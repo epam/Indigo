@@ -57,7 +57,7 @@ void ReactionProductEnumerator::addMonomer(int reactant_idx, Molecule& monomer)
 
 void ReactionProductEnumerator::clearReactantMonomers(int reactant_idx)
 {
-    QS_DEF(Array<int>, unused_monomers);
+    QS_DEF(ArrayNew<int>, unused_monomers);
     unused_monomers.clear();
 
     for (int i = _reaction_monomers._monomers.size() - 1; i >= 0; i--)
@@ -112,7 +112,7 @@ void ReactionProductEnumerator::buildProducts(void)
     for (int i = _reaction.productBegin(); i != _reaction.productEnd(); i = _reaction.productNext(i))
     {
         QueryMolecule& product = _reaction.getQueryMolecule(i);
-        QS_DEF(Array<int>, mapping);
+        QS_DEF(ArrayNew<int>, mapping);
         mapping.clear();
 
         all_products.mergeWithMolecule(product, &mapping);
@@ -145,7 +145,7 @@ void ReactionProductEnumerator::buildProducts(void)
 
 void ReactionProductEnumerator::_buildTubesGrid(void)
 {
-    QS_DEF(ObjArray<Array<int>>, digits);
+    QS_DEF(ObjArray<ArrayNew<int>>, digits);
     digits.clear();
 
     int digit_idx = 0;
@@ -153,7 +153,7 @@ void ReactionProductEnumerator::_buildTubesGrid(void)
     for (int i = _reaction.reactantBegin(); i != _reaction.reactantEnd(); i = _reaction.reactantNext(i))
     {
         int monomers_count = getMonomersCount(i);
-        Array<int>& new_array = digits.push();
+        ArrayNew<int>& new_array = digits.push();
 
         for (int j = 0; j < monomers_count; j++)
             new_array.push(val++);

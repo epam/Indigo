@@ -42,10 +42,10 @@ struct ProductEnumeratorCallbackData
 {
     ReactionProductEnumerator* rpe;
     ObjArray<Reaction>* out_reactions;
-    ObjArray<Array<int>>* out_indices;
+    ObjArray<ArrayNew<int>>* out_indices;
 };
 
-static void product_proc(Molecule& product, Array<int>& monomers_indices, Array<int>& mapping, void* userdata)
+static void product_proc(Molecule& product, ArrayNew<int>& monomers_indices, ArrayNew<int>& mapping, void* userdata)
 {
     ProductEnumeratorCallbackData* rpe_data = (ProductEnumeratorCallbackData*)userdata;
 
@@ -62,7 +62,7 @@ static void product_proc(Molecule& product, Array<int>& monomers_indices, Array<
     reaction.addProductCopy(new_product, NULL, NULL);
     reaction.name.copy(product.name);
 
-    Array<int>& indices = rpe_data->out_indices->push();
+    ArrayNew<int>& indices = rpe_data->out_indices->push();
     indices.copy(monomers_indices);
 }
 
@@ -108,7 +108,7 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
         rpe.product_proc = product_proc;
 
         ObjArray<Reaction> out_reactions;
-        ObjArray<Array<int>> out_indices_all;
+        ObjArray<ArrayNew<int>> out_indices_all;
 
         ProductEnumeratorCallbackData rpe_data;
         rpe_data.out_reactions = &out_reactions;
@@ -136,7 +136,7 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
             indigo_rxn.rxn.clone(out_reaction, NULL, NULL, NULL);
 
             int properties_count = monomers_properties.size();
-            Array<int>& out_indices = out_indices_all[k];
+            ArrayNew<int>& out_indices = out_indices_all[k];
             for (auto m = 0; m < out_indices.size(); m++)
             {
                 int index = out_indices[m];
@@ -188,7 +188,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
 
         if (is_mol)
         {
-            Array<int> mapping;
+            ArrayNew<int> mapping;
             Molecule& mol = monomers_object.getMolecule();
             Molecule input_mol;
             input_mol.clone(mol, 0, 0);
@@ -209,7 +209,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
             for (int i = 0; i < monomers_array.objects.size(); i++)
             {
 
-                Array<int> mapping;
+                ArrayNew<int> mapping;
                 Molecule& mol = monomers_object.getMolecule();
                 Molecule input_mol;
                 input_mol.clone(mol, 0, 0);

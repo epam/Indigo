@@ -255,12 +255,12 @@ void MoleculeSGroups::buildTree(Tree& tree)
     }
 }
 
-bool MoleculeSGroups::getParentAtoms(int idx, Array<int>& target)
+bool MoleculeSGroups::getParentAtoms(int idx, ArrayNew<int>& target)
 {
     return getParentAtoms(getSGroup(idx), target);
 }
 
-bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
+bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, ArrayNew<int>& target)
 {
     if (sgroup.parent_idx <= 0)
     {
@@ -278,9 +278,9 @@ bool MoleculeSGroups::isPolimer()
     return getSGroupCount(SGroup::SG_TYPE_SRU) > 0;
 }
 
-void MoleculeSGroups::findSGroups(const char* property, const char* value, Array<int>& sgs)
+void MoleculeSGroups::findSGroups(const char* property, const char* value, ArrayNew<int>& sgs)
 {
-    QS_DEF(Array<int>, s_indices);
+    QS_DEF(ArrayNew<int>, s_indices);
     int s_property;
     int s_type;
     int s_int;
@@ -298,7 +298,7 @@ void MoleculeSGroups::findSGroups(const char* property, const char* value, Array
         findSGroups(s_property, s_indices, sgs);
 }
 
-void MoleculeSGroups::parseCondition(const char* property, const char* value, int& s_property, int& s_type, int& s_int, Array<int>& s_indices)
+void MoleculeSGroups::parseCondition(const char* property, const char* value, int& s_property, int& s_type, int& s_int, ArrayNew<int>& s_indices)
 {
     struct Mapping
     {
@@ -382,7 +382,7 @@ void MoleculeSGroups::parseCondition(const char* property, const char* value, in
     throw Error("unsupported condition property: %s", property);
 }
 
-void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
+void MoleculeSGroups::findSGroups(int property, int value, ArrayNew<int>& sgs)
 {
     int i;
     if (property == SGroup::SG_TYPE)
@@ -450,7 +450,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
         throw Error("Unknown or incomaptible value Sgroup property: %d", property);
 }
 
-void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs)
+void MoleculeSGroups::findSGroups(int property, const char* str, ArrayNew<int>& sgs)
 {
     int i;
     if (property == SGroup::SG_CLASS)
@@ -639,7 +639,7 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
         throw Error("Unknown or incomaptible value Sgroup property: %d", property);
 }
 
-void MoleculeSGroups::findSGroups(int property, Array<int>& indices, Array<int>& sgs)
+void MoleculeSGroups::findSGroups(int property, ArrayNew<int>& indices, ArrayNew<int>& sgs)
 {
     int i;
     if (property == SGroup::SG_ATOMS)
@@ -693,7 +693,7 @@ int MoleculeSGroups::_findSGroupById(int id)
     return -1;
 }
 
-bool MoleculeSGroups::_cmpIndices(Array<int>& t_inds, Array<int>& q_inds)
+bool MoleculeSGroups::_cmpIndices(ArrayNew<int>& t_inds, ArrayNew<int>& q_inds)
 {
     for (int i = 0; i < q_inds.size(); i++)
     {

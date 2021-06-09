@@ -209,7 +209,7 @@ void MoleculeLayoutMacrocyclesLattice::calculate_rotate_length()
     rotate_length++;
 }
 
-void MoleculeLayoutMacrocyclesLattice::_rotate_ar_i(Array<int>& ar, Array<int>& tmp, int shift)
+void MoleculeLayoutMacrocyclesLattice::_rotate_ar_i(ArrayNew<int>& ar, ArrayNew<int>& tmp, int shift)
 {
     for (int i = shift; i < length; i++)
         tmp[i - shift] = ar[i];
@@ -243,7 +243,7 @@ void MoleculeLayoutMacrocyclesLattice::rotate_cycle(int shift)
 {
     shift = (shift % length + length) % length;
 
-    QS_DEF(Array<int>, temp);
+    QS_DEF(ArrayNew<int>, temp);
     temp.clear_resize(length);
     QS_DEF(Array<float>, tempd);
     tempd.clear_resize(length);
@@ -851,7 +851,7 @@ float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
         is_cis[i] = (is_pos_rotate[i & 7] == is_pos_rotate[i >> 1]) ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS;
 
     int best_rot = -1;
-    QS_DEF(Array<int>, up);
+    QS_DEF(ArrayNew<int>, up);
     up.clear_resize(length + 1);
     up.zerofill();
 

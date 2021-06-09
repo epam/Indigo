@@ -91,7 +91,7 @@ const char* IndigoMolecule::getName()
 IndigoMolecule* IndigoMolecule::cloneFrom(IndigoObject& obj)
 {
     AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, mapping);
 
     molptr->mol.clone(obj.getMolecule(), 0, &mapping);
 
@@ -118,7 +118,7 @@ QueryMolecule& IndigoQueryMolecule::getQueryMolecule()
 IndigoQueryMolecule* IndigoQueryMolecule::cloneFrom(IndigoObject& obj)
 {
     AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, mapping);
 
     molptr->qmol.clone(obj.getQueryMolecule(), 0, &mapping);
 
@@ -1667,7 +1667,7 @@ CEXPORT const int* indigoSymmetryClasses(int molecule, int* count_out)
         m2.clone_KeepIndices(mol);
         m2.aromatize(self.arom_options);
 
-        QS_DEF(Array<int>, ignored);
+        QS_DEF(ArrayNew<int>, ignored);
         ignored.clear_resize(m2.vertexEnd());
         ignored.zerofill();
 
@@ -1677,7 +1677,7 @@ CEXPORT const int* indigoSymmetryClasses(int molecule, int* count_out)
 
         MoleculeAutomorphismSearch of;
 
-        QS_DEF(Array<int>, orbits);
+        QS_DEF(ArrayNew<int>, orbits);
         of.find_canonical_ordering = true;
         of.ignored_vertices = ignored.ptr();
         of.process(m2);
@@ -1719,7 +1719,7 @@ CEXPORT int indigoCreateSubmolecule(int molecule, int nvertices, int* vertices)
     {
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
 
-        QS_DEF(Array<int>, vertices_arr);
+        QS_DEF(ArrayNew<int>, vertices_arr);
 
         vertices_arr.copy(vertices, nvertices);
 
@@ -1747,17 +1747,17 @@ CEXPORT int indigoGetSubmolecule(int molecule, int nvertices, int* vertices)
     {
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
 
-        QS_DEF(Array<int>, vertices_arr);
+        QS_DEF(ArrayNew<int>, vertices_arr);
         vertices_arr.copy(vertices, nvertices);
 
         // Collect edges by vertices
-        QS_DEF(Array<int>, vertices_mask);
+        QS_DEF(ArrayNew<int>, vertices_mask);
         vertices_mask.clear_resize(mol.vertexEnd());
         vertices_mask.zerofill();
         for (int i = 0; i < nvertices; i++)
             vertices_mask[vertices[i]] = 1;
 
-        QS_DEF(Array<int>, edges);
+        QS_DEF(ArrayNew<int>, edges);
         edges.clear();
         for (int i = mol.edgeBegin(); i < mol.edgeEnd(); i = mol.edgeNext(i))
         {
@@ -1778,8 +1778,8 @@ CEXPORT int indigoCreateEdgeSubmolecule(int molecule, int nvertices, int* vertic
     {
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
 
-        QS_DEF(Array<int>, vertices_arr);
-        QS_DEF(Array<int>, edges_arr);
+        QS_DEF(ArrayNew<int>, vertices_arr);
+        QS_DEF(ArrayNew<int>, edges_arr);
 
         vertices_arr.copy(vertices, nvertices);
         edges_arr.copy(edges, nedges);
@@ -1807,7 +1807,7 @@ CEXPORT int indigoRemoveAtoms(int molecule, int nvertices, int* vertices)
     INDIGO_BEGIN
     {
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
-        QS_DEF(Array<int>, indices);
+        QS_DEF(ArrayNew<int>, indices);
 
         indices.copy(vertices, nvertices);
 
@@ -1822,7 +1822,7 @@ CEXPORT int indigoRemoveBonds(int molecule, int nbonds, int* bonds)
     INDIGO_BEGIN
     {
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
-        QS_DEF(Array<int>, indices);
+        QS_DEF(ArrayNew<int>, indices);
 
         indices.copy(bonds, nbonds);
 
@@ -2112,7 +2112,7 @@ CEXPORT int indigoCountGenericSGroups(int molecule)
     INDIGO_END(-1);
 }
 
-IndigoDataSGroupsIter::IndigoDataSGroupsIter(BaseMolecule& molecule, Array<int>& refs) : IndigoObject(DATA_SGROUPS_ITER), _mol(molecule), _refs(refs)
+IndigoDataSGroupsIter::IndigoDataSGroupsIter(BaseMolecule& molecule, ArrayNew<int>& refs) : IndigoObject(DATA_SGROUPS_ITER), _mol(molecule), _refs(refs)
 {
     _idx = -1;
 }
@@ -2146,7 +2146,7 @@ CEXPORT int indigoIterateDataSGroups(int molecule)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<int>, sgs);
+        QS_DEF(ArrayNew<int>, sgs);
         sgs.clear();
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_DAT, sgs);
@@ -2224,7 +2224,7 @@ Superatom& IndigoSuperatom::get()
     return (Superatom&)mol.sgroups.getSGroup(idx);
 }
 
-IndigoSuperatomsIter::IndigoSuperatomsIter(BaseMolecule& molecule, Array<int>& refs) : IndigoObject(SUPERATOMS_ITER), _mol(molecule), _refs(refs)
+IndigoSuperatomsIter::IndigoSuperatomsIter(BaseMolecule& molecule, ArrayNew<int>& refs) : IndigoObject(SUPERATOMS_ITER), _mol(molecule), _refs(refs)
 {
     _idx = -1;
 }
@@ -2286,7 +2286,7 @@ RepeatingUnit& IndigoRepeatingUnit::get()
     return (RepeatingUnit&)mol.sgroups.getSGroup(idx);
 }
 
-IndigoRepeatingUnitsIter::IndigoRepeatingUnitsIter(BaseMolecule& molecule, Array<int>& refs) : IndigoObject(REPEATING_UNITS_ITER), _mol(molecule), _refs(refs)
+IndigoRepeatingUnitsIter::IndigoRepeatingUnitsIter(BaseMolecule& molecule, ArrayNew<int>& refs) : IndigoObject(REPEATING_UNITS_ITER), _mol(molecule), _refs(refs)
 {
     _idx = -1;
 }
@@ -2348,7 +2348,7 @@ MultipleGroup& IndigoMultipleGroup::get()
     return (MultipleGroup&)mol.sgroups.getSGroup(idx);
 }
 
-IndigoMultipleGroupsIter::IndigoMultipleGroupsIter(BaseMolecule& molecule, Array<int>& refs) : IndigoObject(MULTIPLE_GROUPS_ITER), _mol(molecule), _refs(refs)
+IndigoMultipleGroupsIter::IndigoMultipleGroupsIter(BaseMolecule& molecule, ArrayNew<int>& refs) : IndigoObject(MULTIPLE_GROUPS_ITER), _mol(molecule), _refs(refs)
 {
     _idx = -1;
 }
@@ -2410,7 +2410,7 @@ SGroup& IndigoGenericSGroup::get()
     return (SGroup&)mol.sgroups.getSGroup(idx);
 }
 
-IndigoGenericSGroupsIter::IndigoGenericSGroupsIter(BaseMolecule& molecule, Array<int>& refs) : IndigoObject(GENERIC_SGROUPS_ITER), _mol(molecule), _refs(refs)
+IndigoGenericSGroupsIter::IndigoGenericSGroupsIter(BaseMolecule& molecule, ArrayNew<int>& refs) : IndigoObject(GENERIC_SGROUPS_ITER), _mol(molecule), _refs(refs)
 {
     _idx = -1;
 }
@@ -2444,7 +2444,7 @@ CEXPORT int indigoIterateGenericSGroups(int molecule)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<int>, sgs);
+        QS_DEF(ArrayNew<int>, sgs);
         sgs.clear();
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_GEN, sgs);
@@ -2491,7 +2491,7 @@ SGroup& IndigoSGroup::get()
     return (SGroup&)mol.sgroups.getSGroup(idx);
 }
 
-IndigoSGroupsIter::IndigoSGroupsIter(BaseMolecule& molecule, Array<int>& sg_refs) : IndigoObject(SGROUPS_ITER), _mol(molecule), _refs(sg_refs)
+IndigoSGroupsIter::IndigoSGroupsIter(BaseMolecule& molecule, ArrayNew<int>& sg_refs) : IndigoObject(SGROUPS_ITER), _mol(molecule), _refs(sg_refs)
 {
     _idx = -1;
 }
@@ -2530,7 +2530,7 @@ CEXPORT int indigoIterateSGroups(int molecule)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<int>, sgs);
+        QS_DEF(ArrayNew<int>, sgs);
         sgs.clear();
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         for (auto i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
@@ -2628,7 +2628,7 @@ CEXPORT int indigoIterateRepeatingUnits(int molecule)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<int>, sgs);
+        QS_DEF(ArrayNew<int>, sgs);
         sgs.clear();
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_SRU, sgs);
@@ -2641,7 +2641,7 @@ CEXPORT int indigoIterateMultipleGroups(int molecule)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<int>, sgs);
+        QS_DEF(ArrayNew<int>, sgs);
         sgs.clear();
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_MUL, sgs);
@@ -2654,7 +2654,7 @@ CEXPORT int indigoIterateSuperatoms(int molecule)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<int>, sgs);
+        QS_DEF(ArrayNew<int>, sgs);
         sgs.clear();
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_SUP, sgs);
@@ -3047,7 +3047,7 @@ CEXPORT int indigoCreateSGroup(const char* type, int mapping, const char* name)
         IndigoMapping& map = IndigoMapping::cast(self.getObject(mapping));
         BaseMolecule& mol = map.to;
         BaseMolecule& temp = map.from;
-        Array<int>& m = map.mapping;
+        ArrayNew<int>& m = map.mapping;
         int idx = mol.sgroups.addSGroup(type);
         if (idx != -1)
         {
@@ -3310,7 +3310,7 @@ CEXPORT int indigoFindSGroups(int item, const char* property, const char* value)
     INDIGO_BEGIN
     {
         BaseMolecule& mol = self.getObject(item).getBaseMolecule();
-        QS_DEF(Array<int>, sgs);
+        QS_DEF(ArrayNew<int>, sgs);
         sgs.clear();
 
         mol.sgroups.findSGroups(property, value, sgs);
@@ -3895,7 +3895,7 @@ CEXPORT int indigoSetTemplateAtomClass(int atom, const char* name)
     INDIGO_END(-1);
 }
 
-static void _parseRSites(const char* name, Array<int>& rsites)
+static void _parseRSites(const char* name, ArrayNew<int>& rsites)
 {
     BufferScanner scanner(name);
     rsites.clear();
@@ -3922,7 +3922,7 @@ static void _parseRSites(const char* name, Array<int>& rsites)
 static void _indigoSetRSite(Molecule& mol, int atom_index, const char* name)
 {
     // Parse r-sites
-    QS_DEF(Array<int>, rsites);
+    QS_DEF(ArrayNew<int>, rsites);
     _parseRSites(name, rsites);
     mol.resetAtom(atom_index, ELEM_RSITE);
     mol.setRSiteBits(atom_index, 0);
@@ -4036,7 +4036,7 @@ CEXPORT int indigoSetBondOrder(int bond, int order)
     INDIGO_END(-1);
 }
 
-IndigoSubmolecule::IndigoSubmolecule(BaseMolecule& mol_, Array<int>& vertices_, Array<int>& edges_) : IndigoObject(SUBMOLECULE), _mol(mol_)
+IndigoSubmolecule::IndigoSubmolecule(BaseMolecule& mol_, ArrayNew<int>& vertices_, ArrayNew<int>& edges_) : IndigoObject(SUBMOLECULE), _mol(mol_)
 {
     vertices.copy(vertices_);
     edges.copy(edges_);
@@ -4227,12 +4227,12 @@ IndigoSubtreesIter::~IndigoSubtreesIter()
 {
 }
 
-void IndigoSubtreesIter::_handleTree(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context)
+void IndigoSubtreesIter::_handleTree(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context)
 {
     IndigoSubtreesIter* self = (IndigoSubtreesIter*)context;
 
-    Array<int>& self_vertices = self->_vertices.push();
-    Array<int>& self_edges = self->_edges.push();
+    ArrayNew<int>& self_vertices = self->_vertices.push();
+    ArrayNew<int>& self_edges = self->_edges.push();
     self_vertices.copy(vertices);
     self_edges.copy(edges);
 }
@@ -4278,7 +4278,7 @@ IndigoRingsIter::~IndigoRingsIter()
 {
 }
 
-bool IndigoRingsIter::_handleCycle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context)
+bool IndigoRingsIter::_handleCycle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context)
 {
     IndigoRingsIter* self = (IndigoRingsIter*)context;
 
@@ -4333,8 +4333,8 @@ void IndigoEdgeSubmoleculeIter::_handleSubgraph(Graph& graph, const int* v_mappi
 {
     IndigoEdgeSubmoleculeIter* self = (IndigoEdgeSubmoleculeIter*)context;
 
-    Array<int>& vertices = self->_vertices.push();
-    Array<int>& edges = self->_edges.push();
+    ArrayNew<int>& vertices = self->_vertices.push();
+    ArrayNew<int>& edges = self->_edges.push();
 
     Graph::filterVertices(graph, v_mapping, FILTER_NEQ, -1, vertices);
     Graph::filterEdges(graph, e_mapping, FILTER_NEQ, -1, edges);

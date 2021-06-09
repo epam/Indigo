@@ -52,18 +52,18 @@ namespace indigo
     class DLLEXPORT MoleculeGrossFormula
     {
     public:
-        static void collect(BaseMolecule& molecule, Array<int>& gross);
+        static void collect(BaseMolecule& molecule, ArrayNew<int>& gross);
         static std::unique_ptr<GROSS_UNITS> collect(BaseMolecule& molecule, bool add_isotopes = false );
 
-        static void toString(const Array<int>& gross, ArrayChar& str, bool add_rsites = false);
+        static void toString(const ArrayNew<int>& gross, ArrayChar& str, bool add_rsites = false);
         static void toString(GROSS_UNITS& gross, ArrayChar& str, bool add_rsites = false);
         static void toString_Hill(GROSS_UNITS& gross, ArrayChar& str, bool add_rsites = false);
-        static void fromString(const char* str, Array<int>& gross);
-        static void fromString(Scanner& scanner, Array<int>& gross);
+        static void fromString(const char* str, ArrayNew<int>& gross);
+        static void fromString(Scanner& scanner, ArrayNew<int>& gross);
 
-        static bool leq(const Array<int>& gross1, const Array<int>& gross2);
-        static bool geq(const Array<int>& gross1, const Array<int>& gross2);
-        static bool equal(const Array<int>& gross1, const Array<int>& gross2);
+        static bool leq(const ArrayNew<int>& gross1, const ArrayNew<int>& gross2);
+        static bool geq(const ArrayNew<int>& gross1, const ArrayNew<int>& gross2);
+        static bool equal(const ArrayNew<int>& gross1, const ArrayNew<int>& gross2);
 
     protected:
         struct _ElemCounter
@@ -73,7 +73,7 @@ namespace indigo
             int counter;
         };
 
-        static void _toString(const Array<int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites);
+        static void _toString(const ArrayNew<int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites);
         static void _toString(const RedBlackMap<int, int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites);
         static int _cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context);
         static int _cmp_hill(_ElemCounter& ec1, _ElemCounter& ec2, void* context);

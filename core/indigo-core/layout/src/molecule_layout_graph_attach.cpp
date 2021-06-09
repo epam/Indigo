@@ -20,7 +20,7 @@
 
 using namespace indigo;
 
-void MoleculeLayoutGraphSimple::_setChainType(const Array<int>& chain, const Array<int>& mapping, int type)
+void MoleculeLayoutGraphSimple::_setChainType(const ArrayNew<int>& chain, const ArrayNew<int>& mapping, int type)
 {
     for (int i = 0; i < chain.size() - 1; i++)
     {
@@ -34,8 +34,8 @@ void MoleculeLayoutGraphSimple::_setChainType(const Array<int>& chain, const Arr
     }
 }
 
-bool MoleculeLayoutGraphSimple::_splitCycle(const Cycle& cycle, const Array<int>& cycle_vertex_types, bool check_boundary, Array<int>& chain_ext,
-                                            Array<int>& chain_int, int& c_beg, int& c_end) const
+bool MoleculeLayoutGraphSimple::_splitCycle(const Cycle& cycle, const ArrayNew<int>& cycle_vertex_types, bool check_boundary, ArrayNew<int>& chain_ext,
+                                            ArrayNew<int>& chain_int, int& c_beg, int& c_end) const
 {
     int i, j, k;
 
@@ -117,7 +117,7 @@ bool MoleculeLayoutGraphSimple::_splitCycle(const Cycle& cycle, const Array<int>
 }
 
 // Split cycle into separate chains which are not drawn
-void MoleculeLayoutGraphSimple::_splitCycle2(const Cycle& cycle, const Array<int>& cycle_vertex_types, ObjArray<Array<int>>& chains_ext) const
+void MoleculeLayoutGraphSimple::_splitCycle2(const Cycle& cycle, const ArrayNew<int>& cycle_vertex_types, ObjArray<ArrayNew<int>>& chains_ext) const
 {
     int i;
 
@@ -137,7 +137,7 @@ void MoleculeLayoutGraphSimple::_splitCycle2(const Cycle& cycle, const Array<int
         if (i == cycle.vertexCount())
             break;
 
-        Array<int>& chain_ext = chains_ext.push();
+        ArrayNew<int>& chain_ext = chains_ext.push();
 
         chain_ext.push(cycle.getVertex(i - 1));
 
@@ -152,7 +152,7 @@ void MoleculeLayoutGraphSimple::_splitCycle2(const Cycle& cycle, const Array<int
     {
         i = cycle.vertexCount() - 1;
 
-        Array<int>* chain_ext = 0;
+        ArrayNew<int>* chain_ext = 0;
 
         if (cycle_vertex_types[i] != ELEMENT_NOT_DRAWN)
         {
@@ -173,7 +173,7 @@ void MoleculeLayoutGraphSimple::_splitCycle2(const Cycle& cycle, const Array<int
 bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float length, int n_common_edges)
 {
     int n_common_e = 0, n_common_v = 0;
-    QS_DEF(Array<int>, cycle_vertex_types);
+    QS_DEF(ArrayNew<int>, cycle_vertex_types);
 
     cycle_vertex_types.clear_resize(cycle.vertexCount());
     cycle_vertex_types.zerofill();
@@ -208,8 +208,8 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
     if (n_common_v < 2)
         return false;
 
-    QS_DEF(Array<int>, chain_ext);
-    QS_DEF(Array<int>, chain_int);
+    QS_DEF(ArrayNew<int>, chain_ext);
+    QS_DEF(ArrayNew<int>, chain_int);
     int c_beg, c_end;
 
     if (!_splitCycle(cycle, cycle_vertex_types, true, chain_ext, chain_int, c_beg, c_end))
@@ -217,17 +217,17 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
 
     int i, k;
     bool is_attached = false;
-    QS_DEF(Array<int>, border1v);
-    QS_DEF(Array<int>, border1e);
-    QS_DEF(Array<int>, border2v);
-    QS_DEF(Array<int>, border2e);
+    QS_DEF(ArrayNew<int>, border1v);
+    QS_DEF(ArrayNew<int>, border1e);
+    QS_DEF(ArrayNew<int>, border2v);
+    QS_DEF(ArrayNew<int>, border2e);
     Vec2f p;
 
     // Make Border1, Border2 from component border (borders have two common vertices)
     _splitBorder(c_beg, c_end, border1v, border1e, border2v, border2e);
 
     QS_DEF(MoleculeLayoutGraphSimple, next_bc);
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, mapping);
 
     for (int n_try = 0; n_try < 2 && !is_attached; n_try++)
     {
@@ -335,7 +335,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleInside(const Cycle& cycle, float len
     int n_common_e = 0, n_common_v = 0;
     int i, j;
 
-    QS_DEF(Array<int>, cycle_vertex_types);
+    QS_DEF(ArrayNew<int>, cycle_vertex_types);
 
     cycle_vertex_types.clear_resize(cycle.vertexCount());
     cycle_vertex_types.zerofill();
@@ -392,15 +392,15 @@ bool MoleculeLayoutGraphSimple::_attachCycleInside(const Cycle& cycle, float len
     if (n_common_v < 2)
         return false;
 
-    QS_DEF(Array<int>, chain_ext);
-    QS_DEF(Array<int>, chain_int);
+    QS_DEF(ArrayNew<int>, chain_ext);
+    QS_DEF(ArrayNew<int>, chain_int);
     int c_beg, c_end;
 
     if (!_splitCycle(cycle, cycle_vertex_types, false, chain_ext, chain_int, c_beg, c_end))
         return false;
 
     QS_DEF(MoleculeLayoutGraphSimple, next_bc);
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, mapping);
 
     for (int n_try = 0; n_try < 2 && !attached; n_try++)
     {
@@ -462,7 +462,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
     int n_common_e = 0, n_common_v = 0;
     int i, j, k;
 
-    QS_DEF(Array<int>, cycle_vertex_types);
+    QS_DEF(ArrayNew<int>, cycle_vertex_types);
 
     cycle_vertex_types.clear_resize(cycle.vertexCount());
     cycle_vertex_types.zerofill();
@@ -488,7 +488,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
     if (n_common_v < 2)
         return false;
 
-    QS_DEF(ObjArray<Array<int>>, chains_ext);
+    QS_DEF(ObjArray<ArrayNew<int>>, chains_ext);
 
     // Split cycle into separate external (not drawn) chains
     _splitCycle2(cycle, cycle_vertex_types, chains_ext);
@@ -496,7 +496,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
     // Attach each chain separately
     for (int chain_idx = 0; chain_idx < chains_ext.size(); chain_idx++)
     {
-        Array<int>& chain_ext = chains_ext[chain_idx];
+        ArrayNew<int>& chain_ext = chains_ext[chain_idx];
         int c_beg = chain_ext[0], c_end = chain_ext[chain_ext.size() - 1];
 
         float max_length = length * 4; // to avoid infinite values
@@ -612,7 +612,7 @@ void MoleculeLayoutGraph::_attachEars(int vert_idx, int drawn_idx, int* ears, co
 }
 
 // Attach set of trivial components
-void MoleculeLayoutGraph::_attachDandlingVertices(int vert_idx, Array<int>& adjacent_list)
+void MoleculeLayoutGraph::_attachDandlingVertices(int vert_idx, ArrayNew<int>& adjacent_list)
 {
     int n_pos = 0, not_drawn_idx = 0, drawn_idx = -1;
     Vec2f v1, v2;
@@ -697,15 +697,15 @@ void MoleculeLayoutGraph::_attachDandlingVertices(int vert_idx, Array<int>& adja
     }
 }
 
-bool MoleculeLayoutGraphSimple::_drawEdgesWithoutIntersection(const Cycle& cycle, Array<int>& cycle_vertex_types)
+bool MoleculeLayoutGraphSimple::_drawEdgesWithoutIntersection(const Cycle& cycle, ArrayNew<int>& cycle_vertex_types)
 {
     bool is_attached = true;
     Vec2f p;
 
-    QS_DEF(Array<int>, border1v);
-    QS_DEF(Array<int>, border1e);
-    QS_DEF(Array<int>, border2v);
-    QS_DEF(Array<int>, border2e);
+    QS_DEF(ArrayNew<int>, border1v);
+    QS_DEF(ArrayNew<int>, border1e);
+    QS_DEF(ArrayNew<int>, border2v);
+    QS_DEF(ArrayNew<int>, border2e);
 
     for (int i = 0; i < cycle.vertexCount(); i++)
     {
@@ -782,7 +782,7 @@ bool MoleculeLayoutGraphSimple::_drawEdgesWithoutIntersection(const Cycle& cycle
     return is_attached;
 }
 
-bool MoleculeLayoutGraph::_checkBadTryBorderIntersection(Array<int>& chain_ext, MoleculeLayoutGraph& next_bc, Array<int>& mapping)
+bool MoleculeLayoutGraph::_checkBadTryBorderIntersection(ArrayNew<int>& chain_ext, MoleculeLayoutGraph& next_bc, ArrayNew<int>& mapping)
 {
     for (int i = 0; i < chain_ext.size() - 1; i++)
         for (int j = next_bc.edgeBegin(); j < next_bc.edgeEnd(); j = next_bc.edgeNext(j))
@@ -808,7 +808,7 @@ bool MoleculeLayoutGraph::_checkBadTryBorderIntersection(Array<int>& chain_ext, 
     return true;
 }
 
-bool MoleculeLayoutGraph::_checkBadTryChainOutside(Array<int>& chain_ext, MoleculeLayoutGraph& next_bc, Array<int>& mapping)
+bool MoleculeLayoutGraph::_checkBadTryChainOutside(ArrayNew<int>& chain_ext, MoleculeLayoutGraph& next_bc, ArrayNew<int>& mapping)
 {
     // Check chain_ext is outside bound
     for (int i = 1; i < chain_ext.size() - 1; i++)
@@ -828,7 +828,7 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
     float phi;
 
     QS_DEF(Array<float>, angles); // polar angles of drawn edges
-    QS_DEF(Array<int>, edges);    // edge indices in CCW order
+    QS_DEF(ArrayNew<int>, edges);    // edge indices in CCW order
 
     angles.clear();
     edges.clear();
@@ -876,7 +876,7 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
     _calculatePos(phi, v1, v2, positions.top());
 }
 
-void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, Array<int>& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears,
+void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, ArrayNew<int>& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears,
                                                          Array<Vec2f>& positions, int& parity)
 {
     // Split 2pi to n_pos+1 parts

@@ -89,7 +89,7 @@ void MainLayerFormula::printFormula(ArrayChar& result)
         _printAtom(output, ELEM_H);
     }
 
-    const Array<int>& atom_lables_sorted = MoleculeInChIUtils::getLexSortedAtomLables();
+    const ArrayNew<int>& atom_lables_sorted = MoleculeInChIUtils::getLexSortedAtomLables();
     for (int i = 0; i < atom_lables_sorted.size(); i++)
     {
         int label = atom_lables_sorted[i];
@@ -113,7 +113,7 @@ void MainLayerFormula::_printAtom(Output& output, int label) const
 
 int MainLayerFormula::compareComponentsAtomsCountNoH(MainLayerFormula& comp1, MainLayerFormula& comp2)
 {
-    const Array<int>& atom_lables_sorted = MoleculeInChIUtils::getLexSortedAtomLables();
+    const ArrayNew<int>& atom_lables_sorted = MoleculeInChIUtils::getLexSortedAtomLables();
 
     for (int i = 0; i < atom_lables_sorted.size(); i++)
     {
@@ -152,7 +152,7 @@ void MainLayerConnections::_linearizeConnectionTable()
 
     _connection_table.clear();
 
-    QS_DEF(Array<int>, nei_array);
+    QS_DEF(ArrayNew<int>, nei_array);
     for (int v_idx = mol.vertexBegin(); v_idx != mol.vertexEnd(); v_idx = mol.vertexNext(v_idx))
     {
         const Vertex& vertex = mol.getVertex(v_idx);
@@ -177,8 +177,8 @@ int MainLayerConnections::compareMappings(const MoleculeInChIUtils::Mapping& m1,
     Molecule& mol = _getMolecule();
 
     // Compare low triangles of connection tables row by row
-    QS_DEF(Array<int>, tmp1);
-    QS_DEF(Array<int>, tmp2);
+    QS_DEF(ArrayNew<int>, tmp1);
+    QS_DEF(ArrayNew<int>, tmp2);
 
     for (int i = 0; i < m1.mapping.size(); i++)
     {
@@ -257,7 +257,7 @@ void MainLayerConnections::printConnectionTable(ArrayChar& result)
     }
     ArrayOutput output(result);
 
-    QS_DEF(Array<int>, vertex_ranks);
+    QS_DEF(ArrayNew<int>, vertex_ranks);
     vertex_ranks.clear_resize(cano_mol.vertexEnd());
     for (int i = 0; i < cano_mol.vertexEnd(); i++)
         vertex_ranks[i] = i;
@@ -281,7 +281,7 @@ void MainLayerConnections::printConnectionTable(ArrayChar& result)
 
     // Calculate size of the descedants of each vertex in DFS-tree
     const Array<DfsWalk::SeqElem>& sequence = dfs_walk.getSequence();
-    QS_DEF(Array<int>, descedants_size);
+    QS_DEF(ArrayNew<int>, descedants_size);
     descedants_size.clear_resize(cano_mol.vertexEnd());
     descedants_size.zerofill();
 
@@ -304,7 +304,7 @@ void MainLayerConnections::printConnectionTable(ArrayChar& result)
     }
 
     // DFS-walk based on previous walk but with order based on descedants_size
-    QS_DEF(Array<int>, edge_in_dfs);
+    QS_DEF(ArrayNew<int>, edge_in_dfs);
     edge_in_dfs.clear_resize(cano_mol.edgeEnd());
     edge_in_dfs.zerofill();
     for (int i = sequence.size() - 1; i >= 0; i--)
@@ -315,15 +315,15 @@ void MainLayerConnections::printConnectionTable(ArrayChar& result)
             edge_in_dfs[item.parent_edge] = 1;
     }
 
-    QS_DEF(Array<int>, vertex_visited);
+    QS_DEF(ArrayNew<int>, vertex_visited);
     vertex_visited.clear_resize(cano_mol.vertexEnd());
     vertex_visited.zerofill();
 
-    QS_DEF(Array<int>, vertex_stack);
+    QS_DEF(ArrayNew<int>, vertex_stack);
     vertex_stack.push(min_degree_vertex);
 
-    QS_DEF(Array<int>, nei_visited_vertices);
-    QS_DEF(Array<int>, nei_dfs_next_vertices);
+    QS_DEF(ArrayNew<int>, nei_visited_vertices);
+    QS_DEF(ArrayNew<int>, nei_dfs_next_vertices);
 
     enum
     {
@@ -471,7 +471,7 @@ void HydrogensLayer::print(ArrayChar& result)
     ArrayOutput output(result);
 
     // Find maximum number of hydrogens
-    const Array<int>& hydrogens = _per_atom_immobile;
+    const ArrayNew<int>& hydrogens = _per_atom_immobile;
     int max_hydrogens = 0;
     for (int i = 0; i < hydrogens.size(); i++)
         if (max_hydrogens < hydrogens[i])
@@ -527,7 +527,7 @@ void HydrogensLayer::print(ArrayChar& result)
     result.push(0);
 }
 
-bool HydrogensLayer::checkAutomorphism(const Array<int>& mapping)
+bool HydrogensLayer::checkAutomorphism(const ArrayNew<int>& mapping)
 {
     Molecule& mol = _getMolecule();
 
@@ -609,7 +609,7 @@ void CisTransStereochemistryLayer::print(ArrayChar& result)
     result.push(0);
 }
 
-bool CisTransStereochemistryLayer::checkAutomorphism(const Array<int>& mapping)
+bool CisTransStereochemistryLayer::checkAutomorphism(const ArrayNew<int>& mapping)
 {
     Molecule& mol = _getMolecule();
 
@@ -754,7 +754,7 @@ void TetrahedralStereochemistryLayer::printEnantiomers(ArrayChar& result)
     result.push(0);
 }
 
-bool TetrahedralStereochemistryLayer::checkAutomorphism(const Array<int>& mapping)
+bool TetrahedralStereochemistryLayer::checkAutomorphism(const ArrayNew<int>& mapping)
 {
     Molecule& mol = _getMolecule();
 

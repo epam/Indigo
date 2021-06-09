@@ -173,7 +173,7 @@ namespace indigo
             }
 
         private:
-            void _fillIndexes(byte buf, Array<int>& indexes);
+            void _fillIndexes(byte buf, ArrayNew<int>& indexes);
             int _wordsInUse;
             qword* _words;
 
@@ -181,7 +181,7 @@ namespace indigo
             int _fromByteIdx;
             int _fromBitIdx;
             qword* _fromWord;
-            Array<int>* _fromIndexes;
+            ArrayNew<int>* _fromIndexes;
 
             int _shiftByte;
             int _shiftWord;

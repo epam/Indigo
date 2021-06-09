@@ -217,7 +217,7 @@ void LzwDict::save(Output& _output)
 void LzwDict::saveFull(Output& _output)
 {
     int i, n = _storage.size(), code, HashCode;
-    QS_DEF(Array<int>, MarkedHashCodes);
+    QS_DEF(ArrayNew<int>, MarkedHashCodes);
 
     MarkedHashCodes.resize(SIZE);
 

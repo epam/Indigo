@@ -75,10 +75,10 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
 void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates(float bond_length)
 {
     BiconnectedDecomposer bc_decom(*this);
-    QS_DEF(Array<int>, bc_tree);
+    QS_DEF(ArrayNew<int>, bc_tree);
     // QS_DEF(ObjArray<MoleculeLayoutGraphSimple>, bc_components);
     PtrArray<MoleculeLayoutGraph> bc_components;
-    QS_DEF(Array<int>, fixed_components);
+    QS_DEF(ArrayNew<int>, fixed_components);
     bool all_trivial = true;
 
     int n_comp = bc_decom.decompose();
@@ -111,8 +111,8 @@ void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates(float bond_length)
 
     // ( 1] atoms assigned absolute coordinates and adjacent to atoms not;
     //   assigned coordinates are put on a list;
-    QS_DEF(Array<int>, assigned_list);
-    QS_DEF(Array<int>, adjacent_list);
+    QS_DEF(ArrayNew<int>, assigned_list);
+    QS_DEF(ArrayNew<int>, adjacent_list);
 
     while (true)
     {
@@ -288,7 +288,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     // TODO: repair exception with vec2f
 
     QS_DEF(ObjPool<Cycle>, cycles);
-    QS_DEF(Array<int>, sorted_cycles);
+    QS_DEF(ArrayNew<int>, sorted_cycles);
 
     cycles.clear();
     int n_cycles = sssrCount();
@@ -747,7 +747,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         {
             // flip molecule vertically if R1 is not above other R-groups
             // flip molecule horizontally if R1 is not on the left
-            QS_DEF(Array<int>, rgroup_list);
+            QS_DEF(ArrayNew<int>, rgroup_list);
             Vec2f r1_pos, highest_pos(0.f, -1000.f);
             bool r1_exist = false;
             float center_x = 0.f;
@@ -913,14 +913,14 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     }
 }
 
-void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components)
+void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, ArrayNew<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components)
 {
     // 1. Find biconnected components forming connected subgraph from fixed vertices
     if (_n_fixed == 0)
         return;
 
     int n_comp = bc_decom.componentsCount();
-    QS_DEF(Array<int>, fixed_count);
+    QS_DEF(ArrayNew<int>, fixed_count);
 
     fixed_count.clear_resize(n_comp);
     fixed_count.zerofill();
@@ -966,8 +966,8 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
     Filter fixed_filter(_fixed_vertices.ptr(), Filter::EQ, 1);
 
     Graph fixed_graph;
-    QS_DEF(Array<int>, fixed_mapping);
-    QS_DEF(Array<int>, fixed_inv_mapping);
+    QS_DEF(ArrayNew<int>, fixed_mapping);
+    QS_DEF(ArrayNew<int>, fixed_inv_mapping);
 
     fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, &fixed_inv_mapping);
 
@@ -977,7 +977,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
     {
         // fixed subgraph is not connected - choose its greatest component
         int n = fixed_graph.countComponents();
-        const Array<int>& decomposition = fixed_graph.getDecomposition();
+        const ArrayNew<int>& decomposition = fixed_graph.getDecomposition();
 
         fixed_count.clear_resize(n);
         fixed_count.zerofill();
@@ -1020,7 +1020,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
     }
 }
 
-bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& fixed_components,
+bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph>& bc_components, ArrayNew<int>& fixed_components,
                                                                BiconnectedDecomposer& bc_decom)
 {
     bool all_trivial = true;
@@ -1189,7 +1189,7 @@ bool MoleculeLayoutGraphSimple::_tryToFindPattern(int& fixed_component)
     return false;
 }
 
-void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial)
+void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, ArrayNew<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial)
 {
     if (_n_fixed > 0)
     {
@@ -1263,8 +1263,8 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
     }
 }
 
-bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
-                                               Array<int>& bc_tree)
+bool MoleculeLayoutGraph::_prepareAssignedList(ArrayNew<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
+                                               ArrayNew<int>& bc_tree)
 {
     assigned_list.clear();
 

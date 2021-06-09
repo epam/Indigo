@@ -28,7 +28,7 @@
 #include "reaction/reaction_exact_matcher.h"
 #include "reaction/reaction_substructure_matcher.h"
 
-void _indigoParseTauCondition(const char* list_ptr, int& aromaticity, Array<int>& label_list)
+void _indigoParseTauCondition(const char* list_ptr, int& aromaticity, ArrayNew<int>& label_list)
 {
     if (list_ptr == 0 || *list_ptr == 0)
         throw IndigoError("null or empty tautomer rule description is not allowed");
@@ -579,7 +579,7 @@ IndigoMoleculeSubstructureMatchIter* IndigoMoleculeSubstructureMatcher::iterateQ
     QueryMolecule& query = query_object.getQueryMolecule();
 
     Molecule* target_prepared;
-    Array<int>* mapping;
+    ArrayNew<int>* mapping;
     bool* prepared;
     MoleculeAtomNeighbourhoodCounters* nei_counters;
 
@@ -648,7 +648,7 @@ IndigoTautomerSubstructureMatchIter* IndigoMoleculeSubstructureMatcher::iterateT
     QueryMolecule& query = query_object.getQueryMolecule();
 
     Molecule* target_prepared;
-    Array<int>* mapping;
+    ArrayNew<int>* mapping;
     bool* prepared;
     MoleculeAtomNeighbourhoodCounters* nei_counters;
 
@@ -667,7 +667,7 @@ IndigoTautomerSubstructureMatchIter* IndigoMoleculeSubstructureMatcher::iterateT
     iter->matcher.find_unique_by_edges = embedding_edges_uniqueness;
     iter->matcher.save_for_iteration = for_iteration;
 
-    Array<int> simpleMapping;
+    ArrayNew<int> simpleMapping;
     simpleMapping.expand(mapping->size());
     for (int i = 0; i < simpleMapping.size(); ++i)
     {
@@ -679,12 +679,12 @@ IndigoTautomerSubstructureMatchIter* IndigoMoleculeSubstructureMatcher::iterateT
     return iter.release();
 }
 
-bool IndigoMoleculeSubstructureMatcher::findTautomerMatch(QueryMolecule& query, PtrArray<TautomerRule>& tautomer_rules, Array<int>& mapping_out)
+bool IndigoMoleculeSubstructureMatcher::findTautomerMatch(QueryMolecule& query, PtrArray<TautomerRule>& tautomer_rules, ArrayNew<int>& mapping_out)
 {
     // shameless copy-paste from the method above
     bool* prepared;
     Molecule* target_prepared;
-    Array<int>* mapping;
+    ArrayNew<int>* mapping;
     if (MoleculeSubstructureMatcher::shouldUnfoldTargetHydrogens(query, false))
     {
         if (!_arom_h_unfolded_prepared)

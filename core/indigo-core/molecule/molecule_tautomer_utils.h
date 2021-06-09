@@ -31,9 +31,9 @@ namespace indigo
     class MoleculeTautomerUtils
     {
     public:
-        static void countHReplacements(BaseMolecule& g, Array<int>& h_rep_count);
+        static void countHReplacements(BaseMolecule& g, ArrayNew<int>& h_rep_count);
 
-        static void highlightChains(BaseMolecule& g1, BaseMolecule& g2, const Array<int>& chains_2, const int* core_2);
+        static void highlightChains(BaseMolecule& g1, BaseMolecule& g2, const ArrayNew<int>& chains_2, const int* core_2);
 
     private:
         static bool _isRepMetal(int elem);

@@ -37,7 +37,7 @@ ReactionTransformation::ReactionTransformation(void) : CP_INIT, TL_CP_GET(_merge
     smart_layout = false;
 }
 
-bool ReactionTransformation::transform(Molecule& molecule, QueryReaction& reaction, Array<int>* mapping)
+bool ReactionTransformation::transform(Molecule& molecule, QueryReaction& reaction, ArrayNew<int>* mapping)
 {
     _generateMergedReaction(reaction);
 
@@ -49,13 +49,13 @@ bool ReactionTransformation::transform(Molecule& molecule, QueryReaction& reacti
     QS_DEF(QueryMolecule, cur_full_product);
     cur_full_product.clear();
     cur_full_product.clone(_merged_reaction.getQueryMolecule(product_idx), NULL, NULL);
-    Array<int>& cur_cur_monomer_aam_array = _merged_reaction.getAAMArray(product_idx);
+    ArrayNew<int>& cur_cur_monomer_aam_array = _merged_reaction.getAAMArray(product_idx);
     QS_DEF(RedBlackStringMap<int>, cur_smiles_array);
     cur_smiles_array.clear();
     QS_DEF(ReactionEnumeratorState::ReactionMonomers, cur_reaction_monomers);
     cur_reaction_monomers.clear();
     cur_reaction_monomers.addMonomer(reactant_idx, molecule);
-    QS_DEF(ObjArray<Array<int>>, cur_tubes_monomers);
+    QS_DEF(ObjArray<ArrayNew<int>>, cur_tubes_monomers);
     cur_tubes_monomers.clear();
 
     int product_count = 0;
@@ -76,11 +76,11 @@ bool ReactionTransformation::transform(Molecule& molecule, QueryReaction& reacti
 
     _cur_monomer.clone(molecule, NULL, NULL);
 
-    QS_DEF(Array<int>, forbidden_atoms);
+    QS_DEF(ArrayNew<int>, forbidden_atoms);
     forbidden_atoms.clear_resize(_cur_monomer.vertexEnd());
     forbidden_atoms.zerofill();
 
-    QS_DEF(Array<int>, original_hydrogens);
+    QS_DEF(ArrayNew<int>, original_hydrogens);
     original_hydrogens.clear();
     for (int i = _cur_monomer.vertexBegin(); i != _cur_monomer.vertexEnd(); i = _cur_monomer.vertexNext(i))
     {
@@ -119,11 +119,11 @@ bool ReactionTransformation::transform(Molecule& molecule, QueryReaction& reacti
     return transformed_flag;
 }
 
-bool ReactionTransformation::transform(ReusableObjArray<Molecule>& molecules, QueryReaction& reaction, ReusableObjArray<Array<int>>* mapping_array)
+bool ReactionTransformation::transform(ReusableObjArray<Molecule>& molecules, QueryReaction& reaction, ReusableObjArray<ArrayNew<int>>* mapping_array)
 {
     for (int i = 0; i < molecules.size(); i++)
     {
-        Array<int>* mapping = 0;
+        ArrayNew<int>* mapping = 0;
         if (mapping_array != 0)
             mapping = &(mapping_array->at(i));
 
@@ -134,7 +134,7 @@ bool ReactionTransformation::transform(ReusableObjArray<Molecule>& molecules, Qu
     return true;
 }
 
-void ReactionTransformation::_product_proc(Molecule& product, Array<int>& monomers_indices, Array<int>& mapping, void* userdata)
+void ReactionTransformation::_product_proc(Molecule& product, ArrayNew<int>& monomers_indices, ArrayNew<int>& mapping, void* userdata)
 {
     ReactionTransformation* rt = (ReactionTransformation*)userdata;
 
@@ -145,7 +145,7 @@ void ReactionTransformation::_product_proc(Molecule& product, Array<int>& monome
     return;
 }
 
-void ReactionTransformation::_mergeReactionComponents(QueryReaction& reaction, int mol_type, QueryMolecule& merged_molecule, Array<int>& merged_aam)
+void ReactionTransformation::_mergeReactionComponents(QueryReaction& reaction, int mol_type, QueryMolecule& merged_molecule, ArrayNew<int>& merged_aam)
 {
     merged_molecule.clear();
     merged_aam.clear();
@@ -168,13 +168,13 @@ void ReactionTransformation::_generateMergedReaction(QueryReaction& reaction)
     QS_DEF(QueryMolecule, merged_reactant);
     merged_reactant.clear();
 
-    QS_DEF(Array<int>, reactant_aam);
+    QS_DEF(ArrayNew<int>, reactant_aam);
     reactant_aam.clear();
 
     QS_DEF(QueryMolecule, merged_cur_monomer);
     merged_cur_monomer.clear();
 
-    QS_DEF(Array<int>, product_aam);
+    QS_DEF(ArrayNew<int>, product_aam);
     product_aam.clear();
 
     // Reactants merging
@@ -194,11 +194,11 @@ void ReactionTransformation::_generateMergedReaction(QueryReaction& reaction)
     reactant.clone(merged_reactant, NULL, NULL);
     product.clone(merged_cur_monomer, NULL, NULL);
 
-    Array<int>& r_aam = _merged_reaction.getAAMArray(reactant_idx);
+    ArrayNew<int>& r_aam = _merged_reaction.getAAMArray(reactant_idx);
     r_aam.clear();
     r_aam.concat(reactant_aam);
 
-    Array<int>& p_aam = _merged_reaction.getAAMArray(product_idx);
+    ArrayNew<int>& p_aam = _merged_reaction.getAAMArray(product_idx);
     p_aam.clear();
     p_aam.concat(product_aam);
 }

@@ -728,7 +728,7 @@ void MoleculeStereocenters::invertPyramid(int idx)
     std::swap(pyramid[0], pyramid[1]);
 }
 
-void MoleculeStereocenters::getAbsAtoms(Array<int>& indices)
+void MoleculeStereocenters::getAbsAtoms(ArrayNew<int>& indices)
 {
     indices.clear();
 
@@ -739,7 +739,7 @@ void MoleculeStereocenters::getAbsAtoms(Array<int>& indices)
     }
 }
 
-void MoleculeStereocenters::_getGroups(int type, Array<int>& numbers)
+void MoleculeStereocenters::_getGroups(int type, ArrayNew<int>& numbers)
 {
     numbers.clear();
 
@@ -755,7 +755,7 @@ void MoleculeStereocenters::_getGroups(int type, Array<int>& numbers)
     }
 }
 
-void MoleculeStereocenters::_getGroup(int type, int number, Array<int>& indices)
+void MoleculeStereocenters::_getGroup(int type, int number, ArrayNew<int>& indices)
 {
     indices.clear();
 
@@ -768,22 +768,22 @@ void MoleculeStereocenters::_getGroup(int type, int number, Array<int>& indices)
     }
 }
 
-void MoleculeStereocenters::getOrGroups(Array<int>& numbers)
+void MoleculeStereocenters::getOrGroups(ArrayNew<int>& numbers)
 {
     _getGroups(ATOM_OR, numbers);
 }
 
-void MoleculeStereocenters::getAndGroups(Array<int>& numbers)
+void MoleculeStereocenters::getAndGroups(ArrayNew<int>& numbers)
 {
     _getGroups(ATOM_AND, numbers);
 }
 
-void MoleculeStereocenters::getOrGroup(int number, Array<int>& indices)
+void MoleculeStereocenters::getOrGroup(int number, ArrayNew<int>& indices)
 {
     _getGroup(ATOM_OR, number, indices);
 }
 
-void MoleculeStereocenters::getAndGroup(int number, Array<int>& indices)
+void MoleculeStereocenters::getAndGroup(int number, ArrayNew<int>& indices)
 {
     _getGroup(ATOM_AND, number, indices);
 }
@@ -867,7 +867,7 @@ bool MoleculeStereocenters::haveAllAndAny()
 bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const MoleculeStereocenters& target, const int* mapping, bool reset_h_isotopes,
                                      Filter* stereocenters_vertex_filter)
 {
-    QS_DEF(Array<int>, flags);
+    QS_DEF(ArrayNew<int>, flags);
 
     flags.clear_resize(query._stereocenters.end());
     flags.zerofill();
@@ -1148,7 +1148,7 @@ void MoleculeStereocenters::remove(int idx)
     _stereocenters.remove(idx);
 }
 
-void MoleculeStereocenters::removeAtoms(const Array<int>& indices)
+void MoleculeStereocenters::removeAtoms(const ArrayNew<int>& indices)
 {
     for (int i = 0; i < indices.size(); i++)
     {
@@ -1168,7 +1168,7 @@ void MoleculeStereocenters::removeAtoms(const Array<int>& indices)
     }
 }
 
-void MoleculeStereocenters::removeBonds(const Array<int>& indices)
+void MoleculeStereocenters::removeBonds(const ArrayNew<int>& indices)
 {
     for (int i = 0; i < indices.size(); i++)
     {
@@ -1642,7 +1642,7 @@ void MoleculeStereocenters::markBonds()
         markBond(_stereocenters.key(i));
 }
 
-bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter)
+bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const ArrayNew<int>& mapping, const Filter* filter)
 {
     MoleculeStereocenters& stereocenters = mol.stereocenters;
 

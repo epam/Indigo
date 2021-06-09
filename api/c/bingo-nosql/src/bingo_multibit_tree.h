@@ -76,7 +76,7 @@ namespace bingo
 
         static int _compareBitWeights(_DistrWeight& bw1, _DistrWeight& bw2, void* context);
 
-        BingoPtr<_MultibitNode> _buildNode(Array<int>& fit_fp_indices, const ArrayBool& is_parrent_mb, int level);
+        BingoPtr<_MultibitNode> _buildNode(ArrayNew<int>& fit_fp_indices, const ArrayBool& is_parrent_mb, int level);
 
         void _build();
 

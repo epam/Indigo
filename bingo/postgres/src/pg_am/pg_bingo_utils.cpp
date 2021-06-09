@@ -261,7 +261,7 @@ Datum _precache_database(PG_FUNCTION_ARGS)
         params.parseParameters(parameters_text.getString());
 
         ArrayChar tmp_buffer;
-        Array<int> tmp_buffer2;
+        ArrayNew<int> tmp_buffer2;
         ArrayChar result_buf;
         ArrayOutput result(result_buf);
         ItemPointerData item_buf;

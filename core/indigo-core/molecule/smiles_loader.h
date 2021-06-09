@@ -51,7 +51,7 @@ namespace indigo
 
         void loadSMARTS(QueryMolecule& mol);
 
-        Array<int>* ignorable_aam;
+        ArrayNew<int>* ignorable_aam;
 
         bool inside_rsmiles;
 
@@ -135,13 +135,13 @@ namespace indigo
         Scanner& _scanner;
 
         CP_DECL;
-        TL_CP_DECL(Array<int>, _atom_stack);
+        TL_CP_DECL(ArrayNew<int>, _atom_stack);
         TL_CP_DECL(Array<_CycleDesc>, _cycles);
         TL_CP_DECL(StringPool, _pending_bonds_pool);
         TL_CP_DECL(Pool<List<int>::Elem>, _neipool);
         TL_CP_DECL(ObjArray<_AtomDesc>, _atoms);
         TL_CP_DECL(Array<_BondDesc>, _bonds);
-        TL_CP_DECL(Array<int>, _polymer_repetitions);
+        TL_CP_DECL(ArrayNew<int>, _polymer_repetitions);
 
         int _balance;
         int _current_compno;
@@ -175,7 +175,7 @@ namespace indigo
 
         void _readBond(ArrayChar& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond);
         void _readBondSub(ArrayChar& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond);
-        void _readRGroupOccurrenceRanges(const char* str, Array<int>& ranges);
+        void _readRGroupOccurrenceRanges(const char* str, ArrayNew<int>& ranges);
 
     private:
         SmilesLoader(const SmilesLoader&); // no implicit copy

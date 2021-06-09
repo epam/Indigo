@@ -236,6 +236,337 @@ namespace indigo
         std::string _arr;
     };
 
+    template <typename T> class ArrayNew
+    {
+    public:
+        DECL_TPL_ERROR(ArrayError);
+        int memcmp(const ArrayNew<T>& other) const
+        {
+            if (_arr.size() < other.size())
+                return -1;
+            if (_arr.size() > other.size())
+                return -1;
+
+            if (_arr.size() == 0)
+                return 0;
+
+            return ::memcmp(_arr.data(), other._arr.data(), _arr.size() * sizeof(T));
+        }
+
+        void clear()
+        {
+            _arr.clear();
+        }
+
+        void clear_resize(int newsize)
+        {
+            _arr.clear();
+            _arr.resize(newsize);
+        }
+
+        void reserve(int to_reserve)
+        {
+            _arr.reserve(to_reserve);
+        }
+
+        const T* ptr() const
+        {
+            return _arr.size() ? _arr.data() : nullptr;
+        }
+
+        T* ptr()
+        {
+            return _arr.size() ? &_arr[0] : nullptr;
+        }
+
+        const T& operator[](int index) const
+        {
+            if (index < 0 || _arr.size() - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _arr.size());
+
+            return _arr[index];
+        }
+
+        T& operator[](int index)
+        {
+            if (index < 0 || _arr.size() - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _arr.size());
+
+            return _arr[index];
+        }
+
+        const T& at(int index) const
+        {
+            return _arr[index];
+        }
+
+        T& at(int index)
+        {
+            return _arr[index];
+        }
+
+        int size() const
+        {
+            return _arr.size();
+        }
+
+        int sizeInBytes() const
+        {
+            return _arr.size() * sizeof(T);
+        }
+
+        const T& top() const
+        {
+            return _arr.back();
+        }
+
+        T& top()
+        {
+            return _arr.back();
+        }
+
+        void swap(ArrayNew<T>& other)
+        {
+            _arr.swap(other._arr);
+        }
+
+        void swap(int idx1, int idx2)
+        {
+            std::swap(_arr[idx1], _arr[idx2]);
+        }
+
+        void zerofill()
+        {
+            if (_arr.size())
+                memset(&_arr[0], 0, _arr.size() * sizeof(T));
+        }
+
+        void fffill()
+        {
+            if (_arr.size())
+                memset(&_arr[0], 0xFF, _arr.size() * sizeof(T));
+        }
+
+        void fill(const T& value)
+        {
+            std::fill(_arr.begin(), _arr.end(), value);
+        }
+
+        void resize(int newsize)
+        {
+            _arr.resize(newsize);
+        }
+
+        int find(const T& value) const // TODO:: remove it!!!
+        {
+            for (int i = 0; i < _arr.size(); i++)
+                if (_arr[i] == value)
+                    return i;
+            return -1;
+        }
+
+        void push(T elem)
+        {
+            _arr.push_back(elem);
+        }
+
+        T& push()
+        {
+            _arr.emplace_back();
+            _arr.push_back(T());
+            return _arr.back();
+        }
+
+        T pop()
+        {
+            T res = _arr.back();
+            _arr.pop_back();
+            return res;
+        }
+
+        void copy(const ArrayNew<T>& other)
+        {
+            _arr = other._arr;
+        }
+
+        void copy(const T* other, int count)
+        {
+            _arr = std::vector<T>(other, other + count);
+        }
+
+        void concat(const ArrayNew<T>& other)
+        {
+            _arr.insert(_arr.end(), other._arr.begin(), other._arr.end());
+        }
+
+        void concat(const T* other, int count)
+        {
+            std::vector<T> tmp(other, other + count);
+            _arr.insert(_arr.end(), tmp.begin(), tmp.end());
+        }
+
+        void expand(int newsize)
+        {
+            if (newsize > _arr.size())
+                resize(newsize);
+        }
+
+        void expandFill(int newsize, const T& value)
+        {
+            while (_arr.size() < newsize)
+                push(value);
+        }
+
+        void remove(int idx, int span = 1)
+        {
+            auto beg = _arr.begin();
+            std::advance(beg, idx);
+            auto end = beg;
+            std::advance(end, span);
+            _arr.erase(beg, end);
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor> void insertionSort(int start, int end, CmpFunctor cmp)
+        {
+            int i, j;
+            char tmp[sizeof(T)]; // can't use T directly because it may have destructor
+
+            for (i = start + 1; i <= end; i++)
+            {
+                j = i;
+                while (j > start && cmp(_arr[j - 1], _arr[j]) > 0)
+                {
+                    T* a1 = &_arr[j - 1];
+                    T* a2 = a1 + 1;
+                    memcpy(&tmp, a1, sizeof(T));
+                    memcpy(a1, a2, sizeof(T));
+                    memcpy(a2, &tmp, sizeof(T));
+                    j--;
+                }
+            }
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor> void qsort(int start, int end, CmpFunctor cmp)
+        {
+            // Sort elements from start to end
+            if (start >= end)
+                return;
+            if (end - start < 10)
+                insertionSort(start, end, cmp);
+
+            struct
+            {
+                T *lo, *hi;
+            } stack[32], *sp;
+
+            char tmp[sizeof(T)]; // can't use T directly because it may have destructor
+
+            sp = stack;
+
+            // push our initial values onto the stack
+            sp->lo = &_arr[start];
+            sp->hi = &_arr[end + 1];
+            sp++;
+
+            while (sp > stack)
+            {
+                // pop lo and hi off the stack
+                sp--;
+                T *high = sp->hi, *low = sp->lo;
+                T* hi = high - 1;
+                T* lo = low;
+                T* pivot = low;
+
+                while (1)
+                {
+                    while (lo < high && lo != pivot && cmp(*lo, *pivot) < 0)
+                        lo++;
+
+                    while (hi > low && (hi == pivot || cmp(*hi, *pivot) >= 0))
+                        hi--;
+
+                    if (lo < hi)
+                    {
+                        memcpy(&tmp, lo, sizeof(T));
+                        memcpy(lo, hi, sizeof(T));
+                        memcpy(hi, &tmp, sizeof(T));
+
+                        if (lo == pivot)
+                            pivot = hi;
+                        else if (hi == pivot)
+                            pivot = lo;
+
+                        hi--;
+                    }
+                    else
+                    {
+                        hi++;
+
+                        if (hi == high)
+                            // done with this segment
+                            break;
+
+                        // push the larger segment onto the stack and continue
+                        // sorting the smaller segment.
+                        if ((hi - low) > (high - hi))
+                        {
+                            sp->lo = low;
+                            sp->hi = hi;
+                            sp++;
+
+                            hi = high;
+                            low = lo;
+                        }
+                        else
+                        {
+                            sp->hi = high;
+                            sp->lo = hi;
+                            sp++;
+
+                            high = hi;
+                            lo = low;
+                        }
+
+                        pivot = lo;
+                        hi--;
+                    }
+                }
+            }
+        }
+
+        template <typename T1, typename T2> void qsort(int start, int end, int (*cmp)(T1, T2, void*), void* context)
+        {
+            this->qsort(start, end, _CmpFunctorCaller<T1, T2>(cmp, context));
+        }
+
+        template <typename T1, typename T2> void qsort(int (*cmp)(T1, T2, void*), void* context)
+        {
+            this->qsort(0, _arr.size() - 1, cmp, context);
+        }
+
+    private:
+        std::vector<T> _arr;
+        template <typename T1, typename T2> class _CmpFunctorCaller
+        {
+        public:
+            _CmpFunctorCaller(int (*cmp)(T1, T2, void*), void* context) : _context(context), _cmp(cmp)
+            {
+            }
+
+            int operator()(T1 arg1, T2 arg2) const
+            {
+                return _cmp(arg1, arg2, _context);
+            }
+
+        private:
+            void* _context;
+            int (*_cmp)(T1, T2, void*);
+        };
+    };
+    
+
     template <typename T> class Array
     {
     public:
@@ -733,7 +1064,7 @@ namespace indigo
 
     private:
         Array(const Array&);                            // no implicit copy
-        Array<int>& operator=(const Array<int>& right); // no copy constructor
+        ArrayNew<int>& operator=(const ArrayNew<int>& right); // no copy constructor
 
         template <typename T1, typename T2> class _CmpFunctorCaller
         {

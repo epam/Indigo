@@ -34,12 +34,12 @@ MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output)
 {
 }
 
-void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list)
+void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, ArrayNew<int>& sgs_list)
 {
-    QS_DEF(Array<int>, orig_ids);
-    QS_DEF(Array<int>, added_ids);
-    QS_DEF(Array<int>, sgs_mapping);
-    QS_DEF(Array<int>, sgs_changed);
+    QS_DEF(ArrayNew<int>, orig_ids);
+    QS_DEF(ArrayNew<int>, added_ids);
+    QS_DEF(ArrayNew<int>, sgs_mapping);
+    QS_DEF(ArrayNew<int>, sgs_changed);
 
     sgs_list.clear();
     orig_ids.clear();
@@ -134,7 +134,7 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
 
 void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
-    QS_DEF(Array<int>, sgs_sorted);
+    QS_DEF(ArrayNew<int>, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
 
     if (mol.countSGroups() > 0)
@@ -577,7 +577,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
             writer.StartObject();
             if (mol.attachmentPointCount())
                 saveAttachmentPoint(mol, i, writer);
-            QS_DEF(Array<int>, rg_list);
+            QS_DEF(ArrayNew<int>, rg_list);
             int radical = 0;
             if (mol.isRSite(i))
             {

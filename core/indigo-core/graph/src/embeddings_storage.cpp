@@ -164,7 +164,7 @@ void GraphEmbeddingsStorage::clear()
     _map_hash_to_id.clear();
 }
 
-dword GraphEmbeddingsStorage::_calcSetHash(const Array<int>& set, int offset, int size)
+dword GraphEmbeddingsStorage::_calcSetHash(const ArrayNew<int>& set, int offset, int size)
 {
     dword hash = 0;
     const int* data = set.ptr() + offset;

@@ -41,7 +41,7 @@ QueryMolecule& QueryReaction::getQueryMolecule(int index)
     return (QueryMolecule&)getBaseMolecule(index);
 }
 
-Array<int>& QueryReaction::getExactChangeArray(int index)
+ArrayNew<int>& QueryReaction::getExactChangeArray(int index)
 {
     BaseMolecule& mol = *_allMolecules.at(index);
     return mol.reaction_atom_exact_change;
@@ -63,7 +63,7 @@ void QueryReaction::_addedBaseMolecule(int idx, int side, BaseMolecule& mol)
 
 void QueryReaction::makeTransposedForSubstructure(QueryReaction& other)
 {
-    QS_DEF(Array<int>, transposition);
+    QS_DEF(ArrayNew<int>, transposition);
 
     clear();
 
@@ -94,15 +94,15 @@ void QueryReaction::makeTransposedForSubstructure(QueryReaction& other)
     }
 }
 
-void QueryReaction::_transposeMoleculeForSubstructure(int index, Array<int>& transposition)
+void QueryReaction::_transposeMoleculeForSubstructure(int index, ArrayNew<int>& transposition)
 {
-    QS_DEF(Array<int>, has_reacting_info);
+    QS_DEF(ArrayNew<int>, has_reacting_info);
     QueryMolecule& mol = *(QueryMolecule*)_allMolecules[index];
 
-    Array<int>& aam = getAAMArray(index);
-    Array<int>& rc = getReactingCenterArray(index);
-    Array<int>& inv = getInversionArray(index);
-    Array<int>& ex = getExactChangeArray(index);
+    ArrayNew<int>& aam = getAAMArray(index);
+    ArrayNew<int>& rc = getReactingCenterArray(index);
+    ArrayNew<int>& inv = getInversionArray(index);
+    ArrayNew<int>& ex = getExactChangeArray(index);
 
     has_reacting_info.clear_resize(mol.vertexEnd());
     has_reacting_info.zerofill();
@@ -196,7 +196,7 @@ bool QueryReaction::dearomatize(const AromaticityOptions& options)
     throw Error("Dearomatization of query reactions is not implemented");
 }
 
-void QueryReaction::_clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings)
+void QueryReaction::_clone(BaseReaction& other, int index, int i, ObjArray<ArrayNew<int>>* mol_mappings)
 {
     BaseMolecule& rmol = other.getBaseMolecule(i);
     // for query
@@ -225,7 +225,7 @@ BaseReaction* QueryReaction::neu()
     return new QueryReaction();
 }
 
-Array<int>& QueryReaction::getIgnorableAAMArray(int index)
+ArrayNew<int>& QueryReaction::getIgnorableAAMArray(int index)
 {
     return _ignorableAAM[index];
 }

@@ -74,9 +74,9 @@ ReactionCdxmlSaver::~ReactionCdxmlSaver()
 void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
 {
     int i;
-    Array<int> reactants_ids;
-    Array<int> products_ids;
-    ObjArray<Array<int>> nodes_ids;
+    ArrayNew<int> reactants_ids;
+    ArrayNew<int> products_ids;
+    ObjArray<ArrayNew<int>> nodes_ids;
 
     int arrow_id;
 
@@ -303,8 +303,8 @@ void ReactionCdxmlSaver::_closeScheme(MoleculeCdxmlSaver& molsaver)
     molsaver.endCurrentElement();
 }
 
-void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, Array<int>& reactants_ids, Array<int>& products_ids,
-                                  ObjArray<Array<int>>& nodes_ids, int arrow_id)
+void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, ArrayNew<int>& reactants_ids, ArrayNew<int>& products_ids,
+                                  ObjArray<ArrayNew<int>>& nodes_ids, int arrow_id)
 {
     int id = -1;
     ArrayChar name;
@@ -380,7 +380,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     molsaver.addCustomElement(id, name, attrs);
 }
 
-void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, Array<int>& reactants_ids, Array<int>& products_ids, ObjArray<Array<int>>& nodes_ids,
+void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, ArrayNew<int>& reactants_ids, ArrayNew<int>& products_ids, ObjArray<ArrayNew<int>>& nodes_ids,
                                               int& arrow_id)
 {
     reactants_ids.clear_resize(rxn.reactantEnd());

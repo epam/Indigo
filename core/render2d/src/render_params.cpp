@@ -87,8 +87,8 @@ bool RenderParamInterface::needsLayoutSub(BaseMolecule& mol)
         SGroup& sg = mol.sgroups.getSGroup(i);
         if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
         {
-            const Array<int>& atoms = sg.atoms;
-            const Array<int>& patoms = ((MultipleGroup&)sg).parent_atoms;
+            const ArrayNew<int>& atoms = sg.atoms;
+            const ArrayNew<int>& patoms = ((MultipleGroup&)sg).parent_atoms;
             for (int j = 0; j < atoms.size(); ++j)
                 atomsToIgnore.find_or_insert(atoms[j]);
             for (int j = 0; j < patoms.size(); ++j)
@@ -206,8 +206,8 @@ void RenderParamInterface::render(RenderParams& params)
 
     RenderItemFactory factory(rc);
     int obj = -1;
-    Array<int> objs;
-    Array<int> titles;
+    ArrayNew<int> objs;
+    ArrayNew<int> titles;
     if (params.rmode == RENDER_MOL)
     {
         if (params.mols.size() == 0)

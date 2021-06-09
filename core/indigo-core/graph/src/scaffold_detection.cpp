@@ -55,8 +55,8 @@ void ScaffoldDetection::_searchScaffold(Graph& scaffold, bool approximate)
 
 void ScaffoldDetection::_searchExactScaffold(GraphBasket& basket)
 {
-    ObjArray<Array<int>> v_lists;
-    ObjArray<Array<int>> e_lists;
+    ObjArray<ArrayNew<int>> v_lists;
+    ObjArray<ArrayNew<int>> e_lists;
 
     int graphset_size = basket.getGraphSetSize();
     int first_graph_num = 0;
@@ -124,10 +124,10 @@ void ScaffoldDetection::_searchExactScaffold(GraphBasket& basket)
 
 void ScaffoldDetection::_searchApproximateScaffold(GraphBasket& basket)
 {
-    ObjArray<Array<int>> v_maps;
-    ObjArray<Array<int>> e_maps;
-    Array<int> v_list;
-    Array<int> e_list;
+    ObjArray<ArrayNew<int>> v_maps;
+    ObjArray<ArrayNew<int>> e_maps;
+    ArrayNew<int> v_list;
+    ArrayNew<int> e_list;
 
     int graphset_size = basket.getGraphSetSize();
 
@@ -384,7 +384,7 @@ int ScaffoldDetection::GraphBasket::getMaxGraphIndex()
 
     return 0;
 }
-void ScaffoldDetection::GraphBasket::addToNextEmptySpot(Graph& graph, Array<int>& v_list, Array<int>& e_list)
+void ScaffoldDetection::GraphBasket::addToNextEmptySpot(Graph& graph, ArrayNew<int>& v_list, ArrayNew<int>& e_list)
 {
     pickOutNextGraph().makeEdgeSubgraph(graph, v_list, e_list, 0, 0);
 }

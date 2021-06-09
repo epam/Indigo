@@ -14,7 +14,7 @@ using namespace indigo;
 
 namespace
 {
-    int numUniqueMap(Array<int>& map)
+    int numUniqueMap(ArrayNew<int>& map)
     {
         std::set<int> unique;
         for (int i = 0; i < map.size(); ++i)
@@ -63,7 +63,7 @@ TEST(IndigoAAMTest, test_aam_rings)
 
         //      indigoRenderToFile(rxn, "test_aam.png");
 
-        Array<int> map;
+        ArrayNew<int> map;
         int re = indigoIterateReactants(rxn);
 
         while (indigoHasNext(re))
@@ -100,7 +100,7 @@ TEST(IndigoAAMTest, test_aam_alter)
 
         //      indigoRenderToFile(rxn, "test_aam.png");
 
-        Array<int> map;
+        ArrayNew<int> map;
         int re = indigoIterateReactants(rxn);
 
         while (indigoHasNext(re))
@@ -137,7 +137,7 @@ TEST(IndigoAAMTest, test_aam_keep_radicals)
 
         //      indigoRenderToFile(rxn, "test_aam.png");
 
-        Array<int> map;
+        ArrayNew<int> map;
         int re = indigoIterateReactants(rxn);
 
         while (indigoHasNext(re))
@@ -174,7 +174,7 @@ TEST(IndigoAAMTest, test_aam_395_1)
 
         // indigoRenderToFile(rxn, "test_aam.png");
 
-        Array<int> map;
+        ArrayNew<int> map;
         int re = indigoIterateReactants(rxn);
 
         while (indigoHasNext(re))

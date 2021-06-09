@@ -180,7 +180,7 @@ namespace indigo
         bool is_valid;
 
         PtrArray<T> _objects;
-        Array<int> _vacant_indices;
+        ArrayNew<int> _vacant_indices;
     };
 
     // Utility class for automatically release call

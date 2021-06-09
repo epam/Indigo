@@ -33,7 +33,7 @@ SkewSymmetricFlowFinder::SkewSymmetricFlowFinder(const SkewSymmetricNetwork& net
 
 void SkewSymmetricFlowFinder::process()
 {
-    QS_DEF(Array<int>, path);
+    QS_DEF(ArrayNew<int>, path);
     while (_findAugmentatingPath(path))
         _increaseFlowByPath(path);
 }
@@ -69,7 +69,7 @@ void SkewSymmetricFlowFinder::_init()
     _network_sink = _network.getSymmetricVertex(_network.getSource());
 }
 
-bool SkewSymmetricFlowFinder::_findAugmentatingPath(Array<int>& vertices)
+bool SkewSymmetricFlowFinder::_findAugmentatingPath(ArrayNew<int>& vertices)
 {
     for (int i = 0; i < _vertex_is_used.size(); i++)
         _vertex_is_used[i] = 0;
@@ -81,7 +81,7 @@ bool SkewSymmetricFlowFinder::_findAugmentatingPath(Array<int>& vertices)
     return _findAugmentatingPathRec(vertices);
 }
 
-bool SkewSymmetricFlowFinder::_findAugmentatingPathRec(Array<int>& vertices)
+bool SkewSymmetricFlowFinder::_findAugmentatingPathRec(ArrayNew<int>& vertices)
 {
     // This is trivial implementation that takes exponential time in worth case
     // There is fast polynomial algorithm bud trimming algorithm that
@@ -157,7 +157,7 @@ bool SkewSymmetricFlowFinder::_isEdgeAugmentating(int edge, int from, int sym_us
     return false;
 }
 
-void SkewSymmetricFlowFinder::_increaseFlowByPath(Array<int>& vertices)
+void SkewSymmetricFlowFinder::_increaseFlowByPath(ArrayNew<int>& vertices)
 {
     int delta = -1;
     // Find path maximum delta

@@ -87,14 +87,14 @@ void RSmilesLoader::_loadReaction()
 
     AutoPtr<BaseMolecule>* mols[] = {&rcnt, &ctlt, &prod};
 
-    QS_DEF(Array<int>, rcnt_aam);
-    QS_DEF(Array<int>, ctlt_aam);
-    QS_DEF(Array<int>, prod_aam);
-    QS_DEF(Array<int>, rcnt_aam_ignorable);
-    QS_DEF(Array<int>, prod_aam_ignorable);
+    QS_DEF(ArrayNew<int>, rcnt_aam);
+    QS_DEF(ArrayNew<int>, ctlt_aam);
+    QS_DEF(ArrayNew<int>, prod_aam);
+    QS_DEF(ArrayNew<int>, rcnt_aam_ignorable);
+    QS_DEF(ArrayNew<int>, prod_aam_ignorable);
     QS_DEF(ArrayChar, buf);
-    Array<int>* aams[] = {&rcnt_aam, &ctlt_aam, &prod_aam};
-    Array<int>* ignorable_aams[] = {&rcnt_aam_ignorable, 0, &prod_aam_ignorable};
+    ArrayNew<int>* aams[] = {&rcnt_aam, &ctlt_aam, &prod_aam};
+    ArrayNew<int>* ignorable_aams[] = {&rcnt_aam_ignorable, 0, &prod_aam_ignorable};
 
     // read the reactants
     buf.clear();
@@ -207,10 +207,10 @@ void RSmilesLoader::_loadReaction()
     }
     prod_aam.copy(prod.ref().reaction_atom_mapping);
 
-    QS_DEF(Array<int>, r_fragments);
-    QS_DEF(Array<int>, c_fragments);
-    QS_DEF(Array<int>, p_fragments);
-    Array<int>* fragments[] = {&r_fragments, &c_fragments, &p_fragments};
+    QS_DEF(ArrayNew<int>, r_fragments);
+    QS_DEF(ArrayNew<int>, c_fragments);
+    QS_DEF(ArrayNew<int>, p_fragments);
+    ArrayNew<int>* fragments[] = {&r_fragments, &c_fragments, &p_fragments};
 
     r_fragments.clear_resize(rcnt->countComponents());
     c_fragments.clear_resize(ctlt->countComponents());
@@ -227,8 +227,8 @@ void RSmilesLoader::_loadReaction()
 
     bool have_highlighting = false;
 
-    QS_DEF(Array<int>, hl_atoms);
-    QS_DEF(Array<int>, hl_bonds);
+    QS_DEF(ArrayNew<int>, hl_atoms);
+    QS_DEF(ArrayNew<int>, hl_bonds);
 
     hl_atoms.clear_resize(rcnt->vertexCount() + ctlt->vertexCount() + prod->vertexCount());
     hl_bonds.clear_resize(rcnt->edgeCount() + ctlt->edgeCount() + prod->edgeCount());
@@ -475,11 +475,11 @@ void RSmilesLoader::_loadReaction()
         scanner_for_name->readLine(_brxn->name, true);
 
     AutoPtr<BaseMolecule> mol;
-    QS_DEF(Array<int>, aam);
-    QS_DEF(Array<int>, ignorable_aam);
-    QS_DEF(Array<int>, mapping);
-    QS_DEF(Array<int>, hl_atoms_frag);
-    QS_DEF(Array<int>, hl_bonds_frag);
+    QS_DEF(ArrayNew<int>, aam);
+    QS_DEF(ArrayNew<int>, ignorable_aam);
+    QS_DEF(ArrayNew<int>, mapping);
+    QS_DEF(ArrayNew<int>, hl_atoms_frag);
+    QS_DEF(ArrayNew<int>, hl_bonds_frag);
 
     if (_rxn != 0)
         mol.reset(new Molecule());

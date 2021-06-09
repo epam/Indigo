@@ -170,9 +170,9 @@ float MoleculeLayoutGraph::_dichotomy2(float a0, float b0, int L, float s)
 }
 
 // Complete regular curve from v1 to v2 by vertices in chain
-bool MoleculeLayoutGraph::_drawRegularCurve(const Array<int>& chain, int v1, int v2, float length, bool ccw, int type)
+bool MoleculeLayoutGraph::_drawRegularCurve(const ArrayNew<int>& chain, int v1, int v2, float length, bool ccw, int type)
 {
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, mapping);
 
     mapping.clear_resize(vertexEnd());
 
@@ -182,7 +182,7 @@ bool MoleculeLayoutGraph::_drawRegularCurve(const Array<int>& chain, int v1, int
     return _drawRegularCurveEx(chain, v1, v2, length, ccw, type, mapping);
 }
 
-bool MoleculeLayoutGraph::_drawRegularCurveEx(const Array<int>& chain, int v1, int v2, float length, bool ccw, int type, const Array<int>& mapping)
+bool MoleculeLayoutGraph::_drawRegularCurveEx(const ArrayNew<int>& chain, int v1, int v2, float length, bool ccw, int type, const ArrayNew<int>& mapping)
 {
     float s, x0 = 0.f, y0 = 0.f;
     int i, k, L;
@@ -390,8 +390,8 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
     Vec2f p, p0;
     float beta = 0.f;
     QS_DEF(Array<float>, angles);
-    QS_DEF(Array<int>, edges);
-    QS_DEF(Array<int>, on_left);
+    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayNew<int>, on_left);
 
     if (vertexCount() == 2)
     {
@@ -650,8 +650,8 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
     Vec2f p, p0;
     float beta = 0.f;
     QS_DEF(Array<float>, angles);
-    QS_DEF(Array<int>, edges);
-    QS_DEF(Array<int>, on_left);
+    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayNew<int>, on_left);
 
     if (vertexCount() == 2)
     {

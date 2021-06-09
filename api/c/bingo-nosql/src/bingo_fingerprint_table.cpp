@@ -5,7 +5,7 @@
 
 using namespace bingo;
 
-FingerprintTable::FingerprintTable(int fp_size, const Array<int>& borders, int mt_size) : _table(100), _fp_size(fp_size), _mt_size(mt_size)
+FingerprintTable::FingerprintTable(int fp_size, const ArrayNew<int>& borders, int mt_size) : _table(100), _fp_size(fp_size), _mt_size(mt_size)
 {
     _table.resize(borders.size() - 1);
 
@@ -24,7 +24,7 @@ FingerprintTable::FingerprintTable(int fp_size, const Array<int>& borders, int m
 
 BingoAddr FingerprintTable::create(BingoPtr<FingerprintTable>& ptr, int fp_size, int mt_size)
 {
-    Array<int> borders;
+    ArrayNew<int> borders;
 
     borders.push(0);
     borders.push(fp_size * 8 + 1);

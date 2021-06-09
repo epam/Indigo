@@ -371,7 +371,7 @@ static int _resetSymmetric(Molecule& mol, bool cistrans, bool stereo)
 
     if (stereo)
     {
-        QS_DEF(Array<int>, to_remove);
+        QS_DEF(ArrayNew<int>, to_remove);
         to_remove.clear();
         for (int i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
         {

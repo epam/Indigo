@@ -59,8 +59,8 @@ namespace indigo
         bool rsite_indices_as_aam;
 
         int writtenComponents();
-        const Array<int>& writtenAtoms();
-        const Array<int>& writtenBonds();
+        const ArrayNew<int>& writtenAtoms();
+        const ArrayNew<int>& writtenBonds();
 
         static void writePseudoAtom(const char* label, Output& out);
         void writeSpecialAtom(int aid, Output& out);
@@ -70,7 +70,7 @@ namespace indigo
         bool smarts_mode;
         bool ignore_invalid_hcount;
 
-        const Array<int>& getSavedCisTransParities();
+        const ArrayNew<int>& getSavedCisTransParities();
 
     protected:
         void _saveMolecule();
@@ -124,7 +124,7 @@ namespace indigo
         void _checkSRU();
         void _checkRGroupsAndAttachmentPoints();
 
-        void _writeOccurrenceRanges(Output& out, const Array<int>& occurrences);
+        void _writeOccurrenceRanges(Output& out, const ArrayNew<int>& occurrences);
 
         struct _DBond // directed bond (near cis-trans bond)
         {
@@ -136,17 +136,17 @@ namespace indigo
         CP_DECL;
         TL_CP_DECL(Pool<List<int>::Elem>, _neipool);
         TL_CP_DECL(ObjArray<_Atom>, _atoms);
-        TL_CP_DECL(Array<int>, _hcount);
-        TL_CP_DECL(Array<int>, _hcount_ignored);
+        TL_CP_DECL(ArrayNew<int>, _hcount);
+        TL_CP_DECL(ArrayNew<int>, _hcount_ignored);
         TL_CP_DECL(Array<_DBond>, _dbonds);
-        TL_CP_DECL(Array<int>, _written_atoms);
-        TL_CP_DECL(Array<int>, _written_atoms_inv);
-        TL_CP_DECL(Array<int>, _written_bonds);
-        TL_CP_DECL(Array<int>, _polymer_indices);
-        TL_CP_DECL(Array<int>, _attachment_indices);
-        TL_CP_DECL(Array<int>, _attachment_cycle_numbers);
-        TL_CP_DECL(Array<int>, _aromatic_bonds);
-        TL_CP_DECL(Array<int>, _ignored_vertices);
+        TL_CP_DECL(ArrayNew<int>, _written_atoms);
+        TL_CP_DECL(ArrayNew<int>, _written_atoms_inv);
+        TL_CP_DECL(ArrayNew<int>, _written_bonds);
+        TL_CP_DECL(ArrayNew<int>, _polymer_indices);
+        TL_CP_DECL(ArrayNew<int>, _attachment_indices);
+        TL_CP_DECL(ArrayNew<int>, _attachment_cycle_numbers);
+        TL_CP_DECL(ArrayNew<int>, _aromatic_bonds);
+        TL_CP_DECL(ArrayNew<int>, _ignored_vertices);
 
         // Some cis-trans bonds are considered "complicated", they are either:
         // 1.   Ring bonds, which can not be saved with slash notation (conflicts are
@@ -157,12 +157,12 @@ namespace indigo
         //      Marvin erroneously saves that structure as N\C=C\C=C\C=C\O, which is
         //      incorrect, as it introduces cis-trans parity on the middle bond
         // 1+2: C[N+](O)=C1C=CC(=CO)C=C1
-        TL_CP_DECL(Array<int>, _complicated_cistrans);
+        TL_CP_DECL(ArrayNew<int>, _complicated_cistrans);
         // single bonds that can not be written as slashes; see item 2 above
-        TL_CP_DECL(Array<int>, _ban_slashes);
+        TL_CP_DECL(ArrayNew<int>, _ban_slashes);
         // array with cis-trans parity marks
         // 0 means ignored
-        TL_CP_DECL(Array<int>, _cis_trans_parity);
+        TL_CP_DECL(ArrayNew<int>, _cis_trans_parity);
 
         // This flag does not necessarily mean "any of _complicated_cistrans == 1".
         // If all _complicated_cistrans are actually ring CIS bonds, then the flag

@@ -113,7 +113,7 @@ protected:
     indigo::ArrayChar _cmfBuf;
     indigo::ArrayChar _xyzBuf;
 
-    indigo::Array<int> _fingerprintBits;
+    indigo::ArrayNew<int> _fingerprintBits;
 };
 
 class BingoPgSearchEngine

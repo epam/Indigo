@@ -55,7 +55,7 @@ void MoleculeTautomerSubstructureMatcher::setQuery(QueryMolecule& query)
         _tautomerEnumerator.aromatize();
     }
 
-    QS_DEF(Array<int>, ignored);
+    QS_DEF(ArrayNew<int>, ignored);
 
     ignored.clear_resize(_query->vertexEnd());
 

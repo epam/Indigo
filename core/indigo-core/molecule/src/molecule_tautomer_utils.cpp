@@ -32,7 +32,7 @@ bool MoleculeTautomerUtils::_isRepMetal(int elem)
 }
 
 // Count potential hydrogens (+, - charges or metal bonds)
-void MoleculeTautomerUtils::countHReplacements(BaseMolecule& m, Array<int>& h_rep_count)
+void MoleculeTautomerUtils::countHReplacements(BaseMolecule& m, ArrayNew<int>& h_rep_count)
 {
 
     h_rep_count.clear_resize(m.vertexEnd());
@@ -63,7 +63,7 @@ void MoleculeTautomerUtils::countHReplacements(BaseMolecule& m, Array<int>& h_re
 }
 
 // If core_2 != 0 highlights g1 too
-void MoleculeTautomerUtils::highlightChains(BaseMolecule& g1, BaseMolecule& g2, const Array<int>& chains_2, const int* core_2)
+void MoleculeTautomerUtils::highlightChains(BaseMolecule& g1, BaseMolecule& g2, const ArrayNew<int>& chains_2, const int* core_2)
 {
     int i;
 

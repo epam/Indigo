@@ -170,7 +170,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     MoleculeCdxmlSaver saver(*params.rOpt.output);
 
     Array<BaseMolecule*> mols;
-    Array<int> ids;
+    ArrayNew<int> ids;
 
     if (params.mols.size() != 0)
         for (int i = 0; i < params.mols.size(); ++i)

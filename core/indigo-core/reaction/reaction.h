@@ -69,8 +69,8 @@ namespace indigo
         void aromatizeQueryBonds();
         bool isAllConnected() const;*/
 
-        static void saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types);
-        static void loadBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types);
+        static void saveBondOrders(Reaction& reaction, ObjArray<ArrayNew<int>>& bond_types);
+        static void loadBondOrders(Reaction& reaction, ObjArray<ArrayNew<int>>& bond_types);
 
         static void checkForConsistency(Reaction& rxn);
 

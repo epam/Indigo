@@ -12,7 +12,7 @@ int MultibitTree::_compareBitWeights(_DistrWeight& bw1, _DistrWeight& bw2, void*
         return 0;
 }
 
-BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_fp_indices, const ArrayBool& is_parrent_mb, int level)
+BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(ArrayNew<int>& fit_fp_indices, const ArrayBool& is_parrent_mb, int level)
 {
     BingoPtr<_MultibitNode> node_ptr;
     node_ptr.allocate();
@@ -51,7 +51,7 @@ BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_f
 
     bit_weights.qsort(_compareBitWeights, 0);
 
-    QS_DEF(Array<int>, mb_indices);
+    QS_DEF(ArrayNew<int>, mb_indices);
     mb_indices.clear();
 
     double distr_coef = 1;
@@ -65,9 +65,9 @@ BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_f
             break;
     }
 
-    QS_DEF(Array<int>, left_fit);
+    QS_DEF(ArrayNew<int>, left_fit);
     left_fit.clear();
-    QS_DEF(Array<int>, right_fit);
+    QS_DEF(ArrayNew<int>, right_fit);
     right_fit.clear();
 
     QS_DEF(ArrayBool, is_mb);
@@ -128,7 +128,7 @@ BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_f
 
 void MultibitTree::_build()
 {
-    QS_DEF(Array<int>, indices);
+    QS_DEF(ArrayNew<int>, indices);
     indices.clear_resize(_fp_count);
 
     for (int i = 0; i < indices.size(); i++)

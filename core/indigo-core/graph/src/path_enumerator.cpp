@@ -40,10 +40,10 @@ PathEnumerator::~PathEnumerator()
 
 void PathEnumerator::process()
 {
-    QS_DEF(Array<int>, vertices);
-    QS_DEF(Array<int>, edges);
+    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayNew<int>, edges);
     QS_DEF(ArrayBool, flags);
-    QS_DEF(Array<int>, index);
+    QS_DEF(ArrayNew<int>, index);
     QS_DEF(ArrayBool, can_achieve_to_end);
 
     vertices.clear();

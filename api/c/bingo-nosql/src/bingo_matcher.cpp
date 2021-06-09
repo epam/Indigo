@@ -541,7 +541,7 @@ MoleculeSubMatcher::MoleculeSubMatcher(/*const */ BaseIndex& index)
     _mapping.clear();
 }
 
-const Array<int>& MoleculeSubMatcher::currentMapping()
+const ArrayNew<int>& MoleculeSubMatcher::currentMapping()
 {
     return _mapping;
 }
@@ -584,7 +584,7 @@ ReactionSubMatcher::ReactionSubMatcher(/*const */ BaseIndex& index)
     _mapping.clear();
 }
 
-const ObjArray<Array<int>>& ReactionSubMatcher::currentMapping()
+const ObjArray<ArrayNew<int>>& ReactionSubMatcher::currentMapping()
 {
     return _mapping;
 }
@@ -985,9 +985,9 @@ bool TopNSimMatcher::next()
 void TopNSimMatcher::_findTopN()
 {
     QS_DEF(Array<float>, thrs);
-    QS_DEF(Array<int>, nhits_per_block);
-    QS_DEF(Array<int>, blocks);
-    QS_DEF(Array<int>, cells);
+    QS_DEF(ArrayNew<int>, nhits_per_block);
+    QS_DEF(ArrayNew<int>, blocks);
+    QS_DEF(ArrayNew<int>, cells);
 
     thrs.clear();
     nhits_per_block.clear();
@@ -1246,7 +1246,7 @@ bool TopNSimMatcher::_cmp_sim_res( const SimResult& res1, const SimResult& res2 
     return res1.sim_value < res2.sim_value;
 }
 
-void TopNSimMatcher::_initModelDistribution(Array<float>& model_thrs, Array<int>& model_nhits_per_block)
+void TopNSimMatcher::_initModelDistribution(Array<float>& model_thrs, ArrayNew<int>& model_nhits_per_block)
 {
     for (int i = 0; i < 9; i++)
     {

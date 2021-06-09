@@ -88,15 +88,15 @@ namespace indigo
         ParametersForExact parametersForExact;
         ParametersForApproximate parametersForApproximate;
         // array for accept input mapping and working with it
-        Array<int> incomingMap;
+        ArrayNew<int> incomingMap;
         // this method sorts solutions and maximizes number of the rings in graph
-        static int ringsSolutionTerm(Array<int>&, Array<int>&, void*);
+        static int ringsSolutionTerm(ArrayNew<int>&, ArrayNew<int>&, void*);
         // returns all maps-solutions-mcs
-        void getSolutionMaps(ObjArray<Array<int>>* v_maps, ObjArray<Array<int>>* e_maps) const;
+        void getSolutionMaps(ObjArray<ArrayNew<int>>* v_maps, ObjArray<ArrayNew<int>>* e_maps) const;
         // returns first element in sorted solution array
-        void getMaxSolutionMap(Array<int>* v_map, Array<int>* e_map) const;
+        void getMaxSolutionMap(ArrayNew<int>* v_map, ArrayNew<int>* e_map) const;
         // callback for sorting solutions (see _vertEdgeSolMap)
-        int (*cbSolutionTerm)(Array<int>& array1, Array<int>& array2, void* userdata);
+        int (*cbSolutionTerm)(ArrayNew<int>& array1, ArrayNew<int>& array2, void* userdata);
         // context for all callbacks (edge and vertices matching and sort solutions
         void* userdata;
 
@@ -301,19 +301,19 @@ namespace indigo
             // creates resolution graph
             void createRegraph();
             // method change input array to map which corresponds to list of ReGraph nodes (they are in bitset)
-            void setCorrespondence(const Dbitset& b, Array<int>& map) const;
+            void setCorrespondence(const Dbitset& b, ArrayNew<int>& map) const;
             /*
              * Inserts solution from the given mapping
              */
-            bool insertSolution(const Array<int>& mapping);
+            bool insertSolution(const ArrayNew<int>& mapping);
             // sets input mapping to algorithm using
             bool setMapping();
             // creates all solutions
             int createSolutionMaps();
 
             // retruns all solutions edge and vertices lists
-            void getSolutionListsSub(ObjArray<Array<int>>& v_lists, ObjArray<Array<int>>& e_lists) const;
-            void getSolutionListsSuper(ObjArray<Array<int>>& v_lists, ObjArray<Array<int>>& e_lists) const;
+            void getSolutionListsSub(ObjArray<ArrayNew<int>>& v_lists, ObjArray<ArrayNew<int>>& e_lists) const;
+            void getSolutionListsSuper(ObjArray<ArrayNew<int>>& v_lists, ObjArray<ArrayNew<int>>& e_lists) const;
 
         protected:
             // resolution graph to work with
@@ -333,7 +333,7 @@ namespace indigo
             bool _hasCommonSymbol(int e11, int e12, int e21, int e22) const;
 
             // returns edge and vertices list
-            void _createList(const Dbitset& proj_bitset, Graph& graph, Array<int>& v_list, Array<int>& e_list) const;
+            void _createList(const Dbitset& proj_bitset, Graph& graph, ArrayNew<int>& v_list, ArrayNew<int>& e_list) const;
 
         private:
             ReCreation(const ReCreation&); // no implicit copy
@@ -420,7 +420,7 @@ namespace indigo
                 return _y.ptr();
             }
 
-            void getSolutions(ObjArray<Array<int>>& v_maps);
+            void getSolutions(ObjArray<ArrayNew<int>>& v_maps);
 
             // returns correspondence parameters between each vertex and vertex in other graph with the same label
             int getFLSize(int i)
@@ -444,27 +444,27 @@ namespace indigo
             // PtrArray< ArrayBool > _aj1;
             PtrArray<ArrayBool> _aj2;
             // indexes of edges
-            PtrArray<Array<int>> _ajEdge1;
-            PtrArray<Array<int>> _ajEdge2;
+            PtrArray<ArrayNew<int>> _ajEdge1;
+            PtrArray<ArrayNew<int>> _ajEdge2;
             // correspondence between each vertex and vertex in other graph with the same label
-            PtrArray<Array<int>> _mLabel1;
+            PtrArray<ArrayNew<int>> _mLabel1;
             // adjacency matrix in bitset view
             PtrArray<Dbitset> _daj1;
             PtrArray<Dbitset> _daj2;
             // correspondence between two graphs
-            Array<int> _x;
-            Array<int> _y;
+            ArrayNew<int> _x;
+            ArrayNew<int> _y;
             // correspondence between real graph and matrix
-            Array<int> _cr1;
-            Array<int> _cr2;
+            ArrayNew<int> _cr1;
+            ArrayNew<int> _cr2;
             // degree vectors
-            Array<int> _degreeVec1;
-            Array<int> _degreeVec2;
+            ArrayNew<int> _degreeVec1;
+            ArrayNew<int> _degreeVec2;
             // matrix with not corresponding edges
-            PtrArray<Array<int>> _errorEdgesMatrix;
+            PtrArray<ArrayNew<int>> _errorEdgesMatrix;
             // maps
-            Array<int> _map;
-            Array<int> _invmap;
+            ArrayNew<int> _map;
+            ArrayNew<int> _invmap;
 
             // max size to reserve space in arrays
             int _maxsize;
@@ -486,7 +486,7 @@ namespace indigo
             void _createErrorEdgesMatrix();
             void _createMaps();
             // creation of graph for solution
-            void _createConnectedGraph(Graph& graph, Array<int>& map_gr);
+            void _createConnectedGraph(Graph& graph, ArrayNew<int>& map_gr);
 
             // two graphs to compare
             Graph* _graph1;
@@ -494,7 +494,7 @@ namespace indigo
             // retruns false if there is no need to swap graphs
             bool _checkSize(Graph& g1, Graph& g2);
             // makes invert map
-            void _makeInvertMap(Array<int>& map, Array<int>& invmap);
+            void _makeInvertMap(ArrayNew<int>& map, ArrayNew<int>& invmap);
 
         private:
             AdjMatricesStore(const AdjMatricesStore&); // no implicit copy
@@ -516,11 +516,11 @@ namespace indigo
             // keeping util class for 2DOM method
             AdjMatricesStore& _adjMstore;
             // list of unsigned vertices in first graph
-            Array<int> _unsignVert1;
+            ArrayNew<int> _unsignVert1;
             // list of unsigned vertices in second graph
-            PtrArray<Array<int>> _unsignVert2;
+            PtrArray<ArrayNew<int>> _unsignVert2;
             // adjancy status whether vertex in 2 is adjaent to assigned
-            Array<int> _adjStatus;
+            ArrayNew<int> _adjStatus;
             // assign vertex from 1 graph to 2
             int* _x;
             // assign vertex from 2 graph to 1
@@ -579,9 +579,9 @@ namespace indigo
             int* _y;
             // error list
             CP_DECL;
-            TL_CP_DECL(Array<int>, _errorList);
+            TL_CP_DECL(ArrayNew<int>, _errorList);
             // list of error vertrces
-            TL_CP_DECL(Array<int>, _listErrVertices);
+            TL_CP_DECL(ArrayNew<int>, _listErrVertices);
             // size of first graph
             int _n;
             // size of second graph
@@ -596,7 +596,7 @@ namespace indigo
             int _maxIteration;
 
             // for stucking override
-            Array<int> _stateArray;
+            ArrayNew<int> _stateArray;
             // error number in previous stuck state
             int _errorNumberStuck;
             // number of iterations before algorithm consider current state as stuck state
@@ -739,17 +739,17 @@ namespace indigo
 
         bool _findTrivialMcs();
         void _clearSolutionMaps();
-        void _addSolutionMap(Array<int>& v_map, Array<int>& e_map);
+        void _addSolutionMap(ArrayNew<int>& v_map, ArrayNew<int>& e_map);
 
         // method returns true if edges with input number completely matched
         bool _getEdgeColorCondition(Graph& graph1, Graph& graph2, int i, int j) const;
 
         // returns all solutions
-        void _getSolutionMaps(int count, ObjArray<Array<int>>& v_maps, ObjArray<Array<int>>& e_maps) const;
+        void _getSolutionMaps(int count, ObjArray<ArrayNew<int>>& v_maps, ObjArray<ArrayNew<int>>& e_maps) const;
 
         // array for keeping all solutions. In each subarray element[0] = vertex size, [1] = edge size, and
         // next '[0]' elements for vertex map, next '[1]' for edge map (in sum 2+vertexEnd()+edgeEnd() elements)
-        ObjArray<Array<int>> _vertEdgeSolMap;
+        ObjArray<ArrayNew<int>> _vertEdgeSolMap;
 
         RandomHandler _random;
 
@@ -776,7 +776,7 @@ namespace indigo
         // sets graphs for substructure search considering their size
         void setGraphs(Graph& sub, Graph& super);
         // searches substructure for graphs and maps vertices
-        virtual bool searchSubstructure(Array<int>* map);
+        virtual bool searchSubstructure(ArrayNew<int>* map);
 
         // condition for edge match
         bool (*cbMatchEdge)(Graph& graph1, Graph& graph2, int i, int j, void* userdata);

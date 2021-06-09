@@ -240,7 +240,7 @@ void SmilesLoader::_calcStereocenters()
 
 void SmilesLoader::_calcCisTrans()
 {
-    QS_DEF(Array<int>, dirs);
+    QS_DEF(ArrayNew<int>, dirs);
     int i;
 
     dirs.clear();
@@ -266,7 +266,7 @@ void SmilesLoader::_readOtherStuff()
     MoleculeStereocenters& stereocenters = _bmol->stereocenters;
     MoleculeCisTrans& cis_trans = _bmol->cis_trans;
 
-    QS_DEF(Array<int>, to_remove);
+    QS_DEF(ArrayNew<int>, to_remove);
 
     to_remove.clear();
 
@@ -1568,7 +1568,7 @@ void SmilesLoader::_markAromaticBonds()
     // be aromatic when they are contained in some aliphatic (SSSR) ring.
     for (i = 0; i < basis.getCyclesCount(); i++)
     {
-        const Array<int>& cycle = basis.getCycle(i);
+        const ArrayNew<int>& cycle = basis.getCycle(i);
         int j;
         bool needs_modification = false;
 
@@ -1611,7 +1611,7 @@ void SmilesLoader::_markAromaticBonds()
 
     for (i = 0; i < basis.getCyclesCount(); i++)
     {
-        const Array<int>& cycle = basis.getCycle(i);
+        const ArrayNew<int>& cycle = basis.getCycle(i);
         int j;
         bool needs_modification = false;
 
@@ -1932,7 +1932,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
 
     if (_polymer_repetitions[i] > 1)
     {
-        QS_DEF(Array<int>, mapping);
+        QS_DEF(ArrayNew<int>, mapping);
         AutoPtr<BaseMolecule> rep(_bmol->neu());
 
         rep->makeSubmolecule(*_bmol, sgroup->atoms, &mapping, 0);
@@ -2824,7 +2824,7 @@ int SmilesLoader::_parseCurly(ArrayChar& curly, int& repetitions)
     return 0;
 }
 
-void SmilesLoader::_readRGroupOccurrenceRanges(const char* str, Array<int>& ranges)
+void SmilesLoader::_readRGroupOccurrenceRanges(const char* str, ArrayNew<int>& ranges)
 {
     int beg = -1, end = -1;
     int add_beg = 0, add_end = 0;

@@ -7,7 +7,7 @@ using namespace indigo;
 
 TEST(IndigoContainersTest, test_array)
 {
-    Array<int> array;
+    ArrayNew<int> array;
     const auto initial_size = 100;
     array.resize(initial_size);
     array.zerofill();

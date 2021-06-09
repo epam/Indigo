@@ -60,15 +60,15 @@ namespace indigo
 
         int version; // By default the latest version 2 is used
 
-        Array<int>* atom_flags;
-        Array<int>* bond_flags;
+        ArrayNew<int>* atom_flags;
+        ArrayNew<int>* bond_flags;
 
         bool has_mapping;
         CP_DECL;
-        TL_CP_DECL(Array<int>, atom_mapping_to_restore);
-        TL_CP_DECL(Array<int>, inv_atom_mapping_to_restore);
-        TL_CP_DECL(Array<int>, bond_mapping_to_restore);
-        TL_CP_DECL(Array<int>, inv_bond_mapping_to_restore);
+        TL_CP_DECL(ArrayNew<int>, atom_mapping_to_restore);
+        TL_CP_DECL(ArrayNew<int>, inv_atom_mapping_to_restore);
+        TL_CP_DECL(ArrayNew<int>, bond_mapping_to_restore);
+        TL_CP_DECL(ArrayNew<int>, inv_bond_mapping_to_restore);
 
         DECL_ERROR;
 
@@ -134,7 +134,7 @@ namespace indigo
         void _readBaseSGroupXyz(Scanner& scanner, SGroup& sgroup, const CmfSaver::VecRange& range);
 
         void _readString(ArrayChar& dest);
-        void _readUIntArray(Array<int>& dest);
+        void _readUIntArray(ArrayNew<int>& dest);
 
         void _readVec3f(Scanner& scanner, Vec3f& pos, const CmfSaver::VecRange& range);
         void _readVec2f(Scanner& scanner, Vec2f& pos, const CmfSaver::VecRange& range);
@@ -151,7 +151,7 @@ namespace indigo
         TL_CP_DECL(Array<_BondDesc>, _bonds);
         TL_CP_DECL(StringPool, _pseudo_labels);
         TL_CP_DECL(Array<_AttachmentDesc>, _attachments);
-        TL_CP_DECL(Array<int>, _sgroup_order);
+        TL_CP_DECL(ArrayNew<int>, _sgroup_order);
         Molecule* _mol;
 
     private:

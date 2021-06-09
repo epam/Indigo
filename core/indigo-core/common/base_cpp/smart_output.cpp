@@ -91,7 +91,7 @@ void SmartTableOutput::flush()
         return;
 
     // Smart table printing
-    QS_DEF(Array<int>, column_widths);
+    QS_DEF(ArrayNew<int>, column_widths);
     column_widths.clear();
 
     for (int i = 0; i < _lines.size(); i++)
@@ -108,14 +108,14 @@ void SmartTableOutput::setLineFormat(const char* line_format)
     _line_format_index.top() = _line_formats.size() - 1;
 }
 
-void SmartTableOutput::_updateColumnWidths(int index, Array<int>& widths)
+void SmartTableOutput::_updateColumnWidths(int index, ArrayNew<int>& widths)
 {
     const ArrayChar& line = _lines[index];
 
     if (line.size() == 0 || line[0] == HLINE_CHAR)
         return;
 
-    QS_DEF(Array<int>, cur_widths);
+    QS_DEF(ArrayNew<int>, cur_widths);
     cur_widths.clear();
     cur_widths.push(0);
 
@@ -155,7 +155,7 @@ void SmartTableOutput::_updateColumnWidths(int index, Array<int>& widths)
         widths[i] = std::max(widths[i], cur_widths[i] + 2);
 }
 
-void SmartTableOutput::_printLineSmart(int index, const Array<int>& widths)
+void SmartTableOutput::_printLineSmart(int index, const ArrayNew<int>& widths)
 {
     const ArrayChar& line = _lines[index];
     if (line.size() == 0)

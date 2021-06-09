@@ -49,7 +49,7 @@ namespace indigo
 
     private:
         Array<byte> _arr;
-        Array<int> _offset;
+        ArrayNew<int> _offset;
     };
 
 } // namespace indigo

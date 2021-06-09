@@ -55,8 +55,8 @@ namespace indigo
 
         bool valid(int idx) const;
 
-        void collectGraphVertices(const Graph& graph, Array<int>& indices) const;
-        void collectGraphEdges(const Graph& graph, Array<int>& indices) const;
+        void collectGraphVertices(const Graph& graph, ArrayNew<int>& indices) const;
+        void collectGraphEdges(const Graph& graph, ArrayNew<int>& indices) const;
         int count(const Graph& graph) const;
         inline void clear()
         {
@@ -71,7 +71,7 @@ namespace indigo
     protected:
         const int* _filter;
 
-        Array<int> _own;
+        ArrayNew<int> _own;
 
         int _value;
         int _type;

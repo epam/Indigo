@@ -44,25 +44,25 @@ namespace indigo
 
         bool isArticulationPoint(int idx) const;
         void getComponent(int idx, Filter& filter) const;
-        const Array<int>& getIncomingComponents(int idx) const;
+        const ArrayNew<int>& getIncomingComponents(int idx) const;
         int getIncomingCount(int idx) const;
-        void getVertexComponents(int idx, Array<int>& components) const;
+        void getVertexComponents(int idx, ArrayNew<int>& components) const;
 
         DECL_ERROR;
 
     protected:
         void _biconnect(int v, int u);
 
-        bool _pushToStack(Array<int>& dfs_stack, int v);
-        void _processIfNotPushed(Array<int>& dfs_stack, int w);
+        bool _pushToStack(ArrayNew<int>& dfs_stack, int v);
+        void _processIfNotPushed(ArrayNew<int>& dfs_stack, int w);
 
         const Graph& _graph;
         CP_DECL;
-        TL_CP_DECL(PtrArray<Array<int>>, _components); // masks for components
-        TL_CP_DECL(Array<int>, _dfs_order);
-        TL_CP_DECL(Array<int>, _lowest_order);
-        TL_CP_DECL(PtrArray<Array<int>>, _component_lists);
-        TL_CP_DECL(Array<Array<int>*>, _component_ids); // list of components for articulation point
+        TL_CP_DECL(PtrArray<ArrayNew<int>>, _components); // masks for components
+        TL_CP_DECL(ArrayNew<int>, _dfs_order);
+        TL_CP_DECL(ArrayNew<int>, _lowest_order);
+        TL_CP_DECL(PtrArray<ArrayNew<int>>, _component_lists);
+        TL_CP_DECL(Array<ArrayNew<int>*>, _component_ids); // list of components for articulation point
         TL_CP_DECL(Array<Edge>, _edges_stack);
         int _cur_order;
     };

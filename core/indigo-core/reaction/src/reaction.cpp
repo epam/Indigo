@@ -50,7 +50,7 @@ int Reaction::_addBaseMolecule(int side)
     return idx;
 }
 
-void Reaction::saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types)
+void Reaction::saveBondOrders(Reaction& reaction, ObjArray<ArrayNew<int>>& bond_types)
 {
 
     while (bond_types.size() < reaction.end())
@@ -64,7 +64,7 @@ void Reaction::saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_typ
     }
 }
 
-void Reaction::loadBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types)
+void Reaction::loadBondOrders(Reaction& reaction, ObjArray<ArrayNew<int>>& bond_types)
 {
 
     int i;
@@ -115,7 +115,7 @@ void Reaction::checkForConsistency(Reaction& rxn)
 
 void Reaction::unfoldHydrogens()
 {
-    QS_DEF(Array<int>, markers);
+    QS_DEF(ArrayNew<int>, markers);
     int i, j;
 
     for (i = begin(); i != end(); i = next(i))

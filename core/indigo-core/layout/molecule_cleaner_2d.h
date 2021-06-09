@@ -37,7 +37,7 @@ namespace indigo
             CLEAN_TIMER_MS = 2000
         };
         MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose);
-        MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, const Array<int>& selected_vertices);
+        MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, const ArrayNew<int>& selected_vertices);
         static void clean(BaseMolecule& mol);
         void do_clean(bool _clean_external_angles);
 
@@ -70,24 +70,24 @@ namespace indigo
 
         BaseMolecule& _mol;
 
-        Array<int> active_points;
-        Array<int> base_point;
-        Array<int> base_point_index;
+        ArrayNew<int> active_points;
+        ArrayNew<int> base_point;
+        ArrayNew<int> base_point_index;
         Array<Vec2f> pos;
         bool is_trivial;
         int vertex_size;
         int component_count;
         ObjArray<ArrayBool> in;               // is vertex in component
-        ObjArray<Array<int>> definiting_points; // definiting points for component
+        ObjArray<ArrayNew<int>> definiting_points; // definiting points for component
         ObjArray<Array<Vec2f>> coef;            // linear representation for every vertices throw base points over field of complex numbers
         Array<Vec2f> gradient;
         Array<Vec2f> pregradient;
-        Array<int> edge_comp;
+        ArrayNew<int> edge_comp;
         ArrayBool is_art_point;
         ArrayBool is_valid_base;
         ObjArray<ArrayBool> adj_matrix;
-        ObjArray<Array<int>> common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
-        ObjArray<Array<int>> common_bicon_comp; // common_bicon_comp[i][j] = number of biconnected component wich is contains both vertices i and j (or -1 if
+        ObjArray<ArrayNew<int>> common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
+        ObjArray<ArrayNew<int>> common_bicon_comp; // common_bicon_comp[i][j] = number of biconnected component wich is contains both vertices i and j (or -1 if
                                                 // there isnt such component)
         float target_len; // target length of bonds
         bool clean_external_angles;

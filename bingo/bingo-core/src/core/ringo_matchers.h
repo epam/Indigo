@@ -76,7 +76,7 @@ protected:
     ReactionAtomNeighbourhoodCounters _nei_target_counters;
     ReactionAtomNeighbourhoodCounters _nei_query_counters;
 
-    ObjArray<Array<int>> _target_bond_types;
+    ObjArray<ArrayNew<int>> _target_bond_types;
 
     Array<byte> _query_fp;
     bool _query_data_valid;

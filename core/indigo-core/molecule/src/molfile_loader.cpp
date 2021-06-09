@@ -1846,7 +1846,7 @@ void MolfileLoader::_read3dFeature2000()
         AutoPtr<Molecule3dConstraints::ExclusionSphere> constr;
 
         int allowed_atoms_amount;
-        Array<int> allowed_atoms;
+        ArrayNew<int> allowed_atoms;
 
         constr.create();
         _scanner.skip(6);
@@ -1886,7 +1886,7 @@ void MolfileLoader::_read3dFeature2000()
     }
 }
 
-void MolfileLoader::_readRGroupOccurrenceRanges(const char* str, Array<int>& ranges)
+void MolfileLoader::_readRGroupOccurrenceRanges(const char* str, ArrayNew<int>& ranges)
 {
     int beg = -1, end = -1;
     int add_beg = 0, add_end = 0;
@@ -1967,7 +1967,7 @@ void MolfileLoader::_postLoad()
             for (j = 0; j < vertex.degree(); j++)
                 if (_bmol->getRSiteAttachmentPointByOrder(i, j) == -1)
                 {
-                    QS_DEF(Array<int>, nei_indices);
+                    QS_DEF(ArrayNew<int>, nei_indices);
                     nei_indices.clear();
 
                     for (int nei_idx = vertex.neiBegin(); nei_idx < vertex.neiEnd(); nei_idx = vertex.neiNext(nei_idx))

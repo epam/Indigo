@@ -59,8 +59,8 @@ AutomorphismSearch::~AutomorphismSearch()
 
 void AutomorphismSearch::_prepareGraph(Graph& graph)
 {
-    QS_DEF(Array<int>, buckets);
-    QS_DEF(Array<int>, ranks);
+    QS_DEF(ArrayNew<int>, buckets);
+    QS_DEF(ArrayNew<int>, ranks);
     int i;
 
     ranks.clear();
@@ -198,7 +198,7 @@ int AutomorphismSearch::_cmp_vertices(int idx1, int idx2, void* context)
     return 0;
 }
 
-void AutomorphismSearch::getCanonicalNumbering(Array<int>& numbering)
+void AutomorphismSearch::getCanonicalNumbering(ArrayNew<int>& numbering)
 {
     int i;
 
@@ -208,7 +208,7 @@ void AutomorphismSearch::getCanonicalNumbering(Array<int>& numbering)
         numbering.push(_mapping[_canonlab[i]]);
 }
 
-void AutomorphismSearch::getOrbits(Array<int>& orbits) const
+void AutomorphismSearch::getOrbits(ArrayNew<int>& orbits) const
 {
     orbits.clear_resize(_given_graph->vertexEnd());
     orbits.fffill();
@@ -217,12 +217,12 @@ void AutomorphismSearch::getOrbits(Array<int>& orbits) const
         orbits[_mapping[i]] = _orbits[i];
 }
 
-void AutomorphismSearch::getCanonicallyOrderedOrbits(Array<int>& orbits) const
+void AutomorphismSearch::getCanonicallyOrderedOrbits(ArrayNew<int>& orbits) const
 {
     // Each vertex in the orbit has its canonical number.
     // Canonical orbit index is the minimal canonical index of the vertices
     // from this orbit
-    QS_DEF(Array<int>, min_vertex_in_orbit);
+    QS_DEF(ArrayNew<int>, min_vertex_in_orbit);
     min_vertex_in_orbit.clear_resize(_given_graph->vertexEnd());
     min_vertex_in_orbit.fffill();
 
@@ -555,7 +555,7 @@ void AutomorphismSearch::_breakout(int level, int tc, int tv)
     _ptn[tc] = level;
 }
 
-int AutomorphismSearch::_shortPrune(Array<int>& tcell, Array<int>& mcr, int idx)
+int AutomorphismSearch::_shortPrune(ArrayNew<int>& tcell, ArrayNew<int>& mcr, int idx)
 {
     int i, j;
     int ret = idx;
@@ -570,7 +570,7 @@ int AutomorphismSearch::_shortPrune(Array<int>& tcell, Array<int>& mcr, int idx)
     return ret;
 }
 
-int AutomorphismSearch::_longPrune(Array<int>& tcell, Array<int>& fixed, int idx)
+int AutomorphismSearch::_longPrune(ArrayNew<int>& tcell, ArrayNew<int>& fixed, int idx)
 {
     int i, j, k;
     int ret = idx;
@@ -681,7 +681,7 @@ int AutomorphismSearch::_processNode(int level, int numcells)
     return level - 1;
 }
 
-void AutomorphismSearch::_joinOrbits(const Array<int>& perm)
+void AutomorphismSearch::_joinOrbits(const ArrayNew<int>& perm)
 {
     int i, j1, j2;
 
@@ -713,7 +713,7 @@ void AutomorphismSearch::_joinOrbits(const Array<int>& perm)
     }
 }
 
-bool AutomorphismSearch::_isAutomorphism(Array<int>& perm)
+bool AutomorphismSearch::_isAutomorphism(ArrayNew<int>& perm)
 {
     for (int i = _graph.edgeBegin(); i != _graph.edgeEnd(); i = _graph.edgeNext(i))
     {
@@ -725,7 +725,7 @@ bool AutomorphismSearch::_isAutomorphism(Array<int>& perm)
 
     if (cb_check_automorphism != 0)
     {
-        QS_DEF(Array<int>, perm_mapping);
+        QS_DEF(ArrayNew<int>, perm_mapping);
 
         perm_mapping.clear_resize(_given_graph->vertexEnd());
         perm_mapping.fffill();
@@ -744,8 +744,8 @@ int AutomorphismSearch::_compareCanon()
 {
     int i;
 
-    QS_DEF(Array<int>, map);
-    QS_DEF(Array<int>, canon_map);
+    QS_DEF(ArrayNew<int>, map);
+    QS_DEF(ArrayNew<int>, canon_map);
 
     map.clear_resize(_n);
     canon_map.clear_resize(_n);
@@ -761,7 +761,7 @@ int AutomorphismSearch::_compareCanon()
     return cb_compare_mapped(*_given_graph, map, canon_map, context);
 }
 
-void AutomorphismSearch::_buildFixMcr(const Array<int>& perm, Array<int>& fix, Array<int>& mcr)
+void AutomorphismSearch::_buildFixMcr(const ArrayNew<int>& perm, ArrayNew<int>& fix, ArrayNew<int>& mcr)
 {
     int i;
 
@@ -794,7 +794,7 @@ void AutomorphismSearch::_buildFixMcr(const Array<int>& perm, Array<int>& fix, A
     }
 }
 
-int AutomorphismSearch::_targetcell(int level, Array<int>& cell)
+int AutomorphismSearch::_targetcell(int level, ArrayNew<int>& cell)
 {
     int i = 0, j, k;
     int ibest = -1, jbest = -1, bestdegree = -1;
@@ -1130,11 +1130,11 @@ void AutomorphismSearch::_refineByCell(int split1, int split2, int level, int& n
     }
 }
 
-void AutomorphismSearch::_handleAutomorphism(const Array<int>& perm)
+void AutomorphismSearch::_handleAutomorphism(const ArrayNew<int>& perm)
 {
     if (cb_automorphism != 0)
     {
-        QS_DEF(Array<int>, perm2);
+        QS_DEF(ArrayNew<int>, perm2);
         int i;
 
         perm2.clear_resize(_given_graph->vertexEnd());

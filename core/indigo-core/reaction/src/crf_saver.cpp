@@ -94,8 +94,8 @@ void CrfSaver::_writeMolecule(Molecule& molecule)
     else
         saver.create(_output);
 
-    QS_DEF(Array<int>, atom_flags);
-    QS_DEF(Array<int>, bond_flags);
+    QS_DEF(ArrayNew<int>, atom_flags);
+    QS_DEF(ArrayNew<int>, bond_flags);
 
     if (_atom_stereo_flags != 0)
     {
@@ -162,7 +162,7 @@ void CrfSaver::_writeReactionInfo(Reaction& reaction)
         _output.writePackedUInt(reaction.catalystCount());
 }
 
-void CrfSaver::_writeAam(const int* aam, const Array<int>& sequence)
+void CrfSaver::_writeAam(const int* aam, const ArrayNew<int>& sequence)
 {
     int i;
 

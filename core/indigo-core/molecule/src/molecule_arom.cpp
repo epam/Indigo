@@ -130,7 +130,7 @@ void AromatizerBase::_aromatizeCycle(const int* cycle, int cycle_len)
     _handleAromaticCycle(cycle, cycle_len);
 }
 
-void AromatizerBase::_handleCycle(const Array<int>& path)
+void AromatizerBase::_handleCycle(const ArrayNew<int>& path)
 {
     // Check Huckel's rule
     if (!_isCycleAromatic(path.ptr(), path.size()))
@@ -171,7 +171,7 @@ bool AromatizerBase::_cb_check_vertex(Graph& graph, int v_idx, void* context)
     return arom->_checkVertex(v_idx);
 }
 
-bool AromatizerBase::_cb_handle_cycle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context)
+bool AromatizerBase::_cb_handle_cycle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context)
 {
     AromatizerBase* arom = (AromatizerBase*)context;
     arom->_handleCycle(vertices);
@@ -860,7 +860,7 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
                 bool can_be_arom = bond.possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC);
                 if (can_be_double || can_be_triple || can_be_arom)
                 {
-                    QS_DEF(Array<int>, sites);
+                    QS_DEF(ArrayNew<int>, sites);
 
                     mol.getAllowedRGroups(v, sites);
                     for (int j = 0; j < sites.size(); j++)
@@ -926,7 +926,7 @@ bool QueryMoleculeAromatizer::_aromatizeRGroupFragment(QueryMolecule& fragment, 
 
     bool aromatized = _aromatizeBonds(fragment, additional_atom, options);
 
-    QS_DEF(Array<int>, indices);
+    QS_DEF(ArrayNew<int>, indices);
     indices.clear();
     indices.push(additional_atom);
 
@@ -981,10 +981,10 @@ bool QueryMoleculeAromatizer::_aromatizeBondsFuzzy(QueryMolecule& mol, const Aro
     return aromatized;
 }
 
-void MoleculeAromatizer::findAromaticAtoms(BaseMolecule& mol, Array<int>* atoms, Array<int>* bonds, const AromaticityOptions& options)
+void MoleculeAromatizer::findAromaticAtoms(BaseMolecule& mol, ArrayNew<int>* atoms, ArrayNew<int>* bonds, const AromaticityOptions& options)
 {
     AutoPtr<BaseMolecule> clone;
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, mapping);
 
     clone.reset(mol.neu());
     mapping.clear();

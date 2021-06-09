@@ -201,8 +201,8 @@ int TautomerMatcher::_preliminaryEmbedding(Graph& g1, Graph& g2, int* core1, int
 {
     TautomerMatcher::MatchData& d = *(TautomerMatcher::MatchData*)userdata;
 
-    QS_DEF(Array<int>, core_1);
-    QS_DEF(Array<int>, core_2);
+    QS_DEF(ArrayNew<int>, core_1);
+    QS_DEF(ArrayNew<int>, core_2);
 
     core_1.copy(core1, d.context.initial_g1_vertexend);
     // can not use g1.vertexEnd() because atoms may have been
@@ -529,7 +529,7 @@ bool TautomerMatcher::fixBondsNotInChains(TautomerSearchContext& context, const 
 {
     bool ok = true;
 
-    QS_DEF(Array<int>, fixed_bonds);
+    QS_DEF(ArrayNew<int>, fixed_bonds);
 
     fixed_bonds.clear();
 

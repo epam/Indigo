@@ -108,8 +108,8 @@ namespace indigo
         int parent_idx;     // parent group number; represented with index in the array
         // TODO: leave only parent_idx
 
-        Array<int> atoms; // represented with SAL in Molfile format
-        Array<int> bonds; // represented with SBL in Molfile format
+        ArrayNew<int> atoms; // represented with SAL in Molfile format
+        ArrayNew<int> bonds; // represented with SBL in Molfile format
 
         int brk_style;            // represented with SBT in Molfile format
         Array<std::array<Vec2f, 2>> brackets; // represented with SDI in Molfile format
@@ -194,7 +194,7 @@ namespace indigo
         MultipleGroup();
         ~MultipleGroup() override;
 
-        Array<int> parent_atoms;
+        ArrayNew<int> parent_atoms;
         int multiplier;
 
     private:
@@ -220,8 +220,8 @@ namespace indigo
         bool hasSGroup(int idx);
 
         void buildTree(Tree& tree);
-        bool getParentAtoms(int idx, Array<int>& target);
-        bool getParentAtoms(SGroup& sgroup, Array<int>& target);
+        bool getParentAtoms(int idx, ArrayNew<int>& target);
+        bool getParentAtoms(SGroup& sgroup, ArrayNew<int>& target);
 
         void remove(int idx);
         void clear();
@@ -238,12 +238,12 @@ namespace indigo
             PROPERTY_STRING,
             PROPERTY_INT_ARRAY
         };
-        static void parseCondition(const char* property, const char* value, int& s_property, int& s_type, int& s_int, Array<int>& s_indices);
+        static void parseCondition(const char* property, const char* value, int& s_property, int& s_type, int& s_int, ArrayNew<int>& s_indices);
 
-        void findSGroups(const char* property, const char* value, Array<int>& sgs);
-        void findSGroups(int property, int value, Array<int>& sgs);
-        void findSGroups(int property, const char* value, Array<int>& sgs);
-        void findSGroups(int property, Array<int>& value, Array<int>& sgs);
+        void findSGroups(const char* property, const char* value, ArrayNew<int>& sgs);
+        void findSGroups(int property, int value, ArrayNew<int>& sgs);
+        void findSGroups(int property, const char* value, ArrayNew<int>& sgs);
+        void findSGroups(int property, ArrayNew<int>& value, ArrayNew<int>& sgs);
 
         void registerUnfoldedHydrogen(int idx, int new_h_idx);
 
@@ -252,7 +252,7 @@ namespace indigo
 
     private:
         int _findSGroupById(int id);
-        bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);
+        bool _cmpIndices(ArrayNew<int>& t_inds, ArrayNew<int>& q_inds);
     };
 
 } // namespace indigo

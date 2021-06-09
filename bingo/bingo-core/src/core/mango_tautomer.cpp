@@ -119,7 +119,7 @@ void MangoTautomer::_validateQueryData()
     }
     else
     {
-        QS_DEF(Array<int>, gross);
+        QS_DEF(ArrayNew<int>, gross);
 
         MoleculeGrossFormula::collect(_query.ref(), gross);
         gross[ELEM_H] = 0;

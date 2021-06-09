@@ -49,10 +49,10 @@ namespace indigo
 
     private:
         void _find(bool add_stereo);
-        bool _processRing(bool add_stereo, const Array<int>& vertices, const Array<int>& edges);
+        bool _processRing(bool add_stereo, const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
 
-        void _markRingBonds(const Array<int>& vertices, const Array<int>& edges);
-        void _addRingStereocenters(const Array<int>& vertices, const Array<int>& edges);
+        void _markRingBonds(const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
+        void _addRingStereocenters(const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
 
         bool _isCornerVertex(int v, int e1, int e2);
         bool _isHorizontalEdge(int e, float cos_threshold);

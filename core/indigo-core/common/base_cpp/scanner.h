@@ -86,7 +86,7 @@ namespace indigo
 
     protected:
         bool _readDouble(double& res, int max);
-        void _prefixFunction(ArrayChar& str, Array<int>& prefix);
+        void _prefixFunction(ArrayChar& str, ArrayNew<int>& prefix);
     };
 
     class DLLEXPORT FileScanner : public Scanner

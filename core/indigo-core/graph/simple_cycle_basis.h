@@ -38,12 +38,12 @@ namespace indigo
         {
             return _cycles.size();
         }
-        const Array<int>& getCycle(int num) const
+        const ArrayNew<int>& getCycle(int num) const
         {
             return _cycles[num];
         }
 
-        ObjArray<Array<int>> _cycles;
+        ObjArray<ArrayNew<int>> _cycles;
 
     private:
         static void constructKernelVector(ArrayBool& u, ObjArray<ArrayBool>& a, int i);
@@ -63,7 +63,7 @@ namespace indigo
 
         const Graph& _graph;
 
-        Array<int> _edgeList;
+        ArrayNew<int> _edgeList;
 
         bool _isMinimized;
     };

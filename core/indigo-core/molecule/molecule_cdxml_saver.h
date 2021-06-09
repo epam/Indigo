@@ -57,7 +57,7 @@ namespace indigo
         void addFontToTable(int id, const char* charset, const char* name);
         void addColorTable(const char* color);
         void addColorToTable(int id, int r, int g, int b);
-        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int id, Array<int>& nodes_ids);
+        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int id, ArrayNew<int>& nodes_ids);
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);
         void addCustomText(const Vec2f& pos, const char* alignment, float line_height, const char* text);

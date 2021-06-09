@@ -251,7 +251,7 @@ int MoleculeInChI::_cmpComponents(int& index1, int& index2, void* context)
 
 void MoleculeInChI::_normalizeMolecule(Molecule& mol)
 {
-    QS_DEF(Array<int>, ignored);
+    QS_DEF(ArrayNew<int>, ignored);
 
     ignored.clear_resize(mol.vertexEnd());
     ignored.zerofill();

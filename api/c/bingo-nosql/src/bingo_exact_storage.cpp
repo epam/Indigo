@@ -30,7 +30,7 @@ void ExactStorage::add(dword hash, int id)
     _molecule_hashes.add(hash, id);
 }
 
-void ExactStorage::findCandidates(dword query_hash, Array<int>& candidates, int part_id, int part_count)
+void ExactStorage::findCandidates(dword query_hash, ArrayNew<int>& candidates, int part_id, int part_count)
 {
     profTimerStart(tsingle, "exact_filter");
 
@@ -56,7 +56,7 @@ void ExactStorage::findCandidates(dword query_hash, Array<int>& candidates, int 
 dword ExactStorage::calculateMolHash(Molecule& mol)
 {
     QS_DEF(Molecule, mol_without_h);
-    QS_DEF(Array<int>, vertices);
+    QS_DEF(ArrayNew<int>, vertices);
     int i;
 
     vertices.clear();
@@ -67,7 +67,7 @@ dword ExactStorage::calculateMolHash(Molecule& mol)
 
     mol_without_h.makeSubmolecule(mol, vertices, 0);
 
-    QS_DEF(Array<int>, vertex_codes);
+    QS_DEF(ArrayNew<int>, vertex_codes);
     vertex_codes.clear_resize(mol_without_h.vertexEnd());
 
     SubgraphHash hh(mol_without_h);
@@ -83,7 +83,7 @@ dword ExactStorage::calculateMolHash(Molecule& mol)
 dword ExactStorage::calculateRxnHash(Reaction& rxn)
 {
     QS_DEF(Molecule, mol_without_h);
-    QS_DEF(Array<int>, vertices);
+    QS_DEF(ArrayNew<int>, vertices);
     int i, j;
     dword hash = 0;
 

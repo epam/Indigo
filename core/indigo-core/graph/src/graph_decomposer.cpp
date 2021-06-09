@@ -45,7 +45,7 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter)
         return 0;
     }
 
-    QS_DEF(Array<int>, queue);
+    QS_DEF(ArrayNew<int>, queue);
 
     _component_ids.clear_resize(_graph.vertexEnd());
     _component_ids.fffill();
@@ -109,7 +109,7 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter)
     return n_comp;
 }
 
-const Array<int>& GraphDecomposer::getDecomposition() const
+const ArrayNew<int>& GraphDecomposer::getDecomposition() const
 {
     return _component_ids;
 }

@@ -20,7 +20,7 @@ namespace bingo
     class FingerprintTable
     {
     public:
-        FingerprintTable(int fp_size, const Array<int>& borders, int mt_size);
+        FingerprintTable(int fp_size, const ArrayNew<int>& borders, int mt_size);
 
         static BingoAddr create(BingoPtr<FingerprintTable>& ptr, int fp_size, int mt_size);
 

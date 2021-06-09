@@ -38,9 +38,9 @@ namespace indigo
 
         ReactionTransformation(void);
 
-        bool transform(Molecule& molecule, QueryReaction& reaction, Array<int>* mapping = 0);
+        bool transform(Molecule& molecule, QueryReaction& reaction, ArrayNew<int>* mapping = 0);
 
-        bool transform(ReusableObjArray<Molecule>& molecules, QueryReaction& reaction, ReusableObjArray<Array<int>>* mapping_array = 0);
+        bool transform(ReusableObjArray<Molecule>& molecules, QueryReaction& reaction, ReusableObjArray<ArrayNew<int>>* mapping_array = 0);
 
         AromaticityOptions arom_options;
 
@@ -55,11 +55,11 @@ namespace indigo
         CP_DECL;
         TL_CP_DECL(QueryReaction, _merged_reaction);
         TL_CP_DECL(Molecule, _cur_monomer);
-        TL_CP_DECL(Array<int>, _mapping);
+        TL_CP_DECL(ArrayNew<int>, _mapping);
 
-        static void _product_proc(Molecule& product, Array<int>& monomers_indices, Array<int>& mapping, void* userdata);
+        static void _product_proc(Molecule& product, ArrayNew<int>& monomers_indices, ArrayNew<int>& mapping, void* userdata);
 
-        void _mergeReactionComponents(QueryReaction& reaction, int mol_type, QueryMolecule& merged_molecule, Array<int>& merged_aam);
+        void _mergeReactionComponents(QueryReaction& reaction, int mol_type, QueryMolecule& merged_molecule, ArrayNew<int>& merged_aam);
 
         void _generateMergedReaction(QueryReaction& reaction);
     };

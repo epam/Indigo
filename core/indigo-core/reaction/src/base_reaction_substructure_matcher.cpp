@@ -115,8 +115,8 @@ bool BaseReactionSubstructureMatcher::find()
         {
             int mol1 = _matchers.top()->_current_molecule_1;
             int mol2 = _matchers.top()->_current_molecule_2;
-            Array<int>& core1 = _matchers.top()->_current_core_1;
-            Array<int>& core2 = _matchers.top()->_current_core_2;
+            ArrayNew<int>& core1 = _matchers.top()->_current_core_1;
+            ArrayNew<int>& core2 = _matchers.top()->_current_core_2;
             int mode = _matchers.top()->getMode();
 
             //_matchers.reserve(_matchers.size() + 1);
@@ -410,7 +410,7 @@ int BaseReactionSubstructureMatcher::_Matcher::nextPair()
         int src_aam_1 = 0;
         int src_aam_2 = 0;
 
-        Array<int>& prev_core_1 = _context._matchers[_context._matchers.size() - 2]->_current_core_1;
+        ArrayNew<int>& prev_core_1 = _context._matchers[_context._matchers.size() - 2]->_current_core_1;
         for (int i = src_mol_1.vertexBegin(); i < src_mol_1.vertexEnd(); i = src_mol_1.vertexNext(i))
             if (prev_core_1[i] >= 0)
             {
@@ -468,7 +468,7 @@ bool BaseReactionSubstructureMatcher::_Matcher::_initEnumerator(BaseMolecule& mo
     return true;
 }
 
-bool BaseReactionSubstructureMatcher::_Matcher::addPair(int mol1_idx, int mol2_idx, const Array<int>& core1, const Array<int>& core2, bool from_first_side)
+bool BaseReactionSubstructureMatcher::_Matcher::addPair(int mol1_idx, int mol2_idx, const ArrayNew<int>& core1, const ArrayNew<int>& core2, bool from_first_side)
 {
     _selected_molecule_1 = mol1_idx;
     _selected_molecule_2 = mol2_idx;

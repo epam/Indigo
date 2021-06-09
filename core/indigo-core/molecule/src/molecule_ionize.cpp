@@ -43,7 +43,7 @@ MoleculePkaModel::MoleculePkaModel()
     //   _loadAdvancedPkaModel();
 }
 
-void MoleculePkaModel::estimate_pKa(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites, Array<float>& acid_pkas,
+void MoleculePkaModel::estimate_pKa(Molecule& mol, const IonizeOptions& options, ArrayNew<int>& acid_sites, ArrayNew<int>& basic_sites, Array<float>& acid_pkas,
                                     Array<float>& basic_pkas)
 {
     if (options.model == IonizeOptions::PKA_MODEL_SIMPLE)
@@ -64,13 +64,13 @@ void MoleculePkaModel::estimate_pKa(Molecule& mol, const IonizeOptions& options,
 
 int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* filename)
 {
-    //   QS_DEF(Array<int>, order);
+    //   QS_DEF(ArrayNew<int>, order);
     //   QS_DEF(Molecule, can_mol);
     QS_DEF(ArrayChar, fp);
     RedBlackStringObjMap<Array<float>> acid_pkas;
     RedBlackStringObjMap<Array<float>> basic_pkas;
-    RedBlackStringObjMap<Array<int>> acid_pka_cids;
-    RedBlackStringObjMap<Array<int>> basic_pka_cids;
+    RedBlackStringObjMap<ArrayNew<int>> acid_pka_cids;
+    RedBlackStringObjMap<ArrayNew<int>> basic_pka_cids;
     AromaticityOptions opts;
 
     const char* a_pka_sites_id = "ACID PKA SITES";
@@ -124,7 +124,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                 const char* apkas = loader.properties.at(a_pka_values_id);
 
                 BufferScanner scan_aids(aids);
-                Array<int> a_sites;
+                ArrayNew<int> a_sites;
                 while (!scan_aids.isEOF())
                 {
                     int idx = scan_aids.readInt1() - 1;
@@ -175,7 +175,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                 const char* bpkas = loader.properties.at(b_pka_values_id);
 
                 BufferScanner scan_bids(bids);
-                Array<int> b_sites;
+                ArrayNew<int> b_sites;
                 while (!scan_bids.isEOF())
                 {
                     int idx = scan_bids.readInt1() - 1;
@@ -835,13 +835,13 @@ void MoleculePkaModel::_loadAdvancedPkaModel()
     _model.advanced_model_ready = true;
 }
 
-void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, ArrayNew<int>& acid_sites, ArrayNew<int>& basic_sites,
                                             Array<float>& acid_pkas, Array<float>& basic_pkas)
 {
-    //   QS_DEF(Array<int>, can_order);
+    //   QS_DEF(ArrayNew<int>, can_order);
     //   QS_DEF(Molecule, can_mol);
-    QS_DEF(Array<int>, ignore_atoms);
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, ignore_atoms);
+    QS_DEF(ArrayNew<int>, mapping);
     AromaticityOptions opts;
 
     //   _checkCanonicalOrder(mol, can_mol, can_order);
@@ -903,10 +903,10 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
     }
 }
 
-void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, ArrayNew<int>& acid_sites, ArrayNew<int>& basic_sites,
                                               Array<float>& acid_pkas, Array<float>& basic_pkas)
 {
-    //   QS_DEF(Array<int>, can_order);
+    //   QS_DEF(ArrayNew<int>, can_order);
     //   QS_DEF(Molecule, can_mol);
     AromaticityOptions opts;
     int level = options.level;
@@ -969,15 +969,15 @@ int MoleculePkaModel::_asc_cmp_cb(int& v1, int& v2, void* context)
 
 void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, ArrayChar& fp, int level)
 {
-    QS_DEF(Array<int>, included_atoms);
-    QS_DEF(Array<int>, dist_atoms);
+    QS_DEF(ArrayNew<int>, included_atoms);
+    QS_DEF(ArrayNew<int>, dist_atoms);
     QS_DEF(Queue<int>, bfs_queue);
 
     QS_DEF(ArrayChar, n_key);
     QS_DEF(ArrayChar, bond);
 
-    QS_DEF(Array<int>, neibs_atoms);
-    QS_DEF(Array<int>, neibs_bonds);
+    QS_DEF(ArrayNew<int>, neibs_atoms);
+    QS_DEF(ArrayNew<int>, neibs_bonds);
 
     fp.clear();
     bfs_queue.setLength(mol.vertexEnd());
@@ -1068,7 +1068,7 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, ArrayChar
 
 void MoleculePkaModel::_removeExtraHydrogens(Molecule& mol)
 {
-    QS_DEF(Array<int>, to_remove);
+    QS_DEF(ArrayNew<int>, to_remove);
 
     to_remove.clear();
     for (auto i : mol.vertices())
@@ -1079,10 +1079,10 @@ void MoleculePkaModel::_removeExtraHydrogens(Molecule& mol)
         mol.removeAtoms(to_remove);
 }
 
-void MoleculePkaModel::_checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Array<int>& order)
+void MoleculePkaModel::_checkCanonicalOrder(Molecule& mol, Molecule& can_mol, ArrayNew<int>& order)
 {
-    QS_DEF(Array<int>, to_remove);
-    QS_DEF(Array<int>, ignored);
+    QS_DEF(ArrayNew<int>, to_remove);
+    QS_DEF(ArrayNew<int>, ignored);
 
     ignored.clear_resize(mol.vertexEnd());
     ignored.zerofill();
@@ -1111,7 +1111,7 @@ void MoleculePkaModel::_checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Ar
 
 void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, ArrayChar& fp)
 {
-    QS_DEF(Array<int>, feature_set);
+    QS_DEF(ArrayNew<int>, feature_set);
     if (!getAtomLocalFeatureSet(mol, idx, feature_set))
         return;
 
@@ -1143,7 +1143,7 @@ void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, ArrayChar& fp)
  *  11. triple bond count
  *  12. zero bond count
  * */
-bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<int>& fp)
+bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, ArrayNew<int>& fp)
 {
     if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx))
     {
@@ -1211,7 +1211,7 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
 float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int min_level)
 {
     QS_DEF(ArrayChar, fp);
-    QS_DEF(Array<int>, level_pos);
+    QS_DEF(ArrayNew<int>, level_pos);
     fp.clear();
     level_pos.clear();
     float pka = 100.f;
@@ -1265,7 +1265,7 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
 float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int min_level)
 {
     QS_DEF(ArrayChar, fp);
-    QS_DEF(Array<int>, level_pos);
+    QS_DEF(ArrayNew<int>, level_pos);
     fp.clear();
     level_pos.clear();
     float pka = -100.f;
@@ -1322,8 +1322,8 @@ MoleculeIonizer::MoleculeIonizer() : CP_INIT
 
 bool MoleculeIonizer::ionize(Molecule& mol, float ph, float ph_toll, const IonizeOptions& options)
 {
-    QS_DEF(Array<int>, acid_sites);
-    QS_DEF(Array<int>, basic_sites);
+    QS_DEF(ArrayNew<int>, acid_sites);
+    QS_DEF(ArrayNew<int>, basic_sites);
     QS_DEF(Array<float>, acid_pkas);
     QS_DEF(Array<float>, basic_pkas);
 
@@ -1340,7 +1340,7 @@ bool MoleculeIonizer::ionize(Molecule& mol, float ph, float ph_toll, const Ioniz
     return true;
 }
 
-void MoleculeIonizer::_setCharges(Molecule& mol, float pH, float pH_toll, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+void MoleculeIonizer::_setCharges(Molecule& mol, float pH, float pH_toll, const IonizeOptions& options, ArrayNew<int>& acid_sites, ArrayNew<int>& basic_sites,
                                   Array<float>& acid_pkas, Array<float>& basic_pkas)
 {
     for (auto i = 0; i < acid_sites.size(); i++)

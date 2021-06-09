@@ -48,7 +48,7 @@ MangoShadowTable::~MangoShadowTable()
 }
 
 void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockno, int offset, const char* data_cmf, int len_cmf, const char* data_xyz,
-                                   int len_xyz, const MangoExact::Hash& hash, const char* gross, const Array<int>& counters, float molecular_mass,
+                                   int len_xyz, const MangoExact::Hash& hash, const char* gross, const ArrayNew<int>& counters, float molecular_mass,
                                    const char* fp_sim, bool append)
 {
     if (_main_table_statement_count >= 4096)

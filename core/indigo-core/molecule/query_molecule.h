@@ -327,8 +327,8 @@ namespace indigo
         static bool isKnownAttr(QueryMolecule::Atom& qa);
         static bool isNotAtom(QueryMolecule::Atom& qa, int elem);
         static QueryMolecule::Atom* stripKnownAttrs(QueryMolecule::Atom& qa);
-        static bool collectAtomList(Atom& qa, Array<int>& list, bool& notList);
-        static int parseQueryAtom(QueryMolecule& qm, int aid, Array<int>& list);
+        static bool collectAtomList(Atom& qa, ArrayNew<int>& list, bool& notList);
+        static int parseQueryAtom(QueryMolecule& qm, int aid, ArrayNew<int>& list);
         static bool queryAtomIsRegular(QueryMolecule& qm, int aid);
         static bool queryAtomIsSpecial(QueryMolecule& qm, int aid);
         static Bond* getBondOrderTerm(Bond& qb, bool& complex);
@@ -356,7 +356,7 @@ namespace indigo
         void optimize();
 
         Molecule3dConstraints spatial_constraints;
-        Array<int> fixed_atoms;
+        ArrayNew<int> fixed_atoms;
 
         QueryMoleculeAromaticity aromaticity;
 
@@ -368,7 +368,7 @@ namespace indigo
         // must belong to the same connected component of the target molecule;
         // components[i] != components[j] > 0 means that i-th and j-th vertices
         // must belong to different connected components of the target molecule
-        Array<int> components;
+        ArrayNew<int> components;
 
         void invalidateAtom(int index, int mask) override;
 
@@ -383,13 +383,13 @@ namespace indigo
         int _getAtomMinH(Atom* atom);
 
         void _flipBond(int atom_parent, int atom_from, int atom_to) override;
-        void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags) override;
-        void _postMergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping,
+        void _mergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping, int skip_flags) override;
+        void _postMergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping,
                                                int skip_flags) override;
-        void _removeAtoms(const Array<int>& indices, const int* mapping) override;
-        void _removeBonds(const Array<int>& indices) override;
+        void _removeAtoms(const ArrayNew<int>& indices, const int* mapping) override;
+        void _removeBonds(const ArrayNew<int>& indices) override;
 
-        Array<int> _min_h;
+        ArrayNew<int> _min_h;
 
         ArrayBool _bond_stereo_care;
 

@@ -64,7 +64,7 @@ public:
     BingoPgBufferCacheFp& getFpBufferCache(int fp_idx);
     BingoPgBufferCacheBin& getBinBufferCache(int bin_idx);
 
-    void readSectionBitsCount(indigo::Array<int>& bits_count);
+    void readSectionBitsCount(indigo::ArrayNew<int>& bits_count);
 
     const BingoSectionInfoData& getSectionInfo() const
     {
@@ -95,9 +95,9 @@ private:
     indigo::PtrArray<BingoPgBufferCacheMap> _buffersMap;
     indigo::PtrArray<BingoPgBufferCacheBin> _buffersBin;
 
-    indigo::Array<int> _offsetFp;
-    indigo::Array<int> _offsetMap;
-    indigo::Array<int> _offsetBin;
+    indigo::ArrayNew<int> _offsetFp;
+    indigo::ArrayNew<int> _offsetMap;
+    indigo::ArrayNew<int> _offsetBin;
 
     indigo::ObjArray<BingoPgBuffer> _bitsCountBuffers;
 };

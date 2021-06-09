@@ -45,7 +45,7 @@ BiconnectedDecomposer::~BiconnectedDecomposer()
 
 int BiconnectedDecomposer::decompose()
 { // recursion? no, not heard...
-    QS_DEF(Array<int>, dfs_stack);
+    QS_DEF(ArrayNew<int>, dfs_stack);
     int i, v;
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
@@ -93,7 +93,7 @@ bool BiconnectedDecomposer::isArticulationPoint(int idx) const
     return _component_ids[idx] != 0;
 }
 
-const Array<int>& BiconnectedDecomposer::getIncomingComponents(int idx) const
+const ArrayNew<int>& BiconnectedDecomposer::getIncomingComponents(int idx) const
 {
     if (!isArticulationPoint(idx))
         throw Error("vertex %d is not articulation point");
@@ -101,7 +101,7 @@ const Array<int>& BiconnectedDecomposer::getIncomingComponents(int idx) const
     return *_component_ids[idx];
 }
 
-void BiconnectedDecomposer::getVertexComponents(int idx, Array<int>& components) const
+void BiconnectedDecomposer::getVertexComponents(int idx, ArrayNew<int>& components) const
 {
     if (!isArticulationPoint(idx))
     {
@@ -130,7 +130,7 @@ int BiconnectedDecomposer::getIncomingCount(int idx) const
     return _component_ids[idx]->size();
 }
 
-bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v)
+bool BiconnectedDecomposer::_pushToStack(ArrayNew<int>& dfs_stack, int v)
 {
     Edge new_edge;
 
@@ -172,7 +172,7 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v)
     return false;
 }
 
-void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w)
+void BiconnectedDecomposer::_processIfNotPushed(ArrayNew<int>& dfs_stack, int w)
 {
     int v = dfs_stack.top();
 
@@ -183,14 +183,14 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w)
     {
         // v -articulation point in G;
         // start new BCcomp;
-        Array<int>& new_comp = _components.add(new Array<int>());
+        ArrayNew<int>& new_comp = _components.add(new ArrayNew<int>());
         new_comp.clear_resize(_graph.vertexEnd());
         new_comp.zerofill();
 
         int cur_comp = _components.size() - 1;
 
         if (_component_ids[v] == 0)
-            _component_ids[v] = &_component_lists.add(new Array<int>());
+            _component_ids[v] = &_component_lists.add(new ArrayNew<int>());
 
         _component_ids[v]->push(cur_comp);
 

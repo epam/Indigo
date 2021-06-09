@@ -65,10 +65,10 @@ TautomerEnumerator::TautomerEnumerator(Molecule& molecule, TautomerMethod method
 
         // We need a canonical mapping. This is something that MoleculeInChI does.
         // This is the only reason I use it. Maybe it's better to implement this procedure outside of MoleculeInChI.
-        QS_DEF(Array<int>, canonical_mapping);
+        QS_DEF(ArrayNew<int>, canonical_mapping);
         canonical_mapping.resize(molecule.vertexEnd());
         canonical_mapping.zerofill();
-        QS_DEF(Array<int>, ignored);
+        QS_DEF(ArrayNew<int>, ignored);
         ignored.resize(molecule.vertexEnd());
         ignored.zerofill();
 
@@ -88,12 +88,12 @@ TautomerEnumerator::TautomerEnumerator(Molecule& molecule, TautomerMethod method
 
         InChICodeParser inchiParser(params);
 
-        QS_DEF(Array<int>, hydrogens);
+        QS_DEF(ArrayNew<int>, hydrogens);
         // For each position get number of fixed hydrogens
         hydrogens.resize(molecule.vertexCount());
         hydrogens.zerofill();
 
-        QS_DEF(Array<int>, inv_mapping);
+        QS_DEF(ArrayNew<int>, inv_mapping);
         inv_mapping.resize(molecule.vertexEnd());
         inv_mapping.fill(-1);
         int j = 0;
@@ -268,7 +268,7 @@ void TautomerEnumerator::constructMolecule(Molecule& molecule, int n) const
         ; // error!
 }
 
-bool TautomerEnumerator::refine_proc(const Molecule& uncleaned_fragments, Molecule& product, Array<int>& mapping, void* userdata)
+bool TautomerEnumerator::refine_proc(const Molecule& uncleaned_fragments, Molecule& product, ArrayNew<int>& mapping, void* userdata)
 {
     bool changed = true;
     while (changed)
@@ -354,7 +354,7 @@ bool TautomerEnumerator::refine_proc(const Molecule& uncleaned_fragments, Molecu
     return true;
 }
 
-void TautomerEnumerator::product_proc(Molecule& product, Array<int>& monomers_indices, Array<int>& mapping, void* userdata)
+void TautomerEnumerator::product_proc(Molecule& product, ArrayNew<int>& monomers_indices, ArrayNew<int>& mapping, void* userdata)
 {
     LayeredMolecules* lm = (LayeredMolecules*)userdata;
     lm->addLayerFromMolecule(product, mapping);

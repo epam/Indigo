@@ -119,8 +119,8 @@ IMPL_ERROR(ReactionEnumeratorState, "Reaction product enumerator state");
 CP_DEF(ReactionEnumeratorState);
 
 ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext& context, QueryReaction& cur_reaction, QueryMolecule& cur_full_product,
-                                                 Array<int>& cur_product_aam_array, RedBlackStringMap<int>& cur_smiles_array,
-                                                 ReactionMonomers& cur_reaction_monomers, int& cur_product_count, ObjArray<Array<int>>& cur_tubes_monomers)
+                                                 ArrayNew<int>& cur_product_aam_array, RedBlackStringMap<int>& cur_smiles_array,
+                                                 ReactionMonomers& cur_reaction_monomers, int& cur_product_count, ObjArray<ArrayNew<int>>& cur_tubes_monomers)
     : _reaction(cur_reaction), _product_count(cur_product_count), _tubes_monomers(cur_tubes_monomers), _product_aam_array(cur_product_aam_array),
       _smiles_array(cur_smiles_array), _reaction_monomers(cur_reaction_monomers), _context(context), CP_INIT, TL_CP_GET(_fragments_aam_array),
       TL_CP_GET(_full_product), TL_CP_GET(_product_monomers), TL_CP_GET(_mapping), TL_CP_GET(_fragments), TL_CP_GET(_is_needless_atom),
@@ -213,7 +213,7 @@ ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorState& cur_rp
 
     for (int i = 0; i < cur_rpe_state._att_points.size(); i++)
     {
-        Array<int>& new_array = _att_points.push();
+        ArrayNew<int>& new_array = _att_points.push();
         new_array.copy(cur_rpe_state._att_points[i]);
     }
     _am = cur_rpe_state._am;
@@ -372,7 +372,7 @@ void ReactionEnumeratorState::_productProcess(void)
     QS_DEF(Molecule, ready_product);
     ready_product.clear();
 
-    QS_DEF(Array<int>, ucfrag_mapping);
+    QS_DEF(ArrayNew<int>, ucfrag_mapping);
     ucfrag_mapping.clear();
 
     if (!_attachFragments(ready_product, ucfrag_mapping))
@@ -454,9 +454,9 @@ void ReactionEnumeratorState::_productProcess(void)
         product_proc(ready_product, _product_monomers, _mapping, userdata);
 }
 
-void ReactionEnumeratorState::_foldHydrogens(BaseMolecule& molecule, Array<int>* atoms_to_keep, Array<int>* original_hydrogens, Array<int>* mol_mapping)
+void ReactionEnumeratorState::_foldHydrogens(BaseMolecule& molecule, ArrayNew<int>* atoms_to_keep, ArrayNew<int>* original_hydrogens, ArrayNew<int>* mol_mapping)
 {
-    QS_DEF(Array<int>, hydrogens);
+    QS_DEF(ArrayNew<int>, hydrogens);
     hydrogens.clear();
 
     for (int i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
@@ -541,7 +541,7 @@ int ReactionEnumeratorState::_calcMaxHCnt(QueryMolecule& molecule)
     return max_possible_h_cnt;
 }
 
-bool ReactionEnumeratorState::performSingleTransformation(Molecule& molecule, Array<int>& mapping, Array<int>& forbidden_atoms, Array<int>& original_hydrogens,
+bool ReactionEnumeratorState::performSingleTransformation(Molecule& molecule, ArrayNew<int>& mapping, ArrayNew<int>& forbidden_atoms, ArrayNew<int>& original_hydrogens,
                                                           bool& need_layout)
 {
     is_transform = true;
@@ -589,7 +589,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator(Molecule& monomer)
     }
 
     /* Finding in reactant query atoms with two neighbors */
-    QS_DEF(Array<int>, qa_array);
+    QS_DEF(ArrayNew<int>, qa_array);
     qa_array.clear();
     for (int j = ee_reactant.vertexBegin(); j != ee_reactant.vertexEnd(); j = ee_reactant.vertexNext(j))
     {
@@ -614,7 +614,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator(Molecule& monomer)
     if (BaseMolecule::hasCoord(ee_monomer))
     {
         // Double Cis or Trans bonds are excluded from cis-trans build
-        QS_DEF(Array<int>, cis_trans_excluded);
+        QS_DEF(ArrayNew<int>, cis_trans_excluded);
         cis_trans_excluded.clear_resize(ee_monomer.edgeEnd());
         cis_trans_excluded.zerofill();
 
@@ -783,7 +783,7 @@ void ReactionEnumeratorState::_cleanFragments(void)
 {
     if (_is_rg_exist)
     {
-        QS_DEF(Array<int>, is_attached_hydrogen);
+        QS_DEF(ArrayNew<int>, is_attached_hydrogen);
         is_attached_hydrogen.clear();
         is_attached_hydrogen.resize(_fragments.vertexEnd());
         is_attached_hydrogen.zerofill();
@@ -822,9 +822,9 @@ void ReactionEnumeratorState::_cleanFragments(void)
             _fragments.removeBond(i);
 }
 
-void ReactionEnumeratorState::_findR2PMapping(QueryMolecule& reactant, Array<int>& mapping)
+void ReactionEnumeratorState::_findR2PMapping(QueryMolecule& reactant, ArrayNew<int>& mapping)
 {
-    const Array<int>& reactant_aam_array = _reaction.getAAMArray(_reactant_idx);
+    const ArrayNew<int>& reactant_aam_array = _reaction.getAAMArray(_reactant_idx);
 
     for (int i = reactant.vertexBegin(); i != reactant.vertexEnd(); i = reactant.vertexNext(i))
     {
@@ -859,7 +859,7 @@ void ReactionEnumeratorState::_invertStereocenters(Molecule& molecule, int edge_
     const Vertex& edge_end = molecule.getVertex(edge_end_idx);
     int other_end_idx = edge.findOtherEnd(edge_end_idx);
 
-    QS_DEF(Array<int>, was_atoms);
+    QS_DEF(ArrayNew<int>, was_atoms);
     was_atoms.clear_resize(molecule.vertexEnd());
     was_atoms.zerofill();
 
@@ -870,11 +870,11 @@ void ReactionEnumeratorState::_invertStereocenters(Molecule& molecule, int edge_
         if (nei_atom_idx == other_end_idx)
             continue;
 
-        QS_DEF(Array<int>, ignored_atoms);
+        QS_DEF(ArrayNew<int>, ignored_atoms);
         ignored_atoms.clear_resize(molecule.vertexEnd());
         ignored_atoms.zerofill();
         ignored_atoms[edge_end_idx] = 1;
-        QS_DEF(Array<int>, atom_ranks);
+        QS_DEF(ArrayNew<int>, atom_ranks);
         atom_ranks.clear_resize(molecule.vertexEnd());
         atom_ranks.zerofill();
         atom_ranks[nei_atom_idx] = -1;
@@ -898,10 +898,10 @@ void ReactionEnumeratorState::_invertStereocenters(Molecule& molecule, int edge_
     }
 }
 
-void ReactionEnumeratorState::_cistransUpdate(QueryMolecule& submolecule, Molecule& supermolecule, int* frag_mapping, const Array<int>& rp_mapping,
+void ReactionEnumeratorState::_cistransUpdate(QueryMolecule& submolecule, Molecule& supermolecule, int* frag_mapping, const ArrayNew<int>& rp_mapping,
                                               int* core_sub)
 {
-    QS_DEF(Array<int>, cistrans_changed_bonds);
+    QS_DEF(ArrayNew<int>, cistrans_changed_bonds);
     cistrans_changed_bonds.clear();
 
     for (int i = submolecule.edgeBegin(); i != submolecule.edgeEnd(); i = submolecule.edgeNext(i))
@@ -965,8 +965,8 @@ QueryMolecule::Atom* ReactionEnumeratorState::_getReactantAtom(int atom_aam)
     return NULL;
 }
 
-void ReactionEnumeratorState::_buildMolProduct(QueryMolecule& product, Molecule& mol_product, Molecule& uncleaned_fragments, Array<int>& all_forbidden_atoms,
-                                               Array<int>& mapping_out)
+void ReactionEnumeratorState::_buildMolProduct(QueryMolecule& product, Molecule& mol_product, Molecule& uncleaned_fragments, ArrayNew<int>& all_forbidden_atoms,
+                                               ArrayNew<int>& mapping_out)
 {
     mol_product.clear();
     mapping_out.clear_resize(product.vertexEnd());
@@ -1206,10 +1206,10 @@ void ReactionEnumeratorState::_buildMolProduct(QueryMolecule& product, Molecule&
     mol_product.mergeSGroupsWithSubmolecule(product, mapping_out);
 }
 
-void ReactionEnumeratorState::_stereocentersUpdate(QueryMolecule& submolecule, Molecule& supermolecule, const Array<int>& rp_mapping, int* core_sub,
+void ReactionEnumeratorState::_stereocentersUpdate(QueryMolecule& submolecule, Molecule& supermolecule, const ArrayNew<int>& rp_mapping, int* core_sub,
                                                    int* core_super)
 {
-    QS_DEF(Array<int>, mp_mapping);
+    QS_DEF(ArrayNew<int>, mp_mapping);
     mp_mapping.clear_resize(supermolecule.vertexEnd());
     mp_mapping.fffill();
 
@@ -1292,7 +1292,7 @@ void ReactionEnumeratorState::_stereocentersUpdate(QueryMolecule& submolecule, M
     }
 }
 
-void ReactionEnumeratorState::_completeCisTrans(Molecule& product, Molecule& uncleaned_fragments, Array<int>& frags_mapping)
+void ReactionEnumeratorState::_completeCisTrans(Molecule& product, Molecule& uncleaned_fragments, ArrayNew<int>& frags_mapping)
 {
     for (int i = _fragments.edgeBegin(); i != _fragments.edgeEnd(); i = _fragments.edgeNext(i))
     {
@@ -1359,7 +1359,7 @@ bool ReactionEnumeratorState::_checkValence(Molecule& mol, int atom_idx)
     return true;
 }
 
-void ReactionEnumeratorState::_findFragments2ProductMapping(Array<int>& f2p_mapping)
+void ReactionEnumeratorState::_findFragments2ProductMapping(ArrayNew<int>& f2p_mapping)
 {
     f2p_mapping.clear_resize(_fragments.vertexEnd());
     f2p_mapping.fffill();
@@ -1381,9 +1381,9 @@ void ReactionEnumeratorState::_findFragments2ProductMapping(Array<int>& f2p_mapp
     }
 }
 
-bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Array<int>& ucfrag_mapping)
+bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, ArrayNew<int>& ucfrag_mapping)
 {
-    QS_DEF(Array<int>, frags2product_mapping);
+    QS_DEF(ArrayNew<int>, frags2product_mapping);
     _findFragments2ProductMapping(frags2product_mapping);
 
     QS_DEF(QueryMolecule, product);
@@ -1396,10 +1396,10 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
 
     QS_DEF(Molecule, mol_product);
     mol_product.clear();
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, mapping);
     mapping.clear();
 
-    QS_DEF(Array<int>, all_forbidden_atoms);
+    QS_DEF(ArrayNew<int>, all_forbidden_atoms);
     all_forbidden_atoms.clear();
 
     all_forbidden_atoms.clear_resize(product.vertexEnd() + _fragments.vertexCount());
@@ -1412,7 +1412,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
 
     _cleanFragments();
 
-    QS_DEF(Array<int>, frags_mapping);
+    QS_DEF(ArrayNew<int>, frags_mapping);
     frags_mapping.clear_resize(_fragments.vertexEnd());
     frags_mapping.fffill();
     mol_product.mergeWithMolecule(_fragments, &frags_mapping);
@@ -1421,7 +1421,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
         if (i < _monomer_forbidden_atoms.size() && _monomer_forbidden_atoms[i])
             all_forbidden_atoms[frags_mapping[i]] = _monomer_forbidden_atoms[i];
 
-    QS_DEF(Array<int>, product_mapping);
+    QS_DEF(ArrayNew<int>, product_mapping);
     product_mapping.clear_resize(_full_product.vertexEnd());
     for (int i = 0; i < _full_product.vertexEnd(); i++)
         product_mapping[i] = i;
@@ -1433,7 +1433,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
 
         const Vertex& pr_v = mol_product.getVertex(i);
 
-        QS_DEF(Array<int>, pr_neibours);
+        QS_DEF(ArrayNew<int>, pr_neibours);
         pr_neibours.clear();
         for (int j = pr_v.neiBegin(); j != pr_v.neiEnd(); j = pr_v.neiNext(j))
             pr_neibours.push(pr_v.neiVertex(j));
@@ -1508,7 +1508,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
                 if (mol_product.stereocenters.exists(mon_atom))
                     mol_product.stereocenters.remove(mon_atom);
 
-                QS_DEF(Array<int>, neighbors);
+                QS_DEF(ArrayNew<int>, neighbors);
                 neighbors.clear();
                 for (int k = mon_v.neiBegin(); k != mon_v.neiEnd(); k = mon_v.neiNext(k))
                     neighbors.push(mon_v.neiVertex(k));
@@ -1575,14 +1575,14 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
     /* Updating of cis-trans information on product & monomer's fragment border */
     _completeCisTrans(mol_product, uncleaned_fragments, frags_mapping);
 
-    QS_DEF(Array<int>, out_mapping);
+    QS_DEF(ArrayNew<int>, out_mapping);
     out_mapping.clear_resize(mol_product.vertexEnd());
     ready_product_out.clone(mol_product, NULL, &out_mapping);
 
     _product_forbidden_atoms.clear_resize(ready_product_out.vertexEnd());
     _product_forbidden_atoms.zerofill();
 
-    QS_DEF(Array<int>, temp_orig_hydr);
+    QS_DEF(ArrayNew<int>, temp_orig_hydr);
     temp_orig_hydr.clear();
 
     if (is_transform)
@@ -1606,7 +1606,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
     ucfrag_mapping.clear_resize(_fragments.vertexEnd());
     ucfrag_mapping.fffill();
 
-    QS_DEF(Array<int>, old_mapping);
+    QS_DEF(ArrayNew<int>, old_mapping);
     old_mapping.copy(_mapping);
 
     _mapping.clear_resize(_fragments.vertexEnd());
@@ -1641,7 +1641,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
 
 bool ReactionEnumeratorState::_checkFragment(QueryMolecule& submolecule, Molecule& monomer, Array<byte>& unfrag_mon_atoms, int* core_sub)
 {
-    QS_DEF(ObjArray<Array<int>>, attachment_pairs);
+    QS_DEF(ObjArray<ArrayNew<int>>, attachment_pairs);
     attachment_pairs.clear();
 
     QS_DEF(Molecule, fragment);
@@ -1667,7 +1667,7 @@ bool ReactionEnumeratorState::_checkFragment(QueryMolecule& submolecule, Molecul
         if (unfrag_mon_atoms[i])
             fragment.removeAtom(i);
 
-    QS_DEF(Array<int>, path);
+    QS_DEF(ArrayNew<int>, path);
     path.clear();
 
     for (int i = 0; i < attachment_pairs.size(); i++)
@@ -1678,9 +1678,9 @@ bool ReactionEnumeratorState::_checkFragment(QueryMolecule& submolecule, Molecul
     return true;
 }
 
-void ReactionEnumeratorState::_checkFragmentNecessity(Array<int>& is_needless_att_point)
+void ReactionEnumeratorState::_checkFragmentNecessity(ArrayNew<int>& is_needless_att_point)
 {
-    QS_DEF(Array<int>, ranks);
+    QS_DEF(ArrayNew<int>, ranks);
     ranks.clear();
     ranks.resize(_fragments.vertexEnd());
     ranks.fill(1);
@@ -1703,7 +1703,7 @@ void ReactionEnumeratorState::_checkFragmentNecessity(Array<int>& is_needless_at
 
         ranks[i] = 1;
 
-        QS_DEF(Array<int>, needless_atoms);
+        QS_DEF(ArrayNew<int>, needless_atoms);
         needless_atoms.clear();
 
         int j;
@@ -1730,7 +1730,7 @@ void ReactionEnumeratorState::_checkFragmentNecessity(Array<int>& is_needless_at
     }
 }
 
-bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& submolecule, Array<int>& rp_mapping, const Array<int>& sub_rg_atoms,
+bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& submolecule, ArrayNew<int>& rp_mapping, const ArrayNew<int>& sub_rg_atoms,
                                            int* core_sub, int* core_super)
 {
     QS_DEF(Array<byte>, unfrag_mon_atoms);
@@ -1743,8 +1743,8 @@ bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& su
     if (!_checkFragment(submolecule, fragment, unfrag_mon_atoms, core_sub))
         return false;
 
-    const Array<int>& reactant_aam_array = _reaction.getAAMArray(_reactant_idx);
-    QS_DEF(Array<int>, frag_mapping);
+    const ArrayNew<int>& reactant_aam_array = _reaction.getAAMArray(_reactant_idx);
+    QS_DEF(ArrayNew<int>, frag_mapping);
 
     for (int i = 0; i < frag_mapping.size(); i++)
         _fragments_aam_array.push(0);
@@ -1819,7 +1819,7 @@ bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& su
         }
     }
 
-    QS_DEF(Array<int>, is_needless_att_point);
+    QS_DEF(ArrayNew<int>, is_needless_att_point);
     is_needless_att_point.clear();
     is_needless_att_point.resize(_fragments.vertexEnd());
     is_needless_att_point.fffill();
@@ -1955,7 +1955,7 @@ int ReactionEnumeratorState::_embeddingCallback(Graph& subgraph, Graph& supergra
     if (!_checkForNeverUsed(rpe_state, supermolecule))
         return 1;
 
-    QS_DEF(Array<int>, sub_qa_array);
+    QS_DEF(ArrayNew<int>, sub_qa_array);
     sub_qa_array.clear();
     QS_DEF(Molecule, mol_fragments);
     mol_fragments.clear();
@@ -1970,7 +1970,7 @@ int ReactionEnumeratorState::_embeddingCallback(Graph& subgraph, Graph& supergra
         return 1;
 
     /* Cis-Trans structure updating */
-    QS_DEF(Array<int>, rp_mapping);
+    QS_DEF(ArrayNew<int>, rp_mapping);
     rp_mapping.clear_resize(submolecule.vertexEnd());
     rp_mapping.fffill();
 

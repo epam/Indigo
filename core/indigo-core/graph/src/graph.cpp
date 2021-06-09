@@ -184,7 +184,7 @@ void Graph::removeAllEdges()
 
 void Graph::removeVertex(int idx)
 {
-    QS_DEF(Array<int>, edges);
+    QS_DEF(ArrayNew<int>, edges);
 
     const Vertex& vertex = getVertex(idx);
 
@@ -228,11 +228,11 @@ struct BfsState
 };
 
 /* Finds path, writes edge indices into path_out. Returns false if no path. */
-bool Graph::findPath(int from, int where, Array<int>& path_out) const
+bool Graph::findPath(int from, int where, ArrayNew<int>& path_out) const
 {
     path_out.clear();
 
-    QS_DEF(Array<int>, queue);
+    QS_DEF(ArrayNew<int>, queue);
     QS_DEF(Array<BfsState>, states);
 
     queue.clear_resize(_vertices->size());
@@ -329,7 +329,7 @@ bool Graph::isTree(Graph& graph)
     return true;
 }
 
-void Graph::filterVertices(const Graph& graph, const int* filter, int filter_type, int filter_value, Array<int>& result)
+void Graph::filterVertices(const Graph& graph, const int* filter, int filter_type, int filter_value, ArrayNew<int>& result)
 {
     result.clear();
 
@@ -346,7 +346,7 @@ void Graph::filterVertices(const Graph& graph, const int* filter, int filter_typ
     }
 }
 
-void Graph::filterEdges(const Graph& graph, const int* filter, int filter_type, int filter_value, Array<int>& result)
+void Graph::filterEdges(const Graph& graph, const int* filter, int filter_type, int filter_value, ArrayNew<int>& result)
 {
     result.clear();
 
@@ -363,9 +363,9 @@ void Graph::filterEdges(const Graph& graph, const int* filter, int filter_type, 
     }
 }
 
-void Graph::_mergeWithSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>* edges, Array<int>* vertex_mapping, Array<int>* edge_mapping)
+void Graph::_mergeWithSubgraph(const Graph& other, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, ArrayNew<int>* vertex_mapping, ArrayNew<int>* edge_mapping)
 {
-    QS_DEF(Array<int>, tmp_mapping);
+    QS_DEF(ArrayNew<int>, tmp_mapping);
     int i;
 
     if (vertex_mapping == 0)
@@ -424,7 +424,7 @@ void Graph::_mergeWithSubgraph(const Graph& other, const Array<int>& vertices, c
         }
 }
 
-void Graph::buildEdgeMapping(const Graph& other, Array<int>* mapping, Array<int>* edge_mapping)
+void Graph::buildEdgeMapping(const Graph& other, ArrayNew<int>* mapping, ArrayNew<int>* edge_mapping)
 {
     for (int i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
     {
@@ -441,9 +441,9 @@ void Graph::buildEdgeMapping(const Graph& other, Array<int>* mapping, Array<int>
     }
 }
 
-void Graph::mergeWith(const Graph& other, Array<int>* mapping)
+void Graph::mergeWith(const Graph& other, ArrayNew<int>* mapping)
 {
-    QS_DEF(Array<int>, vertices);
+    QS_DEF(ArrayNew<int>, vertices);
     int i;
 
     vertices.clear();
@@ -454,21 +454,21 @@ void Graph::mergeWith(const Graph& other, Array<int>* mapping)
     _mergeWithSubgraph(other, vertices, 0, mapping, 0);
 }
 
-void Graph::makeSubgraph(const Graph& other, const Array<int>& vertices, Array<int>* vertex_mapping)
+void Graph::makeSubgraph(const Graph& other, const ArrayNew<int>& vertices, ArrayNew<int>* vertex_mapping)
 {
     clear();
     _mergeWithSubgraph(other, vertices, 0, vertex_mapping, 0);
 }
 
-void Graph::makeSubgraph(const Graph& other, const Array<int>& vertices, Array<int>* vertex_mapping, const Array<int>* edges, Array<int>* edge_mapping)
+void Graph::makeSubgraph(const Graph& other, const ArrayNew<int>& vertices, ArrayNew<int>* vertex_mapping, const ArrayNew<int>* edges, ArrayNew<int>* edge_mapping)
 {
     clear();
     _mergeWithSubgraph(other, vertices, edges, vertex_mapping, edge_mapping);
 }
 
-void Graph::makeSubgraph(const Graph& other, const Filter& filter, Array<int>* mapping_out, Array<int>* inv_mapping)
+void Graph::makeSubgraph(const Graph& other, const Filter& filter, ArrayNew<int>* mapping_out, ArrayNew<int>* inv_mapping)
 {
-    QS_DEF(Array<int>, vertices);
+    QS_DEF(ArrayNew<int>, vertices);
 
     if (mapping_out == 0)
         mapping_out = &vertices;
@@ -478,9 +478,9 @@ void Graph::makeSubgraph(const Graph& other, const Filter& filter, Array<int>* m
     makeSubgraph(other, *mapping_out, inv_mapping);
 }
 
-void Graph::cloneGraph(const Graph& other, Array<int>* mapping)
+void Graph::cloneGraph(const Graph& other, ArrayNew<int>* mapping)
 {
-    QS_DEF(Array<int>, vertices);
+    QS_DEF(ArrayNew<int>, vertices);
     vertices.clear();
 
     for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
@@ -488,9 +488,9 @@ void Graph::cloneGraph(const Graph& other, Array<int>* mapping)
     makeSubgraph(other, vertices, mapping);
 }
 
-void Graph::makeEdgeSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>& edges, Array<int>* v_mapping, Array<int>* e_mapping)
+void Graph::makeEdgeSubgraph(const Graph& other, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, ArrayNew<int>* v_mapping, ArrayNew<int>* e_mapping)
 {
-    QS_DEF(Array<int>, tmp_mapping);
+    QS_DEF(ArrayNew<int>, tmp_mapping);
     int i;
 
     if (v_mapping == 0)
@@ -634,7 +634,7 @@ void Graph::_calculateSSSRByCycleBasis(CycleBasis& basis)
 
     for (int i = 0; i < basis.getCyclesCount(); i++)
     {
-        const Array<int>& cycle = basis.getCycle(i);
+        const ArrayNew<int>& cycle = basis.getCycle(i);
 
         List<int>& vertices = _sssr_vertices.push(*_sssr_pool);
         List<int>& edges = _sssr_edges.push(*_sssr_pool);
@@ -737,7 +737,7 @@ int Graph::countComponentVertices(int comp_idx)
     return _component_vcount[comp_idx];
 }
 
-const Array<int>& Graph::getDecomposition()
+const ArrayNew<int>& Graph::getDecomposition()
 {
     if (!_components_valid)
         _calculateComponents();
@@ -838,7 +838,7 @@ void Graph::_cloneGraph_KeepIndices(const Graph& other)
     _components_valid = false;
 }
 
-void Graph::_calculateSSSRAddEdgesAndVertices(const Array<int>& cycle, List<int>& edges, List<int>& vertices)
+void Graph::_calculateSSSRAddEdgesAndVertices(const ArrayNew<int>& cycle, List<int>& edges, List<int>& vertices)
 {
     int prev_beg = -1;
     int prev_end = -1;

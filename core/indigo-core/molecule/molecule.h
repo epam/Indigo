@@ -138,10 +138,10 @@ namespace indigo
 
         static int matchAtomsCmp(Graph& g1, Graph& g2, int idx1, int idx2, void* userdata);
 
-        void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false);
+        void unfoldHydrogens(ArrayNew<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false);
 
-        static void saveBondOrders(Molecule& mol, Array<int>& orders);
-        static void loadBondOrders(Molecule& mol, Array<int>& orders);
+        static void saveBondOrders(Molecule& mol, ArrayNew<int>& orders);
+        static void loadBondOrders(Molecule& mol, ArrayNew<int>& orders);
 
         bool convertableToImplicitHydrogen(int idx);
 
@@ -189,13 +189,13 @@ namespace indigo
         };
 
         Array<_Atom> _atoms;
-        Array<int> _bond_orders;
-        Array<int> _connectivity; // implicit H not included
-        Array<int> _aromaticity;
-        Array<int> _implicit_h;
-        Array<int> _total_h;
-        Array<int> _valence;
-        Array<int> _radicals;
+        ArrayNew<int> _bond_orders;
+        ArrayNew<int> _connectivity; // implicit H not included
+        ArrayNew<int> _aromaticity;
+        ArrayNew<int> _implicit_h;
+        ArrayNew<int> _total_h;
+        ArrayNew<int> _valence;
+        ArrayNew<int> _radicals;
 
         StringPool _pseudo_atom_values;
 
@@ -223,10 +223,10 @@ namespace indigo
 
         bool _ignore_bad_valence;
 
-        void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags) override;
+        void _mergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping, int skip_flags) override;
 
         void _flipBond(int atom_parent, int atom_from, int atom_to) override;
-        void _removeAtoms(const Array<int>& indices, const int* mapping) override;
+        void _removeAtoms(const ArrayNew<int>& indices, const int* mapping) override;
 
         // If 'validate' is true then vertex connectivity and implicit hydrogens
         // are calculates and stored. If 'validate' is false then connectivity

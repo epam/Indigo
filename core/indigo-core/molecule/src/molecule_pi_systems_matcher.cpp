@@ -39,7 +39,7 @@ MoleculePiSystemsMatcher::MoleculePiSystemsMatcher(Molecule& target)
     _pi_systems.resize(n_pi_systems);
 }
 
-void MoleculePiSystemsMatcher::_calcConnectivity(Molecule& mol, Array<int>& conn)
+void MoleculePiSystemsMatcher::_calcConnectivity(Molecule& mol, ArrayNew<int>& conn)
 {
     conn.clear_resize(mol.vertexEnd());
     conn.zerofill();
@@ -101,7 +101,7 @@ int MoleculePiSystemsMatcher::_initMarks(void)
     return n_comp;
 }
 
-void MoleculePiSystemsMatcher::_calculatePiSystemsSizes(int n_pi_systems, Array<int>& sizes)
+void MoleculePiSystemsMatcher::_calculatePiSystemsSizes(int n_pi_systems, ArrayNew<int>& sizes)
 {
     sizes.clear_resize(n_pi_systems);
     sizes.zerofill();
@@ -117,7 +117,7 @@ void MoleculePiSystemsMatcher::_calculatePiSystemsSizes(int n_pi_systems, Array<
 
 void MoleculePiSystemsMatcher::_markVerticesInSingleAtomPiSystem(int n_pi_systems)
 {
-    QS_DEF(Array<int>, pi_system_size);
+    QS_DEF(ArrayNew<int>, pi_system_size);
     _calculatePiSystemsSizes(n_pi_systems, pi_system_size);
 
     // Exclude single atoms
@@ -131,7 +131,7 @@ void MoleculePiSystemsMatcher::_markVerticesInSingleAtomPiSystem(int n_pi_system
 
 void MoleculePiSystemsMatcher::_copyPiSystemsIdFromDecomposer()
 {
-    const Array<int>& pi_system_per_vertex = _decomposer->getDecomposition();
+    const ArrayNew<int>& pi_system_per_vertex = _decomposer->getDecomposition();
     for (int v = _target.vertexBegin(); v != _target.vertexEnd(); v = _target.vertexNext(v))
     {
         int pi_system = pi_system_per_vertex[v];
@@ -182,7 +182,7 @@ void MoleculePiSystemsMatcher::_markVerticesInPiSystemsWithCycles()
     Filter filter(_atom_pi_system_idx.ptr(), Filter::NEQ, _NOT_IN_PI_SYSTEM);
     SpanningTree sp_tree(_target, &filter);
 
-    QS_DEF(Array<int>, edge_in_cycle);
+    QS_DEF(ArrayNew<int>, edge_in_cycle);
     edge_in_cycle.clear_resize(_target.edgeEnd());
     edge_in_cycle.zerofill();
     sp_tree.markAllEdgesInCycles(edge_in_cycle.ptr(), 1);
@@ -290,7 +290,7 @@ void MoleculePiSystemsMatcher::_extractPiSystem(int pi_system_index)
     ps.makeSubmolecule(_target, filt, &pi_system.mapping, &pi_system.inv_mapping);
 
     // Replace bonds outside pi-system to implicit hydrogens
-    QS_DEF(Array<int>, conn);
+    QS_DEF(ArrayNew<int>, conn);
     _calcConnectivity(ps, conn);
     for (int v = ps.vertexBegin(); v != ps.vertexEnd(); v = ps.vertexNext(v))
     {

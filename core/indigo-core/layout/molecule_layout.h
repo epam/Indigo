@@ -77,7 +77,7 @@ namespace indigo
         BaseMolecule& _molecule;
         AutoPtr<BaseMolecule> _molCollapsed;
         BaseMolecule* _bm;
-        Array<int> _atomMapping;
+        ArrayNew<int> _atomMapping;
         AutoPtr<MoleculeLayoutGraph> _layout_graph;
         Array<BaseMolecule*> _map;
         bool _query;

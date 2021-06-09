@@ -78,7 +78,7 @@ protected:
 
     Molecule _target;
     QueryMolecule _query;
-    Array<int> _target_bond_types;
+    ArrayNew<int> _target_bond_types;
     Array<byte> _query_fp;
     bool _use_pi_systems_matcher;
     MoleculeAtomNeighbourhoodCounters _nei_target_counters;
@@ -279,7 +279,7 @@ protected:
     ArrayChar _query_gross_str;
     Array<byte> _query_fp;
     bool _query_data_valid;
-    Array<int> _target_bond_types;
+    ArrayNew<int> _target_bond_types;
 
     void _validateQueryData();
 
@@ -299,7 +299,7 @@ public:
     // SLQ conditions like 'CNT_C > 6 AND CNT_H > 6'
     const char* getConditions();
 
-    bool checkGross(const Array<int>& target_gross);
+    bool checkGross(const ArrayNew<int>& target_gross);
     bool checkGross(const char* target_gross_str);
 
     bool checkMolecule(const ArrayChar& target_buf);
@@ -310,7 +310,7 @@ public:
 protected:
     BingoContext& _context;
 
-    Array<int> _query_gross;
+    ArrayNew<int> _query_gross;
     int _sign;
     ArrayChar _conditions;
 };

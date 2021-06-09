@@ -63,8 +63,8 @@ bool MaxCommonSubgraph::_findTrivialMcs()
     if (_subgraph->vertexCount() > 1 && _supergraph->vertexCount() > 1)
         return false;
 
-    QS_DEF(Array<int>, v_map);
-    QS_DEF(Array<int>, e_map);
+    QS_DEF(ArrayNew<int>, v_map);
+    QS_DEF(ArrayNew<int>, e_map);
     v_map.resize(_subgraph->vertexEnd());
     for (int i = 0; i < v_map.size(); ++i)
         v_map[i] = -1;
@@ -126,13 +126,13 @@ void MaxCommonSubgraph::_clearSolutionMaps()
     _vertEdgeSolMap.clear();
 }
 
-void MaxCommonSubgraph::_addSolutionMap(Array<int>& v_map, Array<int>& e_map)
+void MaxCommonSubgraph::_addSolutionMap(ArrayNew<int>& v_map, ArrayNew<int>& e_map)
 {
     int v_size = v_map.size();
     int e_size = e_map.size();
     _vertEdgeSolMap.push().resize(v_size + e_size + 2);
 
-    Array<int>& ve_map = _vertEdgeSolMap.top();
+    ArrayNew<int>& ve_map = _vertEdgeSolMap.top();
     for (int i = 0; i < ve_map.size(); ++i)
         ve_map[i] = -1;
 
@@ -215,10 +215,10 @@ bool MaxCommonSubgraph::_getEdgeColorCondition(Graph& graph1, Graph& graph2, int
     return (e_weight && v_color);
 }
 
-void MaxCommonSubgraph::getSolutionMaps(ObjArray<Array<int>>* v_maps, ObjArray<Array<int>>* e_maps) const
+void MaxCommonSubgraph::getSolutionMaps(ObjArray<ArrayNew<int>>* v_maps, ObjArray<ArrayNew<int>>* e_maps) const
 {
-    QS_DEF(ObjArray<Array<int>>, tmp_v);
-    QS_DEF(ObjArray<Array<int>>, tmp_e);
+    QS_DEF(ObjArray<ArrayNew<int>>, tmp_v);
+    QS_DEF(ObjArray<ArrayNew<int>>, tmp_e);
     if (v_maps == 0)
         v_maps = &tmp_v;
     if (e_maps == 0)
@@ -226,10 +226,10 @@ void MaxCommonSubgraph::getSolutionMaps(ObjArray<Array<int>>* v_maps, ObjArray<A
 
     _getSolutionMaps(_vertEdgeSolMap.size(), *v_maps, *e_maps);
 }
-void MaxCommonSubgraph::getMaxSolutionMap(Array<int>* v_map, Array<int>* e_map) const
+void MaxCommonSubgraph::getMaxSolutionMap(ArrayNew<int>* v_map, ArrayNew<int>* e_map) const
 {
-    QS_DEF(ObjArray<Array<int>>, tmp_v);
-    QS_DEF(ObjArray<Array<int>>, tmp_e);
+    QS_DEF(ObjArray<ArrayNew<int>>, tmp_v);
+    QS_DEF(ObjArray<ArrayNew<int>>, tmp_e);
 
     if (v_map)
         v_map->clear();
@@ -356,7 +356,7 @@ bool MaxCommonSubgraph::ReCreation::_hasCommonSymbol(int e11, int e12, int e21, 
     return false;
 }
 
-void MaxCommonSubgraph::ReCreation::_createList(const Dbitset& proj_bitset, Graph& graph, Array<int>& v_list, Array<int>& e_list) const
+void MaxCommonSubgraph::ReCreation::_createList(const Dbitset& proj_bitset, Graph& graph, ArrayNew<int>& v_list, ArrayNew<int>& e_list) const
 {
     int e_num, v_num1, v_num2;
     RedBlackSet<int> rb_set;
@@ -378,7 +378,7 @@ void MaxCommonSubgraph::ReCreation::_createList(const Dbitset& proj_bitset, Grap
         v_list.push(rb_set.key(i));
 }
 
-void MaxCommonSubgraph::ReCreation::setCorrespondence(const Dbitset& bits, Array<int>& map) const
+void MaxCommonSubgraph::ReCreation::setCorrespondence(const Dbitset& bits, ArrayNew<int>& map) const
 {
     Graph& sub_graph = *_context._subgraph;
     Graph& super_graph = *_context._supergraph;
@@ -469,7 +469,7 @@ void MaxCommonSubgraph::ReCreation::setCorrespondence(const Dbitset& bits, Array
     }
 }
 
-bool MaxCommonSubgraph::ReCreation::insertSolution(const Array<int>& mapping)
+bool MaxCommonSubgraph::ReCreation::insertSolution(const ArrayNew<int>& mapping)
 {
     Graph& sub_graph = *_context._subgraph;
     Graph& super_graph = *_context._supergraph;
@@ -542,7 +542,7 @@ bool MaxCommonSubgraph::ReCreation::setMapping()
     }
     else if (vertex_number == 1)
     {
-        QS_DEF(Array<int>, mapping);
+        QS_DEF(ArrayNew<int>, mapping);
         Graph& sub_graph = *_context._subgraph;
         Graph& super_graph = *_context._supergraph;
         const Vertex& vert_sub = sub_graph.getVertex(vertex_idx);
@@ -590,8 +590,8 @@ bool MaxCommonSubgraph::ReCreation::setMapping()
 
 int MaxCommonSubgraph::ReCreation::createSolutionMaps()
 {
-    QS_DEF(Array<int>, v_map);
-    QS_DEF(Array<int>, e_map);
+    QS_DEF(ArrayNew<int>, v_map);
+    QS_DEF(ArrayNew<int>, e_map);
 
     Graph& sub_graph = *_context._subgraph;
 
@@ -623,7 +623,7 @@ int MaxCommonSubgraph::ReCreation::createSolutionMaps()
     return _context._vertEdgeSolMap.size();
 }
 
-void MaxCommonSubgraph::ReCreation::getSolutionListsSub(ObjArray<Array<int>>& v_lists, ObjArray<Array<int>>& e_lists) const
+void MaxCommonSubgraph::ReCreation::getSolutionListsSub(ObjArray<ArrayNew<int>>& v_lists, ObjArray<ArrayNew<int>>& e_lists) const
 {
     v_lists.clear();
     e_lists.clear();
@@ -631,13 +631,13 @@ void MaxCommonSubgraph::ReCreation::getSolutionListsSub(ObjArray<Array<int>>& v_
     Graph& sub_graph = *_context._subgraph;
     for (int x = _regraph.solBegin(); _regraph.solIsNotEnd(x); x = _regraph.solNext(x))
     {
-        Array<int>& v_list = v_lists.push();
-        Array<int>& e_list = e_lists.push();
+        ArrayNew<int>& v_list = v_lists.push();
+        ArrayNew<int>& e_list = e_lists.push();
         _createList(_regraph.getProj1Bitset(x), sub_graph, v_list, e_list);
     }
 }
 
-void MaxCommonSubgraph::ReCreation::getSolutionListsSuper(ObjArray<Array<int>>& v_lists, ObjArray<Array<int>>& e_lists) const
+void MaxCommonSubgraph::ReCreation::getSolutionListsSuper(ObjArray<ArrayNew<int>>& v_lists, ObjArray<ArrayNew<int>>& e_lists) const
 {
     v_lists.clear();
     e_lists.clear();
@@ -645,8 +645,8 @@ void MaxCommonSubgraph::ReCreation::getSolutionListsSuper(ObjArray<Array<int>>& 
     Graph& super_graph = *_context._supergraph;
     for (int x = _regraph.solBegin(); _regraph.solIsNotEnd(x); x = _regraph.solNext(x))
     {
-        Array<int>& v_list = v_lists.push();
-        Array<int>& e_list = e_lists.push();
+        ArrayNew<int>& v_list = v_lists.push();
+        ArrayNew<int>& e_list = e_lists.push();
         _createList(_regraph.getProj2Bitset(x), super_graph, v_list, e_list);
     }
 }
@@ -694,7 +694,7 @@ void MaxCommonSubgraph::ReGraph::parse(bool findAllStructure)
     QS_DEF(ObjArray<Dbitset>, traversed_g2);
     QS_DEF(ObjArray<Dbitset>, allowed_g1);
     QS_DEF(ObjArray<Dbitset>, allowed_g2);
-    QS_DEF(Array<int>, xk);
+    QS_DEF(ArrayNew<int>, xk);
 
     traversed.clear();
     extension.clear();
@@ -829,7 +829,7 @@ void MaxCommonSubgraph::ReGraph::insertSolution(int ins_index, bool ins_after, c
 
     if (cbEmbedding != 0)
     {
-        QS_DEF(Array<int>, sub_edge_map);
+        QS_DEF(ArrayNew<int>, sub_edge_map);
         sub_edge_map.resize(_firstGraphSize);
         sub_edge_map.zerofill();
 
@@ -961,13 +961,13 @@ MaxCommonSubgraph::AdjMatricesStore::AdjMatricesStore(MaxCommonSubgraph& context
 
     for (int i = 0; i < maxsize; i++)
     {
-        _ajEdge1.add(new Array<int>());
+        _ajEdge1.add(new ArrayNew<int>());
         _ajEdge1[i]->resize(maxsize);
-        _ajEdge2.add(new Array<int>());
+        _ajEdge2.add(new ArrayNew<int>());
         _ajEdge2[i]->resize(maxsize);
         _aj2.add(new ArrayBool());
         _aj2[i]->resize(maxsize);
-        _errorEdgesMatrix.add(new Array<int>());
+        _errorEdgesMatrix.add(new ArrayNew<int>());
         _errorEdgesMatrix[i]->resize(maxsize);
         _daj1.add(new Dbitset(maxsize));
         _daj2.add(new Dbitset(maxsize));
@@ -1004,7 +1004,7 @@ void MaxCommonSubgraph::AdjMatricesStore::create(Graph& g1, Graph& g2)
 
 int MaxCommonSubgraph::AdjMatricesStore::createSolutionMaps()
 {
-    QS_DEF(ObjArray<Array<int>>, v_maps);
+    QS_DEF(ObjArray<ArrayNew<int>>, v_maps);
     int sub_beg, sub_end, super_beg, super_end, super_edge;
 
     getSolutions(v_maps);
@@ -1015,7 +1015,7 @@ int MaxCommonSubgraph::AdjMatricesStore::createSolutionMaps()
 
     for (int sol = 0; sol < v_maps.size(); ++sol)
     {
-        Array<int>& new_map = _context._vertEdgeSolMap.push();
+        ArrayNew<int>& new_map = _context._vertEdgeSolMap.push();
         new_map.resize(2 + v_size + e_size);
         new_map[0] = v_size;
         new_map[1] = e_size;
@@ -1144,7 +1144,7 @@ void MaxCommonSubgraph::AdjMatricesStore::_createLabelMatrices()
     _mLabel1.clear();
     for (int i = 0; i < _size1; i++)
     {
-        _mLabel1.add(new Array<int>());
+        _mLabel1.add(new ArrayNew<int>());
         ;
     }
 
@@ -1180,7 +1180,7 @@ bool MaxCommonSubgraph::AdjMatricesStore::_checkSize(Graph& g1, Graph& g2)
 {
     int size1 = g1.vertexCount();
     int size2 = g2.vertexCount();
-    QS_DEF(Array<int>, inv_map);
+    QS_DEF(ArrayNew<int>, inv_map);
     int i, j;
     _x.zerofill();
     _y.zerofill();
@@ -1358,7 +1358,7 @@ void MaxCommonSubgraph::AdjMatricesStore::_createCorrespondence()
     }
 }
 
-void MaxCommonSubgraph::AdjMatricesStore::_makeInvertMap(Array<int>& map, Array<int>& invmap)
+void MaxCommonSubgraph::AdjMatricesStore::_makeInvertMap(ArrayNew<int>& map, ArrayNew<int>& invmap)
 {
     for (int i = 0; i < map.size(); i++)
     {
@@ -1420,9 +1420,9 @@ int MaxCommonSubgraph::AdjMatricesStore::_getSecondC(int x)
     return -1;
 }
 
-void MaxCommonSubgraph::AdjMatricesStore::_createConnectedGraph(Graph& graph, Array<int>& map_gr)
+void MaxCommonSubgraph::AdjMatricesStore::_createConnectedGraph(Graph& graph, ArrayNew<int>& map_gr)
 {
-    QS_DEF(Array<int>, filter);
+    QS_DEF(ArrayNew<int>, filter);
     int i, j, size_g1;
     bool c1, c2, c3;
 
@@ -1479,14 +1479,14 @@ void MaxCommonSubgraph::AdjMatricesStore::_createConnectedGraph(Graph& graph, Ar
     }
 }
 
-void MaxCommonSubgraph::AdjMatricesStore::getSolutions(ObjArray<Array<int>>& v_maps)
+void MaxCommonSubgraph::AdjMatricesStore::getSolutions(ObjArray<ArrayNew<int>>& v_maps)
 {
 
     int i, j, size_g1;
 
     QS_DEF(Graph, graph);
-    QS_DEF(Array<int>, map_gr);
-    QS_DEF(Array<int>, tmp_map);
+    QS_DEF(ArrayNew<int>, map_gr);
+    QS_DEF(ArrayNew<int>, tmp_map);
 
     size_g1 = _graph1->vertexEnd();
 
@@ -1499,7 +1499,7 @@ void MaxCommonSubgraph::AdjMatricesStore::getSolutions(ObjArray<Array<int>>& v_m
     _createConnectedGraph(graph, map_gr);
 
     int ncomp = graph.countComponents();
-    const Array<int>& decomposition = graph.getDecomposition();
+    const ArrayNew<int>& decomposition = graph.getDecomposition();
 
     // check for maximum
     v_maps.clear();
@@ -1674,7 +1674,7 @@ void MaxCommonSubgraph::Greedy::_createLgLh()
     {
         _unsignVert1.push(i);
     }
-    _unsignVert2.add(new Array<int>());
+    _unsignVert2.add(new ArrayNew<int>());
     bool nfind;
     for (i = 0; i < _n; i++)
     {
@@ -1690,7 +1690,7 @@ void MaxCommonSubgraph::Greedy::_createLgLh()
         }
         if (nfind)
         {
-            _unsignVert2.add(new Array<int>());
+            _unsignVert2.add(new ArrayNew<int>());
             int last = _unsignVert2.size() - 1;
             _unsignVert2[last]->clear_resize(_adjMstore.getFLSize(i));
             for (j = 0; j < _adjMstore.getFLSize(i); j++)
@@ -1994,7 +1994,7 @@ void MaxCommonSubgraph::RandomDisDec::_loadState()
 }
 
 // maximize number of the rings/ v-e+r=2 there v- number of vertices e - number of edges r - number of rings
-int MaxCommonSubgraph::ringsSolutionTerm(Array<int>& a1, Array<int>& a2, void* dummy)
+int MaxCommonSubgraph::ringsSolutionTerm(ArrayNew<int>& a1, ArrayNew<int>& a2, void* dummy)
 {
     int a1_vlen = 0, a2_vlen = 0, a1_elen = 0, a2_elen = 0;
     for (int i = 0; i < a1[0]; ++i)
@@ -2016,7 +2016,7 @@ int MaxCommonSubgraph::ringsSolutionTerm(Array<int>& a1, Array<int>& a2, void* d
     return result;
 }
 
-void MaxCommonSubgraph::_getSolutionMaps(int count, ObjArray<Array<int>>& v_maps, ObjArray<Array<int>>& e_maps) const
+void MaxCommonSubgraph::_getSolutionMaps(int count, ObjArray<ArrayNew<int>>& v_maps, ObjArray<ArrayNew<int>>& e_maps) const
 {
     v_maps.clear();
     e_maps.clear();
@@ -2025,8 +2025,8 @@ void MaxCommonSubgraph::_getSolutionMaps(int count, ObjArray<Array<int>>& v_maps
     {
         int v_size = _vertEdgeSolMap[i].at(0);
         int e_size = _vertEdgeSolMap[i].at(1);
-        Array<int>& v_arr = v_maps.push();
-        Array<int>& e_arr = e_maps.push();
+        ArrayNew<int>& v_arr = v_maps.push();
+        ArrayNew<int>& e_arr = e_maps.push();
         v_arr.resize(v_size);
         e_arr.resize(e_size);
 
@@ -2071,7 +2071,7 @@ void SubstructureMcs::setGraphs(Graph& sub, Graph& super)
     }
 }
 // searches substructure for graphs and maps vertices
-bool SubstructureMcs::searchSubstructure(Array<int>* map)
+bool SubstructureMcs::searchSubstructure(ArrayNew<int>* map)
 {
 
     if (_sub == 0 || _super == 0)

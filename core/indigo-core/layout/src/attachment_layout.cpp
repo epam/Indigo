@@ -22,7 +22,7 @@ using namespace indigo;
 
 CP_DEF(AttachmentLayout);
 
-AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const Array<int>& bc_tree,
+AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const ArrayNew<int>& bc_tree,
                                    MoleculeLayoutGraph& graph, int src_vertex)
     : _src_vertex(src_vertex), CP_INIT, TL_CP_GET(_src_vertex_map), TL_CP_GET(_attached_bc), TL_CP_GET(_bc_angles), TL_CP_GET(_vertices_l), _alpha(0.f),
       TL_CP_GET(_new_vertices), TL_CP_GET(_layout), _energy(0.f), _bc_components(bc_components), _graph(graph)
@@ -88,13 +88,13 @@ AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const 
 }
 
 AttachmentLayoutSimple::AttachmentLayoutSimple(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components,
-                                               const Array<int>& bc_tree, MoleculeLayoutGraph& graph, int src_vertex)
+                                               const ArrayNew<int>& bc_tree, MoleculeLayoutGraph& graph, int src_vertex)
     : AttachmentLayout(bc_decom, bc_components, bc_tree, graph, src_vertex)
 {
 }
 
 AttachmentLayoutSmart::AttachmentLayoutSmart(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components,
-                                             const Array<int>& bc_tree, MoleculeLayoutGraph& graph, int src_vertex)
+                                             const ArrayNew<int>& bc_tree, MoleculeLayoutGraph& graph, int src_vertex)
     : AttachmentLayout(bc_decom, bc_components, bc_tree, graph, src_vertex)
 {
 }
@@ -106,7 +106,7 @@ float AttachmentLayout::calculateEnergy()
     float sum_a;
     float r;
     QS_DEF(Array<float>, norm_a);
-    QS_DEF(Array<int>, drawn_vertices);
+    QS_DEF(ArrayNew<int>, drawn_vertices);
 
     drawn_vertices.clear_resize(_graph.vertexEnd());
     drawn_vertices.zerofill();

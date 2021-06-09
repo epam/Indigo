@@ -33,9 +33,9 @@ SimpleCycleBasis::SimpleCycleBasis(const Graph& graph) : _graph(graph), _isMinim
 
 void SimpleCycleBasis::create()
 {
-    QS_DEF(Array<int>, vert_mapping);
+    QS_DEF(ArrayNew<int>, vert_mapping);
 
-    QS_DEF(ObjArray<Array<int>>, subgraph_cycles);
+    QS_DEF(ObjArray<ArrayNew<int>>, subgraph_cycles);
 
     subgraph_cycles.clear();
 
@@ -64,7 +64,7 @@ void SimpleCycleBasis::create()
     visited_edges.clear();
 
     // FIFO for the BFS
-    QS_DEF(Array<int>, vertex_queue);
+    QS_DEF(ArrayNew<int>, vertex_queue);
     vertex_queue.clear();
 
     // currentVertex is the root of the spanning tree
@@ -79,7 +79,7 @@ void SimpleCycleBasis::create()
     // We need to remember the tree edges so we can add them at once to the
     // index list for the incidence matrix
 
-    QS_DEF(Array<int>, tree_edges);
+    QS_DEF(ArrayNew<int>, tree_edges);
     tree_edges.clear();
 
     while (vertex_queue.size() > 0)
@@ -125,7 +125,7 @@ void SimpleCycleBasis::create()
                     // along the path to the root of the tree. We create a new cycle containing
                     // these edges (not the tree edges, but the corresponding edges in the graph)
 
-                    Array<int>& edges_of_cycle = subgraph_cycles.push();
+                    ArrayNew<int>& edges_of_cycle = subgraph_cycles.push();
 
                     // follow the path to the root of the tree
 
@@ -180,8 +180,8 @@ void SimpleCycleBasis::create()
 
     for (int i = 0; i < subgraph_cycles.size(); ++i)
     {
-        Array<int>& cycle_edges = subgraph_cycles[i];
-        Array<int>& new_cycle_edges = _cycles.push();
+        ArrayNew<int>& cycle_edges = subgraph_cycles[i];
+        ArrayNew<int>& new_cycle_edges = _cycles.push();
         for (int j = 0; j < cycle_edges.size(); ++j)
         {
             int edge_s = subgraph.getEdge(cycle_edges[j]).beg;
@@ -241,7 +241,7 @@ void SimpleCycleBasis::_minimize(int startIndex)
 
         AuxPathFinder path_finder(gu, _graph.vertexEnd() * 2);
 
-        QS_DEF(ObjArray<Array<int>>, all_new_cycles);
+        QS_DEF(ObjArray<ArrayNew<int>>, all_new_cycles);
         all_new_cycles.clear();
 
         for (int v = _graph.vertexBegin(); v < _graph.vertexEnd(); v = _graph.vertexNext(v))
@@ -271,8 +271,8 @@ void SimpleCycleBasis::_minimize(int startIndex)
                 int auxVertex0 = gu.auxVertex0(v);
                 int auxVertex1 = gu.auxVertex1(v);
 
-                Array<int>& edges_of_new_cycle = all_new_cycles.push();
-                Array<int> path_vertices;
+                ArrayNew<int>& edges_of_new_cycle = all_new_cycles.push();
+                ArrayNew<int> path_vertices;
 
                 // Search for shortest path
 
@@ -280,7 +280,7 @@ void SimpleCycleBasis::_minimize(int startIndex)
             }
         }
 
-        Array<int>& current_cycle = _cycles.at(cur_cycle);
+        ArrayNew<int>& current_cycle = _cycles.at(cur_cycle);
         int shortest_cycle_size = current_cycle.size();
 
         int shortest_cycle = -1;
@@ -297,7 +297,7 @@ void SimpleCycleBasis::_minimize(int startIndex)
         if (shortest_cycle != -1)
         {
             current_cycle.clear();
-            Array<int>& sh_cycle = all_new_cycles[shortest_cycle];
+            ArrayNew<int>& sh_cycle = all_new_cycles[shortest_cycle];
             for (int i = 0; i < sh_cycle.size(); ++i)
             {
                 current_cycle.push(gu.edge(sh_cycle[i]));
@@ -332,7 +332,7 @@ void SimpleCycleBasis::_getCycleEdgeIncidenceMatrix(ObjArray<ArrayBool>& result)
     {
         ArrayBool& new_array = result.push();
         new_array.resize(_edgeList.size());
-        Array<int>& cycle = _cycles[i];
+        ArrayNew<int>& cycle = _cycles[i];
         for (int j = 0; j < _edgeList.size(); ++j)
         {
             result[i][j] = (cycle.find(_edgeList[j]) != -1);
@@ -380,7 +380,7 @@ int SimpleCycleBasis::_getEdgeIndex(int edge) const
 
 void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
 {
-    QS_DEF(Array<int>, path_vertices);
+    QS_DEF(ArrayNew<int>, path_vertices);
     path_vertices.clear();
     QS_DEF(RedBlackSet<int>, selected_edges);
     selected_edges.clear();
@@ -403,7 +403,7 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
 
         subgraph.removeEdge(edge);
 
-        Array<int>& path_edges = _cycles.push();
+        ArrayNew<int>& path_edges = _cycles.push();
 
         path_finder.find(path_vertices, path_edges, source, target);
 

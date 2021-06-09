@@ -76,12 +76,12 @@ namespace indigo
         bool _rgfile;
 
         CP_DECL;
-        TL_CP_DECL(Array<int>, _stereo_care_atoms);
-        TL_CP_DECL(Array<int>, _stereo_care_bonds);
-        TL_CP_DECL(Array<int>, _stereocenter_types);
-        TL_CP_DECL(Array<int>, _stereocenter_groups);
-        TL_CP_DECL(Array<int>, _sensible_bond_directions);
-        TL_CP_DECL(Array<int>, _ignore_cistrans);
+        TL_CP_DECL(ArrayNew<int>, _stereo_care_atoms);
+        TL_CP_DECL(ArrayNew<int>, _stereo_care_bonds);
+        TL_CP_DECL(ArrayNew<int>, _stereocenter_types);
+        TL_CP_DECL(ArrayNew<int>, _stereocenter_groups);
+        TL_CP_DECL(ArrayNew<int>, _sensible_bond_directions);
+        TL_CP_DECL(ArrayNew<int>, _ignore_cistrans);
 
         enum
         {
@@ -99,10 +99,10 @@ namespace indigo
             _BRKTYP_ROUND
         };
 
-        TL_CP_DECL(Array<int>, _atom_types);
-        TL_CP_DECL(Array<int>, _hcount);
-        TL_CP_DECL(Array<int>, _sgroup_types);
-        TL_CP_DECL(Array<int>, _sgroup_mapping);
+        TL_CP_DECL(ArrayNew<int>, _atom_types);
+        TL_CP_DECL(ArrayNew<int>, _hcount);
+        TL_CP_DECL(ArrayNew<int>, _sgroup_types);
+        TL_CP_DECL(ArrayNew<int>, _sgroup_mapping);
 
         bool _v2000;
         int _atoms_num;
@@ -114,7 +114,7 @@ namespace indigo
         void _readCtab2000();
         void _convertCharge(int value, int& charge, int& radical);
         void _read3dFeature2000();
-        void _readRGroupOccurrenceRanges(const char* str, Array<int>& ranges);
+        void _readRGroupOccurrenceRanges(const char* str, ArrayNew<int>& ranges);
         void _readRGroups2000();
         void _readCtab3000();
         void _readSGroup3000(const char* str);

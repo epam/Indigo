@@ -233,9 +233,9 @@ void MangoFastIndex::_fetchSimilarity(OracleEnv& env, int max_matches)
 
         BingoStorage& storage = _context.context().context().storage;
 
-        QS_DEF(Array<int>, max_common_ones);
-        QS_DEF(Array<int>, min_common_ones);
-        QS_DEF(Array<int>, target_ones);
+        QS_DEF(ArrayNew<int>, max_common_ones);
+        QS_DEF(ArrayNew<int>, min_common_ones);
+        QS_DEF(ArrayNew<int>, target_ones);
         QS_DEF(ArrayChar, stored);
 
         max_common_ones.clear_resize(_screening.block->used);

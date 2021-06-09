@@ -37,7 +37,7 @@ namespace indigo
 
         void (*cb_get_xyz)(Graph& graph, int vertex_idx, Vec3f& pos);
 
-        const Array<int>* fixed_vertices;
+        const ArrayNew<int>* fixed_vertices;
 
         DECL_ERROR;
 

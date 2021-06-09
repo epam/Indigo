@@ -70,7 +70,7 @@ namespace indigo
             void _construct() override;
 
         private:
-            Array<int> _atoms_count;
+            ArrayNew<int> _atoms_count;
 
             void _printAtom(Output& output, int label) const;
             void _collectAtomsCount();
@@ -90,7 +90,7 @@ namespace indigo
             void _construct() override;
 
         private:
-            Array<int> _connection_table;
+            ArrayNew<int> _connection_table;
 
             void _linearizeConnectionTable();
         };
@@ -101,7 +101,7 @@ namespace indigo
         public:
             static int compareComponentsHydrogens(HydrogensLayer& comp1, HydrogensLayer& comp2);
 
-            bool checkAutomorphism(const Array<int>& mapping);
+            bool checkAutomorphism(const ArrayNew<int>& mapping);
             int compareMappings(MoleculeInChIUtils::Mapping& m1, MoleculeInChIUtils::Mapping& m2);
 
             void print(ArrayChar& result);
@@ -111,10 +111,10 @@ namespace indigo
 
         private:
             // Number of immobile hydrogens for each atom
-            Array<int> _per_atom_immobile;
+            ArrayNew<int> _per_atom_immobile;
             // Atom indices in the 'mol' to avoid vertexBegin/vertexEnd iterations
             // when comparing components
-            Array<int> _atom_indices;
+            ArrayNew<int> _atom_indices;
 
             // TODO: Mobile hydrogens, fixed hydrogens
         };
@@ -125,7 +125,7 @@ namespace indigo
         public:
             void print(ArrayChar& result);
 
-            bool checkAutomorphism(const Array<int>& mapping);
+            bool checkAutomorphism(const ArrayNew<int>& mapping);
             int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
 
             static int compareComponents(CisTransStereochemistryLayer& comp1, CisTransStereochemistryLayer& comp2);
@@ -134,7 +134,7 @@ namespace indigo
             void _construct() override;
 
         private:
-            Array<int> bond_is_cis_trans;
+            ArrayNew<int> bond_is_cis_trans;
         };
 
         // Tetrahedral stereochemistry
@@ -145,7 +145,7 @@ namespace indigo
 
             void printEnantiomers(ArrayChar& result);
 
-            bool checkAutomorphism(const Array<int>& mapping);
+            bool checkAutomorphism(const ArrayNew<int>& mapping);
             int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
 
             static int compareComponentsEnantiomers(TetrahedralStereochemistryLayer& comp1, TetrahedralStereochemistryLayer& comp2);

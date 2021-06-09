@@ -54,8 +54,8 @@ namespace indigo
     {
         bool check(BaseMolecule& molecule, int first, int last, char other_arom_first, char other_arom_last) const;
 
-        Array<int> list1;
-        Array<int> list2;
+        ArrayNew<int> list1;
+        ArrayNew<int> list2;
         int aromaticity1;
         int aromaticity2;
 
@@ -76,8 +76,8 @@ namespace indigo
 
         // amount of metal bonds
         CP_DECL;
-        TL_CP_DECL(Array<int>, h_rep_count_1);
-        TL_CP_DECL(Array<int>, h_rep_count_2);
+        TL_CP_DECL(ArrayNew<int>, h_rep_count_1);
+        TL_CP_DECL(ArrayNew<int>, h_rep_count_2);
 
         const PtrArray<TautomerRule>& rules_list;
 
@@ -94,19 +94,19 @@ namespace indigo
 
         TL_CP_DECL(DearomatizationsStorage, dearomatizations);
 
-        TL_CP_DECL(Array<int>, core_1);
-        TL_CP_DECL(Array<int>, core_2);
+        TL_CP_DECL(ArrayNew<int>, core_1);
+        TL_CP_DECL(ArrayNew<int>, core_2);
 
         int initial_g1_vertexend;
 
-        TL_CP_DECL(Array<int>, chains_2);
+        TL_CP_DECL(ArrayNew<int>, chains_2);
 
-        TL_CP_DECL(Array<int>, edges_1);
-        TL_CP_DECL(Array<int>, edges_2);
-        TL_CP_DECL(Array<int>, edge_types_2);
+        TL_CP_DECL(ArrayNew<int>, edges_1);
+        TL_CP_DECL(ArrayNew<int>, edges_2);
+        TL_CP_DECL(ArrayNew<int>, edge_types_2);
 
-        TL_CP_DECL(Array<int>, n1);
-        TL_CP_DECL(Array<int>, n2);
+        TL_CP_DECL(ArrayNew<int>, n1);
+        TL_CP_DECL(ArrayNew<int>, n2);
 
         Obj<Dearomatizer> dearomatizer;
         Obj<DearomatizationMatcher> dearomatizationMatcher;
@@ -194,7 +194,7 @@ namespace indigo
     class TautomerChainChecker
     {
     public:
-        explicit TautomerChainChecker(TautomerSearchContext& context, const Array<int>& core1, const Array<int>& core2, int start_path_number);
+        explicit TautomerChainChecker(TautomerSearchContext& context, const ArrayNew<int>& core1, const ArrayNew<int>& core2, int start_path_number);
         explicit TautomerChainChecker(TautomerChainChecker& other);
         virtual ~TautomerChainChecker();
 
@@ -237,8 +237,8 @@ namespace indigo
 
         int _path_number;
 
-        const Array<int>& _core_1;
-        const Array<int>& _core_2;
+        const ArrayNew<int>& _core_1;
+        const ArrayNew<int>& _core_2;
 
         int _tau_bonds_to_match;
 
@@ -277,12 +277,12 @@ namespace indigo
         bool isZeroedBond(int idx);
 
         const int* getMapping();
-        const Array<int>& getInvMapping();
+        const ArrayNew<int>& getInvMapping();
 
-        int getSubgraphType(const Array<int>& vertices, const Array<int>& edges);
+        int getSubgraphType(const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
 
     protected:
-        void _findMinDistance(int source, int maxDist, Array<int>& dest, int* result);
+        void _findMinDistance(int source, int maxDist, ArrayNew<int>& dest, int* result);
 
         void _collectAtomProperties(void);
         void _getDoubleBondsCount(int i, int& double_count, int& arom_count);
@@ -296,13 +296,13 @@ namespace indigo
         bool _inside_ctor;
 
         CP_DECL;
-        TL_CP_DECL(Array<int>, _atomsEmitBond);
-        TL_CP_DECL(Array<int>, _atomsAcceptBond);
+        TL_CP_DECL(ArrayNew<int>, _atomsEmitBond);
+        TL_CP_DECL(ArrayNew<int>, _atomsAcceptBond);
         TL_CP_DECL(ArrayBool, _isBondAttachedArray);
-        TL_CP_DECL(Array<int>, _mapping);
-        TL_CP_DECL(Array<int>, _inv_mapping);
-        TL_CP_DECL(Array<int>, _edge_mapping);
-        TL_CP_DECL(Array<int>, _total_h);
+        TL_CP_DECL(ArrayNew<int>, _mapping);
+        TL_CP_DECL(ArrayNew<int>, _inv_mapping);
+        TL_CP_DECL(ArrayNew<int>, _edge_mapping);
+        TL_CP_DECL(ArrayNew<int>, _total_h);
     };
 
 } // namespace indigo

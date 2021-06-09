@@ -54,8 +54,8 @@ void HaworthProjectionFinder::_find(bool add_stereo)
 {
     if (BaseMolecule::hasCoord(_mol))
     {
-        QS_DEF(Array<int>, vertices);
-        QS_DEF(Array<int>, edges);
+        QS_DEF(ArrayNew<int>, vertices);
+        QS_DEF(ArrayNew<int>, edges);
 
         int sssr_cnt = _mol.sssrCount();
         for (int i = 0; i < sssr_cnt; i++)
@@ -92,7 +92,7 @@ void HaworthProjectionFinder::_find(bool add_stereo)
     }
 }
 
-bool HaworthProjectionFinder::_processRing(bool add_stereo, const Array<int>& vertices, const Array<int>& edges)
+bool HaworthProjectionFinder::_processRing(bool add_stereo, const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
 {
     // We detect rings of size from 3 and 6:
     //       -----       ----       /  \      ----            ------
@@ -279,7 +279,7 @@ bool HaworthProjectionFinder::_processRing(bool add_stereo, const Array<int>& ve
     return true;
 }
 
-void HaworthProjectionFinder::_markRingBonds(const Array<int>& vertices, const Array<int>& edges)
+void HaworthProjectionFinder::_markRingBonds(const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
 {
     // Mark bonds
     for (int j = 0; j < vertices.size(); j++)
@@ -308,7 +308,7 @@ void HaworthProjectionFinder::_markRingBonds(const Array<int>& vertices, const A
     }
 }
 
-void HaworthProjectionFinder::_addRingStereocenters(const Array<int>& vertices, const Array<int>& edges)
+void HaworthProjectionFinder::_addRingStereocenters(const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
 {
     // Find left vertex
     int j_left = -1;

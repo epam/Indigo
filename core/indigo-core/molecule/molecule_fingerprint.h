@@ -134,7 +134,7 @@ namespace indigo
 
         int countBits_Sim();
 
-        void (*cb_fragment)(BaseMolecule& mol, const Array<int>& vertices, const Array<int>& edges, bool use_atoms, bool use_bonds, dword hash);
+        void (*cb_fragment)(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, bool use_atoms, bool use_bonds, dword hash);
 
         void parseFingerprintType(const char* type, bool query);
 
@@ -149,17 +149,17 @@ namespace indigo
     protected:
         void _initHashCalculations(BaseMolecule& mol, const Filter& vfilter);
 
-        static void _handleTree(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
-        static bool _handleCycle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
+        static void _handleTree(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
+        static bool _handleCycle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
 
-        static int _maximalSubgraphCriteriaValue(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
+        static int _maximalSubgraphCriteriaValue(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
 
-        void _handleSubgraph(Graph& graph, const Array<int>& vertices, const Array<int>& edges);
+        void _handleSubgraph(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
 
-        dword _canonicalizeFragment(BaseMolecule& mol, const Array<int>& vertices, const Array<int>& edges, bool use_atoms, bool use_bonds,
+        dword _canonicalizeFragment(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, bool use_atoms, bool use_bonds,
                                     int* different_vertex_count);
 
-        void _canonicalizeFragmentAndSetBits(BaseMolecule& mol, const Array<int>& vertices, const Array<int>& edges, bool use_atoms, bool use_bonds,
+        void _canonicalizeFragmentAndSetBits(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, bool use_atoms, bool use_bonds,
                                              int subgraph_type, dword& bits_to_set);
 
         void _makeFingerprint(BaseMolecule& mol);
@@ -172,8 +172,8 @@ namespace indigo
 
         static void _setBits(dword hash, byte* fp, int size, int nbits);
 
-        void _calculateFragmentVertexDegree(BaseMolecule& mol, const Array<int>& vertices, const Array<int>& edges);
-        int _calculateFragmentExternalConn(BaseMolecule& mol, const Array<int>& vertices, const Array<int>& edges);
+        void _calculateFragmentVertexDegree(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
+        int _calculateFragmentExternalConn(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
 
         BaseMolecule& _mol;
         const MoleculeFingerprintParameters& _parameters;
@@ -201,15 +201,15 @@ namespace indigo
 
         CP_DECL;
         TL_CP_DECL(Array<byte>, _total_fingerprint);
-        TL_CP_DECL(Array<int>, _atom_codes);
-        TL_CP_DECL(Array<int>, _bond_codes);
-        TL_CP_DECL(Array<int>, _atom_codes_empty);
-        TL_CP_DECL(Array<int>, _bond_codes_empty);
-        TL_CP_DECL(Array<int>, _atom_hydrogens);
-        TL_CP_DECL(Array<int>, _atom_charges);
-        TL_CP_DECL(Array<int>, _vertex_connectivity);
-        TL_CP_DECL(Array<int>, _fragment_vertex_degree);
-        TL_CP_DECL(Array<int>, _bond_orders);
+        TL_CP_DECL(ArrayNew<int>, _atom_codes);
+        TL_CP_DECL(ArrayNew<int>, _bond_codes);
+        TL_CP_DECL(ArrayNew<int>, _atom_codes_empty);
+        TL_CP_DECL(ArrayNew<int>, _bond_codes_empty);
+        TL_CP_DECL(ArrayNew<int>, _atom_hydrogens);
+        TL_CP_DECL(ArrayNew<int>, _atom_charges);
+        TL_CP_DECL(ArrayNew<int>, _vertex_connectivity);
+        TL_CP_DECL(ArrayNew<int>, _fragment_vertex_degree);
+        TL_CP_DECL(ArrayNew<int>, _bond_orders);
 
         typedef std::unordered_map<HashBits, int, Hasher> HashesMap;
         TL_CP_DECL(HashesMap, _ord_hashes);

@@ -184,9 +184,9 @@ namespace indigo
         int getReactingCenter(int index, int bond);
         int getInversion(int index, int atom);
 
-        Array<int>& getAAMArray(int index);
-        Array<int>& getReactingCenterArray(int index);
-        Array<int>& getInversionArray(int index);
+        ArrayNew<int>& getAAMArray(int index);
+        ArrayNew<int>& getReactingCenterArray(int index);
+        ArrayNew<int>& getInversionArray(int index);
 
         void clearAAM();
 
@@ -194,9 +194,9 @@ namespace indigo
         int addProduct();
         int addCatalyst();
 
-        int addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
-        int addProductCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
-        int addCatalystCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
+        int addReactantCopy(BaseMolecule& mol, ArrayNew<int>* mapping, ArrayNew<int>* inv_mapping);
+        int addProductCopy(BaseMolecule& mol, ArrayNew<int>* mapping, ArrayNew<int>* inv_mapping);
+        int addCatalystCopy(BaseMolecule& mol, ArrayNew<int>* mapping, ArrayNew<int>* inv_mapping);
 
         int findAtomByAAM(int mol_idx, int aam);
         int findAamNumber(BaseMolecule* mol, int atom_number);
@@ -208,7 +208,7 @@ namespace indigo
 
         static bool haveCoord(BaseReaction& reaction);
 
-        void clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<Array<int>>* mappings, ObjArray<Array<int>>* inv_mappings);
+        void clone(BaseReaction& other, ArrayNew<int>* mol_mapping, ObjArray<ArrayNew<int>>* mappings, ObjArray<ArrayNew<int>>* inv_mappings);
 
         ArrayChar name;
 
@@ -221,7 +221,7 @@ namespace indigo
 
         PtrPool<BaseMolecule> _allMolecules;
 
-        Array<int> _types;
+        ArrayNew<int> _types;
 
         int _reactantCount;
         int _productCount;
@@ -229,7 +229,7 @@ namespace indigo
 
         int _nextElement(int type, int index);
 
-        virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
+        virtual void _clone(BaseReaction& other, int index, int i, ObjArray<ArrayNew<int>>* mol_mappings);
     };
 
 } // namespace indigo

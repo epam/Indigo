@@ -223,7 +223,7 @@ void MoleculeSubstructureMatcher::setQuery(QueryMolecule& query)
         _query = &query;
     }
 
-    QS_DEF(Array<int>, ignored);
+    QS_DEF(ArrayNew<int>, ignored);
 
     ignored.clear_resize(_query->vertexEnd());
 
@@ -351,7 +351,7 @@ void MoleculeSubstructureMatcher::_createEmbeddingsStorage()
 
 void MoleculeSubstructureMatcher::_removeUnfoldedHydrogens()
 {
-    QS_DEF(Array<int>, atoms_to_remove);
+    QS_DEF(ArrayNew<int>, atoms_to_remove);
     atoms_to_remove.clear();
 
     for (int i = 0; i < _unfolded_target_h.size(); i++)
@@ -649,7 +649,7 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph& subgraph, Graph& supergraph
 
     if (self->match_3d == AFFINE)
     {
-        QS_DEF(Array<int>, core_sub_full);
+        QS_DEF(ArrayNew<int>, core_sub_full);
 
         core_sub_full.copy(core_sub, subgraph.vertexEnd());
         core_sub_full[sub_idx] = super_idx;
@@ -784,7 +784,7 @@ int MoleculeSubstructureMatcher::_embedding_common(int* core_sub, int* core_supe
     // chemical conformation match
     if (match_3d == CONFORMATION)
     {
-        QS_DEF(Array<int>, mapping);
+        QS_DEF(ArrayNew<int>, mapping);
         GraphDecomposer decomposer(query);
 
         Filter filter(core_sub, Filter::MORE, -1);
@@ -868,9 +868,9 @@ int MoleculeSubstructureMatcher::_embedding_markush(int* core_sub, int* core_sup
 
     // For all possible rgroups at current site
     // do not do this:
-    // const Array<int> &rg_list = g1.getRGroups()->getSiteRGroups(old_site_idx);
+    // const ArrayNew<int> &rg_list = g1.getRGroups()->getSiteRGroups(old_site_idx);
 
-    QS_DEF(Array<int>, old_site_rgroups);
+    QS_DEF(ArrayNew<int>, old_site_rgroups);
 
     g1.getAllowedRGroups(old_site_idx, old_site_rgroups);
 
@@ -926,7 +926,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
                                                            int att_idx2, int rgroup_idx, bool rest_h)
 {
     MarkushContext& context = *_markush.get();
-    QS_DEF(Array<int>, fr_mapping);
+    QS_DEF(ArrayNew<int>, fr_mapping);
     int i;
     int n_sites = 0;
     bool ok = true;
@@ -1061,7 +1061,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
 
         // Check if there are explicit hydrogens or new sites attached- ignore them in further matching
         // Mark new vertices and add new sites if any
-        QS_DEF(Array<int>, ignored);
+        QS_DEF(ArrayNew<int>, ignored);
 
         ignored.clear_resize(fragment->vertexEnd());
 
@@ -1181,9 +1181,9 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
 
 bool MoleculeSubstructureMatcher::_checkRGroupConditions()
 {
-    QS_DEF(Array<int>, occurrences);
-    QS_DEF(Array<int>, conditions);
-    QS_DEF(Array<int>, nontop_rgroups);
+    QS_DEF(ArrayNew<int>, occurrences);
+    QS_DEF(ArrayNew<int>, conditions);
+    QS_DEF(ArrayNew<int>, nontop_rgroups);
     bool resth_satisfied;
     int i, k;
     MarkushContext& context = *_markush.get();
@@ -1232,7 +1232,7 @@ bool MoleculeSubstructureMatcher::_checkRGroupConditions()
                 if (!_query->isRSite(site_idx))
                     continue;
 
-                QS_DEF(Array<int>, rg_list);
+                QS_DEF(ArrayNew<int>, rg_list);
 
                 _query->getAllowedRGroups(site_idx, rg_list);
                 for (k = 0; k < rg_list.size() && resth_satisfied; k++)
@@ -1515,7 +1515,7 @@ int MoleculeSubstructureMatcher::_compare(int& i1, int& i2, void* context)
     return _compare_degree_asc(mol, i1, i2);
 }
 
-void MoleculeSubstructureMatcher::makeTransposition(BaseMolecule& mol, Array<int>& transposition_out)
+void MoleculeSubstructureMatcher::makeTransposition(BaseMolecule& mol, ArrayNew<int>& transposition_out)
 {
     int i;
 
