@@ -1241,7 +1241,7 @@ void TopNSimMatcher::_findTopN()
     }
 }
 
-int TopNSimMatcher::_cmp_sim_res( const SimResult& res1, const SimResult& res2 )
+bool TopNSimMatcher::_cmp_sim_res( const SimResult& res1, const SimResult& res2 )
 {
     return res1.sim_value < res2.sim_value;
 }
