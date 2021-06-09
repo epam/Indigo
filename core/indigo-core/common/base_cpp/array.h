@@ -36,6 +36,7 @@ namespace indigo
     DECL_EXCEPTION(ArrayError);
 
     using ArrayBool = std::vector<unsigned char>;
+    using Vec2fPair = std::array<Vec2f, 2>;
 
     class ArrayChar
     {
