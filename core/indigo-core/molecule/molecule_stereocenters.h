@@ -161,7 +161,7 @@ namespace indigo
         static int _xyzzy(const Vec3f& v1, const Vec3f& v2, const Vec3f& u);
         static int _onPlane(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3, const Vec3f& v4);
 
-        bool _buildOneCenter(int atom_idx, int* sensible_bonds_out, bool bidirectional_mode, bool bidirectional_either_mode, const std::vector<bool>& bond_ignore);
+        bool _buildOneCenter(int atom_idx, int* sensible_bonds_out, bool bidirectional_mode, bool bidirectional_either_mode, const ArrayBool& bond_ignore);
 
         void _buildOneFrom3dCoordinates(int idx);
 

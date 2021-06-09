@@ -825,7 +825,7 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(int* up_point)
 
 float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
 {
-    QS_DEF(ObjArray<ObjArray<std::vector<bool>>>, can);
+    QS_DEF(ObjArray<ObjArray<ArrayBool>>, can);
 
     can.clear();
     int maxrot = 19;    // |[0, 18]|

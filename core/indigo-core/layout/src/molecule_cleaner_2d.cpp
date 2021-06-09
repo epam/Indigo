@@ -171,10 +171,10 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
 
     if (use_beconnected_decomposition)
     {
-        QS_DEF(std::vector<bool>, has_component);
+        QS_DEF(ArrayBool, has_component);
         QS_DEF(Array<int>, component_list);
-        QS_DEF(std::vector<bool>, has_vertex);
-        QS_DEF(std::vector<bool>, block_vertex);
+        QS_DEF(ArrayBool, has_vertex);
+        QS_DEF(ArrayBool, block_vertex);
         has_component.clear();
         has_component.resize(component_count, false);
         component_list.clear();
@@ -449,7 +449,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
             }
         }
 
-    QS_DEF(std::vector<bool>, valid);
+    QS_DEF(ArrayBool, valid);
     valid.clear();
     valid.resize(component_count, false);
 
@@ -591,7 +591,7 @@ void MoleculeCleaner2d::_initCommonBiconnectedComp()
 
     common_bicon_comp.clear();
 
-    QS_DEF(ObjArray<std::vector<bool>>, b_in);
+    QS_DEF(ObjArray<ArrayBool>, b_in);
     Filter filter;
     int b_component_count = decomposer.componentsCount();
 

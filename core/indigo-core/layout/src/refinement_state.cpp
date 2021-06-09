@@ -244,7 +244,7 @@ bool RefinementState::is_small_cycle()
 float RefinementState::calc_best_angle()
 {
     QS_DEF(Array<int>, convex_hull);
-    QS_DEF(std::vector<bool>, take);
+    QS_DEF(ArrayBool, take);
     convex_hull.resize(_graph.vertexEnd() + 1);
     take.resize(_graph.vertexEnd());
     std::fill(take.begin(), take.end(), false);

@@ -1264,8 +1264,8 @@ float MoleculeLayoutMacrocycles::depictionCircle()
     if (zero_edge_stereo_count == 0)
         return 1000000;
 
-    QS_DEF(std::vector<bool>, up);
-    QS_DEF(std::vector<bool>, only_up);
+    QS_DEF(ArrayBool, up);
+    QS_DEF(ArrayBool, only_up);
     up.clear();
     up.resize(length + 1, false);
     only_up.clear();

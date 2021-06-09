@@ -44,8 +44,8 @@ namespace indigo
 
         bool isBoldBond(int e_idx);
 
-        const std::vector<bool>& getAtomsMask();
-        const std::vector<bool>& getBondsMask();
+        const ArrayBool& getAtomsMask();
+        const ArrayBool& getBondsMask();
 
     private:
         void _find(bool add_stereo);
@@ -63,9 +63,9 @@ namespace indigo
 
         BaseMolecule& _mol;
         CP_DECL;
-        TL_CP_DECL(std::vector<bool>, _atoms_mask);
-        TL_CP_DECL(std::vector<bool>, _bonds_mask);
-        TL_CP_DECL(std::vector<bool>, _bold_bonds_mask);
+        TL_CP_DECL(ArrayBool, _atoms_mask);
+        TL_CP_DECL(ArrayBool, _bonds_mask);
+        TL_CP_DECL(ArrayBool, _bold_bonds_mask);
     };
 
 } // namespace indigo

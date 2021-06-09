@@ -140,7 +140,7 @@ namespace indigo
 
         Molecule _proto;
         ObjArray<Dbitset> _bond_masks[BOND_TYPES_NUMBER];
-        std::vector<bool> _mobilePositions;
+        ArrayBool _mobilePositions;
         ObjArray<Dbitset> _mobilePositionsOccupied;
 
         virtual void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags);

@@ -210,7 +210,7 @@ namespace indigo
         void clear();
 
     private:
-        std::vector<bool> can_bond_be_aromatic;
+        ArrayBool can_bond_be_aromatic;
     };
 
 } // namespace indigo

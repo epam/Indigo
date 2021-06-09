@@ -137,7 +137,7 @@ namespace indigo
         int detectAromaticGroups(const int* atom_external_conn);
         void constructGroups(DearomatizationsStorage& storage, bool needHeteroAtoms);
 
-        std::vector<bool>* getAcceptDoubleBonds(void);
+        ArrayBool* getAcceptDoubleBonds(void);
         bool isAcceptDoubleBond(int atom);
 
         DECL_ERROR2(DearomatizationException);
@@ -154,8 +154,8 @@ namespace indigo
         // Additional data stored here to prevent reallocatoins
         CP_DECL;
         TL_CP_DECL(Array<int>, _vertexAromaticGroupIndex);
-        TL_CP_DECL(std::vector<bool>, _vertexIsAcceptDoubleEdge);
-        TL_CP_DECL(std::vector<bool>, _vertexIsAcceptSingleEdge);
+        TL_CP_DECL(ArrayBool, _vertexIsAcceptDoubleEdge);
+        TL_CP_DECL(ArrayBool, _vertexIsAcceptSingleEdge);
         TL_CP_DECL(Array<int>, _vertexProcessed);
 
         TL_CP_DECL(Array<int>, _groupVertices);
@@ -280,14 +280,14 @@ namespace indigo
 
             void setVerticesState(const byte* verticesState);
             void setVerticesMapping(int* verticesMapping);
-            void setVerticesAccept(std::vector<bool>* verticesAcceptDoubleBond);
+            void setVerticesAccept(ArrayBool* verticesAcceptDoubleBond);
 
             virtual bool checkVertex(int v_idx);
 
         protected:
             const byte* _verticesState;
             int* _verticesMapping;
-            std::vector<bool>* _verticesAcceptDoubleBond;
+            ArrayBool* _verticesAcceptDoubleBond;
         };
 
     protected:

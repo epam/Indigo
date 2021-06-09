@@ -35,6 +35,8 @@ namespace indigo
 {
     DECL_EXCEPTION(ArrayError);
 
+    using ArrayBool = std::vector<unsigned char>;
+
     class ArrayChar
     {
     public:

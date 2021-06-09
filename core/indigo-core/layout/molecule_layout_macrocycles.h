@@ -105,7 +105,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _vertex_stereo);
         TL_CP_DECL(Array<float>, _vertex_added_square);
         TL_CP_DECL(Array<int>, _edge_stereo);
-        TL_CP_DECL(std::vector<bool>, _vertex_drawn);
+        TL_CP_DECL(ArrayBool, _vertex_drawn);
         TL_CP_DECL(Array<Vec2f>, _positions);
         TL_CP_DECL(Array<int>, _component_finish);
         TL_CP_DECL(Array<float>, _target_angle);
@@ -193,7 +193,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _edge_stereo);
         TL_CP_DECL(Array<Vec2f>, _positions);
         TL_CP_DECL(Array<float>, _vertex_added_square);
-        TL_CP_DECL(std::vector<bool>, _vertex_drawn);
+        TL_CP_DECL(ArrayBool, _vertex_drawn);
         TL_CP_DECL(Array<int>, _component_finish);
         TL_CP_DECL(Array<float>, _target_angle);
         TL_CP_DECL(Array<float>, _angle_importance);

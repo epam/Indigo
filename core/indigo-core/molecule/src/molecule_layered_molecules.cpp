@@ -131,7 +131,7 @@ bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset& mask, const Arra
 // beg, end: the mobile positions of hydrogen to swap
 // forward: the direction to move the hydrogen
 {
-    QS_DEF(std::vector<bool>, edgeIsOnPath); // indicates if an edge is on path that needs to be inverted
+    QS_DEF(ArrayBool, edgeIsOnPath); // indicates if an edge is on path that needs to be inverted
     edgeIsOnPath.clear();
     edgeIsOnPath.resize(edgeCount(), false);
     for (auto i = 0; i < edgesPath.size(); ++i)

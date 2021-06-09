@@ -77,22 +77,22 @@ namespace indigo
         bool is_trivial;
         int vertex_size;
         int component_count;
-        ObjArray<std::vector<bool>> in;               // is vertex in component
+        ObjArray<ArrayBool> in;               // is vertex in component
         ObjArray<Array<int>> definiting_points; // definiting points for component
         ObjArray<Array<Vec2f>> coef;            // linear representation for every vertices throw base points over field of complex numbers
         Array<Vec2f> gradient;
         Array<Vec2f> pregradient;
         Array<int> edge_comp;
-        std::vector<bool> is_art_point;
-        std::vector<bool> is_valid_base;
-        ObjArray<std::vector<bool>> adj_matrix;
+        ArrayBool is_art_point;
+        ArrayBool is_valid_base;
+        ObjArray<ArrayBool> adj_matrix;
         ObjArray<Array<int>> common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
         ObjArray<Array<int>> common_bicon_comp; // common_bicon_comp[i][j] = number of biconnected component wich is contains both vertices i and j (or -1 if
                                                 // there isnt such component)
         float target_len; // target length of bonds
         bool clean_external_angles;
-        std::vector<bool> _is_trivial; // is component single edge or straightline chain
-        std::vector<bool> _is_straightline_vertex;
+        ArrayBool _is_trivial; // is component single edge or straightline chain
+        ArrayBool _is_straightline_vertex;
 
         Vec2f plane(Vec3f& v)
         {

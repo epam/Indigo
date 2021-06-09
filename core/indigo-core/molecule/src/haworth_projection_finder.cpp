@@ -35,12 +35,12 @@ void HaworthProjectionFinder::find()
     _find(false);
 }
 
-const std::vector<bool>& HaworthProjectionFinder::getAtomsMask()
+const ArrayBool& HaworthProjectionFinder::getAtomsMask()
 {
     return _atoms_mask;
 }
 
-const std::vector<bool>& HaworthProjectionFinder::getBondsMask()
+const ArrayBool& HaworthProjectionFinder::getBondsMask()
 {
     return _bonds_mask;
 }

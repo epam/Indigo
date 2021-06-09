@@ -838,7 +838,7 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
     int n_rgroups = rgroups.getRGroupCount();
 
     // Check if r-groups are attached with single bonds
-    QS_DEF(std::vector<bool>, rgroups_attached_single);
+    QS_DEF(ArrayBool, rgroups_attached_single);
     rgroups_attached_single.clear();
     for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
     {

@@ -42,9 +42,9 @@ void PathEnumerator::process()
 {
     QS_DEF(Array<int>, vertices);
     QS_DEF(Array<int>, edges);
-    QS_DEF(std::vector<bool>, flags);
+    QS_DEF(ArrayBool, flags);
     QS_DEF(Array<int>, index);
-    QS_DEF(std::vector<bool>, can_achieve_to_end);
+    QS_DEF(ArrayBool, can_achieve_to_end);
 
     vertices.clear();
     edges.clear();

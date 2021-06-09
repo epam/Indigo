@@ -70,7 +70,7 @@ int MoleculePiSystemsMatcher::_initMarks(void)
     // Copy pi-system indices
     _copyPiSystemsIdFromDecomposer();
 
-    QS_DEF(std::vector<bool>, pi_system_used);
+    QS_DEF(ArrayBool, pi_system_used);
     pi_system_used.clear();
     pi_system_used.resize(n_comp, false);
     for (int i = 0; i < n_comp; i++)
@@ -142,7 +142,7 @@ void MoleculePiSystemsMatcher::_copyPiSystemsIdFromDecomposer()
     }
 }
 
-void MoleculePiSystemsMatcher::_markUnstablePiSystems(std::vector<bool>& pi_system_used)
+void MoleculePiSystemsMatcher::_markUnstablePiSystems(ArrayBool& pi_system_used)
 {
     // Mark pi-systems that contain atoms with partail octet or charge
     for (int v = _target.vertexBegin(); v != _target.vertexEnd(); v = _target.vertexNext(v))
@@ -163,7 +163,7 @@ void MoleculePiSystemsMatcher::_markUnstablePiSystems(std::vector<bool>& pi_syst
     }
 }
 
-void MoleculePiSystemsMatcher::_markVerticesInUnusedPiSystems(std::vector<bool>& pi_system_used)
+void MoleculePiSystemsMatcher::_markVerticesInUnusedPiSystems(ArrayBool& pi_system_used)
 {
     for (int v = _target.vertexBegin(); v != _target.vertexEnd(); v = _target.vertexNext(v))
     {
