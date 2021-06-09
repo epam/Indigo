@@ -19,7 +19,7 @@ size_t BingoMapping::get(size_t id)
     return (size_t)-1;
 }
 
-void BingoMapping::getAll(size_t id1, Array<size_t>& id2_array)
+void BingoMapping::getAll(size_t id1, ArrayNew<size_t>& id2_array)
 {
     id2_array.clear();
 

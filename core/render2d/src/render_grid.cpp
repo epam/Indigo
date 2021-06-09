@@ -82,7 +82,7 @@ void RenderGrid::draw()
 
     maxsz.set(0, 0);
     Vec2f refSizeLT, refSizeRB;
-    Array<float> columnExtentLeft, columnExtentRight, rowExtentTop, rowExtentBottom;
+    ArrayNew<float> columnExtentLeft, columnExtentRight, rowExtentTop, rowExtentBottom;
     columnExtentLeft.clear_resize(nColumns);
     columnExtentRight.clear_resize(nColumns);
     columnExtentLeft.fill(0);

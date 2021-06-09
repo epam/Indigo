@@ -238,7 +238,7 @@ float Metalayout::getTotalMoleculeBondLength(BaseMolecule& mol)
 
 float Metalayout::getTotalMoleculeClosestDist(BaseMolecule& mol)
 {
-    QS_DEF(Array<float>, dst);
+    QS_DEF(ArrayNew<float>, dst);
     float sum = 0;
 
     dst.clear_resize(mol.vertexEnd());

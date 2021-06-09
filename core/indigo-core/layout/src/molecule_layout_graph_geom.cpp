@@ -389,7 +389,7 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
     int i, j;
     Vec2f p, p0;
     float beta = 0.f;
-    QS_DEF(Array<float>, angles);
+    QS_DEF(ArrayNew<float>, angles);
     QS_DEF(ArrayNew<int>, edges);
     QS_DEF(ArrayNew<int>, on_left);
 
@@ -649,7 +649,7 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
     int i, j;
     Vec2f p, p0;
     float beta = 0.f;
-    QS_DEF(Array<float>, angles);
+    QS_DEF(ArrayNew<float>, angles);
     QS_DEF(ArrayNew<int>, edges);
     QS_DEF(ArrayNew<int>, on_left);
 

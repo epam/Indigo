@@ -1113,7 +1113,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 void MoleculeLayoutGraphSmart::_segment_smoothing(const Cycle& cycle, const MoleculeLayoutMacrocyclesLattice& layout, ArrayNew<int>& rotation_vertex,
                                                   Array<Vec2f>& rotation_point, ObjArray<MoleculeLayoutSmoothingSegment>& segment)
 {
-    QS_DEF(Array<float>, target_angle);
+    QS_DEF(ArrayNew<float>, target_angle);
 
     _segment_update_rotation_points(cycle, rotation_vertex, rotation_point, segment);
     _segment_calculate_target_angle(layout, rotation_vertex, target_angle, segment);
@@ -1137,7 +1137,7 @@ void MoleculeLayoutGraphSmart::_segment_update_rotation_points(const Cycle& cycl
 }
 
 void MoleculeLayoutGraphSmart::_segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice& layout, ArrayNew<int>& rotation_vertex,
-                                                               Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment)
+                                                               ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment)
 {
     int segments_count = rotation_vertex.size();
 
@@ -1172,22 +1172,22 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(ObjArray<MoleculeLayou
 
     // prepearing of list of sticked pairs of vertices
 
-    QS_DEF(Array<float>, min_x);
+    QS_DEF(ArrayNew<float>, min_x);
     min_x.clear_resize(segment_count);
     for (int i = 0; i < segment_count; i++)
         min_x[i] = segment[i].get_min_x();
 
-    QS_DEF(Array<float>, max_x);
+    QS_DEF(ArrayNew<float>, max_x);
     max_x.clear_resize(segment_count);
     for (int i = 0; i < segment_count; i++)
         max_x[i] = segment[i].get_max_x();
 
-    QS_DEF(Array<float>, min_y);
+    QS_DEF(ArrayNew<float>, min_y);
     min_y.clear_resize(segment_count);
     for (int i = 0; i < segment_count; i++)
         min_y[i] = segment[i].get_min_y();
 
-    QS_DEF(Array<float>, max_y);
+    QS_DEF(ArrayNew<float>, max_y);
     max_y.clear_resize(segment_count);
     for (int i = 0; i < segment_count; i++)
         max_y[i] = segment[i].get_max_y();
@@ -1370,7 +1370,7 @@ void MoleculeLayoutGraphSmart::_update_touching_segments(Array<local_pair_ii>& p
             }
 }
 
-void MoleculeLayoutGraphSmart::_do_segment_smoothing(Array<Vec2f>& rotation_point, Array<float>& target_angle,
+void MoleculeLayoutGraphSmart::_do_segment_smoothing(Array<Vec2f>& rotation_point, ArrayNew<float>& target_angle,
                                                      ObjArray<MoleculeLayoutSmoothingSegment>& segment)
 {
     // profTimerStart(t, "_do_segment_smoothing");
@@ -1550,7 +1550,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
         }
 }
 
-void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment,
+void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment,
                                                    int move_vertex, float coef, Array<local_pair_ii>& touching_segments)
 {
     int segments_count = segment.size();
@@ -1631,7 +1631,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
     point[move_vertex] += move_vector * coef;
 }
 
-void MoleculeLayoutGraphSmart::_do_segment_smoothing_gradient(Array<Vec2f>& rotation_point, Array<float>& target_angle,
+void MoleculeLayoutGraphSmart::_do_segment_smoothing_gradient(Array<Vec2f>& rotation_point, ArrayNew<float>& target_angle,
                                                               ObjArray<MoleculeLayoutSmoothingSegment>& segment)
 {
     SmoothingCycle cycle(rotation_point, target_angle, segment);
@@ -1644,11 +1644,11 @@ void MoleculeLayoutGraphSmart::_do_segment_smoothing_gradient(Array<Vec2f>& rota
 
 CP_DEF(SmoothingCycle);
 
-SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a) : CP_INIT, point(p), target_angle(t_a), segment(0), cycle_length(-1), TL_CP_GET(edge_length)
+SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, ArrayNew<float>& t_a) : CP_INIT, point(p), target_angle(t_a), segment(0), cycle_length(-1), TL_CP_GET(edge_length)
 {
 }
 
-SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, ArrayNew<int>& e_l, int l) : SmoothingCycle(p, t_a)
+SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, ArrayNew<float>& t_a, ArrayNew<int>& e_l, int l) : SmoothingCycle(p, t_a)
 {
     cycle_length = l;
     edge_length.clear_resize(cycle_length);
@@ -1656,7 +1656,7 @@ SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, ArrayNew<int>
         edge_length[i] = _2FLOAT(e_l[i]);
 }
 
-SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, ObjArray<MoleculeLayoutSmoothingSegment>& s) : SmoothingCycle(p, t_a)
+SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, ArrayNew<float>& t_a, ObjArray<MoleculeLayoutSmoothingSegment>& s) : SmoothingCycle(p, t_a)
 {
     segment = &s[0];
     cycle_length = s.size();

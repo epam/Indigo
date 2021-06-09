@@ -348,7 +348,7 @@ namespace indigo
         void clear();
 
         ArrayNew<int> bondEnds;
-        Array<float> angles;
+        ArrayNew<float> angles;
         int dblBondCount;
         bool aromatic;
         Vec2f center;

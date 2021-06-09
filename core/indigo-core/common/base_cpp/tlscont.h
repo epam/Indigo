@@ -292,7 +292,7 @@ namespace indigo
 
     private:
         Array<void*> data;
-        Array<size_t> type_hash;
+        ArrayNew<size_t> type_hash;
         PtrArray<Destructor> destructors;
         int index;
     };

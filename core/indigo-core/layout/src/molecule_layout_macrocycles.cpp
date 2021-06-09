@@ -680,7 +680,7 @@ void rotate(int* ar, int ar_length, int shift)
 
 void rotate(float* ar, int ar_length, int shift)
 {
-    QS_DEF(Array<float>, temp);
+    QS_DEF(ArrayNew<float>, temp);
     temp.clear_resize(ar_length);
     shift = (shift % ar_length + ar_length) % ar_length;
     memcpy(temp.ptr(), ar + shift, (ar_length - shift) * sizeof(float));

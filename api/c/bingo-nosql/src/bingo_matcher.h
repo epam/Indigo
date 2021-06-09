@@ -333,7 +333,7 @@ namespace bingo
 
         int _current_cell;
         int _current_container;
-        Array<SimResult> _current_portion;
+        ArrayNew<SimResult> _current_portion;
         int _current_portion_id;
 
         // float _current_sim_value;
@@ -379,7 +379,7 @@ namespace bingo
 
     protected:
         void _findTopN();
-        void _initModelDistribution(Array<float>& thrs, ArrayNew<int>& nhits_per_block);
+        void _initModelDistribution(ArrayNew<float>& thrs, ArrayNew<int>& nhits_per_block);
         static bool _cmp_sim_res(const SimResult& res1, const SimResult& res2);
 
     private:
@@ -387,7 +387,7 @@ namespace bingo
         int _limit;
         std::vector<SimResult> _current_results;
         ArrayNew<int> _result_ids;
-        Array<float> _result_sims;
+        ArrayNew<float> _result_sims;
     };
 
     class MoleculeTopNSimMatcher : public TopNSimMatcher

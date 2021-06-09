@@ -818,8 +818,8 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
 
     // for (int i = 0; i < vertex_count; i++) printf("%d: (%.5f, %.5f)\n", i, pos[i].x, pos[i].y);
 
-    QS_DEF(Array<float>, mult);
-    QS_DEF(Array<float>, energies);
+    QS_DEF(ArrayNew<float>, mult);
+    QS_DEF(ArrayNew<float>, energies);
 
     int k = 20;
     mult.clear_resize(k + 1);
@@ -927,7 +927,7 @@ float MoleculeCleaner2d::_energy()
             const Vertex& vert = _mol.getVertex(i);
             if (clean_external_angles)
             {
-                QS_DEF(Array<float>, angles);
+                QS_DEF(ArrayNew<float>, angles);
                 angles.clear();
                 for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1))
                 {

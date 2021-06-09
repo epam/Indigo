@@ -984,7 +984,7 @@ bool TopNSimMatcher::next()
 
 void TopNSimMatcher::_findTopN()
 {
-    QS_DEF(Array<float>, thrs);
+    QS_DEF(ArrayNew<float>, thrs);
     QS_DEF(ArrayNew<int>, nhits_per_block);
     QS_DEF(ArrayNew<int>, blocks);
     QS_DEF(ArrayNew<int>, cells);
@@ -1246,7 +1246,7 @@ bool TopNSimMatcher::_cmp_sim_res( const SimResult& res1, const SimResult& res2 
     return res1.sim_value < res2.sim_value;
 }
 
-void TopNSimMatcher::_initModelDistribution(Array<float>& model_thrs, ArrayNew<int>& model_nhits_per_block)
+void TopNSimMatcher::_initModelDistribution(ArrayNew<float>& model_thrs, ArrayNew<int>& model_nhits_per_block)
 {
     for (int i = 0; i < 9; i++)
     {

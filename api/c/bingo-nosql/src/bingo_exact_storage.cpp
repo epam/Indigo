@@ -46,7 +46,7 @@ void ExactStorage::findCandidates(dword query_hash, ArrayNew<int>& candidates, i
     if (query_hash < first_hash || query_hash > last_hash)
         return;
 
-    Array<size_t> indices;
+    ArrayNew<size_t> indices;
     _molecule_hashes.getAll(query_hash, indices);
 
     for (int i = 0; i < indices.size(); i++)

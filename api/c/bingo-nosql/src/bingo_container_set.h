@@ -36,11 +36,11 @@ namespace bingo
 
         void splitSet(ContainerSet& new_set);
 
-        void findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_indices);
+        void findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_indices);
 
         void optimize();
 
-        int getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cont_idx);
+        int getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices, int cont_idx);
 
     private:
         BingoArray<MultibitTree> _set;
@@ -54,7 +54,7 @@ namespace bingo
         int _min_ones_count;
         int _max_ones_count;
 
-        int _findSimilarInc(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_indices);
+        int _findSimilarInc(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_indices);
     };
 }; // namespace bingo
 

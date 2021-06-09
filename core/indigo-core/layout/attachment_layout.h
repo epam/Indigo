@@ -41,7 +41,7 @@ namespace indigo
         TL_CP_DECL(ArrayNew<int>, _src_vertex_map); // _src_vertex_map[j] - index of the vertex _src_vertex in j component
         TL_CP_DECL(ArrayNew<int>, _attached_bc);    // BCnumbers[j] - index of j component attached;
                                                  // BCnumbers[size-1] - drawn
-        TL_CP_DECL(Array<float>, _bc_angles);    // BCangles[j] - internal angle of j component attached, 0 if single edge
+        TL_CP_DECL(ArrayNew<float>, _bc_angles);    // BCangles[j] - internal angle of j component attached, 0 if single edge
         TL_CP_DECL(ArrayNew<int>, _vertices_l);     // _vertices_l[j] - index of the vertex in j component such the j component
                                                  // lays on the left (CCW) from edge (v, _vertices_l[j]];
         float _alpha;                            // if positive then angle between components

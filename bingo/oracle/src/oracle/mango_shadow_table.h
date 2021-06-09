@@ -73,7 +73,7 @@ protected:
     Array<char[512]> _pending_gross;
     ObjArray<OracleRaw> _pending_cmf;
     ObjArray<OracleRaw> _pending_xyz;
-    Array<float> _pending_mass;
+    ArrayNew<float> _pending_mass;
     ArrayNew<int> _pending_fragcount;
     ObjArray<ArrayNew<int>> _pending_counters;
 

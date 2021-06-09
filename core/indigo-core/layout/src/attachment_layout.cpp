@@ -105,7 +105,7 @@ float AttachmentLayout::calculateEnergy()
     int i, j;
     float sum_a;
     float r;
-    QS_DEF(Array<float>, norm_a);
+    QS_DEF(ArrayNew<float>, norm_a);
     QS_DEF(ArrayNew<int>, drawn_vertices);
 
     drawn_vertices.clear_resize(_graph.vertexEnd());

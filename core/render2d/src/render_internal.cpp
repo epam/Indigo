@@ -988,7 +988,7 @@ int evcmp(const Event& a, const Event& b, void* context)
 
 float getFreeAngle(const ObjArray<Vec2f>& pp)
 {
-    QS_DEF(Array<float>, angle);
+    QS_DEF(ArrayNew<float>, angle);
     angle.clear();
     int len = pp.size();
     for (int j = 0; j < len; ++j)
@@ -3394,7 +3394,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     }
 
     // prepare R-group attachment point labels
-    QS_DEF(Array<float>, angles);
+    QS_DEF(ArrayNew<float>, angles);
     QS_DEF(ArrayNew<int>, split);
     QS_DEF(ArrayNew<int>, rGroupAttachmentIndices);
 

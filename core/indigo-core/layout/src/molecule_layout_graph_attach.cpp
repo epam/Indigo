@@ -827,7 +827,7 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
     Vec2f v1, v2, p0;
     float phi;
 
-    QS_DEF(Array<float>, angles); // polar angles of drawn edges
+    QS_DEF(ArrayNew<float>, angles); // polar angles of drawn edges
     QS_DEF(ArrayNew<int>, edges);    // edge indices in CCW order
 
     angles.clear();
@@ -1030,8 +1030,8 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, ArrayNew<
 
 void MoleculeLayoutGraph::_orderByEnergy(Array<Vec2f>& positions)
 {
-    QS_DEF(Array<float>, energies);
-    QS_DEF(Array<float>, norm_a);
+    QS_DEF(ArrayNew<float>, energies);
+    QS_DEF(ArrayNew<float>, norm_a);
     float norm = 0.0;
     float r = 0.f;
     Vec2f p0;

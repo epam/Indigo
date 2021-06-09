@@ -179,26 +179,26 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         mols.push(params.mol.get());
 
     Vec2f offset(0, 0);
-    Array<float> column_widths;
+    ArrayNew<float> column_widths;
     column_widths.resize(params.cnvOpt.gridColumnNumber);
     column_widths.fill(0);
 
-    Array<float> title_widths;
+    ArrayNew<float> title_widths;
     title_widths.resize(mols.size());
     title_widths.fill(0);
 
-    Array<float> key_widths;
+    ArrayNew<float> key_widths;
     key_widths.resize(mols.size());
     key_widths.fill(0);
 
-    Array<float> prop_widths;
+    ArrayNew<float> prop_widths;
     prop_widths.resize(mols.size());
     prop_widths.fill(0);
 
     Array<Pos> positions;
     positions.resize(mols.size());
 
-    Array<float> title_heights;
+    ArrayNew<float> title_heights;
     title_heights.resize(mols.size());
     title_heights.fill(0);
 
@@ -253,7 +253,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     float x_margins_base = 1.1f, y_margins_base = 1.1f;
     float x_grid_base = 1.5f;
 
-    Array<float> column_offset;
+    ArrayNew<float> column_offset;
     column_offset.resize(params.cnvOpt.gridColumnNumber);
     column_offset[0] = params.cnvOpt.marginX / 10.0f + x_margins_base;
     for (int i = 1; i < params.cnvOpt.gridColumnNumber; i++)
