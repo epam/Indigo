@@ -333,7 +333,7 @@ namespace bingo
 
         int _current_cell;
         int _current_container;
-        ArrayNew<SimResult> _current_portion;
+        Array<SimResult> _current_portion;
         int _current_portion_id;
 
         // float _current_sim_value;
