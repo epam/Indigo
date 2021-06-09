@@ -1093,14 +1093,14 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         qmol = (QueryMolecule*)(&mol);
 
     int i;
-    QS_DEF(Array<int[2]>, radicals);
+    QS_DEF(Array<IntPair>, radicals);
     QS_DEF(Array<int>, charges);
     QS_DEF(Array<int>, isotopes);
     QS_DEF(Array<int>, pseudoatoms);
     QS_DEF(Array<int>, atom_lists);
     QS_DEF(Array<int>, unsaturated);
-    QS_DEF(Array<int[2]>, substitution_count);
-    QS_DEF(Array<int[2]>, ring_bonds);
+    QS_DEF(Array<IntPair>, substitution_count);
+    QS_DEF(Array<IntPair>, ring_bonds);
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
@@ -1245,7 +1245,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
         if (radical != 0)
         {
-            int* r = radicals.push();
+            auto& r = radicals.push();
             r[0] = i;
             r[1] = radical;
         }
@@ -1258,14 +1258,14 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             int rbc;
             if (_getRingBondCountFlagValue(*qmol, i, rbc))
             {
-                int* r = ring_bonds.push();
+                auto& r = ring_bonds.push();
                 r[0] = i;
                 r[1] = rbc;
             }
             int subst;
             if (_getSubstitutionCountFlagValue(*qmol, i, subst))
             {
-                int* s = substitution_count.push();
+                auto& s = substitution_count.push();
                 s[0] = i;
                 s[1] = subst;
             }
@@ -2131,7 +2131,7 @@ void MolfileSaver::_addCIPStereoDescriptors(BaseMolecule& mol)
 
     QS_DEF(Array<int>, ignored);
 
-    QS_DEF(Array<int[2]>, equiv_ligands);
+    QS_DEF(Array<IntPair>, equiv_ligands);
 
     int atom_idx, type, group, pyramid[4];
 
@@ -2306,7 +2306,7 @@ void MolfileSaver::_addCIPSgroups(BaseMolecule& mol, Array<int>& atom_cip_desc, 
 }
 
 void MolfileSaver::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<int>& atom_cip_desc, Array<int>& stereo_passed,
-                                           bool use_stereo, Array<int[2]>& equiv_ligands, bool& digraph_cip_used)
+                                           bool use_stereo, Array<IntPair>& equiv_ligands, bool& digraph_cip_used)
 {
     Array<int> ligands;
     Array<int> used1;
@@ -2456,7 +2456,7 @@ void MolfileSaver::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfo
     return;
 }
 
-int MolfileSaver::_calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, Array<int>& ligands, Array<int[2]>& equiv_ligands)
+int MolfileSaver::_calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, Array<int>& ligands, Array<IntPair>& equiv_ligands)
 {
     QS_DEF(Molecule, digraph);
     QS_DEF(Array<int>, mapping);
@@ -2511,7 +2511,7 @@ int MolfileSaver::_calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, Arr
 
     QS_DEF(Array<int>, ignored);
 
-    QS_DEF(Array<int[2]>, new_equiv_ligands);
+    QS_DEF(Array<IntPair>, new_equiv_ligands);
 
     int new_atom_idx, type, group, pyramid[4];
 
@@ -2844,7 +2844,7 @@ void MolfileSaver::_calcStereocenters(Molecule& source, Molecule& mol, Array<int
     }
 }
 
-bool MolfileSaver::_checkLigandsEquivalence(Array<int>& ligands, Array<int[2]>& equiv_ligands, CIPContext& context)
+bool MolfileSaver::_checkLigandsEquivalence(Array<int>& ligands, Array<IntPair>& equiv_ligands, CIPContext& context)
 {
     int neq = 0;
     bool rule_5_used = false;
@@ -2860,7 +2860,7 @@ bool MolfileSaver::_checkLigandsEquivalence(Array<int>& ligands, Array<int[2]>& 
 
             if (_cip_rules_cmp(ligands[k], ligands[l], &context) == 0)
             {
-                int* equiv_pair = equiv_ligands.push();
+                auto& equiv_pair = equiv_ligands.push();
                 equiv_pair[0] = ligands[k];
                 equiv_pair[1] = ligands[l];
                 neq++;
@@ -2874,7 +2874,7 @@ bool MolfileSaver::_checkLigandsEquivalence(Array<int>& ligands, Array<int[2]>& 
     return neq != 0;
 }
 
-bool MolfileSaver::_isPseudoAssymCenter(BaseMolecule& mol, int idx, Array<int>& atom_cip_desc, Array<int>& ligands, Array<int[2]>& equiv_ligands)
+bool MolfileSaver::_isPseudoAssymCenter(BaseMolecule& mol, int idx, Array<int>& atom_cip_desc, Array<int>& ligands, Array<IntPair>& equiv_ligands)
 {
     int neq = 0;
     for (int k = 0; k < 3; k++)
