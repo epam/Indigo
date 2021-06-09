@@ -136,6 +136,8 @@ namespace indigo
 
         void appendString(const char* str, bool keep_zero)
         {
+            if ( _arr.size() && !_arr.back() )
+                _arr.resize( strlen( _arr.data()));
             _arr.append(str);
             if (keep_zero)
                 push(0);
