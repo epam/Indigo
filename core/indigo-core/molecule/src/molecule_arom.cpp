@@ -865,7 +865,9 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
                     mol.getAllowedRGroups(v, sites);
                     for (int j = 0; j < sites.size(); j++)
                     {
-                        rgroups_attached_single.resize(sites[j] + 1, true);
+                        auto new_size = sites[j] + 1;
+                        if (new_size > rgroups_attached_single.size())
+                            rgroups_attached_single.resize(new_size, true);
                         rgroups_attached_single[sites[j]] = false;
                     }
                 }
@@ -873,7 +875,9 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
         }
     }
 
-    rgroups_attached_single.resize(n_rgroups + 1, true);
+    auto new_size = n_rgroups + 1;
+    if (new_size > rgroups_attached_single.size())
+        rgroups_attached_single.resize(new_size, true);
     for (int i = 1; i <= n_rgroups; i++)
     {
         PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
@@ -1034,8 +1038,8 @@ void QueryMoleculeAromaticity::setCanBeAromatic(int edge_index, bool state)
 {
     if (state == false && edge_index >= can_bond_be_aromatic.size())
         return;
-
-    can_bond_be_aromatic.resize(edge_index + 1, false);
+    if( edge_index + 1 > can_bond_be_aromatic.size() )
+        can_bond_be_aromatic.resize(edge_index + 1, false);
     can_bond_be_aromatic[edge_index] = state;
 }
 

@@ -21,8 +21,8 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_standardize.h"
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 using namespace indigo;
 
@@ -1602,8 +1602,8 @@ void QueryMolecule::setBondStereoCare(int idx, bool stereo_care)
 {
     if (stereo_care == false && idx >= _bond_stereo_care.size())
         return;
-
-    _bond_stereo_care.resize(idx + 1, false);
+    if (idx + 1 > _bond_stereo_care.size())
+        _bond_stereo_care.resize(idx + 1, false);
     _bond_stereo_care[idx] = stereo_care;
     updateEditRevision();
 }
@@ -2107,14 +2107,13 @@ bool QueryMolecule::standardize(const StandardizeOptions& options)
     return MoleculeStandardizer::standardize(*this, options);
 }
 
-int QueryMolecule::getAtomType( const char* label )
+int QueryMolecule::getAtomType(const char* label)
 {
-    static const std::unordered_map< std::string, int > atom_types = { { "R", _ATOM_R }, { "A", _ATOM_A }, { "X", _ATOM_X }, { "Q", _ATOM_Q },
-                                                                       { "M", _ATOM_M }, { "AH", _ATOM_AH }, { "XH", _ATOM_XH }, { "QH", _ATOM_QH },
-                                                                       { "XH", _ATOM_XH }, { "QH", _ATOM_QH }, { "MH", _ATOM_MH }
-                                                                     } ;
-    auto it = atom_types.find( label );
-    if( it != atom_types.end() )
+    static const std::unordered_map<std::string, int> atom_types = {{"R", _ATOM_R},   {"A", _ATOM_A},   {"X", _ATOM_X},   {"Q", _ATOM_Q},
+                                                                    {"M", _ATOM_M},   {"AH", _ATOM_AH}, {"XH", _ATOM_XH}, {"QH", _ATOM_QH},
+                                                                    {"XH", _ATOM_XH}, {"QH", _ATOM_QH}, {"MH", _ATOM_MH}};
+    auto it = atom_types.find(label);
+    if (it != atom_types.end())
         return it->second;
     return _ATOM_PSEUDO;
 }

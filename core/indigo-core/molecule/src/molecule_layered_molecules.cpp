@@ -51,7 +51,8 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule) : _layersAromatized(0
         _bond_masks[_proto.getBondOrder(e_idx)].top().set(0);
     }
 
-    _mobilePositions.resize(_proto.vertexCount(), false);
+    if (_proto.vertexCount() > _mobilePositions.size() )
+        _mobilePositions.resize(_proto.vertexCount(), false);
     _mobilePositionsOccupied.expand(_proto.vertexCount());
 
     layers = 1;
@@ -133,7 +134,8 @@ bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset& mask, const Arra
 {
     QS_DEF(ArrayBool, edgeIsOnPath); // indicates if an edge is on path that needs to be inverted
     edgeIsOnPath.clear();
-    edgeIsOnPath.resize(edgeCount(), false);
+    if (edgeCount() > edgeIsOnPath.size())
+        edgeIsOnPath.resize(edgeCount(), false);
     for (auto i = 0; i < edgesPath.size(); ++i)
     {
         edgeIsOnPath[edgesPath[i]] = true;
