@@ -1048,14 +1048,10 @@ void TopNSimMatcher::_findTopN()
             cnt = 0;
             _current_results.clear();
 
-            SimResult* res = 0;
-
             while (BaseSimilarityMatcher::next())
             {
                 cnt++;
-                res = &_current_results.push();
-                res->id = _current_id;
-                res->sim_value = _current_sim_value;
+                _current_results.emplace_back(_current_id, _current_sim_value);
                 cur_cell = currentCell();
                 if ((cnt > hits_limit * 2) && ((max_cell - cur_cell) > cells_count / 2))
                 {
@@ -1104,14 +1100,10 @@ void TopNSimMatcher::_findTopN()
             cnt = 0;
             _current_results.clear();
 
-            SimResult* res = 0;
-
             while (BaseSimilarityMatcher::next())
             {
                 cnt++;
-                res = &_current_results.push();
-                res->id = _current_id;
-                res->sim_value = _current_sim_value;
+                _current_results.emplace_back(_current_id, _current_sim_value);
 
                 if (cnt > hits_limit * 2)
                 {
@@ -1181,14 +1173,10 @@ void TopNSimMatcher::_findTopN()
                 cnt = 0;
                 _current_results.clear();
 
-                SimResult* res = 0;
-
                 while (BaseSimilarityMatcher::next())
                 {
                     cnt++;
-                    res = &_current_results.push();
-                    res->id = _current_id;
-                    res->sim_value = _current_sim_value;
+                    _current_results.emplace_back(_current_id, _current_sim_value);
                     cur_cell = currentCell();
                     if ((cnt > hits_limit * 2) && (max_cell - cur_cell) > cells_count / 2)
                     {
@@ -1241,8 +1229,7 @@ void TopNSimMatcher::_findTopN()
 
     if (_current_results.size() > 0)
     {
-        _current_results.qsort(_cmp_sim_res, 0);
-
+        std::sort(_current_results.begin(), _current_results.end(), TopNSimMatcher::_cmp_sim_res);
         for (i = 0; i < _current_results.size(); i++)
         {
             _result_ids.push(_current_results[i].id);
@@ -1254,14 +1241,9 @@ void TopNSimMatcher::_findTopN()
     }
 }
 
-int TopNSimMatcher::_cmp_sim_res(SimResult& res1, SimResult& res2, void* context)
+int TopNSimMatcher::_cmp_sim_res( const SimResult& res1, const SimResult& res2 )
 {
-    if ((res1.sim_value - res2.sim_value) > 0.0)
-        return -1;
-    else if ((res1.sim_value - res2.sim_value) < 0.0)
-        return 1;
-
-    return 0;
+    return res1.sim_value < res2.sim_value;
 }
 
 void TopNSimMatcher::_initModelDistribution(Array<float>& model_thrs, Array<int>& model_nhits_per_block)
