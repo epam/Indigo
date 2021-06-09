@@ -1064,7 +1064,7 @@ namespace indigo
 
     private:
         Array(const Array&);                            // no implicit copy
-        ArrayNew<int>& operator=(const ArrayNew<int>& right); // no copy constructor
+        Array<int>& operator=(const Array<int>& right); // no copy constructor
 
         template <typename T1, typename T2> class _CmpFunctorCaller
         {
