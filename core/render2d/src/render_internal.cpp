@@ -803,8 +803,8 @@ void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
 
 void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms, Array<std::array<Vec2f, 2>>& brackets)
 {
-    auto left = brackets.push();
-    auto right = brackets.push();
+    auto& left = brackets.push();
+    auto& right = brackets.push();
 
     Vec2f min, max, a, b;
     for (int i = 0; i < atoms.size(); ++i)
