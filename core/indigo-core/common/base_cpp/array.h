@@ -1651,7 +1651,7 @@ namespace indigo
         };
     };
 
-    class ArrayInt : public ArrayIntWrapper
+    class ArrayInt : public ArrayInt2
     {
     };
 
