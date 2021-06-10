@@ -36,11 +36,11 @@ namespace indigo
         void* check_edge_context;
         bool (*cb_check_edge)(const Graph& graph, int e_idx, void* context);
 
-        bool find(ArrayNew<int>& vertices, ArrayNew<int>& edges, int u, int v);
+        bool find(ArrayInt& vertices, ArrayInt& edges, int u, int v);
 
     private:
         Queue<int> queue;
-        ArrayNew<int> prev;
+        ArrayInt prev;
         const Graph& _graph;
     };
 

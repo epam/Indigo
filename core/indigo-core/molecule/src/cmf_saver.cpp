@@ -73,7 +73,7 @@ void CmfSaver::saveMolecule(Molecule& mol)
 {
     /* Walk molecule */
     DfsWalk walk(mol);
-    QS_DEF(ArrayNew<int>, mapping);
+    QS_DEF(ArrayInt, mapping);
 
     if (_ext_encoder != 0)
         _ext_encoder->start();
@@ -86,8 +86,8 @@ void CmfSaver::saveMolecule(Molecule& mol)
     /* Calculate mapping to the encoded molecule */
     walk.calcMapping(mapping);
 
-    QS_DEF(ArrayNew<int>, branch_counters);
-    QS_DEF(ArrayNew<int>, cycle_numbers);
+    QS_DEF(ArrayInt, branch_counters);
+    QS_DEF(ArrayInt, cycle_numbers);
 
     branch_counters.clear_resize(mol.vertexEnd());
     branch_counters.zerofill();
@@ -95,7 +95,7 @@ void CmfSaver::saveMolecule(Molecule& mol)
 
     _atom_sequence.clear();
 
-    QS_DEF(ArrayNew<int>, bond_mapping);
+    QS_DEF(ArrayInt, bond_mapping);
     bond_mapping.clear_resize(mol.edgeEnd());
     bond_mapping.fffill();
     int bond_index = 0;
@@ -226,7 +226,7 @@ void CmfSaver::saveMolecule(Molecule& mol)
     _mol = &mol;
 }
 
-void CmfSaver::_encodeUIntArray(const ArrayNew<int>& data, const ArrayNew<int>& mapping)
+void CmfSaver::_encodeUIntArray(const ArrayInt& data, const ArrayInt& mapping)
 {
     _output->writePackedUInt(data.size());
     for (int i = 0; i < data.size(); i++)
@@ -241,7 +241,7 @@ void CmfSaver::_encodeUIntArray(const ArrayNew<int>& data, const ArrayNew<int>& 
     }
 }
 
-void CmfSaver::_encodeUIntArray(const ArrayNew<int>& data)
+void CmfSaver::_encodeUIntArray(const ArrayInt& data)
 {
     _output->writePackedUInt(data.size());
     for (int i = 0; i < data.size(); i++)
@@ -253,7 +253,7 @@ void CmfSaver::_encodeUIntArray(const ArrayNew<int>& data)
     }
 }
 
-void CmfSaver::_encodeUIntArraySkipNegative(const ArrayNew<int>& data)
+void CmfSaver::_encodeUIntArraySkipNegative(const ArrayInt& data)
 {
     int len = 0;
     for (int i = 0; i < data.size(); i++)
@@ -901,7 +901,7 @@ void CmfSaver::saveXyz(Output& output)
     _writeSGroupsXyz(*_mol, output, range);
 }
 
-const ArrayNew<int>& CmfSaver::getAtomSequence()
+const ArrayInt& CmfSaver::getAtomSequence()
 {
     return _atom_sequence;
 }

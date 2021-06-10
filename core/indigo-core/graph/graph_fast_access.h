@@ -61,7 +61,7 @@ namespace indigo
     private:
         Graph* _g;
 
-        ArrayNew<int> _vertices;
+        ArrayInt _vertices;
 
         struct VertexNeiBlock
         {
@@ -69,7 +69,7 @@ namespace indigo
             int e_begin, e_count;
         };
         Array<VertexNeiBlock> _vertices_nei;
-        ArrayNew<int> _nei_vertices_data, _nei_edges_data;
+        ArrayInt _nei_vertices_data, _nei_edges_data;
 
         Array<Edge> _edges;
     };

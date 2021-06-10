@@ -51,9 +51,9 @@ namespace indigo
         void _addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, int arrow_id);
         void _addScheme(MoleculeCdxmlSaver& molsaver);
         void _closeScheme(MoleculeCdxmlSaver& molsaver);
-        void _addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, ArrayNew<int>& reactants_ids, ArrayNew<int>& products_ids, ObjArray<ArrayNew<int>>& nodes_ids,
+        void _addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, ArrayInt& reactants_ids, ArrayInt& products_ids, ObjArray<ArrayInt>& nodes_ids,
                       int arrow_id);
-        void _generateCdxmlObjIds(BaseReaction& rxn, ArrayNew<int>& reactants_ids, ArrayNew<int>& products_ids, ObjArray<ArrayNew<int>>& nodes_ids, int& arrow_id);
+        void _generateCdxmlObjIds(BaseReaction& rxn, ArrayInt& reactants_ids, ArrayInt& products_ids, ObjArray<ArrayInt>& nodes_ids, int& arrow_id);
         void _addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
     };
 

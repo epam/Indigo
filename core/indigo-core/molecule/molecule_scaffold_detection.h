@@ -41,7 +41,7 @@ namespace indigo
             // initializes molecules basket
             void initBasket(ObjArray<Molecule>* mol_set, ObjArray<QueryMolecule>* basket_set, int max_number);
             // this method adds molecules from set (defines with edges and vertices lists) to basket queue
-            void addToNextEmptySpot(Graph& graph, ArrayNew<int>& v_list, ArrayNew<int>& e_list) override;
+            void addToNextEmptySpot(Graph& graph, ArrayInt& v_list, ArrayInt& e_list) override;
 
             Graph& getGraphFromSet(int idx) override
             {
@@ -92,7 +92,7 @@ namespace indigo
         int (*cbSortSolutions)(Molecule& mol1, Molecule& mol2, const void* userdata);
 
         static void clone(QueryMolecule& mol, Molecule& other);
-        static void makeEdgeSubmolecule(QueryMolecule& mol, Molecule& other, ArrayNew<int>& v_list, ArrayNew<int>& e_list);
+        static void makeEdgeSubmolecule(QueryMolecule& mol, Molecule& other, ArrayInt& v_list, ArrayInt& e_list);
 
         static bool matchBonds(Graph& g1, Graph& g2, int i, int j, void* userdata);
         static bool matchAtoms(Graph& g1, Graph& g2, const int* core_sub, int i, int j, void* userdata);

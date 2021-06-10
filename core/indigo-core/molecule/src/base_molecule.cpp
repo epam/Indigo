@@ -121,9 +121,9 @@ bool BaseMolecule::hasZCoord(BaseMolecule& mol)
     return false;
 }
 
-void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, ArrayNew<int>& mapping)
+void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, ArrayInt& mapping)
 {
-    QS_DEF(ArrayNew<int>, edge_mapping);
+    QS_DEF(ArrayInt, edge_mapping);
     edge_mapping.clear_resize(mol.edgeEnd());
     edge_mapping.fffill();
 
@@ -132,7 +132,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, ArrayNew<int>&
     mergeSGroupsWithSubmolecule(mol, mapping, edge_mapping);
 }
 
-void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, ArrayNew<int>& mapping, ArrayNew<int>& edge_mapping)
+void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, ArrayInt& mapping, ArrayInt& edge_mapping)
 {
     int i;
 
@@ -237,8 +237,8 @@ void BaseMolecule::clearSGroups()
     sgroups.clear();
 }
 
-void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, ArrayNew<int>& mapping,
-                                             ArrayNew<int>& edge_mapping, int skip_flags)
+void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt* edges, ArrayInt& mapping,
+                                             ArrayInt& edge_mapping, int skip_flags)
 {
     QS_DEF(ArrayChar, apid);
     int i;
@@ -320,7 +320,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const ArrayNew<i
                 continue;
             if (mol._rsite_attachment_points.size() <= vertices[i])
                 continue;
-            ArrayNew<int>& ap = mol._rsite_attachment_points[vertices[i]];
+            ArrayInt& ap = mol._rsite_attachment_points[vertices[i]];
             int j;
 
             for (j = 0; j < ap.size(); j++)
@@ -454,10 +454,10 @@ void BaseMolecule::_flipTemplateAtomAttachmentPoint(int idx, int atom_from, Arra
     }
 }
 
-void BaseMolecule::mergeWithSubmolecule(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, ArrayNew<int>* mapping_out, int skip_flags)
+void BaseMolecule::mergeWithSubmolecule(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt* edges, ArrayInt* mapping_out, int skip_flags)
 {
-    QS_DEF(ArrayNew<int>, tmp_mapping);
-    QS_DEF(ArrayNew<int>, edge_mapping);
+    QS_DEF(ArrayInt, tmp_mapping);
+    QS_DEF(ArrayInt, edge_mapping);
 
     if (mapping_out == 0)
         mapping_out = &tmp_mapping;
@@ -511,7 +511,7 @@ int BaseMolecule::mergeAtoms(int atom1, int atom2)
         if (is_cs2)
             cis_trans.setParity(cs_bond2_idx, 0);
 
-        QS_DEF(ArrayNew<int>, neighbors);
+        QS_DEF(ArrayInt, neighbors);
         neighbors.clear();
         for (int i = v2.neiBegin(); i != v2.neiEnd(); i = v2.neiNext(i))
             neighbors.push(v2.neiVertex(i));
@@ -591,15 +591,15 @@ void BaseMolecule::flipBond(int atom_parent, int atom_from, int atom_to)
     updateEditRevision();
 }
 
-void BaseMolecule::makeSubmolecule(BaseMolecule& mol, const ArrayNew<int>& vertices, ArrayNew<int>* mapping_out, int skip_flags)
+void BaseMolecule::makeSubmolecule(BaseMolecule& mol, const ArrayInt& vertices, ArrayInt* mapping_out, int skip_flags)
 {
     clear();
     mergeWithSubmolecule(mol, vertices, 0, mapping_out, skip_flags);
 }
 
-void BaseMolecule::makeSubmolecule(BaseMolecule& other, const Filter& filter, ArrayNew<int>* mapping_out, ArrayNew<int>* inv_mapping, int skip_flags)
+void BaseMolecule::makeSubmolecule(BaseMolecule& other, const Filter& filter, ArrayInt* mapping_out, ArrayInt* inv_mapping, int skip_flags)
 {
-    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayInt, vertices);
 
     if (mapping_out == 0)
         mapping_out = &vertices;
@@ -609,15 +609,15 @@ void BaseMolecule::makeSubmolecule(BaseMolecule& other, const Filter& filter, Ar
     makeSubmolecule(other, *mapping_out, inv_mapping, skip_flags);
 }
 
-void BaseMolecule::makeEdgeSubmolecule(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, ArrayNew<int>* v_mapping, int skip_flags)
+void BaseMolecule::makeEdgeSubmolecule(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt& edges, ArrayInt* v_mapping, int skip_flags)
 {
     clear();
     mergeWithSubmolecule(mol, vertices, &edges, v_mapping, skip_flags);
 }
 
-void BaseMolecule::clone(BaseMolecule& other, ArrayNew<int>* mapping, ArrayNew<int>* inv_mapping, int skip_flags)
+void BaseMolecule::clone(BaseMolecule& other, ArrayInt* mapping, ArrayInt* inv_mapping, int skip_flags)
 {
-    QS_DEF(ArrayNew<int>, tmp_mapping);
+    QS_DEF(ArrayInt, tmp_mapping);
 
     if (mapping == 0)
         mapping = &tmp_mapping;
@@ -634,9 +634,9 @@ void BaseMolecule::clone(BaseMolecule& other, ArrayNew<int>* mapping, ArrayNew<i
 
 void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
 {
-    QS_DEF(ArrayNew<int>, mapping);
-    QS_DEF(ArrayNew<int>, edge_mapping);
-    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayInt, mapping);
+    QS_DEF(ArrayInt, edge_mapping);
+    QS_DEF(ArrayInt, vertices);
     int i;
 
     mapping.clear_resize(other.vertexEnd());
@@ -663,9 +663,9 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     name.copy(other.name);
 }
 
-void BaseMolecule::mergeWithMolecule(BaseMolecule& other, ArrayNew<int>* mapping, int skip_flags)
+void BaseMolecule::mergeWithMolecule(BaseMolecule& other, ArrayInt* mapping, int skip_flags)
 {
-    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayInt, vertices);
     int i;
 
     vertices.clear();
@@ -676,9 +676,9 @@ void BaseMolecule::mergeWithMolecule(BaseMolecule& other, ArrayNew<int>* mapping
     mergeWithSubmolecule(other, vertices, 0, mapping, skip_flags);
 }
 
-void BaseMolecule::removeAtoms(const ArrayNew<int>& indices)
+void BaseMolecule::removeAtoms(const ArrayInt& indices)
 {
-    QS_DEF(ArrayNew<int>, mapping);
+    QS_DEF(ArrayInt, mapping);
     int i, j;
 
     mapping.clear_resize(vertexEnd());
@@ -735,7 +735,7 @@ void BaseMolecule::removeAtoms(const ArrayNew<int>& indices)
 
 void BaseMolecule::removeAtom(int idx)
 {
-    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayInt, vertices);
 
     vertices.clear();
     vertices.push(idx);
@@ -744,15 +744,15 @@ void BaseMolecule::removeAtom(int idx)
 
 void BaseMolecule::removeAtoms(const Filter& filter)
 {
-    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayInt, vertices);
 
     filter.collectGraphVertices(*this, vertices);
     removeAtoms(vertices);
 }
 
-void BaseMolecule::removeBonds(const ArrayNew<int>& indices)
+void BaseMolecule::removeBonds(const ArrayInt& indices)
 {
-    QS_DEF(ArrayNew<int>, mapping);
+    QS_DEF(ArrayInt, mapping);
     int i, j;
 
     mapping.clear_resize(edgeEnd());
@@ -791,7 +791,7 @@ void BaseMolecule::removeBonds(const ArrayNew<int>& indices)
 
 void BaseMolecule::removeBond(int idx)
 {
-    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayInt, edges);
 
     edges.clear();
     edges.push(idx);
@@ -807,7 +807,7 @@ void BaseMolecule::removeSGroup(int idx)
 
 void BaseMolecule::removeSGroupWithBasis(int idx)
 {
-    QS_DEF(ArrayNew<int>, sg_atoms);
+    QS_DEF(ArrayInt, sg_atoms);
     SGroup& sg = sgroups.getSGroup(idx);
     _checkSgroupHierarchy(sg.parent_group, sg.original_group);
     sg_atoms.copy(sg.atoms);
@@ -849,7 +849,7 @@ int BaseMolecule::getVacantPiOrbitals(int group, int charge, int radical, int co
     return vacant;
 }
 
-void BaseMolecule::_postMergeWithSubmolecule(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping, int skip_flags)
+void BaseMolecule::_postMergeWithSubmolecule(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt* edges, const ArrayInt& mapping, int skip_flags)
 {
 }
 
@@ -857,11 +857,11 @@ void BaseMolecule::_flipBond(int atom_parent, int atom_from, int atom_to)
 {
 }
 
-void BaseMolecule::_removeAtoms(const ArrayNew<int>& indices, const int* mapping)
+void BaseMolecule::_removeAtoms(const ArrayInt& indices, const int* mapping)
 {
 }
 
-void BaseMolecule::_removeBonds(const ArrayNew<int>& indices)
+void BaseMolecule::_removeBonds(const ArrayInt& indices)
 {
 }
 
@@ -962,7 +962,7 @@ int BaseMolecule::possibleAtomTotalH(int idx, int hcount)
     return true;
 }
 
-void BaseMolecule::getAllowedRGroups(int atom_idx, ArrayNew<int>& rgroup_list)
+void BaseMolecule::getAllowedRGroups(int atom_idx, ArrayInt& rgroup_list)
 {
     rgroup_list.clear();
 
@@ -1211,7 +1211,7 @@ void BaseMolecule::collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping&
     if (group.atoms.size() != group.multiplier * group.parent_atoms.size())
         throw Error("The group is already collapsed or invalid");
 
-    QS_DEF(ArrayNew<int>, toRemove);
+    QS_DEF(ArrayInt, toRemove);
     toRemove.clear();
 
     for (int j = 0; j < group.atoms.size(); ++j)
@@ -1255,7 +1255,7 @@ void BaseMolecule::collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping&
 int BaseMolecule::transformSCSRtoFullCTAB()
 {
     int result = 0;
-    QS_DEF(ArrayNew<int>, tinds);
+    QS_DEF(ArrayInt, tinds);
     tinds.clear();
 
     for (auto i : vertices())
@@ -1291,30 +1291,30 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
     QS_DEF(Molecule, fragment);
     QS_DEF(Molecule, su_fragment);
     QS_DEF(Molecule, rep);
-    QS_DEF(ArrayNew<int>, added_templates);
-    QS_DEF(ArrayNew<int>, added_template_occurs);
-    QS_DEF(ArrayNew<int>, new_templates);
-    QS_DEF(ArrayNew<int>, new_template_occurs);
-    QS_DEF(ArrayNew<int>, mapping);
-    QS_DEF(ArrayNew<int>, su_mapping);
-    QS_DEF(ArrayNew<int>, tm_mapping);
-    QS_DEF(ArrayNew<int>, remove_atoms);
-    QS_DEF(ArrayNew<int>, base_sgs);
-    QS_DEF(ArrayNew<int>, sgs);
-    QS_DEF(ArrayNew<int>, sgs_to_remove);
-    QS_DEF(ArrayNew<int>, atoms_to_remove);
-    QS_DEF(ArrayNew<int>, ap_points_atoms);
-    QS_DEF(ArrayNew<int>, ap_lgrp_atoms);
+    QS_DEF(ArrayInt, added_templates);
+    QS_DEF(ArrayInt, added_template_occurs);
+    QS_DEF(ArrayInt, new_templates);
+    QS_DEF(ArrayInt, new_template_occurs);
+    QS_DEF(ArrayInt, mapping);
+    QS_DEF(ArrayInt, su_mapping);
+    QS_DEF(ArrayInt, tm_mapping);
+    QS_DEF(ArrayInt, remove_atoms);
+    QS_DEF(ArrayInt, base_sgs);
+    QS_DEF(ArrayInt, sgs);
+    QS_DEF(ArrayInt, sgs_to_remove);
+    QS_DEF(ArrayInt, atoms_to_remove);
+    QS_DEF(ArrayInt, ap_points_atoms);
+    QS_DEF(ArrayInt, ap_lgrp_atoms);
     QS_DEF(StringPool, ap_points_ids);
-    QS_DEF(ArrayNew<int>, ap_ids);
-    QS_DEF(ArrayNew<int>, ignore_atoms);
-    QS_DEF(ArrayNew<int>, query_atoms);
-    QS_DEF(ArrayNew<int>, ignore_query_atoms);
+    QS_DEF(ArrayInt, ap_ids);
+    QS_DEF(ArrayInt, ignore_atoms);
+    QS_DEF(ArrayInt, query_atoms);
+    QS_DEF(ArrayInt, ignore_query_atoms);
     QS_DEF(ArrayChar, tg_alias);
     QS_DEF(ArrayChar, tg_name);
 
-    QS_DEF(ArrayNew<int>, att_atoms);
-    QS_DEF(ArrayNew<int>, ap_neibs);
+    QS_DEF(ArrayInt, att_atoms);
+    QS_DEF(ArrayInt, ap_neibs);
 
     added_templates.clear();
     new_templates.clear();
@@ -1329,7 +1329,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
     InchiWrapper indigo_inchi;
     QS_DEF(ArrayChar, inchi_target);
     QS_DEF(ArrayChar, inchi_query);
-    QS_DEF(ArrayNew<int>, mapping_out);
+    QS_DEF(ArrayInt, mapping_out);
 
     indigo_inchi.setOptions("/SNon");
 
@@ -1713,7 +1713,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
                 if (remove_atoms.find(att_point_idx) != -1)
                 {
                     const Vertex& v = getVertex(att_point_idx);
-                    QS_DEF(ArrayNew<int>, neighbors);
+                    QS_DEF(ArrayInt, neighbors);
                     neighbors.clear();
                     for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
                     {
@@ -1986,7 +1986,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
                 if (remove_atoms.find(att_point_idx) != -1)
                 {
                    const Vertex &v = getVertex(att_point_idx);
-                   QS_DEF(ArrayNew<int>, neighbors);
+                   QS_DEF(ArrayInt, neighbors);
                    neighbors.clear();
                    for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
                    {
@@ -2468,7 +2468,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
                 if (remove_atoms.find(att_point_idx) != -1)
                 {
                     const Vertex& v = getVertex(att_point_idx);
-                    QS_DEF(ArrayNew<int>, neighbors);
+                    QS_DEF(ArrayInt, neighbors);
                     neighbors.clear();
                     for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
                     {
@@ -2597,7 +2597,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
 
     if (expand_mod_templates)
     {
-        QS_DEF(ArrayNew<int>, tinds);
+        QS_DEF(ArrayInt, tinds);
         tinds.clear();
 
         for (auto i : vertices())
@@ -2644,7 +2644,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
             _transformTGroupToSGroup(tinds[i], -1);
         }
 
-        QS_DEF(ArrayNew<int>, rem_templ);
+        QS_DEF(ArrayInt, rem_templ);
         QS_DEF(ArrayChar, ta_desc);
         rem_templ.clear();
         ta_desc.clear();
@@ -2687,8 +2687,8 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
 
 void BaseMolecule::_fillTemplateSeqIds()
 {
-    QS_DEF(ArrayNew<int>, ignored_vertices);
-    QS_DEF(ArrayNew<int>, vertex_ranks);
+    QS_DEF(ArrayInt, ignored_vertices);
+    QS_DEF(ArrayInt, vertex_ranks);
     QS_DEF(Molecule, tmp);
 
     tmp.clear();
@@ -2749,9 +2749,9 @@ void BaseMolecule::_fillTemplateSeqIds()
 
     const Array<DfsWalk::SeqElem>& v_seq = walk.getSequence();
 
-    QS_DEF(ArrayNew<int>, branch_counters);
-    QS_DEF(ArrayNew<int>, cycle_numbers);
-    QS_DEF(ArrayNew<int>, atom_sequence);
+    QS_DEF(ArrayInt, branch_counters);
+    QS_DEF(ArrayInt, cycle_numbers);
+    QS_DEF(ArrayInt, atom_sequence);
 
     branch_counters.clear_resize(tmp.vertexEnd());
     branch_counters.zerofill();
@@ -2840,8 +2840,8 @@ int BaseMolecule::addTemplate(TGroup& tgroup)
 
 bool BaseMolecule::isAtomBelongsSGroup(int idx)
 {
-    QS_DEF(ArrayNew<int>, sgs);
-    QS_DEF(ArrayNew<int>, atoms);
+    QS_DEF(ArrayInt, sgs);
+    QS_DEF(ArrayInt, atoms);
 
     sgs.clear();
     atoms.clear();
@@ -2854,14 +2854,14 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 {
     int result = 0;
     QS_DEF(Molecule, fragment);
-    QS_DEF(ArrayNew<int>, sgs);
-    QS_DEF(ArrayNew<int>, base_sgs);
-    QS_DEF(ArrayNew<int>, mapping);
-    QS_DEF(ArrayNew<int>, att_atoms);
-    QS_DEF(ArrayNew<int>, tg_atoms);
-    QS_DEF(ArrayNew<int>, lvgroups);
+    QS_DEF(ArrayInt, sgs);
+    QS_DEF(ArrayInt, base_sgs);
+    QS_DEF(ArrayInt, mapping);
+    QS_DEF(ArrayInt, att_atoms);
+    QS_DEF(ArrayInt, tg_atoms);
+    QS_DEF(ArrayInt, lvgroups);
     QS_DEF(StringPool, ap_points_ids);
-    QS_DEF(ArrayNew<int>, ap_ids);
+    QS_DEF(ArrayInt, ap_ids);
     QS_DEF(ArrayChar, ap_id);
 
     int tg_idx = t_idx;
@@ -2942,7 +2942,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         }
     }
 
-    QS_DEF(ArrayNew<int>, added_atoms);
+    QS_DEF(ArrayInt, added_atoms);
 
     added_atoms.clear();
     for (auto i = 0; i < su.atoms.size(); i++)
@@ -3029,7 +3029,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         }
     }
 
-    QS_DEF(ArrayNew<int>, templ_atoms);
+    QS_DEF(ArrayInt, templ_atoms);
     templ_atoms.clear();
     templ_atoms.push(idx);
 
@@ -3049,14 +3049,14 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 
 int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
 {
-    QS_DEF(ArrayNew<int>, remove_atoms);
-    QS_DEF(ArrayNew<int>, sg_atoms);
-    QS_DEF(ArrayNew<int>, mapping);
-    QS_DEF(ArrayNew<int>, ap_points_atoms);
+    QS_DEF(ArrayInt, remove_atoms);
+    QS_DEF(ArrayInt, sg_atoms);
+    QS_DEF(ArrayInt, mapping);
+    QS_DEF(ArrayInt, ap_points_atoms);
     QS_DEF(StringPool, ap_points_ids);
-    QS_DEF(ArrayNew<int>, ap_ids);
-    QS_DEF(ArrayNew<int>, sgs);
-    QS_DEF(ArrayNew<int>, sgs_tmp);
+    QS_DEF(ArrayInt, ap_ids);
+    QS_DEF(ArrayInt, sgs);
+    QS_DEF(ArrayInt, sgs_tmp);
 
     mapping.clear();
 
@@ -3193,7 +3193,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
         if (su.atoms.find(att_point_idx) != -1)
         {
             const Vertex& v = getVertex(att_point_idx);
-            QS_DEF(ArrayNew<int>, neighbors);
+            QS_DEF(ArrayInt, neighbors);
             neighbors.clear();
             for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
             {
@@ -3265,7 +3265,7 @@ bool BaseMolecule::_isCTerminus(Superatom& su, int idx)
     if (getAtomNumber(idx) != ELEM_C)
         return false;
 
-    QS_DEF(ArrayNew<int>, mapping);
+    QS_DEF(ArrayInt, mapping);
     BufferScanner sc("[#7]-[#6]-[#6]=O");
     SmilesLoader loader(sc);
     QS_DEF(QueryMolecule, aminoacid);
@@ -3297,7 +3297,7 @@ bool BaseMolecule::_isNTerminus(Superatom& su, int idx)
     if (getAtomNumber(idx) != ELEM_N)
         return false;
 
-    QS_DEF(ArrayNew<int>, mapping);
+    QS_DEF(ArrayInt, mapping);
     BufferScanner sc("[#7]-[#6]-[#6]=O");
     SmilesLoader loader(sc);
     QS_DEF(QueryMolecule, aminoacid);
@@ -3324,16 +3324,16 @@ bool BaseMolecule::_isNTerminus(Superatom& su, int idx)
         return true;
 }
 
-int BaseMolecule::_createSGroupFromFragment(ArrayNew<int>& sg_atoms, const TGroup& tg, ArrayNew<int>& mapping)
+int BaseMolecule::_createSGroupFromFragment(ArrayInt& sg_atoms, const TGroup& tg, ArrayInt& mapping)
 {
     QS_DEF(Molecule, fragment);
-    QS_DEF(ArrayNew<int>, sgs);
-    QS_DEF(ArrayNew<int>, base_sgs);
-    QS_DEF(ArrayNew<int>, att_atoms);
-    QS_DEF(ArrayNew<int>, tg_atoms);
-    QS_DEF(ArrayNew<int>, lvgroups);
+    QS_DEF(ArrayInt, sgs);
+    QS_DEF(ArrayInt, base_sgs);
+    QS_DEF(ArrayInt, att_atoms);
+    QS_DEF(ArrayInt, tg_atoms);
+    QS_DEF(ArrayInt, lvgroups);
     QS_DEF(StringPool, ap_points_ids);
-    QS_DEF(ArrayNew<int>, ap_ids);
+    QS_DEF(ArrayInt, ap_ids);
     QS_DEF(ArrayChar, ap_id);
 
     fragment.clear();
@@ -3418,7 +3418,7 @@ int BaseMolecule::_createSGroupFromFragment(ArrayNew<int>& sg_atoms, const TGrou
     return new_sg_idx;
 }
 
-void BaseMolecule::_removeAtomsFromSGroup(SGroup& sgroup, ArrayNew<int>& mapping)
+void BaseMolecule::_removeAtomsFromSGroup(SGroup& sgroup, ArrayInt& mapping)
 {
     int i;
 
@@ -3436,7 +3436,7 @@ void BaseMolecule::_removeAtomsFromSGroup(SGroup& sgroup, ArrayNew<int>& mapping
     updateEditRevision();
 }
 
-void BaseMolecule::_removeAtomsFromMultipleGroup(MultipleGroup& mg, ArrayNew<int>& mapping)
+void BaseMolecule::_removeAtomsFromMultipleGroup(MultipleGroup& mg, ArrayInt& mapping)
 {
     int i;
 
@@ -3448,7 +3448,7 @@ void BaseMolecule::_removeAtomsFromMultipleGroup(MultipleGroup& mg, ArrayNew<int
     updateEditRevision();
 }
 
-void BaseMolecule::_removeAtomsFromSuperatom(Superatom& sa, ArrayNew<int>& mapping)
+void BaseMolecule::_removeAtomsFromSuperatom(Superatom& sa, ArrayInt& mapping)
 {
 
     if (sa.bond_connections.size() > 0)
@@ -3475,7 +3475,7 @@ void BaseMolecule::_removeAtomsFromSuperatom(Superatom& sa, ArrayNew<int>& mappi
     updateEditRevision();
 }
 
-void BaseMolecule::_removeBondsFromSGroup(SGroup& sgroup, ArrayNew<int>& mapping)
+void BaseMolecule::_removeBondsFromSGroup(SGroup& sgroup, ArrayInt& mapping)
 {
     int i;
 
@@ -3487,7 +3487,7 @@ void BaseMolecule::_removeBondsFromSGroup(SGroup& sgroup, ArrayNew<int>& mapping
     updateEditRevision();
 }
 
-void BaseMolecule::_removeBondsFromSuperatom(Superatom& sa, ArrayNew<int>& mapping)
+void BaseMolecule::_removeBondsFromSuperatom(Superatom& sa, ArrayInt& mapping)
 {
     if (sa.bond_connections.size() > 0)
     {
@@ -3501,7 +3501,7 @@ void BaseMolecule::_removeBondsFromSuperatom(Superatom& sa, ArrayNew<int>& mappi
     updateEditRevision();
 }
 
-bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, BaseMolecule& supermol, ArrayNew<int>& mapping, ArrayNew<int>& edge_mapping)
+bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, BaseMolecule& supermol, ArrayInt& mapping, ArrayInt& edge_mapping)
 {
     int i;
     bool merged = false;
@@ -3509,7 +3509,7 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, Ba
     sgroup.sgroup_subtype = super.sgroup_subtype;
     sgroup.brackets.copy(super.brackets);
 
-    QS_DEF(ArrayNew<int>, parent_atoms);
+    QS_DEF(ArrayInt, parent_atoms);
     parent_atoms.clear();
     if (supermol.sgroups.getParentAtoms(super, parent_atoms))
     {
@@ -3829,7 +3829,7 @@ int BaseMolecule::countSGroups()
     return sgroups.getSGroupCount();
 }
 
-void BaseMolecule::getAttachmentIndicesForAtom(int atom_idx, ArrayNew<int>& res)
+void BaseMolecule::getAttachmentIndicesForAtom(int atom_idx, ArrayInt& res)
 {
     res.clear();
 
@@ -3932,7 +3932,7 @@ void BaseMolecule::getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res)
     getAtomsCenterPoint(sgroup.atoms, res);
 }
 
-void BaseMolecule::getAtomsCenterPoint(ArrayNew<int>& atoms, Vec2f& res)
+void BaseMolecule::getAtomsCenterPoint(ArrayInt& atoms, Vec2f& res)
 {
     res.set(0, 0);
     for (int j = 0; j < atoms.size(); j++)
@@ -3958,7 +3958,7 @@ void BaseMolecule::getAtomSymbol(int v, ArrayChar& result)
     }
     else if (isRSite(v))
     {
-        QS_DEF(ArrayNew<int>, rgroups);
+        QS_DEF(ArrayInt, rgroups);
         int i;
         getAllowedRGroups(v, rgroups);
 
@@ -3980,7 +3980,7 @@ void BaseMolecule::getAtomSymbol(int v, ArrayChar& result)
     else
     {
         int number = getAtomNumber(v);
-        QS_DEF(ArrayNew<int>, list);
+        QS_DEF(ArrayInt, list);
 
         if (number != -1)
         {
@@ -4052,7 +4052,7 @@ int BaseMolecule::bondCode(int edge_idx)
 
 int BaseMolecule::transformHELMtoSGroups(ArrayChar& helm_class, ArrayChar& name, ArrayChar& code, ArrayChar& natreplace, StringPool& r_names)
 {
-    QS_DEF(ArrayNew<int>, sg_atoms);
+    QS_DEF(ArrayInt, sg_atoms);
     sg_atoms.clear();
 
     if (countRSites() > r_names.size())
@@ -4083,7 +4083,7 @@ int BaseMolecule::transformHELMtoSGroups(ArrayChar& helm_class, ArrayChar& name,
     {
         if (isRSite(i))
         {
-            QS_DEF(ArrayNew<int>, rg_list);
+            QS_DEF(ArrayInt, rg_list);
             getAllowedRGroups(i, rg_list);
             int r_num = rg_list[0] - 1;
 

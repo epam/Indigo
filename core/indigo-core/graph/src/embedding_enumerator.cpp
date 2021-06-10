@@ -158,7 +158,7 @@ void EmbeddingEnumerator::processStart()
     // Save query indices ordered by preserving connectivity by walk
     // according to vertex numbers
     //
-    QS_DEF(ArrayNew<int>, core1_pre);
+    QS_DEF(ArrayInt, core1_pre);
     core1_pre.copy(_core_1);
     int t1_len_saved = _t1_len_pre;
 

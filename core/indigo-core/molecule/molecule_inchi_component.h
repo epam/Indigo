@@ -48,7 +48,7 @@ namespace indigo
         {
         }
 
-        void getCanonicalOrdering(Molecule& source_mol, ArrayNew<int>& mapping);
+        void getCanonicalOrdering(Molecule& source_mol, ArrayInt& mapping);
         static int cmpVertex(Graph& graph, int v1, int v2, const void* context);
 
     private:
@@ -56,9 +56,9 @@ namespace indigo
 
         static int _cmpVertex(Graph& graph, int v1, int v2, const void* context);
         static int _cmpVertexStereo(Molecule& graph, int v1, int v2, const void* context);
-        static int _cmpMappings(Graph& graph, const ArrayNew<int>& mapping1, const ArrayNew<int>& mapping2, const void* context);
+        static int _cmpMappings(Graph& graph, const ArrayInt& mapping1, const ArrayInt& mapping2, const void* context);
 
-        static bool _checkAutomorphism(Graph& graph, const ArrayNew<int>& mapping, const void* context);
+        static bool _checkAutomorphism(Graph& graph, const ArrayInt& mapping, const void* context);
     };
 
 } // namespace indigo

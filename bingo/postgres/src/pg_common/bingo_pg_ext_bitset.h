@@ -178,7 +178,7 @@ public:
         }
 
     private:
-        void _fillIndexes(byte buf, indigo::ArrayNew<int>& indexes);
+        void _fillIndexes(byte buf, indigo::ArrayInt& indexes);
         int _wordsInUse;
         qword* _words;
 
@@ -186,7 +186,7 @@ public:
         int _fromByteIdx;
         int _fromBitIdx;
         qword* _fromWord;
-        indigo::ArrayNew<int>* _fromIndexes;
+        indigo::ArrayInt* _fromIndexes;
 
         int _shiftByte;
         int _shiftWord;

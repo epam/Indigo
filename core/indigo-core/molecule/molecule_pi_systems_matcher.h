@@ -57,7 +57,7 @@ namespace indigo
         void _markVerticesInUnusedPiSystems(ArrayBool& pi_system_used);
         void _markVerticesInSingleAtomPiSystem(int n_pi_systems);
 
-        void _calculatePiSystemsSizes(int n_pi_systems, ArrayNew<int>& sizes);
+        void _calculatePiSystemsSizes(int n_pi_systems, ArrayInt& sizes);
 
         void _copyPiSystemsIdFromDecomposer();
 
@@ -74,7 +74,7 @@ namespace indigo
 
         bool _canAtomBeInPiSystem(int v);
 
-        void _calcConnectivity(Molecule& mol, ArrayNew<int>& conn);
+        void _calcConnectivity(Molecule& mol, ArrayInt& conn);
 
         enum
         {
@@ -87,12 +87,12 @@ namespace indigo
         Obj<GraphDecomposer> _decomposer;
 
         CP_DECL;
-        TL_CP_DECL(ArrayNew<int>, _atom_pi_system_idx);
+        TL_CP_DECL(ArrayInt, _atom_pi_system_idx);
 
         struct _Pi_System
         {
             Molecule pi_system;
-            ArrayNew<int> inv_mapping, mapping;
+            ArrayInt inv_mapping, mapping;
             Obj<MoleculeElectronsLocalizer> localizer;
 
             struct Localizations
@@ -107,7 +107,7 @@ namespace indigo
             void clear();
         };
         TL_CP_DECL(ReusableObjArray<_Pi_System>, _pi_systems);
-        TL_CP_DECL(ArrayNew<int>, _connectivity);
+        TL_CP_DECL(ArrayInt, _connectivity);
     };
 
 } // namespace indigo

@@ -68,10 +68,10 @@ public:
 
         CP_DECL;
 
-        TL_CP_DECL(ArrayNew<int>, query_ones);
+        TL_CP_DECL(ArrayInt, query_ones);
         TL_CP_DECL(List<int>, passed);
-        TL_CP_DECL(ArrayNew<int>, one_counters);
-        TL_CP_DECL(ArrayNew<int>, passed_pre);
+        TL_CP_DECL(ArrayInt, one_counters);
+        TL_CP_DECL(ArrayInt, passed_pre);
         TL_CP_DECL(Array<qword>, fp_final);
 
         void* data;

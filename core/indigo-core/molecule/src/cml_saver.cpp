@@ -118,7 +118,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                 atom_str = Element::toString(atom_number);
             else if (qmol != 0)
             {
-                QS_DEF(ArrayNew<int>, list);
+                QS_DEF(ArrayInt, list);
 
                 int query_atom_type;
                 if ((query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list)) != -1)
@@ -150,7 +150,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
             if (qmol != 0)
             {
-                QS_DEF(ArrayNew<int>, list);
+                QS_DEF(ArrayInt, list);
 
                 int query_atom_type;
                 if ((query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list)) != -1)
@@ -234,7 +234,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
             if (_mol->isRSite(i))
             {
-                QS_DEF(ArrayNew<int>, rg_refs);
+                QS_DEF(ArrayInt, rg_refs);
 
                 _mol->getAllowedRGroups(i, rg_refs);
 
@@ -254,7 +254,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                 QS_DEF(ArrayChar, buf);
                 ArrayOutput out(buf);
 
-                QS_DEF(ArrayNew<int>, list);
+                QS_DEF(ArrayInt, list);
 
                 int query_atom_type;
                 if ((query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list)) != -1)
@@ -822,7 +822,7 @@ void CmlSaver::_addRgroupElement(TiXmlElement* elem, RGroup& rgroup, bool query)
     }
 }
 
-void CmlSaver::_writeOccurrenceRanges(Output& out, const ArrayNew<int>& occurrences)
+void CmlSaver::_writeOccurrenceRanges(Output& out, const ArrayInt& occurrences)
 {
     for (int i = 0; i < occurrences.size(); i++)
     {

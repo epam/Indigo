@@ -654,11 +654,11 @@ void MoleculeAlleneStereo::markBonds()
     }
 }
 
-void MoleculeAlleneStereo::removeAtoms(const ArrayNew<int>& indices)
+void MoleculeAlleneStereo::removeAtoms(const ArrayInt& indices)
 {
     int i, j;
 
-    QS_DEF(ArrayNew<int>, centers_to_remove);
+    QS_DEF(ArrayInt, centers_to_remove);
     centers_to_remove.clear();
 
     for (i = 0; i < indices.size(); i++)
@@ -717,7 +717,7 @@ void MoleculeAlleneStereo::removeAtoms(const ArrayNew<int>& indices)
     }
 }
 
-void MoleculeAlleneStereo::removeBonds(const ArrayNew<int>& indices)
+void MoleculeAlleneStereo::removeBonds(const ArrayInt& indices)
 {
     int i, j;
 

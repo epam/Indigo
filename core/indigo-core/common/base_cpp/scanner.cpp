@@ -796,7 +796,7 @@ byte BufferScanner::readByte()
     return _buffer[_offset++];
 }
 
-void Scanner::_prefixFunction(ArrayChar& str, ArrayNew<int>& prefix)
+void Scanner::_prefixFunction(ArrayChar& str, ArrayInt& prefix)
 {
     prefix.clear();
     prefix.push(0);
@@ -829,8 +829,8 @@ int Scanner::findWord(ReusableObjArray<ArrayChar>& words)
     if (isEOF())
         return -1;
 
-    QS_DEF(ReusableObjArray<ArrayNew<int>>, prefixes);
-    QS_DEF(ArrayNew<int>, pos);
+    QS_DEF(ReusableObjArray<ArrayInt>, prefixes);
+    QS_DEF(ArrayInt, pos);
     int i;
     long long pos_saved = tell();
 
@@ -882,8 +882,8 @@ int Scanner::findWordIgnoreCase(ReusableObjArray<ArrayChar>& words)
     if (isEOF())
         return -1;
 
-    QS_DEF(ReusableObjArray<ArrayNew<int>>, prefixes);
-    QS_DEF(ArrayNew<int>, pos);
+    QS_DEF(ReusableObjArray<ArrayInt>, prefixes);
+    QS_DEF(ArrayInt, pos);
     int i;
     long long pos_saved = tell();
 

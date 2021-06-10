@@ -50,9 +50,9 @@ void CanonicalSmilesSaver::saveMolecule(Molecule& mol_)
     if (mol_.vertexCount() < 1)
         return;
 
-    QS_DEF(ArrayNew<int>, ignored);
-    QS_DEF(ArrayNew<int>, order);
-    QS_DEF(ArrayNew<int>, ranks);
+    QS_DEF(ArrayInt, ignored);
+    QS_DEF(ArrayInt, order);
+    QS_DEF(ArrayInt, ranks);
     QS_DEF(Molecule, mol);
 
     int i;
@@ -82,7 +82,7 @@ void CanonicalSmilesSaver::saveMolecule(Molecule& mol_)
     saver_cistrans.ignore_hydrogens = true;
     saver_cistrans.saveMolecule(mol);
     // Then reset cis-trans infromation that is not saved into SMILES
-    const ArrayNew<int>& parities = saver_cistrans.getSavedCisTransParities();
+    const ArrayInt& parities = saver_cistrans.getSavedCisTransParities();
     for (i = mol.edgeBegin(); i < mol.edgeEnd(); i = mol.edgeNext(i))
     {
         if (mol.cis_trans.getParity(i) != 0 && parities[i] == 0)

@@ -147,8 +147,8 @@ namespace indigo
 
         void makeOnGraph(Graph& graph);
         virtual void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& filter) = 0;
-        void cloneLayoutGraph(MoleculeLayoutGraph& other, ArrayNew<int>* mapping);
-        void copyLayoutTo(MoleculeLayoutGraph& other, const ArrayNew<int>& mapping) const;
+        void cloneLayoutGraph(MoleculeLayoutGraph& other, ArrayInt* mapping);
+        void copyLayoutTo(MoleculeLayoutGraph& other, const ArrayInt& mapping) const;
 
         virtual void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing) = 0;
 
@@ -176,7 +176,7 @@ namespace indigo
         ObjArray<LayoutVertex> _layout_vertices;
         ObjArray<LayoutEdge> _layout_edges;
 
-        ArrayNew<int> _fixed_vertices;
+        ArrayInt _fixed_vertices;
 
         long _total_morgan_code;
         int _first_vertex_idx;
@@ -192,10 +192,10 @@ namespace indigo
         {
             explicit Cycle();
             explicit Cycle(const List<int>& edges, const MoleculeLayoutGraph& graph);
-            explicit Cycle(const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
+            explicit Cycle(const ArrayInt& vertices, const ArrayInt& edges);
 
             void copy(const List<int>& edges, const MoleculeLayoutGraph& graph);
-            void copy(const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
+            void copy(const ArrayInt& vertices, const ArrayInt& edges);
 
             int vertexCount() const
             {
@@ -255,9 +255,9 @@ namespace indigo
 
         protected:
             CP_DECL;
-            TL_CP_DECL(ArrayNew<int>, _vertices);
-            TL_CP_DECL(ArrayNew<int>, _edges);
-            TL_CP_DECL(ArrayNew<int>, _attached_weight);
+            TL_CP_DECL(ArrayInt, _vertices);
+            TL_CP_DECL(ArrayInt, _edges);
+            TL_CP_DECL(ArrayInt, _attached_weight);
 
             int _max_idx;
             long _morgan_code;
@@ -279,8 +279,8 @@ namespace indigo
         bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const;
         bool _isVertexOnSomeEdge(int vert_idx) const;
         void _shiftEdge(int edge_idx, float delta);
-        bool _drawRegularCurve(const ArrayNew<int>& chain, int begin, int end, float length, bool ccw, int type);
-        bool _drawRegularCurveEx(const ArrayNew<int>& chain, int begin, int end, float length, bool ccw, int type, const ArrayNew<int>& mapping);
+        bool _drawRegularCurve(const ArrayInt& chain, int begin, int end, float length, bool ccw, int type);
+        bool _drawRegularCurveEx(const ArrayInt& chain, int begin, int end, float length, bool ccw, int type, const ArrayInt& mapping);
         static void _findAngles(int k, float s, float& x, float& y);
         static float _dichotomy1(float a0, float b0, int L, float s);
         static float _dichotomy2(float a0, float b0, int L, float s);
@@ -290,8 +290,8 @@ namespace indigo
         virtual void _getBorder(Cycle& border) const = 0;
         virtual bool _isPointOutside(const Vec2f& p) const = 0;
         virtual bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const = 0;
-        bool _isPointOutsideCycleEx(const Cycle& cycle, const Vec2f& p, const ArrayNew<int>& mapping) const;
-        static bool _border_cb(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
+        bool _isPointOutsideCycleEx(const Cycle& cycle, const Vec2f& p, const ArrayInt& mapping) const;
+        static bool _border_cb(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context);
 
         // for components
         virtual void _calcMorganCodes() = 0;
@@ -299,38 +299,38 @@ namespace indigo
         // for whole graph
         virtual void _assignAbsoluteCoordinates(float bond_length) = 0;
 
-        bool _checkBadTryBorderIntersection(ArrayNew<int>& chain_ext, MoleculeLayoutGraph& next_bc, ArrayNew<int>& mapping);
-        bool _checkBadTryChainOutside(ArrayNew<int>& chain_ext, MoleculeLayoutGraph& next_bc, ArrayNew<int>& mapping);
+        bool _checkBadTryBorderIntersection(ArrayInt& chain_ext, MoleculeLayoutGraph& next_bc, ArrayInt& mapping);
+        bool _checkBadTryChainOutside(ArrayInt& chain_ext, MoleculeLayoutGraph& next_bc, ArrayInt& mapping);
 
         virtual void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) = 0;
 
         // refine
         static bool _edge_check(Graph& graph, int e_idx, void* context);
-        void _refineCoordinates(const BiconnectedDecomposer& bc_decomposer, const PtrArray<MoleculeLayoutGraph>& bc_components, const ArrayNew<int>& bc_tree);
+        void _refineCoordinates(const BiconnectedDecomposer& bc_decomposer, const PtrArray<MoleculeLayoutGraph>& bc_components, const ArrayInt& bc_tree);
         bool _allowRotateAroundVertex(int idx) const;
-        void _makeBranches(ArrayNew<int>& branches, int edge, Filter& filter) const;
+        void _makeBranches(ArrayInt& branches, int edge, Filter& filter) const;
         void _excludeDandlingIntersections();
-        static bool _path_handle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
+        static bool _path_handle(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context);
 
         // attaching
         void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos);
 
         // assigning coordinates
-        void _attachDandlingVertices(int vert_idx, ArrayNew<int>& adjacent_list);
+        void _attachDandlingVertices(int vert_idx, ArrayInt& adjacent_list);
         void _calculatePositionsOneNotDrawn(Array<Vec2f>& positions, int n_pos, int vert_idx, int not_drawn_idx);
-        void _calculatePositionsSingleDrawn(int vert_idx, ArrayNew<int>& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears, Array<Vec2f>& positions,
+        void _calculatePositionsSingleDrawn(int vert_idx, ArrayInt& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears, Array<Vec2f>& positions,
                                             int& parity);
         void _orderByEnergy(Array<Vec2f>& positions);
         void _assignRelativeSingleEdge(int& fixed_component, const MoleculeLayoutGraph& supergraph);
-        void _findFirstVertexIdx(int n_comp, ArrayNew<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
-        bool _prepareAssignedList(ArrayNew<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
-                                  ArrayNew<int>& bc_tree);
+        void _findFirstVertexIdx(int n_comp, ArrayInt& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
+        bool _prepareAssignedList(ArrayInt& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
+                                  ArrayInt& bc_tree);
         void _assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout);
         void _copyLayout(MoleculeLayoutGraph& component);
         void _getAnchor(int& v1, int& v2, int& v3) const;
 
-        void _findFixedComponents(BiconnectedDecomposer& bc_decom, ArrayNew<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components);
-        bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph>& bc_components, ArrayNew<int>& fixed_components, BiconnectedDecomposer& bc_decom);
+        void _findFixedComponents(BiconnectedDecomposer& bc_decom, ArrayInt& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components);
+        bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph>& bc_components, ArrayInt& fixed_components, BiconnectedDecomposer& bc_decom);
         void _attachCrossingEdges();
 
         void _buildOutline(void);
@@ -388,25 +388,25 @@ namespace indigo
 
         // attaching cycles
         bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);
-        bool _drawEdgesWithoutIntersection(const Cycle& cycle, ArrayNew<int>& cycle_vertex_types);
+        bool _drawEdgesWithoutIntersection(const Cycle& cycle, ArrayInt& cycle_vertex_types);
 
         bool _attachCycleInside(const Cycle& cycle, float length);
         bool _attachCycleWithIntersections(const Cycle& cycle, float length);
-        void _setChainType(const ArrayNew<int>& chain, const ArrayNew<int>& mapping, int type);
-        bool _splitCycle(const Cycle& cycle, const ArrayNew<int>& cycle_vertex_types, bool check_boundary, ArrayNew<int>& chain_ext, ArrayNew<int>& chain_int,
+        void _setChainType(const ArrayInt& chain, const ArrayInt& mapping, int type);
+        bool _splitCycle(const Cycle& cycle, const ArrayInt& cycle_vertex_types, bool check_boundary, ArrayInt& chain_ext, ArrayInt& chain_int,
                          int& c_beg, int& c_end) const;
-        void _splitCycle2(const Cycle& cycle, const ArrayNew<int>& cycle_vertex_types, ObjArray<ArrayNew<int>>& chains_ext) const;
+        void _splitCycle2(const Cycle& cycle, const ArrayInt& cycle_vertex_types, ObjArray<ArrayInt>& chains_ext) const;
 
         // border functions
         void _getBorder(Cycle& border) const;
-        void _splitBorder(int v1, int v2, ArrayNew<int>& part1v, ArrayNew<int>& part1e, ArrayNew<int>& part2v, ArrayNew<int>& part2e) const;
+        void _splitBorder(int v1, int v2, ArrayInt& part1v, ArrayInt& part1e, ArrayInt& part2v, ArrayInt& part2e) const;
         bool _isPointOutside(const Vec2f& p) const;
         bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const;
 
         static bool _edge_check(Graph& graph, int e_idx, void* context);
 
         // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
-        static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, ArrayNew<int>& tree);
+        static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, ArrayInt& tree);
 
         void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
@@ -505,7 +505,7 @@ namespace indigo
     public:
         CP_DECL;
         SmoothingCycle(Array<Vec2f>&, Array<float>&);
-        SmoothingCycle(Array<Vec2f>&, Array<float>&, ArrayNew<int>&, int);
+        SmoothingCycle(Array<Vec2f>&, Array<float>&, ArrayInt&, int);
         SmoothingCycle(Array<Vec2f>&, Array<float>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
 
         int cycle_length;
@@ -636,18 +636,18 @@ namespace indigo
         void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph);
         void _get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list);
         int _search_separated_component(Cycle& cycle, Array<interval>& interval_list);
-        void _search_path(int start, int finish, ArrayNew<int>& path, int component_number);
+        void _search_path(int start, int finish, ArrayInt& path, int component_number);
         void _assignEveryCycle(const Cycle& cycle);
 
         // smoothing
-        void _segment_smoothing(const Cycle& cycle, const MoleculeLayoutMacrocyclesLattice& layout, ArrayNew<int>& rotation_vertex, Array<Vec2f>& rotation_point,
+        void _segment_smoothing(const Cycle& cycle, const MoleculeLayoutMacrocyclesLattice& layout, ArrayInt& rotation_vertex, Array<Vec2f>& rotation_point,
                                 ObjArray<MoleculeLayoutSmoothingSegment>& segment);
         void _update_touching_segments(Array<local_pair_ii>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
-        void _segment_smoothing_prepearing(const Cycle& cycle, ArrayNew<int>& rotation_vertex, Array<Vec2f>& rotation_point,
+        void _segment_smoothing_prepearing(const Cycle& cycle, ArrayInt& rotation_vertex, Array<Vec2f>& rotation_point,
                                            ObjArray<MoleculeLayoutSmoothingSegment>& segment, MoleculeLayoutMacrocyclesLattice& layout);
-        void _segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice& layout, ArrayNew<int>& rotation_vertex, Array<float>& target_angle,
+        void _segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice& layout, ArrayInt& rotation_vertex, Array<float>& target_angle,
                                              ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _segment_update_rotation_points(const Cycle& cycle, ArrayNew<int>& rotation_vertex, Array<Vec2f>& rotation_point,
+        void _segment_update_rotation_points(const Cycle& cycle, ArrayInt& rotation_vertex, Array<Vec2f>& rotation_point,
                                              ObjArray<MoleculeLayoutSmoothingSegment>& segment);
         void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment>& segment);
         void _do_segment_smoothing(Array<Vec2f>& rotation_point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
@@ -661,19 +661,19 @@ namespace indigo
 
         // attaching cycles
         bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);
-        bool _drawEdgesWithoutIntersection(const Cycle& cycle, ArrayNew<int>& cycle_vertex_types);
+        bool _drawEdgesWithoutIntersection(const Cycle& cycle, ArrayInt& cycle_vertex_types);
 
         bool _attachCycleInside(const Cycle& cycle, float length);
         bool _attachCycleWithIntersections(const Cycle& cycle, float length);
-        void _setChainType(const ArrayNew<int>& chain, const ArrayNew<int>& mapping, int type);
-        bool _splitCycle(const Cycle& cycle, const ArrayNew<int>& cycle_vertex_types, bool check_boundary, ArrayNew<int>& chain_ext, ArrayNew<int>& chain_int,
+        void _setChainType(const ArrayInt& chain, const ArrayInt& mapping, int type);
+        bool _splitCycle(const Cycle& cycle, const ArrayInt& cycle_vertex_types, bool check_boundary, ArrayInt& chain_ext, ArrayInt& chain_int,
                          int& c_beg, int& c_end) const;
-        void _splitCycle2(const Cycle& cycle, const ArrayNew<int>& cycle_vertex_types, ObjArray<ArrayNew<int>>& chains_ext) const;
+        void _splitCycle2(const Cycle& cycle, const ArrayInt& cycle_vertex_types, ObjArray<ArrayInt>& chains_ext) const;
 
         // border functions
         void _getBorder(Cycle& border) const;
         void _getSurroundCycle(Cycle& cycle, Vec2f p) const;
-        void _splitBorder(int v1, int v2, ArrayNew<int>& part1v, ArrayNew<int>& part1e, ArrayNew<int>& part2v, ArrayNew<int>& part2e) const;
+        void _splitBorder(int v1, int v2, ArrayInt& part1v, ArrayInt& part1e, ArrayInt& part2v, ArrayInt& part2e) const;
         bool _isPointOutside(const Vec2f& p) const;
         bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const;
 
@@ -682,12 +682,12 @@ namespace indigo
         int _isCisConfiguratuin(Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4);
 
         // make tree of biconnected components (tree[i] - -1 or component incoming to vertex i)
-        static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, ArrayNew<int>& tree);
+        static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, ArrayInt& tree);
 
         void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
 
-        ArrayNew<int> _layout_component_number; // number of layout component of certain edge
+        ArrayInt _layout_component_number; // number of layout component of certain edge
         int _layout_component_count;
 
         MoleculeLayoutGraph* _graph;

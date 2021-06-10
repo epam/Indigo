@@ -82,7 +82,7 @@ namespace indigo
         void restoreSubstituents(int bond_idx);
         void registerUnfoldedHydrogen(int atom_idx, int added_hydrogen);
 
-        static bool isAutomorphism(BaseMolecule& mol, const ArrayNew<int>& mapping, const Filter* edge_filter = NULL);
+        static bool isAutomorphism(BaseMolecule& mol, const ArrayInt& mapping, const Filter* edge_filter = NULL);
 
         bool isRingTransBond(int bond_idx);
 

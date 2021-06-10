@@ -132,7 +132,7 @@ namespace indigo
         void _ensureRecordExistanceLocked(int name_index);
 
         ObjArray<Record> _records;
-        ArrayNew<int> _sorted_records;
+        ArrayInt _sorted_records;
         OsLock _lock;
 
         static ObjArray<ArrayChar>& getNames();

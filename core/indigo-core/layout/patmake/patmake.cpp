@@ -73,7 +73,7 @@ void convertMolfile(char* path, char* filename, FileOutput& cpp_file)
     FileScanner molfile("%s\\%s", path, filename);
     MolfileLoader mf_loader(molfile);
     Molecule mol;
-    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayInt, edges);
 
     printf("%s\n", filename);
 

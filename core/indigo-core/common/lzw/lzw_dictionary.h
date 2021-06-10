@@ -108,9 +108,9 @@ namespace indigo
         CP_DECL;
         TL_CP_DECL(Array<_DictElement>, _storage); /* Dictionary */
 
-        TL_CP_DECL(ArrayNew<int>, _nextPointers);
+        TL_CP_DECL(ArrayInt, _nextPointers);
 
-        TL_CP_DECL(ArrayNew<int>, _hashKeys);
+        TL_CP_DECL(ArrayInt, _hashKeys);
 
         LzwDict(const LzwDict&);
     };

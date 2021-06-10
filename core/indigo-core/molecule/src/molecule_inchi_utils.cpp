@@ -28,18 +28,18 @@ using namespace indigo;
 //
 // Sorted atoms lables
 //
-ArrayNew<int> MoleculeInChIUtils::_atom_lables_sorted;
-ArrayNew<int> MoleculeInChIUtils::_atom_lables_ranks;
+ArrayInt MoleculeInChIUtils::_atom_lables_sorted;
+ArrayInt MoleculeInChIUtils::_atom_lables_ranks;
 
 IMPL_ERROR(MoleculeInChIUtils, "InChI utility");
 
-const ArrayNew<int>& MoleculeInChIUtils::getLexSortedAtomLables()
+const ArrayInt& MoleculeInChIUtils::getLexSortedAtomLables()
 {
     _ensureLabelsInitialized();
     return _atom_lables_sorted;
 }
 
-const ArrayNew<int>& MoleculeInChIUtils::getLexSortedAtomLablesRanks()
+const ArrayInt& MoleculeInChIUtils::getLexSortedAtomLablesRanks()
 {
     _ensureLabelsInitialized();
     return _atom_lables_ranks;
@@ -90,7 +90,7 @@ int MoleculeInChIUtils::_compareAtomLabels(int& label1, int& label2, void* conte
 // Sorting
 //
 
-void MoleculeInChIUtils::stableSmallSort(ArrayNew<int>& indices, const ArrayNew<int>* ranks)
+void MoleculeInChIUtils::stableSmallSort(ArrayInt& indices, const ArrayInt* ranks)
 {
     // Stable insersion sort
     for (int i = 1; i < indices.size(); i++)

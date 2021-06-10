@@ -60,8 +60,8 @@ namespace indigo
         // beg, end: the mobile positions of hydrogen to swap
         // forward: the direction to move the hydrogen
         // returns true if at least one new layer was added, false otherwise
-        bool addLayersWithInvertedPath(const Dbitset& mask, const ArrayNew<int>& path, int beg, int end, bool forward);
-        bool addLayerFromMolecule(const Molecule& molecule, ArrayNew<int>& aam);
+        bool addLayersWithInvertedPath(const Dbitset& mask, const ArrayInt& path, int beg, int end, bool forward);
+        bool addLayerFromMolecule(const Molecule& molecule, ArrayInt& aam);
 
         bool aromatize(int layerFrom, int layerTo, const AromaticityOptions& options);
 
@@ -143,22 +143,22 @@ namespace indigo
         ArrayBool _mobilePositions;
         ObjArray<Dbitset> _mobilePositionsOccupied;
 
-        void _mergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping, int skip_flags) override;
+        void _mergeWithSubmolecule(BaseMolecule& bmol, const ArrayInt& vertices, const ArrayInt* edges, const ArrayInt& mapping, int skip_flags) override;
 
-        static bool _cb_handle_cycle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
+        static bool _cb_handle_cycle(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context);
 
         void _resizeLayers(int newSize);
         void _calcConnectivity(int layerFrom, int layerTo);
         void _calcPiLabels(int layerFrom, int layerTo);
-        bool _handleCycle(int layerFrom, int layerTo, const ArrayNew<int>& path);
+        bool _handleCycle(int layerFrom, int layerTo, const ArrayInt& path);
         bool _isCycleAromaticInLayer(const int* cycle, int cycle_len, int layer);
-        void _aromatizeCycle(const ArrayNew<int>& cycle, const Dbitset& mask);
+        void _aromatizeCycle(const ArrayInt& cycle, const Dbitset& mask);
         void _registerAromatizedLayers(int layerFrom, int layerTo);
 
     private:
         LayeredMolecules(const LayeredMolecules&); // no implicit copy
-        ObjArray<ArrayNew<int>> _piLabels;
-        ObjArray<ArrayNew<int>> _connectivity;
+        ObjArray<ArrayInt> _piLabels;
+        ObjArray<ArrayInt> _connectivity;
         int _layersAromatized;
 
         struct TrieNode

@@ -167,7 +167,7 @@ double MoleculeMass::mostAbundantMass(Molecule& mol )
         elements_counts[ELEM_H] += impl_h;
     }
 
-    QS_DEF(ArrayNew<int>, isotopes);
+    QS_DEF(ArrayInt, isotopes);
 
     // Compute mass of the most abunant composition
     for (int i = ELEM_MIN; i < ELEM_MAX; i++)

@@ -480,7 +480,7 @@ Dbitset::Iterator::Iterator(Dbitset& self) : _fromWordIdx(0), _fromByteIdx(-1), 
     _wordsInUse = self._wordsInUse;
 }
 
-static ObjArray<ArrayNew<int>> all_indexes;
+static ObjArray<ArrayInt> all_indexes;
 
 int Dbitset::Iterator::begin()
 {
@@ -488,7 +488,7 @@ int Dbitset::Iterator::begin()
     {
         for (unsigned int buf = 0; buf < 256; ++buf)
         {
-            ArrayNew<int>& indexes = all_indexes.push();
+            ArrayInt& indexes = all_indexes.push();
             _fillIndexes(buf, indexes);
         }
     }
@@ -554,7 +554,7 @@ int Dbitset::Iterator::next()
     return -1;
 }
 
-void Dbitset::Iterator::_fillIndexes(byte buf, ArrayNew<int>& indexes)
+void Dbitset::Iterator::_fillIndexes(byte buf, ArrayInt& indexes)
 {
     byte test_buf;
     for (int buf_idx = 0; buf_idx < 8; ++buf_idx)

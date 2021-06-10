@@ -57,7 +57,7 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        void _checkSGroupIndices(BaseMolecule& mol, ArrayNew<int>& sgs_list);
+        void _checkSGroupIndices(BaseMolecule& mol, ArrayInt& sgs_list);
 
         Molecule* _pmol;
         QueryMolecule* _pqmol;

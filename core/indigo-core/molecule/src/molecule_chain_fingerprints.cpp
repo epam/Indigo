@@ -38,7 +38,7 @@ MoleculeChainFingerprintBuilder::MoleculeChainFingerprintBuilder(Molecule& mol, 
 void MoleculeChainFingerprintBuilder::process()
 {
     QS_DEF(Molecule, copy_without_h);
-    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayInt, vertices);
     int i;
 
     vertices.clear();

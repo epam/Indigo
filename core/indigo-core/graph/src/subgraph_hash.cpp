@@ -47,8 +47,8 @@ SubgraphHash::SubgraphHash(Graph& g)
 
 dword SubgraphHash::getHash()
 {
-    QS_DEF(ArrayNew<int>, vertices);
-    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayInt, vertices);
+    QS_DEF(ArrayInt, edges);
     int i;
 
     vertices.clear();
@@ -63,7 +63,7 @@ dword SubgraphHash::getHash()
     return getHash(vertices, edges);
 }
 
-dword SubgraphHash::getHash(const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
+dword SubgraphHash::getHash(const ArrayInt& vertices, const ArrayInt& edges)
 {
     int i, iter;
 

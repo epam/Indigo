@@ -33,9 +33,9 @@ namespace indigo
 
         DECL_ERROR;
 
-        ArrayNew<int> objs;
-        ArrayNew<int> titles;
-        ArrayNew<int> refAtoms;
+        ArrayInt objs;
+        ArrayInt titles;
+        ArrayInt refAtoms;
         int titleOffset;
         int nColumns;
         int commentOffset;

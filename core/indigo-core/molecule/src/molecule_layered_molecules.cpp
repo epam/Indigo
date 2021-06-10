@@ -125,7 +125,7 @@ void LayeredMolecules::setMobilePositionOccupiedMask(int idx, Dbitset& mask, boo
         _mobilePositionsOccupied[idx].andNotWith(mask);
 }
 
-bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset& mask, const ArrayNew<int>& edgesPath, int beg, int end, bool forward)
+bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset& mask, const ArrayInt& edgesPath, int beg, int end, bool forward)
 // mask: the mask of layers used as prototypes;
 // edgesPath: the path of single-double bonds to be inverted
 // edgesPath: a sequence of edges with intercganging single-double bonds that need to be inverted
@@ -207,9 +207,9 @@ bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset& mask, const Arra
     return true;
 }
 
-bool LayeredMolecules::addLayerFromMolecule(const Molecule& molecule, ArrayNew<int>& aam)
+bool LayeredMolecules::addLayerFromMolecule(const Molecule& molecule, ArrayInt& aam)
 {
-    ArrayNew<int> aam_inverse;
+    ArrayInt aam_inverse;
     aam_inverse.expandFill(aam.size(), -1);
     for (int i = 0; i < aam.size(); ++i)
     {
@@ -473,7 +473,7 @@ bool LayeredMolecules::dearomatize(const AromaticityOptions& options)
     return _proto.dearomatize(options);
 }
 
-void LayeredMolecules::_mergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping, int skip_flags)
+void LayeredMolecules::_mergeWithSubmolecule(BaseMolecule& bmol, const ArrayInt& vertices, const ArrayInt* edges, const ArrayInt& mapping, int skip_flags)
 {
     throw Error("_mergeWithSubmolecule method is not implemented in LayeredMolecules class");
 }
@@ -533,10 +533,10 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
     _piLabels.resize(_proto.vertexEnd());
     QS_DEF(Dbitset, skip);
     skip.resize(layers);
-    QS_DEF(ArrayNew<int>, non_arom_conn);
-    QS_DEF(ArrayNew<int>, arom_bonds);
-    QS_DEF(ArrayNew<int>, n_double_ext);
-    QS_DEF(ArrayNew<int>, n_double_ring);
+    QS_DEF(ArrayInt, non_arom_conn);
+    QS_DEF(ArrayInt, arom_bonds);
+    QS_DEF(ArrayInt, n_double_ext);
+    QS_DEF(ArrayInt, n_double_ring);
     non_arom_conn.resize(layers);
     arom_bonds.resize(layers);
     n_double_ext.resize(layers);
@@ -658,7 +658,7 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
     }
 }
 
-bool LayeredMolecules::_cb_handle_cycle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context)
+bool LayeredMolecules::_cb_handle_cycle(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context)
 {
     AromatizationContext* aromatizationContext = (AromatizationContext*)context;
     LayeredMolecules* self = aromatizationContext->self;
@@ -666,7 +666,7 @@ bool LayeredMolecules::_cb_handle_cycle(Graph& graph, const ArrayNew<int>& verti
     return true;
 }
 
-bool LayeredMolecules::_handleCycle(int layerFrom, int layerTo, const ArrayNew<int>& path)
+bool LayeredMolecules::_handleCycle(int layerFrom, int layerTo, const ArrayInt& path)
 {
     // Check Huckel's rule
     QS_DEF(Dbitset, satisfiesRule);
@@ -699,7 +699,7 @@ bool LayeredMolecules::_isCycleAromaticInLayer(const int* cycle, int cycle_len, 
     return true;
 }
 
-void LayeredMolecules::_aromatizeCycle(const ArrayNew<int>& cycle, const Dbitset& mask)
+void LayeredMolecules::_aromatizeCycle(const ArrayInt& cycle, const Dbitset& mask)
 {
     for (auto i = 0; i < cycle.size(); ++i)
     {

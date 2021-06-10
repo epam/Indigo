@@ -264,7 +264,7 @@ void MangoSubstructure::_initQuery(QueryMolecule& query_in, QueryMolecule& query
     QueryMoleculeAromatizer::aromatizeBonds(query_in, AromaticityOptions::BASIC);
     _nei_query_counters.calculate(query_in);
 
-    QS_DEF(ArrayNew<int>, transposition);
+    QS_DEF(ArrayInt, transposition);
 
     _nei_query_counters.makeTranspositionForSubstructure(query_in, transposition);
 
@@ -274,7 +274,7 @@ void MangoSubstructure::_initQuery(QueryMolecule& query_in, QueryMolecule& query
 
 void MangoSubstructure::_initSmartsQuery(QueryMolecule& query_in, QueryMolecule& query_out)
 {
-    QS_DEF(ArrayNew<int>, transposition);
+    QS_DEF(ArrayInt, transposition);
 
     MoleculeSubstructureMatcher::makeTransposition(query_in, transposition);
     query_out.makeSubmolecule(query_in, transposition, 0);

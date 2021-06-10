@@ -60,9 +60,9 @@ namespace indigo
         Obj<LzwDecoder> _decoder;
         LzwDict* _dict;
 
-        ArrayNew<int>* _bond_rc_flags;
-        ArrayNew<int>* _atom_stereo_flags;
-        ArrayNew<int>* _aam;
+        ArrayInt* _bond_rc_flags;
+        ArrayInt* _atom_stereo_flags;
+        ArrayInt* _aam;
 
     private:
         CrfLoader(const CrfLoader&); // no implicit copy

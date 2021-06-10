@@ -115,19 +115,19 @@ int BaseReaction::getInversion(int index, int atom)
     return mol.reaction_atom_inversion[atom];
 }
 
-ArrayNew<int>& BaseReaction::getAAMArray(int index)
+ArrayInt& BaseReaction::getAAMArray(int index)
 {
     BaseMolecule& mol = *_allMolecules.at(index);
     return mol.reaction_atom_mapping;
 }
 
-ArrayNew<int>& BaseReaction::getReactingCenterArray(int index)
+ArrayInt& BaseReaction::getReactingCenterArray(int index)
 {
     BaseMolecule& mol = *_allMolecules.at(index);
     return mol.reaction_bond_reacting_center;
 }
 
-ArrayNew<int>& BaseReaction::getInversionArray(int index)
+ArrayInt& BaseReaction::getInversionArray(int index)
 {
     BaseMolecule& mol = *_allMolecules.at(index);
     return mol.reaction_atom_inversion;
@@ -232,7 +232,7 @@ void BaseReaction::clearAAM()
     }
 }
 
-int BaseReaction::addReactantCopy(BaseMolecule& mol, ArrayNew<int>* mapping, ArrayNew<int>* inv_mapping)
+int BaseReaction::addReactantCopy(BaseMolecule& mol, ArrayInt* mapping, ArrayInt* inv_mapping)
 {
     int idx = _allMolecules.add(mol.neu());
 
@@ -241,7 +241,7 @@ int BaseReaction::addReactantCopy(BaseMolecule& mol, ArrayNew<int>* mapping, Arr
     return idx;
 }
 
-int BaseReaction::addProductCopy(BaseMolecule& mol, ArrayNew<int>* mapping, ArrayNew<int>* inv_mapping)
+int BaseReaction::addProductCopy(BaseMolecule& mol, ArrayInt* mapping, ArrayInt* inv_mapping)
 {
     int idx = _allMolecules.add(mol.neu());
 
@@ -250,7 +250,7 @@ int BaseReaction::addProductCopy(BaseMolecule& mol, ArrayNew<int>* mapping, Arra
     return idx;
 }
 
-int BaseReaction::addCatalystCopy(BaseMolecule& mol, ArrayNew<int>* mapping, ArrayNew<int>* inv_mapping)
+int BaseReaction::addCatalystCopy(BaseMolecule& mol, ArrayInt* mapping, ArrayInt* inv_mapping)
 {
     int idx = _allMolecules.add(mol.neu());
 
@@ -259,12 +259,12 @@ int BaseReaction::addCatalystCopy(BaseMolecule& mol, ArrayNew<int>* mapping, Arr
     return idx;
 }
 
-void BaseReaction::clone(BaseReaction& other, ArrayNew<int>* mol_mapping, ObjArray<ArrayNew<int>>* mappings, ObjArray<ArrayNew<int>>* inv_mappings)
+void BaseReaction::clone(BaseReaction& other, ArrayInt* mol_mapping, ObjArray<ArrayInt>* mappings, ObjArray<ArrayInt>* inv_mappings)
 {
     clear();
 
     int i, index = 0;
-    QS_DEF(ObjArray<ArrayNew<int>>, tmp_mappings);
+    QS_DEF(ObjArray<ArrayInt>, tmp_mappings);
 
     if (mol_mapping != 0)
     {
@@ -284,7 +284,7 @@ void BaseReaction::clone(BaseReaction& other, ArrayNew<int>* mol_mapping, ObjArr
     for (int i = other.begin(); i < other.end(); i = other.next(i))
     {
         BaseMolecule& rmol = other.getBaseMolecule(i);
-        QS_DEF(ArrayNew<int>, inv_mapping);
+        QS_DEF(ArrayInt, inv_mapping);
 
         switch (other._types[i])
         {
@@ -314,7 +314,7 @@ void BaseReaction::clone(BaseReaction& other, ArrayNew<int>* mol_mapping, ObjArr
     name.copy(other.name);
 }
 
-void BaseReaction::_clone(BaseReaction& other, int index, int i, ObjArray<ArrayNew<int>>* mol_mappings)
+void BaseReaction::_clone(BaseReaction& other, int index, int i, ObjArray<ArrayInt>* mol_mappings)
 {
 }
 

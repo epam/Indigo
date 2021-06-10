@@ -38,8 +38,8 @@ void TGroup::clear()
 
 int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* context)
 {
-    QS_DEF(ArrayNew<int>, lgrps)
-    QS_DEF(ArrayNew<int>, bgrps)
+    QS_DEF(ArrayInt, lgrps)
+    QS_DEF(ArrayInt, bgrps)
 
     if (tg1.fragment.get() == 0)
         return -1;

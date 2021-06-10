@@ -505,7 +505,7 @@ void BingoPgIndex::getSectionBitset(int section_idx, BingoPgExternalBitset& sect
     current_section.getSectionStructures(section_bitset);
 }
 
-void BingoPgIndex::getSectionBitsCount(int section_idx, indigo::ArrayNew<int>& bits_count)
+void BingoPgIndex::getSectionBitsCount(int section_idx, indigo::ArrayInt& bits_count)
 {
     BingoPgSection& current_section = _jumpToSection(section_idx);
     current_section.readSectionBitsCount(bits_count);

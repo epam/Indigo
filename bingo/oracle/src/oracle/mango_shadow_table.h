@@ -45,7 +45,7 @@ public:
     bool getMoleculeLocation(OracleEnv& env, const char* rowid, int& blockno, int& offset);
     void deleteMolecule(OracleEnv& env, const char* rowid);
     void addMolecule(OracleEnv& env, const char* rowid, int blockno, int offset, const char* data_cmf, int len_cmf, const char* data_xyz, int len_xyz,
-                     const MangoExact::Hash& hash, const char* gross, const ArrayNew<int>& counters, float molecular_mass, const char* fp_ord, bool append);
+                     const MangoExact::Hash& hash, const char* gross, const ArrayInt& counters, float molecular_mass, const char* fp_ord, bool append);
     void flush(OracleEnv& env);
 
     void analyze(OracleEnv& env);
@@ -68,18 +68,18 @@ protected:
     int _components_table_statement_count;
 
     Array<char[19]> _pending_rid;
-    ArrayNew<int> _pending_blockno;
-    ArrayNew<int> _pending_offset;
+    ArrayInt _pending_blockno;
+    ArrayInt _pending_offset;
     Array<char[512]> _pending_gross;
     ObjArray<OracleRaw> _pending_cmf;
     ObjArray<OracleRaw> _pending_xyz;
     Array<float> _pending_mass;
-    ArrayNew<int> _pending_fragcount;
-    ObjArray<ArrayNew<int>> _pending_counters;
+    ArrayInt _pending_fragcount;
+    ObjArray<ArrayInt> _pending_counters;
 
     Array<char[19]> _pending_comp_rid;
     Array<char[9]> _pending_comp_hash;
-    ArrayNew<int> _pending_comp_count;
+    ArrayInt _pending_comp_count;
 
     bool _commit_main;
     bool _commit_comp;

@@ -61,8 +61,8 @@ void MoleculeScaffoldDetection::_searchScaffold(QueryMolecule& scaffold, bool ap
 
 void MoleculeScaffoldDetection::clone(QueryMolecule& mol, Molecule& other)
 {
-    QS_DEF(ArrayNew<int>, v_list);
-    QS_DEF(ArrayNew<int>, e_list);
+    QS_DEF(ArrayInt, v_list);
+    QS_DEF(ArrayInt, e_list);
     v_list.clear();
     e_list.clear();
     for (int v_idx = other.vertexBegin(); v_idx != other.vertexEnd(); v_idx = other.vertexNext(v_idx))
@@ -76,10 +76,10 @@ void MoleculeScaffoldDetection::clone(QueryMolecule& mol, Molecule& other)
     makeEdgeSubmolecule(mol, other, v_list, e_list);
 }
 
-void MoleculeScaffoldDetection::makeEdgeSubmolecule(QueryMolecule& mol, Molecule& other, ArrayNew<int>& v_list, ArrayNew<int>& e_list)
+void MoleculeScaffoldDetection::makeEdgeSubmolecule(QueryMolecule& mol, Molecule& other, ArrayInt& v_list, ArrayInt& e_list)
 {
-    QS_DEF(ArrayNew<int>, tmp_mapping);
-    ArrayNew<int>* v_mapping = 0;
+    QS_DEF(ArrayInt, tmp_mapping);
+    ArrayInt* v_mapping = 0;
     mol.clear();
     int i;
 
@@ -224,7 +224,7 @@ QueryMolecule& MoleculeScaffoldDetection::MoleculeBasket::pickOutNextMolecule()
     return _basketStructures->at(empty_index);
 }
 
-void MoleculeScaffoldDetection::MoleculeBasket::addToNextEmptySpot(Graph& graph, ArrayNew<int>& v_list, ArrayNew<int>& e_list)
+void MoleculeScaffoldDetection::MoleculeBasket::addToNextEmptySpot(Graph& graph, ArrayInt& v_list, ArrayInt& e_list)
 {
     Molecule& mol = (Molecule&)graph;
     QueryMolecule& b_mol = pickOutNextMolecule();

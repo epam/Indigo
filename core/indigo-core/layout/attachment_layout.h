@@ -28,7 +28,7 @@ namespace indigo
     class AttachmentLayout
     {
     public:
-        explicit AttachmentLayout(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const ArrayNew<int>& bc_tree,
+        explicit AttachmentLayout(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const ArrayInt& bc_tree,
                                   MoleculeLayoutGraph& graph, int src_vertex);
 
         float calculateEnergy();
@@ -38,14 +38,14 @@ namespace indigo
     public:
         int _src_vertex;
         CP_DECL;
-        TL_CP_DECL(ArrayNew<int>, _src_vertex_map); // _src_vertex_map[j] - index of the vertex _src_vertex in j component
-        TL_CP_DECL(ArrayNew<int>, _attached_bc);    // BCnumbers[j] - index of j component attached;
+        TL_CP_DECL(ArrayInt, _src_vertex_map); // _src_vertex_map[j] - index of the vertex _src_vertex in j component
+        TL_CP_DECL(ArrayInt, _attached_bc);    // BCnumbers[j] - index of j component attached;
                                                  // BCnumbers[size-1] - drawn
         TL_CP_DECL(Array<float>, _bc_angles);    // BCangles[j] - internal angle of j component attached, 0 if single edge
-        TL_CP_DECL(ArrayNew<int>, _vertices_l);     // _vertices_l[j] - index of the vertex in j component such the j component
+        TL_CP_DECL(ArrayInt, _vertices_l);     // _vertices_l[j] - index of the vertex in j component such the j component
                                                  // lays on the left (CCW) from edge (v, _vertices_l[j]];
         float _alpha;                            // if positive then angle between components
-        TL_CP_DECL(ArrayNew<int>, _new_vertices);   // indices in source graph of new verices
+        TL_CP_DECL(ArrayInt, _new_vertices);   // indices in source graph of new verices
         TL_CP_DECL(Array<Vec2f>, _layout);       // layout of new vertices
         float _energy;                           // current energy between drawn part and new part
 
@@ -56,7 +56,7 @@ namespace indigo
     class AttachmentLayoutSimple : public AttachmentLayout
     {
     public:
-        explicit AttachmentLayoutSimple(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const ArrayNew<int>& bc_tree,
+        explicit AttachmentLayoutSimple(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const ArrayInt& bc_tree,
                                         MoleculeLayoutGraph& graph, int src_vertex);
 
         void applyLayout();
@@ -65,7 +65,7 @@ namespace indigo
     class AttachmentLayoutSmart : public AttachmentLayout
     {
     public:
-        explicit AttachmentLayoutSmart(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const ArrayNew<int>& bc_tree,
+        explicit AttachmentLayoutSmart(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const ArrayInt& bc_tree,
                                        MoleculeLayoutGraph& graph, int src_vertex);
 
         void applyLayout();
@@ -88,8 +88,8 @@ namespace indigo
         int _n_components;
         float _cur_energy;
         CP_DECL;
-        TL_CP_DECL(ArrayNew<int>, _comp_permutation);
-        TL_CP_DECL(ArrayNew<int>, _rest_numbers);
+        TL_CP_DECL(ArrayInt, _comp_permutation);
+        TL_CP_DECL(ArrayInt, _rest_numbers);
         AttachmentLayout& _layout;
     };
 

@@ -64,7 +64,7 @@ TautomerSuperStructure::TautomerSuperStructure(Molecule& mol)
     _collectAtomProperties();
 
     // Detect distances from _atomsEmitBond elements to _atomsAcceptBond elements
-    QS_DEF(ArrayNew<int>, distancesMatrix);
+    QS_DEF(ArrayInt, distancesMatrix);
     distancesMatrix.resize(_atomsEmitBond.size() * _atomsAcceptBond.size());
     for (int i = 0; i < _atomsEmitBond.size(); i++)
     {
@@ -72,7 +72,7 @@ TautomerSuperStructure::TautomerSuperStructure(Molecule& mol)
         _findMinDistance(_atomsEmitBond[i], 6, _atomsAcceptBond, result);
     }
 
-    QS_DEF(ArrayNew<int>, attachedBonds);
+    QS_DEF(ArrayInt, attachedBonds);
     attachedBonds.clear();
     for (int i = 0; i < _atomsEmitBond.size(); i++)
         for (int j = 0; j < _atomsAcceptBond.size(); j++)
@@ -131,11 +131,11 @@ bool TautomerSuperStructure::possibleBondOrder(int idx, int order)
     return Molecule::possibleBondOrder(idx, order);
 }
 
-int TautomerSuperStructure::getSubgraphType(const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
+int TautomerSuperStructure::getSubgraphType(const ArrayInt& vertices, const ArrayInt& edges)
 {
     // For any atoms number of attached bonds must be 0 or 1
 
-    QS_DEF(ArrayNew<int>, per_vertex_attached_bonds);
+    QS_DEF(ArrayInt, per_vertex_attached_bonds);
 
     per_vertex_attached_bonds.clear_resize(vertexEnd());
     per_vertex_attached_bonds.zerofill();
@@ -262,10 +262,10 @@ void TautomerSuperStructure::_collectAtomProperties(void)
 // and check tautomer chain property:
 //    * only one bond can be in ring
 //    * if no one bond is in ring then only one bond can be double and no one can be triple
-void TautomerSuperStructure::_findMinDistance(int source, int maxDist, ArrayNew<int>& dest, int* result)
+void TautomerSuperStructure::_findMinDistance(int source, int maxDist, ArrayInt& dest, int* result)
 {
-    QS_DEF(ArrayNew<int>, distances);
-    QS_DEF(ArrayNew<int>, parents);
+    QS_DEF(ArrayInt, distances);
+    QS_DEF(ArrayInt, parents);
 
     distances.resize(vertexEnd());
     parents.resize(vertexEnd());
@@ -355,7 +355,7 @@ const int* TautomerSuperStructure::getMapping()
     return _mapping.ptr();
 }
 
-const ArrayNew<int>& TautomerSuperStructure::getInvMapping()
+const ArrayInt& TautomerSuperStructure::getInvMapping()
 {
     return _inv_mapping;
 }

@@ -117,7 +117,7 @@ int Filter::count(const Graph& graph) const
     return n;
 }
 
-void Filter::collectGraphVertices(const Graph& graph, ArrayNew<int>& indices) const
+void Filter::collectGraphVertices(const Graph& graph, ArrayInt& indices) const
 {
     if (_filter == 0)
         throw Error("uninitialized");
@@ -129,7 +129,7 @@ void Filter::collectGraphVertices(const Graph& graph, ArrayNew<int>& indices) co
             indices.push(i);
 }
 
-void Filter::collectGraphEdges(const Graph& graph, ArrayNew<int>& indices) const
+void Filter::collectGraphEdges(const Graph& graph, ArrayInt& indices) const
 {
     if (_filter == 0)
         throw Error("uninitialized");

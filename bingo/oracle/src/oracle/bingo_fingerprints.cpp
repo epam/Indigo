@@ -713,7 +713,7 @@ void BingoFingerprints::_optimizePendingBlock()
     // number of bytes to read during screening
 
     // Find bit order for better screening
-    QS_DEF(ArrayNew<int>, counters_order);
+    QS_DEF(ArrayInt, counters_order);
     counters_order.clear_resize(_fp_bytes * 8);
     for (int i = 0; i < _fp_bytes * 8; i++)
         counters_order[i] = i;

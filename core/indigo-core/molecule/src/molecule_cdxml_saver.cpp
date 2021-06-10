@@ -239,7 +239,7 @@ void MoleculeCdxmlSaver::addDefaultColorTable()
     addColorTable(color.ptr());
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int id, ArrayNew<int>& ids)
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int id, ArrayInt& ids)
 {
     float scale = structure_scale * _bond_length;
 
@@ -336,7 +336,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
             }
             else if (atom_number < 0)
             {
-                QS_DEF(ArrayNew<int>, list);
+                QS_DEF(ArrayInt, list);
                 int query_atom_type;
                 node->SetAttribute("id", nid);
                 if (mol.isQueryMolecule() && (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), i, list)) != -1)
@@ -580,7 +580,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 s->SetAttribute("size", 10);
                 s->SetAttribute("face", 96);
 
-                QS_DEF(ArrayNew<int>, list);
+                QS_DEF(ArrayInt, list);
                 int query_atom_type;
 
                 out.clear();
@@ -904,7 +904,7 @@ int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule& mol, int idx, int charge,
 
 void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
 {
-    ArrayNew<int> ids;
+    ArrayInt ids;
     Vec3f min_coord, max_coord;
     ids.clear();
 

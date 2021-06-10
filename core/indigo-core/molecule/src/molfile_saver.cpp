@@ -389,7 +389,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         ArrayOutput out(buf);
 
         out.printf("%d ", _atom_mapping[i]);
-        QS_DEF(ArrayNew<int>, list);
+        QS_DEF(ArrayInt, list);
         int query_atom_type;
 
         if (atom_number == ELEM_H && isotope == 2)
@@ -526,7 +526,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         {
             int k;
 
-            QS_DEF(ArrayNew<int>, rg_list);
+            QS_DEF(ArrayInt, rg_list);
             mol.getAllowedRGroups(i, rg_list);
 
             if (rg_list.size() > 0)
@@ -705,7 +705,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     {
         output.writeStringCR("M  V30 BEGIN COLLECTION");
 
-        QS_DEF(ArrayNew<int>, processed);
+        QS_DEF(ArrayInt, processed);
 
         processed.clear_resize(mol.vertexEnd());
         processed.zerofill();
@@ -727,7 +727,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             else
                 continue;
 
-            QS_DEF(ArrayNew<int>, list);
+            QS_DEF(ArrayInt, list);
 
             list.clear();
             list.push(i);
@@ -787,7 +787,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         output.writeStringCR("M  V30 END COLLECTION");
     }
 
-    QS_DEF(ArrayNew<int>, sgs_sorted);
+    QS_DEF(ArrayInt, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
 
     if (mol.countSGroups() > 0)
@@ -1021,7 +1021,7 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, int idx, Output& outp
     }
 }
 
-void MolfileSaver::_writeOccurrenceRanges(Output& out, const ArrayNew<int>& occurrences)
+void MolfileSaver::_writeOccurrenceRanges(Output& out, const ArrayInt& occurrences)
 {
     for (int i = 0; i < occurrences.size(); i++)
     {
@@ -1094,11 +1094,11 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
     int i;
     QS_DEF(Array<IntPair>, radicals);
-    QS_DEF(ArrayNew<int>, charges);
-    QS_DEF(ArrayNew<int>, isotopes);
-    QS_DEF(ArrayNew<int>, pseudoatoms);
-    QS_DEF(ArrayNew<int>, atom_lists);
-    QS_DEF(ArrayNew<int>, unsaturated);
+    QS_DEF(ArrayInt, charges);
+    QS_DEF(ArrayInt, isotopes);
+    QS_DEF(ArrayInt, pseudoatoms);
+    QS_DEF(ArrayInt, atom_lists);
+    QS_DEF(ArrayInt, unsaturated);
     QS_DEF(Array<IntPair>, substitution_count);
     QS_DEF(Array<IntPair>, ring_bonds);
 
@@ -1157,7 +1157,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             if (qmol == 0)
                 throw Error("internal: atom number = -1, but qmol == 0");
 
-            QS_DEF(ArrayNew<int>, list);
+            QS_DEF(ArrayInt, list);
 
             int query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list);
 
@@ -1479,7 +1479,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     for (i = 0; i < atom_lists.size(); i++)
     {
         int atom_idx = atom_lists[i];
-        QS_DEF(ArrayNew<int>, list);
+        QS_DEF(ArrayInt, list);
 
         int query_atom_type = QueryMolecule::parseQueryAtom(*qmol, atom_idx, list);
 
@@ -1529,9 +1529,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         }
     }
 
-    QS_DEF(ArrayNew<int>, sgroup_ids);
-    QS_DEF(ArrayNew<int>, child_ids);
-    QS_DEF(ArrayNew<int>, parent_ids);
+    QS_DEF(ArrayInt, sgroup_ids);
+    QS_DEF(ArrayInt, child_ids);
+    QS_DEF(ArrayInt, parent_ids);
 
     sgroup_ids.clear();
     child_ids.clear();
@@ -1549,7 +1549,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         sgroup_ids.push(i);
     }
 
-    QS_DEF(ArrayNew<int>, sgs_sorted);
+    QS_DEF(ArrayInt, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
 
     if (sgroup_ids.size() > 0)
@@ -1814,12 +1814,12 @@ void MolfileSaver::_writeFormattedString(Output& output, ArrayChar& str, int len
             output.writeChar(' ');
 }
 
-void MolfileSaver::_checkSGroupIndices(BaseMolecule& mol, ArrayNew<int>& sgs_list)
+void MolfileSaver::_checkSGroupIndices(BaseMolecule& mol, ArrayInt& sgs_list)
 {
-    QS_DEF(ArrayNew<int>, orig_ids);
-    QS_DEF(ArrayNew<int>, added_ids);
-    QS_DEF(ArrayNew<int>, sgs_mapping);
-    QS_DEF(ArrayNew<int>, sgs_changed);
+    QS_DEF(ArrayInt, orig_ids);
+    QS_DEF(ArrayInt, added_ids);
+    QS_DEF(ArrayInt, sgs_mapping);
+    QS_DEF(ArrayInt, sgs_changed);
 
     sgs_list.clear();
     orig_ids.clear();
@@ -1971,8 +1971,8 @@ void MolfileSaver::_writeRGroupIndices2000(Output& output, BaseMolecule& mol)
 {
     int i, j;
 
-    QS_DEF(ArrayNew<int>, atom_ids);
-    QS_DEF(ArrayNew<int>, rg_ids);
+    QS_DEF(ArrayInt, atom_ids);
+    QS_DEF(ArrayInt, rg_ids);
 
     atom_ids.clear();
     rg_ids.clear();
@@ -1982,7 +1982,7 @@ void MolfileSaver::_writeRGroupIndices2000(Output& output, BaseMolecule& mol)
         if (!mol.isRSite(i))
             continue;
 
-        QS_DEF(ArrayNew<int>, rg_list);
+        QS_DEF(ArrayInt, rg_list);
 
         mol.getAllowedRGroups(i, rg_list);
 
@@ -2123,13 +2123,13 @@ void MolfileSaver::_updateCIPStereoDescriptors(BaseMolecule& mol)
 
 void MolfileSaver::_addCIPStereoDescriptors(BaseMolecule& mol)
 {
-    QS_DEF(ArrayNew<int>, atom_cip_desc);
-    QS_DEF(ArrayNew<int>, bond_cip_desc);
+    QS_DEF(ArrayInt, atom_cip_desc);
+    QS_DEF(ArrayInt, bond_cip_desc);
     QS_DEF(Molecule, unfolded_h_mol);
-    QS_DEF(ArrayNew<int>, markers);
-    QS_DEF(ArrayNew<int>, stereo_passed);
+    QS_DEF(ArrayInt, markers);
+    QS_DEF(ArrayInt, stereo_passed);
 
-    QS_DEF(ArrayNew<int>, ignored);
+    QS_DEF(ArrayInt, ignored);
 
     QS_DEF(Array<IntPair>, equiv_ligands);
 
@@ -2238,7 +2238,7 @@ void MolfileSaver::_addCIPStereoDescriptors(BaseMolecule& mol)
     _addCIPSgroups(mol, atom_cip_desc, bond_cip_desc);
 }
 
-int MolfileSaver::_getNumberOfStereoDescritors(ArrayNew<int>& atom_cip_desc)
+int MolfileSaver::_getNumberOfStereoDescritors(ArrayInt& atom_cip_desc)
 {
     int ndesc = 0;
     for (int i = 0; i < atom_cip_desc.size(); i++)
@@ -2249,7 +2249,7 @@ int MolfileSaver::_getNumberOfStereoDescritors(ArrayNew<int>& atom_cip_desc)
     return ndesc;
 }
 
-void MolfileSaver::_addCIPSgroups(BaseMolecule& mol, ArrayNew<int>& atom_cip_desc, ArrayNew<int>& bond_cip_desc)
+void MolfileSaver::_addCIPSgroups(BaseMolecule& mol, ArrayInt& atom_cip_desc, ArrayInt& bond_cip_desc)
 {
     int sg_idx;
 
@@ -2305,12 +2305,12 @@ void MolfileSaver::_addCIPSgroups(BaseMolecule& mol, ArrayNew<int>& atom_cip_des
     }
 }
 
-void MolfileSaver::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, ArrayNew<int>& atom_cip_desc, ArrayNew<int>& stereo_passed,
+void MolfileSaver::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, ArrayInt& atom_cip_desc, ArrayInt& stereo_passed,
                                            bool use_stereo, Array<IntPair>& equiv_ligands, bool& digraph_cip_used)
 {
-    ArrayNew<int> ligands;
-    ArrayNew<int> used1;
-    ArrayNew<int> used2;
+    ArrayInt ligands;
+    ArrayInt used1;
+    ArrayInt used2;
 
     QS_DEF(ArrayChar, st_desc);
     CIPContext context;
@@ -2456,13 +2456,13 @@ void MolfileSaver::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfo
     return;
 }
 
-int MolfileSaver::_calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, ArrayNew<int>& ligands, Array<IntPair>& equiv_ligands)
+int MolfileSaver::_calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, ArrayInt& ligands, Array<IntPair>& equiv_ligands)
 {
     QS_DEF(Molecule, digraph);
-    QS_DEF(ArrayNew<int>, mapping);
-    QS_DEF(ArrayNew<int>, used);
+    QS_DEF(ArrayInt, mapping);
+    QS_DEF(ArrayInt, used);
     StereocentersOptions options;
-    QS_DEF(ArrayNew<int>, sensible_bond_orientations);
+    QS_DEF(ArrayInt, sensible_bond_orientations);
     int res_cip_desc = 0;
 
     int i1 = -1;
@@ -2504,12 +2504,12 @@ int MolfileSaver::_calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, Arr
 
     _calcStereocenters(source, digraph, mapping);
 
-    QS_DEF(ArrayNew<int>, atom_cip_desc);
-    QS_DEF(ArrayNew<int>, bond_cip_desc);
-    QS_DEF(ArrayNew<int>, markers);
-    QS_DEF(ArrayNew<int>, stereo_passed);
+    QS_DEF(ArrayInt, atom_cip_desc);
+    QS_DEF(ArrayInt, bond_cip_desc);
+    QS_DEF(ArrayInt, markers);
+    QS_DEF(ArrayInt, stereo_passed);
 
-    QS_DEF(ArrayNew<int>, ignored);
+    QS_DEF(ArrayInt, ignored);
 
     QS_DEF(Array<IntPair>, new_equiv_ligands);
 
@@ -2537,11 +2537,11 @@ int MolfileSaver::_calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, Arr
             digraph.stereocenters.get(stereo_passed[i], new_atom_idx, type, group, pyramid);
             if (atom_idx == mapping[new_atom_idx])
             {
-                QS_DEF(ArrayNew<int>, used1);
-                QS_DEF(ArrayNew<int>, used2);
+                QS_DEF(ArrayInt, used1);
+                QS_DEF(ArrayInt, used2);
                 CIPContext context;
 
-                ArrayNew<int> dg_ligands;
+                ArrayInt dg_ligands;
                 dg_ligands.clear();
                 dg_ligands.copy(pyramid, 4);
 
@@ -2599,7 +2599,7 @@ int MolfileSaver::_calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, Arr
                     }
                 }
 
-                ArrayNew<int> sorted_ligands;
+                ArrayInt sorted_ligands;
                 sorted_ligands.clear();
                 sorted_ligands.copy(ligands);
 
@@ -2687,9 +2687,9 @@ int MolfileSaver::_calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, Arr
     return res_cip_desc;
 }
 
-void MolfileSaver::_addNextLevel(Molecule& source, Molecule& target, int s_idx, int t_idx, ArrayNew<int>& used, ArrayNew<int>& mapping)
+void MolfileSaver::_addNextLevel(Molecule& source, Molecule& target, int s_idx, int t_idx, ArrayInt& used, ArrayInt& mapping)
 {
-    ArrayNew<int> next_used;
+    ArrayInt next_used;
 
     const Vertex& v = source.getVertex(s_idx);
     int bond_stereo_atom = -1;
@@ -2774,9 +2774,9 @@ void MolfileSaver::_addNextLevel(Molecule& source, Molecule& target, int s_idx, 
     }
 }
 
-void MolfileSaver::_calcStereocenters(Molecule& source, Molecule& mol, ArrayNew<int>& mapping)
+void MolfileSaver::_calcStereocenters(Molecule& source, Molecule& mol, ArrayInt& mapping)
 {
-    QS_DEF(ArrayNew<int>, chirality);
+    QS_DEF(ArrayInt, chirality);
     int type, group;
 
     chirality.clear_resize(mol.vertexEnd());
@@ -2844,7 +2844,7 @@ void MolfileSaver::_calcStereocenters(Molecule& source, Molecule& mol, ArrayNew<
     }
 }
 
-bool MolfileSaver::_checkLigandsEquivalence(ArrayNew<int>& ligands, Array<IntPair>& equiv_ligands, CIPContext& context)
+bool MolfileSaver::_checkLigandsEquivalence(ArrayInt& ligands, Array<IntPair>& equiv_ligands, CIPContext& context)
 {
     int neq = 0;
     bool rule_5_used = false;
@@ -2874,7 +2874,7 @@ bool MolfileSaver::_checkLigandsEquivalence(ArrayNew<int>& ligands, Array<IntPai
     return neq != 0;
 }
 
-bool MolfileSaver::_isPseudoAssymCenter(BaseMolecule& mol, int idx, ArrayNew<int>& atom_cip_desc, ArrayNew<int>& ligands, Array<IntPair>& equiv_ligands)
+bool MolfileSaver::_isPseudoAssymCenter(BaseMolecule& mol, int idx, ArrayInt& atom_cip_desc, ArrayInt& ligands, Array<IntPair>& equiv_ligands)
 {
     int neq = 0;
     for (int k = 0; k < 3; k++)
@@ -2904,11 +2904,11 @@ bool MolfileSaver::_isPseudoAssymCenter(BaseMolecule& mol, int idx, ArrayNew<int
     return false;
 }
 
-void MolfileSaver::_calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, ArrayNew<int>& bond_cip_desc)
+void MolfileSaver::_calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, ArrayInt& bond_cip_desc)
 {
-    QS_DEF(ArrayNew<int>, ligands);
-    QS_DEF(ArrayNew<int>, used1);
-    QS_DEF(ArrayNew<int>, used2);
+    QS_DEF(ArrayInt, ligands);
+    QS_DEF(ArrayInt, used1);
+    QS_DEF(ArrayInt, used2);
 
     QS_DEF(ArrayChar, st_desc);
     CIPContext context;
@@ -2996,15 +2996,15 @@ void MolfileSaver::_calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfo
 int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
 {
     int res = 0;
-    QS_DEF(ArrayNew<int>, cip);
-    QS_DEF(ArrayNew<int>, used1);
-    QS_DEF(ArrayNew<int>, used2);
+    QS_DEF(ArrayInt, cip);
+    QS_DEF(ArrayInt, used1);
+    QS_DEF(ArrayInt, used2);
 
     CIPContext* cur_context = (CIPContext*)context;
     BaseMolecule& mol = *(BaseMolecule*)cur_context->mol;
-    cip.copy(*(ArrayNew<int>*)cur_context->cip_desc);
-    used1.copy(*(ArrayNew<int>*)cur_context->used1);
-    used2.copy(*(ArrayNew<int>*)cur_context->used2);
+    cip.copy(*(ArrayInt*)cur_context->cip_desc);
+    used1.copy(*(ArrayInt*)cur_context->used1);
+    used2.copy(*(ArrayInt*)cur_context->used2);
 
     if ((i1 == -1) && (i2 == -1))
         return 0;
@@ -3072,8 +3072,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
     }
 
     const Vertex& v1 = mol.getVertex(i1);
-    QS_DEF(ArrayNew<int>, neibs1);
-    QS_DEF(ArrayNew<int>, cip_neibs1);
+    QS_DEF(ArrayInt, neibs1);
+    QS_DEF(ArrayInt, cip_neibs1);
     neibs1.clear();
     cip_neibs1.clear();
     for (auto i : v1.neighbors())
@@ -3086,8 +3086,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
     if (neibs1.size() > 1)
     {
         QS_DEF(CIPContext, next_context);
-        QS_DEF(ArrayNew<int>, used1_next);
-        QS_DEF(ArrayNew<int>, used2_next);
+        QS_DEF(ArrayInt, used1_next);
+        QS_DEF(ArrayInt, used2_next);
         used1_next.copy(used1);
         used1_next.push(i1);
         used2_next.copy(used1_next);
@@ -3258,8 +3258,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
     }
 
     const Vertex& v2 = mol.getVertex(i2);
-    QS_DEF(ArrayNew<int>, neibs2);
-    QS_DEF(ArrayNew<int>, cip_neibs2);
+    QS_DEF(ArrayInt, neibs2);
+    QS_DEF(ArrayInt, cip_neibs2);
     neibs2.clear();
     cip_neibs2.clear();
 
@@ -3273,8 +3273,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
     if (neibs2.size() > 1)
     {
         QS_DEF(CIPContext, next_context);
-        QS_DEF(ArrayNew<int>, used1_next);
-        QS_DEF(ArrayNew<int>, used2_next);
+        QS_DEF(ArrayInt, used1_next);
+        QS_DEF(ArrayInt, used2_next);
         used1_next.copy(used2);
         used1_next.push(i2);
         used2_next.copy(used1_next);
@@ -3549,8 +3549,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
             for (auto i = 0; i < next_level_branches; i++)
             {
                 QS_DEF(CIPContext, next_context);
-                QS_DEF(ArrayNew<int>, used1_next);
-                QS_DEF(ArrayNew<int>, used2_next);
+                QS_DEF(ArrayInt, used1_next);
+                QS_DEF(ArrayInt, used2_next);
                 used1_next.copy(used1);
                 used1_next.push(i1);
                 used2_next.copy(used2);
@@ -3576,8 +3576,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
             for (auto i = 0; i < next_level_branches; i++)
             {
                 QS_DEF(CIPContext, next_context);
-                QS_DEF(ArrayNew<int>, used1_next);
-                QS_DEF(ArrayNew<int>, used2_next);
+                QS_DEF(ArrayInt, used1_next);
+                QS_DEF(ArrayInt, used2_next);
                 used1_next.copy(used1);
                 used1_next.push(i1);
                 used2_next.copy(used2);
@@ -3619,8 +3619,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
         if (isotope_found > 0)
         {
             QS_DEF(CIPContext, next_context);
-            QS_DEF(ArrayNew<int>, used1_next);
-            QS_DEF(ArrayNew<int>, used2_next);
+            QS_DEF(ArrayInt, used1_next);
+            QS_DEF(ArrayInt, used2_next);
             used1_next.copy(used1);
             used2_next.copy(used2);
             next_context.mol = &mol;
@@ -3644,8 +3644,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
         if (isotope_found > 0)
         {
             QS_DEF(CIPContext, next_context);
-            QS_DEF(ArrayNew<int>, used1_next);
-            QS_DEF(ArrayNew<int>, used2_next);
+            QS_DEF(ArrayInt, used1_next);
+            QS_DEF(ArrayInt, used2_next);
             used1_next.copy(used1);
             used2_next.copy(used2);
             next_context.mol = &mol;
@@ -3672,8 +3672,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
         if (_getNumberOfStereoDescritors(cip) > 0)
         {
             QS_DEF(CIPContext, next_context);
-            QS_DEF(ArrayNew<int>, used1_next);
-            QS_DEF(ArrayNew<int>, used2_next);
+            QS_DEF(ArrayInt, used1_next);
+            QS_DEF(ArrayInt, used2_next);
             used1_next.copy(used1);
             used2_next.copy(used2);
             next_context.mol = &mol;
@@ -3697,8 +3697,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
         if (_getNumberOfStereoDescritors(cip) > 0)
         {
             QS_DEF(CIPContext, next_context);
-            QS_DEF(ArrayNew<int>, used1_next);
-            QS_DEF(ArrayNew<int>, used2_next);
+            QS_DEF(ArrayInt, used1_next);
+            QS_DEF(ArrayInt, used2_next);
             used1_next.copy(used1);
             used2_next.copy(used2);
             next_context.mol = &mol;
@@ -3726,8 +3726,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
         if (_getNumberOfStereoDescritors(cip) > 0)
         {
             QS_DEF(CIPContext, next_context);
-            QS_DEF(ArrayNew<int>, used1_next);
-            QS_DEF(ArrayNew<int>, used2_next);
+            QS_DEF(ArrayInt, used1_next);
+            QS_DEF(ArrayInt, used2_next);
             used1_next.copy(used1);
             used2_next.copy(used2);
             next_context.mol = &mol;
@@ -3752,8 +3752,8 @@ int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
         if (_getNumberOfStereoDescritors(cip) > 0)
         {
             QS_DEF(CIPContext, next_context);
-            QS_DEF(ArrayNew<int>, used1_next);
-            QS_DEF(ArrayNew<int>, used2_next);
+            QS_DEF(ArrayInt, used1_next);
+            QS_DEF(ArrayInt, used2_next);
             used1_next.copy(used1);
             used2_next.copy(used2);
             next_context.mol = &mol;

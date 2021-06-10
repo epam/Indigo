@@ -52,7 +52,7 @@ namespace indigo
         }
         int endAtomMap() const;
         int nextAtomMap(int mol_idx, int opposite_idx, int atom_idx) const;
-        bool getAtomMap(int mol_idx, int opposite_idx, int atom_idx, ArrayNew<int>* mapping) const;
+        bool getAtomMap(int mol_idx, int opposite_idx, int atom_idx, ArrayInt* mapping) const;
 
         int beginBondMap(int mol_idx, int bond_idx) const
         {
@@ -60,15 +60,15 @@ namespace indigo
         }
         int endBondMap() const;
         int nextBondMap(int mol_idx, int opposite_idx, int bond_idx) const;
-        bool getBondMap(int mol_idx, int opposite_idx, int bond_idx, ArrayNew<int>* mapping) const;
+        bool getBondMap(int mol_idx, int opposite_idx, int bond_idx, ArrayInt* mapping) const;
 
     private:
         BaseReaction& _reaction;
 
         // array to set correspondence between atoms due to input mapping
-        ObjArray<ArrayNew<int>> _vertexMatchingArray;
+        ObjArray<ArrayInt> _vertexMatchingArray;
         // array to set correspondence between bonds due to input mapping
-        ObjArray<ArrayNew<int>> _edgeMatchingArray;
+        ObjArray<ArrayInt> _edgeMatchingArray;
 
         int _getVertexId(int mol_idx, int vert) const;
         int _getEdgeId(int mol_idx, int edge) const;
@@ -122,9 +122,9 @@ namespace indigo
         {
             _MIN_VERTEX_SUB = 3
         };
-        void _createReactionCopy(ArrayNew<int>& mol_mapping, ObjArray<ArrayNew<int>>& mappings);
-        void _createMoleculeCopy(int mol_idx, bool reactant, ArrayNew<int>& mol_mapping, ObjArray<ArrayNew<int>>& mappings);
-        void _makeInvertMap(ArrayNew<int>& map, ArrayNew<int>& invmap);
+        void _createReactionCopy(ArrayInt& mol_mapping, ObjArray<ArrayInt>& mappings);
+        void _createMoleculeCopy(int mol_idx, bool reactant, ArrayInt& mol_mapping, ObjArray<ArrayInt>& mappings);
+        void _makeInvertMap(ArrayInt& map, ArrayInt& invmap);
         // sets up input mapping
         void _initMappings(BaseReaction& reaction);
         // searches AAM using mcs and substructure functions
@@ -133,31 +133,31 @@ namespace indigo
 
         void _cleanReactants(BaseReaction& reaction);
 
-        int _handleWithProduct(const ArrayNew<int>& reactant_cons, ArrayNew<int>& product_mapping_tmp, BaseReaction& reaction, int product,
+        int _handleWithProduct(const ArrayInt& reactant_cons, ArrayInt& product_mapping_tmp, BaseReaction& reaction, int product,
                                ReactionMapMatchingData& react_map_match);
-        bool _chooseBestMapping(BaseReaction& reaction, ArrayNew<int>& product_mapping, int product, int map_complete);
+        bool _chooseBestMapping(BaseReaction& reaction, ArrayInt& product_mapping, int product, int map_complete);
         bool _checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null);
 
         // arranges all maps to AAM
-        void _setupReactionMap(ArrayNew<int>& mol_mapping, ObjArray<ArrayNew<int>>& mappings);
-        void _setupReactionInvMap(ArrayNew<int>& mol_mapping, ObjArray<ArrayNew<int>>& mappings);
+        void _setupReactionMap(ArrayInt& mol_mapping, ObjArray<ArrayInt>& mappings);
+        void _setupReactionInvMap(ArrayInt& mol_mapping, ObjArray<ArrayInt>& mappings);
         // takes account of possibility for molecule dissociation
         void _considerDissociation();
 
         // takes account of possibility for molecule dimerization
         void _considerDimerization();
 
-        int _validMapFound(BaseReaction& reaction, int react, int prod, ArrayNew<int>& sub_map) const;
+        int _validMapFound(BaseReaction& reaction, int react, int prod, ArrayInt& sub_map) const;
         void _removeUnusedInfo(BaseReaction& reaction, int mol_idx, bool aam_presented) const;
         void _removeSmallComponents(BaseMolecule& mol) const;
-        void _createPermutations(BaseReaction& reaction, ObjArray<ArrayNew<int>>&);
+        void _createPermutations(BaseReaction& reaction, ObjArray<ArrayInt>&);
         // all permutation
-        static void _permutation(ArrayNew<int>&, ObjArray<ArrayNew<int>>&);
+        static void _permutation(ArrayInt&, ObjArray<ArrayInt>&);
 
         BaseReaction& _initReaction;
         AutoPtr<BaseReaction> _reactionCopy;
 
-        ArrayNew<int> _usedVertices;
+        ArrayInt _usedVertices;
         int _maxMapUsed;
         int _maxVertUsed;
         int _maxCompleteMap;
@@ -190,11 +190,11 @@ namespace indigo
         }
 
         // molecules substructure search
-        bool searchSubstructure(ArrayNew<int>* map) override;
+        bool searchSubstructure(ArrayInt* map) override;
         // reaction molecules substructure search
-        bool searchSubstructureReact(BaseMolecule& init_rmol, const ArrayNew<int>* in_map, ArrayNew<int>* out_map);
+        bool searchSubstructureReact(BaseMolecule& init_rmol, const ArrayInt* in_map, ArrayInt* out_map);
         // reaction molecules mcs search
-        bool searchMaxCommonSubReact(const ArrayNew<int>* in_map, ArrayNew<int>* out_map);
+        bool searchMaxCommonSubReact(const ArrayInt* in_map, ArrayInt* out_map);
 
         // callback for atom matching
         static bool atomConditionReact(Graph& g1, Graph& g2, const int* core_sub, int i, int j, void* userdata);
@@ -206,7 +206,7 @@ namespace indigo
         static bool bondConditionReactSimple(Graph& g1, Graph& g2, int i, int j, void* userdata);
 
         // callback for mcs sorting solutions
-        static int cbMcsSolutionTerm(ArrayNew<int>&, ArrayNew<int>&, void*);
+        static int cbMcsSolutionTerm(ArrayInt&, ArrayInt&, void*);
 
         int findReactionCenter(BaseMolecule& mol, int bondNum) const;
         void getReactingCenters(BaseMolecule& mol1, BaseMolecule& mol2, int bond1, int bond2, int& rc_reactant, int& rc_product) const;
@@ -230,17 +230,17 @@ namespace indigo
         AromaticityOptions arom_options;
 
     private:
-        int _searchSubstructure(EmbeddingEnumerator& emb_enum, const ArrayNew<int>* in_map, ArrayNew<int>* out_map);
+        int _searchSubstructure(EmbeddingEnumerator& emb_enum, const ArrayInt* in_map, ArrayInt* out_map);
         static bool _matchAtoms(BaseMolecule& query, BaseMolecule& target, int sub_idx, int super_idx, int flags);
 
-        void _selectBestAutomorphism(ArrayNew<int>* map_out);
+        void _selectBestAutomorphism(ArrayInt* map_out);
 
         static int _cbAutoVertexReact(Graph& graph, int idx1, int idx2, const void* context);
-        static bool _cbAutoCheckAutomorphismReact(Graph& graph, const ArrayNew<int>& mapping, const void* context);
-        int _scoreSolution(BaseMolecule* sub_molecule, BaseMolecule* super_molecule, ArrayNew<int>& map);
+        static bool _cbAutoCheckAutomorphismReact(Graph& graph, const ArrayInt& mapping, const void* context);
+        int _scoreSolution(BaseMolecule* sub_molecule, BaseMolecule* super_molecule, ArrayInt& map);
         void _createQueryTransposition();
-        void _detransposeOutputMap(ArrayNew<int>* map) const;
-        void _transposeInputMap(const ArrayNew<int>* map, ArrayNew<int>& input_map) const;
+        void _detransposeOutputMap(ArrayInt* map) const;
+        void _transposeInputMap(const ArrayInt* map, ArrayInt& input_map) const;
         inline int _getTransposedBondIndex(BaseMolecule& mol, int bond) const;
 
         const ReactionAutomapper& _context;
@@ -248,12 +248,12 @@ namespace indigo
         int _subReactNumber;
         int _superProductNumber;
 
-        ObjArray<ArrayNew<int>> _autoMaps;
+        ObjArray<ArrayInt> _autoMaps;
 
         AutoPtr<BaseMolecule> _transposedQuery;
-        ArrayNew<int> _transposition;
-        ArrayNew<int> _invTransposition;
-        ArrayNew<int> _bondTransposition;
+        ArrayInt _transposition;
+        ArrayInt _invTransposition;
+        ArrayInt _bondTransposition;
     };
 
     class AAMCancellationWrapper

@@ -37,8 +37,8 @@ namespace indigo
         void setScaleFactor(const float scaleFactor, const Vec2f& min, const Vec2f& max);
         void render();
 
-        void setReactionComponentProperties(const ArrayNew<int>* aam, const ArrayNew<int>* reactingCenters, const ArrayNew<int>* inversions);
-        void setQueryReactionComponentProperties(const ArrayNew<int>* exactChanges);
+        void setReactionComponentProperties(const ArrayInt* aam, const ArrayInt* reactingCenters, const ArrayInt* inversions);
+        void setQueryReactionComponentProperties(const ArrayInt* exactChanges);
 
         DECL_ERROR;
 
@@ -89,7 +89,7 @@ namespace indigo
         void _initAtomData();
         void _initRGroups();
         void _loadBrackets(Sgroup& sg, const Array<std::array<Vec2f, 2>>& coord);
-        void _placeBrackets(Sgroup& sg, const ArrayNew<int>& atoms, Array<std::array<Vec2f, 2>>& brackets);
+        void _placeBrackets(Sgroup& sg, const ArrayInt& atoms, Array<std::array<Vec2f, 2>>& brackets);
         void _positionIndex(Sgroup& sg, int ti, bool lower);
         void _loadBracketsAuto(const SGroup& group, Sgroup& sg);
         void _convertCoordinate(const Array<std::array<Vec2f, 2>>& original, Array<std::array<Vec2f, 2>>& converted);
@@ -164,7 +164,7 @@ namespace indigo
         void _precalcScale();
 
         // TODO: remove dublicate with _placeBrackets(..)
-        inline Rect2f _bound(ArrayNew<int>& atoms) const
+        inline Rect2f _bound(ArrayInt& atoms) const
         {
             const int n = atoms.size();
             if (n <= 0)
@@ -190,7 +190,7 @@ namespace indigo
             return Rect2f(_bound(points, l, m), _bound(points, m + 1, r));
         }
 
-        inline Vec2f _firstPosition(ArrayNew<int>& atoms)
+        inline Vec2f _firstPosition(ArrayInt& atoms)
         {
             return _ad(atoms[0]).pos;
         }
@@ -232,8 +232,8 @@ namespace indigo
         const RenderOptions& _opt;
         CP_DECL;
         TL_CP_DECL(MoleculeRenderData, _data);
-        TL_CP_DECL(ArrayNew<int>, _atomMapping);
-        TL_CP_DECL(ArrayNew<int>, _atomMappingInv);
+        TL_CP_DECL(ArrayInt, _atomMapping);
+        TL_CP_DECL(ArrayInt, _atomMappingInv);
         TL_CP_DECL(BaseMolecule::Mapping, _bondMappingInv);
     };
 

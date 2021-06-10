@@ -38,7 +38,7 @@ namespace indigo
         {
             return _cycles.size();
         }
-        const ArrayNew<int>& getCycle(int num) const
+        const ArrayInt& getCycle(int num) const
         {
             return _cycles[num];
         }
@@ -53,7 +53,7 @@ namespace indigo
     private:
         CycleBasis(const CycleBasis&); // no implicit copy
 
-        ObjArray<ArrayNew<int>> _cycles;
+        ObjArray<ArrayInt> _cycles;
 
         RedBlackSet<int> _cycleVertices;
     };

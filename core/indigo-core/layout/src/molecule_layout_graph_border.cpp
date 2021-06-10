@@ -246,7 +246,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutsideCycle(const Cycle& cycle, const V
 }
 
 // The same but with mapping
-bool MoleculeLayoutGraph::_isPointOutsideCycleEx(const Cycle& cycle, const Vec2f& p, const ArrayNew<int>& mapping) const
+bool MoleculeLayoutGraph::_isPointOutsideCycleEx(const Cycle& cycle, const Vec2f& p, const ArrayInt& mapping) const
 {
     Random rand(SOME_MAGIC_INT_FOR_RANDOM_3);
     // TODO: check that point 'p' is equal to the one of cycle points (sometimes it happens)
@@ -297,8 +297,8 @@ bool MoleculeLayoutGraph::_isPointOutsideCycleEx(const Cycle& cycle, const Vec2f
 // Extract component border
 void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
 {
-    QS_DEF(ArrayNew<int>, vertices);
-    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayInt, vertices);
+    QS_DEF(ArrayInt, edges);
     int i, n = 0;
 
     for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
@@ -351,7 +351,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
 }
 
 // Split border in two parts by two vertices
-void MoleculeLayoutGraphSimple::_splitBorder(int v1, int v2, ArrayNew<int>& part1v, ArrayNew<int>& part1e, ArrayNew<int>& part2v, ArrayNew<int>& part2e) const
+void MoleculeLayoutGraphSimple::_splitBorder(int v1, int v2, ArrayInt& part1v, ArrayInt& part1e, ArrayInt& part2v, ArrayInt& part2e) const
 {
     Cycle border;
 
@@ -397,7 +397,7 @@ void MoleculeLayoutGraphSimple::_splitBorder(int v1, int v2, ArrayNew<int>& part
 
 // Cycle enumerator callback
 // Check if cycle is boundary and mark vertices and edges as boundary/internal
-bool MoleculeLayoutGraph::_border_cb(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context)
+bool MoleculeLayoutGraph::_border_cb(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context)
 {
     MoleculeLayoutGraph& self = *(MoleculeLayoutGraph*)context;
     Cycle cycle(vertices, edges);
@@ -405,7 +405,7 @@ bool MoleculeLayoutGraph::_border_cb(Graph& graph, const ArrayNew<int>& vertices
     // cycle.canonize();
 
     int i;
-    QS_DEF(ArrayNew<int>, types);
+    QS_DEF(ArrayInt, types);
 
     types.clear_resize(self.vertexEnd());
 
@@ -534,8 +534,8 @@ void MoleculeLayoutGraphSmart::_getBorder(Cycle& border) const
 
 void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
 {
-    QS_DEF(ArrayNew<int>, vertices);
-    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayInt, vertices);
+    QS_DEF(ArrayInt, edges);
     QS_DEF(Array<Vec2f>, pos);
     int i, n = 0;
     const float eps = 1e-5f;

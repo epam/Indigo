@@ -69,7 +69,7 @@ void RSmilesSaver::_writeMolecule(int i)
 
     _ncomp.push(saver.writtenComponents());
 
-    const ArrayNew<int>& atoms = saver.writtenAtoms();
+    const ArrayInt& atoms = saver.writtenAtoms();
     int j;
 
     for (j = 0; j < atoms.size(); j++)
@@ -80,7 +80,7 @@ void RSmilesSaver::_writeMolecule(int i)
         idx.idx = atoms[j];
     }
 
-    const ArrayNew<int>& bonds = saver.writtenBonds();
+    const ArrayInt& bonds = saver.writtenBonds();
 
     for (j = 0; j < bonds.size(); j++)
     {
@@ -189,7 +189,7 @@ void RSmilesSaver::_writeFragmentsInfo()
 
 void RSmilesSaver::_writeStereogroups()
 {
-    QS_DEF(ArrayNew<int>, marked);
+    QS_DEF(ArrayInt, marked);
     int i, j;
 
     for (i = 0; i < _written_atoms.size(); i++)
@@ -299,7 +299,7 @@ void RSmilesSaver::_writeStereogroups()
 
 void RSmilesSaver::_writeRadicals()
 {
-    QS_DEF(ArrayNew<int>, marked);
+    QS_DEF(ArrayInt, marked);
     int i, j;
 
     marked.clear_resize(_written_atoms.size());

@@ -56,7 +56,7 @@ MoleculeElectronsLocalizer::MoleculeElectronsLocalizer(Molecule& skeleton)
 
 void MoleculeElectronsLocalizer::_construct()
 {
-    QS_DEF(ArrayNew<int>, atom_mapping);
+    QS_DEF(ArrayInt, atom_mapping);
     _extended_skeleton.cloneGraph(_skeleton, &atom_mapping);
 
     // Find edge mapping between source skeleton and extended skeleton
@@ -111,7 +111,7 @@ void MoleculeElectronsLocalizer::_construct()
 
 void MoleculeElectronsLocalizer::_constructBMatchingFinder()
 {
-    QS_DEF(ObjArray<ArrayNew<int>>, nodes_per_set);
+    QS_DEF(ObjArray<ArrayInt>, nodes_per_set);
     nodes_per_set.clear();
     nodes_per_set.resize(_SET_MAX);
 
@@ -128,7 +128,7 @@ void MoleculeElectronsLocalizer::_constructBMatchingFinder()
         nodes_per_set[_CONSTRAINED_LONEPAIRS_SET].push(info.orbitals_node);
     }
 
-    QS_DEF(ArrayNew<int>, set_per_set);
+    QS_DEF(ArrayInt, set_per_set);
     set_per_set.clear_resize(_SET_MAX);
     set_per_set.fffill();
     set_per_set[_PRIMARY_ATOMS_SET] = _SUM_ATOMS_SET;
@@ -439,7 +439,7 @@ int MoleculeElectronsLocalizer::_isLocalizationValid(int atom) const
     return OK;
 }
 
-void MoleculeElectronsLocalizer::copyBondsAndCharges(Molecule& dest, const ArrayNew<int>& mapping) const
+void MoleculeElectronsLocalizer::copyBondsAndCharges(Molecule& dest, const ArrayInt& mapping) const
 {
     // Copy atom charges
     for (int v = _skeleton.vertexBegin(); v != _skeleton.vertexEnd(); v = _skeleton.vertexNext(v))

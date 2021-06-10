@@ -91,11 +91,11 @@ namespace indigo
         // these members made static for saving time of memory allocations
         CP_DECL;
         TL_CP_DECL(Array<ExtEdge>, _edges_list);
-        TL_CP_DECL(ArrayNew<int>, _depth_counters);
+        TL_CP_DECL(ArrayInt, _depth_counters);
         TL_CP_DECL(Graph, _tree);
-        TL_CP_DECL(ArrayNew<int>, _mapping);
-        TL_CP_DECL(ArrayNew<int>, _inv_mapping);
-        TL_CP_DECL(ArrayNew<int>, _edge_mapping);
+        TL_CP_DECL(ArrayInt, _mapping);
+        TL_CP_DECL(ArrayInt, _inv_mapping);
+        TL_CP_DECL(ArrayInt, _edge_mapping);
         TL_CP_DECL(Array<StackElem>, _stack);
 
         int _current_depth;

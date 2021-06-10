@@ -71,7 +71,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_dec
     active_points.fffill();
 }
 
-MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, const ArrayNew<int>& selected_vertices)
+MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, const ArrayInt& selected_vertices)
     : MoleculeCleaner2d(mol, use_biconnected_decompose)
 {
     active_points.clear_resize(mol.vertexEnd());
@@ -172,7 +172,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
     if (use_beconnected_decomposition)
     {
         QS_DEF(ArrayBool, has_component);
-        QS_DEF(ArrayNew<int>, component_list);
+        QS_DEF(ArrayInt, component_list);
         QS_DEF(ArrayBool, has_vertex);
         QS_DEF(ArrayBool, block_vertex);
         has_component.clear();
@@ -183,7 +183,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         block_vertex.clear();
         block_vertex.resize(vertex_size, false);
 
-        QS_DEF(ArrayNew<int>, local_component_list);
+        QS_DEF(ArrayInt, local_component_list);
 
         int index = 0;
         for (int c = 0; c < component_count; c++)
@@ -308,7 +308,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
                 base_point.push(v);
                 _addCoef(v, base_point.size() - 1, ONE);
             }
-        QS_DEF(ArrayNew<int>, vertex_list);
+        QS_DEF(ArrayInt, vertex_list);
         QS_DEF(ArrayChar, debug_atoms);
         vertex_list.clear();
         for (int c = 0; c < component_count; c++)
@@ -356,7 +356,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
 
 void MoleculeCleaner2d::_uniteBondsOnLine()
 {
-    QS_DEF(ArrayNew<int>, unite_with);
+    QS_DEF(ArrayInt, unite_with);
     unite_with.clear_resize(component_count);
     for (int i = 0; i < component_count; i++)
         unite_with[i] = i;
@@ -364,7 +364,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
     _is_straightline_vertex.clear();
     _is_straightline_vertex.resize(vertex_size);
 
-    QS_DEF(ObjArray<ArrayNew<int>>, unite_to);
+    QS_DEF(ObjArray<ArrayInt>, unite_to);
     unite_to.clear();
     for (int i = 0; i < component_count; i++)
     {
@@ -460,18 +460,18 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
     for (int i = 0; i < component_count; i++)
         new_component_count += valid[i];
 
-    QS_DEF(ArrayNew<int>, valid_list);
+    QS_DEF(ArrayInt, valid_list);
     valid_list.clear();
     for (int i = 0; i < component_count; i++)
         if (valid[i])
             valid_list.push(i);
-    QS_DEF(ArrayNew<int>, valid_index);
+    QS_DEF(ArrayInt, valid_index);
     valid_index.clear_resize(component_count);
     valid_index.fffill();
     for (int i = 0; i < valid_list.size(); i++)
         valid_index[valid_list[i]] = i;
 
-    QS_DEF(ObjArray<ArrayNew<int>>, new_in);
+    QS_DEF(ObjArray<ArrayInt>, new_in);
     new_in.clear();
 
     for (int i = 0; i < new_component_count; i++)

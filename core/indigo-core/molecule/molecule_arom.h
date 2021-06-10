@@ -101,17 +101,17 @@ namespace indigo
 
         CP_DECL;
         TL_CP_DECL(Array<byte>, _bonds_arom);
-        TL_CP_DECL(ArrayNew<int>, _bonds_arom_count);
+        TL_CP_DECL(ArrayInt, _bonds_arom_count);
         TL_CP_DECL(Array<CycleDef>, _unsure_cycles);
-        TL_CP_DECL(ArrayNew<int>, _cycle_atoms);
+        TL_CP_DECL(ArrayInt, _cycle_atoms);
         int _cycle_atoms_mark;
 
         bool _checkDoubleBonds(const int* cycle, int cycle_len);
         void _aromatizeCycle(const int* cycle, int cycle_len);
-        void _handleCycle(const ArrayNew<int>& vertices);
+        void _handleCycle(const ArrayInt& vertices);
 
         static bool _cb_check_vertex(Graph& graph, int v_idx, void* context);
-        static bool _cb_handle_cycle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
+        static bool _cb_handle_cycle(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context);
 
         int _cyclesHandled;
         int _unsureCyclesCount;
@@ -126,7 +126,7 @@ namespace indigo
         MoleculeAromatizer(Molecule& molecule, const AromaticityOptions& options);
         void precalculatePiLabels();
 
-        static void findAromaticAtoms(BaseMolecule& mol, ArrayNew<int>* atoms, ArrayNew<int>* bonds, const AromaticityOptions& options);
+        static void findAromaticAtoms(BaseMolecule& mol, ArrayInt* atoms, ArrayInt* bonds, const AromaticityOptions& options);
 
     protected:
         bool _checkVertex(int v_idx) override;
@@ -139,7 +139,7 @@ namespace indigo
         AromaticityOptions _options;
 
         CP_DECL;
-        TL_CP_DECL(ArrayNew<int>, _pi_labels);
+        TL_CP_DECL(ArrayInt, _pi_labels);
     };
 
     class QueryMoleculeAromatizer : public AromatizerBase

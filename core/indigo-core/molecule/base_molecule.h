@@ -160,7 +160,7 @@ namespace indigo
         virtual dword getRSiteBits(int atom_idx) = 0;
         virtual void allowRGroupOnRSite(int atom_idx, int rg_idx) = 0;
 
-        void getAllowedRGroups(int atom_idx, ArrayNew<int>& rgroup_list);
+        void getAllowedRGroups(int atom_idx, ArrayInt& rgroup_list);
         int getSingleAllowedRGroup(int atom_idx);
         int getRSiteAttachmentPointByOrder(int idx, int order) const;
         void setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order);
@@ -178,7 +178,7 @@ namespace indigo
         int attachmentPointCount() const;
         void removeAttachmentPoints();
 
-        void getAttachmentIndicesForAtom(int atom_idx, ArrayNew<int>& res);
+        void getAttachmentIndicesForAtom(int atom_idx, ArrayInt& res);
 
         virtual bool isSaturatedAtom(int idx) = 0;
 
@@ -264,36 +264,36 @@ namespace indigo
 
         ArrayChar name;
 
-        ArrayNew<int> reaction_atom_mapping;
-        ArrayNew<int> reaction_atom_inversion;
-        ArrayNew<int> reaction_atom_exact_change;
-        ArrayNew<int> reaction_bond_reacting_center;
+        ArrayInt reaction_atom_mapping;
+        ArrayInt reaction_atom_inversion;
+        ArrayInt reaction_atom_exact_change;
+        ArrayInt reaction_bond_reacting_center;
 
         static bool hasCoord(BaseMolecule& mol);
         static bool hasZCoord(BaseMolecule& mol);
 
-        void mergeWithSubmolecule(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, ArrayNew<int>* mapping_out, int skip_flags = 0);
+        void mergeWithSubmolecule(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt* edges, ArrayInt* mapping_out, int skip_flags = 0);
 
         int mergeAtoms(int atom1, int atom2);
 
         void flipBond(int atom_parent, int atom_from, int atom_to);
 
-        void makeSubmolecule(BaseMolecule& mol, const ArrayNew<int>& vertices, ArrayNew<int>* mapping_out, int skip_flags = 0);
-        void makeSubmolecule(BaseMolecule& other, const Filter& filter, ArrayNew<int>* mapping_out, ArrayNew<int>* inv_mapping, int skip_flags = 0);
-        void makeEdgeSubmolecule(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, ArrayNew<int>* v_mapping, int skip_flags = 0);
+        void makeSubmolecule(BaseMolecule& mol, const ArrayInt& vertices, ArrayInt* mapping_out, int skip_flags = 0);
+        void makeSubmolecule(BaseMolecule& other, const Filter& filter, ArrayInt* mapping_out, ArrayInt* inv_mapping, int skip_flags = 0);
+        void makeEdgeSubmolecule(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt& edges, ArrayInt* v_mapping, int skip_flags = 0);
 
-        void clone(BaseMolecule& other, ArrayNew<int>* mapping, ArrayNew<int>* inv_mapping, int skip_flags = 0);
+        void clone(BaseMolecule& other, ArrayInt* mapping, ArrayInt* inv_mapping, int skip_flags = 0);
 
         // This is a bad hack for those who are too lazy to handle the mappings.
         // NEVER USE IT.
         void clone_KeepIndices(BaseMolecule& other, int skip_flags = 0);
 
-        void mergeWithMolecule(BaseMolecule& other, ArrayNew<int>* mapping, int skip_flags = 0);
+        void mergeWithMolecule(BaseMolecule& other, ArrayInt* mapping, int skip_flags = 0);
 
-        void removeAtoms(const ArrayNew<int>& indices);
+        void removeAtoms(const ArrayInt& indices);
         void removeAtoms(const Filter& filter);
         void removeAtom(int idx);
-        void removeBonds(const ArrayNew<int>& indices);
+        void removeBonds(const ArrayInt& indices);
         void removeBond(int idx);
 
         void removeSGroup(int idx);
@@ -345,13 +345,13 @@ namespace indigo
 
         int getBondDirection2(int center_idx, int nei_idx);
 
-        void mergeSGroupsWithSubmolecule(BaseMolecule& mol, ArrayNew<int>& mapping);
+        void mergeSGroupsWithSubmolecule(BaseMolecule& mol, ArrayInt& mapping);
 
-        void mergeSGroupsWithSubmolecule(BaseMolecule& mol, ArrayNew<int>& mapping, ArrayNew<int>& edge_mapping);
+        void mergeSGroupsWithSubmolecule(BaseMolecule& mol, ArrayInt& mapping, ArrayInt& edge_mapping);
         void clearSGroups();
 
         void getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res);
-        void getAtomsCenterPoint(ArrayNew<int>& atoms, Vec2f& res);
+        void getAtomsCenterPoint(ArrayInt& atoms, Vec2f& res);
 
         void getAtomSymbol(int v, ArrayChar& output);
 
@@ -366,33 +366,33 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        void _mergeWithSubmolecule_Sub(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, ArrayNew<int>& mapping, ArrayNew<int>& edge_mapping,
+        void _mergeWithSubmolecule_Sub(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt* edges, ArrayInt& mapping, ArrayInt& edge_mapping,
                                        int skip_flags);
 
         void _flipSGroupBond(SGroup& sgroup, int src_bond_idx, int new_bond_idx);
         void _flipSuperatomBond(Superatom& sa, int src_bond_idx, int new_bond_idx);
         void _flipTemplateAtomAttachmentPoint(int idx, int atom_from, ArrayChar& ap_id, int atom_to);
 
-        virtual void _mergeWithSubmolecule(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping,
+        virtual void _mergeWithSubmolecule(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt* edges, const ArrayInt& mapping,
                                            int skip_flags) = 0;
 
-        virtual void _postMergeWithSubmolecule(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping,
+        virtual void _postMergeWithSubmolecule(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt* edges, const ArrayInt& mapping,
                                                int skip_flags);
 
         virtual void _flipBond(int atom_parent, int atom_from, int atom_to);
 
-        virtual void _removeAtoms(const ArrayNew<int>& indices, const int* mapping);
-        virtual void _removeBonds(const ArrayNew<int>& indices);
+        virtual void _removeAtoms(const ArrayInt& indices, const int* mapping);
+        virtual void _removeBonds(const ArrayInt& indices);
 
         int _addBaseAtom();
         int _addBaseBond(int beg, int end);
 
-        void _removeAtomsFromSGroup(SGroup& sgroup, ArrayNew<int>& mapping);
-        void _removeAtomsFromMultipleGroup(MultipleGroup& mg, ArrayNew<int>& mapping);
-        void _removeAtomsFromSuperatom(Superatom& sa, ArrayNew<int>& mapping);
-        void _removeBondsFromSGroup(SGroup& sgroup, ArrayNew<int>& mapping);
-        void _removeBondsFromSuperatom(Superatom& sa, ArrayNew<int>& mapping);
-        bool _mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, BaseMolecule& supermol, ArrayNew<int>& mapping, ArrayNew<int>& edge_mapping);
+        void _removeAtomsFromSGroup(SGroup& sgroup, ArrayInt& mapping);
+        void _removeAtomsFromMultipleGroup(MultipleGroup& mg, ArrayInt& mapping);
+        void _removeAtomsFromSuperatom(Superatom& sa, ArrayInt& mapping);
+        void _removeBondsFromSGroup(SGroup& sgroup, ArrayInt& mapping);
+        void _removeBondsFromSuperatom(Superatom& sa, ArrayInt& mapping);
+        bool _mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, BaseMolecule& supermol, ArrayInt& mapping, ArrayInt& edge_mapping);
 
         void _checkSgroupHierarchy(int pidx, int oidx);
 
@@ -401,21 +401,21 @@ namespace indigo
         void _fillTemplateSeqIds();
         bool _isCTerminus(Superatom& su, int idx);
         bool _isNTerminus(Superatom& su, int idx);
-        int _createSGroupFromFragment(ArrayNew<int>& sg_atoms, const TGroup& tg, ArrayNew<int>& mapping);
+        int _createSGroupFromFragment(ArrayInt& sg_atoms, const TGroup& tg, ArrayInt& mapping);
         bool isAtomBelongsSGroup(int idx);
 
-        ArrayNew<int> _hl_atoms;
-        ArrayNew<int> _hl_bonds;
-        ArrayNew<int> _sl_atoms;
-        ArrayNew<int> _sl_bonds;
+        ArrayInt _hl_atoms;
+        ArrayInt _hl_bonds;
+        ArrayInt _sl_atoms;
+        ArrayInt _sl_bonds;
 
-        ArrayNew<int> _bond_directions;
+        ArrayInt _bond_directions;
 
         Array<Vec3f> _xyz;
-        ObjArray<ArrayNew<int>> _rsite_attachment_points;
+        ObjArray<ArrayInt> _rsite_attachment_points;
         bool _rGroupFragment;
 
-        ObjArray<ArrayNew<int>> _attachment_index;
+        ObjArray<ArrayInt> _attachment_index;
 
         int _chiral_flag = -1;
 

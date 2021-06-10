@@ -51,9 +51,9 @@ namespace indigo
 
             CP_DECL;
             TL_CP_DECL(PtrArray<Molecule>, _monomers);
-            TL_CP_DECL(ArrayNew<int>, _reactant_indexes);
-            TL_CP_DECL(ArrayNew<int>, _deep_levels);
-            TL_CP_DECL(ArrayNew<int>, _tube_indexes);
+            TL_CP_DECL(ArrayInt, _reactant_indexes);
+            TL_CP_DECL(ArrayInt, _deep_levels);
+            TL_CP_DECL(ArrayInt, _tube_indexes);
 
             ReactionMonomers();
 
@@ -70,8 +70,8 @@ namespace indigo
             void removeMonomer(int idx);
         };
 
-        bool (*refine_proc)(const Molecule& uncleaned_fragments, Molecule& product, ArrayNew<int>& mapping, void* userdata);
-        void (*product_proc)(Molecule& product, ArrayNew<int>& monomers_indices, ArrayNew<int>& mapping, void* userdata);
+        bool (*refine_proc)(const Molecule& uncleaned_fragments, Molecule& product, ArrayInt& mapping, void* userdata);
+        void (*product_proc)(Molecule& product, ArrayInt& monomers_indices, ArrayInt& mapping, void* userdata);
 
         void* userdata;
         bool is_multistep_reaction;
@@ -85,14 +85,14 @@ namespace indigo
         int max_reuse_count;
 
         ReactionEnumeratorState(ReactionEnumeratorContext& context, QueryReaction& cur_reaction, QueryMolecule& cur_full_product,
-                                ArrayNew<int>& cur_product_aam_array, RedBlackStringMap<int>& cur_smiles_array, ReactionMonomers& cur_reaction_monomers,
-                                int& cur_product_coint, ObjArray<ArrayNew<int>>& cur_tubes_monomers);
+                                ArrayInt& cur_product_aam_array, RedBlackStringMap<int>& cur_smiles_array, ReactionMonomers& cur_reaction_monomers,
+                                int& cur_product_coint, ObjArray<ArrayInt>& cur_tubes_monomers);
 
         ReactionEnumeratorState(ReactionEnumeratorState& cur_rpe_state);
 
         int buildProduct(void);
 
-        bool performSingleTransformation(Molecule& molecule, ArrayNew<int>& mapping, ArrayNew<int>& forbidden_atoms, ArrayNew<int>& original_hydrogens,
+        bool performSingleTransformation(Molecule& molecule, ArrayInt& mapping, ArrayInt& forbidden_atoms, ArrayInt& original_hydrogens,
                                          bool& need_layout);
 
     private:
@@ -105,27 +105,27 @@ namespace indigo
 
         int& _product_count;
 
-        ObjArray<ArrayNew<int>>& _tubes_monomers;
-        ArrayNew<int>& _product_aam_array;
+        ObjArray<ArrayInt>& _tubes_monomers;
+        ArrayInt& _product_aam_array;
         RedBlackStringMap<int>& _smiles_array;
         ReactionMonomers& _reaction_monomers;
 
         CP_DECL;
-        TL_CP_DECL(ArrayNew<int>, _fragments_aam_array);
+        TL_CP_DECL(ArrayInt, _fragments_aam_array);
         TL_CP_DECL(QueryMolecule, _full_product);
-        TL_CP_DECL(ArrayNew<int>, _product_monomers);
-        TL_CP_DECL(ArrayNew<int>, _mapping);
+        TL_CP_DECL(ArrayInt, _product_monomers);
+        TL_CP_DECL(ArrayInt, _mapping);
         TL_CP_DECL(Molecule, _fragments);
-        TL_CP_DECL(ArrayNew<int>, _is_needless_atom);
-        TL_CP_DECL(ArrayNew<int>, _is_needless_bond);
-        TL_CP_DECL(ArrayNew<int>, _bonds_mapping_sub);
-        TL_CP_DECL(ArrayNew<int>, _bonds_mapping_super);
-        TL_CP_DECL(ObjArray<ArrayNew<int>>, _att_points);
+        TL_CP_DECL(ArrayInt, _is_needless_atom);
+        TL_CP_DECL(ArrayInt, _is_needless_bond);
+        TL_CP_DECL(ArrayInt, _bonds_mapping_sub);
+        TL_CP_DECL(ArrayInt, _bonds_mapping_super);
+        TL_CP_DECL(ObjArray<ArrayInt>, _att_points);
         TL_CP_DECL(MoleculeSubstructureMatcher::FragmentMatchCache, _fmcache);
-        TL_CP_DECL(ArrayNew<int>, _monomer_forbidden_atoms);
-        TL_CP_DECL(ArrayNew<int>, _product_forbidden_atoms);
+        TL_CP_DECL(ArrayInt, _monomer_forbidden_atoms);
+        TL_CP_DECL(ArrayInt, _product_forbidden_atoms);
 
-        TL_CP_DECL(ArrayNew<int>, _original_hydrogens);
+        TL_CP_DECL(ArrayInt, _original_hydrogens);
 
         AromaticityMatcher* _am;
         EmbeddingEnumerator* _ee;
@@ -138,7 +138,7 @@ namespace indigo
 
         bool _isMonomerFromCurTube(int monomer_idx);
 
-        static void _foldHydrogens(BaseMolecule& molecule, ArrayNew<int>* atoms_to_keep = 0, ArrayNew<int>* original_hydrogens = 0, ArrayNew<int>* mol_mapping = 0);
+        static void _foldHydrogens(BaseMolecule& molecule, ArrayInt* atoms_to_keep = 0, ArrayInt* original_hydrogens = 0, ArrayInt* mol_mapping = 0);
 
         void _productProcess(void);
 
@@ -153,10 +153,10 @@ namespace indigo
             if ((reactant.vertexCount() != product.vertexCount()) || (reactant.edgeCount() != product.edgeCount()))
                 return false;
 
-            ArrayNew<int>& reactant_aam = _reaction.getAAMArray(_reaction.reactantBegin());
-            ArrayNew<int>& product_aam = _reaction.getAAMArray(_reaction.productBegin());
+            ArrayInt& reactant_aam = _reaction.getAAMArray(_reaction.reactantBegin());
+            ArrayInt& product_aam = _reaction.getAAMArray(_reaction.productBegin());
 
-            ArrayNew<int> aam_mapping;
+            ArrayInt aam_mapping;
             aam_mapping.resize(reactant.vertexEnd());
             aam_mapping.fffill();
 
@@ -213,32 +213,32 @@ namespace indigo
 
         void _cleanFragments(void);
 
-        void _findR2PMapping(QueryMolecule& reactant, ArrayNew<int>& mapping);
+        void _findR2PMapping(QueryMolecule& reactant, ArrayInt& mapping);
 
         void _invertStereocenters(Molecule& molecule, int edge_idx);
 
-        void _cistransUpdate(QueryMolecule& submolecule, Molecule& supermolecule, int* frag_mapping, const ArrayNew<int>& rp_mapping, int* core_sub);
+        void _cistransUpdate(QueryMolecule& submolecule, Molecule& supermolecule, int* frag_mapping, const ArrayInt& rp_mapping, int* core_sub);
 
         QueryMolecule::Atom* _getReactantAtom(int atom_aam);
 
-        void _buildMolProduct(QueryMolecule& product, Molecule& mol_product, Molecule& uncleaned_fragments, ArrayNew<int>& all_forbidden_atoms,
-                              ArrayNew<int>& mapping_out);
+        void _buildMolProduct(QueryMolecule& product, Molecule& mol_product, Molecule& uncleaned_fragments, ArrayInt& all_forbidden_atoms,
+                              ArrayInt& mapping_out);
 
-        void _stereocentersUpdate(QueryMolecule& submolecule, Molecule& supermolecule, const ArrayNew<int>& rp_mapping, int* core_sub, int* core_super);
+        void _stereocentersUpdate(QueryMolecule& submolecule, Molecule& supermolecule, const ArrayInt& rp_mapping, int* core_sub, int* core_super);
 
-        void _findFragments2ProductMapping(ArrayNew<int>& f2p_mapping);
+        void _findFragments2ProductMapping(ArrayInt& f2p_mapping);
 
-        void _completeCisTrans(Molecule& product, Molecule& uncleaned_fragments, ArrayNew<int>& frags_mapping);
+        void _completeCisTrans(Molecule& product, Molecule& uncleaned_fragments, ArrayInt& frags_mapping);
 
         bool _checkValence(Molecule& mol, int atom_idx);
 
-        bool _attachFragments(Molecule& ready_product_out, ArrayNew<int>& ucfrag_mapping);
+        bool _attachFragments(Molecule& ready_product_out, ArrayInt& ucfrag_mapping);
 
         bool _checkFragment(QueryMolecule& submolecule, Molecule& monomer, Array<byte>& unfrag_mon_atoms, int* core_sub);
 
-        void _checkFragmentNecessity(ArrayNew<int>& is_needless_att_point);
+        void _checkFragmentNecessity(ArrayInt& is_needless_att_point);
 
-        bool _addFragment(Molecule& fragment, QueryMolecule& submolecule, ArrayNew<int>& rp_mapping, const ArrayNew<int>& sub_rg_atoms, int* core_sub,
+        bool _addFragment(Molecule& fragment, QueryMolecule& submolecule, ArrayInt& rp_mapping, const ArrayInt& sub_rg_atoms, int* core_sub,
                           int* core_super);
 
         static bool _matchVertexCallback(Graph& subgraph, Graph& supergraph, const int* core_sub, int sub_idx, int super_idx, void* userdata);

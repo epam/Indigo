@@ -324,7 +324,7 @@ public:
 class IndigoSGroupsIter : public IndigoObject
 {
 public:
-    IndigoSGroupsIter(BaseMolecule& molecule, ArrayNew<int>& sgs);
+    IndigoSGroupsIter(BaseMolecule& molecule, ArrayInt& sgs);
 
     ~IndigoSGroupsIter() override;
 
@@ -336,7 +336,7 @@ public:
 protected:
     int _idx;
     BaseMolecule& _mol;
-    ArrayNew<int>& _refs;
+    ArrayInt& _refs;
 };
 
 class IndigoDataSGroup : public IndigoObject
@@ -358,7 +358,7 @@ public:
 class IndigoDataSGroupsIter : public IndigoObject
 {
 public:
-    IndigoDataSGroupsIter(BaseMolecule& molecule, ArrayNew<int>& refs);
+    IndigoDataSGroupsIter(BaseMolecule& molecule, ArrayInt& refs);
     ~IndigoDataSGroupsIter() override;
 
     IndigoObject* next() override;
@@ -367,7 +367,7 @@ public:
 protected:
     int _idx;
     BaseMolecule& _mol;
-    ArrayNew<int>& _refs;
+    ArrayInt& _refs;
 };
 
 class IndigoSuperatom : public IndigoObject
@@ -391,7 +391,7 @@ public:
 class IndigoSuperatomsIter : public IndigoObject
 {
 public:
-    IndigoSuperatomsIter(BaseMolecule& molecule, ArrayNew<int>& refs);
+    IndigoSuperatomsIter(BaseMolecule& molecule, ArrayInt& refs);
     ~IndigoSuperatomsIter() override;
 
     IndigoObject* next() override;
@@ -400,7 +400,7 @@ public:
 protected:
     int _idx;
     BaseMolecule& _mol;
-    ArrayNew<int>& _refs;
+    ArrayInt& _refs;
 };
 
 class IndigoRepeatingUnit : public IndigoObject
@@ -422,7 +422,7 @@ public:
 class IndigoRepeatingUnitsIter : public IndigoObject
 {
 public:
-    IndigoRepeatingUnitsIter(BaseMolecule& molecule, ArrayNew<int>& refs);
+    IndigoRepeatingUnitsIter(BaseMolecule& molecule, ArrayInt& refs);
     ~IndigoRepeatingUnitsIter() override;
 
     IndigoObject* next() override;
@@ -431,7 +431,7 @@ public:
 protected:
     int _idx;
     BaseMolecule& _mol;
-    ArrayNew<int>& _refs;
+    ArrayInt& _refs;
 };
 
 class IndigoMultipleGroup : public IndigoObject
@@ -453,7 +453,7 @@ public:
 class IndigoMultipleGroupsIter : public IndigoObject
 {
 public:
-    IndigoMultipleGroupsIter(BaseMolecule& molecule, ArrayNew<int>& refs);
+    IndigoMultipleGroupsIter(BaseMolecule& molecule, ArrayInt& refs);
     ~IndigoMultipleGroupsIter() override;
 
     IndigoObject* next() override;
@@ -462,7 +462,7 @@ public:
 protected:
     int _idx;
     BaseMolecule& _mol;
-    ArrayNew<int>& _refs;
+    ArrayInt& _refs;
 };
 
 class IndigoGenericSGroup : public IndigoObject
@@ -484,7 +484,7 @@ public:
 class IndigoGenericSGroupsIter : public IndigoObject
 {
 public:
-    IndigoGenericSGroupsIter(BaseMolecule& molecule, ArrayNew<int>& refs);
+    IndigoGenericSGroupsIter(BaseMolecule& molecule, ArrayInt& refs);
     ~IndigoGenericSGroupsIter() override;
 
     IndigoObject* next() override;
@@ -493,7 +493,7 @@ public:
 protected:
     int _idx;
     BaseMolecule& _mol;
-    ArrayNew<int>& _refs;
+    ArrayInt& _refs;
 };
 
 class IndigoSGroupAtomsIter : public IndigoObject
@@ -591,7 +591,7 @@ protected:
 class IndigoSubmolecule : public IndigoObject
 {
 public:
-    IndigoSubmolecule(BaseMolecule& mol_, ArrayNew<int>& vertices_, ArrayNew<int>& edges_);
+    IndigoSubmolecule(BaseMolecule& mol_, ArrayInt& vertices_, ArrayInt& edges_);
     IndigoSubmolecule(BaseMolecule& mol_, List<int>& vertices_, List<int>& edges_);
     ~IndigoSubmolecule() override;
 
@@ -608,8 +608,8 @@ public:
     int idx; // not really a submolecule property, but included for convenience
              // of iterators that return submolecules
 
-    ArrayNew<int> vertices;
-    ArrayNew<int> edges;
+    ArrayInt vertices;
+    ArrayInt edges;
 
 protected:
     BaseMolecule& _mol;
@@ -670,13 +670,13 @@ public:
     bool hasNext() override;
 
 protected:
-    static void _handleTree(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
+    static void _handleTree(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context);
 
     BaseMolecule& _mol;
     GraphSubtreeEnumerator _enumerator;
     int _idx;
-    ObjArray<ArrayNew<int>> _vertices;
-    ObjArray<ArrayNew<int>> _edges;
+    ObjArray<ArrayInt> _vertices;
+    ObjArray<ArrayInt> _edges;
 };
 
 class IndigoRingsIter : public IndigoObject
@@ -689,13 +689,13 @@ public:
     bool hasNext() override;
 
 protected:
-    static bool _handleCycle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
+    static bool _handleCycle(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context);
 
     BaseMolecule& _mol;
     CycleEnumerator _enumerator;
     int _idx;
-    ObjArray<ArrayNew<int>> _vertices;
-    ObjArray<ArrayNew<int>> _edges;
+    ObjArray<ArrayInt> _vertices;
+    ObjArray<ArrayInt> _edges;
 };
 
 class IndigoEdgeSubmoleculeIter : public IndigoObject
@@ -713,8 +713,8 @@ protected:
     BaseMolecule& _mol;
     EdgeSubgraphEnumerator _enumerator;
     int _idx;
-    ObjArray<ArrayNew<int>> _vertices;
-    ObjArray<ArrayNew<int>> _edges;
+    ObjArray<ArrayInt> _vertices;
+    ObjArray<ArrayInt> _edges;
 };
 
 class IndigoAttachmentPointsIter : public IndigoObject

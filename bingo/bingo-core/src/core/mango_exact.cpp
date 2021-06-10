@@ -55,7 +55,7 @@ void MangoExact::calculateHash(Molecule& mol, Hash& hash)
     hash.clear();
 
     QS_DEF(Molecule, mol_without_h);
-    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayInt, vertices);
     int i;
 
     vertices.clear();
@@ -69,7 +69,7 @@ void MangoExact::calculateHash(Molecule& mol, Hash& hash)
     // Decompose into connected components
     int n_comp = mol_without_h.countComponents();
     QS_DEF(Molecule, component);
-    QS_DEF(ArrayNew<int>, vertex_codes);
+    QS_DEF(ArrayInt, vertex_codes);
 
     for (int i = 0; i < n_comp; i++)
     {

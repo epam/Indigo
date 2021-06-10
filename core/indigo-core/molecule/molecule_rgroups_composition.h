@@ -47,26 +47,26 @@ namespace indigo
             }
 
             // Constructs (0,...,0) state, limits indicates max number on every site
-            AttachmentIter(int size, const ArrayNew<int>& limits) : _limits(&limits), _end(false), _size(size)
+            AttachmentIter(int size, const ArrayInt& limits) : _limits(&limits), _end(false), _size(size)
             {
                 _fragments.resize(size);
                 _fragments.fill(0);
             }
 
             // Operators *, != and ++ are used for range-loop iteration
-            const ArrayNew<int>* operator*() const;
+            const ArrayInt* operator*() const;
             bool operator!=(const AttachmentIter& other) const;
             AttachmentIter& operator++();
 
             // Output numbers assigned to sites
-            void dump(ArrayNew<int>& other) const;
+            void dump(ArrayInt& other) const;
 
             // Move to next state, returns true if the iterator has next element
             bool next();
 
         protected:
-            const ArrayNew<int>* _limits;
-            ArrayNew<int> _fragments;
+            const ArrayInt* _limits;
+            ArrayInt _fragments;
 
             bool _end;
             int _size;
@@ -76,7 +76,7 @@ namespace indigo
         class Attachments : NonCopyable
         {
         public:
-            Attachments(int size, const ArrayNew<int>& limits) : _limits(limits), _end(), _size(size)
+            Attachments(int size, const ArrayInt& limits) : _limits(limits), _end(), _size(size)
             {
             }
             ~Attachments()
@@ -103,7 +103,7 @@ namespace indigo
             {
                 return new AttachmentIter(_size, _limits);
             }
-            const ArrayNew<int>& _limits;
+            const ArrayInt& _limits;
 
             PtrPool<AttachmentIter> _ptrs;
             AttachmentIter _end;
@@ -119,10 +119,10 @@ namespace indigo
         }
 
         // Assembles result molecule from abstract assigment of numbers to sites
-        void decorate(const ArrayNew<int>& at, Molecule& out) const;
+        void decorate(const ArrayInt& at, Molecule& out) const;
         void decorate(const AttachmentIter& at, Molecule& out) const;
 
-        std::unique_ptr<Molecule> decorate(const ArrayNew<int>& at) const;
+        std::unique_ptr<Molecule> decorate(const ArrayInt& at) const;
         std::unique_ptr<Molecule> decorate(const AttachmentIter& at) const;
 
         // Iterator for result molecules, essentially wrapper of AttachmentIter
@@ -279,8 +279,8 @@ namespace indigo
         BaseMolecule& _mol;
         MoleculeRGroups& _rgroups;
 
-        ArrayNew<int> _limits;
-        ArrayNew<int> _rgroup2size;
+        ArrayInt _limits;
+        ArrayInt _rgroup2size;
         MultiMap<int, int> _rsite2rgroup;
         RedBlackMap<int, int> _rsite2vertex;
 

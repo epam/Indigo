@@ -129,7 +129,7 @@ void CanonicalRSmilesSaver::_writeMolecule(int i, CanonicalSmilesSaver& saver)
 
     _ncomp.push(saver.writtenComponents());
 
-    const ArrayNew<int>& atoms = saver.writtenAtoms();
+    const ArrayInt& atoms = saver.writtenAtoms();
 
     for (j = 0; j < atoms.size(); j++)
     {
@@ -139,7 +139,7 @@ void CanonicalRSmilesSaver::_writeMolecule(int i, CanonicalSmilesSaver& saver)
         idx.idx = atoms[j];
     }
 
-    const ArrayNew<int>& bonds = saver.writtenBonds();
+    const ArrayInt& bonds = saver.writtenBonds();
 
     for (j = 0; j < bonds.size(); j++)
     {

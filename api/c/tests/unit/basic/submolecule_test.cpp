@@ -19,7 +19,7 @@ TEST(IndigoSubmoleculeTest, sub_test_layout)
     try
     {
         int mol = indigoLoadMoleculeFromString("CC.NN.PP.OO");
-        ArrayNew<int> vertices;
+        ArrayInt vertices;
         vertices.push(6);
         vertices.push(7);
         int sub_mol = indigoGetSubmolecule(mol, vertices.size(), vertices.ptr());
@@ -42,7 +42,7 @@ TEST(IndigoSubmoleculeTest, sub_test_general)
     try
     {
         int mol = indigoLoadMoleculeFromString("C1=CC=CC=C1.C1=CC=CC=C1");
-        ArrayNew<int> vertices;
+        ArrayInt vertices;
         for (int i = 0; i < 6; ++i)
             vertices.push(i);
 

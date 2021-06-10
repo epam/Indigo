@@ -40,7 +40,7 @@ static OsLock _bingo_lock;
 static PtrArray<DatabaseLockData> _lockers;
 static PtrPool<Matcher> _searches;
 static OsLock _searches_lock;
-static ArrayNew<int> _searches_db;
+static ArrayInt _searches_db;
 
 static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* options, bool create, const char* type = 0)
 {

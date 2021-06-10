@@ -224,7 +224,7 @@ void InchiWrapper::parseInchiOutput(const InchiOutput& inchi_output, Molecule& m
 {
     mol.clear();
 
-    ArrayNew<int> atom_indices;
+    ArrayInt atom_indices;
     atom_indices.clear();
 
     // Add atoms
@@ -399,7 +399,7 @@ void InchiWrapper::parseInchiOutput(const InchiOutput& inchi_output, Molecule& m
 
 void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo)
 {
-    QS_DEF(ArrayNew<int>, mapping);
+    QS_DEF(ArrayInt, mapping);
     mapping.clear_resize(mol.vertexEnd());
     mapping.fffill();
     int index = 0;

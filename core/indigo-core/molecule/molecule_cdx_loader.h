@@ -102,12 +102,12 @@ namespace indigo
         TL_CP_DECL(Array<_NodeDesc>, _nodes);
         TL_CP_DECL(Array<_BondDesc>, _bonds);
 
-        TL_CP_DECL(ArrayNew<int>, _stereo_care_atoms);
-        TL_CP_DECL(ArrayNew<int>, _stereo_care_bonds);
-        TL_CP_DECL(ArrayNew<int>, _stereocenter_types);
-        TL_CP_DECL(ArrayNew<int>, _stereocenter_groups);
-        TL_CP_DECL(ArrayNew<int>, _sensible_bond_directions);
-        TL_CP_DECL(ArrayNew<int>, _ignore_cistrans);
+        TL_CP_DECL(ArrayInt, _stereo_care_atoms);
+        TL_CP_DECL(ArrayInt, _stereo_care_bonds);
+        TL_CP_DECL(ArrayInt, _stereocenter_types);
+        TL_CP_DECL(ArrayInt, _stereocenter_groups);
+        TL_CP_DECL(ArrayInt, _sensible_bond_directions);
+        TL_CP_DECL(ArrayInt, _ignore_cistrans);
 
         void _checkHeader();
         void _loadMolecule();

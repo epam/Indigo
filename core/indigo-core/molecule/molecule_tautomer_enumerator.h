@@ -53,8 +53,8 @@ namespace indigo
             Dbitset backwardMask;
             ObjArray<Dbitset> forwardEdgesHistory;
             ObjArray<Dbitset> backwardEdgesHistory;
-            ArrayNew<int> nodesHistory;
-            ArrayNew<int> edgesHistory;
+            ArrayInt nodesHistory;
+            ArrayInt edgesHistory;
         };
 
         static bool matchEdge(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
@@ -63,8 +63,8 @@ namespace indigo
         static void vertexAdd(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
         static void vertexRemove(Graph& subgraph, int sub_idx, void* userdata);
 
-        static bool refine_proc(const Molecule& uncleaned_fragments, Molecule& product, ArrayNew<int>& mapping, void* userdata);
-        static void product_proc(Molecule& product, ArrayNew<int>& monomers_indices, ArrayNew<int>& mapping, void* userdata);
+        static bool refine_proc(const Molecule& uncleaned_fragments, Molecule& product, ArrayInt& mapping, void* userdata);
+        static void product_proc(Molecule& product, ArrayInt& monomers_indices, ArrayInt& mapping, void* userdata);
 
         bool _performProcedure();
         bool _aromatize(int from, int to);

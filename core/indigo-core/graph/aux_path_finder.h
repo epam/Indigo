@@ -31,11 +31,11 @@ namespace indigo
     public:
         AuxPathFinder(AuxiliaryGraph& graph, int max_size);
 
-        bool find(ArrayNew<int>& vertices, ArrayNew<int>& edges, int u, int v);
+        bool find(ArrayInt& vertices, ArrayInt& edges, int u, int v);
 
     private:
         Queue<int> _queue;
-        ArrayNew<int> _prev;
+        ArrayInt _prev;
         AuxiliaryGraph& _graph;
         AuxPathFinder(const AuxPathFinder&);
     };

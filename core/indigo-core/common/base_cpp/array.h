@@ -32,6 +32,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <iostream>
 
 namespace indigo
 {
@@ -1082,6 +1083,244 @@ namespace indigo
             void* _context;
             int (*_cmp)(T1, T2, void*);
         };
+    };
+
+    class ArrayIntWrapper
+    {
+    public:
+        DECL_TPL_ERROR(ArrayError);
+        void clear()
+        {
+            std::cout << "clear" << std::endl;
+            _array.clear();
+        }
+
+        void clear_resize(int newsize)
+        {
+            std::cout << "clear_resize:" << newsize << std::endl;
+            _array.clear_resize(newsize);
+        }
+
+        void reserve(int to_reserve)
+        {
+            std::cout << "clear_resize:" << to_reserve << std::endl;
+            _array.reserve(to_reserve);
+        }
+
+        const int* ptr() const
+        {
+            return _array.ptr();
+        }
+
+        int* ptr()
+        {
+            return _array.ptr();
+        }
+
+        const int& operator[](int index) const
+        {
+            std::cout << "const int&:" << index << std::endl;
+            return _array[index];
+        }
+
+        int& operator[](int index)
+        {
+            std::cout << "int&:" << index << std::endl;
+            return _array[index];
+        }
+
+        const int& at(int index) const
+        {
+            std::cout << "const int& at:" << index << std::endl;
+            return _array.at(index);
+        }
+
+        int& at(int index)
+        {
+            std::cout << "int& at:" << index << std::endl;
+            return _array.at(index);
+        }
+
+        int size() const
+        {
+            std::cout << "size:", _array.size();
+            return _array.size();
+        }
+
+        int sizeInBytes() const
+        {
+            std::cout << "sizeInBytes:" << _array.size() << std::endl;
+            return _array.sizeInBytes();
+        }
+
+        const int& top() const
+        {
+            std::cout << "const top" << std::endl;
+            return _array.top();
+        }
+
+        int& top()
+        {
+            std::cout << "const top" << std::endl;
+            return _array.top();
+        }
+
+        void swap(ArrayIntWrapper& other)
+        {
+            std::cout << "swap1" << std::endl;
+            _array.swap(other._array);
+        }
+
+        void swap(int idx1, int idx2)
+        {
+            std::cout << "swap2" << std::endl;
+            _array.swap(idx1, idx2);
+        }
+
+        void zerofill()
+        {
+            std::cout << "zerofill" << std::endl;
+            _array.zerofill();
+        }
+
+        void fffill()
+        {
+            std::cout << "fffill" << std::endl;
+            _array.fffill();
+        }
+
+        void fill(const int& value)
+        {
+            std::cout << "fill" << std::endl;
+            _array.fill(value);
+        }
+
+        void resize(int newsize)
+        {
+            std::cout << "resize:" << _array.size() << ":" << newsize << std::endl;
+            _array.resize(newsize);
+        }
+
+        int find(int value) const // TODO:: remove it!!!
+        {
+            std::cout << "find:" << value << std::endl;
+            return _array.find(value);
+        }
+
+        void push(int elem)
+        {
+            std::cout << "push:" << elem << std::endl;
+            _array.push(elem);
+        }
+
+        int& push()
+        {
+            std::cout << "push() size:" << _array.size() << std::endl;
+            return _array.push();
+        }
+
+        int pop()
+        {
+            std::cout << "pop:" << _array.size() << std::endl;
+            return _array.pop();
+        }
+
+        void copy(const ArrayIntWrapper& other)
+        {
+            std::cout << "copy:" << _array.size() << ":" << other.size() << std::endl;
+            _array.copy(other._array);
+            std::cout << "copy:" << _array.size() << ":" << other.size() << std::endl;
+        }
+
+        void copy(const int* other, int count)
+        {
+            std::cout << "copy2:" << _array.size() << std::endl;
+            _array.copy(other, count);
+            std::cout << "copy2:" << _array.size() << std::endl;
+        }
+
+        void concat(const ArrayIntWrapper& other)
+        {
+            std::cout << "concat:" << _array.size() << ":" << other.size() << std::endl;
+            _array.concat(other._array);
+            std::cout << "concat:" << _array.size() << ":" << other.size() << std::endl;
+        }
+
+        void concat(const int* other, int count)
+        {
+            std::cout << "concat2:" << _array.size() << std::endl;
+            _array.concat(other, count);
+            std::cout << "concat2:" << _array.size() << std::endl;
+        }
+
+        void expand(int newsize)
+        {
+            std::cout << "expand" << newsize << ":" << _array.size() << std::endl;
+            _array.expand(newsize);
+            std::cout << "expand" << newsize << ":" << _array.size() << std::endl;
+        }
+
+        void expandFill(int newsize, const int& value)
+        {
+            std::cout << "expandFill" << newsize << ":" << _array.size() << ":" << value << std::endl;
+            _array.expandFill(newsize, value);
+        }
+
+        void remove(int idx, int span = 1)
+        {
+            std::cout << "remove" << idx << ":" << span << ":" << _array.size();
+            _array.remove(idx, span);
+            std::cout << "remove:" << _array.size() << std::endl;
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor> void insertionSort(int start, int end, CmpFunctor cmp)
+        {
+            std::cout << "insertionSort" << std::endl;
+            _array.insertionSort(start, end, cmp);
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor> void qsort(int start, int end, CmpFunctor cmp)
+        {
+            std::cout << "qsort" << std::endl;
+            _array.qsort(start, end, cmp);
+        }
+
+        void qsort(int start, int end, int (*cmp)(int, int, void*), void* context)
+        {
+            std::cout << "qsort2" << std::endl;
+            _array.qsort(start, end, cmp, context);
+        }
+
+        void qsort(int (*cmp)(int, int, void*), void* context)
+        {
+            std::cout << "qsort2" << std::endl;
+            _array.qsort(cmp, context);
+        }
+
+    private:
+        ArrayInt2 _array;
+        class _CmpFunctorCaller
+        {
+        public:
+            _CmpFunctorCaller(int (*cmp)(int, int, void*), void* context) : _context(context), _cmp(cmp)
+            {
+            }
+
+            int operator()(int arg1, int arg2) const
+            {
+                return _cmp(arg1, arg2, _context);
+            }
+
+        private:
+            void* _context;
+            int (*_cmp)(int, int, void*);
+        };
+    };
+
+    class ArrayInt : public Array<int>
+    {
     };
 
     // using ArrayChar = Array<char>;

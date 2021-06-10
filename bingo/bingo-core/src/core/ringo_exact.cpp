@@ -50,7 +50,7 @@ void RingoExact::loadQuery(Scanner& scanner)
 dword RingoExact::calculateHash(Reaction& rxn)
 {
     QS_DEF(Molecule, mol_without_h);
-    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayInt, vertices);
     int i, j;
     dword hash = 0;
 

@@ -40,7 +40,7 @@ int sum(int s, int x)
     {
         return s;
     }
-    QS_DEF(ArrayNew<int>, xs);
+    QS_DEF(ArrayInt, xs);
     xs.push(x);
 
     int top = xs[0];

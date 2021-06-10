@@ -73,7 +73,7 @@ void Molecule::_flipBond(int atom_parent, int atom_from, int atom_to)
     updateEditRevision();
 }
 
-void Molecule::_mergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping, int skip_flags)
+void Molecule::_mergeWithSubmolecule(BaseMolecule& bmol, const ArrayInt& vertices, const ArrayInt* edges, const ArrayInt& mapping, int skip_flags)
 {
     Molecule& mol = bmol.asMolecule();
     _ignore_bad_valence = mol.getIgnoreBadValenceFlag();
@@ -542,8 +542,8 @@ int Molecule::matchAtomsCmp(Graph& g1, Graph& g2, int idx1, int idx2, void* user
     if (!m1.isAtomHighlighted(idx1) && m2.isAtomHighlighted(idx2))
         return -1;
 
-    QS_DEF(ArrayNew<int>, ai1);
-    QS_DEF(ArrayNew<int>, ai2);
+    QS_DEF(ArrayInt, ai1);
+    QS_DEF(ArrayInt, ai2);
 
     m1.getAttachmentIndicesForAtom(idx1, ai1);
     m2.getAttachmentIndicesForAtom(idx2, ai2);
@@ -634,7 +634,7 @@ int Molecule::getAtomAromaticity(int idx)
     return ATOM_ALIPHATIC;
 }
 
-void Molecule::_removeAtoms(const ArrayNew<int>& indices, const int* mapping)
+void Molecule::_removeAtoms(const ArrayInt& indices, const int* mapping)
 {
     int i;
 
@@ -688,11 +688,11 @@ void Molecule::_removeAtoms(const ArrayNew<int>& indices, const int* mapping)
     updateEditRevision();
 }
 
-void Molecule::unfoldHydrogens(ArrayNew<int>* markers_out, int max_h_cnt, bool impl_h_no_throw)
+void Molecule::unfoldHydrogens(ArrayInt* markers_out, int max_h_cnt, bool impl_h_no_throw)
 {
     int v_end = vertexEnd();
 
-    QS_DEF(ArrayNew<int>, imp_h_count);
+    QS_DEF(ArrayInt, imp_h_count);
     imp_h_count.clear_resize(vertexEnd());
     imp_h_count.zerofill();
 
@@ -1168,12 +1168,12 @@ int Molecule::getAtomRadical(int idx)
     return 0;
 }
 
-void Molecule::saveBondOrders(Molecule& mol, ArrayNew<int>& orders)
+void Molecule::saveBondOrders(Molecule& mol, ArrayInt& orders)
 {
     orders.copy(mol._bond_orders);
 }
 
-void Molecule::loadBondOrders(Molecule& mol, ArrayNew<int>& orders)
+void Molecule::loadBondOrders(Molecule& mol, ArrayInt& orders)
 {
     mol._bond_orders.copy(orders);
     mol.updateEditRevision();

@@ -41,7 +41,7 @@ namespace indigo
         int getBondCount() override;
         int getAtomCount() override;
 
-        ArrayNew<int> items;
+        ArrayInt items;
     };
 
 } // namespace indigo

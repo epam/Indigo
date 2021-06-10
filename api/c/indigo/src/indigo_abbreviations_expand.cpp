@@ -96,7 +96,7 @@ namespace indigo
             // Results
             int input_index, output_index;
 
-            ArrayNew<int> added_atoms;
+            ArrayInt added_atoms;
 
             bool expandAtomAbbreviation(Molecule& mol, int v);
 
@@ -359,7 +359,7 @@ namespace indigo
             if (i != cur.multiplier)
             {
                 // Rollback
-                ArrayNew<int> new_atoms;
+                ArrayInt new_atoms;
                 for (int v = m.vertexBegin(); v != m.vertexEnd(); v = m.vertexNext(v))
                     if (v >= atom_bound)
                         new_atoms.push(v);
@@ -379,7 +379,7 @@ namespace indigo
             if (cur.multiplier != 1)
                 return false;
 
-            ArrayNew<int> connection_points;
+            ArrayInt connection_points;
             if (cur.type == Token::Element)
             {
                 if (cur.index == ELEM_H)
@@ -420,8 +420,8 @@ namespace indigo
                 Molecule abbr;
                 loader.loadMolecule(abbr);
 
-                ArrayNew<int> mapping;
-                ArrayNew<int> rsites;
+                ArrayInt mapping;
+                ArrayInt rsites;
                 m.mergeWithMolecule(abbr, &mapping);
                 for (int v = abbr.vertexBegin(); v != abbr.vertexEnd(); v = abbr.vertexNext(v))
                 {
@@ -524,7 +524,7 @@ namespace indigo
             if (rollback)
             {
                 // Rollback
-                ArrayNew<int> new_atoms;
+                ArrayInt new_atoms;
                 for (int v = m.vertexBegin(); v != m.vertexEnd(); v = m.vertexNext(v))
                     if (v >= atom_bound)
                         new_atoms.push(v);
@@ -550,7 +550,7 @@ namespace indigo
                 {
                     attach_to = attach_to_saved;
                     // Rollback
-                    ArrayNew<int> new_atoms;
+                    ArrayInt new_atoms;
                     for (int v = m.vertexBegin(); v != m.vertexEnd(); v = m.vertexNext(v))
                         if (v >= atom_bound)
                             new_atoms.push(v);
@@ -637,7 +637,7 @@ namespace indigo
             Vec3f& pos = mol.getAtomXyz(v);
             const Vertex& vertex = mol.getVertex(v);
             int count_left = 0, count_right = 0, count_middle = 0;
-            ArrayNew<int> left_atoms, right_atoms;
+            ArrayInt left_atoms, right_atoms;
             for (int nei = vertex.neiBegin(); nei != vertex.neiEnd(); nei = vertex.neiNext(nei))
             {
                 int nei_atom = vertex.neiVertex(nei);
@@ -729,7 +729,7 @@ namespace indigo
                 return false;
 
             // Merge expanded abbreviation with the source molecule and connect bonds
-            ArrayNew<int> mapping;
+            ArrayInt mapping;
             mol.mergeWithMolecule(expanded, &mapping);
 
             // if (right_atoms.size() == 0)
@@ -796,7 +796,7 @@ namespace indigo
 
                 // Collect pseudoatoms first because abbreviation can change atom ordering because
                 // it deletes atoms and adds new ones
-                ArrayNew<int> pseudoatoms;
+                ArrayInt pseudoatoms;
                 for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
                 {
                     if (mol.isPseudoAtom(v))

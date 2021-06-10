@@ -28,9 +28,9 @@ void GrossStorage::add(ArrayChar& gross_formula, int id)
     _hashes.add(hash, id);
 }
 
-void GrossStorage::find(ArrayChar& query_formula, ArrayNew<int>& indices, int part_id, int part_count)
+void GrossStorage::find(ArrayChar& query_formula, ArrayInt& indices, int part_id, int part_count)
 {
-    ArrayNew<int> candidates;
+    ArrayInt candidates;
 
     findCandidates(query_formula, candidates, part_id, part_count);
 
@@ -42,7 +42,7 @@ void GrossStorage::find(ArrayChar& query_formula, ArrayNew<int>& indices, int pa
     }
 }
 
-void GrossStorage::findCandidates(ArrayChar& query_formula, ArrayNew<int>& candidates, int part_id, int part_count)
+void GrossStorage::findCandidates(ArrayChar& query_formula, ArrayInt& candidates, int part_id, int part_count)
 {
     dword query_hash = _calculateGrossHash(query_formula.ptr(), query_formula.size());
 
@@ -65,9 +65,9 @@ void GrossStorage::findCandidates(ArrayChar& query_formula, ArrayNew<int>& candi
         candidates.push(indices[i]);
 }
 
-int GrossStorage::findNext(ArrayChar& query_formula, ArrayNew<int>& candidates, int& cur_candidate)
+int GrossStorage::findNext(ArrayChar& query_formula, ArrayInt& candidates, int& cur_candidate)
 {
-    ArrayNew<int> query_array;
+    ArrayInt query_array;
     MoleculeGrossFormula::fromString(query_formula.ptr(), query_array);
 
     while (++cur_candidate)
@@ -82,9 +82,9 @@ int GrossStorage::findNext(ArrayChar& query_formula, ArrayNew<int>& candidates, 
     return -1;
 }
 
-bool GrossStorage::tryCandidate(ArrayNew<int>& query_array, int id)
+bool GrossStorage::tryCandidate(ArrayInt& query_array, int id)
 {
-    ArrayNew<int> cand_array;
+    ArrayInt cand_array;
     const char* cand_formula;
     int len;
 
@@ -129,7 +129,7 @@ void GrossStorage::calculateRxnFormula(Reaction& rxn, ArrayChar& gross_formula)
     }
 }
 
-dword GrossStorage::_calculateGrossHashForMolArray(ArrayNew<int>& gross_array)
+dword GrossStorage::_calculateGrossHashForMolArray(ArrayInt& gross_array)
 {
     dword hash = 0;
 
@@ -141,7 +141,7 @@ dword GrossStorage::_calculateGrossHashForMolArray(ArrayNew<int>& gross_array)
 
 dword GrossStorage::_calculateGrossHashForMol(const char* gross_str, int len)
 {
-    ArrayNew<int> gross_array;
+    ArrayInt gross_array;
     MoleculeGrossFormula::fromString(gross_str, gross_array);
 
     return _calculateGrossHashForMolArray(gross_array);

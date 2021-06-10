@@ -76,8 +76,8 @@ namespace indigo
         DECL_ERROR;
 
     private:
-        ArrayNew<int> _hydrogens;
-        ArrayNew<int> _types;
+        ArrayInt _hydrogens;
+        ArrayInt _types;
         int _mobileCount;
 
         int _nextElement(int type, int index);

@@ -58,10 +58,10 @@ void MoleculeLayoutGraphSmart::makeLayoutSubgraph(MoleculeLayoutGraph& graph, Fi
     _graph = &graph;
     _molecule_edge_mapping = graph._molecule_edge_mapping;
 
-    QS_DEF(ArrayNew<int>, vertices);
-    QS_DEF(ArrayNew<int>, vertex_mapping);
-    QS_DEF(ArrayNew<int>, edges);
-    QS_DEF(ArrayNew<int>, edge_mapping);
+    QS_DEF(ArrayInt, vertices);
+    QS_DEF(ArrayInt, vertex_mapping);
+    QS_DEF(ArrayInt, edges);
+    QS_DEF(ArrayInt, edge_mapping);
 
     clear();
 
@@ -138,7 +138,7 @@ void MoleculeLayoutGraphSmart::_calcMorganCodes()
     }
 }
 
-void MoleculeLayoutGraphSmart::_makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, ArrayNew<int>& tree)
+void MoleculeLayoutGraphSmart::_makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, ArrayInt& tree)
 {
     int i, j, v, k;
     bool from;
@@ -175,11 +175,11 @@ void MoleculeLayoutGraphSmart::_makeComponentsTree(BiconnectedDecomposer& decon,
 void MoleculeLayoutGraphSmart::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
 {
     QS_DEF(Array<Vec2f>, src_layout);
-    QS_DEF(ArrayNew<int>, molecule_edge_mapping);
+    QS_DEF(ArrayInt, molecule_edge_mapping);
 
     int n_components = countComponents();
 
-    const ArrayNew<int>& decomposition = getDecomposition();
+    const ArrayInt& decomposition = getDecomposition();
     int i, j, k;
 
     molecule_edge_mapping.clear_resize(edgeEnd());
@@ -354,7 +354,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents(BaseMolecule& molecule,
 void MoleculeLayoutGraphSmart::_layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
 {
     QS_DEF(Array<Vec2f>, src_layout);
-    QS_DEF(ArrayNew<int>, molecule_edge_mapping);
+    QS_DEF(ArrayInt, molecule_edge_mapping);
 
     int i;
 
@@ -423,7 +423,7 @@ MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGra
     else
     {
         // this is straight line
-        QS_DEF(ArrayNew<int>, vert);
+        QS_DEF(ArrayInt, vert);
         vert.clear(); // list or vertices in order of connection
         for (int v : _graph.vertices())
             if (_graph.getVertex(v).degree() == 1)
@@ -713,7 +713,7 @@ void MoleculeLayoutGraphSmart::saveDebug()
 {
     int i;
     Molecule mol;
-    QS_DEF(ArrayNew<int>, mapping);
+    QS_DEF(ArrayInt, mapping);
 
     mapping.clear_resize(vertexEnd());
 

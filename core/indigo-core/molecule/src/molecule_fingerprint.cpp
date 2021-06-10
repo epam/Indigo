@@ -306,7 +306,7 @@ int MoleculeFingerprintBuilder::getSimilarityTypeOrder(SimilarityType type)
     }
 }
 
-bool MoleculeFingerprintBuilder::_handleCycle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context)
+bool MoleculeFingerprintBuilder::_handleCycle(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context)
 {
     MoleculeFingerprintBuilder* self = (MoleculeFingerprintBuilder*)context;
 
@@ -314,14 +314,14 @@ bool MoleculeFingerprintBuilder::_handleCycle(Graph& graph, const ArrayNew<int>&
     return true;
 }
 
-void MoleculeFingerprintBuilder::_handleTree(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context)
+void MoleculeFingerprintBuilder::_handleTree(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context)
 {
     MoleculeFingerprintBuilder* self = (MoleculeFingerprintBuilder*)context;
 
     self->_handleSubgraph(graph, vertices, edges);
 }
 
-int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context)
+int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context)
 {
     BaseMolecule& mol = (BaseMolecule&)graph;
     int ret = 0;
@@ -357,7 +357,7 @@ int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue(Graph& graph, cons
     return ret;
 }
 
-dword MoleculeFingerprintBuilder::_canonicalizeFragment(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, bool use_atoms, bool use_bonds,
+dword MoleculeFingerprintBuilder::_canonicalizeFragment(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt& edges, bool use_atoms, bool use_bonds,
                                                         int* different_vertex_count)
 {
     if (use_bonds)
@@ -391,7 +391,7 @@ void MoleculeFingerprintBuilder::_addOrdHashBits(dword hash, int bits_per_fragme
         _ord_hashes.at(hash_bits)++;
 }
 
-void MoleculeFingerprintBuilder::_calculateFragmentVertexDegree(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
+void MoleculeFingerprintBuilder::_calculateFragmentVertexDegree(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt& edges)
 {
     for (int i = 0; i < vertices.size(); i++)
     {
@@ -409,7 +409,7 @@ void MoleculeFingerprintBuilder::_calculateFragmentVertexDegree(BaseMolecule& mo
     }
 }
 
-int MoleculeFingerprintBuilder::_calculateFragmentExternalConn(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
+int MoleculeFingerprintBuilder::_calculateFragmentExternalConn(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt& edges)
 {
     _calculateFragmentVertexDegree(mol, vertices, edges);
     int sum = 0;
@@ -421,7 +421,7 @@ int MoleculeFingerprintBuilder::_calculateFragmentExternalConn(BaseMolecule& mol
     return sum;
 }
 
-void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits(BaseMolecule& mol, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, bool use_atoms,
+void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits(BaseMolecule& mol, const ArrayInt& vertices, const ArrayInt& edges, bool use_atoms,
                                                                  bool use_bonds, int subgraph_type, dword& bits_set)
 {
     bool set_sim = false, set_ord = false, set_any = false, set_tau = false;
@@ -547,7 +547,7 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits(BaseMolecule& m
     }
 }
 
-void MoleculeFingerprintBuilder::_handleSubgraph(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
+void MoleculeFingerprintBuilder::_handleSubgraph(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges)
 {
 
     if (cancellation && cancellation->isCancelled())
@@ -731,7 +731,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
 
     std::map<dword, int> counters;
 
-    QS_DEF(ArrayNew<int>, feature_set);
+    QS_DEF(ArrayInt, feature_set);
     for (auto vi : mol.vertices())
     {
         // No exception should ever be thrown, added the try-catch just to be sure
@@ -758,8 +758,8 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
         counters[key] = value + 1; // increment the counter for the key
     }
 
-    QS_DEF(ArrayNew<int>, feature_set1);
-    QS_DEF(ArrayNew<int>, feature_set2);
+    QS_DEF(ArrayInt, feature_set1);
+    QS_DEF(ArrayInt, feature_set2);
     for (auto ei : mol.edges())
     {
         // No exception should ever be thrown, added the try-catch just to be sure
@@ -775,7 +775,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
             continue;
         }
 
-        ArrayNew<int>*fs1, *fs2; // ordered `feature_set1` and `feature_set2`
+        ArrayInt*fs1, *fs2; // ordered `feature_set1` and `feature_set2`
         if (feature_set1.memcmp(feature_set2) < 0)
         {
             fs1 = &feature_set1;

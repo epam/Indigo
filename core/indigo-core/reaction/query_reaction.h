@@ -41,7 +41,7 @@ namespace indigo
 
         QueryMolecule& getQueryMolecule(int index);
 
-        ArrayNew<int>& getExactChangeArray(int index);
+        ArrayInt& getExactChangeArray(int index);
 
         int getExactChange(int index, int atom);
 
@@ -56,13 +56,13 @@ namespace indigo
 
         QueryReaction& asQueryReaction() override;
         bool isQueryReaction() override;
-        ArrayNew<int>& getIgnorableAAMArray(int index);
+        ArrayInt& getIgnorableAAMArray(int index);
         int getIgnorableAAM(int index, int atom);
 
         void optimize();
 
     protected:
-        void _transposeMoleculeForSubstructure(int index, ArrayNew<int>& transposition);
+        void _transposeMoleculeForSubstructure(int index, ArrayInt& transposition);
 
         int _addBaseMolecule(int side) override;
 
@@ -70,19 +70,19 @@ namespace indigo
 
         struct _SortingContext
         {
-            explicit _SortingContext(QueryMolecule& mol, const ArrayNew<int>& r) : m(mol), rdata(r)
+            explicit _SortingContext(QueryMolecule& mol, const ArrayInt& r) : m(mol), rdata(r)
             {
             }
 
             QueryMolecule& m;
-            const ArrayNew<int>& rdata;
+            const ArrayInt& rdata;
         };
 
         static int _compare(int& i1, int& i2, void* c);
 
-        ObjArray<ArrayNew<int>> _ignorableAAM;
+        ObjArray<ArrayInt> _ignorableAAM;
 
-        void _clone(BaseReaction& other, int index, int i, ObjArray<ArrayNew<int>>* mol_mappings) override;
+        void _clone(BaseReaction& other, int index, int i, ObjArray<ArrayInt>* mol_mappings) override;
 
     private:
         QueryReaction(const QueryReaction&); // no implicit copy

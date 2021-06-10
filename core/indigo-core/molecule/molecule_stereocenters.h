@@ -59,8 +59,8 @@ namespace indigo
         // takes mapping from supermolecule to submolecule
         void buildOnSubmolecule(const MoleculeStereocenters& super, int* mapping);
 
-        void removeAtoms(const ArrayNew<int>& indices);
-        void removeBonds(const ArrayNew<int>& indices);
+        void removeAtoms(const ArrayInt& indices);
+        void removeBonds(const ArrayInt& indices);
 
         int size() const;
 
@@ -83,11 +83,11 @@ namespace indigo
 
         bool sameGroup(int idx1, int idx2);
 
-        void getAbsAtoms(ArrayNew<int>& indices);
-        void getOrGroups(ArrayNew<int>& numbers);
-        void getAndGroups(ArrayNew<int>& numbers);
-        void getOrGroup(int number, ArrayNew<int>& indices);
-        void getAndGroup(int number, ArrayNew<int>& indices);
+        void getAbsAtoms(ArrayInt& indices);
+        void getOrGroups(ArrayInt& numbers);
+        void getAndGroups(ArrayInt& numbers);
+        void getOrGroup(int number, ArrayInt& indices);
+        void getAndGroup(int number, ArrayInt& indices);
 
         bool haveAbs();
         bool haveAllAbs();
@@ -115,7 +115,7 @@ namespace indigo
         static void moveMinimalToEnd(int pyramid[4]);
         static void moveElementToEnd(int pyramid[4], int element);
 
-        static bool isAutomorphism(BaseMolecule& mol, const ArrayNew<int>& mapping, const Filter* filter = NULL);
+        static bool isAutomorphism(BaseMolecule& mol, const ArrayInt& mapping, const Filter* filter = NULL);
 
         DECL_ERROR;
 
@@ -165,8 +165,8 @@ namespace indigo
 
         void _buildOneFrom3dCoordinates(int idx);
 
-        void _getGroups(int type, ArrayNew<int>& numbers);
-        void _getGroup(int type, int number, ArrayNew<int>& indices);
+        void _getGroups(int type, ArrayInt& numbers);
+        void _getGroup(int type, int number, ArrayInt& indices);
         void _restorePyramid(int idx, int pyramid[4], int invert_pyramid);
 
         static void _convertAtomToImplicitHydrogen(int pyramid[4], int atom_to_remove);

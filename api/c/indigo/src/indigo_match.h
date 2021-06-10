@@ -63,7 +63,7 @@ public:
     Molecule &target, &original_target;
     QueryMolecule& query;
 
-    ArrayNew<int> mapping;
+    ArrayInt mapping;
     int max_embeddings;
 
 private:
@@ -91,7 +91,7 @@ public:
     Molecule& tautomerFound;
     QueryMolecule& query;
 
-    ArrayNew<int> mapping;
+    ArrayInt mapping;
     int max_embeddings;
 
 private:
@@ -132,7 +132,7 @@ public:
 
     Obj<MoleculeTautomerMatcher> tau_matcher;
     IndigoTautomerParams tau_params;
-    bool findTautomerMatch(QueryMolecule& query, PtrArray<TautomerRule>& tautomer_rules, ArrayNew<int>& mapping_out);
+    bool findTautomerMatch(QueryMolecule& query, PtrArray<TautomerRule>& tautomer_rules, ArrayInt& mapping_out);
 
     IndigoMoleculeSubstructureMatchIter* getMatchIterator(Indigo& self, int query, bool for_iteration, int max_embeddings);
     IndigoTautomerSubstructureMatchIter* getTautomerMatchIterator(Indigo& self, int query, bool for_iteration, int max_embeddings, TautomerMethod method);
@@ -140,7 +140,7 @@ public:
     int mode; // NORMAL, TAUTOMER, or RESONANCE
 private:
     Molecule _target_arom_h_unfolded, _target_arom;
-    ArrayNew<int> _mapping_arom_h_unfolded, _mapping_arom, _ignored_atoms;
+    ArrayInt _mapping_arom_h_unfolded, _mapping_arom, _ignored_atoms;
     bool _arom_h_unfolded_prepared, _arom_prepared, _aromatized;
     MoleculeAtomNeighbourhoodCounters _nei_counters, _nei_counters_h_unfolded;
 };
@@ -160,8 +160,8 @@ public:
     bool daylight_aam;
 
     Obj<ReactionSubstructureMatcher> matcher;
-    ObjArray<ArrayNew<int>> mappings;
-    ArrayNew<int> mol_mapping;
+    ObjArray<ArrayInt> mappings;
+    ArrayInt mol_mapping;
 };
 
 DLLEXPORT bool _indigoParseTautomerFlags(const char* flags, IndigoTautomerParams& params);

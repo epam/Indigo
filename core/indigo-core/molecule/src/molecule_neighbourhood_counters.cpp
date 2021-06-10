@@ -300,13 +300,13 @@ int MoleculeAtomNeighbourhoodCounters::_countersCmp(int& i1, int& i2, void* abst
     return degree_sum2 - degree_sum1;
 }
 
-void MoleculeAtomNeighbourhoodCounters::makeTranspositionForSubstructure(BaseMolecule& mol, ArrayNew<int>& output) const
+void MoleculeAtomNeighbourhoodCounters::makeTranspositionForSubstructure(BaseMolecule& mol, ArrayInt& output) const
 {
     output.clear();
     if (mol.vertexCount() == 0)
         return;
 
-    QS_DEF(ArrayNew<int>, sorted_indices);
+    QS_DEF(ArrayInt, sorted_indices);
     sorted_indices.clear();
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
         sorted_indices.push(i);
@@ -316,7 +316,7 @@ void MoleculeAtomNeighbourhoodCounters::makeTranspositionForSubstructure(BaseMol
     context.mol = &mol;
     sorted_indices.qsort(_countersCmp, &context);
 
-    QS_DEF(ArrayNew<int>, vertices_state);
+    QS_DEF(ArrayInt, vertices_state);
     enum
     {
         FREE = 0,

@@ -88,7 +88,7 @@ void MoleculeLayout::_init(bool smart_layout)
     }
 }
 
-void _collectCrossBonds(ArrayNew<int>& crossBonds, ArrayBool& crossBondOut, BaseMolecule& mol, const ArrayNew<int>& atoms)
+void _collectCrossBonds(ArrayInt& crossBonds, ArrayBool& crossBondOut, BaseMolecule& mol, const ArrayInt& atoms)
 {
     QS_DEF(ArrayBool, atomMask);
     atomMask.clear();
@@ -117,7 +117,7 @@ void _collectCrossBonds(ArrayNew<int>& crossBonds, ArrayBool& crossBondOut, Base
     }
 }
 
-void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, const ArrayNew<int>& crossBonds,
+void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayInt& atoms, const ArrayInt& crossBonds,
                                     const ArrayBool& crossBondOut, float bondLength)
 {
     brackets.clear();
@@ -225,7 +225,7 @@ void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f, 2>>& brackets, BaseM
     }
 }
 
-void _placeSGroupBracketsCrossBondSingle(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, int bid, bool out, float bondLength)
+void _placeSGroupBracketsCrossBondSingle(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayInt& atoms, int bid, bool out, float bondLength)
 {
     brackets.clear();
     const Edge& edge = mol.getEdge(bid);
@@ -283,7 +283,7 @@ void _placeSGroupBracketsCrossBondSingle(Array<std::array<Vec2f, 2>>& brackets, 
     bracket2[1].copy(b2);
 }
 
-void _placeSGroupBracketsHorizontal(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, float bondLength)
+void _placeSGroupBracketsHorizontal(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayInt& atoms, float bondLength)
 {
     brackets.clear();
     Vec2f min, max, a, b;
@@ -320,7 +320,7 @@ void _placeSGroupBracketsHorizontal(Array<std::array<Vec2f, 2>>& brackets, BaseM
 void MoleculeLayout::_updateDataSGroups()
 {
     // Move Data-SGroups with absolute coordinates according to new position
-    QS_DEF(ArrayNew<int>, layout_graph_mapping);
+    QS_DEF(ArrayInt, layout_graph_mapping);
     layout_graph_mapping.resize(_molecule.vertexEnd());
     layout_graph_mapping.fffill();
     for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
@@ -480,7 +480,7 @@ void MoleculeLayout::_makeLayout()
 {
     if (filter != 0)
     {
-        QS_DEF(ArrayNew<int>, fixed_vertices);
+        QS_DEF(ArrayInt, fixed_vertices);
 
         fixed_vertices.clear_resize(_layout_graph->vertexEnd());
         fixed_vertices.zerofill();
@@ -499,7 +499,7 @@ void MoleculeLayout::_makeLayout()
 
 void MoleculeLayout::_updateRepeatingUnits()
 {
-    QS_DEF(ArrayNew<int>, crossBonds);
+    QS_DEF(ArrayInt, crossBonds);
     QS_DEF(ArrayBool, crossBondOut);
     for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
     {

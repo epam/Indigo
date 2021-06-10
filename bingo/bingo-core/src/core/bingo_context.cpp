@@ -129,7 +129,7 @@ BingoContext* BingoContext::get(int id)
     return &_instances.add(new BingoContext(id));
 }
 
-void bingoGetTauCondition(const char* list_ptr, int& aromaticity, ArrayNew<int>& label_list)
+void bingoGetTauCondition(const char* list_ptr, int& aromaticity, ArrayInt& label_list)
 {
     if (isdigit(*list_ptr))
     {

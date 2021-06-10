@@ -69,7 +69,7 @@ namespace indigo
 
         // Copy localized bonds and charges infomation to the specifed molecule.
         // 'dest' molecule must have the same structure as 'skeleton' molecule.
-        void copyBondsAndCharges(Molecule& dest, const ArrayNew<int>& mapping) const;
+        void copyBondsAndCharges(Molecule& dest, const ArrayInt& mapping) const;
 
         // Methods for adding constraints for atom charges and bonds.
         // For better performance fix bonds first.
@@ -202,12 +202,12 @@ namespace indigo
         // Molecule skeleton with orbitals nodes attached
         TL_CP_DECL(Graph, _extended_skeleton);
         // Edge mapping between skeleton and extended skeleton
-        TL_CP_DECL(ArrayNew<int>, _edge_mapping);
+        TL_CP_DECL(ArrayInt, _edge_mapping);
         // Additional information per atom for extracting data from
         // matching in extended skeleton graph
         TL_CP_DECL(Array<_AtomInfo>, _atom_info);
         // Array with fixed edges
-        TL_CP_DECL(ArrayNew<int>, _edges_fixed_type);
+        TL_CP_DECL(ArrayInt, _edges_fixed_type);
     };
 
 } // namespace indigo

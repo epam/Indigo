@@ -48,10 +48,10 @@ namespace indigo
 
         BaseMolecule* mol;
         bool isRFragment;
-        ArrayNew<int>* aam;
-        ArrayNew<int>* reactingCenters;
-        ArrayNew<int>* inversionArray;
-        ArrayNew<int>* exactChangeArray;
+        ArrayInt* aam;
+        ArrayInt* reactingCenters;
+        ArrayInt* inversionArray;
+        ArrayInt* exactChangeArray;
         int refAtom;
         Vec2f refAtomPos;
 

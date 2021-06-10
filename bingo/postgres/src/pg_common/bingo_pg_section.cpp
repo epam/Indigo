@@ -276,7 +276,7 @@ BingoPgBufferCacheBin& BingoPgSection::getBinBufferCache(int bin_idx)
     return *_getBufferBin(bin_idx);
 }
 
-void BingoPgSection::readSectionBitsCount(indigo::ArrayNew<int>& bits_number)
+void BingoPgSection::readSectionBitsCount(indigo::ArrayInt& bits_number)
 {
     bits_number.resize(_sectionInfo.n_structures);
     bits_number.zerofill();

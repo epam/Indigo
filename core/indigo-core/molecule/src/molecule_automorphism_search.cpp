@@ -165,7 +165,7 @@ void MoleculeAutomorphismSearch::process(Molecule& mol)
 
         GraphDecomposer decomposer(mol);
         int ncomp = decomposer.decompose();
-        QS_DEF(ArrayNew<int>, ignored_vertices_arr);
+        QS_DEF(ArrayInt, ignored_vertices_arr);
         ignored_vertices_arr.resize(mol.vertexEnd());
         ignored_vertices = ignored_vertices_arr.ptr();
 
@@ -361,7 +361,7 @@ int MoleculeAutomorphismSearch::_edge_rank(Graph& graph, int edge_idx, const voi
     return 2 * rank0 + highlighted;
 }
 
-bool MoleculeAutomorphismSearch::_check_automorphism(Graph& graph, const ArrayNew<int>& mapping, const void* context)
+bool MoleculeAutomorphismSearch::_check_automorphism(Graph& graph, const ArrayInt& mapping, const void* context)
 {
     const MoleculeAutomorphismSearch& self = *(MoleculeAutomorphismSearch*)context;
     Molecule& mol = (Molecule&)graph;
@@ -404,7 +404,7 @@ bool MoleculeAutomorphismSearch::_check_automorphism(Graph& graph, const ArrayNe
     return true;
 }
 
-bool MoleculeAutomorphismSearch::_checkStereocentersAutomorphism(Molecule& mol, const ArrayNew<int>& mapping) const
+bool MoleculeAutomorphismSearch::_checkStereocentersAutomorphism(Molecule& mol, const ArrayInt& mapping) const
 {
     const MoleculeStereocenters& stereocenters = mol.stereocenters;
     if (stereocenters.size() != 0)
@@ -419,7 +419,7 @@ bool MoleculeAutomorphismSearch::_checkStereocentersAutomorphism(Molecule& mol, 
         if (!ret)
             return false;
 
-        QS_DEF(ArrayNew<int>, inv_mapping);
+        QS_DEF(ArrayInt, inv_mapping);
         inv_mapping.clear_resize(mol.vertexEnd());
         inv_mapping.fffill();
         for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
@@ -435,7 +435,7 @@ bool MoleculeAutomorphismSearch::_checkStereocentersAutomorphism(Molecule& mol, 
     return true;
 }
 
-void MoleculeAutomorphismSearch::_getSortedNei(Graph& g, int v_idx, Array<EdgeInfo>& sorted_nei, ArrayNew<int>& inv_mapping)
+void MoleculeAutomorphismSearch::_getSortedNei(Graph& g, int v_idx, Array<EdgeInfo>& sorted_nei, ArrayInt& inv_mapping)
 {
     sorted_nei.clear();
 
@@ -466,7 +466,7 @@ void MoleculeAutomorphismSearch::_getSortedNei(Graph& g, int v_idx, Array<EdgeIn
     }
 }
 
-int MoleculeAutomorphismSearch::_getMappedBondOrderAndParity(Molecule& m, int e, ArrayNew<int>& inv_mapping) const
+int MoleculeAutomorphismSearch::_getMappedBondOrderAndParity(Molecule& m, int e, ArrayInt& inv_mapping) const
 {
     int type = m.getBondOrder(e);
 
@@ -480,13 +480,13 @@ int MoleculeAutomorphismSearch::_getMappedBondOrderAndParity(Molecule& m, int e,
     return type;
 }
 
-int MoleculeAutomorphismSearch::_compare_mapped(Graph& graph, const ArrayNew<int>& mapping1, const ArrayNew<int>& mapping2, const void* context)
+int MoleculeAutomorphismSearch::_compare_mapped(Graph& graph, const ArrayInt& mapping1, const ArrayInt& mapping2, const void* context)
 {
     const MoleculeAutomorphismSearch& self = *(MoleculeAutomorphismSearch*)context;
     Molecule& mol = (Molecule&)graph;
 
-    QS_DEF(ArrayNew<int>, inv_mapping1);
-    QS_DEF(ArrayNew<int>, inv_mapping2);
+    QS_DEF(ArrayInt, inv_mapping1);
+    QS_DEF(ArrayInt, inv_mapping2);
 
     inv_mapping1.clear_resize(graph.vertexEnd());
     inv_mapping2.clear_resize(graph.vertexEnd());
@@ -543,8 +543,8 @@ int MoleculeAutomorphismSearch::_compare_mapped(Graph& graph, const ArrayNew<int
     return self._compareMappedStereocenters(mol, mapping1, mapping2, inv_mapping1, inv_mapping2);
 }
 
-int MoleculeAutomorphismSearch::_compareMappedStereocenters(Molecule& mol, const ArrayNew<int>& mapping1, const ArrayNew<int>& mapping2,
-                                                            const ArrayNew<int>& inv_mapping1, const ArrayNew<int>& inv_mapping2) const
+int MoleculeAutomorphismSearch::_compareMappedStereocenters(Molecule& mol, const ArrayInt& mapping1, const ArrayInt& mapping2,
+                                                            const ArrayInt& inv_mapping1, const ArrayInt& inv_mapping2) const
 {
     MoleculeStereocenters& stereocenters = mol.stereocenters;
 
@@ -559,10 +559,10 @@ int MoleculeAutomorphismSearch::_compareMappedStereocenters(Molecule& mol, const
     }
 
     int groups_count = 2 * (max_stereogroup + 1);
-    QS_DEF(ArrayNew<int>, stereogroup1_rank);
-    QS_DEF(ArrayNew<int>, stereogroup2_rank);
-    QS_DEF(ArrayNew<int>, stereogroup1_parity_mod);
-    QS_DEF(ArrayNew<int>, stereogroup2_parity_mod);
+    QS_DEF(ArrayInt, stereogroup1_rank);
+    QS_DEF(ArrayInt, stereogroup2_rank);
+    QS_DEF(ArrayInt, stereogroup1_parity_mod);
+    QS_DEF(ArrayInt, stereogroup2_parity_mod);
     stereogroup1_rank.clear_resize(groups_count);
     stereogroup1_rank.fffill();
     stereogroup2_rank.clear_resize(groups_count);
@@ -690,7 +690,7 @@ int MoleculeAutomorphismSearch::_compareMappedStereocenters(Molecule& mol, const
     return 0;
 }
 
-int MoleculeAutomorphismSearch::_validCisTransBond(int idx, const ArrayNew<int>& orbits)
+int MoleculeAutomorphismSearch::_validCisTransBond(int idx, const ArrayInt& orbits)
 {
     Molecule& mol = *(Molecule*)_given_graph;
 
@@ -728,7 +728,7 @@ int MoleculeAutomorphismSearch::_validCisTransBond(int idx, const ArrayNew<int>&
     return _VALID;
 }
 
-int MoleculeAutomorphismSearch::_validStereocenterByAtom(int atom_index, ArrayNew<int>& orbits, int* parity)
+int MoleculeAutomorphismSearch::_validStereocenterByAtom(int atom_index, ArrayInt& orbits, int* parity)
 {
     Molecule& mol = *(Molecule*)_given_graph;
 
@@ -781,7 +781,7 @@ int MoleculeAutomorphismSearch::_validStereocenterByAtom(int atom_index, ArrayNe
     return _VALID;
 }
 
-int MoleculeAutomorphismSearch::_validStereocenter(int idx, ArrayNew<int>& orbits, int* parity)
+int MoleculeAutomorphismSearch::_validStereocenter(int idx, ArrayInt& orbits, int* parity)
 {
     Molecule& mol = *(Molecule*)_given_graph;
 
@@ -917,7 +917,7 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree(Molecule& mol)
         _independent_component_index.fffill();
 }
 
-void MoleculeAutomorphismSearch::_markValidOrInvalidStereo(bool find_valid, ArrayNew<int>& orbits, bool* found)
+void MoleculeAutomorphismSearch::_markValidOrInvalidStereo(bool find_valid, ArrayInt& orbits, bool* found)
 {
     Molecule& mol = *(Molecule*)_given_graph;
 
@@ -1057,19 +1057,19 @@ bool MoleculeAutomorphismSearch::_findInvalidStereo(Molecule& mol)
 
     AutomorphismSearch::process(mol);
 
-    QS_DEF(ArrayNew<int>, orbits_stereo_restricted);
+    QS_DEF(ArrayInt, orbits_stereo_restricted);
     getOrbits(orbits_stereo_restricted);
     _markValidOrInvalidStereo(false, orbits_stereo_restricted, &invalid_found);
     */
 
     // Check each possible stereocenters to be valid
-    QS_DEF(ArrayNew<int>, invalid_stereo);
+    QS_DEF(ArrayInt, invalid_stereo);
 
     //
     // Step 1: find valid and invalid stereocenters
     //
 
-    QS_DEF(ArrayNew<int>, stereocenters_to_restore);
+    QS_DEF(ArrayInt, stereocenters_to_restore);
 
     invalid_stereo.clear();
     _target_bond = -1;
@@ -1146,7 +1146,7 @@ bool MoleculeAutomorphismSearch::_findInvalidStereoCisTrans(Molecule& mol)
 {
     _treat_undef_as = _VALID;
 
-    QS_DEF(ArrayNew<int>, invalid_stereo);
+    QS_DEF(ArrayInt, invalid_stereo);
     invalid_stereo.clear();
 
     bool invalid_found = false;
@@ -1205,7 +1205,7 @@ void MoleculeAutomorphismSearch::_markComplicatedStereocentersAsValid(Molecule& 
     // with current methods. For example C[C@H]1C[C@@H](C)C[C@H](C)C1
     // can lead to CC1C[C@H](C)C[C@@H](C)C1 or CC1C[C@@H](C)C[C@H](C)C1,
     // but canonical codes are different for such molecules.
-    QS_DEF(ArrayNew<int>, single_bond_bridge_mark);
+    QS_DEF(ArrayInt, single_bond_bridge_mark);
     single_bond_bridge_mark.resize(mol.edgeEnd());
     single_bond_bridge_mark.fill(1);
 
@@ -1219,9 +1219,9 @@ void MoleculeAutomorphismSearch::_markComplicatedStereocentersAsValid(Molecule& 
     GraphDecomposer decomposer(mol);
     decomposer.decompose(0, &edge_filter);
 
-    const ArrayNew<int>& decomposition = decomposer.getDecomposition();
+    const ArrayInt& decomposition = decomposer.getDecomposition();
 
-    QS_DEF(ArrayNew<int>, undef_stereo_in_component);
+    QS_DEF(ArrayInt, undef_stereo_in_component);
     undef_stereo_in_component.clear();
 
     for (int v : mol.vertices())

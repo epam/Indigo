@@ -501,7 +501,7 @@ BingoPgExternalBitset::Iterator::Iterator(BingoPgExternalBitset& self) : _fromWo
     _wordsInUse = *self._lastWordPtr;
 }
 
-static indigo::ObjArray<indigo::ArrayNew<int>> all_indexes;
+static indigo::ObjArray<indigo::ArrayInt> all_indexes;
 
 int BingoPgExternalBitset::Iterator::begin()
 {
@@ -509,7 +509,7 @@ int BingoPgExternalBitset::Iterator::begin()
     {
         for (unsigned int buf = 0; buf < 256; ++buf)
         {
-            indigo::ArrayNew<int>& indexes = all_indexes.push();
+            indigo::ArrayInt& indexes = all_indexes.push();
             _fillIndexes(buf, indexes);
         }
     }
@@ -575,7 +575,7 @@ int BingoPgExternalBitset::Iterator::next()
     return -1;
 }
 
-void BingoPgExternalBitset::Iterator::_fillIndexes(byte buf, indigo::ArrayNew<int>& indexes)
+void BingoPgExternalBitset::Iterator::_fillIndexes(byte buf, indigo::ArrayInt& indexes)
 {
     byte test_buf;
     for (int buf_idx = 0; buf_idx < 8; ++buf_idx)

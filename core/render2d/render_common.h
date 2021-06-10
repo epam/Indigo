@@ -248,9 +248,9 @@ namespace indigo
         int stereoGroupType;
         int stereoGroupNumber;
         int implicit_h;
-        ArrayNew<int> list;
+        ArrayInt list;
         ArrayChar pseudo;
-        ArrayNew<int> nearbyAtoms;
+        ArrayInt nearbyAtoms;
         int aam;
         int inversion;
         float implHPosWeights[4];
@@ -347,7 +347,7 @@ namespace indigo
         Ring();
         void clear();
 
-        ArrayNew<int> bondEnds;
+        ArrayInt bondEnds;
         Array<float> angles;
         int dblBondCount;
         bool aromatic;
@@ -373,10 +373,10 @@ namespace indigo
         ObjArray<RenderItemAttachmentPoint> attachmentPoints;
         ObjArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
         ObjArray<RenderItemBracket> brackets;
-        ArrayNew<int> aam;
-        ArrayNew<int> reactingCenters;
-        ArrayNew<int> inversions;
-        ArrayNew<int> exactChanges;
+        ArrayInt aam;
+        ArrayInt reactingCenters;
+        ArrayInt inversions;
+        ArrayInt exactChanges;
 
     private:
         MoleculeRenderData(const MoleculeRenderData& data);

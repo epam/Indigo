@@ -59,7 +59,7 @@ namespace indigo
         PtrArray<BaseReaction> rxns;
 
         ObjArray<ArrayChar> titles;
-        ArrayNew<int> refAtoms;
+        ArrayInt refAtoms;
 
         RenderOptions rOpt;
         CanvasOptions cnvOpt;

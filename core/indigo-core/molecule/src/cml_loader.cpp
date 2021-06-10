@@ -164,8 +164,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         return it->second;
     };
 
-    QS_DEF(ArrayNew<int>, total_h_count);
-    QS_DEF(ArrayNew<int>, query_h_count);
+    QS_DEF(ArrayInt, total_h_count);
+    QS_DEF(ArrayInt, query_h_count);
     atoms_id.clear();
     atoms_id_int.clear();
     total_h_count.clear();
@@ -1087,7 +1087,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
 
     if (_bmol->stereocenters.size() == 0 && BaseMolecule::hasCoord(*_bmol))
     {
-        QS_DEF(ArrayNew<int>, sensible_bond_orientations);
+        QS_DEF(ArrayInt, sensible_bond_orientations);
 
         sensible_bond_orientations.clear_resize(_bmol->vertexEnd());
         _bmol->stereocenters.buildFromBonds(stereochemistry_options, sensible_bond_orientations.ptr());
@@ -1895,7 +1895,7 @@ void CmlLoader::_loadRgroupElement(TiXmlHandle& handle)
     }
 }
 
-void CmlLoader::_parseRlogicRange(const char* str, ArrayNew<int>& ranges)
+void CmlLoader::_parseRlogicRange(const char* str, ArrayInt& ranges)
 {
     int beg = -1, end = -1;
     int add_beg = 0, add_end = 0;

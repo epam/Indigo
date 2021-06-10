@@ -65,12 +65,12 @@ namespace indigo
         // product: the molecule after transformation (possibly broken), may be modified in callback
         // mapping: atom to atom mapping
         // result: true if the molecule shall be accepted, false otherwise
-        bool (*refine_proc)(const Molecule& uncleaned_fragments, Molecule& product, ArrayNew<int>& mapping, void* userdata);
+        bool (*refine_proc)(const Molecule& uncleaned_fragments, Molecule& product, ArrayInt& mapping, void* userdata);
 
         // This callback provides the results of applying the pattern, one for each possible mapping.
         // product: the molecule after transformation
         // mapping: atom to atom mapping
-        void (*product_proc)(Molecule& product, ArrayNew<int>& monomers_indices, ArrayNew<int>& mapping, void* userdata);
+        void (*product_proc)(Molecule& product, ArrayInt& monomers_indices, ArrayInt& mapping, void* userdata);
 
     private:
         bool _is_rg_exist;
@@ -78,9 +78,9 @@ namespace indigo
         QueryReaction& _reaction;
         ReactionEnumeratorState::ReactionMonomers _reaction_monomers;
         CP_DECL;
-        TL_CP_DECL(ArrayNew<int>, _product_aam_array);
+        TL_CP_DECL(ArrayInt, _product_aam_array);
         TL_CP_DECL(RedBlackStringMap<int>, _smiles_array);
-        TL_CP_DECL(ObjArray<ArrayNew<int>>, _tubes_monomers);
+        TL_CP_DECL(ObjArray<ArrayInt>, _tubes_monomers);
 
         void _buildTubesGrid(void);
     };

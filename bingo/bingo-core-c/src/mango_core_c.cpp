@@ -699,7 +699,7 @@ MoleculeAutoLoader loader(scanner);
 self.bingo_context->setLoaderSettings(loader);
 loader.loadMolecule(target);
 
-QS_DEF(ArrayNew<int>, gross);
+QS_DEF(ArrayInt, gross);
 MoleculeGrossFormula::collect(target, gross);
 MoleculeGrossFormula::toString(gross, self.buffer);
 self.buffer.push(0);

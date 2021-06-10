@@ -61,9 +61,9 @@ namespace indigo
         struct CIPContext
         {
             BaseMolecule* mol;
-            ArrayNew<int>* cip_desc;
-            ArrayNew<int>* used1;
-            ArrayNew<int>* used2;
+            ArrayInt* cip_desc;
+            ArrayInt* used1;
+            ArrayInt* used2;
             bool next_level;
             bool isotope_check;
             bool use_stereo;
@@ -112,12 +112,12 @@ namespace indigo
         void _writeAtomLabel(Output& output, int label);
         void _writeMultiString(Output& output, const char* string, int len);
         void _writeCtab(Output& output, BaseMolecule& mol, bool query);
-        void _writeOccurrenceRanges(Output& out, const ArrayNew<int>& occurrences);
+        void _writeOccurrenceRanges(Output& out, const ArrayInt& occurrences);
         void _writeRGroup(Output& output, BaseMolecule& mol, int rg_idx);
         void _writeTGroup(Output& output, BaseMolecule& mol, int tg_idx);
         void _writeCtabHeader2000(Output& output, BaseMolecule& mol);
         void _writeCtab2000(Output& output, BaseMolecule& mol, bool query);
-        void _checkSGroupIndices(BaseMolecule& mol, ArrayNew<int>& sgs);
+        void _checkSGroupIndices(BaseMolecule& mol, ArrayInt& sgs);
         void _writeRGroupIndices2000(Output& output, BaseMolecule& mol);
         void _writeAttachmentValues2000(Output& output, BaseMolecule& fragment);
         void _writeGenericSGroup3000(SGroup& sgroup, int idx, Output& output);
@@ -133,17 +133,17 @@ namespace indigo
 
         void _updateCIPStereoDescriptors(BaseMolecule& mol);
         void _addCIPStereoDescriptors(BaseMolecule& mol);
-        void _addCIPSgroups(BaseMolecule& mol, ArrayNew<int>& attom_cip_desc, ArrayNew<int>& bond_cip_desc);
-        void _calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, ArrayNew<int>& atom_cip_desc, ArrayNew<int>& stereo_passed,
+        void _addCIPSgroups(BaseMolecule& mol, ArrayInt& attom_cip_desc, ArrayInt& bond_cip_desc);
+        void _calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, ArrayInt& atom_cip_desc, ArrayInt& stereo_passed,
                                      bool use_stereo, Array<IntPair>& equiv_ligands, bool& digrap_cip_used);
-        void _calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, ArrayNew<int>& bond_cip_desc);
-        bool _checkLigandsEquivalence(ArrayNew<int>& ligands, Array<IntPair>& equiv_ligands, CIPContext& context);
-        static int _getNumberOfStereoDescritors(ArrayNew<int>& atom_cip_desc);
-        bool _isPseudoAssymCenter(BaseMolecule& mol, int idx, ArrayNew<int>& atom_cip_desc, ArrayNew<int>& ligands, Array<IntPair>& equiv_ligands);
+        void _calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, ArrayInt& bond_cip_desc);
+        bool _checkLigandsEquivalence(ArrayInt& ligands, Array<IntPair>& equiv_ligands, CIPContext& context);
+        static int _getNumberOfStereoDescritors(ArrayInt& atom_cip_desc);
+        bool _isPseudoAssymCenter(BaseMolecule& mol, int idx, ArrayInt& atom_cip_desc, ArrayInt& ligands, Array<IntPair>& equiv_ligands);
 
-        int _calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, ArrayNew<int>& ligands, Array<IntPair>& equiv_ligands);
-        void _addNextLevel(Molecule& source, Molecule& target, int s_idx, int t_idx, ArrayNew<int>& used, ArrayNew<int>& mapping);
-        void _calcStereocenters(Molecule& source, Molecule& mol, ArrayNew<int>& mapping);
+        int _calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, ArrayInt& ligands, Array<IntPair>& equiv_ligands);
+        void _addNextLevel(Molecule& source, Molecule& target, int s_idx, int t_idx, ArrayInt& used, ArrayInt& mapping);
+        void _calcStereocenters(Molecule& source, Molecule& mol, ArrayInt& mapping);
 
         static int _cip_rules_cmp(int& i1, int& i2, void* context);
 
@@ -151,8 +151,8 @@ namespace indigo
         bool _v2000;
 
         CP_DECL;
-        TL_CP_DECL(ArrayNew<int>, _atom_mapping);
-        TL_CP_DECL(ArrayNew<int>, _bond_mapping);
+        TL_CP_DECL(ArrayInt, _atom_mapping);
+        TL_CP_DECL(ArrayInt, _bond_mapping);
 
         enum
         {

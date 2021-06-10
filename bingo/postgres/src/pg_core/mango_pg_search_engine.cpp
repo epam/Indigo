@@ -670,8 +670,8 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
 
     BingoPgFpData& query_data = _queryFpData.ref();
     BingoPgIndex& bingo_index = *_bufferIndexPtr;
-    QS_DEF(ArrayNew<int>, bits_count);
-    QS_DEF(ArrayNew<int>, common_ones);
+    QS_DEF(ArrayInt, bits_count);
+    QS_DEF(ArrayInt, common_ones);
     BingoPgExternalBitset screening_bitset(BINGO_MOLS_PER_SECTION);
 
     int *min_bounds, *max_bounds, bingo_res;

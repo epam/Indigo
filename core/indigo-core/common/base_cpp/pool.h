@@ -153,7 +153,7 @@ namespace indigo
         //                    _next[i] contains the index of the next unused element
         // _next[i] == -1 => _array[i] is the last unused element
         // _next[i] == -2 => _array[i] is used
-        ArrayNew<int> _next;
+        ArrayInt _next;
 
         int _size; // number of _array items used
 

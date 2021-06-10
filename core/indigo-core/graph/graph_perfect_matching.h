@@ -106,9 +106,9 @@ namespace indigo
         TL_CP_DECL(Array<byte>, _matchingEdgesLocal);
         TL_CP_DECL(Array<VertexExtInfo>, _verticesInfo);
         // Path has the following format: (v0, localEdge0, localEdge1, ...)
-        TL_CP_DECL(ArrayNew<int>, _path);
-        TL_CP_DECL(ArrayNew<int>, _edgesMappingLocal);
-        TL_CP_DECL(ArrayNew<int>, _verticesUsedLocal);
+        TL_CP_DECL(ArrayInt, _path);
+        TL_CP_DECL(ArrayInt, _edgesMappingLocal);
+        TL_CP_DECL(ArrayInt, _verticesUsedLocal);
 
         byte* _matchingEdges;
         int* _edgesMapping;

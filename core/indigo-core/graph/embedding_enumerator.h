@@ -107,11 +107,11 @@ namespace indigo
 
         CP_DECL;
 
-        TL_CP_DECL(ArrayNew<int>, _core_1);
-        TL_CP_DECL(ArrayNew<int>, _core_2);
+        TL_CP_DECL(ArrayInt, _core_1);
+        TL_CP_DECL(ArrayInt, _core_2);
 
-        TL_CP_DECL(ArrayNew<int>, _term2);
-        TL_CP_DECL(ArrayNew<int>, _unterm2);
+        TL_CP_DECL(ArrayInt, _term2);
+        TL_CP_DECL(ArrayInt, _unterm2);
 
         TL_CP_DECL(Pool<RedBlackSet<int>::Node>, _s_pool);
 

@@ -46,9 +46,9 @@ void MoleculeInChICompoment::construct(Molecule& original_component)
         layers[i]->construct(mol);
 }
 
-void MoleculeInChICompoment::getCanonicalOrdering(Molecule& source_mol, ArrayNew<int>& mapping)
+void MoleculeInChICompoment::getCanonicalOrdering(Molecule& source_mol, ArrayInt& mapping)
 {
-    QS_DEF(ArrayNew<int>, ignored);
+    QS_DEF(ArrayInt, ignored);
     ignored.clear_resize(source_mol.vertexEnd());
     ignored.zerofill();
     for (int i = source_mol.vertexBegin(); i < source_mol.vertexEnd(); i = source_mol.vertexNext(i))
@@ -78,7 +78,7 @@ int MoleculeInChICompoment::cmpVertex(Graph& graph, int v1, int v2, const void* 
 
 void MoleculeInChICompoment::_getCanonicalMolecule(Molecule& source_mol, Molecule& cano_mol)
 {
-    QS_DEF(ArrayNew<int>, ignored);
+    QS_DEF(ArrayInt, ignored);
     ignored.clear_resize(source_mol.vertexEnd());
     ignored.zerofill();
     for (int i = source_mol.vertexBegin(); i < source_mol.vertexEnd(); i = source_mol.vertexNext(i))
@@ -98,7 +98,7 @@ void MoleculeInChICompoment::_getCanonicalMolecule(Molecule& source_mol, Molecul
 
     as.process(source_mol);
 
-    QS_DEF(ArrayNew<int>, canonical_order);
+    QS_DEF(ArrayInt, canonical_order);
     as.getCanonicalNumbering(canonical_order);
     for (int i = 0; i < canonical_order.size(); ++i)
     {
@@ -116,7 +116,7 @@ int MoleculeInChICompoment::_cmpVertex(Graph& graph, int v1, int v2, const void*
 {
     Molecule& mol = (Molecule&)graph;
 
-    const ArrayNew<int>& atom_lables_ranks = MoleculeInChIUtils::getLexSortedAtomLablesRanks();
+    const ArrayInt& atom_lables_ranks = MoleculeInChIUtils::getLexSortedAtomLablesRanks();
 
     int ret = atom_lables_ranks[mol.getAtomNumber(v1)] - atom_lables_ranks[mol.getAtomNumber(v2)];
     if (ret != 0)
@@ -143,7 +143,7 @@ int MoleculeInChICompoment::_cmpVertexStereo(Molecule& mol, int v1, int v2, cons
     return 0;
 }
 
-bool MoleculeInChICompoment::_checkAutomorphism(Graph& graph, const ArrayNew<int>& mapping, const void* context)
+bool MoleculeInChICompoment::_checkAutomorphism(Graph& graph, const ArrayInt& mapping, const void* context)
 {
     Molecule& mol = (Molecule&)graph;
 
@@ -176,10 +176,10 @@ bool MoleculeInChICompoment::_checkAutomorphism(Graph& graph, const ArrayNew<int
     return true;
 }
 
-int MoleculeInChICompoment::_cmpMappings(Graph& graph, const ArrayNew<int>& mapping1, const ArrayNew<int>& mapping2, const void* context)
+int MoleculeInChICompoment::_cmpMappings(Graph& graph, const ArrayInt& mapping1, const ArrayInt& mapping2, const void* context)
 {
-    QS_DEF(ArrayNew<int>, inv_mapping1);
-    QS_DEF(ArrayNew<int>, inv_mapping2);
+    QS_DEF(ArrayInt, inv_mapping1);
+    QS_DEF(ArrayInt, inv_mapping2);
 
     inv_mapping1.clear_resize(graph.vertexEnd());
     inv_mapping2.clear_resize(graph.vertexEnd());

@@ -102,8 +102,8 @@ void CrfLoader::_loadMolecule(Molecule& molecule)
     else
         loader.create(_scanner);
 
-    QS_DEF(ArrayNew<int>, atom_flags);
-    QS_DEF(ArrayNew<int>, bond_flags);
+    QS_DEF(ArrayInt, atom_flags);
+    QS_DEF(ArrayInt, bond_flags);
 
     loader->atom_flags = &atom_flags;
     loader->bond_flags = &bond_flags;

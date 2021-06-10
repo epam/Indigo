@@ -433,7 +433,7 @@ void MoleculeCisTrans::build(int* exclude_bonds)
 
 void MoleculeCisTrans::buildFromSmiles(int* dirs)
 {
-    QS_DEF(ArrayNew<int>, subst_used);
+    QS_DEF(ArrayInt, subst_used);
     int i, j;
 
     clear();
@@ -783,7 +783,7 @@ void MoleculeCisTrans::buildOnSubmolecule(BaseMolecule& super, int* mapping)
     }
 }
 
-bool MoleculeCisTrans::isAutomorphism(BaseMolecule& mol, const ArrayNew<int>& mapping, const Filter* edge_filter)
+bool MoleculeCisTrans::isAutomorphism(BaseMolecule& mol, const ArrayInt& mapping, const Filter* edge_filter)
 {
     for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
     {

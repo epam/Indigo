@@ -244,7 +244,7 @@ namespace bingo
         int _cand_count;
         /*const*/ AutoPtr<SubstructureQueryData> _query_data;
         Array<byte> _query_fp;
-        ArrayNew<int> _query_fp_bits_used;
+        ArrayInt _query_fp_bits_used;
 
         void _findPackCandidates(int pack_idx);
 
@@ -257,7 +257,7 @@ namespace bingo
         virtual void _initPartition();
 
     private:
-        ArrayNew<int> _candidates;
+        ArrayInt _candidates;
         int _current_cand_id;
         int _current_pack;
         int _final_pack;
@@ -269,10 +269,10 @@ namespace bingo
     public:
         MoleculeSubMatcher(/*const */ BaseIndex& index);
 
-        const ArrayNew<int>& currentMapping();
+        const ArrayInt& currentMapping();
 
     private:
-        ArrayNew<int> _mapping;
+        ArrayInt _mapping;
 
         bool _tryCurrent() /*const*/ override;
 
@@ -284,10 +284,10 @@ namespace bingo
     public:
         ReactionSubMatcher(/*const */ BaseIndex& index);
 
-        const ObjArray<ArrayNew<int>>& currentMapping();
+        const ObjArray<ArrayInt>& currentMapping();
 
     private:
-        ObjArray<ArrayNew<int>> _mapping;
+        ObjArray<ArrayInt> _mapping;
 
         bool _tryCurrent() /*const*/ override;
 
@@ -379,14 +379,14 @@ namespace bingo
 
     protected:
         void _findTopN();
-        void _initModelDistribution(Array<float>& thrs, ArrayNew<int>& nhits_per_block);
+        void _initModelDistribution(Array<float>& thrs, ArrayInt& nhits_per_block);
         static bool _cmp_sim_res(const SimResult& res1, const SimResult& res2);
 
     private:
         int _idx;
         int _limit;
         std::vector<SimResult> _current_results;
-        ArrayNew<int> _result_ids;
+        ArrayInt _result_ids;
         Array<float> _result_sims;
     };
 
@@ -423,7 +423,7 @@ namespace bingo
         int _current_cand_id;
         dword _query_hash;
         int _flags;
-        ArrayNew<int> _candidates;
+        ArrayInt _candidates;
         /* const */ AutoPtr<ExactQueryData> _query_data;
 
         virtual dword _calcHash() = 0;
@@ -480,8 +480,8 @@ namespace bingo
 
     protected:
         int _current_cand_id;
-        ArrayNew<int> _query_array;
-        ArrayNew<int> _candidates;
+        ArrayInt _query_array;
+        ArrayInt _candidates;
         /* const */ AutoPtr<GrossQueryData> _query_data;
 
         virtual void _calcFormula() = 0;

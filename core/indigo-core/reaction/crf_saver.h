@@ -57,7 +57,7 @@ namespace indigo
         void _init();
 
         void _writeReactionInfo(Reaction& reaction);
-        void _writeAam(const int* aam, const ArrayNew<int>& sequence);
+        void _writeAam(const int* aam, const ArrayInt& sequence);
         void _writeMolecule(Molecule& molecule);
         void _writeReactionMolecule(Reaction& reaction, int idx);
 

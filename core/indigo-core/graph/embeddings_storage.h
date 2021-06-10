@@ -58,7 +58,7 @@ namespace indigo
         DECL_ERROR;
 
     private:
-        ArrayNew<int> _all_vertices, _all_edges, _all_mappings;
+        ArrayInt _all_vertices, _all_edges, _all_mappings;
         struct _EmbeddingData
         {
             bool sorted;
@@ -70,7 +70,7 @@ namespace indigo
         Array<_EmbeddingData> _embedding_data;
         RedBlackMap<dword, int> _map_hash_to_id;
 
-        static dword _calcSetHash(const ArrayNew<int>& set, int offset, int size);
+        static dword _calcSetHash(const ArrayInt& set, int offset, int size);
         bool _compareEmbedding(int id, int id2);
 
         void _prepareForCompare(int id);

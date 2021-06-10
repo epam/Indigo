@@ -110,7 +110,7 @@ int MoleculeGrossFormula::_cmp_hill(_ElemCounter& ec1, _ElemCounter& ec2, void* 
     return _cmp_hill_no_carbon(ec1, ec2, context);
 }
 
-void MoleculeGrossFormula::collect(BaseMolecule& molecule, ArrayNew<int>& gross_out)
+void MoleculeGrossFormula::collect(BaseMolecule& molecule, ArrayInt& gross_out)
 {
     auto res = collect(molecule);
     auto& gross = *res;
@@ -143,7 +143,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
 
     // basic structure and all polymers
     int grossFormulaSize = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) + 1;
-    QS_DEF_RES(ObjArray<ArrayNew<int>>, filters, grossFormulaSize);
+    QS_DEF_RES(ObjArray<ArrayInt>, filters, grossFormulaSize);
     QS_DEF_RES(ObjArray<ArrayChar>, indices, grossFormulaSize);
 
     // first element is for old-style gross formula
@@ -227,7 +227,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     return result;
 }
 
-void MoleculeGrossFormula::toString(const ArrayNew<int>& gross, ArrayChar& str, bool add_rsites)
+void MoleculeGrossFormula::toString(const ArrayInt& gross, ArrayChar& str, bool add_rsites)
 {
     ArrayOutput output(str);
     _toString(gross, output, _cmp, add_rsites);
@@ -274,7 +274,7 @@ void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, ArrayChar& str, boo
     output.writeChar(0);
 }
 
-void MoleculeGrossFormula::_toString(const ArrayNew<int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites)
+void MoleculeGrossFormula::_toString(const ArrayInt& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites)
 {
     QS_DEF(Array<_ElemCounter>, counters);
     int i;
@@ -418,7 +418,7 @@ int MoleculeGrossFormula::_isotopeCount(BaseMolecule& mol)
     return isotopes.size();
 }
 
-void MoleculeGrossFormula::fromString(Scanner& scanner, ArrayNew<int>& gross)
+void MoleculeGrossFormula::fromString(Scanner& scanner, ArrayInt& gross)
 {
     gross.clear_resize(ELEM_MAX);
     gross.zerofill();
@@ -440,14 +440,14 @@ void MoleculeGrossFormula::fromString(Scanner& scanner, ArrayNew<int>& gross)
     }
 }
 
-void MoleculeGrossFormula::fromString(const char* str, ArrayNew<int>& gross)
+void MoleculeGrossFormula::fromString(const char* str, ArrayInt& gross)
 {
     BufferScanner scanner(str);
 
     fromString(scanner, gross);
 }
 
-bool MoleculeGrossFormula::leq(const ArrayNew<int>& gross1, const ArrayNew<int>& gross2)
+bool MoleculeGrossFormula::leq(const ArrayInt& gross1, const ArrayInt& gross2)
 {
     int i;
 
@@ -458,7 +458,7 @@ bool MoleculeGrossFormula::leq(const ArrayNew<int>& gross1, const ArrayNew<int>&
     return true;
 }
 
-bool MoleculeGrossFormula::geq(const ArrayNew<int>& gross1, const ArrayNew<int>& gross2)
+bool MoleculeGrossFormula::geq(const ArrayInt& gross1, const ArrayInt& gross2)
 {
     int i;
 
@@ -469,7 +469,7 @@ bool MoleculeGrossFormula::geq(const ArrayNew<int>& gross1, const ArrayNew<int>&
     return true;
 }
 
-bool MoleculeGrossFormula::equal(const ArrayNew<int>& gross1, const ArrayNew<int>& gross2)
+bool MoleculeGrossFormula::equal(const ArrayInt& gross1, const ArrayInt& gross2)
 {
     int i;
 

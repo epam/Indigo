@@ -127,7 +127,7 @@ public:
     const BingoSectionInfoData& getSectionInfo(int section_idx);
 
     void getSectionBitset(int section_idx, BingoPgExternalBitset& section_bitset);
-    void getSectionBitsCount(int section_idx, indigo::ArrayNew<int>& bits_count);
+    void getSectionBitsCount(int section_idx, indigo::ArrayInt& bits_count);
 
     void removeStructure(int section_idx, int mol_idx);
     bool isStructureRemoved(int section_idx, int mol_idx);

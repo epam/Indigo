@@ -112,7 +112,7 @@ namespace indigo
             {
                 return _mode;
             }
-            bool addPair(int mol1_idx, int mol2_idx, const ArrayNew<int>& core1, const ArrayNew<int>& core2, bool from_first_side);
+            bool addPair(int mol1_idx, int mol2_idx, const ArrayInt& core1, const ArrayInt& core2, bool from_first_side);
             void restore();
 
             bool match_stereo;
@@ -120,8 +120,8 @@ namespace indigo
             int _current_molecule_1, _current_molecule_2;
 
             CP_DECL;
-            TL_CP_DECL(ArrayNew<int>, _current_core_1);
-            TL_CP_DECL(ArrayNew<int>, _current_core_2);
+            TL_CP_DECL(ArrayInt, _current_core_1);
+            TL_CP_DECL(ArrayInt, _current_core_2);
 
         protected:
             int _nextPair();
@@ -141,7 +141,7 @@ namespace indigo
             int _mode;
             int _selected_molecule_1;
             int _selected_molecule_2;
-            TL_CP_DECL(ArrayNew<int>, _mapped_aams);
+            TL_CP_DECL(ArrayInt, _mapped_aams);
         };
 
         Reaction& _target;
@@ -150,8 +150,8 @@ namespace indigo
         TL_CP_DECL(PtrArray<_Matcher>, _matchers);
         TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_1);
         TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_2);
-        TL_CP_DECL(ArrayNew<int>, _molecule_core_1);
-        TL_CP_DECL(ArrayNew<int>, _molecule_core_2);
+        TL_CP_DECL(ArrayInt, _molecule_core_1);
+        TL_CP_DECL(ArrayInt, _molecule_core_2);
         TL_CP_DECL(RedBlackIntMap, _aam_core_first_side);
 
         int _first_side;

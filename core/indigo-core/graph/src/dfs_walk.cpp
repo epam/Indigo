@@ -48,7 +48,7 @@ void DfsWalk::mustBeRootVertex(int v_idx)
 
 void DfsWalk::walk()
 {
-    QS_DEF(ArrayNew<int>, v_stack);
+    QS_DEF(ArrayInt, v_stack);
     int i, j;
 
     if (vertex_ranks != 0 && vertex_classes != 0)
@@ -206,7 +206,7 @@ int DfsWalk::numOpenings(int v_idx) const
     return _vertices[v_idx].openings;
 }
 
-void DfsWalk::calcMapping(ArrayNew<int>& mapping) const
+void DfsWalk::calcMapping(ArrayInt& mapping) const
 {
     int i, counter = 0;
 
@@ -238,7 +238,7 @@ int DfsWalk::_cmp_classes(VertexEdge& ve1, VertexEdge& ve2, void* context)
     return 0;
 }
 
-void DfsWalk::getNeighborsClosing(int v_idx, ArrayNew<int>& res)
+void DfsWalk::getNeighborsClosing(int v_idx, ArrayInt& res)
 {
     int i;
 

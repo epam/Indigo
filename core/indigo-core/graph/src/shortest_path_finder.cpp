@@ -31,7 +31,7 @@ ShortestPathFinder::ShortestPathFinder(const Graph& graph) : _graph(graph)
     prev.clear_resize(_graph.vertexEnd());
 }
 
-bool ShortestPathFinder::find(ArrayNew<int>& vertices, ArrayNew<int>& edges, int u, int v)
+bool ShortestPathFinder::find(ArrayInt& vertices, ArrayInt& edges, int u, int v)
 {
     // init
     queue.clear();

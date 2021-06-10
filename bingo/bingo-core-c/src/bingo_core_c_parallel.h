@@ -45,7 +45,7 @@ namespace indigo
             // Molecules or reactions
             ChunkStorage records;
             // Array of their internal indices
-            ArrayNew<int> ids;
+            ArrayInt ids;
 
             BingoCore* core;
             OsLock* lock_for_exclusive_access;
@@ -59,11 +59,11 @@ namespace indigo
             virtual BingoIndex& getIndex(int index) = 0;
 
             // Array of processed indices
-            ArrayNew<int> ids;
+            ArrayInt ids;
 
             // Array with error messages
             ChunkStorage error_messages;
-            ArrayNew<int> error_ids;
+            ArrayInt error_ids;
         };
 
         // Dispatcher for creating commands.

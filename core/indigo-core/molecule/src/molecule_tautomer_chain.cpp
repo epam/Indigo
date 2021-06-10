@@ -324,7 +324,7 @@ void TautomerChainFinder::restore()
 
 IMPL_ERROR(TautomerChainChecker, "tautomer chain checker");
 
-TautomerChainChecker::TautomerChainChecker(TautomerSearchContext& context, const ArrayNew<int>& core1, const ArrayNew<int>& core2, int start_path_number)
+TautomerChainChecker::TautomerChainChecker(TautomerSearchContext& context, const ArrayInt& core1, const ArrayInt& core2, int start_path_number)
     : _context(context), _path_length(0), _h_difference(0), _is_zero_bond_present(!context.ring_chain), _is_query_bond_present(false),
       _is_non_aromatic_bond_present(false), _path_number(start_path_number + 2), _core_1(core1), _core_2(core2), _tau_bonds_to_match(0), _prev_n1(-1),
       _prev_n2(-1), _bond_idx1(-1), _bond_idx2(-1), _bond_type2(0)
@@ -1195,7 +1195,7 @@ int TautomerChainChecker::_embedding(Graph& subgraph, Graph& supergraph, int* co
 bool TautomerChainChecker::_matchAromatizedQuery()
 {
     QS_DEF(QueryMolecule, aromatized_query);
-    QS_DEF(ArrayNew<int>, mapping);
+    QS_DEF(ArrayInt, mapping);
 
     aromatized_query.clone(((BaseMolecule&)_context.g1).asQueryMolecule(), 0, &mapping);
     QueryMoleculeAromatizer::aromatizeBonds(aromatized_query, _context.arom_options);

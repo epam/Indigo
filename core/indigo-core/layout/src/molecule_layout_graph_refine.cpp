@@ -44,7 +44,7 @@ bool MoleculeLayoutGraph::_edge_check(Graph& graph, int e_idx, void* context_)
     return false;
 }
 
-bool MoleculeLayoutGraph::_path_handle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context_)
+bool MoleculeLayoutGraph::_path_handle(Graph& graph, const ArrayInt& vertices, const ArrayInt& edges, void* context_)
 {
     EnumContext& context = *(EnumContext*)context_;
     int i;
@@ -65,12 +65,12 @@ bool MoleculeLayoutGraph::_path_handle(Graph& graph, const ArrayNew<int>& vertic
 }
 
 // Split graph in two branches by acyclic edge (its vertices are in different branches)
-void MoleculeLayoutGraph::_makeBranches(ArrayNew<int>& branches, int edge, Filter& filter) const
+void MoleculeLayoutGraph::_makeBranches(ArrayInt& branches, int edge, Filter& filter) const
 {
     branches.clear_resize(vertexEnd());
     branches.zerofill();
 
-    QS_DEF(ArrayNew<int>, dfs_stack);
+    QS_DEF(ArrayInt, dfs_stack);
 
     dfs_stack.clear();
     dfs_stack.push(_first_vertex_idx);
@@ -130,12 +130,12 @@ bool MoleculeLayoutGraph::_allowRotateAroundVertex(int idx) const
 
 // Increase minimal distance between vertices
 void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_decomposer, const PtrArray<MoleculeLayoutGraph>& bc_components,
-                                             const ArrayNew<int>& bc_tree)
+                                             const ArrayInt& bc_tree)
 {
     RefinementState beg_state(*this);
     RefinementState best_state(*this);
     RefinementState new_state(*this);
-    QS_DEF(ArrayNew<int>, branch);
+    QS_DEF(ArrayInt, branch);
     int v1, v2;
     int v1c, v2c;
     int i, j, n;
@@ -153,8 +153,8 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
     // Look through all vertex pairs which are closer than 0.6
     bool improved = true;
     QS_DEF(RedBlackSet<int>, edges);
-    QS_DEF(ArrayNew<int>, components1);
-    QS_DEF(ArrayNew<int>, components2);
+    QS_DEF(ArrayInt, components1);
+    QS_DEF(ArrayInt, components2);
     EnumContext context;
 
     context.edges = &edges;
@@ -431,7 +431,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
 void MoleculeLayoutGraph::_excludeDandlingIntersections()
 {
-    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayInt, edges);
     int i, j, res, beg1, end1, beg2, end2;
     float norm1, norm2;
     Vec2f a, b;

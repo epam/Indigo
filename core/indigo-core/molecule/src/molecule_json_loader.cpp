@@ -391,7 +391,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
     int start = -1;
     int end = -1;
     int end_bond = -1, start_bond = -1;
-    QS_DEF(ArrayNew<int>, xbonds);
+    QS_DEF(ArrayInt, xbonds);
 
     for (auto j : bmol.edges())
     {
@@ -425,7 +425,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
 
     if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
     {
-        QS_DEF(ArrayNew<int>, mapping);
+        QS_DEF(ArrayInt, mapping);
         AutoPtr<BaseMolecule> rep(bmol.neu());
         rep->makeSubmolecule(bmol, sgroup.atoms, &mapping, 0);
 

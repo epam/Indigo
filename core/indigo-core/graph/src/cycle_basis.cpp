@@ -25,7 +25,7 @@ using namespace indigo;
 
 void CycleBasis::create(const Graph& graph)
 {
-    QS_DEF(ArrayNew<int>, mapping_out);
+    QS_DEF(ArrayInt, mapping_out);
 
     // using biconnected decomposer since components will contain smallest cycles
 
@@ -55,8 +55,8 @@ void CycleBasis::create(const Graph& graph)
             // create new cycle consider the mapping
             for (int k = 0; k < simple_cycle.getCyclesCount(); ++k)
             {
-                const ArrayNew<int>& cycle = simple_cycle.getCycle(k);
-                ArrayNew<int>& new_cycle = _cycles.push();
+                const ArrayInt& cycle = simple_cycle.getCycle(k);
+                ArrayInt& new_cycle = _cycles.push();
                 for (int j = 0; j < cycle.size(); ++j)
                 {
                     // cycle is edge list so we have to covert from subgraph edge list to graph edge list

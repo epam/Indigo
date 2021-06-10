@@ -82,7 +82,7 @@ namespace indigo
         // Array with molecule components and InChI information and sorted indices
         CP_DECL;
         TL_CP_DECL(ReusableObjArray<MoleculeInChICompoment>, _components);
-        TL_CP_DECL(ArrayNew<int>, _component_indices);
+        TL_CP_DECL(ArrayInt, _component_indices);
     };
 
 } // namespace indigo

@@ -30,7 +30,7 @@ public:
 
     BaseMolecule& from;
     BaseMolecule& to;
-    ArrayNew<int> mapping;
+    ArrayInt mapping;
 
     IndigoObject* clone() override;
 
@@ -46,8 +46,8 @@ public:
     BaseReaction& from;
     BaseReaction& to;
 
-    ArrayNew<int> mol_mapping;
-    ObjArray<ArrayNew<int>> mappings;
+    ArrayInt mol_mapping;
+    ObjArray<ArrayInt> mappings;
 
     IndigoObject* clone() override;
 };

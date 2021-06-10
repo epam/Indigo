@@ -109,7 +109,7 @@ private:
     BingoContext(const BingoContext&); // no implicit copy
 };
 
-void bingoGetTauCondition(const char* list_ptr, int& aromaticity, ArrayNew<int>& label_list);
+void bingoGetTauCondition(const char* list_ptr, int& aromaticity, ArrayInt& label_list);
 
 void bingoGetName(Scanner& scanner, ArrayChar& result);
 

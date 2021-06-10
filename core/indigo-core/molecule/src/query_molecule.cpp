@@ -723,7 +723,7 @@ void QueryMolecule::_flipBond(int atom_parent, int atom_from, int atom_to)
     updateEditRevision();
 }
 
-void QueryMolecule::_mergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping, int skip_flags)
+void QueryMolecule::_mergeWithSubmolecule(BaseMolecule& bmol, const ArrayInt& vertices, const ArrayInt* edges, const ArrayInt& mapping, int skip_flags)
 {
     QueryMolecule& mol = bmol.asQueryMolecule();
     int i;
@@ -816,7 +816,7 @@ void QueryMolecule::_mergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int
     updateEditRevision();
 }
 
-void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping,
+void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& bmol, const ArrayInt& vertices, const ArrayInt* edges, const ArrayInt& mapping,
                                               int skip_flags)
 {
     // Remove stereocare flags for bonds that are not cis-trans
@@ -825,7 +825,7 @@ void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew
             setBondStereoCare(i, false);
 }
 
-void QueryMolecule::_removeAtoms(const ArrayNew<int>& indices, const int* mapping)
+void QueryMolecule::_removeAtoms(const ArrayInt& indices, const int* mapping)
 {
     spatial_constraints.removeAtoms(mapping);
 
@@ -858,7 +858,7 @@ void QueryMolecule::_removeAtoms(const ArrayNew<int>& indices, const int* mappin
     }
 
     // Collect bonds to remove
-    QS_DEF(ArrayNew<int>, edges_to_remove);
+    QS_DEF(ArrayInt, edges_to_remove);
     edges_to_remove.clear();
     for (int i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
     {
@@ -870,7 +870,7 @@ void QueryMolecule::_removeAtoms(const ArrayNew<int>& indices, const int* mappin
     updateEditRevision();
 }
 
-void QueryMolecule::_removeBonds(const ArrayNew<int>& indices)
+void QueryMolecule::_removeBonds(const ArrayInt& indices)
 {
     for (int i = 0; i < indices.size(); i++)
         _bonds.reset(indices[i]);
@@ -1871,7 +1871,7 @@ bool QueryMolecule::isNotAtom(QueryMolecule::Atom& qa, int elem)
     return false;
 }
 
-bool QueryMolecule::collectAtomList(QueryMolecule::Atom& qa, ArrayNew<int>& list, bool& notList)
+bool QueryMolecule::collectAtomList(QueryMolecule::Atom& qa, ArrayInt& list, bool& notList)
 {
     list.clear();
     if (qa.type == QueryMolecule::OP_OR || qa.type == QueryMolecule::OP_NOT)
@@ -1937,7 +1937,7 @@ QueryMolecule::Atom* QueryMolecule::stripKnownAttrs(QueryMolecule::Atom& qa)
     return qd == NULL ? &qa : qd;
 }
 
-int QueryMolecule::parseQueryAtom(QueryMolecule& qm, int aid, ArrayNew<int>& list)
+int QueryMolecule::parseQueryAtom(QueryMolecule& qm, int aid, ArrayInt& list)
 {
     QueryMolecule::Atom& qa = qm.getAtom(aid);
     QueryMolecule::Atom* qc = stripKnownAttrs(qa);
@@ -1984,7 +1984,7 @@ bool QueryMolecule::queryAtomIsRegular(QueryMolecule& qm, int aid)
 
 bool QueryMolecule::queryAtomIsSpecial(QueryMolecule& qm, int aid)
 {
-    QS_DEF(ArrayNew<int>, list);
+    QS_DEF(ArrayInt, list);
     int query_atom_type;
 
     if ((query_atom_type = QueryMolecule::parseQueryAtom(qm, aid, list)) != -1)

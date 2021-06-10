@@ -21,7 +21,7 @@ TEST(IndigoAromTest, arom_test_merge)
         int c = indigoComponent(m, 0);
         int cc = indigoClone(c);
         indigoDearomatize(cc);
-        ArrayNew<int> vertices;
+        ArrayInt vertices;
         for (int i = 0; i < 6; ++i)
             vertices.push(i);
 

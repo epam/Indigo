@@ -90,7 +90,7 @@ namespace indigo
             // returns index of graph in basket that has maximum number of edges
             virtual int getMaxGraphIndex();
             // this method adds graph from set (defines with edges and vertices lists) to basket queue
-            virtual void addToNextEmptySpot(Graph& graph, ArrayNew<int>& v_list, ArrayNew<int>& e_list);
+            virtual void addToNextEmptySpot(Graph& graph, ArrayInt& v_list, ArrayInt& e_list);
 
             virtual Graph& getGraphFromSet(int idx)
             {
@@ -120,7 +120,7 @@ namespace indigo
             virtual void _sortGraphsInSet();
 
             // array for keeping indexes of sorted graphs in set
-            ArrayNew<int> _orderArray;
+            ArrayInt _orderArray;
 
             int _graphSetSize;
 

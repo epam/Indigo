@@ -250,7 +250,7 @@ void MoleculeRenderInternal::setScaleFactor(const float scaleFactor, const Vec2f
     _max.copy(max);
 }
 
-void mapArray(ArrayNew<int>& dst, const ArrayNew<int>& src, const int* mapping)
+void mapArray(ArrayInt& dst, const ArrayInt& src, const int* mapping)
 {
     for (int i = 0; i < src.size(); ++i)
     {
@@ -259,7 +259,7 @@ void mapArray(ArrayNew<int>& dst, const ArrayNew<int>& src, const int* mapping)
     }
 }
 
-void MoleculeRenderInternal::setReactionComponentProperties(const ArrayNew<int>* aam, const ArrayNew<int>* reactingCenters, const ArrayNew<int>* inversions)
+void MoleculeRenderInternal::setReactionComponentProperties(const ArrayInt* aam, const ArrayInt* reactingCenters, const ArrayInt* inversions)
 {
     if (aam != NULL)
         _data.aam.copy(*aam);
@@ -269,7 +269,7 @@ void MoleculeRenderInternal::setReactionComponentProperties(const ArrayNew<int>*
         _data.inversions.copy(*inversions);
 }
 
-void MoleculeRenderInternal::setQueryReactionComponentProperties(const ArrayNew<int>* exactChanges)
+void MoleculeRenderInternal::setQueryReactionComponentProperties(const ArrayInt* exactChanges)
 {
     if (exactChanges != NULL)
         _data.exactChanges.copy(*exactChanges);
@@ -801,7 +801,7 @@ void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
     index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
 }
 
-void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const ArrayNew<int>& atoms, Array<std::array<Vec2f, 2>>& brackets)
+void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const ArrayInt& atoms, Array<std::array<Vec2f, 2>>& brackets)
 {
     auto& left = brackets.push();
     auto& right = brackets.push();
@@ -1472,15 +1472,15 @@ bool MoleculeRenderInternal::_hasQueryModifiers(int aid)
 void MoleculeRenderInternal::_findNearbyAtoms()
 {
     float maxDistance = _settings.neighboringAtomDistanceTresholdA * 2;
-    RedBlackObjMap<int, RedBlackObjMap<int, ArrayNew<int>>> buckets;
+    RedBlackObjMap<int, RedBlackObjMap<int, ArrayInt>> buckets;
 
     for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
     {
         const Vec2f& v = _ad(i).pos;
         int xBucket = (int)(v.x / maxDistance);
         int yBucket = (int)(v.y / maxDistance);
-        RedBlackObjMap<int, ArrayNew<int>>& bucketRow = buckets.findOrInsert(yBucket);
-        ArrayNew<int>& bucket = bucketRow.findOrInsert(xBucket);
+        RedBlackObjMap<int, ArrayInt>& bucketRow = buckets.findOrInsert(yBucket);
+        ArrayInt& bucket = bucketRow.findOrInsert(xBucket);
         bucket.push(i);
     }
 
@@ -1497,10 +1497,10 @@ void MoleculeRenderInternal::_findNearbyAtoms()
                 int y = yBucket + k - 1;
                 if (!buckets.find(y))
                     continue;
-                RedBlackObjMap<int, ArrayNew<int>>& bucketRow = buckets.at(y);
+                RedBlackObjMap<int, ArrayInt>& bucketRow = buckets.at(y);
                 if (!bucketRow.find(x))
                     continue;
-                const ArrayNew<int>& bucket = bucketRow.at(x);
+                const ArrayInt& bucket = bucketRow.at(x);
                 for (int r = 0; r < bucket.size(); ++r)
                 {
                     int aid = bucket[r];
@@ -1514,7 +1514,7 @@ void MoleculeRenderInternal::_findNearbyAtoms()
                 }
             }
         }
-        // const ArrayNew<int>& natoms = _ad(i).nearbyAtoms;
+        // const ArrayInt& natoms = _ad(i).nearbyAtoms;
         // printf("%02d:", i);
         // for (int j = 0; j < natoms.size(); ++j) {
         //   printf(" %02d", natoms[j]);
@@ -2402,7 +2402,7 @@ void MoleculeRenderInternal::_writeQueryAtomToString(Output& output, int aid)
 
     if (bm.isRSite(aid))
     {
-        QS_DEF(ArrayNew<int>, rg);
+        QS_DEF(ArrayInt, rg);
         bm.getAllowedRGroups(aid, rg);
 
         if (rg.size() == 0)
@@ -2819,7 +2819,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
     int len = (int)strlen(str);
     GraphItem::TYPE signType;
     // TODO: replace remembering item ids and shifting each of them with single offset value for an atom
-    ArrayNew<int> tis, gis;
+    ArrayInt tis, gis;
 
     TextItem fake;
     fake.fontsize = FONT_SIZE_LABEL;
@@ -3395,8 +3395,8 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
 
     // prepare R-group attachment point labels
     QS_DEF(Array<float>, angles);
-    QS_DEF(ArrayNew<int>, split);
-    QS_DEF(ArrayNew<int>, rGroupAttachmentIndices);
+    QS_DEF(ArrayInt, split);
+    QS_DEF(ArrayInt, rGroupAttachmentIndices);
 
     if (ad.isRGroupAttachmentPoint)
     {
@@ -4162,7 +4162,7 @@ void MoleculeRenderInternal::_precalcScale()
     for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
     {
         long long int output_length = 0;
-        ArrayNew<int> iarr;
+        ArrayInt iarr;
         ArrayChar carr;
         if (bm.isPseudoAtom(i))
         {
@@ -4177,7 +4177,7 @@ void MoleculeRenderInternal::_precalcScale()
         else if (bm.isRSite(i))
         {
             output_length = 0;
-            QS_DEF(ArrayNew<int>, rg);
+            QS_DEF(ArrayInt, rg);
             bm.getAllowedRGroups(i, rg);
             if (rg.size() == 0)
             {

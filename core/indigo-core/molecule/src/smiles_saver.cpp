@@ -370,8 +370,8 @@ void SmilesSaver::_saveMolecule()
     if (canonize_chiralities)
     {
         int i, j;
-        QS_DEF(ArrayNew<int>, marked);
-        QS_DEF(ArrayNew<int>, ids);
+        QS_DEF(ArrayInt, marked);
+        QS_DEF(ArrayInt, ids);
         const MoleculeStereocenters& stereocenters = _bmol->stereocenters;
 
         marked.clear_resize(_bmol->vertexEnd());
@@ -427,7 +427,7 @@ void SmilesSaver::_saveMolecule()
 
     // cycle_numbers[i] == -1 means that the number is available
     // cycle_numbers[i] == n means that the number is used by vertex n
-    QS_DEF(ArrayNew<int>, cycle_numbers);
+    QS_DEF(ArrayInt, cycle_numbers);
 
     int rsites_closures_starting_num = 91;
     int rbonds = _countRBonds() + _n_attachment_points;
@@ -538,7 +538,7 @@ void SmilesSaver::_saveMolecule()
             else
                 throw Error("SMARTS format availble for query only");
 
-            QS_DEF(ArrayNew<int>, closing);
+            QS_DEF(ArrayInt, closing);
 
             walk.getNeighborsClosing(v_idx, closing);
 
@@ -664,7 +664,7 @@ void SmilesSaver::_writeAtom(int idx, bool aromatic, bool lowercase, int chirali
     {
         if (rsite_indices_as_aam && _bmol->getRSiteBits(idx) != 0)
         {
-            QS_DEF(ArrayNew<int>, allowed_rgroups);
+            QS_DEF(ArrayInt, allowed_rgroups);
             _bmol->getAllowedRGroups(idx, allowed_rgroups);
             _output.printf("[*:%d]", allowed_rgroups[0]);
         }
@@ -727,7 +727,7 @@ void SmilesSaver::_writeAtom(int idx, bool aromatic, bool lowercase, int chirali
             }
             // Check atom list
 
-            QS_DEF(ArrayNew<int>, list);
+            QS_DEF(ArrayInt, list);
 
             int query_atom_type;
             if ((query_atom_type = QueryMolecule::parseQueryAtom(*_qmol, idx, list)) != -1)
@@ -1020,7 +1020,7 @@ void SmilesSaver::_writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_
 
 void SmilesSaver::_banSlashes()
 {
-    QS_DEF(ArrayNew<int>, slashes);
+    QS_DEF(ArrayInt, slashes);
     BaseMolecule& mol = *_bmol;
     int i, j;
 
@@ -1436,7 +1436,7 @@ void SmilesSaver::_writeStereogroups()
     int and_group_idx = 1;
     int or_group_idx = 1;
 
-    QS_DEF(ArrayNew<int>, marked);
+    QS_DEF(ArrayInt, marked);
 
     marked.clear_resize(_written_atoms.size());
     marked.zerofill();
@@ -1510,7 +1510,7 @@ void SmilesSaver::_writeStereogroups()
 void SmilesSaver::_writeRadicals()
 {
     BaseMolecule& mol = *_bmol;
-    QS_DEF(ArrayNew<int>, marked);
+    QS_DEF(ArrayInt, marked);
     int i, j;
 
     marked.clear_resize(_written_atoms.size());
@@ -1590,7 +1590,7 @@ void SmilesSaver::_writePseudoAtoms()
         // ChemAxon's Extended SMILES notation for R-sites
         // and added support of multiple R-groups on one R-site
         {
-            QS_DEF(ArrayNew<int>, allowed_rgroups);
+            QS_DEF(ArrayInt, allowed_rgroups);
             mol.getAllowedRGroups(_written_atoms[i], allowed_rgroups);
             for (int j = 0; j < allowed_rgroups.size(); j++)
             {
@@ -1629,7 +1629,7 @@ void SmilesSaver::writePseudoAtom(const char* label, Output& out)
 
 void SmilesSaver::writeSpecialAtom(int aid, Output& out)
 {
-    QS_DEF(ArrayNew<int>, list);
+    QS_DEF(ArrayInt, list);
     int query_atom_type;
 
     query_atom_type = QueryMolecule::parseQueryAtom(*_qmol, aid, list);
@@ -1800,7 +1800,7 @@ void SmilesSaver::_writeRGroups()
     }
 }
 
-void SmilesSaver::_writeOccurrenceRanges(Output& out, const ArrayNew<int>& occurrences)
+void SmilesSaver::_writeOccurrenceRanges(Output& out, const ArrayInt& occurrences)
 {
     for (int i = 0; i < occurrences.size(); i++)
     {
@@ -1825,12 +1825,12 @@ int SmilesSaver::writtenComponents()
     return _written_components;
 }
 
-const ArrayNew<int>& SmilesSaver::writtenAtoms()
+const ArrayInt& SmilesSaver::writtenAtoms()
 {
     return _written_atoms;
 }
 
-const ArrayNew<int>& SmilesSaver::writtenBonds()
+const ArrayInt& SmilesSaver::writtenBonds()
 {
     return _written_bonds;
 }
@@ -1865,7 +1865,7 @@ void SmilesSaver::_checkSRU()
         SGroup* sg = &_bmol->sgroups.getSGroup(i);
         if (sg->sgroup_type == SGroup::SG_TYPE_SRU)
         {
-            ArrayNew<int>& atoms = sg->atoms;
+            ArrayInt& atoms = sg->atoms;
 
             for (j = 0; j < atoms.size(); j++)
             {
@@ -1886,7 +1886,7 @@ void SmilesSaver::_checkSRU()
         SGroup* sg = &_bmol->sgroups.getSGroup(i);
         if (sg->sgroup_type == SGroup::SG_TYPE_SRU)
         {
-            ArrayNew<int>& atoms = sg->atoms;
+            ArrayInt& atoms = sg->atoms;
             int cnt = 0;
 
             for (j = 0; j < atoms.size(); j++)
@@ -1937,8 +1937,8 @@ void SmilesSaver::_writeRingCisTrans()
 
     int i, j;
 
-    QS_DEF(ArrayNew<int>, cis_bonds);
-    QS_DEF(ArrayNew<int>, trans_bonds);
+    QS_DEF(ArrayInt, cis_bonds);
+    QS_DEF(ArrayInt, trans_bonds);
 
     cis_bonds.clear();
     trans_bonds.clear();
@@ -2026,7 +2026,7 @@ void SmilesSaver::_writeRingCisTrans()
     }
 }
 
-const ArrayNew<int>& SmilesSaver::getSavedCisTransParities()
+const ArrayInt& SmilesSaver::getSavedCisTransParities()
 {
     return _cis_trans_parity;
 }

@@ -61,8 +61,8 @@ namespace indigo
 
         int (*cb_edge_rank)(Graph& graph, int edge_idx, const void* context);
 
-        bool (*cb_check_automorphism)(Graph& graph, const ArrayNew<int>& mapping, const void* context);
-        int (*cb_compare_mapped)(Graph& graph, const ArrayNew<int>& mapping1, const ArrayNew<int>& mapping2, const void* context);
+        bool (*cb_check_automorphism)(Graph& graph, const ArrayInt& mapping, const void* context);
+        int (*cb_compare_mapped)(Graph& graph, const ArrayInt& mapping1, const ArrayInt& mapping2, const void* context);
 
         void* context_automorphism;
 
@@ -70,10 +70,10 @@ namespace indigo
 
         void process(Graph& graph);
 
-        void getCanonicalNumbering(ArrayNew<int>& numbering);
+        void getCanonicalNumbering(ArrayInt& numbering);
 
-        void getOrbits(ArrayNew<int>& orbits) const;
-        void getCanonicallyOrderedOrbits(ArrayNew<int>& orbits) const;
+        void getOrbits(ArrayInt& orbits) const;
+        void getCanonicallyOrderedOrbits(ArrayInt& orbits) const;
 
         enum
         {
@@ -108,30 +108,30 @@ namespace indigo
 
         TL_CP_DECL(Array<_Call>, _call_stack);
 
-        TL_CP_DECL(ArrayNew<int>, _lab);
-        TL_CP_DECL(ArrayNew<int>, _ptn);
+        TL_CP_DECL(ArrayInt, _lab);
+        TL_CP_DECL(ArrayInt, _ptn);
         TL_CP_DECL(Graph, _graph);
 
-        TL_CP_DECL(ArrayNew<int>, _mapping);
-        TL_CP_DECL(ArrayNew<int>, _inv_mapping);
-        TL_CP_DECL(ArrayNew<int>, _degree);
+        TL_CP_DECL(ArrayInt, _mapping);
+        TL_CP_DECL(ArrayInt, _inv_mapping);
+        TL_CP_DECL(ArrayInt, _degree);
 
-        TL_CP_DECL(ReusableObjArray<ArrayNew<int>>, _tcells);
+        TL_CP_DECL(ReusableObjArray<ArrayInt>, _tcells);
 
-        TL_CP_DECL(ReusableObjArray<ArrayNew<int>>, _fix);
-        TL_CP_DECL(ReusableObjArray<ArrayNew<int>>, _mcr);
+        TL_CP_DECL(ReusableObjArray<ArrayInt>, _fix);
+        TL_CP_DECL(ReusableObjArray<ArrayInt>, _mcr);
 
-        TL_CP_DECL(ArrayNew<int>, _active);
-        TL_CP_DECL(ArrayNew<int>, _workperm);
-        TL_CP_DECL(ArrayNew<int>, _workperm2);
-        TL_CP_DECL(ArrayNew<int>, _bucket);
-        TL_CP_DECL(ArrayNew<int>, _count);
-        TL_CP_DECL(ArrayNew<int>, _firstlab);
-        TL_CP_DECL(ArrayNew<int>, _canonlab);
-        TL_CP_DECL(ArrayNew<int>, _orbits);
-        TL_CP_DECL(ArrayNew<int>, _fixedpts);
+        TL_CP_DECL(ArrayInt, _active);
+        TL_CP_DECL(ArrayInt, _workperm);
+        TL_CP_DECL(ArrayInt, _workperm2);
+        TL_CP_DECL(ArrayInt, _bucket);
+        TL_CP_DECL(ArrayInt, _count);
+        TL_CP_DECL(ArrayInt, _firstlab);
+        TL_CP_DECL(ArrayInt, _canonlab);
+        TL_CP_DECL(ArrayInt, _orbits);
+        TL_CP_DECL(ArrayInt, _fixedpts);
         TL_CP_DECL(Array<IntPair>, _work_active_cells);
-        TL_CP_DECL(ArrayNew<int>, _edge_ranks_in_refine);
+        TL_CP_DECL(ArrayInt, _edge_ranks_in_refine);
 
         int _n;
         Graph* _given_graph;
@@ -150,17 +150,17 @@ namespace indigo
         void _refineOriginal(int level, int& numcells);
         void _refineBySortingNeighbourhood(int level, int& numcells);
         void _refineByCell(int split1, int split2, int level, int& numcells, int& hint, int target_edge_rank);
-        int _targetcell(int level, ArrayNew<int>& cell);
+        int _targetcell(int level, ArrayInt& cell);
         void _breakout(int level, int tc, int tv);
-        int _shortPrune(ArrayNew<int>& tcell, ArrayNew<int>& mcr, int idx);
-        int _longPrune(ArrayNew<int>& tcell, ArrayNew<int>& fix, int idx);
+        int _shortPrune(ArrayInt& tcell, ArrayInt& mcr, int idx);
+        int _longPrune(ArrayInt& tcell, ArrayInt& fix, int idx);
         void _recover(int level);
         int _processNode(int level, int numcells);
-        bool _isAutomorphism(ArrayNew<int>& perm);
+        bool _isAutomorphism(ArrayInt& perm);
         int _compareCanon();
-        void _buildFixMcr(const ArrayNew<int>& perm, ArrayNew<int>& fix, ArrayNew<int>& mcr);
-        void _joinOrbits(const ArrayNew<int>& perm);
-        void _handleAutomorphism(const ArrayNew<int>& perm);
+        void _buildFixMcr(const ArrayInt& perm, ArrayInt& fix, ArrayInt& mcr);
+        void _joinOrbits(const ArrayInt& perm);
+        void _handleAutomorphism(const ArrayInt& perm);
         bool _hasEdgeWithRank(int from, int to, int target_edge_rank);
 
         static int _cmp_vertices(int idx1, int idx2, void* context);

@@ -149,7 +149,7 @@ void SpanningTree::markAllEdgesInCycles(int* marks_out, int value)
 {
     int i, j;
 
-    QS_DEF(ArrayNew<int>, path);
+    QS_DEF(ArrayInt, path);
 
     for (i = 0; i < _edges_list.size(); i++)
     {

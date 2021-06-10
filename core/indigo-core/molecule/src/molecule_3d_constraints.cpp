@@ -93,7 +93,7 @@ bool Molecule3dConstraints::haveConstraints()
 
 void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>& super, const int* mapping)
 {
-    QS_DEF(ArrayNew<int>, cmapping); // mapping of constraints from supermolecule to submolecule
+    QS_DEF(ArrayInt, cmapping); // mapping of constraints from supermolecule to submolecule
     int i, j;
 
     cmapping.resize(super.size());
@@ -546,7 +546,7 @@ bool Molecule3dConstraintsChecker::check(BaseMolecule& target, const int* mappin
             _cache(constr.center_id);
 
             const Vec3f& center = _cache_v.at(constr.center_id);
-            QS_DEF(ArrayNew<int>, allowed);
+            QS_DEF(ArrayInt, allowed);
             int i;
 
             allowed.clear_resize(_target->vertexCount());

@@ -43,7 +43,7 @@ namespace indigo
         // returns the amount of connected components
         int decompose(const Filter* filter = NULL, const Filter* edge_filter = NULL);
 
-        const ArrayNew<int>& getDecomposition() const;
+        const ArrayInt& getDecomposition() const;
 
         int getComponent(int vertex) const;
         int getComponentsCount() const;
@@ -58,9 +58,9 @@ namespace indigo
         int n_comp;
 
         CP_DECL;
-        TL_CP_DECL(ArrayNew<int>, _component_ids);
-        TL_CP_DECL(ArrayNew<int>, _component_vertices_count);
-        TL_CP_DECL(ArrayNew<int>, _component_edges_count);
+        TL_CP_DECL(ArrayInt, _component_ids);
+        TL_CP_DECL(ArrayInt, _component_vertices_count);
+        TL_CP_DECL(ArrayInt, _component_edges_count);
 
     private:
         GraphDecomposer(const GraphDecomposer&);

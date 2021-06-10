@@ -25,7 +25,7 @@ IMPL_ERROR(GraphConstrainedBMatchingFinder, "b-matching finder");
 
 CP_DEF(GraphConstrainedBMatchingFinder);
 
-GraphConstrainedBMatchingFinder::GraphConstrainedBMatchingFinder(const Graph& g, const ObjArray<ArrayNew<int>>& nodes_per_set, const ArrayNew<int>* per_set_set_id)
+GraphConstrainedBMatchingFinder::GraphConstrainedBMatchingFinder(const Graph& g, const ObjArray<ArrayInt>& nodes_per_set, const ArrayInt* per_set_set_id)
     : _g(g), CP_INIT, TL_CP_GET(_network), TL_CP_GET(_edges_graph_to_net), TL_CP_GET(_vertices_graph_to_net), TL_CP_GET(_vertices_capacity_arc_per_set),
       TL_CP_GET(_constraint_sets), TL_CP_GET(_edge_matching_multiplicity), TL_CP_GET(_node_incident_edges_count)
 {
@@ -58,7 +58,7 @@ GraphConstrainedBMatchingFinder::GraphConstrainedBMatchingFinder(const Graph& g,
     _createEdges();
 }
 
-void GraphConstrainedBMatchingFinder::_createSet(int idx, int root, const ArrayNew<int>* per_set_set_id)
+void GraphConstrainedBMatchingFinder::_createSet(int idx, int root, const ArrayInt* per_set_set_id)
 {
     if (_constraint_sets[idx].node != -1)
         return;
@@ -79,7 +79,7 @@ void GraphConstrainedBMatchingFinder::_createSet(int idx, int root, const ArrayN
     _constraint_sets[idx].in_arc = _network.addArc(parent_node, node, 0);
 }
 
-void GraphConstrainedBMatchingFinder::_createSets(int n, int root, const ArrayNew<int>* per_set_set_id)
+void GraphConstrainedBMatchingFinder::_createSets(int n, int root, const ArrayInt* per_set_set_id)
 {
     for (int s = 0; s < n; s++)
         _createSet(s, root, per_set_set_id);
@@ -94,13 +94,13 @@ void GraphConstrainedBMatchingFinder::_createVertices()
     }
 }
 
-void GraphConstrainedBMatchingFinder::_connectVerticesWithSets(const ObjArray<ArrayNew<int>>& nodes_per_set)
+void GraphConstrainedBMatchingFinder::_connectVerticesWithSets(const ObjArray<ArrayInt>& nodes_per_set)
 {
     for (int s = 0; s < nodes_per_set.size(); s++)
     {
         int cs_root = _constraint_sets[s].node;
 
-        const ArrayNew<int>& nodes = nodes_per_set[s];
+        const ArrayInt& nodes = nodes_per_set[s];
         for (int i = 0; i < nodes.size(); i++)
         {
             int vertex = nodes[i];

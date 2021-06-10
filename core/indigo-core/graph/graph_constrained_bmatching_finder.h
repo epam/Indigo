@@ -59,7 +59,7 @@ namespace indigo
          * constrained set
          * Initially all arc capacities are set to zero.
          */
-        GraphConstrainedBMatchingFinder(const Graph& g, const ObjArray<ArrayNew<int>>& nodes_per_set, const ArrayNew<int>* per_set_set_id);
+        GraphConstrainedBMatchingFinder(const Graph& g, const ObjArray<ArrayInt>& nodes_per_set, const ArrayInt* per_set_set_id);
 
         void setNodeCapacity(int node, int capacity, int set_id);
         int getNodeCapacity(int node, int set_id) const;
@@ -89,23 +89,23 @@ namespace indigo
             int in_arc;
         };
 
-        void _createSets(int n, int root, const ArrayNew<int>* per_set_set_id);
-        void _createSet(int idx, int root, const ArrayNew<int>* per_set_set_id);
+        void _createSets(int n, int root, const ArrayInt* per_set_set_id);
+        void _createSet(int idx, int root, const ArrayInt* per_set_set_id);
         void _createVertices();
         void _createEdges();
-        void _connectVerticesWithSets(const ObjArray<ArrayNew<int>>& nodes_per_set);
+        void _connectVerticesWithSets(const ObjArray<ArrayInt>& nodes_per_set);
 
         const Graph& _g;
 
         CP_DECL;
         TL_CP_DECL(SkewSymmetricNetwork, _network);
         // Edges mapping between graph and network
-        TL_CP_DECL(ArrayNew<int>, _edges_graph_to_net);
-        TL_CP_DECL(ArrayNew<int>, _vertices_graph_to_net);
-        TL_CP_DECL(ReusableObjArray<ArrayNew<int>>, _vertices_capacity_arc_per_set);
+        TL_CP_DECL(ArrayInt, _edges_graph_to_net);
+        TL_CP_DECL(ArrayInt, _vertices_graph_to_net);
+        TL_CP_DECL(ReusableObjArray<ArrayInt>, _vertices_capacity_arc_per_set);
         TL_CP_DECL(Array<ConstraintSet>, _constraint_sets);
-        TL_CP_DECL(ArrayNew<int>, _edge_matching_multiplicity);
-        TL_CP_DECL(ArrayNew<int>, _node_incident_edges_count);
+        TL_CP_DECL(ArrayInt, _edge_matching_multiplicity);
+        TL_CP_DECL(ArrayInt, _node_incident_edges_count);
 
         int _source_edge;
     };

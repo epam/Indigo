@@ -409,7 +409,7 @@ static OCIString* _mangoGrossCalc(OracleEnv& env, MangoOracleContext& context, c
 
     OCIString* result = 0;
 
-    QS_DEF(ArrayNew<int>, gross);
+    QS_DEF(ArrayInt, gross);
     QS_DEF(ArrayChar, gross_str);
 
     MoleculeGrossFormula::collect(target, gross);

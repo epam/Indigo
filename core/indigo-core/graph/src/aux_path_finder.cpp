@@ -27,7 +27,7 @@ AuxPathFinder::AuxPathFinder(AuxiliaryGraph& graph, int max_size) : _graph(graph
     _prev.clear_resize(max_size);
 }
 
-bool AuxPathFinder::find(ArrayNew<int>& vertices, ArrayNew<int>& edges, int u, int v)
+bool AuxPathFinder::find(ArrayInt& vertices, ArrayInt& edges, int u, int v)
 {
     // init
     _queue.clear();

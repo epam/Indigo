@@ -45,7 +45,7 @@ public:
 
     const char* getGrossString() const;
     const char* getCountedElementsString() const;
-    const ArrayNew<int>& getCountedElements() const;
+    const ArrayInt& getCountedElements() const;
 
     const byte* getFingerprint() const;
 
@@ -68,7 +68,7 @@ private:
     MangoExact::Hash _hash;
 
     // gross formula
-    ArrayNew<int> _gross;
+    ArrayInt _gross;
     ArrayChar _gross_str;
 
     Array<byte> _fp;
@@ -77,7 +77,7 @@ private:
     // comma-separated list of selected counters
     // (for non-exact gross formula search)
     ArrayChar _counted_elems_str;
-    ArrayNew<int> _counted_elem_counters;
+    ArrayInt _counted_elem_counters;
 
     // Molecular mass
     float _molecular_mass;

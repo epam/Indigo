@@ -49,7 +49,7 @@ namespace indigo
         void saveMolecule(Molecule& mol);
         void saveXyz(Output& output);
 
-        const ArrayNew<int>& getAtomSequence();
+        const ArrayInt& getAtomSequence();
 
         int* atom_flags;
         int* bond_flags;
@@ -78,13 +78,13 @@ namespace indigo
 
         struct Mapping
         {
-            ArrayNew<int>*atom_mapping, *bond_mapping;
+            ArrayInt*atom_mapping, *bond_mapping;
         };
 
         void _encodeString(const ArrayChar& str);
-        void _encodeUIntArray(const ArrayNew<int>& data, const ArrayNew<int>& mapping);
-        void _encodeUIntArray(const ArrayNew<int>& data);
-        void _encodeUIntArraySkipNegative(const ArrayNew<int>& data);
+        void _encodeUIntArray(const ArrayInt& data, const ArrayInt& mapping);
+        void _encodeUIntArray(const ArrayInt& data);
+        void _encodeUIntArraySkipNegative(const ArrayInt& data);
 
         void _encodeExtSection(Molecule& mol, const Mapping& mapping);
         void _encodeBaseSGroup(Molecule& mol, SGroup& sgroup, const Mapping& mapping);
@@ -101,7 +101,7 @@ namespace indigo
         void _updateBaseSGroupXyzMinMax(SGroup& sgroup, Vec3f& min, Vec3f& max);
 
         CP_DECL;
-        TL_CP_DECL(ArrayNew<int>, _atom_sequence);
+        TL_CP_DECL(ArrayInt, _atom_sequence);
 
         Output* _output;
         Obj<LzwEncoder> _encoder_obj;

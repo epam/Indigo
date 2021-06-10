@@ -409,8 +409,8 @@ void CmfLoader::loadMolecule(Molecule& mol)
 
     mol.clear();
 
-    QS_DEF(ArrayNew<int>, cycle_numbers);
-    QS_DEF(ArrayNew<int>, atom_stack);
+    QS_DEF(ArrayInt, cycle_numbers);
+    QS_DEF(ArrayInt, atom_stack);
 
     _atoms.clear();
     _bonds.clear();
@@ -869,7 +869,7 @@ void CmfLoader::_readString(ArrayChar& dest)
     dest[len] = 0;
 }
 
-void CmfLoader::_readUIntArray(ArrayNew<int>& dest)
+void CmfLoader::_readUIntArray(ArrayInt& dest)
 {
     unsigned int len = _scanner->readPackedUInt();
     dest.clear_resize(len);
