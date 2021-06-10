@@ -245,7 +245,7 @@ void MoleculeAtomNeighbourhoodCounters::_calculateNextLevel(BaseMolecule& mol, i
     }
 }
 
-int MoleculeAtomNeighbourhoodCounters::_countersCmp(int& i1, int& i2, void* abstract_context)
+int MoleculeAtomNeighbourhoodCounters::_countersCmp(int i1, int i2, void* abstract_context)
 {
     const MoleculeAtomNeighbourhoodCounters::Context* context = (const MoleculeAtomNeighbourhoodCounters::Context*)abstract_context;
     const MoleculeAtomNeighbourhoodCounters* self = context->cnt;

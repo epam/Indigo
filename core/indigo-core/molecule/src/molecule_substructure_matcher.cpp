@@ -1476,7 +1476,7 @@ int MoleculeSubstructureMatcher::_compare_in_loop(BaseMolecule& mol, int i1, int
     return in_loop2 - in_loop1;
 }
 
-int MoleculeSubstructureMatcher::_compare(int& i1, int& i2, void* context)
+int MoleculeSubstructureMatcher::_compare(int i1, int i2, void* context)
 {
     BaseMolecule& mol = *(BaseMolecule*)context;
 

@@ -215,7 +215,7 @@ bool MoleculeInChI::_printInChILayer(_PrintLayerFuncBase& print_func, const char
     return false;
 }
 
-int MoleculeInChI::_cmpComponents(int& index1, int& index2, void* context)
+int MoleculeInChI::_cmpComponents(int index1, int index2, void* context)
 {
     MoleculeInChI* self = (MoleculeInChI*)context;
     MoleculeInChICompoment& comp1 = self->_components[index1];

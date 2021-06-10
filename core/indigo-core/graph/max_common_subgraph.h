@@ -532,8 +532,8 @@ namespace indigo
 
         protected:
             // callbacks for sorting list of vertices
-            static int _compareFirstDegree(int& i1, int& i2, void* context);
-            static int _compareSecondDegree(int& i1, int& i2, void* context);
+            static int _compareFirstDegree(int i1, int i2, void* context);
+            static int _compareSecondDegree(int i1, int i2, void* context);
 
         private:
             Greedy(const Greedy&); // no implicit copy

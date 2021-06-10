@@ -62,7 +62,7 @@ namespace indigo
         private:
             void _sortGraphsInSet() override;
 
-            static int _compareEdgeCount(int& i1, int& i2, void* context);
+            static int _compareEdgeCount(int i1, int i2, void* context);
             static int _compareRingsCount(BaseMolecule& m1, BaseMolecule& m2, void* context);
 
             ObjArray<Molecule>* _searchStructures;

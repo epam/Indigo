@@ -251,7 +251,7 @@ namespace indigo
             bool contains(const Cycle& another) const;
             void calcMorganCode(const MoleculeLayoutGraph& parent_graph);
 
-            static int compare_cb(int& idx1, int& idx2, void* context);
+            static int compare_cb(int idx1, int idx2, void* context);
 
         protected:
             CP_DECL;

@@ -1708,12 +1708,12 @@ void MaxCommonSubgraph::Greedy::_createLgLh()
     }
 }
 
-int MaxCommonSubgraph::Greedy::_compareFirstDegree(int& i1, int& i2, void* context)
+int MaxCommonSubgraph::Greedy::_compareFirstDegree(int i1, int i2, void* context)
 {
     AdjMatricesStore& aj = *(AdjMatricesStore*)context;
     return aj.getFirstVDegree(i2) - aj.getFirstVDegree(i1);
 }
-int MaxCommonSubgraph::Greedy::_compareSecondDegree(int& i1, int& i2, void* context)
+int MaxCommonSubgraph::Greedy::_compareSecondDegree(int i1, int i2, void* context)
 {
     AdjMatricesStore& aj = *(AdjMatricesStore*)context;
     return aj.getSecondVDegree(i2) - aj.getSecondVDegree(i1);

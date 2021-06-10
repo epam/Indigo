@@ -78,7 +78,7 @@ namespace indigo
         static void _estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, ArrayInt& acid_sites, ArrayInt& basic_sites,
                                            Array<float>& acid_pkas, Array<float>& basic_pkas);
 
-        static int _asc_cmp_cb(int& v1, int& v2, void* context);
+        static int _asc_cmp_cb(int v1, int v2, void* context);
         static void _checkCanonicalOrder(Molecule& mol, Molecule& can_mol, ArrayInt& order);
         static void _removeExtraHydrogens(Molecule& mol);
 

@@ -53,7 +53,7 @@ namespace indigo
         //
 
         // Compare components. Returns DIFFERENCE_**** for the first found difference
-        static int _cmpComponents(int& index1, int& index2, void* context);
+        static int _cmpComponents(int index1, int index2, void* context);
 
         //
         // Printing

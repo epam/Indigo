@@ -109,7 +109,7 @@ namespace indigo
         static void _linearizeFragment(BaseMolecule& mol, int idx);
         static bool _isNonMetalAtom(int atom_number);
         static bool _isMetalAtom(int atom_number);
-        static int _asc_cmp_cb(int& v1, int& v2, void* context);
+        static int _asc_cmp_cb(int v1, int v2, void* context);
     };
 
 } // namespace indigo

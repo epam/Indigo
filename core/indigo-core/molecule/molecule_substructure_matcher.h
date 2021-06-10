@@ -224,7 +224,7 @@ namespace indigo
         static int _compare_frequency_base(BaseMolecule& mol, int i1, int i2);
         static int _compare_frequency_asc(BaseMolecule& mol, int i1, int i2);
         static int _compare_in_loop(BaseMolecule& mol, int i1, int i2);
-        static int _compare(int& i1, int& i2, void* context);
+        static int _compare(int i1, int i2, void* context);
 
         void _createEmbeddingsStorage();
     };

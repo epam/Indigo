@@ -78,7 +78,7 @@ namespace indigo
             const ArrayInt& rdata;
         };
 
-        static int _compare(int& i1, int& i2, void* c);
+        static int _compare(int i1, int i2, void* c);
 
         ObjArray<ArrayInt> _ignorableAAM;
 

@@ -281,7 +281,7 @@ void MoleculeScaffoldDetection::MoleculeBasket::_sortGraphsInSet()
     _orderArray.qsort(_compareEdgeCount, _searchStructures);
 }
 
-int MoleculeScaffoldDetection::MoleculeBasket::_compareEdgeCount(int& i1, int& i2, void* context)
+int MoleculeScaffoldDetection::MoleculeBasket::_compareEdgeCount(int i1, int i2, void* context)
 {
     ObjArray<Molecule>& graph_set = *(ObjArray<Molecule>*)context;
     return graph_set.at(i1).edgeCount() - graph_set.at(i2).edgeCount();

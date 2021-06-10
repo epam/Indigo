@@ -938,7 +938,7 @@ void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions
     }
 }
 
-int MoleculePkaModel::_asc_cmp_cb(int& v1, int& v2, void* context)
+int MoleculePkaModel::_asc_cmp_cb(int v1, int v2, void* context)
 {
     ArrayChar key1;
     ArrayChar key2;

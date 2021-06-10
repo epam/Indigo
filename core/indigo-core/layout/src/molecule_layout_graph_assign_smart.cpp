@@ -45,7 +45,7 @@ enum
 
 // Make relative coordinates of a component absolute
 
-static int _vertex_cmp(int& n1, int& n2, void* context)
+static int _vertex_cmp(int n1, int n2, void* context)
 {
     const MoleculeLayoutGraph& graph = *(MoleculeLayoutGraph*)context;
     const LayoutVertex& v1 = graph.getLayoutVertex(n1);

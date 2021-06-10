@@ -64,7 +64,7 @@ namespace indigo
         static void _ensureLabelsInitialized();
         static void _initializeAtomLabels();
 
-        static int _compareAtomLabels(int& label1, int& label2, void* context);
+        static int _compareAtomLabels(int label1, int label2, void* context);
 
         static ArrayInt _atom_lables_sorted;
         static ArrayInt _atom_lables_ranks;

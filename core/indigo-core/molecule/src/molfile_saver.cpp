@@ -2993,7 +2993,7 @@ void MolfileSaver::_calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfo
     return;
 }
 
-int MolfileSaver::_cip_rules_cmp(int& i1, int& i2, void* context)
+int MolfileSaver::_cip_rules_cmp(int i1, int i2, void* context)
 {
     int res = 0;
     QS_DEF(ArrayInt, cip);

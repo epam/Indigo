@@ -180,7 +180,7 @@ bool MoleculeLayoutGraph::Cycle::contains(const Cycle& another) const
 // Cycle sorting callback
 // Order by size: 6, 5, 7, 8, 4, 3, 9, 10, 11, ..
 // If cycles has the same size then Morgan code in descending order (higher first)
-int MoleculeLayoutGraph::Cycle::compare_cb(int& idx1, int& idx2, void* context)
+int MoleculeLayoutGraph::Cycle::compare_cb(int idx1, int idx2, void* context)
 {
     const ObjPool<Cycle>& cycles = *(const ObjPool<Cycle>*)context;
 

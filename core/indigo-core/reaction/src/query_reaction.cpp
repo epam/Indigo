@@ -131,7 +131,7 @@ void QueryReaction::_transposeMoleculeForSubstructure(int index, ArrayInt& trans
     transposition.qsort(_compare, &context);
 }
 
-int QueryReaction::_compare(int& i1, int& i2, void* c)
+int QueryReaction::_compare(int i1, int i2, void* c)
 {
     _SortingContext& context = *(_SortingContext*)c;
 

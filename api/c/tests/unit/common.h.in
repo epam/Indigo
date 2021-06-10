@@ -8,6 +8,6 @@ namespace indigo
 {
     std::string dataPath(const char* dataPathSuffix);
     void errorHandling(const char* message, void* context);
-    void printMap(ArrayNew<int>& map);
+    void printMap(ArrayInt& map);
     void loadMolecule(const char* buf, Molecule& mol);
 }

@@ -46,7 +46,7 @@ namespace indigo
 
         bool _isAtomInformationStored(int atom_idx) const;
 
-        static int _countersCmp(int& i1, int& i2, void* context);
+        static int _countersCmp(int i1, int i2, void* context);
 
         struct CountersPerRadius
         {

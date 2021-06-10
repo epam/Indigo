@@ -145,7 +145,7 @@ namespace indigo
         void _addNextLevel(Molecule& source, Molecule& target, int s_idx, int t_idx, ArrayInt& used, ArrayInt& mapping);
         void _calcStereocenters(Molecule& source, Molecule& mol, ArrayInt& mapping);
 
-        static int _cip_rules_cmp(int& i1, int& i2, void* context);
+        static int _cip_rules_cmp(int i1, int i2, void* context);
 
         Output& _output;
         bool _v2000;

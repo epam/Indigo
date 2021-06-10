@@ -1933,7 +1933,7 @@ void MolfileLoader::_readRGroupOccurrenceRanges(const char* str, ArrayInt& range
     ranges.push((beg << 16) | end);
 }
 
-int MolfileLoader::_asc_cmp_cb(int& v1, int& v2, void* context)
+int MolfileLoader::_asc_cmp_cb(int v1, int v2, void* context)
 {
     return v2 - v1;
 }
