@@ -1,0 +1,54 @@
+*** Similarity test ***
+sim=1.000
+*** Similarity fingerprints test ***
+11
+000000efdddcb97fe9bdca
+8
+efdddcb97fe9bdca
+64
+8040c048000141021c00988102002001000008011c0002120400004008040010202651a8044088008200001400020420a4001809080800070004004000001040
+67
+0000008040c048000141021c00988102002001000008011c0002120400004008040010202651a8044088008200001400020420a4001809080800070004004000001040
+*** Similarity bits test ***
+C
+  as target 'sim': 1
+  as target 'sub': 0
+  as target 'sub-tau': 0
+  as target 'sub-res': 0
+  as target 'full': 1
+  as query 'sim': 1
+  as query 'sub': 0
+  as query 'sub-tau': 0
+  as query 'sub-res': 0
+N
+  as target 'sim': 1
+  as target 'sub': 0
+  as target 'sub-tau': 0
+  as target 'sub-res': 0
+  as target 'full': 1
+  as query 'sim': 1
+  as query 'sub': 0
+  as query 'sub-tau': 0
+  as query 'sub-res': 0
+CN
+  as target 'sim': 3
+  as target 'sub': 0
+  as target 'sub-tau': 0
+  as target 'sub-res': 0
+  as target 'full': 3
+  as query 'sim': 3
+  as query 'sub': 0
+  as query 'sub-tau': 0
+  as query 'sub-res': 0
+CCCCCCN
+  as target 'sim': 10
+  as target 'sub': 0
+  as target 'sub-tau': 0
+  as target 'sub-res': 0
+  as target 'full': 10
+  as query 'sim': 10
+  as query 'sub': 0
+  as query 'sub-tau': 0
+  as query 'sub-res': 0
+*** Undefined hydrogens ***
+1b00000012a020108341002000008004004401501400050010040614000812080800172006c020040814608200010c4000042020091060002891002695004340200000

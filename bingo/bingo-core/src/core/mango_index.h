@@ -21,8 +21,8 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
-#include "core/bingo_index.h"
-#include "core/mango_matchers.h"
+#include "bingo_index.h"
+#include "mango_matchers.h"
 
 using namespace indigo;
 

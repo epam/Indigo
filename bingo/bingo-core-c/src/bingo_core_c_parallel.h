@@ -39,8 +39,8 @@ namespace indigo
         class IndexingCommand : public OsCommand
         {
         public:
-            virtual void execute(OsCommandResult& result);
-            virtual void clear();
+            void execute(OsCommandResult& result) override;
+            void clear() override;
 
             // Molecules or reactions
             ChunkStorage records;
@@ -54,7 +54,7 @@ namespace indigo
         class IndexingCommandResult : public OsCommandResult
         {
         public:
-            virtual void clear();
+            void clear() override;
 
             virtual BingoIndex& getIndex(int index) = 0;
 
@@ -95,10 +95,10 @@ namespace indigo
             BingoCore& _core;
 
         private:
-            virtual OsCommand* _allocateCommand();
+            OsCommand* _allocateCommand() override;
 
-            virtual bool _setupCommand(OsCommand& command);
-            virtual void _handleResult(OsCommandResult& result);
+            bool _setupCommand(OsCommand& command) override;
+            void _handleResult(OsCommandResult& result) override;
 
             int _records_per_command;
             OsLock _lock_for_exclusive_access;

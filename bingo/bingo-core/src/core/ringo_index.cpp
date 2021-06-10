@@ -16,13 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "core/ringo_index.h"
+#include "ringo_index.h"
 
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/output.h"
-#include "core/bingo_context.h"
-#include "core/mango_index.h"
-#include "core/ringo_matchers.h"
+#include "bingo_context.h"
+#include "mango_index.h"
+#include "ringo_matchers.h"
 #include "reaction/crf_saver.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_auto_loader.h"

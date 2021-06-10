@@ -18,9 +18,9 @@
 
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
-#include "core/bingo_context.h"
-#include "core/mango_index.h"
-#include "core/mango_matchers.h"
+#include "bingo_context.h"
+#include "mango_index.h"
+#include "mango_matchers.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_gross_formula.h"

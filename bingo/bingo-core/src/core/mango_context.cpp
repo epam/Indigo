@@ -16,8 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "core/mango_context.h"
-#include "core/bingo_context.h"
+#include "mango_context.h"
+#include "bingo_context.h"
 
 TL_DEF(MangoContext, PtrArray<MangoContext>, _instances);
 

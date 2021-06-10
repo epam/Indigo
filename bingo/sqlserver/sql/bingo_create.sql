@@ -6,8 +6,28 @@ GO
 RECONFIGURE
 GO
 
-if (select is_broker_enabled from sys.databases where name='$(database)') = 0
-ALTER DATABASE $(database) SET ENABLE_BROKER
+IF (select is_broker_enabled from sys.databases where name='$(database)') = 0
+BEGIN
+	-- It is necessary to generate new service_broker_guid when any other database has identical active service_broker_guid
+	-- (target database might be used as a template and be created via backup, so that's why duplications are possible
+	-- and in addition the same service_broker_guid might be enabled on another db)
+	IF (
+		select count(*) has_service_broker_guid_conflicts
+		from sys.databases
+		where name = '$(database)' and service_broker_guid = ANY 
+		(
+			select service_broker_guid
+			from sys.databases
+			group by service_broker_guid
+			-- check for duplicates with enabled service broker
+			having count(*) > 1 and max(convert(int, is_broker_enabled)) = 1
+		)
+		) = 1
+		ALTER DATABASE $(database) SET NEW_BROKER WITH ROLLBACK IMMEDIATE
+	ELSE
+		-- otherwise enable service broker for event notification purposes
+		ALTER DATABASE $(database) SET ENABLE_BROKER
+END
 go
 
 -- Create key for adding unsafe assembly. It might be already created for different installation
@@ -169,7 +189,7 @@ BEGIN
 			
 			SET @obj_id = @message_body.value('(/EVENT_INSTANCE/ObjectID)[1]', 'int')
 			SET @database_id = @message_body.value('(/EVENT_INSTANCE/DatabaseID)[1]', 'int')
-			
+
 			EXECUTE [$(bingo)]._DropIndexByID @obj_id, @database_id
 		END
 	END ;
@@ -193,8 +213,37 @@ GO
 CREATE ROUTE $(bingo)_notify_route AUTHORIZATION dbo
 WITH SERVICE_NAME = N'$(bingo)_notify_service', ADDRESS = N'LOCAL';
 GO
+
+-- Creating server-global triggers and events
+
+IF (select count(*) from sys.server_event_notifications where name = '$(bingo)_$(database)_logout_notify') = 1
+	-- event notification for the database may exist when db was restored from backup with different service_broker_guid 
+	drop event notification $(bingo)_$(database)_logout_notify on server;
+GO
+
 create event notification $(bingo)_$(database)_logout_notify on server for
-  AUDIT_LOGOUT, OBJECT_DELETED to service '$(bingo)_notify_service', 'current database'
+	AUDIT_LOGOUT, OBJECT_DELETED to service '$(bingo)_notify_service', 'current database';
+GO
+
+-- Trigger to prevent manual database drop operation with Bingo installed
+if (select count(*) from sys.server_triggers where name = '$(bingo)_$(database)_prevent_db_drop') = 1
+	DROP TRIGGER $(bingo)_$(database)_prevent_db_drop ON ALL SERVER;
+GO
+
+CREATE TRIGGER $(bingo)_$(database)_prevent_db_drop
+ON ALL SERVER
+FOR DROP_DATABASE
+AS
+	DECLARE @database_name NVARCHAR(128),
+			@event_data XML
+	SET @event_data = EVENTDATA()
+	SELECT @database_name = @event_data.value('(/EVENT_INSTANCE/DatabaseName)[1]', 'nvarchar(128)')
+
+	IF @database_name = '$(database)'
+	BEGIN
+		PRINT 'You must uninstall Bingo first to drop database!'
+		ROLLBACK;
+	END
 GO
 
 PRINT 'Done.'

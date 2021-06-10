@@ -7,11 +7,11 @@ using System.Data.Sql;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Bingo")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Chemistry cartridge for MS SQL Server")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("EPAM Systems")]
 [assembly: AssemblyProduct("Bingo")]
-[assembly: AssemblyCopyright("Copyright © EPAM Systems 2010-2013")]
+[assembly: AssemblyCopyright("Copyright © EPAM Systems 2010-2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -27,5 +27,5 @@ using System.Data.Sql;
 //
 // You can specify all the values or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.7.*")]
+[assembly: AssemblyVersion("1.9.*")]
 

@@ -37,7 +37,7 @@ class MangoOracleContext : public MangoContext
 {
 public:
     explicit MangoOracleContext(BingoContext& context);
-    virtual ~MangoOracleContext();
+    ~MangoOracleContext() override;
 
     BingoOracleContext& context();
 

@@ -23,7 +23,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 
-#include "core/bingo_index.h"
+#include "bingo_index.h"
 
 using namespace indigo;
 
@@ -32,7 +32,7 @@ class BingoContext;
 class RingoIndex : public BingoIndex
 {
 public:
-    virtual void prepare(Scanner& rxnfile, Output& fi_output, OsLock* lock_for_exclusive_access);
+    void prepare(Scanner& rxnfile, Output& fi_output, OsLock* lock_for_exclusive_access) override;
 
     const byte* getFingerprint();
     const Array<char>& getCrf();

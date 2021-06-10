@@ -1,20 +1,14 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(BingoCore)
+project(bingo-core LANGUAGES CXX)
 
-SET(BingoCore_HEADERS_DIR ${BingoCore_SOURCE_DIR}/src CACHE INTERNAL "include directories" FORCE)
-CMAKE_POLICY(SET CMP0011 NEW)
-INCLUDE(${Bingo_SOURCE_DIR}/bingo-version.cmake)                                            
-MESSAGE(STATUS "BingoCore version is ${BINGO_VERSION}")
-configure_file(${BingoCore_HEADERS_DIR}/core/bingo_version.h.in ${BingoCore_HEADERS_DIR}/core/bingo_version.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/core/bingo_version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/core/bingo_version.h)
 
-file(GLOB BingoCore_src src/core/*.cpp)
-file(GLOB BingoCore_headers ${BingoCore_HEADERS_DIR}/core/*.h)
+file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/*.cpp)
 
-include(SetBuildParameters)
-include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/..)
-add_library(bingo-core STATIC ${BingoCore_src} ${BingoCore_headers})
-set_target_properties(bingo-core PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-
-set_property(TARGET bingo-core PROPERTY FOLDER "bingo-core")
-
+add_library(${PROJECT_NAME} OBJECT ${${PROJECT_NAME}_SOURCES})
+target_link_libraries(${PROJECT_NAME}
+        PUBLIC indigo-core)
+target_include_directories(${PROJECT_NAME}
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

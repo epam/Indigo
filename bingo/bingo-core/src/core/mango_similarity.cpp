@@ -18,9 +18,9 @@
 
 #include "base_c/bitarray.h"
 #include "base_cpp/scanner.h"
-#include "core/bingo_context.h"
-#include "core/bingo_error.h"
-#include "core/mango_matchers.h"
+#include "bingo_context.h"
+#include "bingo_error.h"
+#include "mango_matchers.h"
 #include "molecule/cmf_loader.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_auto_loader.h"

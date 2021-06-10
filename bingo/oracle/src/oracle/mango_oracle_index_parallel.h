@@ -20,12 +20,12 @@ public:
     MangoRegisterDispatcher(MangoOracleContext& context, OracleEnv& env, const char* rowid);
 
 protected:
-    virtual OsCommand* _allocateCommand();
-    virtual OsCommandResult* _allocateResult();
+    OsCommand* _allocateCommand() override;
+    OsCommandResult* _allocateResult() override;
 
-    virtual bool _setupCommand(OsCommand& command);
-    virtual void _addCurrentRecordToCommand(BingoOracleCommand& command);
-    virtual void _handleResult(OsCommandResult& result);
+    bool _setupCommand(OsCommand& command) override;
+    void _addCurrentRecordToCommand(BingoOracleCommand& command) override;
+    void _handleResult(OsCommandResult& result) override;
 
     MangoOracleContext& _context;
     OracleEnv& _env;
@@ -39,9 +39,9 @@ class MangoRegisterCommand : public BingoOracleCommand
 public:
     MangoRegisterCommand(OracleEnv& env, MangoOracleContext& context, OsLock& lock_for_exclusive_access, int* molecules_prepared_counter);
 
-    virtual void execute(OsCommandResult& result);
+    void execute(OsCommandResult& result) override;
 
-    virtual void clear();
+    void clear() override;
 
     ChunkStorage rowids;
 
@@ -62,7 +62,7 @@ class MangoRegisterResult : public OsCommandResult
 public:
     int valid_molecules;
 
-    virtual void clear();
+    void clear() override;
 
     ObjArray<MangoIndex> per_molecule_index;
     std::vector<MangoRegisterFailure> warnings;

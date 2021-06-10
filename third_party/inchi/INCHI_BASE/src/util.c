@@ -1559,11 +1559,11 @@ int i, len=0;
 
     if ( p &&  (len = (int) strlen( p )) )
     {
-        for ( i = 0; i < len && __isascii( p[i] ) && isspace( p[i] ); i++ )
+        for ( i = 0; i < len && isascii( p[i] ) && isspace( p[i] ); i++ )
             ;
         if ( i )
             (memmove)( p, p+i, (len -= i)+1 );
-        for ( ; 0 < len && __isascii( p[len-1] ) && isspace( p[len-1] ); len--)
+        for ( ; 0 < len && isascii( p[len-1] ) && isspace( p[len-1] ); len--)
             ;
         p[len] = '\0';
     }

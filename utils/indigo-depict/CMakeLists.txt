@@ -1,27 +1,14 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(IndigoDepict)
+project(indigo-depict LANGUAGES C)
 
-include(DefineTest)
+add_executable(indigo-depict ${CMAKE_CURRENT_SOURCE_DIR}/main.c)
+target_link_libraries(indigo-depict indigo-static indigo-renderer-static)
 
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}/utils
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${DIST_DIRECTORY}/utils/
+)
 
-include_directories(../../api ../../api/plugins/renderer ../../common)
-include_directories(${IndigoRenderer_SOURCE_DIR} ${Indigo_SOURCE_DIR} ${Indigo_SOURCE_DIR}/src ${Cairo_SOURCE_DIR} ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/..)
-
-
-add_executable(indigo-depict main.c)
-if(APPLE)
-	INCLUDE(GetSystemVersion)
-	INCLUDE(MacFrameworks)
-	FIND_FRAMEWORK(ApplicationServices)
-	target_link_libraries(indigo-depict ${FRAMEWORK_ApplicationServices})
-	SET_TARGET_PROPERTIES(indigo-depict PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Xlinker -framework -Xlinker ApplicationServices")
-endif()
-target_link_libraries(indigo-depict indigo-renderer indigo cairo png pixman)
-if (UNIX)
-    set_target_properties(indigo-depict PROPERTIES LINK_FLAGS "-pthread")
-endif()
-pack_executable(indigo-depict)
-
-add_test(NAME depict-simple-test COMMAND indigo-depict - "[CH2:1]=[CH:2][CH2:1][CH2:3][C:4](C)[CH2:3]" output.png)
-add_test(NAME depict-query-test COMMAND indigo-depict - "CC.[O-][*-]([O-])=O" query.png -query)
+add_test(NAME depict-simple-test COMMAND ${PROJECT_NAME} - "[CH2:1]=[CH:2][CH2:1][CH2:3][C:4](C)[CH2:3]" output.png)
+add_test(NAME depict-query-test COMMAND ${PROJECT_NAME} - "CC.[O-][*-]([O-])=O" query.png -query)

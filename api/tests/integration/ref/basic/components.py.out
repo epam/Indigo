@@ -1,0 +1,4 @@
+'Na' molecule loading..
+molecule auto loader: SMILES loader: 'a' specifier is allowed only for query molecules
+Loop starting..
+fail_cnt=0

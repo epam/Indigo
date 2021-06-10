@@ -1,15 +1,15 @@
 FROM debian:stable-slim
 
-ARG JDK_VERSION_MAJOR=8u272
+ARG JDK_VERSION_MAJOR=8u292
 ARG JDK_VERSION_MINOR=b10
-ARG MAVEN_VERSION=3.6.3
+ARG MAVEN_VERSION=3.8.1
 ARG JYTHON_VERSION=2.7.2
-ARG DOTNET_VERSION=2.1
-ARG IRONPYTHON_VERSION=2.7.10
+ARG DOTNET_VERSION=3.1
+ARG IRONPYTHON_VERSION=2.7.11
 
 RUN apt update && \
     apt upgrade -y && \
-    apt install -y --no-install-recommends git git-lfs python3 python3-pip python3-distutils curl libfreetype6 libfontconfig1 unzip libc6-dev libgdiplus libx11-dev && \
+    apt install -y --no-install-recommends build-essential cmake make git git-lfs python3 python3-pip python3-distutils curl unzip libc6-dev libgdiplus libx11-dev && \
     apt install -y gnupg && \
     # Java JDK
     curl -OL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR}/OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
@@ -25,6 +25,8 @@ RUN apt update && \
     curl -OL https://repo1.maven.org/maven2/org/python/jython-installer/${JYTHON_VERSION}/jython-installer-${JYTHON_VERSION}.jar && \
     /opt/jdk/bin/java -jar jython-installer-${JYTHON_VERSION}.jar -s -d /opt/jython && \
     rm jython-installer-${JYTHON_VERSION}.jar && \
+    export JAVA_HOME=/opt/jdk && \
+    export PATH=$PATH:$JAVA_HOME/bin && \
     # .NET Core
     curl -L https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg && \
     mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/ && \
@@ -40,16 +42,18 @@ RUN apt update && \
     mkdir ironpython && \
     unzip IronPython.${IRONPYTHON_VERSION}.zip -d ./ironpython || true && \
     mv ironpython /opt/ && \
+    printf '#!/bin/sh\nBASEDIR=$(dirname $(readlink $0))\nABS_PATH=$(cd "${BASEDIR}"; pwd)\ndotnet ${ABS_PATH}/ipy.dll $@' > /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
     chmod +x /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh && \
-    sed 's|$(dirname $0)|$(dirname $(readlink $0))|g' /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
-    ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh  /opt/ironpython/ipy && \
+    ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
-    # Python 3 Pillow
-    python3 -m pip install --upgrade Pillow pip setuptools wheel twine && \
+    # Python 3 packages
+    python3 -m pip install --upgrade pip && \
+    python3 -m pip install --upgrade Pillow setuptools wheel twine && \
     apt autoremove -y
 
 ENV JAVA_HOME=/opt/jdk
 ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 # Check
 RUN git --version && \

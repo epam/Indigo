@@ -1,27 +1,11 @@
-PROJECT(TinyXML)
+cmake_minimum_required(VERSION 3.4)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../common/cmake/)
-if(USE_LOCAL_TINYXML)
-    set(TINYXML_FOUND "NO")
-    message(STATUS "Using local TinyXML")
-else()
-    find_package(TINYXML)
-endif()
-if (NOT TINYXML_FOUND)
-    file (GLOB TinyXML_src src/*.c* src/*.def)
-    file (GLOB TinyXML_headers include/*.h*)
+project(tinyxml CXX)
 
-    set(TinyXML_HEADERS_DIR ${TinyXML_SOURCE_DIR}/include)
+file (GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS "src/*.cpp")
 
-    include_directories(${TinyXML_HEADERS_DIR})
+add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
+target_include_directories(${PROJECT_NAME}
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-    add_library(tinyxml STATIC ${TinyXML_src} ${TinyXML_headers})
-
-    set_target_properties(tinyxml PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-    set_property(TARGET tinyxml PROPERTY FOLDER "third_party")
-    if (WITH_STATIC)
-        pack_static(tinyxml)
-    endif()
-else()
-    set(TinyXML_HEADERS_DIR ${TINYXML_INCLUDE_DIRS})
-endif()
+message(STATUS "Using local version of ${PROJECT_NAME}")

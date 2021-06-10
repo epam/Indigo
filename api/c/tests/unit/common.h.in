@@ -1,0 +1,13 @@
+#cmakedefine DATA_PATH "@DATA_PATH@"
+
+#include <string>
+
+#include "molecule/molecule.h"
+
+namespace indigo
+{
+    std::string dataPath(const char* dataPathSuffix);
+    void errorHandling(const char* message, void* context);
+    void printMap(Array<int>& map);
+    void loadMolecule(const char* buf, Molecule& mol);
+}

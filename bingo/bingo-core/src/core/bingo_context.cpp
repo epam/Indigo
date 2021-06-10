@@ -16,9 +16,9 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "core/bingo_context.h"
+#include "bingo_context.h"
 #include "base_cpp/scanner.h"
-#include "core/bingo_error.h"
+#include "bingo_error.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/smiles_loader.h"

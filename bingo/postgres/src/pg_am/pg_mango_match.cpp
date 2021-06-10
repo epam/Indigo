@@ -53,7 +53,7 @@ public:
         setFunctionName(_typeStr.ptr());
     }
 
-    virtual ~_MangoContextHandler()
+    ~_MangoContextHandler() override
     {
     }
 

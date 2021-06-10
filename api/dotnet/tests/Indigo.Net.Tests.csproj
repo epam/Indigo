@@ -1,0 +1,98 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>com.epam.indigo</RootNamespace>
+        <IsPackable>false</IsPackable>
+        <Platforms>Any CPU</Platforms>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+        <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+        <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="$(ProjectDir)/../src/Indigo.Net.csproj"  PrivateAssets="None"/>
+    </ItemGroup>
+
+    <!-- TODO: enable conditionally adding native libraries to test another platforms -->
+    <!-- <ItemGroup Condition="'$(Platform)' == 'x64'"> -->
+    <ItemGroup>
+        <Content Include="$(ProjectDir)/../src/runtimes/linux-x64/native/libindigo.so">
+            <Pack>false</Pack>
+            <Link>libindigo.so</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/linux-x64/native/libindigo-renderer.so">
+            <Pack>false</Pack>
+            <Link>libindigo-renderer.so</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/linux-x64/native/libindigo-inchi.so">
+            <Pack>false</Pack>
+            <Link>libindigo-inchi.so</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/linux-x64/native/libbingo-nosql.so">
+            <Pack>false</Pack>
+            <Link>libbingo-nosql.so</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/osx-x64/native/libindigo.dylib">
+            <Pack>false</Pack>
+            <Link>libindigo.dylib</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/osx-x64/native/libindigo-renderer.dylib">
+            <Pack>false</Pack>
+            <Link>libindigo-renderer.dylib</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/osx-x64/native/libindigo-inchi.dylib">
+            <Pack>false</Pack>
+            <Link>libindigo-inchi.dylib</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/osx-x64/native/libbingo-nosql.dylib">
+            <Pack>false</Pack>
+            <Link>libbingo-nosql.dylib</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/win-x64/native/indigo.dll">
+            <Pack>false</Pack>
+            <Link>indigo.dll</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/win-x64/native/indigo-renderer.dll">
+            <Pack>false</Pack>
+            <Link>indigo-renderer.dll</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/win-x64/native/indigo-inchi.dll">
+            <Pack>false</Pack>
+            <Link>indigo-inchi.dll</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/win-x64/native/bingo-nosql.dll">
+            <Pack>false</Pack>
+            <Link>bingo-nosql.dll</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/win-x64/native/msvcp140.dll">
+            <Pack>true</Pack>
+            <Link>msvcp140.dll</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/win-x64/native/vcruntime140.dll">
+            <Pack>true</Pack>
+            <Link>vcruntime140.dll</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="$(ProjectDir)/../src/runtimes/win-x64/native/vcruntime140_1.dll">
+            <Pack>true</Pack>
+            <Link>vcruntime140_1.dll</Link>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+</Project>

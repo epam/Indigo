@@ -5,6 +5,7 @@
 #include "base_c/bitarray.h"
 #include "base_cpp/obj_array.h"
 #include "bingo_pg_ext_bitset.h"
+#include <algorithm>
 
 BingoPgExternalBitset::BingoPgExternalBitset()
 {
@@ -163,7 +164,7 @@ void BingoPgExternalBitset::copySubset(const BingoPgExternalBitset& set)
         copy(set);
     if (_bitsNumber < set._bitsNumber)
         return;
-    (*_lastWordPtr) = __max((*_lastWordPtr), (*set._lastWordPtr));
+    (*_lastWordPtr) = std::max((*_lastWordPtr), (*set._lastWordPtr));
     for (int i = 0; i < set._length; ++i)
     {
         _words[i] = set._words[i];
@@ -311,7 +312,7 @@ int BingoPgExternalBitset::nextSetBit(int fromIndex) const
 
 bool BingoPgExternalBitset::intersects(const BingoPgExternalBitset& set) const
 {
-    for (int i = __min((*_lastWordPtr), (*set._lastWordPtr)) - 1; i >= 0; --i)
+    for (int i = std::min((*_lastWordPtr), (*set._lastWordPtr)) - 1; i >= 0; --i)
         if ((_words[i] & set._words[i]) != 0)
             return true;
     return false;
@@ -357,7 +358,7 @@ void BingoPgExternalBitset::xorWith(const BingoPgExternalBitset& set)
 
 void BingoPgExternalBitset::andNotWith(const BingoPgExternalBitset& set)
 {
-    for (int i = __min((*_lastWordPtr), (*set._lastWordPtr)) - 1; i >= 0; --i)
+    for (int i = std::min((*_lastWordPtr), (*set._lastWordPtr)) - 1; i >= 0; --i)
         _words[i] &= ~set._words[i];
 
     _recalculateWordsInUse();
@@ -415,7 +416,7 @@ void BingoPgExternalBitset::zeroFill()
 
 void BingoPgExternalBitset::bsOrBs(const BingoPgExternalBitset& set1, const BingoPgExternalBitset& set2)
 {
-    int max_words = __max((*set1._lastWordPtr), (*set2._lastWordPtr));
+    int max_words = std::max((*set1._lastWordPtr), (*set2._lastWordPtr));
     for (int i = 0; i < max_words; ++i)
     {
         _words[i] = set1._words[i] | set2._words[i];

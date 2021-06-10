@@ -25,7 +25,13 @@
 #define BINGO_INDEX_TYPE_REACTION 2
 
 #if PG_VERSION_NUM / 100 >= 904
+#ifdef __MINGW32__
+#undef PGDLLEXPORT
+#define PGDLLEXPORT EXPORT_SYMBOL
+#define BINGO_FUNCTION_EXPORT(funcname) EXPORT_SYMBOL PG_FUNCTION_INFO_V1(funcname);
+#else
 #define BINGO_FUNCTION_EXPORT(funcname) PGDLLEXPORT PG_FUNCTION_INFO_V1(funcname);
+#endif
 #else
 
 #define BINGO_FUNCTION_EXPORT(funcname)                                                                                                                        \

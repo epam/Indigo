@@ -9,7 +9,7 @@ extern "C"
 #include "fmgr.h"
 #include "storage/bufmgr.h"
 #include "utils/rel.h"
-#include "utils/relcache.h"
+
 
 #if PG_VERSION_NUM / 100 >= 906
 #include "access/amapi.h"
@@ -25,7 +25,6 @@ extern "C"
 #include "base_cpp/tlscont.h"
 #include "bingo_pg_build.h"
 #include "bingo_pg_common.h"
-#include "bingo_pg_text.h"
 #include "bingo_postgres.h"
 #include "pg_bingo_context.h"
 
@@ -39,8 +38,10 @@ using namespace indigo;
 
 extern "C"
 {
-#ifdef PG_MODULE_MAGIC
-    PG_MODULE_MAGIC;
+#ifdef __MINGW32__
+EXPORT_SYMBOL PG_MODULE_MAGIC;
+#else
+PG_MODULE_MAGIC;
 #endif
 
 #if PG_VERSION_NUM / 100 >= 906
@@ -204,7 +205,7 @@ Datum bingo_build(PG_FUNCTION_ARGS)
             #else
                 reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
             #endif
-            
+
         }
         BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", message));
 

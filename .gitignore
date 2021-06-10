@@ -1,3 +1,18 @@
+# Visual Studio Code
+.vscode
+
+# Rider
+.idea
+
+# Visual Studio 2015
+.vs/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
 *.pyc
 build/
 dist/
@@ -6,13 +21,11 @@ api/src/indigo_version.h
 third_party/cairo-src/cairo/src/cairo-features.h
 _projects/
 
-/api/dotnet/.vs/
 /api/dotnet/bin/
 /api/dotnet/lib/
 /api/dotnet/obj
 /api/tests/dotnet/bin
 /api/tests/dotnet/obj
-/.idea
 api/dotnet/*.dll
 api/dotnet/*.so
 api/dotnet/*.dylib
@@ -49,7 +62,31 @@ api/plugins/renderer/java/target/
 api/tests/dotnet/bin/
 api/tests/dotnet/obj/
 **/venv/
-api/tests/python/**/out
+api/tests/integrations/**/out/
 **/.__pycache__
 *.pyo
 .DS_Store
+api/python/epam.indigo.egg-info
+api/python/indigo/lib
+*.jar
+*.nupkg
+*.whl
+bin
+lib
+obj
+TestResults
+cmake-build-debug
+cmake-build-release
+api/c/indigo/src/indigo_version.h
+.jython_cache/
+*$py.class
+.vscode/
+.flattened-pom.xml
+api/java/**/target/
+
+cmake-build-*/
+bingo/bingo-core/src/core/bingo_version.h
+bingo/sqlserver/Resources/bingo-core-c.dll
+api/tests/integration/**/out
+api/tests/integration/_c/test.h
+api/c/tests/unit/common.h

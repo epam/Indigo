@@ -1,0 +1,14 @@
+sqlserver/bin
+sqlserver/obj
+
+sqlserver/sqlserver_script_generator/bin
+sqlserver/sqlserver_script_generator/obj
+
+sqlserver/sql/assembly
+!sqlserver/sql/assembly/*.txt
+
+sqlserver/Resources
+!sqlserver/Resources/*/*.txt
+
+sqlserver/sql/bingo_saved_params.bat
+bingo-core/src/core/bingo_version.h

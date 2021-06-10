@@ -1,6 +1,0 @@
-{
-	global: 
-			bingo*;
-	local: 
-			*;
-};

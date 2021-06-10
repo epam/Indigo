@@ -1,3 +1,5 @@
+#include <float.h>
+
 #include "bingo_pg_fix_pre.h"
 
 extern "C"
@@ -10,7 +12,6 @@ extern "C"
 
 #include "mango_pg_build_engine.h"
 
-#include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
@@ -21,7 +22,7 @@ extern "C"
 #include "bingo_pg_index.h"
 #include "bingo_pg_text.h"
 #include "mango_pg_search_engine.h"
-#include <float.h>
+
 
 using namespace indigo;
 

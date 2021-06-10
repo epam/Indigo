@@ -32,8 +32,8 @@ namespace indigo
         class RingoIndexingCommandResult : public IndexingCommandResult
         {
         public:
-            virtual void clear();
-            virtual BingoIndex& getIndex(int index);
+            void clear() override;
+            BingoIndex& getIndex(int index) override;
 
             ReusableObjArray<RingoIndex> per_reaction_index;
         };
@@ -44,8 +44,8 @@ namespace indigo
             RingoIndexingDispatcher(BingoCore& core);
 
         protected:
-            virtual void _exposeCurrentResult(int index, IndexingCommandResult& result);
-            virtual OsCommandResult* _allocateResult();
+            void _exposeCurrentResult(int index, IndexingCommandResult& result) override;
+            OsCommandResult* _allocateResult() override;
         };
 
     } // namespace bingo_core
