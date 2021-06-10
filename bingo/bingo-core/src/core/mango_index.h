@@ -71,7 +71,7 @@ private:
     ArrayNew<int> _gross;
     ArrayChar _gross_str;
 
-    Array<byte> _fp;
+    ArrayNew<byte> _fp;
     ArrayChar _fp_sim_str;
 
     // comma-separated list of selected counters

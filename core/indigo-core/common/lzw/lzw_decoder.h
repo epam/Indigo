@@ -48,7 +48,7 @@ namespace indigo
         BitInWorker _bitin;
 
         CP_DECL;
-        TL_CP_DECL(Array<byte>, _symbolsBuf);
+        TL_CP_DECL(ArrayNew<byte>, _symbolsBuf);
 
         // no implicit copy
         LzwDecoder(const LzwDecoder&);

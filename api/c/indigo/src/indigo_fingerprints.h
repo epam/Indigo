@@ -37,7 +37,7 @@ public:
 
     static IndigoFingerprint& cast(IndigoObject& obj);
 
-    Array<byte> bytes;
+    ArrayNew<byte> bytes;
 };
 
 #ifdef _WIN32

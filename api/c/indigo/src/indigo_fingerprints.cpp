@@ -168,7 +168,7 @@ CEXPORT int indigoLoadFingerprintFromDescriptors(const double* arr, int arr_len,
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<byte>, data);
+        QS_DEF(ArrayNew<byte>, data);
         data.resize(size);
         data.zerofill();
 
@@ -257,7 +257,7 @@ static float _indigoSimilarity2(const byte* arr1, const byte* arr2, int size, co
         throw IndigoError("unknown metrics: %s", metrics);
 }
 
-static float _indigoSimilarity(Array<byte>& arr1, Array<byte>& arr2, const char* metrics)
+static float _indigoSimilarity(ArrayNew<byte>& arr1, ArrayNew<byte>& arr2, const char* metrics)
 {
     int size = arr1.size();
 
@@ -473,8 +473,8 @@ CEXPORT int indigoCommonBits(int fingerprint1, int fingerprint2)
 {
     INDIGO_BEGIN
     {
-        Array<byte>& fp1 = IndigoFingerprint::cast(self.getObject(fingerprint1)).bytes;
-        Array<byte>& fp2 = IndigoFingerprint::cast(self.getObject(fingerprint2)).bytes;
+        ArrayNew<byte>& fp1 = IndigoFingerprint::cast(self.getObject(fingerprint1)).bytes;
+        ArrayNew<byte>& fp2 = IndigoFingerprint::cast(self.getObject(fingerprint2)).bytes;
 
         if (fp1.size() != fp2.size())
             throw IndigoError("fingerprint sizes do not match (%d and %d)", fp1.size(), fp2.size());
@@ -488,7 +488,7 @@ CEXPORT const char* indigoOneBitsList(int fingerprint)
 {
     INDIGO_BEGIN
     {
-        Array<byte>& fp = IndigoFingerprint::cast(self.getObject(fingerprint)).bytes;
+        ArrayNew<byte>& fp = IndigoFingerprint::cast(self.getObject(fingerprint)).bytes;
         auto& tmp = self.getThreadTmpData();
         ArrayOutput out(tmp.string);
         tmp.string.clear();

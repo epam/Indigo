@@ -248,7 +248,7 @@ float MangoSimilarity::calc(Scanner& scanner)
 
     MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 
-    QS_DEF(Array<byte>, target_fp);
+    QS_DEF(ArrayNew<byte>, target_fp);
 
     MoleculeFingerprintBuilder builder(target, _context.fp_parameters);
 

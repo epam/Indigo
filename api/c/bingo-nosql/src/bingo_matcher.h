@@ -243,7 +243,7 @@ namespace bingo
         int _fp_size;
         int _cand_count;
         /*const*/ AutoPtr<SubstructureQueryData> _query_data;
-        Array<byte> _query_fp;
+        ArrayNew<byte> _query_fp;
         ArrayNew<int> _query_fp_bits_used;
 
         void _findPackCandidates(int pack_idx);
@@ -333,16 +333,16 @@ namespace bingo
 
         int _current_cell;
         int _current_container;
-        Array<SimResult> _current_portion;
+        ArrayNew<SimResult> _current_portion;
         int _current_portion_id;
 
         // float _current_sim_value;
 
         AutoPtr<SimCoef> _sim_coef;
 
-        Array<byte> _current_block;
+        ArrayNew<byte> _current_block;
         const byte* _cur_loc;
-        Array<byte> _query_fp;
+        ArrayNew<byte> _query_fp;
 
         void _setParameters(const char* params) override;
 

@@ -78,7 +78,7 @@ protected:
 
     ObjArray<ArrayNew<int>> _target_bond_types;
 
-    Array<byte> _query_fp;
+    ArrayNew<byte> _query_fp;
     bool _query_data_valid;
     bool _smarts;
 

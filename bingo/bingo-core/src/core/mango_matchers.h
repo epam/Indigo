@@ -79,7 +79,7 @@ protected:
     Molecule _target;
     QueryMolecule _query;
     ArrayNew<int> _target_bond_types;
-    Array<byte> _query_fp;
+    ArrayNew<byte> _query_fp;
     bool _use_pi_systems_matcher;
     MoleculeAtomNeighbourhoodCounters _nei_target_counters;
     MoleculeAtomNeighbourhoodCounters _nei_query_counters;
@@ -217,7 +217,7 @@ public:
 
 protected:
     BingoContext& _context;
-    Array<byte> _query_fp;
+    ArrayNew<byte> _query_fp;
     int _query_ones;
 
     float _numerator_value, _denominator_value;
@@ -277,7 +277,7 @@ protected:
     AutoPtr<BaseMolecule> _query;
     Molecule _target;
     ArrayChar _query_gross_str;
-    Array<byte> _query_fp;
+    ArrayNew<byte> _query_fp;
     bool _query_data_valid;
     ArrayNew<int> _target_bond_types;
 

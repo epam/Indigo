@@ -347,7 +347,7 @@ namespace indigo
         TL_CP_DECL(ArrayNew<int>, _rotation_parity);
         TL_CP_DECL(ArrayNew<int>, _coord_diff_reminder); // (x - y) % 3
         TL_CP_DECL(ObjArray<ObjArray<ObjArray<TriangleLattice>>>, _lattices);
-        TL_CP_DECL(Array<byte>, _hidden_data_field_array);
+        TL_CP_DECL(ArrayNew<byte>, _hidden_data_field_array);
 
         TriangleLattice _sink_lattice;
     };

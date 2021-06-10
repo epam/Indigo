@@ -49,7 +49,7 @@ namespace indigo
     private:
         CP_DECL;
         TL_CP_DECL(ArrayNew<int>, _indices);
-        TL_CP_DECL(Array<byte>, _code);
+        TL_CP_DECL(ArrayNew<byte>, _code);
         bool _needFullCode;
         int _bitChangeIndex;
     };

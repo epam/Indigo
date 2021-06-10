@@ -42,7 +42,7 @@ public:
     void clear();
 
 private:
-    Array<byte> _fp;
+    ArrayNew<byte> _fp;
     ArrayChar _crf;
     dword _hash;
     ArrayChar _hash_str;

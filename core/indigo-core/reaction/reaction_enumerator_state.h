@@ -209,7 +209,7 @@ namespace indigo
 
         void _changeQueryNode(QueryMolecule& ee_reactant, int change_atom_idx);
 
-        void _findFragAtoms(Array<byte>& unfrag_mon_atoms, QueryMolecule& submolecule, Molecule& fragment, int* core_sub, int* core_super);
+        void _findFragAtoms(ArrayNew<byte>& unfrag_mon_atoms, QueryMolecule& submolecule, Molecule& fragment, int* core_sub, int* core_super);
 
         void _cleanFragments(void);
 
@@ -234,7 +234,7 @@ namespace indigo
 
         bool _attachFragments(Molecule& ready_product_out, ArrayNew<int>& ucfrag_mapping);
 
-        bool _checkFragment(QueryMolecule& submolecule, Molecule& monomer, Array<byte>& unfrag_mon_atoms, int* core_sub);
+        bool _checkFragment(QueryMolecule& submolecule, Molecule& monomer, ArrayNew<byte>& unfrag_mon_atoms, int* core_sub);
 
         void _checkFragmentNecessity(ArrayNew<int>& is_needless_att_point);
 

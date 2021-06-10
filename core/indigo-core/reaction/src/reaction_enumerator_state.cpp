@@ -765,7 +765,7 @@ bool ReactionEnumeratorState::_matchEdgeCallback(Graph& subgraph, Graph& supergr
     return res;
 }
 
-void ReactionEnumeratorState::_findFragAtoms(Array<byte>& unfrag_mon_atoms, QueryMolecule& submolecule, Molecule& fragment, int* core_sub, int* core_super)
+void ReactionEnumeratorState::_findFragAtoms(ArrayNew<byte>& unfrag_mon_atoms, QueryMolecule& submolecule, Molecule& fragment, int* core_sub, int* core_super)
 {
     for (int i = submolecule.vertexBegin(); i != submolecule.vertexEnd(); i = submolecule.vertexNext(i))
     {
@@ -1639,7 +1639,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
     return true;
 }
 
-bool ReactionEnumeratorState::_checkFragment(QueryMolecule& submolecule, Molecule& monomer, Array<byte>& unfrag_mon_atoms, int* core_sub)
+bool ReactionEnumeratorState::_checkFragment(QueryMolecule& submolecule, Molecule& monomer, ArrayNew<byte>& unfrag_mon_atoms, int* core_sub)
 {
     QS_DEF(ObjArray<ArrayNew<int>>, attachment_pairs);
     attachment_pairs.clear();
@@ -1733,7 +1733,7 @@ void ReactionEnumeratorState::_checkFragmentNecessity(ArrayNew<int>& is_needless
 bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& submolecule, ArrayNew<int>& rp_mapping, const ArrayNew<int>& sub_rg_atoms,
                                            int* core_sub, int* core_super)
 {
-    QS_DEF(Array<byte>, unfrag_mon_atoms);
+    QS_DEF(ArrayNew<byte>, unfrag_mon_atoms);
     unfrag_mon_atoms.clear_resize(fragment.vertexEnd());
     unfrag_mon_atoms.zerofill();
 

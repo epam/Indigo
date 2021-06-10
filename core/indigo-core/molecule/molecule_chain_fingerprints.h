@@ -63,7 +63,7 @@ namespace indigo
         const MoleculeChainFingerprintParameters& _parameters;
 
         CP_DECL;
-        TL_CP_DECL(Array<byte>, _fingerprint);
+        TL_CP_DECL(ArrayNew<byte>, _fingerprint);
 
     private:
         MoleculeChainFingerprintBuilder(const MoleculeChainFingerprintBuilder&); // no implicit copy

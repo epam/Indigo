@@ -100,7 +100,7 @@ namespace indigo
         BaseMolecule& _basemol;
 
         CP_DECL;
-        TL_CP_DECL(Array<byte>, _bonds_arom);
+        TL_CP_DECL(ArrayNew<byte>, _bonds_arom);
         TL_CP_DECL(ArrayNew<int>, _bonds_arom_count);
         TL_CP_DECL(Array<CycleDef>, _unsure_cycles);
         TL_CP_DECL(ArrayNew<int>, _cycle_atoms);

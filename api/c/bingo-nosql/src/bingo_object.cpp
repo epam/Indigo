@@ -25,7 +25,7 @@ BaseMoleculeQuery::BaseMoleculeQuery(BaseMolecule& mol, bool needs_query_fingerp
 {
 }
 
-bool BaseMoleculeQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
+bool BaseMoleculeQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) // const
 {
     MoleculeFingerprintBuilder fp_builder(_base_mol, fp_params);
     TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
@@ -63,7 +63,7 @@ GrossQuery::GrossQuery(/* const */ ArrayChar& str)
     _gross_str.copy(str);
 }
 
-bool GrossQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/
+bool GrossQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) /*const*/
 {
     throw Exception("GrossQuery::buildFingerprint can\t be called");
 }
@@ -77,7 +77,7 @@ BaseReactionQuery::BaseReactionQuery(BaseReaction& rxn) : _base_rxn(rxn)
 {
 }
 
-bool BaseReactionQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
+bool BaseReactionQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) // const
 {
     ReactionFingerprintBuilder fp_builder(_base_rxn, fp_params);
     TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
@@ -114,7 +114,7 @@ IndexMolecule::IndexMolecule(/* const */ Molecule& mol)
     _mol.clone(mol, 0, 0);
 }
 
-bool IndexMolecule::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
+bool IndexMolecule::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) // const
 {
     MoleculeFingerprintBuilder fp_builder(_mol, fp_params);
     TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
@@ -160,7 +160,7 @@ IndexReaction::IndexReaction(/* const */ Reaction& rxn)
     _rxn.clone(rxn, 0, 0, 0);
 }
 
-bool IndexReaction::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
+bool IndexReaction::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) // const
 {
     ReactionFingerprintBuilder fp_builder(_rxn, fp_params);
     TimeoutCancellationHandler canc_handler(_fp_calc_timeout);

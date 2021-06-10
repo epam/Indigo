@@ -200,7 +200,7 @@ namespace indigo
         Obj<SubgraphHash> subgraph_hash;
 
         CP_DECL;
-        TL_CP_DECL(Array<byte>, _total_fingerprint);
+        TL_CP_DECL(ArrayNew<byte>, _total_fingerprint);
         TL_CP_DECL(ArrayNew<int>, _atom_codes);
         TL_CP_DECL(ArrayNew<int>, _bond_codes);
         TL_CP_DECL(ArrayNew<int>, _atom_codes_empty);

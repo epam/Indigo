@@ -101,8 +101,8 @@ namespace indigo
         Array<Group> _aromaticGroups;
 
         // Data for I/O
-        Array<byte> _dearomBondsStateArray; // Array of array of dearomatization configuration
-        Array<byte> _heteroAtomsStateArray; // States for heteroatoms
+        ArrayNew<byte> _dearomBondsStateArray; // Array of array of dearomatization configuration
+        ArrayNew<byte> _heteroAtomsStateArray; // States for heteroatoms
         byte _dearomParams;
     };
 
@@ -297,14 +297,14 @@ namespace indigo
         DearomatizationsGroups _aromaticGroups;
 
         CP_DECL;
-        TL_CP_DECL(Array<byte>, _matchedEdges);       // Edges that have already been matched
-        TL_CP_DECL(Array<byte>, _matchedEdgesState);  // State of such edges
+        TL_CP_DECL(ArrayNew<byte>, _matchedEdges);       // Edges that have already been matched
+        TL_CP_DECL(ArrayNew<byte>, _matchedEdgesState);  // State of such edges
         TL_CP_DECL(Array<GroupExData>, _groupExInfo); // Additional data for group
         TL_CP_DECL(ArrayNew<int>, _verticesInGroup);
         TL_CP_DECL(Dbitset, _verticesAdded);
         TL_CP_DECL(ArrayNew<int>, _edges2GroupMapping);
         TL_CP_DECL(ArrayNew<int>, _edges2IndexInGroupMapping);
-        TL_CP_DECL(Array<byte>, _correctEdgesArray);
+        TL_CP_DECL(ArrayNew<byte>, _correctEdgesArray);
         TL_CP_DECL(ArrayNew<int>, _verticesFixCount);
         TL_CP_DECL(DearomatizationsGroups::GROUP_DATA, _aromaticGroupsData);
 

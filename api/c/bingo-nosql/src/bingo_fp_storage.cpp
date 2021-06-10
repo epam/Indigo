@@ -138,7 +138,7 @@ void TranspFpStorage::load (int fp_size, const char *info_filename)
    if (_pack_count > 0)
    {
       // Calculate fingerprints frequencies from the first block
-      QS_DEF(Array<byte>, _items_mask);
+      QS_DEF(ArrayNew<byte>, _items_mask);
       _items_mask.resize(storage->getBlockSize());
       for (int i = 0; i < fp_size * 8; i++)
       {

@@ -37,8 +37,8 @@ namespace indigo
         void calculateDescriptorsECFP(int fp_depth, Array<dword>& res);
         void calculateDescriptorsFCFP(int fp_depth, Array<dword>& res);
 
-        void packFingerprintECFP(int fp_depth, Array<byte>& res);
-        void packFingerprintFCFP(int fp_depth, Array<byte>& res);
+        void packFingerprintECFP(int fp_depth, ArrayNew<byte>& res);
+        void packFingerprintFCFP(int fp_depth, ArrayNew<byte>& res);
 
     private:
         enum

@@ -48,7 +48,7 @@ namespace indigo
         DECL_ERROR;
 
     private:
-        Array<byte> _arr;
+        ArrayNew<byte> _arr;
         ArrayNew<int> _offset;
     };
 

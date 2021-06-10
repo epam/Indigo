@@ -24,7 +24,7 @@ namespace bingo
     class QueryObject
     {
     public:
-        virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /* const */ = 0;
+        virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) /* const */ = 0;
         virtual ~QueryObject(){};
     };
 
@@ -42,7 +42,7 @@ namespace bingo
     public:
         BaseMoleculeQuery(BaseMolecule& mol, bool needs_query_fingerprint);
 
-        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) /*const*/ override;
 
         const BaseMolecule& getMolecule();
     };
@@ -70,7 +70,7 @@ namespace bingo
     private:
         ArrayChar _gross_str;
 
-        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) /*const*/ override;
 
     public:
         GrossQuery(/* const */ ArrayChar& str);
@@ -90,7 +90,7 @@ namespace bingo
     public:
         BaseReactionQuery(BaseReaction& rxn);
 
-        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) /*const*/ override;
 
         const BaseReaction& getReaction();
     };
@@ -116,7 +116,7 @@ namespace bingo
     class IndexObject
     {
     public:
-        virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /* const */ = 0;
+        virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) /* const */ = 0;
 
         virtual bool buildGrossString(ArrayChar& cf) /* const */ = 0;
 
@@ -135,7 +135,7 @@ namespace bingo
     public:
         IndexMolecule(/* const */ Molecule& mol);
 
-        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) /*const*/ override;
 
         bool buildGrossString(ArrayChar& gross_string) /* const */ override;
 
@@ -152,7 +152,7 @@ namespace bingo
     public:
         IndexReaction(/* const */ Reaction& rxn);
 
-        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) /*const*/ override;
 
         bool buildGrossString(ArrayChar& gross_string) /* const */ override;
 

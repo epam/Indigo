@@ -628,7 +628,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint(BaseMolecule& mol)
         { // Morgan fingerprints
             MoleculeMorganFingerprintBuilder builder(mol);
 
-            QS_DEF(Array<byte>, buf);
+            QS_DEF(ArrayNew<byte>, buf);
             buf.resize(_parameters.fingerprintSizeSim());
 
             switch (similarityType)

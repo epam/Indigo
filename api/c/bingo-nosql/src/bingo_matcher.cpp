@@ -451,7 +451,7 @@ void BaseSubstructureMatcher::_findPackCandidates(int pack_idx)
 
     int fp_size_in_bits = _fp_size * 8;
 
-    Array<byte> fit_bits;
+    ArrayNew<byte> fit_bits;
     fit_bits.clear_resize(fp_storage.getBlockSize());
     fit_bits.fill(255);
 
