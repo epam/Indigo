@@ -373,7 +373,6 @@ namespace indigo
         T& push()
         {
             _arr.emplace_back();
-            _arr.push_back(T());
             return _arr.back();
         }
 
