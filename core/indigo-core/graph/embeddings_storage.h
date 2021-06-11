@@ -67,7 +67,7 @@ namespace indigo
             int sub_mapping_begin, sub_mapping_count;
             int next; // Index to the next
         };
-        Array<_EmbeddingData> _embedding_data;
+        std::vector<_EmbeddingData> _embedding_data;
         RedBlackMap<dword, int> _map_hash_to_id;
 
         static dword _calcSetHash(const ArrayNew<int>& set, int offset, int size);
