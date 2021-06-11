@@ -88,12 +88,12 @@ namespace indigo
         void _hydroPosCorrectRepulse();
         void _initAtomData();
         void _initRGroups();
-        void _loadBrackets(Sgroup& sg, const Array<std::array<Vec2f, 2>>& coord);
-        void _placeBrackets(Sgroup& sg, const ArrayNew<int>& atoms, Array<std::array<Vec2f, 2>>& brackets);
+        void _loadBrackets(Sgroup& sg, const ArrayNew<std::array<Vec2f, 2>>& coord);
+        void _placeBrackets(Sgroup& sg, const ArrayNew<int>& atoms, ArrayNew<std::array<Vec2f, 2>>& brackets);
         void _positionIndex(Sgroup& sg, int ti, bool lower);
         void _loadBracketsAuto(const SGroup& group, Sgroup& sg);
-        void _convertCoordinate(const Array<std::array<Vec2f, 2>>& original, Array<std::array<Vec2f, 2>>& converted);
-        void _adjustBrackets(const Array<std::array<Vec2f, 2>>& converted, Array<std::array<Vec2f, 2>>& placed);
+        void _convertCoordinate(const ArrayNew<std::array<Vec2f, 2>>& original, ArrayNew<std::array<Vec2f, 2>>& converted);
+        void _adjustBrackets(const ArrayNew<std::array<Vec2f, 2>>& converted, ArrayNew<std::array<Vec2f, 2>>& placed);
 
         void _prepareSGroups();
         void _initSGroups(Tree& sgroups, Rect2f parent);
@@ -171,7 +171,7 @@ namespace indigo
             {
                 return Rect2f(Vec2f(0, 0), Vec2f(0, 0));
             }
-            Array<Vec2f> points;
+            ArrayNew<Vec2f> points;
             points.resize(n);
             for (int i = 0; i < n; i++)
             {
@@ -180,7 +180,7 @@ namespace indigo
             return _bound(points, 0, n - 1);
         }
 
-        Rect2f _bound(Array<Vec2f>& points, int l, int r) const
+        Rect2f _bound(ArrayNew<Vec2f>& points, int l, int r) const
         {
             if (r == l || r == l + 1)
             {

@@ -73,15 +73,15 @@ namespace indigo
         ArrayNew<int> active_points;
         ArrayNew<int> base_point;
         ArrayNew<int> base_point_index;
-        Array<Vec2f> pos;
+        ArrayNew<Vec2f> pos;
         bool is_trivial;
         int vertex_size;
         int component_count;
         ObjArray<ArrayBool> in;               // is vertex in component
         ObjArray<ArrayNew<int>> definiting_points; // definiting points for component
-        ObjArray<Array<Vec2f>> coef;            // linear representation for every vertices throw base points over field of complex numbers
-        Array<Vec2f> gradient;
-        Array<Vec2f> pregradient;
+        ObjArray<ArrayNew<Vec2f>> coef;            // linear representation for every vertices throw base points over field of complex numbers
+        ArrayNew<Vec2f> gradient;
+        ArrayNew<Vec2f> pregradient;
         ArrayNew<int> edge_comp;
         ArrayBool is_art_point;
         ArrayBool is_valid_base;

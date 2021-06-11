@@ -117,7 +117,7 @@ void _collectCrossBonds(ArrayNew<int>& crossBonds, ArrayBool& crossBondOut, Base
     }
 }
 
-void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, const ArrayNew<int>& crossBonds,
+void _placeSGroupBracketsCrossBonds(ArrayNew<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, const ArrayNew<int>& crossBonds,
                                     const ArrayBool& crossBondOut, float bondLength)
 {
     brackets.clear();
@@ -225,7 +225,7 @@ void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f, 2>>& brackets, BaseM
     }
 }
 
-void _placeSGroupBracketsCrossBondSingle(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, int bid, bool out, float bondLength)
+void _placeSGroupBracketsCrossBondSingle(ArrayNew<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, int bid, bool out, float bondLength)
 {
     brackets.clear();
     const Edge& edge = mol.getEdge(bid);
@@ -283,7 +283,7 @@ void _placeSGroupBracketsCrossBondSingle(Array<std::array<Vec2f, 2>>& brackets, 
     bracket2[1].copy(b2);
 }
 
-void _placeSGroupBracketsHorizontal(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, float bondLength)
+void _placeSGroupBracketsHorizontal(ArrayNew<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, float bondLength)
 {
     brackets.clear();
     Vec2f min, max, a, b;

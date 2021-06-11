@@ -1430,7 +1430,7 @@ float MoleculeLayoutMacrocycles::depictionCircle()
 
     float r = _2FLOAT(length * sqrt(3.0) / 2. / (2. * M_PI));
 
-    QS_DEF(Array<Vec2f>, p);
+    QS_DEF(ArrayNew<Vec2f>, p);
     p.clear_resize(length + 1);
 
     for (int i = 0; i <= length; i++)

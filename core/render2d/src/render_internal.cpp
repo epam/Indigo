@@ -700,7 +700,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             const Superatom& group = (Superatom&)sgroup;
             Sgroup& sg = _data.sgroups.push();
             typedef std::array<Vec2f, 2> Vec2fPair;
-            QS_DEF(Array<Vec2fPair>, brackets);
+            QS_DEF(ArrayNew<Vec2fPair>, brackets);
             _placeBrackets(sg, group.atoms, brackets);
             _loadBrackets(sg, brackets);
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
@@ -729,7 +729,7 @@ void MoleculeRenderInternal::_initSGroups()
     _initSGroups(sgroups, Rect2f(_min, _max));
 }
 
-void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<std::array<Vec2f, 2>>& coord)
+void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const ArrayNew<std::array<Vec2f, 2>>& coord)
 {
     for (int j = 0; j < coord.size(); ++j)
     {
@@ -758,7 +758,7 @@ void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<std::array<Ve
     }
 }
 
-void MoleculeRenderInternal::_convertCoordinate(const Array<std::array<Vec2f, 2>>& original, Array<std::array<Vec2f, 2>>& converted)
+void MoleculeRenderInternal::_convertCoordinate(const ArrayNew<std::array<Vec2f, 2>>& original, ArrayNew<std::array<Vec2f, 2>>& converted)
 {
     auto& left = original.at(0);
     auto& right = original.at(1);
@@ -773,13 +773,13 @@ void MoleculeRenderInternal::_convertCoordinate(const Array<std::array<Vec2f, 2>
 
 void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg)
 {
-    Array<std::array<Vec2f, 2>> brackets;
+    ArrayNew<std::array<Vec2f, 2>> brackets;
     _placeBrackets(sg, group.atoms, brackets);
 
     const bool isBracketsCoordinates = group.brackets.size() != 0 || Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) > EPSILON;
     if (isBracketsCoordinates)
     {
-        Array<std::array<Vec2f, 2>> temp;
+        ArrayNew<std::array<Vec2f, 2>> temp;
         _convertCoordinate(group.brackets, temp);
         _loadBrackets(sg, temp);
         return;
@@ -801,7 +801,7 @@ void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
     index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
 }
 
-void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const ArrayNew<int>& atoms, Array<std::array<Vec2f, 2>>& brackets)
+void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const ArrayNew<int>& atoms, ArrayNew<std::array<Vec2f, 2>>& brackets)
 {
     auto& left = brackets.push();
     auto& right = brackets.push();
@@ -1274,7 +1274,7 @@ void MoleculeRenderInternal::_findRings()
         if (_opt.showCycles)
         {
             float cycleLineOffset = _settings.unit * 9;
-            QS_DEF(Array<Vec2f>, vv);
+            QS_DEF(ArrayNew<Vec2f>, vv);
             vv.clear();
             for (int j = 0; j < ring.bondEnds.size() + 1; ++j)
             {
@@ -1295,7 +1295,7 @@ void MoleculeRenderInternal::_findRings()
     {
         Ring& ring = _data.rings[i];
 
-        Array<Vec2f> pp;
+        ArrayNew<Vec2f> pp;
         for (int j = 0; j < ring.bondEnds.size(); ++j)
             pp.push().copy(_ad(_be(ring.bondEnds[j]).aid).pos);
 
@@ -3432,7 +3432,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
             }
         }
         // arrange the directions of the attachment points
-        QS_DEF(Array<Vec2f>, attachmentDirection);
+        QS_DEF(ArrayNew<Vec2f>, attachmentDirection);
         attachmentDirection.clear();
         if (v.degree() == 0)
         {

@@ -183,7 +183,7 @@ namespace indigo
         int _n_fixed;
 
         // Outline of the graph (from pattern)
-        Obj<Array<Vec2f>> _outline;
+        Obj<ArrayNew<Vec2f>> _outline;
 
         BaseMolecule* _molecule;
         const int* _molecule_edge_mapping;
@@ -317,15 +317,15 @@ namespace indigo
 
         // assigning coordinates
         void _attachDandlingVertices(int vert_idx, ArrayNew<int>& adjacent_list);
-        void _calculatePositionsOneNotDrawn(Array<Vec2f>& positions, int n_pos, int vert_idx, int not_drawn_idx);
-        void _calculatePositionsSingleDrawn(int vert_idx, ArrayNew<int>& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears, Array<Vec2f>& positions,
+        void _calculatePositionsOneNotDrawn(ArrayNew<Vec2f>& positions, int n_pos, int vert_idx, int not_drawn_idx);
+        void _calculatePositionsSingleDrawn(int vert_idx, ArrayNew<int>& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears, ArrayNew<Vec2f>& positions,
                                             int& parity);
-        void _orderByEnergy(Array<Vec2f>& positions);
+        void _orderByEnergy(ArrayNew<Vec2f>& positions);
         void _assignRelativeSingleEdge(int& fixed_component, const MoleculeLayoutGraph& supergraph);
         void _findFirstVertexIdx(int n_comp, ArrayNew<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
         bool _prepareAssignedList(ArrayNew<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                   ArrayNew<int>& bc_tree);
-        void _assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout);
+        void _assignFinalCoordinates(float bond_length, const ArrayNew<Vec2f>& src_layout);
         void _copyLayout(MoleculeLayoutGraph& component);
         void _getAnchor(int& v1, int& v2, int& v3) const;
 
@@ -447,7 +447,7 @@ namespace indigo
 
     private:
         float _length;
-        Array<Vec2f> _pos;
+        ArrayNew<Vec2f> _pos;
         int _finish_number;
         int _start_number;
         Vec2f& _start;
@@ -504,12 +504,12 @@ namespace indigo
     {
     public:
         CP_DECL;
-        SmoothingCycle(Array<Vec2f>&, ArrayNew<float>&);
-        SmoothingCycle(Array<Vec2f>&, ArrayNew<float>&, ArrayNew<int>&, int);
-        SmoothingCycle(Array<Vec2f>&, ArrayNew<float>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
+        SmoothingCycle(ArrayNew<Vec2f>&, ArrayNew<float>&);
+        SmoothingCycle(ArrayNew<Vec2f>&, ArrayNew<float>&, ArrayNew<int>&, int);
+        SmoothingCycle(ArrayNew<Vec2f>&, ArrayNew<float>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
 
         int cycle_length;
-        Array<Vec2f>& point;
+        ArrayNew<Vec2f>& point;
         ArrayNew<float>& target_angle;
         MoleculeLayoutSmoothingSegment* segment;
         TL_CP_DECL(ArrayNew<float>, edge_length);
@@ -640,21 +640,21 @@ namespace indigo
         void _assignEveryCycle(const Cycle& cycle);
 
         // smoothing
-        void _segment_smoothing(const Cycle& cycle, const MoleculeLayoutMacrocyclesLattice& layout, ArrayNew<int>& rotation_vertex, Array<Vec2f>& rotation_point,
+        void _segment_smoothing(const Cycle& cycle, const MoleculeLayoutMacrocyclesLattice& layout, ArrayNew<int>& rotation_vertex, ArrayNew<Vec2f>& rotation_point,
                                 ObjArray<MoleculeLayoutSmoothingSegment>& segment);
         void _update_touching_segments(Array<local_pair_ii>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
-        void _segment_smoothing_prepearing(const Cycle& cycle, ArrayNew<int>& rotation_vertex, Array<Vec2f>& rotation_point,
+        void _segment_smoothing_prepearing(const Cycle& cycle, ArrayNew<int>& rotation_vertex, ArrayNew<Vec2f>& rotation_point,
                                            ObjArray<MoleculeLayoutSmoothingSegment>& segment, MoleculeLayoutMacrocyclesLattice& layout);
         void _segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice& layout, ArrayNew<int>& rotation_vertex, ArrayNew<float>& target_angle,
                                              ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _segment_update_rotation_points(const Cycle& cycle, ArrayNew<int>& rotation_vertex, Array<Vec2f>& rotation_point,
+        void _segment_update_rotation_points(const Cycle& cycle, ArrayNew<int>& rotation_vertex, ArrayNew<Vec2f>& rotation_point,
                                              ObjArray<MoleculeLayoutSmoothingSegment>& segment);
         void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _do_segment_smoothing(Array<Vec2f>& rotation_point, ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _segment_improoving(Array<Vec2f>& rotation_point, ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, int, float,
+        void _do_segment_smoothing(ArrayNew<Vec2f>& rotation_point, ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
+        void _segment_improoving(ArrayNew<Vec2f>& rotation_point, ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, int, float,
                                  Array<local_pair_ii>&);
-        void _do_segment_smoothing_gradient(Array<Vec2f>& rotation_point, ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _gradient_step(Array<Vec2f>& point, ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, float coef,
+        void _do_segment_smoothing_gradient(ArrayNew<Vec2f>& rotation_point, ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
+        void _gradient_step(ArrayNew<Vec2f>& point, ArrayNew<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, float coef,
                             Array<local_pair_ii>& touching_segments);
 
         void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos);

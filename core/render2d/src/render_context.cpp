@@ -494,7 +494,7 @@ void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
     cairoCheckStatus();
 }
 
-void RenderContext::drawPoly(const Array<Vec2f>& v)
+void RenderContext::drawPoly(const ArrayNew<Vec2f>& v)
 {
     moveTo(v[0]);
     for (int i = 1; i < v.size(); ++i)

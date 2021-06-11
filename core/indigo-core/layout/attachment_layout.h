@@ -46,7 +46,7 @@ namespace indigo
                                                  // lays on the left (CCW) from edge (v, _vertices_l[j]];
         float _alpha;                            // if positive then angle between components
         TL_CP_DECL(ArrayNew<int>, _new_vertices);   // indices in source graph of new verices
-        TL_CP_DECL(Array<Vec2f>, _layout);       // layout of new vertices
+        TL_CP_DECL(ArrayNew<Vec2f>, _layout);       // layout of new vertices
         float _energy;                           // current energy between drawn part and new part
 
         const PtrArray<MoleculeLayoutGraph>& _bc_components;

@@ -723,7 +723,7 @@ void MoleculeLayoutGraph::_getAnchor(int& v1, int& v2, int& v3) const
 }
 
 // Scale and transform
-void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout)
+void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const ArrayNew<Vec2f>& src_layout)
 {
     int i;
 

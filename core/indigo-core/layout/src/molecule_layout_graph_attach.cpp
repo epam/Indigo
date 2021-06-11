@@ -616,7 +616,7 @@ void MoleculeLayoutGraph::_attachDandlingVertices(int vert_idx, ArrayNew<int>& a
 {
     int n_pos = 0, not_drawn_idx = 0, drawn_idx = -1;
     Vec2f v1, v2;
-    QS_DEF(Array<Vec2f>, positions);
+    QS_DEF(ArrayNew<Vec2f>, positions);
     int parity = 0;
     bool two_ears = false; // mark the case with two atoms to be drawn on the same side of chain
 
@@ -819,7 +819,7 @@ bool MoleculeLayoutGraph::_checkBadTryChainOutside(ArrayNew<int>& chain_ext, Mol
     return true;
 }
 
-void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions, int n_pos, int vert_idx, int not_drawn_idx)
+void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(ArrayNew<Vec2f>& positions, int n_pos, int vert_idx, int not_drawn_idx)
 {
     positions.clear_resize(n_pos);
 
@@ -877,7 +877,7 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
 }
 
 void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, ArrayNew<int>& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears,
-                                                         Array<Vec2f>& positions, int& parity)
+                                                         ArrayNew<Vec2f>& positions, int& parity)
 {
     // Split 2pi to n_pos+1 parts
     // Place vertices like regular polygon
@@ -1028,7 +1028,7 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, ArrayNew<
     }
 }
 
-void MoleculeLayoutGraph::_orderByEnergy(Array<Vec2f>& positions)
+void MoleculeLayoutGraph::_orderByEnergy(ArrayNew<Vec2f>& positions)
 {
     QS_DEF(ArrayNew<float>, energies);
     QS_DEF(ArrayNew<float>, norm_a);

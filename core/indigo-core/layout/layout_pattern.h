@@ -84,7 +84,7 @@ namespace indigo
 
         const PatternAtom& getAtom(int idx) const;
         const PatternBond& getBond(int idx) const;
-        const Array<Vec2f>& getOutline() const
+        const ArrayNew<Vec2f>& getOutline() const
         {
             return _outline;
         }
@@ -95,7 +95,7 @@ namespace indigo
         Array<PatternAtom> _atoms;
         Array<PatternBond> _bonds;
 
-        Array<Vec2f> _outline;
+        ArrayNew<Vec2f> _outline;
 
         ArrayChar _name;
 

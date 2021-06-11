@@ -141,7 +141,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f& p) const
         }
         else
         {
-            const Array<Vec2f>& outline = *_outline.get();
+            const ArrayNew<Vec2f>& outline = *_outline.get();
 
             for (i = 0; i < outline.size(); i++)
             {
@@ -177,7 +177,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f& p) const
     }
     else
     {
-        const Array<Vec2f>& outline = *_outline.get();
+        const ArrayNew<Vec2f>& outline = *_outline.get();
 
         for (i = 0; i < outline.size(); i++)
             if (_isRayIntersect(a, b, p, outline[i], outline[(i + 1) % outline.size()]))
@@ -463,7 +463,7 @@ bool MoleculeLayoutGraph::_border_cb(Graph& graph, const ArrayNew<int>& vertices
 bool MoleculeLayoutGraphSmart::_isPointOutside(const Vec2f& p) const
 {
     //   return true;
-    QS_DEF(Array<Vec2f>, point);
+    QS_DEF(ArrayNew<Vec2f>, point);
     Cycle surround_cycle;
     _getSurroundCycle(surround_cycle, p);
 
@@ -477,7 +477,7 @@ bool MoleculeLayoutGraphSmart::_isPointOutside(const Vec2f& p) const
 // By calculating number of intersections of ray
 bool MoleculeLayoutGraphSmart::_isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const
 {
-    QS_DEF(Array<Vec2f>, point);
+    QS_DEF(ArrayNew<Vec2f>, point);
     float rotate_angle = 0;
     int size = cycle.vertexCount();
     point.resize(size + 1);
@@ -536,7 +536,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
 {
     QS_DEF(ArrayNew<int>, vertices);
     QS_DEF(ArrayNew<int>, edges);
-    QS_DEF(Array<Vec2f>, pos);
+    QS_DEF(ArrayNew<Vec2f>, pos);
     int i, n = 0;
     const float eps = 1e-5f;
 

@@ -174,7 +174,7 @@ void MoleculeLayoutGraphSmart::_makeComponentsTree(BiconnectedDecomposer& decon,
 
 void MoleculeLayoutGraphSmart::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
 {
-    QS_DEF(Array<Vec2f>, src_layout);
+    QS_DEF(ArrayNew<Vec2f>, src_layout);
     QS_DEF(ArrayNew<int>, molecule_edge_mapping);
 
     int n_components = countComponents();
@@ -353,7 +353,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents(BaseMolecule& molecule,
 
 void MoleculeLayoutGraphSmart::_layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
 {
-    QS_DEF(Array<Vec2f>, src_layout);
+    QS_DEF(ArrayNew<Vec2f>, src_layout);
     QS_DEF(ArrayNew<int>, molecule_edge_mapping);
 
     int i;

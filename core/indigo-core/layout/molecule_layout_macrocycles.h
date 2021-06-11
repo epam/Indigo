@@ -106,7 +106,7 @@ namespace indigo
         TL_CP_DECL(ArrayNew<float>, _vertex_added_square);
         TL_CP_DECL(ArrayNew<int>, _edge_stereo);
         TL_CP_DECL(ArrayBool, _vertex_drawn);
-        TL_CP_DECL(Array<Vec2f>, _positions);
+        TL_CP_DECL(ArrayNew<Vec2f>, _positions);
         TL_CP_DECL(ArrayNew<int>, _component_finish);
         TL_CP_DECL(ArrayNew<float>, _target_angle);
         TL_CP_DECL(ArrayNew<float>, _angle_importance);
@@ -139,7 +139,7 @@ namespace indigo
 
         public:
             int vertex_count;
-            TL_CP_DECL(Array<Vec2f>, point);
+            TL_CP_DECL(ArrayNew<Vec2f>, point);
             TL_CP_DECL(ArrayNew<int>, rotate);
             TL_CP_DECL(ArrayNew<int>, external_vertex_number);
             TL_CP_DECL(ArrayNew<int>, edge_length);
@@ -185,13 +185,13 @@ namespace indigo
         void rotate_cycle(int shift);
         void _rotate_ar_i(ArrayNew<int>& ar, ArrayNew<int>& tmp, int shift);
         void _rotate_ar_d(ArrayNew<float>& ar, ArrayNew<float>& tmp, int shift);
-        void _rotate_ar_v(Array<Vec2f>& ar, Array<Vec2f>& tmp, int shift);
+        void _rotate_ar_v(ArrayNew<Vec2f>& ar, ArrayNew<Vec2f>& tmp, int shift);
         // float rating(Array<answer_point>);
 
         TL_CP_DECL(ArrayNew<int>, _vertex_weight);
         TL_CP_DECL(ArrayNew<int>, _vertex_stereo);
         TL_CP_DECL(ArrayNew<int>, _edge_stereo);
-        TL_CP_DECL(Array<Vec2f>, _positions);
+        TL_CP_DECL(ArrayNew<Vec2f>, _positions);
         TL_CP_DECL(ArrayNew<float>, _vertex_added_square);
         TL_CP_DECL(ArrayBool, _vertex_drawn);
         TL_CP_DECL(ArrayNew<int>, _component_finish);

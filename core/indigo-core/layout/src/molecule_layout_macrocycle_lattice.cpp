@@ -229,7 +229,7 @@ void MoleculeLayoutMacrocyclesLattice::_rotate_ar_d(ArrayNew<float>& ar, ArrayNe
         ar[i] = tmp[i];
 }
 
-void MoleculeLayoutMacrocyclesLattice::_rotate_ar_v(Array<Vec2f>& ar, Array<Vec2f>& tmp, int shift)
+void MoleculeLayoutMacrocyclesLattice::_rotate_ar_v(ArrayNew<Vec2f>& ar, ArrayNew<Vec2f>& tmp, int shift)
 {
     for (int i = shift; i < length; i++)
         tmp[i - shift] = ar[i];
@@ -247,7 +247,7 @@ void MoleculeLayoutMacrocyclesLattice::rotate_cycle(int shift)
     temp.clear_resize(length);
     QS_DEF(ArrayNew<float>, tempd);
     tempd.clear_resize(length);
-    QS_DEF(Array<Vec2f>, temp_v);
+    QS_DEF(ArrayNew<Vec2f>, temp_v);
     temp_v.clear_resize(length);
 
     _rotate_ar_i(_vertex_weight, temp, shift);
@@ -1067,7 +1067,7 @@ float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
     result += _2FLOAT(1.0 * diff / length);
 
     float area = cl.area();
-    QS_DEF(Array<Vec2f>, current_point);
+    QS_DEF(ArrayNew<Vec2f>, current_point);
     current_point.clear_resize(length);
     for (int i = 0, t = 0; i < cl.vertex_count; i++)
         for (int j = cl.external_vertex_number[i], d = 0; j < cl.external_vertex_number[i + 1]; j++, t++, d++)
@@ -1324,7 +1324,7 @@ void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>
     float good_distance = 1.f;
     pairs.clear();
 
-    QS_DEF(Array<Vec2f>, all_points);
+    QS_DEF(ArrayNew<Vec2f>, all_points);
     QS_DEF(ArrayNew<float>, all_numbers);
     all_points.clear();
     all_numbers.clear();

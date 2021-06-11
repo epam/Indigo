@@ -267,7 +267,7 @@ void Metalayout::adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos
     float scaleFactor = getScaleFactor();
 
     // Compute center points for the data sgroups
-    QS_DEF(Array<Vec2f>, data_centers);
+    QS_DEF(ArrayNew<Vec2f>, data_centers);
     data_centers.resize(mol.sgroups.getSGroupCount());
     for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {

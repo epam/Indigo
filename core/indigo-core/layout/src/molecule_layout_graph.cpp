@@ -435,7 +435,7 @@ void MoleculeLayoutGraphSimple::_initPatterns()
 
 void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
 {
-    QS_DEF(Array<Vec2f>, src_layout);
+    QS_DEF(ArrayNew<Vec2f>, src_layout);
     QS_DEF(ArrayNew<int>, molecule_edge_mapping);
 
     int n_components = countComponents();
@@ -613,7 +613,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule
 
 void MoleculeLayoutGraphSimple::_layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
 {
-    QS_DEF(Array<Vec2f>, src_layout);
+    QS_DEF(ArrayNew<Vec2f>, src_layout);
     QS_DEF(ArrayNew<int>, molecule_edge_mapping);
 
     int i;

@@ -72,7 +72,7 @@ namespace indigo
         void drawCircle(const Vec2f& center, const float r);
         void fillCircle(const Vec2f& center, const float r);
         void drawArc(const Vec2f& center, const float r, const float a0, const float a1);
-        void drawPoly(const Array<Vec2f>& v);
+        void drawPoly(const ArrayNew<Vec2f>& v);
         void setFontSize(double fontSize);
         void setTextItemSize(TextItem& ti);
         void setTextItemSize(TextItem& ti, const Vec2f& c);
