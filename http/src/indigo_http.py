@@ -34,6 +34,7 @@ class DataModel(BaseModel):
 
 
 class IndigoRequest(BaseModel):
+    # TODO: add list of data items?
     data: DataModel = None
 
 
@@ -69,9 +70,9 @@ def apply(molecule: IndigoObject, function: str) -> IndigoResponse:
             "type": SupportedTypes.MOLFILE,
             "attributes": {"content": molecule.molfile()},
         }
-    except IndigoException as err_:
+    except IndigoException as e:
         indigo_response.errors = [
-            str(err_),
+            str(e),
         ]
     return indigo_response
 
@@ -111,8 +112,8 @@ def apply_float(molecule: IndigoObject, function: str) -> IndigoResponse:
             "type": SupportedTypes.FLOAT,
             "attributes": {"content": float(result)},
         }
-    except IndigoException as err_:
-        indigo_response.errors = [str(err_)]
+    except IndigoException as e:
+        indigo_response.errors = [str(e)]
     return indigo_response
 
 
@@ -126,9 +127,17 @@ async def isolate_indigo_session(request: Request, call_next):
 
 
 @app.post(f"{BASE_URL_INDIGO}/checkStructure")
-async def check_structure(body: IndigoRequest):
-    # todo: find documentation about this function
-    pass
+async def check_structure(indigo_request: IndigoRequest):
+    # do we need new type for structure?
+    attrs = indigo_request.data.attributes
+
+    structure = attrs[0].content  # required
+    props = attrs[1] if len(attrs) > 1 else None  # optional
+    result: str = indigo().checkStructure(structure, props)
+
+    return IndigoResponse(
+        data={"type": "check_structure_result", "attributes": {"result": result}}
+    )
 
 
 @app.post(f"{BASE_URL_INDIGO}/commonBits", response_model=IndigoResponse)
@@ -144,9 +153,9 @@ async def common_bits(indigo_request: IndigoRequest) -> IndigoResponse:
                 )
             },
         }
-    except IndigoException as err_:
+    except IndigoException as e:
         indigo_response.errors = [
-            str(err_),
+            str(e),
         ]
 
     return indigo_response
@@ -162,15 +171,15 @@ async def exact_match(indigo_request: IndigoRequest) -> IndigoResponse:
     indigo_response = IndigoResponse()
     try:
         mol1, mol2 = list(get_indigo_object(indigo_request))
-        match = True if indigo().exactMatch(mol1, mol2) else False
+        match = bool(indigo().exactMatch(mol1, mol2))
         indigo_response.data = {
             "type": "bool",
             "attributes": {"is_match": match},
         }
 
-    except IndigoException as err_:
+    except IndigoException as e:
         indigo_response.errors = [
-            str(err_),
+            str(e),
         ]
 
     return indigo_response
@@ -179,7 +188,7 @@ async def exact_match(indigo_request: IndigoRequest) -> IndigoResponse:
 @app.get(f"{BASE_URL_INDIGO}/version", response_model=IndigoResponse)
 async def indigo_version() -> IndigoResponse:
     indigo_response = IndigoResponse()
-    mol1 = indigo().loadMolecule("CN1C=NC2=C1C(=O)N(C(=O)N2C)C")
+    # mol1 = indigo().loadMolecule("CN1C=NC2=C1C(=O)N(C(=O)N2C)C")
     indigo_response.data = {
         "type": "version_string",
         "attributes": {"content": indigo().version()},
@@ -204,9 +213,9 @@ async def smiles(indigo_request: IndigoRequest) -> IndigoResponse:
             "type": "smiles",
             "attributes": {"content": mol1.smiles()},
         }
-    except IndigoException as err_:
+    except IndigoException as e:
         indigo_response.errors = [
-            str(err_),
+            str(e),
         ]
     return indigo_response
 
@@ -215,16 +224,16 @@ async def smiles(indigo_request: IndigoRequest) -> IndigoResponse:
 async def smarts(indigo_request: IndigoRequest) -> IndigoResponse:
     # TODO: query molecule only
     indigo_response = IndigoResponse()
-    molecule1 = indigo_request.data.attributes.arg1.content
+    molecule1 = indigo_request.data.attributes[0].content
     try:
         mol1 = indigo().loadMolecule(molecule1)
         indigo_response.data = {
             "type": "smarts",
             "attributes": {"content": mol1.smarts()},
         }
-    except IndigoException as err_:
+    except IndigoException as e:
         indigo_response.errors = [
-            str(err_),
+            str(e),
         ]
     return indigo_response
 
