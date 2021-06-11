@@ -701,7 +701,7 @@ namespace indigo
                     return (int)(max * next());
             }
 
-            void next(Array<double>& d)
+            void next(ArrayNew<double>& d)
             {
                 double uni;
                 int n = d.size();
@@ -726,8 +726,8 @@ namespace indigo
             }
 
             double c, cd, cm;
-            Array<double> u;
-            Array<double> uvec;
+            ArrayNew<double> u;
+            ArrayNew<double> uvec;
             int i97, j97;
             bool strand;
         };

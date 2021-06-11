@@ -90,7 +90,7 @@ namespace indigo
         void setGradientSource(const Vec3f& color1, const Vec3f& color2, const Vec2f& pos1, const Vec2f& pos2);
         void clearPattern();
         float _getDashedLineAlignmentOffset(float length);
-        void setDash(const Array<double>& dash, float offset = 0);
+        void setDash(const ArrayNew<double>& dash, float offset = 0);
         void resetDash();
         void drawPlus(const Vec2f& pos, const float linewidth, const float size);
         void drawEquality(const Vec2f& pos, const float linewidth, const float size, const float interval);

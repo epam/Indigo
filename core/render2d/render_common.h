@@ -389,10 +389,10 @@ namespace indigo
         void init(float sf, float lwf);
 
         CP_DECL;
-        TL_CP_DECL(Array<double>, bondDashAromatic);
-        TL_CP_DECL(Array<double>, bondDashAny);
-        TL_CP_DECL(Array<double>, bondDashSingleOrAromatic);
-        TL_CP_DECL(Array<double>, bondDashDoubleOrAromatic);
+        TL_CP_DECL(ArrayNew<double>, bondDashAromatic);
+        TL_CP_DECL(ArrayNew<double>, bondDashAny);
+        TL_CP_DECL(ArrayNew<double>, bondDashSingleOrAromatic);
+        TL_CP_DECL(ArrayNew<double>, bondDashDoubleOrAromatic);
 
         float labelInternalOffset;
         float lowerIndexShift;

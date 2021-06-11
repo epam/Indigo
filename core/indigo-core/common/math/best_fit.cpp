@@ -24,8 +24,8 @@ using namespace indigo;
 
 bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[], float* sqsum_out)
 {
-    QS_DEF(Array<double>, X); // set of points
-    QS_DEF(Array<double>, Y); // set of goals
+    QS_DEF(ArrayNew<double>, X); // set of points
+    QS_DEF(ArrayNew<double>, Y); // set of goals
     Matr3x3d R, RT, RTR, evectors_matrix;
     //
     Matr3x3d rotation;
@@ -215,7 +215,7 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
 
 bool Plane3f::bestFit(int npoints, const Vec3f points[], float* sqsum_out)
 {
-    QS_DEF(Array<double>, m);
+    QS_DEF(ArrayNew<double>, m);
     m.clear_resize(npoints * 3);
     int i, j, k;
     Matr3x3d A, evec;
@@ -267,7 +267,7 @@ bool Plane3f::bestFit(int npoints, const Vec3f points[], float* sqsum_out)
 
 bool Line3f::bestFit(int npoints, const Vec3f points[], float* sqsum_out)
 {
-    QS_DEF(Array<double>, m);
+    QS_DEF(ArrayNew<double>, m);
     Matr3x3d A;
     Matr3x3d evec;
     int i, j, k;

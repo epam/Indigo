@@ -330,7 +330,7 @@ void MoleculeMass::massComposition(Molecule& mol, ArrayChar& str )
         throw Error("Cannot calculate mass for structure with repeating units");
     }
 
-    Array<double> relativeMass;
+    ArrayNew<double> relativeMass;
     int impl_h = 0;
     relativeMass.clear_resize(ELEM_MAX);
     relativeMass.zerofill();

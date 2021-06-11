@@ -1022,7 +1022,7 @@ float RenderContext::_getDashedLineAlignmentOffset(float length)
     return offset;
 }
 
-void RenderContext::setDash(const Array<double>& dash, float length)
+void RenderContext::setDash(const ArrayNew<double>& dash, float length)
 {
     cairo_set_dash(_cr, dash.ptr(), dash.size(), _getDashedLineAlignmentOffset(length));
     cairoCheckStatus();
