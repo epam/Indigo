@@ -151,7 +151,7 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
     if (_searchType == BingoPgCommon::MOL_MASS_GREAT || _searchType == BingoPgCommon::MOL_MASS_LESS)
         _searchType = BingoPgCommon::MOL_MASS;
 
-    _queryFpData.reset(new MangoPgFpData());
+    _queryFpData = std::make_unique<MangoPgFpData>();
 
     _setBingoContext();
 
@@ -405,7 +405,7 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
     }
     _searchCursor.reset(nullptr);
     profTimerStart(t4, "mango_pg.exact_search_cursor");
-    _searchCursor.reset(new BingoPgCursor("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr()));
+    _searchCursor = std::make_unique<BingoPgCursor>("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
     profTimerStop(t4);
     //   if(nanoHowManySeconds(profTimerGetTime(t4) )> 1)
     //      elog(WARNING, "select %s from %s where %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
@@ -445,7 +445,7 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
     const char* gross_conditions = mangoGrossGetConditions();
     if (gross_conditions == 0)
         CORE_HANDLE_ERROR(0, 1, "molecule search engine: can not get gross conditions", bingoGetError());
-    _searchCursor.reset(new BingoPgCursor("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions));
+    _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions);
 }
 
 void MangoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)
@@ -491,7 +491,7 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr)
     if (max_mass_flag)
         where_clause.printf("AND mass < %f", max_mass);
     where_clause.writeChar(0);
-    _searchCursor.reset(new BingoPgCursor("SELECT b_id FROM %s WHERE %s", _shadowRelName.ptr(), where_clause_str.ptr()));
+    _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id FROM %s WHERE %s", _shadowRelName.ptr(), where_clause_str.ptr());
 }
 
 void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr)

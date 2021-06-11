@@ -40,9 +40,9 @@ void MoleculeLayout::_init(bool smart_layout)
     filter = 0;
     _smart_layout = smart_layout;
     if (_smart_layout)
-        _layout_graph.reset(new MoleculeLayoutGraphSmart());
+        _layout_graph = std::make_unique<MoleculeLayoutGraphSmart>();
     else
-        _layout_graph.reset(new MoleculeLayoutGraphSimple());
+        _layout_graph = std::make_unique<MoleculeLayoutGraphSimple>();
 
     max_iterations = LAYOUT_MAX_ITERATION;
     _query = false;
@@ -52,9 +52,9 @@ void MoleculeLayout::_init(bool smart_layout)
     if (_hasMulGroups)
     {
         if (_molecule.isQueryMolecule())
-            _molCollapsed.reset(new QueryMolecule());
+            _molCollapsed = std::make_unique<QueryMolecule>();
         else
-            _molCollapsed.reset(new Molecule());
+            _molCollapsed = std::make_unique<Molecule>();
         _molCollapsed->clone(_molecule, &_atomMapping, NULL);
         QS_DEF(BaseMolecule::Mapping, atomMapCollapse);
         QS_DEF(BaseMolecule::Mapping, bondMapInv);
@@ -386,7 +386,7 @@ void MoleculeLayout::_make()
             int i = _atomMapping[j];
             _molecule.setAtomXyz(j, _molCollapsed->getAtomXyz(i));
         }
-        _molCollapsed.reset(NULL);
+        _molCollapsed.reset(nullptr);
     }
 
     _updateMultipleGroups();

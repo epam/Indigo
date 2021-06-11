@@ -54,7 +54,7 @@ RingoOracleContext& RingoOracleContext::get(OracleEnv& env, int id, bool lock)
         roc = (RingoOracleContext*)already;
     else
     {
-        res.reset(new RingoOracleContext(context));
+        res = std::make_unique<RingoOracleContext>(context);
         roc = res.get();
         config_reloaded = true;
     }

@@ -1466,10 +1466,10 @@ void QueryMolecule::Atom::copy(Atom& other)
     value_max = other.value_max;
     value_min = other.value_min;
 
-    fragment.reset(0);
+    fragment.reset(nullptr);
     if (other.fragment.get() != 0)
     {
-        fragment.reset(new QueryMolecule());
+        fragment = std::make_unique<QueryMolecule>();
         fragment->clone(*other.fragment, 0, 0);
         fragment->fragment_smarts.copy(other.fragment->fragment_smarts);
     }

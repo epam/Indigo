@@ -147,13 +147,13 @@ void MangoShadowFetch::prepareNonSubstructure(OracleEnv& env)
     _fetch_type = _NON_SUBSTRUCTURE;
     _need_xyz = _context.substructure.needCoords();
 
-    _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(*_env));
+    _env = std::make_unique<OracleEnv>(env.ctx(), env.logger());
+    _statement = std::make_unique<OracleStatement>(*_env);
 
     if (_need_xyz)
     {
-        _lob_cmf.reset(new OracleLOB(*_env));
-        _lob_xyz.reset(new OracleLOB(*_env));
+        _lob_cmf = std::make_unique<OracleLOB>(*_env);
+        _lob_xyz = std::make_unique<OracleLOB>(*_env);
         _statement->append("SELECT mol_rowid, cmf, xyz FROM %s", _table_name.ptr());
         _statement->prepare();
         _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
@@ -162,7 +162,7 @@ void MangoShadowFetch::prepareNonSubstructure(OracleEnv& env)
     }
     else
     {
-        _lob_cmf.reset(new OracleLOB(*_env));
+        _lob_cmf = std::make_unique<OracleLOB>(*_env);
         _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
         _statement->prepare();
         _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
@@ -177,9 +177,9 @@ void MangoShadowFetch::prepareNonTautomerSubstructure(OracleEnv& env)
     env.dbgPrintf("preparing shadow table for non-tautomer-substructure match\n");
     _fetch_type = _NON_TAUTOMER_SUBSTRUCTURE;
 
-    _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(*_env));
-    _lob_cmf.reset(new OracleLOB(*_env));
+    _env = std::make_unique<OracleEnv>(env.ctx(), env.logger());
+    _statement = std::make_unique<OracleStatement>(*_env);
+    _lob_cmf = std::make_unique<OracleLOB>(*_env);
 
     _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
     _statement->prepare();
@@ -199,9 +199,9 @@ void MangoShadowFetch::prepareTautomer(OracleEnv& env, int right_part)
     _fetch_type = _TAUTOMER;
     _right_part = right_part;
 
-    _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(*_env));
-    _lob_cmf.reset(new OracleLOB(*_env));
+    _env = std::make_unique<OracleEnv>(env.ctx(), env.logger());
+    _statement = std::make_unique<OracleStatement>(*_env);
+    _lob_cmf = std::make_unique<OracleLOB>(*_env);
 
     _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
 
@@ -235,9 +235,9 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
     _right_part = right_part;
     _need_xyz = instance.needCoords();
 
-    _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(*_env));
-    _lob_cmf.reset(new OracleLOB(*_env));
+    _env = std::make_unique<OracleEnv>(env.ctx(), env.logger());
+    _statement = std::make_unique<OracleStatement>(*_env);
+    _lob_cmf = std::make_unique<OracleLOB>(*_env);
 
     _statement->append("SELECT sh.mol_rowid, sh.cmf");
     if (_need_xyz)
@@ -257,7 +257,7 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
 
     if (_need_xyz)
     {
-        _lob_xyz.reset(new OracleLOB(*_env));
+        _lob_xyz = std::make_unique<OracleLOB>(*_env);
         _statement->defineBlobByPos(3, *_lob_xyz);
     }
 
@@ -337,8 +337,8 @@ void MangoShadowFetch::prepareGross(OracleEnv& env, int right_part)
 
     _fetch_type = _GROSS;
     _right_part = right_part;
-    _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(*_env));
+    _env = std::make_unique<OracleEnv>(env.ctx(), env.logger());
+    _statement = std::make_unique<OracleStatement>(*_env);
     _statement->append("SELECT mol_rowid, gross FROM %s ", _table_name.ptr());
     if (*instance.getConditions() != 0 && right_part == 1)
         _statement->append("WHERE %s", instance.getConditions());
@@ -363,8 +363,8 @@ void MangoShadowFetch::prepareMass(OracleEnv& env)
     }
 
     _fetch_type = _MASS;
-    _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(*_env));
+    _env = std::make_unique<OracleEnv>(env.ctx(), env.logger());
+    _statement = std::make_unique<OracleStatement>(*_env);
 
     _statement->append("SELECT mol_rowid FROM %s WHERE mass >= :mass_min AND mass <= :mass_max", _table_name.ptr());
 

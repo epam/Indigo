@@ -214,12 +214,12 @@ void MoleculeSubstructureMatcher::setQuery(QueryMolecule& query)
 
     if (query.rgroups.getRGroupCount() > 0)
     {
-        _markush.reset(new MarkushContext(query, _target));
+        _markush = std::make_unique<MarkushContext>(query, _target);
         _query = &_markush->query;
     }
     else
     {
-        _markush.reset(0);
+        _markush.reset(nullptr);
         _query = &query;
     }
 

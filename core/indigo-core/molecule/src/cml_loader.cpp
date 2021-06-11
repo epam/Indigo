@@ -479,14 +479,14 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                 if (label == ELEM_PSEUDO)
                 {
                     if (!a.label.empty())
-                        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, a.label.c_str()));
+                        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, a.label.c_str());
                     else
-                        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, a.element_type.c_str()));
+                        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, a.element_type.c_str());
                 }
                 else if (label == ELEM_RSITE)
-                    atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                    atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
                 else
-                    atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, label));
+                    atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, label);
 
                 if (!a.query_props.empty() && (strncmp(a.query_props.c_str(), "L", 1) == 0)) // _ATOM_LIST
                 {
@@ -920,7 +920,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                 bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
                                                      new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
             else if (strncmp(query_type, "Any", 3) == 0)
-                bond.reset(new QueryMolecule::Bond());
+                bond = std::make_unique<QueryMolecule::Bond>();
             else
                 throw Error("unknown bond type: %d", order);
 
@@ -1947,9 +1947,9 @@ void CmlLoader::_appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMo
     int atom_number = Element::fromString2(atom_label);
     std::unique_ptr<QueryMolecule::Atom> cur_atom;
     if (atom_number != -1)
-        cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, atom_number));
+        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, atom_number);
     else
-        cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, atom_label));
+        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, atom_label);
 
     if (atom.get() == 0)
         atom.reset(cur_atom.release());

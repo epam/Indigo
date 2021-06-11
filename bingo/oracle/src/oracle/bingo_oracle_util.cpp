@@ -352,7 +352,7 @@ void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, co
     Scanner* scanner = nullptr;
     if (magic[0] == 0x1f && magic[1] == 0x8b)
     {
-        gzscanner.reset(new GZipScanner(fscanner));
+        gzscanner = std::make_unique<GZipScanner>(fscanner);
         scanner = gzscanner.get();
     }
     else

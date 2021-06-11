@@ -166,12 +166,12 @@ void mangoRegisterTable(OracleEnv& env, MangoOracleContext& context, const char*
 
     if (blob)
     {
-        molfile_lob.reset(new OracleLOB(env));
+        molfile_lob = std::make_unique<OracleLOB>(env);
         statement.defineBlobByPos(1, *molfile_lob);
     }
     else if (clob)
     {
-        molfile_lob.reset(new OracleLOB(env));
+        molfile_lob = std::make_unique<OracleLOB>(env);
         statement.defineClobByPos(1, *molfile_lob);
     }
     else

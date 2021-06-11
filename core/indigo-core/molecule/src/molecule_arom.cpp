@@ -909,9 +909,9 @@ bool QueryMoleculeAromatizer::_aromatizeRGroupFragment(QueryMolecule& fragment, 
             {
                 std::unique_ptr<QueryMolecule::Bond> bond;
                 if (add_single_bonds)
-                    bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+                    bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, BOND_SINGLE);
                 else
-                    bond.reset(new QueryMolecule::Bond());
+                    bond = std::make_unique<QueryMolecule::Bond>();
 
                 fragment.addBond(point, additional_atom, bond.release());
             }

@@ -119,12 +119,12 @@ void RSmilesLoader::_loadReaction()
 
     if (_rxn != 0)
     {
-        rcnt.reset(new Molecule());
+        rcnt = std::make_unique<Molecule>();
         r_loader.loadMolecule(static_cast<Molecule&>(*rcnt));
     }
     else
     {
-        rcnt.reset(new QueryMolecule());
+        rcnt = std::make_unique<QueryMolecule>();
         r_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*rcnt));
     }
     rcnt_aam.copy(rcnt->reaction_atom_mapping);
@@ -141,9 +141,9 @@ void RSmilesLoader::_loadReaction()
     }
 
     if (_rxn != 0)
-        ctlt.reset(new Molecule());
+        ctlt = std::make_unique<Molecule>();
     else
-        ctlt.reset(new QueryMolecule());
+        ctlt = std::make_unique<QueryMolecule>();
 
     BufferScanner c_scanner(buf);
     SmilesLoader c_loader(c_scanner);
@@ -157,12 +157,12 @@ void RSmilesLoader::_loadReaction()
 
     if (_rxn != 0)
     {
-        ctlt.reset(new Molecule());
+        ctlt = std::make_unique<Molecule>();
         c_loader.loadMolecule(static_cast<Molecule&>(*ctlt));
     }
     else
     {
-        ctlt.reset(new QueryMolecule());
+        ctlt = std::make_unique<QueryMolecule>();
         c_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*ctlt));
     }
     ctlt_aam.copy(ctlt->reaction_atom_mapping);
@@ -196,12 +196,12 @@ void RSmilesLoader::_loadReaction()
 
     if (_rxn != 0)
     {
-        prod.reset(new Molecule());
+        prod = std::make_unique<Molecule>();
         p_loader.loadMolecule(static_cast<Molecule&>(*prod));
     }
     else
     {
-        prod.reset(new QueryMolecule());
+        prod = std::make_unique<QueryMolecule>();
         p_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*prod));
     }
     prod_aam.copy(prod->reaction_atom_mapping);
@@ -475,9 +475,9 @@ void RSmilesLoader::_loadReaction()
     QS_DEF(Array<int>, hl_bonds_frag);
 
     if (_rxn != 0)
-        mol.reset(new Molecule());
+        mol = std::make_unique<Molecule>();
     else
-        mol.reset(new QueryMolecule());
+        mol = std::make_unique<QueryMolecule>();
 
     for (int v = 0; v < 3; ++v)
     {
@@ -499,9 +499,9 @@ void RSmilesLoader::_loadReaction()
                 std::unique_ptr<BaseMolecule> fragment;
 
                 if (_rxn != 0)
-                    fragment.reset(new Molecule());
+                    fragment = std::make_unique<Molecule>();
                 else
-                    fragment.reset(new QueryMolecule());
+                    fragment = std::make_unique<QueryMolecule>();
 
                 if ((*fragments[v])[j] == i)
                 {

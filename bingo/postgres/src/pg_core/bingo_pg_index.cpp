@@ -278,7 +278,7 @@ void BingoPgIndex::_initializeNewSection()
     /*
      * Prepare a new section
      */
-    _currentSection.reset(new BingoPgSection(*this, BUILDING_STRATEGY, section_offset));
+    _currentSection = std::make_unique<BingoPgSection>(*this, BUILDING_STRATEGY, section_offset);
     ++_metaInfo.n_sections;
 }
 
@@ -351,7 +351,7 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx)
     profTimerStart(t1, "bingo_pg.get_offset");
     int offset = _getSectionOffset(section_idx);
     profTimerStop(t1);
-    _currentSection.reset(new BingoPgSection(*this, _strategy, offset));
+    _currentSection = std::make_unique<BingoPgSection>(*this, _strategy, offset);
 
     return *_currentSection;
 }

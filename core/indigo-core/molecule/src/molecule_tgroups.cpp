@@ -109,9 +109,7 @@ void TGroup::copy(TGroup& other)
     tgroup_comment.copy(other.tgroup_comment);
     tgroup_natreplace.copy(other.tgroup_natreplace);
     tgroup_id = other.tgroup_id;
-
-    std::unique_ptr<BaseMolecule> new_fragment(other.fragment->neu());
-    fragment.reset(new_fragment.release());
+    fragment.reset(other.fragment->neu());
     fragment->clone(*other.fragment.get(), 0, 0);
 }
 

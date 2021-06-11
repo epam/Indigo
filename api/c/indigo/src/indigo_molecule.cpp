@@ -184,7 +184,7 @@ void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* valu
                     }
                 }
             }
-            atom.reset(new QueryMolecule::Atom(mappingForKeys[i].value, int_value));
+            atom = std::make_unique<QueryMolecule::Atom>(mappingForKeys[i].value, int_value);
             return;
         }
     }
@@ -197,7 +197,7 @@ void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* valu
             BufferScanner buf_scanner(value);
             int_value = buf_scanner.readInt();
         }
-        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 1 << int_value));
+        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 1 << int_value);
         return;
     }
     else if (strcasecmp(type, "smarts") == 0)
@@ -219,7 +219,7 @@ void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* valu
             else
                 throw IndigoError("unsupported aromaticity type: %s", value);
         }
-        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, int_value));
+        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_AROMATICITY, int_value);
         return;
     }
 
@@ -627,12 +627,12 @@ IndigoObject* IndigoMoleculeComponent::clone()
 
     if (mol.isQueryMolecule())
     {
-        res.reset(new IndigoQueryMolecule());
+        res = std::make_unique<IndigoQueryMolecule>();
         newmol = &(((IndigoQueryMolecule*)res.get())->qmol);
     }
     else
     {
-        res.reset(new IndigoMolecule());
+        res = std::make_unique<IndigoMolecule>();
         newmol = &(((IndigoMolecule*)res.get())->mol);
     }
 
@@ -1107,12 +1107,12 @@ IndigoObject* IndigoRGroupFragment::clone()
 
     if (mol->isQueryMolecule())
     {
-        molptr.reset(new IndigoQueryMolecule());
+        molptr = std::make_unique<IndigoQueryMolecule>();
         molptr->getQueryMolecule().clone(*mol, 0, 0);
     }
     else
     {
-        molptr.reset(new IndigoMolecule());
+        molptr = std::make_unique<IndigoMolecule>();
         molptr->getMolecule().clone(*mol, 0, 0);
     }
 
@@ -4054,11 +4054,11 @@ void IndigoSubmolecule::_createSubMolecule()
     }
     if (_mol.isQueryMolecule())
     {
-        _submol.reset(new QueryMolecule());
+        _submol = std::make_unique<QueryMolecule>();
     }
     else
     {
-        _submol.reset(new Molecule());
+        _submol = std::make_unique<Molecule>();
     }
     _submol->makeEdgeSubmolecule(_mol, vertices, edges, 0, 0);
     _submol_revision = _mol.getEditRevision();
@@ -4085,12 +4085,12 @@ IndigoObject* IndigoSubmolecule::clone()
 
     if (_mol.isQueryMolecule())
     {
-        res.reset(new IndigoQueryMolecule());
+        res = std::make_unique<IndigoQueryMolecule>();
         newmol = &(((IndigoQueryMolecule*)res.get())->qmol);
     }
     else
     {
-        res.reset(new IndigoMolecule());
+        res = std::make_unique<IndigoMolecule>();
         newmol = &(((IndigoMolecule*)res.get())->mol);
     }
 

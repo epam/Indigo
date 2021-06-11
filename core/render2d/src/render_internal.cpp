@@ -870,9 +870,7 @@ void MoleculeRenderInternal::_prepareSGroups()
 
                 if (mol.isQueryMolecule())
                 {
-                    std::unique_ptr<QueryMolecule::Atom> atom;
-                    atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
-                    said = mol.asQueryMolecule().addAtom(atom.release());
+                    said = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
                 }
                 else
                 {

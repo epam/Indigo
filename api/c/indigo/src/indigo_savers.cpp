@@ -78,13 +78,13 @@ IndigoSaver* IndigoSaver::create(Output& output, const char* type)
 {
     std::unique_ptr<IndigoSaver> saver;
     if (strcasecmp(type, "sdf") == 0)
-        saver.reset(new IndigoSdfSaver(output));
+        saver = std::make_unique<IndigoSdfSaver>(output);
     else if (strcasecmp(type, "smiles") == 0 || strcasecmp(type, "smi") == 0)
-        saver.reset(new IndigoSmilesSaver(output));
+        saver = std::make_unique<IndigoSmilesSaver>(output);
     else if (strcasecmp(type, "cml") == 0)
-        saver.reset(new IndigoCmlSaver(output));
+        saver = std::make_unique<IndigoCmlSaver>(output);
     else if (strcasecmp(type, "rdf") == 0)
-        saver.reset(new IndigoRdfSaver(output));
+        saver = std::make_unique<IndigoRdfSaver>(output);
     else
         throw IndigoError("unsupported saver type: '%s'. Supported formats are sdf, smiles, cml, rdf", type);
 

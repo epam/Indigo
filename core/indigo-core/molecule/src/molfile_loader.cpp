@@ -427,14 +427,14 @@ void MolfileLoader::_readCtab2000()
             std::unique_ptr<QueryMolecule::Atom> atom;
 
             if (atom_type == _ATOM_ELEMENT)
-                atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, label));
+                atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, label);
             else if (atom_type == _ATOM_PSEUDO)
-                atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, buf));
+                atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, buf);
             else if (atom_type == _ATOM_A)
                 atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             else if (atom_type == _ATOM_AH)
             {
-                atom.reset(new QueryMolecule::Atom());
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_NONE;
             }
             else if (atom_type == _ATOM_QH)
@@ -444,8 +444,7 @@ void MolfileLoader::_readCtab2000()
                                                     QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
             else if (atom_type == _ATOM_X)
             {
-                atom.reset(new QueryMolecule::Atom());
-
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_OR;
                 atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
                 atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
@@ -455,8 +454,7 @@ void MolfileLoader::_readCtab2000()
             }
             else if (atom_type == _ATOM_XH)
             {
-                atom.reset(new QueryMolecule::Atom());
-
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_OR;
                 atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
                 atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
@@ -467,8 +465,7 @@ void MolfileLoader::_readCtab2000()
             }
             else if (atom_type == _ATOM_MH)
             {
-                atom.reset(new QueryMolecule::Atom());
-
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_AND;
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)));
@@ -490,8 +487,7 @@ void MolfileLoader::_readCtab2000()
             }
             else if (atom_type == _ATOM_M)
             {
-                atom.reset(new QueryMolecule::Atom());
-
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_AND;
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)));
@@ -513,9 +509,9 @@ void MolfileLoader::_readCtab2000()
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             }
             else if (atom_type == _ATOM_R)
-                atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
             else // _ATOM_LIST
-                atom.reset(new QueryMolecule::Atom());
+                atom = std::make_unique<QueryMolecule::Atom>();
 
             if (charge != 0)
                 atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_CHARGE, charge)));
@@ -597,7 +593,7 @@ void MolfileLoader::_readCtab2000()
             std::unique_ptr<QueryMolecule::Bond> bond;
 
             if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
-                bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
+                bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
             else if (order == _BOND_SINGLE_OR_DOUBLE)
                 bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
                                                     QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
@@ -609,7 +605,7 @@ void MolfileLoader::_readCtab2000()
                 bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
                                                      new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
             else if (order == _BOND_ANY)
-                bond.reset(new QueryMolecule::Bond());
+                bond = std::make_unique<QueryMolecule::Bond>();
             else
                 throw Error("unknown bond type: %d", order);
 
@@ -1537,9 +1533,9 @@ void MolfileLoader::_appendQueryAtom(const char* atom_label, std::unique_ptr<Que
     int atom_number = Element::fromString2(atom_label);
     std::unique_ptr<QueryMolecule::Atom> cur_atom;
     if (atom_number != -1)
-        cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, atom_number));
+        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, atom_number);
     else
-        cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, atom_label));
+        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, atom_label);
 
     if (atom.get() == 0)
         atom.reset(cur_atom.release());
@@ -2827,9 +2823,9 @@ void MolfileLoader::_readCtab3000()
                 std::unique_ptr<QueryMolecule::Bond> bond;
 
                 if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
-                    bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
+                    bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
                 else if (order == _BOND_COORDINATION || order == _BOND_HYDROGEN)
-                    bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_ZERO));
+                    bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, BOND_ZERO);
                 else if (order == _BOND_SINGLE_OR_DOUBLE)
                 {
                     bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
@@ -2843,7 +2839,7 @@ void MolfileLoader::_readCtab3000()
                     bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
                                                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
                 else if (order == _BOND_ANY)
-                    bond.reset(new QueryMolecule::Bond());
+                    bond = std::make_unique<QueryMolecule::Bond>();
                 else
                     throw Error("unknown bond type: %d", order);
 
@@ -3700,9 +3696,7 @@ void MolfileLoader::_readTGroups3000()
                 if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
                 {
                     _scanner.seek(pos, SEEK_SET);
-                    std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
-                    tgroup.fragment.reset(fragment.release());
-
+                    tgroup.fragment.reset(_bmol->neu());
                     //               tgroup.fragment = _bmol->neu();
 
                     MolfileLoader loader(_scanner);
