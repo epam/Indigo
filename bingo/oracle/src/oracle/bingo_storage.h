@@ -91,7 +91,7 @@ protected:
     };
 
     SharedMemory* _shmem_state;
-    Array<_Block> _blocks;
+    ArrayNew<_Block> _blocks;
     int _n_added;
 
     int _age_loaded;

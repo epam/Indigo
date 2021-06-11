@@ -48,11 +48,11 @@ public:
         // All blocks (except maybe the last one) are full
         int used;
 
-        Array<word> counters;
+        ArrayNew<word> counters;
         // Mapping between original molecules order and sorted
-        Array<word> mapping;
+        ArrayNew<word> mapping;
         // Low and high bounds for data in transposed fingerprint row
-        Array<word> bit_starts, bit_ends;
+        ArrayNew<word> bit_starts, bit_ends;
     };
 
     class Screening
@@ -72,7 +72,7 @@ public:
         TL_CP_DECL(List<int>, passed);
         TL_CP_DECL(ArrayNew<int>, one_counters);
         TL_CP_DECL(ArrayNew<int>, passed_pre);
-        TL_CP_DECL(Array<qword>, fp_final);
+        TL_CP_DECL(ArrayNew<qword>, fp_final);
 
         void* data;
 
@@ -130,7 +130,7 @@ protected:
     // when adding fingerprints
 
     int _part_adding;
-    Array<qword> _pending_bits, _pending_bits_2;
+    ArrayNew<qword> _pending_bits, _pending_bits_2;
     Block _pending_block;
 
     int _total_count_cached;

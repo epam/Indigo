@@ -208,7 +208,7 @@ protected:
     void _advance();
 
     CP_DECL;
-    TL_CP_DECL(Array<long long>, _offsets);
+    TL_CP_DECL(ArrayNew<long long>, _offsets);
     int _current_number;
     long long _max_offset;
 };

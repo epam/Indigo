@@ -302,7 +302,7 @@ bool BingoFingerprints::screenPart_Init(OracleEnv& env, Screening& screening)
 
 bool BingoFingerprints::screenPart_Next(OracleEnv& env, Screening& screening)
 {
-    QS_DEF(Array<qword>, fp_inter); // i.e. intermediate
+    QS_DEF(ArrayNew<qword>, fp_inter); // i.e. intermediate
     int used_bytes = (screening.block->used + 7) / 8;
 
     if (screening.query_bit_idx >= screening.query_ones.size())
@@ -489,7 +489,7 @@ bool BingoFingerprints::countOnes_Next(OracleEnv& env, Screening& screening)
     int used_qwords = (screening.block->used + 63) / 64;
     int used_bytes = (screening.block->used + 7) / 8;
 
-    QS_DEF(Array<qword>, fp);
+    QS_DEF(ArrayNew<qword>, fp);
 
     fp.clear_resize(used_qwords);
 
@@ -721,7 +721,7 @@ void BingoFingerprints::_optimizePendingBlock()
     counters_order.qsort(_cmp_optimize_counters, this);
 
     // Find better mapping
-    QS_DEF(Array<word>, post_mapping);
+    QS_DEF(ArrayNew<word>, post_mapping);
     post_mapping.clear_resize(_pending_block.used);
     for (int i = 0; i < _pending_block.used; i++)
         post_mapping[i] = i;

@@ -156,8 +156,8 @@ private:
 
     qword* _words;
 
-    indigo::Array<qword> _internalWords;
-    indigo::Array<qword> _serializeWords;
+    indigo::ArrayNew<qword> _internalWords;
+    indigo::ArrayNew<qword> _serializeWords;
 
 public:
     class Iterator

@@ -70,7 +70,7 @@ namespace indigo
 
         int _leastSignificantBitPosition(qword n) const;
 
-        Array<qword> _words;
+        ArrayNew<qword> _words;
 
         Dbitset(const Dbitset&);            // no implicit copy
         Dbitset& operator=(const Dbitset&); // no implicit assign

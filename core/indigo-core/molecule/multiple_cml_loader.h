@@ -48,7 +48,7 @@ namespace indigo
 
     protected:
         TL_CP_DECL(ReusableObjArray<ArrayChar>, _tags);
-        TL_CP_DECL(Array<long long>, _offsets);
+        TL_CP_DECL(ArrayNew<long long>, _offsets);
         Scanner& _scanner;
         int _current_number;
         long long _max_offset;

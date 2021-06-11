@@ -67,7 +67,7 @@ namespace indigo
         RedBlackSet<qword> _allSIDs;
         qword _lastNewSID;
         // Array with vacant SIDs
-        Array<qword> _vacantSIDs;
+        ArrayNew<qword> _vacantSIDs;
 
     };
 
@@ -291,7 +291,7 @@ namespace indigo
         }
 
     private:
-        Array<void*> data;
+        ArrayNew<void*> data;
         ArrayNew<size_t> type_hash;
         PtrArray<Destructor> destructors;
         int index;

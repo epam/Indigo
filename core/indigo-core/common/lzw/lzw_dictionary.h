@@ -98,6 +98,10 @@ namespace indigo
             _DictElement(int NewPrefix, byte NewChar) : Prefix(NewPrefix), AppendChar(NewChar)
             {
             }
+
+            _DictElement() : Prefix(0), AppendChar(0)
+            {
+            }
         };
 
         int _hashingShift,                                              /* Hashing function shift */
@@ -106,7 +110,7 @@ namespace indigo
         bool _modified;
 
         CP_DECL;
-        TL_CP_DECL(Array<_DictElement>, _storage); /* Dictionary */
+        TL_CP_DECL(std::vector<_DictElement>, _storage); /* Dictionary */
 
         TL_CP_DECL(ArrayNew<int>, _nextPointers);
 

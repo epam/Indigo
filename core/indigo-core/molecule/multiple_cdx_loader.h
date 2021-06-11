@@ -49,7 +49,7 @@ namespace indigo
         TL_CP_DECL(PropertiesMap, properties);
 
     protected:
-        TL_CP_DECL(Array<long long>, _offsets);
+        TL_CP_DECL(ArrayNew<long long>, _offsets);
         TL_CP_DECL(ArrayChar, _latest_text);
         Scanner& _scanner;
         int _current_number;
