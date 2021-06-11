@@ -90,8 +90,8 @@ namespace indigo
         {
             OsLocker locker(_lock.ref());
             std::unique_ptr<T>& ptr = _map.findOrInsert(id);
-            if (ptr.get() == NULL)
-                ptr.reset(new T());
+            if (ptr.get() == nullptr)
+                ptr = std::make_unique<T>();
             return *ptr;
         }
 

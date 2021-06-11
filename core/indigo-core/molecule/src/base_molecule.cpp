@@ -3139,8 +3139,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     if (su.sa_natreplace.size() > 0)
         tg.tgroup_natreplace.copy(su.sa_natreplace);
 
-    std::unique_ptr<BaseMolecule> new_fragment(this->neu());
-    tg.fragment.reset(new_fragment.release());
+    tg.fragment.reset(this->neu());
     tg.fragment->makeSubmolecule(*this, su.atoms, &mapping, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS);
 
     sg_atoms.clear();

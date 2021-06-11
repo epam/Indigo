@@ -27,7 +27,7 @@ using namespace indigo;
 std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> ReactionGrossFormula::collect(BaseReaction& rxn, bool add_isotopes)
 {
 
-    std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> result(new std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>);
+    std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> result = std::make_unique<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>>();
     auto& gross = *result;
 
     if (rxn.reactantsCount() > 0)

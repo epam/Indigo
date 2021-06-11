@@ -123,12 +123,12 @@ void ringoRegisterTable(OracleEnv& env, RingoOracleContext& context, const char*
 
     if (blob)
     {
-        reaction_lob.reset(new OracleLOB(env));
+        reaction_lob = std::make_unique<OracleLOB>(env);
         statement.defineBlobByPos(1, *reaction_lob);
     }
     else if (clob)
     {
-        reaction_lob.reset(new OracleLOB(env));
+        reaction_lob = std::make_unique<OracleLOB>(env);
         statement.defineClobByPos(1, *reaction_lob);
     }
     else

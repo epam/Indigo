@@ -100,11 +100,11 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
      */
     if (strcasecmp(func_name, "matchsub") == 0)
     {
-        fp_engine.reset(new MangoPgBuildEngine(bingo_config, rel_name));
+        fp_engine = std::make_unique<MangoPgBuildEngine>(bingo_config, rel_name);
     }
     else if (strcasecmp(func_name, "matchrsub") == 0)
     {
-        fp_engine.reset(new RingoPgBuildEngine(bingo_config, rel_name));
+        fp_engine = std::make_unique<RingoPgBuildEngine>(bingo_config, rel_name);
     }
     else
     {
@@ -136,9 +136,9 @@ void BingoPgBuild::_prepareUpdating()
      * Define index type
      */
     if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_MOLECULE)
-        fp_engine.reset(new MangoPgBuildEngine(bingo_config, rel_name));
+        fp_engine = std::make_unique<MangoPgBuildEngine>(bingo_config, rel_name);
     else if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_REACTION)
-        fp_engine.reset(new RingoPgBuildEngine(bingo_config, rel_name));
+        fp_engine = std::make_unique<RingoPgBuildEngine>(bingo_config, rel_name);
     else
         throw Error("internal error: unknown index type %d", _bufferIndex.getIndexType());
 
@@ -174,7 +174,7 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     profTimerStart(t0, "bingo_pg.insert");
 
     BingoPgBuildEngine::StructCache struct_cache;
-    struct_cache.text.reset(new BingoPgText(text_ptr));
+    struct_cache.text = std::make_unique<BingoPgText>(text_ptr);
     struct_cache.ptr = *((ItemPointer)item_ptr);
 
     elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid", block_number, offset_number);
@@ -203,7 +203,7 @@ void BingoPgBuild::insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_pt
      * Insert a new structure
      */
     BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache.push();
-    struct_cache.text.reset(new BingoPgText(text_ptr));
+    struct_cache.text = std::make_unique<BingoPgText>(text_ptr);
     struct_cache.ptr = *((ItemPointer)item_ptr);
     /*
      * Flush cache

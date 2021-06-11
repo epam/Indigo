@@ -35,8 +35,8 @@ RingoFetchContext::RingoFetchContext(int id_, RingoOracleContext& context, const
     fresh = false;
     fetch_engine = 0;
 
-    shadow_fetch.reset(new RingoShadowFetch(*this));
-    fast_index.reset(new RingoFastIndex(*this));
+    shadow_fetch = std::make_unique<RingoShadowFetch>(*this);
+    fast_index = std::make_unique<RingoFastIndex>(*this);
 }
 
 RingoFetchContext& RingoFetchContext::get(int id)

@@ -52,7 +52,7 @@ MangoOracleContext& MangoOracleContext::get(OracleEnv& env, int id, bool lock)
 
     if (already == 0)
     {
-        res.reset(new MangoOracleContext(context));
+        res = std::make_unique<MangoOracleContext>(context);
         moc = res.get();
         config_reloaded = true;
     }

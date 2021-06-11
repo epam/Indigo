@@ -2218,12 +2218,12 @@ void RSubstructureMcs::_createQueryTransposition()
     if (_reaction.isQueryReaction())
     {
         nei_counters.calculate((QueryMolecule&)*_sub);
-        _transposedQuery.reset(new QueryMolecule());
+        _transposedQuery = std::make_unique<QueryMolecule>();
     }
     else
     {
         nei_counters.calculate((Molecule&)*_sub);
-        _transposedQuery.reset(new Molecule());
+        _transposedQuery = std::make_unique<Molecule>();
     }
 
     nei_counters.makeTranspositionForSubstructure((BaseMolecule&)*_sub, transposition);

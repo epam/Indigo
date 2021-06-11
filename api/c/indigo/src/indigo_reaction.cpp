@@ -279,11 +279,8 @@ bool IndigoReactionIter::hasNext()
 IndigoReaction* IndigoReaction::cloneFrom(IndigoObject& obj)
 {
     Reaction& rxn = obj.getReaction();
-
-    std::unique_ptr<IndigoReaction> rxnptr;
-    rxnptr.reset(new IndigoReaction());
+    std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
     rxnptr->rxn.clone(rxn, 0, 0, 0);
-
     try
     {
         MonomersProperties& mprops = obj.getMonomersProperties();
@@ -305,8 +302,7 @@ IndigoQueryReaction* IndigoQueryReaction::cloneFrom(IndigoObject& obj)
 {
     QueryReaction& rxn = obj.getQueryReaction();
 
-    std::unique_ptr<IndigoQueryReaction> rxnptr;
-    rxnptr.reset(new IndigoQueryReaction());
+    std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();
     rxnptr->rxn.clone(rxn, 0, 0, 0);
 
     try
@@ -621,7 +617,7 @@ CEXPORT int indigoAutomap(int reaction, const char* mode)
         std::unique_ptr<TimeoutCancellationHandler> timeout(nullptr);
         if (self.aam_cancellation_timeout > 0)
         {
-            timeout.reset(new TimeoutCancellationHandler(self.aam_cancellation_timeout));
+            timeout = std::make_unique<TimeoutCancellationHandler>(self.aam_cancellation_timeout);
         }
         /*
          * Set cancellation handler

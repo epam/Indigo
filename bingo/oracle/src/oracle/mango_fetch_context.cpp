@@ -37,8 +37,8 @@ MangoFetchContext::MangoFetchContext(int id_, MangoOracleContext& context, const
     fresh = false;
     fetch_engine = 0;
 
-    shadow_fetch.reset(new MangoShadowFetch(*this));
-    fast_index.reset(new MangoFastIndex(*this));
+    shadow_fetch = std::make_unique<MangoShadowFetch>(*this);
+    fast_index = std::make_unique<MangoFastIndex>(*this);
 }
 
 MangoFetchContext& MangoFetchContext::get(int id)

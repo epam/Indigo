@@ -73,9 +73,9 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
 
     std::unique_ptr<Index> context;
     if (ind_type == BaseIndex::MOLECULE)
-        context.reset(new MoleculeIndex());
+        context = std::make_unique<MoleculeIndex>();
     else if (ind_type == BaseIndex::REACTION)
-        context.reset(new ReactionIndex());
+        context = std::make_unique<ReactionIndex>();
     else
         throw BingoException("Unknown database type");
 

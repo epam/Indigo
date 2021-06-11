@@ -24,7 +24,7 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
 {
     std::unique_ptr<QueryMolecule::Bond> bond;
     if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
-        bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
+        bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
     else if (order == _BOND_SINGLE_OR_DOUBLE)
         bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
                                             QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
@@ -36,7 +36,7 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
         bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
                                              new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
     else if (order == _BOND_ANY)
-        bond.reset(new QueryMolecule::Bond());
+        bond = std::make_unique<QueryMolecule::Bond>();
     else
         throw Error("unknown bond type: %d", order);
     if (topology != 0)
@@ -49,17 +49,16 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
 
 int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope)
 {
-    std::unique_ptr<QueryMolecule::Atom> atom;
-    atom.reset(new QueryMolecule::Atom());
+    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
     if (element != -1 && element != ELEM_RSITE)
-        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, element));
+        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, element);
     else
     {
         int atom_type = QueryMolecule::getAtomType(label);
         switch (atom_type)
         {
         case _ATOM_PSEUDO:
-            atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label));
+            atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, label);
             break;
         case _ATOM_A:
             atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
@@ -127,7 +126,7 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
             atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             break;
         case _ATOM_R:
-            atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+            atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
             break;
         }
     }

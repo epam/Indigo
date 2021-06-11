@@ -704,13 +704,13 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
     _pqmol = nullptr;
     if (bmol.isQueryMolecule())
     {
-        mol.reset(new QueryMolecule());
-        _pqmol = (QueryMolecule*)mol.get();
+        mol = std::make_unique<QueryMolecule>();
+        _pqmol = static_cast<QueryMolecule*>(mol.get());
     }
     else
     {
-        mol.reset(new Molecule());
-        _pmol = (Molecule*)mol.get();
+        mol = std::make_unique<Molecule>();
+        _pmol = static_cast<Molecule*>(mol.get());
     }
     mol->clone_KeepIndices(bmol);
     if (!BaseMolecule::hasCoord(*mol))

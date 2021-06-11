@@ -78,7 +78,7 @@ void RingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
     {
         throw Error("unsupported number of scan keys %d", scan_desc->numberOfKeys);
     }
-    _queryFpData.reset(new RingoPgFpData());
+    _queryFpData = std::make_unique<RingoPgFpData>();
 
     _setBingoContext();
     BingoPgSearchEngine::prepareQuerySearch(bingo_idx, scan_desc);
@@ -214,7 +214,7 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
 
     _prepareExactQueryStrings(what_clause, from_clause, where_clause);
 
-    _searchCursor.reset(new BingoPgCursor("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr()));
+    _searchCursor = std::make_unique<BingoPgCursor>("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
 }
 
 void RingoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)

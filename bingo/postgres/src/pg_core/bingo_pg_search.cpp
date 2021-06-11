@@ -107,9 +107,9 @@ void BingoPgSearch::_initScanSearch()
     int index_type = _bufferIndex.getIndexType();
 
     if (index_type == BINGO_INDEX_TYPE_MOLECULE)
-        _fpEngine.reset(new MangoPgSearchEngine(bingo_config, rel_name));
+        _fpEngine = std::make_unique<MangoPgSearchEngine>(bingo_config, rel_name);
     else if (index_type == BINGO_INDEX_TYPE_REACTION)
-        _fpEngine.reset(new RingoPgSearchEngine(bingo_config, rel_name));
+        _fpEngine = std::make_unique<RingoPgSearchEngine>(bingo_config, rel_name);
     else
         throw Error("unknown index type %d", index_type);
 

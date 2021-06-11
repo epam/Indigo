@@ -45,12 +45,12 @@ void MangoTautomer::loadQuery(Scanner& scanner)
 
     if (_params.substructure)
     {
-        _query.reset(new QueryMolecule());
+        _query = std::make_unique<QueryMolecule>();
         loader.loadQueryMolecule(static_cast<QueryMolecule&>(*_query));
     }
     else
     {
-        _query.reset(new Molecule());
+        _query = std::make_unique<Molecule>();
         loader.loadMolecule(static_cast<Molecule&>(*_query));
     }
 
