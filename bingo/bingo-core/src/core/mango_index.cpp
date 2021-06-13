@@ -37,7 +37,7 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, OsLock* lock_for_excl
 {
     QS_DEF(Molecule, mol);
 
-    QS_DEF(Array<int>, gross);
+    QS_DEF(ArrayNew<int>, gross);
 
     MoleculeAutoLoader loader(molfile);
     _context->setLoaderSettings(loader);
@@ -150,17 +150,17 @@ const char* MangoIndex::getCountedElementsString() const
     return (const char*)_counted_elems_str.ptr();
 }
 
-const Array<int>& MangoIndex::getCountedElements() const
+const ArrayNew<int>& MangoIndex::getCountedElements() const
 {
     return _counted_elem_counters;
 }
 
-const Array<char>& MangoIndex::getCmf() const
+const ArrayChar& MangoIndex::getCmf() const
 {
     return _cmf;
 }
 
-const Array<char>& MangoIndex::getXyz() const
+const ArrayChar& MangoIndex::getXyz() const
 {
     return _xyz;
 }

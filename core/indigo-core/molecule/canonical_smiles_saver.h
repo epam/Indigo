@@ -40,7 +40,7 @@ namespace indigo
     protected:
         typedef RedBlackMap<int, int> MapIntInt;
 
-        TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
+        TL_CP_DECL(ArrayNew<int>, _actual_atom_atom_mapping);
         TL_CP_DECL(MapIntInt, _initial_to_actual);
         int _aam_counter;
     };

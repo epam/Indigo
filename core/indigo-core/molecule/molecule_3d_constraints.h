@@ -125,7 +125,7 @@ namespace indigo
             }
 
             float max_deviation;
-            Array<int> point_ids;
+            ArrayNew<int> point_ids;
         };
 
         struct PointByAtom : public Base
@@ -191,7 +191,7 @@ namespace indigo
             {
             }
 
-            Array<int> point_ids;
+            ArrayNew<int> point_ids;
         };
 
         struct BestFitPlane : public Base
@@ -204,7 +204,7 @@ namespace indigo
             }
 
             float max_deviation;
-            Array<int> point_ids;
+            ArrayNew<int> point_ids;
         };
 
         struct PlaneByPoint : public Base
@@ -326,7 +326,7 @@ namespace indigo
             int center_id;
             float radius;
             bool allow_unconnected;
-            Array<int> allowed_atoms;
+            ArrayNew<int> allowed_atoms;
         };
 
         Base& add(Base* constraint);

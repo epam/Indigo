@@ -27,7 +27,7 @@
 void bingoProfilingPrintStatistics(bool print_all)
 {
     // Print profiling statistics
-    QS_DEF(Array<char>, buffer);
+    QS_DEF(ArrayChar, buffer);
     ArrayOutput output(buffer);
     profGetStatistics(output, print_all);
     buffer.push(0);

@@ -109,7 +109,7 @@ void ContainerSet::splitSet(ContainerSet& new_set)
     _inc_count = inc_count_cur;
 }
 
-void ContainerSet::findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_indices)
+void ContainerSet::findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_indices)
 {
     sim_indices.clear();
 
@@ -117,7 +117,7 @@ void ContainerSet::findSimilar(const byte* query, SimCoef& sim_coef, double min_
 
     // int query_bit_number = bitGetOnesCount(query, _fp_size);
 
-    QS_DEF(Array<SimResult>, cell_sim_indices);
+    QS_DEF(ArrayNew<SimResult>, cell_sim_indices);
     for (int i = 0; i < _set.size(); i++)
     {
         MultibitTree& container = _set[i];
@@ -148,7 +148,7 @@ void ContainerSet::optimize()
     _inc_count = 0;
 }
 
-int ContainerSet::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cont_idx)
+int ContainerSet::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices, int cont_idx)
 {
     profTimerStart(cs_s, "getSimilar");
 
@@ -177,7 +177,7 @@ int ContainerSet::getSimilar(const byte* query, SimCoef& sim_coef, double min_co
     return sim_fp_indices.size();
 }
 
-int ContainerSet::_findSimilarInc(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_indices)
+int ContainerSet::_findSimilarInc(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_indices)
 {
     byte* inc = _increment.ptr();
     int* indices = _indices.ptr();

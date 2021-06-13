@@ -41,7 +41,7 @@
 #include "oracle/ora_wrap.h"
 #include "oracle/rowid_saver.h"
 
-bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index, Array<char>& data,
+bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const ArrayChar& molfile_buf, MangoOracleContext& context, MangoIndex& index, ArrayChar& data,
                           OsLock* lock_for_exclusive_access, std::string& failure_message)
 {
     profTimerStart(tall, "moleculeIndex.prepare");
@@ -50,7 +50,7 @@ bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& 
 
     output.writeChar(0); // 0 -- present, 1 -- removed from index
 
-    QS_DEF(Array<char>, compressed_rowid);
+    QS_DEF(ArrayChar, compressed_rowid);
     ArrayOutput rid_output(compressed_rowid);
 
     {
@@ -99,7 +99,7 @@ bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& 
 }
 
 void mangoRegisterMolecule(OracleEnv& env, const char* rowid, MangoOracleContext& context, const MangoIndex& index, BingoFingerprints& fingerprints,
-                           const Array<char>& prepared_data, bool append)
+                           const ArrayChar& prepared_data, bool append)
 {
     profTimerStart(tall, "moleculeIndex.register");
 
@@ -118,10 +118,10 @@ void mangoRegisterMolecule(OracleEnv& env, const char* rowid, MangoOracleContext
     profTimerStop(tshad);
 }
 
-bool mangoPrepareAndRegisterMolecule(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index,
+bool mangoPrepareAndRegisterMolecule(OracleEnv& env, const char* rowid, const ArrayChar& molfile_buf, MangoOracleContext& context, MangoIndex& index,
                                      BingoFingerprints& fingerprints, bool append)
 {
-    QS_DEF(Array<char>, prepared_data);
+    QS_DEF(ArrayChar, prepared_data);
     std::string failure_message;
 
     if (mangoPrepareMolecule(env, rowid, molfile_buf, context, index, prepared_data, NULL, failure_message))
@@ -141,7 +141,7 @@ void mangoRegisterTable(OracleEnv& env, MangoOracleContext& context, const char*
 {
     profTimerStart(tall, "total");
 
-    QS_DEF(Array<char>, molfile_buf);
+    QS_DEF(ArrayChar, molfile_buf);
     OracleStatement statement(env);
     AutoPtr<OracleLOB> molfile_lob;
     OraRowidText rowid;
@@ -363,7 +363,7 @@ storage.validateForInsert(env);
 
 fingerprints.validateForUpdate(env);
 
-QS_DEF(Array<char>, target_buf);
+QS_DEF(ArrayChar, target_buf);
 
 OracleLOB target_lob(env, target_loc);
 

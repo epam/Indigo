@@ -436,7 +436,7 @@ CEXPORT int indigoUnfoldHydrogens(int item)
 
         if (IndigoBaseMolecule::is(obj))
         {
-            QS_DEF(Array<int>, markers);
+            QS_DEF(ArrayNew<int>, markers);
             obj.getMolecule().unfoldHydrogens(&markers, -1);
         }
         else if (IndigoBaseReaction::is(obj))
@@ -454,8 +454,8 @@ CEXPORT int indigoUnfoldHydrogens(int item)
 
 static bool _removeHydrogens(Molecule& mol)
 {
-    QS_DEF(Array<int>, to_remove);
-    QS_DEF(Array<int>, sterecenters_to_validate);
+    QS_DEF(ArrayNew<int>, to_remove);
+    QS_DEF(ArrayNew<int>, sterecenters_to_validate);
     int i;
 
     sterecenters_to_validate.clear();
@@ -920,7 +920,7 @@ CEXPORT int indigoOptimize(int query, const char* options)
             QueryMolecule& q = qm_obj.getQueryMolecule();
             q.optimize();
 
-            QS_DEF(Array<int>, transposition);
+            QS_DEF(ArrayNew<int>, transposition);
             QS_DEF(QueryMolecule, transposed_q);
             qm_obj.getNeiCounters().makeTranspositionForSubstructure(q, transposition);
             transposed_q.makeSubmolecule(q, transposition, 0);
@@ -1156,12 +1156,12 @@ CEXPORT int indigoIsPossibleFischerProjection(int object, const char* options)
     INDIGO_END(-1);
 }
 
-void _parseHelmRgroupsNames(Array<char>& helm_caps, StringPool& r_names)
+void _parseHelmRgroupsNames(ArrayChar& helm_caps, StringPool& r_names)
 {
     BufferScanner strscan(helm_caps);
-    QS_DEF(Array<char>, r_desc);
-    QS_DEF(Array<char>, r_name);
-    QS_DEF(Array<char>, delim);
+    QS_DEF(ArrayChar, r_desc);
+    QS_DEF(ArrayChar, r_name);
+    QS_DEF(ArrayChar, delim);
     r_desc.clear();
     r_name.clear();
     delim.clear();
@@ -1192,12 +1192,12 @@ CEXPORT int indigoTransformHELMtoSCSR(int object)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<char>, helm_class);
-        QS_DEF(Array<char>, helm_name);
-        QS_DEF(Array<char>, helm_code);
-        QS_DEF(Array<char>, helm_natreplace);
-        QS_DEF(Array<char>, helm_caps);
-        QS_DEF(Array<char>, helm_type);
+        QS_DEF(ArrayChar, helm_class);
+        QS_DEF(ArrayChar, helm_name);
+        QS_DEF(ArrayChar, helm_code);
+        QS_DEF(ArrayChar, helm_natreplace);
+        QS_DEF(ArrayChar, helm_caps);
+        QS_DEF(ArrayChar, helm_type);
         QS_DEF(StringPool, r_names);
 
         IndigoObject& obj = self.getObject(object);

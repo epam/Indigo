@@ -86,7 +86,7 @@ void Output::printf(const char* format, ...)
 
 void Output::vprintf(const char* format, va_list args_orig)
 {
-    QS_DEF(Array<char>, str);
+    QS_DEF(ArrayChar, str);
     if (str.size() < 2048)
         str.resize(2048);
 
@@ -119,7 +119,7 @@ void Output::vprintf(const char* format, va_list args_orig)
     write(str.ptr(), n);
 }
 
-void Output::writeArray(const Array<char>& data)
+void Output::writeArray(const ArrayChar& data)
 {
     write(data.ptr(), data.size());
 }
@@ -263,7 +263,7 @@ long long FileOutput::tell()
 #endif
 }
 
-ArrayOutput::ArrayOutput(Array<char>& arr) : _arr(arr)
+ArrayOutput::ArrayOutput(ArrayChar& arr) : _arr(arr)
 {
     _arr.clear();
 }
@@ -364,7 +364,7 @@ void NullOutput::flush()
 
 namespace indigo
 {
-    void bprintf(Array<char>& buf, const char* format, ...)
+    void bprintf(ArrayChar& buf, const char* format, ...)
     {
         va_list args;
         va_start(args, format);

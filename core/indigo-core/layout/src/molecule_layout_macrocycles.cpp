@@ -68,8 +68,8 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles(int size)
     _edge_stereo.clear_resize(size);
     _edge_stereo.zerofill();
 
-    _vertex_drawn.clear_resize(size);
-    _vertex_drawn.zerofill();
+    _vertex_drawn.clear();
+    _vertex_drawn.resize(size, false);
 
     _positions.clear_resize(size);
 
@@ -670,7 +670,7 @@ int MoleculeLayoutMacrocycles::get_diff_circle(int x, int y, int rot, int value)
 
 void rotate(int* ar, int ar_length, int shift)
 {
-    QS_DEF(Array<int>, temp);
+    QS_DEF(ArrayNew<int>, temp);
     temp.clear_resize(ar_length);
     shift = (shift % ar_length + ar_length) % ar_length;
     memcpy(temp.ptr(), ar + shift, (ar_length - shift) * sizeof(int));
@@ -680,7 +680,7 @@ void rotate(int* ar, int ar_length, int shift)
 
 void rotate(float* ar, int ar_length, int shift)
 {
-    QS_DEF(Array<float>, temp);
+    QS_DEF(ArrayNew<float>, temp);
     temp.clear_resize(ar_length);
     shift = (shift % ar_length + ar_length) % ar_length;
     memcpy(temp.ptr(), ar + shift, (ar_length - shift) * sizeof(float));
@@ -1264,12 +1264,12 @@ float MoleculeLayoutMacrocycles::depictionCircle()
     if (zero_edge_stereo_count == 0)
         return 1000000;
 
-    QS_DEF(Array<bool>, up);
-    QS_DEF(Array<bool>, only_up);
-    up.clear_resize(length + 1);
-    only_up.clear_resize(length + 1);
-    up.zerofill();
-    only_up.zerofill();
+    QS_DEF(ArrayBool, up);
+    QS_DEF(ArrayBool, only_up);
+    up.clear();
+    up.resize(length + 1, false);
+    only_up.clear();
+    only_up.resize(length + 1, false);
 
     for (int i = 0; i < length; i++)
         if (_edge_stereo[i] == MoleculeCisTrans::CIS && _edge_stereo[(i + length - 1) % length] == MoleculeCisTrans::CIS)
@@ -1282,7 +1282,7 @@ float MoleculeLayoutMacrocycles::depictionCircle()
     for (int i = 0; i < length; i++)
         up[i] = only_up[i];
 
-    QS_DEF(Array<int>, free);
+    QS_DEF(ArrayNew<int>, free);
     free.clear_resize(length);
 
     bool exist_precalc = false;
@@ -1430,7 +1430,7 @@ float MoleculeLayoutMacrocycles::depictionCircle()
 
     float r = _2FLOAT(length * sqrt(3.0) / 2. / (2. * M_PI));
 
-    QS_DEF(Array<Vec2f>, p);
+    QS_DEF(ArrayNew<Vec2f>, p);
     p.clear_resize(length + 1);
 
     for (int i = 0; i <= length; i++)
@@ -1445,7 +1445,7 @@ float MoleculeLayoutMacrocycles::depictionCircle()
         p[i].rotate(_2FLOAT(2. * M_PI / length * i));
     }
 
-    QS_DEF(Array<int>, rotateAngle);
+    QS_DEF(ArrayNew<int>, rotateAngle);
     rotateAngle.clear_resize(length);
 
     for (int i = 0; i < length; i++)
@@ -1461,12 +1461,12 @@ float MoleculeLayoutMacrocycles::depictionCircle()
         else
             rotateAngle[i] = up[i] ? 1 : (up[(i + 1) % length] || up[(i + length - 1) % length]) ? -1 : 1;
 
-    QS_DEF(Array<int>, edgeLength);
+    QS_DEF(ArrayNew<int>, edgeLength);
     edgeLength.clear_resize(length);
     for (i = 0; i < length; i++)
         edgeLength[i] = 1;
 
-    QS_DEF(Array<int>, vertexNumber);
+    QS_DEF(ArrayNew<int>, vertexNumber);
     vertexNumber.clear_resize(length);
     for (i = 0; i < length; i++)
         vertexNumber[i] = i;

@@ -68,11 +68,11 @@ protected:
 
     BingoFingerprints::Screening _screening;
 
-    bool _loadCoords(OracleEnv& env, const char* rowid, Array<char>& coords);
+    bool _loadCoords(OracleEnv& env, const char* rowid, ArrayChar& coords);
     void _match(OracleEnv& env, int idx);
     int _countOnes(int idx);
 
-    void _decompressRowid(const Array<char>& stored, OraRowidText& rid);
+    void _decompressRowid(const ArrayChar& stored, OraRowidText& rid);
 
     void _fetchSubstructure(OracleEnv& env, int maxrows);
     void _fetchSimilarity(OracleEnv& env, int maxrows);

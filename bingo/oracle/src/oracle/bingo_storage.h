@@ -39,7 +39,7 @@ public:
     virtual ~BingoStorage();
 
     void validateForInsert(OracleEnv& env);
-    void add(OracleEnv& env, const Array<char>& data, int& blockno, int& offset);
+    void add(OracleEnv& env, const ArrayChar& data, int& blockno, int& offset);
 
     void create(OracleEnv& env);
     void drop(OracleEnv& env);
@@ -53,7 +53,7 @@ public:
     void markRemoved(OracleEnv& env, int blockno, int offset);
 
     int count();
-    void get(int n, Array<char>& out);
+    void get(int n, ArrayChar& out);
 
     DECL_ERROR;
 
@@ -91,7 +91,7 @@ protected:
     };
 
     SharedMemory* _shmem_state;
-    Array<_Block> _blocks;
+    ArrayNew<_Block> _blocks;
     int _n_added;
 
     int _age_loaded;
@@ -105,12 +105,12 @@ protected:
     void _finishTopLob(OracleEnv& env);
     void _finishIndexLob(OracleEnv& env);
 
-    Array<char> _shmem_id;
-    Array<char> _table_name;
+    ArrayChar _shmem_id;
+    ArrayChar _table_name;
 
     Array<_Addr> _index;
-    Array<char> _top_lob_pending_data;
-    Array<char> _index_lob_pending_data;
+    ArrayChar _top_lob_pending_data;
+    ArrayChar _index_lob_pending_data;
     int _top_lob_pending_mark;
     int _index_lob_pending_mark;
 };

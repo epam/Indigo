@@ -50,7 +50,7 @@ namespace indigo
         int numOpenings(int v_idx) const;
 
         // mapping[i] = index of appearance of graph's i-th vertex in the vertex sequence
-        void calcMapping(Array<int>& mapping) const;
+        void calcMapping(ArrayNew<int>& mapping) const;
 
         int* ignored_vertices;
         int* vertex_ranks;
@@ -59,7 +59,7 @@ namespace indigo
 
         void mustBeRootVertex(int v_idx);
 
-        void getNeighborsClosing(int v_idx, Array<int>& res);
+        void getNeighborsClosing(int v_idx, ArrayNew<int>& res);
 
         DECL_ERROR;
 
@@ -91,9 +91,9 @@ namespace indigo
         TL_CP_DECL(Array<_EdgeDesc>, _edges);
 
         TL_CP_DECL(Array<SeqElem>, _v_seq);
-        TL_CP_DECL(Array<int>, _root_vertices);
+        TL_CP_DECL(ArrayNew<int>, _root_vertices);
         TL_CP_DECL(Array<Edge>, _closures);
-        TL_CP_DECL(Array<int>, _class_dist_from_exit);
+        TL_CP_DECL(ArrayNew<int>, _class_dist_from_exit);
     };
 } // namespace indigo
 

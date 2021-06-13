@@ -37,7 +37,7 @@ namespace indigo
 
         bool (*cb_check_vertex)(Graph& graph, int v_idx, void* context);
         bool (*cb_check_edge)(Graph& graph, int e_idx, void* context);
-        bool (*cb_handle_path)(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
+        bool (*cb_handle_path)(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
 
         void process();
 

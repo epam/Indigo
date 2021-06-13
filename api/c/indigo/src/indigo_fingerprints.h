@@ -32,12 +32,12 @@ public:
     IndigoFingerprint();
     ~IndigoFingerprint() override;
 
-    void toString(Array<char>& str) override;
-    void toBuffer(Array<char>& buf) override;
+    void toString(ArrayChar& str) override;
+    void toBuffer(ArrayChar& buf) override;
 
     static IndigoFingerprint& cast(IndigoObject& obj);
 
-    Array<byte> bytes;
+    ArrayNew<byte> bytes;
 };
 
 #ifdef _WIN32

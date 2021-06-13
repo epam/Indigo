@@ -167,7 +167,7 @@ double MoleculeMass::mostAbundantMass(Molecule& mol )
         elements_counts[ELEM_H] += impl_h;
     }
 
-    QS_DEF(Array<int>, isotopes);
+    QS_DEF(ArrayNew<int>, isotopes);
 
     // Compute mass of the most abunant composition
     for (int i = ELEM_MIN; i < ELEM_MAX; i++)
@@ -321,7 +321,7 @@ int MoleculeMass::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context)
     return strncmp(Element::toString(ec1.elem), Element::toString(ec2.elem), 3);
 }
 
-void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
+void MoleculeMass::massComposition(Molecule& mol, ArrayChar& str )
 {
     std::set<int> selected_atoms;
     mol.getAtomSelection( selected_atoms );
@@ -330,7 +330,7 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
         throw Error("Cannot calculate mass for structure with repeating units");
     }
 
-    Array<double> relativeMass;
+    ArrayNew<double> relativeMass;
     int impl_h = 0;
     relativeMass.clear_resize(ELEM_MAX);
     relativeMass.zerofill();

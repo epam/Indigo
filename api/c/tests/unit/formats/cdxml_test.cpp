@@ -21,7 +21,7 @@ TEST(IndigoCdxmlTest, cdxml_test1)
 
     loadMolecule("c1ccccc1N", t_mol);
 
-    Array<char> out;
+    ArrayChar out;
     ArrayOutput std_out(out);
     MoleculeCdxmlSaver saver(std_out);
     saver.saveMolecule(t_mol);

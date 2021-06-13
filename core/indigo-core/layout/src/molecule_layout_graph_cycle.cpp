@@ -40,7 +40,7 @@ MoleculeLayoutGraph::Cycle::Cycle(const List<int>& edges, const MoleculeLayoutGr
     _morgan_code_calculated = false;
 }
 
-MoleculeLayoutGraph::Cycle::Cycle(const Array<int>& vertices, const Array<int>& edges)
+MoleculeLayoutGraph::Cycle::Cycle(const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
     : CP_INIT, TL_CP_GET(_vertices), TL_CP_GET(_edges), TL_CP_GET(_attached_weight)
 {
     copy(vertices, edges);
@@ -84,7 +84,7 @@ void MoleculeLayoutGraph::Cycle::copy(const List<int>& edges, const MoleculeLayo
             _max_idx = _vertices[i];
 }
 
-void MoleculeLayoutGraph::Cycle::copy(const Array<int>& vertices, const Array<int>& edges)
+void MoleculeLayoutGraph::Cycle::copy(const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
 {
     _vertices.copy(vertices);
     _edges.copy(edges);
@@ -162,7 +162,7 @@ bool MoleculeLayoutGraph::Cycle::contains(const Cycle& another) const
     if (vertexCount() < another.vertexCount())
         return false;
 
-    QS_DEF(Array<int>, vertex_found);
+    QS_DEF(ArrayNew<int>, vertex_found);
 
     vertex_found.clear_resize(_max_idx + 1);
     vertex_found.zerofill();

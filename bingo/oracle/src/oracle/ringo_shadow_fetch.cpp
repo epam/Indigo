@@ -222,7 +222,7 @@ void RingoShadowFetch::fetch(OracleEnv& env, int maxrows)
             if (_fetch_type == _NON_SUBSTRUCTURE)
             {
                 RingoSubstructure& instance = _context.substructure;
-                QS_DEF(Array<char>, crf);
+                QS_DEF(ArrayChar, crf);
 
                 _lob_crf->readAll(crf, false);
 
@@ -232,7 +232,7 @@ void RingoShadowFetch::fetch(OracleEnv& env, int maxrows)
             else if (_fetch_type == _EXACT)
             {
                 RingoExact& instance = _context.exact;
-                QS_DEF(Array<char>, crf);
+                QS_DEF(ArrayChar, crf);
 
                 _lob_crf->readAll(crf, false);
 

@@ -72,7 +72,7 @@ namespace indigo
         void drawCircle(const Vec2f& center, const float r);
         void fillCircle(const Vec2f& center, const float r);
         void drawArc(const Vec2f& center, const float r, const float a0, const float a1);
-        void drawPoly(const Array<Vec2f>& v);
+        void drawPoly(const ArrayNew<Vec2f>& v);
         void setFontSize(double fontSize);
         void setTextItemSize(TextItem& ti);
         void setTextItemSize(TextItem& ti, const Vec2f& c);
@@ -90,7 +90,7 @@ namespace indigo
         void setGradientSource(const Vec3f& color1, const Vec3f& color2, const Vec2f& pos1, const Vec2f& pos2);
         void clearPattern();
         float _getDashedLineAlignmentOffset(float length);
-        void setDash(const Array<double>& dash, float offset = 0);
+        void setDash(const ArrayNew<double>& dash, float offset = 0);
         void resetDash();
         void drawPlus(const Vec2f& pos, const float linewidth, const float size);
         void drawEquality(const Vec2f& pos, const float linewidth, const float size, const float interval);
@@ -201,8 +201,8 @@ namespace indigo
         static TextLock _tlock;
 
         CP_DECL;
-        TL_CP_DECL(Array<char>, _fontfamily);
-        TL_CP_DECL(Array<cairo_matrix_t>, transforms);
+        TL_CP_DECL(ArrayChar, _fontfamily);
+        TL_CP_DECL(ArrayNew<cairo_matrix_t>, transforms);
 #ifdef _WIN32
         void* _h_fonts[FONT_SIZE_COUNT * 2];
 #endif

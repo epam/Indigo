@@ -48,7 +48,7 @@ void ChunkStorage::add(const byte* data, int n_bytes)
     memcpy(ptr, data, n_bytes);
 }
 
-void ChunkStorage::add(const Array<char>& data)
+void ChunkStorage::add(const ArrayChar& data)
 {
     add((const byte*)data.ptr(), data.size());
 }

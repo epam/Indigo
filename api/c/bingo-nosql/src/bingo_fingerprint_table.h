@@ -20,7 +20,7 @@ namespace bingo
     class FingerprintTable
     {
     public:
-        FingerprintTable(int fp_size, const Array<int>& borders, int mt_size);
+        FingerprintTable(int fp_size, const ArrayNew<int>& borders, int mt_size);
 
         static BingoAddr create(BingoPtr<FingerprintTable>& ptr, int fp_size, int mt_size);
 
@@ -28,7 +28,7 @@ namespace bingo
 
         void add(const byte* fingerprint, int id);
 
-        void findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices);
+        void findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices);
 
         void optimize();
 
@@ -42,7 +42,7 @@ namespace bingo
 
         int nextFitCell(int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx) const;
 
-        int getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cell_idx, int cont_idx);
+        int getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices, int cell_idx, int cont_idx);
 
         ~FingerprintTable();
 

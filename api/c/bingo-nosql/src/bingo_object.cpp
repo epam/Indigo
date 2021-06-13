@@ -25,7 +25,7 @@ BaseMoleculeQuery::BaseMoleculeQuery(BaseMolecule& mol, bool needs_query_fingerp
 {
 }
 
-bool BaseMoleculeQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
+bool BaseMoleculeQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) // const
 {
     MoleculeFingerprintBuilder fp_builder(_base_mol, fp_params);
     TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
@@ -58,17 +58,17 @@ SimilarityMoleculeQuery::SimilarityMoleculeQuery(/* const */ Molecule& mol) : Ba
     _mol.clone(mol, 0, 0);
 }
 
-GrossQuery::GrossQuery(/* const */ Array<char>& str)
+GrossQuery::GrossQuery(/* const */ ArrayChar& str)
 {
     _gross_str.copy(str);
 }
 
-bool GrossQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/
+bool GrossQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) /*const*/
 {
     throw Exception("GrossQuery::buildFingerprint can\t be called");
 }
 
-Array<char>& GrossQuery::getGrossString()
+ArrayChar& GrossQuery::getGrossString()
 {
     return _gross_str;
 }
@@ -77,7 +77,7 @@ BaseReactionQuery::BaseReactionQuery(BaseReaction& rxn) : _base_rxn(rxn)
 {
 }
 
-bool BaseReactionQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
+bool BaseReactionQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) // const
 {
     ReactionFingerprintBuilder fp_builder(_base_rxn, fp_params);
     TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
@@ -114,7 +114,7 @@ IndexMolecule::IndexMolecule(/* const */ Molecule& mol)
     _mol.clone(mol, 0, 0);
 }
 
-bool IndexMolecule::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
+bool IndexMolecule::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) // const
 {
     MoleculeFingerprintBuilder fp_builder(_mol, fp_params);
     TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
@@ -131,14 +131,14 @@ bool IndexMolecule::buildFingerprint(const MoleculeFingerprintParameters& fp_par
     return true;
 }
 
-bool IndexMolecule::buildGrossString(Array<char>& gross) /* const */
+bool IndexMolecule::buildGrossString(ArrayChar& gross) /* const */
 {
     GrossStorage::calculateMolFormula(_mol, gross);
 
     return true;
 }
 
-bool IndexMolecule::buildCfString(Array<char>& cf) // const
+bool IndexMolecule::buildCfString(ArrayChar& cf) // const
 {
     ArrayOutput arr_out(cf);
     CmfSaver cmf_saver(arr_out);
@@ -160,7 +160,7 @@ IndexReaction::IndexReaction(/* const */ Reaction& rxn)
     _rxn.clone(rxn, 0, 0, 0);
 }
 
-bool IndexReaction::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
+bool IndexReaction::buildFingerprint(const MoleculeFingerprintParameters& fp_params, ArrayNew<byte>* sub_fp, ArrayNew<byte>* sim_fp) // const
 {
     ReactionFingerprintBuilder fp_builder(_rxn, fp_params);
     TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
@@ -177,14 +177,14 @@ bool IndexReaction::buildFingerprint(const MoleculeFingerprintParameters& fp_par
     return true;
 }
 
-bool IndexReaction::buildGrossString(Array<char>& gross) /* const */
+bool IndexReaction::buildGrossString(ArrayChar& gross) /* const */
 {
     GrossStorage::calculateRxnFormula(_rxn, gross);
 
     return true;
 }
 
-bool IndexReaction::buildCfString(Array<char>& cf) // const
+bool IndexReaction::buildCfString(ArrayChar& cf) // const
 {
     ArrayOutput arr_out(cf);
     CrfSaver crf_saver(arr_out);

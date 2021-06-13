@@ -56,11 +56,11 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        static void estimate_pKa(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites, Array<float>& acid_pkas,
-                                 Array<float>& basic_pkas);
-        static void getAtomLocalFingerprint(Molecule& mol, int idx, Array<char>& fp, int level);
-        static void getAtomLocalKey(Molecule& mol, int idx, Array<char>& fp);
-        static bool getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<int>& fp);
+        static void estimate_pKa(Molecule& mol, const IonizeOptions& options, ArrayNew<int>& acid_sites, ArrayNew<int>& basic_sites, ArrayNew<float>& acid_pkas,
+                                 ArrayNew<float>& basic_pkas);
+        static void getAtomLocalFingerprint(Molecule& mol, int idx, ArrayChar& fp, int level);
+        static void getAtomLocalKey(Molecule& mol, int idx, ArrayChar& fp);
+        static bool getAtomLocalFeatureSet(BaseMolecule& mol, int idx, ArrayNew<int>& fp);
         static int buildPkaModel(int level, float threshold, const char* filename);
 
         static float getAcidPkaValue(Molecule& mol, int idx, int level, int min_level);
@@ -72,26 +72,26 @@ namespace indigo
 
         static void _loadSimplePkaModel();
         static void _loadAdvancedPkaModel();
-        static void _estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites, Array<float>& acid_pkas,
-                                         Array<float>& basic_pkas);
+        static void _estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, ArrayNew<int>& acid_sites, ArrayNew<int>& basic_sites, ArrayNew<float>& acid_pkas,
+                                         ArrayNew<float>& basic_pkas);
 
-        static void _estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
-                                           Array<float>& acid_pkas, Array<float>& basic_pkas);
+        static void _estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, ArrayNew<int>& acid_sites, ArrayNew<int>& basic_sites,
+                                           ArrayNew<float>& acid_pkas, ArrayNew<float>& basic_pkas);
 
         static int _asc_cmp_cb(int& v1, int& v2, void* context);
-        static void _checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Array<int>& order);
+        static void _checkCanonicalOrder(Molecule& mol, Molecule& can_mol, ArrayNew<int>& order);
         static void _removeExtraHydrogens(Molecule& mol);
 
         ObjArray<QueryMolecule> acids;
         ObjArray<QueryMolecule> basics;
-        Array<float> a_pkas;
-        Array<float> b_pkas;
+        ArrayNew<float> a_pkas;
+        ArrayNew<float> b_pkas;
         bool simple_model_ready = false;
 
-        RedBlackStringObjMap<Array<float>> adv_a_pkas;
-        RedBlackStringObjMap<Array<float>> adv_b_pkas;
+        RedBlackStringObjMap<ArrayNew<float>> adv_a_pkas;
+        RedBlackStringObjMap<ArrayNew<float>> adv_b_pkas;
         int level;
-        Array<float> max_deviations;
+        ArrayNew<float> max_deviations;
         bool advanced_model_ready = false;
     };
 
@@ -106,8 +106,8 @@ namespace indigo
         CP_DECL;
 
     protected:
-        static void _setCharges(Molecule& mol, float ph, float ph_toll, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
-                                Array<float>& acid_pkas, Array<float>& basic_pkas);
+        static void _setCharges(Molecule& mol, float ph, float ph_toll, const IonizeOptions& options, ArrayNew<int>& acid_sites, ArrayNew<int>& basic_sites,
+                                ArrayNew<float>& acid_pkas, ArrayNew<float>& basic_pkas);
     };
 
 } // namespace indigo

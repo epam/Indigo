@@ -45,7 +45,7 @@ namespace indigo
         int lookNext() override;
         void skip(int length) override;
         long long length() override;
-        void readAll(Array<char>& arr) override;
+        void readAll(ArrayChar& arr) override;
 
         DECL_ERROR;
 

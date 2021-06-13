@@ -96,13 +96,13 @@ namespace indigo
         };
 
     protected:
-        Array<int> _aromBondsArray;          // Bonds used in this connectivity group
-        Array<int> _heteroAtomsIndicesArray; // Heteroatoms indices
+        ArrayNew<int> _aromBondsArray;          // Bonds used in this connectivity group
+        ArrayNew<int> _heteroAtomsIndicesArray; // Heteroatoms indices
         Array<Group> _aromaticGroups;
 
         // Data for I/O
-        Array<byte> _dearomBondsStateArray; // Array of array of dearomatization configuration
-        Array<byte> _heteroAtomsStateArray; // States for heteroatoms
+        ArrayNew<byte> _dearomBondsStateArray; // Array of array of dearomatization configuration
+        ArrayNew<byte> _heteroAtomsStateArray; // States for heteroatoms
         byte _dearomParams;
     };
 
@@ -118,12 +118,12 @@ namespace indigo
         };
         struct GROUP_DATA
         {
-            Array<int> bonds;
-            Array<int> bondsInvMapping;
-            Array<int> vertices;
-            Array<int> verticesFilter;
-            Array<int> heteroAtoms;
-            Array<int> heteroAtomsInvMapping;
+            ArrayNew<int> bonds;
+            ArrayNew<int> bondsInvMapping;
+            ArrayNew<int> vertices;
+            ArrayNew<int> verticesFilter;
+            ArrayNew<int> heteroAtoms;
+            ArrayNew<int> heteroAtomsInvMapping;
         };
 
     public:
@@ -137,7 +137,7 @@ namespace indigo
         int detectAromaticGroups(const int* atom_external_conn);
         void constructGroups(DearomatizationsStorage& storage, bool needHeteroAtoms);
 
-        bool* getAcceptDoubleBonds(void);
+        ArrayBool* getAcceptDoubleBonds(void);
         bool isAcceptDoubleBond(int atom);
 
         DECL_ERROR2(DearomatizationException);
@@ -153,14 +153,14 @@ namespace indigo
 
         // Additional data stored here to prevent reallocatoins
         CP_DECL;
-        TL_CP_DECL(Array<int>, _vertexAromaticGroupIndex);
-        TL_CP_DECL(Array<bool>, _vertexIsAcceptDoubleEdge);
-        TL_CP_DECL(Array<bool>, _vertexIsAcceptSingleEdge);
-        TL_CP_DECL(Array<int>, _vertexProcessed);
+        TL_CP_DECL(ArrayNew<int>, _vertexAromaticGroupIndex);
+        TL_CP_DECL(ArrayBool, _vertexIsAcceptDoubleEdge);
+        TL_CP_DECL(ArrayBool, _vertexIsAcceptSingleEdge);
+        TL_CP_DECL(ArrayNew<int>, _vertexProcessed);
 
-        TL_CP_DECL(Array<int>, _groupVertices);
-        TL_CP_DECL(Array<int>, _groupEdges);
-        TL_CP_DECL(Array<int>, _groupHeteroAtoms);
+        TL_CP_DECL(ArrayNew<int>, _groupVertices);
+        TL_CP_DECL(ArrayNew<int>, _groupEdges);
+        TL_CP_DECL(ArrayNew<int>, _groupHeteroAtoms);
         TL_CP_DECL(GROUP_DATA, _groupData);
     };
 
@@ -215,7 +215,7 @@ namespace indigo
         TL_CP_DECL(DearomatizationsGroups::GROUP_DATA, _aromaticGroupData);
         /*TL_CP_DECL(*/ Dbitset /*,    */ _edgesFixed /*)*/;
         /*TL_CP_DECL(*/ Dbitset /*,    */ _verticesFixed /*)*/;
-        TL_CP_DECL(Array<int>, _submoleculeMapping);
+        TL_CP_DECL(ArrayNew<int>, _submoleculeMapping);
 
     protected:
         void _initEdges(void);
@@ -280,14 +280,14 @@ namespace indigo
 
             void setVerticesState(const byte* verticesState);
             void setVerticesMapping(int* verticesMapping);
-            void setVerticesAccept(bool* verticesAcceptDoubleBond);
+            void setVerticesAccept(ArrayBool* verticesAcceptDoubleBond);
 
             bool checkVertex(int v_idx) override;
 
         protected:
             const byte* _verticesState;
             int* _verticesMapping;
-            bool* _verticesAcceptDoubleBond;
+            ArrayBool* _verticesAcceptDoubleBond;
         };
 
     protected:
@@ -297,15 +297,15 @@ namespace indigo
         DearomatizationsGroups _aromaticGroups;
 
         CP_DECL;
-        TL_CP_DECL(Array<byte>, _matchedEdges);       // Edges that have already been matched
-        TL_CP_DECL(Array<byte>, _matchedEdgesState);  // State of such edges
+        TL_CP_DECL(ArrayNew<byte>, _matchedEdges);       // Edges that have already been matched
+        TL_CP_DECL(ArrayNew<byte>, _matchedEdgesState);  // State of such edges
         TL_CP_DECL(Array<GroupExData>, _groupExInfo); // Additional data for group
-        TL_CP_DECL(Array<int>, _verticesInGroup);
+        TL_CP_DECL(ArrayNew<int>, _verticesInGroup);
         TL_CP_DECL(Dbitset, _verticesAdded);
-        TL_CP_DECL(Array<int>, _edges2GroupMapping);
-        TL_CP_DECL(Array<int>, _edges2IndexInGroupMapping);
-        TL_CP_DECL(Array<byte>, _correctEdgesArray);
-        TL_CP_DECL(Array<int>, _verticesFixCount);
+        TL_CP_DECL(ArrayNew<int>, _edges2GroupMapping);
+        TL_CP_DECL(ArrayNew<int>, _edges2IndexInGroupMapping);
+        TL_CP_DECL(ArrayNew<byte>, _correctEdgesArray);
+        TL_CP_DECL(ArrayNew<int>, _verticesFixCount);
         TL_CP_DECL(DearomatizationsGroups::GROUP_DATA, _aromaticGroupsData);
 
         bool _needPrepare;
@@ -336,7 +336,7 @@ namespace indigo
         int _getBestDearomatization(int group);
 
         CP_DECL;
-        TL_CP_DECL(Array<int>, vertex_connectivity);
+        TL_CP_DECL(ArrayNew<int>, vertex_connectivity);
     };
 
 } // namespace indigo

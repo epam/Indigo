@@ -40,7 +40,7 @@ MoleculeRGroupsComposition::MoleculeRGroupsComposition(BaseMolecule& mol)
         }
         _rsite2vertex.insert(rsite, vertex);
 
-        Array<int> rgroups;
+        ArrayNew<int> rgroups;
         _mol.getAllowedRGroups(vertex, rgroups);
         _rsite2rgroup.insert(vertex, rgroups);
 
@@ -59,12 +59,12 @@ MoleculeRGroupsComposition::MoleculeRGroupsComposition(BaseMolecule& mol)
 
 std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const AttachmentIter& at) const
 {
-    Array<int> fs;
+    ArrayNew<int> fs;
     at.dump(fs);
     return decorate(fs);
 }
 
-std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const Array<int>& at) const
+std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const ArrayNew<int>& at) const
 {
     std::unique_ptr<Molecule> result(new Molecule());
     decorate(at, *result.get());
@@ -73,12 +73,12 @@ std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const Array<int>&
 
 void MoleculeRGroupsComposition::decorate(const AttachmentIter& at, Molecule& mol) const
 {
-    Array<int> fs;
+    ArrayNew<int> fs;
     at.dump(fs);
     decorate(fs, mol);
 }
 
-void MoleculeRGroupsComposition::decorate(const Array<int>& fs, Molecule& mol) const
+void MoleculeRGroupsComposition::decorate(const ArrayNew<int>& fs, Molecule& mol) const
 {
     mol.clone(_mol, nullptr, nullptr);
 
@@ -90,7 +90,7 @@ void MoleculeRGroupsComposition::decorate(const Array<int>& fs, Molecule& mol) c
         int apcount = fragment.attachmentPointCount();
         int apoint = fragment.getAttachmentPoint(apcount, 0);
 
-        Array<int> map;
+        ArrayNew<int> map;
         mol.mergeWithMolecule(fragment, &map);
 
         int atom = mol.getAtomNumber(map[apoint]);
@@ -128,7 +128,7 @@ std::unique_ptr<MoleculeRGroups> MoleculeIter::modifyRGroups(const char* options
 
 MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
 {
-    Array<int> fs;
+    ArrayNew<int> fs;
     m._at.dump(fs);
     MultiMap<int, int> rgroup2fragment;
     RedBlackMap<Fragment, int> fragment2count;
@@ -172,7 +172,7 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
 
 MoleculeIter::OrderedRGroups::OrderedRGroups(const MoleculeIter& m)
 {
-    Array<int> fs;
+    ArrayNew<int> fs;
     m._at.dump(fs);
     for (auto i = 0; i < fs.size(); i++)
     {
@@ -232,12 +232,12 @@ bool AttachmentIter::next()
     return false;
 }
 
-const Array<int>* AttachmentIter::operator*() const
+const ArrayNew<int>* AttachmentIter::operator*() const
 {
     return &_fragments;
 }
 
-void AttachmentIter::dump(Array<int>& other) const
+void AttachmentIter::dump(ArrayNew<int>& other) const
 {
     other.copy(_fragments);
 }

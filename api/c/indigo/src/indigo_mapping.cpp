@@ -165,7 +165,7 @@ CEXPORT int indigoMapBond(int handle, int bond)
     INDIGO_END(-1);
 }
 
-void _indigoHighlightSubstructure(BaseMolecule& query, BaseMolecule& mol, Array<int>& qmapping, Array<int>& mapping)
+void _indigoHighlightSubstructure(BaseMolecule& query, BaseMolecule& mol, ArrayNew<int>& qmapping, ArrayNew<int>& mapping)
 {
     int i;
 
@@ -201,7 +201,7 @@ CEXPORT int indigoHighlightedTarget(int item)
             IndigoMapping& im = (IndigoMapping&)obj;
             AutoPtr<IndigoMolecule> mol(new IndigoMolecule());
 
-            QS_DEF(Array<int>, mapping);
+            QS_DEF(ArrayNew<int>, mapping);
             mol->mol.clone(im.to, 0, &mapping);
             _indigoHighlightSubstructure(im.from, mol->mol, im.mapping, mapping);
             return self.addObject(mol.release());
@@ -210,8 +210,8 @@ CEXPORT int indigoHighlightedTarget(int item)
         {
             IndigoReactionMapping& im = (IndigoReactionMapping&)obj;
             AutoPtr<IndigoReaction> rxn(new IndigoReaction());
-            QS_DEF(ObjArray<Array<int>>, mappings);
-            QS_DEF(Array<int>, mol_mapping);
+            QS_DEF(ObjArray<ArrayNew<int>>, mappings);
+            QS_DEF(ArrayNew<int>, mol_mapping);
             int i;
 
             rxn->rxn.clone(im.to, &mol_mapping, 0, &mappings);

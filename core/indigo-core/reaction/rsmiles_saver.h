@@ -67,7 +67,7 @@ namespace indigo
         CP_DECL;
         TL_CP_DECL(Array<_Idx>, _written_atoms);
         TL_CP_DECL(Array<_Idx>, _written_bonds);
-        TL_CP_DECL(Array<int>, _ncomp);
+        TL_CP_DECL(ArrayNew<int>, _ncomp);
 
         void _writeMolecule(int i);
         void _writeFragmentsInfo();

@@ -96,7 +96,7 @@ int SimStorage::nextFitCell(int query_bit_count, int first_fit_cell, int min_cel
     return _fingerprint_table->nextFitCell(query_bit_count, first_fit_cell, min_cell, max_cell, idx);
 }
 
-int SimStorage::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cell_idx, int cont_idx)
+int SimStorage::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices, int cell_idx, int cont_idx)
 {
     if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
         throw Exception("SimStorage: fingerptint table wasn't built");
@@ -111,7 +111,7 @@ bool SimStorage::isSmallBase()
     return false;
 }
 
-int SimStorage::getIncSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices)
+int SimStorage::getIncSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices)
 {
     for (int i = 0; i < _inc_fp_count; i++)
     {

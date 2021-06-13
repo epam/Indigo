@@ -61,7 +61,7 @@ namespace indigo
         class MainLayerFormula : public AbstractLayer
         {
         public:
-            void printFormula(Array<char>& result);
+            void printFormula(ArrayChar& result);
 
             static int compareComponentsAtomsCountNoH(MainLayerFormula& comp1, MainLayerFormula& comp2);
             static int compareComponentsTotalHydrogensCount(MainLayerFormula& comp1, MainLayerFormula& comp2);
@@ -70,7 +70,7 @@ namespace indigo
             void _construct() override;
 
         private:
-            Array<int> _atoms_count;
+            ArrayNew<int> _atoms_count;
 
             void _printAtom(Output& output, int label) const;
             void _collectAtomsCount();
@@ -80,7 +80,7 @@ namespace indigo
         class MainLayerConnections : public AbstractLayer
         {
         public:
-            void printConnectionTable(Array<char>& result);
+            void printConnectionTable(ArrayChar& result);
 
             int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
 
@@ -90,7 +90,7 @@ namespace indigo
             void _construct() override;
 
         private:
-            Array<int> _connection_table;
+            ArrayNew<int> _connection_table;
 
             void _linearizeConnectionTable();
         };
@@ -101,20 +101,20 @@ namespace indigo
         public:
             static int compareComponentsHydrogens(HydrogensLayer& comp1, HydrogensLayer& comp2);
 
-            bool checkAutomorphism(const Array<int>& mapping);
+            bool checkAutomorphism(const ArrayNew<int>& mapping);
             int compareMappings(MoleculeInChIUtils::Mapping& m1, MoleculeInChIUtils::Mapping& m2);
 
-            void print(Array<char>& result);
+            void print(ArrayChar& result);
 
         protected:
             void _construct() override;
 
         private:
             // Number of immobile hydrogens for each atom
-            Array<int> _per_atom_immobile;
+            ArrayNew<int> _per_atom_immobile;
             // Atom indices in the 'mol' to avoid vertexBegin/vertexEnd iterations
             // when comparing components
-            Array<int> _atom_indices;
+            ArrayNew<int> _atom_indices;
 
             // TODO: Mobile hydrogens, fixed hydrogens
         };
@@ -123,9 +123,9 @@ namespace indigo
         class CisTransStereochemistryLayer : public AbstractLayer
         {
         public:
-            void print(Array<char>& result);
+            void print(ArrayChar& result);
 
-            bool checkAutomorphism(const Array<int>& mapping);
+            bool checkAutomorphism(const ArrayNew<int>& mapping);
             int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
 
             static int compareComponents(CisTransStereochemistryLayer& comp1, CisTransStereochemistryLayer& comp2);
@@ -134,18 +134,18 @@ namespace indigo
             void _construct() override;
 
         private:
-            Array<int> bond_is_cis_trans;
+            ArrayNew<int> bond_is_cis_trans;
         };
 
         // Tetrahedral stereochemistry
         class TetrahedralStereochemistryLayer : public AbstractLayer
         {
         public:
-            void print(Array<char>& result);
+            void print(ArrayChar& result);
 
-            void printEnantiomers(Array<char>& result);
+            void printEnantiomers(ArrayChar& result);
 
-            bool checkAutomorphism(const Array<int>& mapping);
+            bool checkAutomorphism(const ArrayNew<int>& mapping);
             int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
 
             static int compareComponentsEnantiomers(TetrahedralStereochemistryLayer& comp1, TetrahedralStereochemistryLayer& comp2);

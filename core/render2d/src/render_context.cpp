@@ -106,7 +106,7 @@ IMPL_ERROR(RenderContext, "render context");
 //    if (!discard)
 //    {
 //        int size = GetEnhMetaFileBits(hemf, 0, NULL);
-//        Array<char> buf;
+//        ArrayChar buf;
 //        buf.resize(size);
 //        GetEnhMetaFileBits(hemf, size, (BYTE*)(buf.ptr()));
 //        opt.output->writeArray(buf);
@@ -494,7 +494,7 @@ void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
     cairoCheckStatus();
 }
 
-void RenderContext::drawPoly(const Array<Vec2f>& v)
+void RenderContext::drawPoly(const ArrayNew<Vec2f>& v)
 {
     moveTo(v[0]);
     for (int i = 1; i < v.size(); ++i)
@@ -1022,7 +1022,7 @@ float RenderContext::_getDashedLineAlignmentOffset(float length)
     return offset;
 }
 
-void RenderContext::setDash(const Array<double>& dash, float length)
+void RenderContext::setDash(const ArrayNew<double>& dash, float length)
 {
     cairo_set_dash(_cr, dash.ptr(), dash.size(), _getDashedLineAlignmentOffset(length));
     cairoCheckStatus();

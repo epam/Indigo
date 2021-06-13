@@ -75,7 +75,7 @@ void CmlLoader::_loadMolecule()
 {
     if (_scanner != 0)
     {
-        QS_DEF(Array<char>, buf);
+        QS_DEF(ArrayChar, buf);
         _scanner->readAll(buf);
         buf.push(0);
         TiXmlDocument xml;
@@ -164,8 +164,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         return it->second;
     };
 
-    QS_DEF(Array<int>, total_h_count);
-    QS_DEF(Array<int>, query_h_count);
+    QS_DEF(ArrayNew<int>, total_h_count);
+    QS_DEF(ArrayNew<int>, query_h_count);
     atoms_id.clear();
     atoms_id_int.clear();
     total_h_count.clear();
@@ -493,8 +493,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     AutoPtr<QueryMolecule::Atom> atomlist;
 
                     BufferScanner strscan(a.query_props.c_str());
-                    QS_DEF(Array<char>, el);
-                    QS_DEF(Array<char>, delim);
+                    QS_DEF(ArrayChar, el);
+                    QS_DEF(ArrayChar, delim);
                     el.clear();
                     delim.clear();
 
@@ -628,8 +628,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                 else if (!a.query_props.empty()) // Query features
                 {
                     BufferScanner strscan(a.query_props.c_str());
-                    QS_DEF(Array<char>, qf);
-                    QS_DEF(Array<char>, delim);
+                    QS_DEF(ArrayChar, qf);
+                    QS_DEF(ArrayChar, delim);
                     qf.clear();
                     delim.clear();
 
@@ -861,7 +861,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         int idx;
 
         BufferScanner strscan(atom_refs);
-        QS_DEF(Array<char>, id);
+        QS_DEF(ArrayChar, id);
 
         strscan.readWord(id, 0);
         int beg = getAtomIdx(id.ptr());
@@ -1064,8 +1064,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         if (refs4 != 0)
         {
             BufferScanner strscan(refs4);
-            QS_DEF(Array<char>, id);
-            int pyramid[4];
+            QS_DEF(ArrayChar, id);
+            int k, pyramid[4];
 
             for (int k = 0; k < 4; k++)
             {
@@ -1087,7 +1087,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
 
     if (_bmol->stereocenters.size() == 0 && BaseMolecule::hasCoord(*_bmol))
     {
-        QS_DEF(Array<int>, sensible_bond_orientations);
+        QS_DEF(ArrayNew<int>, sensible_bond_orientations);
 
         sensible_bond_orientations.clear_resize(_bmol->vertexEnd());
         _bmol->stereocenters.buildFromBonds(stereochemistry_options, sensible_bond_orientations.ptr());
@@ -1161,7 +1161,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
             if (has_subst)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
                 int refs[4] = {-1, -1, -1, -1};
 
                 for (int k = 0; k < 4; k++)
@@ -1282,7 +1282,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1318,7 +1318,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = dsg->brackets.push();
+                        pbrackets = &dsg->brackets.push().front();
 
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");
@@ -1438,7 +1438,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1474,7 +1474,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = gen->brackets.push();
+                        pbrackets = &gen->brackets.push().front();
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1516,7 +1516,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1552,7 +1552,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = sru->brackets.push();
+                        pbrackets = &sru->brackets.push().front();
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1611,7 +1611,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1625,7 +1625,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (patoms != 0)
             {
                 BufferScanner strscan(patoms);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1661,7 +1661,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = mul->brackets.push();
+                        pbrackets = &mul->brackets.push().front();
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1710,7 +1710,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1746,7 +1746,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = sup->brackets.push();
+                        pbrackets = &sup->brackets.push().front();
 
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");
@@ -1895,7 +1895,7 @@ void CmlLoader::_loadRgroupElement(TiXmlHandle& handle)
     }
 }
 
-void CmlLoader::_parseRlogicRange(const char* str, Array<int>& ranges)
+void CmlLoader::_parseRlogicRange(const char* str, ArrayNew<int>& ranges)
 {
     int beg = -1, end = -1;
     int add_beg = 0, add_end = 0;

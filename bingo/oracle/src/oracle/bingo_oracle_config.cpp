@@ -162,7 +162,7 @@ ORAEXT OCIString* oraConfigGetString(OCIExtProcContext* ctx, int context_id, cha
         if (key_name_indicator != OCI_IND_NOTNULL)
             throw BingoError("Null key is given");
 
-        QS_DEF(Array<char>, value);
+        QS_DEF(ArrayChar, value);
         BingoOracleContext& context = BingoOracleContext::get(env, context_id, false, 0);
         if (!context.configGetString(env, key_name, value))
             throw BingoError("Key wasn't found");

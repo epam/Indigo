@@ -62,10 +62,10 @@ bool CycleEnumerator::process()
 bool CycleEnumerator::_pathFinder(const SpanningTree& spt, int ext_v1, int ext_v2, int ext_e)
 {
 
-    QS_DEF(Array<int>, vertices);
-    QS_DEF(Array<int>, edges);
-    QS_DEF(Array<int>, flags);
-    QS_DEF(Array<int>, visited_vertices);
+    QS_DEF(ArrayNew<int>, vertices);
+    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayNew<int>, flags);
+    QS_DEF(ArrayNew<int>, visited_vertices);
     int cur_start_idx = 0;
 
     vertices.clear();

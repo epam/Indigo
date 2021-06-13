@@ -35,16 +35,16 @@ public:
     void prepare(Scanner& rxnfile, Output& fi_output, OsLock* lock_for_exclusive_access) override;
 
     const byte* getFingerprint();
-    const Array<char>& getCrf();
+    const ArrayChar& getCrf();
     dword getHash();
     const char* getHashStr();
 
     void clear();
 
 private:
-    Array<byte> _fp;
-    Array<char> _crf;
+    ArrayNew<byte> _fp;
+    ArrayChar _crf;
     dword _hash;
-    Array<char> _hash_str;
+    ArrayChar _hash_str;
 };
 #endif

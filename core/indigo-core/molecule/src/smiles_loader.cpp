@@ -240,7 +240,7 @@ void SmilesLoader::_calcStereocenters()
 
 void SmilesLoader::_calcCisTrans()
 {
-    QS_DEF(Array<int>, dirs);
+    QS_DEF(ArrayNew<int>, dirs);
     int i;
 
     dirs.clear();
@@ -266,7 +266,7 @@ void SmilesLoader::_readOtherStuff()
     MoleculeStereocenters& stereocenters = _bmol->stereocenters;
     MoleculeCisTrans& cis_trans = _bmol->cis_trans;
 
-    QS_DEF(Array<int>, to_remove);
+    QS_DEF(ArrayNew<int>, to_remove);
 
     to_remove.clear();
 
@@ -429,7 +429,7 @@ void SmilesLoader::_readOtherStuff()
         }
         else if (c == '$') // pseudoatoms
         {
-            QS_DEF(Array<char>, label);
+            QS_DEF(ArrayChar, label);
 
             for (int i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
             {
@@ -463,7 +463,7 @@ void SmilesLoader::_readOtherStuff()
 
                         // check multiple R-sites notation
                         BufferScanner strscan(label.ptr());
-                        QS_DEF(Array<char>, word);
+                        QS_DEF(ArrayChar, word);
                         while (!strscan.isEOF())
                         {
                             strscan.skip(1);
@@ -744,7 +744,7 @@ void SmilesLoader::_readOtherStuff()
                 throw Error("colon expected after 'RG'");
 
             MoleculeRGroups* rgroups = &_bmol->rgroups;
-            QS_DEF(Array<char>, label);
+            QS_DEF(ArrayChar, label);
 
             while (1)
             {
@@ -771,7 +771,7 @@ void SmilesLoader::_readOtherStuff()
                     if (label.size() > 3 && strncmp(label.ptr(), "_R", 2) == 0 && sscanf(label.ptr() + 2, "%d", &rnum) == 1)
                     {
                         // RGroup description found
-                        QS_DEF(Array<char>, rgdesc);
+                        QS_DEF(ArrayChar, rgdesc);
                         RGroup& rgroup = rgroups->getRGroup(rnum);
 
                         while (1)
@@ -861,7 +861,7 @@ void SmilesLoader::_readOtherStuff()
 
                                     int if_then = 0;
                                     int rest_h = 0;
-                                    QS_DEF(Array<char>, occurrence_str);
+                                    QS_DEF(ArrayChar, occurrence_str);
 
                                     if (_scanner.lookNext() == '_')
                                     {
@@ -1002,7 +1002,7 @@ void SmilesLoader::_parseMolecule()
 
                     if (_qmol != 0)
                     {
-                        QS_DEF(Array<char>, bond_str);
+                        QS_DEF(ArrayChar, bond_str);
                         AutoPtr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond());
 
                         bond_str.readString(_pending_bonds_pool.at(_cycles[number].pending_bond_str), false);
@@ -1098,7 +1098,7 @@ void SmilesLoader::_parseMolecule()
 
         if (bond != 0)
         {
-            QS_DEF(Array<char>, bond_str);
+            QS_DEF(ArrayChar, bond_str);
 
             bond_str.clear();
             while (strchr("-=#:@!;,&~?/\\", next) != NULL)
@@ -1252,7 +1252,7 @@ void SmilesLoader::_parseMolecule()
         if (bond != 0)
             bond->end = _atoms.size() - 1;
 
-        QS_DEF(Array<char>, atom_str);
+        QS_DEF(ArrayChar, atom_str);
 
         atom_str.clear();
 
@@ -1391,7 +1391,7 @@ void SmilesLoader::_parseMolecule()
 
 void SmilesLoader::_handleCurlyBrace(_AtomDesc& atom, bool& inside_polymer)
 {
-    QS_DEF(Array<char>, curly);
+    QS_DEF(ArrayChar, curly);
     curly.clear();
     while (1)
     {
@@ -1568,7 +1568,7 @@ void SmilesLoader::_markAromaticBonds()
     // be aromatic when they are contained in some aliphatic (SSSR) ring.
     for (i = 0; i < basis.getCyclesCount(); i++)
     {
-        const Array<int>& cycle = basis.getCycle(i);
+        const ArrayNew<int>& cycle = basis.getCycle(i);
         int j;
         bool needs_modification = false;
 
@@ -1611,7 +1611,7 @@ void SmilesLoader::_markAromaticBonds()
 
     for (i = 0; i < basis.getCyclesCount(); i++)
     {
-        const Array<int>& cycle = basis.getCycle(i);
+        const ArrayNew<int>& cycle = basis.getCycle(i);
         int j;
         bool needs_modification = false;
 
@@ -1923,7 +1923,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
         std::swap(start_bond, end_bond);
     }
 
-    Vec2f* p = sgroup->brackets.push();
+    auto& p = sgroup->brackets.push();
     p[0].set(0, 0);
     p[1].set(0, 0);
     p = sgroup->brackets.push();
@@ -1932,7 +1932,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
 
     if (_polymer_repetitions[i] > 1)
     {
-        QS_DEF(Array<int>, mapping);
+        QS_DEF(ArrayNew<int>, mapping);
         AutoPtr<BaseMolecule> rep(_bmol->neu());
 
         rep->makeSubmolecule(*_bmol, sgroup->atoms, &mapping, 0);
@@ -2022,11 +2022,11 @@ void SmilesLoader::_loadMolecule()
     _loadParsedMolecule();
 }
 
-void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond)
+void SmilesLoader::_readBond(ArrayChar& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond)
 {
     if (bond_str.find(';') != -1)
     {
-        QS_DEF(Array<char>, substring);
+        QS_DEF(ArrayChar, substring);
         AutoPtr<QueryMolecule::Bond> subqbond;
         int i;
 
@@ -2050,7 +2050,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<Que
     }
     if (bond_str.find(',') != -1)
     {
-        QS_DEF(Array<char>, substring);
+        QS_DEF(ArrayChar, substring);
         AutoPtr<QueryMolecule::Bond> subqbond;
         int i;
 
@@ -2077,7 +2077,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<Que
     }
     if (bond_str.find('&') != -1)
     {
-        QS_DEF(Array<char>, substring);
+        QS_DEF(ArrayChar, substring);
         AutoPtr<QueryMolecule::Bond> subqbond;
         int i;
 
@@ -2102,7 +2102,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<Que
     _readBondSub(bond_str, bond, qbond);
 }
 
-void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond)
+void SmilesLoader::_readBondSub(ArrayChar& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond)
 {
     BufferScanner scanner(bond_str);
 
@@ -2213,9 +2213,9 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, AutoPtr<
     }
 }
 
-bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom)
+bool SmilesLoader::_readAtomLogic(ArrayChar& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom)
 {
-    QS_DEF(Array<char>, atom_str_copy);
+    QS_DEF(ArrayChar, atom_str_copy);
     if (atom_str.size() < 1)
         throw Error("empty atom?");
 
@@ -2243,7 +2243,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
 
     if (atom_str_copy.find(';') != -1)
     {
-        QS_DEF(Array<char>, substring);
+        QS_DEF(ArrayChar, substring);
         AutoPtr<QueryMolecule::Atom> subqatom;
         int i, k = 0;
 
@@ -2269,7 +2269,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
 
     if (atom_str_copy.find(',') != -1)
     {
-        QS_DEF(Array<char>, substring);
+        QS_DEF(ArrayChar, substring);
         AutoPtr<QueryMolecule::Atom> subqatom;
         int i, k = 0;
 
@@ -2298,7 +2298,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
 
     if (atom_str_copy.find('&') != -1)
     {
-        QS_DEF(Array<char>, substring);
+        QS_DEF(ArrayChar, substring);
         AutoPtr<QueryMolecule::Atom> subqatom;
         int i, k = 0;
 
@@ -2324,7 +2324,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     return true;
 }
 
-void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom)
+void SmilesLoader::_readAtom(ArrayChar& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom)
 {
     if (!_readAtomLogic(atom_str, first_in_brackets, atom, qatom))
         return;
@@ -2357,7 +2357,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             if (scanner.readChar() != '(')
                 throw Error("'$' must be followed by '('");
 
-            QS_DEF(Array<char>, subexp);
+            QS_DEF(ArrayChar, subexp);
 
             subexp.clear();
             int cnt = 1;
@@ -2800,7 +2800,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
     }
 }
 
-int SmilesLoader::_parseCurly(Array<char>& curly, int& repetitions)
+int SmilesLoader::_parseCurly(ArrayChar& curly, int& repetitions)
 {
     if (curly.size() == 1 && curly[0] == '-')
         return _POLYMER_START;
@@ -2824,7 +2824,7 @@ int SmilesLoader::_parseCurly(Array<char>& curly, int& repetitions)
     return 0;
 }
 
-void SmilesLoader::_readRGroupOccurrenceRanges(const char* str, Array<int>& ranges)
+void SmilesLoader::_readRGroupOccurrenceRanges(const char* str, ArrayNew<int>& ranges)
 {
     int beg = -1, end = -1;
     int add_beg = 0, add_end = 0;

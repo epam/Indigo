@@ -61,7 +61,7 @@ IndigoOutput::IndigoOutput() : IndigoObject(OUTPUT)
     _own_buf = true;
 }
 
-void IndigoOutput::toString(Array<char>& str)
+void IndigoOutput::toString(ArrayChar& str)
 {
     if (_own_buf)
         str.copy(_buf);

@@ -132,10 +132,10 @@ namespace bingo
     private:
         struct _ObjectIndexData
         {
-            Array<byte> sub_fp;
-            Array<byte> sim_fp;
-            Array<char> cf_str;
-            Array<char> gross_str;
+            ArrayNew<byte> sub_fp;
+            ArrayNew<byte> sim_fp;
+            ArrayChar cf_str;
+            ArrayChar gross_str;
             dword hash;
         };
 

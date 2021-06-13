@@ -14,7 +14,7 @@ namespace bingo
 
         size_t get(size_t id);
 
-        void getAll(size_t id1, Array<size_t>& id2_array);
+        void getAll(size_t id1, ArrayNew<size_t>& id2_array);
 
         void add(size_t id1, size_t id2);
 

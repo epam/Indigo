@@ -38,14 +38,14 @@ class MangoIndex : public BingoIndex
 public:
     void prepare(Scanner& molfile, Output& output, OsLock* lock_for_exclusive_access);
 
-    const Array<char>& getCmf() const;
-    const Array<char>& getXyz() const;
+    const ArrayChar& getCmf() const;
+    const ArrayChar& getXyz() const;
 
     const MangoExact::Hash& getHash() const;
 
     const char* getGrossString() const;
     const char* getCountedElementsString() const;
-    const Array<int>& getCountedElements() const;
+    const ArrayNew<int>& getCountedElements() const;
 
     const byte* getFingerprint() const;
 
@@ -61,23 +61,23 @@ public:
 
 private:
     // CMF-packed aromatized molecule and coordinates
-    Array<char> _cmf;
-    Array<char> _xyz;
+    ArrayChar _cmf;
+    ArrayChar _xyz;
 
     // hash for exact match
     MangoExact::Hash _hash;
 
     // gross formula
-    Array<int> _gross;
-    Array<char> _gross_str;
+    ArrayNew<int> _gross;
+    ArrayChar _gross_str;
 
-    Array<byte> _fp;
-    Array<char> _fp_sim_str;
+    ArrayNew<byte> _fp;
+    ArrayChar _fp_sim_str;
 
     // comma-separated list of selected counters
     // (for non-exact gross formula search)
-    Array<char> _counted_elems_str;
-    Array<int> _counted_elem_counters;
+    ArrayChar _counted_elems_str;
+    ArrayNew<int> _counted_elem_counters;
 
     // Molecular mass
     float _molecular_mass;

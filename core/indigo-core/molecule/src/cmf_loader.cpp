@@ -409,8 +409,8 @@ void CmfLoader::loadMolecule(Molecule& mol)
 
     mol.clear();
 
-    QS_DEF(Array<int>, cycle_numbers);
-    QS_DEF(Array<int>, atom_stack);
+    QS_DEF(ArrayNew<int>, cycle_numbers);
+    QS_DEF(ArrayNew<int>, atom_stack);
 
     _atoms.clear();
     _bonds.clear();
@@ -861,7 +861,7 @@ void CmfLoader::_readSGroupXYZ(Scanner& scanner, int idx, Molecule& mol, const C
         throw Error("_readExtSection: unexpected SGroup type: %d", sg_type);
 }
 
-void CmfLoader::_readString(Array<char>& dest)
+void CmfLoader::_readString(ArrayChar& dest)
 {
     unsigned int len = _scanner->readPackedUInt();
     dest.resize(len + 1);
@@ -869,7 +869,7 @@ void CmfLoader::_readString(Array<char>& dest)
     dest[len] = 0;
 }
 
-void CmfLoader::_readUIntArray(Array<int>& dest)
+void CmfLoader::_readUIntArray(ArrayNew<int>& dest)
 {
     unsigned int len = _scanner->readPackedUInt();
     dest.clear_resize(len);

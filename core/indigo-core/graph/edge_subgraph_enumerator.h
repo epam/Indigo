@@ -49,13 +49,13 @@ namespace indigo
         CP_DECL;
         TL_CP_DECL(Graph, _subgraph);
 
-        TL_CP_DECL(Array<int>, _mapping);          // subgraph -> graph
-        TL_CP_DECL(Array<int>, _inv_mapping);      // graph -> subgraph
-        TL_CP_DECL(Array<int>, _edge_mapping);     // subgraph -> graph
-        TL_CP_DECL(Array<int>, _inv_edge_mapping); // graph -> subgraph
+        TL_CP_DECL(ArrayNew<int>, _mapping);          // subgraph -> graph
+        TL_CP_DECL(ArrayNew<int>, _inv_mapping);      // graph -> subgraph
+        TL_CP_DECL(ArrayNew<int>, _edge_mapping);     // subgraph -> graph
+        TL_CP_DECL(ArrayNew<int>, _inv_edge_mapping); // graph -> subgraph
 
         TL_CP_DECL(Pool<List<int>::Elem>, _pool);
-        TL_CP_DECL(Array<int>, _adjacent_edges);
+        TL_CP_DECL(ArrayNew<int>, _adjacent_edges);
 
         class _Enumerator
         {

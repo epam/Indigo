@@ -19,7 +19,7 @@ using namespace bingo;
 static const char* _matcher_params_prop = "";
 static const char* _matcher_part_prop = "part";
 
-GrossQueryData::GrossQueryData(Array<char>& gross_str) : _obj(gross_str)
+GrossQueryData::GrossQueryData(ArrayChar& gross_str) : _obj(gross_str)
 {
 }
 
@@ -451,7 +451,7 @@ void BaseSubstructureMatcher::_findPackCandidates(int pack_idx)
 
     int fp_size_in_bits = _fp_size * 8;
 
-    Array<byte> fit_bits;
+    ArrayNew<byte> fit_bits;
     fit_bits.clear_resize(fp_storage.getBlockSize());
     fit_bits.fill(255);
 
@@ -541,7 +541,7 @@ MoleculeSubMatcher::MoleculeSubMatcher(/*const */ BaseIndex& index)
     _mapping.clear();
 }
 
-const Array<int>& MoleculeSubMatcher::currentMapping()
+const ArrayNew<int>& MoleculeSubMatcher::currentMapping()
 {
     return _mapping;
 }
@@ -584,7 +584,7 @@ ReactionSubMatcher::ReactionSubMatcher(/*const */ BaseIndex& index)
     _mapping.clear();
 }
 
-const ObjArray<Array<int>>& ReactionSubMatcher::currentMapping()
+const ObjArray<ArrayNew<int>>& ReactionSubMatcher::currentMapping()
 {
     return _mapping;
 }
@@ -984,10 +984,10 @@ bool TopNSimMatcher::next()
 
 void TopNSimMatcher::_findTopN()
 {
-    QS_DEF(Array<float>, thrs);
-    QS_DEF(Array<int>, nhits_per_block);
-    QS_DEF(Array<int>, blocks);
-    QS_DEF(Array<int>, cells);
+    QS_DEF(ArrayNew<float>, thrs);
+    QS_DEF(ArrayNew<int>, nhits_per_block);
+    QS_DEF(ArrayNew<int>, blocks);
+    QS_DEF(ArrayNew<int>, cells);
 
     thrs.clear();
     nhits_per_block.clear();
@@ -1048,14 +1048,10 @@ void TopNSimMatcher::_findTopN()
             cnt = 0;
             _current_results.clear();
 
-            SimResult* res = 0;
-
             while (BaseSimilarityMatcher::next())
             {
                 cnt++;
-                res = &_current_results.push();
-                res->id = _current_id;
-                res->sim_value = _current_sim_value;
+                _current_results.emplace_back(_current_id, _current_sim_value);
                 cur_cell = currentCell();
                 if ((cnt > hits_limit * 2) && ((max_cell - cur_cell) > cells_count / 2))
                 {
@@ -1104,14 +1100,10 @@ void TopNSimMatcher::_findTopN()
             cnt = 0;
             _current_results.clear();
 
-            SimResult* res = 0;
-
             while (BaseSimilarityMatcher::next())
             {
                 cnt++;
-                res = &_current_results.push();
-                res->id = _current_id;
-                res->sim_value = _current_sim_value;
+                _current_results.emplace_back(_current_id, _current_sim_value);
 
                 if (cnt > hits_limit * 2)
                 {
@@ -1181,14 +1173,10 @@ void TopNSimMatcher::_findTopN()
                 cnt = 0;
                 _current_results.clear();
 
-                SimResult* res = 0;
-
                 while (BaseSimilarityMatcher::next())
                 {
                     cnt++;
-                    res = &_current_results.push();
-                    res->id = _current_id;
-                    res->sim_value = _current_sim_value;
+                    _current_results.emplace_back(_current_id, _current_sim_value);
                     cur_cell = currentCell();
                     if ((cnt > hits_limit * 2) && (max_cell - cur_cell) > cells_count / 2)
                     {
@@ -1241,8 +1229,7 @@ void TopNSimMatcher::_findTopN()
 
     if (_current_results.size() > 0)
     {
-        _current_results.qsort(_cmp_sim_res, 0);
-
+        std::sort(_current_results.begin(), _current_results.end(), TopNSimMatcher::_cmp_sim_res);
         for (i = 0; i < _current_results.size(); i++)
         {
             _result_ids.push(_current_results[i].id);
@@ -1254,17 +1241,12 @@ void TopNSimMatcher::_findTopN()
     }
 }
 
-int TopNSimMatcher::_cmp_sim_res(SimResult& res1, SimResult& res2, void* context)
+bool TopNSimMatcher::_cmp_sim_res( const SimResult& res1, const SimResult& res2 )
 {
-    if ((res1.sim_value - res2.sim_value) > 0.0)
-        return -1;
-    else if ((res1.sim_value - res2.sim_value) < 0.0)
-        return 1;
-
-    return 0;
+    return res1.sim_value < res2.sim_value;
 }
 
-void TopNSimMatcher::_initModelDistribution(Array<float>& model_thrs, Array<int>& model_nhits_per_block)
+void TopNSimMatcher::_initModelDistribution(ArrayNew<float>& model_thrs, ArrayNew<int>& model_nhits_per_block)
 {
     for (int i = 0; i < 9; i++)
     {
@@ -1432,7 +1414,7 @@ void RxnExactMatcher::_setParameters(const char* flags)
 
     BufferScanner scanner(flags);
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(ArrayChar, word);
     while (1)
     {
         scanner.skipSpace();

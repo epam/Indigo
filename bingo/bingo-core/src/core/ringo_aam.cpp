@@ -29,7 +29,7 @@ RingoAAM::RingoAAM(BingoContext& context) : _context(context)
 {
 }
 
-void RingoAAM::loadReaction(const Array<char>& buf)
+void RingoAAM::loadReaction(const ArrayChar& buf)
 {
     BufferScanner scanner(buf);
     loadReaction(scanner);
@@ -72,7 +72,7 @@ void RingoAAM::parse(const char* mode)
         throw Error("unknown mode: %s", mode);
 }
 
-void RingoAAM::getResult(Array<char>& buf)
+void RingoAAM::getResult(ArrayChar& buf)
 {
     ArrayOutput output_r(buf);
     RxnfileSaver rcs(output_r);

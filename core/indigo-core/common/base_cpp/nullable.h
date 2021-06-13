@@ -79,7 +79,7 @@ namespace indigo
     private:
         T _value;
         bool _has_value;
-        Array<char> variable_name;
+        ArrayChar variable_name;
     };
 
 } // namespace indigo

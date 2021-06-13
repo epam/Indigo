@@ -52,9 +52,9 @@ namespace indigo
         int _mode;
 
         CP_DECL;
-        TL_CP_DECL(Array<int>, _vertex_states);
-        TL_CP_DECL(Array<int>, _chain_vertices);
-        TL_CP_DECL(Array<int>, _chain_edges);
+        TL_CP_DECL(ArrayNew<int>, _vertex_states);
+        TL_CP_DECL(ArrayNew<int>, _chain_vertices);
+        TL_CP_DECL(ArrayNew<int>, _chain_edges);
     };
 
 } // namespace indigo

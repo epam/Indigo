@@ -331,8 +331,8 @@ CEXPORT int bingoImportParseFieldList(const char* fields_str)
 {
     BINGO_BEGIN
     {
-        QS_DEF(Array<char>, prop);
-        QS_DEF(Array<char>, column);
+        QS_DEF(ArrayChar, prop);
+        QS_DEF(ArrayChar, column);
         BufferScanner scanner(fields_str);
 
         self.import_properties.free();
@@ -552,8 +552,8 @@ CEXPORT void bingoProfIncCounter(const char* name, int dv)
     inst.addCounter(name_index, dv);
 }
 
-CEXPORT const char* bingoGetNameCore(const char* target_buf, int target_buf_len){BINGO_BEGIN{QS_DEF(Array<char>, source);
-QS_DEF(Array<char>, name);
+CEXPORT const char* bingoGetNameCore(const char* target_buf, int target_buf_len){BINGO_BEGIN{QS_DEF(ArrayChar, source);
+QS_DEF(ArrayChar, name);
 
 BufferScanner scanner(target_buf, target_buf_len);
 bingoGetName(scanner, self.buffer);

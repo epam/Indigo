@@ -63,14 +63,14 @@ protected:
         _MASS = 6
     };
 
-    void _prepareExactQueryStrings(Array<char>& table_copies, Array<char>& where_clause);
+    void _prepareExactQueryStrings(ArrayChar& table_copies, ArrayChar& where_clause);
 
     MangoFetchContext& _context;
 
-    Array<char> _table_name;
-    Array<char> _components_table_name;
+    ArrayChar _table_name;
+    ArrayChar _components_table_name;
     int _total_count;
-    Array<char> _counting_select;
+    ArrayChar _counting_select;
     int _processed_rows;
     bool _end;
     AutoPtr<OracleEnv> _env;

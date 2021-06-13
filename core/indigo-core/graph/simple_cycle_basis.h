@@ -38,19 +38,19 @@ namespace indigo
         {
             return _cycles.size();
         }
-        const Array<int>& getCycle(int num) const
+        const ArrayNew<int>& getCycle(int num) const
         {
             return _cycles[num];
         }
 
-        ObjArray<Array<int>> _cycles;
+        ObjArray<ArrayNew<int>> _cycles;
 
     private:
-        static void constructKernelVector(Array<bool>& u, ObjArray<Array<bool>>& a, int i);
+        static void constructKernelVector(ArrayBool& u, ObjArray<ArrayBool>& a, int i);
         SimpleCycleBasis(SimpleCycleBasis&); // no implicit copy
         bool _getParentVertex(const Graph& graph, int vertex, int& parent_vertex);
         void _minimize(int startIndex);
-        void _getCycleEdgeIncidenceMatrix(ObjArray<Array<bool>>& a);
+        void _getCycleEdgeIncidenceMatrix(ObjArray<ArrayBool>& a);
         void _createEdgeIndexMap();
         int _getEdgeIndex(int edge) const;
 
@@ -63,7 +63,7 @@ namespace indigo
 
         const Graph& _graph;
 
-        Array<int> _edgeList;
+        ArrayNew<int> _edgeList;
 
         bool _isMinimized;
     };
@@ -81,11 +81,11 @@ namespace indigo
         RedBlackMap<int, int> _auxEdgeMap;
 
         const Graph& _graph;
-        Array<bool>& _u;
+        ArrayBool& _u;
         RedBlackMap<int, int>& _edgeIndexMap;
 
     public:
-        AuxiliaryGraph(const Graph& graph, Array<bool>& u, RedBlackMap<int, int>& edgeIndexMap) : _graph(graph), _u(u), _edgeIndexMap(edgeIndexMap)
+        AuxiliaryGraph(const Graph& graph, ArrayBool& u, RedBlackMap<int, int>& edgeIndexMap) : _graph(graph), _u(u), _edgeIndexMap(edgeIndexMap)
         {
         }
 

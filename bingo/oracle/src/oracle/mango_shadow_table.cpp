@@ -48,7 +48,7 @@ MangoShadowTable::~MangoShadowTable()
 }
 
 void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockno, int offset, const char* data_cmf, int len_cmf, const char* data_xyz,
-                                   int len_xyz, const MangoExact::Hash& hash, const char* gross, const Array<int>& counters, float molecular_mass,
+                                   int len_xyz, const MangoExact::Hash& hash, const char* gross, const ArrayNew<int>& counters, float molecular_mass,
                                    const char* fp_sim, bool append)
 {
     if (_main_table_statement_count >= 4096)
@@ -85,11 +85,11 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
     }
 
     _pending_rid.push();
-    strncpy(_pending_rid.top(), rowid, 19);
+    strncpy(&_pending_rid.top().front(), rowid, 19);
     _pending_blockno.push(blockno);
     _pending_offset.push(offset);
     _pending_gross.push();
-    strncpy(_pending_gross.top(), gross, 512);
+    strncpy(&_pending_gross.top().front(), gross, 512);
     _pending_mass.push(molecular_mass);
 
     _pending_cmf.push(env);
@@ -129,9 +129,9 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
     for (int i = 0; i < hash.size(); i++)
     {
         _pending_comp_hash.push();
-        snprintf(_pending_comp_hash.top(), 9, "%08X", hash[i].hash);
+        snprintf(&_pending_comp_hash.top().front(), 9, "%08X", hash[i].hash);
         _pending_comp_rid.push();
-        strncpy(_pending_comp_rid.top(), rowid, 19);
+        strncpy(&_pending_comp_rid.top().front(), rowid, 19);
         _pending_comp_count.push(hash[i].count);
         _components_table_statement_count++;
     }
@@ -155,13 +155,13 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
             profTimerStart(tmain, "moleculeIndex.register_shadow_main");
             _main_table_statement->prepare();
 
-            _main_table_statement->bindStringByName(":rid", _pending_rid[0], 19);
+            _main_table_statement->bindStringByName(":rid", &_pending_rid[0].front(), 19);
             _main_table_statement->bindIntByName(":blockno", _pending_blockno.ptr());
             _main_table_statement->bindIntByName(":offset", _pending_offset.ptr());
-            _main_table_statement->bindStringByName(":gross", _pending_gross[0], 512);
+            _main_table_statement->bindStringByName(":gross", &_pending_gross[0].front(), 512);
 
-            QS_DEF(Array<char>, cmf);
-            QS_DEF(Array<char>, xyz);
+            QS_DEF(ArrayChar, cmf);
+            QS_DEF(ArrayChar, xyz);
             QS_DEF(Array<short>, xyz_ind);
             int maxallocsize_cmf = 0;
             int maxallocsize_xyz = 0;
@@ -254,8 +254,8 @@ void MangoShadowTable::_flushComponents(OracleEnv& env)
             profTimerStart(tcomp, "moleculeIndex.register_shadow_comp");
             _components_table_statement->prepare();
             _components_table_statement->bindIntByName(":count", _pending_comp_count.ptr());
-            _components_table_statement->bindStringByName(":rid", _pending_comp_rid[0], 19);
-            _components_table_statement->bindStringByName(":hash", _pending_comp_hash[0], 9);
+            _components_table_statement->bindStringByName(":rid", &_pending_comp_rid[0].front(), 19);
+            _components_table_statement->bindStringByName(":hash", &_pending_comp_hash[0].front(), 9);
             _components_table_statement->executeMultiple(_components_table_statement_count);
             if (_commit_comp)
             {
@@ -352,7 +352,7 @@ void MangoShadowTable::analyze(OracleEnv& env)
     OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _components_table_name.ptr());
 }
 
-bool MangoShadowTable::getXyz(OracleEnv& env, const char* rowid, Array<char>& xyz)
+bool MangoShadowTable::getXyz(OracleEnv& env, const char* rowid, ArrayChar& xyz)
 {
     if (!OracleStatement::executeSingleBlob(xyz, env, "SELECT xyz FROM %s where mol_rowid='%s'", _table_name.ptr(), rowid))
         return false;

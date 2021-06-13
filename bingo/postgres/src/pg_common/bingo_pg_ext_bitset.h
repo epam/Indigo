@@ -156,8 +156,8 @@ private:
 
     qword* _words;
 
-    indigo::Array<qword> _internalWords;
-    indigo::Array<qword> _serializeWords;
+    indigo::ArrayNew<qword> _internalWords;
+    indigo::ArrayNew<qword> _serializeWords;
 
 public:
     class Iterator
@@ -178,7 +178,7 @@ public:
         }
 
     private:
-        void _fillIndexes(byte buf, indigo::Array<int>& indexes);
+        void _fillIndexes(byte buf, indigo::ArrayNew<int>& indexes);
         int _wordsInUse;
         qword* _words;
 
@@ -186,7 +186,7 @@ public:
         int _fromByteIdx;
         int _fromBitIdx;
         qword* _fromWord;
-        indigo::Array<int>* _fromIndexes;
+        indigo::ArrayNew<int>* _fromIndexes;
 
         int _shiftByte;
         int _shiftWord;

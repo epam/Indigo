@@ -78,8 +78,8 @@ CEXPORT int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* c
                                            const char** fingerprint_sim_str, float* mass,
                                            int* sim_fp_bits_count){BINGO_BEGIN{if (id) * id = self.index_record_data_id;
 
-const Array<char>& cmf = self.mango_index->getCmf();
-const Array<char>& xyz = self.mango_index->getXyz();
+const ArrayChar& cmf = self.mango_index->getCmf();
+const ArrayChar& xyz = self.mango_index->getXyz();
 
 *cmf_buf = cmf.ptr();
 *cmf_buf_len = cmf.size();
@@ -699,7 +699,7 @@ MoleculeAutoLoader loader(scanner);
 self.bingo_context->setLoaderSettings(loader);
 loader.loadMolecule(target);
 
-QS_DEF(Array<int>, gross);
+QS_DEF(ArrayNew<int>, gross);
 MoleculeGrossFormula::collect(target, gross);
 MoleculeGrossFormula::toString(gross, self.buffer);
 self.buffer.push(0);

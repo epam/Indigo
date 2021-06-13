@@ -462,7 +462,7 @@ bool MoleculeStandardizer::standardize(QueryMolecule& query, const StandardizeOp
 
 void MoleculeStandardizer::_standardizeStereo(Molecule& mol)
 {
-    QS_DEF(Array<int>, ignored);
+    QS_DEF(ArrayNew<int>, ignored);
 
     ignored.clear_resize(mol.vertexEnd());
     ignored.zerofill();
@@ -689,7 +689,7 @@ void MoleculeStandardizer::_centerMolecule(BaseMolecule& mol)
 
 void MoleculeStandardizer::_removeSingleAtomFragments(BaseMolecule& mol)
 {
-    QS_DEF(Array<int>, single_atoms);
+    QS_DEF(ArrayNew<int>, single_atoms);
     single_atoms.clear();
 
     for (auto i : mol.vertices())
@@ -726,7 +726,7 @@ void MoleculeStandardizer::_keepSmallestFragment(BaseMolecule& mol)
         }
     }
 
-    QS_DEF(Array<int>, remove_atoms);
+    QS_DEF(ArrayNew<int>, remove_atoms);
     remove_atoms.clear();
 
     for (auto i : mol.vertices())
@@ -760,7 +760,7 @@ void MoleculeStandardizer::_keepLargestFragment(BaseMolecule& mol)
         }
     }
 
-    QS_DEF(Array<int>, remove_atoms);
+    QS_DEF(ArrayNew<int>, remove_atoms);
     remove_atoms.clear();
 
     for (auto i : mol.vertices())
@@ -793,7 +793,7 @@ void MoleculeStandardizer::_removeLargestFragment(BaseMolecule& mol)
         }
     }
 
-    QS_DEF(Array<int>, remove_atoms);
+    QS_DEF(ArrayNew<int>, remove_atoms);
     remove_atoms.clear();
 
     for (auto i : mol.vertices())
@@ -1021,7 +1021,7 @@ void MoleculeStandardizer::_setStereoFromCoordinates(BaseMolecule& mol)
     mol.allene_stereo.clear();
 
     StereocentersOptions options;
-    QS_DEF(Array<int>, sensible_bond_orientations);
+    QS_DEF(ArrayNew<int>, sensible_bond_orientations);
     sensible_bond_orientations.clear_resize(mol.vertexEnd());
 
     mol.stereocenters.buildFromBonds(options, sensible_bond_orientations.ptr());
@@ -1099,7 +1099,7 @@ void MoleculeStandardizer::_fixDirectionOfWedgeBonds(BaseMolecule& mol)
 
 void MoleculeStandardizer::_removeExtraStereoBonds(BaseMolecule& mol)
 {
-    QS_DEF(Array<int>, stereo_neibs);
+    QS_DEF(ArrayNew<int>, stereo_neibs);
 
     if (!Molecule::hasCoord(mol))
         throw Error("Atoms coordinates are not defined");
@@ -1310,7 +1310,7 @@ void MoleculeStandardizer::_clearIsotopes(QueryMolecule& mol)
 
 void MoleculeStandardizer::_clearDativeBonds(BaseMolecule& mol)
 {
-    QS_DEF(Array<int>, remove_bonds);
+    QS_DEF(ArrayNew<int>, remove_bonds);
     remove_bonds.clear();
 
     for (auto i : mol.edges())
@@ -1327,7 +1327,7 @@ void MoleculeStandardizer::_clearDativeBonds(BaseMolecule& mol)
 
 void MoleculeStandardizer::_clearHydrogenBonds(BaseMolecule& mol)
 {
-    QS_DEF(Array<int>, remove_bonds);
+    QS_DEF(ArrayNew<int>, remove_bonds);
     remove_bonds.clear();
 
     for (auto i : mol.edges())
@@ -1392,7 +1392,7 @@ void MoleculeStandardizer::_createCoordinationBonds(BaseMolecule& mol)
 
 void MoleculeStandardizer::_createHydrogenBonds(BaseMolecule& mol)
 {
-    QS_DEF(Array<int>, modified_atoms);
+    QS_DEF(ArrayNew<int>, modified_atoms);
     modified_atoms.clear();
 
     for (auto i : mol.vertices())

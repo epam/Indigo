@@ -17,12 +17,12 @@ const float COS10_THRESHOLD = 0.015f;
 HaworthProjectionFinder::HaworthProjectionFinder(BaseMolecule& mol)
     : _mol(mol), CP_INIT, TL_CP_GET(_atoms_mask), TL_CP_GET(_bonds_mask), TL_CP_GET(_bold_bonds_mask)
 {
-    _atoms_mask.clear_resize(_mol.vertexEnd());
-    _atoms_mask.fill(false);
-    _bonds_mask.clear_resize(_mol.edgeEnd());
-    _bonds_mask.fill(false);
-    _bold_bonds_mask.clear_resize(_mol.edgeEnd());
-    _bold_bonds_mask.fill(false);
+    _atoms_mask.clear();
+    _atoms_mask.resize(_mol.vertexEnd(), false);
+    _bonds_mask.clear();
+    _bonds_mask.resize(_mol.edgeEnd(), false);
+    _bold_bonds_mask.clear();
+    _bold_bonds_mask.resize(_mol.edgeEnd(), false);
 }
 
 void HaworthProjectionFinder::findAndAddStereocenters()
@@ -35,12 +35,12 @@ void HaworthProjectionFinder::find()
     _find(false);
 }
 
-const Array<bool>& HaworthProjectionFinder::getAtomsMask()
+const ArrayBool& HaworthProjectionFinder::getAtomsMask()
 {
     return _atoms_mask;
 }
 
-const Array<bool>& HaworthProjectionFinder::getBondsMask()
+const ArrayBool& HaworthProjectionFinder::getBondsMask()
 {
     return _bonds_mask;
 }
@@ -54,8 +54,8 @@ void HaworthProjectionFinder::_find(bool add_stereo)
 {
     if (BaseMolecule::hasCoord(_mol))
     {
-        QS_DEF(Array<int>, vertices);
-        QS_DEF(Array<int>, edges);
+        QS_DEF(ArrayNew<int>, vertices);
+        QS_DEF(ArrayNew<int>, edges);
 
         int sssr_cnt = _mol.sssrCount();
         for (int i = 0; i < sssr_cnt; i++)
@@ -92,7 +92,7 @@ void HaworthProjectionFinder::_find(bool add_stereo)
     }
 }
 
-bool HaworthProjectionFinder::_processRing(bool add_stereo, const Array<int>& vertices, const Array<int>& edges)
+bool HaworthProjectionFinder::_processRing(bool add_stereo, const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
 {
     // We detect rings of size from 3 and 6:
     //       -----       ----       /  \      ----            ------
@@ -279,7 +279,7 @@ bool HaworthProjectionFinder::_processRing(bool add_stereo, const Array<int>& ve
     return true;
 }
 
-void HaworthProjectionFinder::_markRingBonds(const Array<int>& vertices, const Array<int>& edges)
+void HaworthProjectionFinder::_markRingBonds(const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
 {
     // Mark bonds
     for (int j = 0; j < vertices.size(); j++)
@@ -308,7 +308,7 @@ void HaworthProjectionFinder::_markRingBonds(const Array<int>& vertices, const A
     }
 }
 
-void HaworthProjectionFinder::_addRingStereocenters(const Array<int>& vertices, const Array<int>& edges)
+void HaworthProjectionFinder::_addRingStereocenters(const ArrayNew<int>& vertices, const ArrayNew<int>& edges)
 {
     // Find left vertex
     int j_left = -1;

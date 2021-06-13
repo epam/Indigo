@@ -37,14 +37,14 @@ namespace indigo
 
         Filter* vfilter;
 
-        void (*callback)(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
+        void (*callback)(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
 
         // Callback function that returns some value for subgraph.
         // Graph is treated to be maximal by this criteria if one of its supergraph
         // has different value from value for current subgraph. If there is no
         // supergraphs for some graphs (cutted by max_vertices constraint)
         // then such graph is treated to be maximal too.
-        int (*maximal_critera_value_callback)(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
+        int (*maximal_critera_value_callback)(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context);
 
         // Call main callback function only for maximal subgraphs (by maximal
         // criteria callback or by size).
@@ -74,10 +74,10 @@ namespace indigo
         CP_DECL;
         TL_CP_DECL(Array<VertexEdgeParent>, _front); // array with current front
 
-        TL_CP_DECL(Array<int>, _vertices); // array with subgraph vertices
-        TL_CP_DECL(Array<int>, _edges);    // array with subgraph edges
+        TL_CP_DECL(ArrayNew<int>, _vertices); // array with subgraph vertices
+        TL_CP_DECL(ArrayNew<int>, _edges);    // array with subgraph edges
 
-        TL_CP_DECL(Array<int>, _v_processed); // from _graph to _subtree
+        TL_CP_DECL(ArrayNew<int>, _v_processed); // from _graph to _subtree
 
         void _reverseSearch(int front_idx, int cur_maximal_criteria_value);
 

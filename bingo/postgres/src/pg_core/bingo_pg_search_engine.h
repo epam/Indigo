@@ -82,11 +82,11 @@ public:
         return _structureIdx;
     }
 
-    indigo::Array<char>& getCmfBuf()
+    indigo::ArrayChar& getCmfBuf()
     {
         return _cmfBuf;
     }
-    indigo::Array<char>& getXyzBuf()
+    indigo::ArrayChar& getXyzBuf()
     {
         return _xyzBuf;
     }
@@ -110,10 +110,10 @@ protected:
     int _structureIdx;
     unsigned short _bitsCount;
 
-    indigo::Array<char> _cmfBuf;
-    indigo::Array<char> _xyzBuf;
+    indigo::ArrayChar _cmfBuf;
+    indigo::ArrayChar _xyzBuf;
 
-    indigo::Array<int> _fingerprintBits;
+    indigo::ArrayNew<int> _fingerprintBits;
 };
 
 class BingoPgSearchEngine
@@ -153,7 +153,7 @@ protected:
     void _setBingoContext();
     bool _fetchForNext();
 
-    void _getBlockParameters(indigo::Array<char>& params);
+    void _getBlockParameters(indigo::ArrayChar& params);
 
     qword _bingoSession;
 

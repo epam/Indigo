@@ -132,10 +132,10 @@ namespace indigo
         void _ensureRecordExistanceLocked(int name_index);
 
         ObjArray<Record> _records;
-        Array<int> _sorted_records;
+        ArrayNew<int> _sorted_records;
         OsLock _lock;
 
-        static ObjArray<Array<char>>& getNames();
+        static ObjArray<ArrayChar>& getNames();
     };
 
     // This class shouldn't be used explicitly

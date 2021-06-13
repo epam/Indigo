@@ -21,8 +21,8 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_standardize.h"
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 using namespace indigo;
 
@@ -202,7 +202,7 @@ bool QueryMolecule::possibleAtomRadical(int idx, int radical)
     return _atoms[idx]->possibleValue(ATOM_RADICAL, radical);
 }
 
-void QueryMolecule::getAtomDescription(int idx, Array<char>& description)
+void QueryMolecule::getAtomDescription(int idx, ArrayChar& description)
 {
     ArrayOutput out(description);
 
@@ -318,7 +318,7 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
     }
 }
 
-void QueryMolecule::getBondDescription(int idx, Array<char>& description)
+void QueryMolecule::getBondDescription(int idx, ArrayChar& description)
 {
     ArrayOutput out(description);
 
@@ -723,7 +723,7 @@ void QueryMolecule::_flipBond(int atom_parent, int atom_from, int atom_to)
     updateEditRevision();
 }
 
-void QueryMolecule::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags)
+void QueryMolecule::_mergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping, int skip_flags)
 {
     QueryMolecule& mol = bmol.asQueryMolecule();
     int i;
@@ -816,7 +816,7 @@ void QueryMolecule::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& 
     updateEditRevision();
 }
 
-void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping,
+void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& bmol, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, const ArrayNew<int>& mapping,
                                               int skip_flags)
 {
     // Remove stereocare flags for bonds that are not cis-trans
@@ -825,7 +825,7 @@ void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& bmol, const Array<in
             setBondStereoCare(i, false);
 }
 
-void QueryMolecule::_removeAtoms(const Array<int>& indices, const int* mapping)
+void QueryMolecule::_removeAtoms(const ArrayNew<int>& indices, const int* mapping)
 {
     spatial_constraints.removeAtoms(mapping);
 
@@ -858,7 +858,7 @@ void QueryMolecule::_removeAtoms(const Array<int>& indices, const int* mapping)
     }
 
     // Collect bonds to remove
-    QS_DEF(Array<int>, edges_to_remove);
+    QS_DEF(ArrayNew<int>, edges_to_remove);
     edges_to_remove.clear();
     for (int i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
     {
@@ -870,7 +870,7 @@ void QueryMolecule::_removeAtoms(const Array<int>& indices, const int* mapping)
     updateEditRevision();
 }
 
-void QueryMolecule::_removeBonds(const Array<int>& indices)
+void QueryMolecule::_removeBonds(const ArrayNew<int>& indices)
 {
     for (int i = 0; i < indices.size(); i++)
         _bonds.reset(indices[i]);
@@ -1602,8 +1602,8 @@ void QueryMolecule::setBondStereoCare(int idx, bool stereo_care)
 {
     if (stereo_care == false && idx >= _bond_stereo_care.size())
         return;
-
-    _bond_stereo_care.expandFill(idx + 1, false);
+    if (idx + 1 > _bond_stereo_care.size())
+        _bond_stereo_care.resize(idx + 1, false);
     _bond_stereo_care[idx] = stereo_care;
     updateEditRevision();
 }
@@ -1871,7 +1871,7 @@ bool QueryMolecule::isNotAtom(QueryMolecule::Atom& qa, int elem)
     return false;
 }
 
-bool QueryMolecule::collectAtomList(QueryMolecule::Atom& qa, Array<int>& list, bool& notList)
+bool QueryMolecule::collectAtomList(QueryMolecule::Atom& qa, ArrayNew<int>& list, bool& notList)
 {
     list.clear();
     if (qa.type == QueryMolecule::OP_OR || qa.type == QueryMolecule::OP_NOT)
@@ -1937,7 +1937,7 @@ QueryMolecule::Atom* QueryMolecule::stripKnownAttrs(QueryMolecule::Atom& qa)
     return qd == NULL ? &qa : qd;
 }
 
-int QueryMolecule::parseQueryAtom(QueryMolecule& qm, int aid, Array<int>& list)
+int QueryMolecule::parseQueryAtom(QueryMolecule& qm, int aid, ArrayNew<int>& list)
 {
     QueryMolecule::Atom& qa = qm.getAtom(aid);
     QueryMolecule::Atom* qc = stripKnownAttrs(qa);
@@ -1984,7 +1984,7 @@ bool QueryMolecule::queryAtomIsRegular(QueryMolecule& qm, int aid)
 
 bool QueryMolecule::queryAtomIsSpecial(QueryMolecule& qm, int aid)
 {
-    QS_DEF(Array<int>, list);
+    QS_DEF(ArrayNew<int>, list);
     int query_atom_type;
 
     if ((query_atom_type = QueryMolecule::parseQueryAtom(qm, aid, list)) != -1)
@@ -2107,14 +2107,13 @@ bool QueryMolecule::standardize(const StandardizeOptions& options)
     return MoleculeStandardizer::standardize(*this, options);
 }
 
-int QueryMolecule::getAtomType( const char* label )
+int QueryMolecule::getAtomType(const char* label)
 {
-    static const std::unordered_map< std::string, int > atom_types = { { "R", _ATOM_R }, { "A", _ATOM_A }, { "X", _ATOM_X }, { "Q", _ATOM_Q },
-                                                                       { "M", _ATOM_M }, { "AH", _ATOM_AH }, { "XH", _ATOM_XH }, { "QH", _ATOM_QH },
-                                                                       { "XH", _ATOM_XH }, { "QH", _ATOM_QH }, { "MH", _ATOM_MH }
-                                                                     } ;
-    auto it = atom_types.find( label );
-    if( it != atom_types.end() )
+    static const std::unordered_map<std::string, int> atom_types = {{"R", _ATOM_R},   {"A", _ATOM_A},   {"X", _ATOM_X},   {"Q", _ATOM_Q},
+                                                                    {"M", _ATOM_M},   {"AH", _ATOM_AH}, {"XH", _ATOM_XH}, {"QH", _ATOM_QH},
+                                                                    {"XH", _ATOM_XH}, {"QH", _ATOM_QH}, {"MH", _ATOM_MH}};
+    auto it = atom_types.find(label);
+    if (it != atom_types.end())
         return it->second;
     return _ATOM_PSEUDO;
 }

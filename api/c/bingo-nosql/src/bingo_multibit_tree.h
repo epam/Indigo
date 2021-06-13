@@ -21,7 +21,7 @@ namespace bingo
 
         void build(BingoPtr<byte> fingerprints, BingoPtr<int> indices, int fp_count, int min_fp_bit_number, int max_fp_bit_number);
 
-        int findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices);
+        int findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices);
 
     private:
         struct _MatchBit
@@ -76,15 +76,15 @@ namespace bingo
 
         static int _compareBitWeights(_DistrWeight& bw1, _DistrWeight& bw2, void* context);
 
-        BingoPtr<_MultibitNode> _buildNode(Array<int>& fit_fp_indices, const Array<bool>& is_parrent_mb, int level);
+        BingoPtr<_MultibitNode> _buildNode(ArrayNew<int>& fit_fp_indices, const ArrayBool& is_parrent_mb, int level);
 
         void _build();
 
-        void _findLinear(_MultibitNode* node, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_indices,
+        void _findLinear(_MultibitNode* node, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_indices,
                          int fp_bit_number = -1);
 
         void _findSimilarInNode(BingoPtr<_MultibitNode> node_ptr, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef,
-                                Array<SimResult>& sim_indices, int m01, int m10);
+                                ArrayNew<SimResult>& sim_indices, int m01, int m10);
     };
 }; // namespace bingo
 

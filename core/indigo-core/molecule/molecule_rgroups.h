@@ -46,7 +46,7 @@ namespace indigo
         PtrPool<BaseMolecule> fragments;
         int if_then;
         int rest_h;
-        Array<int> occurrence;
+        ArrayNew<int> occurrence;
 
     protected:
         explicit RGroup(RGroup& other);

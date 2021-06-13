@@ -50,15 +50,15 @@ namespace indigo
         DECL_ERROR;
 
     private:
-        void _updateColumnWidths(int index, Array<int>& widths);
-        void _printLineSmart(int index, const Array<int>& widths);
+        void _updateColumnWidths(int index, ArrayNew<int>& widths);
+        void _printLineSmart(int index, const ArrayNew<int>& widths);
 
         CP_DECL;
-        TL_CP_DECL(ReusableObjArray<Array<char>>, _lines);
-        TL_CP_DECL(ReusableObjArray<Array<char>>, _line_formats);
-        TL_CP_DECL(Array<int>, _line_format_index);
+        TL_CP_DECL(ReusableObjArray<ArrayChar>, _lines);
+        TL_CP_DECL(ReusableObjArray<ArrayChar>, _line_formats);
+        TL_CP_DECL(ArrayNew<int>, _line_format_index);
 
-        Array<char>* _active_line;
+        ArrayChar* _active_line;
         bool _use_smart_printing;
         Output& _output;
     };

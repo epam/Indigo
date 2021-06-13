@@ -26,7 +26,7 @@ IMPL_ERROR(BingoPgCursor, "bingo cursor access");
 
 BingoPgCursor::BingoPgCursor(const char* format, ...)
 {
-    Array<char> buf;
+    ArrayChar buf;
     va_list args;
     va_start(args, format);
     ArrayOutput output(buf);
@@ -37,7 +37,7 @@ BingoPgCursor::BingoPgCursor(const char* format, ...)
     _init(buf);
 }
 
-BingoPgCursor::BingoPgCursor(indigo::Array<char>& query_str)
+BingoPgCursor::BingoPgCursor(indigo::ArrayChar& query_str)
 {
     _init(query_str);
 }
@@ -194,7 +194,7 @@ unsigned int BingoPgCursor::getArgOid(int arg_idx)
     return result;
 }
 
-void BingoPgCursor::_init(indigo::Array<char>& query_str)
+void BingoPgCursor::_init(indigo::ArrayChar& query_str)
 {
     Array<dword> arg_types;
 

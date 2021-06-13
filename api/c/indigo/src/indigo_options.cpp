@@ -39,7 +39,7 @@ static void indigoSetMolfileSavingMode(const char* mode)
         throw IndigoError("unknown value: %s", mode);
 }
 
-static void indigoGetMolfileSavingMode(Array<char>& value)
+static void indigoGetMolfileSavingMode(ArrayChar& value)
 {
     Indigo& self = indigoGetInstance();
     switch (self.molfile_saving_mode)
@@ -67,7 +67,7 @@ static void indigoSetFilenameEncoding(const char* encoding)
         throw IndigoError("unknown value: %s", encoding);
 }
 
-static void indigoGetFilenameEncoding(Array<char>& value)
+static void indigoGetFilenameEncoding(ArrayChar& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.filename_encoding == ENCODING_ASCII)
@@ -89,7 +89,7 @@ static void indigoSetLayoutOrientation(const char* orientation)
         throw IndigoError("unknown value: %s", orientation);
 }
 
-static void indigoGetLayoutOrientation(Array<char>& value)
+static void indigoGetLayoutOrientation(ArrayChar& value)
 {
     Indigo& self = indigoGetInstance();
     switch (self.layout_orientation)
@@ -127,7 +127,7 @@ static void indigoSetEmbeddingUniqueness(const char* mode)
         throw IndigoError("unknown value: %s", mode);
 }
 
-static void indigoGetEmbeddingUniqueness(Array<char>& value)
+static void indigoGetEmbeddingUniqueness(ArrayChar& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.find_unique_embeddings == false)
@@ -161,7 +161,7 @@ static void indigoSetAromaticityModel(const char* model)
         throw IndigoError("unknown value: %s. Allowed values are \"basic\", \"generic\"", model);
 }
 
-static void indigoGetAromaticityModel(Array<char>& value)
+static void indigoGetAromaticityModel(ArrayChar& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.arom_options.method == AromaticityOptions::BASIC)
@@ -181,7 +181,7 @@ static void indigoSetPkaModel(const char* model)
         throw IndigoError("unknown value: %s. Allowed values are \"simple\", \"advanced\"", model);
 }
 
-static void indigoGetPkaModel(Array<char>& value)
+static void indigoGetPkaModel(ArrayChar& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.ionize_options.model == IonizeOptions::PKA_MODEL_SIMPLE)
@@ -221,7 +221,7 @@ static void indigoSetStereoOption(const char* option)
         throw IndigoError("unknown value: %s. Allowed values are \"abs\", \"rel\", \"rac\", \"any\", \"ucf\"", option);
 }
 
-static void indigoGetStereoOption(Array<char>& option)
+static void indigoGetStereoOption(ArrayChar& option)
 {
     Indigo& self = indigoGetInstance();
     if (self.treat_stereo_as == 0)
@@ -279,7 +279,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter()
     mgr.setOptionHandlerString("layout-orientation", indigoSetLayoutOrientation, indigoGetLayoutOrientation);
     mgr.setOptionHandlerString(
         "similarity-type", [](const char* value) { indigo.fp_params.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(value); },
-        [](Array<char>& value) {
+        [](ArrayChar& value) {
             const char* str = MoleculeFingerprintBuilder::printSimilarityType(indigo.fp_params.similarity_type);
             value.copy(str, strlen(str));
         });

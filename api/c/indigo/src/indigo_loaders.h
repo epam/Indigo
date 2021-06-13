@@ -31,11 +31,11 @@
 class IndigoRdfData : public IndigoObject
 {
 public:
-    IndigoRdfData(int type, Array<char>& data, int index, long long offset);
-    IndigoRdfData(int type, Array<char>& data, PropertiesMap& properties, int index, long long offset);
+    IndigoRdfData(int type, ArrayChar& data, int index, long long offset);
+    IndigoRdfData(int type, ArrayChar& data, PropertiesMap& properties, int index, long long offset);
     ~IndigoRdfData() override;
 
-    Array<char>& getRawData();
+    ArrayChar& getRawData();
     //   RedBlackStringObjMap< Array<char> > * getProperties () override {return &_properties.getProperties();}
     PropertiesMap& getProperties() override
     {
@@ -46,7 +46,7 @@ public:
     long long tell();
 
 protected:
-    Array<char> _data;
+    ArrayChar _data;
 
     PropertiesMap _properties;
     bool _loaded;
@@ -57,7 +57,7 @@ protected:
 class IndigoRdfMolecule : public IndigoRdfData
 {
 public:
-    IndigoRdfMolecule(Array<char>& data, PropertiesMap& properties, int index, long long offset);
+    IndigoRdfMolecule(ArrayChar& data, PropertiesMap& properties, int index, long long offset);
     ~IndigoRdfMolecule() override;
 
     Molecule& getMolecule() override;
@@ -72,7 +72,7 @@ protected:
 class IndigoRdfReaction : public IndigoRdfData
 {
 public:
-    IndigoRdfReaction(Array<char>& data, PropertiesMap& properties, int index, long long offset);
+    IndigoRdfReaction(ArrayChar& data, PropertiesMap& properties, int index, long long offset);
     ~IndigoRdfReaction() override;
 
     Reaction& getReaction() override;
@@ -158,7 +158,7 @@ protected:
 class IndigoSmilesMolecule : public IndigoRdfData
 {
 public:
-    IndigoSmilesMolecule(Array<char>& smiles, int index, long long offset);
+    IndigoSmilesMolecule(ArrayChar& smiles, int index, long long offset);
     ~IndigoSmilesMolecule() override;
 
     Molecule& getMolecule() override;
@@ -173,7 +173,7 @@ protected:
 class IndigoSmilesReaction : public IndigoRdfData
 {
 public:
-    IndigoSmilesReaction(Array<char>& data, int index, long long offset);
+    IndigoSmilesReaction(ArrayChar& data, int index, long long offset);
     ~IndigoSmilesReaction() override;
 
     Reaction& getReaction() override;
@@ -202,13 +202,13 @@ public:
 
 protected:
     Scanner* _scanner;
-    Array<char> _str;
+    ArrayChar _str;
     AutoPtr<Scanner> _own_scanner;
 
     void _advance();
 
     CP_DECL;
-    TL_CP_DECL(Array<long long>, _offsets);
+    TL_CP_DECL(ArrayNew<long long>, _offsets);
     int _current_number;
     long long _max_offset;
 };
@@ -221,7 +221,7 @@ namespace indigo
 class IndigoCmlMolecule : public IndigoRdfData
 {
 public:
-    IndigoCmlMolecule(Array<char>& data_, int index, long long offset);
+    IndigoCmlMolecule(ArrayChar& data_, int index, long long offset);
     ~IndigoCmlMolecule() override;
 
     Molecule& getMolecule() override;
@@ -238,7 +238,7 @@ protected:
 class IndigoCmlReaction : public IndigoRdfData
 {
 public:
-    IndigoCmlReaction(Array<char>& data_, int index, long long offset);
+    IndigoCmlReaction(ArrayChar& data_, int index, long long offset);
     ~IndigoCmlReaction() override;
 
     Reaction& getReaction() override;
@@ -280,7 +280,7 @@ namespace indigo
 class IndigoCdxMolecule : public IndigoRdfData
 {
 public:
-    IndigoCdxMolecule(Array<char>& data_, PropertiesMap& properties, int index, long long offset);
+    IndigoCdxMolecule(ArrayChar& data_, PropertiesMap& properties, int index, long long offset);
     ~IndigoCdxMolecule() override;
 
     Molecule& getMolecule() override;
@@ -297,7 +297,7 @@ protected:
 class IndigoCdxReaction : public IndigoRdfData
 {
 public:
-    IndigoCdxReaction(Array<char>& data_, PropertiesMap& properties, int index, long long offset);
+    IndigoCdxReaction(ArrayChar& data_, PropertiesMap& properties, int index, long long offset);
     ~IndigoCdxReaction() override;
 
     Reaction& getReaction() override;

@@ -150,7 +150,7 @@ namespace indigo
 
         static bool matchQueryBond(QueryMolecule::Bond* query, BaseMolecule& target, int sub_idx, int super_idx, AromaticityMatcher* am, dword flags);
 
-        static void makeTransposition(BaseMolecule& mol, Array<int>& transposition);
+        static void makeTransposition(BaseMolecule& mol, ArrayNew<int>& transposition);
 
         DECL_ERROR;
 
@@ -163,8 +163,8 @@ namespace indigo
 
             CP_DECL;
             TL_CP_DECL(QueryMolecule, query);
-            TL_CP_DECL(Array<int>, query_marking);
-            TL_CP_DECL(Array<int>, sites);
+            TL_CP_DECL(ArrayNew<int>, query_marking);
+            TL_CP_DECL(ArrayNew<int>, sites);
             int depth;
         };
 
@@ -216,9 +216,9 @@ namespace indigo
         bool _h_unfold; // implicit target hydrogens unfolded
 
         CP_DECL;
-        TL_CP_DECL(Array<int>, _3d_constrained_atoms);
-        TL_CP_DECL(Array<int>, _unfolded_target_h);
-        TL_CP_DECL(Array<int>, _used_target_h);
+        TL_CP_DECL(ArrayNew<int>, _3d_constrained_atoms);
+        TL_CP_DECL(ArrayNew<int>, _unfolded_target_h);
+        TL_CP_DECL(ArrayNew<int>, _used_target_h);
 
         static int _compare_degree_asc(BaseMolecule& mol, int i1, int i2);
         static int _compare_frequency_base(BaseMolecule& mol, int i1, int i2);

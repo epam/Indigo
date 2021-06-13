@@ -64,7 +64,7 @@ public:
     BingoPgBufferCacheFp& getFpBufferCache(int fp_idx);
     BingoPgBufferCacheBin& getBinBufferCache(int bin_idx);
 
-    void readSectionBitsCount(indigo::Array<int>& bits_count);
+    void readSectionBitsCount(indigo::ArrayNew<int>& bits_count);
 
     const BingoSectionInfoData& getSectionInfo() const
     {
@@ -76,9 +76,9 @@ public:
 private:
     BingoPgSection(const BingoPgSection&); // no implicit copy
 
-    void _setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, int map_idx);
-    void _setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx);
-    void _setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data);
+    void _setCmfData(indigo::ArrayChar& cmf_buf, int map_buf_idx, int map_idx);
+    void _setXyzData(indigo::ArrayChar& xyz_buf, int map_buf_idx, int map_idx);
+    void _setBinData(indigo::ArrayChar& buf, int& last_buf, ItemPointerData& item_data);
     void _setBitsCountData(unsigned short bits_count);
 
     BingoPgBufferCacheBin* _getBufferBin(int idx);
@@ -95,9 +95,9 @@ private:
     indigo::PtrArray<BingoPgBufferCacheMap> _buffersMap;
     indigo::PtrArray<BingoPgBufferCacheBin> _buffersBin;
 
-    indigo::Array<int> _offsetFp;
-    indigo::Array<int> _offsetMap;
-    indigo::Array<int> _offsetBin;
+    indigo::ArrayNew<int> _offsetFp;
+    indigo::ArrayNew<int> _offsetMap;
+    indigo::ArrayNew<int> _offsetBin;
 
     indigo::ObjArray<BingoPgBuffer> _bitsCountBuffers;
 };

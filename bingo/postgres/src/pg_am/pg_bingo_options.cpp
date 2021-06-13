@@ -451,7 +451,7 @@ Datum bingo_options(PG_FUNCTION_ARGS)
 //   BingoStdRdOptions *rdopts = 0;
 //
 //   try {
-//      RedBlackStringObjMap< Array<char> > attributes;
+//      RedBlackStringObjMap< ArrayChar > attributes;
 //
 //   /*
 //    * Done if no options

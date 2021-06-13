@@ -94,7 +94,7 @@ void IndigoOptionManager::getOptionValueInt(const char* name, int& value)
     intGetters.at(name)(value);
 }
 
-void IndigoOptionManager::getOptionValueStr(const char* name, Array<char>& value)
+void IndigoOptionManager::getOptionValueStr(const char* name, ArrayChar& value)
 {
     CHECK_OPT_DEFINED(name);
 
@@ -181,7 +181,7 @@ void IndigoOptionManager::getOptionValueXY(const char* name, int& x, int& y)
     xyGetters.at(name)(x, y);
 }
 
-void IndigoOptionManager::getOptionType(const char* name, Array<char>& value)
+void IndigoOptionManager::getOptionType(const char* name, ArrayChar& value)
 {
     CHECK_OPT_DEFINED(name);
     if (!typeMap.find(name))

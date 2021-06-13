@@ -561,7 +561,7 @@ static int readAAMOptions(const char* mode, ReactionAutomapper& ram)
     if (mode == 0 || mode[0] == 0)
         return nmode;
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(ArrayChar, word);
     BufferScanner scanner(mode);
 
     while (1)

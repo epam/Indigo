@@ -68,7 +68,7 @@ public:
 
         if (res < 0)
         {
-            QS_DEF(Array<char>, buffer_warn);
+            QS_DEF(ArrayChar, buffer_warn);
             buffer_warn.readString(bingoGetWarning(), true);
             const char* react_name = bingoGetNameCore(target_data, target_size);
             if (react_name != 0 && strlen(react_name) > 0)
@@ -83,7 +83,7 @@ public:
 private:
     _RingoContextHandler(const _RingoContextHandler&); // no implicit copy
     int _type;
-    indigo::Array<char> _typeStr;
+    indigo::ArrayChar _typeStr;
 };
 
 Datum _rsub_internal(PG_FUNCTION_ARGS)

@@ -124,7 +124,7 @@ void indigoRenderSetOutputFormat(const char* format)
     rp.rOpt.mode = indigoRenderMapOutputFormat(format);
 }
 
-void indigoRenderGetOutputFormat(Array<char>& value)
+void indigoRenderGetOutputFormat(ArrayChar& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     const char* mode = indigoRenderOutputFormatToString(rp.rOpt.mode);
@@ -144,7 +144,7 @@ void indigoRenderSetStereoStyle(const char* mode)
     rp.rOpt.stereoMode = (STEREO_STYLE)stereoStyleMap.at(mode);
 }
 
-void indigoRenderGetStereoStyle(Array<char>& value)
+void indigoRenderGetStereoStyle(ArrayChar& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     switch (rp.rOpt.stereoMode)
@@ -175,7 +175,7 @@ void indigoRenderSetLabelMode(const char* mode)
     rp.rOpt.labelMode = (LABEL_MODE)labelMap.at(mode);
 }
 
-void indigoRenderGetLabelMode(Array<char>& value)
+void indigoRenderGetLabelMode(ArrayChar& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     switch (rp.rOpt.labelMode)
@@ -207,7 +207,7 @@ void indigoRenderSetCatalystsPlacement(const char* mode)
     rp.rOpt.agentsBelowArrow = agentPlacementMap.at(mode) != 0;
 }
 
-void indigoRenderGetCatalystsPlacement(Array<char>& value)
+void indigoRenderGetCatalystsPlacement(ArrayChar& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if (rp.rOpt.agentsBelowArrow)
@@ -228,7 +228,7 @@ void indigoRenderSetSuperatomMode(const char* mode)
     rp.rOpt.collapseSuperatoms = stereoAtomMode.at(mode) != 0;
 }
 
-void indigoRenderGetSuperatomMode(Array<char>& value)
+void indigoRenderGetSuperatomMode(ArrayChar& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if (rp.rOpt.collapseSuperatoms)
@@ -269,7 +269,7 @@ static MultilineTextLayout _parseTextLayout(const char* text)
         throw IndigoError("Option value is invalid");
 }
 
-static void layoutToText(const MultilineTextLayout& layout, Array<char>& value)
+static void layoutToText(const MultilineTextLayout& layout, ArrayChar& value)
 {
     switch (layout.bbox_alignment)
     {
@@ -302,7 +302,7 @@ void indigoRenderSetCommentAlignment(const char* text)
     rp.cnvOpt.commentAlign = _parseTextLayout(text);
 }
 
-void indigoRenderGetCommentAlignment(Array<char>& value)
+void indigoRenderGetCommentAlignment(ArrayChar& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     layoutToText(rp.cnvOpt.commentAlign, value);
@@ -314,7 +314,7 @@ void indigoRenderSetTitleAlignment(const char* text)
     rp.cnvOpt.titleAlign = _parseTextLayout(text);
 }
 
-void indigoRenderGetTitleAlignment(Array<char>& value)
+void indigoRenderGetTitleAlignment(ArrayChar& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     layoutToText(rp.cnvOpt.titleAlign, value);
@@ -332,7 +332,7 @@ void indigoRenderSetCommentPosition(const char* pos)
     rp.cnvOpt.commentPos = (COMMENT_POS)map.at(pos);
 }
 
-void indigoRenderGetCommentPosition(Array<char>& value)
+void indigoRenderGetCommentPosition(ArrayChar& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if (rp.cnvOpt.commentPos == COMMENT_POS_TOP)
@@ -362,7 +362,7 @@ void indigoRenderSetCdxmlPropertiesKeyAlignment(const char* value)
         throw IndigoError("Option value alignment is invalid");
 }
 
-void indigoRenderGetCdxmlPropertiesKeyAlignment(Array<char>& value)
+void indigoRenderGetCdxmlPropertiesKeyAlignment(ArrayChar& value)
 {
     RenderCdxmlContext& context = getCdxmlContext();
     if (context.keyAlignment == RenderCdxmlContext::ALIGNMENT_LEFT)
@@ -448,7 +448,7 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
                     rp.mols.add(new QueryMolecule());
                 else
                     rp.mols.add(new Molecule());
-                Array<char>& title = rp.titles.push();
+                ArrayChar& title = rp.titles.push();
                 if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
                     title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
 
@@ -485,7 +485,7 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
                     rp.rxns.add(new QueryReaction());
                 else
                     rp.rxns.add(new Reaction());
-                Array<char>& title = rp.titles.push();
+                ArrayChar& title = rp.titles.push();
                 if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
                     title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
 

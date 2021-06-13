@@ -30,7 +30,7 @@ RowIDLoader::RowIDLoader(LzwDict& NewDict, Scanner& NewIn) : _decoder(NewDict, N
 {
 }
 
-void RowIDLoader::loadRowID(Array<char>& RowId)
+void RowIDLoader::loadRowID(ArrayChar& RowId)
 {
     RowId.clear();
 

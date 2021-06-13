@@ -159,7 +159,7 @@ bool ReactionSubstructureMatcher::_prepare(BaseReaction& query_, Reaction& targe
 bool ReactionSubstructureMatcher::_prepare_ee(EmbeddingEnumerator& ee, BaseMolecule& submol, Molecule& supermol, void* context)
 {
     // mark hydrogens to ignore
-    QS_DEF(Array<int>, ignored);
+    QS_DEF(ArrayNew<int>, ignored);
 
     ignored.clear_resize(submol.vertexEnd());
 

@@ -55,7 +55,7 @@ void MoleculeMorganFingerprintBuilder::calculateDescriptorsFCFP(int fp_depth, Ar
     }
 }
 
-void MoleculeMorganFingerprintBuilder::packFingerprintECFP(int fp_depth, Array<byte>& res)
+void MoleculeMorganFingerprintBuilder::packFingerprintECFP(int fp_depth, ArrayNew<byte>& res)
 {
     int size = res.sizeInBytes();
 
@@ -73,7 +73,7 @@ void MoleculeMorganFingerprintBuilder::packFingerprintECFP(int fp_depth, Array<b
     }
 }
 
-void MoleculeMorganFingerprintBuilder::packFingerprintFCFP(int fp_depth, Array<byte>& res)
+void MoleculeMorganFingerprintBuilder::packFingerprintFCFP(int fp_depth, ArrayNew<byte>& res)
 {
     int size = res.sizeInBytes();
 

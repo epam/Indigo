@@ -44,15 +44,15 @@ namespace indigo
 
         bool isBoldBond(int e_idx);
 
-        const Array<bool>& getAtomsMask();
-        const Array<bool>& getBondsMask();
+        const ArrayBool& getAtomsMask();
+        const ArrayBool& getBondsMask();
 
     private:
         void _find(bool add_stereo);
-        bool _processRing(bool add_stereo, const Array<int>& vertices, const Array<int>& edges);
+        bool _processRing(bool add_stereo, const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
 
-        void _markRingBonds(const Array<int>& vertices, const Array<int>& edges);
-        void _addRingStereocenters(const Array<int>& vertices, const Array<int>& edges);
+        void _markRingBonds(const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
+        void _addRingStereocenters(const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
 
         bool _isCornerVertex(int v, int e1, int e2);
         bool _isHorizontalEdge(int e, float cos_threshold);
@@ -63,9 +63,9 @@ namespace indigo
 
         BaseMolecule& _mol;
         CP_DECL;
-        TL_CP_DECL(Array<bool>, _atoms_mask);
-        TL_CP_DECL(Array<bool>, _bonds_mask);
-        TL_CP_DECL(Array<bool>, _bold_bonds_mask);
+        TL_CP_DECL(ArrayBool, _atoms_mask);
+        TL_CP_DECL(ArrayBool, _bonds_mask);
+        TL_CP_DECL(ArrayBool, _bold_bonds_mask);
     };
 
 } // namespace indigo

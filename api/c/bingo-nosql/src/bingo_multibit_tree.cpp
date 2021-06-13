@@ -12,7 +12,7 @@ int MultibitTree::_compareBitWeights(_DistrWeight& bw1, _DistrWeight& bw2, void*
         return 0;
 }
 
-BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_fp_indices, const Array<bool>& is_parrent_mb, int level)
+BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(ArrayNew<int>& fit_fp_indices, const ArrayBool& is_parrent_mb, int level)
 {
     BingoPtr<_MultibitNode> node_ptr;
     node_ptr.allocate();
@@ -51,7 +51,7 @@ BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_f
 
     bit_weights.qsort(_compareBitWeights, 0);
 
-    QS_DEF(Array<int>, mb_indices);
+    QS_DEF(ArrayNew<int>, mb_indices);
     mb_indices.clear();
 
     double distr_coef = 1;
@@ -65,13 +65,13 @@ BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_f
             break;
     }
 
-    QS_DEF(Array<int>, left_fit);
+    QS_DEF(ArrayNew<int>, left_fit);
     left_fit.clear();
-    QS_DEF(Array<int>, right_fit);
+    QS_DEF(ArrayNew<int>, right_fit);
     right_fit.clear();
 
-    QS_DEF(Array<bool>, is_mb);
-    is_mb.copy(is_parrent_mb);
+    QS_DEF(ArrayBool, is_mb);
+    is_mb = is_parrent_mb;
 
     for (int i = 0; i < mb_indices.size(); i++)
     {
@@ -128,20 +128,19 @@ BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_f
 
 void MultibitTree::_build()
 {
-    QS_DEF(Array<int>, indices);
+    QS_DEF(ArrayNew<int>, indices);
     indices.clear_resize(_fp_count);
 
     for (int i = 0; i < indices.size(); i++)
         indices[i] = i;
 
-    QS_DEF(Array<bool>, is_mb);
-    is_mb.clear_resize(_fp_size * 8);
-    is_mb.zerofill();
+    QS_DEF(ArrayBool, is_mb);
+    is_mb.resize(_fp_size * 8, false);
 
     _tree_ptr = _buildNode(indices, is_mb, 0);
 }
 
-void MultibitTree::_findLinear(_MultibitNode* node, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_indices,
+void MultibitTree::_findLinear(_MultibitNode* node, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_indices,
                                int fp_bit_number)
 {
     profTimerStart(tmsl, "multibit_tree_search_linear");
@@ -164,7 +163,7 @@ void MultibitTree::_findLinear(_MultibitNode* node, const byte* query, int query
 }
 
 void MultibitTree::_findSimilarInNode(BingoPtr<_MultibitNode> node_ptr, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef,
-                                      Array<SimResult>& sim_indices, int m01, int m10)
+                                      ArrayNew<SimResult>& sim_indices, int m01, int m10)
 {
     if (node_ptr.isNull())
         return;
@@ -183,9 +182,9 @@ void MultibitTree::_findSimilarInNode(BingoPtr<_MultibitNode> node_ptr, const by
 
     _MatchBit* match_bits = node->match_bits_array.ptr();
 
-    QS_DEF(Array<SimResult>, left_indices);
+    QS_DEF(ArrayNew<SimResult>, left_indices);
     left_indices.clear();
-    QS_DEF(Array<SimResult>, right_indices);
+    QS_DEF(ArrayNew<SimResult>, right_indices);
     right_indices.clear();
 
     int right_m01 = m01, right_m10 = m10;
@@ -232,7 +231,7 @@ void MultibitTree::build(BingoPtr<byte> fingerprints, BingoPtr<int> indices, int
     _build();
 }
 
-int MultibitTree::findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices)
+int MultibitTree::findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices)
 {
     profTimerStart(tms, "multibit_tree_search");
     int query_bit_number = bitGetOnesCount(query, _fp_size);

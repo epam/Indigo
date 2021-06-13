@@ -37,11 +37,11 @@
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_loader.h"
 
-bool _ringoRegisterReaction(OracleEnv& env, const char* rowid, const Array<char>& reaction_buf, RingoOracleContext& context, RingoIndex& index,
+bool _ringoRegisterReaction(OracleEnv& env, const char* rowid, const ArrayChar& reaction_buf, RingoOracleContext& context, RingoIndex& index,
                             BingoFingerprints& fingerprints)
 {
-    QS_DEF(Array<char>, data);
-    QS_DEF(Array<char>, compressed_rowid);
+    QS_DEF(ArrayChar, data);
+    QS_DEF(ArrayChar, compressed_rowid);
     ArrayOutput output(data);
 
     output.writeChar(0); // 0 -- present, 1 -- removed from index
@@ -99,7 +99,7 @@ bool _ringoRegisterReaction(OracleEnv& env, const char* rowid, const Array<char>
 
 void ringoRegisterTable(OracleEnv& env, RingoOracleContext& context, const char* source_table, const char* source_column, const char* target_datatype)
 {
-    QS_DEF(Array<char>, reaction_buf);
+    QS_DEF(ArrayChar, reaction_buf);
     OracleStatement statement(env);
     AutoPtr<OracleLOB> reaction_lob;
     OraRowidText rowid;
@@ -287,7 +287,7 @@ storage.validateForInsert(env);
 
 fingerprints.validateForUpdate(env);
 
-QS_DEF(Array<char>, target_buf);
+QS_DEF(ArrayChar, target_buf);
 
 OracleLOB target_lob(env, target_loc);
 

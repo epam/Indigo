@@ -158,7 +158,7 @@ namespace indigo
             clear();
         }
         void clear();
-        Array<char> text;
+        ArrayChar text;
         FONT_SIZE fontsize;
     };
 
@@ -248,9 +248,9 @@ namespace indigo
         int stereoGroupType;
         int stereoGroupNumber;
         int implicit_h;
-        Array<int> list;
-        Array<char> pseudo;
-        Array<int> nearbyAtoms;
+        ArrayNew<int> list;
+        ArrayChar pseudo;
+        ArrayNew<int> nearbyAtoms;
         int aam;
         int inversion;
         float implHPosWeights[4];
@@ -347,8 +347,8 @@ namespace indigo
         Ring();
         void clear();
 
-        Array<int> bondEnds;
-        Array<float> angles;
+        ArrayNew<int> bondEnds;
+        ArrayNew<float> angles;
         int dblBondCount;
         bool aromatic;
         Vec2f center;
@@ -373,10 +373,10 @@ namespace indigo
         ObjArray<RenderItemAttachmentPoint> attachmentPoints;
         ObjArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
         ObjArray<RenderItemBracket> brackets;
-        Array<int> aam;
-        Array<int> reactingCenters;
-        Array<int> inversions;
-        Array<int> exactChanges;
+        ArrayNew<int> aam;
+        ArrayNew<int> reactingCenters;
+        ArrayNew<int> inversions;
+        ArrayNew<int> exactChanges;
 
     private:
         MoleculeRenderData(const MoleculeRenderData& data);
@@ -389,10 +389,10 @@ namespace indigo
         void init(float sf, float lwf);
 
         CP_DECL;
-        TL_CP_DECL(Array<double>, bondDashAromatic);
-        TL_CP_DECL(Array<double>, bondDashAny);
-        TL_CP_DECL(Array<double>, bondDashSingleOrAromatic);
-        TL_CP_DECL(Array<double>, bondDashDoubleOrAromatic);
+        TL_CP_DECL(ArrayNew<double>, bondDashAromatic);
+        TL_CP_DECL(ArrayNew<double>, bondDashAny);
+        TL_CP_DECL(ArrayNew<double>, bondDashSingleOrAromatic);
+        TL_CP_DECL(ArrayNew<double>, bondDashDoubleOrAromatic);
 
         float labelInternalOffset;
         float lowerIndexShift;
@@ -506,8 +506,8 @@ namespace indigo
         int marginY;
         int commentOffset;
         int titleOffset;
-        Array<char> comment;
-        Array<char> titleProp;
+        ArrayChar comment;
+        ArrayChar titleProp;
         COMMENT_POS commentPos;
         MultilineTextLayout commentAlign;
         MultilineTextLayout titleAlign;
@@ -558,7 +558,7 @@ namespace indigo
         bool showCycles; // for diagnostic purposes
         bool agentsBelowArrow;
         bool collapseSuperatoms;
-        Array<char> atomColorProp;
+        ArrayChar atomColorProp;
         AutoPtr<RenderCdxmlContext> cdxml_context;
 
     private:

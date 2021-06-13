@@ -103,14 +103,14 @@ protected:
     static BingoContext* _get(int id);
     static OsLock _instances_lock;
 
-    Array<char> _relative_atomic_mass;
+    ArrayChar _relative_atomic_mass;
 
 private:
     BingoContext(const BingoContext&); // no implicit copy
 };
 
-void bingoGetTauCondition(const char* list_ptr, int& aromaticity, Array<int>& label_list);
+void bingoGetTauCondition(const char* list_ptr, int& aromaticity, ArrayNew<int>& label_list);
 
-void bingoGetName(Scanner& scanner, Array<char>& result);
+void bingoGetName(Scanner& scanner, ArrayChar& result);
 
 #endif

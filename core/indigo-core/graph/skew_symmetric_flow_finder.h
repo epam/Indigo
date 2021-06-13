@@ -45,10 +45,10 @@ namespace indigo
     private:
         void _init();
 
-        bool _findAugmentatingPath(Array<int>& vertices);
-        bool _findAugmentatingPathRec(Array<int>& vertices);
+        bool _findAugmentatingPath(ArrayNew<int>& vertices);
+        bool _findAugmentatingPathRec(ArrayNew<int>& vertices);
 
-        void _increaseFlowByPath(Array<int>& vertices);
+        void _increaseFlowByPath(ArrayNew<int>& vertices);
 
         int _getResidualCapacity(int edge, int from);
         bool _isEdgeAugmentating(int edge, int from, int sym_used_dir);
@@ -56,12 +56,12 @@ namespace indigo
         void _dbgCheckConsistency();
 
         CP_DECL;
-        TL_CP_DECL(Array<int>, _arc_values);
-        TL_CP_DECL(Array<int>, _arc_sym);
+        TL_CP_DECL(ArrayNew<int>, _arc_values);
+        TL_CP_DECL(ArrayNew<int>, _arc_sym);
 
         // Variables for path finding
-        TL_CP_DECL(Array<int>, _edge_used_dir);
-        TL_CP_DECL(Array<int>, _vertex_is_used);
+        TL_CP_DECL(ArrayNew<int>, _edge_used_dir);
+        TL_CP_DECL(ArrayNew<int>, _vertex_is_used);
 
         int _network_sink;
         const SkewSymmetricNetwork& _network;

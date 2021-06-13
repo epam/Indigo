@@ -191,18 +191,18 @@ namespace indigo
         void removeVertex(int idx);
         void removeAllEdges();
 
-        bool findPath(int from, int where, Array<int>& path_out) const;
+        bool findPath(int from, int where, ArrayNew<int>& path_out) const;
 
-        void makeSubgraph(const Graph& other, const Array<int>& vertices, Array<int>* vertex_mapping);
-        void makeSubgraph(const Graph& other, const Array<int>& vertices, Array<int>* vertex_mapping, const Array<int>* edges, Array<int>* edge_mapping);
-        void makeSubgraph(const Graph& other, const Filter& filter, Array<int>* mapping_out, Array<int>* inv_mapping);
-        void cloneGraph(const Graph& other, Array<int>* mapping);
+        void makeSubgraph(const Graph& other, const ArrayNew<int>& vertices, ArrayNew<int>* vertex_mapping);
+        void makeSubgraph(const Graph& other, const ArrayNew<int>& vertices, ArrayNew<int>* vertex_mapping, const ArrayNew<int>* edges, ArrayNew<int>* edge_mapping);
+        void makeSubgraph(const Graph& other, const Filter& filter, ArrayNew<int>* mapping_out, ArrayNew<int>* inv_mapping);
+        void cloneGraph(const Graph& other, ArrayNew<int>* mapping);
 
-        void buildEdgeMapping(const Graph& other, Array<int>* mapping, Array<int>* edge_mapping);
+        void buildEdgeMapping(const Graph& other, ArrayNew<int>* mapping, ArrayNew<int>* edge_mapping);
 
-        void mergeWith(const Graph& other, Array<int>* mapping);
+        void mergeWith(const Graph& other, ArrayNew<int>* mapping);
 
-        void makeEdgeSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>& edges, Array<int>* v_mapping, Array<int>* e_mapping);
+        void makeEdgeSubgraph(const Graph& other, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, ArrayNew<int>* v_mapping, ArrayNew<int>* e_mapping);
 
         int getEdgeTopology(int idx);
         void setEdgeTopology(int idx, int topology);
@@ -211,8 +211,8 @@ namespace indigo
         static bool isConnected(Graph& graph);
         static bool isChain_AssumingConnected(const Graph& graph);
         static bool isTree(Graph& graph);
-        static void filterVertices(const Graph& graph, const int* filter, int filter_type, int filter_value, Array<int>& result);
-        static void filterEdges(const Graph& graph, const int* filter, int filter_type, int filter_value, Array<int>& result);
+        static void filterVertices(const Graph& graph, const int* filter, int filter_type, int filter_value, ArrayNew<int>& result);
+        static void filterEdges(const Graph& graph, const int* filter, int filter_type, int filter_value, ArrayNew<int>& result);
         static int findMappedEdge(const Graph& graph, const Graph& mapped_graph, int edge_idx, const int* mapping);
 
         int vertexCountSSSR(int idx);
@@ -228,28 +228,28 @@ namespace indigo
         int countComponents();
         int countComponentVertices(int comp_idx);
         int countComponentEdges(int comp_idx);
-        const Array<int>& getDecomposition();
+        const ArrayNew<int>& getDecomposition();
 
     protected:
-        void _mergeWithSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>* edges, Array<int>* mapping, Array<int>* edge_mapping);
+        void _mergeWithSubgraph(const Graph& other, const ArrayNew<int>& vertices, const ArrayNew<int>* edges, ArrayNew<int>* mapping, ArrayNew<int>* edge_mapping);
 
         Pool<List<VertexEdge>::Elem>* _neighbors_pool;
         ObjPool<Vertex>* _vertices;
         Pool<Edge> _edges;
 
-        Array<int> _topology; // for each edge: TOPOLOGY_RING, TOPOLOGY_CHAIN, or -1 (not calculated)
+        ArrayNew<int> _topology; // for each edge: TOPOLOGY_RING, TOPOLOGY_CHAIN, or -1 (not calculated)
         bool _topology_valid;
 
-        Array<int> _v_smallest_ring_size, _e_smallest_ring_size;
-        Array<int> _v_sssr_count;
+        ArrayNew<int> _v_smallest_ring_size, _e_smallest_ring_size;
+        ArrayNew<int> _v_sssr_count;
         Pool<List<int>::Elem>* _sssr_pool;
         ObjArray<List<int>> _sssr_vertices;
         ObjArray<List<int>> _sssr_edges;
         bool _sssr_valid;
 
-        Array<int> _component_numbers;
-        Array<int> _component_vcount;
-        Array<int> _component_ecount;
+        ArrayNew<int> _component_numbers;
+        ArrayNew<int> _component_vcount;
+        ArrayNew<int> _component_ecount;
         bool _components_valid;
         int _components_count;
 
@@ -257,7 +257,7 @@ namespace indigo
         void _calculateSSSR();
         void _calculateSSSRInit();
         void _calculateSSSRByCycleBasis(CycleBasis& basis);
-        void _calculateSSSRAddEdgesAndVertices(const Array<int>& cycle, List<int>& edges, List<int>& vertices);
+        void _calculateSSSRAddEdgesAndVertices(const ArrayNew<int>& cycle, List<int>& edges, List<int>& vertices);
         void _calculateComponents();
 
         // This is a bad hack for those who are too lazy to handle the mappings.

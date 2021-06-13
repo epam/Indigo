@@ -79,7 +79,7 @@ using namespace indigo;
         }
 
 #define SETTER_GETTER_STR_OPTION(option)                                                                                                                       \
-    [](const char* value) { option.readString(value, true); }, [](Array<char>& value) {                                                                        \
+    [](const char* value) { option.readString(value, true); }, [](ArrayChar& value) {                                                                        \
         value.copy(option);                                                                                                                                    \
         value.push(0);                                                                                                                                         \
     }
@@ -95,7 +95,7 @@ public:
     typedef void (*optf_xy_t)(int, int);
     typedef void (*optf_void_t)();
 
-    typedef void (*get_optf_string_t)(Array<char>& value);
+    typedef void (*get_optf_string_t)(ArrayChar& value);
     typedef void (*get_optf_int_t)(int&);
     typedef void (*get_optf_bool_t)(int&);
     typedef void (*get_optf_float_t)(float&);
@@ -123,7 +123,7 @@ public:
     void callOptionHandlerVoid(const char* name);
     void callOptionHandler(const char* name, const char* value);
 
-    void getOptionValueStr(const char* name, Array<char>& value);
+    void getOptionValueStr(const char* name, ArrayChar& value);
     void getOptionValueInt(const char* name, int& value);
     void getOptionValueBool(const char* name, int& value);
     void getOptionValueFloat(const char* name, float& value);
@@ -132,7 +132,7 @@ public:
 
     int nOptions() const;
 
-    void getOptionType(const char* name, Array<char>& value);
+    void getOptionType(const char* name, ArrayChar& value);
 
     OsLock lock;
 

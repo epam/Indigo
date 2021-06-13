@@ -79,7 +79,7 @@ void StandardizeOptions::reset()
 void StandardizeOptions::parseFromString(const char* options)
 {
     BufferScanner scanner(options);
-    QS_DEF(Array<char>, word);
+    QS_DEF(ArrayChar, word);
 
     scanner.skipSpace();
     while (!scanner.isEOF())

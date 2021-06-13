@@ -155,7 +155,7 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
 
     // 1. Extract query submolecule that maps on aromatic bonds. It is the same as in target.
     // Set skip all additional informatio during copying
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, mapping);
 
     mapping.clear();
     for (int v_idx = _query.vertexBegin(); v_idx < _query.vertexEnd(); v_idx = _query.vertexNext(v_idx))
@@ -166,8 +166,8 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
         mapping.push(target_idx);
     }
 
-    QS_DEF(Array<int>, edges);
-    QS_DEF(Array<int>, base_edges_mask);
+    QS_DEF(ArrayNew<int>, edges);
+    QS_DEF(ArrayNew<int>, base_edges_mask);
     edges.clear();
     base_edges_mask.clear_resize(_base.edgeEnd());
     base_edges_mask.zerofill();
@@ -185,10 +185,10 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
         base_edges_mask[target_idx] = 1;
     }
 
-    QS_DEF(Array<int>, inv_mapping);
+    QS_DEF(ArrayNew<int>, inv_mapping);
     _submolecule->makeEdgeSubmolecule(_base, mapping, edges, &inv_mapping, SKIP_ALL);
 
-    QS_DEF(Array<int>, external_conn);
+    QS_DEF(ArrayNew<int>, external_conn);
     external_conn.resize(_submolecule->vertexEnd());
     external_conn.zerofill();
     // Calculate external connectivity
@@ -214,7 +214,7 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
 
     // 1b. Find bonds in aromatic rings in query and skip aromatic
     // bonds that are not in cycles
-    QS_DEF(Array<int>, is_edge_in_aromatic_cycle);
+    QS_DEF(ArrayNew<int>, is_edge_in_aromatic_cycle);
     is_edge_in_aromatic_cycle.clear_resize(_submolecule->edgeEnd());
     is_edge_in_aromatic_cycle.zerofill();
     // At first just mark aromatic bonds

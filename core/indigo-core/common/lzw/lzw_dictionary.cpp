@@ -97,7 +97,6 @@ int LzwDict::getBitCodeSize(void)
 bool LzwDict::addElem(const int NewPrefix, const byte NewChar, int HashIndex)
 {
     int j;
-    _DictElement D(NewPrefix, NewChar);
 
     if (_nextCode <= _maxCode)
     {
@@ -118,7 +117,7 @@ bool LzwDict::addElem(const int NewPrefix, const byte NewChar, int HashIndex)
             }
         }
 
-        _storage.push(D);
+        _storage.emplace_back(NewPrefix, NewChar);
 
         _freePtr++;
 
@@ -217,7 +216,7 @@ void LzwDict::save(Output& _output)
 void LzwDict::saveFull(Output& _output)
 {
     int i, n = _storage.size(), code, HashCode;
-    QS_DEF(Array<int>, MarkedHashCodes);
+    QS_DEF(ArrayNew<int>, MarkedHashCodes);
 
     MarkedHashCodes.resize(SIZE);
 

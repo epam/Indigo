@@ -35,7 +35,7 @@ public:
     MangoShadowTable(int context_id);
     virtual ~MangoShadowTable();
 
-    bool getXyz(OracleEnv& env, const char* rowid, Array<char>& xyz);
+    bool getXyz(OracleEnv& env, const char* rowid, ArrayChar& xyz);
 
     void drop(OracleEnv& env);
     void truncate(OracleEnv& env);
@@ -45,7 +45,7 @@ public:
     bool getMoleculeLocation(OracleEnv& env, const char* rowid, int& blockno, int& offset);
     void deleteMolecule(OracleEnv& env, const char* rowid);
     void addMolecule(OracleEnv& env, const char* rowid, int blockno, int offset, const char* data_cmf, int len_cmf, const char* data_xyz, int len_xyz,
-                     const MangoExact::Hash& hash, const char* gross, const Array<int>& counters, float molecular_mass, const char* fp_ord, bool append);
+                     const MangoExact::Hash& hash, const char* gross, const ArrayNew<int>& counters, float molecular_mass, const char* fp_ord, bool append);
     void flush(OracleEnv& env);
 
     void analyze(OracleEnv& env);
@@ -56,7 +56,7 @@ public:
     DECL_ERROR;
 
 protected:
-    Array<char> _table_name, _components_table_name;
+    ArrayChar _table_name, _components_table_name;
 
     void _flushMain(OracleEnv& env);
     void _flushComponents(OracleEnv& env);
@@ -67,19 +67,19 @@ protected:
     int _main_table_statement_count;
     int _components_table_statement_count;
 
-    Array<char[19]> _pending_rid;
-    Array<int> _pending_blockno;
-    Array<int> _pending_offset;
-    Array<char[512]> _pending_gross;
+    ArrayNew<std::array<char,19>> _pending_rid;
+    ArrayNew<int> _pending_blockno;
+    ArrayNew<int> _pending_offset;
+    ArrayNew<std::array<char, 512>> _pending_gross;
     ObjArray<OracleRaw> _pending_cmf;
     ObjArray<OracleRaw> _pending_xyz;
-    Array<float> _pending_mass;
-    Array<int> _pending_fragcount;
-    ObjArray<Array<int>> _pending_counters;
+    ArrayNew<float> _pending_mass;
+    ArrayNew<int> _pending_fragcount;
+    ObjArray<ArrayNew<int>> _pending_counters;
 
-    Array<char[19]> _pending_comp_rid;
-    Array<char[9]> _pending_comp_hash;
-    Array<int> _pending_comp_count;
+    ArrayNew<std::array<char, 19>> _pending_comp_rid;
+    ArrayNew<std::array<char, 9>> _pending_comp_hash;
+    ArrayNew<int> _pending_comp_count;
 
     bool _commit_main;
     bool _commit_comp;

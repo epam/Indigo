@@ -55,7 +55,7 @@ void MangoExact::calculateHash(Molecule& mol, Hash& hash)
     hash.clear();
 
     QS_DEF(Molecule, mol_without_h);
-    QS_DEF(Array<int>, vertices);
+    QS_DEF(ArrayNew<int>, vertices);
     int i;
 
     vertices.clear();
@@ -69,7 +69,7 @@ void MangoExact::calculateHash(Molecule& mol, Hash& hash)
     // Decompose into connected components
     int n_comp = mol_without_h.countComponents();
     QS_DEF(Molecule, component);
-    QS_DEF(Array<int>, vertex_codes);
+    QS_DEF(ArrayNew<int>, vertex_codes);
 
     for (int i = 0; i < n_comp; i++)
     {
@@ -106,7 +106,7 @@ void MangoExact::calculateHash(Molecule& mol, Hash& hash)
     }
 }
 
-void MangoExact::loadQuery(const Array<char>& buf)
+void MangoExact::loadQuery(const ArrayChar& buf)
 {
     BufferScanner scanner(buf);
 
@@ -139,7 +139,7 @@ void MangoExact::loadTarget(Scanner& scanner)
     _initTarget(_target, false);
 }
 
-void MangoExact::loadTarget(const Array<char>& target_buf)
+void MangoExact::loadTarget(const ArrayChar& target_buf)
 {
     BufferScanner scanner(target_buf);
 
@@ -203,7 +203,7 @@ bool MangoExact::matchBinary(Scanner& scanner, Scanner* xyz_scanner)
     return matcher.find();
 }
 
-bool MangoExact::matchBinary(const Array<char>& target_buf, const Array<char>* xyz_buf)
+bool MangoExact::matchBinary(const ArrayChar& target_buf, const ArrayChar* xyz_buf)
 {
     BufferScanner scanner(target_buf);
 
@@ -232,7 +232,7 @@ bool MangoExact::parse(const char* params)
         return true;
     }
 
-    QS_DEF(Array<char>, params_upper);
+    QS_DEF(ArrayChar, params_upper);
 
     params_upper.upper(params);
 

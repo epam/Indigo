@@ -150,7 +150,7 @@ void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& ru
 
     BufferScanner scanner(tautomer_text);
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(ArrayChar, word);
 
     while (1)
     {

@@ -12,7 +12,7 @@ using namespace indigo;
 
 namespace
 {
-    static bool hasSolution(const Array<int>& map)
+    static bool hasSolution(const ArrayNew<int>& map)
     {
         bool result = false;
         for (int i = 0; i < map.size(); ++i)
@@ -23,7 +23,7 @@ namespace
         return result;
     }
 
-    static int mapSize(const Array<int>& map)
+    static int mapSize(const ArrayNew<int>& map)
     {
         int result = 0;
         for (int i = 0; i < map.size(); ++i)
@@ -46,8 +46,8 @@ TEST(IndigoMcsBasicTest, mcs_one_atom)
     MaxCommonSubmolecule mcs(t_mol, q_mol);
 
     mcs.findExactMCS();
-    Array<int> v_map;
-    Array<int> e_map;
+    ArrayNew<int> v_map;
+    ArrayNew<int> e_map;
     mcs.getMaxSolutionMap(&v_map, &e_map);
 
     ASSERT_EQ(1, mcs.parametersForExact.numberOfSolutions);
@@ -66,8 +66,8 @@ TEST(IndigoMcsBasicTest, mcs_find_2_atom_mcs)
     MaxCommonSubmolecule mcs(t_mol, q_mol);
 
     mcs.findExactMCS();
-    Array<int> v_map;
-    Array<int> e_map;
+    ArrayNew<int> v_map;
+    ArrayNew<int> e_map;
     mcs.getMaxSolutionMap(&v_map, &e_map);
     ASSERT_EQ(1, mcs.parametersForExact.numberOfSolutions);
     ASSERT_TRUE(hasSolution(e_map));
@@ -87,8 +87,8 @@ TEST(IndigoMcsBasicTest, mcs_find_2_atom_mcs_with_input_map)
     mcs.incomingMap[0] = 0;
 
     mcs.findExactMCS();
-    Array<int> v_map;
-    Array<int> e_map;
+    ArrayNew<int> v_map;
+    ArrayNew<int> e_map;
     mcs.getMaxSolutionMap(&v_map, &e_map);
     ASSERT_EQ(1, mcs.parametersForExact.numberOfSolutions);
     ASSERT_EQ(0, v_map[0]);
@@ -109,8 +109,8 @@ TEST(IndigoMcsBasicTest, mcs_find_2_atom_and_edges)
     mcs.incomingMap[0] = 0;
 
     mcs.findExactMCS();
-    Array<int> v_map;
-    Array<int> e_map;
+    ArrayNew<int> v_map;
+    ArrayNew<int> e_map;
     mcs.getMaxSolutionMap(&v_map, &e_map);
     ASSERT_EQ(0, mcs.parametersForExact.numberOfSolutions);
 }
@@ -135,8 +135,8 @@ TEST(IndigoMcsBasicTest, DISABLED_mcs_finish_on_timeout)
     {
         //      ASSERT_STREQ("", e.message());
     }
-    //         Array<int> v_map;
-    //         Array<int> e_map;
+    //         ArrayNew<int> v_map;
+    //         ArrayNew<int> e_map;
     //         mcs.getMaxSolutionMap(&v_map, &e_map);
 
     ASSERT_EQ(0, mcs.parametersForExact.numberOfSolutions);
@@ -158,8 +158,8 @@ TEST(IndigoMcsBasicTest, mcs_test_rings)
     MaxCommonSubmolecule mcs(t_mol, q_mol);
 
     mcs.findExactMCS();
-    Array<int> v_map;
-    Array<int> e_map;
+    ArrayNew<int> v_map;
+    ArrayNew<int> e_map;
     mcs.getMaxSolutionMap(&v_map, &e_map);
     flog << "Size" << v_map.size() << "\n";
     for (int i = 0; i < v_map.size(); ++i)

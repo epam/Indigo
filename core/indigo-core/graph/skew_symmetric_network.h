@@ -89,7 +89,7 @@ namespace indigo
 
     private:
         Graph _g;
-        Array<int> _symmetry;
+        ArrayNew<int> _symmetry;
         int _source;
 
         struct Arc

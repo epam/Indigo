@@ -47,7 +47,7 @@ namespace indigo
         double energy;
         float height;
         CP_DECL;
-        TL_CP_DECL(Array<Vec2f>, layout);
+        TL_CP_DECL(ArrayNew<Vec2f>, layout);
 
         DECL_ERROR;
 

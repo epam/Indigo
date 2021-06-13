@@ -104,17 +104,17 @@ public:
 
     private:
         DecompositionEnumerator(const DecompositionEnumerator&); // no implicit copy
-        bool _foundOrder(ObjArray<Array<int>>& rsite_orders, Array<int>& swap_order);
+        bool _foundOrder(ObjArray<ArrayNew<int>>& rsite_orders, ArrayNew<int>& swap_order);
         void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx);
-        void _refineAutoMaps(ObjList<Array<int>>& auto_maps, Graph& sub, Graph& super, Array<int>& scaf_map);
+        void _refineAutoMaps(ObjList<ArrayNew<int>>& auto_maps, Graph& sub, Graph& super, ArrayNew<int>& scaf_map);
         void _addAllRsites(QueryMolecule&, IndigoDecompositionMatch&, RedBlackMap<int, int>&);
 
-        static bool _cbAutoCheckAutomorphism(Graph& graph, const Array<int>& mapping, const void* context);
-        ObjList<Array<int>> _autoMaps;
-        ObjList<Array<int>> _scafAutoMaps;
+        static bool _cbAutoCheckAutomorphism(Graph& graph, const ArrayNew<int>& mapping, const void* context);
+        ObjList<ArrayNew<int>> _autoMaps;
+        ObjList<ArrayNew<int>> _scafAutoMaps;
     };
 
-    void addCompleteRGroup(IndigoDecompositionMatch& emb_context, bool change_scaffold, Array<int>* rg_map);
+    void addCompleteRGroup(IndigoDecompositionMatch& emb_context, bool change_scaffold, ArrayNew<int>* rg_map);
     void createRgroups(IndigoDecompositionMatch& emb_context, bool change_scaffold);
 
     DECL_ERROR;
@@ -122,7 +122,7 @@ public:
 private:
     void _parseOptions(const char* options);
 
-    void _addFullRGroup(IndigoDecompositionMatch& deco_match, Array<int>& auto_map, int rg_idx, int new_rg_idx);
+    void _addFullRGroup(IndigoDecompositionMatch& deco_match, ArrayNew<int>& auto_map, int rg_idx, int new_rg_idx);
 
     static int _rGroupsEmbedding(Graph& g1, Graph& g2, int* core1, int* core2, void* userdata);
 
@@ -130,10 +130,10 @@ private:
     static bool _matchBonds(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
     static void _addBond(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
     static void _removeAtom(Graph& subgraph, int sub_idx, void* userdata);
-    void _makeInvertMap(Array<int>& map, Array<int>& invmap);
-    int _createRgMap(IndigoDecompositionMatch& deco_match, int aut_idx, RedBlackStringObjMap<Array<int>>& match_rgroups, Array<int>* rg_map_buf,
+    void _makeInvertMap(ArrayNew<int>& map, ArrayNew<int>& invmap);
+    int _createRgMap(IndigoDecompositionMatch& deco_match, int aut_idx, RedBlackStringObjMap<ArrayNew<int>>& match_rgroups, ArrayNew<int>* rg_map_buf,
                      bool change_scaffold);
-    int _getRgScore(Array<int>& rg_map) const;
+    int _getRgScore(ArrayNew<int>& rg_map) const;
 
     QueryMolecule _scaffold;
     QueryMolecule _fullScaffold;
@@ -171,24 +171,24 @@ class DLLEXPORT IndigoDecompositionMatch : public IndigoObject
 {
 public:
     IndigoDecompositionMatch();
-    Array<int> visitedAtoms;
-    Array<int> scaffoldBonds;
-    Array<int> scaffoldAtoms;
-    Array<int> lastMapping;
-    Array<int> lastInvMapping;
-    ObjArray<Array<int>> attachmentOrder;
-    ObjArray<Array<int>> attachmentIndex;
-    ObjList<Array<int>> scafAutoMaps;
+    ArrayNew<int> visitedAtoms;
+    ArrayNew<int> scaffoldBonds;
+    ArrayNew<int> scaffoldAtoms;
+    ArrayNew<int> lastMapping;
+    ArrayNew<int> lastInvMapping;
+    ObjArray<ArrayNew<int>> attachmentOrder;
+    ObjArray<ArrayNew<int>> attachmentIndex;
+    ObjList<ArrayNew<int>> scafAutoMaps;
 
     int getRgroupNumber() const
     {
         return attachmentIndex.size() - 1;
     }
 
-    void renumber(Array<int>& map, Array<int>& inv_map);
+    void renumber(ArrayNew<int>& map, ArrayNew<int>& inv_map);
     void copy(IndigoDecompositionMatch& other);
     void removeRsitesFromMaps(Graph& query_graph);
-    void copyScafAutoMaps(ObjList<Array<int>>& autoMaps);
+    void copyScafAutoMaps(ObjList<ArrayNew<int>>& autoMaps);
     void completeScaffold();
 
     Molecule mol_out;

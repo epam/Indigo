@@ -130,7 +130,7 @@ void AromatizerBase::_aromatizeCycle(const int* cycle, int cycle_len)
     _handleAromaticCycle(cycle, cycle_len);
 }
 
-void AromatizerBase::_handleCycle(const Array<int>& path)
+void AromatizerBase::_handleCycle(const ArrayNew<int>& path)
 {
     // Check Huckel's rule
     if (!_isCycleAromatic(path.ptr(), path.size()))
@@ -171,7 +171,7 @@ bool AromatizerBase::_cb_check_vertex(Graph& graph, int v_idx, void* context)
     return arom->_checkVertex(v_idx);
 }
 
-bool AromatizerBase::_cb_handle_cycle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context)
+bool AromatizerBase::_cb_handle_cycle(Graph& graph, const ArrayNew<int>& vertices, const ArrayNew<int>& edges, void* context)
 {
     AromatizerBase* arom = (AromatizerBase*)context;
     arom->_handleCycle(vertices);
@@ -838,7 +838,7 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
     int n_rgroups = rgroups.getRGroupCount();
 
     // Check if r-groups are attached with single bonds
-    QS_DEF(Array<bool>, rgroups_attached_single);
+    QS_DEF(ArrayBool, rgroups_attached_single);
     rgroups_attached_single.clear();
     for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
     {
@@ -860,12 +860,14 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
                 bool can_be_arom = bond.possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC);
                 if (can_be_double || can_be_triple || can_be_arom)
                 {
-                    QS_DEF(Array<int>, sites);
+                    QS_DEF(ArrayNew<int>, sites);
 
                     mol.getAllowedRGroups(v, sites);
                     for (int j = 0; j < sites.size(); j++)
                     {
-                        rgroups_attached_single.expandFill(sites[j] + 1, true);
+                        auto new_size = sites[j] + 1;
+                        if (new_size > rgroups_attached_single.size())
+                            rgroups_attached_single.resize(new_size, true);
                         rgroups_attached_single[sites[j]] = false;
                     }
                 }
@@ -873,7 +875,9 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
         }
     }
 
-    rgroups_attached_single.expandFill(n_rgroups + 1, true);
+    auto new_size = n_rgroups + 1;
+    if (new_size > rgroups_attached_single.size())
+        rgroups_attached_single.resize(new_size, true);
     for (int i = 1; i <= n_rgroups; i++)
     {
         PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
@@ -922,7 +926,7 @@ bool QueryMoleculeAromatizer::_aromatizeRGroupFragment(QueryMolecule& fragment, 
 
     bool aromatized = _aromatizeBonds(fragment, additional_atom, options);
 
-    QS_DEF(Array<int>, indices);
+    QS_DEF(ArrayNew<int>, indices);
     indices.clear();
     indices.push(additional_atom);
 
@@ -977,10 +981,10 @@ bool QueryMoleculeAromatizer::_aromatizeBondsFuzzy(QueryMolecule& mol, const Aro
     return aromatized;
 }
 
-void MoleculeAromatizer::findAromaticAtoms(BaseMolecule& mol, Array<int>* atoms, Array<int>* bonds, const AromaticityOptions& options)
+void MoleculeAromatizer::findAromaticAtoms(BaseMolecule& mol, ArrayNew<int>* atoms, ArrayNew<int>* bonds, const AromaticityOptions& options)
 {
     AutoPtr<BaseMolecule> clone;
-    QS_DEF(Array<int>, mapping);
+    QS_DEF(ArrayNew<int>, mapping);
 
     clone.reset(mol.neu());
     mapping.clear();
@@ -1034,8 +1038,8 @@ void QueryMoleculeAromaticity::setCanBeAromatic(int edge_index, bool state)
 {
     if (state == false && edge_index >= can_bond_be_aromatic.size())
         return;
-
-    can_bond_be_aromatic.expandFill(edge_index + 1, false);
+    if( edge_index + 1 > can_bond_be_aromatic.size() )
+        can_bond_be_aromatic.resize(edge_index + 1, false);
     can_bond_be_aromatic[edge_index] = state;
 }
 

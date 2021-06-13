@@ -42,11 +42,11 @@ namespace indigo
         bool calc_different_codes_count;
 
         dword getHash();
-        dword getHash(const Array<int>& vertices, const Array<int>& edges);
+        dword getHash(const ArrayNew<int>& vertices, const ArrayNew<int>& edges);
 
         int getDifferentCodesCount();
 
-        const Array<int>*vertex_codes, *edge_codes;
+        const ArrayNew<int>*vertex_codes, *edge_codes;
 
     private:
         Graph& _g;
@@ -57,8 +57,8 @@ namespace indigo
         TL_CP_DECL(Array<dword>, _oldcodes);
         TL_CP_DECL(GraphFastAccess, _gf);
 
-        TL_CP_DECL(Array<int>, _default_vertex_codes);
-        TL_CP_DECL(Array<int>, _default_edge_codes);
+        TL_CP_DECL(ArrayNew<int>, _default_vertex_codes);
+        TL_CP_DECL(ArrayNew<int>, _default_edge_codes);
     };
 
 } // namespace indigo

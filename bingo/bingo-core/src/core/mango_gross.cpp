@@ -31,7 +31,7 @@ MangoGross::MangoGross(BingoContext& context) : _context(context)
 {
 }
 
-void MangoGross::parseQuery(const Array<char>& query)
+void MangoGross::parseQuery(const ArrayChar& query)
 {
     BufferScanner scanner(query);
 
@@ -76,7 +76,7 @@ void MangoGross::parseQuery(Scanner& scanner)
 
     if (_sign == 0)
     {
-        QS_DEF(Array<char>, query_gross_str);
+        QS_DEF(ArrayChar, query_gross_str);
 
         MoleculeGrossFormula::toString(_query_gross, query_gross_str);
 
@@ -108,7 +108,7 @@ const char* MangoGross::getConditions()
     return _conditions.ptr();
 }
 
-bool MangoGross::checkGross(const Array<int>& target_gross)
+bool MangoGross::checkGross(const ArrayNew<int>& target_gross)
 {
     if (_sign == 1)
         return MoleculeGrossFormula::geq(target_gross, _query_gross);
@@ -120,14 +120,14 @@ bool MangoGross::checkGross(const Array<int>& target_gross)
 
 bool MangoGross::checkGross(const char* target_gross_str)
 {
-    QS_DEF(Array<int>, target_gross);
+    QS_DEF(ArrayNew<int>, target_gross);
 
     MoleculeGrossFormula::fromString(target_gross_str, target_gross);
 
     return checkGross(target_gross);
 }
 
-bool MangoGross::checkMolecule(const Array<char>& target_buf)
+bool MangoGross::checkMolecule(const ArrayChar& target_buf)
 {
     BufferScanner scanner(target_buf);
 
@@ -137,7 +137,7 @@ bool MangoGross::checkMolecule(const Array<char>& target_buf)
 bool MangoGross::checkMolecule(Scanner& scanner)
 {
     QS_DEF(Molecule, target);
-    QS_DEF(Array<int>, target_gross);
+    QS_DEF(ArrayNew<int>, target_gross);
 
     MoleculeAutoLoader loader(scanner);
     _context.setLoaderSettings(loader);

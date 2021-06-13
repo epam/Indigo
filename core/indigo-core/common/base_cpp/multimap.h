@@ -49,6 +49,8 @@ namespace indigo
 
         void insert(const K& k, const V& v);
         void insert(const K& k, const Array<V>& vs);
+        void insert(const K& k, const ArrayNew<V>& vs);
+
         void insert(const K& k, const RedBlackSet<V>& vs);
 
         bool remove(const K& k);
@@ -120,6 +122,15 @@ template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const 
     _provide_set(k).insert(v);
 }
 
+template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const ArrayNew<V>& vs)
+{
+    RedBlackSet<V>& set = _provide_set(k);
+    for (auto i = 0; i < vs.size(); i++)
+    {
+        set.insert(vs[i]);
+    }
+}
+
 template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const Array<V>& vs)
 {
     RedBlackSet<V>& set = _provide_set(k);
@@ -128,6 +139,7 @@ template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const 
         set.insert(vs[i]);
     }
 }
+
 
 template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const RedBlackSet<V>& vs)
 {

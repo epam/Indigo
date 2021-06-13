@@ -5,7 +5,7 @@
 
 using namespace bingo;
 
-FingerprintTable::FingerprintTable(int fp_size, const Array<int>& borders, int mt_size) : _table(100), _fp_size(fp_size), _mt_size(mt_size)
+FingerprintTable::FingerprintTable(int fp_size, const ArrayNew<int>& borders, int mt_size) : _table(100), _fp_size(fp_size), _mt_size(mt_size)
 {
     _table.resize(borders.size() - 1);
 
@@ -24,7 +24,7 @@ FingerprintTable::FingerprintTable(int fp_size, const Array<int>& borders, int m
 
 BingoAddr FingerprintTable::create(BingoPtr<FingerprintTable>& ptr, int fp_size, int mt_size)
 {
-    Array<int> borders;
+    ArrayNew<int> borders;
 
     borders.push(0);
     borders.push(fp_size * 8 + 1);
@@ -68,13 +68,13 @@ void FingerprintTable::add(const byte* fingerprint, int id)
     }
 }
 
-void FingerprintTable::findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices)
+void FingerprintTable::findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices)
 {
     sim_fp_indices.clear();
 
     int query_bit_number = bitGetOnesCount(query, _fp_size);
 
-    QS_DEF(Array<SimResult>, cell_sim_indices);
+    QS_DEF(ArrayNew<SimResult>, cell_sim_indices);
     for (int i = 0; i < _table.size(); i++)
     {
         if (sim_coef.calcUpperBound(query_bit_number, _table[i].getMinBorder(), _table[i].getMaxBorder()) < min_coef)
@@ -157,7 +157,7 @@ int FingerprintTable::nextFitCell(int query_bit_count, int first_fit_cell, int m
     return next_idx;
 }
 
-int FingerprintTable::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cell_idx, int cont_idx)
+int FingerprintTable::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices, int cell_idx, int cont_idx)
 {
     if (cell_idx >= _table.size())
         throw Exception("FingerprintTable: Incorrect cell index");

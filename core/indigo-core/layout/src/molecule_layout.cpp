@@ -88,11 +88,11 @@ void MoleculeLayout::_init(bool smart_layout)
     }
 }
 
-void _collectCrossBonds(Array<int>& crossBonds, Array<bool>& crossBondOut, BaseMolecule& mol, const Array<int>& atoms)
+void _collectCrossBonds(ArrayNew<int>& crossBonds, ArrayBool& crossBondOut, BaseMolecule& mol, const ArrayNew<int>& atoms)
 {
-    QS_DEF(Array<bool>, atomMask);
-    atomMask.clear_resize(mol.vertexEnd());
-    atomMask.fill(false);
+    QS_DEF(ArrayBool, atomMask);
+    atomMask.clear();
+    atomMask.resize(mol.vertexEnd(), false);
     for (int i = 0; i < atoms.size(); ++i)
     {
         int aid = atoms[i];
@@ -111,14 +111,14 @@ void _collectCrossBonds(Array<int>& crossBonds, Array<bool>& crossBondOut, BaseM
             {
                 int bid = v.neiEdge(j);
                 crossBonds.push(bid);
-                crossBondOut.push(mol.getEdge(bid).beg == aid);
+                crossBondOut.push_back(mol.getEdge(bid).beg == aid);
             }
         }
     }
 }
 
-void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, const Array<int>& crossBonds,
-                                    const Array<bool>& crossBondOut, float bondLength)
+void _placeSGroupBracketsCrossBonds(ArrayNew<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, const ArrayNew<int>& crossBonds,
+                                    const ArrayBool& crossBondOut, float bondLength)
 {
     brackets.clear();
     if (crossBonds.size() == 2)
@@ -181,7 +181,7 @@ void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol
             float factor = 0.5;
             b1.addScaled(n, factor * bondLength);
             b2.addScaled(n, -factor * bondLength);
-            Vec2f* const& bracket1 = brackets.push();
+            auto& bracket1 = brackets.push();
             bracket1[0].copy(b1);
             bracket1[1].copy(b2);
 
@@ -190,7 +190,7 @@ void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol
             b2.copy(b1);
             b1.addScaled(n, -factor * bondLength);
             b2.addScaled(n, factor * bondLength);
-            Vec2f* const& bracket2 = brackets.push();
+            auto& bracket2 = brackets.push();
             bracket2[0].copy(b1);
             bracket2[1].copy(b2);
             return;
@@ -219,13 +219,13 @@ void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol
         float factor = 0.5;
         b1.addScaled(n, factor * bondLength);
         b2.addScaled(n, -factor * bondLength);
-        Vec2f* const& bracket = brackets.push();
+        auto& bracket = brackets.push();
         bracket[0].copy(b1);
         bracket[1].copy(b2);
     }
 }
 
-void _placeSGroupBracketsCrossBondSingle(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, int bid, bool out, float bondLength)
+void _placeSGroupBracketsCrossBondSingle(ArrayNew<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, int bid, bool out, float bondLength)
 {
     brackets.clear();
     const Edge& edge = mol.getEdge(bid);
@@ -270,7 +270,7 @@ void _placeSGroupBracketsCrossBondSingle(Array<Vec2f[2]>& brackets, BaseMolecule
     float factor = 0.5;
     b1.addScaled(n, factor * bondLength);
     b2.addScaled(n, -factor * bondLength);
-    Vec2f* const& bracket1 = brackets.push();
+    auto& bracket1 = brackets.push();
     bracket1[0].copy(b1);
     bracket1[1].copy(b2);
 
@@ -278,12 +278,12 @@ void _placeSGroupBracketsCrossBondSingle(Array<Vec2f[2]>& brackets, BaseMolecule
     b2.copy(b1);
     b1.addScaled(n, -factor * bondLength);
     b2.addScaled(n, factor * bondLength);
-    Vec2f* const& bracket2 = brackets.push();
+    auto& bracket2 = brackets.push();
     bracket2[0].copy(b1);
     bracket2[1].copy(b2);
 }
 
-void _placeSGroupBracketsHorizontal(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, float bondLength)
+void _placeSGroupBracketsHorizontal(ArrayNew<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const ArrayNew<int>& atoms, float bondLength)
 {
     brackets.clear();
     Vec2f min, max, a, b;
@@ -309,10 +309,10 @@ void _placeSGroupBracketsHorizontal(Array<Vec2f[2]>& brackets, BaseMolecule& mol
     min.sub(Vec2f(extent, extent));
     max.add(Vec2f(extent, extent));
 
-    Vec2f* const& left = brackets.push();
+    auto& left = brackets.push();
     left[0].set(min.x, min.y);
     left[1].set(min.x, max.y);
-    Vec2f* const& right = brackets.push();
+    auto& right = brackets.push();
     right[0].set(max.x, max.y);
     right[1].set(max.x, min.y);
 }
@@ -320,7 +320,7 @@ void _placeSGroupBracketsHorizontal(Array<Vec2f[2]>& brackets, BaseMolecule& mol
 void MoleculeLayout::_updateDataSGroups()
 {
     // Move Data-SGroups with absolute coordinates according to new position
-    QS_DEF(Array<int>, layout_graph_mapping);
+    QS_DEF(ArrayNew<int>, layout_graph_mapping);
     layout_graph_mapping.resize(_molecule.vertexEnd());
     layout_graph_mapping.fffill();
     for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
@@ -480,7 +480,7 @@ void MoleculeLayout::_makeLayout()
 {
     if (filter != 0)
     {
-        QS_DEF(Array<int>, fixed_vertices);
+        QS_DEF(ArrayNew<int>, fixed_vertices);
 
         fixed_vertices.clear_resize(_layout_graph->vertexEnd());
         fixed_vertices.zerofill();
@@ -499,8 +499,8 @@ void MoleculeLayout::_makeLayout()
 
 void MoleculeLayout::_updateRepeatingUnits()
 {
-    QS_DEF(Array<int>, crossBonds);
-    QS_DEF(Array<bool>, crossBondOut);
+    QS_DEF(ArrayNew<int>, crossBonds);
+    QS_DEF(ArrayBool, crossBondOut);
     for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
     {
         SGroup& sg = _molecule.sgroups.getSGroup(i);

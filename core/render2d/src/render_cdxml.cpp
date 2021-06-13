@@ -85,7 +85,7 @@ void _getBounds(RenderParams& params, BaseMolecule& mol, Vec2f& min, Vec2f& max,
     min.scale(scale);
     max.scale(scale);
 }
-int _findReverse(int from, int to, const Array<char>& _array, char value)
+int _findReverse(int from, int to, const ArrayChar& _array, char value)
 {
     for (int i = to - 1; i >= from; i--)
     {
@@ -94,7 +94,7 @@ int _findReverse(int from, int to, const Array<char>& _array, char value)
     }
     return -1;
 }
-int _getLongestLineXml(const Array<char>& line)
+int _getLongestLineXml(const ArrayChar& line)
 {
     int longest_line = 0;
     if (line.size() > 0)
@@ -118,7 +118,7 @@ int _getLongestLineXml(const Array<char>& line)
     }
     return longest_line;
 }
-int _getLongestLine(const Array<char>& line)
+int _getLongestLine(const ArrayChar& line)
 {
     int longest_line = 0;
     if (line.size() > 0)
@@ -170,7 +170,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     MoleculeCdxmlSaver saver(*params.rOpt.output);
 
     Array<BaseMolecule*> mols;
-    Array<int> ids;
+    ArrayNew<int> ids;
 
     if (params.mols.size() != 0)
         for (int i = 0; i < params.mols.size(); ++i)
@@ -179,26 +179,26 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         mols.push(params.mol.get());
 
     Vec2f offset(0, 0);
-    Array<float> column_widths;
+    ArrayNew<float> column_widths;
     column_widths.resize(params.cnvOpt.gridColumnNumber);
     column_widths.fill(0);
 
-    Array<float> title_widths;
+    ArrayNew<float> title_widths;
     title_widths.resize(mols.size());
     title_widths.fill(0);
 
-    Array<float> key_widths;
+    ArrayNew<float> key_widths;
     key_widths.resize(mols.size());
     key_widths.fill(0);
 
-    Array<float> prop_widths;
+    ArrayNew<float> prop_widths;
     prop_widths.resize(mols.size());
     prop_widths.fill(0);
 
     Array<Pos> positions;
     positions.resize(mols.size());
 
-    Array<float> title_heights;
+    ArrayNew<float> title_heights;
     title_heights.resize(mols.size());
     title_heights.fill(0);
 
@@ -214,7 +214,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         // Check titles width
         if (mol_idx < params.titles.size())
         {
-            const Array<char>& title = params.titles[mol_idx];
+            const ArrayChar& title = params.titles[mol_idx];
 
             if (title.size() > 0)
             {
@@ -253,7 +253,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     float x_margins_base = 1.1f, y_margins_base = 1.1f;
     float x_grid_base = 1.5f;
 
-    Array<float> column_offset;
+    ArrayNew<float> column_offset;
     column_offset.resize(params.cnvOpt.gridColumnNumber);
     column_offset[0] = params.cnvOpt.marginX / 10.0f + x_margins_base;
     for (int i = 1; i < params.cnvOpt.gridColumnNumber; i++)
@@ -283,7 +283,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
         if (mol_idx < params.titles.size())
         {
-            const Array<char>& title = params.titles[mol_idx];
+            const ArrayChar& title = params.titles[mol_idx];
             if (title.size() > 0)
             {
                 int lines = title.count('\n') + 1;
@@ -355,7 +355,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     b.max.set(w, max_y + y_margins_base);
     saver.beginDocument(&b);
 
-    Array<char> font_attr;
+    ArrayChar font_attr;
     ArrayOutput font_out(font_attr);
 
     font_out.printf("<s size=\"%f\"", params.rOpt.titleFontFactor);
@@ -402,7 +402,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     //}
     // font_attr.push(0);
     saver.beginPage(&b);
-    Array<char> title_font;
+    ArrayChar title_font;
 
     for (int mol_idx = 0; mol_idx < mols.size(); ++mol_idx)
     {
@@ -415,7 +415,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
         if (mol_idx < params.titles.size())
         {
-            const Array<char>& title = params.titles[mol_idx];
+            const ArrayChar& title = params.titles[mol_idx];
 
             if (title.size() > 0)
             {

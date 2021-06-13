@@ -108,11 +108,11 @@ namespace indigo
         int parent_idx;     // parent group number; represented with index in the array
         // TODO: leave only parent_idx
 
-        Array<int> atoms; // represented with SAL in Molfile format
-        Array<int> bonds; // represented with SBL in Molfile format
+        ArrayNew<int> atoms; // represented with SAL in Molfile format
+        ArrayNew<int> bonds; // represented with SBL in Molfile format
 
         int brk_style;            // represented with SBT in Molfile format
-        Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
+        ArrayNew<std::array<Vec2f, 2>> brackets; // represented with SDI in Molfile format
 
         static const char* typeToString(int sg_type);
         static int getType(const char* sg_type);
@@ -127,12 +127,12 @@ namespace indigo
         DataSGroup();
         ~DataSGroup() override;
 
-        Array<char> description; // SDT in Molfile format (filed units or format)
-        Array<char> name;        // SDT in Molfile format (field name)
-        Array<char> type;        // SDT in Molfile format (field type)
-        Array<char> querycode;   // SDT in Molfile format (query code)
-        Array<char> queryoper;   // SDT in Molfile format (query operator)
-        Array<char> data;        // SCD/SED in Molfile format (field data)
+        ArrayChar description; // SDT in Molfile format (filed units or format)
+        ArrayChar name;        // SDT in Molfile format (field name)
+        ArrayChar type;        // SDT in Molfile format (field type)
+        ArrayChar querycode;   // SDT in Molfile format (query code)
+        ArrayChar queryoper;   // SDT in Molfile format (query operator)
+        ArrayChar data;        // SCD/SED in Molfile format (field data)
         Vec2f display_pos;       // SDD in Molfile format
         bool detached;           // or attached
         bool relative;           // or absolute
@@ -150,18 +150,18 @@ namespace indigo
         Superatom();
         ~Superatom() override;
 
-        Array<char> subscript;     // SMT in Molfile format
-        Array<char> sa_class;      // SCL in Molfile format
+        ArrayChar subscript;     // SMT in Molfile format
+        ArrayChar sa_class;      // SCL in Molfile format
         int contracted;            // display option (-1 if undefined, 0 - expanded, 1 - contracted)
                                    // SDS in Molfile format
         int seqid;                 // SEQID (V3000 - 2017)
-        Array<char> sa_natreplace; // NATREPLACE (V3000 - 2017)
+        ArrayChar sa_natreplace; // NATREPLACE (V3000 - 2017)
 
         struct _AttachmentPoint
         {
             int aidx;
             int lvidx;
-            Array<char> apid;
+            ArrayChar apid;
         };
         ObjPool<_AttachmentPoint> attachment_points; // SAP in Molfile format
 
@@ -183,7 +183,7 @@ namespace indigo
         ~RepeatingUnit() override;
 
         int connectivity;
-        Array<char> subscript; // SMT in Molfile format
+        ArrayChar subscript; // SMT in Molfile format
     private:
         RepeatingUnit(const RepeatingUnit&);
     };
@@ -194,7 +194,7 @@ namespace indigo
         MultipleGroup();
         ~MultipleGroup() override;
 
-        Array<int> parent_atoms;
+        ArrayNew<int> parent_atoms;
         int multiplier;
 
     private:
@@ -220,8 +220,8 @@ namespace indigo
         bool hasSGroup(int idx);
 
         void buildTree(Tree& tree);
-        bool getParentAtoms(int idx, Array<int>& target);
-        bool getParentAtoms(SGroup& sgroup, Array<int>& target);
+        bool getParentAtoms(int idx, ArrayNew<int>& target);
+        bool getParentAtoms(SGroup& sgroup, ArrayNew<int>& target);
 
         void remove(int idx);
         void clear();
@@ -238,12 +238,12 @@ namespace indigo
             PROPERTY_STRING,
             PROPERTY_INT_ARRAY
         };
-        static void parseCondition(const char* property, const char* value, int& s_property, int& s_type, int& s_int, Array<int>& s_indices);
+        static void parseCondition(const char* property, const char* value, int& s_property, int& s_type, int& s_int, ArrayNew<int>& s_indices);
 
-        void findSGroups(const char* property, const char* value, Array<int>& sgs);
-        void findSGroups(int property, int value, Array<int>& sgs);
-        void findSGroups(int property, const char* value, Array<int>& sgs);
-        void findSGroups(int property, Array<int>& value, Array<int>& sgs);
+        void findSGroups(const char* property, const char* value, ArrayNew<int>& sgs);
+        void findSGroups(int property, int value, ArrayNew<int>& sgs);
+        void findSGroups(int property, const char* value, ArrayNew<int>& sgs);
+        void findSGroups(int property, ArrayNew<int>& value, ArrayNew<int>& sgs);
 
         void registerUnfoldedHydrogen(int idx, int new_h_idx);
 
@@ -252,7 +252,7 @@ namespace indigo
 
     private:
         int _findSGroupById(int id);
-        bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);
+        bool _cmpIndices(ArrayNew<int>& t_inds, ArrayNew<int>& q_inds);
     };
 
 } // namespace indigo

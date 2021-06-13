@@ -91,7 +91,7 @@ IndigoSdfLoader::~IndigoSdfLoader()
 {
 }
 
-IndigoRdfData::IndigoRdfData(int type, Array<char>& data, int index, long long offset) : IndigoObject(type)
+IndigoRdfData::IndigoRdfData(int type, ArrayChar& data, int index, long long offset) : IndigoObject(type)
 {
     _loaded = false;
     _data.copy(data);
@@ -100,7 +100,7 @@ IndigoRdfData::IndigoRdfData(int type, Array<char>& data, int index, long long o
     _offset = offset;
 }
 
-IndigoRdfData::IndigoRdfData(int type, Array<char>& data, PropertiesMap& properties, int index, long long offset) : IndigoObject(type)
+IndigoRdfData::IndigoRdfData(int type, ArrayChar& data, PropertiesMap& properties, int index, long long offset) : IndigoObject(type)
 {
     _loaded = false;
     _data.copy(data);
@@ -115,7 +115,7 @@ IndigoRdfData::~IndigoRdfData()
 {
 }
 
-Array<char>& IndigoRdfData::getRawData()
+ArrayChar& IndigoRdfData::getRawData()
 {
     return _data;
 }
@@ -130,7 +130,7 @@ int IndigoRdfData::getIndex()
     return _index;
 }
 
-IndigoRdfMolecule::IndigoRdfMolecule(Array<char>& data, PropertiesMap& properties, int index, long long offset)
+IndigoRdfMolecule::IndigoRdfMolecule(ArrayChar& data, PropertiesMap& properties, int index, long long offset)
     : IndigoRdfData(RDF_MOLECULE, data, properties, index, offset)
 {
 }
@@ -184,7 +184,7 @@ IndigoRdfMolecule::~IndigoRdfMolecule()
 {
 }
 
-IndigoRdfReaction::IndigoRdfReaction(Array<char>& data, PropertiesMap& properties, int index, long long offset)
+IndigoRdfReaction::IndigoRdfReaction(ArrayChar& data, PropertiesMap& properties, int index, long long offset)
     : IndigoRdfData(RDF_REACTION, data, properties, index, offset)
 {
 }
@@ -323,7 +323,7 @@ bool IndigoRdfLoader::hasNext()
     return !rdf_loader->isEOF();
 }
 
-IndigoSmilesMolecule::IndigoSmilesMolecule(Array<char>& smiles, int index, long long offset) : IndigoRdfData(SMILES_MOLECULE, smiles, index, offset)
+IndigoSmilesMolecule::IndigoSmilesMolecule(ArrayChar& smiles, int index, long long offset) : IndigoRdfData(SMILES_MOLECULE, smiles, index, offset)
 {
 }
 
@@ -365,7 +365,7 @@ IndigoObject* IndigoSmilesMolecule::clone()
     return IndigoMolecule::cloneFrom(*this);
 }
 
-IndigoSmilesReaction::IndigoSmilesReaction(Array<char>& smiles, int index, long long offset) : IndigoRdfData(SMILES_REACTION, smiles, index, offset)
+IndigoSmilesReaction::IndigoSmilesReaction(ArrayChar& smiles, int index, long long offset) : IndigoRdfData(SMILES_REACTION, smiles, index, offset)
 {
 }
 
@@ -642,7 +642,7 @@ CEXPORT int indigoIterateSmilesFile(const char* filename)
     INDIGO_END(-1);
 }
 
-IndigoCmlMolecule::IndigoCmlMolecule(Array<char>& data, int index, long long offset) : IndigoRdfData(CML_MOLECULE, data, index, offset)
+IndigoCmlMolecule::IndigoCmlMolecule(ArrayChar& data, int index, long long offset) : IndigoRdfData(CML_MOLECULE, data, index, offset)
 {
 }
 
@@ -686,7 +686,7 @@ const char* IndigoCmlMolecule::debugInfo()
     return "<cml molecule>";
 }
 
-IndigoCmlReaction::IndigoCmlReaction(Array<char>& data, int index, long long offset) : IndigoRdfData(CML_REACTION, data, index, offset)
+IndigoCmlReaction::IndigoCmlReaction(ArrayChar& data, int index, long long offset) : IndigoRdfData(CML_REACTION, data, index, offset)
 {
 }
 
@@ -792,7 +792,7 @@ CEXPORT int indigoIterateCMLFile(const char* filename)
     INDIGO_END(-1);
 }
 
-IndigoCdxMolecule::IndigoCdxMolecule(Array<char>& data, PropertiesMap& properties, int index, long long offset)
+IndigoCdxMolecule::IndigoCdxMolecule(ArrayChar& data, PropertiesMap& properties, int index, long long offset)
     : IndigoRdfData(CDX_MOLECULE, data, properties, index, offset)
 {
 }
@@ -837,7 +837,7 @@ const char* IndigoCdxMolecule::debugInfo()
     return "<cdx molecule>";
 }
 
-IndigoCdxReaction::IndigoCdxReaction(Array<char>& data, PropertiesMap& properties, int index, long long offset)
+IndigoCdxReaction::IndigoCdxReaction(ArrayChar& data, PropertiesMap& properties, int index, long long offset)
     : IndigoRdfData(CDX_REACTION, data, properties, index, offset)
 {
 }

@@ -20,7 +20,8 @@
 #define __red_black_h__
 
 #include <string.h>
-
+#include <unordered_map>
+#include <memory>
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/string_pool.h"
 

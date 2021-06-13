@@ -37,7 +37,7 @@ namespace indigo
 
         bool testSubstructure(const MoleculeAtomNeighbourhoodCounters& target_counters, int query_atom_idx, int target_atom_idx, bool use_bond_types) const;
 
-        void makeTranspositionForSubstructure(BaseMolecule& mol, Array<int>& output) const;
+        void makeTranspositionForSubstructure(BaseMolecule& mol, ArrayNew<int>& output) const;
 
     public:
         void _calculate(BaseMolecule& mol, bool is_query);
@@ -80,7 +80,7 @@ namespace indigo
         };
 
         Array<Counters> _per_atom_counters;
-        Array<int> _use_atom;
+        ArrayNew<int> _use_atom;
     };
 
 } // namespace indigo

@@ -52,7 +52,7 @@ namespace indigo
         void readAt(int index);
 
         CP_DECL;
-        TL_CP_DECL(Array<char>, data);
+        TL_CP_DECL(ArrayChar, data);
         TL_CP_DECL(PropertiesMap, properties);
 
         DECL_ERROR;
@@ -60,8 +60,8 @@ namespace indigo
     protected:
         Scanner* _scanner;
         bool _own_scanner;
-        TL_CP_DECL(Array<long long>, _offsets);
-        TL_CP_DECL(Array<char>, _preread);
+        TL_CP_DECL(ArrayNew<long long>, _offsets);
+        TL_CP_DECL(ArrayChar, _preread);
         int _current_number;
         long long _max_offset;
     };

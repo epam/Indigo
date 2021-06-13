@@ -38,7 +38,7 @@ MoleculeChainFingerprintBuilder::MoleculeChainFingerprintBuilder(Molecule& mol, 
 void MoleculeChainFingerprintBuilder::process()
 {
     QS_DEF(Molecule, copy_without_h);
-    QS_DEF(Array<int>, vertices);
+    QS_DEF(ArrayNew<int>, vertices);
     int i;
 
     vertices.clear();
@@ -64,8 +64,8 @@ void MoleculeChainFingerprintBuilder::process()
 void MoleculeChainFingerprintBuilder::_handleChain(Graph& graph, int size, const int* vertices, const int* edges, void* context)
 {
     MoleculeChainFingerprintBuilder* self = (MoleculeChainFingerprintBuilder*)context;
-    QS_DEF(Array<char>, str);
-    QS_DEF(Array<char>, rev_str);
+    QS_DEF(ArrayChar, str);
+    QS_DEF(ArrayChar, rev_str);
     int i;
 
     str.clear();

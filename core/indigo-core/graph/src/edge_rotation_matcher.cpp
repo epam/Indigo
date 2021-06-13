@@ -42,10 +42,10 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
     if (_subgraph.vertexCount() < 2 || _subgraph.edgeCount() < 1)
         return true;
 
-    QS_DEF(Array<int>, in_cycle);
+    QS_DEF(ArrayNew<int>, in_cycle);
     QS_DEF(Array<_DirEdge>, edge_queue);
-    QS_DEF(Array<int>, vertex_queue);
-    QS_DEF(Array<int>, states);
+    QS_DEF(ArrayNew<int>, vertex_queue);
+    QS_DEF(ArrayNew<int>, states);
 
     in_cycle.clear_resize(_subgraph.edgeEnd());
     edge_queue.clear();
@@ -131,7 +131,7 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
 
     QS_DEF(Array<Vec3f>, xyz_sub);
     QS_DEF(Array<Vec3f>, xyz_super);
-    QS_DEF(Array<int>, xyzmap);
+    QS_DEF(ArrayNew<int>, xyzmap);
 
     xyzmap.clear_resize(_supergraph.vertexEnd());
     xyz_sub.clear();

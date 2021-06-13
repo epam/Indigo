@@ -34,23 +34,23 @@ namespace indigo
         // Helpful structure with mappings
         struct Mapping
         {
-            Mapping(const Array<int>& _mapping, const Array<int>& _inv_mapping) : mapping(_mapping), inv_mapping(_inv_mapping)
+            Mapping(const ArrayNew<int>& _mapping, const ArrayNew<int>& _inv_mapping) : mapping(_mapping), inv_mapping(_inv_mapping)
             {
             }
 
-            const Array<int>&mapping, &inv_mapping;
+            const ArrayNew<int>&mapping, &inv_mapping;
         };
 
         // Returns indices for lexicographically-sorted atom labels
         // with exception that the first atom is Carbon
-        static const Array<int>& getLexSortedAtomLables();
+        static const ArrayNew<int>& getLexSortedAtomLables();
         // Returns inverse permutation for getLexSortedLables
-        static const Array<int>& getLexSortedAtomLablesRanks();
+        static const ArrayNew<int>& getLexSortedAtomLablesRanks();
 
         // Stable sort for small integer arrays with possibility to use array with ranks
         // Note: it is better to add stable sort method in Array and
         // modify qsort (and other stable sort) to accept any comparators.
-        static void stableSmallSort(Array<int>& indices, const Array<int>* ranks);
+        static void stableSmallSort(ArrayNew<int>& indices, const ArrayNew<int>* ranks);
 
         // Compare atoms with hydrogens: C < CH4 < CH3 < CH2 < CH
         static int compareHydrogens(int hyd1, int hyd2);
@@ -66,8 +66,8 @@ namespace indigo
 
         static int _compareAtomLabels(int& label1, int& label2, void* context);
 
-        static Array<int> _atom_lables_sorted;
-        static Array<int> _atom_lables_ranks;
+        static ArrayNew<int> _atom_lables_sorted;
+        static ArrayNew<int> _atom_lables_ranks;
     };
 
 } // namespace indigo

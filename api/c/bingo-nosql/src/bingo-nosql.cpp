@@ -40,7 +40,7 @@ static OsLock _bingo_lock;
 static PtrArray<DatabaseLockData> _lockers;
 static PtrPool<Matcher> _searches;
 static OsLock _searches_lock;
-static Array<int> _searches_db;
+static ArrayNew<int> _searches_db;
 
 static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* options, bool create, const char* type = 0)
 {
@@ -458,7 +458,7 @@ CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options
 {
     BINGO_BEGIN_DB(db)
     {
-        Array<char> gross_str;
+        ArrayChar gross_str;
         gross_str.copy(query, (int)(strlen(query) + 1));
 
         AutoPtr<GrossQueryData> query_data(new GrossQueryData(gross_str));

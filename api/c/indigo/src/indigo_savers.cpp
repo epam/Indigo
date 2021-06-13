@@ -160,7 +160,7 @@ CEXPORT int indigoSdfAppend(int output, int molecule)
 // IndigoSmilesSaver
 //
 
-void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& out_buffer)
+void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, ArrayChar& out_buffer)
 {
     ArrayOutput output(out_buffer);
     if (IndigoBaseMolecule::is(obj))
@@ -188,7 +188,7 @@ void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& out_buffe
     out_buffer.push(0);
 }
 
-void IndigoSmilesSaver::generateSmarts(IndigoObject& obj, Array<char>& out_buffer)
+void IndigoSmilesSaver::generateSmarts(IndigoObject& obj, ArrayChar& out_buffer)
 {
     ArrayOutput output(out_buffer);
 
@@ -223,7 +223,7 @@ void IndigoSmilesSaver::generateSmarts(IndigoObject& obj, Array<char>& out_buffe
 
 void IndigoSmilesSaver::append(Output& output, IndigoObject& object)
 {
-    QS_DEF(Array<char>, tmp_buffer);
+    QS_DEF(ArrayChar, tmp_buffer);
     IndigoSmilesSaver::generateSmiles(object, tmp_buffer);
     output.writeString(tmp_buffer.ptr());
 
@@ -264,7 +264,7 @@ CEXPORT int indigoSmilesAppend(int output, int item)
 // IndigoCanonicalSmilesSaver
 //
 
-void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& out_buffer)
+void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject& obj, ArrayChar& out_buffer)
 {
     ArrayOutput output(out_buffer);
 
@@ -295,7 +295,7 @@ void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& 
     out_buffer.push(0);
 }
 
-void IndigoCanonicalSmilesSaver::generateSmarts(IndigoObject& obj, Array<char>& out_buffer)
+void IndigoCanonicalSmilesSaver::generateSmarts(IndigoObject& obj, ArrayChar& out_buffer)
 {
     ArrayOutput output(out_buffer);
 
@@ -619,7 +619,7 @@ CEXPORT int indigoSaveMDLCT(int item, int output)
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(item);
-        QS_DEF(Array<char>, buf);
+        QS_DEF(ArrayChar, buf);
         ArrayOutput out(buf);
 
         if (IndigoBaseMolecule::is(obj))
@@ -628,7 +628,7 @@ CEXPORT int indigoSaveMDLCT(int item, int output)
             IndigoRdfSaver::appendRXN(out, obj);
         Output& out2 = IndigoOutput::get(self.getObject(output));
         BufferScanner scanner(buf);
-        QS_DEF(Array<char>, line);
+        QS_DEF(ArrayChar, line);
         while (!scanner.isEOF())
         {
             scanner.readLine(line, false);

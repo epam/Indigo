@@ -38,11 +38,11 @@ namespace bingo
 
         int nextFitCell(int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx) const;
 
-        int getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cell_idx, int cont_idx);
+        int getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices, int cell_idx, int cont_idx);
 
         bool isSmallBase();
 
-        int getIncSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices);
+        int getIncSimilar(const byte* query, SimCoef& sim_coef, double min_coef, ArrayNew<SimResult>& sim_fp_indices);
 
         ~SimStorage();
 
