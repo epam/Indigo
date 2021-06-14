@@ -3064,7 +3064,7 @@ void MolfileLoader::_fillSGroupsParentIndices()
     {
         SGroup& sgroup = sgroups.getSGroup(i);
         auto set_it = indices.find(sgroup.parent_group);
-        if (set_it->second.size() == 1)
+        if( set_it != indices.end() && set_it->second.size() == 1)
         {
             sgroup.parent_idx = *set_it->second.begin();
         }
