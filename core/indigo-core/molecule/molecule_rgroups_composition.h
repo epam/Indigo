@@ -22,7 +22,6 @@
 #include <memory>
 
 #include "base_cpp/array.h"
-#include "base_cpp/multimap.h"
 #include "molecule/molecule.h"
 
 namespace indigo
@@ -240,14 +239,14 @@ namespace indigo
 
         inline Fragment _fragment_coordinates(int rsite, int fragment) const
         {
-            const RedBlackSet<int>& rs = _rsite2rgroup[_rsite2vertex.at(rsite)];
+            auto vtx = _rsite2vertex.at(rsite);
+            const auto& rs = _rsite2rgroup.at(vtx);
 
             int r = -1;
             int f = fragment;
-            for (int i = rs.begin(); i != rs.end(); i = rs.next(i))
+            for ( auto val: rs )
             {
-                r = rs.key(i);
-                int size = _rgroup2size[r];
+                int size = _rgroup2size[val];
                 if (f >= size)
                 {
                     f -= size;
@@ -281,7 +280,7 @@ namespace indigo
 
         Array<int> _limits;
         Array<int> _rgroup2size;
-        MultiMap<int, int> _rsite2rgroup;
+        std::map<int, std::set<int>> _rsite2rgroup;
         RedBlackMap<int, int> _rsite2vertex;
 
         mutable std::unique_ptr<Attachments> _ats;
