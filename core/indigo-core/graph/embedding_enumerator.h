@@ -113,7 +113,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _term2);
         TL_CP_DECL(Array<int>, _unterm2);
 
-        TL_CP_DECL(Pool<RedBlackSet<int>::Node>, _s_pool);
+        TL_CP_DECL(std::unordered_set<int>, _mapped_orbit_ids);
 
         TL_CP_DECL(GraphFastAccess, _g1_fast);
         TL_CP_DECL(GraphFastAccess, _g2_fast);
@@ -166,7 +166,7 @@ namespace indigo
             EmbeddingEnumerator& _context;
 
             bool _use_equivalence;
-            RedBlackSet<int> _mapped_orbit_ids;
+            std::unordered_set<int>& _mapped_orbit_ids;
             int _term2_begin;
             int _unterm2_begin;
 

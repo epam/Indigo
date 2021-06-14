@@ -25,6 +25,7 @@
 #include "base_cpp/string_pool.h"
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace indigo
 {
