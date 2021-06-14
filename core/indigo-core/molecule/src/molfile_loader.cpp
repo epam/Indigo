@@ -3046,7 +3046,7 @@ void MolfileLoader::_fillSGroupsParentIndices()
 {
     MoleculeSGroups& sgroups = _bmol->sgroups;
 
-    std::unordered_map<int, std::set<int>> indices;
+    std::map<int, std::set<int>> indices;
     // original index can be arbitrary, sometimes key is used multiple times
 
     for (auto i = sgroups.begin(); i != sgroups.end(); i++)
