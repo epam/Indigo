@@ -29,6 +29,7 @@
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph_fast_access.h"
+#include <unordered_set>
 
 namespace indigo
 {
