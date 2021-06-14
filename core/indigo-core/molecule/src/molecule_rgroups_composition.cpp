@@ -42,7 +42,17 @@ MoleculeRGroupsComposition::MoleculeRGroupsComposition(BaseMolecule& mol)
 
         Array<int> rgroups;
         _mol.getAllowedRGroups(vertex, rgroups);
-        _rsite2rgroup.insert(vertex, rgroups);
+
+        auto vit = _rsite2rgroup.find(vertex);
+
+        for ( int i = 0; i < rgroups.size(); ++i )
+        {
+            int rgrp = rgroups[i];
+            if (vit == _rsite2rgroup.end())
+                vit = _rsite2rgroup.emplace(vertex, std::set<int>({rgrp})).first;
+            else
+                vit->second.emplace(rgrp);
+        }
 
         int total = 0;
         for (int i = 0; i < rgroups.size(); i++)
