@@ -19,15 +19,18 @@
 #ifndef __array_h__
 #define __array_h__
 
+#include "base_c/defs.h"
+#include "base_cpp/exception.h"
 #include <cctype>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
-
-#include "base_c/defs.h"
-#include "base_cpp/exception.h"
 
 namespace indigo
 {

@@ -130,12 +130,13 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
 {
     Array<int> fs;
     m._at.dump(fs);
-    MultiMap<int, int> rgroup2fragment;
+    std::map<int, std::set<int>> rgroup2fragment;
     RedBlackMap<Fragment, int> fragment2count;
     for (auto i = 0; i < fs.size(); i++)
     {
         auto x = m._parent._fragment_coordinates(i, fs[i]);
-        if (rgroup2fragment.find(x.rgroup, x.fragment))
+        auto set_it = rgroup2fragment.find(x.rgroup);
+        if ( set_it != rgroup2fragment.end() && set_it->second.find(x.fragment)!= set_it->second.end() )
         {
             int count = fragment2count.at(x);
             fragment2count.remove(x);
@@ -143,27 +144,29 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
         }
         else
         {
-            rgroup2fragment.insert(x.rgroup, x.fragment);
+            auto it = rgroup2fragment.find(x.rgroup);
+            if (it == rgroup2fragment.end())
+            {
+                rgroup2fragment.emplace(x.rgroup, std::set<int>({x.fragment}));
+            }
+            else
+                it->second.emplace(x.fragment);
             fragment2count.insert(x, 1);
         }
     }
 
-    const RedBlackSet<int>& rgroups = rgroup2fragment.keys();
-    for (auto i = rgroups.begin(); i != rgroups.end(); i = rgroups.next(i))
+    for (auto& kvp : rgroup2fragment )
     {
-        auto r = rgroups.key(i);
         RGroup& rgroup = _rgroups.push();
-        RGroup& source = m._parent._rgroups.getRGroup(r);
+        RGroup& source = m._parent._rgroups.getRGroup(kvp.first);
 
-        const RedBlackSet<int>& fs_r = rgroup2fragment[r];
-        for (auto j = fs_r.begin(); j != fs_r.end(); j = fs_r.next(j))
+        for (auto val: kvp.second )
         {
-            auto f = fs_r.key(j);
-            for (auto k = 0; k < fragment2count.at({r, f}); k++)
+            for (auto k = 0; k < fragment2count.at({kvp.first, val}); k++)
             {
                 int fr_idx = rgroup.fragments.add(new Molecule());
                 BaseMolecule* fragment = rgroup.fragments.at(fr_idx);
-                fragment->clone(*source.fragments[f], nullptr, nullptr);
+                fragment->clone(*source.fragments[val], nullptr, nullptr);
                 fragment->removeAttachmentPoints();
             }
         }
