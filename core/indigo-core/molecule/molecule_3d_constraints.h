@@ -397,7 +397,7 @@ namespace indigo
         int* _to_mark;
         int _mark_value;
 
-        TL_CP_DECL(RedBlackSet<int>, _cache_mark);
+        TL_CP_DECL(std::unordered_set<int>, _cache_mark);
     };
 
 } // namespace indigo

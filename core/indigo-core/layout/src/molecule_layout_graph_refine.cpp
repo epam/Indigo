@@ -38,7 +38,7 @@ bool MoleculeLayoutGraph::_edge_check(Graph& graph, int e_idx, void* context_)
             if (context.graph->_fixed_vertices[edge.beg] && context.graph->_fixed_vertices[edge.end])
                 return false;
         }
-        context.edges->find_or_insert(e_idx);
+        context.edges->emplace(e_idx);
         return true;
     }
     return false;
@@ -59,7 +59,7 @@ bool MoleculeLayoutGraph::_path_handle(Graph& graph, const Array<int>& vertices,
                 if (context.graph->_fixed_vertices[edge.beg] && context.graph->_fixed_vertices[edge.end])
                     continue;
             }
-            context.edges->find_or_insert(edges[i]);
+            context.edges->emplace(edges[i]);
         }
     return false;
 }
@@ -152,7 +152,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
     new_state.copy(beg_state);
     // Look through all vertex pairs which are closer than 0.6
     bool improved = true;
-    QS_DEF(RedBlackSet<int>, edges);
+    QS_DEF(std::set<int>, edges);
     QS_DEF(Array<int>, components1);
     QS_DEF(Array<int>, components2);
     EnumContext context;
@@ -259,7 +259,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
         // Flipping
         // Look through found edges
-        for (i = edges.begin(); i < edges.end(); i = edges.next(i))
+        for ( auto edge_id: edges )
         {
             if (max_improvements > 0 && n_improvements > max_improvements)
                 break;
@@ -267,9 +267,9 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             n_improvements++;
 
             // Try to flip branch
-            const Edge& edge = getEdge(edges.key(i));
+            const Edge& edge = getEdge(edge_id);
 
-            if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edges.key(i)].ext_idx]) != 0)
+            if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edge_id].ext_idx]) != 0)
                 continue;
 
             if (getVertex(edge.beg).degree() == 1 || getVertex(edge.end).degree() == 1)
@@ -277,7 +277,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             Filter filter;
 
-            _makeBranches(branch, edges.key(i), filter);
+            _makeBranches(branch, edge_id, filter);
             new_state.flipBranch(filter, beg_state, edge.beg, edge.end);
             new_state.calcEnergy();
 
@@ -296,7 +296,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
         // Rotations
         // Look through found edges
-        for (i = edges.begin(); i < edges.end(); i = edges.next(i))
+        for( auto edge_id : edges )
         {
             if (max_improvements > 0 && n_improvements > max_improvements)
                 break;
@@ -304,14 +304,14 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             n_improvements += 3;
 
             // Try to rotate one branch by 10 degrees in both directions around both vertices
-            const Edge& edge = getEdge(edges.key(i));
+            const Edge& edge = getEdge(edge_id);
 
-            if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edges.key(i)].ext_idx]) != 0)
+            if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edge_id].ext_idx]) != 0)
                 continue;
 
             Filter filter;
 
-            _makeBranches(branch, edges.key(i), filter);
+            _makeBranches(branch, edge_id, filter);
 
             bool around_beg = _allowRotateAroundVertex(edge.beg);
             bool around_end = _allowRotateAroundVertex(edge.end);

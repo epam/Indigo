@@ -22,7 +22,6 @@
 #include <memory>
 
 #include "base_cpp/array.h"
-#include "base_cpp/multimap.h"
 #include "molecule/molecule.h"
 
 namespace indigo
