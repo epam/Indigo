@@ -254,7 +254,7 @@ async def unfold_hydrogens(indigo_request: IndigoRequest) -> IndigoResponse:
 async def validate_chirality(indigo_request: IndigoRequest) -> IndigoResponse:
     indigo_response = IndigoResponse()
     molecule, *_ = list(get_indigo_object(indigo_request))
-    molecule.validateChirality()
+    molecule.validateChirality()  # TODO: empty response?
     return indigo_response
 
 
@@ -523,3 +523,14 @@ async def molecular_weight(indigo_request: IndigoRequest) -> IndigoResponse:
 async def normalize(indigo_request: IndigoRequest) -> IndigoResponse:
     molecule, *_ = list(get_indigo_object(indigo_request))
     return apply(molecule, "normalize")
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/nameToStructure")
+async def name_to_structure(indigo_request: IndigoRequest) -> IndigoResponse:
+    attrs = indigo_request.data.attributes
+
+    name: str = attrs[0].content  # required
+    params: str = attrs[1] if len(attrs) > 1 else None  # optional
+    structure: IndigoObject = indigo().nameToStructure(name, params)
+    # TODO: what to return
+    return IndigoResponse()
