@@ -1,0 +1,45 @@
+Chiral flag and canonical smiles:
+OC(=O)[C@@H](CC1C=CC=CC=1)NI |&1:3,r|. Chiral: False
+OC(=O)[C@@H](CC1C=CC=CC=1)NI |&1:3,r|. Chiral: False
+OC(=O)C(CC1C=CC=CC=1)NI. Chiral: False
+OC(=O)C(CC1C=CC=CC=1)NI. Chiral: False
+OC(=O)[C@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI |o1:3,r|. Chiral: False
+OC(=O)[C@@H](CC1C=CC=CC=1)NI |&1:3,r|. Chiral: False
+OC(=O)C(CC1C=CC=CC=1)NI |w:3,r|. Chiral: False
+C[C@@H](C(NI)C(O)=O)C1C=CC=CC=1 |&1:1,w:2,r|. Chiral: False
+C[C@@H](C(NI)C(O)=O)C1C=CC=CC=1 |&1:1,w:2,r|. Chiral: False
+C[C@@H]([C@@H](NI)C(O)=O)C1C=CC=CC=1 |&1:1,o1:2,r|. Chiral: False
+CC(C(NI)C(O)=O)C1C=CC=CC=1. Chiral: False
+Change stereocenters
+OC(=O)[C@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)C(CC1C=CC=CC=1)NI. Chiral: False
+OC(=O)C(CC1C=CC=CC=1)NI. Chiral: False
+OC(=O)[C@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+C[C@H]([C@@H](NI)C(O)=O)C1C=CC=CC=1. Chiral: True
+C[C@H]([C@@H](NI)C(O)=O)C1C=CC=CC=1. Chiral: True
+C[C@H]([C@@H](NI)C(O)=O)C1C=CC=CC=1. Chiral: True
+CC(C(NI)C(O)=O)C1C=CC=CC=1. Chiral: False
+Reload and check
+OC(=O)[C@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)C(CC1C=CC=CC=1)NI. Chiral: False
+OC(=O)C(CC1C=CC=CC=1)NI. Chiral: False
+OC(=O)[C@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+OC(=O)[C@@H](CC1C=CC=CC=1)NI. Chiral: True
+C[C@H]([C@@H](NI)C(O)=O)C1C=CC=CC=1. Chiral: True
+C[C@H]([C@@H](NI)C(O)=O)C1C=CC=CC=1. Chiral: True
+C[C@H]([C@@H](NI)C(O)=O)C1C=CC=CC=1. Chiral: True
+CC(C(NI)C(O)=O)C1C=CC=CC=1. Chiral: False

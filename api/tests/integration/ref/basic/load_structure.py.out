@@ -1,0 +1,87 @@
+******  Test: (Load Molecule Structure) ***
+
+---- SMILE Structure ----
+
+(** #1 **): Empty input:
+
+
+(** #2 **): Smile (no parameter):
+C1C=CC=CC=1* |$;;;;;;A$|
+
+(** #3 **): Smile (query parameter):
+C1C=CC=CC=1*
+
+(** #4 **): Smile (smarts parameter):
+C1C=CC=CC=1*
+
+---- Reaction Structure ----
+
+(** #5 **): Reaction (query parameter):
+C1C=CC=CC=1*>>C1C=C(*)C=CC=1
+
+(** #6 **): smarts parameter:
+C1C=CC=CC=1*>>C1C=C(*)C=CC=1
+
+(** #7 **): Smiles, (no parameter):
+C1C=CC=CC=1* |$;;;;;;A$|
+
+(** #8 **): Smarts, (smarts parameter):
+[#8;A;H]-[#6;a]1-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:1
+
+(** #9 **): Smarts, (query parameter):
+[OH]C1:C:C:C:C:C:1
+
+(** #10 **): Smarts, (no parameter):
+Oc1ccccc1
+
+---- TestLoadFromBuffer ----
+
+(** #11 **): no parameter
+SC1C=CC=CC=1Br
+C1=CC=CC(S)=C1Br
+Atoms: 8
+Bonds: 8
+
+(** #12 **): Load as query
+Atoms: 8
+Bonds: 8
+
+(** #13 **): Load as smarts
+Atoms: 0
+Bonds: 0
+
+(** #14 **): Load from compessed binary (../../../../../data/molecules/basic/benzodiazepine.sdf.gz)
+Atoms: 33
+Bonds: 35
+
+---- TestLoadFromFile ----
+
+(** #15 **): Load from file (../../../../../data/molecules/affine/2-bromobenzenethiol-rot.mol)
+SC1C=CC=CC=1Br
+C1=CC=CC(S)=C1Br
+Atoms: 8
+Bonds: 8
+
+(** #16 **): Load as query
+Atoms: 8
+Bonds: 8
+
+(** #17 **): Load as smarts
+Atoms: 0
+Bonds: 0
+
+(** #18 **): Load smiles from file (molecules/large-symmetric.smi)
+Atoms: 120
+Bonds: 152
+
+(** #19 **): Load reaction from file (../../../../../data/reactions/basic/adama_reaction.rxn)
+Molecules : 4
+Reactants: 1
+Products : 1
+Catalysts: 2
+
+(** #20 **): Load zipped file (../../../../../data/molecules/basic/benzene.mol.gz)
+Atoms: 6
+Bonds: 6
+
+*** End Test: (Load Molecule Structure)  ***
