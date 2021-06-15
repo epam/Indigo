@@ -41,7 +41,7 @@ public:
     }
 
     void insertHash(dword hash, int c_cnt);
-    const indigo::std::unordered_map<dword, int>& getHashes() const
+    const std::unordered_map<dword, int>& getHashes() const
     {
         return _hashes;
     }
@@ -69,7 +69,7 @@ private:
     /*
      * Map: hash - components count
      */
-    indigo::std::unordered_map<dword, int> _hashes;
+    std::unordered_map<dword, int> _hashes;
     indigo::Array<char> _gross;
 };
 
