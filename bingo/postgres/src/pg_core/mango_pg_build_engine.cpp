@@ -153,7 +153,7 @@ void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
                                 shadow_rel_name, data.getSectionIdx(), data.getStructureIdx(), ItemPointerGetBlockNumber(tid_ptr),
                                 ItemPointerGetOffsetNumber(tid_ptr), data.getMass(), data.getFragmentsCount(), data.getGrossStr());
 
-    const RedBlackMap<dword, int>& hashes = data.getHashes();
+    const std::unordered_map<dword, int>& hashes = data.getHashes();
     for (int h_idx = hashes.begin(); h_idx != hashes.end(); h_idx = hashes.next(h_idx))
     {
         BingoPgCommon::executeQuery("INSERT INTO %s(b_id, ex_hash, f_count) VALUES ('(%d, %d)'::tid, %d, %d)", shadow_hash_name, data.getSectionIdx(),

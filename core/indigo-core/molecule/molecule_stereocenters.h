@@ -154,7 +154,7 @@ namespace indigo
             int implicit_degree;
         };
 
-        RedBlackMap<int, _Atom> _stereocenters;
+        std::map<int, _Atom> _stereocenters;
         BaseMolecule& _baseMolecule;
 
         static int _sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3);

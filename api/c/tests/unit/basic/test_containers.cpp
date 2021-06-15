@@ -24,9 +24,9 @@ TEST(IndigoContainersTest, test_array)
 
 TEST(IndigoContainersTest, test_red_black)
 {
-    RedBlackMap<int, int> map;
-    map.insert(1, 2);
-    map.insert(2,3);
+    std::unordered_map<int, int> map;
+    map.emplace(1, 2);
+    map.emplace(2,3);
     ASSERT_EQ(map.size(), 2);
     map.clear();
     ASSERT_EQ(map.size(), 0);

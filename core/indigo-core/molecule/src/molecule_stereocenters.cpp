@@ -357,7 +357,7 @@ bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_ou
             if (getDir(atom_idx, edge_ids[i].nei_idx) > 0)
                 sensible_bonds_out[edge_ids[i].edge_idx] = 1;
         }
-        _stereocenters.insert(atom_idx, stereocenter);
+        _stereocenters.emplace(atom_idx, stereocenter);
         return true;
     }
 
@@ -586,7 +586,7 @@ bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_ou
         if (getDir(atom_idx, edge_ids[i].nei_idx) > 0)
             sensible_bonds_out[edge_ids[i].edge_idx] = 1;
 
-    _stereocenters.insert(atom_idx, stereocenter);
+    _stereocenters.emplace(atom_idx, stereocenter);
     return true;
 }
 
@@ -678,12 +678,8 @@ int MoleculeStereocenters::_onPlane(const Vec3f& v1, const Vec3f& v2, const Vec3
 
 int MoleculeStereocenters::getType(int idx) const
 {
-    _Atom* atom = _stereocenters.at2(idx);
-
-    if (atom == 0)
-        return 0;
-
-    return atom->type;
+    auto a_it = _stereocenters.find(idx);
+    return a_it == _stereocenters.end() ? 0 : a_it->second.type;
 }
 
 int MoleculeStereocenters::getGroup(int idx) const
@@ -714,12 +710,8 @@ const int* MoleculeStereocenters::getPyramid(int idx) const
 
 int* MoleculeStereocenters::getPyramid(int idx)
 {
-    _Atom* stereo = _stereocenters.at2(idx);
-
-    if (stereo != 0)
-        return stereo->pyramid;
-    else
-        return 0;
+    auto a_it = _stereocenters.find(idx);
+    return a_it == _stereocenters.end() ? 0 : a_it->second.pyramid;
 }
 
 void MoleculeStereocenters::invertPyramid(int idx)
@@ -732,10 +724,10 @@ void MoleculeStereocenters::getAbsAtoms(Array<int>& indices)
 {
     indices.clear();
 
-    for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+    for (auto& kvp : _stereocenters)
     {
-        if (_stereocenters.value(i).type == ATOM_ABS)
-            indices.push(_stereocenters.key(i));
+        if (kvp.second.type == ATOM_ABS)
+            indices.push(kvp.first);
     }
 }
 
@@ -743,11 +735,11 @@ void MoleculeStereocenters::_getGroups(int type, Array<int>& numbers)
 {
     numbers.clear();
 
-    for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+    for (auto& kvp : _stereocenters)
     {
-        if (_stereocenters.value(i).type == type)
+        if (kvp.second.type == type)
         {
-            int group = _stereocenters.value(i).group;
+            int group = kvp.second.group;
 
             if (numbers.find(group) == -1)
                 numbers.push(group);
@@ -759,12 +751,12 @@ void MoleculeStereocenters::_getGroup(int type, int number, Array<int>& indices)
 {
     indices.clear();
 
-    for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+    for (auto& kvp : _stereocenters)
     {
-        const _Atom& atom = _stereocenters.value(i);
+        const _Atom& atom = kvp.second;
 
         if (atom.type == type && atom.group == number)
-            indices.push(_stereocenters.key(i));
+            indices.push(kvp.first);
     }
 }
 
@@ -790,55 +782,47 @@ void MoleculeStereocenters::getAndGroup(int number, Array<int>& indices)
 
 bool MoleculeStereocenters::sameGroup(int idx1, int idx2)
 {
-    _Atom* center1 = _stereocenters.at2(idx1);
-    _Atom* center2 = _stereocenters.at2(idx2);
+    auto a_it1 = _stereocenters.find(idx1);
+    auto a_it2 = _stereocenters.find(idx2);
 
-    if (center1 == 0 && center2 == 0)
+    if (a_it1 == _stereocenters.end() && a_it2 == _stereocenters.end())
         return true;
 
-    if (center1 == 0 || center2 == 0)
+    if (a_it1 == _stereocenters.end() || a_it2 == _stereocenters.end())
         return false;
 
-    if (center1->type == ATOM_ABS)
-        return center2->type == ATOM_ABS;
+    if (a_it1->second.type == ATOM_ABS)
+        return a_it2->second.type == ATOM_ABS;
 
-    if (center1->type == ATOM_OR)
-        return center2->type == ATOM_OR && center1->group == center2->group;
+    if (a_it1->second.type == ATOM_OR)
+        return a_it2->second.type == ATOM_OR && a_it1->second.group == a_it2->second.group;
 
-    if (center1->type == ATOM_AND)
-        return center2->type == ATOM_AND && center1->group == center2->group;
+    if (a_it1->second.type == ATOM_AND)
+        return a_it2->second.type == ATOM_AND && a_it1->second.group == a_it2->second.group;
 
     return false;
 }
 
 bool MoleculeStereocenters::haveAllAbs()
 {
-    int i;
-
-    for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-        if (_stereocenters.value(i).type != ATOM_ABS)
+    for (auto& kvp : _stereocenters)
+        if (kvp.second.type != ATOM_ABS)
             return false;
-
     return true;
 }
 
 bool MoleculeStereocenters::haveAbs()
 {
-    int i;
-
-    for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-        if (_stereocenters.value(i).type == ATOM_ABS)
+    for (auto& kvp : _stereocenters)
+        if (kvp.second.type == ATOM_ABS)
             return true;
-
     return false;
 }
 
 bool MoleculeStereocenters::haveAllAbsAny()
 {
-    int i;
-
-    for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-        if (_stereocenters.value(i).type != ATOM_ABS && _stereocenters.value(i).type != ATOM_ANY)
+    for (auto& kvp : _stereocenters)
+        if (kvp.second.type != ATOM_ABS && kvp.second.type != ATOM_ANY)
             return false;
 
     return true;
@@ -846,21 +830,18 @@ bool MoleculeStereocenters::haveAllAbsAny()
 
 bool MoleculeStereocenters::haveAllAndAny()
 {
-    int i;
     int groupno = -1;
-
-    for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+    for (auto& kvp : _stereocenters)
     {
-        if (_stereocenters.value(i).type == ATOM_ANY)
+        if (kvp.second.type == ATOM_ANY)
             continue;
-        if (_stereocenters.value(i).type != ATOM_AND)
+        if (kvp.second.type != ATOM_AND)
             return false;
         if (groupno == -1)
-            groupno = _stereocenters.value(i).group;
-        else if (groupno != _stereocenters.value(i).group)
+            groupno = kvp.second.group;
+        else if (groupno != kvp.second.group)
             return false;
     }
-
     return true;
 }
 
@@ -869,20 +850,19 @@ bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const M
 {
     QS_DEF(Array<int>, flags);
 
-    flags.clear_resize(query._stereocenters.end());
+    flags.clear_resize(query._stereocenters.size());
     flags.zerofill();
 
-    int i, j;
-
-    for (i = query._stereocenters.begin(); i != query._stereocenters.end(); i = query._stereocenters.next(i))
+    int i = -1;
+    for (auto it_i = query._stereocenters.begin(); it_i != query._stereocenters.end(); ++it_i)
     {
-        if (flags[i])
+        if (flags[++i])
             continue;
 
         flags[i] = 1;
 
-        const _Atom& cq = query._stereocenters.value(i);
-        int iq = query._stereocenters.key(i);
+        const _Atom& cq = it_i->second;
+        int iq = it_i->first;
 
         if (mapping[iq] < 0)
             continue; // happens only on Exact match (when some query fragments are disabled)
@@ -917,10 +897,11 @@ bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const M
         }
         else if (type == ATOM_OR || type == ATOM_AND)
         {
-            for (j = i; j != query._stereocenters.end(); j = query._stereocenters.next(j))
+            int j = i;
+            for (auto it_j = it_i; it_j != query._stereocenters.end(); ++it_j)
             {
-                int iq2 = query._stereocenters.key(j);
-                const _Atom& cq2 = query._stereocenters.value(j);
+                int iq2 = it_j->first;
+                const _Atom& cq2 = it_j->second;
 
                 if (cq2.type != type)
                     continue;
@@ -928,17 +909,17 @@ bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const M
                 if (cq2.group != cq.group)
                     continue;
 
-                const _Atom* ct2 = target._stereocenters.at2(mapping[iq2]);
+                auto ct2_it = target._stereocenters.find(mapping[iq2]);
 
-                if (ct2 == 0)
+                if (ct2_it == target._stereocenters.end())
                     return false;
 
-                if (ct2->type < type)
+                if (ct2_it->second.type < type)
                     return false;
 
                 flags[j] = 1;
 
-                if (ct2->type == ATOM_AND)
+                if (ct2_it->second.type == ATOM_AND)
                 {
                     if (stereo_group_or != -1)
                         return false;
@@ -946,11 +927,11 @@ bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const M
                         return false;
 
                     if (stereo_group_and == -1)
-                        stereo_group_and = ct2->group;
-                    else if (stereo_group_and != ct2->group)
+                        stereo_group_and = ct2_it->second.group;
+                    else if (stereo_group_and != ct2_it->second.group)
                         return false;
                 }
-                else if (ct2->type == ATOM_OR)
+                else if (ct2_it->second.type == ATOM_OR)
                 {
                     if (stereo_group_and != -1)
                         return false;
@@ -958,11 +939,11 @@ bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const M
                         return false;
 
                     if (stereo_group_or == -1)
-                        stereo_group_or = ct2->group;
-                    else if (stereo_group_or != ct2->group)
+                        stereo_group_or = ct2_it->second.group;
+                    else if (stereo_group_or != ct2_it->second.group)
                         return false;
                 }
-                else if (ct2->type == ATOM_ABS)
+                else if (ct2_it->second.type == ATOM_ABS)
                 {
                     if (stereo_group_and != -1)
                         return false;
@@ -1145,7 +1126,7 @@ void MoleculeStereocenters::getPyramidMapping(const MoleculeStereocenters& query
 
 void MoleculeStereocenters::remove(int idx)
 {
-    _stereocenters.remove(idx);
+    _stereocenters.erase(idx);
 }
 
 void MoleculeStereocenters::removeAtoms(const Array<int>& indices)
@@ -1153,8 +1134,8 @@ void MoleculeStereocenters::removeAtoms(const Array<int>& indices)
     for (int i = 0; i < indices.size(); i++)
     {
         int idx = indices[i];
-        if (_stereocenters.find(idx))
-            _stereocenters.remove(idx);
+        if (_stereocenters.find(idx) != _stereocenters.end())
+            _stereocenters.erase(idx);
         else
         {
             const Vertex& vertex = _baseMolecule.getVertex(idx);
@@ -1181,26 +1162,25 @@ void MoleculeStereocenters::removeBonds(const Array<int>& indices)
 
 void MoleculeStereocenters::_removeBondDir(int atom_from, int atom_to)
 {
-    _Atom* stereo_atom = _stereocenters.at2(atom_to);
-    if (stereo_atom != 0)
+    auto it = _stereocenters.find(atom_to);
+    if (it != _stereocenters.end())
     {
-        if (stereo_atom->pyramid[3] == -1)
-            _stereocenters.remove(atom_to);
+        if (it->second.pyramid[3] == -1)
+            _stereocenters.erase(atom_to);
         else
         {
             if (!_baseMolecule.isQueryMolecule() || _baseMolecule.possibleAtomNumber(atom_from, ELEM_H) || _baseMolecule.isRSite(atom_from))
-                _convertAtomToImplicitHydrogen(stereo_atom->pyramid, atom_from);
+                _convertAtomToImplicitHydrogen(it->second.pyramid, atom_from);
         }
     }
 }
 
 void MoleculeStereocenters::buildOnSubmolecule(const MoleculeStereocenters& super, int* mapping)
 {
-    int i, j;
-    for (i = super._stereocenters.begin(); i != super._stereocenters.end(); i = super._stereocenters.next(i))
+    for (auto& kvp : super._stereocenters)
     {
-        int super_idx = super._stereocenters.key(i);
-        const _Atom& super_stereocenter = super._stereocenters.value(i);
+        int super_idx = kvp.first;
+        const _Atom& super_stereocenter = kvp.second;
         int sub_idx = mapping[super_idx];
 
         if (sub_idx < 0)
@@ -1211,7 +1191,7 @@ void MoleculeStereocenters::buildOnSubmolecule(const MoleculeStereocenters& supe
         new_stereocenter.group = super_stereocenter.group;
         new_stereocenter.type = super_stereocenter.type;
 
-        for (j = 0; j < 4; j++)
+        for (int j = 0; j < 4; j++)
         {
             int idx = super_stereocenter.pyramid[j];
 
@@ -1231,11 +1211,11 @@ void MoleculeStereocenters::buildOnSubmolecule(const MoleculeStereocenters& supe
             // pyramid is not mapped completely
             continue;
 
-        _stereocenters.insert(sub_idx, new_stereocenter);
+        _stereocenters.emplace(sub_idx, new_stereocenter);
 
         const Vertex& super_vertex = super._baseMolecule.getVertex(super_idx);
 
-        for (j = super_vertex.neiBegin(); j != super_vertex.neiEnd(); j = super_vertex.neiNext(j))
+        for (int j = super_vertex.neiBegin(); j != super_vertex.neiEnd(); j = super_vertex.neiNext(j))
         {
             int super_edge = super_vertex.neiEdge(j);
             if (mapping[super_vertex.neiVertex(j)] == -1)
@@ -1273,34 +1253,35 @@ void MoleculeStereocenters::add(int atom_idx, int type, int group, const int pyr
     center.group = group;
     memcpy(center.pyramid, pyramid, 4 * sizeof(int));
 
-    _stereocenters.insert(atom_idx, center);
+    _stereocenters.emplace(atom_idx, center);
 }
 
 int MoleculeStereocenters::begin() const
 {
-    return _stereocenters.begin();
+    return 0;
 }
 
 int MoleculeStereocenters::end() const
 {
-    return _stereocenters.end();
+    return _stereocenters.size();
 }
 
 int MoleculeStereocenters::next(int i) const
 {
-    return _stereocenters.next(i);
+    return i < _stereocenters.size() ? i + 1 : _stereocenters.size();
 }
 
 bool MoleculeStereocenters::exists(int atom_idx) const
 {
-    return _stereocenters.at2(atom_idx) != 0;
+    return _stereocenters.find(atom_idx) != _stereocenters.end();
 }
 
 void MoleculeStereocenters::get(int i, int& atom_idx, int& type, int& group, int* pyramid) const
 {
-    const _Atom& center = _stereocenters.value(i);
-
-    atom_idx = _stereocenters.key(i);
+    auto it = _stereocenters.begin();
+    std::advance(it, i);
+    const _Atom& center = it->second;
+    atom_idx = it->first;
     type = center.type;
     group = center.group;
     if (pyramid != 0)
@@ -1309,7 +1290,9 @@ void MoleculeStereocenters::get(int i, int& atom_idx, int& type, int& group, int
 
 int MoleculeStereocenters::getAtomIndex(int i) const
 {
-    return _stereocenters.key(i);
+    auto it = _stereocenters.begin();
+    std::advance(it, i);
+    return it->first;
 }
 
 void MoleculeStereocenters::get(int atom_idx, int& type, int& group, int* pyramid) const
@@ -1324,50 +1307,48 @@ void MoleculeStereocenters::get(int atom_idx, int& type, int& group, int* pyrami
 
 void MoleculeStereocenters::registerUnfoldedHydrogen(int atom_idx, int added_hydrogen)
 {
-    _Atom* center = _stereocenters.at2(atom_idx);
-    if (center == 0)
+    auto it = _stereocenters.find(atom_idx);
+    if (it == _stereocenters.end())
         return;
 
-    if (center->pyramid[3] != -1)
+    if (it->second.pyramid[3] != -1)
         throw Error("cannot unfold hydrogens for stereocenter without implicit hydrogens");
-    center->pyramid[3] = added_hydrogen;
+    it->second.pyramid[3] = added_hydrogen;
 }
 
 void MoleculeStereocenters::flipBond(int atom_parent, int atom_from, int atom_to)
 {
     if (exists(atom_from))
     {
-        _Atom* from_center = _stereocenters.at2(atom_from);
-
-        if (from_center->pyramid[3] == -1)
+        auto it = _stereocenters.find(atom_from);
+        if (it->second.pyramid[3] == -1)
             remove(atom_from);
         else
         {
             for (int i = 0; i < 4; i++)
-                if (from_center->pyramid[i] == atom_parent)
-                    from_center->pyramid[i] = -1;
-            moveMinimalToEnd(from_center->pyramid);
+                if (it->second.pyramid[i] == atom_parent)
+                    it->second.pyramid[i] = -1;
+            moveMinimalToEnd(it->second.pyramid);
         }
     }
 
     if (exists(atom_to))
     {
-        _Atom* to_center = _stereocenters.at2(atom_to);
-
-        if (to_center->pyramid[3] != -1)
+        auto it = _stereocenters.find(atom_to);
+        if (it->second.pyramid[3] != -1)
             throw Error("Bad bond flipping. Stereocenter pyramid is already full");
 
-        to_center->pyramid[3] = atom_parent;
+        it->second.pyramid[3] = atom_parent;
     }
 
     if (!exists(atom_parent))
         return;
 
-    _Atom* center = _stereocenters.at2(atom_parent);
+    auto it = _stereocenters.find(atom_parent);
     for (int i = 0; i < 4; i++)
-        if (center->pyramid[i] == atom_from)
+        if (it->second.pyramid[i] == atom_from)
         {
-            center->pyramid[i] = atom_to;
+            it->second.pyramid[i] = atom_to;
             break;
         }
 }
@@ -1501,11 +1482,11 @@ void MoleculeStereocenters::_convertAtomToImplicitHydrogen(int pyramid[4], int a
 
 void MoleculeStereocenters::markBond(int atom_idx)
 {
-    const _Atom* atom_ptr = _stereocenters.at2(atom_idx);
-    if (atom_ptr == NULL)
+    auto atom_it = _stereocenters.find(atom_idx);
+    if (atom_it == _stereocenters.end())
         return;
 
-    const _Atom& atom = *atom_ptr;
+    const _Atom& atom = atom_it->second;
     int pyramid[4];
     int mult = 1;
     int size = 0;
@@ -1636,10 +1617,8 @@ void MoleculeStereocenters::markBond(int atom_idx)
 
 void MoleculeStereocenters::markBonds()
 {
-    int i;
-
-    for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-        markBond(_stereocenters.key(i));
+    for (auto& kvp : _stereocenters)
+        markBond(kvp.first);
 }
 
 bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter)

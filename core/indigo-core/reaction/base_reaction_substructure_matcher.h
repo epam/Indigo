@@ -41,7 +41,7 @@ namespace indigo
     class BaseMolecule;
     class Molecule;
 
-    typedef RedBlackMap<int, int> RedBlackIntMap;
+    typedef std::unordered_map<int, int> RedBlackIntMap;
 
     class DLLEXPORT BaseReactionSubstructureMatcher
     {
@@ -82,7 +82,7 @@ namespace indigo
         void* context;
 
     protected:
-        void _initMap(BaseReaction& reaction, int side, RedBlackMap<int, int>& aam_map);
+        void _initMap(BaseReaction& reaction, int side, std::unordered_map<int, int>& aam_map);
         virtual bool _checkAAM();
         void _highlight();
         bool _match_stereo;

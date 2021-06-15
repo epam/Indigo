@@ -56,10 +56,10 @@ namespace indigo
 
         void _prepareSubgraph(Graph& subgraph);
 
-        RedBlackMap<int, int> vertices_spanning_tree;
+        std::unordered_map<int, int> vertices_spanning_tree;
 
-        RedBlackMap<int, int> spanning_tree_vertices;
-        RedBlackMap<int, int> _edgeIndexMap;
+        std::unordered_map<int, int> spanning_tree_vertices;
+        std::unordered_map<int, int> _edgeIndexMap;
 
         const Graph& _graph;
 
@@ -72,20 +72,20 @@ namespace indigo
     {
 
         // graph to aux. graph
-        RedBlackMap<int, int> _vertexMap0;
-        RedBlackMap<int, int> _vertexMap1;
+        std::unordered_map<int, int> _vertexMap0;
+        std::unordered_map<int, int> _vertexMap1;
 
-        RedBlackMap<int, int> _auxVertexMap;
+        std::unordered_map<int, int> _auxVertexMap;
 
         // aux. edge to edge
-        RedBlackMap<int, int> _auxEdgeMap;
+        std::unordered_map<int, int> _auxEdgeMap;
 
         const Graph& _graph;
         Array<bool>& _u;
-        RedBlackMap<int, int>& _edgeIndexMap;
+        std::unordered_map<int, int>& _edgeIndexMap;
 
     public:
-        AuxiliaryGraph(const Graph& graph, Array<bool>& u, RedBlackMap<int, int>& edgeIndexMap) : _graph(graph), _u(u), _edgeIndexMap(edgeIndexMap)
+        AuxiliaryGraph(const Graph& graph, Array<bool>& u, std::unordered_map<int, int>& edgeIndexMap) : _graph(graph), _u(u), _edgeIndexMap(edgeIndexMap)
         {
         }
 

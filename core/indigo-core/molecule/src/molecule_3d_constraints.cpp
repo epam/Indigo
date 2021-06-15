@@ -612,7 +612,7 @@ bool Molecule3dConstraintsChecker::check(BaseMolecule& target, const int* mappin
 
 void Molecule3dConstraintsChecker::_cache(int idx)
 {
-    if (_cache_v.find(idx) || _cache_l.find(idx) || _cache_p.find(idx))
+    if (_cache_v.find(idx) != _cache_v.end() || _cache_l.find(idx) != _cache_l.end() || _cache_p.find(idx) != _cache_p.end())
         return;
 
     const MC::Base& base = _constraints.at(idx);
@@ -622,7 +622,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
     case MC::POINT_ATOM: {
         int atom_idx = ((const Molecule3dConstraints::PointByAtom&)base).atom_idx;
 
-        _cache_v.insert(idx, _target->getAtomXyz(_mapping[atom_idx]));
+        _cache_v.emplace(idx, _target->getAtomXyz(_mapping[atom_idx]));
         break;
     }
     case MC::POINT_DISTANCE: {
@@ -644,7 +644,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
 
         res.lineCombin(beg, dir, constr.distance);
 
-        _cache_v.insert(idx, res);
+        _cache_v.emplace(idx, res);
         break;
     }
     case MC::POINT_PERCENTAGE: {
@@ -666,7 +666,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
 
         res.lineCombin2(beg, 1.f - constr.percentage, end, constr.percentage);
 
-        _cache_v.insert(idx, res);
+        _cache_v.emplace(idx, res);
         break;
     }
     case MC::POINT_NORMALE: {
@@ -681,7 +681,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
         Vec3f res;
 
         res.lineCombin(org, norm.dir, constr.distance);
-        _cache_v.insert(idx, res);
+        _cache_v.emplace(idx, res);
         break;
     }
     case MC::POINT_CENTROID: {
@@ -702,7 +702,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
         }
 
         res.scale(1.f / constr.point_ids.size());
-        _cache_v.insert(idx, res);
+        _cache_v.emplace(idx, res);
         break;
     }
     case MC::LINE_NORMALE: {
@@ -722,7 +722,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
         res.dir.copy(plane.getNorm());
         res.org.copy(projection);
 
-        _cache_l.insert(idx, res);
+        _cache_l.emplace(idx, res);
         break;
     }
     case MC::LINE_BEST_FIT: {
@@ -744,7 +744,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
 
         res.bestFit(points.size(), points.ptr(), 0);
 
-        _cache_l.insert(idx, res);
+        _cache_l.emplace(idx, res);
         break;
     }
     case MC::PLANE_BEST_FIT: {
@@ -766,7 +766,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
 
         res.bestFit(points.size(), points.ptr(), 0);
 
-        _cache_p.insert(idx, res);
+        _cache_p.emplace(idx, res);
         break;
     }
     case MC::PLANE_POINT_LINE: {
@@ -782,7 +782,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
 
         res.byPointAndLine(point, line);
 
-        _cache_p.insert(idx, res);
+        _cache_p.emplace(idx, res);
         break;
     }
     default:

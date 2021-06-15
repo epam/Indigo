@@ -32,10 +32,10 @@ MoleculeMass::MoleculeMass()
     relative_atomic_mass_map = NULL;
 }
 
-double MoleculeMass::molecularWeight( Molecule& mol )
+double MoleculeMass::molecularWeight(Molecule& mol)
 {
     std::set<int> selected_atoms;
-    mol.getAtomSelection( selected_atoms );
+    mol.getAtomSelection(selected_atoms);
 
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
@@ -61,8 +61,8 @@ double MoleculeMass::molecularWeight( Molecule& mol )
                 throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
             }
         }
-        
-        if( selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
+
+        if (selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
             continue;
 
         int number = mol.getAtomNumber(v);
@@ -70,20 +70,12 @@ double MoleculeMass::molecularWeight( Molecule& mol )
 
         if (isotope == 0)
         {
-            double* value = 0;
-            if (relative_atomic_mass_map != NULL)
+            if (relative_atomic_mass_map != NULL && relative_atomic_mass_map->find(number) != relative_atomic_mass_map->end())
             {
-                value = relative_atomic_mass_map->at2(number);
-            }
-
-            if (value == 0)
-            {
+                auto it = relative_atomic_mass_map->find(number);
+                molmass += it->second;
+            } else
                 elements_count[number]++;
-            }
-            else
-            {
-                molmass += *value;
-            }
         }
         else
         {
@@ -120,10 +112,10 @@ static int _isotopesCmp(int i1, int i2, void* context)
     return 0;
 }
 
-double MoleculeMass::mostAbundantMass(Molecule& mol )
+double MoleculeMass::mostAbundantMass(Molecule& mol)
 {
     std::set<int> selected_atoms;
-    mol.getAtomSelection( selected_atoms );
+    mol.getAtomSelection(selected_atoms);
 
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
@@ -150,8 +142,8 @@ double MoleculeMass::mostAbundantMass(Molecule& mol )
                 throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
             }
         }
-        
-        if( selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
+
+        if (selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
             continue;
 
         int number = mol.getAtomNumber(v);
@@ -222,7 +214,7 @@ double MoleculeMass::mostAbundantMass(Molecule& mol )
 double MoleculeMass::monoisotopicMass(Molecule& mol)
 {
     std::set<int> selected_atoms;
-    mol.getAtomSelection( selected_atoms );
+    mol.getAtomSelection(selected_atoms);
 
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
@@ -247,7 +239,7 @@ double MoleculeMass::monoisotopicMass(Molecule& mol)
             }
         }
 
-        if( selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
+        if (selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
             continue;
 
         int number = mol.getAtomNumber(v);
@@ -321,10 +313,10 @@ int MoleculeMass::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context)
     return strncmp(Element::toString(ec1.elem), Element::toString(ec2.elem), 3);
 }
 
-void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
+void MoleculeMass::massComposition(Molecule& mol, Array<char>& str)
 {
     std::set<int> selected_atoms;
-    mol.getAtomSelection( selected_atoms );
+    mol.getAtomSelection(selected_atoms);
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
         throw Error("Cannot calculate mass for structure with repeating units");
@@ -351,7 +343,7 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
             }
         }
 
-        if( selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
+        if (selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
             continue;
 
         int number = mol.getAtomNumber(v);
@@ -364,20 +356,12 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
         }
         else
         {
-            double* value = 0;
-            if (relative_atomic_mass_map != NULL)
+            if (relative_atomic_mass_map != NULL && relative_atomic_mass_map->find(number) != relative_atomic_mass_map->end())
             {
-                value = relative_atomic_mass_map->at2(number);
-            }
-
-            if (value)
-            {
-                relativeMass[number] += *value;
-            }
-            else
-            {
+                auto it = relative_atomic_mass_map->find(number);
+                relativeMass[number] += it->second;
+            } else
                 relativeMass[number] += Element::getStandardAtomicWeight(number);
-            }
         }
     }
 

@@ -2025,7 +2025,7 @@ void MolfileSaver::_writeAttachmentValues2000(Output& output, BaseMolecule& frag
     if (fragment.attachmentPointCount() == 0)
         return;
 
-    RedBlackMap<int, int> orders;
+    std::map<int, int> orders;
     int i;
 
     for (i = 1; i <= fragment.attachmentPointCount(); i++)
@@ -2035,19 +2035,18 @@ void MolfileSaver::_writeAttachmentValues2000(Output& output, BaseMolecule& frag
 
         while ((idx = fragment.getAttachmentPoint(i, j++)) != -1)
         {
-            int* val;
-
-            if ((val = orders.at2(_atom_mapping[idx])) == 0)
-                orders.insert(_atom_mapping[idx], 1 << (i - 1));
+            auto it = orders.find(_atom_mapping[idx]);
+            if( it == orders.end() )
+                orders.emplace(_atom_mapping[idx], 1 << (i - 1));
             else
-                *val |= 1 << (i - 1);
+                it->second |= 1 << (i - 1);
         }
     }
 
     output.printf("M  APO%3d", orders.size());
 
-    for (i = orders.begin(); i < orders.end(); i = orders.next(i))
-        output.printf(" %3d %3d", orders.key(i), orders.value(i));
+    for ( auto& kvp: orders )
+        output.printf(" %3d %3d", kvp.first, kvp.second);
 
     output.writeCR();
 }
