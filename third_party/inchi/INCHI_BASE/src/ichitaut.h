@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -142,21 +137,22 @@ typedef enum tagTG_NumDA {  /* 2004-02-26 */
 } TGNUMDA;
 
 typedef struct tagTautomerGroup {
-    /*
-    union {
-        struct {
-               // T_NUM_NO_ISOTOPIC = 2 elements:
-            AT_RANK num_Mobile; // Num_H+num_D+num_T+num_NegCharges
-            AT_RANK num_NegCharges;
-               // T_NUM_ISOTOPIC = 3 elements
-            AT_RANK num_T;      // here the isotopic part (num+T_NUM_NO_ISOTOPIC) starts
-            AT_RANK num_D;
-            AT_RANK num_1H;
-        };
-        AT_RANK num[T_NUM_NO_ISOTOPIC+T_NUM_ISOTOPIC];  // same size and meaning as num[] in T_ENDPOINT
+#if 0
+union {
+    struct {
+           /*T_NUM_NO_ISOTOPIC = 2 elements:*/
+        AT_RANK num_Mobile; /*Num_H+num_D+num_T+num_NegCharges*/
+        AT_RANK num_NegCharges;
+           /* T_NUM_ISOTOPIC = 3 elements*/
+        AT_RANK num_T;      /*here the isotopic part (num+T_NUM_NO_ISOTOPIC) starts*/
+        AT_RANK num_D;
+        AT_RANK num_1H;
     };
-    */
-    AT_RANK num[T_NUM_NO_ISOTOPIC+T_NUM_ISOTOPIC];  /* same size and meaning as num[] in T_ENDPOINT */
+    AT_RANK num[T_NUM_NO_ISOTOPIC+T_NUM_ISOTOPIC];  /*same size and meaning as num[] in T_ENDPOINT*/
+};
+#endif /* 0 */
+
+    AT_RANK num[T_NUM_NO_ISOTOPIC + T_NUM_ISOTOPIC];  /* same size and meaning as num[] in T_ENDPOINT */
                                                     /* isotopic inv. order: num_T, num_D, num_1H */
     AT_RANK num_DA[TG_NUM_DA];
     T_GROUP_ISOWT iWeight;   /* isotopic "weight" = T_GROUP_ISOWT_MULT*(T_GROUP_ISOWT_MULT*num_T + num_D)+num_1H; */
@@ -257,7 +253,7 @@ typedef struct tagTautomerEndpoint {
         AT_RANK num[T_NUM_NO_ISOTOPIC+T_NUM_ISOTOPIC];    // same size and meaning as num[] in T_GROUP
     };
     */
-    AT_RANK num[T_NUM_NO_ISOTOPIC+T_NUM_ISOTOPIC];    /* same size and meaning as num[] in T_GROUP */
+    AT_RANK num[T_NUM_NO_ISOTOPIC + T_NUM_ISOTOPIC];    /* same size and meaning as num[] in T_GROUP */
     AT_RANK num_DA[TG_NUM_DA];
     AT_NUMB nGroupNumber;
     AT_NUMB nEquNumber;  /* same for endpoints connected by alt paths */
@@ -363,118 +359,109 @@ extern "C" {
 #endif
 #endif
 
-int is_centerpoint_elem( U_CHAR el_number );
-int is_centerpoint_elem_strict( U_CHAR el_number );
+    int is_centerpoint_elem( U_CHAR el_number );
+    int is_centerpoint_elem_strict( U_CHAR el_number );
 #if ( KETO_ENOL_TAUT == 1 )
-int is_centerpoint_elem_KET( U_CHAR el_number );
+    int is_centerpoint_elem_KET( U_CHAR el_number );
 #endif
-int bIsCenterPointStrict( inp_ATOM *atom, int iat );
-
-int nGetEndpointInfo( inp_ATOM *atom, int iat, ENDPOINT_INFO *eif );
+    int bIsCenterPointStrict( inp_ATOM *atom, int iat );
+    int nGetEndpointInfo( inp_ATOM *atom, int iat, ENDPOINT_INFO *eif );
 #if ( KETO_ENOL_TAUT == 1 )
-int nGetEndpointInfo_KET( inp_ATOM *atom, int iat, ENDPOINT_INFO *eif );
+    int nGetEndpointInfo_KET( inp_ATOM *atom, int iat, ENDPOINT_INFO *eif );
 #endif
-void AddAtom2DA( AT_RANK num_DA[], inp_ATOM *atom, int at_no, int bSubtract );
-int AddAtom2num(  AT_RANK num[], inp_ATOM *atom, int at_no, int bSubtract );
-int AddEndPoint( T_ENDPOINT *pEndPoint, inp_ATOM *at, int iat );
-int bHasAcidicHydrogen( inp_ATOM *at, int i );
-int bHasOtherExchangableH ( inp_ATOM *at, int i );
-int bHasAcidicMinus( inp_ATOM *at, int i );
+    void AddAtom2DA( AT_RANK num_DA[], inp_ATOM *atom, int at_no, int bSubtract );
+    int AddAtom2num( AT_RANK num[], inp_ATOM *atom, int at_no, int bSubtract );
+    int AddEndPoint( T_ENDPOINT *pEndPoint, inp_ATOM *at, int iat );
+    int bHasAcidicHydrogen( inp_ATOM *at, int i );
+    int bHasOtherExchangableH( inp_ATOM *at, int i );
+    int bHasAcidicMinus( inp_ATOM *at, int i );
 
 
-int nGet15TautIn6MembAltRing( struct tagCANON_GLOBALS *pCG,
-                              inp_ATOM *atom,
-                              int nStartAtom,
-                              AT_RANK  *nBfsTreePos,
-                              DFS_PATH *DfsPath,
-                              int nMaxLenBfsTree,
-                              T_ENDPOINT *EndPoint,
-                              int nMaxNumEndPoint,
-                              T_BONDPOS  *BondPos,
-                              int nMaxNumBondPos,
-                              int *pnNumEndPoint,
-                              int *pnNumBondPos,
-                              struct BalancedNetworkStructure *pBNS,
-                              struct BalancedNetworkData *pBD,
-                              int num_atoms );
+    int nGet15TautIn6MembAltRing( struct tagCANON_GLOBALS *pCG,
+                                  inp_ATOM *atom,
+                                  int nStartAtom,
+                                  AT_RANK  *nBfsTreePos,
+                                  DFS_PATH *DfsPath,
+                                  int nMaxLenBfsTree,
+                                  T_ENDPOINT *EndPoint,
+                                  int nMaxNumEndPoint,
+                                  T_BONDPOS  *BondPos,
+                                  int nMaxNumBondPos,
+                                  int *pnNumEndPoint,
+                                  int *pnNumBondPos,
+                                  struct BalancedNetworkStructure *pBNS,
+                                  struct BalancedNetworkData *pBD,
+                                  int num_atoms );
 
-int nGet12TautIn5MembAltRing( struct tagCANON_GLOBALS *pCG,
-                              inp_ATOM *atom, int nStartAtom,
-                              int nStartAtomNeighbor,
-                              AT_RANK  *nBfsTreePos,
-                              DFS_PATH *DfsPath,
-                              int nMaxLenBfsTree,
-                              T_ENDPOINT *EndPoint,
-                              int nMaxNumEndPoint,
-                              T_BONDPOS  *BondPos,
-                              int nMaxNumBondPos,
-                              int *pnNumEndPoint,
-                              int *pnNumBondPos,
-                              struct BalancedNetworkStructure *pBNS,
-                              struct BalancedNetworkData *pBD,
-                              int num_atoms );
+    int nGet12TautIn5MembAltRing( struct tagCANON_GLOBALS *pCG,
+                                  inp_ATOM *atom, int nStartAtom,
+                                  int nStartAtomNeighbor,
+                                  AT_RANK  *nBfsTreePos,
+                                  DFS_PATH *DfsPath,
+                                  int nMaxLenBfsTree,
+                                  T_ENDPOINT *EndPoint,
+                                  int nMaxNumEndPoint,
+                                  T_BONDPOS  *BondPos,
+                                  int nMaxNumBondPos,
+                                  int *pnNumEndPoint,
+                                  int *pnNumBondPos,
+                                  struct BalancedNetworkStructure *pBNS,
+                                  struct BalancedNetworkData *pBD,
+                                  int num_atoms );
 
-int nGet14TautIn7MembAltRing( struct tagCANON_GLOBALS *pCG,
-                              inp_ATOM *atom,
-                              int nStartAtom,
-                              int nStartAtomNeighbor,
-                              int nStartAtomNeighborEndpoint,
-                              int nStartAtomNeighborNeighborEndpoint,
-                              AT_RANK  *nDfsPathPos,
-                              DFS_PATH *DfsPath,
-                              int nMaxLenDfsPath,
-                              T_ENDPOINT *EndPoint,
-                              int nMaxNumEndPoint,
-                              T_BONDPOS  *BondPos,
-                              int nMaxNumBondPos,
-                              int *pnNumEndPoint,
-                              int *pnNumBondPos,
-                              struct BalancedNetworkStructure *pBNS,
-                              struct BalancedNetworkData *pBD,
-                              int num_atoms );
+    int nGet14TautIn7MembAltRing( struct tagCANON_GLOBALS *pCG,
+                                  inp_ATOM *atom,
+                                  int nStartAtom,
+                                  int nStartAtomNeighbor,
+                                  int nStartAtomNeighborEndpoint,
+                                  int nStartAtomNeighborNeighborEndpoint,
+                                  AT_RANK  *nDfsPathPos,
+                                  DFS_PATH *DfsPath,
+                                  int nMaxLenDfsPath,
+                                  T_ENDPOINT *EndPoint,
+                                  int nMaxNumEndPoint,
+                                  T_BONDPOS  *BondPos,
+                                  int nMaxNumBondPos,
+                                  int *pnNumEndPoint,
+                                  int *pnNumBondPos,
+                                  struct BalancedNetworkStructure *pBNS,
+                                  struct BalancedNetworkData *pBD,
+                                  int num_atoms );
 
-int nGet14TautIn5MembAltRing( struct tagCANON_GLOBALS *pCG,
-                              inp_ATOM *atom,
-                              int nStartAtom,
-                              int nStartAtomNeighbor,
-                              int nStartAtomNeighborEndpoint,
-                              int nStartAtomNeighborNeighborEndpoint,
-                              AT_RANK  *nDfsPathPos,
-                              DFS_PATH *DfsPath,
-                              int nMaxLenDfsPath,
-                              T_ENDPOINT *EndPoint,
-                              int nMaxNumEndPoint,
-                              T_BONDPOS  *BondPos,
-                              int nMaxNumBondPos,
-                              int *pnNumEndPoint,
-                              int *pnNumBondPos,
-                              struct BalancedNetworkStructure *pBNS,
-                              struct BalancedNetworkData *pBD,
-                              int num_atoms );
+    int nGet14TautIn5MembAltRing( struct tagCANON_GLOBALS *pCG,
+                                  inp_ATOM *atom,
+                                  int nStartAtom,
+                                  int nStartAtomNeighbor,
+                                  int nStartAtomNeighborEndpoint,
+                                  int nStartAtomNeighborNeighborEndpoint,
+                                  AT_RANK  *nDfsPathPos,
+                                  DFS_PATH *DfsPath,
+                                  int nMaxLenDfsPath,
+                                  T_ENDPOINT *EndPoint,
+                                  int nMaxNumEndPoint,
+                                  T_BONDPOS  *BondPos,
+                                  int nMaxNumBondPos,
+                                  int *pnNumEndPoint,
+                                  int *pnNumBondPos,
+                                  struct BalancedNetworkStructure *pBNS,
+                                  struct BalancedNetworkData *pBD,
+                                  int num_atoms );
 
-int nGet15TautInAltPath(      struct tagCANON_GLOBALS *pCG,
-                              inp_ATOM *atom,
-                              int nStartAtom, AT_RANK  *nDfsPathPos,
-                              DFS_PATH *DfsPath,
-                              int nMaxLenDfsPath,
-                              T_ENDPOINT *EndPoint,
-                              int nMaxNumEndPoint,
-                              T_BONDPOS  *BondPos,
-                              int nMaxNumBondPos,
-                              int *pnNumEndPoint,
-                              int *pnNumBondPos,
-                              struct BalancedNetworkStructure *pBNS,
-                              struct BalancedNetworkData *pBD,
-                              int num_atoms );
+    int nGet15TautInAltPath( struct tagCANON_GLOBALS *pCG,
+                                  inp_ATOM *atom,
+                                  int nStartAtom, AT_RANK  *nDfsPathPos,
+                                  DFS_PATH *DfsPath,
+                                  int nMaxLenDfsPath,
+                                  T_ENDPOINT *EndPoint,
+                                  int nMaxNumEndPoint,
+                                  T_BONDPOS  *BondPos,
+                                  int nMaxNumBondPos,
+                                  int *pnNumEndPoint,
+                                  int *pnNumBondPos,
+                                  struct BalancedNetworkStructure *pBNS,
+                                  struct BalancedNetworkData *pBD,
+                                  int num_atoms );
 
-
-#if ( RING2CHAIN == 1 )
-int Ring2Chain( ORIG_ATOM_DATA *orig_inp_data );
-#endif
-
-#if ( UNDERIVATIZE == 1 )
-int underivatize( ORIG_ATOM_DATA *orig_inp_data );
-#endif
 
 #ifndef COMPILE_ALL_CPP
 #ifdef __cplusplus

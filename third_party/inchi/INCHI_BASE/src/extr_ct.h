@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -50,22 +45,22 @@
 
 struct AtData
 {
-     char element[3];
-     int maxvalence;
+    char element[3];
+    int maxvalence;
 };
 
 
 
-#define NUM_CHEM_ELEMENTS 127   /* well above number of known chem. elements */
+#define NUM_CHEM_ELEMENTS 127               /* well above number of known chem. elements    */
 
 
 
-#define               AT_ISO_SORT_KEY_MULT  32  /* up to 32 identical hydrogen isotopes */
-                                                /* (similar to T_GROUP_ISOWT_MULT) */
-                                                /* changed from 16 9-12-2003 */
+#define         AT_ISO_SORT_KEY_MULT  32    /* up to 32 identical hydrogen isotopes         */
+                                            /* (similar to T_GROUP_ISOWT_MULT)              */
+                                            /* changed from 16 9-12-2003                    */
 
-typedef long          AT_ISO_SORT_KEY;          /* signed, should hold up to 4096*max_iso_diff */
-                                                /* (similar to T_GROUP_ISOWT) */
+typedef long    AT_ISO_SORT_KEY;            /* signed, should hold up to 4096*max_iso_diff  */
+                                            /* (similar to T_GROUP_ISOWT)                   */
 /*
    = num_1H + AT_ISO_SORT_KEY_MULT*(num_D + AT_ISO_SORT_KEY_MULT*(num_T+AT_ISO_SORT_KEY_MULT*iso_atw_diff))
 */
@@ -73,66 +68,67 @@ typedef long          AT_ISO_SORT_KEY;          /* signed, should hold up to 409
 /* typedef signed   char AT_ISOTOPIC; */ /* + or - */
 typedef struct tagStereoCarb
 {
-    AT_NUMB        at_num;
-    U_CHAR         parity;
+    AT_NUMB at_num;
+    U_CHAR  parity;
 } AT_STEREO_CARB;
 
 typedef struct tagStereoDble
 {
-    AT_NUMB        at_num1;
-    AT_NUMB        at_num2;
-    U_CHAR         parity;
+    AT_NUMB at_num1;
+    AT_NUMB at_num2;
+    U_CHAR  parity;
 } AT_STEREO_DBLE;
 
 typedef struct tagIsotopicAtom
 {
-    AT_NUMB        at_num;
-    NUM_H          num_1H;
-    NUM_H          num_D;
-    NUM_H          num_T;
-    NUM_H          iso_atw_diff;
+    AT_NUMB at_num;
+    NUM_H   num_1H;
+    NUM_H   num_D;
+    NUM_H   num_T;
+    NUM_H   iso_atw_diff;
 } AT_ISOTOPIC;
 
 typedef AT_NUMB AT_STEREO;
 
 
 
-#define BYTE_BITS         8       /* number of bits in one byte */
-
-#define BOND_MASK         0xf     /* 4 bits */
-#define BOND_BITS         4       /* 3 or 4 does not matter; 2 is too small for BOND_TAUTOM */
-#define BOND_ADD          (BOND_BITS==2?-1:0) /* subtract 1 from bonds stored in CT */
+#define BYTE_BITS 8                     /* number of bits in one byte                               */
+#define BOND_MASK 0xf                   /* 4 bits                                                   */
+#define BOND_BITS 4                     /* 3 or 4 does not matter; 2 is too small for BOND_TAUTOM   */
+#define BOND_ADD  (BOND_BITS==2?-1:0)   /* subtract 1 from bonds stored in CT                       */
 
 
 
 typedef struct tagAtom
 {
     char elname[ATOM_EL_LEN];
-    AT_NUMB    neighbor[MAXVAL]; /* changed to unsigned 2-2-95. D.Ch. */
-    AT_NUMB    init_rank;        /* also used in remove_terminal_HDT() to save orig. at. number */
+    AT_NUMB    neighbor[MAXVAL];    /* changed to unsigned 2-2-95. D.Ch.                            */
+    AT_NUMB    init_rank;           /* also used in remove_terminal_HDT() to save                   */
+                                    /* orig. at. number                                             */
     AT_NUMB    orig_at_number;
     AT_NUMB    orig_compt_at_numb;
-    /* low 3 bits=bond type;
-       high 5 bits (in case of cut-vertex atom) = an attached part number
-    */
+    /* low 3 bits=bond type;                                                                        */
+    /* high 5 bits (in case of cut-vertex atom) = an attached part number                           */
     U_CHAR bond_type[MAXVAL];
-    U_CHAR el_number;  /* periodic table number = charge of the nucleus = number of the protons */
-    /* U_CHAR hill_type; */  /* number in psudo hill order */
+    U_CHAR el_number;               /* periodic table number = charge of the nucleus =              */
+                                    /* number of the protons                                        */
+    /* U_CHAR hill_type; */         /* number in pseudo Hill order                                  */
     S_CHAR valence;
-    S_CHAR chem_bonds_valence; /* 8-24-00 to treat tautomer centerpoints, etc. */
-    S_CHAR num_H;              /* first not including D, T; add_DT_to_num_H() includes. */
-    S_CHAR num_iso_H[NUM_H_ISOTOPES];   /* num 1H, 2H(D), 3H(T) */
+    S_CHAR chem_bonds_valence;      /* 8-24-00 to treat tautomer centerpoints, etc.                 */
+    S_CHAR num_H;                   /* first not including D, T; add_DT_to_num_H() includes.        */
+    S_CHAR num_iso_H[NUM_H_ISOTOPES];   /* num 1H, 2H(D), 3H(T)                                     */
     S_CHAR cFlags;
-    S_CHAR iso_atw_diff;        /* abs(iso_atw_diff) < 127 or 31 - ??? */
-    AT_ISO_SORT_KEY iso_sort_key;  /* = num_1H + AT_ISO_SORT_KEY_MULT^1*num_D
-                                               + AT_ISO_SORT_KEY_MULT^2*num_T
-                                               + AT_ISO_SORT_KEY_MULT^3*iso_atw_diff
-                                    */
+    S_CHAR iso_atw_diff;            /* abs(iso_atw_diff) < 127 or 31 - ???                          */
+    AT_ISO_SORT_KEY iso_sort_key;   /* = num_1H + AT_ISO_SORT_KEY_MULT^1*num_D                      */
+                                    /*         + AT_ISO_SORT_KEY_MULT^2*num_T                       */
+                                    /*         + AT_ISO_SORT_KEY_MULT^3*iso_atw_diff                */
     S_CHAR charge;
-    S_CHAR radical; /* 1=>doublet(.), 2=> triplet as singlet (:) ???? why are they same ???? */
+    S_CHAR radical;                 /* 1=>doublet(.), 2=> triplet as singlet (:)                    */
+                                    /* ???? why are they same ????                                  */
     S_CHAR marked;
 
-    AT_NUMB endpoint;  /* tautomer analysis. If != 0 then the hydrogens & (-)charge are in the tautomer group. */
+    AT_NUMB endpoint;               /* tautomer analysis. If != 0 then the hydrogens & (-)charge    */
+                                    /* are in the tautomer group.                                   */
 
     /*
        Pairs stereo_bond_neighbor[] and stereo_bond_neighbor2[], etc
@@ -140,48 +136,53 @@ typedef struct tagAtom
        To use same stereo processing code these arrays are swapped when
        switching from non-isotopic to isotopic processing and back.
     */
-    AT_NUMB stereo_bond_neighbor[MAX_NUM_STEREO_BONDS];  /* Original number of an opposite atom */
-    AT_NUMB stereo_bond_neighbor2[MAX_NUM_STEREO_BONDS]; /*     (stereo bond neighbor) +1; */
-    S_CHAR  stereo_bond_ord[MAX_NUM_STEREO_BONDS];    /* Ordering number of a bond/neighbor in the direction to the */
-    S_CHAR  stereo_bond_ord2[MAX_NUM_STEREO_BONDS];   /* stereo bond opposite atom (important for cumulenes); */
-    S_CHAR  stereo_bond_z_prod[MAX_NUM_STEREO_BONDS];  /* Relative  atom-neighbors */
-    S_CHAR  stereo_bond_z_prod2[MAX_NUM_STEREO_BONDS]; /* double bond planes orientation; */
-    S_CHAR  stereo_bond_parity[MAX_NUM_STEREO_BONDS];  /* parity + MULT_STEREOBOND*chain_length, */
-    S_CHAR  stereo_bond_parity2[MAX_NUM_STEREO_BONDS]; /* where: */
-              /*
-                 parity (Mask 0x07=BITS_PARITY):
+    AT_NUMB stereo_bond_neighbor[MAX_NUM_STEREO_BONDS]; /* Original number of an opposite atom      */
+    AT_NUMB stereo_bond_neighbor2[MAX_NUM_STEREO_BONDS];/*     (stereo bond neighbor) +1;           */
+    S_CHAR  stereo_bond_ord[MAX_NUM_STEREO_BONDS];      /* Ordering number of a bond/neighbor       */
+                                                        /* in the direction to the                  */
+    S_CHAR  stereo_bond_ord2[MAX_NUM_STEREO_BONDS];     /* stereo bond opposite atom (important     */
+                                                        /* for cumulenes);                          */
+    S_CHAR  stereo_bond_z_prod[MAX_NUM_STEREO_BONDS];   /* Relative  atom-neighbors                 */
+    S_CHAR  stereo_bond_z_prod2[MAX_NUM_STEREO_BONDS];  /* double bond planes orientation;          */
+    S_CHAR  stereo_bond_parity[MAX_NUM_STEREO_BONDS];   /* parity + MULT_STEREOBOND*chain_length,   */
+    S_CHAR  stereo_bond_parity2[MAX_NUM_STEREO_BONDS];  /* where:                                   */
+                    /*
+                        parity (Mask 0x07=BITS_PARITY):
 
-                 0   = AB_PARITY_NONE = not a stereo bond
-                 1/2 = AB_PARITY_ODD/EVEN = bond parity defined from initial ranks
-                 3   = AB_PARITY_UNKN = geometry is unknown to the user
-                 4   = AB_PARITY_UNDF = not enough geometry info to find the parity
-                 6   = AB_PARITY_CALC = calculate later from the neighbor ranks; some ot them can be
-                       replaced with AB_PARITY_ODD/EVEN after equivalence ranks have been determined
+                         0   = AB_PARITY_NONE = not a stereo bond
+                         1/2 = AB_PARITY_ODD/EVEN = bond parity defined from initial ranks
+                         3   = AB_PARITY_UNKN = geometry is unknown to the user
+                         4   = AB_PARITY_UNDF = not enough geometry info to find the parity
+                         6   = AB_PARITY_CALC = calculate later from the neighbor ranks;
+                               some ot them can be replaced with AB_PARITY_ODD/EVEN
+                               after equivalence ranks have been determined
 
-                 length (Mask 0x38=MASK_CUMULENE_LEN, length=stereo_bond_parity[i]/MULT_STEREOBOND):
+                         length (Mask 0x38=MASK_CUMULENE_LEN, length=stereo_bond_parity[i]/MULT_STEREOBOND):
 
-                 0   => double or alternating stereogenic bond
-                 1   => cumulene with 2 double bonds (stereogenic center)
-                 2   => cumulene with 3 double bonds (stereogenic bond)
-                 length <= (MAX_CUMULENE_LEN=2)
-                 bit KNOWN_PARITIES_EQL =  0x40: all pairs of const. equ. atoms are connected by stereo bonds
-                                                and these bonds have identical parities
-              */
+                         0   => double or alternating stereogenic bond
+                         1   => cumulene with 2 double bonds (stereogenic center)
+                         2   => cumulene with 3 double bonds (stereogenic bond)
+                         length <= (MAX_CUMULENE_LEN=2)
+                         bit KNOWN_PARITIES_EQL =  0x40: all pairs of const. equ. atoms are connected
+                         by stereo bonds and these bonds have identical parities
+                    */
 
-    S_CHAR parity; /* -- Mask 0x07=BITS_PARITY: --
-                   0 = AB_PARITY_NONE => no parity; also parity&0x38 = 0
-                   1 = AB_PARITY_ODD  => odd parity
-                   2 = AB_PARITY_EVEN => even parity
-                   3 = AB_PARITY_UNKN => user marked as unknown parity
-                   4 = AB_PARITY_UNDF => parity cannot be defined because of symmetry or not well defined geometry
-                  */
-    S_CHAR parity2;        /* parity including parity due to isotopic terminal H */
-    /* bit msks: 0x07 => known parity (1,2,3,4) or AB_PARITY_CALC=6, AB_PARITY_IISO = 6 */
-    /*           0x40 => KNOWN_PARITIES_EQL */
-    S_CHAR stereo_atom_parity; /* similar to stereo_bond_parity[]: known in advance AB_PARITY_* value + KNOWN_PARITIES_EQL bit */
+    S_CHAR parity;  /* -- Mask 0x07=BITS_PARITY: --
+                        0 = AB_PARITY_NONE => no parity; also parity&0x38 = 0
+                        1 = AB_PARITY_ODD  => odd parity
+                        2 = AB_PARITY_EVEN => even parity
+                        3 = AB_PARITY_UNKN => user marked as unknown parity
+                        4 = AB_PARITY_UNDF => parity cannot be defined because of symmetry
+                            or not well defined geometry
+                    */
+    S_CHAR parity2; /* parity including parity due to isotopic terminal H */
+    /* bit msks: 0x07 => known parity (1,2,3,4) or AB_PARITY_CALC=6, AB_PARITY_IISO = 6             */
+    /*           0x40 => KNOWN_PARITIES_EQL                                                         */
+    S_CHAR stereo_atom_parity;  /* similar to stereo_bond_parity[]: known in
+                                /( advance AB_PARITY_* value + KNOWN_PARITIES_EQL bit               */
     S_CHAR stereo_atom_parity2;
-    S_CHAR final_parity;   /* defined by equivalence ranks */
-    S_CHAR final_parity2;  /* defined by equivalence ranks, incl. due to terminal isotopic H */
+    S_CHAR final_parity;        /* defined by equivalence ranks                                          */
+    S_CHAR final_parity2;       /* defined by equivalence ranks, incl. due to terminal isotopic H        */
     S_CHAR bAmbiguousStereo;
     S_CHAR bHasStereoOrEquToStereo;
     S_CHAR bHasStereoOrEquToStereo2;
@@ -199,29 +200,29 @@ typedef struct tagAtom
 #endif
 
     S_CHAR z_dir[3];
-} sp_ATOM ;
+} sp_ATOM;
 
-#define BOND_SINGLE BOND_TYPE_SINGLE  /* 1 */
-#define BOND_DOUBLE BOND_TYPE_DOUBLE  /* 2 */
-#define BOND_TRIPLE BOND_TYPE_TRIPLE  /* 3 */
-#define BOND_ALTERN BOND_TYPE_ALTERN  /* 4 single/double */
+#define BOND_SINGLE BOND_TYPE_SINGLE  /* 1                                  */
+#define BOND_DOUBLE BOND_TYPE_DOUBLE  /* 2                                  */
+#define BOND_TRIPLE BOND_TYPE_TRIPLE  /* 3                                  */
+#define BOND_ALTERN BOND_TYPE_ALTERN  /* 4 single/double                    */
 
-#define BOND_ALT_123             5  /* single/double/triple */
-#define BOND_ALT_13              6  /* single/triple */
-#define BOND_ALT_23              7  /* double/triple */
+#define BOND_ALT_123             5   /* single/double/triple                */
+#define BOND_ALT_13              6   /* single/triple                       */
+#define BOND_ALT_23              7   /* double/triple                       */
 #define BOND_TAUTOM              8
 #define BOND_ALT12NS             9
-#define BOND_NUMDIF              9  /* number of different kinds of bonds */
+#define BOND_NUMDIF              9  /* number of different kinds of bonds  */
 
 #define BOND_TYPE_MASK        0x0f
 
-#define BOND_MARK_ALL         0xf0  /* complement to BOND_TYPE_MASK */
+#define BOND_MARK_ALL         0xf0  /* complement to BOND_TYPE_MASK         */
 
 #define BOND_MARK_ALT12       0x10
 #define BOND_MARK_ALT123      0x20
 #define BOND_MARK_ALT13       0x30
 #define BOND_MARK_ALT23       0x40
-#define BOND_MARK_ALT12NS     0x50  /* 1 or 2, non-stereo */
+#define BOND_MARK_ALT12NS     0x50  /* 1 or 2, non-stereo                   */
 #define BOND_MARK_MASK        0x70
 
 #define ACTUAL_ORDER(PBNS, IAT,IBOND, BTYPE)  ( ((PBNS) && (PBNS)->edge && (PBNS)->vert &&\
@@ -229,12 +230,12 @@ typedef struct tagAtom
 
 
 #define BITS_PARITY        0x07  /* mask to retrieve half-bond parity */
-#define MASK_CUMULENE_LEN  0x38  /* mask to retrieve (cumulene chain length - 1)*MULT_STEREOBOND */
-#define KNOWN_PARITIES_EQL 0x40  /* parity is same for all pairs of constit. equivalent atoms */
-#define MAX_CUMULENE_LEN   2     /* max number of bonds in a cumulene chain - 1 */
+#define MASK_CUMULENE_LEN  0x38  /* mask to retrieve (cumulene chain length - 1)*MULT_STEREOBOND    */
+#define KNOWN_PARITIES_EQL 0x40  /* parity is same for all pairs of constit. equivalent atoms       */
+#define MAX_CUMULENE_LEN   2     /* max number of bonds in a cumulene chain - 1                     */
 
 #define MULT_STEREOBOND    0x08  /* multiplier for cumulene chain length
-                                    odd length => chiral, even length => stereogenic bond */
+                                    odd length => chiral, even length => stereogenic bond           */
 
 #define MAKE_BITS_CUMULENE_LEN(X)   ((X)*MULT_STEREOBOND)
 #define GET_BITS_CUMULENE_LEN(X)    ((X)&MASK_CUMULENE_LEN)

@@ -1,8 +1,35 @@
 /*
- * International Chemical Identifier (InChI)
- * Version 1
- *
- */
+* International Chemical Identifier (InChI)
+* Version 1
+* Software version 1.06
+* December 15, 2020
+*
+* The InChI library and programs are free software developed under the
+* auspices of the International Union of Pure and Applied Chemistry (IUPAC).
+* Originally developed at NIST.
+* Modifications and additions by IUPAC and the InChI Trust.
+* Some portions of code were developed/changed by external contributors
+* (either contractor or volunteer) which are listed in the file
+* 'External-contributors' included in this distribution.
+*
+* IUPAC/InChI-Trust Licence No.1.0 for the
+* International Chemical Identifier (InChI)
+* Copyright (C) IUPAC and InChI Trust
+*
+* This library is free software; you can redistribute it and/or modify it
+* under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
+* or any later version.
+*
+* Please note that this library is distributed WITHOUT ANY WARRANTIES
+* whatsoever, whether expressed or implied.
+* See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
+*
+* You should have received a copy of the IUPAC/InChI Trust InChI
+* Licence No. 1.0 with this library; if not, please e-mail:
+*
+* info@inchi-trust.org
+*
+*/
 
 
 #include <string.h>
@@ -23,25 +50,29 @@
 
 #ifndef TARGET_LIB_FOR_WINCHI
 
-/****************************************************************************/
-int DisplayStructure( struct tagCANON_GLOBALS *pCG,
-                      inp_ATOM *at,
-                      int num_at, int num_removed_H,
-                      int bAdd_DT_to_num_H,
-                      int nNumRemovedProtons,
-                      NUM_H *nNumRemovedProtonsIsotopic,
-                      int bIsotopic,
-                      int j /*bTautomeric*/,
-                      INChI **cur_INChI, INChI_Aux **cur_INChI_Aux,
-                      int bAbcNumbers,
-                      DRAW_PARMS *dp,
-                      INCHI_MODE nMode,
-                      char *szTitle )
-{
-INF_ATOM_DATA inf_data = {NULL,};
-int err = -1;
 
-    if ( CreateInfoAtomData( &inf_data, num_at, 1 ) )
+ /****************************************************************************/
+int DisplayStructure( struct tagCANON_GLOBALS   *pCG,
+                      inp_ATOM      *at,
+                      int           num_at,
+                      OAD_Polymer   *polymer,
+                      int           num_removed_H,
+                      int           bAdd_DT_to_num_H,
+                      int           nNumRemovedProtons,
+                      NUM_H         *nNumRemovedProtonsIsotopic,
+                      int           bIsotopic,
+                      int           j /*bTautomeric*/,
+                      INChI         **cur_INChI,
+                      INChI_Aux     **cur_INChI_Aux,
+                      int           bAbcNumbers,
+                      DRAW_PARMS    *dp,
+                      INCHI_MODE    nMode,
+                      char          *szTitle )
+{
+    INF_ATOM_DATA inf_data = { NULL, };
+    int err = -1;
+
+    if (CreateInfoAtomData( &inf_data, num_at, 1 ))
     {
         err = 0;
 
@@ -49,7 +80,7 @@ int err = -1;
                         nNumRemovedProtons, nNumRemovedProtonsIsotopic, bIsotopic,
                         cur_INChI ? cur_INChI[j] : NULL,
                         cur_INChI_Aux ? cur_INChI_Aux[j] : NULL,
-                        bAbcNumbers, nMode);
+                        bAbcNumbers, nMode );
 
         FillTableParms( &dp->sdp, cur_INChI, cur_INChI_Aux, nMode, bIsotopic, j );
 
@@ -65,34 +96,36 @@ int err = -1;
 
 /****************************************************************************/
 int DisplayCompositeStructure( struct tagCANON_GLOBALS *pCG,
-                               COMP_ATOM_DATA *composite_norm_data,
-                               int bIsotopic, int bTautomeric,
-                               PINChI2 *pINChI2,
-                               PINChI_Aux2 *pINChI_Aux2,
-                               int bAbcNumbers,
-                               DRAW_PARMS *dp,
-                               INCHI_MODE nMode,
-                               char *szTitle )
+                               COMP_ATOM_DATA   *composite_norm_data,
+                               OAD_Polymer		*polymer,
+                               int              bIsotopic,
+                               int              bTautomeric,
+                               PINChI2          *pINChI2,
+                               PINChI_Aux2      *pINChI_Aux2,
+                               int              bAbcNumbers,
+                               DRAW_PARMS       *dp,
+                               INCHI_MODE       nMode,
+                               char             *szTitle )
 {
-INF_ATOM_DATA inf_data;
-int err = -1, ret;
+    INF_ATOM_DATA inf_data;
+    int err = -1, ret;
 
-    memset( &inf_data, 0, sizeof(inf_data) );
+    memset( &inf_data, 0, sizeof( inf_data ) );
 
-    if ( CreateInfoAtomData( &inf_data, (composite_norm_data+bTautomeric)->num_at,
-                              (composite_norm_data+bTautomeric)->num_components ) )
+    if (CreateInfoAtomData( &inf_data, ( composite_norm_data + bTautomeric )->num_at,
+        ( composite_norm_data + bTautomeric )->num_components ))
     {
 
-        ret = FillOutCompositeCanonInfAtom( pCG,
-                                            composite_norm_data,
-                                            &inf_data,
-                                            bIsotopic, bTautomeric,
+        ret = FillOutCompositeCanonInfAtom( pCG, composite_norm_data,
+                                            &inf_data, bIsotopic, bTautomeric,
                                             pINChI2, pINChI_Aux2,
-                                            bAbcNumbers, nMode);
-        if ( !ret )
+                                            bAbcNumbers, nMode );
+        if (!ret)
+        {
             goto exit_function;
+        }
 
-        if ( bTautomeric == TAUT_INI )
+        if (bTautomeric == TAUT_INI)
         {
             /*
             FillOutInfAtom( (composite_norm_data+bTautomeric)->at, &inf_data, (composite_norm_data+bTautomeric)->num_at,
@@ -108,79 +141,78 @@ int err = -1, ret;
             /* real check for tautomeric components 02-04-2005 */
             int m, nNumTautComponents = 0;
 
-            if ( 1 == bTautomeric )
+            if (1 == bTautomeric)
             {
-                for ( m = 0; m < composite_norm_data[TAUT_YES].num_components; m ++ )
+                for (m = 0; m < composite_norm_data[TAUT_YES].num_components; m++)
                 {
-                    if ( !pINChI2[m][TAUT_YES] )
+                    if (!pINChI2[m][TAUT_YES])
+                    {
                         continue;
-                    if ( pINChI2[m][TAUT_YES]->bDeleted || pINChI2[m][TAUT_YES]->lenTautomer > 0 )
-                        nNumTautComponents ++;
+                    }
+                    if (pINChI2[m][TAUT_YES]->bDeleted || pINChI2[m][TAUT_YES]->lenTautomer > 0)
+                    {
+                        nNumTautComponents++;
+                    }
                 }
             }
 
             FillCompositeTableParms( &dp->sdp, inf_data.StereoFlags, nMode, bIsotopic, nNumTautComponents );
         }
 
-        err = DisplayInputStructure( szTitle, (composite_norm_data+bTautomeric)->at, &inf_data, (composite_norm_data+bTautomeric)->num_at, dp );
+        err = DisplayInputStructure( szTitle, ( composite_norm_data + bTautomeric )->at, &inf_data, ( composite_norm_data + bTautomeric )->num_at, dp );
 
         FreeInfoAtomData( &inf_data );
     }
 
 exit_function:
+
     return err;
 }
 
-
-
-
-
-
-
 #endif
-
 
 
 /****************************************************************************/
 void FillTableParms( SET_DRAW_PARMS *sdp,
-                     INChI **cur_INChI,
-                     INChI_Aux **cur_INChI_Aux,
-                     INCHI_MODE nMode,
-                     int bShowIsotopic, int indx )
+                     INChI          **cur_INChI,
+                     INChI_Aux      **cur_INChI_Aux,
+                     INCHI_MODE     nMode,
+                     int            bShowIsotopic,
+                     int            indx )
 {
-TBL_DRAW_PARMS *tdp = sdp->tdp;
-char   (*ReqShownFound)[TDP_NUM_PAR] = tdp->ReqShownFound;
-int  i, j;
-INChI_Stereo *Stereo;
-int          bShowTaut = (cur_INChI && cur_INChI[indx]->lenTautomer > 0)? 1 : 0;
+    TBL_DRAW_PARMS *tdp = sdp->tdp;
+    char( *ReqShownFound )[TDP_NUM_PAR] = tdp->ReqShownFound;
+    int  i, j;
+    INChI_Stereo *Stereo;
+    int          bShowTaut = ( cur_INChI && cur_INChI[indx]->lenTautomer > 0 ) ? 1 : 0;
 
 #if ( REL_RAC_STEREO_IGN_1_SC == 1 )
-    int bRelRac = 0!=(nMode &
-                        (REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO ));
+    int bRelRac = 0 != ( nMode &
+        ( REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO ) );
 #endif
 
-    if ( !cur_INChI || !cur_INChI_Aux )
+    if (!cur_INChI || !cur_INChI_Aux)
     {
         sdp->tdp->bDrawTbl = 0;
-        sdp->bOrigAtom     = 1;
+        sdp->bOrigAtom = 1;
         return;
     }
 
     /*  Displayed */
 
-    ReqShownFound[ilSHOWN][itBASIC]    =  bShowTaut?     'T':'\0';
-    ReqShownFound[ilSHOWN][itISOTOPIC] =  bShowIsotopic? 'I':'\0';
+    ReqShownFound[ilSHOWN][itBASIC] = bShowTaut ? 'T' : '\0';
+    ReqShownFound[ilSHOWN][itISOTOPIC] = bShowIsotopic ? 'I' : '\0';
 
-/*
+    /*
     ReqShownFound[ilSHOWN][itBASIC]    =  bShowTaut?     'T':'B';
     ReqShownFound[ilSHOWN][itISOTOPIC] =  bShowIsotopic? 'I':'N';
- */
+    */
 
     i = indx;
-    if ( cur_INChI[i] )
+    if (cur_INChI[i])
     {
-        Stereo = bShowIsotopic    ? cur_INChI[i]->StereoIsotopic
-                                : cur_INChI[i]->Stereo;
+        Stereo = bShowIsotopic ? cur_INChI[i]->StereoIsotopic
+            : cur_INChI[i]->Stereo;
     }
     else
     {
@@ -189,45 +221,47 @@ int          bShowTaut = (cur_INChI && cur_INChI[indx]->lenTautomer > 0)? 1 : 0;
 
 #if ( REL_RAC_STEREO_IGN_1_SC == 1 )
 
-    if ( Stereo && ( 0 < Stereo->nNumberOfStereoBonds ||
-                     0 < Stereo->nNumberOfStereoCenters-bRelRac ) ) {
+    if (Stereo && ( 0 < Stereo->nNumberOfStereoBonds ||
+        0 < Stereo->nNumberOfStereoCenters - bRelRac ))
+    {
         ReqShownFound[ilSHOWN][itSTEREO] = 'S';
-        if ( Stereo->nNumberOfStereoCenters && Stereo->nCompInv2Abs == -1 &&
-             ( nMode & (REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO )))
+        if (Stereo->nNumberOfStereoCenters && Stereo->nCompInv2Abs == -1 &&
+            ( nMode & ( REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO ) ))
         {
-            if ( Stereo->nNumberOfStereoCenters < 2 &&
-                !Stereo->nNumberOfStereoBonds )
+            if (Stereo->nNumberOfStereoCenters < 2 &&
+                !Stereo->nNumberOfStereoBonds)
             {
                 ReqShownFound[ilSHOWN][itSTEREO] = '\0';
             }
-            else if ( Stereo->nNumberOfStereoCenters >= 2 )
+            else if (Stereo->nNumberOfStereoCenters >= 2)
             {
                 /* shown Inverted stereo */
-                ReqShownFound[ilSHOWN][itSTEREO] =  's';
+                ReqShownFound[ilSHOWN][itSTEREO] = 's';
             }
         }
 
 #else  /* REL_RAC_STEREO_IGN_1_SC == 0 */
 
-    if ( Stereo &&
-        (Stereo->nNumberOfStereoBonds || Stereo->nNumberOfStereoCenters) )
+    if (Stereo &&
+        ( Stereo->nNumberOfStereoBonds || Stereo->nNumberOfStereoCenters ))
     {
 
         ReqShownFound[ilSHOWN][itSTEREO] = 'S';
 
-        if ( Stereo->nNumberOfStereoCenters && Stereo->nCompInv2Abs == -1 &&
-             ( nMode & (REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO) ) )
+        if (Stereo->nNumberOfStereoCenters && Stereo->nCompInv2Abs == -1 &&
+            ( nMode & ( REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO ) ))
         {
             /*
             if ( Stereo->nNumberOfStereoCenters < 2 && !Stereo->nNumberOfStereoBonds )
             {
                 ReqShownFound[ilSHOWN][itSTEREO] = '\0';
             } else
-            if ( Stereo->nNumberOfStereoCenters >= 2 ) {
+            if ( Stereo->nNumberOfStereoCenters >= 2 )
+            {
             */
 
             /* shown Inverted stereo */
-            ReqShownFound[ilSHOWN][itSTEREO] =  's';
+            ReqShownFound[ilSHOWN][itSTEREO] = 's';
 
             /*
             }
@@ -253,9 +287,9 @@ int          bShowTaut = (cur_INChI && cur_INChI[indx]->lenTautomer > 0)? 1 : 0;
     */
 
     /* Remove zeroes between chars */
-    for ( i = j = 0; i < TDP_NUM_PAR; i ++ )
+    for (i = j = 0; i < TDP_NUM_PAR; i++)
     {
-        if ( ReqShownFound[ilSHOWN][i] >= ' ' )
+        if (ReqShownFound[ilSHOWN][i] >= ' ')
         {
             ReqShownFound[ilSHOWN][j++] = ReqShownFound[ilSHOWN][i];
         }
@@ -263,50 +297,52 @@ int          bShowTaut = (cur_INChI && cur_INChI[indx]->lenTautomer > 0)? 1 : 0;
 
     i = j;
 
-    for ( ; i < TDP_NUM_PAR; i ++ )
+    for (; i < TDP_NUM_PAR; i++)
     {
         ReqShownFound[ilSHOWN][i] = '\0';
     }
 
-    sdp->tdp->bDrawTbl = j? 1 : 0;
-    sdp->bOrigAtom     = 0;
+    sdp->tdp->bDrawTbl = j ? 1 : 0;
+    sdp->bOrigAtom = 0;
 
     return;
 }
 
 
-
 /****************************************************************************/
-void FillCompositeTableParms( SET_DRAW_PARMS *sdp, AT_NUMB StereoFlags,
-                     INCHI_MODE nMode, int bShowIsotopic, int bShowTaut )
+void FillCompositeTableParms( SET_DRAW_PARMS    *sdp,
+                              AT_NUMB           StereoFlags,
+                              INCHI_MODE        nMode,
+                              int               bShowIsotopic,
+                              int               bShowTaut )
 {
-TBL_DRAW_PARMS *tdp = sdp->tdp;
-char    (*ReqShownFound)[TDP_NUM_PAR] = tdp->ReqShownFound;
-int  i, j;
+    TBL_DRAW_PARMS *tdp = sdp->tdp;
+    char( *ReqShownFound )[TDP_NUM_PAR] = tdp->ReqShownFound;
+    int  i, j;
 
-    /*  Displayed */
+        /*  Displayed */
 
-    ReqShownFound[ilSHOWN][itBASIC]    =  bShowTaut?     'T':'\0';
-    ReqShownFound[ilSHOWN][itISOTOPIC] =  bShowIsotopic? 'I':'\0';
+    ReqShownFound[ilSHOWN][itBASIC] = bShowTaut ? 'T' : '\0';
+    ReqShownFound[ilSHOWN][itISOTOPIC] = bShowIsotopic ? 'I' : '\0';
 
-/*
+    /*
     ReqShownFound[ilSHOWN][itBASIC]    =  bShowTaut?     'T':'B';
     ReqShownFound[ilSHOWN][itISOTOPIC] =  bShowIsotopic? 'I':'N';
- */
+     */
 
-    if ( StereoFlags & INF_STEREO )
+    if (StereoFlags & INF_STEREO)
     {
         ReqShownFound[ilSHOWN][itSTEREO] = 'S';
-        if ( (StereoFlags & INF_STEREO_INV) &&
-            ( nMode & (REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO ) ) )
+        if (( StereoFlags & INF_STEREO_INV ) &&
+            ( nMode & ( REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO ) ))
         {
-            if (StereoFlags & (INF_STEREO_REL | INF_STEREO_RAC) )
+            if (StereoFlags & ( INF_STEREO_REL | INF_STEREO_RAC ))
             {
                 ReqShownFound[ilSHOWN][itSTEREO] = 's';
             }
             else
             {
-                ReqShownFound[ilSHOWN][itSTEREO] =  '\0'; /* shown Inverted stereo */
+                ReqShownFound[ilSHOWN][itSTEREO] = '\0'; /* shown Inverted stereo */
             }
         }
     }
@@ -329,9 +365,9 @@ int  i, j;
 
     /* Remove zeroes between chars */
 
-    for ( i = j = 0; i < TDP_NUM_PAR; i ++ )
+    for (i = j = 0; i < TDP_NUM_PAR; i++)
     {
-        if ( ReqShownFound[ilSHOWN][i] >= ' ' )
+        if (ReqShownFound[ilSHOWN][i] >= ' ')
         {
             ReqShownFound[ilSHOWN][j++] = ReqShownFound[ilSHOWN][i];
         }
@@ -339,17 +375,15 @@ int  i, j;
 
     i = j;
 
-    for ( ; i < TDP_NUM_PAR; i ++ )
+    for (; i < TDP_NUM_PAR; i++)
     {
         ReqShownFound[ilSHOWN][i] = '\0';
     }
 
-    sdp->tdp->bDrawTbl = j? 1 : 0;
-    sdp->bOrigAtom     = 0;
+    sdp->tdp->bDrawTbl = j ? 1 : 0;
+    sdp->bOrigAtom = 0;
 
     return;
 }
-
-
 
 #endif
