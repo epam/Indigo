@@ -57,7 +57,7 @@ total_count = 0
 
 bad_mols = collections.defaultdict(list)
 
-for m2 in indigo.iterateSDFile(joinPath("molecules", "mols-to-dearom.sdf")):
+for m2 in indigo.iterateSDFile(joinPath("molecules", "molecules-to-dearom.sdf")):
     indigo.setOption("aromaticity-model", "basic")
     sm = m2.smiles()
     print(sm)

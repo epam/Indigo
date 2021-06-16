@@ -50,7 +50,7 @@ index = 0
 wrongStructures = 0
 mols = []
 
-for mol in indigo.iterateSDFile(joinPath('molecules', 'mols.sdf')):
+for mol in indigo.iterateSDFile(joinPath('molecules', 'molecules.sdf')):
     try:
         bingo.insert(mol, index)
         mols.append(mol)

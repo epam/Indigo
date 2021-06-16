@@ -1,0 +1,92 @@
+****** Load without ignore errors ********
+01.mol C1CC[C@H](C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+02.mol C1CCC([C@@H]2C=CC(N([H])C2=O)=O)O1 |&1:4,r|
+03.mol C1CC[C@@H](C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+04.mol C1CCC([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:4,r|
+05.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,4,r|
+06.mol C1CC[C@@H](C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+07.mol stereocenters: one bond up, one bond down -- indefinite case near atom 3
+08.mol C1CC[C@@](C)(C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+09.mol C1CC[C@@](C)(C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+10.mol stereocenters: stereo types of non-opposite bonds match near atom 3
+11.mol C1CC[C@](C)([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+12.mol C1CCC(C)([C@@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:5,r|
+13.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+14.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+15.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+16.mol stereocenters: stereo types of non-opposite bonds match near atom 4
+17.mol stereocenters: stereo types of non-opposite bonds match near atom 3
+18.mol C1CCC(C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |w:3,&1:5,r|
+either1.mol OCC(C)[C@@H](C)C[C@@H](C)C(C)CN |w:2,9,&1:4,7,r|
+either2.mol OC[C@H](C)C(C)CC(C)[C@H](C)CN |&1:2,9,w:4,7,r|
+test.mol stereocenters: one bond up, one bond down -- indefinite case near atom 0
+test2.mol stereocenters: one bond up, one bond down -- indefinite case near atom 0
+****** Load with ignore errors ********
+01.mol C1CC[C@H](C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+02.mol C1CCC([C@@H]2C=CC(N([H])C2=O)=O)O1 |&1:4,r|
+03.mol C1CC[C@@H](C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+04.mol C1CCC([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:4,r|
+05.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,4,r|
+06.mol C1CC[C@@H](C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+07.mol C1CCC(C2C=CC(N([H])C2=O)=O)O1
+08.mol C1CC[C@@](C)(C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+09.mol C1CC[C@@](C)(C2C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+10.mol C1CCC(C)(C2C=CC(N([H])C2=O)=O)O1
+11.mol C1CC[C@](C)([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+12.mol C1CCC(C)([C@@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:5,r|
+13.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+14.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+15.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+16.mol C1CC[C@@](C)(C2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,r|
+17.mol C1CCC(C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:5,r|
+18.mol C1CCC(C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |w:3,&1:5,r|
+either1.mol OCC(C)[C@@H](C)C[C@@H](C)C(C)CN |w:2,9,&1:4,7,r|
+either2.mol OC[C@H](C)C(C)CC(C)[C@H](C)CN |&1:2,9,w:4,7,r|
+test.mol C(C)(O)N
+test2.mol C1(CCCO1)N
+****** Load with bidirectional mode ********
+01.mol C1CC[C@H]([C@@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,4,r|
+02.mol C1CC[C@H]([C@@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,4,r|
+03.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,4,r|
+04.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,4,r|
+05.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,4,r|
+06.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,4,r|
+07.mol stereocenters: one bond up, one bond down -- indefinite case near atom 3
+08.mol C1CC[C@@](C)([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+09.mol C1CC[C@@](C)([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+10.mol stereocenters: stereo types of non-opposite bonds match near atom 3
+11.mol C1CC[C@](C)([C@H]2C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+12.mol C1CC[C@@](C)([C@@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+13.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+14.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+15.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1 |&1:3,5,r|
+16.mol stereocenters: stereo types of non-opposite bonds match near atom 4
+17.mol stereocenters: stereo types of non-opposite bonds match near atom 3
+18.mol C1CCC(C)(C2(C)C=CC(N([H])C2=O)=O)O1 |w:3,5,r|
+either1.mol OCC(C)C(C)CC(C)C(C)CN |w:2,4,7,9,r|
+either2.mol OCC(C)C(C)CC(C)C(C)CN |w:2,4,7,9,r|
+test.mol stereocenters: one bond up, one bond down -- indefinite case near atom 0
+test2.mol stereocenters: one bond up, one bond down -- indefinite case near atom 0
+****** Compare with reference in bidirectional mode ********
+01.mol C1CC[C@H]([C@@H]2C=CC(N([H])C2=O)=O)O1
+02.mol C1CC[C@H]([C@@H]2C=CC(N([H])C2=O)=O)O1
+03.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1
+04.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1
+05.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1
+06.mol C1CC[C@@H]([C@H]2C=CC(N([H])C2=O)=O)O1
+07.mol stereocenters: one bond up, one bond down -- indefinite case near atom 3
+08.mol C1CC[C@@](C)([C@H]2C=CC(N([H])C2=O)=O)O1
+09.mol C1CC[C@@](C)([C@H]2C=CC(N([H])C2=O)=O)O1
+10.mol stereocenters: stereo types of non-opposite bonds match near atom 3
+11.mol C1CC[C@](C)([C@H]2C=CC(N([H])C2=O)=O)O1
+12.mol C1CC[C@@](C)([C@@]2(C)C=CC(N([H])C2=O)=O)O1
+13.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1
+14.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1
+15.mol C1CC[C@@](C)([C@]2(C)C=CC(N([H])C2=O)=O)O1
+16.mol stereocenters: stereo types of non-opposite bonds match near atom 4
+17.mol stereocenters: stereo types of non-opposite bonds match near atom 3
+18.mol C1CCC(C)(C2(C)C=CC(N([H])C2=O)=O)O1
+either1.mol OCC(C)C(C)CC(C)C(C)CN
+either2.mol OCC(C)C(C)CC(C)C(C)CN
+test.mol stereocenters: one bond up, one bond down -- indefinite case near atom 0
+test2.mol stereocenters: one bond up, one bond down -- indefinite case near atom 0
