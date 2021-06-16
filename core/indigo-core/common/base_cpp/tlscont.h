@@ -19,6 +19,7 @@
 #ifndef __tlscont_h__
 #define __tlscont_h__
 
+#include <memory>
 #include <typeinfo>
 #include <unordered_map>
 
