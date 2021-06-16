@@ -1,0 +1,3357 @@
+Alanine
+              4.8
+              10.5
+Arginine
+              4.8
+              14.4
+              10.5
+Asparagine
+              4.8
+              10.5
+AsparticAcid
+              4.8
+              4.8
+              10.5
+Cysteine
+              4.8
+              10.5
+GlutamicAcid
+              4.8
+              4.8
+              10.5
+Glutamine
+              4.8
+              10.5
+Glycine
+              4.8
+              10.5
+Histidine
+              4.8
+              10.5
+Isoleucine
+              4.8
+              10.5
+Leucine
+              4.8
+              10.5
+Lysine
+              4.8
+              10.5
+              10.5
+Methionine
+              4.8
+              10.5
+Phenylalanine
+              4.8
+              10.5
+Proline
+              4.8
+              10.5
+Serine
+              4.8
+              10.5
+Threonine
+              4.8
+              10.5
+Tryptophan
+              4.8
+              10.5
+Tyrosine
+              4.8
+              10.5
+Valine
+              4.8
+              10.5
+Alanine
+Basic site on atom 0  has pKa value = 9.87
+Acid site on atom 4  has pKa value = 2.34
+Arginine
+Basic site on atom 0  has pKa value = 9.36
+Acid site on atom 4  has pKa value = 2.07
+Asparagine
+Basic site on atom 0  has pKa value = 8.80
+Acid site on atom 4  has pKa value = 2.14
+AsparticAcid
+Basic site on atom 0  has pKa value = 9.90
+Acid site on atom 4  has pKa value = 2.14
+Acid site on atom 7  has pKa value = 2.35
+Cysteine
+Basic site on atom 0  has pKa value = 8.70
+Acid site on atom 4  has pKa value = 2.13
+GlutamicAcid
+Basic site on atom 0  has pKa value = 9.40
+Acid site on atom 4  has pKa value = 2.07
+Acid site on atom 9  has pKa value = 2.35
+Glutamine
+Basic site on atom 0  has pKa value = 9.40
+Acid site on atom 4  has pKa value = 2.07
+Glycine
+Basic site on atom 0  has pKa value = 9.78
+Acid site on atom 4  has pKa value = 2.35
+Histidine
+Basic site on atom 0  has pKa value = 9.31
+Acid site on atom 4  has pKa value = 2.14
+Isoleucine
+Basic site on atom 0  has pKa value = 9.76
+Acid site on atom 4  has pKa value = 2.32
+Leucine
+Basic site on atom 0  has pKa value = 9.74
+Acid site on atom 4  has pKa value = 2.33
+Lysine
+Basic site on atom 0  has pKa value = 9.36
+Acid site on atom 9  has pKa value = 2.07
+Methionine
+Basic site on atom 0  has pKa value = 9.27
+Acid site on atom 4  has pKa value = 2.07
+Phenylalanine
+Basic site on atom 0  has pKa value = 9.21
+Acid site on atom 4  has pKa value = 2.14
+Proline
+Basic site on atom 0  has pKa value = 10.64
+Acid site on atom 4  has pKa value = 1.95
+Serine
+Basic site on atom 0  has pKa value = 9.21
+Acid site on atom 4  has pKa value = 2.13
+Threonine
+Basic site on atom 0  has pKa value = 9.10
+Acid site on atom 4  has pKa value = 2.30
+Tryptophan
+Basic site on atom 0  has pKa value = 9.41
+Acid site on atom 4  has pKa value = 2.14
+Tyrosine
+Basic site on atom 0  has pKa value = 9.21
+Acid site on atom 4  has pKa value = 2.14
+Valine
+Basic site on atom 0  has pKa value = 9.74
+Acid site on atom 4  has pKa value = 2.29
+NCCc1ccc(O)cc1,10.52,9.74
+Cc1c(Cl)ccc(O)c1,9.32
+CC(Cc1ccc(O)cc1)(C)C,8.53
+c1(cc(O)ccc1[N+](=O)[O-])C(F)(F)F,9.32
+c1(Cl)c(C)cc(cc1C)O,9.19
+c1(ccc(cc1)O)c2ccccc2,9.55,14.90
+C(OCCCC)(=O)c1ccc(cc1)O,8.80
+c1(Cl)c(Cl)ccc(O)c1,9.32
+c1(C)cc(O)ccc1C,9.32
+C(C)(C)(C)c1ccc(cc1)O,10.23
+C(F)(F)(F)c1cccc(O)c1,8.68
+C(C)(=O)c1ccc(cc1)O,8.05
+c1(C(C)C)ccc(cc1)O,9.09
+O=Cc1cccc(O)c1,8.98
+[N+](=O)([O-])c1ccc(cc1)O,7.15
+C(C)(=O)Nc1ccc(cc1)O,9.09
+c1(ccc(cc1)O)Cl,9.41
+c1(O)ccc(cc1)C,10.26
+c1(ccc(cc1)O)Br,9.37
+c1(ccccc1)O,9.99,14.90
+c1(O)cc(C)cc(C)c1,9.19
+c1c(cccc1Cl)O,9.12
+c1c(C)cccc1O,10.09
+C(OCC)(=O)c1ccc(cc1)O,8.80
+c1(cccc(O)c1)C(C)=O,9.19
+c1(ccc(cc1)O)N,5.48,10.30
+O=Cc1ccc(cc1)O,7.61
+c1(O)ccc(cc1)CC,8.53
+c1(O)ccc(cc1)OC,10.21
+c1c(cccc1O)OC,9.65
+c1(ccc(cc1)O)F,9.89
+c1c(cccc1F)O,9.29
+C(F)(F)(F)c1ccc(cc1)O,9.28
+c1(O)cc(OC)cc(OC)c1,9.19
+c1(ccc(cc1)O)I,9.33
+[N+](=O)([O-])c1cccc(O)c1,8.36
+c1(cc(O)ccc1[N+](=O)[O-])[N+](=O)[O-],9.32
+c1(cccc(O)c1)c2ccccc2,9.64,14.90
+c1(cccc(O)c1)C(C)(C)C,10.12
+[N+](=O)([O-])c1cc(O)cc(c1)[N+](=O)[O-],9.19
+c1(Cl)cc(O)cc(Cl)c1,9.19
+c1c(cccc1N)O,4.37,9.82
+c1c(cccc1Br)O,9.03
+c1(Cl)c(Cl)cc(cc1Cl)O,9.19
+c1(cccc(O)c1)C(C)C,9.32
+c1c(CC)cccc1O,9.32
+c1c(cccc1O)OCC,9.65
+c1(O)ccc(cc1)OCC,10.21
+c1(Br)cc(O)cc(Br)c1,9.19
+c1c(cccc1I)O,9.03
+c1(O)ccc(cc1)CCC,9.74
+c1(O)cc(CC)cc(C)c1,9.19
+N#Cc1ccc(cc1)O,7.97
+N#Cc1cccc(O)c1,8.61
+c1(O)ccc(cc1)CS,8.53,9.43
+c12CCCc1ccc(O)c2,10.48
+[N+](=O)([O-])c1c(C)ccc(O)c1,9.32
+C(C)(=O)c1ccc(cc1)O,8.05
+O=C(OC(c1cccc2)(c(ccc(O)c3)c3)c(ccc(O)c4)c4)c12,8.80,9.70
+c1cc(O)ccc1C(c2ccc(O)cc2)c3ccccc3CO,9.09,9.09
+Oc(cccc1O)c1,9.32,9.32
+Oc(cc(O)cc1O)c1,9.19,9.19,9.19
+Oc(ccc(O)c1)c1,9.09,9.09
+Oc(ccc(c1ccc2)c2)c1,9.63
+OCc1cccc(O)c1,9.32
+OCc1ccc(O)cc1,8.53
+Oc1cc2CCCCc2cc1,10.48
+Oc1ccc(cc1)CCCCCCCCC,9.74
+Oc1ccc(cc1)C(C)CC(C)CC(C)C,9.09
+Oc(cc(C)c1N(=O)=O)cc1C,9.19
+S(=O)(=O)(C)c(ccc1)cc1O,9.07
+Ic(cc(I)c1)cc1O,9.19
+Oc(cc(c1)OCC)cc1OCC,9.19
+O=Nc(ccc(O)c1)c1,9.09
+O=S(=O)(c1ccc(O)cc1)C,9.11
+O=S(=O)(c1c(cc(O)cc1C)C)C,9.19
+Oc1cc(cc(c1)C(C)(C)C)C(C)(C)C,9.19
+c1(ccccc1O)C(N)=O,13.00,9.82
+Oc(cc(c(c1C)C)C)c1,9.19
+c1(ccccc1O)C(N)=O,13.00,9.82
+C(=O)(Nc1ccccc1)c2ccccc2O,9.82,14.90
+c1(ccccc1O)C(OC)=O,9.82
+c1(O)c(cccc1C=O)OC,6.15
+c1(cc(cc(Cl)c1O)Cl)C(=O)Nc2ccc(cc2)Cl,6.15
+C(=O)(Nc1ccccc1Cl)c2ccccc2O,9.82
+c1(c(O)ccc(c1)N(=O)=O)C(=O)Nc2ccccc2,9.82,14.90
+C(=O)(Nc1ccc(cc1)Br)c2ccccc2O,9.82
+c1(cc(ccc1O)Br)C(=O)Nc2ccc(cc2)Cl,9.82
+C(=O)(Nc1ccc(cc1)Cl)c2ccccc2O,9.82
+c1(cc(cc(Cl)c1O)Cl)C(=O)Nc2ccccc2,6.15,14.90
+c1(cc(ccc1O)Cl)C(=O)Nc2ccccc2,9.82,14.90
+c1(cc(ccc1O)Cl)C(=O)Nc2ccccc2C,9.82
+C(=O)(Nc1ccc(Cl)cc1Cl)c2ccccc2O,9.82
+N(=O)(=O)c1ccccc1NC(=O)c2ccccc2O,9.82
+c1(cc(ccc1NC(=O)c2ccccc2O)Cl)N(=O)=O,9.82
+c1(ccc(Br)c(C)c1O)C(NC)=O,6.15
+c1(cc(cc(Cl)c1O)Cl)C(=O)Nc2ccc(cc2)F,6.15
+c1(cc(cc(Br)c1O)Br)C(=O)Nc2ccc(Cl)cc2N(=O)=O,6.15
+C(=O)(Nc1ccc(Cl)cc1C)c2ccccc2O,9.82
+c1(cc(ccc1O)F)C(=O)Nc2ccc(Br)cc2C,9.82
+c1(cc(ccc1O)F)C(=O)Nc2ccc(Cl)cc2C,9.82
+c1(cc(cc(Br)c1O)Br)C(=O)Nc2ccc(F)cc2F,6.15
+c1(cc(cc(Cl)c1O)Cl)C(=O)Nc2ccc(F)cc2F,6.15
+c1(cc(cc(Cl)c1O)Cl)C(=O)Nc2ccc(Cl)cc2N(=O)=O,6.15
+c1(cc(cc(Cl)c1O)Cl)C(=O)Nc2ccc(cc2C)N(=O)=O,6.15
+O=Cc(c(O)ccc1)c1,8.37
+O=C(c(c(O)ccc1)c1)C,10.06
+Clc1ccc2oc(nc2c1)c1cc(N)ccc1O,3.83,9.82
+c1(c(O)ccc(c1)[N+](=O)[O-])[N+](=O)[O-],4.07
+c1(Cl)c(O)c(Cl)cc(Cl)c1Cl,6.15
+c1(c(cccc1N(=O)=O)O)N(=O)=O,8.56
+c1(Cl)c(Cl)c(O)c(c(Cl)c1Cl)Cl,6.15
+c1(O)c(cccc1Cl)Cl,6.15
+c1(O)c(C)cccc1Cl,6.15
+c1(cc(cc([N+](=O)[O-])c1O)[N+](=O)[O-])[N+](=O)[O-],0.42
+c1(cc(Cl)cc([N+](=O)[O-])c1O)[N+](=O)[O-],0.42
+c1(cc(cc(C(C)CC)c1O)[N+](=O)[O-])[N+](=O)[O-],6.15
+[N+](=O)([O-])c1ccccc1O,7.23
+c1(ccccc1O)C(C)C,8.56
+c1(ccccc1O)C(C)(C)C,10.62
+c1(O)c(Cl)cc(cc1Cl)Cl,6.15
+c1(O)cc(C)ccc1C(C)C,8.56
+c1(C(C)C)c(O)cc(c(Cl)c1)C,8.56
+[N+](=O)([O-])c1c(O)ccc(Cl)c1,4.07
+c1(ccccc1O)c2ccccc2,10.01,14.90
+c1(ccccc1OC)O,9.98
+c1(ccccc1CC)O,8.56
+c1(OC)cc(C)ccc1O,9.98
+c1(ccccc1OCC)O,9.98
+c1c(Cl)c(O)cc(Cl)c1Cl,8.56
+c1(O)cc(C)ccc1C,8.56
+c1(ccccc1O)Cl,8.56
+c1(ccccc1O)Br,8.45
+c1(ccccc1O)N,4.78,9.97
+c1(ccccc1C)O,10.29
+c1(c(O)ccc(C(C)(C)C)c1)C(C)(C)C,9.78
+c1(OC)cc(ccc1O)C=CC,9.98
+c1(OC)cc(CC=C)ccc1O,9.98
+c1(ccc(c(Cl)c1)O)C(C)(C)C,8.56
+c1(ccc(c(C)c1)O)C(C)(C)C,8.85
+[N+](=O)([O-])c1ccc(c(N)c1)O,3.23,9.97
+[N+](=O)([O-])c1cc(Br)c(c(Br)c1)O,4.03
+c1(C)cc(C)ccc1O,8.85
+c1(O)c(Br)cc(cc1Br)Br,4.03
+N(=O)(=O)c1c(O)ccc(N)c1,3.83,8.56
+[N+](=O)([O-])c1cc(C)ccc1O,4.07
+c1(Cl)c(O)ccc(Cl)c1,8.56
+c1(OC)cc(ccc1O)C=O,9.98
+c1(O)c(cccc1C(C)(C)C)C(C)(C)C,6.15
+c1(O)c(cc(cc1C(C)(C)C)C)C(C)(C)C,6.15
+c2(cc(cc(C1CCCCC1)c2O)[N+](=O)[O-])[N+](=O)[O-],4.62
+[N+](=O)([O-])c1ccc(cc1O)[N+](=O)[O-],5.15
+c1(ccccc1O)F,8.73
+[N+](=O)([O-])c1ccc(cc1O)F,5.15
+c1(O)c(C)cc(c(C)c1)C,8.56
+c1(C)c(C)cccc1O,8.56
+c1(O)c(C)cc(cc1C)C,6.15
+c1(ccccc1O)I,8.51
+c1(c(O)c(C)cc(c1)[N+](=O)[O-])[N+](=O)[O-],6.15
+c1(O)c(O)ccc(CCN)c1C,10.65,8.56,6.15
+[N+](=O)([O-])c1cccc(c1O)[N+](=O)[O-],0.42
+c1(O)c(C)cccc1C,6.15
+c1(Cl)c(cccc1Cl)O,7.44
+c1(O)c(Cl)ccc(Cl)c1,8.56
+[N+](=O)([O-])c1cccc(Cl)c1O,6.15
+c1(Br)c(Br)c(O)c(c(Br)c1Br)Br,6.15
+c1(O)c(cccc1Br)Br,4.03
+c1(cc(C)cc([N+](=O)[O-])c1O)[N+](=O)[O-],0.42
+N#Cc1ccccc1O,6.86
+[N+](=O)([O-])c1ccc(cc1O)Cl,5.15
+c1(Br)c(O)ccc(Br)c1,8.45
+[N+](=O)([O-])c1cc(Cl)c(c(Cl)c1)O,6.15
+[N+](=O)([O-])c1ccc(c(Cl)c1)O,8.56
+c1(O)cc(ccc1OC)C=O,8.56
+c1(ccccc1CCC)O,8.56
+c1(O)cc(C)cc(C)c1C,8.56
+c1(C)cc(c([N+]([O-])=O)cc1)O,5.15
+c2(cc(cc(c1ccccc1)c2O)[N+](=O)[O-])[N+](=O)[O-],6.15,14.90
+c1(C(C)(C)C)cc(C(C)(C)C)cc(C(C)(C)C)c1O,6.15
+c1(F)c(F)c(O)c(c(F)c1F)F,6.15
+[N+](=O)([O-])c2c(O)ccc(c1ccccc1)c2,4.07,14.90
+c1(Cl)c(Cl)ccc(Cl)c1O,6.15
+c1(O)c(Cl)c(Cl)cc(Cl)c1Cl,6.15
+c1(cc(cc(Cl)c1O)[N+](=O)[O-])[N+](=O)[O-],6.15
+[N+](=O)([O-])c1c(O)ccc(OC)c1,4.07
+c1(C)cc(Cl)ccc1O,8.85
+c1(O)c(Br)cc(cc1Br)C#N,4.06
+c1(cc(C)cc(C)c1O)C(C)(C)C,6.15
+c1(O)c(cccc1C(C)C)C(C)C,6.15
+c1(cc(C)ccc1O)C(C)(C)C,9.78
+[N+](=O)([O-])c1cc(C)c(c(C)c1)O,6.15
+c1(O)c(Cl)cc(cc1Cl)C,6.15
+c1(O)c(Cl)cc(cc1Cl)Br,6.15
+[N+](=O)([O-])c1c(O)ccc(C(C)CC)c1,4.07
+C(O)(=O)c1ccc(O)c(Cl)c1,8.56,3.82
+c1(Cl)c(Cl)c(O)cc(Cl)c1Cl,8.56
+N(=O)(=O)c1ccc(c(O)c1)C,8.56
+Cl-c(cc(c1)C)c(c1)O,8.56
+c2(c(ON=Cc1cc(Br)c(c(Br)c1)O)ccc(c2)N(=O)=O)N(=O)=O,4.03
+Oc(c(c(c(c1)Cl)Cl)Cc(c(c(cc2Cl)Cl)Cl)c2O)c1Cl,6.15,6.15
+OCc(c(O)ccc1)c1,8.56
+Oc(c(c(ccc1)cc2)c1)c2,9.39
+Oc(c(cc(c1)Cl)Cc(c(O)ccc2Cl)c2)c1,8.56,8.56
+Oc(c(O)ccc1)c1,8.66,8.66
+c1c(O)c2CCCCc2cc1,8.56
+Oc(c(c(c(O)c1)ccc2)c2)c1,9.82,9.82
+Oc(c(c(c(c1)Cl)ccc2)c2)c1,9.82
+Oc1ccccc1C,10.29
+Oc1c(I)cc(C#N)cc1I,6.15
+Oc1ccccc1CCCC,8.56
+c1c(O)c(CO)cc(C)c1,8.56
+Oc(c(c(c(c1)C)C)C)c1,8.56
+Oc(c(c(O)cc1)C)c1,8.56,8.56
+Oc1cccc2c1CCC2,8.56
+Oc(c(ccc1)CC=C)c1,8.56
+Oc(c(cc(c1)Cl)Cc(c(O)c(cc2Cl)Cl)c2)c1Cl,6.15,6.15
+Oc1ccc(Cl)c(Cl)c1Cl,7.44
+Oc1cccc(O)c1O,8.56,8.56,8.11
+Oc1cc(Cl)c(O)c(Cl)c1,6.15,9.19
+N#Cc1cc(C)c(O)c(C)c1,6.15
+[O-][N+](=O)c1cc(c(O)c(c1)C(C)(C)C)C(C)(C)C,6.15
+Brc1ccc(O)c(Cl)c1,8.56
+Oc1ccc(cc1Cl)c1ccccc1,8.56,14.90
+Oc(c(cc1CCC)CCC)c(c1)CCC,6.15
+C(O)(=O)c1ccc(c(Cl)c1)Cl,3.82
+c1(cc(Cl)cc(Cl)c1)C(O)=O,4.26
+S(=O)(=O)(N(CCC)CCC)c1ccc(cc1)C(O)=O,5.80
+[N+](=O)([O-])c1ccc(cc1)C(O)=O,3.43
+C(O)(c1ccccc1)=O,4.20,14.90
+C(O)(=O)c1ccc(cc1)Cl,4.00
+C(O)(=O)c2ccc1c(cccc1)c2,4.16
+C(O)(=O)c1ccc(c(OC)c1)OC,3.82
+C(O)(=O)c1ccc(cc1)C(C)(C)C,4.38
+C(O)(=O)c1ccc(cc1)O,8.80,4.27
+C(O)(=O)c1ccc(cc1)C,4.37
+C(O)(=O)c1ccc(c(O)c1)O,8.77,8.66,3.82
+[N+](=O)([O-])c1cc(cc(c1)[N+](=O)[O-])C(O)=O,4.26
+c1(cc(O)cc(O)c1)C(O)=O,9.19,9.19,4.04
+C(O)(=O)c1cccc(N)c1,4.79,3.07
+C(O)(=O)c1cccc(C)c1,4.25
+C(O)(=O)c1ccc(cc1)OC,4.50
+[N+](=O)([O-])c1cccc(c1)C(O)=O,3.46
+C(O)(=O)c1ccc(c(OC)c1)O,9.98,3.82
+c1(O)c(O)cc(cc1O)C(O)=O,8.56,8.56,8.11,4.41
+C(O)(=O)c1ccc(cc1)N,4.87,2.50
+C(O)(=O)c1cccc(F)c1,3.86
+C(O)(=O)c1ccc(cc1)F,4.15
+c1(cc(ccc1[N+](=O)[O-])C(O)=O)[N+](=O)[O-],3.82
+c1(O)c(OC)cc(cc1OC)C(O)=O,9.97,4.26
+C(O)(=O)c1cccc(Cl)c1,3.84
+C(O)(=O)c1ccc(cc1)C(C)C,4.27
+C(O)(=O)c1cccc(Br)c1,3.81
+C(O)(=O)c1ccc(cc1)C(C)=O,4.27
+C(O)(=O)c1ccc(cc1)Br,3.96
+C(O)(=O)c1cccc(OC)c1,4.10
+C(O)(=O)c1cccc(I)c1,3.87
+C(O)(=O)c1ccc(cc1)OCC,4.53
+c(cc(c1)C(=O)O)c(c1)C=O,3.77
+N#Cc1ccc(cc1)C(O)=O,3.55
+C(O)(=O)c1ccc(cc1)CC,4.27
+C(O)(=O)c1ccc(cc1)I,4.00
+C(O)(=O)c1cccc(c1)C=O,3.84
+c1(cc(OC)cc(OC)c1)C(O)=O,4.26
+C(O)(=O)c1cccc(c1)C#N,3.60
+C(O)(=O)c1ccc(cc1)Oc2ccccc2,4.57,14.90
+C(O)(=O)c2cccc(Oc1ccccc1)c2,3.95,14.90
+S(C)(=O)(=O)c1ccc(cc1)C(O)=O,5.80
+C(O)(=O)c1ccc(cc1)OCCC,4.53
+O=C(O)c(cccc1O)c1,9.41,3.82
+O=C(O)c(ccc(c1)C(=O)O)c1,4.27,4.27
+O=C(O)c(cccc1C(=O)O)c1,3.82,3.82
+OC(C1=CC(F)=CC(F)=C1)=O,4.26
+OC(=O)c1cc(c(cc1)F)F,3.82
+O=C(O)c(cc(cc1C(=O)O)C(=O)O)c1,4.26,4.26,4.26
+OC(=O)c1cc(c(c(c1)F)F)F,4.26
+c(cc(c1)S(=O)(=O)C)cc1C(=O)O,3.82
+OC(=O)c1ccc(CN)cc1,9.34,4.27
+OC(=O)c1ccc(S(=O)(=O)N)cc1,8.34,5.80
+O=C(O)c(cc(cc1C)C)c1,4.32
+O=C(Nc(ccc(c1)C(=O)O)c1)C,5.04
+OC(=O)c1cc(NC(=O)C)ccc1,5.10
+O=C(O)c(ccc(c1C)C)c1,3.82
+O=C(Oc(ccc(c1)C(=O)O)c1)C,4.57
+O=C(O)c1cccc(c1)C(C)(C)C,4.20
+O=C(O)c(ccc(OC)c1N(=O)=O)c1,3.82
+O=C(O)c(ccc(c1N(=O)=O)C)c1,3.82
+O=C(O)c(ccc(c1N(=O)=O)Cl)c1,3.82
+OC(=O)c1cccc(c1)C(F)(F)F,4.20
+OC(=O)c1ccc(N(C)C)cc1,11.49,6.03
+O=C(O)c(ccc(N(=O)=O)c1C)c1,3.82
+COc1ccc(cc1C)C(O)=O,3.82
+O=C(O)c1cc(OC)c(cc1)C,3.82
+OC(=O)c1cc(Br)c(C)cc1,3.82
+Cc1cc(ccc1Cl)C(O)=O,3.82
+c1(ccc(cc1O)C)C(O)=O,8.56,3.25
+c1(ccc(cc1Cl)Cl)C(O)=O,2.90
+c1(cc(Cl)ccc1Cl)C(O)=O,3.22
+c1(ccccc1OC(C)=O)C(O)=O,3.48
+c1(c(Cl)ccc(Cl)c1Cl)C(O)=O,1.36
+c1(c(cccc1Cl)Cl)C(O)=O,1.36
+c1(ccc(cc1OCC)N)C(O)=O,3.83,3.70
+c1(ccccc1Nc2cccc(C)c2C)C(O)=O,4.20
+c1(ccc(cc1O)N)C(O)=O,3.83,8.56,3.25
+c1(ccccc1O)C(O)=O,9.82,3.25
+c1(cccc(C)c1O)C(O)=O,3.22,6.15
+c1(ccccc1I)C(O)=O,2.86
+c1(ccccc1Br)C(O)=O,2.85
+c1(ccc(cc1O)O)C(O)=O,9.32,8.56,3.25
+c1(cc(C)ccc1O)C(O)=O,9.82,2.97
+O=C(O)c(c(O)ccc1Br)c1,9.82,2.97
+c1(ccccc1NC(C)=O)C(O)=O,4.20
+c1(ccc(cc1OC)OC)C(O)=O,3.70
+c1(ccccc1Nc2ccccc2)C(O)=O,4.20,14.90
+c2(C(O)=O)c(O)cc1ccccc1c2,8.56,2.97
+[N+](=O)([O-])c1ccc(c(C(O)=O)c1)O,9.82,2.97
+[N+](=O)([O-])c1ccc(c(Cl)c1)C(O)=O,2.90
+c1(ccccc1N)C(O)=O,4.85,2.17
+c1(ccccc1Cl)C(O)=O,2.90
+C(O)(=O)c1ccccc1C,3.91
+c1(cc(I)ccc1O)C(O)=O,9.82,2.97
+c1(C(O)=O)c(cc(cc1[N+](=O)[O-])[N+](=O)[O-])[N+](=O)[O-],0.65
+c1(cc(I)cc(I)c1O)C(O)=O,6.15,3.22
+c1(cc(Cl)cc(N)c1Cl)C(O)=O,3.23,3.22
+c1(cccc(O)c1O)C(O)=O,3.22,8.56,6.15
+c1(c(cccc1O)O)C(O)=O,8.56,8.56,1.68
+c1(cc(Cl)ccc1O)C(O)=O,9.82,2.97
+c1(ccccc1F)C(O)=O,3.27
+c1(cc(O)ccc1O)C(O)=O,9.80,2.97,9.82
+[N+](=O)([O-])c1ccccc1C(O)=O,2.17
+c1(ccccc1C(C)=O)C(O)=O,3.58
+c1(ccccc1OC)C(O)=O,4.08
+c1(cc(cc(C(O)=O)c1O)N(=O)=O)N(=O)=O,3.22,6.15
+c1(cc(ccc1C(O)=O)[N+](=O)[O-])[N+](=O)[O-],1.43
+C(O)(=O)c1c(C)cccc1C,1.36
+c1(C(O)=O)c(F)c(F)c(c(F)c1F)C,1.75
+c1(ccccc1c2ccccc2)C(O)=O,3.46,14.90
+c1(c(cccc1OC)OC)C(O)=O,1.36
+c1(cccc(OC)c1OC)C(O)=O,3.22
+c1(c(Cl)ccc(Cl)c1OC)C(O)=O,1.36
+c1(ccccc1Oc2ccccc2)C(O)=O,3.53,14.90
+c1(ccccc1C(C)C)C(O)=O,3.22
+[N+](=O)([O-])c1ccc(c(C(O)=O)c1)Cl,3.22
+[N+](=O)([O-])c1cccc(C(O)=O)c1Cl,3.22
+c2c(NC(c1c(C(O)=O)cccc1)=O)cccc2,3.58,14.90
+N(=O)(=O)c1cccc(Cl)c1C(O)=O,1.36
+c1(c(C)cccc1Cl)C(O)=O,1.36
+c1(ccccc1NCC(N)=O)C(O)=O,4.77
+O=C(O)c(c(c(ccc1)cc2)c1)c2,3.69
+O=C(O)c(c(ccc1)C(=O)O)c1,3.58,3.58
+O=C(O)c(c(cc(c1C(=O)O)C(=O)O)C(=O)O)c1,3.22,3.22,3.22,3.22
+OC(=O)c1c(F)cccc1F,1.36
+OC(C1=C(C=C(C(F)=C1)F)F)=O,3.22
+O=C(O)c(c(F)c(F)c(F)c1F)c1F,1.75
+OC(=O)c1c(c(cc(c1F)F)F)F,1.75
+O=C(O)c(c(c(ccc1)cc2cccc3)c1)c23,1.36
+OC(=O)c1c(c(c(c(c1)F)F)F)F,3.22
+OC(=O)c1c(F)cc(F)cc1,3.27
+OC(=O)c1c(c(ccc1F)F)F,1.36
+OC(=O)c1c(F)ccc(F)c1,3.22
+OC(=O)c1c(c(ccc1)F)F,3.22
+OC(=O)c1c(c(c(cc1)F)F)F,3.22
+c(cc(N(=O)=O)c1N(=O)=O)cc1C(=O)O,3.22
+Brc(ccc1)c(c1N(=O)=O)C(=O)O,1.36
+c(cc(O)c1C(=O)O)cc1N(=O)=O,1.36,8.56
+O=C(O)c(c(O)cc(O)c1)c1O,8.56,9.19,8.56,1.68
+OC(=O)c1c(O)c(N(=O)=O)ccc1,3.22,6.15
+O=C(O)c(c(ccc1)C(=O)c(cccc2)c2)c1,3.58,14.90
+O=C(O)c(c(cc(c1)C)C)c1C,1.36
+c(cc(O)c1C(=O)O)cc1C,8.56,1.36
+c(cc(N(=O)=O)c1C(=O)O)cc1N(=O)=O,1.36
+Cc1cccc(C(O)=O)c1C,3.22
+O=C(O)c(c(N(=O)(=O))ccc1N(=O)(=O))c1,3.22
+O=C(O)c(c(ccc1C)C)c1,3.22
+O=C(O)c(c(cc(c1)C)C)c1,3.91
+CCC1=CC=CC=C1C(=O)O,3.22
+O=C(c1c(cc(cc1Br)Br)Br)O,1.36
+c12c(C(=O)O)c(C)ccc1cccc2,1.36
+OC(=O)c1c(C)c(C)cc(C)c1C,1.36
+N(=O)(=O)c1c(C(=O)O)c(C)ccc1,1.36
+Clc(ccc1Cl)c(c1C(=O)O)C(=O)O,1.36,1.36
+O=C(O)c(c(c(N(=O)=O)cc1N(=O)=O)C)c1,3.22
+c(cc(C)c1C(=O)O)cc1OC,1.36
+O=Cc(c(ccc1)C(=O)O)c1,3.22
+OC(=O)c1c(O)ccc(F)c1,9.82,2.97
+C(O)(C(C)O)=O,3.86
+n3(C(=O)c1ccc(cc1)Cl)c2ccc(cc2c(CC(O)=O)c3C)OC,4.50
+C(=O)(c1ccc(cc1)N)NCC(O)=O,3.91,3.62
+N13C(C(O)=O)C(SC1C(NC(c2ccccc2)=O)C3=O)(C)C,14.90,2.96
+N13C(C(O)=O)C(SC1C(NC(=O)c2c(cccc2OC)OC)C3=O)(C)C,2.96
+OC(CI)=O,3.18
+C(C)(O)=O,4.76
+C(CS)(O)=O,3.68,9.43
+C(C)(Cl)(Cl)C(O)=O,2.93
+C(O)(=O)C(C)(C)C,5.03
+C(O)(c1ccccc1)(c2ccccc2)C(O)=O,3.04,14.90,14.90
+C(F)(F)(F)C(O)=O,0.52
+C(Cl)(Cl)(Cl)C(O)=O,0.66
+C125C=CC(C(C(=O)O1)(C)C2C(C34CC(C(C3)(O)CCC45)=C)C(O)=O)O,4.00
+C(O)(=O)C(Cl)Cl,1.35
+C(O)(C(C)C)=O,4.84
+C(CO)(O)=O,3.83
+C(CCl)(O)=O,2.87
+C(CC)(O)=O,4.87
+C(CBr)(O)=O,2.90
+C14(C)C(C(C)CCC(O)=O)CCC1C3C(C2(C)CCC(CC2CC3O)O)CC4O,5.07,14.15,13.90
+c1(c(Cl)ccc(Cl)c1Cl)CC(O)=O,4.50
+c1(cccc2ccccc12)CC(O)=O,4.30
+c2(CC(O)=O)c1ccccc1[nH]c2,4.75
+N13C(C(O)=O)C(SC1C(NC(COc2ccccc2)=O)C3=O)(C)C,14.90,2.96
+C(O)(C(CC)CC)=O,4.83
+C(O)(=O)C(O)c1ccccc1,3.37,14.90
+c1c(Cl)c(Cl)cc(Cl)c1OCC(O)=O,3.18
+c1(c(Cl)cc(c(Cl)c1)Cl)OC(C)C(O)=O,2.96
+c1(Cl)c(OCCCC(O)=O)ccc(Cl)c1,4.57
+c1(Cl)c(ccc(Cl)c1)OCC(O)=O,3.05
+c1(C)cc(Cl)ccc1OCC(O)=O,3.18
+C(O)(C(C)CCC)=O,4.40
+C(O)(C1CCCCC1)=O,4.91
+C(O)(C(CCC)CCC)=O,4.60
+c1(O)cc(ccc1O)CC(O)=O,8.90,4.05,8.66
+C(O)(Cc1ccccc1)=O,4.31,14.90
+N(=O)(=O)c1ccc(cc1)CC(O)=O,4.02
+C(O)(Cc1ccc(cc1)OC)=O,4.02
+C(O)(=O)CCCl,3.98
+C(CCC)(O)=O,4.83
+C(O)(C(C)CC)=O,4.80
+C(O)(=O)C(c1ccccc1)c2ccccc2,3.94,14.90,14.90
+O(C(C)C(O)=O)c1ccc(cc1Cl)Cl,2.96
+C(O)(COc1ccc(cc1)Cl)=O,2.93
+C(O)(COc1ccccc1)=O,3.17,14.90
+C(O)(CCC(C)=O)=O,4.49
+C(C(O)=O)C(O)=O,4.16,4.16
+C(O)(=O)CCI,4.53
+C(CF)(O)=O,2.59
+CC(CC(O)=O)O,4.70
+C(CCCc1ccc(cc1)N(CCCl)CCCl)(O)=O,4.76
+c1(OC)cc(ccc1O)CC(O)=O,4.05,9.98
+C2(O)(C(O)=O)CC(OC(=O)C=Cc1ccc(O)c(O)c1)C(O)C(O)C2,2.93,13.90,8.77,8.66
+C(O)(Cc1cccc(F)c1)=O,4.05
+C(O)(COc1ccccc1F)=O,3.18
+N#CCC(O)=O,2.47
+F-c(ccc1)cc1OCC(=O)O,3.10
+C(O)(COc1ccc(cc1)F)=O,2.93
+C(O)(Cc1ccc(cc1)F)=O,4.02
+C(N)(=O)NCC(O)=O,3.31
+OCC(C(O)=O)O,12.81,3.52
+C(O)(CCc1ccccc1)=O,4.66,14.90
+C(O)(CC(C)C)=O,4.77
+OCCC(O)=O,14.60,4.51
+C(C)(O)(c1ccccc1)C(O)=O,14.90,3.47
+C(C)(C(O)=O)C(O)=O,4.57,4.57
+OC(CCCCCC1SCC(=O)N1)=O,4.78
+C(O)(Cc2ccc1c(cccc1)c2)=O,4.05
+C(O)(COc1cccc(Cl)c1)=O,3.10
+c1(Cl)c(Cl)ccc(OCC(O)=O)c1,3.10
+C(O)(=O)C(C)(C)O,2.93
+C(C)(C)(C(O)=O)C(O)=O,3.15,3.15
+C(O)(=O)C(C)(C)CC,2.93
+C(O)(C(C)Cl)=O,2.83
+C(O)(C(C)Br)=O,2.96
+C(CC)(C(O)=O)C(O)=O,2.96,2.96
+C(O)(COc1ccccc1Cl)=O,3.05
+C(CCC)(C(O)=O)C(O)=O,2.96,2.96
+C(O)(C(CCC)O)=O,3.52
+c(cc(c1)CC(=O)O)c(c1)C,4.02
+C(O)(CCC(C)C)=O,4.84
+OC(CN(C=O)O)=O,2.63
+C(O)(COc1ccc(cc1)C)=O,2.93
+C(O)(COc1cccc(C)c1)=O,3.10
+C1(CC1)C(O)=O,4.83
+C(O)(COc1cccc(Br)c1)=O,3.10
+N(=O)(=O)c1ccc(cc1)OCC(O)=O,2.93
+C(O)(Cc1ccc(cc1)I)=O,4.02
+C(CCCc1ccccc1)(O)=O,4.76,14.90
+C(O)(COc1ccc(cc1)OC)=O,2.93
+N(=O)(=O)c1cccc(CC(O)=O)c1,4.05
+C(O)(COc1ccc(cc1)I)=O,2.93
+C(O)(COc1cccc(I)c1)=O,3.10
+C(O)(COc1ccccc1I)=O,3.18
+C(O)(COc1ccc(cc1)Br)=O,2.93
+N(=O)(=O)c1cccc(OCC(O)=O)c1,3.10
+[N+](=O)([O-])c1ccccc1OCC(O)=O,3.18
+C(O)(COc1ccccc1OC)=O,3.18
+N#Cc1ccc(cc1)OCC(O)=O,2.93
+C(O)(Cc1cccc(I)c1)=O,4.05
+C(O)(Cc1ccc(cc1)Br)=O,4.02
+C(O)(Cc1ccc(cc1)Cl)=O,4.19
+C(O)(Cc1cccc(Cl)c1)=O,4.14
+C(O)(COc1ccccc1C)=O,3.18
+N#Cc1cccc(c1)OCC(O)=O,3.10
+C(O)(COc1ccccc1Br)=O,3.18
+C(O)(COc1cccc(OC)c1)=O,3.10
+C(CCCCc1ccccc1)(O)=O,4.63,14.90
+C(O)(COc1cccc2ccccc12)=O,3.18
+N2(CC(O)=O)c1c(cccc1SC2=O)Cl,2.63
+C(O)(CC1CCCCC1)=O,4.44
+C(O)(COc1ccccc1O)=O,9.98,3.18
+C(O)(=O)C(O)c1ccc(cc1)OC,3.37
+C(O)(Cc1ccc(cc1)CC)=O,4.02
+N(c1ccccc1CC(O)=O)c2c(cccc2Cl)Cl,4.30
+c(cc(c1)C(C(=O)O)C)c(c1)CC(C)C,4.64
+OC(C(C)Oc1ccc(Cl)cc1C)=O,2.96
+c(ccc1c(c2)OCCC(=O)O)cc1cc2,4.53
+n2c(c1ccc(cc1)Cl)c(sc2c3ccccc3)CC(O)=O,4.16,14.90
+C(O)(=O)Cc1ccccc1I,4.30
+C(O)(C(CCC)CC)=O,4.83
+C(c1ccccc1)(=O)c2cccc(C(C)C(O)=O)c2,4.50,14.90
+c1(Cl)cc(ccc1OCC=C)CC(O)=O,4.05
+c2(ccc1c(ccc(OC)c1)c2)C(C)C(O)=O,4.50
+CC(c2cc(Oc1ccccc1)ccc2)C(O)=O,4.50,14.90
+C(O)(Cc1ccc(cc1)C(C)(C)C)=O,4.02
+C(CCC(O)=O)(=O)c1ccc(cc1)c2ccccc2,4.49,14.90
+C3(=Cc1ccc(cc1)S(C)=O)c2ccc(cc2C(CC(O)=O)=C3C)F,4.50
+CC(c2ccc(C(c1sccc1)=O)cc2)C(O)=O,4.64
+C(O)(=O)C(C)Oc1ccc(cc1)Oc2ccc(cc2Cl)Cl,2.96
+OC(Cc3c(c1ccc(Cl)cc1)nn(c2ccccc2)c3)=O,4.30,14.90
+n1c(Cl)c(Cl)cc(Cl)c1OCC(O)=O,2.68
+C2(=O)c1ccccc1CSc3ccc(CC(O)=O)cc23,4.05
+Cl-c(c(F)cc1)cc1N(C(=O)-c(ccc2)cc2)C(C(=O)O)C,2.96,14.90
+n2c(Oc1ccc(OC(C(O)=O)C)cc1)ccc(C(F)(F)F)c2,2.96
+CC(C(O)=O)Oc2ccc(Oc1c(Cl)cc(C(F)(F)F)cn1)cc2,2.96
+OC(C3c2ccc(C(c1ccccc1)=O)n2CC3)=O,2.96,14.90
+N(=O)(=O)c1c(Cl)ccc(OCC(O)=O)c1,3.10
+OC(C2CC(=O)C(=C(C1CC1)O)C(=O)C2)=O,4.83
+O=C(O-c(cc(c1)OC(OC(C2O)C(=O)O)C(O)C2O)c3c1)C=C3C,2.96
+O=C(O)CCCCCN,10.80,4.37
+O=C(O)CCCCCCCC=CCC=CCCCCC,4.86
+O=C(O)C=C,4.25,4.31
+O=C(O)C(O)C,3.86
+O=C(O)C(=C)C,3.50
+O=C(O)C(=CC)C,3.50
+O=C(O)C(O)C(O)C(=O)O,2.96,2.96
+O=C(O)C(Oc(c(cc(c1)Cl)C)c1)C,2.96
+O=C(O)C=CC,4.69
+O=C(O)CCCC,4.83
+O=C(O)CCC(=O)O,4.49,4.49
+O=C(O)C=CC(=O)O,4.34,4.34
+O=C(O)CCCC(=O)O,4.76,4.76
+O=C(O)CCCCCC,4.89
+O=C(O)CCCCCC(=O)O,4.78,4.78
+O=C(O)CCSCCC(=O)O,4.53,4.53
+O=C(O)CCCCCCCC,4.86
+O=C(O)CCCCCCCC(=O)O,4.86,4.86
+O=C(O)CCCCC(=O)O,4.63,4.63
+O=C(O)CCCCCCC,4.86
+O=C(O)C(=O)C,2.49
+O=C(O)C=Cc(cccc1)c1,4.16,14.90
+O=C(O)CCCCC,4.85
+O=C(O)CCCCCCCCCCC,4.86
+O=C(O)C(=O)O,3.50,3.50
+O=C(O)C(C(C(=O)O)C(O1)CC2)C12,2.96,2.96
+O=CC(=O)O,3.18
+c1c(O)c(O)ccc1C=CC(=O)O,8.66,8.77,4.36
+CCCCCCCCCC(=O)O,4.86
+c1cc(O)ccc1C=CC(=O)O,7.61,4.48
+CC=CC(=O)O,4.69
+O=C(O)CCCCCCC(=O)O,4.86,4.86
+CC(=O)CC(O)=O,3.60
+O=C(O)CCCCCCCCCCCCC,4.86
+O=C(O)Cc(c(N(=O)=O)cc(N(=O)=O)c1)c1,4.30
+c1cc(N(=O)=O)ccc1C=CC(=O)O,4.48
+NCCCCCCC(=O)O,10.63,4.86
+O=C(O)C=Cc(ccc(OC)c1)c1,4.48
+NCCCCCCCC(=O)O,10.63,4.86
+COc1ccccc1C=CC(=O)O,4.36
+O=C(O)C=Cc(ccc(O)c1OC)c1,4.36,9.98
+OC(=O)C(Cl)=C(Cl)Cl,3.50
+COc1ccc(C=CC(=O)(O))cc1OC,4.36
+O=CO,3.75
+OCCCC(O)=O,14.60,4.72
+OC(=O)CN(=O)=O,3.90
+O=C(O)CCCCl,4.52
+OC(=O)Cc1ccccc1Cl,4.07
+BrCCCC(=O)O,4.57
+OC(=O)CC=C,4.34
+OC(=O)CCBr,4.00
+CCC(O)C(O)=O,3.52
+OC(=O)C(Cl)CC,2.86
+O=C(O)C(Br)CC,2.96
+O=C(O)C(F)F,2.96
+Nc1cc(C(O)=O)ccc1,4.79,3.07
+Nc1ccc(C(O)=O)cc1,4.87,2.50
+Nc1cc(O)c(C(O)=O)cc1,3.83,8.56,3.25
+Nc1ccc(O)cc1,5.48,10.30
+Nc1cc(O)ccc1,4.37,9.82
+Nc1cc(N(=O)=O)cc(N(=O)=O)c1,2.34
+Nc1cc(Cl)cc(Cl)c1,2.34
+Nc2ccc(c1ccccc1)cc2,4.35,14.90
+Cc1c(N(=O)=O)ccc(N)c1,3.83
+C(c1ccccc1)(=O)c2ccc(cc2)N,3.91,14.90
+[N+](=O)([O-])c1c(C)cc(cc1C)N,2.34
+[N+](=O)([O-])c1c(C)ccc(N)c1,3.83
+S(C)(=O)(=O)c1ccc(cc1)N,2.65
+N(=O)(=O)c1c(Cl)ccc(N)c1,3.83
+C(F)(F)(F)c1ccc(cc1)N,2.45
+C(OC)(=O)c1ccc(cc1)N,2.50
+C(OCCCC)(=O)c1ccc(cc1)N,2.50
+C(OCCC)(=O)c1ccc(cc1)N,2.50
+C(OCC)(=O)c1ccc(cc1)N,2.50
+c1(Cl)c(Cl)ccc(N)c1,3.83
+C(F)(F)(F)c1cccc(N)c1,3.49
+c1c(cccc1N)Br,3.53
+c1c(cccc1N)I,3.58
+c1(ccc(cc1)I)N,3.81
+c1(ccc(cc1)Br)N,3.89
+c1(C)cc(ccc1Br)N,3.83
+c1(ccccc1N)C(O)=O,4.85,2.17
+c1(ccccc1O)N,4.78,9.97
+[N+](=O)([O-])c1ccc(c(N)c1)O,3.23,9.97
+c1(Br)c(N)ccc(Br)c1,2.53
+[N+](=O)([O-])c1cc(C)ccc1N,-0.25
+c1(ccccc1N)c2ccccc2,3.83,14.90
+[N+](=O)([O-])c1cc(Cl)c(c(Cl)c1)N,6.94
+[N+](=O)([O-])c1cc(C)c(c(C)c1)N,3.89
+c1(N)c(Cl)ccc(Cl)c1,3.23
+c1(c(N)ccc(c1)[N+](=O)[O-])[N+](=O)[O-],-0.25
+[N+](=O)([O-])c1c(N)ccc(Cl)c1,-0.25
+[N+](=O)([O-])c1ccc(c(Cl)c1)N,2.05
+c1(N)c(F)c(F)c(c(F)c1F)F,6.94
+c1(N)c(cccc1Cl)Cl,6.94
+N(=O)(=O)c1c(N)ccc(OC)c1,3.23
+[N+](=O)([O-])c1ccc(c(C)c1)N,4.45
+c1(Cl)c(cccc1N)Cl,3.23
+c1(Cl)c(N)ccc(Cl)c1,2.05
+c1(ccccc1N)C(OCC)=O,4.14
+c1(ccccc1N)C(OC)=O,4.14
+[N+](=O)([O-])c1ccc(c(N)c1)C,3.23
+c1(c(C)c(C)c(c(C)c1C)N)[N+](=O)[O-],6.94
+[N+](=O)([O-])c1ccc(c(N)c1)OC,3.23
+c1(ccccc1Br)N,2.53
+c1(ccccc1I)N,2.54
+N(=O)(=O)c1cccc(c1N)N(=O)=O,6.94
+c1(N)c(Cl)cc(cc1Cl)Cl,6.94
+c1c(Cl)c(Cl)cc(Cl)c1N,3.23
+c1(N)c(OC)ccc(OC)c1,3.23
+N(=Nc(cccc1)c1)c(ccc(N)c2)c2,2.82,14.90
+Nc(cccc1)c1,4.87,14.90
+O=S(=O)(c(ccc(N)c1)c1)c(ccc(N)c2)c2,2.65,2.65
+Nc(c(c(cc1)C)C)c1,3.23
+Nc(c(ccc1)C)c1C,3.89
+Nc(c(cc(c1)C)C)c1C,3.89
+N(=O)(=O)c(c(N)ccc1)c1,3.23
+O(c(c(N)ccc1)c1)C,4.53
+c(c(ccc1N)ccc2)(c2)c1,4.16
+Nc(ccc(c(ccc(N)c1)c1)c2)c2,4.35,4.35
+O(c(c(N)ccc1)c1)CC,4.43
+Nc(c(ccc1)Cl)c1,2.66
+Nc(c(ccc1)C)c1,4.45
+Nc(c(N)ccc1)c1,3.23,3.23
+Nc(ccc(c1C)C)c1,3.83
+Nc(c(cc(c1)C)C)c1,4.45
+Nc(c(cc(c1)Cl)C)c1,4.45
+Nc(ccc(c1Cl)C)c1,3.83
+Nc(c(ccc1C)C)c1,3.23
+Nc1cc(cc(N(=O)=O)c1O)N(=O)=O,3.23,6.15
+O=S(=O)(N)c(cccc1N)c1,3.83,8.34
+O=C(c(cccc1N)c1)C,4.52
+N(=O)(=O)c(cccc1N)c1,3.83
+CC(C)c1ccc(N)cc1,3.69
+N(=O)(=O)c(ccc(N)c1)c1,3.69
+O(c(ccc(N)c1)c1)C,5.36
+Nc(ccc(c1)Cl)c1,3.98
+Nc(ccc(c1)C)c1,5.08
+Nc(ccc(N)c1)c1,3.69,3.69
+Nc(cccc1Cl)c1,3.52
+Nc(cccc1C)c1,4.71
+Nc(cccc1N)c1,3.83,3.83
+Nc(cc(cc1C)C)c1,2.34
+Nc(c(cc(c(ccc(N)c1C)c1)c2)C)c2,4.45,4.45
+c(c(c(N)cc1)ccc2)(c2)c1,3.92
+Cc1cc(C)c(N)cc1C,3.23
+O(c(ccc(N)c1)c1)CC,5.20
+Fc(c(N)ccc1)c1,3.20
+Fc(c(cc(N)c1)Cl)c1,3.83
+Fc(ccc(N)c1)c1,4.65
+Nc1cccc(F)c1,3.59
+c(c(c(N)cc1)c(N)cc2)(c1)c2,3.23,3.23
+Nc1cc(OC)ccc1,4.20
+O=C(c(c(N)ccc1)c1)C,4.14
+Nc(c(ccc1)CC)c1,3.23
+Nc(ccc(c1)CC)c1,2.17
+Nc1c2cc3ccccc3cc2ccc1,4.14
+Nc(c(ccc1)C(C)C)c1,3.23
+c1cc(N)ccc1C(C)(C)C,2.45
+N#Cc(ccc(N)c1)c1,1.74
+S(c(cccc1N)c1)C,3.83
+Nc1cccc(C#N)c1,2.75
+Nc1cccc2c(N)cccc12,3.97,3.97
+Nc1ccccc1SC,3.45
+O=N(C(C=C2)=CC=C2NC1=CC=C(N)C=C1)=O,3.69,0.79
+Nc1c2Cc3ccccc3c2ccc1,3.23
+N(=Nc(cccc1)c1)c(ccc(N(C)C)c2)c2,6.70,14.90
+c1ccccc1N2C(=O)C=C(C)N2C,14.90
+N(c(c(c(ccc1)cc2)c1)c2)(C)C,4.83
+N(c(cccc1)c1)(CC)CC,6.57,14.90
+N(c(ccc(c1)C)c1)(C)C,6.70
+N(c(ccc(N(C)C)c1)c1)(C)C,6.70,6.70
+O=N(=O)c(ccc(N(C)C)c1)c1,6.70
+N(c(cccc1)c1)C,4.85,14.90
+N(c(cccc1C)c1)CC,5.12
+N(c(cccc1)c1)CC,5.12,14.90
+N(c(c(c(ccc1)cc2)c1)c2)CC
+N(c(cccc1)c1)(C)C,5.07,14.90
+N(c(cccc1C)c1)(C)C,4.43
+N(c(cccc1)c1)c(cccc2)c2,14.90,0.79,14.90
+OCCNc(cccc1)c1,14.60,14.90
+O=C(N(c(cccc1)c1)C)C,14.90
+N(c(c(ccc1)C)c1)(C)C,4.83
+N(c(c(ccc1)C)c1)C,3.67
+O=N(=O)c(cccc1N(C)C)c1,4.43
+N(c(ccc(c1)C)c1)C,4.85
+N(c(cccc1C)c1)C,4.85
+c1cc(OC)ccc1N(C)C,6.70
+N(c(cccc1)c1)C(C)C,5.77,14.90
+N(c(cccc1)c1)CCCC,14.90
+CN(C)c1ccc(C#N)cc1,6.70
+N(c(c(c(ccc1)cc2)c1)c2)C,3.67
+c12ccccc1CCC(N)C2,10.61
+c1(ccccc1)C(C)N,9.87,14.90
+C(C(C)N)c1ccccc1,10.63,14.90
+NCCC,10.54
+NCCCC,10.60
+NCC,10.65
+NC1CCCCC1,10.64
+NCc1ccccc1,9.34,14.90
+c1(CN)ccc(cc1)C,9.34
+c1(ccc(cc1)OC)CC(C)N,10.63
+c12cc(ccc1OCO2)CC(C)N,10.63
+NC(C)CCc1ccccc1,10.70,14.90
+NCCCc1ccccc1,10.56,14.90
+NCCCCc1ccccc1,10.77,14.90
+NCC(C)C,9.70
+c1(CN)ccco1,8.73
+C(CN)(F)(F)F
+c1(OC)c(OC)cc(cc1OC)CCN,10.32
+C(CN)=C,9.49
+NC(C)CC,10.56
+NC,10.66
+NC(C)C,10.63
+C(C)(C)(C)N,10.68
+NCCc1cnc2ccc(O)cc12,11.10,9.80
+C1=NC=C(CCN)N1,10.42
+NC(C)Cc(cccc1)c1,10.63,14.90
+CC(N)C(O)c1cccc(O)c1,9.44,9.32
+NC(=S)N
+O=C(O)C(N)CC(c(c(N1)ccc2)c2)=C1,9.41,2.46
+OCC(N)(CO)CO,8.30,12.31,12.31,12.31
+OC(CN)C,9.70
+OCC(N)CC,10.61,12.81
+N(=O)(=O)c(ccc(NN)c1)c1,8.79
+NCCN,10.36,10.36
+NCCCN,10.64,10.64
+NCCCCC,10.63
+NCCCCN,10.65,10.65
+NCCCCCC,10.56
+NCCCCCCC,10.67
+NCCCCCCCC,10.63
+NCCCCCCCCC,10.63
+OCC(N)(CO)C,12.31,12.31
+OCC(N)(CC)CO,8.30,12.31,12.31
+NC(CCCCC)C,10.70
+NCCCCCCN,10.63,10.63
+NCCCCCCCCCCCC,10.63
+NCCCCCCCCCCCCCCCCCC,10.63
+OCC(N)(C)C,10.85,12.31
+OCCN,9.50,14.60
+c1ccccc1CC(N)C,10.63,14.90
+OCCCN,10.64,14.60
+NN
+C12(C)C3CCC4(C)C(C(=O)C)CCC4C3CCC1CC(N)CC2,10.61
+N#CCN,5.34
+c1c(Br)ccc(NN)c1,8.79
+NC(C(N)CCC1)C1
+C(#C)CN,5.34
+n(c(ccc1)CCN)c1,10.42,5.50
+n1c(CN)cccc1,8.73,5.51
+NCc1ccc(N(=O)(=O))cc1,9.34
+OC(c(cccc1)c1)C(N)C,9.44,14.90
+CCCCC(C)CN,9.70
+Cc(cccc1C)c1NC(C(CC)N)=O,9.21
+O=S(=O)(N)c(ccc(c1)C)c1,8.34
+c1cc(NC)ccc1S(=O)(=O)N,4.85,8.34
+c1cc(S(=O)(=O)N)ccc1SCCO,8.34,14.60
+c1cc(S(=O)(=O)N)ccc1S(=O)(=O)CCO,8.34,14.60
+c1cc(SCCCO)ccc1S(=O)(=O)N,8.34,14.60
+c1cc(S(=O)(=O)N)ccc1SCCC(C)(C)O,8.34
+c1cc(S(=O)(=O)N)ccc1SCCCCCO,8.34,14.60
+NS(=O)(=O)c1ccc(S(=O)(=O)CCCO)cc1,8.34,14.60
+c1cc(S(=O)(=O)N)ccc1S(=O)(=O)CCC(C)(C)O,8.34
+O=N(=O)c1cc(S(=O)(=O)N)ccc1SCCO,8.34,14.60
+O=N(=O)c1cc(S(=O)(=O)N)ccc1SCCCO,8.34,14.60
+O=N(=O)c1cc(S(=O)(=O)N)ccc1S(=O)(=O)CCCO,8.34,14.60
+Nc1cc(S(=O)(=O)N)ccc1S(=O)(=O)CCCO,8.34,3.23,14.60
+COC(=O)c1cc(S(=O)(=O)N)ccc1SCCCO,14.60,8.34
+COC(=O)c1cc(S(=O)(=O)N)ccc1S(=O)(=O)CCCO,14.60,8.34
+Fc1cc(S(=O)(=O)N)ccc1SCCO,8.34,14.60
+Clc1cc(S(=O)(=O)N)ccc1SCCCO,8.34,14.60
+Fc1cc(S(=O)(=O)N)ccc1SCCCO,8.34,14.60
+Fc1cc(S(=O)(=O)N)ccc1SCCCCO,8.34,14.60
+Fc1cc(S(=O)(=O)N)ccc1S(=O)(=O)CCO,8.34,14.60
+Fc1cc(S(=O)(=O)N)ccc1S(=O)(=O)CCCO,8.34,14.60
+NS(=O)(=O)c1ccc(c(F)c1)S(=O)(=O)CCCCO,8.34,14.60
+c1cc(OC)ccc1C(=O)C2=CSC(S(=O)(=O)N)=C2,8.34
+c1cc(O)ccc1C(=O)C2=CSC(S(=O)(=O)N)=C2,8.34,8.80
+c1cc(OC)ccc1C(=O)C2=COC(S(=O)(=O)N)=C2,8.34
+c1cc(C)ccc1C(=O)C2=CSC(S(=O)(=O)N)=C2,8.34
+c1cc(OC)ccc1S(=O)(=O)C2=CSC(S(=O)(=O)N)=C2,8.34
+C1COCCN1Cc2cc3cc(S(=O)(=O)N)oc3s2,8.34
+c1cc(C)ccc1S(=O)(=O)C2=CSC(S(=O)(=O)N)=C2,8.34
+c1cc(C)ccc1S(=O)(=O)C2=COC(S(=O)(=O)N)=C2,8.34
+c1cc(OC)ccc1S(=O)(=O)C2=COC(S(=O)(=O)N)=C2,8.34
+S1C(S(=O)(=O)N)=CC=C1S(=O)(=O)CCOC(=O)C,8.34
+S1C(S(=O)(=O)N)=CC=C1SCCCCO,8.34,14.60
+S1C(S(=O)(=O)N)=CC=C1S(=O)(=O)CCCCO,8.34,14.60
+c1cc(S(=O)(=O)N)ccc1SCCCCO,8.34,14.60
+c1cc(S(=O)(=O)N)ccc1S(=O)(=O)CCCCO,8.34,14.60
+COC(=O)c1cc(S(=O)(=O)N)ccc1S(=O)(=O)CCO,14.60,8.34
+c1cc(CCCO)ccc1S(=O)(=O)N,8.34,14.60
+c1cc(S(=O)(=O)N)ccc1CCCOC(=O)C,8.34
+c1cc(S(=O)(=O)N)ccc1CCCCO,8.34,14.60
+c1cc(S(=O)(=O)N)ccc1CCCCCO,8.34,14.60
+c1cc(S(=O)(=O)N)ccc1CCCCCOC(=O)C,8.34
+CC(C)(C)CN
+N(C)CCc1ccccc1,8.20,14.90
+N(CC)CC,10.84
+N1CCCCC1,11.12
+N(CCCC)CCCC,11.25
+N1CCOCC1,8.50
+C(CNCC=C)=C
+N(C)Cc1ccccc1,10.10,14.90
+N(CC)Cc1ccccc1,14.90
+N(C)C(C)Cc1ccccc1,10.99,14.90
+c(ccc1CC(NC)C)cc1,10.99,14.90
+N(C)CCCC,8.20
+N(CCC)CCC,11.31
+N1CCCCCC1,11.25
+N(C(C)C)C(C)C,11.05
+N1C(C)(C)CCCC1(C)C,11.07
+N1CCCCC1C
+N1CCC1,11.29
+N1CCCC1,11.31
+N1CCCCC1c2cccnc2,10.67
+N1CCCC1c2ccccc2,10.67,14.90
+N(C)C,10.73
+N1CCCCC1CCC,10.90
+C2CCC(NC1CCCCC1)CC2,10.40
+CNCCCN2c1ccccc1CCc3ccccc23,8.20
+c1cc2ccccc2cc1C(O)CNC(C)C,8.64
+N(C1C)C1
+OC(c(cccc1)c1)C(NC)C,10.05,14.90
+N(C(CNC1C)C)C1
+N(CCNC)C,8.20,8.20
+N(CCNC1)C1,11.31,11.31
+N(CC(C)C)CC(C)C
+OC(C)CNCC(O)C
+OCCNCCO,14.60,11.31,14.60
+N(CCNCC)CC
+C(#N)CCNCCC(#N),11.31
+N(C1)C1,8.04
+CC(C)NCC(O)COc1cccc2ccccc12,9.60,14.15
+O=S(=O)(O)CCCNC(CCCC1)C1,1.45,11.23
+CCNNCC
+N(C1)C1(C)C
+c1ccccc1CS(=O)(=O)NC(=O)N,14.90
+N(C(CC)C)C(CC)C
+C1(NC(C)(C)C)CCCCC1
+N1(CCOCC1)CC,7.67
+c2c(CC(CN1CC(C)OC(C)C1)C)ccc(C(C)(C)C)c2
+N(C)(C)CC
+N(C)(C)CCCC,9.27
+N1(C)CCOCC1,7.38
+n1cccc(CN(C)C)c1,9.89
+C(CN(CC=C)CC=C)=C
+n1ccccc1CCN(C)C,9.27,5.50
+n1cccc(c1)CCN(C)C,9.27
+N(C)(C)Cc1ccccc1,9.89,14.90
+C(c1ccccc1)(c2ccccc2)(C(CC)=O)CC(C)N(C)C,14.90,14.90
+C(c1ccccn1)(c2ccc(cc2)Cl)CCN(C)C,9.27
+N1(CCCC1)CCc2cccnc2,8.50
+N1(CCCCC1)C,10.38
+N1(CCCC1)C,10.46
+N(CC)(CC)CC,10.75
+N1(CCCCC1)CCC,8.50
+CN1C(C)(C)CCCC1(C)C,11.25
+N1(C)CCCC1c2cccnc2,6.53
+CCN(CCCl)CCCl,9.06
+C1(=CCCN(C)C1)C(OC)=O,6.84
+c1(OCCN(C)C)cc(C)ccc1C(C)C,9.27
+c1(C(C)C)c(OCCN(C)C)cc(c(OC(C)=O)c1)C,9.27
+CC2N(CCCOC(c1cc(Cl)c(Cl)cc1)=O)CCCC2
+c1(ccccc1C)C(OCCN(C)C)c2ccccc2,9.27,14.90
+C(OCCN(C)C)(c1ccccc1)c2ccccc2,9.27,14.90,14.90
+N(C)(C)C,9.80
+CC(Cc1ccc(C(C)(C)C)cc1)CN2CCCCC2
+N(CCC)(CCC)CCC,8.50
+N(CCCC)(CCCC)CCCC,8.50
+COC(=O)C1C(CC2CCC1N2C)OC(=O)c3ccccc3,14.90
+CN(C)CCC=C2c1ccccc1CCc3ccccc23,9.40
+CN(C)CCCN2c1ccccc1CCc3ccccc23,9.27
+CCN(CC)CCNC(=O)c1ccc(N)cc1,6.56,3.91
+CN1C2CC(CC1C3OC23)OC(=O)C(CO)c4ccccc4,12.81,14.90
+O=C(OC(CC(N(C1C2)C)C2)C1)C(c(cccc3)c3)CO,9.70,12.81,14.90
+CN(CCCl)CCCl,10.46
+COc2ccc(CCN(C)CCCC(C#N)(C(C)C)c1ccc(OC)c(OC)c1)cc2OC,8.60
+OC2(CCN(CCCC(=O)c1ccc(F)cc1)CC2)c3ccc(Cl)cc3,8.30
+CCN(CC)CCCC(C)Nc1ccnc2cc(Cl)ccc12,4.86
+CCOC(=O)C1(CCN(C)CC1)c2ccccc2,10.46,14.90
+O=C(OCCN(CC)CC)c(ccc(N)c1)c1,6.56,2.50
+c(ccc1c2CCN(C)C)cc1nc2,9.27
+C1CCN(CC1)C2(CCCCC2)c3ccccc3,14.90
+CCC(=O)OC1(CCN(C)CC1C)c2ccccc2,14.90
+CCCCOc2cc(C(=O)NCCN(CC)CC)c1ccccc1n2
+OCCN(CC)CC,6.56,14.60
+N(CCC(C1)C2)(C1)C2,8.50
+OCCN(CCO)CCO,14.60,7.76,14.60,14.60
+OCCN(CCO)C,10.46,14.60,14.60
+OCCN(C)C,9.27,14.60
+N(CCN(C)C)(C)C,8.25,8.25
+OC(C)CN(CC(O)C)CC(O)C
+O=C(Nc(c(ccc1)C)c1C)CN(CC)CC
+c1c(OC)c(OC)c(OC)cc1C(=O)NCc2ccc(OCCN(C)C)cc2,9.27
+N(CCN(C1)C2)(C1)C2,8.50,8.50
+CCN(CC)CCNC(=O)c1cc(Cl)c(N)cc1OC,3.23
+ClCCN(CCCl)CCCl,8.50
+CCCCN1CC1
+O=S(=O)(O)CCCN(CCOC1)C1,1.45,8.50
+c1ccccc1C(O)C(C)N(C)C,14.90
+C1CCCCCCCCCCC1N2CC(C)OC(C)C2
+OCC(N(C)C)(C)C,12.31
+CN(O)C
+O=P(C)(OCC)SCCN(C(C)C)C(C)C
+CC(CC2)(C)CCC2(c3ccccc3)N1CCCCC1,14.90
+CN1CCN(C(=O)c2ccccc2)CC1,10.46,14.90
+C1CC(C(C)(C)C)CCC12(OCC(CN(CC)CCC)O2)
+O1CCN(C)CC1(O)c2ccccc2,14.90
+O1C(C)CN(C)CC1(O)c2ccccc2,14.90
+O1CCN(C)CC1(O)c2ccc(Br)cc2
+O1CCN(C)C(C)C1(O)c2ccccc2,14.90
+O1C(c3ccccc3)C(C)N(C)CC1(O)c2ccccc2,14.90,14.90
+O1CCN(C)C(c2ccccc2)C1(O),7.80,12.11,14.90
+O1CCN(C)CC1(O)c2cc(C(F)(F)F)ccc2
+O1CCN(C)CC1(OCCC)c2ccccc2,14.90
+O1CCN(C)CC1(OCC=C)c2ccccc2,14.90
+O1CCN(C)C(C)C1(OCC)c2ccccc2,14.90
+O1CCN(C)CC1(OCCCC)c2ccccc2,14.90
+O1CCN(C)CC1(OCC(C)C)c2ccccc2,14.90
+C(CCC1)N(C1)CC=C,7.64
+N(C(CCCC1)C1)(C)C
+CCCN(C)C,10.15
+N(C(C)C)(C)C
+N(CC(C)C)(C)C
+C(C)(c1ccncc1)=O,4.84
+n1cccc(c1)Br
+C(OCC)(=O)c1cccnc1
+C(OCC)(c1ccncc1)=O,4.84
+n1ccc(cc1)Br,6.29
+n1cccc(C=O)c1
+n1ccc(cc1)Cl,3.83
+n1ccc(cc1)C=O,12.05
+n1ccc(cc1)c2ccncc2,4.84,4.84
+C(OC)(=O)c1cccnc1
+C(OC)(c1ccncc1)=O,4.84
+n1cc(Cl)cc(Cl)c1,6.15
+n1cccc(c1)Cl
+n1cccc(c1)F
+C(C)(=O)c1cccnc1
+n1cccc(c1)I
+n1cccc(CO)c1
+n1ccc(cc1)CO,6.29
+n1cccc(CCCO)c1,14.60
+n1cccc(CC)c1
+n1ccc(cc1)Cc2ccccc2,14.90,6.29
+n1ccc(cc1)CCO,14.60,6.29
+n1ccc(cc1)C=C,4.25,12.05
+n1cccc(C)c1
+n1ccc(cc1)CCCO,14.60,6.29
+n1ccc(cc1)CC,6.29
+n1ccc(cc1)C,5.99
+C(C)(C)(C)c1ccncc1,6.29
+n1ccc(cc1)CCC,6.29
+n1cc(C)cc(C)c1,6.15
+n1ccc(c(C)c1)C
+n1ccc(cc1)OC,6.58
+n1cccc(c1)CCN(C)C,9.27
+N1CCCCC1c2cccnc2,10.67
+N#Cc1ccncc1,6.29
+N1(C)CCCC1c2cccnc2,6.53
+C(=O)(N(CC)CC)c1cccnc1
+C(=CC(O)=O)C(=O)c1cccnc1,4.34
+n2cccc(c1ccccc1)c2,4.06,14.90
+n1ccccc1,14.90,5.23
+n1ccc(cc1)c2ccccc2,14.90,4.84
+n1cccc(CN)c1,9.34
+N(=O)(=O)c1cccnc1
+n1cccc(O)c1,8.75
+n1cccc(OC)c1
+O=C(N)c(cccn1)c1,13.00
+N#Cc(cccn1)c1
+n(ccc(N)c1)c1,3.75,9.11
+ON=Cc1ccncc1,12.05
+n(ccc(N(C)C)c1)c1,6.30,6.29
+n1ccc(CN)cc1,9.34,6.29
+n1cc(NC(=O)C)ccc1
+Nc1ccncc1Br,2.53,5.19
+c1ccncc1CC(c2ccc(Cl)cc2Cl)=NOC
+n(cccc1N)c1,3.74
+n1cc(CC)ccc1C,6.40
+n1c(C)c(C)cc(C)c1C
+n1ccccc1F,-0.44
+n1ccccc1Cl,0.49
+n1ccccc1Br
+n1ccccc1C=C,4.25,12.68
+n1ccccc1Cc2ccccc2,5.13,14.90
+n1ccccc1CCO,14.60,5.50
+n1ccccc1CCCO,14.60,5.50
+n1cc(ccc1C)C=C,6.40,4.25
+C(C)(C)(C)c1ccccn1
+n1ccccc1CC,5.89
+n1cc(C)ccc1C,6.40
+n1cccc(C)c1C,6.57
+n1c(C)cccc1C,4.65
+n1ccc(cc1C)C,6.99
+n1c(C)cc(cc1C)C,7.43
+n1c(cccc1Cl)Cl
+n1c(Cl)c(Cl)c(c(Cl)c1Cl)Cl
+c1(Cl)c(cccn1)Cl
+n1c(Cl)c(Cl)cc(Cl)c1Cl
+n1ccccc1c2ccccc2,14.90,5.03
+n1ccccc1C,6.00
+n1ccccc1c2ccccn2,4.86,4.86
+n1ccccc1CO,5.51
+n1cc(C)ccc1N,5.77
+n1ccccc1SC
+n1ccccc1OC,3.28
+n1c(cccc1OC)OC
+n1ccccc1C(C)=O,4.86
+n1ccccc1C=O,12.68
+C(OC)(=O)c1ccccn1,4.86
+C(#N)c(nccc1)c1
+n(c(N)ccc1)c1,6.82
+n1c(C(C)(C)C)cccc1C(C)(C)C,3.58
+ON=Cc1ccccn1,12.68
+O=N(=O)c(ccc(n1)N)c1,5.77
+c1cc(Cl)ncc1CN(C)C(C)=NC#N
+c1(Br)ncccn1
+c1(ncccn1)C(OC)=O
+c1(SC)ncccn1
+N(=O)(=O)c1cncnc1
+n1cccnc1,1.23,1.23
+c1(OCC)ncccn1
+n1cc(C)cnc1
+c1(SC)nc(C)cc(C)n1
+n1c(C)cc(nc1)C
+c1(N)ncccn1,3.45,3.45
+c2c(Nc1nc(C)cc(C)n1)cccc2,14.90
+c1(N)nc(C)cc(C)n1,4.82,4.82
+n1c(N)cc(nc1N)N,6.84,6.84
+CCc1nc(N)nc(N)c1c2ccc(Cl)cc2,6.60
+n1cnc(OC)cc1,1.23
+c1ccccc1Nc2nc(C3CC3)cc(C)n2,14.90
+c1(cn(cn1)C)[N+](=O)[O-]
+c1(c[nH]cn1)[N+](=O)[O-]
+c1(cncn1C)[N+](=O)[O-]
+n1(ccnc1)C(C)=O,6.95
+n1(ccnc1)C(COCCC)=Nc2ccc(cc2C(F)(F)F)Cl,6.95
+c2(c1ccccc1)[nH]ccn2,14.90,2.27
+n1ccn(C)c1,6.95
+n1cc[nH]c1,6.99
+n1cc[nH]c1C
+c1(cncn1C)CC(C(=O)O)NC(=O)CCN,10.42,2.84
+n1(ccnc1)C(=O)N(CCC)CCOc2c(Cl)cc(cc2Cl)Cl,6.95
+n2(C1CC(O)C(CO)O1)cnc3C(O)CNC=Nc23,12.67,13.90,8.77
+n2ccn(Cc1ccccc1)c2,14.90,6.95
+c1(cncn1C)CC2COC(=O)C2CC
+c1(CSCCN=C(NC)NC#N)[nH]cnc1C
+n1(ccnc1)CC(OCC=C)c2ccc(cc2Cl)Cl,6.95
+n2c1ccccc1[nH]c2,6.60,5.53
+COc3ccc(Cc2[nH]c1ccc(N(=O)=O)cc1n2)cc3,6.18
+Clc3ccc(Cc2[nH]c1ccc(Cl)cc1n2)cc3,6.18
+Cc3c(c2[nH]c1ccc(N(=O)=O)cc1n2)cccc3,5.23
+Cc3cc(C)c(c2[nH]c1ccc(N(=O)=O)cc1n2)cc3,5.23
+Clc3cc2nc(Cc1ccc(Br)cc1)[nH]c2cc3,6.18
+Cc3ccc(c2[nH]c1ccccc1n2)cc3,5.23
+Cc3ccc(Cc2[nH]c1ccc(Cl)cc1n2)cc3,6.18
+COc3c(c2[nH]c1ccccc1n2)cccc3,5.23
+Nc3ccc(Cc2[nH]c1ccc(Cl)cc1n2)cc3,2.17,6.18
+c1ccccc1CC2=NCCN2,14.90
+c1c(C)cc2N=C(c3c(OC)cc(OC)cc3)Nc2c1,5.23
+Cn1ccnc1Br
+Cn1ccnc1F
+Cn1ccnc1N
+C1=CN(C)C(N(=O)=O)=N1
+Brc1ncc[nH]1
+Clc1ncc[nH]1
+CCc1ncc[nH]1
+C1=CN=C(N1)F
+N1C(N)=NC=C1
+N1C(N(=O)(=O))=NC=C1
+CSC1=NC=CN1
+[O-][N+](=O)C1=CC2=C([NH]C=N2)C=C1,5.53,6.60
+ClC1=NC2=CC=CC=C2[NH]1
+C[N]1C=NC2=C1C=CC=C2
+CC1=CC2=C([NH]C=N2)C=C1,5.53,6.60
+CC1=CC2=C(C=C1C)N=C[NH]2,5.53,6.60
+CC1=NC2=CC=CC=C2[NH]1
+NC1=CC2=C([NH]C=N2)C=C1,3.83,5.53,6.60
+CCC1=NC2=CC=CC=C2[NH]1,6.18
+n2c1ccccc1nc2C(C)C
+n1cccc2ccccc12,4.90
+c12cccnc1cccc2O,9.82,5.20
+c12c(cccn1)ccc(OC)c2,4.86
+n2cccc1cc(OC)ccc12,5.03
+c12c(cccn1)cccc2C,4.88
+n2cc(C)cc1ccccc12,4.36
+n2cccc1cc(C)ccc12,5.09
+c12c(cccn1)ccc(C)c2,4.86
+n2cccc1cc(O)ccc12,8.90,5.15
+c12c(cccn1)ccc(O)c2,9.32,4.86
+c12ccccc1nccc2C,5.67
+n1c(C)ccc2ccccc12,5.83
+n2cc(Br)cc1ccccc12,2.69
+c12c(Cl)ccnc1cc(Cl)cc2,4.86
+c12c(cccn1)cccc2Cl,4.88
+c12c(cccn1)cccc2F,4.88
+n2cccc1cc(Cl)ccc12,5.09
+c12c(cccn1)ccc(Br)c2,4.86
+n2cccc1cc(Br)ccc12,5.09
+n1c(C)ccc2cc(C)ccc12,5.83
+n1c(C)cc(c2ccccc12)C,5.83
+n2cc(cc1ccccc12)O,8.08,4.28
+c12cccnc1c(ccc2Cl)O,9.81,4.88
+c12c(cccn1)cccc2OC,4.88
+n1c(C)ccc2cccc(O)c12,9.81
+c12c(cccc1c(ccn2)C)O,4.88,9.81
+CCCCCC(OC(COc2c1ncccc1c(Cl)cc2)=O)C,4.88
+COc3ccc(Cc1nccc2cc(OC)c(OC)cc12)cc3OC,6.40
+c1ccc2c(c1)ccc3ncccc23,5.20
+c1ccc2c(c1)ccc3cccnc23,4.88
+n(c(c(ccc1)cc2)c1N)c2,3.23,4.88
+c1ccc2c(N)ccnc2c1,4.14,9.17
+Nc2ccc1ncccc1c2,4.16,5.09
+n(c(c(ccc1)cc2)c1)c2N,7.34
+c1c(N)c2cccnc2c(O)c1,4.14,9.81,4.88
+N[C@@H](C)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.87
+======= Acid site on atom 4  has pKa value = 2.34
+N[C@@H](CCCNC(=N)N)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.69
+======= Acid site on atom 4  has pKa value = 2.09
+N[C@@H](CC(=O)N)C(=O)O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 8.80
+======= Acid site on atom 4  has pKa value = 2.10
+N[C@@H](CC(=O)O)C(=O)O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.90
+======= Acid site on atom 4  has pKa value = 2.03
+======= Acid site on atom 7  has pKa value = 4.44
+N[C@@H](CS)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 8.70
+======= Acid site on atom 4  has pKa value = 2.23
+N[C@@H](CCC(O)=O)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.67
+======= Acid site on atom 4  has pKa value = 3.01
+======= Acid site on atom 9  has pKa value = 4.99
+N[C@@H](CCC(N)=O)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.13
+======= Acid site on atom 4  has pKa value = 3.01
+NCC(O)=O
+======= Basic site on atom 0  has pKa value = 9.78
+======= Acid site on atom 4  has pKa value = 2.35
+N[C@H](C(O)=O)CC1NC=NC=1 |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.15
+======= Acid site on atom 4  has pKa value = 1.80
+N[C@@H](C(C)CC)C(=O)O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.76
+======= Acid site on atom 4  has pKa value = 2.32
+N[C@@H](CC(C)C)C(=O)O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.74
+======= Acid site on atom 4  has pKa value = 2.33
+N[C@@H](CCCCN)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.76
+======= Basic site on atom 8  has pKa value = 10.65
+======= Acid site on atom 9  has pKa value = 2.09
+N[C@@H](CCSC)C(=O)O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.27
+======= Acid site on atom 4  has pKa value = 2.13
+N[C@@H](CC1C=CC=CC=1)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.21
+======= Acid site on atom 4  has pKa value = 2.20
+======= Acid site on atom 9  has pKa value = 14.90
+N1CCC[C@H]1C(=O)O |&1:4,r|
+======= Basic site on atom 0  has pKa value = 10.64
+======= Acid site on atom 4  has pKa value = 1.95
+N[C@@H](CO)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.21
+======= Acid site on atom 4  has pKa value = 2.23
+======= Acid site on atom 6  has pKa value = 12.81
+N[C@@H](C(C)O)C(=O)O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.10
+======= Acid site on atom 4  has pKa value = 2.30
+N[C@@H](CC1C2C=CC=CC=2NC=1)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.41
+======= Acid site on atom 4  has pKa value = 2.46
+N[C@@H](CC1C=CC(O)=CC=1)C(O)=O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.21
+======= Acid site on atom 4  has pKa value = 2.20
+======= Acid site on atom 12  has pKa value = 8.53
+N[C@@H](C(C)C)C(=O)O |&1:1,r|
+======= Basic site on atom 0  has pKa value = 9.74
+======= Acid site on atom 4  has pKa value = 2.29
+O([H])C#N
+======= Acid site on atom 0  has pKa value = 3.70
+N([H])([H])C#N
+======= Acid site on atom 0  has pKa value = 1.10
+O=C([H])[H]
+======= Acid site on atom 1  has pKa value = 13.27
+O([H])C([H])=O
+======= Acid site on atom 0  has pKa value = 3.75
+[O-][N+](C([H])([H])[H])=O
+======= Acid site on atom 3  has pKa value = 10.21
+S([H])C(N([H])[H])=S
+======= Acid site on atom 0  has pKa value = 2.95
+O([H])C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 10.33
+N([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.66
+O(C([H])([H])[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 12.50
+N([H])([H])/C(=N/[H])/N([H])[H]
+======= Basic site on atom 2  has pKa value = 13.60
+ClC(C([H])=O)(Cl)Cl
+======= Acid site on atom 5  has pKa value = 10.04
+ClC(C(=O)O[H])(Cl)Cl
+======= Acid site on atom 3  has pKa value = 0.66
+FC(C(=O)O[H])(F)F
+======= Acid site on atom 3  has pKa value = 0.52
+ClC([H])(C(=O)O[H])Cl
+======= Acid site on atom 2  has pKa value = 1.35
+O([H])C(C([H])=O)=O
+======= Acid site on atom 0  has pKa value = 3.18
+O([H])C(C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 3.50
+======= Acid site on atom 1  has pKa value = 3.50
+BrC([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.90
+ClC([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.87
+ClC(C([H])([H])O[H])(Cl)Cl
+======= Acid site on atom 3  has pKa value = 12.24
+FC([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.59
+FC(C([H])([H])O[H])(F)F
+======= Acid site on atom 3  has pKa value = 12.37
+IC([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.18
+O([H])C(C([H])([H])[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 1.48
+N1([H])C([H])=NC([H])=N1
+======= Acid site on atom 2  has pKa value = 2.27
+N1([H])N=C([H])C([H])=N1
+======= Acid site on atom 1  has pKa value = 1.17
+======= Acid site on atom 2  has pKa value = 1.17
+N([H])([H])C([H])([H])C#N
+======= Basic site on atom 0  has pKa value = 5.34
+O=C([H])C([H])([H])[H]
+======= Acid site on atom 2  has pKa value = 13.57
+S([H])C(C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 3.33
+O([H])C(C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.76
+S([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 0  has pKa value = 9.43
+======= Acid site on atom 1  has pKa value = 3.68
+O([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.83
+N1([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 8.04
+O=C(C([H])([H])[H])N([H])[H]
+======= Acid site on atom 1  has pKa value = 15.10
+O([H])N([H])C(C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 8.70
+[O-][N+](C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 3  has pKa value = 8.46
+N([H])([H])/C(/C([H])([H])[H])=N/[H]
+======= Basic site on atom 1  has pKa value = 12.10
+O([H])C([H])([H])C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 15.50
+S([H])C([H])([H])C([H])([H])O[H]
+======= Acid site on atom 0  has pKa value = 9.72
+======= Acid site on atom 1  has pKa value = 14.60
+O([H])C([H])([H])C([H])([H])O[H]
+======= Acid site on atom 0  has pKa value = 15.10
+======= Acid site on atom 1  has pKa value = 15.10
+[As](C([H])([H])[H])(C([H])([H])[H])(=O)O[H]
+======= Acid site on atom 0  has pKa value = 6.27
+N([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.65
+N([H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.73
+O([H])C([H])([H])C([H])([H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 14.60
+======= Basic site on atom 1  has pKa value = 9.50
+S(C([H])([H])C([H])([H])N([H])[H])(=O)(=O)O[H]
+======= Acid site on atom 1  has pKa value = 1.50
+======= Basic site on atom 4  has pKa value = 9.06
+S([H])C([H])([H])C([H])([H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 8.27
+======= Basic site on atom 1  has pKa value = 10.53
+N(/C(=N/[H])/N([H])[H])=C(/N([H])[H])\N([H])[H]
+======= Basic site on atom 0  has pKa value = 11.52
+N([H])([H])C([H])([H])C([H])([H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 10.36
+======= Basic site on atom 1  has pKa value = 10.36
+P(C(C([H])([H])[H])(O[H])P(=O)(O[H])O[H])(=O)(O[H])O[H]
+O([H])C(C#C[H])=O
+======= Acid site on atom 0  has pKa value = 1.84
+O1C([H])=NC([H])=C1[H]
+======= Basic site on atom 1  has pKa value = 0.80
+O1C([H])=C([H])C([H])=N1
+======= Basic site on atom 1  has pKa value = -2.00
+O([H])C(C([H])([H])C#N)=O
+======= Acid site on atom 0  has pKa value = 2.47
+S1C([H])=NC([H])=C1[H]
+======= Basic site on atom 1  has pKa value = 2.52
+O=C1N([H])C(N([H])C(N1[H])=O)=O
+N1([H])C([H])=C([H])C([H])=N1
+======= Basic site on atom 1  has pKa value = 2.49
+N1([H])C([H])=NC([H])=C1[H]
+======= Basic site on atom 1  has pKa value = 6.99
+S1C([H])=C([H])N=C1N([H])[H]
+======= Basic site on atom 1  has pKa value = 5.36
+O([H])C([H])([H])C#C[H]
+======= Acid site on atom 0  has pKa value = 13.60
+O([H])C(C([H])=C([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.31
+======= Acid site on atom 4  has pKa value = 4.25
+O([H])C(C(C([H])([H])[H])=O)=O
+======= Acid site on atom 0  has pKa value = 2.49
+O([H])C(C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.16
+======= Acid site on atom 1  has pKa value = 4.16
+O([H])C([H])(C(=O)O[H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.37
+======= Acid site on atom 2  has pKa value = 3.37
+BrC([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.00
+ClC([H])(C(=O)O[H])C([H])([H])[H]
+======= Acid site on atom 1  has pKa value = 2.83
+ClC([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.98
+N([H])([H])C([H])([H])C([H])([H])C#N
+======= Basic site on atom 0  has pKa value = 7.80
+N1C(N([H])[H])=NC(N([H])[H])=NC=1N([H])[H]
+======= Basic site on atom 0  has pKa value = 5.00
+======= Basic site on atom 1  has pKa value = 5.00
+======= Basic site on atom 2  has pKa value = 5.00
+O([H])C([H])([H])C([H])=C([H])[H]
+======= Acid site on atom 0  has pKa value = 15.50
+O([H])C(C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.87
+S(C([H])([H])[H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.66
+O([H])C([H])(C(=O)O[H])C([H])([H])[H]
+======= Acid site on atom 1  has pKa value = 3.86
+O([H])C([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 0  has pKa value = 14.60
+======= Acid site on atom 1  has pKa value = 4.51
+O([H])C([H])(C(=O)O[H])C([H])([H])O[H]
+======= Acid site on atom 1  has pKa value = 12.81
+======= Acid site on atom 2  has pKa value = 3.52
+N([H])([H])C([H])([H])C([H])=C([H])[H]
+======= Basic site on atom 0  has pKa value = 9.49
+N1([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 11.29
+O([H])/N=C(\C([H])([H])[H])/C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 12.42
+O([H])C(C([H])([H])C([H])([H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 3.55
+======= Basic site on atom 2  has pKa value = 10.24
+O([H])C(C([H])([H])N([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.21
+======= Basic site on atom 2  has pKa value = 10.10
+S(C([H])([H])C([H])(C(=O)O[H])N([H])[H])(=O)(=O)O[H]
+======= Acid site on atom 1  has pKa value = 1.45
+======= Acid site on atom 4  has pKa value = 2.23
+======= Basic site on atom 6  has pKa value = 8.70
+O([H])C(C([H])([H])/N=C(\N([H])[H])/N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.82
+O(C([H])([H])[H])C([H])([H])C([H])([H])O[H]
+======= Acid site on atom 1  has pKa value = 14.80
+O([H])C([H])(C([H])([H])O[H])C([H])([H])O[H]
+======= Acid site on atom 0  has pKa value = 14.15
+======= Acid site on atom 1  has pKa value = 12.81
+======= Acid site on atom 2  has pKa value = 12.81
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.54
+N([H])([H])C([H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.63
+N(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 9.80
+O(C([H])([H])[H])C([H])([H])C([H])([H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 9.40
+[O-][N+](C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 4.65
+N([H])([H])C([H])(C([H])([H])[H])C([H])([H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 10.63
+======= Basic site on atom 1  has pKa value = 9.70
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+======= Basic site on atom 1  has pKa value = 10.64
+O([H])C([H])(C([H])([H])N([H])[H])C([H])([H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 14.15
+======= Basic site on atom 1  has pKa value = 9.70
+======= Basic site on atom 2  has pKa value = 9.70
+N([H])([H])C([H])(C([H])([H])N([H])[H])C([H])([H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 10.61
+======= Basic site on atom 1  has pKa value = 9.70
+======= Basic site on atom 2  has pKa value = 9.70
+FC1C([H])=NC(N([H])C=1N([H])[H])=O
+======= Basic site on atom 4  has pKa value = 3.26
+N1C([H])=C([H])N=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 0.65
+======= Basic site on atom 1  has pKa value = 0.65
+N1C([H])=NC([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 1.23
+======= Basic site on atom 1  has pKa value = 1.23
+N1=C([H])C([H])=C([H])C([H])=N1
+======= Basic site on atom 0  has pKa value = 2.24
+======= Basic site on atom 1  has pKa value = 2.24
+O=C1N([H])C([H])=C([H])C(N1[H])=O
+======= Basic site on atom 2  has pKa value = 9.45
+O=C1C([H])([H])C(N([H])C(N1[H])=O)=O
+======= Acid site on atom 3  has pKa value = 4.01
+======= Acid site on atom 4  has pKa value = 4.01
+O([H])C1(C(=O)O[H])C(N([H])C(N1[H])=O)=O
+======= Acid site on atom 2  has pKa value = 6.64
+======= Acid site on atom 6  has pKa value = 7.72
+[O-][N+](C1C([H])=C([H])N=C(N([H])[H])N=1)=O
+======= Basic site on atom 2  has pKa value = 0.35
+======= Basic site on atom 3  has pKa value = 3.45
+O([H])C(C#CC([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.62
+O([H])C(/C(/[H])=C(/[H])\C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.34
+======= Acid site on atom 1  has pKa value = 4.34
+O([H])C(/C(/[H])=C(\[H])/C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.34
+======= Acid site on atom 1  has pKa value = 4.34
+O([H])C(C([H])([H])C(C(=O)O[H])=O)=O
+======= Acid site on atom 0  has pKa value = 4.16
+======= Acid site on atom 2  has pKa value = 2.50
+N1([H])C([H])=C([H])C([H])=C1[H]
+======= Acid site on atom 0  has pKa value = 11.12
+======= Basic site on atom 0  has pKa value = -3.80
+O=C1C([H])([H])C([H])([H])C(N1[H])=O
+======= Acid site on atom 2  has pKa value = 9.62
+N1=C([H])C([H])=C([H])N=C1N([H])[H]
+======= Basic site on atom 0  has pKa value = 3.45
+======= Basic site on atom 1  has pKa value = 3.45
+N1C([H])=NC([H])=C([H])C=1N([H])[H]
+======= Basic site on atom 0  has pKa value = 5.71
+======= Basic site on atom 2  has pKa value = 1.23
+O=C1C(C([H])([H])[H])=NN([H])C(N1[H])=O
+======= Acid site on atom 2  has pKa value = 7.60
+N1(C([H])=NC([H])=C1[H])C([H])([H])[H]
+======= Basic site on atom 1  has pKa value = 6.95
+O=C1C([H])(N([H])C(N([H])[H])=O)N([H])C(N1[H])=O
+======= Acid site on atom 5  has pKa value = 8.96
+S(C1=NN=C(N([H])C(C([H])([H])[H])=O)S1)(N([H])[H])(=O)=O
+======= Acid site on atom 7  has pKa value = 7.20
+O([H])C(/C(/[H])=C(\[H])/C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.69
+O([H])C(C([H])([H])C([H])=C([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.34
+O([H])C(C1([H])C([H])([H])C1([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.83
+O=C(C(=O)O[H])C([H])([H])C([H])([H])[H]
+======= Acid site on atom 1  has pKa value = 2.50
+O=C(C([H])([H])[H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.60
+O([H])C(C([H])([H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.49
+======= Acid site on atom 1  has pKa value = 4.49
+O([H])C(C([H])(C(=O)O[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.57
+======= Acid site on atom 1  has pKa value = 4.57
+O([H])C([H])(C(=O)O[H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.52
+======= Acid site on atom 2  has pKa value = 4.44
+O([H])C([H])(C(=O)O[H])C([H])(C(=O)O[H])O[H]
+======= Acid site on atom 2  has pKa value = 2.96
+======= Acid site on atom 3  has pKa value = 2.96
+O([H])[C@@]([H])(C(=O)O[H])[C@@]([H])(C(=O)O[H])O[H]
+======= Acid site on atom 2  has pKa value = 2.96
+======= Acid site on atom 3  has pKa value = 2.96
+O([H])[C@@]([H])(C(=O)O[H])[C@]([H])(C(=O)O[H])O[H]
+======= Acid site on atom 2  has pKa value = 2.96
+======= Acid site on atom 3  has pKa value = 2.96
+O([H])C(C(=O)O[H])(C(C(=O)O[H])(O[H])O[H])O[H]
+======= Acid site on atom 4  has pKa value = 1.92
+======= Acid site on atom 5  has pKa value = 1.92
+ClC([H])(C(=O)O[H])C([H])([H])C([H])([H])[H]
+======= Acid site on atom 1  has pKa value = 2.86
+ClC([H])(C([H])([H])[H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.05
+ClC([H])([H])C([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.52
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C#N)=O
+======= Acid site on atom 0  has pKa value = 2.42
+O([H])C(C([H])([H])N([H])C(C([H])([H])[H])=O)=O
+======= Acid site on atom 0  has pKa value = 3.67
+O([H])C(C([H])([H])N([H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 2.98
+======= Acid site on atom 1  has pKa value = 2.98
+======= Basic site on atom 4  has pKa value = 9.89
+O=C1C([H])([H])N(C([H])([H])[H])C(N([H])[H])=N1
+======= Basic site on atom 2  has pKa value = 9.20
+N1C(N([H])[H])=NC(=C([H])C=1N([H])[H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 6.84
+======= Basic site on atom 1  has pKa value = 6.84
+O=C(C([H])([H])N([H])[H])N([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.59
+======= Basic site on atom 4  has pKa value = 8.13
+O([H])C(C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.83
+O([H])C(C([H])(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.84
+O([H])C([H])(C([H])([H])[H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.70
+O([H])C([H])([H])C([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 0  has pKa value = 14.60
+======= Acid site on atom 1  has pKa value = 4.72
+O(C([H])([H])C(=O)O[H])C([H])([H])C([H])([H])[H]
+======= Acid site on atom 1  has pKa value = 3.65
+N1([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 11.31
+O1C([H])([H])C([H])([H])N([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 1  has pKa value = 8.50
+O([H])C(C(C([H])([H])[H])(C([H])([H])[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.36
+======= Basic site on atom 2  has pKa value = 10.21
+O([H])C(C([H])([H])N(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.63
+======= Basic site on atom 2  has pKa value = 9.89
+O([H])C(C([H])(C([H])([H])C([H])([H])[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.29
+======= Basic site on atom 2  has pKa value = 9.83
+O([H])C(C([H])([H])C([H])([H])C([H])([H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.03
+======= Basic site on atom 2  has pKa value = 10.56
+S([H])C([H])([H])C([H])([H])C([H])(C(=O)O[H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 9.00
+======= Acid site on atom 1  has pKa value = 2.32
+======= Basic site on atom 3  has pKa value = 8.87
+O([H])C([H])([H])C([H])([H])[C@@]([H])(C(=O)O[H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 14.60
+======= Acid site on atom 1  has pKa value = 2.71
+======= Basic site on atom 3  has pKa value = 9.62
+O([H])C(C([H])([H])N(/C(=N/[H])/N([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.63
+======= Basic site on atom 4  has pKa value = 14.30
+N1([H])C([H])([H])C([H])([H])N([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 11.31
+======= Basic site on atom 1  has pKa value = 11.31
+O([H])C(C([H])(C([H])([H])C([H])([H])N([H])[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 1.85
+======= Basic site on atom 2  has pKa value = 9.33
+======= Basic site on atom 3  has pKa value = 10.60
+O([H])C([H])(C([H])([H])O[H])C([H])(C([H])([H])O[H])O[H]
+======= Acid site on atom 0  has pKa value = 13.90
+======= Acid site on atom 1  has pKa value = 13.90
+======= Acid site on atom 2  has pKa value = 13.50
+======= Acid site on atom 3  has pKa value = 13.50
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.60
+N([H])([H])C([H])(C([H])([H])[H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.56
+N([H])([H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.68
+N([H])(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.84
+O([H])C([H])([H])C(C([H])([H])O[H])(C([H])([H])O[H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 12.31
+======= Acid site on atom 1  has pKa value = 12.31
+======= Acid site on atom 2  has pKa value = 12.31
+======= Basic site on atom 3  has pKa value = 8.30
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 10.65
+======= Basic site on atom 1  has pKa value = 10.65
+BrC1=C([H])N=C([H])C([H])=C1[H]
+======= Basic site on atom 1  has pKa value = 2.84
+ClC1=C([H])C([H])=C([H])C([H])=N1
+======= Basic site on atom 1  has pKa value = 0.49
+ClC1=C([H])N=C([H])C([H])=C1[H]
+======= Basic site on atom 1  has pKa value = 2.81
+ClC1C([H])=C([H])N=C([H])C=1[H]
+======= Basic site on atom 1  has pKa value = 3.83
+FC1=C([H])C([H])=C([H])C([H])=N1
+======= Basic site on atom 1  has pKa value = -0.44
+[O-][N+](C1C([H])=C([H])N=C([H])C=1[H])=O
+======= Basic site on atom 3  has pKa value = 1.61
+N1([H])C([H])=NC2C1=C([H])N=C([H])N=2
+======= Basic site on atom 0  has pKa value = 6.60
+======= Basic site on atom 1  has pKa value = 8.20
+======= Basic site on atom 2  has pKa value = 4.05
+O=C1C2=C(N=C([H])N2[H])N([H])C([H])=N1
+======= Basic site on atom 3  has pKa value = 8.70
+O=C1C2=C([H])N([H])N([H])C2=NC([H])=N1
+======= Basic site on atom 3  has pKa value = 10.20
+O=C1C2=C(N([H])C(N1[H])=O)N([H])C(N2[H])=O
+======= Acid site on atom 6  has pKa value = 3.89
+S1C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.49
+S1C([H])=C([H])C(C(=O)O[H])=C1[H]
+======= Acid site on atom 1  has pKa value = 4.10
+O1C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.16
+O1C([H])=C([H])C(C(=O)O[H])=C1[H]
+======= Acid site on atom 1  has pKa value = 3.90
+N1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 5.23
+======= Acid site on atom 1  has pKa value = 14.90
+O=C1C([H])=C([H])C([H])=C([H])N1[H]
+======= Acid site on atom 1  has pKa value = 11.65
+======= Basic site on atom 1  has pKa value = 0.75
+O([H])C1=C([H])N=C([H])C([H])=C1[H]
+======= Acid site on atom 0  has pKa value = 8.75
+======= Basic site on atom 1  has pKa value = 4.79
+O=C1C([H])=C([H])N([H])C([H])=C1[H]
+======= Acid site on atom 1  has pKa value = 11.12
+======= Basic site on atom 1  has pKa value = 3.20
+[O-][N+]1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 1  has pKa value = 0.79
+======= Acid site on atom 6  has pKa value = 14.90
+O([H])C(C1=C([H])C([H])=C([H])N1[H])=O
+======= Acid site on atom 0  has pKa value = 4.45
+======= Basic site on atom 2  has pKa value = 2.23
+O([H])C(C1C([H])=C([H])N([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 5.00
+O=C(C1C([H])=NC([H])=C([H])N=1)N([H])[H]
+======= Basic site on atom 1  has pKa value = 0.50
+======= Basic site on atom 2  has pKa value = 5.19
+======= Acid site on atom 3  has pKa value = 13.00
+N1([H])C([H])=NC2C1=C(N([H])[H])N=C([H])N=2
+======= Basic site on atom 1  has pKa value = 8.20
+======= Basic site on atom 2  has pKa value = 4.05
+======= Basic site on atom 3  has pKa value = 3.70
+O=C1C2=C(N=C([H])N2[H])N([H])C(N([H])[H])=N1
+======= Basic site on atom 3  has pKa value = 8.70
+N1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Basic site on atom 0  has pKa value = 6.82
+N1=C([H])C([H])=C([H])C(=C1[H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 6.04
+======= Basic site on atom 1  has pKa value = 3.74
+N([H])([H])C1C([H])=C([H])N=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 3.75
+======= Basic site on atom 1  has pKa value = 9.11
+N1C([H])=C([H])N=C([H])C=1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 1.45
+======= Basic site on atom 1  has pKa value = 5.19
+O=C1C(C([H])([H])[H])=C([H])N([H])C(N1[H])=O
+======= Acid site on atom 2  has pKa value = 9.94
+O([H])C(C1(C(=O)O[H])C([H])([H])C1([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.93
+======= Acid site on atom 1  has pKa value = 2.93
+O([H])C(/C(=C(\[H])/C(=O)O[H])/C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 3.50
+======= Acid site on atom 1  has pKa value = 4.31
+O([H])C(C([H])([H])C(=C([H])[H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.16
+======= Acid site on atom 1  has pKa value = 3.50
+O([H])C(C([H])([H])C([H])([H])C(C(=O)O[H])=O)=O
+======= Acid site on atom 0  has pKa value = 4.49
+======= Acid site on atom 3  has pKa value = 2.50
+O1C(N([H])C(C1(C([H])([H])[H])C([H])([H])[H])=O)=O
+======= Acid site on atom 3  has pKa value = 6.13
+O=C1C([H])([H])C([H])([H])[C@@]([H])(C(=O)O[H])N1[H]
+======= Acid site on atom 1  has pKa value = 3.32
+N1C([H])=C(C([H])=C([H])C=1N([H])[H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 6.48
+======= Basic site on atom 1  has pKa value = 3.74
+N([H])(C([H])([H])[H])C1C([H])=NC([H])=C([H])N=1
+======= Basic site on atom 1  has pKa value = 3.39
+======= Basic site on atom 2  has pKa value = 5.19
+O(/C(=C(\[H])/[N+]#N)/[O-])C([H])([H])[C@@]([H])(C(=O)O[H])N([H])[H]
+======= Acid site on atom 1  has pKa value = 2.23
+======= Basic site on atom 4  has pKa value = 8.55
+N1([H])C(C([H])([H])[H])=NC([H])=C1C([H])([H])[H]
+======= Basic site on atom 1  has pKa value = 8.36
+S(C1=NN(C([H])([H])[H])/C(=N/C(C([H])([H])[H])=O)/S1)(N([H])[H])(=O)=O
+======= Acid site on atom 7  has pKa value = 7.30
+O([H])C(C([H])([H])C([H])=C([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.51
+O([H])C(C(C(=O)O[H])(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 3.15
+======= Acid site on atom 1  has pKa value = 3.15
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.76
+======= Acid site on atom 1  has pKa value = 4.76
+O([H])C(C([H])(C([H])([H])[H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.40
+======= Acid site on atom 1  has pKa value = 4.44
+O([H])C([C@]1([H])C([H])([H])C([H])([H])C([H])([H])N1[H])=O
+======= Acid site on atom 0  has pKa value = 1.95
+======= Basic site on atom 2  has pKa value = 10.64
+O=C(C([H])([H])N([H])[H])C([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.05
+======= Basic site on atom 3  has pKa value = 8.90
+O([H])[C@@]1([H])C([H])([H])N([H])[C@]([H])(C(=O)O[H])C1([H])[H]
+======= Acid site on atom 0  has pKa value = 14.15
+======= Acid site on atom 1  has pKa value = 1.82
+======= Basic site on atom 3  has pKa value = 9.66
+N1([H])C([H])=NC([H])=C1C([H])([H])C([H])([H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 10.42
+O([H])C([C@]([H])(C([H])([H])[H])N([H])C(C([H])([H])N([H])[H])=O)=O
+======= Acid site on atom 0  has pKa value = 3.15
+======= Basic site on atom 4  has pKa value = 8.41
+O([H])C([H])([H])C([H])(C(=O)O[H])N([H])C(C([H])([H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 12.81
+======= Acid site on atom 1  has pKa value = 2.98
+======= Basic site on atom 5  has pKa value = 8.41
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.83
+O([H])C(C([H])(C([H])([H])[H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.80
+O([H])C(C([H])([H])C([H])(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.77
+O([H])C(C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 5.03
+O1C([H])(C([H])([H])[C@@]([H])([C@@]1([H])C([H])([H])O[H])O[H])O[H]
+======= Acid site on atom 1  has pKa value = 13.90
+======= Acid site on atom 2  has pKa value = 12.61
+======= Acid site on atom 3  has pKa value = 12.67
+O([H])[C@]([H])([C@@]([H])(C([H])=O)O[H])[C@]([H])(C([H])([H])O[H])O[H]
+======= Acid site on atom 1  has pKa value = 13.90
+======= Acid site on atom 2  has pKa value = 12.22
+======= Acid site on atom 3  has pKa value = 13.50
+O1C([H])([H])[C@]([H])([C@@]([H])([C@]([H])(C1([H])O[H])O[H])O[H])O[H]
+======= Acid site on atom 3  has pKa value = 13.90
+======= Acid site on atom 4  has pKa value = 12.14
+N1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 11.12
+N1(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 10.46
+O1C([H])([H])C([H])([H])N(C([H])([H])[H])C([H])([H])C1([H])[H]
+======= Basic site on atom 1  has pKa value = 7.38
+O([H])C(C([H])(C([H])([H])C([H])([H])C([H])([H])[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.34
+======= Basic site on atom 2  has pKa value = 9.77
+O([H])C([C@]([H])(C([H])([H])C([H])([H])C([H])([H])[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.34
+======= Basic site on atom 2  has pKa value = 9.77
+O([H])C(C([H])([H])N([H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.35
+======= Basic site on atom 2  has pKa value = 10.19
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+======= Basic site on atom 2  has pKa value = 10.77
+[O-]C(C([H])([H])[N+](C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 1.83
+O=C(N(C([H])([H])[H])C([H])([H])[H])N(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 1  has pKa value = 12.00
+======= Basic site on atom 2  has pKa value = 12.00
+O([H])C([C@]([H])(C([H])([H])C([H])([H])C([H])([H])N([H])[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.09
+======= Basic site on atom 2  has pKa value = 9.76
+======= Basic site on atom 3  has pKa value = 10.64
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.63
+N([H])([H])C([H])(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.59
+N([H])([H])C([H])([H])C([H])([H])C([H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.60
+N([H])([H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.85
+N(C([H])([H])[H])(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.15
+N(C([H])([H])[H])(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.35
+O([H])C([H])([H])C([H])([H])[N+](C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 13.90
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+======= Basic site on atom 1  has pKa value = 10.64
+ClC1C(C(=O)O[H])=NC(=C(C=1N([H])[H])Cl)Cl
+======= Acid site on atom 3  has pKa value = 3.60
+======= Basic site on atom 6  has pKa value = 6.94
+O([H])C1C(=C([H])C(=C([H])C=1[N+](=O)[O-])[N+](=O)[O-])[N+](=O)[O-]
+======= Acid site on atom 0  has pKa value = 0.42
+ClC1C(=C([H])C([H])=C([H])C=1O[H])Cl
+======= Acid site on atom 2  has pKa value = 7.44
+O([H])C1C([H])=C([H])C(=C([H])C=1[N+](=O)[O-])[N+](=O)[O-]
+======= Acid site on atom 0  has pKa value = 4.07
+O([H])C1C([H])=C(C([H])=C([H])C=1[N+](=O)[O-])[N+](=O)[O-]
+======= Acid site on atom 0  has pKa value = 5.15
+N1C([H])=C([H])N=C2C=1C([H])=NC([H])=N2
+======= Basic site on atom 0  has pKa value = 4.86
+======= Basic site on atom 2  has pKa value = 4.05
+BrC1=C([H])C([H])=C([H])C([H])=C1O[H]
+======= Acid site on atom 1  has pKa value = 8.45
+BrC1=C([H])C([H])=C([H])C(=C1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.03
+BrC1C([H])=C([H])C(=C([H])C=1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.37
+BrC1C([H])=C(C([H])=C(C=1[H])N([H])[H])Br
+======= Basic site on atom 2  has pKa value = 2.34
+ClC1=C([H])C([H])=C([H])C([H])=C1O[H]
+======= Acid site on atom 1  has pKa value = 8.56
+ClC1=C([H])C([H])=C([H])C(=C1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.12
+ClC1C([H])=C([H])C(=C([H])C=1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.41
+ClC1C([H])=C(C([H])=C([H])C=1N([H])[H])Cl
+======= Basic site on atom 2  has pKa value = 2.05
+FC1=C([H])C([H])=C([H])C([H])=C1O[H]
+======= Acid site on atom 1  has pKa value = 8.73
+FC1=C([H])C([H])=C([H])C(=C1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.29
+FC1C([H])=C([H])C(=C([H])C=1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.89
+IC1=C([H])C([H])=C([H])C([H])=C1O[H]
+======= Acid site on atom 1  has pKa value = 8.51
+IC1=C([H])C([H])=C([H])C(=C1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.03
+IC1C([H])=C([H])C(=C([H])C=1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.33
+O=C([H])C1=C([H])C([H])=C([H])C([H])=N1
+======= Basic site on atom 1  has pKa value = 12.68
+O=C([H])C1C([H])=C([H])N=C([H])C=1[H]
+======= Basic site on atom 1  has pKa value = 12.05
+[O-][N+](C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 8  has pKa value = 14.90
+O([H])C(C1=C([H])C([H])=C([H])C([H])=N1)=O
+======= Acid site on atom 0  has pKa value = 0.99
+======= Basic site on atom 2  has pKa value = 5.39
+O([H])C(C1=C([H])N=C([H])C([H])=C1[H])=O
+======= Acid site on atom 0  has pKa value = 2.00
+======= Basic site on atom 2  has pKa value = 4.82
+O([H])C(C1C([H])=C([H])N=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 1.77
+======= Basic site on atom 2  has pKa value = 4.84
+O([H])C1=C([H])C([H])=C([H])C([H])=C1[N+](=O)[O-]
+======= Acid site on atom 0  has pKa value = 7.23
+O([H])C1=C([H])C([H])=C([H])C(=C1[H])[N+](=O)[O-]
+======= Acid site on atom 0  has pKa value = 8.36
+O([H])C1C([H])=C([H])C(=C([H])C=1[H])[N+](=O)[O-]
+======= Acid site on atom 0  has pKa value = 7.15
+N1=C2C([H])=C([H])C([H])=C([H])C2=NN1[H]
+======= Basic site on atom 0  has pKa value = 1.60
+======= Basic site on atom 1  has pKa value = 1.60
+O=C1C2C(=NC([H])=C([H])N=2)N([H])C(N([H])[H])=N1
+======= Basic site on atom 3  has pKa value = 2.27
+======= Basic site on atom 4  has pKa value = 4.88
+O=C1C2=C(N=C([H])C(N2[H])=O)N([H])C(N([H])[H])=N1
+BrC1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Basic site on atom 1  has pKa value = 2.53
+BrC1=C([H])C([H])=C([H])C(=C1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.53
+BrC1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.89
+ClC1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Basic site on atom 1  has pKa value = 2.66
+ClC1=C([H])C([H])=C([H])C(=C1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.52
+ClC1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.98
+FC1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.20
+FC1=C([H])C([H])=C([H])C(=C1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.59
+FC1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 4.65
+IC1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Basic site on atom 1  has pKa value = 2.54
+IC1=C([H])C([H])=C([H])C(=C1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.58
+IC1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.81
+O=C(C1=C([H])N=C([H])C([H])=C1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.30
+======= Acid site on atom 2  has pKa value = 13.00
+O=N/C(/[H])=C1\C([H])=C([H])C([H])=C([H])N\1[H]
+======= Basic site on atom 1  has pKa value = 3.59
+[O-][N+](C1=C([H])C([H])=C([H])C([H])=C1N([H])[H])=O
+======= Basic site on atom 3  has pKa value = -0.25
+[O-][N+](C1=C([H])C([H])=C([H])C(=C1[H])N([H])[H])=O
+======= Basic site on atom 3  has pKa value = 2.46
+[O-][N+](C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])=O
+======= Basic site on atom 3  has pKa value = 1.02
+O([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 9.99
+======= Acid site on atom 6  has pKa value = 14.90
+O([H])C1C([H])=C([H])C(=C([H])C=1[H])O[H]
+======= Acid site on atom 0  has pKa value = 9.09
+======= Acid site on atom 1  has pKa value = 9.09
+O([H])C1=C([H])C([H])=C([H])C([H])=C1O[H]
+======= Acid site on atom 0  has pKa value = 8.66
+======= Acid site on atom 1  has pKa value = 8.66
+O([H])C1C([H])=C([H])C([H])=C(C=1[H])O[H]
+======= Acid site on atom 0  has pKa value = 9.32
+======= Acid site on atom 1  has pKa value = 9.32
+S(C1C([H])=C([H])C([H])=C([H])C=1[H])(=O)O[H]
+======= Acid site on atom 1  has pKa value = 1.30
+======= Acid site on atom 8  has pKa value = 14.90
+S(C1C([H])=C([H])C([H])=C([H])C=1[H])(=O)(=O)O[H]
+======= Acid site on atom 1  has pKa value = 0.70
+======= Acid site on atom 9  has pKa value = 14.90
+O1C([H])=C(C(C([H])=C1C([H])([H])O[H])=O)O[H]
+======= Acid site on atom 2  has pKa value = 7.90
+S(C1=C([H])C([H])=C([H])C(=C1[H])O[H])(=O)(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.74
+======= Acid site on atom 2  has pKa value = 9.07
+S(C1C([H])=C([H])C(=C([H])C=1[H])O[H])(=O)(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.23
+======= Acid site on atom 2  has pKa value = 9.11
+O([H])C(C([H])([H])/C(/C(=O)O[H])=C(\[H])/C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.30
+======= Acid site on atom 1  has pKa value = 1.95
+======= Acid site on atom 4  has pKa value = 4.31
+O([H])C(C([H])([H])/C(/C(=O)O[H])=C(/[H])\C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.30
+======= Acid site on atom 1  has pKa value = 1.95
+======= Acid site on atom 4  has pKa value = 4.31
+S([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 6.62
+======= Acid site on atom 6  has pKa value = 14.90
+O([H])B(C1C([H])=C([H])C([H])=C([H])C=1[H])O[H]
+======= Acid site on atom 0  has pKa value = 8.83
+======= Acid site on atom 1  has pKa value = 8.83
+======= Acid site on atom 7  has pKa value = 14.90
+N([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 4.87
+======= Acid site on atom 6  has pKa value = 14.90
+N1=C([H])C([H])=C([H])C([H])=C1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 6.00
+N1=C([H])C([H])=C([H])C(=C1[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 5.70
+N1C([H])=C([H])C(C([H])([H])[H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 5.99
+O([H])C1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Acid site on atom 0  has pKa value = 9.97
+======= Basic site on atom 1  has pKa value = 4.78
+O([H])C1=C([H])C([H])=C([H])C(=C1[H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 9.82
+======= Basic site on atom 1  has pKa value = 4.37
+O([H])C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 10.30
+======= Basic site on atom 1  has pKa value = 5.48
+O(C([H])([H])[H])C1=C([H])C([H])=C([H])C([H])=N1
+======= Basic site on atom 1  has pKa value = 3.28
+O(C([H])([H])[H])C1=C([H])N=C([H])C([H])=C1[H]
+======= Basic site on atom 1  has pKa value = 4.78
+O(C([H])([H])[H])C1C([H])=C([H])N=C([H])C=1[H]
+======= Basic site on atom 1  has pKa value = 6.58
+S(C1=C([H])C([H])=C([H])C([H])=C1N([H])[H])(=O)(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.46
+======= Basic site on atom 4  has pKa value = 3.23
+S(C1=C([H])C([H])=C([H])C(=C1[H])N([H])[H])(=O)(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.74
+======= Basic site on atom 4  has pKa value = 3.83
+S(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])(=O)(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.23
+======= Basic site on atom 4  has pKa value = 2.65
+N([H])(C([H])([H])[H])C1=C([H])N=C([H])C([H])=C1[H]
+======= Basic site on atom 0  has pKa value = 4.85
+======= Basic site on atom 1  has pKa value = 9.65
+N([H])([H])C1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Basic site on atom 0  has pKa value = 3.23
+======= Basic site on atom 1  has pKa value = 3.23
+N([H])([H])C1C([H])=C([H])C([H])=C(C=1[H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 3.83
+======= Basic site on atom 1  has pKa value = 3.83
+N([H])([H])C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 3.69
+======= Basic site on atom 1  has pKa value = 3.69
+N([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 8.79
+======= Acid site on atom 7  has pKa value = 14.90
+O([H])C(/C(/[H])=C(\[H])/C(/[H])=C(\[H])/C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.76
+O=C1C([H])([H])C(C([H])([H])C([H])([H])C1([H])[H])=O
+======= Acid site on atom 5  has pKa value = 5.26
+O1C(C([H])([H])C(=O)OC1(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 7  has pKa value = 5.10
+O1C(C(=C([C@@]1([H])[C@]([H])(C([H])([H])O[H])O[H])O[H])O[H])=O
+======= Acid site on atom 1  has pKa value = 13.90
+======= Acid site on atom 3  has pKa value = 13.50
+======= Acid site on atom 4  has pKa value = 6.15
+O([H])C(C(=O)O[H])(C([H])([H])C(=O)O[H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.93
+======= Acid site on atom 3  has pKa value = 3.90
+======= Acid site on atom 4  has pKa value = 3.90
+O([H])C([H])(C(=O)O[H])C([H])(C(=O)O[H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.96
+======= Acid site on atom 2  has pKa value = 2.96
+======= Acid site on atom 4  has pKa value = 4.44
+O([H])C(C([H])([H])N(C([H])([H])C(=O)O[H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 2.63
+======= Acid site on atom 1  has pKa value = 2.63
+======= Acid site on atom 2  has pKa value = 2.63
+======= Basic site on atom 6  has pKa value = 10.70
+O([H])C(C([H])(C(=O)O[H])C([H])([H])[C@@]([H])(C(=O)O[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.96
+======= Acid site on atom 1  has pKa value = 2.96
+======= Acid site on atom 2  has pKa value = 2.33
+======= Basic site on atom 6  has pKa value = 9.90
+N1C(N([H])[H])=NC(C([H])([H])[H])=C([H])C=1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 4.82
+======= Basic site on atom 1  has pKa value = 4.82
+O([H])C(C1([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.99
+O(C(C([H])([H])C(C([H])([H])[H])=O)=O)C([H])([H])C([H])([H])[H]
+======= Acid site on atom 3  has pKa value = 10.68
+O([H])C(C([H])([H])C([H])(C([H])([H])[H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.24
+======= Acid site on atom 1  has pKa value = 4.24
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+======= Acid site on atom 1  has pKa value = 4.78
+O([H])C(C1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N1[H])=O
+======= Acid site on atom 0  has pKa value = 2.28
+======= Basic site on atom 2  has pKa value = 10.72
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C(N([H])[H])=O)=O
+======= Acid site on atom 0  has pKa value = 4.78
+O([H])C([C@]([H])(C([H])([H])C([H])([H])C([H])([H])C(=O)O[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.09
+======= Acid site on atom 2  has pKa value = 4.57
+======= Basic site on atom 4  has pKa value = 9.77
+O=C(C([H])([H])N([H])C(C([H])([H])N([H])[H])=O)N([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 2  has pKa value = 3.59
+======= Basic site on atom 6  has pKa value = 8.13
+O([H])C([C@]([H])(C([H])([H])C(N([H])[H])=O)N([H])C(C([H])([H])N([H])[H])=O)=O
+======= Acid site on atom 0  has pKa value = 2.94
+======= Basic site on atom 6  has pKa value = 8.41
+N12C([H])([H])C([H])([H])N(C([H])([H])C1([H])[H])C([H])([H])C2([H])[H]
+======= Basic site on atom 0  has pKa value = 8.50
+======= Basic site on atom 1  has pKa value = 8.50
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+O([H])C(C([H])([H])C([H])([H])C([H])(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.84
+O1[C@]([H])(C([H])([H])O[H])[C@]([H])([C@@]([H])([C@]1(C([H])([H])O[H])O[H])O[H])O[H]
+======= Acid site on atom 4  has pKa value = 12.31
+======= Acid site on atom 5  has pKa value = 12.27
+O1[C@@]([H])([C@@]([H])([C@]([H])([C@@]([H])([C@@]1([H])C([H])([H])O[H])O[H])O[H])O[H])O[H]
+======= Acid site on atom 4  has pKa value = 12.08
+======= Acid site on atom 5  has pKa value = 12.46
+O1C([H])([C@]([H])([C@]([H])([C@@]([H])([C@@]1([H])C([H])([H])O[H])O[H])O[H])O[H])O[H]
+======= Acid site on atom 4  has pKa value = 12.08
+======= Acid site on atom 5  has pKa value = 12.46
+N([H])([H])C1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+N1(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 10.38
+N1(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C1([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.20
+O1C([H])([H])C([H])([H])N(C([H])([H])C([H])([H])[H])C([H])([H])C1([H])[H]
+======= Basic site on atom 1  has pKa value = 7.67
+O([H])C([C@]([H])(C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.09
+======= Basic site on atom 2  has pKa value = 9.83
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+======= Basic site on atom 2  has pKa value = 10.64
+O([H])C([H])([H])C([H])([H])N(C([H])([H])C(=O)O[H])C([H])([H])C([H])([H])O[H]
+======= Acid site on atom 0  has pKa value = 14.60
+======= Acid site on atom 1  has pKa value = 14.60
+======= Acid site on atom 2  has pKa value = 2.63
+======= Basic site on atom 4  has pKa value = 8.35
+O([H])C([C@]([H])(C([H])([H])C([H])([H])C([H])([H])N([H])C(N([H])[H])=O)N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.09
+======= Basic site on atom 4  has pKa value = 9.69
+N([H])([H])[C@]1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[C@]1([H])N([H])[H]
+N([H])([H])[C@]1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[C@@]1([H])N([H])[H]
+N1([H])C([H])([H])C([H])(C([H])([H])[H])N([H])C([H])([H])C1([H])C([H])([H])[H]
+O([H])[C@]([H])([C@@]([H])(C([H])([H])O[H])O[H])[C@@]([H])([C@@]([H])(C([H])([H])O[H])O[H])O[H]
+======= Acid site on atom 2  has pKa value = 13.90
+======= Acid site on atom 3  has pKa value = 13.90
+======= Acid site on atom 4  has pKa value = 13.50
+======= Acid site on atom 5  has pKa value = 13.50
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+N([H])(C([H])(C([H])([H])[H])C([H])([H])[H])C([H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 11.05
+N(C([H])([H])C([H])([H])[H])(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.75
+O([H])C([H])([H])C([H])([H])N(C([H])([H])C([H])([H])O[H])C([H])([H])C([H])([H])O[H]
+======= Acid site on atom 0  has pKa value = 14.60
+======= Acid site on atom 1  has pKa value = 14.60
+======= Acid site on atom 2  has pKa value = 14.60
+======= Basic site on atom 3  has pKa value = 7.76
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+======= Basic site on atom 1  has pKa value = 10.64
+N(C([H])([H])[H])(C([H])([H])[H])C([H])([H])C([H])([H])N(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 8.25
+======= Basic site on atom 1  has pKa value = 8.25
+[Si](C([H])([H])[H])(C([H])([H])[H])(C([H])([H])[H])N([H])[Si](C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 2  has pKa value = 7.55
+FC1C(=C(C(=C(C=1C(=O)O[H])F)F)F)F
+======= Acid site on atom 5  has pKa value = 1.75
+BrC1C([H])=C(C#N)C([H])=C(C=1O[H])Br
+======= Acid site on atom 2  has pKa value = 4.06
+O([H])C(C1C(=C([H])C(=C([H])C=1[N+](=O)[O-])[N+](=O)[O-])[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 0.65
+ClC1=C([H])C(=C(N=C1OC([H])([H])C(=O)O[H])Cl)Cl
+======= Acid site on atom 4  has pKa value = 2.68
+O([H])C(C1C([H])=C([H])C(=C([H])C=1[N+](=O)[O-])[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 1.43
+BrC1=C([H])C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.85
+BrC1=C([H])C([H])=C([H])C(C(=O)O[H])=C1[H]
+======= Acid site on atom 1  has pKa value = 3.81
+BrC1C([H])=C([H])C(C(=O)O[H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 4.27
+ClC1=C([H])C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.90
+ClC1=C([H])C([H])=C([H])C(C(=O)O[H])=C1[H]
+======= Acid site on atom 1  has pKa value = 3.84
+ClC1C([H])=C([H])C(C(=O)O[H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 4.27
+FC1=C([H])C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.27
+FC1=C([H])C([H])=C([H])C(C(=O)O[H])=C1[H]
+======= Acid site on atom 1  has pKa value = 3.86
+FC1C([H])=C([H])C(C(=O)O[H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 4.27
+FC(C1=C([H])C([H])=C([H])C([H])=C1O[H])(F)F
+======= Acid site on atom 3  has pKa value = 8.95
+FC(C1C([H])=C([H])C([H])=C(C=1[H])O[H])(F)F
+======= Acid site on atom 3  has pKa value = 8.68
+IC1=C([H])C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.86
+IC1=C([H])C([H])=C([H])C(C(=O)O[H])=C1[H]
+======= Acid site on atom 1  has pKa value = 3.87
+IC1C([H])=C([H])C(C(=O)O[H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 4.27
+O([H])C1=C([H])C([H])=C([H])C([H])=C1C#N
+======= Acid site on atom 0  has pKa value = 6.86
+O([H])C1=C([H])C([H])=C([H])C(C#N)=C1[H]
+======= Acid site on atom 0  has pKa value = 8.61
+O([H])C1C([H])=C([H])C(C#N)=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 7.97
+S1(C2=C([H])C([H])=C([H])C([H])=C2C(N1[H])=O)(=O)=O
+======= Acid site on atom 4  has pKa value = 4.57
+======= Basic site on atom 4  has pKa value = 11.68
+O([H])C(C1=C([H])C([H])=C([H])C([H])=C1[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 2.17
+O([H])C(C1C([H])=C([H])C([H])=C(C=1[H])[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 3.46
+O([H])C(C1C([H])=C([H])C(=C([H])C=1[H])[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 4.27
+O([H])C(C1C([H])=C([H])C([H])=NC=1C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 2.71
+======= Acid site on atom 1  has pKa value = 3.60
+======= Basic site on atom 4  has pKa value = 4.88
+O([H])C(C1C([H])=C([H])N=C(C(=O)O[H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 2.15
+======= Acid site on atom 1  has pKa value = 0.99
+======= Basic site on atom 4  has pKa value = 4.86
+O([H])C(C1C([H])=C([H])C([H])=C(C(=O)O[H])N=1)=O
+======= Acid site on atom 0  has pKa value = 0.99
+======= Acid site on atom 1  has pKa value = 0.99
+======= Basic site on atom 4  has pKa value = 5.48
+O([H])C(C1C([H])=NC([H])=C(C(=O)O[H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 2.80
+======= Acid site on atom 1  has pKa value = 2.80
+======= Basic site on atom 4  has pKa value = 6.15
+ClC1C([H])=C2C(=C([H])C=1S(N([H])[H])(=O)=O)S(N=C([H])N2[H])(=O)=O
+======= Basic site on atom 7  has pKa value = 6.85
+======= Acid site on atom 9  has pKa value = 9.42
+FC(C1C([H])=C([H])C([H])=C(C=1[H])N([H])[H])(F)F
+======= Basic site on atom 3  has pKa value = 3.49
+FC(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])(F)F
+======= Basic site on atom 3  has pKa value = 2.45
+N1([H])C([H])=NC2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 0  has pKa value = 6.60
+======= Basic site on atom 1  has pKa value = 5.53
+N([H])([H])C1=C([H])C([H])=C([H])C([H])=C1C#N
+======= Basic site on atom 0  has pKa value = 0.77
+N([H])([H])C1=C([H])C([H])=C([H])C(C#N)=C1[H]
+======= Basic site on atom 0  has pKa value = 2.75
+N([H])([H])C1C([H])=C([H])C(C#N)=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 1.74
+O=C([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 6  has pKa value = 14.90
+O([H])C(C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.20
+======= Acid site on atom 7  has pKa value = 14.90
+O([H])C1=C([H])C([H])=C([H])C([H])=C1C([H])=O
+======= Acid site on atom 0  has pKa value = 8.37
+O([H])C1=C([H])C([H])=C([H])C(C([H])=O)=C1[H]
+======= Acid site on atom 0  has pKa value = 8.98
+O([H])C1C([H])=C([H])C(C([H])=O)=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 7.61
+O([H])C1=C([H])C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 0  has pKa value = 9.82
+======= Acid site on atom 1  has pKa value = 3.25
+O([H])C1=C([H])C([H])=C([H])C(C(=O)O[H])=C1[H]
+======= Acid site on atom 0  has pKa value = 9.41
+======= Acid site on atom 1  has pKa value = 3.82
+O([H])C1C([H])=C([H])C(C(=O)O[H])=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 8.80
+======= Acid site on atom 1  has pKa value = 4.27
+O([H])C1C([H])=C(C([H])=C([H])C=1C(=O)O[H])O[H]
+======= Acid site on atom 0  has pKa value = 8.56
+======= Acid site on atom 1  has pKa value = 9.32
+======= Acid site on atom 2  has pKa value = 3.25
+O([H])C1C([H])=C([H])C(=C([H])C=1C(=O)O[H])O[H]
+======= Acid site on atom 0  has pKa value = 9.82
+======= Acid site on atom 1  has pKa value = 9.80
+======= Acid site on atom 2  has pKa value = 2.97
+O([H])C1=C(C([H])=C([H])C(C(=O)O[H])=C1[H])O[H]
+======= Acid site on atom 0  has pKa value = 8.77
+======= Acid site on atom 1  has pKa value = 8.66
+======= Acid site on atom 2  has pKa value = 3.82
+O([H])C1C([H])=C(C([H])=C(C(=O)O[H])C=1[H])O[H]
+======= Acid site on atom 0  has pKa value = 9.19
+======= Acid site on atom 1  has pKa value = 9.19
+======= Acid site on atom 2  has pKa value = 4.04
+O([H])C1C([H])=C(C([H])=C(C=1C(=O)O[H])O[H])O[H]
+======= Acid site on atom 0  has pKa value = 8.56
+======= Acid site on atom 1  has pKa value = 8.56
+======= Acid site on atom 2  has pKa value = 9.19
+======= Acid site on atom 3  has pKa value = 1.68
+O([H])C1C(=C([H])C(C(=O)O[H])=C([H])C=1O[H])O[H]
+======= Acid site on atom 0  has pKa value = 8.11
+======= Acid site on atom 1  has pKa value = 8.56
+======= Acid site on atom 2  has pKa value = 8.56
+======= Acid site on atom 3  has pKa value = 4.41
+O=C(C1C([H])=C([H])C([H])=C([H])C=1[H])N([H])[H]
+======= Acid site on atom 1  has pKa value = 13.00
+======= Acid site on atom 7  has pKa value = 14.90
+O([H])C(C1=C([H])C([H])=C([H])C([H])=C1N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.17
+======= Basic site on atom 2  has pKa value = 4.85
+O([H])C(C1C([H])=C([H])C([H])=C(C=1[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 3.07
+======= Basic site on atom 2  has pKa value = 4.79
+O([H])C(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.27
+======= Basic site on atom 2  has pKa value = 3.91
+O([H])C1C([H])=C(C([H])=C([H])C=1C(=O)O[H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 8.56
+======= Acid site on atom 1  has pKa value = 3.25
+======= Basic site on atom 3  has pKa value = 3.83
+ClC1C([H])=C2C(=C([H])C=1S(N([H])[H])(=O)=O)S(N([H])C([H])([H])N2[H])(=O)=O
+======= Acid site on atom 9  has pKa value = 9.42
+O=C1C2=C(N=C([H])N2C([H])([H])[H])N(C([H])([H])[H])C(N1[H])=O
+======= Acid site on atom 4  has pKa value = 7.89
+O=C1C2=C(N=C([H])N2[H])N(C([H])([H])[H])C(N1C([H])([H])[H])=O
+======= Basic site on atom 5  has pKa value = 8.77
+O([H])C1=C([H])C([H])=C([H])C([H])=C1C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 10.29
+O([H])C1=C([H])C([H])=C([H])C(C([H])([H])[H])=C1[H]
+======= Acid site on atom 0  has pKa value = 10.09
+O([H])C1C([H])=C([H])C(C([H])([H])[H])=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 10.26
+S(C([H])([H])[H])C1C([H])=C([H])C(=C([H])C=1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.53
+O(C([H])([H])[H])C1=C([H])C([H])=C([H])C([H])=C1O[H]
+======= Acid site on atom 1  has pKa value = 9.98
+O(C([H])([H])[H])C1=C([H])C([H])=C([H])C(=C1[H])O[H]
+======= Acid site on atom 1  has pKa value = 9.65
+O(C([H])([H])[H])C1C([H])=C([H])C(=C([H])C=1[H])O[H]
+======= Acid site on atom 1  has pKa value = 10.21
+S([H])C([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 9.43
+======= Acid site on atom 7  has pKa value = 14.90
+N([H])([H])C([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 9.34
+======= Acid site on atom 7  has pKa value = 14.90
+N([H])([H])C1=C([H])C([H])=C([H])C([H])=C1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 4.45
+N([H])([H])C1=C([H])C([H])=C([H])C(C([H])([H])[H])=C1[H]
+======= Basic site on atom 0  has pKa value = 4.71
+N([H])([H])C1C([H])=C([H])C(C([H])([H])[H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 5.08
+N([H])(C([H])([H])[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 4.85
+======= Acid site on atom 6  has pKa value = 14.90
+N1=C([H])C([H])=C([H])C([H])=C1C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 5.89
+N1=C([H])C([H])=C([H])C(C([H])([H])[H])=C1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 6.57
+N1C([H])=C([H])C(C([H])([H])[H])=C([H])C=1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 6.99
+N1C([H])=C(C([H])([H])[H])C([H])=C([H])C=1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 6.40
+N1C(C([H])([H])[H])=C([H])C([H])=C([H])C=1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 4.65
+N1C([H])=C([H])C(C([H])([H])[H])=C(C=1[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 6.46
+N1C([H])=C(C([H])([H])[H])C([H])=C(C=1[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 6.15
+O(C([H])([H])[H])C1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Basic site on atom 1  has pKa value = 4.53
+O(C([H])([H])[H])C1=C([H])C([H])=C([H])C(=C1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 4.20
+O(C([H])([H])[H])C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 5.28
+S(C([H])([H])[H])C1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Basic site on atom 1  has pKa value = 3.45
+S(C([H])([H])[H])C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 4.35
+N(C([H])([H])[H])(C([H])([H])[H])C1=NC([H])=C2C(N=C([H])N2[H])=N1
+======= Basic site on atom 1  has pKa value = 6.60
+======= Basic site on atom 4  has pKa value = 8.20
+O([H])C([C@]([H])(C([H])([H])C1=C([H])N(C([H])([H])[H])C([H])=N1)N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 1.69
+======= Basic site on atom 4  has pKa value = 9.15
+O([H])C([C@]([H])(C([H])([H])C1=C([H])N=C([H])N1C([H])([H])[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 1.92
+======= Basic site on atom 3  has pKa value = 9.15
+O([H])C(C1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.91
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+======= Acid site on atom 1  has pKa value = 4.78
+O([H])C(C([H])(C(=O)O[H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.96
+======= Acid site on atom 1  has pKa value = 2.96
+O(C([H])([H])C([H])([H])[H])C(C([H])([H])C([H])([H])C([H])(C(=O)O[H])N([H])[H])=O
+======= Acid site on atom 1  has pKa value = 3.01
+======= Basic site on atom 4  has pKa value = 7.84
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+O1[C@@]([H])([C@@]([H])([C@]([H])([C@@]([H])([C@@]1([H])C([H])([H])O[H])O[H])O[H])O[H])OC([H])([H])[H]
+======= Acid site on atom 5  has pKa value = 13.71
+N1(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 10.45
+N1(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.22
+O([H])[C@]([H])(C([H])([H])C(=O)[O-])C([H])([H])[N+](C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 14.15
+======= Acid site on atom 1  has pKa value = 3.80
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+N([H])([H])C([H])(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.70
+O([H])C(C1=C([H])C([H])=C([H])C(C#N)=C1[H])=O
+======= Acid site on atom 0  has pKa value = 3.60
+O([H])C(C1C([H])=C([H])C(C#N)=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.27
+N1C2=C([H])C([H])=C([H])C([H])=C2C([H])=C([H])N=1
+======= Basic site on atom 0  has pKa value = 2.37
+N1=C([H])N=C([H])C2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 0  has pKa value = 3.43
+N1=C([H])C([H])=NC2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 0  has pKa value = 0.56
+======= Basic site on atom 1  has pKa value = 0.56
+N1=C([H])C2=C([H])C([H])=C([H])C([H])=C2C([H])=N1
+======= Basic site on atom 0  has pKa value = 3.47
+======= Basic site on atom 1  has pKa value = 3.47
+O1C(=C([H])C([H])=C1/C(/[H])=N/N1C(N([H])C(C1([H])[H])=O)=O)[N+](=O)[O-]
+======= Acid site on atom 6  has pKa value = 7.20
+O([H])C(C1=C([H])C([H])=C([H])C(C([H])=O)=C1[H])=O
+======= Acid site on atom 0  has pKa value = 3.84
+O([H])C(C1C([H])=C([H])C(C([H])=O)=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.27
+O([H])C(C1=C([H])C([H])=C([H])C([H])=C1C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 3.58
+======= Acid site on atom 1  has pKa value = 3.58
+O([H])C(C1C([H])=C([H])C([H])=C(C(=O)O[H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 3.82
+======= Acid site on atom 1  has pKa value = 3.82
+O([H])C(C1C([H])=C([H])C(C(=O)O[H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.27
+======= Acid site on atom 1  has pKa value = 4.27
+ClC1C([H])=C([H])C(=C([H])C=1[H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.12
+ClC1=C([H])C([H])=C([H])C(=C1[H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.05
+ClC1=C([H])C([H])=C([H])C([H])=C1C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.07
+ClC1=C([H])C([H])=C([H])C([H])=C1OC([H])([H])C(=O)O[H]
+======= Acid site on atom 2  has pKa value = 3.18
+ClC1=C([H])C([H])=C([H])C(=C1[H])OC([H])([H])C(=O)O[H]
+======= Acid site on atom 2  has pKa value = 3.07
+O([H])C(C([H])([H])C1=C([H])C([H])=C([H])C([H])=C1[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 4.00
+O([H])C(C([H])([H])C1C([H])=C([H])C([H])=C(C=1[H])[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 4.05
+O([H])C(C([H])([H])C1C([H])=C([H])C(=C([H])C=1[H])[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 4.12
+S1(C2C([H])=C(C(C(F)(F)F)=C([H])C=2N([H])C([H])([H])N1[H])S(N([H])[H])(=O)=O)(=O)=O
+======= Acid site on atom 11  has pKa value = 9.42
+N1([H])C(C([H])([H])[H])=NC2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 1  has pKa value = 6.19
+O([H])C(C1=C([H])C([H])=C([H])C([H])=C1C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 3.91
+O([H])C(C1C([H])=C([H])C([H])=C(C([H])([H])[H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.25
+O([H])C(C1C([H])=C([H])C(C([H])([H])[H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.27
+O([H])C(C([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.12
+======= Acid site on atom 8  has pKa value = 14.90
+O([H])C1=C([H])C([H])=C([H])C([H])=C1C(C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 10.06
+O([H])C1=C([H])C([H])=C([H])C(C(C([H])([H])[H])=O)=C1[H]
+======= Acid site on atom 0  has pKa value = 9.19
+O([H])C1C([H])=C([H])C(C(C([H])([H])[H])=O)=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 8.80
+O(C([H])([H])[H])C1=C([H])C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.08
+O(C([H])([H])[H])C1=C([H])C([H])=C([H])C(C(=O)O[H])=C1[H]
+======= Acid site on atom 1  has pKa value = 4.03
+O(C([H])([H])[H])C1C([H])=C([H])C(C(=O)O[H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 4.27
+O(C([H])([H])C(=O)O[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 3.07
+======= Acid site on atom 9  has pKa value = 14.90
+O([H])C([H])(C(=O)O[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 3.37
+======= Acid site on atom 9  has pKa value = 14.90
+O([H])C1C([H])=C([H])C(=C([H])C=1C([H])([H])C(=O)O[H])O[H]
+======= Acid site on atom 0  has pKa value = 8.56
+======= Acid site on atom 1  has pKa value = 10.48
+======= Acid site on atom 2  has pKa value = 4.40
+O=C(C([H])([H])[H])N([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 1  has pKa value = 0.50
+======= Acid site on atom 7  has pKa value = 14.90
+O([H])C(C1=C([H])C([H])=C([H])C([H])=C1N([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 5.34
+======= Basic site on atom 2  has pKa value = 3.67
+O([H])C(C1C([H])=C([H])C([H])=C(C=1[H])N([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 5.10
+======= Basic site on atom 2  has pKa value = 4.85
+O([H])C(C1C([H])=C([H])C(=C([H])C=1[H])N([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.27
+======= Basic site on atom 2  has pKa value = 4.85
+O([H])C(C([H])([H])N([H])C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 1.83
+======= Basic site on atom 2  has pKa value = 4.39
+======= Acid site on atom 9  has pKa value = 14.90
+BrC1C([H])=C([H])C(=C([H])C=1[H])N(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 1  has pKa value = 4.23
+ClC1=C([H])C([H])=C([H])C(=C1[H])N(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 1  has pKa value = 3.83
+ClC1C([H])=C([H])C(=C([H])C=1[H])N(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 1  has pKa value = 4.39
+[O-][N+](C1=C([H])C([H])=C([H])C(=C1[H])N(C([H])([H])[H])C([H])([H])[H])=O
+======= Basic site on atom 2  has pKa value = 2.62
+N([H])(C([H])([H])C([H])([H])[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 5.12
+======= Acid site on atom 8  has pKa value = 14.90
+N(C([H])([H])[H])(C([H])([H])[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 5.07
+======= Acid site on atom 8  has pKa value = 14.90
+N([H])([H])C1C(C([H])([H])[H])=C([H])C([H])=C([H])C=1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 3.89
+N([H])([H])C([H])([H])C([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 10.18
+======= Acid site on atom 8  has pKa value = 14.90
+N1C(C([H])([H])[H])=C([H])C(C([H])([H])[H])=C([H])C=1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 7.43
+O(C([H])([H])C([H])([H])[H])C1=C([H])C([H])=C([H])C([H])=C1N([H])[H]
+======= Basic site on atom 1  has pKa value = 4.43
+O(C([H])([H])C([H])([H])[H])C1=C([H])C([H])=C([H])C(=C1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 4.18
+O(C([H])([H])C([H])([H])[H])C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 1  has pKa value = 5.28
+O([H])C1C([H])=C([H])C(=C([H])C=1[H])C([H])([H])C([H])([H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 8.53
+======= Basic site on atom 1  has pKa value = 10.18
+O(C([H])([H])[H])C([H])([H])C([H])([H])C1=C([H])C([H])=C([H])C([H])=N1
+======= Basic site on atom 1  has pKa value = 5.50
+O([H])C1=C(C([H])=C([H])C(=C1[H])C([H])([H])C([H])([H])N([H])[H])O[H]
+======= Acid site on atom 0  has pKa value = 8.90
+======= Acid site on atom 1  has pKa value = 8.66
+======= Basic site on atom 2  has pKa value = 10.60
+O([H])[C@@]([H])(C([H])([H])N([H])[H])C1C([H])=C([H])C(=C(C=1[H])O[H])O[H]
+======= Acid site on atom 1  has pKa value = 8.64
+======= Acid site on atom 2  has pKa value = 8.66
+======= Basic site on atom 3  has pKa value = 9.70
+O1[C@]([H])([C@@]([H])([C@@]([H])([C@@]1([H])C([H])([H])O[H])O[H])O[H])N1C(N([H])C(C([H])=N1)=O)=O
+======= Acid site on atom 3  has pKa value = 12.45
+======= Acid site on atom 8  has pKa value = 6.70
+======= Basic site on atom 8  has pKa value = 9.50
+N(=C(/N([H])[H])\N=C(/N([H])[H])\N([H])[H])/C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 10.77
+======= Basic site on atom 1  has pKa value = 11.52
+======= Acid site on atom 10  has pKa value = 14.90
+O=C1C(C(N([H])C(N1[H])=O)=O)(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])[H]
+======= Acid site on atom 3  has pKa value = 7.43
+======= Acid site on atom 4  has pKa value = 7.43
+O=C1C([H])([H])C(C([H])([H])C(C([H])([H])[H])(C([H])([H])[H])C1([H])[H])=O
+======= Acid site on atom 9  has pKa value = 5.15
+O(C([H])([H])[H])C(C1=C([H])C([H])([H])C([H])([H])N(C([H])([H])[H])C1([H])[H])=O
+======= Basic site on atom 2  has pKa value = 6.84
+S1C([H])(C([H])([H])C([H])([H])S1)C([H])([H])C([H])([H])C([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 2  has pKa value = 4.78
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+======= Acid site on atom 1  has pKa value = 4.78
+O([H])C1([H])C([H])([H])[C@@]2([H])C([H])([H])C([H])([H])[C@@]([H])(C1([H])[H])N2C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 14.15
+======= Basic site on atom 1  has pKa value = 3.80
+O([H])C1([H])C([H])([H])C2([H])C([H])([H])C([H])([H])C([H])(C1([H])[H])N2C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 14.15
+======= Basic site on atom 1  has pKa value = 3.80
+O([H])C([C@]([H])(C([H])([H])C([H])(C([H])([H])[H])C([H])([H])[H])N([H])C(C([H])([H])N([H])[H])=O)=O
+======= Acid site on atom 0  has pKa value = 3.18
+======= Basic site on atom 4  has pKa value = 8.41
+O=C(C([H])(C([H])([H])C([H])(C([H])([H])[H])C([H])([H])[H])N([H])[H])N([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.25
+======= Basic site on atom 3  has pKa value = 8.20
+S(C([H])([H])C([H])([H])C([H])(C(=O)O[H])N([H])[H])SC([H])([H])C([H])([H])C([H])(C(=O)O[H])N([H])[H]
+======= Acid site on atom 2  has pKa value = 2.13
+======= Acid site on atom 3  has pKa value = 2.13
+======= Basic site on atom 6  has pKa value = 9.27
+======= Basic site on atom 7  has pKa value = 9.27
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+O([H])C(C([H])(C([H])([H])C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.60
+N1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.90
+O([H])[C@]1([H])C([H])([H])N([H])[C@@]([H])(C([H])([H])C([H])([H])C([H])([H])[H])C([H])([H])C1([H])[H]
+======= Acid site on atom 0  has pKa value = 14.15
+======= Basic site on atom 1  has pKa value = 10.30
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+N([H])(C([H])([H])[H])C([H])(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.99
+N([H])(C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 11.25
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+======= Basic site on atom 1  has pKa value = 10.64
+BrC1C([H])=NC2=C([H])C([H])=C([H])C([H])=C2C=1[H]
+======= Basic site on atom 1  has pKa value = 2.69
+ClC1=C([H])C([H])=C([H])C([H])=C1/C(/[H])=C(\[H])/C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.36
+ClC1=C([H])C([H])=C([H])C(/C(/[H])=C(\[H])/C(=O)O[H])=C1[H]
+======= Acid site on atom 1  has pKa value = 4.34
+ClC1C([H])=C([H])C(/C(/[H])=C(\[H])/C(=O)O[H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 4.34
+N1=C([H])C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 0  has pKa value = 4.90
+N1C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C2C=1[H]
+======= Basic site on atom 0  has pKa value = 5.40
+O=C1C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C2N1[H]
+======= Basic site on atom 1  has pKa value = -0.31
+O([H])C1C([H])=NC2=C([H])C([H])=C([H])C([H])=C2C=1[H]
+======= Acid site on atom 0  has pKa value = 8.08
+======= Basic site on atom 1  has pKa value = 4.28
+O=C1C([H])=C([H])N([H])C2=C([H])C([H])=C([H])C([H])=C21
+======= Basic site on atom 1  has pKa value = 2.23
+O([H])C1C([H])=C([H])C2=C(C([H])=C([H])C([H])=N2)C=1[H]
+======= Acid site on atom 0  has pKa value = 8.90
+======= Basic site on atom 1  has pKa value = 5.15
+O([H])C1=C([H])C([H])=C([H])C2C([H])=C([H])C([H])=NC=21
+======= Acid site on atom 0  has pKa value = 9.81
+======= Basic site on atom 1  has pKa value = 4.91
+O([H])C1C([H])=C([H])C2C([H])=C([H])N=C([H])C=2C=1[H]
+======= Acid site on atom 0  has pKa value = 8.90
+======= Basic site on atom 1  has pKa value = 5.68
+O(C([H])([H])C(=O)O[H])C1=C([H])C([H])=C([H])C([H])=C1C#N
+======= Acid site on atom 1  has pKa value = 3.18
+O(C([H])([H])C(=O)O[H])C1C([H])=C([H])C(C#N)=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 3.07
+S(C1C2=C(N=C([H])N=1)N=C([H])N2[H])C1=C([N+](=O)[O-])N=C([H])N1C([H])([H])[H]
+======= Basic site on atom 7  has pKa value = 8.20
+======= Basic site on atom 9  has pKa value = 4.05
+N1=C(C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C12)N([H])[H]
+======= Basic site on atom 0  has pKa value = 7.34
+N1=C([H])C(=C([H])C2=C([H])C([H])=C([H])C([H])=C12)N([H])[H]
+======= Basic site on atom 0  has pKa value = 4.91
+======= Basic site on atom 1  has pKa value = 3.74
+N1=C([H])C([H])=C(C2=C([H])C([H])=C([H])C([H])=C12)N([H])[H]
+======= Basic site on atom 0  has pKa value = 9.17
+======= Basic site on atom 1  has pKa value = 4.14
+N1C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C2C=1N([H])[H]
+======= Basic site on atom 0  has pKa value = 7.62
+N1C(=C([H])C2=C([H])C([H])=C([H])C([H])=C2C=1[H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 5.05
+O([H])C(/C(/[H])=C(\[H])/C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.34
+======= Acid site on atom 8  has pKa value = 14.90
+O([H])C(/C(/[H])=C(/[H])\C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.34
+======= Acid site on atom 8  has pKa value = 14.90
+O([H])C(C(=C([H])[H])C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.35
+======= Acid site on atom 8  has pKa value = 14.90
+O(C(C([H])([H])[H])=O)C1=C([H])C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.51
+BrC1C(=C(C([H])=C(C=1[H])C([H])([H])[C@@]([H])(C(=O)O[H])N([H])[H])Br)O[H]
+======= Acid site on atom 2  has pKa value = 2.20
+======= Acid site on atom 3  has pKa value = 4.03
+======= Basic site on atom 5  has pKa value = 9.06
+ClC1=C([H])C([H])=C([H])C([H])=C1C([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.54
+ClC1=C([H])C([H])=C([H])C(=C1[H])C([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.58
+ClC1C([H])=C([H])C(=C([H])C=1[H])C([H])([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 4.58
+IC1C(=C(C([H])=C(C=1[H])C([H])([H])[C@@]([H])(C(=O)O[H])N([H])[H])I)O[H]
+======= Acid site on atom 2  has pKa value = 2.20
+======= Acid site on atom 3  has pKa value = 6.15
+======= Basic site on atom 5  has pKa value = 9.06
+O=C(C1C([H])=C([H])C([H])=C([H])C=1[H])N([H])C([H])([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.62
+======= Acid site on atom 11  has pKa value = 14.90
+O([H])C(C([H])([H])C([H])([H])C1=C([H])C([H])=C([H])C([H])=C1[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 4.54
+O([H])C(C([H])([H])C([H])([H])C1C([H])=C([H])C(=C([H])C=1[H])[N+](=O)[O-])=O
+======= Acid site on atom 0  has pKa value = 4.58
+O(C([H])([H])[H])C(N([H])C1=NC2=C([H])C([H])=C([H])C([H])=C2N1[H])=O
+======= Basic site on atom 3  has pKa value = 4.48
+S(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])(N([H])C1=NC([H])=C([H])S1)(=O)=O
+======= Acid site on atom 4  has pKa value = 7.20
+======= Basic site on atom 5  has pKa value = 2.65
+IC1=C(C([H])=C([H])C(=C1[H])C([H])([H])[C@@]([H])(C(=O)O[H])N([H])[H])O[H]
+======= Acid site on atom 1  has pKa value = 2.20
+======= Acid site on atom 2  has pKa value = 8.51
+======= Basic site on atom 4  has pKa value = 8.91
+N1([H])C2=C([H])C([H])=C([H])C([H])=C2N=C1C([H])([H])C([H])([H])[H]
+======= Basic site on atom 1  has pKa value = 6.18
+O([H])C(C1C([H])=C(C([H])([H])[H])C([H])=C(C([H])([H])[H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.32
+O([H])C(C([H])([H])C([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.58
+======= Acid site on atom 10  has pKa value = 14.90
+O([H])C(C([H])(C([H])([H])[H])C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.64
+======= Acid site on atom 10  has pKa value = 14.90
+O([H])C(C(=O)O[H])(C([H])([H])[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 3.47
+======= Acid site on atom 11  has pKa value = 14.90
+ClC([H])([H])C1([H])N([H])C2=C([H])C(=C(C([H])=C2S(N1C([H])([H])[H])(=O)=O)S(N([H])[H])(=O)=O)Cl
+======= Acid site on atom 10  has pKa value = 9.42
+N([H])(C([H])([H])C([H])=C([H])[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 4.17
+======= Acid site on atom 7  has pKa value = 14.90
+N([H])([H])C1([H])C2=C([H])C([H])=C([H])C([H])=C2C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 9.21
+O([H])C(C1C([H])=C([H])C(=C([H])C=1[H])N(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.27
+======= Basic site on atom 2  has pKa value = 11.49
+O(C([H])([H])C([H])([H])[H])C(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])=O
+======= Basic site on atom 2  has pKa value = 3.91
+O([H])C1=C(C([H])=C([H])C(=C1[H])C([H])([H])[C@@]([H])(C(=O)O[H])N([H])[H])O[H]
+======= Acid site on atom 0  has pKa value = 8.90
+======= Acid site on atom 1  has pKa value = 2.20
+======= Acid site on atom 2  has pKa value = 8.66
+======= Basic site on atom 4  has pKa value = 8.91
+O=C([C@]([H])(C([H])([H])C1C([H])=C([H])C(=C([H])C=1[H])O[H])N([H])[H])N([H])[H]
+======= Acid site on atom 1  has pKa value = 8.53
+======= Basic site on atom 2  has pKa value = 9.21
+N([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])C([H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 5.77
+======= Acid site on atom 9  has pKa value = 14.90
+O([H])[C@@]([H])(C([H])([H])N([H])C([H])([H])[H])C1C([H])=C([H])C(=C(C=1[H])O[H])O[H]
+======= Acid site on atom 1  has pKa value = 8.64
+======= Acid site on atom 2  has pKa value = 8.66
+======= Basic site on atom 3  has pKa value = 9.95
+P(=O)(O[H])(O[H])OC([H])([H])[C@]1([H])[C@]([H])([C@]([H])([C@]([H])(N2C([H])=C([H])C(N([H])C2=O)=O)O1)O[H])O[H]
+======= Acid site on atom 6  has pKa value = 6.30
+======= Acid site on atom 7  has pKa value = 6.30
+======= Acid site on atom 11  has pKa value = 6.70
+======= Basic site on atom 11  has pKa value = 9.50
+O1[C@]([H])(C([H])([H])O[H])[C@]([H])([C@]([H])([C@]1([H])N1C(N=C(C([H])=C1[H])N([H])[H])=O)O[H])O[H]
+======= Acid site on atom 3  has pKa value = 12.45
+======= Basic site on atom 6  has pKa value = 4.25
+Cl[H].O([H])[C@]([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])[C@@]([H])(C([H])([H])[H])N([H])[H]
+======= Basic site on atom 2  has pKa value = 9.44
+======= Acid site on atom 11  has pKa value = 14.90
+O=C1C(C(N([H])C(N1C([H])([H])[H])=O)=O)(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])[H]
+======= Acid site on atom 4  has pKa value = 8.45
+P(=O)(O[H])(O[H])O[C@]1([H])[C@@]([H])(C([H])([H])O[H])O[C@]([H])([C@]1([H])O[H])N1C(N=C(C([H])=C1[H])N([H])[H])=O
+======= Acid site on atom 4  has pKa value = 12.67
+======= Acid site on atom 5  has pKa value = 6.30
+======= Acid site on atom 6  has pKa value = 6.30
+======= Basic site on atom 10  has pKa value = 4.25
+O([H])C([C@]([H])(C([H])([H])C1=C([H])N=C([H])N1[H])N([H])C(C([H])([H])C([H])([H])N([H])[H])=O)=O
+======= Acid site on atom 0  has pKa value = 2.73
+======= Basic site on atom 6  has pKa value = 10.42
+S([H])C([H])([H])[C@@]([H])(C([H])([H])[H])C(N1C([H])([H])C([H])([H])C([H])([H])[C@@]1([H])C(=O)O[H])=O
+======= Acid site on atom 2  has pKa value = 2.96
+O([H])N1/C(=N/[H])/N=C(C([H])=C1N([H])[H])N1C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 5  has pKa value = 4.61
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+======= Acid site on atom 1  has pKa value = 4.78
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+N1(C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 10.47
+N1([H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C1(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 11.07
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+O([H])C(C1=C([H])C([H])=C([H])C2C([H])=C([H])C([H])=NC=21)=O
+======= Acid site on atom 0  has pKa value = 1.82
+======= Basic site on atom 2  has pKa value = 4.88
+O([H])C1=C([H])C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C21
+======= Acid site on atom 0  has pKa value = 9.39
+O([H])C1C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C2C=1[H]
+======= Acid site on atom 0  has pKa value = 9.63
+N([H])([H])C1=C([H])C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C21
+======= Basic site on atom 0  has pKa value = 3.92
+N([H])([H])C1C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C2C=1[H]
+======= Basic site on atom 0  has pKa value = 4.16
+N1=C(C([H])([H])[H])C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 0  has pKa value = 5.83
+N1=C([H])C([H])=C(C([H])([H])[H])C2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 0  has pKa value = 5.67
+N1=C([H])C([H])=C([H])C2C1=C([H])C([H])=C([H])C=2C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 5.20
+O([H])C1=C([H])C([H])=C([H])C2C(=C([H])C([H])=C([H])C=21)N([H])[H]
+======= Acid site on atom 0  has pKa value = 9.82
+======= Basic site on atom 1  has pKa value = 3.97
+O(C([H])([H])[H])C1C([H])=C([H])C2=C(C([H])=C([H])C([H])=N2)C=1[H]
+======= Basic site on atom 1  has pKa value = 5.03
+O([H])C(C([H])([H])C1=C([H])N([H])C2=C([H])C([H])=C([H])C([H])=C12)=O
+======= Acid site on atom 0  has pKa value = 4.75
+O([H])C(/C(/[H])=C(\[H])/C1=C([H])C([H])=C([H])C([H])=C1C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.36
+O([H])C(C([H])=C([H])C1C([H])=C([H])C([H])=C(C([H])([H])[H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.34
+O([H])C(C([H])=C([H])C1C([H])=C([H])C(C([H])([H])[H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.34
+N1([H])C([H])=C(C([H])([H])C([H])([H])N([H])[H])C2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 1  has pKa value = 10.65
+O([H])C1C([H])=C([H])C2=C(C=1[H])C(=C([H])N2[H])C([H])([H])C([H])([H])N([H])[H]
+======= Acid site on atom 0  has pKa value = 9.80
+======= Basic site on atom 2  has pKa value = 10.65
+O([H])C1=C(C([H])=C(C([H])=C1C([H])(C([H])([H])[H])C([H])([H])C([H])([H])[H])[N+](=O)[O-])[N+](=O)[O-]
+======= Acid site on atom 0  has pKa value = 4.62
+O1C([H])(C([H])([H])O[H])C([H])([H])C([H])([H])C1([H])N1C([H])=NC2C(N=C([H])N([H])C1=2)=O
+======= Acid site on atom 1  has pKa value = 12.81
+======= Basic site on atom 5  has pKa value = 9.12
+O([H])C1C([H])=C([H])C2=C(C=1[H])C([H])([H])C([H])([H])C([H])([H])C2([H])[H]
+======= Acid site on atom 0  has pKa value = 10.48
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.76
+======= Acid site on atom 11  has pKa value = 14.90
+O(C(C1C([H])=C(C(=C(C=1[H])O[H])O[H])O[H])=O)C([H])([H])C([H])([H])C([H])([H])[H]
+======= Acid site on atom 1  has pKa value = 8.56
+======= Acid site on atom 2  has pKa value = 8.56
+======= Acid site on atom 3  has pKa value = 8.11
+O1[C@]([H])(C([H])([H])O[H])[C@]([H])([C@]([H])([C@]1([H])N1C([H])=NC2=C(N([H])[H])N=C([H])N=C12)O[H])O[H]
+======= Acid site on atom 3  has pKa value = 12.45
+======= Basic site on atom 5  has pKa value = 9.12
+======= Basic site on atom 7  has pKa value = 3.70
+N1(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])[C@@]1([H])C1=C([H])N=C([H])C([H])=C1[H]
+======= Basic site on atom 0  has pKa value = 6.53
+======= Basic site on atom 1  has pKa value = 5.19
+P(=O)(O[H])(O[H])OC([H])([H])[C@]1([H])[C@]([H])([C@]([H])([C@]([H])(N2C([H])=NC3=C(N([H])[H])N=C([H])N=C23)O1)O[H])O[H]
+======= Acid site on atom 5  has pKa value = 6.30
+======= Acid site on atom 6  has pKa value = 6.30
+======= Basic site on atom 9  has pKa value = 9.12
+======= Basic site on atom 11  has pKa value = 3.70
+O([H])C1=C([H])C([H])=C([H])C([H])=C1C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 10.62
+O([H])C1=C([H])C([H])=C([H])C(=C1[H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 10.12
+O([H])C1C([H])=C([H])C(=C([H])C=1[H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Acid site on atom 0  has pKa value = 9.28
+N([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 7.00
+======= Acid site on atom 10  has pKa value = 14.90
+N(C1C([H])=C([H])C([H])=C([H])C=1[H])(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 6.57
+======= Acid site on atom 10  has pKa value = 14.90
+O([H])[C@@]([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])[C@@]([H])(C([H])([H])[H])N([H])C([H])([H])[H]
+======= Basic site on atom 1  has pKa value = 10.05
+======= Acid site on atom 11  has pKa value = 14.90
+O([H])[C@]([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])[C@]([H])(C([H])([H])[H])N([H])C([H])([H])[H]
+======= Basic site on atom 1  has pKa value = 10.05
+======= Acid site on atom 11  has pKa value = 14.90
+S([H])C([H])([H])[C@@]([H])(C(N([H])C([H])([H])C(=O)O[H])=O)N([H])C(C([H])([H])C([H])([H])[C@@]([H])(C(=O)O[H])N([H])[H])=O
+======= Acid site on atom 3  has pKa value = 3.01
+======= Acid site on atom 5  has pKa value = 3.25
+======= Basic site on atom 8  has pKa value = 8.75
+O([H])C([C@]([H])(C([H])([H])C([H])([H])C([H])([H])/N=C(\N([H])[H])/N([H])[C@]([H])(C(=O)O[H])C([H])([H])C(=O)O[H])N([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.09
+======= Acid site on atom 2  has pKa value = 2.84
+======= Acid site on atom 4  has pKa value = 4.44
+======= Basic site on atom 7  has pKa value = 9.58
+======= Basic site on atom 8  has pKa value = 9.76
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C(=O)O[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+======= Acid site on atom 1  has pKa value = 4.78
+N([H])([H])C1([H])C([H])([H])C2([H])C([H])([H])C([H])([H])C1(C([H])([H])[H])C2(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.17
+N([H])(C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])C1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 11.23
+N1(C([H])([H])[H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C1(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 11.25
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+N1([H])C([H])=NC2=C([H])C([H])=C([H])C3C([H])=C([H])C([H])=C1C=32
+======= Basic site on atom 0  has pKa value = 6.35
+======= Basic site on atom 1  has pKa value = 5.53
+O([H])C(C1=C([H])C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C21)=O
+======= Acid site on atom 0  has pKa value = 3.58
+O([H])C(C1C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C2C=1[H])=O
+======= Acid site on atom 0  has pKa value = 4.16
+N([H])(C([H])([H])[H])C1=C([H])C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C21
+======= Basic site on atom 0  has pKa value = 3.67
+IC1C(=C(C([H])=C(C=1C([H])([H])C([H])(C(=O)O[H])C([H])([H])C([H])([H])[H])I)I)N([H])[H]
+======= Acid site on atom 3  has pKa value = 4.80
+======= Basic site on atom 5  has pKa value = 6.94
+S(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])(N([H])C1C([H])=C([H])C(=NN=1)OC([H])([H])[H])(=O)=O
+======= Acid site on atom 4  has pKa value = 6.70
+======= Basic site on atom 6  has pKa value = 2.65
+S(C(F)(F)F)(N([H])C1C([H])=C(C(C([H])([H])[H])=C([H])C=1C([H])([H])[H])N([H])C(C([H])([H])[H])=O)(=O)=O
+======= Acid site on atom 7  has pKa value = 4.60
+O([H])C1([H])C2=C([H])C3=C(C([H])=C2C([H])([H])C([H])([H])N1C([H])([H])[H])OC([H])([H])O3
+======= Basic site on atom 3  has pKa value = 11.38
+S(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])(N([H])C1=C(C([H])([H])[H])C(C([H])([H])[H])=NO1)(=O)=O
+======= Acid site on atom 4  has pKa value = 5.00
+======= Basic site on atom 6  has pKa value = 2.65
+O=C1C([H])=C([H])C([H])=C2C3([H])C([H])([H])N([H])C([H])([H])C([H])(C([H])([H])N21)C3([H])[H]
+O([H])C(C1=C([H])C([H])=C([H])C([H])=C1C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 3.54
+O([H])C(C1C([H])=C([H])C([H])=C(C=1[H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.20
+O([H])C(C1C([H])=C([H])C(=C([H])C=1[H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.27
+O1C([C@@]([H])(C([H])([H])C([H])([H])[H])[C@]([H])(C1([H])[H])C([H])([H])C1=C([H])N=C([H])N1C([H])([H])[H])=O
+O1[C@]([H])(C([H])([H])O[H])[C@]([H])(C([H])([H])[C@]1([H])N1C([H])=NC2[C@@]([H])(C([H])([H])N=C([H])N([H])C1=2)O[H])O[H]
+======= Acid site on atom 1  has pKa value = 13.90
+======= Acid site on atom 2  has pKa value = 12.67
+======= Basic site on atom 7  has pKa value = 5.20
+N(C([H])([H])C([H])([H])[H])(C([H])([H])C([H])([H])[H])C1=C([H])C([H])=C([H])C([H])=C1C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 7.24
+O([H])C([H])(C1C([H])=C([H])C(=C(C=1[H])O[H])O[H])C([H])([H])N([H])C([H])(C([H])([H])[H])C([H])([H])[H]
+======= Acid site on atom 1  has pKa value = 8.64
+======= Acid site on atom 2  has pKa value = 8.66
+======= Basic site on atom 3  has pKa value = 8.64
+O1[C@]2([C@]([H])([C@]34[C@@]([H])([C@@]([H])([C@](C([H])([H])O[H])([C@@]1([H])[C@]3([H])[C@]([H])(N=C(N([H])[H])N4[H])O[H])O[H])O2)O[H])O[H])O[H]
+======= Acid site on atom 7  has pKa value = 12.31
+======= Basic site on atom 9  has pKa value = 8.76
+Cl[H].O([H])C([H])(C1C([H])=C(C([H])=C([H])C=1OC([H])([H])[H])OC([H])([H])[H])C([H])(C([H])([H])[H])N([H])[H]
+======= Basic site on atom 4  has pKa value = 9.20
+O=C1C(C(N([H])C(N1[H])=O)=O)(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])C([H])(C([H])([H])[H])C([H])([H])[H]
+======= Acid site on atom 3  has pKa value = 8.00
+======= Acid site on atom 4  has pKa value = 8.00
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+ClC1C([H])=C(C([H])=C(C=1O[H])SC1=C([H])C(=C([H])C(=C1O[H])Cl)Cl)Cl
+======= Acid site on atom 5  has pKa value = 6.15
+======= Acid site on atom 6  has pKa value = 6.15
+N1=C([H])C([H])=C([H])C2C([H])=C([H])C3C([H])=C([H])C([H])=NC=3C1=2
+======= Basic site on atom 0  has pKa value = 4.84
+======= Basic site on atom 1  has pKa value = 4.84
+N1C2=C([H])C([H])=C([H])C([H])=C2N=C2C([H])=C([H])C([H])=C([H])C=12
+======= Basic site on atom 0  has pKa value = 1.20
+======= Basic site on atom 1  has pKa value = 1.20
+O([H])C1=C([H])C([H])=C([H])C([H])=C1C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 10.01
+======= Acid site on atom 12  has pKa value = 14.90
+O([H])C1=C([H])C([H])=C([H])C(=C1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 9.64
+======= Acid site on atom 12  has pKa value = 14.90
+O([H])C1C([H])=C([H])C(=C([H])C=1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 0  has pKa value = 8.80
+======= Acid site on atom 12  has pKa value = 14.90
+N([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 0.79
+======= Acid site on atom 11  has pKa value = 14.90
+======= Acid site on atom 12  has pKa value = 14.90
+N([H])([H])C1=C([H])C([H])=C([H])C([H])=C1C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 3.83
+======= Acid site on atom 12  has pKa value = 14.90
+N([H])([H])C1=C([H])C([H])=C([H])C(=C1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 4.25
+======= Acid site on atom 12  has pKa value = 14.90
+N([H])([H])C1C([H])=C([H])C(=C([H])C=1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 3.91
+======= Acid site on atom 12  has pKa value = 14.90
+N1=C([H])C([H])=C([H])C([H])=C1C([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 5.13
+======= Acid site on atom 9  has pKa value = 14.90
+N(/C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])=N\C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 2  has pKa value = 2.82
+======= Acid site on atom 14  has pKa value = 14.90
+N([H])([H])C1C([H])=C([H])C(=C([H])C=1[H])C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 3.91
+======= Basic site on atom 1  has pKa value = 3.91
+O=C1C(C(N([H])C(N1[H])=O)=O)(C1C([H])=C([H])C([H])=C([H])C=1[H])C([H])([H])C([H])([H])[H]
+======= Acid site on atom 3  has pKa value = 7.72
+======= Acid site on atom 4  has pKa value = 7.72
+======= Acid site on atom 16  has pKa value = 14.90
+IC1=C(C(=C([H])C(=C1N(C(C([H])([H])[H])=O)C([H])([H])C([H])(C(=O)O[H])C([H])([H])[H])I)I)N([H])[H]
+======= Acid site on atom 3  has pKa value = 4.00
+======= Basic site on atom 7  has pKa value = 6.94
+N(C([H])([H])[H])(C([H])([H])[H])C1=C([H])C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 0  has pKa value = 4.83
+N(C([H])([H])[H])(C([H])([H])[H])C1C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C2C=1[H]
+======= Basic site on atom 0  has pKa value = 4.57
+S(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])(N([H])C1=NC(C([H])([H])[H])=C([H])C(C([H])([H])[H])=N1)(=O)=O
+======= Acid site on atom 3  has pKa value = 7.40
+======= Basic site on atom 6  has pKa value = 2.65
+S(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])(N([H])C1C([H])=C([H])N(C(N=1)=O)C([H])([H])C([H])([H])[H])(=O)=O
+======= Acid site on atom 5  has pKa value = 6.70
+======= Basic site on atom 6  has pKa value = 6.90
+======= Basic site on atom 7  has pKa value = 2.65
+O=C(C([H])([H])C([H])([H])[C@@]([H])(C(=O)[O-])[N+]([H])([H])[H])N([H])N([H])C1C([H])=C([H])C(C([H])([H])O[H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 3.40
+======= Basic site on atom 4  has pKa value = 8.86
+O([H])N1C(C(C([H])([H])C([H])(C([H])([H])[H])C([H])([H])[H])=NC([H])=C1C([H])(C([H])([H])[H])C([H])([H])C([H])([H])[H])=O
+======= Basic site on atom 2  has pKa value = 5.50
+S(C([H])([H])C1=C([H])SC(C([H])([H])N(C([H])([H])[H])C([H])([H])[H])=N1)C([H])([H])C([H])([H])N([H])/C(=C(\[H])/[N+](=O)[O-])/N([H])C([H])([H])[H]
+======= Basic site on atom 4  has pKa value = 9.89
+======= Basic site on atom 5  has pKa value = 2.10
+N([H])(C1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H])C1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 0  has pKa value = 10.40
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+N1C2=C([H])C([H])=C([H])C([H])=C2C([H])=C2C([H])=C([H])C([H])=C([H])C=12
+======= Basic site on atom 0  has pKa value = 5.58
+N1=C([H])C2=C([H])C([H])=C([H])C([H])=C2C2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 0  has pKa value = 5.58
+N1C2=C([H])C([H])=C([H])C([H])=C2C(=C2C([H])=C([H])C([H])=C([H])C=12)N([H])[H]
+======= Basic site on atom 0  has pKa value = 5.48
+======= Basic site on atom 1  has pKa value = 9.99
+N1([H])C(C2C([H])=C([H])C([H])=C([H])C=2[H])=NC2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 1  has pKa value = 5.23
+======= Acid site on atom 14  has pKa value = 14.90
+O([H])C(C1=C([H])C([H])=C([H])C([H])=C1C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 3.58
+======= Acid site on atom 13  has pKa value = 14.90
+O(C1C([H])=C([H])C([H])=C([H])C=1[H])C1=C([H])C([H])=C([H])C([H])=C1C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 3.51
+======= Acid site on atom 15  has pKa value = 14.90
+O(C1C([H])=C([H])C([H])=C([H])C=1[H])C1=C([H])C([H])=C([H])C(C(=O)O[H])=C1[H]
+======= Acid site on atom 1  has pKa value = 4.03
+======= Acid site on atom 14  has pKa value = 14.90
+O(C1C([H])=C([H])C([H])=C([H])C=1[H])C1C([H])=C([H])C(C(=O)O[H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 4.27
+======= Acid site on atom 14  has pKa value = 14.90
+N1C2C([H])=C(C([H])=C([H])C=2C([H])=C2C([H])=C([H])C(=C([H])C=12)N([H])[H])N([H])[H]
+======= Basic site on atom 0  has pKa value = 9.65
+======= Basic site on atom 1  has pKa value = 3.83
+======= Basic site on atom 2  has pKa value = 3.83
+ClC1C(=C(C([H])=C([H])C=1C(C(=C([H])[H])C([H])([H])C([H])([H])[H])=O)OC([H])([H])C(=O)O[H])Cl
+======= Acid site on atom 4  has pKa value = 3.18
+O(C([H])([H])[H])C1C([H])=C([H])C2=C(C=1[H])N([H])C1C(C([H])([H])[H])=NC([H])=C([H])C2=1
+======= Basic site on atom 2  has pKa value = 7.70
+S(C1C([H])=C([H])C(=C([H])C=1[H])N([H])[H])(N([H])C(C1C([H])=C([H])C([H])=C([H])C=1[H])=O)(=O)=O
+======= Acid site on atom 4  has pKa value = 4.57
+======= Basic site on atom 4  has pKa value = 11.68
+======= Basic site on atom 5  has pKa value = 2.65
+======= Acid site on atom 18  has pKa value = 14.90
+N([H])([H])C1C([H])=C([H])C(=C([H])C=1[H])C([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Basic site on atom 0  has pKa value = 2.17
+======= Acid site on atom 13  has pKa value = 14.90
+O(C([H])([H])[H])C1C([H])=C([H])C2C(C=1[H])=NC1=C(C([H])([H])[H])N([H])C([H])([H])C([H])([H])C1=2
+======= Basic site on atom 1  has pKa value = 4.20
+O=C1C(C([H])([H])[H])(C([H])(C([H])([H])[H])C([H])([H])[H])N=C(C2=C(C(=O)O[H])C([H])=C([H])C([H])=N2)N1[H]
+======= Acid site on atom 1  has pKa value = 3.60
+======= Basic site on atom 3  has pKa value = 1.90
+======= Basic site on atom 5  has pKa value = 4.88
+ClC1=C([H])C([H])=C([H])C([H])=C1C1(C(C([H])([H])C([H])([H])C([H])([H])C1([H])[H])=O)N([H])C([H])([H])[H]
+======= Basic site on atom 2  has pKa value = 7.50
+S(C1C([H])=C([H])C(C(=O)O[H])=C([H])C=1[H])(N(C([H])([H])C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])[H])(=O)=O
+======= Acid site on atom 3  has pKa value = 4.27
+CC(C1C=CC=C(C(C)(C)C)N=1)(C)C
+======= Basic site on atom 5  has pKa value = 3.58
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+S(C1C([H])=C([H])C([H])=C([H])C=1[H])(C1C([H])=C([H])C(=C(C([H])([H])[H])C=1[H])N([H])S(C(F)(F)F)(=O)=O)(=O)=O
+======= Acid site on atom 9  has pKa value = 2.50
+======= Acid site on atom 23  has pKa value = 14.90
+O([H])C(C([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])C1C([H])=C([H])C([H])=C([H])C=1[H])=O
+======= Acid site on atom 0  has pKa value = 3.94
+======= Acid site on atom 14  has pKa value = 14.90
+======= Acid site on atom 15  has pKa value = 14.90
+O([H])C(C(=O)O[H])(C1C([H])=C([H])C([H])=C([H])C=1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
+======= Acid site on atom 1  has pKa value = 3.04
+======= Acid site on atom 15  has pKa value = 14.90
+======= Acid site on atom 16  has pKa value = 14.90
+O(C([H])([H])[H])C1C(=C(C([H])=C(C=1[H])C([H])([H])C1=C([H])N=C(N([H])[H])N=C1N([H])[H])OC([H])([H])[H])OC([H])([H])[H]
+======= Basic site on atom 3  has pKa value = 6.60
+O(C([H])([H])[H])C(C([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])C1([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N1[H])=O
+======= Basic site on atom 2  has pKa value = 8.90
+======= Acid site on atom 15  has pKa value = 14.90
+S(C1C([H])=C([H])C(C([H])([H])[H])=C([H])C=1[H])(N([H])C(N([H])N1C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H])=O)(=O)=O
+======= Acid site on atom 5  has pKa value = 3.60
+O(C1C([H])=C([H])C(C([H])([H])C(N([H])[H])=O)=C([H])C=1[H])C([H])([H])C([H])(C([H])([H])N([H])C([H])(C([H])([H])[H])C([H])([H])[H])O[H]
+======= Acid site on atom 1  has pKa value = 14.15
+======= Basic site on atom 3  has pKa value = 9.60
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+ClC1=C([H])C([H])=C([H])C([H])=C1C1C2C([H])=C(C([H])=C([H])C=2N([H])C(C([H])([H])N=1)=O)[N+](=O)[O-]
+IC1C(=C(C([H])=C(C=1[H])C([H])([H])[C@@]([H])(C(=O)O[H])N([H])[H])I)OC1C([H])=C(C(=C(C=1[H])I)O[H])I
+======= Acid site on atom 5  has pKa value = 2.20
+======= Acid site on atom 7  has pKa value = 6.15
+======= Basic site on atom 8  has pKa value = 9.06
+O(C1C([H])=C([H])C([H])=C([H])C=1[H])C1=C([H])C([H])=C([H])C(=C1[H])C([H])(C(=O)O[H])C([H])([H])[H]
+======= Acid site on atom 1  has pKa value = 4.50
+======= Acid site on atom 17  has pKa value = 14.90
+O([H])C(C1=C([H])C([H])=C([H])C([H])=C1N([H])C1=C([H])C([H])=C([H])C(C([H])([H])[H])=C1C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.20
+O([H])C(C1=C([H])C([H])=C([H])C([H])=C1/N=N/C1C([H])=C([H])C(=C([H])C=1[H])N(C([H])([H])[H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 2.50
+======= Basic site on atom 2  has pKa value = 6.70
+[Cl-].[N+]1([H])C2C([H])=C([H])C(=C([H])C=2N=C2C([H])=C(C(C([H])([H])[H])=C([H])C=12)N([H])[H])N(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 2  has pKa value = 5.48
+======= Basic site on atom 3  has pKa value = 6.70
+======= Basic site on atom 4  has pKa value = 3.23
+O(C(C1C([H])=C([H])C([H])=C([H])C=1[H])=O)C1([H])C([H])([H])C2([H])C([H])([H])C([H])([H])C([H])(C1([H])[H])N2C([H])([H])[H]
+======= Basic site on atom 2  has pKa value = 9.70
+======= Acid site on atom 17  has pKa value = 14.90
+O=C1C(C([H])([H])[H])(C([H])(C([H])([H])[H])C([H])([H])[H])N=C(C2=C(C(=O)O[H])C([H])=C(C([H])([H])C([H])([H])[H])C([H])=N2)N1[H]
+======= Acid site on atom 1  has pKa value = 3.90
+======= Basic site on atom 3  has pKa value = 2.10
+O(C(N([H])C([H])([H])[H])=O)C1C([H])=C([H])C2=C(C=1[H])[C@]1(C([H])([H])[H])C([H])([H])C([H])([H])N(C([H])([H])[H])[C@]1([H])N2C([H])([H])[H]
+N12C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])C1([H])C([H])([H])N3C([H])([H])C([H])([H])C([H])([H])C([H])([H])C3([H])C([H])(C2([H])[H])C1([H])[H]
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+ClC1C([H])=C([H])C2=C(C=1[H])C(C1C([H])=C([H])C([H])=C([H])C=1[H])=NC([H])([H])C(N2C([H])([H])[H])=O
+======= Basic site on atom 2  has pKa value = 3.40
+======= Acid site on atom 19  has pKa value = 14.90
+ClC1C([H])=C([H])C2C(C=1[H])=C(C1C([H])=C([H])C([H])=C([H])C=1[H])N(C([H])([H])/C(=N/C([H])([H])[H])/N=2)O[H]
+======= Basic site on atom 4  has pKa value = 4.80
+======= Acid site on atom 19  has pKa value = 14.90
+O([H])C([C@]1([H])C([H])=C2C3C([H])=C([H])C([H])=C4C=3C(=C([H])N4[H])C([H])([H])[C@@]2([H])N(C([H])([H])[H])C1([H])[H])=O
+======= Acid site on atom 0  has pKa value = 3.44
+======= Basic site on atom 2  has pKa value = 7.68
+S1C([H])([H])C(C([H])([H])[H])=C(C(=O)O[H])N2C([C@]([H])([C@@]12[H])N([H])C([C@@]([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])N([H])[H])=O)=O
+======= Acid site on atom 3  has pKa value = 3.12
+======= Basic site on atom 7  has pKa value = 7.30
+======= Acid site on atom 23  has pKa value = 14.90
+S1C([H])([H])C(C([H])([H])[H])=C(C(=O)O[H])N2C([C@]([H])([C@@]12[H])N([H])C([C@@]([H])(C1=C([H])C([H])([H])C([H])=C([H])C1([H])[H])N([H])[H])=O)=O
+======= Acid site on atom 3  has pKa value = 3.12
+======= Basic site on atom 7  has pKa value = 7.27
+N1([H])C([H])([H])C([H])([H])C([H])([H])[C@]2([H])[C@]3([H])C([H])([H])C4=C(C([H])=C([H])C([H])=N4)[C@]12C([H])([H])[C@]([H])(C([H])([H])[H])C3([H])[H]
+======= Basic site on atom 1  has pKa value = 6.40
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+O([H])C1=C(C([H])=C([H])C2=C1C1=C([H])C([H])=C([H])C3C([H])([H])C([H])([H])N(C([H])([H])[H])[C@]([H])(C2([H])[H])C=31)O[H]
+======= Acid site on atom 0  has pKa value = 8.92
+======= Acid site on atom 1  has pKa value = 8.56
+======= Basic site on atom 2  has pKa value = 7.00
+O=C(/C(/[H])=C(\[H])/C(/[H])=C(\[H])/C1C([H])=C([H])C2=C(C=1[H])OC([H])([H])O2)N1C([H])([H])C([H])([H])C([H])([H])C([H])([H])C1([H])[H]
+======= Basic site on atom 3  has pKa value = 12.22
+O1C2=C(C([H])=C([H])C3C([H])([H])[C@]4([H])[C@]5([H])C([H])=C([H])[C@@]([H])([C@@]1([H])[C@@]5(C=32)C([H])([H])C([H])([H])N4C([H])([H])[H])O[H])O[H]
+======= Acid site on atom 1  has pKa value = 12.22
+======= Acid site on atom 2  has pKa value = 8.21
+======= Basic site on atom 3  has pKa value = 9.03
+O([H])[C@]([H])([C@@]([H])([C@@]([H])(C([H])([H])O[H])O[H])O[H])C([H])([H])N1C2C(C(N([H])C(N=2)=O)=O)=NC2C([H])=C(C([H])([H])[H])C(C([H])([H])[H])=C([H])C1=2
+======= Acid site on atom 0  has pKa value = 13.90
+======= Acid site on atom 2  has pKa value = 13.90
+======= Acid site on atom 3  has pKa value = 13.50
+======= Basic site on atom 6  has pKa value = 1.70
+======= Acid site on atom 9  has pKa value = 9.69
+O1C(C2=C(C(C([H])([H])/C(/[H])=C(\C([H])([H])[H])/C([H])([H])C([H])([H])C(=O)O[H])=C(C(C([H])([H])[H])=C2C1([H])[H])OC([H])([H])[H])O[H])=O
+======= Acid site on atom 2  has pKa value = 6.15
+======= Acid site on atom 4  has pKa value = 4.50
+O(C([C@]([H])(C([H])([H])O[H])C1C([H])=C([H])C([H])=C([H])C=1[H])=O)C1([H])C([H])([H])[C@@]2([H])C([H])([H])C([H])([H])[C@@]([H])(C1([H])[H])N2C([H])([H])[H]
+======= Acid site on atom 2  has pKa value = 12.81
+======= Basic site on atom 3  has pKa value = 9.70
+======= Acid site on atom 20  has pKa value = 14.90
+O([H])[C@@]1([H])C([H])([H])C2C(=C([H])C([H])=C([H])C=2C([H])([H])[C@@]1([H])O[H])OC([H])([H])C([H])(C([H])([H])N([H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])O[H]
+======= Acid site on atom 0  has pKa value = 13.90
+======= Acid site on atom 1  has pKa value = 13.90
+======= Acid site on atom 3  has pKa value = 14.15
+======= Basic site on atom 4  has pKa value = 9.67
+ClC1C([H])=C([H])C2=C(C=1[H])N([H])C(=C1C([H])=C([H])C([H])=C([H])C1=N2)N1C([H])([H])C([H])([H])N(C([H])([H])[H])C([H])([H])C1([H])[H]
+======= Basic site on atom 2  has pKa value = 10.46
+======= Basic site on atom 4  has pKa value = 5.48
+O1C2=C(C([H])=C([H])C3C([H])([H])[C@]4([H])[C@]5([H])C([H])=C([H])[C@@]([H])([C@@]1([H])[C@@]5(C=32)C([H])([H])C([H])([H])N4C([H])([H])[H])O[H])OC([H])([H])[H]
+======= Acid site on atom 1  has pKa value = 12.22
+======= Basic site on atom 3  has pKa value = 9.03
+O=C1C2=C([H])C([H])=C([H])C([H])=C2N(C([H])([H])[H])C2=C([H])C([H])=C([H])C([H])=C2N1C([H])([H])C([H])([H])N(C([H])([H])[H])C([H])([H])[H]
+======= Basic site on atom 3  has pKa value = 8.25
+O([H])C(C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])/C(/[H])=C(/[H])\C([H])([H])/C(/[H])=C(/[H])\C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Acid site on atom 0  has pKa value = 4.78
+Cl[C@@]([H])(C([H])([H])[H])[C@]([H])([C@]1([H])[C@@]([H])([C@@]([H])([C@]([H])([C@]([H])(O1)SC([H])([H])[H])O[H])O[H])O[H])N([H])C([C@]1([H])C([H])([H])[C@@]([H])(C([H])([H])C([H])([H])C([H])([H])[H])C([H])([H])N1C([H])([H])[H])=O
+======= Basic site on atom 7  has pKa value = 7.60
+N([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 0  has pKa value = 10.64
+BrC1C(=C(C([H])=C(C=1[H])C1(C2C([H])=C(C(=C(C=2[H])Br)O[H])Br)C2=C([H])C([H])=C([H])C([H])=C2S(=O)(=O)O1)Br)O[H]
+======= Acid site on atom 8  has pKa value = 4.00
+======= Acid site on atom 9  has pKa value = 4.00
+S1(C2=C([H])C([H])=C([H])C([H])=C2C(C2C([H])=C([H])C(=C([H])C=2[H])O[H])(C2C([H])=C([H])C(=C([H])C=2[H])O[H])O1)(=O)=O
+======= Acid site on atom 4  has pKa value = 9.28
+======= Acid site on atom 5  has pKa value = 9.28
+ClC1C([H])=C([H])C(=C([H])C=1[H])C(N1C(C([H])([H])[H])=C(C([H])([H])C(=O)O[H])C2C([H])=C(C([H])=C([H])C1=2)OC([H])([H])[H])=O
+======= Acid site on atom 3  has pKa value = 4.50
+S1C([H])([H])C(C([H])([H])[N+]2C([H])=C([H])C([H])=C([H])C=2[H])=C(C(=O)[O-])N2C([C@]([H])([C@@]12[H])N([H])C(C([H])([H])C1=C([H])C([H])=C([H])S1)=O)=O
+======= Acid site on atom 3  has pKa value = 3.20
+======= Acid site on atom 24  has pKa value = 14.90
+O=C1C([H])(C(N(C2C([H])=C([H])C([H])=C([H])C=2[H])N1C1C([H])=C([H])C([H])=C([H])C=1[H])=O)C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 2  has pKa value = 4.50
+======= Basic site on atom 3  has pKa value = 4.50
+======= Acid site on atom 21  has pKa value = 14.90
+======= Acid site on atom 22  has pKa value = 14.90
+N([H])(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])C1([H])C2=C([H])C([H])=C([H])C([H])=C2C([H])=C([H])C2=C([H])C([H])=C([H])C([H])=C12
+======= Basic site on atom 0  has pKa value = 8.20
+O1C2=C(C([H])=C([H])C3C([H])([H])[C@]4([H])C5=C([H])C([H])=C([C@@]1([H])[C@@]5(C=32)C([H])([H])C([H])([H])N4C([H])([H])[H])OC([H])([H])[H])OC([H])([H])[H]
+======= Basic site on atom 3  has pKa value = 6.05
+O([H])[C@@]([H])(C1=C([H])C([H])=NC2=C([H])C([H])=C([H])C([H])=C12)[C@@]1([H])C([H])([H])C2([H])C([H])([H])C([H])([H])N1C([H])([H])[C@]2([H])C([H])=C([H])[H]
+======= Basic site on atom 2  has pKa value = 6.68
+O([H])C([H])(C1=C([H])C([H])=NC2=C([H])C([H])=C([H])C([H])=C12)C1([H])C([H])([H])C2([H])C([H])([H])C([H])([H])N1C([H])([H])C2([H])C([H])=C([H])[H]
+======= Basic site on atom 2  has pKa value = 6.68
+O([H])[C@]([H])(C1C([H])=C([H])N=C2C([H])=C([H])C(=C([H])C=12)O[H])[C@]1([H])C([H])([H])[C@@]2([H])C([H])([H])C([H])([H])N1C([H])([H])[C@@]2([H])C([H])=C([H])[H]
+======= Acid site on atom 1  has pKa value = 9.80
+======= Basic site on atom 3  has pKa value = 6.57
+O1C([C@]2(C([H])([H])[H])[C@]([H])(C([H])=C([H])[C@]31[C@]2([H])[C@]([H])(C(=O)O[H])[C@]12C([H])([H])C(=C([H])[H])[C@](C([H])([H])C([H])([H])[C@]13[H])(C2([H])[H])O[H])O[H])=O
+======= Acid site on atom 4  has pKa value = 4.00
+O=C([C@@]1([H])C([H])=C2C3C([H])=C([H])C([H])=C4C=3C(=C([H])N4[H])C([H])([H])[C@@]2([H])N(C([H])([H])[H])C1([H])[H])N([H])[C@@]([H])(C([H])([H])[H])C([H])([H])O[H]
+======= Acid site on atom 1  has pKa value = 12.81
+======= Basic site on atom 2  has pKa value = 7.05
+O=C([C@]1([H])C([H])=C2C3C([H])=C([H])C([H])=C4C=3C(=C([H])N4[H])C([H])([H])[C@@]2([H])N(C([H])([H])[H])C1([H])[H])N([H])[C@@]([H])(C([H])([H])[H])C([H])([H])O[H]
+======= Acid site on atom 1  has pKa value = 12.81
+======= Basic site on atom 2  has pKa value = 7.05
+O1C(C2=C([H])C([H])=C([H])C([H])=C2C1(C1C([H])=C([H])C(=C([H])C=1[H])O[H])C1C([H])=C([H])C(=C([H])C=1[H])O[H])=O
+======= Acid site on atom 2  has pKa value = 9.28
+======= Acid site on atom 3  has pKa value = 9.28
+O(C([H])([H])[H])C1=C(C([H])=C2C([H])=C([H])N=C(C([H])([H])C3C([H])=C([H])C(=C(C=3[H])OC([H])([H])[H])OC([H])([H])[H])C2=C1[H])OC([H])([H])[H]
+======= Basic site on atom 4  has pKa value = 6.40
+N(C([H])([H])[H])(C([H])([H])[H])C([H])([H])C([H])([H])/C(/[H])=C1/C2=C([H])C([H])=C([H])C([H])=C2C([H])([H])C([H])([H])C2=C([H])C([H])=C([H])C([H])=C/12
+======= Basic site on atom 0  has pKa value = 9.40
+O=C1C2=C(N([H])C(N([H])[H])=N1)N([H])C([H])([H])C([H])(C([H])([H])N([H])C1C([H])=C([H])C(C(N([H])C([H])(C(=O)O[H])C([H])([H])C([H])([H])C(=O)O[H])=O)=C([H])C=1[H])N2C([H])=O
+======= Acid site on atom 3  has pKa value = 3.32
+======= Acid site on atom 5  has pKa value = 4.99
+======= Basic site on atom 10  has pKa value = 10.40
+O([H])[C@]([H])(C1C([H])=C([H])N=C2C([H])=C([H])C(=C([H])C=12)OC([H])([H])[H])[C@]1([H])C([H])([H])C2([H])C([H])([H])C([H])([H])N1C([H])([H])[C@]2([H])C([H])=C([H])[H]
+======= Basic site on atom 3  has pKa value = 5.33
+O([H])[C@@]([H])(C1C([H])=C([H])N=C2C([H])=C([H])C(=C([H])C=12)OC([H])([H])[H])[C@@]1([H])C([H])([H])[C@]2([H])C([H])([H])C([H])([H])N1C([H])([H])[C@]2([H])C([H])=C([H])[H]
+======= Basic site on atom 3  has pKa value = 5.33
+O([H])[C@]([H])(C1C([H])=C([H])N=C2C([H])=C([H])C(=C([H])C=12)OC([H])([H])[H])[C@@]1([H])C([H])([H])[C@]2([H])C([H])([H])C([H])([H])N1C([H])([H])[C@]2([H])C([H])([H])C([H])([H])[H]
+======= Basic site on atom 3  has pKa value = 5.33
+BrC1C(=C(C([H])=C(C=1C([H])([H])[H])C1(C2=C([H])C(=C(C(=C2C([H])([H])[H])Br)O[H])Br)C2=C([H])C([H])=C([H])C([H])=C2S(=O)(=O)O1)Br)O[H]
+======= Acid site on atom 8  has pKa value = 4.70
+======= Acid site on atom 9  has pKa value = 4.70
+BrC1=C(C(C([H])([H])[H])=C([H])C(=C1[H])C1(C2=C([H])C(=C(C(C([H])([H])[H])=C2[H])O[H])Br)C2=C([H])C([H])=C([H])C([H])=C2S(=O)(=O)O1)O[H]
+======= Acid site on atom 6  has pKa value = 6.30
+======= Acid site on atom 7  has pKa value = 6.30
+S1(C2=C([H])C([H])=C([H])C([H])=C2C(C2C([H])=C([H])C(=C(C([H])([H])[H])C=2[H])O[H])(C2C([H])=C([H])C(=C(C([H])([H])[H])C=2[H])O[H])O1)(=O)=O
+======= Acid site on atom 4  has pKa value = 8.85
+======= Acid site on atom 5  has pKa value = 8.85
+O1C(C2C(=C(C([H])=C([H])C=2[C@@]1([H])[C@@]1([H])C2=C([H])C3=C(C([H])=C2C([H])([H])C([H])([H])N1C([H])([H])[H])OC([H])([H])O3)OC([H])([H])[H])OC([H])([H])[H])=O
+======= Basic site on atom 6  has pKa value = 7.80
+O1C([H])([H])C([H])=C2C([H])([H])N3C([H])([H])C([H])([H])[C@@]45C6=C([H])C([H])=C([H])C([H])=C6N6C(C([H])([H])[C@@]1([H])[C@]([H])([C@@]2([H])C([H])([H])[C@]34[H])[C@]65[H])=O
+======= Basic site on atom 3  has pKa value = 8.26
+ClC1C([H])=C([H])C(=C([H])C=1[H])C1(C([H])([H])C([H])([H])N(C([H])([H])C([H])([H])C([H])([H])C(C2C([H])=C([H])C(=C([H])C=2[H])F)=O)C([H])([H])C1([H])[H])O[H]
+======= Basic site on atom 4  has pKa value = 8.30
+O(C([H])([H])C([H])([H])[H])C(C1(C2C([H])=C([H])C([H])=C([H])C=2[H])C([H])([H])C([H])([H])N(C([H])([H])C([H])([H])OC([H])([H])C2([H])C([H])([H])C([H])([H])C([H])([H])O2)C([H])([H])C1([H])[H])=O
+======= Basic site on atom 4  has pKa value = 7.48
+======= Acid site on atom 23  has pKa value = 14.90
+O=C([C@]([H])(C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])[H])N([H])[C@]([H])(C(=O)O[H])C([H])([H])C([H])([H])C1C([H])=C([H])C([H])=C([H])C=1[H])N1C([H])([H])C([H])([H])C([H])([H])[C@@]1([H])C(=O)O[H]
+======= Acid site on atom 1  has pKa value = 2.96
+======= Acid site on atom 3  has pKa value = 2.57
+======= Basic site on atom 7  has pKa value = 10.65
+======= Acid site on atom 28  has pKa value = 14.90
+O1C(C2=C([H])C([H])=C([H])C([H])=C2C1(C1C([H])=C([H])C(=C(C([H])([H])[H])C=1[H])O[H])C1C([H])=C([H])C(=C(C([H])([H])[H])C=1[H])O[H])=O
+======= Acid site on atom 2  has pKa value = 8.85
+======= Acid site on atom 3  has pKa value = 8.85
+FC1C([H])=C([H])C(=C([H])C=1[H])C(C([H])([H])C([H])([H])C([H])([H])N1C([H])([H])C([H])=C(C([H])([H])C1([H])[H])N1C(N([H])C2=C([H])C([H])=C([H])C([H])=C12)=O)=O
+======= Basic site on atom 3  has pKa value = 7.64
+O1C(C2C(=C(C([H])=C([H])C=2[C@@]1([H])[C@@]1([H])C2=C(C3=C(C([H])=C2C([H])([H])C([H])([H])N1C([H])([H])[H])OC([H])([H])O3)OC([H])([H])[H])OC([H])([H])[H])OC([H])([H])[H])=O
+======= Basic site on atom 7  has pKa value = 7.80
+O(C([H])([H])[H])C1C(=C(C([H])=C2C=1C1=C([H])C([H])=C(C(C([H])=C1[C@]([H])(C([H])([H])C2([H])[H])N([H])C(C([H])([H])[H])=O)=O)OC([H])([H])[H])OC([H])([H])[H])OC([H])([H])[H]
+======= Basic site on atom 6  has pKa value = 12.36
+O=C1C(C([H])([H])C2C([H])=C([H])C([H])=C([H])C=2[H])=C(C2C([H])=C([H])C([H])=C([H])C=2[H])N([H])N1C1([H])C([H])([H])C([H])([H])N(C([H])([H])[H])C([H])([H])C1([H])[H]
+======= Basic site on atom 2  has pKa value = 10.46
+======= Acid site on atom 22  has pKa value = 14.90
+======= Acid site on atom 25  has pKa value = 14.90
+O1C([H])([H])C([H])([H])N2C([H])([H])[C@]3(C([H])([H])[H])C([H])([H])C([H])([H])C([H])([H])[C@]4(C12[H])[C@]3([H])C([H])([H])C([H])([H])[C@@]12[C@@]([H])(C(=C([H])[H])[C@@]([H])(C([H])([H])C1([H])[H])C([H])([H])[C@@]42[H])O[H]
+======= Basic site on atom 2  has pKa value = 12.20
+O1C([H])([H])C([H])=C2C([H])([H])N3C([H])([H])C([H])([H])[C@@]45C6=C([H])C(=C(C([H])=C6N6C(C([H])([H])[C@@]1([H])[C@]([H])([C@@]2([H])C([H])([H])[C@]34[H])[C@]65[H])=O)OC([H])([H])[H])OC([H])([H])[H]
+======= Basic site on atom 5  has pKa value = 8.26
+O([H])[C@@]1([H])C([H])([H])[C@]2([H])[C@@]3(C([H])([H])[H])C([H])([H])C([H])([H])[C@]([H])(C([H])([H])[C@@]3([H])C([H])([H])C([H])([H])[C@@]2([H])[C@]2([H])C([H])([H])C([H])([H])[C@]([H])([C@]([H])(C([H])([H])[H])C([H])([H])C([H])([H])C(=O)O[H])[C@]21C([H])([H])[H])O[H]
+======= Acid site on atom 1  has pKa value = 14.15
+======= Acid site on atom 2  has pKa value = 5.07
+O([H])[C@@]1([H])C([H])([H])[C@]2([H])[C@@]3(C([H])([H])[H])C([H])([H])C([H])([H])[C@]([H])(C([H])([H])[C@@]3([H])C([H])([H])[C@]([H])([C@@]2([H])[C@]2([H])C([H])([H])C([H])([H])[C@]([H])([C@]([H])(C([H])([H])[H])C([H])([H])C([H])([H])C(=O)O[H])[C@]21C([H])([H])[H])O[H])O[H]
+======= Acid site on atom 1  has pKa value = 13.90
+======= Acid site on atom 2  has pKa value = 14.15
+======= Acid site on atom 3  has pKa value = 5.07
+IC1C([H])=C(C([H])=C(C=1OC([H])([H])C([H])([H])N(C([H])([H])C([H])([H])[H])C([H])([H])C([H])([H])[H])I)C(C1C2=C([H])C([H])=C([H])C([H])=C2OC=1C([H])([H])C([H])([H])C([H])([H])C([H])([H])[H])=O
+======= Basic site on atom 5  has pKa value = 6.56
+O([H])[C@]12[C@]([H])([C@@]([H])([C@@]3([C@@]([H])([C@@]1([H])[C@@]([H])(C3([H])[H])[C@@]13[C@]([H])(C([H])([H])[C@]([H])([C@@]4(C([H])([H])OC([H])([H])[H])C([H])([H])N(C([H])([H])C([H])([H])[H])C1([H])[C@]2([H])[C@@]([H])([C@@]34[H])OC([H])([H])[H])O[H])OC([H])([H])[H])O[H])O[H])OC([H])([H])[H])O[H]
+======= Basic site on atom 9  has pKa value = 9.52
+O([H])[C@@]1([H])C([H])([H])[C@]2([H])[C@@]3(C([H])([H])[H])C([H])([H])C([H])([H])[C@]([H])(C([H])([H])[C@@]3([H])C([H])([H])[C@]([H])([C@@]2([H])[C@]2([H])C([H])([H])C([H])([H])[C@]([H])([C@]([H])(C([H])([H])[H])C([H])([H])C([H])([H])C(N([H])C([H])([H])C(=O)O[H])=O)[C@]21C([H])([H])[H])O[H])O[H]
+======= Acid site on atom 1  has pKa value = 13.90
+======= Acid site on atom 2  has pKa value = 14.15
+======= Acid site on atom 4  has pKa value = 3.59
+S(C([H])([H])C([H])([H])N([H])C(C([H])([H])C([H])([H])[C@@]([H])(C([H])([H])[H])[C@@]1([H])C([H])([H])C([H])([H])[C@@]2([H])[C@]3([H])[C@@]([H])(C([H])([H])[C@]4([H])C([H])([H])[C@@]([H])(C([H])([H])C([H])([H])[C@]4(C([H])([H])[H])[C@@]3([H])C([H])([H])[C@@]([H])([C@@]21C([H])([H])[H])O[H])O[H])O[H])=O)(=O)(=O)O[H]
+======= Acid site on atom 2  has pKa value = 13.90
+======= Acid site on atom 3  has pKa value = 14.15
+======= Acid site on atom 5  has pKa value = 1.40
+BrC1=C(C(C([H])(C([H])([H])[H])C([H])([H])[H])=C([H])C(=C1C([H])([H])[H])C1(C2C([H])=C(C(=C(C=2C([H])([H])[H])Br)O[H])C([H])(C([H])([H])[H])C([H])([H])[H])C2=C([H])C([H])=C([H])C([H])=C2S(=O)(=O)O1)O[H]
+======= Acid site on atom 6  has pKa value = 7.00
+======= Acid site on atom 7  has pKa value = 7.00
+O(C([H])([H])[H])C1=C(C([H])=C([H])C(=C1[H])C(C#N)(C([H])([H])C([H])([H])C([H])([H])N(C([H])([H])[H])C([H])([H])C([H])([H])C1C([H])=C([H])C(=C(C=1[H])OC([H])([H])[H])OC([H])([H])[H])C([H])(C([H])([H])[H])C([H])([H])[H])OC([H])([H])[H]
+======= Basic site on atom 4  has pKa value = 8.60
+O([C@@]1([H])[C@@]([H])([C@]([H])([C@@]2([H])[C@@]([H])(C([H])([H])O[C@@]([H])(C([H])([H])[H])O2)O1)O[H])O[H])[C@]1([H])C2=C([H])C3=C(C([H])=C2[C@@]([H])(C2C([H])=C(C(=C(C=2[H])OC([H])([H])[H])O[H])OC([H])([H])[H])[C@@]2([H])C(=O)OC([H])([H])[C@@]21[H])OC([H])([H])O3
+======= Acid site on atom 12  has pKa value = 9.97
+O(C([H])([H])[H])C1=C(C([H])=C2C([H])([H])C([H])([H])N3C([H])([H])[C@]([H])(C([H])([H])C([H])([H])[H])[C@@]([H])(C([H])([H])[C@]4([H])C5=C([H])C(=C(C([H])=C5C([H])([H])C([H])([H])N4[H])OC([H])([H])[H])OC([H])([H])[H])C([H])([H])[C@@]3([H])C2=C1[H])OC([H])([H])[H]
+======= Basic site on atom 4  has pKa value = 6.60
+======= Basic site on atom 5  has pKa value = 10.67
+BrC1C([H])=C([H])C(=C([H])C=1[H])C1C([H])=C([H])C(=C([H])C=1[H])C([H])(C([H])([H])C([H])(C1C([H])=C([H])C([H])=C([H])C=1[H])C1C(=O)OC2=C([H])C([H])=C([H])C([H])=C2C=1O[H])O[H]
+======= Acid site on atom 3  has pKa value = 4.04
+======= Acid site on atom 25  has pKa value = 14.90
+O([H])[C@@]1([H])C([H])([H])C([H])([H])[C@@]2(C([H])([H])[H])[C@]([H])(C1(C([H])([H])[H])C([H])([H])[H])C([H])([H])C([H])([H])[C@@]1(C([H])([H])[H])[C@]3(C([H])([H])[H])C([H])([H])C([H])([H])[C@@]4(C(=O)O[H])C([H])([H])C([H])([H])C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[C@@]4([H])C3=C([H])C([H])([H])[C@@]12[H]
+======= Acid site on atom 1  has pKa value = 2.52
+O1[C@]([H])([C@@]([H])([C@@]([H])([C@]([H])(C1(C([H])([H])[H])C([H])([H])[H])OC([H])([H])[H])OC(N([H])[H])=O)O[H])OC1C([H])=C([H])C2C(=C(C(=O)OC=2C=1C([H])([H])[H])N([H])C(C1C([H])=C([H])C(=C(C([H])([H])/C(/[H])=C(\C([H])([H])[H])/C([H])([H])[H])C=1[H])O[H])=O)O[H]
+======= Acid site on atom 7  has pKa value = 6.15
+======= Acid site on atom 10  has pKa value = 8.56
+S1C([H])=C([H])C([H])=C1[C@]1([H])OC([H])([H])[C@]2([H])[C@]([H])([C@@]([H])([C@]([H])([C@@]([H])(O2)O[C@]2([H])C3=C([H])C4=C(C([H])=C3[C@@]([H])(C3C([H])=C(C(=C(C=3[H])OC([H])([H])[H])O[H])OC([H])([H])[H])[C@@]3([H])C(=O)OC([H])([H])[C@@]32[H])OC([H])([H])O4)O[H])O[H])O1
+======= Acid site on atom 13  has pKa value = 9.97
+O(C([H])([H])[H])[C@@]1([H])[C@@]([H])(C([H])([H])[C@]2([H])C([H])([H])N3C([H])([H])C([H])([H])C4C5C([H])=C([H])C(=C([H])C=5N([H])C=4[C@@]3([H])C([H])([H])[C@]2([H])[C@]1([H])C(=O)OC([H])([H])[H])OC([H])([H])[H])OC(C1C([H])=C(C(=C(C=1[H])OC([H])([H])[H])OC([H])([H])[H])OC([H])([H])[H])=O
+======= Basic site on atom 9  has pKa value = 6.60
+O(C(C([H])([H])[H])=O)[C@]12[C@]([H])([C@@]([H])([C@@]3([C@@]([H])([C@@]1([H])[C@@]([H])(C3([H])[H])[C@@]13[C@]([H])(C([H])([H])[C@]([H])([C@@]4(C([H])([H])OC([H])([H])[H])C([H])([H])N(C([H])([H])C([H])([H])[H])C1([H])[C@]2([H])[C@@]([H])([C@@]34[H])OC([H])([H])[H])O[H])OC([H])([H])[H])OC(C1C([H])=C([H])C([H])=C([H])C=1[H])=O)O[H])OC([H])([H])[H])O[H]
+======= Basic site on atom 11  has pKa value = 5.88
+======= Acid site on atom 45  has pKa value = 14.90
+O1[C@@]2([C@]([H])(C([H])([H])C([H])([H])[C@@]3(C([H])([H])[H])[C@]2([H])C([H])([H])C([H])([H])[C@@]2([H])[C@@]4(C([H])([H])[C@@]([H])([C@@]5([C@@](C([H])([H])[H])([C@]6([H])C([H])([H])C([H])([H])[C@]([H])(C([H])([H])[H])C([H])([H])N6C([H])([H])[C@@]5([H])[C@@]4(C([H])([H])[C@]132)O[H])O[H])O[H])O[H])O[H])OC(C1C([H])=C([H])C(=C(C=1[H])OC([H])([H])[H])OC([H])([H])[H])=O)O[H]
+======= Basic site on atom 11  has pKa value = 9.54
+O([C@@]1([H])[C@@]([H])([C@]([H])(C([H])([H])[C@@]([H])(C([H])([H])[H])O1)N(C([H])([H])[H])C([H])([H])[H])O[H])[C@@]1([H])[C@@](C([H])([H])[H])(C([H])([H])[C@@]([H])(C([H])([H])[H])C([C@]([H])(C([H])([H])[H])[C@]([H])([C@@](C([H])([H])[H])([C@@]([H])(C([H])([H])C([H])([H])[H])OC([C@]([H])(C([H])([H])[H])[C@]([H])([C@]1([H])C([H])([H])[H])O[C@@]1([H])C([H])([H])[C@](C([H])([H])[H])([C@]([H])([C@]([H])(C([H])([H])[H])O1)O[H])OC([H])([H])[H])=O)O[H])O[H])=O)O[H]
+======= Basic site on atom 13  has pKa value = 8.80
+O(C(C([H])([H])[H])=O)[C@]1([H])[C@]([H])(C([H])([H])[H])[C@]([H])(C([H])=C([H])O[C@]2(C([H])([H])[H])C(C3C4C(/C(=C(\[H])/N([H])N5C([H])([H])C([H])([H])N(C([H])([H])[H])C([H])([H])C5([H])[H])/C(=C(C=4C(=C(C([H])([H])[H])C=3O2)O[H])O[H])N([H])C(C(C([H])([H])[H])=C([H])C([H])=C([H])[C@]([H])(C([H])([H])[H])[C@@]([H])([C@@]([H])(C([H])([H])[H])[C@]([H])([C@@]1([H])C([H])([H])[H])O[H])O[H])=O)=O)=O)OC([H])([H])[H] |c:18,84,t:80|
+======= Acid site on atom 8  has pKa value = 7.90
+======= Acid site on atom 9  has pKa value = 6.15
+======= Basic site on atom 13  has pKa value = 10.46
+======= Basic site on atom 14  has pKa value = 1.70
+O(C1([H])C([H])(C([H])(C([H])(C([H])(C([H])([H])O[H])O1)O[H])OC1([H])C([H])(C([H])(C([H])(C([H])(C([H])([H])O[H])O1)O[H])O[H])O[H])OC1([H])C([H])(C([H])(C([H])(C([H])(C([H])([H])[H])O1)O[H])O[H])O[H])C1([H])C([H])([H])C([H])([H])C2(C([H])([H])[H])C(C1([H])[H])=C([H])C([H])([H])C1([H])C2([H])C([H])([H])C([H])([H])C2(C([H])([H])[H])C1([H])C([H])([H])C1([H])C2([H])C([H])(C([H])([H])[H])C2([H])C([H])([H])C([H])([H])C([H])(C([H])([H])[H])C([H])([H])N12
+======= Acid site on atom 6  has pKa value = 12.77
+======= Acid site on atom 14  has pKa value = 13.71
+======= Basic site on atom 15  has pKa value = 6.66
+O(C(C([H])([H])[H])=O)[C@@]1([H])[C@](C(=O)OC([H])([H])[H])([C@@]2([H])[C@@]3(C4=C([H])C([C@]5(C(=O)OC([H])([H])[H])C6=C(C7=C([H])C([H])=C([H])C([H])=C7N6[H])C([H])([H])C([H])([H])N6C([H])([H])[C@](C([H])([H])C([H])([H])[H])(C([H])([H])[C@@]([H])(C6([H])[H])C5([H])[H])O[H])=C(C([H])=C4N2C([H])=O)OC([H])([H])[H])C([H])([H])C([H])([H])N2C([H])([H])C([H])=C([H])[C@]1(C([H])([H])C([H])([H])[H])[C@]23[H])O[H]
+======= Basic site on atom 10  has pKa value = 5.40
+O(C(C([H])([H])[H])=O)[C@@]1([H])[C@](C(=O)OC([H])([H])[H])([C@@]2([H])[C@@]3(C4=C([H])C([C@]5(C(=O)OC([H])([H])[H])C6=C(C7=C([H])C([H])=C([H])C([H])=C7N6[H])C([H])([H])C([H])([H])N6C([H])([H])[C@](C([H])([H])C([H])([H])[H])(C([H])([H])[C@]([H])(C6([H])[H])C5([H])[H])O[H])=C(C([H])=C4N2C([H])([H])[H])OC([H])([H])[H])C([H])([H])C([H])([H])N2C([H])([H])C([H])=C([H])[C@]1(C([H])([H])C([H])([H])[H])[C@]23[H])O[H]
+======= Basic site on atom 9  has pKa value = 5.40
