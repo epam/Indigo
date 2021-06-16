@@ -1,0 +1,85 @@
+ind-293-2nested_v2000.mol: 
+  molecule: Invalid mapping in MultipleGroup::collapse
+  molecule: Invalid mapping in MultipleGroup::collapse
+ind-293-mult_nested_v2000.mol: 
+  molecule: Invalid mapping in MultipleGroup::collapse
+  molecule: Invalid mapping in MultipleGroup::collapse
+ind-295-2nested_v2000.mol: 
+  molecule: Invalid mapping in MultipleGroup::collapse
+  molecule: Invalid mapping in MultipleGroup::collapse
+ind-295-biggy1v2000.mol: 
+  molfile loader: 'Q' label is allowed only for queries
+
+molfile/ind-295-biggy1v2000.mol_q.png rendering status: OK
+   OK
+ind-295-mult_2CRS_v2000.mol: 
+  molecule: The group is already collapsed or invalid
+  molecule: The group is already collapsed or invalid
+ind-295-mult_3Brackets3Bonds_v2000.mol: 
+  molecule: The group is already collapsed or invalid
+  molecule: The group is already collapsed or invalid
+ind-295-mult_4B_v2000.mol: 
+  molecule: The group is already collapsed or invalid
+  molecule: The group is already collapsed or invalid
+ind-295-mult_nested_v2000.mol: 
+  molecule: Invalid mapping in MultipleGroup::collapse
+  molecule: Invalid mapping in MultipleGroup::collapse
+ind-295-mult_single_v2000.mol: 
+  molecule: The group is already collapsed or invalid
+  molecule: The group is already collapsed or invalid
+ind-296-backSupa_v2000.mol: 
+
+molfile/ind-296-backSupa_v2000.mol_t.png rendering status: OK
+   OK
+
+molfile/ind-296-backSupa_v2000.mol_q.png rendering status: OK
+   OK
+ind-296-backSupa_v3000.mol: 
+
+molfile/ind-296-backSupa_v3000.mol_t.png rendering status: OK
+   OK
+
+molfile/ind-296-backSupa_v3000.mol_q.png rendering status: OK
+   OK
+ind-297-backSupa_v2000.mol: 
+
+molfile/ind-297-backSupa_v2000.mol_t.png rendering status: OK
+   OK
+
+molfile/ind-297-backSupa_v2000.mol_q.png rendering status: OK
+   OK
+ind-297-backSupa_v3000.mol: 
+
+molfile/ind-297-backSupa_v3000.mol_t.png rendering status: OK
+   OK
+
+molfile/ind-297-backSupa_v3000.mol_q.png rendering status: OK
+   OK
+ind-298-big_nonstest_v3000.mol: 
+
+molfile/ind-298-big_nonstest_v3000.mol_t.png rendering status: OK
+   OK
+
+molfile/ind-298-big_nonstest_v3000.mol_q.png rendering status: OK
+   OK
+ind-299-linknodeMany_v2000.mol: 
+
+molfile/ind-299-linknodeMany_v2000.mol_t.png rendering status: OK
+   OK
+
+molfile/ind-299-linknodeMany_v2000.mol_q.png rendering status: OK
+   OK
+ind-300-mult_SPA_v3000.mol: 
+
+molfile/ind-300-mult_SPA_v3000.mol_t.png rendering status: OK
+   OK
+
+molfile/ind-300-mult_SPA_v3000.mol_q.png rendering status: OK
+   OK
+ind-514-h-arom-cycle.mol: 
+
+molfile/ind-514-h-arom-cycle.mol_t.png rendering status: OK
+   OK
+
+molfile/ind-514-h-arom-cycle.mol_q.png rendering status: OK
+   OK
