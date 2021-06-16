@@ -38,7 +38,7 @@ MoleculeRGroupsComposition::MoleculeRGroupsComposition(BaseMolecule& mol)
         {
             continue;
         }
-        _rsite2vertex.insert(rsite, vertex);
+        _rsite2vertex.emplace(rsite, vertex);
 
         Array<int> rgroups;
         _mol.getAllowedRGroups(vertex, rgroups);
