@@ -82,6 +82,10 @@ namespace indigo
             //             substituent when we look at it from "left" to "right"
             // parity = 2  if it is rotated CW
             int parity;
+            _Atom()
+                : left(0), right(0), subst({0, 0, 0, 0}), parity(0)
+            {
+            }
         };
 
         bool _isAlleneCenter(BaseMolecule& mol, int idx, _Atom& atom, int* sensible_bonds_out);
