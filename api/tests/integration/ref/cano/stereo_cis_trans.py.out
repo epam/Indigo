@@ -1,0 +1,14 @@
+*** With clearing cis-trans ***
+Database: ../../../../../data/molecules/basic/zinc-slice.sdf.gz
+Database: ../../../../../data/molecules/basic/thiazolidines.sdf
+Database: ../../../../../data/molecules/basic/sugars.sdf
+Exception for #262: stereocenters: one bond up, one bond down -- indefinite case near atom 0
+Database: ../../../../../data/molecules/stereo/stereo_cis_trans.sdf
+Database: ../../../../../data/molecules/basic/helma.smi
+*** Without clearing cis-trans ***
+Database: ../../../../../data/molecules/basic/zinc-slice.sdf.gz
+Database: ../../../../../data/molecules/basic/thiazolidines.sdf
+Database: ../../../../../data/molecules/basic/sugars.sdf
+Exception for #262: stereocenters: one bond up, one bond down -- indefinite case near atom 0
+Database: ../../../../../data/molecules/stereo/stereo_cis_trans.sdf
+Database: ../../../../../data/molecules/basic/helma.smi
