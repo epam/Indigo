@@ -382,9 +382,9 @@ namespace indigo
         typedef Molecule3dConstraints MC;
 
         // can't have comma-containing type names in macro declarations below
-        typedef RedBlackMap<int, Vec3f> MapV;
-        typedef RedBlackMap<int, Line3f> MapL;
-        typedef RedBlackMap<int, Plane3f> MapP;
+        typedef std::unordered_map<int, Vec3f> MapV;
+        typedef std::unordered_map<int, Line3f> MapL;
+        typedef std::unordered_map<int, Plane3f> MapP;
 
         CP_DECL;
         TL_CP_DECL(MapV, _cache_v);
