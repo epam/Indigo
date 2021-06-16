@@ -30,14 +30,14 @@ using namespace indigo;
 
 void MangoPgFpData::insertHash(dword hash, int c_cnt)
 {
-    int* comp_count = _hashes.at2(hash);
-    if (comp_count)
+    auto hash_it = _hashes.find(hash);
+    if (hash_it != _hashes.end())
     {
-        (*comp_count) += c_cnt;
+        hash_it->second += c_cnt;
     }
     else
     {
-        _hashes.insert(hash, c_cnt);
+        _hashes.emplace(hash_it->second, c_cnt);
     }
 }
 

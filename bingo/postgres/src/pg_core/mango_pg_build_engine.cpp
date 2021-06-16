@@ -157,7 +157,7 @@ void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
     for ( auto& hash: hashes )
     {
         BingoPgCommon::executeQuery("INSERT INTO %s(b_id, ex_hash, f_count) VALUES ('(%d, %d)'::tid, %d, %d)", shadow_hash_name, data.getSectionIdx(),
-                                    data.getStructureIdx(), hashes.key(h_idx), hashes.value(h_idx));
+                                    data.getStructureIdx(), hash.first, hash.second);
     }
 }
 
