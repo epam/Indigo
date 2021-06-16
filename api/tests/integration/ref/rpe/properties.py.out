@@ -1,0 +1,14 @@
+=== Input Reaction ===
+Cl[C:1](=O)*.[OH:2]*>>*[O:2][C:1](=O)*
+=== Input Monomers ===
+x = CC(=O)Cl
+y = OC1CCC(CC1)C(=O)Cl
+z = O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O
+=== Output Reaction #1 ===
+CC(=O)Cl.O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O>>CC(=O)O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O |f:0.1|
+	x = CC(=O)Cl
+	z = O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O
+=== Output Reaction #2 ===
+OC1CCC(CC1)C(=O)Cl.O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O>>OC1CCC(CC1)C(=O)O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O |f:0.1|
+	y = OC1CCC(CC1)C(=O)Cl
+	z = O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O
