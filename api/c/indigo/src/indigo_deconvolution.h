@@ -107,7 +107,7 @@ public:
         bool _foundOrder(ObjArray<Array<int>>& rsite_orders, Array<int>& swap_order);
         void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx);
         void _refineAutoMaps(ObjList<Array<int>>& auto_maps, Graph& sub, Graph& super, Array<int>& scaf_map);
-        void _addAllRsites(QueryMolecule&, IndigoDecompositionMatch&, RedBlackMap<int, int>&);
+        void _addAllRsites(QueryMolecule&, IndigoDecompositionMatch&, std::map<int, int>& r_sites);
 
         static bool _cbAutoCheckAutomorphism(Graph& graph, const Array<int>& mapping, const void* context);
         ObjList<Array<int>> _autoMaps;
