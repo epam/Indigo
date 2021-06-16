@@ -16,15 +16,15 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "molecule/cmf_saver.h"
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
-#include "molecule/cmf_saver.h"
+#include "graph/dfs_walk.h"
 #include "molecule/cmf_symbol_codes.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cis_trans.h"
 #include "molecule/molecule_stereocenters.h"
-#include "graph/dfs_walk.h"
 
 using namespace indigo;
 
@@ -604,7 +604,8 @@ void CmfSaver::_encodeAtom(Molecule& mol, int idx, const int* mapping)
 
     if (mol.allene_stereo.isCenter(idx))
     {
-        int left, right, parity, subst[4];
+        int left, right, parity;
+        std::array<int,4> subst;
 
         mol.allene_stereo.getByAtomIdx(idx, left, right, subst, parity);
         if (subst[1] != -1 && mapping[subst[1]] != -1 && mapping[subst[1]] < mapping[subst[0]])

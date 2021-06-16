@@ -51,7 +51,7 @@ int MoleculeAlleneStereo::sameside(const Vec3f& dir1, const Vec3f& dir2, const V
     return (prod1 * prod2 > 0) ? 1 : -1;
 }
 
-bool MoleculeAlleneStereo::possibleCenter(BaseMolecule& mol, int idx, int& left, int& right, int subst[4], bool pure_h[4])
+bool MoleculeAlleneStereo::possibleCenter(BaseMolecule& mol, int idx, int& left, int& right, std::array<int, 4>& subst, bool pure_h[4])
 {
     const Vertex& vertex = mol.getVertex(idx);
 
@@ -329,10 +329,8 @@ bool MoleculeAlleneStereo::checkSub(BaseMolecule& query, BaseMolecule& target, c
             return false;
 
         int parity = qa_it->second.parity;
-        int qs[4], ts[4];
-
-        memcpy(qs, qa_it->second.subst, 4 * sizeof(int));
-        memcpy(ts, ta_it->second.subst, 4 * sizeof(int));
+        std::array<int, 4> qs = qa_it->second.subst;
+        std::array<int, 4> ts = ta_it->second.subst;
 
         if (mapping[qs[0]] == ts[2] || mapping[qs[0]] == ts[3])
         {
@@ -464,7 +462,7 @@ int MoleculeAlleneStereo::next(int i) const
     return i < _centers.size() ? i + 1 : _centers.size();
 }
 
-void MoleculeAlleneStereo::get(int i, int& atom_idx, int& left, int& right, int subst[4], int& parity)
+void MoleculeAlleneStereo::get(int i, int& atom_idx, int& left, int& right, std::array<int,4>& subst, int& parity)
 {
     auto it = _centers.begin();
     std::advance(it, i);
@@ -474,28 +472,25 @@ void MoleculeAlleneStereo::get(int i, int& atom_idx, int& left, int& right, int 
     left = atom.left;
     right = atom.right;
     parity = atom.parity;
-    memcpy(subst, atom.subst, sizeof(int) * 4);
+    subst = atom.subst;
 }
 
-void MoleculeAlleneStereo::getByAtomIdx(int atom_idx, int& left, int& right, int subst[4], int& parity)
+void MoleculeAlleneStereo::getByAtomIdx(int atom_idx, int& left, int& right, std::array<int, 4>& subst, int& parity)
 {
     _Atom& atom = _centers.at(atom_idx);
 
     left = atom.left;
     right = atom.right;
     parity = atom.parity;
-    memcpy(subst, atom.subst, sizeof(int) * 4);
+    subst = atom.subst;
 }
 
-void MoleculeAlleneStereo::add(int atom_idx, int left, int right, int subst[4], int parity)
+void MoleculeAlleneStereo::add(int atom_idx, int left, int right, const std::array<int, 4>& subst, int parity)
 {
     _Atom atom;
-
     atom.left = left;
     atom.right = right;
-    memcpy(atom.subst, subst, 4 * sizeof(int));
-    atom.parity = parity;
-
+    atom.subst = subst;
     _centers.emplace(atom_idx, atom);
 }
 

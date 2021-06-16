@@ -30,6 +30,7 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
+#include <array>
 #include <utility>
 
 namespace indigo

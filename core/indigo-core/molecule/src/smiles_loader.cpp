@@ -89,7 +89,7 @@ void SmilesLoader::_calcStereocenters()
 
         if (_bmol->getVertex(i).degree() == 2) // allene stereo center
         {
-            int subst[4];
+            std::array<int, 4> subst;
             int subst2[4];
             int left, right;
             bool pure_h[4];
@@ -1843,7 +1843,7 @@ bool SmilesLoader::_isAlleneLike(int i)
 {
     if (_bmol->getVertex(i).degree() == 2)
     {
-        int subst[4];
+        std::array<int, 4> subst;
         int left, right;
         bool pure_h[4];
 

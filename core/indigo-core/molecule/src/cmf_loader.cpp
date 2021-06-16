@@ -664,7 +664,8 @@ void CmfLoader::loadMolecule(Molecule& mol)
     {
         if (_atoms[i].allene_stereo_parity != 0)
         {
-            int left, right, subst[4];
+            int left, right;
+            std::array<int,4> subst;
             bool pure_h[4];
             int parity = _atoms[i].allene_stereo_parity;
 
