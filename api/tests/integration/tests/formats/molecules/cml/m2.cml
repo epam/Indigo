@@ -1,0 +1,57 @@
+<cml>
+<MDocument>
+  <MChemicalStruct>
+    <molecule molID="m1" absStereo="true">
+      <atomArray>
+        <atom id="a1" elementType="C" />
+        <atom id="a2" elementType="C" />
+        <atom id="a3" elementType="C" mrvStereoGroup="abs" isotope="13">
+          <atomParity atomRefs4="a3 a2 a4 a5">1</atomParity>
+        </atom>
+        <atom id="a4" elementType="C" />
+        <atom id="a5" elementType="C" mrvStereoGroup="abs" isotope="14">
+          <atomParity atomRefs4="a5 a8 a3 a10">-1</atomParity>
+        </atom>
+        <atom id="a6" elementType="N" />
+        <atom id="a7" elementType="C" mrvStereoGroup="abs">
+          <atomParity atomRefs4="a7 a6 a8 a9">1</atomParity>
+        </atom>
+        <atom id="a8" elementType="C" />
+        <atom id="a9" elementType="C" />
+        <atom id="a10" elementType="C" />
+        <atom id="a11" elementType="O" />
+        <atom id="a18" elementType="C" />
+        <atom id="a19" elementType="C" />
+        <atom id="a20" elementType="C" />
+        <atom id="a21" elementType="C" />
+        <atom id="a22" elementType="C" />
+      </atomArray>
+      <bondArray>
+        <bond atomRefs2="a1 a2" order="1" />
+        <bond atomRefs2="a2 a3" order="1" />
+        <bond atomRefs2="a3 a4" order="1" />
+        <bond atomRefs2="a4 a6" order="1" />
+        <bond atomRefs2="a6 a7" order="1" />
+        <bond atomRefs2="a7 a8" order="1" />
+        <bond atomRefs2="a8 a5" order="1" />
+        <bond atomRefs2="a3 a5" order="1" />
+        <bond atomRefs2="a5 a10" order="1" />
+        <bond atomRefs2="a10 a112" order="2" />
+        <bond atomRefs2="a7 a9" order="1" />
+        <bond atomRefs2="a9 a18" order="2">
+          <bondStereo>T</bondStereo>
+        </bond>
+        <bond atomRefs2="a18 a19" order="1" />
+        <bond atomRefs2="a19 a20" order="2">
+          <bondStereo>C</bondStereo>
+        </bond>
+        <bond atomRefs2="a20 a21" order="1" />
+        <bond atomRefs2="a21 a22" order="2">
+          <bondStereo>C</bondStereo>
+        </bond>
+        <bond atomRefs2="a9 a22" order="1" />
+      </bondArray>
+    </molecule>
+  </MChemicalStruct>
+</MDocument>
+</cml>
