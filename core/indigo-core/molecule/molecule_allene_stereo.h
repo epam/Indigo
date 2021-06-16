@@ -87,7 +87,7 @@ namespace indigo
         bool _isAlleneCenter(BaseMolecule& mol, int idx, _Atom& atom, int* sensible_bonds_out);
 
         BaseMolecule& _baseMolecule;
-        RedBlackMap<int, _Atom> _centers;
+        std::map<int, _Atom> _centers;
     };
 
 } // namespace indigo
