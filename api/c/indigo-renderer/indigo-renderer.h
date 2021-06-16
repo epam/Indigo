@@ -21,6 +21,9 @@
 
 #include "indigo.h"
 
+CEXPORT int indigoRendererInit();
+CEXPORT int indigoRendererDispose();
+
 /* Rendering */
 
 // Returns an 'output' object for the given HDC

@@ -20,6 +20,7 @@
 #define __tlscont_h__
 
 #include <typeinfo>
+#include <unordered_map>
 
 #include "base_c/defs.h"
 #include "base_c/os_tls.h"
@@ -77,26 +78,41 @@ namespace indigo
 #define TL_ALLOC_SESSION_ID() _SIDManager::getInst().allocSessionId()
 #define TL_RELEASE_SESSION_ID(id) _SIDManager::getInst().releaseSessionId(id)
 
-    // Container that keeps one instance of specifed type per session
+    // Container that keeps one instance of specified type per session
     template <typename T> class _SessionLocalContainer
     {
     public:
-        T& getLocalCopy(void)
+        T& getLocalCopy()
         {
-            return getLocalCopy(_SIDManager::getInst().getSessionId());
+            return getLocalCopy(TL_GET_SESSION_ID());
         }
 
         T& getLocalCopy(const qword id)
         {
             OsLocker locker(_lock.ref());
-            AutoPtr<T>& ptr = _map.findOrInsert(id);
-            if (ptr.get() == NULL)
-                ptr.reset(new T());
-            return ptr.ref();
+            if (!_map.count(id))
+            {
+                _map[id] = std::unique_ptr<T>(new T());
+            }
+            return *_map.at(id);
+        }
+
+        void removeLocalCopy()
+        {
+            removeLocalCopy(TL_GET_SESSION_ID());
+        }
+
+        void removeLocalCopy(const qword id)
+        {
+            OsLocker locker(_lock.ref());
+            if (_map.count(id))
+            {
+                _map.erase(id);
+            }
         }
 
     private:
-        typedef RedBlackObjMap<qword, AutoPtr<T>> _Map;
+        using _Map = std::unordered_map<qword, std::unique_ptr<T>>;
 
         _Map _map;
         ThreadSafeStaticObj<OsLock> _lock;
