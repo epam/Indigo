@@ -250,6 +250,14 @@ jobs:
           cd ../tmp
           unzip ../dist/Indigo.Net.*.nupkg
           chmod -R a+rw .
+      - name: Prepare macOS
+        if: ${{ matrix.os == 'macos' }}
+        run: |
+          brew install mono-libgdiplus
+      - name: Prepare Linux
+        if: ${{ matrix.os == 'ubuntu' }}
+        run: |
+          sudo apt install -y libgdiplus
       - name: Prepare Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
