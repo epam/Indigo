@@ -142,6 +142,7 @@ int main(int argc, char* argv[])
         i++;
     }
 
+    qword session = indigoAllocSessionId();
     indigoSetErrorHandler(onError, 0);
 
     if (filename == 0)
@@ -149,6 +150,7 @@ int main(int argc, char* argv[])
         int mol = indigoLoadMoleculeFromString(argv[2]);
         processMolecule(mol, smiles, no_arom, no_cistrans, no_tetra);
         indigoFree(mol);
+        indigoReleaseSessionId(session);
         return 0;
     }
 
@@ -159,6 +161,7 @@ int main(int argc, char* argv[])
     else
     {
         fprintf(stderr, "input file format not recognized\n");
+        indigoReleaseSessionId(session);
         return -1;
     }
 
@@ -167,6 +170,7 @@ int main(int argc, char* argv[])
         int mol = indigoLoadMoleculeFromFile(filename);
         processMolecule(mol, smiles, no_arom, no_cistrans, no_tetra);
         indigoFree(mol);
+        indigoReleaseSessionId(session);
         return 0;
     }
     else if (strcmp(ext, "cml") == 0 || strcmp(ext, "sdf") == 0 || strcmp(ext, "sdf.gz") == 0 || strcmp(ext, "rdf") == 0 || strcmp(ext, "rdf.gz") == 0 ||
@@ -196,7 +200,10 @@ int main(int argc, char* argv[])
     else
     {
         fprintf(stderr, "input file format not recognized\n");
+        indigoReleaseSessionId(session);
         return -1;
     }
+
+    indigoReleaseSessionId(session);
     return 0;
 }
