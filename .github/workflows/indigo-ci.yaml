@@ -392,7 +392,7 @@ jobs:
       - name: Prepare integration tests
         run: |
           cd build
-          python -m pip install wheel
+          python -m pip install wheel Pillow
           cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DPython3_ROOT_DIR=/mingw64
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests
