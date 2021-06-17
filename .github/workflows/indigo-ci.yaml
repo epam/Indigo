@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - master
+      - indigo-1.5
     tags:
       - 'indigo-*'
   workflow_dispatch:
