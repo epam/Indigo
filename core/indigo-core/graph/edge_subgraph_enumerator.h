@@ -53,8 +53,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _inv_mapping);      // graph -> subgraph
         TL_CP_DECL(Array<int>, _edge_mapping);     // subgraph -> graph
         TL_CP_DECL(Array<int>, _inv_edge_mapping); // graph -> subgraph
-
-        TL_CP_DECL(Pool<List<int>::Elem>, _pool);
+        TL_CP_DECL(std::list<int>, _adjacent_edges_added);
         TL_CP_DECL(Array<int>, _adjacent_edges);
 
         class _Enumerator
@@ -78,7 +77,7 @@ namespace indigo
 
             int _added_vertex;
             int _added_edge;
-            List<int> _adjacent_edges_added;
+            std::list<int>& _adjacent_edges_added;
         };
     };
 

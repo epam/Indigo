@@ -330,8 +330,8 @@ void SmilesSaver::_saveMolecule()
 
     for (i = allene_stereo.begin(); i != allene_stereo.end(); i = allene_stereo.next(i))
     {
-        int atom_idx, left, right, parity, subst[4], subst_map[4] = {-1, -1, -1, -1};
-
+        int atom_idx, left, right, parity, subst_map[4] = {-1, -1, -1, -1};
+        std::array<int, 4> subst; 
         allene_stereo.get(i, atom_idx, left, right, subst, parity);
 
         for (j = 0; j < 4; j++)

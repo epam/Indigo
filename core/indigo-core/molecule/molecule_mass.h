@@ -44,7 +44,7 @@ namespace indigo
         MoleculeMass();
         MassOptions mass_options;
 
-        const RedBlackMap<int, double>* relative_atomic_mass_map;
+        const std::map<int, double>* relative_atomic_mass_map;
 
         /* Mass of a molecule calculated using the average mass of each
          * element weighted for its natural isotopic abundance

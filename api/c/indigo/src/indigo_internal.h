@@ -348,7 +348,7 @@ public:
     bool scsr_ignore_chem_templates;
 
 protected:
-    RedBlackMap<int, IndigoObject*> _objects;
+    std::unordered_map<int, IndigoObject*> _objects;
 
     int _next_id;
     OsLock _objects_lock;

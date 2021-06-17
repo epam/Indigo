@@ -71,7 +71,7 @@ void MoleculeLayout::_init(bool smart_layout)
 
                 // modify the atom mapping
                 for (int j = 0; j < _atomMapping.size(); ++j)
-                    if (atomMapCollapse.find(_atomMapping[j]))
+                    if (atomMapCollapse.find(_atomMapping[j]) != atomMapCollapse.end())
                         _atomMapping[j] = atomMapCollapse.at(_atomMapping[j]);
             }
         }

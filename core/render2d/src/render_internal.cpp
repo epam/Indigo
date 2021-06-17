@@ -840,7 +840,7 @@ void MoleculeRenderInternal::_cloneAndFillMappings()
     _bondMappingInv.clear();
     for (int i = clone->edgeBegin(); i < clone->edgeEnd(); i = clone->edgeNext(i))
     {
-        _bondMappingInv.insert(i, BaseMolecule::findMappedEdge(*clone, *_mol, i, _atomMappingInv.ptr()));
+        _bondMappingInv.emplace(i, BaseMolecule::findMappedEdge(*clone, *_mol, i, _atomMappingInv.ptr()));
     }
     _mol = clone;
     _own_mol = true;
@@ -860,9 +860,9 @@ void MoleculeRenderInternal::_prepareSGroups()
             {
                 const Superatom& group = (Superatom&)sgroup;
                 Vec3f centre;
-                for (int i = 0; i < group.atoms.size(); ++i)
+                for (int j = 0; j < group.atoms.size(); ++j)
                 {
-                    int aid = group.atoms[i];
+                    int aid = group.atoms[j];
                     centre.add(mol.getAtomXyz(aid));
                 }
                 centre.scale(1.0f / group.atoms.size());
@@ -915,9 +915,9 @@ void MoleculeRenderInternal::_prepareSGroups()
                                     bid = amol.addBond(said, naid, amol.getBondOrder(nbid));
                                     amol.setEdgeTopology(bid, amol.getBondTopology(nbid));
                                 }
-                                if (_bondMappingInv.find(bid))
-                                    _bondMappingInv.remove(bid);
-                                _bondMappingInv.insert(bid, _bondMappingInv.at(nbid));
+                                if (_bondMappingInv.find(bid) != _bondMappingInv.end())
+                                    _bondMappingInv.erase(bid);
+                                _bondMappingInv.emplace(bid, _bondMappingInv.at(nbid));
                             }
                         }
                     }

@@ -19,19 +19,116 @@
 #ifndef __array_h__
 #define __array_h__
 
+#include "base_c/defs.h"
+#include "base_cpp/exception.h"
+#include <array>
 #include <cctype>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <deque>
+#include <map>
+#include <set>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
-
-#include "base_c/defs.h"
-#include "base_cpp/exception.h"
-
 namespace indigo
 {
     DECL_EXCEPTION(ArrayError);
+
+    template <typename Key, typename Value> class MapIndexed
+    {
+        typedef std::map<Key, std::pair<Value, int>> MapStorage;
+    private:
+        MapStorage _map;
+        std::unordered_map<int, Key> _index;
+        std::deque<int> _deleted_indexes;
+
+    public:
+
+        void insert(Key key, Value value)
+        {
+            int index;
+            if (_deleted_indexes.size())
+            {
+                index = _deleted_indexes.front();
+                _deleted_indexes.pop_front();
+            }
+            else
+                index = _map.size();
+            _map.emplace(key, std::make_pair(value, index));
+            _index.emplace(index, key);
+        }
+
+        void clear()
+        {
+            _map.clear();
+            _index.clear();
+            _deleted_indexes.clear();
+        }
+
+        void erase(Key key)
+        {
+            auto& pair = _map.at(key);
+            int idx = pair.second;
+            _index.erase(idx);
+            _deleted_indexes.push_back(idx);
+            _map.erase(key);
+        }
+
+        typename MapStorage::iterator find(Key key)
+        {
+            return _map.find( key );
+        }
+
+        std::pair<Key, Value> kvp(int i)
+        {
+            auto key = _index.at(i);
+            return std::make_pair(key, _map.at(key).first);
+        }
+
+        int next(int i) const
+        {
+            auto key = _index.at(i);
+            auto it = _map.find(key);
+            if (it != _map.end() && ++it != _map.end())
+            {
+                return it->second.second;
+            }
+            return _map.size();
+        }
+
+        Value& at(Key key)
+        {
+            return _map.at(key).first;
+        }
+
+        typename MapStorage::iterator begin()
+        {
+            return _map.begin();
+        }
+
+        typename MapStorage::iterator end()
+        {
+            return _map.end();
+        }
+
+        typename MapStorage::const_iterator begin() const
+        {
+            return _map.begin();
+        }
+
+        typename MapStorage::const_iterator end() const
+        {
+            return _map.end();
+        }
+
+        int size() const
+        {
+            return _map.size();
+        }
+    };
 
     template <typename T> class Array
     {

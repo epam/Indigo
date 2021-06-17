@@ -29,7 +29,7 @@ CP_DEF(EdgeSubgraphEnumerator);
 
 EdgeSubgraphEnumerator::EdgeSubgraphEnumerator(Graph& graph)
     : _graph(graph), CP_INIT, TL_CP_GET(_subgraph), TL_CP_GET(_mapping), TL_CP_GET(_inv_mapping), TL_CP_GET(_edge_mapping), TL_CP_GET(_inv_edge_mapping),
-      TL_CP_GET(_pool), TL_CP_GET(_adjacent_edges)
+      TL_CP_GET(_adjacent_edges_added), TL_CP_GET(_adjacent_edges)
 {
     min_edges = 1;
     max_edges = graph.edgeCount();
@@ -62,14 +62,14 @@ int EdgeSubgraphEnumerator::_fCIS()
 }
 
 EdgeSubgraphEnumerator::_Enumerator::_Enumerator(EdgeSubgraphEnumerator& context)
-    : _context(context), _graph(context._graph), _subgraph(context._subgraph), _adjacent_edges_added(context._pool)
+    : _context(context), _graph(context._graph), _subgraph(context._subgraph), _adjacent_edges_added(context._adjacent_edges_added)
 {
     _added_vertex = -1;
     _added_edge = -1;
 }
 
 EdgeSubgraphEnumerator::_Enumerator::_Enumerator(const EdgeSubgraphEnumerator::_Enumerator& other)
-    : _context(other._context), _graph(other._context._graph), _subgraph(other._context._subgraph), _adjacent_edges_added(other._context._pool)
+    : _context(other._context), _graph(other._context._graph), _subgraph(other._context._subgraph), _adjacent_edges_added(other._context._adjacent_edges_added)
 {
     _added_vertex = -1;
     _added_edge = -1;
@@ -190,15 +190,15 @@ void EdgeSubgraphEnumerator::_Enumerator::_removeAddedEdge()
 void EdgeSubgraphEnumerator::_Enumerator::_addAdjacentEdge(int edge_idx)
 {
     _context._adjacent_edges[edge_idx] = 1;
-    _adjacent_edges_added.add(edge_idx);
+    _adjacent_edges_added.push_back(edge_idx);
 }
 
 void EdgeSubgraphEnumerator::_Enumerator::_removeAdjacentEdges()
 {
     int i;
 
-    for (i = _adjacent_edges_added.begin(); i != _adjacent_edges_added.end(); i = _adjacent_edges_added.next(i))
-        _context._adjacent_edges[_adjacent_edges_added.at(i)] = 0;
+    for (auto val : _adjacent_edges_added)
+        _context._adjacent_edges[val] = 0;
 
     _adjacent_edges_added.clear();
 }

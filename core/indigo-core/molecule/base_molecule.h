@@ -101,8 +101,7 @@ namespace indigo
     class DLLEXPORT BaseMolecule : public Graph
     {
     public:
-        typedef RedBlackMap<int, int> Mapping;
-
+        typedef std::unordered_map<int, int> Mapping;
         BaseMolecule();
         ~BaseMolecule() override;
 

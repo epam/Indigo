@@ -114,8 +114,8 @@ void Indigo::removeAllObjects()
     OsLocker lock(_objects_lock);
     int i;
 
-    for (i = _objects.begin(); i != _objects.end(); i = _objects.next(i))
-        delete _objects.value(i);
+    for (auto& kvp : _objects)
+        delete kvp.second;
 
     _objects.clear();
 }
@@ -232,17 +232,17 @@ int Indigo::addObject(IndigoObject* obj)
 {
     OsLocker lock(_objects_lock);
     int id = _next_id++;
-    _objects.insert(id, obj);
+    _objects.emplace(id, obj);
     return id;
 }
 
 void Indigo::removeObject(int id)
 {
     OsLocker lock(_objects_lock);
-    if (_objects.at2(id) == 0)
+    if (_objects.find(id) == _objects.end())
         return;
     delete _objects.at(id);
-    _objects.remove(id);
+    _objects.erase(id);
 }
 
 IndigoObject& Indigo::getObject(int handle)
@@ -253,9 +253,9 @@ IndigoObject& Indigo::getObject(int handle)
     {
         return *_objects.at(handle);
     }
-    catch (RedBlackMap<int, IndigoObject*>::Error& e)
+    catch (const std::exception& e)
     {
-        throw IndigoError("can not access object #%d: %s", handle, e.message());
+        throw IndigoError("can not access object #%d: %s", handle, e.what());
     }
 }
 

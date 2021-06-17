@@ -1220,10 +1220,10 @@ void BaseMolecule::collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping&
         int from = group.atoms[j];
         int to = group.atoms[k];
 
-        int* to_ = mapAtom.at2(from);
-        if (to_ == 0)
-            mapAtom.insert(from, to);
-        else if (*to_ != to)
+        auto it = mapAtom.find(from);
+        if (it == mapAtom.end()) 
+            mapAtom.emplace(from, to);
+        else if (it->second != to)
             throw Error("Invalid mapping in MultipleGroup::collapse");
 
         if (k != j)
@@ -1233,15 +1233,15 @@ void BaseMolecule::collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping&
     for (int j = bm.edgeBegin(); j < bm.edgeEnd(); j = bm.edgeNext(j))
     {
         const Edge& edge = bm.getEdge(j);
-        bool in1 = mapAtom.find(edge.beg), in2 = mapAtom.find(edge.end), p1 = in1 && mapAtom.at(edge.beg) == edge.beg,
+        bool in1 = mapAtom.find(edge.beg) != mapAtom.end(), in2 = mapAtom.find(edge.end) != mapAtom.end(), p1 = in1 && mapAtom.at(edge.beg) == edge.beg,
              p2 = in2 && mapAtom.at(edge.end) == edge.end;
         if ((in1 && !p1 && !in2) || (!in1 && !p2 && in2))
         {
             int beg = in1 ? mapAtom.at(edge.beg) : edge.beg;
             int end = in2 ? mapAtom.at(edge.end) : edge.end;
             int bid = copyBaseBond(bm, beg, end, j);
-            if (!mapBondInv.find(bid))
-                mapBondInv.insert(bid, j);
+            if (mapBondInv.find(bid) == mapBondInv.end())
+                mapBondInv.emplace(bid, j);
         }
     }
 

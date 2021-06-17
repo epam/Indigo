@@ -70,20 +70,12 @@ double MoleculeMass::molecularWeight( Molecule& mol )
 
         if (isotope == 0)
         {
-            double* value = 0;
-            if (relative_atomic_mass_map != NULL)
+            if (relative_atomic_mass_map != NULL && relative_atomic_mass_map->find(number) != relative_atomic_mass_map->end())
             {
-                value = relative_atomic_mass_map->at2(number);
+                auto it = relative_atomic_mass_map->find(number);
+                molmass += it->second;
             }
-
-            if (value == 0)
-            {
-                elements_count[number]++;
-            }
-            else
-            {
-                molmass += *value;
-            }
+            else elements_count[number]++;
         }
         else
         {
@@ -364,15 +356,10 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
         }
         else
         {
-            double* value = 0;
-            if (relative_atomic_mass_map != NULL)
+            if (relative_atomic_mass_map != NULL && relative_atomic_mass_map->find(number) != relative_atomic_mass_map->end())
             {
-                value = relative_atomic_mass_map->at2(number);
-            }
-
-            if (value)
-            {
-                relativeMass[number] += *value;
+                auto it = relative_atomic_mass_map->find(number);
+                relativeMass[number] += it->second;
             }
             else
             {

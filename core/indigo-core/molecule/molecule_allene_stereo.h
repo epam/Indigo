@@ -46,19 +46,19 @@ namespace indigo
         void buildOnSubmolecule(MoleculeAlleneStereo& super, int* mapping);
         static bool checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping);
 
-        static bool possibleCenter(BaseMolecule& mol, int idx, int& left, int& right, int subst[4], bool pure_h[4]);
+        static bool possibleCenter(BaseMolecule& mol, int idx, int& left, int& right, std::array<int, 4>& subst, bool pure_h[4]);
 
         bool isCenter(int atom_idx);
         int size();
         int begin() const;
         int end() const;
         int next(int i) const;
-        void get(int i, int& atom_idx, int& left, int& right, int subst[4], int& parity);
-        void getByAtomIdx(int atom_idx, int& left, int& right, int subst[4], int& parity);
+        void get(int i, int& atom_idx, int& left, int& right, std::array<int, 4>& subst, int& parity);
+        void getByAtomIdx(int atom_idx, int& left, int& right, std::array<int, 4>& subst, int& parity);
         void invert(int atom_idx);
         void reset(int atom_idx);
 
-        void add(int atom_idx, int left, int right, int subst[4], int parity);
+        void add(int atom_idx, int left, int right, const std::array<int, 4>& subst, int parity);
 
         void removeAtoms(const Array<int>& indices);
         void removeBonds(const Array<int>& indices);
@@ -76,18 +76,22 @@ namespace indigo
             //              [2] and [3] are connected to the "right" neighbor.
             //              [1] and [3] may be -1 (implicit H)
             //              [0] and [2] are never -1
-            int subst[4];
+            std::array<int, 4> subst;
 
             // parity = 1  if [2]-nd substituent is rotated CCW w.r.t. [0]-th
             //             substituent when we look at it from "left" to "right"
             // parity = 2  if it is rotated CW
             int parity;
+            _Atom()
+                : left(0), right(0), subst({0, 0, 0, 0}), parity(0)
+            {
+            }
         };
 
         bool _isAlleneCenter(BaseMolecule& mol, int idx, _Atom& atom, int* sensible_bonds_out);
 
         BaseMolecule& _baseMolecule;
-        RedBlackMap<int, _Atom> _centers;
+        MapIndexed<int, _Atom> _centers;
     };
 
 } // namespace indigo

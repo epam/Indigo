@@ -28,8 +28,6 @@
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
-#include "base_cpp/multimap.h"
-
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
 using namespace indigo;
@@ -377,7 +375,6 @@ void MolfileLoader::_readCtab2000()
 
         try
         {
-
 
             atom_line.skip(3); // skip atom stereo parity
             _hcount[k] = atom_line.readIntFix(3);
@@ -3048,23 +3045,29 @@ void MolfileLoader::_fillSGroupsParentIndices()
 {
     MoleculeSGroups& sgroups = _bmol->sgroups;
 
-    MultiMap<int, int> indices;
+    std::map<int, std::set<int>> indices;
     // original index can be arbitrary, sometimes key is used multiple times
 
     for (auto i = sgroups.begin(); i != sgroups.end(); i++)
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        indices.insert(sgroup.original_group, i);
+        auto it = indices.find(sgroup.original_group);
+        if (it == indices.end())
+        {
+            indices.emplace(sgroup.original_group, std::set<int>({i}));
+        } else
+            it->second.emplace(i);
     }
 
     // TODO: replace parent_group with parent_idx
     for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        auto& set = indices.get(sgroup.parent_group);
-        if (set.size() == 1)
+        auto set_it = indices.find(sgroup.parent_group);
+        if( set_it != indices.end() && set_it->second.size() == 1)
         {
-            sgroup.parent_idx = set.key(set.begin());
+            auto bg_it = set_it->second.begin();
+            sgroup.parent_idx = *bg_it;
         }
         else
         {

@@ -20,6 +20,7 @@
 #define __list_h__
 
 #include "base_cpp/pool.h"
+#include <list>
 
 namespace indigo
 {

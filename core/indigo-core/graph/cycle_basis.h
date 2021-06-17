@@ -55,7 +55,7 @@ namespace indigo
 
         ObjArray<Array<int>> _cycles;
 
-        RedBlackSet<int> _cycleVertices;
+        std::unordered_set<int> _cycleVertices;
     };
 
 } // namespace indigo
