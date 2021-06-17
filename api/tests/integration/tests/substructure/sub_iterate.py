@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 
 sys.path.append('../../common')
@@ -36,7 +37,7 @@ def checkMatch(query, mapping):
             else:
                 order1 = ['-', '=', '#', ':'][query_bond.bondOrder() - 1]
                 order2 = ['-', '=', '#', ':'][target_bond.bondOrder() - 1]
-                print('Error! Bond type not matched. '),
+                print('Error! Bond type not matched. ', end=' ')
                 print('Bond {2}{0}{3} --> {4}{1}{5}'.format(order1, order2, query_bond.source().index(),
                                                             query_bond.destination().index(),
                                                             target_bond.source().index(),
