@@ -39,8 +39,9 @@ namespace indigo
 
     template <typename Key, typename Value> class MapIndexed
     {
+        typedef std::map<Key, std::pair<Value, int>> MapStorage;
     private:
-        std::map<Key, std::pair<Value, int>> _map;
+        MapStorage _map;
         std::unordered_map<int, Key> _index;
         std::deque<int> _deleted_indexes;
 
@@ -76,12 +77,12 @@ namespace indigo
             _map.erase(key);
         }
 
-        auto find(Key key)
+        typename MapStorage::iterator find(Key key)
         {
             return _map.find( key );
         }
 
-        auto kvp(int i)
+        std::pair<Key, Value> kvp(int i)
         {
             auto key = _index.at(i);
             return std::make_pair(key, _map.at(key).first);
@@ -103,22 +104,22 @@ namespace indigo
             return _map.at(key).first;
         }
 
-        auto begin()
+        typename MapStorage::iterator begin()
         {
             return _map.begin();
         }
 
-        auto end()
+        typename MapStorage::iterator end()
         {
             return _map.end();
         }
 
-        auto begin() const
+        typename MapStorage::const_iterator begin() const
         {
             return _map.begin();
         }
 
-        auto end() const
+        typename MapStorage::const_iterator end() const
         {
             return _map.end();
         }
