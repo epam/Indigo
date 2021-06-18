@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -119,343 +114,346 @@ extern "C" {
 
 /**********************************************************************************************/
 int CompareTautNonIsoPartOfINChI( const INChI *i1,
-                                  const INChI *i2 );
+                                      const INChI *i2 );
 const char *EquString( int EquVal );
-int FillOutINChI( INChI *pINChI,
-                  INChI_Aux *pINChI_Aux,
-                  int num_atoms,
-                  int num_at_tg,
-                  int num_removed_H,
-                  sp_ATOM *at,
-                  inp_ATOM *norm_at,
-                  CANON_STAT *pCS,
-                  CANON_GLOBALS *pCG,
-                  int bTautomeric,
-                  INCHI_MODE nUserMode,
-                  char *pStrErrStruct );
-int MakeHillFormulaString( char *szHillFormula,
-                           INCHI_IOSTREAM_STRING *strbuf,
-                           int *bOverflow);
-int bHasOrigInfo( ORIG_INFO *OrigInfo,
-                  int num_atoms );
-int EqlOrigInfo( INChI_Aux *a1,
-                 INChI_Aux *a2 );
-int MakeAbcNumber( char *szString,
-                   int nStringLen,
-                   const char *szLeadingDelim,
-                   int nValue );
-int MakeDecNumber( char *szString,
-                   int nStringLen,
-                   const char *szLeadingDelim,
-                   int nValue );
-int MakeCtStringNew( CANON_GLOBALS *pCG,
-                     AT_NUMB *LinearCT,
-                     int nLenCT,
-                     int bAddDelim,
-                     S_CHAR *nNum_H,
-                     int num_atoms,
-                     INCHI_IOSTREAM_STRING *strbuf,
-                     int nCtMode,
-                     int *bOverflow);
-int MakeCtStringOld( AT_NUMB *LinearCT,
-                     int nLenCT,
-                     int bAddDelim,
-                     INCHI_IOSTREAM_STRING *strbuf,
-                     int nCtMode,
-                     int *bOverflow);
-int MakeCtString( CANON_GLOBALS *pCG,
-                  AT_NUMB *LinearCT,
-                  int nLenCT,
-                  int bAddDelim,
-                  S_CHAR *nNum_H,    /* not used here */
-                  int num_atoms,    /* not used here */
-                  INCHI_IOSTREAM_STRING *strbuf,
-                  int nCtMode,
-                  int *bOverflow);
-int MakeTautString( AT_NUMB *LinearCT,
-                    int nLenCT,
-                    int bAddDelim,
-                    INCHI_IOSTREAM_STRING *strbuf,
-                    int nCtMode,
-                    int *bOverflow);
-int MakeEquString( AT_NUMB *LinearCT,
-                   int nLenCT,
-                   int bAddDelim,
-                   INCHI_IOSTREAM_STRING *strbuf,
-                   int nCtMode,
-                   int *bOverflow);
-int MakeIsoAtomString( INChI_IsotopicAtom   *IsotopicAtom,
-                       int nNumberOfIsotopicAtoms,
-                       INCHI_IOSTREAM_STRING *strbuf,
-                       int nCtMode,
-                       int *bOverflow);
-int MakeIsoTautString( INChI_IsotopicTGroup   *IsotopicTGroup,
-                       int nNumberOfIsotopicTGroups,
-                       INCHI_IOSTREAM_STRING *strbuf,
-                       int nCtMode,
-                       int *bOverflow);
-int MakeIsoHString( int num_iso_H[],
-                    INCHI_IOSTREAM_STRING *strbuf,
-                    int nCtMode, int *bOverflow);
-int MakeStereoString( AT_NUMB *at1,
-                      AT_NUMB *at2,
-                      S_CHAR *parity,
-                      int bAddDelim,
+    int FillOutINChI( INChI *pINChI,
+                      INChI_Aux *pINChI_Aux,
+                      int num_atoms,
+                      int num_at_tg,
+                      int num_removed_H,
+                      sp_ATOM *at,
+                      inp_ATOM *norm_at,
+                      CANON_STAT *pCS,
+                      CANON_GLOBALS *pCG,
+                      int bTautomeric,
+                      INCHI_MODE nUserMode,
+                      char *pStrErrStruct,
+                      int bNoWarnings );
+    int MakeHillFormulaString( char *szHillFormula,
+                               INCHI_IOS_STRING *strbuf,
+                               int *bOverflow );
+    int bHasOrigInfo( ORIG_INFO *OrigInfo,
+                      int num_atoms );
+    int EqlOrigInfo( INChI_Aux *a1,
+                     INChI_Aux *a2 );
+    int MakeAbcNumber( char *szString,
+                       int nStringLen,
+                       const char *szLeadingDelim,
+                       int nValue );
+    int MakeDecNumber( char *szString,
+                       int nStringLen,
+                       const char *szLeadingDelim,
+                       int nValue );
+    int MakeCtStringNew( CANON_GLOBALS *pCG,
+                         AT_NUMB *LinearCT,
+                         int nLenCT,
+                         int bAddDelim,
+                         S_CHAR *nNum_H,
+                         int num_atoms,
+                         INCHI_IOS_STRING *strbuf,
+                         int nCtMode,
+                         int *bOverflow );
+    int MakeCtStringOld( AT_NUMB *LinearCT,
+                         int nLenCT,
+                         int bAddDelim,
+                         INCHI_IOS_STRING *strbuf,
+                         int nCtMode,
+                         int *bOverflow );
+    int MakeCtString( CANON_GLOBALS *pCG,
+                      AT_NUMB *LinearCT,
                       int nLenCT,
-                      INCHI_IOSTREAM_STRING *buf,
+                      int bAddDelim,
+                      S_CHAR *nNum_H,    /* not used here */
+                      int num_atoms,    /* not used here */
+                      INCHI_IOS_STRING *strbuf,
                       int nCtMode,
-                      int *bOverflow);
-int MakeCRVString( ORIG_INFO *OrigInfo,
-                   int nLenCT,
-                   int bAddDelim,
-                   INCHI_IOSTREAM_STRING *strbuf,
-                   int nCtMode,
-                   int *bOverflow);
-int MakeMult( int mult,
-              const char *szTailingDelim,
-              INCHI_IOSTREAM_STRING *buf,
-              int nCtMode,
-              int *bOverflow);
-int MakeDelim( const char *szTailingDelim,
-               INCHI_IOSTREAM_STRING *buf,
-               int *bOverflow);
-int MakeEqStr( const char *szTailingDelim,
-               int mult,
-               INCHI_IOSTREAM_STRING *buf,
-               int *bOverflow);
-int MakeHString( int bAddDelim,
-                 S_CHAR *LinearCT,
-                 int nLenCT,
-                 INCHI_IOSTREAM_STRING *buf,
-                 int nCtMode,
-                 int *bOverflow );
-AT_NUMB  *GetDfsOrder4CT( CANON_GLOBALS *pCG,
-                          AT_NUMB *LinearCT,
+                      int *bOverflow );
+    int MakeTautString( AT_NUMB *LinearCT,
+                        int nLenCT,
+                        int bAddDelim,
+                        INCHI_IOS_STRING *strbuf,
+                        int nCtMode,
+                        int *bOverflow );
+    int MakeEquString( AT_NUMB *LinearCT,
+                       int nLenCT,
+                       int bAddDelim,
+                       INCHI_IOS_STRING *strbuf,
+                       int nCtMode,
+                       int *bOverflow );
+    int MakeIsoAtomString( INChI_IsotopicAtom   *IsotopicAtom,
+                           int nNumberOfIsotopicAtoms,
+                           INCHI_IOS_STRING *strbuf,
+                           int nCtMode,
+                           int *bOverflow );
+    int MakeIsoTautString( INChI_IsotopicTGroup   *IsotopicTGroup,
+                           int nNumberOfIsotopicTGroups,
+                           INCHI_IOS_STRING *strbuf,
+                           int nCtMode,
+                           int *bOverflow );
+    int MakeIsoHString( int num_iso_H[],
+                        INCHI_IOS_STRING *strbuf,
+                        int nCtMode, int *bOverflow );
+    int MakeStereoString( AT_NUMB *at1,
+                          AT_NUMB *at2,
+                          S_CHAR *parity,
+                          int bAddDelim,
                           int nLenCT,
-                          S_CHAR *nNum_H,
-                          int num_atoms,
-                          int nCtMode );
-int str_HillFormula(  INCHI_SORT *pINChISort,
-                      INCHI_IOSTREAM_STRING *strbuf,
-                      int *bOverflow,
-                      int bOutType,
-                      int num_components,
-                      int bUseMulipliers);
-int str_HillFormula2( INCHI_SORT *pINChISort    /* non-taut */,
-                      INCHI_SORT *pINChISort2    /* taut */,
-                      INCHI_IOSTREAM_STRING *strbuf,
-                      int *bOverflow,
-                      int bOutType,
-                      int num_components,
-                      int bUseMulipliers);
-int str_Connections( CANON_GLOBALS *pCG,
-                     INCHI_SORT *pINChISort,
-                     INCHI_IOSTREAM_STRING *strbuf,
+                          INCHI_IOS_STRING *buf,
+                          int nCtMode,
+                          int *bOverflow );
+    int MakeCRVString( ORIG_INFO *OrigInfo,
+                       int nLenCT,
+                       int bAddDelim,
+                       INCHI_IOS_STRING *strbuf,
+                       int nCtMode,
+                       int *bOverflow );
+    int MakeMult( int mult,
+                  const char *szTailingDelim,
+                  INCHI_IOS_STRING *buf,
+                  int nCtMode,
+                  int *bOverflow );
+    int MakeDelim( const char *szTailingDelim,
+                   INCHI_IOS_STRING *buf,
+                   int *bOverflow );
+    int MakeEqStr( const char *szTailingDelim,
+                   int mult,
+                   INCHI_IOS_STRING *buf,
+                   int *bOverflow );
+    int MakeHString( int bAddDelim,
+                     S_CHAR *LinearCT,
+                     int nLenCT,
+                     INCHI_IOS_STRING *buf,
+                     int nCtMode,
+                     int *bOverflow );
+    AT_NUMB  *GetDfsOrder4CT( CANON_GLOBALS *pCG,
+                              AT_NUMB *LinearCT,
+                              int nLenCT,
+                              S_CHAR *nNum_H,
+                              int num_atoms,
+                              int nCtMode );
+    int str_HillFormula( INCHI_SORT *pINChISort,
+                         INCHI_IOS_STRING *strbuf,
+                         int *bOverflow,
+                         int bOutType,
+                         int num_components,
+                         int bUseMulipliers );
+    int str_HillFormula2( INCHI_SORT *pINChISort    /* non-taut */,
+                          INCHI_SORT *pINChISort2    /* taut */,
+                          INCHI_IOS_STRING *strbuf,
+                          int *bOverflow,
+                          int bOutType,
+                          int num_components,
+                          int bUseMulipliers );
+    int str_Connections( CANON_GLOBALS *pCG,
+                         INCHI_SORT *pINChISort,
+                         INCHI_IOS_STRING *strbuf,
+                         int *bOverflow,
+                         int bOutType,
+                         int ATOM_MODE,
+                         int num_components,
+                         int bUseMulipliers );
+    int str_H_atoms( INCHI_SORT *pINChISort,
+                     INCHI_IOS_STRING *strbuf,
                      int *bOverflow,
                      int bOutType,
                      int ATOM_MODE,
+                     int TAUT_MODE,
                      int num_components,
-                     int bUseMulipliers);
-int str_H_atoms( INCHI_SORT *pINChISort,
-                 INCHI_IOSTREAM_STRING *strbuf,
-                 int *bOverflow,
-                 int bOutType,
-                 int ATOM_MODE,
-                 int TAUT_MODE,
-                 int num_components,
-                 int bUseMulipliers);
-int str_Charge2( INCHI_SORT *pINChISort,
+                     int bUseMulipliers );
+    int str_Charge2( INCHI_SORT *pINChISort,
+                     INCHI_SORT *pINChISort2,
+                     INCHI_IOS_STRING *strbuf,
+                     int *bOverflow,
+                     int bOutType,
+                     int num_components,
+                     int bSecondNonTautPass,
+                     int bOmitRepetitions,
+                     int bUseMulipliers );
+    int str_Sp2( INCHI_SORT *pINChISort,
                  INCHI_SORT *pINChISort2,
-                 INCHI_IOSTREAM_STRING *strbuf,
+                 INCHI_IOS_STRING *strbuf,
                  int *bOverflow,
                  int bOutType,
+                 int TAUT_MODE,
                  int num_components,
                  int bSecondNonTautPass,
                  int bOmitRepetitions,
-                 int bUseMulipliers);
-int str_Sp2( INCHI_SORT *pINChISort,
-             INCHI_SORT *pINChISort2,
-             INCHI_IOSTREAM_STRING *strbuf,
-             int *bOverflow,
-             int bOutType,
-             int TAUT_MODE,
-             int num_components,
-             int bSecondNonTautPass,
-             int bOmitRepetitions,
-             int bUseMulipliers);
-int str_IsoSp2( INCHI_SORT *pINChISort,
-                INCHI_SORT *pINChISort2,
-                INCHI_IOSTREAM_STRING *strbuf,
-                int *bOverflow,
-                int bOutType, int TAUT_MODE,
-                int num_components,
-                int bSecondNonTautPass,
-                int bOmitRepetitions,
-                int bUseMulipliers);
-int str_Sp3( INCHI_SORT *pINChISort,
-             INCHI_SORT *pINChISort2,
-             INCHI_IOSTREAM_STRING *strbuf,
-             int *bOverflow,
-             int bOutType,
-             int TAUT_MODE,
-             int num_components,
-             int bRelRac,
-             int bSecondNonTautPass,
-             int bOmitRepetitions,
-             int bUseMulipliers);
-int str_IsoSp3( INCHI_SORT *pINChISort,
-                INCHI_SORT *pINChISort2,
-                INCHI_IOSTREAM_STRING *strbuf,
-                int *bOverflow,
-                int bOutType,
-                int TAUT_MODE,
-                int num_components,
-                int bRelRac,
-                int bSecondNonTautPass,
-                int bOmitRepetitions,
-                int bUseMulipliers);
-int str_StereoAbsInv( INCHI_SORT *pINChISort,
-                      INCHI_IOSTREAM_STRING *strbuf,
-                      int *bOverflow,
-                      int bOutType,
-                      int num_components);
-int str_IsoStereoAbsInv( INCHI_SORT *pINChISort,
-                         INCHI_IOSTREAM_STRING *strbuf,
-                         int *bOverflow,
-                         int bOutType,
-                         int num_components);
-int str_IsoAtoms( INCHI_SORT *pINChISort,
-                  INCHI_SORT *pINChISort2,
-                  INCHI_IOSTREAM_STRING *strbuf,
-                  int *bOverflow,
-                  int bOutType,
-                  int TAUT_MODE,
-                  int num_components,
-                  int bAbcNumbers,
-                  int bSecondNonTautPass,
-                  int bOmitRepetitions,
-                  int bUseMulipliers);
-int str_FixedH_atoms( INCHI_SORT *pINChISort,
-                      INCHI_IOSTREAM_STRING *strbuf,
-                      int *bOverflow,
-                      int bOutType,
-                      int ATOM_MODE,
-                      int num_components,
-                      int bUseMulipliers);
-int str_AuxNumb( CANON_GLOBALS *pCG,
-                 INCHI_SORT *pINChISort,
+                 int bUseMulipliers );
+    int str_IsoSp2( INCHI_SORT *pINChISort,
+                    INCHI_SORT *pINChISort2,
+                    INCHI_IOS_STRING *strbuf,
+                    int *bOverflow,
+                    int bOutType, int TAUT_MODE,
+                    int num_components,
+                    int bSecondNonTautPass,
+                    int bOmitRepetitions,
+                    int bUseMulipliers );
+    int str_Sp3( INCHI_SORT *pINChISort,
                  INCHI_SORT *pINChISort2,
-                 INCHI_IOSTREAM_STRING *strbuf,
+                 INCHI_IOS_STRING *strbuf,
                  int *bOverflow,
                  int bOutType,
                  int TAUT_MODE,
                  int num_components,
+                 int bRelRac,
                  int bSecondNonTautPass,
-                 int bOmitRepetitions);
-int str_AuxEqu( INCHI_SORT *pINChISort,
-                INCHI_SORT *pINChISort2,
-                INCHI_IOSTREAM_STRING *strbuf,
-                int *bOverflow,
-                int bOutType,
-                int TAUT_MODE,
-                int num_components,
-                int bSecondNonTautPass,
-                int bOmitRepetitions,
-                int bUseMulipliers);
-int str_AuxTgroupEqu( INCHI_SORT *pINChISort,
-                      INCHI_IOSTREAM_STRING *strbuf,
+                 int bOmitRepetitions,
+                 int bUseMulipliers );
+    int str_IsoSp3( INCHI_SORT *pINChISort,
+                    INCHI_SORT *pINChISort2,
+                    INCHI_IOS_STRING *strbuf,
+                    int *bOverflow,
+                    int bOutType,
+                    int TAUT_MODE,
+                    int num_components,
+                    int bRelRac,
+                    int bSecondNonTautPass,
+                    int bOmitRepetitions,
+                    int bUseMulipliers );
+    int str_StereoAbsInv( INCHI_SORT *pINChISort,
+                          INCHI_IOS_STRING *strbuf,
+                          int *bOverflow,
+                          int bOutType,
+                          int num_components );
+    int str_IsoStereoAbsInv( INCHI_SORT *pINChISort,
+                             INCHI_IOS_STRING *strbuf,
+                             int *bOverflow,
+                             int bOutType,
+                             int num_components );
+    int str_IsoAtoms( INCHI_SORT *pINChISort,
+                      INCHI_SORT *pINChISort2,
+                      INCHI_IOS_STRING *strbuf,
                       int *bOverflow,
                       int bOutType,
                       int TAUT_MODE,
                       int num_components,
-                      int bUseMulipliers);
-int str_AuxIsoTgroupEqu( INCHI_SORT *pINChISort,
-                         INCHI_IOSTREAM_STRING *strbuf,
-                         int *bOverflow,
-                         int bOutType,
-                         int TAUT_MODE,
-                         int num_components,
-                         int bOmitRepetitions,
-                         int bUseMulipliers);
-int str_AuxInvSp3( INCHI_SORT *pINChISort,
-                   INCHI_SORT *pINChISort2,
-                   INCHI_IOSTREAM_STRING *strbuf,
-                   int *bOverflow,
-                   int bOutType,
-                   int TAUT_MODE,
-                   int num_components,
-                   int bSecondNonTautPass,
-                   int bOmitRepetitions,
-                   int bUseMulipliers);
-int str_AuxInvSp3Numb( CANON_GLOBALS *pCG,
-                       INCHI_SORT *pINChISort,
-                       INCHI_SORT *pINChISort2,
-                       INCHI_IOSTREAM_STRING *strbuf,
-                       int *bOverflow,
-                       int bOutType,
-                       int TAUT_MODE,
-                       int num_components,
-                       int bSecondNonTautPass,
-                       int bOmitRepetitions);
-int str_AuxIsoNumb( CANON_GLOBALS *pCG,
-                    INCHI_SORT *pINChISort,
+                      int bAbcNumbers,
+                      int bSecondNonTautPass,
+                      int bOmitRepetitions,
+                      int bUseMulipliers );
+    int str_FixedH_atoms( INCHI_SORT *pINChISort,
+                          INCHI_IOS_STRING *strbuf,
+                          int *bOverflow,
+                          int bOutType,
+                          int ATOM_MODE,
+                          int num_components,
+                          int bUseMulipliers );
+    int str_AuxNumb( CANON_GLOBALS *pCG,
+                     INCHI_SORT *pINChISort,
+                     INCHI_SORT *pINChISort2,
+                     INCHI_IOS_STRING *strbuf,
+                     int *bOverflow,
+                     int bOutType,
+                     int TAUT_MODE,
+                     int num_components,
+                     int bSecondNonTautPass,
+                     int bOmitRepetitions );
+    int str_AuxEqu( INCHI_SORT *pINChISort,
                     INCHI_SORT *pINChISort2,
-                    INCHI_IOSTREAM_STRING *strbuf,
+                    INCHI_IOS_STRING *strbuf,
                     int *bOverflow,
                     int bOutType,
                     int TAUT_MODE,
                     int num_components,
                     int bSecondNonTautPass,
-                    int bOmitRepetitions);
-int str_AuxIsoEqu( INCHI_SORT *pINChISort,
-                   INCHI_SORT *pINChISort2,
-                   INCHI_IOSTREAM_STRING *strbuf,
-                   int *bOverflow,
-                   int bOutType,
-                   int TAUT_MODE,
-                   int num_components,
-                   int bSecondNonTautPass,
-                   int bOmitRepetitions,
-                   int bUseMulipliers);
-int str_AuxInvIsoSp3( INCHI_SORT *pINChISort,
-                      INCHI_SORT *pINChISort2,
-                      INCHI_IOSTREAM_STRING *strbuf,
-                      int *bOverflow, int bOutType,
-                      int TAUT_MODE,
-                      int num_components,
-                      int bSecondNonTautPass,
-                      int bOmitRepetitions,
-                      int bUseMulipliers);
-int str_AuxInvIsoSp3Numb( CANON_GLOBALS *pCG,
-                          INCHI_SORT *pINChISort,
-                          INCHI_SORT *pINChISort2,
-                          INCHI_IOSTREAM_STRING *strbuf,
+                    int bOmitRepetitions,
+                    int bUseMulipliers );
+    int str_AuxTgroupEqu( INCHI_SORT *pINChISort,
+                          INCHI_IOS_STRING *strbuf,
                           int *bOverflow,
                           int bOutType,
                           int TAUT_MODE,
                           int num_components,
+                          int bUseMulipliers );
+    int str_AuxIsoTgroupEqu( INCHI_SORT *pINChISort,
+                             INCHI_IOS_STRING *strbuf,
+                             int *bOverflow,
+                             int bOutType,
+                             int TAUT_MODE,
+                             int num_components,
+                             int bOmitRepetitions,
+                             int bUseMulipliers );
+    int str_AuxInvSp3( INCHI_SORT *pINChISort,
+                       INCHI_SORT *pINChISort2,
+                       INCHI_IOS_STRING *strbuf,
+                       int *bOverflow,
+                       int bOutType,
+                       int TAUT_MODE,
+                       int num_components,
+                       int bSecondNonTautPass,
+                       int bOmitRepetitions,
+                       int bUseMulipliers );
+    int str_AuxInvSp3Numb( CANON_GLOBALS *pCG,
+                           INCHI_SORT *pINChISort,
+                           INCHI_SORT *pINChISort2,
+                           INCHI_IOS_STRING *strbuf,
+                           int *bOverflow,
+                           int bOutType,
+                           int TAUT_MODE,
+                           int num_components,
+                           int bSecondNonTautPass,
+                           int bOmitRepetitions );
+    int str_AuxIsoNumb( CANON_GLOBALS *pCG,
+                        INCHI_SORT *pINChISort,
+                        INCHI_SORT *pINChISort2,
+                        INCHI_IOS_STRING *strbuf,
+                        int *bOverflow,
+                        int bOutType,
+                        int TAUT_MODE,
+                        int num_components,
+                        int bSecondNonTautPass,
+                        int bOmitRepetitions );
+    int str_AuxIsoEqu( INCHI_SORT *pINChISort,
+                       INCHI_SORT *pINChISort2,
+                       INCHI_IOS_STRING *strbuf,
+                       int *bOverflow,
+                       int bOutType,
+                       int TAUT_MODE,
+                       int num_components,
+                       int bSecondNonTautPass,
+                       int bOmitRepetitions,
+                       int bUseMulipliers );
+    int str_AuxInvIsoSp3( INCHI_SORT *pINChISort,
+                          INCHI_SORT *pINChISort2,
+                          INCHI_IOS_STRING *strbuf,
+                          int *bOverflow, int bOutType,
+                          int TAUT_MODE,
+                          int num_components,
                           int bSecondNonTautPass,
-                          int bOmitRepetitions);
-int str_AuxChargeRadVal( INCHI_SORT *pINChISort,
-                         INCHI_IOSTREAM_STRING *strbuf,
-                         int *bOverflow,
-                         int bOutType,
-                         int TAUT_MODE,
-                         int num_components,
-                         int bUseMulipliers);
-int bin_AuxTautTrans( INCHI_SORT *pINChISort,
-                      INCHI_SORT *pINChISort2,
-                      AT_NUMB **pTrans_n,
-                      AT_NUMB **pTrans_s,
-                      int bOutType,
-                      int num_components);
+                          int bOmitRepetitions,
+                          int bUseMulipliers );
+    int str_AuxInvIsoSp3Numb( CANON_GLOBALS *pCG,
+                              INCHI_SORT *pINChISort,
+                              INCHI_SORT *pINChISort2,
+                              INCHI_IOS_STRING *strbuf,
+                              int *bOverflow,
+                              int bOutType,
+                              int TAUT_MODE,
+                              int num_components,
+                              int bSecondNonTautPass,
+                              int bOmitRepetitions );
+    int str_AuxChargeRadVal( INCHI_SORT *pINChISort,
+                             INCHI_IOS_STRING *strbuf,
+                             int *bOverflow,
+                             int bOutType,
+                             int TAUT_MODE,
+                             int num_components,
+                             int bUseMulipliers );
+    int bin_AuxTautTrans( INCHI_SORT *pINChISort,
+                          INCHI_SORT *pINChISort2,
+                          AT_NUMB **pTrans_n,
+                          AT_NUMB **pTrans_s,
+                          int bOutType,
+                          int num_components );
 int str_AuxTautTrans( CANON_GLOBALS *pCG,
                       AT_NUMB *nTrans_n,
                       AT_NUMB *nTrans_s,
-                      INCHI_IOSTREAM_STRING *strbuf,
+                      INCHI_IOS_STRING *strbuf,
                       int *bOverflow,
                       int TAUT_MODE,
-                      int num_components);
+                      int num_components );
+
+int MergeZzInHillFormula(INCHI_IOS_STRING *strbuf);
 
 #ifndef COMPILE_ALL_CPP
 #ifdef __cplusplus

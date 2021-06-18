@@ -1,0 +1,700 @@
+119914 119914
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000
+119914 119915
+  tversky sim:         0.8300
+  tversky sim 1 0:     0.7981
+  tversky sim 0 1:     0.8646
+  tversky sim 0.7 0.3: 0.8169
+  tanimo to:           0.7094
+  euclid-sub:          0.7981
+119914 119916
+  tversky sim:         0.7349
+  tversky sim 1 0:     0.7596
+  tversky sim 0 1:     0.7117
+  tversky sim 0.7 0.3: 0.7446
+  tanimo to:           0.5809
+  euclid-sub:          0.7596
+119914 119917
+  tversky sim:         0.7122
+  tversky sim 1 0:     0.7019
+  tversky sim 0 1:     0.7228
+  tversky sim 0.7 0.3: 0.7081
+  tanimo to:           0.5530
+  euclid-sub:          0.7019
+119914 119918
+  tversky sim:         0.7113
+  tversky sim 1 0:     0.6635
+  tversky sim 0 1:     0.7667
+  tversky sim 0.7 0.3: 0.6914
+  tanimo to:           0.5520
+  euclid-sub:          0.6635
+119914 119919
+  tversky sim:         0.7857
+  tversky sim 1 0:     0.7404
+  tversky sim 0 1:     0.8370
+  tversky sim 0.7 0.3: 0.7669
+  tanimo to:           0.6471
+  euclid-sub:          0.7404
+119914 119920
+  tversky sim:         0.7174
+  tversky sim 1 0:     0.6346
+  tversky sim 0 1:     0.8250
+  tversky sim 0.7 0.3: 0.6818
+  tanimo to:           0.5593
+  euclid-sub:          0.6346
+119914 119921
+  tversky sim:         0.8178
+  tversky sim 1 0:     0.8846
+  tversky sim 0 1:     0.7603
+  tversky sim 0.7 0.3: 0.8433
+  tanimo to:           0.6917
+  euclid-sub:          0.8846
+119914 119922
+  tversky sim:         0.7157
+  tversky sim 1 0:     0.7019
+  tversky sim 0 1:     0.7300
+  tversky sim 0.7 0.3: 0.7101
+  tanimo to:           0.5573
+  euclid-sub:          0.7019
+119914 119923
+  tversky sim:         0.7576
+  tversky sim 1 0:     0.7212
+  tversky sim 0 1:     0.7979
+  tversky sim 0.7 0.3: 0.7426
+  tanimo to:           0.6098
+  euclid-sub:          0.7212
+119915 119914
+  tversky sim:         0.8300
+  tversky sim 1 0:     0.8646
+  tversky sim 0 1:     0.7981
+  tversky sim 0.7 0.3: 0.8435
+  tanimo to:           0.7094
+  euclid-sub:          0.8646
+119915 119915
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000
+119915 119916
+  tversky sim:         0.7440
+  tversky sim 1 0:     0.8021
+  tversky sim 0 1:     0.6937
+  tversky sim 0.7 0.3: 0.7662
+  tanimo to:           0.5923
+  euclid-sub:          0.8021
+119915 119917
+  tversky sim:         0.6701
+  tversky sim 1 0:     0.6875
+  tversky sim 0 1:     0.6535
+  tversky sim 0.7 0.3: 0.6769
+  tanimo to:           0.5038
+  euclid-sub:          0.6875
+119915 119918
+  tversky sim:         0.8602
+  tversky sim 1 0:     0.8333
+  tversky sim 0 1:     0.8889
+  tversky sim 0.7 0.3: 0.8493
+  tanimo to:           0.7547
+  euclid-sub:          0.8333
+119915 119919
+  tversky sim:         0.7553
+  tversky sim 1 0:     0.7396
+  tversky sim 0 1:     0.7717
+  tversky sim 0.7 0.3: 0.7489
+  tanimo to:           0.6068
+  euclid-sub:          0.7396
+119915 119920
+  tversky sim:         0.8182
+  tversky sim 1 0:     0.7500
+  tversky sim 0 1:     0.9000
+  tversky sim 0.7 0.3: 0.7895
+  tanimo to:           0.6923
+  euclid-sub:          0.7500
+119915 119921
+  tversky sim:         0.7650
+  tversky sim 1 0:     0.8646
+  tversky sim 0 1:     0.6860
+  tversky sim 0.7 0.3: 0.8019
+  tanimo to:           0.6194
+  euclid-sub:          0.8646
+119915 119922
+  tversky sim:         0.6735
+  tversky sim 1 0:     0.6875
+  tversky sim 0 1:     0.6600
+  tversky sim 0.7 0.3: 0.6790
+  tanimo to:           0.5077
+  euclid-sub:          0.6875
+119915 119923
+  tversky sim:         0.7789
+  tversky sim 1 0:     0.7708
+  tversky sim 0 1:     0.7872
+  tversky sim 0.7 0.3: 0.7757
+  tanimo to:           0.6379
+  euclid-sub:          0.7708
+119916 119914
+  tversky sim:         0.7349
+  tversky sim 1 0:     0.7117
+  tversky sim 0 1:     0.7596
+  tversky sim 0.7 0.3: 0.7254
+  tanimo to:           0.5809
+  euclid-sub:          0.7117
+119916 119915
+  tversky sim:         0.7440
+  tversky sim 1 0:     0.6937
+  tversky sim 0 1:     0.8021
+  tversky sim 0.7 0.3: 0.7230
+  tanimo to:           0.5923
+  euclid-sub:          0.6937
+119916 119916
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000
+119916 119917
+  tversky sim:         0.9434
+  tversky sim 1 0:     0.9009
+  tversky sim 0 1:     0.9901
+  tversky sim 0.7 0.3: 0.9259
+  tanimo to:           0.8929
+  euclid-sub:          0.9009
+119916 119918
+  tversky sim:         0.7463
+  tversky sim 1 0:     0.6757
+  tversky sim 0 1:     0.8333
+  tversky sim 0.7 0.3: 0.7163
+  tanimo to:           0.5952
+  euclid-sub:          0.6757
+119916 119919
+  tversky sim:         0.7882
+  tversky sim 1 0:     0.7207
+  tversky sim 0 1:     0.8696
+  tversky sim 0.7 0.3: 0.7597
+  tanimo to:           0.6504
+  euclid-sub:          0.7207
+119916 119920
+  tversky sim:         0.7644
+  tversky sim 1 0:     0.6577
+  tversky sim 0 1:     0.9125
+  tversky sim 0.7 0.3: 0.7178
+  tanimo to:           0.6186
+  euclid-sub:          0.6577
+119916 119921
+  tversky sim:         0.8017
+  tversky sim 1 0:     0.8378
+  tversky sim 0 1:     0.7686
+  tversky sim 0.7 0.3: 0.8158
+  tanimo to:           0.6691
+  euclid-sub:          0.8378
+119916 119922
+  tversky sim:         0.9479
+  tversky sim 1 0:     0.9009
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 0.9285
+  tanimo to:           0.9009
+  euclid-sub:          0.9009
+119916 119923
+  tversky sim:         0.7317
+  tversky sim 1 0:     0.6757
+  tversky sim 0 1:     0.7979
+  tversky sim 0.7 0.3: 0.7082
+  tanimo to:           0.5769
+  euclid-sub:          0.6757
+119917 119914
+  tversky sim:         0.7122
+  tversky sim 1 0:     0.7228
+  tversky sim 0 1:     0.7019
+  tversky sim 0.7 0.3: 0.7164
+  tanimo to:           0.5530
+  euclid-sub:          0.7228
+119917 119915
+  tversky sim:         0.6701
+  tversky sim 1 0:     0.6535
+  tversky sim 0 1:     0.6875
+  tversky sim 0.7 0.3: 0.6633
+  tanimo to:           0.5038
+  euclid-sub:          0.6535
+119917 119916
+  tversky sim:         0.9434
+  tversky sim 1 0:     0.9901
+  tversky sim 0 1:     0.9009
+  tversky sim 0.7 0.3: 0.9615
+  tanimo to:           0.8929
+  euclid-sub:          0.9901
+119917 119917
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000
+119917 119918
+  tversky sim:         0.7225
+  tversky sim 1 0:     0.6832
+  tversky sim 0 1:     0.7667
+  tversky sim 0.7 0.3: 0.7062
+  tanimo to:           0.5656
+  euclid-sub:          0.6832
+119917 119919
+  tversky sim:         0.7668
+  tversky sim 1 0:     0.7327
+  tversky sim 0 1:     0.8043
+  tversky sim 0.7 0.3: 0.7528
+  tanimo to:           0.6218
+  euclid-sub:          0.7327
+119917 119920
+  tversky sim:         0.7514
+  tversky sim 1 0:     0.6733
+  tversky sim 0 1:     0.8500
+  tversky sim 0.7 0.3: 0.7181
+  tanimo to:           0.6018
+  euclid-sub:          0.6733
+119917 119921
+  tversky sim:         0.7748
+  tversky sim 1 0:     0.8515
+  tversky sim 0 1:     0.7107
+  tversky sim 0.7 0.3: 0.8037
+  tanimo to:           0.6324
+  euclid-sub:          0.8515
+119917 119922
+  tversky sim:         0.9950
+  tversky sim 1 0:     0.9901
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 0.9930
+  tanimo to:           0.9901
+  euclid-sub:          0.9901
+119917 119923
+  tversky sim:         0.7179
+  tversky sim 1 0:     0.6931
+  tversky sim 0 1:     0.7447
+  tversky sim 0.7 0.3: 0.7078
+  tanimo to:           0.5600
+  euclid-sub:          0.6931
+119918 119914
+  tversky sim:         0.7113
+  tversky sim 1 0:     0.7667
+  tversky sim 0 1:     0.6635
+  tversky sim 0.7 0.3: 0.7325
+  tanimo to:           0.5520
+  euclid-sub:          0.7667
+119918 119915
+  tversky sim:         0.8602
+  tversky sim 1 0:     0.8889
+  tversky sim 0 1:     0.8333
+  tversky sim 0.7 0.3: 0.8715
+  tanimo to:           0.7547
+  euclid-sub:          0.8889
+119918 119916
+  tversky sim:         0.7463
+  tversky sim 1 0:     0.8333
+  tversky sim 0 1:     0.6757
+  tversky sim 0.7 0.3: 0.7788
+  tanimo to:           0.5952
+  euclid-sub:          0.8333
+119918 119917
+  tversky sim:         0.7225
+  tversky sim 1 0:     0.7667
+  tversky sim 0 1:     0.6832
+  tversky sim 0.7 0.3: 0.7395
+  tanimo to:           0.5656
+  euclid-sub:          0.7667
+119918 119918
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000
+119918 119919
+  tversky sim:         0.8901
+  tversky sim 1 0:     0.9000
+  tversky sim 0 1:     0.8804
+  tversky sim 0.7 0.3: 0.8940
+  tanimo to:           0.8020
+  euclid-sub:          0.9000
+119918 119920
+  tversky sim:         0.9176
+  tversky sim 1 0:     0.8667
+  tversky sim 0 1:     0.9750
+  tversky sim 0.7 0.3: 0.8966
+  tanimo to:           0.8478
+  euclid-sub:          0.8667
+119918 119921
+  tversky sim:         0.7299
+  tversky sim 1 0:     0.8556
+  tversky sim 0 1:     0.6364
+  tversky sim 0.7 0.3: 0.7754
+  tanimo to:           0.5746
+  euclid-sub:          0.8556
+119918 119922
+  tversky sim:         0.7263
+  tversky sim 1 0:     0.7667
+  tversky sim 0 1:     0.6900
+  tversky sim 0.7 0.3: 0.7419
+  tanimo to:           0.5702
+  euclid-sub:          0.7667
+119918 119923
+  tversky sim:         0.8261
+  tversky sim 1 0:     0.8444
+  tversky sim 0 1:     0.8085
+  tversky sim 0.7 0.3: 0.8333
+  tanimo to:           0.7037
+  euclid-sub:          0.8444
+119919 119914
+  tversky sim:         0.7857
+  tversky sim 1 0:     0.8370
+  tversky sim 0 1:     0.7404
+  tversky sim 0.7 0.3: 0.8054
+  tanimo to:           0.6471
+  euclid-sub:          0.8370
+119919 119915
+  tversky sim:         0.7553
+  tversky sim 1 0:     0.7717
+  tversky sim 0 1:     0.7396
+  tversky sim 0.7 0.3: 0.7618
+  tanimo to:           0.6068
+  euclid-sub:          0.7717
+119919 119916
+  tversky sim:         0.7882
+  tversky sim 1 0:     0.8696
+  tversky sim 0 1:     0.7207
+  tversky sim 0.7 0.3: 0.8188
+  tanimo to:           0.6504
+  euclid-sub:          0.8696
+119919 119917
+  tversky sim:         0.7668
+  tversky sim 1 0:     0.8043
+  tversky sim 0 1:     0.7327
+  tversky sim 0.7 0.3: 0.7814
+  tanimo to:           0.6218
+  euclid-sub:          0.8043
+119919 119918
+  tversky sim:         0.8901
+  tversky sim 1 0:     0.8804
+  tversky sim 0 1:     0.9000
+  tversky sim 0.7 0.3: 0.8862
+  tanimo to:           0.8020
+  euclid-sub:          0.8804
+119919 119919
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000
+119919 119920
+  tversky sim:         0.9070
+  tversky sim 1 0:     0.8478
+  tversky sim 0 1:     0.9750
+  tversky sim 0.7 0.3: 0.8824
+  tanimo to:           0.8298
+  euclid-sub:          0.8478
+119919 119921
+  tversky sim:         0.7512
+  tversky sim 1 0:     0.8696
+  tversky sim 0 1:     0.6612
+  tversky sim 0.7 0.3: 0.7944
+  tanimo to:           0.6015
+  euclid-sub:          0.8696
+119919 119922
+  tversky sim:         0.7708
+  tversky sim 1 0:     0.8043
+  tversky sim 0 1:     0.7400
+  tversky sim 0.7 0.3: 0.7839
+  tanimo to:           0.6271
+  euclid-sub:          0.8043
+119919 119923
+  tversky sim:         0.8172
+  tversky sim 1 0:     0.8261
+  tversky sim 0 1:     0.8085
+  tversky sim 0.7 0.3: 0.8207
+  tanimo to:           0.6909
+  euclid-sub:          0.8261
+119920 119914
+  tversky sim:         0.7174
+  tversky sim 1 0:     0.8250
+  tversky sim 0 1:     0.6346
+  tversky sim 0.7 0.3: 0.7569
+  tanimo to:           0.5593
+  euclid-sub:          0.8250
+119920 119915
+  tversky sim:         0.8182
+  tversky sim 1 0:     0.9000
+  tversky sim 0 1:     0.7500
+  tversky sim 0.7 0.3: 0.8491
+  tanimo to:           0.6923
+  euclid-sub:          0.9000
+119920 119916
+  tversky sim:         0.7644
+  tversky sim 1 0:     0.9125
+  tversky sim 0 1:     0.6577
+  tversky sim 0.7 0.3: 0.8175
+  tanimo to:           0.6186
+  euclid-sub:          0.9125
+119920 119917
+  tversky sim:         0.7514
+  tversky sim 1 0:     0.8500
+  tversky sim 0 1:     0.6733
+  tversky sim 0.7 0.3: 0.7879
+  tanimo to:           0.6018
+  euclid-sub:          0.8500
+119920 119918
+  tversky sim:         0.9176
+  tversky sim 1 0:     0.9750
+  tversky sim 0 1:     0.8667
+  tversky sim 0.7 0.3: 0.9398
+  tanimo to:           0.8478
+  euclid-sub:          0.9750
+119920 119919
+  tversky sim:         0.9070
+  tversky sim 1 0:     0.9750
+  tversky sim 0 1:     0.8478
+  tversky sim 0.7 0.3: 0.9330
+  tanimo to:           0.8298
+  euclid-sub:          0.9750
+119920 119920
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000
+119920 119921
+  tversky sim:         0.7065
+  tversky sim 1 0:     0.8875
+  tversky sim 0 1:     0.5868
+  tversky sim 0.7 0.3: 0.7692
+  tanimo to:           0.5462
+  euclid-sub:          0.8875
+119920 119922
+  tversky sim:         0.7444
+  tversky sim 1 0:     0.8375
+  tversky sim 0 1:     0.6700
+  tversky sim 0.7 0.3: 0.7791
+  tanimo to:           0.5929
+  euclid-sub:          0.8375
+119920 119923
+  tversky sim:         0.8391
+  tversky sim 1 0:     0.9125
+  tversky sim 0 1:     0.7766
+  tversky sim 0.7 0.3: 0.8670
+  tanimo to:           0.7228
+  euclid-sub:          0.9125
+119921 119914
+  tversky sim:         0.8178
+  tversky sim 1 0:     0.7603
+  tversky sim 0 1:     0.8846
+  tversky sim 0.7 0.3: 0.7938
+  tanimo to:           0.6917
+  euclid-sub:          0.7603
+119921 119915
+  tversky sim:         0.7650
+  tversky sim 1 0:     0.6860
+  tversky sim 0 1:     0.8646
+  tversky sim 0.7 0.3: 0.7313
+  tanimo to:           0.6194
+  euclid-sub:          0.6860
+119921 119916
+  tversky sim:         0.8017
+  tversky sim 1 0:     0.7686
+  tversky sim 0 1:     0.8378
+  tversky sim 0.7 0.3: 0.7881
+  tanimo to:           0.6691
+  euclid-sub:          0.7686
+119921 119917
+  tversky sim:         0.7748
+  tversky sim 1 0:     0.7107
+  tversky sim 0 1:     0.8515
+  tversky sim 0.7 0.3: 0.7478
+  tanimo to:           0.6324
+  euclid-sub:          0.7107
+119921 119918
+  tversky sim:         0.7299
+  tversky sim 1 0:     0.6364
+  tversky sim 0 1:     0.8556
+  tversky sim 0.7 0.3: 0.6893
+  tanimo to:           0.5746
+  euclid-sub:          0.6364
+119921 119919
+  tversky sim:         0.7512
+  tversky sim 1 0:     0.6612
+  tversky sim 0 1:     0.8696
+  tversky sim 0.7 0.3: 0.7124
+  tanimo to:           0.6015
+  euclid-sub:          0.6612
+119921 119920
+  tversky sim:         0.7065
+  tversky sim 1 0:     0.5868
+  tversky sim 0 1:     0.8875
+  tversky sim 0.7 0.3: 0.6532
+  tanimo to:           0.5462
+  euclid-sub:          0.5868
+119921 119921
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000
+119921 119922
+  tversky sim:         0.7783
+  tversky sim 1 0:     0.7107
+  tversky sim 0 1:     0.8600
+  tversky sim 0.7 0.3: 0.7498
+  tanimo to:           0.6370
+  euclid-sub:          0.7107
+119921 119923
+  tversky sim:         0.8000
+  tversky sim 1 0:     0.7107
+  tversky sim 0 1:     0.9149
+  tversky sim 0.7 0.3: 0.7617
+  tanimo to:           0.6667
+  euclid-sub:          0.7107
+119922 119914
+  tversky sim:         0.7157
+  tversky sim 1 0:     0.7300
+  tversky sim 0 1:     0.7019
+  tversky sim 0.7 0.3: 0.7213
+  tanimo to:           0.5573
+  euclid-sub:          0.7300
+119922 119915
+  tversky sim:         0.6735
+  tversky sim 1 0:     0.6600
+  tversky sim 0 1:     0.6875
+  tversky sim 0.7 0.3: 0.6680
+  tanimo to:           0.5077
+  euclid-sub:          0.6600
+119922 119916
+  tversky sim:         0.9479
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     0.9009
+  tversky sim 0.7 0.3: 0.9681
+  tanimo to:           0.9009
+  euclid-sub:          1.0000
+119922 119917
+  tversky sim:         0.9950
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     0.9901
+  tversky sim 0.7 0.3: 0.9970
+  tanimo to:           0.9901
+  euclid-sub:          1.0000
+119922 119918
+  tversky sim:         0.7263
+  tversky sim 1 0:     0.6900
+  tversky sim 0 1:     0.7667
+  tversky sim 0.7 0.3: 0.7113
+  tanimo to:           0.5702
+  euclid-sub:          0.6900
+119922 119919
+  tversky sim:         0.7708
+  tversky sim 1 0:     0.7400
+  tversky sim 0 1:     0.8043
+  tversky sim 0.7 0.3: 0.7582
+  tanimo to:           0.6271
+  euclid-sub:          0.7400
+119922 119920
+  tversky sim:         0.7444
+  tversky sim 1 0:     0.6700
+  tversky sim 0 1:     0.8375
+  tversky sim 0.7 0.3: 0.7128
+  tanimo to:           0.5929
+  euclid-sub:          0.6700
+119922 119921
+  tversky sim:         0.7783
+  tversky sim 1 0:     0.8600
+  tversky sim 0 1:     0.7107
+  tversky sim 0.7 0.3: 0.8090
+  tanimo to:           0.6370
+  euclid-sub:          0.8600
+119922 119922
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000
+119922 119923
+  tversky sim:         0.7216
+  tversky sim 1 0:     0.7000
+  tversky sim 0 1:     0.7447
+  tversky sim 0.7 0.3: 0.7128
+  tanimo to:           0.5645
+  euclid-sub:          0.7000
+119923 119914
+  tversky sim:         0.7576
+  tversky sim 1 0:     0.7979
+  tversky sim 0 1:     0.7212
+  tversky sim 0.7 0.3: 0.7732
+  tanimo to:           0.6098
+  euclid-sub:          0.7979
+119923 119915
+  tversky sim:         0.7789
+  tversky sim 1 0:     0.7872
+  tversky sim 0 1:     0.7708
+  tversky sim 0.7 0.3: 0.7822
+  tanimo to:           0.6379
+  euclid-sub:          0.7872
+119923 119916
+  tversky sim:         0.7317
+  tversky sim 1 0:     0.7979
+  tversky sim 0 1:     0.6757
+  tversky sim 0.7 0.3: 0.7568
+  tanimo to:           0.5769
+  euclid-sub:          0.7979
+119923 119917
+  tversky sim:         0.7179
+  tversky sim 1 0:     0.7447
+  tversky sim 0 1:     0.6931
+  tversky sim 0.7 0.3: 0.7284
+  tanimo to:           0.5600
+  euclid-sub:          0.7447
+119923 119918
+  tversky sim:         0.8261
+  tversky sim 1 0:     0.8085
+  tversky sim 0 1:     0.8444
+  tversky sim 0.7 0.3: 0.8190
+  tanimo to:           0.7037
+  euclid-sub:          0.8085
+119923 119919
+  tversky sim:         0.8172
+  tversky sim 1 0:     0.8085
+  tversky sim 0 1:     0.8261
+  tversky sim 0.7 0.3: 0.8137
+  tanimo to:           0.6909
+  euclid-sub:          0.8085
+119923 119920
+  tversky sim:         0.8391
+  tversky sim 1 0:     0.7766
+  tversky sim 0 1:     0.9125
+  tversky sim 0.7 0.3: 0.8129
+  tanimo to:           0.7228
+  euclid-sub:          0.7766
+119923 119921
+  tversky sim:         0.8000
+  tversky sim 1 0:     0.9149
+  tversky sim 0 1:     0.7107
+  tversky sim 0.7 0.3: 0.8423
+  tanimo to:           0.6667
+  euclid-sub:          0.9149
+119923 119922
+  tversky sim:         0.7216
+  tversky sim 1 0:     0.7447
+  tversky sim 0 1:     0.7000
+  tversky sim 0.7 0.3: 0.7307
+  tanimo to:           0.5645
+  euclid-sub:          0.7447
+119923 119923
+  tversky sim:         1.0000
+  tversky sim 1 0:     1.0000
+  tversky sim 0 1:     1.0000
+  tversky sim 0.7 0.3: 1.0000
+  tanimo to:           1.0000
+  euclid-sub:          1.0000

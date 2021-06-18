@@ -15,7 +15,7 @@ TEST(IndigoLayoutTest, layout_rings)
 {
     qword session = indigoAllocSessionId();
     indigoSetSessionId(session);
-
+    indigoRendererInit();
     indigoSetErrorHandler(errorHandling, 0);
 
     try
@@ -37,12 +37,16 @@ TEST(IndigoLayoutTest, layout_rings)
     {
         ASSERT_STREQ("", e.message());
     }
+
+    indigoRendererDispose();
+    indigoReleaseSessionId(session);
 }
 
 TEST(IndigoLayoutTest, layout_crown)
 {
     qword session = indigoAllocSessionId();
     indigoSetSessionId(session);
+    indigoRendererInit();
 
     indigoSetErrorHandler(errorHandling, 0);
 
@@ -65,4 +69,7 @@ TEST(IndigoLayoutTest, layout_crown)
     {
         ASSERT_STREQ("", e.message());
     }
+
+    indigoRendererDispose();
+    indigoReleaseSessionId(session);
 }

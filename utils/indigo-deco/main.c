@@ -142,6 +142,7 @@ int main(int argc, const char** argv)
     int deco = 0;
     int structures = 0;
 
+    const qword session = indigoAllocSessionId();
     indigoSetErrorHandler(onError, 0);
 
     printf("R-Group deconvolution utility, powered by Indigo API version %s\n", indigoVersion());
@@ -400,5 +401,6 @@ int main(int argc, const char** argv)
         indigoFree(output);
     }
 
+    indigoReleaseSessionId(session);
     return 0;
 };

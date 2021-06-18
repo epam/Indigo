@@ -58,6 +58,7 @@ O=[N+](C1=CC(=C(C=C1)N)O)[O-]
 OC1=C(C=C(C=C1)N)[N+](=O)[O-]
 NC1=NC(C2=CC=C([N+]([O-])=O)C=C2)=CS1
 O=[N+](C1=CN=C(S1)N)[O-]
+NC1=NC(C(C2=CC=CC=C2)O1)=O.O[Mg]O
 O=C1C2=CC(=CC=C2C(=O)C3=C1C=CC=C3)N
 CC1=C(C=CC=C1)/N=N/C2=CC(=C(C=C2)N)C
 OC(=O)CCCCCN
@@ -100,6 +101,7 @@ CC(C)NCC(O)COC1(=CC=C(C=C1)CC(=O)N).[H]Cl
 ClC1=NC(=NC(=N1)NC(C)C)NCC
 CN3[C@@H]1CC[C@H]3C[C@H](C1)OC(=O)C(CO)c2ccccc2
 N=C(C2=CC=C(N(C)C)C=C2)C1=CC=C(N(C)C)C=C1.[H]Cl
+CC(=O)O[C@H]1[C@@H]([C@H](O[C@H]([C@@H]1OC(=O)C)COC(=O)C)S[Au]=P(CC)(CC)CC)OC(=O)C
 N/C1=N/C(=O)N(/C=N1)[C@@H]2O[C@H](CO)[C@@H](O)[C@H]2O
 O[C@H]([C@@H]2O)[C@@H](O[C@@H]2CO)N(N=CC(N)=N1)C1=O
 O=C(OC[C@@H](C(=O)O)N)C=[N+]=[N-]
@@ -165,11 +167,13 @@ N1C(=NC(=C2C=CC=CC=12)N(CCO)CCO)C3=CC=CS3
 S=C(N(CCO)CCO)[S-].[K+]
 CC(CNCC(C)O)O
 S=C(N(C)C)S[Bi](SC(=S)N(C)C)SC(=S)N(C)C
+O=[Bi]Cl
 C[C@](C)(c1ccc(O)cc1)c2ccc(O)cc2
 C12C(=C(C=CC=1NC(C)=O)S(=O)(=O)[O-])C=C(C(=C2O)/N=N/C3=C4C(=C(C=C3)/N=N\C5=CC=C(C=C5)S(=O)(=O)[O-])C=CC(=C4)S(=O)(=O)[O-])S(=O)(=O)[O-].[Na+].[Na+].[Na+].[Na+]
 C12C(=CC(=C(C=1N)/N=N/C3=CC=C(C=C3)C4=CC=C(C=C4)/N=N/C5=C(C=C(C=C5)N)N)S(=O)(=O)[O-])C=C(C(=C2O)/N=N/C6=CC=CC=C6)S(=O)(=O)[O-].[Na+].[Na+]
 C12C(=C(C(=C(C=1)S(=O)(=O)[O-])/N=N/C3=CC=C(C=C3)C4=CC=C(C=C4)/N=N/C5=C(C=C6C(=C5O)C(=CC(=C6)S(=O)(=O)[O-])N)S(=O)(=O)[O-])O)C(=CC(=C2)S(=O)(=O)[O-])N.[Na+].[Na+].[Na+].[Na+]
 C12C(=CC(=C(C=1O)/N=N/C3=C(C=C(C=C3)C4=CC(=C(C=C4)/N=N/C5=C(C=C6C(=C5O)C(=CC(=C6)S(=O)(=O)[O-])N)S(=O)(=O)[O-])OC)OC)S(=O)(=O)[O-])C=C(C=C2N)S(=O)(=O)[O-].[Na+].[Na+].[Na+].[Na+]
+C12=C(C=C(C(=C1O)/N=N/C3=CC=C(C=C3O)C4=CC=C(\N=N/C5=C(C=C6C(=C5O)C(=CC(=C6)S(=O)(=O)[O-])N)S(=O)(=O)[O-])C(=C4)O)S(=O)(=O)[O-])C=C(C=C2N)S(=O)(=O)[O-].[Na+].[Na+].[Na+].[Na+]
 O=C1C2=C(C(=CC=C2N)N)C(=O)C3=C(C=CC(=C13)N)N
 O=S(=O)(C1=C(C=CC=C1)/C(=C2\C=C/C(=[N+](/CC3=CC(=CC=C3)S(=O)(=O)[O-])CC)C=C2)C4=CC=C(C=C4)N(CC5=CC(=CC=C5)S(=O)(=O)[O-])CC)[O-].[Na+].[Na+]
 C1(=C2/C(C3=CC(S(=O)(=O)[O-])=CC=C3N2)=O)/C(C4=CC(S(=O)(=O)[O-])=CC=C4N1)=O.[Na+].[Na+]
@@ -218,6 +222,7 @@ O=C1C2=C(N=CN2C)N(C(=O)N1C)C
 O[C@@H]3C\C(=C\C=C2/CCC[C@@]1(C)[C@H]2CC[C@@H]1[C@H](C)/C=C/[C@H](C)C(C)C)C(=C)CC3
 CC(=O)[O-].[O-]C(=O)C.[Ca+2]
 [Cl-].[Ca+2].[Cl-]
+C(C(C)O)(O[Ca]OC(C(C)O)=O)=O
 C(CCC)(CCC)C(=O)[O-].C(CCC)(CCC)C(=O)[O-].[Ca+2]
 O=C(CC1=CC=C(C=C1)OC(=O)C2=CC=C(C=C2)NC(=N)N)OCC(=O)N(C)C.O=S(=O)(C)O
 CC(OC(=O)OC1CCCCC1)OC(=O)c5cccc6nc(OCC)n(Cc2ccc(cc2)c3ccccc3C\4=N\N=N/N/4)c56
@@ -315,6 +320,8 @@ O[C@@H]1C2[C@@]34C5=C(C=CC(=C5O2)OC)CC(C3C=C1)N(C)CC4
 COC1=C(C(=CC2=C1C3=CC=C(OC)C(=O)C=C3[C@@H](NC)CC2)OC)OC
 N1(C(/N=C(\C2C=CC(=CC1=2)C)C3C=C(C=CC=3)OC)=O)C(C)C
 C1(=C(C(=C(C=C1)C(C)=O)O)CCC)OCCCCC2NN=NN=2
+S=C(N(C)C)S[Cu]SC(=S)N(C)C
+N1=CC=CC2=CC=CC(=C12)O[Cu]OC3=CC=CC4=CC=CN=C34
 CC1=C(Cl)C(=O)OC2=C1C=CC(=C2)OP(=S)(OCC)OCC
 O=C1OC2=C(C=CC=C2)C=C1
 COC1=CC(=C(C=C1)N)C
@@ -360,6 +367,7 @@ N(NCC=C)CC=C.[H]Cl.[H]Cl
 C=CCN(CC=C)N=O
 NC1=NC(=NC(=N1)C2=CC=C(O2)[N+]([O-])=O)N
 C1(=C(/C=C/C2=C(S(=O)(=O)[O-])C=C(C=C2)N)C=CC(=C1)N)S(=O)(=O)[O-].[Na+].[Na+]
+COC1=C(N)C=C(N)C=C1.O=S(O)(O)=O.COC2=C(N)C=C(N)C=C2.O=S(O)(O)=O
 NC1=CC=C(C=C1)/N=N/C2=CC=C(C=C2)N
 O=C(C1=CC=C(C=C1)N)NC2=CC=C(C=C2)N
 C1(C(=CC=C(C=1)N)O)N.[H]Cl.[H]Cl
@@ -373,6 +381,7 @@ C1(/C=C(\C=C/C1=O)CCN)=[N+]=[N-].[H]Cl
 C1=C2C=CC3=CC=CC=C3C2=CC4=CC=C5C(=C14)C=CC=C5
 O1C2=C(C=CC=C2)OC3=CC=CC=C13
 NC1=CC=C2C3=C(C=CC=C3)OC2=C1
+NC1(=C(C[N+]2=CS(H)(C(CCOC(C3C=CC=CC=3)=O)=C2C)C(C4C=CC=CC=4)=O)C=NC(C)=N1).[H]Cl.[Cl-]
 BrC(CCl)CBr
 O[C@H](CBr)[C@H](O)[C@H](O)[C@@H](O)CBr
 BrCCBr
@@ -453,6 +462,7 @@ O=C1C2=C(C3=C(C=C2OC)OC4C3C=CO4)OC5=C1C(=CC(=C5OC)OC)O
 O=C(C)NCCSP(=S)(OC)OC
 CN(C1=CC=C(C=C1)/N=N/C2=CC=CC=C2)C
 CN(N=O)C(=O)C1=C(C=CC=C1)C(=O)N(C)N=O
+O=P(H)(OC)OC
 CP(=O)(OC)OC
 P(=O)(OC)(OC)N1CCOCC1
 C1(=CC(=NC(=N1)C2=CC=C(O2)[N+]([O-])=O)C)C
@@ -517,6 +527,7 @@ OC1C2=C3C(C(OC4C3=C(C=C(C=4O)O)C(=O)O2)=O)=CC=1O
 Cl\C2=C(/Cl)C3(Cl)C1COS(=O)OCC1C2(Cl)C3(Cl)Cl
 Cl\C2=C(/Cl)C3(Cl)C1C4CC(C1C2(Cl)C3(Cl)Cl)C5OC45
 FC(C(F)Cl)(OC(F)F)F
+O=S(O)(O)=O.O[C@@H]([C@H](C)NC)[C@@]1=CC=CC=C1.O[C@@H]([C@H](C)NC)[C@@]2=CC=CC=C2
 ClCC1CO1
 C1(=C(C=CC(=C1)[C@H](CNC)O)O)O.[H]Cl
 CCC1CO1
@@ -524,6 +535,7 @@ OC1(=C(O)C(=O)O[C@H]1[C@@H](C[O-])O).[Na+]
 CCCCCCCCCCCCCCCCCC(O)=O.CN(C)[C@H]3C[C@@H](C)O[C@@H](O[C@@H]2[C@@H](C)[C@H](O[C@H]1C[C@@](C)(OC)[C@@H](O)[C@H](C)O1)[C@@H](C)C(=O)O[C@H](CC)[C@@](C)(O)[C@H](O)[C@@H](C)C(=O)[C@H](C)C[C@@]2(C)O)[C@@H]3O
 C1=C(Cl)C=C3C(=C1)N4C(CN=C3C2=CC=CC=C2)=NN=C4
 Oc3cc4CC[C@@H]1[C@H](CC[C@]2(C)[C@@H](O)CC[C@@H]12)c4cc3
+ClCCN(CCCl)c1ccc(cc1)CC(=O)O[C@H]3CC[C@H]4[C@@H]5CCc2cc(OC(=O)N(CCCl)CCCl)ccc2[C@H]5CC[C@]34C
 C=CCC1=CC=C(C=C1)OC
 Oc3cc4CC[C@@H]1[C@H](CC[C@]2(C)[C@@](O)(CC[C@@H]12)C#C)c4cc3
 NC(=S)C1=CC(=NC=C1)CC
@@ -728,6 +740,7 @@ C[C@@H](CC)C(=O)O[C@H]2C[C@@H](C)\C=C3\C=C/[C@H](C)[C@H](CC[C@@H]1C[C@@H](O)CC(=
 Cn3nc(CO)nc3NCCCOc2cc(CN1CCCCC1)ccc2
 Cl.Cl.Cl.Cc1ccc(cn1)C\C2=C\N/C(=N\C2=O)NCCSCc3ccc(CN(C)C)o3
 O=C1C23C4C5C6(C(=O)C7=C(O)C(C)=CC(=C7C(C6=C(C2C5O)O)=O)O)C(C4O)C(=C3C(=O)C8=C1C(O)=C(C)C=C8O)O
+Cl[Mg]Cl.O.O.O.O.O.O
 O=C(C(SP(=O)(OC)OC)CC(=O)OCC)OCC
 O=C(C(SP(=S)(OC)OC)CC(=O)OCC)OCC
 O=C1C=CC(=O)NN1
@@ -779,6 +792,7 @@ O=C(C(C)(OC1=CC=C(C=C1)C2=CC=C(C=C2)Cl)C)OC
 CN(C1=CC=C(C=C1)/N=N/C2=CC(=CC=C2)C)C
 C1=CC(=CC=C1N(C)N=O)N=O
 CN(N)C=O
+O=C(C3)C(C(O)=CC(O[C@H]4[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO[C@H]5[C@H](O)[C@H](O)[C@@H](O)[C@H](C)O5)O4)=C2)=C2O[C@@H]3[C@@]1=CC(OC)=C(OC)C=C1
 CCCCCC(/C=C/C=C\CCCCCCCC(=O)OC)OO
 CCCCC/C=C\C/C=C\CCCCCCCC(OC)=O
 O=C(C(=C)C)OC
@@ -863,11 +877,14 @@ C1(=C2C(=CC=C1N)C=CC=C2)S(=O)(O)=O
 O=C(CN1C(=O)CCC1)NC2=C(C=CC=C2C)C
 [Ni]
 C([O-])(C)=O.[O-]C(C)=O.[Ni+2]
+S=C(N(CCCC)CCCC)S[Ni]SC(=S)N(CCCC)CCCC
 O=S(=O)([O-])[O-].O.O.O.O.O.O.[Ni+2]
 NC(=O)C1=CC=CN=C1
 CN1[C@H](C2=CC=CN=C2)CCC1
+CN(CCC2)[C@@H]2[C@]1=CN=CC=C1.Cl
 OC(=O)C1=CC=CN=C1
 O=C(C1=CC=CN=C1)NN
+O=[Nb](=O)[O-].[Na+]
 [O-][N+](C1=CN=C(NC(NCC)=O)S1)=O
 O=[N+]([O-])[O-].[Na+]
 O=[N]
@@ -1166,6 +1183,7 @@ C12C3=C4O[C@@](C3=O)(O/C=C/[C@@H]([C@H]([C@H]([C@@H]([C@@H]([C@@H]([C@@H]([C@H](
 O=C(CN=C2C3=CC=CC=C3)NC1=C2N(N=C1C)CC
 C1=C(C=CC(=C1)C(C2=CC=C(N)C(=C2)C)=C3C=CC(=N)C=C3)N.[H]Cl
 C(C1=CC=C(C=C1)N)(C2=CC=C(C=C2)N)=C3C=CC(C=C3)=N.[H]Cl
+O=C([C@](C(C=C4OC)=C(C=C4OC)OC3)([H])[C@]3([H])O2)C(C=C5)=C2C1=C5O[C@@H]([C@@](C)=C)C1
 OC2=CC1=C(C(O)=C2)C(C(O[C@@H]4O[C@@H]([C@H]([C@H](O)[C@H]4O)O)CO[C@H]3[C@H](O)[C@H](O)[C@H]([C@H](C)O3)O)=C(C5=CC(O)=C(C=C5)O)O1)=O.O=S(O)(O)=O
 OC2=CC1=C(C(O)=C2)C(C(O[C@@H]4O[C@@H]([C@H]([C@H](O)[C@H]4O)O)CO[C@H]3[C@H](O)[C@H](O)[C@H]([C@H](C)O3)O)=C(C5=CC(O)=C(C=C5)O)O1)=O
 C12=C(C(=O)NS1(=O)=O)C=CC=C2
@@ -1194,6 +1212,7 @@ Cl[O-].[Na+]
 OC(=O)C=CC=CC
 OC(CNC(C)C)C1=CC=C(NS(=O)(C)=O)C=C1.[H]Cl
 O=C1C2=C(C=C3C(=C2OC4=CC=CC(=C14)O)C5C(O3)OC=C5)OC
+O=[C@](O[C@H](O[C@H](CO)[C@H]1O)[C@H](O)[C@H]1O)[C@@]5(C)[C@](CC3)([H])[C@](CCC5)(C)[C@@](CC4)([H])[C@@](C2)3C[C@]4(O[C@H]6[C@H](O[C@H]7[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O7)[C@@H](O)[C@H](O)[C@@H](CO)O6)[C@@]2=C
 [C@@H]1(NC(N(N=O)C)=O)[C@H]([C@H](O)[C@H](O[C@@H]1O)CO)O
 Cl[C@@]12C(C(Cl)(Cl)[C@](C2Cl)(Cl)C(=C)C1(C)C)(Cl)Cl
 C=CC1=CC=CC=C1
@@ -1212,6 +1231,7 @@ CC(C)C(O)(C(C)O)C(=O)OC\C1=C\CN2CC[C@@H](OC(=O)C(\C)=C\C)[C@@H]12
 CC(C)CC(=O)O[C@H]1C[C@]2(COC(C)=O)[C@@]4(C)[C@H](OC(C)=O)[C@@H](O)[C@@H](O[C@@H]2/C=C1/C)[C@]34CO3
 ClC(=C(C1=CC=C(C=C1)OC)C2=CC=C(C=C2)OC)C3=CC=C(C=C3)OC
 O.O.O.O.NC(=O)[C@@H]3CCCN3C(=O)[C@@H](NC(=O)[C@@H]1CC(=O)N(C)C(=O)N1)C\C2=C\N=C/N2
+O=C(O)CC(C(O)=O)(O)CC(O)=O.CN(C)COC3=CC=C(C=C3)\C(C2=CC=CC=C2)=C(CC)/C1=CC=CC=C1
 NCCS(O)(=O)=O
 O=C(N1)N(C2OCCC2)C=C(F)C1=O
 Cl/C2=C(\Cl)C3(Cl)C1C(Cl)OC(Cl)C1C2(Cl)C3(Cl)Cl
@@ -1261,6 +1281,8 @@ CN(C)[C@@H]2/C=C\CC[C@@]2(c1ccccc1)C(=O)OCC.OC(=O)\C=C\C(O)=O
 Cl.CC(C)(C)NCC(O)CO/C1=C/N(C)C(=O)c2ccccc12
 [Sn](Cl)Cl
 O=[Ti]=O
+C(C(=O)[O-])(O[Ti](OC(C(=O)[O-])=O)=O)=O.[K+].[K+]
+[Ti+2](C1=CC=CC1)C2(=CC=CC2).[Cl-].[Cl-]
 CC1=C(C(=C(C2=C1OC(CCCC(CCCC(CCCC(C)C)C)C)(C)CC2)C)O)C
 C1(=C(C)C2OC(CCC=2C(=C1OC(=O)C)C)(CCCC(CCCC(CCCC(C)C)C)C)C)C
 O=S(=O)(C1=CC=C(C=C1)C)NC(=O)NN2CCCCCC2
@@ -1274,6 +1296,7 @@ NC(=O)NC1=CC=C(C=C1)C
 ClCC/C(C2=CC=CC=C2)=C(C3=CC=CC=C3)/C1=CC=C(C=C1)OCCN(C)C.OC(C(O)=O)(CC(O)=O)CC(O)=O
 ClC2(Cl)C1(Cl)C(=C)C(CCl)(CCl)C2(Cl)C(Cl)C1Cl
 C(C1)N1C(=CC(=O)C=2N(C3)C3)C(=O)C=2N(C4)C4
+F[C@@]([C@](C=C4)(C)C3=CC4=O)2[C@@H](O)C[C@]([C@](C5)([H])[C@@]([H])2CC3)(C)[C@@]1([C@](CO)=O)[C@@H]5OC(C)(C)O1
 NC1=CC=C(OC2=CC=C(N)C=C2)C=C1N
 NC1=C2C(=NC(=N1)N)N=C(C(=N2)C3=CC=CC=C3)N
 C(Br)(Br)Br
@@ -1311,6 +1334,7 @@ CC(C1=C(C(=C(C(=C1[N+](=O)[O-])C)[N+](=O)[O-])C)[N+](=O)[O-])(C)C
 [O-][N+](C1=CC([N+]([O-])=O)=CC([N+]([O-])=O)=C1)=O
 O=[N+](OC(CO[N+](=O)[O-])CO[N+](=O)[O-])[O-]
 CC(=O)O[Sn](C1=CC=CC=C1)(C2=CC=CC=C2)C3=CC=CC=C3
+O[Sn](C1=CC=CC=C1)(C2=CC=CC=C2)C3=CC=CC=C3
 C(=C\CN1CCCC1)(/C2=CC=C(C=C2)C)C3C=CC=CN=3.[H]Cl.O
 O=P(OCCCl)(OCCCl)OCCCl
 C(C(COCCl)OCCl)OCCl
@@ -1329,6 +1353,7 @@ COc3ccccc3N2CCN(CCCN\C1=C\C(=O)N(C)C(=O)N1C)CC2
 C(N)(N)=O
 NC(=O)OCC
 O=S(=O)([O-])[O-].[V+2]=O
+O[C@@]2([C@](OC)=O)[C@@]1([H])[C@]([C@](N6CC=C5)([H])[C@]5(CC)[C@H]2OC(C)=O)(CC6)C3=C(C=C(OC)[C@]([C@@]([C@@](OC)=O)(C[C@@H]8CN(C[C@](O)(CC)C8)CC7)C4=C7C(C=CC=C9)=C9N4)=C3)N1C
 CC(=O)OC=C
 C=CBr
 NC(=O)OC=C

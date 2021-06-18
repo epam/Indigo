@@ -1,0 +1,444 @@
+**** Basic test ****
+** searchMolFormula(C5H11N1, '') **
+	30 C1CCNCC1 C1CCNCC1. C5 H11 N
+	60 [CH2-]CCCC[NH-] [CH2-]CCCC[NH-]. C5 H11 N
+	90 NC1CCCC1 NC1CCCC1. C5 H11 N
+	180 CC1NC1(C)C CC1NC1(C)C. C5 H11 N
+	195 [H][H].[H][H].Cc1c[nH]cc1 [H][H].[H][H].Cc1c[nH]cc1. C5 H11 N
+** searchMolFormula(C5 H11 N1, '') **
+	30 C1CCNCC1 C1CCNCC1. C5 H11 N
+	60 [CH2-]CCCC[NH-] [CH2-]CCCC[NH-]. C5 H11 N
+	90 NC1CCCC1 NC1CCCC1. C5 H11 N
+	180 CC1NC1(C)C CC1NC1(C)C. C5 H11 N
+	195 [H][H].[H][H].Cc1c[nH]cc1 [H][H].[H][H].Cc1c[nH]cc1. C5 H11 N
+** searchMolFormula(C3 C2 H11 N1, '') **
+	30 C1CCNCC1 C1CCNCC1. C5 H11 N
+	60 [CH2-]CCCC[NH-] [CH2-]CCCC[NH-]. C5 H11 N
+	90 NC1CCCC1 NC1CCCC1. C5 H11 N
+	180 CC1NC1(C)C CC1NC1(C)C. C5 H11 N
+	195 [H][H].[H][H].Cc1c[nH]cc1 [H][H].[H][H].Cc1c[nH]cc1. C5 H11 N
+** searchMolFormula(Cl3, '') **
+Wrong MolFormula:
+** searchMolFormula(AnyText3, '') **
+BingoException: element: fromString(): element An not supported
+*** Search ***
+** searchMolFormula(C28 H40 O7, '', requiredId=0) **
+	0 O(C(CCC)=O)[C@]1(C(COC(CC)=O)=O)CC[C@H]2[C@@H]3CCC4=CC(CC[C@]4(C)C3C(C[C@]12C)O)=O O(C(CCC)=O)[C@]1(C(COC(CC)=O)=O)CC[C@H]2[C@@H]3CCC4=CC(CC[C@]4(C)C3C(C[C@]12C)O)=O. C28 H40 O7
+** searchMolFormula(C28 H33 N5 O5, '', requiredId=1) **
+	1 O=C1N(CCCN2CCOCC2)c2ccccc2N1C1CCN(C(CN2C(=O)Oc3ccccc23)=O)CC1 O=C1N(CCCN2CCOCC2)c2ccccc2N1C1CCN(C(CN2C(=O)Oc3ccccc23)=O)CC1. C28 H33 N5 O5
+** searchMolFormula(C20 H29 Cl N2 O5 S, '', requiredId=2) **
+	2 Clc1ccc(C(=O)OCC(N2CCCCC2CC)=O)cc1S(NC(C)(C)C)(=O)=O Clc1ccc(C(=O)OCC(N2CCCCC2CC)=O)cc1S(NC(C)(C)C)(=O)=O. C20 H29 Cl N2 O5 S
+** searchMolFormula(C20 H19 N5 O2, '', requiredId=3) **
+	3 O=C(c1cc[n]cc1)NC1C(C)(C)c2cc(C3CCC(=O)NN=3)ccc2N=1 O=C(c1cc[n]cc1)NC1C(C)(C)c2cc(C3CCC(=O)NN=3)ccc2N=1. C20 H19 N5 O2
+** searchMolFormula(C12 H11 F N2 S, '', requiredId=4) **
+	4 S(c1ccc(F)cc1)c1cc(CN)cc[n]1 S(c1ccc(F)cc1)c1cc(CN)cc[n]1. C12 H11 F N2 S
+** searchMolFormula(C17 H27 N5 O8, '', requiredId=5) **
+	5 O=C(C1CCCN1)NC(C(NC(C(NCC(=O)O)=O)CCC(N)=O)=O)CCC(=O)O O=C(C1CCCN1)NC(C(NC(C(NCC(=O)O)=O)CCC(N)=O)=O)CCC(=O)O. C17 H27 N5 O8
+** searchMolFormula(C13 H18 N2 O5 S, '', requiredId=6) **
+	6 S(NCCc1ccc(C(=O)O)cc1)(N1CCOCC1)(=O)=O S(NCCc1ccc(C(=O)O)cc1)(N1CCOCC1)(=O)=O. C13 H18 N2 O5 S
+** searchMolFormula(C29 H37 Cl N2 O2, '', requiredId=7) **
+	7 Clc1cccc(N(C(C[C@H](C)c2ccccc2)=O)[C@@H](/C=C/CCC)C(NC2CCCCC2)=O)c1 Clc1cccc(N(C(C[C@H](C)c2ccccc2)=O)[C@@H](/C=C/CCC)C(NC2CCCCC2)=O)c1. C29 H37 Cl N2 O2
+** searchMolFormula(C13 H14 Br N O2 S, '', requiredId=8) **
+	8 BrC1(C=CC=CC1)S(Nc1ccc(C)cc1)(=O)=O BrC1(C=CC=CC1)S(Nc1ccc(C)cc1)(=O)=O. C13 H14 Br N O2 S
+** searchMolFormula(C22 H24 N2 O2, '', requiredId=9) **
+	9 O=C1C=C(C)c2cc(C)cc(C)c2N1CCC(Nc1ccccc1C)=O O=C1C=C(C)c2cc(C)cc(C)c2N1CCC(Nc1ccccc1C)=O. C22 H24 N2 O2
+** searchMolFormula(C21 H31 N2 O, '', requiredId=10) **
+	10 O=C([C@@H](C)[NH2+][C@@H](C)C12CC3CC(CC(C3)C1)C2)Nc1ccccc1 O=C([C@@H](C)[NH2+][C@@H](C)C12CC3CC(CC(C3)C1)C2)Nc1ccccc1. C21 H31 N2 O
+** searchMolFormula(C16 H27 N O4, '', requiredId=11) **
+	11 O1[C@@H]2CC[C@H]1[C@H](C(N(CCCC)CCCC)=O)[C@H]2C(=O)O O1[C@@H]2CC[C@H]1[C@H](C(N(CCCC)CCCC)=O)[C@H]2C(=O)O. C16 H27 N O4
+** searchMolFormula(C23 H24 N2 O5 S, '', requiredId=12) **
+	12 S(c1ccc(NC(C2=CC(=O)c3cc(C)ccc3O2)=O)cc1)(N1CCCCCC1)(=O)=O S(c1ccc(NC(C2=CC(=O)c3cc(C)ccc3O2)=O)cc1)(N1CCCCCC1)(=O)=O. C23 H24 N2 O5 S
+** searchMolFormula(C8 H11 N O4, '', requiredId=13) **
+	13 Oc1c(CO)[n]c(CO)cc1CO Oc1c(CO)[n]c(CO)cc1CO. C8 H11 N O4
+** searchMolFormula(C28 H38 Cl N5 O2 S, '', requiredId=14) **
+	14 Clc1cc(N2CCN(C(CCCC)=O)C(C)C2)[n]c(SCC(N2CCC(Cc3ccccc3)CC2)=O)[n]1 Clc1cc(N2CCN(C(CCCC)=O)C(C)C2)[n]c(SCC(N2CCC(Cc3ccccc3)CC2)=O)[n]1. C28 H38 Cl N5 O2 S
+** searchMolFormula(C23 H26 Cl N3 O2, '', requiredId=15) **
+	15 Clc1ccc2c([n]c(CCCC(N(C)Cc3ccc4c(CC(C)O4)c3)=O)[n]2C)c1 Clc1ccc2c([n]c(CCCC(N(C)Cc3ccc4c(CC(C)O4)c3)=O)[n]2C)c1. C23 H26 Cl N3 O2
+** searchMolFormula(C16 H21 N3 O, '', requiredId=16) **
+	16 O=C(CCC[n]1cccc1)Nc1ccc(N(C)C)cc1 O=C(CCC[n]1cccc1)Nc1ccc(N(C)C)cc1. C16 H21 N3 O
+** searchMolFormula(C22 H19 F N2 O4, '', requiredId=17) **
+	17 Fc1ccc(C2(C)C(=O)N(CC3=CC(=O)Oc4cc(C)c(C)cc34)C(=O)N2)cc1 Fc1ccc(C2(C)C(=O)N(CC3=CC(=O)Oc4cc(C)c(C)cc34)C(=O)N2)cc1. C22 H19 F N2 O4
+** searchMolFormula(C17 H13 N2 O4 S, '', requiredId=18) **
+	18 [s]1c(C)ccc1/C=C1\C(=O)N=C([O-])N(c2cccc(OC)c2)C\1=O [s]1c(C)ccc1/C=C1\C(=O)N=C([O-])N(c2cccc(OC)c2)C\1=O. C17 H13 N2 O4 S
+** searchMolFormula(C20 H21 F N2 O5 S, '', requiredId=19) **
+	19 [s]1c(NC([C@H](C)OC(Cc2ccc(OC)c(F)c2)=O)=O)c(C(N)=O)c2c1CCC2 [s]1c(NC([C@H](C)OC(Cc2ccc(OC)c(F)c2)=O)=O)c(C(N)=O)c2c1CCC2. C20 H21 F N2 O5 S
+** searchMolFormula(C20 H19 Cl2 N3 O3, '', requiredId=20) **
+	20 Clc1cc(Cl)ccc1OCC(NN=C1C(=O)N(CC(C)C)c2ccccc12)=O Clc1cc(Cl)ccc1OCC(NN=C1C(=O)N(CC(C)C)c2ccccc12)=O. C20 H19 Cl2 N3 O3
+** searchMolFormula(C23 H30 N4 O2, '', requiredId=21) **
+	21 O=C(c1cc[n](C)[n]1)N1CCC[C@@H]2CN(C(CCCc3ccccc3)=O)CC[C@H]12 O=C(c1cc[n](C)[n]1)N1CCC[C@@H]2CN(C(CCCc3ccccc3)=O)CC[C@H]12. C23 H30 N4 O2
+** searchMolFormula(C22 H22 N2 O5, '', requiredId=22) **
+	22 O=C1C(=O)/C(=C(\c2ccccc2)/O)/C(c2ccc(OC)cc2)N1CCNC(C)=O O=C1C(=O)/C(=C(\c2ccccc2)/O)/C(c2ccc(OC)cc2)N1CCNC(C)=O. C22 H22 N2 O5
+** searchMolFormula(C19 H18 N4 O4 S2, '', requiredId=23) **
+	23 [s]1c2c(c([n]c[n]2)Sc2ccccc2C(=O)O[C@H](C(NC(N)=O)=O)C)c(C)c1C [s]1c2c(c([n]c[n]2)Sc2ccccc2C(=O)O[C@H](C(NC(N)=O)=O)C)c(C)c1C. C19 H18 N4 O4 S2
+** searchMolFormula(C28 H23 N O5, '', requiredId=24) **
+	24 O1CCCC1CN1C(=O)C2=C(C(c3ccccc3O2)=O)C1c1cccc(Oc2ccccc2)c1 O1CCCC1CN1C(=O)C2=C(C(c3ccccc3O2)=O)C1c1cccc(Oc2ccccc2)c1. C28 H23 N O5
+** searchMolFormula(C22 H24 N4 O6 S, '', requiredId=25) **
+	25 S(c1c(OC)ccc(NC(CN2C(=O)NC3(c4ccccc4CC3)C2=O)=O)c1)(N(C)C)(=O)=O S(c1c(OC)ccc(NC(CN2C(=O)NC3(c4ccccc4CC3)C2=O)=O)c1)(N(C)C)(=O)=O. C22 H24 N4 O6 S
+** searchMolFormula(C13 H8 F2 N4 O4, '', requiredId=26) **
+	26 Fc1c(F)ccc(/C=N\Nc2ccc([N+](=O)[O-])cc2[N+](=O)[O-])c1 Fc1c(F)ccc(/C=N\Nc2ccc([N+](=O)[O-])cc2[N+](=O)[O-])c1. C13 H8 F2 N4 O4
+** searchMolFormula(C16 H23 N3 O S, '', requiredId=27) **
+	27 [s]1c(C)cc2c1cc(C(NCCN(C)C)=O)[n]2C/C=C/C [s]1c(C)cc2c1cc(C(NCCN(C)C)=O)[n]2C/C=C/C. C16 H23 N3 O S
+** searchMolFormula(C22 H22 Cl N3 O3, '', requiredId=28) **
+	28 ClC1C(C)=CC(=O)C(=C2C3=C(C(N(CCCO)C3c3ccc(C)cc3)=O)NN2)C=1 ClC1C(C)=CC(=O)C(=C2C3=C(C(N(CCCO)C3c3ccc(C)cc3)=O)NN2)C=1. C22 H22 Cl N3 O3
+** searchMolFormula(C26 H52 N O4, '', requiredId=29) **
+	29 O(CCC)C(C(C(=O)OCCC)CCCCCCCCCCCCCCC[NH+](C)C)=O O(CCC)C(C(C(=O)OCCC)CCCCCCCCCCCCCCC[NH+](C)C)=O. C26 H52 N O4
+** searchMolFormula(C5 H11 N, '', requiredId=30) **
+	30 C1CCNCC1 C1CCNCC1. C5 H11 N
+	60 [CH2-]CCCC[NH-] [CH2-]CCCC[NH-]. C5 H11 N
+	90 NC1CCCC1 NC1CCCC1. C5 H11 N
+	180 CC1NC1(C)C CC1NC1(C)C. C5 H11 N
+	195 [H][H].[H][H].Cc1c[nH]cc1 [H][H].[H][H].Cc1c[nH]cc1. C5 H11 N
+** searchMolFormula(C20 H24 N2 O4 S, '', requiredId=31) **
+	31 S(c1c(OC)ccc(CCNC(/C=C/c2ccc(C)cc2C)=O)c1)(N)(=O)=O S(c1c(OC)ccc(CCNC(/C=C/c2ccc(C)cc2C)=O)c1)(N)(=O)=O. C20 H24 N2 O4 S
+** searchMolFormula(C29 H33 N O4, '', requiredId=32) **
+	32 OC(C1CCCN(C(c2ccc(C)cc2)c2ccc(OCc3ccccc3)c(OCC)c2)C1)=O OC(C1CCCN(C(c2ccc(C)cc2)c2ccc(OCc3ccccc3)c(OCC)c2)C1)=O. C29 H33 N O4
+** searchMolFormula(C11 H12 Cl N7 O4, '', requiredId=33) **
+	33 Clc1c[n][n](C)c1C(NNC(CC[n]1cc([N+](=O)[O-])c[n]1)=O)=O Clc1c[n][n](C)c1C(NNC(CC[n]1cc([N+](=O)[O-])c[n]1)=O)=O. C11 H12 Cl N7 O4
+** searchMolFormula(C15 H18 O6, '', requiredId=34) **
+	34 O(C)c1cc(OC)cc(OC)c1C(/C=C(\C)/OC(C)=O)=O O(C)c1cc(OC)cc(OC)c1C(/C=C(\C)/OC(C)=O)=O. C15 H18 O6
+** searchMolFormula(C34 H37 Cl2 N5 O4, '', requiredId=35) **
+	35 Clc1ccc(C(N2CCCCC2)=O)cc1NC(C(C)N1CCC(C(Nc2ccc(Cl)c(NC(c3ccccc3)=O)c2)=O)CC1)=O Clc1ccc(C(N2CCCCC2)=O)cc1NC(C(C)N1CCC(C(Nc2ccc(Cl)c(NC(c3ccccc3)=O)c2)=O)CC1)=O. C34 H37 Cl2 N5 O4
+** searchMolFormula(C10 H10 Br N3 O2, '', requiredId=36) **
+	36 Brc1ccc(CNCCC#N)cc1[N+](=O)[O-] Brc1ccc(CNCCC#N)cc1[N+](=O)[O-]. C10 H10 Br N3 O2
+** searchMolFormula(C11 H13 Cl O2, '', requiredId=37) **
+	37 ClCC1=CC2(C)C3(C(=O)C1O2)CCC3 ClCC1=CC2(C)C3(C(=O)C1O2)CCC3. C11 H13 Cl O2
+** searchMolFormula(C19 H26 N2 O2 S, '', requiredId=38) **
+	38 [s]1c(C(N(C)C)=O)ccc1C(CNC(C)CCc1ccccc1)O [s]1c(C(N(C)C)=O)ccc1C(CNC(C)CCc1ccccc1)O. C19 H26 N2 O2 S
+** searchMolFormula(C20 H16 F N3 O5, '', requiredId=39) **
+	39 Fc1ccc(-[n]2c[n]cc2C(=O)OCC(Nc2ccc(C(=O)OC)cc2)=O)cc1 Fc1ccc(-[n]2c[n]cc2C(=O)OCC(Nc2ccc(C(=O)OC)cc2)=O)cc1. C20 H16 F N3 O5
+** searchMolFormula(C22 H23 N3 O3 S, '', requiredId=40) **
+	40 S(CC(NN=Cc1cccc(OC)c1OC)=O)c1cc(C)c2cc(C)ccc2[n]1 S(CC(NN=Cc1cccc(OC)c1OC)=O)c1cc(C)c2cc(C)ccc2[n]1. C22 H23 N3 O3 S
+** searchMolFormula(C10 H5 Cl F9 N, '', requiredId=41) **
+	41 Clc1ccc(N)cc1C(C(C(C(F)(F)F)(F)F)(F)F)(F)F Clc1ccc(N)cc1C(C(C(C(F)(F)F)(F)F)(F)F)(F)F. C10 H5 Cl F9 N
+** searchMolFormula(C13 H14 N4 O3, '', requiredId=42) **
+	42 O=C(c1ccc([N+](=O)[O-])cc1)N(C)Cc1cc[n](C)[n]1 O=C(c1ccc([N+](=O)[O-])cc1)N(C)Cc1cc[n](C)[n]1. C13 H14 N4 O3
+** searchMolFormula(C26 H26 Cl N O5, '', requiredId=43) **
+	43 Clc1cccc(NC(c2cccc(OCCOc3ccccc3)c2)=O)c1OC[C@H]1CCCO1 Clc1cccc(NC(c2cccc(OCCOc3ccccc3)c2)=O)c1OC[C@H]1CCCO1. C26 H26 Cl N O5
+** searchMolFormula(C19 H16 Br N5 O S, '', requiredId=44) **
+	44 Brc1ccc2c([s]c([n]2)N(C(c2c(C)c[n][n]2C)=O)Cc2c[n]ccc2)c1 Brc1ccc2c([s]c([n]2)N(C(c2c(C)c[n][n]2C)=O)Cc2c[n]ccc2)c1. C19 H16 Br N5 O S
+** searchMolFormula(C21 H25 Cl N2 O3, '', requiredId=45) **
+	45 Clc1cccc(NC([C@@H]2CCCN2Cc2ccccc2)=O)c1OCCOC Clc1cccc(NC([C@@H]2CCCN2Cc2ccccc2)=O)c1OCCOC. C21 H25 Cl N2 O3
+** searchMolFormula(C16 H18 Br N3 O2 S, '', requiredId=46) **
+	46 Brc1ccc(OC(N)=O)c(CCNC(NC2C=CCCC=2)=S)c1 Brc1ccc(OC(N)=O)c(CCNC(NC2C=CCCC=2)=S)c1. C16 H18 Br N3 O2 S
+** searchMolFormula(C22 H26 Cl N3 O4 S, '', requiredId=47) **
+	47 Clc1c(C)ccc(N(CC(NCc2ccccc2CN2C(=O)CCC2)=O)S(C)(=O)=O)c1 Clc1c(C)ccc(N(CC(NCc2ccccc2CN2C(=O)CCC2)=O)S(C)(=O)=O)c1. C22 H26 Cl N3 O4 S
+** searchMolFormula(C17 H14 F N3 O, '', requiredId=48) **
+	48 Fc1ccccc1C=NNc1cc[n]c2cc(ccc12)OC Fc1ccccc1C=NNc1cc[n]c2cc(ccc12)OC. C17 H14 F N3 O
+** searchMolFormula(C35 H38 Cl N3 O6 S, '', requiredId=49) **
+	49 Clc1ccc(S(Nc2cccc3c2O[C@H](CN(C)Cc2ccc(Oc4ccccc4)cc2)[C@@H](C)CN(C3=O)[C@H](C)CO)(=O)=O)cc1 Clc1ccc(S(Nc2cccc3c2O[C@H](CN(C)Cc2ccc(Oc4ccccc4)cc2)[C@@H](C)CN(C3=O)[C@H](C)CO)(=O)=O)cc1. C35 H38 Cl N3 O6 S
+** searchMolFormula(C14 H18 N4 O S, '', requiredId=50) **
+	50 S(/C(/N)=N/CC(C)C)CC1=NC(=O)c2ccccc2N1 S(/C(/N)=N/CC(C)C)CC1=NC(=O)c2ccccc2N1. C14 H18 N4 O S
+** searchMolFormula(C18 H18 Cl N O3, '', requiredId=51) **
+	51 Clc1ccc(CCC(NCc2ccc3c(OCCO3)c2)=O)cc1 Clc1ccc(CCC(NCc2ccc3c(OCCO3)c2)=O)cc1. C18 H18 Cl N O3
+** searchMolFormula(C17 H17 Cl2 N O5 S, '', requiredId=52) **
+	52 Clc1cc(Cl)ccc1OC(c1ccc(OC)c(S(NC(C)C)(=O)=O)c1)=O Clc1cc(Cl)ccc1OC(c1ccc(OC)c(S(NC(C)C)(=O)=O)c1)=O. C17 H17 Cl2 N O5 S
+** searchMolFormula(C15 H22 N2 O9 S, '', requiredId=53) **
+	53 S(C(=N)N)[C@H]1[C@@H](OC(C)=O)[C@@H](OC(C)=O)[C@H](OC(C)=O)[C@H](COC(C)=O)O1 S(C(=N)N)[C@H]1[C@@H](OC(C)=O)[C@@H](OC(C)=O)[C@H](OC(C)=O)[C@H](COC(C)=O)O1. C15 H22 N2 O9 S
+** searchMolFormula(C24 H26 N4 O3 S2, '', requiredId=54) **
+	54 S(Cc1c[s]c(-c2ccc(OC)c(OC)c2)[n]1)c1[n][n]c(-c2ccco2)[n]1C1CCCCC1 S(Cc1c[s]c(-c2ccc(OC)c(OC)c2)[n]1)c1[n][n]c(-c2ccco2)[n]1C1CCCCC1. C24 H26 N4 O3 S2
+** searchMolFormula(C15 H18 Cl N3 O S3, '', requiredId=55) **
+	55 Clc1ccccc1CNC([C@@H](C)Sc1[n][n]c(SCCC)[s]1)=O Clc1ccccc1CNC([C@@H](C)Sc1[n][n]c(SCCC)[s]1)=O. C15 H18 Cl N3 O S3
+** searchMolFormula(C29 H35 N2 O10, '', requiredId=56) **
+	56 O1C[C@H](O)[C@H](O)[C@@H](O)[C@@H]1[n+]1ccc2c(C)c3c(c(C)c2c1)c1cc(ccc1[nH]3)OCCO[C@H]1[C@H](O)[C@@H](O)[C@@H](O)CO1 O1C[C@H](O)[C@H](O)[C@@H](O)[C@@H]1[n+]1ccc2c(C)c3c(c(C)c2c1)c1cc(ccc1[nH]3)OCCO[C@H]1[C@H](O)[C@@H](O)[C@@H](O)CO1. C29 H35 N2 O10
+** searchMolFormula(C23 H23 F N2 O4, '', requiredId=57) **
+	57 Fc1ccccc1[C@H]1C(C(/C=C/c2ccco2)=O)=C(O)C(=O)N1CCN1CCCC1 Fc1ccccc1[C@H]1C(C(/C=C/c2ccco2)=O)=C(O)C(=O)N1CCN1CCCC1. C23 H23 F N2 O4
+** searchMolFormula(C13 H18 O2, '', requiredId=58) **
+	58 O(C(CCCC)=O)CCc1ccccc1 O(C(CCCC)=O)CCc1ccccc1. C13 H18 O2
+** searchMolFormula(C22 H22 N6 O3 S, '', requiredId=59) **
+	59 S(CC(Nc1ccc(OC)c(OC)c1)=O)c1c2c([n](Cc3ccc(C)cc3)[n][n]2)[n]c[n]1 S(CC(Nc1ccc(OC)c(OC)c1)=O)c1c2c([n](Cc3ccc(C)cc3)[n][n]2)[n]c[n]1. C22 H22 N6 O3 S
+** searchMolFormula(C5 H11 N, '', requiredId=60) **
+	30 C1CCNCC1 C1CCNCC1. C5 H11 N
+	60 [CH2-]CCCC[NH-] [CH2-]CCCC[NH-]. C5 H11 N
+	90 NC1CCCC1 NC1CCCC1. C5 H11 N
+	180 CC1NC1(C)C CC1NC1(C)C. C5 H11 N
+	195 [H][H].[H][H].Cc1c[nH]cc1 [H][H].[H][H].Cc1c[nH]cc1. C5 H11 N
+** searchMolFormula(C21 H18 Cl N O5, '', requiredId=61) **
+	61 Clc1cc(OC)c(NC(COc2cc3ccccc3cc2C(=O)O)=O)cc1C Clc1cc(OC)c(NC(COc2cc3ccccc3cc2C(=O)O)=O)cc1C. C21 H18 Cl N O5
+** searchMolFormula(C19 H26 N2 O, '', requiredId=62) **
+	62 O=C([C@@H]1C[C@H]2CC[C@@H]1C2)N1CCN(Cc2ccccc2)CC1 O=C([C@@H]1C[C@H]2CC[C@@H]1C2)N1CCN(Cc2ccccc2)CC1. C19 H26 N2 O
+** searchMolFormula(C29 H30 N4 O3, '', requiredId=63) **
+	63 O(c1ccc(C=C(C(NCCc2[n]c3ccccc3[nH]2)=O)NC(c2ccccc2C)=O)cc1)C(C)C O(c1ccc(C=C(C(NCCc2[n]c3ccccc3[nH]2)=O)NC(c2ccccc2C)=O)cc1)C(C)C. C29 H30 N4 O3
+** searchMolFormula(C20 H23 N3 O3, '', requiredId=64) **
+	64 O(C)c1c(OC)ccc(CNc2[n]cc(-c3ccc(OC)cc3)[n]2C)c1 O(C)c1c(OC)ccc(CNc2[n]cc(-c3ccc(OC)cc3)[n]2C)c1. C20 H23 N3 O3
+** searchMolFormula(C13 H17 N3, '', requiredId=65) **
+	65 N1CCCC1c1[n]c2c(C)c(C)ccc2[nH]1 N1CCCC1c1[n]c2c(C)c(C)ccc2[nH]1. C13 H17 N3
+** searchMolFormula(C21 H18 N2 S, '', requiredId=66) **
+	66 S(c1[n]c2ccccc2[nH]1)Cc1cccc(-c2ccccc2)c1C S(c1[n]c2ccccc2[nH]1)Cc1cccc(-c2ccccc2)c1C. C21 H18 N2 S
+** searchMolFormula(C18 H17 F N2 O4 S, '', requiredId=67) **
+	67 S(c1[n][n]c(-c2ccc(OC)cc2)o1)C[C@@H](COc1ccccc1F)O S(c1[n][n]c(-c2ccc(OC)cc2)o1)C[C@@H](COc1ccccc1F)O. C18 H17 F N2 O4 S
+** searchMolFormula(C28 H29 N3 O4, '', requiredId=68) **
+	68 O=C1CC[C@H](C(Nc2cccc(C(NC)=O)c2)=O)[C@H](c2ccccc2OC)N1c1ccc(C)cc1 O=C1CC[C@H](C(Nc2cccc(C(NC)=O)c2)=O)[C@H](c2ccccc2OC)N1c1ccc(C)cc1. C28 H29 N3 O4
+** searchMolFormula(C26 H25 Cl N4 O5 S2, '', requiredId=69) **
+	69 Clc1ccccc1OC(C)c1[n][n]c(SCC(Nc2c(C(=O)OC)c(-c3ccc(OC)cc3)c[s]2)=O)[n]1C Clc1ccccc1OC(C)c1[n][n]c(SCC(Nc2c(C(=O)OC)c(-c3ccc(OC)cc3)c[s]2)=O)[n]1C. C26 H25 Cl N4 O5 S2
+** searchMolFormula(C23 H20 F N4 O2, '', requiredId=70) **
+	70 Fc1ccc([C@@H]2CC(=O)C([C@@H]3c4ccccc4CCN3)=C([O-])[C@H]2[n]2c[n]c[n]2)cc1 Fc1ccc([C@@H]2CC(=O)C([C@@H]3c4ccccc4CCN3)=C([O-])[C@H]2[n]2c[n]c[n]2)cc1. C23 H20 F N4 O2
+** searchMolFormula(C23 H19 Cl N2 O3, '', requiredId=71) **
+	71 Clc1ccc2c(NC(CN(C(c3ccccc3OC)=O)C2c2ccccc2)=O)c1 Clc1ccc2c(NC(CN(C(c3ccccc3OC)=O)C2c2ccccc2)=O)c1. C23 H19 Cl N2 O3
+** searchMolFormula(C24 H25 N O2, '', requiredId=72) **
+	72 O(Cc1ccccc1)c1ccc2c(CCNC2c2ccc(OC)c(C)c2)c1 O(Cc1ccccc1)c1ccc2c(CCNC2c2ccc(OC)c(C)c2)c1. C24 H25 N O2
+** searchMolFormula(C19 H19 F2 N O2, '', requiredId=73) **
+	73 Fc1cc(F)ccc1COC1CN(C(c2ccccc2)=O)CCC1 Fc1cc(F)ccc1COC1CN(C(c2ccccc2)=O)CCC1. C19 H19 F2 N O2
+** searchMolFormula(C27 H31 N3 O2, '', requiredId=74) **
+	74 O=C(C1C(=O)C=C(C)N(Cc2cccc[n]2)C=1CCc1ccccc1)N1CCC[C@H](C)C1 O=C(C1C(=O)C=C(C)N(Cc2cccc[n]2)C=1CCc1ccccc1)N1CCC[C@H](C)C1. C27 H31 N3 O2
+** searchMolFormula(C20 H16 N2 O7, '', requiredId=75) **
+	75 o1cccc1[C@H]1CC(c2ccco2)=NN1C(COC(c1ccc(O)cc1O)=O)=O o1cccc1[C@H]1CC(c2ccco2)=NN1C(COC(c1ccc(O)cc1O)=O)=O. C20 H16 N2 O7
+** searchMolFormula(C23 H28 N2 O, '', requiredId=76) **
+	76 O=C(c1ccc2c(CCC2)c1)NCc1ccccc1CN1CCCCC1 O=C(c1ccc2c(CCC2)c1)NCc1ccccc1CN1CCCCC1. C23 H28 N2 O
+** searchMolFormula(C27 H25 N O7, '', requiredId=77) **
+	77 OC1C(=O)N(Cc2ccco2)C(c2cc(OC)c(OC)c(OC)c2)C=1C(/C=C/c1ccccc1)=O OC1C(=O)N(Cc2ccco2)C(c2cc(OC)c(OC)c(OC)c2)C=1C(/C=C/c1ccccc1)=O. C27 H25 N O7
+** searchMolFormula(C16 H16 I N5 O S, '', requiredId=78) **
+	78 Ic1ccc(NC(CSc2[n][n]c3[n]c(C)cc(C)[n]23)=O)c(C)c1 Ic1ccc(NC(CSc2[n][n]c3[n]c(C)cc(C)[n]23)=O)c(C)c1. C16 H16 I N5 O S
+** searchMolFormula(C35 H40 N4 O8 S, '', requiredId=79) **
+	79 S(C1CC1)(NC([C@]1(C[C@H]1C=C)NC([C@@H]1C[C@@H](Oc2cc(-c3ccccc3)[n]c3c(cccc23)OC)CN1C(=O)OC(C)(C)C)=O)=O)(=O)=O S(C1CC1)(NC([C@]1(C[C@H]1C=C)NC([C@@H]1C[C@@H](Oc2cc(-c3ccccc3)[n]c3c(cccc23)OC)CN1C(=O)OC(C)(C)C)=O)=O)(=O)=O. C35 H40 N4 O8 S
+** searchMolFormula(C19 H22 N2 O3 S, '', requiredId=80) **
+	80 [s]1cccc1CCNC(N[C@H](c1ccc2c(OCCO2)c1)C1CC1)=O [s]1cccc1CCNC(N[C@H](c1ccc2c(OCCO2)c1)C1CC1)=O. C19 H22 N2 O3 S
+** searchMolFormula(C24 H29 N5 O8, '', requiredId=81) **
+	81 O=C1C(NC(c2ccc(NC(CC)=O)cc2)=O)CCC(=O)N2CCCC(C(NC(C=O)CC(=O)O)=O)N12 O=C1C(NC(c2ccc(NC(CC)=O)cc2)=O)CCC(=O)N2CCCC(C(NC(C=O)CC(=O)O)=O)N12. C24 H29 N5 O8
+** searchMolFormula(C17 H22 N4 O2 S2, '', requiredId=82) **
+	82 S(c1[n][n]c(NCC)[s]1)C(C)C(c1ccc(NC(C(C)C)=O)cc1)=O S(c1[n][n]c(NCC)[s]1)C(C)C(c1ccc(NC(C(C)C)=O)cc1)=O. C17 H22 N4 O2 S2
+** searchMolFormula(C12 H6 Cl2 Cu N2 O4, '', requiredId=83) **
+	83 [Cu].ClC1C=CC(=O)/C(=N/[O-])/C=1.ClC1C=CC(=O)/C(=N/[O-])/C=1 [Cu].ClC1C=CC(=O)/C(=N/[O-])/C=1.ClC1C=CC(=O)/C(=N/[O-])/C=1. C12 H6 Cl2 Cu N2 O4
+** searchMolFormula(C24 H28 N4 O4, '', requiredId=84) **
+	84 o1cccc1[C@@H]1/C(=C(/c2c(C)[n]c3cccc[n]23)\O)/C(=O)C(=O)N1CCCN(CC)CC o1cccc1[C@@H]1/C(=C(/c2c(C)[n]c3cccc[n]23)\O)/C(=O)C(=O)N1CCCN(CC)CC. C24 H28 N4 O4
+** searchMolFormula(C20 H31 N5 O2, '', requiredId=85) **
+	85 O=C(c1ccc(C)[n]c1C1CCN(C(NCC)=O)CC1)N1CCN(C)CC1 O=C(c1ccc(C)[n]c1C1CCN(C(NCC)=O)CC1)N1CCN(C)CC1. C20 H31 N5 O2
+** searchMolFormula(C12 H10 N2 O6, '', requiredId=86) **
+	86 O(C)C1=C(OC(C)=O)C(=O)Nc2cc(ccc12)[N+](=O)[O-] O(C)C1=C(OC(C)=O)C(=O)Nc2cc(ccc12)[N+](=O)[O-]. C12 H10 N2 O6
+** searchMolFormula(C23 H21 N3 O3, '', requiredId=87) **
+	87 O=C1c2ccccc2NC(c2ccc(OCC(N)=O)cc2)N1Cc1ccccc1 O=C1c2ccccc2NC(c2ccc(OCC(N)=O)cc2)N1Cc1ccccc1. C23 H21 N3 O3
+** searchMolFormula(C62 H100 O9 S2 Si3, '', requiredId=88) **
+	88 S(CC)C1([C@@H](/C=C\C[C@@]2(C)[C@H](O[Si](C)(C)C)C[C@@]3(C)[C@@H](C[C@H]4[C@](C)(O3)C(C)=CCO4)O2)O[C@H]2C[C@@H]3[C@@](C)(O[C@@H]2C1)[C@@H](O[Si](C)(C)C(C)(C)C)C[C@@H](CCCO[Si](c1ccccc1)(c1ccccc1)C(C)(C)C)O3)SCC S(CC)C1([C@@H](/C=C\C[C@@]2(C)[C@H](O[Si](C)(C)C)C[C@@]3(C)[C@@H](C[C@H]4[C@](C)(O3)C(C)=CCO4)O2)O[C@H]2C[C@@H]3[C@@](C)(O[C@@H]2C1)[C@@H](O[Si](C)(C)C(C)(C)C)C[C@@H](CCCO[Si](c1ccccc1)(c1ccccc1)C(C)(C)C)O3)SCC. C62 H100 O9 S2 Si3
+** searchMolFormula(C23 H33 N3 O2, '', requiredId=89) **
+	89 O(c1ccccc1C)CCCN(C)CC(N(C)Cc1ccc(N(C)C)cc1)=O O(c1ccccc1C)CCCN(C)CC(N(C)Cc1ccc(N(C)C)cc1)=O. C23 H33 N3 O2
+** searchMolFormula(C5 H11 N, '', requiredId=90) **
+	30 C1CCNCC1 C1CCNCC1. C5 H11 N
+	60 [CH2-]CCCC[NH-] [CH2-]CCCC[NH-]. C5 H11 N
+	90 NC1CCCC1 NC1CCCC1. C5 H11 N
+	180 CC1NC1(C)C CC1NC1(C)C. C5 H11 N
+	195 [H][H].[H][H].Cc1c[nH]cc1 [H][H].[H][H].Cc1c[nH]cc1. C5 H11 N
+** searchMolFormula(C10 H6 Cl N3 O4 S2, '', requiredId=91) **
+	91 ClC1C=C([N+](=O)[O-])C(=O)/C(=C\NN2C(=S)SCC2=O)/C=1 ClC1C=C([N+](=O)[O-])C(=O)/C(=C\NN2C(=S)SCC2=O)/C=1. C10 H6 Cl N3 O4 S2
+** searchMolFormula(C40 H46 N4 O2, '', requiredId=92) **
+	92 O(C)C([C@@H]1[C@@H]2/C(=C\C)/CN3[C@@H](C2)[C@]24[C@](CC3)(c3ccccc3N12)CN1[C@]23CC[C@@]5(CCCN6CC[C@@]2(c2cccc4c12)[C@H]56)C3C)=O O(C)C([C@@H]1[C@@H]2/C(=C\C)/CN3[C@@H](C2)[C@]24[C@](CC3)(c3ccccc3N12)CN1[C@]23CC[C@@]5(CCCN6CC[C@@]2(c2cccc4c12)[C@H]56)C3C)=O. C40 H46 N4 O2
+** searchMolFormula(C21 H27 F N4 O S, '', requiredId=93) **
+	93 S1CCN(C(c2c3c(CC[C@H](C3)NCc3ccc(F)cc3)[n](CC)[n]2)=O)CC1 S1CCN(C(c2c3c(CC[C@H](C3)NCc3ccc(F)cc3)[n](CC)[n]2)=O)CC1. C21 H27 F N4 O S
+** searchMolFormula(C15 H15 N3 O8, '', requiredId=94) **
+	94 O(C)c1c(OC)cc([N+](=O)[O-])c(CCNC(c2ccc([N+](=O)[O-])o2)=O)c1 O(C)c1c(OC)cc([N+](=O)[O-])c(CCNC(c2ccc([N+](=O)[O-])o2)=O)c1. C15 H15 N3 O8
+** searchMolFormula(C22 H26 N6 O S, '', requiredId=95) **
+	95 S(c1[n][n][n][n]1-c1cccc(C)c1)[C@H](C)C(Nc1ccc(N2CCCCC2)cc1)=O S(c1[n][n][n][n]1-c1cccc(C)c1)[C@H](C)C(Nc1ccc(N2CCCCC2)cc1)=O. C22 H26 N6 O S
+** searchMolFormula(C18 H17 F3 N2 O3 S, '', requiredId=96) **
+	96 S(c1ccccc1)(N1CCCC[C@@H]1C(Nc1ccc(F)c(F)c1F)=O)(=O)=O S(c1ccccc1)(N1CCCC[C@@H]1C(Nc1ccc(F)c(F)c1F)=O)(=O)=O. C18 H17 F3 N2 O3 S
+** searchMolFormula(C16 H23 F N2 O4 S2, '', requiredId=97) **
+	97 S1(CC[C@@H](S(NC[C@H](c2ccc(F)cc2)N2CCCC2)(=O)=O)C1)(=O)=O S1(CC[C@@H](S(NC[C@H](c2ccc(F)cc2)N2CCCC2)(=O)=O)C1)(=O)=O. C16 H23 F N2 O4 S2
+** searchMolFormula(C18 H22 N2 O4, '', requiredId=98) **
+	98 O(C(c1c(C)o[n]c1CC)=O)CC(NCCc1ccccc1C)=O O(C(c1c(C)o[n]c1CC)=O)CC(NCCc1ccccc1C)=O. C18 H22 N2 O4
+** searchMolFormula(C15 H18 Cl N O3 S, '', requiredId=99) **
+	99 Clc1cccc(C([C@H]2CCCN(S(CC=C)(=O)=O)C2)=O)c1 Clc1cccc(C([C@H]2CCCN(S(CC=C)(=O)=O)C2)=O)c1. C15 H18 Cl N O3 S
+** searchMolFormula(C23 H18 N4 O4, '', requiredId=100) **
+	100 O=C1c2ccccc2N=C(C)N1c1ccc(C(Nc2ccc(C)c([N+](=O)[O-])c2)=O)cc1 O=C1c2ccccc2N=C(C)N1c1ccc(C(Nc2ccc(C)c([N+](=O)[O-])c2)=O)cc1. C23 H18 N4 O4
+** searchMolFormula(C9 H22 Mg Si, '', requiredId=101) **
+	101 [Si](C)(C)(C)[CH2-].[Mg+2].C(CCC)[CH2-] [Si](C)(C)(C)[CH2-].[Mg+2].C(CCC)[CH2-]. C9 H22 Mg Si
+** searchMolFormula(C29 H37 F N4 O9 S, '', requiredId=102) **
+	102 S(c1ccc(C)cc1)(N1CC2(CN(C(=O)OC(C)C)N(C(=O)OC(C)C)CC2(OC(NCc2ccccc2F)=O)C1)O)(=O)=O S(c1ccc(C)cc1)(N1CC2(CN(C(=O)OC(C)C)N(C(=O)OC(C)C)CC2(OC(NCc2ccccc2F)=O)C1)O)(=O)=O. C29 H37 F N4 O9 S
+** searchMolFormula(C20 H25 Cl N2 O2, '', requiredId=103) **
+	103 Clc1c(OCCC)ccc(CNc2ccc(N3CCOCC3)cc2)c1 Clc1c(OCCC)ccc(CNc2ccc(N3CCOCC3)cc2)c1. C20 H25 Cl N2 O2
+** searchMolFormula(C24 H27 N4 O4, '', requiredId=104) **
+	104 O=C(c1ccc2c(OCO2)c1)NC[C@H]1C[C@@H]2CC[NH+]1C[C@@H]2c1cc(-c2ccco2)[n][n]1C O=C(c1ccc2c(OCO2)c1)NC[C@H]1C[C@@H]2CC[NH+]1C[C@@H]2c1cc(-c2ccco2)[n][n]1C. C24 H27 N4 O4
+** searchMolFormula(C27 H46 N8 O6, '', requiredId=105) **
+	105 O=C(C(C(C)CC)NC(C(Cc1ccc(O)cc1)N)=O)NC(C(NC(C(=O)O)CCC/N=C(\N)/N)=O)CCCCN O=C(C(C(C)CC)NC(C(Cc1ccc(O)cc1)N)=O)NC(C(NC(C(=O)O)CCC/N=C(\N)/N)=O)CCCCN. C27 H46 N8 O6
+** searchMolFormula(C16 H24 N2 O2, '', requiredId=106) **
+	106 O=C(C1CC2CCC1C2)NNC1=CC(=O)CC(C)(C)C1 O=C(C1CC2CCC1C2)NNC1=CC(=O)CC(C)(C)C1. C16 H24 N2 O2
+** searchMolFormula(C24 H23 N O6, '', requiredId=107) **
+	107 OC1C(=O)N(CCCC(=O)O)C(c2cccc(OC)c2)C=1C(C=Cc1ccccc1)=O OC1C(=O)N(CCCC(=O)O)C(c2cccc(OC)c2)C=1C(C=Cc1ccccc1)=O. C24 H23 N O6
+** searchMolFormula(C21 H18 N4 O5 S, '', requiredId=108) **
+	108 [s]1c(-[n]2c(NC(c3ccc(OC)c(OC)c3)=O)cc(C)[n]2)[n]c2cc3c(cc12)OCO3 [s]1c(-[n]2c(NC(c3ccc(OC)c(OC)c3)=O)cc(C)[n]2)[n]c2cc3c(cc12)OCO3. C21 H18 N4 O5 S
+** searchMolFormula(C14 H16, '', requiredId=109) **
+	109 C12C(C)=C(C)c3c(C)c(c(C)cc13)C2 C12C(C)=C(C)c3c(C)c(c(C)cc13)C2. C14 H16
+** searchMolFormula(C6 H11 N3, '', requiredId=110) **
+	110 [nH]1c[n]cc1C[C@@H](C)N [nH]1c[n]cc1C[C@@H](C)N. C6 H11 N3
+** searchMolFormula(C27 H24 Cl N3 O4 S, '', requiredId=111) **
+	111 Clc1ccc([C@H]2C(C(=O)OCC)=C(C)N=C3N2C(/C(=C2/C(=O)N(CCC)c4ccccc/24)/S3)=O)cc1 Clc1ccc([C@H]2C(C(=O)OCC)=C(C)N=C3N2C(/C(=C2/C(=O)N(CCC)c4ccccc/24)/S3)=O)cc1. C27 H24 Cl N3 O4 S
+** searchMolFormula(C11 H18 Cl2 N2 O2, '', requiredId=112) **
+	112 Clc1c(CC)o[n]c1OC1CCN(C)CC1.Cl Clc1c(CC)o[n]c1OC1CCN(C)CC1.Cl. C11 H18 Cl2 N2 O2
+** searchMolFormula(C21 H18 N2 O2, '', requiredId=113) **
+	113 O(CC=C)C(/C(/C#N)=C/c1ccc2c(c3ccccc3[n]2CC)c1)=O O(CC=C)C(/C(/C#N)=C/c1ccc2c(c3ccccc3[n]2CC)c1)=O. C21 H18 N2 O2
+** searchMolFormula(C14 H21 N O3, '', requiredId=114) **
+	114 O(Cc1ccccc1)C1CN(C)CC(CO)C1O O(Cc1ccccc1)C1CN(C)CC(CO)C1O. C14 H21 N O3
+** searchMolFormula(C23 H36 F2 N2 O3, '', requiredId=115) **
+	115 Fc1cc(F)cc(CC(C(CNC2(CCOCCC(C)(C)C)CC2)O)NC(C)=O)c1 Fc1cc(F)cc(CC(C(CNC2(CCOCCC(C)(C)C)CC2)O)NC(C)=O)c1. C23 H36 F2 N2 O3
+** searchMolFormula(C18 H15 Br N5 O6 P S, '', requiredId=116) **
+	116 Brc1[n]c2C(N3C=C(c4ccccc4)NC3=Nc2[n]1[C@H]1[C@H](O)[C@H]2[C@@H](COP(O)(O2)=S)O1)=O Brc1[n]c2C(N3C=C(c4ccccc4)NC3=Nc2[n]1[C@H]1[C@H](O)[C@H]2[C@@H](COP(O)(O2)=S)O1)=O. C18 H15 Br N5 O6 P S
+** searchMolFormula(C23 H12 Cl2 F N O5, '', requiredId=117) **
+	117 Clc1c(Cl)cc2C(N(c3cccc(C(=O)OCC(c4ccc(F)cc4)=O)c3)C(=O)c2c1)=O Clc1c(Cl)cc2C(N(c3cccc(C(=O)OCC(c4ccc(F)cc4)=O)c3)C(=O)c2c1)=O. C23 H12 Cl2 F N O5
+** searchMolFormula(C41 H44 Cl F N6 O5, '', requiredId=118) **
+	118 Clc1ccc(NC(CN2CCC(C(NC(C(Nc3c(C(NCc4ccc(F)cc4)=O)cccc3C)=O)C(C)C)=O)CC2)=O)cc1C(Nc1ccccc1)=O Clc1ccc(NC(CN2CCC(C(NC(C(Nc3c(C(NCc4ccc(F)cc4)=O)cccc3C)=O)C(C)C)=O)CC2)=O)cc1C(Nc1ccccc1)=O. C41 H44 Cl F N6 O5
+** searchMolFormula(C17 H18 Cl N3 O5 S, '', requiredId=119) **
+	119 Clc1cccc(CNc2ccc(S(N3CCOCC3)(=O)=O)cc2[N+](=O)[O-])c1 Clc1cccc(CNc2ccc(S(N3CCOCC3)(=O)=O)cc2[N+](=O)[O-])c1. C17 H18 Cl N3 O5 S
+** searchMolFormula(C5 H10 O, '', requiredId=120) **
+	120 C1CCOCC1 C1CCOCC1. C5 H10 O
+** searchMolFormula(C19 H17 N O3 S, '', requiredId=121) **
+	121 S1c2ccccc2[C@@H](NC([C@@H]2Cc3ccccc3C(=O)O2)=O)CC1 S1c2ccccc2[C@@H](NC([C@@H]2Cc3ccccc3C(=O)O2)=O)CC1. C19 H17 N O3 S
+** searchMolFormula(C17 H24 O, '', requiredId=122) **
+	122 O1[C@@H](C=C)C[C@@H](c2ccccc2)[C@]1(C)CCCC O1[C@@H](C=C)C[C@@H](c2ccccc2)[C@]1(C)CCCC. C17 H24 O
+** searchMolFormula(C20 H20 N4 O, '', requiredId=123) **
+	123 O=C(Nc1cc[n]c2ccccc12)Nc1ccccc1C1CNCC1 O=C(Nc1cc[n]c2ccccc12)Nc1ccccc1C1CNCC1. C20 H20 N4 O
+** searchMolFormula(C24 H21 F N4 O4 S, '', requiredId=124) **
+	124 S1C(=O)N(CCNC(c2ccc3c(N=C(C)C(N3CC)=O)c2)=O)C(=O)/C/1=C/c1ccc(F)cc1 S1C(=O)N(CCNC(c2ccc3c(N=C(C)C(N3CC)=O)c2)=O)C(=O)/C/1=C/c1ccc(F)cc1. C24 H21 F N4 O4 S
+** searchMolFormula(C18 H20 N2 O3 S, '', requiredId=125) **
+	125 S(C)(c1ccc(NC(N[C@H]2c3ccccc3CCC2)=O)cc1)(=O)=O S(C)(c1ccc(NC(N[C@H]2c3ccccc3CCC2)=O)cc1)(=O)=O. C18 H20 N2 O3 S
+** searchMolFormula(C15 H18 Cl N O2, '', requiredId=126) **
+	126 ClCCN1C=Cc2ccc(cc2CC1=O)OCCC ClCCN1C=Cc2ccc(cc2CC1=O)OCCC. C15 H18 Cl N O2
+** searchMolFormula(C31 H36 N8 O7, '', requiredId=127) **
+	127 O=C(C(Cc1c[nH]c2ccccc12)NC(C(Cc1c[n]c[nH]1)N)=O)NC(C(NC(C(=O)O)Cc1ccc(O)cc1)=O)CCC(N)=O O=C(C(Cc1c[nH]c2ccccc12)NC(C(Cc1c[n]c[nH]1)N)=O)NC(C(NC(C(=O)O)Cc1ccc(O)cc1)=O)CCC(N)=O. C31 H36 N8 O7
+** searchMolFormula(C24 H22 Br Cl2 N3 O2, '', requiredId=128) **
+	128 Brc1ccc2c(/C(/C(N2)=O)=C(/C)\C2N(c3c(Cl)cccc3Cl)C(=O)C3CCCCC3N2)c1 Brc1ccc2c(/C(/C(N2)=O)=C(/C)\C2N(c3c(Cl)cccc3Cl)C(=O)C3CCCCC3N2)c1. C24 H22 Br Cl2 N3 O2
+** searchMolFormula(C20 H19 F N2 O3 S, '', requiredId=129) **
+	129 S1C(N[C@@H](C)c2ccc(F)cc2)=NC(=O)C1(C)c1ccc(C(=O)OC)cc1 S1C(N[C@@H](C)c2ccc(F)cc2)=NC(=O)C1(C)c1ccc(C(=O)OC)cc1. C20 H19 F N2 O3 S
+** searchMolFormula(C9 H11 N O3, '', requiredId=130) **
+	130 OC(CCC[n]1cccc1C=O)=O OC(CCC[n]1cccc1C=O)=O. C9 H11 N O3
+** searchMolFormula(C20 H23 N7 O2, '', requiredId=131) **
+	131 O=C(CN(C)C(Nc1ccc(C)c(-[n]2c[n][n][n]2)c1)=O)Nc1ccccc1CC O=C(CN(C)C(Nc1ccc(C)c(-[n]2c[n][n][n]2)c1)=O)Nc1ccccc1CC. C20 H23 N7 O2
+** searchMolFormula(C19 H22 N4 O2 S, '', requiredId=132) **
+	132 S(CC(c1ccc[nH]1)=O)C1=Nc2ccccc2C(=O)N1CCCN(C)C S(CC(c1ccc[nH]1)=O)C1=Nc2ccccc2C(=O)N1CCCN(C)C. C19 H22 N4 O2 S
+** searchMolFormula(C15 H16 Cl N3 O3 S, '', requiredId=133) **
+	133 Clc1ccc([C@@]2(C[n]3c[n]c[n]3)OC[C@H](CSC(C)=O)O2)cc1 Clc1ccc([C@@]2(C[n]3c[n]c[n]3)OC[C@H](CSC(C)=O)O2)cc1. C15 H16 Cl N3 O3 S
+** searchMolFormula(C24 H24 N2 O6 S, '', requiredId=134) **
+	134 [s]1cccc1C/C(/C(=O)O)=C\c1c[n]c(CCCC)[n]1Cc1ccc(C(=O)O)c(C(=O)O)c1 [s]1cccc1C/C(/C(=O)O)=C\c1c[n]c(CCCC)[n]1Cc1ccc(C(=O)O)c(C(=O)O)c1. C24 H24 N2 O6 S
+** searchMolFormula(C24 H25 N O2 S, '', requiredId=135) **
+	135 S=C(c1ccc(OCc2ccc3ccccc3c2)c(OCC)c1)N1CCCC1 S=C(c1ccc(OCc2ccc3ccccc3c2)c(OCC)c1)N1CCCC1. C24 H25 N O2 S
+** searchMolFormula(C15 H21 Br N2 O4 S, '', requiredId=136) **
+	136 Brc1ccc(S(N2CCN(C(=O)OC(C)(C)C)CC2)(=O)=O)cc1 Brc1ccc(S(N2CCN(C(=O)OC(C)(C)C)CC2)(=O)=O)cc1. C15 H21 Br N2 O4 S
+** searchMolFormula(C20 H26 N4 O3, '', requiredId=137) **
+	137 O(c1ccc(/C=N/Nc2c(C#N)[n]c(C(C)C)o2)cc1OC)CCC(C)C O(c1ccc(/C=N/Nc2c(C#N)[n]c(C(C)C)o2)cc1OC)CCC(C)C. C20 H26 N4 O3
+** searchMolFormula(C15 H10 Cl N5 O, '', requiredId=138) **
+	138 Clc1cc(N)ccc1-c1[n]c2cc(ccc2o1)-[n]1c[n][n]c1 Clc1cc(N)ccc1-c1[n]c2cc(ccc2o1)-[n]1c[n][n]c1. C15 H10 Cl N5 O
+** searchMolFormula(C24 H18 N4 S, '', requiredId=139) **
+	139 S(c1ccc(-c2ccc(-[n]3c[n]cc3)cc2)[n][n]1)Cc1cccc2ccccc12 S(c1ccc(-c2ccc(-[n]3c[n]cc3)cc2)[n][n]1)Cc1cccc2ccccc12. C24 H18 N4 S
+** searchMolFormula(C25 H22 Cl N3 O S, '', requiredId=140) **
+	140 Clc1ccc(C(C)=NN(c2ccccc2)c2[n]c(-c3ccc(OCC)cc3)c[s]2)cc1 Clc1ccc(C(C)=NN(c2ccccc2)c2[n]c(-c3ccc(OCC)cc3)c[s]2)cc1. C25 H22 Cl N3 O S
+** searchMolFormula(C23 H27 Cl I N3 O3 S, '', requiredId=141) **
+	141 Ic1ccccc1C(N(c1[n]c2c(ccc(C)c2[s]1)OC)CCCN1CCOCC1)=O.Cl Ic1ccccc1C(N(c1[n]c2c(ccc(C)c2[s]1)OC)CCCN1CCOCC1)=O.Cl. C23 H27 Cl I N3 O3 S
+** searchMolFormula(C20 H19 Br2 N3 O3, '', requiredId=142) **
+	142 Brc1cc(Br)ccc1OC(C)C(NC1C(=O)N(c2ccccc2)N(C)C=1C)=O Brc1cc(Br)ccc1OC(C)C(NC1C(=O)N(c2ccccc2)N(C)C=1C)=O. C20 H19 Br2 N3 O3
+** searchMolFormula(C22 H27 N3 O4 S2, '', requiredId=143) **
+	143 [s]1c2cc(ccc2[n]c1N(C(c1cccc(OC)c1)=O)CCN(CC)CC)S(C)(=O)=O [s]1c2cc(ccc2[n]c1N(C(c1cccc(OC)c1)=O)CCN(CC)CC)S(C)(=O)=O. C22 H27 N3 O4 S2
+** searchMolFormula(C27 H33 N3 O2, '', requiredId=144) **
+	144 O1CCc2c1ccc(c2)Cc1[n]c2cc(C(N(CC)CC)=O)ccc2[n]1CC1CCCC1 O1CCc2c1ccc(c2)Cc1[n]c2cc(C(N(CC)CC)=O)ccc2[n]1CC1CCCC1. C27 H33 N3 O2
+** searchMolFormula(C15 H24 N3 O3 P S3, '', requiredId=145) **
+	145 S(CNC(=O)O/N=C(/C)\SC)N(c1ccccc1)P(C)(OC(C)C)=S S(CNC(=O)O/N=C(/C)\SC)N(c1ccccc1)P(C)(OC(C)C)=S. C15 H24 N3 O3 P S3
+** searchMolFormula(C29 H24 Cl F N2 O2, '', requiredId=146) **
+	146 Clc1ccc([C@H]2CC(=O)C3=C(Nc4ccccc4N([C@H]3c3ccc(F)cc3)C(C3CC3)=O)C2)cc1 Clc1ccc([C@H]2CC(=O)C3=C(Nc4ccccc4N([C@H]3c3ccc(F)cc3)C(C3CC3)=O)C2)cc1. C29 H24 Cl F N2 O2
+** searchMolFormula(C22 H24 N2 O, '', requiredId=147) **
+	147 O=C(CCCC)NCc1ccc(-c2ccc(C)cc2)c2cc[n]cc12 O=C(CCCC)NCc1ccc(-c2ccc(C)cc2)c2cc[n]cc12. C22 H24 N2 O
+** searchMolFormula(C21 H23 N3 O4, '', requiredId=148) **
+	148 O(C(COc1ccc(Nc2ccccc2)cc1)=O)[C@@H](C)C(N(C)CCC#N)=O O(C(COc1ccc(Nc2ccccc2)cc1)=O)[C@@H](C)C(N(C)CCC#N)=O. C21 H23 N3 O4
+** searchMolFormula(C17 H19 N5 O5, '', requiredId=149) **
+	149 O(C(CCCCCNC(c1ccc(N=[N+]=[N-])cc1)=O)=O)N1C(=O)CCC1=O O(C(CCCCCNC(c1ccc(N=[N+]=[N-])cc1)=O)=O)N1C(=O)CCC1=O. C17 H19 N5 O5
+** searchMolFormula(C5 H5 N, '', requiredId=150) **
+	150 c1cc[n]cc1 c1cc[n]cc1. C5 H5 N
+** searchMolFormula(C24 H26 N6 O, '', requiredId=151) **
+	151 O=C(c1ccc(C[n]2[n][n]c(-c3ccccc3)[n]2)cc1)N/N=C1\C=C(C)CC(C)(C)C\1 O=C(c1ccc(C[n]2[n][n]c(-c3ccccc3)[n]2)cc1)N/N=C1\C=C(C)CC(C)(C)C\1. C24 H26 N6 O
+** searchMolFormula(C33 H51 N O11, '', requiredId=152) **
+	152 O1[C@@]23[C@H]4CC[C@@H](C)[C@@H]2CC[C@@](C)(O[C@H]3O[C@@H]([C@@H]4C)OC/C(/CO[C@@H]2[C@H](C)[C@@H]3CC[C@@H](C)[C@@H]4CC[C@]5(C)OO[C@@]34[C@@H](O5)O2)=N/O)O1 O1[C@@]23[C@H]4CC[C@@H](C)[C@@H]2CC[C@@](C)(O[C@H]3O[C@@H]([C@@H]4C)OC/C(/CO[C@@H]2[C@H](C)[C@@H]3CC[C@@H](C)[C@@H]4CC[C@]5(C)OO[C@@]34[C@@H](O5)O2)=N/O)O1. C33 H51 N O11
+** searchMolFormula(C28 H53 Cl N3 P Si, '', requiredId=153) **
+	153 ClP1(=Nc2c(C(C)(C)C)cc(C(C)(C)C)cc2C(C)(C)C)N(C(C)(C)C)[Si](C)(C)N1C(C)(C)C ClP1(=Nc2c(C(C)(C)C)cc(C(C)(C)C)cc2C(C)(C)C)N(C(C)(C)C)[Si](C)(C)N1C(C)(C)C. C28 H53 Cl N3 P Si
+** searchMolFormula(C40 H47 F N8 O2, '', requiredId=154) **
+	154 Fc1cc(OC)ccc1CCN1C(c2c[n]ccc2)=Nc2c(ccc(c2)N/C(/N2CCN(CC#N)[C@@H](C)C2)=N/[C@H]2C[C@@H]3C[C@@H](C3(C)C)[C@@H]2C)C1=O Fc1cc(OC)ccc1CCN1C(c2c[n]ccc2)=Nc2c(ccc(c2)N/C(/N2CCN(CC#N)[C@@H](C)C2)=N/[C@H]2C[C@@H]3C[C@@H](C3(C)C)[C@@H]2C)C1=O. C40 H47 F N8 O2
+** searchMolFormula(C13 H10 N4 O, '', requiredId=155) **
+	155 O=C(c1ccc2ccccc2[n]1)Nc1c[n][nH]c1 O=C(c1ccc2ccccc2[n]1)Nc1c[n][nH]c1. C13 H10 N4 O
+** searchMolFormula(C15 H19 N O, '', requiredId=156) **
+	156 O=C(C)CCCN(CC#C)Cc1ccccc1 O=C(C)CCCN(CC#C)Cc1ccccc1. C15 H19 N O
+** searchMolFormula(C17 H22 N2 O4, '', requiredId=157) **
+	157 O=C(C1CCCCC1)Nc1ccc(/C(/CCC(=O)O)=N/O)cc1 O=C(C1CCCCC1)Nc1ccc(/C(/CCC(=O)O)=N/O)cc1. C17 H22 N2 O4
+** searchMolFormula(C23 H22 N4 O4 S2, '', requiredId=158) **
+	158 S1C2=NC(/C(/C(=N)N2C(SC)=N1)=C\c1ccc(OCCCOc2ccccc2)c(OC)c1)=O S1C2=NC(/C(/C(=N)N2C(SC)=N1)=C\c1ccc(OCCCOc2ccccc2)c(OC)c1)=O. C23 H22 N4 O4 S2
+** searchMolFormula(C23 H22 Cl2 F N O2, '', requiredId=159) **
+	159 Clc1c(Cl)ccc(COc2ccc(CNCc3ccc(F)cc3)cc2OCC)c1 Clc1c(Cl)ccc(COc2ccc(CNCc3ccc(F)cc3)cc2OCC)c1. C23 H22 Cl2 F N O2
+** searchMolFormula(C36 H51 N7 O9, '', requiredId=160) **
+	160 O=C([C@H](CC(C)C)NC([C@H](Cc1ccccc1)NC([C@H](CCC(=O)O)N)=O)=O)N[C@H](C(NCC(N[C@H](C(N)=O)C(C)C)=O)=O)Cc1ccc(O)cc1 O=C([C@H](CC(C)C)NC([C@H](Cc1ccccc1)NC([C@H](CCC(=O)O)N)=O)=O)N[C@H](C(NCC(N[C@H](C(N)=O)C(C)C)=O)=O)Cc1ccc(O)cc1. C36 H51 N7 O9
+** searchMolFormula(C33 H36 N6 O5 S2, '', requiredId=161) **
+	161 S(c1ccc(C(NCc2[n][n]c(SCC(N3c4ccccc4CCC3)=O)[n]2-c2cccc(C)c2C)=O)cc1)(N1CCOCC1)(=O)=O S(c1ccc(C(NCc2[n][n]c(SCC(N3c4ccccc4CCC3)=O)[n]2-c2cccc(C)c2C)=O)cc1)(N1CCOCC1)(=O)=O. C33 H36 N6 O5 S2
+** searchMolFormula(C20 H21 N O6 S, '', requiredId=162) **
+	162 S1([C@H](C(=O)OC)[C@H](c2ccccc2)N[C@H](c2ccccc2)[C@H]1C(=O)OC)(=O)=O S1([C@H](C(=O)OC)[C@H](c2ccccc2)N[C@H](c2ccccc2)[C@H]1C(=O)OC)(=O)=O. C20 H21 N O6 S
+** searchMolFormula(C22 H16 I N3 O2, '', requiredId=163) **
+	163 Ic1ccccc1C(Nc1ccccc1-c1[n]c(Cc2ccccc2)[n]o1)=O Ic1ccccc1C(Nc1ccccc1-c1[n]c(Cc2ccccc2)[n]o1)=O. C22 H16 I N3 O2
+** searchMolFormula(C18 H15 Cl N6, '', requiredId=164) **
+	164 Clc1cc(C)cc(C)c1Nc1ccc(C#N)c(N)c1-c1[n]c[n]c[n]1 Clc1cc(C)cc(C)c1Nc1ccc(C#N)c(N)c1-c1[n]c[n]c[n]1. C18 H15 Cl N6
+** searchMolFormula(C14 H10 Cl3 N3 O2 S2, '', requiredId=165) **
+	165 Clc1cc(Cl)ccc1C[n]1cc(NS(c2ccc(Cl)[s]2)(=O)=O)c[n]1 Clc1cc(Cl)ccc1C[n]1cc(NS(c2ccc(Cl)[s]2)(=O)=O)c[n]1. C14 H10 Cl3 N3 O2 S2
+** searchMolFormula(C9 H6 Cl6 O2, '', requiredId=166) **
+	166 ClC12C(Cl)=C(Cl)C(C1(Cl)Cl)(Cl)C1COC(O)C21 ClC12C(Cl)=C(Cl)C(C1(Cl)Cl)(Cl)C1COC(O)C21. C9 H6 Cl6 O2
+** searchMolFormula(C15 H14 Br F2 N3 O3, '', requiredId=167) **
+	167 Brc1c(C(F)F)[n][n](CC(Nc2ccc3c(OCCO3)c2)=O)c1C Brc1c(C(F)F)[n][n](CC(Nc2ccc3c(OCCO3)c2)=O)c1C. C15 H14 Br F2 N3 O3
+** searchMolFormula(C17 H20 N2 O S, '', requiredId=168) **
+	168 S(CC(Nc1cc(C)cc[n]1)=O)c1ccc(C(C)C)cc1 S(CC(Nc1cc(C)cc[n]1)=O)c1ccc(C(C)C)cc1. C17 H20 N2 O S
+** searchMolFormula(C21 H23 N7 O S, '', requiredId=169) **
+	169 S(c1[n][n]c(-c2ccccc2)[n]1CC)CC(/C(/C#N)=C1\NN=C2CCCCCN\12)=O S(c1[n][n]c(-c2ccccc2)[n]1CC)CC(/C(/C#N)=C1\NN=C2CCCCCN\12)=O. C21 H23 N7 O S
+** searchMolFormula(C22 H29 N5 O4 S2, '', requiredId=170) **
+	170 S1(CC[C@@H](Cc2[n][n]c(SCC(Nc3c(C#N)c(C)c(C)[n]3C3CCCCC3)=O)o2)C1)(=O)=O S1(CC[C@@H](Cc2[n][n]c(SCC(Nc3c(C#N)c(C)c(C)[n]3C3CCCCC3)=O)o2)C1)(=O)=O. C22 H29 N5 O4 S2
+** searchMolFormula(C36 H48 O8, '', requiredId=171) **
+	171 O[C@@]1(COC(C)=O)CC[C@H]2[C@@](C)(CC[C@H]3C(C)(C)CCC[C@@]32C)[C@H]1CC(C1=CC(=O)OC1OC(/C=C/c1ccccc1)=O)O O[C@@]1(COC(C)=O)CC[C@H]2[C@@](C)(CC[C@H]3C(C)(C)CCC[C@@]32C)[C@H]1CC(C1=CC(=O)OC1OC(/C=C/c1ccccc1)=O)O. C36 H48 O8
+** searchMolFormula(C8 H18 B Li O3 Si, '', requiredId=172) **
+	172 [Si](C#C[B-](OC)(OC)OC)(C)(C)C.[Li+] [Si](C#C[B-](OC)(OC)OC)(C)(C)C.[Li+]. C8 H18 B Li O3 Si
+** searchMolFormula(C14 H22 N2 O2, '', requiredId=173) **
+	173 O=C=NCCCCCCCCCC/C=C/N=C=O O=C=NCCCCCCCCCC/C=C/N=C=O. C14 H22 N2 O2
+** searchMolFormula(C14 H11 N3 O3 S2, '', requiredId=174) **
+	174 [s]1c(C(=O)O)c(C)c2c1NC(C=C2CSc1[n]ccc[n]1)=O [s]1c(C(=O)O)c(C)c2c1NC(C=C2CSc1[n]ccc[n]1)=O. C14 H11 N3 O3 S2
+** searchMolFormula(C23 H19 N3 O3 S, '', requiredId=175) **
+	175 [s]1cccc1C(Nc1ccc2c(c(cc(-c3ccc(C)cc3)[n]2)OCC(N)=O)c1)=O [s]1cccc1C(Nc1ccc2c(c(cc(-c3ccc(C)cc3)[n]2)OCC(N)=O)c1)=O. C23 H19 N3 O3 S
+** searchMolFormula(C16 H13 Cl2 N O, '', requiredId=176) **
+	176 Clc1ccc(C)c(NC(/C=C/c2ccccc2Cl)=O)c1 Clc1ccc(C)c(NC(/C=C/c2ccccc2Cl)=O)c1. C16 H13 Cl2 N O
+** searchMolFormula(C19 H27 F N6 O2, '', requiredId=177) **
+	177 Fc1cc(N)ccc1Oc1cc(NC(N(C)CCCN(CC)CC)=O)[n]c[n]1 Fc1cc(N)ccc1Oc1cc(NC(N(C)CCCN(CC)CC)=O)[n]c[n]1. C19 H27 F N6 O2
+** searchMolFormula(C19 H22 Cl N5 O2, '', requiredId=178) **
+	178 Clc1ccc(OC[n]2ccc(C(N(C)Cc3c[n](CC)[n]c3C)=O)[n]2)cc1 Clc1ccc(OC[n]2ccc(C(N(C)Cc3c[n](CC)[n]c3C)=O)[n]2)cc1. C19 H22 Cl N5 O2
+** searchMolFormula(C13 H14 F N3 O2, '', requiredId=179) **
+	179 Fc1ccc(NCC2=CN(C)C(=O)N(C)C2=O)cc1 Fc1ccc(NCC2=CN(C)C(=O)N(C)C2=O)cc1. C13 H14 F N3 O2
+** searchMolFormula(C5 H11 N, '', requiredId=180) **
+	30 C1CCNCC1 C1CCNCC1. C5 H11 N
+	60 [CH2-]CCCC[NH-] [CH2-]CCCC[NH-]. C5 H11 N
+	90 NC1CCCC1 NC1CCCC1. C5 H11 N
+	180 CC1NC1(C)C CC1NC1(C)C. C5 H11 N
+	195 [H][H].[H][H].Cc1c[nH]cc1 [H][H].[H][H].Cc1c[nH]cc1. C5 H11 N
+** searchMolFormula(C25 H44 O12, '', requiredId=181) **
+	181 O(C(=O)OCC(C)C)CC(COC(=O)OCC(C)C)(COC(=O)OCC(C)C)COC(=O)OCC(C)C O(C(=O)OCC(C)C)CC(COC(=O)OCC(C)C)(COC(=O)OCC(C)C)COC(=O)OCC(C)C. C25 H44 O12
+** searchMolFormula(C25 H33 N7 O5 S2, '', requiredId=182) **
+	182 [s]1c(NC(c2ccc(S(N(CC=N)CC=N)(=O)=O)cc2)=O)c(C(NC(N(C)C)=O)=O)c2c1CN(C(C)C)CC2 [s]1c(NC(c2ccc(S(N(CC=N)CC=N)(=O)=O)cc2)=O)c(C(NC(N(C)C)=O)=O)c2c1CN(C(C)C)CC2. C25 H33 N7 O5 S2
+** searchMolFormula(C19 H21 N3 O7, '', requiredId=183) **
+	183 O(CC(Nc1cc([N+](=O)[O-])c(OC)c([N+](=O)[O-])c1)=O)c1ccc(C(C)(C)C)cc1 O(CC(Nc1cc([N+](=O)[O-])c(OC)c([N+](=O)[O-])c1)=O)c1ccc(C(C)(C)C)cc1. C19 H21 N3 O7
+** searchMolFormula(C25 H26 N4 O3 S, '', requiredId=184) **
+	184 S(c1[n][n]c(-c2cccc(OC)c2)[n]1Cc1ccco1)C(C)C(N(c1ccccc1)CC)=O S(c1[n][n]c(-c2cccc(OC)c2)[n]1Cc1ccco1)C(C)C(N(c1ccccc1)CC)=O. C25 H26 N4 O3 S
+** searchMolFormula(C18 H24 N2 O7 S, '', requiredId=185) **
+	185 S(c1cccc2c(cccc12)N(C)C)(N[C@@H](C=O)[C@H]([C@H]([C@@H](CO)O)O)O)(=O)=O S(c1cccc2c(cccc12)N(C)C)(N[C@@H](C=O)[C@H]([C@H]([C@@H](CO)O)O)O)(=O)=O. C18 H24 N2 O7 S
+** searchMolFormula(C21 H15 Br F6 N4 O2, '', requiredId=186) **
+	186 Brc1ccc([C@@H]2C[C@H](C(F)(F)F)N3C(C=C(C(Nc4ccc(OC(F)(F)F)cc4)=O)N3)=N2)cc1 Brc1ccc([C@@H]2C[C@H](C(F)(F)F)N3C(C=C(C(Nc4ccc(OC(F)(F)F)cc4)=O)N3)=N2)cc1. C21 H15 Br F6 N4 O2
+** searchMolFormula(C31 H50 N2 O6, '', requiredId=187) **
+	187 O1[C@@]2(C)C(C)CC31C(C(N(CC=C)CCCCC)=O)N([C@@H](CO)[C@@H](C)CC)C(=O)[C@@H]3[C@@H]2C(=O)OCCCC=C O1[C@@]2(C)C(C)CC31C(C(N(CC=C)CCCCC)=O)N([C@@H](CO)[C@@H](C)CC)C(=O)[C@@H]3[C@@H]2C(=O)OCCCC=C. C31 H50 N2 O6
+** searchMolFormula(C16 H20 F3 N3 O3, '', requiredId=188) **
+	188 FC(c1cccc(NC(CN(C)CC(N2CCOCC2)=O)=O)c1)(F)F FC(c1cccc(NC(CN(C)CC(N2CCOCC2)=O)=O)c1)(F)F. C16 H20 F3 N3 O3
+** searchMolFormula(C19 H16 Cl N3 O2 S, '', requiredId=189) **
+	189 Clc1ccccc1C(/N=C1/N(CC=C)c2ccc(cc2S/1)NC(C)=O)=O Clc1ccccc1C(/N=C1/N(CC=C)c2ccc(cc2S/1)NC(C)=O)=O. C19 H16 Cl N3 O2 S
+** searchMolFormula(C36 H45 I O, '', requiredId=190) **
+	190 Ic1cc(/C=C/c2cc(C)cc(C)c2)cc(/C=C/c2ccc(OCCCCCCCCCCCC)cc2)c1 Ic1cc(/C=C/c2cc(C)cc(C)c2)cc(/C=C/c2ccc(OCCCCCCCCCCCC)cc2)c1. C36 H45 I O
+** searchMolFormula(C17 H20 N4 O4 S, '', requiredId=191) **
+	191 S(c1ccc([N+](=O)[O-])cc1)CC(N1CCN(Cc2cc(C)o[n]2)CC1)=O S(c1ccc([N+](=O)[O-])cc1)CC(N1CCN(Cc2cc(C)o[n]2)CC1)=O. C17 H20 N4 O4 S
+** searchMolFormula(C15 H25 N3 O3 S, '', requiredId=192) **
+	192 S(Cc1cccc(CNC(NC(C)C(C)C)=O)c1)(NC)(=O)=O S(Cc1cccc(CNC(NC(C)C(C)C)=O)c1)(NC)(=O)=O. C15 H25 N3 O3 S
+** searchMolFormula(C17 H22 N4 O, '', requiredId=193) **
+	193 O(C)c1ccc(CN2Cc3c[n]c(N)[n]c3CC2)c(C)c1C O(C)c1ccc(CN2Cc3c[n]c(N)[n]c3CC2)c(C)c1C. C17 H22 N4 O
+** searchMolFormula(C25 H34 N2 O4, '', requiredId=194) **
+	194 O([C@H]1c2ccccc2CCC1)C[C@@H](C[NH+]1CC[NH+](Cc2ccc3c(OCO3)c2)CC1)O O([C@H]1c2ccccc2CCC1)C[C@@H](C[NH+]1CC[NH+](Cc2ccc3c(OCO3)c2)CC1)O. C25 H34 N2 O4
+** searchMolFormula(C5 H11 N, '', requiredId=195) **
+	30 C1CCNCC1 C1CCNCC1. C5 H11 N
+	60 [CH2-]CCCC[NH-] [CH2-]CCCC[NH-]. C5 H11 N
+	90 NC1CCCC1 NC1CCCC1. C5 H11 N
+	180 CC1NC1(C)C CC1NC1(C)C. C5 H11 N
+	195 [H][H].[H][H].Cc1c[nH]cc1 [H][H].[H][H].Cc1c[nH]cc1. C5 H11 N
+** searchMolFormula(C21 H29 N5 O, '', requiredId=196) **
+	196 O=C(c1c[n]c(N2CCCC2)[n]c1CC)N1CC[n]2cccc2C1C(C)C O=C(c1c[n]c(N2CCCC2)[n]c1CC)N1CC[n]2cccc2C1C(C)C. C21 H29 N5 O
+** searchMolFormula(C19 H24 Cl N3 O3 S, '', requiredId=197) **
+	197 ClC(c1ccccc1)C(N(CC(Nc1[n]c(C)c[s]1)=O)CCCOCC)=O ClC(c1ccccc1)C(N(CC(Nc1[n]c(C)c[s]1)=O)CCCOCC)=O. C19 H24 Cl N3 O3 S
+** searchMolFormula(C36 H34 F3 N5 O5, '', requiredId=198) **
+	198 Fc1ccc(NC(C2CCN(CC(Nc3ccc(C(Nc4ccc(F)cc4F)=O)cc3C)=O)CC2)=O)cc1NC(c1cccc(OC)c1)=O Fc1ccc(NC(C2CCN(CC(Nc3ccc(C(Nc4ccc(F)cc4F)=O)cc3C)=O)CC2)=O)cc1NC(c1cccc(OC)c1)=O. C36 H34 F3 N5 O5
+** searchMolFormula(C22 H23 N3 O2, '', requiredId=199) **
+	199 O=C(c1ccc[nH]1)CN(CC(c1ccc[nH]1)=O)CC1(c2ccccc2)CC1 O=C(c1ccc[nH]1)CN(CC(c1ccc[nH]1)=O)CC1(c2ccccc2)CC1. C22 H23 N3 O2

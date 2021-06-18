@@ -1,0 +1,48 @@
+** 0 **
+Exception: element: can not calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
+
+False
+Cc1cccc[n]1
+False
+** 1 **
+False
+
+False
+Cc1cccc2cc[nH]c21
+False
+** 2 **
+False
+
+False
+Cc1cccc2c1[nH]c1ccccc21
+False
+** 3 **
+False
+dearomatization: non-unique dearomatization: Dearomatization is not unique. Cannot restore hydrogens.
+False
+Exception: dearomatization: non-unique dearomatization: Dearomatization is not unique. Cannot restore hydrogens.
+False
+** 4 **
+False
+
+False
+CC1NC=C(O)N=1
+False
+** 5 **
+Exception: element: can not calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
+dearomatization: non-unique dearomatization: Dearomatization is not unique. Cannot restore hydrogens.
+Exception: element: can not calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
+Exception: dearomatization: non-unique dearomatization: Dearomatization is not unique. Cannot restore hydrogens.
+Exception: element: can not calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
+** 6 **
+True
+element: bad valence on H having 1 drawn bonds, charge 1, and 0 radical electrons
+True
+C
+True
+** 7 **
+True
+element: explicit valence 3 specified on H, but 4 bonds are drawn
+True
+Exception: SMILES saver: unsure hydrogen count on atom #0
+True

@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -92,29 +87,25 @@
 typedef struct tagINChI_IsotopicAtom
 {
 
-    AT_NUMB   nAtomNumber;  /* Canonical atom number */
+    AT_NUMB   nAtomNumber;      /* Canonical atom number                        */
 
-    NUM_H     nIsoDifference; /* 0=non-isotopic; 1=rounded avg. atomic mass */
+    NUM_H     nIsoDifference;   /* 0=non-isotopic; 1=rounded avg. atomic mass   */
 
-    NUM_H     nNum_H;  /* number of 1H isotopic atoms attached */
+    NUM_H     nNum_H;           /* number of 1H isotopic atoms attached         */
 
-    NUM_H     nNum_D;  /* number of 2H isotopic atoms attached */
+    NUM_H     nNum_D;           /* number of 2H isotopic atoms attached         */
 
-    NUM_H     nNum_T;  /* number of 3H isotopic atoms attached */
+    NUM_H     nNum_T;           /* number of 3H isotopic atoms attached         */
 } INChI_IsotopicAtom;
 
 
 
 typedef struct tagINChI_IsotopicTGroup
 {
-
-    AT_NUMB   nTGroupNumber;  /* Tautomeric group number */
-
-    AT_NUMB   nNum_H;  /* number of 1H isotopic atoms */
-
-    AT_NUMB   nNum_D;  /* number of 2H isotopic atoms */
-
-    AT_NUMB   nNum_T;  /* number of 3H isotopic atoms */
+    AT_NUMB   nTGroupNumber;    /* Tautomeric group number          */
+    AT_NUMB   nNum_H;           /* number of 1H isotopic atoms      */
+    AT_NUMB   nNum_D;           /* number of 2H isotopic atoms      */
+    AT_NUMB   nNum_T;           /* number of 3H isotopic atoms      */
 } INChI_IsotopicTGroup;
 
 
@@ -128,60 +119,65 @@ typedef struct tagINChI_Stereo
     int         nNumberOfStereoCenters;
 
     AT_NUMB    *nNumber;      /* Canonical number of a possibly tetrahedral
-                               * stereogenic atom or allenes [nNumberOfAtoms] */
+                               * stereogenic atom or allenes [nNumberOfStereoCenters]       */
 
-    S_CHAR     *t_parity;     /* tetrahedral (relative, see nCompInv2Abs) atom parities [nNumberOfAtoms] */
-    /* ---- possibly tetrahedral stereogenic atoms of the iverted structure */
+    S_CHAR     *t_parity;     /* tetrahedral (relative, see nCompInv2Abs) atom parities [nNumberOfStereoCenters] */
+    /* ---- possibly tetrahedral stereogenic atoms of the inverted structure         */
 
     AT_NUMB    *nNumberInv;   /* Canonical number of a possibly tetrahedral
-                               * stereogenic atom or allene [nNumberOfAtoms] */
+                               * stereogenic atom or allene [nNumberOfStereoCenters]        */
 
-    S_CHAR     *t_parityInv;  /* tetrahedral inverted atom parities [nNumberOfAtoms] */
+    S_CHAR     *t_parityInv;  /* tetrahedral inverted atom parities [nNumberOfStereoCenters]*/
 
-    /* bFlagAbsStereoIsInverted = nCompInv2Abs==-1: Abs stereo = Inverted  */
-    int         nCompInv2Abs; /* 0=>Inv = Abs stereo; -1=> Inv < Abs stereo, +1=> Inv > Abs stereo; +2=> in reading InChI: no /m was found and in /sN N>0 */
+    /* bFlagAbsStereoIsInverted = nCompInv2Abs==-1: Abs stereo = Inverted           */
+    int         nCompInv2Abs; /* 0=>Inv = Abs stereo; -1=> Inv < Abs stereo,
+                              +1=> Inv > Abs stereo; +2=> in reading InChI:
+                              no /m was found and in /sN N>0                        */
 
     int         bTrivialInv;  /* 1=> nCompInv2Abs!= 0 && Inverted = Abs stereo with inverted parities 1<-->2 */
 
     /* ---- possibly stereogenic bonds and tetrahedral cumuleles */
     int         nNumberOfStereoBonds;
     AT_NUMB    *nBondAtom1; /* Canonical number of a first atom
-                             * [number of bonds] */
+                             * [number of bonds]                                    */
     AT_NUMB    *nBondAtom2; /* Canonical number of a second atom
-                             * [number of bonds] */
+                             * [number of bonds]                                    */
     S_CHAR     *b_parity;   /* possibly stereogenic bond parities
-                             * [number of bonds] */
+                             * [number of bonds]                                    */
 } INChI_Stereo;
 #define INCHI_FLAG_ACID_TAUT            0x0001   /* tautomerism of dissociated acid invoked */
-#define INCHI_FLAG_REL_STEREO           0x0002   /* requested relative stereo */
-#define INCHI_FLAG_RAC_STEREO           0x0004   /* requested racemic stereo */
+#define INCHI_FLAG_REL_STEREO           0x0002   /* requested relative stereo               */
+#define INCHI_FLAG_RAC_STEREO           0x0004   /* requested racemic stereo                */
 #define INCHI_FLAG_SC_IGN_ALL_UU        0x0008   /* ignored all undefined/unknown stereocenters, non-isotopic */
 #define INCHI_FLAG_SB_IGN_ALL_UU        0x0010   /* ignored all undefined/unknown stereocenters, non-isotopic */
 #define INCHI_FLAG_SC_IGN_ALL_ISO_UU    0x0020   /* ignored all undefined/unknown stereocenters, isotopic */
 #define INCHI_FLAG_SB_IGN_ALL_ISO_UU    0x0040   /* ignored all undefined/unknown stereocenters, isotopic */
 #define INCHI_FLAG_HARD_ADD_REM_PROTON  0x0080   /* in normalization a proton has been added or removed along alt path */
 
-#define INCHI_OUT_NO_AUX_INFO           0x0001   /* do not output Aux Info */
-#define INCHI_OUT_SHORT_AUX_INFO        0x0002   /* output short version of Aux Info */
-#define INCHI_OUT_ONLY_AUX_INFO         0x0004   /* output only Aux Info */
+#define INCHI_OUT_NO_AUX_INFO           0x0001   /* do not output Aux Info                  */
+#define INCHI_OUT_SHORT_AUX_INFO        0x0002   /* output short version of Aux Info        */
+#define INCHI_OUT_ONLY_AUX_INFO         0x0004   /* output only Aux Info                    */
 #define INCHI_OUT_EMBED_REC             0x0008   /* embed reconnected INChI into disconnected INChI */
 #define INCHI_OUT_SDFILE_ONLY           0x0010   /* save input data in a Molfile instead of creating INChI */
-#define INCHI_OUT_XML                   0x0020   /* *obsolete* output xml INChI */
-#define INCHI_OUT_PLAIN_TEXT            0x0040   /* output plain text INChI */
-#define INCHI_OUT_PLAIN_TEXT_COMMENTS   0x0080   /* output plain text annotation */
-#define INCHI_OUT_XML_TEXT_COMMENTS     0x0100   /* *obsolete* output xml text annotation */
-#define INCHI_OUT_WINCHI_WINDOW         0x0200   /* output into wINChI text window */
-#define INCHI_OUT_TABBED_OUTPUT         0x0400   /* tab-delimited (only for plain text) */
-#define INCHI_OUT_SDFILE_ATOMS_DT       0x0800   /* SDfile output H isotopes as D and T */
-#define INCHI_OUT_SDFILE_SPLIT          0x1000   /* Split SDfile into components */
+#define INCHI_OUT_XML                   0x0020   /* *obsolete* output xml INChI             */
+#define INCHI_OUT_PLAIN_TEXT            0x0040   /* output plain text INChI                 */
+#define INCHI_OUT_PLAIN_TEXT_COMMENTS   0x0080   /* output plain text annotation            */
+#define INCHI_OUT_XML_TEXT_COMMENTS     0x0100   /* *obsolete* output xml text annotation   */
+#define INCHI_OUT_WINCHI_WINDOW         0x0200   /* output into wINChI text window          */
+#define INCHI_OUT_TABBED_OUTPUT         0x0400   /* tab-delimited (only for plain text)     */
+#define INCHI_OUT_SDFILE_ATOMS_DT       0x0800   /* SDfile output H isotopes as D and T     */
+#define INCHI_OUT_SDFILE_SPLIT          0x1000   /* Split SDfile into components            */
 
 #define INCHI_OUT_FIX_TRANSPOSITION_CHARGE_BUG 0x2000
-                                    /* used to accomodate FIX_TRANSPOSITION_CHARGE_BUG */
+                                        /* used to accomodate FIX_TRANSPOSITION_CHARGE_BUG */
 #define INCHI_OUT_STDINCHI 0x4000
 #define INCHI_OUT_SAVEOPT  0x8000
 
+/* bINChIOutputOptions2+ */
 #define INCHI_OUT_INCHI_GEN_ERROR        0x0001 /* v. 1.05 */
-#define INCHI_OUT_MISMATCH_AS_ERROR        0x0002 /* v. 1.05 */
+#define INCHI_OUT_MISMATCH_AS_ERROR      0x0002 /* v. 1.05 */
+#define INCHI_OUT_REQ_LARGE_MOL             0x0004 /* v. 1.06 */
+#define INCHI_OUT_REQ_POLYMERS             0x0008 /* v. 1.06 */
 
 /* Bits encoding InChI creation options to be saved */
 #define SAVE_OPT_SLUUD  0x0001
@@ -258,37 +254,37 @@ typedef struct tagOrigInfo {
 /******************** auxiliary chemical identifier info **************/
 typedef struct tagINChI_Aux { /* [N] = allocated length */
 
-    int        nErrorCode;  /* 0 = success */
-    int        nNumberOfAtoms;
-    int        nNumberOfTGroups;   /* non-zero only in tautomeric representation */
-    int        bIsIsotopic;        /* filled out even though isotopic has not been requested */
-    int        bIsTautomeric;      /* filled out even though tautomeric has not been requested; non-zero if taut exists */
+    int			nErrorCode;  /* 0 = success */
+    int			nNumberOfAtoms;
+    int			nNumberOfTGroups;   /* non-zero only in tautomeric representation */
+    int			bIsIsotopic;        /* filled out even though isotopic has not been requested */
+    int			bIsTautomeric;      /* filled out even though tautomeric has not been requested; non-zero if taut exists */
     /* canonical numbers of the atoms: nOrigAtNosInCanonOrd[i-1]+1 =       */
     /*                       input atom number for the canonical number i  */
-    AT_NUMB   *nOrigAtNosInCanonOrd;             /* [nNumberOfInputAtoms*1.5]; */
-    AT_NUMB   *nIsotopicOrigAtNosInCanonOrd;     /* [nNumberOfInputAtoms*1.5]; */
+    AT_NUMB		*nOrigAtNosInCanonOrd;             /* [nNumberOfInputAtoms*1.5]; */
+    AT_NUMB		*nIsotopicOrigAtNosInCanonOrd;     /* [nNumberOfInputAtoms*1.5]; */
     /* same for the inverted structure */
-    AT_NUMB   *nOrigAtNosInCanonOrdInv;          /* inverted stereo [nNumberOfInputAtoms*1.5]; */
-    AT_NUMB   *nIsotopicOrigAtNosInCanonOrdInv;  /* [nNumberOfInputAtoms*1.5]; */
-    AT_NUMB   *nConstitEquNumbers;               /* [nNumberOfAtoms*1.5] */
-    AT_NUMB   *nConstitEquTGroupNumbers;         /* [nNumberOfAtoms/2] */
-    AT_NUMB   *nConstitEquIsotopicNumbers;       /* [nNumberOfAtoms*1.5] */
-    AT_NUMB   *nConstitEquIsotopicTGroupNumbers; /* [nNumberOfAtoms/2] */
+    AT_NUMB		*nOrigAtNosInCanonOrdInv;          /* inverted stereo [nNumberOfInputAtoms*1.5]; */
+    AT_NUMB		*nIsotopicOrigAtNosInCanonOrdInv;  /* [nNumberOfInputAtoms*1.5]; */
+    AT_NUMB		*nConstitEquNumbers;               /* [nNumberOfAtoms*1.5] */
+    AT_NUMB		*nConstitEquTGroupNumbers;         /* [nNumberOfAtoms/2] */
+    AT_NUMB		*nConstitEquIsotopicNumbers;       /* [nNumberOfAtoms*1.5] */
+    AT_NUMB		*nConstitEquIsotopicTGroupNumbers; /* [nNumberOfAtoms/2] */
 #if ( bREUSE_INCHI == 1 )
-    int nRefCount;
+    int			nRefCount;
 #endif
 
-    ORIG_INFO *OrigInfo;
-    MOL_COORD *szOrigCoord;
-    NUM_H   nNumRemovedProtons;
-    NUM_H   nNumRemovedIsotopicH[NUM_H_ISOTOPES]; /* isotopic H that may be exchanged and considered
+    ORIG_INFO	*OrigInfo;
+    MOL_COORD	*szOrigCoord;
+    NUM_H		nNumRemovedProtons;
+    NUM_H		nNumRemovedIsotopicH[NUM_H_ISOTOPES]; /* isotopic H that may be exchanged and considered
                                                      randomly distributed, including removed protons;
                                                      order: 0=>1H, 1=>D, 2=>T */
-    int            bDeleted;
+    int         bDeleted;
     INCHI_MODE  bTautFlags;             /* t_group_info->bTautFlags */
     INCHI_MODE  bTautFlagsDone;         /* t_group_info->bTautFlagsDone */
     INCHI_MODE  bNormalizationFlags;    /* t_group_info->tni.bNormalizationFlags */
-    int            nCanonFlags;
+    int         nCanonFlags;
 } INChI_Aux;
 
 typedef INChI_Aux *PINChI_Aux2[TAUT_NUM];

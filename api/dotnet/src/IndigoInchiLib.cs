@@ -30,5 +30,11 @@ namespace com.epam.indigo
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
         public static extern sbyte* indigoInchiGetAuxInfo();
+
+        [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoInchiInit();
+
+        [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoInchiDispose();
     }
 }

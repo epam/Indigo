@@ -1,0 +1,1257 @@
+targertId = 1, query = 1:
+target = [N+](C)(C)=NC(=CN(C)C)O
+query = [N+](=NC(O)=CN(C)C)(C)C
+targertId = 4, query = 2:
+target = C1(=C(C(C(=C(C)C(C)=C1C)O)=O)C)C
+query = C1(C)C(C)=C(C)C(C)=C(O)C(=O)C=1C
+targertId = 5, query = 2:
+target = C1(C(C)=C(O)C(=O)C(=C(C=1C)C)C)C
+query = C1(C)C(C)=C(C)C(C)=C(O)C(=O)C=1C
+targertId = 6, query = 3:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 6, query = 4:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 6, query = 5:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 6, query = 6:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 6, query = 7:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 6, query = 8:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 6, query = 9:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 6, query = 10:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 6, query = 11:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 6, query = 12:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 6, query = 13:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 7, query = 3:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 7, query = 4:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 7, query = 5:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 7, query = 6:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 7, query = 7:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 7, query = 8:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 7, query = 9:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 7, query = 10:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 7, query = 11:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 7, query = 12:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 7, query = 13:
+target = C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 8, query = 3:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 8, query = 4:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 8, query = 5:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 8, query = 6:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 8, query = 7:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 8, query = 8:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 8, query = 9:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 8, query = 10:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 8, query = 11:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 8, query = 12:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 8, query = 13:
+target = C1(=O)NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 9, query = 3:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 9, query = 4:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 9, query = 5:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 9, query = 6:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 9, query = 7:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 9, query = 8:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 9, query = 9:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 9, query = 10:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 9, query = 11:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 9, query = 12:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 9, query = 13:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 10, query = 3:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 10, query = 4:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 10, query = 5:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 10, query = 6:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 10, query = 7:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 10, query = 8:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 10, query = 9:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 10, query = 10:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 10, query = 11:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 10, query = 12:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 10, query = 13:
+target = C1(=O)NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 11, query = 3:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 11, query = 4:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 11, query = 5:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 11, query = 6:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 11, query = 7:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 11, query = 8:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 11, query = 9:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 11, query = 10:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 11, query = 11:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 11, query = 12:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 11, query = 13:
+target = C1(=O)NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 12, query = 3:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 12, query = 4:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 12, query = 5:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 12, query = 6:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 12, query = 7:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 12, query = 8:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 12, query = 9:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 12, query = 10:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 12, query = 11:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 12, query = 12:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 12, query = 13:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 13, query = 3:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 13, query = 4:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 13, query = 5:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 13, query = 6:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 13, query = 7:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 13, query = 8:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 13, query = 9:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 13, query = 10:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 13, query = 11:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 13, query = 12:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 13, query = 13:
+target = C1(=O)N=C2C(NC1=O)=C(O)NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 14, query = 3:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 14, query = 4:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 14, query = 5:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 14, query = 6:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 14, query = 7:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 14, query = 8:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 14, query = 9:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 14, query = 10:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 14, query = 11:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 14, query = 12:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 14, query = 13:
+target = C1(=O)N=C2C(NC1=O)=C(O)N=C(N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 15, query = 3:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 15, query = 4:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 15, query = 5:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 15, query = 6:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 15, query = 7:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 15, query = 8:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 15, query = 9:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 15, query = 10:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 15, query = 11:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 15, query = 12:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 15, query = 13:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 16, query = 3:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 16, query = 4:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 16, query = 5:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 16, query = 6:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 16, query = 7:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 16, query = 8:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 16, query = 9:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 16, query = 10:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 16, query = 11:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 16, query = 12:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 16, query = 13:
+target = C1(O)=NC2=C(NC1=O)C(=O)NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 17, query = 3:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 17, query = 4:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 17, query = 5:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 17, query = 6:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 17, query = 7:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 17, query = 8:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 17, query = 9:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 17, query = 10:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 17, query = 11:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 17, query = 12:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 17, query = 13:
+target = C1(O)=NC2C(NC1=O)=C(O)NC(=N)N=2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 18, query = 3:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 18, query = 4:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 18, query = 5:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 18, query = 6:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 18, query = 7:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 18, query = 8:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 18, query = 9:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 18, query = 10:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 18, query = 11:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 18, query = 12:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 18, query = 13:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 19, query = 3:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 19, query = 4:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 19, query = 5:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 19, query = 6:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 19, query = 7:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 19, query = 8:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 19, query = 9:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 19, query = 10:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 19, query = 11:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 19, query = 12:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 19, query = 13:
+target = C1(O)=NC2=C(NC1=O)C(O)=NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 20, query = 3:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 20, query = 4:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 20, query = 5:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 20, query = 6:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 20, query = 7:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 20, query = 8:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 20, query = 9:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 20, query = 10:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 20, query = 11:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 20, query = 12:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 20, query = 13:
+target = C1(O)=NC2=C(NC1=O)C(=O)N=C(N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 21, query = 3:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 21, query = 4:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 21, query = 5:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 21, query = 6:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 21, query = 7:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 21, query = 8:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 21, query = 9:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 21, query = 10:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 21, query = 11:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 21, query = 12:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 21, query = 13:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 22, query = 3:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 22, query = 4:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 22, query = 5:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 22, query = 6:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 22, query = 7:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 22, query = 8:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 22, query = 9:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 22, query = 10:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 22, query = 11:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 22, query = 12:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 22, query = 13:
+target = C1(=O)NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 23, query = 3:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 23, query = 4:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 23, query = 5:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 23, query = 6:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 23, query = 7:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 23, query = 8:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 23, query = 9:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 23, query = 10:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 23, query = 11:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 23, query = 12:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 23, query = 13:
+target = C1(=O)NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 24, query = 3:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 24, query = 4:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 24, query = 5:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 24, query = 6:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 24, query = 7:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 24, query = 8:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 24, query = 9:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 24, query = 10:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 24, query = 11:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 24, query = 12:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 24, query = 13:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 25, query = 3:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 25, query = 4:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 25, query = 5:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 25, query = 6:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 25, query = 7:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 25, query = 8:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 25, query = 9:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 25, query = 10:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 25, query = 11:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 25, query = 12:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 25, query = 13:
+target = C1(=O)NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 26, query = 3:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 26, query = 4:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 26, query = 5:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 26, query = 6:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 26, query = 7:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 26, query = 8:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 26, query = 9:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 26, query = 10:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 26, query = 11:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 26, query = 12:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 26, query = 13:
+target = C1(=O)NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 27, query = 3:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 27, query = 4:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 27, query = 5:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 27, query = 6:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 27, query = 7:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 27, query = 8:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 27, query = 9:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 27, query = 10:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 27, query = 11:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 27, query = 12:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 27, query = 13:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 28, query = 3:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 28, query = 4:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 28, query = 5:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 28, query = 6:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 28, query = 7:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 28, query = 8:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 28, query = 9:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 28, query = 10:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 28, query = 11:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 28, query = 12:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 28, query = 13:
+target = C1(=O)N=C2C(N=C1O)=C(O)NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 29, query = 3:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 29, query = 4:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 29, query = 5:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 29, query = 6:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 29, query = 7:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 29, query = 8:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 29, query = 9:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 29, query = 10:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 29, query = 11:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 29, query = 12:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 29, query = 13:
+target = C1(=O)N=C2C(N=C1O)=C(O)N=C(N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 30, query = 3:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 30, query = 4:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 30, query = 5:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 30, query = 6:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 30, query = 7:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 30, query = 8:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 30, query = 9:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 30, query = 10:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 30, query = 11:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 30, query = 12:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 30, query = 13:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 31, query = 3:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 31, query = 4:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 31, query = 5:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 31, query = 6:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 31, query = 7:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 31, query = 8:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 31, query = 9:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 31, query = 10:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 31, query = 11:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 31, query = 12:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 31, query = 13:
+target = C1(O)=NC2=C(N=C1O)C(=O)NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 32, query = 3:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 32, query = 4:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 32, query = 5:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 32, query = 6:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 32, query = 7:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 32, query = 8:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 32, query = 9:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 32, query = 10:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 32, query = 11:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 32, query = 12:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 32, query = 13:
+target = C1(O)=NC2C(N=C1O)=C(O)NC(=N)N=2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 33, query = 3:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 33, query = 4:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 33, query = 5:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 33, query = 6:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 33, query = 7:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 33, query = 8:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 33, query = 9:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 33, query = 10:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 33, query = 11:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 33, query = 12:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 33, query = 13:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(=N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 34, query = 3:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 34, query = 4:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 34, query = 5:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 34, query = 6:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 34, query = 7:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 34, query = 8:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 34, query = 9:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 34, query = 10:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 34, query = 11:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 34, query = 12:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 34, query = 13:
+target = C1(O)=NC2=C(N=C1O)C(O)=NC(N)=N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 35, query = 3:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 35, query = 4:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 35, query = 5:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 35, query = 6:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 35, query = 7:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 35, query = 8:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 35, query = 9:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 35, query = 10:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 35, query = 11:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 35, query = 12:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 35, query = 13:
+target = C1(O)=NC2=C(N=C1O)C(=O)N=C(N)N2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 36, query = 3:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 36, query = 4:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 36, query = 5:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 36, query = 6:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 36, query = 7:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 36, query = 8:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 36, query = 9:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 36, query = 10:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 36, query = 11:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 36, query = 12:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 36, query = 13:
+target = C1(O)NC2C(=NC=1O)C(=O)NC(=N)N=2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 37, query = 3:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 37, query = 4:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 37, query = 5:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 37, query = 6:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 37, query = 7:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 37, query = 8:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 37, query = 9:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 37, query = 10:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 37, query = 11:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 37, query = 12:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 37, query = 13:
+target = C1(O)NC2C(=NC=1O)C(O)=NC(=N)N=2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 38, query = 3:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 38, query = 4:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 38, query = 5:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(=O)NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 38, query = 6:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(=O)NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 38, query = 7:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(=O)NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 38, query = 8:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N1)N)=O)=O
+targertId = 38, query = 9:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N1)N)O)=O
+targertId = 38, query = 10:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(O)=NC2=C(NC(=NC2=N1)N)O)=O
+targertId = 38, query = 11:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(O)=NC2C(NC(=NC=2N=1)N)=O)O
+targertId = 38, query = 12:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(C(O)=NC2C(=NC(=NC=2N=1)N)O)O
+targertId = 38, query = 13:
+target = C1(O)NC2C(=NC=1O)C(=O)N=C(N)N=2
+query = C1(=C(O)N=C2C(=NC(N=C2N1)=N)O)O
+targertId = 39, query = 14:
+target = S=NO
+query = SN=O
+targertId = 40, query = 14:
+target = SN=O
+query = SN=O
+targertId = 41, query = 17:
+target = NC(=N)NN/C(/C)=C/N=N/C(=N)N
+query = N/C(=N/N/C(=C/N=N/C(N)=N)/C)/N
+targertId = 41, query = 19:
+target = NC(=N)NN/C(/C)=C/N=N/C(=N)N
+query = N=C(NN/C(=C/N=N/C(=N)N)/C)N
+targertId = 42, query = 17:
+target = NC(=N)NN/C(/C)=C/N=N/C(N)=N
+query = N/C(=N/N/C(=C/N=N/C(N)=N)/C)/N
+targertId = 42, query = 19:
+target = NC(=N)NN/C(/C)=C/N=N/C(N)=N
+query = N=C(NN/C(=C/N=N/C(=N)N)/C)N
+targertId = 43, query = 15:
+target = NC(=N)N/N=C(\C)/C=N/NC(=N)N
+query = NC(N/N=C(/C=N/NC(N)=N)\C)=N
+targertId = 43, query = 18:
+target = NC(=N)N/N=C(\C)/C=N/NC(=N)N
+query = N/C(=N/N=C(/C=N/NC(=N)N)\C)/N
+targertId = 43, query = 20:
+target = NC(=N)N/N=C(\C)/C=N/NC(=N)N
+query = N=C(N/N=C(/C=N/N=C(/N)\N)\C)N
+targertId = 44, query = 15:
+target = NC(=N)N/N=C(\C)/C=N/NC(N)=N
+query = NC(N/N=C(/C=N/NC(N)=N)\C)=N
+targertId = 44, query = 18:
+target = NC(=N)N/N=C(\C)/C=N/NC(N)=N
+query = N/C(=N/N=C(/C=N/NC(=N)N)\C)/N
+targertId = 44, query = 20:
+target = NC(=N)N/N=C(\C)/C=N/NC(N)=N
+query = N=C(N/N=C(/C=N/N=C(/N)\N)\C)N
+targertId = 45, query = 15:
+target = NC(=N)N/N=C(\C)/C=N/N=C(\N)/N
+query = NC(N/N=C(/C=N/NC(N)=N)\C)=N
+targertId = 45, query = 18:
+target = NC(=N)N/N=C(\C)/C=N/N=C(\N)/N
+query = N/C(=N/N=C(/C=N/NC(=N)N)\C)/N
+targertId = 45, query = 20:
+target = NC(=N)N/N=C(\C)/C=N/N=C(\N)/N
+query = N=C(N/N=C(/C=N/N=C(/N)\N)\C)N
+targertId = 46, query = 16:
+target = NC(=N)/N=N/C(/C)=C/NNC(=N)N
+query = NC(/N=N/C(=C/NNC(N)=N)/C)=N
+targertId = 46, query = 21:
+target = NC(=N)/N=N/C(/C)=C/NNC(=N)N
+query = N=C(/N=N/C(=C/N/N=C(/N)\N)/C)N
+targertId = 47, query = 16:
+target = NC(=N)/N=N/C(/C)=C/NNC(N)=N
+query = NC(/N=N/C(=C/NNC(N)=N)/C)=N
+targertId = 47, query = 21:
+target = NC(=N)/N=N/C(/C)=C/NNC(N)=N
+query = N=C(/N=N/C(=C/N/N=C(/N)\N)/C)N
+targertId = 48, query = 16:
+target = NC(=N)/N=N/C(/C)=C/N/N=C(\N)/N
+query = NC(/N=N/C(=C/NNC(N)=N)/C)=N
+targertId = 48, query = 21:
+target = NC(=N)/N=N/C(/C)=C/N/N=C(\N)/N
+query = N=C(/N=N/C(=C/N/N=C(/N)\N)/C)N
+targertId = 49, query = 17:
+target = N/C(/N)=N/N/C(/C)=C/N=N/C(=N)N
+query = N/C(=N/N/C(=C/N=N/C(N)=N)/C)/N
+targertId = 49, query = 19:
+target = N/C(/N)=N/N/C(/C)=C/N=N/C(=N)N
+query = N=C(NN/C(=C/N=N/C(=N)N)/C)N
+targertId = 50, query = 17:
+target = N/C(/N)=N/N/C(/C)=C/N=N/C(N)=N
+query = N/C(=N/N/C(=C/N=N/C(N)=N)/C)/N
+targertId = 50, query = 19:
+target = N/C(/N)=N/N/C(/C)=C/N=N/C(N)=N
+query = N=C(NN/C(=C/N=N/C(=N)N)/C)N
+targertId = 51, query = 15:
+target = N/C(/N)=N/N=C(\C)/C=N/NC(=N)N
+query = NC(N/N=C(/C=N/NC(N)=N)\C)=N
+targertId = 51, query = 18:
+target = N/C(/N)=N/N=C(\C)/C=N/NC(=N)N
+query = N/C(=N/N=C(/C=N/NC(=N)N)\C)/N
+targertId = 51, query = 20:
+target = N/C(/N)=N/N=C(\C)/C=N/NC(=N)N
+query = N=C(N/N=C(/C=N/N=C(/N)\N)\C)N
+targertId = 52, query = 15:
+target = N/C(/N)=N/N=C(\C)/C=N/NC(N)=N
+query = NC(N/N=C(/C=N/NC(N)=N)\C)=N
+targertId = 52, query = 18:
+target = N/C(/N)=N/N=C(\C)/C=N/NC(N)=N
+query = N/C(=N/N=C(/C=N/NC(=N)N)\C)/N
+targertId = 52, query = 20:
+target = N/C(/N)=N/N=C(\C)/C=N/NC(N)=N
+query = N=C(N/N=C(/C=N/N=C(/N)\N)\C)N
+targertId = 53, query = 15:
+target = N/C(/N)=N/N=C(\C)/C=N/N=C(\N)/N
+query = NC(N/N=C(/C=N/NC(N)=N)\C)=N
+targertId = 53, query = 18:
+target = N/C(/N)=N/N=C(\C)/C=N/N=C(\N)/N
+query = N/C(=N/N=C(/C=N/NC(=N)N)\C)/N
+targertId = 53, query = 20:
+target = N/C(/N)=N/N=C(\C)/C=N/N=C(\N)/N
+query = N=C(N/N=C(/C=N/N=C(/N)\N)\C)N
+targertId = 54, query = 17:
+target = N=C(N)NN/C(/C)=C/N=N/C(=N)N
+query = N/C(=N/N/C(=C/N=N/C(N)=N)/C)/N
+targertId = 54, query = 19:
+target = N=C(N)NN/C(/C)=C/N=N/C(=N)N
+query = N=C(NN/C(=C/N=N/C(=N)N)/C)N
+targertId = 55, query = 17:
+target = N=C(N)NN/C(/C)=C/N=N/C(N)=N
+query = N/C(=N/N/C(=C/N=N/C(N)=N)/C)/N
+targertId = 55, query = 19:
+target = N=C(N)NN/C(/C)=C/N=N/C(N)=N
+query = N=C(NN/C(=C/N=N/C(=N)N)/C)N
+targertId = 56, query = 15:
+target = N=C(N)N/N=C(\C)/C=N/NC(=N)N
+query = NC(N/N=C(/C=N/NC(N)=N)\C)=N
+targertId = 56, query = 18:
+target = N=C(N)N/N=C(\C)/C=N/NC(=N)N
+query = N/C(=N/N=C(/C=N/NC(=N)N)\C)/N
+targertId = 56, query = 20:
+target = N=C(N)N/N=C(\C)/C=N/NC(=N)N
+query = N=C(N/N=C(/C=N/N=C(/N)\N)\C)N
+targertId = 57, query = 15:
+target = N=C(N)N/N=C(\C)/C=N/NC(N)=N
+query = NC(N/N=C(/C=N/NC(N)=N)\C)=N
+targertId = 57, query = 18:
+target = N=C(N)N/N=C(\C)/C=N/NC(N)=N
+query = N/C(=N/N=C(/C=N/NC(=N)N)\C)/N
+targertId = 57, query = 20:
+target = N=C(N)N/N=C(\C)/C=N/NC(N)=N
+query = N=C(N/N=C(/C=N/N=C(/N)\N)\C)N
+targertId = 58, query = 15:
+target = N=C(N)N/N=C(\C)/C=N/N=C(\N)/N
+query = NC(N/N=C(/C=N/NC(N)=N)\C)=N
+targertId = 58, query = 18:
+target = N=C(N)N/N=C(\C)/C=N/N=C(\N)/N
+query = N/C(=N/N=C(/C=N/NC(=N)N)\C)/N
+targertId = 58, query = 20:
+target = N=C(N)N/N=C(\C)/C=N/N=C(\N)/N
+query = N=C(N/N=C(/C=N/N=C(/N)\N)\C)N
+targertId = 59, query = 16:
+target = N=C(N)/N=N/C(/C)=C/NNC(=N)N
+query = NC(/N=N/C(=C/NNC(N)=N)/C)=N
+targertId = 59, query = 21:
+target = N=C(N)/N=N/C(/C)=C/NNC(=N)N
+query = N=C(/N=N/C(=C/N/N=C(/N)\N)/C)N
+targertId = 60, query = 16:
+target = N=C(N)/N=N/C(/C)=C/NNC(N)=N
+query = NC(/N=N/C(=C/NNC(N)=N)/C)=N
+targertId = 60, query = 21:
+target = N=C(N)/N=N/C(/C)=C/NNC(N)=N
+query = N=C(/N=N/C(=C/N/N=C(/N)\N)/C)N
+targertId = 61, query = 16:
+target = N=C(N)/N=N/C(/C)=C/N/N=C(\N)/N
+query = NC(/N=N/C(=C/NNC(N)=N)/C)=N
+targertId = 61, query = 21:
+target = N=C(N)/N=N/C(/C)=C/N/N=C(\N)/N
+query = N=C(/N=N/C(=C/N/N=C(/N)\N)/C)N

@@ -1,0 +1,662 @@
+***
+Reaction: O[*:1]>>[*:1][H]
+Monomers:
+    mol_0: C(O)C=C(O)C(O)
+    mol_1: OC(=C)C1=CC=CC=C1O
+Products:
+rpe+smiles:
+    mol_0: OCC=CCO
+    mol_0: CC=C(O)CO
+    mol_0: CC(O)=CCO
+    mol_1: C=CC1=CC=CC=C1O
+    mol_1: C=C(O)C1C=CC=CC=1
+rpe+smarts:
+    mol_0: OCC=CCO
+    mol_0: CC=C(O)CO
+    mol_0: CC(O)=CCO
+    mol_1: C=CC1=CC=CC=C1O
+    mol_1: C=C(O)C1C=CC=CC=1
+transform+smiles:
+    mol_0: CC=CC
+[0] 0-4
+[0] 2-6
+[0] 3-2
+[0] 5-0
+    mol_1: C=CC1C=CC=CC=1
+[1] 1-2
+[1] 2-4
+[1] 3-5
+[1] 4-6
+[1] 5-7
+[1] 6-8
+[1] 7-9
+[1] 8-0
+transform+smarts:
+    mol_0: CC=CC
+[0] 0-4
+[0] 2-6
+[0] 3-2
+[0] 5-0
+    mol_1: C=CC1C=CC=CC=1
+[1] 1-2
+[1] 2-4
+[1] 3-5
+[1] 4-6
+[1] 5-7
+[1] 6-8
+[1] 7-9
+[1] 8-0
+
+
+***
+Reaction: [H]C([*:2])([*:3])C([*:5])([*:6])[*:7]>>C([*:2])([*:3])=C([*:5])([*:6])
+Monomers:
+    mol_0: C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)
+Products:
+rpe+smiles:
+rpe+smarts:
+transform+smiles:
+    mol_0: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+transform+smarts:
+    mol_0: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+
+
+***
+Reaction: [H]C([H,*:2])([H,*:3])C([H,*:5])([H,*:6])[H,*:7]>>C([H,*:2])([H,*:3])=C([H,*:5])([H,*:6])
+Monomers:
+    mol_0: C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)
+Products:
+rpe+smiles:
+    mol_0: ClCC(Cl)C(Cl)C(Cl)C(Cl)=CCl
+    mol_0: ClC1C=C(Cl)C(Cl)C(Cl)C1Cl
+    mol_0: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C=1Cl
+rpe+smarts:
+    mol_0: ClCC(Cl)C(Cl)C(Cl)C(Cl)=CCl
+    mol_0: ClC1C=C(Cl)C(Cl)C(Cl)C1Cl
+    mol_0: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C=1Cl
+transform+smiles:
+    mol_0: ClC1C(Cl)C(Cl)=C(Cl)C(Cl)C=1Cl
+[0] 1-7
+[0] 2-1
+[0] 3-10
+[0] 5-2
+[0] 7-4
+[0] 8-5
+[0] 9-11
+[0] 11-9
+transform+smarts:
+    mol_0: ClC1C(Cl)C(Cl)=C(Cl)C(Cl)C=1Cl
+[0] 1-7
+[0] 2-1
+[0] 3-10
+[0] 5-2
+[0] 7-4
+[0] 8-5
+[0] 9-11
+[0] 11-9
+
+
+***
+Reaction: [H]C([H,*:2])([H,*:3])C([H,*:5])([H,*:6])[H,*:7]>>C([*:2])([*:3])=C([*:5])([H,*:6])
+Monomers:
+    mol_0: C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)
+Products:
+rpe+smiles:
+Error: Reaction product enumerator state: product atom's impossible number
+rpe+smarts:
+Error: Reaction product enumerator state: product atom's impossible number
+transform+smiles:
+    mol_0: ClC1C(Cl)C(Cl)=C(Cl)C(Cl)C=1Cl
+[0] 1-7
+[0] 2-1
+[0] 3-10
+[0] 5-2
+[0] 7-4
+[0] 8-5
+[0] 9-11
+[0] 11-9
+transform+smarts:
+    mol_0: ClC1C(Cl)C(Cl)=C(Cl)C(Cl)C=1Cl
+[0] 1-7
+[0] 2-1
+[0] 3-10
+[0] 5-2
+[0] 7-4
+[0] 8-5
+[0] 9-11
+[0] 11-9
+
+
+***
+Reaction: [*:1]C([*:2])=[*:3]>>[*:1]C=[*:3]
+Monomers:
+    mol_0: C=1(Cl)C=CC=CC1
+Products:
+rpe+smiles:
+rpe+smarts:
+transform+smiles:
+    mol_0: ClC1C=CC=CC=1
+transform+smarts:
+    mol_0: ClC1C=CC=CC=1
+
+
+***
+Reaction: [*:2]c(:[*:1]):[*:3]>>[*:1]:c:[*:3]
+Monomers:
+    mol_0: C=1(Cl)C=CC=CC1
+Products:
+rpe+smiles:
+    mol_0: C1C=CC=CC=1
+rpe+smarts:
+    mol_0: C1C=CC=CC=1
+transform+smiles:
+    mol_0: C1C=CC=CC=1
+[0] 2-2
+[0] 3-3
+[0] 4-4
+[0] 5-5
+[0] 6-0
+transform+smarts:
+    mol_0: C1C=CC=CC=1
+[0] 2-2
+[0] 3-3
+[0] 4-4
+[0] 5-5
+[0] 6-0
+
+
+***
+Reaction: [*:1]>>[*;+:1]
+Monomers:
+    mol_0: C
+    mol_1: [H]
+Products:
+rpe+smiles:
+    mol_0: [CH3+]
+rpe+smarts:
+    mol_0: [CH3+]
+transform+smiles:
+    mol_1: [H]
+    mol_0: [CH3+]
+[1] 0-0
+transform+smarts:
+    mol_1: [H]
+    mol_0: [CH3+]
+[1] 0-0
+
+
+***
+Reaction: [*:1]>>[*;+0:1]
+Monomers:
+    mol_0: [C+]
+    mol_1: [H]
+Products:
+rpe+smiles:
+    mol_0: C
+rpe+smarts:
+    mol_0: C
+transform+smiles:
+    mol_1: [H]
+    mol_0: C
+[1] 0-0
+transform+smarts:
+    mol_1: [H]
+    mol_0: C
+[1] 0-0
+
+
+***
+Reaction: [*:1]>>[O,N;+:1]
+Monomers:
+    mol_0: O
+    mol_1: N
+    mol_2: C
+Products:
+rpe+smiles:
+Error: Reaction product enumerator state: product atom's impossible number
+rpe+smarts:
+Error: Reaction product enumerator state: product atom's impossible number
+transform+smiles:
+Error: Reaction product enumerator state: product atom's impossible number
+transform+smarts:
+Error: Reaction product enumerator state: product atom's impossible number
+
+
+***
+Reaction: [H,*:2]>>N[*:2]
+Monomers:
+    mol_0: C
+Products:
+rpe+smiles:
+    mol_0: CN
+rpe+smarts:
+    mol_0: CN
+transform+smiles:
+    mol_0: CN
+[0] 0-1
+transform+smarts:
+    mol_0: CN
+[0] 0-1
+
+
+***
+Reaction: [H,*:1]>>N[H,*:1]
+Monomers:
+    mol_0: C
+Products:
+rpe+smiles:
+    mol_0: CN
+rpe+smarts:
+    mol_0: CN
+transform+smiles:
+    mol_0: CN
+[0] 0-1
+transform+smarts:
+    mol_0: CN
+[0] 0-1
+
+
+***
+Reaction: [H,*:1]>>[*:1]
+Monomers:
+    mol_0: C[2H]
+Products:
+rpe+smiles:
+Error: Reaction product enumerator state: product atom's impossible number
+rpe+smarts:
+Error: Reaction product enumerator state: product atom's impossible number
+transform+smiles:
+Error: Reaction product enumerator state: product atom's impossible number
+transform+smarts:
+Error: Reaction product enumerator state: product atom's impossible number
+
+
+***
+Reaction: [H,*:1]>>[H,*:1]
+Monomers:
+    mol_0: C[2H]
+Products:
+rpe+smiles:
+    mol_0: [2H]C
+rpe+smarts:
+    mol_0: [2H]C
+transform+smiles:
+    mol_0: [2H]C
+[0] 0-1
+[0] 1-0
+transform+smarts:
+    mol_0: [2H]C
+[0] 0-1
+[0] 1-0
+
+
+***
+Reaction: [H,*:1]>>[*:1]
+Monomers:
+    mol_0: [H]
+Products:
+rpe+smiles:
+Error: Reaction product enumerator state: product atom's impossible number
+rpe+smarts:
+Error: Reaction product enumerator state: product atom's impossible number
+transform+smiles:
+Error: Reaction product enumerator state: product atom's impossible number
+transform+smarts:
+Error: Reaction product enumerator state: product atom's impossible number
+
+
+***
+Reaction: [H,*:1]>>[H,*:1]
+Monomers:
+    mol_0: [H]
+Products:
+rpe+smiles:
+    mol_0: [HH]
+rpe+smarts:
+    mol_0: [HH]
+transform+smiles:
+    mol_0: [HH]
+[0] 0-0
+transform+smarts:
+    mol_0: [HH]
+[0] 0-0
+
+
+***
+Reaction: [H:1][O,S,Se,Te:2][C:3]([H,*:7])=[C:4]([H,*:6])[H,*:5]>>[H:1][C:4]([H,*:6])([H,*:5])[C:3]([H,*:7])=[O,S,Se,Te:2]
+Monomers:
+    mol_0: C[C@]1(O)[C@H]2C[C@H]3[C@@H](C(O)=C(C(N)=O)C(=O)[C@@]3(O)C(=O)C2C(=O)C2=C1C=CC=C2O)N(C)C
+Products:
+rpe+smiles:
+    mol_0: C[C@]1(O)[C@H]2C[C@H]3[C@@H](C(=O)C(C(N)=O)C(=O)[C@@]3(O)C(=O)C2C(=O)C2=C1C=CC=C2O)N(C)C
+rpe+smarts:
+    mol_0: C[C@]1(O)[C@H]2C[C@H]3[C@@H](C(=O)C(C(N)=O)C(=O)[C@@]3(O)C(=O)C2C(=O)C2=C1C=CC=C2O)N(C)C
+transform+smiles:
+    mol_0: C[C@]1(O)[C@H]2C[C@H]3[C@@H](C(=O)C(C(N)=O)C(=O)[C@@]3(O)C(=O)C2C(=O)C2=C1C=CC=C2O)N(C)C
+[0] 0-7
+[0] 1-8
+[0] 2-9
+[0] 3-10
+[0] 4-11
+[0] 5-12
+[0] 6-5
+[0] 7-4
+[0] 8-6
+[0] 9-1
+[0] 10-2
+[0] 11-13
+[0] 12-14
+[0] 13-3
+[0] 14-15
+[0] 15-16
+[0] 16-17
+[0] 17-18
+[0] 18-19
+[0] 19-20
+[0] 20-21
+[0] 21-22
+[0] 22-23
+[0] 23-24
+[0] 24-25
+[0] 25-26
+[0] 26-27
+[0] 27-28
+[0] 28-29
+[0] 29-30
+[0] 30-31
+[0] 31-32
+transform+smarts:
+    mol_0: C[C@]1(O)[C@H]2C[C@H]3[C@@H](C(=O)C(C(N)=O)C(=O)[C@@]3(O)C(=O)C2C(=O)C2=C1C=CC=C2O)N(C)C
+[0] 0-7
+[0] 1-8
+[0] 2-9
+[0] 3-10
+[0] 4-11
+[0] 5-12
+[0] 6-5
+[0] 7-4
+[0] 8-6
+[0] 9-1
+[0] 10-2
+[0] 11-13
+[0] 12-14
+[0] 13-3
+[0] 14-15
+[0] 15-16
+[0] 16-17
+[0] 17-18
+[0] 18-19
+[0] 19-20
+[0] 20-21
+[0] 21-22
+[0] 22-23
+[0] 23-24
+[0] 24-25
+[0] 25-26
+[0] 26-27
+[0] 27-28
+[0] 28-29
+[0] 29-30
+[0] 30-31
+[0] 31-32
+
+
+***
+Reaction: [H]c1[c:5][c:4][c:3][c:2]c1C(=O)N[H,*:1]>>[H,*:1]NC1=NOc2c1[c:2][c:3][c:4][c:5]2
+Monomers:
+    mol_0: NC(=O)c1ccccc1
+Products:
+rpe+smiles:
+    mol_0: NC1=NOC2C=CC=CC=21
+rpe+smarts:
+    mol_0: NC1=NOC2C=CC=CC=21
+transform+smiles:
+    mol_0: NC1=NOC2C=CC=CC=21
+[0] 5-10
+[0] 6-9
+[0] 7-8
+[0] 8-7
+transform+smarts:
+    mol_0: NC1=NOC2C=CC=CC=21
+[0] 5-10
+[0] 6-9
+[0] 7-8
+[0] 8-7
+
+
+***
+Reaction: [*:1]:[c]([*:2]):[c:10]([*:3]):[n]([*:4]):[*:5]>>[*:1]:[n]([*:2]):[c:10]([*:3]):[c]([*:4])[*:5]
+Monomers:
+    mol_0: Oc1ccn(C)c1C
+Products:
+rpe+smiles:
+    mol_0: CC1C=CN(O)C=1C
+rpe+smarts:
+    mol_0: Cc1c(:c)cc[n]1:[o]
+transform+smiles:
+    mol_0: CC1C=CN(O)C=1C
+[0] 0-2
+[0] 2-0
+[0] 3-7
+[0] 5-6
+[0] 6-3
+[0] 7-4
+transform+smarts:
+    mol_0: Cc1c(:c)cc[n]1:[o]
+[0] 0-2
+[0] 2-0
+[0] 3-7
+[0] 5-6
+[0] 6-3
+[0] 7-4
+
+
+***
+Reaction: [!O:1][S;X3:2](=[O:3])[!O:4]>>[!O:1][S+;X3:2]([O-:3])[!O:4]
+Monomers:
+    mol_0: CNC(=O)ON=CC(C)(C)S(C)=O
+Products:
+rpe+smiles:
+    mol_0: CNC(=O)ON=CC(C)(C)[S+](C)[O-]
+rpe+smarts:
+    mol_0: CNC(=O)ON=CC(C)(C)[S+](C)[O-]
+transform+smiles:
+    mol_0: CNC(=O)ON=CC(C)(C)[S+](C)[O-]
+[0] 0-4
+[0] 1-5
+[0] 2-6
+[0] 3-7
+[0] 4-8
+[0] 5-9
+[0] 6-10
+[0] 7-0
+[0] 8-11
+[0] 9-12
+[0] 10-1
+[0] 11-3
+[0] 12-2
+transform+smarts:
+    mol_0: CNC(=O)ON=CC(C)(C)[S+](C)[O-]
+[0] 0-4
+[0] 1-5
+[0] 2-6
+[0] 3-7
+[0] 4-8
+[0] 5-9
+[0] 6-10
+[0] 7-0
+[0] 8-11
+[0] 9-12
+[0] 10-1
+[0] 11-3
+[0] 12-2
+
+
+***
+Reaction: [H:1][O:2][C:3]([H,*:4])=[C:5]([H,*;!O:6])[H,*;!O:7]>>[O:2]=[C:3]([H,*:4])[C:5]([H,*:6])([H:1])[H,*:7]
+Monomers:
+    mol_0: C12/C(=C(\O)/C3C=C(C=CC=3)OC)/C=NC1=NC=CC=2C1C=C(F)C=C(F)C=1
+Products:
+rpe+smiles:
+    mol_0: COC1C=C(C=CC=1)C(=O)C1C=NC2N=CC=C(C=21)C1C=C(F)C=C(F)C=1
+rpe+smarts:
+    mol_0: COC1C=C(C=CC=1)C(=O)C1C=NC2N=CC=C(C=21)C1C=C(F)C=C(F)C=1
+transform+smiles:
+    mol_0: COC1C=C(C=CC=1)C(=O)C1C=NC2N=CC=C(C=21)C1C=C(F)C=C(F)C=1
+[0] 0-4
+[0] 1-3
+[0] 2-1
+[0] 3-0
+[0] 4-2
+[0] 5-7
+[0] 6-8
+[0] 7-9
+[0] 8-10
+[0] 9-11
+[0] 10-12
+[0] 11-13
+[0] 12-6
+[0] 13-14
+[0] 14-15
+[0] 15-16
+[0] 16-17
+[0] 17-18
+[0] 18-19
+[0] 19-20
+[0] 20-21
+[0] 21-22
+[0] 22-23
+[0] 23-24
+[0] 24-25
+[0] 25-26
+[0] 26-27
+transform+smarts:
+    mol_0: COC1C=C(C=CC=1)C(=O)C1C=NC2N=CC=C(C=21)C1C=C(F)C=C(F)C=1
+[0] 0-4
+[0] 1-3
+[0] 2-1
+[0] 3-0
+[0] 4-2
+[0] 5-7
+[0] 6-8
+[0] 7-9
+[0] 8-10
+[0] 9-11
+[0] 10-12
+[0] 11-13
+[0] 12-6
+[0] 13-14
+[0] 14-15
+[0] 15-16
+[0] 16-17
+[0] 17-18
+[0] 18-19
+[0] 19-20
+[0] 20-21
+[0] 21-22
+[0] 22-23
+[0] 23-24
+[0] 24-25
+[0] 25-26
+[0] 26-27
+
+
+
+
+***
+Reaction: [N+:1]~[CH3]>>[N:1]
+Monomers:
+    mol_0: [Br-].CC([N@+]1([C@@H]2CC[C@H]1C[C@@H](OC(C(C1=CC=CC=C1)CO)=O)C2)C)C
+Products:
+rpe+smiles:
+    mol_0: [Br-].CC(C)N1[C@@H]2C[C@H](C[C@H]1CC2)OC(=O)C(CO)C1=CC=CC=C1
+rpe+smarts:
+    mol_0: [Br-].CC(C)N1[C@@H]2C[C@H](C[C@H]1CC2)OC(=O)C(CO)C1=CC=CC=C1
+transform+smiles:
+    mol_0: [Br-].CC(C)N1[C@@H]2C[C@H](C[C@H]1CC2)OC(=O)C(CO)C1=CC=CC=C1
+[0] 0-1
+[0] 1-2
+[0] 2-3
+[0] 3-0
+[0] 4-4
+[0] 5-5
+[0] 6-6
+[0] 7-7
+[0] 8-8
+[0] 9-9
+[0] 10-10
+[0] 11-11
+[0] 12-12
+[0] 13-13
+[0] 14-14
+[0] 15-15
+[0] 16-16
+[0] 17-17
+[0] 18-18
+[0] 19-19
+[0] 20-20
+[0] 21-21
+[0] 22-22
+[0] 24-23
+transform+smarts:
+    mol_0: [Br-].CC(C)N1[C@@H]2C[C@H](C[C@H]1CC2)OC(=O)C(CO)C1=CC=CC=C1
+[0] 0-1
+[0] 1-2
+[0] 2-3
+[0] 3-0
+[0] 4-4
+[0] 5-5
+[0] 6-6
+[0] 7-7
+[0] 8-8
+[0] 9-9
+[0] 10-10
+[0] 11-11
+[0] 12-12
+[0] 13-13
+[0] 14-14
+[0] 15-15
+[0] 16-16
+[0] 17-17
+[0] 18-18
+[0] 19-19
+[0] 20-20
+[0] 21-21
+[0] 22-22
+[0] 24-23
+
+
+
+
+***
+Reaction: [*][N:1]([*])F.O[C:2](=O)[*][N:3]([*])I.O[C:4](=O)[*]>>[*][N:3]([C:4](=O)[*])[*][C:2]([N:1]([*])[*])=O |$_R1;;_R2;;;;;_R3;;_R4;;;;;_R5;_R4;;;;_R5;_R3;;;_R1;_R2;$|
+Monomers:
+    mol_0: NF
+    mol_1: CC(OC1C=CC(C[C@@H](C(=O)O)NI)=CC=1)(C)C
+    mol_2: CC(=O)O
+    mol_0+mol_1+mol_2: CC(=O)N[C@@H](CC1=CC=C(C=C1)OC(C)(C)C)C(N)=O hasXYZ: 1
+
+
+***
+Reaction: [*][N:1]([*])F.O[C:2](=O)[*][N:3]([*])I.O[C:4](=O)[*]>>[*][N:3]([C:4](=O)[*])[*][C:2]([N:1]([*])[*])=O |$_R1;;_R2;;;;;_R3;;_R4;;;;;_R5;_R4;;;;_R5;_R3;;;_R1;_R2;$|
+Monomers:
+    mol_0: NF
+    mol_1: CC(OC1C=CC(C[C@@H](C(=O)O)NI)=CC=1)(C)C
+    mol_2: CC(=O)O
+    mol_0+mol_1+mol_2: CC(=O)N[C@@H](CC1=CC=C(C=C1)OC(C)(C)C)C(N)=O hasXYZ: 0
+
+
+***
+Reaction: OC(O)C(=O)[*]>>OC(=O)C([*])O |$;;;;;_R1;;;;;_R1;$|
+Monomers:
+    mol_0: C(O)(O)C(C)=O
+    mol_0: CC(O)C(O)=O hasXYZ: 1
+
+
+***
+Reaction: OC(O)C(=O)[*]>>OC(=O)C([*])O |$;;;;;_R1;;;;;_R1;$|
+Monomers:
+    mol_0: C(O)(O)C(C)=O
+    mol_0: CC(O)C(O)=O hasXYZ: 0
+
+

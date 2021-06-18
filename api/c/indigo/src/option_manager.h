@@ -87,6 +87,8 @@ using namespace indigo;
 class DLLEXPORT IndigoOptionManager
 {
 public:
+    IndigoOptionManager() = default;
+
     typedef void (*optf_string_t)(const char*);
     typedef void (*optf_int_t)(int);
     typedef void (*optf_bool_t)(int);
@@ -101,8 +103,6 @@ public:
     typedef void (*get_optf_float_t)(float&);
     typedef void (*get_optf_color_t)(float&, float&, float&);
     typedef void (*get_optf_xy_t)(int&, int&);
-
-    IndigoOptionManager();
 
     DECL_ERROR;
     DEF_SET_GET_OPT_HANDLERS(String, optf_string_t, get_optf_string_t, OPTION_STRING, stringSetters, stringGetters)
@@ -135,6 +135,8 @@ public:
     void getOptionType(const char* name, Array<char>& value);
 
     OsLock lock;
+
+    static _SessionLocalContainer<IndigoOptionManager>& getIndigoOptionManager();
 
 protected:
     enum OPTION_TYPE
@@ -180,7 +182,6 @@ protected:
         std::string converted = ss.str();
         callOptionHandler(name, converted.c_str());
     }
-
 private:
     IndigoOptionManager(const IndigoOptionManager&);
 };

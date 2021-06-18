@@ -23,6 +23,9 @@
 
 CEXPORT const char* indigoInchiVersion();
 
+CEXPORT int indigoInchiInit();
+CEXPORT int indigoInchiDispose();
+
 CEXPORT int indigoInchiResetOptions();
 
 CEXPORT int indigoInchiLoadMolecule(const char* inchi_string);

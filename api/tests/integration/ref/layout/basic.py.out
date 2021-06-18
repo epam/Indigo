@@ -1,0 +1,57 @@
+*** Reaction layout testing ***
+  Result: Molecule #0: Success
+   Molecule #1: Success
+*** Check relative layout for the fixed components ***
+
+  -INDIGO-01000000002D
+
+  8  4  0  0  0  0  0  0  0  0999 V2000
+    3.2000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.2000    0.1600    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.1600    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    1.6000    1.6000    0.0000 P   0  0  0  0  0  0  0  0  0  0  0  0
+    1.6000    1.7600    0.0000 P   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    4.9600    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    1.6000    4.9600    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  3  4  1  0  0  0  0
+  5  6  1  0  0  0  0
+  7  8  1  0  0  0  0
+M  END
+
+
+  -INDIGO-01000000002D
+
+  8  4  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.6000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.8000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    6.4000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    3.2000    0.0000 P   0  0  0  0  0  0  0  0  0  0  0  0
+    1.6000    3.2000    0.0000 P   0  0  0  0  0  0  0  0  0  0  0  0
+    4.8000    3.2000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    6.4000    3.2000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  3  4  1  0  0  0  0
+  5  6  1  0  0  0  0
+  7  8  1  0  0  0  0
+M  END
+
+Error: order has been changed:x[0]=2.0000, x[1]=0.0000 vs nx[0]=0.0000, nx[1]=4.8000
+Error: order has been changed:x[1]=0.0000, x[0]=2.0000 vs nx[1]=4.8000, nx[0]=0.0000
+Error: order has been changed:x[1]=0.0000, x[2]=1.0000 vs nx[1]=4.8000, nx[2]=0.0000
+Error: order has been changed:x[2]=1.0000, x[0]=2.0000 vs nx[2]=0.0000, nx[0]=0.0000
+Error: order has been changed:x[2]=1.0000, x[1]=0.0000 vs nx[2]=0.0000, nx[1]=4.8000
+*** Molecule layout for data sgroups ***
+  Result: Success
+*** Reaction layout for data sgroups ***
+  Result: Molecule #0: Success
+   Molecule #1: Success
+*** Check issue 468 ***
+  Result: Success
+*** Test aromatic ***
+  Result: Success
+*** IND-617: fixed ends ***
+  mol Result: Success
+  mol2 Result: Success

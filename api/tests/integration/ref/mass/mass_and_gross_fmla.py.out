@@ -1,0 +1,203 @@
+*** Molecules ***
+658.512 657.096 657.096 C28 H25 Cl2 N7 O6 S C 51.07 H 3.83 Cl 10.77 N 14.89 O 14.58 S 4.87
+2525.842 2528.081 2527.084 C104 H83 Na3 O48 Sn3 C 49.45 H 3.31 Na 2.73 O 30.40 Sn 14.10
+120.726 121.918 121.918 H2 Sn H 1.67 Sn 98.33
+13.019 13.008 13.008 C H C 92.26 H 7.74
+312.988 310.782 312.782 Cl H2 O2 Sb2 H 0.64 Cl 11.33 O 10.22 Sb 77.80
+186.031 186.013 186.013 C10 H10 Fe C 64.56 H 5.42 Fe 30.02
+15.035 15.023 15.023 C H3 C 79.89 H 20.11
+62.134 62.019 62.019 C2 H6 S C 38.66 H 9.73 S 51.61
+61.126 61.011 61.011 C2 H5 S C 39.30 H 8.24 S 52.46
+39.948 39.962 39.962 Ar Ar 100.00
+131.293 131.904 131.904 Xe Xe 100.00
+54.938 54.938 54.938 Mn Mn 100.00
+65.409 63.929 63.929 Zn Zn 100.00
+63.546 62.930 62.930 Cu Cu 100.00
+13.835 14.033 14.033 B H3 H 21.86 B 78.14
+83.798 83.912 83.912 Kr Kr 100.00
+106.420 105.903 105.903 Pd Pd 100.00
+222.018 222.018 222.018 Rn Rn 100.00
+195.078 194.965 194.965 Pt Pt 100.00
+112.411 113.903 113.903 Cd Cd 100.00
+2.016 2.016 2.016 H2 H 100.00
+7.949 8.024 8.024 H Li H 12.68 Li 87.32
+23.998 23.998 23.998 H Na H 4.20 Na 95.80
+40.106 39.972 39.972 H K H 2.51 K 97.49
+86.476 85.920 85.920 H Rb H 1.17 Rb 98.83
+133.913 133.913 133.913 Cs H H 0.75 Cs 99.25
+44.956 44.956 44.956 Sc Sc 100.00
+88.906 88.906 88.906 Y Y 100.00
+138.906 138.906 138.906 La La 100.00
+140.116 139.905 139.905 Ce Ce 100.00
+158.925 158.925 158.925 Tb Tb 100.00
+232.038 232.038 232.038 Th Th 100.00
+247.070 247.070 247.070 Bk Bk 100.00
+107.868 106.905 106.905 Ag Ag 100.00
+9.012 9.012 9.012 Be Be 100.00
+24.305 23.985 23.985 Mg Mg 100.00
+40.078 39.963 39.963 Ca Ca 100.00
+87.620 87.906 87.906 Sr Sr 100.00
+137.327 137.905 137.905 Ba Ba 100.00
+47.867 47.948 47.948 Ti Ti 100.00
+91.224 89.905 89.905 Zr Zr 100.00
+178.490 179.947 179.947 Hf Hf 100.00
+140.908 140.908 140.908 Pr Pr 100.00
+162.500 163.929 163.929 Dy Dy 100.00
+231.036 231.036 231.036 Pa Pa 100.00
+251.080 251.080 251.080 Cf Cf 100.00
+4.003 4.003 4.003 He He 100.00
+20.180 19.992 19.992 Ne Ne 100.00
+30.005 30.005 30.005 Al H3 H 10.08 Al 89.92
+72.747 71.949 71.949 Ga H3 H 4.16 Ga 95.84
+117.842 117.927 117.927 H3 In H 2.57 In 97.43
+205.391 205.982 205.982 H Tl H 0.49 Tl 99.51
+50.942 50.944 50.944 V V 100.00
+92.906 92.906 92.906 Nb Nb 100.00
+180.948 180.948 180.948 Ta Ta 100.00
+144.240 141.908 141.908 Nd Nd 100.00
+164.930 164.930 164.930 Ho Ho 100.00
+238.029 238.051 238.051 U U 100.00
+252.083 252.083 252.083 Es Es 100.00
+224.028 224.028 224.028 Fr H H 0.45 Fr 99.55
+16.042 16.031 16.031 C H4 C 74.87 H 25.13
+32.117 32.008 32.008 H4 Si H 12.55 Si 87.45
+76.672 77.952 77.952 Ge H4 H 5.26 Ge 94.74
+120.726 121.918 121.918 H2 Sn H 1.67 Sn 98.33
+209.216 209.992 209.992 H2 Pb H 0.96 Pb 99.04
+51.996 51.941 51.941 Cr Cr 100.00
+95.940 97.905 97.905 Mo Mo 100.00
+183.840 183.951 183.951 W W 100.00
+144.913 144.913 144.913 Pm Pm 100.00
+167.259 165.930 165.930 Er Er 100.00
+237.048 237.048 237.048 Np Np 100.00
+257.095 257.095 257.095 Fm Fm 100.00
+226.025 226.025 226.025 Ra Ra 100.00
+17.031 17.027 17.027 H3 N H 17.76 N 82.24
+33.998 33.997 33.997 H3 P H 8.89 P 91.11
+77.945 77.945 77.945 As H3 H 3.88 As 96.12
+124.784 123.927 123.927 H3 Sb H 2.42 Sb 97.58
+212.004 212.004 212.004 Bi H3 H 1.43 Bi 98.57
+55.845 55.935 55.935 Fe Fe 100.00
+97.907 97.907 97.907 Tc Tc 100.00
+186.207 186.956 186.956 Re Re 100.00
+150.360 151.920 151.920 Sm Sm 100.00
+168.934 168.934 168.934 Tm Tm 100.00
+244.064 244.064 244.064 Pu Pu 100.00
+258.098 258.098 258.098 Md Md 100.00
+227.028 227.028 227.028 Ac Ac 100.00
+18.015 18.011 18.011 H2 O H 11.19 O 88.81
+34.081 33.988 33.988 H2 S H 5.91 S 94.09
+80.976 81.932 81.932 H2 Se H 2.49 Se 97.51
+129.616 131.922 131.922 H2 Te H 1.56 Te 98.44
+210.998 210.998 210.998 H2 Po H 0.96 Po 99.04
+58.693 57.935 57.935 Ni Ni 100.00
+101.070 101.904 101.904 Ru Ru 100.00
+190.230 191.961 191.961 Os Os 100.00
+151.964 152.921 152.921 Eu Eu 100.00
+173.040 173.939 173.939 Yb Yb 100.00
+243.061 243.061 243.061 Am Am 100.00
+259.101 259.101 259.101 No No 100.00
+267.122 267.122 267.122 Rf Rf 100.00
+20.006 20.006 20.006 F H H 5.04 F 94.96
+36.461 35.977 35.977 Cl H H 2.76 Cl 97.24
+80.912 79.926 79.926 Br H H 1.25 Br 98.75
+127.912 127.912 127.912 H I H 0.79 I 99.21
+210.995 210.995 210.995 At H H 0.48 At 99.52
+58.933 58.933 58.933 Co Co 100.00
+102.906 102.906 102.906 Rh Rh 100.00
+192.217 192.963 192.963 Ir Ir 100.00
+157.250 157.924 157.924 Gd Gd 100.00
+174.967 174.941 174.941 Lu Lu 100.00
+247.070 247.070 247.070 Cm Cm 100.00
+262.110 262.110 262.110 Lr Lr 100.00
+200.590 201.971 201.971 Hg Hg 100.00
+196.967 196.967 196.967 Au Au 100.00
+268.125 268.125 268.125 Db Db 100.00
+271.133 271.133 271.133 Sg Sg 100.00
+272.138 272.138 272.138 Bh Bh 100.00
+270.135 270.135 270.135 Hs Hs 100.00
+276.151 276.151 276.151 Mt Mt 100.00
+281.162 281.162 281.162 Ds Ds 100.00
+280.164 280.164 280.164 Rg Rg 100.00
+285.174 285.174 285.174 Cn Cn 100.00
+284.178 284.178 284.178 Nh Nh 100.00
+289.187 289.187 289.187 Fl Fl 100.00
+288.192 288.192 288.192 Mc Mc 100.00
+293.000 293.000 293.000 Lv Lv 100.00
+292.208 292.208 292.208 Ts Ts 100.00
+294.000 294.000 294.000 Og Og 100.00
+*** Molecule fragments ***
+N([H])([H])C1=C([H])C([H])=C([H])C([H])=C1[H]
+*** Invalid valence ***
+Exception:  element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+*** INDSP-222 [indigo-general] Problem with monoisotopic mass calculation in KNIME molecule properties ***
+94.939 93.942 93.942 C H3 Br C 12.65 H 3.19 Br 84.16
+426.221 427.768 427.768 C8 O8 Ru2 C 22.54 O 30.03 Ru 47.43
+831.400 827.118 831.112 C36 H45 Cl8 N5 C 52.01 H 5.46 Cl 34.11 N 8.42
+1214.322 1205.988 1213.980 C41 H82 Br8 C 40.55 H 6.81 Br 52.64
+1251.576 1255.840 1249.839 C40 H40 O16 Sn4 C 38.39 H 3.22 O 20.45 Sn 37.94
+474.840 479.609 473.608 Sn4 Sn 100.00
+1424.520 1438.826 1424.829 Sn12 Sn 100.00
+*** Unambigious Hydrogens in aromatic form ***
+dearomatization: non-unique dearomatization: Dearomatization is not unique. Cannot restore hydrogens.
+C5 H6 N2
+94.115 94.053 94.053 C5 H6 N2 C 63.81 H 6.43 N 29.77
+0.000 0.000 0.000  
+mass: Cannot calculate mass for structure with repeating units
+mass: Cannot calculate mass for structure with repeating units
+mass: Cannot calculate mass for structure with repeating units
+mass: Cannot calculate mass for structure with repeating units
+C2 H6(C H2)n
+mass: Cannot calculate mass for structure with repeating units
+mass: Cannot calculate mass for structure with repeating units
+mass: Cannot calculate mass for structure with repeating units
+mass: Cannot calculate mass for structure with repeating units
+C13 H28(C2 H4)n(C3 H6)k
+254.494
+254.297
+254.297
+C 84.95 H 15.05
+C18 H38
+mass: Cannot calculate mass for structure with repeating units
+mass: Cannot calculate mass for structure with repeating units
+mass: Cannot calculate mass for structure with repeating units
+mass: Cannot calculate mass for structure with repeating units
+C12 H26(C2 H4)n(C3 H6)k(C H2)n
+65.093
+65.039
+65.039
+C 92.26 H 7.74
+C5 H5
+52.075
+52.031
+52.031
+C 92.26 H 7.74
+C4 H4
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+C4 H4
+*** R-sites in gross formula ***
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+C5 H5 R#
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+C5 H5
+*** Isotopic gross formula ***
+104.209
+104.154
+104.154
+C 81.63 H 18.37
+C5 11C 14C H14 D T
+*** Gross formula ignoring isotopes ***
+104.209
+104.154
+104.154
+C 81.63 H 18.37
+C7 H16

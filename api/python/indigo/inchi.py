@@ -31,6 +31,10 @@ class IndigoInchi(object):
         else:
             raise IndigoException("unsupported OS: " + os.name)
 
+        self._lib.indigoInchiInit.restype = c_int
+        self._lib.indigoInchiInit.argtypes = []
+        self._lib.indigoInchiDispose.restype = c_int
+        self._lib.indigoInchiDispose.argtypes = []
         self._lib.indigoInchiVersion.restype = c_char_p
         self._lib.indigoInchiVersion.argtypes = []
         self._lib.indigoInchiResetOptions.restype = c_int
@@ -47,6 +51,15 @@ class IndigoInchi(object):
         self._lib.indigoInchiGetLog.argtypes = []
         self._lib.indigoInchiGetAuxInfo.restype = c_char_p
         self._lib.indigoInchiGetAuxInfo.argtypes = []
+
+        # Init Indigo-InChI context and options
+        self.indigo._setSessionId()
+        self.indigo._checkResult(self._lib.indigoInchiInit())
+
+    def __del__(self):
+        self.indigo._setSessionId()
+        self.indigo._checkResult(self._lib.indigoInchiDispose())
+
 
     def resetOptions(self):
         self.indigo._setSessionId()

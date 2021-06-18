@@ -139,7 +139,7 @@ def main():
     import socket
     print("Host name: " + socket.gethostname()) # platform.node())
     print("")
-
+    del indigo
     # Collect tests and sort them
     tests_dir = os.path.join(base_root, 'tests')
     tests = sorted(get_tests(tests_dir))

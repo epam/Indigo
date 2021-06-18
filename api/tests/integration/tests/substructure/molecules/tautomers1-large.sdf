@@ -1,0 +1,5614 @@
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+
+> <TautomerIndex>
+1
+
+> <TautomerScore>
+17.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+2
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+3
+
+> <TautomerScore>
+9.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+4
+
+> <TautomerScore>
+9.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+5
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+6
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+7
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+8
+
+> <TautomerScore>
+17.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+9
+
+> <TautomerScore>
+17.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+10
+
+> <TautomerScore>
+9.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+11
+
+> <TautomerScore>
+9.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+
+> <TautomerIndex>
+12
+
+> <TautomerScore>
+-1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  2  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+13
+
+> <TautomerScore>
+-2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+
+> <TautomerIndex>
+14
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+15
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+16
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+17
+
+> <TautomerScore>
+2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+18
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+
+> <TautomerIndex>
+19
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+20
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+04_SpecialImine_B3
+
+> <TautomerIndex>
+21
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  2  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+
+> <TautomerIndex>
+22
+
+> <TautomerScore>
+0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  2  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+23
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  2  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+
+> <TautomerIndex>
+24
+
+> <TautomerScore>
+0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  2  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+25
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+
+> <TautomerIndex>
+26
+
+> <TautomerScore>
+17.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+27
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+28
+
+> <TautomerScore>
+9.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+29
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+30
+
+> <TautomerScore>
+9.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+
+> <TautomerIndex>
+31
+
+> <TautomerScore>
+-1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+32
+
+> <TautomerScore>
+9.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+33
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+34
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+
+> <TautomerIndex>
+35
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+36
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+37
+
+> <TautomerScore>
+17.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+38
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+39
+
+> <TautomerScore>
+9.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+04_SpecialImine_A3
+
+> <TautomerIndex>
+40
+
+> <TautomerScore>
+0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+41
+
+> <TautomerScore>
+0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+42
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+43
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+44
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+45
+
+> <TautomerScore>
+0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+04_SpecialImine_A3
+
+> <TautomerIndex>
+46
+
+> <TautomerScore>
+0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+47
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+04_SpecialImine_A3
+
+> <TautomerIndex>
+48
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+04_SpecialImine_A3
+
+> <TautomerIndex>
+49
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+50
+
+> <TautomerScore>
+-1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+51
+
+> <TautomerScore>
+-1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+04_SpecialImine_A3
+
+> <TautomerIndex>
+52
+
+> <TautomerScore>
+0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+53
+
+> <TautomerScore>
+0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+01_KetoEnol13_B
+
+> <TautomerIndex>
+54
+
+> <TautomerScore>
+0
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+55
+
+> <TautomerScore>
+0
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+04_SpecialImine_A3
+
+> <TautomerIndex>
+56
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+01_KetoEnol13_B
+
+> <TautomerIndex>
+57
+
+> <TautomerScore>
+0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+
+> <TautomerIndex>
+58
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+59
+
+> <TautomerScore>
+17.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+60
+
+> <TautomerScore>
+-0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+61
+
+> <TautomerScore>
+-1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+
+> <TautomerIndex>
+62
+
+> <TautomerScore>
+2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+63
+
+> <TautomerScore>
+2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+
+> <TautomerIndex>
+64
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+
+> <TautomerIndex>
+65
+
+> <TautomerScore>
+-1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+66
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  2  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+04_SpecialImine_A2
+
+> <TautomerIndex>
+67
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+02_KetoEnol15_B
+
+> <TautomerIndex>
+68
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+06_HeteroShift13_B1
+
+> <TautomerIndex>
+69
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+70
+
+> <TautomerScore>
+2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+71
+
+> <TautomerScore>
+2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+72
+
+> <TautomerScore>
+2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+
+> <TautomerIndex>
+73
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+
+> <TautomerIndex>
+74
+
+> <TautomerScore>
+-1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+75
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+76
+
+> <TautomerScore>
+-0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+07_AromHeteroShift15_A1
+02_KetoEnol15_B
+
+> <TautomerIndex>
+77
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  2  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+04_SpecialImine_A3
+
+> <TautomerIndex>
+78
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+01_KetoEnol13_A
+02_KetoEnol15_B
+
+> <TautomerIndex>
+79
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+06_HeteroShift13_B1
+
+> <TautomerIndex>
+80
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+06_HeteroShift13_B1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+81
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+82
+
+> <TautomerScore>
+2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+04_SpecialImine_B3
+
+> <TautomerIndex>
+83
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+84
+
+> <TautomerScore>
+-0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+02_KetoEnol15_B
+
+> <TautomerIndex>
+85
+
+> <TautomerScore>
+-1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+01_KetoEnol13_B
+
+> <TautomerIndex>
+86
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+87
+
+> <TautomerScore>
+17.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+88
+
+> <TautomerScore>
+-1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+04_SpecialImine_A3
+
+> <TautomerIndex>
+89
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+90
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+91
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+92
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+04_SpecialImine_A3
+07_AromHeteroShift15_A1
+06_HeteroShift13_B1
+
+> <TautomerIndex>
+93
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+04_SpecialImine_A3
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+94
+
+> <TautomerScore>
+2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+02_KetoEnol15_B
+
+> <TautomerIndex>
+95
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+09_AromHeteroShift17_A1
+01_KetoEnol13_B
+
+> <TautomerIndex>
+96
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+97
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+98
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+05_AromHeteroShift13_A
+06_HeteroShift13_B1
+
+> <TautomerIndex>
+99
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+05_AromHeteroShift13_A
+04_SpecialImine_B2
+01_KetoEnol13_B1
+
+> <TautomerIndex>
+100
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0  0  0  0  4
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  2  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+04_SpecialImine_A2
+04_SpecialImine_B2
+
+> <TautomerIndex>
+101
+
+> <TautomerScore>
+-2
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A1
+01_KetoEnol13_B
+
+> <TautomerIndex>
+102
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+04_SpecialImine_A3
+
+> <TautomerIndex>
+103
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  2  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A2
+09_AromHeteroShift17_A1
+01_KetoEnol13_B
+
+> <TautomerIndex>
+104
+
+> <TautomerScore>
+1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+07_AromHeteroShift15_A1
+
+> <TautomerIndex>
+105
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+06_HeteroShift13_B1
+
+> <TautomerIndex>
+106
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  2  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+107
+
+> <TautomerScore>
+-1
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  1  0
+  2 10  1  0
+  6  7  1  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+07_AromHeteroShift15_A2
+01_KetoEnol13_B1
+
+> <TautomerIndex>
+108
+
+> <TautomerScore>
+1.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  2  0
+  5  6  1  0
+  7  8  1  0
+  8  9  1  0
+  9  5  2  0
+  6  4  2  0
+  2 10  1  0
+  6  7  1  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+09_AromHeteroShift17_A1
+07_AromHeteroShift15_A2
+
+> <TautomerIndex>
+109
+
+> <TautomerScore>
+-0.5
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  2  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  1  0
+M  END
+> <TautomerReactions>
+06_HeteroShift13_A1
+
+> <TautomerIndex>
+110
+
+> <TautomerScore>
+17.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  2  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+111
+
+> <TautomerScore>
+9.9
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  1  0
+  1  4  1  0
+  2  3  2  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+05_AromHeteroShift13_A
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+112
+
+> <TautomerScore>
+10.4
+
+$$$$
+
+  SciTegic12121300502D
+
+ 11 12  0  0  0  0            999 V2000
+   -2.3155    0.7475    0.0000 N   0  0
+   -2.3155   -0.7475    0.0000 C   0  0
+   -1.0028   -1.5132    0.0000 N   0  0
+   -1.0028    1.5132    0.0000 C   0  0
+    1.7138    1.2033    0.0000 N   0  0
+    0.2917    0.7475    0.0000 C   0  0
+    0.2917   -0.7475    0.0000 C   0  0
+    1.7138   -1.2033    0.0000 N   0  0
+    2.5889    0.0182    0.0000 C   0  0
+   -3.3560   -1.3452    0.0000 N   0  0
+   -0.9991    2.7132    0.0000 S   0  0
+  1  2  2  0
+  1  4  1  0
+  2  3  1  0
+  3  7  1  0
+  5  6  1  0
+  7  8  1  0
+  8  9  2  0
+  9  5  1  0
+  6  4  1  0
+  2 10  1  0
+  6  7  2  0
+  4 11  2  0
+M  END
+> <TautomerReactions>
+05_AromHeteroShift13_A
+
+> <TautomerIndex>
+113
+
+> <TautomerScore>
+10.4
+
+$$$$

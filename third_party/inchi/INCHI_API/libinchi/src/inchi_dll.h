@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -43,9 +38,9 @@
 
 #define INCHI_MAX_NUM_ARG 32
 
-int parse_options_string ( char *cmd,
-                           const char *argv[],
-                           int maxargs );
+int parse_options_string( char *cmd,
+                          const char *argv[],
+                          int maxargs );
 void produce_generation_output( inchi_Output *out,
                                 STRUCT_DATA *sd,
                                 INPUT_PARMS *ip,
@@ -54,5 +49,7 @@ void produce_generation_output( inchi_Output *out,
 void copy_corrected_log_tail( inchi_Output *out,
                               INCHI_IOSTREAM *log_file );
 
+int input_erroneously_contains_pseudoatoms( inchi_Input *inp,
+                                            inchi_Output *out );
 
 #endif /* __INCHI_DLL_H__ */

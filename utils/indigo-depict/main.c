@@ -832,6 +832,9 @@ int main(int argc, char* argv[])
     if (argc <= 2)
         USAGE();
 
+    const qword session = indigoAllocSessionId();
+    indigoRendererInit();
+
     indigoSetErrorHandler(onError, 0);
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
@@ -1057,6 +1060,9 @@ int main(int argc, char* argv[])
 
     indigoFree(reader);
     indigoFree(obj);
+
+    indigoRendererDispose();
+    indigoReleaseSessionId(session);
 
     return 0;
 }

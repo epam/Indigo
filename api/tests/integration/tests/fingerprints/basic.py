@@ -1,5 +1,6 @@
 import os
 import sys
+
 sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
 from env_indigo import *
 
@@ -37,7 +38,7 @@ print("*** Similarity bits test ***")
 
 
 def bitCnt(fp):
-    ''' Simple and slow method to count number of bits '''    
+    ''' Simple and slow method to count number of bits '''
     return sum([bin(int(b)).count("1") for b in fp.toBuffer()])
 
 
@@ -52,7 +53,6 @@ for mstr in mols:
         print("  as target '%s': %d" % (t, bitCnt(m.fingerprint(t))))
     for t in qtypes:
         print("  as query '%s': %d" % (t, bitCnt(q.fingerprint(t))))
-
 
 print("*** Undefined hydrogens ***")
 m = indigo.loadMolecule("Clc1cc(C=NNc2nc(NCc3ccccc3)nc(c2)C)ccc1")

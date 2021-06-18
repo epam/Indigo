@@ -1,41 +1,35 @@
 /*
- * International Chemical Identifier (InChI)
- * Version 1
- * Software version 1.05
- * January 27, 2017
- *
- * The InChI library and programs are free software developed under the
- * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
- * Originally developed at NIST.
- * Modifications and additions by IUPAC and the InChI Trust.
- * Some portions of code were developed/changed by external contributors
- * (either contractor or volunteer) which are listed in the file
- * 'External-contributors' included in this distribution.
- *
- * IUPAC/InChI-Trust Licence No.1.0 for the
- * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
- * or any later version.
- *
- * Please note that this library is distributed WITHOUT ANY WARRANTIES
- * whatsoever, whether expressed or implied.
- * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
- *
- * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
- *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
- *
- */
-
+* International Chemical Identifier (InChI)
+* Version 1
+* Software version 1.06
+* December 15, 2020
+*
+* The InChI library and programs are free software developed under the
+* auspices of the International Union of Pure and Applied Chemistry (IUPAC).
+* Originally developed at NIST.
+* Modifications and additions by IUPAC and the InChI Trust.
+* Some portions of code were developed/changed by external contributors
+* (either contractor or volunteer) which are listed in the file
+* 'External-contributors' included in this distribution.
+*
+* IUPAC/InChI-Trust Licence No.1.0 for the
+* International Chemical Identifier (InChI)
+* Copyright (C) IUPAC and InChI Trust
+*
+* This library is free software; you can redistribute it and/or modify it
+* under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
+* or any later version.
+*
+* Please note that this library is distributed WITHOUT ANY WARRANTIES
+* whatsoever, whether expressed or implied.
+* See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
+*
+* You should have received a copy of the IUPAC/InChI Trust InChI
+* Licence No. 1.0 with this library; if not, please e-mail:
+*
+* info@inchi-trust.org
+*
+*/
 
 
 #include <string.h>
@@ -66,11 +60,8 @@
     Local
 */
 
-int el_number_in_internal_ref_table( const char* elname );
-
-
 /*    CHEMICAL ELEMENTS & ATOMIC VALENCE MODEL
-    FOR VARIOUS OXIDATION STATES)
+      FOR VARIOUS OXIDATION STATES
 */
 typedef struct tagElData
 {
@@ -212,12 +203,12 @@ const ELDATA ElData[] =
     v. 1.04: added elements 105-112.
                 Ref.: M. E. WIESER AND T. B. COPLEN.
                 Atomic weights of the elements 2009 (IUPAC Technical Report).
-                Pure Appl. Chem., Vol. 83, No. 2, pp. 359�396, 2011.
+                Pure Appl. Chem., Vol. 83, No. 2, pp. 359-396, 2011.
     v. 1.05: added elements 114 and 116;
                 updated data for elements 105-112.
                 Ref.: J. Meija, T.B. Coplen, M.Berglund et al.
                 Atomic weights of the elements 2013 (IUPAC Technical Report).
-                Pure Appl. Chem., Vol. 88, No. 3, pp. 265�291, 2016.
+                Pure Appl. Chem., Vol. 88, No. 3, pp. 265-291, 2016.
             added elements 113, 115, 117, and 118, according to IUPAC provisional recommendations:
                 Ref.: L. Ohrstrom, J. Reedijk.
                 Names and Symbols of the Elements with Atomic Numbers 113, 115, 117 and 118.
@@ -254,49 +245,42 @@ const ELDATA ElData[] =
 /* 118 oganesson Og            ? Like: ? */
 { "Og", 294, 294, 294.000000000, METAL ,  0,  1, {{0,},       {0,},       {1,},       {0,},       {0,}       }},
 /* End of added in v. 1.04 - 1.05 */
-/*
 { "Zy",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {1,},       {0,},       {0,}       }},
-*/
 { "Zz",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {1,},       {0,},       {0,}       }},
 #ifdef INCHI_ZFRAG
-{ "Zu",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {1,},       {0,},       {0,}       }}, //single bond fragment
-{ "Zv",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {2,},       {0,},       {0,}       }}, //double bond fragment
-{ "Zw",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {3,},       {0,},       {0,}       }}, //triple bond fragment
-{ "Zx",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {1,2,},     {0,},       {0,}       }}, //aromatic bond fragment
+{ "Zu",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {1,},       {0,},       {0,}       }}, 
+{ "Zv",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {2,},       {0,},       {0,}       }}, 
+{ "Zw",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {3,},       {0,},       {0,}       }}, 
+{ "Zx",   0,   0,   0.000000000,     0 ,  0,  1, {{0,},       {0,},       {1,2,},     {0,},       {0,}       }}, 
 #endif
 
 { "",     0,   0,   0.000000000,     0 ,  0,  0, {{0,},       {0,},       {0,},       {0,},       {0,}       }},
 };
 
 
-/*
-#ifdef __cplusplus
-}
-#endif
-*/
-
-
 const int ERR_ELEM = 255;
-const int nElDataLen = sizeof(ElData)/sizeof(ElData[0])-1;
+const int nElDataLen = sizeof( ElData ) / sizeof( ElData[0] ) - 1;
 
 
 /*
-    MISC. CHEMICAL-STRUCTURE RELATED UTILS/HELPERS
+    MISC. CHEMICAL-STRUCTURE RELATED UTILITIES AND HELPERS
 */
 
 
-/*
-    For given element number finds its chemical symbol.
-    Returns 0 if OK and -1 if element was not found.
-*/
-int get_element_chemical_symbol(int nAtNum, char *szElement )
+/****************************************************************************
+  Finds chemical symbol for element of given number.
+  Returns 0 if OK and -1 if element was not found.
+****************************************************************************/
+int get_element_chemical_symbol( int nAtNum, char *szElement )
 {
     nAtNum -= 1;
 
-    if ( 0 < nAtNum )
+    if (0 < nAtNum)
+    {
         nAtNum += 2; /*  bypass D, T */
+    }
 
-    if ( 0 <= nAtNum && nAtNum < nElDataLen )
+    if (0 <= nAtNum && nAtNum < nElDataLen)
     {
         /* valid element symbol found */
         strcpy( szElement, ElData[nAtNum].szElName );
@@ -305,55 +289,109 @@ int get_element_chemical_symbol(int nAtNum, char *szElement )
 
     /* not found */
     strcpy( szElement, "??" );
+
     return -1;
 }
 
 
+/****************************************************************************
+Finds symbol for element of given number.
+Accounts for (translates)pseudoelements.
+Returns 0 if OK and -1 if element was not found.
+****************************************************************************/
+int get_element_or_pseudoelement_symbol( int nAtNum,
+                                         char *szElement )
+{
+    nAtNum -= 1;
+
+    if (0 < nAtNum)
+    {
+        nAtNum += 2; /*  bypass D, T */
+    }
+
+    if (0 <= nAtNum && nAtNum < nElDataLen)
+    {
+        /* valid element symbol found */
+        strcpy( szElement, ElData[nAtNum].szElName );
+
+        if (!strcmp( szElement, "Zy" ))
+        {
+            strcpy( szElement, "Zz" );
+        }
+
+        return 0;
+    }
+
+    /* not found */
+    strcpy( szElement, "??" );
+
+    return -1;
+}
+
+
+/****************************************************************************/
 int el_number_in_internal_ref_table( const char* elname )
 {
-int i;
-const char *p;
+    int i;
+    const char *p;
 
-    for ( i = 0; (p=ElData[i].szElName)[0] && strcmp( p, elname ); i++ )
+    for (i = 0; ( p = ElData[i].szElName )[0] && strcmp( p, elname ); i++)
+    {
         ;
+    }
+
     return p[0] ? i : ERR_ELEM;
 }
 
 
+/****************************************************************************
+  Get element number by symbol
+****************************************************************************/
 int get_periodic_table_number( const char* elname )
 {
-int num;
+    int num;
 
     num = el_number_in_internal_ref_table( elname );
 
-    if ( num < ERR_ELEM )
+    if (num < ERR_ELEM)
+    {
         /* account for D,T in internal table (but not Mendeleev's table) */
-        num = inchi_max(1, num-1);
+        num = inchi_max( 1, num - 1 );
+    }
 
     return num;
 }
 
 
+/****************************************************************************
+  Check if no H addition allowed
+****************************************************************************/
 int if_skip_add_H( int nPeriodicNum )
-    /* was called if_skip_add_H(, renamed to avoid confusion with other procedures   */
+/* was called if_skip_add_H(, renamed to avoid confusion with other procedures   */
 {
     return
-        ElData[nPeriodicNum>1? nPeriodicNum+1:0].bSkipAddingH;
+        ElData[nPeriodicNum > 1 ? nPeriodicNum + 1 : 0].bSkipAddingH;
 }
 
 
+/****************************************************************************
+  Get reference value of atom valence at given charge
+****************************************************************************/
 int get_el_valence( int nPeriodicNum, int charge, int val_num )
 {
-    if ( charge < MIN_ATOM_CHARGE || charge > MAX_ATOM_CHARGE || val_num >= MAX_NUM_VALENCES )
+    if (charge < MIN_ATOM_CHARGE || charge > MAX_ATOM_CHARGE || val_num >= MAX_NUM_VALENCES)
+    {
         return 0;
+    }
+
     return
-        ElData[nPeriodicNum>1? nPeriodicNum+1:0].cValence[NEUTRAL_STATE+charge][val_num];
+        ElData[nPeriodicNum > 1 ? nPeriodicNum + 1 : 0].cValence[NEUTRAL_STATE + charge][val_num];
 }
 
 
-/*
+/****************************************************************************
     Output valence needed to unambiguosly reconstruct bonds
-*/
+****************************************************************************/
 int get_unusual_el_valence( int nPeriodicNum,
                             int charge,
                             int radical,
@@ -361,39 +399,49 @@ int get_unusual_el_valence( int nPeriodicNum,
                             int num_H,
                             int num_bonds )
 {
-int i, num_found, chem_valence, rad_adj, known_chem_valence, exact_found;
+    int i, num_found, chem_valence, rad_adj, known_chem_valence, exact_found;
 
-    if ( !num_bonds && !num_H )
-        return 0;
-
-    if ( charge < MIN_ATOM_CHARGE || charge > MAX_ATOM_CHARGE )
+    if (!num_bonds && !num_H)
     {
-        if ( bonds_valence == num_bonds )
+        return 0;
+    }
+
+    if (charge < MIN_ATOM_CHARGE || charge > MAX_ATOM_CHARGE)
+    {
+        if (bonds_valence == num_bonds)
+        {
             return 0; /* all single bonds */
+        }
         return bonds_valence;
     }
 
-    if ( !get_el_valence( nPeriodicNum, charge, 0 ) && bonds_valence == num_bonds )
+    if (!get_el_valence( nPeriodicNum, charge, 0 ) && bonds_valence == num_bonds)
+    {
         return 0;
+    }
 
     chem_valence = bonds_valence + num_H;
-    rad_adj     = 0;
-    num_found   = 0;
+    rad_adj = 0;
+    num_found = 0;
     exact_found = 0;
 
     /* Take into account a radical */
-    if (radical==RADICAL_DOUBLET)
-        rad_adj = 1;
-    else if (radical==RADICAL_TRIPLET )
-        rad_adj = 2;
-
-    for ( i = 0; i < MAX_NUM_VALENCES; i ++ )
+    if (radical == RADICAL_DOUBLET)
     {
-        if ( 0 < (known_chem_valence = get_el_valence( nPeriodicNum, charge, i )-rad_adj) &&
-             num_bonds <= known_chem_valence && known_chem_valence <= chem_valence )
+        rad_adj = 1;
+    }
+    else if (radical == RADICAL_TRIPLET)
+    {
+        rad_adj = 2;
+    }
+
+    for (i = 0; i < MAX_NUM_VALENCES; i++)
+    {
+        if (0 < ( known_chem_valence = get_el_valence( nPeriodicNum, charge, i ) - rad_adj ) &&
+             num_bonds <= known_chem_valence && known_chem_valence <= chem_valence)
         {
-                num_found ++;
-            if ( known_chem_valence == chem_valence )
+            num_found++;
+            if (known_chem_valence == chem_valence)
             {
                 exact_found = 1;
                 break;
@@ -401,14 +449,13 @@ int i, num_found, chem_valence, rad_adj, known_chem_valence, exact_found;
         }
     }
 
-    return (exact_found && 1==num_found) ? 0
-                                         : chem_valence;
+    return ( exact_found && 1 == num_found ) ? 0 : chem_valence;
 }
 
 
-/*
+/****************************************************************************
     Output valence needed to unambiguosly reconstruct number of H
-*/
+****************************************************************************/
 int needed_unusual_el_valence( int nPeriodicNum,
                                int charge,
                                int radical,
@@ -417,18 +464,17 @@ int needed_unusual_el_valence( int nPeriodicNum,
                                int num_H, int
                                num_bonds )
 {
-int i, num_found, num_found_known, chem_valence, rad_adj, known_chem_valence, exact_found;
-int num_H_expected;
-char szElement[4];
+    int chem_valence, num_H_expected;
+    char szElement[4];
 
     /*
     if ( !num_bonds && !num_H )
         return 0;
     */
 
-    if ( num_bonds && get_element_chemical_symbol(nPeriodicNum, szElement )!=-1 )
+    if (num_bonds && get_element_chemical_symbol( nPeriodicNum, szElement ) != -1)
     {
-        num_H_expected = get_num_H( szElement, 0, NULL, charge, radical, actual_bonds_valence, 0,0,0,0 );
+        num_H_expected = get_num_H( szElement, 0, NULL, charge, radical, actual_bonds_valence, 0, 0, 0, 0 );
     }
     else
     {
@@ -436,57 +482,82 @@ char szElement[4];
     }
 
     chem_valence = bonds_valence + num_H;
-    if ( charge < MIN_ATOM_CHARGE || charge > MAX_ATOM_CHARGE ||
-         !get_el_valence( nPeriodicNum, charge, 0 ) ||
-         if_skip_add_H( nPeriodicNum ) || bonds_valence != actual_bonds_valence ||
-         num_H_expected != num_H )
+
+#if ( (BUILD_WITH_ENG_OPTIONS==1) && (SDF_OUTPUT_HETERO_VALENCE==1) )
+    if (nPeriodicNum == 1 && chem_valence != 1 /* H */ || nPeriodicNum == 6 && chem_valence != 4 /* C */ ||
+         nPeriodicNum != 1 && nPeriodicNum != 6 || charge || radical)
     {
-        if ( !num_H && !num_H_expected && bonds_valence == actual_bonds_valence )
-            return 0; /* no H */
-        return chem_valence; /* needs to add H-atoms */
+        return chem_valence ? chem_valence : -1;
     }
-
-    /* take into account radical */
-    if (radical==RADICAL_DOUBLET)
-        rad_adj = 1;
-    else if (radical==RADICAL_TRIPLET )
-        rad_adj = 2;
     else
-        rad_adj = 0;
-
-    num_found_known = 0;
-    num_found       = 0;
-    exact_found     = 0;
-
-    for ( i = 0; i < MAX_NUM_VALENCES; i ++ )
     {
-        if ( 0 <  (known_chem_valence = get_el_valence( nPeriodicNum, charge, i )) &&
-             bonds_valence <= (known_chem_valence -= rad_adj) )
+        return 0;
+    }
+#else
+    {
+        int i, num_found, num_found_known, rad_adj, known_chem_valence, exact_found;
+
+        if (charge < MIN_ATOM_CHARGE || charge > MAX_ATOM_CHARGE ||
+             !get_el_valence( nPeriodicNum, charge, 0 ) ||
+             if_skip_add_H( nPeriodicNum ) || bonds_valence != actual_bonds_valence ||
+             num_H_expected != num_H)
         {
-            /* found known valence that fits without H */
-            num_found_known ++;
-            if ( known_chem_valence <= chem_valence )
+            if (!num_H && !num_H_expected && bonds_valence == actual_bonds_valence)
             {
-                /* known valence is large enough to accommodate (implicit) H */
-                num_found ++;
+                return 0; /* no H */
             }
-            if ( known_chem_valence == chem_valence )
+            return chem_valence; /* needs to add H-atoms */
+        }
+
+        /* take into account radical */
+        if (radical == RADICAL_DOUBLET)
+        {
+            rad_adj = 1;
+        }
+        else if (radical == RADICAL_TRIPLET)
+        {
+            rad_adj = 2;
+        }
+        else
+        {
+            rad_adj = 0;
+        }
+
+        num_found_known = 0;
+        num_found = 0;
+        exact_found = 0;
+
+        for (i = 0; i < MAX_NUM_VALENCES; i++)
+        {
+            if (0 < ( known_chem_valence = get_el_valence( nPeriodicNum, charge, i ) ) &&
+                 bonds_valence <= ( known_chem_valence -= rad_adj ))
             {
-                exact_found = 1;
-                break;
+                /* found known valence that fits without H */
+                num_found_known++;
+                if (known_chem_valence <= chem_valence)
+                {
+                    /* known valence is large enough to accommodate (implicit) H */
+                    num_found++;
+                }
+                if (known_chem_valence == chem_valence)
+                {
+                    exact_found = 1;
+                    break;
+                }
             }
         }
-    }
 
-    return
-        (exact_found&&1==num_found&&1==num_found_known)    ? 0
-                                                        : chem_valence?chem_valence:-1;    /* needs zero */
+        return ( exact_found && 1 == num_found && 1 == num_found_known )
+            ? 0
+            : chem_valence ? chem_valence : -1;    /* needs zero */
+    }
+#endif
 }
 
 
-/*
+/****************************************************************************
     Output valence that does not fit any known valences
-*/
+****************************************************************************/
 int detect_unusual_el_valence( int nPeriodicNum,
                                int charge,
                                int radical,
@@ -494,35 +565,45 @@ int detect_unusual_el_valence( int nPeriodicNum,
                                int num_H,
                                int num_bonds )
 {
-int i, chem_valence, rad_adj, known_chem_valence;
+    int i, chem_valence, rad_adj, known_chem_valence;
 
-    if ( !num_bonds && !num_H )
-        return 0;
-
-    if ( charge < MIN_ATOM_CHARGE || charge > MAX_ATOM_CHARGE )
+    if (!num_bonds && !num_H)
     {
-        if ( bonds_valence == num_bonds )
+        return 0;
+    }
+
+    if (charge < MIN_ATOM_CHARGE || charge > MAX_ATOM_CHARGE)
+    {
+        if (bonds_valence == num_bonds)
+        {
             return 0; /* all single bonds */
+        }
         return bonds_valence;
     }
 
-    if ( !get_el_valence( nPeriodicNum, charge, 0 ) && bonds_valence == num_bonds )
+    if (!get_el_valence( nPeriodicNum, charge, 0 ) && bonds_valence == num_bonds)
+    {
         return 0;
+    }
 
     chem_valence = bonds_valence + num_H;
-    rad_adj     = 0;
+    rad_adj = 0;
 
     /* take into account radical */
-    if (radical==RADICAL_DOUBLET)
-        rad_adj = 1;
-    else if (radical==RADICAL_TRIPLET || radical==RADICAL_SINGLET )
-        rad_adj = 2;
-
-    for ( i = 0; i < MAX_NUM_VALENCES; i ++ )
+    if (radical == RADICAL_DOUBLET)
     {
-        if ( 0 < (known_chem_valence = get_el_valence( nPeriodicNum, charge, i )-rad_adj) )
+        rad_adj = 1;
+    }
+    else if (radical == RADICAL_TRIPLET || radical == RADICAL_SINGLET)
+    {
+        rad_adj = 2;
+    }
+
+    for (i = 0; i < MAX_NUM_VALENCES; i++)
+    {
+        if (0 < ( known_chem_valence = get_el_valence( nPeriodicNum, charge, i ) - rad_adj ))
         {
-            if ( known_chem_valence == chem_valence )
+            if (known_chem_valence == chem_valence)
             {
                 return 0;
             }
@@ -533,144 +614,154 @@ int i, chem_valence, rad_adj, known_chem_valence;
 }
 
 
-/* Return element type */
+/****************************************************************************
+ Return element type
+****************************************************************************/
 int get_el_type( int nPeriodicNum )
 {
-    return ElData[nPeriodicNum+1].nType;
+    return ElData[nPeriodicNum + 1].nType;
 }
 
 
-/* Check if element is metal */
+/****************************************************************************
+ Check if element is metal
+****************************************************************************/
 int is_el_a_metal( int nPeriodicNum )
 {
-    return 0!=(ElData[nPeriodicNum+1].nType & IS_METAL);
+    return 0 != ( ElData[nPeriodicNum + 1].nType & IS_METAL );
 }
-
 
 
 /*#ifndef TARGET_API_LIB*/
 
 
-/* Extract radicals and charges */
+/****************************************************************************
+ Extract radicals and charges
+****************************************************************************/
 int extract_charges_and_radicals( char *elname, int *pnRadical, int *pnCharge )
 {
-char *q, *r, *p;
-int  nCharge=0, nRad = 0, charge_len = 0, k, nVal, nSign, nLastSign=1, len;
+    char *q, *r, *p;
+    int  nCharge = 0, nRad = 0, charge_len = 0, k, nVal, nSign, nLastSign = 1, len;
 
     p = elname;
 
     /*  extract radicals & charges */
-    while ( q = strpbrk( p, "+-^" ) )
+    while (q = strpbrk( p, "+-^" ))
     {
-        switch ( *q )
+        switch (*q)
         {
-        case '+':
-        case '-':
-            for ( k = 0, nVal=0; (nSign = ('+' == q[k])) || (nSign = -('-' == q[k])); k++ )
-            {
-                nVal += (nLastSign = nSign);
-                charge_len ++;
-            }
-            if ( nSign = (int)strtol( q+k, &r, 10 ) )
-            {
-                /*  fixed 12-5-2001 */
-                nVal += nLastSign * (nSign-1);
-            }
-            charge_len = (int) (r - q);
-            nCharge += nVal;
-            break;
-        /* case '.': */ /*  singlet '.' may be confused with '.' in formulas like CaO.H2O */
-        case '^':
-            nRad = 1; /* doublet here is 1. See below */
-            charge_len = 1;
-            for ( k = 1; q[0] == q[k]; k++ )
-            {
-                nRad ++;
-                charge_len ++;
-            }
-            break;
+            case '+':
+            case '-':
+                for (k = 0, nVal = 0; ( nSign = ( '+' == q[k] ) ) || ( nSign = -( '-' == q[k] ) ); k++)
+                {
+                    nVal += ( nLastSign = nSign );
+                    charge_len++;
+                }
+                if (nSign = (int) strtol( q + k, &r, 10 ))
+                {
+                    /*  fixed 12-5-2001 */
+                    nVal += nLastSign * ( nSign - 1 );
+                }
+                charge_len = (int) ( r - q );
+                nCharge += nVal;
+                break;
+            /* case '.': */ /*  singlet '.' may be confused with '.' in formulas like CaO.H2O */
+            case '^':
+                nRad = 1; /* doublet here is 1. See below */
+                charge_len = 1;
+                for (k = 1; q[0] == q[k]; k++)
+                {
+                    nRad++;
+                    charge_len++;
+                }
+                break;
         }
-        memmove( q, q+charge_len, strlen(q+charge_len)+1 );
+        memmove( q, q + charge_len, strlen( q + charge_len ) + 1 );
     }
 
-    len = (int) strlen(p);
+    len = (int) strlen( p );
 
     /*  radical */
-    if ( (q = strrchr( p, ':' )) && !q[1])
+    if (( q = strrchr( p, ':' ) ) && !q[1])
     {
         nRad = RADICAL_SINGLET;
         q[0] = '\0';
-        len --;
+        len--;
     }
     else
     {
-        while( (q = strrchr( p, '.' )) && !q[1] )
+        while (( q = strrchr( p, '.' ) ) && !q[1])
         {
-            nRad ++;
+            nRad++;
             q[0] = '\0';
-            len --;
+            len--;
         }
 
-        nRad = nRad == 1? RADICAL_DOUBLET :
-               nRad == 2? RADICAL_TRIPLET : 0;
+        nRad = nRad == 1 ? RADICAL_DOUBLET :
+            nRad == 2 ? RADICAL_TRIPLET : 0;
     }
 
     *pnRadical = nRad;
-    *pnCharge  = nCharge;
+    *pnCharge = nCharge;
+
     return ( nRad || nCharge );
 }
+
 
 /*#endif*/
 
 
+/****************************************************************************/
 int extract_H_atoms( char *elname, S_CHAR num_iso_H[] )
 {
-int i, len, c, k, num_H, val;
-char *q;
-char elname1 = '\0';
+    int i, len, c, k, num_H, val;
+    char *q;
+    char elname1 = '\0';
 
     i = 0;
     num_H = 0;
-    len = (int) strlen(elname);
-    c =  UCINT elname[0];
+    len = (int) strlen( elname );
+    c = UCINT elname[0];
 
-    if ( len > 1 )
-        elname1 = elname[1];
-
-    while ( i < len )
+    if (len > 1)
     {
-        switch ( c )
+        elname1 = elname[1];
+    }
+
+    while (i < len)
+    {
+        switch (c)
         {
-        case 'H':
-            k = 0;
-            break;
-        case 'D':
-            k = 1;
-            break;
-        case 'T':
-            k = 2;
-            break;
-        default:
-            k = -1;
-            break;
+            case 'H':
+                k = 0;
+                break;
+            case 'D':
+                k = 1;
+                break;
+            case 'T':
+                k = 2;
+                break;
+            default:
+                k = -1;
+                break;
         }
 
-        q = elname+i+1; /*  pointer to the next to elname[i] character */
-        c =  UCINT q[0];
+        q = elname + i + 1; /*  pointer to the next to elname[i] character */
+        c = UCINT q[0];
 
-        if ( k >= 0 && !islower( c ) )
+        if (k >= 0 && !islower( c ))
         {
             /*  found a hydrogen */
-            if ( isdigit( c ) )
+            if (isdigit( c ))
             {
-                val = (int)strtol( q, &q, 10 );
+                val = (int) strtol( q, &q, 10 );
                 /*  q = pointer to the next to number of hydrogen atom(s) character */
             }
             else
             {
                 val = 1;
             }
-            if ( k )
+            if (k)
             {
                 num_iso_H[k] += val;
             }
@@ -680,22 +771,22 @@ char elname1 = '\0';
             }
 
             /*  remove the hydrogen atom from the string */
-            len -= (int) (q-elname)-i;
-            memmove( elname+i, q, len + 1 );
+            len -= (int) ( q - elname ) - i;
+            memmove( elname + i, q, len + 1 );
             /*  c =  UCINT elname[i]; */
         }
         else
         {
-            i ++;
+            i++;
         }
 
-        c =  UCINT elname[i]; /*  moved here 11-04-2002 */
+        c = UCINT elname[i]; /*  moved here 11-04-2002 */
     }
 
-    len = (int) strlen(elname);
-    if ( len == 2 )
+    len = (int) strlen( elname );
+    if (len == 2)
     {
-        if ( elname[1] != elname1 )
+        if (elname[1] != elname1)
             /* Error, incorrect 2nd char of elname appears after 'subtracting' {H,D,T}  */
             /* See a bug reported to inchi-discuss by A. Dalke for alias atom "pH4d"    */
             /*^^^ 2017-01-06                                                            */
@@ -706,8 +797,10 @@ char elname1 = '\0';
 }
 
 
-/* Return number of attached hydrogens */
-int get_num_H ( const char* elname,
+/****************************************************************************
+ Return number of attached hydrogens
+****************************************************************************/
+int get_num_H( const char* elname,
                 int inp_num_H,
                 S_CHAR inp_num_iso_H[],
                 int charge,
@@ -718,43 +811,54 @@ int get_num_H ( const char* elname,
                 int bDoNotAddH,
                 int bHasMetalNeighbor )
 {
-int val, i, el_number, num_H = 0, num_iso_H;
-static int el_number_N = 0, el_number_S, el_number_O, el_number_C;
+    int val, i, el_number, num_H = 0, num_iso_H;
+    static int intl_el_number_N = 0, intl_el_number_S=0, intl_el_number_O=0, intl_el_number_C=0;
 
-    if ( !el_number_N )
+    if (!intl_el_number_N)
     {
-        el_number_N = el_number_in_internal_ref_table( "N" );
-        el_number_S = el_number_in_internal_ref_table( "S" );
-        el_number_O = el_number_in_internal_ref_table( "O" );
-        el_number_C = el_number_in_internal_ref_table( "C" );
+        intl_el_number_N = el_number_in_internal_ref_table( "N" );
     }
+    if (!intl_el_number_S)
+    {
+        intl_el_number_S = el_number_in_internal_ref_table( "S" );
+    }
+    if (!intl_el_number_O)
+    {
+        intl_el_number_O = el_number_in_internal_ref_table( "O" );
+    }
+    if (!intl_el_number_C)
+    {
+        intl_el_number_C = el_number_in_internal_ref_table( "C" );
+    }
+
 
     /*  atom_input_valence (cValence) cannot be specified in case of */
     /*  aliased MOLFile atom with known inp_num_H or inp_num_iso_H[] */
 
-    if ( bAliased )
+    if (bAliased)
     {
         num_H = inp_num_H;
     }
-    else if ( atom_input_valence && (atom_input_valence !=15 || chem_bonds_valence) )
+    else if (atom_input_valence && ( atom_input_valence != 15 || chem_bonds_valence ))
     {
         num_H = inchi_max( 0, atom_input_valence - chem_bonds_valence );
     }
-    else if ( atom_input_valence == 15 && !chem_bonds_valence )
+    else if (atom_input_valence == 15 && !chem_bonds_valence)
     {
         num_H = 0;
     }
-    else if ( MIN_ATOM_CHARGE <= charge &&
+    else if (MIN_ATOM_CHARGE <= charge &&
               MAX_ATOM_CHARGE >= charge &&
-              ERR_ELEM != (el_number=el_number_in_internal_ref_table( elname ) ) &&
-              !ElData[el_number].bSkipAddingH && !bDoNotAddH )
+              ERR_ELEM != ( el_number = el_number_in_internal_ref_table( elname ) ) &&
+              !ElData[el_number].bSkipAddingH && !bDoNotAddH)
     {
         /* add hydrogen atoms according to standard element valence */
-        if ( radical && radical != RADICAL_SINGLET ) {
-            if ( val = ElData[el_number].cValence[NEUTRAL_STATE+charge][0] )
+        if (radical && radical != RADICAL_SINGLET)
+        {
+            if (val = ElData[el_number].cValence[NEUTRAL_STATE + charge][0])
             {
-                val -= (radical==RADICAL_DOUBLET)    ? 1
-                                                    : (radical==RADICAL_SINGLET || radical==RADICAL_TRIPLET )? 2 : val;
+                val -= ( radical == RADICAL_DOUBLET ) ? 1
+                    : ( radical == RADICAL_SINGLET || radical == RADICAL_TRIPLET ) ? 2 : val;
                 /* if unknown radical then do not add H */
                 num_H = inchi_max( 0, val - chem_bonds_valence );
             }
@@ -762,29 +866,39 @@ static int el_number_N = 0, el_number_S, el_number_O, el_number_C;
         else
         {
             /* find the smallest valence that is greater than the sum of the chemical bond valences */
-            for ( i = 0;
-                  (val=ElData[el_number].cValence[NEUTRAL_STATE+charge][i]) &&
-                   val < chem_bonds_valence;
-                   i++ )
+            for (i = 0;
+                 ( val = ElData[el_number].cValence[NEUTRAL_STATE + charge][i] ) &&
+                 val < chem_bonds_valence;
+                 i++)
+            {
                 ;
+            }
 
             /* special case: do not add H to N(IV), S(III), S+(II), S-(II) */ /* S ions added 2004-05-10 */
-            if ( el_number == el_number_N && !charge && !radical && val == 5 )
+            if (el_number == intl_el_number_N && !charge && !radical && val == 5)
+            {
                 val = 3;
+            }
             /*else if ( el_number == el_number_N && !charge && !radical && val == 3 &&
                  chem_bonds_valence == 2 && bHasMetalNeighbor )
-                val = 2;
+              {
+              val = 2;
+              }
             */
-            else if ( el_number == el_number_S && !charge && !radical && val == 4 && chem_bonds_valence == 3 )
-                val = 3;
-            else if ( bHasMetalNeighbor && el_number != el_number_C && val > 0 )
+            else if (el_number == intl_el_number_S && !charge && !radical && val == 4 && chem_bonds_valence == 3)
             {
-                val --;
+                val = 3;
+            }
+            else if (bHasMetalNeighbor && el_number != intl_el_number_C && val > 0)
+            {
+                val--;
             }
             /*
             if ( (el_number == el_number_S || el_number == el_number_O) &&
                  abs(charge)==1 && !radical && val == 3 && chem_bonds_valence == 2 && bHasMetalNeighbor )
-                val = 2;
+              {
+              val = 2;
+              }
             else
             */
 
@@ -792,18 +906,18 @@ static int el_number_N = 0, el_number_S, el_number_O, el_number_C;
         }
 
         num_iso_H = 0;
-        if ( inp_num_iso_H )
+        if (inp_num_iso_H)
         {
-            for ( i = 0; i < NUM_H_ISOTOPES; i ++ )
+            for (i = 0; i < NUM_H_ISOTOPES; i++)
             {
                 num_iso_H += inp_num_iso_H[i];
             }
         }
 
         /*  should not happen because atom here is not aliased */
-        if ( num_iso_H )
+        if (num_iso_H)
         {
-            if ( num_H >= num_iso_H )
+            if (num_H >= num_iso_H)
             {
                 num_H -= num_iso_H;
             }
@@ -815,7 +929,7 @@ static int el_number_N = 0, el_number_S, el_number_O, el_number_C;
         }
 
         /*  should not happen because atom here is not aliased */
-        if ( inp_num_H > num_H )
+        if (inp_num_H > num_H)
         {
             num_H = inp_num_H;  /*  as requested in the alias */
             /* num_H = inp_num_H + (inp_num_H - num_H)%2; */ /*  keep unchanged parity of the number of non-isotopic H atoms */
@@ -830,22 +944,26 @@ static int el_number_N = 0, el_number_S, el_number_O, el_number_C;
 }
 
 
-
+/****************************************************************************/
 int get_atomic_mass_from_elnum( int nAtNum )
 {
-    nAtNum-= 1;
+    nAtNum -= 1;
 
-    if ( 0 < nAtNum )
-        nAtNum+= 2; /*  bypass D, T */
+    if (0 < nAtNum)
+    {
+        nAtNum += 2; /*  bypass D, T */
+    }
 
-    if ( 0 <= nAtNum && nAtNum < nElDataLen )
-        return (int)ElData[nAtNum].nAtMass;
+    if (0 <= nAtNum && nAtNum < nElDataLen)
+    {
+        return (int) ElData[nAtNum].nAtMass;
+    }
 
     return 0;
 }
 
 
-/*
+/****************************************************************************
 int get_mw(char elname[])
 {
     int i;
@@ -855,13 +973,15 @@ int get_mw(char elname[])
             return(atomic_wt[i]);
     return(0);
 }
-*/
+****************************************************************************/
 
 
-int get_atomic_mass(const char *elname)
+
+/****************************************************************************/
+int get_atomic_mass( const char *elname )
 {
     int el_number, atw;
-    if ( ERR_ELEM != (el_number = el_number_in_internal_ref_table( elname )) )
+    if (ERR_ELEM != ( el_number = el_number_in_internal_ref_table( elname ) ))
     {
         atw = ElData[el_number].nAtMass;
     }
@@ -874,60 +994,64 @@ int get_atomic_mass(const char *elname)
 }
 
 
-/*
-
-*/
+/****************************************************************************
+  Check if atom is in the list
+****************************************************************************/
 AT_NUMB *is_in_the_list( AT_NUMB *pathAtom, AT_NUMB nNextAtom, int nPathLen )
 {
-    for ( ; nPathLen && *pathAtom != nNextAtom; nPathLen--,  pathAtom++ )
+    for (; nPathLen && *pathAtom != nNextAtom; nPathLen--, pathAtom++)
+    {
         ;
-    return nPathLen? pathAtom : NULL;
+    }
+    return nPathLen ? pathAtom : NULL;
 }
 
 
-/*
-    Check if integer is in list
-*/
+/****************************************************************************
+  Check if integer is in the list
+****************************************************************************/
 int *is_in_the_ilist( int *pathAtom, int nNextAtom, int nPathLen )
 {
-    for ( ; nPathLen && *pathAtom != nNextAtom; nPathLen--,  pathAtom++ )
+    for (; nPathLen && *pathAtom != nNextAtom; nPathLen--, pathAtom++)
+    {
         ;
-    return nPathLen? pathAtom : NULL;
+    }
+    return nPathLen ? pathAtom : NULL;
 }
 
 
-/*
-    Check if all integers in the list are also included in embedding list2
-*/
+/****************************************************************************
+  Check if list (of integers) is within the embedding list2
+****************************************************************************/
 int is_ilist_inside( int *ilist, int nlist, int *ilist2, int nlist2 )
 {
     int k;
-    for (k=0; k<nlist; k++)
+    for (k = 0; k < nlist; k++)
     {
-        if ( !is_in_the_ilist( ilist2, ilist[k], nlist2 ) )
+        if (!is_in_the_ilist( ilist2, ilist[k], nlist2 ))
+        {
             return 0;
+        }
     }
     return 1;
 }
 
 
-/*
-
-*/
+/****************************************************************************/
 int nBondsValToMetal( inp_ATOM* at, int iat )
 {
-int i, neigh, bond_type, nVal2Metal = 0;
-inp_ATOM* a  = at + iat;
+    int i, neigh, bond_type, nVal2Metal = 0;
+    inp_ATOM* a = at + iat;
 
-    for ( i = 0; i < a->valence; i ++ )
+    for (i = 0; i < a->valence; i++)
     {
         neigh = a->neighbor[i];
 
-        if ( is_el_a_metal( at[(int)a->neighbor[i]].el_number ) )
+        if (is_el_a_metal( at[(int) a->neighbor[i]].el_number ))
         {
             bond_type = a->bond_type[i];
 
-            if ( bond_type <= BOND_TYPE_TRIPLE )
+            if (bond_type <= BOND_TYPE_TRIPLE)
             {
                 nVal2Metal += bond_type;
             }
@@ -942,46 +1066,43 @@ inp_ATOM* a  = at + iat;
 }
 
 
-/*
-
-*/
+/****************************************************************************/
 int num_of_H( inp_ATOM *at, int iat )
 {
-static int el_number_H;
-int    i, n, num_explicit_H = 0;
-inp_ATOM *a = at + iat;
+    static int el_number_H;
+    int    i, n, num_explicit_H = 0;
+    inp_ATOM *a = at + iat;
 
-    if ( !el_number_H )
+    if (!el_number_H)
+    {
         el_number_H = get_periodic_table_number( "H" );
+    }
 
-    for ( i = 0; i < a->valence; i ++ )
+    for (i = 0; i < a->valence; i++)
     {
         n = a->neighbor[i];
         num_explicit_H += ( 1 == at[n].valence && el_number_H == at[n].el_number );
     }
 
-    return num_explicit_H+NUMH(at,iat);
+    return num_explicit_H + NUMH( at, iat );
 }
 
 
-/*
-
-*/
 int has_other_ion_neigh( inp_ATOM *at,
                          int iat,
                          int iat_ion_neigh,
                          const char *el,
                          int el_len )
 {
-int charge = at[iat_ion_neigh].charge;
-int i, neigh;
+    int charge = at[iat_ion_neigh].charge;
+    int i, neigh;
 
-    for ( i = 0; i < at[iat].valence; i ++ )
+    for (i = 0; i < at[iat].valence; i++)
     {
         neigh = at[iat].neighbor[i];
 
-        if ( neigh != iat_ion_neigh && at[neigh].charge == charge &&
-             NULL != memchr( el, at[neigh].el_number, el_len ) )
+        if (neigh != iat_ion_neigh && at[neigh].charge == charge &&
+             NULL != memchr( el, at[neigh].el_number, el_len ))
         {
             return 1;
         }
@@ -991,55 +1112,53 @@ int i, neigh;
 }
 
 
-/*
-    Check if has_other_ion_in_sphere_2
-
+/****************************************************************************
+  Check if has_other_ion_in_sphere_2
     BFS r=2
-*/
-int has_other_ion_in_sphere_2( inp_ATOM *at,
-                               int iat,
+****************************************************************************/
+int has_other_ion_in_sphere_2( inp_ATOM *at, int iat,
                                int iat_ion_neigh,
-                               const char *el,
-                               int el_len )
+                               const char *el, int el_len )
 {
 #define MAXQ 16
     AT_NUMB q[MAXQ];
-    int lenq=0, lenq2, dist = 0, i = 0, iq, neigh, j, nRet=0;
+    int lenq = 0, lenq2, dist = 0, i = 0, iq, neigh, j, nRet = 0;
     q[lenq++] = iat;
     at[iat].cFlags = 1;
 
-    iq  = 0;
+    iq = 0;
     dist = 1;
     /* use at->cFlags as an indicator */
-    while ( dist <= 2 )
+
+    while (dist <= 2)
     {
-        for ( lenq2 = lenq; iq < lenq2; iq ++ )
+        for (lenq2 = lenq; iq < lenq2; iq++)
         {
             i = q[iq];
 
-            for ( j = 0; j < at[i].valence; j ++ )
+            for (j = 0; j < at[i].valence; j++)
             {
                 neigh = at[i].neighbor[j];
 
-                if ( !at[neigh].cFlags &&
+                if (!at[neigh].cFlags &&
                      at[neigh].valence <= 3 &&
-                     NULL != memchr( el, at[neigh].el_number, el_len ) )
+                     NULL != memchr( el, at[neigh].el_number, el_len ))
                 {
-                    q[lenq ++] = neigh;
+                    q[lenq++] = neigh;
                     at[neigh].cFlags = 1;
-                    if ( neigh != iat_ion_neigh &&
-                         at[iat_ion_neigh].charge == at[neigh].charge )
+                    if (neigh != iat_ion_neigh &&
+                         at[iat_ion_neigh].charge == at[neigh].charge)
                     {
-                        nRet ++;
+                        nRet++;
                     }
                 }
             }
         }
 
-        dist ++;
+        dist++;
     }
 
-    for ( iq = 0; iq < lenq; iq ++ )
+    for (iq = 0; iq < lenq; iq++)
     {
         i = q[iq];
         at[i].cFlags = 0;
@@ -1049,33 +1168,34 @@ int has_other_ion_in_sphere_2( inp_ATOM *at,
 }
 
 
+/****************************************************************************/
 int nNoMetalNumBonds( inp_ATOM *at, int at_no )
 {
-int i;
+    int i;
 
     inp_ATOM *a = at + at_no;
-    int num_H = NUMH(a, 0);
+    int num_H = NUMH( a, 0 );
     int std_chem_bonds_valence = get_el_valence( a->el_number, a->charge, 0 );
 
-    if ( a->chem_bonds_valence + num_H > std_chem_bonds_valence )
+    if (a->chem_bonds_valence + num_H > std_chem_bonds_valence)
     {
         int valence_to_metal = 0;
         int num_bonds_to_metal = 0;
 
-        for ( i = 0; i < a->valence; i ++ )
+        for (i = 0; i < a->valence; i++)
         {
-            if ( is_el_a_metal( at[(int)a->neighbor[i]].el_number ) )
+            if (is_el_a_metal( at[(int) a->neighbor[i]].el_number ))
             {
-                if ( (a->bond_type[i] & BOND_TYPE_MASK) >= BOND_TYPE_ALTERN )
+                if (( a->bond_type[i] & BOND_TYPE_MASK ) >= BOND_TYPE_ALTERN)
                 {
                     return a->valence; /* fall back */
                 }
-                num_bonds_to_metal ++;
-                valence_to_metal += (a->bond_type[i] & BOND_TYPE_MASK);
+                num_bonds_to_metal++;
+                valence_to_metal += ( a->bond_type[i] & BOND_TYPE_MASK );
             }
         }
 
-        if ( a->chem_bonds_valence + num_H - valence_to_metal == std_chem_bonds_valence )
+        if (a->chem_bonds_valence + num_H - valence_to_metal == std_chem_bonds_valence)
         {
             /* removing bonds to metal produces standard valence */
             return a->valence - num_bonds_to_metal;
@@ -1084,27 +1204,29 @@ int i;
 
 #if ( S_VI_O_PLUS_METAL_FIX_BOND == 1 )
     else
-    if ( 1 == a->charge && 2 == get_endpoint_valence(a->el_number) &&
-         a->chem_bonds_valence + num_H == std_chem_bonds_valence )
     {
-        int valence_to_metal = 0;
-        int num_bonds_to_metal = 0;
-        for ( i = 0; i < a->valence; i ++ )
+        if (1 == a->charge && 2 == get_endpoint_valence( a->el_number ) &&
+                a->chem_bonds_valence + num_H == std_chem_bonds_valence)
         {
-            if ( is_el_a_metal( at[(int)a->neighbor[i]].el_number ) )
+            int valence_to_metal = 0;
+            int num_bonds_to_metal = 0;
+            for (i = 0; i < a->valence; i++)
             {
-                if ( (a->bond_type[i] & BOND_TYPE_MASK) >= BOND_TYPE_ALTERN )
+                if (is_el_a_metal( at[(int) a->neighbor[i]].el_number ))
                 {
-                    return a->valence; /* fall back */
+                    if (( a->bond_type[i] & BOND_TYPE_MASK ) >= BOND_TYPE_ALTERN)
+                    {
+                        return a->valence; /* fall back */
+                    }
+                    num_bonds_to_metal++;
+                    valence_to_metal += ( a->bond_type[i] & BOND_TYPE_MASK );
                 }
-                num_bonds_to_metal ++;
-                valence_to_metal += (a->bond_type[i] & BOND_TYPE_MASK);
             }
-        }
-        if ( 1 == valence_to_metal )
-        {
-            /* removing bonds to metal produces standard valence */
-            return a->valence - num_bonds_to_metal;
+            if (1 == valence_to_metal)
+            {
+                /* removing bonds to metal produces standard valence */
+                return a->valence - num_bonds_to_metal;
+            }
         }
     }
 #endif
@@ -1113,34 +1235,34 @@ int i;
 }
 
 
-
+/****************************************************************************/
 int nNoMetalBondsValence( inp_ATOM *at, int at_no )
 {
-int i;
+    int i;
 
     inp_ATOM *a = at + at_no;
-    int num_H = NUMH(a, 0);
+    int num_H = NUMH( a, 0 );
     int std_chem_bonds_valence = get_el_valence( a->el_number, a->charge, 0 );
 
-    if ( a->chem_bonds_valence + num_H > std_chem_bonds_valence )
+    if (a->chem_bonds_valence + num_H > std_chem_bonds_valence)
     {
         int valence_to_metal = 0;
         /*int num_bonds_to_metal = 0;*/
 
-        for ( i = 0; i < a->valence; i ++ )
+        for (i = 0; i < a->valence; i++)
         {
-            if ( is_el_a_metal( at[(int)a->neighbor[i]].el_number ) )
+            if (is_el_a_metal( at[(int) a->neighbor[i]].el_number ))
             {
-                if ( (a->bond_type[i] & BOND_TYPE_MASK) >= BOND_TYPE_ALTERN )
+                if (( a->bond_type[i] & BOND_TYPE_MASK ) >= BOND_TYPE_ALTERN)
                 {
                     return a->valence; /* fall back */
                 }
                 /* num_bonds_to_metal ++;*/
-                valence_to_metal += (a->bond_type[i] & BOND_TYPE_MASK);
+                valence_to_metal += ( a->bond_type[i] & BOND_TYPE_MASK );
             }
         }
 
-        if ( a->chem_bonds_valence + num_H - valence_to_metal == std_chem_bonds_valence )
+        if (a->chem_bonds_valence + num_H - valence_to_metal == std_chem_bonds_valence)
         {
             /* removing bonds to metal produces standard valence */
             return a->chem_bonds_valence - valence_to_metal;
@@ -1148,29 +1270,30 @@ int i;
     }
 
 #if ( S_VI_O_PLUS_METAL_FIX_BOND == 1 )
-    else if ( 1 == a->charge && 2 == get_endpoint_valence(a->el_number) &&
-         a->chem_bonds_valence + num_H == std_chem_bonds_valence )
+    else if (1 == a->charge && 2 == get_endpoint_valence( a->el_number ) &&
+         a->chem_bonds_valence + num_H == std_chem_bonds_valence)
     {
 
         int valence_to_metal = 0;
         /* int num_bonds_to_metal = 0;*/
 
-        for ( i = 0; i < a->valence; i ++ )
+        for (i = 0; i < a->valence; i++)
         {
-            if ( is_el_a_metal( at[(int)a->neighbor[i]].el_number ) )
+            if (is_el_a_metal( at[(int) a->neighbor[i]].el_number ))
             {
-                if ( (a->bond_type[i] & BOND_TYPE_MASK) >= BOND_TYPE_ALTERN )
+                if (( a->bond_type[i] & BOND_TYPE_MASK ) >= BOND_TYPE_ALTERN)
                 {
                     return a->valence; /* fall back */
                 }
                 /* num_bonds_to_metal ++;*/
-                valence_to_metal += (a->bond_type[i] & BOND_TYPE_MASK);
+                valence_to_metal += ( a->bond_type[i] & BOND_TYPE_MASK );
             }
         }
 
-        if ( 1 == valence_to_metal )
-            /* removing bonds to metal produces standard valence */
+        if (1 == valence_to_metal)
+        {/* removing bonds to metal produces standard valence */
             return a->chem_bonds_valence - valence_to_metal;
+        }
     }
 #endif
 
@@ -1178,55 +1301,64 @@ int i;
 }
 
 
+/****************************************************************************/
 int nNoMetalNeighIndex( inp_ATOM *at, int at_no )
 {
-int i;
+    int i;
 
     inp_ATOM *a = at + at_no;
 
-    for ( i = 0; i < a->valence; i ++ )
+    for (i = 0; i < a->valence; i++)
     {
-        if ( !is_el_a_metal( at[(int)a->neighbor[i]].el_number ) )
+        if (!is_el_a_metal( at[(int) a->neighbor[i]].el_number ))
+        {
             return i;
+        }
     }
 
     return -1;
 }
 
 
+/****************************************************************************/
 int nNoMetalOtherNeighIndex( inp_ATOM *at, int at_no, int cur_neigh )
 {
-int i, neigh;
+    int i, neigh;
 
     inp_ATOM *a = at + at_no;
 
-    for ( i = 0; i < a->valence; i ++ )
+    for (i = 0; i < a->valence; i++)
     {
-        neigh = (int)a->neighbor[i];
+        neigh = (int) a->neighbor[i];
 
-        if ( neigh != cur_neigh && !is_el_a_metal( at[neigh].el_number ) )
+        if (neigh != cur_neigh && !is_el_a_metal( at[neigh].el_number ))
+        {
             return i;
+        }
     }
 
     return -1;
 }
 
 
+/****************************************************************************/
 int nNoMetalOtherNeighIndex2( inp_ATOM *at,
                               int at_no,
                               int cur_neigh,
                               int cur_neigh2 )
 {
-int i, neigh;
+    int i, neigh;
 
     inp_ATOM *a = at + at_no;
 
-    for ( i = 0; i < a->valence; i ++ )
+    for (i = 0; i < a->valence; i++)
     {
-        neigh = (int)a->neighbor[i];
+        neigh = (int) a->neighbor[i];
 
-        if ( neigh != cur_neigh && neigh != cur_neigh2 && !is_el_a_metal( at[neigh].el_number ) )
+        if (neigh != cur_neigh && neigh != cur_neigh2 && !is_el_a_metal( at[neigh].el_number ))
+        {
             return i;
+        }
     }
 
     return -1;
@@ -1237,6 +1369,7 @@ int i, neigh;
 #ifndef COMPILE_ANSI_ONLY
 
 
+/****************************************************************************/
 int MakeRemovedProtonsString( int nNumRemovedProtons,
                               NUM_H *nNumExchgIsotopicH,
                               NUM_H *nNumRemovedProtonsIsotopic,
@@ -1244,49 +1377,54 @@ int MakeRemovedProtonsString( int nNumRemovedProtons,
                               char *szRemovedProtons,
                               int *num_removed_iso_H )
 {
-int i, j, len, num;
+    int i, j, len, num;
 
     len = 0;
 
-    if ( nNumRemovedProtons )
+    if (nNumRemovedProtons)
     {
-        len = sprintf ( szRemovedProtons, "Proton balance: %c %d H+",
-                        nNumRemovedProtons>=0? '+':'-', abs(nNumRemovedProtons) );
+        len = sprintf( szRemovedProtons, "Proton balance: %c %d H+",
+                        nNumRemovedProtons >= 0 ? '+' : '-', abs( nNumRemovedProtons ) );
     }
 
-    if ( bIsotopic && (nNumRemovedProtonsIsotopic || nNumExchgIsotopicH) )
+    if (bIsotopic && ( nNumRemovedProtonsIsotopic || nNumExchgIsotopicH ))
     {
 
-        for ( i = 0, j = 0; i < NUM_H_ISOTOPES; i ++ )
+        for (i = 0, j = 0; i < NUM_H_ISOTOPES; i++)
         {
 
-            num = (nNumExchgIsotopicH? nNumExchgIsotopicH[i]:0) +
-                  (nNumRemovedProtonsIsotopic? nNumRemovedProtonsIsotopic[i]:0);
+            num = ( nNumExchgIsotopicH ? nNumExchgIsotopicH[i] : 0 ) +
+                ( nNumRemovedProtonsIsotopic ? nNumRemovedProtonsIsotopic[i] : 0 );
 
-            if ( num )
+            if (num)
             {
-                len += sprintf( szRemovedProtons+len, "%s %d^%dH",
-                                j? ", ":"  [ removed ", num, i+1);
-                j ++;
+                len += sprintf( szRemovedProtons + len, "%s %d^%dH",
+                                j ? ", " : "  [ removed ", num, i + 1 );
+                j++;
             }
         }
 
-        if ( j )
+        if (j)
         {
-            len += sprintf( szRemovedProtons+len, " ]" );
-            if ( num_removed_iso_H )
+            len += sprintf( szRemovedProtons + len, " ]" );
+            if (num_removed_iso_H)
+            {
                 *num_removed_iso_H = j;
+            }
         }
     }
 
-    if ( !len ) {
+    if (!len)
+    {
         szRemovedProtons[0] = '\0';
     }
+
     return len;
 }
 #endif
 
 
+/****************************************************************************/
 int get_endpoint_valence( U_CHAR el_number )
 {
     static U_CHAR el_numb[6];
@@ -1295,114 +1433,133 @@ int get_endpoint_valence( U_CHAR el_number )
     int len3;
     if (!len)
     {
-        len3=0;
-        el_numb[len3++] = (U_CHAR)get_periodic_table_number( "O" );
-        el_numb[len3++] = (U_CHAR)get_periodic_table_number( "S" );
-        el_numb[len3++] = (U_CHAR)get_periodic_table_number( "Se" );
-        el_numb[len3++] = (U_CHAR)get_periodic_table_number( "Te" );
+        len3 = 0;
+        el_numb[len3++] = (U_CHAR) get_periodic_table_number( "O" );
+        el_numb[len3++] = (U_CHAR) get_periodic_table_number( "S" );
+        el_numb[len3++] = (U_CHAR) get_periodic_table_number( "Se" );
+        el_numb[len3++] = (U_CHAR) get_periodic_table_number( "Te" );
         len2 = len3;
-        el_numb[len3++] = (U_CHAR)get_periodic_table_number( "N" );
-        len=len3;
+        el_numb[len3++] = (U_CHAR) get_periodic_table_number( "N" );
+        len = len3;
     }
-    for ( i = 0; i < len; i ++ ) {
-        if ( el_numb[i] == el_number ) {
-            return i < len2? 2 : 3;
+    for (i = 0; i < len; i++)
+    {
+        if (el_numb[i] == el_number)
+        {
+            return i < len2 ? 2 : 3;
         }
     }
+
     return 0;
 }
 
 
 #if ( KETO_ENOL_TAUT == 1 )  /* post v.1 feature */
+
+
+/****************************************************************************/
 int get_endpoint_valence_KET( U_CHAR el_number )
 {
     static U_CHAR el_numb[2];
     static int len, len2;
     int len3;
     int i;
-    if (!len )
+
+    if (!len)
     {
-        len3=0;
-        el_numb[len3++] = (U_CHAR)get_periodic_table_number( "O" );
+        len3 = 0;
+        el_numb[len3++] = (U_CHAR) get_periodic_table_number( "O" );
         len2 = len3;
-        el_numb[len3++] = (U_CHAR)get_periodic_table_number( "C" );
-        len=len3;
+        el_numb[len3++] = (U_CHAR) get_periodic_table_number( "C" );
+        len = len3;
     }
-    for ( i = 0; i < len; i ++ ) {
-        if ( el_numb[i] == el_number ) {
-            return i < len2? 2 : 4;
+
+    for (i = 0; i < len; i++)
+    {
+        if (el_numb[i] == el_number)
+        {
+            return i < len2 ? 2 : 4;
         }
     }
+
     return 0;
 }
 #endif
 
 
 /*
-    MEMORY MANAGE
+    MEMORY MANAGEMENT
 */
 
 
 #ifndef inchi_malloc
-void *inchi_malloc(size_t c)
+/****************************************************************************/
+void *inchi_malloc( size_t c )
 {
-    return  malloc(c);
+    return  malloc( c );
 }
 #endif
 
 
 #ifndef inchi_calloc
-void *inchi_calloc(size_t c, size_t n)
+/****************************************************************************/
+void *inchi_calloc( size_t c, size_t n )
 {
-    return calloc(c,n);
+    return calloc( c, n );
 }
 #endif
 
 
 #ifndef inchi_free
-void inchi_free(void *p)
+/****************************************************************************/
+void inchi_free( void *p )
 {
-    if(p) {
-        free(p); /*added check if zero*/
+    if (p)
+    {
+        inchi_free( p ); /*added check if zero*/
     }
 }
 #endif
 
 
 /*
-    STRINGS/TEXT
+    STRINGS AND TEXT HANDLING
 */
 
 
-
-/* Remove leading & trailing spaces; replace consecutive spaces with a single space. */
+/****************************************************************************
+  Remove leading & trailing spaces, replace consecutive
+  spaces with a single space.
+****************************************************************************/
 int normalize_string( char* name )
 {
-int i, len, n;
+    int i, len, n;
 
-    len = (int)strlen(name);
+    len = (int) strlen( name );
 
-    for ( i = 0, n = 0; i < len; i++ )
+    for (i = 0, n = 0; i < len; i++)
     {
-        if ( isspace( UCINT name[i] ) /*|| !isprint( UCINT name[i] )*/ )
+        if (isspace( UCINT name[i] ) /*|| !isprint( UCINT name[i] )*/)
         {
             name[i] = ' '; /* exterminate tabs !!! */
             n++;
         }
         else
         {
-            if ( n > 0 )
+            if (n > 0)
             {
-                memmove( (void*) &name[i-n], (void*) &name[i], len-i+1 );
-                i   -= n;
+                memmove( (void*) &name[i - n], (void*) &name[i], len - i + 1 );
+                i -= n;
                 len -= n;
             }
             n = -1;
         }
     }
-    if ( n == len ) /* empty line */
-        name[len=0] = '\0';
-    else if ( ++n && n <= len )
+    if (n == len) /* empty line */
+    {
+        name[len = 0] = '\0';
+    }
+    else if (++n && n <= len)
     {
         len -= n;
         name[len] = '\0';
@@ -1412,19 +1569,19 @@ int i, len, n;
 }
 
 
-
-/*    Replace non-ASCII characters with '.'
-    and return number of replacements        */
+/****************************************************************************
+ Replace non-ASCII characters with '.', return number of replacements
+****************************************************************************/
 int dotify_non_printable_chars( char *line )
 {
-int i, c, num = 0;
+    int i, c, num = 0;
 
-    if ( line )
+    if (line)
     {
-        for ( i = 0; c = UCINT line[i]; i++ )
+        for (i = 0; c = UCINT line[i]; i++)
         {
             /* assuming ASCII charset */
-            if ( c < ' ' || c >= 0x7F )
+            if (c < ' ' || c >= 0x7F)
             {
                 line[i] = '.';
                 num++;
@@ -1436,148 +1593,178 @@ int i, c, num = 0;
 }
 
 
-/*
+/****************************************************************************
     Reads char sequence pointed to by *pstring ( char *p = *ppstring) for
     not more than maxlen bytes) to 'field' up to first occurrence of any of
     delimiters in 'delims' or end of line, whichever occurs first.
     Sets *pstring to point to character which matches delimiter.
     Returns number of bytes copied, -1 on error.
-*/
+****************************************************************************/
 int read_upto_delim( char **pstring, char *field, int maxlen, char* delims )
 {
     int i, n;
     char *p = *pstring;
 
-    if ( !p )
+    if (!p)
+    {
         return -1;
+    }
 
     /* skip leading spaces */
-    for ( i=0; p[i] && isspace(UCINT p[i] ); i++ )
+    for (i = 0; p[i] && isspace( UCINT p[i] ); i++)
+    {
         ;
-    p+= i;
+    }
+    p += i;
 
     /* read up to next delim or eol */
     n = 0;
-    while ( p[n] && !is_matching_any_delim( p[n], delims ) )
+    while (p[n] && !is_matching_any_delim( p[n], delims ))
     {
         n++;
     }
 
-    if ( n+1 > maxlen )
+    if (n + 1 > maxlen)
+    {
         return -1;
+    }
 
-    mystrncpy( field, p, n+1 );
-    field[n+1] = '\0';
+    mystrncpy( field, p, n + 1 );
+    field[n + 1] = '\0';
 
-    if ( !p[n] )
+    if (!p[n])
+    {
         /* reached EOL */
         *pstring = NULL;
+    }
     else
+    {
         /* advance reading pos */
         *pstring = *pstring + i + n;
+    }
 
     return n;
 }
 
 
-/*
+/****************************************************************************
     Check if a character is in the list of possible delimiters
     NB: same as isspace if delims is " \t\n\v\f\r"
     (0x20 and 0x09-0x0D)
-*/
+****************************************************************************/
 int is_matching_any_delim( char c, char* delims )
 {
     int ic = UCINT c;
-    while ( *delims )
+    while (*delims)
     {
-        if ( ic == *delims )
+        if (ic == *delims)
+        {
             return 1;
+        }
         delims++;
     }
     return 0;
 }
 
 
-/* Remove trailing spaces */
+/****************************************************************************
+  Remove trailing spaces
+****************************************************************************/
 void remove_trailing_spaces( char* p )
 {
     int   len;
-    for( len = (int)strlen( p ) - 1; len >= 0 && isspace( UCINT p[len] ); len-- )
+    for (len = (int) strlen( p ) - 1; len >= 0 && isspace( UCINT p[len] ); len--)
+    {
         ;
+    }
     p[++len] = '\0';
 }
 
 
-void remove_one_lf( char* p)
+/****************************************************************************/
+void remove_one_lf( char* p )
 {
     size_t len;
-    if ( p && 0 < (len = strlen(p)) && p[len-1] == '\n' )
+    if (p && 0 < ( len = strlen( p ) ) && p[len - 1] == '\n')
     {
-        p[len-1] = '\0';
-        if ( len >= 2 && p[len-2] == '\r' )
-            p[len-2] = '\0';
+        p[len - 1] = '\0';
+        if (len >= 2 && p[len - 2] == '\r')
+        {
+            p[len - 2] = '\0';
+        }
     }
 }
 
 
-/*
+/****************************************************************************
     Copies up to maxlen characters INCLUDING end null from source to target
     Fills out the rest of the target with null bytes
 
     protected from non-zero-terminated source and overlapped target/source.
-*/
-int mystrncpy(char *target,const char *source,unsigned maxlen)
+****************************************************************************/
+int mystrncpy( char *target, const char *source, unsigned maxlen )
 {
-const char *p;
-unsigned len;
+    const char *p;
+    unsigned len;
 
-    if (target==NULL || maxlen == 0 || source == NULL)
+    if (target == NULL || maxlen == 0 || source == NULL)
+    {
         return 0;
+    }
 
-    if ( p = (const char*)memchr(source, 0, maxlen) )
+    if (p = (const char*) memchr( source, 0, maxlen ))
     {    /* maxlen does not include the found zero termination */
-        len = (int) (p-source);
+        len = (int) ( p - source );
     }
     else
     {    /*  reduced length does not include one more byte for zero termination */
-        len = maxlen-1;
+        len = maxlen - 1;
     }
 
-    if ( len )
+    if (len)
+    {
         memmove( target, source, len );
+    }
 
-    memset( target+len, 0, maxlen-len); /*  zero termination */
+    memset( target + len, 0, maxlen - len ); /*  zero termination */
 
     return 1;
 }
 
 
-/* Remove leading and trailing white spaces */
+/****************************************************************************
+ Remove leading and trailing white spaces
+****************************************************************************/
 char* lrtrim( char *p, int* nLen )
 {
-int i, len=0;
+    int i, len = 0;
 
-    if ( p &&  (len = (int) strlen( p )) )
+    if (p && ( len = (int) strlen( p ) ))
     {
-        for ( i = 0; i < len && isascii( p[i] ) && isspace( p[i] ); i++ )
+        for (i = 0; i < len && isascii( p[i] ) && isspace( p[i] ); i++)
+        {
             ;
-        if ( i )
-            (memmove)( p, p+i, (len -= i)+1 );
-        for ( ; 0 < len && isascii( p[len-1] ) && isspace( p[len-1] ); len--)
+        }
+        if (i)
+            (memmove) ( p, p + i, ( len -= i ) + 1 );
+        for (; 0 < len && isascii( p[len - 1] ) && isspace( p[len - 1] ); len--)
+        {
             ;
+        }
         p[len] = '\0';
     }
 
-    if ( nLen )
+    if (nLen)
+    {
         *nLen = len;
+    }
 
     return p;
 }
 
-/*
-    extract_inchi_substring( ... )
 
-    Extract InChI substring embedded into a longer string.
+ /****************************************************************************
+   Extract InChI substring embedded into a longer string.
 
     InChI should start from "InChI=".
 
@@ -1599,33 +1786,37 @@ int i, len=0;
     all will be trimmed to
         "InChI=1/Ar"
 
-*/
-void extract_inchi_substring(char ** buf, const char *str, size_t slen)
+****************************************************************************/
+void extract_inchi_substring( char ** buf, const char *str, size_t slen )
 {
-size_t i;
-const char *p;
-char pp;
+    size_t i;
+    const char *p;
+    char pp;
 
 
     *buf = NULL;
 
-    if (str==NULL)
+    if (str == NULL)
+    {
         return;
-    if (strlen(str)<1)
+    }
+    if (strlen( str ) < 1)
+    {
+        return;
+    }
+
+    p = strstr( str, "InChI=" );
+    if (NULL == p)
         return;
 
-    p = strstr(str, "InChI=");
-    if (NULL==p)
-        return;
-
-    for (i=0; i<slen; i++)
+    for (i = 0; i < slen; i++)
     {
         pp = p[i];
 
-        if (pp >= 'A' && pp <='Z')   continue;
-        if (pp >= 'a' && pp <='z')   continue;
-        if (pp >= '0' && pp <='9')   continue;
-        switch ( pp )
+        if (pp >= 'A' && pp <= 'Z')   continue;
+        if (pp >= 'a' && pp <= 'z')   continue;
+        if (pp >= '0' && pp <= '9')   continue;
+        switch (pp)
         {
             case '(':
             case ')':
@@ -1646,38 +1837,79 @@ char pp;
         break;
     }
 
-    *buf = (char*) inchi_calloc(i+1, sizeof(char));
-    memcpy(*buf, p, i);
-    (*buf)[i] = '\0';
+    *buf = (char*) inchi_calloc( i + 1, sizeof( char ) );
+    memcpy( *buf, p, i );
+    ( *buf )[i] = '\0';
 
     return;
 }
 
 
-/*
-    For compatibility: local implementation of non-ANSI (MS-specific) functions, prefixed with "inchi_"
-*/
+/****************************************************************************/
+void extract_auxinfo_substring( char ** buf, const char *str, size_t slen )
+{
+    size_t i;
+    const char *p;
+    char pp;
+
+
+    *buf = NULL;
+
+    if (str == NULL)
+    {
+        return;
+    }
+    if (strlen( str ) < 1)
+    {
+        return;
+    }
+
+    p = strstr( str, "AuxInfo=" );
+    if (NULL == p)
+    {
+        return;
+    }
+
+    for (i = 0; i < slen; i++)
+    {
+        pp = p[i];
+        if (isspace( UCINT pp ))    break;
+    }
+
+    *buf = (char*) inchi_calloc( i + 1, sizeof( char ) );
+    memcpy( *buf, p, i );
+    ( *buf )[i] = '\0';
+
+    return;
+}
+
+
+/****************************************************************************
+    For compatibility: local implementation of non-ANSI
+    (MS-specific) functions, prefixed with "inchi_"
+****************************************************************************/
 
 
 #define __MYTOLOWER(c) ( ((c) >= 'A') && ((c) <= 'Z') ? ((c) - 'A' + 'a') : (c) )
 
 
+/****************************************************************************/
 int inchi_memicmp( const void * p1, const void * p2, size_t length )
 {
-    const U_CHAR *s1 = (const U_CHAR*)p1;
-    const U_CHAR *s2  = (const U_CHAR*)p2;
-    while ( length-- )
+    const U_CHAR *s1 = (const U_CHAR*) p1;
+    const U_CHAR *s2 = (const U_CHAR*) p2;
+    while (length--)
     {
-        if ( *s1 == *s2 ||
-              __MYTOLOWER( (int)*s1 ) == __MYTOLOWER( (int)*s2 ))
+        if (*s1 == *s2 ||
+              __MYTOLOWER( (int) *s1 ) == __MYTOLOWER( (int) *s2 ))
         {
-            s1 ++;
-            s2  ++;
+            s1++;
+            s2++;
         }
         else
         {
             return
-                __MYTOLOWER( (int)*s1 ) - __MYTOLOWER( (int)*s2 );
+                __MYTOLOWER( (int) *s1 ) - __MYTOLOWER( (int) *s2 );
         }
     }
 
@@ -1685,58 +1917,62 @@ int inchi_memicmp( const void * p1, const void * p2, size_t length )
 }
 
 
+/****************************************************************************/
 int inchi_stricmp( const char *s1, const char *s2 )
 {
-    while ( *s1 )
+    while (*s1)
     {
-        if ( *s1 == *s2 ||
-              __MYTOLOWER( (int)*s1 ) == __MYTOLOWER( (int)*s2 ))
+        if (*s1 == *s2 ||
+              __MYTOLOWER( (int) *s1 ) == __MYTOLOWER( (int) *s2 ))
         {
-            s1 ++;
-            s2  ++;
+            s1++;
+            s2++;
         }
         else
         {
             return
-                __MYTOLOWER( (int)*s1 ) - __MYTOLOWER( (int)*s2 );
+                __MYTOLOWER( (int) *s1 ) - __MYTOLOWER( (int) *s2 );
         }
     }
 
-    if ( *s2 )
+    if (*s2)
+    {
         return -1;
+    }
 
     return 0;
 }
 
 
+/****************************************************************************/
 char *inchi__strnset( char *s, int val, size_t length )
 {
     char *ps = s;
     while (length-- && *ps)
-        *ps++ = (char)val;
+    {
+        *ps++ = (char) val;
+    }
+
     return s;
 }
 
 
+/****************************************************************************/
 char *inchi__strdup( const char *string )
 {
     char *p = NULL;
-    if ( string )
+    if (string)
     {
         size_t length = strlen( string );
         p = (char *) inchi_malloc( length + 1 );
-        if ( p )
+        if (p)
         {
             strcpy( p, string );
         }
     }
+
     return p;
 }
 
 
 #undef __MYTOLOWER
-
-
-/*
-    End of local implementation of non-ANSI (MS-specific) functions
-*/

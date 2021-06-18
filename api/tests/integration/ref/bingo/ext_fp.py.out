@@ -1,0 +1,49 @@
+*** Add external fingerprints ****
+v0.72
+0000000000000000000000800000000020000000000000000000000000000000000000a004000000000000000000000000000000000000000000000000000040
+ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00ff00
+00000000000000000000048000004000000000000000000000000000000200000010402004000000000000080000040000000000002000002004000080000840
+** searchSimExt(C1CCCCC1) metric='tanimoto' **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+** searchSimExt(C1CCCCC1) metric='tversky' **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+** searchSimExt(C1CCCCC1) metric='tversky 0.1 0.9' **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+** searchSimExt(C1CCCCC1) metric='tversky 0.9 0.1' **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+** searchSimExt(C1CCCCC1) metric='euclid-sub' **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+** searchSimExt(C1CCNNC1) metric='tanimoto' **
+0 0 0.0
+2
+1.0
+C1CNNCC1
+** searchSimExt(C1CCNNC1) metric='tanimoto' **
+0 0 0.0
+3
+1.0
+C1CNNCC1
+*** Add external fingerprint with id ****
+** searchSimExt(C1CCNNC1) metric='tanimoto' **
+0 0 0.0
+2
+1.0
+C1CNNCC1
+100
+1.0
+C1CNNCC1

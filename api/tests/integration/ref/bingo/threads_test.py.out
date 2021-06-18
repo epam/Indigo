@@ -1,0 +1,152 @@
+
+2 BINGO WITH SAME INDIGO
+
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Database #1
+
+
+SimSearch with metric tanimoto
+PID 0) Total count 5
+
+
+
+
+SimSearch with metric tversky 0.5 0.5
+PID 0) Total count 73
+
+
+
+
+SimSearch with metric euclid-sub
+PID 0) Total count 531
+
+
+
+
+SubSearch:
+PID 0) Total count 2
+
+ExactSearch:
+PID 0) Total count 2
+
+Database #2
+
+
+SimSearch with metric tanimoto
+PID 0) Total count 4
+
+
+
+
+SimSearch with metric tversky 0.5 0.5
+PID 0) Total count 90
+
+
+
+
+SimSearch with metric euclid-sub
+PID 0) Total count 662
+
+
+
+
+SubSearch:
+PID 0) Total count 1
+
+ExactSearch:
+PID 0) Total count 1
+
+
+MULTYTHREADING TEST
+
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+Finished indexing 2000 structures. 0 wrong structures excluded
+
+
+
+
+
+
+
+
+
+
+check..
+Database #1
+Database #2
+
+
+
+SimSearch with metric tanimoto
+PID 0) Total count 5
+
+
+
+
+
+SimSearch with metric tversky 0.2 0.8
+PID 1) Total count 294
+
+
+
+
+
+SimSearch with metric euclid-sub
+PID 2) Total count 168
+
+
+
+
+
+SubSearch:
+PID 3) Total count 1
+
+
+ExactSearch:
+PID 4) Total count 1
+
+
+
+
+SimSearch with metric tanimoto
+PID 5) Total count 5
+
+
+
+
+
+SimSearch with metric tversky 0.2 0.8
+PID 6) Total count 294
+
+
+
+
+
+SimSearch with metric euclid-sub
+PID 7) Total count 168
+
+
+
+
+
+SubSearch:
+PID 8) Total count 1
+
+
+ExactSearch:
+PID 9) Total count 1
+

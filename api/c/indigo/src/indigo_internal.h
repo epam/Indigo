@@ -63,7 +63,7 @@ namespace indigo
 
     typedef ObjArray<PropertiesMap> MonomersProperties;
 } // namespace indigo
-extern DLLEXPORT IndigoOptionManager& indigoGetOptionManager();
+extern DLLEXPORT IndigoOptionManager& indigoGetOptionManager(const qword id = _SIDManager::getInst().getSessionId());
 
 class DLLEXPORT IndigoObject
 {
@@ -365,8 +365,6 @@ public:
 
 protected:
     virtual void init() = 0;
-
-private:
     int indigo_id;
 };
 
@@ -415,11 +413,10 @@ public:
     explicit IndigoError(const char* format, ...);
 };
 
-class _IndigoBasicOptionsHandlersSetter
+class IndigoOptionHandlerSetter
 {
 public:
-    _IndigoBasicOptionsHandlersSetter();
-    ~_IndigoBasicOptionsHandlersSetter();
+    static void setBasicOptionHandlers(const qword id);
 };
 
 #ifdef _WIN32

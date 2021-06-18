@@ -1,0 +1,235 @@
+****** Query reload ********
+
+  -INDIGO-01000000002D
+
+  4  3  0  0  0  0  0  0  0  0999 V2000
+   -2.1720    2.5114    0.0000 L   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.4575    2.9239    0.0000 L   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.7431    2.0400    0.0000 L   0  0  0  0  0  0  0  0  0  0  0  0
+    0.1482    2.9239    0.0000 L   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+M  ALS   1  8 T He  Li  F   Al  Mn  Zr  Pd  Ta  
+M  ALS   2  5 T B   C   N   O   F   
+M  ALS   3  5 F B   C   N   O   F   
+M  ALS   4  5 F Sc  V   Zr  La  Ta  
+M  END
+
+****** Remove constraints and reload ********
+C1:N:C2:C(:[N+](:C:N:C:2:[NH]:1)[O-])N
+False
+C1:N:C2:C(:[N+](:C:N:C:2:N:1)[O-])N
+True
+C1:N:C2:C(:[N+](:C:N:C:2:N:1)[O-])N
+True
+C1:[NH]:C2:C(:C(N):[N+]([O-]):C:N:2):N:1
+False
+****** Bad valence, smiles and unfold ********
+C/C=C(/N(=O)O)\N(=O)O
+CC=C(N(O)=O)N(O)=O
+element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+****** Serialize and atom changing ********
+CC[C@H](/C=C\C)N
+C/C=C\[C@H](N)CC
+***(*=**)* |$*;*;*;*;*;*;*$|
+***(*)*=** |$*;*;*;*;*;*;*$|
+***(*)*=** |$*;*;*;*;*;*;*$|
+***(*)*=** |$*;*;*;*;*;*;*$|
+****** Anormal properties ********
+0 8
+0 2
+0 2
+10 2
+0 2
+-10 1
+[WH7][W][W][W+10][W][W-10]
+[W-10][W][W+10][W][W][WH7]
+0 8
+0 2
+0 2
+10 2
+0 2
+-10 1
+****** Unmarked stereobonds ********
+C1C2CCC3CCC4C5CCCCC5CCC4[C@@]321 |&1:17,r|
+C1C2CCC3CCC4C5CCCCC5CCC4C321
+C1C2CCC3CCC4C5CCCCC5CCC4C321
+****** Chemical formula ********
+Br I
+Br H
+H2 O4 S
+C H3 I
+C2 H5 Br
+H2 O
+C6 H6
+C6 H5 He
+C6 H5 Br He
+****** Nei iterator ********
+v:0
+  neighbor atom 1 is connected by bond 0
+v:1
+  neighbor atom 0 is connected by bond 0
+  neighbor atom 2 is connected by bond 1
+v:2
+  neighbor atom 1 is connected by bond 1
+  neighbor atom 3 is connected by bond 2
+  neighbor atom 7 is connected by bond 7
+v:3
+  neighbor atom 2 is connected by bond 2
+  neighbor atom 4 is connected by bond 3
+v:4
+  neighbor atom 3 is connected by bond 3
+  neighbor atom 5 is connected by bond 4
+  neighbor atom 15 is connected by bond 16
+v:5
+  neighbor atom 4 is connected by bond 4
+  neighbor atom 6 is connected by bond 5
+  neighbor atom 8 is connected by bond 8
+v:6
+  neighbor atom 5 is connected by bond 5
+  neighbor atom 7 is connected by bond 6
+v:7
+  neighbor atom 6 is connected by bond 6
+  neighbor atom 2 is connected by bond 7
+v:8
+  neighbor atom 5 is connected by bond 8
+  neighbor atom 9 is connected by bond 9
+  neighbor atom 11 is connected by bond 11
+v:9
+  neighbor atom 8 is connected by bond 9
+  neighbor atom 10 is connected by bond 10
+v:10
+  neighbor atom 9 is connected by bond 10
+v:11
+  neighbor atom 8 is connected by bond 11
+  neighbor atom 12 is connected by bond 12
+v:12
+  neighbor atom 11 is connected by bond 12
+  neighbor atom 13 is connected by bond 13
+  neighbor atom 15 is connected by bond 15
+v:13
+  neighbor atom 12 is connected by bond 13
+  neighbor atom 14 is connected by bond 14
+v:14
+  neighbor atom 13 is connected by bond 14
+v:15
+  neighbor atom 12 is connected by bond 15
+  neighbor atom 4 is connected by bond 16
+****** Structure normalization ********
+[H]N(/C(=C(\N(=O)=O)/[NH2+][O-])/[H])C
+True
+N(/C=C(\N(=O)=O)/N=O)C
+False
+N(/C=C(\N(=O)=O)/N=O)C
+****** R-group big index ********
+molecules/r31.mol molecule:
+  CCCCC%91.[*:31]%91 |$;;;;;_R31$|
+molecules/r31.mol query:
+  CCCCC%91.[*:31]%91 |$;;;;;_R31$|
+molecules/r32.mol molecule:
+  CCCCC%91.[*:32]%91 |$;;;;;_R32$|
+molecules/r32.mol query:
+  CCCCC%91.[*:32]%91 |$;;;;;_R32$|
+molecules/r128.mol molecule:
+  Error: molecule: allowRGroupOnRSite(): rgroup number 128 is invalid
+molecules/r128.mol query:
+  Error: molecule: allowRGroupOnRSite(): rgroup number 128 is invalid
+****** Smiles with R-group ********
+Smiles: NC[*][*][*][*]
+  Smiles:      NC%91.[*]%92%91.[*]%91%92.[*]%92%91.[*]%92
+  Cano smiles: NC%91.[*]%92.[*]%93%92.[*]%92%91.[*]%92%93
+  0: N
+  1: C
+  2: R
+  3: R
+  4: R
+  5: R
+Smiles: [*][*]NC[*][*]
+  Smiles:      [*]%91.[*]%91NC%91.[*]%92%91.[*]%92
+  Cano smiles: [*]%91.[*]%92.C%93N%94.[*]%93%92.[*]%94%91
+  0: R
+  1: R
+  2: N
+  3: C
+  4: R
+  5: R
+Smiles: [*][*][*][*]NC
+  Smiles:      [*]%91.[*]%92%91.[*]%91%92.[*]%91NC
+  Cano smiles: CN%91.[*]%92.[*]%93%92.[*]%92%91.[*]%92%93
+  0: R
+  1: R
+  2: R
+  3: R
+  4: N
+  5: C
+****** Smiles <-> Molfile ********
+[CH6]
+ molfile-saving-mode: 2000
+[CH6]
+[CH6]
+ molfile-saving-mode: 3000
+[CH6]
+[CH6]
+ molfile-saving-mode: auto
+[CH6]
+[CH6]
+****** SMARTS and query SMILES ********
+O*C(F)(F)F
+O*C(F)(F)F
+******** |$;AH_p;Q_e;QH_p;M_p;MH_p;X_p;XH_p$|
+
+  -INDIGO-01000000002D
+
+  8  7  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 A   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 AH  0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 Q   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 QH  0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 M   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 MH  0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 X   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 XH  0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+  4  5  1  0  0  0  0
+  5  6  1  0  0  0  0
+  6  7  1  0  0  0  0
+  7  8  1  0  0  0  0
+M  END
+
+****** Large symmetric molecule ********
+c1(-c2ccccc2)cc(-c2ccccc2)cc(-c2ccccc2)c1.c12[C]3[C][C]4[C@]56[C]7[C@@]89[C]([C]58)[C]5[C]8[C][C]5[C][C@]5%10[C][C]%11[C]%12[C]%13[C][C@@]%14%15[C@]%16%13[C@@]%13%17[C@]([C]%13[C][C]5%11)([C]8)[C][C@@]5%17[C][C][C][C@@]8%11[C][C@@]([C]([C][C]5)[C]%16%14)([C]5[C][C]%15c%13c%12c(ccc%13[C]([C]5)[C@]5%12[C][C]([C][C@@]%13([C])[C]([C]8c(ccc1[C]=[C]4)c2[C][C]1[C@]2([C])[C@@]3([C]1)[C]2[C]6[C][C][C@]1([C][C]([C]1)[C]5)[C][C])[C][C]%13)[C]%12)[C]%10[C@@]97[C])[C]([C])[C]%11.[C]#[C].[C]#[C] |^1:25,27,29,31,32,33,34,36,40,41,42,48,50,60,63,64,66,73,77,81,82,87,88,91,96,97,102,110,113,116,117,118,119,^3:26,35,37,39,43,49,51,52,54,55,56,58,61,62,65,74,76,78,90,95,98,99,101,103,104,105,107,108,109,115|
+c1(-c2ccccc2)cc(-c2ccccc2)cc(-c2ccccc2)c1.c12[C]3[C][C]4[C@]56[C]7[C@@]89[C]([C]58)[C]5[C]8[C][C]5[C][C@]5%10[C][C]%11[C]%12[C]%13[C][C@@]%14%15[C@]%16%13[C@@]%13%17[C@]([C]%13[C][C]5%11)([C]8)[C][C@@]5%17[C][C][C][C@@]8%11[C][C@@]([C]([C][C]5)[C]%16%14)([C]5[C][C]%15c%13c%12c(ccc%13[C]([C]5)[C@]5%12[C][C]([C][C@@]%13([C])[C]([C]8c(ccc1[C]=[C]4)c2[C][C]1[C@]2([C])[C@@]3([C]1)[C]2[C]6[C][C][C@]1([C][C]([C]1)[C]5)[C][C])[C][C]%13)[C]%12)[C]%10[C@@]97[C])[C]([C])[C]%11.[C]#[C].[C]#[C] |^1:25,27,29,31,32,33,34,36,40,41,42,48,50,60,63,64,66,73,77,81,82,87,88,91,96,97,102,110,113,116,117,118,119,^3:26,35,37,39,43,49,51,52,54,55,56,58,61,62,65,74,76,78,90,95,98,99,101,103,104,105,107,108,109,115|
+****** Symmetric stereocenters and cis-trans bonds ********
+C[C@@H]1CCC(/C(=C(\C2CCCCC2)/C)/C2CC[C@@H](C)CC2)CC1
+C[C@@H]1CCC(C(=C(C2CCCCC2)C)C2CC[C@@H](C)CC2)CC1
+CC1CCC(/C(=C(\C2CCCCC2)/C)/C2CCC(C)CC2)CC1
+CC1CCC(C(=C(C2CCCCC2)C)C2CCC(C)CC2)CC1
+****** Remove bonds ********
+CNCNCNCN
+CN.CN.C.NCN
+****** Overlapping stereocenters due to hydrogens folding bug fix check *****
+CC(=O)[C@H]1C[C@H](O)[C@H]2[C@@H]3CCC4=CC(=O)CC[C@]4(C)[C@H]3C(=O)C[C@@]21C
+CC(=O)[C@H]1C[C@H](O)[C@H]2[C@@H]3CCC4=CC(=O)CC[C@]4(C)[C@H]3C(=O)C[C@@]21C
+CC(=O)[C@H]1C[C@H](O)[C@H]2[C@@H]3CCC4=CC(=O)CC[C@]4(C)[C@H]3C(=O)C[C@@]21C
+****** SMILES cis-trans check *****
+IC1=C(C([H])=C([H])C([H])=C([H])C([H])=C([H])C2C=CC=CC(/C(=N/[H])/N([H])[H])=C([H])C=21)[H] |c:16,18,29,t:1,4,8,12,26|
+[H]/N=C(\N)/C1=CC2C(I)=CC=CC=CC=CC=2C=CC=C1 |c:8,10,12,14,18,20,t:4,16|
+****** Empty SDF saver *****
+0
+0
+****** Normalize and serialize *****
+[O-]/[N+](=C\C1C=CC=CC=1)/C1C=CC=CC=1
+O=N(=CC1C=CC=CC=1)C1C=CC=CC=1
+CC=CC1C=CC=CC=1/[N+](/[O-])=C/C1=CC(/C=C/C)=CC=C1 |t:1|
+C/C=C/C1C=CC=CC=1N(=O)=CC1=CC(/C=C/C)=CC=C1
+***** Serialization of aromatic hydrogens *****
+***** Reset options check *****
+[H][C@@](O)(N)C Molecule 1
+C1C=CC=CC=1 Molecule 2
+
+[H][C@@](O)(N)C
+C1C=CC=CC=1
+

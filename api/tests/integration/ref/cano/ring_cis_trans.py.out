@@ -1,0 +1,21 @@
+Database: ../../../../../data/molecules/stereo/ring-cis-trans.sdf
+ct1 (#0)
+C1C=CCC=CC=CC=CC=C2CCCC=CC(CC=CC=CC=CCC2)=CN1 |c:1,6,10,23,27,t:4,8,15,19,21|
+ct2 (#1)
+C1=CC=CC=CC=CNC=CN1 |c:2,6,9,t:0,4|
+ct3 (#2)
+OC1=CC=CC=CC=CNC=CN1 |c:1,3,7,10,t:5|
+ct4a (#3)
+CN(C)/C=C1/N=C(c2cc(Cl)ccc2N(C)C/1=O)c1ccccc1
+ct4 (#4)
+CN(C)/C=C1/N=C(C2=CC(Cl)=CC=C2N(C)C/1=O)C1C=CC=CC=1
+ct5 (#5)
+C/C=C/N(C)/C=C/SC1C=CC=CC=1.OC1=CC=CC=CC=CNC=CN1 |c:15,17,21,24,t:19|
+ct6 (#6)
+CN1C2C=CC(=CC=2C(=NCC1=O)C1=CC=CC=C1F)/N=[N+](\[O-])/C1=CC2C(=NCC(=O)N(C)C=2C=C1)C1=CC=CC=C1F
+cd7 (#7)
+C1=CC=CC=CC=CNC=CC=CN1 |c:0,6,t:2,4,9,11|
+ct8 (#8)
+N#CC1=CC2CC=NC=2S1=CC1=CC=CN1
+ct8a (#9)
+N#Cc1cc2CC=Nc2[s]1=Cc1ccc[nH]1

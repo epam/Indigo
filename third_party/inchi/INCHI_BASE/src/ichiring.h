@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -67,10 +62,10 @@ extern "C" {
 #endif
 #endif
 
-QUEUE *QueueCreate( int nTotLength, int nSize );
-QUEUE *QueueDelete( QUEUE *q );
-int is_bond_in_Nmax_memb_ring( inp_ATOM* atom, int at_no, int neigh_ord, QUEUE *q, AT_RANK *nAtomLevel, S_CHAR *cSource, AT_RANK nMaxRingSize );
-int is_atom_in_3memb_ring( inp_ATOM* atom, int at_no );
+    QUEUE *QueueCreate( int nTotLength, int nSize );
+    QUEUE *QueueDelete( QUEUE *q );
+    int is_bond_in_Nmax_memb_ring( inp_ATOM* atom, int at_no, int neigh_ord, QUEUE *q, AT_RANK *nAtomLevel, S_CHAR *cSource, AT_RANK nMaxRingSize );
+    int is_atom_in_3memb_ring( inp_ATOM* atom, int at_no );
 
 #ifndef COMPILE_ALL_CPP
 #ifdef __cplusplus

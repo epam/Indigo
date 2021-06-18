@@ -1,0 +1,1371 @@
+molecule auto loader: SMILES loader: cycle 1: closing bond description = does not match pending bond description -
+molecule auto loader: SMILES loader: cycle 1: closing bond description - does not match pending bond description =
+molfile loader: atom lists are allowed only for queries
+
+*** Test 0 ***
+** Original
+Query: [#1] (SMARTS)
+Target: c
+  count = 4
+** Serialized
+Query: [#1] (SMARTS)
+Target: c serialized
+  count = 4
+** Aromatized
+Query: [#1] (SMARTS)
+Target: c aromatized
+  count = 4
+** Serialized, aromatized
+Query: [#1] (SMARTS)
+Target: c serialized aromatized
+  count = 4
+** Aromatized, serialized
+Query: [#1] (SMARTS)
+Target: c aromatized serialized
+  count = 4
+
+*** Test 1 ***
+** Original
+Query: [#1] (SMARTS)
+Target: C
+  count = 4
+** Serialized
+Query: [#1] (SMARTS)
+Target: C serialized
+  count = 4
+** Aromatized
+Query: [#1] (SMARTS)
+Target: C aromatized
+  count = 4
+** Serialized, aromatized
+Query: [#1] (SMARTS)
+Target: C serialized aromatized
+  count = 4
+** Aromatized, serialized
+Query: [#1] (SMARTS)
+Target: C aromatized serialized
+  count = 4
+
+*** Test 2 ***
+** Original
+Query: *~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101
+  count = 9298
+** Serialized
+Query: *~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 serialized
+  count = 9298
+** Aromatized
+Query: *~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 aromatized
+  count = 9298
+** Serialized, aromatized
+Query: *~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 serialized aromatized
+  count = 9298
+** Aromatized, serialized
+Query: *~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 aromatized serialized
+  count = 9298
+
+*** Test 3 ***
+** Original
+Query: *~*~*~*~*~*~*~*~*~*~*~*1~*~*~*C=C1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101
+  count = 2106
+** Serialized
+Query: *~*~*~*~*~*~*~*~*~*~*~*1~*~*~*C=C1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 serialized
+  count = 2106
+** Aromatized
+Query: *~*~*~*~*~*~*~*~*~*~*~*1~*~*~*C=C1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 aromatized
+  count = 2106
+** Serialized, aromatized
+Query: *~*~*~*~*~*~*~*~*~*~*~*1~*~*~*C=C1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 serialized aromatized
+  count = 2106
+** Aromatized, serialized
+Query: *~*~*~*~*~*~*~*~*~*~*~*1~*~*~*C=C1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 aromatized serialized
+  count = 2106
+
+*** Test 4 ***
+** Original
+Query: *~*~*~*~*~*~*~*~*~*~*~*~1~*~*~*~*~*~1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101
+  count = 2106
+** Serialized
+Query: *~*~*~*~*~*~*~*~*~*~*~*~1~*~*~*~*~*~1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 serialized
+  count = 2106
+** Aromatized
+Query: *~*~*~*~*~*~*~*~*~*~*~*~1~*~*~*~*~*~1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 aromatized
+  count = 2106
+** Serialized, aromatized
+Query: *~*~*~*~*~*~*~*~*~*~*~*~1~*~*~*~*~*~1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 serialized aromatized
+  count = 2106
+** Aromatized, serialized
+Query: *~*~*~*~*~*~*~*~*~*~*~*~1~*~*~*~*~*~1
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 aromatized serialized
+  count = 2106
+
+*** Test 5 ***
+** Original
+Query: *~*~*~*~*~*~*~*~*~*~*~[#1,#6] (SMARTS)
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101
+  count = 5920
+** Serialized
+Query: *~*~*~*~*~*~*~*~*~*~*~[#1,#6] (SMARTS)
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 serialized
+  count = 5920
+** Aromatized
+Query: *~*~*~*~*~*~*~*~*~*~*~[#1,#6] (SMARTS)
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 aromatized
+  count = 5920
+** Serialized, aromatized
+Query: *~*~*~*~*~*~*~*~*~*~*~[#1,#6] (SMARTS)
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 serialized aromatized
+  count = 5920
+** Aromatized, serialized
+Query: *~*~*~*~*~*~*~*~*~*~*~[#1,#6] (SMARTS)
+Target: c1cc2cc3ccc4cc5cc6cccc7cc8ccc9cc%10cc(c1)c2c1c3c4c2c5c(c67)c8c9c2c%101 aromatized serialized
+  count = 5920
+
+*** Test 6 ***
+** Original
+Query: molecules/r1_2ap.mol
+Target: c1cc2concc2cn1
+  count = 0
+** Serialized
+Query: molecules/r1_2ap.mol
+Target: c1cc2concc2cn1 serialized
+  count = 0
+** Aromatized
+Query: molecules/r1_2ap.mol
+Target: c1cc2concc2cn1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: molecules/r1_2ap.mol
+Target: c1cc2concc2cn1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: molecules/r1_2ap.mol
+Target: c1cc2concc2cn1 aromatized serialized
+  count = 0
+
+*** Test 7 ***
+** Original
+Query: molecules/r1_2ap_aal.mol
+Target: c1cc2cnocc2cn1
+  count = 0
+** Serialized
+Query: molecules/r1_2ap_aal.mol
+Target: c1cc2cnocc2cn1 serialized
+  count = 0
+** Aromatized
+Query: molecules/r1_2ap_aal.mol
+Target: c1cc2cnocc2cn1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: molecules/r1_2ap_aal.mol
+Target: c1cc2cnocc2cn1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: molecules/r1_2ap_aal.mol
+Target: c1cc2cnocc2cn1 aromatized serialized
+  count = 0
+
+*** Test 8 ***
+** Original
+Query: molecules/r2.mol
+Target: molecules/r2_target.mol
+  count = 7
+** Serialized
+Query: molecules/r2.mol
+Target: molecules/r2_target.mol serialized
+  count = 7
+** Aromatized
+Query: molecules/r2.mol
+Target: molecules/r2_target.mol aromatized
+  count = 7
+** Serialized, aromatized
+Query: molecules/r2.mol
+Target: molecules/r2_target.mol serialized aromatized
+  count = 7
+** Aromatized, serialized
+Query: molecules/r2.mol
+Target: molecules/r2_target.mol aromatized serialized
+  count = 7
+
+*** Test 9 ***
+** Original
+Query: [#6]cccc[#6,#7] (SMARTS)
+Target: c1ccccc1
+  count = 1
+** Serialized
+Query: [#6]cccc[#6,#7] (SMARTS)
+Target: c1ccccc1 serialized
+  count = 1
+** Aromatized
+Query: [#6]cccc[#6,#7] (SMARTS)
+Target: c1ccccc1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: [#6]cccc[#6,#7] (SMARTS)
+Target: c1ccccc1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: [#6]cccc[#6,#7] (SMARTS)
+Target: c1ccccc1 aromatized serialized
+  count = 1
+
+*** Test 10 ***
+** Original
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1
+  count = 0
+** Serialized
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1 serialized
+  count = 0
+** Aromatized
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1 aromatized serialized
+  count = 0
+
+*** Test 11 ***
+** Original
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1.c1ccccc1
+  count = 0
+** Serialized
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1.c1ccccc1 serialized
+  count = 0
+** Aromatized
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1.c1ccccc1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1.c1ccccc1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: molecules/q_rg_recurs.mol
+Target: c1ccccc1.c1ccccc1 aromatized serialized
+  count = 0
+
+*** Test 12 ***
+** Original
+Query: molecules/q_rg_recurs2.mol
+Target: c1ccccc1
+  count = 0
+** Serialized
+Query: molecules/q_rg_recurs2.mol
+Target: c1ccccc1 serialized
+  count = 0
+** Aromatized
+Query: molecules/q_rg_recurs2.mol
+Target: c1ccccc1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: molecules/q_rg_recurs2.mol
+Target: c1ccccc1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: molecules/q_rg_recurs2.mol
+Target: c1ccccc1 aromatized serialized
+  count = 0
+
+*** Test 13 ***
+** Original
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1
+  count = 1
+** Serialized
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1 serialized
+  count = 1
+** Aromatized
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1 aromatized serialized
+  count = 1
+
+*** Test 14 ***
+** Original
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1.C1CCCCCC1
+  count = 541
+** Serialized
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1.C1CCCCCC1 serialized
+  count = 541
+** Aromatized
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1.C1CCCCCC1 aromatized
+  count = 541
+** Serialized, aromatized
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1.C1CCCCCC1 serialized aromatized
+  count = 541
+** Aromatized, serialized
+Query: molecules/q_rg_recurs2.mol
+Target: C1CCCCCC1.C1CCCCCC1 aromatized serialized
+  count = 541
+
+*** Test 15 ***
+** Original
+Query: molecules/rgroups/c11100_3.mol
+Target: OC(=O)C1=CC=CC=C1
+  count = 1
+** Serialized
+Query: molecules/rgroups/c11100_3.mol
+Target: OC(=O)C1=CC=CC=C1 serialized
+  count = 1
+** Aromatized
+Query: molecules/rgroups/c11100_3.mol
+Target: OC(=O)C1=CC=CC=C1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: molecules/rgroups/c11100_3.mol
+Target: OC(=O)C1=CC=CC=C1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: molecules/rgroups/c11100_3.mol
+Target: OC(=O)C1=CC=CC=C1 aromatized serialized
+  count = 1
+
+*** Test 16 ***
+** Original
+Query: [N;!$(NC=O)] (SMARTS)
+Target: NC=O
+  count = 0
+** Serialized
+Query: [N;!$(NC=O)] (SMARTS)
+Target: NC=O serialized
+  count = 0
+** Aromatized
+Query: [N;!$(NC=O)] (SMARTS)
+Target: NC=O aromatized
+  count = 0
+** Serialized, aromatized
+Query: [N;!$(NC=O)] (SMARTS)
+Target: NC=O serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [N;!$(NC=O)] (SMARTS)
+Target: NC=O aromatized serialized
+  count = 0
+
+*** Test 17 ***
+** Original
+Query: [N;!$([*,H]C=O)] (SMARTS)
+Target: NC=O
+  count = 0
+** Serialized
+Query: [N;!$([*,H]C=O)] (SMARTS)
+Target: NC=O serialized
+  count = 0
+** Aromatized
+Query: [N;!$([*,H]C=O)] (SMARTS)
+Target: NC=O aromatized
+  count = 0
+** Serialized, aromatized
+Query: [N;!$([*,H]C=O)] (SMARTS)
+Target: NC=O serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [N;!$([*,H]C=O)] (SMARTS)
+Target: NC=O aromatized serialized
+  count = 0
+
+*** Test 18 ***
+** Original
+Query: [#1][N] (SMARTS)
+Target: N
+  count = 3
+** Serialized
+Query: [#1][N] (SMARTS)
+Target: N serialized
+  count = 3
+** Aromatized
+Query: [#1][N] (SMARTS)
+Target: N aromatized
+  count = 3
+** Serialized, aromatized
+Query: [#1][N] (SMARTS)
+Target: N serialized aromatized
+  count = 3
+** Aromatized, serialized
+Query: [#1][N] (SMARTS)
+Target: N aromatized serialized
+  count = 3
+
+*** Test 19 ***
+** Original
+Query: [$([#1][N])] (SMARTS)
+Target: N
+  count = 3
+** Serialized
+Query: [$([#1][N])] (SMARTS)
+Target: N serialized
+  count = 3
+** Aromatized
+Query: [$([#1][N])] (SMARTS)
+Target: N aromatized
+  count = 3
+** Serialized, aromatized
+Query: [$([#1][N])] (SMARTS)
+Target: N serialized aromatized
+  count = 3
+** Aromatized, serialized
+Query: [$([#1][N])] (SMARTS)
+Target: N aromatized serialized
+  count = 3
+
+*** Test 20 ***
+** Original
+Query: [$([#1][N])]C (SMARTS)
+Target: NC
+  count = 0
+** Serialized
+Query: [$([#1][N])]C (SMARTS)
+Target: NC serialized
+  count = 0
+** Aromatized
+Query: [$([#1][N])]C (SMARTS)
+Target: NC aromatized
+  count = 0
+** Serialized, aromatized
+Query: [$([#1][N])]C (SMARTS)
+Target: NC serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [$([#1][N])]C (SMARTS)
+Target: NC aromatized serialized
+  count = 0
+
+*** Test 21 ***
+** Original
+Query: [$([#1][N])]N (SMARTS)
+Target: NC
+  count = 2
+** Serialized
+Query: [$([#1][N])]N (SMARTS)
+Target: NC serialized
+  count = 2
+** Aromatized
+Query: [$([#1][N])]N (SMARTS)
+Target: NC aromatized
+  count = 2
+** Serialized, aromatized
+Query: [$([#1][N])]N (SMARTS)
+Target: NC serialized aromatized
+  count = 2
+** Aromatized, serialized
+Query: [$([#1][N])]N (SMARTS)
+Target: NC aromatized serialized
+  count = 2
+
+*** Test 22 ***
+** Original
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: O
+  count = 1
+** Serialized
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: O serialized
+  count = 1
+** Aromatized
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: O aromatized
+  count = 1
+** Serialized, aromatized
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: O serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: O aromatized serialized
+  count = 1
+
+*** Test 23 ***
+** Original
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: C* |$;Some value_p$|
+  count = 1
+** Serialized
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: C* |$;Some value_p$| serialized
+  count = 1
+** Aromatized
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: C* |$;Some value_p$| aromatized
+  count = 1
+** Serialized, aromatized
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: C* |$;Some value_p$| serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: [!#6;!#1;!H0] (SMARTS)
+Target: C* |$;Some value_p$| aromatized serialized
+  count = 1
+
+*** Test 24 ***
+** Original
+Query: [H]C(*)(*)C(*)(*)* (SMARTS)
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 0
+** Serialized
+Query: [H]C(*)(*)C(*)(*)* (SMARTS)
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized
+  count = 0
+** Aromatized
+Query: [H]C(*)(*)C(*)(*)* (SMARTS)
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized
+  count = 0
+** Serialized, aromatized
+Query: [H]C(*)(*)C(*)(*)* (SMARTS)
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [H]C(*)(*)C(*)(*)* (SMARTS)
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized serialized
+  count = 0
+
+*** Test 25 ***
+** Original
+Query: [H]C(*)(*)C(*)(*)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 0
+** Serialized
+Query: [H]C(*)(*)C(*)(*)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized
+  count = 0
+** Aromatized
+Query: [H]C(*)(*)C(*)(*)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized
+  count = 0
+** Serialized, aromatized
+Query: [H]C(*)(*)C(*)(*)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [H]C(*)(*)C(*)(*)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized serialized
+  count = 0
+
+*** Test 26 ***
+** Original
+Query: C(C)(Cl)C(C)(Cl)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 0
+** Serialized
+Query: C(C)(Cl)C(C)(Cl)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized
+  count = 0
+** Aromatized
+Query: C(C)(Cl)C(C)(Cl)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized
+  count = 0
+** Serialized, aromatized
+Query: C(C)(Cl)C(C)(Cl)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: C(C)(Cl)C(C)(Cl)*
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized serialized
+  count = 0
+
+*** Test 27 ***
+** Original
+Query: C(C)(Cl)C(C)(Cl)[H,*]
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 12
+** Serialized
+Query: C(C)(Cl)C(C)(Cl)[H,*]
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized
+  count = 12
+** Aromatized
+Query: C(C)(Cl)C(C)(Cl)[H,*]
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized
+  count = 12
+** Serialized, aromatized
+Query: C(C)(Cl)C(C)(Cl)[H,*]
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized aromatized
+  count = 12
+** Aromatized, serialized
+Query: C(C)(Cl)C(C)(Cl)[H,*]
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized serialized
+  count = 12
+
+*** Test 28 ***
+** Original
+Query: [H]C(C)(Cl)C([H])(C)Cl
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+  count = 6
+** Serialized
+Query: [H]C(C)(Cl)C([H])(C)Cl
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized
+  count = 6
+** Aromatized
+Query: [H]C(C)(Cl)C([H])(C)Cl
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized
+  count = 6
+** Serialized, aromatized
+Query: [H]C(C)(Cl)C([H])(C)Cl
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl serialized aromatized
+  count = 6
+** Aromatized, serialized
+Query: [H]C(C)(Cl)C([H])(C)Cl
+Target: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl aromatized serialized
+  count = 6
+
+*** Test 29 ***
+** Original
+Query: C[*,H]
+Target: C
+  count = 0
+** Serialized
+Query: C[*,H]
+Target: C serialized
+  count = 0
+** Aromatized
+Query: C[*,H]
+Target: C aromatized
+  count = 0
+** Serialized, aromatized
+Query: C[*,H]
+Target: C serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: C[*,H]
+Target: C aromatized serialized
+  count = 0
+
+*** Test 30 ***
+** Original
+Query: C[H,*]
+Target: C
+  count = 4
+** Serialized
+Query: C[H,*]
+Target: C serialized
+  count = 4
+** Aromatized
+Query: C[H,*]
+Target: C aromatized
+  count = 4
+** Serialized, aromatized
+Query: C[H,*]
+Target: C serialized aromatized
+  count = 4
+** Aromatized, serialized
+Query: C[H,*]
+Target: C aromatized serialized
+  count = 4
+
+*** Test 31 ***
+** Original
+Query: [*,H]
+Target: [H]
+  count = 0
+** Serialized
+Query: [*,H]
+Target: [H] serialized
+  count = 0
+** Aromatized
+Query: [*,H]
+Target: [H] aromatized
+  count = 0
+** Serialized, aromatized
+Query: [*,H]
+Target: [H] serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [*,H]
+Target: [H] aromatized serialized
+  count = 0
+
+*** Test 32 ***
+** Original
+Query: [H,*]
+Target: [H]
+  count = 1
+** Serialized
+Query: [H,*]
+Target: [H] serialized
+  count = 1
+** Aromatized
+Query: [H,*]
+Target: [H] aromatized
+  count = 1
+** Serialized, aromatized
+Query: [H,*]
+Target: [H] serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: [H,*]
+Target: [H] aromatized serialized
+  count = 1
+
+*** Test 33 ***
+** Original
+Query: N1OCCCC=1
+Target: N1OCCCC=1
+  count = 1
+** Serialized
+Query: N1OCCCC=1
+Target: N1OCCCC=1 serialized
+  count = 1
+** Aromatized
+Query: N1OCCCC=1
+Target: N1OCCCC=1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: N1OCCCC=1
+Target: N1OCCCC=1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: N1OCCCC=1
+Target: N1OCCCC=1 aromatized serialized
+  count = 1
+
+*** Test 34 ***
+** Original
+Query: N=1OCCCC1
+Target: N1OCCCC=1
+  count = 1
+** Serialized
+Query: N=1OCCCC1
+Target: N1OCCCC=1 serialized
+  count = 1
+** Aromatized
+Query: N=1OCCCC1
+Target: N1OCCCC=1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: N=1OCCCC1
+Target: N1OCCCC=1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: N=1OCCCC1
+Target: N1OCCCC=1 aromatized serialized
+  count = 1
+
+*** Test 35 ***
+
+*** Test 36 ***
+** Original
+Query: C~1~C~C~C~C~1
+Target: C=1=C=C=C=C=1
+  count = 1
+** Serialized
+Query: C~1~C~C~C~C~1
+Target: C=1=C=C=C=C=1 serialized
+  count = 1
+** Aromatized
+Query: C~1~C~C~C~C~1
+Target: C=1=C=C=C=C=1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: C~1~C~C~C~C~1
+Target: C=1=C=C=C=C=1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: C~1~C~C~C~C~1
+Target: C=1=C=C=C=C=1 aromatized serialized
+  count = 1
+
+*** Test 37 ***
+** Original
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C=1=C=C=C=C=1
+  count = 1
+** Serialized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C=1=C=C=C=C=1 serialized
+  count = 1
+** Aromatized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C=1=C=C=C=C=1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C=1=C=C=C=C=1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C=1=C=C=C=C=1 aromatized serialized
+  count = 1
+
+*** Test 38 ***
+** Original
+Query: C1CCCC1
+Target: C=1=C=C=C=C=1
+  count = 0
+** Serialized
+Query: C1CCCC1
+Target: C=1=C=C=C=C=1 serialized
+  count = 0
+** Aromatized
+Query: C1CCCC1
+Target: C=1=C=C=C=C=1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: C1CCCC1
+Target: C=1=C=C=C=C=1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: C1CCCC1
+Target: C=1=C=C=C=C=1 aromatized serialized
+  count = 0
+
+*** Test 39 ***
+** Original
+Query: C1CCCC1 (SMARTS)
+Target: C=1=C=C=C=C=1
+  count = 0
+** Serialized
+Query: C1CCCC1 (SMARTS)
+Target: C=1=C=C=C=C=1 serialized
+  count = 0
+** Aromatized
+Query: C1CCCC1 (SMARTS)
+Target: C=1=C=C=C=C=1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: C1CCCC1 (SMARTS)
+Target: C=1=C=C=C=C=1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: C1CCCC1 (SMARTS)
+Target: C=1=C=C=C=C=1 aromatized serialized
+  count = 0
+
+*** Test 40 ***
+** Original
+Query: C1CCCC1 (SMARTS)
+Target: C1C=CC=C1
+  count = 0
+** Serialized
+Query: C1CCCC1 (SMARTS)
+Target: C1C=CC=C1 serialized
+  count = 0
+** Aromatized
+Query: C1CCCC1 (SMARTS)
+Target: C1C=CC=C1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: C1CCCC1 (SMARTS)
+Target: C1C=CC=C1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: C1CCCC1 (SMARTS)
+Target: C1C=CC=C1 aromatized serialized
+  count = 0
+
+*** Test 41 ***
+** Original
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C1C=CC=C1
+  count = 1
+** Serialized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C1C=CC=C1 serialized
+  count = 1
+** Aromatized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C1C=CC=C1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C1C=CC=C1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: C1C=CC=C1 aromatized serialized
+  count = 1
+
+*** Test 42 ***
+** Original
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: c1cccc1
+  count = 0
+** Serialized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: c1cccc1 serialized
+  count = 0
+** Aromatized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: c1cccc1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: c1cccc1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: C~1~C~C~C~C~1 (SMARTS)
+Target: c1cccc1 aromatized serialized
+  count = 0
+
+*** Test 43 ***
+** Original
+Query: C~1~C~C~C~C~1
+Target: c1cccc1
+  count = 1
+** Serialized
+Query: C~1~C~C~C~C~1
+Target: c1cccc1 serialized
+  count = 1
+** Aromatized
+Query: C~1~C~C~C~C~1
+Target: c1cccc1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: C~1~C~C~C~C~1
+Target: c1cccc1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: C~1~C~C~C~C~1
+Target: c1cccc1 aromatized serialized
+  count = 1
+
+*** Test 44 ***
+** Original
+Query: C1CCCC1 (SMARTS)
+Target: c1cccc1
+  count = 0
+** Serialized
+Query: C1CCCC1 (SMARTS)
+Target: c1cccc1 serialized
+  count = 0
+** Aromatized
+Query: C1CCCC1 (SMARTS)
+Target: c1cccc1 aromatized
+  count = 0
+** Serialized, aromatized
+Query: C1CCCC1 (SMARTS)
+Target: c1cccc1 serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: C1CCCC1 (SMARTS)
+Target: c1cccc1 aromatized serialized
+  count = 0
+
+*** Test 45 ***
+** Original
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1
+  count = 1
+** Serialized
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1 serialized
+  count = 1
+** Aromatized
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1 aromatized serialized
+  count = 1
+
+*** Test 46 ***
+** Original
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1
+  count = 1
+** Serialized
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1 serialized
+  count = 1
+** Aromatized
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1 aromatized
+  count = 1
+** Serialized, aromatized
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1 serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: [#6]1[#6][#6][#6][#6]1 (SMARTS)
+Target: c1cccc1 aromatized serialized
+  count = 1
+
+*** Test 47 ***
+** Original
+Query: C\C=C/C
+Target: C\C=C\C
+  count = 0
+** Serialized
+Query: C\C=C/C
+Target: C\C=C\C serialized
+  count = 0
+** Aromatized
+Query: C\C=C/C
+Target: C\C=C\C aromatized
+  count = 0
+** Serialized, aromatized
+Query: C\C=C/C
+Target: C\C=C\C serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: C\C=C/C
+Target: C\C=C\C aromatized serialized
+  count = 0
+
+*** Test 48 ***
+** Original
+Query: [H]\C=C/C
+Target: C\C=C\C
+  count = 2
+** Serialized
+Query: [H]\C=C/C
+Target: C\C=C\C serialized
+  count = 2
+** Aromatized
+Query: [H]\C=C/C
+Target: C\C=C\C aromatized
+  count = 2
+** Serialized, aromatized
+Query: [H]\C=C/C
+Target: C\C=C\C serialized aromatized
+  count = 2
+** Aromatized, serialized
+Query: [H]\C=C/C
+Target: C\C=C\C aromatized serialized
+  count = 2
+
+*** Test 49 ***
+** Original
+Query: [H]/C=C/C
+Target: C\C=C\C
+  count = 0
+** Serialized
+Query: [H]/C=C/C
+Target: C\C=C\C serialized
+  count = 0
+** Aromatized
+Query: [H]/C=C/C
+Target: C\C=C\C aromatized
+  count = 0
+** Serialized, aromatized
+Query: [H]/C=C/C
+Target: C\C=C\C serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [H]/C=C/C
+Target: C\C=C\C aromatized serialized
+  count = 0
+
+*** Test 50 ***
+** Original
+Query: [H]\C=C/N
+Target: N\C=C\C
+  count = 1
+** Serialized
+Query: [H]\C=C/N
+Target: N\C=C\C serialized
+  count = 1
+** Aromatized
+Query: [H]\C=C/N
+Target: N\C=C\C aromatized
+  count = 1
+** Serialized, aromatized
+Query: [H]\C=C/N
+Target: N\C=C\C serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: [H]\C=C/N
+Target: N\C=C\C aromatized serialized
+  count = 1
+
+*** Test 51 ***
+** Original
+Query: *C=CN
+Target: N\C=C\C
+  count = 1
+** Serialized
+Query: *C=CN
+Target: N\C=C\C serialized
+  count = 1
+** Aromatized
+Query: *C=CN
+Target: N\C=C\C aromatized
+  count = 1
+** Serialized, aromatized
+Query: *C=CN
+Target: N\C=C\C serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: *C=CN
+Target: N\C=C\C aromatized serialized
+  count = 1
+
+*** Test 52 ***
+** Original
+Query: [H,*]\C=C\N
+Target: N\C=C\C
+  count = 1
+** Serialized
+Query: [H,*]\C=C\N
+Target: N\C=C\C serialized
+  count = 1
+** Aromatized
+Query: [H,*]\C=C\N
+Target: N\C=C\C aromatized
+  count = 1
+** Serialized, aromatized
+Query: [H,*]\C=C\N
+Target: N\C=C\C serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: [H,*]\C=C\N
+Target: N\C=C\C aromatized serialized
+  count = 1
+
+*** Test 53 ***
+** Original
+Query: [H,*]\C=C/N
+Target: N\C=C\C
+  count = 1
+** Serialized
+Query: [H,*]\C=C/N
+Target: N\C=C\C serialized
+  count = 1
+** Aromatized
+Query: [H,*]\C=C/N
+Target: N\C=C\C aromatized
+  count = 1
+** Serialized, aromatized
+Query: [H,*]\C=C/N
+Target: N\C=C\C serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: [H,*]\C=C/N
+Target: N\C=C\C aromatized serialized
+  count = 1
+
+*** Test 54 ***
+
+*** Test 55 ***
+** Original
+Query: molecules/pseudo_query.mol
+Target: molecules/pseudo_target2.mol
+  count = 1
+** Serialized
+Query: molecules/pseudo_query.mol
+Target: molecules/pseudo_target2.mol serialized
+  count = 1
+** Aromatized
+Query: molecules/pseudo_query.mol
+Target: molecules/pseudo_target2.mol aromatized
+  count = 1
+** Serialized, aromatized
+Query: molecules/pseudo_query.mol
+Target: molecules/pseudo_target2.mol serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: molecules/pseudo_query.mol
+Target: molecules/pseudo_target2.mol aromatized serialized
+  count = 1
+
+*** Test 56 ***
+** Original
+Query: [Fe]~N (SMARTS)
+Target: molecules/test_basic_smarts.mol
+  count = 0
+** Serialized
+Query: [Fe]~N (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized
+  count = 0
+** Aromatized
+Query: [Fe]~N (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized
+  count = 0
+** Serialized, aromatized
+Query: [Fe]~N (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [Fe]~N (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized serialized
+  count = 0
+
+*** Test 57 ***
+** Original
+Query: [Fe]~[N] (SMARTS)
+Target: molecules/test_basic_smarts.mol
+  count = 0
+** Serialized
+Query: [Fe]~[N] (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized
+  count = 0
+** Aromatized
+Query: [Fe]~[N] (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized
+  count = 0
+** Serialized, aromatized
+Query: [Fe]~[N] (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [Fe]~[N] (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized serialized
+  count = 0
+
+*** Test 58 ***
+** Original
+Query: [Fe]N (SMARTS)
+Target: molecules/test_basic_smarts.mol
+  count = 0
+** Serialized
+Query: [Fe]N (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized
+  count = 0
+** Aromatized
+Query: [Fe]N (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized
+  count = 0
+** Serialized, aromatized
+Query: [Fe]N (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [Fe]N (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized serialized
+  count = 0
+
+*** Test 59 ***
+** Original
+Query: [Fe]-N (SMARTS)
+Target: molecules/test_basic_smarts.mol
+  count = 0
+** Serialized
+Query: [Fe]-N (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized
+  count = 0
+** Aromatized
+Query: [Fe]-N (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized
+  count = 0
+** Serialized, aromatized
+Query: [Fe]-N (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: [Fe]-N (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized serialized
+  count = 0
+
+*** Test 60 ***
+** Original
+Query: [Fe]-[#7] (SMARTS)
+Target: molecules/test_basic_smarts.mol
+  count = 4
+** Serialized
+Query: [Fe]-[#7] (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized
+  count = 4
+** Aromatized
+Query: [Fe]-[#7] (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized
+  count = 4
+** Serialized, aromatized
+Query: [Fe]-[#7] (SMARTS)
+Target: molecules/test_basic_smarts.mol serialized aromatized
+  count = 4
+** Aromatized, serialized
+Query: [Fe]-[#7] (SMARTS)
+Target: molecules/test_basic_smarts.mol aromatized serialized
+  count = 4
+
+*** Test 61 ***
+** Original
+Query: [#7&v5]=O (SMARTS)
+Target: molecules/bad_valance.mol
+  count = 2
+** Serialized
+Query: [#7&v5]=O (SMARTS)
+Target: molecules/bad_valance.mol serialized
+  count = 2
+** Aromatized
+Query: [#7&v5]=O (SMARTS)
+Target: molecules/bad_valance.mol aromatized
+  count = 2
+** Serialized, aromatized
+Query: [#7&v5]=O (SMARTS)
+Target: molecules/bad_valance.mol serialized aromatized
+  count = 2
+** Aromatized, serialized
+Query: [#7&v5]=O (SMARTS)
+Target: molecules/bad_valance.mol aromatized serialized
+  count = 2
+
+*** Test 62 ***
+** Original
+Query: *1*******1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O
+  count = 0
+** Serialized
+Query: *1*******1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O serialized
+  count = 0
+** Aromatized
+Query: *1*******1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O aromatized
+  count = 0
+** Serialized, aromatized
+Query: *1*******1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O serialized aromatized
+  count = 0
+** Aromatized, serialized
+Query: *1*******1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O aromatized serialized
+  count = 0
+
+*** Test 63 ***
+** Original
+Query: N1C~CN=C1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O
+  count = 1
+** Serialized
+Query: N1C~CN=C1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O serialized
+  count = 1
+** Aromatized
+Query: N1C~CN=C1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O aromatized
+  count = 1
+** Serialized, aromatized
+Query: N1C~CN=C1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O serialized aromatized
+  count = 1
+** Aromatized, serialized
+Query: N1C~CN=C1
+Target: C12SC3N(C=CN=3)C=1C(C1=C(C=CC(O)=C1C2=O)Cl)=O aromatized serialized
+  count = 1

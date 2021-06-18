@@ -1,0 +1,12 @@
+molecules/li-h.mol
+[1H-].[Li+]
+[1H-].[Li+]
+
+molecules/pc-438107.mol
+[SiH-]12(C3=CC=CC=C3C(C(F)(F)F)(C(F)(F)F)O1)C1=CC=CC=C1C(C(F)(F)F)(C(F)(F)F)O2
+FC(F)(F)C1(O[SiH-]2(OC(c3ccccc23)(C(F)(F)F)C(F)(F)F)c2ccccc12)C(F)(F)F
+
+molecules/pc-20749491.mol
+[Cl-].[Cl-].[Cl-].C.[2H+]
+[2H+].C.[Cl-].[Cl-].[Cl-]
+

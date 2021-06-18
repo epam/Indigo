@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -141,32 +136,32 @@ extern "C" {
 
 /* allocator */
 #ifndef inchi_malloc
-void *inchi_malloc(size_t c);
+    void *inchi_malloc( size_t c );
 #endif
 #ifndef inchi_calloc
-void *inchi_calloc(size_t c, size_t n);
+    void *inchi_calloc( size_t c, size_t n );
 #endif
 #ifndef inchi_free
-void inchi_free(void *p);
+    void inchi_free( void *p );
 #endif
 
 
 
 /* sorting etc */
 
-void inchi_swap ( char *a, char *b, size_t width );
+    void inchi_swap( char *a, char *b, size_t width );
 
-int insertions_sort( void *pCG,
-                     void *base, size_t num, size_t width, int ( *compare )(const void *e1, const void *e2, void *) );
-int insertions_sort_AT_NUMBERS( void *pCG,
-                                AT_NUMB *base, int num, int ( *compare )(const void *e1, const void *e2, void *) );
-/*
-int insertions_sort( void *base, size_t num, size_t width, int ( *compare )(const void *e1, const void *e2 ) );
-int insertions_sort_AT_NUMBERS( AT_NUMB *base, int num, int ( *compare )(const void *e1, const void *e2 ) );
-*/
+    int insertions_sort( void *pCG,
+                         void *base, size_t num, size_t width, int( *compare )( const void *e1, const void *e2, void * ) );
+    int insertions_sort_AT_NUMBERS( void *pCG,
+                                    AT_NUMB *base, int num, int( *compare )( const void *e1, const void *e2, void * ) );
+    /*
+    int insertions_sort( void *base, size_t num, size_t width, int ( *compare )(const void *e1, const void *e2 ) );
+    int insertions_sort_AT_NUMBERS( AT_NUMB *base, int num, int ( *compare )(const void *e1, const void *e2 ) );
+    */
 
 
-/* min-max */
+    /* min-max */
 
 #define inchi_max(a,b)  (((a)>(b))?(a):(b))
 #define inchi_min(a,b)  (((a)<(b))?(a):(b))

@@ -42,8 +42,8 @@ CEXPORT const char* indigoVersion()
 
 void Indigo::init()
 {
-    error_handler = 0;
-    error_handler_context = 0;
+    error_handler = nullptr;
+    error_handler_context = nullptr;
 
     stereochemistry_options.reset();
     ignore_noncritical_query_features = false;
@@ -163,9 +163,11 @@ int Indigo::getId() const
 CEXPORT qword indigoAllocSessionId()
 {
     qword id = TL_ALLOC_SESSION_ID();
+    TL_SET_SESSION_ID(id);
     Indigo& indigo = indigo_self.getLocalCopy(id);
     indigo.init();
     setlocale(LC_NUMERIC, "C");
+    IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
     return id;
 }
 
@@ -178,6 +180,8 @@ CEXPORT void indigoReleaseSessionId(qword id)
 {
     TL_SET_SESSION_ID(id);
     indigoGetInstance().removeAllObjects();
+    IndigoOptionManager::getIndigoOptionManager().removeLocalCopy(id);
+    indigo_self.removeLocalCopy(id);
     TL_RELEASE_SESSION_ID(id);
 }
 
@@ -288,9 +292,8 @@ IndigoError::IndigoError(const char* format, ...) : Exception("core: ")
 //
 // IndigoPluginContext
 //
-IndigoPluginContext::IndigoPluginContext()
+IndigoPluginContext::IndigoPluginContext() : indigo_id(-1)
 {
-    indigo_id = -1;
 }
 
 void IndigoPluginContext::validate()
@@ -306,11 +309,6 @@ void IndigoPluginContext::validate()
 //
 // Options registrator
 //
-
-// Options registrator is placed in the main module to avoid being ignored by a
-// linker as an unused object
-// http://stackoverflow.com/questions/1229430/how-do-i-prevent-my-unused-global-variables-being-compiled-out
-static _IndigoBasicOptionsHandlersSetter _indigo_basic_options_handlers_setter;
 
 //
 // Debug methods

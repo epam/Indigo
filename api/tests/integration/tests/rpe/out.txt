@@ -1,0 +1,221 @@
+Testing reaction products enumberator with different options
+
+*** Test set ***
+('rpe-multistep-reactions', '0')
+('rpe-mode', 'grid')
+('rpe-self-reaction', '0')
+('rpe-max-depth', '1')
+('rpe-max-products-count', '4')
+Test 1
+  CC=CC(=O)NC1CCCC1
+  CC=CC(=O)NCC
+  CC=CC(=O)N[C@@H](C)CC
+  CCNC(=O)C=CC(O)=O
+Test 10
+  ClSBr
+Test 11
+  CC(=O)N[C@@H](CC1=CNC=N1)C(=O)N[C@H](CO)C(=O)N[C@@H](CCC(N)=O)C(=O)NCC(=O)N[C@@H]([C@@H](C)O)C(=O)N[C@@H](CC1C=CC=CC=1)C(=O)N[C@@H]([C@@H](C)O)C(=O)N[C@@H](CO)C(=O)N[C@@H](CC(O)=O)C(=O)*(**(N[C@@H](CC1C=CC(O)=CC=1)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC(O)=O)C(=O)N[C@@H](CCC(O)=O)C(=O)N[C@@H](CCCNC(N)=N)C(=O)N[C@@H](CCCNC(N)=N)C(=O)N[C@@H](C)C(=O)N[C@@H](CCC(N)=O)C(=O)N[C@@H](CC(O)=O)C(=O)N[C@@H](CC1C=CC=CC=1)C(=O)N[C@@H](C(C)C)C(=O)N[C@@H](CCC(N)=O)C(=O)N[C@@H](CC1=CNC2C=CC=CC1=2)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC(O)=O)C(=O)N[C@@H]([C@@H](C)O)C(N)=O)C(=O)CCCCN1C=C(CCC(=O)*(N[C@@H]([C@@H](C)O)C(O)=O)**********2************(SC[C@@H]3NC(=O)[C@H](CSSC[C@H](NC(=O)[C@@H](NC(=O)[C@H](CO)NC(=O)[C@@H](NC3=O)[C@@H](C)O)[C@@H](C)CC)C(=O)*********2N[C@@H](CC(N)=O)C(O)=O)N*****)******)N=N1)C(=O)CC[C@H](NC(=O)CC[C@H](NC(=O)CCCCCCCCCCCCCCC)C(O)=O)C(O)=O |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Kq;Sq;Kq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Kq;;;;;;;;;Pq;Tq;Yq;Fq;Fq;Gq;Rq;Eq;Gq;Cq;Vq;Lq;Yq;Lq;Aq;Eq;Vq;Lq;Hq;Sq;Gq;Cq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Sq;Lq;Yq;Qq;Lq;Eq;Nq;Yq;Cq;;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;Lq;Hq;Qq;Nq;Vq;Fq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********(N[C@@H]([C@@H](C)O)C(O)=O)C(=O)CCC3=CN(CCCCC(=O)*(NCC(=O)N[C@@H](CCCNC(N)=N)C(N)=O)***************************)N=N3)*(N[C@@H](CC(N)=O)C(O)=O)********C(=O)[C@H](CSSC[C@H](N*****)C(=O)N2)NC1=O)******)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;;;;;;;;;;;;;;;;;;;;;;Kq;;;;;;;;;;;;;;;;;Vq;Lq;Wq;Aq;Iq;Fq;Eq;Kq;Aq;Aq;Qq;Gq;Eq;Lq;Yq;Sq;Sq;Vq;Dq;Sq;Tq;Fq;Tq;Gq;Eq;Aq;Hq;;;Cq;;;;;;;;;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;Lq;Hq;Qq;Nq;Vq;Fq;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(NCC(=O)N[C@@H](CCC(O)=O)C(=O)N[C@@H](CCCNC(N)=N)C(=O)NCC(=O)N[C@@H](CC3=CC=CC=C3)C(=O)N[C@@H](CC3=CC=CC=C3)C(=O)N[C@@H](CC3=CC=C(O)C=C3)C(=O)N[C@@H]([C@@H](C)O)C(=O)N3CCC[C@H]3C(=O)N[C@@H](CCCCN)C(=O)N[C@@H]([C@@H](C)O)C(O)=O)*(N[C@@H](CC(N)=O)C(O)=O)********C(=O)[C@H](CSSC[C@H](N*****)C(=O)N2)NC1=O)C(=O)[C@H](CC(C)C)NC(=O)[C@H](CC1=CN=CN1)NC(=O)[C@H](CCC(N)=O)NC(=O)[C@H](CC(N)=O)NC(=O)[C@@H](NC(=O)[C@H](CC1=CC=CC=C1)NC(=O)CCC1=CN(CCCCC(=O)*(NCC(=O)N[C@@H](CCCNC(N)=N)C(N)=O)****************************)N=N1)C(C)C)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Cq;;;;;;;;;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Kq;;;;;;;;;;;;;;;;;Vq;Lq;Wq;Aq;Iq;Fq;Eq;Kq;Aq;Aq;Qq;Lq;Gq;Eq;Lq;Yq;Sq;Sq;Vq;Dq;Sq;Tq;Fq;Tq;Gq;Eq;Aq;Hq;;;;;;;;$|
+Test 12
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********(*O)C(=O)CCCCC(=O)NCCCC[C@@H](C(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)N(CC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)CC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)*(*O)********C(=O)[C@H](CSSC[C@H](N*****C(=O)CCOCC(COCCC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)(COCCC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)COCCC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)C(=O)N2)NC1=O)******C(=O)CCOCC(COCCC(=O)NCCO[C@H]1OC(CO)[C@@H](O)C(O)[C@H]1O)(COCCC(=O)NCCO[C@H]1OC(CO)[C@@H](O)C(O)[C@H]1O)COCCC(=O)NCCO[C@H]1OC(CO)[C@@H](O)C(O)[C@H]1O)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;Tq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Cq;Nq;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Lq;Hq;Qq;Nq;Vq;Fq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********(*O)C(=O)CCOCC(COCCC(=O)NCCO[C@@H]3O[C@@H](C)[C@@H](O)[C@@H](O)[C@@H]3O)(COCCC(=O)NCCOC3OC(C)C(O)C(O)C3O)COCCC(=O)NCCOC3OC(C)C(O)C(O)C3O)*(*O)********C(=O)[C@H](CSSC[C@H](N*****C(=O)CCCCC(=O)NCCOC3OC(COC4OC(CO)C(O)C(O)C4O)C(O)C(OC4OC(CO)C(O)C(O)C4O)C3O)C(=O)N2)NC1=O)******C(=O)CCCCC(=O)NCCOC1OC(COC2OC(CO)C(O)C(O)C2O)C(O)C(OC2OC(CO)C(O)C(O)C2O)C1O)[C@@H](C)O |a:2,4,8,14,18,126,131,240,&1:63,65,67,69,71,r,$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;Tq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Cq;Nq;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Lq;Hq;Qq;Nq;Vq;Fq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********O)*(********C(=O)[C@H](CSSC[C@H](N*****)C(=O)N2)NC1=O)*O)******)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;;Cq;Aq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;Nq;;Lq;Hq;Qq;Nq;Vq;Fq;;;$|
+Test 1_aam
+  C/C=C/C(=O)NC1CCCC1
+  C/C=C/C(=O)NCC
+  C/C=C/C(=O)N[C@@H](C)CC
+  CCNC(=O)/C=C\C(O)=O
+Test 2
+  O=C1C=CC(=O)[C@@H]2CC=CC[C@H]12 |&1:6,11,r|
+  O=C1CC[C@@H]2CC=CC[C@H]12 |&1:4,9,r|
+  O=C1OC(=O)[C@@H]2CC=CC[C@H]12 |&1:5,10,r|
+  O=C1[C@@H]2CC=CC[C@@H]2C(=O)C2C=CC=CC1=2 |&1:2,7,r|
+Test 3
+  CC(=O)O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O
+  O[C@H]1[C@H](O)[C@@H](O)[C@H](OC(=O)C2CCCCC2)[C@@H](O)[C@@H]1O
+Test 4
+  NCC1OC1C(=O)NCC1OC1C(O)=O
+Test 5
+  CC(=O)O[C@@H]1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O
+  CC(=O)O[C@@H]1[C@@H](CO)O[C@@H](O)[C@H](O)[C@H]1O
+  CC(=O)O[C@@H]1[C@@H](O)[C@H](O)O[C@H](CO)[C@H]1O
+  CC(=O)O[C@@H]1[C@@H](O)[C@H](O)[C@@H](CO)O[C@H]1O
+Test 6
+  C[C@@H](Cl)N(C)S
+  C[C@@H](Cl)[N@@](C)S |&1:1,&2:3,r|
+  C[C@@H](Cl)[N@@](C)S |&1:1,o1:3,r|
+  C[C@H](Cl)N(C)S
+Test 7
+  C[N@@](S)/C=C/[C@H](O)Cl
+  N/C=C/O
+  N/C=C\O
+Test 8
+  NCC(=O)NCCCC[C@@H](N)C(O)=O |&1:9,r|
+  NCCCC[C@@H](N)C(=O)NCC(O)=O |&1:5,r|
+  NCCCC[C@@H](NC(=O)CN)C(O)=O |&1:5,r|
+Test 9
+  N[C@H]1CCC[C@H]1C(=O)N(C(C1C=CC(=CC=1)[N+]([O-])=O)C(=O)NC1CCCCC1)[C@H]1CCC[C@H]1C(O)=O
+
+*** Test set ***
+('rpe-multistep-reactions', '0')
+('rpe-mode', 'grid')
+('rpe-self-reaction', '0')
+('rpe-max-depth', '1')
+('rpe-max-products-count', '10')
+Test 1
+  CC=CC(=O)NC1CCCC1
+  CC=CC(=O)NCC
+  CC=CC(=O)N[C@@H](C)CC
+  CCNC(=O)C=CC(O)=O
+  C[C@@H](C(=O)NCC)C1C=CC=CC=1 |&1:1,r|
+  C[C@@H](C(=O)N[C@@H](C)CC)C1C=CC=CC=1 |&1:1,a:5,r|
+  C[C@@H](C1=CC=CC=C1)C(=O)NC1CCCC1 |&1:1,r|
+  C[C@@H](CC)NC(=O)C=CC(O)=O
+  OC(=O)C=CC(=O)NC1CCCC1
+Test 10
+  ClSBr
+Test 11
+  CC(=O)N[C@@H](CC1=CNC=N1)C(=O)N[C@H](CO)C(=O)N[C@@H](CCC(N)=O)C(=O)NCC(=O)N[C@@H]([C@@H](C)O)C(=O)N[C@@H](CC1C=CC=CC=1)C(=O)N[C@@H]([C@@H](C)O)C(=O)N[C@@H](CO)C(=O)N[C@@H](CC(O)=O)C(=O)*(**(N[C@@H](CC1C=CC(O)=CC=1)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC(O)=O)C(=O)N[C@@H](CCC(O)=O)C(=O)N[C@@H](CCCNC(N)=N)C(=O)N[C@@H](CCCNC(N)=N)C(=O)N[C@@H](C)C(=O)N[C@@H](CCC(N)=O)C(=O)N[C@@H](CC(O)=O)C(=O)N[C@@H](CC1C=CC=CC=1)C(=O)N[C@@H](C(C)C)C(=O)N[C@@H](CCC(N)=O)C(=O)N[C@@H](CC1=CNC2C=CC=CC1=2)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC(O)=O)C(=O)N[C@@H]([C@@H](C)O)C(N)=O)C(=O)CCCCN1C=C(CCC(=O)*(N[C@@H]([C@@H](C)O)C(O)=O)**********2************(SC[C@@H]3NC(=O)[C@H](CSSC[C@H](NC(=O)[C@@H](NC(=O)[C@H](CO)NC(=O)[C@@H](NC3=O)[C@@H](C)O)[C@@H](C)CC)C(=O)*********2N[C@@H](CC(N)=O)C(O)=O)N*****)******)N=N1)C(=O)CC[C@H](NC(=O)CC[C@H](NC(=O)CCCCCCCCCCCCCCC)C(O)=O)C(O)=O |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Kq;Sq;Kq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Kq;;;;;;;;;Pq;Tq;Yq;Fq;Fq;Gq;Rq;Eq;Gq;Cq;Vq;Lq;Yq;Lq;Aq;Eq;Vq;Lq;Hq;Sq;Gq;Cq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Sq;Lq;Yq;Qq;Lq;Eq;Nq;Yq;Cq;;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;Lq;Hq;Qq;Nq;Vq;Fq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********(N[C@@H]([C@@H](C)O)C(O)=O)C(=O)CCC3=CN(CCCCC(=O)*(NCC(=O)N[C@@H](CCCNC(N)=N)C(N)=O)***************************)N=N3)*(N[C@@H](CC(N)=O)C(O)=O)********C(=O)[C@H](CSSC[C@H](N*****)C(=O)N2)NC1=O)******)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;;;;;;;;;;;;;;;;;;;;;;Kq;;;;;;;;;;;;;;;;;Vq;Lq;Wq;Aq;Iq;Fq;Eq;Kq;Aq;Aq;Qq;Gq;Eq;Lq;Yq;Sq;Sq;Vq;Dq;Sq;Tq;Fq;Tq;Gq;Eq;Aq;Hq;;;Cq;;;;;;;;;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;Lq;Hq;Qq;Nq;Vq;Fq;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(NCC(=O)N[C@@H](CCC(O)=O)C(=O)N[C@@H](CCCNC(N)=N)C(=O)NCC(=O)N[C@@H](CC3=CC=CC=C3)C(=O)N[C@@H](CC3=CC=CC=C3)C(=O)N[C@@H](CC3=CC=C(O)C=C3)C(=O)N[C@@H]([C@@H](C)O)C(=O)N3CCC[C@H]3C(=O)N[C@@H](CCCCN)C(=O)N[C@@H]([C@@H](C)O)C(O)=O)*(N[C@@H](CC(N)=O)C(O)=O)********C(=O)[C@H](CSSC[C@H](N*****)C(=O)N2)NC1=O)C(=O)[C@H](CC(C)C)NC(=O)[C@H](CC1=CN=CN1)NC(=O)[C@H](CCC(N)=O)NC(=O)[C@H](CC(N)=O)NC(=O)[C@@H](NC(=O)[C@H](CC1=CC=CC=C1)NC(=O)CCC1=CN(CCCCC(=O)*(NCC(=O)N[C@@H](CCCNC(N)=N)C(N)=O)****************************)N=N1)C(C)C)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Cq;;;;;;;;;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Kq;;;;;;;;;;;;;;;;;Vq;Lq;Wq;Aq;Iq;Fq;Eq;Kq;Aq;Aq;Qq;Lq;Gq;Eq;Lq;Yq;Sq;Sq;Vq;Dq;Sq;Tq;Fq;Tq;Gq;Eq;Aq;Hq;;;;;;;;$|
+Test 12
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********(*O)C(=O)CCCCC(=O)NCCCC[C@@H](C(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)N(CC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)CC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)*(*O)********C(=O)[C@H](CSSC[C@H](N*****C(=O)CCOCC(COCCC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)(COCCC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)COCCC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)C(=O)N2)NC1=O)******C(=O)CCOCC(COCCC(=O)NCCO[C@H]1OC(CO)[C@@H](O)C(O)[C@H]1O)(COCCC(=O)NCCO[C@H]1OC(CO)[C@@H](O)C(O)[C@H]1O)COCCC(=O)NCCO[C@H]1OC(CO)[C@@H](O)C(O)[C@H]1O)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;Tq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Cq;Nq;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Lq;Hq;Qq;Nq;Vq;Fq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********(*O)C(=O)CCOCC(COCCC(=O)NCCO[C@@H]3O[C@@H](C)[C@@H](O)[C@@H](O)[C@@H]3O)(COCCC(=O)NCCOC3OC(C)C(O)C(O)C3O)COCCC(=O)NCCOC3OC(C)C(O)C(O)C3O)*(*O)********C(=O)[C@H](CSSC[C@H](N*****C(=O)CCCCC(=O)NCCOC3OC(COC4OC(CO)C(O)C(O)C4O)C(O)C(OC4OC(CO)C(O)C(O)C4O)C3O)C(=O)N2)NC1=O)******C(=O)CCCCC(=O)NCCOC1OC(COC2OC(CO)C(O)C(O)C2O)C(O)C(OC2OC(CO)C(O)C(O)C2O)C1O)[C@@H](C)O |a:2,4,8,14,18,126,131,240,&1:63,65,67,69,71,r,$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;Tq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Cq;Nq;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Lq;Hq;Qq;Nq;Vq;Fq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********O)*(********C(=O)[C@H](CSSC[C@H](N*****)C(=O)N2)NC1=O)*O)******)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;;Cq;Aq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;Nq;;Lq;Hq;Qq;Nq;Vq;Fq;;;$|
+Test 1_aam
+  C/C=C/C(=O)NC1CCCC1
+  C/C=C/C(=O)NCC
+  C/C=C/C(=O)N[C@@H](C)CC
+  CCNC(=O)/C=C\C(O)=O
+  C[C@@H](C(=O)NCC)C1C=CC=CC=1 |&1:1,r|
+  C[C@@H](C(=O)N[C@@H](C)CC)C1C=CC=CC=1 |&1:1,a:5,r|
+  C[C@@H](C1=CC=CC=C1)C(=O)NC1CCCC1 |&1:1,r|
+  C[C@@H](CC)NC(=O)/C=C\C(O)=O
+  OC(=O)/C=C\C(=O)NC1CCCC1
+Test 2
+  CC1C=CC[C@@H]2[C@H]1C(=O)C1C=CC=CC=1C2=O |&1:5,6,r|
+  CC1C=CC[C@@H]2[C@H]1C(=O)C=CC2=O |&1:5,6,r|
+  CC1C=CC[C@@H]2[C@H]1C(=O)OC2=O |&1:5,6,r|
+  CC1C=CC[C@@H]2[C@H]1CCC2=O |&1:5,6,r|
+  C[C@@H]1CC=CC[C@]1(C)C=O |&1:1,6,r|
+  C[C@@]1(CC=CC[C@]1(C)F)C=O |&1:1,6,r|
+  O=C1C=CC(=O)[C@@H]2CC=CC[C@H]12 |&1:6,11,r|
+  O=C1CC[C@@H]2CC=CC[C@H]12 |&1:4,9,r|
+  O=C1OC(=O)[C@@H]2CC=CC[C@H]12 |&1:5,10,r|
+  O=C1[C@@H]2CC=CC[C@@H]2C(=O)C2C=CC=CC1=2 |&1:2,7,r|
+Test 3
+  CC(=O)O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O
+  O[C@H]1[C@H](O)[C@@H](O)[C@H](OC(=O)C2CCCCC2)[C@@H](O)[C@@H]1O
+Test 4
+  NCC1OC1C(=O)NCC1OC1C(O)=O
+Test 5
+  CC(=O)OC[C@H]1O[C@@H](O)[C@H](O)[C@@H](O)[C@@H]1O
+  CC(=O)O[C@@H]1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O
+  CC(=O)O[C@@H]1[C@@H](CO)O[C@@H](O)[C@H](O)[C@H]1O
+  CC(=O)O[C@@H]1[C@@H](O)[C@H](O)O[C@H](CO)[C@H]1O
+  CC(=O)O[C@@H]1[C@@H](O)[C@H](O)[C@@H](CO)O[C@H]1O
+Test 6
+  C[C@@H](Cl)N(C)S
+  C[C@@H](Cl)[N@@](C)S |&1:1,&2:3,r|
+  C[C@@H](Cl)[N@@](C)S |&1:1,o1:3,r|
+  C[C@H](Cl)N(C)S
+Test 7
+  C[N@@](S)/C=C/[C@H](O)Cl
+  N/C=C/O
+  N/C=C\O
+Test 8
+  NCC(=O)NCCCC[C@@H](N)C(O)=O |&1:9,r|
+  NCCCC[C@@H](N)C(=O)NCC(O)=O |&1:5,r|
+  NCCCC[C@@H](NC(=O)CN)C(O)=O |&1:5,r|
+Test 9
+  N[C@H]1CCC[C@H]1C(=O)N(C(C1C=CC(=CC=1)[N+]([O-])=O)C(=O)NC1CCCCC1)[C@H]1CCC[C@H]1C(O)=O
+
+*** Test set ***
+('rpe-multistep-reactions', '0')
+('rpe-mode', 'grid')
+('rpe-self-reaction', '0')
+('rpe-max-depth', '3')
+('rpe-max-products-count', '4')
+Test 1
+  CC=CC(=O)NC1CCCC1
+  CC=CC(=O)NCC
+  CC=CC(=O)N[C@@H](C)CC
+  CCNC(=O)C=CC(O)=O
+Test 10
+  ClSBr
+Test 11
+  CC(=O)N[C@@H](CC1=CNC=N1)C(=O)N[C@H](CO)C(=O)N[C@@H](CCC(N)=O)C(=O)NCC(=O)N[C@@H]([C@@H](C)O)C(=O)N[C@@H](CC1C=CC=CC=1)C(=O)N[C@@H]([C@@H](C)O)C(=O)N[C@@H](CO)C(=O)N[C@@H](CC(O)=O)C(=O)*(**(N[C@@H](CC1C=CC(O)=CC=1)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC(O)=O)C(=O)N[C@@H](CCC(O)=O)C(=O)N[C@@H](CCCNC(N)=N)C(=O)N[C@@H](CCCNC(N)=N)C(=O)N[C@@H](C)C(=O)N[C@@H](CCC(N)=O)C(=O)N[C@@H](CC(O)=O)C(=O)N[C@@H](CC1C=CC=CC=1)C(=O)N[C@@H](C(C)C)C(=O)N[C@@H](CCC(N)=O)C(=O)N[C@@H](CC1=CNC2C=CC=CC1=2)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC(C)C)C(=O)N[C@@H](CC(O)=O)C(=O)N[C@@H]([C@@H](C)O)C(N)=O)C(=O)CCCCN1C=C(CCC(=O)*(N[C@@H]([C@@H](C)O)C(O)=O)**********2************(SC[C@@H]3NC(=O)[C@H](CSSC[C@H](NC(=O)[C@@H](NC(=O)[C@H](CO)NC(=O)[C@@H](NC3=O)[C@@H](C)O)[C@@H](C)CC)C(=O)*********2N[C@@H](CC(N)=O)C(O)=O)N*****)******)N=N1)C(=O)CC[C@H](NC(=O)CC[C@H](NC(=O)CCCCCCCCCCCCCCC)C(O)=O)C(O)=O |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Kq;Sq;Kq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Kq;;;;;;;;;Pq;Tq;Yq;Fq;Fq;Gq;Rq;Eq;Gq;Cq;Vq;Lq;Yq;Lq;Aq;Eq;Vq;Lq;Hq;Sq;Gq;Cq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Sq;Lq;Yq;Qq;Lq;Eq;Nq;Yq;Cq;;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;Lq;Hq;Qq;Nq;Vq;Fq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********(N[C@@H]([C@@H](C)O)C(O)=O)C(=O)CCC3=CN(CCCCC(=O)*(NCC(=O)N[C@@H](CCCNC(N)=N)C(N)=O)***************************)N=N3)*(N[C@@H](CC(N)=O)C(O)=O)********C(=O)[C@H](CSSC[C@H](N*****)C(=O)N2)NC1=O)******)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;;;;;;;;;;;;;;;;;;;;;;Kq;;;;;;;;;;;;;;;;;Vq;Lq;Wq;Aq;Iq;Fq;Eq;Kq;Aq;Aq;Qq;Gq;Eq;Lq;Yq;Sq;Sq;Vq;Dq;Sq;Tq;Fq;Tq;Gq;Eq;Aq;Hq;;;Cq;;;;;;;;;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;Lq;Hq;Qq;Nq;Vq;Fq;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(NCC(=O)N[C@@H](CCC(O)=O)C(=O)N[C@@H](CCCNC(N)=N)C(=O)NCC(=O)N[C@@H](CC3=CC=CC=C3)C(=O)N[C@@H](CC3=CC=CC=C3)C(=O)N[C@@H](CC3=CC=C(O)C=C3)C(=O)N[C@@H]([C@@H](C)O)C(=O)N3CCC[C@H]3C(=O)N[C@@H](CCCCN)C(=O)N[C@@H]([C@@H](C)O)C(O)=O)*(N[C@@H](CC(N)=O)C(O)=O)********C(=O)[C@H](CSSC[C@H](N*****)C(=O)N2)NC1=O)C(=O)[C@H](CC(C)C)NC(=O)[C@H](CC1=CN=CN1)NC(=O)[C@H](CCC(N)=O)NC(=O)[C@H](CC(N)=O)NC(=O)[C@@H](NC(=O)[C@H](CC1=CC=CC=C1)NC(=O)CCC1=CN(CCCCC(=O)*(NCC(=O)N[C@@H](CCCNC(N)=N)C(N)=O)****************************)N=N1)C(C)C)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Cq;;;;;;;;;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Kq;;;;;;;;;;;;;;;;;Vq;Lq;Wq;Aq;Iq;Fq;Eq;Kq;Aq;Aq;Qq;Lq;Gq;Eq;Lq;Yq;Sq;Sq;Vq;Dq;Sq;Tq;Fq;Tq;Gq;Eq;Aq;Hq;;;;;;;;$|
+Test 12
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********(*O)C(=O)CCCCC(=O)NCCCC[C@@H](C(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)N(CC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)CC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)*(*O)********C(=O)[C@H](CSSC[C@H](N*****C(=O)CCOCC(COCCC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)(COCCC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)COCCC(=O)NCCO[C@H]3OC(CO)[C@@H](O)C(O)[C@H]3O)C(=O)N2)NC1=O)******C(=O)CCOCC(COCCC(=O)NCCO[C@H]1OC(CO)[C@@H](O)C(O)[C@H]1O)(COCCC(=O)NCCO[C@H]1OC(CO)[C@@H](O)C(O)[C@H]1O)COCCC(=O)NCCO[C@H]1OC(CO)[C@@H](O)C(O)[C@H]1O)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;Tq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Cq;Nq;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Lq;Hq;Qq;Nq;Vq;Fq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********(*O)C(=O)CCOCC(COCCC(=O)NCCO[C@@H]3O[C@@H](C)[C@@H](O)[C@@H](O)[C@@H]3O)(COCCC(=O)NCCOC3OC(C)C(O)C(O)C3O)COCCC(=O)NCCOC3OC(C)C(O)C(O)C3O)*(*O)********C(=O)[C@H](CSSC[C@H](N*****C(=O)CCCCC(=O)NCCOC3OC(COC4OC(CO)C(O)C(O)C4O)C(O)C(OC4OC(CO)C(O)C(O)C4O)C3O)C(=O)N2)NC1=O)******C(=O)CCCCC(=O)NCCOC1OC(COC2OC(CO)C(O)C(O)C2O)C(O)C(OC2OC(CO)C(O)C(O)C2O)C1O)[C@@H](C)O |a:2,4,8,14,18,126,131,240,&1:63,65,67,69,71,r,$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;Tq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Cq;Nq;;Yq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Lq;Hq;Qq;Nq;Vq;Fq;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+  CC[C@H](C)[C@@H]1NC(=O)[C@H](CO)NC(=O)[C@@H](NC(=O)[C@@H]2CS*(************(**********O)*(********C(=O)[C@H](CSSC[C@H](N*****)C(=O)N2)NC1=O)*O)******)[C@@H](C)O |$;;;;;;;;;;;;;;;;;;;;;Cq;Gq;Sq;Hq;Lq;Vq;Eq;Aq;Lq;Yq;Lq;Vq;Cq;Gq;Eq;Rq;Gq;Fq;Fq;Yq;Tq;Pq;Kq;;Cq;Aq;Nq;Eq;Lq;Qq;Yq;Lq;Sq;;;;;;;;;;Qq;Eq;Vq;Iq;Gq;;;;;;;Nq;;Lq;Hq;Qq;Nq;Vq;Fq;;;$|
+Test 1_aam
+  C/C=C/C(=O)NC1CCCC1
+  C/C=C/C(=O)NCC
+  C/C=C/C(=O)N[C@@H](C)CC
+  CCNC(=O)/C=C\C(O)=O
+Test 2
+  O=C1C=CC(=O)[C@@H]2CC=CC[C@H]12 |&1:6,11,r|
+  O=C1CC[C@@H]2CC=CC[C@H]12 |&1:4,9,r|
+  O=C1OC(=O)[C@@H]2CC=CC[C@H]12 |&1:5,10,r|
+  O=C1[C@@H]2CC=CC[C@@H]2C(=O)C2C=CC=CC1=2 |&1:2,7,r|
+Test 3
+  CC(=O)O[C@@H]1[C@@H](O)[C@H](O)[C@@H](O)[C@H](O)[C@H]1O
+  O[C@H]1[C@H](O)[C@@H](O)[C@H](OC(=O)C2CCCCC2)[C@@H](O)[C@@H]1O
+Test 4
+  NCC1OC1C(=O)NCC1OC1C(O)=O
+Test 5
+  CC(=O)O[C@@H]1O[C@H](CO)[C@@H](O)[C@H](O)[C@H]1O
+  CC(=O)O[C@@H]1[C@@H](CO)O[C@@H](O)[C@H](O)[C@H]1O
+  CC(=O)O[C@@H]1[C@@H](O)[C@H](O)O[C@H](CO)[C@H]1O
+  CC(=O)O[C@@H]1[C@@H](O)[C@H](O)[C@@H](CO)O[C@H]1O
+Test 6
+  C[C@@H](Cl)N(C)S
+  C[C@@H](Cl)[N@@](C)S |&1:1,&2:3,r|
+  C[C@@H](Cl)[N@@](C)S |&1:1,o1:3,r|
+  C[C@H](Cl)N(C)S
+Test 7
+  C[N@@](S)/C=C/[C@H](O)Cl
+  N/C=C/O
+  N/C=C\O
+Test 8
+  NCC(=O)NCCCC[C@@H](N)C(O)=O |&1:9,r|
+  NCCCC[C@@H](N)C(=O)NCC(O)=O |&1:5,r|
+  NCCCC[C@@H](NC(=O)CN)C(O)=O |&1:5,r|
+Test 9
+  N[C@H]1CCC[C@H]1C(=O)N(C(C1C=CC(=CC=1)[N+]([O-])=O)C(=O)NC1CCCCC1)[C@H]1CCC[C@H]1C(O)=O
+
+*** Test set ***
+('rpe-multistep-reactions', '0')
+('rpe-mode', 'grid')
+('rpe-self-reaction', '0')
+('rpe-max-depth', '3')
+('rpe-max-products-count', '10')
+Test 1
+  CC=CC(=O)NC1CCCC1
+  CC=CC(=O)NCC
+  CC=CC(=O)N[C@@H](C)CC
+  CCNC(=O)C=CC(O)=O
+  C[C@@H](C(=O)NCC)C1C=CC=CC=1 |&1:1,r|
+  C[C@@H](C(=O)N[C@@H](C)CC)C1C=CC=CC=1 |&1:1,a:5,r|
+  C[C@@H](C1=CC=CC=C1)C(=O)NC1CCCC1 |&1:1,r|
+  C[C@@H](CC)NC(=O)C=CC(O)=O
+  OC(=O)C=CC(=O)NC1CCCC1
+Test 10
+  ClSBr
+Test 11
+Traceback (most recent call last):
+  File "rpe.py", line 66, in <module>
+    testRpe()
+  File "rpe.py", line 37, in testRpe
+    rpe_reactions = buildRpeReactions(test_dir)
+  File "rpe.py", line 31, in buildRpeReactions
+    return indigo.reactionProductEnumerate(reaction, mons)
+  File "/Users/kviatmi1/Documents/indigo/api/python/indigo/__init__.py", line 3978, in reactionProductEnumerate
+    replacedaction.id, monomers.id
+  File "/Users/kviatmi1/Documents/indigo/api/python/indigo/__init__.py", line 3416, in _checkResult
+    raise IndigoException(Indigo._lib.indigoGetLastError())
+indigo.IndigoException: stereocenters: zero bond length

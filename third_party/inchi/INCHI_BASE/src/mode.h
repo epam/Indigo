@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -42,6 +37,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 
 /*******************/
 /*                 */
@@ -54,27 +50,41 @@
     indicated to compiler (makefile/directive):
 
         TARGET_EXE_STANDALONE    Stand-alone executable inchi-1[.exe]
-        TARGET_API_LIB            Library (libinchi) for using InChI API
-                                described in inchi_api.h
-        TARGET_EXE_USING_API    Executable (INCHI_MAIN) which uses
-                                API library (e.g., libinchi.dll)
+        TARGET_API_LIB           Library (libinchi) for using InChI API
+                                 described in inchi_api.h
+        TARGET_EXE_USING_API     Executable (INCHI_MAIN) which uses
+                                 API library (e.g., libinchi.dll)
         TARGET_LIB_FOR_WINCHI    library for wInChI
 */
 
+
 #if defined(TARGET_EXE_STANDALONE)
-#define APP_DESCRIPTION "InChI version 1, Software v. 1.05 (inchi-1 executable)"
+/* Uncomment the next line to perform atom ordering/renumbering tests (internal only) */
+/*#define RENUMBER_ATOMS_AND_RECALC_V106 1*/
+#ifdef      RENUMBER_ATOMS_AND_RECALC_V106
+/* Comment the next line to print all renumbering changing the initial InChIKey */
+#define STOP_AFTER_FIRST_CHANGE_ON_RENUMBERING 1
+#define APP_DESCRIPTION "InChI version 1, Software v. 1.06 (inchi-1 executable) \n*** INTERNAL TEST MODE: ATOM RENUMBERING TEST IS ACTIVE ***"
+#else
+#define APP_DESCRIPTION "InChI version 1, Software v. 1.06 (inchi-1 executable)"
+#endif
+
 #elif defined(TARGET_API_LIB)
-#define APP_DESCRIPTION "InChI version 1, Software v. 1.05 (API Library)"
+#define APP_DESCRIPTION "InChI version 1, Software v. 1.06 (API Library)"
+
 #elif defined(TARGET_EXE_USING_API)
 #ifndef APP_DESCRIPTION
-#define APP_DESCRIPTION "InChI version 1, Software v. 1.05 (executable calling API Library)"
+#define APP_DESCRIPTION "InChI version 1, Software v. 1.06 (executable calling API Library)"
 #endif
+
 #elif defined(TARGET_LIB_FOR_WINCHI)
-#define APP_DESCRIPTION "InChI version 1, Software v. 1.05 (Library for wInChI GUI executable)"
+#define APP_DESCRIPTION "InChI version 1, Software v. 1.06 (Library for wInChI GUI executable)"
+
 #elif defined(TARGET_WINCHI)
-#define APP_DESCRIPTION "InChI version 1, Software v. 1.05 (wInChI GUI executable)"
+#define APP_DESCRIPTION "InChI version 1, Software v. 1.06 (wInChI GUI executable)"
+
 #else
-    #error  No build target #defined, pls check compiler options... (TARGET_EXE_STANDALONE|TARGET_API_LIB|TARGET_EXE_USING_API|TARGET_LIB_FOR_WINCHI)
+#error  No build target #defined, pls check compiler options... (TARGET_EXE_STANDALONE|TARGET_API_LIB|TARGET_EXE_USING_API|TARGET_LIB_FOR_WINCHI)
 #endif
 
 
@@ -85,6 +95,7 @@
 #define TARGET_PLATFORM "Linux"
 #endif
 #endif
+
 
 /****************************/
 /*                          */
@@ -109,7 +120,12 @@ BUILD_WITH_AMI
 
 /* #define BUILD_LINK_AS_DLL */
 
-/* #define BUILD_WITH_ENG_OPTIONS 1 */
+/*
+#ifndef BUILD_WITH_ENG_OPTIONS
+#define BUILD_WITH_ENG_OPTIONS 1
+#endif
+*/
+
 
 #ifndef BUILD_WITH_AMI
 /* this allows BUILD_WITH_AMI be #defined in a makefile */
@@ -129,18 +145,19 @@ BUILD_WITH_AMI
 #define MSC_AMI 1
 /* use MSC _findfirst(...), etc. Do not link with setargv.obj */
 #endif
-#ifdef  BUILD_WITH_ENG_OPTIONS
+#if (BUILD_WITH_ENG_OPTIONS==1)
 #define OUTPUT_FILE_EXT 1           /* options "/.": /.extOut /.extLog /.extPrb replace input file extension instead of adding .txt, .log, .prb 2013-12-18 DCh */
 #define ALLOW_EMPTY_PATHS 1         /* let command line argument "" be interpreted as path */
+
+#define DEL_EMPTY_OUTPUT  1         /* delete output file, problem file if the file is empty -- needed for /DoDrv /DoneOnly or to get rid of empty prb files */
+#define SDF_OUTPUT_HETERO_VALENCE 1 /* output all hetero atom valences to SDF -- NIST output specific */
+
 #endif
 #endif
 
 /* CML input is not supported started from v. 1.04 */
 /* set ADD_CMLPPP to zero to override possble makefile define */
 #define ADD_CMLPP 0
-
-/* v. 1.05 OutErrInchi allowed */
-#define ERR_INCHI_STRING_ALLOWED 1
 
 
 /*****************************/
@@ -197,6 +214,21 @@ MS VC compiler pragmas
 #endif
 
 
+/* To use allocator, uncomment the next line or use /D "USE_TBB_MALLOC=1" compile directive */
+/*#define USE_TBB_MALLOC 1*/
+#ifdef USE_TBB_MALLOC
+#if !defined(TARGET_EXE_STANDALONE) && !defined(TARGET_LIB_FOR_WINCHI) && defined(_WIN32)
+/* Use dynamic memory allocator from  Intel(R) Threading Building Blocks                    */
+/* https://www.threadingbuildingblocks.org/                                                 */
+/* see the header, tbbmalloc_proxy.h                                                        */
+/* NB: under MS Visual Studio, add paths to platform-dependent TBB 32/64 bit libs          */
+/* (tbbmalloc_proxy_debug.lib tbbmalloc_proxy.lib)                                          */
+/* also ensure that final binaries access platform-dependent TBB 32/64 bit dlls             */
+/* (tbbmalloc.dll tbbmalloc_proxy.dll) and MSVCR120.dll or other corresp. to TBB compile    */
+/*                                                                                          */
+#include "../../INCHI_API/tbb/tbbmalloc_proxy_for_inchi.h"
+#endif
+#endif
 
 
 #ifndef COMPILE_ALL_CPP
@@ -204,8 +236,6 @@ MS VC compiler pragmas
 extern "C" {
 #endif
 #endif
-
-
 
 
 /*********************/
@@ -253,6 +283,8 @@ extern "C" {
 #endif
 
 
+#define DISPLAY_ZZ_AS_STAR 1
+
 
 /* BUG FIXES */
 
@@ -297,7 +329,7 @@ extern "C" {
 #define FIX_ISO_FIXEDH_BUG            1 /* (2007-09-24) 1=> Fix bug: missing fixed-H iso segment in case of single removed D(+) */
 #define FIX_ISO_FIXEDH_BUG_READ       0 /* (2007-09-24) 1=> Accommodate this InChI bug in reading InChI */
 #define FIX_DALKE_BUGS                1
-#define FIX_TRANSPOSITION_CHARGE_BUG  1    /* (2008-01-02) fix bug that leads to missed charge in some cases when /o is present */
+#define FIX_TRANSPOSITION_CHARGE_BUG  1 /* (2008-01-02) fix bug that leads to missed charge in some cases when /o is present */
 #define FIX_I2I_STEREOCONVERSION_BUG  1 /* (2008-03-06)   1=> Fix bug of i2i conversion SAbs-->(SRel||Srac) */
 #define FIX_I2I_STEREOCONVERSION_BUG2 1 /* (2008-04-02)   1=> Fix bug of i2i conversion (missed empty /t) */
 #define FIX_I2I_STEREOCONVERSION_BUG3 1 /* (2008-04-10)   1=> Fix bug of i2i conversion */
@@ -312,6 +344,71 @@ extern "C" {
                                         /* on atomic permitations for systems containing radical at */
                                         /* atom in aromatic ring */
 
+
+/* Software version 1.06 */
+#define FIX_STEREOCOUNT_ERR           1 /* (2018-01-09) Supplied by DT                              */
+                                        /* Fix for InChI Error -30010 (STEREOCOUNT_ERR)             */
+                                        /* appeared on PubChem CIDs 124897603, 124921144            */
+                                        /* "The failure occurs when one of two or more              */
+                                        /* constitutionally equivalent undefined stereocenters has  */
+                                        /* been removed due to stereo equivalence of its two        */
+                                        /* attachments."                                            */
+
+#define FIX_IMPOSSIBLE_H_ISOTOPE_BUG  1 /* (2018-01-25) Bug reported by Andrew Dalke, inchi-discuss */
+                                        /* Unrealistic H with mass difference 30 was consumed by    */
+                                        /* InChI and sometimes resulted in memory corruption on     */
+                                        /* accessing array of len == NUM_H_ISOTOPES that is 3.      */
+
+#define FIX_OLEAN_SPIRO_CHIRALITY_DETECTION_BUG 1 
+                                        /* (2018-05-03) thanks, DT; fix for 'olean spiro chirality' */
+
+
+#define FIX_RENUM_BUG_FOR_CASE_OF_ACIDIC_OH_AT_P_PLUS 1
+                                        /* Fix renumbering instability for case of acidic group     */
+                                        /* near charged P and some other heteroatoms                */
+
+
+
+
+
+/* Fixing issues reported by "Google Autofuzz project" and CURE53                                   */
+
+/* internal v. 1.051, September 2019                                                                */
+#define CHECK_STRTOL_ATNUMB 1
+#define DISABLE_READ_COMPRESSED_INCHI 1
+#define FIX_GAF_2019_1 1
+#define FIX_GAF_2019_2 1
+
+/* v. 1.06 December 2020 */
+/*  Sep-Dec 2020 Fixed oss-fuzz issues:
+    25604 25607 25609 25618 25726 25727 25728 25730 25731 25735
+    25736 25737 25741 25830 25835 26514 27901 27903 27905
+    Thanks to google/oss-fuzz for detecting and reporting the issues
+ */
+
+#define FIX_GAF_2020_GENERIC 1
+#define FIX_OSS_FUZZ_25604 1
+#define FIX_GAF_2020_25607 1
+#define FIX_GAF_2020_25726 1
+#define FIX_GAF_2020_25741 1
+
+/* internal v. 1.052, January 2020 */
+/* Thanks to CURE53 for detecting and reporting the issues */
+#define FIX_CURE53_ISSUE_OOB_ALREADY_HAVE_THIS_MESSAGE 1
+#define FIX_CURE53_ISSUE_HEAP_BUFFER_OVERFLOW_INCHITOINPATOM 1
+#define FIX_CURE53_ISSUE_NULL_DEREFERENCE_MAKE_A_COPY_OF_T_GROUP_INFO 1
+                                        /* NB: NO NEED IN FIX FOR CURE53 ISSUE
+                                        'stack_buffer_overflow__mark_alt_bonds_and_taut_groups'
+                                        AS IT IS COVERED BY ALREADY DEFINED
+                                        FIX_CURE53_ISSUE_NULL_DEREFERENCE_MAKE_A_COPY_OF_T_GROUP_INFO
+                                        */
+#define FIX_GAF_2019_3 1
+#define FIX_ONE_LINE_INCHI_INPUT_CONVERSION_ISSUE 1
+
+
+#define ALLOW_EMPTY_INCHI_AS_INPUT    1 /* Allow "InChI=1//" and standard/beta analogues in input   */
+
+
 #if ( !defined(TARGET_API_LIB) && !defined(TARGET_EXE_USING_API) )
 #define I2S_MODIFY_OUTPUT             1  /* 1=> Allow various InChI2InChI output types from cInChI */
 #else
@@ -319,7 +416,10 @@ extern "C" {
 #endif
 
 
-#define FIX_NP_MINUS_BUG  1         /* 2010-03-11 DCh */
+#define FIX_NP_MINUS_BUG  1         /* 2010-03-11 DT Fix for bug reported by Timo Boehme						*/
+                                    /* in normalization procedure for some structures containing N2(+) fragment	*/ 
+                                    /* which may result in producing different InChI strings for the same		*/
+                                    /* molecule, depending on original order of the atomic numbers				*/
 
 /**************************/
 /* additions to v1.00     */
@@ -330,10 +430,13 @@ extern "C" {
 #define SDF_OUTPUT_DT               1  /* 1=> all option -SdfAtomsDT to output D and T into SDfile */
 #define CHECK_AROMBOND2ALT          1  /* 1=> check whether arom->alt bond conversion succeeded */
 
+#define READ_INCHI_STRING           1  /* 1=> input InChI string and process it */
+#if 0
 #ifdef TARGET_LIB_FOR_WINCHI
 #define READ_INCHI_STRING           0  /* 1=> input InChI string and process it */
 #else
 #define READ_INCHI_STRING           1  /* 1=> input InChI string and process it */
+#endif
 #endif
 
 /****************************************************/
@@ -349,9 +452,62 @@ extern "C" {
 #define KETO_ENOL_TAUT             1 /* include keto-enol tautomerism */
 #define TAUT_15_NON_RING           1 /* 1,5 tautomerism with endpoints not in ring */
 
-/* v.1.04 : still experimental but may be exposed (set to 1) */
-#define UNDERIVATIZE               0 /* split to possible underivatized fragments */
-#define RING2CHAIN                 0 /* open rings R-C(-OH)-O-R => R-C(=O) OH-R   */
+
+#if 0
+#define UNDERIVATIZE               1 /* split to possible underivatized fragments */
+#define RING2CHAIN                 1 /* open rings R-C(-OH)-O-R => R-C(=O) OH-R   */
+#endif 
+
+#if( UNDERIVATIZE == 1 )
+#define UNDERIVATIZE_REPORT        1 /* if SdfValue found, add to SdfValue a list of removed deriv. agents */
+
+#define FIX_UNDERIV_TO_SDF       /* prevent bond normalization if underivatization result goes to SDF 2013-05-10 DCh */
+
+#if 0
+/*commented out 2019-08-20 as this switch caused several thousands changed InChI's for PubChem Substance (280M records) due to
+[falsely] detected stereos in boranes, etc. e.g. 431803, 7890546,
+*/
+#define ALLOW_NO_CHARGE_ON_STEREO_CENTERS  /* do not require (+) on >N< for stereo, etc -- NIST output specific */
+#endif
+
+/*#define UNDERIV_SYLYL_ONLY */         /* Underiv: special case: recognize Sylyl derivatives only; typically commented out */
+
+                                        /* derivatives selection begin */
+
+                                        /* begin disabled derivatizations */
+#ifdef NEVER
+                                        /*#define UNDERIV_ACETATE_CnF2np1*/       /* 1r2c1-3 R-C(=O)-O---CnF2n+1 => R-C(=O)-OH, n=1..3: DERIV_BRIDGE_O - not a derivative */
+                                                                                  /* Methyltion - 1 */
+#define UNDERIV_ACETATE_Me            /* 1r1c3   R-C(=O)-O---Me (RCOO_Me) => R-C(=O)-OH: DERIV_BRIDGE_O */
+                                                                                  /* Ethylation -1 */
+#define UNDERIV_ACETATE_Et            /* 1r1c4   R-C(=O)-O---Et (RCOO_Et) => R-C(=O)-OH: DERIV_BRIDGE_O */
+                                                                                  /* Propanoate - 3 */
+#define UNDERIV_RN_AcEt               /* 2r1c4   R-N(-X)--C(=O)Et => R-N(-X)H: DERIV_BRIDGE_tN, X is not H */
+#define UNDERIV_RNH_AcEt              /* 2r1c4   R-NH--C(=O)Et => R-NH2: DERIV_BRIDGE_NH */
+#define UNDERIV_RO_COX_Et             /* 3r1c4   RO-C(=O)Et => ROH: create alcohols from acetates  DERIV_RO_COX */
+#endif /* NEVER */
+                                                                                  /* end disabled */
+
+                                                                                  /* Acetate - 3 */
+#define UNDERIV_RN_AcMe               /* 2r1c3   R-N(-X)--C(=O)Me => R-N(-X)H: DERIV_BRIDGE_tN, X is not H */
+#define UNDERIV_RNH_AcMe              /* 2r1c3   R-NH--C(=O)Me => R-NH2: DERIV_BRIDGE_NH */
+#define UNDERIV_RO_COX_Me             /* 3r1c1   RO-C(=O)Me => ROH: create alcohols from acetates  DERIV_RO_COX */
+                                                                                  /* Benzoate - 1 */
+#define UNDERIV_RO_COX_BENZOATES             /* 3r1c2 create alcohols from benzoates DERIV_RO_COX */
+
+#define UNDERIV_RO_COX_PENTAFLOUROBENZOATES  /* 3r1c3 create alcohols from pentafluorobenzoates DERIV_RO_COX -C(=O)C6F5*/
+#define UNDERIV_OOB_nButyl                   /* 4r2c1 DERIV_RING_O_OUTSIDE_PRECURSOR: 5 at, n-Butyl */
+#define UNDERIV_X_OXIME_TBDMS                /* 5r2c3 DERIV_X_OXIME: >C=N--O-TBDMS */
+#define UNDERIV_X_OXIME_TMS                  /* 5r2c2 DERIV_X_OXIME: >C=N--O-TMS */
+#define UNDERIV_PYRROLIDIDES                 /* 7r1c1 DERIV_RING2_PRRLDD_OUTSIDE_PRECUR */
+
+                                            /* derivatives selection end*/
+
+#define UNDERIV_ADD_EXPLICIT_H               /* Underiv: add removed explict H after underivatization */
+                                             /*#define UNDERIV_ADD_D_TO_PRECURSOR */      /* Uncomment to add Deuterium to the precursor struct -- for debugging only */
+                                             /* search for other Underivatize settings in ichinorm.c, lines ~802-894 */
+#endif /* UNDERIVATIZE == 1 */
+
 
 /* post-2004-04-27 features */
 #define HAL_ACID_H_XCHG            1 /* allow iso H exchange to HX (X=halogen) and H2Y (Y=halcogen) */
@@ -689,10 +845,10 @@ extern "C" {
 
 /* verify corectness of dependent settings */
 #if !defined( CT_ATOMID )
-  #error  You have to #define CT_ATOMID
+#error  You have to #define CT_ATOMID
 #else
 #if ( defined( CT_ATOMID ) && CT_ATOMID==CT_ATOMID_DONTINCLUDE )
-  #error  CT_DELIMITER should be #defined if CT_ATOMID is not included
+#error  CT_DELIMITER should be #defined if CT_ATOMID is not included
 #endif
 #endif
 
@@ -797,6 +953,7 @@ extern "C" {
 #define TG_FLAG_FIX_ISO_FIXEDH_BUG       0x00200000   /* fix bug found after v.102b (isotopic H representation)  */
 #define TG_FLAG_FIX_TERM_H_CHRG_BUG      0x00400000   /* fix bug found after v.102b (moving H charge in 'remove_terminal_HDT') */
 
+
 /* output bTautFlags flags */
 
 #define TG_FLAG_MOVE_HPLUS2NEUTR_DONE    0x00000001   /* protons have been moved to neutralize */
@@ -840,36 +997,35 @@ extern "C" {
 /*       */
 /*********/
 
-typedef struct tagOutputString
-{
-    char *pStr;
-    int  nAllocatedLength;
-    int  nUsedLength;
-    int  nPtr;            /*    if the struct is used as expanding string buffer,    */
-                        /*    this field will store an expansion increment        */
-} INCHI_IOSTREAM_STRING;
+    typedef struct tagOutputString
+    {
+        char *pStr;
+        int  nAllocatedLength;
+        int  nUsedLength;
+        int  nPtr;              /* expansion increment */
+    } INCHI_IOS_STRING;
 
-typedef struct tagOutputStream
-{
-    /* output is directed either to resizable string buffer: */
-    INCHI_IOSTREAM_STRING s;
-    /* or to the plain file: */
-    FILE* f;
-    int type;
-} INCHI_IOSTREAM;
-/* INCHI_IOSTREAM.type values */
-#define INCHI_IOSTREAM_TYPE_NONE 0
-#define INCHI_IOSTREAM_TYPE_STRING 1
-#define INCHI_IOSTREAM_TYPE_FILE 2
 
+    /* INCHI_IOSTREAM.type values */
+#define INCHI_IOS_TYPE_NONE 0
+#define INCHI_IOS_TYPE_STRING 1
+#define INCHI_IOS_TYPE_FILE 2
+
+    typedef struct tagOutputStream
+    {
+        INCHI_IOS_STRING s;     /* output is directed either to resizable string buffer s   */
+        FILE             *f;    /* or to the plain file:                                    */
+        int              type;  /* dependent on type                                        */
+    } INCHI_IOSTREAM;
 
 
 
-/***********/
-/*         */
-/*  DEBUG  */
-/*         */
-/***********/
+
+    /***********/
+    /*         */
+    /*  DEBUG  */
+    /*         */
+    /***********/
 
 #if ( defined(_WIN32) && defined(_DEBUG) && defined(_MSC_VER) /*&& !defined(COMPILE_ANSI_ONLY)*/ )
 /* debug: memory leaks tracking */
@@ -944,6 +1100,7 @@ do {\
 /*  ALLOC  */
 /*         */
 /***********/
+
 
 #ifdef TARGET_EXE_USING_API
 /* INChI_MAIN specific */
@@ -1029,11 +1186,30 @@ do {\
     } while(0)
 
 
-/* comment out the next line to disable */
-/*#define DEBUG_POLYMERS 0*/
+/* Solely v. 1.06 specific */
+
+/* comment out the next line to enable polymeric debug */
+#define DEBUG_POLYMERS 0
 #ifndef DEBUG_POLYMERS
 #define DEBUG_POLYMERS  2
 #endif
+
+#define POLYMERS_NO 0		/* ignore polymers										*/
+#define POLYMERS_MODERN 1	/* current (1.06) way to treat polymers with Zz			*/
+#define POLYMERS_LEGACY 2	/* 1.05 mode, no explicit Zz (internally they are here) */
+#define POLYMERS_LEGACY_PLUS 3	/* 1.05 mode with an addition of that in all
+                                   frame-shiftable-bistar-CRUs their backbone bonds 
+                                   are reordered in descending seniority order. 
+                                   Used as hidden 1st pass in 1.06 treatment		*/
+
+
+
+#define STEREO_AT_ZZ 0
+/* #define STEREO_AT_ZZ 1 */
+
+/* Set to 1 and use in engineering mode, if necessary */
+/*#define ALLOW_SUBSTRUCTURE_FILTERING 1 */
+
 
 #ifndef COMPILE_ALL_CPP
 #ifdef __cplusplus

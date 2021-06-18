@@ -1,0 +1,12 @@
+C(CCC([H])=O)[C@H]([NH3+])C(=O)[O-].O=C([C@H](CCC([O-])=O)[NH3+])[O-].[H+].N1(C=NC2C(N)=NC=NC1=2)[C@H]1[C@H](OP([O-])([O-])=O)[C@@H]([C@@H](COP([O-])(=O)OP([O-])(=O)OC[C@@H]2[C@@H](O)[C@H]([C@H](N3C=CCC(C(N)=O)=C3)O2)O)O1)O>>C([O-])([C@H](CCCC[NH2+][C@@H](CCC([O-])=O)C([O-])=O)[NH3+])=O.[H]O[H].N1(C=NC2C(N)=NC=NC1=2)[C@H]1[C@H](OP([O-])([O-])=O)[C@@H]([C@@H](COP([O-])(=O)OP([O-])(=O)OC[C@@H]2[C@@H](O)[C@H]([C@H]([N+]3C=CC=C(C(N)=O)C=3)O2)O)O1)O |&1:6,32,33,39,40,52,53,55,56,72,78,102,103,109,110,122,123,125,126,a:13|
+C1(CSC#N)C=CC=CC=1>>C1C=C(C=CC=1)CN=C=S
+C(C(CCC([O-])=O)=O)([O-])=O.[C@]12(C(O[C@@]3(CCC1)[C@]2([H])[C@H](C([O-])=O)[C@@]12CC(=C)[C@@](O)(C1)CC[C@@]32[H])=O)C.O=O>>C(=O)=O.[C@]12(C(O[C@@]3(CC[C@@H]1O)[C@]2([H])[C@H](C([O-])=O)[C@@]12CC(=C)[C@@](O)(C1)CC[C@@]32[H])=O)C.C(C(=O)[O-])CC(=O)[O-]
+C(=C/C(/C)=C/C=C/C(/C)=C/C=C/C=C(\C)/C=C/C=C(\C)/C([H])=[C@@]=C1[C@@](O)(C)C[C@@H](O)CC1(C)C)\[C@]12C(C)(C)C[C@H](O)C[C@@]1(C)O2>>[C@]12(/C=C/C(/C)=C/C=C/C(/C)=C/C=C/C=C(/C=C/C=C(\C)/C=C/[C@]34C(C)(C)C[C@H](O)C[C@]3(O4)C)\C)C(C)(C)C[C@H](O)C[C@]1(O2)C |a:24,28,34,39,42,&1:45,67,72,75,83,86|
+C(=O)([O-])C(O)C([H])=O.C(=O)=O>>O=C(C([H])=O)[O-].O=C(C([H])=O)[O-].[H+]
+C(C([O-])=O)(C(O)C([O-])=O)CC([O-])=O>>C(C(O)(CC([O-])=O)CC([O-])=O)([O-])=O
+O1C(CC(=O)[O-])C=CC1=O>>C([O-])(=O)/C=C\C=C/C([O-])=O.[H+]
+CC(=O)[O-].C(C(=O)[O-])C(=O)C([O-])=O>>C(C(O)(CC([O-])=O)CC([O-])=O)([O-])=O
+O=C([O-])O>>O=C([O-])O
+[N+](C)(C)(C)CCO.[H+]>>[N+](C)(C)(C)CCO.[H+]
+NC1C2N=CN([C@H]3[C@H](O)[C@H](O)[C@@H](COP([O-])(OP([O-])([O-])=O)=O)O3)C=2N=CN=1.[H+].C1(O)O[C@H](CO)[C@@H](O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)[C@H](O)[C@H]1O.P(=O)(O)([O-])[O-]>>NC1C2N=CN([C@H]3[C@H](O)[C@H](O)[C@@H](COP([O-])(OP([O-])(OP([O-])([O-])=O)=O)=O)O3)C=2N=CN=1.[H]O[H].C1(O)O[C@H](CO)[C@@H](O[C@H]2O[C@H](CO)[C@@H](O)[C@H](O)[C@H]2O)[C@H](O)[C@H]1O
+C1=C([C@@H]([NH3+])CC(=O)[O-])C=CC=C1>>C(C1C=CC=CC=1)[C@H]([NH3+])C(=O)[O-] |&1:2,19|

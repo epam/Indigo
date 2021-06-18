@@ -1,7 +1,82 @@
-CID 58374005 edited
-  -INDIGO-10082014492D
+disconnected-0052-00
+  Mrv0541 12281113442D          
 
-  5  4  0  0  0  0  0  0  0  0999 V2000
+ 17 17  0  0  0  0            999 V2000
+   10.2536   -9.9417    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   11.0158  -10.2574    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   11.3315  -11.0196    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   11.0158  -11.7818    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   10.2536  -12.0976    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.4914  -11.7818    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.1757  -11.0196    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.4914  -10.2574    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   10.2536   -9.1167    0.0000 R#  0  0  0  0  0  0  0  0  0  0  0  0
+   11.5991   -9.6741    0.0000 R#  0  0  0  0  0  0  0  0  0  0  0  0
+   12.1565  -11.0196    0.0000 R#  0  0  0  0  0  0  0  0  0  0  0  0
+   11.5991  -12.3652    0.0000 R#  0  0  0  0  0  0  0  0  0  0  0  0
+   10.2536  -12.9226    0.0000 R#  0  0  0  0  0  0  0  0  0  0  0  0
+    8.9080  -12.3652    0.0000 R#  0  0  0  0  0  0  0  0  0  0  0  0
+    8.3507  -11.0196    0.0000 R#  0  0  0  0  0  0  0  0  0  0  0  0
+    8.9080   -9.6741    0.0000 R#  0  0  0  0  0  0  0  0  0  0  0  0
+   10.0747  -10.8408    0.0000 R#  0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  8  1  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+  4  5  1  0  0  0  0
+  5  6  1  0  0  0  0
+  6  7  1  0  0  0  0
+  7  8  1  0  0  0  0
+  1  9  1  0  0  0  0
+  2 10  1  0  0  0  0
+  3 11  1  0  0  0  0
+  4 12  1  0  0  0  0
+  5 13  1  0  0  0  0
+  6 14  1  0  0  0  0
+  7 15  1  0  0  0  0
+  8 16  1  0  0  0  0
+  8 17  1  0  0  0  0
+M  RGP  8   9   1  10   2  11   3  12   4  13   5  14   6  15   7  16   8
+M  RGP  1  17   9
+M  END
+$$$$
+--------------------
+  test
+
+ 13 14  0  0  0  0  0  0  0  0999 V2000
+    3.2280    1.9670    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.2280    2.9650    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.1770    1.6580    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.3640    1.4650    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.1770    3.2730    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.3600    3.4680    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.7640    2.4660    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    4.4860    0.7070    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    1.4930    1.9680    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.4860    4.2240    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    1.4930    2.9700    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    5.4640    0.5000    0.0000 Br  0  0  0  0  0  0  0  0  0  0  0  0
+    5.4640    4.4320    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  2  0  0  0  0
+  2  5  1  0  0  0  0
+  2  6  2  0  0  0  0
+  3  7  2  0  0  0  0
+  3  8  1  0  0  0  0
+  4  9  1  0  0  0  0
+  5  7  1  0  0  0  0
+  5 10  2  3  0  0  0
+  6 11  1  0  0  0  0
+  8 12  1  0  0  0  0
+  9 11  2  0  0  0  0
+ 10 13  1  0  0  0  0
+M  END
+$$$$
+CID 58374005 edited
+  Mrv0541 10231315512D          
+
+  5  4  0  0  1  0            999 V2000
     9.3739   -2.8820    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
     9.1588   -3.6784    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
     9.7410   -4.2630    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -12,12 +87,12 @@ CID 58374005 edited
   2  4  2  3  0  0  0
   4  5  1  0  0  0  0
 M  RAD  1   4   2
-M  END
+M  END  
 $$$$
 58374005
-  -INDIGO-10082014492D
+  -OEChem-11301218162D
 
- 79 83  0  0  1  0  0  0  0  0999 V2000
+ 79 83  0     1  0  0  0  0  0999 V2000
     4.9076    3.8060    0.0000 Cl  0  0  0  0  0  0  0  0  0  0  0  0
     8.3373   -1.6066    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0
    15.1715   -2.1022    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0
@@ -31,7 +106,7 @@ $$$$
     2.5896    6.3803    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
    11.5462   -6.1326    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
    12.7734   -4.9104    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    5.7392   -0.1066    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    5.7392   -0.1066    0.0000 N   0  3  0  0  0  0  0  0  0  0  0  0
     9.2033   -0.1066    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
     4.3724    2.1587    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
    10.9173   -1.8193    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
@@ -66,7 +141,7 @@ $$$$
    14.9146   -1.1357    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
    11.1013   -4.4586    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
    11.8070   -5.1672    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   10.1349   -4.7155    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   10.1349   -4.7155    0.0000 C   0  4  0  0  0  0  0  0  0  0  0  0
     6.6541   -1.4334    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
     6.7408   -0.6082    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
     4.6963    0.3021    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
@@ -183,105 +258,105 @@ $$$$
 M  CHG  1  14   1
 M  RAD  1  49   2
 M  END
->  <PUBCHEM_COMPOUND_CID>
+> <PUBCHEM_COMPOUND_CID>
 58374005
 
->  <PUBCHEM_COMPOUND_CANONICALIZED>
+> <PUBCHEM_COMPOUND_CANONICALIZED>
 1
 
->  <PUBCHEM_CACTVS_COMPLEXITY>
+> <PUBCHEM_CACTVS_COMPLEXITY>
 1440
 
->  <PUBCHEM_CACTVS_HBOND_ACCEPTOR>
+> <PUBCHEM_CACTVS_HBOND_ACCEPTOR>
 15
 
->  <PUBCHEM_CACTVS_HBOND_DONOR>
+> <PUBCHEM_CACTVS_HBOND_DONOR>
 7
 
->  <PUBCHEM_CACTVS_ROTATABLE_BOND>
+> <PUBCHEM_CACTVS_ROTATABLE_BOND>
 13
 
->  <PUBCHEM_CACTVS_SUBSKEYS>
+> <PUBCHEM_CACTVS_SUBSKEYS>
 AAADceB7vABkAAAAAAAAAAAAAABYAWLAAAAwQAAAAAAQAAABwAAAHgYUCAAADC7F3iSxn5PYEgisAyXyfAKC8KllLnkIiJX+r9iLZrqj1jOUcQlk1hO5nae63BLOIAABAQABSABAAAICAAKQAAAAAAAAAA==
 
->  <PUBCHEM_IUPAC_OPENEYE_NAME>
+> <PUBCHEM_IUPAC_OPENEYE_NAME>
 (6R,7R)-7-[[(2Z)-2-(2-aminothiazol-4-yl)-2-(1-carboxyvinyloxyimino)acetyl]amino]-3-[[1-[2-[(2-chloro-3,4-dihydroxy-benzoyl)amino]ethyl]pyrrolidin-1-ium-1-yl]methyl]-8-oxo-5-thia-1-azabicyclo[4.2.0]oct-2-ene-2-carboxylic acid
 
->  <PUBCHEM_IUPAC_CAS_NAME>
+> <PUBCHEM_IUPAC_CAS_NAME>
 (6R,7R)-7-[[(2Z)-2-(2-amino-4-thiazolyl)-2-(1-carboxyethenoxyimino)-1-oxoethyl]amino]-3-[[1-[2-[[(2-chloro-3,4-dihydroxyphenyl)-oxomethyl]amino]ethyl]-1-pyrrolidin-1-iumyl]methyl]-8-oxo-5-thia-1-azabicyclo[4.2.0]oct-2-ene-2-carboxylic acid
 
->  <PUBCHEM_IUPAC_NAME>
+> <PUBCHEM_IUPAC_NAME>
 (6R,7R)-7-[[(2Z)-2-(2-amino-1,3-thiazol-4-yl)-2-(1-carboxyethenoxyimino)acetyl]amino]-3-[[1-[2-[(2-chloro-3,4-dihydroxybenzoyl)amino]ethyl]pyrrolidin-1-ium-1-yl]methyl]-8-oxo-5-thia-1-azabicyclo[4.2.0]oct-2-ene-2-carboxylic acid
 
->  <PUBCHEM_IUPAC_SYSTEMATIC_NAME>
+> <PUBCHEM_IUPAC_SYSTEMATIC_NAME>
 (6R,7R)-7-[[(2Z)-2-(2-azanyl-1,3-thiazol-4-yl)-2-(3-oxidanyl-3-oxidanylidene-prop-1-en-2-yl)oxyimino-ethanoyl]amino]-3-[[1-[2-[[2-chloranyl-3,4-bis(oxidanyl)phenyl]carbonylamino]ethyl]pyrrolidin-1-ium-1-yl]methyl]-8-oxidanylidene-5-thia-1-azabicyclo[4.2.0]oct-2-ene-2-carboxylic acid
 
->  <PUBCHEM_IUPAC_TRADITIONAL_NAME>
+> <PUBCHEM_IUPAC_TRADITIONAL_NAME>
 (6R,7R)-7-[[(2Z)-2-(2-aminothiazol-4-yl)-2-(1-carboxyvinyloximino)acetyl]amino]-3-[[1-[2-[(2-chloro-3,4-dihydroxy-benzoyl)amino]ethyl]pyrrolidin-1-ium-1-yl]methyl]-8-keto-5-thia-1-azabicyclo[4.2.0]oct-2-ene-2-carboxylic acid
 
->  <PUBCHEM_IUPAC_INCHI>
+> <PUBCHEM_IUPAC_INCHI>
 InChI=1S/C29H29ClN7O10S2/c1-13(27(43)44)47-35-19(16-12-49-29(31)33-16)24(41)34-20-25(42)36-21(28(45)46)14(11-48-26(20)36)10-37(7-2-3-8-37)9-6-32-23(40)15-4-5-17(38)22(39)18(15)30/h1,4-5,12,20,26H,2-3,6-11H2,(H7-,31,32,33,34,35,38,39,40,41,43,44,45,46)/p+1/t20-,26-/m1/s1
 
->  <PUBCHEM_IUPAC_INCHIKEY>
+> <PUBCHEM_IUPAC_INCHIKEY>
 KXJWNKARTRZASH-FQRUVTKNSA-O
 
->  <PUBCHEM_XLOGP3>
+> <PUBCHEM_XLOGP3>
 0.4
 
->  <PUBCHEM_EXACT_MASS>
+> <PUBCHEM_EXACT_MASS>
 735.11841
 
->  <PUBCHEM_MOLECULAR_FORMULA>
+> <PUBCHEM_MOLECULAR_FORMULA>
 C29H30ClN7O10S2+
 
->  <PUBCHEM_MOLECULAR_WEIGHT>
+> <PUBCHEM_MOLECULAR_WEIGHT>
 736.1724
 
->  <PUBCHEM_OPENEYE_CAN_SMILES>
+> <PUBCHEM_OPENEYE_CAN_SMILES>
 [CH]=C(C(=O)O)ON=C(C1=CSC(=N1)N)C(=O)NC2C3N(C2=O)C(=C(CS3)C[N+]4(CCCC4)CCNC(=O)C5=C(C(=C(C=C5)O)O)Cl)C(=O)O
 
->  <PUBCHEM_OPENEYE_ISO_SMILES>
+> <PUBCHEM_OPENEYE_ISO_SMILES>
 [CH]=C(C(=O)O)O/N=C(/C1=CSC(=N1)N)\C(=O)N[C@H]2[C@@H]3N(C2=O)C(=C(CS3)C[N+]4(CCCC4)CCNC(=O)C5=C(C(=C(C=C5)O)O)Cl)C(=O)O
 
->  <PUBCHEM_CACTVS_TPSA>
+> <PUBCHEM_CACTVS_TPSA>
 308
 
->  <PUBCHEM_MONOISOTOPIC_WEIGHT>
+> <PUBCHEM_MONOISOTOPIC_WEIGHT>
 735.11841
 
->  <PUBCHEM_TOTAL_CHARGE>
+> <PUBCHEM_TOTAL_CHARGE>
 1
 
->  <PUBCHEM_HEAVY_ATOM_COUNT>
+> <PUBCHEM_HEAVY_ATOM_COUNT>
 49
 
->  <PUBCHEM_ATOM_DEF_STEREO_COUNT>
+> <PUBCHEM_ATOM_DEF_STEREO_COUNT>
 2
 
->  <PUBCHEM_ATOM_UDEF_STEREO_COUNT>
+> <PUBCHEM_ATOM_UDEF_STEREO_COUNT>
 0
 
->  <PUBCHEM_BOND_DEF_STEREO_COUNT>
+> <PUBCHEM_BOND_DEF_STEREO_COUNT>
 1
 
->  <PUBCHEM_BOND_UDEF_STEREO_COUNT>
+> <PUBCHEM_BOND_UDEF_STEREO_COUNT>
 0
 
->  <PUBCHEM_ISOTOPIC_ATOM_COUNT>
+> <PUBCHEM_ISOTOPIC_ATOM_COUNT>
 0
 
->  <PUBCHEM_COMPONENT_COUNT>
+> <PUBCHEM_COMPONENT_COUNT>
 1
 
->  <PUBCHEM_CACTVS_TAUTO_COUNT>
+> <PUBCHEM_CACTVS_TAUTO_COUNT>
 308
 
->  <PUBCHEM_COORDINATE_TYPE>
+> <PUBCHEM_COORDINATE_TYPE>
 1
 5
 255
 
->  <PUBCHEM_BONDANNOTATIONS>
+> <PUBCHEM_BONDANNOTATIONS>
 32  17  5
 19  41  8
 19  46  8
@@ -296,4 +371,4 @@ C29H30ClN7O10S2+
 42  44  8
 43  44  8
 
-$$$$
+$$$$ 

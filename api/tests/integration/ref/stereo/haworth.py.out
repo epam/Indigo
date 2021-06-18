@@ -1,0 +1,56 @@
+****** Compare with references ********
+false_001.mol C1C(C(C([H])([H])[H])CC1)C(N[H])=O
+false_002.mol C1(C)CCC(C)CC1
+false_003.mol O([H])C(O)C([H])([H])C1C(C2C([H])C(C([H])C(C2[H])[H])[H])C(NN1C1C([H])C([H])C([H])C(C1[H])[H])C1C([H])C(C([H])C(C1[H])[H])[H]
+test_001.mol [C@]1(O)(C)[C@]([C@@](O)([C@](O)(C)[C@]1(O)C)C)(O)C
+test_002.mol [C@]1(O)(C)[C@]([C@@](O)([C@](O)(C)[C@]1(O)C)C)(O)C
+test_003.mol [C@]1(O)(C)[C@]([C@@](O)([C@](O)(C)[C@]1(O)C)C)(O)C
+test_004.mol [C@]1(C)(O)[C@]([C@@](C)([C@](C)(O)[C@]1(C)O)O)(C)O
+test_005.mol [C@]1(C)(O)[C@]([C@@](C)([C@](C)(O)[C@]1(C)O)O)(C)O
+test_006.mol [C@]1(C)(O)[C@@H]([C@@H](C)[C@@H](C)[C@]1(C)O)O
+test_007.mol [C@H]1(C)C[C@@H](C)[C@@H](C)[C@H]1C
+test_008.mol [C@H]1(C)[C@@H](C)[C@@H](C)[C@@H](C)[C@H]1C
+test_009.mol [C@H]1(C)C(C)[C@@H](C)[C@@H](C)[C@H]1C
+test_010.mol C1CC(C2C(O)C(O)C(C3C(O)C(O)CCC3)CC2)C(O)C(O)C1
+test_011.mol [C@@H]1(C)[C@H](C)C(C2C(O)C(O)C(C3[C@H](O)[C@H](O)C[C@@H](C)[C@H]3C)CC2)[C@@H](O)[C@@H](O)C1
+test_012.mol [C@@]1(C)(N)[C@@](C)(N)C(C2C(O)C(O)C(C3[C@H](O)[C@H](O)C[C@](C)(N)[C@]3(C)N)CC2)[C@@H](O)[C@@H](O)C1
+test_013.mol [C@@]1(C)(N)[C@@](C)(N)C(C2[C@@](O)(C)[C@](C)(O)C(C3[C@@](O)(C)[C@](C)(O)C[C@](C)(N)[C@]3(C)N)CC2)[C@@](C)(O)[C@](O)(C)C1
+test_014.mol [C@@]1(C)(N)[C@@](C)(N)C(C2[C@@](O)(C)[C@](C)(C)C(C3[C@@](O)(C)[C@](C)(O)C[C@](C)(N)[C@]3(C)N)C[C@H]2C)[C@@](C)(O)[C@](O)(C)C1
+test_015.mol [C@@]1(C)(N)[C@@](C)(N)C(C2[C@@](O)(C)[C@](C)(O)C(C3[C@@](O)(C)[C@](C)(O)C[C@](C)(N)[C@]3(C)N)C[C@H]2C)[C@@](C)(O)[C@](O)(C)C1
+test_016.mol [C@@]1(C)(N)[C@@](C)(N)C(C2[C@@](O)(C)[C@](C)(O)C(C3[C@@](O)(C)[C@](C)(O)C[C@](C)(N)[C@]3(C)N)[C@](C)(N)[C@]2(C)N)[C@@](C)(O)[C@](O)(C)C1
+test_017.mol [C@@]1(C)(N)[C@@](C)(N)C(C2[C@@](O)(C)[C@](C)(O)[C@@H](CC[C@H]3[C@@](O)(C)[C@](C)(O)C[C@](C)(N)[C@]3(C)N)[C@](C)(N)[C@]2(C)N)[C@@](C)(O)[C@](O)(C)C1
+test_018.mol [C@@]1(C)(N)[C@@](C)(N)[C@H](CC[C@H]2[C@@](O)(C)[C@](C)(O)[C@@H](CC[C@H]3[C@@](O)(C)[C@](C)(O)C[C@](C)(N)[C@]3(C)N)[C@](C)(N)[C@]2(C)N)[C@@](C)(O)[C@](O)(C)C1
+test_019.mol [C@@]1(C)(N)[C@@](C)(N)[C@H](CC[C@H]2[C@@](O)(C)[C@](C)(O)[C@@H](CC[C@H]3[C@@](O)(C)[C@](C)(O)[C@](C)(O)[C@](C)(N)[C@]3(C)N)[C@](C)(N)[C@]2(C)N)[C@@](C)(O)[C@](O)(C)[C@@]1(C)O
+test_020.mol [C@@]1(C)(N)[C@@](C)(N)[C@@](CC[C@@]2(C)[C@@](O)(C)[C@](C)(O)[C@](CC[C@@]3(O)[C@@](O)(C)[C@](C)(O)[C@](C)(O)[C@](C)(N)[C@]3(C)N)(O)[C@](C)(N)[C@]2(C)N)(C)[C@@](C)(O)[C@](O)(C)[C@@]1(C)O
+test_021.mol [C@@]1(C)(N)[C@@](C)(N)[C@@](CC[C@@]2(O)[C@@](O)(C)[C@](C)(O)[C@](CC[C@@]3(O)[C@@](O)(C)[C@](C)(O)[C@](C)(O)[C@](C)(N)[C@]3(C)N)(O)[C@](C)(N)[C@]2(C)N)(O)[C@@](C)(O)[C@](O)(C)[C@@]1(C)O
+test_022.mol [C@@]1(C)(N)[C@@](C)(N)[C@@](CC[C@@]2(O)[C@@](O)(C)[C@](C)(O)[C@](CC[C@@]3(O)[C@@](O)(C)[C@](C)(O)[C@](C)(O)[C@](C)(N)[C@]3(C)N)(O)[C@](C)(N)[C@]2(C)N)(O)[C@@](C)(O)[C@](O)(C)[C@@]1(C)O
+test_023.mol [C@@]1(C)(N)[C@@](C)(N)[C@@](CC[C@@]2(O)[C@@](O)(C)[C@](C)(O)[C@](CC[C@@]3(O)[C@@](O)(C)[C@](C)(O)[C@](C)(O)[C@](C)(N)[C@]3(C)N)(O)[C@](C)(N)[C@]2(C)N)(O)[C@@](C)(O)[C@](O)(C)[C@@]1(C)O
+test_024.mol [C@]1(C)(O)[C@]([C@@](C)([C@](COC[C@]2([C@@](C)([C@](C)(O)[C@](C)(O)[C@]2(C)O)O)O)(O)[C@]1(C)O)O)(C)N
+test_025.mol [C@]1(C)(O)[C@]([C@@](C)([C@](COC[C@]2([C@@](C)([C@](C)(O)[C@](C)(O)[C@]2(C)O)O)O)(O)[C@]1(C)O)O)(C)N
+test_026.mol [C@]1(C)(O)[C@]([C@@](C)([C@](COC[C@@]2([C@@](O)([C@](N)(C)[C@](O)(C)[C@]2(O)C)C)O)(O)[C@]1(C)O)O)(C)N
+test_027.mol [C@]1(C)(O)[C@]([C@@](C)([C@](COC[C@@]2([C@@](O)([C@](N)(C)[C@](O)(C)[C@]2(O)C)C)O)(O)[C@]1(C)O)O)(C)N
+test_028.mol [C@]1(C)(O)[C@@H]([C@@H]([C@](COC[C@@]2([C@@](O)([C@@H](N)[C@@H](O)[C@H]2O)C)O)(O)[C@]1(C)O)O)N
+test_029.mol [C@H]1(C)[C@@H]([C@@H]([C@](COC[C@@]2([C@@H]([C@@H](N)[C@@H](O)[C@H]2O)C)O)(O)[C@]1(C)O)O)N
+test_030.mol [C@H]1(C)[C@@H]([C@@H]([C@@H](COC[C@@H]2[C@@H]([C@@H](N)[C@@H](O)[C@H]2O)C)[C@]1(C)O)O)N
+test_031.mol [C@]1(O)(C)[C@]([C@@](N)([C@](O[C@@]2([C@@](C)([C@](C)(O)[C@](C)(O)[C@]2(C)O)N)C)(C)[C@]1(O)C)C)(N)C
+test_032.mol [C@@]1(C)(O)[C@@](C)(O)[C@@](O[C@@]2(O)[C@@](O)(C)[C@](C)([H])[C@](C)(O)[C@](C)(O)[C@]2(C)O)(O)[C@@](C)(O)[C@]([H])(C)[C@@]1(C)O
+test_033.mol [C@@]1(C)(O)[C@@](C)(O)[C@@](O[C@@]2(O)[C@@](O)(C)[C@](C)([H])[C@](C)(O)[C@](C)(O)[C@]2(C)O)(O)[C@@](C)(O)[C@]([H])(C)[C@@]1(C)O
+test_034.mol [C@@]1(O)([H])[C@@](O)([H])[C@@](O[C@@]2([H])[C@@]([H])(O)[C@](O)([H])[C@](O)([H])[C@](O)([H])[C@]2(O)[H])([H])[C@@](O)([H])[C@]([H])(O)[C@@]1(O)[H]
+test_035.mol [C@]1(N)(C)[C@]([C@@](O)([C@]([C@]2(N)[C@]([C@@](O)([C@]([C@]3(O)[C@]([C@@](N)([C@](O)(C)[C@]3(O)C)C)(O)C)(C)[C@]2(N)C)C)(N)C)(C)[C@]1(O)C)C)(O)C
+test_036.mol [C@]1(N)(C)[C@]([C@@](O)([C@]([C@]2(N)[C@]([C@@](O)([C@]([C@]3(O)[C@]([C@@](N)([C@](O)(C)[C@]3(O)C)C)(O)C)(C)[C@]2(N)C)C)(N)C)(C)[C@]1(O)C)C)(O)C
+test_037.mol [C@]1(N)(C)C(C)[C@@](O)([C@]([C@]2(N)[C@]([C@@](O)([C@]([C@]3(O)[C@]([C@@](N)(C(C)[C@]3(O)C)C)(O)C)(C)[C@]2(N)C)C)(N)C)(C)[C@]1(O)C)C
+test_038.mol [C@]1(N)(C)[C@@](C)(O)[C@@](O)([C@]([C@]2(N)[C@]([C@@](O)([C@]([C@]3(O)[C@]([C@@](N)([C@@H](O)[C@]3(O)C)C)(O)C)(C)[C@]2(N)C)C)(N)C)(C)[C@]1(O)C)C
+test_039.mol [C@]1(C)(O)[C@]([C@@](C)([C@H](O[C@H]2[C@@](O)([C@](O)(C)[C@](O)(C)[C@]2(O)C)C)[C@]1(C)O)O)(C)O
+test_040.mol C1O[C@](C)(O)CC1
+test_041.mol molfile loader: direction of bond #0 makes no sense
+test_042.mol molfile loader: direction of bond #0 makes no sense
+test_043.mol molfile loader: direction of bond #0 makes no sense
+test_044.mol molfile loader: direction of bond #0 makes no sense
+test_045.mol [C@@H]1(C)C[C@H](C)CC1
+test_046.mol C1(C)CC(C)CC1
+test_047.mol C1C[C@@H](C)CC[C@H]1C
+test_048.mol C1CCCC(C)C1C
+test_049.mol [C@]1(C)(O)[C@](C)(O)[C@]1(C)O
+test_050.mol [C@]1(C)(O)[C@]([C@](C)(O)[C@]1(C)O)(C)O
+test_051.mol [C@H]1(O)[C@@](N)(O)[C@H]1O
+****** Check search ********

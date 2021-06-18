@@ -60,6 +60,9 @@ typedef RedBlackStringMap<int, false> StringIntMap;
 
 IndigoRenderer::IndigoRenderer()
 {
+    indigo_id = TL_GET_SESSION_ID();
+    setOptionsHandlers();
+    init();
 }
 
 IndigoRenderer::~IndigoRenderer()
@@ -371,6 +374,28 @@ void indigoRenderGetCdxmlPropertiesKeyAlignment(Array<char>& value)
         value.readString("right", true);
 }
 
+
+CEXPORT int indigoRendererInit(void)
+{
+    INDIGO_BEGIN
+    {
+        const auto& context = indigoRendererGetInstance();
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoRendererDispose()
+{
+    INDIGO_BEGIN
+    {
+        indigo_renderer_self.removeLocalCopy(TL_GET_SESSION_ID());
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
+
 CEXPORT int indigoRender(int object, int output)
 {
     INDIGO_BEGIN
@@ -611,15 +636,9 @@ CEXPORT int indigoRenderWriteHDC(void* hdc, int printingHdc)
     INDIGO_END(-1);
 }
 
-class _IndigoRenderingOptionsHandlersSetter
+void IndigoRenderer::setOptionsHandlers()
 {
-public:
-    _IndigoRenderingOptionsHandlersSetter();
-};
-
-_IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter()
-{
-    IndigoOptionManager& mgr = indigoGetOptionManager();
+    IndigoOptionManager& mgr = indigoGetOptionManager(indigo_id);
     OsLocker locker(mgr.lock);
 
 #define rp indigoRendererGetInstance().renderParams
@@ -690,5 +709,3 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter()
 
     mgr.setOptionHandlerVoid("reset-render-options", indigoRenderResetOptions);
 }
-
-_IndigoRenderingOptionsHandlersSetter _indigo_rendering_options_handlers_setter;

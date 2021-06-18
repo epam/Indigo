@@ -25,7 +25,6 @@ from indigo import IndigoException, DECODE_ENCODING
 class IndigoRenderer(object):
     def __init__(self, indigo):
         self.indigo = indigo
-
         if (
             os.name == "posix"
             and not platform.mac_ver()[0]
@@ -39,6 +38,10 @@ class IndigoRenderer(object):
         else:
             raise IndigoException("unsupported OS: " + os.name)
 
+        self._lib.indigoRendererInit.restype = c_int
+        self._lib.indigoRendererInit.argtypes = []
+        self._lib.indigoRendererDispose.restype = c_int
+        self._lib.indigoRendererDispose.argtypes = []
         self._lib.indigoRender.restype = c_int
         self._lib.indigoRender.argtypes = [c_int, c_int]
         self._lib.indigoRenderToFile.restype = c_int
@@ -58,7 +61,14 @@ class IndigoRenderer(object):
             c_char_p,
         ]
         self._lib.indigoRenderReset.restype = c_int
-        self._lib.indigoRenderReset.argtypes = [c_int]
+        self._lib.indigoRenderReset.argtypes = []
+        # Init context
+        self.indigo._setSessionId()
+        self.indigo._checkResult(self._lib.indigoRendererInit())
+
+    def __del__(self):
+        self.indigo._setSessionId()
+        self.indigo._checkResult(self._lib.indigoRendererDispose())
 
     def renderToBuffer(self, obj):
         self.indigo._setSessionId()

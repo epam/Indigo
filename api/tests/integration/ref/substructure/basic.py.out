@@ -1,0 +1,21 @@
+***** Substructure with either and bidirectional mode *****
+molecules/either1.mol molecules/either1.mol
+molecules/either1.mol molecules/either2.mol
+molecules/either1.mol molecules/either1_query.mol
+***** Substructure with explicit hydrogens *****
+***** Structure should match itself *****
+molecules/Calcitonin_Salmon.mol molecules/Calcitonin_Salmon.mol
+molecules/Calcitonin_Salmon.mol molecules/Calcitonin_Salmon.mol
+***** Check specific SMILES/SMARTS behaviour *****
+Cn1c(CN)nc2ccccc12
+  0 - match
+  1 - match
+  2 - match
+  3 - match
+  4 - match
+c1ccc(cc1)-c1nc2ccccc2[nH]1
+  0 - match
+  1 - match
+  2 - match
+  3 - match
+  4 - match

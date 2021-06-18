@@ -18,7 +18,6 @@ public class IndigoRendererTests {
         indigo.setOption("render-output-format", "svg");
         byte[] bytes = indigoRenderer.renderToBuffer(indigoObject);
 
-
         assertEquals(
                 60,
                 bytes[0],

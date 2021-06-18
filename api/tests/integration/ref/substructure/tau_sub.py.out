@@ -1,0 +1,76 @@
+matched
+O=C1C2C(=CC=CC=2)CNC1 |ha:0,1,2,3,8,9,10,hb:0,1,2,8,9,10,11|
+0 -> 0
+1 -> 1
+2 -> 10
+3 -> 5
+4 -> 4
+5 -> 3
+6 -> 2
+matched
+unmatched
+unmatched
+matched
+CC(=C1CC=C(C)CC1)C |ha:1,2,3,4,5,6,7,8,hb:1,2,3,4,5,6,7,8|
+0 -> 1
+1 -> 3
+2 -> 4
+3 -> 5
+4 -> 6
+5 -> 7
+6 -> 8
+7 -> 9
+unmatched
+unmatched
+matched
+NC1NC(=O)C2N=C(C(=O)O)C=NC=2N=1 |ha:0,1,2,3,5,6,7,11,12,13,14,hb:0,1,2,4,5,6,10,11,12,13,14,15|
+0 -> 0
+1 -> 1
+2 -> 2
+3 -> 3
+4 -> 8
+5 -> 7
+6 -> 6
+7 -> 5
+8 -> 4
+9 -> 12
+10 -> 14
+unmatched
+matched
+NC1NC(=O)C2N=CC(NC=2N=1)=O |ha:0,1,2,3,5,6,7,8,9,10,11,hb:0,1,2,4,5,6,7,8,9,10,11,12|
+0 -> 0
+1 -> 1
+2 -> 2
+3 -> 3
+4 -> 9
+5 -> 7
+6 -> 6
+7 -> 5
+8 -> 4
+9 -> 10
+10 -> 12
+unmatched
+matched
+matched
+unmatched
+unmatched
+unmatched
+unmatched
+matched
+OC1C2=CNN=C2N=CN=1 |ha:0,1,2,6,7,hb:0,1,6,7|
+0 -> 0
+1 -> 1
+2 -> 6
+3 -> 5
+4 -> 4
+*** Specific cases ***
+matched
+P(OCc1c(N)[n]c(C)[n]c1)(O)(O)=O |ha:3,4,10,hb:3,10|
+0 -> 11
+1 -> 10
+2 -> 20
+matched
+P(=O)(O)(O)OCc1c[n]c(C)[n]c1N |ha:6,7,12,hb:6,12|
+0 -> 4
+1 -> 3
+2 -> 10

@@ -7,14 +7,25 @@ using System.IO;
 namespace com.epam.indigo
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    public unsafe class IndigoInchi
+    public unsafe class IndigoInchi : IDisposable
     {
         private Indigo _indigo;
 
         public IndigoInchi(Indigo indigo)
         {
             _indigo = indigo;
-            resetOptions(); // Preloads native library to register renderer options
+             // Preloads native library to register options
+            _indigo.checkResult(IndigoInchiLib.indigoInchiInit());
+        }
+
+        ~IndigoInchi()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            _indigo.checkResult(IndigoInchiLib.indigoInchiDispose());
         }
 
         public String version()

@@ -244,9 +244,29 @@ static void indigoResetBasicOptions()
     self.init();
 }
 
-_IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter()
+void indigoProductEnumeratorSetOneTubeMode(const char* mode_string)
 {
-    IndigoOptionManager& mgr = indigoGetOptionManager();
+    Indigo& self = indigoGetInstance();
+    if (strcmp(mode_string, "one-tube") == 0)
+        self.rpe_params.is_one_tube = true;
+    else if (strcmp(mode_string, "grid") == 0)
+        self.rpe_params.is_one_tube = false;
+    else
+        throw IndigoError("%s is bad reaction product enumerator mode string", mode_string);
+}
+
+void indigoProductEnumeratorGetOneTubeMode(Array<char>& value)
+{
+    Indigo& self = indigoGetInstance();
+    if (self.rpe_params.is_one_tube)
+        value.readString("one-tube", true);
+    else
+        value.readString("grid", true);
+}
+
+void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
+{
+    IndigoOptionManager& mgr = indigoGetOptionManager(id);
     OsLocker locker(mgr.lock);
 
 #define indigo indigoGetInstance()
@@ -300,7 +320,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter()
     mgr.setOptionHandlerBool("dearomatize-verification", SETTER_GETTER_BOOL_OPTION(indigo.arom_options.dearomatize_check));
     mgr.setOptionHandlerBool("unique-dearomatization", SETTER_GETTER_BOOL_OPTION(indigo.unique_dearomatization));
     mgr.setOptionHandlerBool("stereochemistry-bidirectional-mode", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.bidirectional_mode));
-    mgr.setOptionHandlerBool("stereochemistry-detect-haworth-projection", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.detect_haworth_projection));
+    mgr.setOptionHandlerBool("stereochemistry-detect-haworth-projection",
+                             SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.detect_haworth_projection));
 
     mgr.setOptionHandlerBool("standardize-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_stereo));
     mgr.setOptionHandlerBool("standardize-charges", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_charges));
@@ -326,7 +347,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter()
     mgr.setOptionHandlerBool("standardize-clear-cis-trans", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_cis_trans_bond_stereo));
     mgr.setOptionHandlerBool("standardize-stereo-from-coordinates", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.set_stereo_from_coordinates));
     mgr.setOptionHandlerBool("standardize-reposition-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.reposition_stereo_bonds));
-    mgr.setOptionHandlerBool("standardize-reposition-axial-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.reposition_axial_stereo_bonds));
+    mgr.setOptionHandlerBool("standardize-reposition-axial-stereo-bonds",
+                             SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.reposition_axial_stereo_bonds));
     mgr.setOptionHandlerBool("standardize-fix-direction-wedge-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.fix_direction_of_wedge_bonds));
     mgr.setOptionHandlerBool("standardize-clear-charges", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_charges));
     mgr.setOptionHandlerBool("standardize-highlight-colors", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_highlight_colors));
@@ -352,8 +374,12 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter()
     mgr.setOptionHandlerBool("gross-formula-add-isotopes", SETTER_GETTER_BOOL_OPTION(indigo.gross_formula_options.add_isotopes));
 
     mgr.setOptionHandlerBool("scsr-ignore-chem-templates", SETTER_GETTER_BOOL_OPTION(indigo.scsr_ignore_chem_templates));
-}
 
-_IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter()
-{
+    mgr.setOptionHandlerBool("rpe-multistep-reactions", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_multistep_reactions));
+    mgr.setOptionHandlerString("rpe-mode", indigoProductEnumeratorSetOneTubeMode, indigoProductEnumeratorGetOneTubeMode);
+    mgr.setOptionHandlerBool("rpe-self-reaction", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_self_react));
+    mgr.setOptionHandlerInt("rpe-max-depth", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_deep_level));
+    mgr.setOptionHandlerInt("rpe-max-products-count", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_product_count));
+    mgr.setOptionHandlerBool("rpe-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_layout));
+    mgr.setOptionHandlerBool("transform-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.transform_is_layout));
 }

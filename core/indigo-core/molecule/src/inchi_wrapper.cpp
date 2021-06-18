@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <mode.h>
 
 #include "molecule/inchi_wrapper.h"
 
@@ -72,7 +73,7 @@ private:
 
 const char* InchiWrapper::version()
 {
-    return "1.03";
+    return APP_DESCRIPTION;
 }
 
 InchiWrapper::InchiWrapper()

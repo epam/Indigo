@@ -1,0 +1,16 @@
+**** Test orientation_smart0 ****
+  Item #0: Result: Success
+**** Test orientation_smart1 ****
+  Item #0: Result: Success
+**** Test orientation_horizontal_smart0 ****
+  Item #0: Result: Success
+**** Test orientation_horizontal_smart1 ****
+  Item #0: Result: Success
+**** Test orientation_vertical_smart0 ****
+  Item #0: Result: Success
+**** Test orientation_vertical_smart1 ****
+  Item #0: Result: Success
+**** Test orientation_unspecified_smart0 ****
+  Item #0: Result: Success
+**** Test orientation_unspecified_smart1 ****
+  Item #0: Result: Success

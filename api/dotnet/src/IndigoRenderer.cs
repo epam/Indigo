@@ -7,7 +7,7 @@ using System.IO;
 namespace com.epam.indigo
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    public unsafe class IndigoRenderer
+    public unsafe class IndigoRenderer : IDisposable
     {
         private Indigo _indigo;
         private IndigoRendererLib IndigoRendererLib;
@@ -15,7 +15,18 @@ namespace com.epam.indigo
         public IndigoRenderer(Indigo indigo)
         {
             _indigo = indigo;
-            reset(); // Preloads native library to register renderer options
+             // Preloads native library to register renderer options
+            _indigo.checkResult(IndigoRendererLib.indigoRendererInit());
+        }
+
+        ~IndigoRenderer()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            _indigo.checkResult(IndigoRendererLib.indigoRendererDispose());
         }
 
         public void renderToFile(IndigoObject obj, string filename)

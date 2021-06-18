@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -73,51 +68,60 @@
 
 #ifdef TARGET_LIB_FOR_WINCHI
 
-void (*FWPRINT)
-            (const char * format, va_list argptr ) = NULL;
-void (*DRAWDATA)
-            ( struct DrawData * pDrawData) = NULL;
-int (*DRAWDATA_EXISTS)
-            ( int nComponent, int nType, int bReconnected ) = NULL;
-struct DrawData * (*GET_DRAWDATA)
-            ( int nComponent, int nType, int bReconnected ) = NULL;
+void( *FWPRINT )
+( const char * format, va_list argptr ) = NULL;
+void( *FWPUSH )
+( const char *s );
+void( *DRAWDATA )
+( struct DrawData * pDrawData ) = NULL;
+int( *DRAWDATA_EXISTS )
+( int nComponent, int nType, int bReconnected ) = NULL;
+struct DrawData * ( *GET_DRAWDATA )
+    ( int nComponent, int nType, int bReconnected ) = NULL;
 #endif
 
-int get_processing_warnings_one_InChI( INChI *pINChI, INP_ATOM_DATA *inp_norm_data, char *pStrErrStruct);
+/* Local */
+int GetProcessingWarningsOneInChI( INChI *pINChI,
+                                   INP_ATOM_DATA *inp_norm_data,
+                                   char *pStrErrStruct,
+                                   int bNoWarnings);
 
-/*
-    Main serialization (i.e. InChI output) procedure
-*/
-int SortAndPrintINChI( CANON_GLOBALS *pCG,
-                       INCHI_IOSTREAM *out_file,
-                       INCHI_IOSTREAM_STRING *strbuf,
-                       INCHI_IOSTREAM *log_file,
-                       INPUT_PARMS *ip,
-                       ORIG_ATOM_DATA *orig_inp_data,
-                       ORIG_ATOM_DATA *prep_inp_data,
-                       COMP_ATOM_DATA composite_norm_data[INCHI_NUM][TAUT_NUM+1],
-                       ORIG_STRUCT *pOrigStruct,
-                       int num_components[INCHI_NUM],
-                       int num_non_taut[INCHI_NUM],
-                       int num_taut[INCHI_NUM],
-                       INCHI_MODE bTautFlags[INCHI_NUM],
-                       INCHI_MODE bTautFlagsDone[INCHI_NUM],
-                       NORM_CANON_FLAGS *pncFlags,
-                       long num_inp,
-                       PINChI2 *pINChI[INCHI_NUM],
-                       PINChI_Aux2 *pINChI_Aux[INCHI_NUM],
-                       int *pSortPrintINChIFlags,
-                       unsigned char save_opt_bits)
+
+
+/****************************************************************************
+ Main InChI serialization procedure
+****************************************************************************/
+int SortAndPrintINChI( CANON_GLOBALS            *pCG,
+                       INCHI_IOSTREAM           *out_file,
+                       INCHI_IOS_STRING         *strbuf,
+                       INCHI_IOSTREAM           *log_file,
+                       INPUT_PARMS              *ip,
+                       ORIG_ATOM_DATA           *orig_inp_data,
+                       ORIG_ATOM_DATA           *prep_inp_data,
+                       COMP_ATOM_DATA           composite_norm_data[INCHI_NUM][TAUT_NUM + 1],
+                       ORIG_STRUCT              *pOrigStruct,
+                       int                      num_components[INCHI_NUM],
+                       int                      num_non_taut[INCHI_NUM],
+                       int                      num_taut[INCHI_NUM],
+                       INCHI_MODE               bTautFlags[INCHI_NUM],
+                       INCHI_MODE               bTautFlagsDone[INCHI_NUM],
+                       NORM_CANON_FLAGS         *pncFlags,
+                       long                     num_inp,
+                       PINChI2                  *pINChI[INCHI_NUM],
+                       PINChI_Aux2              *pINChI_Aux[INCHI_NUM],
+                       int                      *pSortPrintINChIFlags,
+                       unsigned char            save_opt_bits )
 {
-INCHI_SORT *pINChISort[INCHI_NUM][TAUT_NUM];
-int j, i, k, k1, ret, ret2, iINChI, max_num_components;
-int INCHI_basic_or_INCHI_reconnected;
-INCHI_MODE nMode;
-int bDisconnectedCoord = (0 != (bTautFlagsDone[0] & TG_FLAG_DISCONNECT_COORD_DONE));
-int bINChIOutputOptions0, bCurOption, bINChIOutputOptionsCur, bEmbedReconnected;
-static const char szAnnHdr[] = "InChI ANNOTATED CONTENTS";
+    INCHI_SORT *pINChISort[INCHI_NUM][TAUT_NUM];
+    int j, i, k, k1, ret, ret2, iINChI, max_num_components;
+    int INCHI_basic_or_INCHI_reconnected;
+    INCHI_MODE nMode;
+    int bDisconnectedCoord = ( 0 != ( bTautFlagsDone[0] & TG_FLAG_DISCONNECT_COORD_DONE ) );
+    int bINChIOutputOptions0, bCurOption, bINChIOutputOptionsCur, bEmbedReconnected;
+    static const char szAnnHdr[] = "InChI ANNOTATED CONTENTS";
 #ifdef TARGET_LIB_FOR_WINCHI
-int ikflag=0;
+    int ikflag = 0;
+    out_file->type = INCHI_IOS_TYPE_STRING;
 #endif
 
     /*
@@ -128,73 +132,76 @@ int ikflag=0;
         pINChI[INCHI_REC] refers to the reconnected structure,
             and only if the input structure has been disconnected, that is,
             num_components[INCHI_REC] > 0
-
     */
-
 
     ret = 1;
 
-    for ( i = 0; i < INCHI_NUM; i ++ )
+    for (i = 0; i < INCHI_NUM; i++)
     {
-        for ( k = 0; k < TAUT_NUM; k ++ )
+        for (k = 0; k < TAUT_NUM; k++)
         {
-            bTautFlags[i]     |= pncFlags->bTautFlags[i][k];
+            bTautFlags[i] |= pncFlags->bTautFlags[i][k];
             bTautFlagsDone[i] |= pncFlags->bTautFlagsDone[i][k];
         }
     }
 
     nMode = ip->nMode;
-    if ( !(nMode & (REQ_MODE_BASIC|REQ_MODE_TAUT)) )
+    if (!( nMode & ( REQ_MODE_BASIC | REQ_MODE_TAUT ) ))
     {
-        nMode |= (REQ_MODE_BASIC|REQ_MODE_TAUT);
+        nMode |= ( REQ_MODE_BASIC | REQ_MODE_TAUT );
     }
-
 
     max_num_components = 0;
-    for ( j = 0; j < INCHI_NUM; j ++ )
+    for (j = 0; j < INCHI_NUM; j++)
     {
-        if ( max_num_components < num_components[j] )
-            max_num_components = num_components[j];
-    }
-    if ( max_num_components <= 0 )
-        max_num_components = 1;
-
-
-    for ( j = 0, i = 0; j < INCHI_NUM; j ++ )
-    {
-        if ( num_components[j] )
+        if (max_num_components < num_components[j])
         {
-            for ( k1 = 0; k1 < TAUT_NUM; k1 ++ )
+            max_num_components = num_components[j];
+        }
+    }
+    if (max_num_components <= 0)
+    {
+        max_num_components = 1;
+    }
+
+    for (j = 0, i = 0; j < INCHI_NUM; j++)
+    {
+        if (num_components[j])
+        {
+            for (k1 = 0; k1 < TAUT_NUM; k1++)
             {
                 pINChISort[j][k1] =
-                    (INCHI_SORT *)inchi_calloc(max_num_components,
-                                               sizeof(pINChISort[0][0][0]) );
+                    (INCHI_SORT *) inchi_calloc( max_num_components,
+                                               sizeof( pINChISort[0][0][0] ) );
                 i += !pINChISort[j][k1]; /* number of failed allocatons */
             }
         }
         else
         {
-            for ( k1 = 0; k1 < TAUT_NUM; k1 ++ )
+            for (k1 = 0; k1 < TAUT_NUM; k1++)
             {
                 pINChISort[j][k1] = NULL; /* keep BC happy */
             }
         }
     }
 
-    if ( i )
+    if (i)
     {
         ret = CT_OUT_OF_RAM;
         goto exit_function;
     }
 
-    for ( j = 0; j < INCHI_NUM; j ++ )
+    for (j = 0; j < INCHI_NUM; j++)
     {
-        if ( !num_components[j] )
+        if (!num_components[j])
+        {
             continue;
+        }
         iINChI = j;
 
 #if ( OUTPUT_CONNECTED_METAL_ONLY == 1 ) /* test: output connected as the only one INChI */
-        if ( INCHI_BAS == j && num_components[INCHI_REC] ) {
+        if (INCHI_BAS == j && num_components[INCHI_REC])
+        {
             j = INCHI_REC;
         }
 #endif
@@ -203,13 +210,13 @@ int ikflag=0;
         /* for only normal or disconnected coord compounds */
         /* (j=0=INCHI_BAS => normal or disconnected, j=1=INCHI_REC => reconnected */
 
-        for ( k1 = 0; k1 < TAUT_NUM; k1 ++ )
+        for (k1 = 0; k1 < TAUT_NUM; k1++)
         {
-            for ( i = 0; i < num_components[j]; i ++ )
+            for (i = 0; i < num_components[j]; i++)
             {
-                for ( k = 0; k < TAUT_NUM; k ++ )
+                for (k = 0; k < TAUT_NUM; k++)
                 {
-                    pINChISort[j][k1][i].pINChI[k]     = pINChI[j][i][k];
+                    pINChISort[j][k1][i].pINChI[k] = pINChI[j][i][k];
                     pINChISort[j][k1][i].pINChI_Aux[k] = pINChI_Aux[j][i][k];
                 }
                 pINChISort[j][k1][i].ord_number = i;
@@ -217,55 +224,60 @@ int ikflag=0;
         }
 
         /* Sort component INChIs */
-        for ( k1 = 0; k1 < TAUT_NUM; k1 ++ )
+        for (k1 = 0; k1 < TAUT_NUM; k1++)
         {
-            switch ( k1 )
+            switch (k1)
             {
-            case TAUT_NON:
-                qsort( pINChISort[j][k1],
-                       num_components[j],
-                       sizeof(pINChISort[0][0][0]),
-                       CompINChINonTaut2 );
-                break;
-            case TAUT_YES:
-                qsort( pINChISort[j][k1],
-                       num_components[j],
-                       sizeof(pINChISort[0][0][0]),
-                       CompINChITaut2 );
-                break;
+                case TAUT_NON:
+                    qsort( pINChISort[j][k1],
+                           num_components[j],
+                           sizeof( pINChISort[0][0][0] ),
+                           CompINChINonTaut2 );
+                    break;
+                case TAUT_YES:
+                    qsort( pINChISort[j][k1],
+                           num_components[j],
+                           sizeof( pINChISort[0][0][0] ),
+                           CompINChITaut2 );
+                    break;
             }
         }
 
 #ifndef COMPILE_ANSI_ONLY
         /* Find equivalent and wINChI display order;
         use requested in ip->bCompareComponents comparison */
-        ret = SaveEquComponentsInfoAndSortOrder ( iINChI, pINChISort[j], num_components,
+
+        ret = SaveEquComponentsInfoAndSortOrder( iINChI, pINChISort[j],
+                                                  num_components,
                                                   orig_inp_data, prep_inp_data,
 #if ( FIX_DALKE_BUGS == 1 )
-                                                  composite_norm_data
-                                                    ? composite_norm_data[j] : NULL,
+                                                  composite_norm_data ? composite_norm_data[j] : NULL,
 #else
                                                   composite_norm_data[j],
 #endif
                                                   ip->bCompareComponents );
-        if ( RETURNED_ERROR( ret ) )
+        if (RETURNED_ERROR( ret ))
         {
             ret = 0;
             goto exit_function;
         }
         else
+        {
             ret = 1;
+        }
 #endif
     } /* j */
 
-    if ( !( ip->bINChIOutputOptions & INCHI_OUT_PRINT_OPTIONS ) )
+    if (!( ip->bINChIOutputOptions & INCHI_OUT_PRINT_OPTIONS ))
     {
         /* Prepare InChI from the structures obtained by
            reversing InChI for returning to the caller */
-        for ( j = 0; j < INCHI_NUM; j ++ )
+        for (j = 0; j < INCHI_NUM; j++)
         {
-            if ( !num_components[j] )
+            if (!num_components[j])
+            {
                 continue;
+            }
 
             /* pINChI[iINCHI][iComponent][bTaut] */
             /* j  = disconnected/connected */
@@ -274,24 +286,24 @@ int ikflag=0;
             k1 = TAUT_YES; /* in Mobile H order */
             /* store components in Mobile H order */
 
-            for ( i = 0; i < num_components[j]; i ++ )
+            for (i = 0; i < num_components[j]; i++)
             {
 
-                if ( pINChISort[j][k1][i].pINChI[TAUT_NON] &&
-                    !pINChISort[j][k1][i].pINChI[TAUT_YES] )
+                if (pINChISort[j][k1][i].pINChI[TAUT_NON] &&
+                    !pINChISort[j][k1][i].pINChI[TAUT_YES])
                 {
                     /* make sure Mobile-H is always present */
-                    for ( k = 0; k < TAUT_NUM; k ++ )
+                    for (k = 0; k < TAUT_NUM; k++)
                     {
-                        pINChI[j][i][k]     = pINChISort[j][k1][i].pINChI[ALT_TAUT(k)];
-                        pINChI_Aux[j][i][k] = pINChISort[j][k1][i].pINChI_Aux[ALT_TAUT(k)];
+                        pINChI[j][i][k] = pINChISort[j][k1][i].pINChI[ALT_TAUT( k )];
+                        pINChI_Aux[j][i][k] = pINChISort[j][k1][i].pINChI_Aux[ALT_TAUT( k )];
                     }
                 }
                 else
                 {
-                    for ( k = 0; k < TAUT_NUM; k ++ )
+                    for (k = 0; k < TAUT_NUM; k++)
                     {
-                        pINChI[j][i][k]     = pINChISort[j][k1][i].pINChI[k];
+                        pINChI[j][i][k] = pINChISort[j][k1][i].pINChI[k];
                         pINChI_Aux[j][i][k] = pINChISort[j][k1][i].pINChI_Aux[k];
                     }
                 }
@@ -302,207 +314,237 @@ int ikflag=0;
     {
         /* Print InChI string(s) */
         bINChIOutputOptions0 = ip->bINChIOutputOptions & ~INCHI_OUT_PRINT_OPTIONS;
-        bEmbedReconnected    = ip->bINChIOutputOptions & INCHI_OUT_EMBED_REC;
-#ifdef TARGET_LIB_FOR_WINCHI
-        out_file->type = INCHI_IOSTREAM_TYPE_STRING;
-#endif
+        bEmbedReconnected = ip->bINChIOutputOptions & INCHI_OUT_EMBED_REC;
 
-        for ( i=1; i<=2; i++ )
+        for (i = 1; i <= 2; i++)
         {
             bCurOption = INCHI_OUT_PLAIN_TEXT;
-            if ( i==2 )
+            if (i == 2)
+            {
                 bCurOption = INCHI_OUT_PLAIN_TEXT_COMMENTS;
                 /* continue; */
-            if ( ! (ip->bINChIOutputOptions & bCurOption) )
+            }
+            if (!( ip->bINChIOutputOptions & bCurOption ))
+            {
                 continue;
+            }
 
             bINChIOutputOptionsCur = bINChIOutputOptions0 | bCurOption;
-            if ( i==1 )
+            if (i == 1)
             {
                 /* output INChI */
                 bINChIOutputOptionsCur |= bEmbedReconnected;
             }
-            else if ( i==2)
+            else if (i == 2)
             {
                 /* output annotation */
                 inchi_ios_print( out_file, "\n==== %s ====\n", szAnnHdr );
+                ITRACE_( "\n==== %s ====\n", szAnnHdr );
                 bINChIOutputOptionsCur |= bEmbedReconnected;
                 bINChIOutputOptionsCur &= ~INCHI_OUT_TABBED_OUTPUT;
             }
             else
+            {
                 continue;
+            }
 
-#ifdef TARGET_LIB_FOR_WINCHI
-            /*if ( ikflag==0 )*/
-                out_file->type = INCHI_IOSTREAM_TYPE_STRING;
+#if 0 /*^^^#ifdef TARGET_LIB_FOR_WINCHI*/
+            inchi_ios_free_str( out_file );
 #endif
+
             INCHI_basic_or_INCHI_reconnected = INCHI_BAS;
 
-            ret2 = OutputINChI2( pCG, strbuf, pINChISort,
+            ret2 = OutputINChI2( pCG,
+                                 strbuf,
+                                 pINChISort,
                                  INCHI_basic_or_INCHI_reconnected,
-                                 pOrigStruct, bDisconnectedCoord, OUT_TN, bINChIOutputOptionsCur,
-                                 ip->bAbcNumbers, ip->bCtPredecessors, ip->bNoStructLabels,
-                                 num_components, num_non_taut, num_taut,
-                                 out_file, log_file,
-                                 num_inp,ip->pSdfLabel,ip->pSdfValue, ip->lSdfId,
-                                 pSortPrintINChIFlags, save_opt_bits);
+                                 orig_inp_data,
+                                 pOrigStruct,
+                                 ip,
+                                 bDisconnectedCoord,
+                                 OUT_TN,
+                                 bINChIOutputOptionsCur,
+                                 num_components,
+                                 num_non_taut,
+                                 num_taut,
+                                 out_file,
+                                 log_file,
+                                 num_inp,
+                                 pSortPrintINChIFlags,
+                                 save_opt_bits );
 
             ret &= ret2;
 
-/************************** not used anymore **************************************************************/
-            if ( ret &&
-                 !(bINChIOutputOptionsCur & INCHI_OUT_EMBED_REC) )
-            {
-                INCHI_basic_or_INCHI_reconnected = INCHI_REC;
-
-                ret2 = OutputINChI2( pCG, strbuf,pINChISort,
-                                     INCHI_basic_or_INCHI_reconnected,
-                                     pOrigStruct, bDisconnectedCoord, OUT_TN, bINChIOutputOptionsCur,
-                                     ip->bAbcNumbers, ip->bCtPredecessors, ip->bNoStructLabels,
-                                     num_components, num_non_taut, num_taut,
-                                     out_file, log_file,
-                                     num_inp,ip->pSdfLabel,ip->pSdfValue,  ip->lSdfId,
-                                     pSortPrintINChIFlags, save_opt_bits);
-                ret &= ret2;
-            }
-/************************** end of not used anymore *********************************************************/
-
 #ifdef TARGET_LIB_FOR_WINCHI
             /* always calculate InChIKey */
-            ikflag++;
-            if (ikflag == 1)
+            winchi_calc_inchikey( ret, &ikflag, ip, out_file, log_file );
+            /*push_to_winchi_text_window( out_file );
+            inchi_ios_flush( out_file );*/
+
+#endif
+
+            if (!ret)
             {
-                if (ret)
-                {
-                    char ik_string[256];    /* Resulting InChIKey string */
-                    int ik_ret=0;           /* InChIKey-calc result code */
-                    int xhash1, xhash2;
-                    char szXtra1[256], szXtra2[256];
-                    size_t slen = out_file->s.nUsedLength;
-                    char *buf = NULL;
-
-                    extract_inchi_substring(&buf, out_file->s.pStr, slen);
-
-                    inchi_ios_flush(out_file);
-                    out_file->type = INCHI_IOSTREAM_TYPE_FILE;
-
-                    /* calculate and print InChIKey */
-
-                    if (NULL!=buf)
-                    {
-                        xhash1 = xhash2 = 0;
-                        if ( ( ip->bCalcInChIHash == INCHIHASH_KEY_XTRA1 ) ||
-                             ( ip->bCalcInChIHash == INCHIHASH_KEY_XTRA1_XTRA2 ) )
-                             xhash1 = 1;
-                        if ( ( ip->bCalcInChIHash == INCHIHASH_KEY_XTRA2 ) ||
-                             ( ip->bCalcInChIHash == INCHIHASH_KEY_XTRA1_XTRA2 ) )
-                             xhash2 = 1;
-                        ik_ret = GetINCHIKeyFromINCHI(buf, xhash1, xhash2, ik_string, szXtra1, szXtra2);
-                        inchi_free(buf);
-                    }
-                    else
-                        ik_ret = 3;
-
-                    if (ik_ret==INCHIKEY_OK)
-                    {
-                        /* NB: correctly treat tabbed output with InChIKey & hash extensions */
-                        char csep = '\n';
-                            if ( ip->bINChIOutputOptions & INCHI_OUT_TABBED_OUTPUT )
-                        csep = '\t';
-                        inchi_ios_print(out_file, "InChIKey=%-s",ik_string);
-                        if ( xhash1 )
-                            inchi_ios_print(out_file, "%cXHash1=%-s",csep,szXtra1);
-                        if ( xhash2 )
-                            inchi_ios_print(out_file, "%cXHash2=%-s",csep,szXtra2);
-                        inchi_ios_print(out_file, "\n");
-                    }
-                    else
-                    {
-                        inchi_ios_print(log_file, "Warning (Could not compute InChIKey: ", num_inp);
-                    }
-
-                    /*inchi_ios_flush(out_file);
-                    inchi_ios_flush2(log_file, stderr);*/
-                }
-                else
-                {
-                    inchi_ios_flush(out_file);
-                    out_file->type = INCHI_IOSTREAM_TYPE_FILE;
-                }
-            }
-#endif /* #ifdef TARGET_LIB_FOR_WINCHI */
-
-            if ( !ret )
                 break;
+            }
         } /* i */
     }
 
 
 exit_function:
-    for ( j = 0; j < INCHI_NUM; j ++ )
+
+    for (j = 0; j < INCHI_NUM; j++)
     {
-        for ( k1 = 0, i = 0; k1 < TAUT_NUM; k1 ++ )
+        for (k1 = 0, i = 0; k1 < TAUT_NUM; k1++)
         {
-            if ( pINChISort[j][k1] )
+            if (pINChISort[j][k1])
+            {
                 inchi_free( pINChISort[j][k1] );
+            }
         }
     }
+
+
     ret = ret ? 0 : _IS_FATAL;
 
     return ret;
 }
 
 
+/****************************************************************************
+ Specific to winchi-1 calculation of InChIKey
+****************************************************************************/
+void winchi_calc_inchikey( int            ret,
+                           int            *ikflag,
+                           INPUT_PARMS    *ip,
+                           INCHI_IOSTREAM *out_file,
+                           INCHI_IOSTREAM *log_file )
+{
+    char ik_string[256];    /* Resulting InChIKey string */
+    int ik_ret = 0;           /* InChIKey-calc result code */
+    int xhash1 = 0, xhash2 = 0;
+    char szXtra1[256], szXtra2[256];
+    size_t slen = out_file->s.nUsedLength;
+    char *buf = NULL;
+
+    ( *ikflag )++;
+    if (*ikflag != 1)
+    {
+        return;
+    }
+
+    if (ret == 0)
+    {
+        inchi_ios_flush( out_file );
+        return;
+    }
+
+    extract_inchi_substring( &buf, out_file->s.pStr, slen );
+
+    /* Calculate and print InChIKey */
+    if (NULL != buf)
+    {
+        xhash1 = xhash2 = 0;
+        if (( ip->bCalcInChIHash == INCHIHASH_KEY_XTRA1 ) ||
+            ( ip->bCalcInChIHash == INCHIHASH_KEY_XTRA1_XTRA2 ))
+        {
+            xhash1 = 1;
+        }
+        if (( ip->bCalcInChIHash == INCHIHASH_KEY_XTRA2 ) ||
+            ( ip->bCalcInChIHash == INCHIHASH_KEY_XTRA1_XTRA2 ))
+        {
+            xhash2 = 1;
+        }
+        ik_ret = GetINCHIKeyFromINCHI( buf, xhash1, xhash2, ik_string, szXtra1, szXtra2 );
+        inchi_free( buf );
+    }
+    else
+    {
+        ik_ret = 3;
+    }
+
+    if (ik_ret == INCHIKEY_OK)
+    {
+        /* NB: correctly treat tabbed output with InChIKey & hash extensions */
+        char csep = '\n';
+        if (ip->bINChIOutputOptions & INCHI_OUT_TABBED_OUTPUT)
+        {
+            csep = '\t';
+        }
+        inchi_ios_print( out_file, "InChIKey=%-s", ik_string );
+        if (xhash1)
+        {
+            inchi_ios_print( out_file, "%cXHash1=%-s", csep, szXtra1 );
+        }
+        if (xhash2)
+        {
+            inchi_ios_print( out_file, "%cXHash2=%-s", csep, szXtra2 );
+        }
+        inchi_ios_print( out_file, "\n" );
+    }
+    else
+    {
+        inchi_ios_print( log_file, "Warning (Could not compute InChIKey)\n" ); /*: ", num_inp);*/
+    }
+    /*inchi_ios_flush(out_file);*/
+
+    return;
+}
+
+
 #ifndef COMPILE_ANSI_ONLY /* { */
 
 
-/*
-    SaveEquComponentsInfoAndSortOrder
-*/
-int SaveEquComponentsInfoAndSortOrder ( int iINChI,
-                                        INCHI_SORT *pINChISort[TAUT_NUM],
-                                        int *num_components,
-                                        ORIG_ATOM_DATA *orig_inp_data,
-                                        ORIG_ATOM_DATA *prep_inp_data,
-                                        COMP_ATOM_DATA composite_norm_data[TAUT_NUM+1],
-                                        int bCompareComponents )
+/****************************************************************************/
+int SaveEquComponentsInfoAndSortOrder( int             iINChI,
+                                        INCHI_SORT      *pINChISort[TAUT_NUM],
+                                        int             *num_components,
+                                        ORIG_ATOM_DATA  *orig_inp_data,
+                                        ORIG_ATOM_DATA  *prep_inp_data,
+                                        COMP_ATOM_DATA  composite_norm_data[TAUT_NUM + 1],
+                                        int             bCompareComponents )
 {
-int nRet = 0, i, k, nNumDeleted;
-/* equivalent components and sorting order */
-/* bCompareComponents: bit = 1 => compare */
-/*                     bit = 2 => compare non-isotopic */
-/*                     bit = 4 => compare non-tautomeric  */
-int bCompareIsotopic, bCompareTaut, bCompareAlt;
-ORIG_ATOM_DATA *inp_data = NULL;
+    int nRet = 0, i, k, nNumDeleted;
+    int bCompareIsotopic, bCompareTaut, bCompareAlt;
+    ORIG_ATOM_DATA *inp_data = NULL;
 
-    if ( num_components[iINChI] <= 1 )
+    /* Equivalent components and sorting order                  */
+    /* bCompareComponents: bit = 1 => compare                   */
+    /*                     bit = 2 => compare non-isotopic      */
+    /*                     bit = 4 => compare non-tautomeric    */
+
+    if (num_components[iINChI] <= 1)
+    {
         return 0;
+    }
 
 #ifdef TARGET_LIB_FOR_WINCHI
-    if ( !DRAWDATA )
+    if (!DRAWDATA)
         return 0;
 #endif
 
-    if ( !(bCompareComponents & CMP_COMPONENTS) )
-        return 0;
-
-    bCompareIsotopic = !(bCompareComponents & CMP_COMPONENTS_NONISO);
-
-    bCompareTaut     =  (bCompareComponents & CMP_COMPONENTS_NONTAUT)
-                                                                ? TAUT_NON
-                                                                : TAUT_YES;
-
-    bCompareAlt      =  ALT_TAUT(bCompareTaut);
-
-    if ( num_components[iINChI] > 1 )
+    if (!( bCompareComponents & CMP_COMPONENTS ))
     {
-        if ( prep_inp_data[iINChI].bSavedInINCHI_LIB[iINChI] &&
-             prep_inp_data[iINChI].bPreprocessed[iINChI] )
+        return 0;
+    }
+
+    bCompareIsotopic = !( bCompareComponents & CMP_COMPONENTS_NONISO );
+
+    bCompareTaut = ( bCompareComponents & CMP_COMPONENTS_NONTAUT )
+        ? TAUT_NON
+        : TAUT_YES;
+
+    bCompareAlt = ALT_TAUT( bCompareTaut );
+
+    if (num_components[iINChI] > 1)
+    {
+        if (prep_inp_data[iINChI].bSavedInINCHI_LIB[iINChI] &&
+             prep_inp_data[iINChI].bPreprocessed[iINChI])
         {
-            inp_data = prep_inp_data+iINChI;
+            inp_data = prep_inp_data + iINChI;
         }
-        else if ( orig_inp_data->bSavedInINCHI_LIB[iINChI] &&
-                  !orig_inp_data->bPreprocessed[iINChI] )
+        else if (orig_inp_data->bSavedInINCHI_LIB[iINChI] &&
+                  !orig_inp_data->bPreprocessed[iINChI])
         {
             inp_data = orig_inp_data;
         }
@@ -511,80 +553,80 @@ ORIG_ATOM_DATA *inp_data = NULL;
             inp_data = NULL;
         }
 
-        if ( inp_data && !inp_data->nEquLabels &&
-             !prep_inp_data[iINChI].nSortedOrder )
+        if (inp_data && !inp_data->nEquLabels &&
+             !prep_inp_data[iINChI].nSortedOrder)
         {
             int i1, i2, nSet;
             AT_NUMB nAtNo;
-            AT_NUMB nNumAtoms = (AT_NUMB)inp_data->num_inp_atoms;
+            AT_NUMB nNumAtoms = (AT_NUMB) inp_data->num_inp_atoms;
 
-            if ( ( prep_inp_data[iINChI].nSortedOrder =
-                                 (AT_NUMB *)inchi_calloc(num_components[iINChI]+1,
-                                                         sizeof(prep_inp_data[0].nSortedOrder[0])) ) )
+            if (( prep_inp_data[iINChI].nSortedOrder =
+                (AT_NUMB *) inchi_calloc( num_components[iINChI] + 1,
+                    sizeof( prep_inp_data[0].nSortedOrder[0] ) ) ))
             {
                 inp_data->nNumEquSets = 0;
 
-                for ( i1 = 0, nSet = 0; i1 < num_components[iINChI]; i1 = i2 )
+                for (i1 = 0, nSet = 0; i1 < num_components[iINChI]; i1 = i2)
                 {
                     nNumDeleted =
-                        (pINChISort[bCompareTaut][i1].pINChI[bCompareTaut] &&
-                         pINChISort[bCompareTaut][i1].pINChI[bCompareTaut]->bDeleted);
+                        ( pINChISort[bCompareTaut][i1].pINChI[bCompareTaut] &&
+                         pINChISort[bCompareTaut][i1].pINChI[bCompareTaut]->bDeleted );
 
-                    for ( i2 = i1+1; i2 < num_components[iINChI]; i2 ++ )
+                    for (i2 = i1 + 1; i2 < num_components[iINChI]; i2++)
                     {
                         /* isotopic/non-isotopic comparison does not separate equivalent components */
-                        if ( CompINChI2( pINChISort[bCompareTaut]+i1,
-                                         pINChISort[bCompareTaut]+i2,
-                                         bCompareTaut, bCompareIsotopic ) )
+                        if (CompINChI2( pINChISort[bCompareTaut] + i1,
+                            pINChISort[bCompareTaut] + i2,
+                            bCompareTaut, bCompareIsotopic ))
                         {
                             break;
                         }
                         else
                         {
                             nNumDeleted +=
-                                (pINChISort[bCompareTaut][i2].pINChI[bCompareTaut] &&
-                                 pINChISort[bCompareTaut][i2].pINChI[bCompareTaut]->bDeleted);
+                                ( pINChISort[bCompareTaut][i2].pINChI[bCompareTaut] &&
+                                 pINChISort[bCompareTaut][i2].pINChI[bCompareTaut]->bDeleted );
                         }
                     }
 
-                    if ( i2 - i1 - nNumDeleted > 1 )
+                    if (i2 - i1 - nNumDeleted > 1)
                     {
-                        if ( inp_data->nEquLabels ||
-                             (inp_data->nEquLabels =
-                                (AT_NUMB *)inchi_calloc(inp_data->num_inp_atoms+1,
-                                                 sizeof(inp_data->nEquLabels[0]))) )
+                        if (inp_data->nEquLabels ||
+                            ( inp_data->nEquLabels =
+                            (AT_NUMB *) inchi_calloc( inp_data->num_inp_atoms + 1,
+                                sizeof( inp_data->nEquLabels[0] ) ) ))
                         {
-                            nSet ++;
+                            nSet++;
                                 /* found i2-i1 equivalent components && */
                                 /* memory has been allocated */
-                            for ( i = i1; i < i2; i ++ )
+                            for (i = i1; i < i2; i++)
                             {
                                 INChI_Aux *pINChI_Aux;
                                 int aux_test;
 
-                                if ( pINChISort[bCompareTaut][i].pINChI[bCompareTaut] &&
+                                if (pINChISort[bCompareTaut][i].pINChI[bCompareTaut] &&
                                      pINChISort[bCompareTaut][i].pINChI[bCompareTaut]->bDeleted)
                                     continue;
 
                                 aux_test =
-                                ( pINChISort[bCompareTaut][i].pINChI_Aux[bCompareTaut] &&
-                                  pINChISort[bCompareTaut][i].pINChI_Aux[bCompareTaut]->nNumberOfAtoms );
+                                    ( pINChISort[bCompareTaut][i].pINChI_Aux[bCompareTaut] &&
+                                      pINChISort[bCompareTaut][i].pINChI_Aux[bCompareTaut]->nNumberOfAtoms );
 
                                 pINChI_Aux =
                                     aux_test ? pINChISort[bCompareTaut][i].pINChI_Aux[bCompareTaut]
-                                             : ( pINChISort[bCompareTaut][i].pINChI_Aux[bCompareAlt] &&
-                                                 pINChISort[bCompareTaut][i].pINChI_Aux[bCompareAlt]->nNumberOfAtoms )
-                                                    ?    pINChISort[bCompareTaut][i].pINChI_Aux[bCompareAlt]
-                                                    :    (INChI_Aux *)NULL;
+                                    : ( pINChISort[bCompareTaut][i].pINChI_Aux[bCompareAlt] &&
+                                        pINChISort[bCompareTaut][i].pINChI_Aux[bCompareAlt]->nNumberOfAtoms )
+                                    ? pINChISort[bCompareTaut][i].pINChI_Aux[bCompareAlt]
+                                    : (INChI_Aux *) NULL;
 
-                                if ( pINChI_Aux && pINChI_Aux->nOrigAtNosInCanonOrd )
+                                if (pINChI_Aux && pINChI_Aux->nOrigAtNosInCanonOrd)
                                 {
-                                    for ( k = 0; k < pINChI_Aux->nNumberOfAtoms; k ++ )
+                                    for (k = 0; k < pINChI_Aux->nNumberOfAtoms; k++)
                                     {
-                                        if ( (nAtNo = pINChI_Aux->nOrigAtNosInCanonOrd[k]) &&
-                                              nAtNo <= nNumAtoms )
+                                        if (( nAtNo = pINChI_Aux->nOrigAtNosInCanonOrd[k] ) &&
+                                              nAtNo <= nNumAtoms)
                                         {
-                                            inp_data->nEquLabels[nAtNo-1] = nSet;
+                                            inp_data->nEquLabels[nAtNo - 1] = nSet;
                                         }
                                     }
                                 }
@@ -597,7 +639,7 @@ ORIG_ATOM_DATA *inp_data = NULL;
                     }
                 }
 
-                nRet |= nSet? 1:0;
+                nRet |= nSet ? 1 : 0;
             }
             else
             {
@@ -607,39 +649,39 @@ ORIG_ATOM_DATA *inp_data = NULL;
             inp_data->nNumEquSets = nSet;
             /* output order */
             prep_inp_data[iINChI].nSortedOrder[0] = 0;
-            for ( i1 = 0; i1 < num_components[iINChI]; i1 ++ )
+            for (i1 = 0; i1 < num_components[iINChI]; i1++)
             {
-                prep_inp_data[iINChI].nSortedOrder[i1+1] =
-                                        pINChISort[TAUT_YES][i1].ord_number+1;
+                prep_inp_data[iINChI].nSortedOrder[i1 + 1] =
+                    pINChISort[TAUT_YES][i1].ord_number + 1;
             }
 
 #ifdef TARGET_LIB_FOR_WINCHI /* { */
-            if ( DRAWDATA && GET_DRAWDATA &&
+            if (DRAWDATA && GET_DRAWDATA &&
                  inp_data->nNumEquSets > 0 &&
-                 inp_data->nEquLabels )
+                 inp_data->nEquLabels)
             {
                 int    nType = inp_data->bPreprocessed[iINChI]
-                                        ?    COMPONENT_ORIGINAL_PREPROCESSED
-                                        :    COMPONENT_ORIGINAL;
+                    ? COMPONENT_ORIGINAL_PREPROCESSED
+                    : COMPONENT_ORIGINAL;
 
-                struct DrawData *pDrawData = GET_DRAWDATA( 0, nType, iINChI);
-                if (  pDrawData &&
+                struct DrawData *pDrawData = GET_DRAWDATA( 0, nType, iINChI );
+                if (pDrawData &&
                       pDrawData->pWindowData &&
-                     !pDrawData->pWindowData->nEquLabels )
+                     !pDrawData->pWindowData->nEquLabels)
                 {
                     /* copy equivalence data from inp_data */
                     /* to pDrawData->pWindowData           */
-                    if ( inp_data->nEquLabels &&
-                         (pDrawData->pWindowData->nEquLabels =
-                            (AT_NUMB *)inchi_calloc(inp_data->num_inp_atoms,
-                                                    sizeof(inp_data->nEquLabels[0]))))
+                    if (inp_data->nEquLabels &&
+                        ( pDrawData->pWindowData->nEquLabels =
+                        (AT_NUMB *) inchi_calloc( inp_data->num_inp_atoms,
+                            sizeof( inp_data->nEquLabels[0] ) ) ))
                     {
                         memcpy( pDrawData->pWindowData->nEquLabels,
                                 inp_data->nEquLabels,
-                                inp_data->num_inp_atoms*
-                                            sizeof(inp_data->nEquLabels[0]));
-                        pDrawData->pWindowData->nNumEquSets  =
-                                                        inp_data->nNumEquSets;
+                                inp_data->num_inp_atoms *
+                                            sizeof( inp_data->nEquLabels[0] ) );
+                        pDrawData->pWindowData->nNumEquSets =
+                            inp_data->nNumEquSets;
                         pDrawData->pWindowData->nCurEquLabel = 0;
                     }
                 }
@@ -653,37 +695,35 @@ ORIG_ATOM_DATA *inp_data = NULL;
 }
 
 
-/*
-    DisplayTheWholeCompositeStructure
-*/
-int DisplayTheWholeCompositeStructure( struct tagCANON_GLOBALS *pCG,
-                                       struct tagINCHI_CLOCK *ic,
-                                       INPUT_PARMS *ip,
-                                       struct tagStructData *sd,
-                                       long num_inp,
-                                       int iINChI,
-                                       PINChI2 *pINChI2,
-                                       PINChI_Aux2 *pINChI_Aux2,
-                                       ORIG_ATOM_DATA *orig_inp_data,
-                                       ORIG_ATOM_DATA *prep_inp_data,
-                                       COMP_ATOM_DATA composite_norm_data[TAUT_NUM+1] )
+/****************************************************************************/
+int DisplayTheWholeCompositeStructure( struct tagCANON_GLOBALS  *pCG,
+                                       struct tagINCHI_CLOCK    *ic,
+                                       INPUT_PARMS              *ip,
+                                       struct tagStructData     *sd,
+                                       long                     num_inp,
+                                       int                      iINChI,
+                                       PINChI2                  *pINChI2,
+                                       PINChI_Aux2              *pINChI_Aux2,
+                                       ORIG_ATOM_DATA           *orig_inp_data,
+                                       ORIG_ATOM_DATA           *prep_inp_data,
+                                       COMP_ATOM_DATA           composite_norm_data[TAUT_NUM + 1] )
 {
-ORIG_ATOM_DATA *inp_data = NULL;
-int jj, j, k, err = 0, nNumIntermediateTaut = 0, bDisplayTaut;
-char szTitle[256];
-int nNumTautComponents, m;
-int bCompareIsotopic   = !(ip->bCompareComponents & CMP_COMPONENTS_NONISO);
-int bCompareTaut       =  (ip->bCompareComponents & CMP_COMPONENTS_NONTAUT) ? TAUT_NON : TAUT_YES;
+    ORIG_ATOM_DATA *inp_data = NULL;
+    int jj, j, k, err = 0, nNumIntermediateTaut = 0, bDisplayTaut;
+    char szTitle[256];
+    int nNumTautComponents, m;
+    int bCompareIsotopic = !( ip->bCompareComponents & CMP_COMPONENTS_NONISO );
+    int bCompareTaut = ( ip->bCompareComponents & CMP_COMPONENTS_NONTAUT ) ? TAUT_NON : TAUT_YES;
 
-    if ( ip->bCompareComponents & CMP_COMPONENTS )
+    if (ip->bCompareComponents & CMP_COMPONENTS)
     {
-        if ( prep_inp_data[iINChI].bSavedInINCHI_LIB[iINChI] && prep_inp_data[iINChI].bPreprocessed[iINChI] )
+        if (prep_inp_data[iINChI].bSavedInINCHI_LIB[iINChI] && prep_inp_data[iINChI].bPreprocessed[iINChI])
         {
-            inp_data       = prep_inp_data+iINChI;
+            inp_data = prep_inp_data + iINChI;
         }
-        else if ( orig_inp_data->bSavedInINCHI_LIB[iINChI] && !orig_inp_data->bPreprocessed[iINChI] )
+        else if (orig_inp_data->bSavedInINCHI_LIB[iINChI] && !orig_inp_data->bPreprocessed[iINChI])
         {
-            inp_data       = orig_inp_data;
+            inp_data = orig_inp_data;
         }
     }
 
@@ -699,132 +739,135 @@ int bCompareTaut       =  (ip->bCompareComponents & CMP_COMPONENTS_NONTAUT) ? TA
      **************************************************************************/
 
     for ( jj = 0;
-                ip->bDisplayCompositeResults &&
-                !sd->bUserQuitComponentDisplay &&
-                jj <= TAUT_INI;
-                                jj ++ )
+          ip->bDisplayCompositeResults && !sd->bUserQuitComponentDisplay && jj <= TAUT_INI;
+          jj++)
     {
-        j = (jj==0) ? TAUT_NON
-                    : (jj==1)? TAUT_INI
-                             : (jj==2) ? TAUT_YES
-                                       : -1;
+        j = ( jj == 0 )
+            ? TAUT_NON : ( jj == 1 ) ? TAUT_INI : ( jj == 2 ) ? TAUT_YES : -1;
 
-        if ( j < 0 )
+        if (j < 0)
+        {
             continue;
+        }
 
-        if ( composite_norm_data[j].bExists &&
-             composite_norm_data[j].num_components > 1 )
+        if (composite_norm_data[j].bExists &&
+             composite_norm_data[j].num_components > 1)
         {
 
-            bDisplayTaut = ( !(ip->nMode & REQ_MODE_BASIC) && !j ) ? -1
-                                                                   : j;
+            bDisplayTaut = ( !( ip->nMode & REQ_MODE_BASIC ) && !j ) ? -1 : j;
             nNumTautComponents = 0;
-            if ( bDisplayTaut )
+            if (bDisplayTaut)
             {
                 /* find whether the structure is actually tautomeric */
-                for ( m = 0;
-                        m < composite_norm_data[TAUT_YES].num_components;
-                                                                        m ++ )
+                for (m = 0; m < composite_norm_data[TAUT_YES].num_components; m++)
                 {
-                    if ( !pINChI2[m][TAUT_YES] )
+                    if (!pINChI2[m][TAUT_YES])
+                    {
                         continue;
-                    if ( pINChI2[m][TAUT_YES]->bDeleted ||
-                         pINChI2[m][TAUT_YES]->lenTautomer > 0 )
-                        nNumTautComponents ++;
+                    }
+                    if (pINChI2[m][TAUT_YES]->bDeleted ||
+                         pINChI2[m][TAUT_YES]->lenTautomer > 0)
+                    {
+                        nNumTautComponents++;
+                    }
                 }
             }
 
-            for ( k = 0;
-                        k <= composite_norm_data[j].bHasIsotopicLayer &&
-                        !sd->bUserQuitComponentDisplay;
-                                                    k ++ )
+            for (k = 0;
+                 k <= composite_norm_data[j].bHasIsotopicLayer && !sd->bUserQuitComponentDisplay;
+                 k++)
             {
                 /*  added number of components, added another format */
                 /* for a single component case - DCh         */
-                int bMobileH = (bDisplayTaut>0 && nNumTautComponents);
+                int bMobileH = ( bDisplayTaut > 0 && nNumTautComponents );
 
                 sprintf( szTitle, "%s Structure #%ld%s%s.%s%s%s%s%s",
-                              j == TAUT_INI? "Preprocessed":"Result for", num_inp,
-                              bMobileH? ", mobile H":
-                              bDisplayTaut==0?", fixed H":"",
+                              j == TAUT_INI ? "Preprocessed" : "Result for", num_inp,
+                              bMobileH ? ", mobile H" :
+                              bDisplayTaut == 0 ? ", fixed H" : "",
                               /*j? ", mobile H":", fixed H",*/
-                              k? ", isotopic":"",
-                              SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue),
-                              iINChI? " (Reconnected)":"");
+                              k ? ", isotopic" : "",
+                              SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ),
+                              iINChI ? " (Reconnected)" : "" );
 
 #ifndef TARGET_LIB_FOR_WINCHI
-
                 /****** Display composite Result structure **************/
-                nNumIntermediateTaut += (j == TAUT_INI );
+                nNumIntermediateTaut += ( j == TAUT_INI );
                 /* display TAUT_INI (preprocessed) only once */
-                if ( j != TAUT_INI || nNumIntermediateTaut == 1 )
+                if (j != TAUT_INI || nNumIntermediateTaut == 1)
                 {
                     err =
                         DisplayCompositeStructure( pCG,
                                                    composite_norm_data,
-                                                   j==TAUT_INI ? 1:k,
+                                                   orig_inp_data->polymer,
+                                                   j == TAUT_INI ? 1 : k,
                                                         /* bIsotopic*/
                                                    j, /*tautomeric*/
-                                                   j==TAUT_INI ? NULL
+                                                   j == TAUT_INI ? NULL
                                                                : pINChI2,
-                                                   j==TAUT_INI ? NULL
+                                                   j == TAUT_INI ? NULL
                                                                : pINChI_Aux2,
                                                    ip->bAbcNumbers,
                                                    &ip->dp,
                                                    ip->nMode,
                                                    szTitle );
                 }
-                if ( sd->bUserQuitComponentDisplay = (err==ESC_KEY) )
+                if (sd->bUserQuitComponentDisplay = ( err == ESC_KEY ))
+                {
                     break;
+                }
 
-                if ( inp_data &&
+                if (inp_data &&
                      inp_data->nEquLabels &&
                      inp_data->nNumEquSets &&
                      !sd->bUserQuitComponentDisplay &&
                      ( ( j == bCompareTaut || bCompareTaut && j == TAUT_INI ) ||
-                       bCompareTaut && !composite_norm_data[bCompareTaut].bExists ) &&
-                       ( k == bCompareIsotopic || bCompareIsotopic && !composite_norm_data[j].bHasIsotopicLayer )
+                         bCompareTaut && !composite_norm_data[bCompareTaut].bExists ) &&
+                         ( k == bCompareIsotopic || bCompareIsotopic && !composite_norm_data[j].bHasIsotopicLayer )
                       )
                 {
                     AT_NUMB         nEquSet;
                     int             bDisplaySaved = ip->bDisplay;
 
                     /****** Display Equ Sets of composite Result structure **************/
-                    for ( nEquSet = 1;
+                    for (nEquSet = 1;
                                     nEquSet <= inp_data->nNumEquSets;
-                                                                    nEquSet ++ )
+                                                                    nEquSet++)
                     {
                         sprintf( szTitle, "Equ set %d of %d, %s Structure #%ld%s%s.%s%s%s%s%s",
                                       nEquSet, inp_data->nNumEquSets,
-                                      j == TAUT_INI? "Preprocessed":"Result for",
+                                      j == TAUT_INI ? "Preprocessed" : "Result for",
                                       num_inp,
-                                      (bDisplayTaut>0 && nNumTautComponents)? ", mobile H": bDisplayTaut==0?", fixed H":"",
+                                      ( bDisplayTaut > 0 && nNumTautComponents ) ? ", mobile H" : bDisplayTaut == 0 ? ", fixed H" : "",
                                       /*j? ", mobile H":", fixed H",*/
-                                      k? ", isotopic":"",
-                                      SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue), iINChI? " (Reconnected)":"");
-                        ip->dp.nEquLabels   = inp_data->nEquLabels;
+                                      k ? ", isotopic" : "",
+                                      SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ), iINChI ? " (Reconnected)" : "" );
+                        ip->dp.nEquLabels = inp_data->nEquLabels;
                         ip->dp.nCurEquLabel = nEquSet;
-                        ip->dp.nNumEquSets  = inp_data->nNumEquSets;
+                        ip->dp.nNumEquSets = inp_data->nNumEquSets;
                         ip->bDisplay = 1; /* force display if it was not requested */
                         err = DisplayCompositeStructure( pCG,
                                                          composite_norm_data,
+                                                         inp_data->polymer,
                                                          k, j,
                                                          pINChI2, pINChI_Aux2,
                                                          ip->bAbcNumbers,
                                                          &ip->dp,
                                                          ip->nMode,
                                                          szTitle );
-                        ip->dp.nEquLabels   = NULL;
+                        ip->dp.nEquLabels = NULL;
                         ip->dp.nCurEquLabel = 0;
-                        ip->dp.nNumEquSets  = 0;
+                        ip->dp.nNumEquSets = 0;
                         ip->bDisplay = bDisplaySaved; /* restore display option */
 
-                        if ( sd->bUserQuitComponentDisplay = (err==ESC_KEY) )
+                        if (sd->bUserQuitComponentDisplay = ( err == ESC_KEY ))
+                        {
                             break;
+                        }
                     }
                 }
 #else
-                if(DRAWDATA && j <= TAUT_YES)
+                if (DRAWDATA && j <= TAUT_YES)
                 {
                     struct DrawData vDrawData;
                     vDrawData.pWindowData =
@@ -836,71 +879,72 @@ int bCompareTaut       =  (ip->bCompareComponents & CMP_COMPONENTS_NONTAUT) ? TA
                                                  pINChI_Aux2,
                                                  ip->bAbcNumbers,
                                                  &ip->dp,
-                                                 ip->nMode);
+                                                 ip->nMode );
 
                     /* vDrawData.pWindowData = CreateWinData_( composite_norm_data[j].at, composite_norm_data[j].num_at,
                                          k, j, pINChI[i], pINChI_Aux[i],ip->bAbcNumbers, &ip->dp, ip->nMode ); */
 
-                    if( vDrawData.pWindowData != NULL )
+                    if (vDrawData.pWindowData != NULL)
                     {
                         int nType;
                         vDrawData.nComponent = 0;
-                        if( j == 0 )
-                            nType = (k == 0) ? COMPONENT_BN: COMPONENT_BI;
+                        if (j == 0)
+                            nType = ( k == 0 ) ? COMPONENT_BN : COMPONENT_BI;
                         else
-                            nType = (k == 0) ? COMPONENT_TN: COMPONENT_TI;
-                        vDrawData.nType        = nType;
+                            nType = ( k == 0 ) ? COMPONENT_TN : COMPONENT_TI;
+                        vDrawData.nType = nType;
                         vDrawData.bReconnected = iINChI; /* 0=>main; 1=>reconnected */
-                        vDrawData.szTitle              = inchi__strdup(szTitle);
-                        vDrawData.pWindowData->szTitle = inchi__strdup(szTitle);
-                        if ( inp_data && inp_data->nEquLabels &&
+                        vDrawData.szTitle = inchi__strdup( szTitle );
+                        vDrawData.pWindowData->szTitle = inchi__strdup( szTitle );
+                        if (inp_data && inp_data->nEquLabels &&
                              inp_data->nNumEquSets &&
-                             (j == bCompareTaut     || bCompareTaut     && !composite_norm_data[bCompareTaut].bExists) &&
-                             (k == bCompareIsotopic || bCompareIsotopic && !composite_norm_data[j].bHasIsotopicLayer)  &&
-                             (vDrawData.pWindowData->nEquLabels = (AT_NUMB *)inchi_calloc(inp_data->num_inp_atoms,
-                                                                                  sizeof(inp_data->nEquLabels[0])))) {
+                             ( j == bCompareTaut || bCompareTaut && !composite_norm_data[bCompareTaut].bExists ) &&
+                             ( k == bCompareIsotopic || bCompareIsotopic && !composite_norm_data[j].bHasIsotopicLayer ) &&
+                             ( vDrawData.pWindowData->nEquLabels = (AT_NUMB *) inchi_calloc( inp_data->num_inp_atoms,
+                                 sizeof( inp_data->nEquLabels[0] ) ) ))
+                        {
                             memcpy( vDrawData.pWindowData->nEquLabels, inp_data->nEquLabels,
-                                     inp_data->num_inp_atoms * sizeof(inp_data->nEquLabels[0]));
-                            vDrawData.pWindowData->nNumEquSets  = inp_data->nNumEquSets;
+                                     inp_data->num_inp_atoms * sizeof( inp_data->nEquLabels[0] ) );
+                            vDrawData.pWindowData->nNumEquSets = inp_data->nNumEquSets;
                             vDrawData.pWindowData->nCurEquLabel = 0;
                         }
-                        DRAWDATA(&vDrawData);
+                        DRAWDATA( &vDrawData );
                     }
                 }
-                else if(DRAWDATA && GET_DRAWDATA && j == TAUT_INI)
+                else if (DRAWDATA && GET_DRAWDATA && j == TAUT_INI)
                 {
                     struct DrawData vDrawData;
                     struct DrawData *pDrawData;
 
-                    if ( !(ip->bCompareComponents & CMP_COMPONENTS) ||
-                           (ip->bCompareComponents & CMP_COMPONENTS_NONTAUT) ||
-                           !k != !composite_norm_data[j].bHasIsotopicLayer )
+                    if (!( ip->bCompareComponents & CMP_COMPONENTS ) ||
+                        ( ip->bCompareComponents & CMP_COMPONENTS_NONTAUT ) ||
+                           !k != !composite_norm_data[j].bHasIsotopicLayer)
                     {
 
                         continue;
                     }
                     vDrawData.pWindowData =
-                            CreateWinDataComposite_( pCG,
-                                                     composite_norm_data,
-                                                     1 /*k*/,
-                                                     j,
-                                                     NULL,
-                                                     NULL,
-                                                     ip->bAbcNumbers,
-                                                     &ip->dp,
-                                                     ip->nMode);
+                        CreateWinDataComposite_( pCG,
+                                                 composite_norm_data,
+                                                 1 /*k*/,
+                                                 j,
+                                                 NULL,
+                                                 NULL,
+                                                 ip->bAbcNumbers,
+                                                 &ip->dp,
+                                                 ip->nMode );
 
 
 
-                    if( vDrawData.pWindowData != NULL )
+                    if (vDrawData.pWindowData != NULL)
                     {
                         int nType = COMPONENT_ORIGINAL_PREPROCESSED;
-                        pDrawData = GET_DRAWDATA( 0, nType, iINChI);
-                        if ( pDrawData  )
+                        pDrawData = GET_DRAWDATA( 0, nType, iINChI );
+                        if (pDrawData)
                         {
                             FreeDrawData( pDrawData );
                             pDrawData->pWindowData = vDrawData.pWindowData;
-                            vDrawData.pWindowData  = NULL;
+                            vDrawData.pWindowData = NULL;
                         }
                         else
                         {
@@ -910,26 +954,27 @@ int bCompareTaut       =  (ip->bCompareComponents & CMP_COMPONENTS_NONTAUT) ? TA
                         /* vDrawData.pWindowData = CreateWinData_( composite_norm_data[j].at, composite_norm_data[j].num_at,
                                         k, j, pINChI[i], pINChI_Aux[i],ip->bAbcNumbers, &ip->dp, ip->nMode ); */
 
-                        pDrawData->nComponent   = 0;
-                        pDrawData->nType        = nType;
-                           pDrawData->bReconnected = iINChI; /* 0=>main; 1=>reconnected */
-                        pDrawData->szTitle              = inchi__strdup(szTitle);
-                        pDrawData->pWindowData->szTitle = inchi__strdup(szTitle);
-                        if ( inp_data && inp_data->nEquLabels &&
+                        pDrawData->nComponent = 0;
+                        pDrawData->nType = nType;
+                        pDrawData->bReconnected = iINChI; /* 0=>main; 1=>reconnected */
+                        pDrawData->szTitle = inchi__strdup( szTitle );
+                        pDrawData->pWindowData->szTitle = inchi__strdup( szTitle );
+                        if (inp_data && inp_data->nEquLabels &&
                              inp_data->nNumEquSets &&
                              /*(j == bCompareTaut     || bCompareTaut     && !composite_norm_data[bCompareTaut].bExists) &&*/
                              /*(k == bCompareIsotopic || bCompareIsotopic && !composite_norm_data[j].bHasIsotopicLayer)  &&*/
-                             (pDrawData->pWindowData->nEquLabels = (AT_NUMB *)inchi_calloc(inp_data->num_inp_atoms,
-                                                                                  sizeof(inp_data->nEquLabels[0]))))
+                             ( pDrawData->pWindowData->nEquLabels = (AT_NUMB *) inchi_calloc( inp_data->num_inp_atoms,
+                                 sizeof( inp_data->nEquLabels[0] ) ) ))
                         {
                             memcpy( pDrawData->pWindowData->nEquLabels,
                                     inp_data->nEquLabels,
-                                    inp_data->num_inp_atoms * sizeof(inp_data->nEquLabels[0]));
-                            pDrawData->pWindowData->nNumEquSets  = inp_data->nNumEquSets;
+                                    inp_data->num_inp_atoms * sizeof( inp_data->nEquLabels[0] ) );
+                            pDrawData->pWindowData->nNumEquSets = inp_data->nNumEquSets;
                             pDrawData->pWindowData->nCurEquLabel = 0;
                         }
-                        if ( pDrawData == &vDrawData ) {
-                            DRAWDATA(pDrawData);  /* there was no prepocessed structure */
+                        if (pDrawData == &vDrawData)
+                        {
+                            DRAWDATA( pDrawData );  /* there was no prepocessed structure */
                         }
                     }
                 }
@@ -943,61 +988,59 @@ int bCompareTaut       =  (ip->bCompareComponents & CMP_COMPONENTS_NONTAUT) ? TA
 }
 
 
-/*
-    DisplayTheWholeStructure
-*/
+/****************************************************************************/
 int DisplayTheWholeStructure( struct tagCANON_GLOBALS *pCG,
-                              struct tagINCHI_CLOCK *ic,
-                              STRUCT_DATA *sd,
-                              INPUT_PARMS *ip,
-                              char *szTitle,
-                              INCHI_IOSTREAM *inp_file,
-                              INCHI_IOSTREAM *log_file,
-                              ORIG_ATOM_DATA *orig_inp_data,
-                              long num_inp,
-                              int iINChI,
-                              int bShowStruct,
-                              int bINCHI_LIB_Flag )
+                              struct tagINCHI_CLOCK   *ic,
+                              STRUCT_DATA             *sd,
+                              INPUT_PARMS             *ip,
+                              char                    *szTitle,
+                              INCHI_IOSTREAM          *inp_file,
+                              INCHI_IOSTREAM          *log_file,
+                              ORIG_ATOM_DATA          *orig_inp_data,
+                              long                    num_inp,
+                              int                     iINChI,
+                              int                     bShowStruct,
+                              int                     bINCHI_LIB_Flag )
 {
 
-int bDisplayEqu = 0;
+    int bDisplayEqu = 0;
 
 #ifndef TARGET_LIB_FOR_WINCHI
 
     /* Displaying equivalent input structures when disconnection has been done: */
     /* in case of TARGET_LIB_FOR_WINCHI equivalence info is always unknown here and bOriginalReconnected=0 */
 
-    int bOriginalReconnected =    iINChI < 0 &&
-                                orig_inp_data && orig_inp_data->nEquLabels &&
-                                (sd->bTautFlagsDone[INCHI_BAS] & TG_FLAG_DISCONNECT_COORD_DONE) &&
-                                (ip->bTautFlags & TG_FLAG_RECONNECT_COORD);
+    int bOriginalReconnected = iINChI < 0 &&
+        orig_inp_data && orig_inp_data->nEquLabels &&
+        ( sd->bTautFlagsDone[INCHI_BAS] & TG_FLAG_DISCONNECT_COORD_DONE ) &&
+        ( ip->bTautFlags & TG_FLAG_RECONNECT_COORD );
 
     const char *lpszType =
         bOriginalReconnected ? " (Reconnected)"
-                             : (iINChI <  0 ) ? ""
-                                              : ( iINChI==INCHI_BAS ) ? " (Preprocessed)"
-                                                                      : (iINChI == INCHI_REC ) ? " (Reconnected)"
-                                                                                               : "";
+        : ( iINChI < 0 ) ? ""
+        : ( iINChI == INCHI_BAS ) ? " (Preprocessed)"
+        : ( iINChI == INCHI_REC ) ? " (Reconnected)"
+        : "";
 
     int err = 0;
 
     /* Display the original structure */
 
     bDisplayEqu = bShowStruct && ip->bDisplay &&
-                  ip->dp.nEquLabels && 0 < ip->dp.nCurEquLabel && ip->dp.nCurEquLabel <= ip->dp.nNumEquSets;
+        ip->dp.nEquLabels && 0 < ip->dp.nCurEquLabel && ip->dp.nCurEquLabel <= ip->dp.nNumEquSets;
 #else
-    if(!DRAWDATA || !DRAWDATA_EXISTS)
+    if (!DRAWDATA || !DRAWDATA_EXISTS)
         return 0;
 #endif
 
 
 #if !defined(TARGET_API_LIB) && !defined(COMPILE_ANSI_ONLY)
     /* Ask the user whether to process the input structure or quit*/
-    if ( ip->bDisplay && inp_file->f != stdin )
+    if (ip->bDisplay && inp_file->f != stdin)
     {
-        if ( user_quit(ic, bDisplayEqu ? "Enter=Display identical components, Esc=Stop ?"
-                                   : "Enter=Display, Esc=Stop ?",
-                                   ip->ulDisplTime) )
+        if (user_quit( ic, bDisplayEqu ? "Enter=Display identical components, Esc=Stop ?"
+            : "Enter=Display, Esc=Stop ?",
+            ip->ulDisplTime ))
         {
             sd->bUserQuit = 1;
             goto exit_function;
@@ -1008,38 +1051,50 @@ int bDisplayEqu = 0;
     /*
      *    Display the whole input structure in console app
      */
-
+    
 /* #ifndef TARGET_LIB_FOR_WINCHI */
-
+    
 #if ( !defined( TARGET_LIB_FOR_WINCHI ) && !defined(TARGET_EXE_STANDALONE) )
-    if ( bShowStruct && ip->bDisplay ) {
-        if ( bDisplayEqu ) {
+    if (bShowStruct && ip->bDisplay)
+    {
+        if (bDisplayEqu)
+        {
             sprintf( szTitle, " Equ Set %d of %d, Input Structure #%ld.%s%s%s%s%s",
                      ip->dp.nCurEquLabel, ip->dp.nNumEquSets,
-                     num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue), lpszType);
-        } else {
-            sprintf( szTitle, "Input Structure #%ld.%s%s%s%s%s", num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue), lpszType);
+                     num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ), lpszType );
         }
-        err = DisplayStructure( orig_inp_data->at, orig_inp_data->num_inp_atoms, 0, 1, 0, NULL, 1/*isotopic*/, 0/*taut*/, NULL, NULL,
-                                            ip->bAbcNumbers, &ip->dp, ip->nMode, szTitle );
-        sd->bUserQuitComponent = (err==ESC_KEY);
-        if ( !err ) {
-            inchi_fprintf( stderr, "Cannot display the structure\n");
+        else
+        {
+            sprintf( szTitle, "Input Structure #%ld.%s%s%s%s%s", num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ), lpszType );
+        }
+        err = DisplayStructure( orig_inp_data->at, orig_inp_data->num_inp_atoms, 
+                                orig_inp_data->polymer,
+                                0, 1, 0, NULL, 1/*isotopic*/, 0/*taut*/, NULL, NULL,
+                                ip->bAbcNumbers, &ip->dp, ip->nMode, szTitle );
+        sd->bUserQuitComponent = ( err == ESC_KEY );
+        if (!err)
+        {
+            inchi_fprintf( stderr, "Cannot display the structure\n" );
         }
     }
-    if( !bDisplayEqu ) {
+    if (!bDisplayEqu)
+    {
         /*  console output progress report */
-        if ( ip->bDisplay && !sd->bUserQuitComponent ) {
-            if ( iINChI == 1 ) {
-                if ( ip->bDisplay )
-                    inchi_ios_eprint( log_file, "Processing (rec) structure #%ld.%s%s%s%s...\n", num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue) );
+        if (ip->bDisplay && !sd->bUserQuitComponent)
+        {
+            if (iINChI == 1)
+            {
+                if (ip->bDisplay)
+                    inchi_ios_eprint( log_file, "Processing (rec) structure #%ld.%s%s%s%s...\n", num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ) );
                 else
-                    inchi_fprintf( stderr, "Processing (rec) structure #%ld.%s%s%s%s...\r", num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue) );
-            } else {
-                if ( ip->bDisplay )
-                    inchi_ios_eprint( log_file, "Processing structure #%ld.%s%s%s%s...\n", num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue) );
+                    inchi_fprintf( stderr, "Processing (rec) structure #%ld.%s%s%s%s...\r", num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ) );
+            }
+            else
+            {
+                if (ip->bDisplay)
+                    inchi_ios_eprint( log_file, "Processing structure #%ld.%s%s%s%s...\n", num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ) );
                 else
-                    inchi_fprintf( stderr, "Processing structure #%ld.%s%s%s%s...\r", num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue) );
+                    inchi_fprintf( stderr, "Processing structure #%ld.%s%s%s%s...\r", num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ) );
             }
         }
     }
@@ -1051,43 +1106,48 @@ int bDisplayEqu = 0;
      */
 
 #ifdef TARGET_LIB_FOR_WINCHI
-    if ( ip->bDisplay && bINCHI_LIB_Flag )
+    if (ip->bDisplay && bINCHI_LIB_Flag)
 #else
-    if ( (ip->bDisplay || (ip->bCompareComponents & CMP_COMPONENTS)) && bINCHI_LIB_Flag )
+    if (( ip->bDisplay || ( ip->bCompareComponents & CMP_COMPONENTS ) ) && bINCHI_LIB_Flag)
 #endif
 
     {
-
         int bBit, k, bReconnected, nComponent, bPreprocessed;
 
-        for ( bBit = 1, k = 0; k < 8; k ++, bBit <<= 1 ) {
+        for (bBit = 1, k = 0; k < 8; k++, bBit <<= 1)
+        {
             /******************************************************************************
              *  bReconnected  = k%2     (0 or 1)
              *  nComponent    = k/4     (0 or 1)
              *  bPreprocessed = (k/2)%2 (0 or 1)
              ******************************************************************************/
-            if ( !(bINCHI_LIB_Flag & bBit) )
+            if (!( bINCHI_LIB_Flag & bBit ))
+            {
                 continue;
+            }
 
-            bReconnected  = k%2;
-            nComponent    = k/4;
-            bPreprocessed = ((k/2)%2);
+            bReconnected = k % 2;
+            nComponent = k / 4;
+            bPreprocessed = ( ( k / 2 ) % 2 );
 
             sprintf( szTitle, "%s Structure #%ld.%s%s%s%s",
-                              bPreprocessed? "Preprocessed" : bReconnected? "Reconnected" : "Input",
+                              bPreprocessed ? "Preprocessed" : bReconnected ? "Reconnected" : "Input",
                               num_inp,
-                              SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue));
+                              SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ) );
 
 #ifdef TARGET_LIB_FOR_WINCHI
-            if(DRAWDATA && DRAWDATA_EXISTS)
+            if (DRAWDATA && DRAWDATA_EXISTS)
             {
                 struct DrawData vDrawData;
-                int    nType = bPreprocessed? COMPONENT_ORIGINAL_PREPROCESSED : COMPONENT_ORIGINAL;
-                if ( DRAWDATA_EXISTS( nComponent, bPreprocessed, bReconnected ) )
+                int    nType = bPreprocessed ? COMPONENT_ORIGINAL_PREPROCESSED : COMPONENT_ORIGINAL;
+                if (DRAWDATA_EXISTS( nComponent, bPreprocessed, bReconnected ))
                 {
+                    /* 
+                    TEMPORARILY DISABLED TO MAKE WINCHI TREAT SOME POLYMERS
                     sd->nErrorType = _IS_FATAL;
                     sd->nErrorCode = CT_UNKNOWN_ERR;
                     return -1;
+                    */
                 }
                 vDrawData.pWindowData = CreateWinData_( pCG,
                                                         orig_inp_data->at,
@@ -1103,65 +1163,79 @@ int bDisplayEqu = 0;
                                                         ip->bAbcNumbers,
                                                         &ip->dp,
                                                         ip->nMode );
-                if( vDrawData.pWindowData != NULL )
+                if (vDrawData.pWindowData != NULL)
                 {
-                    vDrawData.nComponent   = nComponent;
-                    vDrawData.nType        = nType; /* COMPONENT_ORIGINAL or COMPONENT_ORIGINAL_PREPROCESSED */
+                    vDrawData.nComponent = nComponent;
+                    vDrawData.nType = nType; /* COMPONENT_ORIGINAL or COMPONENT_ORIGINAL_PREPROCESSED */
                     vDrawData.bReconnected = bReconnected; /* 0=>main; 1=>reconnected */
-                    vDrawData.pWindowData->szTitle = inchi__strdup(szTitle);
-                    vDrawData.szTitle              = inchi__strdup(szTitle);
-                    DRAWDATA(&vDrawData);
-                    if ( !nComponent )
+                    vDrawData.pWindowData->szTitle = inchi__strdup( szTitle );
+                    vDrawData.szTitle = inchi__strdup( szTitle );
+                    DRAWDATA( &vDrawData );
+                    if (!nComponent)
                     {
                         /* keep track of saved INCHI_LIB data */
                         orig_inp_data->bSavedInINCHI_LIB[bReconnected] ++;
-                        orig_inp_data->bPreprocessed[bReconnected]    = bPreprocessed;
+                        orig_inp_data->bPreprocessed[bReconnected] = bPreprocessed;
                     }
                 }
             }
 #else
-            if ( !nComponent ) {
+            if (!nComponent)
+            {
                 /* keep track of saved INCHI_LIB data */
                 orig_inp_data->bSavedInINCHI_LIB[bReconnected] ++;
-                orig_inp_data->bPreprocessed[bReconnected]    = bPreprocessed;
+                orig_inp_data->bPreprocessed[bReconnected] = bPreprocessed;
             }
 #endif
         }
     }
 
 exit_function:
+
     return sd->bUserQuit;
 }
 
 #else
 /* dummies */
+
+/****************************************************************************/
 int DisplayTheWholeStructure( struct tagCANON_GLOBALS *pCG,
-                              struct tagINCHI_CLOCK *ic,
-                              STRUCT_DATA *sd,
-                              INPUT_PARMS *ip,
-                              char *szTitle,
-                              INCHI_IOSTREAM *inp_file,
-                              INCHI_IOSTREAM *log_file,
-                              ORIG_ATOM_DATA *orig_inp_data,
-                              long num_inp,
-                              int iINChI,
-                              int bShowStruct,
-                              int bINCHI_LIB_Flag )
-{ return 0; }
+                              struct tagINCHI_CLOCK   *ic,
+                              STRUCT_DATA             *sd,
+                              INPUT_PARMS             *ip,
+                              char                    *szTitle,
+                              INCHI_IOSTREAM          *inp_file,
+                              INCHI_IOSTREAM          *log_file,
+                              ORIG_ATOM_DATA          *orig_inp_data,
+                              long                    num_inp,
+                              int                     iINChI,
+                              int                     bShowStruct,
+                              int                     bINCHI_LIB_Flag )
+{
+    return 0;
+}
+
+
+/****************************************************************************/
 int DisplayStructure( struct tagCANON_GLOBALS *pCG,
-                      inp_ATOM *at,
-                      int num_at, int num_removed_H,
-                      int bAdd_DT_to_num_H,
-                      int nNumRemovedProtons,
-                      NUM_H *nNumRemovedProtonsIsotopic,
-                      int bIsotopic,
-                      int j /*bTautomeric*/,
-                      INChI **cur_INChI, INChI_Aux **cur_INChI_Aux,
-                      int bAbcNumbers,
-                      DRAW_PARMS *dp,
-                      INCHI_MODE nMode,
-                      char *szTitle )
-{ return 0; }
+                      inp_ATOM                *at,
+                      int                     num_at,
+                      OAD_Polymer			  *polymer,
+                      int                     num_removed_H,
+                      int                     bAdd_DT_to_num_H,
+                      int                     nNumRemovedProtons,
+                      NUM_H                   *nNumRemovedProtonsIsotopic,
+                      int                     bIsotopic,
+                      int                     j /*bTautomeric*/,
+                      INChI                   **cur_INChI,
+                      INChI_Aux               **cur_INChI_Aux,
+                      int                     bAbcNumbers,
+                      DRAW_PARMS              *dp,
+                      INCHI_MODE              nMode,
+                      char                    *szTitle )
+{
+    return 0;
+}
 
 
 
@@ -1171,61 +1245,63 @@ int DisplayStructure( struct tagCANON_GLOBALS *pCG,
 
 #ifndef TARGET_API_LIB
 
+
+/****************************************************************************/
 void SplitTime( unsigned long ulTotalTime,
-                int *hours,
-                int *minutes,
-                int *seconds,
-                int *mseconds )
+                int *hours, int *minutes,
+                int *seconds, int *mseconds )
 {
 
-    *mseconds = (int)(ulTotalTime % 1000);
+    *mseconds = (int) ( ulTotalTime % 1000 );
     ulTotalTime /= 1000;
-    *seconds = (int)(ulTotalTime % 60);
+    *seconds = (int) ( ulTotalTime % 60 );
     ulTotalTime /= 60;
-    *minutes = (int)(ulTotalTime % 60);
+    *minutes = (int) ( ulTotalTime % 60 );
     ulTotalTime /= 60;
-    *hours = (int)(ulTotalTime);
+    *hours = (int) ( ulTotalTime );
 }
 #endif
 
 
-/*
-    Check if structure is chiral
-*/
+/****************************************************************************
+ Check if structure is chiral
+****************************************************************************/
 int bIsStructChiral( PINChI2 *pINChI2[INCHI_NUM], int num_components[] )
 {
     int i, j, k;
     INChI *pINChI;
     INChI_Stereo *Stereo;
 
-    for ( j = 0; j < INCHI_NUM; j ++ )
+    for (j = 0; j < INCHI_NUM; j++)
     {
         /* disconnected / reconnected */
-        if ( !num_components[j] )
+        if (!num_components[j])
+        {
             continue;
+        }
 
-        for ( i = 0; i < num_components[j]; i ++ )
+        for (i = 0; i < num_components[j]; i++)
         {
             /* i-th component */
-            for ( k = 0; k < TAUT_NUM; k ++ )
+            for (k = 0; k < TAUT_NUM; k++)
             {
                 /* mobile/immobile H */
-                if ( (pINChI = pINChI2[j][i][k])    &&
+                if (( pINChI = pINChI2[j][i][k] ) &&
                       !pINChI->bDeleted                &&
-                      pINChI->nNumberOfAtoms > 0    )
+                      pINChI->nNumberOfAtoms > 0)
                 {
 
-                    if ( (Stereo = pINChI->Stereo) &&
+                    if (( Stereo = pINChI->Stereo ) &&
                          Stereo->t_parity &&
                          Stereo->nNumberOfStereoCenters > 0 &&
-                         Stereo->nCompInv2Abs )
+                         Stereo->nCompInv2Abs)
                     {
                         return 1; /* inversion changed stereo */
                     }
-                    if ( (Stereo = pINChI->StereoIsotopic) &&
+                    if (( Stereo = pINChI->StereoIsotopic ) &&
                          Stereo->t_parity &&
                          Stereo->nNumberOfStereoCenters > 0 &&
-                         Stereo->nCompInv2Abs )
+                         Stereo->nCompInv2Abs)
                     {
                         return 1; /* inversion changed stereo */
                     }
@@ -1238,15 +1314,15 @@ int bIsStructChiral( PINChI2 *pINChI2[INCHI_NUM], int num_components[] )
 }
 
 
-/*
-    Release IChI working memory...
-*/
+/****************************************************************************
+ Release InChI work memory
+****************************************************************************/
 void FreeAllINChIArrays( PINChI2 *pINChI[INCHI_NUM],
                          PINChI_Aux2 *pINChI_Aux[INCHI_NUM],
                          int num_components[INCHI_NUM] )
 {
     int k;
-    for ( k = 0; k < INCHI_NUM; k ++ )
+    for (k = 0; k < INCHI_NUM; k++)
     {
         int nk = num_components[k];
 
@@ -1254,15 +1330,15 @@ void FreeAllINChIArrays( PINChI2 *pINChI[INCHI_NUM],
 
         num_components[k] = 0;
 
-        if ( nk &&                /* added check for nk: 2013-12-15 IPl */
-             pINChI[k] )
+        if (nk &&                /* added check for nk: 2013-12-15 IPl */
+             pINChI[k])
         {
             inchi_free( pINChI[k] );
             pINChI[k] = NULL;
         }
 
-        if ( nk &&                /* added check for nk: 2013-12-15 IPl */
-             pINChI_Aux[k] )
+        if (nk &&                /* added check for nk: 2013-12-15 IPl */
+             pINChI_Aux[k])
         {
             inchi_free( pINChI_Aux[k] );
             pINChI_Aux[k] = NULL;
@@ -1273,78 +1349,83 @@ void FreeAllINChIArrays( PINChI2 *pINChI[INCHI_NUM],
 }
 
 
-/*
-    Release InChI working memory...
-*/
-void FreeINChIArrays( PINChI2 *pINChI,
-                      PINChI_Aux2 *pINChI_Aux,
-                      int num_components )
+/****************************************************************************
+ Release InChI work memory
+****************************************************************************/
+void FreeINChIArrays( PINChI2 *pINChI, PINChI_Aux2 *pINChI_Aux, int num_components )
 {
     int i, k;
     /* Release allocated memory */
-    if ( pINChI )
+    if (pINChI)
     {
-        for ( i = 0; i < num_components; i++ )
-            for ( k = 0; k < TAUT_NUM; k++ )
+        for (i = 0; i < num_components; i++)
+        {
+            for (k = 0; k < TAUT_NUM; k++)
+            {
                 Free_INChI( &pINChI[i][k] );
+            }
+        }
     }
-    if ( pINChI_Aux )
+    if (pINChI_Aux)
     {
-        for ( i = 0; i < num_components; i++ )
-            for ( k = 0; k < TAUT_NUM; k++ )
+        for (i = 0; i < num_components; i++)
+        {
+            for (k = 0; k < TAUT_NUM; k++)
+            {
                 Free_INChI_Aux( &pINChI_Aux[i][k] );
+            }
+        }
     }
 }
 
 
-/*
-    Treat errors returned by CreateOneComponentINChI( ... )
-*/
+/****************************************************************************
+  Treat errors returned by CreateOneComponentINChI( ... )
+****************************************************************************/
 int TreatErrorsInCreateOneComponentINChI( STRUCT_DATA *sd,
-                                          INPUT_PARMS *ip,
+                                          INPUT_PARMS    *ip,
                                           ORIG_ATOM_DATA *orig_inp_data,
-                                          int i,
-                                          long num_inp,
+                                          int i, long num_inp,
                                           INCHI_IOSTREAM *inp_file,
                                           INCHI_IOSTREAM *log_file,
                                           INCHI_IOSTREAM *out_file,
                                           INCHI_IOSTREAM *prb_file )
 {
-    if ( sd->nErrorCode )
+    if (sd->nErrorCode)
     {
-        AddErrorMessage( sd->pStrErrStruct, ErrMsg(sd->nErrorCode) );
+        AddErrorMessage( sd->pStrErrStruct, ErrMsg( sd->nErrorCode ) );
         inchi_ios_eprint( log_file,
                           "Error %d (%s) structure #%ld component %d.%s%s%s%s\n",
                           sd->nErrorCode, sd->pStrErrStruct,
-                          num_inp, i+1, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue) );
-        sd->nErrorType = (sd->nErrorCode==CT_OUT_OF_RAM || sd->nErrorCode==CT_USER_QUIT_ERR)
-                                ? _IS_FATAL
-                                : _IS_ERROR;
+                          num_inp, i + 1, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ) );
+        sd->nErrorType = ( sd->nErrorCode == CT_OUT_OF_RAM || sd->nErrorCode == CT_USER_QUIT_ERR )
+            ? _IS_FATAL
+            : _IS_ERROR;
 
 #ifdef TARGET_LIB_FOR_WINCHI
-        if ( (ip->bINChIOutputOptions & INCHI_OUT_WINCHI_WINDOW) &&
-             (ip->bINChIOutputOptions & INCHI_OUT_PLAIN_TEXT) )
+        if (( ip->bINChIOutputOptions & INCHI_OUT_WINCHI_WINDOW ) &&
+            ( ip->bINChIOutputOptions & INCHI_OUT_PLAIN_TEXT ))
         {
             sd->nErrorType = ProcessStructError( out_file, log_file,
                                                  sd->pStrErrStruct, sd->nErrorType,
                                                  num_inp, ip );
             /*  Save the problem structure */
-            if ( prb_file->f &&
+            if (prb_file->f &&
                  0L <= sd->fPtrStart && sd->fPtrStart < sd->fPtrEnd &&
-                 !ip->bSaveAllGoodStructsAsProblem )
+                 !ip->bSaveAllGoodStructsAsProblem)
             {
-                MolfileSaveCopy( inp_file, sd->fPtrStart, sd->fPtrEnd, prb_file->f, num_inp);
+                MolfileSaveCopy( inp_file, sd->fPtrStart, sd->fPtrEnd, prb_file->f, num_inp );
             }
         }
         else
         {
             /*  Save the problem structure */
-            if ( sd->nErrorCode &&
+            if (sd->nErrorCode &&
                  prb_file->f &&
                  0L <= sd->fPtrStart && sd->fPtrStart < sd->fPtrEnd &&
-                 !ip->bSaveAllGoodStructsAsProblem )
+                 !ip->bSaveAllGoodStructsAsProblem)
             {
-                MolfileSaveCopy( inp_file, sd->fPtrStart, sd->fPtrEnd, prb_file->f, num_inp);
+                MolfileSaveCopy( inp_file, sd->fPtrStart, sd->fPtrEnd, prb_file->f, num_inp );
             }
         }
 #endif
@@ -1353,11 +1434,12 @@ int TreatErrorsInCreateOneComponentINChI( STRUCT_DATA *sd,
 /* #ifndef TARGET_API_LIB */
 #if ( !defined( TARGET_API_LIB ) && !defined(TARGET_EXE_STANDALONE) )
     /*  print the logfile record */
-    if ( log_file->f && log_file->f != stderr && (sd->ulStructTime >= 1000 || sd->nErrorCode) ) {
+    if (log_file->f && log_file->f != stderr && ( sd->ulStructTime >= 1000 || sd->nErrorCode ))
+    {
         fprintf( log_file->f, "%10lu msec structure #%ld.%s%s%s%s (%d component%s, %d atom%s, error=%d).\n",
-                sd->ulStructTime, num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue),
-                orig_inp_data->num_components, orig_inp_data->num_components==1?"":"s",
-                orig_inp_data->num_inp_atoms, orig_inp_data->num_inp_atoms==1?"":"s", sd->nErrorCode );
+                sd->ulStructTime, num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ),
+                orig_inp_data->num_components, orig_inp_data->num_components == 1 ? "" : "s",
+                orig_inp_data->num_inp_atoms, orig_inp_data->num_inp_atoms == 1 ? "" : "s", sd->nErrorCode );
     }
 #endif
 
@@ -1365,10 +1447,11 @@ int TreatErrorsInCreateOneComponentINChI( STRUCT_DATA *sd,
 }
 
 
-int TreatCreateINChIWarning( STRUCT_DATA *sd,
-                             INPUT_PARMS *ip,
+/****************************************************************************/
+int TreatCreateINChIWarning( STRUCT_DATA    *sd,
+                             INPUT_PARMS    *ip,
                              ORIG_ATOM_DATA *orig_inp_data,
-                             long num_inp,
+                             long           num_inp,
                              INCHI_IOSTREAM *inp_file,
                              INCHI_IOSTREAM *log_file,
                              INCHI_IOSTREAM *out_file,
@@ -1376,25 +1459,28 @@ int TreatCreateINChIWarning( STRUCT_DATA *sd,
 {
 
 #if ( bRELEASE_VERSION == 0 && (EXTR_FLAGS || EXTR_MASK) )
-    if ( EXTR_MASK    ? ((sd->bExtract & EXTR_MASK) == EXTR_FLAGS)
-                    :  (sd->bExtract & EXTR_FLAGS)
+    if (EXTR_MASK ? ( ( sd->bExtract & EXTR_MASK ) == EXTR_FLAGS )
+                    : ( sd->bExtract & EXTR_FLAGS )
        )
     {
         char szMsg[64];
-        sprintf( szMsg, "ExtractStruct.code=0x%X", sd->bExtract);
-        WarningMessage(sd->pStrErrStruct, szMsg);
+        sprintf( szMsg, "ExtractStruct.code=0x%X", sd->bExtract );
+        if (!ip->bNoWarnings)
+        {
+            WarningMessage( sd->pStrErrStruct, szMsg );
+        }
     }
 #endif
 
-    if ( !sd->nErrorCode && sd->pStrErrStruct[0] )
+    if (!sd->nErrorCode && sd->pStrErrStruct[0])
     {
         inchi_ios_eprint( log_file, "Warning (%s) structure #%ld.%s%s%s%s\n",
-            sd->pStrErrStruct, num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue) );
+            sd->pStrErrStruct, num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ) );
         sd->nErrorType = _IS_WARNING;
 
 #ifdef TARGET_LIB_FOR_WINCHI
-        if ( (ip->bINChIOutputOptions & INCHI_OUT_WINCHI_WINDOW) &&
-             (ip->bINChIOutputOptions & INCHI_OUT_PLAIN_TEXT) )
+        if (( ip->bINChIOutputOptions & INCHI_OUT_WINCHI_WINDOW ) &&
+            ( ip->bINChIOutputOptions & INCHI_OUT_PLAIN_TEXT ))
         {
             sd->nErrorType = ProcessStructError( out_file,
                                                  log_file,
@@ -1405,49 +1491,49 @@ int TreatCreateINChIWarning( STRUCT_DATA *sd,
         }
 #endif
         /*  save the structure as a problem structure if requested */
-        if ( ip->bSaveWarningStructsAsProblem && !ip->bSaveAllGoodStructsAsProblem &&
-             prb_file->f && 0L <= sd->fPtrStart && sd->fPtrStart < sd->fPtrEnd )
+        if (ip->bSaveWarningStructsAsProblem && !ip->bSaveAllGoodStructsAsProblem &&
+             prb_file->f && 0L <= sd->fPtrStart && sd->fPtrStart < sd->fPtrEnd)
         {
             MolfileSaveCopy( inp_file,
                              sd->fPtrStart,
                              sd->fPtrEnd,
                              prb_file->f,
-                             num_inp);
+                             num_inp );
         }
 
 #if ( bRELEASE_VERSION == 0 )
         /*  otherwise extract the structure as a problem structure if requested */
         else
-        if ( (EXTR_MASK ? ((sd->bExtract & EXTR_MASK) == EXTR_FLAGS) : (sd->bExtract & EXTR_FLAGS))
-                        && !ip->bSaveAllGoodStructsAsProblem &&
-                           prb_file->f &&
-                           0L <= sd->fPtrStart && sd->fPtrStart < sd->fPtrEnd )
-        {
-            MolfileSaveCopy( inp_file->f,
-                             sd->fPtrStart,
-                             sd->fPtrEnd,
-                             prb_file->f,
-                             num_inp);
-        }
+            if (( EXTR_MASK ? ( ( sd->bExtract & EXTR_MASK ) == EXTR_FLAGS ) : ( sd->bExtract & EXTR_FLAGS ) )
+                            && !ip->bSaveAllGoodStructsAsProblem &&
+                               prb_file->f &&
+                               0L <= sd->fPtrStart && sd->fPtrStart < sd->fPtrEnd)
+            {
+                MolfileSaveCopy( inp_file->f,
+                                 sd->fPtrStart,
+                                 sd->fPtrEnd,
+                                 prb_file->f,
+                                 num_inp );
+            }
 #endif
     }
 
 #if ( bRELEASE_VERSION != 1 && bOUTPUT_ONE_STRUCT_TIME == 1 )
 #ifndef TARGET_API_LIB
-    if ( log_file && log_file != stderr )
+    if (log_file && log_file != stderr)
     {
         fprintf( log_file, "%10lu msec structure %1dD #%ld.%s%s%s%s (%d component%s, %d atom%s, error=%d).\n",
-                sd->ulStructTime, orig_inp_data->num_dimensions, num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue),
-                orig_inp_data->num_components, orig_inp_data->num_components==1?"":"s",
-                orig_inp_data->num_inp_atoms, orig_inp_data->num_inp_atoms==1?"":"s", sd->nErrorCode );
+                sd->ulStructTime, orig_inp_data->num_dimensions, num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ),
+                orig_inp_data->num_components, orig_inp_data->num_components == 1 ? "" : "s",
+                orig_inp_data->num_inp_atoms, orig_inp_data->num_inp_atoms == 1 ? "" : "s", sd->nErrorCode );
     }
 #else
-    if ( log_file )
-{
+    if (log_file)
+    {
         inchi_ios_eprint( log_file, "%10lu msec structure %1dD #%ld.%s%s%s%s (%d component%s, %d atom%s, error=%d).\n",
-                sd->ulStructTime, orig_inp_data->num_dimensions, num_inp, SDF_LBL_VAL(ip->pSdfLabel,ip->pSdfValue),
-                orig_inp_data->num_components, orig_inp_data->num_components==1?"":"s",
-                orig_inp_data->num_inp_atoms, orig_inp_data->num_inp_atoms==1?"":"s", sd->nErrorCode );
+                sd->ulStructTime, orig_inp_data->num_dimensions, num_inp, SDF_LBL_VAL( ip->pSdfLabel, ip->pSdfValue ),
+                orig_inp_data->num_components, orig_inp_data->num_components == 1 ? "" : "s",
+                orig_inp_data->num_inp_atoms, orig_inp_data->num_inp_atoms == 1 ? "" : "s", sd->nErrorCode );
     }
 #endif
 #endif
@@ -1456,55 +1542,73 @@ int TreatCreateINChIWarning( STRUCT_DATA *sd,
 }
 
 
-/* Treat errors/warnings... */
-int  GetProcessingWarningsOneComponentInChI( INChI *cur_INChI[],
+/****************************************************************************
+ Treat errors/warnings
+****************************************************************************/
+int GetProcessingWarningsOneComponentInChI( INChI *cur_INChI[],
                                             INP_ATOM_DATA **inp_norm_data,
-                                            STRUCT_DATA *sd)
+                                            STRUCT_DATA *sd,
+                                            int bNoWarnings )
 {
     int i, ret = 0;
-    for (i = 0; i < TAUT_NUM; i ++ ) {
-        if ( cur_INChI[i] && cur_INChI[i]->nNumberOfAtoms>0 ) {
-            ret |= get_processing_warnings_one_InChI(cur_INChI[i], inp_norm_data[i], sd->pStrErrStruct);
+    for (i = 0; i < TAUT_NUM; i++)
+    {
+        if (cur_INChI[i] && cur_INChI[i]->nNumberOfAtoms > 0)
+        {
+            ret |= GetProcessingWarningsOneInChI( cur_INChI[i],
+                                                  inp_norm_data[i],
+                                                  sd->pStrErrStruct,
+                                                  bNoWarnings );
         }
     }
+
     return ret;
 }
 
 
-/* Treat errors/warnings... */
-int get_processing_warnings_one_InChI( INChI *pINChI,
+/****************************************************************************
+ Treat errors/warnings
+****************************************************************************/
+int GetProcessingWarningsOneInChI( INChI *pINChI,
                                    INP_ATOM_DATA *inp_norm_data,
-                                   char *pStrErrStruct)
+                                   char *pStrErrStruct,
+                                   int bNoWarnings )
 {
-int j;
-int nAmbiguousStereoAtoms, nAmbiguousStereoBonds;
-nAmbiguousStereoAtoms = 0;
-nAmbiguousStereoBonds = 0;
+    int j;
+    int nAmbiguousStereoAtoms, nAmbiguousStereoBonds;
+    nAmbiguousStereoAtoms = 0;
+    nAmbiguousStereoBonds = 0;
 
-    if ( inp_norm_data->at )
+    if (inp_norm_data->at)
     {
-        for ( j = 0; j < pINChI->nNumberOfAtoms; j ++ )
+        for (j = 0; j < pINChI->nNumberOfAtoms; j++)
         {
-            if ( inp_norm_data->at[j].bAmbiguousStereo & (AMBIGUOUS_STEREO_ATOM | AMBIGUOUS_STEREO_ATOM_ISO) )
+            if (inp_norm_data->at[j].bAmbiguousStereo & ( AMBIGUOUS_STEREO_ATOM | AMBIGUOUS_STEREO_ATOM_ISO ))
             {
-                nAmbiguousStereoAtoms ++;
+                nAmbiguousStereoAtoms++;
             }
-            if ( inp_norm_data->at[j].bAmbiguousStereo & (AMBIGUOUS_STEREO_BOND | AMBIGUOUS_STEREO_BOND_ISO) )
+            if (inp_norm_data->at[j].bAmbiguousStereo & ( AMBIGUOUS_STEREO_BOND | AMBIGUOUS_STEREO_BOND_ISO ))
             {
-                nAmbiguousStereoBonds ++;
+                nAmbiguousStereoBonds++;
             }
         }
-        if ( nAmbiguousStereoAtoms )
+        if (nAmbiguousStereoAtoms)
         {
-            WarningMessage(pStrErrStruct, "Ambiguous stereo:");
-            WarningMessage(pStrErrStruct, "center(s)");
+            if (!bNoWarnings)
+            {
+                WarningMessage( pStrErrStruct, "Ambiguous stereo:" );
+                WarningMessage( pStrErrStruct, "center(s)" );
+            }
         }
-        if ( nAmbiguousStereoBonds )
+        if (nAmbiguousStereoBonds)
         {
-            WarningMessage(pStrErrStruct, "Ambiguous stereo:");
-            WarningMessage(pStrErrStruct, "bond(s)");
+            if (!bNoWarnings)
+            {
+                WarningMessage( pStrErrStruct, "Ambiguous stereo:" );
+                WarningMessage( pStrErrStruct, "bond(s)" );
+            }
         }
     }
 
-    return (nAmbiguousStereoAtoms || nAmbiguousStereoBonds);
+    return ( nAmbiguousStereoAtoms || nAmbiguousStereoBonds );
 }
