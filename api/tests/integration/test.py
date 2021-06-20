@@ -72,6 +72,10 @@ def write_difference(fn_1, fn_2, fn_3):
             if line2:
                 f_3.write("+ " + line2 + "\n")
     f_3.close()
+    with open("{}.html".format(fn_3), "w") as pretty_file:
+        pretty_diff = difflib.HtmlDiff()
+        html_cont = pretty_diff.make_file(lines_1, lines_2)
+        pretty_file.write(html_cont)
     return difference_counter
 
 
