@@ -1,4 +1,4 @@
-from typing import Generator, Tuple, Union
+from typing import Callable, Generator, Tuple, Union
 
 from fastapi import FastAPI, Request, Response
 from indigo import IndigoException, IndigoObject
@@ -63,58 +63,77 @@ def error_response(msg: str) -> IndigoResponse:
 
 def apply(molecule: IndigoObject, function: str) -> IndigoResponse:
     """apply function to molecule and form IndigoResponse"""
-    indigo_response = IndigoResponse()
+    # indigo_response = IndigoResponse()
     try:
         getattr(molecule, function)()
-        indigo_response.data = {
+    except IndigoException as e:
+        return error_response(str(e))
+
+    return IndigoResponse(
+        data={
             "type": SupportedTypes.MOLFILE,
             "attributes": {"content": molecule.molfile()},
         }
+    )
+
+
+def apply_to_result(
+    molecule: IndigoObject, method_name: str, res_type: SupportedTypes, func: Callable
+) -> IndigoResponse:
+    try:
+        result = func(getattr(molecule, method_name)())
     except IndigoException as e:
-        indigo_response.errors = [
-            str(e),
-        ]
-    return indigo_response
+        return error_response(str(e))
+
+    return IndigoResponse(
+        data={
+            "type": res_type,
+            "attributes": {"content": result},
+        }
+    )
 
 
 def apply_bool(molecule: IndigoObject, function: str) -> IndigoResponse:
     """apply boolean function to molecule and form bool IndigoResponse"""
-    indigo_response = IndigoResponse()
-    try:
-        result: bool = getattr(molecule, function)()
-        indigo_response.data = {
-            "type": SupportedTypes.BOOL,
-            "attributes": {"content": bool(result)},
-        }
-    except IndigoException as e:
-        indigo_response.errors = [str(e)]
-    return indigo_response
+    # indigo_response = IndigoResponse()
+    # try:
+    #     result: bool = getattr(molecule, function)()
+    #     indigo_response.data = {
+    #         "type": SupportedTypes.BOOL,
+    #         "attributes": {"content": bool(result)},
+    #     }
+    # except IndigoException as e:
+    #     indigo_response.errors = [str(e)]
+    # return indigo_response
+    return apply_to_result(molecule, function, SupportedTypes.BOOL, bool)
 
 
 def apply_int(molecule: IndigoObject, function: str) -> IndigoResponse:
-    indigo_response = IndigoResponse()
-    try:
-        result: int = getattr(molecule, function)()
-        indigo_response.data = {
-            "type": SupportedTypes.INT,
-            "attributes": {"content": int(result)},
-        }
-    except IndigoException as e:
-        indigo_response.errors = [str(e)]
-    return indigo_response
+    # indigo_response = IndigoResponse()
+    # try:
+    #     result: int = getattr(molecule, function)()
+    #     indigo_response.data = {
+    #         "type": SupportedTypes.INT,
+    #         "attributes": {"content": int(result)},
+    #     }
+    # except IndigoException as e:
+    #     indigo_response.errors = [str(e)]
+    # return indigo_response
+    return apply_to_result(molecule, function, SupportedTypes.INT, int)
 
 
 def apply_float(molecule: IndigoObject, function: str) -> IndigoResponse:
-    indigo_response = IndigoResponse()
-    try:
-        result: float = getattr(molecule, function)()
-        indigo_response.data = {
-            "type": SupportedTypes.FLOAT,
-            "attributes": {"content": float(result)},
-        }
-    except IndigoException as e:
-        indigo_response.errors = [str(e)]
-    return indigo_response
+    # indigo_response = IndigoResponse()
+    # try:
+    #     result: float = getattr(molecule, function)()
+    #     indigo_response.data = {
+    #         "type": SupportedTypes.FLOAT,
+    #         "attributes": {"content": float(result)},
+    #     }
+    # except IndigoException as e:
+    #     indigo_response.errors = [str(e)]
+    # return indigo_response
+    return apply_to_result(molecule, function, SupportedTypes.FLOAT, float)
 
 
 @app.middleware("http")
