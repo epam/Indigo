@@ -1,8 +1,8 @@
 import threading
 from contextlib import contextmanager
 from contextvars import ContextVar
-from indigo import Indigo
 
+from indigo import Indigo
 
 __indigo: ContextVar[Indigo] = ContextVar("indigo", default=Indigo())
 __cur_thread: ContextVar[int] = ContextVar("thread_id", default=threading.get_ident())

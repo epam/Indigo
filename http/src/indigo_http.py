@@ -1,47 +1,25 @@
-import asyncio
-from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union, Tuple, Generator
+from typing import Generator, Tuple, Union
 
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Request, Response
 from indigo import IndigoException, IndigoObject
-from pydantic import BaseModel
+
 from .indigo_tools import indigo, indigo_new
+from .model import (
+    DataModel,
+    IndigoBaseRequest,
+    IndigoReactionProductEnumerateRequest,
+    IndigoRequest,
+    IndigoResponse,
+    IndigoStructurePropsRequest,
+    SupportedTypes,
+)
 
 app = FastAPI()
+
 
 BASE_URL_INDIGO = "/indigo"
 BASE_URL_INDIGO_OBJECT = "/indigoObject"
 RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
-
-
-class SupportedTypes(Enum):
-    MOLFILE = "molfile"
-    SMILES = "smiles"
-    BOOL = "bool"
-    INT = "int"
-    REACTION = "reaction"
-    QUERY_REACTION = "query_reaction"
-    GROSSFORMULA = "grossformula"
-    FLOAT = "float"
-
-
-class AttributesModel(BaseModel):
-    content: str
-
-
-class DataModel(BaseModel):
-    type: SupportedTypes = None
-    attributes: List[AttributesModel] = None
-
-
-class IndigoRequest(BaseModel):
-    data: list[DataModel]
-
-
-class IndigoResponse(BaseModel):
-    data: Optional[Dict] = None
-    meta: Optional[Dict] = None
-    errors: Optional[List[str]] = None
 
 
 def get_indigo_object(data: DataModel):
@@ -76,6 +54,10 @@ def parse_indigo_request(
             yield tuple(get_indigo_object(data_item))
         else:
             yield from get_indigo_object(data_item)
+
+
+def error_response(msg: str) -> IndigoResponse:
+    return IndigoResponse(errors=[Error(detail=msg)])
 
 
 def apply(molecule: IndigoObject, function: str) -> IndigoResponse:
@@ -144,12 +126,10 @@ async def isolate_indigo_session(request: Request, call_next):
 
 
 @app.post(f"{BASE_URL_INDIGO}/checkStructure")
-async def check_structure(indigo_request: IndigoRequest):
-    # do we need new type for structure?
-    attrs = indigo_request.data[0].attributes
+async def check_structure(indigo_request: IndigoStructurePropsRequest):
+    structure = indigo_request.data.attributes.content
+    props = indigo_request.data.attributes.props
 
-    structure = attrs[0].content  # required
-    props = attrs[1] if len(attrs) > 1 else None  # optional
     result: str = indigo().checkStructure(structure, props)
 
     return IndigoResponse(
@@ -543,23 +523,31 @@ async def normalize(indigo_request: IndigoRequest) -> IndigoResponse:
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/nameToStructure")
-async def name_to_structure(indigo_request: IndigoRequest) -> IndigoResponse:
-    attrs = indigo_request.data[0].attributes
+async def name_to_structure(
+    indigo_request: IndigoStructurePropsRequest,
+) -> IndigoResponse:
+    name = indigo_request.data.attributes.content
+    props = indigo_request.data.attributes.props
 
-    name: str = attrs[0].content  # required
-    params: str = attrs[1] if len(attrs) > 1 else None  # optional
-    structure: IndigoObject = indigo().nameToStructure(name, params)
+    structure: IndigoObject = indigo().nameToStructure(name, props)
     # TODO: what to return
     return IndigoResponse()
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/reactionProductEnumerate")
-async def reaction_product_enumerate(indigo_request: IndigoRequest) -> IndigoResponse:
-    data = parse_indigo_request(indigo_request, separate=True)
-    reaction, *monomers_table = data
-    # TODO: check convertToArray implementation to see if it saves nested table structure
-    # if not, do conversion manually, as described here:
-    # https://lifescience.opensource.epam.com/indigo/api/index.html, see Reaction Products Enumeration
-    output_reactions = indigo().reactionProductEnumerate(reaction[0], monomers_table)
+async def reaction_product_enumerate(
+    indigo_request: IndigoReactionProductEnumerateRequest,
+) -> IndigoResponse:
+    # data = parse_indigo_request(indigo_request, separate=True)
+    try:
+        reaction = indigo().loadQueryReaction(indigo_request.data.attributes.reaction)
+        monomers_table = indigo_request.data.attributes.monomers_table
+        # TODO: check convertToArray implementation to see if it saves nested table structure
+        # if not, do conversion manually, as described here:
+        # https://lifescience.opensource.epam.com/indigo/api/index.html, see Reaction Products Enumeration
+        output_reactions = indigo().reactionProductEnumerate(reaction, monomers_table)
+    except IndigoException as e:
+        return error_response(str(e))
+
     # TODO: how to return output reactions
     return IndigoResponse()
