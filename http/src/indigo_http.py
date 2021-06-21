@@ -6,6 +6,7 @@ from indigo import IndigoException, IndigoObject
 from .indigo_tools import indigo, indigo_new
 from .model import (
     DataModel,
+    Error,
     IndigoBaseRequest,
     IndigoReactionProductEnumerateRequest,
     IndigoRequest,
