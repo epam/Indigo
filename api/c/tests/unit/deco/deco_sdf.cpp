@@ -10,29 +10,34 @@ using namespace indigo;
 
 void prepareStructure(int mol)
 {
-    int atoms = indigoIterateAtoms(mol);
-    while (indigoHasNext(atoms))
+    int atoms_it = indigoIterateAtoms(mol);
+    while (indigoHasNext(atoms_it))
     {
-        int atom = indigoNext(atoms);
+        int atom = indigoNext(atoms_it);
         indigoSetXYZ(atom, 0, 0, 0);
     }
 
-    int rgroups = indigoIterateRGroups(mol);
-    while (indigoHasNext(rgroups))
+	indigoFree(atoms_it);
+
+    int rgroups_it = indigoIterateRGroups(mol);
+    while(indigoHasNext(rgroups_it))
     {
-        int rg = indigoNext(rgroups);
-        int fragments = indigoIterateRGroupFragments(rg);
-        if (indigoHasNext(fragments))
+        int rg = indigoNext(rgroups_it); // take rgroup
+        int fragments_it = indigoIterateRGroupFragments(rg);
+        if (indigoHasNext(fragments_it))
         {
-            int rg_next = indigoNext(fragments);
-            int atoms = indigoIterateAtoms(rg_next);
-            while (indigoHasNext(atoms))
+            int rg_next = indigoNext(fragments_it); // take first fragment.
+            int atoms_it = indigoIterateAtoms(rg_next);
+            while (indigoHasNext(atoms_it))
             {
-                int atom = indigoNext(atoms);
+                int atom = indigoNext(atoms_it);
                 indigoSetXYZ(atom, 0, 0, 0);
             }
+            indigoFree( atoms_it );
         }
+        indigoFree( fragments_it );
     }
+	indigoFree(rgroups_it);
 }
 
 void testScaffold(const std::string& filename, const std::string& mode, bool print_molfile)
@@ -44,28 +49,29 @@ void testScaffold(const std::string& filename, const std::string& mode, bool pri
     int sdf_it = indigoIterateSDFile(filename.c_str());
     while (indigoHasNext(sdf_it))
     {
-        int item = indigoNext( sdf_it );
+        int item = indigoNext( sdf_it ); // take molecule
         indigoClearStereocenters(item);
         indigoClearCisTrans(item);
         indigoArrayAdd(arr, item);
     }
+    indigoFree(sdf_it);
     int scaf = indigoExtractCommonScaffold(arr, mode.c_str());
     prepareStructure(scaf);
     std::cout << "scaffold:" << indigoSmiles(scaf) << std::endl;
     int all_scaffolds = indigoAllScaffolds( scaf );
     int deco = indigoDecomposeMolecules( scaf, arr );
     int full_scaf = indigoDecomposedMoleculeScaffold(deco);
-    std::cout << "full scaffold:" << indigoSmiles(full_scaf) << std::endl;
+    std::cout << "full scaffold: " << indigoSmiles(full_scaf) << std::endl;
     if (print_molfile)
     {
         prepareStructure(full_scaf);
-        std::cout << "full scaffold:" << indigoMolfile( full_scaf ) << std::endl;
+        std::cout << "full scaffold: " << indigoMolfile( full_scaf ) << std::endl;
     }
 
-    int decos = indigoIterateDecomposedMolecules(deco);
-    while (indigoHasNext(decos))
+    int decos_it = indigoIterateDecomposedMolecules(deco);
+    while (indigoHasNext(decos_it))
     {
-        int item = indigoNext(decos);
+        int item = indigoNext(decos_it);
 		std::cout << indigoSmiles( indigoDecomposedMoleculeHighlighted(item) ) << std::endl;
         int mol = indigoDecomposedMoleculeWithRGroups(item);
         std::cout << "decomposed molecule: " << indigoCanonicalSmiles(mol) << std::endl;
