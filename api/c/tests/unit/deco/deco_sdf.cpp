@@ -66,58 +66,52 @@ void testScaffold(const std::string& filename, const std::string& mode, bool pri
     while (indigoHasNext(decos))
     {
         int item = indigoNext(decos);
-
+		std::cout << indigoSmiles( indigoDecomposedMoleculeHighlighted(item) ) << std::endl;
+        int mol = indigoDecomposedMoleculeWithRGroups(item);
+        std::cout << "decomposed molecule: " << indigoCanonicalSmiles(mol) << std::endl;
+        if ( print_molfile )
+	    {
+            prepareStructure( mol );
+            std::cout << "decomposed molecule: " << indigoMolfile(mol) << std::endl;
+		}
+        std::cout << "mapped scaffold: " << indigoCanonicalSmiles(indigoDecomposedMoleculeScaffold(item));
+        int rgroups = indigoIterateRGroups(mol);
+		while (indigoHasNext(rgroups))
+		{
+            int rg = indigoNext( rgroups);
+            std::cout << "  RGROUP #" << indigoIndex(rg);
+            int frags = indigoIterateRGroupFragments( rg );
+			if (indigoHasNext(frags))
+			{
+                int frag = indigoNext(frags);
+                std::cout << "  fragment #" << indigoIndex(frag) << ":" << indigoCanonicalSmiles(frag) << std::endl;
+            }
+            else
+                std::cout << "NO FRAGMENT" << std::endl;
+		}
+    }
+    sdf_it = indigoIterateSDFile(filename.c_str());
+    while (indigoHasNext(sdf_it))
+    {
+        int item = indigoNext(sdf_it);
+        int sm = indigoSubstructureMatcher( item, nullptr );
+		if (!indigoMatch(sm, full_scaf))
+		{
+            std::cout << "ERROR: full scaffold not found in the input structure " << indigoIndex( item );
+		}
+        int arr_it = indigoIterateArray(all_scaffolds);
+		while (indigoHasNext(arr_it))
+		{
+            int sm = indigoSubstructureMatcher(item, nullptr);
+            if (!indigoMatch(sm, scaf))
+            {
+                std::cout << "ERROR: scaffold " << indigoIndex( scaf ) << " not found in the input structure " << indigoIndex( item ) << std::endl;
+            }
+		}
     }
 }
 
-    /*def testScaffold(filename, mode, print_molfile):
-        indigo.setOption("molfile-saving-skip-date", True)
-        indigo.setOption("treat-x-as-pseudoatom", True)
-        indigo.setOption("ignore-stereochemistry-errors", True)
-        arr = indigo.createArray()
-        for item in indigo.iterateSDFile(filename):
-            item.clearStereocenters()
-            item.clearCisTrans()
-    #item.aromatize()
-    #for atom in item.iterateAtoms():
-    #atom.setXYZ(0, 0, 0)
-            arr.arrayAdd(item)
-
-        scaf = indigo.extractCommonScaffold(arr, mode)
-        prepareStructure(scaf)
-        print("scaffold: " + scaf.smiles())
-        all_scaffolds = scaf.allScaffolds()
-        deco = indigo.decomposeMolecules(scaf, arr)
-        full_scaf = deco.decomposedMoleculeScaffold()
-        print("full scaffold: " + full_scaf.smiles())
-
-        if print_molfile:
-            prepareStructure(full_scaf)
-            print("full scaffold: " + full_scaf.molfile())
-        for item in deco.iterateDecomposedMolecules():
-            print(item.decomposedMoleculeHighlighted().smiles())
-            mol = item.decomposedMoleculeWithRGroups()
-            print("decomposed molecule: " + mol.canonicalSmiles())
-            if print_molfile:
-                prepareStructure(mol)
-                print("decomposed molecule: " + mol.molfile())
-            print("mapped scaffold: " + item.decomposedMoleculeScaffold().canonicalSmiles())
-            for rg in mol.iterateRGroups():
-                print("  RGROUP #%d" % ((rg.index())))
-                if rg.iterateRGroupFragments().hasNext():
-                    frag = rg.iterateRGroupFragments().next()
-                    print("  fragment #%s: %s" % (str(frag.index()), frag.canonicalSmiles()))
-                else:
-                    print("NO FRAGMENT")
-        for item in indigo.iterateSDFile(filename):
-            if not indigo.substructureMatcher(item).match(full_scaf):
-                print("ERROR: full scaffold not found in the input structure " + item.index())
-            for scaf in all_scaffolds.iterateArray():
-                if not indigo.substructureMatcher(item).match(scaf):
-                    print("ERROR: scaffold " + scaf.index() + " not found in the input structure " + item.index())
-    */
-
-    TEST(IndigoDecoSDFTest, deco_sdf_test)
+TEST(IndigoDecoSDFTest, deco_sdf_test)
 {
     qword session = indigoAllocSessionId();
     indigoSetSessionId(session);
@@ -126,19 +120,7 @@ void testScaffold(const std::string& filename, const std::string& mode, bool pri
 
     try
     {
-        int m = indigoLoadMoleculeFromString("c1ccccc1.c1ccccc1");
-        int c = indigoComponent(m, 0);
-        int cc = indigoClone(c);
-        indigoDearomatize(cc);
-        Array<int> vertices;
-        for (int i = 0; i < 6; ++i)
-            vertices.push(i);
-
-        indigoRemoveAtoms(m, vertices.size(), vertices.ptr());
-        //      printf("%s\n", indigoSmiles(cc));
-
-        indigoMerge(m, cc);
-        ASSERT_STREQ("C1C=CC=CC=1.c1ccccc1", indigoSmiles(m));
+        testScaffold(dataPath("molecules/basic/thiazolidines.sdf"), "approx", false);
     }
     catch (Exception& e)
     {
