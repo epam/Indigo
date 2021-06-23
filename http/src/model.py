@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
@@ -16,7 +16,7 @@ class SupportedTypes(Enum):
 
 
 class AttributesModel(BaseModel):
-    content: str
+    content: Union[str, Dict]
 
 
 class DataBaseModel(BaseModel):
@@ -41,6 +41,11 @@ class StructurePropsAttributes(AttributesModel):
     props: Optional[str] = None
 
 
+class MolPairAttributes(BaseModel):
+    mol1: str
+    mol2: str
+
+
 class StructurePropsDataModel(DataBaseModel):
     attributes: StructurePropsAttributes
 
@@ -49,9 +54,13 @@ class ReactionProductEnumerateDataModel(DataBaseModel):
     attributes: ReactionProductEnumerateAttributes
 
 
+class MolPairDataModel(DataBaseModel):
+    attributes: MolPairAttributes
+
+
 class IndigoRequest(BaseModel):
     """
-    old data model
+    old request model
     """
 
     data: List[DataModel]
@@ -59,7 +68,7 @@ class IndigoRequest(BaseModel):
 
 class IndigoBaseRequest(BaseModel):
     """
-    new request base model
+    new request model
     """
 
     data: NewDataModel
@@ -82,6 +91,16 @@ class IndigoStructurePropsRequest(BaseModel):
     """
 
     data: StructurePropsDataModel
+
+
+class IndigoMolPairRequest(BaseModel):
+    """
+    request model for:
+    - POST /commonBits
+    - POST /exactMatch
+    """
+
+    data: MolPairDataModel
 
 
 class Error(BaseModel):
