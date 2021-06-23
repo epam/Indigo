@@ -1,5 +1,5 @@
 from os import error
-from typing import Callable, Generator, Tuple, Union
+from typing import Any, Callable
 
 from fastapi import FastAPI, Request, Response
 from indigo import IndigoException, IndigoObject
@@ -56,6 +56,17 @@ RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
 #             yield tuple(get_indigo_object(data_item))
 #         else:
 #             yield from get_indigo_object(data_item)
+
+
+def make_response(result_type: SupportedTypes, result: Any):
+    return IndigoResponse(
+        **{
+            "data": {
+                "type": result_type,
+                "attributes": {"result": result},
+            }
+        }
+    )
 
 
 def error_response(msg: str) -> IndigoResponse:

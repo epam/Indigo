@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -17,7 +17,7 @@ class SupportedTypes(Enum):
 
 
 class AttributesModel(BaseModel):
-    content: Union[str, Dict]
+    content: str
 
 
 class DataBaseModel(BaseModel):
@@ -115,7 +115,19 @@ class Error(BaseModel):
     detail: Optional[str] = None
 
 
-class IndigoResponse(BaseModel):
-    data: Optional[Dict] = None
+class ResponseAttributesModel(BaseModel):
+    result: Any
+
+
+class ResponseDataModel(DataBaseModel):
+    type: Optional[SupportedTypes] = None
+    attributes: ResponseAttributesModel
+
+
+class IndigoBaseResponse(BaseModel):
     meta: Optional[Dict] = None
     errors: Optional[List[Error]] = None
+
+
+class IndigoResponse(IndigoBaseResponse):
+    data: Optional[ResponseDataModel] = None
