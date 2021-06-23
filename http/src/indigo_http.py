@@ -568,7 +568,7 @@ async def reaction_product_enumerate(
         reaction = indigo().loadQueryReaction(indigo_request.data.attributes.reaction)
         monomers_table = indigo_request.data.attributes.monomers_table
         monomers_table = [
-            list(map(lambda m: indigo().loadMolecule(m), row)) for row in monomers_table
+            [indigo().loadMolecule(m) for m in row] for row in monomers_table
         ]
         # TODO: check convertToArray implementation to see if it saves nested table structure
         # if not, do conversion manually, as described here:
@@ -579,12 +579,3 @@ async def reaction_product_enumerate(
 
     # TODO: how to return output reactions
     return IndigoResponse()
-
-
-@app.on_event("startup")
-async def test():
-    import json
-
-    data = app.openapi()
-    with open("openapi.json", "w") as f:
-        json.dump(data.f)
