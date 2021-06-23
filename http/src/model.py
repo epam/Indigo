@@ -12,6 +12,7 @@ class SupportedTypes(Enum):
     REACTION = "reaction"
     QUERY_REACTION = "query_reaction"
     GROSSFORMULA = "grossformula"
+    COMMON_BITS = "common_bits"
     FLOAT = "float"
 
 
@@ -24,12 +25,8 @@ class DataBaseModel(BaseModel):
     # attributes: AttributesModel
 
 
-class NewDataModel(DataBaseModel):
-    attributes: AttributesModel
-
-
 class DataModel(DataBaseModel):
-    attributes: List[AttributesModel]
+    attributes: AttributesModel
 
 
 class ReactionProductEnumerateAttributes(BaseModel):
@@ -46,6 +43,11 @@ class MolPairAttributes(BaseModel):
     mol2: str
 
 
+class AmbiguousHAttributes(BaseModel):
+    molecule: Optional[str] = None
+    reaction: Optional[str] = None
+
+
 class StructurePropsDataModel(DataBaseModel):
     attributes: StructurePropsAttributes
 
@@ -58,12 +60,8 @@ class MolPairDataModel(DataBaseModel):
     attributes: MolPairAttributes
 
 
-class IndigoRequest(BaseModel):
-    """
-    old request model
-    """
-
-    data: List[DataModel]
+class AmbiguousHDataModel(DataBaseModel):
+    attributes: AmbiguousHAttributes
 
 
 class IndigoBaseRequest(BaseModel):
@@ -71,7 +69,7 @@ class IndigoBaseRequest(BaseModel):
     new request model
     """
 
-    data: NewDataModel
+    data: DataModel
 
 
 class IndigoReactionProductEnumerateRequest(BaseModel):
@@ -101,6 +99,15 @@ class IndigoMolPairRequest(BaseModel):
     """
 
     data: MolPairDataModel
+
+
+class IndigoAmbiguousHRequest(BaseModel):
+    """
+    request model for:
+    - POST /checkAmbiguousH
+    """
+
+    data: AmbiguousHDataModel
 
 
 class Error(BaseModel):

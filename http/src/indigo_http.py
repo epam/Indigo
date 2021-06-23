@@ -6,12 +6,11 @@ from indigo import IndigoException, IndigoObject
 
 from .indigo_tools import indigo, indigo_new
 from .model import (
-    DataModel,
     Error,
+    IndigoAmbiguousHRequest,
     IndigoBaseRequest,
     IndigoMolPairRequest,
     IndigoReactionProductEnumerateRequest,
-    IndigoRequest,
     IndigoResponse,
     IndigoStructurePropsRequest,
     SupportedTypes,
@@ -25,38 +24,38 @@ BASE_URL_INDIGO_OBJECT = "/indigoObject"
 RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
 
 
-def get_indigo_object(data: DataModel):
-    if isinstance(data.attributes, list):
-        data_type = data.type
-        for attribute in data.attributes:
-            if data_type == SupportedTypes.SMILES:
-                yield indigo().loadMolecule(attribute.content)
-            elif data_type == SupportedTypes.MOLFILE:
-                yield indigo().loadMoleculeFromBuffer(bytes(attribute.content, "utf-8"))
-            elif data_type == SupportedTypes.REACTION:
-                yield indigo().loadReaction(attribute.content)
-            elif data_type == SupportedTypes.QUERY_REACTION:
-                yield indigo().loadQueryReaction(attribute.content)
-            else:
-                raise AttributeError(f"Unsupported type {data_type}")
-    else:
-        raise AttributeError(f"Unsupported attributes type: {type(data.attributes)}")
+# def get_indigo_object(data: DataModel):
+#     if isinstance(data.attributes, list):
+#         data_type = data.type
+#         for attribute in data.attributes:
+#             if data_type == SupportedTypes.SMILES:
+#                 yield indigo().loadMolecule(attribute.content)
+#             elif data_type == SupportedTypes.MOLFILE:
+#                 yield indigo().loadMoleculeFromBuffer(bytes(attribute.content, "utf-8"))
+#             elif data_type == SupportedTypes.REACTION:
+#                 yield indigo().loadReaction(attribute.content)
+#             elif data_type == SupportedTypes.QUERY_REACTION:
+#                 yield indigo().loadQueryReaction(attribute.content)
+#             else:
+#                 raise AttributeError(f"Unsupported type {data_type}")
+#     else:
+#         raise AttributeError(f"Unsupported attributes type: {type(data.attributes)}")
 
 
-def parse_indigo_request(
-    request: IndigoRequest, separate: bool = False
-) -> Generator[Union[IndigoObject, Tuple[IndigoObject]], None, None]:
-    """
-    extract objects from request,
-    is `separate` is set, yields data elements by chunks corresponding
-    to list elements in request, otherwise yields data elements one by one
-    """
-    for data_item in request.data:
-        # TODO: maybe add itertools.groupby and parse request in buckets by type
-        if separate:
-            yield tuple(get_indigo_object(data_item))
-        else:
-            yield from get_indigo_object(data_item)
+# def parse_indigo_request(
+#     request: IndigoRequest, separate: bool = False
+# ) -> Generator[Union[IndigoObject, Tuple[IndigoObject]], None, None]:
+#     """
+#     extract objects from request,
+#     is `separate` is set, yields data elements by chunks corresponding
+#     to list elements in request, otherwise yields data elements one by one
+#     """
+#     for data_item in request.data:
+#         # TODO: maybe add itertools.groupby and parse request in buckets by type
+#         if separate:
+#             yield tuple(get_indigo_object(data_item))
+#         else:
+#             yield from get_indigo_object(data_item)
 
 
 def error_response(msg: str) -> IndigoResponse:
@@ -159,21 +158,19 @@ async def check_structure(indigo_request: IndigoStructurePropsRequest):
     )
 
 
-@app.post(f"{BASE_URL_INDIGO}/commonBits", response_model=IndigoResponse)
+@app.post(f"{BASE_URL_INDIGO}/commonBits")
 async def common_bits(indigo_request: IndigoMolPairRequest) -> IndigoResponse:
     try:
         mol1 = indigo().loadMolecule(indigo_request.data.attributes.mol1)
         mol2 = indigo().loadMolecule(indigo_request.data.attributes.mol2)
-        common_bits = indigo().commonBits(
-            mol1.fingerprint("sim"), mol2.fingerprint("sim")
-        )
+        bits = indigo().commonBits(mol1.fingerprint("sim"), mol2.fingerprint("sim"))
     except IndigoException as e:
         return error_response(str(e))
 
     return IndigoResponse(
         data={
             "type": "common_bits",
-            "attributes": {"common_bits": common_bits},
+            "attributes": {"common_bits": bits},
         }
     )
 
@@ -278,17 +275,19 @@ async def check_3d_stereo(indigo_request: IndigoBaseRequest) -> IndigoResponse:
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/checkAmbiguousH")
-async def check_ambiguous_h(indigo_request: IndigoBaseRequest) -> IndigoResponse:
+async def check_ambiguous_h(indigo_request: IndigoAmbiguousHRequest) -> IndigoResponse:
     # TODO: Accepts a molecule or reaction (but not query molecule or query reaction).
     # Returns a string describing the first encountered mistake with ambiguous H counter.
     # Returns an empty string if the input molecule/reaction is fine.
     try:
-        if "molecule" in indigo_request.data.attributes.content:
-            data = indigo_request.data.attributes.content["molecule"]
-            indigo_object = indigo().loadMolecule(data)
+        if indigo_request.data.attributes.molecule is not None:
+            indigo_object = indigo().loadMolecule(
+                indigo_request.data.attributes.molecule
+            )
         else:
-            data = indigo_request.data.attributes.content["reaction"]
-            indigo_object = indigo().loadReaction(data)
+            indigo_object = indigo().loadReaction(
+                indigo_request.data.attributes.reaction
+            )
     except (IndigoException, ValueError) as e:
         return error_response(str(e))
 
@@ -541,7 +540,7 @@ async def molecular_weight(indigo_request: IndigoBaseRequest) -> IndigoResponse:
     return apply_float(molecule, "molecularWeight")
 
 
-@app.post(f"{BASE_URL_INDIGO_OBJECT}/normalize")
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/normalize", response_model=IndigoResponse)
 async def normalize(indigo_request: IndigoBaseRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     return apply(molecule, "normalize")
