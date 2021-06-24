@@ -1,12 +1,14 @@
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
 
 class SupportedTypes(Enum):
+    VERSION = "version"
     MOLFILE = "molfile"
     SMILES = "smiles"
+    SMARTS = "smarts"
     BOOL = "bool"
     INT = "int"
     REACTION = "reaction"
@@ -121,7 +123,7 @@ class ResponseAttributesModel(BaseModel):
 
 class ResponseDataModel(DataBaseModel):
     type: Optional[SupportedTypes] = None
-    attributes: ResponseAttributesModel
+    attributes: Union[ResponseAttributesModel, List[ResponseAttributesModel]]
 
 
 class IndigoBaseResponse(BaseModel):
