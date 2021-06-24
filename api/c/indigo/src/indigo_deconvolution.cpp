@@ -178,7 +178,9 @@ void IndigoDeconvolution::makeRGroup(IndigoDeconvolutionElem& elem, bool all_mat
         for (int match_idx = 0; match_idx < deco_enum.contexts.size(); ++match_idx)
         {
             IndigoDecompositionMatch& deco_match = deco_enum.contexts[match_idx];
-            deco_match.mol_out.clone_KeepIndices(mol_in);
+            Molecule test;
+            test.clone_KeepIndices(mol_in);
+            deco_match.mol_out.clone_KeepIndices(test);
 
             createRgroups(deco_match, change_scaffold);
 

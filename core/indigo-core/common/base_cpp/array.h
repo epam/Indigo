@@ -119,15 +119,20 @@ namespace indigo
         const T& operator[](int index) const
         {
             if (index < 0 || _length - index <= 0)
+            {
+                printf("invalid index\n");
                 throw Error("invalid index %d (size=%d)", index, _length);
-
+            }
             return _array[index];
         }
 
         T& operator[](int index)
         {
             if (index < 0 || _length - index <= 0)
+            {
+                printf("invalid index\n");
                 throw Error("invalid index %d (size=%d)", index, _length);
+            }
 
             return _array[index];
         }

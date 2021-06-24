@@ -734,6 +734,13 @@ void MoleculeCisTrans::buildOnSubmolecule(BaseMolecule& super, int* mapping)
     if (!super.cis_trans.exists())
         return;
 
+    printf("super.edgeCount():%d _baseMolecule.edgeCount():%d\n", super.edgeCount(), _baseMolecule.edgeCount());
+
+    // if (_baseMolecule.edgeCount() == 0)
+    // {
+    //    printf("_baseMolecule.edgeCount(): %d\n", _baseMolecule.edgeCount());
+    // }
+
     while (_bonds.size() < _baseMolecule.edgeEnd())
     {
         _Bond& bond = _bonds.push();

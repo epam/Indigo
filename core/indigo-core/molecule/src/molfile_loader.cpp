@@ -378,7 +378,7 @@ void MolfileLoader::_readCtab2000()
         try
         {
 
-
+            _hcount[k] = 0;
             atom_line.skip(3); // skip atom stereo parity
             _hcount[k] = atom_line.readIntFix(3);
 

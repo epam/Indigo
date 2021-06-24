@@ -80,12 +80,12 @@ void testScaffold(const std::string& filename, const std::string& mode, bool pri
             prepareStructure( mol );
             std::cout << "decomposed molecule: " << indigoMolfile(mol) << std::endl;
 		}
-        std::cout << "mapped scaffold: " << indigoCanonicalSmiles(indigoDecomposedMoleculeScaffold(item));
+        std::cout << "mapped scaffold: " << indigoCanonicalSmiles(indigoDecomposedMoleculeScaffold(item)) << std::endl;
         int rgroups = indigoIterateRGroups(mol);
 		while (indigoHasNext(rgroups))
 		{
             int rg = indigoNext( rgroups);
-            std::cout << "  RGROUP #" << indigoIndex(rg);
+            std::cout << "  RGROUP #" << indigoIndex(rg) << std::endl;
             int frags = indigoIterateRGroupFragments( rg );
 			if (indigoHasNext(frags))
 			{
@@ -103,11 +103,12 @@ void testScaffold(const std::string& filename, const std::string& mode, bool pri
         int sm = indigoSubstructureMatcher( item, nullptr );
 		if (!indigoMatch(sm, full_scaf))
 		{
-            std::cout << "ERROR: full scaffold not found in the input structure " << indigoIndex( item );
+            std::cout << "ERROR: full scaffold not found in the input structure " << indigoIndex(item) << std::endl;
 		}
-        int arr_it = indigoIterateArray(all_scaffolds);
-		while (indigoHasNext(arr_it))
+        int scaffs_it = indigoIterateArray(all_scaffolds);
+        while (indigoHasNext(scaffs_it))
 		{
+            int scaf = indigoNext(scaffs_it);
             int sm = indigoSubstructureMatcher(item, nullptr);
             if (!indigoMatch(sm, scaf))
             {
@@ -126,7 +127,7 @@ TEST(IndigoDecoSDFTest, deco_sdf_test)
 
     try
     {
-        testScaffold(dataPath("molecules/basic/thiazolidines.sdf"), "approx", false);
+        testScaffold(dataPath("molecules/basic/thiazolidines.sdf"), "exact", false);
     }
     catch (Exception& e)
     {
