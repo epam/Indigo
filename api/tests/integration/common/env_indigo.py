@@ -139,9 +139,22 @@ relPathDict = {}
 inspectStackLock = threading.RLock()
 
 
+class Memoize:
+    def __init__(self, f):
+        self.f = f
+        self.memo = {}
+
+    def __call__(self, *args):
+        if not args in self.memo:
+            self.memo[args] = self.f(*args)
+        return self.memo[args]
+
+
+# We use memoization because inspect works very slow on Jython
+@Memoize
 def joinPath(*args):
     inspectStackLock.acquire()
-    frm = inspect.stack()[1][1]
+    frm = inspect.stack()[2][1]
     inspectStackLock.release()
     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\',
                                                                                                                  '/')
