@@ -566,5 +566,5 @@ async def reaction_product_enumerate(
         return error_response(str(e))
 
     return make_response(
-        SupportedTypes.MOLFILE(), [r.molfile() for r in output_reactions.iterateArray()]
+        SupportedTypes.MOLFILE, [r.molfile() for r in output_reactions.iterateArray()]
     )
