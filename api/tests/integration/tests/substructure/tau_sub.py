@@ -52,8 +52,6 @@ def testTauSubFlags():
     mol1 = indigo.loadQueryMolecule("CC1(C)NC(=O)C2=CC=CC=C2N1")
     mol2 = indigo.loadMolecule("CC(=C)NC1=CC=CC=C1C(N)=O")
     mol2.aromatize()
-    testSingleTauMatch(mol1, mol2, "TAU R-C", True, False)
-    testSingleTauMatch(mol1, mol2, "TAU R-C R2", True, False)
     testSingleTauMatch(mol1, mol2, "TAU", False, False)
     testSingleTauMatch(mol1, mol2, "TAU R2 R3", False, False)
     testSingleTauMatch(mol1, mol2, "TAU INCHI", False, False)
