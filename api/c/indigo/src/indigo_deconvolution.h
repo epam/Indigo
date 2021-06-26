@@ -85,6 +85,7 @@ public:
     public:
         DecompositionEnumerator() : all_matches(false), remove_rsites(false), deco(0)
         {
+            contexts.reserve(128);
         }
         ~DecompositionEnumerator()
         {
