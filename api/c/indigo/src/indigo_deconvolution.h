@@ -85,7 +85,6 @@ public:
     public:
         DecompositionEnumerator() : all_matches(false), remove_rsites(false), deco(0)
         {
-            contexts.reserve(128);
         }
         ~DecompositionEnumerator()
         {
@@ -101,7 +100,7 @@ public:
         bool all_matches;
         bool remove_rsites;
         IndigoDeconvolution* deco;
-        ObjArray<IndigoDecompositionMatch> contexts;
+        std::list<IndigoDecompositionMatch> contexts;
 
     private:
         DecompositionEnumerator(const DecompositionEnumerator&); // no implicit copy
@@ -187,9 +186,9 @@ public:
     }
 
     void renumber(Array<int>& map, Array<int>& inv_map);
-    void copy(IndigoDecompositionMatch& other);
+    void copy(const IndigoDecompositionMatch& other);
     void removeRsitesFromMaps(Graph& query_graph);
-    void copyScafAutoMaps(ObjList<Array<int>>& autoMaps);
+    void copyScafAutoMaps(const ObjList<Array<int>>& autoMaps);
     void completeScaffold();
 
     Molecule mol_out;
@@ -198,8 +197,10 @@ public:
 
     IndigoDeconvolution* deco;
 
-private:
-    IndigoDecompositionMatch(const IndigoDecompositionMatch&); // no implicit copy
+    IndigoDecompositionMatch(const IndigoDecompositionMatch& other) : IndigoObject( other )
+    {
+        copy(other);
+    }
 
     bool _completeScaffold;
 };
@@ -220,21 +221,17 @@ protected:
 class DLLEXPORT IndigoDecompositionMatchIter : public IndigoObject
 {
 public:
-    IndigoDecompositionMatchIter(ObjArray<IndigoDecompositionMatch>& matches);
+    IndigoDecompositionMatchIter(std::list<IndigoDecompositionMatch>& matches);
     ~IndigoDecompositionMatchIter() override
     {
     }
 
     IndigoObject* next() override;
     bool hasNext() override;
-    int getIndex() override
-    {
-        return _index;
-    }
 
 protected:
-    int _index;
-    ObjArray<IndigoDecompositionMatch>& _matches;
+    std::list<IndigoDecompositionMatch>::iterator _index;
+    std::list<IndigoDecompositionMatch>& _matches;
 };
 
 #ifdef _WIN32
