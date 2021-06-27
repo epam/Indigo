@@ -100,7 +100,7 @@ public:
         bool all_matches;
         bool remove_rsites;
         IndigoDeconvolution* deco;
-        std::list<IndigoDecompositionMatch> contexts;
+        std::vector<IndigoDecompositionMatch> contexts;
 
     private:
         DecompositionEnumerator(const DecompositionEnumerator&); // no implicit copy
@@ -221,7 +221,7 @@ protected:
 class DLLEXPORT IndigoDecompositionMatchIter : public IndigoObject
 {
 public:
-    IndigoDecompositionMatchIter(std::list<IndigoDecompositionMatch>& matches);
+    IndigoDecompositionMatchIter(std::vector<IndigoDecompositionMatch>& matches);
     ~IndigoDecompositionMatchIter() override
     {
     }
@@ -230,8 +230,8 @@ public:
     bool hasNext() override;
 
 protected:
-    std::list<IndigoDecompositionMatch>::iterator _index;
-    std::list<IndigoDecompositionMatch>& _matches;
+    std::vector<IndigoDecompositionMatch>::iterator _index;
+    std::vector<IndigoDecompositionMatch>& _matches;
 };
 
 #ifdef _WIN32

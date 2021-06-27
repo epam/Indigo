@@ -583,7 +583,7 @@ IndigoDeconvolutionIter::~IndigoDeconvolutionIter()
 {
 }
 
-IndigoDecompositionMatchIter::IndigoDecompositionMatchIter(std::list<IndigoDecompositionMatch>& matches)
+IndigoDecompositionMatchIter::IndigoDecompositionMatchIter(std::vector<IndigoDecompositionMatch>& matches)
     : IndigoObject(DECOMPOSITION_MATCH_ITER), _matches(matches)
 {
     _index = matches.begin();
