@@ -127,7 +127,11 @@ TEST(IndigoDecoSDFTest, deco_sdf_test)
 
     try
     {
-        testScaffold(dataPath("molecules/basic/thiazolidines.sdf"), "exact", false);
+        testScaffold(dataPath("molecules/basic/thiazolidines.sdf"), "exact 10000", false);
+        testScaffold(dataPath("molecules/basic/thiazolidines.sdf"), "approx", false);
+        testScaffold(dataPath("molecules/basic/thiazolidines.sdf"), "approx 3", false);
+        testScaffold(dataPath("molecules/basic/sugars.sdf"), "exact", true);
+        testScaffold(dataPath("molecules/basic/sugars.sdf"), "approx", false);
     }
     catch (Exception& e)
     {

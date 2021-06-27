@@ -200,7 +200,8 @@ public:
 
 protected:
     AutoPtr<Array<char>> _dbg_info; // allocated by debugInfo() on demand
-    IndigoObject(const IndigoObject&){};
+    IndigoObject(const IndigoObject& obj) : 
+        type(obj.type){};
 };
 
 class IndigoMoleculeGross : public IndigoObject
