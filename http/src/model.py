@@ -13,7 +13,7 @@ class SupportedTypes(Enum):
     INT = "int"
     REACTION = "reaction"
     QUERY_REACTION = "query_reaction"
-    GROSSFORMULA = "grossformula"
+    GROSSFORMULA = "grossFormula"
     COMMON_BITS = "common_bits"
     FLOAT = "float"
 

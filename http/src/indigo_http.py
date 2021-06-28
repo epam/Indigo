@@ -63,14 +63,29 @@ RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
 
 
 def make_response(result_type: SupportedTypes, result: Any):
-    if isinstance(result, list):
-        result_attributes = [ResponseAttributesModel(result=r) for r in result]
+    if hasattr(result, "__iter__"):
+        result_attributes = (ResponseAttributesModel(result=r) for r in result)
     else:
         result_attributes = ResponseAttributesModel(result=result)
 
     return IndigoResponse(
         data=ResponseDataModel(type=result_type, attributes=result_attributes)
     )
+
+
+def make_mol_response(result_type: SupportedTypes, result: IndigoObject):
+    """
+    TODO: restrict types passed to this function to smiles, smarts, grossFormula
+    """
+
+    func = lambda r: getattr(r, result_type.value)()  # call corresponding method
+
+    if hasattr(result, "__iter__"):
+        raw_data = (func(r) for r in result)  # no actual iteration
+    else:
+        raw_data = func(result)
+
+    return make_response(result_type, raw_data)
 
 
 def error_response(
@@ -565,6 +580,4 @@ async def reaction_product_enumerate(
     except IndigoException as e:
         return error_response(str(e))
 
-    return make_response(
-        SupportedTypes.MOLFILE, [r.molfile() for r in output_reactions.iterateArray()]
-    )
+    return make_mol_response(SupportedTypes.MOLFILE, output_reactions.iterateArray())
