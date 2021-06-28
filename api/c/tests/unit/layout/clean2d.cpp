@@ -52,6 +52,7 @@ TEST(IndigoClean2DTest, clean2d_test)
             int cl2d = indigoClean2d(item_org);
             print_compare(item_org, item_ref);
             printf("------------------>\n");
+            break;
         }
         indigoFree(sdf_org_it);
         indigoFree(sdf_ref_it);
