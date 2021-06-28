@@ -1067,7 +1067,6 @@ float MoleculeCleaner2d::_localEnergy(int v)
                     result += _angleEnergy(v1, v, vert1.neiVertex(n2));
         }
     }
-    printf("local energy:%f\n", result);
     return result;
 }
 
