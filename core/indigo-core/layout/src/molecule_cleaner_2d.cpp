@@ -841,7 +841,6 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
         float len = 0;
         for (int i = 0; i < base_point.size(); i++)
             len += gradient[i].lengthSqr();
-        printf("len:%f\n", len);
         len = sqrt(len);
 
         float factor = std::min(need_len / len, 1.f);
@@ -1067,6 +1066,7 @@ float MoleculeCleaner2d::_localEnergy(int v)
                     result += _angleEnergy(v1, v, vert1.neiVertex(n2));
         }
     }
+    printf("local energy:%f\n", result);
     return result;
 }
 
