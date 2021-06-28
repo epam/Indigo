@@ -842,8 +842,9 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
         for (int i = 0; i < base_point.size(); i++)
             len += gradient[i].lengthSqr();
         len = sqrt(len);
-        float factor = std::min(need_len / len, 1.f);
-        printf("factor:%f\n", factor);
+        printf("len:%f\n", len);
+
+        double factor = std::min(need_len / len, 1.f);
         for (int i = 0; i < base_point.size(); i++)
             gradient[i] *= factor;
 
