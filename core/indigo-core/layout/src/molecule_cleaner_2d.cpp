@@ -1023,6 +1023,7 @@ float MoleculeCleaner2d::_energy()
             }
         }
 
+    printf("energy:%f\n", result);
     return result;
 }
 
