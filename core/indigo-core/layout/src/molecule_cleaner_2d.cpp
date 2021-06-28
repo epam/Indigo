@@ -834,6 +834,7 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
 
     for (int iter = 0; iter < 1000; iter++)
     {
+        printf("iteration:%d\n", iter);
         _updateGradient2();
         /*if (iter < 10) {
             for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f) \n", base_point[i], gradient[i].x, gradient[i].y);
