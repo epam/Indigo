@@ -2,7 +2,7 @@
 name = "indigo_http"
 version = "0.0.1"
 description = ""
-authors = ["Ruslan Khyurri <ruslan_khyurri@epam.com>"]
+authors = ["Ruslan Khyurri <ruslan_khyurri@epam.com>", "Sergei Petrov <sergei_petrov3@epam.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
