@@ -342,7 +342,7 @@ void LayoutChooser::_makeLayout()
         if (parity != 0)
         {
             int substituents[4];
-            ((BaseMolecule*)molecule)->cis_trans.getSubstituents_All(_layout._graph.getEdgeExtIdx(drawn_ext_idx), substituents);
+            ((BaseMolecule*)molecule)->getSubstituents_All(_layout._graph.getEdgeExtIdx(drawn_ext_idx), substituents);
 
             int drawn_substituent = -1;
             int drawn_substituent_idx = -1;

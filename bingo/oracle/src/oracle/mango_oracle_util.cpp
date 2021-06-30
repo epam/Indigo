@@ -370,8 +370,8 @@ ORAEXT OCILobLocator* oraMangoMolfile(OCIExtProcContext* ctx, OCILobLocator* tar
 
                 layout.make();
                 mol.clearBondDirections();
-                mol.stereocenters.markBonds();
-                mol.allene_stereo.markBonds();
+                mol.stereocentersMarkBonds();
+                mol.allene_stereoMarkBonds();
             }
 
             ArrayOutput output(icm);
@@ -425,8 +425,8 @@ ORAEXT OCILobLocator* oraMangoCML(OCIExtProcContext* ctx, OCILobLocator* target_
 
                 layout.make();
                 mol.clearBondDirections();
-                mol.stereocenters.markBonds();
-                mol.allene_stereo.markBonds();
+                mol.stereocentersMarkBonds();
+                mol.allene_stereoMarkBonds();
             }
 
             ArrayOutput output(icm);

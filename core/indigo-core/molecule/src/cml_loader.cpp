@@ -1081,7 +1081,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
 
             MoleculeStereocenters::moveMinimalToEnd(pyramid);
 
-            _bmol->stereocenters.add(idx, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
+            _bmol->stereocentersAdd(idx, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
         }
     }
 
@@ -1090,7 +1090,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         QS_DEF(Array<int>, sensible_bond_orientations);
 
         sensible_bond_orientations.clear_resize(_bmol->vertexEnd());
-        _bmol->stereocenters.buildFromBonds(stereochemistry_options, sensible_bond_orientations.ptr());
+        _bmol->stereocentersBuildFromBonds(stereochemistry_options, sensible_bond_orientations.ptr());
 
         if (!stereochemistry_options.ignore_errors)
             for (i = 0; i < _bmol->vertexCount(); i++)
@@ -1208,7 +1208,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         }
     }
     else if (BaseMolecule::hasCoord(*_bmol))
-        _bmol->cis_trans.build(0);
+        _bmol->cis_transBuild(0);
 
     // Sgroups
 

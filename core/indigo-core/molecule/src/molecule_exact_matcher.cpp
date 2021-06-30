@@ -176,12 +176,9 @@ int MoleculeExactMatcher::_embedding(Graph& subgraph, Graph& supergraph, int* co
 
     if (self->flags & CONDITION_STEREO)
     {
-        MoleculeStereocenters& qs = query.stereocenters;
-        MoleculeStereocenters& ts = target.stereocenters;
-
-        if (!MoleculeStereocenters::checkSub(qs, ts, core_sub, !(self->flags & CONDITION_ISOTOPE)))
+        if (!MoleculeStereocenters::checkSub(query, target, core_sub, !(self->flags & CONDITION_ISOTOPE)))
             return 1;
-        if (!MoleculeStereocenters::checkSub(ts, qs, core_super, !(self->flags & CONDITION_ISOTOPE)))
+        if (!MoleculeStereocenters::checkSub(query, target, core_super, !(self->flags & CONDITION_ISOTOPE)))
             return 1;
 
         if (!MoleculeCisTrans::checkSub(query, target, core_sub))

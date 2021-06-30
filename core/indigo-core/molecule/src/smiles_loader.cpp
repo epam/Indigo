@@ -226,14 +226,14 @@ void SmilesLoader::_calcStereocenters()
             if (_atoms[i].chirality == 2)
                 std::swap(pyramid[0], pyramid[1]);
 
-            if (!stereocenters.isPossibleStereocenter(i))
+            if (!_bmol->isPossibleStereocenter(i))
             {
                 if (!stereochemistry_options.ignore_errors)
                     throw Error("chirality not possible on atom #%d", i);
                 continue;
             }
 
-            stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
+            _bmol->stereocentersAdd(i, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
         }
     }
 }
@@ -252,7 +252,7 @@ void SmilesLoader::_calcCisTrans()
     for (; i < _bmol->edgeEnd(); i++)
         dirs.push(0);
 
-    _bmol->cis_trans.buildFromSmiles(dirs.ptr());
+    _bmol->cis_transBuildFromSmiles(dirs.ptr());
     if (_qmol != 0)
     {
         for (i = 0; i < _bonds.size(); i++)
@@ -314,7 +314,7 @@ void SmilesLoader::_readOtherStuff()
 
                     if (!found)
                     {
-                        if (!stereocenters.isPossibleStereocenter(idx))
+                        if (!_mol->isPossibleStereocenter(idx))
                         {
                             if (!stereochemistry_options.ignore_errors)
                                 throw Error("chirality not possible on atom #%d", idx);
@@ -324,7 +324,7 @@ void SmilesLoader::_readOtherStuff()
                             // Check if the stereocenter has already been marked as any
                             // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
                             if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
-                                stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                                _mol->stereocentersAdd(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
                         }
                     }
                 }
@@ -634,7 +634,7 @@ void SmilesLoader::_readOtherStuff()
 
                 if (!skip)
                 {
-                    _bmol->cis_trans.restoreSubstituents(_bonds[idx].index);
+                    _bmol->restoreSubstituents(_bonds[idx].index);
                     const int* subst = _bmol->cis_trans.getSubstituents(_bonds[idx].index);
                     int parity = ((c == 'c') ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
 
@@ -694,8 +694,8 @@ void SmilesLoader::_readOtherStuff()
             }
             if (_scanner.readChar() != ')')
                 throw Error("expected ')' after coordinates");
-            _bmol->stereocenters.markBonds();
-            _bmol->allene_stereo.markBonds();
+            _bmol->stereocentersMarkBonds();
+            _bmol->allene_stereoMarkBonds();
         }
         else if (c == 'h') // highlighting (Indigo's own extension)
         {

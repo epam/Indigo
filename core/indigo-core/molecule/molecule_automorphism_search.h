@@ -65,7 +65,7 @@ namespace indigo
         static bool _check_automorphism(Graph& graph, const Array<int>& mapping, const void* context);
 
         static bool _isCisTransBondMappedRigid(Molecule& mol, int i, const int* mapping);
-        static bool _isStereocenterMappedRigid(const MoleculeStereocenters& stereocenters, int i, const int* mapping);
+        static bool _isStereocenterMappedRigid(Molecule& baseMolecule, int i, const int* mapping);
 
         static int _compare_mapped(Graph& graph, const Array<int>& mapping1, const Array<int>& mapping2, const void* context);
 

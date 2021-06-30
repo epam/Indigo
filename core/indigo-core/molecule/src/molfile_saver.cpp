@@ -2800,7 +2800,7 @@ void MolfileSaver::_calcStereocenters(Molecule& source, Molecule& mol, Array<int
         if ((chirality[i] != BOND_UP) && (chirality[i] != BOND_DOWN))
             continue;
 
-        if (!mol.stereocenters.isPossibleStereocenter(i))
+        if (!mol.isPossibleStereocenter(i))
             continue;
 
         const Vertex& v = mol.getVertex(i);
@@ -2840,7 +2840,7 @@ void MolfileSaver::_calcStereocenters(Molecule& source, Molecule& mol, Array<int
         if (source.stereocenters.isPyramidMappingRigid(source_pyramid) != mol.stereocenters.isPyramidMappingRigid(pyramid, size, mapping.ptr()))
             std::swap(pyramid[0], pyramid[1]);
 
-        mol.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 1, pyramid);
+        mol.stereocentersAdd(i, MoleculeStereocenters::ATOM_ABS, 1, pyramid);
     }
 }
 

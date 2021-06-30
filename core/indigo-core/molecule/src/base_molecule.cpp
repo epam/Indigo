@@ -21,23 +21,23 @@
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
+#include "graph/dfs_walk.h"
 #include "molecule/elements.h"
+#include "molecule/inchi_wrapper.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
 #include "molecule/molecule_substructure_matcher.h"
+#include "molecule/molecule_tautomer_enumerator.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
-#include "molecule/inchi_wrapper.h"
-#include "molecule/molecule_tautomer_enumerator.h"
 #include "molecule/smiles_saver.h"
-#include "graph/dfs_walk.h"
 
 using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
 
-BaseMolecule::BaseMolecule() : cis_trans(*this), stereocenters(*this), allene_stereo(*this)
+BaseMolecule::BaseMolecule()
 {
     _edit_revision = 0;
 }
@@ -379,16 +379,16 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
     // stereo
     if (!(skip_flags & SKIP_STEREOCENTERS))
-        stereocenters.buildOnSubmolecule(mol.stereocenters, mapping.ptr());
+        stereocentersBuildOnSubmolecule(mol, mapping.ptr());
     else
         stereocenters.clear();
 
     if (!(skip_flags & SKIP_CIS_TRANS))
-        cis_trans.buildOnSubmolecule(mol, mapping.ptr());
+        cis_trans.buildOnSubmolecule(*this, mol, mapping.ptr());
     else
         cis_trans.clear();
 
-    allene_stereo.buildOnSubmolecule(mol.allene_stereo, mapping.ptr());
+    allene_stereoBuildOnSubmolecule(mol, mapping.ptr());
 
     // subclass stuff (Molecule or QueryMolecule)
     _postMergeWithSubmolecule(mol, vertices, edges, mapping, skip_flags);
@@ -563,7 +563,7 @@ int BaseMolecule::mergeAtoms(int atom1, int atom2)
 void BaseMolecule::flipBond(int atom_parent, int atom_from, int atom_to)
 {
     stereocenters.flipBond(atom_parent, atom_from, atom_to);
-    cis_trans.flipBond(atom_parent, atom_from, atom_to);
+    cis_trans.flipBond(*this, atom_parent, atom_from, atom_to);
 
     // subclass (Molecule or QueryMolecule) adds the new bond
     _flipBond(atom_parent, atom_from, atom_to);
@@ -704,9 +704,9 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
     }
 
     // stereo
-    stereocenters.removeAtoms(indices);
-    cis_trans.buildOnSubmolecule(*this, mapping.ptr());
-    allene_stereo.removeAtoms(indices);
+    stereocentersRemoveAtoms(indices);
+    cis_trans.buildOnSubmolecule(*this, *this, mapping.ptr());
+    allene_stereoRemoveAtoms(indices);
 
     // highlighting and stereo
     int b_idx;
@@ -776,8 +776,8 @@ void BaseMolecule::removeBonds(const Array<int>& indices)
     // subclass (Molecule or QueryMolecule) removes its data
     _removeBonds(indices);
 
-    stereocenters.removeBonds(indices);
-    allene_stereo.removeBonds(indices);
+    stereocenters.removeBonds(*this, indices);
+    allene_stereoRemoveBonds(indices);
 
     for (int i = 0; i < indices.size(); i++)
     {
@@ -3559,9 +3559,9 @@ void BaseMolecule::unhighlightAll()
 
 void BaseMolecule::unselectAll()
 {
-	_sl_atoms.clear();
-	_sl_bonds.clear();
-	updateEditRevision();
+    _sl_atoms.clear();
+    _sl_bonds.clear();
+    updateEditRevision();
 }
 
 void BaseMolecule::highlightAtom(int idx)
@@ -3573,11 +3573,10 @@ void BaseMolecule::highlightAtom(int idx)
 
 void BaseMolecule::selectAtom(int idx)
 {
-	_sl_atoms.expandFill(idx + 1, 0);
-	_sl_atoms[idx] = 1;
-	updateEditRevision();
+    _sl_atoms.expandFill(idx + 1, 0);
+    _sl_atoms[idx] = 1;
+    updateEditRevision();
 }
-
 
 void BaseMolecule::highlightBond(int idx)
 {
@@ -3588,9 +3587,9 @@ void BaseMolecule::highlightBond(int idx)
 
 void BaseMolecule::selectBond(int idx)
 {
-	_sl_bonds.expandFill(idx + 1, 0);
-	_sl_bonds[idx] = 1;
-	updateEditRevision();
+    _sl_bonds.expandFill(idx + 1, 0);
+    _sl_bonds[idx] = 1;
+    updateEditRevision();
 }
 
 void BaseMolecule::highlightAtoms(const Filter& filter)
@@ -3605,12 +3604,12 @@ void BaseMolecule::highlightAtoms(const Filter& filter)
 
 void BaseMolecule::selectAtoms(const Filter& filter)
 {
-	int i;
+    int i;
 
-	for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-		if (filter.valid(i))
-			selectAtom(i);
-	updateEditRevision();
+    for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+        if (filter.valid(i))
+            selectAtom(i);
+    updateEditRevision();
 }
 
 void BaseMolecule::highlightBonds(const Filter& filter)
@@ -3625,12 +3624,12 @@ void BaseMolecule::highlightBonds(const Filter& filter)
 
 void BaseMolecule::selectBonds(const Filter& filter)
 {
-	int i;
+    int i;
 
-	for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
-		if (filter.valid(i))
-			selectBond(i);
-	updateEditRevision();
+    for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
+        if (filter.valid(i))
+            selectBond(i);
+    updateEditRevision();
 }
 
 void BaseMolecule::unhighlightAtom(int idx)
@@ -3644,13 +3643,12 @@ void BaseMolecule::unhighlightAtom(int idx)
 
 void BaseMolecule::unselectAtom(int idx)
 {
-	if (_sl_atoms.size() > idx)
-	{
-		_sl_atoms[idx] = 0;
-		updateEditRevision();
-	}
+    if (_sl_atoms.size() > idx)
+    {
+        _sl_atoms[idx] = 0;
+        updateEditRevision();
+    }
 }
-
 
 void BaseMolecule::unhighlightBond(int idx)
 {
@@ -3663,11 +3661,11 @@ void BaseMolecule::unhighlightBond(int idx)
 
 void BaseMolecule::unselectBond(int idx)
 {
-	if (_sl_bonds.size() > idx)
-	{
-		_sl_bonds[idx] = 0;
-		updateEditRevision();
-	}
+    if (_sl_bonds.size() > idx)
+    {
+        _sl_bonds[idx] = 0;
+        updateEditRevision();
+    }
 }
 
 int BaseMolecule::countHighlightedAtoms()
@@ -3686,43 +3684,42 @@ int BaseMolecule::countHighlightedAtoms()
 
 int BaseMolecule::countSelectedAtoms()
 {
-	int i, res = 0;
+    int i, res = 0;
 
-	for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-	{
-		if (i >= _sl_atoms.size())
-			break;
-		res += _sl_atoms[i];
-	}
+    for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+    {
+        if (i >= _sl_atoms.size())
+            break;
+        res += _sl_atoms[i];
+    }
 
-	return res;
+    return res;
 }
 
-void BaseMolecule::getAtomSelection( std::set<int>& selection )
+void BaseMolecule::getAtomSelection(std::set<int>& selection)
 {
     selection.clear();
-	for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-	{
-		if (i >= _sl_atoms.size())
-			break;
-        if( _sl_atoms[i] )
-        selection.insert( i );
-	}
+    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+    {
+        if (i >= _sl_atoms.size())
+            break;
+        if (_sl_atoms[i])
+            selection.insert(i);
+    }
 }
 
 int BaseMolecule::countHighlightedBonds()
 {
-	int i, res = 0;
+    int i, res = 0;
 
-	for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
-	{
-		if (i >= _hl_bonds.size())
-			break;
-		res += _hl_bonds[i];
-	}
-	return res;
+    for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
+    {
+        if (i >= _hl_bonds.size())
+            break;
+        res += _hl_bonds[i];
+    }
+    return res;
 }
-
 
 int BaseMolecule::countSelectedBonds()
 {
@@ -3745,9 +3742,8 @@ bool BaseMolecule::hasHighlighting()
 
 bool BaseMolecule::hasSelection()
 {
-	return countSelectedAtoms() > 0 || countSelectedBonds() > 0;
+    return countSelectedAtoms() > 0 || countSelectedBonds() > 0;
 }
-
 
 bool BaseMolecule::isAtomHighlighted(int idx)
 {
@@ -3756,7 +3752,7 @@ bool BaseMolecule::isAtomHighlighted(int idx)
 
 bool BaseMolecule::isAtomSelected(int idx)
 {
-	return _sl_atoms.size() > idx && _sl_atoms[idx] == 1;
+    return _sl_atoms.size() > idx && _sl_atoms[idx] == 1;
 }
 
 bool BaseMolecule::isBondHighlighted(int idx)
@@ -3766,9 +3762,8 @@ bool BaseMolecule::isBondHighlighted(int idx)
 
 bool BaseMolecule::isBondSelected(int idx)
 {
-	return _sl_bonds.size() > idx && _sl_bonds[idx] == 1;
+    return _sl_bonds.size() > idx && _sl_bonds[idx] == 1;
 }
-
 
 void BaseMolecule::highlightSubmolecule(BaseMolecule& subgraph, const int* mapping, bool entire)
 {
@@ -3799,29 +3794,29 @@ void BaseMolecule::highlightSubmolecule(BaseMolecule& subgraph, const int* mappi
 
 void BaseMolecule::selectSubmolecule(BaseMolecule& subgraph, const int* mapping, bool entire)
 {
-	int i;
+    int i;
 
-	for (i = subgraph.vertexBegin(); i != subgraph.vertexEnd(); i = subgraph.vertexNext(i))
-		if (mapping[i] >= 0 && (entire || subgraph.isAtomSelected(i)))
-			selectAtom(mapping[i]);
+    for (i = subgraph.vertexBegin(); i != subgraph.vertexEnd(); i = subgraph.vertexNext(i))
+        if (mapping[i] >= 0 && (entire || subgraph.isAtomSelected(i)))
+            selectAtom(mapping[i]);
 
-	for (i = subgraph.edgeBegin(); i != subgraph.edgeEnd(); i = subgraph.edgeNext(i))
-	{
-		if (!entire && !subgraph.isBondSelected(i))
-			continue;
+    for (i = subgraph.edgeBegin(); i != subgraph.edgeEnd(); i = subgraph.edgeNext(i))
+    {
+        if (!entire && !subgraph.isBondSelected(i))
+            continue;
 
-		const Edge& edge = subgraph.getEdge(i);
+        const Edge& edge = subgraph.getEdge(i);
 
-		int beg = mapping[edge.beg];
-		int end = mapping[edge.end];
+        int beg = mapping[edge.beg];
+        int end = mapping[edge.end];
 
-		if (beg >= 0 && end >= 0)
-		{
-			int edge_idx = findEdgeIndex(beg, end);
-			if (edge_idx >= 0)
-				selectBond(edge_idx);
-		}
-	}
+        if (beg >= 0 && end >= 0)
+        {
+            int edge_idx = findEdgeIndex(beg, end);
+            if (edge_idx >= 0)
+                selectBond(edge_idx);
+        }
+    }
 }
 
 int BaseMolecule::countSGroups()
@@ -3910,7 +3905,7 @@ void BaseMolecule::invalidateAtom(int index, int mask)
         // Cis-trans and stereocenters can be removed
         if (stereocenters.exists(index))
         {
-            if (!stereocenters.isPossibleStereocenter(index))
+            if (!isPossibleStereocenter(index))
                 stereocenters.remove(index);
         }
 
@@ -4129,4 +4124,129 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& n
         }
     }
     return 1;
+}
+
+const int* BaseMolecule::getPyramidStereocenters(int idx) const
+{
+    return stereocenters.getPyramid(idx);
+}
+
+void BaseMolecule::stereocentersMarkBonds()
+{
+    stereocenters.markBonds(*this);
+}
+
+void BaseMolecule::stereocentersMarkBond(int atom_idx)
+{
+    stereocenters.markBond(*this, atom_idx);
+}
+
+void BaseMolecule::stereocentersAdd(int atom_idx, int type, int group, const int pyramid[4])
+{
+    stereocenters.add(*this, atom_idx, type, group, pyramid);
+}
+
+void BaseMolecule::stereocentersAdd(int atom_idx, int type, int group, bool inverse_pyramid)
+{
+    stereocenters.add(*this, atom_idx, type, group, inverse_pyramid);
+}
+
+void BaseMolecule::stereocentersRemoveAtoms(const Array<int>& indices)
+{
+    stereocenters.removeAtoms(*this, indices);
+}
+
+void BaseMolecule::stereocentersRemoveBonds(const Array<int>& indices)
+{
+    stereocenters.removeBonds( *this, indices );
+}
+
+void BaseMolecule::stereocentersBuildFromBonds(const StereocentersOptions& options, int* sensible_bonds_out)
+{
+    stereocenters.buildFromBonds(*this, options, sensible_bonds_out);
+}
+
+void BaseMolecule::stereocentersBuildFrom3dCoordinates(const StereocentersOptions& options)
+{
+    stereocenters.buildFrom3dCoordinates(*this, options);
+}
+
+bool BaseMolecule::isPossibleStereocenter(int atom_idx, bool* possible_implicit_h, bool* possible_lone_pair)
+{
+    return stereocenters.isPossibleStereocenter(*this, atom_idx, possible_implicit_h, possible_lone_pair);
+}
+
+void BaseMolecule::stereocentersBuildOnSubmolecule(const BaseMolecule& super, int* mapping)
+{
+    stereocenters.buildOnSubmolecule(*this, super, mapping);
+}
+
+void BaseMolecule::getSubstituents_All(int bond_idx, int subst[4])
+{
+    cis_trans.getSubstituents_All(*this, bond_idx, subst);
+}
+
+void BaseMolecule::restoreSubstituents(int bond_idx)
+{
+    cis_trans.restoreSubstituents(*this, bond_idx);
+}
+
+void BaseMolecule::cis_transBuild(int* exclude_bonds)
+{
+    cis_trans.build(*this, exclude_bonds);
+}
+
+bool BaseMolecule::registerBondAndSubstituents(int idx)
+{
+    return cis_trans.registerBondAndSubstituents(*this, idx);
+}
+
+void BaseMolecule::cis_transRegisterUnfoldedHydrogen(int atom_idx, int added_hydrogen)
+{
+    cis_trans.registerUnfoldedHydrogen(*this, atom_idx, added_hydrogen);
+}
+
+void BaseMolecule::cis_transBuildFromSmiles(int* dirs)
+{
+    cis_trans.buildFromSmiles( *this, dirs );
+}
+
+void BaseMolecule::cis_transBuildOnSubmolecule(BaseMolecule& super, int* mapping)
+{
+    cis_trans.buildOnSubmolecule(*this, super, mapping);
+}
+
+void BaseMolecule::cis_transValidate()
+{
+    cis_trans.validate(*this);
+}
+
+bool BaseMolecule::cis_transConvertableToImplicitHydrogen(int idx)
+{
+    return cis_trans.convertableToImplicitHydrogen(*this, idx );
+}
+
+void BaseMolecule::allene_stereoMarkBonds()
+{
+    allene_stereo.markBonds(*this);
+}
+
+void BaseMolecule::allene_stereoBuildOnSubmolecule(BaseMolecule& super, int* mapping)
+{
+    allene_stereo.buildOnSubmolecule(*this, super, mapping);
+}
+
+void BaseMolecule::allene_stereoRemoveAtoms(const Array<int>& indices)
+{
+    allene_stereo.removeAtoms(*this, indices);
+}
+
+void BaseMolecule::allene_stereoRemoveBonds(const Array<int>& indices)
+{
+    allene_stereo.removeBonds(*this, indices);
+}
+
+void BaseMolecule::allene_stereoBuildFromBonds(bool ignore_errors, int* sensible_bonds_out)
+{
+    allene_stereo.buildFromBonds(*this, ignore_errors, sensible_bonds_out);
 }

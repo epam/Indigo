@@ -637,7 +637,7 @@ void CmfLoader::loadMolecule(Molecule& mol)
                     mol.cis_trans.setParity(i, _bonds[i].cis_trans);
                 else
                     mol.cis_trans.ignore(i);
-                mol.cis_trans.restoreSubstituents(i);
+                mol.restoreSubstituents(i);
             }
         }
     }
@@ -656,7 +656,7 @@ void CmfLoader::loadMolecule(Molecule& mol)
         for (i = 0; i < _atoms.size(); i++)
         {
             if (_atoms[i].stereo_type != 0)
-                mol.stereocenters.add(i, _atoms[i].stereo_type, _atoms[i].stereo_group, _atoms[i].stereo_invert_pyramid);
+                mol.stereocentersAdd(i, _atoms[i].stereo_type, _atoms[i].stereo_group, _atoms[i].stereo_invert_pyramid);
         }
     }
 

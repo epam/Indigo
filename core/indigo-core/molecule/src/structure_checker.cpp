@@ -195,11 +195,11 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
 
         for (const auto i : target->vertices())
         {
-            if (!target->stereocenters.exists(i) && target->stereocenters.isPossibleStereocenter(i))
+            if (!target->stereocenters.exists(i) && target->isPossibleStereocenter(i))
             {
                 try
                 {
-                    target->stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+                    target->stereocentersAdd(i, MoleculeStereocenters::ATOM_ABS, 0, false);
                 }
                 catch (Exception&)
                 {

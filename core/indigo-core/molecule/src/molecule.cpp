@@ -739,7 +739,7 @@ void Molecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool impl
             }
 
             stereocenters.registerUnfoldedHydrogen(i, new_h_idx);
-            cis_trans.registerUnfoldedHydrogen(i, new_h_idx);
+            cis_transRegisterUnfoldedHydrogen(i, new_h_idx);
             allene_stereo.registerUnfoldedHydrogen(i, new_h_idx);
             sgroups.registerUnfoldedHydrogen(i, new_h_idx);
         }
@@ -1572,7 +1572,7 @@ bool Molecule::convertableToImplicitHydrogen(int idx)
                 if (getVertex(nei).degree() == 3)
                     return false; // not ignoring hydrogens around stereocenters with lone pair
 
-            if (!cis_trans.convertableToImplicitHydrogen(idx))
+            if (!cis_transConvertableToImplicitHydrogen(idx))
                 return false;
 
             return true;

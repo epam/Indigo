@@ -741,7 +741,7 @@ int MoleculeSubstructureMatcher::_embedding_common(int* core_sub, int* core_supe
 {
     QueryMolecule& query = *_query;
 
-    if (!MoleculeStereocenters::checkSub(query.stereocenters, _target.stereocenters, core_sub, false))
+    if (!MoleculeStereocenters::checkSub(query, _target, core_sub, false))
         return 1;
 
     if (!MoleculeCisTrans::checkSub(query, _target, core_sub))
@@ -1160,7 +1160,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
             MoleculeStereocenters& qstereo = context.query.stereocenters;
             if (qstereo.exists(src_att_idx1))
                 qstereo.remove(src_att_idx1);
-            qstereo.add(src_att_idx1, saved_stereo_type, saved_stereo_group, saved_stereo_pyramid);
+            context.query.stereocentersAdd(src_att_idx1, saved_stereo_type, saved_stereo_group, saved_stereo_pyramid);
         }
     }
 
