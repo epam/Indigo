@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.8
 
 ENV PYTHONPATH=${PYTHONPATH}:${PWD} 
 RUN pip install poetry
