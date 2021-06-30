@@ -63,7 +63,7 @@ RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
 
 
 def make_response(result_type: SupportedTypes, result: Any):
-    if hasattr(result, "__iter__"):
+    if not isinstance(result, str) and hasattr(result, "__iter__"):
         result_attributes = (ResponseAttributesModel(result=r) for r in result)
     else:
         result_attributes = ResponseAttributesModel(result=result)
