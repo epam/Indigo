@@ -486,7 +486,7 @@ void MoleculeStandardizer::_standardizeStereo(Molecule& mol)
             if (mol.stereocenters.exists(i))
                 continue;
             else
-                mol.stereocentersAdd(i, MoleculeStereocenters::ATOM_ANY, 0, false);
+                mol.addStereocenters(i, MoleculeStereocenters::ATOM_ANY, 0, false);
         }
         else
         {
@@ -503,7 +503,7 @@ void MoleculeStandardizer::_standardizeStereo(Molecule& mol)
         {
             if (mol.cis_trans.getParity(i) > 0)
                 continue;
-            else if (mol.registerBondAndSubstituents(i))
+            else if (mol.registerBondAndSubstituentsCisTrans(i))
             {
                 mol.setBondDirection(i, BOND_EITHER);
                 mol.cis_trans.setParity(i, 0);
@@ -1024,12 +1024,12 @@ void MoleculeStandardizer::_setStereoFromCoordinates(BaseMolecule& mol)
     QS_DEF(Array<int>, sensible_bond_orientations);
     sensible_bond_orientations.clear_resize(mol.vertexEnd());
 
-    mol.stereocentersBuildFromBonds(options, sensible_bond_orientations.ptr());
-    mol.allene_stereoBuildFromBonds(options.ignore_errors, sensible_bond_orientations.ptr());
-    mol.cis_transBuild(0);
+    mol.buildFromBondsStereocenters(options, sensible_bond_orientations.ptr());
+    mol.buildFromBondsAlleneStereo(options.ignore_errors, sensible_bond_orientations.ptr());
+    mol.buildCisTrans(0);
 
     if (mol.stereocenters.size() == 0)
-        mol.stereocentersBuildFrom3dCoordinates(options);
+        mol.buildFrom3dCoordinatesStereocenters(options);
 }
 
 void MoleculeStandardizer::_repositionStereoBonds(BaseMolecule& mol)
@@ -1037,7 +1037,7 @@ void MoleculeStandardizer::_repositionStereoBonds(BaseMolecule& mol)
     if (!Molecule::hasCoord(mol))
         throw Error("Atoms coordinates are not defined");
 
-    mol.stereocentersMarkBonds();
+    mol.markBondsStereocenters();
 }
 
 void MoleculeStandardizer::_repositionAxialStereoBonds(BaseMolecule& mol)
@@ -1045,7 +1045,7 @@ void MoleculeStandardizer::_repositionAxialStereoBonds(BaseMolecule& mol)
     if (!Molecule::hasCoord(mol))
         throw Error("Atoms coordinates are not defined");
 
-    mol.allene_stereoMarkBonds();
+    mol.markBondsAlleneStereo();
 }
 
 void MoleculeStandardizer::_fixDirectionOfWedgeBonds(BaseMolecule& mol)

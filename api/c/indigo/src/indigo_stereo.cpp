@@ -106,7 +106,7 @@ CEXPORT int indigoChangeStereocenterType(int atom, int type)
         int group = ia.mol.stereocenters.getGroup(ia.idx);
         ia.mol.stereocenters.setType(ia.idx, mapStereocenterType(type), group);
         if (ia.mol.have_xyz)
-            ia.mol.stereocentersMarkBond(ia.idx);
+            ia.mol.markBondStereocenters(ia.idx);
 
         return 0;
     }
@@ -139,7 +139,7 @@ CEXPORT int indigoAddStereocenter(int atom, int type, int v1, int v2, int v3, in
         }
 
         int pyramid[4] = {v1, v2, v3, v4};
-        ia.mol.stereocentersAdd(ia.idx, core_type, 0, pyramid);
+        ia.mol.addStereocenters(ia.idx, core_type, 0, pyramid);
         return 1;
     }
     INDIGO_END(-1);
@@ -388,7 +388,7 @@ static int _resetSymmetric(Molecule& mol, bool cistrans, bool stereo)
         if (to_remove.size() > 0)
         {
             mol.clearBondDirections();
-            mol.stereocentersMarkBonds();
+            mol.markBondsStereocenters();
         }
     }
     return sum;
@@ -506,12 +506,12 @@ CEXPORT int indigoMarkStereobonds(int handle)
         IndigoObject& obj = self.getObject(handle);
 
         if (IndigoBaseMolecule::is(obj))
-            obj.getMolecule().stereocentersMarkBonds();
+            obj.getMolecule().markBondsStereocenters();
         else if (IndigoBaseReaction::is(obj))
         {
             Reaction& rxn = obj.getReaction();
             for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-                rxn.getMolecule(i).stereocentersMarkBonds();
+                rxn.getMolecule(i).markBondsStereocenters();
         }
         else
             throw IndigoError("only molecules and reactions have stereocenters");

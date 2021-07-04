@@ -1160,7 +1160,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
             MoleculeStereocenters& qstereo = context.query.stereocenters;
             if (qstereo.exists(src_att_idx1))
                 qstereo.remove(src_att_idx1);
-            context.query.stereocentersAdd(src_att_idx1, saved_stereo_type, saved_stereo_group, saved_stereo_pyramid);
+            context.query.addStereocenters(src_att_idx1, saved_stereo_type, saved_stereo_group, saved_stereo_pyramid);
         }
     }
 

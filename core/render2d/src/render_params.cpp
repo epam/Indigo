@@ -140,8 +140,8 @@ void RenderParamInterface::_prepareMolecule(RenderParams& params, BaseMolecule& 
         ml.layout_orientation = UNCPECIFIED;
         ml.make();
         bm.clearBondDirections();
-        bm.stereocentersMarkBonds();
-        bm.allene_stereoMarkBonds();
+        bm.markBondsStereocenters();
+        bm.markBondsAlleneStereo();
     }
 }
 
@@ -156,8 +156,8 @@ void RenderParamInterface::_prepareReaction(RenderParams& params, BaseReaction& 
             ml.layout_orientation = UNCPECIFIED;
             ml.make();
             mol.clearBondDirections();
-            mol.stereocentersMarkBonds();
-            mol.allene_stereoMarkBonds();
+            mol.markBondsStereocenters();
+            mol.markBondsAlleneStereo();
         }
     }
 }

@@ -174,8 +174,8 @@ void MangoTautomer::getHighlightedTarget(Array<char>& molfile_buf)
         MoleculeLayout ml(_target);
         ml.make();
         _target.clearBondDirections();
-        _target.stereocentersMarkBonds();
-        _target.allene_stereoMarkBonds();
+        _target.markBondsStereocenters();
+        _target.markBondsAlleneStereo();
     }
 
     if (preserve_bonds_on_highlighting)

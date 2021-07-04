@@ -199,7 +199,7 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
             {
                 try
                 {
-                    target->stereocentersAdd(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+                    target->addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 0, false);
                 }
                 catch (Exception&)
                 {

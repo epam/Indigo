@@ -2840,7 +2840,7 @@ void MolfileSaver::_calcStereocenters(Molecule& source, Molecule& mol, Array<int
         if (source.stereocenters.isPyramidMappingRigid(source_pyramid) != mol.stereocenters.isPyramidMappingRigid(pyramid, size, mapping.ptr()))
             std::swap(pyramid[0], pyramid[1]);
 
-        mol.stereocentersAdd(i, MoleculeStereocenters::ATOM_ABS, 1, pyramid);
+        mol.addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 1, pyramid);
     }
 }
 

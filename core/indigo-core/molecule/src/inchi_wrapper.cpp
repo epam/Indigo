@@ -324,7 +324,7 @@ void InchiWrapper::parseInchiOutput(const InchiOutput& inchi_output, Molecule& m
             if (mol.getBondOrder(bond) != BOND_DOUBLE)
                 continue;
 
-            bool valid = mol.registerBondAndSubstituents(bond);
+            bool valid = mol.registerBondAndSubstituentsCisTrans(bond);
             if (!valid)
                 throw Error("Indigo-InChI: Unsupported cis-trans configuration for "
                             "bond %d (atoms %d-%d-%d-%d)",
@@ -386,14 +386,14 @@ void InchiWrapper::parseInchiOutput(const InchiOutput& inchi_output, Molecule& m
             if (stereo0D.parity == INCHI_PARITY_ODD || stereo0D.parity == INCHI_PARITY_EVEN)
             {
                 if (_stereo_opt == _STEREO_ABS)
-                    mol.stereocentersAdd(stereo0D.central_atom, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
+                    mol.addStereocenters(stereo0D.central_atom, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
                 else if (_stereo_opt == _STEREO_REL)
-                    mol.stereocentersAdd(stereo0D.central_atom, MoleculeStereocenters::ATOM_OR, 0, pyramid);
+                    mol.addStereocenters(stereo0D.central_atom, MoleculeStereocenters::ATOM_OR, 0, pyramid);
                 else if (_stereo_opt == _STEREO_RAC)
-                    mol.stereocentersAdd(stereo0D.central_atom, MoleculeStereocenters::ATOM_AND, 0, pyramid);
+                    mol.addStereocenters(stereo0D.central_atom, MoleculeStereocenters::ATOM_AND, 0, pyramid);
             }
             else if (stereo0D.parity == INCHI_PARITY_UNKNOWN || stereo0D.parity == INCHI_PARITY_UNDEFINED)
-                mol.stereocentersAdd(stereo0D.central_atom, MoleculeStereocenters::ATOM_ANY, 0, pyramid);
+                mol.addStereocenters(stereo0D.central_atom, MoleculeStereocenters::ATOM_ANY, 0, pyramid);
         }
     }
 }

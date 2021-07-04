@@ -63,7 +63,7 @@ void MolfileLoader::loadMolecule(Molecule& mol)
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
 
     if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
-        mol.stereocentersBuildFrom3dCoordinates(stereochemistry_options);
+        mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
 
 void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
@@ -75,7 +75,7 @@ void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
     _loadMolecule();
 
     if (mol.stereocenters.size() == 0)
-        mol.stereocentersBuildFrom3dCoordinates(stereochemistry_options);
+        mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
 
 void MolfileLoader::_loadMolecule()
@@ -2094,8 +2094,8 @@ void MolfileLoader::_postLoad()
             }
         }
 
-    _bmol->stereocentersBuildFromBonds(stereochemistry_options, _sensible_bond_directions.ptr());
-    _bmol->allene_stereoBuildFromBonds(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
+    _bmol->buildFromBondsStereocenters(stereochemistry_options, _sensible_bond_directions.ptr());
+    _bmol->buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
 
     if (!_chiral && treat_stereo_as == 0)
         for (i = 0; i < _atoms_num; i++)
@@ -2134,7 +2134,7 @@ void MolfileLoader::_postLoad()
             if (_bmol->getBondDirection(i) > 0 && !_sensible_bond_directions[i])
                 throw Error("direction of bond #%d makes no sense", i);
 
-    _bmol->cis_transBuild(_ignore_cistrans.ptr());
+    _bmol->buildCisTrans(_ignore_cistrans.ptr());
 
     // Remove adding default R-group logic behavior
     /*

@@ -111,7 +111,7 @@ bool ReactionTransformation::transform(Molecule& molecule, QueryReaction& reacti
                 molecule.clearXyz();
         }
         else
-            molecule.stereocentersMarkBonds();
+            molecule.markBondsStereocenters();
     }
 
     mapping->copy(_mapping);

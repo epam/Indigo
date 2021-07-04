@@ -233,7 +233,7 @@ void SmilesLoader::_calcStereocenters()
                 continue;
             }
 
-            _bmol->stereocentersAdd(i, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
+            _bmol->addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
         }
     }
 }
@@ -252,7 +252,7 @@ void SmilesLoader::_calcCisTrans()
     for (; i < _bmol->edgeEnd(); i++)
         dirs.push(0);
 
-    _bmol->cis_transBuildFromSmiles(dirs.ptr());
+    _bmol->buildFromSmilesCisTrans(dirs.ptr());
     if (_qmol != 0)
     {
         for (i = 0; i < _bonds.size(); i++)
@@ -324,7 +324,7 @@ void SmilesLoader::_readOtherStuff()
                             // Check if the stereocenter has already been marked as any
                             // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
                             if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
-                                _mol->stereocentersAdd(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                                _mol->addStereocenters(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
                         }
                     }
                 }
@@ -694,8 +694,8 @@ void SmilesLoader::_readOtherStuff()
             }
             if (_scanner.readChar() != ')')
                 throw Error("expected ')' after coordinates");
-            _bmol->stereocentersMarkBonds();
-            _bmol->allene_stereoMarkBonds();
+            _bmol->markBondsStereocenters();
+            _bmol->markBondsAlleneStereo();
         }
         else if (c == 'h') // highlighting (Indigo's own extension)
         {

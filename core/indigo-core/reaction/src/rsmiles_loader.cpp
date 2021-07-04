@@ -259,7 +259,7 @@ void RSmilesLoader::_loadReaction()
                     int idx = _scanner.readUnsigned();
 
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
-                    stereo[group]->stereocentersAdd(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                    stereo[group]->addStereocenters(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
 
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);

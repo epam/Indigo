@@ -840,7 +840,7 @@ namespace indigo
                         atoms_with_nei.find_or_insert(expander.added_atoms[i]);
                     }
                     for (int i = atoms_with_nei.begin(); i != atoms_with_nei.end(); i = atoms_with_nei.next(i))
-                        mol.stereocentersMarkBond(atoms_with_nei.key(i));
+                        mol.markBondStereocenters(atoms_with_nei.key(i));
                 }
 
                 return count;

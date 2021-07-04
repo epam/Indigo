@@ -396,7 +396,7 @@ void HaworthProjectionFinder::_addRingStereocenters(const Array<int>& vertices, 
                 std::swap(pyramid[0], pyramid[1]);
         }
 
-        _mol.stereocentersAdd(vi, MoleculeStereocenters::ATOM_ABS, 1, pyramid);
+        _mol.addStereocenters(vi, MoleculeStereocenters::ATOM_ABS, 1, pyramid);
     }
 }
 

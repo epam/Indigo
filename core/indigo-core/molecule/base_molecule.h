@@ -364,36 +364,36 @@ namespace indigo
 
         // proxy methods for stereocenters
         const int* getPyramidStereocenters(int idx) const;
-        void stereocentersMarkBonds();
-        void stereocentersMarkBond(int atom_idx);
+        void markBondsStereocenters();
+        void markBondStereocenters(int atom_idx);
 
-        void stereocentersAdd(int atom_idx, int type, int group, const int pyramid[4]);
-        void stereocentersAdd(int atom_idx, int type, int group, bool inverse_pyramid);
-        void stereocentersRemoveAtoms(const Array<int>& indices);
-        void stereocentersRemoveBonds(const Array<int>& indices);
+        void addStereocenters(int atom_idx, int type, int group, const int pyramid[4]);
+        void addStereocenters(int atom_idx, int type, int group, bool inverse_pyramid);
+        void removeAtomsStereocenters(const Array<int>& indices);
+        void removeBondsStereocenters(const Array<int>& indices);
 
-        void stereocentersBuildFromBonds(const StereocentersOptions& options, int* sensible_bonds_out);
-        void stereocentersBuildFrom3dCoordinates(const StereocentersOptions& options);
+        void buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out);
+        void buildFrom3dCoordinatesStereocenters(const StereocentersOptions& options);
         bool isPossibleStereocenter( int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
-        void stereocentersBuildOnSubmolecule(const BaseMolecule& super, int* mapping);
+        void buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping);
 
         // proxy methods for cis_trans
         void getSubstituents_All( int bond_idx, int subst[4]);
         void restoreSubstituents( int bond_idx);
-        void cis_transBuild( int* exclude_bonds);
-        bool registerBondAndSubstituents(int idx);
-        void cis_transRegisterUnfoldedHydrogen(int atom_idx, int added_hydrogen);
-        void cis_transBuildFromSmiles(int* dirs);
-        void cis_transBuildOnSubmolecule(BaseMolecule& super, int* mapping);
-        void cis_transValidate();
-        bool cis_transConvertableToImplicitHydrogen(int idx);
+        void buildCisTrans( int* exclude_bonds);
+        bool registerBondAndSubstituentsCisTrans(int idx);
+        void registerUnfoldedHydrogenCisTrans(int atom_idx, int added_hydrogen);
+        void buildFromSmilesCisTrans(int* dirs);
+        void buildOnSubmoleculeCisTrans(BaseMolecule& super, int* mapping);
+        void validateCisTrans();
+        bool convertableToImplicitHydrogenCisTrans(int idx);
 
         // proxy methods for allene_stereo
-        void allene_stereoMarkBonds();
-        void allene_stereoBuildOnSubmolecule(BaseMolecule& super, int* mapping);
-        void allene_stereoRemoveAtoms(const Array<int>& indices);
-        void allene_stereoRemoveBonds(const Array<int>& indices);
-        void allene_stereoBuildFromBonds(bool ignore_errors, int* sensible_bonds_out);
+        void markBondsAlleneStereo();
+        void buildOnSubmoleculeAlleneStereo(BaseMolecule& super, int* mapping);
+        void removeAtomsAlleneStereo(const Array<int>& indices);
+        void removeBondsAlleneStereo(const Array<int>& indices);
+        void buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_bonds_out);
 
         DECL_ERROR;
 
