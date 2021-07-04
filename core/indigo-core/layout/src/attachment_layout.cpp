@@ -60,7 +60,7 @@ AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const 
             _vertices_l[i] = v1;
     }
 
-    _alpha = _2FLOAT((2. * M_PI - sum) / _attached_bc.size());
+    _alpha = ((2. * M_PI - sum) / _attached_bc.size());
     // TODO: what if negative?
 
     // find the one component which is drawn and put it to the end
@@ -125,7 +125,7 @@ float AttachmentLayout::calculateEnergy()
     {
         if (drawn_vertices[i] > 0)
         {
-            norm_a[i] = _2FLOAT(_graph.getLayoutVertex(i).morgan_code);
+            norm_a[i] = (_graph.getLayoutVertex(i).morgan_code);
             sum_a += norm_a[i] * norm_a[i];
         }
     }
