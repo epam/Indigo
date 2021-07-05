@@ -23,7 +23,7 @@ class SupportedTypes(str, enum.Enum):
 
 
 def create_types(types: Iterable[SupportedTypes]):
-    return enum.Enum("Types", {t.name: t.value for t in types})
+    return enum.Enum("Types", {t.name: t.value for t in types}, type=str)
 
 
 class AttributesModel(BaseModel):
