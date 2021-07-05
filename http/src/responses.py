@@ -1,9 +1,8 @@
-from typing import Union, Any, Iterable, List
+from typing import Any, Iterable, List, Union
 
 from fastapi import status
 from fastapi.responses import JSONResponse
 from indigo import IndigoObject
-from pydantic.fields import SHAPE_TUPLE_ELLIPSIS
 
 from .model import (
     Error,
@@ -30,7 +29,8 @@ def get_ingigo_repr(indigo_object: IndigoObject, repr_type: SupportedTypes):
 
 
 def _make_response(
-    result_type: SupportedTypes, result_attributes: Union[ResponseAttributesModel, List[ResponseAttributesModel]]
+    result_type: SupportedTypes,
+    result_attributes: Union[ResponseAttributesModel, List[ResponseAttributesModel]],
 ):
     return IndigoResponse(
         data=ResponseDataModel(type=result_type, attributes=result_attributes)

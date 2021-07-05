@@ -170,7 +170,7 @@ async def check_bad_valence(indigo_request: IndigoBaseRequest) -> IndigoResponse
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/checkChirality", response_model=IndigoResponse)
 async def check_chirality(indigo_request: IndigoBaseRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
-    result = molecule.checkChirality() # TODO: return value?
+    result = molecule.checkChirality()  # TODO: return value?
     return make_response(SupportedTypes.BOOL, result)
 
 
