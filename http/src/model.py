@@ -103,7 +103,7 @@ class IndigoBaseRequest(BaseModel):
         return create_model("IndigoRequest", __base__=cls, **fields)
 
 
-class IndigoReactionProductEnumerateRequest(IndigoBaseRequest):
+class IndigoReactionProductEnumerateBaseRequest(IndigoBaseRequest):
     """
     request model for:
     - POST /reactionProductEnumerate
@@ -162,3 +162,23 @@ class IndigoBaseResponse(BaseModel):
 
 class IndigoResponse(IndigoBaseResponse):
     data: Optional[ResponseDataModel] = None
+
+
+IndigoMolRequest = IndigoBaseRequest.with_types(
+    (
+        SupportedTypes.MOLFILE,
+        SupportedTypes.SMILES,
+        SupportedTypes.SMARTS
+    )
+)
+
+
+IndigoReactionProductEnumerateRequest = (
+    IndigoReactionProductEnumerateBaseRequest.with_types(
+        (
+            SupportedTypes.MOLFILE_LIST,
+            SupportedTypes.SMILES_LIST,
+            SupportedTypes.SMARTS_LIST,
+        )
+    )
+)
