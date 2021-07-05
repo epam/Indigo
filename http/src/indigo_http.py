@@ -1,14 +1,11 @@
 import json
-from os import error
-from typing import Any, Callable
+from os import initgroups
 
-from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request
 from indigo import IndigoException, IndigoObject
 
 from .indigo_tools import indigo, indigo_new
 from .model import (
-    Error,
     IndigoAmbiguousHRequest,
     IndigoBaseRequest,
     IndigoMolPairRequest,
@@ -16,10 +13,9 @@ from .model import (
     IndigoReactionProductEnumerateRequest,
     IndigoResponse,
     IndigoStructurePropsRequest,
-    ResponseAttributesModel,
-    ResponseDataModel,
     SupportedTypes,
 )
+from .responses import error_response, make_response
 
 app = FastAPI()
 
@@ -27,75 +23,6 @@ app = FastAPI()
 BASE_URL_INDIGO = "/indigo"
 BASE_URL_INDIGO_OBJECT = "/indigoObject"
 RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
-
-
-# def get_indigo_object(data: DataModel):
-#     if isinstance(data.attributes, list):
-#         data_type = data.type
-#         for attribute in data.attributes:
-#             if data_type == SupportedTypes.SMILES:
-#                 yield indigo().loadMolecule(attribute.content)
-#             elif data_type == SupportedTypes.MOLFILE:
-#                 yield indigo().loadMoleculeFromBuffer(bytes(attribute.content, "utf-8"))
-#             elif data_type == SupportedTypes.REACTION:
-#                 yield indigo().loadReaction(attribute.content)
-#             elif data_type == SupportedTypes.QUERY_REACTION:
-#                 yield indigo().loadQueryReaction(attribute.content)
-#             else:
-#                 raise AttributeError(f"Unsupported type {data_type}")
-#     else:
-#         raise AttributeError(f"Unsupported attributes type: {type(data.attributes)}")
-
-
-# def parse_indigo_request(
-#     request: IndigoRequest, separate: bool = False
-# ) -> Generator[Union[IndigoObject, Tuple[IndigoObject]], None, None]:
-#     """
-#     extract objects from request,
-#     is `separate` is set, yields data elements by chunks corresponding
-#     to list elements in request, otherwise yields data elements one by one
-#     """
-#     for data_item in request.data:
-#         # TODO: maybe add itertools.groupby and parse request in buckets by type
-#         if separate:
-#             yield tuple(get_indigo_object(data_item))
-#         else:
-#             yield from get_indigo_object(data_item)
-
-
-def make_response(result_type: SupportedTypes, result: Any):
-    if not isinstance(result, str) and hasattr(result, "__iter__"):
-        result_attributes = (ResponseAttributesModel(result=r) for r in result)
-    else:
-        result_attributes = ResponseAttributesModel(result=result)
-
-    return IndigoResponse(
-        data=ResponseDataModel(type=result_type, attributes=result_attributes)
-    )
-
-
-def make_mol_response(result_type: SupportedTypes, result: IndigoObject):
-    """
-    TODO: restrict types passed to this function to smiles, smarts, grossFormula
-    """
-
-    func = lambda r: getattr(r, result_type.value)()  # call corresponding method
-
-    if hasattr(result, "__iter__"):
-        raw_data = (func(r) for r in result)  # no actual iteration
-    else:
-        raw_data = func(result)
-
-    return make_response(result_type, raw_data)
-
-
-def error_response(
-    msg: str, status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR
-) -> IndigoResponse:
-    return JSONResponse(
-        status_code=status_code,
-        content=IndigoResponse(errors=[Error(detail=msg)]).dict(),
-    )
 
 
 @app.middleware("http")
@@ -141,7 +68,8 @@ async def exact_match(indigo_request: IndigoMolPairRequest) -> IndigoResponse:
     try:
         mol1 = indigo().loadMolecule(indigo_request.data.attributes.mol1)
         mol2 = indigo().loadMolecule(indigo_request.data.attributes.mol2)
-        match = bool(indigo().exactMatch(mol1, mol2))
+        flags = indigo_request.data.attributes.flags
+        match = bool(indigo().exactMatch(mol1, mol2, flags))
     except IndigoException as e:
         return error_response(str(e))
 
@@ -158,7 +86,7 @@ async def aromatize(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule_string = indigo_request.data.attributes.content
     molecule = indigo().loadMolecule(molecule_string)
     molecule.aromatize()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/smiles", response_model=IndigoResponse)
@@ -187,14 +115,14 @@ async def smarts(indigo_request: IndigoBaseRequest) -> IndigoResponse:
 async def standardize(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.standardize()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/unfoldHydrogens", response_model=IndigoResponse)
 async def unfold_hydrogens(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.unfoldHydrogens()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/validateChirality", response_model=IndigoResponse)
@@ -242,7 +170,7 @@ async def check_bad_valence(indigo_request: IndigoBaseRequest) -> IndigoResponse
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/checkChirality", response_model=IndigoResponse)
 async def check_chirality(indigo_request: IndigoBaseRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
-    result = molecule.checkChirality()
+    result = molecule.checkChirality() # TODO: return value?
     return make_response(SupportedTypes.BOOL, result)
 
 
@@ -279,28 +207,28 @@ async def check_valence(indigo_request: IndigoBaseRequest) -> IndigoResponse:
 async def clean_2d(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.clean2d()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/clear", response_model=IndigoResponse)
 async def clear(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.clear()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/clearAAM", response_model=IndigoResponse)
 async def clear_aam(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.clearAAM()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/clearAlleneCenters", response_model=IndigoResponse)
 async def clear_allene_centers(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.clearAlleneCenters()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(
@@ -309,21 +237,21 @@ async def clear_allene_centers(indigo_request: IndigoMolRequest) -> IndigoRespon
 async def clear_attachment_points(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.clearAttachmentPoints()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/clearCisTrans", response_model=IndigoResponse)
 async def clear_cis_trans(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.clearCisTrans()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/clearStereocenters", response_model=IndigoResponse)
 async def clear_stereocenters(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.clearStereocenters()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/countAlleneCenters", response_model=IndigoResponse)
@@ -494,7 +422,7 @@ async def count_superatoms(indigo_request: IndigoBaseRequest) -> IndigoResponse:
 async def clear_dearomatize(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.dearomatize()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/grossFormula", response_model=IndigoResponse)
@@ -528,7 +456,7 @@ async def molecular_weight(indigo_request: IndigoBaseRequest) -> IndigoResponse:
 async def normalize(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     molecule.normalize()
-    return make_mol_response(indigo_request.data.type, molecule)
+    return make_response(indigo_request.data.type, molecule)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/nameToStructure", response_model=IndigoResponse)
@@ -541,7 +469,7 @@ async def name_to_structure(
     props = indigo_request.data.attributes.props
 
     structure: IndigoObject = indigo().nameToStructure(name, props)
-    return make_response(SupportedTypes.MOLFILE, structure.molfile())
+    return make_response(indigo_request.data.type, structure)
 
 
 @app.post(
@@ -563,4 +491,4 @@ async def reaction_product_enumerate(
     except IndigoException as e:
         return error_response(str(e))
 
-    return make_mol_response(SupportedTypes.MOLFILE, output_reactions.iterateArray())
+    return make_response(indigo_request.data.type, output_reactions.iterateArray())
