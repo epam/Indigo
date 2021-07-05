@@ -1,21 +1,29 @@
-from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+import enum
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 from pydantic import BaseModel
+from pydantic.main import create_model
 
 
-class SupportedTypes(Enum):
+class SupportedTypes(str, enum.Enum):
     VERSION = "version"
     MOLFILE = "molfile"
     SMILES = "smiles"
     SMARTS = "smarts"
-    BOOL = "bool"
-    INT = "int"
+    MOLFILE_LIST = "molfile_list"
+    SMILES_LIST = "smiles_list"
+    SMARTS_LIST = "smarts_list"
     REACTION = "reaction"
     QUERY_REACTION = "query_reaction"
-    GROSSFORMULA = "grossFormula"
+    GROSSFORMULA = "gross_formula"
     COMMON_BITS = "common_bits"
+    INT = "int"
     FLOAT = "float"
+    BOOL = "bool"
+
+
+def create_types(types: Iterable[SupportedTypes]):
+    return enum.Enum("Types", {t.name: t.value for t in types})
 
 
 class AttributesModel(BaseModel):
@@ -23,8 +31,18 @@ class AttributesModel(BaseModel):
 
 
 class DataBaseModel(BaseModel):
-    type: SupportedTypes
-    # attributes: AttributesModel
+    type: Optional[SupportedTypes] = None
+
+    @classmethod
+    def with_types(cls, types: Iterable[SupportedTypes]):
+        """
+        Generates data model with `type` field restricted to specific types from SupportedTypes
+        """
+
+        TypesEnum = create_types(types)
+        fields = {"type": (Optional[TypesEnum], None)}
+
+        return create_model("DataModel", __base__=cls, **fields)
 
 
 class DataModel(DataBaseModel):
@@ -68,13 +86,24 @@ class AmbiguousHDataModel(DataBaseModel):
 
 class IndigoBaseRequest(BaseModel):
     """
-    new request model
+    base request model
     """
 
     data: DataModel
 
+    @classmethod
+    def with_types(cls, types: Iterable[SupportedTypes]):
+        """
+        Generates request model with `data.type` field restricted to specific types from SupportedTypes
+        """
 
-class IndigoReactionProductEnumerateRequest(BaseModel):
+        DataModelClass = cls.__fields__.get("data").type_
+        fields = {"data": (DataModelClass.with_types(types), ...)}
+
+        return create_model("IndigoRequest", __base__=cls, **fields)
+
+
+class IndigoReactionProductEnumerateRequest(IndigoBaseRequest):
     """
     request model for:
     - POST /reactionProductEnumerate
@@ -83,7 +112,7 @@ class IndigoReactionProductEnumerateRequest(BaseModel):
     data: ReactionProductEnumerateDataModel
 
 
-class IndigoStructurePropsRequest(BaseModel):
+class IndigoStructurePropsRequest(IndigoBaseRequest):
     """
     request model for:
     - POST /nameToStructure
@@ -93,7 +122,7 @@ class IndigoStructurePropsRequest(BaseModel):
     data: StructurePropsDataModel
 
 
-class IndigoMolPairRequest(BaseModel):
+class IndigoMolPairRequest(IndigoBaseRequest):
     """
     request model for:
     - POST /commonBits
@@ -103,7 +132,7 @@ class IndigoMolPairRequest(BaseModel):
     data: MolPairDataModel
 
 
-class IndigoAmbiguousHRequest(BaseModel):
+class IndigoAmbiguousHRequest(IndigoBaseRequest):
     """
     request model for:
     - POST /checkAmbiguousH
