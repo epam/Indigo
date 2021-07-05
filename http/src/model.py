@@ -3,6 +3,11 @@ from typing import Any, Dict, Iterable, List, Optional, Union
 
 from pydantic import BaseModel
 from pydantic.main import create_model
+from itertools import count
+
+generated_types_enum_count = count(1)
+generated_data_models_count = count(1)
+generated_request_models_count = count(1)
 
 
 class SupportedTypes(str, enum.Enum):
@@ -23,7 +28,11 @@ class SupportedTypes(str, enum.Enum):
 
 
 def create_types(types: Iterable[SupportedTypes]):
-    return enum.Enum("Types", {t.name: t.value for t in types}, type=str)
+    return enum.Enum(
+        f"Types{next(generated_types_enum_count)}",
+        {t.name: t.value for t in types},
+        type=str,
+    )
 
 
 class AttributesModel(BaseModel):
@@ -42,7 +51,9 @@ class DataBaseModel(BaseModel):
         TypesEnum = create_types(types)
         fields = {"type": (Optional[TypesEnum], None)}
 
-        return create_model("DataModel", __base__=cls, **fields)
+        return create_model(
+            f"DataModel{next(generated_data_models_count)}", __base__=cls, **fields
+        )
 
 
 class DataModel(DataBaseModel):
@@ -100,7 +111,11 @@ class IndigoBaseRequest(BaseModel):
         DataModelClass = cls.__fields__.get("data").type_
         fields = {"data": (DataModelClass.with_types(types), ...)}
 
-        return create_model("IndigoRequest", __base__=cls, **fields)
+        return create_model(
+            f"IndigoRequest{next(generated_request_models_count)}",
+            __base__=cls,
+            **fields,
+        )
 
 
 class IndigoReactionProductEnumerateBaseRequest(IndigoBaseRequest):
@@ -166,19 +181,17 @@ class IndigoResponse(IndigoBaseResponse):
 
 IndigoMolRequest = IndigoBaseRequest.with_types(
     (
-        SupportedTypes.MOLFILE,
-        SupportedTypes.SMILES,
+        SupportedTypes.MOLFILE, 
+        SupportedTypes.SMILES, 
         SupportedTypes.SMARTS
     )
 )
 
 
-IndigoReactionProductEnumerateRequest = (
-    IndigoReactionProductEnumerateBaseRequest.with_types(
+IndigoReactionProductEnumerateRequest = IndigoReactionProductEnumerateBaseRequest.with_types(
         (
             SupportedTypes.MOLFILE_LIST,
             SupportedTypes.SMILES_LIST,
             SupportedTypes.SMARTS_LIST,
         )
-    )
 )
