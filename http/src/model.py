@@ -1,16 +1,29 @@
 import enum
+from itertools import count
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 from pydantic import BaseModel
 from pydantic.main import create_model
-from itertools import count
 
 generated_types_enum_count = count(1)
 generated_data_models_count = count(1)
 generated_request_models_count = count(1)
 
 
-class SupportedTypes(str, enum.Enum):
+class IndigoType(str, enum.Enum):
+    """
+    Base type enum for request and response, made for passing both
+    SupportedTypes and generated Types
+    (derived from this class via DerivedSupportedType? see `create_types()`)
+    instances to functions and not making mess with type hintings
+    all successor must redefine `convert_to_supp_type`
+    """
+
+    def convert_to_supp_type(self):
+        pass
+
+
+class SupportedTypes(IndigoType):
     VERSION = "version"
     MOLFILE = "molfile"
     SMILES = "smiles"
@@ -26,12 +39,28 @@ class SupportedTypes(str, enum.Enum):
     FLOAT = "float"
     BOOL = "bool"
 
+    def convert_to_supp_type(self):
+        return self
+
+
+SUPPORTED_TYPES_MAPPING = {t.value: t for t in SupportedTypes}
+
+
+class DerivedSupportedType(IndigoType):
+    def convert_to_supp_type(self):
+        """
+        convert current type from subset of SupportedTypes
+        to actual SupportedTypes instance based on value
+        """
+
+        return SUPPORTED_TYPES_MAPPING[self.value]
+
 
 def create_types(types: Iterable[SupportedTypes]):
     return enum.Enum(
         f"Types{next(generated_types_enum_count)}",
         {t.name: t.value for t in types},
-        type=str,
+        type=DerivedSupportedType,
     )
 
 
@@ -72,6 +101,7 @@ class StructurePropsAttributes(AttributesModel):
 class MolPairAttributes(BaseModel):
     mol1: str
     mol2: str
+    flags: Optional[str] = None
 
 
 class AmbiguousHAttributes(BaseModel):
@@ -180,18 +210,16 @@ class IndigoResponse(IndigoBaseResponse):
 
 
 IndigoMolRequest = IndigoBaseRequest.with_types(
-    (
-        SupportedTypes.MOLFILE, 
-        SupportedTypes.SMILES, 
-        SupportedTypes.SMARTS
-    )
+    (SupportedTypes.MOLFILE, SupportedTypes.SMILES, SupportedTypes.SMARTS)
 )
 
 
-IndigoReactionProductEnumerateRequest = IndigoReactionProductEnumerateBaseRequest.with_types(
+IndigoReactionProductEnumerateRequest = (
+    IndigoReactionProductEnumerateBaseRequest.with_types(
         (
             SupportedTypes.MOLFILE_LIST,
             SupportedTypes.SMILES_LIST,
             SupportedTypes.SMARTS_LIST,
         )
+    )
 )
