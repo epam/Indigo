@@ -92,7 +92,7 @@ void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates(float bond_length)
     {
         Filter comp;
         bc_decom.getComponent(i, comp);
-        std::unique_ptr<MoleculeLayoutGraph> tmp(dynamic_cast<MoleculeLayoutGraph*>(getInstance()));
+        std::unique_ptr<MoleculeLayoutGraph> tmp(getInstance());
         tmp->makeLayoutSubgraph(*this, comp);
         bc_components.add(tmp.release());
     }
