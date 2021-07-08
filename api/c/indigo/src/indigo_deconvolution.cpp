@@ -90,6 +90,9 @@ void IndigoDeconvolution::setScaffold(QueryMolecule& scaffold)
                 if (_scaffold.getAtomNumber(vertex.neiVertex(j)) != ELEM_H)
                     ++subst_count;
             }
+// TODO: remove this empty lines
+
+
             _scaffold.resetAtom(i, QueryMolecule::Atom::und(_scaffold.releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst_count)));
         }
     }
@@ -1565,6 +1568,7 @@ bool IndigoDeconvolution::DecompositionEnumerator::_cbAutoCheckAutomorphism(Grap
 
 CEXPORT int indigoDecomposeMolecules(int scaffold, int structures)
 {
+
     INDIGO_BEGIN
     {
         IndigoArray& mol_array = IndigoArray::cast(self.getObject(structures));
@@ -1572,12 +1576,20 @@ CEXPORT int indigoDecomposeMolecules(int scaffold, int structures)
         deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
         deco->ignore_errors = self.deco_ignore_errors;
         deco->aromatize = self.deconvolution_aromatization;
+// TODO: remove this empty lines
+
+
         for (int i = 0; i < mol_array.objects.size(); i++)
         {
             IndigoObject& obj = *mol_array.objects[i];
+// TODO: remove this empty lines
+
+
             deco->addMolecule(obj.getMolecule(), obj.getProperties(), i);
         }
+
         QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();
+
         deco->makeRGroups(scaf);
         return self.addObject(deco.release());
     }

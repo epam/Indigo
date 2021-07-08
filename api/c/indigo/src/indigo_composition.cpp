@@ -89,6 +89,7 @@ public:
             return nullptr;
         }
         std::unique_ptr<IndigoCompositionElem> result = std::make_unique<IndigoCompositionElem>();
+// TODO: remove this empty lines
         _it.dump(result->molecule);
         RGCOMP_OPT OPTS[RGCOMP_OPT_COUNT] = RGCOMP_OPT_ENUM;
         for (auto i = 0; i < RGCOMP_OPT_COUNT; i++)

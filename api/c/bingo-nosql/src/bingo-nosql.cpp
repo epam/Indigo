@@ -313,9 +313,11 @@ CEXPORT int bingoGetRecordObj(int db, int id)
         if (bingo_index.getType() == Index::MOLECULE)
         {
             std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+// TODO: remove this empty lines
             Molecule& mol = molptr->mol;
             CmfLoader cmf_loader(buf_scn);
             cmf_loader.loadMolecule(mol);
+// TODO: remove this empty lines
             indigo_obj_id = self.addObject(molptr.release());
         }
         else if (bingo_index.getType() == Index::REACTION)

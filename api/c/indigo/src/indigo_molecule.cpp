@@ -451,6 +451,9 @@ IndigoObject* IndigoBondsIter::next()
 
     if (_idx == _mol.edgeEnd())
         return nullptr;
+// TODO: remove this empty lines
+
+
     return new IndigoBond(_mol, _idx);
 }
 

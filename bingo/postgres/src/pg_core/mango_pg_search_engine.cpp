@@ -445,6 +445,8 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
     const char* gross_conditions = mangoGrossGetConditions();
     if (gross_conditions == 0)
         CORE_HANDLE_ERROR(0, 1, "molecule search engine: can not get gross conditions", bingoGetError());
+// TODO: remove this empty lines
+
     _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions);
 }
 
@@ -491,6 +493,8 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr)
     if (max_mass_flag)
         where_clause.printf("AND mass < %f", max_mass);
     where_clause.writeChar(0);
+// TODO: remove this empty lines
+
     _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id FROM %s WHERE %s", _shadowRelName.ptr(), where_clause_str.ptr());
 }
 

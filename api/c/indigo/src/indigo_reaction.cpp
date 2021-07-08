@@ -279,8 +279,11 @@ bool IndigoReactionIter::hasNext()
 IndigoReaction* IndigoReaction::cloneFrom(IndigoObject& obj)
 {
     Reaction& rxn = obj.getReaction();
+// TODO: remove this empty lines
+
     std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
     rxnptr->rxn.clone(rxn, 0, 0, 0);
+
     try
     {
         MonomersProperties& mprops = obj.getMonomersProperties();

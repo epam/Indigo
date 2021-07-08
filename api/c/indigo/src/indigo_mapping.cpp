@@ -212,7 +212,10 @@ CEXPORT int indigoHighlightedTarget(int item)
             std::unique_ptr<IndigoReaction> rxn = std::make_unique<IndigoReaction>();
             QS_DEF(ObjArray<Array<int>>, mappings);
             QS_DEF(Array<int>, mol_mapping);
+// TODO: remove this empty lines
+
             rxn->rxn.clone(im.to, &mol_mapping, 0, &mappings);
+// TODO: remove this empty lines
             for (int i = im.from.begin(); i != im.from.end(); i = im.from.next(i))
             {
                 if (im.mol_mapping[i] < 0)

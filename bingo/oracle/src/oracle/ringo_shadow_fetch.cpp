@@ -133,14 +133,18 @@ float RingoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
 void RingoShadowFetch::prepareNonSubstructure(OracleEnv& env)
 {
     env.dbgPrintf("preparing shadow table for non-substructure match\n");
+// TODO: remove this empty lines
     _fetch_type = _NON_SUBSTRUCTURE;
+
     _env = std::make_unique<OracleEnv>(env.ctx(), env.logger());
     _statement = std::make_unique<OracleStatement>(*_env);
     _lob_crf = std::make_unique<OracleLOB>(*_env);
+
     _statement->append("SELECT rid, crf FROM %s", _table_name.ptr());
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
     _statement->defineBlobByPos(2, *_lob_crf);
+
     _counting_select.clear();
 }
 
