@@ -36,7 +36,7 @@ namespace indigo
     const float EPSILON = 0.000001f;
 
     // frac of type 1/n for acos_stable
-    const float frac1[25] = {0.,      1.,      1. / 2,  1. / 3,  1. / 4,  1. / 5,  1. / 6,  1. / 7,  1. / 8,  1. / 9,  1. / 10, 1. / 11, 1. / 12,
+    const double frac1[25] = {0.,      1.,      1. / 2,  1. / 3,  1. / 4,  1. / 5,  1. / 6,  1. / 7,  1. / 8,  1. / 9,  1. / 10, 1. / 11, 1. / 12,
                               1. / 13, 1. / 14, 1. / 15, 1. / 16, 1. / 17, 1. / 18, 1. / 19, 1. / 20, 1. / 21, 1. / 22, 1. / 23, 1. / 24};
 
     struct Transform3f;
@@ -257,20 +257,20 @@ namespace indigo
 
         DLLEXPORT static float asin_stable(float x)
         {
-            float x2 = x * x;
-            float res = 0.;
-            float y = x;
+            double x2 = _2DOUBLE(x) * _2DOUBLE(x);
+            double res = 0.;
+            double y = _2DOUBLE(x);
             for (int i = 0; i < 12; i++)
             {
                 res += y * frac1[2 * i + 1];
                 y *= (1. - frac1[2 * i + 2]) * x2;
             }
-            return res;
+            return _2FLOAT(res);
         }
 
         DLLEXPORT static float acos_stable(float x)
         {
-            return (M_PI / 2.) - asin_stable(x);
+            return _2FLOAT((M_PI / 2.) - asin_stable(x));
         }
     };
 

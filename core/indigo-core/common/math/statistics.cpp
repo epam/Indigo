@@ -60,7 +60,7 @@ float MeanEstimator::meanEsimationError() const
     if (_count == 0)
         return 0;
 
-    float sigma = sqrt(_sum_sq / _count - pow(_sum / _count, 2));
+    double sigma = sqrt(_sum_sq / _count - pow(_sum / _count, 2));
 
-    return 2. * sigma / sqrt((float)_count);
+    return _2FLOAT(2. * sigma / sqrt(_2DOUBLE(_count)));
 }
