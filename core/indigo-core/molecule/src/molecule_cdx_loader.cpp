@@ -238,7 +238,7 @@ void MoleculeCdxLoader::_postLoad()
     _ignore_cistrans.zerofill();
 
     _bmol->buildFromBondsStereocenters(stereochemistry_options, _sensible_bond_directions.ptr());
-    _bmol->allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
+    _bmol->buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
     _bmol->buildCisTrans(_ignore_cistrans.ptr());
     _bmol->have_xyz = true;
 }

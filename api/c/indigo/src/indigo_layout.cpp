@@ -71,7 +71,7 @@ CEXPORT int indigoLayout(int object)
                 try
                 {
                     mol->markBondsStereocenters();
-                    mol->allene_stereo.markBonds();
+                    mol->markBondsAlleneStereo();
                 }
                 catch (Exception e)
                 {
@@ -86,7 +86,7 @@ CEXPORT int indigoLayout(int object)
                         try
                         {
                             rgp.fragments[j]->markBondsStereocenters();
-                            rgp.fragments[j]->allene_stereo.markBonds();
+                            rgp.fragments[j]->markBondsAlleneStereo();
                         }
                         catch (Exception e)
                         {

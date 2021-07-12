@@ -1287,7 +1287,7 @@ void ReactionEnumeratorState::_stereocentersUpdate(QueryMolecule& submolecule, M
             _full_product.stereocenters.invertPyramid(rp_mapping[i]);
             _full_product.clearBondDirections();
             _full_product.markBondsStereocenters();
-            _full_product.allene_stereo.markBonds();
+            _full_product.markBondsAlleneStereo();
         }
     }
 }

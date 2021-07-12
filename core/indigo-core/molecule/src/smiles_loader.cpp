@@ -692,7 +692,7 @@ void SmilesLoader::_readOtherStuff()
             if (_scanner.readChar() != ')')
                 throw Error("expected ')' after coordinates");
             _bmol->markBondsStereocenters();
-            _bmol->allene_stereo.markBonds();
+            _bmol->markBondsAlleneStereo();
         }
         else if (c == 'h') // highlighting (Indigo's own extension)
         {

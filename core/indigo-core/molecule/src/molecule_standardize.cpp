@@ -1025,7 +1025,7 @@ void MoleculeStandardizer::_setStereoFromCoordinates(BaseMolecule& mol)
     sensible_bond_orientations.clear_resize(mol.vertexEnd());
 
     mol.buildFromBondsStereocenters(options, sensible_bond_orientations.ptr());
-    mol.allene_stereo.buildFromBonds(options.ignore_errors, sensible_bond_orientations.ptr());
+    mol.buildFromBondsAlleneStereo(options.ignore_errors, sensible_bond_orientations.ptr());
     mol.buildCisTrans(0);
 
     if (mol.stereocenters.size() == 0)
@@ -1045,7 +1045,7 @@ void MoleculeStandardizer::_repositionAxialStereoBonds(BaseMolecule& mol)
     if (!Molecule::hasCoord(mol))
         throw Error("Atoms coordinates are not defined");
 
-    mol.allene_stereo.markBonds();
+    mol.markBondsAlleneStereo();
 }
 
 void MoleculeStandardizer::_fixDirectionOfWedgeBonds(BaseMolecule& mol)

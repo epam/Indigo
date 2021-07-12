@@ -2095,7 +2095,7 @@ void MolfileLoader::_postLoad()
         }
 
     _bmol->buildFromBondsStereocenters(stereochemistry_options, _sensible_bond_directions.ptr());
-    _bmol->allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
+    _bmol->buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
 
     if (!_chiral && treat_stereo_as == 0)
         for (i = 0; i < _atoms_num; i++)

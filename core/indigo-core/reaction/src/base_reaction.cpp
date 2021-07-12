@@ -196,7 +196,7 @@ void BaseReaction::markStereocenterBonds()
     {
         _allMolecules[i]->clearBondDirections();
         _allMolecules[i]->markBondsStereocenters();
-        _allMolecules[i]->allene_stereo.markBonds();
+        _allMolecules[i]->markBondsAlleneStereo();
     }
 }
 

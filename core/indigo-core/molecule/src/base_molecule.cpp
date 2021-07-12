@@ -37,7 +37,7 @@ using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
 
-BaseMolecule::BaseMolecule() : allene_stereo(*this)
+BaseMolecule::BaseMolecule()
 {
     _edit_revision = 0;
 }
@@ -388,7 +388,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     else
         cis_trans.clear();
 
-    allene_stereo.buildOnSubmolecule(mol.allene_stereo, mapping.ptr());
+    buildOnSubmoleculeAlleneStereo(mol, mapping.ptr());
 
     // subclass stuff (Molecule or QueryMolecule)
     _postMergeWithSubmolecule(mol, vertices, edges, mapping, skip_flags);
@@ -706,7 +706,7 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
     // stereo
     removeAtomsStereocenters(indices);
     buildOnSubmoleculeCisTrans(*this, mapping.ptr());
-    allene_stereo.removeAtoms(indices);
+    removeAtomsAlleneStereo(indices);
 
     // highlighting and stereo
     int b_idx;
@@ -777,7 +777,7 @@ void BaseMolecule::removeBonds(const Array<int>& indices)
     _removeBonds(indices);
 
     removeBondsStereocenters(indices);
-    allene_stereo.removeBonds(indices);
+    removeBondsAlleneStereo(indices);
 
     for (int i = 0; i < indices.size(); i++)
     {
@@ -4231,3 +4231,27 @@ bool BaseMolecule::convertableToImplicitHydrogenCisTrans(int idx)
     return cis_trans.convertableToImplicitHydrogen(*this, idx );
 }
 
+void BaseMolecule::markBondsAlleneStereo()
+{
+    allene_stereo.markBonds(*this);
+}
+
+void BaseMolecule::buildOnSubmoleculeAlleneStereo(BaseMolecule& super, int* mapping)
+{
+    allene_stereo.buildOnSubmolecule(*this, super, mapping);
+}
+
+void BaseMolecule::removeAtomsAlleneStereo(const Array<int>& indices)
+{
+    allene_stereo.removeAtoms(*this, indices);
+}
+
+void BaseMolecule::removeBondsAlleneStereo(const Array<int>& indices)
+{
+    allene_stereo.removeBonds(*this, indices);
+}
+
+void BaseMolecule::buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_bonds_out)
+{
+    allene_stereo.buildFromBonds(*this, ignore_errors, sensible_bonds_out);
+}

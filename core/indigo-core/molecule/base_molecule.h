@@ -389,6 +389,13 @@ namespace indigo
         void validateCisTrans();
         bool convertableToImplicitHydrogenCisTrans(int idx);
 
+        // proxy methods for allene_stereo
+        void markBondsAlleneStereo();
+        void buildOnSubmoleculeAlleneStereo(BaseMolecule& super, int* mapping);
+        void removeAtomsAlleneStereo(const Array<int>& indices);
+        void removeBondsAlleneStereo(const Array<int>& indices);
+        void buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_bonds_out);
+
         DECL_ERROR;
 
     protected:

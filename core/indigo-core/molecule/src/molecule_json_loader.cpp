@@ -698,7 +698,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         }
 
     mol.buildFromBondsStereocenters(stereochemistry_options, sensible_bond_directions.data());
-    mol.allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, sensible_bond_directions.data());
+    mol.buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, sensible_bond_directions.data());
 
     // int num_atoms = mol.vertices();
     // printf("%d", num_atoms);
