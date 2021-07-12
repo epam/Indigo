@@ -656,7 +656,7 @@ void CmfLoader::loadMolecule(Molecule& mol)
         for (i = 0; i < _atoms.size(); i++)
         {
             if (_atoms[i].stereo_type != 0)
-                mol.stereocenters.add(i, _atoms[i].stereo_type, _atoms[i].stereo_group, _atoms[i].stereo_invert_pyramid);
+                mol.addStereocenters(i, _atoms[i].stereo_type, _atoms[i].stereo_group, _atoms[i].stereo_invert_pyramid);
         }
     }
 

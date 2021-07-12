@@ -386,14 +386,14 @@ void InchiWrapper::parseInchiOutput(const InchiOutput& inchi_output, Molecule& m
             if (stereo0D.parity == INCHI_PARITY_ODD || stereo0D.parity == INCHI_PARITY_EVEN)
             {
                 if (_stereo_opt == _STEREO_ABS)
-                    mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
+                    mol.addStereocenters(stereo0D.central_atom, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
                 else if (_stereo_opt == _STEREO_REL)
-                    mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_OR, 0, pyramid);
+                    mol.addStereocenters(stereo0D.central_atom, MoleculeStereocenters::ATOM_OR, 0, pyramid);
                 else if (_stereo_opt == _STEREO_RAC)
-                    mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_AND, 0, pyramid);
+                    mol.addStereocenters(stereo0D.central_atom, MoleculeStereocenters::ATOM_AND, 0, pyramid);
             }
             else if (stereo0D.parity == INCHI_PARITY_UNKNOWN || stereo0D.parity == INCHI_PARITY_UNDEFINED)
-                mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_ANY, 0, pyramid);
+                mol.addStereocenters(stereo0D.central_atom, MoleculeStereocenters::ATOM_ANY, 0, pyramid);
         }
     }
 }

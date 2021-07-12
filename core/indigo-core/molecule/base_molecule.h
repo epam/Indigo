@@ -363,6 +363,21 @@ namespace indigo
         int getChiralFlag();
         void setChiralFlag(int flag);
 
+        // proxy methods for stereocenters
+        const int* getPyramidStereocenters(int idx) const;
+        void markBondsStereocenters();
+        void markBondStereocenters(int atom_idx);
+
+        void addStereocenters(int atom_idx, int type, int group, const int pyramid[4]);
+        void addStereocenters(int atom_idx, int type, int group, bool inverse_pyramid);
+        void removeAtomsStereocenters(const Array<int>& indices);
+        void removeBondsStereocenters(const Array<int>& indices);
+
+        void buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out);
+        void buildFrom3dCoordinatesStereocenters(const StereocentersOptions& options);
+        bool isPossibleStereocenter( int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+        void buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping);
+
         DECL_ERROR;
 
     protected:

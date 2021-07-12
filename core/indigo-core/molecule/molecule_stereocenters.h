@@ -29,10 +29,9 @@
 
 namespace indigo
 {
-
-    class BaseMolecule;
     class Filter;
     class StereocentersOptions;
+    class BaseMolecule;
 
     class DLLEXPORT MoleculeStereocenters
     {
@@ -45,27 +44,27 @@ namespace indigo
             ATOM_ABS = 4
         };
 
-        explicit MoleculeStereocenters(BaseMolecule& baseMolecule);
+        explicit MoleculeStereocenters();
 
         void clear();
 
-        void buildFromBonds(const StereocentersOptions& options, int* sensible_bonds_out);
+        void buildFromBonds(BaseMolecule& baseMolecule, const StereocentersOptions& options, int* sensible_bonds_out);
 
-        void buildFrom3dCoordinates(const StereocentersOptions& options);
+        void buildFrom3dCoordinates(BaseMolecule& baseMolecule, const StereocentersOptions& options);
 
-        void markBonds();
-        void markBond(int atom_idx);
+        void markBonds(BaseMolecule& baseMolecule);
+        void markBond(BaseMolecule& baseMolecule, int atom_idx);
 
         // takes mapping from supermolecule to submolecule
-        void buildOnSubmolecule(const MoleculeStereocenters& super, int* mapping);
+        void buildOnSubmolecule(BaseMolecule& baseMolecule, const BaseMolecule& super, int* mapping);
 
-        void removeAtoms(const Array<int>& indices);
-        void removeBonds(const Array<int>& indices);
+        void removeAtoms(BaseMolecule& baseMolecule, const Array<int>& indices);
+        void removeBonds(BaseMolecule& baseMolecule, const Array<int>& indices);
 
         int size() const;
 
-        void add(int atom_idx, int type, int group, bool inverse_pyramid);
-        void add(int atom_idx, int type, int group, const int pyramid[4]);
+        void add(BaseMolecule& baseMolecule, int atom_idx, int type, int group, bool inverse_pyramid);
+        void add(BaseMolecule& baseMolecule, int atom_idx, int type, int group, const int pyramid[4]);
         void get(int i, int& atom_idx, int& type, int& group, int* pyramid) const;
         void remove(int idx);
 
@@ -104,8 +103,12 @@ namespace indigo
 
         int getAtomIndex(int i) const;
 
-        static bool checkSub(const MoleculeStereocenters& query, const MoleculeStereocenters& target, const int* mapping, bool reset_h_isotopes,
-                             Filter* stereocenters_vertex_filter = 0);
+        bool isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+
+    public:
+
+        static bool checkSub( BaseMolecule& query, BaseMolecule& target, const int* mapping, bool reset_h_isotopes,
+                              Filter* stereocenters_vertex_filter = 0);
 
         static bool isPyramidMappingRigid(const int* pyramid, int size, const int* mapping);
         static bool isPyramidMappingRigid(const int mapping[4]);
@@ -119,14 +122,13 @@ namespace indigo
 
         DECL_ERROR;
 
-        static void getPyramidMapping(const MoleculeStereocenters& query, const MoleculeStereocenters& target, int query_atom, const int* mapping,
-                                      int* mapping_out, bool reset_h_isotopes);
-
-        bool isPossibleStereocenter(int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+        static void getPyramidMapping( BaseMolecule& query, BaseMolecule& target, int query_atom, const int* mapping,
+                                       int* mapping_out, bool reset_h_isotopes);
 
         static void rotatePyramid(int* pyramid);
 
-    protected:
+    private:
+
         struct _Atom
         {
             int type;  // ANY, AND, OR, ABS
@@ -155,27 +157,26 @@ namespace indigo
         };
 
         RedBlackMap<int, _Atom> _stereocenters;
-        BaseMolecule& _baseMolecule;
 
         static int _sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3);
         static int _xyzzy(const Vec3f& v1, const Vec3f& v2, const Vec3f& u);
         static int _onPlane(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3, const Vec3f& v4);
 
-        bool _buildOneCenter(int atom_idx, int* sensible_bonds_out, bool bidirectional_mode, bool bidirectional_either_mode, const Array<bool>& bond_ignore);
+        bool _buildOneCenter(BaseMolecule& baseMolecule, int atom_idx, int* sensible_bonds_out, bool bidirectional_mode, bool bidirectional_either_mode,
+                             const Array<bool>& bond_ignore);
 
-        void _buildOneFrom3dCoordinates(int idx);
+        void _buildOneFrom3dCoordinates(BaseMolecule& baseMolecule, int idx);
 
         void _getGroups(int type, Array<int>& numbers);
         void _getGroup(int type, int number, Array<int>& indices);
-        void _restorePyramid(int idx, int pyramid[4], int invert_pyramid);
+        void _restorePyramid(BaseMolecule& baseMolecule, int idx, int pyramid[4], int invert_pyramid);
 
         static void _convertAtomToImplicitHydrogen(int pyramid[4], int atom_to_remove);
 
-        void _removeBondDir(int atom_from, int atom_to);
+        void _removeBondDir(BaseMolecule& baseMolecule, int atom_from, int atom_to);
 
         int _getDirection(BaseMolecule& mol, int atom_from, int atom_to, bool bidirectional_mode);
 
-    private:
         MoleculeStereocenters(const MoleculeStereocenters&); // no implicit copy
     };
 

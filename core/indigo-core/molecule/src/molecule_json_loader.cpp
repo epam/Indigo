@@ -697,7 +697,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
             }
         }
 
-    mol.stereocenters.buildFromBonds(stereochemistry_options, sensible_bond_directions.data());
+    mol.buildFromBondsStereocenters(stereochemistry_options, sensible_bond_directions.data());
     mol.allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, sensible_bond_directions.data());
 
     // int num_atoms = mol.vertices();
@@ -712,7 +712,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
 
     mol.cis_trans.build(ignore_cistrans.data());
     if (mol.stereocenters.size() == 0)
-        mol.stereocenters.buildFrom3dCoordinates(stereochemistry_options);
+        mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
     MoleculeLayout ml(mol, false);
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();

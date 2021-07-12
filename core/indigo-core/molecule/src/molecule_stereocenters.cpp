@@ -30,7 +30,7 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeStereocenters, "stereocenters");
 
-MoleculeStereocenters::MoleculeStereocenters(BaseMolecule& baseMolecule) : _baseMolecule(baseMolecule)
+MoleculeStereocenters::MoleculeStereocenters()
 {
 }
 
@@ -39,21 +39,21 @@ void MoleculeStereocenters::clear()
     _stereocenters.clear();
 }
 
-void MoleculeStereocenters::buildFromBonds(const StereocentersOptions& options, int* sensible_bonds_out)
+void MoleculeStereocenters::buildFromBonds(BaseMolecule& baseMolecule, const StereocentersOptions& options, int* sensible_bonds_out)
 {
-    HaworthProjectionFinder haworth_finder(_baseMolecule);
+    HaworthProjectionFinder haworth_finder(baseMolecule);
     if (options.detect_haworth_projection)
         haworth_finder.findAndAddStereocenters();
 
     const Array<bool>& bonds_ignore = haworth_finder.getBondsMask();
     const Array<bool>& atoms_ignore = haworth_finder.getAtomsMask();
-    for (int i = _baseMolecule.edgeBegin(); i != _baseMolecule.edgeEnd(); i = _baseMolecule.edgeNext(i))
+    for (int i = baseMolecule.edgeBegin(); i != baseMolecule.edgeEnd(); i = baseMolecule.edgeNext(i))
     {
-        if (bonds_ignore[i] && _baseMolecule.getBondDirection(i))
+        if (bonds_ignore[i] && baseMolecule.getBondDirection(i))
             sensible_bonds_out[i] = 1;
     }
 
-    for (int i = _baseMolecule.vertexBegin(); i != _baseMolecule.vertexEnd(); i = _baseMolecule.vertexNext(i))
+    for (int i = baseMolecule.vertexBegin(); i != baseMolecule.vertexEnd(); i = baseMolecule.vertexNext(i))
     {
         if (atoms_ignore[i])
             continue;
@@ -62,7 +62,7 @@ void MoleculeStereocenters::buildFromBonds(const StereocentersOptions& options, 
         bool found = false;
         try
         {
-            found = _buildOneCenter(i, sensible_bonds_out, false, options.bidirectional_mode, bonds_ignore);
+            found = _buildOneCenter(baseMolecule, i, sensible_bonds_out, false, options.bidirectional_mode, bonds_ignore);
         }
         catch (Error&)
         {
@@ -77,7 +77,7 @@ void MoleculeStereocenters::buildFromBonds(const StereocentersOptions& options, 
         {
             try
             {
-                _buildOneCenter(i, sensible_bonds_out, true, options.bidirectional_mode, bonds_ignore);
+                _buildOneCenter(baseMolecule, i, sensible_bonds_out, true, options.bidirectional_mode, bonds_ignore);
             }
             catch (Error&)
             {
@@ -86,12 +86,12 @@ void MoleculeStereocenters::buildFromBonds(const StereocentersOptions& options, 
     }
 }
 
-void MoleculeStereocenters::buildFrom3dCoordinates(const StereocentersOptions& options)
+void MoleculeStereocenters::buildFrom3dCoordinates(BaseMolecule& baseMolecule, const StereocentersOptions& options)
 {
-    if (_baseMolecule.isQueryMolecule())
+    if (baseMolecule.isQueryMolecule())
         return;
 
-    Molecule& mol = _baseMolecule.asMolecule();
+    Molecule& mol = baseMolecule.asMolecule();
 
     if (!BaseMolecule::hasZCoord(mol))
         return;
@@ -100,11 +100,11 @@ void MoleculeStereocenters::buildFrom3dCoordinates(const StereocentersOptions& o
 
     int i;
 
-    for (i = _baseMolecule.vertexBegin(); i != _baseMolecule.vertexEnd(); i = _baseMolecule.vertexNext(i))
+    for (i = baseMolecule.vertexBegin(); i != baseMolecule.vertexEnd(); i = baseMolecule.vertexNext(i))
     {
         try
         {
-            _buildOneFrom3dCoordinates(i);
+            _buildOneFrom3dCoordinates(baseMolecule, i);
         }
         catch (Error&)
         {
@@ -118,9 +118,9 @@ void MoleculeStereocenters::buildFrom3dCoordinates(const StereocentersOptions& o
     am.allow_undefined = true;
     am.process(mol);
 
-    for (i = _baseMolecule.vertexBegin(); i != _baseMolecule.vertexEnd(); i = _baseMolecule.vertexNext(i))
+    for (i = baseMolecule.vertexBegin(); i != baseMolecule.vertexEnd(); i = baseMolecule.vertexNext(i))
     {
-        if (!_baseMolecule.stereocenters.exists(i))
+        if (!baseMolecule.stereocenters.exists(i))
             continue;
 
         if (am.invalidStereocenter(i))
@@ -128,18 +128,18 @@ void MoleculeStereocenters::buildFrom3dCoordinates(const StereocentersOptions& o
     }
 }
 
-void MoleculeStereocenters::_buildOneFrom3dCoordinates(int idx)
+void MoleculeStereocenters::_buildOneFrom3dCoordinates(BaseMolecule& baseMolecule, int idx)
 {
-    Vec3f& v_pos = _baseMolecule.getAtomXyz(idx);
+    Vec3f& v_pos = baseMolecule.getAtomXyz(idx);
 
-    if (!isPossibleStereocenter(idx))
+    if (!isPossibleStereocenter(baseMolecule,idx))
         return;
 
     int pyramid[4];
 
     try
     {
-        _restorePyramid(idx, pyramid, false);
+        _restorePyramid(baseMolecule, idx, pyramid, false);
     }
     catch (Exception&)
     {
@@ -151,7 +151,7 @@ void MoleculeStereocenters::_buildOneFrom3dCoordinates(int idx)
     for (int j = 0; j < 4; j++)
     {
         if (pyramid[j] != -1)
-            nei_coords[nei_cnt++] = _baseMolecule.getAtomXyz(pyramid[j]);
+            nei_coords[nei_cnt++] = baseMolecule.getAtomXyz(pyramid[j]);
     }
 
     if (nei_cnt != 4)
@@ -187,14 +187,14 @@ void MoleculeStereocenters::_buildOneFrom3dCoordinates(int idx)
         return;
 
     if (plane_sign > 0)
-        add(idx, ATOM_ABS, 0, true);
+        add(baseMolecule, idx, ATOM_ABS, 0, true);
     else
-        add(idx, ATOM_ABS, 0, false);
+        add(baseMolecule, idx, ATOM_ABS, 0, false);
 }
 
-bool MoleculeStereocenters::isPossibleStereocenter(int atom_idx, bool* possible_implicit_h, bool* possible_lone_pair)
+bool MoleculeStereocenters::isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, bool* possible_implicit_h, bool* possible_lone_pair)
 {
-    const Vertex& vertex = _baseMolecule.getVertex(atom_idx);
+    const Vertex& vertex = baseMolecule.getVertex(atom_idx);
 
     int sure_double_bonds = 0;
     int possible_double_bonds = 0;
@@ -207,14 +207,14 @@ bool MoleculeStereocenters::isPossibleStereocenter(int atom_idx, bool* possible_
     {
         int e_idx = vertex.neiEdge(i);
 
-        if (_baseMolecule.getBondOrder(e_idx) == BOND_TRIPLE)
+        if (baseMolecule.getBondOrder(e_idx) == BOND_TRIPLE)
             return false;
-        if (_baseMolecule.getBondOrder(e_idx) == BOND_AROMATIC)
+        if (baseMolecule.getBondOrder(e_idx) == BOND_AROMATIC)
             return false;
 
-        if (_baseMolecule.getBondOrder(e_idx) == BOND_DOUBLE)
+        if (baseMolecule.getBondOrder(e_idx) == BOND_DOUBLE)
             sure_double_bonds++;
-        else if (_baseMolecule.possibleBondOrder(e_idx, BOND_DOUBLE))
+        else if (baseMolecule.possibleBondOrder(e_idx, BOND_DOUBLE))
             possible_double_bonds++;
     }
 
@@ -242,7 +242,7 @@ bool MoleculeStereocenters::isPossibleStereocenter(int atom_idx, bool* possible_
         if (as.n_double_bonds < sure_double_bonds || as.n_double_bonds > sure_double_bonds + possible_double_bonds)
             continue;
 
-        if (!_baseMolecule.possibleAtomNumberAndCharge(atom_idx, as.elem, as.charge))
+        if (!baseMolecule.possibleAtomNumberAndCharge(atom_idx, as.elem, as.charge))
             continue;
 
         possible = true;
@@ -262,10 +262,11 @@ bool MoleculeStereocenters::isPossibleStereocenter(int atom_idx, bool* possible_
 // But such opposite directions has lower priority and if stereocenter configuration
 // can be determined by normal direction then do not check if opposite directions
 // contradicts original ones.
-bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_out, bool bidirectional_mode, bool bidirectional_either_mode,
+bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom_idx, int* sensible_bonds_out, bool bidirectional_mode,
+                                            bool bidirectional_either_mode,
                                             const Array<bool>& bond_ignore)
 {
-    const Vertex& vertex = _baseMolecule.getVertex(atom_idx);
+    const Vertex& vertex = baseMolecule.getVertex(atom_idx);
 
     int degree = vertex.degree();
 
@@ -303,31 +304,31 @@ bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_ou
         edge_ids[nei_idx].edge_idx = e_idx;
         edge_ids[nei_idx].nei_idx = v_idx;
 
-        if (_baseMolecule.possibleAtomNumberAndIsotope(v_idx, ELEM_H, 0))
+        if (baseMolecule.possibleAtomNumberAndIsotope(v_idx, ELEM_H, 0))
         {
-            if (_baseMolecule.getAtomNumber(v_idx) == ELEM_H && _baseMolecule.getAtomIsotope(v_idx) == 0)
+            if (baseMolecule.getAtomNumber(v_idx) == ELEM_H && baseMolecule.getAtomIsotope(v_idx) == 0)
                 n_pure_hydrogens++;
             edge_ids[nei_idx].rank = 10000;
         }
         else
             edge_ids[nei_idx].rank = v_idx;
 
-        edge_ids[nei_idx].vec.diff(_baseMolecule.getAtomXyz(v_idx), _baseMolecule.getAtomXyz(atom_idx));
+        edge_ids[nei_idx].vec.diff(baseMolecule.getAtomXyz(v_idx), baseMolecule.getAtomXyz(atom_idx));
 
         if (!edge_ids[nei_idx].vec.normalize())
             zero_bond_length = true;
 
-        if (_baseMolecule.getBondOrder(e_idx) == BOND_TRIPLE)
+        if (baseMolecule.getBondOrder(e_idx) == BOND_TRIPLE)
             return false;
-        if (_baseMolecule.getBondOrder(e_idx) == BOND_AROMATIC)
+        if (baseMolecule.getBondOrder(e_idx) == BOND_AROMATIC)
             return false;
 
-        if (_baseMolecule.getBondOrder(e_idx) == BOND_DOUBLE)
+        if (baseMolecule.getBondOrder(e_idx) == BOND_DOUBLE)
             sure_double_bonds++;
-        else if (_baseMolecule.possibleBondOrder(e_idx, BOND_DOUBLE))
+        else if (baseMolecule.possibleBondOrder(e_idx, BOND_DOUBLE))
             possible_double_bonds++;
 
-        if (_getDirection(_baseMolecule, atom_idx, v_idx, bidirectional_either_mode) == BOND_EITHER)
+        if (_getDirection(baseMolecule, atom_idx, v_idx, bidirectional_either_mode) == BOND_EITHER)
             is_either = true;
 
         nei_idx++;
@@ -337,15 +338,15 @@ bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_ou
     bool possible_lone_pair = false;
     int i;
 
-    if (!isPossibleStereocenter(atom_idx, &possible_implicit_h, &possible_lone_pair))
+    if (!isPossibleStereocenter(baseMolecule, atom_idx, &possible_implicit_h, &possible_lone_pair))
         return false;
 
     // Local synonym to get bond direction
     auto getDir = [&](int from, int to) {
-        int idx = _baseMolecule.findEdgeIndex(from, to);
-        if (bond_ignore[idx])
-            return 0;
-        return _getDirection(_baseMolecule, from, to, bidirectional_mode);
+      int idx = baseMolecule.findEdgeIndex(from, to);
+      if (bond_ignore[idx])
+          return 0;
+      return _getDirection(baseMolecule, from, to, bidirectional_mode);
     };
 
     if (is_either)
@@ -629,7 +630,7 @@ int MoleculeStereocenters::_sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& 
 {
     // Check the angle between bonds
     float dot_eps = 0.997f; // Corresponds to 4.5 degrees
-                            //   float dot_eps = 0.99999f; // Corresponds to 0 degrees
+    //   float dot_eps = 0.99999f; // Corresponds to 0 degrees
     if (Vec3f::dot(v1, v2) > dot_eps * v1.length() * v2.length() || Vec3f::dot(v1, v3) > dot_eps * v1.length() * v3.length() ||
         Vec3f::dot(v2, v3) > dot_eps * v2.length() * v3.length())
         throw Error("angle between bonds is too small");
@@ -864,25 +865,25 @@ bool MoleculeStereocenters::haveAllAndAny()
     return true;
 }
 
-bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const MoleculeStereocenters& target, const int* mapping, bool reset_h_isotopes,
+bool MoleculeStereocenters::checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping, bool reset_h_isotopes,
                                      Filter* stereocenters_vertex_filter)
 {
     QS_DEF(Array<int>, flags);
 
-    flags.clear_resize(query._stereocenters.end());
+    flags.clear_resize(query.stereocenters._stereocenters.end());
     flags.zerofill();
 
     int i, j;
 
-    for (i = query._stereocenters.begin(); i != query._stereocenters.end(); i = query._stereocenters.next(i))
+    for (i = query.stereocenters._stereocenters.begin(); i != query.stereocenters._stereocenters.end(); i = query.stereocenters._stereocenters.next(i))
     {
         if (flags[i])
             continue;
 
         flags[i] = 1;
 
-        const _Atom& cq = query._stereocenters.value(i);
-        int iq = query._stereocenters.key(i);
+        const _Atom& cq = query.stereocenters._stereocenters.value(i);
+        int iq = query.stereocenters._stereocenters.key(i);
 
         if (mapping[iq] < 0)
             continue; // happens only on Exact match (when some query fragments are disabled)
@@ -917,10 +918,10 @@ bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const M
         }
         else if (type == ATOM_OR || type == ATOM_AND)
         {
-            for (j = i; j != query._stereocenters.end(); j = query._stereocenters.next(j))
+            for (j = i; j != query.stereocenters._stereocenters.end(); j = query.stereocenters._stereocenters.next(j))
             {
-                int iq2 = query._stereocenters.key(j);
-                const _Atom& cq2 = query._stereocenters.value(j);
+                int iq2 = query.stereocenters._stereocenters.key(j);
+                const _Atom& cq2 = query.stereocenters._stereocenters.value(j);
 
                 if (cq2.type != type)
                     continue;
@@ -928,7 +929,7 @@ bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const M
                 if (cq2.group != cq.group)
                     continue;
 
-                const _Atom* ct2 = target._stereocenters.at2(mapping[iq2]);
+                const _Atom* ct2 = target.stereocenters._stereocenters.at2(mapping[iq2]);
 
                 if (ct2 == 0)
                     return false;
@@ -1067,16 +1068,13 @@ bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, 
     throw Error("IsPyramidMappingRigid: size = %d", size);
 }
 
-void MoleculeStereocenters::getPyramidMapping(const MoleculeStereocenters& query, const MoleculeStereocenters& target, int query_atom, const int* mapping,
-                                              int* mapping_out, bool reset_h_isotopes)
+void MoleculeStereocenters::getPyramidMapping( BaseMolecule& query, BaseMolecule& target, int query_atom, const int* mapping,
+                                               int* mapping_out, bool reset_h_isotopes)
 {
     int i, j;
 
-    BaseMolecule& tmol = target._baseMolecule;
-    BaseMolecule& qmol = query._baseMolecule;
-
-    const int* seq1 = query.getPyramid(query_atom);
-    const int* seq2 = target.getPyramid(mapping[query_atom]);
+    const int* seq1 = query.getPyramidStereocenters(query_atom);
+    const int* seq2 = target.getPyramidStereocenters(mapping[query_atom]);
 
     int seq2_matched[] = {0, 0, 0, 0};
 
@@ -1093,8 +1091,8 @@ void MoleculeStereocenters::getPyramidMapping(const MoleculeStereocenters& query
         if (mapping[seq1[i]] < 0)
         {
             // only hydrogens are allowed to be unmapped
-            if (qmol.getAtomNumber(seq1[i]) != ELEM_H)
-                throw Error("unmapped non-hydrogen atom (atom number %d)", qmol.getAtomNumber(seq1[i]));
+            if (query.getAtomNumber(seq1[i]) != ELEM_H)
+                throw Error("unmapped non-hydrogen atom (atom number %d)", query.getAtomNumber(seq1[i]));
             continue;
         }
 
@@ -1122,11 +1120,11 @@ void MoleculeStereocenters::getPyramidMapping(const MoleculeStereocenters& query
 
             if (!seq2_matched[j])
             {
-                if (tmol.getAtomNumber(seq2[j]) == ELEM_H)
+                if (target.getAtomNumber(seq2[j]) == ELEM_H)
                     break; // match to explicit hydrogen
 
                 // rare cases like '[S@](F)(Cl)=O' on '[S@](F)(Cl)(=O)=N'
-                if (seq1[i] == -1 && tmol.getAtomNumber(mapping[query_atom]) == ELEM_S)
+                if (seq1[i] == -1 && target.getAtomNumber(mapping[query_atom]) == ELEM_S)
                     break; // match free electron pair to an atom
 
                 // Match N[C@H](O)S on C[C@@](N)(O)S
@@ -1148,7 +1146,7 @@ void MoleculeStereocenters::remove(int idx)
     _stereocenters.remove(idx);
 }
 
-void MoleculeStereocenters::removeAtoms(const Array<int>& indices)
+void MoleculeStereocenters::removeAtoms(BaseMolecule& baseMolecule, const Array<int>& indices)
 {
     for (int i = 0; i < indices.size(); i++)
     {
@@ -1157,29 +1155,29 @@ void MoleculeStereocenters::removeAtoms(const Array<int>& indices)
             _stereocenters.remove(idx);
         else
         {
-            const Vertex& vertex = _baseMolecule.getVertex(idx);
+            const Vertex& vertex = baseMolecule.getVertex(idx);
 
             for (int k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
             {
                 int nei_vertex = vertex.neiVertex(k);
-                _removeBondDir(idx, nei_vertex);
+                _removeBondDir(baseMolecule, idx, nei_vertex);
             }
         }
     }
 }
 
-void MoleculeStereocenters::removeBonds(const Array<int>& indices)
+void MoleculeStereocenters::removeBonds(BaseMolecule& baseMolecule, const Array<int>& indices)
 {
     for (int i = 0; i < indices.size(); i++)
     {
-        const Edge& edge = _baseMolecule.getEdge(indices[i]);
+        const Edge& edge = baseMolecule.getEdge(indices[i]);
 
-        _removeBondDir(edge.beg, edge.end);
-        _removeBondDir(edge.end, edge.beg);
+        _removeBondDir(baseMolecule, edge.beg, edge.end);
+        _removeBondDir(baseMolecule, edge.end, edge.beg);
     }
 }
 
-void MoleculeStereocenters::_removeBondDir(int atom_from, int atom_to)
+void MoleculeStereocenters::_removeBondDir(BaseMolecule& baseMolecule, int atom_from, int atom_to)
 {
     _Atom* stereo_atom = _stereocenters.at2(atom_to);
     if (stereo_atom != 0)
@@ -1188,19 +1186,19 @@ void MoleculeStereocenters::_removeBondDir(int atom_from, int atom_to)
             _stereocenters.remove(atom_to);
         else
         {
-            if (!_baseMolecule.isQueryMolecule() || _baseMolecule.possibleAtomNumber(atom_from, ELEM_H) || _baseMolecule.isRSite(atom_from))
+            if (!baseMolecule.isQueryMolecule() || baseMolecule.possibleAtomNumber(atom_from, ELEM_H) || baseMolecule.isRSite(atom_from))
                 _convertAtomToImplicitHydrogen(stereo_atom->pyramid, atom_from);
         }
     }
 }
 
-void MoleculeStereocenters::buildOnSubmolecule(const MoleculeStereocenters& super, int* mapping)
+void MoleculeStereocenters::buildOnSubmolecule(BaseMolecule& baseMolecule, const BaseMolecule& super, int* mapping)
 {
     int i, j;
-    for (i = super._stereocenters.begin(); i != super._stereocenters.end(); i = super._stereocenters.next(i))
+    for (i = super.stereocenters._stereocenters.begin(); i != super.stereocenters._stereocenters.end(); i = super.stereocenters._stereocenters.next(i))
     {
-        int super_idx = super._stereocenters.key(i);
-        const _Atom& super_stereocenter = super._stereocenters.value(i);
+        int super_idx = super.stereocenters._stereocenters.key(i);
+        const _Atom& super_stereocenter = super.stereocenters._stereocenters.value(i);
         int sub_idx = mapping[super_idx];
 
         if (sub_idx < 0)
@@ -1220,7 +1218,7 @@ void MoleculeStereocenters::buildOnSubmolecule(const MoleculeStereocenters& supe
             else
             {
                 int val = mapping[idx];
-                if (val != -1 && _baseMolecule.findEdgeIndex(sub_idx, val) == -1)
+                if (val != -1 && baseMolecule.findEdgeIndex(sub_idx, val) == -1)
                     val = -1;
                 new_stereocenter.pyramid[j] = val;
             }
@@ -1233,7 +1231,7 @@ void MoleculeStereocenters::buildOnSubmolecule(const MoleculeStereocenters& supe
 
         _stereocenters.insert(sub_idx, new_stereocenter);
 
-        const Vertex& super_vertex = super._baseMolecule.getVertex(super_idx);
+        const Vertex& super_vertex = super.getVertex(super_idx);
 
         for (j = super_vertex.neiBegin(); j != super_vertex.neiEnd(); j = super_vertex.neiNext(j))
         {
@@ -1241,9 +1239,9 @@ void MoleculeStereocenters::buildOnSubmolecule(const MoleculeStereocenters& supe
             if (mapping[super_vertex.neiVertex(j)] == -1)
                 continue;
 
-            int dir = super._baseMolecule.getBondDirection(super_edge);
+            int dir = super.getBondDirection(super_edge);
             if (dir != 0)
-                _baseMolecule.setBondDirection(_baseMolecule.findEdgeIndex(sub_idx, mapping[super_vertex.neiVertex(j)]), dir);
+                baseMolecule.setBondDirection(baseMolecule.findEdgeIndex(sub_idx, mapping[super_vertex.neiVertex(j)]), dir);
         }
     }
 }
@@ -1253,14 +1251,14 @@ int MoleculeStereocenters::size() const
     return _stereocenters.size();
 }
 
-void MoleculeStereocenters::add(int atom_idx, int type, int group, bool inverse_pyramid)
+void MoleculeStereocenters::add(BaseMolecule& baseMolecule, int atom_idx, int type, int group, bool inverse_pyramid)
 {
     int pyramid[4];
-    _restorePyramid(atom_idx, pyramid, inverse_pyramid);
-    add(atom_idx, type, group, pyramid);
+    _restorePyramid(baseMolecule, atom_idx, pyramid, inverse_pyramid);
+    add(baseMolecule, atom_idx, type, group, pyramid);
 }
 
-void MoleculeStereocenters::add(int atom_idx, int type, int group, const int pyramid[4])
+void MoleculeStereocenters::add(BaseMolecule& baseMolecule, int atom_idx, int type, int group, const int pyramid[4])
 {
     if (atom_idx < 0)
         throw Error("stereocenter index is invalid");
@@ -1372,9 +1370,9 @@ void MoleculeStereocenters::flipBond(int atom_parent, int atom_from, int atom_to
         }
 }
 
-void MoleculeStereocenters::_restorePyramid(int idx, int pyramid[4], int invert_pyramid)
+void MoleculeStereocenters::_restorePyramid(BaseMolecule& baseMolecule, int idx, int pyramid[4], int invert_pyramid)
 {
-    const Vertex& vertex = _baseMolecule.getVertex(idx);
+    const Vertex& vertex = baseMolecule.getVertex(idx);
     int j, count = 0;
 
     pyramid[0] = -1;
@@ -1386,7 +1384,7 @@ void MoleculeStereocenters::_restorePyramid(int idx, int pyramid[4], int invert_
     {
         int nei = vertex.neiVertex(j);
 
-        if (vertex.degree() == 3 || _baseMolecule.getAtomNumber(nei) != ELEM_H || _baseMolecule.getAtomIsotope(nei) != 0)
+        if (vertex.degree() == 3 || baseMolecule.getAtomNumber(nei) != ELEM_H || baseMolecule.getAtomIsotope(nei) != 0)
         {
             if (count == 4)
                 throw Error("restorePyramid(): stereocenter has more than 4 neighbors");
@@ -1499,7 +1497,7 @@ void MoleculeStereocenters::_convertAtomToImplicitHydrogen(int pyramid[4], int a
     moveImplicitHydrogenToEnd(pyramid);
 }
 
-void MoleculeStereocenters::markBond(int atom_idx)
+void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
 {
     const _Atom* atom_ptr = _stereocenters.at2(atom_idx);
     if (atom_ptr == NULL)
@@ -1513,7 +1511,7 @@ void MoleculeStereocenters::markBond(int atom_idx)
 
     memcpy(pyramid, atom.pyramid, 4 * sizeof(int));
 
-    const Vertex& vertex = _baseMolecule.getVertex(atom_idx);
+    const Vertex& vertex = baseMolecule.getVertex(atom_idx);
     if (atom.type <= ATOM_ANY)
     {
         // fill the pyramid
@@ -1526,15 +1524,15 @@ void MoleculeStereocenters::markBond(int atom_idx)
     // clear bond directions that goes to this atom, and not from this atom because they can
     // be marked by other sterecenter
     for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
-        if (_baseMolecule.getBondDirection2(atom_idx, vertex.neiVertex(j)) != 0)
-            _baseMolecule.setBondDirection(vertex.neiEdge(j), 0);
+        if (baseMolecule.getBondDirection2(atom_idx, vertex.neiVertex(j)) != 0)
+            baseMolecule.setBondDirection(vertex.neiEdge(j), 0);
 
     int edge_idx = -1;
 
     for (j = 0; j < size; j++)
     {
-        edge_idx = _baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
-        if (_baseMolecule.getBondDirection(edge_idx) == 0 && _baseMolecule.getVertex(pyramid[size - 1]).degree() == 1)
+        edge_idx = baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
+        if (baseMolecule.getBondDirection(edge_idx) == 0 && baseMolecule.getVertex(pyramid[size - 1]).degree() == 1)
             break;
         rotatePyramid(pyramid);
         if (size == 4)
@@ -1545,8 +1543,8 @@ void MoleculeStereocenters::markBond(int atom_idx)
     {
         for (j = 0; j < size; j++)
         {
-            edge_idx = _baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
-            if (_baseMolecule.getBondDirection(edge_idx) == 0 && _baseMolecule.getBondTopology(edge_idx) == TOPOLOGY_CHAIN && getType(pyramid[size - 1]) == 0)
+            edge_idx = baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
+            if (baseMolecule.getBondDirection(edge_idx) == 0 && baseMolecule.getBondTopology(edge_idx) == TOPOLOGY_CHAIN && getType(pyramid[size - 1]) == 0)
                 break;
             rotatePyramid(pyramid);
             if (size == 4)
@@ -1558,8 +1556,8 @@ void MoleculeStereocenters::markBond(int atom_idx)
     {
         for (j = 0; j < size; j++)
         {
-            edge_idx = _baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
-            if (_baseMolecule.getBondDirection(edge_idx) == 0 && getType(pyramid[size - 1]) == 0)
+            edge_idx = baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
+            if (baseMolecule.getBondDirection(edge_idx) == 0 && getType(pyramid[size - 1]) == 0)
                 break;
             rotatePyramid(pyramid);
             if (size == 4)
@@ -1571,8 +1569,8 @@ void MoleculeStereocenters::markBond(int atom_idx)
     {
         for (j = 0; j < size; j++)
         {
-            edge_idx = _baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
-            if (_baseMolecule.getBondDirection(edge_idx) == 0 && _baseMolecule.getBondTopology(edge_idx) == TOPOLOGY_CHAIN)
+            edge_idx = baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
+            if (baseMolecule.getBondDirection(edge_idx) == 0 && baseMolecule.getBondTopology(edge_idx) == TOPOLOGY_CHAIN)
                 break;
             rotatePyramid(pyramid);
             if (size == 4)
@@ -1584,8 +1582,8 @@ void MoleculeStereocenters::markBond(int atom_idx)
     {
         for (j = 0; j < size; j++)
         {
-            edge_idx = _baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
-            if (_baseMolecule.getBondDirection(edge_idx) == 0)
+            edge_idx = baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
+            if (baseMolecule.getBondDirection(edge_idx) == 0)
                 break;
             rotatePyramid(pyramid);
             if (size == 4)
@@ -1596,8 +1594,8 @@ void MoleculeStereocenters::markBond(int atom_idx)
     if (j == size)
         throw Error("no bond can be marked");
 
-    if (_baseMolecule.getEdge(edge_idx).beg != atom_idx)
-        _baseMolecule.swapEdgeEnds(edge_idx);
+    if (baseMolecule.getEdge(edge_idx).beg != atom_idx)
+        baseMolecule.swapEdgeEnds(edge_idx);
 
     if (atom.type > ATOM_ANY)
     {
@@ -1605,8 +1603,8 @@ void MoleculeStereocenters::markBond(int atom_idx)
 
         for (j = 0; j < size; j++)
         {
-            dirs[j] = _baseMolecule.getAtomXyz(pyramid[j]);
-            dirs[j].sub(_baseMolecule.getAtomXyz(atom_idx));
+            dirs[j] = baseMolecule.getAtomXyz(pyramid[j]);
+            dirs[j].sub(baseMolecule.getAtomXyz(atom_idx));
             if (!dirs[j].normalize())
                 throw Error("zero bond length");
         }
@@ -1622,24 +1620,24 @@ void MoleculeStereocenters::markBond(int atom_idx)
             {
                 if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1)
                     mult = -1;
-                _baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_DOWN : BOND_UP);
+                baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_DOWN : BOND_UP);
             }
             else
-                _baseMolecule.setBondDirection(edge_idx, (sign == 1) ? BOND_DOWN : BOND_UP);
+                baseMolecule.setBondDirection(edge_idx, (sign == 1) ? BOND_DOWN : BOND_UP);
         }
         else
-            _baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_UP : BOND_DOWN);
+            baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_UP : BOND_DOWN);
     }
     else
-        _baseMolecule.setBondDirection(edge_idx, BOND_EITHER);
+        baseMolecule.setBondDirection(edge_idx, BOND_EITHER);
 }
 
-void MoleculeStereocenters::markBonds()
+void MoleculeStereocenters::markBonds(BaseMolecule& baseMolecule)
 {
     int i;
 
     for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-        markBond(_stereocenters.key(i));
+        markBond(baseMolecule,_stereocenters.key(i));
 }
 
 bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter)
@@ -1682,7 +1680,7 @@ bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& 
 
         int pyra_map[4];
 
-        MoleculeStereocenters::getPyramidMapping(stereocenters, stereocenters, idx, mapping.ptr(), pyra_map, false);
+        MoleculeStereocenters::getPyramidMapping(mol, mol, idx, mapping.ptr(), pyra_map, false);
 
         if (!MoleculeStereocenters::isPyramidMappingRigid(pyra_map))
             return false;

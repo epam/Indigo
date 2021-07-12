@@ -37,7 +37,7 @@ using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
 
-BaseMolecule::BaseMolecule() : cis_trans(*this), stereocenters(*this), allene_stereo(*this)
+BaseMolecule::BaseMolecule() : cis_trans(*this), allene_stereo(*this)
 {
     _edit_revision = 0;
 }
@@ -379,7 +379,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
     // stereo
     if (!(skip_flags & SKIP_STEREOCENTERS))
-        stereocenters.buildOnSubmolecule(mol.stereocenters, mapping.ptr());
+        buildOnSubmoleculeStereocenters(mol, mapping.ptr());
     else
         stereocenters.clear();
 
@@ -704,7 +704,7 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
     }
 
     // stereo
-    stereocenters.removeAtoms(indices);
+    removeAtomsStereocenters(indices);
     cis_trans.buildOnSubmolecule(*this, mapping.ptr());
     allene_stereo.removeAtoms(indices);
 
@@ -776,7 +776,7 @@ void BaseMolecule::removeBonds(const Array<int>& indices)
     // subclass (Molecule or QueryMolecule) removes its data
     _removeBonds(indices);
 
-    stereocenters.removeBonds(indices);
+    removeBondsStereocenters(indices);
     allene_stereo.removeBonds(indices);
 
     for (int i = 0; i < indices.size(); i++)
@@ -3910,7 +3910,7 @@ void BaseMolecule::invalidateAtom(int index, int mask)
         // Cis-trans and stereocenters can be removed
         if (stereocenters.exists(index))
         {
-            if (!stereocenters.isPossibleStereocenter(index))
+            if (!isPossibleStereocenter(index))
                 stereocenters.remove(index);
         }
 
@@ -4130,3 +4130,60 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& n
     }
     return 1;
 }
+
+const int* BaseMolecule::getPyramidStereocenters(int idx) const
+{
+    return stereocenters.getPyramid(idx);
+}
+
+void BaseMolecule::markBondsStereocenters()
+{
+    stereocenters.markBonds(*this);
+}
+
+void BaseMolecule::markBondStereocenters(int atom_idx)
+{
+    stereocenters.markBond(*this, atom_idx);
+}
+
+void BaseMolecule::addStereocenters(int atom_idx, int type, int group, const int pyramid[4])
+{
+    stereocenters.add(*this, atom_idx, type, group, pyramid);
+}
+
+void BaseMolecule::addStereocenters(int atom_idx, int type, int group, bool inverse_pyramid)
+{
+    stereocenters.add(*this, atom_idx, type, group, inverse_pyramid);
+}
+
+void BaseMolecule::removeAtomsStereocenters(const Array<int>& indices)
+{
+    stereocenters.removeAtoms(*this, indices);
+}
+
+void BaseMolecule::removeBondsStereocenters(const Array<int>& indices)
+{
+    stereocenters.removeBonds( *this, indices );
+}
+
+void BaseMolecule::buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out)
+{
+    stereocenters.buildFromBonds(*this, options, sensible_bonds_out);
+}
+
+void BaseMolecule::buildFrom3dCoordinatesStereocenters(const StereocentersOptions& options)
+{
+    stereocenters.buildFrom3dCoordinates(*this, options);
+}
+
+bool BaseMolecule::isPossibleStereocenter(int atom_idx, bool* possible_implicit_h, bool* possible_lone_pair)
+{
+    return stereocenters.isPossibleStereocenter(*this, atom_idx, possible_implicit_h, possible_lone_pair);
+}
+
+void BaseMolecule::buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping)
+{
+    stereocenters.buildOnSubmolecule(*this, super, mapping);
+}
+
+

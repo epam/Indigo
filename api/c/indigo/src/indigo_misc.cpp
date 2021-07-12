@@ -476,7 +476,7 @@ static bool _removeHydrogens(Molecule& mol)
     if (to_remove.size() > 0)
         mol.removeAtoms(to_remove);
     for (int i = 0; i < sterecenters_to_validate.size(); i++)
-        mol.stereocenters.markBond(sterecenters_to_validate[i]);
+        mol.markBondStereocenters(sterecenters_to_validate[i]);
     return to_remove.size() > 0;
 }
 
@@ -1355,9 +1355,9 @@ CEXPORT int indigoCheckStereo(int item)
 
             for (auto i : target.vertices())
             {
-                if (!target.stereocenters.exists(i) && target.stereocenters.isPossibleStereocenter(i))
+                if (!target.stereocenters.exists(i) && target.isPossibleStereocenter(i))
                 {
-                    target.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+                    target.addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 0, false);
                 }
             }
 

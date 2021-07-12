@@ -61,7 +61,7 @@ void IcmLoader::loadMolecule(Molecule& mol)
         loader.loadXyz(_scanner);
         if (!have_bond_dirs)
         {
-            mol.stereocenters.markBonds();
+            mol.markBondsStereocenters();
             mol.allene_stereo.markBonds();
         }
     }

@@ -63,7 +63,7 @@ void MolfileLoader::loadMolecule(Molecule& mol)
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
 
     if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
-        mol.stereocenters.buildFrom3dCoordinates(stereochemistry_options);
+        mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
 
 void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
@@ -75,7 +75,7 @@ void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
     _loadMolecule();
 
     if (mol.stereocenters.size() == 0)
-        mol.stereocenters.buildFrom3dCoordinates(stereochemistry_options);
+        mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
 
 void MolfileLoader::_loadMolecule()
@@ -2094,7 +2094,7 @@ void MolfileLoader::_postLoad()
             }
         }
 
-    _bmol->stereocenters.buildFromBonds(stereochemistry_options, _sensible_bond_directions.ptr());
+    _bmol->buildFromBondsStereocenters(stereochemistry_options, _sensible_bond_directions.ptr());
     _bmol->allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
 
     if (!_chiral && treat_stereo_as == 0)

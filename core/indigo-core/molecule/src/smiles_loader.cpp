@@ -148,8 +148,6 @@ void SmilesLoader::_calcStereocenters()
         }
         else // ordinary tetrahedral stereo center
         {
-            MoleculeStereocenters& stereocenters = _bmol->stereocenters;
-
             int pyramid[4] = {-1, -1, -1, -1};
             int counter = 0;
             int h_index = -1;
@@ -226,14 +224,14 @@ void SmilesLoader::_calcStereocenters()
             if (_atoms[i].chirality == 2)
                 std::swap(pyramid[0], pyramid[1]);
 
-            if (!stereocenters.isPossibleStereocenter(i))
+            if (!_bmol->isPossibleStereocenter(i))
             {
                 if (!stereochemistry_options.ignore_errors)
                     throw Error("chirality not possible on atom #%d", i);
                 continue;
             }
 
-            stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
+            _bmol->addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
         }
     }
 }
@@ -263,7 +261,6 @@ void SmilesLoader::_calcCisTrans()
 
 void SmilesLoader::_readOtherStuff()
 {
-    MoleculeStereocenters& stereocenters = _bmol->stereocenters;
     MoleculeCisTrans& cis_trans = _bmol->cis_trans;
 
     QS_DEF(Array<int>, to_remove);
@@ -314,7 +311,7 @@ void SmilesLoader::_readOtherStuff()
 
                     if (!found)
                     {
-                        if (!stereocenters.isPossibleStereocenter(idx))
+                        if (!_bmol->isPossibleStereocenter(idx))
                         {
                             if (!stereochemistry_options.ignore_errors)
                                 throw Error("chirality not possible on atom #%d", idx);
@@ -323,8 +320,8 @@ void SmilesLoader::_readOtherStuff()
                         {
                             // Check if the stereocenter has already been marked as any
                             // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
-                            if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
-                                stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                            if (_bmol->stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
+                                _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
                         }
                     }
                 }
@@ -348,8 +345,8 @@ void SmilesLoader::_readOtherStuff()
             {
                 int idx = _scanner.readUnsigned();
 
-                if (stereocenters.exists(idx))
-                    stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
+                if (_bmol->stereocenters.exists(idx))
+                    _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
                 else if (!stereochemistry_options.ignore_errors)
                     throw Error("atom %d is not a stereocenter", idx);
 
@@ -368,8 +365,8 @@ void SmilesLoader::_readOtherStuff()
             {
                 int idx = _scanner.readUnsigned();
 
-                if (stereocenters.exists(idx))
-                    stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
+                if (_bmol->stereocenters.exists(idx))
+                    _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
                 else if (!stereochemistry_options.ignore_errors)
                     throw Error("atom %d is not a stereocenter", idx);
 
@@ -388,8 +385,8 @@ void SmilesLoader::_readOtherStuff()
             {
                 int idx = _scanner.readUnsigned();
 
-                if (stereocenters.exists(idx))
-                    stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
+                if (_bmol->stereocenters.exists(idx))
+                    _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
                 else if (!stereochemistry_options.ignore_errors)
                     throw Error("atom %d is not a stereocenter", idx);
 
@@ -694,7 +691,7 @@ void SmilesLoader::_readOtherStuff()
             }
             if (_scanner.readChar() != ')')
                 throw Error("expected ')' after coordinates");
-            _bmol->stereocenters.markBonds();
+            _bmol->markBondsStereocenters();
             _bmol->allene_stereo.markBonds();
         }
         else if (c == 'h') // highlighting (Indigo's own extension)
