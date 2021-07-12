@@ -262,7 +262,7 @@ int ReactionEnumeratorState::buildProduct(void)
         QS_DEF(Molecule, ee_monomer);
         ee_monomer.clear();
         ee_monomer.clone(*_reaction_monomers._monomers[i], NULL, NULL);
-        ee_monomer.cis_trans.build(NULL);
+        ee_monomer.buildCisTrans(NULL);
 
         if (!is_one_tube)
             if (!_isMonomerFromCurTube(i))
@@ -576,7 +576,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator(Molecule& monomer)
     QS_DEF(QueryMolecule, ee_reactant);
     ee_reactant.clear();
     ee_reactant.clone(_reaction.getQueryMolecule(_reactant_idx), NULL, NULL);
-    ee_reactant.cis_trans.build(NULL);
+    ee_reactant.buildCisTrans(NULL);
 
     ee_reactant.aromatize(_context.arom_options);
 
@@ -624,7 +624,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator(Molecule& monomer)
                 cis_trans_excluded[i] = 1;
         }
 
-        ee_monomer.cis_trans.build(cis_trans_excluded.ptr());
+        ee_monomer.buildCisTrans(cis_trans_excluded.ptr());
     }
 
     QS_DEF(Obj<AromaticityMatcher>, am);
@@ -1201,7 +1201,7 @@ void ReactionEnumeratorState::_buildMolProduct(QueryMolecule& product, Molecule&
     }
 
     mol_product.buildOnSubmoleculeStereocenters(product, mapping_out.ptr());
-    mol_product.cis_trans.buildOnSubmolecule(product, mapping_out.ptr());
+    mol_product.buildOnSubmoleculeCisTrans(product, mapping_out.ptr());
 
     mol_product.mergeSGroupsWithSubmolecule(product, mapping_out);
 }

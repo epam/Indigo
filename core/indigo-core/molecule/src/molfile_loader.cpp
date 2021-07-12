@@ -2134,7 +2134,7 @@ void MolfileLoader::_postLoad()
             if (_bmol->getBondDirection(i) > 0 && !_sensible_bond_directions[i])
                 throw Error("direction of bond #%d makes no sense", i);
 
-    _bmol->cis_trans.build(_ignore_cistrans.ptr());
+    _bmol->buildCisTrans(_ignore_cistrans.ptr());
 
     // Remove adding default R-group logic behavior
     /*

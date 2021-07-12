@@ -1208,7 +1208,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         }
     }
     else if (BaseMolecule::hasCoord(*_bmol))
-        _bmol->cis_trans.build(0);
+        _bmol->buildCisTrans(0);
 
     // Sgroups
 

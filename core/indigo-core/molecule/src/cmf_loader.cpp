@@ -637,7 +637,7 @@ void CmfLoader::loadMolecule(Molecule& mol)
                     mol.cis_trans.setParity(i, _bonds[i].cis_trans);
                 else
                     mol.cis_trans.ignore(i);
-                mol.cis_trans.restoreSubstituents(i);
+                mol.restoreSubstituents(i);
             }
         }
     }

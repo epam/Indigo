@@ -1032,7 +1032,7 @@ CEXPORT int indigoNormalize(int structure, const char* options)
         {
             // Validate cs-trans because it can disappear
             // For example: [O-]/[N+](=C\C1C=CC=CC=1)/C1C=CC=CC=1
-            mol.cis_trans.validate();
+            mol.validateCisTrans();
         }
 
         return changed;

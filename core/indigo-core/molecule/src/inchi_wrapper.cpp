@@ -324,7 +324,7 @@ void InchiWrapper::parseInchiOutput(const InchiOutput& inchi_output, Molecule& m
             if (mol.getBondOrder(bond) != BOND_DOUBLE)
                 continue;
 
-            bool valid = mol.cis_trans.registerBondAndSubstituents(bond);
+            bool valid = mol.registerBondAndSubstituentsCisTrans(bond);
             if (!valid)
                 throw Error("Indigo-InChI: Unsupported cis-trans configuration for "
                             "bond %d (atoms %d-%d-%d-%d)",
@@ -498,7 +498,7 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
             continue;
 
         int subst[4];
-        mol.cis_trans.getSubstituents_All(e, subst);
+        mol.getSubstituents_All(e, subst);
 
         const Edge& edge = mol.getEdge(e);
 

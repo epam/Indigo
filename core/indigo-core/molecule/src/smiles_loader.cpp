@@ -250,7 +250,7 @@ void SmilesLoader::_calcCisTrans()
     for (; i < _bmol->edgeEnd(); i++)
         dirs.push(0);
 
-    _bmol->cis_trans.buildFromSmiles(dirs.ptr());
+    _bmol->buildFromSmilesCisTrans(dirs.ptr());
     if (_qmol != 0)
     {
         for (i = 0; i < _bonds.size(); i++)
@@ -631,7 +631,7 @@ void SmilesLoader::_readOtherStuff()
 
                 if (!skip)
                 {
-                    _bmol->cis_trans.restoreSubstituents(_bonds[idx].index);
+                    _bmol->restoreSubstituents(_bonds[idx].index);
                     const int* subst = _bmol->cis_trans.getSubstituents(_bonds[idx].index);
                     int parity = ((c == 'c') ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
 

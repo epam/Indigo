@@ -503,7 +503,7 @@ void MoleculeStandardizer::_standardizeStereo(Molecule& mol)
         {
             if (mol.cis_trans.getParity(i) > 0)
                 continue;
-            else if (mol.cis_trans.registerBondAndSubstituents(i))
+            else if (mol.registerBondAndSubstituentsCisTrans(i))
             {
                 mol.setBondDirection(i, BOND_EITHER);
                 mol.cis_trans.setParity(i, 0);
@@ -1026,7 +1026,7 @@ void MoleculeStandardizer::_setStereoFromCoordinates(BaseMolecule& mol)
 
     mol.buildFromBondsStereocenters(options, sensible_bond_orientations.ptr());
     mol.allene_stereo.buildFromBonds(options.ignore_errors, sensible_bond_orientations.ptr());
-    mol.cis_trans.build(0);
+    mol.buildCisTrans(0);
 
     if (mol.stereocenters.size() == 0)
         mol.buildFrom3dCoordinatesStereocenters(options);

@@ -378,6 +378,17 @@ namespace indigo
         bool isPossibleStereocenter( int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
         void buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping);
 
+        // proxy methods for cis_trans
+        void getSubstituents_All( int bond_idx, int subst[4]);
+        void restoreSubstituents( int bond_idx);
+        void buildCisTrans( int* exclude_bonds);
+        bool registerBondAndSubstituentsCisTrans(int idx);
+        void registerUnfoldedHydrogenCisTrans(int atom_idx, int added_hydrogen);
+        void buildFromSmilesCisTrans(int* dirs);
+        void buildOnSubmoleculeCisTrans(BaseMolecule& super, int* mapping);
+        void validateCisTrans();
+        bool convertableToImplicitHydrogenCisTrans(int idx);
+
         DECL_ERROR;
 
     protected:

@@ -710,7 +710,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
                 mol.stereocenters.setType(i, MoleculeStereocenters::ATOM_AND, 1);
         }
 
-    mol.cis_trans.build(ignore_cistrans.data());
+    mol.buildCisTrans(ignore_cistrans.data());
     if (mol.stereocenters.size() == 0)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
     MoleculeLayout ml(mol, false);

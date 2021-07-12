@@ -37,7 +37,7 @@ using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
 
-BaseMolecule::BaseMolecule() : cis_trans(*this), allene_stereo(*this)
+BaseMolecule::BaseMolecule() : allene_stereo(*this)
 {
     _edit_revision = 0;
 }
@@ -384,7 +384,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         stereocenters.clear();
 
     if (!(skip_flags & SKIP_CIS_TRANS))
-        cis_trans.buildOnSubmolecule(mol, mapping.ptr());
+        buildOnSubmoleculeCisTrans(mol, mapping.ptr());
     else
         cis_trans.clear();
 
@@ -563,7 +563,7 @@ int BaseMolecule::mergeAtoms(int atom1, int atom2)
 void BaseMolecule::flipBond(int atom_parent, int atom_from, int atom_to)
 {
     stereocenters.flipBond(atom_parent, atom_from, atom_to);
-    cis_trans.flipBond(atom_parent, atom_from, atom_to);
+    cis_trans.flipBond(*this, atom_parent, atom_from, atom_to);
 
     // subclass (Molecule or QueryMolecule) adds the new bond
     _flipBond(atom_parent, atom_from, atom_to);
@@ -705,7 +705,7 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
 
     // stereo
     removeAtomsStereocenters(indices);
-    cis_trans.buildOnSubmolecule(*this, mapping.ptr());
+    buildOnSubmoleculeCisTrans(*this, mapping.ptr());
     allene_stereo.removeAtoms(indices);
 
     // highlighting and stereo
@@ -4186,4 +4186,48 @@ void BaseMolecule::buildOnSubmoleculeStereocenters(const BaseMolecule& super, in
     stereocenters.buildOnSubmolecule(*this, super, mapping);
 }
 
+void BaseMolecule::getSubstituents_All(int bond_idx, int subst[4])
+{
+    cis_trans.getSubstituents_All(*this, bond_idx, subst);
+}
+
+void BaseMolecule::restoreSubstituents(int bond_idx)
+{
+    cis_trans.restoreSubstituents(*this, bond_idx);
+}
+
+void BaseMolecule::buildCisTrans(int* exclude_bonds)
+{
+    cis_trans.build(*this, exclude_bonds);
+}
+
+bool BaseMolecule::registerBondAndSubstituentsCisTrans(int idx)
+{
+    return cis_trans.registerBondAndSubstituents(*this, idx);
+}
+
+void BaseMolecule::registerUnfoldedHydrogenCisTrans(int atom_idx, int added_hydrogen)
+{
+    cis_trans.registerUnfoldedHydrogen(*this, atom_idx, added_hydrogen);
+}
+
+void BaseMolecule::buildFromSmilesCisTrans(int* dirs)
+{
+    cis_trans.buildFromSmiles( *this, dirs );
+}
+
+void BaseMolecule::buildOnSubmoleculeCisTrans(BaseMolecule& super, int* mapping)
+{
+    cis_trans.buildOnSubmolecule(*this, super, mapping);
+}
+
+void BaseMolecule::validateCisTrans()
+{
+    cis_trans.validate(*this);
+}
+
+bool BaseMolecule::convertableToImplicitHydrogenCisTrans(int idx)
+{
+    return cis_trans.convertableToImplicitHydrogen(*this, idx );
+}
 
