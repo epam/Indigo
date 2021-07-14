@@ -181,7 +181,8 @@ CEXPORT int indigoLoadFingerprintFromDescriptors(const double* arr, int arr_len,
             int hash = i;
             for (auto cnt = 0; cnt < set_bits_num; cnt++)
             {
-                hash = abs(hash * 0x8088405 + 1) % bit_size;
+                hash = hash * 0x8088405 + 1;
+                hash = llabs((qword)(hash)) % bit_size;
                 bitSetBit(data.ptr(), hash, 1);
             }
         }

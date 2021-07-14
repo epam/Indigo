@@ -548,7 +548,7 @@ int BaseReactionSubstructureMatcher::_Matcher::_embedding(Graph& subgraph, Graph
 
     if (self.match_stereo)
     {
-        if (!MoleculeStereocenters::checkSub(query.stereocenters, target.stereocenters, core_sub, false))
+        if (!MoleculeStereocenters::checkSub(query, target, core_sub, false))
             return 1;
 
         if (!MoleculeCisTrans::checkSub(query, target, core_sub))

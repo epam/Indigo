@@ -481,12 +481,12 @@ void MoleculeStandardizer::_standardizeStereo(Molecule& mol)
 
     for (auto i : mol.vertices())
     {
-        if ((mol.stereocenters.isPossibleStereocenter(i)) && !as.invalidStereocenter(i))
+        if ((mol.isPossibleStereocenter(i)) && !as.invalidStereocenter(i))
         {
             if (mol.stereocenters.exists(i))
                 continue;
             else
-                mol.stereocenters.add(i, MoleculeStereocenters::ATOM_ANY, 0, false);
+                mol.addStereocenters(i, MoleculeStereocenters::ATOM_ANY, 0, false);
         }
         else
         {
@@ -503,7 +503,7 @@ void MoleculeStandardizer::_standardizeStereo(Molecule& mol)
         {
             if (mol.cis_trans.getParity(i) > 0)
                 continue;
-            else if (mol.cis_trans.registerBondAndSubstituents(i))
+            else if (mol.registerBondAndSubstituentsCisTrans(i))
             {
                 mol.setBondDirection(i, BOND_EITHER);
                 mol.cis_trans.setParity(i, 0);
@@ -1024,12 +1024,12 @@ void MoleculeStandardizer::_setStereoFromCoordinates(BaseMolecule& mol)
     QS_DEF(Array<int>, sensible_bond_orientations);
     sensible_bond_orientations.clear_resize(mol.vertexEnd());
 
-    mol.stereocenters.buildFromBonds(options, sensible_bond_orientations.ptr());
-    mol.allene_stereo.buildFromBonds(options.ignore_errors, sensible_bond_orientations.ptr());
-    mol.cis_trans.build(0);
+    mol.buildFromBondsStereocenters(options, sensible_bond_orientations.ptr());
+    mol.buildFromBondsAlleneStereo(options.ignore_errors, sensible_bond_orientations.ptr());
+    mol.buildCisTrans(0);
 
     if (mol.stereocenters.size() == 0)
-        mol.stereocenters.buildFrom3dCoordinates(options);
+        mol.buildFrom3dCoordinatesStereocenters(options);
 }
 
 void MoleculeStandardizer::_repositionStereoBonds(BaseMolecule& mol)
@@ -1037,7 +1037,7 @@ void MoleculeStandardizer::_repositionStereoBonds(BaseMolecule& mol)
     if (!Molecule::hasCoord(mol))
         throw Error("Atoms coordinates are not defined");
 
-    mol.stereocenters.markBonds();
+    mol.markBondsStereocenters();
 }
 
 void MoleculeStandardizer::_repositionAxialStereoBonds(BaseMolecule& mol)
@@ -1045,7 +1045,7 @@ void MoleculeStandardizer::_repositionAxialStereoBonds(BaseMolecule& mol)
     if (!Molecule::hasCoord(mol))
         throw Error("Atoms coordinates are not defined");
 
-    mol.allene_stereo.markBonds();
+    mol.markBondsAlleneStereo();
 }
 
 void MoleculeStandardizer::_fixDirectionOfWedgeBonds(BaseMolecule& mol)
@@ -1107,7 +1107,7 @@ void MoleculeStandardizer::_removeExtraStereoBonds(BaseMolecule& mol)
     // Clear wrong stereo
     for (auto i : mol.vertices())
     {
-        if ((mol.stereocenters.exists(i)) && !mol.stereocenters.isPossibleStereocenter(i))
+        if ((mol.stereocenters.exists(i)) && !mol.isPossibleStereocenter(i))
             mol.stereocenters.remove(i);
 
         if (!mol.stereocenters.exists(i))
