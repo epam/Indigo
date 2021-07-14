@@ -107,6 +107,7 @@ class MolPairAttributes(BaseModel):
     mol1: str
     mol2: str
     flags: Optional[str] = None
+    is_reactions: Optional[bool] = None
 
 
 class AmbiguousHAttributes(BaseModel):
@@ -116,7 +117,7 @@ class AmbiguousHAttributes(BaseModel):
 
 class ExtractCommondScaffoldAttributes(BaseModel):
     mode: Optional[ExtractScaffoldMode] = ExtractScaffoldMode.APPROX
-    mol_array: List[str]
+    structures: List[str]
 
 
 class StructurePropsDataModel(DataBaseModel):
@@ -186,6 +187,7 @@ class IndigoMolPairRequest(IndigoBaseRequest):
     request model for:
     - POST /commonBits
     - POST /exactMatch
+    - POST /similarity
     """
 
     data: MolPairDataModel

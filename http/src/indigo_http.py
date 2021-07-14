@@ -513,3 +513,20 @@ async def extract_common_scaffold(
         return error_response(msg="No common scaffold")
 
     return make_response(indigo_request.data.type, scaf.allScaffolds().iterateArray())
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/similarity", response_model=IndigoResponse)
+async def similarity(ingido_request: IndigoMolPairRequest) -> IndigoResponse:
+    """Does not support fingerprints"""
+
+    if ingido_request.data.attributes.is_reactions:
+        m1 = indigo().loadReaction(ingido_request.data.attributes.mol1)
+        m2 = indigo().loadReaction(ingido_request.data.attributes.mol2)
+    else:
+        m1 = indigo().loadMolecule(ingido_request.data.attributes.mol1)
+        m2 = indigo().loadMolecule(ingido_request.data.attributes.mol2)
+
+    metrics = ingido_request.data.attributes.flags
+    result = indigo().similarity(m1, m2, metrics)
+
+    return make_response(SupportedTypes.FLOAT, result)
