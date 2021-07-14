@@ -8,6 +8,7 @@ from .indigo_tools import indigo, indigo_new
 from .model import (
     IndigoAmbiguousHRequest,
     IndigoBaseRequest,
+    IndigoExtractCommondScaffoldRequest,
     IndigoMolPairRequest,
     IndigoMolRequest,
     IndigoReactionProductEnumerateRequest,
@@ -57,9 +58,11 @@ async def common_bits(indigo_request: IndigoMolPairRequest) -> IndigoResponse:
     return make_response(SupportedTypes.COMMON_BITS, bits)
 
 
-async def decompose_molecules(scaffold: str, structures: str) -> str:
-    # todo: find documentation about this function
-    pass
+@app.post(f"{BASE_URL_INDIGO}/decomposeMolecules", response_model=IndigoResponse)
+async def decompose_molecules(indigo_request: IndigoBaseRequest) -> str:
+    # TODO: https://lifescience.opensource.epam.com/indigo/api/index.html
+    #  at R-Group Decomposition says indigo.decomposeMolecules(scaf, arr) is deprecated
+    return make_response(SupportedTypes.BOOL, True)
 
 
 @app.post(f"{BASE_URL_INDIGO}/exactMatch", response_model=IndigoResponse)
@@ -492,3 +495,21 @@ async def reaction_product_enumerate(
         return error_response(str(e))
 
     return make_response(indigo_request.data.type, output_reactions.iterateArray())
+
+
+@app.post(
+    f"{BASE_URL_INDIGO_OBJECT}/extractCommonScaffold", response_model=IndigoResponse
+)
+async def extract_common_scaffold(
+    indigo_request: IndigoExtractCommondScaffoldRequest,
+) -> IndigoResponse:
+    extract_mode = indigo_request.data.attributes.mode
+    structures = [
+        indigo().loadMolecule(mol) for mol in indigo_request.data.attributes.structures
+    ]
+    scaf = indigo().extractCommonScaffold(structures, extract_mode)
+
+    if scaf is None:
+        return error_response(msg="No common scaffold")
+
+    return make_response(indigo_request.data.type, scaf.allScaffolds().iterateArray())

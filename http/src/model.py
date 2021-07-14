@@ -64,6 +64,11 @@ def create_types(types: Iterable[SupportedTypes]):
     )
 
 
+class ExtractScaffoldMode(str, enum.Enum):
+    EXACT = "exact"
+    APPROX = "approx"
+
+
 class AttributesModel(BaseModel):
     content: str
 
@@ -109,6 +114,11 @@ class AmbiguousHAttributes(BaseModel):
     reaction: Optional[str] = None
 
 
+class ExtractCommondScaffoldAttributes(BaseModel):
+    mode: Optional[ExtractScaffoldMode] = ExtractScaffoldMode.APPROX
+    mol_array: List[str]
+
+
 class StructurePropsDataModel(DataBaseModel):
     attributes: StructurePropsAttributes
 
@@ -123,6 +133,10 @@ class MolPairDataModel(DataBaseModel):
 
 class AmbiguousHDataModel(DataBaseModel):
     attributes: AmbiguousHAttributes
+
+
+class ExtractCommondScaffoldDataModel(DataBaseModel):
+    attributes: ExtractCommondScaffoldAttributes
 
 
 class IndigoBaseRequest(BaseModel):
@@ -184,6 +198,15 @@ class IndigoAmbiguousHRequest(IndigoBaseRequest):
     """
 
     data: AmbiguousHDataModel
+
+
+class IndigoExtractCommondScaffoldRequest(IndigoBaseRequest):
+    """
+    request model for:
+    - POST /extractCommondScaffold
+    """
+
+    data: ExtractCommondScaffoldDataModel
 
 
 class Error(BaseModel):
