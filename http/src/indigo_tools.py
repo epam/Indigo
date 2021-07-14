@@ -1,3 +1,5 @@
+import os
+import tempfile
 import threading
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -26,3 +28,11 @@ def indigo_new() -> Indigo:
         yield
     finally:
         __indigo.reset(token)
+
+
+def create_temp_file():
+    _, path = tempfile.mkstemp()
+    try:
+        yield path
+    finally:
+        os.unlink(path)

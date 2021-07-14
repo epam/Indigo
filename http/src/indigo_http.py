@@ -1,10 +1,12 @@
 import json
-from os import initgroups
 
 from fastapi import FastAPI, Request
+from fastapi.params import Depends
 from indigo import IndigoException, IndigoObject
+from indigo.renderer import IndigoRenderer
+from starlette.responses import FileResponse
 
-from .indigo_tools import indigo, indigo_new
+from .indigo_tools import create_temp_file, indigo, indigo_new
 from .model import (
     IndigoAmbiguousHRequest,
     IndigoBaseRequest,
@@ -530,3 +532,18 @@ async def similarity(ingido_request: IndigoMolPairRequest) -> IndigoResponse:
     result = indigo().similarity(m1, m2, metrics)
 
     return make_response(SupportedTypes.FLOAT, result)
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/renderToFile", response_class=FileResponse)
+async def render_to_file(
+    indigo_request: IndigoMolRequest, temp_path=Depends(create_temp_file)
+) -> FileResponse:
+    mol = indigo().loadMolecule(indigo_request.data.attributes.content)
+
+    indigo().setOption("render-output-format", "png")
+    indigo().setOption("render-margins", 10, 10)
+
+    renderer = IndigoRenderer(indigo())
+    renderer.renderToFile(mol, temp_path)
+
+    return FileResponse(path=temp_path, filename="mol.png", media_type="image/png")
