@@ -195,7 +195,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
 
             transformed_flag = rt.transform(mol, query_rxn, &mapping);
 
-            AutoPtr<IndigoMapping> mptr(new IndigoMapping(input_mol, mol));
+            std::unique_ptr<IndigoMapping> mptr = std::make_unique<IndigoMapping>(input_mol, mol);
 
             mptr.get()->mapping.copy(mapping);
 
@@ -204,7 +204,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
         else if (monomers_object.type == IndigoObject::ARRAY)
         {
             IndigoArray& monomers_array = IndigoArray::cast(self.getObject(monomers));
-            AutoPtr<IndigoArray> out_array(new IndigoArray());
+            std::unique_ptr<IndigoArray> out_array = std::make_unique<IndigoArray>();
 
             for (int i = 0; i < monomers_array.objects.size(); i++)
             {
@@ -217,7 +217,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
                 if (rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn, &mapping))
                     transformed_flag = true;
 
-                AutoPtr<IndigoMapping> mptr(new IndigoMapping(input_mol, mol));
+                std::unique_ptr<IndigoMapping> mptr = std::make_unique<IndigoMapping>(input_mol, mol);
                 mptr.get()->mapping.copy(mapping);
 
                 out_array.get()->objects.add(mptr.release());

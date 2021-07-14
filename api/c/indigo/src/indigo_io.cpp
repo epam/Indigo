@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "indigo_io.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_savers.h"
@@ -30,13 +30,13 @@ IndigoScanner::IndigoScanner(Scanner* scanner) : IndigoObject(SCANNER), ptr(scan
 IndigoScanner::IndigoScanner(const char* str) : IndigoObject(SCANNER)
 {
     _buf.readString(str, false);
-    ptr.reset(new BufferScanner(_buf));
+    ptr = std::make_unique<BufferScanner>(_buf);
 }
 
 IndigoScanner::IndigoScanner(const char* buf, int size) : IndigoObject(SCANNER)
 {
     _buf.copy(buf, size);
-    ptr.reset(new BufferScanner(_buf));
+    ptr = std::make_unique<BufferScanner>(_buf);
 }
 
 IndigoScanner::~IndigoScanner()
@@ -57,7 +57,7 @@ IndigoOutput::IndigoOutput(Output* output) : IndigoObject(OUTPUT), ptr(output)
 
 IndigoOutput::IndigoOutput() : IndigoObject(OUTPUT)
 {
-    ptr.reset(new ArrayOutput(_buf));
+    ptr = std::make_unique<ArrayOutput>(_buf);
     _own_buf = true;
 }
 

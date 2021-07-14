@@ -72,8 +72,8 @@ bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
     if (bingo_res < 1)
         return false;
 
-    AutoPtr<RingoPgFpData> fp_data(new RingoPgFpData());
-    if (_readPreparedInfo(0, fp_data.ref(), getFpSize()))
+    std::unique_ptr<RingoPgFpData> fp_data = std::make_unique<RingoPgFpData>();
+    if (_readPreparedInfo(0, *fp_data, getFpSize()))
     {
         struct_cache.data.reset(fp_data.release());
         struct_cache.data->setTidItem(item_ptr);
@@ -170,11 +170,11 @@ void RingoPgBuildEngine::_processResultCb(void* context)
     RingoPgBuildEngine* engine = (RingoPgBuildEngine*)context;
     ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
     int cache_idx = -1;
-    AutoPtr<RingoPgFpData> fp_data(new RingoPgFpData());
+    std::unique_ptr<RingoPgFpData> fp_data = std::make_unique<RingoPgFpData>();
     /*
      * Prepare info
      */
-    if (_readPreparedInfo(&cache_idx, fp_data.ref(), engine->_fpSize))
+    if (_readPreparedInfo(&cache_idx, *fp_data, engine->_fpSize))
     {
         StructCache& struct_cache = struct_caches[cache_idx];
         struct_cache.data.reset(fp_data.release());

@@ -13,7 +13,7 @@ extern "C"
 
 #include "bingo_pg_build.h"
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/profiling.h"
 #include "bingo_core_c.h"
 
@@ -56,12 +56,12 @@ BingoPgBuild::~BingoPgBuild()
      */
     if (_buildingState)
     {
-        fp_engine.ref().finishShadowProcessing();
+        fp_engine->finishShadowProcessing();
     }
     /*
      * Write meta info in desctructor
      */
-    _bufferIndex.writeDictionary(fp_engine.ref());
+    _bufferIndex.writeDictionary(*fp_engine);
     _bufferIndex.writeMetaInfo();
 }
 /*
@@ -100,11 +100,11 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
      */
     if (strcasecmp(func_name, "matchsub") == 0)
     {
-        fp_engine.reset(new MangoPgBuildEngine(bingo_config, rel_name));
+        fp_engine = std::make_unique<MangoPgBuildEngine>(bingo_config, rel_name);
     }
     else if (strcasecmp(func_name, "matchrsub") == 0)
     {
-        fp_engine.reset(new RingoPgBuildEngine(bingo_config, rel_name));
+        fp_engine = std::make_unique<RingoPgBuildEngine>(bingo_config, rel_name);
     }
     else
     {
@@ -114,9 +114,9 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
     /*
      * If new build then create a metapage and initial section
      */
-    _bufferIndex.writeBegin(fp_engine.ref(), bingo_config);
+    _bufferIndex.writeBegin(*fp_engine, bingo_config);
 
-    fp_engine.ref().prepareShadowInfo(schema_name, index_schema);
+    fp_engine->prepareShadowInfo(schema_name, index_schema);
 }
 
 void BingoPgBuild::_prepareUpdating()
@@ -136,9 +136,9 @@ void BingoPgBuild::_prepareUpdating()
      * Define index type
      */
     if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_MOLECULE)
-        fp_engine.reset(new MangoPgBuildEngine(bingo_config, rel_name));
+        fp_engine = std::make_unique<MangoPgBuildEngine>(bingo_config, rel_name);
     else if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_REACTION)
-        fp_engine.reset(new RingoPgBuildEngine(bingo_config, rel_name));
+        fp_engine = std::make_unique<RingoPgBuildEngine>(bingo_config, rel_name);
     else
         throw Error("internal error: unknown index type %d", _bufferIndex.getIndexType());
 
@@ -174,7 +174,7 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     profTimerStart(t0, "bingo_pg.insert");
 
     BingoPgBuildEngine::StructCache struct_cache;
-    struct_cache.text.reset(new BingoPgText(text_ptr));
+    struct_cache.text = std::make_unique<BingoPgText>(text_ptr);
     struct_cache.ptr = *((ItemPointer)item_ptr);
 
     elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid", block_number, offset_number);
@@ -187,7 +187,7 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     if (struct_cache.data.get() == 0)
         return false;
 
-    BingoPgFpData& data_ref = struct_cache.data.ref();
+    BingoPgFpData& data_ref = *struct_cache.data;
 
     _bufferIndex.insertStructure(data_ref);
     fp_engine->insertShadowInfo(data_ref);
@@ -203,7 +203,7 @@ void BingoPgBuild::insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_pt
      * Insert a new structure
      */
     BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache.push();
-    struct_cache.text.reset(new BingoPgText(text_ptr));
+    struct_cache.text = std::make_unique<BingoPgText>(text_ptr);
     struct_cache.ptr = *((ItemPointer)item_ptr);
     /*
      * Flush cache
@@ -232,7 +232,7 @@ void BingoPgBuild::flush()
             continue;
         }
 
-        BingoPgFpData& data_ref = struct_cache.data.ref();
+        BingoPgFpData& data_ref = *struct_cache.data;
         _bufferIndex.insertStructure(data_ref);
         fp_engine->insertShadowInfo(data_ref);
     }

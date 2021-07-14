@@ -70,11 +70,11 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
     {
-        merged.reset(new QueryMolecule());
+        merged = std::make_unique<QueryMolecule>();
     }
     else
     {
-        merged.reset(new Molecule());
+        merged = std::make_unique<Molecule>();
     }
 
     if (rxn.reactantsCount() > 0)

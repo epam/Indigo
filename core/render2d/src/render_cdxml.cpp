@@ -230,7 +230,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         }
         if (params.rOpt.cdxml_context.get() != NULL)
         {
-            RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+            RenderCdxmlContext& context = *params.rOpt.cdxml_context;
             if (context.enabled)
             {
                 RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
@@ -297,7 +297,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         }
         if (params.rOpt.cdxml_context.get() != NULL)
         {
-            RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+            RenderCdxmlContext& context = *params.rOpt.cdxml_context;
             if (context.enabled)
             {
                 RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
@@ -362,7 +362,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
     if (params.rOpt.cdxml_context.get() != NULL)
     {
-        RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+        RenderCdxmlContext& context = *params.rOpt.cdxml_context;
         if (context.fonttable.size() > 0)
         {
             saver.addFontTable(context.fonttable.ptr());
@@ -442,7 +442,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         }
         if (params.rOpt.cdxml_context.get() != NULL)
         {
-            RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+            RenderCdxmlContext& context = *params.rOpt.cdxml_context;
             if (context.enabled)
             {
                 RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);

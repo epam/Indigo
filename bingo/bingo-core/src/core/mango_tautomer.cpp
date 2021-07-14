@@ -45,13 +45,13 @@ void MangoTautomer::loadQuery(Scanner& scanner)
 
     if (_params.substructure)
     {
-        _query.reset(new QueryMolecule());
-        loader.loadQueryMolecule((QueryMolecule&)_query.ref());
+        _query = std::make_unique<QueryMolecule>();
+        loader.loadQueryMolecule(static_cast<QueryMolecule&>(*_query));
     }
     else
     {
-        _query.reset(new Molecule());
-        loader.loadMolecule((Molecule&)_query.ref());
+        _query = std::make_unique<Molecule>();
+        loader.loadMolecule(static_cast<Molecule&>(*_query));
     }
 
     _query_data_valid = false;
@@ -101,7 +101,7 @@ void MangoTautomer::_validateQueryData()
     {
         QS_DEF(QueryMolecule, aromatized_query);
 
-        aromatized_query.clone(_query.ref(), 0, 0);
+        aromatized_query.clone(*_query, 0, 0);
         QueryMoleculeAromatizer::aromatizeBonds(aromatized_query, AromaticityOptions::BASIC);
 
         MoleculeFingerprintBuilder builder(aromatized_query, _context.fp_parameters);
@@ -121,7 +121,7 @@ void MangoTautomer::_validateQueryData()
     {
         QS_DEF(Array<int>, gross);
 
-        MoleculeGrossFormula::collect(_query.ref(), gross);
+        MoleculeGrossFormula::collect(*_query, gross);
         gross[ELEM_H] = 0;
         MoleculeGrossFormula::toString(gross, _query_gross_str);
     }
@@ -158,7 +158,7 @@ bool MangoTautomer::matchLoadedTarget()
 
     matcher.setRulesList(&_context.tautomer_rules);
     matcher.setRules(_params.conditions, _params.force_hydrogens, _params.ring_chain, m);
-    matcher.setQuery(_query.ref());
+    matcher.setQuery(*_query);
     matcher.highlight = true;
 
     return matcher.find();
@@ -212,7 +212,7 @@ bool MangoTautomer::matchBinary(Scanner& scanner)
 
     matcher.setRulesList(&_context.tautomer_rules);
     matcher.setRules(_params.conditions, _params.force_hydrogens, _params.ring_chain, m);
-    matcher.setQuery(_query.ref());
+    matcher.setQuery(*_query);
 
     profTimerStart(temb, "match.embedding");
     bool res = matcher.find();

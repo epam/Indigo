@@ -66,7 +66,7 @@ std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const AttachmentI
 
 std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const Array<int>& at) const
 {
-    std::unique_ptr<Molecule> result(new Molecule());
+    std::unique_ptr<Molecule> result = std::make_unique<Molecule>();
     decorate(at, *result.get());
     return result;
 }
@@ -106,8 +106,8 @@ void MoleculeRGroupsComposition::decorate(const Array<int>& fs, Molecule& mol) c
 
 using MoleculeIter = MoleculeRGroupsComposition::MoleculeIter;
 
-#define EMPTY_RGROUPS std::unique_ptr<MoleculeRGroups>(new MoleculeRGroups())
-#define MAKE_RGROUPS(T) std::unique_ptr<T>(new T(*this))
+#define EMPTY_RGROUPS std::make_unique<MoleculeRGroups>()
+#define MAKE_RGROUPS(T) std::make_unique<T>(*this)
 
 std::unique_ptr<MoleculeRGroups> MoleculeIter::modifyRGroups(const char* options) const
 {

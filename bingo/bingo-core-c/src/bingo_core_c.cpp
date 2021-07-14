@@ -303,7 +303,7 @@ CEXPORT int bingoAddTautomerRule(int n, const char* beg, const char* end)
         if (n < 1 || n >= 32)
             throw BingoError("tautomer rule index %d is out of range", n);
 
-        AutoPtr<TautomerRule> rule(new TautomerRule());
+        std::unique_ptr<TautomerRule> rule = std::make_unique<TautomerRule>();
 
         bingoGetTauCondition(beg, rule->aromaticity1, rule->list1);
         bingoGetTauCondition(end, rule->aromaticity2, rule->list2);
@@ -579,7 +579,7 @@ static void _bingoIndexEnd(BingoCore& self)
     if (self.parallel_indexing_dispatcher.get())
     {
         self.parallel_indexing_dispatcher->terminate();
-        self.parallel_indexing_dispatcher.reset(0);
+        self.parallel_indexing_dispatcher.reset(nullptr);
     }
 
     if (self.single_mango_index.get())
@@ -625,7 +625,7 @@ self.file_scanner->readCharsFix(2, (char*)magic);
 self.file_scanner->seek(pos, SEEK_SET);
 if (magic[0] == 0x1f && magic[1] == 0x8b)
 {
-    self.gz_scanner.reset(new GZipScanner(self.file_scanner.ref()));
+    self.gz_scanner = std::make_unique<GZipScanner>(self.file_scanner.ref());
     self.smiles_scanner = self.gz_scanner.get();
 }
 else
@@ -635,7 +635,7 @@ return 1;
 BINGO_END(-2, -2)
 }
 
-CEXPORT int bingoSMILESImportClose(){BINGO_BEGIN{self.gz_scanner.reset(0);
+CEXPORT int bingoSMILESImportClose(){BINGO_BEGIN{self.gz_scanner.reset(nullptr);
 self.file_scanner.free();
 self.smiles_scanner = 0;
 }

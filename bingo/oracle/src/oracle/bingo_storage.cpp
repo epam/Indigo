@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "oracle/bingo_storage.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/shmem.h"
 #include "base_cpp/tlscont.h"
@@ -255,12 +255,12 @@ void BingoStorage::validate(OracleEnv& env)
 OracleLOB* BingoStorage::_getLob(OracleEnv& env, int no)
 {
     OracleStatement statement(env);
-    AutoPtr<OracleLOB> lob(new OracleLOB(env));
+    std::unique_ptr<OracleLOB> lob = std::make_unique<OracleLOB>(env);
 
     statement.append("SELECT bindata FROM %s where ID = :id FOR UPDATE", _table_name.ptr());
     statement.prepare();
     statement.bindIntByName(":id", &no);
-    statement.defineBlobByPos(1, lob.ref());
+    statement.defineBlobByPos(1, *lob);
     statement.execute();
 
     if (statement.fetch())

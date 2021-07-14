@@ -77,14 +77,14 @@ IndigoJSONMolecule::~IndigoJSONMolecule()
 
 IndigoSdfLoader::IndigoSdfLoader(Scanner& scanner) : IndigoObject(SDF_LOADER)
 {
-    sdf_loader.reset(new SdfLoader(scanner));
+    sdf_loader = std::make_unique<SdfLoader>(scanner);
 }
 
 IndigoSdfLoader::IndigoSdfLoader(const char* filename) : IndigoObject(SDF_LOADER)
 {
     // AutoPtr guard in case of exception in SdfLoader (happens in case of empty file)
-    _own_scanner.reset(new FileScanner(indigoGetInstance().filename_encoding, filename));
-    sdf_loader.reset(new SdfLoader(_own_scanner.ref()));
+    _own_scanner = std::make_unique<FileScanner>(indigoGetInstance().filename_encoding, filename);
+    sdf_loader = std::make_unique<SdfLoader>(*_own_scanner);
 }
 
 IndigoSdfLoader::~IndigoSdfLoader()
@@ -274,13 +274,13 @@ long long IndigoSdfLoader::tell()
 
 IndigoRdfLoader::IndigoRdfLoader(Scanner& scanner) : IndigoObject(RDF_LOADER)
 {
-    rdf_loader = new RdfLoader(scanner);
+    rdf_loader = std::make_unique<RdfLoader>(scanner);
 }
 
 IndigoRdfLoader::IndigoRdfLoader(const char* filename) : IndigoObject(RDF_LOADER)
 {
-    _own_scanner.reset(new FileScanner(indigoGetInstance().filename_encoding, filename));
-    rdf_loader.reset(new RdfLoader(_own_scanner.ref()));
+    _own_scanner = std::make_unique<FileScanner>(indigoGetInstance().filename_encoding, filename);
+    rdf_loader = std::make_unique<RdfLoader>(*_own_scanner);
 }
 
 IndigoRdfLoader::~IndigoRdfLoader()
@@ -420,7 +420,7 @@ IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader(Scanner& scanner) : Ind
 
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader(const char* filename) : IndigoObject(MULTILINE_SMILES_LOADER), CP_INIT, TL_CP_GET(_offsets)
 {
-    _own_scanner.reset(new FileScanner(indigoGetInstance().filename_encoding, filename));
+    _own_scanner = std::make_unique<FileScanner>(indigoGetInstance().filename_encoding, filename);
     _scanner = _own_scanner.get();
 
     _current_number = 0;
@@ -733,13 +733,13 @@ const char* IndigoCmlReaction::debugInfo()
 IndigoMultipleCmlLoader::IndigoMultipleCmlLoader(Scanner& scanner) : IndigoObject(MULTIPLE_CML_LOADER)
 {
     _own_scanner = 0;
-    loader = new MultipleCmlLoader(scanner);
+    loader = std::make_unique<MultipleCmlLoader>(scanner);
 }
 
 IndigoMultipleCmlLoader::IndigoMultipleCmlLoader(const char* filename) : IndigoObject(MULTIPLE_CML_LOADER)
 {
-    _own_scanner.reset(new FileScanner(filename));
-    loader.reset(new MultipleCmlLoader(_own_scanner.ref()));
+    _own_scanner = std::make_unique<FileScanner>(filename);
+    loader = std::make_unique<MultipleCmlLoader>(*_own_scanner);
 }
 
 IndigoMultipleCmlLoader::~IndigoMultipleCmlLoader()
@@ -885,13 +885,13 @@ const char* IndigoCdxReaction::debugInfo()
 IndigoMultipleCdxLoader::IndigoMultipleCdxLoader(Scanner& scanner) : IndigoObject(MULTIPLE_CDX_LOADER)
 {
     _own_scanner = 0;
-    loader = new MultipleCdxLoader(scanner);
+    loader = std::make_unique<MultipleCdxLoader>(scanner);
 }
 
 IndigoMultipleCdxLoader::IndigoMultipleCdxLoader(const char* filename) : IndigoObject(MULTIPLE_CDX_LOADER)
 {
-    _own_scanner.reset(new FileScanner(filename));
-    loader.reset(new MultipleCdxLoader(_own_scanner.ref()));
+    _own_scanner = std::make_unique<FileScanner>(filename);
+    loader = std::make_unique<MultipleCdxLoader>(*_own_scanner);
 }
 
 IndigoMultipleCdxLoader::~IndigoMultipleCdxLoader()

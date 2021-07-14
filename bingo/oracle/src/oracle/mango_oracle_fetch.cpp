@@ -32,9 +32,8 @@
 static void _mangoIndexStart(OracleEnv& env, MangoFetchContext& context, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop,
                              int flags, const char* params)
 {
-    MangoShadowFetch& shadow_fetch = context.shadow_fetch.ref();
-    MangoFastIndex& fast_index = context.fast_index.ref();
-
+    MangoShadowFetch& shadow_fetch = *context.shadow_fetch;
+    MangoFastIndex& fast_index = *context.fast_index;
     if (strcasecmp(oper, "SUB") == 0)
     {
         if (context.substructure.parse(params))

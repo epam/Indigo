@@ -51,7 +51,7 @@ namespace indigo
         void clear();
         static int cmp(TGroup& tg1, TGroup& tg2, void* context);
 
-        AutoPtr<BaseMolecule> fragment;
+        std::unique_ptr<BaseMolecule> fragment;
 
     private:
         TGroup(const TGroup&);

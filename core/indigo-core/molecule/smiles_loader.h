@@ -167,14 +167,14 @@ namespace indigo
         void _handleCurlyBrace(_AtomDesc& atom, bool& inside_polymer);
         void _handlePolymerRepetition(int i);
 
-        void _readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom);
+        void _readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom);
 
-        bool _readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom);
+        bool _readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom);
 
         int _parseCurly(Array<char>& curly, int& repetitions);
 
-        void _readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond);
-        void _readBondSub(Array<char>& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond);
+        void _readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond);
+        void _readBondSub(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond);
         void _readRGroupOccurrenceRanges(const char* str, Array<int>& ranges);
 
     private:

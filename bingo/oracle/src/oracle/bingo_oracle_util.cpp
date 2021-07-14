@@ -26,7 +26,7 @@
 #include "oracle/ora_logger.h"
 #include "oracle/ora_wrap.h"
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/profiling.h"
 #include "base_cpp/string_pool.h"
 #include "gzip/gzip_output.h"
@@ -335,8 +335,6 @@ void _importSDF(OracleEnv& env, const char* table, const char* clob_col, const c
 void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, const char* id_col, const char* file_name)
 {
     FileScanner fscanner(file_name);
-    AutoPtr<GZipScanner> gzscanner;
-    Scanner* scanner;
 
     int nwritten = 0;
     QS_DEF(Array<char>, id);
@@ -350,10 +348,11 @@ void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, co
 
     fscanner.readCharsFix(2, (char*)magic);
     fscanner.seek(pos, SEEK_SET);
-
+    std::unique_ptr<GZipScanner> gzscanner;
+    Scanner* scanner = nullptr;
     if (magic[0] == 0x1f && magic[1] == 0x8b)
     {
-        gzscanner.reset(new GZipScanner(fscanner));
+        gzscanner = std::make_unique<GZipScanner>(fscanner);
         scanner = gzscanner.get();
     }
     else

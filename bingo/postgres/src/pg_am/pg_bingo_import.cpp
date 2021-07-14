@@ -120,13 +120,13 @@ public:
     class ImportInt8Data : public ImportData
     {
     public:
-        ImportInt8Data() : data(0)
+        ImportInt8Data()
         {
         }
         ~ImportInt8Data() override
         {
         }
-        AutoPtr<int64> data;
+        std::unique_ptr<int64> data;
 
         void convert(const char* str) override
         {
@@ -148,7 +148,7 @@ public:
             if (data.get() == 0)
                 return 0;
             else
-                return Int64GetDatum(data.ref());
+                return Int64GetDatum(*data);
         }
 
     private:
@@ -157,13 +157,13 @@ public:
     class ImportInt4Data : public ImportData
     {
     public:
-        ImportInt4Data() : data(0)
+        ImportInt4Data()
         {
         }
         ~ImportInt4Data() override
         {
         }
-        AutoPtr<int32> data;
+        std::unique_ptr<int32> data;
 
         void convert(const char* str) override
         {
@@ -179,7 +179,7 @@ public:
                 BINGO_PG_TRY
                 {
                     data.reset(new int32);
-                    data.ref() = pg_atoi(str2.ptr(), sizeof(int32), 0);
+                    *data = pg_atoi(str2.ptr(), sizeof(int32), 0);
                 }
                 BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int32: %s", message));
             }
@@ -190,7 +190,7 @@ public:
             if (data.get() == 0)
                 return 0;
             else
-                return Int32GetDatum(data.ref());
+                return Int32GetDatum(*data);
         }
 
     private:
@@ -297,7 +297,7 @@ public:
 
     void _addData(const char* data, int col_idx)
     {
-        AutoPtr<ImportData> import_data;
+        std::unique_ptr<ImportData> import_data;
         ImportColumn& import_column = _importColumns[col_idx];
         /*
          * Detect the types and correspond class

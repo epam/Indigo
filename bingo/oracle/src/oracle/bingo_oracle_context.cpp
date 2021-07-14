@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "oracle/bingo_oracle_context.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/shmem.h"
@@ -66,7 +66,7 @@ BingoOracleContext& BingoOracleContext::get(OracleEnv& env, int id, bool lock, b
         return *already;
     }
 
-    AutoPtr<BingoOracleContext> res(new BingoOracleContext(env, id));
+    std::unique_ptr<BingoOracleContext> res = std::make_unique<BingoOracleContext>(env, id);
 
     if (lock)
         res->lock(env);
@@ -348,7 +348,7 @@ void BingoOracleContext::tautomerLoadRules(OracleEnv& env)
             if (n < 1 || n >= 32)
                 throw BingoError("tautomer rule index %d is out of range", n);
 
-            AutoPtr<TautomerRule> rule(new TautomerRule());
+            std::unique_ptr<TautomerRule> rule = std::make_unique<TautomerRule>();
 
             bingoGetTauCondition(param1, rule->aromaticity1, rule->list1);
             bingoGetTauCondition(param2, rule->aromaticity2, rule->list2);

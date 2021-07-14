@@ -19,7 +19,7 @@
 #ifndef __molecule_substructure_matcher__
 #define __molecule_substructure_matcher__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/obj.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/embeddings_storage.h"
@@ -202,7 +202,7 @@ namespace indigo
 
         Obj<EmbeddingEnumerator> _ee;
 
-        AutoPtr<MarkushContext> _markush;
+        std::unique_ptr<MarkushContext> _markush;
 
         // Because storage can be big it is not stored into TL_CP_***
         // It can be stored as TL_CP_*** if memory allocations will

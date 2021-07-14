@@ -90,8 +90,8 @@ public:
         {
         }
 
-        AutoPtr<AromaticityMatcher> am;
-        AutoPtr<MoleculeSubstructureMatcher::FragmentMatchCache> fmcache;
+        std::unique_ptr<AromaticityMatcher> am;
+        std::unique_ptr<MoleculeSubstructureMatcher::FragmentMatchCache> fmcache;
 
         void calculateAutoMaps(Graph& sub);
         bool shouldContinue(int* map, int size);

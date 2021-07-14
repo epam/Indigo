@@ -16,7 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_internal.h"

@@ -2,7 +2,7 @@
 #define _RINGO_PG_BUILD_ENGINE_H__
 
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/obj_array.h"
 
 #include "bingo_pg_build_engine.h"

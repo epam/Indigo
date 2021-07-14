@@ -26,7 +26,7 @@
 #include "base_c/defs.h"
 #include "base_c/os_tls.h"
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/pool.h"
 #include "base_cpp/ptr_array.h"

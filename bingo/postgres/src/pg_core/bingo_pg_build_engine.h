@@ -14,7 +14,7 @@ extern "C"
  * Interface class for procession fingerprint data
  */
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/obj_array.h"
 #include "bingo_postgres.h"
 
@@ -40,8 +40,8 @@ public:
         {
         }
         ItemPointerData ptr;
-        indigo::AutoPtr<BingoPgText> text;
-        indigo::AutoPtr<BingoPgFpData> data;
+        std::unique_ptr<BingoPgText> text;
+        std::unique_ptr<BingoPgFpData> data;
 
     private:
         StructCache(const StructCache&); // no implicit copy

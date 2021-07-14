@@ -19,7 +19,7 @@
 #ifndef __mango_shadow_fetch__
 #define __mango_shadow_fetch__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "oracle/bingo_fetch_engine.h"
 #include "oracle/mango_shadow_table.h"
 
@@ -73,10 +73,10 @@ protected:
     Array<char> _counting_select;
     int _processed_rows;
     bool _end;
-    AutoPtr<OracleEnv> _env;
-    AutoPtr<OracleStatement> _statement;
-    AutoPtr<OracleLOB> _lob_cmf;
-    AutoPtr<OracleLOB> _lob_xyz;
+    std::unique_ptr<OracleEnv> _env;
+    std::unique_ptr<OracleStatement> _statement;
+    std::unique_ptr<OracleLOB> _lob_cmf;
+    std::unique_ptr<OracleLOB> _lob_xyz;
     bool _executed;
     int _fetch_type;
     char _gross[1024];

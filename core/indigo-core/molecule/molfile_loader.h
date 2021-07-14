@@ -127,7 +127,7 @@ namespace indigo
         void _readMultiString(Array<char>& str);
         void _readStringInQuotes(Scanner& scanner, Array<char>* str);
         void _init();
-        void _appendQueryAtom(const char* atom_label, AutoPtr<QueryMolecule::Atom>& atom);
+        void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
 
         void _fillSGroupsParentIndices();
 

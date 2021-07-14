@@ -2,7 +2,7 @@
 #define _BINGO_PG_SECTION_H__
 
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
@@ -89,7 +89,7 @@ private:
 
     BingoSectionInfoData _sectionInfo;
     BingoPgBuffer _sectionInfoBuffer;
-    indigo::AutoPtr<BingoPgBufferCacheFp> _existStructures;
+    std::unique_ptr<BingoPgBufferCacheFp> _existStructures;
 
     indigo::PtrArray<BingoPgBufferCacheFp> _buffersFp;
     indigo::PtrArray<BingoPgBufferCacheMap> _buffersMap;

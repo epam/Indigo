@@ -5,7 +5,7 @@
 #define _BINGO_PG_SEARCH_H__
 
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/exception.h"
 
 #include "bingo_pg_index.h"
@@ -58,7 +58,7 @@ private:
     PG_OBJECT _indexScanDesc;
 
     BingoPgIndex _bufferIndex;
-    indigo::AutoPtr<BingoPgSearchEngine> _fpEngine;
+    std::unique_ptr<BingoPgSearchEngine> _fpEngine;
 
     indigo::Array<char> _funcName;
 };

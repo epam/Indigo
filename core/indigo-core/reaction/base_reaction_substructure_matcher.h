@@ -19,7 +19,7 @@
 #ifndef __base_reaction__substructure_matcher__
 #define __base_reaction__substructure_matcher__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/obj.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
@@ -135,7 +135,7 @@ namespace indigo
             static void _addBond(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
 
             BaseReactionSubstructureMatcher& _context;
-            AutoPtr<AromaticityMatcher> _am;
+            std::unique_ptr<AromaticityMatcher> _am;
 
             Obj<EmbeddingEnumerator> _enumerator;
             int _mode;

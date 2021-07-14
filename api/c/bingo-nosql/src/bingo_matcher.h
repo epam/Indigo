@@ -242,7 +242,7 @@ namespace bingo
     protected:
         int _fp_size;
         int _cand_count;
-        /*const*/ AutoPtr<SubstructureQueryData> _query_data;
+        /*const*/ std::unique_ptr<SubstructureQueryData> _query_data;
         Array<byte> _query_fp;
         Array<int> _query_fp_bits_used;
 
@@ -321,7 +321,7 @@ namespace bingo
 
     protected:
         float _current_sim_value;
-        AutoPtr<SimilarityQueryData> _query_data;
+        std::unique_ptr<SimilarityQueryData> _query_data;
 
     private:
         int _fp_size;
@@ -338,7 +338,7 @@ namespace bingo
 
         // float _current_sim_value;
 
-        AutoPtr<SimCoef> _sim_coef;
+        std::unique_ptr<SimCoef> _sim_coef;
 
         Array<byte> _current_block;
         const byte* _cur_loc;
@@ -424,7 +424,7 @@ namespace bingo
         dword _query_hash;
         int _flags;
         Array<int> _candidates;
-        /* const */ AutoPtr<ExactQueryData> _query_data;
+        /* const */ std::unique_ptr<ExactQueryData> _query_data;
 
         virtual dword _calcHash() = 0;
 
@@ -482,7 +482,7 @@ namespace bingo
         int _current_cand_id;
         Array<int> _query_array;
         Array<int> _candidates;
-        /* const */ AutoPtr<GrossQueryData> _query_data;
+        /* const */ std::unique_ptr<GrossQueryData> _query_data;
 
         virtual void _calcFormula() = 0;
 

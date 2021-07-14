@@ -6,7 +6,7 @@
  */
 
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 
 #include "bingo_pg_buffer_cache.h"
 #include "bingo_pg_cursor.h"
@@ -167,8 +167,8 @@ protected:
     BingoPgIndex* _bufferIndexPtr;
 
     BingoPgExternalBitset _sectionBitset;
-    indigo::AutoPtr<BingoPgFpData> _queryFpData;
-    indigo::AutoPtr<BingoPgCursor> _searchCursor;
+    std::unique_ptr<BingoPgFpData> _queryFpData;
+    std::unique_ptr<BingoPgCursor> _searchCursor;
 };
 
 #endif /* BINGO_PG_SEARCH_ENGINE_H */

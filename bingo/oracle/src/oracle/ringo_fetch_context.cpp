@@ -35,8 +35,8 @@ RingoFetchContext::RingoFetchContext(int id_, RingoOracleContext& context, const
     fresh = false;
     fetch_engine = 0;
 
-    shadow_fetch.reset(new RingoShadowFetch(*this));
-    fast_index.reset(new RingoFastIndex(*this));
+    shadow_fetch = std::make_unique<RingoShadowFetch>(*this);
+    fast_index = std::make_unique<RingoFastIndex>(*this);
 }
 
 RingoFetchContext& RingoFetchContext::get(int id)
@@ -62,7 +62,7 @@ RingoFetchContext& RingoFetchContext::create(RingoOracleContext& context, const 
         if (_instances[i]->id >= id)
             id = _instances[i]->id + 1;
 
-    AutoPtr<RingoFetchContext> new_context(new RingoFetchContext(id, context, query_id));
+    std::unique_ptr<RingoFetchContext> new_context = std::make_unique<RingoFetchContext>(id, context, query_id);
     const BingoOracleContext& boc = context.context();
 
     new_context->id = id;

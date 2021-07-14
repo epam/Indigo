@@ -19,7 +19,7 @@
 #ifndef __molecule_tautomer_matcher__
 #define __molecule_tautomer_matcher__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule_tautomer.h"
 
@@ -70,9 +70,9 @@ namespace indigo
         int _rules;
 
         const PtrArray<TautomerRule>* _rules_list;
-        AutoPtr<TautomerSearchContext> _context;
+        std::unique_ptr<TautomerSearchContext> _context;
         Molecule& _target_src;
-        AutoPtr<BaseMolecule> _query;
+        std::unique_ptr<BaseMolecule> _query;
 
         Obj<TautomerSuperStructure> _target;
         BaseMolecule* _supermol;

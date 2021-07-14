@@ -178,7 +178,6 @@ namespace indigo
         public:
             Trie()
             {
-                _nodes = new ObjPool<TrieNode>();
                 // Adding root (index == 0)
                 _nodes->add();
             }
@@ -204,7 +203,7 @@ namespace indigo
             }
 
         private:
-            AutoPtr<ObjPool<TrieNode>> _nodes;
+            std::unique_ptr<ObjPool<TrieNode>> _nodes = std::make_unique<ObjPool<TrieNode>>();
         };
 
         Trie _trie;

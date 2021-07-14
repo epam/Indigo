@@ -102,7 +102,7 @@ CEXPORT int indigoInchiLoadMolecule(const char* inchi_string)
     {
         InchiWrapper& inchi_wrapper = indigoInchiGetInstance().inchi;
 
-        AutoPtr<IndigoMolecule> mol_obj(new IndigoMolecule());
+        std::unique_ptr<IndigoMolecule> mol_obj = std::make_unique<IndigoMolecule>();
 
         const char* aux_prefix = "AuxInfo";
         auto& tmp = self.getThreadTmpData();
