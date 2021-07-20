@@ -25,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -233,6 +233,9 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x' 
         uses: actions/download-artifact@v2
         with:
           name: indigo-dotnet
@@ -279,7 +282,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: 'C:\Program Files\dotnet\dotnet' ./IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+        run: dotnet ./IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
