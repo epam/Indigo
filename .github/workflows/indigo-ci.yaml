@@ -233,7 +233,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-      - uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.x' 
         uses: actions/download-artifact@v2
