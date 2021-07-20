@@ -233,9 +233,6 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '3.1.x' 
         uses: actions/download-artifact@v2
         with:
           name: indigo-dotnet
@@ -264,6 +261,9 @@ jobs:
           sudo apt install -y libgdiplus
       - name: Prepare Windows
         if: ${{ matrix.os == 'windows' }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
         run: |
           cd IronPython
           Expand-Archive IronPython.2.7.11.zip .
