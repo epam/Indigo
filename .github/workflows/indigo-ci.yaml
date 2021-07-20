@@ -273,7 +273,7 @@ jobs:
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+          C:\Program Files\dotnet\dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
