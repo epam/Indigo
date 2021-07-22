@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -85,9 +80,9 @@ typedef struct tagEQUIV_INFO {
 #define MOL_PART_MASK  (~0x0U ^ 0x07U)
 
 typedef struct tagAtData_dch {
-     char element[3];
-     int valence;
-   }AT_DATA;
+    char element[3];
+    int valence;
+}AT_DATA;
 
 
 #define MAXVAL 20       /* maximum valence */
@@ -124,11 +119,11 @@ typedef enum tagAtInvariantIndexes {
     /* for endpoint + undirected graph, otherwise 0 */
     AT_INV_NUM_TG_ENDPOINTS,
     AT_INV_TG_NUMBERS,       /* num H, num (-) */
-    AT_INV_NUM_H_FIX = AT_INV_TG_NUMBERS+T_NUM_NO_ISOTOPIC,
+    AT_INV_NUM_H_FIX = AT_INV_TG_NUMBERS + T_NUM_NO_ISOTOPIC,
     AT_INV_BREAK1,
     /* here compare iso sort key */
     AT_INV_TAUT_ISO = AT_INV_BREAK1,
-    AT_INV_LENGTH   = AT_INV_TAUT_ISO + T_NUM_ISOTOPIC
+    AT_INV_LENGTH = AT_INV_TAUT_ISO + T_NUM_ISOTOPIC
 } AT_INV_INDEXES;
 
 typedef struct tagAtomInvariant2 {
@@ -345,9 +340,9 @@ typedef struct tagCANON_GLOBALS
     int m_num_bit;
 } CANON_GLOBALS;
 
-int  SetBitCreate( struct tagCANON_GLOBALS *pCG);
+int  SetBitCreate( struct tagCANON_GLOBALS *pCG );
 
-void inchi_qsort(void *pParam, void *base, size_t num, size_t width, int (*comp)(const void *, const void *, void *));
+void inchi_qsort( void *pParam, void *base, size_t num, size_t width, int( *comp )( const void *, const void *, void * ) );
 
 
 

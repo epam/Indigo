@@ -1,0 +1,20 @@
+*** 0 ***
+COC(c1[n]2s(c3c(c4c2cccc4)cccc3)(C(C)C)c1C(OC)=O)=O
+element: can not calculate implicit hydrogens on aromatic S, charge 0, degree 4, 0 radical electrons
+COC(c1[n]2s(c3c(c4c2cccc4)cccc3)(C(C)C)c1C(OC)=O)=O
+element: can not calculate implicit hydrogens on aromatic S, charge 0, degree 4, 0 radical electrons
+*** 1 ***
+COC(C1N2S(C3C(C4C2=CC=CC=4)=CC=CC=3)(C(C)C)C=1C(OC)=O)=O
+CC(C)S12C(=C(C(=O)OC)N1C1=CC=CC=C1C1=CC=CC=C21)C(=O)OC
+COC(C1N2S(C3C(C4C2=CC=CC=4)=CC=CC=3)(C(C)C)C=1C(OC)=O)=O
+CC(C)S12C(=C(C(=O)OC)N1C1=CC=CC=C1C1=CC=CC=C21)C(=O)OC
+*** 2 ***
+COC(C1[n]2s(c3c(c4c2cccc4)cccc3)(C(C)C)C=1C(OC)=O)=O
+element: can not calculate implicit hydrogens on aromatic S, charge 0, degree 4, 0 radical electrons
+COC(C1[n]2s(c3c(c4c2cccc4)cccc3)(C(C)C)C=1C(OC)=O)=O
+element: can not calculate implicit hydrogens on aromatic S, charge 0, degree 4, 0 radical electrons
+*** 3 ***
+COC(c1[n]2s(C3C(C4C2=CC=CC=4)=CC=CC=3)(C(C)C)c1C(OC)=O)=O
+CC(C)[s]12c(c(C(=O)OC)[n]1C1=CC=CC=C1C1=CC=CC=C21)C(=O)OC
+COC(C1N2S(C3C(C4C2=CC=CC=4)=CC=CC=3)(C(C)C)C=1C(OC)=O)=O
+CC(C)S12C(=C(C(=O)OC)N1C1=CC=CC=C1C1=CC=CC=C21)C(=O)OC

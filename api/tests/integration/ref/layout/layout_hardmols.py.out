@@ -1,0 +1,41 @@
+../../../../../data/molecules/chebi/ChEBI_10305.mol
+O(CCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCO)CCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOC
+../../../../../data/molecules/chebi/ChEBI_10909.mol
+O(CCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCO)CCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCOCCO
+../../../../../data/molecules/chebi/ChEBI_12211.mol
+B1234B5678B9%10%11B%12%13%14%15B915B15%12B9%12%16%17B%18%19%20B%21%22%23%24B%25%189B9%18%21B%21%26%27%28B%29%30%31B%32%33%34%35B%36%37%38B%39%40%41%42B%43%44%36B%36%45%46%47B%48%49%50B%51%52%53%54B%55%56%57B%58%59%60%61B%62%63%55B%55%64%65%66B%62%39(B%39%55%40B%37%41%32B%29%33%21B9%22%26B%39%23%64B%19%24%65B%63%58%66B%59%13(B%10%60%14B%56%61%51B9%10%52B%13%14%19%21B%1196B67%13B79%14B%11%13%14%22B7%19(B%10%48%21%53)B7%10%11B%11%19%21%23B%497%36B%43%11%45B7%11%19B%19%24%26%29B%32%33(B%36%37%39%40B%41%43%45B%48%49%51%52B%53%55(B%56%582(B3%5368)B234B468%53B12%12B%254%16B126B46%12%16B1%18%27B%304%28B%32%366B%41%37%12B28%16B3%56%53B%55%43%48%58)B9%49%13B1%51%14B%45%52%39B%33%40%19B7%21%24B1%10%23%22)B%31%26%34B%38%11%29%35)B5%20%17%15)B%44%46%42B%57%50%47%54
+../../../../../data/molecules/chebi/ChEBI_12791.mol
+C12C3C4C5C6=C7C=CC8=CC9=CC%10C=CC%11=CC%12=CC%13C=CC%14=CC%15=CC%16C=CC%17=CC%18=CC%19C=CC%20C=C%21C=C%22C=CC%23=CC(=C7)C=5C5C=3C3C(=C%22C=5%23)C%21=C5C=%20C=%19C7C%19=C5C=3C1=C1C%19=C3C(C=7%18)=C%17C=%16C5C3=C3C1=C1C7C%16C(C=%13C%14=C(C=5%15)C=%163)=C%12C3C=7C5C(C=%10C=3%11)=C9C(C=4C=5C=21)=C68
+../../../../../data/molecules/chebi/ChEBI_12799.mol
+C12C3C4C5=C6C=CC7=C5C5C=3C3C8=C9C(C=CC(=C7)C9=5)=CC5C8=C7C8=C(C=CC9=C8C8C%10=C7C=3C1=C1C%10=C3C7C=8C(=C9)C=C8C=7C7=C(C=C8)C=C8C9=C7C3=C3C1=C1C7C%10C(=CC(C=C8)=C9C=%103)C=C3C=7C7C(C=C3)=CC(C=4C=7C=21)=C6)C=5
+../../../../../data/molecules/chebi/ChEBI_12800.mol
+C12C3C4C5C6=C7C=CC8=CC9C=CC%10C=C%11C=CC%12=CC%13=CC%14C=CC%15=CC%16C=CC%17=CC%18C=CC%19=CC(=C7)C=5C5C=3C3C(C=%18C=5%19)=C%17C=%16C5C=3C1=C(C=%14C=5%15)C%13=C1C%12=C%11C3C=%10C=9C(C=4C=3C=21)=C68
+../../../../../data/molecules/chebi/ChEBI_12820.mol
+O=C1N2CN3C(N4CN5[C@@]6(N7CN8[C@@]4([H])[C@@]3([H])N(CN3C(=O)N4CN9[C@@]%10(N(CN1[C@@]4([H])[C@@]23[H])C(N1CN2[C@]3(N(CN([C@]%101[H])C9=O)C(=O)N1[C@]3(N(CN3[C@]4(N(C1)C(=O)N1[C@]4(N(CN4[C@]9(N(C1)C(=O)N1CN%10[C@@]%11(N(CN([C@@]91[H])C4=O)C(N1[C@@]%11(N(CN([C@@]6(N(C1)C5=O)[H])C7=O)C%10=O)[H])=O)[H])[H])C3=O)[H])[H])C2=O)[H])[H])=O)[H])C8=O)[H])=O
+../../../../../data/molecules/chebi/ChEBI_12821.mol
+[C@@]12([H])N3CN4[C@@]5([H])N6CN1C(=O)N1CN7[C@]8(N(CN([C@]21[H])C3=O)C(N1CN2[C@@]3(N(CN([C@@]81[H])C7=O)C(=O)N1CN7[C@]8(N(CN([C@]31[H])C2=O)C(N1CN2[C@@]3(N(CN([C@@]81[H])C7=O)C(=O)N1CN7[C@]8(N(CN([C@]31[H])C2=O)C(N1CN([C@@]5(N(CN([C@@]81[H])C7=O)C6=O)[H])C4=O)=O)[H])[H])=O)[H])[H])=O)[H]
+../../../../../data/molecules/chebi/ChEBI_12823.mol
+[C@@]12([H])N3CN4[C@@]5([H])N6CN1C(=O)N1CN7[C@]8(N(CN([C@]21[H])C3=O)C(N1CN2[C@@]3(N(CN([C@@]81[H])C7=O)C(=O)N1CN7[C@]8(N(CN([C@]31[H])C2=O)C(N1CN2[C@@]3(N(CN([C@@]81[H])C7=O)C(=O)N1CN7[C@]8(N(CN([C@]31[H])C2=O)C(N1CN([C@@]5(N(CN([C@@]81[H])C7=O)C6=O)[H])C4=O)=O)[H])[H])=O)[H])[H])=O)[H].C1CCC[C@@H]2[C@@H]1N([H])([H])[Pt]1(OC(C(O1)=O)=O)N2([H])[H]
+../../../../../data/molecules/chebi/ChEBI_12825.mol
+O=C1N2[C@]3(N4CN5[C@]6(N(C2)C(N2CN7[C@@]8(N(CN([C@@]62[H])C5=O)C(=O)N2CN5[C@]6(N(CN([C@]82[H])C7=O)C(N2CN7[C@@]8(N(CN([C@@]62[H])C5=O)C(=O)N2CN5[C@]6(N(CN([C@]82[H])C7=O)C(N2CN7[C@@]8(N(CN(C5=O)[C@@]62[H])C(=O)N2[C@@]8(N(CN5[C@@]6(N(C2)C(=O)N2CN8[C@]9(N(CN([C@]62[H])C5=O)C(N2CN5[C@@]6(N(CN([C@@]92[H])C8=O)C(=O)N2CN([C@]3(N1CN([C@]62[H])C5=O)[H])C4=O)[H])=O)[H])[H])C7=O)[H])[H])=O)[H])[H])=O)[H])[H])=O)[H])[H]
+../../../../../data/molecules/chebi/ChEBI_12827.mol
+O=C1N2[C@]3(N4CN5[C@]6(N(C2)C(N2CN7[C@@]8(N(CN([C@@]62[H])C5=O)C(=O)N2CN5[C@]6(N(CN([C@]82[H])C7=O)C(N2CN7[C@@]8(N(CN([C@@]62[H])C5=O)C(=O)N2CN5[C@]6(N(CN([C@]82[H])C7=O)C(N2CN7[C@@]8(N(CN(C5=O)[C@@]62[H])C(=O)N2[C@@]8(N(CN5[C@@]6(N(C2)C(=O)N2CN8[C@]9(N(CN([C@]62[H])C5=O)C(N2CN5[C@@]6(N(CN([C@@]92[H])C8=O)C(=O)N2CN([C@]3(N1CN([C@]62[H])C5=O)[H])C4=O)[H])=O)[H])[H])C7=O)[H])[H])=O)[H])[H])=O)[H])[H])=O)[H])[H].O=C1N2CN3[C@@]4(N5CN6[C@@]2([H])[C@@]2(N1CN1[C@]7(N(CN2C6=O)C(=O)N2CN6[C@@]8(N(CN([C@@]72[H])C1=O)C(N1CN2[C@]7(N(CN([C@]81[H])C6=O)C(=O)N1CN([C@@]4(N(CN([C@@]71[H])C2=O)C3=O)[H])C5=O)[H])=O)[H])[H])[H])[H]
+../../../../../data/molecules/chebi/ChEBI_13693.mol
+[C@@H]1(O)CN2C(=O)[C@@]3([H])NC(=O)[C@@]([H])([C@@H](O)C(NCCNC(=O)CCCCCCC(=O)COC4C=CC(=CC=4)C4C=CC5[N+]=4[B-](F)(F)N4C(=CC=C4C4SC=CC=4)C=5)=O)NC(=O)[C@H](C(C)C)NC(=O)[C@H](C[C@@](O)(CO)C)NC(=O)[C@@](CC4=C(SC3)NC3C4=CC=CC=3)([H])NC(=O)[C@H](C)NC(=O)[C@]2([H])C1
+../../../../../data/molecules/chebi/ChEBI_13934_fixed.mol
+P(O)(=O)(O[C@@H]1[C@H](NC(C)=O)[C@@H](O)[C@H](O[C@H]2[C@H](NC(=O)C)[C@@H](O)[C@H](O[C@H]3[C@@H](O)[C@@H](O[C@@H]4[C@@H](O[C@@H]5[C@@H](O[C@@H]6[C@@H](O)[C@@H](O[C@@H]7[C@H](O)[C@@H](O[C@@H]8[C@H](O[C@@H]9[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O9)[C@@H](O)[C@H](O)[C@@H](CO)O8)[C@H](O)[C@@H](CO)O7)[C@H](O)[C@@H](CO)O6)[C@@H](O)[C@H](O)[C@@H](CO)O5)[C@@H](O)[C@H](O)[C@@H](CO)O4)[C@H](O)[C@@H](CO[C@@H]4[C@@H](O)[C@@H](O[C@@H]5[C@@H](O)[C@@H](O)[C@H](O[C@@H]6[C@@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O6)[C@@H](CO)O5)[C@H](O)[C@@H](CO[C@@H]5[C@@H](O)[C@@H](O)[C@H](O[C@@H]6[C@@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O6)[C@@H](CO)O5)O4)O3)[C@@H](CO)O2)[C@@H](CO)O1)OP(O)(=O)OCCC(CC/C=C(/CC/C=C(\C)/CC/C=C(\C)/CC/C=C(\C)/C)\C)C.[W] |&1:4,5,10,12,14,15,20,22,24,25,27,29,30,32,33,35,36,38,40,41,43,45,46,48,49,51,53,55,59,61,63,67,69,73,75,79,81,83,87,89,91,95,97,100,101,103,105,106,108,110,112,113,115,117,119,123,127,129,132,133,135,137,139,140,142,144,146,150,156,160,r|
+../../../../../data/molecules/chebi/ChEBI_7750.mol
+C12C3C4C5C6C7C8C9=C%10C%11=C%12C%13=C%14C%15C%16C%17=C%18C=%15C%12=C%10C%10=C%18C%12C%15=C%17C%17C%18C=%16C%16=C%14C%14=C%13C%13=C%11C%11C9=C9C=7C=5C=1C1=C9C=%11C5=C%13C7=C%14C9=C%16C=%18C%11C%13C=%17C%15=C(C=6C=%12C=8%10)C=4C=%13C=3C3C=%11C9=C4C7=C5C1=C2C4=3
+../../../../../data/molecules/chebi/ChEBI_7871.mol
+[W]123(=O)O[W]45(O[W]67(O[W]8(O1)(=O)O[W]19(O[W]%10%11(O[W]%12%13(O[W]%14(O[W](O6)(=O)(O4)O[W]4(O[W]6(O[W]%15(O[W](O2)(=O)(O[W](O5)(O6)(O4)=O)O[W]2(O[W](O%10)(=O)(O1)O[W](O3)(O8)(O2)=O)(=O)O%15)(=O)O%11)(=O)O%12)(=O)O%14)(=O)O[W](O7)(O%13)(=O)O9)=O)=O)=O)=O)=O.P([O-])([O-])(=O)[O-].P([O-])(=O)([O-])[O-]
+../../../../../data/molecules/chebi/ChEBI_9022_fixed.mol
+C12C3C4=C5C(=C6C7C(=C([W])C([W])=C6[W])C([W])=C6C([W])=C8C(=C9C%10C%11C%12=C%13C%14=C%15C(=C%12C=3C(=C6C4=7)C=%118)C=1C1C(C(=C([W])C3C=1C%15=C1C4C6=C(C([W])=C7C([W])=C([W])C([W])=C8C7=C6C6C(=C8[W])C([W])=C7C([W])=C(C([W])=C9[W])C=%10C%13=C7C=6C%14=4)C([W])=C1C=3[W])[W])=C([W])C2=C5[W])[W])[W]
+../../../../../data/molecules/chebi/issue230.mol
+C1=CC2C[C@H]3[C@]4([H])[C@@](CCN3C)(CCCC4)C=2C=C1OC |&1:4,5,7,r|
+*** Layout with timeout ***
+layout-max-iterations: 1
+layout-max-iterations: 2
+layout-max-iterations: 3
+layout-max-iterations: 32
+layout-max-iterations: 64
+layout-max-iterations: 0

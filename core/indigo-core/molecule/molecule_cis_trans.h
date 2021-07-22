@@ -42,11 +42,11 @@ namespace indigo
             TRANS = 2
         };
 
-        explicit MoleculeCisTrans(BaseMolecule& baseMolecule);
+        explicit MoleculeCisTrans();
 
         void clear();
-        void build(int* exclude_bonds);
-        void buildFromSmiles(int* dirs);
+        void build(BaseMolecule& baseMolecule, int* exclude_bonds);
+        void buildFromSmiles(BaseMolecule& baseMolecule, int* dirs);
 
         bool exists() const;
 
@@ -59,13 +59,13 @@ namespace indigo
 
         void registerBond(int idx);
 
-        void flipBond(int atom_parent, int atom_from, int atom_to);
+        void flipBond(BaseMolecule& baseMolecule, int atom_parent, int atom_from, int atom_to);
 
         const int* getSubstituents(int bond_idx) const;
-        void getSubstituents_All(int bond_idx, int subst[4]);
+        void getSubstituents_All(BaseMolecule& baseMolecule, int bond_idx, int subst[4]);
 
         void add(int bond_idx, int substituents[4], int parity);
-        bool registerBondAndSubstituents(int idx);
+        bool registerBondAndSubstituents(BaseMolecule& baseMolecule, int idx);
 
         int applyMapping(int idx, const int* mapping, bool sort) const;
         static int applyMapping(int parity, const int* substituents, const int* mapping, bool sort);
@@ -75,20 +75,20 @@ namespace indigo
 
         static bool checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping);
 
-        void buildOnSubmolecule(BaseMolecule& super, int* mapping);
+        void buildOnSubmolecule(BaseMolecule& baseMolecule, BaseMolecule& super, int* mapping);
 
         static bool sortSubstituents(BaseMolecule& mol, int* substituents, bool* parity_changed);
 
-        void restoreSubstituents(int bond_idx);
-        void registerUnfoldedHydrogen(int atom_idx, int added_hydrogen);
+        void restoreSubstituents(BaseMolecule& baseMolecule, int bond_idx);
+        void registerUnfoldedHydrogen(BaseMolecule& baseMolecule, int atom_idx, int added_hydrogen);
 
         static bool isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* edge_filter = NULL);
 
-        bool isRingTransBond(int bond_idx);
+        bool isRingTransBond(BaseMolecule& baseMolecule, int bond_idx);
 
-        bool convertableToImplicitHydrogen(int idx);
+        bool convertableToImplicitHydrogen(BaseMolecule& baseMolecule, int idx);
 
-        void validate();
+        void validate(BaseMolecule& baseMolecule);
 
         DECL_ERROR;
 
@@ -113,7 +113,6 @@ namespace indigo
         };
 
         Array<_Bond> _bonds;
-        BaseMolecule& _baseMolecule;
 
         static bool _pureH(BaseMolecule& mol, int idx);
         static int _sameside(BaseMolecule& mol, int i_beg, int i_end, int i_nei_beg, int i_nei_end);

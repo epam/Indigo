@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,16 +25,12 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -112,176 +108,242 @@ int ExtractOneStructure( STRUCT_DATA *sd,
                          ORIG_ATOM_DATA *orig_inp_data,
                          long *num_inp );
 
-static int GetINCHI1( inchi_InputEx *inp, inchi_Output *out,  int bStdFormat);
+static int GetINCHI1( inchi_InputEx *inp, inchi_Output *out, int enforce_std_format );
 
-int SetExtOrigAtDataByInChIExtInput( OrigAtDataPolymer **ppPolymer,
-                                     OrigAtDataV3000 **ppV3000,
+int SetExtOrigAtDataByInChIExtInput( OAD_Polymer **ppPolymer,
+                                     OAD_V3000 **ppV3000,
                                      inchi_Input_Polymer *polymer,
                                      inchi_Input_V3000 *v3000,
-                                     int nat);
-int SetInChIExtInputByExtOrigAtData( OrigAtDataPolymer *pPolymer,
-                                     OrigAtDataV3000 *pV3000,
+                                     int nat );
+int SetInChIExtInputByExtOrigAtData( OAD_Polymer *pPolymer,
+                                     OAD_V3000 *pV3000,
                                      inchi_Input_Polymer **ipolymer,
                                      inchi_Input_V3000 **iv3000,
-                                     int nat);
+                                     int nat );
 
 /****************************************************************************/
 
 int bInterrupted = 0;
 
-/********************************************************************
+
+
+/****************************************************************************
  *
  * INCHI API
  *
- ********************************************************************/
+ ****************************************************************************/
 
-/*
+
+
+/****************************************************************************
+
     FreeINCHI
-*/
-EXPIMP_TEMPLATE INCHI_API void INCHI_DECL FreeINCHI( inchi_Output *out )
+
+****************************************************************************/
+EXPIMP_TEMPLATE INCHI_API
+void INCHI_DECL FreeINCHI( inchi_Output *out )
 {
-    if ( !out )
+    if (!out)
+    {
         return;
+    }
 
-    if ( out->szInChI )
+    if (out->szInChI)
+    {
         inchi_free( out->szInChI );
-    if ( out->szLog )
+    }
+    if (out->szLog)
+    {
         inchi_free( out->szLog );
-    if ( out->szMessage )
+    }
+    if (out->szMessage)
+    {
         inchi_free( out->szMessage );
+    }
 
-    memset( out, 0, sizeof(*out) );
+    memset( out, 0, sizeof( *out ) );
 }
 
-/*
+
+/****************************************************************************
+
     FreeStdINCHI
-*/
-EXPIMP_TEMPLATE INCHI_API void INCHI_DECL FreeStdINCHI( inchi_Output *out )
+
+****************************************************************************/
+EXPIMP_TEMPLATE INCHI_API
+void INCHI_DECL FreeStdINCHI( inchi_Output *out )
 {
     FreeINCHI( out );
 }
 
-/*
+
+
+/****************************************************************************
+
     FreeStructFromStdINCHI
-*/
-EXPIMP_TEMPLATE INCHI_API void INCHI_DECL FreeStructFromStdINCHI( inchi_OutputStruct *out )
+****************************************************************************/
+EXPIMP_TEMPLATE INCHI_API
+void INCHI_DECL FreeStructFromStdINCHI( inchi_OutputStruct *out )
 {
     FreeStructFromINCHI( out );
 }
 
-/*
+
+
+/****************************************************************************
+
     FreeStructFromINCHI
-*/
+
+****************************************************************************/
 EXPIMP_TEMPLATE INCHI_API
-    void INCHI_DECL FreeStructFromINCHI( inchi_OutputStruct *out )
+void INCHI_DECL FreeStructFromINCHI( inchi_OutputStruct *out )
 {
-    if ( !out )
+    if (!out)
+    {
         return;
+    }
 
-    if ( out->atom )
+    if (out->atom)
+    {
         inchi_free( out->atom );
-    if ( out->stereo0D )
+    }
+    if (out->stereo0D)
+    {
         inchi_free( out->stereo0D );
-    if ( out->szLog )
+    }
+    if (out->szLog)
+    {
         inchi_free( out->szLog );
-    if ( out->szMessage )
+    }
+    if (out->szMessage)
+    {
         inchi_free( out->szMessage );
+    }
 
-    memset( out, 0, sizeof(*out) );
+    memset( out, 0, sizeof( *out ) );
 }
 
-/*
+
+/****************************************************************************
+
     GetStdINCHI
-*/
-EXPIMP_TEMPLATE INCHI_API int INCHI_DECL GetStdINCHI( inchi_Input *inp,
-                                                      inchi_Output *out )
+
+****************************************************************************/
+EXPIMP_TEMPLATE INCHI_API
+int INCHI_DECL GetStdINCHI( inchi_Input *inp, inchi_Output *out )
 {
     inchi_InputEx extended_input;
-    extended_input.atom            =    inp->atom;
-    extended_input.num_atoms    =    inp->num_atoms;
-    extended_input.num_stereo0D    =    inp->num_stereo0D;
-    extended_input.stereo0D        =    inp->stereo0D;
-    extended_input.szOptions    =    inp->szOptions;
-    extended_input.polymer        =    NULL;
-    extended_input.v3000        =    NULL;
+
+    /* No '*' or 'Zz' elements are allowed in the input . */
+    if (input_erroneously_contains_pseudoatoms(inp, out))
+    {
+        return _IS_ERROR;
+    }
+
+    extended_input.atom = inp->atom;
+    extended_input.num_atoms = inp->num_atoms;
+    extended_input.num_stereo0D = inp->num_stereo0D;
+    extended_input.stereo0D = inp->stereo0D;
+    extended_input.szOptions = inp->szOptions;
+    extended_input.polymer = NULL;
+    extended_input.v3000 = NULL;
+
     return GetINCHI1( &extended_input, out, 1 );
 }
 
-/*
+
+/****************************************************************************
+
     GetINCHI
 
-*/
-EXPIMP_TEMPLATE INCHI_API int INCHI_DECL GetINCHI( inchi_Input *inp,
-                                                   inchi_Output *out )
+****************************************************************************/
+EXPIMP_TEMPLATE INCHI_API
+int INCHI_DECL GetINCHI( inchi_Input *inp, inchi_Output *out )
 {
     inchi_InputEx extended_input;
-    char *str_noz = "Unknown element \'*\'";
-    int i;
 
     /* For back compatibility: no '*' or 'Zz' elements are allowed in the input to GetINCHI() ! */
-    for (i=0; i<inp->num_atoms; i++)
+    if ( input_erroneously_contains_pseudoatoms( inp, out) )
     {
-        if ( !strcmp(inp->atom->elname,"Zz") || !strcmp(inp->atom->elname,"*") )
-        {
-            if ( out )
-            {
-                memset( out, 0, sizeof(*out) );
-                if (out->szMessage = (char *) inchi_malloc( strlen(str_noz) + 1 ) )
-                {
-                    strcpy( out->szMessage, str_noz );
-                }
-            }
-            return _IS_ERROR;
-        }
+        return _IS_ERROR;
     }
 
-    extended_input.atom            =    inp->atom;
-    extended_input.num_atoms    =    inp->num_atoms;
-    extended_input.stereo0D        =    inp->stereo0D;
-    extended_input.num_stereo0D    =    inp->num_stereo0D;
-    extended_input.szOptions    =    inp->szOptions;
-    extended_input.polymer        =    NULL;
-    extended_input.v3000        =    NULL;
+    extended_input.atom = inp->atom;
+    extended_input.num_atoms = inp->num_atoms;
+    extended_input.stereo0D = inp->stereo0D;
+    extended_input.num_stereo0D = inp->num_stereo0D;
+    extended_input.szOptions = inp->szOptions;
+    extended_input.polymer = NULL;
+    extended_input.v3000 = NULL;
 
     return GetINCHI1( &extended_input, out, 0 );
 }
 
-/*
+
+/****************************************************************************/
+int input_erroneously_contains_pseudoatoms( inchi_Input *inp,
+                                            inchi_Output *out)
+{
+    char *str_noz = "Unsupported in this mode element \'*\'";
+    int i;
+    /* Supposed that no '*' or 'Zz' elements are allowed in the input. */
+    for (i = 0; i < inp->num_atoms; i++)
+    {
+        if (!strcmp(inp->atom->elname, "Zz") || !strcmp(inp->atom->elname, "*"))
+        {
+            if (out)
+            {
+                memset(out, 0, sizeof(*out));
+                if (out->szMessage = (char *)inchi_malloc(strlen(str_noz) + 1))
+                {
+                    strcpy(out->szMessage, str_noz);
+                }
+            }
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+
+/****************************************************************************
+
     GetINCHIEx
-*/
+
+****************************************************************************/
 EXPIMP_TEMPLATE INCHI_API
 int INCHI_DECL GetINCHIEx( inchi_InputEx *inp, inchi_Output *out )
 {
-int i;
-    /* Check for and then replace star atoms if Polymer extension is supplied */
-    if ( inp->polymer && inp->polymer->n && inp->polymer->units && inp->polymer->units[0] )
+    int i;
+
+    /* Check for star atoms and replace them by Zz atoms */
+    for (i = 0; i < inp->num_atoms; i++)
     {
-        for (i=0; i<inp->num_atoms; i++)
+        if (!strcmp( inp->atom[i].elname, "*" ))
         {
-            if ( !strcmp( inp->atom[i].elname,"*") )
-            {
-                strcpy( inp->atom[i].elname, "Zz" );
-            }
+            strcpy( inp->atom[i].elname, "Zz" );
         }
     }
 
     return GetINCHI1( inp, out, 0 );
 }
 
-/*
-    GetINCHI1 (real worker)
-*/
+
+/****************************************************************************
+    GetINCHI1 (major worker)
+****************************************************************************/
 static int GetINCHI1( inchi_InputEx *extended_input,
                       inchi_Output *out,
-                      int bStdFormat)
+                      int enforce_std_format )
 {
     STRUCT_DATA struct_data;
     STRUCT_DATA *sd = &struct_data;
-    char szTitle[MAX_SDF_HEADER+MAX_SDF_VALUE+256];
+    char szTitle[MAX_SDF_HEADER + MAX_SDF_VALUE + 256];
 
     int i;
     long num_inp, num_err;
-    char      szSdfDataValue[MAX_SDF_VALUE+1];
+    char      szSdfDataValue[MAX_SDF_VALUE + 1];
     PINChI2     *pINChI[INCHI_NUM];
     PINChI_Aux2 *pINChI_Aux[INCHI_NUM];
 
@@ -307,47 +369,47 @@ static int GetINCHI1( inchi_InputEx *extended_input,
     int  num_repeat = REPEAT_ALL;
 #endif
 
-    const char *argv[INCHI_MAX_NUM_ARG+1];
+    const char *argv[INCHI_MAX_NUM_ARG + 1];
     int   argc;
     char *szOptions = NULL;
 
-    INCHI_IOSTREAM inchi_file[3], *out_file = inchi_file, *log_file = inchi_file+1;
+    INCHI_IOSTREAM inchi_file[3], *out_file = inchi_file, *log_file = inchi_file + 1;
     INCHI_IOSTREAM prb_file0, *prb_file = &prb_file0;
+    INCHI_IOS_STRING temp_string_container;
+    INCHI_IOS_STRING *strbuf = &temp_string_container;
 
-    INCHI_IOSTREAM_STRING temp_string_container;
-    INCHI_IOSTREAM_STRING *strbuf = &temp_string_container;
+    inchi_Input prev_versions_input;
+    inchi_Input *pvinp = &prev_versions_input;
 
-    inchi_Input                prev_versions_input;
-    inchi_Input                *pvinp = &prev_versions_input;
-    pvinp->atom            =    extended_input->atom;
-    pvinp->num_atoms    =    extended_input->num_atoms;
-    pvinp->num_stereo0D    =    extended_input->num_stereo0D;
-    pvinp->stereo0D        =    extended_input->stereo0D;
-    pvinp->szOptions    =    extended_input->szOptions;
+    pvinp->atom = extended_input->atom;
+    pvinp->num_atoms = extended_input->num_atoms;
+    pvinp->num_stereo0D = extended_input->num_stereo0D;
+    pvinp->stereo0D = extended_input->stereo0D;
+    pvinp->szOptions = extended_input->szOptions;
 
 #if( TRACE_MEMORY_LEAKS == 1 )
-    _CrtSetDbgFlag(_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+    _CrtSetDbgFlag( _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF );
 /* for execution outside the VC++ debugger uncomment one of the following two */
 #ifdef MY_REPORT_FILE
-   _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_WARN, MY_REPORT_FILE );
-   _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ERROR, MY_REPORT_FILE );
-   _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ASSERT, MY_REPORT_FILE );
+    _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_WARN, MY_REPORT_FILE );
+    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ERROR, MY_REPORT_FILE );
+    _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ASSERT, MY_REPORT_FILE );
 #else
-    _CrtSetReportMode(_CRT_WARN | _CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode( _CRT_WARN | _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 #endif
 
 #if ( !defined(__STDC__) || __STDC__ != 1 )
     /* turn on floating point exceptions */
     {
         /* Get the default control word. */
-        int cw = _controlfp( 0,0 );
+        int cw = _controlfp( 0, 0 );
 
         /* Set the exception masks OFF, turn exceptions on. */
         /*cw &=~(EM_OVERFLOW|EM_UNDERFLOW|EM_INEXACT|EM_ZERODIVIDE|EM_DENORMAL);*/
-        cw &=~(EM_OVERFLOW|EM_UNDERFLOW|EM_ZERODIVIDE|EM_DENORMAL);
+        cw &= ~( EM_OVERFLOW | EM_UNDERFLOW | EM_ZERODIVIDE | EM_DENORMAL );
 
         /* Set the control word. */
         _controlfp( cw, MCW_EM );
@@ -358,136 +420,151 @@ static int GetINCHI1( inchi_InputEx *extended_input,
     szTitle[0] = '\0';
 
 #if ( defined(REPEAT_ALL) && REPEAT_ALL > 0 )
-repeat:
-    inchi_ios_close(out_file);
-    inchi_ios_close(log_file);
-    inchi_ios_close(prb_file);
-    pStr = NULL;
+    repeat:
+          inchi_ios_close( out_file );
+          inchi_ios_close( log_file );
+          inchi_ios_close( prb_file );
+          pStr = NULL;
 #endif
 
     /* Initialize internal for this function output streams as string buffers */
-    inchi_ios_init(out_file, INCHI_IOSTREAM_TYPE_STRING, NULL);
-    inchi_ios_init(log_file, INCHI_IOSTREAM_TYPE_STRING, NULL);
-    inchi_ios_init(prb_file, INCHI_IOSTREAM_TYPE_STRING, NULL);
+    inchi_ios_init( out_file, INCHI_IOS_TYPE_STRING, NULL );
+    inchi_ios_init( log_file, INCHI_IOS_TYPE_STRING, NULL );
+    inchi_ios_init( prb_file, INCHI_IOS_TYPE_STRING, NULL );
 
-    num_inp    = 0;
-    num_err    = 0;
-    sd->bUserQuit  = 0;
+    num_inp = 0;
+    num_err = 0;
+    sd->bUserQuit = 0;
 
     /* clear original input structure */
-    memset( pINChI,     0, sizeof(pINChI    ) );
-    memset( pINChI_Aux, 0, sizeof(pINChI_Aux) );
-    memset( sd,         0, sizeof(*sd) );
-    memset( ip,         0, sizeof(*ip) );
-    memset( orig_inp_data     , 0,   sizeof( *orig_inp_data  ) );
-    memset( prep_inp_data     , 0, 2*sizeof( *prep_inp_data  ) );
-    memset( szSdfDataValue    , 0, sizeof( szSdfDataValue    ) );
+    memset( pINChI, 0, sizeof( pINChI ) );
+    memset( pINChI_Aux, 0, sizeof( pINChI_Aux ) );
+    memset( sd, 0, sizeof( *sd ) );
+    memset( ip, 0, sizeof( *ip ) );
+    memset( orig_inp_data, 0, sizeof( *orig_inp_data ) );
+    memset( prep_inp_data, 0, 2 * sizeof( *prep_inp_data ) );
+    memset( szSdfDataValue, 0, sizeof( szSdfDataValue ) );
 
-    memset( &CG, 0, sizeof(CG));
-    memset( &ic, 0, sizeof(ic));
+    memset( &CG, 0, sizeof( CG ) );
+    memset( &ic, 0, sizeof( ic ) );
 
-    if ( !out ) {
+    if (!out)
+    {
         nRet = _IS_ERROR;
         goto exit_function;
     }
-    memset( out, 0, sizeof(*out) );
+    memset( out, 0, sizeof( *out ) );
 
     /* options */
-    if ( pvinp && pvinp->szOptions ) {
-        szOptions = (char*)inchi_malloc( strlen(pvinp->szOptions) + 1 );
-        if ( szOptions ) {
+    if (pvinp && pvinp->szOptions)
+    {
+        szOptions = (char*) inchi_malloc( strlen( pvinp->szOptions ) + 1 );
+        if (szOptions)
+        {
             strcpy( szOptions, pvinp->szOptions );
-            argc = parse_options_string ( szOptions, argv, INCHI_MAX_NUM_ARG );
-        } else {
+            argc = parse_options_string( szOptions, argv, INCHI_MAX_NUM_ARG );
+        }
+        else
+        {
             nRet = _IS_FATAL;
             goto translate_RetVal; /* emergency exit */
         }
-    } else {
+    }
+    else
+    {
         argc = 1;
         argv[0] = "";
         argv[1] = NULL;
     }
 
-    if ( argc == 1
+    if (argc == 1
 #ifdef TARGET_API_LIB
-        && (!pvinp || pvinp->num_atoms <= 0 || !pvinp->atom)
+              && ( !pvinp || pvinp->num_atoms <= 0 || !pvinp->atom )
 #endif
-        || argc==2 && ( argv[1][0]==INCHI_OPTION_PREFX ) &&
-        (!strcmp(argv[1]+1, "?") || !inchi_stricmp(argv[1]+1, "help") ) ) {
-        HelpCommandLineParms(log_file);
+              || argc == 2 && ( argv[1][0] == INCHI_OPTION_PREFX ) &&
+                    ( !strcmp( argv[1] + 1, "?" ) || !inchi_stricmp( argv[1] + 1, "help" ) ))
+    {
+        HelpCommandLineParms( log_file );
         out->szLog = log_file->s.pStr;
-        memset( log_file, 0, sizeof(*log_file) );
+        memset( log_file, 0, sizeof( *log_file ) );
         nRet = _IS_EOF;
         goto translate_RetVal;
     }
 
     nRet1 = ReadCommandLineParms( argc, argv, ip, szSdfDataValue, &ulDisplTime, bReleaseVersion, log_file );
-    if ( szOptions ) {
+    if (szOptions)
+    {
         inchi_free( szOptions );
         szOptions = NULL;
     }
     /* INChI DLL specific */
     ip->bNoStructLabels = 1;
 
-    if ( 0 > nRet1 ) {
+    if (0 > nRet1)
+    {
         nRet = _IS_FATAL;
         goto exit_function;
     }
-    if ( ip->bNoStructLabels ) {
+    if (ip->bNoStructLabels)
+    {
         ip->pSdfLabel = NULL;
         ip->pSdfValue = NULL;
-    } else
-    if ( ip->nInputType == INPUT_INCHI_XML || ip->nInputType == INPUT_INCHI_PLAIN  || ip->nInputType == INPUT_CMLFILE ) {
-        /* the input may contain both the header and the label of the structure */
-        if ( !ip->pSdfLabel )
-            ip->pSdfLabel  = ip->szSdfDataHeader;
-        if ( !ip->pSdfValue )
-            ip->pSdfValue  = szSdfDataValue;
+    }
+    else
+    {
+        if (ip->nInputType == INPUT_INCHI_XML || ip->nInputType == INPUT_INCHI_PLAIN || ip->nInputType == INPUT_CMLFILE)
+        {
+            /* the input may contain both the header and the label of the structure */
+            if (!ip->pSdfLabel)
+                ip->pSdfLabel = ip->szSdfDataHeader;
+            if (!ip->pSdfValue)
+                ip->pSdfValue = szSdfDataValue;
+        }
     }
 
     /* Ensure standardness */
-    if ( bStdFormat )
+    if (enforce_std_format)
     {
-        if ( ip->bINChIOutputOptions & INCHI_OUT_SAVEOPT )
+        if (ip->bINChIOutputOptions & INCHI_OUT_SAVEOPT)
         {
             ip->bINChIOutputOptions &= ~INCHI_OUT_SAVEOPT;
         }
-        if ( 0 != ( ip->bTautFlags & TG_FLAG_RECONNECT_COORD) )
+        if (0 != ( ip->bTautFlags & TG_FLAG_RECONNECT_COORD ))
         {
             ip->bTautFlags &= ~TG_FLAG_RECONNECT_COORD;
         }
-        if ( 0 != (ip->nMode & REQ_MODE_BASIC) )
+        if (0 != ( ip->nMode & REQ_MODE_BASIC ))
         {
             ip->nMode &= ~REQ_MODE_BASIC;
         }
-        if ( 0 != ( ip->nMode & REQ_MODE_RELATIVE_STEREO) )
+        if (0 != ( ip->nMode & REQ_MODE_RELATIVE_STEREO ))
         {
-            ip->nMode &= ~(REQ_MODE_RACEMIC_STEREO | REQ_MODE_RELATIVE_STEREO | REQ_MODE_CHIR_FLG_STEREO);
+            ip->nMode &= ~( REQ_MODE_RACEMIC_STEREO | REQ_MODE_RELATIVE_STEREO | REQ_MODE_CHIR_FLG_STEREO );
         }
-        if ( 0 != ( ip->nMode & REQ_MODE_RACEMIC_STEREO) )
+        if (0 != ( ip->nMode & REQ_MODE_RACEMIC_STEREO ))
         {
-            ip->nMode &= ~(REQ_MODE_RACEMIC_STEREO | REQ_MODE_RELATIVE_STEREO | REQ_MODE_CHIR_FLG_STEREO);
+            ip->nMode &= ~( REQ_MODE_RACEMIC_STEREO | REQ_MODE_RELATIVE_STEREO | REQ_MODE_CHIR_FLG_STEREO );
         }
-        if ( 0 != ( ip->nMode & REQ_MODE_CHIR_FLG_STEREO) )
+        if (0 != ( ip->nMode & REQ_MODE_CHIR_FLG_STEREO ))
         {
-            ip->nMode &= ~(REQ_MODE_RACEMIC_STEREO | REQ_MODE_RELATIVE_STEREO | REQ_MODE_CHIR_FLG_STEREO);
+            ip->nMode &= ~( REQ_MODE_RACEMIC_STEREO | REQ_MODE_RELATIVE_STEREO | REQ_MODE_CHIR_FLG_STEREO );
         }
-        if ( 0 != ( ip->nMode & REQ_MODE_DIFF_UU_STEREO) )
+        if (0 != ( ip->nMode & REQ_MODE_DIFF_UU_STEREO ))
         {
             ip->nMode &= ~REQ_MODE_DIFF_UU_STEREO;
         }
-        if ( 0 == (ip->nMode & (REQ_MODE_SB_IGN_ALL_UU | REQ_MODE_SC_IGN_ALL_UU))  )
+        if (0 == ( ip->nMode & ( REQ_MODE_SB_IGN_ALL_UU | REQ_MODE_SC_IGN_ALL_UU ) ))
         {
             ip->nMode |= REQ_MODE_SB_IGN_ALL_UU;
             ip->nMode |= REQ_MODE_SC_IGN_ALL_UU;
         }
-        if ( 0 != (ip->bTautFlags & TG_FLAG_KETO_ENOL_TAUT) )
+        if (0 != ( ip->bTautFlags & TG_FLAG_KETO_ENOL_TAUT ))
         {
-            ip->bTautFlags  &= ~TG_FLAG_KETO_ENOL_TAUT;
+            ip->bTautFlags &= ~TG_FLAG_KETO_ENOL_TAUT;
         }
-        if ( 0 != (ip->bTautFlags & TG_FLAG_1_5_TAUT) )
+        if (0 != ( ip->bTautFlags & TG_FLAG_1_5_TAUT ))
         {
-            ip->bTautFlags  &= ~TG_FLAG_1_5_TAUT;
+            ip->bTautFlags &= ~TG_FLAG_1_5_TAUT;
         }
         /* And anyway... */
         ip->bINChIOutputOptions |= INCHI_OUT_STDINCHI;
@@ -497,9 +574,9 @@ repeat:
 
     PrintInputParms( log_file, ip );
 
-    if ( 0>=inchi_strbuf_init( strbuf, INCHI_STRBUF_INITIAL_SIZE, INCHI_STRBUF_SIZE_INCREMENT ) )
+    if (0 >= inchi_strbuf_init( strbuf, INCHI_STRBUF_INITIAL_SIZE, INCHI_STRBUF_SIZE_INCREMENT ))
     {
-        inchi_ios_eprint( log_file, "Cannot allocate internal string buffer. Terminating\n");
+        inchi_ios_eprint( log_file, "Cannot allocate internal string buffer. Terminating\n" );
         nRet = _IS_FATAL;
         goto exit_function;
     }
@@ -509,66 +586,60 @@ repeat:
     /*  read input structures and create their INChI's */
     ulTotalProcessingTime = 0;
 
-    if ( pStructPtrs )
+    if (pStructPtrs)
     {
-        memset ( pStructPtrs, 0, sizeof(pStructPtrs[0]) );
+        memset( pStructPtrs, 0, sizeof( pStructPtrs[0] ) );
     }
 
     /* === possible improvement: convert inp to orig_inp_data ==== */
-    if ( !sd->bUserQuit && !bInterrupted )
+    if (!sd->bUserQuit && !bInterrupted)
     {
-        if ( ip->last_struct_number && num_inp >= ip->last_struct_number )
+        if (ip->last_struct_number && num_inp >= ip->last_struct_number)
         {
             nRet = _IS_EOF; /*  simulate end of file */
             goto exit_function;
         }
 
-        nRet = ExtractOneStructure( sd,
-                                    ip,
-                                    szTitle,
-                                    extended_input,
-                                    log_file,
-                                    out_file,
-                                    prb_file,
-                                    orig_inp_data,
-                                    &num_inp );
+        nRet = ExtractOneStructure( sd,ip, szTitle, extended_input,
+                                    log_file, out_file, prb_file,
+                                    orig_inp_data, &num_inp );
 
-        if ( pStructPtrs )
+        if (pStructPtrs)
         {
-            pStructPtrs->cur_fptr ++;
+            pStructPtrs->cur_fptr++;
         }
 
 #ifndef TARGET_API_LIB
-        if ( sd->bUserQuit )
+        if (sd->bUserQuit)
         {
             break;
         }
 #endif
-        switch ( nRet )
+        switch (nRet)
         {
-        case _IS_FATAL:
-            num_err ++;
-            goto exit_function;
-        case _IS_EOF:
-            goto exit_function;
-        case _IS_ERROR:
-            num_err ++;
-            goto exit_function;
+            case _IS_FATAL:
+                num_err++;
+                goto exit_function;
+            case _IS_EOF:
+                goto exit_function;
+            case _IS_ERROR:
+                num_err++;
+                goto exit_function;
 #ifndef TARGET_API_LIB
-        case _IS_SKIP:
-            continue;
+            case _IS_SKIP:
+                continue;
 #endif
         }
 
-        /* Create INChI for each connected component of the structure and optionally display them */
-        /* output INChI for the whole structure */
+        /* Create INChI for each connected component of the structure and */
+        /* optionally display them ; output INChI for the whole structure */
+
         nRet1 = ProcessOneStructureEx( &ic, &CG, sd, ip, szTitle,
-                                       pINChI, pINChI_Aux,
-                                       NULL, /* inp_file is not necessary as all input is already saved in 'ip' */
-                                       log_file, out_file, prb_file,
-                                       orig_inp_data, prep_inp_data,
-                                       num_inp, strbuf,
-                                       0 /* save_opt_bits */);
+                                        pINChI, pINChI_Aux,
+                                        NULL, /* inp_file is not necessary as all input is already saved in 'ip' */
+                                        log_file, out_file, prb_file,
+                                        orig_inp_data, prep_inp_data,
+                                        num_inp, strbuf, 0 /* save_opt_bits */ );
 
         /*  Free INChI memory */
         FreeAllINChIArrays( pINChI, pINChI_Aux, sd->num_components );
@@ -576,42 +647,41 @@ repeat:
         /* Free structure data */
         FreeOrigAtData( orig_inp_data );
         FreeOrigAtData( prep_inp_data );
-        FreeOrigAtData( prep_inp_data+1 );
+        FreeOrigAtData( prep_inp_data + 1 );
 
         ulTotalProcessingTime += sd->ulStructTime;
-        nRet = inchi_max(nRet, nRet1);
-        switch ( nRet ) {
-        case _IS_FATAL:
-            /* num_err ++; */
-            goto exit_function;
-        case _IS_ERROR:
-            ; /* num_err ++; */
+        nRet = inchi_max( nRet, nRet1 );
+        switch (nRet)
+        {
+            case _IS_FATAL:
+                /* num_err ++; */
+                goto exit_function;
+            case _IS_ERROR:
+                ; /* num_err ++; */
 #ifndef TARGET_API_LIB
-            continue;
+                continue;
 #endif
         }
     }
 
 exit_function:
-
-    /*    Avoid memory leaks in case of fatal error */
-    if ( pStructPtrs && pStructPtrs->fptr )
+    /* Avoid memory leaks in case of fatal error */
+    if (pStructPtrs && pStructPtrs->fptr)
     {
         inchi_free( pStructPtrs->fptr );
     }
-
-    /*  Free INChI memory */
+    /* Free INChI memory */
     FreeAllINChIArrays( pINChI, pINChI_Aux, sd->num_components );
     /*    Free structure data */
     FreeOrigAtData( orig_inp_data );
     FreeOrigAtData( prep_inp_data );
-    FreeOrigAtData( prep_inp_data+1 );
+    FreeOrigAtData( prep_inp_data + 1 );
 
     inchi_strbuf_close( strbuf );
 
-    for ( i = 0; i < MAX_NUM_PATHS; i ++ )
+    for (i = 0; i < MAX_NUM_PATHS; i++)
     {
-        if ( ip->path[i] )
+        if (ip->path[i])
         {
             inchi_free( (char*) ip->path[i] ); /*  cast deliberately discards 'const' qualifier */
             ip->path[i] = NULL;
@@ -621,7 +691,8 @@ exit_function:
     SetBitFree( &CG );
 
 #if ( defined(REPEAT_ALL) && REPEAT_ALL > 0 )
-    if ( num_repeat-- > 0 ) {
+    if (num_repeat-- > 0)
+    {
         goto repeat;
     }
 #endif
@@ -632,84 +703,91 @@ exit_function:
 translate_RetVal:
 
     /* Close inernal I/O streams */
-    inchi_ios_close(log_file);
-    inchi_ios_close(out_file);
-    inchi_ios_close(prb_file);
+    inchi_ios_close( log_file );
+    inchi_ios_close( out_file );
+    inchi_ios_close( prb_file );
 
     switch (nRet)
     {
-    case _IS_SKIP   : nRet = inchi_Ret_SKIP   ; break; /* not used in INChI dll */
-    case _IS_EOF    : nRet = inchi_Ret_EOF    ; break; /* no structural data has been provided */
-    case _IS_OKAY   : nRet = inchi_Ret_OKAY   ; break; /* Success; break; no errors or warnings */
-    case _IS_WARNING: nRet = inchi_Ret_WARNING; break; /* Success; break; warning(s) issued */
-    case _IS_ERROR  : nRet = inchi_Ret_ERROR  ; break; /* Error: no INChI has been created */
-    case _IS_FATAL  : nRet = inchi_Ret_FATAL  ; break; /* Severe error: no INChI has been created (typically; break; memory allocation failed) */
-    case _IS_UNKNOWN:
-    default         : nRet = inchi_Ret_UNKNOWN; break; /* Unlnown program error */
+        case _IS_SKIP: nRet = inchi_Ret_SKIP; break; /* not used in INChI dll */
+        case _IS_EOF: nRet = inchi_Ret_EOF; break; /* no structural data has been provided */
+        case _IS_OKAY: nRet = inchi_Ret_OKAY; break; /* Success; break; no errors or warnings */
+        case _IS_WARNING: nRet = inchi_Ret_WARNING; break; /* Success; break; warning(s) issued */
+        case _IS_ERROR: nRet = inchi_Ret_ERROR; break; /* Error: no INChI has been created */
+        case _IS_FATAL: nRet = inchi_Ret_FATAL; break; /* Severe error: no INChI has been created (typically; break; memory allocation failed) */
+        case _IS_UNKNOWN:
+        default: nRet = inchi_Ret_UNKNOWN; break; /* Unlnown program error */
     }
 
     return nRet;
 }
 
-/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
-void produce_generation_output( inchi_Output *out, STRUCT_DATA *sd, INPUT_PARMS *ip,
-                                INCHI_IOSTREAM *log_file, INCHI_IOSTREAM *out_file )
+
+/****************************************************************************/
+void produce_generation_output( inchi_Output *out,
+                                STRUCT_DATA *sd,
+                                INPUT_PARMS *ip,
+                                INCHI_IOSTREAM *log_file,
+                                INCHI_IOSTREAM *out_file )
 
 {
-    if ( sd->pStrErrStruct[0] )
+    if (sd->pStrErrStruct[0])
     {
-        if ( out && (out->szMessage = (char *)inchi_malloc( strlen(sd->pStrErrStruct) + 1 )) )
+        if (out && ( out->szMessage = (char *) inchi_malloc( strlen( sd->pStrErrStruct ) + 1 ) ))
         {
             strcpy( out->szMessage, sd->pStrErrStruct );
         }
     }
 
     /* Make separate strings with InChI and AuxInfo */
-    if ( out_file->s.pStr && out_file->s.nUsedLength > 0 && out )
+    if (out_file->s.pStr && out_file->s.nUsedLength > 0 && out)
     {
         char *p;
-        out->szInChI   = out_file->s.pStr;
+        out->szInChI = out_file->s.pStr;
         out->szAuxInfo = NULL;
-        if ( !(INCHI_OUT_SDFILE_ONLY & ip->bINChIOutputOptions ) ) /* do not remove last LF from SDF output - 2008-12-23 DT */
-        for ( p = strchr(out->szInChI, '\n'); p; p = strchr(p+1, '\n') )
+        if (!( INCHI_OUT_SDFILE_ONLY & ip->bINChIOutputOptions )) /* do not remove last LF from SDF output - 2008-12-23 DT */
         {
-            if ( !memcmp( p, "\nAuxInfo", 8 ) )
+            for (p = strchr( out->szInChI, '\n' ); p; p = strchr( p + 1, '\n' ))
             {
-                *p = '\0';            /* remove LF after INChI */
-                out->szAuxInfo = p+1; /* save pointer to AuxInfo */
-            }
-            else if ( out->szAuxInfo || !p[1])
-            {
-                /* remove LF after aux info or from the last char */
-                *p = '\0';
-                break;
+                if (!memcmp( p, "\nAuxInfo", 8 ))
+                {
+                    *p = '\0';            /* remove LF after INChI */
+                    out->szAuxInfo = p + 1; /* save pointer to AuxInfo */
+                }
+                else if (out->szAuxInfo || !p[1])
+                {
+                    /* remove LF after aux info or from the last char */
+                    *p = '\0';
+                    break;
+                }
             }
         }
-       out_file->s.pStr = NULL;
+        out_file->s.pStr = NULL;
     }
 
     copy_corrected_log_tail( out, log_file );
 }
 
-/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+/****************************************************************************/
 void copy_corrected_log_tail( inchi_Output *out, INCHI_IOSTREAM *log_file )
 {
-    if ( log_file->s.pStr && log_file->s.nUsedLength > 0 )
+    if (log_file->s.pStr && log_file->s.nUsedLength > 0)
     {
-        while ( log_file->s.nUsedLength &&
-                '\n' == log_file->s.pStr[log_file->s.nUsedLength-1] )
+        while (log_file->s.nUsedLength &&
+                '\n' == log_file->s.pStr[log_file->s.nUsedLength - 1])
         {
-            log_file->s.pStr[-- log_file->s.nUsedLength]  = '\0';
+            log_file->s.pStr[--log_file->s.nUsedLength] = '\0';
                                             /* remove last LF */
         }
-        if ( out )
+        if (out)
         {
             char *p;
             out->szLog = log_file->s.pStr;
             log_file->s.pStr = NULL;
-            for ( p = strchr(out->szLog, ' '); p; p = strchr(p+1, ' ') )
+            for (p = strchr( out->szLog, ' ' ); p; p = strchr( p + 1, ' ' ))
             {
-                if ( !memcmp( p, " structure #", 12 ) )
+                if (!memcmp( p, " structure #", 12 ))
                 {
                     *p = '\0';
                 }
@@ -718,62 +796,74 @@ void copy_corrected_log_tail( inchi_Output *out, INCHI_IOSTREAM *log_file )
     }
 }
 
-/*
+
+/****************************************************************************
+
     CheckINCHI
 
     Check if the string represents valid InChI/standard InChI.
     Input:
             szINCHI     source InChI
-            strict      if 0, just quickly check for proper layout (prefix, version, etc.)
+            strict      if 0, just quickly check for proper layout
+                        (prefix, version, etc.)
                         The result may not be strict.
                         If not 0, try to perform InChI2InChI conversion and
-                        returns success if a resulting InChI string exactly match source.
+                        returns success if a resulting InChI string exactly
+                        match source.
                         The result may be 'false alarm' due to imperfect algorithm of
                         conversion.
     Returns:
             success/errors codes
 
-*/
-
+****************************************************************************/
 EXPIMP_TEMPLATE INCHI_API
-    int INCHI_DECL CheckINCHI(const char *szINCHI, const int strict)
+int INCHI_DECL CheckINCHI( const char *szINCHI, const int strict )
 {
-int ret=INCHI_VALID_NON_STANDARD;
-int ret_i2i;
-inchi_InputINCHI    inchi_inp;
-inchi_Output        inchi_out;
-size_t slen, pos_slash1=0;
-char *str = NULL;
-size_t i;
-size_t slen0;
-char pp;
+    int ret = INCHI_VALID_NON_STANDARD;
+    int ret_i2i;
+    inchi_InputINCHI    inchi_inp;
+    inchi_Output        inchi_out;
+    size_t slen, pos_slash1 = 0;
+    char *str = NULL;
+    size_t i;
+    size_t slen0;
+    char pp;
 
     /* .. non-empty */
-    if (szINCHI==NULL)
+    if (szINCHI == NULL)
+    {
         return INCHI_INVALID_PREFIX;
+    }
 
-    slen = strlen(szINCHI);
+    slen = strlen( szINCHI );
+
 
     /* .. has valid prefix */
-    if (slen<LEN_INCHI_STRING_PREFIX+3)
+    if (slen < LEN_INCHI_STRING_PREFIX + 3)
+    {
         return INCHI_INVALID_PREFIX;
-    if (memcmp(szINCHI,INCHI_STRING_PREFIX,LEN_INCHI_STRING_PREFIX))
+    }
+    if (memcmp( szINCHI, INCHI_STRING_PREFIX, LEN_INCHI_STRING_PREFIX ))
+    {
         return INCHI_INVALID_PREFIX;
+    }
 
     /* .. has InChI version 1 */
     /* if (!isdigit(szINCHI[LEN_INCHI_STRING_PREFIX]) )  */
-    if ( szINCHI[LEN_INCHI_STRING_PREFIX] != '1' )
+    if (szINCHI[LEN_INCHI_STRING_PREFIX] != '1')
+    {
         return INCHI_INVALID_VERSION;
+    }
 
     /* .. optionally has a 'standard' flag character */
-    pos_slash1 = LEN_INCHI_STRING_PREFIX+1;
-    if (szINCHI[pos_slash1]=='S')
+    pos_slash1 = LEN_INCHI_STRING_PREFIX + 1;
+    if (szINCHI[pos_slash1] == 'S')
     {
         /* Standard InChI ==> standard InChIKey */
         ret = INCHI_VALID_STANDARD;
         pos_slash1++;
     }
-    else if (szINCHI[pos_slash1]=='B')
+    else if (szINCHI[pos_slash1] == 'B')
     {
         /* Beta version InChI ==> non-standard */
         ret = INCHI_VALID_BETA;
@@ -781,44 +871,77 @@ char pp;
     }
 
     /* .. has trailing slash in the right place */
-    if (szINCHI[pos_slash1]!='/')
+    if (szINCHI[pos_slash1] != '/')
+    {
         return INCHI_INVALID_LAYOUT;
+    }
 
     /* .. the rest of source string contains valid literals */
 
+
+    /* adjust line len so we not check trailing whitespaces */
+    i = slen - 1;
+    while (isspace(UCINT szINCHI[i--])) slen--;
+
     /* Treat possible SaveOpt letters  */
     slen0 = slen;
-    if ( (szINCHI[slen-3]=='\\') &&
-         (szINCHI[slen-2] >= 'A') && (szINCHI[slen-2] <='Z') &&
-         (szINCHI[slen-1] >= 'A') && (szINCHI[slen-1] <='Z')
+    if (( szINCHI[slen - 3] == '\\' ) &&
+        ( szINCHI[slen - 2] >= 'A' ) && ( szINCHI[slen - 2] <= 'Z' ) &&
+        ( szINCHI[slen - 1] >= 'A' ) && ( szINCHI[slen - 1] <= 'Z' )
         )
-        slen0 = slen -3;
+    {
+        slen0 = slen - 3;
+    }
 
-    for (i=pos_slash1+1; i<slen0; i++)
+    int prev_is_slash = 1;
+    for (i = pos_slash1 + 1; i < slen0; i++)
     {
         pp = szINCHI[i];
-        if (pp >= 'A' && pp <='Z')   continue;
-        if (pp >= 'a' && pp <='z')   continue;
-        if (pp >= '0' && pp <='9')   continue;
-        switch ( pp )
+#if ( FIX_GAF_2020_GENERIC==1 )
+        if (prev_is_slash)
+        {
+            /* After slash: */
+            if (pp == '0')
+            {
+                /* '0' is never allowed */
+                return INCHI_INVALID_LAYOUT;
+            }
+            if (i > pos_slash1 + 1)
+            {
+                /* Not in main formula layer... */ 
+                if (!islower(pp))
+                {
+                    /* only lowercase letters are allowed */
+                    return INCHI_INVALID_LAYOUT;
+                }
+            }
+        }
+        prev_is_slash = (pp != '/') ? 0 : 1;
+#endif
+        if (pp >= 'A' && pp <= 'Z')   continue;
+        if (pp >= 'a' && pp <= 'z')   continue;
+        if (pp >= '0' && pp <= '9')  continue;
+        switch (pp)
         {
             case '(': case ')':
             case '*': case '+':
             case ',': case '-':
             case '.': case '/':
+#if ( FIX_GAF_2020_GENERIC==1 )
+            case ';': case '?':     continue;
+#else
             case ';': case '=':
-            case '?': case '@': continue;
-
-            default:            break;
+            case '?': case '@':     continue;
+#endif
+            default:            return INCHI_INVALID_LAYOUT;
         }
-        return INCHI_INVALID_LAYOUT;
     }
 
-    if ( strict )
+    if (strict)
     {
-        char opts[]="?FixedH ?RecMet ?SUU ?SLUUD";
-        extract_inchi_substring(&str, szINCHI, slen);
-        if (NULL==str)
+        char opts[] = "?FixedH ?RecMet ?SUU ?SLUUD";
+        extract_inchi_substring( &str, szINCHI, slen );
+        if (NULL == str)
         {
             ret = INCHI_FAIL_I2I;
             goto fin;
@@ -826,44 +949,46 @@ char pp;
 
         inchi_inp.szInChI = str;
         opts[0] = opts[8] = opts[16] = opts[21] = INCHI_OPTION_PREFX;
-        inchi_inp.szOptions  = opts;
+        inchi_inp.szOptions = opts;
 
-        ret_i2i = GetINCHIfromINCHI(&inchi_inp, &inchi_out);
+        ret_i2i = GetINCHIfromINCHI( &inchi_inp, &inchi_out );
 
-        if ( ((ret_i2i!=inchi_Ret_OKAY) && (ret_i2i!=inchi_Ret_WARNING)) || !inchi_out.szInChI )
+        if (( ( ret_i2i != inchi_Ret_OKAY ) && ( ret_i2i != inchi_Ret_WARNING ) ) || !inchi_out.szInChI)
         {
             ret = INCHI_FAIL_I2I;
         }
         else
         {
-            if (strcmp(inchi_inp.szInChI, inchi_out.szInChI))
+            if (strcmp( inchi_inp.szInChI, inchi_out.szInChI ))
             {
                 ret = INCHI_FAIL_I2I;
             }
         }
     }
 
-fin:if ( strict )
-    {
-        if (NULL!=str)
-            inchi_free(str);
-    }
+fin:if (strict)
+{
+    if (NULL != str)
+        inchi_free( str );
+}
+
     return ret;
 }
 
+
 /****************************************************************************/
-void SetNumImplicitH(inp_ATOM* at, int num_atoms)
+void SetNumImplicitH( inp_ATOM* at, int num_atoms )
 {
     int bNonMetal;
     int a1/*, n1*/;
 
     /* special valences */
-    for ( bNonMetal = 0; bNonMetal < 2; bNonMetal ++ )
+    for (bNonMetal = 0; bNonMetal < 2; bNonMetal++)
     {
-        for ( a1 = 0; a1 < num_atoms; a1 ++ )
+        for (a1 = 0; a1 < num_atoms; a1++)
         {
             int bHasMetalNeighbor /*, j*/;
-            if ( bNonMetal != is_el_a_metal( at[a1].el_number ) )
+            if (bNonMetal != is_el_a_metal( at[a1].el_number ))
             {
                 continue; /* first process all metals, after that all non-metals */
             }
@@ -879,20 +1004,23 @@ void SetNumImplicitH(inp_ATOM* at, int num_atoms)
                                       at[a1].radical,
                                       at[a1].chem_bonds_valence,
                                       0, /* instead of valence entered by the user: it does not exist here*/
-                                      (at[a1].at_type & 1)  /* bAliased */,
-                                      !(at[a1].at_type & 2) /* bDoNotAddH */,
+                                      ( at[a1].at_type & 1 )  /* bAliased */,
+                                      !( at[a1].at_type & 2 ) /* bDoNotAddH */,
                                       bHasMetalNeighbor );
             at[a1].at_type = 0;
         }
     }
 }
 
-/********************************************************************/
+
+/****************************************************************************/
+
 
 #define REPEAT_ALL  0
 
-/********************************************************************/
-int parse_options_string ( char *cmd, const char *argv[], int maxargs )
+
+/****************************************************************************/
+int parse_options_string( char *cmd, const char *argv[], int maxargs )
 {
     char    *p;
     char    *pArgCurChar;
@@ -907,17 +1035,22 @@ int parse_options_string ( char *cmd, const char *argv[], int maxargs )
     bInsideQuotes = 0;
 
     /* arguments, one by one */
-    while( i < maxargs-1 )
+    while (i < maxargs - 1)
     {
         /* bypass spaces */
-        while ( *p == ' ' || *p == '\t' )
-            p ++;
-        if ( !*p )
+        while (*p == ' ' || *p == '\t')
+        {
+            p++;
+        }
+        if (!*p)
+        {
             break;
+        }
+
         /* scan an argument */
         argv[i++] = pArgCurChar = p;     /* store preliminary ptr to arg */
 
-        while ( 1 )
+        while (1)
         {
             bCopyCharToArg = 1;
             nNumBackSlashes = 0;
@@ -928,16 +1061,19 @@ int parse_options_string ( char *cmd, const char *argv[], int maxargs )
             }
 
             /* each pair of backslashes => one backslash; one more backslash => literal quote */
-            if ( *p == '\"' )
+            if (*p == '\"')
             {
                 /* one " found */
-                if ( nNumBackSlashes % 2 == 0 )
+                if (nNumBackSlashes % 2 == 0)
                 {
-                    if (bInsideQuotes) {
-                        if (*(p+1) == '\"')
+                    if (bInsideQuotes)
+                    {
+                        if (*( p + 1 ) == '\"')
                         {
                             p++;
-                        } else {
+                        }
+                        else
+                        {
                             bCopyCharToArg = 0;
                         }
                     }
@@ -957,9 +1093,9 @@ int parse_options_string ( char *cmd, const char *argv[], int maxargs )
             {
                 break;
             }
-            if (!bInsideQuotes && (*p == ' ' || *p == '\t'))
+            if (!bInsideQuotes && ( *p == ' ' || *p == '\t' ))
             {
-                p ++;
+                p++;
                 /* move to the next char because this char may become
                  * zero due to  *pArgCurChar++ = '\0'; line below */
                 break;
@@ -979,9 +1115,11 @@ int parse_options_string ( char *cmd, const char *argv[], int maxargs )
     return i;
 }
 
-/*****************************************************************/
+
+/****************************************************************************/
 
 #define MIN_BOND_LENGTH   (1.0e-6)
+
 
 /****************************************************************************/
 int SetAtomProperties( inp_ATOM *at,
@@ -993,48 +1131,46 @@ int SetAtomProperties( inp_ATOM *at,
                        int *err )
 {
     S_CHAR      cRadical;
-    /* element, check later */
 
+    /* element, check later */
     strcpy( at[a1].elname, ati[a1].elname );
 
     /* charge */
-
     at[a1].charge = ati[a1].charge;
 
     /* radical */
-
-    switch ( ati[a1].radical )
+    switch (ati[a1].radical)
     {
-    case   INCHI_RADICAL_NONE:
-        cRadical = 0;
-        break;
-    case   INCHI_RADICAL_SINGLET:
+        case   INCHI_RADICAL_NONE:
+            cRadical = 0;
+            break;
+        case   INCHI_RADICAL_SINGLET:
 #if( SINGLET_IS_TRIPLET == 1) /* 'singlet' means two electrons make a lone pair instead of 2 bonds*/
                               /* its effect on valence is same as the effect of a triplet */
-        cRadical = RADICAL_TRIPLET;
+            cRadical = RADICAL_TRIPLET;
 #else
-        cRadical = RADICAL_SINGLET;
+            cRadical = RADICAL_SINGLET;
 #endif
-        break;
-    case   INCHI_RADICAL_DOUBLET:
-        cRadical = RADICAL_DOUBLET;
-        break;
-    case   INCHI_RADICAL_TRIPLET:
-        cRadical = RADICAL_TRIPLET;
-        break;
-    default:
+            break;
+        case   INCHI_RADICAL_DOUBLET:
+            cRadical = RADICAL_DOUBLET;
+            break;
+        case   INCHI_RADICAL_TRIPLET:
+            cRadical = RADICAL_TRIPLET;
+            break;
+        default:
         {
             char szRadicalType[16];
             int nRad = ati[a1].radical;
-            while ( nRad > RADICAL_TRIPLET )
+            while (nRad > RADICAL_TRIPLET)
             {
                 nRad -= 2;
             }
             sprintf( szRadicalType, "%d->%d", ati[a1].radical, nRad );
-            TREAT_ERR (*err, 0, "Radical center type replaced:");
-            TREAT_ERR (*err, 0, szRadicalType);
+            TREAT_ERR( *err, 0, "Radical center type replaced:" );
+            TREAT_ERR( *err, 0, szRadicalType );
             cRadical = nRad;
-            if ( nRad < 0 )
+            if (nRad < 0)
             {
                 *err |= 8; /*  Unrecognized Radical replaced with non-radical */
             }
@@ -1048,7 +1184,7 @@ int SetAtomProperties( inp_ATOM *at,
     at[a1].y = ati[a1].y;
     at[a1].z = ati[a1].z;
 
-    if ( szCoord )
+    if (szCoord)
     {
         /* store text coordinates */
         char str[32];
@@ -1056,14 +1192,14 @@ int SetAtomProperties( inp_ATOM *at,
         WriteCoord( str, ati[a1].x );
         memcpy( *coord_p, str, 10 );
         WriteCoord( str, ati[a1].y );
-        memcpy( *coord_p+10, str, 10 );
+        memcpy( *coord_p + 10, str, 10 );
         WriteCoord( str, ati[a1].z );
-        memcpy( *coord_p+20, str, 10 );
+        memcpy( *coord_p + 20, str, 10 );
     }
 
-    if ( MIN_BOND_LENGTH < fabs(ati[a1].x) || MIN_BOND_LENGTH < fabs(ati[a1].y) || MIN_BOND_LENGTH < fabs(ati[a1].z) )
+    if (MIN_BOND_LENGTH < fabs( ati[a1].x ) || MIN_BOND_LENGTH < fabs( ati[a1].y ) || MIN_BOND_LENGTH < fabs( ati[a1].z ))
     {
-        if ( MIN_BOND_LENGTH < fabs(ati[a1].z) )
+        if (MIN_BOND_LENGTH < fabs( ati[a1].z ))
         {
             *nDim |= 3;
         }
@@ -1074,11 +1210,12 @@ int SetAtomProperties( inp_ATOM *at,
     }
 
     /* orig. at. number */
-    at[a1].orig_at_number = a1+1;
+    at[a1].orig_at_number = a1 + 1;
     return 0;
 
 #undef MIN_BOND_LENGTH
 }
+
 
 /****************************************************************************/
 int SetBondProperties( inp_ATOM *at,
@@ -1096,165 +1233,164 @@ int SetBondProperties( inp_ATOM *at,
     int        n1, n2;
 
     /* bond type */
-    switch( ati[a1].bond_type[j] )
+    switch (ati[a1].bond_type[j])
     {
-    case INCHI_BOND_TYPE_SINGLE:
-        cBondType = BOND_TYPE_SINGLE;
-        break;
-    case INCHI_BOND_TYPE_DOUBLE:
-        cBondType = BOND_TYPE_DOUBLE;
-        break;
-    case INCHI_BOND_TYPE_TRIPLE:
-        cBondType = BOND_TYPE_TRIPLE;
-        break;
-    case INCHI_BOND_TYPE_ALTERN:
-        cBondType = BOND_TYPE_ALTERN;
-        break;
-    default:
+        case INCHI_BOND_TYPE_SINGLE:
+            cBondType = BOND_TYPE_SINGLE;
+            break;
+        case INCHI_BOND_TYPE_DOUBLE:
+            cBondType = BOND_TYPE_DOUBLE;
+            break;
+        case INCHI_BOND_TYPE_TRIPLE:
+            cBondType = BOND_TYPE_TRIPLE;
+            break;
+        case INCHI_BOND_TYPE_ALTERN:
+            cBondType = BOND_TYPE_ALTERN;
+            break;
+        default:
         {
-        char szBondType[16];
-        sprintf( szBondType, "%d", ati[a1].bond_type[j] );
-        TREAT_ERR (*err, 0, "Unrecognized bond type:");
-        TREAT_ERR (*err, 0, szBondType);
-        *err |= 8; /*  Unrecognized Bond type replaced with single bond */
-        cBondType = BOND_TYPE_SINGLE;
+            char szBondType[16];
+            sprintf( szBondType, "%d", ati[a1].bond_type[j] );
+            TREAT_ERR( *err, 0, "Unrecognized bond type:" );
+            TREAT_ERR( *err, 0, szBondType );
+            *err |= 8; /*  Unrecognized Bond type replaced with single bond */
+            cBondType = BOND_TYPE_SINGLE;
         }
         break;
     }
 
     /* 2D stereo */
 
-    switch( ati[a1].bond_stereo[j] )
+    switch (ati[a1].bond_stereo[j])
     {
     /* stereocenter-related; positive: the sharp end points to this atom  */
-    case   INCHI_BOND_STEREO_NONE:
-        cStereoType1 = 0;
-        cStereoType2 = 0;
-        break;
-    case   INCHI_BOND_STEREO_SINGLE_1UP:
-        cStereoType1 =  STEREO_SNGL_UP;
-        cStereoType2 = -STEREO_SNGL_UP;
-        break;
-    case   INCHI_BOND_STEREO_SINGLE_1EITHER:
-        cStereoType1 =  STEREO_SNGL_EITHER;
-        cStereoType2 = -STEREO_SNGL_EITHER;
-        break;
-    case   INCHI_BOND_STEREO_SINGLE_1DOWN:
-        cStereoType1 =  STEREO_SNGL_DOWN;
-        cStereoType2 = -STEREO_SNGL_DOWN;
-        break;
-    /* stereocenter-related; negative: the sharp end points to the opposite atom  */
-    case   INCHI_BOND_STEREO_SINGLE_2UP:
-        cStereoType1 = -STEREO_SNGL_UP;
-        cStereoType2 =  STEREO_SNGL_UP;
-        break;
-    case   INCHI_BOND_STEREO_SINGLE_2EITHER:
-        cStereoType1 = -STEREO_SNGL_EITHER;
-        cStereoType2 =  STEREO_SNGL_EITHER;
-        break;
-    case   INCHI_BOND_STEREO_SINGLE_2DOWN:
-        cStereoType1 = -STEREO_SNGL_DOWN;
-        cStereoType2 =  STEREO_SNGL_DOWN;
-        break;
-    /* stereobond-related */
-    case   INCHI_BOND_STEREO_DOUBLE_EITHER:
-    case  -INCHI_BOND_STEREO_DOUBLE_EITHER:
-        cStereoType1 = STEREO_DBLE_EITHER;
-        cStereoType2 = STEREO_DBLE_EITHER;
-        break;
-    default:
+        case   INCHI_BOND_STEREO_NONE:
+            cStereoType1 = 0;
+            cStereoType2 = 0;
+            break;
+        case   INCHI_BOND_STEREO_SINGLE_1UP:
+            cStereoType1 = STEREO_SNGL_UP;
+            cStereoType2 = -STEREO_SNGL_UP;
+            break;
+        case   INCHI_BOND_STEREO_SINGLE_1EITHER:
+            cStereoType1 = STEREO_SNGL_EITHER;
+            cStereoType2 = -STEREO_SNGL_EITHER;
+            break;
+        case   INCHI_BOND_STEREO_SINGLE_1DOWN:
+            cStereoType1 = STEREO_SNGL_DOWN;
+            cStereoType2 = -STEREO_SNGL_DOWN;
+            break;
+        /* stereocenter-related; negative: the sharp end points to the opposite atom  */
+        case   INCHI_BOND_STEREO_SINGLE_2UP:
+            cStereoType1 = -STEREO_SNGL_UP;
+            cStereoType2 = STEREO_SNGL_UP;
+            break;
+        case   INCHI_BOND_STEREO_SINGLE_2EITHER:
+            cStereoType1 = -STEREO_SNGL_EITHER;
+            cStereoType2 = STEREO_SNGL_EITHER;
+            break;
+        case   INCHI_BOND_STEREO_SINGLE_2DOWN:
+            cStereoType1 = -STEREO_SNGL_DOWN;
+            cStereoType2 = STEREO_SNGL_DOWN;
+            break;
+        /* stereobond-related */
+        case   INCHI_BOND_STEREO_DOUBLE_EITHER:
+        case  -INCHI_BOND_STEREO_DOUBLE_EITHER:
+            cStereoType1 = STEREO_DBLE_EITHER;
+            cStereoType2 = STEREO_DBLE_EITHER;
+            break;
+        default:
         {
-        char szBondType[16];
-        sprintf( szBondType, "%d", ati[a1].bond_stereo[j] );
-        TREAT_ERR (*err, 0, "Unrecognized bond stereo:");
-        TREAT_ERR (*err, 0, szBondType);
-        *err |= 8; /*  Unrecognized Bond stereo replaced with non-stereo bond */
-        cStereoType1 = 0;
-        cStereoType2 = 0;
+            char szBondType[16];
+            sprintf( szBondType, "%d", ati[a1].bond_stereo[j] );
+            TREAT_ERR( *err, 0, "Unrecognized bond stereo:" );
+            TREAT_ERR( *err, 0, szBondType );
+            *err |= 8; /*  Unrecognized Bond stereo replaced with non-stereo bond */
+            cStereoType1 = 0;
+            cStereoType2 = 0;
         }
         break;
     }
 
     /* neighbor */
-
-    if ( ati[a1].neighbor[j] < 0 || ati[a1].neighbor[j] >= nNumAtoms )
+    if (ati[a1].neighbor[j] < 0 || ati[a1].neighbor[j] >= nNumAtoms)
     {
         *err |= 1; /*  bond for impossible atom number(s); ignored */
-        TREAT_ERR (*err, 0, "Bond to nonexistent atom");
+        TREAT_ERR( *err, 0, "Bond to nonexistent atom" );
         goto err_exit;
     }
 
     a2 = (AT_NUMB) ati[a1].neighbor[j];
-    if ( a2 == a1 )
+    if (a2 == a1)
     {
         *err |= 1; /*  bond for impossible atom number(s); ignored */
-        TREAT_ERR (*err, 0, "Atom has a bond to itself");
+        TREAT_ERR( *err, 0, "Atom has a bond to itself" );
         goto err_exit;
     }
 
     /* consistency check; locate the bond in the opposite atom */
-    p1 = is_in_the_list( at[a1].neighbor, (AT_NUMB)a2, at[a1].valence );
-    p2 = is_in_the_list( at[a2].neighbor, (AT_NUMB)a1, at[a2].valence );
+    p1 = is_in_the_list( at[a1].neighbor, (AT_NUMB) a2, at[a1].valence );
+    p2 = is_in_the_list( at[a2].neighbor, (AT_NUMB) a1, at[a2].valence );
 
-    if ( p1 && p2 )
+    if (p1 && p2)
     {
-        n1 = (int) (p1 - at[a1].neighbor);
-        n2 = (int) (p2 - at[a2].neighbor);
-        if ( n1+1 < at[a1].valence &&
-             is_in_the_list( at[a1].neighbor+n1+1, (AT_NUMB)a2, at[a1].valence-n1-1 )
+        n1 = (int) ( p1 - at[a1].neighbor );
+        n2 = (int) ( p2 - at[a2].neighbor );
+        if (n1 + 1 < at[a1].valence &&
+             is_in_the_list( at[a1].neighbor + n1 + 1, (AT_NUMB) a2, at[a1].valence - n1 - 1 )
              ||
-             n2+1 < at[a2].valence &&
-             is_in_the_list( at[a2].neighbor+n2+1, (AT_NUMB)a1, at[a2].valence-n2-1 ) )
+             n2 + 1 < at[a2].valence &&
+             is_in_the_list( at[a2].neighbor + n2 + 1, (AT_NUMB) a1, at[a2].valence - n2 - 1 ))
         {
-            TREAT_ERR (*err, 0, "Multiple bonds between two atoms");
+            TREAT_ERR( *err, 0, "Multiple bonds between two atoms" );
             *err |= 2; /*  multiple bonds between atoms */
         }
-        else if ( n1 < at[a1].valence && n2 < at[a2].valence &&
+        else if (n1 < at[a1].valence && n2 < at[a2].valence &&
              cBondType == at[a2].bond_type[n2] &&
              cBondType == at[a1].bond_type[n1] &&
              cStereoType1 == at[a1].bond_stereo[n1] &&
-             cStereoType2 == at[a2].bond_stereo[n2] )
+             cStereoType2 == at[a2].bond_stereo[n2])
         {
             /*TREAT_ERR (*err, 0, "Duplicated bond(s) between two atoms");*/
         }
         else
         {
-            TREAT_ERR (*err, 0, "Multiple bonds between two atoms");
+            TREAT_ERR( *err, 0, "Multiple bonds between two atoms" );
             *err |= 2; /*  multiple bonds between atoms */
         }
     }
-    else if ( (p1 || p2) &&
-              (p1 || at[a1].valence < MAXVAL) &&
-              (p2 || at[a2].valence < MAXVAL) )
+    else if (( p1 || p2 ) &&
+        ( p1 || at[a1].valence < MAXVAL ) &&
+        ( p2 || at[a2].valence < MAXVAL ))
     {
-        n1 = p1? (int) (p1 - at[a1].neighbor) : at[a1].valence ++;
-        n2 = p2? (int) (p2 - at[a2].neighbor) : at[a2].valence ++;
+        n1 = p1 ? (int) ( p1 - at[a1].neighbor ) : at[a1].valence++;
+        n2 = p2 ? (int) ( p2 - at[a2].neighbor ) : at[a2].valence++;
         /* the bond is present in one atom only: possibly program error */
-        if ( p1 && (cBondType != at[a1].bond_type[n1] || at[a1].bond_stereo[n1] != cStereoType1 )||
-             p2 && (cBondType != at[a2].bond_type[n2] || at[a2].bond_stereo[n2] != cStereoType2 ) )
+        if (p1 && ( cBondType != at[a1].bond_type[n1] || at[a1].bond_stereo[n1] != cStereoType1 ) ||
+             p2 && ( cBondType != at[a2].bond_type[n2] || at[a2].bond_stereo[n2] != cStereoType2 ))
         {
-            TREAT_ERR (*err, 0, "Multiple bonds between two atoms");
+            TREAT_ERR( *err, 0, "Multiple bonds between two atoms" );
             *err |= 2; /*  multiple bonds between atoms */
         }
         else
         {
-            TREAT_ERR (*err, 0, "Duplicated bond(s) between two atoms");
+            TREAT_ERR( *err, 0, "Duplicated bond(s) between two atoms" );
             /* warning */
         }
     }
-    else if ( !p1 && !p2 && at[a1].valence < MAXVAL && at[a2].valence < MAXVAL )
+    else if (!p1 && !p2 && at[a1].valence < MAXVAL && at[a2].valence < MAXVAL)
     {
-        n1 = at[a1].valence ++;
-        n2 = at[a2].valence ++;
-        (*nNumBonds) ++;
+        n1 = at[a1].valence++;
+        n2 = at[a2].valence++;
+        ( *nNumBonds )++;
     }
     else
     {
         char szMsg[64];
         *err |= 4; /*  too large number of bonds. Some bonds ignored. */
         sprintf( szMsg, "Atom '%s' has more than %d bonds",
-                        at[a1].valence>= MAXVAL? at[a1].elname:at[a2].elname, MAXVAL );
-        TREAT_ERR (*err, 0, szMsg);
+                        at[a1].valence >= MAXVAL ? at[a1].elname : at[a2].elname, MAXVAL );
+        TREAT_ERR( *err, 0, szMsg );
         goto err_exit;
     }
 
@@ -1262,21 +1398,23 @@ int SetBondProperties( inp_ATOM *at,
 
     /* bond type */
     at[a1].bond_type[n1] =
-    at[a2].bond_type[n2] = cBondType;
-    /* connection */
-    at[a1].neighbor[n1] = (AT_NUMB)a2;
-    at[a2].neighbor[n2] = (AT_NUMB)a1;
+        at[a2].bond_type[n2] = cBondType;
+        /* connection */
+    at[a1].neighbor[n1] = (AT_NUMB) a2;
+    at[a2].neighbor[n2] = (AT_NUMB) a1;
     /* stereo */
-    at[a1].bond_stereo[n1] =  cStereoType1; /*  >0: the wedge (pointed) end is at this atom */
-    at[a2].bond_stereo[n2] =  cStereoType2; /*  <0: the wedge (pointed) end is at the opposite atom */
+    at[a1].bond_stereo[n1] = cStereoType1; /*  >0: the wedge (pointed) end is at this atom */
+    at[a2].bond_stereo[n2] = cStereoType2; /*  <0: the wedge (pointed) end is at the opposite atom */
 
     return 0;
 
 err_exit:
+
     return 1;
 }
 
-/******************************************************************/
+
+/****************************************************************************/
 int SetAtomAndBondProperties( inp_ATOM *at,
                               inchi_Atom *ati,
                               int a1,
@@ -1288,7 +1426,7 @@ int SetAtomAndBondProperties( inp_ATOM *at,
     int nRadical, nCharge;
     static int el_number_H = 0;
 
-    if ( !el_number_H )
+    if (!el_number_H)
     {
         el_number_H = get_periodic_table_number( "H" );
     }
@@ -1296,71 +1434,77 @@ int SetAtomAndBondProperties( inp_ATOM *at,
     nRadical = nCharge = 0;
     valence = at[a1].valence;
     chem_valence = num_alt_bonds = 0;
-    for ( j = 0; j < valence; j ++ )
+    for (j = 0; j < valence; j++)
     {
-        if ( at[a1].bond_type[j] <= BOND_TYPE_TRIPLE )
+        if (at[a1].bond_type[j] <= BOND_TYPE_TRIPLE)
         {
             chem_valence += at[a1].bond_type[j];
         }
         else
         {
-            num_alt_bonds ++;
+            num_alt_bonds++;
         }
     }
-    switch( num_alt_bonds ) {
-    case 0:
-        break;
-    case 2:
-        chem_valence += 3; /* -C= */
-        break;
-    case 3:
-        chem_valence += 4;  /* >C= */
-        break;
-    default:
+    switch (num_alt_bonds)
+    {
+        case 0:
+            break;
+        case 2:
+            chem_valence += 3; /* -C= */
+            break;
+        case 3:
+            chem_valence += 4;  /* >C= */
+            break;
+        default:
         {
-        char szMsg[64];
-        *err |= 8; /*  wrong number of alt. bonds */
-        sprintf( szMsg, "Atom '%s' has %d alternating bonds",
-                        at[a1].elname, num_alt_bonds );
-        TREAT_ERR (*err, 0, szMsg);
+            char szMsg[64];
+            *err |= 8; /*  wrong number of alt. bonds */
+            sprintf( szMsg, "Atom '%s' has %d alternating bonds",
+                            at[a1].elname, num_alt_bonds );
+            TREAT_ERR( *err, 0, szMsg );
         }
         break;
     }
     at[a1].chem_bonds_valence = chem_valence;
 
     /* aliased hydrogen atoms */
-    if ( ERR_ELEM == (n1 = get_periodic_table_number( at[a1].elname ) ) )
+    if (ERR_ELEM == ( n1 = get_periodic_table_number( at[a1].elname ) ))
     {
         /*  Case when elname contains more than 1 element: extract number of H if possible */
-        if ( extract_charges_and_radicals( at[a1].elname, &nRadical, &nCharge ) )
+        if (extract_charges_and_radicals( at[a1].elname, &nRadical, &nCharge ))
         {
-            if ( nRadical && at[a1].radical && nRadical != at[a1].radical ||
-                 nCharge  && at[a1].charge  && nCharge  != at[a1].charge )
+            if (nRadical && at[a1].radical && nRadical != at[a1].radical ||
+                 nCharge  && at[a1].charge  && nCharge != at[a1].charge)
             {
-                TREAT_ERR (*err, 0, "Ignored charge/radical redefinition:");
-                TREAT_ERR (*err, 0, ati[a1].elname);
+                TREAT_ERR( *err, 0, "Ignored charge/radical redefinition:" );
+                TREAT_ERR( *err, 0, ati[a1].elname );
             }
             else
             {
-                if ( nRadical )
+                if (nRadical)
+                {
                     at[a1].radical = nRadical;
-                if ( nCharge )
-                    at[a1].charge  = nCharge;
+                }
+                if (nCharge)
+                {
+                    at[a1].charge = nCharge;
+                }
             }
         }
 
         at[a1].num_H = extract_H_atoms( at[a1].elname, at[a1].num_iso_H );
-        if ( !at[a1].elname[0] && NUMH(at, a1) )
+        if (!at[a1].elname[0] && NUMH( at, a1 ))
         {
             /* alias contains only H. Added 2004-07-21, fixed 2004-07-22
              * move the heaviest isotope to the "central atom"
              * Note: this must be consistent with H-H treatment in remove_terminal_HDT()
              */
             strcpy( at[a1].elname, "H" );
-            if ( NUM_ISO_H(at,a1) ) {
-                for ( j = NUM_H_ISOTOPES-1; 0 <= j; j -- )
+            if (NUM_ISO_H( at, a1 ))
+            {
+                for (j = NUM_H_ISOTOPES - 1; 0 <= j; j--)
                 {
-                    if ( at[a1].num_iso_H[j] )
+                    if (at[a1].num_iso_H[j])
                     {
                         at[a1].num_iso_H[j] --;
                         at[a1].iso_atw_diff = 1 + j;
@@ -1370,49 +1514,78 @@ int SetAtomAndBondProperties( inp_ATOM *at,
             }
             else
             {
-                at[a1].num_H --;
+                at[a1].num_H--;
             }
         }
 
-        if ( ERR_ELEM == (n1 = get_periodic_table_number( at[a1].elname ) ) )
+        if (ERR_ELEM == ( n1 = get_periodic_table_number( at[a1].elname ) ))
         {
             n1 = 0;
         }
-        if ( n1 )
+        if (n1)
         {
             at[a1].at_type |= 1; /* "Aliased" atom: data in the element name */
-            TREAT_ERR (*err, 0, "Parsed compound atom(s):");
-            TREAT_ERR (*err, 0, ati[a1].elname);
+            TREAT_ERR( *err, 0, "Parsed compound atom(s):" );
+            TREAT_ERR( *err, 0, ati[a1].elname );
         }
     }
 
     at[a1].el_number = (U_CHAR) n1;
-    if ( !n1 )
+    if (!n1)
     {
         *err |= 64; /*  Unrecognized aromatic bond(s) replaced with single */
-        TREAT_ERR (*err, 0, "Unknown element(s):");
-        TREAT_ERR (*err, 0, at[a1].elname);
+        TREAT_ERR( *err, 0, "Unknown element(s):" );
+        TREAT_ERR( *err, 0, at[a1].elname );
     }
     else
-    /* replace explicit D or T with isotopic H (added 2003-06-02) */
-    if ( el_number_H == n1 && !at[a1].iso_atw_diff )
     {
-        switch( at[a1].elname[0] )
+        /* replace explicit D or T with isotopic H (added 2003-06-02) */
+        if (el_number_H == n1 && !at[a1].iso_atw_diff)
         {
-        case 'D':
-            at[a1].iso_atw_diff = 2;
-            mystrncpy( at[a1].elname, "H", sizeof(at->elname) );
-            break;
-        case 'T':
-            at[a1].iso_atw_diff = 3;
-            mystrncpy( at[a1].elname, "H", sizeof(at->elname) );
-            break;
-        case 'H':
-            if ( 1 <= ati[a1].isotopic_mass )
+            switch (at[a1].elname[0])
+            {
+                case 'D':
+                    at[a1].iso_atw_diff = 2;
+                    mystrncpy( at[a1].elname, "H", sizeof( at->elname ) );
+                    break;
+                case 'T':
+                    at[a1].iso_atw_diff = 3;
+                    mystrncpy( at[a1].elname, "H", sizeof( at->elname ) );
+                    break;
+                case 'H':
+                    if (1 <= ati[a1].isotopic_mass)
+                    {
+                        AT_NUM iso_atw_diff;
+                        if (ISOTOPIC_SHIFT_FLAG - ISOTOPIC_SHIFT_MAX <= ati[a1].isotopic_mass &&
+                             ISOTOPIC_SHIFT_FLAG + ISOTOPIC_SHIFT_MAX >= ati[a1].isotopic_mass)
+                        {
+                            /* ati[a1].isotopic_mass is isotopic iso_atw_diff + ISOTOPIC_SHIFT_FLAG */
+                            iso_atw_diff = ati[a1].isotopic_mass - ISOTOPIC_SHIFT_FLAG;
+                        }
+                        else
+                        {
+                            /* ati[a1].isotopic_mass is isotopic mass */
+                            int iso_atw = get_atomic_mass_from_elnum( (int) at[a1].el_number );
+                            iso_atw_diff = ati[a1].isotopic_mass - iso_atw;
+                        }
+                        if (iso_atw_diff >= 0)
+                            iso_atw_diff++;
+                        /* reproduce Bug04: allowed non-terminal H heavier than T */
+                        if (1 <= iso_atw_diff &&
+                            ( at[a1].valence != 1 || iso_atw_diff <= NUM_H_ISOTOPES ))
+                        {
+                            at[a1].iso_atw_diff = (S_CHAR) iso_atw_diff;
+                        }
+                    }
+            }
+        }
+        else
+        {/* isotopic shift */
+            if (ati[a1].isotopic_mass)
             {
                 AT_NUM iso_atw_diff;
-                if ( ISOTOPIC_SHIFT_FLAG - ISOTOPIC_SHIFT_MAX <=  ati[a1].isotopic_mass &&
-                     ISOTOPIC_SHIFT_FLAG + ISOTOPIC_SHIFT_MAX >=  ati[a1].isotopic_mass )
+                if (ISOTOPIC_SHIFT_FLAG - ISOTOPIC_SHIFT_MAX <= ati[a1].isotopic_mass &&
+                     ISOTOPIC_SHIFT_FLAG + ISOTOPIC_SHIFT_MAX >= ati[a1].isotopic_mass)
                 {
                     /* ati[a1].isotopic_mass is isotopic iso_atw_diff + ISOTOPIC_SHIFT_FLAG */
                     iso_atw_diff = ati[a1].isotopic_mass - ISOTOPIC_SHIFT_FLAG;
@@ -1420,46 +1593,20 @@ int SetAtomAndBondProperties( inp_ATOM *at,
                 else
                 {
                     /* ati[a1].isotopic_mass is isotopic mass */
-                    int iso_atw = get_atomic_mass_from_elnum( (int) at[a1].el_number );
-                    iso_atw_diff = ati[a1].isotopic_mass - iso_atw;
+                    iso_atw_diff = get_atomic_mass_from_elnum( (int) at[a1].el_number );
+                    iso_atw_diff = ati[a1].isotopic_mass - iso_atw_diff;
                 }
-                if ( iso_atw_diff >= 0 )
-                    iso_atw_diff ++;
-                /* reproduce Bug04: allowed non-terminal H heavier than T */
-                if ( 1 <= iso_atw_diff &&
-                     (at[a1].valence != 1 || iso_atw_diff <= NUM_H_ISOTOPES) )
-                {
-                    at[a1].iso_atw_diff = (S_CHAR)iso_atw_diff;
-                }
+                if (iso_atw_diff >= 0)
+                    iso_atw_diff++;
+                at[a1].iso_atw_diff = (S_CHAR) iso_atw_diff;
             }
         }
     }
-    else
-    /* isotopic shift */
-    if ( ati[a1].isotopic_mass )
-    {
-        AT_NUM iso_atw_diff;
-        if ( ISOTOPIC_SHIFT_FLAG - ISOTOPIC_SHIFT_MAX <=  ati[a1].isotopic_mass &&
-             ISOTOPIC_SHIFT_FLAG + ISOTOPIC_SHIFT_MAX >=  ati[a1].isotopic_mass )
-        {
-            /* ati[a1].isotopic_mass is isotopic iso_atw_diff + ISOTOPIC_SHIFT_FLAG */
-            iso_atw_diff = ati[a1].isotopic_mass - ISOTOPIC_SHIFT_FLAG;
-        }
-        else
-        {
-            /* ati[a1].isotopic_mass is isotopic mass */
-            iso_atw_diff = get_atomic_mass_from_elnum( (int) at[a1].el_number );
-            iso_atw_diff = ati[a1].isotopic_mass - iso_atw_diff;
-        }
-        if ( iso_atw_diff >= 0 )
-            iso_atw_diff ++;
-        at[a1].iso_atw_diff = (S_CHAR)iso_atw_diff;
-    }
 
     /* add implicit hydrogen atoms flag */
-    if ( ati[a1].num_iso_H[0] == -1 )
+    if (ati[a1].num_iso_H[0] == -1)
     {
-        if ( !bDoNotAddH )
+        if (!bDoNotAddH)
         {
             at[a1].at_type |= 2; /* user requested to add H */
         }
@@ -1469,35 +1616,36 @@ int SetAtomAndBondProperties( inp_ATOM *at,
         at[a1].num_H = ati[a1].num_iso_H[0];
     }
 
-    for ( j = 0; j < NUM_H_ISOTOPES; j ++ )
+    for (j = 0; j < NUM_H_ISOTOPES; j++)
     {
-        at[a1].num_iso_H[j] = ati[a1].num_iso_H[j+1];
+        at[a1].num_iso_H[j] = ati[a1].num_iso_H[j + 1];
     }
 
-    if ( num_alt_bonds )
+    if (num_alt_bonds)
     {
         /* atom has aromatic bonds AND the chemical valence is not known */
-        int num_H = NUMH(at, a1);
+        int num_H = NUMH( at, a1 );
         int chem_valence_alt = at[a1].chem_bonds_valence + num_H;
         int bUnusualValenceArom =
-            detect_unusual_el_valence( (int)at[a1].el_number, at[a1].charge,
+            detect_unusual_el_valence( (int) at[a1].el_number, at[a1].charge,
                                         at[a1].radical, chem_valence_alt,
                                         num_H, at[a1].valence );
         int bUnusualValenceNoArom =
-            detect_unusual_el_valence( (int)at[a1].el_number, at[a1].charge,
-                                        at[a1].radical, chem_valence_alt-1,
+            detect_unusual_el_valence( (int) at[a1].el_number, at[a1].charge,
+                                        at[a1].radical, chem_valence_alt - 1,
                                         num_H, at[a1].valence );
-        if ( bUnusualValenceArom && !bUnusualValenceNoArom && 0 == nBondsValToMetal( at, a1) )
+        if (bUnusualValenceArom && !bUnusualValenceNoArom && 0 == nBondsValToMetal( at, a1 ))
         {
             /* typically NH in 5-member aromatic ring */
-            at[a1].chem_bonds_valence --;
+            at[a1].chem_bonds_valence--;
         }
     }
 
     return 0;
 }
 
-/****************************************************************************************/
+
+/****************************************************************************/
 int InpAtom0DToInchiAtom( inp_ATOM *at,
                           int num_inp_atoms,
                           AT_NUM *num_atoms,
@@ -1505,7 +1653,8 @@ int InpAtom0DToInchiAtom( inp_ATOM *at,
                           AT_NUM *num_stereo0D,
                           inchi_Stereo0D **stereo0D )
 {
-    int num_stereo_centers, num_stereo_bonds, num_inp_stereo0D, i, m, m1, m2, n, ret=0;
+    int num_stereo_centers, num_stereo_bonds, num_inp_stereo0D, i, m, m1, m2, n, ret = 0;
+
     /* count stereobonds, allenes. cumulenes. and stereoatoms */
     num_stereo_centers = num_stereo_bonds = ret = 0;
 
@@ -1514,17 +1663,19 @@ int InpAtom0DToInchiAtom( inp_ATOM *at,
     *stereo0D = NULL;
     *num_stereo0D = 0;
 
-    for ( i = 0; i < num_inp_atoms; i ++ )
+    for (i = 0; i < num_inp_atoms; i++)
     {
-        if ( at[i].p_parity )
+        if (at[i].p_parity)
         {
             /* stereocenter */
-            num_stereo_centers ++;
+            num_stereo_centers++;
         }
         else
         {
-            for ( m = 0; m < MAX_NUM_STEREO_BONDS && at[i].sb_parity[m]; m ++ )
+            for (m = 0; m < MAX_NUM_STEREO_BONDS && at[i].sb_parity[m]; m++)
+            {
                 ;
+            }
             num_stereo_bonds += m;
         }
     }
@@ -1532,19 +1683,19 @@ int InpAtom0DToInchiAtom( inp_ATOM *at,
     num_stereo_bonds /= 2;
     num_inp_stereo0D = num_stereo_bonds + num_stereo_centers;
 
-    if ( num_inp_atoms > 0 )
+    if (num_inp_atoms > 0)
     {
-        *atom = (inchi_Atom *) inchi_calloc( num_inp_atoms, sizeof( (*atom)[0] ) );
+        *atom = (inchi_Atom *) inchi_calloc( num_inp_atoms, sizeof( ( *atom )[0] ) );
     }
 
     *num_atoms = num_inp_atoms;
 
-    if ( num_inp_stereo0D > 0 )
+    if (num_inp_stereo0D > 0)
     {
-        *stereo0D = (inchi_Stereo0D *)inchi_calloc( num_inp_stereo0D, sizeof((*stereo0D)[0]));
+        *stereo0D = (inchi_Stereo0D *) inchi_calloc( num_inp_stereo0D, sizeof( ( *stereo0D )[0] ) );
     }
 
-    if ( num_inp_atoms && !(*atom) || num_inp_stereo0D > 0 && !(*stereo0D) )
+    if (num_inp_atoms && !( *atom ) || num_inp_stereo0D > 0 && !( *stereo0D ))
     {
         /* allocation failed */
         ret = -1;
@@ -1552,43 +1703,43 @@ int InpAtom0DToInchiAtom( inp_ATOM *at,
     }
 
     /* copy atom properties */
-    for ( i = 0; i < num_inp_atoms; i ++ )
+    for (i = 0; i < num_inp_atoms; i++)
     {
-        (*atom)[i].num_bonds = at[i].valence;
-        for ( m = 0; m < at[i].valence; m ++ )
+        ( *atom )[i].num_bonds = at[i].valence;
+        for (m = 0; m < at[i].valence; m++)
         {
-            (*atom)[i].bond_type[m] = at[i].bond_type[m];
-            (*atom)[i].neighbor[m]  = at[i].neighbor[m];
+            ( *atom )[i].bond_type[m] = at[i].bond_type[m];
+            ( *atom )[i].neighbor[m] = at[i].neighbor[m];
         }
-        (*atom)[i].charge = at[i].charge;
-        memcpy( (*atom)[i].elname, at[i].elname, ATOM_EL_LEN );
-        if ( at[i].iso_atw_diff )
+        ( *atom )[i].charge = at[i].charge;
+        memcpy( ( *atom )[i].elname, at[i].elname, ATOM_EL_LEN );
+        if (at[i].iso_atw_diff)
         {
-            (*atom)[i].isotopic_mass = ISOTOPIC_SHIFT_FLAG + (at[i].iso_atw_diff > 0? at[i].iso_atw_diff-1 : at[i].iso_atw_diff);
+            ( *atom )[i].isotopic_mass = ISOTOPIC_SHIFT_FLAG + ( at[i].iso_atw_diff > 0 ? at[i].iso_atw_diff - 1 : at[i].iso_atw_diff );
         }
-        (*atom)[i].num_iso_H[0] = at[i].num_H;
-        for ( m = 0; m < NUM_H_ISOTOPES; m ++ )
+        ( *atom )[i].num_iso_H[0] = at[i].num_H;
+        for (m = 0; m < NUM_H_ISOTOPES; m++)
         {
-            (*atom)[i].num_iso_H[m+1] = at[i].num_iso_H[m];
+            ( *atom )[i].num_iso_H[m + 1] = at[i].num_iso_H[m];
         }
-        (*atom)[i].radical = at[i].radical;
+        ( *atom )[i].radical = at[i].radical;
     }
 
     /* stereo */
-    for ( i = n = 0; i < num_inp_atoms; i ++ )
+    for (i = n = 0; i < num_inp_atoms; i++)
     {
-        if ( at[i].p_parity )
+        if (at[i].p_parity)
         {
-            if ( n < num_inp_stereo0D )
+            if (n < num_inp_stereo0D)
             {
-                (*stereo0D)[n].central_atom = i;
-                (*stereo0D)[n].parity       = at[i].p_parity;
-                (*stereo0D)[n].type         = INCHI_StereoType_Tetrahedral;
-                for ( m = 0; m < MAX_NUM_STEREO_ATOM_NEIGH; m ++ )
+                ( *stereo0D )[n].central_atom = i;
+                ( *stereo0D )[n].parity = at[i].p_parity;
+                ( *stereo0D )[n].type = INCHI_StereoType_Tetrahedral;
+                for (m = 0; m < MAX_NUM_STEREO_ATOM_NEIGH; m++)
                 {
-                    (*stereo0D)[n].neighbor[m] = at[i].p_orig_at_num[m] - 1;
+                    ( *stereo0D )[n].neighbor[m] = at[i].p_orig_at_num[m] - 1;
                 }
-                n ++;
+                n++;
             }
             else
             {
@@ -1598,7 +1749,7 @@ int InpAtom0DToInchiAtom( inp_ATOM *at,
         }
         else
         {
-            for ( m1 = 0; m1 < MAX_NUM_STEREO_BONDS && at[i].sb_parity[m1]; m1 ++ )
+            for (m1 = 0; m1 < MAX_NUM_STEREO_BONDS && at[i].sb_parity[m1]; m1++)
             {
                 /* find the opposite atom at the other end of double bond, allene, or cumulene */
                 int chain[12], len = 0, nxt_neigh, nxt, cur;
@@ -1608,43 +1759,45 @@ int InpAtom0DToInchiAtom( inp_ATOM *at,
                 do
                 {
                     /* add next atom */
-                    chain[len ++] = nxt = at[cur].neighbor[nxt_neigh];
-                    nxt_neigh = (at[nxt].neighbor[0] == cur);
+                    chain[len++] = nxt = at[cur].neighbor[nxt_neigh];
+                    nxt_neigh = ( at[nxt].neighbor[0] == cur );
                     cur = nxt;
                     /* find nxt_neigh */
-                } while ( !at[cur].sb_parity[0] &&
-                          len < 12 &&
-                          at[cur].valence == 2 );
+                }
+                while (!at[cur].sb_parity[0] &&
+                       len < 12 &&
+                       at[cur].valence == 2);
 
-                if ( at[cur].sb_parity[0] && len <= 4 && i < cur /* count bonds only one time */ )
+                if (at[cur].sb_parity[0] && len <= 4 && i < cur /* count bonds only one time */)
                 {
                     /* double bond, cumulene, or allene has been found */
-                    for ( m2 = 0; m2 < MAX_NUM_STEREO_BONDS && at[cur].sb_parity[m2]; m2 ++ )
+                    for (m2 = 0; m2 < MAX_NUM_STEREO_BONDS && at[cur].sb_parity[m2]; m2++)
                     {
-                        if ( chain[len-2] == at[cur].neighbor[(int)at[cur].sb_ord[m2]] )
+                        if (chain[len - 2] == at[cur].neighbor[(int) at[cur].sb_ord[m2]])
                         {
-                            if ( n < num_inp_stereo0D )
+                            if (n < num_inp_stereo0D)
                             {
                                 int parity1 = at[i].sb_parity[m1];
                                 int parity2 = at[cur].sb_parity[m2];
                                 int parity;
-                                if ( (INCHI_PARITY_ODD == parity1 || INCHI_PARITY_EVEN == parity1) &&
-                                    (INCHI_PARITY_ODD == parity2 || INCHI_PARITY_EVEN == parity2) ) {
+                                if (( INCHI_PARITY_ODD == parity1 || INCHI_PARITY_EVEN == parity1 ) &&
+                                    ( INCHI_PARITY_ODD == parity2 || INCHI_PARITY_EVEN == parity2 ))
+                                {
                                     /* well-defined parity */
-                                    parity = (parity1==parity2)? INCHI_PARITY_EVEN : INCHI_PARITY_ODD;
+                                    parity = ( parity1 == parity2 ) ? INCHI_PARITY_EVEN : INCHI_PARITY_ODD;
                                 }
                                 else
                                 {
-                                    parity = inchi_max(parity1, parity2);
+                                    parity = inchi_max( parity1, parity2 );
                                 }
-                                (*stereo0D)[n].central_atom = (len==3)? chain[1] : NO_ATOM;
-                                (*stereo0D)[n].parity       = parity;
-                                (*stereo0D)[n].type         = len == 3? INCHI_StereoType_Allene : INCHI_StereoType_DoubleBond;
-                                (*stereo0D)[n].neighbor[0]  = at[i].sn_orig_at_num[m1]-1;
-                                (*stereo0D)[n].neighbor[1]  = i;
-                                (*stereo0D)[n].neighbor[2]  = cur;
-                                (*stereo0D)[n].neighbor[3]  = at[cur].sn_orig_at_num[m2] - 1;
-                                n ++;
+                                ( *stereo0D )[n].central_atom = ( len == 3 ) ? chain[1] : NO_ATOM;
+                                ( *stereo0D )[n].parity = parity;
+                                ( *stereo0D )[n].type = len == 3 ? INCHI_StereoType_Allene : INCHI_StereoType_DoubleBond;
+                                ( *stereo0D )[n].neighbor[0] = at[i].sn_orig_at_num[m1] - 1;
+                                ( *stereo0D )[n].neighbor[1] = i;
+                                ( *stereo0D )[n].neighbor[2] = cur;
+                                ( *stereo0D )[n].neighbor[3] = at[cur].sn_orig_at_num[m2] - 1;
+                                n++;
                             }
                             else
                             {
@@ -1661,10 +1814,16 @@ int InpAtom0DToInchiAtom( inp_ATOM *at,
     *num_stereo0D = n;
 
 exit_function:
-    if ( ret < 0 )
+    if (ret < 0)
     {
-        if ( *atom ) inchi_free( *atom );
-        if ( *stereo0D ) inchi_free( *stereo0D );
+        if (*atom)
+        {
+            inchi_free( *atom );
+        }
+        if (*stereo0D)
+        {
+            inchi_free( *stereo0D );
+        }
         *atom = NULL;
         *stereo0D = NULL;
         *num_atoms = 0;
@@ -1674,7 +1833,8 @@ exit_function:
     return ret;
 }
 
-/****************************************************************************************/
+
+/****************************************************************************/
 int ExtractOneStructure( STRUCT_DATA *sd,
                          INPUT_PARMS *ip,
                          char *szTitle,
@@ -1685,19 +1845,19 @@ int ExtractOneStructure( STRUCT_DATA *sd,
                          ORIG_ATOM_DATA *orig_inp_data,
                          long *num_inp )
 {
-    int         *err           = &sd->nStructReadError;
-    char        *pStrErr       = sd->pStrErrStruct;
-    inp_ATOM    *at            = NULL;
-    MOL_COORD   *szCoord       = NULL;
-    inchi_Atom  *ati           = NULL;
+    int         *err = &sd->nStructReadError;
+    char        *pStrErr = sd->pStrErrStruct;
+    inp_ATOM    *at = NULL;
+    MOL_COORD   *szCoord = NULL;
+    inchi_Atom  *ati = NULL;
     int       nNumAtoms = 0;
-    int       a1, j, valence, nDim, nNumBonds, nRet=0, max_num_at;
+    int       a1, j, valence, nDim, nNumBonds, nRet = 0, max_num_at;
 
     /* vABParityUnknown holds actual value of an internal constant signifying       */
     /* unknown parity: either the same as for undefined parity (default==standard)  */
     /*  or a specific one (non-std; requested by SLUUD switch).                     */
     int vABParityUnknown = AB_PARITY_UNDF;
-    if ( 0 != ( ip->nMode & REQ_MODE_DIFF_UU_STEREO) )
+    if (0 != ( ip->nMode & REQ_MODE_DIFF_UU_STEREO ))
     {
         /* Make labels for unknown and undefined stereo different */
         vABParityUnknown = AB_PARITY_UNKN;
@@ -1710,31 +1870,31 @@ int ExtractOneStructure( STRUCT_DATA *sd,
      ********************************************************/
 
     FreeOrigAtData( orig_inp_data );
-    nDim      = 0;
+    nDim = 0;
     nNumBonds = 0;
 
-    if ( !inp || (nNumAtoms = inp->num_atoms) <= 0 || !(ati = inp->atom) )
+    if (!inp || ( nNumAtoms = inp->num_atoms ) <= 0 || !( ati = inp->atom ))
     {
-        TREAT_ERR (*err, 0, "Empty structure");
+        TREAT_ERR( *err, 0, "Empty structure" );
         *err = 98;
         goto err_exit;
     }
 
     max_num_at = ip->bLargeMolecules ? MAX_ATOMS : NORMALLY_ALLOWED_INP_MAX_ATOMS;
-    if ( nNumAtoms>=max_num_at )
+    if (nNumAtoms >= max_num_at)
     {
-        TREAT_ERR (*err, 0, "Too many atoms [did you forget 'LargeMolecules' switch?]");
+        TREAT_ERR( *err, 0, "Too many atoms [did you forget 'LargeMolecules' switch?]" );
         *err = 70;
         orig_inp_data->num_inp_atoms = -1;
         goto err_exit;
     }
 
-    at      = (inp_ATOM  *) inchi_calloc( nNumAtoms, sizeof(at[0]) );
-    szCoord = (MOL_COORD *) inchi_calloc (inchi_max(nNumAtoms, 1), sizeof (MOL_COORD));
+    at = (inp_ATOM  *) inchi_calloc( nNumAtoms, sizeof( at[0] ) );
+    szCoord = (MOL_COORD *) inchi_calloc( inchi_max( nNumAtoms, 1 ), sizeof( MOL_COORD ) );
 
-    if ( !at || !szCoord )
+    if (!at || !szCoord)
     {
-        TREAT_ERR (*err, 0, "Out of RAM");
+        TREAT_ERR( *err, 0, "Out of RAM" );
         *err = -1;
         goto err_exit;
     }
@@ -1745,24 +1905,24 @@ int ExtractOneStructure( STRUCT_DATA *sd,
      *
      ********************************************************/
     /* extract atoms and bonds */
-    for ( a1 = 0; a1 < nNumAtoms; a1 ++ )
+    for (a1 = 0; a1 < nNumAtoms; a1++)
     {
         /* extract atoms */
         SetAtomProperties( at, szCoord, ati, a1, &nDim, pStrErr, err );
 
-        if ( *err )
+        if (*err)
         {
             goto err_exit;
         }
 
         /* extract connections */
         valence = ati[a1].num_bonds;
-        for ( j = 0; j < valence; j ++ )
+        for (j = 0; j < valence; j++)
         {
             SetBondProperties( at, ati, a1, j, nNumAtoms, &nNumBonds, pStrErr, err );
         }
 
-        if ( *err )
+        if (*err)
         {
             goto err_exit;
         }
@@ -1773,7 +1933,7 @@ int ExtractOneStructure( STRUCT_DATA *sd,
     orig_inp_data->num_dimensions = nDim;
 
     /* extract elements, chemical valences, implicit H, isotopic shifts */
-    for ( a1 = 0; a1 < nNumAtoms; a1 ++ )
+    for (a1 = 0; a1 < nNumAtoms; a1++)
     {
         /* set temp flags in at[a1].at_type */
         /* (1: data in atom name; 2: request to add H) */
@@ -1783,7 +1943,7 @@ int ExtractOneStructure( STRUCT_DATA *sd,
                                   ip->bDoNotAddH,
                                   pStrErr,
                                   err );
-        if ( *err )
+        if (*err)
         {
             goto err_exit;
         }
@@ -1792,7 +1952,7 @@ int ExtractOneStructure( STRUCT_DATA *sd,
     /* clear temp flags in at[].at_type; add implicit H */
     SetNumImplicitH( at, nNumAtoms );
 
-    if ( *err )
+    if (*err)
     {
         goto err_exit;
     }
@@ -1808,19 +1968,19 @@ int ExtractOneStructure( STRUCT_DATA *sd,
                        inp->num_stereo0D,
                        pStrErr,
                        err,
-                       vABParityUnknown);
+                       vABParityUnknown );
 
-    if ( *err )
+    if (*err)
     {
         goto err_exit;
     }
 
-    orig_inp_data->at             = at;
-    at     = NULL;
+    orig_inp_data->at = at;
+    at = NULL;
     orig_inp_data->num_dimensions = nDim;
-    orig_inp_data->num_inp_atoms  = nNumAtoms;
-    orig_inp_data->num_inp_bonds  = nNumBonds;
-    orig_inp_data->szCoord        = szCoord;
+    orig_inp_data->num_inp_atoms = nNumAtoms;
+    orig_inp_data->num_inp_bonds = nNumBonds;
+    orig_inp_data->szCoord = szCoord;
     szCoord = NULL;
 
     /* chiral flag */
@@ -1832,12 +1992,12 @@ int ExtractOneStructure( STRUCT_DATA *sd,
      * - inchi_dll.c  ExtractOneStructure -- InChI dll code (here)
      *******************************************************************************/
 
-    if ( (ip->nMode & REQ_MODE_CHIR_FLG_STEREO) && (ip->nMode & REQ_MODE_STEREO) )
+    if (( ip->nMode & REQ_MODE_CHIR_FLG_STEREO ) && ( ip->nMode & REQ_MODE_STEREO ))
     {
-        if ( ip->bChiralFlag & FLAG_SET_INP_AT_CHIRAL )
+        if (ip->bChiralFlag & FLAG_SET_INP_AT_CHIRAL)
         {
             /* absolute stereo */
-            ip->nMode &= ~(REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO);
+            ip->nMode &= ~( REQ_MODE_RELATIVE_STEREO | REQ_MODE_RACEMIC_STEREO );
             sd->bChiralFlag &= ~FLAG_INP_AT_NONCHIRAL;
             sd->bChiralFlag |= FLAG_INP_AT_CHIRAL; /* write AuxInfo as chiral */
         }
@@ -1845,18 +2005,18 @@ int ExtractOneStructure( STRUCT_DATA *sd,
         /*if ( ip->bChiralFlag & FLAG_SET_INP_AT_NONCHIRAL )*/
         {
             /* relative stereo */
-            ip->nMode &= ~(REQ_MODE_RACEMIC_STEREO);
-            ip->nMode |=   REQ_MODE_RELATIVE_STEREO;
+            ip->nMode &= ~( REQ_MODE_RACEMIC_STEREO );
+            ip->nMode |= REQ_MODE_RELATIVE_STEREO;
             sd->bChiralFlag &= ~FLAG_INP_AT_CHIRAL;
             sd->bChiralFlag |= FLAG_INP_AT_NONCHIRAL; /* write AuxInfo as non-chiral */
         }
     }
-    else if ( ip->bChiralFlag & FLAG_SET_INP_AT_CHIRAL )
+    else if (ip->bChiralFlag & FLAG_SET_INP_AT_CHIRAL)
     {
         sd->bChiralFlag &= ~FLAG_INP_AT_NONCHIRAL;
         sd->bChiralFlag |= FLAG_INP_AT_CHIRAL; /* write AuxInfo as chiral */
     }
-    else if ( ip->bChiralFlag & FLAG_SET_INP_AT_NONCHIRAL )
+    else if (ip->bChiralFlag & FLAG_SET_INP_AT_NONCHIRAL)
     {
         sd->bChiralFlag &= ~FLAG_INP_AT_CHIRAL;
         sd->bChiralFlag |= FLAG_INP_AT_NONCHIRAL; /* write AuxInfo as non-chiral */
@@ -1869,9 +2029,9 @@ int ExtractOneStructure( STRUCT_DATA *sd,
                                                    inp->polymer,
                                                    inp->v3000,
                                                    orig_inp_data->num_inp_atoms );
-        if ( res )
+        if (res)
         {
-            TREAT_ERR ( res, 0, "General error on treating polymers");
+            TREAT_ERR( res, 0, "General error on treating polymers" );
             *err = -1;
             goto err_exit;
         }
@@ -1880,11 +2040,14 @@ int ExtractOneStructure( STRUCT_DATA *sd,
 
 err_exit:
 
-    if ( at )
-        /* if not moved to orig_inp_data/then nullified */
+    if (at)
+    {   /* if not moved to orig_inp_data/then nullified */
         inchi_free( at );
-    if ( szCoord )
+    }
+    if (szCoord)
+    {
         inchi_free( szCoord );
+    }
 
     nRet = TreatErrorsInReadTheStructure( sd, ip, LOG_MASK_NO_WARN, NULL,
                                           log_file, out_file, prb_file,
@@ -1893,26 +2056,36 @@ err_exit:
     return nRet;
 }
 
-/********************************************************/
+
+/****************************************************************************/
 int INCHI_DECL GetStringLength( char *p )
 {
-    if ( p )
-        return
-            (int) strlen(p);
+    if (p)
+    {
+        return (int) strlen( p );
+    }
     else
+    {
         return 0;
+    }
 }
 
 #define MAX_MSG_LEN 512
 
-/* GetINCHIfromINCHI does same as -InChI2InChI option: converts InChI into InChI for validation purposes */
-/* It may also be used to filter out specific layers. For instance, /Snon would remove stereochemical layer */
-/* Omitting /FixedH and/or /RecMet would remove Fixed-H or Reconnected layers */
-/* To keep all InChI layers use options string "/FixedH /RecMet"; option /InChI2InChI is not needed */
-/* inchi_InputINCHI is created by the user; strings in inchi_Output are allocated and deallocated by InChI */
-/* inchi_Output does not need to be initilized out to zeroes; see FreeINCHI() on how to deallocate it */
 
-/*************************************************************/
+/****************************************************************************
+ GetINCHIfromINCHI does same as -InChI2InChI option: converts InChI into
+ InChI for validation purposes
+ It may also be used to filter out specific layers. For instance,
+ /Snon would remove stereochemical layer
+ Omitting /FixedH and/or /RecMet would remove Fixed-H or Reconnected layers
+ To keep all InChI layers use options string "/FixedH /RecMet";
+ option /InChI2InChI is not needed
+ inchi_InputINCHI is created by the user;
+ strings in inchi_Output are allocated and deallocated by InChI
+ inchi_Output does not need to be initilized out to zeroes;
+ see FreeINCHI() on how to deallocate it
+****************************************************************************/
 int INCHI_DECL GetINCHIfromINCHI( inchi_InputINCHI *inpInChI,
                                   inchi_Output *out )
 {
@@ -1925,7 +2098,7 @@ int INCHI_DECL GetINCHIfromINCHI( inchi_InputINCHI *inpInChI,
     CANON_GLOBALS CG;
 
     int i;
-    char      szSdfDataValue[MAX_SDF_VALUE+1];
+    char      szSdfDataValue[MAX_SDF_VALUE + 1];
     unsigned long  ulDisplTime = 0;    /*  infinite, milliseconds */
 
     INPUT_PARMS inp_parms;
@@ -1938,36 +2111,36 @@ int INCHI_DECL GetINCHIfromINCHI( inchi_InputINCHI *inpInChI,
     int  num_repeat = REPEAT_ALL;
 #endif
 
-    const char *argv[INCHI_MAX_NUM_ARG+1];
+    const char *argv[INCHI_MAX_NUM_ARG + 1];
     int   argc;
     char *szOptions = NULL;
 
-    INCHI_IOSTREAM inchi_file[3], *out_file = inchi_file, *log_file = inchi_file+1, *input_file = inchi_file+2;
+    INCHI_IOSTREAM inchi_file[3], *out_file = inchi_file, *log_file = inchi_file + 1, *input_file = inchi_file + 2;
 
 #if( TRACE_MEMORY_LEAKS == 1 )
-    _CrtSetDbgFlag(_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+    _CrtSetDbgFlag( _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF );
 /* for execution outside the VC++ debugger uncomment one of the following two */
 
 #ifdef MY_REPORT_FILE
-   _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_WARN, MY_REPORT_FILE );
-   _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ERROR, MY_REPORT_FILE );
-   _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ASSERT, MY_REPORT_FILE );
+    _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_WARN, MY_REPORT_FILE );
+    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ERROR, MY_REPORT_FILE );
+    _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ASSERT, MY_REPORT_FILE );
 #else
-    _CrtSetReportMode(_CRT_WARN | _CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode( _CRT_WARN | _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 #endif
 
     /* turn on floating point exceptions */
 #if ( !defined(__STDC__) || __STDC__ != 1 )
     {
         /* Get the default control word. */
-        int cw = _controlfp( 0,0 );
+        int cw = _controlfp( 0, 0 );
 
         /* Set the exception masks OFF, turn exceptions on. */
         /*cw &=~(EM_OVERFLOW|EM_UNDERFLOW|EM_INEXACT|EM_ZERODIVIDE|EM_DENORMAL);*/
-        cw &=~(EM_OVERFLOW|EM_UNDERFLOW|EM_ZERODIVIDE|EM_DENORMAL);
+        cw &= ~( EM_OVERFLOW | EM_UNDERFLOW | EM_ZERODIVIDE | EM_DENORMAL );
 
         /* Set the control word. */
         _controlfp( cw, MCW_EM );
@@ -1975,52 +2148,52 @@ int INCHI_DECL GetINCHIfromINCHI( inchi_InputINCHI *inpInChI,
 #endif
 #endif
 
-    memset( out, 0, sizeof(*out) );
+    memset( out, 0, sizeof( *out ) );
 #if ( defined(REPEAT_ALL) && REPEAT_ALL > 0 )
 repeat:
     FreeINCHI( out );
-    inchi_ios_close(out_file);
-    inchi_ios_close(log_file);
-    inchi_ios_reset(input_file);  /* do not close input_file - its string buffer may point to inpInChI->szInChI */
+    inchi_ios_close( out_file );
+    inchi_ios_close( log_file );
+    inchi_ios_reset( input_file );  /* do not close input_file - its string buffer may point to inpInChI->szInChI */
 #endif
 
     /* Initialize internal for this function I/O streams as string buffers */
-    inchi_ios_init(input_file, INCHI_IOSTREAM_TYPE_STRING, NULL);
-    inchi_ios_init(out_file, INCHI_IOSTREAM_TYPE_STRING, NULL);
-    inchi_ios_init(log_file, INCHI_IOSTREAM_TYPE_STRING, NULL);
+    inchi_ios_init( input_file, INCHI_IOS_TYPE_STRING, NULL );
+    inchi_ios_init( out_file, INCHI_IOS_TYPE_STRING, NULL );
+    inchi_ios_init( log_file, INCHI_IOS_TYPE_STRING, NULL );
 
-    sd->bUserQuit  = 0;
+    sd->bUserQuit = 0;
 
     /* clear original input structure */
     /* memset( inchi_file, 0, sizeof(inchi_file) ); */
-    memset( sd,         0, sizeof(*sd) );
-    memset( ip,         0, sizeof(*ip) );
-    memset( szSdfDataValue    , 0, sizeof( szSdfDataValue    ) );
+    memset( sd, 0, sizeof( *sd ) );
+    memset( ip, 0, sizeof( *ip ) );
+    memset( szSdfDataValue, 0, sizeof( szSdfDataValue ) );
 
-    memset(&ic, 0, sizeof(ic));
-    memset(&CG, 0, sizeof(CG));
+    memset( &ic, 0, sizeof( ic ) );
+    memset( &CG, 0, sizeof( CG ) );
 
     szMainOption[1] = INCHI_OPTION_PREFX;
 
-    if ( !inpInChI )
+    if (!inpInChI)
     {
         nRet = _IS_ERROR;
         goto exit_function;
     }
 
     /* options */
-    if ( inpInChI )
+    if (inpInChI)
     {
-        int opt_len = (int) ( (inpInChI->szOptions? strlen(inpInChI->szOptions) : 0) + sizeof(szMainOption) + 1 );
-        szOptions = (char*)inchi_calloc( opt_len+1, sizeof(szOptions[0]) );
-        if ( szOptions )
+        int opt_len = (int) ( ( inpInChI->szOptions ? strlen( inpInChI->szOptions ) : 0 ) + sizeof( szMainOption ) + 1 );
+        szOptions = (char*) inchi_calloc( opt_len + 1, sizeof( szOptions[0] ) );
+        if (szOptions)
         {
-            if ( inpInChI->szOptions )
+            if (inpInChI->szOptions)
             {
                 strcpy( szOptions, inpInChI->szOptions );
             }
             strcat( szOptions, szMainOption );
-            argc = parse_options_string ( szOptions, argv, INCHI_MAX_NUM_ARG );
+            argc = parse_options_string( szOptions, argv, INCHI_MAX_NUM_ARG );
         }
         else
         {
@@ -2035,31 +2208,25 @@ repeat:
         argv[1] = NULL;
     }
 
-    if ( argc == 1
-
+    if (argc == 1
 #ifdef TARGET_API_LIB
-        && (!inpInChI || !inpInChI->szInChI)
+        && ( !inpInChI || !inpInChI->szInChI )
 #endif
 
-        || argc==2 && ( argv[1][0]==INCHI_OPTION_PREFX ) &&
-        (!strcmp(argv[1]+1, "?") || !inchi_stricmp(argv[1]+1, "help") ) )
+        || argc == 2 && ( argv[1][0] == INCHI_OPTION_PREFX ) &&
+        ( !strcmp( argv[1] + 1, "?" ) || !inchi_stricmp( argv[1] + 1, "help" ) ))
     {
-        HelpCommandLineParms(log_file);
+        HelpCommandLineParms( log_file );
         out->szLog = log_file->s.pStr;
-        memset( log_file, 0, sizeof(*log_file) );
+        memset( log_file, 0, sizeof( *log_file ) );
         nRet = _IS_EOF;
         goto translate_RetVal;
     }
 
-    nRet1 = ReadCommandLineParms( argc,
-                                  argv,
-                                  ip,
-                                  szSdfDataValue,
-                                  &ulDisplTime,
-                                  bReleaseVersion,
-                                  log_file );
+    nRet1 = ReadCommandLineParms( argc, argv, ip, szSdfDataValue,
+                                &ulDisplTime, bReleaseVersion, log_file );
 
-    if ( szOptions )
+    if (szOptions)
     {
         /* argv pointed to strings in szOptions */
         inchi_free( szOptions );
@@ -2068,78 +2235,101 @@ repeat:
     /* INChI DLL specific */
     ip->bNoStructLabels = 1;
 
-    if ( 0 > nRet1 )
+    if (0 > nRet1)
     {
         goto exit_function;
     }
 
-    if ( ip->bNoStructLabels )
+    if (ip->bNoStructLabels)
     {
         ip->pSdfLabel = NULL;
         ip->pSdfValue = NULL;
-    } else if ( ip->nInputType == INPUT_INCHI_XML ||
-                ip->nInputType == INPUT_INCHI_PLAIN  ||
-                ip->nInputType == INPUT_CMLFILE ||
-                ip->nInputType == INPUT_INCHI )
+    }
+    else if (ip->nInputType == INPUT_INCHI_XML ||
+            ip->nInputType == INPUT_INCHI_PLAIN ||
+            ip->nInputType == INPUT_CMLFILE ||
+            ip->nInputType == INPUT_INCHI)
     {
         /* the input may contain both the header and the label of the structure */
-        if ( !ip->pSdfLabel )
-            ip->pSdfLabel  = ip->szSdfDataHeader;
-        if ( !ip->pSdfValue )
-            ip->pSdfValue  = szSdfDataValue;
+        if (!ip->pSdfLabel)
+        {
+            ip->pSdfLabel = ip->szSdfDataHeader;
+        }
+        if (!ip->pSdfValue)
+        {
+            ip->pSdfValue = szSdfDataValue;
+        }
     }
 
-    if ( ip->nInputType && ip->nInputType != INPUT_INCHI )
+    if (ip->nInputType && ip->nInputType != INPUT_INCHI)
     {
         inchi_ios_eprint( log_file, "Input type set to INPUT_INCHI\n" );
         ip->nInputType = INPUT_INCHI;
     }
 
+    if (!inpInChI->szInChI)
+    {
+        nRet = _IS_ERROR;
+        goto exit_function;
+    }
+    else
+    {
+        const int strict = 0;
+        nRet = CheckINCHI( inpInChI->szInChI, strict );
+        if (nRet != INCHI_VALID_STANDARD     &&
+            nRet != INCHI_VALID_NON_STANDARD &&
+            nRet != INCHI_VALID_BETA)
+        {
+            nRet = _IS_ERROR;
+            goto exit_function;
+        }
+    }
+
+
     PrintInputParms( log_file, ip );
 
-    /*********************************/
-    /* InChI -> Structure conversion */
-    /*********************************/
+    /********************************/
+    /* InChI -> InChI               */
+    /********************************/
 
     /* input_file simulation */
     input_file->s.pStr = inpInChI->szInChI;
-    input_file->s.nUsedLength = (int) strlen(input_file->s.pStr)+1;
+    input_file->s.nUsedLength = (int) strlen( input_file->s.pStr ) + 1;
     input_file->s.nAllocatedLength = input_file->s.nUsedLength;
     input_file->s.nPtr = 0;
 
     /* buffer for the message */
-    out->szMessage = (char *)inchi_calloc( MAX_MSG_LEN, sizeof(out->szMessage[0]));
-    if ( !out->szMessage )
+    out->szMessage = (char *) inchi_calloc( MAX_MSG_LEN, sizeof( out->szMessage[0] ) );
+    if (!out->szMessage)
     {
-         inchi_ios_eprint( log_file, "Cannot allocate output message buffer.\n");
+        inchi_ios_eprint( log_file, "Cannot allocate output message buffer.\n" );
         nRet = -1;
     }
     else
     {
-        nRet = ReadWriteInChI( input_file, out_file, log_file,
-                               ip, sd,
-                               NULL, 0, NULL,
-                               NULL, NULL,
-                               out->szMessage, MAX_MSG_LEN,
-                               NULL /*out->WarningFlags*/ ,
-                               &ic, &CG);
+        nRet = ReadWriteInChI( &ic, &CG, input_file, out_file, log_file,
+                                ip, sd,
+                                NULL, 0, NULL,
+                                NULL, NULL,
+                                out->szMessage, MAX_MSG_LEN,
+                                NULL /*out->WarningFlags*/ );
     }
 
-    if ( nRet >= 0 && out_file->s.pStr )
+    if (nRet >= 0 && out_file->s.pStr)
     {
         /* success */
         char *p;
         out->szInChI = out_file->s.pStr;
         out->szAuxInfo = NULL;
 
-        for ( p = strchr(out->szInChI, '\n'); p; p = strchr(p+1, '\n') )
+        for (p = strchr( out->szInChI, '\n' ); p; p = strchr( p + 1, '\n' ))
         {
-            if ( !memcmp( p, "\nAuxInfo", 8 ) )
+            if (!memcmp( p, "\nAuxInfo", 8 ))
             {
                 *p = '\0';            /* remove LF after INChI */
-                out->szAuxInfo = p+1; /* save pointer to AuxInfo */
+                out->szAuxInfo = p + 1; /* save pointer to AuxInfo */
             }
-            else if ( out->szAuxInfo || !p[1])
+            else if (out->szAuxInfo || !p[1])
             {
                 /* remove LF after aux info or from the last char */
                 *p = '\0';
@@ -2156,9 +2346,9 @@ repeat:
 
 exit_function:;
 
-    for ( i = 0; i < MAX_NUM_PATHS; i ++ )
+    for (i = 0; i < MAX_NUM_PATHS; i++)
     {
-        if ( ip->path[i] )
+        if (ip->path[i])
         {
             inchi_free( (char*) ip->path[i] ); /*  cast deliberately discards 'const' qualifier */
             ip->path[i] = NULL;
@@ -2168,7 +2358,7 @@ exit_function:;
     SetBitFree( &CG );
 
 #if ( defined(REPEAT_ALL) && REPEAT_ALL > 0 )
-    if ( num_repeat-- > 0 )
+    if (num_repeat-- > 0)
     {
         goto repeat;
     }
@@ -2177,70 +2367,74 @@ exit_function:;
 #ifdef TARGET_API_LIB
     /* output */
 
-    if ( log_file->s.pStr && log_file->s.nUsedLength > 0 )
-    {
-        while ( log_file->s.nUsedLength && '\n' == log_file->s.pStr[log_file->s.nUsedLength-1] )
+        if (log_file->s.pStr && log_file->s.nUsedLength > 0)
         {
-            log_file->s.pStr[-- log_file->s.nUsedLength]  = '\0'; /* remove last LF */
+            while (log_file->s.nUsedLength && '\n' == log_file->s.pStr[log_file->s.nUsedLength - 1])
+            {
+                log_file->s.pStr[--log_file->s.nUsedLength] = '\0'; /* remove last LF */
+            }
+            if (out)
+            {
+                out->szLog = log_file->s.pStr;
+                log_file->s.pStr = NULL;
+            }
         }
-        if ( out )
-        {
-            out->szLog = log_file->s.pStr;
-            log_file->s.pStr = NULL;
-        }
-    }
 
 #endif
 
 translate_RetVal:
+
     /* close internal output streams */
-    inchi_ios_close(out_file);
-    inchi_ios_close(log_file);
-    inchi_ios_reset(input_file);  /* do not close input_file - its string buffer may point to inpInChI->szInChI */
+    inchi_ios_close( out_file );
+    inchi_ios_close( log_file );
+    inchi_ios_reset( input_file );  /* do not close input_file - its string buffer may point to inpInChI->szInChI */
 
     switch (nRet)
     {
-    case -3         : nRet = inchi_Ret_ERROR  ; break; /* Error: no Structure has been created */
-    case -2         : nRet = inchi_Ret_ERROR  ; break; /* Error: no Structure has been created */
-    case -1         : nRet = inchi_Ret_FATAL  ; break; /* Severe error: no Structure has been created (typically; break; memory allocation failed) */
-    default         :
-        /*
-        if ( !outStruct->atom || !outStruct->num_atoms )
-        {
-            nRet = inchi_Ret_EOF;
-        }
-        else
-        {
-            int m,n,t=0;
-            for ( m=0; m < 2; m ++ )
+        case -3: nRet = inchi_Ret_ERROR; break; /* Error: no Structure has been created */
+        case -2: nRet = inchi_Ret_ERROR; break; /* Error: no Structure has been created */
+        case -1: nRet = inchi_Ret_FATAL; break; /* Severe error: no Structure has been created (typically; break; memory allocation failed) */
+        default:
+            /*
+            if ( !outStruct->atom || !outStruct->num_atoms )
             {
-                for ( n=0; n < 2; n ++ )
+                nRet = inchi_Ret_EOF;
+            }
+            else
+            {
+                int m,n,t=0;
+                for ( m=0; m < 2; m ++ )
                 {
-                    if ( outStruct->WarningFlags[m][n] ) {
-                        t ++;
+                    for ( n=0; n < 2; n ++ )
+                    {
+                        if ( outStruct->WarningFlags[m][n] ) {
+                            t ++;
+                        }
                     }
                 }
+                nRet = t? inchi_Ret_WARNING : inchi_Ret_OKAY;
             }
-            nRet = t? inchi_Ret_WARNING : inchi_Ret_OKAY;
-        }
-        */
-        break;
+            */
+            break;
     }
 
     return nRet;
 }
 
-/*
+
+/****************************************************************************
+
     GetStructFromStdINCHI
-*/
+
+****************************************************************************/
 EXPIMP_TEMPLATE INCHI_API
-    int INCHI_DECL GetStructFromStdINCHI( inchi_InputINCHI *inpInChI,
-                                          inchi_OutputStruct *outStruct )
+int INCHI_DECL GetStructFromStdINCHI( inchi_InputINCHI *inpInChI,
+                                      inchi_OutputStruct *outStruct )
 {
-    if ( ( inpInChI ) &&
-         ( inpInChI->szInChI ) &&
-         ( strlen(inpInChI->szInChI) >= LEN_INCHI_STRING_PREFIX+3 ) &&
-         ( inpInChI->szInChI[LEN_INCHI_STRING_PREFIX+1] == 'S' )     )
+    if (( inpInChI ) &&
+        ( inpInChI->szInChI ) &&
+        ( strlen( inpInChI->szInChI ) >= LEN_INCHI_STRING_PREFIX + 3 ) &&
+        ( inpInChI->szInChI[LEN_INCHI_STRING_PREFIX + 1] == 'S' ))
     {
          /* brief check indicated valid std input (more checks in GetStructFromINCHI) */
         return GetStructFromINCHI( inpInChI, outStruct );
@@ -2252,11 +2446,14 @@ EXPIMP_TEMPLATE INCHI_API
     }
 }
 
-/*
+
+/****************************************************************************
+
     GetStructFromINCHIEx
-*/
-EXPIMP_TEMPLATE INCHI_API int INCHI_DECL GetStructFromINCHIEx( inchi_InputINCHI *inpInChI,
-                                                               inchi_OutputStructEx *outStruct )
+****************************************************************************/
+EXPIMP_TEMPLATE INCHI_API
+int INCHI_DECL GetStructFromINCHIEx( inchi_InputINCHI *inpInChI,
+                                     inchi_OutputStructEx *outStruct )
 {
     INCHI_CLOCK ic;
     CANON_GLOBALS CG;
@@ -2265,49 +2462,49 @@ EXPIMP_TEMPLATE INCHI_API int INCHI_DECL GetStructFromINCHIEx( inchi_InputINCHI 
     INPUT_PARMS inp_parms;
     INPUT_PARMS *ip = &inp_parms;
     INCHI_IOSTREAM inchi_file[3];
-    INCHI_IOSTREAM *out_file = inchi_file, *log_file = inchi_file+1, *input_file = inchi_file+2;
-    int    i, nRet=0, nRet1;
-    int bStdFormat=0;
-    int bReleaseVersion=bRELEASE_VERSION;
-    unsigned long  ulDisplTime=0;    /*  infinite, milliseconds */
+    INCHI_IOSTREAM *out_file = inchi_file, *log_file = inchi_file + 1, *input_file = inchi_file + 2;
+    int    i, nRet = 0, nRet1;
+    int bStdFormat = 0;
+    int bReleaseVersion = bRELEASE_VERSION;
+    unsigned long  ulDisplTime = 0;    /*  infinite, milliseconds */
 #if ( defined(REPEAT_ALL) && REPEAT_ALL > 0 )
     int  num_repeat = REPEAT_ALL;
 #endif
     static char szMainOption[] = " ?InChI2Struct";
-    char szSdfDataValue[MAX_SDF_VALUE+1];
-    const char *argv[INCHI_MAX_NUM_ARG+1];
+    char szSdfDataValue[MAX_SDF_VALUE + 1];
+    const char *argv[INCHI_MAX_NUM_ARG + 1];
     int   argc;
     char *szOptions = NULL;
     /* conversion result */
     inp_ATOM *at = NULL;
     int num_at = 0;
-    OrigAtDataPolymer *polymer = NULL;
-    OrigAtDataV3000    *v3000 = NULL;
+    OAD_Polymer *polymer = NULL;
+    OAD_V3000    *v3000 = NULL;
 
 #if( TRACE_MEMORY_LEAKS == 1 )
-    _CrtSetDbgFlag(_CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+    _CrtSetDbgFlag( _CRTDBG_CHECK_ALWAYS_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF );
 
 /* for execution outside the VC++ debugger uncomment one of the following two */
 #ifdef MY_REPORT_FILE
-   _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_WARN, MY_REPORT_FILE );
-   _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ERROR, MY_REPORT_FILE );
-   _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
-   _CrtSetReportFile( _CRT_ASSERT, MY_REPORT_FILE );
+    _CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_WARN, MY_REPORT_FILE );
+    _CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ERROR, MY_REPORT_FILE );
+    _CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_FILE );
+    _CrtSetReportFile( _CRT_ASSERT, MY_REPORT_FILE );
 #else
-    _CrtSetReportMode(_CRT_WARN | _CRT_ERROR, _CRTDBG_MODE_DEBUG);
+    _CrtSetReportMode( _CRT_WARN | _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 #endif
 
     /* turn on floating point exceptions */
 #if ( !defined(__STDC__) || __STDC__ != 1 )
     {
         /* Get the default control word. */
-        int cw = _controlfp( 0,0 );
+        int cw = _controlfp( 0, 0 );
 
         /* Set the exception masks OFF, turn exceptions on. */
         /*cw &=~(EM_OVERFLOW|EM_UNDERFLOW|EM_INEXACT|EM_ZERODIVIDE|EM_DENORMAL);*/
-        cw &=~(EM_OVERFLOW|EM_UNDERFLOW|EM_ZERODIVIDE|EM_DENORMAL);
+        cw &= ~( EM_OVERFLOW | EM_UNDERFLOW | EM_ZERODIVIDE | EM_DENORMAL );
 
         /* Set the control word. */
         _controlfp( cw, MCW_EM );
@@ -2315,52 +2512,52 @@ EXPIMP_TEMPLATE INCHI_API int INCHI_DECL GetStructFromINCHIEx( inchi_InputINCHI 
 #endif
 #endif
 
-    memset( outStruct, 0, sizeof(*outStruct) );
+    memset( outStruct, 0, sizeof( *outStruct ) );
 
 #if ( defined(REPEAT_ALL) && REPEAT_ALL > 0 )
-repeat:
+    repeat:
     FreeStructFromINCHI( &outStruct );
-    inchi_ios_reset(input_file);  /* do not close input_file - its string buffer may point to inpInChI->szInChI */
-    inchi_ios_close(out_file);
-    inchi_ios_close(log_file);
+    inchi_ios_reset( input_file );  /* do not close input_file - its string buffer may point to inpInChI->szInChI */
+    inchi_ios_close( out_file );
+    inchi_ios_close( log_file );
 #endif
 
-    sd->bUserQuit  = 0;
+    sd->bUserQuit = 0;
 
     /* Initialize internal for this function I/O streams as string buffers */
-    inchi_ios_init(input_file, INCHI_IOSTREAM_TYPE_STRING, NULL);
-    inchi_ios_init(out_file, INCHI_IOSTREAM_TYPE_STRING, NULL);
-    inchi_ios_init(log_file, INCHI_IOSTREAM_TYPE_STRING, NULL);
+    inchi_ios_init( input_file, INCHI_IOS_TYPE_STRING, NULL );
+    inchi_ios_init( out_file, INCHI_IOS_TYPE_STRING, NULL );
+    inchi_ios_init( log_file, INCHI_IOS_TYPE_STRING, NULL );
 
     /* clear original input structure */
-    memset( sd,         0, sizeof(*sd) );
-    memset( ip,         0, sizeof(*ip) );
-    memset( szSdfDataValue    , 0, sizeof( szSdfDataValue    ) );
+    memset( sd, 0, sizeof( *sd ) );
+    memset( ip, 0, sizeof( *ip ) );
+    memset( szSdfDataValue, 0, sizeof( szSdfDataValue ) );
 
-    memset(&ic, 0, sizeof(ic));
-    memset(&CG, 0, sizeof(CG));
+    memset( &ic, 0, sizeof( ic ) );
+    memset( &CG, 0, sizeof( CG ) );
 
     szMainOption[1] = INCHI_OPTION_PREFX;
 
-    if ( !inpInChI )
+    if (!inpInChI)
     {
         nRet = _IS_ERROR;
         goto exit_function;
     }
 
     /* options */
-    if ( inpInChI /*&& inpInChI->szOptions*/ )
+    if (inpInChI /*&& inpInChI->szOptions*/)
     {
         /* fix bug discovered by Burt Leland 2008-12-23 */
-        int opt_len = (inpInChI->szOptions? strlen(inpInChI->szOptions) : 0) + sizeof(szMainOption) + 1;
-        szOptions = (char*)inchi_calloc( opt_len+1, sizeof(szOptions[0]) );
-        if ( szOptions )
+        int opt_len = ( inpInChI->szOptions ? strlen( inpInChI->szOptions ) : 0 ) + sizeof( szMainOption ) + 1;
+        szOptions = (char*) inchi_calloc( opt_len + 1, sizeof( szOptions[0] ) );
+        if (szOptions)
         {
-            if ( inpInChI->szOptions )
+            if (inpInChI->szOptions)
                 /* fix bug discovered by Burt Leland 2008-12-23 */
                 strcpy( szOptions, inpInChI->szOptions );
             strcat( szOptions, szMainOption );
-            argc = parse_options_string ( szOptions, argv, INCHI_MAX_NUM_ARG );
+            argc = parse_options_string( szOptions, argv, INCHI_MAX_NUM_ARG );
         }
         else
         {
@@ -2371,26 +2568,28 @@ repeat:
     else
     {
         argc = 1;
-        argv[0] = "";
+            argv[0] = "";
         argv[1] = NULL;
     }
 
-    if ( argc == 1
+    if (argc == 1
 #ifdef TARGET_API_LIB
-        && (!inpInChI || !inpInChI->szInChI)
+        && ( !inpInChI || !inpInChI->szInChI )
 #endif
-        || argc==2 && ( argv[1][0]==INCHI_OPTION_PREFX ) &&
-        (!strcmp(argv[1]+1, "?") || !inchi_stricmp(argv[1]+1, "help") ) ) {
-        HelpCommandLineParms(log_file);
+        || argc == 2 && ( argv[1][0] == INCHI_OPTION_PREFX ) &&
+        ( !strcmp( argv[1] + 1, "?" ) || !inchi_stricmp( argv[1] + 1, "help" ) ))
+    {
+        HelpCommandLineParms( log_file );
         outStruct->szLog = log_file->s.pStr;
         nRet = _IS_EOF;
         goto translate_RetVal;
     }
 
     nRet1 = ReadCommandLineParms( argc, argv, ip, szSdfDataValue,
-                                  &ulDisplTime, bReleaseVersion, log_file );
+                                  &ulDisplTime, bReleaseVersion,
+                                  log_file );
 
-    if ( szOptions )
+    if (szOptions)
     {
         /* argv pointed to strings in szOptions */
         inchi_free( szOptions );
@@ -2400,48 +2599,48 @@ repeat:
     /* INChI DLL specific */
     ip->bNoStructLabels = 1;
 
-    if ( 0 > nRet1 )
+    if (0 > nRet1)
     {
         goto exit_function;
     }
 
-    if ( ip->bNoStructLabels )
+    if (ip->bNoStructLabels)
     {
         ip->pSdfLabel = NULL;
         ip->pSdfValue = NULL;
     }
-    else if ( ip->nInputType == INPUT_INCHI_XML ||
-              ip->nInputType == INPUT_INCHI_PLAIN  ||
-              ip->nInputType == INPUT_CMLFILE ||
-              ip->nInputType == INPUT_INCHI )
+    else if (ip->nInputType == INPUT_INCHI_XML ||
+            ip->nInputType == INPUT_INCHI_PLAIN ||
+            ip->nInputType == INPUT_CMLFILE ||
+            ip->nInputType == INPUT_INCHI)
     {
         /* the input may contain both the header and the label of the structure */
-        if ( !ip->pSdfLabel )
-            ip->pSdfLabel  = ip->szSdfDataHeader;
-        if ( !ip->pSdfValue )
-            ip->pSdfValue  = szSdfDataValue;
+        if (!ip->pSdfLabel)
+            ip->pSdfLabel = ip->szSdfDataHeader;
+        if (!ip->pSdfValue)
+            ip->pSdfValue = szSdfDataValue;
     }
 
-    if ( ip->nInputType && ip->nInputType != INPUT_INCHI )
+    if (ip->nInputType && ip->nInputType != INPUT_INCHI)
     {
         inchi_ios_eprint( log_file, "Input type set to INPUT_INCHI\n" );
         ip->nInputType = INPUT_INCHI;
     }
 
-    if ( !inpInChI->szInChI )
+    if (!inpInChI->szInChI)
     {
         nRet = _IS_ERROR;
         goto exit_function;
     }
     else
     {
-        const int strict=0; /* do not use strict mode, it may be too alarmous */
-        nRet = CheckINCHI(inpInChI->szInChI, strict);
+        const int strict = 0;                     /* do not use strict mode, it may be too alarmous */
+        nRet = CheckINCHI( inpInChI->szInChI, strict );
         if (nRet == INCHI_VALID_STANDARD)
         {
             bStdFormat = 1;
         }
-        else if (nRet == INCHI_VALID_NON_STANDARD || nRet == INCHI_VALID_BETA )
+        else if (nRet == INCHI_VALID_NON_STANDARD || nRet == INCHI_VALID_BETA)
         {
             ;
         }
@@ -2453,6 +2652,7 @@ repeat:
     }
 
     PrintInputParms( log_file, ip );
+
     /*********************************/
     /* InChI -> Structure conversion */
     /*********************************/
@@ -2469,57 +2669,60 @@ repeat:
     inchi_ios_print_nodisplay( input_file, inpInChI->szInChI );
 
     /* buffer for the message */
-    outStruct->szMessage = (char *)inchi_calloc( MAX_MSG_LEN, sizeof(outStruct->szMessage[0]));
-    if ( !outStruct->szMessage )
+    /* outStruct->szMessage = (char *)inchi_calloc( MAX_MSG_LEN, sizeof(outStruct->szMessage[0])); */
+
+    outStruct->szMessage = (char *) inchi_calloc( MAX_MSG_LEN, sizeof( char ) );
+    if (!outStruct->szMessage)
     {
-         inchi_ios_eprint( log_file, "Cannot allocate output message buffer.\n");
+        inchi_ios_eprint( log_file, "Cannot allocate output message buffer.\n" );
         nRet = -1;
     }
     else
     {
         int num_bonds;
-        nRet = ReadWriteInChI( input_file, out_file, log_file,
-                               ip, sd,
-                               &at, &num_at, &num_bonds,
-                               &polymer, &v3000,
-                               outStruct->szMessage,
-                               MAX_MSG_LEN, outStruct->WarningFlags,
-                               &ic, &CG);
+        nRet = ReadWriteInChI( &ic, &CG , input_file, out_file, log_file,
+                                ip, sd, &at, &num_at, &num_bonds,
+                                &polymer, &v3000,
+                                outStruct->szMessage,
+                                MAX_MSG_LEN, outStruct->WarningFlags );
 
-        if ( nRet >= 0 &&polymer )
-            OrigAtData_CheckAndMakePolymerPhaseShifts( polymer, at, num_at, &num_bonds );
+        if (nRet >= 0 && polymer)
+        {
+            OAD_Polymer_SmartReopenCyclizedUnits( polymer, at,
+                                                 num_at, &num_bonds );
+        }
     }
 
-    if ( nRet >= 0 && at && num_at )
+    if (nRet >= 0 && at && num_at)
     {
         /* success */
         nRet = InpAtom0DToInchiAtom( at, num_at,
-                                     &outStruct->num_atoms,
-                                     &outStruct->atom,
-                                     &outStruct->num_stereo0D,
-                                     &outStruct->stereo0D );
+                                    &outStruct->num_atoms,
+                                    &outStruct->atom,
+                                    &outStruct->num_stereo0D,
+                                    &outStruct->stereo0D );
 
-        if ( at )
+        if (at)
         {
             inchi_free( at );
             at = NULL;
         }
 
-        if ( nRet >= 0 && polymer )
+        if (nRet >= 0 && polymer)
         {
             /* Check for and then replace ZZ for star atoms if Polymer extension is supplied */
-            for (i=0; i<outStruct->num_atoms; i++)
+            for (i = 0; i < outStruct->num_atoms; i++)
             {
-                if ( !strcmp( outStruct->atom[i].elname,"Zz") )
+                if (!strcmp( outStruct->atom[i].elname, "Zz" ))
                 {
                     strcpy( outStruct->atom[i].elname, "*" );
                 }
             }
         }
 
-        if ( nRet >=0 )
+        if (nRet >= 0)
         {
-            if ( polymer || v3000 )
+            if (polymer || v3000)
             {
                 nRet = SetInChIExtInputByExtOrigAtData( polymer, v3000,
                                                         &outStruct->polymer,
@@ -2530,7 +2733,7 @@ repeat:
                 v3000 = NULL;
             }
         }
-        if ( nRet < 0 )
+        if (nRet < 0)
         {
             inchi_ios_eprint( log_file, "Final structure conversion failed\n" );
         }
@@ -2539,9 +2742,9 @@ repeat:
 
 exit_function:;
 
-    for ( i = 0; i < MAX_NUM_PATHS; i ++ )
+    for (i = 0; i < MAX_NUM_PATHS; i++)
     {
-        if ( ip->path[i] )
+        if (ip->path[i])
         {
             inchi_free( (char*) ip->path[i] ); /*  cast deliberately discards 'const' qualifier */
             ip->path[i] = NULL;
@@ -2551,21 +2754,22 @@ exit_function:;
     SetBitFree( &CG );
 
 #if ( defined(REPEAT_ALL) && REPEAT_ALL > 0 )
-    if ( num_repeat-- > 0 ) {
+    if (num_repeat-- > 0)
+    {
         goto repeat;
     }
 #endif
 
 #ifdef TARGET_API_LIB
     /* output */
-    if ( log_file->s.pStr && log_file->s.nUsedLength > 0 )
+    if (log_file->s.pStr && log_file->s.nUsedLength > 0)
     {
-        while ( log_file->s.nUsedLength &&
-                '\n' == log_file->s.pStr[log_file->s.nUsedLength-1] )
+        while (log_file->s.nUsedLength &&
+                '\n' == log_file->s.pStr[log_file->s.nUsedLength - 1])
         {
-            log_file->s.pStr[-- log_file->s.nUsedLength]  = '\0'; /* remove last LF */
+            log_file->s.pStr[--log_file->s.nUsedLength] = '\0'; /* remove last LF */
         }
-        if ( outStruct )
+        if (outStruct)
         {
             outStruct->szLog = log_file->s.pStr;
             log_file->s.pStr = NULL;
@@ -2579,108 +2783,133 @@ translate_RetVal:
     /* that was incorrect also
     inchi_ios_reset(input_file);  */    /* do not close input_file - its string buffer may point to inpInChI->szInChI */
     inchi_ios_close( input_file );
-    inchi_ios_close(out_file);
-    inchi_ios_close(log_file);
+    inchi_ios_close( out_file );
+    inchi_ios_close( log_file );
 
     switch (nRet)
     {
-    case -3         : nRet = inchi_Ret_ERROR  ; break; /* Error: no Structure has been created */
-    case -2         : nRet = inchi_Ret_ERROR  ; break; /* Error: no Structure has been created */
-    case -1         : nRet = inchi_Ret_FATAL  ; break; /* Severe error: no Structure has been created (typically; break; memory allocation failed) */
-    default         :
-        if ( !outStruct->atom || !outStruct->num_atoms )
-        {
-            nRet = inchi_Ret_EOF;
-        }
-        else
-        {
-            int m,n,t=0;
-            for ( m=0; m < 2; m ++ )
+        case -3: nRet = inchi_Ret_ERROR; break; /* Error: no Structure has been created */
+        case -2: nRet = inchi_Ret_ERROR; break; /* Error: no Structure has been created */
+        case -1: nRet = inchi_Ret_FATAL; break; /* Severe error: no Structure has been created (typically; break; memory allocation failed) */
+        default:
+            if (!outStruct->atom || !outStruct->num_atoms)
             {
-                for ( n=0; n < 2; n ++ )
+                nRet = inchi_Ret_EOF;
+            }
+            else
+            {
+                int m, n, t = 0;
+                for (m = 0; m < 2; m++)
                 {
-                    if ( outStruct->WarningFlags[m][n] )
+                    for (n = 0; n < 2; n++)
                     {
-                        t++;
+                        if (outStruct->WarningFlags[m][n])
+                        {
+                            t++;
+                        }
                     }
                 }
+                nRet = t ? inchi_Ret_WARNING : inchi_Ret_OKAY;
             }
-            nRet = t? inchi_Ret_WARNING : inchi_Ret_OKAY;
-        }
-        break;
+            break;
     }
 
     return nRet;
 }
 
-/*
+
+/****************************************************************************
+
     GetStructFromINCHI
-*/
-EXPIMP_TEMPLATE INCHI_API int INCHI_DECL GetStructFromINCHI( inchi_InputINCHI *inpInChI, inchi_OutputStruct *out )
+
+****************************************************************************/
+EXPIMP_TEMPLATE INCHI_API
+int INCHI_DECL GetStructFromINCHI( inchi_InputINCHI *inpInChI,
+                                   inchi_OutputStruct *out )
 {
-int ret = 0;
+    int ret = 0;
 
     inchi_OutputStructEx outex;
-    memset( out, 0, sizeof(*out) );
+    memset( out, 0, sizeof( *out ) );
 
     ret = GetStructFromINCHIEx( inpInChI, &outex );
 
-    out->szLog                =    outex.szLog;
-    out->szMessage            =    outex.szMessage;
-    out->WarningFlags[0][0] =    outex.WarningFlags[0][0];
-    out->WarningFlags[0][1] =    outex.WarningFlags[0][1];
-    out->WarningFlags[1][0] =    outex.WarningFlags[1][0];
-    out->WarningFlags[1][1] =    outex.WarningFlags[1][1];
+    out->szLog = outex.szLog;
+    out->szMessage = outex.szMessage;
+    out->WarningFlags[0][0] = outex.WarningFlags[0][0];
+    out->WarningFlags[0][1] = outex.WarningFlags[0][1];
+    out->WarningFlags[1][0] = outex.WarningFlags[1][0];
+    out->WarningFlags[1][1] = outex.WarningFlags[1][1];
 
-    if ( ret == inchi_Ret_OKAY ||  ret == inchi_Ret_WARNING  )
+    if (ret == inchi_Ret_OKAY || ret == inchi_Ret_WARNING)
     {
-        out->num_atoms        =    outex.num_atoms;
-        out->atom            =    outex.atom;
-        out->num_stereo0D    =    outex.num_stereo0D;
-        out->stereo0D        =    outex.stereo0D;
+        out->num_atoms = outex.num_atoms;
+        out->atom = outex.atom;
+        out->num_stereo0D = outex.num_stereo0D;
+        out->stereo0D = outex.stereo0D;
     }
 
     return ret;
 }
 
-EXPIMP_TEMPLATE INCHI_API void INCHI_DECL FreeStructFromINCHIEx( inchi_OutputStructEx *out )
+
+
+/****************************************************************************
+
+    FreeStructFromINCHIEx
+
+****************************************************************************/
+EXPIMP_TEMPLATE INCHI_API
+void INCHI_DECL FreeStructFromINCHIEx( inchi_OutputStructEx *out )
 {
-    if ( !out )
+    if (!out)
         return;
 
-    if ( out->atom )
+    if (out->atom)
+    {
         inchi_free( out->atom );
-    if ( out->stereo0D )
+    }
+    if (out->stereo0D)
+    {
         inchi_free( out->stereo0D );
-    if ( out->szLog )
+    }
+    if (out->szLog)
+    {
         inchi_free( out->szLog );
-    if ( out->szMessage )
+    }
+    if (out->szMessage)
+    {
         inchi_free( out->szMessage );
-    if ( out->polymer || out->v3000 )
-         FreeInChIExtInput( out->polymer, out->v3000 );
+    }
+    if (out->polymer || out->v3000)
+    {
+        FreeInChIExtInput( out->polymer, out->v3000 );
+    }
 
-    memset( out, 0, sizeof(*out) );
+    memset( out, 0, sizeof( *out ) );
 }
 
-/*
 
-*/
+/****************************************************************************/
 void FreeInChIExtInput( inchi_Input_Polymer *polymer, inchi_Input_V3000 *v3000 )
 {
     int k;
-    if ( polymer )
+    if (polymer)
     {
-        if ( polymer->n && polymer->units )
+        if (polymer->n && polymer->units)
         {
-            int k;
-            for (k=0; k<polymer->n; k++)
+            for (k = 0; k < polymer->n; k++)
             {
-                if ( polymer->units[k] )
+                if (polymer->units[k])
                 {
-                    if ( polymer->units[k]->alist )
-                        { inchi_free( polymer->units[k]->alist );  polymer->units[k]->alist = NULL; }
-                    if ( polymer->units[k]->blist )
-                        { inchi_free( polymer->units[k]->blist );  polymer->units[k]->blist = NULL; }
+                    if (polymer->units[k]->alist)
+                    {
+                        inchi_free( polymer->units[k]->alist );  polymer->units[k]->alist = NULL;
+                    }
+                    if (polymer->units[k]->blist)
+                    {
+                        inchi_free( polymer->units[k]->blist );  polymer->units[k]->blist = NULL;
+                    }
                 }
                 inchi_free( polymer->units[k] );
             }
@@ -2689,457 +2918,539 @@ void FreeInChIExtInput( inchi_Input_Polymer *polymer, inchi_Input_V3000 *v3000 )
             inchi_free( polymer );
         }
     }
-    if ( v3000 )
+    if (v3000)
     {
-        if ( v3000->atom_index_orig )
+        if (v3000->atom_index_orig)
         {
             inchi_free( v3000->atom_index_orig );
             v3000->atom_index_orig = NULL;
         }
-        if ( v3000->atom_index_fin )
+        if (v3000->atom_index_fin)
         {
             inchi_free( v3000->atom_index_fin );
             v3000->atom_index_fin = NULL;
         }
-        if ( v3000->n_haptic_bonds && v3000->lists_haptic_bonds )
+        if (v3000->n_haptic_bonds && v3000->lists_haptic_bonds)
         {
-            for (k=0; k<v3000->n_haptic_bonds; k++)
-                if ( v3000->lists_haptic_bonds[k] )
+            for (k = 0; k < v3000->n_haptic_bonds; k++)
+            {
+                if (v3000->lists_haptic_bonds[k])
                 {
                     inchi_free( v3000->lists_haptic_bonds[k] );
                     v3000->lists_haptic_bonds[k] = NULL;
                 }
+            }
             inchi_free( v3000->lists_haptic_bonds );
             v3000->lists_haptic_bonds = NULL;
         }
-        if ( v3000->n_steabs && v3000->lists_steabs )
+        if (v3000->n_steabs && v3000->lists_steabs)
         {
-            for (k=0; k<v3000->n_steabs; k++)
-                if ( v3000->lists_steabs[k] )
+            for (k = 0; k < v3000->n_steabs; k++)
+            {
+                if (v3000->lists_steabs[k])
                 {
                     inchi_free( v3000->lists_steabs[k] );
                     v3000->lists_steabs[k] = NULL;
                 }
+            }
             inchi_free( v3000->lists_steabs );
             v3000->lists_steabs = NULL;
         }
-        if ( v3000->n_sterel && v3000->lists_sterel )
+        if (v3000->n_sterel && v3000->lists_sterel)
         {
-            for (k=0; k<v3000->n_sterel; k++)
-                if ( v3000->lists_sterel[k] )
+            for (k = 0; k < v3000->n_sterel; k++)
+            {
+                if (v3000->lists_sterel[k])
                 {
                     inchi_free( v3000->lists_sterel[k] );
                     v3000->lists_sterel[k] = NULL;
                 }
+            }
             inchi_free( v3000->lists_sterel );
             v3000->lists_sterel = NULL;
         }
-        if ( v3000->n_sterac && v3000->lists_sterac )
+        if (v3000->n_sterac && v3000->lists_sterac)
         {
-            for (k=0; k<v3000->n_sterac; k++)
-                if ( v3000->lists_sterac[k] )
+            for (k = 0; k < v3000->n_sterac; k++)
+            {
+                if (v3000->lists_sterac[k])
                 {
                     inchi_free( v3000->lists_sterac[k] );
                     v3000->lists_sterac[k] = NULL;
                 }
+            }
             inchi_free( v3000->lists_sterac );
             v3000->lists_sterac = NULL;
         }
-        memset( v3000, 0, sizeof( *v3000 ) );
+        inchi_free( v3000 );
+        /*memset( v3000, 0, sizeof( *v3000 ) );*/
     }
 }
 
-/*
-    SetExtOrigAtDataByInChIExtInput
-*/
-int SetExtOrigAtDataByInChIExtInput( OrigAtDataPolymer **ppPolymer,
-                                     OrigAtDataV3000 **ppV3000,
+
+/****************************************************************************/
+int SetExtOrigAtDataByInChIExtInput( OAD_Polymer **ppPolymer,
+                                     OAD_V3000 **ppV3000,
                                      inchi_Input_Polymer *iep,
                                      inchi_Input_V3000 *iev,
-                                     int nat)
+                                     int nat )
 {
     int    k, m, err = 0;
-    OrigAtDataV3000 *pv=NULL;
+    OAD_V3000 *pv = NULL;
 
     /* Polymers */
-    if ( iep && iep->n )
+    if (iep && iep->n)
     {
-        /* Prepare OrigAtDataPolymer container */
-        *ppPolymer = (OrigAtDataPolymer *) inchi_calloc( 1, sizeof(OrigAtDataPolymer) );
-        if ( !*ppPolymer )
+        /* Prepare OAD_Polymer container */
+        *ppPolymer = (OAD_Polymer *) inchi_calloc( 1, sizeof( OAD_Polymer ) );
+        if (!*ppPolymer)
         {
             err = 9001;
             goto exitf;
         }
 
-        /* Convert Molfile's Sgroup's to OrigAtDataPolymerUnit's */
-        (*ppPolymer)->units = (OrigAtDataPolymerUnit**) inchi_calloc( iep->n, sizeof((*ppPolymer)->units[0]) );
-        if ( !(*ppPolymer)->units )
+        /* Convert Molfile's Sgroup's to OAD_PolymerUnit's */
+        ( *ppPolymer )->units = (OAD_PolymerUnit**) inchi_calloc( iep->n, sizeof( ( *ppPolymer )->units[0] ) );
+        if (!( *ppPolymer )->units)
         {
             err = 9001;
             goto exitf;
         }
-        memset( (*ppPolymer)->units, 0, sizeof( *(*ppPolymer)->units ) );
+        memset( ( *ppPolymer )->units, 0, sizeof( *( *ppPolymer )->units ) );
 
-        (*ppPolymer)->n                        =    iep->n;
-        (*ppPolymer)->valid                    =    -1;
-        (*ppPolymer)->really_do_phase_shift    =    0;
+        ( *ppPolymer )->n = iep->n;
+        /*( *ppPolymer )->valid = -1;*/
+        ( *ppPolymer )->really_do_frame_shift = 0;
 
-        for (k=0; k<iep->n; k++ )
+        for (k = 0; k < iep->n; k++)
         {
-            int q=0;
-            OrigAtDataPolymerUnit *unitk;
+            int q = 0;
+            OAD_PolymerUnit *unitk;
 
-            inchi_Input_PolymerUnit *groupk        =    iep->units[k];
-            (*ppPolymer)->units[k]            =    (OrigAtDataPolymerUnit*) inchi_calloc( 1, sizeof(OrigAtDataPolymerUnit) );
-            unitk                            =    (*ppPolymer)->units[k];
-            if (!unitk )
+            inchi_Input_PolymerUnit *groupk = iep->units[k];
+            ( *ppPolymer )->units[k] = (OAD_PolymerUnit*) inchi_calloc( 1, sizeof( OAD_PolymerUnit ) );
+            unitk = ( *ppPolymer )->units[k];
+            if (!unitk)
             {
                 err = 9001;
                 goto exitf;
             }
 
             memset( unitk, 0, sizeof( *unitk ) );
-            unitk->id                    =    groupk->id;
-            unitk->type                    =    groupk->type;
-            unitk->subtype                =    groupk->subtype;
-            unitk->conn                    =    groupk->conn;
-            unitk->label                =    groupk->label;
-            unitk->real_kind            =    POLYMER_UNIT_KIND_UNKNOWN;
+            unitk->id = groupk->id;
+            unitk->type = groupk->type;
+            unitk->subtype = groupk->subtype;
+            unitk->conn = groupk->conn;
+            unitk->label = groupk->label;
 
-            for (q=0; q<4; q++)
+            for (q = 0; q < 4; q++)
             {
                 unitk->xbr1[q] = groupk->xbr1[q];
                 unitk->xbr2[q] = groupk->xbr2[q];
             }
             strcpy( unitk->smt, groupk->smt );
             unitk->na = groupk->na;
-            unitk->alist = (int *) inchi_calloc( unitk->na, sizeof(int) );
+            unitk->alist = (int *) inchi_calloc( unitk->na, sizeof( int ) );
             if (!unitk->alist )
             {
                 err = 9001;
                 goto exitf;
             }
-            for (m=0; m<unitk->na; m++)
-                unitk->alist[m] = groupk->alist[m];
-            unitk->nb = groupk->nb;
-            if ( unitk->nb > 0 )
+            for (m = 0; m < unitk->na; m++)
             {
-                unitk->blist = (int *) inchi_calloc( 2*unitk->nb, sizeof(int) );
+                unitk->alist[m] = groupk->alist[m];
+            }
+            unitk->nb = groupk->nb;
+            if (unitk->nb > 0)
+            {
+                unitk->blist = (int *) inchi_calloc( 2 * unitk->nb, sizeof( int ) );
                 if (!unitk->blist )
                 {
                     err = 9001;
                     goto exitf;
                 }
-                for (m=0; m < 2*groupk->nb; m++)
-                    unitk->blist[m]    = groupk->blist[m];
+                for (m = 0; m < 2 * groupk->nb; m++)
+                {
+                    unitk->blist[m] = groupk->blist[m];
+                }
             }
             else
+            {
                 unitk->blist = NULL;
+            }
         }
     }
 
     /* V3000 Extensions */
-    if ( iev )
+    if (iev)
     {
-        int m, k, nn;
-        *ppV3000    = (OrigAtDataV3000 *) inchi_calloc( 1, sizeof(OrigAtDataV3000) );
-        pv            = *ppV3000;
-        if ( !pv )
+        int nn;
+        *ppV3000 = (OAD_V3000 *) inchi_calloc( 1, sizeof( OAD_V3000 ) );
+        pv = *ppV3000;
+        if (!pv)
         {
             err = 9001;
             goto exitf;
         }
-        memset( pv, 0, sizeof(*pv) );
+        memset( pv, 0, sizeof( *pv ) );
 
-        pv->n_collections        = iev->n_collections;
-        pv->n_haptic_bonds        = iev->n_haptic_bonds;
-        pv->n_non_haptic_bonds    = iev->n_non_haptic_bonds;
-        pv->n_sgroups            = iev->n_sgroups;
-        pv->n_non_star_atoms    = iev->n_non_star_atoms;
-        pv->n_star_atoms        = iev->n_star_atoms;
-        pv->n_steabs            = iev->n_steabs;
-        pv->n_sterac            = iev->n_sterac;
-        pv->n_sterel            = iev->n_sterel;
-        pv->n_3d_constraints    = iev->n_3d_constraints;
+        pv->n_collections = iev->n_collections;
+        pv->n_haptic_bonds = iev->n_haptic_bonds;
+        pv->n_non_haptic_bonds = iev->n_non_haptic_bonds;
+        pv->n_sgroups = iev->n_sgroups;
+        pv->n_non_star_atoms = iev->n_non_star_atoms;
+        pv->n_star_atoms = iev->n_star_atoms;
+        pv->n_steabs = iev->n_steabs;
+        pv->n_sterac = iev->n_sterac;
+        pv->n_sterel = iev->n_sterel;
+        pv->n_3d_constraints = iev->n_3d_constraints;
 
-        if ( iev->atom_index_orig )
+        if (iev->atom_index_orig)
         {
-            pv->atom_index_orig = (int *) inchi_calloc( nat, sizeof(int) );
-            if ( NULL==pv->atom_index_orig )
+            pv->atom_index_orig = (int *) inchi_calloc( nat, sizeof( int ) );
+            if (NULL == pv->atom_index_orig)
             {
                 err = 9001;
                 goto exitf;
             }
-            memcpy( pv->atom_index_orig, iev->atom_index_orig, nat);
+            memcpy( pv->atom_index_orig, iev->atom_index_orig, nat );
         }
-        if ( iev->atom_index_fin )
+        if (iev->atom_index_fin)
         {
-            pv->atom_index_fin = (int *) inchi_calloc( nat, sizeof(int) );
-            if ( NULL==pv->atom_index_fin )
+            pv->atom_index_fin = (int *) inchi_calloc( nat, sizeof( int ) );
+            if (NULL == pv->atom_index_fin)
             {
                 err = 9001;
                 goto exitf;
             }
-            memcpy( pv->atom_index_fin, iev->atom_index_fin, nat);
+            memcpy( pv->atom_index_fin, iev->atom_index_fin, nat );
         }
-        if ( iev->n_haptic_bonds && iev->lists_haptic_bonds )
+        if (iev->n_haptic_bonds && iev->lists_haptic_bonds)
         {
-            pv->lists_haptic_bonds = (int **) calloc( iev->n_haptic_bonds, sizeof (int*) );
-            if ( NULL==pv->lists_haptic_bonds )
+            pv->lists_haptic_bonds = (int **) inchi_calloc( iev->n_haptic_bonds, sizeof( int* ) );
+            if (NULL == pv->lists_haptic_bonds)
             {
                 err = 9001;
                 goto exitf;
             }
-            for (m=0; m<iev->n_haptic_bonds; m++)
+            for (m = 0; m < iev->n_haptic_bonds; m++)
             {
-                int *lst=NULL;
+                int *lst = NULL;
                 int *mol_lst = iev->lists_haptic_bonds[m];
                 nn = mol_lst[2] + 3;
-                lst = pv->lists_haptic_bonds[m] = (int *) calloc( nn, sizeof (int) );
-                if ( NULL==lst )
+                lst = pv->lists_haptic_bonds[m] = (int *) inchi_calloc( nn, sizeof( int ) );
+                if (NULL == lst)
                 {
                     err = 9001;
                     goto exitf;
                 }
-                for (k=0; k<nn; k++)
+                for (k = 0; k < nn; k++)
+                {
                     lst[k] = mol_lst[k];
+                }
             }
         }
-        if ( iev->n_steabs && iev->lists_steabs )
+        if (iev->n_steabs && iev->lists_steabs)
         {
-            pv->lists_steabs                =    (int **) calloc( iev->n_steabs, sizeof (int*) );
-            if ( NULL==pv->lists_steabs )        { err = 9001; goto exitf;  }
-            for (m=0; m<iev->n_steabs; m++)
+            pv->lists_steabs = (int **) inchi_calloc( iev->n_steabs, sizeof( int* ) );
+            if (NULL == pv->lists_steabs) { err = 9001; goto exitf; }
+            for (m = 0; m < iev->n_steabs; m++)
             {
-                int *lst=NULL;
+                int *lst = NULL;
                 int *mol_lst = iev->lists_steabs[m];
                 nn = mol_lst[1] + 2;
-                lst = pv->lists_steabs[m]    =    (int *) calloc( nn, sizeof (int) );
-                if ( NULL==lst )                { err = 9001; goto exitf; }
-                for (k=0; k<nn; k++)            lst[k] = mol_lst[k];
+                lst = pv->lists_steabs[m] = (int *) inchi_calloc( nn, sizeof( int ) );
+                if (NULL == lst)
+                {
+                    err = 9001;
+                    goto exitf;
+                }
+                for (k = 0; k < nn; k++)
+                {
+                    lst[k] = mol_lst[k];
+                }
             }
         }
-        if ( iev->n_sterac && iev->lists_sterac )
+        if (iev->n_sterac && iev->lists_sterac)
         {
-            pv->lists_sterac                =    (int **) calloc( iev->n_sterac, sizeof (int*) );
-            if ( NULL==pv->lists_sterac )        { err = 9001; goto exitf;  }
-            for (m=0; m<iev->n_sterac; m++)
+            pv->lists_sterac = (int **) inchi_calloc( iev->n_sterac, sizeof( int* ) );
+            if (NULL == pv->lists_sterac) { err = 9001; goto exitf; }
+            for (m = 0; m < iev->n_sterac; m++)
             {
-                int *lst=NULL;
+                int *lst = NULL;
                 int *mol_lst = iev->lists_sterac[m];
                 nn = mol_lst[1] + 2;
-                lst = pv->lists_sterac[m]    =    (int *) calloc( nn, sizeof (int) );
-                if ( NULL==lst )                { err = 9001; goto exitf; }
-                for (k=0; k<nn; k++)            lst[k] = mol_lst[k];
+                lst = pv->lists_sterac[m] = (int *) inchi_calloc( nn, sizeof( int ) );
+                if (NULL == lst)
+                {
+                    err = 9001;
+                    goto exitf;
+                }
+                for (k = 0; k < nn; k++)
+                {
+                    lst[k] = mol_lst[k];
+                }
             }
         }
-        if ( iev->n_sterel && iev->lists_sterel )
+        if (iev->n_sterel && iev->lists_sterel)
         {
-            pv->lists_sterel                =    (int **) calloc( iev->n_sterel, sizeof (int*) );
-            if ( NULL==pv->lists_sterel )        { err = 9001; goto exitf;  }
-            for (m=0; m<iev->n_sterel; m++)
+            pv->lists_sterel = (int **) inchi_calloc( iev->n_sterel, sizeof( int* ) );
+            if (NULL == pv->lists_sterel) { err = 9001; goto exitf; }
+            for (m = 0; m < iev->n_sterel; m++)
             {
-                int *lst=NULL;
+                int *lst = NULL;
                 int *mol_lst = iev->lists_sterel[m];
                 nn = mol_lst[1] + 2;
-                lst = pv->lists_sterel[m]    =    (int *) calloc( nn, sizeof (int) );
-                if ( NULL==lst )                { err = 9001; goto exitf; }
-                for (k=0; k<nn; k++)            lst[k] = mol_lst[k];
+                lst = pv->lists_sterel[m] = (int *) inchi_calloc( nn, sizeof( int ) );
+                if (NULL == lst)
+                {
+                    err = 9001;
+                    goto exitf;
+                }
+                for (k = 0; k < nn; k++)
+                {
+                    lst[k] = mol_lst[k];
+                }
             }
         }
     }
 
 exitf:
-    if ( err )
-        FreeExtOrigAtData ( *ppPolymer, pv );
+    if (err)
+    {
+        FreeExtOrigAtData( *ppPolymer, pv );
+    }
 
     return err;
 }
 
-/*
-    SetInChIExtInputByExtOrigAtData
-*/
-int SetInChIExtInputByExtOrigAtData( OrigAtDataPolymer     *orp,
-                                     OrigAtDataV3000     *orv,
+
+/****************************************************************************/
+int SetInChIExtInputByExtOrigAtData( OAD_Polymer     *orp,
+                                     OAD_V3000     *orv,
                                      inchi_Input_Polymer **iip,
                                      inchi_Input_V3000     **iiv,
-                                     int nat)
+                                     int nat )
 {
-int    k, m, err = 0;
+    int    k, m, err = 0;
 
-    /* Polymers */
-    if ( orp && orp->n > 0 )
+        /* Polymers */
+    if (orp && orp->n > 0)
     {
-        *iip = (inchi_Input_Polymer *) inchi_calloc( 1, sizeof(inchi_Input_Polymer) );
-        if ( !*iip )
+        *iip = (inchi_Input_Polymer *) inchi_calloc( 1, sizeof( inchi_Input_Polymer ) );
+        if (!*iip)
         {
             err = 9001;
             goto exitf;
         }
-        (*iip)->n    =    orp->n;
-        (*iip)->units = (inchi_Input_PolymerUnit**) inchi_calloc( orp->n, sizeof((*iip)->units[0]) );
-        if ( !(*iip)->units )
-            { err = 9001; goto exitf;   }
-        memset( (*iip)->units, 0, sizeof( * (*iip)->units ) );
-        for (k=0; k<orp->n; k++ )
+        ( *iip )->n = orp->n;
+        ( *iip )->units = (inchi_Input_PolymerUnit**) inchi_calloc( orp->n, sizeof( ( *iip )->units[0] ) );
+        if (!( *iip )->units)
         {
-            int q=0;
+            err = 9001; goto exitf;
+        }
+        memset( ( *iip )->units, 0, sizeof( *( *iip )->units ) );
+        for (k = 0; k < orp->n; k++)
+        {
+            int q = 0;
             inchi_Input_PolymerUnit *unitk;
-            OrigAtDataPolymerUnit    *groupk        =    orp->units[k];
-            (*iip)->units[k]        =    (inchi_Input_PolymerUnit*) inchi_calloc( 1, sizeof(inchi_Input_PolymerUnit) );
-            unitk                    =    (*iip)->units[k];
-            if (!unitk )
-                { err = 9001; goto exitf;  }
-            memset( unitk, 0, sizeof(*unitk) );
-            unitk->id                    =    groupk->id;
-            unitk->type                    =    groupk->type;
-            unitk->subtype                =    groupk->subtype;
-            unitk->conn                    =    groupk->conn;
-            unitk->label                =    groupk->label;
-            for (q=0; q<4; q++)
+            OAD_PolymerUnit    *groupk = orp->units[k];
+            ( *iip )->units[k] = (inchi_Input_PolymerUnit*) inchi_calloc( 1, sizeof( inchi_Input_PolymerUnit ) );
+            unitk = ( *iip )->units[k];
+            if (!unitk)
+            {
+                err = 9001; goto exitf;
+            }
+            memset( unitk, 0, sizeof( *unitk ) );
+            unitk->id = groupk->id;
+            unitk->type = groupk->type;
+            unitk->subtype = groupk->subtype;
+            unitk->conn = groupk->conn;
+            unitk->label = groupk->label;
+            for (q = 0; q < 4; q++)
             {
                 unitk->xbr1[q] = groupk->xbr1[q];
                 unitk->xbr2[q] = groupk->xbr2[q];
             }
             strcpy( unitk->smt, groupk->smt );
             unitk->na = groupk->na;
-            unitk->alist = (int *) inchi_calloc( unitk->na, sizeof(int) );
-            if (!unitk->alist )
-                { err = 9001; goto exitf; }
-            for (m=0; m<unitk->na; m++)
-                unitk->alist[m] = groupk->alist[m];
-            unitk->nb = groupk->nb;
-            if ( unitk->nb > 0 )
+            unitk->alist = (int *) inchi_calloc( unitk->na, sizeof( int ) );
+            if (!unitk->alist)
             {
-                unitk->blist = (int *) inchi_calloc( 2*unitk->nb, sizeof(int) );
-                if (!unitk->blist )
-                    { err = 9001; goto exitf; }
-                for (m=0; m < 2*groupk->nb; m++)
-                    unitk->blist[m]    = groupk->blist[m];
+                err = 9001; goto exitf;
+            }
+            for (m = 0; m < unitk->na; m++)
+            {
+                unitk->alist[m] = groupk->alist[m];
+            }
+            unitk->nb = groupk->nb;
+            if (unitk->nb > 0)
+            {
+                unitk->blist = (int *) inchi_calloc( 2 * unitk->nb, sizeof( int ) );
+                if (!unitk->blist)
+                {
+                    err = 9001; goto exitf;
+                }
+                for (m = 0; m < 2 * groupk->nb; m++)
+                {
+                    unitk->blist[m] = groupk->blist[m];
+                }
             }
             else
+            {
                 unitk->blist = NULL;
+            }
         }
     }
 
-    if ( orv )
+    if (orv)
     {
-        int m, k, nn;
-        *iiv    = (inchi_Input_V3000 *) inchi_calloc( 1, sizeof(OrigAtDataV3000) );
-        if ( !*iiv )
-            { err = 9001; goto exitf;  }
+        int nn;
+        *iiv = (inchi_Input_V3000 *) inchi_calloc( 1, sizeof( OAD_V3000 ) );
+        if (!*iiv)
+        {
+            err = 9001; goto exitf;
+        }
         memset( *iiv, 0, sizeof( **iiv ) );
 
-        (*iiv)->n_collections        = orv->n_collections;
-        (*iiv)->n_haptic_bonds        = orv->n_haptic_bonds;
-        (*iiv)->n_non_haptic_bonds    = orv->n_non_haptic_bonds;
-        (*iiv)->n_sgroups            = orv->n_sgroups;
-        (*iiv)->n_non_star_atoms    = orv->n_non_star_atoms;
-        (*iiv)->n_star_atoms        = orv->n_star_atoms;
-        (*iiv)->n_steabs            = orv->n_steabs;
-        (*iiv)->n_sterac            = orv->n_sterac;
-        (*iiv)->n_sterel            = orv->n_sterel;
-        (*iiv)->n_3d_constraints    = orv->n_3d_constraints;
+        ( *iiv )->n_collections = orv->n_collections;
+        ( *iiv )->n_haptic_bonds = orv->n_haptic_bonds;
+        ( *iiv )->n_non_haptic_bonds = orv->n_non_haptic_bonds;
+        ( *iiv )->n_sgroups = orv->n_sgroups;
+        ( *iiv )->n_non_star_atoms = orv->n_non_star_atoms;
+        ( *iiv )->n_star_atoms = orv->n_star_atoms;
+        ( *iiv )->n_steabs = orv->n_steabs;
+        ( *iiv )->n_sterac = orv->n_sterac;
+        ( *iiv )->n_sterel = orv->n_sterel;
+        ( *iiv )->n_3d_constraints = orv->n_3d_constraints;
 
-        if ( orv->atom_index_orig )
+        if (orv->atom_index_orig)
         {
-            (*iiv)->atom_index_orig = (int *) inchi_calloc( nat, sizeof(int) );
-            if ( NULL==(*iiv)->atom_index_orig )
+            ( *iiv )->atom_index_orig = (int *) inchi_calloc( nat, sizeof( int ) );
+            if (NULL == ( *iiv )->atom_index_orig)
             {
                 err = 9001;
                 goto exitf;
             }
-            memcpy( (*iiv)->atom_index_orig, orv->atom_index_orig, nat);
+            memcpy( ( *iiv )->atom_index_orig, orv->atom_index_orig, nat );
         }
-        if ( orv->atom_index_fin )
+        if (orv->atom_index_fin)
         {
-            (*iiv)->atom_index_fin = (int *) inchi_calloc( nat, sizeof(int) );
-            if ( NULL==(*iiv)->atom_index_fin )
+            ( *iiv )->atom_index_fin = (int *) inchi_calloc( nat, sizeof( int ) );
+            if (NULL == ( *iiv )->atom_index_fin)
             {
                 err = 9001;
                 goto exitf;
             }
-            memcpy( (*iiv)->atom_index_fin, orv->atom_index_fin, nat);
+            memcpy( ( *iiv )->atom_index_fin, orv->atom_index_fin, nat );
         }
-        if ( orv->n_haptic_bonds && orv->lists_haptic_bonds )
+        if (orv->n_haptic_bonds && orv->lists_haptic_bonds)
         {
-            (*iiv)->lists_haptic_bonds = (int **) calloc( orv->n_haptic_bonds, sizeof (int*) );
-            if ( NULL==(*iiv)->lists_haptic_bonds )
+            ( *iiv )->lists_haptic_bonds = (int **) inchi_calloc( orv->n_haptic_bonds, sizeof( int* ) );
+            if (NULL == ( *iiv )->lists_haptic_bonds)
             {
                 err = 9001;
                 goto exitf;
             }
-            for (m=0; m<orv->n_haptic_bonds; m++)
+            for (m = 0; m < orv->n_haptic_bonds; m++)
             {
-                int *lst=NULL;
+                int *lst = NULL;
                 int *mol_lst = orv->lists_haptic_bonds[m];
                 nn = mol_lst[2] + 3;
-                lst = (*iiv)->lists_haptic_bonds[m] = (int *) calloc( nn, sizeof (int) );
-                if ( NULL==lst )
+                lst = ( *iiv )->lists_haptic_bonds[m] = (int *) inchi_calloc( nn, sizeof( int ) );
+                if (NULL == lst)
                 {
                     err = 9001;
                     goto exitf;
                 }
-                for (k=0; k<nn; k++)
+                for (k = 0; k < nn; k++)
+                {
                     lst[k] = mol_lst[k];
+                }
             }
         }
-        if ( orv->n_steabs && orv->lists_steabs )
+        if (orv->n_steabs && orv->lists_steabs)
         {
-            (*iiv)->lists_steabs                =    (int **) calloc( orv->n_steabs, sizeof (int*) );
-            if ( NULL==(*iiv)->lists_steabs )        { err = 9001; goto exitf;  }
-            for (m=0; m<orv->n_steabs; m++)
+            ( *iiv )->lists_steabs = (int **) inchi_calloc( orv->n_steabs, sizeof( int* ) );
+            if (NULL == ( *iiv )->lists_steabs) { err = 9001; goto exitf; }
+            for (m = 0; m < orv->n_steabs; m++)
             {
-                int *lst=NULL;
+                int *lst = NULL;
                 int *mol_lst = orv->lists_steabs[m];
                 nn = mol_lst[1] + 2;
-                lst = (*iiv)->lists_steabs[m]    =    (int *) calloc( nn, sizeof (int) );
-                if ( NULL==lst )                { err = 9001; goto exitf; }
-                for (k=0; k<nn; k++)            lst[k] = mol_lst[k];
+                lst = ( *iiv )->lists_steabs[m] = (int *) inchi_calloc( nn, sizeof( int ) );
+                if (NULL == lst)
+                {
+                    err = 9001;
+                    goto exitf;
+                }
+                for (k = 0; k < nn; k++)
+                {
+                    lst[k] = mol_lst[k];
+                }
             }
         }
-        if ( orv->n_sterac && orv->lists_sterac )
+        if (orv->n_sterac && orv->lists_sterac)
         {
-            (*iiv)->lists_sterac                =    (int **) calloc( orv->n_sterac, sizeof (int*) );
-            if ( NULL==(*iiv)->lists_sterac )        { err = 9001; goto exitf;  }
-            for (m=0; m<orv->n_sterac; m++)
+            ( *iiv )->lists_sterac = (int **) inchi_calloc( orv->n_sterac, sizeof( int* ) );
+            if (NULL == ( *iiv )->lists_sterac) { err = 9001; goto exitf; }
+            for (m = 0; m < orv->n_sterac; m++)
             {
-                int *lst=NULL;
+                int *lst = NULL;
                 int *mol_lst = orv->lists_sterac[m];
                 nn = mol_lst[1] + 2;
-                lst = (*iiv)->lists_sterac[m]    =    (int *) calloc( nn, sizeof (int) );
-                if ( NULL==lst )                { err = 9001; goto exitf; }
-                for (k=0; k<nn; k++)            lst[k] = mol_lst[k];
+                lst = ( *iiv )->lists_sterac[m] = (int *) inchi_calloc( nn, sizeof( int ) );
+                if (NULL == lst)
+                {
+                    err = 9001;
+                    goto exitf;
+                }
+                for (k = 0; k < nn; k++)
+                {
+                    lst[k] = mol_lst[k];
+                }
             }
         }
-        if ( orv->n_sterel && orv->lists_sterel )
+        if (orv->n_sterel && orv->lists_sterel)
         {
-            (*iiv)->lists_sterel                =    (int **) calloc( orv->n_sterel, sizeof (int*) );
-            if ( NULL==(*iiv)->lists_sterel )        { err = 9001; goto exitf;  }
-            for (m=0; m<orv->n_sterel; m++)
+            ( *iiv )->lists_sterel = (int **) inchi_calloc( orv->n_sterel, sizeof( int* ) );
+            if (NULL == ( *iiv )->lists_sterel) { err = 9001; goto exitf; }
+            for (m = 0; m < orv->n_sterel; m++)
             {
-                int *lst=NULL;
+                int *lst = NULL;
                 int *mol_lst = orv->lists_sterel[m];
                 nn = mol_lst[1] + 2;
-                lst = (*iiv)->lists_sterel[m]    =    (int *) calloc( nn, sizeof (int) );
-                if ( NULL==lst )                { err = 9001; goto exitf; }
-                for (k=0; k<nn; k++)            lst[k] = mol_lst[k];
+                lst = ( *iiv )->lists_sterel[m] = (int *) inchi_calloc( nn, sizeof( int ) );
+                if (NULL == lst)
+                {
+                    err = 9001;
+                    goto exitf;
+                }
+                for (k = 0; k < nn; k++)
+                {
+                    lst[k] = mol_lst[k];
+                }
             }
         }
     }
 
 exitf:
-    if ( err )
+    if (err)
+    {
         FreeInChIExtInput( *iip, *iiv );
+    }
+
     return err;
 }
 
+
 #if( defined( _WIN32 ) && defined( _MSC_VER ) && _MSC_VER >= 800 && defined(_USRDLL) && defined(BUILD_LINK_AS_DLL) )
 /* Win32 & MS VC ++, compile and link as a DLL */
+
 /*********************************************************/
 /*   C calling conventions export from Win32 dll         */
 /*********************************************************/
+
 /* prototypes */
 #ifndef COMPILE_ALL_CPP
 #ifdef __cplusplus
@@ -3147,29 +3458,29 @@ extern "C" {
 #endif
 #endif
 
-int cdecl_GetINCHI( inchi_Input *inp, inchi_Output *out );
-int cdecl_GetStdINCHI( inchi_Input *inp, inchi_Output *out );
-void cdecl_FreeINCHI( inchi_Output *out );
-void cdecl_FreeStdINCHI( inchi_Output *out );
-int  cdecl_GetStringLength( char *p );
-int  cdecl_Get_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
-                                        int bDoNotAddH,
-                                        int bDiffUnkUndfStereo,
-                                        InchiInpData *pInchiInp );
-int  cdecl_Get_std_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
+    int cdecl_GetINCHI( inchi_Input *inp, inchi_Output *out );
+    int cdecl_GetStdINCHI( inchi_Input *inp, inchi_Output *out );
+    void cdecl_FreeINCHI( inchi_Output *out );
+    void cdecl_FreeStdINCHI( inchi_Output *out );
+    int  cdecl_GetStringLength( char *p );
+    int  cdecl_Get_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
                                             int bDoNotAddH,
+                                            int bDiffUnkUndfStereo,
                                             InchiInpData *pInchiInp );
-/*void cdecl_Free_inchi_Input( inchi_Input *pInp );*/
-void cdecl_Free_std_inchi_Input( inchi_Input *pInp );
-int cdecl_GetStructFromINCHI( inchi_InputINCHI *inpInChI,
-                              inchi_OutputStruct *outStruct );
-int cdecl_GetStructFromStdINCHI( inchi_InputINCHI *inpInChI,
-                                 inchi_OutputStruct *outStruct );
-int cdecl_GetINCHIfromINCHI( inchi_InputINCHI *inpInChI,
-                             inchi_Output *out );
-void cdecl_FreeStructFromINCHI( inchi_OutputStruct *outStruct );
-void cdecl_FreeStructFromStdINCHI( inchi_OutputStruct *outStruct );
-int cdecl_CheckINCHI( const char *szINCHI, const int strict);
+    int  cdecl_Get_std_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
+                                                int bDoNotAddH,
+                                                InchiInpData *pInchiInp );
+    /*void cdecl_Free_inchi_Input( inchi_Input *pInp );*/
+    void cdecl_Free_std_inchi_Input( inchi_Input *pInp );
+    int cdecl_GetStructFromINCHI( inchi_InputINCHI *inpInChI,
+                                  inchi_OutputStruct *outStruct );
+    int cdecl_GetStructFromStdINCHI( inchi_InputINCHI *inpInChI,
+                                     inchi_OutputStruct *outStruct );
+    int cdecl_GetINCHIfromINCHI( inchi_InputINCHI *inpInChI,
+                                 inchi_Output *out );
+    void cdecl_FreeStructFromINCHI( inchi_OutputStruct *outStruct );
+    void cdecl_FreeStructFromStdINCHI( inchi_OutputStruct *outStruct );
+    int cdecl_CheckINCHI( const char *szINCHI, const int strict );
 
 #ifndef COMPILE_ALL_CPP
 #ifdef __cplusplus
@@ -3180,32 +3491,43 @@ int cdecl_CheckINCHI( const char *szINCHI, const int strict);
 /* implementation */
 /* libinchi.def provides export without cdecl_ prefixes */
 
-/********************************************************/
+
+/****************************************************************************/
 int cdecl_GetINCHI( inchi_Input *inp, inchi_Output *out )
 {
     return GetINCHI( inp, out );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 int cdecl_GetStdINCHI( inchi_Input *inp, inchi_Output *out )
 {
     return GetStdINCHI( inp, out );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 void cdecl_FreeINCHI( inchi_Output *out )
 {
     FreeINCHI( out );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 void cdecl_FreeStdINCHI( inchi_Output *out )
 {
     FreeStdINCHI( out );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 int cdecl_GetStringLength( char *p )
 {
     return GetStringLength( p );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 int cdecl_Get_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
                                       int bDoNotAddH,
                                       int bDiffUnkUndfStereo,
@@ -3217,7 +3539,8 @@ int cdecl_Get_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
                                         pInchiInp );
 }
 
-/********************************************************/
+
+/****************************************************************************/
 int cdecl_Get_std_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
                                           int bDoNotAddH,
                                           InchiInpData *pInchiInp )
@@ -3227,26 +3550,30 @@ int cdecl_Get_std_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
                                             pInchiInp );
 }
 
-/********************************************************/
+
+/****************************************************************************/
 void cdecl_Free_std_inchi_Input( inchi_Input *pInp )
 {
     Free_std_inchi_Input( pInp );
 }
 
-/********************************************************/
+
+/****************************************************************************/
 void cdecl_Free_inchi_Input( inchi_Input *pInp )
 {
     Free_inchi_Input( pInp );
 }
 
-/********************************************************/
+
+/****************************************************************************/
 int cdecl_GetStructFromINCHI( inchi_InputINCHI *inpInChI,
                               inchi_OutputStruct *outStruct )
 {
     return GetStructFromINCHI( inpInChI, outStruct );
 }
 
-/********************************************************//********************************************************/
+
+/****************************************************************************/
 int cdecl_GetStructFromStdINCHI( inchi_InputINCHI *inpInChI,
                                  inchi_OutputStruct *outStruct )
 {
@@ -3259,21 +3586,24 @@ void cdecl_FreeStructFromINCHI( inchi_OutputStruct *outStruct )
     FreeStructFromINCHI( outStruct );
 }
 
-/********************************************************/
+
+/****************************************************************************/
 int cdecl_GetINCHIfromINCHI( inchi_InputINCHI *inpInChI,
                              inchi_Output *out )
 {
     return GetINCHIfromINCHI( inpInChI, out );
 }
 
-/********************************************************/
+
+/****************************************************************************/
 void cdecl_FreeStructFromStdINCHI( inchi_OutputStruct *outStruct )
 {
     FreeStructFromStdINCHI( outStruct );
 }
 
-/********************************************************/
-int cdecl_CheckINCHI(const char *szINCHI, const int strict)
+
+/****************************************************************************/
+int cdecl_CheckINCHI( const char *szINCHI, const int strict )
 {
     return CheckINCHI( szINCHI, strict );
 }
@@ -3291,25 +3621,25 @@ extern "C" {
 #endif
 /* prototypes */
 
-int  PASCAL pasc_GetINCHI( inchi_Input *inp, inchi_Output *out );
-int  PASCAL pasc_GetStdINCHI( inchi_Input *inp, inchi_Output *out );
-void PASCAL pasc_FreeINCHI( inchi_Output *out );
-void PASCAL pasc_FreeStdINCHI( inchi_Output *out );
-int  PASCAL pasc_GetStringLength( char *p );
-int  PASCAL pasc_Get_std_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
-                                                  int bDoNotAddH,
-                                                  InchiInpData *pInchiInp );
-int  PASCAL pasc_Get_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
-                                                  int bDoNotAddH,
-                                                  int bDiffUnkUndfStereo,
-                                                  InchiInpData *pInchiInp );
-void PASCAL pasc_Free_inchi_Input( inchi_Input *pInp );
-void PASCAL pasc_Free_std_inchi_Input( inchi_Input *pInp );
-void PASCAL pasc_FreeStructFromINCHI( inchi_OutputStruct *out );
-void PASCAL pasc_FreeStructFromStdINCHI( inchi_OutputStruct *out );
-int PASCAL pasc_GetStructFromINCHI( inchi_InputINCHI *inp, inchi_OutputStruct *out );
-int PASCAL pasc_GetStructFromStdINCHI( inchi_InputINCHI *inp, inchi_OutputStruct *out );
-int PASCAL pasc_CheckINCHI(const char *szINCHI, const int strict);
+    int  PASCAL pasc_GetINCHI( inchi_Input *inp, inchi_Output *out );
+    int  PASCAL pasc_GetStdINCHI( inchi_Input *inp, inchi_Output *out );
+    void PASCAL pasc_FreeINCHI( inchi_Output *out );
+    void PASCAL pasc_FreeStdINCHI( inchi_Output *out );
+    int  PASCAL pasc_GetStringLength( char *p );
+    int  PASCAL pasc_Get_std_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
+                                                      int bDoNotAddH,
+                                                      InchiInpData *pInchiInp );
+    int  PASCAL pasc_Get_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
+                                                      int bDoNotAddH,
+                                                      int bDiffUnkUndfStereo,
+                                                      InchiInpData *pInchiInp );
+    void PASCAL pasc_Free_inchi_Input( inchi_Input *pInp );
+    void PASCAL pasc_Free_std_inchi_Input( inchi_Input *pInp );
+    void PASCAL pasc_FreeStructFromINCHI( inchi_OutputStruct *out );
+    void PASCAL pasc_FreeStructFromStdINCHI( inchi_OutputStruct *out );
+    int PASCAL pasc_GetStructFromINCHI( inchi_InputINCHI *inp, inchi_OutputStruct *out );
+    int PASCAL pasc_GetStructFromStdINCHI( inchi_InputINCHI *inp, inchi_OutputStruct *out );
+    int PASCAL pasc_CheckINCHI( const char *szINCHI, const int strict );
 
 #ifndef COMPILE_ALL_CPP
 #ifdef __cplusplus
@@ -3319,32 +3649,44 @@ int PASCAL pasc_CheckINCHI(const char *szINCHI, const int strict);
 
 /* implementation */
 /* libinchi.def provides export without PASCAL pasc_ prefixes */
-/********************************************************/
+
+
+/****************************************************************************/
 int PASCAL pasc_GetINCHI( inchi_Input *inp, inchi_Output *out )
 {
     return GetINCHI( inp, out );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 int PASCAL pasc_GetStdINCHI( inchi_Input *inp, inchi_Output *out )
 {
     return GetStdINCHI( inp, out );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 void PASCAL pasc_FreeINCHI( inchi_Output *out )
 {
     FreeINCHI( out );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 void PASCAL pasc_FreeStdINCHI( inchi_Output *out )
 {
     FreeStdINCHI( out );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 int PASCAL pasc_GetStringLength( char *p )
 {
     return GetStringLength( p );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 int PASCAL pasc_Get_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
                                                 int bDoNotAddH,
                                                 int bDiffUnkUndfStereo,
@@ -3353,45 +3695,61 @@ int PASCAL pasc_Get_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
     return Get_inchi_Input_FromAuxInfo( szInchiAuxInfo, bDoNotAddH,
                                             bDiffUnkUndfStereo, pInchiInp );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 int PASCAL pasc_Get_std_inchi_Input_FromAuxInfo( char *szInchiAuxInfo,
                                                 int bDoNotAddH,
                                                 InchiInpData *pInchiInp )
 {
     return Get_std_inchi_Input_FromAuxInfo( szInchiAuxInfo, bDoNotAddH, pInchiInp );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 void PASCAL pasc_Free_inchi_Input( inchi_Input *pInp )
 {
     Free_inchi_Input( pInp );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 void PASCAL pasc_Free_std_inchi_Input( inchi_Input *pInp )
 {
     Free_std_inchi_Input( pInp );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 void PASCAL pasc_FreeStructFromINCHI( inchi_OutputStruct *out )
 {
     FreeStructFromINCHI( out );
 }
-/********************************************************/
+
+
+/****************************************************************************/
 void PASCAL pasc_FreeStructFromStdINCHI( inchi_OutputStruct *out )
 {
     FreeStructFromStdINCHI( out );
 }
-/********************************************************//********************************************************/
+
+
+/****************************************************************************/
 int PASCAL pasc_GetStructFromINCHI( inchi_InputINCHI *inp, inchi_OutputStruct *out )
 {
     return GetStructFromINCHI( inp, out );
 }
-/********************************************************//********************************************************/
+
+
+/****************************************************************************/
 int PASCAL pasc_GetStructFromStdINCHI( inchi_InputINCHI *inp, inchi_OutputStruct *out )
 {
     return GetStructFromStdINCHI( inp, out );
 }
-/********************************************************/
-int PASCAL pasc_CheckINCHI(const char *szINCHI, const int strict)
+
+
+/****************************************************************************/
+int PASCAL pasc_CheckINCHI( const char *szINCHI, const int strict )
 {
     return CheckINCHI( szINCHI, strict );
 }

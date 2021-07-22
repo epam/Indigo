@@ -1,0 +1,1134 @@
+molecules/abbreviations_test.sdf
+C1N(*)C(*)C(*)C(CCC(*)C(*)*)C1*.C*.C* |$;;NO2;;NO2;;NO2;;;;;COOH;;COOH;Ph;;SiPr;;NO2;;NO2$|
+ ->  C1N([N+](=O)[O-])C([N+](=O)[O-])C([N+](=O)[O-])C(CCC(C(=O)O)C(C(=O)O)C2C=CC=CC=2)C1SC(C)C.[O-][N+](C)=O.[O-][N+](C)=O
+[W]=*=[Re] |$;CHCH;$|
+ ->  [W]=CC=[Re]
+C1CCC*21CCCC2 |$;;;;NCH2N;;;;$|
+ ->  C1N(CCC1)CN1CCCC1
+[W]*=[Re] |$;CHCH;$|
+ ->  [W]*=[Re] |$;CHCH;$|
+[W]*[Re] |$;CHCH;$|
+ ->  [W]*[Re] |$;CHCH;$|
+[W]*[Re] |$;CHCH2;$|
+ ->  [W]*[Re] |$;CHCH2;$|
+[W]=*[Re] |$;CHCH2;$|
+ ->  [W]=CC[Re]
+[W]=*=[Re] |$;CHCH2;$|
+ ->  [W]=*=[Re] |$;CHCH2;$|
+[W]=*=[Re] |$;CH2CH;$|
+ ->  [W]=*=[Re] |$;CH2CH;$|
+[W]=*[Re] |$;CH2CH;$|
+ ->  [W]=*[Re] |$;CH2CH;$|
+[W]*[Re] |$;CH2CH;$|
+ ->  [W]*[Re] |$;CH2CH;$|
+[W]*=[Re] |$;CH2CH;$|
+ ->  [W]CC=[Re]
+[W]=*=[Re] |$;CHCH;$|
+ ->  [W]=CC=[Re]
+[W]*[Re] |$;CH2CH2;$|
+ ->  [W]CC[Re]
+N*(C)(C)C |$;CO2C;;;$|
+ ->  NC(=O)OC(C)(C)C
+* |$CH3CH2Ph$|
+ ->  CCC1C=CC=CC=1
+*(C(C(C(C(F)F)(F)F)(F)F)(F)F)N |$(CH2)2;;;;;;;;;;;;;$|
+ ->  NCCC(C(C(C(F)F)(F)F)(F)F)(F)F
+*[C@]12O[C@H]1C[C@H](/C(=C\C/C=C(/*)\*)/*)CC2 |&1:1,3,5,r,$Me;;;;;;;;;;;Me;Me;Me;;$|
+ ->  C/C(/C)=C\C/C=C(/C)\[C@@H]1CC[C@@]2(C)O[C@H]2C1 |&1:8,11,14,r|
+C*C(C(C)C)C(N**)=O |$;PH2C;;;;;;;(CH2)2;(CF2)4H;$|
+ ->  CC(C(C(C)C)C(NCCC(C(C(C(F)F)(F)F)(F)F)(F)F)=O)(C1C=CC=CC=1)C1C=CC=CC=1
+O=C(OC(*)*)NCC(N[C@H]1CC[C@@H](NC(C2C(OC3C=CC(F)=CC=3)=NC=C(F)C=2)=O)CC1)=O |&1:10,13,r,$;;;;MeMe;Me;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+ ->  O=C(OC(C)*)NCC(N[C@H]1CC[C@@H](NC(C2C(OC3C=CC(F)=CC=3)=NC=C(F)C=2)=O)CC1)=O |&1:10,13,r,$;;;;;MeMe;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$|
+*C(*)O |$PH3C;;Ph;$|
+ ->  C1(C(C(C2C=CC=CC=2)(C2C=CC=CC=2)C2C=CC=CC=2)O)C=CC=CC=1
+*C(*)O |$BOC;;BOc;$|
+ ->  CC(OC(C(C(=O)OC(C)(C)C)O)=O)(C)C
+molecules/abbreviations_tests2.sdf
+*C |$AcO;$|
+ ->  COC(=O)C
+*C |$CO2H;$|
+ ->  CC(=O)O
+*C |$TfO;$|
+ ->  COS(=O)(=O)C(F)(F)F
+*C |$CF3;$|
+ ->  CC(F)(F)F
+*C |$CF3;$|
+ ->  CC(F)(F)F
+*C |$NHBoc;$|
+ ->  CNC(=O)OC(C)(C)C
+*C |$OCH3;$|
+ ->  COC
+*C |$NO2;$|
+ ->  C[N+](=O)[O-]
+*C |$SO2H;$|
+ ->  CS(=O)=O
+*C |$NO2;$|
+ ->  C[N+](=O)[O-]
+*C |$Ph;$|
+ ->  CC1C=CC=CC=1
+*C |$NHAc;$|
+ ->  CNC(=O)C
+*N |$Me;$|
+ ->  NC
+*N |$Me;$|
+ ->  NC
+*C |$Ph;$|
+ ->  CC1C=CC=CC=1
+*C |$MeO;$|
+ ->  COC
+*C |$MeO;$|
+ ->  COC
+*C |$Me;$|
+ ->  CC
+*C |$MeO;$|
+ ->  COC
+*C |$CN;$|
+ ->  CC#N
+*P |$OC2H5;$|
+ ->  POCC
+*P |$OC2H5;$|
+ ->  POCC
+*C |$OCF3;$|
+ ->  COC(F)(F)F
+*C |$H3CO;$|
+ ->  COC
+*(C)O |$CH2CH2CH2;;$|
+ ->  OCCCC
+*C |$NO2;$|
+ ->  C[N+](=O)[O-]
+*C |$CO2CH3;$|
+ ->  CC(=O)OC
+*C |$CH2CO2CH3;$|
+ ->  CCC(=O)OC
+*N |$P1;$|
+ ->  *N |$P1;$|
+*N |$C2H5;$|
+ ->  NCC
+*C |$H3CO;$|
+ ->  COC
+*C |$OCH3;$|
+ ->  COC
+*(C)(C)(C)C |$CO2C;;;;$|
+ ->  CC(C)(C)OC(C)=O
+*C |$CF3;$|
+ ->  CC(F)(F)F
+*C |$CO2H;$|
+ ->  CC(=O)O
+*C |$F3C;$|
+ ->  CC(F)(F)F
+*C |$CF3;$|
+ ->  CC(F)(F)F
+*C |$F3C;$|
+ ->  CC(F)(F)F
+*C |$CO2CH3;$|
+ ->  CC(=O)OC
+*C |$CN;$|
+ ->  CC#N
+*C |$CH2CH3;$|
+ ->  CCC
+*C |$CH2CH3;$|
+ ->  CCC
+*C |$CH2CH3;$|
+ ->  CCC
+*C |$CH3CH2;$|
+ ->  CCC
+*C |$OCH3;$|
+ ->  COC
+*C |$CO2H;$|
+ ->  CC(=O)O
+*C |$O2N;$|
+ ->  C[N+](=O)[O-]
+*(C)C |$SO2;;$|
+ ->  CS(C)(=O)=O
+*C |$CHO;$|
+ ->  CC=O
+*C |$C2H5;$|
+ ->  CCC
+*C |$C3H7;$|
+ ->  CCCC
+*C |$C8H17;$|
+ ->  CCCCCCCCC
+*N |$CH2CH3;$|
+ ->  NCC
+*C |$N(CH2CH3)2;$|
+ ->  CN(CC)CC
+*C |$(CH3CH2)2N;$|
+ ->  CN(CC)CC
+*C |$(CH3CH2)2N;$|
+ ->  CN(CC)CC
+*C |$N(CH2CH3)2;$|
+ ->  CN(CC)CC
+*N |$H3CH2C;$|
+ ->  NCC
+*N |$H3CH2C;$|
+ ->  NCC
+*(C)C |$CH2CH2CH2CH2;;$|
+ ->  CCCCCC
+*C |$N(CH2CH2CH3)2;$|
+ ->  CN(CCC)CCC
+*C |$(C2H5)2N;$|
+ ->  CN(CC)CC
+*C |$N(C2H5)2;$|
+ ->  CN(CC)CC
+*C |$C(CH3)3;$|
+ ->  CC(C)(C)C
+*(C)(C)C |$CH2CH2CH2CH;;;$|
+ ->  *(C)(C)C |$CH2CH2CH2CH;;;$|
+*C |$N(CH3)2;$|
+ ->  CN(C)C
+*C |$CH2CH2CH2SCH3;$|
+ ->  CCCCSC
+*(=C)(C)=C |$CHCHCH2CH2;;;$|
+ ->  *(=C)(C)=C |$CHCHCH2CH2;;;$|
+*(=C)C |$CH2CH;;$|
+ ->  CCC=C
+*(N)N |$(CH2)10;;$|
+ ->  *(N)N |$(CH2)10;;$|
+*C |$(H3C)2N;$|
+ ->  CN(C)C
+*C |$(H7C3)2N;$|
+ ->  CN(CCC)CCC
+*(C)=C |$CHCH2;;$|
+ ->  C=CCC
+*C |$OCH3;$|
+ ->  COC
+*C |$COCOOCH2CH3;$|
+ ->  CC(C(=O)OCC)=O
+*C |$SO2Cl;$|
+ ->  CS(Cl)(=O)=O
+*C |$SO2NH2;$|
+ ->  CS(N)(=O)=O
+*C |$NHSO2Me;$|
+ ->  CNS(=O)(=O)C
+*C |$OCH2CO2Et;$|
+ ->  COCC(=O)OCC
+*C |$OCH2CO2H;$|
+ ->  COCC(=O)O
+*C |$NHSO2CH3;$|
+ ->  CNS(=O)(=O)C
+*C |$Et2N;$|
+ ->  CN(CC)CC
+*C |$COOH;$|
+ ->  CC(=O)O
+*C |$Boc2N;$|
+ ->  CN(C(=O)OC(C)(C)C)C(=O)OC(C)(C)C
+*C |$(Boc)2N;$|
+ ->  CN(C(=O)OC(C)(C)C)C(=O)OC(C)(C)C
+*C |$OMe;$|
+ ->  COC
+*C |$COOH;$|
+ ->  CC(=O)O
+*C |$NHSO2Bu;$|
+ ->  CNS(CCCC)(=O)=O
+*C |$COOC2H5;$|
+ ->  CC(=O)OCC
+*(C)C |$(CH2)4O;;$|
+ ->  CCCCCOC
+*C |$O2N;$|
+ ->  C[N+](=O)[O-]
+*C |$COOMe;$|
+ ->  CC(=O)OC
+*C |$OEt;$|
+ ->  COCC
+*C |$NMe2;$|
+ ->  CN(C)C
+*N |$NC;$|
+ ->  NC#N
+*(N)(C)N |$(CH2)2;;;$|
+ ->  *(N)(C)N |$(CH2)2;;;$|
+*C |$(CF2)4H;$|
+ ->  CC(C(C(C(F)F)(F)F)(F)F)(F)F
+*O |$(C2H4O)2H;$|
+ ->  OCCOCCO
+*O |$(C2H4O)4CH3;$|
+ ->  OCCOCCOCCOCCOC
+*C |$(CF2)6H;$|
+ ->  CC(C(C(C(C(C(F)F)(F)F)(F)F)(F)F)(F)F)(F)F
+*O |$(C2H4O)8H;$|
+ ->  OCCOCCOCCOCCOCCOCCOCCOCCO
+*C |$COOK;$|
+ ->  CC(=O)O[K]
+*C |$COOK;$|
+ ->  CC(=O)O[K]
+*(C)C |$SO2NH;;$|
+ ->  CNS(C)(=O)=O
+*(O)N |$(CH2)3;;$|
+ ->  NCCCO
+*C |$N3;$|
+ ->  CN=[N+]=[N-]
+*C |$N3;$|
+ ->  CN=[N+]=[N-]
+*C |$NHNH2;$|
+ ->  CNN
+*C |$CO2CysPr;$|
+ ->  CC(=O)ON[C@H](C(=O)CCC)CS
+*C |$CO2Et;$|
+ ->  CC(=O)OCC
+*C |$CO2Et;$|
+ ->  CC(=O)OCC
+*C |$HOOC;$|
+ ->  CC(=O)O
+*C |$Me;$|
+ ->  CC
+*C |$F5S;$|
+ ->  CS(F)(F)(F)(F)F
+*C |$Ph2P;$|
+ ->  CP(C1C=CC=CC=1)C1C=CC=CC=1
+*C |$HO2C;$|
+ ->  CC(=O)O
+*C |$OMe;$|
+ ->  COC
+*C |$SO3-;$|
+ ->  CS(=O)(=O)[O-]
+*C |$OCH2OC2H5;$|
+ ->  COCOCC
+*C |$F3C;$|
+ ->  CC(F)(F)F
+[Ts]N
+ ->  [Ts]N
+*C |$OMe;$|
+ ->  COC
+*C |$MeO;$|
+ ->  COC
+*(C)C |$NCH3;;$|
+ ->  CN(C)C
+*C |$O(CH2)9CH3;$|
+ ->  COCCCCCCCCCC
+*C |$NO^2;$|
+ ->  *C |$NO^2;$|
+*N |$Boc;$|
+ ->  NC(=O)OC(C)(C)C
+molecules/abbreviations_tests3.sdf
+*P |$OC2H5;$|
+ ->  POCC
+*P |$OC2H5;$|
+ ->  POCC
+*C |$CN;$|
+ ->  CC#N
+*C |$CCl3;$|
+ ->  CC(Cl)(Cl)Cl
+*C |$CCl3;$|
+ ->  CC(Cl)(Cl)Cl
+*C |$OCF3;$|
+ ->  COC(F)(F)F
+*C |$H3CO;$|
+ ->  COC
+*C |$COCl;$|
+ ->  CC(=O)Cl
+*C |$ClOC;$|
+ ->  CC(=O)Cl
+*(C)O |$CH2CH2CH2;;$|
+ ->  OCCCC
+*C |$NO2;$|
+ ->  C[N+](=O)[O-]
+*(C)C |$HNOC;;$|
+ ->  CC(C)N=O
+*(C)C |$CONH;;$|
+ ->  CNC(C)=O
+*C |$CO2H;$|
+ ->  CC(=O)O
+*C |$NC;$|
+ ->  CC#N
+*C |$COOC2H5;$|
+ ->  CC(=O)OCC
+*C |$Cl3C;$|
+ ->  CC(Cl)(Cl)Cl
+*C |$Cl3C;$|
+ ->  CC(Cl)(Cl)Cl
+*N |$H3COH2C;$|
+ ->  NCOC
+*N |$CH2OCH3;$|
+ ->  NCOC
+*N |$H3COH2C;$|
+ ->  NCOC
+*N |$CH2OCH3;$|
+ ->  NCOC
+*C |$CN;$|
+ ->  CC#N
+*C |$CN;$|
+ ->  CC#N
+*C |$NC;$|
+ ->  CC#N
+*C |$SO3H;$|
+ ->  CS(=O)(=O)O
+*C |$SO3H;$|
+ ->  CS(=O)(=O)O
+*C |$HO3S;$|
+ ->  CS(=O)(=O)O
+*C |$SO3H;$|
+ ->  CS(=O)(=O)O
+*C |$O2N;$|
+ ->  C[N+](=O)[O-]
+*C |$CH2CO2H;$|
+ ->  CCC(=O)O
+*C |$CO2H;$|
+ ->  CC(=O)O
+*C |$CO2CH3;$|
+ ->  CC(=O)OC
+*C |$CH2CO2CH3;$|
+ ->  CCC(=O)OC
+*C |$F3C;$|
+ ->  CC(F)(F)F
+*C |$NHCH2COOH;$|
+ ->  CNCC(=O)O
+*N |$P1;$|
+ ->  *N |$P1;$|
+*C |$CF3;$|
+ ->  CC(F)(F)F
+*N |$C2H5;$|
+ ->  NCC
+*C |$H3CO;$|
+ ->  COC
+*C |$OCH3;$|
+ ->  COC
+*C |$F3C;$|
+ ->  CC(F)(F)F
+*N |$C2H5;$|
+ ->  NCC
+*(C)(C)(C)C |$CO2C;;;;$|
+ ->  CC(C)(C)OC(C)=O
+*C |$C6H13;$|
+ ->  CCCCCCC
+*(C)C |$OCH2;;$|
+ ->  *(C)C |$OCH2;;$|
+*N |$CH3OCH2;$|
+ ->  NCOC
+*N |$CH3OCH2;$|
+ ->  NCOC
+*(=O)(C)C |$OC;;;$|
+ ->  COC(=O)C
+*C |$COOH;$|
+ ->  CC(=O)O
+*C |$CH3CO;$|
+ ->  CC(=O)C
+*C |$CF3;$|
+ ->  CC(F)(F)F
+*C |$CF3;$|
+ ->  CC(F)(F)F
+*(C)C |$SO2;;$|
+ ->  CS(C)(=O)=O
+*C |$OCH3;$|
+ ->  COC
+*C |$COOH;$|
+ ->  CC(=O)O
+*C |$NO2;$|
+ ->  C[N+](=O)[O-]
+*N |$C8H17;$|
+ ->  NCCCCCCCC
+*C |$CO2CH3;$|
+ ->  CC(=O)OC
+*N |$C2H5;$|
+ ->  NCC
+*(=C)C |$CHCOO;;$|
+ ->  COC(=O)C=C
+*C |$C3H7;$|
+ ->  CCCC
+*C |$CH2CH3;$|
+ ->  CCC
+*C |$CH2CH3;$|
+ ->  CCC
+*C |$CH2CH3;$|
+ ->  CCC
+*C |$CH3CH2;$|
+ ->  CCC
+*C |$H3CH2C;$|
+ ->  CCC
+*C |$CO2H;$|
+ ->  CC(=O)O
+*C |$OCH3;$|
+ ->  COC
+*C |$HOOC;$|
+ ->  CC(=O)O
+*C |$C3H7;$|
+ ->  CCCC
+*C |$C3H7;$|
+ ->  CCCC
+*C |$OSO2CH3;$|
+ ->  COS(=O)(=O)C
+*P |$OC2H5;$|
+ ->  POCC
+*N |$C2H5;$|
+ ->  NCC
+*C |$COOCH3;$|
+ ->  CC(=O)OC
+*C |$H3COOC;$|
+ ->  CC(=O)OC
+*C |$CH2COOC2H5;$|
+ ->  CCC(=O)OCC
+*C |$CH2COOC2H5;$|
+ ->  CCC(=O)OCC
+*C |$CF3;$|
+ ->  CC(F)(F)F
+*(O)O |$CH3CCH3;;$|
+ ->  *(O)O |$CH3CCH3;;$|
+*C |$CHO;$|
+ ->  CC=O
+*(C)O |$CH3CH;;$|
+ ->  OC(C)C
+*C |$Ph;$|
+ ->  CC1C=CC=CC=1
+*C |$Ph;$|
+ ->  CC1C=CC=CC=1
+*C |$OTos;$|
+ ->  COS(=O)(=O)C1C=CC(=CC=1)C
+*C |$OTos;$|
+ ->  COS(=O)(=O)C1C=CC(=CC=1)C
+*C |$C3H7;$|
+ ->  CCCC
+*C |$H11C5;$|
+ ->  CCCCCC
+*(C)(C)C |$OCH;;;$|
+ ->  CC(C)OC
+*C |$C5H11;$|
+ ->  CCCCCC
+*C |$NO2;$|
+ ->  C[N+](=O)[O-]
+*N |$CH2CH3;$|
+ ->  NCC
+*C |$N(CH2CH3)2;$|
+ ->  CN(CC)CC
+*C |$(CH3CH2)2N;$|
+ ->  CN(CC)CC
+*C |$(CH3CH2)2N;$|
+ ->  CN(CC)CC
+*C |$N(CH2CH3)2;$|
+ ->  CN(CC)CC
+*N |$H3CH2C;$|
+ ->  NCC
+*C |$N(CH2CH3)2;$|
+ ->  CN(CC)CC
+*(C)N |$CH2CH2;;$|
+ ->  *(C)N |$CH2CH2;;$|
+*(C)C |$CH2CH2CH2CH2;;$|
+ ->  CCCCCC
+*C |$(CH3CH2CH2CH2)2N;$|
+ ->  CN(CCCC)CCCC
+*C |$N(CH2CH2CH2CH3)2;$|
+ ->  CN(CCCC)CCCC
+*C |$N(CH2CH2CH3)2;$|
+ ->  CN(CCC)CCC
+*C |$(C2H5)2N;$|
+ ->  CN(CC)CC
+*C |$N(C2H5)2;$|
+ ->  CN(CC)CC
+*C |$(H5C2)2N;$|
+ ->  CN(CC)CC
+*C |$C(CH3)3;$|
+ ->  CC(C)(C)C
+*C |$CH2CH2CH3;$|
+ ->  CCCC
+*C |$CH3CH2CH2;$|
+ ->  CCCC
+*(=C)C |$CHCH2CH2;;$|
+ ->  CCCC=C
+*(=C)C |$CH2CH2CH2CH2CH;;$|
+ ->  CCCCCC=C
+*(C)(C)C |$CH2CH2CH2CH;;;$|
+ ->  *(C)(C)C |$CH2CH2CH2CH;;;$|
+*C |$CH2CH2Cl;$|
+ ->  CCCCl
+*(C)(C)C |$ClCH2CH2C;;;$|
+ ->  CC(C)(C)CCCl
+*(C)(C)C |$CH3CH2CH2C;;;$|
+ ->  CC(C)(C)CCC
+*(C)(C)C |$CH2CH2CH;;;$|
+ ->  CC(C)CCC
+*(C)(C)C |$CHCH2CH2;;;$|
+ ->  CC(C)CCC
+*=C |$CHCH3;$|
+ ->  C=CC
+*(C)=C |$CH2CH;;$|
+ ->  C=CCC
+*(=C)C |$CH2CH2CH;;$|
+ ->  CCCC=C
+*C |$CH2Cl;$|
+ ->  CCCl
+*C |$N(CH3)2;$|
+ ->  CN(C)C
+*(=C)C |$CHCH2;;$|
+ ->  CCC=C
+*C |$CH2CH2CH2SCH3;$|
+ ->  CCCCSC
+*(=C)(C)=C |$CHCHCH2CH2;;;$|
+ ->  *(=C)(C)=C |$CHCHCH2CH2;;;$|
+*(C)(C)(C)O |$CH2CH2C;;;;$|
+ ->  OC(C)(C)CCC
+*C |$CH3O;$|
+ ->  COC
+*(C)(C)(C)C |$CH2C;;;;$|
+ ->  CCC(C)(C)C
+*(C)C |$CH2CH2CHCH2CH3;;$|
+ ->  *(C)C |$CH2CH2CHCH2CH3;;$|
+*(C)(C)C |$CHCH2CH2CH2;;;$|
+ ->  CCCCC(C)C
+*C |$CH2OH;$|
+ ->  CCO
+*C |$ClCH2CH2CH2;$|
+ ->  CCCCCl
+*C |$CH2CH2CH2Cl;$|
+ ->  CCCCCl
+*(=O)(C)C |$CH2CH2CH2C;;;$|
+ ->  *(=O)(C)C |$CH2CH2CH2C;;;$|
+*C |$OCH3;$|
+ ->  COC
+*(C)(C)C |$HCH2CH2CH2C;;;$|
+ ->  *(C)(C)C |$HCH2CH2CH2C;;;$|
+*C |$COOCH3;$|
+ ->  CC(=O)OC
+*N |$COCH3;$|
+ ->  NC(=O)C
+*(N)C |$COCH2;;$|
+ ->  CCC(N)=O
+*(N)N |$(CH2)10;;$|
+ ->  *(N)N |$(CH2)10;;$|
+*C |$H5C2O;$|
+ ->  COCC
+*C |$(H3C)2N;$|
+ ->  CN(C)C
+*C |$(H7C3)2N;$|
+ ->  CN(CCC)CCC
+*C |$CH(CH3)2;$|
+ ->  CC(C)C
+*C |$CH(CH3)2;$|
+ ->  CC(C)C
+*C |$(H5C2)2N;$|
+ ->  CN(CC)CC
+*C |$(H3C)2HC;$|
+ ->  CC(C)C
+*C |$COCOOCH2CH3;$|
+ ->  CC(C(=O)OCC)=O
+*C |$COCH3;$|
+ ->  CC(=O)C
+*C |$COCOOCH2CH3;$|
+ ->  CC(C(=O)OCC)=O
+*C |$Me;$|
+ ->  CC
+*N |$Et;$|
+ ->  NCC
+*(C)C |$NHCO;;$|
+ ->  CNC(C)=O
+*C |$COOH;$|
+ ->  CC(=O)O
+*C |$SO2Cl;$|
+ ->  CS(Cl)(=O)=O
+*C |$OMe;$|
+ ->  COC
+*C |$OCF2H;$|
+ ->  COC(F)F
+*C |$SO2NH2;$|
+ ->  CS(N)(=O)=O
+*C |$SO2Me;$|
+ ->  CS(C)(=O)=O
+*C |$MeO2C;$|
+ ->  CC(=O)OC
+*C |$O2N;$|
+ ->  C[N+](=O)[O-]
+*C |$NHSO2Me;$|
+ ->  CNS(=O)(=O)C
+*C |$OMe;$|
+ ->  COC
+*C |$OMe;$|
+ ->  COC
+*C |$MeO;$|
+ ->  COC
+*C |$OCH2CO2Et;$|
+ ->  COCC(=O)OCC
+*C |$OCH2CO2H;$|
+ ->  COCC(=O)O
+*C |$OCH2CO2Et;$|
+ ->  COCC(=O)OCC
+*C |$Me2N;$|
+ ->  CN(C)C
+*C |$MeHN;$|
+ ->  CNC
+*N |$Me;$|
+ ->  NC
+*(C)C |$MeN;;$|
+ ->  CN(C)C
+*C |$SO2NH2;$|
+ ->  CS(N)(=O)=O
+*C |$CO2Me;$|
+ ->  CC(=O)OC
+*C |$CO2Me;$|
+ ->  CC(=O)OC
+*C |$CONH2;$|
+ ->  CC(=O)N
+*C |$NHSO2CH3;$|
+ ->  CNS(=O)(=O)C
+*C |$EtO;$|
+ ->  COCC
+*C |$Et2N;$|
+ ->  CN(CC)CC
+*C |$NHCbz;$|
+ ->  CNC(OCC1C=CC=CC=1)=O
+*C |$Me;$|
+ ->  CC
+*C |$Boc2N;$|
+ ->  CN(C(=O)OC(C)(C)C)C(=O)OC(C)(C)C
+*C |$(Boc)2N;$|
+ ->  CN(C(=O)OC(C)(C)C)C(=O)OC(C)(C)C
+*C |$BocHN;$|
+ ->  CNC(=O)OC(C)(C)C
+*C |$OMe;$|
+ ->  COC
+*C |$CO2Me;$|
+ ->  CC(=O)OC
+*C |$Bn;$|
+ ->  CCC1C=CC=CC=1
+*C |$OEt;$|
+ ->  COCC
+*C |$NHBoc;$|
+ ->  CNC(=O)OC(C)(C)C
+*(C)C |$BnN;;$|
+ ->  CN(C)CC1C=CC=CC=1
+*C |$NHBoc;$|
+ ->  CNC(=O)OC(C)(C)C
+*C |$MeO;$|
+ ->  COC
+*C |$F3CO;$|
+ ->  COC(F)(F)F
+*C |$H3CO;$|
+ ->  COC
+*C |$HO2C;$|
+ ->  CC(=O)O
+*C |$F3C;$|
+ ->  CC(F)(F)F
+*C |$CO2Me;$|
+ ->  CC(=O)OC
+*C |$HO2C;$|
+ ->  CC(=O)O
+*C |$SO2Me;$|
+ ->  CS(C)(=O)=O
+*O |$CF2CF2H;$|
+ ->  OC(C(F)F)(F)F
+*C |$OCH2CF3;$|
+ ->  COCC(F)(F)F
+*C |$NHSO2Bu;$|
+ ->  CNS(CCCC)(=O)=O
+*(C)C |$(CH2)4O;;$|
+ ->  CCCCCOC
+*C |$MeO2SO;$|
+ ->  COS(=O)(=O)C
+*C |$CO2Et;$|
+ ->  CC(=O)OCC
+*C |$CO2Et;$|
+ ->  CC(=O)OCC
+*C |$COOMe;$|
+ ->  CC(=O)OC
+*C |$COOMe;$|
+ ->  CC(=O)OC
+*N |$Boc;$|
+ ->  NC(=O)OC(C)(C)C
+*C |$OEt;$|
+ ->  COCC
+*C |$COOEt;$|
+ ->  CC(=O)OCC
+*C |$COOEt;$|
+ ->  CC(=O)OCC
+*C |$C(CH3)3;$|
+ ->  CC(C)(C)C
+*C |$C(CH3)3;$|
+ ->  CC(C)(C)C
+*C |$(CH3)3C;$|
+ ->  CC(C)(C)C
+*N |$Boc;$|
+ ->  NC(=O)OC(C)(C)C
+*N |$Boc;$|
+ ->  NC(=O)OC(C)(C)C
+*N |$Boc;$|
+ ->  NC(=O)OC(C)(C)C
+*C |$CONH2;$|
+ ->  CC(=O)N
+*C |$EtO2CHN;$|
+ ->  CNC(=O)OCC
+*C |$NHCOOEt;$|
+ ->  CNC(=O)OCC
+*N |$Et;$|
+ ->  NCC
+*C |$SO2Cl;$|
+ ->  CS(Cl)(=O)=O
+*C |$Me;$|
+ ->  CC
+*C |$NMe2;$|
+ ->  CN(C)C
+*C |$NMe2;$|
+ ->  CN(C)C
+*C |$SCH3;$|
+ ->  CSC
+*C |$SOCH3;$|
+ ->  CSOC
+*C |$SCH3;$|
+ ->  CSC
+*C |$CONH2;$|
+ ->  CC(=O)N
+*C |$SOCH3;$|
+ ->  CSOC
+*C |$MeHN;$|
+ ->  CNC
+*C |$MeNH;$|
+ ->  *C |$MeNH;$|
+*C |$N2+BF4-;$|
+ ->  *C |$N2+BF4-;$|
+*(C)C |$CF2O;;$|
+ ->  COC(C)(F)F
+*(C)C |$CO2;;$|
+ ->  COC(C)=O
+*(C)C |$CF2;;$|
+ ->  CC(C)(F)F
+*(C)(C)C |$CF;;;$|
+ ->  CC(C)(C)F
+*N |$CH2OH;$|
+ ->  NCO
+*C |$HOCH2;$|
+ ->  CCO
+*C |$(CH2)9CH3;$|
+ ->  CCCCCCCCCCC
+*C |$(CF2)8H;$|
+ ->  CC(C(C(C(C(C(C(C(F)F)(F)F)(F)F)(F)F)(F)F)(F)F)(F)F)(F)F
+*C |$(CF2)6H;$|
+ ->  CC(C(C(C(C(C(F)F)(F)F)(F)F)(F)F)(F)F)(F)F
+*C |$(CF2)8H;$|
+ ->  CC(C(C(C(C(C(C(C(F)F)(F)F)(F)F)(F)F)(F)F)(F)F)(F)F)(F)F
+*C |$(CF2)4H;$|
+ ->  CC(C(C(C(F)F)(F)F)(F)F)(F)F
+*O |$(C3H6O)7CH3;$|
+ ->  OCCCOCCCOCCCOCCCOCCCOCCCOCCCOC
+*O |$(C3H6O)13H;$|
+ ->  OCCCOCCCOCCCOCCCOCCCOCCCOCCCOCCCOCCCOCCCOCCCOCCCOCCCO
+*(N)(C)N |$(CH2)2;;;$|
+ ->  *(N)(C)N |$(CH2)2;;;$|
+*C |$(CF2)4H;$|
+ ->  CC(C(C(C(F)F)(F)F)(F)F)(F)F
+*O |$(C2H4O)2H;$|
+ ->  OCCOCCO
+*O |$(C2H4O)4CH3;$|
+ ->  OCCOCCOCCOCCOC
+*O |$(C2H4O)8H;$|
+ ->  OCCOCCOCCOCCOCCOCCOCCOCCO
+*N |$C4H9;$|
+ ->  NCCCC
+*C |$(C2H5)2N;$|
+ ->  CN(CC)CC
+*(C)C |$SO2NH;;$|
+ ->  CS(NC)(=O)=O
+*(C)(C)(C)C |$OCH2CH;;;;$|
+ ->  *(C)(C)(C)C |$OCH2CH;;;;$|
+*C |$C8H17;$|
+ ->  CCCCCCCCC
+*(O)(C)C |$NHCOCH;;;$|
+ ->  *(O)(C)C |$NHCOCH;;;$|
+*C |$COOK;$|
+ ->  CC(=O)O[K]
+*C |$COOK;$|
+ ->  CC(=O)O[K]
+*C |$NHCH3;$|
+ ->  CNC
+*C |$NHCH3;$|
+ ->  CNC
+*C |$NC;$|
+ ->  CC#N
+*(O)N |$(CH2)3;;$|
+ ->  NCCCO
+*(C)(C)C |$SO2NH;;;$|
+ ->  *(C)(C)C |$SO2NH;;;$|
+*N |$C4H9;$|
+ ->  NCCCC
+*(C)C |$SO2CH2CH2CH2SO2NHCH2CH2CH2O;;$|
+ ->  *(C)C |$SO2CH2CH2CH2SO2NHCH2CH2CH2O;;$|
+*(C)C |$SO2CH2CH2CH2SO2NH;;$|
+ ->  *(C)C |$SO2CH2CH2CH2SO2NH;;$|
+*(O)C |$SO2(CH2)3SO2NHCH2CHCH2OH;;$|
+ ->  *(O)C |$SO2(CH2)3SO2NHCH2CHCH2OH;;$|
+*C |$SO3-;$|
+ ->  CS(=O)(=O)[O-]
+*(C)(C)C |$SO2NHCH2CH;;;$|
+ ->  *(C)(C)C |$SO2NHCH2CH;;;$|
+*C |$OCH2CH2OCH3;$|
+ ->  COCCOC
+*P |$(H4NO)2;$|
+ ->  *P |$(H4NO)2;$|
+*C |$H4NO3S;$|
+ ->  *C |$H4NO3S;$|
+*C |$C2H5O;$|
+ ->  COCC
+*C |$H4NOOC;$|
+ ->  *C |$H4NOOC;$|
+*(C)(P)(C)C |$OCH2CHCH2CCH3;;;;$|
+ ->  *(C)(P)(C)C |$OCH2CHCH2CCH3;;;;$|
+*N |$H3CO2SHNH2CH2C;$|
+ ->  NCCNS(=O)(=O)C
+*(C)C |$COO;;$|
+ ->  CC(=O)OC
+*(C)C |$(CH2)4;;$|
+ ->  CCCCCC
+*C |$C8H13O;$|
+ ->  *C |$C8H13O;$|
+*C |$C8H13;$|
+ ->  *C |$C8H13;$|
+*(C)(C)(C)C |$OCH;;;;$|
+ ->  *(C)(C)(C)C |$OCH;;;;$|
+*C |$C6H10;$|
+ ->  *C |$C6H10;$|
+*C |$O2N;$|
+ ->  C[N+](=O)[O-]
+*(C)C |$(CH2)5;;$|
+ ->  *(C)C |$(CH2)5;;$|
+*C |$OEt;$|
+ ->  COCC
+*C |$NHNH2;$|
+ ->  CNN
+*C |$OCH2CH2OH;$|
+ ->  COCCO
+*C |$OCH2CHOHCH2OH;$|
+ ->  COCC(CO)O
+*C |$OCH2CHOHCH2NH2;$|
+ ->  COCC(CN)O
+*C |$N(SO2CH3)2;$|
+ ->  CN(S(=O)(=O)C)S(=O)(=O)C
+*=C |$NBoc;$|
+ ->  C=NC(=O)OC(C)(C)C
+*C |$H3CO2S;$|
+ ->  CS(C)(=O)=O
+*C |$H3CS;$|
+ ->  CSC
+*C |$N3;$|
+ ->  CN=[N+]=[N-]
+*C |$N3;$|
+ ->  CN=[N+]=[N-]
+*C |$N3;$|
+ ->  CN=[N+]=[N-]
+*C |$NHNH2;$|
+ ->  CNN
+*C |$NHNHCOCH3;$|
+ ->  CNNC(=O)C
+*C |$NHNHCOCF3;$|
+ ->  CNNC(=O)C(F)(F)F
+*C |$OCH2CN;$|
+ ->  COCC#N
+*C |$NO;$|
+ ->  CN=O
+*C |$CO2CysPr;$|
+ ->  CC(=O)ON[C@H](C(=O)CCC)CS
+*C |$EtO2C;$|
+ ->  CC(=O)OCC
+*C |$CO2Et;$|
+ ->  CC(=O)OCC
+*C |$CO2CysPr;$|
+ ->  CC(=O)ON[C@H](C(=O)CCC)CS
+*C |$EtO2C;$|
+ ->  CC(=O)OCC
+*C |$HOH2C;$|
+ ->  CCO
+*C |$HOH2C;$|
+ ->  CCO
+*C |$H3CHN;$|
+ ->  CNC
+*C |$H3CO2C;$|
+ ->  CC(=O)OC
+*C |$C2H5O;$|
+ ->  COCC
+*C |$N3;$|
+ ->  CN=[N+]=[N-]
+*C |$EtHN;$|
+ ->  CNCC
+*C |$HOOC;$|
+ ->  CC(=O)O
+*C |$MeOOC;$|
+ ->  CC(=O)OC
+*(C)C |$CO;;$|
+ ->  CC(C)=O
+*(O)C |$OC;;$|
+ ->  *(O)C |$OC;;$|
+*C |$AcO;$|
+ ->  COC(=O)C
+*C |$OAc;$|
+ ->  COC(=O)C
+*C |$CH2CH2C(O)OCH2CH3;$|
+ ->  CCCC(=O)OCC
+*(N)N |$(CH2)2;;$|
+ ->  NCCN
+*N |$OHC;$|
+ ->  NC=O
+*N |$CF3CH2;$|
+ ->  NCC(F)(F)F
+*C |$t-Bu;$|
+ ->  CC(C)(C)C
+*C |$OBz;$|
+ ->  COC(C1C=CC=CC=1)=O
+*C |$OAc;$|
+ ->  COC(=O)C
+*C |$OBoc;$|
+ ->  COC(=O)OC(C)(C)C
+*C |$Bn2N;$|
+ ->  CN(CC1C=CC=CC=1)CC1C=CC=CC=1
+*C |$F5S;$|
+ ->  CS(F)(F)(F)(F)F
+*C |$PPh2;$|
+ ->  CP(C1C=CC=CC=1)C1C=CC=CC=1
+*C |$C6H11;$|
+ ->  CC1CCCCC1
+*C |$PPh2;$|
+ ->  CP(C1C=CC=CC=1)C1C=CC=CC=1
+*C |$Ph2P;$|
+ ->  CP(C1C=CC=CC=1)C1C=CC=CC=1
+*(C)=C |$CHCO2CH2CH2O;;$|
+ ->  C=CC(=O)OCCOC
+*C |$C9H19;$|
+ ->  CCCCCCCCCC
+*([H])O |$CH2CH2O;;$|
+ ->  OCCO[H]
+*C |$H2CO;$|
+ ->  *C |$H2CO;$|
+*N |$NHPh;$|
+ ->  NNC1C=CC=CC=1
+*C |$Ph;$|
+ ->  CC1C=CC=CC=1
+*C |$EtOOC;$|
+ ->  CC(=O)OCC
+*C |$Ph;$|
+ ->  CC1C=CC=CC=1
+*C |$NH+3;$|
+ ->  *C |$NH+3;$|
+*C |$COO-;$|
+ ->  *C |$COO-;$|
+*C |$OCF3;$|
+ ->  COC(F)(F)F
+S(C)N
+ ->  S(C)N
+*O |$C10H21;$|
+ ->  OCCCCCCCCCC
+*O |$C10H21;$|
+ ->  OCCCCCCCCCC
+*C |$CH2OSO3-;$|
+ ->  CCOS(=O)(=O)[O-]
+*C |$NHSO3-;$|
+ ->  CNS(=O)(=O)[O-]
+*C |$OSO3-;$|
+ ->  COS(=O)(=O)[O-]
+*C |$FmocHN;$|
+ ->  CNC(OCC1C2C=CC=CC=2C2C1=CC=CC=2)=O
+*(C)C |$CH2O;;$|
+ ->  CCOC
+*C |$OCH2Ph;$|
+ ->  COCC1C=CC=CC=1
+*C |$CH2OMe;$|
+ ->  CCOC
+*C |$CHO;$|
+ ->  CC=O
+*C |$OMs;$|
+ ->  COS(=O)(=O)C
+*C |$OMs;$|
+ ->  COS(=O)(=O)C
+*(C)C |$NMe;;$|
+ ->  CN(C)C
+*C |$HO2C;$|
+ ->  CC(=O)O
+*(C)C |$PMBN;;$|
+ ->  CN(C)CC1C=CC(=CC=1)OC
+*C |$OTf;$|
+ ->  COS(=O)(=O)C(F)(F)F
+*C |$AcO;$|
+ ->  COC(=O)C
+*C |$H23C11;$|
+ ->  CCCCCCCCCCCC
+*C |$H7C3;$|
+ ->  CCCC
+*C |$H15C7;$|
+ ->  CCCCCCCC
+*C |$Ph2P;$|
+ ->  CP(C1C=CC=CC=1)C1C=CC=CC=1
+*C |$TFAH2N;$|
+ ->  *C |$TFAH2N;$|
+*(N)C |$O2S;;$|
+ ->  CS(N)(=O)=O
+*C |$C5H11;$|
+ ->  CCCCCC
+*C |$CH3CONH;$|
+ ->  *C |$CH3CONH;$|
+*C |$CH3O;$|
+ ->  COC
+N(C)C
+ ->  N(C)C
+*O |$H37C18;$|
+ ->  OCCCCCCCCCCCCCCCCCC
+*C |$CO2C(CH3)3;$|
+ ->  CC(=O)OC(C)(C)C
+*C |$OCH2OC2H5;$|
+ ->  COCOCC
+*N |$MeOH2C;$|
+ ->  NCOC
+*N |$CH2OMe;$|
+ ->  NCOC
+*C |$NHC18H37;$|
+ ->  CNCCCCCCCCCCCCCCCCCC
+*C |$C18H37HNOC;$|
+ ->  CC(CCCCCCCCCCCCCCCCCC)N=O
+*C |$NH3Cl;$|
+ ->  *C |$NH3Cl;$|
+*C |$PhHN;$|
+ ->  CNC1C=CC=CC=1
+*(C)C |$O(H);;$|
+ ->  *(C)C |$O(H);;$|
+*C |$CF2CF3;$|
+ ->  CC(C(F)(F)F)(F)F
+*C |$t-Bu;$|
+ ->  CC(C)(C)C
+*N |$n-Bu;$|
+ ->  NCCCC
+*C |$BnO;$|
+ ->  COCC1C=CC=CC=1
+*C |$Bn;$|
+ ->  CCC1C=CC=CC=1
+*C |$Me(H)N;$|
+ ->  CNC
+*C |$N(H)Me;$|
+ ->  CNC
+*C |$N(H)Et;$|
+ ->  CNCC
+*C |$Et(H)N;$|
+ ->  CNCC
+[Ts]N
+ ->  [Ts]N
+*C |$OAc;$|
+ ->  COC(=O)C
+*C |$SMe;$|
+ ->  CSC
+*C |$COOMe;$|
+ ->  CC(=O)OC
+*C |$OCH2Ph;$|
+ ->  COCC1C=CC=CC=1
+*C |$COOCH2Ph;$|
+ ->  CC(=O)OCC1C=CC=CC=1
+*C |$PhS;$|
+ ->  CSC1C=CC=CC=1
+*C |$PhS;$|
+ ->  CSC1C=CC=CC=1
+*C |$(CH2)11Me;$|
+ ->  CCCCCCCCCCCCC
+*C |$(CH2)16Me;$|
+ ->  CCCCCCCCCCCCCCCCCC
+*C |$OPh;$|
+ ->  COC1C=CC=CC=1
+*C |$OPh;$|
+ ->  COC1C=CC=CC=1
+*C |$MeS;$|
+ ->  CSC
+*C |$OCCl3;$|
+ ->  COC(Cl)(Cl)Cl
+*C |$SPh;$|
+ ->  CSC1C=CC=CC=1
+*C |$OEt;$|
+ ->  COCC
+*=C |$NOMe;$|
+ ->  *=C |$NOMe;$|
+*(C)C |$NCH3;;$|
+ ->  CN(C)C
+*C |$RO2C;$|
+ ->  *C |$RO2C;$|
+*C(=O)O |$PO3H2;;;$|
+ ->  OC(P(=O)(O)O)=O
+*C1C=CC(NC(=O)C)=CC=1.CCC |$AsO3H2;;;;;;;;;;;;;$|
+ ->  CCC.CC(NC1C=CC([As](=O)(O)O)=CC=1)=O
+####### Test expandAbbreviations for CML
+before 21
+after 43

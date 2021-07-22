@@ -13,6 +13,7 @@ TEST(IndigoRenderTest, render_superatoms)
 {
     qword session = indigoAllocSessionId();
     indigoSetSessionId(session);
+    indigoRendererInit();
 
     indigoSetErrorHandler(errorHandling, 0);
 
@@ -33,4 +34,7 @@ TEST(IndigoRenderTest, render_superatoms)
     {
         ASSERT_STREQ("", e.message());
     }
+
+    indigoRendererDispose();
+    indigoReleaseSessionId(session);
 }

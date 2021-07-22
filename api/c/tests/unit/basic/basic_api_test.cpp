@@ -3,6 +3,7 @@
 #include <molecule/molecule_mass.h>
 
 #include <indigo-inchi.h>
+#include <indigo-renderer.h>
 #include <indigo.h>
 #include <indigo_internal.h>
 
@@ -233,6 +234,7 @@ TEST(IndigoBasicApiTest, test_getter_function)
     ASSERT_STREQ(chFloat, "20.5");
 
     float r, g, b;
+    indigoRendererInit();
     indigoSetOptionColor("render-background-color", 50, 100, 150);
     indigoGetOptionColor("render-background-color", &r, &g, &b);
     ASSERT_EQ(r, 50);
@@ -248,4 +250,7 @@ TEST(IndigoBasicApiTest, test_getter_function)
     ASSERT_EQ(y, 400);
     const char* chXY = indigoGetOption("render-image-size");
     ASSERT_STREQ(chXY, "[250, 400]");
+
+    indigoRendererDispose();
+    indigoReleaseSessionId(session);
 }

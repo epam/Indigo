@@ -1,3 +1,36 @@
+/*
+ * International Chemical Identifier (InChI)
+ * Version 1
+ * Software version 1.06
+ * December 15, 2020
+ *
+ * The InChI library and programs are free software developed under the
+ * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
+ * Originally developed at NIST.
+ * Modifications and additions by IUPAC and the InChI Trust.
+ * Some portions of code were developed/changed by external contributors
+ * (either contractor or volunteer) which are listed in the file
+ * 'External-contributors' included in this distribution.
+ *
+ * IUPAC/InChI-Trust Licence No.1.0 for the
+ * International Chemical Identifier (InChI)
+ * Copyright (C) IUPAC and InChI Trust
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
+ * or any later version.
+ *
+ * Please note that this library is distributed WITHOUT ANY WARRANTIES
+ * whatsoever, whether expressed or implied.
+ * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
+ *
+ * You should have received a copy of the IUPAC/InChI Trust InChI
+ * Licence No. 1.0 with this library; if not, please e-mail:
+ *
+ * info@inchi-trust.org
+ *
+ */
+
 #pragma warning( disable : 4706 4127 4514 4100 4786 4996 4244 4267 )
 
 
@@ -8,9 +41,7 @@
 #include "ichierr.h"
 
 
-
 static int already_have_this_message( char *prev_messages, const char *new_message );
-
 
 
 /****************************************************************************/
@@ -18,7 +49,8 @@ const char *ErrMsg( int nErrorCode )
 {
     const char *p;
     static char szErrMsg[64];
-    switch( nErrorCode ) {
+    switch (nErrorCode)
+    {
         case 0:                      p = "";                      break;
         case CT_OVERFLOW:            p = "ARRAY OVERFLOW";        break;
         case CT_LEN_MISMATCH:        p = "LENGTH_MISMATCH";       break;
@@ -47,7 +79,7 @@ const char *ErrMsg( int nErrorCode )
         case BNS_TIMEOUT:             p = "Structure normalization timeout";      break;
 
         default:
-            if ( nErrorCode > CT_UNKNOWN_ERR )
+            if (nErrorCode > CT_UNKNOWN_ERR)
             {
                 sprintf( szErrMsg, "No description(%d)", nErrorCode );
                 p = szErrMsg;
@@ -64,31 +96,37 @@ const char *ErrMsg( int nErrorCode )
 }
 
 
-/*************************************************************************/
+/****************************************************************************/
 int AddErrorMessage( char *all_messages, const char *new_message )
 {
-int len_all, len;
+    int len_all, len;
 
-    if ( !all_messages )
+    if (!all_messages)
+    {
         return 0;
-    if ( !new_message )
+    }
+    if (!new_message)
+    {
         return 0;
-    if ( !new_message[0] )
+    }
+    if (!new_message[0])
+    {
         return 0;
-
-    if ( already_have_this_message(all_messages, new_message) )
+    }
+    if (already_have_this_message( all_messages, new_message ))
+    {
         return 1;
+    }
 
+    len_all = (int) strlen( all_messages );
+    len = (int) strlen( new_message );
 
-    len_all = (int) strlen(all_messages);
-    len = (int) strlen(new_message);
-
-    if ( len_all + len + 2*(len_all > 0) < STR_ERR_LEN )
+    if (len_all + len + 2 * ( len_all > 0 ) < STR_ERR_LEN)
     {
         /* enough room... add message and return */
         if (len_all > 0)
         {
-            if ( all_messages[len_all-1] != ':' )
+            if (all_messages[len_all - 1] != ':')
             {
                 strcat( all_messages, ";" );
             }
@@ -99,30 +137,34 @@ int len_all, len;
     }
 
     /*  not enough room... add no-room marker if not yet added */
-    if ( strstr( all_messages, "..." ) )
+    if (strstr( all_messages, "..." ))
+    {
         return 0;
-    if ( len_all + 3 < STR_ERR_LEN )
-       strcat( all_messages, "..." );
+    }
+    if (len_all + 3 < STR_ERR_LEN)
+    {
+        strcat( all_messages, "..." );
+    }
 
     return 0;
 }
 
 
-/*************** static **********************************************************/
+/****************************************************************************/
 int already_have_this_message( char *prev_messages, const char *new_message )
 {
-int have=0;
+    int have = 0;
 
     char *p = strstr( prev_messages, new_message );
 
-    if ( p )
+    if (p)
     {
-        have =  ( p==prev_messages || *(p-1) == ' ' && (*(p-2) == ';' || *(p-2) == ':' ));
-        if ( have )
+        have = ( p == prev_messages || *( p - 1 ) == ' ' && ( *( p - 2 ) == ';' || *( p - 2 ) == ':' ) );
+        if (have)
         {
-            int len_prev = (int) strlen(prev_messages);
-            int len = (int) strlen(new_message);
-            have = ( p+len==prev_messages+len_prev || p[len] == ';' && p[len+1] == ' ' || p[len-1]==':' && p[len]==' ' );
+            int len_prev = (int) strlen( prev_messages );
+            int len = (int) strlen( new_message );
+            have = ( p + len == prev_messages + len_prev || p[len] == ';' && p[len + 1] == ' ' || p[len - 1] == ':' && p[len] == ' ' );
         }
     }
 

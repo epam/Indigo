@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - master
+      - indigo-1.5
     tags:
       - 'indigo-*'
   workflow_dispatch:
@@ -250,6 +251,14 @@ jobs:
           cd ../tmp
           unzip ../dist/Indigo.Net.*.nupkg
           chmod -R a+rw .
+      - name: Prepare macOS
+        if: ${{ matrix.os == 'macos' }}
+        run: |
+          brew install mono-libgdiplus
+      - name: Prepare Linux
+        if: ${{ matrix.os == 'ubuntu' }}
+        run: |
+          sudo apt install -y libgdiplus
       - name: Prepare Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
@@ -367,7 +376,7 @@ jobs:
           fetch-depth: 500
       - uses: msys2/setup-msys2@v2
         with:
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
       - name: Git fetch tags
         run: git fetch --tags -f
       - name: Build native libs
@@ -383,7 +392,7 @@ jobs:
       - name: Prepare integration tests
         run: |
           cd build
-          python -m pip install wheel
+          # python -m pip install wheel
           cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DPython3_ROOT_DIR=/mingw64
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests

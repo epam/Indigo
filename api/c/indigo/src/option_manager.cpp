@@ -15,23 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+
 #include <string>
 
 #include "base_cpp/scanner.h"
+#include "base_cpp/tlscont.h"
+
 #include "option_manager.h"
 
-ThreadSafeStaticObj<IndigoOptionManager> indigo_option_manager;
-
-DLLEXPORT IndigoOptionManager& indigoGetOptionManager()
+_SessionLocalContainer<IndigoOptionManager>& IndigoOptionManager::getIndigoOptionManager()
 {
-    return indigo_option_manager.ref();
+    static _SessionLocalContainer<IndigoOptionManager> mgr;
+    return mgr;
+}
+
+DLLEXPORT IndigoOptionManager& indigoGetOptionManager(const qword id)
+{
+    return IndigoOptionManager::getIndigoOptionManager().getLocalCopy(id);
 }
 
 IMPL_ERROR(IndigoOptionManager, "option manager");
 
-IndigoOptionManager::IndigoOptionManager()
-{
-}
 
 void IndigoOptionManager::callOptionHandlerInt(const char* name, int value)
 {
@@ -188,10 +192,10 @@ void IndigoOptionManager::getOptionType(const char* name, Array<char>& value)
         throw Error("Property \"%s\" not defined", name);
 
     auto copyString = [](const char* source, char* dest, int len) {
-      if (strlen(source) > len)
-          throw Error("invalid string value len: expected len: %d, actual len: %d", len, strlen(source));
-      memset(dest, ' ', len);
-      strcpy(dest, source);
+        if (strlen(source) > len)
+            throw Error("invalid string value len: expected len: %d, actual len: %d", len, strlen(source));
+        memset(dest, ' ', len);
+        strcpy(dest, source);
     };
     switch (typeMap.at(name))
     {

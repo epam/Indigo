@@ -237,10 +237,7 @@ void RSmilesLoader::_loadReaction()
 
     if (vbar)
     {
-        MoleculeStereocenters& r_stereo = rcnt->stereocenters;
-        MoleculeStereocenters& c_stereo = ctlt->stereocenters;
-        MoleculeStereocenters& p_stereo = prod->stereocenters;
-        MoleculeStereocenters* stereo[] = {&r_stereo, &c_stereo, &p_stereo};
+        BaseMolecule* stereo[] = {rcnt.get(), ctlt.get(), prod.get()};
 
         while (1)
         {
@@ -259,7 +256,7 @@ void RSmilesLoader::_loadReaction()
                     int idx = _scanner.readUnsigned();
 
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
-                    stereo[group]->add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                    stereo[group]->addStereocenters(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
 
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
@@ -275,7 +272,7 @@ void RSmilesLoader::_loadReaction()
                     int idx = _scanner.readUnsigned();
 
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
-                    stereo[group]->setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
+                    stereo[group]->stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
 
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
@@ -293,7 +290,7 @@ void RSmilesLoader::_loadReaction()
                     int idx = _scanner.readUnsigned();
 
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
-                    stereo[group]->setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
+                    stereo[group]->stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
 
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
@@ -311,7 +308,7 @@ void RSmilesLoader::_loadReaction()
                     int idx = _scanner.readUnsigned();
 
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
-                    stereo[group]->setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
+                    stereo[group]->stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
 
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);

@@ -363,6 +363,39 @@ namespace indigo
         int getChiralFlag();
         void setChiralFlag(int flag);
 
+        // proxy methods for stereocenters
+        const int* getPyramidStereocenters(int idx) const;
+        void markBondsStereocenters();
+        void markBondStereocenters(int atom_idx);
+
+        void addStereocenters(int atom_idx, int type, int group, const int pyramid[4]);
+        void addStereocenters(int atom_idx, int type, int group, bool inverse_pyramid);
+        void removeAtomsStereocenters(const Array<int>& indices);
+        void removeBondsStereocenters(const Array<int>& indices);
+
+        void buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out);
+        void buildFrom3dCoordinatesStereocenters(const StereocentersOptions& options);
+        bool isPossibleStereocenter( int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+        void buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping);
+
+        // proxy methods for cis_trans
+        void getSubstituents_All( int bond_idx, int subst[4]);
+        void restoreSubstituents( int bond_idx);
+        void buildCisTrans( int* exclude_bonds);
+        bool registerBondAndSubstituentsCisTrans(int idx);
+        void registerUnfoldedHydrogenCisTrans(int atom_idx, int added_hydrogen);
+        void buildFromSmilesCisTrans(int* dirs);
+        void buildOnSubmoleculeCisTrans(BaseMolecule& super, int* mapping);
+        void validateCisTrans();
+        bool convertableToImplicitHydrogenCisTrans(int idx);
+
+        // proxy methods for allene_stereo
+        void markBondsAlleneStereo();
+        void buildOnSubmoleculeAlleneStereo(BaseMolecule& super, int* mapping);
+        void removeAtomsAlleneStereo(const Array<int>& indices);
+        void removeBondsAlleneStereo(const Array<int>& indices);
+        void buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_bonds_out);
+
         DECL_ERROR;
 
     protected:

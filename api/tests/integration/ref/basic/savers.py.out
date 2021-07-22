@@ -1,0 +1,39 @@
+*** Loading molecules *** 
+5: stereocenters: one bond up, one bond down -- indefinite case near atom 0
+6: stereocenters: directions of opposite stereo bonds do not match near atom 0
+8: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+9: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+10: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+11: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+12: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+14: stereocenters: one bond up, one bond down -- indefinite case near atom 0
+18: stereocenters: directions of neighbor stereo bonds match near atom 0
+24: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+52: stereocenters: one bond up, one bond down -- indefinite case near atom 4
+90: stereocenters: one bond up, one bond down -- indefinite case near atom 1
+135: stereocenters: one bond up, one bond down -- indefinite case near atom 21
+161: stereocenters: one bond up, one bond down -- indefinite case near atom 1
+163: stereocenters: one bond up, one bond down -- indefinite case near atom 1
+*** Making query molecules *** 
+*** Making reactions *** 
+77: element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
+78: element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
+79: element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
+80: element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
+*** Making query reactions *** 
+*** Saving molecules in different formats *** 
+*** SDF *** 
+*** SMI with default name option. Should be disabled by default *** 
+*** SMI with names *** 
+*** SMI without names *** 
+*** CML *** 
+*** RDF *** 
+*** Saving query molecules in different formats *** 
+*** SDF *** 
+*** RDF *** 
+*** Saving reactions in different formats *** 
+*** RDF *** 
+*** Reaction SMI without names *** 
+*** Reaction SMI with names *** 
+*** Saving query reactions in different formats *** 
+*** RDF *** 

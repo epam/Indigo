@@ -72,6 +72,10 @@ def write_difference(fn_1, fn_2, fn_3):
             if line2:
                 f_3.write("+ " + line2 + "\n")
     f_3.close()
+    with open("{}.html".format(fn_3), "w") as pretty_file:
+        pretty_diff = difflib.HtmlDiff()
+        html_cont = pretty_diff.make_file(lines_1, lines_2)
+        pretty_file.write(html_cont)
     return difference_counter
 
 
@@ -139,7 +143,7 @@ def main():
     import socket
     print("Host name: " + socket.gethostname()) # platform.node())
     print("")
-
+    del indigo
     # Collect tests and sort them
     tests_dir = os.path.join(base_root, 'tests')
     tests = sorted(get_tests(tests_dir))

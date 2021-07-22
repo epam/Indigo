@@ -1,0 +1,590 @@
+***** Aromaticity models *****
+molecules/basic-generic.sdf
+0
+basic
+  Original:     N1C(=S)NC(=O)N1
+  Arom:         N1C(=S)NC(=O)N1
+  Dearom:       N1C(=S)NC(=O)N1
+  Arom->Dearom: N1C(=S)NC(=O)N1
+  Dearom->Arom: N1C(=S)NC(=O)N1
+generic
+  Original:     N1C(=S)NC(=O)N1
+  Arom:         [nH]1c(=S)[nH]c(=O)[nH]1
+  Dearom:       N1C(=S)NC(=O)N1
+  Arom->Dearom: N1C(=S)NC(=O)N1
+  Dearom->Arom: [nH]1c(=S)[nH]c(=O)[nH]1
+1
+basic
+  Original:     C1C=C2C(OC3C(C2=O)=CC=CC=3)=CC=1
+  Arom:         c1cc2c(Oc3c(C2=O)cccc3)cc1
+  Dearom:       C1C=C2C(OC3C(C2=O)=CC=CC=3)=CC=1
+  Arom->Dearom: C1C=C2C(OC3C(C2=O)=CC=CC=3)=CC=1
+  Dearom->Arom: c1cc2c(Oc3c(C2=O)cccc3)cc1
+generic
+  Original:     C1C=C2C(OC3C(C2=O)=CC=CC=3)=CC=1
+  Arom:         c1cc2c(oc3c(c2=O)cccc3)cc1
+  Dearom:       C1C=C2C(OC3C(C2=O)=CC=CC=3)=CC=1
+  Arom->Dearom: C1C=C2C(OC3C(C2=O)=CC=CC=3)=CC=1
+  Dearom->Arom: c1cc2c(oc3c(c2=O)cccc3)cc1
+2
+basic
+  Original:     N1C=CC=CC1=O
+  Arom:         N1C=CC=CC1=O
+  Dearom:       N1C=CC=CC1=O
+  Arom->Dearom: N1C=CC=CC1=O
+  Dearom->Arom: N1C=CC=CC1=O
+generic
+  Original:     N1C=CC=CC1=O
+  Arom:         [nH]1ccccc1=O
+  Dearom:       N1C=CC=CC1=O
+  Arom->Dearom: N1C=CC=CC1=O
+  Dearom->Arom: [nH]1ccccc1=O
+3
+basic
+  Original:     C1=CC=CN2C1=CNC2=S
+  Arom:         C1=CC=CN2C1=CNC2=S
+  Dearom:       C1=CC=CN2C1=CNC2=S
+  Arom->Dearom: C1=CC=CN2C1=CNC2=S
+  Dearom->Arom: C1=CC=CN2C1=CNC2=S
+generic
+  Original:     C1=CC=CN2C1=CNC2=S
+  Arom:         c1ccc[n]2c1c[nH]c2=S
+  Dearom:       C1=CC=CN2C1=CNC2=S
+  Arom->Dearom: C1=CC=CN2C1=CNC2=S
+  Dearom->Arom: c1ccc[n]2c1c[nH]c2=S
+4
+basic
+  Original:     C=N1C(C)=CC=CC=1
+  Arom:         C=[n]1c(C)cccc1
+  Dearom:       C=N1C(C)=CC=CC=1
+  Arom->Dearom: C=N1C(C)=CC=CC=1
+  Dearom->Arom: C=[n]1c(C)cccc1
+generic
+  Original:     C=N1C(C)=CC=CC=1
+  Arom:         C=[n]1c(C)cccc1
+  Dearom:       C=N1C(C)=CC=CC=1
+  Arom->Dearom: C=N1C(C)=CC=CC=1
+  Dearom->Arom: C=[n]1c(C)cccc1
+molecules/basic-generic.smi
+0
+basic
+  Original:     O=c1[n](C2CCN(CCC[n]3c(=O)[nH]c4c3cccc4)CC2)c2c(cc(cc2)Cl)[nH]1
+  Arom:         O=c1[n](C2CCN(CCC[n]3c(=O)[nH]c4c3cccc4)CC2)c2c(cc(cc2)Cl)[nH]1
+  Dearom:       O=c1[n](C2CCN(CCC[n]3c(=O)[nH]c4c3cccc4)CC2)c2c(cc(cc2)Cl)[nH]1
+  Arom->Dearom: O=c1[n](C2CCN(CCC[n]3c(=O)[nH]c4c3cccc4)CC2)c2c(cc(cc2)Cl)[nH]1
+  Dearom->Arom: O=c1[n](C2CCN(CCC[n]3c(=O)[nH]c4c3cccc4)CC2)c2c(cc(cc2)Cl)[nH]1
+generic
+  Original:     O=c1[n](C2CCN(CCC[n]3c(=O)[nH]c4c3cccc4)CC2)c2c(cc(cc2)Cl)[nH]1
+  Arom:         O=c1[n](C2CCN(CCC[n]3c(=O)[nH]c4c3cccc4)CC2)c2c(cc(cc2)Cl)[nH]1
+  Dearom:       O=C1N(C2CCN(CCCN3C(=O)NC4C3=CC=CC=4)CC2)C2C(=CC(=CC=2)Cl)N1
+  Arom->Dearom: O=C1N(C2CCN(CCCN3C(=O)NC4C3=CC=CC=4)CC2)C2C(=CC(=CC=2)Cl)N1
+  Dearom->Arom: O=c1[n](C2CCN(CCC[n]3c(=O)[nH]c4c3cccc4)CC2)c2c(cc(cc2)Cl)[nH]1
+1
+basic
+  Original:     Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+  Dearom:       CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(OC)=CC=CN=3)[nH]c2)=CC=1
+  Arom->Dearom: CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(OC)=CC=CN=3)[nH]c2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+generic
+  Original:     Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+  Dearom:       CC1N=CC(CC2C(=O)N=C(NCCCCC3C(OC)=CC=CN=3)NC=2)=CC=1
+  Arom->Dearom: CC1N=CC(CC2C(=O)N=C(NCCCCC3C(OC)=CC=CN=3)NC=2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+2
+basic
+  Original:     CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(OC)=CC=CN=3)[nH]c2)=CC=1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+  Dearom:       CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(OC)=CC=CN=3)[nH]c2)=CC=1
+  Arom->Dearom: CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(OC)=CC=CN=3)[nH]c2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+generic
+  Original:     CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(OC)=CC=CN=3)[nH]c2)=CC=1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+  Dearom:       CC1N=CC(CC2C(=O)N=C(NCCCCC3C(OC)=CC=CN=3)NC=2)=CC=1
+  Arom->Dearom: CC1N=CC(CC2C(=O)N=C(NCCCCC3C(OC)=CC=CN=3)NC=2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(OC)ccc[n]3)[nH]c2)cc1
+3
+basic
+  Original:     Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+  Dearom:       CC1N=CC(Cc2c(=O)[n]c(NCCSCC3OC(CN(C)C)=CC=3)[nH]c2)=CC=1
+  Arom->Dearom: CC1N=CC(Cc2c(=O)[n]c(NCCSCC3OC(CN(C)C)=CC=3)[nH]c2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+generic
+  Original:     Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+  Dearom:       CC1N=CC(CC2C(=O)N=C(NCCSCC3OC(CN(C)C)=CC=3)NC=2)=CC=1
+  Arom->Dearom: CC1N=CC(CC2C(=O)N=C(NCCSCC3OC(CN(C)C)=CC=3)NC=2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+4
+basic
+  Original:     CC1N=CC(Cc2c(=O)[n]c(NCCSCC3OC(CN(C)C)=CC=3)[nH]c2)=CC=1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+  Dearom:       CC1N=CC(Cc2c(=O)[n]c(NCCSCC3OC(CN(C)C)=CC=3)[nH]c2)=CC=1
+  Arom->Dearom: CC1N=CC(Cc2c(=O)[n]c(NCCSCC3OC(CN(C)C)=CC=3)[nH]c2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+generic
+  Original:     CC1N=CC(Cc2c(=O)[n]c(NCCSCC3OC(CN(C)C)=CC=3)[nH]c2)=CC=1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+  Dearom:       CC1N=CC(CC2C(=O)N=C(NCCSCC3OC(CN(C)C)=CC=3)NC=2)=CC=1
+  Arom->Dearom: CC1N=CC(CC2C(=O)N=C(NCCSCC3OC(CN(C)C)=CC=3)NC=2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCSCc3oc(CN(C)C)cc3)[nH]c2)cc1
+5
+basic
+  Original:     Cc1c(CCCCNc2[n]c(=O)c(Cc3ccc(C)[n]c3)c[nH]2)[n]cc(Br)c1
+  Arom:         Cc1c(CCCCNc2[n]c(=O)c(Cc3ccc(C)[n]c3)c[nH]2)[n]cc(Br)c1
+  Dearom:       CC1C(CCCCNc2[n]c(=O)c(CC3C=CC(C)=NC=3)c[nH]2)=NC=C(Br)C=1
+  Arom->Dearom: CC1C(CCCCNc2[n]c(=O)c(CC3C=CC(C)=NC=3)c[nH]2)=NC=C(Br)C=1
+  Dearom->Arom: Cc1c(CCCCNc2[n]c(=O)c(Cc3ccc(C)[n]c3)c[nH]2)[n]cc(Br)c1
+generic
+  Original:     Cc1c(CCCCNc2[n]c(=O)c(Cc3ccc(C)[n]c3)c[nH]2)[n]cc(Br)c1
+  Arom:         Cc1c(CCCCNc2[n]c(=O)c(Cc3ccc(C)[n]c3)c[nH]2)[n]cc(Br)c1
+  Dearom:       CC1C(CCCCNC2=NC(=O)C(CC3C=CC(C)=NC=3)=CN2)=NC=C(Br)C=1
+  Arom->Dearom: CC1C(CCCCNC2=NC(=O)C(CC3C=CC(C)=NC=3)=CN2)=NC=C(Br)C=1
+  Dearom->Arom: Cc1c(CCCCNc2[n]c(=O)c(Cc3ccc(C)[n]c3)c[nH]2)[n]cc(Br)c1
+6
+basic
+  Original:     CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(C)=CC(Br)=CN=3)[nH]c2)=CC=1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(C)cc(Br)c[n]3)[nH]c2)cc1
+  Dearom:       CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(C)=CC(Br)=CN=3)[nH]c2)=CC=1
+  Arom->Dearom: CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(C)=CC(Br)=CN=3)[nH]c2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(C)cc(Br)c[n]3)[nH]c2)cc1
+generic
+  Original:     CC1N=CC(Cc2c(=O)[n]c(NCCCCC3C(C)=CC(Br)=CN=3)[nH]c2)=CC=1
+  Arom:         Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(C)cc(Br)c[n]3)[nH]c2)cc1
+  Dearom:       CC1N=CC(CC2C(=O)N=C(NCCCCC3C(C)=CC(Br)=CN=3)NC=2)=CC=1
+  Arom->Dearom: CC1N=CC(CC2C(=O)N=C(NCCCCC3C(C)=CC(Br)=CN=3)NC=2)=CC=1
+  Dearom->Arom: Cc1[n]cc(Cc2c(=O)[n]c(NCCCCc3c(C)cc(Br)c[n]3)[nH]c2)cc1
+7
+basic
+  Original:     C[n]1c(=O)[n](C)c2c([nH]c[n]2)c1=O
+  Arom:         C[n]1c(=O)[n](C)c2c([nH]c[n]2)c1=O
+  Dearom:       C[n]1c(=O)[n](C)c2c([nH]c[n]2)c1=O
+  Arom->Dearom: C[n]1c(=O)[n](C)c2c([nH]c[n]2)c1=O
+  Dearom->Arom: C[n]1c(=O)[n](C)c2c([nH]c[n]2)c1=O
+generic
+  Original:     C[n]1c(=O)[n](C)c2c([nH]c[n]2)c1=O
+  Arom:         C[n]1c(=O)[n](C)c2c([nH]c[n]2)c1=O
+  Dearom:       CN1C(=O)N(C)C2=C(NC=N2)C1=O
+  Arom->Dearom: CN1C(=O)N(C)C2=C(NC=N2)C1=O
+  Dearom->Arom: C[n]1c(=O)[n](C)c2c([nH]c[n]2)c1=O
+8
+basic
+  Original:     C[n]1c(=O)c2c([n]c[n]2C)[nH]c1=O
+  Arom:         C[n]1c(=O)c2c([n]c[n]2C)[nH]c1=O
+  Dearom:       C[n]1c(=O)c2c([n]c[n]2C)[nH]c1=O
+  Arom->Dearom: C[n]1c(=O)c2c([n]c[n]2C)[nH]c1=O
+  Dearom->Arom: C[n]1c(=O)c2c([n]c[n]2C)[nH]c1=O
+generic
+  Original:     C[n]1c(=O)c2c([n]c[n]2C)[nH]c1=O
+  Arom:         C[n]1c(=O)c2c([n]c[n]2C)[nH]c1=O
+  Dearom:       CN1C(=O)C2=C(N=CN2C)NC1=O
+  Arom->Dearom: CN1C(=O)C2=C(N=CN2C)NC1=O
+  Dearom->Arom: C[n]1c(=O)c2c([n]c[n]2C)[nH]c1=O
+9
+basic
+  Original:     C[n]1c(=O)[nH]c(=O)c2c1[n]c[n]2C
+  Arom:         C[n]1c(=O)[nH]c(=O)c2c1[n]c[n]2C
+  Dearom:       C[n]1c(=O)[nH]c(=O)c2c1[n]c[n]2C
+  Arom->Dearom: C[n]1c(=O)[nH]c(=O)c2c1[n]c[n]2C
+  Dearom->Arom: C[n]1c(=O)[nH]c(=O)c2c1[n]c[n]2C
+generic
+  Original:     C[n]1c(=O)[nH]c(=O)c2c1[n]c[n]2C
+  Arom:         C[n]1c(=O)[nH]c(=O)c2c1[n]c[n]2C
+  Dearom:       CN1C(=O)NC(=O)C2=C1N=CN2C
+  Arom->Dearom: CN1C(=O)NC(=O)C2=C1N=CN2C
+  Dearom->Arom: C[n]1c(=O)[nH]c(=O)c2c1[n]c[n]2C
+**** Dearomatization ***
+C1C=c2c3c4c(cc2)cccc4ccc3C1
+1 -> C1C=c2c3c4c(cc2)cccc4ccc3C1   <- Aromatic
+0 -> C1C=C2C3=C4C(C=C2)=CC=CC4=CC=C3C1
+    arom -> C1C=C2c3c4c(C=C2)cccc4ccc3C1
+C1c2c3c4c(cc2)c2c(cccc2)c4ccc3C=C1
+1 -> C1c2c3c4c(cc2)c2c(cccc2)c4ccc3C=C1   <- Aromatic
+0 -> C1C2C3C4C(=CC=2)C2=C(C=CC=C2)C=4C=CC=3C=C1
+    arom -> C1c2c3c4c(cc2)-c2c(cccc2)-c4ccc3C=C1
+CC(CC(Nc1[n](=O)c2c(cccc2)[n](=O)[n]1)=O)=O
+1 -> CC(CC(NC1N(=O)=C2C(C=CC=C2)=N(=O)N=1)=O)=O
+0 -> CC(CC(NC1N(=O)=C2C(C=CC=C2)=N(=O)N=1)=O)=O
+CC(Nc1c2c(ccccc2)cc1)=O
+1 -> CC(NC1C2C(C=CC=CC=2)=CC=1)=O
+0 -> CC(NC1C2C(C=CC=CC=2)=CC=1)=O
+CC(Nc1c2c(cccc2)[n](=O)cc1)=O
+1 -> CC(NC1C2C(=CC=CC=2)N(=O)=CC=1)=O
+0 -> CC(NC1C2C(=CC=CC=2)N(=O)=CC=1)=O
+CC(Nc1[n](=O)c2c(cc(cc2)C)[n](=O)[n]1)=O
+1 -> CC(NC1N(=O)=C2C(C=C(C=C2)C)=N(=O)N=1)=O
+0 -> CC(NC1N(=O)=C2C(C=C(C=C2)C)=N(=O)N=1)=O
+CC(Nc1[n](=O)c2c(cccc2)[n](=O)[n]1)=O
+1 -> CC(NC1N(=O)=C2C(C=CC=C2)=N(=O)N=1)=O
+0 -> CC(NC1N(=O)=C2C(C=CC=C2)=N(=O)N=1)=O
+CC(c1[n](=O)o[n]c1C)=O
+1 -> CC(C1=N(=O)ON=C1C)=O
+0 -> CC(C1=N(=O)ON=C1C)=O
+CC(c1c2c(ccccc2)cc1)=O
+1 -> CC(C1C2C(C=CC=CC=2)=CC=1)=O
+0 -> CC(C1C2C(C=CC=CC=2)=CC=1)=O
+CC(c1cc[n](=O)cc1)=O
+1 -> CC(C1C=CN(=O)=CC=1)=O
+0 -> CC(C1C=CN(=O)=CC=1)=O
+CC(c1c(C)[n](=O)o[n]1)=O
+1 -> CC(C1C(C)=N(=O)ON=1)=O
+0 -> CC(C1C(C)=N(=O)ON=1)=O
+CC(N(=Cc1cc[n](=O)cc1)=O)(C)C
+1 -> CC(N(=CC1C=CN(=O)=CC=1)=O)(C)C
+0 -> CC(N(=CC1C=CN(=O)=CC=1)=O)(C)C
+CC(N=c1c(NC2C=CC(Cl)=CC=2)cc2c([n](c3c([n]2)cccc3)C2C=CC(Cl)=CC=2)c1)C
+  aromatized: CC(N=c1c(Nc2ccc(Cl)cc2)cc2c([n](c3c([n]2)cccc3)-c2ccc(Cl)cc2)c1)C
+1 -> CC(N=C1C(NC2C=CC(Cl)=CC=2)=CC2C(N(C3C(N=2)=CC=CC=3)C2C=CC(Cl)=CC=2)=C1)C
+0 -> CC(N=C1C(NC2C=CC(Cl)=CC=2)=CC2C(N(C3C(N=2)=CC=CC=3)C2C=CC(Cl)=CC=2)=C1)C
+CC1CC(=O)N(c2ccc(OCc3c(C#N)[n](=O)o[n]3)cc2)N=1
+1 -> CC1CC(=O)N(C2C=CC(OCC3C(C#N)=N(=O)ON=3)=CC=2)N=1
+0 -> CC1CC(=O)N(C2C=CC(OCC3C(C#N)=N(=O)ON=3)=CC=2)N=1
+CC1CC(=O)N(c2ccc(OCc3c(C(=O)N)[n](=O)o[n]3)cc2)N=1
+1 -> CC1CC(=O)N(C2C=CC(OCC3C(C(=O)N)=N(=O)ON=3)=CC=2)N=1
+0 -> CC1CC(=O)N(C2C=CC(OCC3C(C(=O)N)=N(=O)ON=3)=CC=2)N=1
+CC1CC(=O)N(c2ccc(OCCCOc3c(S(c4ccccc4)(=O)=O)[n](=O)o[n]3)cc2)N=1
+1 -> CC1CC(=O)N(C2C=CC(OCCCOC3C(S(C4C=CC=CC=4)(=O)=O)=N(=O)ON=3)=CC=2)N=1
+0 -> CC1CC(=O)N(C2C=CC(OCCCOC3C(S(C4C=CC=CC=4)(=O)=O)=N(=O)ON=3)=CC=2)N=1
+CC1CC(=O)N(c2ccc(OCCCOc3c(-c4ccccc4)[n](=O)o[n]3)cc2)N=1
+1 -> CC1CC(=O)N(C2C=CC(OCCCOC3C(C4C=CC=CC=4)=N(=O)ON=3)=CC=2)N=1
+0 -> CC1CC(=O)N(C2C=CC(OCCCOC3C(C4C=CC=CC=4)=N(=O)ON=3)=CC=2)N=1
+CCCCCCCCNc1c(NCCSCC2OC(CN(C)C)=CC=2)[n][s](=O)[n]1
+  aromatized: CCCCCCCCNc1c(NCCSCc2oc(CN(C)C)cc2)[n][s](=O)[n]1
+1 -> CCCCCCCCNC1C(NCCSCC2OC(CN(C)C)=CC=2)=NS(=O)N=1
+0 -> CCCCCCCCNC1C(NCCSCC2OC(CN(C)C)=CC=2)=NS(=O)N=1
+CCCCCCCNc1c(NCCSCC2OC(CN(C)C)=CC=2)[n][s](=O)[n]1
+  aromatized: CCCCCCCNc1c(NCCSCc2oc(CN(C)C)cc2)[n][s](=O)[n]1
+1 -> CCCCCCCNC1C(NCCSCC2OC(CN(C)C)=CC=2)=NS(=O)N=1
+0 -> CCCCCCCNC1C(NCCSCC2OC(CN(C)C)=CC=2)=NS(=O)N=1
+CCCCCCNc1c(NCCSCC2OC(CN(C)C)=CC=2)[n][s](=O)[n]1
+  aromatized: CCCCCCNc1c(NCCSCc2oc(CN(C)C)cc2)[n][s](=O)[n]1
+1 -> CCCCCCNC1C(NCCSCC2OC(CN(C)C)=CC=2)=NS(=O)N=1
+0 -> CCCCCCNC1C(NCCSCC2OC(CN(C)C)=CC=2)=NS(=O)N=1
+CCN(c1[n]c(N)[n](=O)c(N)c1)CC
+1 -> CCN(C1N=C(N)N(=O)=C(N)C=1)CC
+0 -> CCN(C1N=C(N)N(=O)=C(N)C=1)CC
+CCN(c1cc2c(c(c3c(o2)cc(=[N+](CC)CC)cc3)C2C(C(=O)O)=CC=CC=2)cc1)CC
+  aromatized: CCN(c1cc2c(c(c3c(o2)cc(=[N+](CC)CC)cc3)-c2c(C(=O)O)cccc2)cc1)CC
+1 -> CCN(C1C=C2C(C(=C3C(O2)=CC(=[N+](CC)CC)C=C3)C2C(C(=O)O)=CC=CC=2)=CC=1)CC
+0 -> CCN(C1C=C2C(C(=C3C(O2)=CC(=[N+](CC)CC)C=C3)C2C(C(=O)O)=CC=CC=2)=CC=1)CC
+CCOC(c1c2c(ccccc2)cc1)=O
+1 -> CCOC(C1C2C(C=CC=CC=2)=CC=1)=O
+0 -> CCOC(C1C2C(C=CC=CC=2)=CC=1)=O
+CCOP(C(N(=Cc1cc[n](=O)cc1)=O)(C)C)(OCC)=O
+1 -> CCOP(C(N(=CC1C=CN(=O)=CC=1)=O)(C)C)(OCC)=O
+0 -> CCOP(C(N(=CC1C=CN(=O)=CC=1)=O)(C)C)(OCC)=O
+CCOc1cc[n](=O)cc1
+1 -> CCOC1C=CN(=O)=CC=1
+0 -> CCOC1C=CN(=O)=CC=1
+CCOc1c(S(c2ccccc2)(=O)=O)[n](=O)o[n]1
+1 -> CCOC1C(S(C2C=CC=CC=2)(=O)=O)=N(=O)ON=1
+0 -> CCOC1C(S(C2C=CC=CC=2)(=O)=O)=N(=O)ON=1
+CCS(c1c(C)[n](=O)o[n]1)(=O)=O
+1 -> CCS(C1C(C)=N(=O)ON=1)(=O)=O
+0 -> CCS(C1C(C)=N(=O)ON=1)(=O)=O
+CN(c1cc[n](=O)cc1)C
+1 -> CN(C1C=CN(=O)=CC=1)C
+0 -> CN(C1C=CN(=O)=CC=1)C
+CNc1c(NCCSCC2OC(CN(C)C)=CC=2)[n][s](=O)[n]1
+  aromatized: CNc1c(NCCSCc2oc(CN(C)C)cc2)[n][s](=O)[n]1
+1 -> CNC1C(NCCSCC2OC(CN(C)C)=CC=2)=NS(=O)N=1
+0 -> CNC1C(NCCSCC2OC(CN(C)C)=CC=2)=NS(=O)N=1
+COC(C1C(c2c3c(cc(cc3)=[NH2+])oc3c2ccc(c3)N)=CC=CC=1)=O
+  aromatized: COC(c1c(-c2c3c(cc(cc3)=[NH2+])oc3c2ccc(c3)N)cccc1)=O
+1 -> COC(C1C(C2=C3C(=CC(C=C3)=[NH2+])OC3C2=CC=C(C=3)N)=CC=CC=1)=O
+0 -> COC(C1C(C2=C3C(=CC(C=C3)=[NH2+])OC3C2=CC=C(C=3)N)=CC=CC=1)=O
+COC(c1c(C)[n](=O)o[n]1)=O
+1 -> COC(C1C(C)=N(=O)ON=1)=O
+0 -> COC(C1C(C)=N(=O)ON=1)=O
+COCc1c(C#N)[n](=O)o[n]1
+1 -> COCC1C(C#N)=N(=O)ON=1
+0 -> COCC1C(C#N)=N(=O)ON=1
+COCc1c(C(=O)N)[n](=O)o[n]1
+1 -> COCC1C(C(=O)N)=N(=O)ON=1
+0 -> COCC1C(C(=O)N)=N(=O)ON=1
+COc1c(-c2ccccc2)[n](=O)o[n]1
+1 -> COC1C(C2C=CC=CC=2)=N(=O)ON=1
+0 -> COC1C(C2C=CC=CC=2)=N(=O)ON=1
+COc1cc2c([n](c([n][n]2=O)N)=O)cc1
+1 -> COC1C=C2C(N(=C(N=N2=O)N)=O)=CC=1
+0 -> COC1C=C2C(N(=C(N=N2=O)N)=O)=CC=1
+COc1[n](=O)c2c(cccc2)[n](=O)[n]1
+1 -> COC1N(=O)=C2C(C=CC=C2)=N(=O)N=1
+0 -> COC1N(=O)=C2C(C=CC=C2)=N(=O)N=1
+CS(c1c2c(cccc2)[n](=O)cc1)(=O)=O
+1 -> CS(C1C2C(=CC=CC=2)N(=O)=CC=1)(=O)=O
+0 -> CS(C1C2C(=CC=CC=2)N(=O)=CC=1)(=O)=O
+Cc1[n](=O)o[n]c1C=O
+1 -> CC1=N(=O)ON=C1C=O
+0 -> CC1=N(=O)ON=C1C=O
+Cc1[n](=O)o[n]c1Cl
+1 -> CC1=N(=O)ON=C1Cl
+0 -> CC1=N(=O)ON=C1Cl
+Cc1[n](=O)o[n]c1N
+1 -> CC1=N(=O)ON=C1N
+0 -> CC1=N(=O)ON=C1N
+Cc1[n](=O)o[n]c1C(=O)N
+1 -> CC1=N(=O)ON=C1C(=O)N
+0 -> CC1=N(=O)ON=C1C(=O)N
+Cc1[n](=O)o[n]c1N(=O)=O
+1 -> CC1=N(=O)ON=C1N(=O)=O
+0 -> CC1=N(=O)ON=C1N(=O)=O
+Cc1[n](=O)o[n]c1S(c1ccccc1)(=O)=O
+1 -> CC1=N(=O)ON=C1S(C1C=CC=CC=1)(=O)=O
+0 -> CC1=N(=O)ON=C1S(C1C=CC=CC=1)(=O)=O
+Cc1[n](=O)o[n]c1S(c1ccccc1)=O
+1 -> CC1=N(=O)ON=C1S(C1C=CC=CC=1)=O
+0 -> CC1=N(=O)ON=C1S(C1C=CC=CC=1)=O
+Cc1[n](=O)o[n]c1-c1ccccc1
+1 -> CC1=N(=O)ON=C1C1C=CC=CC=1
+0 -> CC1=N(=O)ON=C1C1C=CC=CC=1
+CC1SC=C([n]2c(=O)c3c[nH]c4c(c3[n]2)cccc4)C=1
+  aromatized: Cc1[s]cc(-[n]2c(=O)c3c[nH]c4c(c3[n]2)cccc4)c1
+1 -> CC1SC=C(N2C(=O)C3=CNC4C(C3=N2)=CC=CC=4)C=1
+0 -> CC1SC=C(N2C(=O)C3=CNC4C(C3=N2)=CC=CC=4)C=1
+Cc1c2c(c(N(=O)=O)cc[n]2=O)ccc1
+1 -> CC1C2C(=C(N(=O)=O)C=CN=2=O)C=CC=1
+0 -> CC1C2C(=C(N(=O)=O)C=CN=2=O)C=CC=1
+Cc1c2c([n](ccc2N(=O)=O)=O)ccc1
+1 -> CC1C2C(=N(C=CC=2N(=O)=O)=O)C=CC=1
+0 -> CC1C2C(=N(C=CC=2N(=O)=O)=O)C=CC=1
+Cc1c2c([n](cc[n]2)=O)ccc1
+1 -> CC1C2C(=N(C=CN=2)=O)C=CC=1
+0 -> CC1C2C(=N(C=CN=2)=O)C=CC=1
+Cc1cc[n](=O)cc1
+1 -> CC1C=CN(=O)=CC=1
+0 -> CC1C=CN(=O)=CC=1
+Cc1c(C)[n](=O)o[n]1
+1 -> CC1C(C)=N(=O)ON=1
+0 -> CC1C(C)=N(=O)ON=1
+Cc1c(C(=O)N)[n](=O)o[n]1
+1 -> CC1C(C(=O)N)=N(=O)ON=1
+0 -> CC1C(C(=O)N)=N(=O)ON=1
+Cc1c(C=O)[n](=O)o[n]1
+1 -> CC1C(C=O)=N(=O)ON=1
+0 -> CC1C(C=O)=N(=O)ON=1
+Cc1c(Cc2ccccc2)[n](=O)o[n]1
+1 -> CC1C(CC2C=CC=CC=2)=N(=O)ON=1
+0 -> CC1C(CC2C=CC=CC=2)=N(=O)ON=1
+Cc1c(Cl)[n](=O)o[n]1
+1 -> CC1C(Cl)=N(=O)ON=1
+0 -> CC1C(Cl)=N(=O)ON=1
+Cc1c(N)[n](=O)o[n]1
+1 -> CC1C(N)=N(=O)ON=1
+0 -> CC1C(N)=N(=O)ON=1
+Cc1c(S(c2ccccc2)(=O)=O)[n](=O)o[n]1
+1 -> CC1C(S(C2C=CC=CC=2)(=O)=O)=N(=O)ON=1
+0 -> CC1C(S(C2C=CC=CC=2)(=O)=O)=N(=O)ON=1
+Cc1c(S(c2ccccc2)=O)[n](=O)o[n]1
+1 -> CC1C(S(C2C=CC=CC=2)=O)=N(=O)ON=1
+0 -> CC1C(S(C2C=CC=CC=2)=O)=N(=O)ON=1
+Cc1c(Sc2ccccc2)[n](=O)o[n]1
+1 -> CC1C(SC2C=CC=CC=2)=N(=O)ON=1
+0 -> CC1C(SC2C=CC=CC=2)=N(=O)ON=1
+Cc1c(-c2ccccc2)[n](=O)o[n]1
+1 -> CC1C(C2C=CC=CC=2)=N(=O)ON=1
+0 -> CC1C(C2C=CC=CC=2)=N(=O)ON=1
+Cc1[n](=O)o[n]c1Cc1ccccc1
+1 -> CC1=N(=O)ON=C1CC1C=CC=CC=1
+0 -> CC1=N(=O)ON=C1CC1C=CC=CC=1
+Cc1[n](=O)o[n]c1Sc1ccccc1
+1 -> CC1=N(=O)ON=C1SC1C=CC=CC=1
+0 -> CC1=N(=O)ON=C1SC1C=CC=CC=1
+Cc1[n](=O)c2c(cccc2)c(N(=O)=O)c1
+1 -> CC1N(=O)=C2C(C=CC=C2)=C(N(=O)=O)C=1
+0 -> CC1N(=O)=C2C(C=CC=C2)=C(N(=O)=O)C=1
+Cc1c(C)cc2c([n]([n]c([n]2=O)N)=O)c1
+1 -> CC1C(C)=CC2C(=N(N=C(N=2=O)N)=O)C=1
+0 -> CC1C(C)=CC2C(=N(N=C(N=2=O)N)=O)C=1
+Cc1cc2c(c(N(=O)=O)cc[n]2=O)cc1
+1 -> CC1C=C2C(C(N(=O)=O)=CC=N2=O)=CC=1
+0 -> CC1C=C2C(C(N(=O)=O)=CC=N2=O)=CC=1
+Cc1cc2c([n](c(cc2C)C)=O)cc1
+1 -> CC1C=C2C(N(=C(C=C2C)C)=O)=CC=1
+0 -> CC1C=C2C(N(=C(C=C2C)C)=O)=CC=1
+Cc1cc2c([n](c([n][n]2=O)N)=O)cc1
+1 -> CC1C=C2C(N(=C(N=N2=O)N)=O)=CC=1
+0 -> CC1C=C2C(N(=C(N=N2=O)N)=O)=CC=1
+Cc1cc2c([n](ccc2N(=O)=O)=O)cc1
+1 -> CC1C=C2C(N(=CC=C2N(=O)=O)=O)=CC=1
+0 -> CC1C=C2C(N(=CC=C2N(=O)=O)=O)=CC=1
+Cc1cc2c([n](ccc2)=O)cc1
+1 -> CC1C=C2C(N(=CC=C2)=O)=CC=1
+0 -> CC1C=C2C(N(=CC=C2)=O)=CC=1
+Cc1c(N(=O)=O)c2c(cccc2)[n](=O)c1
+1 -> CC1C(N(=O)=O)=C2C(C=CC=C2)=N(=O)C=1
+0 -> CC1C(N(=O)=O)=C2C(C=CC=C2)=N(=O)C=1
+Clc1[n](=O)o[n]c1-c1ccccc1
+1 -> ClC1=N(=O)ON=C1C1C=CC=CC=1
+0 -> ClC1=N(=O)ON=C1C1C=CC=CC=1
+Clc1c(Cl)cc2c3c(c2c1)cc(Cl)c(Cl)c3
+1 -> Clc1c(Cl)cc2c3c(c2c1)cc(Cl)c(Cl)c3   <- Aromatic
+0 -> ClC1C(Cl)=CC2=C3C(=C2C=1)C=C(Cl)C(Cl)=C3
+    arom -> ClC1C(Cl)=CC2=C3C(=C2C=1)C=C(Cl)C(Cl)=C3
+Clc1c2c(cccc2)[n](=O)cc1
+1 -> ClC1C2C(=CC=CC=2)N(=O)=CC=1
+0 -> ClC1C2C(=CC=CC=2)N(=O)=CC=1
+Clc1cc[n](=O)cc1
+1 -> ClC1C=CN(=O)=CC=1
+0 -> ClC1C=CN(=O)=CC=1
+Clc1c(-c2ccccc2)[n](=O)o[n]1
+1 -> ClC1C(C2C=CC=CC=2)=N(=O)ON=1
+0 -> ClC1C(C2C=CC=CC=2)=N(=O)ON=1
+Clc1cc2c(c(cc[n]2=O)Cl)cc1
+1 -> ClC1C=C2C(C(=CC=N2=O)Cl)=CC=1
+0 -> ClC1C=C2C(C(=CC=N2=O)Cl)=CC=1
+Clc1cc2c([n](ccc2N(=O)=O)=O)cc1
+1 -> ClC1C=C2C(N(=CC=C2N(=O)=O)=O)=CC=1
+0 -> ClC1C=C2C(N(=CC=C2N(=O)=O)=O)=CC=1
+Clc1c(N(=O)=O)c2c(cccc2)[n](=O)c1
+1 -> ClC1C(N(=O)=O)=C2C(C=CC=C2)=N(=O)C=1
+0 -> ClC1C(N(=O)=O)=C2C(C=CC=C2)=N(=O)C=1
+CN1C(Sc2c3c([n]c[n]3)[n]c[nH]2)=C(N(=O)=O)N=C1
+  aromatized: C[n]1c(Sc2c3c([n]c[n]3)[n]c[nH]2)c(N(=O)=O)[n]c1
+1 -> CN1C(SC2=C3C(=NC=N3)N=CN2)=C(N(=O)=O)N=C1
+0 -> CN1C(SC2=C3C(=NC=N3)N=CN2)=C(N(=O)=O)N=C1
+Fc1c2c(c(N(=O)=O)cc[n]2=O)ccc1
+1 -> FC1C2C(=C(N(=O)=O)C=CN=2=O)C=CC=1
+0 -> FC1C2C(=C(N(=O)=O)C=CN=2=O)C=CC=1
+Ic1c(N(=O)=O)[n](CC(NCc2c[n](=O)ccc2)=O)c[n]1
+1 -> IC1=C(N(=O)=O)N(CC(NCC2C=N(=O)C=CC=2)=O)C=N1
+0 -> IC1=C(N(=O)=O)N(CC(NCC2C=N(=O)C=CC=2)=O)C=N1
+Nc1[n](=O)o[n]c1-c1ccccc1
+1 -> NC1=N(=O)ON=C1C1C=CC=CC=1
+0 -> NC1=N(=O)ON=C1C1C=CC=CC=1
+Nc1c2c(cccc2)[n](=O)cc1
+1 -> NC1C2C(=CC=CC=2)N(=O)=CC=1
+0 -> NC1C2C(=CC=CC=2)N(=O)=CC=1
+Nc1c2c([n](C3C(F)CC(CO)O3)c[n]2)[n]c[n]1=O
+1 -> NC1=C2C(N(C3C(F)CC(CO)O3)C=N2)=NC=N1=O
+0 -> NC1=C2C(N(C3C(F)CC(CO)O3)C=N2)=NC=N1=O
+Nc1c(-c2ccccc2)[n](=O)o[n]1
+1 -> NC1C(C2C=CC=CC=2)=N(=O)ON=1
+0 -> NC1C(C2C=CC=CC=2)=N(=O)ON=1
+Nc1c2c3c(ccc2)c2c(cccc2)c3cc1
+1 -> Nc1c2c3c(ccc2)c2c(cccc2)c3cc1   <- Aromatic
+0 -> NC1=C2C3C(=CC=C2)C2=C(C=CC=C2)C=3C=C1
+    arom -> Nc1c2c3c(ccc2)-c2c(cccc2)-c3cc1
+Nc1[n](=O)c2c(cc(cc2)OCC(CO)O)[n](=O)[n]1
+1 -> NC1N(=O)=C2C(C=C(C=C2)OCC(CO)O)=N(=O)N=1
+0 -> NC1N(=O)=C2C(C=C(C=C2)OCC(CO)O)=N(=O)N=1
+Nc1[n](=O)c2c(cc(cc2)OCC=C)[n](=O)[n]1
+1 -> NC1N(=O)=C2C(C=C(C=C2)OCC=C)=N(=O)N=1
+0 -> NC1N(=O)=C2C(C=C(C=C2)OCC=C)=N(=O)N=1
+Nc1[n](=O)c2c(ccc(c2)Cl)[n](=O)[n]1
+1 -> NC1N(=O)=C2C(C=CC(=C2)Cl)=N(=O)N=1
+0 -> NC1N(=O)=C2C(C=CC(=C2)Cl)=N(=O)N=1
+Nc1[n](=O)c2c(cccc2)[n](=O)[n]1
+1 -> NC1N(=O)=C2C(C=CC=C2)=N(=O)N=1
+0 -> NC1N(=O)=C2C(C=CC=C2)=N(=O)N=1
+O=Cc1c2c(ccccc2)cc1
+1 -> O=CC1C2C(C=CC=CC=2)=CC=1
+0 -> O=CC1C2C(C=CC=CC=2)=CC=1
+O=N(c1c2c(cccc2)[n](=O)cc1)=NC#N
+1 -> O=N(C1C2C(=CC=CC=2)N(=O)=CC=1)=NC#N
+0 -> O=N(C1C2C(=CC=CC=2)N(=O)=CC=1)=NC#N
+O=N(c1cc[n](=O)cc1)=NC#N
+1 -> O=N(C1C=CN(=O)=CC=1)=NC#N
+0 -> O=N(C1C=CN(=O)=CC=1)=NC#N
+O=N(c1c2c(ccccc2)cc1)=O
+1 -> O=N(C1C2C(C=CC=CC=2)=CC=1)=O
+0 -> O=N(C1C2C(C=CC=CC=2)=CC=1)=O
+O=N(c1c2c(ccc[n]2=O)ccc1)=O
+1 -> O=N(C1C2C(=CC=CN=2=O)C=CC=1)=O
+0 -> O=N(C1C2C(=CC=CN=2=O)C=CC=1)=O
+O=N(c1c2c([n](ccc2N(=O)=O)=O)ccc1)=O
+1 -> O=N(C1C2C(=N(C=CC=2N(=O)=O)=O)C=CC=1)=O
+0 -> O=N(C1C2C(=N(C=CC=2N(=O)=O)=O)C=CC=1)=O
+O=N(c1c2c([n](ccc2)=O)ccc1)=O
+1 -> O=N(C1C2C(=N(C=CC=2)=O)C=CC=1)=O
+0 -> O=N(C1C2C(=N(C=CC=2)=O)C=CC=1)=O
+O=N(c1c2c(c(N(=O)=O)ccc2)[n](=O)cc1)=O
+1 -> O=N(C1C2C(=C(N(=O)=O)C=CC=2)N(=O)=CC=1)=O
+0 -> O=N(C1C2C(=C(N(=O)=O)C=CC=2)N(=O)=CC=1)=O
+O=N(c1c2c(cccc2)[n](=O)cc1)=O
+1 -> O=N(C1C2C(=CC=CC=2)N(=O)=CC=1)=O
+0 -> O=N(C1C2C(=CC=CC=2)N(=O)=CC=1)=O
+O=N(c1cc[n](=O)cc1)=O
+1 -> O=N(C1C=CN(=O)=CC=1)=O
+0 -> O=N(C1C=CN(=O)=CC=1)=O
+O=N(c1cc2c(ccc[n]2=O)cc1)=O
+1 -> O=N(C1C=C2C(C=CC=N2=O)=CC=1)=O
+0 -> O=N(C1C=C2C(C=CC=N2=O)=CC=1)=O
+O=N(c1cc2c([n](ccc2N(=O)=O)=O)cc1)=O
+1 -> O=N(C1C=C2C(N(=CC=C2N(=O)=O)=O)=CC=1)=O
+0 -> O=N(C1C=C2C(N(=CC=C2N(=O)=O)=O)=CC=1)=O
+O=N(c1cc2c([n](ccc2)=O)cc1)=O
+1 -> O=N(C1C=C2C(N(=CC=C2)=O)=CC=1)=O
+0 -> O=N(C1C=C2C(N(=CC=C2)=O)=CC=1)=O
+O=N(c1cc2c(cccc2)[n](=O)c1)=O
+1 -> O=N(C1C=C2C(C=CC=C2)=N(=O)C=1)=O
+0 -> O=N(C1C=C2C(C=CC=C2)=N(=O)C=1)=O
+O=c1[n](Cc2ccccc2)cc[n](=O)[n]1
+1 -> O=C1N(CC2C=CC=CC=2)C=CN(=O)=N1
+0 -> O=C1N(CC2C=CC=CC=2)C=CN(=O)=N1
+O=c1c2c([s]c(c([s]2)C#N)C#N)c(=O)c2c1cccc2
+1 -> O=c1c2c([s]c(c([s]2)C#N)C#N)c(=O)c2c1cccc2   <- Aromatic
+0 -> O=C1C2=C(SC(=C(S2)C#N)C#N)C(=O)C2C1=CC=CC=2
+    arom -> O=C1C2=C(SC(=C(S2)C#N)C#N)C(=O)c2c1cccc2
+O=[n]1ccc(C#N)cc1
+1 -> O=N1C=CC(C#N)=CC=1
+0 -> O=N1C=CC(C#N)=CC=1
+O=[n]1ccc(-c2ccccc2)cc1
+1 -> O=N1C=CC(C2C=CC=CC=2)=CC=1
+0 -> O=N1C=CC(C2C=CC=CC=2)=CC=1
+O=[n]1c2c(cccc2)ccc1
+1 -> O=N1C2C(=CC=CC=2)C=CC=1
+0 -> O=N1C2C(=CC=CC=2)C=CC=1
+O=[n]1ccccc1
+1 -> O=N1C=CC=CC=1
+0 -> O=N1C=CC=CC=1
+O=[n]1c(SCc2ccccc2)cccc1
+1 -> O=N1C(SCC2C=CC=CC=2)=CC=CC=1
+0 -> O=N1C(SCC2C=CC=CC=2)=CC=CC=1
+O=[n]1c2c(cccc2)[n](=O)[n]c1
+1 -> O=N1C2C(=CC=CC=2)N(=O)=NC=1
+0 -> O=N1C2C(=CC=CC=2)N(=O)=NC=1
+O=[n]1c2c(cccc2)[n]o1
+1 -> O=N1=C2C(C=CC=C2)=NO1
+0 -> O=N1=C2C(C=CC=C2)=NO1
+O=[n]1cc2c(cccc2)cc1
+1 -> O=N1C=C2C(C=CC=C2)=CC=1
+0 -> O=N1C=C2C(C=CC=C2)=CC=1
+O=[n]1c2c(cccc2)c2c(cccc2)[n]1
+1 -> O=N1C2C(=CC=CC=2)C2C(=CC=CC=2)N=1
+0 -> O=N1C2C(=CC=CC=2)C2C(=CC=CC=2)N=1
+O=[n]1c(Cc2ccccc2)c(Cc2ccccc2)[n]o1
+1 -> O=N1=C(CC2C=CC=CC=2)C(CC2C=CC=CC=2)=NO1
+0 -> O=N1=C(CC2C=CC=CC=2)C(CC2C=CC=CC=2)=NO1
+O=[n]1c(-c2ccccc2)c(-c2ccccc2)[n]o1
+1 -> O=N1=C(C2C=CC=CC=2)C(C2C=CC=CC=2)=NO1
+0 -> O=N1=C(C2C=CC=CC=2)C(C2C=CC=CC=2)=NO1
+OC(c1c2c(ccccc2)cc1)=O
+1 -> OC(C1C2C(C=CC=CC=2)=CC=1)=O
+0 -> OC(C1C2C(C=CC=CC=2)=CC=1)=O
+OCC1C(O)C(O)C([n]2c(=O)[n][n](=O)cc2)O1
+1 -> OCC1C(O)C(O)C(N2C(=O)N=N(=O)C=C2)O1
+0 -> OCC1C(O)C(O)C(N2C(=O)N=N(=O)C=C2)O1
+Oc1c[n](=O)ccc1
+1 -> OC1C=N(=O)C=CC=1
+0 -> OC1C=N(=O)C=CC=1
+Oc1c2c(cccc2)[n](=O)cc1
+1 -> OC1C2C(=CC=CC=2)N(=O)=CC=1
+0 -> OC1C2C(=CC=CC=2)N(=O)=CC=1
+c1cc2c3c4c(cccc4c2cc1)ccc3
+1 -> c1cc2c3c4c(cccc4c2cc1)ccc3   <- Aromatic
+0 -> C1=CC2C3=C4C(C=CC=C4C=2C=C1)=CC=C3
+    arom -> c1cc2-c3c4c(cccc4-c2cc1)ccc3
+c1cc2c(cc3c4c5c(ccc4)cccc5c3c2)cc1
+1 -> c1cc2c(cc3c4c5c(ccc4)cccc5c3c2)cc1   <- Aromatic
+0 -> C1=CC2C(=CC3C4C5C(C=CC=4)=CC=CC=5C=3C=2)C=C1
+    arom -> c1cc2c(cc3-c4c5c(ccc4)cccc5-c3c2)cc1
+c1ccc2c(ccc2)cc1
+1 -> C1C=CC2C(C=CC=2)=CC=1
+0 -> C1C=CC2C(C=CC=2)=CC=1
+Number of molecules that cannot be dearomatized out of 124:
+ without verification: 0
+ with verification:    7

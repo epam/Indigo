@@ -36,14 +36,14 @@ namespace indigo
     class DLLEXPORT MoleculeAlleneStereo
     {
     public:
-        explicit MoleculeAlleneStereo(BaseMolecule& baseMolecule);
+        explicit MoleculeAlleneStereo();
 
         void clear();
 
-        void buildFromBonds(bool ignore_errors, int* sensible_bonds_out);
-        void markBonds();
+        void buildFromBonds(BaseMolecule& baseMolecule, bool ignore_errors, int* sensible_bonds_out);
+        void markBonds(BaseMolecule& baseMolecule);
         static int sameside(const Vec3f& dir1, const Vec3f& dir2, const Vec3f& sep);
-        void buildOnSubmolecule(MoleculeAlleneStereo& super, int* mapping);
+        void buildOnSubmolecule(BaseMolecule& baseMolecule, BaseMolecule& super, int* mapping);
         static bool checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping);
 
         static bool possibleCenter(BaseMolecule& mol, int idx, int& left, int& right, int subst[4], bool pure_h[4]);
@@ -60,8 +60,8 @@ namespace indigo
 
         void add(int atom_idx, int left, int right, int subst[4], int parity);
 
-        void removeAtoms(const Array<int>& indices);
-        void removeBonds(const Array<int>& indices);
+        void removeAtoms(BaseMolecule& baseMolecule,const Array<int>& indices);
+        void removeBonds(BaseMolecule& baseMolecule,const Array<int>& indices);
         void registerUnfoldedHydrogen(int atom_idx, int added_hydrogen);
 
         DECL_ERROR;
@@ -86,7 +86,6 @@ namespace indigo
 
         bool _isAlleneCenter(BaseMolecule& mol, int idx, _Atom& atom, int* sensible_bonds_out);
 
-        BaseMolecule& _baseMolecule;
         RedBlackMap<int, _Atom> _centers;
     };
 

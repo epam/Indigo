@@ -1,7 +1,7 @@
 
-  -INDIGO-10082014502D
 
-  0  0  0  0  0  0  0  0  0  0999 V2000
+
+  0  0  0  0  0  0  0  0  0  0  1 V2000
 M  END
 >  <DSSTox_RID>
 20385
@@ -71,9 +71,9 @@ http://potency.berkeley.edu/chempages/DEXTRAN.html
 
 $$$$
 
-  -INDIGO-10082014502D
 
-  0  0  0  0  0  0  0  0  0  0999 V2000
+
+  0  0  0  0  0  0  0  0  0  0  1 V2000
 M  END
 >  <DSSTox_RID>
 20386
@@ -149,9 +149,9 @@ http://potency.berkeley.edu/chempages/DEXTRAN%20SULFATE%20SODIUM%20(DS-M-1).html
 
 $$$$
 
-  -INDIGO-10082014502D
 
-  0  0  0  0  0  0  0  0  0  0999 V2000
+
+  0  0  0  0  0  0  0  0  0  0  1 V2000
 M  END
 >  <DSSTox_RID>
 20387
@@ -221,9 +221,9 @@ http://potency.berkeley.edu/chempages/DEXTRAN%20SULFATE%20SODIUM%20(DST-H).html
 
 $$$$
 
-  -INDIGO-10082014502D
 
-  0  0  0  0  0  0  0  0  0  0999 V2000
+
+  0  0  0  0  0  0  0  0  0  0  1 V2000
 M  END
 >  <DSSTox_RID>
 20388

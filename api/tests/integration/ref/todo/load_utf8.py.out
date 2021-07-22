@@ -1,0 +1,63 @@
+****** Load molfile with UTF-8 characters in Data S-group ********
+
+  -INDIGO-01000000002D
+
+  5  4  0  0  0  0  0  0  0  0999 V2000
+   -4.1250   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.2590   -8.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.3929   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.5269   -8.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.6609   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+  4  5  1  0  0  0  0
+M  STY  1   1 DAT
+M  SLB  1   1   1
+M  SAL   1  2   4   5
+M  SDT   1 single-name                    F                                     
+M  SDD   1     1.6314   -1.1000    DR    ALL  1       1  
+M  SED   1 single-value-бензол
+M  END
+
+
+  -INDIGO-01000000002D
+
+  5  4  0  0  0  0  0  0  0  0999 V2000
+   -4.1250   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.2590   -8.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.3929   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.5269   -8.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.6609   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+  4  5  1  0  0  0  0
+M  STY  1   1 DAT
+M  SLB  1   1   1
+M  SAL   1  2   4   5
+M  SDT   1 single-name                    F                                     
+M  SDD   1     1.6314   -1.1000    DR    ALL  1       1  
+M  SED   1 single-value-бензол
+M  END
+
+<?xml version="1.0" ?>
+<cml>
+    <molecule title="">
+        <atomArray>
+            <atom id="a0" elementType="C" x2="-4.125" y2="-8.1" />
+            <atom id="a1" elementType="C" x2="-3.259" y2="-8.6" />
+            <atom id="a2" elementType="C" x2="-2.3929" y2="-8.1" />
+            <atom id="a3" elementType="C" x2="-1.5269" y2="-8.6" />
+            <atom id="a4" elementType="C" x2="-0.6609" y2="-8.1" />
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a0 a1" order="1" />
+            <bond atomRefs2="a1 a2" order="1" />
+            <bond atomRefs2="a2 a3" order="1" />
+            <bond atomRefs2="a3 a4" order="1" />
+        </bondArray>
+        <molecule id="sg1" atomRefs="a3 a4" role="DataSgroup" fieldName="single-name" x="1.6314" y="-1.1" placement="Relative" fieldData="single-value-бензол" />
+    </molecule>
+</cml>
+

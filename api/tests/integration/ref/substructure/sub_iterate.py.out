@@ -1,0 +1,1217 @@
+Try TAU:
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+Nothing found
+Try TAU INCHI (Match):
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+OC1=C2C=NN=C2NC=N1 |ha:0,1,2,6,7,hb:0,1,6,7|
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+Try TAU RSMARTS (Match):
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+OC1=C2C=NNC2=NC=N1 |ha:0,1,2,5,6,hb:0,1,5,6|
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 9-5
+Try TAU INCHI (IterateMatches):
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 9-5
+Try TAU RSMARTS (IterateMatches):
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 9-5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+Test molecule with irregular atom numbering.
+Try TAU:
+Query: OC=CCN
+Molecule: C1(C2C=NNC=2NC=N1)=O
+Nothing found
+Try TAU INCHI (Match):
+Query: OC=CCN
+Molecule: C1(C2C=NNC=2NC=N1)=O
+C1(=C2C=NN=C2NC=N1)O |ha:0,1,5,6,9,hb:0,5,6,10|
+0 --> 1; matched
+1 --> 0; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=0
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+Try TAU RSMARTS (Match):
+Query: OC=CCN
+Molecule: C1(C2C=NNC=2NC=N1)=O
+C1(=C2C=NNC2=NC=N1)O |ha:0,1,4,5,9,hb:0,4,5,10|
+0 --> 1; matched
+1 --> 0; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=0
+Bond 2-3 --> 5-6
+Bond 3-4 --> 9-5
+Try TAU INCHI (IterateMatches):
+Query: OC=CCN
+Molecule: C1(C2C=NNC=2NC=N1)=O
+0 --> 1; matched
+1 --> 0; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=0
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+0 --> 1; matched
+1 --> 0; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=0
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+0 --> 1; matched
+1 --> 0; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=0
+Bond 2-3 --> 5-6
+Bond 3-4 --> 9-5
+Try TAU RSMARTS (IterateMatches):
+Query: OC=CCN
+Molecule: C1(C2C=NNC=2NC=N1)=O
+0 --> 1; matched
+1 --> 0; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=0
+Bond 2-3 --> 5-6
+Bond 3-4 --> 9-5
+0 --> 1; matched
+1 --> 0; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=0
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+0 --> 1; matched
+1 --> 0; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=0
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+Try TAU:
+Query: OC=CC=N
+Molecule: O=C1C2C=NNC=2NC=N1
+Nothing found
+Try TAU INCHI (Match):
+Query: OC=CC=N
+Molecule: O=C1C2C=NNC=2NC=N1
+OC1=C2C=NNC2=NC=N1 |ha:0,1,2,6,7,hb:0,1,6,7|
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3=4 --> 4=5
+Try TAU RSMARTS (Match):
+Query: OC=CC=N
+Molecule: O=C1C2C=NNC=2NC=N1
+OC1=C2C=NNC2=NC=N1 |ha:0,1,2,6,7,hb:0,1,6,7|
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3=4 --> 4=5
+Try TAU INCHI (IterateMatches):
+Query: OC=CC=N
+Molecule: O=C1C2C=NNC=2NC=N1
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3=4 --> 4=5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3=4 --> 9=5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3=4 --> 9=5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 7; matched
+4 --> 8; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 6-7
+Bond 3=4 --> 7=8
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 7; matched
+4 --> 8; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 6-7
+Bond 3=4 --> 7=8
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 7; matched
+4 --> 8; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 6-7
+Bond 3=4 --> 7=8
+Try TAU RSMARTS (IterateMatches):
+Query: OC=CC=N
+Molecule: O=C1C2C=NNC=2NC=N1
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3=4 --> 4=5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 7; matched
+4 --> 8; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 6-7
+Bond 3=4 --> 7=8
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3=4 --> 9=5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 7; matched
+4 --> 8; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 6-7
+Bond 3=4 --> 7=8
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3=4 --> 9=5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 7; matched
+4 --> 8; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 6-7
+Bond 3=4 --> 7=8
+Try TAU:
+Query: NNC
+Molecule: O=C1C2C=NNC=2NC=N1
+Nothing found
+Try TAU INCHI (Match):
+Query: NNC
+Molecule: O=C1C2C=NNC=2NC=N1
+O=C1C2C=NNC=2NC=N1 |ha:4,5,6,hb:4,5|
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+Try TAU RSMARTS (Match):
+Query: NNC
+Molecule: O=C1C2C=NNC=2NC=N1
+O=C1C2C=NNC=2NC=N1 |ha:4,5,6,hb:4,5|
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+Try TAU INCHI (IterateMatches):
+Query: NNC
+Molecule: O=C1C2C=NNC=2NC=N1
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+Try TAU RSMARTS (IterateMatches):
+Query: NNC
+Molecule: O=C1C2C=NNC=2NC=N1
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 7-8
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+0 --> 8; matched
+1 --> 9; matched
+2 --> 5; matched
+Bond 0-1 --> 8-9
+Bond 1-2 --> 9-5
+Try TAU:
+Query: NNCCC
+Molecule: O=C1N=CNC2NN=CC1=2
+O=C1N=CNC2NN=CC1=2 |ha:1,5,6,7,9,hb:5,6,9,10|
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 1; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Error! Bond type not matched.  Bond 2-3 --> 2=6
+Bond 3-4 --> 1-2
+Try TAU INCHI (Match):
+Query: NNCCC
+Molecule: O=C1N=CNC2NN=CC1=2
+O=C1N=CN=C2NNC=C12 |ha:1,5,6,7,9,hb:5,6,9,10|
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 1; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 1-2
+Try TAU RSMARTS (Match):
+Query: NNCCC
+Molecule: O=C1N=CNC2NN=CC1=2
+O=C1N=CN=C2NN=CC12 |ha:1,5,6,7,9,hb:5,6,9,10|
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 1; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 1-2
+Try TAU INCHI (IterateMatches):
+Query: NNCCC
+Molecule: O=C1N=CNC2NN=CC1=2
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 1; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 1-2
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 3; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 2-3
+Try TAU RSMARTS (IterateMatches):
+Query: NNCCC
+Molecule: O=C1N=CNC2NN=CC1=2
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 1; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 1-2
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 3; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 2-3
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 1; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 1-2
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 3; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 2-3
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 1; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 1-2
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 1; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 1-2
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 2; matched
+4 --> 3; matched
+Bond 0-1 --> 4-5
+Bond 1-2 --> 6-5
+Bond 2-3 --> 2-6
+Bond 3-4 --> 2-3
+Try TAU:
+Query: OC1CNC=CC=1
+Molecule: O=C1C2C(=CC=CC=2)CNC1
+O=C1C2C(=CC=CC=2)CNC1 |ha:0,1,2,3,8,9,10,hb:0,1,2,8,9,10,11|
+0 --> 0; matched
+1 --> 1; matched
+2 --> 10; matched
+3 --> 5; matched
+4 --> 4; matched
+5 --> 3; matched
+6 --> 2; matched
+Error! Bond type not matched.  Bond 0-1 --> 0=1
+Error! Bond type not matched.  Bond 1=2 --> 10-1
+Bond 2-3 --> 10-5
+Error! Bond type not matched.  Bond 3=4 --> 4-5
+Bond 4-5 --> 3-4
+Bond 5-6 --> 2-3
+Bond 6-1 --> 1-2
+Try TAU INCHI (Match):
+Query: OC1CNC=CC=1
+Molecule: O=C1C2C(=CC=CC=2)CNC1
+Nothing found
+Try TAU RSMARTS (Match):
+Query: OC1CNC=CC=1
+Molecule: O=C1C2C(=CC=CC=2)CNC1
+Nothing found
+Try TAU INCHI (IterateMatches):
+Query: OC1CNC=CC=1
+Molecule: O=C1C2C(=CC=CC=2)CNC1
+Try TAU RSMARTS (IterateMatches):
+Query: OC1CNC=CC=1
+Molecule: O=C1C2C(=CC=CC=2)CNC1
+Try TAU:
+Query: C=C1CCC(=C)CC1
+Molecule: CC(=C1CC=C(C)CC1)C
+CC(=C1CC=C(C)CC1)C |ha:1,2,3,4,5,6,7,8,hb:1,2,3,4,5,6,7,8|
+0 --> 1; matched
+1 --> 3; matched
+2 --> 4; matched
+3 --> 5; matched
+4 --> 6; matched
+5 --> 7; matched
+6 --> 8; matched
+7 --> 9; matched
+Bond 0=1 --> 1=3
+Bond 1-2 --> 3-4
+Bond 2-3 --> 4-5
+Bond 3-4 --> 5-6
+Error! Bond type not matched.  Bond 4=5 --> 6-7
+Error! Bond type not matched.  Bond 4-6 --> 6=8
+Bond 6-7 --> 8-9
+Bond 7-1 --> 9-3
+Try TAU INCHI (Match):
+Query: C=C1CCC(=C)CC1
+Molecule: CC(=C1CC=C(C)CC1)C
+Nothing found
+Try TAU RSMARTS (Match):
+Query: C=C1CCC(=C)CC1
+Molecule: CC(=C1CC=C(C)CC1)C
+Nothing found
+Try TAU INCHI (IterateMatches):
+Query: C=C1CCC(=C)CC1
+Molecule: CC(=C1CC=C(C)CC1)C
+Try TAU RSMARTS (IterateMatches):
+Query: C=C1CCC(=C)CC1
+Molecule: CC(=C1CC=C(C)CC1)C
+Try TAU:
+Query: CC=CC
+Molecule: CC(NC1C(C(=O)N)=CC=CC=1)=C
+Nothing found
+Try TAU INCHI (Match):
+Query: CC=CC
+Molecule: CC(NC1C(C(=O)N)=CC=CC=1)=C
+CC(NC1C(C(=O)N)=CC=CC=1)=C |ha:3,4,8,9,hb:3,7,8|
+0 --> 4; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+Try TAU RSMARTS (Match):
+Query: CC=CC
+Molecule: CC(NC1C(C(=O)N)=CC=CC=1)=C
+CC(NC1C(C(=O)N)=CC=CC=1)=C |ha:3,4,8,9,hb:3,7,8|
+0 --> 4; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+Try TAU INCHI (IterateMatches):
+Query: CC=CC
+Molecule: CC(NC1C(C(=O)N)=CC=CC=1)=C
+0 --> 4; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 5; matched
+1 --> 6; matched
+2 --> 7; matched
+3 --> 8; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 6=7
+Bond 2-3 --> 7-8
+0 --> 6; matched
+1 --> 5; matched
+2 --> 4; matched
+3 --> 9; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 4=5
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 4; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 10; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-10
+0 --> 8; matched
+1 --> 7; matched
+2 --> 6; matched
+3 --> 5; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 6=7
+Bond 2-3 --> 5-6
+0 --> 9; matched
+1 --> 4; matched
+2 --> 5; matched
+3 --> 6; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 4=5
+Bond 2-3 --> 5-6
+0 --> 10; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-10
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 4; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 5; matched
+1 --> 6; matched
+2 --> 7; matched
+3 --> 8; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 6=7
+Bond 2-3 --> 7-8
+0 --> 6; matched
+1 --> 5; matched
+2 --> 4; matched
+3 --> 9; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 4=5
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 4; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 10; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-10
+0 --> 8; matched
+1 --> 7; matched
+2 --> 6; matched
+3 --> 5; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 6=7
+Bond 2-3 --> 5-6
+0 --> 9; matched
+1 --> 4; matched
+2 --> 5; matched
+3 --> 6; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 4=5
+Bond 2-3 --> 5-6
+0 --> 10; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-10
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+Try TAU RSMARTS (IterateMatches):
+Query: CC=CC
+Molecule: CC(NC1C(C(=O)N)=CC=CC=1)=C
+0 --> 4; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 5; matched
+1 --> 6; matched
+2 --> 7; matched
+3 --> 8; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 6=7
+Bond 2-3 --> 7-8
+0 --> 6; matched
+1 --> 5; matched
+2 --> 4; matched
+3 --> 9; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 4=5
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 4; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 10; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-10
+0 --> 8; matched
+1 --> 7; matched
+2 --> 6; matched
+3 --> 5; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 6=7
+Bond 2-3 --> 5-6
+0 --> 9; matched
+1 --> 4; matched
+2 --> 5; matched
+3 --> 6; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 4=5
+Bond 2-3 --> 5-6
+0 --> 10; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-10
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 4; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 5; matched
+1 --> 6; matched
+2 --> 7; matched
+3 --> 8; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 6=7
+Bond 2-3 --> 7-8
+0 --> 6; matched
+1 --> 5; matched
+2 --> 4; matched
+3 --> 9; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 4=5
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 4; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 10; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-10
+0 --> 8; matched
+1 --> 7; matched
+2 --> 6; matched
+3 --> 5; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 6=7
+Bond 2-3 --> 5-6
+0 --> 9; matched
+1 --> 4; matched
+2 --> 5; matched
+3 --> 6; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 4=5
+Bond 2-3 --> 5-6
+0 --> 10; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-10
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 4; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 5; matched
+1 --> 6; matched
+2 --> 7; matched
+3 --> 8; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 6=7
+Bond 2-3 --> 7-8
+0 --> 6; matched
+1 --> 5; matched
+2 --> 4; matched
+3 --> 9; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 4=5
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 4; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 10; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-10
+0 --> 8; matched
+1 --> 7; matched
+2 --> 6; matched
+3 --> 5; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 6=7
+Bond 2-3 --> 5-6
+0 --> 9; matched
+1 --> 4; matched
+2 --> 5; matched
+3 --> 6; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 4=5
+Bond 2-3 --> 5-6
+0 --> 10; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-10
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 7; matched
+Bond 0-1 --> 4-5
+Bond 1=2 --> 5=6
+Bond 2-3 --> 6-7
+0 --> 6; matched
+1 --> 7; matched
+2 --> 8; matched
+3 --> 9; matched
+Bond 0-1 --> 6-7
+Bond 1=2 --> 7=8
+Bond 2-3 --> 8-9
+0 --> 7; matched
+1 --> 6; matched
+2 --> 5; matched
+3 --> 4; matched
+Bond 0-1 --> 6-7
+Bond 1=2 --> 5=6
+Bond 2-3 --> 4-5
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+3 --> 6; matched
+Bond 0-1 --> 8-9
+Bond 1=2 --> 7=8
+Bond 2-3 --> 6-7
+0 --> 4; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 5; matched
+1 --> 6; matched
+2 --> 7; matched
+3 --> 8; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 6=7
+Bond 2-3 --> 7-8
+0 --> 6; matched
+1 --> 5; matched
+2 --> 4; matched
+3 --> 9; matched
+Bond 0-1 --> 5-6
+Bond 1=2 --> 4=5
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 4; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-4
+0 --> 7; matched
+1 --> 8; matched
+2 --> 9; matched
+3 --> 10; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 8=9
+Bond 2-3 --> 9-10
+0 --> 8; matched
+1 --> 7; matched
+2 --> 6; matched
+3 --> 5; matched
+Bond 0-1 --> 7-8
+Bond 1=2 --> 6=7
+Bond 2-3 --> 5-6
+0 --> 9; matched
+1 --> 4; matched
+2 --> 5; matched
+3 --> 6; matched
+Bond 0-1 --> 9-4
+Bond 1=2 --> 4=5
+Bond 2-3 --> 5-6
+0 --> 10; matched
+1 --> 9; matched
+2 --> 8; matched
+3 --> 7; matched
+Bond 0-1 --> 9-10
+Bond 1=2 --> 8=9
+Bond 2-3 --> 7-8
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 7; matched
+Bond 0-1 --> 4-5
+Bond 1=2 --> 5=6
+Bond 2-3 --> 6-7
+0 --> 6; matched
+1 --> 7; matched
+2 --> 8; matched
+3 --> 9; matched
+Bond 0-1 --> 6-7
+Bond 1=2 --> 7=8
+Bond 2-3 --> 8-9
+0 --> 7; matched
+1 --> 6; matched
+2 --> 5; matched
+3 --> 4; matched
+Bond 0-1 --> 6-7
+Bond 1=2 --> 5=6
+Bond 2-3 --> 4-5
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+3 --> 6; matched
+Bond 0-1 --> 8-9
+Bond 1=2 --> 7=8
+Bond 2-3 --> 6-7
+0 --> 4; matched
+1 --> 5; matched
+2 --> 6; matched
+3 --> 7; matched
+Bond 0-1 --> 4-5
+Bond 1=2 --> 5=6
+Bond 2-3 --> 6-7
+0 --> 6; matched
+1 --> 7; matched
+2 --> 8; matched
+3 --> 9; matched
+Bond 0-1 --> 6-7
+Bond 1=2 --> 7=8
+Bond 2-3 --> 8-9
+0 --> 7; matched
+1 --> 6; matched
+2 --> 5; matched
+3 --> 4; matched
+Bond 0-1 --> 6-7
+Bond 1=2 --> 5=6
+Bond 2-3 --> 4-5
+0 --> 9; matched
+1 --> 8; matched
+2 --> 7; matched
+3 --> 6; matched
+Bond 0-1 --> 8-9
+Bond 1=2 --> 7=8
+Bond 2-3 --> 6-7
+Try TAU:
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+Nothing found
+Try TAU INCHI (Match):
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+OC1=C2C=NN=C2NC=N1 |ha:0,1,2,6,7,hb:0,1,6,7|
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+Try TAU RSMARTS (Match):
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+OC1=C2C=NNC2=NC=N1 |ha:0,1,2,5,6,hb:0,1,5,6|
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 9-5
+Try TAU INCHI (IterateMatches):
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 9-5
+Try TAU RSMARTS (IterateMatches):
+Query: OC=CCN
+Molecule: O=C1C2C=NNC=2NC=N1
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 9; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 9-5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
+0 --> 0; matched
+1 --> 1; matched
+2 --> 6; matched
+3 --> 5; matched
+4 --> 4; matched
+Bond 0-1 --> 0-1
+Bond 1=2 --> 6=1
+Bond 2-3 --> 5-6
+Bond 3-4 --> 4-5
