@@ -144,7 +144,7 @@ IndexCurrentReaction::~IndexCurrentReaction()
 BaseMatcher::BaseMatcher(BaseIndex& index, IndigoObject*& current_obj) : _index(index), _current_obj(current_obj)
 {
     _current_obj_used = false;
-    _current_id = 0;
+    _current_id = -1;
     _part_id = -1;
     _part_count = -1;
 }
@@ -1603,7 +1603,7 @@ bool MolGrossMatcher::_tryCurrent() /* const */
 EnumeratorMatcher::EnumeratorMatcher(BaseIndex& index) : BaseMatcher(index, (IndigoObject*&)_indigoObject)
 {
     _id_numbers = index.getIdMapping().size();
-    _current_id = 0;
+    _current_id = -1;
     _indigoObject = nullptr;
 }
 
