@@ -23,4 +23,23 @@ public class BingoTests {
         );
         bingo.close();
     }
+
+    @Test
+    @DisplayName("Testing enumerateId from Java bindings")
+    void checkEnumerateId(@TempDir Path tempDir) {
+        Indigo indigo = new Indigo();
+        Bingo bingo = Bingo.createDatabaseFile(indigo, tempDir.toString(), "molecule");
+        bingo.insert(indigo.loadMolecule("C"));
+        bingo.insert(indigo.loadMolecule("CC"));
+        BingoObject enumerator = bingo.enumerateId();
+        int i = 0;
+        do {
+            assertEquals(
+                i,
+                enumerator.getCurrentId(),
+                "Checking currentId"
+            );
+            i++;
+        } while (enumerator.next());
+    }
 }

@@ -1609,11 +1609,10 @@ EnumeratorMatcher::EnumeratorMatcher(BaseIndex& index) : BaseMatcher(index, (Ind
 
 bool EnumeratorMatcher::next()
 {
-    if (_current_id < _id_numbers)
+    if (_current_id + 1 < _id_numbers)
     {
         _current_id++;
         return true;
     }
-
     return false;
 }
