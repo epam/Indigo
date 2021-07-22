@@ -9,6 +9,7 @@ python = "^3.7"
 fastapi = "^0.63.0"
 uvicorn = {extras = ["standard"], version = "^0.13.3"}
 "epam.indigo" = "^1.4.3"
+aiofiles = "^0.7.0"
 
 [tool.poetry.dev-dependencies]
 

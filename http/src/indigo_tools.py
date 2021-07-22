@@ -31,7 +31,7 @@ def indigo_new() -> Indigo:
 
 
 def create_temp_file():
-    _, path = tempfile.mkstemp()
+    _, path = tempfile.mkstemp(suffix=".png")
     try:
         yield path
     finally:

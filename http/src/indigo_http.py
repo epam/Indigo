@@ -32,7 +32,9 @@ RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
 async def isolate_indigo_session(request: Request, call_next):
     with indigo_new():
         response = await call_next(request)
-        if not request.scope["path"].startswith("/docs"):
+        if not request.scope["path"].startswith(
+            ("/docs", f"{BASE_URL_INDIGO_OBJECT}/render")
+        ):
             response.headers["Content-Type"] = RESP_HEADER_CONTENT_TYPE
         return response
 
@@ -538,12 +540,8 @@ async def similarity(ingido_request: IndigoMolPairRequest) -> IndigoResponse:
 async def render_to_file(
     indigo_request: IndigoMolRequest, temp_path=Depends(create_temp_file)
 ) -> FileResponse:
+    # TODO: add support for rendering options
     mol = indigo().loadMolecule(indigo_request.data.attributes.content)
-
-    indigo().setOption("render-output-format", "png")
-    indigo().setOption("render-margins", 10, 10)
-
     renderer = IndigoRenderer(indigo())
     renderer.renderToFile(mol, temp_path)
-
     return FileResponse(path=temp_path, filename="mol.png", media_type="image/png")
