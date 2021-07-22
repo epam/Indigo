@@ -33,13 +33,18 @@ public class BingoTests {
         bingo.insert(indigo.loadMolecule("CC"));
         BingoObject enumerator = bingo.enumerateId();
         int i = 0;
-        do {
+        while (enumerator.next()) {
             assertEquals(
                 i,
                 enumerator.getCurrentId(),
                 "Checking currentId"
             );
             i++;
-        } while (enumerator.next());
+        }
+        assertEquals(
+            i,
+            2,
+            "Checking count"
+        );
     }
 }

@@ -53,6 +53,7 @@ TEST_F(BingoNosqlTest, test_enumerate_id)
     int e = bingoEnumerateId(db);
     while (bingoNext(e))
     {
+        ASSERT_EQ(count, bingoGetCurrentId(e));
         count++;
     }
 
