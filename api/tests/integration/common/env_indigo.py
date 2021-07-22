@@ -159,7 +159,9 @@ def joinPath(*args):
     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\',
                                                                                                                  '/')
 
-
+def joinPathPy(args, file_py):
+    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(file_py)), args))).replace('\\',
+                                                                                                                 '/')
 def relativePath(args):
     inspectStackLock.acquire()
     frm = inspect.stack()[1][1]

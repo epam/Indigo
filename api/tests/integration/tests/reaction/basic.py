@@ -7,14 +7,14 @@ from env_indigo import *
 indigo = Indigo()
 
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
-saver = indigo.createFileSaver(joinPath("out/basic.rdf"), "rdf")
+saver = indigo.createFileSaver(joinPathPy("out/basic.rdf", __file__), "rdf")
 
 print("*** Test 1 ***")
 mol = indigo.loadMolecule("")

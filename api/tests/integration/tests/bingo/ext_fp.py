@@ -43,12 +43,12 @@ print(ext_fp.toString())
 
 buffer = [0xFF, 0x00] * 32
 
-buf_arr = array.array('b')
-buf_arr.frombytes((bytearray(buffer)))
-
 if isIronPython():
     from System import Array, Byte
     buf_arr = Array[Byte](buffer)
+else:
+    buf_arr = array.array('b')
+    buf_arr.frombytes((bytearray(buffer)))
 
 ext_fp1 = indigo.loadFingerprintFromBuffer(buf_arr)
 print(ext_fp1.toString())

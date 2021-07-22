@@ -10,9 +10,9 @@ from rendering import *
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -21,19 +21,19 @@ indigo.setOption("render-label-mode", "all")
 indigo.setOption("ignore-stereochemistry-errors", "true")
 indigo.setOption("render-background-color", "1, 1, 1")
 
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "atom-coloring.mol"))   
-renderer.renderToFile(m, joinPath("out/atom-coloring-no.png"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/atom-coloring.mol", __file__))   
+renderer.renderToFile(m, joinPathPy("out/atom-coloring-no.png", __file__))
 print(checkImageSimilarity('atom-coloring-no.png'))
 
 m.addDataSGroup([1, 2, 3], [], "color", "0.155, 0.55, 0.955")
 indigo.setOption("render-atom-color-property", "color")
 
-renderer.renderToFile(m, joinPath("out/atom-coloring-1.png"))
+renderer.renderToFile(m, joinPathPy("out/atom-coloring-1.png", __file__))
 print(checkImageSimilarity('atom-coloring-1.png'))
 
 m.addDataSGroup([4, 5, 6], [], "color", "0.955, 0.155, 0.155")
 
-renderer.renderToFile(m, joinPath("out/atom-coloring-2.png"))
+renderer.renderToFile(m, joinPathPy("out/atom-coloring-2.png", __file__))
 print(checkImageSimilarity('atom-coloring-2.png'))
 
 print("*** Reaction atom coloring ***")
@@ -41,5 +41,5 @@ rxn = indigo.createReaction()
 rxn.addReactant(m)
 rxn.addProduct(m)
 rxn.addCatalyst(m)
-renderer.renderToFile(rxn, joinPath("out/rxn-atom-coloring.png"))
+renderer.renderToFile(rxn, joinPathPy("out/rxn-atom-coloring.png", __file__))
 print(checkImageSimilarity('rxn-atom-coloring.png'))

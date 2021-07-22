@@ -86,7 +86,7 @@ namespace indigo
 
         struct FeatureDescriptor
         {
-            dword hash;
+            uint32_t hash;
             std::set<int> bond_set;
 
             bool operator==(const FeatureDescriptor& rhs) const;

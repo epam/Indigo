@@ -234,12 +234,12 @@ dword MoleculeMorganFingerprintBuilder::initialStateCallback_FCFP(BaseMolecule& 
 int MoleculeMorganFingerprintBuilder::bondDescriptorCmp(const BondDescriptor& bd1, const BondDescriptor& bd2)
 {
     if (bd1.bond_type != bd2.bond_type)
-        return bd1.bond_type - bd2.bond_type;
+        return bd1.bond_type < bd2.bond_type ? -1 : 1;
 
     AtomDescriptor& ad1 = atom_descriptors[bd1.vertex_idx];
     AtomDescriptor& ad2 = atom_descriptors[bd2.vertex_idx];
 
-    return ad1.descr.hash - ad2.descr.hash;
+    return ad1.descr.hash < ad2.descr.hash ? -1 : 1;
 }
 
 bool MoleculeMorganFingerprintBuilder::FeatureDescriptor::operator==(const FeatureDescriptor& rhs) const

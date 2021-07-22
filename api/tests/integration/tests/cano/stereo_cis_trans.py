@@ -14,9 +14,9 @@ mol_db_names = [
     (joinPath("../../../../../data/molecules/basic/helma.smi"), indigo.iterateSmilesFile)
 ]
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -42,9 +42,9 @@ def testAll(clear_cis_trans):
                     mol2.clearCisTrans()
                 mol2.layout()
                 mol2.markEitherCisTrans()
-                mol2.saveMolfile(joinPath("out/out.mol"))
+                mol2.saveMolfile(joinPathPy("out/out.mol", __file__))
                 cansm2 = mol2.canonicalSmiles()
-                mol3 = indigo.loadMoleculeFromFile(joinPath("out/out.mol"))
+                mol3 = indigo.loadMoleculeFromFile(joinPathPy("out/out.mol", __file__))
                 cansm3 = mol3.canonicalSmiles()
                 if cansm2 != cansm3:
                     sys.stderr.write("Different canonical smiles for #%s:\n" % idx)

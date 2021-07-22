@@ -5,9 +5,9 @@ sys.path.append('../../common')
 
 from env_indigo import *
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -19,7 +19,7 @@ print("*** Reaction layout testing ***")
 test = indigo.loadReaction("ClCC1CO1>>CN(CC1CO1)S(=O)(=O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F")
 test.layout()
 res = reactionLayoutDiff(indigo, test, 'test1.rxn')
-test.saveRxnfile(joinPath('out', 'test1.rxn'))
+test.saveRxnfile(joinPathPy('out/test1.rxn', __file__))
 print('  Result: {}'.format(res))
 
 print("*** Check relative layout for the fixed components ***")
@@ -56,27 +56,27 @@ testLayout(m, [6, 7])
 testLayout(m, [1, 3, 5, 6, 7]) # this has to be fixed...
 
 print("*** Molecule layout for data sgroups ***")
-m = indigo.loadMoleculeFromFile(joinPath('molecules', 'sgroups', 'datasgroup.mol'))
+m = indigo.loadMoleculeFromFile(joinPathPy('molecules/sgroups/datasgroup.mol', __file__))
 m.layout()
 res = moleculeLayoutDiff(indigo, m, 'test_sgroup.mol')
 print('  Result: {}'.format(res))
-m.saveMolfile(joinPath('out', 'test_sgroup.mol'))
+m.saveMolfile(joinPathPy('out/test_sgroup.mol', __file__))
 
 print("*** Reaction layout for data sgroups ***")
-ref = joinPath('molecules', 'sgroups', 'reaction_datasgroup.rxn')
+ref = joinPathPy('molecules/sgroups/reaction_datasgroup.rxn', __file__)
 test = indigo.loadReactionFromFile(ref)
 test.layout()
 res = reactionLayoutDiff(indigo, test, 'test_sgroup.rxn')
 print('  Result: {}'.format(res))
-test.saveRxnfile(joinPath('out', 'test_sgroup.rxn'))
+test.saveRxnfile(joinPathPy('out/test_sgroup.rxn', __file__ ))
 
 
 print("*** Check issue 468 ***")
-m = indigo.loadMoleculeFromFile(joinPath('molecules/mol-ind-468.mol'))
+m = indigo.loadMoleculeFromFile(joinPathPy('molecules/mol-ind-468.mol', __file__))
 m.layout()
 res = moleculeLayoutDiff(indigo, m, 'mol-ind-468.mol')
 print('  Result: {}'.format(res))
-m.saveMolfile(joinPath('out', 'mol-ind-468.mol'))
+m.saveMolfile(joinPathPy('out/mol-ind-468.mol', __file__))
 
 print("*** Test aromatic ***")
 
@@ -85,12 +85,12 @@ m.layout()
 # print(m.molfile())
 res = moleculeLayoutDiff(indigo, m, 'mol-indsp-93.mol')
 print('  Result: {}'.format(res))
-m.saveMolfile(joinPath('out', 'mol-indsp-93.mol'))
+m.saveMolfile(joinPathPy('out/mol-indsp-93.mol', __file__))
 
 
 print("*** IND-617: fixed ends ***")
 atoms = [ 2, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24 ]
-mol = indigo.loadMoleculeFromFile(joinPath('molecules', 'ind-617-test-fixed.mol'))
+mol = indigo.loadMoleculeFromFile(joinPathPy('molecules/ind-617-test-fixed.mol', __file__))
 mol2 = mol.clone()
 sub = mol.getSubmolecule(atoms)
 sub.layout() # IND-617 -> bug: exception
@@ -99,8 +99,8 @@ res = moleculeLayoutDiff(indigo, mol, 'ind-617-test-fixed-1.mol')
 print('  mol Result: {}'.format(res))
 res = moleculeLayoutDiff(indigo, mol2, 'ind-617-test-fixed-2.mol')
 print('  mol2 Result: {}'.format(res))
-mol2.saveMolfile(joinPath('out', 'ind-617-test-fixed-1.mol'))
-mol.saveMolfile(joinPath('out', 'ind-617-test-fixed-2.mol'))
+mol2.saveMolfile(joinPathPy('out/ind-617-test-fixed-1.mol', __file__))
+mol.saveMolfile(joinPathPy('out/ind-617-test-fixed-2.mol', __file__))
 # Ensure that coordinates have been changed
 if indigo.exactMatch(mol, mol2, "0.0000001"):
     sys.stderr.write("Error: Match should have failed")

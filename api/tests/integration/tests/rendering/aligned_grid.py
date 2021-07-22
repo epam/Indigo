@@ -9,20 +9,20 @@ from rendering import *
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
 def testAlignAtoms():
     query = indigo.loadSmarts("[#7]1~[#6]~[#6]~[#7]~[#6]~[#6]2~[#6]~[#6]~[#6]~[#6]~[#6]~1~2")
-    sdfout = indigo.writeFile(joinPath("out/aligned.sdf"))
+    sdfout = indigo.writeFile(joinPathPy("out/aligned.sdf", __file__))
     xyz = []
     collection = indigo.createArray()
     refatoms = []
-    for structure in indigo.iterateSDFile(joinPath("molecules/benzodiazepine.sdf.gz")):
+    for structure in indigo.iterateSDFile(joinPathPy("molecules/benzodiazepine.sdf.gz", __file__)):
         match = indigo.substructureMatcher(structure).match(query)
         if not match:
             print("structure not matched, this is unexpected")
@@ -52,20 +52,20 @@ def testAlignAtoms():
     indigo.setOption("render-coloring", "true")
 
     indigo.setOption("render-output-format", "svg")
-    renderer.renderGridToFile(collection, None, 4, joinPath("out/grid.svg"))
+    renderer.renderGridToFile(collection, None, 4, joinPathPy("out/grid.svg", __file__))
     print(checkImageSimilarity('grid.svg'))
     indigo.setOption("render-output-format", "png")
-    renderer.renderGridToFile(collection, None, 4, joinPath("out/grid.png"))
+    renderer.renderGridToFile(collection, None, 4, joinPathPy("out/grid.png", __file__))
     print(checkImageSimilarity('grid.png'))
     indigo.setOption("render-output-format", "svg")
     if isIronPython():
         from System import Array, Int32
 
         refatoms = Array[Int32](refatoms)
-    renderer.renderGridToFile(collection, refatoms, 4, joinPath("out/grid1.svg"))
+    renderer.renderGridToFile(collection, refatoms, 4, joinPathPy("out/grid1.svg", __file__))
     print(checkImageSimilarity('grid1.svg'))
     indigo.setOption("render-output-format", "png")
-    renderer.renderGridToFile(collection, refatoms, 4, joinPath("out/grid1.png"))
+    renderer.renderGridToFile(collection, refatoms, 4, joinPathPy("out/grid1.png", __file__))
     print(checkImageSimilarity('grid1.png'))
 
     indigo.setOption("render-grid-title-property", "title")
@@ -76,7 +76,7 @@ def testAlignAtoms():
     for alignment in options_align:
         indigo.setOption("render-grid-title-alignment", alignment)
         fname = "grid-%s.png" % alignment
-        renderer.renderGridToFile(collection, None, 4, joinPath("out/", fname))
+        renderer.renderGridToFile(collection, None, 4, joinPathPy("out/" + fname, __file__))
         print(checkImageSimilarity(fname))
 
 
