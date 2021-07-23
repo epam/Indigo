@@ -19,7 +19,7 @@
 #ifndef __ringo_fetch_context__
 #define __ringo_fetch_context__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "core/ringo_matchers.h"
 #include "oracle/ringo_fast_index.h"
 #include "oracle/ringo_oracle.h"
@@ -37,8 +37,8 @@ class RingoFetchContext
 public:
     RingoFetchContext(int id, RingoOracleContext& context, const Array<char>& query_id);
 
-    AutoPtr<RingoFastIndex> fast_index;
-    AutoPtr<RingoShadowFetch> shadow_fetch;
+    std::unique_ptr<RingoFastIndex> fast_index;
+    std::unique_ptr<RingoShadowFetch> shadow_fetch;
 
     BingoFetchEngine* fetch_engine;
 

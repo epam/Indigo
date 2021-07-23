@@ -19,7 +19,7 @@
 #ifndef __render_params_h__
 #define __render_params_h__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "render_common.h"
 
 namespace indigo
@@ -52,8 +52,8 @@ namespace indigo
         bool smart_layout = false;
         RENDER_MODE rmode;
 
-        AutoPtr<BaseMolecule> mol;
-        AutoPtr<BaseReaction> rxn;
+        std::unique_ptr<BaseMolecule> mol;
+        std::unique_ptr<BaseReaction> rxn;
 
         PtrArray<BaseMolecule> mols;
         PtrArray<BaseReaction> rxns;

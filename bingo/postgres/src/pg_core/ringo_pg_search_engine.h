@@ -4,7 +4,7 @@
 #include "bingo_pg_search_engine.h"
 
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/red_black.h"
 

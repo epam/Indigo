@@ -18,7 +18,7 @@
 
 #include "oracle/ora_wrap.h"
 #include "oracle/mango_oracle.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/mango_shadow_table.h"
@@ -48,11 +48,11 @@ MangoOracleContext& MangoOracleContext::get(OracleEnv& env, int id, bool lock)
     MangoContext* already = _get(id, context);
     MangoOracleContext* moc;
 
-    AutoPtr<MangoOracleContext> res;
+    std::unique_ptr<MangoOracleContext> res;
 
     if (already == 0)
     {
-        res.reset(new MangoOracleContext(context));
+        res = std::make_unique<MangoOracleContext>(context);
         moc = res.get();
         config_reloaded = true;
     }

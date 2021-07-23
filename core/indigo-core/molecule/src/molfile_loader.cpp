@@ -16,7 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 
@@ -424,17 +424,17 @@ void MolfileLoader::_readCtab2000()
         }
         else
         {
-            AutoPtr<QueryMolecule::Atom> atom;
+            std::unique_ptr<QueryMolecule::Atom> atom;
 
             if (atom_type == _ATOM_ELEMENT)
-                atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, label));
+                atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, label);
             else if (atom_type == _ATOM_PSEUDO)
-                atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, buf));
+                atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, buf);
             else if (atom_type == _ATOM_A)
                 atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             else if (atom_type == _ATOM_AH)
             {
-                atom.reset(new QueryMolecule::Atom());
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_NONE;
             }
             else if (atom_type == _ATOM_QH)
@@ -444,8 +444,7 @@ void MolfileLoader::_readCtab2000()
                                                     QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
             else if (atom_type == _ATOM_X)
             {
-                atom.reset(new QueryMolecule::Atom());
-
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_OR;
                 atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
                 atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
@@ -455,8 +454,7 @@ void MolfileLoader::_readCtab2000()
             }
             else if (atom_type == _ATOM_XH)
             {
-                atom.reset(new QueryMolecule::Atom());
-
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_OR;
                 atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
                 atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
@@ -467,8 +465,7 @@ void MolfileLoader::_readCtab2000()
             }
             else if (atom_type == _ATOM_MH)
             {
-                atom.reset(new QueryMolecule::Atom());
-
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_AND;
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)));
@@ -490,8 +487,7 @@ void MolfileLoader::_readCtab2000()
             }
             else if (atom_type == _ATOM_M)
             {
-                atom.reset(new QueryMolecule::Atom());
-
+                atom = std::make_unique<QueryMolecule::Atom>();
                 atom->type = QueryMolecule::OP_AND;
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)));
@@ -513,9 +509,9 @@ void MolfileLoader::_readCtab2000()
                 atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             }
             else if (atom_type == _ATOM_R)
-                atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
             else // _ATOM_LIST
-                atom.reset(new QueryMolecule::Atom());
+                atom = std::make_unique<QueryMolecule::Atom>();
 
             if (charge != 0)
                 atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_CHARGE, charge)));
@@ -594,10 +590,10 @@ void MolfileLoader::_readCtab2000()
         }
         else
         {
-            AutoPtr<QueryMolecule::Bond> bond;
+            std::unique_ptr<QueryMolecule::Bond> bond;
 
             if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
-                bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
+                bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
             else if (order == _BOND_SINGLE_OR_DOUBLE)
                 bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
                                                     QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
@@ -609,7 +605,7 @@ void MolfileLoader::_readCtab2000()
                 bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
                                                      new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
             else if (order == _BOND_ANY)
-                bond.reset(new QueryMolecule::Bond());
+                bond = std::make_unique<QueryMolecule::Bond>();
             else
                 throw Error("unknown bond type: %d", order);
 
@@ -678,7 +674,7 @@ void MolfileLoader::_readCtab2000()
 
                 atom_idx--;
 
-                AutoPtr<QueryMolecule::Atom> atomlist;
+                std::unique_ptr<QueryMolecule::Atom> atomlist;
 
                 _scanner.readLine(str, false);
                 BufferScanner rest(str);
@@ -1532,14 +1528,14 @@ void MolfileLoader::_readCtab2000()
     _fillSGroupsParentIndices();
 }
 
-void MolfileLoader::_appendQueryAtom(const char* atom_label, AutoPtr<QueryMolecule::Atom>& atom)
+void MolfileLoader::_appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom)
 {
     int atom_number = Element::fromString2(atom_label);
-    AutoPtr<QueryMolecule::Atom> cur_atom;
+    std::unique_ptr<QueryMolecule::Atom> cur_atom;
     if (atom_number != -1)
-        cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, atom_number));
+        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, atom_number);
     else
-        cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, atom_label));
+        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, atom_label);
 
     if (atom.get() == 0)
         atom.reset(cur_atom.release());
@@ -1591,10 +1587,7 @@ void MolfileLoader::_read3dFeature2000()
     {
     case -1: // point defined by 2 points and distance
     {
-        AutoPtr<Molecule3dConstraints::PointByDistance> constr;
-
-        constr.create();
-
+        std::unique_ptr<Molecule3dConstraints::PointByDistance> constr = std::make_unique<Molecule3dConstraints::PointByDistance>();
         _scanner.skip(6);
         constr->beg_id = _scanner.readIntFix(3) - 1;
         constr->end_id = _scanner.readIntFix(3) - 1;
@@ -1606,10 +1599,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -2: // point defined by 2 points and percentage
     {
-        AutoPtr<Molecule3dConstraints::PointByPercentage> constr;
-
-        constr.create();
-
+        std::unique_ptr<Molecule3dConstraints::PointByPercentage> constr = std::make_unique<Molecule3dConstraints::PointByPercentage>();
         _scanner.skip(6);
         constr->beg_id = _scanner.readIntFix(3) - 1;
         constr->end_id = _scanner.readIntFix(3) - 1;
@@ -1621,10 +1611,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -3: // point defined by point, normal line, and distance
     {
-        AutoPtr<Molecule3dConstraints::PointByNormale> constr;
-
-        constr.create();
-
+        std::unique_ptr<Molecule3dConstraints::PointByNormale> constr = std::make_unique<Molecule3dConstraints::PointByNormale>();
         _scanner.skip(6);
         constr->org_id = _scanner.readIntFix(3) - 1;
         constr->norm_id = _scanner.readIntFix(3) - 1;
@@ -1636,12 +1623,8 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -4: // line defined by 2 or more points (best fit line if more than 2 points)
     {
-        AutoPtr<Molecule3dConstraints::BestFitLine> constr;
-
-        constr.create();
-
+        std::unique_ptr<Molecule3dConstraints::BestFitLine> constr = std::make_unique<Molecule3dConstraints::BestFitLine>();
         _scanner.skip(6);
-
         int amount = _scanner.readIntFix(3);
         if (amount < 2)
             throw Error("invalid points amount in M $3D-4 feature");
@@ -1659,10 +1642,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -5: // plane defined by 3 or more points (best fit line if more than 3 points)
     {
-        AutoPtr<Molecule3dConstraints::BestFitPlane> constr;
-
-        constr.create();
-
+        std::unique_ptr<Molecule3dConstraints::BestFitPlane> constr = std::make_unique<Molecule3dConstraints::BestFitPlane>();
         _scanner.skip(6);
 
         int amount = _scanner.readIntFix(3);
@@ -1683,10 +1663,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -6: // plane defined by point and line
     {
-        AutoPtr<Molecule3dConstraints::PlaneByPoint> constr;
-
-        constr.create();
-
+        std::unique_ptr<Molecule3dConstraints::PlaneByPoint> constr = std::make_unique<Molecule3dConstraints::PlaneByPoint>();
         _scanner.skip(6);
         constr->point_id = _scanner.readIntFix(3) - 1;
         constr->line_id = _scanner.readIntFix(3) - 1;
@@ -1697,9 +1674,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -7: // centroid defined by points
     {
-        AutoPtr<Molecule3dConstraints::Centroid> constr;
-
-        constr.create();
+        std::unique_ptr<Molecule3dConstraints::Centroid> constr = std::make_unique<Molecule3dConstraints::Centroid>();
         _scanner.skip(6);
 
         int amount = _scanner.readIntFix(3);
@@ -1720,9 +1695,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -8: // normal line defined by point and plane
     {
-        AutoPtr<Molecule3dConstraints::Normale> constr;
-
-        constr.create();
+        std::unique_ptr<Molecule3dConstraints::Normale> constr = std::make_unique<Molecule3dConstraints::Normale>();
         _scanner.skip(6);
         constr->point_id = _scanner.readIntFix(3) - 1;
         constr->plane_id = _scanner.readIntFix(3) - 1;
@@ -1734,9 +1707,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -9: // distance defined by 2 points and range
     {
-        AutoPtr<Molecule3dConstraints::DistanceByPoints> constr;
-
-        constr.create();
+        std::unique_ptr<Molecule3dConstraints::DistanceByPoints> constr = std::make_unique<Molecule3dConstraints::DistanceByPoints>();
         _scanner.skip(6);
         constr->beg_id = _scanner.readIntFix(3) - 1;
         constr->end_id = _scanner.readIntFix(3) - 1;
@@ -1749,10 +1720,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -10: // distance defined by point, line and range
     {
-        AutoPtr<Molecule3dConstraints::DistanceByLine> constr;
-
-        constr.create();
-
+        std::unique_ptr<Molecule3dConstraints::DistanceByLine> constr = std::make_unique<Molecule3dConstraints::DistanceByLine>();
         _scanner.skip(6);
         constr->point_id = _scanner.readIntFix(3) - 1;
         constr->line_id = _scanner.readIntFix(3) - 1;
@@ -1765,9 +1733,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -11: // distance defined by point, plane and range
     {
-        AutoPtr<Molecule3dConstraints::DistanceByPlane> constr;
-
-        constr.create();
+        std::unique_ptr<Molecule3dConstraints::DistanceByPlane> constr = std::make_unique<Molecule3dConstraints::DistanceByPlane>();
         _scanner.skip(6);
         constr->point_id = _scanner.readIntFix(3) - 1;
         constr->plane_id = _scanner.readIntFix(3) - 1;
@@ -1780,9 +1746,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -12: // angle defined by 3 points and range
     {
-        AutoPtr<Molecule3dConstraints::AngleByPoints> constr;
-
-        constr.create();
+        std::unique_ptr<Molecule3dConstraints::AngleByPoints> constr = std::make_unique<Molecule3dConstraints::AngleByPoints>();
         _scanner.skip(6);
         constr->point1_id = _scanner.readIntFix(3) - 1;
         constr->point2_id = _scanner.readIntFix(3) - 1;
@@ -1790,30 +1754,24 @@ void MolfileLoader::_read3dFeature2000()
         constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
         constr->top = (float)(_scanner.readFloatFix(10) * M_PI / 180);
         _scanner.skipLine();
-
         constraints->add(constr.release());
         break;
     }
     case -13: // angle defined by 2 lines and range
     {
-        AutoPtr<Molecule3dConstraints::AngleByLines> constr;
-
-        constr.create();
+        std::unique_ptr<Molecule3dConstraints::AngleByLines> constr = std::make_unique<Molecule3dConstraints::AngleByLines>();
         _scanner.skip(6);
         constr->line1_id = _scanner.readIntFix(3) - 1;
         constr->line2_id = _scanner.readIntFix(3) - 1;
         constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
         constr->top = (float)(_scanner.readFloatFix(10) * M_PI / 180);
         _scanner.skipLine();
-
         constraints->add(constr.release());
         break;
     }
     case -14: // angles defined by 2 planes and range
     {
-        AutoPtr<Molecule3dConstraints::AngleByPlanes> constr;
-
-        constr.create();
+        std::unique_ptr<Molecule3dConstraints::AngleByPlanes> constr = std::make_unique<Molecule3dConstraints::AngleByPlanes>();
         _scanner.skip(6);
         constr->plane1_id = _scanner.readIntFix(3) - 1;
         constr->plane2_id = _scanner.readIntFix(3) - 1;
@@ -1826,9 +1784,7 @@ void MolfileLoader::_read3dFeature2000()
     }
     case -15: // dihedral angle defined by 4 points
     {
-        AutoPtr<Molecule3dConstraints::AngleDihedral> constr;
-
-        constr.create();
+        std::unique_ptr<Molecule3dConstraints::AngleDihedral> constr = std::make_unique<Molecule3dConstraints::AngleDihedral>();
         _scanner.skip(6);
         constr->point1_id = _scanner.readIntFix(3) - 1;
         constr->point2_id = _scanner.readIntFix(3) - 1;
@@ -1837,18 +1793,15 @@ void MolfileLoader::_read3dFeature2000()
         constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
         constr->top = (float)(_scanner.readFloatFix(10) * M_PI / 180);
         _scanner.skipLine();
-
         constraints->add(constr.release());
         break;
     }
     case -16: // exclusion sphere defines by points and distance
     {
-        AutoPtr<Molecule3dConstraints::ExclusionSphere> constr;
+        std::unique_ptr<Molecule3dConstraints::ExclusionSphere> constr = std::make_unique<Molecule3dConstraints::ExclusionSphere>();
 
         int allowed_atoms_amount;
         Array<int> allowed_atoms;
-
-        constr.create();
         _scanner.skip(6);
         constr->center_id = _scanner.readIntFix(3) - 1;
         constr->allow_unconnected = (_scanner.readIntFix(3) != 0);
@@ -2177,7 +2130,7 @@ void MolfileLoader::_readRGroups2000()
                 if (strncmp(rgp_chars, "$CTAB", 5) == 0)
                 {
                     _scanner.skipLine();
-                    AutoPtr<BaseMolecule> fragment(_bmol->neu());
+                    std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
 
                     MolfileLoader loader(_scanner);
 
@@ -2277,7 +2230,7 @@ void MolfileLoader::_readCtab3000()
 
             int isotope = 0;
             int label = 0;
-            AutoPtr<QueryMolecule::Atom> query_atom;
+            std::unique_ptr<QueryMolecule::Atom> query_atom;
 
             strscan.readInt1(); // atom index -- ignored
 
@@ -2493,13 +2446,13 @@ void MolfileLoader::_readCtab3000()
                     _qmol->addAtom(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
                 else if (atom_type == _ATOM_AH)
                 {
-                    AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
                     atom->type = QueryMolecule::OP_NONE;
                     _qmol->addAtom(atom.release());
                 }
                 else if (atom_type == _ATOM_X)
                 {
-                    AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
 
                     atom->type = QueryMolecule::OP_OR;
                     atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -2511,7 +2464,7 @@ void MolfileLoader::_readCtab3000()
                 }
                 else if (atom_type == _ATOM_XH)
                 {
-                    AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
 
                     atom->type = QueryMolecule::OP_OR;
                     atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -2529,7 +2482,7 @@ void MolfileLoader::_readCtab3000()
                                                             QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
                 else if (atom_type == _ATOM_MH)
                 {
-                    AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
 
                     atom->type = QueryMolecule::OP_AND;
                     atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -2554,7 +2507,7 @@ void MolfileLoader::_readCtab3000()
                 }
                 else if (atom_type == _ATOM_M)
                 {
-                    AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
 
                     atom->type = QueryMolecule::OP_AND;
                     atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -2867,12 +2820,12 @@ void MolfileLoader::_readCtab3000()
             }
             else
             {
-                AutoPtr<QueryMolecule::Bond> bond;
+                std::unique_ptr<QueryMolecule::Bond> bond;
 
                 if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
-                    bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
+                    bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
                 else if (order == _BOND_COORDINATION || order == _BOND_HYDROGEN)
-                    bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_ZERO));
+                    bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, BOND_ZERO);
                 else if (order == _BOND_SINGLE_OR_DOUBLE)
                 {
                     bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
@@ -2886,7 +2839,7 @@ void MolfileLoader::_readCtab3000()
                     bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
                                                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
                 else if (order == _BOND_ANY)
-                    bond.reset(new QueryMolecule::Bond());
+                    bond = std::make_unique<QueryMolecule::Bond>();
                 else
                     throw Error("unknown bond type: %d", order);
 
@@ -3282,7 +3235,7 @@ void MolfileLoader::_readRGroups3000()
                 if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
                 {
                     _scanner.seek(pos, SEEK_SET);
-                    AutoPtr<BaseMolecule> fragment(_bmol->neu());
+                    std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
 
                     MolfileLoader loader(_scanner);
                     loader._bmol = fragment.get();
@@ -3743,9 +3696,7 @@ void MolfileLoader::_readTGroups3000()
                 if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
                 {
                     _scanner.seek(pos, SEEK_SET);
-                    AutoPtr<BaseMolecule> fragment(_bmol->neu());
-                    tgroup.fragment.reset(fragment.release());
-
+                    tgroup.fragment.reset(_bmol->neu());
                     //               tgroup.fragment = _bmol->neu();
 
                     MolfileLoader loader(_scanner);

@@ -64,7 +64,7 @@ public:
     const char* getName() override;
 
     static IndigoQueryMolecule* cloneFrom(IndigoObject& obj);
-    static void parseAtomConstraint(const char* type, const char* value, AutoPtr<QueryMolecule::Atom>&);
+    static void parseAtomConstraint(const char* type, const char* value, std::unique_ptr<QueryMolecule::Atom>&);
     static QueryMolecule::Atom* parseAtomSMARTS(const char* string);
 
     const char* debugInfo() override;
@@ -613,7 +613,7 @@ public:
 
 protected:
     BaseMolecule& _mol;
-    AutoPtr<BaseMolecule> _submol;
+    std::unique_ptr<BaseMolecule> _submol;
     int _submol_revision;
     void _createSubMolecule();
 };

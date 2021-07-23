@@ -155,7 +155,7 @@ namespace indigo
         static void _permutation(Array<int>&, ObjArray<Array<int>>&);
 
         BaseReaction& _initReaction;
-        AutoPtr<BaseReaction> _reactionCopy;
+        std::unique_ptr<BaseReaction> _reactionCopy;
 
         Array<int> _usedVertices;
         int _maxMapUsed;
@@ -250,7 +250,7 @@ namespace indigo
 
         ObjArray<Array<int>> _autoMaps;
 
-        AutoPtr<BaseMolecule> _transposedQuery;
+        std::unique_ptr<BaseMolecule> _transposedQuery;
         Array<int> _transposition;
         Array<int> _invTransposition;
         Array<int> _bondTransposition;

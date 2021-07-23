@@ -19,7 +19,7 @@
 #ifndef __query_molecule_h__
 #define __query_molecule_h__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/ptr_array.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_3d_constraints.h"
@@ -189,7 +189,7 @@ namespace indigo
             Array<char> alias;
 
             // available only when type is ATOM_FRAGMENT
-            AutoPtr<QueryMolecule> fragment;
+            std::unique_ptr<QueryMolecule> fragment;
 
             // when type is ATOM_RSITE, the value (value_min=valuemax)
             // are 32 bits, each allowing an r-group with corresponding number

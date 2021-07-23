@@ -94,10 +94,10 @@ public:
     bool hasNext() override;
     IndigoObject* at(int index);
     long long tell();
-    AutoPtr<SdfLoader> sdf_loader;
+    std::unique_ptr<SdfLoader> sdf_loader;
 
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };
 
 /*
@@ -110,10 +110,10 @@ public:
     IndigoObject* next() override;
     bool hasNext() override;
     IndigoObject* at(int index);
-    AutoPtr<JSONLoader> json_loader;
+    std::unique_ptr<JSONLoader> json_loader;
     
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };*/
 
 
@@ -131,10 +131,10 @@ public:
 
     long long tell();
 
-    AutoPtr<RdfLoader> rdf_loader;
+    std::unique_ptr<RdfLoader> rdf_loader;
 
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };
 
 
@@ -203,7 +203,7 @@ public:
 protected:
     Scanner* _scanner;
     Array<char> _str;
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 
     void _advance();
 
@@ -266,10 +266,10 @@ public:
 
     long long tell();
 
-    AutoPtr<MultipleCmlLoader> loader;
+    std::unique_ptr<MultipleCmlLoader> loader;
 
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };
 
 namespace indigo
@@ -325,10 +325,10 @@ public:
 
     long long tell();
 
-    AutoPtr<MultipleCdxLoader> loader;
+    std::unique_ptr<MultipleCdxLoader> loader;
 
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };
 
 #endif

@@ -29,8 +29,8 @@
 static void _ringoIndexStart(OracleEnv& env, RingoFetchContext& context, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop,
                              const char* params)
 {
-    RingoShadowFetch& shadow_fetch = context.shadow_fetch.ref();
-    RingoFastIndex& fast_index = context.fast_index.ref();
+    RingoShadowFetch& shadow_fetch = *context.shadow_fetch;
+    RingoFastIndex& fast_index = *context.fast_index;
 
     if (strcasecmp(oper, "RSUB") == 0)
     {

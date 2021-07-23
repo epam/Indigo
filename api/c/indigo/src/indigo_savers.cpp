@@ -20,7 +20,7 @@
 
 #include <ctime>
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "molecule/canonical_smiles_saver.h"
@@ -76,15 +76,15 @@ void IndigoSaver::close()
 
 IndigoSaver* IndigoSaver::create(Output& output, const char* type)
 {
-    AutoPtr<IndigoSaver> saver;
+    std::unique_ptr<IndigoSaver> saver;
     if (strcasecmp(type, "sdf") == 0)
-        saver = new IndigoSdfSaver(output);
+        saver = std::make_unique<IndigoSdfSaver>(output);
     else if (strcasecmp(type, "smiles") == 0 || strcasecmp(type, "smi") == 0)
-        saver = new IndigoSmilesSaver(output);
+        saver = std::make_unique<IndigoSmilesSaver>(output);
     else if (strcasecmp(type, "cml") == 0)
-        saver = new IndigoCmlSaver(output);
+        saver = std::make_unique<IndigoCmlSaver>(output);
     else if (strcasecmp(type, "rdf") == 0)
-        saver = new IndigoRdfSaver(output);
+        saver = std::make_unique<IndigoRdfSaver>(output);
     else
         throw IndigoError("unsupported saver type: '%s'. Supported formats are sdf, smiles, cml, rdf", type);
 
@@ -533,8 +533,8 @@ CEXPORT int indigoCreateFileSaver(const char* filename, const char* format)
 {
     INDIGO_BEGIN
     {
-        AutoPtr<FileOutput> output(new FileOutput(self.filename_encoding, filename));
-        AutoPtr<IndigoSaver> saver(IndigoSaver::create(output.ref(), format));
+        std::unique_ptr<FileOutput> output = std::make_unique<FileOutput>(self.filename_encoding, filename);
+        std::unique_ptr<IndigoSaver> saver(IndigoSaver::create(*output, format));
         saver->acquireOutput(output.release());
         return self.addObject(saver.release());
     }

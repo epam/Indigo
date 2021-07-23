@@ -473,24 +473,24 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
             }
             else
             {
-                AutoPtr<QueryMolecule::Atom> atom;
+                std::unique_ptr<QueryMolecule::Atom> atom;
                 int qhcount = -1;
 
                 if (label == ELEM_PSEUDO)
                 {
                     if (!a.label.empty())
-                        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, a.label.c_str()));
+                        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, a.label.c_str());
                     else
-                        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, a.element_type.c_str()));
+                        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, a.element_type.c_str());
                 }
                 else if (label == ELEM_RSITE)
-                    atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                    atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
                 else
-                    atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, label));
+                    atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, label);
 
                 if (!a.query_props.empty() && (strncmp(a.query_props.c_str(), "L", 1) == 0)) // _ATOM_LIST
                 {
-                    AutoPtr<QueryMolecule::Atom> atomlist;
+                    std::unique_ptr<QueryMolecule::Atom> atomlist;
 
                     BufferScanner strscan(a.query_props.c_str());
                     QS_DEF(Array<char>, el);
@@ -532,7 +532,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                 {
                     if (strncmp(a.label.c_str(), "AH", 2) == 0)
                     {
-                        AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
                         x_atom->type = QueryMolecule::OP_NONE;
                         atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
                         atom.reset(x_atom.release());
@@ -544,7 +544,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     }
                     else if (strncmp(a.label.c_str(), "XH", 2) == 0)
                     {
-                        AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
                         x_atom->type = QueryMolecule::OP_OR;
                         x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -559,7 +559,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     }
                     else if (strncmp(a.label.c_str(), "X", 1) == 0)
                     {
-                        AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
                         x_atom->type = QueryMolecule::OP_OR;
                         x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -573,7 +573,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     }
                     else if (strncmp(a.label.c_str(), "MH", 2) == 0)
                     {
-                        AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
                         x_atom->type = QueryMolecule::OP_AND;
                         x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -599,7 +599,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     }
                     else if (strncmp(a.label.c_str(), "M", 1) == 0)
                     {
-                        AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
                         x_atom->type = QueryMolecule::OP_AND;
                         x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -902,7 +902,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         }
         else
         {
-            AutoPtr<QueryMolecule::Bond> bond;
+            std::unique_ptr<QueryMolecule::Bond> bond;
 
             if (query_type == 0)
             {
@@ -920,7 +920,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                 bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
                                                      new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
             else if (strncmp(query_type, "Any", 3) == 0)
-                bond.reset(new QueryMolecule::Bond());
+                bond = std::make_unique<QueryMolecule::Bond>();
             else
                 throw Error("unknown bond type: %d", order);
 
@@ -1861,7 +1861,7 @@ void CmlLoader::_loadRgroupElement(TiXmlHandle& handle)
             TiXmlHandle molecule = pChild;
             if (molecule.Element() != 0)
             {
-                AutoPtr<BaseMolecule> fragment(_bmol->neu());
+                std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
 
                 Molecule* _mol_save;
                 BaseMolecule* _bmol_save;
@@ -1942,14 +1942,14 @@ void CmlLoader::_parseRlogicRange(const char* str, Array<int>& ranges)
     ranges.push((beg << 16) | end);
 }
 
-void CmlLoader::_appendQueryAtom(const char* atom_label, AutoPtr<QueryMolecule::Atom>& atom)
+void CmlLoader::_appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom)
 {
     int atom_number = Element::fromString2(atom_label);
-    AutoPtr<QueryMolecule::Atom> cur_atom;
+    std::unique_ptr<QueryMolecule::Atom> cur_atom;
     if (atom_number != -1)
-        cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, atom_number));
+        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, atom_number);
     else
-        cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, atom_label));
+        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, atom_label);
 
     if (atom.get() == 0)
         atom.reset(cur_atom.release());

@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "indigo_reaction.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "indigo_array.h"
 #include "indigo_io.h"
@@ -279,11 +279,8 @@ bool IndigoReactionIter::hasNext()
 IndigoReaction* IndigoReaction::cloneFrom(IndigoObject& obj)
 {
     Reaction& rxn = obj.getReaction();
-
-    AutoPtr<IndigoReaction> rxnptr;
-    rxnptr.reset(new IndigoReaction());
+    std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
     rxnptr->rxn.clone(rxn, 0, 0, 0);
-
     try
     {
         MonomersProperties& mprops = obj.getMonomersProperties();
@@ -305,8 +302,7 @@ IndigoQueryReaction* IndigoQueryReaction::cloneFrom(IndigoObject& obj)
 {
     QueryReaction& rxn = obj.getQueryReaction();
 
-    AutoPtr<IndigoQueryReaction> rxnptr;
-    rxnptr.reset(new IndigoQueryReaction());
+    std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();
     rxnptr->rxn.clone(rxn, 0, 0, 0);
 
     try
@@ -369,7 +365,7 @@ CEXPORT int indigoLoadReaction(int source)
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
         loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
 
-        AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
+        std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
         loader.loadReaction(rxnptr->rxn);
         return self.addObject(rxnptr.release());
     }
@@ -388,7 +384,7 @@ CEXPORT int indigoLoadQueryReaction(int source)
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
 
-        AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+        std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();
         loader.loadQueryReaction(rxnptr->rxn);
         return self.addObject(rxnptr.release());
     }
@@ -621,7 +617,7 @@ CEXPORT int indigoAutomap(int reaction, const char* mode)
         std::unique_ptr<TimeoutCancellationHandler> timeout(nullptr);
         if (self.aam_cancellation_timeout > 0)
         {
-            timeout.reset(new TimeoutCancellationHandler(self.aam_cancellation_timeout));
+            timeout = std::make_unique<TimeoutCancellationHandler>(self.aam_cancellation_timeout);
         }
         /*
          * Set cancellation handler
@@ -745,7 +741,7 @@ CEXPORT int indigoLoadReactionSmarts(int source)
         IndigoObject& obj = self.getObject(source);
         RSmilesLoader loader(IndigoScanner::get(obj));
 
-        AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+        std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();
 
         QueryReaction& qrxn = rxnptr->rxn;
 

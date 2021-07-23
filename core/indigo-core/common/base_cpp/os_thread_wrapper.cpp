@@ -28,7 +28,7 @@
 #endif
 
 #include "base_c/os_thread.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/os_thread_wrapper.h"
 #include "base_cpp/profiling.h"
@@ -311,8 +311,8 @@ void OsCommandDispatcher::_handleException(Exception* exception)
     {
         _need_to_terminate = true;
         // Store exception to correct memory deallocation in the next time...
-        TL_DECL(AutoPtr<Exception>, exception_ptr);
-        TL_GET(AutoPtr<Exception>, exception_ptr);
+        TL_DECL(std::unique_ptr<Exception>, exception_ptr);
+        TL_GET(std::unique_ptr<Exception>, exception_ptr);
 
         exception_ptr.reset(exception);
         _exception_to_forward = exception;

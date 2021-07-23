@@ -54,7 +54,7 @@ correct references you need to use CMake configurations from the build_scripts d
 To build the project from the sources, the following tools should be installed:
 
 * GIT 1.8.2+
-* C/C++ compilers with C++11 support (GCC, Clang and MSVC are officially supported)
+* C/C++ compilers with C++14 support (GCC, Clang and MSVC are officially supported)
 * CMake 3.4+
 * Python 3.6+
 * JDK 1.8+

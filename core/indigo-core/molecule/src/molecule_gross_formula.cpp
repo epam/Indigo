@@ -138,7 +138,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
         mol.asMolecule().restoreAromaticHydrogens();
     }
 
-    std::unique_ptr<GROSS_UNITS> result(new GROSS_UNITS());
+    std::unique_ptr<GROSS_UNITS> result = std::make_unique<GROSS_UNITS>();
     auto& gross = *result;
 
     // basic structure and all polymers

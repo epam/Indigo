@@ -20,7 +20,7 @@
 #define __bingo_core_c_internal_h___
 
 #include "base_c/defs.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "core/bingo_context.h"
 #include "core/mango_context.h"
 #include "core/ringo_context.h"
@@ -28,7 +28,6 @@
 #include "core/bingo_error.h"
 #include "core/mango_matchers.h"
 
-#include "base_cpp/auto_ptr.h"
 #include "base_cpp/scanner.h"
 #include "gzip/gzip_scanner.h"
 #include "molecule/cmf_saver.h"
@@ -77,7 +76,7 @@ namespace indigo
             Obj<SdfLoader> sdf_loader;
             Obj<RdfLoader> rdf_loader;
 
-            AutoPtr<GZipScanner> gz_scanner;
+            std::unique_ptr<GZipScanner> gz_scanner;
             Scanner* smiles_scanner;
 
             Array<char> buffer;
@@ -91,7 +90,7 @@ namespace indigo
             Obj<MangoIndex> single_mango_index;
             Obj<RingoIndex> single_ringo_index;
 
-            AutoPtr<IndexingDispatcher> parallel_indexing_dispatcher;
+            std::unique_ptr<IndexingDispatcher> parallel_indexing_dispatcher;
 
             bool skip_calculate_fp;
 
