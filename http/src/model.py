@@ -125,6 +125,11 @@ class RenderGridAttributes(BaseModel):
     structures: List[str]
 
 
+class AlignAtomsAttributes(AttributesModel):
+    atoms: List[int]
+    xyz: List[float]
+
+
 class StructurePropsDataModel(DataBaseModel):
     attributes: StructurePropsAttributes
 
@@ -147,6 +152,10 @@ class ExtractCommondScaffoldDataModel(DataBaseModel):
 
 class RenderGridDataModel(DataBaseModel):
     attributes: RenderGridAttributes
+
+
+class AlignAtomsDataModel(DataBaseModel):
+    attributes: AlignAtomsAttributes
 
 
 class IndigoBaseRequest(BaseModel):
@@ -229,6 +238,15 @@ class IndigoRenderGridRequest(IndigoBaseRequest):
     data: RenderGridDataModel
 
 
+class IndigoAlignAtomsRequest(IndigoBaseRequest):
+    """
+    request model for:
+    - POST /alignAtoms
+    """
+
+    data: AlignAtomsDataModel
+
+
 class Error(BaseModel):
     status: Optional[int] = None
     detail: Optional[str] = None
@@ -265,4 +283,8 @@ IndigoReactionProductEnumerateRequest = (
             SupportedTypes.SMARTS_LIST,
         )
     )
+)
+
+IndigoMolAlignAtomsRequest = IndigoAlignAtomsRequest.with_types(
+    (SupportedTypes.MOLFILE, SupportedTypes.SMILES, SupportedTypes.SMARTS)
 )

@@ -11,6 +11,7 @@ from .model import (
     IndigoAmbiguousHRequest,
     IndigoBaseRequest,
     IndigoExtractCommondScaffoldRequest,
+    IndigoMolAlignAtomsRequest,
     IndigoMolPairRequest,
     IndigoMolRequest,
     IndigoReactionProductEnumerateRequest,
@@ -38,6 +39,11 @@ async def isolate_indigo_session(request: Request, call_next):
         ):
             response.headers["Content-Type"] = RESP_HEADER_CONTENT_TYPE
         return response
+
+
+@app.exception_handler(IndigoException)
+async def unicorn_exception_handler(r: Request, exc: IndigoException):
+    return error_response(msg=str(exc))
 
 
 @app.post(f"{BASE_URL_INDIGO}/checkStructure", response_model=IndigoResponse)
@@ -546,11 +552,12 @@ async def render_to_file(
     mol = indigo().loadMolecule(indigo_request.data.attributes.content)
     renderer = IndigoRenderer(indigo())
     renderer.renderToFile(mol, temp_path)
+    mol.alignAtoms()
     return FileResponse(path=temp_path, filename="mol.png", media_type="image/png")
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/renderGridToFile", response_class=FileResponse)
-async def render_to_file(
+async def render_grid_to_file(
     indigo_request: IndigoRenderGridRequest, temp_path=Depends(create_temp_png_file)
 ) -> FileResponse:
     # TODO: add support for rendering options,
@@ -569,3 +576,12 @@ async def render_to_file(
     renderer = IndigoRenderer(indigo())
     renderer.renderGridToFile(arr, None, ncolumns, temp_path)
     return FileResponse(path=temp_path, filename="mol_grid.png", media_type="image/png")
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/alignAtoms", response_model=IndigoResponse)
+async def align_atoms(indigo_request: IndigoMolAlignAtomsRequest) -> IndigoResponse:
+    molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
+    atoms = indigo_request.data.attributes.atoms
+    xyz = indigo_request.data.attributes.xyz
+    molecule.alignAtoms(atoms, xyz)
+    return make_response(indigo_request.data.type, molecule)
