@@ -30,7 +30,7 @@ def indigo_new() -> Indigo:
         __indigo.reset(token)
 
 
-def create_temp_file():
+def create_temp_png_file():
     _, path = tempfile.mkstemp(suffix=".png")
     try:
         yield path

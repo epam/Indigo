@@ -6,7 +6,7 @@ from indigo import IndigoException, IndigoObject
 from indigo.renderer import IndigoRenderer
 from starlette.responses import FileResponse
 
-from .indigo_tools import create_temp_file, indigo, indigo_new
+from .indigo_tools import create_temp_png_file, indigo, indigo_new
 from .model import (
     IndigoAmbiguousHRequest,
     IndigoBaseRequest,
@@ -14,6 +14,7 @@ from .model import (
     IndigoMolPairRequest,
     IndigoMolRequest,
     IndigoReactionProductEnumerateRequest,
+    IndigoRenderGridRequest,
     IndigoResponse,
     IndigoStructurePropsRequest,
     SupportedTypes,
@@ -538,10 +539,33 @@ async def similarity(ingido_request: IndigoMolPairRequest) -> IndigoResponse:
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/renderToFile", response_class=FileResponse)
 async def render_to_file(
-    indigo_request: IndigoMolRequest, temp_path=Depends(create_temp_file)
+    indigo_request: IndigoMolRequest, temp_path=Depends(create_temp_png_file)
 ) -> FileResponse:
     # TODO: add support for rendering options
+    # add rendering reactions
     mol = indigo().loadMolecule(indigo_request.data.attributes.content)
     renderer = IndigoRenderer(indigo())
     renderer.renderToFile(mol, temp_path)
     return FileResponse(path=temp_path, filename="mol.png", media_type="image/png")
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/renderGridToFile", response_class=FileResponse)
+async def render_to_file(
+    indigo_request: IndigoRenderGridRequest, temp_path=Depends(create_temp_png_file)
+) -> FileResponse:
+    # TODO: add support for rendering options,
+    #  add rendering reactions
+    #  add support  for second parameter in renderGridToFile
+    structures = [
+        indigo().loadMolecule(mol) for mol in indigo_request.data.attributes.structures
+    ]
+    ncolumns = indigo_request.data.attributes.ncolumns
+
+    arr = indigo().convertToArray(structures)
+
+    if ncolumns is None:
+        ncolumns = len(structures) // 2
+
+    renderer = IndigoRenderer(indigo())
+    renderer.renderGridToFile(arr, None, ncolumns, temp_path)
+    return FileResponse(path=temp_path, filename="mol_grid.png", media_type="image/png")

@@ -120,6 +120,11 @@ class ExtractCommondScaffoldAttributes(BaseModel):
     structures: List[str]
 
 
+class RenderGridAttributes(BaseModel):
+    ncolumns: Optional[int] = None
+    structures: List[str]
+
+
 class StructurePropsDataModel(DataBaseModel):
     attributes: StructurePropsAttributes
 
@@ -138,6 +143,10 @@ class AmbiguousHDataModel(DataBaseModel):
 
 class ExtractCommondScaffoldDataModel(DataBaseModel):
     attributes: ExtractCommondScaffoldAttributes
+
+
+class RenderGridDataModel(DataBaseModel):
+    attributes: RenderGridAttributes
 
 
 class IndigoBaseRequest(BaseModel):
@@ -209,6 +218,15 @@ class IndigoExtractCommondScaffoldRequest(IndigoBaseRequest):
     """
 
     data: ExtractCommondScaffoldDataModel
+
+
+class IndigoRenderGridRequest(IndigoBaseRequest):
+    """
+    request model for:
+    - POST /renderGridToFile
+    """
+
+    data: RenderGridDataModel
 
 
 class Error(BaseModel):
