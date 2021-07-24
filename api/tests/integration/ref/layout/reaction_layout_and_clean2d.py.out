@@ -5,5 +5,17 @@
    Molecule #3: Success
   Item #0: Result of clean2d: Molecule #0: Success
    Molecule #1: Success
-   Molecule #2: Success
-   Molecule #3: Success
+   Molecule #2: Error: atom #0 (C) contains delta 0.0053361678662484265 > 0.001
+   atom #1 (C) contains delta 0.005604052898603864 > 0.001
+   atom #2 (C) contains delta 0.0058189450264323084 > 0.001
+   atom #3 (C) contains delta 0.005864324131101495 > 0.001
+   atom #4 (C) contains delta 0.005460970720796071 > 0.001
+   atom #5 (P) contains delta 0.005218272315482439 > 0.001
+   atom #6 (C) contains delta 0.0060745030274375455 > 0.001
+   Molecule #3: Error: atom #0 (C) contains delta 0.0016256589697899383 > 0.001
+   atom #1 (C) contains delta 0.0015275397798407025 > 0.001
+   atom #2 (C) contains delta 0.0010254934425694446 > 0.001
+   atom #3 (C) contains delta 0.001366004741742138 > 0.001
+   atom #4 (C) contains delta 0.0017667571687461315 > 0.001
+   atom #5 (C) contains delta 0.0020695291349015765 > 0.001
+   atom #6 (O) contains delta 0.001326051815891435 > 0.001

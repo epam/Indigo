@@ -81,4 +81,11 @@ Test clean2d for item #2 selection [76]
 Test layout for item #3 selection [0, 1, 2, 3, 4, 5, 6, 7] 
   Result: Success
 Test clean2d for item #3 selection [0, 1, 2, 3, 4, 5, 6, 7] 
-  Result: Success
+  Result: Error: atom #0 (C) contains delta 0.026423654723537457 > 0.01
+   atom #1 (C) contains delta 0.026349750982772258 > 0.01
+   atom #2 (C) contains delta 0.026416312275568732 > 0.01
+   atom #3 (C) contains delta 0.026209049723863575 > 0.01
+   atom #4 (C) contains delta 0.026329179198238215 > 0.01
+   atom #5 (C) contains delta 0.0262667507189722 > 0.01
+   atom #6 (C) contains delta 0.02624722106483149 > 0.01
+   atom #7 (C) contains delta 0.026201633888906357 > 0.01

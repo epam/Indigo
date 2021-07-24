@@ -3,11 +3,60 @@
   Item #1: Result: Success
   Item #2: Result: Success
   Item #3: Result: Success
-  Item #4: Result: Success
+  Item #4: Result: Error: atom #0 (C) contains delta 0.0935588370897683 > 0.01
+   atom #1 (C) contains delta 0.09782555730798366 > 0.01
+   atom #2 (C) contains delta 0.09938040325829017 > 0.01
+   atom #3 (C) contains delta 0.09676557018817832 > 0.01
+   atom #4 (C) contains delta 0.092549806513549 > 0.01
+   atom #5 (C) contains delta 0.09088343081270864 > 0.01
+   atom #6 (C) contains delta 0.08446626677076612 > 0.01
+   atom #7 (C) contains delta 0.08578106471927223 > 0.01
+   atom #8 (C) contains delta 0.07873315509059528 > 0.01
+   atom #9 (C) contains delta 0.06933842763476664 > 0.01
+   atom #10 (C) contains delta 0.06779702404236312 > 0.01
+   atom #11 (C) contains delta 0.075822969204103 > 0.01
+   atom #12 (C) contains delta 0.08965340087446656 > 0.01
+   atom #13 (C) contains delta 0.07830809963836559 > 0.01
+   atom #14 (C) contains delta 0.06619158544376151 > 0.01
+   atom #15 (C) contains delta 0.06759329441002343 > 0.01
+   atom #16 (C) contains delta 0.08041964499430106 > 0.01
+   atom #17 (C) contains delta 0.09044675646483437 > 0.01
+   atom #18 (C) contains delta 0.05878044959476303 > 0.01
+   atom #19 (C) contains delta 0.05193332626164317 > 0.01
+   atom #20 (C) contains delta 0.056939167669280484 > 0.01
+   atom #21 (C) contains delta 0.10065264623771317 > 0.01
+   atom #22 (C) contains delta 0.10477617429585138 > 0.01
+   atom #23 (C) contains delta 0.10624508451815774 > 0.01
+   atom #24 (C) contains delta 0.10360051260146942 > 0.01
   Item #5: Result: Success
-  Item #6: Result: Success
+  Item #6: Result: Error: atom #0 (C) contains delta 0.016147269915408175 > 0.01
+   atom #1 (C) contains delta 0.01595229912000314 > 0.01
+   atom #2 (C) contains delta 0.015565679998900486 > 0.01
+   atom #3 (C) contains delta 0.015719918352825712 > 0.01
+   atom #4 (C) contains delta 0.015338673998884274 > 0.01
+   atom #5 (C) contains delta 0.015048124504450635 > 0.01
+   atom #6 (C) contains delta 0.014649813006622832 > 0.01
+   atom #7 (C) contains delta 0.014573532183127375 > 0.01
+   atom #8 (Cl) contains delta 0.014551070542792968 > 0.01
+   atom #9 (C) contains delta 0.01764529055503956 > 0.01
+   atom #10 (C) contains delta 0.017780547692174322 > 0.01
+   atom #11 (C) contains delta 0.017411992561622566 > 0.01
+   atom #12 (C) contains delta 0.016917928236621818 > 0.01
+   atom #13 (C) contains delta 0.017278449959850492 > 0.01
+   atom #14 (C) contains delta 0.01630055484136375 > 0.01
+   atom #15 (C) contains delta 0.015556783844201992 > 0.01
+   atom #16 (C) contains delta 0.014624414397759326 > 0.01
+   atom #17 (Cl) contains delta 0.014070574403619094 > 0.01
+   atom #18 (C) contains delta 0.01413255762210236 > 0.01
   Item #7: Result: Success
-  Item #8: Result: Success
+  Item #8: Result: Error: atom #0 (C) contains delta 0.07922015291887095 > 0.01
+   atom #1 (C) contains delta 0.07549231827457036 > 0.01
+   atom #2 (C) contains delta 0.07181053407047323 > 0.01
+   atom #3 (C) contains delta 0.07496134011898826 > 0.01
+   atom #4 (C) contains delta 0.06665948006833164 > 0.01
+   atom #5 (C) contains delta 0.06497358870709506 > 0.01
+   atom #6 (C) contains delta 0.06925644455539916 > 0.01
+   atom #7 (C) contains delta 0.07442790679231957 > 0.01
   Item #9: Result: Success
   Item #10: Result: Success
   Item #11: Result: Success
