@@ -1,0 +1,91 @@
+Test layout for item #0 selection [37] 
+  Result: Success
+Test clean2d for item #0 selection [37] 
+  Result: Success
+Test layout for item #0 selection [27] 
+  Result: Success
+Test clean2d for item #0 selection [27] 
+  Result: Success
+Test layout for item #0 selection [13] 
+  Result: Success
+Test clean2d for item #0 selection [13] 
+  Result: Success
+Test layout for item #0 selection [25] 
+  Result: Success
+Test clean2d for item #0 selection [25] 
+  Result: Success
+Test layout for item #0 selection [21, 28] 
+  Result: Success
+Test clean2d for item #0 selection [21, 28] 
+  Result: Success
+Test layout for item #0 selection [58] 
+  Result: Success
+Test clean2d for item #0 selection [58] 
+  Result: Success
+Test layout for item #0 selection [67] 
+  Result: Success
+Test clean2d for item #0 selection [67] 
+  Result: Success
+Test layout for item #1 selection [37] 
+  Result: Success
+Test clean2d for item #1 selection [37] 
+  Result: Success
+Test layout for item #1 selection [27] 
+  Result: Success
+Test clean2d for item #1 selection [27] 
+  Result: Success
+Test layout for item #1 selection [13] 
+  Result: Success
+Test clean2d for item #1 selection [13] 
+  Result: Success
+Test layout for item #1 selection [25] 
+  Result: Success
+Test clean2d for item #1 selection [25] 
+  Result: Success
+Test layout for item #1 selection [21, 28] 
+  Result: Success
+Test clean2d for item #1 selection [21, 28] 
+  Result: Success
+Test layout for item #1 selection [58] 
+  Result: Success
+Test clean2d for item #1 selection [58] 
+  Result: Success
+Test layout for item #1 selection [67] 
+  Result: Success
+Test clean2d for item #1 selection [67] 
+  Result: Success
+Test layout for item #2 selection [7] 
+  Result: Success
+Test clean2d for item #2 selection [7] 
+  Result: Success
+Test layout for item #2 selection [56] 
+  Result: Success
+Test clean2d for item #2 selection [56] 
+  Result: Success
+Test layout for item #2 selection [26] 
+  Result: Success
+Test clean2d for item #2 selection [26] 
+  Result: Success
+Test layout for item #2 selection [29] 
+  Result: Success
+Test clean2d for item #2 selection [29] 
+  Result: Success
+Test layout for item #2 selection [66] 
+  Result: Success
+Test clean2d for item #2 selection [66] 
+  Result: Success
+Test layout for item #2 selection [76] 
+  Result: Success
+Test clean2d for item #2 selection [76] 
+  Result: Success
+Test layout for item #3 selection [0, 1, 2, 3, 4, 5, 6, 7] 
+  Result: Success
+Test clean2d for item #3 selection [0, 1, 2, 3, 4, 5, 6, 7] 
+  Result: Error: atom #0 (C) contains delta 0.054599922360178334 > 0.01
+   atom #1 (C) contains delta 0.054499467952166945 > 0.01
+   atom #2 (C) contains delta 0.0544997115197063 > 0.01
+   atom #3 (C) contains delta 0.05428410973100279 > 0.01
+   atom #4 (C) contains delta 0.05436975045184123 > 0.01
+   atom #5 (C) contains delta 0.05427469330173382 > 0.01
+   atom #6 (C) contains delta 0.054202614514218386 > 0.01
+   atom #7 (C) contains delta 0.05417828056261251 > 0.01
