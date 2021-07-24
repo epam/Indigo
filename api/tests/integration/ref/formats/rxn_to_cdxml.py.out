@@ -23,40 +23,40 @@ molfile loader: atom lists are allowed only for queries
     </colortable>
     <page HeightPages="1" WidthPages="1">
         <fragment id="1">
-            <n id="2" Element="6" p="144.000015 0.000014" />
-            <n id="3" Element="6" p="96.000015 0.000014" />
-            <n id="4" Element="6" p="72.000015 41.569233" />
-            <n id="5" Element="6" p="96.000015 83.138458" />
-            <n id="6" Element="6" p="144.000015 83.138466" />
-            <n id="7" Element="6" p="168.000046 41.569248" />
-            <n id="8" Element="7" NumHydrogens="0" p="168.000031 124.707687">
-                <t p="168.000031 124.707687" LabelJustification="Left">
+            <n id="2" Element="6" p="144.000000 -0.000000" />
+            <n id="3" Element="6" p="96.000000 -0.000000" />
+            <n id="4" Element="6" p="72.000008 41.569218" />
+            <n id="5" Element="6" p="96.000000 83.138435" />
+            <n id="6" Element="6" p="144.000000 83.138443" />
+            <n id="7" Element="6" p="168.000031 41.569233" />
+            <n id="8" Element="7" NumHydrogens="0" p="168.000015 124.707657">
+                <t p="168.000015 124.707657" LabelJustification="Left">
                     <s font="3" size="10" face="96">N</s>
                 </t>
             </n>
-            <n id="9" Element="6" p="72.000000 124.707672" />
-            <n id="10" Element="8" NumHydrogens="0" p="24.000006 124.707657">
-                <t p="24.000006 124.707657" LabelJustification="Left">
+            <n id="9" Element="6" p="71.999992 124.707642" />
+            <n id="10" Element="8" NumHydrogens="0" p="24.000002 124.707642">
+                <t p="24.000002 124.707642" LabelJustification="Left">
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="11" Element="8" NumHydrogens="0" p="96.000000 166.276886">
-                <t p="96.000000 166.276886" LabelJustification="Left">
+            <n id="11" Element="8" NumHydrogens="0" p="95.999985 166.276855">
+                <t p="95.999985 166.276855" LabelJustification="Left">
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="12" Element="1" p="0.000000 166.276871">
-                <t p="0.000000 166.276871" LabelJustification="Left">
+            <n id="12" Element="1" p="0.000000 166.276855">
+                <t p="0.000000 166.276855" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <n id="13" Element="1" p="144.000031 166.276901">
-                <t p="144.000031 166.276901" LabelJustification="Left">
+            <n id="13" Element="1" p="144.000015 166.276871">
+                <t p="144.000015 166.276871" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <n id="14" Element="1" p="216.000031 124.707672">
-                <t p="216.000031 124.707672" LabelJustification="Left">
+            <n id="14" Element="1" p="216.000000 124.707642">
+                <t p="216.000000 124.707642" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -75,19 +75,19 @@ molfile loader: atom lists are allowed only for queries
             <b B="8" E="14" />
         </fragment>
         <fragment id="15">
-            <n id="16" Element="7" NumHydrogens="0" p="421.969208 95.138451">
-                <t p="421.969208 95.138451" LabelJustification="Left">
+            <n id="16" Element="7" NumHydrogens="0" p="421.969177 95.138451">
+                <t p="421.969177 95.138451" LabelJustification="Left">
                     <s font="3" size="10" face="96">N</s>
                 </t>
             </n>
-            <n id="17" Element="6" p="463.538452 119.138443" />
-            <n id="18" Element="1" p="421.969208 47.138451">
-                <t p="421.969208 47.138451" LabelJustification="Left">
+            <n id="17" Element="6" p="463.538422 119.138443" />
+            <n id="18" Element="1" p="421.969177 47.138451">
+                <t p="421.969177 47.138451" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <n id="19" Element="1" p="380.400024 119.138451">
-                <t p="380.400024 119.138451" LabelJustification="Left">
+            <n id="19" Element="1" p="380.399994 119.138443">
+                <t p="380.399994 119.138443" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -102,14 +102,14 @@ molfile loader: atom lists are allowed only for queries
             <b B="17" E="20" />
         </fragment>
         <fragment id="21">
-            <n id="22" Element="6" p="711.076904 107.138451" />
-            <n id="23" NodeType="ElementList" ElementList="17 35 53" p="669.507690 83.138451">
-                <t p="669.507690 83.138451" LabelJustification="Left">
+            <n id="22" Element="6" p="711.076782 107.138443" />
+            <n id="23" NodeType="ElementList" ElementList="17 35 53" p="669.507568 83.138443">
+                <t p="669.507568 83.138443" LabelJustification="Left">
                     <s font="3" size="10" face="96">Cl,Br,I</s>
                 </t>
             </n>
-            <n id="24" Element="1" p="752.646118 83.138451">
-                <t p="752.646118 83.138451" LabelJustification="Left">
+            <n id="24" Element="1" p="752.645996 83.138451">
+                <t p="752.645996 83.138451" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -117,36 +117,36 @@ molfile loader: atom lists are allowed only for queries
             <b B="22" E="24" />
         </fragment>
         <fragment id="25">
-            <n id="26" Element="6" p="941.046143 0.000029" />
-            <n id="27" Element="6" p="917.046143 41.569176" />
-            <n id="28" Element="6" p="941.046143 83.138412" />
-            <n id="29" Element="6" p="989.046143 0.000029" />
-            <n id="30" Element="6" p="1013.046143 41.569233" />
-            <n id="31" Element="6" p="989.046143 83.138466" />
-            <n id="32" Element="6" p="1013.046143 124.707687" />
-            <n id="33" Element="7" NumHydrogens="0" p="1061.046143 124.707672">
-                <t p="1061.046143 124.707672" LabelJustification="Left">
+            <n id="26" Element="6" p="941.046082 -0.000000" />
+            <n id="27" Element="6" p="917.046021 41.569218" />
+            <n id="28" Element="6" p="941.046021 83.138428" />
+            <n id="29" Element="6" p="989.046021 0.000014" />
+            <n id="30" Element="6" p="1013.046021 41.569233" />
+            <n id="31" Element="6" p="989.046021 83.138458" />
+            <n id="32" Element="6" p="1013.046021 124.707672" />
+            <n id="33" Element="7" NumHydrogens="0" p="1061.046021 124.707672">
+                <t p="1061.046021 124.707672" LabelJustification="Left">
                     <s font="3" size="10" face="96">N</s>
                 </t>
             </n>
-            <n id="34" Element="6" p="1085.046143 83.138451" />
-            <n id="35" Element="7" NumHydrogens="0" p="1061.046143 41.569233">
-                <t p="1061.046143 41.569233" LabelJustification="Left">
+            <n id="34" Element="6" p="1085.046021 83.138443" />
+            <n id="35" Element="7" NumHydrogens="0" p="1061.046021 41.569233">
+                <t p="1061.046021 41.569233" LabelJustification="Left">
                     <s font="3" size="10" face="96">N</s>
                 </t>
             </n>
-            <n id="36" Element="8" NumHydrogens="0" p="989.046143 166.276901">
-                <t p="989.046143 166.276901" LabelJustification="Left">
+            <n id="36" Element="8" NumHydrogens="0" p="989.046021 166.276886">
+                <t p="989.046021 166.276886" LabelJustification="Left">
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="37" Element="8" NumHydrogens="0" p="1133.046143 83.138451">
-                <t p="1133.046143 83.138451" LabelJustification="Left">
+            <n id="37" Element="8" NumHydrogens="0" p="1133.046021 83.138443">
+                <t p="1133.046021 83.138443" LabelJustification="Left">
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="38" Element="6" p="1085.046143 -0.000000" />
-            <n id="39" Element="6" p="1085.046143 166.276886" />
+            <n id="38" Element="6" p="1085.046021 -0.000000" />
+            <n id="39" Element="6" p="1085.046021 166.276871" />
             <b B="29" E="26" />
             <b B="30" E="31" />
             <b B="30" E="35" />
@@ -163,17 +163,17 @@ molfile loader: atom lists are allowed only for queries
             <b B="30" E="29" Order="2" />
             <b B="33" E="39" />
         </fragment>
-        <t p="298.200012 83.138458" Justification="Center" InterpretChemically="no">
+        <t p="298.199982 83.138435" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <t p="587.307678 83.138451" Justification="Center" InterpretChemically="no">
+        <t p="587.307617 83.138451" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic BoundingBox="875.946167 83.138451 793.746155 83.138458" id="40" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
+        <graphic BoundingBox="875.946045 83.138443 793.746033 83.138435" id="40" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
         <scheme>
             <step ReactionStepReactants="1 15 21" ReactionStepProducts="25" ReactionStepArrows="40" ReactionStepAtomMap="2 26 3 27 4 28 5 31 6 30 7 29 8 35 9 32 11 36 16 33 17 39 22 38" ReactionStepAtomMapManual="2 26 3 27 4 28 5 31 6 30 7 29 8 35 9 32 11 36 16 33 17 39 22 38" />
         </scheme>
-        <t p="458.523041 -30.000000" Justification="Center" InterpretChemically="no">
+        <t p="458.522980 -30.000000" Justification="Center" InterpretChemically="no">
             <s font="4" size="18" face="1">1,3-Quinazoline 2,4-dione formation</s>
         </t>
     </page>
@@ -249,7 +249,7 @@ molfile loader: 'any' atoms are allowed only for queries
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="12" Element="6" p="343.538422 -0.000000" />
+            <n id="12" Element="6" p="343.538452 -0.000000" />
             <b B="8" E="10" />
             <b B="8" E="9" />
             <b B="10" E="11" Order="2" />
@@ -259,6 +259,205 @@ molfile loader: 'any' atoms are allowed only for queries
         <graphic BoundingBox="206.438431 41.569218 124.238434 41.569218" id="13" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
         <scheme>
             <step ReactionStepReactants="1" ReactionStepProducts="6" ReactionStepArrows="13" ReactionStepAtomMap="2 7 3 8 4 9" ReactionStepAtomMapManual="2 7 3 8 4 9" />
+        </scheme>
+    </page>
+</CDXML>
+
+AmideFormation.ket
+*** Try as Reaction ***
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd" >
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable>
+        <font id="3" charset="iso-8859-1" name="Arial" />
+        <font id="4" charset="iso-8859-1" name="Times New Roman" />
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1" />
+        <color r="0" g="0" b="0" />
+        <color r="1" g="0" b="0" />
+        <color r="1" g="1" b="0" />
+        <color r="0" g="1" b="0" />
+        <color r="0" g="1" b="1" />
+        <color r="0" g="0" b="1" />
+        <color r="1" g="0" b="1" />
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="1">
+            <n id="2" Element="6" p="0.000000 72.000000" />
+            <n id="3" Element="6" p="41.569214 47.999996" />
+            <n id="4" Element="8" NumHydrogens="0" p="83.138435 72.000000">
+                <t p="83.138435 72.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="5" Element="8" NumHydrogens="0" p="41.569210 -0.000000">
+                <t p="41.569210 -0.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="6" Element="1" p="124.707657 48.000004">
+                <t p="124.707657 48.000004" LabelJustification="Left">
+                    <s font="3" size="10" face="96">H</s>
+                </t>
+            </n>
+            <b B="2" E="3" />
+            <b B="3" E="5" Order="2" />
+            <b B="3" E="4" />
+            <b B="4" E="6" />
+        </fragment>
+        <fragment id="7">
+            <n id="8" Element="7" NumHydrogens="0" p="330.676849 47.999996">
+                <t p="330.676849 47.999996" LabelJustification="Left">
+                    <s font="3" size="10" face="96">N</s>
+                </t>
+            </n>
+            <n id="9" Element="6" p="372.246094 72.000000" />
+            <n id="10" Element="1" p="330.676849 -0.000000">
+                <t p="330.676849 -0.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">H</s>
+                </t>
+            </n>
+            <n id="11" Element="1" p="289.107666 72.000000">
+                <t p="289.107666 72.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">H</s>
+                </t>
+            </n>
+            <n id="12" Element="1" p="413.815338 48.000004">
+                <t p="413.815338 48.000004" LabelJustification="Left">
+                    <s font="3" size="10" face="96">H</s>
+                </t>
+            </n>
+            <b B="8" E="9" />
+            <b B="8" E="11" />
+            <b B="8" E="10" />
+            <b B="9" E="12" />
+        </fragment>
+        <fragment id="13">
+            <n id="14" Element="6" p="578.215332 72.000000" />
+            <n id="15" Element="6" p="619.784546 47.999996" />
+            <n id="16" Element="8" NumHydrogens="0" p="619.784546 -0.000000">
+                <t p="619.784546 -0.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="17" Element="7" NumHydrogens="1" p="661.353699 72.000000">
+                <t p="661.353699 72.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">NH</s>
+                </t>
+            </n>
+            <n id="18" Element="6" p="702.922974 48.000004" />
+            <b B="14" E="15" />
+            <b B="15" E="17" />
+            <b B="15" E="16" Order="2" />
+            <b B="17" E="18" />
+        </fragment>
+        <t p="206.907669 36.000000" Justification="Center" InterpretChemically="no">
+            <s font="3" size="10" face="96">+</s>
+        </t>
+        <graphic BoundingBox="537.115295 36.000000 454.915314 36.000000" id="19" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
+        <scheme>
+            <step ReactionStepReactants="1 7" ReactionStepProducts="13" ReactionStepArrows="19" ReactionStepAtomMap="2 14 3 15 5 16 8 17 9 18" ReactionStepAtomMapManual="2 14 3 15 5 16 8 17 9 18" />
+        </scheme>
+    </page>
+</CDXML>
+
+*** Compare with QueryReaction ***
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd" >
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable>
+        <font id="3" charset="iso-8859-1" name="Arial" />
+        <font id="4" charset="iso-8859-1" name="Times New Roman" />
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1" />
+        <color r="0" g="0" b="0" />
+        <color r="1" g="0" b="0" />
+        <color r="1" g="1" b="0" />
+        <color r="0" g="1" b="0" />
+        <color r="0" g="1" b="1" />
+        <color r="0" g="0" b="1" />
+        <color r="1" g="0" b="1" />
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="1">
+            <n id="2" Element="6" p="0.000000 72.000000" />
+            <n id="3" Element="6" p="41.569214 47.999996" />
+            <n id="4" Element="8" NumHydrogens="0" p="83.138435 72.000000">
+                <t p="83.138435 72.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="5" Element="8" NumHydrogens="0" p="41.569210 -0.000000">
+                <t p="41.569210 -0.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="6" Element="1" p="124.707657 48.000004">
+                <t p="124.707657 48.000004" LabelJustification="Left">
+                    <s font="3" size="10" face="96">H</s>
+                </t>
+            </n>
+            <b B="2" E="3" />
+            <b B="3" E="5" Order="2" />
+            <b B="3" E="4" />
+            <b B="4" E="6" />
+        </fragment>
+        <fragment id="7">
+            <n id="8" Element="7" NumHydrogens="0" p="330.676849 47.999996">
+                <t p="330.676849 47.999996" LabelJustification="Left">
+                    <s font="3" size="10" face="96">N</s>
+                </t>
+            </n>
+            <n id="9" Element="6" p="372.246094 72.000000" />
+            <n id="10" Element="1" p="330.676849 -0.000000">
+                <t p="330.676849 -0.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">H</s>
+                </t>
+            </n>
+            <n id="11" Element="1" p="289.107666 72.000000">
+                <t p="289.107666 72.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">H</s>
+                </t>
+            </n>
+            <n id="12" Element="1" p="413.815338 48.000004">
+                <t p="413.815338 48.000004" LabelJustification="Left">
+                    <s font="3" size="10" face="96">H</s>
+                </t>
+            </n>
+            <b B="8" E="9" />
+            <b B="8" E="11" />
+            <b B="8" E="10" />
+            <b B="9" E="12" />
+        </fragment>
+        <fragment id="13">
+            <n id="14" Element="6" p="578.215332 72.000000" />
+            <n id="15" Element="6" p="619.784546 47.999996" />
+            <n id="16" Element="8" NumHydrogens="0" p="619.784546 -0.000000">
+                <t p="619.784546 -0.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="17" Element="7" NumHydrogens="1" p="661.353699 72.000000">
+                <t p="661.353699 72.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">NH</s>
+                </t>
+            </n>
+            <n id="18" Element="6" p="702.922974 48.000004" />
+            <b B="14" E="15" />
+            <b B="15" E="17" />
+            <b B="15" E="16" Order="2" />
+            <b B="17" E="18" />
+        </fragment>
+        <t p="206.907669 36.000000" Justification="Center" InterpretChemically="no">
+            <s font="3" size="10" face="96">+</s>
+        </t>
+        <graphic BoundingBox="537.115295 36.000000 454.915314 36.000000" id="19" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
+        <scheme>
+            <step ReactionStepReactants="1 7" ReactionStepProducts="13" ReactionStepArrows="19" ReactionStepAtomMap="2 14 3 15 5 16 8 17 9 18" ReactionStepAtomMapManual="2 14 3 15 5 16 8 17 9 18" />
         </scheme>
     </page>
 </CDXML>
@@ -297,8 +496,8 @@ AmideFormation.rxn
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="6" Element="1" p="124.707657 47.999996">
-                <t p="124.707657 47.999996" LabelJustification="Left">
+            <n id="6" Element="1" p="124.707657 48.000004">
+                <t p="124.707657 48.000004" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -324,8 +523,8 @@ AmideFormation.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <n id="12" Element="1" p="413.815338 47.999996">
-                <t p="413.815338 47.999996" LabelJustification="Left">
+            <n id="12" Element="1" p="413.815338 48.000004">
+                <t p="413.815338 48.000004" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -347,7 +546,7 @@ AmideFormation.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="18" Element="6" p="702.922974 47.999996" />
+            <n id="18" Element="6" p="702.922974 48.000004" />
             <b B="14" E="15" />
             <b B="15" E="17" />
             <b B="15" E="16" Order="2" />
@@ -399,8 +598,8 @@ AmideFormation.rxn
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="6" Element="1" p="124.707657 47.999996">
-                <t p="124.707657 47.999996" LabelJustification="Left">
+            <n id="6" Element="1" p="124.707657 48.000004">
+                <t p="124.707657 48.000004" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -426,8 +625,8 @@ AmideFormation.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <n id="12" Element="1" p="413.815338 47.999996">
-                <t p="413.815338 47.999996" LabelJustification="Left">
+            <n id="12" Element="1" p="413.815338 48.000004">
+                <t p="413.815338 48.000004" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -449,7 +648,7 @@ AmideFormation.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="18" Element="6" p="702.922974 47.999996" />
+            <n id="18" Element="6" p="702.922974 48.000004" />
             <b B="14" E="15" />
             <b B="15" E="17" />
             <b B="15" E="16" Order="2" />
@@ -654,7 +853,7 @@ CN_Bond.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="13" Element="6" p="619.784485 24.000002" />
+            <n id="13" Element="6" p="619.784485 24.000008" />
             <b B="10" E="11" Order="2" />
             <b B="11" E="12" />
             <b B="12" E="13" />
@@ -723,7 +922,7 @@ CN_Bond.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="13" Element="6" p="619.784485 24.000002" />
+            <n id="13" Element="6" p="619.784485 24.000008" />
             <b B="10" E="11" Order="2" />
             <b B="11" E="12" />
             <b B="12" E="13" />
@@ -793,7 +992,7 @@ CN_Bond_map.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="13" Element="6" p="619.784485 24.000002" />
+            <n id="13" Element="6" p="619.784485 24.000008" />
             <b B="10" E="11" Order="2" />
             <b B="11" E="12" />
             <b B="12" E="13" />
@@ -862,7 +1061,7 @@ CN_Bond_map.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="13" Element="6" p="619.784485 24.000002" />
+            <n id="13" Element="6" p="619.784485 24.000008" />
             <b B="10" E="11" Order="2" />
             <b B="11" E="12" />
             <b B="12" E="13" />
@@ -877,7 +1076,7 @@ CN_Bond_map.rxn
     </page>
 </CDXML>
 
-Claisen.rxn
+Claisen.ket
 *** Try as Reaction ***
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd" >
@@ -899,20 +1098,20 @@ Claisen.rxn
     </colortable>
     <page HeightPages="1" WidthPages="1">
         <fragment id="1">
-            <n id="2" Element="6" p="83.138435 38.353828" />
-            <n id="3" Element="6" p="41.569225 14.353830" />
-            <n id="4" Element="6" p="0.000007 38.353821" />
-            <n id="5" Element="6" p="0.000000 86.353828" />
-            <n id="6" Element="6" p="41.569225 110.353836" />
-            <n id="7" Element="6" p="83.138451 86.353844" />
-            <n id="8" Element="8" NumHydrogens="0" p="124.707657 110.353836">
-                <t p="124.707657 110.353836" LabelJustification="Left">
+            <n id="2" Element="6" p="83.138443 38.353844" />
+            <n id="3" Element="6" p="41.569229 14.353846" />
+            <n id="4" Element="6" p="0.000007 38.353836" />
+            <n id="5" Element="6" p="0.000000 86.353844" />
+            <n id="6" Element="6" p="41.569229 110.353844" />
+            <n id="7" Element="6" p="83.138458 86.353851" />
+            <n id="8" Element="8" NumHydrogens="0" p="124.707687 110.353844">
+                <t p="124.707687 110.353844" LabelJustification="Left">
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="9" Element="6" p="166.276886 86.353851" />
-            <n id="10" Element="6" p="207.846100 110.353851" />
-            <n id="11" Element="6" p="249.415283 86.353859" />
+            <n id="9" Element="6" p="166.276901 86.353851" />
+            <n id="10" Element="6" p="207.846100 110.353859" />
+            <n id="11" Element="6" p="249.415314 86.353859" />
             <b B="6" E="7" Order="2" />
             <b B="7" E="2" />
             <b B="4" E="5" Order="2" />
@@ -925,15 +1124,15 @@ Claisen.rxn
             <b B="10" E="11" Order="2" />
         </fragment>
         <fragment id="12">
-            <n id="13" Element="6" p="485.815247 83.138458" />
-            <n id="14" Element="6" p="461.815277 124.707687" />
-            <n id="15" Element="6" p="413.815277 124.707687" />
-            <n id="16" Element="6" p="533.815247 83.138443" />
-            <n id="17" Element="6" p="605.815247 41.569210" />
-            <n id="18" Element="6" p="629.815247 83.138435" />
-            <n id="19" Element="6" p="605.815247 124.707657" />
-            <n id="20" Element="6" p="557.815247 124.707657" />
-            <n id="21" Element="6" p="557.815247 41.569210" />
+            <n id="13" Element="6" p="485.815247 83.138474" />
+            <n id="14" Element="6" p="461.815277 124.707703" />
+            <n id="15" Element="6" p="413.815308 124.707703" />
+            <n id="16" Element="6" p="533.815247 83.138458" />
+            <n id="17" Element="6" p="605.815308 41.569225" />
+            <n id="18" Element="6" p="629.815308 83.138451" />
+            <n id="19" Element="6" p="605.815308 124.707672" />
+            <n id="20" Element="6" p="557.815247 124.707672" />
+            <n id="21" Element="6" p="557.815247 41.569218" />
             <n id="22" Element="8" NumHydrogens="1" p="533.815247 -0.000000">
                 <t p="533.815247 -0.000000" LabelJustification="Left">
                     <s font="3" size="10" face="96">OH</s>
@@ -950,7 +1149,7 @@ Claisen.rxn
             <b B="17" E="18" Order="2" />
             <b B="21" E="22" />
         </fragment>
-        <graphic BoundingBox="372.715271 62.353844 290.515289 62.353844" id="23" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
+        <graphic BoundingBox="372.715302 62.353851 290.515320 62.353851" id="23" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
         <scheme>
             <step ReactionStepReactants="1" ReactionStepProducts="12" ReactionStepArrows="23" ReactionStepAtomMap="2 17 3 18 4 19 5 20 6 16 7 21 8 22 9 15 10 14 11 13" ReactionStepAtomMapManual="2 17 3 18 4 19 5 20 6 16 7 21 8 22 9 15 10 14 11 13" />
         </scheme>
@@ -978,20 +1177,20 @@ Claisen.rxn
     </colortable>
     <page HeightPages="1" WidthPages="1">
         <fragment id="1">
-            <n id="2" Element="6" p="83.138435 38.353828" />
-            <n id="3" Element="6" p="41.569225 14.353830" />
-            <n id="4" Element="6" p="0.000007 38.353821" />
-            <n id="5" Element="6" p="0.000000 86.353828" />
-            <n id="6" Element="6" p="41.569225 110.353836" />
-            <n id="7" Element="6" p="83.138451 86.353844" />
-            <n id="8" Element="8" NumHydrogens="0" p="124.707657 110.353836">
-                <t p="124.707657 110.353836" LabelJustification="Left">
+            <n id="2" Element="6" p="83.138443 38.353844" />
+            <n id="3" Element="6" p="41.569229 14.353846" />
+            <n id="4" Element="6" p="0.000007 38.353836" />
+            <n id="5" Element="6" p="0.000000 86.353844" />
+            <n id="6" Element="6" p="41.569229 110.353844" />
+            <n id="7" Element="6" p="83.138458 86.353851" />
+            <n id="8" Element="8" NumHydrogens="0" p="124.707687 110.353844">
+                <t p="124.707687 110.353844" LabelJustification="Left">
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="9" Element="6" p="166.276886 86.353851" />
-            <n id="10" Element="6" p="207.846100 110.353851" />
-            <n id="11" Element="6" p="249.415283 86.353859" />
+            <n id="9" Element="6" p="166.276901 86.353851" />
+            <n id="10" Element="6" p="207.846100 110.353859" />
+            <n id="11" Element="6" p="249.415314 86.353859" />
             <b B="6" E="7" Order="2" />
             <b B="7" E="2" />
             <b B="4" E="5" Order="2" />
@@ -1004,15 +1203,15 @@ Claisen.rxn
             <b B="10" E="11" Order="2" />
         </fragment>
         <fragment id="12">
-            <n id="13" Element="6" p="485.815247 83.138458" />
-            <n id="14" Element="6" p="461.815277 124.707687" />
-            <n id="15" Element="6" p="413.815277 124.707687" />
-            <n id="16" Element="6" p="533.815247 83.138443" />
-            <n id="17" Element="6" p="605.815247 41.569210" />
-            <n id="18" Element="6" p="629.815247 83.138435" />
-            <n id="19" Element="6" p="605.815247 124.707657" />
-            <n id="20" Element="6" p="557.815247 124.707657" />
-            <n id="21" Element="6" p="557.815247 41.569210" />
+            <n id="13" Element="6" p="485.815247 83.138474" />
+            <n id="14" Element="6" p="461.815277 124.707703" />
+            <n id="15" Element="6" p="413.815308 124.707703" />
+            <n id="16" Element="6" p="533.815247 83.138458" />
+            <n id="17" Element="6" p="605.815308 41.569225" />
+            <n id="18" Element="6" p="629.815308 83.138451" />
+            <n id="19" Element="6" p="605.815308 124.707672" />
+            <n id="20" Element="6" p="557.815247 124.707672" />
+            <n id="21" Element="6" p="557.815247 41.569218" />
             <n id="22" Element="8" NumHydrogens="1" p="533.815247 -0.000000">
                 <t p="533.815247 -0.000000" LabelJustification="Left">
                     <s font="3" size="10" face="96">OH</s>
@@ -1029,7 +1228,166 @@ Claisen.rxn
             <b B="17" E="18" Order="2" />
             <b B="21" E="22" />
         </fragment>
-        <graphic BoundingBox="372.715271 62.353844 290.515289 62.353844" id="23" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
+        <graphic BoundingBox="372.715302 62.353851 290.515320 62.353851" id="23" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
+        <scheme>
+            <step ReactionStepReactants="1" ReactionStepProducts="12" ReactionStepArrows="23" ReactionStepAtomMap="2 17 3 18 4 19 5 20 6 16 7 21 8 22 9 15 10 14 11 13" ReactionStepAtomMapManual="2 17 3 18 4 19 5 20 6 16 7 21 8 22 9 15 10 14 11 13" />
+        </scheme>
+    </page>
+</CDXML>
+
+Claisen.rxn
+*** Try as Reaction ***
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd" >
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable>
+        <font id="3" charset="iso-8859-1" name="Arial" />
+        <font id="4" charset="iso-8859-1" name="Times New Roman" />
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1" />
+        <color r="0" g="0" b="0" />
+        <color r="1" g="0" b="0" />
+        <color r="1" g="1" b="0" />
+        <color r="0" g="1" b="0" />
+        <color r="0" g="1" b="1" />
+        <color r="0" g="0" b="1" />
+        <color r="1" g="0" b="1" />
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="1">
+            <n id="2" Element="6" p="83.138443 38.353844" />
+            <n id="3" Element="6" p="41.569229 14.353846" />
+            <n id="4" Element="6" p="0.000007 38.353836" />
+            <n id="5" Element="6" p="0.000000 86.353844" />
+            <n id="6" Element="6" p="41.569229 110.353844" />
+            <n id="7" Element="6" p="83.138458 86.353851" />
+            <n id="8" Element="8" NumHydrogens="0" p="124.707687 110.353844">
+                <t p="124.707687 110.353844" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="9" Element="6" p="166.276901 86.353851" />
+            <n id="10" Element="6" p="207.846100 110.353859" />
+            <n id="11" Element="6" p="249.415314 86.353859" />
+            <b B="6" E="7" Order="2" />
+            <b B="7" E="2" />
+            <b B="4" E="5" Order="2" />
+            <b B="7" E="8" />
+            <b B="3" E="4" />
+            <b B="8" E="9" />
+            <b B="5" E="6" />
+            <b B="9" E="10" />
+            <b B="2" E="3" Order="2" />
+            <b B="10" E="11" Order="2" />
+        </fragment>
+        <fragment id="12">
+            <n id="13" Element="6" p="485.815247 83.138474" />
+            <n id="14" Element="6" p="461.815277 124.707703" />
+            <n id="15" Element="6" p="413.815308 124.707703" />
+            <n id="16" Element="6" p="533.815247 83.138458" />
+            <n id="17" Element="6" p="605.815308 41.569225" />
+            <n id="18" Element="6" p="629.815308 83.138451" />
+            <n id="19" Element="6" p="605.815308 124.707672" />
+            <n id="20" Element="6" p="557.815247 124.707672" />
+            <n id="21" Element="6" p="557.815247 41.569218" />
+            <n id="22" Element="8" NumHydrogens="1" p="533.815247 -0.000000">
+                <t p="533.815247 -0.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">OH</s>
+                </t>
+            </n>
+            <b B="13" E="14" />
+            <b B="18" E="19" />
+            <b B="16" E="13" />
+            <b B="19" E="20" Order="2" />
+            <b B="20" E="16" />
+            <b B="14" E="15" Order="2" />
+            <b B="16" E="21" Order="2" />
+            <b B="21" E="17" />
+            <b B="17" E="18" Order="2" />
+            <b B="21" E="22" />
+        </fragment>
+        <graphic BoundingBox="372.715302 62.353851 290.515320 62.353851" id="23" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
+        <scheme>
+            <step ReactionStepReactants="1" ReactionStepProducts="12" ReactionStepArrows="23" ReactionStepAtomMap="2 17 3 18 4 19 5 20 6 16 7 21 8 22 9 15 10 14 11 13" ReactionStepAtomMapManual="2 17 3 18 4 19 5 20 6 16 7 21 8 22 9 15 10 14 11 13" />
+        </scheme>
+    </page>
+</CDXML>
+
+*** Compare with QueryReaction ***
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd" >
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable>
+        <font id="3" charset="iso-8859-1" name="Arial" />
+        <font id="4" charset="iso-8859-1" name="Times New Roman" />
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1" />
+        <color r="0" g="0" b="0" />
+        <color r="1" g="0" b="0" />
+        <color r="1" g="1" b="0" />
+        <color r="0" g="1" b="0" />
+        <color r="0" g="1" b="1" />
+        <color r="0" g="0" b="1" />
+        <color r="1" g="0" b="1" />
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="1">
+            <n id="2" Element="6" p="83.138443 38.353844" />
+            <n id="3" Element="6" p="41.569229 14.353846" />
+            <n id="4" Element="6" p="0.000007 38.353836" />
+            <n id="5" Element="6" p="0.000000 86.353844" />
+            <n id="6" Element="6" p="41.569229 110.353844" />
+            <n id="7" Element="6" p="83.138458 86.353851" />
+            <n id="8" Element="8" NumHydrogens="0" p="124.707687 110.353844">
+                <t p="124.707687 110.353844" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="9" Element="6" p="166.276901 86.353851" />
+            <n id="10" Element="6" p="207.846100 110.353859" />
+            <n id="11" Element="6" p="249.415314 86.353859" />
+            <b B="6" E="7" Order="2" />
+            <b B="7" E="2" />
+            <b B="4" E="5" Order="2" />
+            <b B="7" E="8" />
+            <b B="3" E="4" />
+            <b B="8" E="9" />
+            <b B="5" E="6" />
+            <b B="9" E="10" />
+            <b B="2" E="3" Order="2" />
+            <b B="10" E="11" Order="2" />
+        </fragment>
+        <fragment id="12">
+            <n id="13" Element="6" p="485.815247 83.138474" />
+            <n id="14" Element="6" p="461.815277 124.707703" />
+            <n id="15" Element="6" p="413.815308 124.707703" />
+            <n id="16" Element="6" p="533.815247 83.138458" />
+            <n id="17" Element="6" p="605.815308 41.569225" />
+            <n id="18" Element="6" p="629.815308 83.138451" />
+            <n id="19" Element="6" p="605.815308 124.707672" />
+            <n id="20" Element="6" p="557.815247 124.707672" />
+            <n id="21" Element="6" p="557.815247 41.569218" />
+            <n id="22" Element="8" NumHydrogens="1" p="533.815247 -0.000000">
+                <t p="533.815247 -0.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">OH</s>
+                </t>
+            </n>
+            <b B="13" E="14" />
+            <b B="18" E="19" />
+            <b B="16" E="13" />
+            <b B="19" E="20" Order="2" />
+            <b B="20" E="16" />
+            <b B="14" E="15" Order="2" />
+            <b B="16" E="21" Order="2" />
+            <b B="21" E="17" />
+            <b B="17" E="18" Order="2" />
+            <b B="21" E="22" />
+        </fragment>
+        <graphic BoundingBox="372.715302 62.353851 290.515320 62.353851" id="23" GraphicType="Line" ArrowType="FullHead" HeadSize="1000" />
         <scheme>
             <step ReactionStepReactants="1" ReactionStepProducts="12" ReactionStepArrows="23" ReactionStepAtomMap="2 17 3 18 4 19 5 20 6 16 7 21 8 22 9 15 10 14 11 13" ReactionStepAtomMapManual="2 17 3 18 4 19 5 20 6 16 7 21 8 22 9 15 10 14 11 13" />
         </scheme>
@@ -1065,8 +1423,8 @@ Markush6.rxn
             <n id="6" Element="6" p="83.138443 124.858391" />
             <n id="7" Element="6" p="41.569225 100.858391" />
             <n id="8" Element="6" p="124.707657 100.858391" />
-            <n id="9" Element="8" NumHydrogens="1" p="124.707642 52.858387">
-                <t p="124.707642 52.858387" LabelJustification="Left">
+            <n id="9" Element="8" NumHydrogens="1" p="124.707642 52.858398">
+                <t p="124.707642 52.858398" LabelJustification="Left">
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
@@ -1075,8 +1433,8 @@ Markush6.rxn
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="11" Element="1" p="41.569233 52.858387">
-                <t p="41.569233 52.858387" LabelJustification="Left">
+            <n id="11" Element="1" p="41.569206 52.858387">
+                <t p="41.569206 52.858387" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -1110,8 +1468,8 @@ Markush6.rxn
                     <s font="3" size="10" face="96">N</s>
                 </t>
             </n>
-            <n id="17" Element="1" p="474.676880 162.323029">
-                <t p="474.676880 162.323029" LabelJustification="Left">
+            <n id="17" Element="1" p="474.676880 162.323013">
+                <t p="474.676880 162.323013" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -1258,8 +1616,8 @@ Markush6.rxn
             <n id="6" Element="6" p="83.138443 124.858391" />
             <n id="7" Element="6" p="41.569225 100.858391" />
             <n id="8" Element="6" p="124.707657 100.858391" />
-            <n id="9" Element="8" NumHydrogens="1" p="124.707642 52.858387">
-                <t p="124.707642 52.858387" LabelJustification="Left">
+            <n id="9" Element="8" NumHydrogens="1" p="124.707642 52.858398">
+                <t p="124.707642 52.858398" LabelJustification="Left">
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
@@ -1268,8 +1626,8 @@ Markush6.rxn
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <n id="11" Element="1" p="41.569233 52.858387">
-                <t p="41.569233 52.858387" LabelJustification="Left">
+            <n id="11" Element="1" p="41.569206 52.858387">
+                <t p="41.569206 52.858387" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -1303,8 +1661,8 @@ Markush6.rxn
                     <s font="3" size="10" face="96">N</s>
                 </t>
             </n>
-            <n id="17" Element="1" p="474.676880 162.323029">
-                <t p="474.676880 162.323029" LabelJustification="Left">
+            <n id="17" Element="1" p="474.676880 162.323013">
+                <t p="474.676880 162.323013" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
@@ -1613,8 +1971,8 @@ amiderxn3.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="19" NodeType="GenericNickname" GenericNickname="A" p="832.184509 23.999998">
-                <t p="832.184509 23.999998" LabelJustification="Left">
+            <n id="19" NodeType="GenericNickname" GenericNickname="A" p="832.184509 23.999994">
+                <t p="832.184509 23.999994" LabelJustification="Left">
                     <s font="3" size="10" face="96">R2</s>
                 </t>
             </n>
@@ -1745,8 +2103,8 @@ amiderxn3.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="19" NodeType="GenericNickname" GenericNickname="A" p="832.184509 23.999998">
-                <t p="832.184509 23.999998" LabelJustification="Left">
+            <n id="19" NodeType="GenericNickname" GenericNickname="A" p="832.184509 23.999994">
+                <t p="832.184509 23.999994" LabelJustification="Left">
                     <s font="3" size="10" face="96">R2</s>
                 </t>
             </n>
@@ -2137,7 +2495,7 @@ v3000.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="29" Element="6" p="1609.938354 23.999996" />
+            <n id="29" Element="6" p="1609.938354 24.000002" />
             <b B="26" E="27" Order="2" />
             <b B="27" E="28" />
             <b B="28" E="29" />
@@ -2150,7 +2508,7 @@ v3000.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="34" Element="6" p="1899.046143 23.999996" />
+            <n id="34" Element="6" p="1899.046143 24.000002" />
             <b B="31" E="32" Order="2" />
             <b B="32" E="33" />
             <b B="33" E="34" />
@@ -2294,7 +2652,7 @@ v3000.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="29" Element="6" p="1609.938354 23.999996" />
+            <n id="29" Element="6" p="1609.938354 24.000002" />
             <b B="26" E="27" Order="2" />
             <b B="27" E="28" />
             <b B="28" E="29" />
@@ -2307,7 +2665,7 @@ v3000.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <n id="34" Element="6" p="1899.046143 23.999996" />
+            <n id="34" Element="6" p="1899.046143 24.000002" />
             <b B="31" E="32" Order="2" />
             <b B="32" E="33" />
             <b B="33" E="34" />
