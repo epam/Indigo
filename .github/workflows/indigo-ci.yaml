@@ -206,7 +206,7 @@ jobs:
           ls ${env:INDIGO_PATH} || echo failed
           echo ${INDIGO_PATH} || echo failed
           ls ${INDIGO_PATH} || echo failed
-          java -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
