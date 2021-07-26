@@ -160,10 +160,10 @@ Test Item #3
 Test Item #4 
   Result: Success
 Test Item #5 
-  Result: Error: atom #20 (H) contains delta 1.009470463580319 > 0.01
-   atom #21 (O) contains delta 1.0094576296210487 > 0.01
-   atom #58 (H) contains delta 1.8037134288976024 > 0.01
-   atom #59 (C) contains delta 1.8036773694670711 > 0.01
+  Result: Error: atom #20 (H) contains delta 1.0094688689796534 > 0.01
+   atom #21 (O) contains delta 1.009458611044217 > 0.01
+   atom #58 (H) contains delta 1.8037104458758229 > 0.01
+   atom #59 (C) contains delta 1.803681130786517 > 0.01
 Test Item #6 
   Result: Success
 Test Item #7 
@@ -223,7 +223,7 @@ Test Item #13
    atom #53 (C) contains delta 0.016366916811158594 > 0.01
    atom #54 (C) contains delta 0.01605081422235236 > 0.01
    atom #55 (O) contains delta 0.017196828936537283 > 0.01
-   atom #56 (C) contains delta 0.018278251948477 > 0.01
+   atom #56 (C) contains delta 0.01827842797382729 > 0.01
    atom #57 (C) contains delta 0.016078521604333748 > 0.01
    atom #58 (O) contains delta 0.020963853019074538 > 0.01
    atom #59 (C) contains delta 0.020975883788335342 > 0.01
@@ -237,7 +237,7 @@ Test Item #13
    atom #67 (O) contains delta 0.020936197871649326 > 0.01
    atom #68 (C) contains delta 0.02095111521464499 > 0.01
    atom #69 (C) contains delta 0.02093553536031393 > 0.01
-   atom #70 (O) contains delta 0.020988918524514805 > 0.01
+   atom #70 (O) contains delta 0.02098808633598405 > 0.01
    atom #71 (C) contains delta 0.020984629374627604 > 0.01
    atom #72 (O) contains delta 0.02097519896408875 > 0.01
    atom #73 (C) contains delta 0.021001966953296595 > 0.01
@@ -292,7 +292,7 @@ Test Item #20
    atom #16 (C) contains delta 0.056012678482454135 > 0.01
    atom #17 (C) contains delta 0.06796481443827354 > 0.01
    atom #18 (C) contains delta 0.08672516000923307 > 0.01
-   atom #19 (C) contains delta 0.09461716644917934 > 0.01
+   atom #19 (C) contains delta 0.09461574688933173 > 0.01
    atom #20 (C) contains delta 0.08650004231849173 > 0.01
    atom #21 (O) contains delta 0.10562592468994476 > 0.01
    atom #22 (C) contains delta 0.11580073476306608 > 0.01
@@ -326,7 +326,7 @@ Test Item #20
    atom #50 (O) contains delta 0.2523488261734207 > 0.01
    atom #51 (C) contains delta 0.2699896365051028 > 0.01
    atom #52 (C) contains delta 0.27715192009097395 > 0.01
-   atom #53 (C) contains delta 0.28782395924884097 > 0.01
+   atom #53 (C) contains delta 0.2878220634168269 > 0.01
    atom #54 (C) contains delta 0.30515147269262677 > 0.01
    atom #55 (O) contains delta 0.30285200030734094 > 0.01
    atom #56 (C) contains delta 0.31410360259536113 > 0.01
@@ -370,7 +370,7 @@ Test Item #20
    atom #94 (O) contains delta 0.44711262730538726 > 0.01
    atom #95 (C) contains delta 0.4484495468844423 > 0.01
    atom #96 (C) contains delta 0.42636496710520116 > 0.01
-   atom #97 (C) contains delta 0.4353368183405483 > 0.01
+   atom #97 (C) contains delta 0.4353370773344242 > 0.01
    atom #98 (C) contains delta 0.4417124264835848 > 0.01
    atom #99 (O) contains delta 0.4217846368644213 > 0.01
    atom #100 (C) contains delta 0.41311563841426363 > 0.01
@@ -393,7 +393,7 @@ Test Item #20
    atom #117 (O) contains delta 2.0381310189404376 > 0.01
    atom #118 (C) contains delta 2.067442556759505 > 0.01
    atom #119 (C) contains delta 1.9553407643854095 > 0.01
-   atom #120 (C) contains delta 2.069367747685167 > 0.01
+   atom #120 (C) contains delta 2.069362985498636 > 0.01
    atom #121 (C) contains delta 2.0619948543078572 > 0.01
    atom #122 (O) contains delta 1.7278650059768192 > 0.01
    atom #123 (C) contains delta 1.7650471547497517 > 0.01
@@ -447,7 +447,7 @@ Test Item #20
    atom #171 (C) contains delta 1.198168376229073 > 0.01
    atom #172 (C) contains delta 1.0268498135223272 > 0.01
    atom #173 (C) contains delta 1.2464701505421996 > 0.01
-   atom #174 (C) contains delta 1.9397980055741444 > 0.01
+   atom #174 (C) contains delta 1.9397993496861388 > 0.01
    atom #175 (C) contains delta 1.8176624474905712 > 0.01
    atom #176 (O) contains delta 1.655065188177477 > 0.01
    atom #177 (C) contains delta 1.4916576661064533 > 0.01
@@ -458,7 +458,7 @@ Test Item #20
    atom #182 (C) contains delta 1.8259280893980199 > 0.01
    atom #183 (C) contains delta 1.7826369853038848 > 0.01
    atom #184 (C) contains delta 1.6046734405942498 > 0.01
-   atom #185 (C) contains delta 0.439382409650745 > 0.01
+   atom #185 (C) contains delta 0.4393826360761181 > 0.01
    atom #186 (C) contains delta 0.43051547758010467 > 0.01
    atom #187 (O) contains delta 0.4012439333809774 > 0.01
    atom #188 (C) contains delta 0.373921539599901 > 0.01
@@ -494,7 +494,7 @@ Test Item #20
    atom #218 (C) contains delta 0.30172821907881164 > 0.01
    atom #219 (C) contains delta 0.385263524706721 > 0.01
    atom #220 (C) contains delta 0.423817529219204 > 0.01
-   atom #221 (C) contains delta 0.3121134574077981 > 0.01
+   atom #221 (C) contains delta 0.31211157788022553 > 0.01
    atom #222 (C) contains delta 0.3022973218772189 > 0.01
    atom #223 (O) contains delta 0.3032251207639704 > 0.01
    atom #224 (C) contains delta 0.2900048192219049 > 0.01
@@ -521,7 +521,7 @@ Test Item #22
    atom #2 (C) contains delta 0.0841304109511201 > 0.01
    atom #3 (N) contains delta 0.08403610744273599 > 0.01
    atom #4 (C) contains delta 0.08405359401227418 > 0.01
-   atom #5 (O) contains delta 0.08410022831394975 > 0.01
+   atom #5 (O) contains delta 0.0840996265383124 > 0.01
    atom #6 (C) contains delta 0.08404230340691754 > 0.01
    atom #7 (N) contains delta 0.0840346276466191 > 0.01
    atom #8 (C) contains delta 0.08410293638485708 > 0.01
@@ -580,9 +580,9 @@ Test Item #22
    atom #65 (O) contains delta 0.08835002742024317 > 0.01
    atom #66 (N) contains delta 0.09221247146272696 > 0.01
    atom #67 (C) contains delta 0.08411302113900399 > 0.01
-   atom #68 (N) contains delta 0.0840555326889381 > 0.01
+   atom #68 (N) contains delta 0.08405493109104188 > 0.01
    atom #69 (C) contains delta 0.0840815607417065 > 0.01
-   atom #70 (C) contains delta 0.08403520465440052 > 0.01
+   atom #70 (C) contains delta 0.08403252134086027 > 0.01
    atom #71 (S) contains delta 0.08405022410525628 > 0.01
    atom #72 (C) contains delta 0.08406977702400924 > 0.01
    atom #73 (O) contains delta 0.08402926124335436 > 0.01
@@ -639,12 +639,12 @@ Test Item #24
    atom #41 (O) contains delta 0.18596546694464808 > 0.01
    atom #42 (C) contains delta 0.18600179172246487 > 0.01
    atom #43 (C) contains delta 0.1860094664125173 > 0.01
-   atom #44 (O) contains delta 0.18603161447292219 > 0.01
-   atom #45 (C) contains delta 0.1859593445021905 > 0.01
-   atom #46 (C) contains delta 0.18602260430883963 > 0.01
+   atom #44 (O) contains delta 0.1860321746838143 > 0.01
+   atom #45 (C) contains delta 0.18595815824824816 > 0.01
+   atom #46 (C) contains delta 0.1860202313681231 > 0.01
    atom #47 (O) contains delta 0.18606423572551858 > 0.01
-   atom #48 (C) contains delta 0.1860395228946972 > 0.01
-   atom #49 (C) contains delta 0.1859768945303014 > 0.01
+   atom #48 (C) contains delta 0.18603677778064545 > 0.01
+   atom #49 (C) contains delta 0.18597452225830036 > 0.01
    atom #50 (O) contains delta 0.1859867351689027 > 0.01
 Test Item #25 
   Result: Error: atom #34 (C) contains delta 0.19899833526225866 > 0.01
@@ -826,115 +826,115 @@ Test Item #28
    atom #83 (C) contains delta 0.14711316581188533 > 0.01
    atom #84 (O) contains delta 0.14704097862416737 > 0.01
 Test Item #29 
-  Result: Error: atom #0 (C) contains delta 2.765598373792218 > 0.01
-   atom #1 (C) contains delta 0.1187566772522539 > 0.01
-   atom #2 (C) contains delta 2.7819082081970685 > 0.01
-   atom #3 (N) contains delta 0.12041561061241257 > 0.01
-   atom #4 (C) contains delta 0.11273948998396272 > 0.01
-   atom #5 (C) contains delta 0.11410285602549243 > 0.01
-   atom #6 (C) contains delta 0.12420965632233363 > 0.01
-   atom #7 (C) contains delta 0.12691917935341576 > 0.01
-   atom #8 (C) contains delta 0.11986841058569397 > 0.01
-   atom #9 (C) contains delta 0.12392035042194349 > 0.01
-   atom #10 (C) contains delta 0.11826914161121789 > 0.01
-   atom #11 (N) contains delta 0.09889749740395638 > 0.01
-   atom #12 (C) contains delta 0.08506362667238195 > 0.01
-   atom #13 (O) contains delta 0.07969281433641816 > 0.01
-   atom #14 (C) contains delta 0.08522393535097773 > 0.01
-   atom #15 (C) contains delta 0.05676755908825028 > 0.01
-   atom #16 (C) contains delta 0.03190041744794559 > 0.01
-   atom #17 (C) contains delta 0.05151766187508109 > 0.01
-   atom #18 (N) contains delta 0.05157256473115449 > 0.01
-   atom #19 (C) contains delta 0.0318105386597876 > 0.01
-   atom #20 (C) contains delta 0.055127496029883274 > 0.01
-   atom #21 (C) contains delta 0.06374609480903615 > 0.01
-   atom #22 (C) contains delta 0.05511469846220066 > 0.01
+  Result: Error: atom #0 (C) contains delta 0.10907507884620578 > 0.01
+   atom #1 (C) contains delta 0.11875128628924574 > 0.01
+   atom #2 (C) contains delta 0.1274642845164322 > 0.01
+   atom #3 (N) contains delta 0.1204127283746314 > 0.01
+   atom #4 (C) contains delta 0.11273753452639802 > 0.01
+   atom #5 (C) contains delta 0.11410113407066244 > 0.01
+   atom #6 (C) contains delta 0.12420791560066709 > 0.01
+   atom #7 (C) contains delta 0.12691695428573857 > 0.01
+   atom #8 (C) contains delta 0.11986810772210162 > 0.01
+   atom #9 (C) contains delta 0.12391874507567781 > 0.01
+   atom #10 (C) contains delta 0.1182685412442467 > 0.01
+   atom #11 (N) contains delta 0.09889819928507868 > 0.01
+   atom #12 (C) contains delta 0.0850642690095466 > 0.01
+   atom #13 (O) contains delta 0.07969201762540934 > 0.01
+   atom #14 (C) contains delta 0.08522517614562639 > 0.01
+   atom #15 (C) contains delta 0.05676831722486974 > 0.01
+   atom #16 (C) contains delta 0.031899736267133945 > 0.01
+   atom #17 (C) contains delta 0.05151924413562727 > 0.01
+   atom #18 (N) contains delta 0.051574066279138006 > 0.01
+   atom #19 (C) contains delta 0.03181054203977818 > 0.01
+   atom #20 (C) contains delta 0.05512674805029543 > 0.01
+   atom #21 (C) contains delta 0.06374820089419524 > 0.01
+   atom #22 (C) contains delta 0.05511714347489675 > 0.01
    atom #23 (C) contains delta 0.03185957586808053 > 0.01
-   atom #25 (N) contains delta 0.08398674443801152 > 0.01
-   atom #26 (C) contains delta 0.07825162479338674 > 0.01
-   atom #27 (O) contains delta 0.07183243267887957 > 0.01
-   atom #28 (C) contains delta 0.08595846456526011 > 0.01
-   atom #29 (C) contains delta 0.09538937594814197 > 0.01
-   atom #30 (C) contains delta 0.12866719175158275 > 0.01
-   atom #31 (C) contains delta 0.1472150190188934 > 0.01
-   atom #32 (O) contains delta 0.14415761435591481 > 0.01
-   atom #33 (N) contains delta 0.16877483180363204 > 0.01
-   atom #34 (C) contains delta 0.1867953785061596 > 0.01
-   atom #35 (C) contains delta 0.19988839954577312 > 0.01
-   atom #36 (C) contains delta 0.2078679097376869 > 0.01
-   atom #37 (N) contains delta 0.20622450806967565 > 0.01
-   atom #38 (C) contains delta 0.19794884334660878 > 0.01
-   atom #39 (O) contains delta 0.19325986606766343 > 0.01
-   atom #40 (C) contains delta 0.1819070665714011 > 0.01
-   atom #41 (N) contains delta 0.16095050197230526 > 0.01
-   atom #42 (C) contains delta 0.13657788016284314 > 0.01
-   atom #43 (O) contains delta 0.1333023615730826 > 0.01
-   atom #44 (C) contains delta 0.17637121738856154 > 0.01
-   atom #45 (C) contains delta 0.17447400421923623 > 0.01
-   atom #46 (O) contains delta 0.17222160059595873 > 0.01
-   atom #47 (C) contains delta 0.15075133478993194 > 0.01
-   atom #48 (O) contains delta 0.15053051217040103 > 0.01
-   atom #49 (N) contains delta 0.1507465239571454 > 0.01
-   atom #50 (C) contains delta 0.1507042878006851 > 0.01
-   atom #51 (C) contains delta 0.15074942837319993 > 0.01
-   atom #52 (C) contains delta 0.1507684877488449 > 0.01
-   atom #53 (O) contains delta 0.15069297008023178 > 0.01
-   atom #54 (C) contains delta 0.15075943036419398 > 0.01
-   atom #55 (O) contains delta 0.1507164987082947 > 0.01
-   atom #56 (N) contains delta 0.15075136014092747 > 0.01
-   atom #57 (C) contains delta 0.15076616089532294 > 0.01
-   atom #58 (C) contains delta 0.15070333513964096 > 0.01
-   atom #59 (O) contains delta 0.1507579771690764 > 0.01
-   atom #60 (C) contains delta 0.15076525917778547 > 0.01
-   atom #61 (O) contains delta 0.15072670977758484 > 0.01
-   atom #62 (N) contains delta 0.15074572317397983 > 0.01
-   atom #63 (C) contains delta 0.15072456285719985 > 0.01
-   atom #64 (C) contains delta 0.15072068224880564 > 0.01
-   atom #65 (S) contains delta 0.15072115180155332 > 0.01
-   atom #66 (S) contains delta 0.1507490246799144 > 0.01
-   atom #67 (C) contains delta 0.15073253251599264 > 0.01
-   atom #68 (C) contains delta 0.15072927519187604 > 0.01
-   atom #69 (N) contains delta 0.15075125342565115 > 0.01
-   atom #70 (C) contains delta 0.1507080781197492 > 0.01
-   atom #71 (O) contains delta 0.15071128787778218 > 0.01
-   atom #72 (C) contains delta 0.15077516626781715 > 0.01
-   atom #73 (N) contains delta 0.1507733610959985 > 0.01
-   atom #74 (C) contains delta 0.15073482808888986 > 0.01
-   atom #75 (C) contains delta 0.15074805995386964 > 0.01
-   atom #76 (C) contains delta 0.15070697970856056 > 0.01
-   atom #77 (C) contains delta 0.1507105771865011 > 0.01
-   atom #78 (C) contains delta 0.15075334916119804 > 0.01
-   atom #79 (O) contains delta 0.15075489791138902 > 0.01
-   atom #80 (C) contains delta 0.1506827734777443 > 0.01
-   atom #81 (C) contains delta 0.1507811492400624 > 0.01
-   atom #82 (C) contains delta 0.15077258063845517 > 0.01
-   atom #83 (O) contains delta 0.15070508976131156 > 0.01
-   atom #84 (N) contains delta 0.15073665650303045 > 0.01
-   atom #85 (C) contains delta 0.15077652193665275 > 0.01
-   atom #86 (C) contains delta 0.1507600009380623 > 0.01
-   atom #87 (C) contains delta 0.15076035332159973 > 0.01
-   atom #88 (C) contains delta 0.15074466784896787 > 0.01
+   atom #25 (N) contains delta 0.0839885939078872 > 0.01
+   atom #26 (C) contains delta 0.07825254721072224 > 0.01
+   atom #27 (O) contains delta 0.0718326918444007 > 0.01
+   atom #28 (C) contains delta 0.08596005326191887 > 0.01
+   atom #29 (C) contains delta 0.09539113759597492 > 0.01
+   atom #30 (C) contains delta 0.12866833495326405 > 0.01
+   atom #31 (C) contains delta 0.14721459461212327 > 0.01
+   atom #32 (O) contains delta 0.14416177973573782 > 0.01
+   atom #33 (N) contains delta 0.16877450547650957 > 0.01
+   atom #34 (C) contains delta 0.18679666487349805 > 0.01
+   atom #35 (C) contains delta 0.19988934827798766 > 0.01
+   atom #36 (C) contains delta 0.20786839747917168 > 0.01
+   atom #37 (N) contains delta 0.20622452725852622 > 0.01
+   atom #38 (C) contains delta 0.19795030440681696 > 0.01
+   atom #39 (O) contains delta 0.19326236618008633 > 0.01
+   atom #40 (C) contains delta 0.18190763369221252 > 0.01
+   atom #41 (N) contains delta 0.16095369542395588 > 0.01
+   atom #42 (C) contains delta 0.13657916491838423 > 0.01
+   atom #43 (O) contains delta 0.13330410524892833 > 0.01
+   atom #44 (C) contains delta 0.1763729910541752 > 0.01
+   atom #45 (C) contains delta 2.7894178203764 > 0.01
+   atom #46 (O) contains delta 2.4538294763471167 > 0.01
+   atom #47 (C) contains delta 0.1507526065576062 > 0.01
+   atom #48 (O) contains delta 0.15053363930756727 > 0.01
+   atom #49 (N) contains delta 0.1507479031959095 > 0.01
+   atom #50 (C) contains delta 0.1507075611619027 > 0.01
+   atom #51 (C) contains delta 0.15075080617364572 > 0.01
+   atom #52 (C) contains delta 0.15076986551989396 > 0.01
+   atom #53 (O) contains delta 0.15069624484002755 > 0.01
+   atom #54 (C) contains delta 0.15076091817297985 > 0.01
+   atom #55 (O) contains delta 0.1507189320930648 > 0.01
+   atom #56 (N) contains delta 0.15075357958837615 > 0.01
+   atom #57 (C) contains delta 0.1507676474131079 > 0.01
+   atom #58 (C) contains delta 0.15070555458223642 > 0.01
+   atom #59 (O) contains delta 0.15075545721181358 > 0.01
+   atom #60 (C) contains delta 0.15076663831754616 > 0.01
+   atom #61 (O) contains delta 0.15072882064755022 > 0.01
+   atom #62 (N) contains delta 0.15074720961577187 > 0.01
+   atom #63 (C) contains delta 0.1507258344887196 > 0.01
+   atom #64 (C) contains delta 0.15072512017408435 > 0.01
+   atom #65 (S) contains delta 0.15072074200350793 > 0.01
+   atom #66 (S) contains delta 0.15075005927117668 > 0.01
+   atom #67 (C) contains delta 0.15073296294478147 > 0.01
+   atom #68 (C) contains delta 0.15072899494321856 > 0.01
+   atom #69 (N) contains delta 0.15075368640402456 > 0.01
+   atom #70 (C) contains delta 0.15070954244753737 > 0.01
+   atom #71 (O) contains delta 0.1507120626895501 > 0.01
+   atom #72 (C) contains delta 0.1507768902893376 > 0.01
+   atom #73 (N) contains delta 0.15077495667016613 > 0.01
+   atom #74 (C) contains delta 0.15073594701082335 > 0.01
+   atom #75 (C) contains delta 0.15074885789279927 > 0.01
+   atom #76 (C) contains delta 0.15070825029656798 > 0.01
+   atom #77 (C) contains delta 0.1507096937271885 > 0.01
+   atom #78 (C) contains delta 0.15075341477984408 > 0.01
+   atom #79 (O) contains delta 0.15075580290115748 > 0.01
+   atom #80 (C) contains delta 0.1506830537622886 > 0.01
+   atom #81 (C) contains delta 0.1507801588546631 > 0.01
+   atom #82 (C) contains delta 0.15077443205458294 > 0.01
+   atom #83 (O) contains delta 0.15070530563061124 > 0.01
+   atom #84 (N) contains delta 0.15073708696831248 > 0.01
+   atom #85 (C) contains delta 0.15077800891929752 > 0.01
+   atom #86 (C) contains delta 0.15076021624611832 > 0.01
+   atom #87 (C) contains delta 0.15076289641656732 > 0.01
+   atom #88 (C) contains delta 0.15074626205260352 > 0.01
    atom #89 (C) contains delta 0.15074640627210625 > 0.01
-   atom #90 (N) contains delta 0.1507297681996852 > 0.01
-   atom #91 (C) contains delta 0.1506967118345258 > 0.01
-   atom #92 (O) contains delta 0.15072121699522276 > 0.01
-   atom #93 (N) contains delta 0.1507542737485363 > 0.01
-   atom #94 (C) contains delta 0.15078256163875925 > 0.01
-   atom #95 (C) contains delta 0.15073960676432174 > 0.01
-   atom #96 (C) contains delta 0.1507459925946784 > 0.01
-   atom #97 (C) contains delta 0.15069527263404442 > 0.01
-   atom #98 (C) contains delta 0.15070155191996973 > 0.01
-   atom #99 (C) contains delta 0.15075708545105404 > 0.01
-   atom #100 (C) contains delta 0.1507084765502399 > 0.01
-   atom #101 (C) contains delta 0.15070203721440778 > 0.01
-   atom #102 (C) contains delta 0.15075669814863918 > 0.01
-   atom #103 (O) contains delta 0.15074673373282318 > 0.01
-   atom #104 (N) contains delta 0.1507628309468781 > 0.01
-   atom #105 (C) contains delta 0.150760263431812 > 0.01
-   atom #106 (O) contains delta 0.15076553668861084 > 0.01
-   atom #107 (O) contains delta 0.15068883154194646 > 0.01
-   atom #108 (C) contains delta 0.1093575511697453 > 0.01
-   atom #109 (C) contains delta 0.10625554768590104 > 0.01
+   atom #90 (N) contains delta 0.15073093153622563 > 0.01
+   atom #91 (C) contains delta 0.1506971435485362 > 0.01
+   atom #92 (O) contains delta 0.15072154053812403 > 0.01
+   atom #93 (N) contains delta 0.15075470503225796 > 0.01
+   atom #94 (C) contains delta 0.1507839405780412 > 0.01
+   atom #95 (C) contains delta 0.15074098534235708 > 0.01
+   atom #96 (C) contains delta 0.1507465315477549 > 0.01
+   atom #97 (C) contains delta 0.15069565065680443 > 0.01
+   atom #98 (C) contains delta 0.1507020921182876 > 0.01
+   atom #99 (C) contains delta 0.15075857236901383 > 0.01
+   atom #100 (C) contains delta 0.150709015215044 > 0.01
+   atom #101 (C) contains delta 0.15070349633611524 > 0.01
+   atom #102 (C) contains delta 0.1507576849642113 > 0.01
+   atom #103 (O) contains delta 0.1507475576934033 > 0.01
+   atom #104 (N) contains delta 0.15076349899704825 > 0.01
+   atom #105 (C) contains delta 0.15075974753670662 > 0.01
+   atom #106 (O) contains delta 0.15076844463608327 > 0.01
+   atom #107 (O) contains delta 0.15069010298611477 > 0.01
+   atom #108 (C) contains delta 0.10935825530146918 > 0.01
+   atom #109 (C) contains delta 0.10625568999262885 > 0.01
 Test Item #30 
   Result: Success
 Test Item #31 
