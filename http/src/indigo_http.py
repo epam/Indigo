@@ -596,7 +596,6 @@ async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/canonicalSmarts", response_model=IndigoResponse)
 async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
-    molecule.cdxml()
     return make_response(SupportedTypes.SMARTS, molecule.canonicalSmarts())
 
 
@@ -604,3 +603,9 @@ async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
 async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     return make_response(SupportedTypes.CDXML, molecule.cdxml())
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/cml", response_model=IndigoResponse)
+async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
+    molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
+    return make_response(SupportedTypes.CML, molecule.cml())

@@ -36,6 +36,7 @@ class SupportedTypes(IndigoType):
     GROSSFORMULA = "gross_formula"
     COMMON_BITS = "common_bits"
     CDXML = "cdxml"
+    CML = "cml"
     INT = "int"
     FLOAT = "float"
     BOOL = "bool"
