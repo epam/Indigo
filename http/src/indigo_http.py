@@ -125,6 +125,17 @@ async def smarts(indigo_request: IndigoBaseRequest) -> IndigoResponse:
     return make_response(SupportedTypes.SMARTS, mol.smarts())
 
 
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/molfile", response_model=IndigoResponse)
+async def smarts(indigo_request: IndigoBaseRequest) -> IndigoResponse:
+    molecule_string = indigo_request.data.attributes.content
+    try:
+        mol = indigo().loadMolecule(molecule_string)
+    except IndigoException as e:
+        return error_response(str(e))
+
+    return make_response(SupportedTypes.MOLFILE, mol.molfile())
+
+
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/standardize", response_model=IndigoResponse)
 async def standardize(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
