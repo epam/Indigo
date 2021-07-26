@@ -585,3 +585,22 @@ async def align_atoms(indigo_request: IndigoMolAlignAtomsRequest) -> IndigoRespo
     xyz = indigo_request.data.attributes.xyz
     molecule.alignAtoms(atoms, xyz)
     return make_response(indigo_request.data.type, molecule)
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/canonicalSmiles", response_model=IndigoResponse)
+async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
+    molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
+    return make_response(SupportedTypes.SMILES, molecule.canonicalSmiles())
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/canonicalSmarts", response_model=IndigoResponse)
+async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
+    molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
+    molecule.cdxml()
+    return make_response(SupportedTypes.SMARTS, molecule.canonicalSmarts())
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/cdxml", response_model=IndigoResponse)
+async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
+    molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
+    return make_response(SupportedTypes.CDXML, molecule.cdxml())

@@ -35,6 +35,7 @@ class SupportedTypes(IndigoType):
     QUERY_REACTION = "query_reaction"
     GROSSFORMULA = "gross_formula"
     COMMON_BITS = "common_bits"
+    CDXML = "cdxml"
     INT = "int"
     FLOAT = "float"
     BOOL = "bool"
