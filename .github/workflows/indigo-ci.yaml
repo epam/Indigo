@@ -259,11 +259,6 @@ jobs:
         if: ${{ matrix.os == 'ubuntu' }}
         run: |
           sudo apt install -y libgdiplus
-      - name: Install dotnet
-        if: ${{ matrix.os == 'windows' }}
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '3.1.x'
       - name: Prepare Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
@@ -278,13 +273,13 @@ jobs:
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet ./IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: dotnet ./IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
