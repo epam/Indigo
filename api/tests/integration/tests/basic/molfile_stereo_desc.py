@@ -1,4 +1,5 @@
-import sys, os, threading, queue
+import sys, os, threading
+
 sys.path.append('../../common')
 
 from env_indigo import *
@@ -19,7 +20,12 @@ def stereo_desc_test( py_file, out_queue ):
     str_res = str_res + rxn.rxnfile()
     out_queue.put( str_res )
 
-th_queue = queue.Queue()
+if isIronPython():
+    from Queue import Queue
+else:
+    from queue import Queue
+
+th_queue = Queue()
 test_thread = threading.Thread( target = stereo_desc_test, args=( os.path.abspath(__file__), th_queue ) )
 test_thread.start()
 test_thread.join()
