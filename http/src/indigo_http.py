@@ -563,7 +563,6 @@ async def render_to_file(
     mol = indigo().loadMolecule(indigo_request.data.attributes.content)
     renderer = IndigoRenderer(indigo())
     renderer.renderToFile(mol, temp_path)
-    mol.alignAtoms()
     return FileResponse(path=temp_path, filename="mol.png", media_type="image/png")
 
 
