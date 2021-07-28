@@ -29,11 +29,6 @@ using namespace indigo;
 
 class BingoContext;
 
-namespace indigo
-{
-    class OsLock;
-}
-
 class BingoIndex
 {
 public:
@@ -50,7 +45,7 @@ public:
         _context = &context;
     };
 
-    virtual void prepare(Scanner& scanner, Output& output, OsLock* lock_for_exclusive_access) = 0;
+    virtual void prepare(Scanner& scanner, Output& output, std::mutex* lock_for_exclusive_access) = 0;
 
     bool skip_calculate_fp;
 

@@ -166,35 +166,29 @@ namespace indigo
         public:
             TextLock()
             {
-#ifdef _WIN32
-                osMutexCreate(&_mutex);
-#endif
             }
 
             ~TextLock()
             {
-#ifdef _WIN32
-                osMutexDelete(&_mutex);
-#endif
             }
 
             void lock()
             {
 #ifdef _WIN32
-                osMutexLock(&_mutex);
+                _mutex.lock();
 #endif
             }
 
             void unlock()
             {
 #ifdef _WIN32
-                osMutexUnlock(&_mutex);
+                _mutex.unlock();
 #endif
             }
 
         private:
 #ifdef _WIN32
-            os_mutex _mutex;
+            std::mutex _mutex;
 #endif
         };
 

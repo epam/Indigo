@@ -37,21 +37,6 @@ extern "C"
 {
 #endif
 
-    // Cross-platform mutex support
-    typedef struct tag_os_mutex
-    {
-#ifdef _WIN32
-        void* data;
-#else
-    pthread_mutex_t data;
-#endif
-    } os_mutex;
-
-    DLLEXPORT void osMutexCreate(os_mutex* mutex);
-    DLLEXPORT void osMutexDelete(os_mutex* mutex);
-    DLLEXPORT void osMutexLock(os_mutex* mutex);
-    DLLEXPORT void osMutexUnlock(os_mutex* mutex);
-
     //
     // Semaphore
     //

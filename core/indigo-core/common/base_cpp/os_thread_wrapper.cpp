@@ -455,7 +455,7 @@ void OsCommandDispatcher::_startStandalone()
 
 int osGetProcessorsCount(void)
 {
-    static ThreadSafeStaticObj<OsLock> _processors_lock;
+    static ThreadSafeStaticObj<std::mutex> _processors_lock;
     OsLocker locker(_processors_lock.ref());
 
     static int processors_count = 0;

@@ -101,7 +101,7 @@ protected:
     TL_DECL(PtrArray<BingoContext>, _instances);
 
     static BingoContext* _get(int id);
-    static OsLock _instances_lock;
+    static std::mutex _instances_lock;
 
     Array<char> _relative_atomic_mass;
 

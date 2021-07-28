@@ -32,7 +32,7 @@ class BingoContext;
 class RingoIndex : public BingoIndex
 {
 public:
-    void prepare(Scanner& rxnfile, Output& fi_output, OsLock* lock_for_exclusive_access) override;
+    void prepare(Scanner& rxnfile, Output& fi_output, std::mutex* lock_for_exclusive_access) override;
 
     const byte* getFingerprint();
     const Array<char>& getCrf();

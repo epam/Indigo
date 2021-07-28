@@ -84,7 +84,7 @@ void MangoRegisterDispatcher::_handleResult(OsCommandResult& result)
 // MangoRegisterCommand
 //
 
-MangoRegisterCommand::MangoRegisterCommand(OracleEnv& env, MangoOracleContext& context, OsLock& lock_for_exclusive_access, int* molecules_prepared_counter)
+MangoRegisterCommand::MangoRegisterCommand(OracleEnv& env, MangoOracleContext& context, std::mutex& lock_for_exclusive_access, int* molecules_prepared_counter)
     : _context(context), _env(env), _lock_for_exclusive_access(lock_for_exclusive_access)
 {
     _molecules_prepared_counter = molecules_prepared_counter;

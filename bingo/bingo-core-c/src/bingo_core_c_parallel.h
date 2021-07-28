@@ -48,7 +48,7 @@ namespace indigo
             Array<int> ids;
 
             BingoCore* core;
-            OsLock* lock_for_exclusive_access;
+            std::mutex* lock_for_exclusive_access;
         };
 
         class IndexingCommandResult : public OsCommandResult
@@ -101,7 +101,7 @@ namespace indigo
             void _handleResult(OsCommandResult& result) override;
 
             int _records_per_command;
-            OsLock _lock_for_exclusive_access;
+            std::mutex _lock_for_exclusive_access;
         };
 
     } // namespace bingo_core

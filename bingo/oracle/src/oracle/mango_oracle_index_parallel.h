@@ -31,13 +31,13 @@ protected:
     OracleEnv& _env;
     const char* _rowid;
     int _molecules_prepared, _molecules_saved;
-    OsLock _lock_for_exclusive_access;
+    std::mutex _lock_for_exclusive_access;
 };
 
 class MangoRegisterCommand : public BingoOracleCommand
 {
 public:
-    MangoRegisterCommand(OracleEnv& env, MangoOracleContext& context, OsLock& lock_for_exclusive_access, int* molecules_prepared_counter);
+    MangoRegisterCommand(OracleEnv& env, MangoOracleContext& context, std::mutex& lock_for_exclusive_access, int* molecules_prepared_counter);
 
     void execute(OsCommandResult& result) override;
 
@@ -48,7 +48,7 @@ public:
 private:
     MangoOracleContext& _context;
     OracleEnv& _env;
-    OsLock& _lock_for_exclusive_access;
+    std::mutex& _lock_for_exclusive_access;
     int* _molecules_prepared_counter;
 };
 
@@ -71,7 +71,7 @@ public:
 };
 
 bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index, Array<char>& data,
-                          OsLock* lock_for_exclusive_access, std::string& failure_message);
+                          std::mutex* lock_for_exclusive_access, std::string& failure_message);
 
 void mangoRegisterMolecule(OracleEnv& env, const char* rowid, MangoOracleContext& context, const MangoIndex& index, BingoFingerprints& fingerprints,
                            const Array<char>& prepared_data, bool append);

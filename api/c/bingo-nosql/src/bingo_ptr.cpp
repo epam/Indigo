@@ -12,7 +12,7 @@ using namespace indigo;
 using namespace bingo;
 
 PtrArray<BingoAllocator> BingoAllocator::_instances;
-OsLock BingoAllocator::_instances_lock;
+std::mutex BingoAllocator::_instances_lock;
 const BingoAddr BingoAddr::bingo_null = BingoAddr(-1, -1);
 
 int BingoAllocator::getAllocatorDataSize()
@@ -34,10 +34,10 @@ void BingoAllocator::_create(const char* filename, size_t min_size, size_t max_s
     if ((mmf_ptr == 0) || (min_size == 0) || (min_size < sizeof(BingoAllocator)))
         throw Exception("BingoAllocator: Incorrect instance initialization");
 
-    _instances_lock.Lock();
+    _instances_lock.lock();
     _instances.expand(index_id + 1);
     _instances.reset(index_id, new BingoAllocator());
-    _instances_lock.Unlock();
+    _instances_lock.unlock();
 
     BingoAllocator* inst = _instances[index_id];
 
@@ -72,10 +72,10 @@ void BingoAllocator::_load(const char* filename, size_t alloc_off, ObjArray<MMFi
     if ((mmf_ptr == 0) || (size == 0) || (size < sizeof(BingoAllocator)))
         throw Exception("BingoAllocator: Incorrect instance initialization");
 
-    _instances_lock.Lock();
+    _instances_lock.lock();
     _instances.expand(index_id + 1);
     _instances.reset(index_id, new BingoAllocator());
-    _instances_lock.Unlock();
+    _instances_lock.unlock();
 
     BingoAllocator* inst = _instances[index_id];
 

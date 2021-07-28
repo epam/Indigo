@@ -42,7 +42,7 @@
 #include "oracle/rowid_saver.h"
 
 bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index, Array<char>& data,
-                          OsLock* lock_for_exclusive_access, std::string& failure_message)
+                          std::mutex* lock_for_exclusive_access, std::string& failure_message)
 {
     profTimerStart(tall, "moleculeIndex.prepare");
 

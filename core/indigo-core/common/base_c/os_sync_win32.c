@@ -26,37 +26,6 @@
 #include "base_c/os_sync.h"
 
 //
-// Mutex
-//
-
-void osMutexCreate(os_mutex* mutex)
-{
-    mutex->data = malloc(sizeof(CRITICAL_SECTION));
-    InitializeCriticalSection((CRITICAL_SECTION*)mutex->data);
-}
-
-void osMutexDelete(os_mutex* mutex)
-{
-    DeleteCriticalSection((CRITICAL_SECTION*)mutex->data);
-    free(mutex->data);
-    mutex->data = NULL;
-}
-
-void osMutexLock(os_mutex* mutex)
-{
-    if (mutex->data == NULL)
-        return;
-    EnterCriticalSection((CRITICAL_SECTION*)mutex->data);
-}
-
-void osMutexUnlock(os_mutex* mutex)
-{
-    if (mutex->data == NULL)
-        return;
-    LeaveCriticalSection((CRITICAL_SECTION*)mutex->data);
-}
-
-//
 // Semaphore
 //
 

@@ -187,10 +187,10 @@ int RenderParamInterface::multilineTextUnit(RenderItemFactory& factory, int type
 void RenderParamInterface::render(RenderParams& params)
 {
     // Disable multithreaded SVG rendering due to the Cairo issue. See IND-482
-    OsLock* render_lock = 0;
+    std::mutex* render_lock = 0;
     if (params.rOpt.mode == MODE_SVG)
     {
-        static ThreadSafeStaticObj<OsLock> svg_lock;
+        static ThreadSafeStaticObj<std::mutex> svg_lock;
         render_lock = svg_lock.ptr();
     }
     OsLockerNullable locker(render_lock);

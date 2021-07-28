@@ -33,7 +33,7 @@
 
 const int MangoIndex::counted_elements[6] = {ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_H};
 
-void MangoIndex::prepare(Scanner& molfile, Output& output, OsLock* lock_for_exclusive_access)
+void MangoIndex::prepare(Scanner& molfile, Output& output, std::mutex* lock_for_exclusive_access)
 {
     QS_DEF(Molecule, mol);
 

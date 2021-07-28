@@ -95,7 +95,7 @@ void Indigo::init()
     ignore_bad_valence = false;
 
     // Update global index
-    static ThreadSafeStaticObj<OsLock> lock;
+    static ThreadSafeStaticObj<std::mutex> lock;
     {
         OsLocker locker(lock.ref());
         static int global_id;

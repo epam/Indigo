@@ -29,7 +29,7 @@
 
 TL_DEF(BingoContext, PtrArray<BingoContext>, _instances);
 
-OsLock BingoContext::_instances_lock;
+std::mutex BingoContext::_instances_lock;
 
 IMPL_ERROR(BingoContext, "bingo context");
 

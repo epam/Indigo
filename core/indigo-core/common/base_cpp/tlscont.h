@@ -46,7 +46,7 @@ namespace indigo
     {
     public:
         static _SIDManager& getInst(void);
-        static OsLock& getLock();
+        static std::mutex& getLock();
 
         _SIDManager(void);
         ~_SIDManager(void);
@@ -116,7 +116,7 @@ namespace indigo
         using _Map = std::unordered_map<qword, std::unique_ptr<T>>;
 
         _Map _map;
-        ThreadSafeStaticObj<OsLock> _lock;
+        ThreadSafeStaticObj<std::mutex> _lock;
     };
 
     // Helpful templates to deal with commas in template type names
@@ -187,7 +187,7 @@ namespace indigo
         }
 
     private:
-        OsLock _lock;
+        std::mutex _lock;
         bool is_valid;
 
         PtrArray<T> _objects;

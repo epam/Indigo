@@ -31,7 +31,7 @@
 using namespace indigo;
 
 // Inchi doesn't seem to support multithreading
-static OsLock inchi_lock;
+static std::mutex inchi_lock;
 
 namespace indigo
 {

@@ -19,26 +19,14 @@
 #ifndef __os_sync_wrapper_h__
 #define __os_sync_wrapper_h__
 
+#include <mutex>
+
 #include "base_c/defs.h"
 #include "base_c/os_sync.h"
 #include "base_cpp/exception.h"
 
 namespace indigo
 {
-
-    // os_mutex wrapper
-    class DLLEXPORT OsLock
-    {
-    public:
-        OsLock();
-        ~OsLock();
-
-        void Lock();
-        void Unlock();
-
-    private:
-        os_mutex _mutex;
-    };
 
     // Automatic lock/unlock
 
@@ -48,27 +36,27 @@ namespace indigo
         OsLockerT(T* lock) : _lock(lock)
         {
             if (_lock != NULL)
-                _lock->Lock();
+                _lock->lock();
             else if (!lock_can_be_null)
                 throw Exception("Passed lock object pointer is NULL");
         }
 
         OsLockerT(T& lock) : _lock(&lock)
         {
-            _lock->Lock();
+            _lock->lock();
         }
 
         ~OsLockerT()
         {
             if (_lock != NULL)
-                _lock->Unlock();
+                _lock->unlock();
         }
 
     private:
         T* _lock;
     };
-    typedef OsLockerT<OsLock, false> OsLocker;
-    typedef OsLockerT<OsLock, true> OsLockerNullable;
+    typedef OsLockerT<std::mutex, false> OsLocker;
+    typedef OsLockerT<std::mutex, true> OsLockerNullable;
 
     //
     // Semaphore wrapper
@@ -102,8 +90,8 @@ namespace indigo
         OsSemaphore _sendSem;
         OsSemaphore _finishRecvSem;
 
-        OsLock _sendLock;
-        OsLock _recvLock;
+        std::mutex _sendLock;
+        std::mutex _recvLock;
 
         volatile int _localMessage;
         void* volatile _localParam;
@@ -113,9 +101,9 @@ namespace indigo
     // Thread-safe static local variables initialization object
     //
 
-    DLLEXPORT OsLock& osStaticObjConstructionLock();
+    DLLEXPORT std::mutex& osStaticObjConstructionLock();
 
-    // Local static variables with constructors should have OsLock
+    // Local static variables with constructors should have std::mutex
     // guard to avoid thread conflicts.
     // This object should be declared as ONLY static object because
     // _was_created variable should be zero by default.

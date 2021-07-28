@@ -68,7 +68,7 @@ protected:
     RingoOracleContext& _context;
 
     TL_DECL(PtrArray<RingoFetchContext>, _instances);
-    static OsLock _instances_lock;
+    static std::mutex _instances_lock;
 };
 
 #endif

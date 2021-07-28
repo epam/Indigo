@@ -23,7 +23,7 @@
 #include "oracle/mango_shadow_fetch.h"
 
 TL_DEF(MangoFetchContext, PtrArray<MangoFetchContext>, _instances);
-OsLock MangoFetchContext::_instances_lock;
+std::mutex MangoFetchContext::_instances_lock;
 
 IMPL_ERROR(MangoFetchContext, "mango fetch context");
 

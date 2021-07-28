@@ -21,30 +21,6 @@
 using namespace indigo;
 
 //
-// osLock
-//
-
-OsLock::OsLock()
-{
-    osMutexCreate(&_mutex);
-}
-
-OsLock::~OsLock()
-{
-    osMutexDelete(&_mutex);
-}
-
-void OsLock::Lock()
-{
-    osMutexLock(&_mutex);
-}
-
-void OsLock::Unlock()
-{
-    osMutexUnlock(&_mutex);
-}
-
-//
 // Semaphore wrapper
 //
 OsSemaphore::OsSemaphore(int initial_count, int max_count)
@@ -106,9 +82,9 @@ OsMessageSystem::OsMessageSystem() : _sendSem(0, 1), _finishRecvSem(0, 1)
 
 namespace indigo
 {
-    DLLEXPORT OsLock& osStaticObjConstructionLock()
+    DLLEXPORT std::mutex& osStaticObjConstructionLock()
     {
-        static OsLock _static_obj_construction_lock;
+        static std::mutex _static_obj_construction_lock;
         return _static_obj_construction_lock;
     }
 } // namespace indigo

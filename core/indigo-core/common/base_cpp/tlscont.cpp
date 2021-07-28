@@ -28,9 +28,9 @@ _SIDManager& _SIDManager::getInst()
     return _instance;
 }
 
-OsLock& _SIDManager::getLock()
+std::mutex& _SIDManager::getLock()
 {
-    static OsLock _lock;
+    static std::mutex _lock;
     return _lock;
 }
 

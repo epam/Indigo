@@ -134,7 +134,7 @@ public:
 
     void getOptionType(const char* name, Array<char>& value);
 
-    OsLock lock;
+    std::mutex lock;
 
     static _SessionLocalContainer<IndigoOptionManager>& getIndigoOptionManager();
 

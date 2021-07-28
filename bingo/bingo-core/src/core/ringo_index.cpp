@@ -29,7 +29,7 @@
 #include "reaction/reaction_automapper.h"
 #include "reaction/reaction_fingerprint.h"
 
-void RingoIndex::prepare(Scanner& rxnfile, Output& output, OsLock* lock_for_exclusive_access)
+void RingoIndex::prepare(Scanner& rxnfile, Output& output, std::mutex* lock_for_exclusive_access)
 {
     QS_DEF(Reaction, reaction);
 

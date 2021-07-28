@@ -45,7 +45,7 @@ public:
 };
 
 static vector<unique_ptr<PatternLayoutSmart>> _patterns;
-static OsLock _patterns_lock;
+static std::mutex _patterns_lock;
 
 bool PatternLayoutFinder::tryToFindPattern(MoleculeLayoutGraphSmart& layout_graph)
 {

@@ -22,7 +22,7 @@
 #include "oracle/bingo_oracle_context.h"
 
 TL_DEF(RingoFetchContext, PtrArray<RingoFetchContext>, _instances);
-OsLock RingoFetchContext::_instances_lock;
+std::mutex RingoFetchContext::_instances_lock;
 
 IMPL_ERROR(RingoFetchContext, "ringo fetch context");
 

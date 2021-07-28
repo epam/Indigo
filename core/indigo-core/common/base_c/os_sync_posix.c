@@ -25,30 +25,6 @@
 #include <pthread.h>
 
 //
-// Mutex
-//
-
-void osMutexCreate(os_mutex* mutex)
-{
-    pthread_mutex_init((pthread_mutex_t*)mutex, NULL);
-}
-
-void osMutexDelete(os_mutex* mutex)
-{
-    pthread_mutex_destroy((pthread_mutex_t*)mutex);
-}
-
-void osMutexLock(os_mutex* mutex)
-{
-    pthread_mutex_lock((pthread_mutex_t*)mutex);
-}
-
-void osMutexUnlock(os_mutex* mutex)
-{
-    pthread_mutex_unlock((pthread_mutex_t*)mutex);
-}
-
-//
 // Semaphore
 //
 

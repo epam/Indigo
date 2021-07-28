@@ -67,7 +67,7 @@ IMPL_ERROR(ProfilingSystem, "Profiling system");
 
 namespace indigo
 {
-    DLLEXPORT OsLock _profiling_global_lock, _profiling_global_names_lock;
+    DLLEXPORT std::mutex _profiling_global_lock, _profiling_global_names_lock;
 }
 
 ObjArray<Array<char>>& ProfilingSystem::getNames()

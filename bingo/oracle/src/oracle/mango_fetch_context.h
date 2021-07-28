@@ -68,7 +68,7 @@ protected:
     MangoOracleContext& _context;
 
     TL_DECL(PtrArray<MangoFetchContext>, _instances);
-    static OsLock _instances_lock;
+    static std::mutex _instances_lock;
 };
 
 #endif
