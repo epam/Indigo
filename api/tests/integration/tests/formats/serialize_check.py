@@ -168,17 +168,15 @@ class Processor(object):
         try:
             s1 = next(hex_output_prev).strip()
             s2 = next(hex_output_prev).strip()
-            arr = array.array('b')
-            arr.frombytes(binascii.unhexlify(s1))
+            arr = binascii.unhexlify(s1)
             if isIronPython():
                 from System import Array, Byte
-                arr = Array[Byte]([Byte(symbol) for symbol in arr])
+                arr = Array[Byte]([Byte( ord( symbol) ) for symbol in arr])
             mol_rel_prev = indigo.unserialize(arr)
-            arr = array.array('b')
-            arr.frombytes(binascii.unhexlify(s2))
+            arr = binascii.unhexlify(s2)
             if isIronPython():
                 from System import Array, Byte
-                arr = Array[Byte]([Byte(symbol) for symbol in arr])
+                arr = Array[Byte]([Byte( ord( symbol )) for symbol in arr])
             m2_rel_prev = indigo.unserialize(arr)
 
             unser1_prev.append(mol_rel_prev)
