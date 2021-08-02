@@ -154,7 +154,7 @@ async def unfold_hydrogens(indigo_request: IndigoMolRequest) -> IndigoResponse:
 async def validate_chirality(indigo_request: IndigoBaseRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     result = molecule.validateChirality()  # TODO: empty response?
-    return make_response(SupportedTypes.BOOL, result == None)
+    return make_response(SupportedTypes.BOOL, result is None)
 
 
 @app.post(f"{BASE_URL_INDIGO_OBJECT}/check3DStereo", response_model=IndigoResponse)
@@ -619,3 +619,11 @@ async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
 async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     return make_response(SupportedTypes.CML, molecule.cml())
+
+
+@app.post(
+    f"{BASE_URL_INDIGO_OBJECT}/expandAbbreviations", response_model=IndigoResponse
+)
+async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
+    molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
+    return make_response(indigo_request.data.type, molecule.expandAbbreviations())
