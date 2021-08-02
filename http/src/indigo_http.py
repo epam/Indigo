@@ -8,9 +8,11 @@ from starlette.responses import FileResponse
 
 from .indigo_tools import create_temp_png_file, indigo, indigo_new
 from .model import (
+    FingerprintType,
     IndigoAmbiguousHRequest,
     IndigoBaseRequest,
     IndigoExtractCommondScaffoldRequest,
+    IndigoFingerprintRequest,
     IndigoMolAlignAtomsRequest,
     IndigoMolPairRequest,
     IndigoMolRequest,
@@ -627,3 +629,13 @@ async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
 async def align_atoms(indigo_request: IndigoMolRequest) -> IndigoResponse:
     molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
     return make_response(indigo_request.data.type, molecule.expandAbbreviations())
+
+
+@app.post(f"{BASE_URL_INDIGO_OBJECT}/fingerprint", response_model=IndigoResponse)
+async def align_atoms(indigo_request: IndigoFingerprintRequest) -> IndigoResponse:
+    molecule = indigo().loadMolecule(indigo_request.data.attributes.content)
+    fingerprint_type = indigo_request.data.attributes.fingerprint_type.value
+
+    return make_response(
+        SupportedTypes.FINGEPRINT, molecule.fingerprint(fingerprint_type).toString()
+    )

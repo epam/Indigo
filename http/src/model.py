@@ -35,6 +35,7 @@ class SupportedTypes(IndigoType):
     QUERY_REACTION = "query_reaction"
     GROSSFORMULA = "gross_formula"
     COMMON_BITS = "common_bits"
+    FINGEPRINT = "fingerprint"
     CDXML = "cdxml"
     CML = "cml"
     INT = "int"
@@ -64,6 +65,14 @@ def create_types(types: Iterable[SupportedTypes]):
         {t.name: t.value for t in types},
         type=DerivedSupportedType,
     )
+
+
+class FingerprintType(str, enum.Enum):
+    full = "full"
+    sim = "sim"
+    sub = "sub"
+    sub_res = "sub-res"
+    sub_tau = "sub-tau"
 
 
 class ExtractScaffoldMode(str, enum.Enum):
@@ -132,6 +141,10 @@ class AlignAtomsAttributes(AttributesModel):
     xyz: List[float]
 
 
+class FingerprintAttributes(AttributesModel):
+    fingerprint_type: FingerprintType
+
+
 class StructurePropsDataModel(DataBaseModel):
     attributes: StructurePropsAttributes
 
@@ -158,6 +171,10 @@ class RenderGridDataModel(DataBaseModel):
 
 class AlignAtomsDataModel(DataBaseModel):
     attributes: AlignAtomsAttributes
+
+
+class FingerprintDataModel(BaseModel):
+    attributes: FingerprintAttributes
 
 
 class IndigoBaseRequest(BaseModel):
@@ -247,6 +264,15 @@ class IndigoAlignAtomsRequest(IndigoBaseRequest):
     """
 
     data: AlignAtomsDataModel
+
+
+class IndigoFingerprintRequest(IndigoBaseRequest):
+    """
+    request model for:
+    - POST /fingerprint
+    """
+
+    data: FingerprintDataModel
 
 
 class Error(BaseModel):
