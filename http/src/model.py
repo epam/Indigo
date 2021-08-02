@@ -273,7 +273,7 @@ class IndigoResponse(IndigoBaseResponse):
 
 
 IndigoMolRequest = IndigoBaseRequest.with_types(
-    (SupportedTypes.MOLFILE, SupportedTypes.SMILES, SupportedTypes.SMARTS)
+    (SupportedTypes.MOLFILE, SupportedTypes.SMILES)
 )
 
 
@@ -282,11 +282,10 @@ IndigoReactionProductEnumerateRequest = (
         (
             SupportedTypes.MOLFILE_LIST,
             SupportedTypes.SMILES_LIST,
-            SupportedTypes.SMARTS_LIST,
         )
     )
 )
 
 IndigoMolAlignAtomsRequest = IndigoAlignAtomsRequest.with_types(
-    (SupportedTypes.MOLFILE, SupportedTypes.SMILES, SupportedTypes.SMARTS)
+    (SupportedTypes.MOLFILE, SupportedTypes.SMILES)
 )
