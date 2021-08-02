@@ -14,7 +14,6 @@ fp = mol.fingerprint("sim")
 
 for i, m in enumerate(indigo.iterateSmilesFile(joinPath("molecules", "b2000.smi"))):
     f = m.fingerprint("sim")
-
     print(i + 1)
     print(m.smiles())
-    print(int(math.floor(indigo.similarity(fp, f) * 1000000)))
+    print(int(round(indigo.similarity(fp, f) * 1000000)))

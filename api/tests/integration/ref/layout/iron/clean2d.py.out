@@ -1,0 +1,66 @@
+***** Test cleand2d.sdf *****
+  Item #0: Result: Success
+  Item #1: Result: Success
+  Item #2: Result: Success
+  Item #3: Result: Success
+  Item #4: Result: Error: atom #0 (C) contains delta 0.0935588367872 > 0.01
+   atom #1 (C) contains delta 0.0978255568571 > 0.01
+   atom #2 (C) contains delta 0.0993804029654 > 0.01
+   atom #3 (C) contains delta 0.0967655715557 > 0.01
+   atom #4 (C) contains delta 0.0925498074066 > 0.01
+   atom #5 (C) contains delta 0.0908834330343 > 0.01
+   atom #6 (C) contains delta 0.0844662669417 > 0.01
+   atom #7 (C) contains delta 0.0857810633993 > 0.01
+   atom #8 (C) contains delta 0.0787331543845 > 0.01
+   atom #9 (C) contains delta 0.0693384290973 > 0.01
+   atom #10 (C) contains delta 0.0677970235058 > 0.01
+   atom #11 (C) contains delta 0.0758229664393 > 0.01
+   atom #12 (C) contains delta 0.0896533991702 > 0.01
+   atom #13 (C) contains delta 0.0783080995222 > 0.01
+   atom #14 (C) contains delta 0.0661915857735 > 0.01
+   atom #15 (C) contains delta 0.0675932941611 > 0.01
+   atom #16 (C) contains delta 0.080419643705 > 0.01
+   atom #17 (C) contains delta 0.0904467550118 > 0.01
+   atom #18 (C) contains delta 0.0587804482254 > 0.01
+   atom #19 (C) contains delta 0.0519333261215 > 0.01
+   atom #20 (C) contains delta 0.0569391686277 > 0.01
+   atom #21 (C) contains delta 0.100652644806 > 0.01
+   atom #22 (C) contains delta 0.104776174795 > 0.01
+   atom #23 (C) contains delta 0.106245084431 > 0.01
+   atom #24 (C) contains delta 0.103600512193 > 0.01
+  Item #5: Result: Success
+  Item #6: Result: Error: atom #0 (C) contains delta 0.0161472697214 > 0.01
+   atom #1 (C) contains delta 0.0159522995476 > 0.01
+   atom #2 (C) contains delta 0.0155656799606 > 0.01
+   atom #3 (C) contains delta 0.0157199180111 > 0.01
+   atom #4 (C) contains delta 0.0153386742861 > 0.01
+   atom #5 (C) contains delta 0.0150481244365 > 0.01
+   atom #6 (C) contains delta 0.0146498133093 > 0.01
+   atom #7 (C) contains delta 0.0145735320583 > 0.01
+   atom #8 (Cl) contains delta 0.0145510705897 > 0.01
+   atom #9 (C) contains delta 0.0176452911506 > 0.01
+   atom #10 (C) contains delta 0.017780547436 > 0.01
+   atom #11 (C) contains delta 0.0174119925094 > 0.01
+   atom #12 (C) contains delta 0.0169179282013 > 0.01
+   atom #13 (C) contains delta 0.0172784496621 > 0.01
+   atom #14 (C) contains delta 0.0163005544926 > 0.01
+   atom #15 (C) contains delta 0.0155567839831 > 0.01
+   atom #16 (C) contains delta 0.0146244145144 > 0.01
+   atom #17 (Cl) contains delta 0.0140705748561 > 0.01
+   atom #18 (C) contains delta 0.0141325575819 > 0.01
+  Item #7: Result: Success
+  Item #8: Result: Error: atom #0 (C) contains delta 0.0792201530739 > 0.01
+   atom #1 (C) contains delta 0.0754923156904 > 0.01
+   atom #2 (C) contains delta 0.0718105330256 > 0.01
+   atom #3 (C) contains delta 0.0749613416401 > 0.01
+   atom #4 (C) contains delta 0.0666594796044 > 0.01
+   atom #5 (C) contains delta 0.0649735865777 > 0.01
+   atom #6 (C) contains delta 0.0692564448164 > 0.01
+   atom #7 (C) contains delta 0.0744279060103 > 0.01
+  Item #9: Result: Success
+  Item #10: Result: Success
+  Item #11: Result: Success
+***** Test cleand2d for SMILES 1 *****
+  Result: Success
+***** Test cleand2d for SMILES 1 *****
+  Result: Success
