@@ -144,7 +144,7 @@ indigo.setOption("render-grid-margins", "20, 10")
 indigo.setOption("render-grid-title-offset", "5")
 indigo.setOption("render-grid-title-property", "grid-comment")
 
-if not os.path.exists(joinPathPy('out', __file__)):
+if not os.access(joinPathPy('out', __file__), os.F_OK):
     os.makedirs(joinPathPy('out', __file__))
 
 renderer.renderGridToFile(collection, None, 4, joinPathPy('out/ionize1.png', __file__))

@@ -6,7 +6,7 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
-if not os.path.exists(joinPath("out")):
+if not os.access(joinPath("out"), os.F_OK):
     os.mkdir(joinPath("out"))
 
 print("**** Read SDF.GZ ****")

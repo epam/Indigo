@@ -9,8 +9,10 @@ renderer = IndigoRenderer(indigo)
 
 print("*** SMILES to CDXML ***")
 
-if not os.path.exists(joinPathPy("out", __file__)):
-    os.mkdir(joinPathPy("out", __file__))
+out_path = joinPathPy( "out", __file__ )
+
+if not os.access( out_path, os.F_OK ):
+    os.mkdir( out_path )
 
 indigo.setOption("render-output-format", "cdxml")
 

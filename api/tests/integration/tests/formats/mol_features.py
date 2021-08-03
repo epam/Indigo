@@ -20,7 +20,7 @@ def testReload (mol):
 
 indigo.setOption("molfile-saving-skip-date", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
-if not os.path.exists(joinPath("out")):
+if not os.access(joinPath("out"), os.F_OK):
     os.mkdir(joinPath("out"))
 saver = indigo.createFileSaver(joinPath("out/mol_features.sdf"), "sdf")
 mol = indigo.loadMoleculeFromFile(joinPath('molecules/sgroups_2.mol'))
