@@ -24,14 +24,13 @@ bingo = Bingo.createDatabaseFile(indigo, joinPath('tempdb'), 'molecule', '')
 
 print("*** Insert molecules ***")
 
-buffer = [0xFF, 0x00] * 4
+buffer = bytearray([0xFF, 0x00] * 4)
 
 if isIronPython():
     from System import Array, Byte
     buf_arr = Array[Byte](buffer)
 else:
-    buf_arr = array.array('b')
-    buf_arr.frombytes(bytearray(buffer))
+    buf_arr = bytes( buffer )
 
 ext_fp1 = indigo.loadFingerprintFromBuffer(buf_arr)
 
