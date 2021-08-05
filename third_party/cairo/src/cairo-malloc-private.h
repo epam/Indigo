@@ -60,7 +60,7 @@
  **/
 
 #define _cairo_malloc(size) \
-   ((size) > 0 ? malloc((unsigned) (size)) : NULL)
+   ((size) != 0 ? malloc(size) : NULL)
 
 /**
  * _cairo_malloc_ab:
@@ -80,8 +80,8 @@
  **/
 
 #define _cairo_malloc_ab(a, size) \
-  ((size) && (unsigned) (a) >= INT32_MAX / (unsigned) (size) ? NULL : \
-   _cairo_malloc((unsigned) (a) * (unsigned) (size)))
+  ((size) != 0 && (size_t) (a) >= SIZE_MAX / (size_t) (size) ? NULL : \
+   _cairo_malloc((size_t) (a) * (size_t) (size)))
 
 /**
  * _cairo_realloc_ab:
@@ -102,8 +102,8 @@
  **/
 
 #define _cairo_realloc_ab(ptr, a, size) \
-  ((size) && (unsigned) (a) >= INT32_MAX / (unsigned) (size) ? NULL : \
-   realloc(ptr, (unsigned) (a) * (unsigned) (size)))
+  ((size) != 0 && (size_t) (a) >= SIZE_MAX / (size_t) (size) ? NULL : \
+   realloc(ptr, (size_t) (a) * (size_t) (size)))
 
 /**
  * _cairo_malloc_abc:
@@ -123,9 +123,9 @@
  **/
 
 #define _cairo_malloc_abc(a, b, size) \
-  ((b) && (unsigned) (a) >= INT32_MAX / (unsigned) (b) ? NULL : \
-   (size) && (unsigned) ((a)*(b)) >= INT32_MAX / (unsigned) (size) ? NULL : \
-   _cairo_malloc((unsigned) (a) * (unsigned) (b) * (unsigned) (size)))
+  ((b) != 0 && (size_t) (a) >= SIZE_MAX / (size_t) (b) ? NULL : \
+   (size) != 0 && (size_t) ((a)*(b)) >= SIZE_MAX / (size_t) (size) ? NULL : \
+   _cairo_malloc((size_t) (a) * (size_t) (b) * (size_t) (size)))
 
 /**
  * _cairo_malloc_ab_plus_c:
@@ -142,8 +142,8 @@
  **/
 
 #define _cairo_malloc_ab_plus_c(a, size, c) \
-  ((size) && (unsigned) (a) >= INT32_MAX / (unsigned) (size) ? NULL : \
-   (unsigned) (c) >= INT32_MAX - (unsigned) (a) * (unsigned) (size) ? NULL : \
-   _cairo_malloc((unsigned) (a) * (unsigned) (size) + (unsigned) (c)))
+  ((size) != 0 && (size_t) (a) >= SIZE_MAX / (size_t) (size) ? NULL : \
+   (size_t) (c) >= SIZE_MAX - (size_t) (a) * (size_t) (size) ? NULL : \
+   _cairo_malloc((size_t) (a) * (size_t) (size) + (size_t) (c)))
 
 #endif /* CAIRO_MALLOC_PRIVATE_H */

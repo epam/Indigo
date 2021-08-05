@@ -38,8 +38,6 @@
  *      Adrian Johnson <ajohnson@redneon.com>
  */
 
-#define _GNU_SOURCE 1	/* strtod_l() */
-
 #include "cairoint.h"
 #include "cairo-error-private.h"
 
@@ -404,10 +402,9 @@ _cairo_operator_bounded_by_mask (cairo_operator_t op)
     case CAIRO_OPERATOR_DEST_IN:
     case CAIRO_OPERATOR_DEST_ATOP:
 	return FALSE;
+    default:
+	ASSERT_NOT_REACHED;
     }
-
-    ASSERT_NOT_REACHED;
-    return FALSE;
 }
 
 /**
@@ -459,18 +456,15 @@ _cairo_operator_bounded_by_source (cairo_operator_t op)
     case CAIRO_OPERATOR_DEST_IN:
     case CAIRO_OPERATOR_DEST_ATOP:
 	return FALSE;
+    default:
+	ASSERT_NOT_REACHED;
     }
-
-    ASSERT_NOT_REACHED;
-    return FALSE;
 }
 
 uint32_t
 _cairo_operator_bounded_by_either (cairo_operator_t op)
 {
     switch (op) {
-    default:
-	ASSERT_NOT_REACHED;
     case CAIRO_OPERATOR_OVER:
     case CAIRO_OPERATOR_ATOP:
     case CAIRO_OPERATOR_DEST:
@@ -503,6 +497,8 @@ _cairo_operator_bounded_by_either (cairo_operator_t op)
     case CAIRO_OPERATOR_DEST_IN:
     case CAIRO_OPERATOR_DEST_ATOP:
 	return 0;
+    default:
+	ASSERT_NOT_REACHED;
     }
 
 }

@@ -944,7 +944,7 @@ POPEN:
 
     *close_cb = pclose;
     sprintf (command, "%s %s %d", any2ppm, filename, page);
-    return popen (command, "rb");
+    return popen (command, "r");
 }
 
 static cairo_bool_t
@@ -1040,6 +1040,10 @@ cairo_boilerplate_convert_to_image (const char *filename,
     int (*close_cb) (FILE *);
     int ret;
 
+    if (getenv ("CAIRO_BOILERPLATE_OPEN_NO_DAEMON") != NULL) {
+	flags |= CAIRO_BOILERPLATE_OPEN_NO_DAEMON;
+    }
+
   RETRY:
     file = cairo_boilerplate_open_any2ppm (filename, page, flags, &close_cb);
     if (file == NULL) {
@@ -1056,7 +1060,11 @@ cairo_boilerplate_convert_to_image (const char *filename,
     /* check for fatal errors from the interpreter */
     if (ret) { /* any2pmm should never die... */
 	cairo_surface_destroy (image);
-	return cairo_boilerplate_surface_create_in_error (CAIRO_STATUS_INVALID_STATUS);
+	if (getenv ("CAIRO_BOILERPLATE_DO_NOT_CRASH_ON_ANY2PPM_ERROR") != NULL) {
+	    return cairo_boilerplate_surface_create_in_error (CAIRO_STATUS_WRITE_ERROR);
+	} else {
+	    return cairo_boilerplate_surface_create_in_error (CAIRO_STATUS_INVALID_STATUS);
+	}
     }
 
     if (ret == 0 && cairo_surface_status (image) == CAIRO_STATUS_READ_ERROR) {

@@ -404,7 +404,7 @@ static void add_tri (cairo_traps_t *traps,
 	y2 = tmp;
     }
 
-    if (cairo_lines_compare_at_y (left, right, y1) > 0) {
+    if (_cairo_lines_compare_at_y (left, right, y1) > 0) {
 	const cairo_line_t *tmp = left;
 	left = right;
 	right = tmp;
