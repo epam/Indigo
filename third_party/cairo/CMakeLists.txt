@@ -7,7 +7,13 @@ file(GLOB ${PROJECT_NAME}_SOURCES
         boilerplate/*.c
 )
 
-add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
+if (WIN32)
+    file(GLOB ${PROJECT_NAME}_SOURCES_WIN32
+            src/win32/*.c
+    )
+endif()
+
+add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES} ${${PROJECT_NAME}_SOURCES_WIN32})
 target_include_directories(${PROJECT_NAME}
         PUBLIC src
         PRIVATE boilerplate
@@ -39,4 +45,4 @@ else()
     endif()
 endif()
 
-message(STATUS "Using local version of ${PROJECT_NAME}-wasm")
+message(STATUS "Using local version of ${PROJECT_NAME}")
