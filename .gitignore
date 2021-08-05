@@ -26,9 +26,9 @@ _projects/
 /api/dotnet/obj
 /api/tests/dotnet/bin
 /api/tests/dotnet/obj
-api/dotnet/*.dll
-api/dotnet/*.so
-api/dotnet/*.dylib
+/api/dotnet/**/*.dll
+/api/dotnet/**/*.so
+/api/dotnet/**/*.dylib
 /api/plugins/bingo/dotnet/bin/
 /api/plugins/bingo/dotnet/lib/
 /api/plugins/bingo/dotnet/obj/

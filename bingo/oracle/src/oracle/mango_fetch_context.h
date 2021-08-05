@@ -19,7 +19,7 @@
 #ifndef __mango_fetch_context__
 #define __mango_fetch_context__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "core/mango_matchers.h"
 #include "oracle/mango_fast_index.h"
 #include "oracle/mango_oracle.h"
@@ -34,8 +34,8 @@ class MangoFetchContext
 public:
     MangoFetchContext(int id, MangoOracleContext& context, const Array<char>& query_id);
 
-    AutoPtr<MangoFastIndex> fast_index;
-    AutoPtr<MangoShadowFetch> shadow_fetch;
+    std::unique_ptr<MangoFastIndex> fast_index;
+    std::unique_ptr<MangoShadowFetch> shadow_fetch;
 
     BingoFetchEngine* fetch_engine;
 

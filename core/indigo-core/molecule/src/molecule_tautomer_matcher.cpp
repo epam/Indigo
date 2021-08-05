@@ -29,7 +29,7 @@ using namespace indigo;
 IMPL_ERROR(MoleculeTautomerMatcher, "molecule tautomer matcher");
 
 MoleculeTautomerMatcher::MoleculeTautomerMatcher(Molecule& target, bool substructure)
-    : _substructure(substructure), _force_hydrogens(false), _ring_chain(false), _rules(0), _rules_list(0), _context(0), _target_src(target), _query(0)
+    : _substructure(substructure), _force_hydrogens(false), _ring_chain(false), _rules(0), _rules_list(0), _target_src(target)
 {
     if (substructure)
     {
@@ -61,9 +61,9 @@ void MoleculeTautomerMatcher::setRules(int rules_set, bool force_hydrogens, bool
 void MoleculeTautomerMatcher::setQuery(BaseMolecule& query)
 {
     if (_substructure)
-        _query.reset(new QueryMolecule());
+        _query = std::make_unique<QueryMolecule>();
     else
-        _query.reset(new Molecule());
+        _query = std::make_unique<Molecule>();
 
     _query->clone(query, 0, 0, 0);
     _query_decomposer.create(query);
@@ -98,7 +98,7 @@ bool MoleculeTautomerMatcher::find()
     if (p_rules_list == 0)
         p_rules_list = &rules_list;
 
-    _context.reset(new TautomerSearchContext(*_query.get(), *_supermol, *_query_decomposer.get(), *_target_decomposer.get(), *p_rules_list, arom_options));
+    _context = std::make_unique<TautomerSearchContext>(*_query.get(), *_supermol, *_query_decomposer.get(), *_target_decomposer.get(), *p_rules_list, arom_options);
 
     _context->force_hydrogens = _force_hydrogens;
     _context->ring_chain = _ring_chain;

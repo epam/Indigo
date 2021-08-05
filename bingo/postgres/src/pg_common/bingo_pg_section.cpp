@@ -45,7 +45,7 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
         /*
          * Initialize existing structures fingerprint
          */
-        _existStructures.reset(new BingoPgBufferCacheFp(offset + 1, _index, true));
+        _existStructures = std::make_unique<BingoPgBufferCacheFp>(offset + 1, _index, true);
 
         /*
          * Initialize bits number buffers
@@ -69,7 +69,7 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
         _sectionInfo = *data;
         _sectionInfoBuffer.changeAccess(BINGO_PG_NOLOCK);
 
-        _existStructures.reset(new BingoPgBufferCacheFp(offset + 1, _index, false));
+        _existStructures = std::make_unique<BingoPgBufferCacheFp>(offset + 1, _index, false);
     }
     int map_count = _sectionInfo.n_blocks_for_map;
     int fp_count = _sectionInfo.n_blocks_for_fp;
@@ -156,7 +156,7 @@ void BingoPgSection::clear()
     _sectionInfo.last_xyz = -1;
     _sectionInfo.has_removed = 0;
     _sectionInfoBuffer.clear();
-    _existStructures.reset(0);
+    _existStructures.reset(nullptr);
     _buffersMap.clear();
     _buffersFp.clear();
     _buffersBin.clear();

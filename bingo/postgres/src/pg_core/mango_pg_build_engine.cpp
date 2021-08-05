@@ -58,7 +58,7 @@ bool MangoPgBuildEngine::processStructure(StructCache& struct_cache)
     _setBingoContext();
     int bingo_res;
 
-    BingoPgText& struct_text = struct_cache.text.ref();
+    BingoPgText& struct_text = *struct_cache.text;
     ItemPointer item_ptr = &struct_cache.ptr;
     int block_number = ItemPointerGetBlockNumber(item_ptr);
     int offset_number = ItemPointerGetOffsetNumber(item_ptr);
@@ -78,8 +78,8 @@ bool MangoPgBuildEngine::processStructure(StructCache& struct_cache)
     if (bingo_res < 1)
         return false;
 
-    AutoPtr<MangoPgFpData> fp_data(new MangoPgFpData());
-    if (_readPreparedInfo(0, fp_data.ref(), getFpSize()))
+    std::unique_ptr<MangoPgFpData> fp_data = std::make_unique<MangoPgFpData>();
+    if (_readPreparedInfo(0, *fp_data, getFpSize()))
     {
         struct_cache.data.reset(fp_data.release());
         struct_cache.data->setTidItem(item_ptr);
@@ -235,11 +235,11 @@ void MangoPgBuildEngine::_processResultCb(void* context)
     MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
     ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
     int cache_idx = -1;
-    AutoPtr<MangoPgFpData> fp_data(new MangoPgFpData());
+    std::unique_ptr<MangoPgFpData> fp_data = std::make_unique<MangoPgFpData>();
     /*
      * Prepare info
      */
-    if (_readPreparedInfo(&cache_idx, fp_data.ref(), engine->_fpSize))
+    if (_readPreparedInfo(&cache_idx, *fp_data, engine->_fpSize))
     {
         StructCache& struct_cache = struct_caches[cache_idx];
         struct_cache.data.reset(fp_data.release());

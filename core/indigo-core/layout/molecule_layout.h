@@ -75,10 +75,10 @@ namespace indigo
 
         Metalayout _ml;
         BaseMolecule& _molecule;
-        AutoPtr<BaseMolecule> _molCollapsed;
+        std::unique_ptr<BaseMolecule> _molCollapsed;
         BaseMolecule* _bm;
         Array<int> _atomMapping;
-        AutoPtr<MoleculeLayoutGraph> _layout_graph;
+        std::unique_ptr<MoleculeLayoutGraph> _layout_graph;
         Array<BaseMolecule*> _map;
         bool _query;
         bool _hasMulGroups;

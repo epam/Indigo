@@ -272,7 +272,7 @@ namespace indigo
         {
             if (_ats.get() == nullptr)
             {
-                _ats.reset(new Attachments(_rsites_count, _limits));
+                _ats = std::make_unique<Attachments>(_rsites_count, _limits);
             }
         }
 

@@ -597,7 +597,7 @@ QueryMolecule::Node* QueryMolecule::Node::_und(QueryMolecule::Node* node1, Query
         return node2;
     }
 
-    AutoPtr<QueryMolecule::Node> newnode(node1->_neu());
+    std::unique_ptr<QueryMolecule::Node> newnode(node1->_neu());
 
     newnode->type = QueryMolecule::OP_AND;
     newnode->children.add(node1);
@@ -638,7 +638,7 @@ QueryMolecule::Node* QueryMolecule::Node::_oder(QueryMolecule::Node* node1, Quer
         return node2;
     }
 
-    AutoPtr<QueryMolecule::Node> newnode(node1->_neu());
+    std::unique_ptr<QueryMolecule::Node> newnode(node1->_neu());
 
     newnode->type = QueryMolecule::OP_OR;
     newnode->children.add(node1);
@@ -655,7 +655,7 @@ QueryMolecule::Node* QueryMolecule::Node::_nicht(QueryMolecule::Node* node)
         return res;
     }
 
-    AutoPtr<QueryMolecule::Node> newnode(node->_neu());
+    std::unique_ptr<QueryMolecule::Node> newnode(node->_neu());
 
     newnode->type = QueryMolecule::OP_NOT;
     newnode->children.add(node);
@@ -1331,7 +1331,7 @@ void QueryMolecule::Atom::_optimize()
     // Check if fragment has one atom
     if (type == ATOM_FRAGMENT && fragment->vertexCount() == 1)
     {
-        AutoPtr<QueryMolecule> saved_fragment(fragment.release());
+        std::unique_ptr<QueryMolecule> saved_fragment(fragment.release());
         copy(saved_fragment->getAtom(saved_fragment->vertexBegin()));
     }
 }
@@ -1466,11 +1466,11 @@ void QueryMolecule::Atom::copy(Atom& other)
     value_max = other.value_max;
     value_min = other.value_min;
 
-    fragment.reset(0);
+    fragment.reset(nullptr);
     if (other.fragment.get() != 0)
     {
-        fragment.reset(new QueryMolecule());
-        fragment->clone(other.fragment.ref(), 0, 0);
+        fragment = std::make_unique<QueryMolecule>();
+        fragment->clone(*other.fragment, 0, 0);
         fragment->fragment_smarts.copy(other.fragment->fragment_smarts);
     }
     alias.copy(other.alias);
@@ -1482,14 +1482,14 @@ void QueryMolecule::Atom::copy(Atom& other)
 
 QueryMolecule::Atom* QueryMolecule::Atom::clone()
 {
-    AutoPtr<Atom> res(new Atom());
+    std::unique_ptr<Atom> res = std::make_unique<Atom>();
     res->copy(*this);
     return res.release();
 }
 
 QueryMolecule::Bond* QueryMolecule::Bond::clone()
 {
-    AutoPtr<Bond> res(new Bond());
+    std::unique_ptr<Bond> res = std::make_unique<Bond>();
     int i;
 
     res->type = type;
@@ -2069,7 +2069,7 @@ int QueryMolecule::getQueryBondType(QueryMolecule::Bond& qb)
         return QUERY_BOND_ANY;
 
     QueryMolecule::Bond* qb2 = &qb;
-    AutoPtr<QueryMolecule::Bond> qb_modified;
+    std::unique_ptr<QueryMolecule::Bond> qb_modified;
     int topology;
     if (qb.sureValue(QueryMolecule::BOND_TOPOLOGY, topology))
     {

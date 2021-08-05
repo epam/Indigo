@@ -58,7 +58,6 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
     fp_params.ext = false;
     fp_params.tau_qwords = 0;
 
-    AutoPtr<Index> context;
     std::string loc_dir(location);
 
     if (loc_dir.find_last_of('/') != loc_dir.length() - 1)
@@ -72,10 +71,11 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
     else if (type && strcmp(type, "reaction") == 0)
         ind_type = BaseIndex::REACTION;
 
+    std::unique_ptr<Index> context;
     if (ind_type == BaseIndex::MOLECULE)
-        context.reset(new MoleculeIndex());
+        context = std::make_unique<MoleculeIndex>();
     else if (ind_type == BaseIndex::REACTION)
-        context.reset(new ReactionIndex());
+        context = std::make_unique<ReactionIndex>();
     else
         throw BingoException("Unknown database type");
 
@@ -93,10 +93,8 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
     {
         OsLocker bingo_locker(_bingo_lock);
         _bingo_instances[db_id] = context.release();
-        AutoPtr<DatabaseLockData> locker_ptr;
-        locker_ptr.reset(new DatabaseLockData());
         _lockers.expand(db_id + 1);
-        _lockers[db_id] = locker_ptr.release();
+        _lockers[db_id] = new DatabaseLockData();
     }
 
     return db_id;
@@ -314,17 +312,15 @@ CEXPORT int bingoGetRecordObj(int db, int id)
 
         if (bingo_index.getType() == Index::MOLECULE)
         {
-            AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
-
+            std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
             Molecule& mol = molptr->mol;
             CmfLoader cmf_loader(buf_scn);
             cmf_loader.loadMolecule(mol);
-
             indigo_obj_id = self.addObject(molptr.release());
         }
         else if (bingo_index.getType() == Index::REACTION)
         {
-            AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
+            std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
 
             Reaction& rxn = rxnptr->rxn;
             CrfLoader crf_loader(buf_scn);
@@ -364,7 +360,7 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
         {
             obj.getBaseMolecule().aromatize(self.arom_options);
 
-            AutoPtr<MoleculeSubstructureQueryData> query_data(new MoleculeSubstructureQueryData(obj.getQueryMolecule()));
+            std::unique_ptr<MoleculeSubstructureQueryData> query_data = std::make_unique<MoleculeSubstructureQueryData>(obj.getQueryMolecule());
 
             MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
             MoleculeSubMatcher* matcher = dynamic_cast<MoleculeSubMatcher*>(bingo_index.createMatcher("sub", query_data.release(), options));
@@ -383,7 +379,7 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
         {
             obj.getBaseReaction().aromatize(self.arom_options);
 
-            AutoPtr<ReactionSubstructureQueryData> query_data(new ReactionSubstructureQueryData(obj.getQueryReaction()));
+            std::unique_ptr<ReactionSubstructureQueryData> query_data = std::make_unique<ReactionSubstructureQueryData>(obj.getQueryReaction());
 
             ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
             ReactionSubMatcher* matcher = dynamic_cast<ReactionSubMatcher*>(bingo_index.createMatcher("sub", query_data.release(), options));
@@ -414,7 +410,7 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
         {
             obj.getBaseMolecule().aromatize(self.arom_options);
 
-            AutoPtr<MoleculeExactQueryData> query_data(new MoleculeExactQueryData(obj.getMolecule()));
+            std::unique_ptr<MoleculeExactQueryData> query_data = std::make_unique<MoleculeExactQueryData>(obj.getMolecule());
 
             MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
             MolExactMatcher* matcher = dynamic_cast<MolExactMatcher*>(bingo_index.createMatcher("exact", query_data.release(), options));
@@ -433,7 +429,7 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
         {
             obj.getBaseReaction().aromatize(self.arom_options);
 
-            AutoPtr<ReactionExactQueryData> query_data(new ReactionExactQueryData(obj.getReaction()));
+            std::unique_ptr<ReactionExactQueryData> query_data = std::make_unique<ReactionExactQueryData>(obj.getReaction());
 
             ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
             RxnExactMatcher* matcher = dynamic_cast<RxnExactMatcher*>(bingo_index.createMatcher("exact", query_data.release(), options));
@@ -461,7 +457,7 @@ CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options
         Array<char> gross_str;
         gross_str.copy(query, (int)(strlen(query) + 1));
 
-        AutoPtr<GrossQueryData> query_data(new GrossQueryData(gross_str));
+        std::unique_ptr<GrossQueryData> query_data = std::make_unique<GrossQueryData>(gross_str);
 
         BaseIndex& bingo_index = dynamic_cast<BaseIndex&>(_bingo_instances.ref(db));
         MolGrossMatcher* matcher = dynamic_cast<MolGrossMatcher*>(bingo_index.createMatcher("formula", query_data.release(), options));
@@ -489,7 +485,7 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
         {
             obj.getBaseMolecule().aromatize(self.arom_options);
 
-            AutoPtr<MoleculeSimilarityQueryData> query_data(new MoleculeSimilarityQueryData(obj.getMolecule(), min, max));
+            std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, max);
 
             MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
             MoleculeSimMatcher* matcher = dynamic_cast<MoleculeSimMatcher*>(bingo_index.createMatcher("sim", query_data.release(), options));
@@ -508,7 +504,7 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
         {
             obj.getBaseReaction().aromatize(self.arom_options);
 
-            AutoPtr<ReactionSimilarityQueryData> query_data(new ReactionSimilarityQueryData(obj.getReaction(), min, max));
+            std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, max);
 
             ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
             ReactionSimMatcher* matcher = dynamic_cast<ReactionSimMatcher*>(bingo_index.createMatcher("sim", query_data.release(), options));
@@ -540,7 +536,7 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
         {
             obj.getBaseMolecule().aromatize(self.arom_options);
 
-            AutoPtr<MoleculeSimilarityQueryData> query_data(new MoleculeSimilarityQueryData(obj.getMolecule(), min, max));
+            std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, max);
 
             MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
             MoleculeSimMatcher* matcher = dynamic_cast<MoleculeSimMatcher*>(bingo_index.createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
@@ -559,7 +555,7 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
         {
             obj.getBaseReaction().aromatize(self.arom_options);
 
-            AutoPtr<ReactionSimilarityQueryData> query_data(new ReactionSimilarityQueryData(obj.getReaction(), min, max));
+            std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, max);
 
             ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
             ReactionSimMatcher* matcher = dynamic_cast<ReactionSimMatcher*>(bingo_index.createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
@@ -590,7 +586,7 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
         {
             obj.getBaseMolecule().aromatize(self.arom_options);
 
-            AutoPtr<MoleculeSimilarityQueryData> query_data(new MoleculeSimilarityQueryData(obj.getMolecule(), min, 1.0));
+            std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, 1.0);
 
             MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
             MoleculeTopNSimMatcher* matcher = dynamic_cast<MoleculeTopNSimMatcher*>(bingo_index.createMatcherTopN("sim", query_data.release(), options, limit));
@@ -609,7 +605,7 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
         {
             obj.getBaseReaction().aromatize(self.arom_options);
 
-            AutoPtr<ReactionSimilarityQueryData> query_data(new ReactionSimilarityQueryData(obj.getReaction(), min, 1.0));
+            std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, 1.0);
 
             ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
             ReactionTopNSimMatcher* matcher = dynamic_cast<ReactionTopNSimMatcher*>(bingo_index.createMatcherTopN("sim", query_data.release(), options, limit));
@@ -641,7 +637,7 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
         {
             obj.getBaseMolecule().aromatize(self.arom_options);
 
-            AutoPtr<MoleculeSimilarityQueryData> query_data(new MoleculeSimilarityQueryData(obj.getMolecule(), min, 1.0));
+            std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, 1.0);
 
             MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
             MoleculeTopNSimMatcher* matcher =
@@ -661,7 +657,7 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
         {
             obj.getBaseReaction().aromatize(self.arom_options);
 
-            AutoPtr<ReactionSimilarityQueryData> query_data(new ReactionSimilarityQueryData(obj.getReaction(), min, 1.0));
+            std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, 1.0);
 
             ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
             ReactionTopNSimMatcher* matcher =

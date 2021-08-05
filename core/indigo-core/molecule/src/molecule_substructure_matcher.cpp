@@ -18,7 +18,7 @@
 
 #include "molecule/molecule_substructure_matcher.h"
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "graph/edge_rotation_matcher.h"
 #include "graph/filter.h"
 #include "graph/graph.h"
@@ -105,7 +105,7 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A(QueryMolecule::
 {
     if (atom->type == QueryMolecule::ATOM_FRAGMENT)
     {
-        if (_shouldUnfoldTargetHydrogens(atom->fragment.ref(), true, find_all_embeddings))
+        if (_shouldUnfoldTargetHydrogens(*atom->fragment, true, find_all_embeddings))
             return true;
     }
     else if (atom->type == QueryMolecule::OP_AND || atom->type == QueryMolecule::OP_OR || atom->type == QueryMolecule::OP_NOT)
@@ -214,12 +214,12 @@ void MoleculeSubstructureMatcher::setQuery(QueryMolecule& query)
 
     if (query.rgroups.getRGroupCount() > 0)
     {
-        _markush.reset(new MarkushContext(query, _target));
+        _markush = std::make_unique<MarkushContext>(query, _target);
         _query = &_markush->query;
     }
     else
     {
-        _markush.reset(0);
+        _markush.reset(nullptr);
         _query = &query;
     }
 
@@ -936,7 +936,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
     int cur_site = context.sites[context.depth];
 
     int src_att_idx1 = -1, src_att_idx2 = -1;
-    AutoPtr<QueryMolecule::Bond> rg_qbond1;
+    std::unique_ptr<QueryMolecule::Bond> rg_qbond1;
 
     // Parameters for stereocenter restoration
     bool stereo_was_saved = false;

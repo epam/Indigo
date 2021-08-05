@@ -18,7 +18,7 @@
 
 #include "oracle/ora_wrap.h"
 #include "oracle/ringo_oracle.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/ringo_shadow_table.h"
@@ -48,13 +48,13 @@ RingoOracleContext& RingoOracleContext::get(OracleEnv& env, int id, bool lock)
 
     RingoContext* already = _get(id, context);
     RingoOracleContext* roc;
-    AutoPtr<RingoOracleContext> res;
+    std::unique_ptr<RingoOracleContext> res;
 
     if (already != 0)
         roc = (RingoOracleContext*)already;
     else
     {
-        res.reset(new RingoOracleContext(context));
+        res = std::make_unique<RingoOracleContext>(context);
         roc = res.get();
         config_reloaded = true;
     }

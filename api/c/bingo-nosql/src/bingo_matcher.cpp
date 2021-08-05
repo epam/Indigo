@@ -638,7 +638,7 @@ BaseSimilarityMatcher::BaseSimilarityMatcher(/*const */ BaseIndex& index, Indigo
     _current_portion.clear();
     _current_sim_value = -1;
     _fp_size = _index.getFingerprintParams().fingerprintSizeSim();
-    _sim_coef.reset(new TanimotoCoef(_fp_size));
+    _sim_coef = std::make_unique<TanimotoCoef>(_fp_size);
 }
 
 bool BaseSimilarityMatcher::next()
@@ -677,7 +677,7 @@ bool BaseSimilarityMatcher::next()
                 }
 
                 _current_portion.clear();
-                sim_storage.getSimilar(_query_fp.ptr(), _sim_coef.ref(), _query_data->getMin(), _current_portion, _current_cell, _current_container);
+                sim_storage.getSimilar(_query_fp.ptr(), *_sim_coef, _query_data->getMin(), _current_portion, _current_cell, _current_container);
             }
             else
             {
@@ -685,7 +685,7 @@ bool BaseSimilarityMatcher::next()
                     return false;
 
                 _current_portion.clear();
-                sim_storage.getIncSimilar(_query_fp.ptr(), _sim_coef.ref(), _query_data->getMin(), _current_portion);
+                sim_storage.getIncSimilar(_query_fp.ptr(), *_sim_coef, _query_data->getMin(), _current_portion);
             }
 
             _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
@@ -832,14 +832,14 @@ void BaseSimilarityMatcher::_setParameters(const char* parameters)
         if (!param_str.eof())
             throw Exception("BaseSimilarityMatcher: setParameters: tanimoto metric has no parameters");
 
-        _sim_coef.reset(new TanimotoCoef(_fp_size));
+        _sim_coef = std::make_unique<TanimotoCoef>(_fp_size);
     }
     else if (type.compare("euclid-sub") == 0)
     {
         if (!param_str.eof())
             throw Exception("BaseSimilarityMatcher: setParameters: euclid-sub metric has no parameters");
 
-        _sim_coef.reset(new EuclidCoef(_fp_size));
+        _sim_coef = std::make_unique<EuclidCoef>(_fp_size);
     }
     else if (type.compare("tversky") == 0)
     {
@@ -865,7 +865,7 @@ void BaseSimilarityMatcher::_setParameters(const char* parameters)
         if (fabs(alpha + beta - 1) > EPSILON)
             throw Exception("BaseSimilarityMatcher: setParameters: Tversky parameters have to satisfy the condition: alpha + beta = 1 ");
 
-        _sim_coef.reset(new TverskyCoef(_fp_size, alpha, beta));
+        _sim_coef = std::make_unique<TverskyCoef>(_fp_size, alpha, beta);
     }
     else
         throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters. Allowed types: tanimoto, euclid-sub, tversky [<alpha> <beta>]");

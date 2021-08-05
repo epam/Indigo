@@ -65,7 +65,7 @@ namespace indigo
         void _loadRgroupElement(TiXmlHandle& handle);
         bool _findMolecule(TiXmlNode* node);
         void _parseRlogicRange(const char* str, Array<int>& ranges);
-        void _appendQueryAtom(const char* atom_label, AutoPtr<QueryMolecule::Atom>& atom);
+        void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
 
         Molecule* _mol;
         BaseMolecule* _bmol;
