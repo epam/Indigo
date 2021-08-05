@@ -113,6 +113,11 @@ void RenderContext::storeAndDestroyMetafile(bool discard)
     DeleteEnhMetaFile(hemf);
 }
 
+#ifdef _MSC_VER
+#undef min
+#undef max
+#endif
+
 #endif
 
 CP_DEF(RenderContext);
