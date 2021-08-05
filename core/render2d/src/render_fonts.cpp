@@ -20,10 +20,9 @@
 #include "math/algebra.h"
 #include "render_context.h"
 
-//#ifdef _WIN32
-//#include <cairo-wasm-win32.h>
-//#include <windows.h>
-//#endif
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 using namespace indigo;
 

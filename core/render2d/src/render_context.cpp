@@ -31,90 +31,90 @@ RenderContext::TextLock RenderContext::_tlock;
 
 IMPL_ERROR(RenderContext, "render context");
 
-//#ifdef _WIN32
-//
-//#define NOMINMAX
-//#include "cairo-wasm-win32.h"
-//#include <windows.h>
-//
-//cairo_surface_t* RenderContext::createWin32PrintingSurfaceForHDC()
-//{
-//    cairo_surface_t* surface = cairo_win32_printing_surface_create((HDC)opt.hdc);
-//    cairoCheckStatus();
-//    return surface;
-//}
-//
-//cairo_surface_t* RenderContext::createWin32Surface()
-//{
-//    cairo_surface_t* surface = cairo_win32_surface_create((HDC)opt.hdc);
-//    cairoCheckStatus();
-//    return surface;
-//}
-//
-//static void _init_language_pack()
-//{
-//    typedef BOOL(WINAPI * gdi_init_lang_pack_func_t)(int);
-//    gdi_init_lang_pack_func_t gdi_init_lang_pack;
-//    HMODULE module;
-//
-//    if (GetModuleHandleA("LPK.DLL"))
-//        return;
-//
-//    module = GetModuleHandleA("GDI32.DLL");
-//    if (module)
-//    {
-//        gdi_init_lang_pack = (gdi_init_lang_pack_func_t)GetProcAddress(module, "GdiInitializeLanguagePack");
-//        if (gdi_init_lang_pack)
-//            gdi_init_lang_pack(0);
-//    }
-//}
-//
-//cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile(bool& isLarge)
-//{
-//    HDC dc = GetDC(NULL);
-//    int hr = GetDeviceCaps(dc, HORZRES);
-//    int hs = GetDeviceCaps(dc, HORZSIZE);
-//    int vr = GetDeviceCaps(dc, VERTRES);
-//    int vs = GetDeviceCaps(dc, VERTSIZE);
-//    // physical display size in millimeters, divided over the resolution and
-//    //    multiplied by 100, as metafile dimensions are specified in 0.01mm units
-//    float cfx = hs * 100.0f / hr;
-//    float cfy = vs * 100.0f / vr; // it may differ for x and y
-//    int w = (int)(_width * cfx);
-//    int h = (int)(_height * cfy);
-//    RECT rc = {0, 0, w, h}, crc;
-//    _init_language_pack();
-//    GetClipBox(dc, &crc);
-//    isLarge = (_width >= crc.right || _height >= crc.bottom);
-//    _meta_hdc = CreateEnhMetaFileA(dc, 0, &rc, "Indigo Render2D\0\0");
-//    ReleaseDC(NULL, dc);
-//    cairo_surface_t* s = cairo_win32_printing_surface_create((HDC)_meta_hdc);
-//    cairoCheckStatus();
-//    StartPage((HDC)_meta_hdc);
-//    return s;
-//}
-//
-//void RenderContext::storeAndDestroyMetafile(bool discard)
-//{
-//    cairo_surface_show_page(_surface);
-//    cairoCheckStatus();
-//    EndPage((HDC)_meta_hdc);
-//    cairo_surface_destroy(_surface);
-//    cairoCheckStatus();
-//    _surface = NULL;
-//    HENHMETAFILE hemf = CloseEnhMetaFile((HDC)_meta_hdc);
-//    if (!discard)
-//    {
-//        int size = GetEnhMetaFileBits(hemf, 0, NULL);
-//        Array<char> buf;
-//        buf.resize(size);
-//        GetEnhMetaFileBits(hemf, size, (BYTE*)(buf.ptr()));
-//        opt.output->writeArray(buf);
-//    }
-//    DeleteEnhMetaFile(hemf);
-//}
-//
-//#endif
+#ifdef _WIN32
+
+#define NOMINMAX
+#include "cairo-wasm-win32.h"
+#include <windows.h>
+
+cairo_surface_t* RenderContext::createWin32PrintingSurfaceForHDC()
+{
+    cairo_surface_t* surface = cairo_win32_printing_surface_create((HDC)opt.hdc);
+    cairoCheckStatus();
+    return surface;
+}
+
+cairo_surface_t* RenderContext::createWin32Surface()
+{
+    cairo_surface_t* surface = cairo_win32_surface_create((HDC)opt.hdc);
+    cairoCheckStatus();
+    return surface;
+}
+
+static void _init_language_pack()
+{
+    typedef BOOL(WINAPI * gdi_init_lang_pack_func_t)(int);
+    gdi_init_lang_pack_func_t gdi_init_lang_pack;
+    HMODULE module;
+
+    if (GetModuleHandleA("LPK.DLL"))
+        return;
+
+    module = GetModuleHandleA("GDI32.DLL");
+    if (module)
+    {
+        gdi_init_lang_pack = (gdi_init_lang_pack_func_t)GetProcAddress(module, "GdiInitializeLanguagePack");
+        if (gdi_init_lang_pack)
+            gdi_init_lang_pack(0);
+    }
+}
+
+cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile(bool& isLarge)
+{
+    HDC dc = GetDC(NULL);
+    int hr = GetDeviceCaps(dc, HORZRES);
+    int hs = GetDeviceCaps(dc, HORZSIZE);
+    int vr = GetDeviceCaps(dc, VERTRES);
+    int vs = GetDeviceCaps(dc, VERTSIZE);
+    // physical display size in millimeters, divided over the resolution and
+    //    multiplied by 100, as metafile dimensions are specified in 0.01mm units
+    float cfx = hs * 100.0f / hr;
+    float cfy = vs * 100.0f / vr; // it may differ for x and y
+    int w = (int)(_width * cfx);
+    int h = (int)(_height * cfy);
+    RECT rc = {0, 0, w, h}, crc;
+    _init_language_pack();
+    GetClipBox(dc, &crc);
+    isLarge = (_width >= crc.right || _height >= crc.bottom);
+    _meta_hdc = CreateEnhMetaFileA(dc, 0, &rc, "Indigo Render2D\0\0");
+    ReleaseDC(NULL, dc);
+    cairo_surface_t* s = cairo_win32_printing_surface_create((HDC)_meta_hdc);
+    cairoCheckStatus();
+    StartPage((HDC)_meta_hdc);
+    return s;
+}
+
+void RenderContext::storeAndDestroyMetafile(bool discard)
+{
+    cairo_surface_show_page(_surface);
+    cairoCheckStatus();
+    EndPage((HDC)_meta_hdc);
+    cairo_surface_destroy(_surface);
+    cairoCheckStatus();
+    _surface = NULL;
+    HENHMETAFILE hemf = CloseEnhMetaFile((HDC)_meta_hdc);
+    if (!discard)
+    {
+        int size = GetEnhMetaFileBits(hemf, 0, NULL);
+        Array<char> buf;
+        buf.resize(size);
+        GetEnhMetaFileBits(hemf, size, (BYTE*)(buf.ptr()));
+        opt.output->writeArray(buf);
+    }
+    DeleteEnhMetaFile(hemf);
+}
+
+#endif
 
 CP_DEF(RenderContext);
 
@@ -231,30 +231,30 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int
         _surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, _width, _height);
         cairoCheckSurfaceStatus();
         break;
-//    case MODE_HDC:
-//#ifdef _WIN32
-//        _surface = createWin32Surface();
-//#else
-//        throw Error("mode \"HDC\" is not supported on this platform");
-//#endif
-//        break;
-//    case MODE_PRN:
-//#ifdef _WIN32
-//        _surface = createWin32PrintingSurfaceForHDC();
-//#else
-//        throw Error("mode \"PRN\" is not supported on this platform");
-//#endif
-//        break;
-//    case MODE_EMF:
-//#ifdef _WIN32
-//        bool isLarge;
-//        _surface = createWin32PrintingSurfaceForMetafile(isLarge);
-//        if (isLarge)
-//            metafileFontsToCurves = true;
-//#else
-//        throw Error("mode \"EMF\" is not supported on this platform");
-//#endif
-//        break;
+    case MODE_HDC:
+#ifdef _WIN32
+        _surface = createWin32Surface();
+#else
+        throw Error("mode \"HDC\" is not supported on this platform");
+#endif
+        break;
+    case MODE_PRN:
+#ifdef _WIN32
+        _surface = createWin32PrintingSurfaceForHDC();
+#else
+        throw Error("mode \"PRN\" is not supported on this platform");
+#endif
+        break;
+    case MODE_EMF:
+#ifdef _WIN32
+        bool isLarge;
+        _surface = createWin32PrintingSurfaceForMetafile(isLarge);
+        if (isLarge)
+            metafileFontsToCurves = true;
+#else
+        throw Error("mode \"EMF\" is not supported on this platform");
+#endif
+        break;
     default:
         throw Error("unknown mode: %d", mode);
     }
@@ -347,9 +347,9 @@ void RenderContext::closeContext(bool discard)
     case MODE_PRN:
         break;
     case MODE_EMF:
-//#ifdef _WIN32
-//        storeAndDestroyMetafile(discard);
-//#endif
+#ifdef _WIN32
+        storeAndDestroyMetafile(discard);
+#endif
         break;
     default:
         throw Error("unknown mode: %d", opt.mode);
