@@ -809,10 +809,15 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(checkResult(IndigoLib.indigoCreateFileSaver(filename, format))));
         }
 
-        public void transform(IndigoObject reaction, IndigoObject monomer)
+        public IndigoObject transform(IndigoObject reaction, IndigoObject monomer)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoTransform(reaction.self, monomer.self));
+            int result = checkResult(IndigoLib.indigoTransform(reaction.self, monomer.self));
+            if (result == 0)
+            {
+                return null;
+            }
+            return new IndigoObject(this, result);
         }
 
         public IndigoObject loadBuffer(byte[] buf)
