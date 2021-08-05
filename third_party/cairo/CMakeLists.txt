@@ -208,6 +208,7 @@ if(WIN32)
 endif()
 if(UNIX AND NOT APPLE)
     target_include_directories(${PROJECT_NAME} PRIVATE /usr/include/freetype2)
+    target_link_libraries(${PROJECT_NAME} PUBLIC freetype fontconfig)
 endif()
 
 message(STATUS "Using local version of ${PROJECT_NAME}")
