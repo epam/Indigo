@@ -28,10 +28,5 @@ public class IndigoRendererTests {
                 bytes[bytes.length - 1],
                 "last rendered bytes should be the same"
         );
-        assertEquals(
-                2399,
-                bytes.length,
-                "rendered bytes should be the same length"
-        );
     }
 }

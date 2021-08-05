@@ -90,7 +90,7 @@ _jpeg_extract_info (cairo_image_info_t *info, const unsigned char *p)
 cairo_int_status_t
 _cairo_image_info_get_jpeg_info (cairo_image_info_t	*info,
 				 const unsigned char	*data,
-				 long			 length)
+				 unsigned long		 length)
 {
     const unsigned char *p = data;
 

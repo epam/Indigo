@@ -1140,7 +1140,7 @@ dump_glyph (void *entry, void *closure)
     printf("      utf8: '%s'\n", buf);
     printf("      utf8 (hex):");
     for (i = 0; i < glyph->utf8_len; i++)
-	printf(" 0x%02x", glyph->utf8[0]);
+	printf(" 0x%02x", glyph->utf8[i]);
     printf("\n\n");
 }
 

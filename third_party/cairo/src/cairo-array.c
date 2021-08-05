@@ -505,6 +505,11 @@ _cairo_user_data_array_copy (cairo_user_data_array_t	*dst,
 	_cairo_user_data_array_init (dst);
     }
 
+    /* don't call _cairo_array_append_multiple if there's nothing to do,
+     * as it assumes at least 1 element is to be appended */
+    if (src->num_elements == 0)
+        return CAIRO_STATUS_SUCCESS;
+
     return _cairo_array_append_multiple (dst,
 					 _cairo_array_index_const (src, 0),
 					 src->num_elements);

@@ -943,7 +943,8 @@ _cairo_pdf_surface_clear (cairo_pdf_surface_t *surface)
     _cairo_array_truncate (&surface->knockout_group, 0);
     _cairo_array_truncate (&surface->page_annots, 0);
 
-    cairo_surface_destroy (&surface->thumbnail_image->base);
+    if (surface->thumbnail_image)
+	cairo_surface_destroy (&surface->thumbnail_image->base);
     surface->thumbnail_image = NULL;
 }
 
@@ -5309,18 +5310,14 @@ _create_font_subset_tag (cairo_scaled_font_subset_t	*font_subset,
 {
     uint32_t hash;
     int i;
-    long numerator;
-    ldiv_t d;
 
     hash = _hash_data ((unsigned char *) font_name, strlen(font_name), 0);
     hash = _hash_data ((unsigned char *) (font_subset->glyphs),
 		       font_subset->num_glyphs * sizeof(unsigned long), hash);
 
-    numerator = hash;
     for (i = 0; i < 6; i++) {
-	d = ldiv (numerator, 26);
-	numerator = d.quot;
-        tag[i] = 'A' + d.rem;
+	tag[i] = 'A' + (hash % 26);
+	hash /= 26;
     }
     tag[i] = 0;
 }
@@ -8443,12 +8440,7 @@ static cairo_int_status_t
 _cairo_pdf_surface_tag (void			   *abstract_surface,
 			cairo_bool_t                begin,
 			const char                 *tag_name,
-			const char                 *attributes,
-			const cairo_pattern_t	   *source,
-			const cairo_stroke_style_t *style,
-			const cairo_matrix_t	   *ctm,
-			const cairo_matrix_t	   *ctm_inverse,
-			const cairo_clip_t	   *clip)
+			const char                 *attributes)
 {
     cairo_pdf_surface_t *surface = abstract_surface;
     cairo_int_status_t status = 0;

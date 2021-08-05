@@ -628,8 +628,10 @@ cairo_truetype_font_write_glyf_table (cairo_truetype_font_t *font,
 
     status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
                                                  TT_TAG_loca, 0, u.bytes, &size);
-    if (unlikely (status))
+    if (unlikely (status)) {
+	free (u.bytes);
 	return _cairo_truetype_font_set_error (font, status);
+    }
 
     start_offset = _cairo_array_num_elements (&font->output);
     for (i = 0; i < font->num_glyphs; i++) {
@@ -1272,7 +1274,7 @@ _cairo_truetype_reverse_cmap (cairo_scaled_font_t *scaled_font,
     cairo_status_t status;
     const cairo_scaled_font_backend_t *backend;
     tt_segment_map_t *map;
-    char buf[4];
+    tt_segment_map_t map_header;
     unsigned int num_segments, i;
     unsigned long size;
     uint16_t *start_code;
@@ -1282,20 +1284,19 @@ _cairo_truetype_reverse_cmap (cairo_scaled_font_t *scaled_font,
     uint16_t  c;
 
     backend = scaled_font->backend;
-    size = 4;
+    size = 4;  /* enough to read the two header fields we need */
     status = backend->load_truetype_table (scaled_font,
                                            TT_TAG_cmap, table_offset,
-					   (unsigned char *) &buf,
+					   (unsigned char *) &map_header,
 					   &size);
     if (unlikely (status))
 	return status;
 
     /* All table formats have the same first two words */
-    map = (tt_segment_map_t *) buf;
-    if (be16_to_cpu (map->format) != 4)
+    if (be16_to_cpu (map_header.format) != 4)
 	return CAIRO_INT_STATUS_UNSUPPORTED;
 
-    size = be16_to_cpu (map->length);
+    size = be16_to_cpu (map_header.length);
     map = _cairo_malloc (size);
     if (unlikely (map == NULL))
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
@@ -1382,7 +1383,7 @@ _cairo_truetype_index_to_ucs4 (cairo_scaled_font_t *scaled_font,
     cairo_int_status_t status = CAIRO_INT_STATUS_UNSUPPORTED;
     const cairo_scaled_font_backend_t *backend;
     tt_cmap_t *cmap;
-    char buf[4];
+    tt_cmap_t cmap_header;
     int num_tables, i;
     unsigned long size;
 
@@ -1390,17 +1391,16 @@ _cairo_truetype_index_to_ucs4 (cairo_scaled_font_t *scaled_font,
     if (!backend->load_truetype_table)
 	return CAIRO_INT_STATUS_UNSUPPORTED;
 
-    size = 4;
+    size = 4;  /* only read the header fields 'version' and 'num_tables' */
     status = backend->load_truetype_table (scaled_font,
                                            TT_TAG_cmap, 0,
-					   (unsigned char *) &buf,
+					   (unsigned char *) &cmap_header,
 					   &size);
     if (unlikely (status))
 	return status;
 
-    cmap = (tt_cmap_t *) buf;
-    num_tables = be16_to_cpu (cmap->num_tables);
-    size = 4 + num_tables*sizeof(tt_cmap_index_t);
+    num_tables = be16_to_cpu (cmap_header.num_tables);
+    size = 4 + num_tables * sizeof (tt_cmap_index_t);
     cmap = _cairo_malloc_ab_plus_c (num_tables, sizeof (tt_cmap_index_t), 4);
     if (unlikely (cmap == NULL))
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);

@@ -595,7 +595,7 @@ premultiply_data (png_structp   png,
 		green = multiply_alpha (alpha, green);
 		blue  = multiply_alpha (alpha, blue);
 	    }
-	    p = (alpha << 24) | (red << 16) | (green << 8) | (blue << 0);
+	    p = ((uint32_t)alpha << 24) | (red << 16) | (green << 8) | (blue << 0);
 	}
 	memcpy (base, &p, sizeof (uint32_t));
     }
@@ -614,7 +614,7 @@ convert_bytes_to_data (png_structp png, png_row_infop row_info, png_bytep data)
 	uint8_t  blue  = base[2];
 	uint32_t pixel;
 
-	pixel = (0xff << 24) | (red << 16) | (green << 8) | (blue << 0);
+	pixel = (0xffu << 24) | (red << 16) | (green << 8) | (blue << 0);
 	memcpy (base, &pixel, sizeof (uint32_t));
     }
 }
