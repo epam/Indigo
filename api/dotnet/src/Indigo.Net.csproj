@@ -97,10 +97,18 @@
 			<PackagePath>runtimes/win-x64/native/bingo-nosql.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="../NuGet/Indigo.Net.targets">
+			<Pack>true</Pack>
+			<PackagePath>build/net461/Indigo.Net.targets</PackagePath>
+		</Content>
+		<Content Include="../NuGet/Indigo.Net.transitive.targets">
+			<Pack>true</Pack>
+			<PackagePath>buildTransitive/net461/Indigo.Net.targets</PackagePath>
+		</Content>
 	</ItemGroup>
 
 	<Target BeforeTargets="PreBuildEvent" Name="PreBuild">
-		<Exec Command="powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)/prebuild.ps1" />
+		<Exec Command="powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)prebuild.ps1" />
 	</Target>
 
 </Project>
