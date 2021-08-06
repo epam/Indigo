@@ -1,6 +1,5 @@
 **** Test template layout *****
-  Item #0: Result: Error: atom #98 (C) contains delta 0.2057998013834995 > 0.01
-   atom #99 (C) contains delta 0.20715982968414975 > 0.01
+  Item #0: Result: Success
   Item #1: Result: Success
   Item #2: Result: Success
   Item #3: Result: Success

@@ -16,7 +16,9 @@ indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("smart-layout", "1")
 
-saver = indigo.writeFile(joinPath("out", "reaction_layout_and_clean2d.rdf"))
+saver_layout = indigo.writeFile(joinPath("out", "reaction_layout.rdf"))
+saver_clean = indigo.writeFile(joinPath("out", "reaction_clean2d.rdf"))
+
 
 ref_path_layout = getRefFilepath("reaction_layout.rdf")
 ref_path_clean2d = getRefFilepath("reaction_clean2d.rdf")
@@ -31,7 +33,7 @@ for idx, item in enumerate(indigo.iterateRDFile(joinPath("reactions", "reaction_
         rxn.layout()
         res = reactionLayoutDiff(indigo, rxn, ref_layout.at(idx).rawData(), ref_is_file=False)
         print("  Item #{}: Result of layout: {}".format(idx, res))
-        saver.rdfAppend(rxn)
+        saver_layout.rdfAppend(rxn)
     except IndigoException as e:
         print("Exception for #%s: %s" % (idx, getIndigoExceptionText(e)))
 
@@ -41,6 +43,6 @@ for idx, item in enumerate(indigo.iterateRDFile(joinPath("reactions", "reaction_
         rxn.clean2d()
         res = reactionLayoutDiff(indigo, rxn, ref_clean2d.at(idx).rawData(), ref_is_file=False)
         print("  Item #{}: Result of clean2d: {}".format(idx, res))
-        saver.rdfAppend(rxn)
+        saver_clean.rdfAppend(rxn)
     except IndigoException as e:
         print("Exception for #%s: %s" % (idx, getIndigoExceptionText(e)))
