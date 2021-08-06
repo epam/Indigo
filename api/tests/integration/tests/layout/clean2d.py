@@ -18,7 +18,6 @@ indigo.setOption("treat-x-as-pseudoatom", "1")
 print("***** Test cleand2d.sdf *****")
 ref_path = getRefFilepath('clean2d.sdf')
 ref = indigo.iterateSDFile(ref_path)
-print( ref_path )
 saver = indigo.writeFile(joinPath('out', 'clean2d.sdf'))
 
 for idx, item in enumerate(indigo.iterateSDFile(joinPath("molecules", "cleand2d.sdf"))):
