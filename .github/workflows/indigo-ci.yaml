@@ -206,7 +206,7 @@ jobs:
           ls ${env:INDIGO_PATH} || echo failed
           echo ${INDIGO_PATH} || echo failed
           ls ${INDIGO_PATH} || echo failed
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo,part_test
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -273,7 +273,7 @@ jobs:
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
