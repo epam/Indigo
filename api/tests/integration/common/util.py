@@ -5,7 +5,11 @@ import sys
 
 
 REPO_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', '..', '..'))
+system_name = None
 
+def overridePlatform( platform ):
+    global system_name
+    system_name = platform
 
 def isIronPython():
     try:
@@ -47,28 +51,29 @@ def getCpuCount():
 
 
 def getPlatform():
-    system_name = None
-    if isJython():
-        import java.lang.System
-        osname = java.lang.System.getProperty('os.name')
-        if osname.startswith('Windows'):
-            system_name = 'win'
-        elif osname == 'Mac OS X':
-            system_name = 'mac'
-        elif osname == 'Linux':
-            system_name = 'linux'
-        else:
-            raise EnvironmentError('Unsupported operating system %s' % osname)
-    else:
-        if os.name == 'nt':
-            system_name = 'win'
-        elif os.name == 'posix':
-            if platform.mac_ver()[0]:
+    global system_name
+    if not system_name:
+        if isJython():
+            import java.lang.System
+            osname = java.lang.System.getProperty('os.name')
+            if osname.startswith('Windows'):
+                system_name = 'win'
+            elif osname == 'Mac OS X':
                 system_name = 'mac'
-            else:
+            elif osname == 'Linux':
                 system_name = 'linux'
+            else:
+                raise EnvironmentError('Unsupported operating system %s' % osname)
         else:
-            raise EnvironmentError('Unsupported operating system %s' % os.name)
+            if os.name == 'nt':
+                system_name = 'win'
+            elif os.name == 'posix':
+                if platform.mac_ver()[0]:
+                    system_name = 'mac'
+                else:
+                    system_name = 'linux'
+            else:
+                raise EnvironmentError('Unsupported operating system %s' % os.name)
     return system_name
 
 
