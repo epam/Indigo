@@ -266,14 +266,20 @@ jobs:
           Expand-Archive IronPython.2.7.11.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
-      - name: Test UNIX
-        if: ${{ matrix.os != 'windows' }}
+      - name: Test Linux
+        if: ${{ matrix.os == 'ubuntu' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
-          export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
           dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test
+      - name: Test macOS
+        if: ${{ matrix.os == 'macos' }}
+        env:
+          INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
+        run: |
+          export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test -platform mac
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
