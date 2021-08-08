@@ -403,7 +403,7 @@ jobs:
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests
         run: |
-          python api/tests/integration/test.py -j junit_report.xml -e todo -p linux
+          python api/tests/integration/test.py -j junit_report.xml -e todo -platform linux
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
