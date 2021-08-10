@@ -56,7 +56,6 @@ namespace indigo
         T* _lock;
     };
     typedef OsLockerT<std::mutex, false> OsLocker;
-    typedef OsLockerT<std::mutex, true> OsLockerNullable;
 
     //
     // Semaphore wrapper

@@ -193,7 +193,10 @@ void RenderParamInterface::render(RenderParams& params)
         static ThreadSafeStaticObj<std::mutex> svg_lock;
         render_lock = svg_lock.ptr();
     }
-    OsLockerNullable locker(render_lock);
+
+    auto locker = render_lock ?
+                  std::unique_lock<std::mutex>(*render_lock) :
+                  std::unique_lock<std::mutex>();
 
     if (params.rmode == RENDER_NONE)
         throw Error("No object to render specified");

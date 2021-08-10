@@ -56,7 +56,9 @@ bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& 
     {
         // RowIDSaver modifies context.context().rid_dict and
         // requires exclusive access for this
-        OsLockerNullable locker(lock_for_exclusive_access);
+        auto locker = lock_for_exclusive_access ?
+                      std::unique_lock<std::mutex>(*lock_for_exclusive_access) :
+                      std::unique_lock<std::mutex>();
 
         RowIDSaver rid_saver(context.context().rid_dict, rid_output);
 
@@ -78,7 +80,11 @@ bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& 
         {
             if (context.context().reject_invalid_structures)
                 throw; // Rethrow this exception further
-            OsLockerNullable locker(lock_for_exclusive_access);
+            
+            auto locker = lock_for_exclusive_access ?
+                          std::unique_lock<std::mutex>(*lock_for_exclusive_access) :
+                          std::unique_lock<std::mutex>();
+              
             env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message());
             failure_message = e.message();
             return false;
