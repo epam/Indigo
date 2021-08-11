@@ -4,11 +4,11 @@ from env_indigo import *
 
 indigo = Indigo()
 # load queries
-targets = list(indigo.iterateSDFile(joinPath("../../../../../data/molecules/basic/thiazolidines.sdf")))
+targets = list(indigo.iterateSDFile(joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__)))
 targets_unser = [indigo.deserialize(t.serialize()) for t in targets]
 
 queries = []
-queries_file = open(joinPath("molecules/smarts.sma"), "r")
+queries_file = open(joinPathPy("molecules/smarts.sma", __file__), "r")
 cnt = 1
 for x in queries_file:
    try:

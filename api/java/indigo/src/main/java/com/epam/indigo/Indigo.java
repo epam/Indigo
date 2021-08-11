@@ -683,10 +683,12 @@ public class Indigo {
         return new IndigoObject(this, res);
     }
 
-    public void transform(IndigoObject reaction, IndigoObject monomer) {
+    public IndigoObject transform(IndigoObject reaction, IndigoObject monomer) {
         Object[] guard = new Object[] {this, reaction, monomer};
         setSessionID();
-        checkResult(guard, lib.indigoTransform(reaction.self, monomer.self));
+        int res = checkResult(guard, lib.indigoTransform(reaction.self, monomer.self));
+        if (res == 0) return null;
+        return new IndigoObject(this, res);
     }
 
     public IndigoObject createSaver(IndigoObject output, String format) {

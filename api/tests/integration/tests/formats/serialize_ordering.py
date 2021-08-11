@@ -10,7 +10,7 @@ indigo.setOption("molfile-saving-skip-date", True)
 def getAtomString (a, reaction, hasCoord):
     xyzStr = ""
     if hasCoord:
-        x, y, z = [round(v, 3) for v in a.xyz()]
+        x, y, z = [round(v, 1) for v in a.xyz()]
         xyzStr = " (%0.1f %0.1f %0.1f)" % (x, y, z)
     str = "%s%s" % (a.symbol(), xyzStr)
 

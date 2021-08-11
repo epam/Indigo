@@ -46,3 +46,5 @@ for root, dirnames, filenames in os.walk(joinPath("molecules", "layout")):
 print("Checking image similarities:")
 for name in images_to_check:
     print(checkImageSimilarity(name))
+if isIronPython():
+    renderer.Dispose()

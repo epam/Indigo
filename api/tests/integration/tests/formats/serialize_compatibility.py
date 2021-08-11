@@ -30,14 +30,10 @@ def serializeToFileAndPrint(obj, is_rxn):
     f = open(joinPath("out/serialize" + suffix + ".cmf"), "w")
     f.write(indigo.version() + "\n")
     buf = obj.serialize()
-    newbuf = buf
-    if isIronPython():
-        from System import SByte
-        newbuf = array.array('b')
-        for b in buf:
-            newbuf.append(SByte(b))
-    bufstr = newbuf.tobytes()
-    hex_buf = binascii.hexlify(bufstr)
+
+    newbuf = bytearray(buf)
+    
+    hex_buf = binascii.hexlify(newbuf)
     obj2 = indigo.deserialize(buf)
 
     if is_rxn:
@@ -72,11 +68,10 @@ def testUnserialize(fname):
             break
         buf_hex = f.readline().strip()
         print(buf_hex)
-        buf = array.array('b')
-        buf.frombytes(binascii.unhexlify(buf_hex))
+        buf = bytes(binascii.unhexlify(buf_hex))
         if isIronPython():
             from System import Array, Byte
-            buf = Array[Byte]([Byte(symbol) for symbol in buf])
+            buf = Array[Byte]([Byte( ord(symbol) ) for symbol in buf])
         try:
             obj = indigo.unserialize(buf)
             print(obj.smiles())

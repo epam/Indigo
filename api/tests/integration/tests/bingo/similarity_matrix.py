@@ -2,7 +2,7 @@ import sys
 sys.path.append('../../common')
 from env_indigo import *
 
-if not os.path.exists(joinPath("out")):
+if not os.access(joinPath("out"),os.F_OK):
     os.makedirs(joinPath("out"))
 
 def getTuple(search):

@@ -115,7 +115,7 @@ indigo.setOption("inchi-options", "/WarnOnEmptyStructure")
 try:
     print(indigo_inchi.getInchi(mol1))
 except IndigoException as e:
-    print(e)
+    print( getIndigoExceptionText(e) )
 
 print("*** Load Marvin InChI test ***")
 m = indigo_inchi.loadMolecule(

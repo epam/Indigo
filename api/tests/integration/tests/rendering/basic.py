@@ -63,7 +63,9 @@ m = indigo.loadMolecule("CCn1c2nc[nH]c2c(=O)[nH]c1=O")
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(m, joinPath("out/ind-514-output.png"))
 print(checkImageSimilarity('ind-514-output.png'))
-
+if isIronPython():
+    renderer.Dispose()
+    indigo.Dispose()
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 indigo.setOption("render-background-color", "255, 255, 255")
@@ -105,7 +107,9 @@ print(checkImageSimilarity('image-size-bond-length.png'))
 mol = indigo.loadReaction("C>>N")
 renderer.renderToFile(mol, joinPath("out/image-size-bond-length-2.png"))
 print(checkImageSimilarity('image-size-bond-length-2.png'))
-
+if isIronPython():
+    renderer.Dispose()
+    indigo.Dispose()
 print("****** Bug with options mismatch *****")
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
@@ -117,6 +121,9 @@ for idx, opt in enumerate(options):
     indigo.setOption("render-bond-length", opt)
     renderer.renderToFile(m, joinPath("out/bond-length-options-%d.png" % idx))
     print(checkImageSimilarity('bond-length-options-%d.png' % idx, 'bond-length-options-0.png'))
+if isIronPython():
+    renderer.Dispose()
+    indigo.Dispose()
 
 print("****** Reference count *****")
 indigo = Indigo()
@@ -130,6 +137,9 @@ cnt1 = indigo.countReferences()
 # Potentialy GC can happen here, but it should not increase the number of Indigo objects
 # Usually these counters should be equal
 assert cnt0 >= cnt1
+if isIronPython():
+    renderer.Dispose()
+    indigo.Dispose()
 
 print("****** Smart layout*****")
 indigo = Indigo()
@@ -139,3 +149,6 @@ indigo.setOption("render-output-format", "png")
 indigo.setOption("smart-layout", "true")
 renderer.renderToFile(mol, joinPath("out/smart-layout-crown.png"))
 print(checkImageSimilarity('smart-layout-crown.png'))
+if isIronPython():
+    renderer.Dispose()
+    indigo.Dispose()

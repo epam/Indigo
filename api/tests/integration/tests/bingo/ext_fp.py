@@ -41,14 +41,13 @@ indigo.setOption("fp-ext-enabled", False)
 ext_fp = m.fingerprint("sim")
 print(ext_fp.toString())
 
-buffer = [0xFF, 0x00] * 32
-
-buf_arr = array.array('b')
-buf_arr.frombytes((bytearray(buffer)))
+buffer = bytearray([0xFF, 0x00] * 32)
 
 if isIronPython():
     from System import Array, Byte
     buf_arr = Array[Byte](buffer)
+else:
+    buf_arr = bytes(buffer)
 
 ext_fp1 = indigo.loadFingerprintFromBuffer(buf_arr)
 print(ext_fp1.toString())

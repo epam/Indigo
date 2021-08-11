@@ -59,3 +59,5 @@ indigo.setOption("render-cdxml-properties-colortable", "<color id=\"10\" r=\"1\"
 indigo.setOption("render-cdxml-properties-key-alignment", "right")
 
 renderer.renderGridToFile(arr, None, 2, joinPath("out/cdxml/cdxml-test-properties-color.cdxml"))
+if isIronPython():
+    renderer.Dispose()

@@ -159,7 +159,9 @@ def joinPath(*args):
     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\',
                                                                                                                  '/')
 
-
+def joinPathPy(args, file_py):
+    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(file_py)), args))).replace('\\',
+                                                                                                                 '/')
 def relativePath(args):
     inspectStackLock.acquire()
     frm = inspect.stack()[1][1]
@@ -223,11 +225,12 @@ def getRefFilepath(filename):
     with inspectStackLock:
         frm = inspect.stack()[1][1]
     ref_path = os.path.abspath(os.path.join(os.path.dirname(frm), 'ref'))
-    if file_exists(os.path.join(ref_path, filename)):
-        return os.path.normpath(os.path.abspath(os.path.join(ref_path, filename)))
     sys_name = getPlatform()
     if file_exists(os.path.join(ref_path, sys_name, filename)):
         return os.path.normpath(os.path.abspath(os.path.join(ref_path, sys_name, filename)))
+
+    if file_exists(os.path.join(ref_path, filename)):
+        return os.path.normpath(os.path.abspath(os.path.join(ref_path, filename)))
 
     raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (
     filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))

@@ -82,7 +82,7 @@ for acid, pka, basic in table:
 pH = 7.0
 pH_toll = 0.5
 
-for root, dirnames, filenames in os.walk(joinPath("molecules/AA")):
+for root, dirnames, filenames in os.walk(joinPathPy("molecules/AA", __file__)):
     filenames.sort()
     for filename in filenames:
         acid_sites = []
@@ -144,14 +144,14 @@ indigo.setOption("render-grid-margins", "20, 10")
 indigo.setOption("render-grid-title-offset", "5")
 indigo.setOption("render-grid-title-property", "grid-comment")
 
-if not os.path.exists(joinPath('out')):
-    os.makedirs(joinPath('out'))
+if not os.access(joinPathPy('out', __file__), os.F_OK):
+    os.makedirs(joinPathPy('out', __file__))
 
-renderer.renderGridToFile(collection, None, 4, joinPath('out/ionize1.png'))
+renderer.renderGridToFile(collection, None, 4, joinPathPy('out/ionize1.png', __file__))
 
 collection.clear()
 
-for root, dirnames, filenames in os.walk(joinPath("molecules/AA")):
+for root, dirnames, filenames in os.walk(joinPathPy("molecules/AA", __file__)):
     filenames.sort()
     for filename in filenames:
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
@@ -168,18 +168,18 @@ indigo.setOption("render-grid-margins", "20, 10")
 indigo.setOption("render-grid-title-offset", "5")
 indigo.setOption("render-grid-title-property", "grid-comment")
 
-renderer.renderGridToFile(collection, None, 4, joinPath('out/ionize2.png'))
+renderer.renderGridToFile(collection, None, 4, joinPathPy('out/ionize2.png', __file__))
 
 collection.clear()
 
-level = indigo.buildPkaModel(10, 0.5, joinPath('molecules/PkaModel.sdf'))
+level = indigo.buildPkaModel(10, 0.5, joinPathPy('molecules/PkaModel.sdf', __file__))
 # level = indigo.buildPkaModel(10, 0.5, joinPath('test.sdf'))
 
 indigo.setOption("pKa-model", "advanced")
 indigo.setOption("pKa-model-level", 5)
 indigo.setOption("pKa-model-min-level", 2)
 
-for root, dirnames, filenames in os.walk(joinPath("molecules/AA")):
+for root, dirnames, filenames in os.walk(joinPathPy("molecules/AA", __file__)):
     filenames.sort()
     for filename in filenames:
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
@@ -209,11 +209,11 @@ indigo.setOption("render-grid-margins", "20, 10")
 indigo.setOption("render-grid-title-offset", "5")
 indigo.setOption("render-grid-title-property", "grid-comment")
 
-renderer.renderGridToFile(collection, None, 4, joinPath('out/ionize3.png'))
+renderer.renderGridToFile(collection, None, 4, joinPathPy('out/ionize3.png', __file__))
 
-level = indigo.buildPkaModel(10, 0.5, joinPath('molecules/adv_pka_model.sdf'))
+level = indigo.buildPkaModel(10, 0.5, joinPathPy('molecules/adv_pka_model.sdf', __file__))
 
-for item in indigo.iterateSmilesFile(joinPath("molecules/test_set.smi")):
+for item in indigo.iterateSmilesFile(joinPathPy("molecules/test_set.smi", __file__)):
     #    print("%s" % item.rawData())
     item.dearomatize();
     mol = indigo.loadMolecule(item.canonicalSmiles())
@@ -236,7 +236,7 @@ for item in indigo.iterateSmilesFile(joinPath("molecules/test_set.smi")):
             pka_str = pka_str + ",%4.2f" % pka
         print("%s" % item.rawData() + "%s" % pka_str)
 
-for item in indigo.iterateSDFile(joinPath("molecules/adv_pka_model.sdf")):
+for item in indigo.iterateSDFile(joinPathPy("molecules/adv_pka_model.sdf", __file__)):
     print("%s" % item.smiles())
     mol = indigo.loadMolecule(item.rawData())
     mol.foldHydrogens();
@@ -247,3 +247,5 @@ for item in indigo.iterateSDFile(joinPath("molecules/adv_pka_model.sdf")):
             print("======= Acid site on atom %d " % atom.index() + " has pKa value = %4.2f" % a_pka)
         if (b_pka > -100.0):
             print("======= Basic site on atom %d " % atom.index() + " has pKa value = %4.2f" % b_pka)
+if isIronPython():
+    renderer.Dispose()
