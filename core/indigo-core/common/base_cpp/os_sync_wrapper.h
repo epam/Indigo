@@ -28,35 +28,6 @@
 namespace indigo
 {
 
-    // Automatic lock/unlock
-
-    template <typename T, bool lock_can_be_null> class OsLockerT
-    {
-    public:
-        OsLockerT(T* lock) : _lock(lock)
-        {
-            if (_lock != NULL)
-                _lock->lock();
-            else if (!lock_can_be_null)
-                throw Exception("Passed lock object pointer is NULL");
-        }
-
-        OsLockerT(T& lock) : _lock(&lock)
-        {
-            _lock->lock();
-        }
-
-        ~OsLockerT()
-        {
-            if (_lock != NULL)
-                _lock->unlock();
-        }
-
-    private:
-        T* _lock;
-    };
-    typedef OsLockerT<std::mutex, false> OsLocker;
-
     //
     // Semaphore wrapper
     //
@@ -137,7 +108,7 @@ namespace indigo
         {
             if (!_was_created)
             {
-                OsLocker locker(osStaticObjConstructionLock());
+                std::lock_guard<std::mutex> locker(osStaticObjConstructionLock());
 
                 if (!_was_created)
                 {

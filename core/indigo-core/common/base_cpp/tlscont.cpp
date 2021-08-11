@@ -44,7 +44,7 @@ _SIDManager::~_SIDManager(void)
 
 void _SIDManager::setSessionId(qword id)
 {
-    OsLocker locker(_SIDManager::getLock());
+    std::lock_guard<std::mutex> locker(_SIDManager::getLock());
 
     if (!_allSIDs.find(id))
         _allSIDs.insert(id);
@@ -61,7 +61,7 @@ void _SIDManager::setSessionId(qword id)
 
 qword _SIDManager::allocSessionId(void)
 {
-    OsLocker locker(_SIDManager::getLock());
+    std::lock_guard<std::mutex> locker(_SIDManager::getLock());
 
     qword id;
     if (_vacantSIDs.size() > 0)
@@ -96,7 +96,7 @@ qword _SIDManager::getSessionId(void)
 
 void _SIDManager::releaseSessionId(qword id)
 {
-    OsLocker locker(_SIDManager::getLock());
+    std::lock_guard<std::mutex> locker(_SIDManager::getLock());
 
     _vacantSIDs.push(id);
 }

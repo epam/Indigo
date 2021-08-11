@@ -78,7 +78,7 @@ BingoContext::~BingoContext()
 
 void BingoContext::remove(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<BingoContext>, _instances);
     int i;
 
@@ -95,7 +95,7 @@ void BingoContext::remove(int id)
 
 BingoContext* BingoContext::_get(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<BingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -107,7 +107,7 @@ BingoContext* BingoContext::_get(int id)
 
 BingoContext* BingoContext::existing(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<BingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -119,7 +119,7 @@ BingoContext* BingoContext::existing(int id)
 
 BingoContext* BingoContext::get(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<BingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)

@@ -65,14 +65,14 @@ void MangoRegisterDispatcher::_handleResult(OsCommandResult& result)
 
         if ((_molecules_saved % 100) == 0)
         {
-            OsLocker locker(_lock_for_exclusive_access);
+            std::lock_guard<std::mutex> locker(_lock_for_exclusive_access);
             _context.context().longOpUpdate(_env, _molecules_prepared);
         }
 
         if ((_molecules_saved % 2000) == 0)
         {
             {
-                OsLocker locker(_lock_for_exclusive_access);
+                std::lock_guard<std::mutex> locker(_lock_for_exclusive_access);
                 _env.dbgPrintfTS("done %d molecules; flushing\n", _molecules_prepared);
             }
             _context.context().storage.flush(_env);
@@ -112,7 +112,7 @@ void MangoRegisterCommand::execute(OsCommandResult& result)
         const char* rowid = (const char*)rowids.get(i);
 
         {
-            OsLocker locker(_lock_for_exclusive_access);
+            std::lock_guard<std::mutex> locker(_lock_for_exclusive_access);
 
             _env.dbgPrintf("preparing molecule #%d with rowid %s\n", *_molecules_prepared_counter, rowid);
             (*_molecules_prepared_counter)++;

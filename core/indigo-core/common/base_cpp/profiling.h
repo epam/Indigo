@@ -33,7 +33,7 @@
     static int var_name##_name_index;                                                                                                                          \
     if (var_name##_name_index == 0)                                                                                                                            \
     {                                                                                                                                                          \
-        indigo::OsLocker locker(indigo::_profiling_global_lock);                                                                                               \
+        std::lock_guard<std::mutex> locker(indigo::_profiling_global_lock);                                                                                               \
         if (var_name##_name_index == 0)                                                                                                                        \
         {                                                                                                                                                      \
             indigo::ProfilingSystem& inst = indigo::ProfilingSystem::getInstance();                                                                            \

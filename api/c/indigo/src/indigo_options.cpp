@@ -267,7 +267,7 @@ void indigoProductEnumeratorGetOneTubeMode(Array<char>& value)
 void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
 {
     IndigoOptionManager& mgr = indigoGetOptionManager(id);
-    OsLocker locker(mgr.lock);
+    std::lock_guard<std::mutex> locker(mgr.lock);
 
 #define indigo indigoGetInstance()
 

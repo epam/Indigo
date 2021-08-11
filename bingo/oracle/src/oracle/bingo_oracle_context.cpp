@@ -74,7 +74,7 @@ BingoOracleContext& BingoOracleContext::get(OracleEnv& env, int id, bool lock, b
     if (config_reloaded != 0)
         *config_reloaded = true;
 
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<BingoContext>, _instances);
 
     _instances.add(res.release());

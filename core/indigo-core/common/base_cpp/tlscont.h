@@ -90,7 +90,7 @@ namespace indigo
 
         T& getLocalCopy(const qword id)
         {
-            OsLocker locker(_lock.ref());
+            std::lock_guard<std::mutex> locker(_lock.ref());
             if (!_map.count(id))
             {
                 _map[id] = std::unique_ptr<T>(new T());
@@ -105,7 +105,7 @@ namespace indigo
 
         void removeLocalCopy(const qword id)
         {
-            OsLocker locker(_lock.ref());
+            std::lock_guard<std::mutex> locker(_lock.ref());
             if (_map.count(id))
             {
                 _map.erase(id);
@@ -163,7 +163,7 @@ namespace indigo
 
         T& getVacant(int& idx)
         {
-            OsLocker locker(_lock);
+            std::lock_guard<std::mutex> locker(_lock);
             if (_vacant_indices.size() != 0)
             {
                 idx = _vacant_indices.pop();
@@ -177,7 +177,7 @@ namespace indigo
 
         void release(int idx)
         {
-            OsLocker locker(_lock);
+            std::lock_guard<std::mutex> locker(_lock);
             _vacant_indices.push(idx);
         }
 

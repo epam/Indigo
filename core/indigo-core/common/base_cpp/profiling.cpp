@@ -84,7 +84,7 @@ ProfilingSystem& ProfilingSystem::getInstance()
 
 int ProfilingSystem::getNameIndex(const char* name, bool add_if_not_exists)
 {
-    OsLocker locker(_profiling_global_names_lock);
+    std::lock_guard<std::mutex> locker(_profiling_global_names_lock);
     auto& _names = getNames();
 
     for (int i = 0; i < _names.size(); i++)
@@ -100,7 +100,7 @@ int ProfilingSystem::getNameIndex(const char* name, bool add_if_not_exists)
 
 void ProfilingSystem::addTimer(int name_index, qword dt)
 {
-    OsLocker locker(_lock);
+    std::lock_guard<std::mutex> locker(_lock);
 
     _ensureRecordExistanceLocked(name_index);
     Record& rec = _records[name_index];
@@ -111,7 +111,7 @@ void ProfilingSystem::addTimer(int name_index, qword dt)
 
 void ProfilingSystem::addCounter(int name_index, int value)
 {
-    OsLocker locker(_lock);
+    std::lock_guard<std::mutex> locker(_lock);
 
     _ensureRecordExistanceLocked(name_index);
     Record& rec = _records[name_index];
@@ -122,7 +122,7 @@ void ProfilingSystem::addCounter(int name_index, int value)
 
 void ProfilingSystem::reset(bool all)
 {
-    OsLocker locker(_lock);
+    std::lock_guard<std::mutex> locker(_lock);
     for (int i = 0; i < _records.size(); i++)
         _records[i].reset(all);
 }
@@ -135,8 +135,8 @@ int ProfilingSystem::_recordsCmp(int idx1, int idx2, void* context)
 
 void ProfilingSystem::getStatistics(Output& output, bool get_all)
 {
-    OsLocker locker(_lock);
-    OsLocker names_locker(_profiling_global_names_lock);
+    std::lock_guard<std::mutex> locker(_lock);
+    std::lock_guard<std::mutex> names_locker(_profiling_global_names_lock);
     auto& _names = getNames();
 
     // Print formatted statistics
@@ -253,7 +253,7 @@ void ProfilingSystem::_ensureRecordExistanceLocked(int name_index)
 float ProfilingSystem::getLabelExecTime(const char* name, bool total)
 {
     int idx = getNameIndex(name);
-    OsLocker locker(_lock);
+    std::lock_guard<std::mutex> locker(_lock);
     _ensureRecordExistanceLocked(idx);
 
     if (total)
@@ -265,7 +265,7 @@ float ProfilingSystem::getLabelExecTime(const char* name, bool total)
 qword ProfilingSystem::getLabelValue(const char* name, bool total)
 {
     int idx = getNameIndex(name);
-    OsLocker locker(_lock);
+    std::lock_guard<std::mutex> locker(_lock);
     _ensureRecordExistanceLocked(idx);
     if (total)
         return _records[idx].total.value;
@@ -276,7 +276,7 @@ qword ProfilingSystem::getLabelValue(const char* name, bool total)
 qword ProfilingSystem::getLabelCallCount(const char* name, bool total)
 {
     int idx = getNameIndex(name);
-    OsLocker locker(_lock);
+    std::lock_guard<std::mutex> locker(_lock);
     _ensureRecordExistanceLocked(idx);
     if (total)
         return _records[idx].total.count;

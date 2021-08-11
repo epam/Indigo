@@ -49,7 +49,7 @@ void OsSemaphore::Post()
 
 void OsMessageSystem::SendMsg(int message, void* param)
 {
-    OsLocker locker(_sendLock);
+    std::lock_guard<std::mutex> locker(_sendLock);
 
     _localMessage = message;
     _localParam = param;
@@ -60,7 +60,7 @@ void OsMessageSystem::SendMsg(int message, void* param)
 
 void OsMessageSystem::RecvMsg(int* message, void** result)
 {
-    OsLocker locker(_recvLock);
+    std::lock_guard<std::mutex> locker(_recvLock);
 
     // Wait for sending
     _sendSem.Wait();

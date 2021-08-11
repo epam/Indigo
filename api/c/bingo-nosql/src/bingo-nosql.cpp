@@ -81,7 +81,7 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
 
     int db_id;
     {
-        OsLocker bingo_locker(_bingo_lock);
+        std::lock_guard<std::mutex> bingo_locker(_bingo_lock);
         db_id = _bingo_instances.add(0);
     }
 
@@ -91,7 +91,7 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
         context->load(loc_dir.c_str(), options, db_id);
 
     {
-        OsLocker bingo_locker(_bingo_lock);
+        std::lock_guard<std::mutex> bingo_locker(_bingo_lock);
         _bingo_instances[db_id] = context.release();
         _lockers.expand(db_id + 1);
         _lockers[db_id] = new DatabaseLockData();
@@ -367,7 +367,7 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -386,7 +386,7 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -417,7 +417,7 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -436,7 +436,7 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -464,7 +464,7 @@ CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options
 
         int search_id;
         {
-            OsLocker searches_locker(_searches_lock);
+            std::lock_guard<std::mutex> searches_locker(_searches_lock);
             search_id = _searches.add(matcher);
             _searches_db.expand(search_id + 1);
             _searches_db[search_id] = db;
@@ -492,7 +492,7 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -511,7 +511,7 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -543,7 +543,7 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -562,7 +562,7 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -593,7 +593,7 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -612,7 +612,7 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -645,7 +645,7 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -665,7 +665,7 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
 
             int search_id;
             {
-                OsLocker searches_locker(_searches_lock);
+                std::lock_guard<std::mutex> searches_locker(_searches_lock);
                 search_id = _searches.add(matcher);
                 _searches_db.expand(search_id + 1);
                 _searches_db[search_id] = db;
@@ -688,7 +688,7 @@ CEXPORT int bingoEnumerateId(int db)
 
         int search_id;
         {
-            OsLocker searches_locker(_searches_lock);
+            std::lock_guard<std::mutex> searches_locker(_searches_lock);
             search_id = _searches.add(matcher);
             _searches_db.expand(search_id + 1);
             _searches_db[search_id] = db;
@@ -704,7 +704,7 @@ CEXPORT int bingoEndSearch(int search_obj)
     BINGO_BEGIN_SEARCH(search_obj)
     {
         // Ensure that such matcher exists
-        OsLocker searches_locker(_searches_lock);
+        std::lock_guard<std::mutex> searches_locker(_searches_lock);
 
         getMatcher(search_obj);
 
