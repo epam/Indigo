@@ -64,8 +64,6 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(m, joinPathPy("out/ind-514-output.png", __file__))
 print(checkImageSimilarity('ind-514-output.png'))
 
-indigo = Indigo()
-renderer = IndigoRenderer(indigo)
 indigo.setOption("render-background-color", "255, 255, 255")
 m = indigo.loadMolecule("CCn1c2nc[nH]c2c(=O)[nH]c1=O")
 renderer.renderToFile(m, joinPathPy("out/test-size-01.png", __file__))
@@ -107,8 +105,6 @@ renderer.renderToFile(mol, joinPathPy("out/image-size-bond-length-2.png", __file
 print(checkImageSimilarity('image-size-bond-length-2.png'))
 
 print("****** Bug with options mismatch *****")
-indigo = Indigo()
-renderer = IndigoRenderer(indigo)
 indigo.setOption("render-background-color", "255, 255, 255")
 
 m = indigo.loadMolecule("CCn1c2nc[nH]c2c(=O)[nH]c1=O")
@@ -119,8 +115,6 @@ for idx, opt in enumerate(options):
     print(checkImageSimilarity('bond-length-options-%d.png' % idx, 'bond-length-options-0.png'))
 
 print("****** Reference count *****")
-indigo = Indigo()
-renderer = IndigoRenderer(indigo)
 indigo.setOption("render-output-format", "png")
 m = indigo.loadMolecule("CCCC")
 # Make sure that there are no leak of IndigoObjects
@@ -132,10 +126,9 @@ cnt1 = indigo.countReferences()
 assert cnt0 >= cnt1
 
 print("****** Smart layout*****")
-indigo = Indigo()
-renderer = IndigoRenderer(indigo)
 mol = indigo.loadMolecule("C1OCCOCCOCCOCCOCCOCCOCCOCCOCCOC1")
 indigo.setOption("render-output-format", "png")
 indigo.setOption("smart-layout", "true")
 renderer.renderToFile(mol, joinPathPy("out/smart-layout-crown.png", __file__))
 print(checkImageSimilarity('smart-layout-crown.png'))
+renderer.Dispose()

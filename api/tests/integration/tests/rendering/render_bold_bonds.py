@@ -28,3 +28,4 @@ for v in [ "unset", "true", "false" ]:
 
     renderer.renderToFile(m, joinPath("out/bold-bonds-%s.png" % v))
     print(checkImageSimilarity('bold-bonds-%s.png' % v))
+renderer.Dispose()

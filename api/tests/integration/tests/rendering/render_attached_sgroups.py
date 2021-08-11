@@ -32,3 +32,4 @@ def testRenderAttachedSGroups(smiles):
 testRenderAttachedSGroups("N1C=CC=CC1C{-}c1ncccc{+n}1")
 #testRenderAttachedSGroups("C{-}c1ccccc{+n}1")
 print("Done")
+renderer.Dispose()

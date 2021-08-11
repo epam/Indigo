@@ -54,3 +54,4 @@ renderRxnfile(joinPath("reactions/epoxy.rxn"), "epoxy")
 
 
 print("Done")
+renderer.Dispose()

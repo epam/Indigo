@@ -26,7 +26,7 @@ def threadFunction(i):
     renderer.renderToFile(mol, joinPath('out/threads/thread_%s.%s' % (i, ext)))
     with open(joinPath('out/threads/thread_%s.%s' % (i, ext)), 'r') as f:
         a[i] = f.read()
-
+    renderer.Dispose()
 
 def runThreads():
     threads_list = []

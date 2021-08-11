@@ -43,8 +43,4 @@ for length in options_length:
 indigo.setOption("render-output-format", "cdxml")
 buf = renderer.renderGridToBuffer(arr, None, 3)
 print(len(buf) > 100)
-
-
-
-
-
+renderer.Dispose()
