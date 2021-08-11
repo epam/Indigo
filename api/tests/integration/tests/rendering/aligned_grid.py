@@ -81,4 +81,5 @@ def testAlignAtoms():
 
 
 testAlignAtoms()
-renderer.Dispose()
+if isIronPython():
+    renderer.Dispose()

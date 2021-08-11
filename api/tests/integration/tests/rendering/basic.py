@@ -131,4 +131,5 @@ indigo.setOption("render-output-format", "png")
 indigo.setOption("smart-layout", "true")
 renderer.renderToFile(mol, joinPathPy("out/smart-layout-crown.png", __file__))
 print(checkImageSimilarity('smart-layout-crown.png'))
-renderer.Dispose()
+if isIronPython():
+    renderer.Dispose()

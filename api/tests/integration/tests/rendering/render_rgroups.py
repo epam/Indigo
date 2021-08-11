@@ -142,4 +142,5 @@ testRenderRGroupAtomsRemove("""
 M  RGP  2   7   1   9   2
 M  END
 """)
-renderer.Dispose()
+if isIronPython():
+    renderer.Dispose()

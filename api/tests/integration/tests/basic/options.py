@@ -58,4 +58,5 @@ print(indigo.getOption("render-image-size"))
 print(indigo.getOptionType("render-image-size"))
 indigo.setOption("render-image-size", "-1, -1.2")
 print(indigo.getOption("render-image-size"))
-renderer.Dispose()
+if isIronPython():
+    renderer.Dispose()

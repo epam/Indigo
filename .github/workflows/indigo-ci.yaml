@@ -206,7 +206,7 @@ jobs:
           ls ${env:INDIGO_PATH} || echo failed
           echo ${INDIGO_PATH} || echo failed
           ls ${INDIGO_PATH} || echo failed
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo,part_test
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo,part_test,render_rgroups
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -272,20 +272,20 @@ jobs:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,render_rgroups
       - name: Test macOS
         if: ${{ matrix.os == 'macos' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test -platform mac
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,render_rgroups -platform mac
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo -platform ironwin
+        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,render_rgroups -platform ironwin
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1

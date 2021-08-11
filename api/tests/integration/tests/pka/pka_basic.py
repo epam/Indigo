@@ -247,4 +247,5 @@ for item in indigo.iterateSDFile(joinPathPy("molecules/adv_pka_model.sdf", __fil
             print("======= Acid site on atom %d " % atom.index() + " has pKa value = %4.2f" % a_pka)
         if (b_pka > -100.0):
             print("======= Basic site on atom %d " % atom.index() + " has pKa value = %4.2f" % b_pka)
-renderer.Dispose()
+if isIronPython():
+    renderer.Dispose()

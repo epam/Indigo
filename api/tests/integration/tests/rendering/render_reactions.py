@@ -50,8 +50,6 @@ for size in range(10, 100, 5):
 
 renderRxnfile(joinPath("reactions/adama_reaction.rxn"), "adama_reaction")
 renderRxnfile(joinPath("reactions/epoxy.rxn"), "epoxy")
-
-
-
 print("Done")
-renderer.Dispose()
+if isIronPython():
+    renderer.Dispose()
