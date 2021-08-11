@@ -65,7 +65,7 @@ renderer.renderToFile(m, joinPath("out/ind-514-output.png"))
 print(checkImageSimilarity('ind-514-output.png'))
 if isIronPython():
     renderer.Dispose()
-
+    indigo.Dispose()
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 indigo.setOption("render-background-color", "255, 255, 255")
@@ -109,6 +109,7 @@ renderer.renderToFile(mol, joinPath("out/image-size-bond-length-2.png"))
 print(checkImageSimilarity('image-size-bond-length-2.png'))
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()
 print("****** Bug with options mismatch *****")
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
@@ -122,6 +123,8 @@ for idx, opt in enumerate(options):
     print(checkImageSimilarity('bond-length-options-%d.png' % idx, 'bond-length-options-0.png'))
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()
+
 print("****** Reference count *****")
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
@@ -136,6 +139,7 @@ cnt1 = indigo.countReferences()
 assert cnt0 >= cnt1
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()
 
 print("****** Smart layout*****")
 indigo = Indigo()
@@ -147,3 +151,4 @@ renderer.renderToFile(mol, joinPath("out/smart-layout-crown.png"))
 print(checkImageSimilarity('smart-layout-crown.png'))
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()
