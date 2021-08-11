@@ -17,11 +17,7 @@
  ***************************************************************************/
 
 #include "render_context.h"
-#include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/output.h"
-#include "molecule/molecule.h"
-#include "reaction/reaction.h"
 
 #include <limits.h>
 
@@ -127,7 +123,7 @@ RenderContext::RenderContext(const RenderOptions& ropt, float sf, float lwf)
       _pattern(NULL)
 {
     _settings.init(sf, lwf);
-    bprintf(_fontfamily, "sans-serif");
+    bprintf(_fontfamily, "Arial");
     bbmin.x = bbmin.y = 1;
     bbmax.x = bbmax.y = -1;
     _defaultScale = 0.0f;

@@ -126,7 +126,7 @@ void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int size,
 void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold, bool idle)
 {
     /*
-     * cairo-wasm treats all surfaces as bounded and drops glyphs from a rendering
+     * cairo treats all surfaces as bounded and drops glyphs from a rendering
      * path if they don't belong to the surface yet, making it difficult to
      * calculate a desired surface size, which would include all elements of
      * a chemical structure being rendered.
@@ -134,7 +134,7 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool b
      * "real" rendering.
      *
      * If idle, we don't render glyphs for the text item. Rather, we calculate
-     * the bounding rectangle for the text item and add it to the cairo-wasm path.
+     * the bounding rectangle for the text item and add it to the cairo path.
      * Later, glyphs will be rendered in a usual way during a "real" stage.
      *
      * This also saves resources, as we don't make heavyweight glyph rendering
