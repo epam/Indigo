@@ -262,7 +262,7 @@ bool MoleculeSGroups::getParentAtoms(int idx, Array<int>& target)
 
 bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
 {
-    if (sgroup.parent_idx <= 0)
+    if (sgroup.parent_idx < 0)
     {
         return false;
     }
