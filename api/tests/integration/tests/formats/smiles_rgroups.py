@@ -44,9 +44,9 @@ def testSmilesRGroups (filename):
             except IndigoException as e:
                 print('caught ' + getIndigoExceptionText(e))
       
-testSmilesRGroups(joinPath('molecules/r_occur.mol'))
-testSmilesRGroups(joinPath('molecules/rgroup_a0.mol'))
-testSmilesRGroups(joinPath('molecules/rgroup_a1.mol'))
-testSmilesRGroups(joinPath('molecules/rgroup_all.mol'))
-testSmilesRGroups(joinPath('molecules/recursive1.mol'))
-testSmilesRGroups(joinPath('molecules/recursive2.mol'))
+testSmilesRGroups(joinPathPy('molecules/r_occur.mol', __file__))
+testSmilesRGroups(joinPathPy('molecules/rgroup_a0.mol', __file__))
+testSmilesRGroups(joinPathPy('molecules/rgroup_a1.mol', __file__))
+testSmilesRGroups(joinPathPy('molecules/rgroup_all.mol', __file__))
+testSmilesRGroups(joinPathPy('molecules/recursive1.mol', __file__))
+testSmilesRGroups(joinPathPy('molecules/recursive2.mol', __file__))

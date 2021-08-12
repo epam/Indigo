@@ -9,6 +9,8 @@ import sys
 import time
 import runpy
 import traceback
+import gc
+
 
 if sys.platform == 'cli':
     import clr
@@ -199,6 +201,7 @@ def main():
             t0 = time.time()
             try:
                 runpy.run_path(filename, run_name='__main__')
+                gc.collect()
             except:
                 sys.stderr.write(traceback.format_exc())
             tspent = time.time() - t0

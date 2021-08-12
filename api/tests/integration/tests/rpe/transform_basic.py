@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append('../../common')
-from env_indigo import Indigo, IndigoException, joinPath, getIndigoExceptionText
+from env_indigo import Indigo, IndigoException, joinPathPy, getIndigoExceptionText
 
 indigo = Indigo()
 
@@ -25,7 +25,7 @@ def test1():
     print("Test1:")
     reaction = indigo.loadQueryReaction(
         "[N-,P-,As-,Sb-,O-,S-,Se-,Te-:1][C:2]=[N+,P+,As+,Sb+,O+,S+,Se+,Te+:3]>>[N,P,As,Sb,O,S,Se,Te:1]=[C:2][N,P,As,Sb,O,S,Se,Te:3]")
-    molecule = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/1/mon.mol"))
+    molecule = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/1/mon.mol", __file__))
     print(molecule.canonicalSmiles())
     molFromSMILES = indigo.loadMolecule(molecule.canonicalSmiles())
     molFromSMILES.markEitherCisTrans()
@@ -36,8 +36,8 @@ def test1():
 def test2():
     print("Test2:")
     reaction = indigo.loadQueryReaction("[S:1]>>[P:1]I")
-    molecule1 = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/2/mon1.mol"))
-    molecule2 = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/2/mon2.mol"))
+    molecule1 = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/2/mon1.mol", __file__))
+    molecule2 = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/2/mon2.mol", __file__))
     indigo.transform(reaction, molecule1)
     indigo.transform(reaction, molecule2)
     print(molecule1.smiles())
@@ -46,8 +46,8 @@ def test2():
 
 def testInd194():
     print("Test IND-194:")
-    reaction = indigo.loadQueryReactionFromFile(joinPath("tests_transform_basic/ind_194/rxn.rxn"))
-    molecule1 = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/ind_194/mol.mol"))
+    reaction = indigo.loadQueryReactionFromFile(joinPathPy("tests_transform_basic/ind_194/rxn.rxn", __file__))
+    molecule1 = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/ind_194/mol.mol", __file__))
     print(molecule1.smiles())
     indigo.transform(reaction, molecule1)
     print(molecule1.smiles())
@@ -57,8 +57,8 @@ def testInd661():
     print("Test IND-194:")
     rxn_without_aam = indigo.loadQueryReaction("[C][S+]([C])[O-]>>[C]S([C])=O")
     rxn_with_aam = indigo.loadQueryReaction("[C:2][S+:4]([C:3])[O-:1]>>[C:2][S:4]([C:3])=[O:1]")
-    mol1 = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/ind_661/sulfoxidetest.mol"))
-    mol2 = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/ind_661/sulfoxidetest.mol"))
+    mol1 = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/ind_661/sulfoxidetest.mol", __file__))
+    mol2 = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/ind_661/sulfoxidetest.mol", __file__))
     print(mol1.smiles())
     print("With AAM:")
     indigo.transform(rxn_with_aam, mol1)
@@ -73,8 +73,8 @@ def testInd661():
 
 def testLayoutFlag(reaction):
     indigo.setOption("transform-layout", "false")
-    molecule1 = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/3/mol.mol"))
-    molecule2 = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/3/mol.mol"))
+    molecule1 = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/3/mol.mol", __file__))
+    molecule2 = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/3/mol.mol", __file__))
     indigo.transform(reaction, molecule1)
     indigo.setOption("transform-layout", "true")
     indigo.transform(reaction, molecule2)
@@ -99,15 +99,15 @@ def provideSeveralTransforms(mol, rxn_smi_path, ):
 
 
 def testSeveralTransforms():
-    rxn_smi_path = joinPath("tests_transform_basic/4/rxns.smi")
-    mol_it = indigo.iterateSmilesFile(joinPath("tests_transform_basic/4/sample_100.smi"))
+    rxn_smi_path = joinPathPy("tests_transform_basic/4/rxns.smi", __file__)
+    mol_it = indigo.iterateSmilesFile(joinPathPy("tests_transform_basic/4/sample_100.smi", __file__))
     mol_id = 0
     while mol_it.hasNext():
         mol = mol_it.next()
         provideSeveralTransforms(mol, rxn_smi_path)
         mol_id = mol_id + 1
 
-    inc_mol = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/4/inc.mol"))
+    inc_mol = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/4/inc.mol", __file__))
     provideSeveralTransforms(inc_mol, rxn_smi_path)
 
 
@@ -126,7 +126,7 @@ testLayoutFlag(reaction)
 
 print("*** Transform SDF records ***")
 reaction = indigo.loadQueryReaction("[S:1]>>[P:1]I")
-for m in indigo.iterateSmilesFile(joinPath("../../../../../data/molecules/basic/pubchem_slice_50.smi")):
+for m in indigo.iterateSmilesFile(joinPathPy("../../../../../data/molecules/basic/pubchem_slice_50.smi", __file__)):
     sm1 = m.smiles()
     indigo.transform(reaction, m)
     sm2 = m.smiles()
@@ -136,7 +136,7 @@ for m in indigo.iterateSmilesFile(joinPath("../../../../../data/molecules/basic/
 
 print("*** INDSP-197: [indigo-bugs] transform's invalid index exception ***")
 indigo.setOption("ignore-stereochemistry-errors", "true")
-molecule = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/indsp-197.mol"))
+molecule = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/indsp-197.mol", __file__))
 print(molecule.smiles())
 r_remove_methyl = indigo.loadReactionSmarts("[N+:1]~[CH3]>>[N:1]")  # remove methyl
 indigo.transform(r_remove_methyl, molecule)
@@ -152,7 +152,7 @@ print(molecule.smiles())
 print("*** INDSP-196: [indigo-general] lengthy transform ***")
 indigo = Indigo()
 indigo.setOption("timeout", "4000")
-molecule = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/indsp-196.mol"))
+molecule = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/indsp-196.mol", __file__))
 print(molecule.smiles())
 reaction = indigo.loadQueryReaction(
     "[N-,P-,As-,Sb-,O-,S-,Se-,Te-:1][C:2]=[N+,P+,As+,Sb+,O+,S+,Se+,Te+:3]>>[N,P,As,Sb,O,S,Se,Te:1]=[C:2][N,P,As,Sb,O,S,Se,Te:3]")
@@ -179,7 +179,7 @@ methods = [
 for t in transforms:
     for name, method in methods:
         print("Method: " + name)
-        molecule = indigo.loadMoleculeFromFile(joinPath("tests_transform_basic/indsp-220.mol"))
+        molecule = indigo.loadMoleculeFromFile(joinPathPy("tests_transform_basic/indsp-220.mol", __file__))
         print("  Original:    " + molecule.smiles())
         rxn = method(t)
         indigo.transform(rxn, molecule)

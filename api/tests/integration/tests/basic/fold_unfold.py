@@ -48,9 +48,9 @@ def testFoldUnfoldSingleReaction (smiles):
     for mol in rxn2.iterateMolecules():
         print(mol.countAtoms())
       
-testFoldUnfoldSDF(joinPath("../../../../../data/molecules/basic/sugars.sdf"))
+testFoldUnfoldSDF(joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__))
 testFoldUnfoldSingleMol("CC[H]")
 testFoldUnfoldSingleReaction("[H]CC>>CC")
 testFoldUnfoldSingleMol("[H][H]")
 testFoldUnfoldSingleMol("[2H]C")
-testFoldUnfoldSDF(joinPath("molecules/cis_trans_hydrogens_cycle.sdf"))
+testFoldUnfoldSDF(joinPathPy("molecules/cis_trans_hydrogens_cycle.sdf", __file__))

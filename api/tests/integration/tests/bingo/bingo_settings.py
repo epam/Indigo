@@ -20,7 +20,7 @@ print("indigo fp_params: sim %d, ord %d, tau %d, any %d, ext %s" % (
     indigo.getOptionInt("fp-any-qwords"),
     indigo.getOptionBool("fp-ext-enabled")))
 
-bingo = Bingo.createDatabaseFile(indigo, joinPath('tempdb'), 'molecule', '')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('tempdb', __file__), 'molecule', '')
 
 print("*** Insert molecules ***")
 

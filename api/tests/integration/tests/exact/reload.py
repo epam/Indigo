@@ -8,9 +8,9 @@ indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("ignore-stereochemistry-errors", "1")
 mol_db_names = [
-    joinPath("../../../../../data/molecules/basic/zinc-slice.sdf.gz"),
-    joinPath("../../../../../data/molecules/basic/thiazolidines.sdf"),
-    joinPath("../../../../../data/molecules/basic/sugars.sdf")]
+    joinPathPy("../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__),
+    joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__),
+    joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__)]
 
 
 def random_permutation(iterable, r=None):

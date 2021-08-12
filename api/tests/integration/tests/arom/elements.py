@@ -18,6 +18,6 @@ def testFile(filename, shortname):
             print("  %s" % (getIndigoExceptionText(e)))
         idx += 1
 
-for root, dirnames, filenames in os.walk(joinPath("molecules/elements")):
+for root, dirnames, filenames in os.walk(joinPathPy("molecules/elements", __file__)):
     for filename in sorted(filenames):
         testFile(os.path.join(root, filename), filename)

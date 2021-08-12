@@ -6,7 +6,7 @@ from env_indigo import *
 indigo = Indigo()
 
 print("*** Molecule ***")
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "pubchem-1.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/pubchem-1.mol", __file__))
 print(m.smiles())
 
 def printProperies(m):
@@ -47,6 +47,6 @@ m.setProperty("p2", "any text line 1\nany text line 2\nany text line 3\nany text
 printProperies(m)
 
 print("******** Parse structures with empty SDF properties **********")
-for m in indigo.iterateSDFile(joinPath("molecules", "properties-empty.sdf")):
+for m in indigo.iterateSDFile(joinPathPy("molecules/properties-empty.sdf", __file__)):
     print("*** Structure %s ***" % m.name())
     printProperies(m)

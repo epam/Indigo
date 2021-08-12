@@ -8,9 +8,9 @@ eps = 0.01
 sys.path.append('../../common')
 from env_indigo import *
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -20,11 +20,11 @@ indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("smart-layout", "1")
 
-saver = indigo.writeFile(joinPath("out", "result_simple_cycles.sdf"))
+saver = indigo.writeFile(joinPathPy("out/result_simple_cycles.sdf", __file__))
 idx = 1
 
 print("**** Test simple_cycles *****")
-for item in indigo.iterateSmilesFile(joinPath("molecules", "simple_cycles.smi")):
+for item in indigo.iterateSmilesFile(joinPathPy("molecules/simple_cycles.smi", __file__)):
     try:
         mol = item.clone()
         mol.layout()
@@ -91,13 +91,13 @@ for item in indigo.iterateSmilesFile(joinPath("molecules", "simple_cycles.smi"))
 
 saver.close()
 
-saver = indigo.writeFile(joinPath("out", "cyclopropadiens.sdf"))
+saver = indigo.writeFile(joinPathPy("out/cyclopropadiens.sdf", __file__))
 
 ref_path = getRefFilepath("cyclopropadiens.sdf")
 ref = indigo.iterateSDFile(ref_path)
 
 print("**** Test cyclopropadiens *****")
-for idx, mol in enumerate(indigo.iterateSmilesFile(joinPath("molecules","cyclopropadiens.smi"))):
+for idx, mol in enumerate(indigo.iterateSmilesFile(joinPathPy("molecules/cyclopropadiens.smi", __file__))):
     mol.layout()
     res = moleculeLayoutDiff(indigo, mol, ref.at(idx).rawData(), ref_is_file = False)
     print("  Item #{}: Result: {}".format(idx, res))

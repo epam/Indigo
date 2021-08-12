@@ -28,7 +28,7 @@ def loadMol(data):
 for file, method in files:
     print("*** %s ***" % (file))
     idx = 0
-    for m2 in method(joinPath(file)):
+    for m2 in method(joinPathPy(file, __file__)):
         idx += 1
         print("%d:" % (idx))
 

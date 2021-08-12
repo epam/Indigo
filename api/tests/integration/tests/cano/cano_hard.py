@@ -9,7 +9,7 @@ def remove_prefix(text, prefix):
     return text[len(prefix):] if text.startswith(prefix) else text
 
 idx = 1
-for m in indigo.iterateSDFile(joinPath("molecules/hard.sdf")):
+for m in indigo.iterateSDFile(joinPathPy("molecules/hard.sdf", __file__)):
     print("Item #%d" % (idx))
     print("  Try #1")
     try:

@@ -9,12 +9,12 @@ for arom_opt in [ "basic", "generic"]:
     indigo.setOption("aromaticity-model", arom_opt)
 
     # load targets
-    targets = list(indigo.iterateSDFile(joinPath("molecules/arom_targets.sdf")))
+    targets = list(indigo.iterateSDFile(joinPathPy("molecules/arom_targets.sdf", __file__)))
     #targets = [ indigo.loadMoleculeFromFile("test.mol") ]
     for t in targets:
        t.aromatize()
     # load queries
-    queries = [indigo.loadQueryMolecule(x.rawData()) for x in indigo.iterateSDFile(joinPath("molecules/arom_queries.sdf"))]
+    queries = [indigo.loadQueryMolecule(x.rawData()) for x in indigo.iterateSDFile(joinPathPy("molecules/arom_queries.sdf", __file__))]
     #queries = [ indigo.loadQueryMoleculeFromFile("query.mol") ]
     #indigo.dbgBreakpoint()
     for i in range(len(queries)):

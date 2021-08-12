@@ -23,7 +23,7 @@ print("*** Add external fingerprints ****")
 
 indigo = Indigo()
 
-bingo = Bingo.createDatabaseFile(indigo, joinPath('extfp'), 'molecule', '')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('extfp', __file__), 'molecule', '')
 print(bingo.version())
 m = indigo.loadMolecule('C1CCCCC1')
 bingo.insert(m)

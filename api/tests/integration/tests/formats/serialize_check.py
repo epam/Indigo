@@ -11,14 +11,14 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 indigo.setOption("molfile-saving-add-implicit-h", False)
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
-all_features_mol = indigo.loadMoleculeFromFile(joinPath("molecules/all_features_mol.mol"))
+all_features_mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/all_features_mol.mol", __file__))
 
 # Add highlighting
 for index in [1, 4, 5, 6, 7, 10, 40, 12, 13, 18, 20]:
@@ -29,18 +29,18 @@ for index in [5, 8, 1, 4, 5, 85, 10, 15, 112, 13, 2]:
     b = all_features_mol.getBond(index)
     b.highlight()
 
-hex_output = open(joinPath("serialized/serialized.out"), "w")
-unser1 = indigo.createFileSaver(joinPath("serialized/unser1.sdf"), "sdf")
-unser2 = indigo.createFileSaver(joinPath("serialized/unser2_sm.sdf"), "sdf")
+hex_output = open(joinPathPy("serialized/serialized.out", __file__), "w")
+unser1 = indigo.createFileSaver(joinPathPy("serialized/unser1.sdf", __file__), "sdf")
+unser2 = indigo.createFileSaver(joinPathPy("serialized/unser2_sm.sdf", __file__), "sdf")
 
-unser1_prev = indigo.createFileSaver(joinPath("serialized/unser1_prev.sdf"), "sdf")
-unser2_prev = indigo.createFileSaver(joinPath("serialized/unser2_sm_prev.sdf"), "sdf")
+unser1_prev = indigo.createFileSaver(joinPathPy("serialized/unser1_prev.sdf", __file__), "sdf")
+unser2_prev = indigo.createFileSaver(joinPathPy("serialized/unser2_sm_prev.sdf", __file__), "sdf")
 
-hex_output_prev = open(joinPath("serialized/serialized.std"), "r")
+hex_output_prev = open(joinPathPy("serialized/serialized.std", __file__), "r")
 
-saver = indigo.createFileSaver(joinPath("out/serialize_check.sdf"), "sdf")
+saver = indigo.createFileSaver(joinPathPy("out/serialize_check.sdf", __file__), "sdf")
 
-cano_sm_file = open(joinPath("out/cano_sm.smi"), "w")
+cano_sm_file = open(joinPathPy("out/cano_sm.smi", __file__), "w")
 
 
 def getMolProperties(mol):
@@ -295,10 +295,10 @@ processMol(all_features_mol)
 
 # Process other molecules
 test_sets = [
-    (joinPath("../../../../../data/molecules/basic/thiazolidines.sdf"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/allenes/all-allenes.sdf"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/sgroups/all_sgroups.sdf"), indigo.iterateSDFile),
-    (joinPath("molecules/serialize.sdf"), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/allenes/all-allenes.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/sgroups/all_sgroups.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("molecules/serialize.sdf", __file__), indigo.iterateSDFile),
 ]
 
 for file, func in test_sets:
@@ -314,18 +314,18 @@ for file, func in test_sets:
             print("caught {0}\n".format(getIndigoExceptionText(e)))
 
 print("*** Reactions serialization ***")
-hex_output = open(joinPath("serialized/reaction_serialized.out"), "w")
-unser1 = indigo.createFileSaver(joinPath("serialized/reaction_unser1.rdf"), "rdf")
-unser2 = indigo.createFileSaver(joinPath("serialized/reaction_unser2_sm.rdf"), "rdf")
+hex_output = open(joinPathPy("serialized/reaction_serialized.out", __file__), "w")
+unser1 = indigo.createFileSaver(joinPathPy("serialized/reaction_unser1.rdf", __file__), "rdf")
+unser2 = indigo.createFileSaver(joinPathPy("serialized/reaction_unser2_sm.rdf", __file__), "rdf")
 
-unser1_prev = indigo.createFileSaver(joinPath("serialized/reaction_unser1_prev.rdf"), "rdf")
-unser2_prev = indigo.createFileSaver(joinPath("serialized/reaction_unser2_sm_prev.rdf"), "rdf")
+unser1_prev = indigo.createFileSaver(joinPathPy("serialized/reaction_unser1_prev.rdf", __file__), "rdf")
+unser2_prev = indigo.createFileSaver(joinPathPy("serialized/reaction_unser2_sm_prev.rdf", __file__), "rdf")
 
-hex_output_prev = open(joinPath("serialized/reaction_serialized.std"), "r")
+hex_output_prev = open(joinPathPy("serialized/reaction_serialized.std", __file__), "r")
 
-saver = indigo.createFileSaver(joinPath("out/reaction_serialize_check.rdf"), "rdf")
+saver = indigo.createFileSaver(joinPathPy("out/reaction_serialize_check.rdf", __file__), "rdf")
 
-r = indigo.loadReactionFromFile(joinPath("reactions/ordering.rxn"))
+r = indigo.loadReactionFromFile(joinPathPy("reactions/ordering.rxn", __file__))
 processReaction = ReactionProcessor().process
 processReaction(r)
 
@@ -336,7 +336,7 @@ def iterateReactionSmilesFile(f):
 
 
 test_sets = [
-    (joinPath("reactions/reactions.smi"), iterateReactionSmilesFile),
+    (joinPathPy("reactions/reactions.smi", __file__), iterateReactionSmilesFile),
 ]
 
 for file, func in test_sets:

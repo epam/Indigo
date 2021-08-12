@@ -11,7 +11,7 @@ indigo.setOption("similarity-type", "CHEM")
 
 print("*** Difference between CHEM and Normilized-Edit ***")
 
-smiles_file_path = joinPath("molecules", "pubchem_slice_100k.smiles")
+smiles_file_path = joinPathPy("molecules/pubchem_slice_100k.smiles", __file__)
 num_control_mols = 10
 num_mols = 10000
 

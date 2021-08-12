@@ -813,7 +813,7 @@ public class Indigo {
     }
 
     @Override
-    protected void finalize() throws Throwable {
+    public void finalize() throws Throwable {
         if (!sessionReleased()) {
             lib.indigoReleaseSessionId(sid);
             session_released = true;

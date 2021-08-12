@@ -21,7 +21,7 @@ def getMoleculesValence (iter):
             print(msg)
 
 
-getMoleculesValence(indigo.iterateSDFile(joinPath("molecules/valence_test1.sdf")))
+getMoleculesValence(indigo.iterateSDFile(joinPathPy("molecules/valence_test1.sdf", __file__)))
 
 
 print("****** Set explicit valence ********")
@@ -35,4 +35,4 @@ print(m.smiles())
 print(m.molfile())
 
 print("****** Explicit unusual valence ********")
-getMoleculesValence(indigo.iterateSDFile(joinPath("../../../../../data/molecules/basic/explicit_valence.sdf")))
+getMoleculesValence(indigo.iterateSDFile(joinPathPy("../../../../../data/molecules/basic/explicit_valence.sdf", __file__)))

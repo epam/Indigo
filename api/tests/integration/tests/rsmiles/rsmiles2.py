@@ -4,7 +4,7 @@ from env_indigo import *
 
 indigo = Indigo()
 
-for idx, r in enumerate(indigo.iterateRDFile(joinPath('..', 'basic', 'reactions', 'rxns.rdf'))):
+for idx, r in enumerate(indigo.iterateRDFile(joinPathPy('../basic/reactions/rxns.rdf', __file__))):
     print("*** %d ***" % (idx))
     try:
         print(r.smiles())

@@ -32,7 +32,7 @@ groups = [
 
 for file, method in groups:
     print(file)
-    for idx, m in enumerate(method(joinPath(file))):
+    for idx, m in enumerate(method(joinPathPy(file, __file__))):
         print(idx)
         for model in ["basic", "generic"]:
             print(model)
@@ -57,7 +57,7 @@ total_count = 0
 
 bad_mols = collections.defaultdict(list)
 
-for m2 in indigo.iterateSDFile(joinPath("molecules", "mols-to-dearom.sdf")):
+for m2 in indigo.iterateSDFile(joinPathPy("molecules/mols-to-dearom.sdf", __file__)):
     indigo.setOption("aromaticity-model", "basic")
     sm = m2.smiles()
     print(sm)

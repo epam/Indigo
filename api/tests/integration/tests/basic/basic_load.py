@@ -19,7 +19,7 @@ print("****** Canonical SMILES ********")
 mol.unhighlight()
 print(mol.canonicalSmiles())
 print("****** Loading SDF with multiline properties ********")
-for item in indigo.iterateSDFile(joinPath("molecules/multiline_properties.sdf")):
+for item in indigo.iterateSDFile(joinPathPy("molecules/multiline_properties.sdf", __file__)):
     for prop in item.iterateProperties():
         print(prop.name() + " : " + prop.rawData())
 
@@ -30,7 +30,7 @@ m = indigo.loadMolecule("PC{-}O{+n}N")
 print(m.smiles())
 
 print("****** Finding invalid stereocenters ********")
-for item in indigo.iterateSDFile(joinPath("molecules/invalid_3d_stereocenters.sdf")):
+for item in indigo.iterateSDFile(joinPathPy("molecules/invalid_3d_stereocenters.sdf", __file__)):
     try:
         print(item.molfile())
     except IndigoException as e:
@@ -47,7 +47,7 @@ m.dearomatize()
 print(m.smiles())
 
 print("****** Skip BOM flag ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/mol-utf8-bom.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/mol-utf8-bom.mol", __file__))
 print(m.name())
 
 print("****** Incomplete stereo in SMILES/SMARTS ********")
@@ -62,7 +62,7 @@ m = indigo.loadQueryMolecule("[*@H](~*)~*")
 print(m.smiles())
 
 print("****** H2 molecule ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/H2.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/H2.mol", __file__))
 indigo.setOption("molfile-saving-mode", "2000")
 print(m.smiles())
 print(m.canonicalSmiles())
@@ -70,37 +70,37 @@ print(m.molfile())
 print(m.grossFormula())
 
 print("****** S-group's SCL (CLASS) support ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/sa-class-v2000.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/sa-class-v2000.mol", __file__))
 indigo.setOption("molfile-saving-mode", "2000")
 print(m.canonicalSmiles())
 print(m.molfile())
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/sa-class-v3000.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/sa-class-v3000.mol", __file__))
 print(m.canonicalSmiles())
 print(m.molfile())
 
 print("****** S-group's SPL (PARENT) support ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/sgroups-V2000.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/sgroups-V2000.mol", __file__))
 indigo.setOption("molfile-saving-mode", "2000")
 print(m.canonicalSmiles())
 print(m.molfile())
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/sgroups-V3000.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/sgroups-V3000.mol", __file__))
 print(m.canonicalSmiles())
 print(m.molfile())
 
 print("****** Load custom collection ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/custom_collection.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/custom_collection.mol", __file__))
 print(m.molfile())
 
 print("****** Load TEMPLATE (SCSR) structure ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/SCSR_test.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/SCSR_test.mol", __file__))
 print(m.molfile())
 
 print("****** Alias handling (V2000) ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/alias_marvin_v2000.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/alias_marvin_v2000.mol", __file__))
 indigo.setOption("molfile-saving-mode", "2000")
 print(m.molfile())
 print("****** Alias handling (V3000) ********")
@@ -108,14 +108,14 @@ indigo.setOption("molfile-saving-mode", "3000")
 print(m.molfile())
 
 print("****** Alias handling (CML) ********")
-print(m.cml());
+print(m.cml())
 
-m = indigo.loadMoleculeFromFile(joinPath("molecules/alias_marvin.cml"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/alias_marvin.cml", __file__))
 indigo.setOption("molfile-saving-mode", "2000")
-print(m.molfile());
+print(m.molfile())
 
 print("****** Test load from gzip buffer ********")
-with open (joinPath("molecules", "benzene.mol.gz"), 'rb') as gz_mol:
+with open (joinPathPy("molecules/benzene.mol.gz", __file__), 'rb') as gz_mol:
     buf = gz_mol.read()
     if isIronPython():
         from System import Array, Byte
@@ -126,18 +126,18 @@ with open (joinPath("molecules", "benzene.mol.gz"), 'rb') as gz_mol:
     print(m.canonicalSmiles())
 
 print("****** Load V3000 with DISP keyword ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/V3000_disp.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/V3000_disp.mol", __file__))
 indigo.setOption("molfile-saving-mode", "3000")
-print(m.molfile());
+print(m.molfile())
 
 print("****** Load V3000 with unknown keyword ********")
 try:
-   mol = indigo.loadMoleculeFromFile(joinPath("molecules/V3000_unknown.mol"))
+   mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/V3000_unknown.mol", __file__))
 except IndigoException as e:
    print(getIndigoExceptionText(e))
 
 try:
-   mol = indigo.loadMoleculeFromFile(joinPath("molecules/V3000_unknown_atom_key.mol"))
+   mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/V3000_unknown_atom_key.mol", __file__))
 except IndigoException as e:
    print(getIndigoExceptionText(e))
 

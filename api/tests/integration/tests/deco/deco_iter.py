@@ -122,13 +122,13 @@ print("should save only one rsite***********************************************
 testDecoIterateSmile("C1CCCCC1", ["NC1CCCCC1", "C1CC(O)CCC1"])
 
 print("user defined scaffold should have only two matches for simple molecule*************************************************************************")
-testDecoIterateFile(joinPath("molecules/deco_user_def1.mol"), ["NC1CCCC(O)C1"])
+testDecoIterateFile(joinPathPy("molecules/deco_user_def1.mol", __file__), ["NC1CCCC(O)C1"])
 
 print("user defined scaffold should have only 4 matches for molecule*************************************************************************")
-testDecoIterateFile(joinPath("molecules/deco_user_def1.mol"), ["NC1CCCC(C1)C1CCCC(O)C1"])
+testDecoIterateFile(joinPathPy("molecules/deco_user_def1.mol", __file__), ["NC1CCCC(C1)C1CCCC(O)C1"])
 
 print("user defined scaffold should have no matches for molecule with connected atoms*************************************************************************")
-testDecoIterateFile(joinPath("molecules/deco_user_def1.mol"), ["CC1CCC(O)CC1C"])
+testDecoIterateFile(joinPathPy("molecules/deco_user_def1.mol", __file__), ["CC1CCC(O)CC1C"])
 
 print("should save attachment points bond orders*************************************************************************")
 indigo.setOption("deco-save-ap-bond-orders", True)

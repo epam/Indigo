@@ -15,7 +15,7 @@ def testLoadFromBuffer():
     
     try:
         fileName = "../../../../../data/molecules/affine/2-bromobenzenethiol-rot.mol"
-        with open(joinPath(fileName), "rb") as binaryFile:
+        with open(joinPathPy(fileName, __file__), "rb") as binaryFile:
             print("\n(** #{0} **): no parameter".format(testNo))
             testNo += 1
             data = binaryFile.read()
@@ -47,7 +47,7 @@ def testLoadFromBuffer():
                 
     try:
         fileName = "../../../../../data/molecules/basic/benzodiazepine.sdf.gz"
-        with open(joinPath(fileName), "rb") as binaryFile:
+        with open(joinPathPy(fileName, __file__), "rb") as binaryFile:
             print("\n(** #{} **): Load from compessed binary ({})".format(testNo, fileName))
             testNo += 1
             data = binaryFile.read()
@@ -73,7 +73,7 @@ def testLoadFromFile():
     try:    
         print("\n(** #{0} **): Load from file ({1})".format(testNo, fileName))
         testNo += 1
-        m = indigo.loadStructureFromFile(joinPath(fileName))
+        m = indigo.loadStructureFromFile(joinPathPy(fileName, __file__))
         print(m.canonicalSmiles())
         print(m.smiles())
         print("Atoms: {0}".format(m.countAtoms()))
@@ -81,13 +81,13 @@ def testLoadFromFile():
     
         print("\n(** #{0} **): Load as query".format(testNo))
         testNo += 1
-        m = indigo.loadStructureFromFile(joinPath(fileName), "query")
+        m = indigo.loadStructureFromFile(joinPathPy(fileName, __file__), "query")
         print("Atoms: {0}".format(m.countAtoms()))
         print("Bonds: {0}".format(m.countBonds()))
     
         print("\n(** #{0} **): Load as smarts".format(testNo))
         testNo += 1
-        m = indigo.loadStructureFromFile(joinPath(fileName), "smarts")
+        m = indigo.loadStructureFromFile(joinPathPy(fileName, __file__), "smarts")
         print("Atoms: {0}".format(m.countAtoms()))
         print("Bonds: {0}".format(m.countBonds()))
     except IndigoException as e:
@@ -98,7 +98,7 @@ def testLoadFromFile():
         
         print("\n(** #{0} **): Load smiles from file ({1})".format(testNo, fileName))
         testNo += 1
-        m = indigo.loadStructureFromFile(joinPath(fileName))
+        m = indigo.loadStructureFromFile(joinPathPy(fileName, __file__))
         print("Atoms: {0}".format(m.countAtoms()))
         print("Bonds: {0}".format(m.countBonds()))    
     except IndigoException as e:
@@ -109,7 +109,7 @@ def testLoadFromFile():
         
         print("\n(** #{0} **): Load reaction from file ({1})".format(testNo, fileName))
         testNo += 1
-        m = indigo.loadStructureFromFile(joinPath(fileName))
+        m = indigo.loadStructureFromFile(joinPathPy(fileName, __file__))
         
         print("Molecules : {0}".format(m.countMolecules()))
         print("Reactants: {0}".format(m.countReactants()))
@@ -123,7 +123,7 @@ def testLoadFromFile():
 
         print("\n(** #{0} **): Load zipped file ({1})".format(testNo, fileName))
         testNo += 1
-        m = indigo.loadStructureFromFile(joinPath(fileName))
+        m = indigo.loadStructureFromFile(joinPathPy(fileName, __file__))
         print("Atoms: {0}".format(m.countAtoms()))
         print("Bonds: {0}".format(m.countBonds()))    
     except IndigoException as e:

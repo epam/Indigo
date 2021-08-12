@@ -5,7 +5,7 @@ from env_indigo import *
 
 indigo = Indigo()
 
-for root, dirnames, filenames in os.walk(joinPath("molecules/set1")):
+for root, dirnames, filenames in os.walk(joinPathPy("molecules/set1", __file__)):
     filenames.sort()
     for filename in filenames:
         sys.stdout.write("%s: " % filename)        
@@ -23,7 +23,7 @@ def getIndigo ():
     indigo.setOption("ignore-noncritical-query-features", "true")
     return indigo
 
-with open(joinPath("molecules/invalid.csv")) as f:
+with open(joinPathPy("molecules/invalid.csv", __file__)) as f:
     cells = f.read().split(",")
     for idx, c in enumerate(cells):
         print("** %d **" % idx)

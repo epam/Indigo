@@ -8,7 +8,7 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
 def readCdxAndPrintInfo (fname):
-	for idx, m in enumerate(indigo.iterateCDXFile(joinPath(fname))):
+	for idx, m in enumerate(indigo.iterateCDXFile(joinPathPy(fname, __file__))):
 		print("*****")
 		print(idx)
 		print("Smiles:")

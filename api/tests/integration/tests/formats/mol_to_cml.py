@@ -9,31 +9,31 @@ indigo.setOption("molfile-saving-skip-date", True)
 
 print("*** Mol to CML ***")
 
-mol = indigo.loadMoleculeFromFile(joinPath('molecules/disconnected-0106.mol'))
+mol = indigo.loadMoleculeFromFile(joinPathPy('molecules/disconnected-0106.mol', __file__))
 print(mol.cml())
 
 print("*** CML load atoms with incorrect valency (without radical settings) ***")
-mol = indigo.loadMoleculeFromFile(joinPath('molecules/incorrect_valency.mol'))
+mol = indigo.loadMoleculeFromFile(joinPathPy('molecules/incorrect_valency.mol', __file__))
 print(mol.cml())
 
 print("*** CML sgroup saving ***")
-mol = indigo.loadMoleculeFromFile(joinPath('molecules/sgroups.mol'))
+mol = indigo.loadMoleculeFromFile(joinPathPy('molecules/sgroups.mol', __file__))
 print(mol.cml())
 
 print("*** CML rgroup saving ***")
-mol = indigo.loadQueryMoleculeFromFile(joinPath('molecules/rgroups.mol'))
+mol = indigo.loadQueryMoleculeFromFile(joinPathPy('molecules/rgroups.mol', __file__))
 print(mol.molfile())
 print(mol.cml())
 print(indigo.loadQueryMolecule(mol.cml()).molfile())
 
-mol = indigo.loadMoleculeFromFile(joinPath('molecules/rgroup_all.mol'))
+mol = indigo.loadMoleculeFromFile(joinPathPy('molecules/rgroup_all.mol', __file__))
 print(mol.cml())
 
-mol = indigo.loadMoleculeFromFile(joinPath('molecules/rgroup_all.mrv'))
+mol = indigo.loadMoleculeFromFile(joinPathPy('molecules/rgroup_all.mrv', __file__))
 print(mol.cml())
 
 print("*** CML query features saving ***")
-mol = indigo.loadQueryMoleculeFromFile(joinPath('molecules/Query_for_CML.mol'))
+mol = indigo.loadQueryMoleculeFromFile(joinPathPy('molecules/Query_for_CML.mol', __file__))
 print(mol.molfile())
 print(mol.cml())
 print(indigo.loadQueryMolecule(mol.cml()).molfile())
@@ -55,7 +55,7 @@ try:
 except IndigoException as e:
     print(getIndigoExceptionText(e))
 
-mol = indigo.loadQueryMoleculeFromFile(joinPath('molecules/Query_bonds.mol'))
+mol = indigo.loadQueryMoleculeFromFile(joinPathPy('molecules/Query_bonds.mol', __file__))
 print(mol.molfile())
 print(mol.cml())
 print(indigo.loadQueryMolecule(mol.cml()).molfile())
@@ -70,13 +70,13 @@ except IndigoException as e:
 
 
 print("*** CML error handling ***")
-root = joinPath("molecules/cml")
+root = joinPathPy("molecules/cml", __file__)
 files = os.listdir(root)
 files.sort()
 for filename in files:
     print(filename)
     try:
-        mol = indigo.loadMoleculeFromFile(joinPath(root, filename))
+        mol = indigo.loadMoleculeFromFile(joinPathPy(os.path.join(root, filename), __file__))
         print(mol.smiles())
     except IndigoException as e:
         print(getIndigoExceptionText(e))

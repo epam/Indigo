@@ -8,11 +8,11 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("molfile-saving-mode", "3000")
 
-templates = indigo.loadMoleculeFromFile(joinPath("molecules/BIOVIADraw_all_templates.mol"))
+templates = indigo.loadMoleculeFromFile(joinPathPy("molecules/BIOVIADraw_all_templates.mol", __file__))
 
 indigo.setOption("ignore-stereochemistry-errors", "true")
 
-for item in indigo.iterateSDFile(joinPath("molecules/peptides.sdf.gz")):
+for item in indigo.iterateSDFile(joinPathPy("molecules/peptides.sdf.gz", __file__)):
 
     mol = item.clone()
 

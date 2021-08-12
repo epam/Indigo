@@ -44,13 +44,13 @@ def searchExact(bingo, q, options=''):
     assert found
 
 indigo = Indigo()
-bingo = Bingo.createDatabaseFile(indigo, joinPath('db_molecule'), 'molecule', '')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('db_molecule', __file__), 'molecule', '')
 
 index = 0
 wrongStructures = 0
 mols = []
 
-for mol in indigo.iterateSDFile(joinPath('molecules', 'bingo_mols.sdf')):
+for mol in indigo.iterateSDFile(joinPathPy('molecules/bingo_mols.sdf', __file__)):
     try:
         bingo.insert(mol, index)
         mols.append(mol)
@@ -63,7 +63,7 @@ for mol in indigo.iterateSDFile(joinPath('molecules', 'bingo_mols.sdf')):
 
 print('Finished indexing {0} structures. {1} wrong structures excluded'.format(index, wrongStructures))
 
-for mol in indigo.iterateSDFile(joinPath('molecules', 'rand_queries_small.sdf')):
+for mol in indigo.iterateSDFile(joinPathPy('molecules/rand_queries_small.sdf', __file__)):
     qmol = indigo.loadQueryMolecule(mol.rawData())
     searchSub(bingo, qmol)
     searchSim(bingo, mol, 0.9, 1, 'tanimoto')

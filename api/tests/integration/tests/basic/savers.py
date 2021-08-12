@@ -38,14 +38,14 @@ def makeQueryReaction (qm):
    
 mols = []
 print("*** Loading molecules *** ")
-for i, m in zip(infrange(1), indigo.iterateCMLFile(joinPath("../../../../../data/molecules/basic/tetrahedral-all.cml"))):
+for i, m in zip(infrange(1), indigo.iterateCMLFile(joinPathPy("../../../../../data/molecules/basic/tetrahedral-all.cml", __file__))):
    try:
       mols.append((i, m.clone()))
    except IndigoException as e:
       print("%d: %s" % (i, getIndigoExceptionText(e)))
       
 # add molecule with pseudoatoms
-mol_with_pseudo = indigo.loadMoleculeFromFile(joinPath("molecules/aniline_pol_psd.mol"))
+mol_with_pseudo = indigo.loadMoleculeFromFile(joinPathPy("molecules/aniline_pol_psd.mol", __file__))
 mol_with_pseudo.setName("Molecule with pseudoatoms")
 mols.append((len(mols) + 1, mol_with_pseudo))
       
@@ -161,16 +161,16 @@ def compareQuery(m1, m2):
       return "Query molecules representation doesn't match: %s and %s" % (data1, data2)
    return None
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
-if not os.path.exists(joinPath("savers_out")):
+if not os.path.exists(joinPathPy("savers_out", __file__)):
     try:
-        os.makedirs(joinPath("savers_out"))
+        os.makedirs(joinPathPy("savers_out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -178,36 +178,36 @@ if not os.path.exists(joinPath("savers_out")):
 # molecules   
 print("*** Saving molecules in different formats *** ")
 print("*** SDF *** ")
-testSaveLoad(mols, joinPath("savers_out/out_mols.sdf"), "sdf", indigo.iterateSDFile, compare, True)
+testSaveLoad(mols, joinPathPy("savers_out/out_mols.sdf", __file__), "sdf", indigo.iterateSDFile, compare, True)
 print("*** SMI with default name option. Should be disabled by default *** ")
-testSaveLoad(mols, joinPath("savers_out/out_mols.smi"), "smiles", indigo.iterateSmilesFile, compare, False)
+testSaveLoad(mols, joinPathPy("savers_out/out_mols.smi", __file__), "smiles", indigo.iterateSmilesFile, compare, False)
 print("*** SMI with names *** ")
 indigo.setOption("smiles-saving-write-name", "true")
-testSaveLoad(mols, joinPath("savers_out/out_mols_with_names.smi"), "smiles", indigo.iterateSmilesFile, compare, True)
+testSaveLoad(mols, joinPathPy("savers_out/out_mols_with_names.smi", __file__), "smiles", indigo.iterateSmilesFile, compare, True)
 print("*** SMI without names *** ")
 indigo.setOption("smiles-saving-write-name", "false")
-testSaveLoad(mols, joinPath("savers_out/out_mols_without_names.smi"), "smiles", indigo.iterateSmilesFile, compare, False)
+testSaveLoad(mols, joinPathPy("savers_out/out_mols_without_names.smi", __file__), "smiles", indigo.iterateSmilesFile, compare, False)
 print("*** CML *** ")
-testSaveLoad(mols, joinPath("savers_out/out_mols.cml"), "cml", indigo.iterateCMLFile, compare, True)
+testSaveLoad(mols, joinPathPy("savers_out/out_mols.cml", __file__), "cml", indigo.iterateCMLFile, compare, True)
 print("*** RDF *** ")
-testSaveLoad(mols, joinPath("savers_out/out_mols.rdf"), "rdf", indigo.iterateRDFile, compare, True)
+testSaveLoad(mols, joinPathPy("savers_out/out_mols.rdf", __file__), "rdf", indigo.iterateRDFile, compare, True)
 # query molecules   
 print("*** Saving query molecules in different formats *** ")
 print("*** SDF *** ")
-testSaveLoad(qmols, joinPath("savers_out/out_qmols.sdf"), "sdf", indigo.iterateSDFile, compareQuery, True)
+testSaveLoad(qmols, joinPathPy("savers_out/out_qmols.sdf", __file__), "sdf", indigo.iterateSDFile, compareQuery, True)
 print("*** RDF *** ")
-testSaveLoad(qmols, joinPath("savers_out/out_qmols.rdf"), "rdf", indigo.iterateRDFile, compareQuery, True)
+testSaveLoad(qmols, joinPathPy("savers_out/out_qmols.rdf", __file__), "rdf", indigo.iterateRDFile, compareQuery, True)
 # reactions
 print("*** Saving reactions in different formats *** ")
 print("*** RDF *** ")
-testSaveLoad(reacts, joinPath("savers_out/out_reacts.rdf"), "rdf", indigo.iterateRDFile, compareReactions, True)
+testSaveLoad(reacts, joinPathPy("savers_out/out_reacts.rdf", __file__), "rdf", indigo.iterateRDFile, compareReactions, True)
 print("*** Reaction SMI without names *** ")
 indigo.setOption("smiles-saving-write-name", "false")
-testSaveLoad(reacts, joinPath("savers_out/out_reacts_without_names.smi"), "smi", indigo.iterateSmilesFile, compareReactions, False)
+testSaveLoad(reacts, joinPathPy("savers_out/out_reacts_without_names.smi", __file__), "smi", indigo.iterateSmilesFile, compareReactions, False)
 print("*** Reaction SMI with names *** ")
 indigo.setOption("smiles-saving-write-name", "true")
-testSaveLoad(reacts, joinPath("savers_out/out_reacts_with_names.smi"), "smi", indigo.iterateSmilesFile, compareReactions, True)
+testSaveLoad(reacts, joinPathPy("savers_out/out_reacts_with_names.smi", __file__), "smi", indigo.iterateSmilesFile, compareReactions, True)
 # query reactions
 print("*** Saving query reactions in different formats *** ")
 print("*** RDF *** ")
-testSaveLoad(qreacts, joinPath("savers_out/out_qreacts.rdf"), "rdf", indigo.iterateRDFile, compareQueryReactions, True)
+testSaveLoad(qreacts, joinPathPy("savers_out/out_qreacts.rdf", __file__), "rdf", indigo.iterateRDFile, compareQueryReactions, True)

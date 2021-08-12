@@ -6,9 +6,9 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 mol_db_names = [
-    (joinPath("../../../../../data/molecules/basic/zinc-slice.sdf.gz"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/basic/thiazolidines.sdf"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/basic/sugars.sdf"), indigo.iterateSDFile)
+    (joinPathPy("../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), indigo.iterateSDFile)
 ]
 
 

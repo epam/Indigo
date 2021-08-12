@@ -7,7 +7,7 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 
 print("****** Load molfile with UTF-8 characters in Data S-group ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/sgroups_utf8.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/sgroups_utf8.mol", __file__))
 indigo.setOption("molfile-saving-mode", "2000")
 res = m.molfile()
 m = indigo.loadMolecule(res)
@@ -34,7 +34,7 @@ if isIronPython():
     # Console.Write(Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(res.encode("utf-8"))))
     # Console.Write(Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(m.cml().encode("utf-8"))))
     # m.saveMolfile("test.mol")
-    # with codecs.open(joinPath("test.mol"), "r", "utf-8-sig") as temp:
+    # with codecs.open(joinPathPy("test.mol", __file__), "r", "utf-8-sig") as temp:
         # print(temp.read()[510:])
 
         # with codecs.open('test', 'w', "utf-8") as f:

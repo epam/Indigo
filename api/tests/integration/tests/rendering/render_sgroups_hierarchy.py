@@ -23,7 +23,7 @@ indigo.setOption("render-coloring", "true")
 indigo.setOption("ignore-stereochemistry-errors", True)
 
 filename = "sgroups.mol"
-file = joinPath("molecules", filename)
+file = joinPathPy(os.path.join("molecules", filename), __file__)
 mol = indigo.loadQueryMoleculeFromFile(file)
 
 indigo.setOption("render-output-format", "svg")

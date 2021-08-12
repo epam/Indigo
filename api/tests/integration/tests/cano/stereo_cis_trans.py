@@ -7,11 +7,11 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 mol_db_names = [
-    (joinPath("../../../../../data/molecules/basic/zinc-slice.sdf.gz"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/basic/thiazolidines.sdf"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/basic/sugars.sdf"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/stereo/stereo_cis_trans.sdf"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/basic/helma.smi"), indigo.iterateSmilesFile)
+    (joinPathPy("../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/stereo/stereo_cis_trans.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__), indigo.iterateSmilesFile)
 ]
 
 if not os.path.exists(joinPathPy("out", __file__)):
@@ -52,10 +52,10 @@ def testAll(clear_cis_trans):
                     sys.stderr.write("  %s\n" % cansm3)
                     sys.stderr.write("  %s (cansm - before cis-trans removed)\n" % cansm)
                     sys.stderr.write("Database: %s" % relativePath(db_name))
-                    if not os.path.exists(joinPath("bugs")):
-                        os.mkdir(joinPath("bugs"))
-                    mol2.saveMolfile(joinPath("bugs/bug_%s_%s_mol2.mol" % (db_name_print, idx)))
-                    mol3.saveMolfile(joinPath("bugs/bug_%s_%s_mol3.mol" % (db_name_print, idx)))
+                    if not os.path.exists(joinPathPy("bugs", __file__)):
+                        os.mkdir(joinPathPy("bugs", __file__))
+                    mol2.saveMolfile(joinPathPy("bugs/bug_%s_%s_mol2.mol" % (db_name_print, idx), __file__))
+                    mol3.saveMolfile(joinPathPy("bugs/bug_%s_%s_mol3.mol" % (db_name_print, idx), __file__))
             except IndigoException as e:
                 print("Exception for #%s: %s" % (idx, getIndigoExceptionText(e)))
             # sys.stderr.write("%s %s\n" % (db_name_print, idx))

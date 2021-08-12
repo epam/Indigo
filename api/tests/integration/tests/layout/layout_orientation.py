@@ -9,16 +9,16 @@ from env_indigo import *
 
 
 indigo = Indigo()
-indigo.setOption("molfile-saving-skip-date", "1");
+indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("treat-x-as-pseudoatom", "1")
 
 def check_case(name):
     print("**** Test {} ****".format(name))
-    saver = indigo.writeFile(joinPath("out", "{}.sdf".format(name)))
-    # print(joinPath("out", "%s.sdf" % name))
+    saver = indigo.writeFile(joinPathPy("out/{}.sdf".format(name), __file__))
+    # print(joinPathPy("out", "%s.sdf" % name))
     ref_path = getRefFilepath("{}.sdf".format(name))
     ref = indigo.iterateSDFile(ref_path)
-    for idx, item in enumerate(indigo.iterateSDFile(joinPath("molecules", "orientation.sdf"))):
+    for idx, item in enumerate(indigo.iterateSDFile(joinPathPy("molecules/orientation.sdf", __file__))):
         try:
             mol = item.clone()
             mol.layout()

@@ -10,8 +10,9 @@ def listFiles (pattern):
     return sorted(files)
 
 indigo = Indigo()
+bidirectional_dir = joinPathPy("molecules/bidirectional", __file__)
 print("****** Load without ignore errors ********")
-for name in listFiles(joinPath("molecules/bidirectional") + "/*.mol"):
+for name in listFiles(bidirectional_dir + "/*.mol"):
     sys.stdout.write(basename(name) + " ")
     try:
         m = indigo.loadMoleculeFromFile(name)
@@ -21,7 +22,7 @@ for name in listFiles(joinPath("molecules/bidirectional") + "/*.mol"):
 
 print("****** Load with ignore errors ********")
 indigo.setOption("ignore-stereochemistry-errors", True)
-for name in listFiles(joinPath("molecules/bidirectional") + "/*.mol"):
+for name in listFiles(bidirectional_dir + "/*.mol"):
     sys.stdout.write(basename(name) + " ")
     m = indigo.loadMoleculeFromFile(name)
     print(m.smiles())
@@ -29,7 +30,7 @@ for name in listFiles(joinPath("molecules/bidirectional") + "/*.mol"):
 print("****** Load with bidirectional mode ********")
 indigo.setOption("ignore-stereochemistry-errors", False)
 indigo.setOption("stereochemistry-bidirectional-mode", True)
-for name in listFiles(joinPath("molecules/bidirectional") + "/*.mol"):
+for name in listFiles(bidirectional_dir + "/*.mol"):
     sys.stdout.write(basename(name) + " ")
     try:
         m = indigo.loadMoleculeFromFile(name)
@@ -48,7 +49,7 @@ def setStereo(m):
 
 indigo.setOption("stereochemistry-bidirectional-mode", True)
 indigo.setOption("ignore-stereochemistry-errors", False)
-for name in listFiles(joinPath("molecules/bidirectional") + "/*.mol"):
+for name in listFiles(bidirectional_dir + "/*.mol"):
     sys.stdout.write(basename(name) + " ")
     smi_file = name.rpartition('.')[0] + ".smi"
     try:

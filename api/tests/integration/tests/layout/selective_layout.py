@@ -3,11 +3,11 @@ import os
 import errno
 
 sys.path.append('../../common')
-from env_indigo import Indigo, IndigoException, joinPath, getRefFilepath, getIndigoExceptionText, moleculeLayoutDiff
+from env_indigo import Indigo, IndigoException, joinPathPy, getRefFilepath, getIndigoExceptionText, moleculeLayoutDiff
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -26,8 +26,8 @@ indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("smart-layout", "0")
 
-saver1 = indigo.writeFile(joinPath("out", "selective_layout.sdf"))
-saver2 = indigo.writeFile(joinPath("out", "selective_clean2d.sdf"))
+saver1 = indigo.writeFile(joinPathPy("out/selective_layout.sdf", __file__))
+saver2 = indigo.writeFile(joinPathPy("out/selective_clean2d.sdf", __file__))
 
 layout_dict = create_sd_test_dict(getRefFilepath("selective_layout.sdf"))
 clean2d_dict = create_sd_test_dict(getRefFilepath("selective_clean2d.sdf"))
@@ -38,7 +38,7 @@ atoms_lists.append(atoms_lists[0])
 atoms_lists.append([[7], [56], [26], [29], [66], [76]])
 atoms_lists.append([[0, 1, 2, 3, 4, 5, 6, 7]])
 
-for idx, item in enumerate(indigo.iterateSDFile(joinPath("molecules", "selective_layout.sdf"))):
+for idx, item in enumerate(indigo.iterateSDFile(joinPathPy("molecules/selective_layout.sdf", __file__))):
     try:
         for atom_list in atoms_lists[idx]:
             mol_test = "item #{} selection {} ".format(idx, atom_list)

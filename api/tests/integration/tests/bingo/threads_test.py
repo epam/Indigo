@@ -16,7 +16,7 @@ def insertProc(db, pid, input_smi, output=None):
     wrongStructures = 0
     #outPrint('Inserting molecules from:{1}'.format(pid, input_smi), pid, output)
 
-    smi_path = joinPath('molecules', input_smi)
+    smi_path = joinPathPy(os.path.join('molecules', input_smi), __file__)
     for mol in indigo.iterateSmilesFile(smi_path):
         try:
             db.insert(mol)
@@ -47,7 +47,7 @@ def makeSearchSub(db, pid, query, options, output=None):
     cnt = 0
     while search.next():
        #outPrint('Mol #{0}'.format(search.getCurrentId()), pid, output)
-       cnt = cnt + 1;
+       cnt = cnt + 1
     #f1=open('sub_out.txt', 'a+')
     #f1.write('PID {0}) Total count in db #{1} {2}\n'.format(pid, db, cnt))
     outPrint('PID {0}) Total count {1}\n'.format(pid, cnt), pid, output)
@@ -68,8 +68,8 @@ indigo = Indigo()
 indigo1 = Indigo()
 
 def consTest():
-    bingo1 = Bingo.createDatabaseFile(indigo, joinPath('mol_test_db1'), 'molecule', '')
-    bingo2 = Bingo.createDatabaseFile(indigo, joinPath('mol_test_db2'), 'molecule', '')
+    bingo1 = Bingo.createDatabaseFile(indigo, joinPathPy('mol_test_db1', __file__), 'molecule', '')
+    bingo2 = Bingo.createDatabaseFile(indigo, joinPathPy('mol_test_db2', __file__), 'molecule', '')
 
     insertProc(bingo1, 0, 'sample_2000_2.smi')
     insertProc(bingo1, 0, 'sample_2000_2.smi')
@@ -80,8 +80,8 @@ def consTest():
     insertProc(bingo2, 0, 'sample_2000_4.smi')
     insertProc(bingo2, 0, 'sample_2000_5.smi')
 
-    query = indigo.loadMoleculeFromFile(joinPath('molecules', 'query_382.smi'))
-    q_query = indigo.loadQueryMoleculeFromFile(joinPath('molecules', 'query_382.smi'))
+    query = indigo.loadMoleculeFromFile(joinPathPy('molecules/query_382.smi', __file__))
+    q_query = indigo.loadQueryMoleculeFromFile(joinPathPy('molecules/query_382.smi', __file__))
 
     cnt = 1
     for bingo in [bingo1, bingo2]:
@@ -103,7 +103,7 @@ def insertThr(db, pid, samples, output=None):
 
 
 def paralSameTest():
-    bingo1 = Bingo.createDatabaseFile(indigo, joinPath('mol_test_db1'), 'molecule', '')
+    bingo1 = Bingo.createDatabaseFile(indigo, joinPathPy('mol_test_db1', __file__), 'molecule', '')
 
     thrs = []
 
@@ -116,8 +116,8 @@ def paralSameTest():
     for t in thrs:
         t.join()
 
-    query = indigo.loadMoleculeFromFile(joinPath('molecules', 'query_2_182.smi'))
-    q_query = indigo.loadQueryMoleculeFromFile(joinPath('molecules', 'query_2_182.smi'))
+    query = indigo.loadMoleculeFromFile(joinPathPy('molecules/query_2_182.smi', __file__))
+    q_query = indigo.loadQueryMoleculeFromFile(joinPathPy('molecules/query_2_182.smi', __file__))
 
     makeSearchSim(bingo1, 0, query, 0.3, 1, 'tanimoto')
 
@@ -129,15 +129,15 @@ def paralSameTest():
 
 
 def paralBigTest():
-    bingo1 = Bingo.createDatabaseFile(indigo, joinPath('mol_test_db1'), 'molecule', 'read_only:false')
-    bingo2 = Bingo.createDatabaseFile(indigo, joinPath('mol_test_db2'), 'molecule', 'read_only:false')
+    bingo1 = Bingo.createDatabaseFile(indigo, joinPathPy('mol_test_db1', __file__), 'molecule', 'read_only:false')
+    bingo2 = Bingo.createDatabaseFile(indigo, joinPathPy('mol_test_db2', __file__), 'molecule', 'read_only:false')
 
     #indigo.dbgBreakpoint()
 
     thrs = []
 
-    query = indigo.loadMoleculeFromFile(joinPath('molecules', 'query_382.smi'))
-    q_query = indigo.loadQueryMoleculeFromFile(joinPath('molecules', 'query_382.smi'))
+    query = indigo.loadMoleculeFromFile(joinPathPy('molecules/query_382.smi', __file__))
+    q_query = indigo.loadQueryMoleculeFromFile(joinPathPy('molecules/query_382.smi', __file__))
 
     outp = ['' for x in range(70)]
     for i in range(0, 5):
@@ -198,8 +198,8 @@ def paralBigTest():
 def difIndigoTest():
     indigo1 = Indigo()
     indigo2 = Indigo()
-    bingo1 = Bingo.createDatabaseFile(indigo1, joinPath('mol_test_db1'), 'molecule', '')
-    bingo2 = Bingo.createDatabaseFile(indigo2, joinPath('mol_test_db2'), 'molecule', '')
+    bingo1 = Bingo.createDatabaseFile(indigo1, joinPathPy('mol_test_db1', __file__), 'molecule', '')
+    bingo2 = Bingo.createDatabaseFile(indigo2, joinPathPy('mol_test_db2', __file__), 'molecule', '')
 
     t1 = threading.Thread(target=insertThr, args=(bingo1, [2, 3]))
     t2 = threading.Thread(target=insertThr, args=(bingo2, [1, 4, 5]))
@@ -210,8 +210,8 @@ def difIndigoTest():
     t1.join()
     t2.join()
 
-    query = indigo.loadMoleculeFromFile(joinPath('molecules', 'query_382.smi'))
-    q_query = indigo.loadQueryMoleculeFromFile(joinPath('molecules', 'query_382.smi'))
+    query = indigo.loadMoleculeFromFile(joinPathPy('molecules/query_382.smi', __file__))
+    q_query = indigo.loadQueryMoleculeFromFile(joinPathPy('molecules/query_382.smi', __file__))
 
     makeSearchSim(bingo1, 0, query, 0.3, 1, 'tanimoto')
     makeSearchSim(bingo2, 0, query, 0.3, 1, 'tanimoto')

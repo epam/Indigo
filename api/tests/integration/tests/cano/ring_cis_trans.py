@@ -7,7 +7,7 @@ indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("ignore-noncritical-query-features", "true")
 
-mol_db_names = [(joinPath("../../../../../data/molecules/stereo/ring-cis-trans.sdf"), indigo.iterateSDFile)]
+mol_db_names = [(joinPathPy("../../../../../data/molecules/stereo/ring-cis-trans.sdf", __file__), indigo.iterateSDFile)]
 def random_permutation(iterable, r=None):
     """ Random selection from itertools.permutations(iterable, r) """
     pool = tuple(iterable)

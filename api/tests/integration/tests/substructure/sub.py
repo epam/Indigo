@@ -8,17 +8,17 @@ indigo = Indigo()
 
 def doMatrixTest(queries_file, targets_file):
     if targets_file.endswith('sdf'):
-        targets = list(indigo.iterateSDFile(joinPath(targets_file)))
+        targets = list(indigo.iterateSDFile(joinPathPy(targets_file, __file__)))
     elif targets_file.endswith('smiles') or targets_file.endswith('smi'):
-        targets = list(indigo.iterateSmilesFile(joinPath(targets_file)))
+        targets = list(indigo.iterateSmilesFile(joinPathPy(targets_file, __file__)))
     else:
         raise ValueError('Unexpected type of file: {0}'.format((targets_file)))
     if queries_file.endswith('sdf'):
         queries = [indigo.loadQueryMolecule(x.rawData())
-                   for x in indigo.iterateSDFile(joinPath(queries_file))]
+                   for x in indigo.iterateSDFile(joinPathPy(queries_file, __file__))]
     elif queries_file.endswith('smiles') or queries_file.endswith('smi'):
         queries = [indigo.loadQueryMolecule(x.rawData())
-                   for x in indigo.iterateSmilesFile(joinPath(queries_file))]
+                   for x in indigo.iterateSmilesFile(joinPathPy(queries_file, __file__))]
     else:
         raise ValueError('Unexpected type of file: {0}'.format((targets_file)))
     for i in range(len(queries)):

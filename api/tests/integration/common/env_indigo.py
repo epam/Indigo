@@ -151,13 +151,13 @@ class Memoize:
 
 
 # We use memoization because inspect works very slow on Jython
-@Memoize
-def joinPath(*args):
-    inspectStackLock.acquire()
-    frm = inspect.stack()[2][1]
-    inspectStackLock.release()
-    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\',
-                                                                                                                 '/')
+# @Memoize
+# def joinPath(*args):
+#     inspectStackLock.acquire()
+#     frm = inspect.stack()[2][1]
+#     inspectStackLock.release()
+#     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\',
+#                                                                                                                  '/')
 
 def joinPathPy(args, file_py):
     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(file_py)), args))).replace('\\',

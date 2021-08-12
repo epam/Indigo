@@ -14,7 +14,7 @@ class testThread(Thread):
       self.result = "???" #indigo._sid
       id = 0
 
-      for item in indigo.iterateSmilesFile(joinPath("molecules/helma.smi")):
+      for item in indigo.iterateSmilesFile(joinPathPy("molecules/helma.smi", __file__)):
          c1 = ""
          c2 = ""
          try:

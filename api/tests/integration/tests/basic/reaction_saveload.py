@@ -29,12 +29,12 @@ def testQueryReactionSaveLoad (filename):
     if rxn.countMolecules() != rxn3.countMolecules():
         print("ERROR: rxn != rxn3")
     
-testReactionSaveLoad(joinPath("reactions/disconnected_w_stereo.rxn"))
-testReactionSaveLoad(joinPath("reactions/disconnected.rxn"))
-testReactionSaveLoad(joinPath("reactions/catalysts3000.rxn"))
-testReactionSaveLoad(joinPath("reactions/catalysts2000.rxn"))
-testReactionSaveLoad(joinPath("reactions/amiderxn2.rxn"))
-testReactionSaveLoad(joinPath("reactions/test_hi.rxn"))
-testReactionSaveLoad(joinPath("reactions/pseudoatoms/psd-pol.rxn"))
+testReactionSaveLoad(joinPathPy("reactions/disconnected_w_stereo.rxn", __file__))
+testReactionSaveLoad(joinPathPy("reactions/disconnected.rxn", __file__))
+testReactionSaveLoad(joinPathPy("reactions/catalysts3000.rxn", __file__))
+testReactionSaveLoad(joinPathPy("reactions/catalysts2000.rxn", __file__))
+testReactionSaveLoad(joinPathPy("reactions/amiderxn2.rxn", __file__))
+testReactionSaveLoad(joinPathPy("reactions/test_hi.rxn", __file__))
+testReactionSaveLoad(joinPathPy("reactions/pseudoatoms/psd-pol.rxn", __file__))
 #testQueryReactionSaveLoad("reactions/pseudoatoms/x-o.rxn")
     

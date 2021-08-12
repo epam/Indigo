@@ -6,7 +6,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-set = [m for m in indigo.iterateSDFile(joinPath('molecules/chiral_test.sdf'))]
+set = [m for m in indigo.iterateSDFile(joinPathPy('molecules/chiral_test.sdf', __file__))]
 def calculateCanonicalSmiles (set):
    sm_tuples = []
    for m in set:
@@ -24,14 +24,14 @@ for m in set:
       
 res1 = calculateCanonicalSmiles(set)
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
-outfile = joinPath("out/chiral_test_out.sdf")
+outfile = joinPathPy("out/chiral_test_out.sdf", __file__)
 saver = indigo.createFileSaver(outfile, "sdf")
 for m in set:
    saver.append(m)

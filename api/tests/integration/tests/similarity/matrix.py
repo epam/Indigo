@@ -4,7 +4,7 @@ from env_indigo import *
 from itertools import product
 
 indigo = Indigo()
-mol_list = list(indigo.iterateSDFile(joinPath("molecules/thiazolidines_slice.sdf")))
+mol_list = list(indigo.iterateSDFile(joinPathPy("molecules/thiazolidines_slice.sdf", __file__)))
 pairs = product(mol_list, mol_list)
 for (p1, p2) in pairs:
    print("%s %s" %(p1.name(), p2.name()))

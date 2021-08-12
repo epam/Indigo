@@ -7,16 +7,16 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
     
-original = indigo.createFileSaver(joinPath("out/original.sdf"), "sdf")
-saver = indigo.createFileSaver(joinPath("out/create_query.sdf"), "sdf")
-saverRxn = indigo.createFileSaver(joinPath("out/create_query.rdf"), "rdf")
+original = indigo.createFileSaver(joinPathPy("out/original.sdf", __file__), "sdf")
+saver = indigo.createFileSaver(joinPathPy("out/create_query.sdf", __file__), "sdf")
+saverRxn = indigo.createFileSaver(joinPathPy("out/create_query.rdf", __file__), "rdf")
 
 def infrange(start):
    cur = start
@@ -43,7 +43,7 @@ def makeQueryReaction (qm):
    
 mols = []
 print("*** Loading molecules *** ")
-for i, m in zip(infrange(1), indigo.iterateCMLFile(joinPath('../../../../../data/molecules/basic/tetrahedral-all.cml'))):
+for i, m in zip(infrange(1), indigo.iterateCMLFile(joinPathPy('../../../../../data/molecules/basic/tetrahedral-all.cml', __file__))):
    try:
       mols.append((i, m.clone()))
       original.append(m)

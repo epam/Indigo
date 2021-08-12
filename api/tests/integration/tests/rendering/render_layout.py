@@ -8,7 +8,7 @@ from rendering import *
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 
-out_dir = joinPath("out/layout")
+out_dir = joinPathPy("out/layout", __file__)
 
 if not os.path.exists(out_dir):
     try:
@@ -22,19 +22,19 @@ indigo.setOption("render-output-format", "png")
 
 images_to_check = []
 
-for root, dirnames, filenames in os.walk(joinPath("molecules", "layout")):
+for root, dirnames, filenames in os.walk(joinPathPy("molecules/layout", __file__)):
     filenames.sort()
     for filename in filenames:
         print("%s: " % filename)
         try:
-            m = indigo.loadMoleculeFromFile(joinPath(root, filename))
+            m = indigo.loadMoleculeFromFile(joinPathPy(os.path.join(root, filename), __file__))
 
             for idx in range(3):
                 print(m.canonicalSmiles())
                 name = filename + "_%d.png" % idx
-                m.saveMolfile(joinPath(out_dir, name + ".mol"))
+                m.saveMolfile(joinPathPy(os.path.join(out_dir, name + ".mol"), __file__))
 
-                renderer.renderToFile(m, joinPath(out_dir, name))
+                renderer.renderToFile(m, joinPathPy(os.path.join(out_dir, name), __file__))
                 images_to_check.append('layout/' + name)
                 m = indigo.loadMolecule(m.molfile())
                 m.layout()

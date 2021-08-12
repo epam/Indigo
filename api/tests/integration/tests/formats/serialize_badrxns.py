@@ -34,5 +34,5 @@ def testSerializeBadRxns (filename):
     rxn2 = indigo.unserialize(buf)
     print(reducePrecision(rxn2.rxnfile()))
   
-testSerializeBadRxns(joinPath('reactions/crazystereo.rxn'))
-testSerializeBadRxns(joinPath('reactions/crazystereo-badvalence.rxn'))
+testSerializeBadRxns(joinPathPy('reactions/crazystereo.rxn', __file__))
+testSerializeBadRxns(joinPathPy('reactions/crazystereo-badvalence.rxn', __file__))

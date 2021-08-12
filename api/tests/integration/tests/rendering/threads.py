@@ -10,9 +10,9 @@ ext = 'svg'
 thread_count = 100
 a = {}
 
-if not os.path.exists(joinPath("out/threads")):
+if not os.path.exists(joinPathPy("out/threads", __file__)):
     try:
-        os.makedirs(joinPath("out/threads"))
+        os.makedirs(joinPathPy("out/threads", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -23,8 +23,8 @@ def threadFunction(i):
     renderer = IndigoRenderer(indigo)
     mol = indigo.loadMolecule("C")
     indigo.setOption("render-output-format", ext)
-    renderer.renderToFile(mol, joinPath('out/threads/thread_%s.%s' % (i, ext)))
-    with open(joinPath('out/threads/thread_%s.%s' % (i, ext)), 'r') as f:
+    renderer.renderToFile(mol, joinPathPy('out/threads/thread_%s.%s' % (i, ext), __file__))
+    with open(joinPathPy('out/threads/thread_%s.%s' % (i, ext), __file__), 'r') as f:
         a[i] = f.read()
     if isIronPython():
         renderer.Dispose()

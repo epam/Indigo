@@ -7,17 +7,17 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 mol_db_names = [
-    (joinPath("../../../../../data/molecules/basic/zinc-slice.sdf.gz"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/basic/thiazolidines.sdf"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/basic/sugars.sdf"), indigo.iterateSDFile),
-    (joinPath("../../../../../data/molecules/basic/helma.smi"), indigo.iterateSmilesFile),
-    (joinPath("molecules/cis_trans.smi"), indigo.iterateSmilesFile),
-    (joinPath("../../../../../data/molecules/stereo/stereo_cis_trans.sdf"), indigo.iterateSDFile),
-    (joinPath("molecules/complicated_cis_trans.sdf"), indigo.iterateSDFile),
-    (joinPath("molecules/complicated_cis_trans_h.sdf"), indigo.iterateSDFile),
-    (joinPath("molecules/test_explicit_h.smi"), indigo.iterateSmilesFile),
-    (joinPath("molecules/arom-ambiguous.smi"), indigo.iterateSmilesFile),
-    (joinPath("molecules/arom-ambiguous.sdf"), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__), indigo.iterateSmilesFile),
+    (joinPathPy("molecules/cis_trans.smi", __file__), indigo.iterateSmilesFile),
+    (joinPathPy("../../../../../data/molecules/stereo/stereo_cis_trans.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("molecules/complicated_cis_trans.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("molecules/complicated_cis_trans_h.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("molecules/test_explicit_h.smi", __file__), indigo.iterateSmilesFile),
+    (joinPathPy("molecules/arom-ambiguous.smi", __file__), indigo.iterateSmilesFile),
+    (joinPathPy("molecules/arom-ambiguous.sdf", __file__), indigo.iterateSDFile),
 ]
 
 

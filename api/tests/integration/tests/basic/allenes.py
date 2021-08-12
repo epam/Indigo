@@ -5,23 +5,23 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-indigo.setOption("molfile-saving-skip-date", "1");
+indigo.setOption("molfile-saving-skip-date", "1")
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
-saver = indigo.createFileSaver(joinPath("out/allenes_out.sdf"), "sdf")
+saver = indigo.createFileSaver(joinPathPy("out/allenes_out.sdf", __file__), "sdf")
 
 allenes_sets = [ 
-    (joinPath("molecules/allenes/allenes.smi"), indigo.iterateSmilesFile),
-    (joinPath("../../../../../data/molecules/allenes/all-allenes.sdf"), indigo.iterateSDFile),
-    (joinPath("molecules/allenes/two-allenes.mol"), indigo.iterateSDFile),
-    (joinPath("molecules/allenes/allenes-angle.mol"), indigo.iterateSDFile),
-    (joinPath("molecules/allenes/no-coord.mol"), indigo.iterateSDFile),
+    (joinPathPy("molecules/allenes/allenes.smi", __file__), indigo.iterateSmilesFile),
+    (joinPathPy("../../../../../data/molecules/allenes/all-allenes.sdf", __file__), indigo.iterateSDFile),
+    (joinPathPy("molecules/allenes/two-allenes.mol", __file__), indigo.iterateSDFile),
+    (joinPathPy("molecules/allenes/allenes-angle.mol", __file__), indigo.iterateSDFile),
+    (joinPathPy("molecules/allenes/no-coord.mol", __file__), indigo.iterateSDFile),
     ]
 
 def testSingle(m):

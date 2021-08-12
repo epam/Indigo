@@ -10,10 +10,10 @@ print("**** Potential leak on exception in SDF loading ****")
 for i in range(100):
     try:
         all = indigo.createMolecule()
-        for m in indigo.iterateSDFile(joinPath("molecules/exceptions/empty.sdf")):
+        for m in indigo.iterateSDFile(joinPathPy("molecules/exceptions/empty.sdf", __file__)):
             all.merge(m)
     except IndigoException as ex:
         pass
         
-    m = indigo.loadMoleculeFromFile(joinPath("molecules/exceptions/nonempty.mol"))
+    m = indigo.loadMoleculeFromFile(joinPathPy("molecules/exceptions/nonempty.mol", __file__))
     print("%d: %s" % (i, m.smiles()))

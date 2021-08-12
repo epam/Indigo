@@ -29,25 +29,25 @@ print("  " + ",".join([str(i) for i in a0.stereocenterPyramid()]))
 
 print(m.smiles())
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
 m.layout()
-m.saveMolfile(joinPath("out/stereocenters_out12.mol"))
+m.saveMolfile(joinPathPy("out/stereocenters_out12.mol", __file__))
 m.clearStereocenters()
 a0.addStereocenter(indigo.ABS, a2.index(), a1.index(), a3.index(), a4.index())
 print(m.smiles())
 m.layout()
-m.saveMolfile(joinPath("out/stereocenters_out21.mol"))
+m.saveMolfile(joinPathPy("out/stereocenters_out21.mol", __file__))
 
 print("****** Stereocenters pyramid ********")
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("ignore-stereochemistry-errors", "true")
-for idx, m in enumerate(indigo.iterateSDFile(joinPath("../../../../../data/molecules/basic/sugars.sdf"))):
+for idx, m in enumerate(indigo.iterateSDFile(joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__))):
     print("%d: %s" % (idx, m.smiles()))
     for s in m.iterateStereocenters():
         print("  " + ",".join([str(i) for i in s.stereocenterPyramid()]))
@@ -75,12 +75,12 @@ for i, s in enumerate(m.iterateStereocenters()):
 print(m.canonicalSmiles())    
 
 print("****** Mark stereobonds ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "stereo-many.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/stereo-many.mol", __file__))
 print(m.molfile())
-m.saveMolfile(joinPath("out/stereo-many-original.mol"))
+m.saveMolfile(joinPathPy("out/stereo-many-original.mol", __file__))
 m.markStereobonds()
 print(m.molfile())
-m.saveMolfile(joinPath("out/stereo-many-marked.mol"))
+m.saveMolfile(joinPathPy("out/stereo-many-marked.mol", __file__))
 
 print("****** Validate chirality ********")
 mols = [
@@ -112,7 +112,7 @@ for m in [mabs, mand, mor]:
     m2 = indigo.loadMolecule(m.molfile())
     print(m2.smiles())
 
-output = indigo.createFileSaver(joinPath("out", "stereosmiles.sdf"), "sdf")
+output = indigo.createFileSaver(joinPathPy("out/stereosmiles.sdf", __file__), "sdf")
 
 for format in [ "2000", "3000" ]:
     indigo.setOption("molfile-saving-mode", format)

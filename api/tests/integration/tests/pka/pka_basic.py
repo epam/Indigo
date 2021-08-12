@@ -173,7 +173,7 @@ renderer.renderGridToFile(collection, None, 4, joinPathPy('out/ionize2.png', __f
 collection.clear()
 
 level = indigo.buildPkaModel(10, 0.5, joinPathPy('molecules/PkaModel.sdf', __file__))
-# level = indigo.buildPkaModel(10, 0.5, joinPath('test.sdf'))
+# level = indigo.buildPkaModel(10, 0.5, joinPathPy('test.sdf', __file__))
 
 indigo.setOption("pKa-model", "advanced")
 indigo.setOption("pKa-model-level", 5)

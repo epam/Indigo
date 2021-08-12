@@ -3,7 +3,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-target_mol = indigo.loadMoleculeFromFile(joinPath("molecules/for_unignore.mol"))
+target_mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/for_unignore.mol", __file__))
 queries = [ "CC(C)C1CCCCC1", "C1CCCC1" ] 
 queries_mol = []
 for qsm in queries:
