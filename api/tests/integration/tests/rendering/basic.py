@@ -114,7 +114,7 @@ renderer = IndigoRenderer(indigo)
 indigo.setOption("render-background-color", "255, 255, 255")
 
 m = indigo.loadMolecule("CCn1c2nc[nH]c2c(=O)[nH]c1=O")
-options = [ 30, 30, "30", "30.0" ]
+options = [ 30.0, 30, "30", "30.0" ]
 for idx, opt in enumerate(options):
     indigo.setOption("render-bond-length", opt)
     renderer.renderToFile(m, joinPathPy("out/bond-length-options-%d.png" % idx, __file__))
