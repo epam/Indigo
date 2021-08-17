@@ -10,7 +10,7 @@ renderer = IndigoRenderer(indigo)
 
 out_dir = joinPathPy("out/molfile", __file__)
 
-if not os.path.exists(out_dir):
+if not os.access(out_dir, os.F_OK):
     try:
         os.makedirs(out_dir)
     except OSError as e:
@@ -18,7 +18,7 @@ if not os.path.exists(out_dir):
             raise
     
 indigo.setOption("render-background-color", "255, 255, 255")
-indigo.setOption("render-coloring", "true")
+indigo.setOption("render-coloring", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
 
 for root, dirnames, filenames in os.walk(joinPathPy("molecules/molfile", __file__)):

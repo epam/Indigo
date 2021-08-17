@@ -254,6 +254,12 @@ namespace com.epam.indigo
             checkResult(IndigoLib.indigoSetOptionFloat(name, value));
         }
 
+        public void setOption(string name, double value)
+        {
+            setSessionID();
+            checkResult(IndigoLib.indigoSetOptionFloat(name, (float) value));
+        }
+
         public void setOption(string name, int value)
         {
             setSessionID();
@@ -264,6 +270,12 @@ namespace com.epam.indigo
         {
             setSessionID();
             checkResult(IndigoLib.indigoSetOptionColor(name, valuer / 255.0f, valueg / 255.0f, valueb / 255.0f));
+        }
+
+        public void setOption(string name, double valuer, double valueg, double valueb)
+        {
+            setSessionID();
+            checkResult(IndigoLib.indigoSetOptionColor(name, (float) valuer / 255.0f, (float) valueg / 255.0f, (float) valueb / 255.0f));
         }
 
         public void setOption(string name, Color value)

@@ -618,7 +618,21 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             Sgroup& sg = _data.sgroups.push();
             int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
             TextItem& ti = _data.textitems[tii];
-            ti.text.copy(group.data);
+            if (group.tag != ' ')
+            {
+                ti.text.push(group.tag);
+                ti.text.appendString(" = ", false);
+            }
+
+            if (group.data.size())
+            {
+                Array<char> data;
+                data.copy(group.data);
+                if (data[0] == '\\')
+                    data.remove(0);
+                ti.text.concat(data);
+            }
+
             ti.text.push(0);
             ti.fontsize = FONT_SIZE_DATA_SGROUP;
             _cw.setTextItemSize(ti);
