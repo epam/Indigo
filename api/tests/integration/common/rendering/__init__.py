@@ -167,7 +167,7 @@ def checkBitmapSimilarity(filename, ref_filename):
         ref_filename = filename
     try:
         system = getPlatform()
-        if system != 'mac':
+        if system != 'mac' and system != 'linux':
             if os.name == 'nt':
                 system = 'win'
             elif os.name == 'posix':
