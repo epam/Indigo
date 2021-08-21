@@ -27,7 +27,7 @@
 #include <sys/sysctl.h>
 #endif
 
-#include "base_c/os_thread.h"
+#include <thread>
 #include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/os_thread_wrapper.h"
@@ -67,14 +67,6 @@ OsCommandDispatcher::OsCommandDispatcher(int handling_order, bool same_session_I
     _same_session_IDs = same_session_IDs;
 }
 
-extern "C" THREAD_RET THREAD_MOD _threadFuncStatic(void* param)
-{
-    OsCommandDispatcher* dispatcher = (OsCommandDispatcher*)param;
-
-    dispatcher->_threadFunc();
-    THREAD_END;
-}
-
 void OsCommandDispatcher::run()
 {
     _run(3 * osGetProcessorsCount() / 2 + 1);
@@ -108,7 +100,10 @@ void OsCommandDispatcher::_run(int nthreads)
 
     // Create handling threads
     for (int i = 0; i < _left_thread_count; i++)
-        osThreadCreate(_threadFuncStatic, this);
+    {
+        std::thread thread{ [this]() { this->_threadFunc(); } };
+        thread.detach();
+    }
 
     _mainLoop();
 }
