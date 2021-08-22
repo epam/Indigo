@@ -21,26 +21,35 @@
 using namespace indigo;
 
 //
-// Semaphore wrapper
+// Semaphore
 //
-OsSemaphore::OsSemaphore(int initial_count, int max_count)
+OsSemaphore::OsSemaphore(int initial_count, int max_count) : _max_count{ max_count < 1 ? 1 : max_count }
 {
-    osSemaphoreCreate(&_sem, initial_count, max_count);
+    _count = initial_count < 0 ? 0 : initial_count > _max_count ? _max_count : initial_count;
 }
 
 OsSemaphore::~OsSemaphore()
 {
-    osSemaphoreDelete(&_sem);
 }
 
 void OsSemaphore::Wait()
 {
-    osSemaphoreWait(&_sem);
+    std::unique_lock<std::mutex> lock{ _mutex };
+    
+    _cond.wait(lock, [this](){ return _count > 0; });
+    
+    --_count;
 }
 
 void OsSemaphore::Post()
 {
-    osSemaphorePost(&_sem);
+    std::unique_lock<std::mutex> lock { _mutex };
+    
+    if (_count < _max_count)
+    {
+        ++_count;
+        _cond.notify_one();
+    }
 }
 
 //

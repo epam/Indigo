@@ -20,16 +20,16 @@
 #define __os_sync_wrapper_h__
 
 #include <mutex>
+#include <condition_variable>
 
 #include "base_c/defs.h"
-#include "base_c/os_sync.h"
 #include "base_cpp/exception.h"
 
 namespace indigo
 {
 
     //
-    // Semaphore wrapper
+    // Semaphore
     //
     class DLLEXPORT OsSemaphore
     {
@@ -41,7 +41,10 @@ namespace indigo
         void Post();
 
     private:
-        os_semaphore _sem;
+        std::mutex _mutex;
+        std::condition_variable _cond;
+        int _count;
+        const int _max_count;
     };
 
     //

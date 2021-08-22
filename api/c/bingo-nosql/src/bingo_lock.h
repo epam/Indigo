@@ -1,13 +1,13 @@
 #ifndef __bingo_lock__
 #define __bingo_lock__
 
-#include "base_c/os_sync.h"
+#include "base_cpp/os_sync_wrapper.h"
 
 namespace bingo
 {
     struct DatabaseLockData
     {
-        os_semaphore rc_sem, wc_sem, w_sem, r_sem;
+        indigo::OsSemaphore rc_sem, wc_sem, w_sem, r_sem;
         int writers_count, readers_count;
 
         DatabaseLockData();

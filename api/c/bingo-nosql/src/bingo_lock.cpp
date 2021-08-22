@@ -2,52 +2,49 @@
 
 using namespace bingo;
 
-DatabaseLockData::DatabaseLockData() : writers_count(0), readers_count(0)
+DatabaseLockData::DatabaseLockData() : rc_sem(1, 1), wc_sem(1, 1), w_sem(1, 1), r_sem(1, 1), writers_count(0), readers_count(0)
 {
-    osSemaphoreCreate(&rc_sem, 1, 1);
-    osSemaphoreCreate(&wc_sem, 1, 1);
-    osSemaphoreCreate(&w_sem, 1, 1);
-    osSemaphoreCreate(&r_sem, 1, 1);
 }
 
 ReadLock::ReadLock(DatabaseLockData& data) : _data(data)
 {
-    osSemaphoreWait(&_data.r_sem);
-    osSemaphoreWait(&_data.rc_sem);
+    _data.r_sem.Wait();
+    _data.rc_sem.Wait();
     _data.readers_count++;
     if (_data.readers_count == 1)
-        osSemaphoreWait(&_data.w_sem);
-    osSemaphorePost(&_data.rc_sem);
-    osSemaphorePost(&_data.r_sem);
+        _data.w_sem.Wait();
+    _data.rc_sem.Post();
+    _data.r_sem.Post();
 }
 
 ReadLock::~ReadLock()
 {
-    osSemaphoreWait(&_data.rc_sem);
+    _data.rc_sem.Wait();
     _data.readers_count--;
     if (_data.readers_count == 0)
-        osSemaphorePost(&_data.w_sem);
-    osSemaphorePost(&_data.rc_sem);
+        _data.w_sem.Post();
+    _data.rc_sem.Post();
 }
 
 WriteLock::WriteLock(DatabaseLockData& data) : _data(data)
 {
-    osSemaphoreWait(&_data.wc_sem);
+    _data.wc_sem.Wait();
     _data.writers_count++;
     if (_data.writers_count == 1)
-        osSemaphoreWait(&_data.r_sem);
-    osSemaphorePost(&_data.wc_sem);
-
-    osSemaphoreWait(&_data.w_sem);
+        _data.r_sem.Wait();
+    _data.wc_sem.Post();
+    
+    _data.w_sem.Wait();
 }
 
 WriteLock::~WriteLock()
 {
-    osSemaphorePost(&_data.w_sem);
+    _data.w_sem.Post();
 
-    osSemaphoreWait(&_data.wc_sem);
+    _data.wc_sem.Wait();
     _data.writers_count--;
     if (_data.writers_count == 0)
-        osSemaphorePost(&_data.r_sem);
-    osSemaphorePost(&_data.wc_sem);
+        _data.r_sem.Post();
+    
+    _data.wc_sem.Post();
 }

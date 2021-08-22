@@ -1,6 +1,5 @@
 #include "bingo_ptr.h"
 #include "base_c/bitarray.h"
-#include "base_c/os_sync.h"
 #include "bingo_mmf_storage.h"
 #include <fstream>
 #include <iostream>
