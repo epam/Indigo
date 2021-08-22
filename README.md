@@ -76,6 +76,7 @@ Indigo/build>cmake --build . --config Release --target all
 ```
 
 or any of the following targets could be specified: --target { indigo-dotnet | indigo-java | indigo-python }
+Build results could be collected from Indigo/dist folder.
 
 ## How to build Indigo-WASM ##
 
