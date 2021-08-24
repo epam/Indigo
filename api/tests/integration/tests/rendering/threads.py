@@ -28,6 +28,7 @@ def threadFunction(i):
         a[i] = f.read()
     if isIronPython():
         renderer.Dispose()
+        indigo.Dispose()
 
 def runThreads():
     threads_list = []

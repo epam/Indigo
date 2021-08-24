@@ -212,6 +212,7 @@ cairo_status_t RenderContext::writer(void* closure, const unsigned char* data, u
 
 void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int width, int height)
 {
+    cairo_scaled_font_map_destroy();
     int mode = opt.mode;
     if (writer == NULL && (mode == MODE_HDC || mode == MODE_PRN))
         mode = MODE_PDF;

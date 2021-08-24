@@ -233,4 +233,6 @@ data_group = m.getDataSGroup(0)
 print("data s-group description = %s" % data_group.description())
 print("data s-group data = %s" % data_group.data())
 if isIronPython():
+    saver.Dispose()
     renderer.Dispose()
+    indigo.Dispose()
