@@ -45,3 +45,4 @@ buf = renderer.renderGridToBuffer(arr, None, 3)
 print(len(buf) > 100)
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()
