@@ -35,5 +35,7 @@ renderer.renderToFile(mol, joinPathPy(out_dir + '/' + filename + "_q.png", __fil
 print(checkImageSimilarity('%s' % (filename + '_q.png')))
 
 print("   OK")
+
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()

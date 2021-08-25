@@ -46,5 +46,7 @@ for root, dirnames, filenames in os.walk(joinPathPy("molecules/layout", __file__
 print("Checking image similarities:")
 for name in images_to_check:
     print(checkImageSimilarity(name))
+
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()

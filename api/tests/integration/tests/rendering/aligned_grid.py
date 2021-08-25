@@ -81,5 +81,7 @@ def testAlignAtoms():
 
 
 testAlignAtoms()
+
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()

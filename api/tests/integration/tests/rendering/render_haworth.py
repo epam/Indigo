@@ -57,5 +57,7 @@ M  END
 
 renderer.renderToFile(m, joinPathPy('out/render_haworth.png', __file__))
 print(checkImageSimilarity('render_haworth.png'))
+
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()

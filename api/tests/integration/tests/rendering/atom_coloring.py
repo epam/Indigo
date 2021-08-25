@@ -43,5 +43,7 @@ rxn.addProduct(m)
 rxn.addCatalyst(m)
 renderer.renderToFile(rxn, joinPathPy("out/rxn-atom-coloring.png", __file__))
 print(checkImageSimilarity('rxn-atom-coloring.png'))
+
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()
