@@ -1301,6 +1301,7 @@ cairo_scaled_font_map_destroy (void)
 {
     _cairo_scaled_font_map_destroy();
 }
+slim_hidden_def (cairo_scaled_font_map_destroy);
 
 /**
  * cairo_scaled_font_destroy:
