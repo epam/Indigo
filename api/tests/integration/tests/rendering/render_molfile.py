@@ -48,5 +48,7 @@ for root, dirnames, filenames in os.walk(joinPathPy("molecules/molfile", __file_
             print("   OK")
         except IndigoException as e:
             print("  %s" % (getIndigoExceptionText(e)))
+
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()

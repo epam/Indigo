@@ -1608,6 +1608,9 @@ cairo_scaled_font_reference (cairo_scaled_font_t *scaled_font);
 cairo_public void
 cairo_scaled_font_destroy (cairo_scaled_font_t *scaled_font);
 
+cairo_public void
+cairo_scaled_font_map_destroy (void);
+
 cairo_public unsigned int
 cairo_scaled_font_get_reference_count (cairo_scaled_font_t *scaled_font);
 

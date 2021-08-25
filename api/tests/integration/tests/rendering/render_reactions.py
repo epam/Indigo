@@ -51,5 +51,7 @@ for size in range(10, 100, 5):
 renderRxnfile(joinPathPy("reactions/adama_reaction.rxn", __file__), "adama_reaction")
 renderRxnfile(joinPathPy("reactions/epoxy.rxn", __file__), "epoxy")
 print("Done")
+
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()

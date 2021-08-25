@@ -28,5 +28,7 @@ for v in [ "unset", "true", "false" ]:
 
     renderer.renderToFile(m, joinPathPy("out/bold-bonds-%s.png" % v, __file__))
     print(checkImageSimilarity('bold-bonds-%s.png' % v))
+
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()

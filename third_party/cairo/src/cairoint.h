@@ -2014,6 +2014,7 @@ slim_hidden_proto (cairo_save);
 slim_hidden_proto (cairo_scale);
 slim_hidden_proto (cairo_scaled_font_create);
 slim_hidden_proto (cairo_scaled_font_destroy);
+slim_hidden_proto (cairo_scaled_font_map_destroy);
 slim_hidden_proto (cairo_scaled_font_extents);
 slim_hidden_proto (cairo_scaled_font_get_ctm);
 slim_hidden_proto (cairo_scaled_font_get_font_face);

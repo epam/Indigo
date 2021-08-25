@@ -41,5 +41,7 @@ for line in open(joinPathPy("molecules/smarts.sma", __file__)):
     except IndigoException as e:
         print("  %s" % (getIndigoExceptionText(e)))
     idx += 1
+
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()

@@ -1296,6 +1296,13 @@ cairo_scaled_font_reference (cairo_scaled_font_t *scaled_font)
 }
 slim_hidden_def (cairo_scaled_font_reference);
 
+void
+cairo_scaled_font_map_destroy (void)
+{
+    _cairo_scaled_font_map_destroy();
+}
+slim_hidden_def (cairo_scaled_font_map_destroy);
+
 /**
  * cairo_scaled_font_destroy:
  * @scaled_font: a #cairo_scaled_font_t
