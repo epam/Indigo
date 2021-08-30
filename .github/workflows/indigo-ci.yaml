@@ -692,7 +692,6 @@ jobs:
           path: dist/bingo-sqlserver*.zip
 
   publish:
-    if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
     needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64]
     container: epmlsop/indigo-tester:latest
@@ -711,29 +710,11 @@ jobs:
         with:
           name: indigo-native-shared-libs
           path: dist/
-      - name: Update Wrappers version
-        run: python3 build_scripts/indigo-update-version.py
       - name: Publish Python wheels to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal --publish
-      - name: Publish Java jars to Maven Central
-        env:
-          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
-          MAVEN_USER: ${{ secrets.MAVEN_USER }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
-        run: |
-          set -eux
-          apt install -y gnupg
-          mkdir /root/.m2
-          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
-          echo ${GPG_PRIVATE_KEY} > gpg.key
-          gpg --batch --import gpg.key
-          rm gpg.key
-          python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
+        run: twine upload -u __token__ -p ${PYPI_TOKEN} dist/*.whl
       - name: Publish .NET nupkg to Nuget
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal --publish
+        run: dotnet nuget push dist/*.pkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json
