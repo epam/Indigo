@@ -752,4 +752,5 @@ jobs:
           echo ${GPG_PRIVATE_KEY} > gpg.key
           gpg --batch --import gpg.key
           rm gpg.key
-          ./api/java/mvnw  deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
+          cd api/java
+          mvnw  deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
