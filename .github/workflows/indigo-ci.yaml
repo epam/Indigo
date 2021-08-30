@@ -710,10 +710,22 @@ jobs:
         with:
           name: indigo-native-shared-libs
           path: dist/
+      - name: Download Python wheels
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-python
+          path: dist/
+      - name: Download .NET nupkg
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-dotnet
+          path: dist/
       - name: Publish Python wheels to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: twine upload -u __token__ -p ${PYPI_TOKEN} dist/*.whl
+        run: |
+             ls dist/ 
+             twine upload -u __token__ -p ${PYPI_TOKEN} dist/*.whl
       - name: Publish .NET nupkg to Nuget
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
