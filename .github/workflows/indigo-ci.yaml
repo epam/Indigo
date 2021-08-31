@@ -736,7 +736,7 @@ jobs:
       - name: Publish .NET nupkg to Nuget
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: dotnet nuget push dist/*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push dist/*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Publish Java jars to Maven Central
         env:
           MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
