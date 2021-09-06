@@ -163,7 +163,7 @@ jobs:
         if: ${{ matrix.os == 'macos' }}
         run: python3 -m pip install dist/*macos*.whl
       - name: Test
-        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo,thread -p basic/basic.py
+        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo,thread
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -206,7 +206,7 @@ jobs:
           ls ${env:INDIGO_PATH} || echo failed
           echo ${INDIGO_PATH} || echo failed
           ls ${INDIGO_PATH} || echo failed
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo,part_test,render_rgroups -p basic/basic.py
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo,part_test,render_rgroups
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -272,20 +272,20 @@ jobs:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,thread,render_rgroups -p basic/basic.py
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,thread,render_rgroups
       - name: Test macOS
         if: ${{ matrix.os == 'macos' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,thread,render_rgroups -platform mac -p basic/basic.py
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,thread,render_rgroups -platform mac
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,thread,render_rgroups -platform ironwin -p basic/basic.py
+        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,thread,render_rgroups -platform ironwin
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
