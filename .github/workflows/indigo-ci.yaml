@@ -163,7 +163,7 @@ jobs:
         if: ${{ matrix.os == 'macos' }}
         run: python3 -m pip install dist/*macos*.whl
       - name: Test
-        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo,thread
+        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo,thread -p basic/basic.py
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -206,7 +206,7 @@ jobs:
           ls ${env:INDIGO_PATH} || echo failed
           echo ${INDIGO_PATH} || echo failed
           ls ${INDIGO_PATH} || echo failed
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo,part_test,render_rgroups
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo,part_test,render_rgroups -p basic/basic.py
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -272,20 +272,20 @@ jobs:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,thread,render_rgroups
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,thread,render_rgroups -p basic/basic.py
       - name: Test macOS
         if: ${{ matrix.os == 'macos' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,thread,render_rgroups -platform mac
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,part_test,thread,render_rgroups -platform mac -p basic/basic.py
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,thread,render_rgroups -platform ironwin
+        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo,thread,render_rgroups -platform ironwin -p basic/basic.py
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -710,33 +710,33 @@ jobs:
         with:
           name: indigo-native-shared-libs
           path: dist/
-      - name: Download Python wheels
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-python
-          path: dist/
-      - name: Download Java jars
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-java
-          path: dist/
-      - name: Download .NET nupkg
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-dotnet
-          path: dist/
-      - name: Publish Python wheels to PyPI
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: |
-             ls dist/ 
-             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*win*.whl
-             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*linux*.whl
-             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*mac*.whl
-      - name: Publish .NET nupkg to Nuget
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: dotnet nuget push dist/*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json --skip-duplicate
+#      - name: Download Python wheels
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: indigo-python
+#          path: dist/
+#      - name: Download Java jars
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: indigo-java
+#          path: dist/
+#      - name: Download .NET nupkg
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: indigo-dotnet
+#          path: dist/
+#      - name: Publish Python wheels to PyPI
+#        env:
+#          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+#        run: |
+#             ls dist/
+#             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*win*.whl
+#             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*linux*.whl
+#             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*mac*.whl
+#      - name: Publish .NET nupkg to Nuget
+#        env:
+#          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+#        run: dotnet nuget push dist/*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Publish Java jars to Maven Central
         env:
           MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
@@ -745,6 +745,8 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
         run: |
+          pwd
+          ls -alh dist/
           set -eux
           apt install -y gnupg
           mkdir /root/.m2
