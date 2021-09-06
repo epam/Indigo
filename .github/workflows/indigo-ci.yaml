@@ -716,11 +716,6 @@ jobs:
         with:
           name: indigo-python
           path: dist/
-      - name: Download Java jars
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-java
-          path: dist/
       - name: Download .NET nupkg
         uses: actions/download-artifact@v2
         with:
@@ -730,7 +725,6 @@ jobs:
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
-             ls dist/
              twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*win*.whl
              twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*linux*.whl
              twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*mac*.whl
@@ -747,7 +741,6 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
         run: |
           pwd
-          ls -alh dist/
           set -eux
           apt install -y gnupg
           mkdir /root/.m2
