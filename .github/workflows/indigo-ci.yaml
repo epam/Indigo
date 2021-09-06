@@ -705,18 +705,33 @@ jobs:
       - name: Git fetch tags
         run: git fetch --tags -f
       - name: Create folder for native libs
-        run: mkdir dist
+        run: mkdir -p dist/lib
       - name: Download native shared libraries
         uses: actions/download-artifact@v2
         with:
           name: indigo-native-shared-libs
+          path: dist/lib
+      - name: Download Python wheels
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-python
           path: dist/
-      - name: Update Wrappers version
-        run: python3 build_scripts/indigo-update-version.py
+      - name: Download .NET nupkg
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-dotnet
+          path: dist/
       - name: Publish Python wheels to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal --publish
+        run: |
+             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*win*.whl
+             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*linux*.whl
+             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*mac*.whl
+      - name: Publish .NET nupkg to Nuget
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push dist/*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - name: Publish Java jars to Maven Central
         env:
           MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
@@ -725,6 +740,7 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
         run: |
+          pwd
           set -eux
           apt install -y gnupg
           mkdir /root/.m2
@@ -732,8 +748,5 @@ jobs:
           echo ${GPG_PRIVATE_KEY} > gpg.key
           gpg --batch --import gpg.key
           rm gpg.key
-          python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
-      - name: Publish .NET nupkg to Nuget
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal --publish
+          cd api/java
+          ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
