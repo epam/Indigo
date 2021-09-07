@@ -657,6 +657,27 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                 writer.Key("isotope");
                 writer.Int(isotope);
             }
+
+            int enh_stereo_type = mol.stereocenters.getType(i);
+            if (enh_stereo_type > 1)
+            {
+                writer.Key("stereoLabel");
+                switch (enh_stereo_type)
+                {
+                case MoleculeStereocenters::ATOM_ABS:
+                    writer.String("abs");
+                    break;
+                case MoleculeStereocenters::ATOM_OR:
+                    writer.String((std::string("or") + std::to_string(mol.stereocenters.getGroup(i))).c_str());
+                    break;
+                case MoleculeStereocenters::ATOM_AND:
+                    writer.String((std::string("and") + std::to_string(mol.stereocenters.getGroup(i))).c_str());
+                    break;
+                default:
+                    throw Error("Unknows enhanced stereo type %d", enh_stereo_type);
+                    break;
+                }
+            }
             writer.EndObject();
         }
     }
