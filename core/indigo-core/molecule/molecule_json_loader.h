@@ -20,7 +20,7 @@
 #define __molecule_json_loader__
 
 #include <unordered_set>
-
+#include <vector>
 #include <rapidjson/document.h>
 
 #include "base_c/defs.h"
