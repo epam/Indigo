@@ -1,0 +1,17 @@
+cid-1006416-changed.mol: 
+COC1C=CC2=CC=CC=C2C=1/C=C1/CNCN(C)C/1=O
+COC1C=CC2=CC=CC=C2C=1/C=C1/CNCN(C)C/1=O
+COC1C=CC2=CC=CC=C2C=1/C=C1/CNCN(C)C/1=O
+  rendered
+cid-62301-changed.mol: 
+CCCCC(CP)=C1C=CC(=CC2=CC=CC=C2S(O)(=O)=O)C=C1.O=S=O |t:6,10|
+CCCCC(CP)=C1C=CC(=CC2=CC=CC=C2S(O)(=O)=O)C=C1.O=S=O |t:6,10|
+CCCCC(CP)=C1C=CC(=CC2=CC=CC=C2S(O)(=O)=O)C=C1.O=S=O |t:6,10|
+  rendered
+Checking image similarities:
+layout/cid-1006416-changed.mol_0.png rendering status: OK
+layout/cid-1006416-changed.mol_1.png rendering status: OK
+layout/cid-1006416-changed.mol_2.png rendering status: OK
+layout/cid-62301-changed.mol_0.png rendering status: OK
+layout/cid-62301-changed.mol_1.png rendering status: OK
+layout/cid-62301-changed.mol_2.png rendering status: OK

@@ -63,7 +63,7 @@ namespace indigo
 
     typedef ObjArray<PropertiesMap> MonomersProperties;
 } // namespace indigo
-extern DLLEXPORT IndigoOptionManager& indigoGetOptionManager();
+extern DLLEXPORT IndigoOptionManager& indigoGetOptionManager(const qword id = _SIDManager::getInst().getSessionId());
 
 class DLLEXPORT IndigoObject
 {
@@ -199,7 +199,7 @@ public:
     virtual void copyProperties(RedBlackStringObjMap<Array<char>>& other);
 
 protected:
-    AutoPtr<Array<char>> _dbg_info; // allocated by debugInfo() on demand
+    std::unique_ptr<Array<char>> _dbg_info; // allocated by debugInfo() on demand
 private:
     IndigoObject(const IndigoObject&);
 };
@@ -208,9 +208,9 @@ class IndigoMoleculeGross : public IndigoObject
 {
 public:
     IndigoMoleculeGross();
-    virtual ~IndigoMoleculeGross();
+    ~IndigoMoleculeGross() override;
 
-    virtual void toString(Array<char>& str);
+    void toString(Array<char>& str) override;
 
     std::unique_ptr<GROSS_UNITS> gross;
 };
@@ -219,9 +219,9 @@ class IndigoReactionGross : public IndigoObject
 {
 public:
     IndigoReactionGross();
-    virtual ~IndigoReactionGross();
+    ~IndigoReactionGross() override;
 
-    virtual void toString(Array<char>& str);
+    void toString(Array<char>& str) override;
 
     std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> gross;
 };
@@ -365,8 +365,6 @@ public:
 
 protected:
     virtual void init() = 0;
-
-private:
     int indigo_id;
 };
 
@@ -415,11 +413,10 @@ public:
     explicit IndigoError(const char* format, ...);
 };
 
-class _IndigoBasicOptionsHandlersSetter
+class IndigoOptionHandlerSetter
 {
 public:
-    _IndigoBasicOptionsHandlersSetter();
-    ~_IndigoBasicOptionsHandlersSetter();
+    static void setBasicOptionHandlers(const qword id);
 };
 
 #ifdef _WIN32

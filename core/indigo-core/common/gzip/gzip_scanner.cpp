@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "gzip/gzip_scanner.h"
+#include <algorithm>
 
 using namespace indigo;
 
@@ -64,7 +65,7 @@ void GZipScanner::read(int length, void* res)
 
     if (_outbuf_start < _outbuf.size() - (int)_zstream.avail_out)
     {
-        int n = __min(length, CHUNK_SIZE - (int)_zstream.avail_out - _outbuf_start);
+        int n = std::min(length, CHUNK_SIZE - (int)_zstream.avail_out - _outbuf_start);
 
         memcpy(res, _outbuf.ptr() + _outbuf_start, n);
         _outbuf_start += n;
@@ -132,7 +133,7 @@ bool GZipScanner::_read(int length, void* res)
         if (rc != Z_OK && rc != Z_STREAM_END)
             throw Error("unknown zlib error code: %d", rc);
 
-        int n = __min(length, CHUNK_SIZE - (int)_zstream.avail_out - _outbuf_start);
+        int n = std::min(length, CHUNK_SIZE - (int)_zstream.avail_out - _outbuf_start);
 
         if (n > 0 && res != 0)
         {

@@ -59,15 +59,15 @@ namespace indigo
     public:
         LzwScanner(LzwDecoder& decoder);
 
-        virtual void read(int length, void* res);
-        virtual void skip(int n);
-        virtual bool isEOF();
-        virtual int lookNext();
-        virtual void seek(long long pos, int from);
-        virtual long long length();
-        virtual long long tell();
+        void read(int length, void* res) override;
+        void skip(int n) override;
+        bool isEOF() override;
+        int lookNext() override;
+        void seek(long long pos, int from) override;
+        long long length() override;
+        long long tell() override;
 
-        virtual byte readByte();
+        byte readByte() override;
 
         DECL_ERROR;
 

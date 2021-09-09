@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -50,7 +45,7 @@
 /* Convenience storage for InChI read control data */
 typedef struct ReadINCHI_CtlData
 {
-    long longID;
+    unsigned long ulongID;
     int bTooLongLine;
     int bHeaderRead;
     int bErrorMsg;
@@ -89,22 +84,22 @@ int Extract0DParities( inp_ATOM *at,
                        int num_stereo0D,
                        char *pStrErr,
                        int *err,
-                       int vABParityUnknown);
-int InchiToInpAtom (  INCHI_IOSTREAM *inp_molfile,
-                      MOL_COORD **szCoord,
-                      int bDoNotAddH,
-                      int vABParityUnknown,
-                      INPUT_TYPE nInputType,
-                      inp_ATOM **at,
-                      int max_num_at,
-                      int *num_dimensions,
-                      int *num_bonds,
-                      char *pSdfLabel,
-                      char *pSdfValue,
-                      long *Id,
-                      INCHI_MODE *pInpAtomFlags,
-                      int *err,
-                      char *pStrErr );
+                       int vABParityUnknown );
+int InchiToInpAtom( INCHI_IOSTREAM *inp_molfile,
+                     MOL_COORD **szCoord,
+                     int bDoNotAddH,
+                     int vABParityUnknown,
+                     INPUT_TYPE nInputType,
+                     inp_ATOM **at,
+                     int max_num_at,
+                     int *num_dimensions,
+                     int *num_bonds,
+                     char *pSdfLabel,
+                     char *pSdfValue,
+                     unsigned long *Id,
+                     INCHI_MODE *pInpAtomFlags,
+                     int *err,
+                     char *pStrErr );
 
 
 #endif    /* _READINCH_H_ */

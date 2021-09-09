@@ -415,7 +415,7 @@ bool MoleculeAutomorphismSearch::_checkStereocentersAutomorphism(Molecule& mol, 
         else
             stereocenters_valid_filter.init(_stereocenter_state.ptr(), Filter::EQ, _VALID);
 
-        bool ret = MoleculeStereocenters::checkSub(stereocenters, stereocenters, mapping.ptr(), false, &stereocenters_valid_filter);
+        bool ret = MoleculeStereocenters::checkSub(mol, mol, mapping.ptr(), false, &stereocenters_valid_filter);
         if (!ret)
             return false;
 
@@ -428,7 +428,7 @@ bool MoleculeAutomorphismSearch::_checkStereocentersAutomorphism(Molecule& mol, 
                 inv_mapping[mapping[i]] = i;
         }
 
-        ret = MoleculeStereocenters::checkSub(stereocenters, stereocenters, inv_mapping.ptr(), false, &stereocenters_valid_filter);
+        ret = MoleculeStereocenters::checkSub(mol, mol, inv_mapping.ptr(), false, &stereocenters_valid_filter);
         if (!ret)
             return false;
     }
@@ -555,7 +555,7 @@ int MoleculeAutomorphismSearch::_compareMappedStereocenters(Molecule& mol, const
     for (int s = stereocenters.begin(); s != stereocenters.end(); s = stereocenters.next(s))
     {
         int atom_idx = stereocenters.getAtomIndex(s);
-        max_stereogroup = __max(stereocenters.getGroup(atom_idx), max_stereogroup);
+        max_stereogroup = std::max(stereocenters.getGroup(atom_idx), max_stereogroup);
     }
 
     int groups_count = 2 * (max_stereogroup + 1);
@@ -979,10 +979,8 @@ void MoleculeAutomorphismSearch::_automorphismCallback(const int* automorphism, 
     MoleculeAutomorphismSearch& self = *(MoleculeAutomorphismSearch*)context;
     Molecule& mol = *(Molecule*)self._given_graph;
 
-    const MoleculeStereocenters& stereocenters = mol.stereocenters;
-
     if (self._target_stereocenter != -1)
-        if (!_isStereocenterMappedRigid(stereocenters, self._target_stereocenter, automorphism))
+        if (!_isStereocenterMappedRigid(mol, self._target_stereocenter, automorphism))
             self._target_stereocenter_parity_inv = true;
 
     if (self._target_bond != -1)
@@ -990,13 +988,13 @@ void MoleculeAutomorphismSearch::_automorphismCallback(const int* automorphism, 
             self._target_bond_parity_inv = true;
 }
 
-bool MoleculeAutomorphismSearch::_isStereocenterMappedRigid(const MoleculeStereocenters& stereocenters, int i, const int* mapping)
+bool MoleculeAutomorphismSearch::_isStereocenterMappedRigid(Molecule& mol, int i, const int* mapping)
 {
     int idx, type, group;
     int pyramid[4];
     int j;
 
-    stereocenters.get(i, idx, type, group, pyramid);
+    mol.stereocenters.get(i, idx, type, group, pyramid);
 
     if (mapping[idx] == -1)
         return true;
@@ -1018,12 +1016,12 @@ bool MoleculeAutomorphismSearch::_isStereocenterMappedRigid(const MoleculeStereo
     if (type < MoleculeStereocenters::ATOM_AND)
         return true;
 
-    if (stereocenters.getType(mapping[idx]) != type)
+    if (mol.stereocenters.getType(mapping[idx]) != type)
         throw Error("internal: stereocenter types mismatch");
 
     int pyra_map[4];
 
-    MoleculeStereocenters::getPyramidMapping(stereocenters, stereocenters, idx, mapping, pyra_map, false);
+    MoleculeStereocenters::getPyramidMapping(mol, mol, idx, mapping, pyra_map, false);
 
     if (!MoleculeStereocenters::isPyramidMappingRigid(pyra_map))
         return false;

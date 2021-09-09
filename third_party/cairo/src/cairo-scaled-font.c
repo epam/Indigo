@@ -1296,6 +1296,13 @@ cairo_scaled_font_reference (cairo_scaled_font_t *scaled_font)
 }
 slim_hidden_def (cairo_scaled_font_reference);
 
+void
+cairo_scaled_font_map_destroy (void)
+{
+    _cairo_scaled_font_map_destroy();
+}
+slim_hidden_def (cairo_scaled_font_map_destroy);
+
 /**
  * cairo_scaled_font_destroy:
  * @scaled_font: a #cairo_scaled_font_t
@@ -1813,9 +1820,9 @@ cairo_scaled_font_text_to_glyphs_internal_uncached (cairo_scaled_font_t	 *scaled
 
 /**
  * cairo_scaled_font_text_to_glyphs:
+ * @scaled_font: a #cairo_scaled_font_t
  * @x: X position to place first glyph
  * @y: Y position to place first glyph
- * @scaled_font: a #cairo_scaled_font_t
  * @utf8: a string of text encoded in UTF-8
  * @utf8_len: length of @utf8 in bytes, or -1 if it is NUL-terminated
  * @glyphs: pointer to array of glyphs to fill

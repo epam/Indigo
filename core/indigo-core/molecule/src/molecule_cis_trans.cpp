@@ -112,18 +112,18 @@ bool MoleculeCisTrans::_commonHasLonePair(BaseMolecule& mol, int v1, int v2)
     return false;
 }
 
-bool MoleculeCisTrans::convertableToImplicitHydrogen(int idx)
+bool MoleculeCisTrans::convertableToImplicitHydrogen(BaseMolecule& baseMolecule, int idx)
 {
     // check [H]\N=C\C
-    const Vertex& v = _baseMolecule.getVertex(idx);
+    const Vertex& v = baseMolecule.getVertex(idx);
     int nei = v.neiVertex(v.neiBegin());
 
     // Find double bond
-    const Vertex& base = _baseMolecule.getVertex(nei);
+    const Vertex& base = baseMolecule.getVertex(nei);
     for (int i = base.neiBegin(); i != base.neiEnd(); i = base.neiNext(i))
     {
         int edge = base.neiEdge(i);
-        if (_baseMolecule.getBondOrder(edge) == BOND_DOUBLE)
+        if (baseMolecule.getBondOrder(edge) == BOND_DOUBLE)
             return getParity(edge) == 0 || base.degree() != 2;
     }
     return true;
@@ -167,8 +167,6 @@ bool MoleculeCisTrans::sortSubstituents(BaseMolecule& mol, int* substituents, bo
     if (h2 && h3)
         return false;
 
-    int tmp;
-
     // If hydrogens are explicit then keep them
     // And do not place explicit hydrogens to the end, because all static methods
     // should be converted into non-static with checking whether atom is hydrogen
@@ -179,14 +177,14 @@ bool MoleculeCisTrans::sortSubstituents(BaseMolecule& mol, int* substituents, bo
     if (!e1)
         if (e0 || substituents[0] > substituents[1])
         {
-            __swap(substituents[0], substituents[1], tmp);
+            std::swap(substituents[0], substituents[1]);
             swapped = !swapped;
         }
 
     if (!e3)
         if (e2 || substituents[2] > substituents[3])
         {
-            __swap(substituents[2], substituents[3], tmp);
+            std::swap(substituents[2], substituents[3]);
             swapped = !swapped;
         }
 
@@ -302,30 +300,30 @@ bool MoleculeCisTrans::isGeomStereoBond(BaseMolecule& mol, int bond_idx, int* su
     return true;
 }
 
-void MoleculeCisTrans::restoreSubstituents(int bond_idx)
+void MoleculeCisTrans::restoreSubstituents(BaseMolecule& baseMolecule, int bond_idx)
 {
     _Bond& bond = _bonds[bond_idx];
     int* substituents = bond.substituents;
 
     if (!bond.ignored)
     {
-        if (!isGeomStereoBond(_baseMolecule, bond_idx, substituents, false))
+        if (!isGeomStereoBond(baseMolecule, bond_idx, substituents, false))
             throw Error("restoreSubstituents(): not a cis-trans bond");
 
-        if (!sortSubstituents(_baseMolecule, substituents, 0))
+        if (!sortSubstituents(baseMolecule, substituents, 0))
             throw Error("can't sort restored substituents");
     }
 }
 
-void MoleculeCisTrans::registerUnfoldedHydrogen(int atom_idx, int added_hydrogen)
+void MoleculeCisTrans::registerUnfoldedHydrogen(BaseMolecule& baseMolecule, int atom_idx, int added_hydrogen)
 {
-    const Vertex& vertex = _baseMolecule.getVertex(atom_idx);
+    const Vertex& vertex = baseMolecule.getVertex(atom_idx);
     int i;
 
     for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
     {
         int bond_idx = vertex.neiEdge(i);
-        const Edge& edge = _baseMolecule.getEdge(bond_idx);
+        const Edge& edge = baseMolecule.getEdge(bond_idx);
 
         if (_bonds.size() <= bond_idx)
             continue;
@@ -342,7 +340,7 @@ void MoleculeCisTrans::registerUnfoldedHydrogen(int atom_idx, int added_hydrogen
     }
 }
 
-MoleculeCisTrans::MoleculeCisTrans(BaseMolecule& baseMolecule) : _baseMolecule(baseMolecule)
+MoleculeCisTrans::MoleculeCisTrans()
 {
 }
 
@@ -363,45 +361,45 @@ void MoleculeCisTrans::registerBond(int idx)
     _bonds[idx].clear();
 }
 
-void MoleculeCisTrans::validate()
+void MoleculeCisTrans::validate(BaseMolecule& baseMolecule)
 {
-    for (int i = _baseMolecule.edgeBegin(); i != _baseMolecule.edgeEnd(); i = _baseMolecule.edgeNext(i))
+    for (int i = baseMolecule.edgeBegin(); i != baseMolecule.edgeEnd(); i = baseMolecule.edgeNext(i))
     {
         if (getParity(i) != 0)
         {
             int subs[4];
-            if (!isGeomStereoBond(_baseMolecule, i, subs, false))
+            if (!isGeomStereoBond(baseMolecule, i, subs, false))
                 setParity(i, 0);
         }
     }
 }
 
-bool MoleculeCisTrans::registerBondAndSubstituents(int idx)
+bool MoleculeCisTrans::registerBondAndSubstituents(BaseMolecule& baseMolecule, int idx)
 {
     registerBond(idx);
 
-    if (!isGeomStereoBond(_baseMolecule, idx, _bonds[idx].substituents, false))
+    if (!isGeomStereoBond(baseMolecule, idx, _bonds[idx].substituents, false))
         return false;
 
-    if (!sortSubstituents(_baseMolecule, _bonds[idx].substituents, 0))
+    if (!sortSubstituents(baseMolecule, _bonds[idx].substituents, 0))
         return false;
 
     return true;
 }
 
-void MoleculeCisTrans::build(int* exclude_bonds)
+void MoleculeCisTrans::build(BaseMolecule& baseMolecule, int* exclude_bonds)
 {
     int i;
 
     clear();
-    _bonds.clear_resize(_baseMolecule.edgeEnd());
-    for (i = _baseMolecule.edgeBegin(); i != _baseMolecule.edgeEnd(); i = _baseMolecule.edgeNext(i))
+    _bonds.clear_resize(baseMolecule.edgeEnd());
+    for (i = baseMolecule.edgeBegin(); i != baseMolecule.edgeEnd(); i = baseMolecule.edgeNext(i))
     {
         _bonds[i].parity = 0;
         _bonds[i].ignored = 0;
 
-        int beg = _baseMolecule.getEdge(i).beg;
-        int end = _baseMolecule.getEdge(i).end;
+        int beg = baseMolecule.getEdge(i).beg;
+        int end = baseMolecule.getEdge(i).end;
 
         int* substituents = _bonds[i].substituents;
 
@@ -418,13 +416,13 @@ void MoleculeCisTrans::build(int* exclude_bonds)
         // even if coordinates are not valid.
         if (exclude_bonds != 0 && exclude_bonds[i])
             have_xyz = false;
-        if (!isGeomStereoBond(_baseMolecule, i, substituents, have_xyz))
+        if (!isGeomStereoBond(baseMolecule, i, substituents, have_xyz))
             continue;
 
-        if (!sortSubstituents(_baseMolecule, substituents, 0))
+        if (!sortSubstituents(baseMolecule, substituents, 0))
             continue;
 
-        int sign = _sameside(_baseMolecule, beg, end, substituents[0], substituents[2]);
+        int sign = _sameside(baseMolecule, beg, end, substituents[0], substituents[2]);
 
         if (sign == 1)
             setParity(i, CIS);
@@ -433,63 +431,63 @@ void MoleculeCisTrans::build(int* exclude_bonds)
     }
 }
 
-void MoleculeCisTrans::buildFromSmiles(int* dirs)
+void MoleculeCisTrans::buildFromSmiles(BaseMolecule& baseMolecule, int* dirs)
 {
     QS_DEF(Array<int>, subst_used);
     int i, j;
 
     clear();
-    subst_used.clear_resize(_baseMolecule.vertexEnd());
+    subst_used.clear_resize(baseMolecule.vertexEnd());
     subst_used.zerofill();
 
-    _bonds.clear_resize(_baseMolecule.edgeEnd());
+    _bonds.clear_resize(baseMolecule.edgeEnd());
 
-    for (i = _baseMolecule.edgeBegin(); i != _baseMolecule.edgeEnd(); i = _baseMolecule.edgeNext(i))
+    for (i = baseMolecule.edgeBegin(); i != baseMolecule.edgeEnd(); i = baseMolecule.edgeNext(i))
     {
-        if (!registerBondAndSubstituents(i))
+        if (!registerBondAndSubstituents(baseMolecule, i))
             continue;
 
-        int beg = _baseMolecule.getEdge(i).beg;
-        int end = _baseMolecule.getEdge(i).end;
+        int beg = baseMolecule.getEdge(i).beg;
+        int end = baseMolecule.getEdge(i).end;
 
         int substituents[4];
-        getSubstituents_All(i, substituents);
+        getSubstituents_All(baseMolecule, i, substituents);
 
         int subst_dirs[4] = {0, 0, 0, 0};
         int nei_edge;
 
-        nei_edge = _baseMolecule.findEdgeIndex(beg, substituents[0]);
+        nei_edge = baseMolecule.findEdgeIndex(beg, substituents[0]);
 
         if (dirs[nei_edge] == 1)
-            subst_dirs[0] = _baseMolecule.getEdge(nei_edge).beg == beg ? 1 : 2;
+            subst_dirs[0] = baseMolecule.getEdge(nei_edge).beg == beg ? 1 : 2;
         if (dirs[nei_edge] == 2)
-            subst_dirs[0] = _baseMolecule.getEdge(nei_edge).beg == beg ? 2 : 1;
+            subst_dirs[0] = baseMolecule.getEdge(nei_edge).beg == beg ? 2 : 1;
 
         if (substituents[1] != -1)
         {
-            nei_edge = _baseMolecule.findEdgeIndex(beg, substituents[1]);
+            nei_edge = baseMolecule.findEdgeIndex(beg, substituents[1]);
 
             if (dirs[nei_edge] == 1)
-                subst_dirs[1] = _baseMolecule.getEdge(nei_edge).beg == beg ? 1 : 2;
+                subst_dirs[1] = baseMolecule.getEdge(nei_edge).beg == beg ? 1 : 2;
             if (dirs[nei_edge] == 2)
-                subst_dirs[1] = _baseMolecule.getEdge(nei_edge).beg == beg ? 2 : 1;
+                subst_dirs[1] = baseMolecule.getEdge(nei_edge).beg == beg ? 2 : 1;
         }
 
-        nei_edge = _baseMolecule.findEdgeIndex(end, substituents[2]);
+        nei_edge = baseMolecule.findEdgeIndex(end, substituents[2]);
 
         if (dirs[nei_edge] == 1)
-            subst_dirs[2] = _baseMolecule.getEdge(nei_edge).beg == end ? 1 : 2;
+            subst_dirs[2] = baseMolecule.getEdge(nei_edge).beg == end ? 1 : 2;
         if (dirs[nei_edge] == 2)
-            subst_dirs[2] = _baseMolecule.getEdge(nei_edge).beg == end ? 2 : 1;
+            subst_dirs[2] = baseMolecule.getEdge(nei_edge).beg == end ? 2 : 1;
 
         if (substituents[3] != -1)
         {
-            nei_edge = _baseMolecule.findEdgeIndex(end, substituents[3]);
+            nei_edge = baseMolecule.findEdgeIndex(end, substituents[3]);
 
             if (dirs[nei_edge] == 1)
-                subst_dirs[3] = _baseMolecule.getEdge(nei_edge).beg == end ? 1 : 2;
+                subst_dirs[3] = baseMolecule.getEdge(nei_edge).beg == end ? 1 : 2;
             if (dirs[nei_edge] == 2)
-                subst_dirs[3] = _baseMolecule.getEdge(nei_edge).beg == end ? 2 : 1;
+                subst_dirs[3] = baseMolecule.getEdge(nei_edge).beg == end ? 2 : 1;
         }
 
         if ((subst_dirs[0] != 0 && subst_dirs[0] == subst_dirs[1]) || (subst_dirs[2] != 0 && subst_dirs[2] == subst_dirs[3]))
@@ -592,10 +590,10 @@ void MoleculeCisTrans::_fillExplicitHydrogens(BaseMolecule& mol, int bond_idx, i
     _fillAtomExplicitHydrogens(mol, mol.getEdge(bond_idx).end, subst + 2);
 }
 
-void MoleculeCisTrans::getSubstituents_All(int bond_idx, int subst[4])
+void MoleculeCisTrans::getSubstituents_All(BaseMolecule& baseMolecule, int bond_idx, int subst[4])
 {
     memcpy(subst, _bonds[bond_idx].substituents, 4 * sizeof(int));
-    _fillExplicitHydrogens(_baseMolecule, bond_idx, subst);
+    _fillExplicitHydrogens(baseMolecule, bond_idx, subst);
 }
 
 void MoleculeCisTrans::add(int bond_idx, int substituents[4], int parity)
@@ -731,12 +729,12 @@ bool MoleculeCisTrans::checkSub(BaseMolecule& query, BaseMolecule& target, const
     return true;
 }
 
-void MoleculeCisTrans::buildOnSubmolecule(BaseMolecule& super, int* mapping)
+void MoleculeCisTrans::buildOnSubmolecule(BaseMolecule& baseMolecule, BaseMolecule& super, int* mapping)
 {
     if (!super.cis_trans.exists())
         return;
 
-    while (_bonds.size() < _baseMolecule.edgeEnd())
+    while (_bonds.size() < baseMolecule.edgeEnd())
     {
         _Bond& bond = _bonds.push();
 
@@ -748,7 +746,7 @@ void MoleculeCisTrans::buildOnSubmolecule(BaseMolecule& super, int* mapping)
     for (i = super.edgeBegin(); i != super.edgeEnd(); i = super.edgeNext(i))
     {
         int parity = super.cis_trans.getParity(i);
-        int sub_edge_idx = Graph::findMappedEdge(super, _baseMolecule, i, mapping);
+        int sub_edge_idx = Graph::findMappedEdge(super, baseMolecule, i, mapping);
 
         if (sub_edge_idx < 0)
             continue;
@@ -774,7 +772,7 @@ void MoleculeCisTrans::buildOnSubmolecule(BaseMolecule& super, int* mapping)
 
         bond.parity = parity;
         bool parity_changed;
-        if (!sortSubstituents(_baseMolecule, bond.substituents, &parity_changed))
+        if (!sortSubstituents(baseMolecule, bond.substituents, &parity_changed))
         {
             bond.parity = 0;
             continue;
@@ -809,16 +807,16 @@ int MoleculeCisTrans::applyMapping(int idx, const int* mapping, bool sort) const
     return applyMapping(getParity(idx), getSubstituents(idx), mapping, sort);
 }
 
-void MoleculeCisTrans::flipBond(int atom_parent, int atom_from, int atom_to)
+void MoleculeCisTrans::flipBond(BaseMolecule& baseMolecule, int atom_parent, int atom_from, int atom_to)
 {
-    int parent_edge_index = _baseMolecule.findEdgeIndex(atom_parent, atom_from);
+    int parent_edge_index = baseMolecule.findEdgeIndex(atom_parent, atom_from);
     if (parent_edge_index == -1)
         // || getParity(parent_edge_index) != 0)
         // Such call wasn't expected and wasn't implemented
         throw Error("bond flipping attempt for nonexisting bond. ");
     //         "Such functionality isn't implemented yet.");
 
-    const Vertex& parent_vertex = _baseMolecule.getVertex(atom_parent);
+    const Vertex& parent_vertex = baseMolecule.getVertex(atom_parent);
     for (int i = parent_vertex.neiBegin(); i != parent_vertex.neiEnd(); i = parent_vertex.neiNext(i))
     {
         int edge = parent_vertex.neiEdge(i);
@@ -835,7 +833,7 @@ void MoleculeCisTrans::flipBond(int atom_parent, int atom_from, int atom_to)
             }
     }
 
-    const Vertex& from_vertex = _baseMolecule.getVertex(atom_from);
+    const Vertex& from_vertex = baseMolecule.getVertex(atom_from);
     for (int i = from_vertex.neiBegin(); i != from_vertex.neiEnd(); i = from_vertex.neiNext(i))
     {
         int edge = from_vertex.neiEdge(i);
@@ -852,7 +850,7 @@ void MoleculeCisTrans::flipBond(int atom_parent, int atom_from, int atom_to)
             }
     }
 
-    const Vertex& to_vertex = _baseMolecule.getVertex(atom_to);
+    const Vertex& to_vertex = baseMolecule.getVertex(atom_to);
     for (int i = to_vertex.neiBegin(); i != to_vertex.neiEnd(); i = to_vertex.neiNext(i))
     {
         int edge = to_vertex.neiEdge(i);
@@ -861,7 +859,7 @@ void MoleculeCisTrans::flipBond(int atom_parent, int atom_from, int atom_to)
 
         _Bond& bond = _bonds[edge];
 
-        int edge_beg = _baseMolecule.getEdge(edge).beg;
+        int edge_beg = baseMolecule.getEdge(edge).beg;
         if (atom_to == edge_beg)
         {
             if (bond.substituents[1] != -1)
@@ -888,25 +886,25 @@ int MoleculeCisTrans::count()
     return res;
 }
 
-bool MoleculeCisTrans::isRingTransBond(int i)
+bool MoleculeCisTrans::isRingTransBond(BaseMolecule& baseMolecule, int i)
 {
     const int* subst = getSubstituents(i);
     int parity = getParity(i); // 1(CIS) or 2(TRANS)
-    const Edge& edge = _baseMolecule.getEdge(i);
+    const Edge& edge = baseMolecule.getEdge(i);
 
-    if (_baseMolecule.getBondTopology(i) != TOPOLOGY_RING)
+    if (baseMolecule.getBondTopology(i) != TOPOLOGY_RING)
         throw Error("is RingTransBond(): not a ring bond given");
 
-    if (_baseMolecule.getBondTopology(_baseMolecule.findEdgeIndex(edge.beg, subst[0])) != TOPOLOGY_RING)
+    if (baseMolecule.getBondTopology(baseMolecule.findEdgeIndex(edge.beg, subst[0])) != TOPOLOGY_RING)
     {
-        if (_baseMolecule.getBondTopology(_baseMolecule.findEdgeIndex(edge.beg, subst[1])) != TOPOLOGY_RING)
+        if (baseMolecule.getBondTopology(baseMolecule.findEdgeIndex(edge.beg, subst[1])) != TOPOLOGY_RING)
             throw Error("unexpected: have not found ring substutient");
         // invert parity
         parity = 3 - parity;
     }
-    if (_baseMolecule.getBondTopology(_baseMolecule.findEdgeIndex(edge.end, subst[2])) != TOPOLOGY_RING)
+    if (baseMolecule.getBondTopology(baseMolecule.findEdgeIndex(edge.end, subst[2])) != TOPOLOGY_RING)
     {
-        if (_baseMolecule.getBondTopology(_baseMolecule.findEdgeIndex(edge.end, subst[3])) != TOPOLOGY_RING)
+        if (baseMolecule.getBondTopology(baseMolecule.findEdgeIndex(edge.end, subst[3])) != TOPOLOGY_RING)
             throw Error("unexpected: have not found ring substutient");
         // invert parity
         parity = 3 - parity;

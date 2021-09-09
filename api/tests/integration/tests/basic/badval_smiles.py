@@ -8,7 +8,7 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
 print("*** Load molecule with bad valence atoms from MOL file *** ")
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/issue_243.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/issue_243.mol", __file__))
 print(mol.molfile())
 print("*** SMILES for that molecule *** ")
 print(mol.smiles())

@@ -114,14 +114,14 @@ void Metalayout::calcContentSize()
             line.width += line.items[j].scaledSize.x;
             Metalayout::LayoutItem& item = line.items[j];
             if (item.explicitVerticalOffset)
-                line.height = __max(line.height, 2 * __max(item.verticalOffset, item.scaledSize.y - item.verticalOffset));
+                line.height = std::max(line.height, 2 * std::max(item.verticalOffset, item.scaledSize.y - item.verticalOffset));
             else if (item.over)
-                line.height = __max(line.height, item.scaledSize.y * 2 + 2);
+                line.height = std::max(line.height, item.scaledSize.y * 2 + 2);
             else
-                line.height = __max(line.height, item.scaledSize.y);
+                line.height = std::max(line.height, item.scaledSize.y);
         }
         line.width += horizontalIntervalFactor * bondLength * (line.items.size() - 1);
-        _contentSize.x = __max(_contentSize.x, line.width);
+        _contentSize.x = std::max(_contentSize.x, line.width);
         _contentSize.y += line.height;
         if (regularWidth < line.width)
             regularWidth = line.width;

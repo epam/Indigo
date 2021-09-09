@@ -46,9 +46,7 @@
 #ifndef _CAIROINT_H_
 #define _CAIROINT_H_
 
-#if HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifdef _MSC_VER
 #define cairo_public __declspec(dllexport)
@@ -256,7 +254,7 @@ static inline uint16_t get_unaligned_be16 (const unsigned char *p)
 
 static inline uint32_t get_unaligned_be32 (const unsigned char *p)
 {
-    return p[0] << 24 | p[1] << 16 | p[2] << 8 | p[3];
+    return (uint32_t)p[0] << 24 | p[1] << 16 | p[2] << 8 | p[3];
 }
 
 static inline void put_unaligned_be16 (uint16_t v, unsigned char *p)
@@ -286,6 +284,12 @@ static inline int cairo_const
 _cairo_isdigit (int c)
 {
     return (c >= '0' && c <= '9');
+}
+
+static inline int cairo_const
+_cairo_isxdigit (int c)
+{
+    return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
 }
 
 static inline int cairo_const
@@ -1461,12 +1465,7 @@ cairo_private cairo_status_t
 _cairo_surface_tag (cairo_surface_t	        *surface,
 		    cairo_bool_t                 begin,
 		    const char                  *tag_name,
-		    const char                  *attributes,
-		    const cairo_pattern_t	*source,
-		    const cairo_stroke_style_t	*stroke_style,
-		    const cairo_matrix_t	*ctm,
-		    const cairo_matrix_t	*ctm_inverse,
-		    const cairo_clip_t	        *clip);
+		    const char                  *attributes);
 
 cairo_private cairo_status_t
 _cairo_surface_acquire_source_image (cairo_surface_t         *surface,
@@ -2015,6 +2014,7 @@ slim_hidden_proto (cairo_save);
 slim_hidden_proto (cairo_scale);
 slim_hidden_proto (cairo_scaled_font_create);
 slim_hidden_proto (cairo_scaled_font_destroy);
+slim_hidden_proto (cairo_scaled_font_map_destroy);
 slim_hidden_proto (cairo_scaled_font_extents);
 slim_hidden_proto (cairo_scaled_font_get_ctm);
 slim_hidden_proto (cairo_scaled_font_get_font_face);

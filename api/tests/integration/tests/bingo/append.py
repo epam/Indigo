@@ -4,12 +4,12 @@ sys.path.append('../../common')
 from env_indigo import *
 
 
-if dir_exists(joinPath("out", 'append')):
-    rmdir(joinPath("out", 'append'))
-makedirs(joinPath("out", 'append'))
+if dir_exists(joinPathPy("out/append", __file__)):
+    rmdir(joinPathPy("out/append", __file__))
+makedirs(joinPathPy("out/append", __file__))
 
 indigo = Indigo()
-dbname = joinPath('out', 'append')
+dbname = joinPathPy('out/append', __file__)
 ids = []
 
 smiles = [ "CCCC1CCCCC1CPC", "CCC1CCNCC1CPC" ]

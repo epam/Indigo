@@ -31,9 +31,9 @@ class DLLEXPORT IndigoArray : public IndigoObject
 public:
     IndigoArray();
 
-    virtual ~IndigoArray();
+    ~IndigoArray() override;
 
-    virtual IndigoObject* clone();
+    IndigoObject* clone() override;
 
     static bool is(IndigoObject& obj);
     static IndigoArray& cast(IndigoObject& obj);
@@ -45,23 +45,23 @@ class DLLEXPORT IndigoArrayElement : public IndigoObject
 {
 public:
     IndigoArrayElement(IndigoArray& arr, int idx_);
-    virtual ~IndigoArrayElement();
+    ~IndigoArrayElement() override;
 
     IndigoObject& get();
 
-    virtual BaseMolecule& getBaseMolecule();
-    virtual Molecule& getMolecule();
-    virtual QueryMolecule& getQueryMolecule();
+    BaseMolecule& getBaseMolecule() override;
+    Molecule& getMolecule() override;
+    QueryMolecule& getQueryMolecule() override;
 
-    virtual MonomersProperties& getMonomersProperties();
-    virtual BaseReaction& getBaseReaction();
-    virtual Reaction& getReaction();
+    MonomersProperties& getMonomersProperties() override;
+    BaseReaction& getBaseReaction() override;
+    Reaction& getReaction() override;
 
-    virtual IndigoObject* clone();
+    IndigoObject* clone() override;
 
-    virtual const char* getName();
+    const char* getName() override;
 
-    virtual int getIndex();
+    int getIndex() override;
 
     IndigoArray* array;
     int idx;
@@ -71,10 +71,10 @@ class IndigoArrayIter : public IndigoObject
 {
 public:
     IndigoArrayIter(IndigoArray& arr);
-    virtual ~IndigoArrayIter();
+    ~IndigoArrayIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     IndigoArray* _arr;

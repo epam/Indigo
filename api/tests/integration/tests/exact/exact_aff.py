@@ -5,7 +5,7 @@ from env_indigo import *
 
 indigo = Indigo()
 
-mols = list(indigo.iterateSDFile(joinPath('molecules/aff.sdf')))
+mols = list(indigo.iterateSDFile(joinPathPy('molecules/aff.sdf', __file__)))
 
 for m in mols:
     print(m.smiles())

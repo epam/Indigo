@@ -29,7 +29,7 @@ public:
     IndigoCompositionElem() : IndigoObject(COMPOSITION_ELEM)
     {
     }
-    virtual ~IndigoCompositionElem()
+    ~IndigoCompositionElem() override
     {
     }
 
@@ -64,9 +64,9 @@ CEXPORT int indigoGetFragmentedMolecule(int elem, const char* options)
             throw IndigoError("indigoGetFragmentedMolecule(): weird options \"%s\"", options);
         }
 
-        AutoPtr<IndigoMolecule> result(new IndigoMolecule());
-        result.ref().mol.clone(elem.molecule, nullptr, nullptr);
-        result.ref().mol.rgroups.copyRGroupsFromMolecule(*rgroups);
+        std::unique_ptr<IndigoMolecule> result = std::make_unique<IndigoMolecule>();
+        result->mol.clone(elem.molecule, nullptr, nullptr);
+        result->mol.rgroups.copyRGroupsFromMolecule(*rgroups);
         return self.addObject(result.release());
     }
     INDIGO_END(-1);
@@ -78,30 +78,28 @@ public:
     IndigoCompositionIter(BaseMolecule& mol) : IndigoObject(COMPOSITION_ITER), _composition(mol), _it(_composition.begin()), _end(_composition.end())
     {
     }
-    virtual ~IndigoCompositionIter()
+    ~IndigoCompositionIter() override
     {
     }
 
-    virtual IndigoObject* next()
+    IndigoObject* next() override
     {
         if (!_hasNext)
         {
             return nullptr;
         }
-        AutoPtr<IndigoCompositionElem> result(new IndigoCompositionElem());
-
-        _it.dump(result.ref().molecule);
-
+        std::unique_ptr<IndigoCompositionElem> result = std::make_unique<IndigoCompositionElem>();
+        _it.dump(result->molecule);
         RGCOMP_OPT OPTS[RGCOMP_OPT_COUNT] = RGCOMP_OPT_ENUM;
         for (auto i = 0; i < RGCOMP_OPT_COUNT; i++)
         {
-            result.ref().variants[i].copyRGroupsFromMolecule(*_it.modifyRGroups(MoleculeIter::OPTION(OPTS[i])));
+            result->variants[i].copyRGroupsFromMolecule(*_it.modifyRGroups(MoleculeIter::OPTION(OPTS[i])));
         }
 
         _hasNext = _it.next();
         return result.release();
     }
-    virtual bool hasNext()
+    bool hasNext() override
     {
         return _hasNext;
     }

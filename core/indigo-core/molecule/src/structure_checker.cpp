@@ -188,18 +188,18 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
 {
     if (!isQueryMolecule(mol))
     {
-        std::unique_ptr<Molecule> target(new Molecule);
+        std::unique_ptr<Molecule> target = std::make_unique<Molecule>();
         auto saved_valence_flag = mol.asMolecule().getIgnoreBadValenceFlag();
         mol.asMolecule().setIgnoreBadValenceFlag(true);
         target->clone_KeepIndices(mol);
 
         for (const auto i : target->vertices())
         {
-            if (!target->stereocenters.exists(i) && target->stereocenters.isPossibleStereocenter(i))
+            if (!target->stereocenters.exists(i) && target->isPossibleStereocenter(i))
             {
                 try
                 {
-                    target->stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+                    target->addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 0, false);
                 }
                 catch (Exception&)
                 {

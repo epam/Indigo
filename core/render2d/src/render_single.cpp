@@ -98,8 +98,8 @@ void RenderSingle::draw()
     outerMargin.x = (float)(minMarg + _cnvOpt.marginX);
     outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
 
-    width = __min(width, _getMaxWidth());
-    height = __min(height, _getMaxHeight());
+    width = std::min(width, _getMaxWidth());
+    height = std::min(height, _getMaxHeight());
     scale = _getScale(width, height);
     if (width < 1)
         width = _getDefaultWidth(scale);
@@ -135,12 +135,12 @@ void RenderSingle::draw()
 
 int RenderSingle::_getDefaultWidth(const float s)
 {
-    return (int)ceil(__max(__max(objSize.x * s, commentSize.x) + outerMargin.x * 2, 1));
+    return (int)ceil(std::max(std::max(objSize.x * s, commentSize.x) + outerMargin.x * 2, 1.f));
 }
 
 int RenderSingle::_getDefaultHeight(const float s)
 {
-    return (int)ceil(__max(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2, 1));
+    return (int)ceil(std::max(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2, 1.f));
 }
 
 float RenderSingle::_getScaleGivenSize(int w, int h)

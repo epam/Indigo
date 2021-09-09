@@ -27,7 +27,7 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeAlleneStereo, "allene stereo");
 
-MoleculeAlleneStereo::MoleculeAlleneStereo(BaseMolecule& baseMolecule) : _baseMolecule(baseMolecule)
+MoleculeAlleneStereo::MoleculeAlleneStereo()
 {
 }
 
@@ -249,34 +249,32 @@ bool MoleculeAlleneStereo::_isAlleneCenter(BaseMolecule& mol, int idx, _Atom& at
     if (prod.z > 0)
         atom.parity = 3 - atom.parity;
 
-    int tmp;
-
     // move hydrogens from [0] and [2] to [1] and [3] respectively
     if (pure_h[0])
     {
-        __swap(atom.subst[0], atom.subst[1], tmp);
+        std::swap(atom.subst[0], atom.subst[1]);
         atom.parity = 3 - atom.parity;
     }
     if (pure_h[2])
     {
-        __swap(atom.subst[2], atom.subst[3], tmp);
+        std::swap(atom.subst[2], atom.subst[3]);
         atom.parity = 3 - atom.parity;
     }
 
     return true;
 }
 
-void MoleculeAlleneStereo::buildFromBonds(bool ignore_errors, int* sensible_bonds_out)
+void MoleculeAlleneStereo::buildFromBonds(BaseMolecule& baseMolecule, bool ignore_errors, int* sensible_bonds_out)
 {
     int i;
 
-    for (i = _baseMolecule.vertexBegin(); i != _baseMolecule.vertexEnd(); i = _baseMolecule.vertexNext(i))
+    for (i = baseMolecule.vertexBegin(); i != baseMolecule.vertexEnd(); i = baseMolecule.vertexNext(i))
     {
         _Atom atom;
 
         try
         {
-            if (!_isAlleneCenter(_baseMolecule, i, atom, sensible_bonds_out))
+            if (!_isAlleneCenter(baseMolecule, i, atom, sensible_bonds_out))
                 continue;
         }
         catch (Error& err)
@@ -332,15 +330,14 @@ bool MoleculeAlleneStereo::checkSub(BaseMolecule& query, BaseMolecule& target, c
 
         int parity = qa->parity;
         int qs[4], ts[4];
-        int tmp;
 
         memcpy(qs, qa->subst, 4 * sizeof(int));
         memcpy(ts, ta->subst, 4 * sizeof(int));
 
         if (mapping[qs[0]] == ts[2] || mapping[qs[0]] == ts[3])
         {
-            __swap(qs[0], qs[2], tmp);
-            __swap(qs[1], qs[3], tmp);
+            std::swap(qs[0], qs[2]);
+            std::swap(qs[1], qs[3]);
         }
 
         if (mapping[qs[0]] == ts[0])
@@ -363,14 +360,14 @@ bool MoleculeAlleneStereo::checkSub(BaseMolecule& query, BaseMolecule& target, c
     return true;
 }
 
-void MoleculeAlleneStereo::buildOnSubmolecule(MoleculeAlleneStereo& super, int* mapping)
+void MoleculeAlleneStereo::buildOnSubmolecule(BaseMolecule& baseMolecule, BaseMolecule& super, int* mapping)
 {
     int i, j;
 
-    for (i = super._centers.begin(); i != super._centers.end(); i = super._centers.next(i))
+    for (i = super.allene_stereo._centers.begin(); i != super.allene_stereo._centers.end(); i = super.allene_stereo._centers.next(i))
     {
-        int super_idx = super._centers.key(i);
-        const _Atom& super_center = super._centers.value(i);
+        int super_idx = super.allene_stereo._centers.key(i);
+        const _Atom& super_center = super.allene_stereo._centers.value(i);
         int sub_idx = mapping[super_idx];
 
         if (sub_idx < 0)
@@ -399,17 +396,15 @@ void MoleculeAlleneStereo::buildOnSubmolecule(MoleculeAlleneStereo& super, int* 
         if (new_center.subst[2] == -1 && new_center.subst[3] == -1)
             continue;
 
-        int tmp;
-
-        if (_baseMolecule.getAtomNumber(new_center.subst[0]) == ELEM_H && _baseMolecule.possibleAtomIsotope(new_center.subst[0], 0))
+        if (baseMolecule.getAtomNumber(new_center.subst[0]) == ELEM_H && baseMolecule.possibleAtomIsotope(new_center.subst[0], 0))
         {
-            __swap(new_center.subst[0], new_center.subst[1], tmp);
+            std::swap(new_center.subst[0], new_center.subst[1]);
             new_center.parity = 3 - new_center.parity;
         }
 
-        if (_baseMolecule.getAtomNumber(new_center.subst[2]) == ELEM_H && _baseMolecule.possibleAtomIsotope(new_center.subst[2], 0))
+        if (baseMolecule.getAtomNumber(new_center.subst[2]) == ELEM_H && baseMolecule.possibleAtomIsotope(new_center.subst[2], 0))
         {
-            __swap(new_center.subst[2], new_center.subst[3], tmp);
+            std::swap(new_center.subst[2], new_center.subst[3]);
             new_center.parity = 3 - new_center.parity;
         }
 
@@ -429,8 +424,8 @@ void MoleculeAlleneStereo::buildOnSubmolecule(MoleculeAlleneStereo& super, int* 
 
         _centers.insert(sub_idx, new_center);
 
-        const Vertex& super_left = super._baseMolecule.getVertex(super_center.left);
-        const Vertex& super_right = super._baseMolecule.getVertex(super_center.right);
+        const Vertex& super_left = super.getVertex(super_center.left);
+        const Vertex& super_right = super.getVertex(super_center.right);
 
         for (j = super_left.neiBegin(); j != super_left.neiEnd(); j = super_left.neiNext(j))
         {
@@ -438,9 +433,9 @@ void MoleculeAlleneStereo::buildOnSubmolecule(MoleculeAlleneStereo& super, int* 
             if (mapping[super_left.neiVertex(j)] == -1)
                 continue;
 
-            int dir = super._baseMolecule.getBondDirection(super_edge);
+            int dir = super.getBondDirection(super_edge);
             if (dir != 0)
-                _baseMolecule.setBondDirection(_baseMolecule.findEdgeIndex(new_center.left, mapping[super_left.neiVertex(j)]), dir);
+                baseMolecule.setBondDirection(baseMolecule.findEdgeIndex(new_center.left, mapping[super_left.neiVertex(j)]), dir);
         }
 
         for (j = super_right.neiBegin(); j != super_right.neiEnd(); j = super_right.neiNext(j))
@@ -449,9 +444,9 @@ void MoleculeAlleneStereo::buildOnSubmolecule(MoleculeAlleneStereo& super, int* 
             if (mapping[super_right.neiVertex(j)] == -1)
                 continue;
 
-            int dir = super._baseMolecule.getBondDirection(super_edge);
+            int dir = super.getBondDirection(super_edge);
             if (dir != 0)
-                _baseMolecule.setBondDirection(_baseMolecule.findEdgeIndex(new_center.right, mapping[super_right.neiVertex(j)]), dir);
+                baseMolecule.setBondDirection(baseMolecule.findEdgeIndex(new_center.right, mapping[super_right.neiVertex(j)]), dir);
         }
     }
 }
@@ -504,7 +499,7 @@ void MoleculeAlleneStereo::add(int atom_idx, int left, int right, int subst[4], 
     _centers.insert(atom_idx, atom);
 }
 
-void MoleculeAlleneStereo::markBonds()
+void MoleculeAlleneStereo::markBonds(BaseMolecule& baseMolecule)
 {
     int i, j;
     for (i = _centers.begin(); i != _centers.end(); i = _centers.next(i))
@@ -518,7 +513,7 @@ void MoleculeAlleneStereo::markBonds()
         for (k = 0; k < 2; k++)
             if (atom.subst[k] >= 0)
             {
-                subst_vecs[k].diff(_baseMolecule.getAtomXyz(atom.subst[k]), _baseMolecule.getAtomXyz(atom.left));
+                subst_vecs[k].diff(baseMolecule.getAtomXyz(atom.subst[k]), baseMolecule.getAtomXyz(atom.left));
                 if (!subst_vecs[k].normalize())
                     throw Error("zero bond length");
             }
@@ -526,14 +521,14 @@ void MoleculeAlleneStereo::markBonds()
         for (k = 2; k < 4; k++)
             if (atom.subst[k] >= 0)
             {
-                subst_vecs[k].diff(_baseMolecule.getAtomXyz(atom.subst[k]), _baseMolecule.getAtomXyz(atom.right));
+                subst_vecs[k].diff(baseMolecule.getAtomXyz(atom.subst[k]), baseMolecule.getAtomXyz(atom.right));
                 if (!subst_vecs[k].normalize())
                     throw Error("zero bond length");
             }
 
-        Vec3f pos_center = _baseMolecule.getAtomXyz(idx);
-        Vec3f vec_left = _baseMolecule.getAtomXyz(atom.left);
-        Vec3f vec_right = _baseMolecule.getAtomXyz(atom.right);
+        Vec3f pos_center = baseMolecule.getAtomXyz(idx);
+        Vec3f vec_left = baseMolecule.getAtomXyz(atom.left);
+        Vec3f vec_right = baseMolecule.getAtomXyz(atom.right);
 
         vec_left.sub(pos_center);
         vec_right.sub(pos_center);
@@ -567,19 +562,19 @@ void MoleculeAlleneStereo::markBonds()
             if (atom.subst[j] < 0)
                 continue;
 
-            int edge_idx = _baseMolecule.findEdgeIndex(atom.subst[j], j < 2 ? atom.left : atom.right);
+            int edge_idx = baseMolecule.findEdgeIndex(atom.subst[j], j < 2 ? atom.left : atom.right);
             if (edge_idx < 0)
                 throw Error("markBonds(): internal: edge not found");
 
-            if (_baseMolecule.getBondDirection(edge_idx) != 0)
+            if (baseMolecule.getBondDirection(edge_idx) != 0)
                 continue;
 
-            if (_baseMolecule.getVertex(atom.subst[j]).degree() == 1)
+            if (baseMolecule.getVertex(atom.subst[j]).degree() == 1)
             {
                 to_mark1[j] = 1;
                 n_to_mark1++;
             }
-            if (_baseMolecule.getEdgeTopology(edge_idx) != TOPOLOGY_RING)
+            if (baseMolecule.getEdgeTopology(edge_idx) != TOPOLOGY_RING)
             {
                 to_mark2[j] = 1;
                 n_to_mark2++;
@@ -648,18 +643,18 @@ void MoleculeAlleneStereo::markBonds()
         {
             if (to_mark[j])
             {
-                int edge_idx = _baseMolecule.findEdgeIndex(atom.subst[j], j < 2 ? atom.left : atom.right);
+                int edge_idx = baseMolecule.findEdgeIndex(atom.subst[j], j < 2 ? atom.left : atom.right);
 
-                if (_baseMolecule.getEdge(edge_idx).beg != (j < 2 ? atom.left : atom.right))
-                    _baseMolecule.swapEdgeEnds(edge_idx);
+                if (baseMolecule.getEdge(edge_idx).beg != (j < 2 ? atom.left : atom.right))
+                    baseMolecule.swapEdgeEnds(edge_idx);
 
-                _baseMolecule.setBondDirection(edge_idx, dirs[j]);
+                baseMolecule.setBondDirection(edge_idx, dirs[j]);
             }
         }
     }
 }
 
-void MoleculeAlleneStereo::removeAtoms(const Array<int>& indices)
+void MoleculeAlleneStereo::removeAtoms(BaseMolecule& baseMolecule,const Array<int>& indices)
 {
     int i, j;
 
@@ -693,7 +688,7 @@ void MoleculeAlleneStereo::removeAtoms(const Array<int>& indices)
                 atom.subst[3] = -1;
             else if (idx == atom.subst[0])
             {
-                if (atom.subst[1] == -1 || (_baseMolecule.getAtomNumber(atom.subst[1]) == ELEM_H && _baseMolecule.possibleAtomIsotope(atom.subst[1], 0)))
+                if (atom.subst[1] == -1 || (baseMolecule.getAtomNumber(atom.subst[1]) == ELEM_H && baseMolecule.possibleAtomIsotope(atom.subst[1], 0)))
                 {
                     centers_to_remove.push(center_idx);
                     continue;
@@ -703,7 +698,7 @@ void MoleculeAlleneStereo::removeAtoms(const Array<int>& indices)
             }
             else if (idx == atom.subst[2])
             {
-                if (atom.subst[3] == -1 || (_baseMolecule.getAtomNumber(atom.subst[3]) == ELEM_H && _baseMolecule.possibleAtomIsotope(atom.subst[3], 0)))
+                if (atom.subst[3] == -1 || (baseMolecule.getAtomNumber(atom.subst[3]) == ELEM_H && baseMolecule.possibleAtomIsotope(atom.subst[3], 0)))
                 {
                     centers_to_remove.push(center_idx);
                     continue;
@@ -722,7 +717,7 @@ void MoleculeAlleneStereo::removeAtoms(const Array<int>& indices)
     }
 }
 
-void MoleculeAlleneStereo::removeBonds(const Array<int>& indices)
+void MoleculeAlleneStereo::removeBonds(BaseMolecule& baseMolecule,const Array<int>& indices)
 {
     int i, j;
 
@@ -736,19 +731,19 @@ void MoleculeAlleneStereo::removeBonds(const Array<int>& indices)
             int center_idx = _centers.key(j);
             _Atom& atom = _centers.value(j);
 
-            if (idx == _baseMolecule.findEdgeIndex(center_idx, atom.left) || idx == _baseMolecule.findEdgeIndex(center_idx, atom.right))
+            if (idx == baseMolecule.findEdgeIndex(center_idx, atom.left) || idx == baseMolecule.findEdgeIndex(center_idx, atom.right))
             {
                 _centers.remove(center_idx);
                 continue;
             }
 
-            if (idx == _baseMolecule.findEdgeIndex(atom.left, atom.subst[1]))
+            if (idx == baseMolecule.findEdgeIndex(atom.left, atom.subst[1]))
                 atom.subst[1] = -1;
-            else if (idx == _baseMolecule.findEdgeIndex(atom.right, atom.subst[3]))
+            else if (idx == baseMolecule.findEdgeIndex(atom.right, atom.subst[3]))
                 atom.subst[3] = -1;
-            else if (idx == _baseMolecule.findEdgeIndex(atom.left, atom.subst[0]))
+            else if (idx == baseMolecule.findEdgeIndex(atom.left, atom.subst[0]))
             {
-                if (atom.subst[1] == -1 || (_baseMolecule.getAtomNumber(atom.subst[1]) == ELEM_H && _baseMolecule.possibleAtomIsotope(atom.subst[1], 0)))
+                if (atom.subst[1] == -1 || (baseMolecule.getAtomNumber(atom.subst[1]) == ELEM_H && baseMolecule.possibleAtomIsotope(atom.subst[1], 0)))
                 {
                     _centers.remove(center_idx);
                     continue;
@@ -756,9 +751,9 @@ void MoleculeAlleneStereo::removeBonds(const Array<int>& indices)
                 atom.subst[0] = atom.subst[1];
                 atom.parity = 3 - atom.parity;
             }
-            else if (idx == _baseMolecule.findEdgeIndex(atom.right, atom.subst[2]))
+            else if (idx == baseMolecule.findEdgeIndex(atom.right, atom.subst[2]))
             {
-                if (atom.subst[3] == -1 || (_baseMolecule.getAtomNumber(atom.subst[3]) == ELEM_H && _baseMolecule.possibleAtomIsotope(atom.subst[3], 0)))
+                if (atom.subst[3] == -1 || (baseMolecule.getAtomNumber(atom.subst[3]) == ELEM_H && baseMolecule.possibleAtomIsotope(atom.subst[3], 0)))
                 {
                     _centers.remove(center_idx);
                     continue;

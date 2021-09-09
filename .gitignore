@@ -26,9 +26,9 @@ _projects/
 /api/dotnet/obj
 /api/tests/dotnet/bin
 /api/tests/dotnet/obj
-api/dotnet/*.dll
-api/dotnet/*.so
-api/dotnet/*.dylib
+/api/dotnet/**/*.dll
+/api/dotnet/**/*.so
+/api/dotnet/**/*.dylib
 /api/plugins/bingo/dotnet/bin/
 /api/plugins/bingo/dotnet/lib/
 /api/plugins/bingo/dotnet/obj/
@@ -90,3 +90,6 @@ bingo/sqlserver/Resources/bingo-core-c.dll
 api/tests/integration/**/out
 api/tests/integration/_c/test.h
 api/c/tests/unit/common.h
+
+third_party/cairo/src/config.h
+third_party/cairo/src/cairo-features.h.h

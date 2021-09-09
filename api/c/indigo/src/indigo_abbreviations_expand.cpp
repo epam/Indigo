@@ -219,7 +219,7 @@ namespace indigo
                         len++;
                     }
                     char symb[4] = {0};
-                    strncpy(symb, label, __min(NELEM(symb) - 1, len));
+                    strncpy(symb, label, std::min(NELEM(symb) - 1, len));
                     int id = Element::fromString2(symb);
                     if (id < 0)
                         return -1;
@@ -840,7 +840,7 @@ namespace indigo
                         atoms_with_nei.find_or_insert(expander.added_atoms[i]);
                     }
                     for (int i = atoms_with_nei.begin(); i != atoms_with_nei.end(); i = atoms_with_nei.next(i))
-                        mol.stereocenters.markBond(atoms_with_nei.key(i));
+                        mol.markBondStereocenters(atoms_with_nei.key(i));
                 }
 
                 return count;

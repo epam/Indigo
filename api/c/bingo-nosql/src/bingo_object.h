@@ -42,7 +42,7 @@ namespace bingo
     public:
         BaseMoleculeQuery(BaseMolecule& mol, bool needs_query_fingerprint);
 
-        virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
 
         const BaseMolecule& getMolecule();
     };
@@ -70,7 +70,7 @@ namespace bingo
     private:
         Array<char> _gross_str;
 
-        virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
 
     public:
         GrossQuery(/* const */ Array<char>& str);
@@ -90,7 +90,7 @@ namespace bingo
     public:
         BaseReactionQuery(BaseReaction& rxn);
 
-        virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
 
         const BaseReaction& getReaction();
     };
@@ -135,13 +135,13 @@ namespace bingo
     public:
         IndexMolecule(/* const */ Molecule& mol);
 
-        virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
 
-        virtual bool buildGrossString(Array<char>& gross_string) /* const */;
+        bool buildGrossString(Array<char>& gross_string) /* const */ override;
 
-        virtual bool buildCfString(Array<char>& cf) /*const*/;
+        bool buildCfString(Array<char>& cf) /*const*/ override;
 
-        virtual bool buildHash(dword& hash) /* const */;
+        bool buildHash(dword& hash) /* const */ override;
     };
 
     class IndexReaction : public IndexObject
@@ -152,13 +152,13 @@ namespace bingo
     public:
         IndexReaction(/* const */ Reaction& rxn);
 
-        virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/;
+        bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
 
-        virtual bool buildGrossString(Array<char>& gross_string) /* const */;
+        bool buildGrossString(Array<char>& gross_string) /* const */ override;
 
-        virtual bool buildCfString(Array<char>& cf) /*const*/;
+        bool buildCfString(Array<char>& cf) /*const*/ override;
 
-        virtual bool buildHash(dword& hash) /* const */;
+        bool buildHash(dword& hash) /* const */ override;
     };
 }; // namespace bingo
 

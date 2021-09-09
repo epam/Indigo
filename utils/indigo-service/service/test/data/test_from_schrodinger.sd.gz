@@ -1,3 +1,6 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f31cdee25c44706d69cd52bcc611b5d79138b1ac9dfd67193c7ae95c41567d73
-size 149
+{
+  "errors" : [ {
+    "status" : 403,
+    "message" : "'epm-lsop' is blocked due to recurrent login failures, please try again in 4 seconds"
+  } ]
+}

@@ -132,7 +132,7 @@ bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr)
         return true;
     }
 
-    _searchCursor.free();
+    _searchCursor.reset(nullptr);
     return false;
 }
 
@@ -140,7 +140,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr)
 {
 
     profTimerStart(t0, "bingo_pg.search_sub");
-    BingoPgFpData& query_data = _queryFpData.ref();
+    BingoPgFpData& query_data = *_queryFpData;
     BingoPgIndex& bingo_index = *_bufferIndexPtr;
     /*
      * If there are matches found on the previous steps

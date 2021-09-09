@@ -21,12 +21,13 @@ smilesList = [
     'C'
 ]
 
-if dir_exists(joinPath("out", 'triple')):
-    rmdir(joinPath("out", 'triple'))
-makedirs(joinPath("out", 'triple'))
+out_triple_dir = joinPathPy("out/triple", __file__)
+if dir_exists(out_triple_dir):
+    rmdir(out_triple_dir)
+makedirs(out_triple_dir)
 
 for qs in smilesList:
-    bingo = Bingo.createDatabaseFile(indigo, joinPath("out", 'triple'), 'molecule', '')
+    bingo = Bingo.createDatabaseFile(indigo, out_triple_dir, 'molecule', '')
     bingo.insert(indigo.loadMolecule(qs))
     qm = indigo.loadQueryMolecule(qs)
     print('Query: {0}'.format(qs))
@@ -34,5 +35,3 @@ for qs in smilesList:
     while result.next():
         print('\t#{0}'.format(result.getCurrentId()))
     bingo.close()
-
-

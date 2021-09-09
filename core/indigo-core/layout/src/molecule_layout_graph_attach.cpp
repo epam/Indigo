@@ -509,7 +509,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
         if (dist > (k + 1) * length)
         {
             length = 0.2f + dist / (k + 1);
-            max_length = __max(max_length, length * 1.5f); // update max length if needed
+            max_length = std::max(max_length, length * 1.5f); // update max length if needed
         }
 
         bool attached = false;
@@ -977,7 +977,7 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, Array<int
         if (parity != 0)
         {
             int substituents[4];
-            _molecule->cis_trans.getSubstituents_All(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx], substituents);
+            _molecule->getSubstituents_All(_molecule_edge_mapping[_layout_edges[vert.neiEdge(drawn_idx)].ext_idx], substituents);
 
             int to_draw_substituent = -1;
 

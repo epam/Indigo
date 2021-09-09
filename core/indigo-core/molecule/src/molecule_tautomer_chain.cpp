@@ -1176,7 +1176,7 @@ int TautomerChainChecker::_embedding(Graph& subgraph, Graph& supergraph, int* co
     QueryMolecule& query = ((BaseMolecule&)subgraph).asQueryMolecule();
     BaseMolecule& target = (BaseMolecule&)supergraph;
 
-    if (!MoleculeStereocenters::checkSub(query.stereocenters, target.stereocenters, core_sub, false))
+    if (!MoleculeStereocenters::checkSub(query, target, core_sub, false))
         return 1;
 
     if (!MoleculeCisTrans::checkSub(query, target, core_sub))

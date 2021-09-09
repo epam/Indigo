@@ -262,7 +262,7 @@ int ReactionEnumeratorState::buildProduct(void)
         QS_DEF(Molecule, ee_monomer);
         ee_monomer.clear();
         ee_monomer.clone(*_reaction_monomers._monomers[i], NULL, NULL);
-        ee_monomer.cis_trans.build(NULL);
+        ee_monomer.buildCisTrans(NULL);
 
         if (!is_one_tube)
             if (!_isMonomerFromCurTube(i))
@@ -576,7 +576,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator(Molecule& monomer)
     QS_DEF(QueryMolecule, ee_reactant);
     ee_reactant.clear();
     ee_reactant.clone(_reaction.getQueryMolecule(_reactant_idx), NULL, NULL);
-    ee_reactant.cis_trans.build(NULL);
+    ee_reactant.buildCisTrans(NULL);
 
     ee_reactant.aromatize(_context.arom_options);
 
@@ -624,7 +624,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator(Molecule& monomer)
                 cis_trans_excluded[i] = 1;
         }
 
-        ee_monomer.cis_trans.build(cis_trans_excluded.ptr());
+        ee_monomer.buildCisTrans(cis_trans_excluded.ptr());
     }
 
     QS_DEF(Obj<AromaticityMatcher>, am);
@@ -1200,8 +1200,8 @@ void ReactionEnumeratorState::_buildMolProduct(QueryMolecule& product, Molecule&
             mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], product.getBondOrder(i));
     }
 
-    mol_product.stereocenters.buildOnSubmolecule(product.stereocenters, mapping_out.ptr());
-    mol_product.cis_trans.buildOnSubmolecule(product, mapping_out.ptr());
+    mol_product.buildOnSubmoleculeStereocenters(product, mapping_out.ptr());
+    mol_product.buildOnSubmoleculeCisTrans(product, mapping_out.ptr());
 
     mol_product.mergeSGroupsWithSubmolecule(product, mapping_out);
 }
@@ -1255,7 +1255,7 @@ void ReactionEnumeratorState::_stereocentersUpdate(QueryMolecule& submolecule, M
         else if ((sub_ex < 0) && (pr_ex < 0))
         {
             /* if there is no stereo info in reaction take monomer stereo info*/
-            _full_product.stereocenters.add(rp_mapping[i], mon_type, mon_group, new_pr_pyramid);
+            _full_product.addStereocenters(rp_mapping[i], mon_type, mon_group, new_pr_pyramid);
             continue;
         }
         else
@@ -1276,18 +1276,18 @@ void ReactionEnumeratorState::_stereocentersUpdate(QueryMolecule& submolecule, M
 
             int mapping[4];
             /* Reactant to product stereocenter's pyramid mapping finding */
-            MoleculeStereocenters::getPyramidMapping(submolecule.stereocenters, _full_product.stereocenters, i, rp_mapping.ptr(), mapping, false);
+            MoleculeStereocenters::getPyramidMapping(submolecule, _full_product, i, rp_mapping.ptr(), mapping, false);
 
             _full_product.stereocenters.remove(rp_mapping[i]);
-            _full_product.stereocenters.add(rp_mapping[i], pr_type, pr_group, new_pr_pyramid);
+            _full_product.addStereocenters(rp_mapping[i], pr_type, pr_group, new_pr_pyramid);
 
             if (MoleculeStereocenters::isPyramidMappingRigid(mapping))
                 continue;
 
             _full_product.stereocenters.invertPyramid(rp_mapping[i]);
             _full_product.clearBondDirections();
-            _full_product.stereocenters.markBonds();
-            _full_product.allene_stereo.markBonds();
+            _full_product.markBondsStereocenters();
+            _full_product.markBondsAlleneStereo();
         }
     }
 }
@@ -1332,11 +1332,10 @@ void ReactionEnumeratorState::_completeCisTrans(Molecule& product, Molecule& unc
         int pr_bond_idx = product.findEdgeIndex(frags_mapping[edge.beg], frags_mapping[edge.end]);
 
         /* if begin of edge in fragments matches end off edge in product subs pairs should be swaped */
-        int tmp;
         if (frags_mapping[edge.beg] == product.getEdge(pr_bond_idx).end)
         {
-            __swap(new_subs[0], new_subs[2], tmp);
-            __swap(new_subs[1], new_subs[3], tmp);
+            std::swap(new_subs[0], new_subs[2]);
+            std::swap(new_subs[1], new_subs[3]);
         }
 
         product.cis_trans.add(pr_bond_idx, new_subs, uncleaned_fragments.cis_trans.getParity(i));
@@ -1565,7 +1564,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
                 }
 
                 if (!invalid_stereocenter)
-                    mol_product.stereocenters.add(frags_mapping[_att_points[i][j]], type, group, new_pyramid);
+                    mol_product.addStereocenters(frags_mapping[_att_points[i][j]], type, group, new_pyramid);
             }
 
             if (nv_idx == 2)
@@ -1964,7 +1963,7 @@ int ReactionEnumeratorState::_embeddingCallback(Graph& subgraph, Graph& supergra
     if (!rpe_state->_is_rg_exist && !rpe_state->_am->match(core_sub, core_super))
         return 1;
 
-    if (!MoleculeStereocenters::checkSub(submolecule.stereocenters, supermolecule.stereocenters, core_sub, false))
+    if (!MoleculeStereocenters::checkSub(submolecule, supermolecule, core_sub, false))
         return 1;
 
     if (!MoleculeCisTrans::checkSub(submolecule, supermolecule, core_sub))

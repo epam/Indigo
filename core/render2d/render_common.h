@@ -559,7 +559,7 @@ namespace indigo
         bool agentsBelowArrow;
         bool collapseSuperatoms;
         Array<char> atomColorProp;
-        AutoPtr<RenderCdxmlContext> cdxml_context;
+        std::unique_ptr<RenderCdxmlContext> cdxml_context;
 
     private:
         RenderOptions(const RenderOptions&);

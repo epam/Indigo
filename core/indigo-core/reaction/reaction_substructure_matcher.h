@@ -19,7 +19,7 @@
 #ifndef __reaction_substructure_matcher__
 #define __reaction_substructure_matcher__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/obj.h"
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule_arom_match.h"
@@ -47,7 +47,7 @@ namespace indigo
     protected:
         TL_CP_DECL(ObjArray<MoleculeSubstructureMatcher::FragmentMatchCache>, _fmcaches);
 
-        virtual bool _checkAAM();
+        bool _checkAAM() override;
 
         static bool _match_atoms(BaseReaction& query_, Reaction& target, int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx,
                                  void* context);

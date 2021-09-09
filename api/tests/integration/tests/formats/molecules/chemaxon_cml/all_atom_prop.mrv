@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<cml>
+<MDocument>
+  <MChemicalStruct>
+    <molecule molID="m1">
+      <atomArray
+          atomID="a1 a2 a3 a4 a5 a6 a7 a8"
+          elementType="C C C C C P C C"
+          isotope="0 0 0 0 0 25 0 0"
+          formalCharge="0 0 0 0 0 -2 0 0"
+          mrvValence="- - - - - 5 - -"
+          radical="0 0 0 0 0 trivalent 0 0"
+          x2="-5.885000228881836 -4.5513211070538 -3.217641985225765 -1.8839628633977297 -0.550283741569694 0.8567287032602033 2.1170745020863766 3.4507536239144123"
+          y2="-0.054999999701976776 0.7150000002980232 -0.054999999701976776 0.7150000002980232 -0.054999999701976776 0.5683333542943001 -0.054999999701976776 0.7150000002980232"
+          />
+      <bondArray>
+        <bond atomRefs2="a1 a2" order="1" />
+        <bond atomRefs2="a2 a3" order="1" />
+        <bond atomRefs2="a3 a4" order="1" />
+        <bond atomRefs2="a4 a5" order="1" />
+        <bond atomRefs2="a5 a6" order="1" />
+        <bond atomRefs2="a6 a7" order="1" />
+        <bond atomRefs2="a7 a8" order="1" />
+      </bondArray>
+    </molecule>
+  </MChemicalStruct>
+</MDocument>
+</cml>

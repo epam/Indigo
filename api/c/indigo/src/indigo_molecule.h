@@ -38,14 +38,14 @@ class DLLEXPORT IndigoBaseMolecule : public IndigoObject
 public:
     explicit IndigoBaseMolecule(int type_);
 
-    virtual ~IndigoBaseMolecule();
+    ~IndigoBaseMolecule() override;
 
-    virtual PropertiesMap& getProperties()
+    PropertiesMap& getProperties() override
     {
         return _properties;
     }
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
     static bool is(IndigoObject& object);
 
@@ -57,19 +57,19 @@ class DLLEXPORT IndigoQueryMolecule : public IndigoBaseMolecule
 public:
     IndigoQueryMolecule();
 
-    virtual ~IndigoQueryMolecule();
+    ~IndigoQueryMolecule() override;
 
-    virtual BaseMolecule& getBaseMolecule();
-    virtual QueryMolecule& getQueryMolecule();
-    virtual const char* getName();
+    BaseMolecule& getBaseMolecule() override;
+    QueryMolecule& getQueryMolecule() override;
+    const char* getName() override;
 
     static IndigoQueryMolecule* cloneFrom(IndigoObject& obj);
-    static void parseAtomConstraint(const char* type, const char* value, AutoPtr<QueryMolecule::Atom>&);
+    static void parseAtomConstraint(const char* type, const char* value, std::unique_ptr<QueryMolecule::Atom>&);
     static QueryMolecule::Atom* parseAtomSMARTS(const char* string);
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
-    virtual IndigoObject* clone();
+    IndigoObject* clone() override;
 
     const MoleculeAtomNeighbourhoodCounters& getNeiCounters();
 
@@ -85,17 +85,17 @@ class DLLEXPORT IndigoMolecule : public IndigoBaseMolecule
 public:
     IndigoMolecule();
 
-    virtual ~IndigoMolecule();
+    ~IndigoMolecule() override;
 
-    virtual BaseMolecule& getBaseMolecule();
-    virtual Molecule& getMolecule();
-    virtual const char* getName();
+    BaseMolecule& getBaseMolecule() override;
+    Molecule& getMolecule() override;
+    const char* getName() override;
 
     static IndigoMolecule* cloneFrom(IndigoObject& obj);
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
-    virtual IndigoObject* clone();
+    IndigoObject* clone() override;
 
     Molecule mol;
 };
@@ -104,29 +104,29 @@ class DLLEXPORT IndigoAtom : public IndigoObject
 {
 public:
     IndigoAtom(BaseMolecule& mol_, int idx_);
-    virtual ~IndigoAtom();
+    ~IndigoAtom() override;
 
     static bool is(IndigoObject& obj);
     static IndigoAtom& cast(IndigoObject& obj);
-    virtual void remove();
+    void remove() override;
 
-    virtual IndigoObject* clone();
+    IndigoObject* clone() override;
 
     BaseMolecule& mol;
     int idx;
 
-    virtual int getIndex();
+    int getIndex() override;
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 };
 
 class DLLEXPORT IndigoRGroup : public IndigoObject
 {
 public:
     IndigoRGroup();
-    virtual ~IndigoRGroup();
+    ~IndigoRGroup() override;
 
-    virtual int getIndex();
+    int getIndex() override;
 
     static IndigoRGroup& cast(IndigoObject& obj);
 
@@ -140,15 +140,15 @@ public:
     IndigoRGroupFragment(IndigoRGroup& rgp, int idx);
     IndigoRGroupFragment(BaseMolecule* mol, int rgroup_idx, int fragment_idx);
 
-    virtual ~IndigoRGroupFragment();
+    ~IndigoRGroupFragment() override;
 
-    virtual QueryMolecule& getQueryMolecule();
-    virtual Molecule& getMolecule();
-    virtual BaseMolecule& getBaseMolecule();
-    virtual int getIndex();
+    QueryMolecule& getQueryMolecule() override;
+    Molecule& getMolecule() override;
+    BaseMolecule& getBaseMolecule() override;
+    int getIndex() override;
 
-    virtual void remove();
-    virtual IndigoObject* clone();
+    void remove() override;
+    IndigoObject* clone() override;
 
     IndigoRGroup rgroup;
     int frag_idx;
@@ -158,24 +158,24 @@ class DLLEXPORT IndigoBond : public IndigoObject
 {
 public:
     IndigoBond(BaseMolecule& mol_, int idx_);
-    virtual ~IndigoBond();
+    ~IndigoBond() override;
 
     static bool is(IndigoObject& obj);
     static IndigoBond& cast(IndigoObject& obj);
-    virtual void remove();
+    void remove() override;
 
     BaseMolecule& mol;
     int idx;
 
-    virtual int getIndex();
-    const char* debugInfo();
+    int getIndex() override;
+    const char* debugInfo() override;
 };
 
 class IndigoAtomNeighbor : public IndigoAtom
 {
 public:
     explicit IndigoAtomNeighbor(BaseMolecule& mol_, int atom_idx, int bond_idx);
-    virtual ~IndigoAtomNeighbor();
+    ~IndigoAtomNeighbor() override;
 
     int bond_idx;
 };
@@ -185,10 +185,10 @@ class IndigoAtomNeighborsIter : public IndigoObject
 public:
     IndigoAtomNeighborsIter(BaseMolecule& molecule, int atom_idx);
 
-    virtual ~IndigoAtomNeighborsIter();
+    ~IndigoAtomNeighborsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _atom_idx;
@@ -201,10 +201,10 @@ class IndigoRGroupsIter : public IndigoObject
 public:
     IndigoRGroupsIter(BaseMolecule* mol);
 
-    virtual ~IndigoRGroupsIter();
+    ~IndigoRGroupsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     BaseMolecule* _mol;
@@ -215,10 +215,10 @@ class IndigoRGroupFragmentsIter : public IndigoObject
 {
 public:
     IndigoRGroupFragmentsIter(IndigoRGroup& rgroup);
-    virtual ~IndigoRGroupFragmentsIter();
+    ~IndigoRGroupFragmentsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     BaseMolecule* _mol;
@@ -240,10 +240,10 @@ public:
 
     IndigoAtomsIter(BaseMolecule* molecule, int type);
 
-    virtual ~IndigoAtomsIter();
+    ~IndigoAtomsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _shift(int idx);
@@ -258,10 +258,10 @@ class IndigoBondsIter : public IndigoObject
 public:
     IndigoBondsIter(BaseMolecule& molecule);
 
-    virtual ~IndigoBondsIter();
+    ~IndigoBondsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _idx;
@@ -272,12 +272,12 @@ class IndigoTGroup : public IndigoObject
 {
 public:
     IndigoTGroup(BaseMolecule& mol_, int idx_);
-    virtual ~IndigoTGroup();
+    ~IndigoTGroup() override;
 
-    virtual int getIndex();
-    virtual void remove();
+    int getIndex() override;
+    void remove() override;
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
     static IndigoTGroup& cast(IndigoObject& obj);
     TGroup& get();
@@ -291,12 +291,12 @@ class IndigoTGroupsIter : public IndigoObject
 public:
     IndigoTGroupsIter(BaseMolecule& molecule);
 
-    virtual ~IndigoTGroupsIter();
+    ~IndigoTGroupsIter() override;
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _idx;
@@ -307,12 +307,12 @@ class IndigoSGroup : public IndigoObject
 {
 public:
     IndigoSGroup(BaseMolecule& mol_, int idx_);
-    virtual ~IndigoSGroup();
+    ~IndigoSGroup() override;
 
-    virtual int getIndex();
-    virtual void remove();
+    int getIndex() override;
+    void remove() override;
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
     static IndigoSGroup& cast(IndigoObject& obj);
     SGroup& get();
@@ -326,12 +326,12 @@ class IndigoSGroupsIter : public IndigoObject
 public:
     IndigoSGroupsIter(BaseMolecule& molecule, Array<int>& sgs);
 
-    virtual ~IndigoSGroupsIter();
+    ~IndigoSGroupsIter() override;
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _idx;
@@ -343,10 +343,10 @@ class IndigoDataSGroup : public IndigoObject
 {
 public:
     IndigoDataSGroup(BaseMolecule& mol_, int idx_);
-    virtual ~IndigoDataSGroup();
+    ~IndigoDataSGroup() override;
 
-    virtual int getIndex();
-    virtual void remove();
+    int getIndex() override;
+    void remove() override;
 
     static IndigoDataSGroup& cast(IndigoObject& obj);
     DataSGroup& get();
@@ -359,10 +359,10 @@ class IndigoDataSGroupsIter : public IndigoObject
 {
 public:
     IndigoDataSGroupsIter(BaseMolecule& molecule, Array<int>& refs);
-    virtual ~IndigoDataSGroupsIter();
+    ~IndigoDataSGroupsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _idx;
@@ -374,12 +374,12 @@ class IndigoSuperatom : public IndigoObject
 {
 public:
     IndigoSuperatom(BaseMolecule& mol_, int idx_);
-    virtual ~IndigoSuperatom();
+    ~IndigoSuperatom() override;
 
-    virtual int getIndex();
-    virtual void remove();
+    int getIndex() override;
+    void remove() override;
 
-    virtual const char* getName();
+    const char* getName() override;
 
     static IndigoSuperatom& cast(IndigoObject& obj);
     Superatom& get();
@@ -392,10 +392,10 @@ class IndigoSuperatomsIter : public IndigoObject
 {
 public:
     IndigoSuperatomsIter(BaseMolecule& molecule, Array<int>& refs);
-    virtual ~IndigoSuperatomsIter();
+    ~IndigoSuperatomsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _idx;
@@ -407,10 +407,10 @@ class IndigoRepeatingUnit : public IndigoObject
 {
 public:
     IndigoRepeatingUnit(BaseMolecule& mol_, int idx_);
-    virtual ~IndigoRepeatingUnit();
+    ~IndigoRepeatingUnit() override;
 
-    virtual int getIndex();
-    virtual void remove();
+    int getIndex() override;
+    void remove() override;
 
     static IndigoRepeatingUnit& cast(IndigoObject& obj);
     RepeatingUnit& get();
@@ -423,10 +423,10 @@ class IndigoRepeatingUnitsIter : public IndigoObject
 {
 public:
     IndigoRepeatingUnitsIter(BaseMolecule& molecule, Array<int>& refs);
-    virtual ~IndigoRepeatingUnitsIter();
+    ~IndigoRepeatingUnitsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _idx;
@@ -438,10 +438,10 @@ class IndigoMultipleGroup : public IndigoObject
 {
 public:
     IndigoMultipleGroup(BaseMolecule& mol_, int idx_);
-    virtual ~IndigoMultipleGroup();
+    ~IndigoMultipleGroup() override;
 
-    virtual int getIndex();
-    virtual void remove();
+    int getIndex() override;
+    void remove() override;
 
     static IndigoMultipleGroup& cast(IndigoObject& obj);
     MultipleGroup& get();
@@ -454,10 +454,10 @@ class IndigoMultipleGroupsIter : public IndigoObject
 {
 public:
     IndigoMultipleGroupsIter(BaseMolecule& molecule, Array<int>& refs);
-    virtual ~IndigoMultipleGroupsIter();
+    ~IndigoMultipleGroupsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _idx;
@@ -469,10 +469,10 @@ class IndigoGenericSGroup : public IndigoObject
 {
 public:
     IndigoGenericSGroup(BaseMolecule& mol_, int idx_);
-    virtual ~IndigoGenericSGroup();
+    ~IndigoGenericSGroup() override;
 
-    virtual int getIndex();
-    virtual void remove();
+    int getIndex() override;
+    void remove() override;
 
     static IndigoGenericSGroup& cast(IndigoObject& obj);
     SGroup& get();
@@ -485,10 +485,10 @@ class IndigoGenericSGroupsIter : public IndigoObject
 {
 public:
     IndigoGenericSGroupsIter(BaseMolecule& molecule, Array<int>& refs);
-    virtual ~IndigoGenericSGroupsIter();
+    ~IndigoGenericSGroupsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _idx;
@@ -500,10 +500,10 @@ class IndigoSGroupAtomsIter : public IndigoObject
 {
 public:
     IndigoSGroupAtomsIter(BaseMolecule& mol, SGroup& sgroup);
-    virtual ~IndigoSGroupAtomsIter();
+    ~IndigoSGroupAtomsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     BaseMolecule& _mol;
@@ -515,10 +515,10 @@ class IndigoSGroupBondsIter : public IndigoObject
 {
 public:
     IndigoSGroupBondsIter(BaseMolecule& mol, SGroup& sgroup);
-    virtual ~IndigoSGroupBondsIter();
+    ~IndigoSGroupBondsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     BaseMolecule& _mol;
@@ -530,10 +530,10 @@ class IndigoMoleculeComponent : public IndigoObject
 {
 public:
     IndigoMoleculeComponent(BaseMolecule& mol_, int index_);
-    virtual ~IndigoMoleculeComponent();
+    ~IndigoMoleculeComponent() override;
 
-    virtual int getIndex();
-    virtual IndigoObject* clone();
+    int getIndex() override;
+    IndigoObject* clone() override;
 
     int index;
     BaseMolecule& mol;
@@ -543,10 +543,10 @@ class IndigoComponentsIter : public IndigoObject
 {
 public:
     IndigoComponentsIter(BaseMolecule& mol_);
-    virtual ~IndigoComponentsIter();
+    ~IndigoComponentsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
     BaseMolecule& mol;
 
@@ -558,10 +558,10 @@ class IndigoComponentAtomsIter : public IndigoObject
 {
 public:
     IndigoComponentAtomsIter(BaseMolecule& mol, int cidx);
-    virtual ~IndigoComponentAtomsIter();
+    ~IndigoComponentAtomsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _next();
@@ -575,10 +575,10 @@ class IndigoComponentBondsIter : public IndigoObject
 {
 public:
     IndigoComponentBondsIter(BaseMolecule& mol, int cidx);
-    virtual ~IndigoComponentBondsIter();
+    ~IndigoComponentBondsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _next();
@@ -593,12 +593,12 @@ class IndigoSubmolecule : public IndigoObject
 public:
     IndigoSubmolecule(BaseMolecule& mol_, Array<int>& vertices_, Array<int>& edges_);
     IndigoSubmolecule(BaseMolecule& mol_, List<int>& vertices_, List<int>& edges_);
-    virtual ~IndigoSubmolecule();
+    ~IndigoSubmolecule() override;
 
-    virtual BaseMolecule& getBaseMolecule();
+    BaseMolecule& getBaseMolecule() override;
 
-    virtual int getIndex();
-    virtual IndigoObject* clone();
+    int getIndex() override;
+    IndigoObject* clone() override;
 
     BaseMolecule& getOriginalMolecule()
     {
@@ -613,7 +613,7 @@ public:
 
 protected:
     BaseMolecule& _mol;
-    AutoPtr<BaseMolecule> _submol;
+    std::unique_ptr<BaseMolecule> _submol;
     int _submol_revision;
     void _createSubMolecule();
 };
@@ -622,10 +622,10 @@ class IndigoSubmoleculeAtomsIter : public IndigoObject
 {
 public:
     IndigoSubmoleculeAtomsIter(IndigoSubmolecule& submol);
-    virtual ~IndigoSubmoleculeAtomsIter();
+    ~IndigoSubmoleculeAtomsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     IndigoSubmolecule& _submol;
@@ -636,10 +636,10 @@ class IndigoSubmoleculeBondsIter : public IndigoObject
 {
 public:
     IndigoSubmoleculeBondsIter(IndigoSubmolecule& submol);
-    virtual ~IndigoSubmoleculeBondsIter();
+    ~IndigoSubmoleculeBondsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     IndigoSubmolecule& _submol;
@@ -650,10 +650,10 @@ class IndigoSSSRIter : public IndigoObject
 {
 public:
     IndigoSSSRIter(BaseMolecule& mol);
-    virtual ~IndigoSSSRIter();
+    ~IndigoSSSRIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     BaseMolecule& _mol;
@@ -664,10 +664,10 @@ class IndigoSubtreesIter : public IndigoObject
 {
 public:
     IndigoSubtreesIter(BaseMolecule& mol, int min_vertices, int max_vertices);
-    virtual ~IndigoSubtreesIter();
+    ~IndigoSubtreesIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     static void _handleTree(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
@@ -683,10 +683,10 @@ class IndigoRingsIter : public IndigoObject
 {
 public:
     IndigoRingsIter(BaseMolecule& mol, int min_vertices, int max_vertices);
-    virtual ~IndigoRingsIter();
+    ~IndigoRingsIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     static bool _handleCycle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
@@ -702,10 +702,10 @@ class IndigoEdgeSubmoleculeIter : public IndigoObject
 {
 public:
     IndigoEdgeSubmoleculeIter(BaseMolecule& mol, int min_edges, int max_edges);
-    virtual ~IndigoEdgeSubmoleculeIter();
+    ~IndigoEdgeSubmoleculeIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     static void _handleSubgraph(Graph& graph, const int* v_mapping, const int* e_mapping, void* context);
@@ -722,8 +722,8 @@ class IndigoAttachmentPointsIter : public IndigoObject
 public:
     IndigoAttachmentPointsIter(BaseMolecule& mol, int order);
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     BaseMolecule& _mol;

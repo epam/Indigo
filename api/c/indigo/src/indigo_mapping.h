@@ -25,14 +25,14 @@ class IndigoMapping : public IndigoObject
 {
 public:
     IndigoMapping(BaseMolecule& from, BaseMolecule& to);
-    virtual ~IndigoMapping();
+    ~IndigoMapping() override;
     static IndigoMapping& cast(IndigoObject& obj);
 
     BaseMolecule& from;
     BaseMolecule& to;
     Array<int> mapping;
 
-    virtual IndigoObject* clone();
+    IndigoObject* clone() override;
 
 protected:
 };
@@ -41,7 +41,7 @@ class IndigoReactionMapping : public IndigoObject
 {
 public:
     IndigoReactionMapping(BaseReaction& from, BaseReaction& to);
-    virtual ~IndigoReactionMapping();
+    ~IndigoReactionMapping() override;
 
     BaseReaction& from;
     BaseReaction& to;
@@ -49,7 +49,7 @@ public:
     Array<int> mol_mapping;
     ObjArray<Array<int>> mappings;
 
-    virtual IndigoObject* clone();
+    IndigoObject* clone() override;
 };
 
 #endif

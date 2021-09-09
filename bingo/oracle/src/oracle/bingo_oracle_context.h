@@ -37,7 +37,7 @@ class BingoOracleContext : public BingoContext
 {
 public:
     explicit BingoOracleContext(OracleEnv& env, int id);
-    virtual ~BingoOracleContext();
+    ~BingoOracleContext() override;
 
     BingoStorage storage;
     WarningsTable warnings;

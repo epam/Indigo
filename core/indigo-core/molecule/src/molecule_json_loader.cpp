@@ -22,9 +22,9 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups) : _mol_
 
 int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology)
 {
-    AutoPtr<QueryMolecule::Bond> bond;
+    std::unique_ptr<QueryMolecule::Bond> bond;
     if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
-        bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
+        bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
     else if (order == _BOND_SINGLE_OR_DOUBLE)
         bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
                                             QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
@@ -36,7 +36,7 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
         bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
                                              new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
     else if (order == _BOND_ANY)
-        bond.reset(new QueryMolecule::Bond());
+        bond = std::make_unique<QueryMolecule::Bond>();
     else
         throw Error("unknown bond type: %d", order);
     if (topology != 0)
@@ -49,17 +49,16 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
 
 int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope)
 {
-    AutoPtr<QueryMolecule::Atom> atom;
-    atom.reset(new QueryMolecule::Atom());
+    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
     if (element != -1 && element != ELEM_RSITE)
-        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, element));
+        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, element);
     else
     {
         int atom_type = QueryMolecule::getAtomType(label);
         switch (atom_type)
         {
         case _ATOM_PSEUDO:
-            atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label));
+            atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, label);
             break;
         case _ATOM_A:
             atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
@@ -127,7 +126,7 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
             atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             break;
         case _ATOM_R:
-            atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+            atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
             break;
         }
     }
@@ -426,7 +425,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
     if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
     {
         QS_DEF(Array<int>, mapping);
-        AutoPtr<BaseMolecule> rep(bmol.neu());
+        std::unique_ptr<BaseMolecule> rep(bmol.neu());
         rep->makeSubmolecule(bmol, sgroup.atoms, &mapping, 0);
 
         rep->sgroups.clear(SGroup::SG_TYPE_SRU);
@@ -441,7 +440,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
             int end_order = end_bond > 0 ? bmol.getBondOrder(end_bond) : -1;
             for (int j = 0; j < mg.multiplier - 1; j++)
             {
-                bmol.mergeWithMolecule(rep.ref(), &mapping, 0);
+                bmol.mergeWithMolecule(*rep, &mapping, 0);
                 int k;
                 for (k = rep->vertexBegin(); k != rep->vertexEnd(); k = rep->vertexNext(k))
                     sgroup.atoms.push(mapping[k]);
@@ -659,7 +658,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         for (int rsite_idx = 0; rsite_idx < _rgroups.Size(); ++rsite_idx)
         {
             RGroup& rgroup = rgroups.getRGroup(rsite_idx + 1);
-            AutoPtr<BaseMolecule> fragment(mol.neu());
+            std::unique_ptr<BaseMolecule> fragment(mol.neu());
             Value one_rnode(kArrayType);
             Value& rnode = _rgroups[rsite_idx];
             one_rnode.PushBack(rnode, data.GetAllocator());
@@ -697,8 +696,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
             }
         }
 
-    mol.stereocenters.buildFromBonds(stereochemistry_options, sensible_bond_directions.data());
-    mol.allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, sensible_bond_directions.data());
+    mol.buildFromBondsStereocenters(stereochemistry_options, sensible_bond_directions.data());
+    mol.buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, sensible_bond_directions.data());
 
     // int num_atoms = mol.vertices();
     // printf("%d", num_atoms);
@@ -710,9 +709,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
                 mol.stereocenters.setType(i, MoleculeStereocenters::ATOM_AND, 1);
         }
 
-    mol.cis_trans.build(ignore_cistrans.data());
+    mol.buildCisTrans(ignore_cistrans.data());
     if (mol.stereocenters.size() == 0)
-        mol.stereocenters.buildFrom3dCoordinates(stereochemistry_options);
+        mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
     MoleculeLayout ml(mol, false);
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();

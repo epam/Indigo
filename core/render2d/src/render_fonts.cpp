@@ -20,10 +20,9 @@
 #include "math/algebra.h"
 #include "render_context.h"
 
-//#ifdef _WIN32
-//#include <cairo-win32.h>
-//#include <windows.h>
-//#endif
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 using namespace indigo;
 
@@ -56,6 +55,7 @@ void RenderContext::fontsClear()
 
 void RenderContext::fontsInit()
 {
+    fontsDispose();
     fontOptions = cairo_font_options_create();
     cairoCheckStatus();
     cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_GRAY);

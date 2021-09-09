@@ -327,10 +327,10 @@ namespace indigo
             {
                 classType = FragmentClassType::ROOT;
             }
-            virtual ~FragmentNodeRoot() = default;
+            ~FragmentNodeRoot() override = default;
 
 #ifdef DEBUG
-            virtual void print(std::ostream& out) const;
+            void print(std::ostream& out) const override;
 #endif
         }; // class FragmentNodeRoot
 
@@ -367,7 +367,7 @@ namespace indigo
         {
         public:
             FragmentNodeBase();
-            virtual ~FragmentNodeBase() = default;
+            ~FragmentNodeBase() override = default;
 
             /*
             Returns the sum of multipliers stack
@@ -376,7 +376,7 @@ namespace indigo
             int combineMultipliers();
 
 #ifdef DEBUG
-            virtual void print(std::ostream& out) const;
+            void print(std::ostream& out) const override;
 #endif
 
             Element element;
@@ -418,7 +418,7 @@ namespace indigo
             {
                 classType = FragmentClassType::SUBSTITUENT;
             }
-            virtual ~FragmentNodeSubstituent() = default;
+            ~FragmentNodeSubstituent() override = default;
 
             inline operator const FragmentNodeBase*() const
             {
@@ -430,7 +430,7 @@ namespace indigo
             }
 
 #ifdef DEBUG
-            virtual void print(std::ostream& out) const;
+            void print(std::ostream& out) const override;
 #endif
 
             // Positions of this substituent inside its base

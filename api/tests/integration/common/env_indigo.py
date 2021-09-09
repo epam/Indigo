@@ -8,10 +8,10 @@ from math import sqrt
 
 from util import isIronPython, isJython, getPlatform, REPO_ROOT
 
-
 if isIronPython():
     import clr
     import System
+
     clr.AddReference("System.IO.FileSystem")
     clr.AddReference("System.IO.Compression.FileSystem")
     clr.AddReference("System.Runtime.Extensions")
@@ -21,9 +21,9 @@ if isIronPython():
 else:
     import subprocess
     import zipfile
+
     if isJython():
         from util import get_indigo_java_version, download_jna
-
 
 frame = inspect.stack()[1]
 module = inspect.getmodule(frame[0])
@@ -86,9 +86,11 @@ def rmdir(path):
 
 if isIronPython():
     import clr
+
     dll_full_path = lambda: os.path.normpath(os.path.abspath(os.environ['INDIGO_PATH']))
     clr.AddReferenceToFileAndPath(dll_full_path())
-    from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject, ReactingCenter
+    from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, \
+        BingoException, BingoObject, ReactingCenter
 elif isJython():
     indigo_java_version, jna_version = get_indigo_java_version()
     indigo_path = os.path.normpath(os.path.abspath(os.getenv('INDIGO_PATH', os.path.join(REPO_ROOT, 'dist'))))
@@ -103,7 +105,9 @@ elif isJython():
                 jars.append(jar_path)
     for jar in jars:
         sys.path.append(jar)
-    from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
+    from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, \
+        BingoException, BingoObject
+
     dll_full_path = lambda: sys.path[-4]
 else:
     indigo_python_source_folder = os.path.join(REPO_ROOT, 'api', 'python')
@@ -112,6 +116,7 @@ else:
     from indigo.renderer import IndigoRenderer
     from indigo.inchi import IndigoInchi
     from indigo.bingo import Bingo, BingoException, BingoObject
+
     dll_full_path = lambda: Indigo._dll_path
 
 
@@ -134,13 +139,29 @@ relPathDict = {}
 inspectStackLock = threading.RLock()
 
 
-def joinPath(*args):
-    inspectStackLock.acquire()
-    frm = inspect.stack()[1][1]
-    inspectStackLock.release()
-    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\', '/')
+class Memoize:
+    def __init__(self, f):
+        self.f = f
+        self.memo = {}
+
+    def __call__(self, *args):
+        if not args in self.memo:
+            self.memo[args] = self.f(*args)
+        return self.memo[args]
 
 
+# We use memoization because inspect works very slow on Jython
+# @Memoize
+# def joinPath(*args):
+#     inspectStackLock.acquire()
+#     frm = inspect.stack()[2][1]
+#     inspectStackLock.release()
+#     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\',
+#                                                                                                                  '/')
+
+def joinPathPy(args, file_py):
+    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(file_py)), args))).replace('\\',
+                                                                                                                 '/')
 def relativePath(args):
     inspectStackLock.acquire()
     frm = inspect.stack()[1][1]
@@ -149,10 +170,10 @@ def relativePath(args):
 
 
 def dist_vec(a, b):
-    return sqrt(sum((a - b)**2 for a, b in zip(a, b)))
+    return sqrt(sum((a - b) ** 2 for a, b in zip(a, b)))
 
 
-def moleculeLayoutDiff(indigo, mol, ref, delta=0.001, ref_is_file=True):
+def moleculeLayoutDiff(indigo, mol, ref, delta=0.01, ref_is_file=True):
     if ref_is_file:
         ref_name = getRefFilepath2(ref)
         m2 = indigo.loadMoleculeFromFile(ref_name)
@@ -204,13 +225,15 @@ def getRefFilepath(filename):
     with inspectStackLock:
         frm = inspect.stack()[1][1]
     ref_path = os.path.abspath(os.path.join(os.path.dirname(frm), 'ref'))
-    if file_exists(os.path.join(ref_path, filename)):
-        return os.path.normpath(os.path.abspath(os.path.join(ref_path, filename)))
     sys_name = getPlatform()
     if file_exists(os.path.join(ref_path, sys_name, filename)):
         return os.path.normpath(os.path.abspath(os.path.join(ref_path, sys_name, filename)))
 
-    raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
+    if file_exists(os.path.join(ref_path, filename)):
+        return os.path.normpath(os.path.abspath(os.path.join(ref_path, filename)))
+
+    raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (
+    filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
 
 
 def getRefFilepath2(filename):
@@ -227,7 +250,8 @@ def getRefFilepath2(filename):
     if file_exists(os.path.join(ref_path, sys_name, filename)):
         return os.path.normpath(os.path.abspath(os.path.join(ref_path, sys_name, filename)))
 
-    raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
+    raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (
+    filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
 
 
 def subprocess_communicate(name, arguments, wd, env):
@@ -262,7 +286,7 @@ def open_file_utf8(filename):
         return open(filename, 'wt')
     elif isIronPython():
         # TODO: FIXME (maybe on C# site?)
-        return codecs.open(filename, 'wb', encoding='utf-8') # FAILED: wrong symbols
+        return codecs.open(filename, 'wb', encoding='utf-8')  # FAILED: wrong symbols
         # return open(filename, 'wt') # ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\uFFFD' in position 814: ordinal not in range(128)
         # return open(filename, 'wb') # ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\uFFFD' in position 724: ordinal not in range(128)
         # return codecs.open(filename, 'wb') #  # ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\uFFFD' in position 724: ordinal not in range(128)

@@ -192,8 +192,8 @@ namespace indigo
 
             void setFixedInfo(const Dbitset* edgesFixed, const Dbitset* verticesFixed);
 
-            virtual bool checkVertex(int v_idx);
-            virtual bool checkEdge(int e_idx);
+            bool checkVertex(int v_idx) override;
+            bool checkEdge(int e_idx) override;
 
         protected:
             const Dbitset* _edgesFixed;
@@ -267,7 +267,7 @@ namespace indigo
 
             void setExtraInfo(byte* edgesEdges);
 
-            virtual bool checkEdge(int e_idx);
+            bool checkEdge(int e_idx) override;
 
         protected:
             byte* _edgesState;
@@ -282,7 +282,7 @@ namespace indigo
             void setVerticesMapping(int* verticesMapping);
             void setVerticesAccept(bool* verticesAcceptDoubleBond);
 
-            virtual bool checkVertex(int v_idx);
+            bool checkVertex(int v_idx) override;
 
         protected:
             const byte* _verticesState;

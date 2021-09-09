@@ -582,8 +582,8 @@ void CisTransStereochemistryLayer::print(Array<char>& result)
 
         const Edge& e = mol.getEdge(e_idx);
 
-        int max_vertex = __max(e.beg, e.end);
-        int min_vertex = __min(e.beg, e.end);
+        int max_vertex = std::max(e.beg, e.end);
+        int min_vertex = std::min(e.beg, e.end);
 
         int(&cp)[2] = dbl[max_vertex];
 
@@ -642,8 +642,8 @@ int CisTransStereochemistryLayer::compareMappings(const MoleculeInChIUtils::Mapp
 
         const Edge& e = mol.getEdge(e_idx);
 
-        int max_vertex = __max(e.beg, e.end);
-        int min_vertex = __min(e.beg, e.end);
+        int max_vertex = std::max(e.beg, e.end);
+        int min_vertex = std::min(e.beg, e.end);
 
         // Get mapped parity
         int parity1;

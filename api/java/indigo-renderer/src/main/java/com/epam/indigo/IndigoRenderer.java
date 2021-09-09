@@ -27,6 +27,14 @@ public class IndigoRenderer {
     public IndigoRenderer(Indigo indigo) {
         loadLibrary(indigo.getUserSpecifiedPath());
         this.indigo = indigo;
+        Indigo.checkResult(this, lib.indigoRendererInit());
+    }
+
+    @Override
+    public void finalize() throws Throwable {
+        indigo.setSessionID();
+        Indigo.checkResult(this, lib.indigoRendererDispose());
+        super.finalize();
     }
 
     public void render(IndigoObject obj, IndigoObject output) {

@@ -3,11 +3,11 @@ import sys
 sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
 from env_indigo import *
 
-if not os.path.exists(joinPath("out", 'sim_value_test')):
-    makedirs(joinPath("out", 'sim_value_test'))
+if not os.path.exists(joinPathPy("out/sim_value_test", __file__)):
+    makedirs(joinPathPy("out/sim_value_test", __file__))
 
 indigo = Indigo()
-bingo = Bingo.createDatabaseFile(indigo, joinPath('out', 'sim_value_test', 'db_molecule_sim'), 'molecule', '')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('out/sim_value_test/db_molecule_sim', __file__), 'molecule', '')
  
 
 def searchSim(bingo, q, minSim, maxSim, metric, verify):
@@ -31,7 +31,7 @@ def searchSim(bingo, q, minSim, maxSim, metric, verify):
                 print("          " + rm.smiles())
                 print("          " + q.smiles())
 
-bingo = Bingo.createDatabaseFile(indigo, joinPath('out', 'sim_value_test', 'db_molecule_sim_small'), 'molecule', '')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('out/sim_value_test/db_molecule_sim_small', __file__), 'molecule', '')
 bingo.insert(indigo.loadMolecule("Fc1cccc(NC(c2ccc(NC(C(C)N3CCC(C(N4CCCC4C(Nc4cccc(C(Nc5ccccc5)=O)c4)=O)=O)CC3)=O)c(C)c2)=O)c1"))
 q = indigo.loadMolecule("O=C1NCCN(C(=O)c2ccc(-c3ccccc3)cc2)C1(C)C")
 searchSim(bingo, q, 0.5, 1, 'tanimoto', True)

@@ -12,14 +12,14 @@ q = indigo.loadQueryMolecule("C:*:C")
 m = indigo.substructureMatcher(mol).match(q)
 ht = m.highlightedTarget()
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
-saver = indigo.createFileSaver(joinPath("out/highlighting.sdf"), "sdf")
+saver = indigo.createFileSaver(joinPathPy("out/highlighting.sdf", __file__), "sdf")
    
 def printHighlighting (ht):
    print("Highlighting:")

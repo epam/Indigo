@@ -40,9 +40,9 @@ void MoleculeLayout::_init(bool smart_layout)
     filter = 0;
     _smart_layout = smart_layout;
     if (_smart_layout)
-        _layout_graph.reset(new MoleculeLayoutGraphSmart());
+        _layout_graph = std::make_unique<MoleculeLayoutGraphSmart>();
     else
-        _layout_graph.reset(new MoleculeLayoutGraphSimple());
+        _layout_graph = std::make_unique<MoleculeLayoutGraphSimple>();
 
     max_iterations = LAYOUT_MAX_ITERATION;
     _query = false;
@@ -52,9 +52,9 @@ void MoleculeLayout::_init(bool smart_layout)
     if (_hasMulGroups)
     {
         if (_molecule.isQueryMolecule())
-            _molCollapsed.reset(new QueryMolecule());
+            _molCollapsed = std::make_unique<QueryMolecule>();
         else
-            _molCollapsed.reset(new Molecule());
+            _molCollapsed = std::make_unique<Molecule>();
         _molCollapsed->clone(_molecule, &_atomMapping, NULL);
         QS_DEF(BaseMolecule::Mapping, atomMapCollapse);
         QS_DEF(BaseMolecule::Mapping, bondMapInv);
@@ -67,7 +67,7 @@ void MoleculeLayout::_init(bool smart_layout)
                 // collapse multiple group
                 atomMapCollapse.clear();
                 bondMapInv.clear();
-                BaseMolecule::collapse(_molCollapsed.ref(), i, atomMapCollapse, bondMapInv);
+                BaseMolecule::collapse(*_molCollapsed, i, atomMapCollapse, bondMapInv);
 
                 // modify the atom mapping
                 for (int j = 0; j < _atomMapping.size(); ++j)
@@ -203,8 +203,8 @@ void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol
         int aidIn = edge.beg, aidOut = edge.end;
         if (!crossBondOut[i])
         {
-            int t;
-            __swap(aidIn, aidOut, t);
+
+            std::swap(aidIn, aidOut);
         }
         Vec2f p2dIn, p2dOut, d, n, b1, b2;
         Vec2f::projectZ(p2dIn, mol.getAtomXyz(aidIn));
@@ -232,8 +232,8 @@ void _placeSGroupBracketsCrossBondSingle(Array<Vec2f[2]>& brackets, BaseMolecule
     int aidIn = edge.beg, aidOut = edge.end;
     if (!out)
     {
-        int t;
-        __swap(aidIn, aidOut, t);
+
+        std::swap(aidIn, aidOut);
     }
 
     Vec2f p2dIn, p2dOut, d, n, b1, b2;
@@ -384,9 +384,9 @@ void MoleculeLayout::_make()
         for (int j = 0; j < _atomMapping.size(); ++j)
         {
             int i = _atomMapping[j];
-            _molecule.setAtomXyz(j, _molCollapsed.ref().getAtomXyz(i));
+            _molecule.setAtomXyz(j, _molCollapsed->getAtomXyz(i));
         }
-        _molCollapsed.reset(NULL);
+        _molCollapsed.reset(nullptr);
     }
 
     _updateMultipleGroups();

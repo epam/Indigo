@@ -2,7 +2,7 @@
 #define _RINGO_PG_BUILD_ENGINE_H__
 
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/obj_array.h"
 
 #include "bingo_pg_build_engine.h"
@@ -21,20 +21,20 @@ class RingoPgBuildEngine : public BingoPgBuildEngine
 {
 public:
     RingoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name);
-    virtual ~RingoPgBuildEngine();
+    ~RingoPgBuildEngine() override;
 
-    virtual bool processStructure(StructCache& struct_cache);
-    virtual void processStructures(indigo::ObjArray<StructCache>& struct_cache);
+    bool processStructure(StructCache& struct_cache) override;
+    void processStructures(indigo::ObjArray<StructCache>& struct_cache) override;
 
-    virtual int getFpSize();
-    virtual int getType() const
+    int getFpSize() override;
+    int getType() const override
     {
         return BINGO_INDEX_TYPE_REACTION;
     }
 
-    virtual void prepareShadowInfo(const char* schema_name, const char* index_schema);
-    virtual void insertShadowInfo(BingoPgFpData&);
-    virtual void finishShadowProcessing();
+    void prepareShadowInfo(const char* schema_name, const char* index_schema) override;
+    void insertShadowInfo(BingoPgFpData&) override;
+    void finishShadowProcessing() override;
 
     // hardcode return single threading for reactions due to an instable state
     int getNthreads()

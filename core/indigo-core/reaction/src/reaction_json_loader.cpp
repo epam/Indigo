@@ -104,13 +104,13 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     {
         _pmol = &_mol;
         loader.loadMolecule(_mol);
-        merged_molecule.reset(new Molecule);
+        merged_molecule = std::make_unique<Molecule>();
     }
     else if (_pqrxn)
     {
         loader.loadMolecule(_qmol);
         _pmol = &_qmol;
-        merged_molecule.reset(new QueryMolecule);
+        merged_molecule = std::make_unique<QueryMolecule>();
     }
     else
         throw Error("unknown reaction type: %s", typeid(rxn).name());

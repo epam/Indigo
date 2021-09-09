@@ -48,14 +48,14 @@ class IndigoMoleculeSubstructureMatchIter : public IndigoObject
 public:
     IndigoMoleculeSubstructureMatchIter(Molecule& target, QueryMolecule& query, Molecule& original_target, bool resonance, bool disable_folding_query_h);
 
-    virtual ~IndigoMoleculeSubstructureMatchIter();
+    ~IndigoMoleculeSubstructureMatchIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
     int countMatches(int embeddings_limit);
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
     MoleculeSubstructureMatcher matcher;
     MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
@@ -77,14 +77,14 @@ class IndigoTautomerSubstructureMatchIter : public IndigoObject
 public:
     IndigoTautomerSubstructureMatchIter(Molecule& target, QueryMolecule& query, Molecule& tautomerFound, TautomerMethod method);
 
-    virtual ~IndigoTautomerSubstructureMatchIter();
+    ~IndigoTautomerSubstructureMatchIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
     int countMatches(int embeddings_limit);
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
     MoleculeTautomerSubstructureMatcher matcher;
 
@@ -113,7 +113,7 @@ public:
 
     IndigoMoleculeSubstructureMatcher(Molecule& target, int mode);
 
-    virtual ~IndigoMoleculeSubstructureMatcher();
+    ~IndigoMoleculeSubstructureMatcher() override;
 
     IndigoMoleculeSubstructureMatchIter* iterateQueryMatches(IndigoObject& query_object, bool embedding_edges_uniqueness, bool find_unique_embeddings,
                                                              bool for_iteration, int max_embeddings);
@@ -125,7 +125,7 @@ public:
     void unignoreAtom(int atom_index);
     void unignoreAllAtoms();
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
     Molecule& target;
     Molecule moleculeFound;
@@ -149,11 +149,11 @@ class DLLEXPORT IndigoReactionSubstructureMatcher : public IndigoObject
 {
 public:
     IndigoReactionSubstructureMatcher(Reaction& target);
-    virtual ~IndigoReactionSubstructureMatcher();
+    ~IndigoReactionSubstructureMatcher() override;
 
     static IndigoReactionSubstructureMatcher& cast(IndigoObject& obj);
 
-    const char* debugInfo();
+    const char* debugInfo() override;
 
     Reaction& original_target;
     Reaction target;

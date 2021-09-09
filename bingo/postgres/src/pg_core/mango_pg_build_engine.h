@@ -5,7 +5,7 @@
 #define _MANGO_PG_BUILD_ENGINE_H__
 
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/exception.h"
 
 #include "bingo_pg_build_engine.h"
@@ -24,20 +24,20 @@ class MangoPgBuildEngine : public BingoPgBuildEngine
 {
 public:
     MangoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name);
-    virtual ~MangoPgBuildEngine();
+    ~MangoPgBuildEngine() override;
 
-    virtual bool processStructure(StructCache& struct_cache);
-    virtual void processStructures(indigo::ObjArray<StructCache>& struct_caches);
+    bool processStructure(StructCache& struct_cache) override;
+    void processStructures(indigo::ObjArray<StructCache>& struct_caches) override;
 
-    virtual int getFpSize();
-    virtual int getType() const
+    int getFpSize() override;
+    int getType() const override
     {
         return BINGO_INDEX_TYPE_MOLECULE;
     }
 
-    virtual void prepareShadowInfo(const char* schema_name, const char* index_schema);
-    virtual void insertShadowInfo(BingoPgFpData&);
-    virtual void finishShadowProcessing();
+    void prepareShadowInfo(const char* schema_name, const char* index_schema) override;
+    void insertShadowInfo(BingoPgFpData&) override;
+    void finishShadowProcessing() override;
 
 private:
     MangoPgBuildEngine(const MangoPgBuildEngine&); // no implicit copy

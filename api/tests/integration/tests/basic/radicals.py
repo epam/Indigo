@@ -31,7 +31,7 @@ def testRadical (m):
         print(" %d: %s with %d electrons" % (a.index(), radicalMap[a.radical()], a.radicalElectrons()))
     
     
-for m in indigo.iterateSDFile(joinPath("molecules", "radicals.sdf")):
+for m in indigo.iterateSDFile(joinPathPy("molecules/radicals.sdf", __file__)):
     testRadical(m)
     m2 = indigo.loadMolecule(m.molfile())
     testRadical(m2)

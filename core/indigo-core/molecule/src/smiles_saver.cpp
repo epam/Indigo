@@ -331,7 +331,6 @@ void SmilesSaver::_saveMolecule()
     for (i = allene_stereo.begin(); i != allene_stereo.end(); i = allene_stereo.next(i))
     {
         int atom_idx, left, right, parity, subst[4], subst_map[4] = {-1, -1, -1, -1};
-        int tmp;
 
         allene_stereo.get(i, atom_idx, left, right, subst, parity);
 
@@ -356,12 +355,12 @@ void SmilesSaver::_saveMolecule()
 
         if (subst_map[1] < subst_map[0])
         {
-            __swap(subst_map[0], subst_map[1], tmp);
+            std::swap(subst_map[0], subst_map[1]);
             parity = 3 - parity;
         }
         if (subst_map[3] < subst_map[2])
         {
-            __swap(subst_map[2], subst_map[3], tmp);
+            std::swap(subst_map[2], subst_map[3]);
             parity = 3 - parity;
         }
 
@@ -1274,7 +1273,7 @@ bool SmilesSaver::_updateSideBonds(int bond_idx)
     const Edge& edge = mol.getEdge(bond_idx);
     int subst[4];
 
-    mol.cis_trans.getSubstituents_All(bond_idx, subst);
+    mol.getSubstituents_All(bond_idx, subst);
     int parity = _cis_trans_parity[bond_idx];
 
     int sidebonds[4] = {-1, -1, -1, -1};

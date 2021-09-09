@@ -1,0 +1,4 @@
+/out
+/serialized/*.out
+/serialized/*.rdf
+/serialized/*.sdf

@@ -36,10 +36,23 @@ class IndigoInchiContext : public IndigoPluginContext
 public:
     InchiWrapper inchi;
 
-    virtual void init()
+    IndigoInchiContext()
+    {
+        indigo_id = TL_GET_SESSION_ID();
+        setOptionsHandlers();
+        init();
+    }
+
+    ~IndigoInchiContext()
+    {
+    }
+
+    void init() override
     {
         inchi.clear();
     }
+
+    void setOptionsHandlers();
 };
 
 _SessionLocalContainer<IndigoInchiContext> inchi_wrapper_self;
@@ -55,6 +68,27 @@ IndigoInchiContext& indigoInchiGetInstance()
 // C interface functions
 //
 
+
+CEXPORT int indigoInchiInit(void)
+{
+    INDIGO_BEGIN
+    {
+        IndigoInchiContext& inchi_context = indigoInchiGetInstance();
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoInchiDispose()
+{
+    INDIGO_BEGIN
+    {
+        inchi_wrapper_self.removeLocalCopy(TL_GET_SESSION_ID());
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoInchiResetOptions(void)
 {
     IndigoInchiContext& inchi_context = indigoInchiGetInstance();
@@ -68,7 +102,7 @@ CEXPORT int indigoInchiLoadMolecule(const char* inchi_string)
     {
         InchiWrapper& inchi_wrapper = indigoInchiGetInstance().inchi;
 
-        AutoPtr<IndigoMolecule> mol_obj(new IndigoMolecule());
+        std::unique_ptr<IndigoMolecule> mol_obj = std::make_unique<IndigoMolecule>();
 
         const char* aux_prefix = "AuxInfo";
         auto& tmp = self.getThreadTmpData();
@@ -168,18 +202,9 @@ void indigoInchiGetInchiOptions(Array<char>& value)
     inchi_wrapper.getOptions(value);
 }
 
-class _IndigoInchiOptionsHandlersSetter
+void IndigoInchiContext::setOptionsHandlers()
 {
-public:
-    _IndigoInchiOptionsHandlersSetter();
-};
-
-_IndigoInchiOptionsHandlersSetter::_IndigoInchiOptionsHandlersSetter()
-{
-    IndigoOptionManager& mgr = indigoGetOptionManager();
+    IndigoOptionManager& mgr = indigoGetOptionManager(indigo_id);
     OsLocker locker(mgr.lock);
-
     mgr.setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions, indigoInchiGetInchiOptions);
 }
-
-_IndigoInchiOptionsHandlersSetter _indigo_inchi_options_handlers_setter;

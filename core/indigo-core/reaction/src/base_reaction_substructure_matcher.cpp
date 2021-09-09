@@ -120,8 +120,7 @@ bool BaseReactionSubstructureMatcher::find()
             int mode = _matchers.top()->getMode();
 
             //_matchers.reserve(_matchers.size() + 1);
-            AutoPtr<_Matcher> top_matcher(new _Matcher(*_matchers.top()));
-            _matchers.add(top_matcher.release());
+            _matchers.add(new _Matcher(*_matchers.top()));
             _matchers.top()->setMode(command);
             if (!_matchers.top()->addPair(mol1, mol2, core1, core2, mode == _FIRST_SIDE))
                 _matchers.removeLast();
@@ -452,9 +451,9 @@ bool BaseReactionSubstructureMatcher::_Matcher::_initEnumerator(BaseMolecule& mo
     _enumerator->cb_embedding = _embedding;
 
     if (mol_1.isQueryMolecule() && _context.use_aromaticity_matcher && AromaticityMatcher::isNecessary(mol_1.asQueryMolecule()))
-        _am.reset(new AromaticityMatcher(mol_1.asQueryMolecule(), mol_2, _context.arom_options));
+        _am = std::make_unique<AromaticityMatcher>(mol_1.asQueryMolecule(), mol_2, _context.arom_options);
     else
-        _am.reset(0);
+        _am.reset(nullptr);
 
     _enumerator->userdata = this;
     _enumerator->setSubgraph(mol_1);
@@ -548,7 +547,7 @@ int BaseReactionSubstructureMatcher::_Matcher::_embedding(Graph& subgraph, Graph
 
     if (self.match_stereo)
     {
-        if (!MoleculeStereocenters::checkSub(query.stereocenters, target.stereocenters, core_sub, false))
+        if (!MoleculeStereocenters::checkSub(query, target, core_sub, false))
             return 1;
 
         if (!MoleculeCisTrans::checkSub(query, target, core_sub))

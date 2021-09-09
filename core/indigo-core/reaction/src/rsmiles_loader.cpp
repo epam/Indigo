@@ -81,11 +81,10 @@ void RSmilesLoader::_loadReaction()
 
     int i;
 
-    AutoPtr<BaseMolecule> rcnt;
-    AutoPtr<BaseMolecule> ctlt;
-    AutoPtr<BaseMolecule> prod;
-
-    AutoPtr<BaseMolecule>* mols[] = {&rcnt, &ctlt, &prod};
+    std::unique_ptr<BaseMolecule> mols[3];
+    std::unique_ptr<BaseMolecule> & rcnt = mols[0];
+    std::unique_ptr<BaseMolecule> & ctlt = mols[1];
+    std::unique_ptr<BaseMolecule> & prod = mols[2];
 
     QS_DEF(Array<int>, rcnt_aam);
     QS_DEF(Array<int>, ctlt_aam);
@@ -120,15 +119,15 @@ void RSmilesLoader::_loadReaction()
 
     if (_rxn != 0)
     {
-        rcnt.reset(new Molecule());
-        r_loader.loadMolecule((Molecule&)rcnt.ref());
+        rcnt = std::make_unique<Molecule>();
+        r_loader.loadMolecule(static_cast<Molecule&>(*rcnt));
     }
     else
     {
-        rcnt.reset(new QueryMolecule());
-        r_loader.loadQueryMolecule((QueryMolecule&)rcnt.ref());
+        rcnt = std::make_unique<QueryMolecule>();
+        r_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*rcnt));
     }
-    rcnt_aam.copy(rcnt.ref().reaction_atom_mapping);
+    rcnt_aam.copy(rcnt->reaction_atom_mapping);
 
     // read the catalysts (agents)
     buf.clear();
@@ -142,9 +141,9 @@ void RSmilesLoader::_loadReaction()
     }
 
     if (_rxn != 0)
-        ctlt.reset(new Molecule());
+        ctlt = std::make_unique<Molecule>();
     else
-        ctlt.reset(new QueryMolecule());
+        ctlt = std::make_unique<QueryMolecule>();
 
     BufferScanner c_scanner(buf);
     SmilesLoader c_loader(c_scanner);
@@ -158,15 +157,15 @@ void RSmilesLoader::_loadReaction()
 
     if (_rxn != 0)
     {
-        ctlt.reset(new Molecule());
-        c_loader.loadMolecule((Molecule&)ctlt.ref());
+        ctlt = std::make_unique<Molecule>();
+        c_loader.loadMolecule(static_cast<Molecule&>(*ctlt));
     }
     else
     {
-        ctlt.reset(new QueryMolecule());
-        c_loader.loadQueryMolecule((QueryMolecule&)ctlt.ref());
+        ctlt = std::make_unique<QueryMolecule>();
+        c_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*ctlt));
     }
-    ctlt_aam.copy(ctlt.ref().reaction_atom_mapping);
+    ctlt_aam.copy(ctlt->reaction_atom_mapping);
 
     bool vbar = false;
 
@@ -197,15 +196,15 @@ void RSmilesLoader::_loadReaction()
 
     if (_rxn != 0)
     {
-        prod.reset(new Molecule());
-        p_loader.loadMolecule((Molecule&)prod.ref());
+        prod = std::make_unique<Molecule>();
+        p_loader.loadMolecule(static_cast<Molecule&>(*prod));
     }
     else
     {
-        prod.reset(new QueryMolecule());
-        p_loader.loadQueryMolecule((QueryMolecule&)prod.ref());
+        prod = std::make_unique<QueryMolecule>();
+        p_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*prod));
     }
-    prod_aam.copy(prod.ref().reaction_atom_mapping);
+    prod_aam.copy(prod->reaction_atom_mapping);
 
     QS_DEF(Array<int>, r_fragments);
     QS_DEF(Array<int>, c_fragments);
@@ -237,10 +236,7 @@ void RSmilesLoader::_loadReaction()
 
     if (vbar)
     {
-        MoleculeStereocenters& r_stereo = rcnt->stereocenters;
-        MoleculeStereocenters& c_stereo = ctlt->stereocenters;
-        MoleculeStereocenters& p_stereo = prod->stereocenters;
-        MoleculeStereocenters* stereo[] = {&r_stereo, &c_stereo, &p_stereo};
+        BaseMolecule* stereo[] = {rcnt.get(), ctlt.get(), prod.get()};
 
         while (1)
         {
@@ -259,7 +255,7 @@ void RSmilesLoader::_loadReaction()
                     int idx = _scanner.readUnsigned();
 
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
-                    stereo[group]->add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                    stereo[group]->addStereocenters(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
 
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
@@ -275,7 +271,7 @@ void RSmilesLoader::_loadReaction()
                     int idx = _scanner.readUnsigned();
 
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
-                    stereo[group]->setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
+                    stereo[group]->stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
 
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
@@ -293,7 +289,7 @@ void RSmilesLoader::_loadReaction()
                     int idx = _scanner.readUnsigned();
 
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
-                    stereo[group]->setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
+                    stereo[group]->stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
 
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
@@ -311,7 +307,7 @@ void RSmilesLoader::_loadReaction()
                     int idx = _scanner.readUnsigned();
 
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
-                    stereo[group]->setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
+                    stereo[group]->stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
 
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
@@ -341,11 +337,10 @@ void RSmilesLoader::_loadReaction()
                     int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
 
                     if (_rxn != 0)
-                        ((Molecule&)mols[group]->ref()).setAtomRadical(idx, radical);
+                        (dynamic_cast<Molecule&>(*mols[group])).setAtomRadical(idx, radical);
                     else
                     {
-                        QueryMolecule& qmol = (QueryMolecule&)mols[group]->ref();
-
+                        QueryMolecule& qmol = dynamic_cast<QueryMolecule&>(*mols[group]);
                         qmol.resetAtom(idx, (QueryMolecule::Atom*)QueryMolecule::Atom::und(qmol.releaseAtom(idx),
                                                                                            new QueryMolecule::Atom(QueryMolecule::ATOM_RADICAL, radical)));
                     }
@@ -410,20 +405,18 @@ void RSmilesLoader::_loadReaction()
                             // ChemAxon's Extended SMILES notation for R-sites
                             if (_qrxn != 0)
                             {
-                                QueryMolecule& qmol = (QueryMolecule&)mols[group]->ref();
-
+                                QueryMolecule& qmol = dynamic_cast<QueryMolecule&>(*mols[group]);
                                 qmol.resetAtom(idx, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
                             }
-                            mols[group]->ref().allowRGroupOnRSite(idx, rnum);
+                            mols[group]->allowRGroupOnRSite(idx, rnum);
                         }
                         else
                         {
                             if (_rxn != 0)
-                                ((Molecule&)mols[group]->ref()).setPseudoAtom(idx, label.ptr());
+                                (dynamic_cast<Molecule&>(*mols[group])).setPseudoAtom(idx, label.ptr());
                             else
                             {
-                                QueryMolecule& qmol = (QueryMolecule&)mols[group]->ref();
-
+                                QueryMolecule& qmol = dynamic_cast<QueryMolecule&>(*mols[group]);
                                 qmol.resetAtom(idx, (QueryMolecule::Atom*)QueryMolecule::Atom::und(
                                                         qmol.releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
                             }
@@ -474,7 +467,7 @@ void RSmilesLoader::_loadReaction()
     if (!scanner_for_name->isEOF())
         scanner_for_name->readLine(_brxn->name, true);
 
-    AutoPtr<BaseMolecule> mol;
+    std::unique_ptr<BaseMolecule> mol;
     QS_DEF(Array<int>, aam);
     QS_DEF(Array<int>, ignorable_aam);
     QS_DEF(Array<int>, mapping);
@@ -482,9 +475,9 @@ void RSmilesLoader::_loadReaction()
     QS_DEF(Array<int>, hl_bonds_frag);
 
     if (_rxn != 0)
-        mol.reset(new Molecule());
+        mol = std::make_unique<Molecule>();
     else
-        mol.reset(new QueryMolecule());
+        mol = std::make_unique<QueryMolecule>();
 
     for (int v = 0; v < 3; ++v)
     {
@@ -503,20 +496,20 @@ void RSmilesLoader::_loadReaction()
 
             for (j = i; j < fragments[v]->size(); j++)
             {
-                AutoPtr<BaseMolecule> fragment;
+                std::unique_ptr<BaseMolecule> fragment;
 
                 if (_rxn != 0)
-                    fragment.reset(new Molecule());
+                    fragment = std::make_unique<Molecule>();
                 else
-                    fragment.reset(new QueryMolecule());
+                    fragment = std::make_unique<QueryMolecule>();
 
                 if ((*fragments[v])[j] == i)
                 {
                     (*fragments[v])[j] = -1;
-                    Filter filt(mols[v]->ref().getDecomposition().ptr(), Filter::EQ, j);
-                    fragment->makeSubmolecule(mols[v]->ref(), filt, &mapping, 0);
+                    Filter filt(mols[v]->getDecomposition().ptr(), Filter::EQ, j);
+                    fragment->makeSubmolecule(*mols[v], filt, &mapping, 0);
 
-                    mol->mergeWithMolecule(fragment.ref(), 0);
+                    mol->mergeWithMolecule(*fragment, 0);
 
                     for (k = 0; k < fragment->vertexCount(); k++)
                     {
@@ -527,7 +520,7 @@ void RSmilesLoader::_loadReaction()
                         int idx = mapping[k];
 
                         for (int w = 0; w < v; w++)
-                            idx += mols[w]->ref().vertexCount();
+                            idx += mols[w]->vertexCount();
 
                         hl_atoms_frag.push(hl_atoms[idx]);
                     }
@@ -536,13 +529,13 @@ void RSmilesLoader::_loadReaction()
                     {
                         const Edge& edge = fragment->getEdge(k);
 
-                        int idx = mols[v]->ref().findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
+                        int idx = mols[v]->findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
 
                         if (idx < 0)
                             throw Error("internal: can not find edge");
 
                         for (int w = 0; w < v; w++)
-                            idx += mols[w]->ref().edgeCount();
+                            idx += mols[w]->edgeCount();
 
                         hl_bonds_frag.push(hl_bonds[idx]);
                     }
@@ -551,11 +544,11 @@ void RSmilesLoader::_loadReaction()
 
             int idx;
             if (v == 0)
-                idx = _brxn->addReactantCopy(mol.ref(), 0, 0);
+                idx = _brxn->addReactantCopy(*mol, 0, 0);
             else if (v == 1)
-                idx = _brxn->addCatalystCopy(mol.ref(), 0, 0);
+                idx = _brxn->addCatalystCopy(*mol, 0, 0);
             else if (v == 2)
-                idx = _brxn->addProductCopy(mol.ref(), 0, 0);
+                idx = _brxn->addProductCopy(*mol, 0, 0);
 
             _brxn->getAAMArray(idx).copy(aam);
             if (_qrxn != 0)

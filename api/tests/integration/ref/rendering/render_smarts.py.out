@@ -1,0 +1,785 @@
+1: [#1,#6]~*~*~*~*~*~*~*~*~*~*~*
+
+smarts/0001.png rendering status: OK
+2: [#1]
+
+smarts/0002.png rendering status: OK
+3: C!@C!@C!@C!@C!@C!@C1NCC[A]1
+
+smarts/0003.png rendering status: OK
+4: [#7]1~[#6]~[#6]~[#7]~[#6]~[#6]2~[#6]~[#6]~[#6]~[#6]~[#6]~1~2
+
+smarts/0004.png rendering status: OK
+5: [CX4]
+
+smarts/0005.png rendering status: OK
+6: [$([CX2](=C)=C)]
+
+smarts/0006.png rendering status: OK
+7: [$([CX3]=[CX3])]
+
+smarts/0007.png rendering status: OK
+8: [$([CX2]#C)]
+
+smarts/0008.png rendering status: OK
+9: [CX3]=[OX1]
+
+smarts/0009.png rendering status: OK
+10: [$([CX3]=[OX1]),$([CX3+]-[OX1-])]
+
+smarts/0010.png rendering status: OK
+11: [CX3](=[OX1])C
+
+smarts/0011.png rendering status: OK
+12: [OX1]=CN
+
+smarts/0012.png rendering status: OK
+13: [CX3](=[OX1])O
+
+smarts/0013.png rendering status: OK
+14: [CX3](=[OX1])[F,Cl,Br,I]
+
+smarts/0014.png rendering status: OK
+15: [CX3H1](=O)[#6]
+
+smarts/0015.png rendering status: OK
+16: [CX3](=[OX1])[OX2][CX3](=[OX1])
+
+smarts/0016.png rendering status: OK
+17: [NX3][CX3](=[OX1])[#6]
+
+smarts/0017.png rendering status: OK
+18: [NX3][CX3]=[NX3+]
+
+smarts/0018.png rendering status: OK
+19: [NX3,NX4+][CX3](=[OX1])[OX2,OX1-]
+
+smarts/0019.png rendering status: OK
+20: [NX3][CX3](=[OX1])[OX2H0]
+
+smarts/0020.png rendering status: OK
+21: [NX3,NX4+][CX3](=[OX1])[OX2H,OX1-]
+
+smarts/0021.png rendering status: OK
+22: [CX3](=O)[O-]
+
+smarts/0022.png rendering status: OK
+23: [CX3](=[OX1])(O)O
+
+smarts/0023.png rendering status: OK
+24: [CX3](=[OX1])([OX2])[OX2H,OX1H0-1]
+
+smarts/0024.png rendering status: OK
+25: C[OX2][CX3](=[OX1])[OX2]C
+
+smarts/0025.png rendering status: OK
+26: [CX3](=O)[OX2H1]
+
+smarts/0026.png rendering status: OK
+27: [CX3](=O)[OX1H0-,OX2H1]
+
+smarts/0027.png rendering status: OK
+28: [NX3][CX2]#[NX1]
+
+smarts/0028.png rendering status: OK
+29: [#6][CX3](=O)[OX2H0][#6]
+
+smarts/0029.png rendering status: OK
+30: [#6][CX3](=O)[#6]
+
+smarts/0030.png rendering status: OK
+31: [OD2]([#6])[#6]
+
+smarts/0031.png rendering status: OK
+32: [H]
+
+smarts/0032.png rendering status: OK
+33: [!#1]
+
+smarts/0033.png rendering status: OK
+34: [H+]
+
+smarts/0034.png rendering status: OK
+35: [+H]
+
+smarts/0035.png rendering status: OK
+36: [!H]
+
+smarts/0036.png rendering status: OK
+37: [!H1]
+
+smarts/0037.png rendering status: OK
+38: [NX3;H2,H1;!$(NC=O)]
+
+smarts/0038.png rendering status: OK
+39: [NX3][CX3]=[CX3]
+
+smarts/0039.png rendering status: OK
+40: [NX3;H2;!$(NC=[!#6]);!$(NC#[!#6])][#6]
+
+smarts/0040.png rendering status: OK
+41: [NX3;H2,H1;!$(NC=O)].[NX3;H2,H1;!$(NC=O)]
+
+smarts/0041.png rendering status: OK
+42: [NX3][$(C=C),$(cc)]
+
+smarts/0042.png rendering status: OK
+43: [NX3,NX4+][CX4H]([*])[CX3](=[OX1])[O,N]
+
+smarts/0043.png rendering status: OK
+44: [NX3H2,NH3X4+][CX4H]([*])[CX3](=[OX1])[NX3,NX4+][CX4H]([*])[CX3](=[OX1])[OX2H,OX1-]
+
+smarts/0044.png rendering status: OK
+45: [$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H]([*])[CX3](=[OX1])[OX2H,OX1-,N]
+
+smarts/0045.png rendering status: OK
+46: [CH3X4]
+
+smarts/0046.png rendering status: OK
+47: [CH2X4][CH2X4][CH2X4][NHX3][CH0X3](=[NH2X3+,NHX2+0])[NH2X3]
+
+smarts/0047.png rendering status: OK
+48: [CH2X4][CX3](=[OX1])[NX3H2]
+
+smarts/0048.png rendering status: OK
+49: [CH2X4][CX3](=[OX1])[OH0-,OH]
+
+smarts/0049.png rendering status: OK
+50: [CH2X4][SX2H,SX1H0-]
+
+smarts/0050.png rendering status: OK
+51: [CH2X4][CH2X4][CX3](=[OX1])[OH0-,OH]
+
+smarts/0051.png rendering status: OK
+52: [$([$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H2][CX3](=[OX1])[OX2H,OX1-,N])]
+
+smarts/0052.png rendering status: OK
+53: [CH2X4][#6X3]1:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]1
+
+smarts/0053.png rendering status: OK
+54: [CHX4]([CH3X4])[CH2X4][CH3X4]
+
+smarts/0054.png rendering status: OK
+55: [CH2X4][CHX4]([CH3X4])[CH3X4]
+
+smarts/0055.png rendering status: OK
+56: [CH2X4][CH2X4][CH2X4][CH2X4][NX4+,NX3+0]
+
+smarts/0056.png rendering status: OK
+57: [CH2X4][CH2X4][SX2][CH3X4]
+
+smarts/0057.png rendering status: OK
+58: [CH2X4][cX3]1[cX3H][cX3H][cX3H][cX3H][cX3H]1
+
+smarts/0058.png rendering status: OK
+59: [$([NX3H,NX4H2+]),$([NX3](C)(C)(C))]1[CX4H]([CH2][CH2][CH2]1)[CX3](=[OX1])[OX2H,OX1-,N]
+
+smarts/0059.png rendering status: OK
+60: [CH2X4][OX2H]
+
+smarts/0060.png rendering status: OK
+61: [NX3][CX3]=[SX1]
+
+smarts/0061.png rendering status: OK
+62: [CHX4]([CH3X4])[OX2H]
+
+smarts/0062.png rendering status: OK
+63: [CH2X4][cX3]1[cX3H][nX3H][cX3]2[cX3H][cX3H][cX3H][cX3H][cX3]12
+
+smarts/0063.png rendering status: OK
+64: [CH2X4][cX3]1[cX3H][cX3H][cX3]([OHX2,OH0X1-])[cX3H][cX3H]1
+
+smarts/0064.png rendering status: OK
+65: [CHX4]([CH3X4])[CH3X4]
+
+smarts/0065.png rendering status: OK
+66: [CH3X4]
+
+smarts/0066.png rendering status: OK
+67: [CH2X4][CH2X4][CH2X4][NHX3][CH0X3](=[NH2X3+,NHX2+0])[NH2X3]
+
+smarts/0067.png rendering status: OK
+68: [CH2X4][CX3](=[OX1])[NX3H2]
+
+smarts/0068.png rendering status: OK
+69: [CH2X4][CX3](=[OX1])[OH0-,OH]
+
+smarts/0069.png rendering status: OK
+70: [CH2X4][SX2H,SX1H0-]
+
+smarts/0070.png rendering status: OK
+71: [CH2X4][CH2X4][CX3](=[OX1])[OH0-,OH]
+
+smarts/0071.png rendering status: OK
+72: N[CX4H2][CX3](=[OX1])[O,N]
+
+smarts/0072.png rendering status: OK
+73: [CH2X4][#6X3]1:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]1
+
+smarts/0073.png rendering status: OK
+74: [CHX4]([CH3X4])[CH2X4][CH3X4]
+
+smarts/0074.png rendering status: OK
+75: [CH2X4][CHX4]([CH3X4])[CH3X4]
+
+smarts/0075.png rendering status: OK
+76: [CH2X4][CH2X4][CH2X4][CH2X4][NX4+,NX3+0]
+
+smarts/0076.png rendering status: OK
+77: [CH2X4][CH2X4][SX2][CH3X4]
+
+smarts/0077.png rendering status: OK
+78: [CH2X4][cX3]1[cX3H][cX3H][cX3H][cX3H][cX3H]1
+
+smarts/0078.png rendering status: OK
+79: N1[CX4H]([CH2][CH2][CH2]1)[CX3](=[OX1])[O,N]
+
+smarts/0079.png rendering status: OK
+80: [CH2X4][OX2H]
+
+smarts/0080.png rendering status: OK
+81: [CHX4]([CH3X4])[OX2H]
+
+smarts/0081.png rendering status: OK
+82: [CH2X4][cX3]1[cX3H][nX3H][cX3]2[cX3H][cX3H][cX3H][cX3H][cX3]12
+
+smarts/0082.png rendering status: OK
+83: [CH2X4][cX3]1[cX3H][cX3H][cX3]([OHX2,OH0X1-])[cX3H][cX3H]1
+
+smarts/0083.png rendering status: OK
+84: [CHX4]([CH3X4])[CH3X4]
+
+smarts/0084.png rendering status: OK
+85: [$(*-[NX2-]-[NX2+]#[NX1]),$(*-[NX2]=[NX2+]=[NX1-])]
+
+smarts/0085.png rendering status: OK
+86: [$([NX1-]=[NX2+]=[NX1-]),$([NX1]#[NX2+]-[NX1-2])]
+
+smarts/0086.png rendering status: OK
+87: [#7]
+
+smarts/0087.png rendering status: OK
+88: [NX2]=N
+
+smarts/0088.png rendering status: OK
+89: [NX2]=[NX2]
+
+smarts/0089.png rendering status: OK
+90: [$([NX2]=[NX3+]([O-])[#6]),$([NX2]=[NX3+0](=[O])[#6])]
+
+smarts/0090.png rendering status: OK
+91: [$([#6]=[N+]=[N-]),$([#6-]-[N+]#[N])]
+
+smarts/0091.png rendering status: OK
+92: [$([nr5]:[nr5,or5,sr5]),$([nr5]:[cr5]:[nr5,or5,sr5])]
+
+smarts/0092.png rendering status: OK
+93: [NX3][NX3]
+
+smarts/0093.png rendering status: OK
+94: [NX3][NX2]=[*]
+
+smarts/0094.png rendering status: OK
+95: [CX3;$([C]([#6])[#6]),$([CH][#6])]=[NX2][#6]
+
+smarts/0095.png rendering status: OK
+96: [$([CX3]([#6])[#6]),$([CX3H][#6])]=[$([NX2][#6]),$([NX2H])]
+
+smarts/0096.png rendering status: OK
+97: [NX3+]=[CX3]
+
+smarts/0097.png rendering status: OK
+98: [CX3](=[OX1])[NX3H][CX3](=[OX1])
+
+smarts/0098.png rendering status: OK
+99: [CX3](=[OX1])[NX3H0]([#6])[CX3](=[OX1])
+
+smarts/0099.png rendering status: OK
+100: [CX3](=[OX1])[NX3H0]([NX3H0]([CX3](=[OX1]))[CX3](=[OX1]))[CX3](=[OX1])
+
+smarts/0100.png rendering status: OK
+101: [$([NX3](=[OX1])(=[OX1])O),$([NX3+]([OX1-])(=[OX1])O)]
+
+smarts/0101.png rendering status: OK
+102: [$([OX1]=[NX3](=[OX1])[OX1-]),$([OX1]=[NX3+]([OX1-])[OX1-])]
+
+smarts/0102.png rendering status: OK
+103: [NX1]#[CX2]
+
+smarts/0103.png rendering status: OK
+104: [CX1-]#[NX2+]
+
+smarts/0104.png rendering status: OK
+105: [$([NX3](=O)=O),$([NX3+](=O)[O-])][!#8] Hits both forms.
+
+smarts/0105.png rendering status: OK
+106: [$([NX3](=O)=O),$([NX3+](=O)[O-])][!#8].[$([NX3](=O)=O),$([NX3+](=O)[O-])][!#8]
+
+smarts/0106.png rendering status: OK
+107: [NX2]=[OX1]
+
+smarts/0107.png rendering status: OK
+108: [$([#7+][OX1-]),$([#7v5]=[OX1]);!$([#7](~[O])~[O]);!$([#7]=[#7])]
+
+smarts/0108.png rendering status: OK
+109: [OX2H]
+
+smarts/0109.png rendering status: OK
+110: [#6][OX2H]
+
+smarts/0110.png rendering status: OK
+111: [OX2H][CX3]=[OX1]
+
+smarts/0111.png rendering status: OK
+112: [OX2H]P
+
+smarts/0112.png rendering status: OK
+113: [OX2H][#6X3]=[#6]
+
+smarts/0113.png rendering status: OK
+114: [OX2H][cX3]:[c]
+
+smarts/0114.png rendering status: OK
+115: [OX2H][$(C=C),$(cc)]
+
+smarts/0115.png rendering status: OK
+116: [$([OH]-*=[!#6])]
+
+smarts/0116.png rendering status: OK
+117: [OX2,OX1-][OX2,OX1-]
+
+smarts/0117.png rendering status: OK
+118: [$(P(=[OX1])([$([OX2H]),$([OX1-]),$([OX2]P)])([$([OX2H]),$([OX1-]),$([OX2]P)])[$([OX2H]),$([OX1-]),$([OX2]P)]),$([P+]([OX1-])([$([OX2H]),$([OX1-]),$([OX2]P)])([$([OX2H]),$([OX1-]),$([OX2]P)])[$([OX2H]),$([OX1-]),$([OX2]P)])]
+
+smarts/0118.png rendering status: OK
+119: [$(P(=[OX1])([OX2][#6])([$([OX2H]),$([OX1-]),$([OX2][#6])])[$([OX2H]),$([OX1-]),$([OX2][#6]),$([OX2]P)]),$([P+]([OX1-])([OX2][#6])([$([OX2H]),$([OX1-]),$([OX2][#6])])[$([OX2H]),$([OX1-]),$([OX2][#6]),$([OX2]P)])]
+
+smarts/0119.png rendering status: OK
+120: [S-][CX3](=S)[#6]
+
+smarts/0120.png rendering status: OK
+121: S([#6])[CX3](=O)[#6]
+
+smarts/0121.png rendering status: OK
+122: [#6X3](=[SX1])([!N])[!N]
+
+smarts/0122.png rendering status: OK
+123: [SX2]
+
+smarts/0123.png rendering status: OK
+124: [#16X2H]
+
+smarts/0124.png rendering status: OK
+125: [#16!H0]
+
+smarts/0125.png rendering status: OK
+126: [NX3][CX3]=[SX1]
+
+smarts/0126.png rendering status: OK
+127: [#16X2H0]
+
+smarts/0127.png rendering status: OK
+128: [#16X2H0][!#16]
+
+smarts/0128.png rendering status: OK
+129: [#16X2H0][#16X2H0]
+
+smarts/0129.png rendering status: OK
+130: [#16X2H0][!#16].[#16X2H0][!#16]
+
+smarts/0130.png rendering status: OK
+131: [$([#16X3](=[OX1])[OX2H0]),$([#16X3+]([OX1-])[OX2H0])]
+
+smarts/0131.png rendering status: OK
+132: [$([#16X3](=[OX1])[OX2H,OX1H0-]),$([#16X3+]([OX1-])[OX2H,OX1H0-])]
+
+smarts/0132.png rendering status: OK
+133: [$([#16X4](=[OX1])=[OX1]),$([#16X4+2]([OX1-])[OX1-])]
+
+smarts/0133.png rendering status: OK
+134: [$([#16X4](=[OX1])(=[OX1])([#6])[#6]),$([#16X4+2]([OX1-])([OX1-])([#6])[#6])]
+
+smarts/0134.png rendering status: OK
+135: [$([#16X4](=[OX1])(=[OX1])([#6])[OX2H,OX1H0-]),$([#16X4+2]([OX1-])([OX1-])([#6])[OX2H,OX1H0-])]
+
+smarts/0135.png rendering status: OK
+136: [$([#16X4](=[OX1])(=[OX1])([#6])[OX2H0]),$([#16X4+2]([OX1-])([OX1-])([#6])[OX2H0])]
+
+smarts/0136.png rendering status: OK
+137: [$([#16X4]([NX3])(=[OX1])(=[OX1])[#6]),$([#16X4+2]([NX3])([OX1-])([OX1-])[#6])]
+
+smarts/0137.png rendering status: OK
+138: [SX4](C)(C)(=O)=N
+
+smarts/0138.png rendering status: OK
+139: [$([SX4](=[OX1])(=[OX1])([!O])[NX3]),$([SX4+2]([OX1-])([OX1-])([!O])[NX3])]
+
+smarts/0139.png rendering status: OK
+140: [$([#16X3]=[OX1]),$([#16X3+][OX1-])]
+
+smarts/0140.png rendering status: OK
+141: [$([#16X3](=[OX1])([#6])[#6]),$([#16X3+]([OX1-])([#6])[#6])]
+
+smarts/0141.png rendering status: OK
+142: [$([#16X4](=[OX1])(=[OX1])([OX2H,OX1H0-])[OX2][#6]),$([#16X4+2]([OX1-])([OX1-])([OX2H,OX1H0-])[OX2][#6])]
+
+smarts/0142.png rendering status: OK
+143: [$([SX4](=O)(=O)(O)O),$([SX4+2]([O-])([O-])(O)O)]
+
+smarts/0143.png rendering status: OK
+144: [$([#16X4](=[OX1])(=[OX1])([OX2][#6])[OX2][#6]),$([#16X4](=[OX1])(=[OX1])([OX2][#6])[OX2][#6])]
+
+smarts/0144.png rendering status: OK
+145: [$([#16X4]([NX3])(=[OX1])(=[OX1])[OX2][#6]),$([#16X4+2]([NX3])([OX1-])([OX1-])[OX2][#6])]
+
+smarts/0145.png rendering status: OK
+146: [$([#16X4]([NX3])(=[OX1])(=[OX1])[OX2H,OX1H0-]),$([#16X4+2]([NX3])([OX1-])([OX1-])[OX2H,OX1H0-])]
+
+smarts/0146.png rendering status: OK
+147: [#16X2][OX2H,OX1H0-]
+
+smarts/0147.png rendering status: OK
+148: [#16X2][OX2H0]
+
+smarts/0148.png rendering status: OK
+149: [#6][F,Cl,Br,I]
+
+smarts/0149.png rendering status: OK
+150: [F,Cl,Br,I]
+
+smarts/0150.png rendering status: OK
+151: [F,Cl,Br,I].[F,Cl,Br,I].[F,Cl,Br,I]
+
+smarts/0151.png rendering status: OK
+152: [CX3](=[OX1])[F,Cl,Br,I]
+
+smarts/0152.png rendering status: OK
+153: [$([#6X4@](*)(*)(*)*),$([#6X4@H](*)(*)*)]
+
+smarts/0153.png rendering status: OK
+154: C[C@?](F)(Cl)Br
+  SMILES loader: invalid character within atom description: '?'
+155: C[C@?H](Cl)Br
+  SMILES loader: invalid character within atom description: '?'
+156: [$([cX2+](:*):*)]
+
+smarts/0156.png rendering status: OK
+157: [$([cX3](:*):*),$([cX2+](:*):*)]
+
+smarts/0157.png rendering status: OK
+158: [$([cX3](:*):*),$([cX2+](:*):*),$([CX3]=*),$([CX2+]=*)]
+
+smarts/0158.png rendering status: OK
+159: [$([nX3](:*):*),$([nX2](:*):*),$([#7X2]=*),$([NX3](=*)=*),$([#7X3+](-*)=*),$([#7X3+H]=*)]
+
+smarts/0159.png rendering status: OK
+160: [$([#1X1][$([nX3](:*):*),$([nX2](:*):*),$([#7X2]=*),$([NX3](=*)=*),$([#7X3+](-*)=*),$([#7X3+H]=*)])]
+
+smarts/0160.png rendering status: OK
+161: [$([NX4+]),$([NX3]);!$(*=*)&!$(*:*)]
+
+smarts/0161.png rendering status: OK
+162: [$([#1X1][$([NX4+]),$([NX3]);!$(*=*)&!$(*:*)])]
+
+smarts/0162.png rendering status: OK
+163: [$([$([NX3]=O),$([NX3+][O-])])]
+
+smarts/0163.png rendering status: OK
+164: [$([$([NX4]=O),$([NX4+][O-])])]
+
+smarts/0164.png rendering status: OK
+165: [$([$([NX4]=O),$([NX4+][O-,#0])])]
+
+smarts/0165.png rendering status: OK
+166: [$([NX4+]),$([NX4]=*)]
+
+smarts/0166.png rendering status: OK
+167: [$([SX3]=N)]
+
+smarts/0167.png rendering status: OK
+168: [$([SX1]=[#6])]
+
+smarts/0168.png rendering status: OK
+169: [$([NX1]#*)]
+
+smarts/0169.png rendering status: OK
+170: [$([OX2])]
+
+smarts/0170.png rendering status: OK
+171: [R0;D2][R0;D2][R0;D2][R0;D2]
+
+smarts/0171.png rendering status: OK
+172: [R0;D2]~[R0;D2]~[R0;D2]~[R0;D2]
+
+smarts/0172.png rendering status: OK
+173: [AR0]~[AR0]~[AR0]~[AR0]~[AR0]~[AR0]~[AR0]~[AR0]
+
+smarts/0173.png rendering status: OK
+174: [!$([#6+0]);!$(C(F)(F)F);!$(c(:[!c]):[!c])!$([#6]=,#[!#6])]
+
+smarts/0174.png rendering status: OK
+175: [$([#6+0]);!$(C(F)(F)F);!$(c(:[!c]):[!c])!$([#6]=,#[!#6])]
+
+smarts/0175.png rendering status: OK
+176: [$([SX1]~P)]
+
+smarts/0176.png rendering status: OK
+177: [$([NX3]C=N)]
+
+smarts/0177.png rendering status: OK
+178: [$([NX3]N=C)]
+
+smarts/0178.png rendering status: OK
+179: [$([NX3]N=N)]
+
+smarts/0179.png rendering status: OK
+180: [$([OX2]C=N)]
+
+smarts/0180.png rendering status: OK
+181: [!$(*#*)&!D1]-!@[!$(*#*)&!D1]
+
+smarts/0181.png rendering status: OK
+182: [$([*R2]([*R])([*R])([*R]))].[$([*R2]([*R])([*R])([*R]))]
+
+smarts/0182.png rendering status: OK
+183: *-!:aa-!:*
+
+smarts/0183.png rendering status: OK
+184: *-!:aaa-!:*
+
+smarts/0184.png rendering status: OK
+185: *-!:aaaa-!:*
+
+smarts/0185.png rendering status: OK
+186: *!@*
+
+smarts/0186.png rendering status: OK
+187: *-!@*
+
+smarts/0187.png rendering status: OK
+188: [R0]
+
+smarts/0188.png rendering status: OK
+189: [!R]
+
+smarts/0189.png rendering status: OK
+190: [r;!r3;!r4;!r5;!r6;!r7]
+
+smarts/0190.png rendering status: OK
+191: [sX2r5]
+
+smarts/0191.png rendering status: OK
+192: [oX2r5]
+
+smarts/0192.png rendering status: OK
+193: [nX2r5]
+
+smarts/0193.png rendering status: OK
+194: [X4;R2;r4,r5,r6](@[r4,r5,r6])(@[r4,r5,r6])(@[r4,r5,r6])@[r4,r5,r6]
+
+smarts/0194.png rendering status: OK
+195: [$([nX2r5]:[a-]),$([nX2r5]:[a]:[a-])]
+
+smarts/0195.png rendering status: OK
+196: */,\[R]=;@[R]/,\*
+  SMILES loader: Specificiation of both cis- and trans- bond restriction is not supported yet.
+197: */,\[R]=,:;@[R]/,\*
+  SMILES loader: Specificiation of both cis- and trans- bond restriction is not supported yet.
+198: [cR1]1[cR1][cR1][cR1][cR1][cR1]1
+
+smarts/0198.png rendering status: OK
+199: [cR1]1[cR1][cR1][cR1][cR1][cR1]1.[cR1]1[cR1][cR1][cR1][cR1][cR1]1
+
+smarts/0199.png rendering status: OK
+200: c12ccccc1cccc2
+
+smarts/0200.png rendering status: OK
+201: [NX3,NX4+][CX4H]([*])[CX3](=[OX1])[O,N]
+
+smarts/0201.png rendering status: OK
+202: [$([$([NX3H,NX4H2+]),$([NX3](C)(C)(C))]1[CX4H]([CH2][CH2][CH2]1)[CX3](=[OX1])[OX2H,OX1-,N]),$([$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H2][CX3](=[OX1])[OX2H,OX1-,N]),$([$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H]([*])[CX3](=[OX1])[OX2H,OX1-,N])]
+
+smarts/0202.png rendering status: OK
+203: [$([NX3H,NX4H2+]),$([NX3](C)(C)(C))]1[CX4H]([CH2][CH2][CH2]1)[CX3](=[OX1])[OX2H,OX1-,N]
+
+smarts/0203.png rendering status: OK
+204: [$([$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H2][CX3](=[OX1])[OX2H,OX1-,N])]
+
+smarts/0204.png rendering status: OK
+205: [$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H]([*])[CX3](=[OX1])[OX2H,OX1-,N]
+
+smarts/0205.png rendering status: OK
+206: [CH3X4]
+
+smarts/0206.png rendering status: OK
+207: [$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H]([CH3X4])[CX3](=[OX1])[OX2H,OX1-,N]
+
+smarts/0207.png rendering status: OK
+208: ([$([CH3X4]),$([CH2X4][CH2X4][CH2X4][NHX3][CH0X3](=[NH2X3+,NHX2+0])[NH2X3]),$([CH2X4][CX3](=[OX1])[NX3H2]),$([CH2X4][CX3](=[OX1])[OH0-,OH]),$([CH2X4][SX2H,SX1H0-]),$([CH2X4][CH2X4][CX3](=[OX1])[OH0-,OH]),$([CH2X4][#6X3]1:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]1),$([CHX4]([CH3X4])[CH2X4][CH3X4]),$([CH2X4][CHX4]([CH3X4])[CH3X4]),$([CH2X4][CH2X4][CH2X4][CH2X4][NX4+,NX3+0]),$([CH2X4][CH2X4][SX2][CH3X4]),$([CH2X4][cX3]1[cX3H][cX3H][cX3H][cX3H][cX3H]1),$([CH2X4][OX2H]),$([CHX4]([CH3X4])[OX2H]),$([CH2X4][cX3]1[cX3H][nX3H][cX3]2[cX3H][cX3H][cX3H][cX3H][cX3]12),$([CH2X4][cX3]1[cX3H][cX3H][cX3]([OHX2,OH0X1-])[cX3H][cX3H]1),$([CHX4]([CH3X4])[CH3X4])])
+
+smarts/0208.png rendering status: OK
+209: [$([$([NX3H,NX4H2+]),$([NX3](C)(C)(C))]1[CX4H]([CH2][CH2][CH2]1)[CX3](=[OX1])[OX2H,OX1-,N]),$([$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H2][CX3](=[OX1])[OX2H,OX1-,N]),$([$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H]([$([CH3X4]),$([CH2X4][CH2X4][CH2X4][NHX3][CH0X3](=[NH2X3+,NHX2+0])[NH2X3]),$([CH2X4][CX3](=[OX1])[NX3H2]),$([CH2X4][CX3](=[OX1])[OH0-,OH]),$([CH2X4][SX2H,SX1H0-]),$([CH2X4][CH2X4][CX3](=[OX1])[OH0-,OH]),$([CH2X4][#6X3]1:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]1),$([CHX4]([CH3X4])[CH2X4][CH3X4]),$([CH2X4][CHX4]([CH3X4])[CH3X4]),$([CH2X4][CH2X4][CH2X4][CH2X4][NX4+,NX3+0]),$([CH2X4][CH2X4][SX2][CH3X4]),$([CH2X4][cX3]1[cX3H][cX3H][cX3H][cX3H][cX3H]1),$([CH2X4][OX2H]),$([CHX4]([CH3X4])[OX2H]),$([CH2X4][cX3]1[cX3H][nX3H][cX3]2[cX3H][cX3H][cX3H][cX3H][cX3]12),$([CH2X4][cX3]1[cX3H][cX3H][cX3]([OHX2,OH0X1-])[cX3H][cX3H]1),$([CHX4]([CH3X4])[CH3X4])])[CX3](=[OX1])[OX2H,OX1-,N])]
+
+smarts/0209.png rendering status: OK
+210: [$([NX3,NX4+][CX4H]([*])[CX3](=[OX1])[O,N]);!$([$([$([NX3H,NX4H2+]),$([NX3](C)(C)(C))]1[CX4H]([CH2][CH2][CH2]1)[CX3](=[OX1])[OX2H,OX1-,N]),$([$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H2][CX3](=[OX1])[OX2H,OX1-,N]),$([$([NX3H2,NX4H3+]),$([NX3H](C)(C))][CX4H]([$([CH3X4]),$([CH2X4][CH2X4][CH2X4][NHX3][CH0X3](=[NH2X3+,NHX2+0])[NH2X3]),$([CH2X4][CX3](=[OX1])[NX3H2]),$([CH2X4][CX3](=[OX1])[OH0-,OH]),$([CH2X4][SX2H,SX1H0-]),$([CH2X4][CH2X4][CX3](=[OX1])[OH0-,OH]),$([CH2X4][#6X3]1:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]:[$([#7X3H+,#7X2H0+0]:[#6X3H]:[#7X3H]),$([#7X3H])]:[#6X3H]1),$([CHX4]([CH3X4])[CH2X4][CH3X4]),$([CH2X4][CHX4]([CH3X4])[CH3X4]),$([CH2X4][CH2X4][CH2X4][CH2X4][NX4+,NX3+0]),$([CH2X4][CH2X4][SX2][CH3X4]),$([CH2X4][cX3]1[cX3H][cX3H][cX3H][cX3H][cX3H]1),$([CH2X4][OX2H]),$([CHX4]([CH3X4])[OX2H]),$([CH2X4][cX3]1[cX3H][nX3H][cX3]2[cX3H][cX3H][cX3H][cX3H][cX3]12),$([CH2X4][cX3]1[cX3H][cX3H][cX3]([OHX2,OH0X1-])[cX3H][cX3H]1),$([CHX4]([CH3X4])[CH3X4])])[CX3](=[OX1])[OX2H,OX1-,N])])]
+
+smarts/0210.png rendering status: OK
+211: [$(*-[NX2-]-[NX2+]#[NX1]),$(*-[NX2]=[NX2+]=[NX1-])]
+
+smarts/0211.png rendering status: OK
+212: [$([NX1-]=[NX2+]=[NX1-]),$([NX1]#[NX2+]-[NX1-2])]
+
+smarts/0212.png rendering status: OK
+213: [$([$(*-[NX2-]-[NX2+]#[NX1]),$(*-[NX2]=[NX2+]=[NX1-])]),$([$([NX1-]=[NX2+]=[NX1-]),$([NX1]#[NX2+]-[NX1-2])])]
+
+smarts/0213.png rendering status: OK
+214: [$([CX3]=[OX1])]
+
+smarts/0214.png rendering status: OK
+215: [$([OX1]=[CX3])]
+
+smarts/0215.png rendering status: OK
+216: [#16X2H0]
+
+smarts/0216.png rendering status: OK
+217: [#16X2H0][!#16]
+
+smarts/0217.png rendering status: OK
+218: [#16X2H0][#16X2H0]
+
+smarts/0218.png rendering status: OK
+219: [#16X2H0][!#16].[#16X2H0][!#16]
+
+smarts/0219.png rendering status: OK
+220: [OX2H,OX1H0-]
+
+smarts/0220.png rendering status: OK
+221: [OX2H0]
+
+smarts/0221.png rendering status: OK
+222: [H1,H0-]
+
+smarts/0222.png rendering status: OK
+223: ([Cl!$(Cl~c)].[c!$(c~Cl)])
+
+smarts/0223.png rendering status: OK
+224: ([Cl]).([c])
+
+smarts/0224.png rendering status: OK
+225: ([Cl].[c])
+
+smarts/0225.png rendering status: OK
+226: [NX3;H2,H1;!$(NC=O)].[NX3;H2,H1;!$(NC=O)]
+
+smarts/0226.png rendering status: OK
+227: [#6]
+
+smarts/0227.png rendering status: OK
+228: [c,C]
+
+smarts/0228.png rendering status: OK
+229: [#0]
+
+smarts/0229.png rendering status: OK
+230: [OX2,OX1-][OX2,OX1-]
+
+smarts/0230.png rendering status: OK
+231: [O;X2,X1-][O;X2,X1-]
+
+smarts/0231.png rendering status: OK
+232: [N&X4&+,N&X3&+0]
+
+smarts/0232.png rendering status: OK
+233: [NX4+,NX3+0]
+
+smarts/0233.png rendering status: OK
+234: [*!H0,#1]
+
+smarts/0234.png rendering status: OK
+235: [#6!H0,#1]
+
+smarts/0235.png rendering status: OK
+236: [H,#1]
+
+smarts/0236.png rendering status: OK
+237: [!H0;F,Cl,Br,I,N+,$([OH]-*=[!#6]),+]
+
+smarts/0237.png rendering status: OK
+238: [CX3](=O)[OX2H1]
+
+smarts/0238.png rendering status: OK
+239: [CX3](=O)[OX1H0-,OX2H1]
+
+smarts/0239.png rendering status: OK
+240: [$([OH]-*=[!#6])]
+
+smarts/0240.png rendering status: OK
+241: [$(P(=[OX1])([$([OX2H]),$([OX1-]),$([OX2]P)])([$([OX2H]),$([OX1-]),$([OX2]P)])[$([OX2H]),$([OX1-]),$([OX2]P)]),$([P+]([OX1-])([$([OX2H]),$([OX1-]),$([OX2]P)])([$([OX2H]),$([OX1-]),$([OX2]P)])[$([OX2H]),$([OX1-]),$([OX2]P)])]
+
+smarts/0241.png rendering status: OK
+242: [$([#16X4](=[OX1])(=[OX1])([#6])[OX2H,OX1H0-]),$([#16X4+2]([OX1-])([OX1-])([#6])[OX2H,OX1H0-])]
+
+smarts/0242.png rendering status: OK
+243: [CX3](=[OX1])[F,Cl,Br,I]
+
+smarts/0243.png rendering status: OK
+244: [NX2-]
+
+smarts/0244.png rendering status: OK
+245: [OX2H+]=*
+
+smarts/0245.png rendering status: OK
+246: [OX3H2+]
+
+smarts/0246.png rendering status: OK
+247: [#6+]
+
+smarts/0247.png rendering status: OK
+248: [$([cX2+](:*):*)]
+
+smarts/0248.png rendering status: OK
+249: [$([NX1-]=[NX2+]=[NX1-]),$([NX1]#[NX2+]-[NX1-2])]
+
+smarts/0249.png rendering status: OK
+250: [+1]~*~*~[-1]
+
+smarts/0250.png rendering status: OK
+251: [$([!-0!-1!-2!-3!-4]~*~[!+0!+1!+2!+3!+4]),$([!-0!-1!-2!-3!-4]~*~*~[!+0!+1!+2!+3!+4]),$([!-0!-1!-2!-3!-4]~*~*~*~[!+0!+1!+2!+3!+4]),$([!-0!-1!-2!-3!-4]~*~*~*~*~[!+0!+1!+2!+3!+4]),$([!-0!-1!-2!-3!-4]~*~*~*~*~*~[!+0!+1!+2!+3!+4]),$([!-0!-1!-2!-3!-4]~*~*~*~*~*~*~[!+0!+1!+2!+3!+4]),$([!-0!-1!-2!-3!-4]~*~*~*~*~*~*~*~[!+0!+1!+2!+3!+4]),$([!-0!-1!-2!-3!-4]~*~*~*~*~*~*~*~*~[!+0!+1!+2!+3!+4]),$([!-0!-1!-2!-3!-4]~*~*~*~*~*~*~*~*~*~[!+0!+1!+2!+3!+4])]
+
+smarts/0251.png rendering status: OK
+252: ([!-0!-1!-2!-3!-4].[!+0!+1!+2!+3!+4])
+
+smarts/0252.png rendering status: OK
+253: [#6,#7;R0]=[#8]
+
+smarts/0253.png rendering status: OK
+254: [!$([#6,F,Cl,Br,I,o,s,nX3,#7v5,#15v5,#16v4,#16v6,*+1,*+2,*+3])]
+
+smarts/0254.png rendering status: OK
+255: [!$([#6,H0,-,-2,-3])]
+
+smarts/0255.png rendering status: OK
+256: [!H0;#7,#8,#9]
+
+smarts/0256.png rendering status: OK
+257: [O,N;!H0]-*~*-*=[$([C,N;R0]=O)]
+
+smarts/0257.png rendering status: OK
+258: [#6;X3v3+0]
+
+smarts/0258.png rendering status: OK
+259: [#7;X2v4+0]
+
+smarts/0259.png rendering status: OK
+260: [$([a;r8,!R1&r7,!R1&r6,!R1&r5,!R1&r4,!R1&r3])]1:[$([a;r8,!R1&r7,!R1&r6,!R1&r5,!R1&r4,!R1&r3])]:[$([a;r8,!R1&r7,!R1&r6,!R1&r5,!R1&r4,!R1&r3])]:[$([a;r8,!R1&r7,!R1&r6,!R1&r5,!R1&r4,!R1&r3])]:[$([a;r8,!R1&r7,!R1&r6,!R1&r5,!R1&r4,!R1&r3])]:[$([a;r8,!R1&r7,!R1&r6,!R1&r5,!R1&r4,!R1&r3])]:[$([a;r8,!R1&r7,!R1&r6,!R1&r5,!R1&r4,!R1&r3])]:[$([a;r8,!R1&r7,!R1&r6,!R1&r5,!R1&r4,!R1&r3])]:1
+
+smarts/0260.png rendering status: OK
+261: [$([O;H1;v2]),$([O;H0;v2;!$(O=N-*),$([O;-;!$(*-N=O)]),$([o;+0])]),$([n;+0;!X3;!$([n;H1](cc)cc),$([$([N;H0]#[C&v4])]),$([N&v3;H0;$(Nc)])]),$([F;$(F-[#6]);!$(FC[F,Cl,Br,I])])]
+
+smarts/0261.png rendering status: OK
+262: [$([a;r5,!R1&r4,!R1&r3])]1:[$([a;r5,!R1&r4,!R1&r3])]:[$([a;r5,!R1&r4,!R1&r3])]:[$([a;r5,!R1&r4,!R1&r3])]:[$([a;r5,!R1&r4,!R1&r3])]:1
+
+smarts/0262.png rendering status: OK
+263: [$([a;r4,!R1&r3])]1:[$([a;r4,!R1&r3])]:[$([a;r4,!R1&r3])]:[$([a;r4,!R1&r3])]:1
+
+smarts/0263.png rendering status: OK

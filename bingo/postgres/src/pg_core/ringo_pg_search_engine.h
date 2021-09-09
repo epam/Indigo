@@ -4,7 +4,7 @@
 #include "bingo_pg_search_engine.h"
 
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/red_black.h"
 
@@ -22,7 +22,7 @@ public:
     RingoPgFpData() : _hash(0)
     {
     }
-    virtual ~RingoPgFpData()
+    ~RingoPgFpData() override
     {
     }
 
@@ -48,21 +48,21 @@ class RingoPgSearchEngine : public BingoPgSearchEngine
 {
 public:
     RingoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name);
-    virtual ~RingoPgSearchEngine();
+    ~RingoPgSearchEngine() override;
 
-    virtual bool matchTarget(int section_idx, int structure_idx);
-    virtual bool matchTarget(ItemPointerData& item_data)
+    bool matchTarget(int section_idx, int structure_idx) override;
+    bool matchTarget(ItemPointerData& item_data) override
     {
         return BingoPgSearchEngine::matchTarget(item_data);
     }
 
-    virtual int getType() const
+    int getType() const override
     {
         return BINGO_INDEX_TYPE_REACTION;
     }
 
-    virtual void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc);
-    virtual bool searchNext(PG_OBJECT result_ptr);
+    void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc) override;
+    bool searchNext(PG_OBJECT result_ptr) override;
 
     DECL_ERROR;
 

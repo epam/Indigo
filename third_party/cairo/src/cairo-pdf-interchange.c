@@ -1134,13 +1134,20 @@ _cairo_pdf_interchange_begin_dest_tag (cairo_pdf_surface_t    *surface,
 
 	status = _cairo_tag_parse_dest_attributes (attributes, &dest->attrs);
 	if (unlikely (status))
+	{
+	    free (dest);
 	    return status;
+	}
 
 	dest->page = _cairo_array_num_elements (&surface->pages);
 	init_named_dest_key (dest);
 	status = _cairo_hash_table_insert (ic->named_dests, &dest->base);
 	if (unlikely (status))
+	{
+	    free (dest->attrs.name);
+	    free (dest);
 	    return status;
+	}
 
 	_cairo_tag_stack_set_top_data (&ic->analysis_tag_stack, dest);
 	cairo_list_add_tail (&dest->extents.link, &ic->extents_list);
@@ -1373,7 +1380,8 @@ _cairo_pdf_interchange_write_document_objects (cairo_pdf_surface_t *surface)
     cairo_tag_stack_structure_type_t tag_type;
 
     tag_type = _cairo_tag_stack_get_structure_type (&ic->analysis_tag_stack);
-    if (tag_type == TAG_TREE_TYPE_TAGGED || tag_type == TAG_TREE_TYPE_STRUCTURE) {
+    if (tag_type == TAG_TREE_TYPE_TAGGED || tag_type == TAG_TREE_TYPE_STRUCTURE ||
+	tag_type == TAG_TREE_TYPE_LINK_ONLY) {
 
 	status = cairo_pdf_interchange_write_parent_tree (surface);
 	if (unlikely (status))

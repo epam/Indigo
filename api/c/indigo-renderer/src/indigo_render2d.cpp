@@ -49,6 +49,9 @@ void IndigoRenderer::init()
     renderParams.clear();
 }
 
+#define __min3(a, b, c) (std::min(a, std::min(b, c)))
+#define __max3(a, b, c) (std::max(a, std::max(b, c)))
+
 #define CHECKRGB(r, g, b)                                                                                                                                      \
     if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6)                                                                                                   \
     throw IndigoError("Some of the color components are out of range [0..1]")
@@ -57,6 +60,9 @@ typedef RedBlackStringMap<int, false> StringIntMap;
 
 IndigoRenderer::IndigoRenderer()
 {
+    indigo_id = TL_GET_SESSION_ID();
+    setOptionsHandlers();
+    init();
 }
 
 IndigoRenderer::~IndigoRenderer()
@@ -343,9 +349,9 @@ RenderCdxmlContext& getCdxmlContext()
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if (rp.rOpt.cdxml_context.get() == NULL)
     {
-        rp.rOpt.cdxml_context.create();
+        rp.rOpt.cdxml_context = std::make_unique<RenderCdxmlContext>();
     }
-    return rp.rOpt.cdxml_context.ref();
+    return *rp.rOpt.cdxml_context;
 }
 
 void indigoRenderSetCdxmlPropertiesKeyAlignment(const char* value)
@@ -368,6 +374,28 @@ void indigoRenderGetCdxmlPropertiesKeyAlignment(Array<char>& value)
         value.readString("right", true);
 }
 
+
+CEXPORT int indigoRendererInit(void)
+{
+    INDIGO_BEGIN
+    {
+        const auto& context = indigoRendererGetInstance();
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoRendererDispose()
+{
+    INDIGO_BEGIN
+    {
+        indigo_renderer_self.removeLocalCopy(TL_GET_SESSION_ID());
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
+
 CEXPORT int indigoRender(int object, int output)
 {
     INDIGO_BEGIN
@@ -383,18 +411,18 @@ CEXPORT int indigoRender(int object, int output)
         if (IndigoBaseMolecule::is(obj))
         {
             if (obj.getBaseMolecule().isQueryMolecule())
-                rp.mol.reset(new QueryMolecule());
+                rp.mol = std::make_unique<QueryMolecule>();
             else
-                rp.mol.reset(new Molecule());
+                rp.mol = std::make_unique<Molecule>();
             rp.mol->clone_KeepIndices(self.getObject(object).getBaseMolecule());
             rp.rmode = RENDER_MOL;
         }
         else if (IndigoBaseReaction::is(obj))
         {
             if (obj.getBaseReaction().isQueryReaction())
-                rp.rxn.reset(new QueryReaction());
+                rp.rxn = std::make_unique<QueryReaction>();
             else
-                rp.rxn.reset(new Reaction());
+                rp.rxn = std::make_unique<Reaction>();
             rp.rxn->clone(self.getObject(object).getBaseReaction(), 0, 0, 0);
             rp.rmode = RENDER_RXN;
         }
@@ -434,7 +462,7 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
         PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
         if (rp.rOpt.cdxml_context.get() != NULL)
         {
-            RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+            RenderCdxmlContext& context = *rp.rOpt.cdxml_context;
             context.property_data.clear();
         }
         if (IndigoBaseMolecule::is(*objs[0]))
@@ -454,7 +482,7 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
                     if (rp.rOpt.cdxml_context.get() != NULL)
                     {
 
-                        RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+                        RenderCdxmlContext& context = *rp.rOpt.cdxml_context;
                         RenderCdxmlContext::PropertyData& data = context.property_data.push();
 
                         auto& properties = objs[i]->getProperties();
@@ -608,15 +636,9 @@ CEXPORT int indigoRenderWriteHDC(void* hdc, int printingHdc)
     INDIGO_END(-1);
 }
 
-class _IndigoRenderingOptionsHandlersSetter
+void IndigoRenderer::setOptionsHandlers()
 {
-public:
-    _IndigoRenderingOptionsHandlersSetter();
-};
-
-_IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter()
-{
-    IndigoOptionManager& mgr = indigoGetOptionManager();
+    IndigoOptionManager& mgr = indigoGetOptionManager(indigo_id);
     OsLocker locker(mgr.lock);
 
 #define rp indigoRendererGetInstance().renderParams
@@ -687,5 +709,3 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter()
 
     mgr.setOptionHandlerVoid("reset-render-options", indigoRenderResetOptions);
 }
-
-_IndigoRenderingOptionsHandlersSetter _indigo_rendering_options_handlers_setter;

@@ -42,7 +42,7 @@ class BingoOracleCommand : public OsCommand
 {
 public:
     virtual void execute(OsCommandResult& result) = 0;
-    virtual void clear();
+    void clear() override;
 
     ChunkStorage blob_storage;
 };
@@ -63,7 +63,7 @@ public:
     void setup(OracleStatement* statement, OracleLOB* lob, char* varchar2_text, bool read_from_LOB);
 
 protected:
-    virtual bool _setupCommand(OsCommand& command);
+    bool _setupCommand(OsCommand& command) override;
 
     // This function is call _blobs_per_command times to
     // initialize additional data for each molecule

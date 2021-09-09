@@ -251,14 +251,14 @@ float Vec2f::triangleArea(const Vec2f& a, const Vec2f& b, const Vec2f& c)
 bool Vec2f::segmentsIntersect(const Vec2f& a0, const Vec2f& a1, const Vec2f& b0, const Vec2f& b1)
 {
 
-    float maxax = __max(a0.x, a1.x);
-    float maxay = __max(a0.y, a1.y);
-    float maxbx = __max(b0.x, b1.x);
-    float maxby = __max(b0.y, b1.y);
-    float minax = __min(a0.x, a1.x);
-    float minay = __min(a0.y, a1.y);
-    float minbx = __min(b0.x, b1.x);
-    float minby = __min(b0.y, b1.y);
+    float maxax = std::max(a0.x, a1.x);
+    float maxay = std::max(a0.y, a1.y);
+    float maxbx = std::max(b0.x, b1.x);
+    float maxby = std::max(b0.y, b1.y);
+    float minax = std::min(a0.x, a1.x);
+    float minay = std::min(a0.y, a1.y);
+    float minbx = std::min(b0.x, b1.x);
+    float minby = std::min(b0.y, b1.y);
 
     float big_eps = 0.001f;
 
@@ -272,14 +272,14 @@ bool Vec2f::segmentsIntersect(const Vec2f& a0, const Vec2f& a1, const Vec2f& b0,
 bool Vec2f::segmentsIntersectInternal(const Vec2f& a0, const Vec2f& a1, const Vec2f& b0, const Vec2f& b1)
 {
 
-    float maxax = __max(a0.x, a1.x);
-    float maxay = __max(a0.y, a1.y);
-    float maxbx = __max(b0.x, b1.x);
-    float maxby = __max(b0.y, b1.y);
-    float minax = __min(a0.x, a1.x);
-    float minay = __min(a0.y, a1.y);
-    float minbx = __min(b0.x, b1.x);
-    float minby = __min(b0.y, b1.y);
+    float maxax = std::max(a0.x, a1.x);
+    float maxay = std::max(a0.y, a1.y);
+    float maxbx = std::max(b0.x, b1.x);
+    float maxby = std::max(b0.y, b1.y);
+    float minax = std::min(a0.x, a1.x);
+    float minay = std::min(a0.y, a1.y);
+    float minbx = std::min(b0.x, b1.x);
+    float minby = std::min(b0.y, b1.y);
 
     float big_eps = 0.001f;
 
@@ -312,7 +312,7 @@ float Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s)
     if (Vec2f::segmentsIntersect(p, q, r, s))
         return 0;
 
-    return __min(__min(distPointSegment(p, r, s), distPointSegment(q, r, s)), __min(distPointSegment(r, p, q), distPointSegment(s, p, q)));
+    return std::min(std::min(distPointSegment(p, r, s), distPointSegment(q, r, s)), std::min(distPointSegment(r, p, q), distPointSegment(s, p, q)));
 }
 
 Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, float angle)

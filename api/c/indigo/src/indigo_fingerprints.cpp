@@ -19,7 +19,7 @@
 #include "indigo_fingerprints.h"
 
 #include "base_c/bitarray.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_io.h"
@@ -131,7 +131,7 @@ CEXPORT int indigoFingerprint(int item, const char* type)
 
             _indigoParseMoleculeFingerprintType(builder, type, mol.isQueryMolecule());
             builder.process();
-            AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
+            std::unique_ptr<IndigoFingerprint> fp = std::make_unique<IndigoFingerprint>();
             fp->bytes.copy(builder.get(), self.fp_params.fingerprintSize());
             return self.addObject(fp.release());
         }
@@ -142,7 +142,7 @@ CEXPORT int indigoFingerprint(int item, const char* type)
 
             _indigoParseReactionFingerprintType(builder, type, rxn.isQueryReaction());
             builder.process();
-            AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
+            std::unique_ptr<IndigoFingerprint> fp = std::make_unique<IndigoFingerprint>();
             fp->bytes.copy(builder.get(), self.fp_params.fingerprintSizeExtOrdSim() * 2);
             return self.addObject(fp.release());
         }
@@ -157,7 +157,7 @@ CEXPORT int indigoLoadFingerprintFromBuffer(const byte* buffer, int size)
 {
     INDIGO_BEGIN
     {
-        AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
+        std::unique_ptr<IndigoFingerprint> fp = std::make_unique<IndigoFingerprint>();
         fp->bytes.copy(buffer, size);
         return self.addObject(fp.release());
     }
@@ -181,14 +181,14 @@ CEXPORT int indigoLoadFingerprintFromDescriptors(const double* arr, int arr_len,
             int hash = i;
             for (auto cnt = 0; cnt < set_bits_num; cnt++)
             {
-                hash = abs(hash * 0x8088405 + 1) % bit_size;
+                hash = hash * 0x8088405 + 1;
+                hash = llabs((qword)(hash)) % bit_size;
                 bitSetBit(data.ptr(), hash, 1);
             }
         }
 
-        AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
+        std::unique_ptr<IndigoFingerprint> fp = std::make_unique<IndigoFingerprint>();
         fp->bytes.copy(data.ptr(), size);
-
         return self.addObject(fp.release());
     }
     INDIGO_END(-1);
@@ -328,7 +328,7 @@ static void _collectBondFeatures(BaseMolecule& m, RedBlackStringMap<int>& counte
             d1 = d2 = 0;
 
         char key[100];
-        snprintf(key, NELEM(key), "o:%d s:%s d:%d %d", m.getBondOrder(i), stereo, __min(d1, d2), __max(d1, d2));
+        snprintf(key, NELEM(key), "o:%d s:%s d:%d %d", m.getBondOrder(i), stereo, std::min(d1, d2), std::max(d1, d2));
 
         int* ptr = counters.at2(key);
         if (ptr)
@@ -357,7 +357,7 @@ static void _getCountersDifference(RedBlackStringMap<int>& c1, RedBlackStringMap
             int* val2_ptr = b.at2(key);
             int val2 = val2_ptr ? *val2_ptr : 0;
 
-            int c = __min(val1, val2);
+            int c = std::min(val1, val2);
             common += c;
             *diff[i] += val1 - c;
         }

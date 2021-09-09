@@ -2174,6 +2174,7 @@ _cairo_surface_paint (cairo_surface_t		*surface,
 		      const cairo_clip_t	*clip)
 {
     cairo_int_status_t status;
+    cairo_bool_t is_clear;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
     if (unlikely (surface->status))
@@ -2196,8 +2197,9 @@ _cairo_surface_paint (cairo_surface_t		*surface,
 	return status;
 
     status = surface->backend->paint (surface, op, source, clip);
-    if (status != CAIRO_INT_STATUS_NOTHING_TO_DO) {
-	surface->is_clear = op == CAIRO_OPERATOR_CLEAR && clip == NULL;
+    is_clear = op == CAIRO_OPERATOR_CLEAR && clip == NULL;
+    if (status != CAIRO_INT_STATUS_NOTHING_TO_DO || is_clear) {
+	surface->is_clear = is_clear;
 	surface->serial++;
     }
 
@@ -2935,12 +2937,7 @@ cairo_status_t
 _cairo_surface_tag (cairo_surface_t	        *surface,
 		    cairo_bool_t                 begin,
 		    const char                  *tag_name,
-		    const char                  *attributes,
-		    const cairo_pattern_t	*source,
-		    const cairo_stroke_style_t	*stroke_style,
-		    const cairo_matrix_t	*ctm,
-		    const cairo_matrix_t	*ctm_inverse,
-		    const cairo_clip_t	        *clip)
+		    const char                  *attributes)
 {
     cairo_int_status_t status;
 
@@ -2953,15 +2950,7 @@ _cairo_surface_tag (cairo_surface_t	        *surface,
     if (surface->backend->tag == NULL)
 	return CAIRO_STATUS_SUCCESS;
 
-    if (begin) {
-	status = _pattern_has_error (source);
-	if (unlikely (status))
-	    return status;
-    }
-
-    status = surface->backend->tag (surface, begin, tag_name, attributes,
-				    source, stroke_style,
-				    ctm, ctm_inverse, clip);
+    status = surface->backend->tag (surface, begin, tag_name, attributes);
     surface->is_clear = FALSE;
 
     return _cairo_surface_set_error (surface, status);

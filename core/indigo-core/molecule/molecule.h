@@ -33,13 +33,13 @@ namespace indigo
     {
     public:
         Molecule();
-        virtual ~Molecule();
+        ~Molecule() override;
 
-        virtual Molecule& asMolecule();
+        Molecule& asMolecule() override;
 
-        virtual void clear();
+        void clear() override;
 
-        virtual BaseMolecule* neu();
+        BaseMolecule* neu() override;
 
         int addAtom(int label);
         int resetAtom(int idx, int label);
@@ -75,41 +75,41 @@ namespace indigo
 
         void setBondOrder_Silent(int idx, int order);
 
-        virtual int getAtomNumber(int idx);
-        virtual int getAtomCharge(int idx);
-        virtual int getAtomIsotope(int idx);
-        virtual int getAtomRadical(int idx);
-        virtual int getBondOrder(int idx);
-        virtual int getBondTopology(int idx);
-        virtual int getAtomAromaticity(int idx);
-        virtual int getExplicitValence(int idx);
-        virtual int getAtomValence(int idx);
-        virtual int getAtomSubstCount(int idx);
-        virtual int getAtomRingBondsCount(int idx);
-        virtual int getAtomConnectivity(int idx);
+        int getAtomNumber(int idx) override;
+        int getAtomCharge(int idx) override;
+        int getAtomIsotope(int idx) override;
+        int getAtomRadical(int idx) override;
+        int getBondOrder(int idx) override;
+        int getBondTopology(int idx) override;
+        int getAtomAromaticity(int idx) override;
+        int getExplicitValence(int idx) override;
+        int getAtomValence(int idx) override;
+        int getAtomSubstCount(int idx) override;
+        int getAtomRingBondsCount(int idx) override;
+        int getAtomConnectivity(int idx) override;
 
-        virtual int getAtomMaxH(int idx);
-        virtual int getAtomMinH(int idx);
-        virtual int getAtomTotalH(int idx);
+        int getAtomMaxH(int idx) override;
+        int getAtomMinH(int idx) override;
+        int getAtomTotalH(int idx) override;
 
-        virtual bool isPseudoAtom(int idx);
-        virtual const char* getPseudoAtom(int idx);
+        bool isPseudoAtom(int idx) override;
+        const char* getPseudoAtom(int idx) override;
 
-        virtual bool isTemplateAtom(int idx);
-        virtual const char* getTemplateAtom(int idx);
-        virtual const int getTemplateAtomSeqid(int idx);
-        virtual const char* getTemplateAtomClass(int idx);
-        virtual const int getTemplateAtomDisplayOption(int idx);
+        bool isTemplateAtom(int idx) override;
+        const char* getTemplateAtom(int idx) override;
+        const int getTemplateAtomSeqid(int idx) override;
+        const char* getTemplateAtomClass(int idx) override;
+        const int getTemplateAtomDisplayOption(int idx) override;
 
-        virtual bool isRSite(int atom_idx);
-        virtual dword getRSiteBits(int atom_idx);
-        virtual void allowRGroupOnRSite(int atom_idx, int rg_idx);
+        bool isRSite(int atom_idx) override;
+        dword getRSiteBits(int atom_idx) override;
+        void allowRGroupOnRSite(int atom_idx, int rg_idx) override;
         void setRSiteBits(int atom_idx, int bits);
 
-        virtual bool bondStereoCare(int idx);
+        bool bondStereoCare(int idx) override;
 
-        virtual bool aromatize(const AromaticityOptions& options);
-        virtual bool dearomatize(const AromaticityOptions& options);
+        bool aromatize(const AromaticityOptions& options) override;
+        bool dearomatize(const AromaticityOptions& options) override;
 
         int getImplicitH(int idx);
         int getImplicitH_NoThrow(int idx, int fallback);
@@ -123,15 +123,15 @@ namespace indigo
 
         int totalHydrogensCount();
 
-        virtual bool atomNumberBelongs(int idx, const int* numbers, int count);
-        virtual bool possibleAtomNumber(int idx, int number);
-        virtual bool possibleAtomNumberAndCharge(int idx, int number, int charge);
-        virtual bool possibleAtomNumberAndIsotope(int idx, int number, int isotope);
-        virtual bool possibleAtomIsotope(int idx, int isotope);
-        virtual bool possibleAtomCharge(int idx, int charge);
-        virtual void getAtomDescription(int idx, Array<char>& description);
-        virtual void getBondDescription(int idx, Array<char>& description);
-        virtual bool possibleBondOrder(int idx, int order);
+        bool atomNumberBelongs(int idx, const int* numbers, int count) override;
+        bool possibleAtomNumber(int idx, int number) override;
+        bool possibleAtomNumberAndCharge(int idx, int number, int charge) override;
+        bool possibleAtomNumberAndIsotope(int idx, int number, int isotope) override;
+        bool possibleAtomIsotope(int idx, int isotope) override;
+        bool possibleAtomCharge(int idx, int charge) override;
+        void getAtomDescription(int idx, Array<char>& description) override;
+        void getBondDescription(int idx, Array<char>& description) override;
+        bool possibleBondOrder(int idx, int order) override;
 
         int getVacantPiOrbitals(int atom_idx, int* lonepairs_out);
         int getVacantPiOrbitals(int atom_idx, int conn, int* lonepairs_out);
@@ -161,7 +161,7 @@ namespace indigo
         bool isNitrogenV5(int atom_index);
         bool isNitrogenV5ForConnectivity(int atom_index, int conn);
 
-        virtual void invalidateAtom(int index, int mask);
+        void invalidateAtom(int index, int mask) override;
 
         bool restoreAromaticHydrogens(bool unambiguous_only = true);
 
@@ -223,10 +223,10 @@ namespace indigo
 
         bool _ignore_bad_valence;
 
-        virtual void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags);
+        void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags) override;
 
-        virtual void _flipBond(int atom_parent, int atom_from, int atom_to);
-        virtual void _removeAtoms(const Array<int>& indices, const int* mapping);
+        void _flipBond(int atom_parent, int atom_from, int atom_to) override;
+        void _removeAtoms(const Array<int>& indices, const int* mapping) override;
 
         // If 'validate' is true then vertex connectivity and implicit hydrogens
         // are calculates and stored. If 'validate' is false then connectivity

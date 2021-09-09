@@ -36,16 +36,16 @@ namespace indigo
         };
 
         explicit GZipScanner(Scanner& source);
-        virtual ~GZipScanner();
+        ~GZipScanner() override;
 
-        virtual void read(int length, void* res);
-        virtual long long tell();
-        virtual bool isEOF();
-        virtual void seek(long long pos, int from);
-        virtual int lookNext();
-        virtual void skip(int length);
-        virtual long long length();
-        virtual void readAll(Array<char>& arr);
+        void read(int length, void* res) override;
+        long long tell() override;
+        bool isEOF() override;
+        void seek(long long pos, int from) override;
+        int lookNext() override;
+        void skip(int length) override;
+        long long length() override;
+        void readAll(Array<char>& arr) override;
 
         DECL_ERROR;
 

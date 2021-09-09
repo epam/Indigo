@@ -1,0 +1,602 @@
+*** Non-aromatized queries *** 
+Target #1
+Target #2
+  #2 c_r1.mol
+    cnt=1
+  #2 r3.mol
+    cnt=1
+Target #3
+  #3 c_r1.mol
+    cnt=2
+  #3 r3.mol
+    cnt=2
+Target #4
+Target #5
+Target #6
+Target #7
+Target #8
+Target #9
+Target #10
+Target #11
+Target #12
+Target #13
+Target #14
+Target #15
+Target #16
+Target #17
+Target #18
+Target #19
+Target #20
+Target #21
+Target #22
+  #22 c_r1.mol
+    cnt=2
+  #22 r3.mol
+    cnt=2
+Target #23
+  #23 c_r1.mol
+    cnt=4
+  #23 r3.mol
+    cnt=4
+Target #24
+  #24 c_r1.mol
+    cnt=3
+  #24 r1_2ap_aal.mol
+    cnt=1
+  #24 r3.mol
+    cnt=3
+Target #25
+  #25 c_r1.mol
+    cnt=2
+  #25 r3.mol
+    cnt=2
+Target #26
+  #26 c_r1.mol
+    cnt=3
+  #26 r1_2ap.mol
+    cnt=1
+  #26 r3.mol
+    cnt=3
+Target #27
+  #27 c_r1.mol
+    cnt=2
+  #27 r3.mol
+    cnt=2
+Target #28
+  #28 c_r1.mol
+    cnt=5
+  #28 r1_2ap_aal.mol
+    cnt=2
+  #28 r3.mol
+    cnt=5
+  #28 sub_mar_q01.mol
+    cnt=2
+Target #29
+  #29 c_r1.mol
+    cnt=6
+  #29 r3.mol
+    cnt=6
+Target #30
+  #30 c_r1.mol
+    cnt=5
+  #30 r1_2ap.mol
+    cnt=2
+  #30 r3.mol
+    cnt=5
+  #30 sub_mar_q01.mol
+    cnt=2
+Target #31
+  #31 c_r1.mol
+    cnt=6
+  #31 r1_2ap.mol
+    cnt=1
+  #31 r3.mol
+    cnt=6
+  #31 sub_mar_q01.mol
+    cnt=2
+Target #32
+Target #33
+Target #34
+Target #35
+Target #36
+Target #37
+Target #38
+Target #39
+  #39 c_r1.mol
+    cnt=2
+  #39 r3.mol
+    cnt=2
+Target #40
+  #40 c_r1.mol
+    cnt=2
+  #40 r3.mol
+    cnt=2
+Target #41
+  #41 c_r1.mol
+    cnt=2
+  #41 r3.mol
+    cnt=2
+Target #42
+  #42 c_r1.mol
+    cnt=2
+  #42 r3.mol
+    cnt=2
+Target #43
+  #43 c_r1.mol
+    cnt=2
+  #43 r3.mol
+    cnt=2
+Target #44
+  #44 c_r1.mol
+    cnt=4
+  #44 r3.mol
+    cnt=4
+  #44 sub_mar_q01.mol
+    cnt=1
+Target #45
+  #45 c_r1.mol
+    cnt=2
+  #45 r3.mol
+    cnt=2
+Target #46
+  #46 c_r1.mol
+    cnt=2
+  #46 r3.mol
+    cnt=2
+Target #47
+  #47 c_r1.mol
+    cnt=2
+  #47 r3.mol
+    cnt=2
+Target #48
+  #48 c_r1.mol
+    cnt=2
+  #48 r3.mol
+    cnt=2
+Target #49
+Target #50
+  #50 c_r1.mol
+    cnt=2
+  #50 r3.mol
+    cnt=2
+  #50 sub_mar_q01.mol
+    cnt=1
+Target #51
+Target #52
+  #52 c_r1.mol
+    cnt=2
+  #52 r3.mol
+    cnt=2
+Target #53
+  #53 c_r1.mol
+    cnt=3
+  #53 r3.mol
+    cnt=3
+  #53 sub_mar_q01.mol
+    cnt=1
+Target #54
+Target #55
+Target #56
+Target #57
+Target #58
+Target #59
+Target #60
+  #60 c_r1.mol
+    cnt=2
+  #60 r3.mol
+    cnt=2
+Target #61
+Target #62
+  #62 c_r1.mol
+    cnt=2
+  #62 r3.mol
+    cnt=2
+Target #63
+  #63 c_r1.mol
+    cnt=3
+  #63 r3.mol
+    cnt=3
+Target cistrans-0018-00
+  cistrans-0018-00 c_r1.mol
+    cnt=3
+  cistrans-0018-00 r3.mol
+    cnt=3
+Target #65
+
+Results per query:
+c11100_3.mol: 0
+c_r1.mol: 29
+cistrans_r.mol: 0
+r1_2ap.mol: 3
+r1_2ap_aal.mol: 2
+r3.mol: 29
+r_occur.mol: 0
+r_occur_2.mol: 0
+r_resth.mol: 0
+recursive1.mol: 0
+recursive2.mol: 0
+rgroup_all.mol: 0
+sub_mar_q01.mol: 6
+sub_mar_q02.mol: 0
+*** Aromatized queries *** 
+Target #1
+Target #2
+  #2 c_r1.mol
+    cnt=1
+  #2 r3.mol
+    cnt=1
+Target #3
+  #3 c_r1.mol
+    cnt=2
+  #3 r3.mol
+    cnt=2
+Target #4
+Target #5
+Target #6
+Target #7
+  #7 r_occur.mol
+    cnt=1
+  #7 r_occur_2.mol
+    cnt=1
+  #7 r_resth.mol
+    cnt=1
+Target #8
+  #8 r_occur.mol
+    cnt=1
+  #8 r_occur_2.mol
+    cnt=1
+  #8 r_resth.mol
+    cnt=1
+Target #9
+  #9 r_occur.mol
+    cnt=1
+  #9 r_occur_2.mol
+    cnt=1
+  #9 r_resth.mol
+    cnt=1
+Target #10
+  #10 r_occur.mol
+    cnt=1
+  #10 r_occur_2.mol
+    cnt=1
+  #10 r_resth.mol
+    cnt=1
+Target #11
+  #11 r_occur.mol
+    cnt=1
+  #11 r_occur_2.mol
+    cnt=1
+  #11 r_resth.mol
+    cnt=1
+Target #12
+  #12 r_occur.mol
+    cnt=2
+  #12 r_occur_2.mol
+    cnt=2
+  #12 r_resth.mol
+    cnt=1
+Target #13
+  #13 r_occur.mol
+    cnt=4
+  #13 r_occur_2.mol
+    cnt=4
+  #13 r_resth.mol
+    cnt=2
+Target #14
+  #14 r_occur.mol
+    cnt=2
+  #14 r_occur_2.mol
+    cnt=2
+  #14 r_resth.mol
+    cnt=1
+Target #15
+  #15 r_occur.mol
+    cnt=1
+  #15 r_occur_2.mol
+    cnt=1
+  #15 r_resth.mol
+    cnt=1
+Target #16
+  #16 r_occur.mol
+    cnt=1
+  #16 r_occur_2.mol
+    cnt=1
+  #16 r_resth.mol
+    cnt=1
+Target #17
+  #17 r_occur.mol
+    cnt=1
+  #17 r_occur_2.mol
+    cnt=1
+  #17 r_resth.mol
+    cnt=1
+Target #18
+  #18 r_occur.mol
+    cnt=1
+  #18 r_occur_2.mol
+    cnt=1
+Target #19
+  #19 r_occur.mol
+    cnt=1
+  #19 r_occur_2.mol
+    cnt=1
+Target #20
+  #20 r_occur.mol
+    cnt=1
+  #20 r_occur_2.mol
+    cnt=1
+Target #21
+Target #22
+  #22 c_r1.mol
+    cnt=2
+  #22 r3.mol
+    cnt=2
+Target #23
+  #23 c_r1.mol
+    cnt=4
+  #23 r3.mol
+    cnt=4
+Target #24
+  #24 c_r1.mol
+    cnt=3
+  #24 r1_2ap_aal.mol
+    cnt=1
+  #24 r3.mol
+    cnt=3
+Target #25
+  #25 c_r1.mol
+    cnt=2
+  #25 r3.mol
+    cnt=2
+Target #26
+  #26 c_r1.mol
+    cnt=3
+  #26 r1_2ap.mol
+    cnt=1
+  #26 r3.mol
+    cnt=3
+Target #27
+  #27 c_r1.mol
+    cnt=2
+  #27 r3.mol
+    cnt=2
+Target #28
+  #28 c_r1.mol
+    cnt=5
+  #28 r1_2ap_aal.mol
+    cnt=2
+  #28 r3.mol
+    cnt=5
+  #28 sub_mar_q01.mol
+    cnt=2
+Target #29
+  #29 c_r1.mol
+    cnt=6
+  #29 r3.mol
+    cnt=6
+Target #30
+  #30 c_r1.mol
+    cnt=5
+  #30 r1_2ap.mol
+    cnt=2
+  #30 r3.mol
+    cnt=5
+  #30 sub_mar_q01.mol
+    cnt=2
+Target #31
+  #31 c_r1.mol
+    cnt=6
+  #31 r1_2ap.mol
+    cnt=1
+  #31 r3.mol
+    cnt=6
+  #31 sub_mar_q01.mol
+    cnt=2
+Target #32
+Target #33
+Target #34
+Target #35
+Target #36
+Target #37
+Target #38
+Target #39
+  #39 c_r1.mol
+    cnt=2
+  #39 r3.mol
+    cnt=2
+Target #40
+  #40 c_r1.mol
+    cnt=2
+  #40 r3.mol
+    cnt=2
+Target #41
+  #41 c_r1.mol
+    cnt=2
+  #41 r3.mol
+    cnt=2
+Target #42
+  #42 c_r1.mol
+    cnt=2
+  #42 r3.mol
+    cnt=2
+Target #43
+  #43 c_r1.mol
+    cnt=2
+  #43 r3.mol
+    cnt=2
+Target #44
+  #44 c_r1.mol
+    cnt=4
+  #44 r3.mol
+    cnt=4
+  #44 sub_mar_q01.mol
+    cnt=1
+Target #45
+  #45 c_r1.mol
+    cnt=2
+  #45 r3.mol
+    cnt=2
+Target #46
+  #46 c_r1.mol
+    cnt=2
+  #46 r3.mol
+    cnt=2
+Target #47
+  #47 c_r1.mol
+    cnt=2
+  #47 r3.mol
+    cnt=2
+Target #48
+  #48 c_r1.mol
+    cnt=2
+  #48 r3.mol
+    cnt=2
+Target #49
+Target #50
+  #50 c_r1.mol
+    cnt=2
+  #50 r3.mol
+    cnt=2
+  #50 sub_mar_q01.mol
+    cnt=1
+Target #51
+Target #52
+  #52 c_r1.mol
+    cnt=2
+  #52 r3.mol
+    cnt=2
+Target #53
+  #53 c_r1.mol
+    cnt=3
+  #53 r3.mol
+    cnt=3
+  #53 sub_mar_q01.mol
+    cnt=1
+Target #54
+  #54 r_occur.mol
+    cnt=2
+  #54 r_occur_2.mol
+    cnt=2
+  #54 r_resth.mol
+    cnt=2
+  #54 sub_mar_q02.mol
+    cnt=11
+Target #55
+  #55 r_occur.mol
+    cnt=2
+  #55 r_occur_2.mol
+    cnt=2
+  #55 r_resth.mol
+    cnt=2
+Target #56
+  #56 r_occur.mol
+    cnt=2
+  #56 r_occur_2.mol
+    cnt=2
+  #56 r_resth.mol
+    cnt=2
+  #56 sub_mar_q02.mol
+    cnt=1
+Target #57
+  #57 r_occur.mol
+    cnt=2
+  #57 r_occur_2.mol
+    cnt=2
+  #57 r_resth.mol
+    cnt=2
+  #57 sub_mar_q02.mol
+    cnt=1
+Target #58
+  #58 r_occur.mol
+    cnt=2
+  #58 r_occur_2.mol
+    cnt=2
+  #58 r_resth.mol
+    cnt=2
+  #58 sub_mar_q02.mol
+    cnt=11
+Target #59
+  #59 r_occur.mol
+    cnt=2
+  #59 r_occur_2.mol
+    cnt=2
+  #59 r_resth.mol
+    cnt=2
+  #59 sub_mar_q02.mol
+    cnt=4
+Target #60
+  #60 c_r1.mol
+    cnt=2
+  #60 r3.mol
+    cnt=2
+  #60 r_occur.mol
+    cnt=2
+  #60 r_occur_2.mol
+    cnt=2
+  #60 r_resth.mol
+    cnt=2
+  #60 sub_mar_q02.mol
+    cnt=1
+Target #61
+  #61 r_occur.mol
+    cnt=2
+  #61 r_occur_2.mol
+    cnt=2
+  #61 r_resth.mol
+    cnt=2
+  #61 sub_mar_q02.mol
+    cnt=11
+Target #62
+  #62 c_r1.mol
+    cnt=2
+  #62 r3.mol
+    cnt=2
+  #62 r_occur.mol
+    cnt=2
+  #62 r_occur_2.mol
+    cnt=2
+  #62 r_resth.mol
+    cnt=2
+  #62 sub_mar_q02.mol
+    cnt=1
+Target #63
+  #63 c_r1.mol
+    cnt=3
+  #63 r3.mol
+    cnt=3
+Target cistrans-0018-00
+  cistrans-0018-00 c_r1.mol
+    cnt=3
+  cistrans-0018-00 r3.mol
+    cnt=3
+Target #65
+  #65 c11100_3.mol
+    cnt=1
+  #65 r_occur.mol
+    cnt=1
+  #65 r_occur_2.mol
+    cnt=1
+  #65 r_resth.mol
+    cnt=1
+
+Results per query:
+c11100_3.mol: 1
+c_r1.mol: 29
+cistrans_r.mol: 0
+r1_2ap.mol: 3
+r1_2ap_aal.mol: 2
+r3.mol: 29
+r_occur.mol: 24
+r_occur_2.mol: 24
+r_resth.mol: 21
+recursive1.mol: 0
+recursive2.mol: 0
+rgroup_all.mol: 0
+sub_mar_q01.mol: 6
+sub_mar_q02.mol: 8
+*** Another tests *** 
+t_123: False
+t_1578: False
+Aromatized query: 
+t_123: True
+t_1578: True

@@ -1,0 +1,1860 @@
+Database: ../../../../../data/molecules/basic/tetrahedral-all.cml
+tetrahedral-0001-00 (#1): C[C@H](F)I
+tetrahedral-0002-00 (#2): C[C@@H](F)I
+tetrahedral-0003-00 (#3): C[C@@H](F)I
+tetrahedral-0004-00 (#4): C[C@H](F)I
+stereocenters: one bond up, one bond down -- indefinite case near atom 0 (#5): stereocenters: one bond up, one bond down -- indefinite case near atom 0
+save error: stereocenters: one bond up, one bond down -- indefinite case near atom 0
+stereocenters: directions of opposite stereo bonds do not match near atom 0 (#6): stereocenters: directions of opposite stereo bonds do not match near atom 0
+save error: stereocenters: directions of opposite stereo bonds do not match near atom 0
+tetrahedral-0007-00 (#7): C[C@H](F)I
+stereocenters: stereo types of the opposite bonds mismatch near atom 0 (#8): stereocenters: stereo types of the opposite bonds mismatch near atom 0
+save error: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+stereocenters: stereo types of the opposite bonds mismatch near atom 0 (#9): stereocenters: stereo types of the opposite bonds mismatch near atom 0
+save error: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+stereocenters: stereo types of the opposite bonds mismatch near atom 0 (#10): stereocenters: stereo types of the opposite bonds mismatch near atom 0
+save error: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+stereocenters: stereo types of the opposite bonds mismatch near atom 0 (#11): stereocenters: stereo types of the opposite bonds mismatch near atom 0
+save error: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+stereocenters: stereo types of the opposite bonds mismatch near atom 0 (#12): stereocenters: stereo types of the opposite bonds mismatch near atom 0
+save error: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+tetrahedral-0013-00 (#13): C[C@H](F)I
+stereocenters: one bond up, one bond down -- indefinite case near atom 0 (#14): stereocenters: one bond up, one bond down -- indefinite case near atom 0
+save error: stereocenters: one bond up, one bond down -- indefinite case near atom 0
+tetrahedral-0015-00 (#15): C[C@H](F)I
+tetrahedral-0016-00 (#16): C[C@H](F)I
+tetrahedral-0017-00 (#17): C[C@H](F)I
+stereocenters: directions of neighbor stereo bonds match near atom 0 (#18): stereocenters: directions of neighbor stereo bonds match near atom 0
+save error: stereocenters: directions of neighbor stereo bonds match near atom 0
+tetrahedral-0019-00 (#19): C[C@H](F)I
+tetrahedral-0020-00 (#20): C[C@H](F)I
+tetrahedral-0021-00 (#21): C[C@H](F)I
+tetrahedral-0022-00 (#22): C[C@H](F)I
+tetrahedral-0023-00 (#23): C[C@@H](F)I
+stereocenters: stereo types of the opposite bonds mismatch near atom 0 (#24): stereocenters: stereo types of the opposite bonds mismatch near atom 0
+save error: stereocenters: stereo types of the opposite bonds mismatch near atom 0
+tetrahedral-0025-00 (#25): OC(=O)[C@H](O)[C@@H](O)C(O)=O
+tetrahedral-0026-00 (#26): OC(=O)[C@@H](O)[C@H](O)C(O)=O
+tetrahedral-0027-00 (#27): C[C@H](O)C(C)O
+tetrahedral-0032-00 (#28): C[C@]1(Cl)C[C@H](Br)CCO1
+tetrahedral-0033-00 (#29): C[C@]1(Cl)C[C@@H](Br)CCO1
+tetrahedral-0036-00 (#30): C[C@@H]1[C@@H](C)[C@H]1C
+tetrahedral-0037-00 (#31): C1C[C@@H]2CC[C@H]3CC[C@@H]4CC[C@@H]1[C@]234
+tetrahedral-0038-00 (#32): C[C@](F)(Cl)I
+tetrahedral-0039-00 (#33): C[C@](F)(Cl)I
+tetrahedral-0040-00 (#34): C[C@](F)(Cl)I
+tetrahedral-0041-00 (#35): C[C@](F)(Cl)I
+tetrahedral-0042-00 (#36): C[C@](F)(Cl)I
+tetrahedral-0043-00 (#37): C[C@](F)(Cl)I
+tetrahedral-0044-00 (#38): C[C@](F)(Cl)I
+tetrahedral-0045-00 (#39): C[C@](F)(Cl)I
+tetrahedral-0046-00 (#40): C[C@](F)(Cl)I
+tetrahedral-0047-00 (#41): FC(Cl)(Cl)I
+tetrahedral-0048-00 (#42): C[C@](F)(Cl)I
+tetrahedral-0061-00 (#43): [2H][C@@H]([3H])C(C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0062-00 (#44): [2H][C@H]([3H])C(C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0063-00 (#45): [2H][C@@H]([3H])C(C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0064-00 (#46): [2H][C@@H]([3H])[C@](C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0065-00 (#47): [2H][C@@H]([3H])C(C)(C)C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0066-00 (#48): [2H]OC(=N)C1=CC(=CC(=C1)/C(/C)=C(/C)\CC)C(C)(C)[12CH3]
+tetrahedral-0067-00 (#49): [2H]OC(=N)C1=CC(=CC(=C1)/C(/C)=C(\C)/CC)C(C)(C)[12CH3]
+tetrahedral-0068-00 (#50): [2H]OC1NN=CC=1/C=C/[C@](C)(C([2H])[3H])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+tetrahedral-0069-00 (#51): C[C@H](CC)[C@H](C)CC
+stereocenters: one bond up, one bond down -- indefinite case near atom 4 (#52): stereocenters: one bond up, one bond down -- indefinite case near atom 4
+save error: stereocenters: one bond up, one bond down -- indefinite case near atom 4
+tetrahedral-0071-00 (#53): CC1=CC[C@H]2C[C@@H]1C2(C)C
+tetrahedral-0072-00 (#54): C[C@H]([NH3+])C([O-])=O
+tetrahedral-0073-00 (#55): [NH3+][C@@H](CC1C=CC=CC=1)C([O-])=O
+tetrahedral-0074-00 (#56): [NH3+][C@@H](CO)C([O-])=O
+tetrahedral-0075-00 (#57): CC(C)[C@H]([NH3+])C([O-])=O
+tetrahedral-0076-00 (#58): [NH3+][C@@H](CC(O)=O)C([O-])=O
+tetrahedral-0077-00 (#59): [NH3+][C@@H](CCC(O)=O)C([O-])=O
+tetrahedral-0078-00 (#60): [NH3+][C@H](C([O-])=O)C1=CNC=[NH+]1
+tetrahedral-0079-00 (#61): [NH3+][C@@H](CS)C([O-])=O
+tetrahedral-0080-00 (#62): [NH3+]CCCC[C@H]([NH3+])C([O-])=O
+tetrahedral-0081-00 (#63): [NH3+][C@@H](CC1C=CC(O)=CC=1)C([O-])=O
+tetrahedral-0082-00 (#64): NC(=[NH2+])NCCC[C@H]([NH3+])C([O-])=O
+tetrahedral-0083-00 (#65): CC(C)C[C@H]([NH3+])C([O-])=O
+tetrahedral-0084-00 (#66): CC(CC)[C@H]([NH3+])C([O-])=O
+tetrahedral-0085-00 (#67): [NH3+][C@H](C([O-])=O)C1=CNC2C=CC=CC=21
+tetrahedral-0086-00 (#68): [O-]C(=O)[C@@H]1CCC[NH2+]1
+tetrahedral-0087-00 (#69): CSCC[C@H]([NH3+])C([O-])=O
+tetrahedral-0088-00 (#70): CC(O)[C@H]([NH3+])C([O-])=O
+tetrahedral-0089-00 (#71): NC(=O)C[C@H]([NH3+])C([O-])=O
+tetrahedral-0090-00 (#72): NC(=O)CC[C@H]([NH3+])C([O-])=O
+tetrahedral-0091-00 (#73): C[C@@H]1[C@@H](C)C(=O)NC1=O
+tetrahedral-0092-00 (#74): F[C@H](Cl)[C@@H](F)Cl
+tetrahedral-0093-00 (#75): [2H][C@H]([3H])C
+tetrahedral-0094-00 (#76): CN1C[C@@]2(CN(C)CC2)CC1
+tetrahedral-0095-00 (#77): [2H]NC(=O)[C@H]1C(C(=N)=O)[C@H]1C(N)=O
+tetrahedral-0096-00 (#78): [2H]NC(=O)[C@@H]1C(C(=N)=O)[C@@H]1C(N)=O
+tetrahedral-0097-00 (#79): [2H]NC(=O)[C@@H]1[C@@H](C1C(=N)=O)C(=N)O
+tetrahedral-0098-00 (#80): [2H]NC(=O)[C@H]1[C@H](C1C(=N)=O)C(=N)O
+tetrahedral-0099-00 (#81): OC[C@@H](O)[C@@H](O)[C@H](O)[C@@H](O)C=O
+tetrahedral-0100-00 (#82): OC[C@@H](O)[C@@H](O)C=O
+tetrahedral-0101-00 (#83): C[C@@H](NC=[N+](C)C)/[NH+]=C\N(C)C
+tetrahedral-0104-00 (#84): CO[C@]1(C)C[C@H](O[C@@H]2[C@@H](C)C(=O)O[C@H](CC)[C@@](C)(O)[C@H](O)[C@@H](C)C(=O)[C@H](C)C[C@@](C)(O)[C@H](O[C@@H]3O[C@H](C)C[C@@H]([C@H]3O)N(C)C)[C@H]2C)O[C@@H](C)[C@@H]1O
+tetrahedral-0105-00 (#85): CCC(C)C
+tetrahedral-0106-00 (#86): [2H]NC(=O)/C=C(/[CH2+])\[C@@H](C)S
+tetrahedral-0107-00 (#87): CO[C@H]1[C@H](O)[C@@H](O)[C@H](OC)[C@@H]([O-])[C@H]1[O-]
+tetrahedral-0108-00 (#88): C[C@H](Cl)Br
+tetrahedral-0109-00 (#89): Cl[C@@H](Br)I
+stereocenters: one bond up, one bond down -- indefinite case near atom 1 (#90): stereocenters: one bond up, one bond down -- indefinite case near atom 1
+save error: stereocenters: one bond up, one bond down -- indefinite case near atom 1
+tetrahedral-0111-00 (#91): [2H]NC(=O)/C=C(/[CH2-])\[C@@H](C)S
+tetrahedral-0112-00 (#92): [2H]NC(=O)/C(/[Co]/C(/C(=O)N[2H])=C(\[CH2-])/[C@@H](C)S)=C(/[CH2-])\[C@@H](C)S
+tetrahedral-0113-00 (#93): N[C@@H](CC(O)=O)C(O)=O
+tetrahedral-0114-00 (#94): CC(C)C1CC[C@@H](C)C[C@H]1O
+tetrahedral-0115-00 (#95): CC1C(CC)[N@@]1CCC
+tetrahedral-0116-00 (#96): CC[S@@](C)=O
+tetrahedral-0117-00 (#97): CC[S@@+](C)[O-]
+tetrahedral-0118-00 (#98): CCCC[N@+](C)([O-])CC
+tetrahedral-0119-00 (#99): CCCC[P@](C)(=O)CC
+tetrahedral-0120-00 (#100): CCCC[P@+](C)([O-])CC
+tetrahedral-0121-00 (#101): CC[S@@](C)=S
+tetrahedral-0122-00 (#102): CC[S@@+](C)[S-]
+tetrahedral-0123-00 (#103): CCCC[P@](C)(=S)CC
+tetrahedral-0124-00 (#104): CCCC[P@+](C)([S-])CC
+tetrahedral-0125-00 (#105): CCCC[P@](C)(=[Se])CC
+tetrahedral-0126-00 (#106): CCCC[P@+](C)([Se-])CC
+tetrahedral-0127-00 (#107): CCCC[N@+](C)([S-])CC
+tetrahedral-0128-00 (#108): CCCC[N@+](C)([Se-])CC
+tetrahedral-0129-00 (#109): CCC[N@@]1[C@H](C)[C@@H]1C
+tetrahedral-0130-00 (#110): CC[S@@]([O-])=O
+tetrahedral-0131-00 (#111): CC[S@](=O)[S-]
+tetrahedral-0132-00 (#112): CC[S@@]([NH3+])=O
+tetrahedral-0133-00 (#113): CC[S@](=O)[N-]C
+tetrahedral-0134-00 (#114): CC[S@+]([O-])[S-]
+tetrahedral-0135-00 (#115): CC[S+]([O-])[O-]
+tetrahedral-0136-00 (#116): C[C@H](N)C(O)=O
+tetrahedral-0137-00 (#117): CC[C@@H](C)[N+]([O-])=O
+tetrahedral-0138-00 (#118): C[N@@+]([O-])(S)[SeH]
+tetrahedral-0139-00 (#119): C[C@@H]1C[C@H](C)O1
+tetrahedral-0140-00 (#120): C[C@@H]1C[C@@H](C)O1
+tetrahedral-0141-00 (#121): C[C@H]1C[C@H](C)O1
+tetrahedral-0142-00 (#122): C[C@@H]1C[C@H](C)C1
+tetrahedral-0143-00 (#123): C[C@@H]1C[C@@H](C)C1
+tetrahedral-0144-00 (#124): COCO[C@H](/C=C/CO[Si](C)(C)C(C)(C)C)[Sn](CCCC)(CCCC)CCCC
+tetrahedral-0145-00 (#125): CC(CO)[C@H]1OCO[C@H]([C@H]1O)C(C)CO
+tetrahedral-0146-00 (#126): CC(CO)[C@H]1OCO[C@H]([C@H]1O)C(C)CO
+tetrahedral-0147-00 (#127): CC(CO)[C@H]1OCO[C@H]([C@H]1O)C(C)CO
+tetrahedral-0148-00 (#128): C[C@H](CO)[C@H]1OCO[C@H]([C@H]1O)[C@H](C)CO
+tetrahedral-0149-00 (#129): C[C@@H](CO)[C@@H]1OCO[C@@H]([C@@H]1O)[C@@H](C)CO
+tetrahedral-0150-00 (#130): C[C@@H](CO)[C@@H]1OCO[C@@H]([C@@H]1O)[C@@H](C)CO
+tetrahedral-0151-00 (#131): C1=CC=CC=C1N1N=C2N(C1N2C1C=CC=CC=1)C1C=CC=CC=1
+tetrahedral-0152-00 (#132): [2H]C1C=CC(=CC=1)N1[C@@H]2N(N=C1N2C1C=CC=CC=1[2H])C1C=CC=CC=1
+tetrahedral-0153-00 (#133): CC/C=C\N1CC1
+tetrahedral-0154-00 (#134): CC[C@@H](C)CCC
+stereocenters: one bond up, one bond down -- indefinite case near atom 21 (#135): stereocenters: one bond up, one bond down -- indefinite case near atom 21
+save error: stereocenters: one bond up, one bond down -- indefinite case near atom 21
+tetrahedral-0156-00 (#136): C/C=C1/[S@@](=O)C[S@]/1=O
+tetrahedral-0157-00 (#137): C/C=C1/[S@](=O)C[S@@]/1=O
+tetrahedral-0158-00 (#138): CC=C1[S@@](=O)C[S@@]1=O
+tetrahedral-0159-00 (#139): CC=C1[S@](=O)C[S@]1=O
+tetrahedral-0160-00 (#140): C/C=C1/[S@](=O)C[S@@]/1=O
+tetrahedral-0161-00 (#141): C/C=C1/[S@@](=O)C[S@]/1=O
+tetrahedral-0162-00 (#142): CC=C1[S@@](=O)C[S@@]1=O
+tetrahedral-0163-00 (#143): CC=C1[S@](=O)C[S@]1=O
+tetrahedral-0164-00 (#144): [NH3+][C@@H](CCC(O)=O)C([O-])=O
+tetrahedral-0165-00 (#145): C[C@H](O)Cl
+tetrahedral-0166-00 (#146): O[C@@H](S)Cl
+tetrahedral-0167-00 (#147): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0168-00 (#148): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0169-00 (#149): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0170-00 (#150): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0171-00 (#151): COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+tetrahedral-0172-00 (#152): COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+tetrahedral-0173-00 (#153): COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+tetrahedral-0174-00 (#154): COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+tetrahedral-0175-00 (#155): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0176-00 (#156): CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+tetrahedral-0177-00 (#157): C[C@@H]1[C@@H](C)C(=O)NC1=O
+tetrahedral-0178-00 (#158): C[C@@](N)(S)Cl
+tetrahedral-0179-00 (#159): C[C@]1(N)C[C@@]2(C1)C(C)(N)[C@]1(C[C@@](C)(N)C1)C2(C)N
+tetrahedral-0180-00 (#160): C[C@@H](Cl)Br
+stereocenters: one bond up, one bond down -- indefinite case near atom 1 (#161): stereocenters: one bond up, one bond down -- indefinite case near atom 1
+save error: stereocenters: one bond up, one bond down -- indefinite case near atom 1
+tetrahedral-0182-00 (#162): CC(C(C)Cl)C(C)Cl
+stereocenters: one bond up, one bond down -- indefinite case near atom 1 (#163): stereocenters: one bond up, one bond down -- indefinite case near atom 1
+save error: stereocenters: one bond up, one bond down -- indefinite case near atom 1
+tetrahedral-0184-00 (#164): CC(=C(C)N)[C@@](C)(Cl)Br
+tetrahedral-0185-00 (#165): [2H][C@H]([3H])C(=O)[C@@H]1[C@@H](/C/1=C\O)C(O)=O
+tetrahedral-0186-00 (#166): C1CN[C@@]21CCN2
+tetrahedral-0187-00 (#167): C1CN[C@]21CCN2
+tetrahedral-0188-00 (#168): C[C@@]12C[N@](C1)C2
+tetrahedral-0189-00 (#169): C1[C@@]23C[C@]1(C2)CCCC3
+tetrahedral-0190-00 (#170): C[C@@]12C[C@](C)(C1)C2
+tetrahedral-0191-00 (#171): C1CCC21CCN2
+tetrahedral-0192-00 (#172): C1CCC21CCC2
+tetrahedral-0193-00 (#173): CC1(N)CN(C1)N(N1CC(C)(N)C1)N1CC(C)(N)C1
+tetrahedral-0194-00 (#174): C[C@@]1(N)C[La]2(C1)[La]1(C[C@@](C)(N)C1)[La]12C[C@@](C)(N)C1
+tetrahedral-0195-00 (#175): C[C@@]1(N)CS23(C1)(C[C@@](C)(N)C2)C[C@@](C)(N)C3
+tetrahedral-0196-00 (#176): CC1(N)CN(C1)C(N1CC(C)(N)C1)N1CC(C)(N)C1
+tetrahedral-0197-00 (#177): CC1(N)CC(C1)C(C1CC(C)(N)C1)C1CC(C)(N)C1
+tetrahedral-0198-00 (#178): C[C@]1(N)C[C@]2(C[C@@](C)(N)C2)C1
+tetrahedral-0199-00 (#179): C[C@@]1(N)C[C@](C)(N)C1
+tetrahedral-0200-00 (#180): C[C@@]1(N)C[C@@](C)(N)C1
+tetrahedral-0201-00 (#181): C[C@@]1(N)C[C@@]2(C1)[C@]1(C[C@@](C)(N)C1)[C@]12C[C@@](C)(N)C1
+tetrahedral-0202-00 (#182): C[C@@]1(N)C[C@@]2(C1)[C@]1(C[C@](C)(N)C1)[C@]12C[C@@](C)(N)C1
+tetrahedral-0203-00 (#183): CCC1(C)CP2(C)(C)[Sn]34P(C)(C)(C1)P3(C)(C)CC=CCP24(C)C
+tetrahedral-0204-00 (#184): CC1(C)C2C(C)(C)C1C2(C)C
+tetrahedral-0205-00 (#185): CC(CC)([C@](C)(CCC)CC)[C@](C)(CCC)CC
+tetrahedral-0206-00 (#186): C[C@@](CC)([C@](C)(CCC)CC)[C@@](C)(CCC)CC
+tetrahedral-0207-00 (#187): CC(CC)([C@@](C)(CCC)CC)[C@@](C)(CCC)CC
+tetrahedral-0208-00 (#188): CC(CC)([C@@](C)(CCC)CC)[C@@](C)(CCC)CC
+tetrahedral-0209-00 (#189): C[C@]1(C[C@@](C)(C1)CC)CC
+tetrahedral-0210-00 (#190): C[C@]1(C[C@@](C)(C1)CC)CC
+tetrahedral-0211-00 (#191): C[C@]1(C[C@]2(C[C@](C)(C2)CC)C1)CC
+tetrahedral-0212-00 (#192): C[C@@]1(C[C@]2(C[C@](C)(C2)CC)C1)CC
+tetrahedral-0213-00 (#193): C[C@@]1(C[C@@]2(C1)C[C@@]1(C2)C[C@]2(C[C@](C)(C2)CC)C1)CC
+tetrahedral-0214-00 (#194): C[C@]1(C[C@@]2(C1)C[C@@]1(C2)C[C@]2(C[C@](C)(C2)CC)C1)CC
+tetrahedral-0215-00 (#195): C[C@@](F)(Cl)Br
+tetrahedral-0216-00 (#196): C[C@@]12[C@]3(C)[C@@]4(C)[C@]1(C)[C@]1(C)[C@]2(C)[C@]3(C)[C@]14C
+tetrahedral-0217-00 (#197): C[C@@]12[C@@]3(C)[C@@]4(C)[C@]1(C)[C@@]1(C)[C@]2(C)[C@]3(C)[C@]14C
+tetrahedral-0218-00 (#198): C[C@@]12[C@@]3(C)[C@@]4(C)[C@]1(C)[C@@]1(C)[C@]2(C)[C@]3(C)[C@]14C
+tetrahedral-0219-00 (#199): C[C@](F)(Cl)Br
+tetrahedral-0220-00 (#200): C[C@](F)(Cl)Br
+tetrahedral-0221-00 (#201): C[C@@](F)(Cl)Br
+tetrahedral-0222-00 (#202): C[C@](F)(Cl)Br
+tetrahedral-0223-00 (#203): CCC[C@@](C)(CC)/C=C(\C)/CC
+tetrahedral-0224-00 (#204): C[C@@H](Cl)C1C=C(NN=1)[C@H](C)Cl
+tetrahedral-0225-00 (#205): C[C@H](Cl)C1C=C(NN=1)[C@@H](C)Cl
+tetrahedral-0226-00 (#206): C[C@@H](Cl)C1C=C(NN=1)[C@@H](C)Cl
+tetrahedral-0227-00 (#207): C[C@H](Cl)C1C=C(NN=1)[C@H](C)Cl
+tetrahedral-0228-00 (#208): O/C=C1/[C@@H]([C@@H]/1C(O)=O)C(O)=O
+tetrahedral-0229-00 (#209): O/C=C1/[C@@H]([C@@H]/1C(O)=O)C(O)=O
+tetrahedral-0230-00 (#210): OC(=O)[C@H]1[C@H](/C/1=C/O)[12C](O)=O
+tetrahedral-0231-00 (#211): [2H]OC(=O)[C@H]1[C@H](/C/1=C/O)C(O)=O
+tetrahedral-0232-00 (#212): [2H]OC(=O)[C@@H]1[C@@H](/C/1=C\O)C(O)=O
+tetrahedral-0233-00 (#213): C[C@@H]1[C@H](C)/C/1=C1\[C@H](C)[C@@H]\1C
+tetrahedral-0234-00 (#214): C[C@@H](Cl)[C@@H](C)Cl
+tetrahedral-0235-00 (#215): C[C@H](Cl)[C@H](C)Cl
+tetrahedral-0237-00 (#216): CC12C3CCC4(C)C5C(CC4C3CC=C1C[C@@H](O)C[C@H]2O)O[C@]1(CC(C(Cl)Cl)C(C)CO1)C5C
+tetrahedral-0238-00 (#217): C/C=C\[C@@H](C)CC
+tetrahedral-0239-00 (#218): [2H]NC(=O)[C@@]1(C(C)/C=C\C)[C@@](C(C)/C=C\C)(C(N)=O)[C@]1(C(C)/C=C\C)C(N)=O
+tetrahedral-0240-00 (#219): CC1[C@H](C)[C@@H]1C
+tetrahedral-0241-00 (#220): CC1[C@H](C)[C@@H]1C
+tetrahedral-0242-00 (#221): CC1[C@H](C)[C@@H]1C
+tetrahedral-0243-00 (#222): CC1[C@H](C)[C@@H]1C
+tetrahedral-0244-00 (#223): [2H]NC(=O)[C@@H]1[C@@H](C1C(N)=O)C(N)=O
+tetrahedral-0245-00 (#224): [2H]NC(=O)[C@H]1C([C@H]1C(N)=O)C([NH-])=O
+tetrahedral-0246-00 (#225): C[C@@H]1[C@@H](C)[C@H]1C
+tetrahedral-0247-00 (#226): C[C@@H]1[C@H](C)[C@@H]1C
+tetrahedral-0248-00 (#227): C[C@@H]1[C@@H](C)[C@H]1C
+tetrahedral-0249-00 (#228): C[C@@H]1[C@H](C)[C@@H]1C
+tetrahedral-0250-00 (#229): [2H][C@@H]1O[C@H]1CCCC
+tetrahedral-0251-00 (#230): CC1(C)O[C@H]2O[C@H]([C@H]3COC(C)(C)O3)C(=O)[C@H]2O1
+tetrahedral-0252-00 (#231): COC1=CC=CC=C1[P@@](C1C=CC=CC=1)C(C)(C)C
+tetrahedral-0253-00 (#232): COC1=CC=CC=C1[P@](C1C=CC=CC=1)C(C)(C)C
+tetrahedral-0254-00 (#233): CC1(C)O[C@H]2O[C@H](C3COC(C)(C)O3)C(=O)[C@H]2O1
+tetrahedral-0255-00 (#234): C[C@@H](Cl)[C@H](Cl)CC
+tetrahedral-0256-00 (#235): CC(Cl)[C@H](Cl)CC
+tetrahedral-0257-00 (#236): C[C@H]1C/C(=C/C)/C(=O)O[C@@H]2CCN3CC=C(COC(=O)[C@@]1(O)CO)[C@@H]32
+tetrahedral-0258-00 (#237): CC[N@@+](C)([O-])S
+Database: molecules/helma.smi
+ (#1): ON(=O)c1ccc(Cl)cc1
+ (#2): Nc1ccc(cc1)N(O)=O
+ (#3): C=CC1CC=CCC1
+ (#4): CCc1ccccc1
+ (#5): C=Cc1ccccc1
+ (#6): ClCc1ccccc1
+ (#7): OCc1ccccc1
+ (#8): O=Cc1ccccc1
+ (#9): NNc1ccccc1
+ (#10): O=NN1CCCCC1
+ (#11): C1N2CN3CN1CN(C2)C3
+ (#12): NNOS(O)(=O)=O
+ (#13): O=S1(=O)O[Mn]O1
+ (#14): OB(O)O
+ (#15): [Ca]
+ (#16): COc1cc2OC3OC=CC3c2c2oc3cccc(O)c3c(=O)c12
+ (#17): Clc1ccccc1Nc1[n]c(Cl)[n]c(Cl)[n]1
+ (#18): Nc1ccc(Cc2cc(Cl)c(N)cc2)cc1Cl
+ (#19): CN(C)c1ccc(Cc2ccc(cc2)N(C)C)cc1
+ (#20): CC(C)Oc1ccc(cc1)Nc1ccccc1
+ (#21): Nc1ccc(cc1)Oc1ccc(N)cc1
+ (#22): C(Oc1cc(ccc1)OCC1CO1)C1CO1
+ (#23): Cc1cc(ccc1N)OC
+ (#24): OCCN(CCO)CCO
+ (#25): CCCCC(COC(=O)CCCCC(=O)OCC(CCCC)CC)CC
+ (#26): c1ccccc1N=Nc1ccccc1
+ (#27): NC(=S)Nc1ccccc1
+ (#28): CC(=O)Nc1ccc(O)cc1
+ (#29): OC(CBr)C(O)C(O)C(O)CBr
+ (#30): CC=Cc1ccc(cc1)OC
+ (#31): ON=C1C=CC(C=C1)=NO
+ (#32): CCNC(=S)NCC
+ (#33): O=C1CCCCCN1
+ (#34): C[n]1c(N)[n]c2[n]cc(cc12)-c1ccccc1
+ (#35): CCN(C)N=O
+ (#36): Clc1ccc(Cl)cc1
+ (#37): Nc1ccc(Cl)cc1
+ (#38): Nc1ccc(N)cc1
+ (#39): O=C1C=CC(=O)C=C1
+ (#40): C1C2OC2CCC1C1CO1
+ (#41): CCC1CO1
+ (#42): ClCC1CO1
+ (#43): C=CCOCC1CO1
+ (#44): BrCCBr
+ (#45): C=CC=C
+ (#46): CC(=O)O[Sn](CCCC)(CCCC)OC(C)=O
+ (#47): C=CC=O
+ (#48): C=CCCl
+ (#49): ClCCCl
+ (#50): C=CC#N
+ (#51): O=CCCl
+ (#52): OCCO
+ (#53): CC=NO
+ (#54): COCCl
+ (#55): O=S1(=O)OCCO1
+ (#56): CN(C)CCO
+ (#57): CCCN(O)=O
+ (#58): CC(=O)OC=C
+ (#59): O=C1CCC(=O)O1
+ (#60): Nc1cc(N)ccc1
+ (#61): Oc1cc(O)ccc1
+ (#62): CC(CCl)OC(C)CCl
+ (#63): Nc1[n]c(N)[n]c(N)[n]1
+ (#64): Cc1ccccc1
+ (#65): Clc1ccccc1
+ (#66): O=C1CCCCC1
+ (#67): Oc1ccccc1
+ (#68): CCCCCl
+ (#69): NNCCO
+ (#70): c1ccco1
+ (#71): C1CNCCN1
+ (#72): CC(O)CNCC(C)O
+ (#73): ClCCOCCCl
+ (#74): OCCOCCO
+ (#75): OCCN(CCO)N=O
+ (#76): O=S1(=O)CCCO1
+ (#77): CC(=O)NNc1ccccc1
+ (#78): [N-]=N=CC(=O)OCC(N)C(O)=O
+ (#79): CC=C
+ (#80): C[Hg]Cl
+ (#81): OC(=O)C1C(C(O)=O)C2(Cl)C(Cl)=C(Cl)C1(Cl)C2(Cl)Cl
+ (#82): O=S1OCC2C(CO1)C1(Cl)C(Cl)=C(Cl)C2(Cl)C1(Cl)Cl
+ (#83): OC(c1ccc(Cl)cc1)(c1ccc(Cl)cc1)C(Cl)(Cl)Cl
+ (#84): O=P(OCCCl)(OCCCl)OCCCl
+ (#85): Cc1ccc(cc1)S(=O)(=O)NC(=O)NN1CCCCCC1
+ (#86): CNC(=O)ON=CC(C)(C)SC
+ (#87): COc1cc2OC3OC=CC3c2c2oc(=O)c3c(CCC3=O)c12
+ (#88): Brc1c(Oc2c(Br)c(Br)c(Br)c(Br)c2Br)c(Br)c(Br)c(Br)c1Br
+ (#89): Oc1cc2oc(-c3cc(O)c(O)cc3)c(O)c(=O)c2c(O)c1
+ (#90): Nc1cc2c(cc1)C(=O)c1ccccc1C2=O
+ (#91): CCCCC(COC(=O)c1ccccc1C(=O)OCC(CCCC)CC)CC
+ (#92): Clc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
+ (#93): Nc1ccccc1C(O)=O
+ (#94): Nc1ccc(O)c(c1)N(O)=O
+ (#95): OC(C(=O)c1ccccc1)c1ccccc1
+ (#96): O=C1CCc2ccccc2O1
+ (#97): Oc1ccc(Cl)cc1Cc1ccccc1
+ (#98): CC=Cc1cc2OCOc2cc1
+ (#99): COC(=O)c1ccc(cc1)C(=O)OC
+ (#100): CCCCCCCCS(=O)C(C)Cc1ccc2OCOc2c1
+ (#101): Cc1ccc(OC)c(N)c1
+ (#102): c1cccc2[s]c([n]c21)SSc1[n]c2ccccc2[s]1
+ (#103): Oc1ccccc1O
+ (#104): Oc1ccc(Cl)cc1Cl
+ (#105): Cc1ccc(cc1N(O)=O)N(O)=O
+ (#106): Nc1[n]cc([s]1)N(O)=O
+ (#107): CN(C)c1ccccc1
+ (#108): CCOC(=O)C(CC(=O)OCC)SP(=S)(OC)OC
+ (#109): CCCOC(=O)c1cc(O)c(O)c(O)c1
+ (#110): Nc1ccc(cc1O)N(O)=O
+ (#111): S=C(NC1CCCCC1)NC1CCCCC1
+ (#112): S=C1NCCNC(=S)S[Zn]S1
+ (#113): CC(O)CN(CC(C)O)CC(C)O
+ (#114): CCNc1[n]c(Cl)[n]c(NCC)[n]1
+ (#115): C(Oc1ccccc1)C1CO1
+ (#116): c1ccccc1NNc1ccccc1
+ (#117): Oc1ccc(O)cc1
+ (#118): Oc1ccc(O)[n][n]1
+ (#119): C1COCCO1
+ (#120): ClC(Br)Br
+ (#121): OCP(Cl)(CO)(CO)CO
+ (#122): COC1=CC(=O)CC(C)C21Oc1c(Cl)c(cc(OC)c1C2=O)OC
+ (#123): O=P(OCC(Br)CBr)(OCC(Br)CBr)OCC(Br)CBr
+ (#124): ClC(Cl)=C(Cl)Cl
+ (#125): Cc1c(NS(=O)(=O)c2ccc(N)cc2)o[n]c1C
+ (#126): Cc1cc(c(O)c(c1)C(C)(C)C)C(C)(C)C
+ (#127): O=C1NS(=O)(=O)c2ccccc12
+ (#128): O=c1c2ccccc2c2ccc3c4c2c1ccc4c1ccccc1c3=O
+ (#129): Cc1ccc2c(c1N(O)=O)C(=O)c1ccccc1C2=O
+ (#130): CCCN(N=O)C(=N)NN(O)O
+ (#131): CCCCN(N=O)C(=N)NN(O)O
+ (#132): CCCCCN(N=O)C(=N)NN(O)O
+ (#133): CCSCCC(N)C(O)=O
+ (#134): C=CCOC(=O)c1ccccc1C(=O)OCC=C
+ (#135): CC(OP(=O)(OC)OC)=C(Cl)C(=O)N(CC)CC
+ (#136): Oc1ccccc1-c1ccccc1
+ (#137): CC1(C)SC2C(NC(=O)COc3ccccc3)C(=O)N2C1C(=O)O[K]
+ (#138): O=C1C2CC=CCC2C(=O)N1SC(Cl)(Cl)Cl
+ (#139): O=C1c2ccccc2C(=O)N1SC(Cl)(Cl)Cl
+ (#140): Nc1cc(Cl)cc(C(O)=O)c1Cl
+ (#141): Cc1ccccc1OP(=O)(Oc1ccccc1C)Oc1ccccc1C
+ (#142): ClC1(Cl)C2(Cl)C3C4C5C(C3C3OC53)C2(Cl)C(Cl)C14Cl
+ (#143): COc1ccccc1N
+ (#144): CC(NC)C(O)c1ccccc1
+ (#145): NON(N=O)c1ccccc1
+ (#146): CN(C)CCN(Cc1ccc[s]1)c1cccc[n]1
+ (#147): c1c(ccc2ccccc21)Nc1ccccc1
+ (#148): OS(O)(=O)=O
+ (#149): Nc1ccc(Cc2ccc(N)cc2)cc1
+ (#150): Nc1ccc(N=Nc2ccccc2)c(N)[n]1
+ (#151): CCCCCCc1ccc(O)cc1O
+ (#152): Nc1cc(N)c(O)cc1
+ (#153): Cc1cc(N)c(C)cc1C
+ (#154): CN(C)C(=S)S[Zn]SC(=S)N(C)C
+ (#155): NC(=O)N(CCO)N=O
+ (#156): FC(F)OC(F)(F)C(F)Cl
+ (#157): OC(=O)CN(CC(O)=O)CC(O)=O
+ (#158): Nc1ccc(cc1)Sc1ccc(N)cc1
+ (#159): CCNC(=O)Nc1[n]cc([s]1)N(O)=O
+ (#160): CC(=O)OCc1ccccc1
+ (#161): CC(=O)Nc1ccc(cc1)C(=O)CCl
+ (#162): CN(C)c1ccc(cc1)N=NS(=O)(=O)O[Na]
+ (#163): COc1ccc(CC=C)cc1
+ (#164): O=NN1CCN(CC1)N=O
+ (#165): CCOC(=O)C=C
+ (#166): Nc1ccccc1
+ (#167): NC(=S)NNC(N)=S
+ (#168): NC(CCC(O)=O)C(O)=O
+ (#169): O=C1C2(Cl)C3(Cl)C4(Cl)C2(Cl)C2(Cl)C(Cl)(C3(Cl)C21Cl)C4(Cl)Cl
+ (#170): NCCNc1cccc2ccccc21
+ (#171): CN(C)CCOC(c1ccccc1)c1ccccc1
+ (#172): CCN(CC)C(=S)S[Na]
+ (#173): Oc1cccc2ccc[n]c21
+ (#174): c1[n]c(c[s]1)-c1[nH]c2ccccc2[n]1
+ (#175): NC(Cc1ccc(cc1)N(CCCl)CCCl)C(O)=O
+ (#176): OC1OCC=C2OC(=O)C=C21
+ (#177): Sc1[n]c2ccccc2[s]1
+ (#178): OC(=O)c1cc(O)c(O)c(O)c1
+ (#179): OC(=O)CN(CC(=O)O[Na])CCN(CC(=O)O[Na])CC(=O)O[Na]
+ (#180): CN(C)C(=O)Nc1ccc(Cl)cc1
+ (#181): COc1ccc(O)cc1
+ (#182): C1CN1
+ (#183): CC1OC(OCC2OC(Oc3c(=O)c4c(cc(O)cc4O)oc3-c3cc(O)c(O)cc3)C(O)C(O)C2O)C(O)C(O)C1O
+ (#184): CC(C)C1CCC(C)CC1O
+ (#185): Cc1c(N)cccc1N
+ (#186): O=Nc1ccc(cc1)Nc1ccccc1
+ (#187): OS(=O)(=O)ONNCCc1ccccc1
+ (#188): N#CN=[Ca]
+ (#189): Nc1cc(Cl)c(cc1Cl)-c1cc(Cl)c(N)cc1Cl
+ (#190): CCCN(CCC)c1c(cc(cc1N(O)=O)C(F)(F)F)N(O)=O
+ (#191): CN(C)NC(=O)CCC(O)=O
+ (#192): Oc1ccc(cc1C(=O)O[Na])N=Nc1ccc(cc1)-c1ccc(cc1)N=Nc1c2O[Cu]OC3=CC=C(CC3=NNc2ccc1O)S(=O)(=O)O[Na]
+ (#193): COc1ccc(cc1)C(=O)C(Br)=CC(=O)O[Na]
+ (#194): CN(N=O)c1cccc[n]1
+ (#195): CN(N=O)c1cc[n]cc1
+ (#196): CCOC(=O)C(CC(=O)OCC)SP(=O)(OC)OC
+ (#197): Oc1c(I)c2=Oc3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
+ (#198): CC=NN(C)C=O
+ (#199): O=C1CCN(N=O)C(=O)N1
+ (#200): CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
+ (#201): CC(=O)Nc1cc(N)c(cc1)OCC
+ (#202): Clc1cc2Oc3cc(Cl)c(Cl)cc3Oc2cc1Cl
+ (#203): CC(=O)Nc1cc(c(cc1)OCC)N(O)=O
+ (#204): CC1CCCC(=O)CCCC=Cc2cc(O)cc(O)c2C(=O)O1
+ (#205): COc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
+ (#206): ON(=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
+ (#207): O=C(CN(CC(=O)O[Na])CC(=O)O[Na])O[Na]
+ (#208): CCCCCCN(N=O)C(N)=O
+ (#209): CN(N=O)C(=O)NC(C=O)C(O)C(O)C(O)CO
+ (#210): N#Cc1c(Cl)c(Cl)c(Cl)c(C#N)c1Cl
+ (#211): CN(C)C(=S)S[Pb]SC(=S)N(C)C
+ (#212): CCNc1[n]c(Cl)[n]c(NC(C)C)[n]1
+ (#213): Nc1c(Cl)c([n]c(Cl)c1Cl)C(O)=O
+ (#214): OC(=O)C1=NN(c2ccc(cc2)S(O)(=O)=O)C(=O)C1N=Nc1ccc(cc1)S(O)(=O)=O
+ (#215): Oc1ccc2cc(cc(c2c1N=Nc1ccccc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+ (#216): Nc1cc(N)c(cc1)N=Nc1ccc(cc1)-c1ccc(cc1)N=Nc1c(cc2cc(c(N=Nc3ccccc3)c(O)c2c1N)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+ (#217): CC1(C)COC1=O
+ (#218): Nc1ccc(Cl)cc1
+ (#219): COc1ccc(N)cc1
+ (#220): COc1cc(ccc1N)-c1cc(OC)c(N)cc1
+ (#221): CC1(O)C2C(O)C3C(C(O)=C(C(N)=O)C(=O)C3(O)C(O)=C2C(=O)c2c1cccc2O)N(C)C
+ (#222): O=NN1CCCCCCC1
+ (#223): CCN(CC)C(=S)S[Te](SC(=S)N(CC)CC)(SC(=S)N(CC)CC)SC(=S)N(CC)CC
+ (#224): Nc1ccc(cc1)-c1ccccc1
+ (#225): Cc1cc(N)c(C)cc1C
+ (#226): CC1CN(N=Cc2ccc(o2)N(O)=O)C(=O)N1
+ (#227): CN(C)C(=O)Nc1cc(ccc1)C(F)(F)F
+ (#228): Nc1ccccc1-c1ccccc1
+ (#229): Cc1cc(O)c2c(C(=O)C34C5C(O)C6C3C(O)C(C(O)=C4C2=O)C26C(C(=O)c3c(C2=O)c(O)c(C)cc3O)=C5O)c1O
+ (#230): Nc1ccc(cc1)Nc1ccccc1
+ (#231): Nc1cccc2c1cccc2N
+ (#232): CC1=CCC(CC1=O)C(C)=C
+ (#233): CC(C)N(C(C)C)C(=O)SCC(Cl)=CCl
+ (#234): CC12C(OC(C)=O)C(O)C(OC3C=C(C)C(=O)C(O)C13CO)C12CO1
+ (#235): CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
+ (#236): ClC1(Cl)C2(Cl)C3(Cl)C4(Cl)C2(Cl)C2(Cl)C(Cl)(C3(Cl)C12Cl)C4(Cl)Cl
+ (#237): O=C1C2CC=CCC2C(=O)N1SC(Cl)(Cl)C(Cl)Cl
+ (#238): Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)N(O)=O
+ (#239): COc1cc(ccc1N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])-c1cc(OC)c(cc1)N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+ (#240): NCCCCCCCCCCC(O)=O
+ (#241): COc1c(Cl)c(Cl)c(c(Cl)c1Cl)N(O)=O
+ (#242): O=CC=CO[Na]
+ (#243): c1[n]ccc2c1[nH]c1ccccc21
+ (#244): ON(=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
+ (#245): CN(C)c1ccc(cc1)C(=N)c1ccc(cc1)N(C)C
+ (#246): Nc1ccc(N)c2c1C(=O)c1c(C2=O)c(N)ccc1N
+ (#247): CNC(=S)N(C)C
+ (#248): CC(C)CCCCCOC(=O)COc1ccc(Cl)cc1Cl
+ (#249): Cc1ccc(cc1N(O)=O)N(O)=O
+ (#250): CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)N(O)=O
+ (#251): CN=N(C)O
+ (#252): Nc1cc(cc2cc(c(N=Nc3ccc(cc3)-c3ccc(cc3)N=Nc3c(cc4cc(cc(N)c4c3O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])c(O)c12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+ (#253): CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
+ (#254): Nc1ccc2c([nH]c3ccccc23)[n]1
+ (#255): c1cccc2Oc3ccccc3Oc21
+ (#256): O=NN1CCSCC1
+ (#257): [N-]=N=N[Na]
+ (#258): FC(F)OC(Cl)C(F)(F)F
+ (#259): N#CC(=Cc1ccccc1Cl)C#N
+ (#260): c1cccc2occc21
+ (#261): Oc1ccc2cc(ccc2c1N=Nc1ccc(cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+ (#262): CNc1ccc(cc1N(O)=O)N(CCO)CCO
+ (#263): Cc1cc(N=Nc2ccc(cc2)NC(C)=O)c(O)cc1
+ (#264): CC(=O)Nc1cccc2Cc3ccccc3-c12
+ (#265): CC(C)CC(=O)OCC=C
+ (#266): Nc1cc(cc2cc(c3N=Nc4ccc(cc4O[Cu]Oc3c12)-c1cc2O[Cu]Oc3c4c(cc(cc4N)S(=O)(=O)O[Na])cc(c3N=Nc2cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+ (#267): Nc1cc(c(cc1)NCCO)N(O)=O
+ (#268): CCOP(=S)(Oc1[n]c(Cl)c(Cl)cc1Cl)OCC
+ (#269): COc1cc2OC3OC=CC3c2c2oc(=O)c3C(O)CCc3c12
+ (#270): COP(=S)(Oc1ccc(cc1)N(O)=O)OC
+ (#271): C1OC1C1CO1
+ (#272): COc1c2occc2cc2ccc(=O)oc21
+ (#273): CC(O)=O
+ (#274): NN
+ (#275): OC(O)C(Cl)(Cl)Cl
+ (#276): CC(C)(O)C(O)(C(C)OC)C(=O)OCC1=CCN2CCC(OC(=O)C(C)=CC)C21
+ (#277): CC1Cc2c(C(=O)O1)c(O)c(cc2Cl)C(=O)NC(Cc1ccccc1)C(O)=O
+ (#278): C=CC(=O)c1cc2OCOc2cc1
+ (#279): OC(=O)CCCc1ccc(cc1)N(CCCl)CCCl
+ (#280): CNNC
+ (#281): ClC1(Cl)C2(Cl)C3C4CC(C=C4)C3C1(Cl)C(Cl)=C2Cl
+ (#282): CC1C(=O)OC2CCN3CC=C(COC(=O)C(C)(O)C1(C)O)C32
+ (#283): CCC1CN2CCc3cc(OC)c(cc3C2CC1CC1NCCc2cc(OC)c(cc21)OC)OC
+ (#284): Cc1cc(Cl)ccc1N
+ (#285): ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+ (#286): Nc1[n]c(=O)[n](c[n]1)C1OC(CO)C(O)C1O
+ (#287): OCC(CBr)(CBr)CO
+ (#288): OC(=O)C=Cc1cc(O)c(O)cc1
+ (#289): ON(=O)c1cc(ccc1NCCO)N(CCO)CCO
+ (#290): Cc1cc([n]c([n]1)C(C)C)OP(=S)(OCC)OCC
+ (#291): ON(=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
+ (#292): OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)N(O)=O
+ (#293): Clc1cc2Oc3ccc(Cl)cc3Oc2cc1
+ (#294): CN(C#N)N=O
+ (#295): CC(=O)OC(C=C)c1ccc2OCOc2c1
+ (#296): COc1cc(ccc1N)N=Nc1ccccc1
+ (#297): CC(C)CCCC(C)C1CCC2C3CC=C4CC(CCC4(C)C3CCC21C)OC(=O)Cc1ccc(cc1)N(CCCl)CCCl
+ (#298): Cc1cc(C)c(C)cc1N=Nc1c2ccc(cc2cc(c1O)S(O)(=O)=O)S(O)(=O)=O
+ (#299): Oc1c2ccccc2c(cc1N=Nc1ccc(c2ccccc12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+ (#300): ON(=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
+ (#301): CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)N(O)=O
+ (#302): CNNCc1ccc(cc1)C(=O)NC(C)C
+ (#303): NC(=O)C(=Cc1ccc(o1)N(O)=O)c1ccco1
+ (#304): Cc1cc(C)c(cc1)N=Nc1c2ccc(cc2cc(c1O)S(O)(=O)=O)S(O)(=O)=O
+ (#305): CC(C)(Oc1ccc(cc1)C1CCCc2ccccc21)C(O)=O
+ (#306): O=P1(NCCCl)OCCCN1CCCl
+ (#307): CCCCN(CCCCO)N=O
+ (#308): CCN(C#N)N=O
+ (#309): Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
+ (#310): CN(N=O)C(=O)Oc1ccccc1OC(C)C
+ (#311): Cc1ccc2c([n]1)[n](CC)cc(C(O)=O)c2=O
+ (#312): COc1ccc(cc1N)NOS(O)(=O)=O
+ (#313): Nc1[n]c(N)[n]c2[n]c(N)c([n]c12)-c1ccccc1
+ (#314): O=NN1CCCCCCCCCCCC1
+ (#315): CC(N)(Cc1cc(O)c(O)cc1)C(O)=O
+ (#316): ON(=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
+ (#317): O=C1NC(=O)CN1N=O
+ (#318): CC(CCC(O)=O)C1CCC2C3CCC4CC(O)CCC4(C)C3CCC21C
+ (#319): CN(C)N=Nc1[n]c[nH]c1C(N)=O
+ (#320): CN1C(=O)CN=C(c2cc(Cl)ccc12)c1ccccc1
+ (#321): Cc1[n]cc(N(O)=O)[n]1CCO
+ (#322): C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)N(O)=O
+ (#323): Cc1cc(c(N=Nc2cc(c3ccccc3c2O)S(O)(=O)=O)c(C)c1)S(O)(=O)=O
+ (#324): CC1(C)OC2(C)CCC1CC2
+ (#325): OC(CBr)C(O)C(O)C(O)CBr
+ (#326): C=O
+ (#327): CCC1(c2ccccc2)C(=O)NC(=O)NC1=O
+ (#328): CC1C(=O)C2=C(C(COC(N)=O)C3(OC)C4NC4CN32)C(=O)C=1N
+ (#329): O=P1(NCCCO1)N(CCCl)CCCl
+ (#330): CC12C=CC(=O)C=C1CCC1C2C(O)CC2(C)C1CCC2(O)C(=O)CO
+ (#331): CC12CCC3C(CCc4cc(O)ccc43)C1CCC2O
+ (#332): ClC(Cl)(Cl)C(c1ccc(Cl)cc1)c1ccc(Cl)cc1
+ (#333): c1c2ccccc2c2ccc3cccc4ccc1c2c34
+ (#334): CCCCC1C(=O)N(c2ccccc2)N(c2ccccc2)C1=O
+ (#335): Sc1[n]c[n]c2[nH]c[n]c21
+ (#336): COC(=O)C1C(OC)C(CC2CN3CCc4c([nH]c5cc(ccc45)OC)C3CC21)OC(=O)c1cc(OC)c(OC)c(c1)OC
+ (#337): Cc1ccc(c2[n]c3c(c(N)c(=O)c(C)c3oc12)C(=O)NC1C(C)OC(=O)C(C(C)C)N(C)C(=O)CN(C)C(=O)C2CCCN2C(=O)C(NC1=O)C(C)C)C(=O)NC1C(C)OC(=O)C(C(C)C)N(C)C(=O)CN(C)C(=O)C2CCCN2C(=O)C(NC1=O)C(C)C
+ (#338): CC(=O)Oc1ccccc1C(O)=O
+ (#339): OC(CO)C1OC(=O)C(O)=C1O
+ (#340): OCCN1CCN(N=Cc2ccc(o2)N(O)=O)C1=O
+ (#341): OC(=O)CCN(O)=O
+ (#342): ON(=O)C(N(O)=O)(N(O)=O)N(O)=O
+ (#343): CC(C)NCC(O)c1ccc2ccccc2c1
+ (#344): CCCc1cc2OCOc2cc1COCCOCCOCCCC
+ (#345): Oc1[n]cc(F)c(O)[n]1
+ (#346): Oc1ccc(cc1N(O)=O)N(O)=O
+ (#347): CN(CCCl)CCCl
+ (#348): CCOC(N)=O
+ (#349): CCOC(=O)C(O)(c1ccc(Cl)cc1)c1ccc(Cl)cc1
+ (#350): COP(=O)(OC)OC
+ (#351): CC(C)=CCl
+ (#352): Nc1cc(N)c(Cl)cc1
+ (#353): CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)N(O)=O
+ (#354): CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
+ (#355): COc1ccc(cc1)C(O)C=C
+ (#356): Oc1cc2C3c4ccc(O)c(O)c4OCC3(O)Cc2cc1O
+ (#357): CC1C(=O)C(=C(O)C2=COC(C)C(C)C=12)C(O)=O
+ (#358): S=P(N1CC1)(N1CC1)N1CC1
+ (#359): Oc1cc(O)cc2oc(-c3ccc(O)cc3)c(O)c(=O)c12
+ (#360): C=CC(O)c1cc2OCOc2cc1
+ (#361): CC12CC(=O)C3C(CCC4=CC(=O)C=CC43C)C1CCC2(O)C(=O)CO
+ (#362): ClC(Cl)C(c1ccccc1Cl)c1ccc(Cl)cc1
+ (#363): c1c2c3ccccc3ccc2cc2c3ccccc3ccc21
+ (#364): CC(=O)N(O)c1cc2Cc3ccccc3-c2cc1
+ (#365): CC(=O)Nc1cc2Cc3ccccc3-c2cc1
+ (#366): Nc1cc(c(N)cc1)N(O)=O
+ (#367): CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
+ (#368): Nc1ccc(cc1)-c1ccc(N)cc1
+ (#369): O=C(CCl)c1ccccc1
+ (#370): CCc1cc(cc[n]1)C(N)=S
+ (#371): ON(=O)c1ccc(o1)-c1c[s]c[n]1
+ (#372): CN1CCCC1c1c[n]ccc1
+ (#373): NS(=O)(=O)c1cc(C(O)=O)c(cc1Cl)NCc1ccco1
+ (#374): CC(C)NCC(O)c1ccc2ccccc2c1
+ (#375): NNC(=O)c1cc[n]cc1
+ (#376): Cc1ccc(N)cc1
+ (#377): OCCBr
+ (#378): Nc1cc(N)ccc1
+ (#379): COc1cc(ccc1N)OC
+ (#380): ClC=CCCl
+ (#381): CC(C)CN(N=O)C(=N)NN(O)O
+ (#382): OCC(O)C(O)C(O)C(C=O)NC(=O)N(CCCl)N=O
+ (#383): CN(C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
+ (#384): CCN(CC)N=O
+ (#385): Cc1cc(ccc1SC)OP(=S)(OC)OC
+ (#386): Cc1cc(ccc1)N=Nc1ccc(cc1)N(C)C
+ (#387): CS(=O)(=O)OCCCCOS(C)(=O)=O
+ (#388): CCCCCCCCCCCCN(C)N=O
+ (#389): Cc1[n]cc(N(O)=O)[n]1C
+ (#390): O=C(C1CCCCC1)N1CC2c3ccccc3CCN2C(=O)C1
+ (#391): O=NN1CC=CCC1
+ (#392): O=NN1CCCN(CC1)N=O
+ (#393): COC(=O)C1CN(CCC=1)N=O
+ (#394): OCC1CO1
+ (#395): CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)N(O)=O)o1
+ (#396): Cc1cc(O)[n]c(S)[n]1
+ (#397): ClC(Cl)(Cl)Cl
+ (#398): CCCC[Sn](CCCC)(CCCC)O[Sn](CCCC)(CCCC)CCCC
+ (#399): CCOP(=S)(Oc1ccc(cc1)N(O)=O)OCC
+ (#400): Cc1ccc2cc3c(ccc4ccccc43)c3CCc1c32
+ (#401): CCC(c1ccc(O)cc1)=C(CC)c1ccc(O)cc1
+ (#402): Cc1c(Cl)c(=O)oc2cc(ccc12)OP(=S)(OCC)OCC
+ (#403): OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)N(O)=O
+ (#404): NC(CCC(O)=O)C(O)=O
+ (#405): OC1CN(CC1)N=O
+ (#406): NNC(N)=O
+ (#407): CC(=C)CCl
+ (#408): O=NN1CCNCC1
+ (#409): COc1ccc(cc1)C(Cl)=C(c1ccc(cc1)OC)c1ccc(cc1)OC
+ (#410): Nc1ccc(cc1)C(c1ccc(N)cc1)=C1C=CC(=N)C=C1
+ (#411): C=CCN=C=S
+ (#412): NC(N)=O
+ (#413): CN(C)N
+ (#414): CCC1(c2ccccc2)C(=O)NC(O)=NC1=O
+ (#415): O=C1NC(=O)C(N1)(c1ccccc1)c1ccccc1
+ (#416): OC1C(OC(CO)C(O)C1O)OC1(CO)OC(CO)C(O)C1O
+ (#417): CC(O)CO
+ (#418): O=C1CCO1
+ (#419): CCCN(CCC)S(=O)(=O)c1ccc(cc1)C(O)=O
+ (#420): Cc1cc(C)[n]c(NS(=O)(=O)c2ccc(N)cc2)[n]1
+ (#421): ClC1(Cl)C2(Cl)C3CC(Cl)C(Cl)C3C1(Cl)C(Cl)=C2Cl
+ (#422): Cc1c2ccc3ccccc3c2c(C)c2ccccc12
+ (#423): C[n]1c(=O)c2c([n]c[n]2C)[n](C)c1=O
+ (#424): CCc1[n]c(N)[n]c(N)c1-c1ccc(Cl)cc1
+ (#425): CN(C)C(C)CN1c2ccccc2Sc2ccccc12
+ (#426): ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+ (#427): NS(=O)(=O)c1cc2c(cc1Cl)NCNS2(=O)=O
+ (#428): CC(C)CCCC(C)CCCC(C)CCCC1(C)CCc2c(O1)c(C)c(C)c(OC(C)=O)c2C
+ (#429): OCCN(CCO)c1[n]c([n]c2ccccc21)-c1ccc[s]1
+ (#430): ON(=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
+ (#431): CN(Cc1c[n]c2[n]c(N)[n]c(N)c2[n]1)c1ccc(cc1)C(=O)NC(CCC(O)=O)C(O)=O
+ (#432): CSCCC(N)C(O)=O
+ (#433): OC(=O)c1ccc[n]c1
+ (#434): NC(=O)NN=Cc1ccc(o1)N(O)=O
+ (#435): NNc1ccccc1
+ (#436): O=NN1CCOCC1
+ (#437): COP(=O)(OC)N1CCOCC1
+ (#438): COC(N)=O
+ (#439): Oc1cc(ccc1N(CCO)CCO)N(O)=O
+ (#440): CC1CCC(CC=1)C(C)=C
+ (#441): CN(C)c1ccc(cc1)N=Nc1ccccc1
+ (#442): CC(Cc1ccccc1)NOS(=O)(=O)ONC(C)Cc1ccccc1
+ (#443): CNN
+ (#444): CC(N)=O
+ (#445): CNC(=O)CSP(=S)(OC)OC
+ (#446): C[n]1cc[nH]c1=S
+ (#447): ClC1(Cl)C2(Cl)C3C4CC(C5OC54)C3C1(Cl)C(Cl)=C2Cl
+ (#448): C[n]1c(C)cc(=O)[n]1-c1ccccc1
+ (#449): ON(=O)c1ccc2CCc3cccc1c32
+ (#450): NC(=O)N(CC(O)=O)N=O
+ (#451): ON(=O)c1cccc2ccc[n]c21
+ (#452): Nc1cc(Cl)c(N)c(Cl)c1
+ (#453): CNCC(O)c1cc(O)ccc1
+ (#454): N=c1[nH][nH]c[n]1
+ (#455): CC1CN(CC(C)N1C(=O)c1ccccc1)N=O
+ (#456): CC[n]1c2ccc(N)cc2c2ccccc12
+ (#457): Cc1cccc2ccc[n]c21
+ (#458): Cc1cc(ccc1N)-c1cc(C)c(N)cc1
+ (#459): ON(=O)c1cc2ccc[n]c2cc1
+ (#460): CCN(N=O)C(=O)OCC
+ (#461): Nc1ccc(cc1Cl)NOS(O)(=O)=O
+ (#462): Nc1cc(ccc1C(O)=O)N(O)=O
+ (#463): OC(=O)c1ccc(cc1)N(O)=O
+ (#464): NCCc1cc(O)c(O)cc1
+ (#465): CC(=O)O[Hg]c1ccccc1
+ (#466): CC(=O)Nc1ccc(cc1)OCC
+ (#467): Nc1ccccc1
+ (#468): CC(N)=S
+ (#469): NC(N)=S
+ (#470): COP(=O)(OC=C(Cl)Cl)OC
+ (#471): CN(C)N=O
+ (#472): CCCN(CCC)N=O
+ (#473): Cc1ccc(cc1)NC(N)=O
+ (#474): Nc1ccc(N)cc1
+ (#475): CC1CN(N=O)C(=O)NC1=O
+ (#476): CCCCCC(N)=O
+ (#477): NC(=O)CCCCC(N)=O
+ (#478): CNC(=O)Oc1cccc2ccccc21
+ (#479): CC(COc1ccccc1)N(CCCl)Cc1ccccc1
+ (#480): ClCC(Cl)(Cl)Cl
+ (#481): Cc1cc(ccc1N)C(c1ccc(N)cc1)=C1C=CC(=N)C=C1
+ (#482): Nc1c(Cl)cc(Cl)cc1Cl
+ (#483): CN(N=O)C(=O)c1ccccc1
+ (#484): CC(=O)C(N=Nc1ccc(cc1Cl)-c1cc(Cl)c(cc1)N=NC(C(=O)Nc1ccccc1)C(C)=O)C(=O)Nc1ccccc1
+ (#485): Cc1ccccc1N
+ (#486): Cc1ccc(N)cc1N
+ (#487): Cc1cc(ccc1N)NOS(O)(=O)=O
+ (#488): ON(=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])N(O)=O
+ (#489): Cc1cc(N)ccc1
+ (#490): CCO
+ (#491): CC1(O)C2CC3C(C(O)=C(C(N)=O)C(=O)C3(O)C(O)=C2C(=O)c2c1cccc2O)N(C)C
+ (#492): Cc1ccc(cc1)S(=O)(=O)NC(=O)NCCCC
+ (#493): Nc1ccc(Cc2cc(Cl)c(N)cc2)cc1Cl
+ (#494): Cc1ccc(cc1)S(=O)(=O)Oc1ccc(cc1)N=Nc1ccc(cc1C)-c1cc(C)c(cc1)N=Nc1c(O)ccc2cc(cc(c21)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+ (#495): COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)N(O)=O)c1O)N(O)=O
+ (#496): Oc1cc[n]c(O)[n]1
+ (#497): COS(C)(=O)=O
+ (#498): ON(=O)c1ccc(C=NN2CC(=O)NC2=O)o1
+ (#499): CCSCCC(N)C(O)=O
+ (#500): CN(C)(C)CCO
+ (#501): ClC(Cl)Cl
+ (#502): ClC(Cl)(Cl)C(Cl)(Cl)Cl
+ (#503): CNNCc1ccc(cc1)C(=O)NC(C)C
+ (#504): Nc1ccc2[n]c3cccc[n]3c2[n]1
+ (#505): Cc1ccc[n]2c3[n]c(N)ccc3[n]c21
+ (#506): CC12CCC3C(CCC4CC(=O)CCC=43)C1CCC2(O)C#C
+ (#507): Cc1cc2c([nH]c3ccccc23)[n]c1N
+ (#508): CN(N=O)C(N)=O
+ (#509): OC(CO)C(O)C(O)C(O)CO
+ (#510): ClCc1cccc[n]1
+ (#511): ClCc1c[n]ccc1
+ (#512): CN(N=O)c1c[n]ccc1
+ (#513): CN(N=O)C(=N)NN(O)O
+ (#514): Oc1c(Cc2c(Cl)c(Cl)cc(Cl)c2O)c(Cl)c(Cl)cc1Cl
+ (#515): c1ccccc1
+ (#516): CC(Cl)(Cl)Cl
+ (#517): CC1(C)SC2C(NC(=O)C(N)c3ccccc3)C(=O)N2C1C(O)=O
+ (#518): ClC1(Cl)C2(Cl)C3C4CC(C5OC54)C3C1(Cl)C(Cl)=C2Cl
+ (#519): CC12CCC3C(CCc4cc(ccc43)OC)C1CCC2(O)C#C
+ (#520): COc1ccc(cc1)C(c1ccc(cc1)OC)C(Cl)(Cl)Cl
+ (#521): ClC(Cl)C(c1ccc(Cl)cc1)c1ccc(Cl)cc1
+ (#522): ClC(Cl)(Cl)C(c1ccc(Cl)cc1)c1ccc(Cl)cc1
+ (#523): CCc1ccc(cc1)C(C(Cl)Cl)c1ccc(CC)cc1
+ (#524): Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)N(O)=O
+ (#525): Cc1[n]c(N)cc2[nH]c3ccccc3c21
+ (#526): CN(C)N=Nc1ccccc1
+ (#527): NC(Cc1c[nH]c2ccccc21)C(O)=O
+ (#528): Nc1cc(c(cc1)C=Cc1ccc(N)cc1S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+ (#529): c1cc(ccc1Nc1ccccc1)Nc1ccccc1
+ (#530): CBr
+ (#531): CCBr
+ (#532): S=[Se]
+ (#533): Cl[K]
+ (#534): Cl[Hg]Cl
+ (#535): CCCl
+ (#536): C=CCl
+ (#537): CC=O
+ (#538): ClCCl
+ (#539): C1CO1
+ (#540): BrC(Br)Br
+ (#541): ClC(Cl)Br
+ (#542): CC(Cl)Cl
+ (#543): C=C(Cl)Cl
+ (#544): IC(I)I
+ (#545): CC1CO1
+ (#546): FC(Cl)(Cl)Cl
+ (#547): FC(F)(F)CCl
+ (#548): Cc1c(N)[n]c(C)c2c1[nH]c1ccccc12
+ (#549): CP(=O)(OC)OC
+ (#550): CCN(N=O)C(N)=O
+ (#551): ClC(Cl)C(Cl)(Cl)Cl
+ (#552): ON(=O)C(Cl)(Cl)Cl
+ (#553): ClC1(Cl)C2(Cl)C3C=CC(Cl)C3C1(Cl)C(Cl)=C2Cl
+ (#554): O[Sn](c1ccccc1)(c1ccccc1)c1ccccc1
+ (#555): C[n]1c(N)[n]c2c3ccc[n]c3ccc12
+ (#556): O=NO[Na]
+ (#557): [Na]Cl
+ (#558): O=CC1CO1
+ (#559): F[Na]
+ (#560): [Na]OCl
+ (#561): CC12C3C(C(O)=O)C45CC(O)(CCC4C3(C=CC1O)OC2=O)C(=C)C5
+ (#562): ClC1(Cl)C(Cl)=C(Cl)C(Cl)=C1Cl
+ (#563): CCC(Br)(CC)C(=O)NC(N)=O
+ (#564): O=S1(=O)CC=CC1
+ (#565): CC1(OC1C(=O)OCC)c1ccccc1
+ (#566): Cl[Fe](Cl)Cl
+ (#567): Cc1cc2[n]cccc2c2[n]c(N)[n](C)c12
+ (#568): NC(=NO)c1ccc(o1)N(O)=O
+ (#569): OO
+ (#570): Cc1c[n]c2ccc3c([n]c(N)[n]3C)c2[n]1
+ (#571): O=Br(=O)O[K]
+ (#572): Cl[Sn]Cl
+ (#573): ClCl
+ (#574): ON(=O)OCC(CON(O)=O)(CON(O)=O)CON(O)=O
+ (#575): CCOP(=S)(OCC)SC1OCCOC1SP(=S)(OCC)OCC
+ (#576): CCCCC(COP(=O)(OCC(CCCC)CC)OCC(CCCC)CC)CC
+ (#577): CC1CC(C)(C)CC(=O)C=1
+ (#578): CC(Cl)CCl
+ (#579): ClCC(Cl)Cl
+ (#580): ClC=C(Cl)Cl
+ (#581): C=CC(N)=O
+ (#582): OC(=O)CCl
+ (#583): ClC(Cl)C(Cl)Cl
+ (#584): CN(C)C(=O)Cl
+ (#585): CC(C)N(O)=O
+ (#586): CCCCCCCCCCCCCCCC(=O)OCC=C(C)C=CC=C(C)C=CC1=C(C)CCCC1(C)C
+ (#587): CC(C)(c1ccc(O)cc1)c1ccc(O)cc1
+ (#588): Nc1ccc(cc1)S(=O)(=O)c1ccc(N)cc1
+ (#589): CC(=C)C(=O)OC
+ (#590): COc1cc(ccc1O)C=CC(=O)CC(=O)C=Cc1cc(OC)c(O)cc1
+ (#591): O=C1NS(=O)(=O)c2ccccc12
+ (#592): CCCN(N=O)C(N)=O
+ (#593): Cc1ccc2c(c1N)C(=O)c1ccccc1C2=O
+ (#594): ON(=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
+ (#595): CC1OC(CC(C)O1)OC(C)=O
+ (#596): CC(=C)C1Cc2c3OC4COc5cc(OC)c(cc5C4C(=O)c3ccc2O1)OC
+ (#597): NC(=N)NC(=N)NCCc1ccccc1
+ (#598): Cc1cc(Cc2cc(C)c(N)cc2)ccc1N
+ (#599): O=C1c2ccccc2C(=O)c2ccccc12
+ (#600): Oc1ccc2ccccc2c1N=Nc1ccccc1
+ (#601): O=C1OC(=O)c2ccccc12
+ (#602): CCCCOC(=O)c1ccccc1C(=O)OCc1ccccc1
+ (#603): O=NN(c1ccccc1)c1ccccc1
+ (#604): COP(=S)(OC)SC[n]1[n][n]c2ccccc2c1=O
+ (#605): ON(=O)c1cccc2ccccc21
+ (#606): c1cccc2[nH]c3ccccc3c21
+ (#607): NC(=O)Cc1cccc2ccccc21
+ (#608): OC(=O)Cc1cccc2ccccc21
+ (#609): NC(=S)Nc1cccc2ccccc21
+ (#610): OS(=O)(=O)c1cc2c(cc1)NC(=C1Nc3ccc(cc3C1=O)S(O)(=O)=O)C2=O
+ (#611): COP(=O)OC
+ (#612): CCCCN(N=O)C(N)=O
+ (#613): Nc1ccccc1C(=O)OCC=Cc1ccccc1
+ (#614): OC(=O)Cc1c[nH]c2ccccc21
+ (#615): OC(=O)C(Cl)=C(Cl)C=O
+ (#616): ClC(Cl)=C(Cl)C(Cl)=C(Cl)Cl
+ (#617): Oc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
+ (#618): CN1CCCC1=O
+ (#619): Oc1c(Cl)cc(Cl)cc1Cl
+ (#620): Cc1ccccc1S(N)(=O)=O
+ (#621): ON(=O)c1ccccc1Cl
+ (#622): CC(CC)c1cc(cc(c1O)N(O)=O)N(O)=O
+ (#623): NC(=O)c1ccccc1C(N)=O
+ (#624): CC1CC(=O)N(N=1)c1ccccc1
+ (#625): Oc1ccccc1-c1ccccc1
+ (#626): CN(C)c1ccc(cc1)C(=O)c1ccc(cc1)N(C)C
+ (#627): c1cccc2ccccc21
+ (#628): COc1ccccc1N(O)=O
+ (#629): CC1=CC(C)(C)Nc2ccc(cc12)OCC
+ (#630): Nc1cc2ccccc2cc1
+ (#631): Cc1cc2ccc[n]c2cc1
+ (#632): O=c1ccc2ccccc2o1
+ (#633): COc1cc(ccc1N=C=O)-c1cc(OC)c(cc1)N=C=O
+ (#634): Nc1ccc(cc1Cl)-c1cc(Cl)c(N)cc1
+ (#635): Oc1c(N=Nc2ccc(c3ccccc23)S(O)(=O)=O)c2ccc(cc2cc1S(O)(=O)=O)S(O)(=O)=O
+ (#636): c1ccccc1-c1ccccc1
+ (#637): CC(=O)OC(OC(C)=O)c1ccc(o1)N(O)=O
+ (#638): Nc1ccc(cc1)-c1ccccc1
+ (#639): c1cccc2Nc3ccccc3Sc21
+ (#640): Nc1ccc(cc1)-c1ccc(N)cc1
+ (#641): CCCCN(CCCC)N=O
+ (#642): C=CC(=O)NCO
+ (#643): c1c2ccccc2ccc1Nc1ccc(cc1)Nc1cc2ccccc2cc1
+ (#644): OC(=O)COc1cc(Cl)c(Cl)cc1Cl
+ (#645): O=NN1CCCC1
+ (#646): O=NN1CCCCCC1
+ (#647): CCCNC(=O)NS(=O)(=O)c1ccc(Cl)cc1
+ (#648): O=C(OOC(=O)c1ccccc1)c1ccccc1
+ (#649): ON(=O)c1cc2[nH]c[n]c2cc1
+ (#650): CCCc1cc2OCOc2cc1
+ (#651): C=CCc1ccc2OCOc2c1
+ (#652): OC(=O)COc1ccc(Cl)cc1Cl
+ (#653): CCCCOC(=O)COc1ccc(Cl)cc1Cl
+ (#654): CCN(CC)C(=S)SCC(=C)Cl
+ (#655): c1cccc2[nH][n][n]c21
+ (#656): Clc1ccccc1Cl
+ (#657): Cc1ccc(N)cc1Cl
+ (#658): Cc1ccc(Cl)cc1N
+ (#659): Cc1ccc(N)cc1N
+ (#660): Nc1cc(Cl)ccc1N
+ (#661): Nc1cc2[n]c3cc(N)ccc3cc2cc1
+ (#662): C1OC1c1ccccc1
+ (#663): ClCC(Br)CBr
+ (#664): ClC(CCl)CCl
+ (#665): OCC(O)CCl
+ (#666): S=C1NCCN1
+ (#667): O=C1CCCO1
+ (#668): CC(C)(C)c1cc(Sc2cc(c(O)cc2C)C(C)(C)C)c(C)cc1O
+ (#669): COP(=O)(OC(=CCl)c1cc(Cl)c(Cl)cc1Cl)OC
+ (#670): CC(=O)c1ccc(cc1)S(=O)(=O)NC(=O)NC1CCCCC1
+ (#671): Oc1c(cc(Cl)cc1Cl)Sc1cc(Cl)cc(Cl)c1O
+ (#672): COc1cc(CC=C)ccc1O
+ (#673): Cc1ccccc1N=Nc1cc(C)c(N)cc1
+ (#674): CCN(CC)C(=S)SSC(=S)N(CC)CC
+ (#675): O=Cc1ccco1
+ (#676): CC(O)c1ccccc1
+ (#677): NC(=O)c1c[n]cc[n]1
+ (#678): Cc1cc2c(c3cc(C)c(cc3oc2cc1=NCC)NCC)-c1ccccc1C(=O)OCC
+ (#679): Nc1c(Cl)cc(cc1Cl)N(O)=O
+ (#680): Cc1ccc(cc1N)N(O)=O
+ (#681): Nc1cc(ccc1N)N(O)=O
+ (#682): Nc1cc(ccc1O)N(O)=O
+ (#683): COc1ccc(cc1N)N(O)=O
+ (#684): CN(C)(C)CCCl
+Database: molecules/arom.sdf
+ (#1): COC1C=C2OC3OC=CC3C2=C2OC3=CC=CC(O)=C3C(=O)C=12
+Database: molecules/empty.sdf
+ (#1): C1=CC=CC2NC=CC=21
+Database: molecules/empty1.sdf
+ (#1): 
+ (#2): 
+ (#3): 
+ (#4): 
+*** Processing result molecules ***
+#1: C[C@H](F)I
+#2: C[C@@H](F)I
+#3: C[C@@H](F)I
+#4: C[C@H](F)I
+#5: C[C@H](F)I
+#6: C[C@H](F)I
+#7: C[C@H](F)I
+#8: C[C@H](F)I
+#9: C[C@H](F)I
+#10: C[C@H](F)I
+#11: C[C@H](F)I
+#12: C[C@H](F)I
+#13: C[C@H](F)I
+#14: C[C@@H](F)I
+#15: OC(=O)[C@H](O)[C@@H](O)C(O)=O
+#16: OC(=O)[C@@H](O)[C@H](O)C(O)=O
+#17: C[C@H](O)C(C)O
+#18: C[C@]1(Cl)C[C@H](Br)CCO1
+#19: C[C@]1(Cl)C[C@@H](Br)CCO1
+#20: C[C@@H]1[C@@H](C)[C@H]1C
+#21: C1C[C@@H]2CC[C@H]3CC[C@@H]4CC[C@@H]1[C@]234
+#22: C[C@](F)(Cl)I
+#23: C[C@](F)(Cl)I
+#24: C[C@](F)(Cl)I
+#25: C[C@](F)(Cl)I
+#26: C[C@](F)(Cl)I
+#27: C[C@](F)(Cl)I
+#28: C[C@](F)(Cl)I
+#29: C[C@](F)(Cl)I
+#30: C[C@](F)(Cl)I
+#31: FC(Cl)(Cl)I
+#32: C[C@](F)(Cl)I
+#33: [2H][C@@H]([3H])C(C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+#34: [2H][C@H]([3H])C(C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+#35: [2H][C@@H]([3H])C(C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+#36: [2H][C@@H]([3H])[C@](C)([12CH3])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+#37: [2H][C@@H]([3H])C(C)(C)C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+#38: [2H]OC(=N)C1=CC(=CC(=C1)/C(/C)=C(/C)\CC)C(C)(C)[12CH3]
+#39: [2H]OC(=N)C1=CC(=CC(=C1)/C(/C)=C(\C)/CC)C(C)(C)[12CH3]
+#40: [2H]OC1NN=CC=1/C=C/[C@](C)(C([2H])[3H])C1C=C(C=C(C=1)C(C)(C)C)C(C)(C)C
+#41: C[C@H](CC)[C@H](C)CC
+#42: CC1=CC[C@H]2C[C@@H]1C2(C)C
+#43: C[C@H]([NH3+])C([O-])=O
+#44: [NH3+][C@@H](CC1C=CC=CC=1)C([O-])=O
+#45: [NH3+][C@@H](CO)C([O-])=O
+#46: CC(C)[C@H]([NH3+])C([O-])=O
+#47: [NH3+][C@@H](CC(O)=O)C([O-])=O
+#48: [NH3+][C@@H](CCC(O)=O)C([O-])=O
+#49: [NH3+][C@H](C([O-])=O)C1=CNC=[NH+]1
+#50: [NH3+][C@@H](CS)C([O-])=O
+#51: [NH3+]CCCC[C@H]([NH3+])C([O-])=O
+#52: [NH3+][C@@H](CC1C=CC(O)=CC=1)C([O-])=O
+#53: NC(=[NH2+])NCCC[C@H]([NH3+])C([O-])=O
+#54: CC(C)C[C@H]([NH3+])C([O-])=O
+#55: CC(CC)[C@H]([NH3+])C([O-])=O
+#56: [NH3+][C@H](C([O-])=O)C1=CNC2C=CC=CC=21
+#57: [O-]C(=O)[C@@H]1CCC[NH2+]1
+#58: CSCC[C@H]([NH3+])C([O-])=O
+#59: CC(O)[C@H]([NH3+])C([O-])=O
+#60: NC(=O)C[C@H]([NH3+])C([O-])=O
+#61: NC(=O)CC[C@H]([NH3+])C([O-])=O
+#62: C[C@@H]1[C@@H](C)C(=O)NC1=O
+#63: F[C@H](Cl)[C@@H](F)Cl
+#64: [2H][C@H]([3H])C
+#65: CN1C[C@@]2(CN(C)CC2)CC1
+#66: [2H]NC(=O)[C@H]1C(C(=N)=O)[C@H]1C(N)=O
+#67: [2H]NC(=O)[C@@H]1C(C(=N)=O)[C@@H]1C(N)=O
+#68: [2H]NC(=O)[C@@H]1[C@@H](C1C(=N)=O)C(=N)O
+#69: [2H]NC(=O)[C@H]1[C@H](C1C(=N)=O)C(=N)O
+#70: OC[C@@H](O)[C@@H](O)[C@H](O)[C@@H](O)C=O
+#71: OC[C@@H](O)[C@@H](O)C=O
+#72: C[C@@H](NC=[N+](C)C)/[NH+]=C\N(C)C
+#73: CO[C@]1(C)C[C@H](O[C@@H]2[C@@H](C)C(=O)O[C@H](CC)[C@@](C)(O)[C@H](O)[C@@H](C)C(=O)[C@H](C)C[C@@](C)(O)[C@H](O[C@@H]3O[C@H](C)C[C@@H]([C@H]3O)N(C)C)[C@H]2C)O[C@@H](C)[C@@H]1O
+#74: CCC(C)C
+#75: [2H]NC(=O)/C=C(/[CH2+])\[C@@H](C)S
+#76: CO[C@H]1[C@H](O)[C@@H](O)[C@H](OC)[C@@H]([O-])[C@H]1[O-]
+#77: C[C@H](Cl)Br
+#78: Cl[C@@H](Br)I
+#79: [2H]NC(=O)/C=C(/[CH2-])\[C@@H](C)S
+#80: [2H]NC(=O)/C(/[Co]/C(/C(=O)N[2H])=C(\[CH2-])/[C@@H](C)S)=C(/[CH2-])\[C@@H](C)S
+#81: N[C@@H](CC(O)=O)C(O)=O
+#82: CC(C)C1CC[C@@H](C)C[C@H]1O
+#83: CC1C(CC)[N@@]1CCC
+#84: CC[S@@](C)=O
+#85: CC[S@@+](C)[O-]
+#86: CCCC[N@+](C)([O-])CC
+#87: CCCC[P@](C)(=O)CC
+#88: CCCC[P@+](C)([O-])CC
+#89: CC[S@@](C)=S
+#90: CC[S@@+](C)[S-]
+#91: CCCC[P@](C)(=S)CC
+#92: CCCC[P@+](C)([S-])CC
+#93: CCCC[P@](C)(=[Se])CC
+#94: CCCC[P@+](C)([Se-])CC
+#95: CCCC[N@+](C)([S-])CC
+#96: CCCC[N@+](C)([Se-])CC
+#97: CCC[N@@]1[C@H](C)[C@@H]1C
+#98: CC[S@@]([O-])=O
+#99: CC[S@](=O)[S-]
+#100: CC[S@@]([NH3+])=O
+#101: CC[S@](=O)[N-]C
+#102: CC[S@+]([O-])[S-]
+#103: CC[S+]([O-])[O-]
+#104: C[C@H](N)C(O)=O
+#105: CC[C@@H](C)[N+]([O-])=O
+#106: C[N@@+]([O-])(S)[SeH]
+#107: C[C@@H]1C[C@H](C)O1
+#108: C[C@@H]1C[C@@H](C)O1
+#109: C[C@H]1C[C@H](C)O1
+#110: C[C@@H]1C[C@H](C)C1
+#111: C[C@@H]1C[C@@H](C)C1
+#112: COCO[C@H](/C=C/CO[Si](C)(C)C(C)(C)C)[Sn](CCCC)(CCCC)CCCC
+#113: CC(CO)[C@H]1OCO[C@H]([C@H]1O)C(C)CO
+#114: CC(CO)[C@H]1OCO[C@H]([C@H]1O)C(C)CO
+#115: CC(CO)[C@H]1OCO[C@H]([C@H]1O)C(C)CO
+#116: C[C@H](CO)[C@H]1OCO[C@H]([C@H]1O)[C@H](C)CO
+#117: C[C@@H](CO)[C@@H]1OCO[C@@H]([C@@H]1O)[C@@H](C)CO
+#118: C[C@@H](CO)[C@@H]1OCO[C@@H]([C@@H]1O)[C@@H](C)CO
+#119: C1=CC=CC=C1N1N=C2N(C1N2C1C=CC=CC=1)C1C=CC=CC=1
+#120: [2H]C1C=CC(=CC=1)N1[C@@H]2N(N=C1N2C1C=CC=CC=1[2H])C1C=CC=CC=1
+#121: CC/C=C\N1CC1
+#122: CC[C@@H](C)CCC
+#123: C/C=C1/[S@@](=O)C[S@]/1=O
+#124: C/C=C1/[S@](=O)C[S@@]/1=O
+#125: CC=C1[S@@](=O)C[S@@]1=O
+#126: CC=C1[S@](=O)C[S@]1=O
+#127: C/C=C1/[S@](=O)C[S@@]/1=O
+#128: C/C=C1/[S@@](=O)C[S@]/1=O
+#129: CC=C1[S@@](=O)C[S@@]1=O
+#130: CC=C1[S@](=O)C[S@]1=O
+#131: [NH3+][C@@H](CCC(O)=O)C([O-])=O
+#132: C[C@H](O)Cl
+#133: O[C@@H](S)Cl
+#134: CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+#135: CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+#136: CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+#137: CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+#138: COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+#139: COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+#140: COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+#141: COC(O)[C@H](O)[C@@H](O)[C@H](O)C(O)OC
+#142: CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+#143: CC(O)[C@@H](O)[C@H](O)[C@@H](O)C(C)O
+#144: C[C@@H]1[C@@H](C)C(=O)NC1=O
+#145: C[C@@](N)(S)Cl
+#146: C[C@]1(N)C[C@@]2(C1)C(C)(N)[C@]1(C[C@@](C)(N)C1)C2(C)N
+#147: C[C@@H](Cl)Br
+#148: CC(C(C)Cl)C(C)Cl
+#149: CC(=C(C)N)[C@@](C)(Cl)Br
+#150: [2H][C@H]([3H])C(=O)[C@@H]1[C@@H](/C/1=C\O)C(O)=O
+#151: C1CN[C@@]21CCN2
+#152: C1CN[C@]21CCN2
+#153: C[C@@]12C[N@](C1)C2
+#154: C1[C@@]23C[C@]1(C2)CCCC3
+#155: C[C@@]12C[C@](C)(C1)C2
+#156: C1CCC21CCN2
+#157: C1CCC21CCC2
+#158: CC1(N)CN(C1)N(N1CC(C)(N)C1)N1CC(C)(N)C1
+#159: C[C@@]1(N)C[La]2(C1)[La]1(C[C@@](C)(N)C1)[La]12C[C@@](C)(N)C1
+#160: C[C@@]1(N)CS23(C1)(C[C@@](C)(N)C2)C[C@@](C)(N)C3
+#161: CC1(N)CN(C1)C(N1CC(C)(N)C1)N1CC(C)(N)C1
+#162: CC1(N)CC(C1)C(C1CC(C)(N)C1)C1CC(C)(N)C1
+#163: C[C@]1(N)C[C@]2(C[C@@](C)(N)C2)C1
+#164: C[C@@]1(N)C[C@](C)(N)C1
+#165: C[C@@]1(N)C[C@@](C)(N)C1
+#166: C[C@@]1(N)C[C@@]2(C1)[C@]1(C[C@@](C)(N)C1)[C@]12C[C@@](C)(N)C1
+#167: C[C@@]1(N)C[C@@]2(C1)[C@]1(C[C@](C)(N)C1)[C@]12C[C@@](C)(N)C1
+#168: CCC1(C)CP2(C)(C)[Sn]34P(C)(C)(C1)P3(C)(C)CC=CCP24(C)C
+#169: CC1(C)C2C(C)(C)C1C2(C)C
+#170: CC(CC)([C@](C)(CCC)CC)[C@](C)(CCC)CC
+#171: C[C@@](CC)([C@](C)(CCC)CC)[C@@](C)(CCC)CC
+#172: CC(CC)([C@@](C)(CCC)CC)[C@@](C)(CCC)CC
+#173: CC(CC)([C@@](C)(CCC)CC)[C@@](C)(CCC)CC
+#174: C[C@]1(C[C@@](C)(C1)CC)CC
+#175: C[C@]1(C[C@@](C)(C1)CC)CC
+#176: C[C@]1(C[C@]2(C[C@](C)(C2)CC)C1)CC
+#177: C[C@@]1(C[C@]2(C[C@](C)(C2)CC)C1)CC
+#178: C[C@@]1(C[C@@]2(C1)C[C@@]1(C2)C[C@]2(C[C@](C)(C2)CC)C1)CC
+#179: C[C@]1(C[C@@]2(C1)C[C@@]1(C2)C[C@]2(C[C@](C)(C2)CC)C1)CC
+#180: C[C@@](F)(Cl)Br
+#181: C[C@@]12[C@]3(C)[C@@]4(C)[C@]1(C)[C@]1(C)[C@]2(C)[C@]3(C)[C@]14C
+#182: C[C@@]12[C@@]3(C)[C@@]4(C)[C@]1(C)[C@@]1(C)[C@]2(C)[C@]3(C)[C@]14C
+#183: C[C@@]12[C@@]3(C)[C@@]4(C)[C@]1(C)[C@@]1(C)[C@]2(C)[C@]3(C)[C@]14C
+#184: C[C@](F)(Cl)Br
+#185: C[C@](F)(Cl)Br
+#186: C[C@@](F)(Cl)Br
+#187: C[C@](F)(Cl)Br
+#188: CCC[C@@](C)(CC)/C=C(\C)/CC
+#189: C[C@@H](Cl)C1C=C(NN=1)[C@H](C)Cl
+#190: C[C@H](Cl)C1C=C(NN=1)[C@@H](C)Cl
+#191: C[C@@H](Cl)C1C=C(NN=1)[C@@H](C)Cl
+#192: C[C@H](Cl)C1C=C(NN=1)[C@H](C)Cl
+#193: O/C=C1/[C@@H]([C@@H]/1C(O)=O)C(O)=O
+#194: O/C=C1/[C@@H]([C@@H]/1C(O)=O)C(O)=O
+#195: OC(=O)[C@H]1[C@H](/C/1=C/O)[12C](O)=O
+#196: [2H]OC(=O)[C@H]1[C@H](/C/1=C/O)C(O)=O
+#197: [2H]OC(=O)[C@@H]1[C@@H](/C/1=C\O)C(O)=O
+#198: C[C@@H]1[C@H](C)/C/1=C1\[C@H](C)[C@@H]\1C
+#199: C[C@@H](Cl)[C@@H](C)Cl
+#200: C[C@H](Cl)[C@H](C)Cl
+#201: CC12C3CCC4(C)C5C(CC4C3CC=C1C[C@@H](O)C[C@H]2O)O[C@]1(CC(C(Cl)Cl)C(C)CO1)C5C
+#202: C/C=C\[C@@H](C)CC
+#203: [2H]NC(=O)[C@@]1(C(C)/C=C\C)[C@@](C(C)/C=C\C)(C(N)=O)[C@]1(C(C)/C=C\C)C(N)=O
+#204: CC1[C@H](C)[C@@H]1C
+#205: CC1[C@H](C)[C@@H]1C
+#206: CC1[C@H](C)[C@@H]1C
+#207: CC1[C@H](C)[C@@H]1C
+#208: [2H]NC(=O)[C@@H]1[C@@H](C1C(N)=O)C(N)=O
+#209: [2H]NC(=O)[C@H]1C([C@H]1C(N)=O)C([NH-])=O
+#210: C[C@@H]1[C@@H](C)[C@H]1C
+#211: C[C@@H]1[C@H](C)[C@@H]1C
+#212: C[C@@H]1[C@@H](C)[C@H]1C
+#213: C[C@@H]1[C@H](C)[C@@H]1C
+#214: [2H][C@@H]1O[C@H]1CCCC
+#215: CC1(C)O[C@H]2O[C@H]([C@H]3COC(C)(C)O3)C(=O)[C@H]2O1
+#216: COC1=CC=CC=C1[P@@](C1C=CC=CC=1)C(C)(C)C
+#217: COC1=CC=CC=C1[P@](C1C=CC=CC=1)C(C)(C)C
+#218: CC1(C)O[C@H]2O[C@H](C3COC(C)(C)O3)C(=O)[C@H]2O1
+#219: C[C@@H](Cl)[C@H](Cl)CC
+#220: CC(Cl)[C@H](Cl)CC
+#221: C[C@H]1C/C(=C/C)/C(=O)O[C@@H]2CCN3CC=C(COC(=O)[C@@]1(O)CO)[C@@H]32
+#222: CC[N@@+](C)([O-])S
+#223: ON(=O)C1C=CC(Cl)=CC=1
+#224: NC1=CC=C(C=C1)N(O)=O
+#225: C=CC1CC=CCC1
+#226: CCC1C=CC=CC=1
+#227: C=CC1C=CC=CC=1
+#228: ClCC1C=CC=CC=1
+#229: OCC1C=CC=CC=1
+#230: O=CC1C=CC=CC=1
+#231: NNC1C=CC=CC=1
+#232: O=NN1CCCCC1
+#233: C1N2CN3CN1CN(C2)C3
+#234: NNOS(O)(=O)=O
+#235: O=S1(=O)O[Mn]O1
+#236: OB(O)O
+#237: [Ca]
+#238: COc1cc2OC3OC=CC3c2c2oc3cccc(O)c3c(=O)c12
+#239: ClC1=CC=CC=C1NC1N=C(Cl)N=C(Cl)N=1
+#240: NC1=CC=C(CC2C=C(Cl)C(N)=CC=2)C=C1Cl
+#241: CN(C)C1C=CC(CC2C=CC(=CC=2)N(C)C)=CC=1
+#242: CC(C)OC1C=CC(=CC=1)NC1C=CC=CC=1
+#243: NC1C=CC(=CC=1)OC1C=CC(N)=CC=1
+#244: C(OC1=CC(=CC=C1)OCC1CO1)C1CO1
+#245: CC1=CC(=CC=C1N)OC
+#246: OCCN(CCO)CCO
+#247: CCCCC(COC(=O)CCCCC(=O)OCC(CCCC)CC)CC
+#248: C1=CC=CC=C1N=NC1C=CC=CC=1
+#249: NC(=S)NC1C=CC=CC=1
+#250: CC(=O)NC1C=CC(O)=CC=1
+#251: OC(CBr)C(O)C(O)C(O)CBr
+#252: CC=CC1=CC=C(C=C1)OC
+#253: ON=C1C=CC(C=C1)=NO
+#254: CCNC(=S)NCC
+#255: O=C1CCCCCN1
+#256: CN1C(N)=NC2=NC=C(C=C12)C1C=CC=CC=1
+#257: CCN(C)N=O
+#258: ClC1C=CC(Cl)=CC=1
+#259: NC1=CC=C(Cl)C=C1
+#260: NC1C=CC(N)=CC=1
+#261: O=C1C=CC(=O)C=C1
+#262: C1C2OC2CCC1C1CO1
+#263: CCC1CO1
+#264: ClCC1CO1
+#265: C=CCOCC1CO1
+#266: BrCCBr
+#267: C=CC=C
+#268: CC(=O)O[Sn](CCCC)(CCCC)OC(C)=O
+#269: C=CC=O
+#270: C=CCCl
+#271: ClCCCl
+#272: C=CC#N
+#273: O=CCCl
+#274: OCCO
+#275: CC=NO
+#276: COCCl
+#277: O=S1(=O)OCCO1
+#278: CN(C)CCO
+#279: CCCN(O)=O
+#280: CC(=O)OC=C
+#281: O=C1CCC(=O)O1
+#282: NC1=CC(N)=CC=C1
+#283: OC1=CC(O)=CC=C1
+#284: CC(CCl)OC(C)CCl
+#285: NC1N=C(N)N=C(N)N=1
+#286: CC1C=CC=CC=1
+#287: ClC1C=CC=CC=1
+#288: O=C1CCCCC1
+#289: OC1C=CC=CC=1
+#290: CCCCCl
+#291: NNCCO
+#292: C1=CC=CO1
+#293: C1CNCCN1
+#294: CC(O)CNCC(C)O
+#295: ClCCOCCCl
+#296: OCCOCCO
+#297: OCCN(CCO)N=O
+#298: O=S1(=O)CCCO1
+#299: CC(=O)NNC1C=CC=CC=1
+#300: [N-]=N=CC(=O)OCC(N)C(O)=O
+#301: CC=C
+#302: C[Hg]Cl
+#303: OC(=O)C1C(C(O)=O)C2(Cl)C(Cl)=C(Cl)C1(Cl)C2(Cl)Cl
+#304: O=S1OCC2C(CO1)C1(Cl)C(Cl)=C(Cl)C2(Cl)C1(Cl)Cl
+#305: OC(C1C=CC(Cl)=CC=1)(C1C=CC(Cl)=CC=1)C(Cl)(Cl)Cl
+#306: O=P(OCCCl)(OCCCl)OCCCl
+#307: CC1C=CC(=CC=1)S(=O)(=O)NC(=O)NN1CCCCCC1
+#308: CNC(=O)ON=CC(C)(C)SC
+#309: COc1cc2OC3OC=CC3c2c2oc(=O)c3c(CCC3=O)c12
+#310: BrC1C(OC2=C(Br)C(Br)=C(Br)C(Br)=C2Br)=C(Br)C(Br)=C(Br)C=1Br
+#311: Oc1cc2oc(C3C=C(O)C(O)=CC=3)c(O)c(=O)c2c(O)c1
+#312: NC1C=C2C(=CC=1)C(=O)C1=CC=CC=C1C2=O
+#313: CCCCC(COC(=O)C1=CC=CC=C1C(=O)OCC(CCCC)CC)CC
+#314: ClC1C(Cl)=C(Cl)C(Cl)=C(Cl)C=1Cl
+#315: NC1=CC=CC=C1C(O)=O
+#316: NC1=CC=C(O)C(=C1)N(O)=O
+#317: OC(C(=O)C1C=CC=CC=1)C1C=CC=CC=1
+#318: O=C1CCC2=CC=CC=C2O1
+#319: OC1=CC=C(Cl)C=C1CC1C=CC=CC=1
+#320: CC=CC1C=C2OCOC2=CC=1
+#321: COC(=O)C1C=CC(=CC=1)C(=O)OC
+#322: CCCCCCCCS(=O)C(C)CC1C=C2OCOC2=CC=1
+#323: CC1C=C(N)C(=CC=1)OC
+#324: C1C=CC=C2SC(=NC2=1)SSC1=NC2=CC=CC=C2S1
+#325: OC1=CC=CC=C1O
+#326: OC1=CC=C(Cl)C=C1Cl
+#327: CC1=CC=C(C=C1N(O)=O)N(O)=O
+#328: NC1=NC=C(S1)N(O)=O
+#329: CN(C)C1C=CC=CC=1
+#330: CCOC(=O)C(CC(=O)OCC)SP(=S)(OC)OC
+#331: CCCOC(=O)C1=CC(O)=C(O)C(O)=C1
+#332: NC1=CC=C(C=C1O)N(O)=O
+#333: S=C(NC1CCCCC1)NC1CCCCC1
+#334: S=C1NCCNC(=S)S[Zn]S1
+#335: CC(O)CN(CC(C)O)CC(C)O
+#336: CCNC1=NC(Cl)=NC(NCC)=N1
+#337: C(OC1C=CC=CC=1)C1CO1
+#338: C1=CC=CC=C1NNC1C=CC=CC=1
+#339: OC1C=CC(O)=CC=1
+#340: OC1=CC=C(O)N=N1
+#341: C1COCCO1
+#342: ClC(Br)Br
+#343: OCP(Cl)(CO)(CO)CO
+#344: COC1=CC(=O)CC(C)C21OC1C(Cl)=C(C=C(OC)C=1C2=O)OC
+#345: O=P(OCC(Br)CBr)(OCC(Br)CBr)OCC(Br)CBr
+#346: ClC(Cl)=C(Cl)Cl
+#347: CC1=C(NS(=O)(=O)C2C=CC(N)=CC=2)ON=C1C
+#348: CC1C=C(C(O)=C(C=1)C(C)(C)C)C(C)(C)C
+#349: O=C1NS(=O)(=O)C2=CC=CC=C12
+#350: O=c1c2ccccc2c2ccc3c4c2c1ccc4c1ccccc1c3=O
+#351: CC1=CC=C2C(=C1N(O)=O)C(=O)C1=CC=CC=C1C2=O
+#352: CCCN(N=O)C(=N)NN(O)O
+#353: CCCCN(N=O)C(=N)NN(O)O
+#354: CCCCCN(N=O)C(=N)NN(O)O
+#355: CCSCCC(N)C(O)=O
+#356: C=CCOC(=O)C1=CC=CC=C1C(=O)OCC=C
+#357: CC(OP(=O)(OC)OC)=C(Cl)C(=O)N(CC)CC
+#358: OC1=CC=CC=C1C1C=CC=CC=1
+#359: CC1(C)SC2C(NC(=O)COC3C=CC=CC=3)C(=O)N2C1C(=O)O[K]
+#360: O=C1C2CC=CCC2C(=O)N1SC(Cl)(Cl)Cl
+#361: O=C1C2=CC=CC=C2C(=O)N1SC(Cl)(Cl)Cl
+#362: NC1=CC(Cl)=CC(C(O)=O)=C1Cl
+#363: CC1=CC=CC=C1OP(=O)(OC1=CC=CC=C1C)OC1=CC=CC=C1C
+#364: ClC1(Cl)C2(Cl)C3C4C5C(C3C3OC53)C2(Cl)C(Cl)C14Cl
+#365: COC1=CC=CC=C1N
+#366: CC(NC)C(O)C1C=CC=CC=1
+#367: NON(N=O)C1C=CC=CC=1
+#368: CN(C)CCN(CC1=CC=CS1)C1=CC=CC=N1
+#369: C1C(=CC=C2C=CC=CC2=1)NC1C=CC=CC=1
+#370: OS(O)(=O)=O
+#371: NC1C=CC(CC2C=CC(N)=CC=2)=CC=1
+#372: NC1=CC=C(N=NC2C=CC=CC=2)C(N)=N1
+#373: CCCCCCC1=CC=C(O)C=C1O
+#374: NC1C=C(N)C(O)=CC=1
+#375: CC1C=C(C)C(C)=CC=1N
+#376: CN(C)C(=S)S[Zn]SC(=S)N(C)C
+#377: NC(=O)N(CCO)N=O
+#378: FC(F)OC(F)(F)C(F)Cl
+#379: OC(=O)CN(CC(O)=O)CC(O)=O
+#380: NC1C=CC(=CC=1)SC1C=CC(N)=CC=1
+#381: CCNC(=O)NC1=NC=C(S1)N(O)=O
+#382: CC(=O)OCC1C=CC=CC=1
+#383: CC(=O)NC1C=CC(=CC=1)C(=O)CCl
+#384: CN(C)C1C=CC(=CC=1)N=NS(=O)(=O)O[Na]
+#385: COC1C=CC(CC=C)=CC=1
+#386: O=NN1CCN(CC1)N=O
+#387: CCOC(=O)C=C
+#388: NC1C=CC=CC=1
+#389: NC(=S)NNC(N)=S
+#390: NC(CCC(O)=O)C(O)=O
+#391: O=C1C2(Cl)C3(Cl)C4(Cl)C2(Cl)C2(Cl)C(Cl)(C3(Cl)C21Cl)C4(Cl)Cl
+#392: NCCNC1=CC=CC2=CC=CC=C21
+#393: CN(C)CCOC(C1C=CC=CC=1)C1C=CC=CC=1
+#394: CCN(CC)C(=S)S[Na]
+#395: OC1=CC=CC2=CC=CN=C21
+#396: C1=NC(=CS1)C1NC2=CC=CC=C2N=1
+#397: NC(CC1C=CC(=CC=1)N(CCCl)CCCl)C(O)=O
+#398: OC1OCC=C2OC(=O)C=C21
+#399: SC1=NC2=CC=CC=C2S1
+#400: OC1C=C(C=C(O)C=1O)C(O)=O
+#401: OC(=O)CN(CC(=O)O[Na])CCN(CC(=O)O[Na])CC(=O)O[Na]
+#402: CN(C)C(=O)NC1C=CC(Cl)=CC=1
+#403: COC1C=CC(O)=CC=1
+#404: C1CN1
+#405: CC1OC(OCC2OC(Oc3c(=O)c4c(cc(O)cc4O)oc3C3C=C(O)C(O)=CC=3)C(O)C(O)C2O)C(O)C(O)C1O
+#406: CC(C)C1CCC(C)CC1O
+#407: CC1C(N)=CC=CC=1N
+#408: O=NC1C=CC(=CC=1)NC1C=CC=CC=1
+#409: OS(=O)(=O)ONNCCC1C=CC=CC=1
+#410: N#CN=[Ca]
+#411: NC1C=C(Cl)C(=CC=1Cl)C1C=C(Cl)C(N)=CC=1Cl
+#412: CCCN(CCC)C1C(=CC(=CC=1N(O)=O)C(F)(F)F)N(O)=O
+#413: CN(C)NC(=O)CCC(O)=O
+#414: OC1=CC=C(C=C1C(=O)O[Na])N=NC1C=CC(=CC=1)C1C=CC(=CC=1)N=NC1=C2O[Cu]OC3=CC=C(CC3=NNC2=CC=C1O)S(=O)(=O)O[Na]
+#415: COC1C=CC(=CC=1)C(=O)C(Br)=CC(=O)O[Na]
+#416: CN(N=O)C1=CC=CC=N1
+#417: CN(N=O)C1=CC=NC=C1
+#418: CCOC(=O)C(CC(=O)OCC)SP(=O)(OC)OC
+#419: Oc1c(I)c2=OC3C(=CC(I)=C(O)C=3I)C(=c2cc1I)C1=CC=CC=C1C(O)=O
+#420: CC=NN(C)C=O
+#421: O=C1CCN(N=O)C(=O)N1
+#422: CN(C)C1C=CC(=CC=1)C(C1C=CC(=CC=1)N(CC1C=C(C=CC=1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=N(CC1C=C(C=CC=1)S(O)(=O)=O)CC
+#423: CC(=O)NC1C=C(N)C(=CC=1)OCC
+#424: ClC1C=C2OC3C=C(Cl)C(Cl)=CC=3OC2=CC=1Cl
+#425: CC(=O)NC1C=C(C(=CC=1)OCC)N(O)=O
+#426: CC1CCCC(=O)CCCC=CC2=CC(O)=CC(O)=C2C(=O)O1
+#427: COC1C(Cl)=C(Cl)C(Cl)=C(Cl)C=1Cl
+#428: ON(=O)C1C=CC(=CC=1)OC1=CC=C(Cl)C=C1Cl
+#429: O=C(CN(CC(=O)O[Na])CC(=O)O[Na])O[Na]
+#430: CCCCCCN(N=O)C(N)=O
+#431: CN(N=O)C(=O)NC(C=O)C(O)C(O)C(O)CO
+#432: N#CC1C(Cl)=C(Cl)C(Cl)=C(C#N)C=1Cl
+#433: CN(C)C(=S)S[Pb]SC(=S)N(C)C
+#434: CCNC1N=C(NC(C)C)N=C(Cl)N=1
+#435: NC1C(Cl)=C(N=C(Cl)C=1Cl)C(O)=O
+#436: OC(=O)C1=NN(C2C=CC(=CC=2)S(O)(=O)=O)C(=O)C1N=NC1C=CC(=CC=1)S(O)(=O)=O
+#437: OC1=CC=C2C=C(C=C(C2=C1N=NC1C=CC=CC=1)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+#438: NC1C2=C(O)C(N=NC3C=CC=CC=3)=C(C=C2C=C(C=1N=NC1C=CC(=CC=1)C1C=CC(=CC=1)N=NC1=CC=C(N)C=C1N)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+#439: CC1(C)COC1=O
+#440: NC1=CC=C(Cl)C=C1
+#441: COC1C=CC(N)=CC=1
+#442: COC1=CC(=CC=C1N)C1C=C(OC)C(N)=CC=1
+#443: CC1(O)C2C(O)C3C(C(O)=C(C(N)=O)C(=O)C3(O)C(O)=C2C(=O)C2C1=CC=CC=2O)N(C)C
+#444: O=NN1CCCCCCC1
+#445: CCN(CC)C(=S)S[Te](SC(=S)N(CC)CC)(SC(=S)N(CC)CC)SC(=S)N(CC)CC
+#446: NC1C=CC(=CC=1)C1C=CC=CC=1
+#447: CC1C=C(C)C(C)=CC=1N
+#448: CC1CN(N=CC2=CC=C(O2)N(O)=O)C(=O)N1
+#449: CN(C)C(=O)NC1C=C(C=CC=1)C(F)(F)F
+#450: NC1=CC=CC=C1C1C=CC=CC=1
+#451: CC1=CC(O)=C2C(C(=O)C34C5C(O)C6C3C(O)C(C(O)=C4C2=O)C26C(C(=O)C3C(C2=O)=C(O)C(C)=CC=3O)=C5O)=C1O
+#452: NC1C=CC(=CC=1)NC1C=CC=CC=1
+#453: NC1C=CC=C2C=1C=CC=C2N
+#454: CC1=CCC(CC1=O)C(C)=C
+#455: CC(C)N(C(C)C)C(=O)SCC(Cl)=CCl
+#456: CC12C(OC(C)=O)C(O)C(OC3C=C(C)C(=O)C(O)C13CO)C12CO1
+#457: CCN(CC1C=C(C=CC=1)S(O)(=O)=O)C1C=CC(=CC=1)C(C1=CC=C(O)C=C1S(O)(=O)=O)=C1C=CC(C=C1)=N(CC1C=C(C=CC=1)S(O)(=O)=O)CC
+#458: ClC1(Cl)C2(Cl)C3(Cl)C4(Cl)C2(Cl)C2(Cl)C(Cl)(C3(Cl)C12Cl)C4(Cl)Cl
+#459: O=C1C2CC=CCC2C(=O)N1SC(Cl)(Cl)C(Cl)Cl
+#460: CC1C=C(C(=CC=1)N=NC1C2=CC=CC=C2C=CC=1O)N(O)=O
+#461: COC1=CC(=CC=C1N=NC1C(=CC2=CC(=CC(N)=C2C=1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])C1C=C(OC)C(=CC=1)N=NC1C(=CC2=CC(=CC(N)=C2C=1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+#462: NCCCCCCCCCCC(O)=O
+#463: COC1=C(Cl)C(Cl)=C(C(Cl)=C1Cl)N(O)=O
+#464: O=CC=CO[Na]
+#465: C1N=CC=C2C=1NC1=CC=CC=C21
+#466: ON(=O)C1=CC=C(O1)C1=CSC(NC=O)=N1
+#467: CN(C)C1C=CC(=CC=1)C(=N)C1C=CC(=CC=1)N(C)C
+#468: NC1C=CC(N)=C2C=1C(=O)C1=C(C2=O)C(N)=CC=C1N
+#469: CNC(=S)N(C)C
+#470: CC(C)CCCCCOC(=O)COC1=CC=C(Cl)C=C1Cl
+#471: CC1=CC=C(C=C1N(O)=O)N(O)=O
+#472: CC(=O)NC1=NN=C(S1)C1=CC=C(O1)N(O)=O
+#473: CN=N(C)O
+#474: NC1C=C(C=C2C=C(C(N=NC3C=CC(=CC=3)C3C=CC(=CC=3)N=NC3=C(C=C4C=C(C=C(N)C4=C3O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])=C(O)C=12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+#475: CN(C)NC1=NC(=CS1)C1=CC=C(O1)N(O)=O
+#476: NC1=CC=C2C(NC3=CC=CC=C23)=N1
+#477: C1C=CC=C2OC3=CC=CC=C3OC2=1
+#478: O=NN1CCSCC1
+#479: [N-]=N=N[Na]
+#480: FC(F)OC(Cl)C(F)(F)F
+#481: N#CC(=CC1=CC=CC=C1Cl)C#N
+#482: C1=COC2=CC=CC=C21
+#483: OC1=CC=C2C=C(C=CC2=C1N=NC1C=CC(=CC=1)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+#484: CNC1=CC=C(C=C1N(O)=O)N(CCO)CCO
+#485: CC1C=C(N=NC2C=CC(=CC=2)NC(C)=O)C(O)=CC=1
+#486: CC(=O)NC1=CC=CC2CC3=CC=CC=C3C1=2
+#487: CC(C)CC(=O)OCC=C
+#488: NC1=CC(=CC2=CC(=C3N=NC4=CC=C(C=C4O[Cu]OC3=C12)C1C=C2O[Cu]OC3=C4C(C=C(C=C4N)S(=O)(=O)O[Na])=CC(=C3N=NC2=CC=1)S(=O)(=O)O[Na])S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+#489: NC1C=C(C(=CC=1)NCCO)N(O)=O
+#490: CCOP(=S)(OC1=NC(Cl)=C(Cl)C=C1Cl)OCC
+#491: COc1cc2OC3OC=CC3c2c2oc(=O)c3C(O)CCc3c12
+#492: COP(=S)(OC1C=CC(=CC=1)N(O)=O)OC
+#493: C1OC1C1CO1
+#494: COc1c2occc2cc2ccc(=O)oc21
+#495: CC(O)=O
+#496: NN
+#497: OC(O)C(Cl)(Cl)Cl
+#498: CC(C)(O)C(O)(C(C)OC)C(=O)OCC1=CCN2CCC(OC(=O)C(C)=CC)C21
+#499: CC1CC2C(C(=O)O1)=C(O)C(=CC=2Cl)C(=O)NC(CC1C=CC=CC=1)C(O)=O
+#500: C=CC(=O)C1C=C2OCOC2=CC=1
+#501: OC(=O)CCCC1C=CC(=CC=1)N(CCCl)CCCl
+#502: CNNC
+#503: ClC1(Cl)C2(Cl)C3C4CC(C=C4)C3C1(Cl)C(Cl)=C2Cl
+#504: CC1C(=O)OC2CCN3CC=C(COC(=O)C(C)(O)C1(C)O)C32
+#505: CCC1CN2CCC3=CC(OC)=C(C=C3C2CC1CC1NCCC2=CC(OC)=C(C=C21)OC)OC
+#506: CC1=CC(Cl)=CC=C1N
+#507: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+#508: Nc1[n]c(=O)[n](c[n]1)C1OC(CO)C(O)C1O
+#509: OCC(CBr)(CBr)CO
+#510: OC1=CC=C(C=C1O)C=CC(O)=O
+#511: ON(=O)C1=CC(=CC=C1NCCO)N(CCO)CCO
+#512: CC1C=C(N=C(N=1)C(C)C)OP(=S)(OCC)OCC
+#513: ON(=O)C1=CC=C(S1)C1NC(=O)C2=CC=CC=C2N1
+#514: OCCNC1=NC(=NC2=CC=CC=C21)C1=CC=C(S1)N(O)=O
+#515: ClC1C=C2OC3=CC=C(Cl)C=C3OC2=CC=1
+#516: CN(C#N)N=O
+#517: CC(=O)OC(C=C)C1C=C2OCOC2=CC=1
+#518: COC1=CC(=CC=C1N)N=NC1C=CC=CC=1
+#519: CC(C)CCCC(C)C1CCC2C3CC=C4CC(CCC4(C)C3CCC12C)OC(=O)CC1=CC=C(C=C1)N(CCCl)CCCl
+#520: CC1=CC(N=NC2C3=CC=C(C=C3C=C(C=2O)S(O)(=O)=O)S(O)(=O)=O)=C(C)C=C1C
+#521: OC1C2=CC=CC=C2C(=CC=1N=NC1=CC=C(C2=CC=CC=C21)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+#522: ON(=O)C1=CC=C(O1)C1=CSC(NNC=O)=N1
+#523: CC(=O)NCC1=NC(=NO1)C1=CC=C(O1)N(O)=O
+#524: CNNCC1C=CC(=CC=1)C(=O)NC(C)C
+#525: NC(=O)C(=CC1=CC=C(O1)N(O)=O)C1=CC=CO1
+#526: CC1=CC(C)=CC=C1N=NC1C2=CC=C(C=C2C=C(C=1O)S(O)(=O)=O)S(O)(=O)=O
+#527: CC(C)(OC1C=CC(=CC=1)C1CCCC2=CC=CC=C21)C(O)=O
+#528: O=P1(NCCCl)OCCCN1CCCl
+#529: CCCCN(CCCCO)N=O
+#530: CCN(C#N)N=O
+#531: NC1=NC(=CS1)C1=CC=C(O1)N(O)=O
+#532: CN(N=O)C(=O)OC1=CC=CC=C1OC(C)C
+#533: Cc1ccc2c([n]1)[n](CC)cc(C(O)=O)c2=O
+#534: COC1=CC=C(C=C1N)NOS(O)(=O)=O
+#535: NC1N=C(N)N=C2N=C(N)C(=NC=12)C1C=CC=CC=1
+#536: O=NN1CCCCCCCCCCCC1
+#537: CC(N)(CC1C=C(O)C(O)=CC=1)C(O)=O
+#538: ON(=O)C1=CC=C(O1)C1=CSC(NC(=O)C(F)(F)F)=N1
+#539: O=C1NC(=O)CN1N=O
+#540: CC(CCC(O)=O)C1CCC2C3CCC4CC(O)CCC4(C)C3CCC21C
+#541: CN(C)N=NC1N=CNC=1C(N)=O
+#542: CN1C(=O)CN=C(C2=CC(Cl)=CC=C12)C1C=CC=CC=1
+#543: CC1=NC=C(N(O)=O)N1CCO
+#544: CN1C=NC(=C1SC1N=CN=C2NC=NC=12)N(O)=O
+#545: CC1C=C(C(N=NC2=CC(=C3C=CC=CC3=C2O)S(O)(=O)=O)=C(C)C=1)S(O)(=O)=O
+#546: CC1(C)OC2(C)CCC1CC2
+#547: OC(CBr)C(O)C(O)C(O)CBr
+#548: C=O
+#549: CCC1(C2C=CC=CC=2)C(=O)NC(=O)NC1=O
+#550: CC1C(=O)C2=C(C(COC(N)=O)C3(OC)C4NC4CN32)C(=O)C=1N
+#551: O=P1(NCCCO1)N(CCCl)CCCl
+#552: CC12C=CC(=O)C=C1CCC1C2C(O)CC2(C)C1CCC2(O)C(=O)CO
+#553: CC12CCC3C(CCC4=CC(O)=CC=C43)C1CCC2O
+#554: ClC(Cl)(Cl)C(C1C=CC(Cl)=CC=1)C1C=CC(Cl)=CC=1
+#555: C1=C2C=CC3C=CC=C4C=CC(=C2C=34)C2C=CC=CC=21
+#556: CCCCC1C(=O)N(C2C=CC=CC=2)N(C2C=CC=CC=2)C1=O
+#557: SC1N=CN=C2NC=NC2=1
+#558: COC1C=C(C=C(OC)C=1OC)C(=O)OC1CC2CN3CCC4C5=CC=C(C=C5NC=4C3CC2C(C1OC)C(=O)OC)OC
+#559: Cc1ccc(c2[n]c3c(c(N)c(=O)c(C)c3oc12)C(=O)NC1C(C)OC(=O)C(C(C)C)N(C)C(=O)CN(C)C(=O)C2CCCN2C(=O)C(NC1=O)C(C)C)C(=O)NC1C(C)OC(=O)C(C(C)C)N(C)C(=O)CN(C)C(=O)C2CCCN2C(=O)C(NC1=O)C(C)C
+#560: CC(=O)OC1=CC=CC=C1C(O)=O
+#561: OC(CO)C1OC(=O)C(O)=C1O
+#562: OCCN1CCN(N=CC2=CC=C(O2)N(O)=O)C1=O
+#563: OC(=O)CCN(O)=O
+#564: ON(=O)C(N(O)=O)(N(O)=O)N(O)=O
+#565: CC(C)NCC(O)C1=CC=C2C=CC=CC2=C1
+#566: CCCC1=CC2OCOC=2C=C1COCCOCCOCCCC
+#567: OC1=NC(O)=NC=C1F
+#568: OC1=CC=C(C=C1N(O)=O)N(O)=O
+#569: CN(CCCl)CCCl
+#570: CCOC(N)=O
+#571: CCOC(=O)C(O)(C1C=CC(Cl)=CC=1)C1C=CC(Cl)=CC=1
+#572: COP(=O)(OC)OC
+#573: CC(C)=CCl
+#574: NC1C=C(N)C(Cl)=CC=1
+#575: CC(=O)NC1=NC(=NC(NC(C)=O)=N1)C1=CC=C(O1)N(O)=O
+#576: CCN(CC1C=C(C=CC=1)S(O)(=O)=O)C1C=CC(=CC=1)C(C1C=CC(=CC=1)S(O)(=O)=O)=C1C=CC(C=C1)=N(CC1C=C(C=CC=1)S(O)(=O)=O)CC
+#577: COC1C=CC(=CC=1)C(O)C=C
+#578: OC1C=C2C3C4=CC=C(O)C(O)=C4OCC3(O)CC2=CC=1O
+#579: CC1C(=O)C(=C(O)C2=COC(C)C(C)C=12)C(O)=O
+#580: S=P(N1CC1)(N1CC1)N1CC1
+#581: OC1C=CC(=CC=1)c1oc2cc(O)cc(O)c2c(=O)c1O
+#582: C=CC(O)C1C=C2OCOC2=CC=1
+#583: CC12CC(=O)C3C(CCC4=CC(=O)C=CC43C)C1CCC2(O)C(=O)CO
+#584: ClC(Cl)C(C1=CC=C(Cl)C=C1)C1=CC=CC=C1Cl
+#585: C1=C2C3C=CC=CC=3C=CC2=CC2C3=CC=CC=C3C=CC=21
+#586: CC(=O)N(O)C1C=C2CC3=CC=CC=C3C2=CC=1
+#587: CC(=O)NC1C=C2CC3=CC=CC=C3C2=CC=1
+#588: NC1C=C(C(N)=CC=1)N(O)=O
+#589: CC(=O)NC1=NC(=CS1)C1=CC=C(O1)N(O)=O
+#590: NC1C=CC(=CC=1)C1C=CC(N)=CC=1
+#591: O=C(CCl)C1C=CC=CC=1
+#592: CCC1=CC(=CC=N1)C(N)=S
+#593: ON(=O)C1=CC=C(O1)C1=CSC=N1
+#594: CN1CCCC1C1C=NC=CC=1
+#595: NS(=O)(=O)C1=CC(C(O)=O)=C(C=C1Cl)NCC1=CC=CO1
+#596: CC(C)NCC(O)C1=CC=C2C=CC=CC2=C1
+#597: NNC(=O)C1C=CN=CC=1
+#598: CC1=CC=C(N)C=C1
+#599: OCCBr
+#600: NC1=CC(N)=CC=C1
+#601: COC1=CC(=CC=C1N)OC
+#602: ClC=CCCl
+#603: CC(C)CN(N=O)C(=N)NN(O)O
+#604: OCC(O)C(O)C(O)C(C=O)NC(=O)N(CCCl)N=O
+#605: CN(C)=C1C=CC(C=C1)=C(C1C=CC(=CC=1)N(C)C)C1C=CC(=CC=1)N(C)C
+#606: CCN(CC)N=O
+#607: CC1=CC(=CC=C1SC)OP(=S)(OC)OC
+#608: CC1C=CC=C(C=1)N=NC1C=CC(=CC=1)N(C)C
+#609: CS(=O)(=O)OCCCCOS(C)(=O)=O
+#610: CCCCCCCCCCCCN(C)N=O
+#611: CC1=NC=C(N(O)=O)N1C
+#612: O=C(C1CCCCC1)N1CC2C3=CC=CC=C3CCN2C(=O)C1
+#613: O=NN1CC=CCC1
+#614: O=NN1CCCN(CC1)N=O
+#615: COC(=O)C1CN(CCC=1)N=O
+#616: OCC1CO1
+#617: CN(C)CN=c1[nH][n]c(C=CC2=CC=C(O2)N(O)=O)o1
+#618: CC1=CC(O)=NC(S)=N1
+#619: ClC(Cl)(Cl)Cl
+#620: CCCC[Sn](CCCC)(CCCC)O[Sn](CCCC)(CCCC)CCCC
+#621: CCOP(=S)(OC1C=CC(=CC=1)N(O)=O)OCC
+#622: CC1C=CC2=CC3C4=CC=CC=C4C=CC=3C3CCC=1C=32
+#623: CCC(C1C=CC(O)=CC=1)=C(CC)C1C=CC(O)=CC=1
+#624: Cc1c(Cl)c(=O)oc2cc(ccc12)OP(=S)(OCC)OCC
+#625: OC(C(CO)NC(=O)C(Cl)Cl)C1=CC=C(C=C1)N(O)=O
+#626: NC(CCC(O)=O)C(O)=O
+#627: OC1CN(CC1)N=O
+#628: NNC(N)=O
+#629: CC(=C)CCl
+#630: O=NN1CCNCC1
+#631: COC1C=CC(=CC=1)C(Cl)=C(C1C=CC(=CC=1)OC)C1C=CC(=CC=1)OC
+#632: NC1C=CC(=CC=1)C(C1C=CC(N)=CC=1)=C1C=CC(=N)C=C1
+#633: C=CCN=C=S
+#634: NC(N)=O
+#635: CN(C)N
+#636: CCC1(C2C=CC=CC=2)C(=O)NC(O)=NC1=O
+#637: O=C1NC(=O)C(N1)(C1C=CC=CC=1)C1C=CC=CC=1
+#638: OC1C(OC(CO)C(O)C1O)OC1(CO)OC(CO)C(O)C1O
+#639: CC(O)CO
+#640: O=C1CCO1
+#641: CCCN(CCC)S(=O)(=O)C1C=CC(=CC=1)C(O)=O
+#642: CC1C=C(C)N=C(NS(=O)(=O)C2C=CC(N)=CC=2)N=1
+#643: ClC1(Cl)C2(Cl)C3CC(Cl)C(Cl)C3C1(Cl)C(Cl)=C2Cl
+#644: CC1C2C=CC3=CC=CC=C3C=2C(C)=C2C=CC=CC=12
+#645: C[n]1c(=O)c2c([n]c[n]2C)[n](C)c1=O
+#646: CCC1=NC(N)=NC(N)=C1C1C=CC(Cl)=CC=1
+#647: CN(C)C(C)CN1C2=CC=CC=C2SC2=CC=CC=C12
+#648: ClC1C(Cl)C(Cl)C(Cl)C(Cl)C1Cl
+#649: NS(=O)(=O)C1=CC2=C(C=C1Cl)NCNS2(=O)=O
+#650: CC(C)CCCC(C)CCCC(C)CCCC1(C)CCC2C(O1)=C(C)C(C)=C(OC(C)=O)C=2C
+#651: OCCN(CCO)C1=NC(=NC2=CC=CC=C21)C1=CC=CS1
+#652: ON(=O)C1=CC=C(S1)C1N=C2C=CC=CC2=C(N=1)N1CCOCC1
+#653: CN(CC1=CN=C2N=C(N)N=C(N)C2=N1)C1C=CC(=CC=1)C(=O)NC(CCC(O)=O)C(O)=O
+#654: CSCCC(N)C(O)=O
+#655: OC(=O)C1C=NC=CC=1
+#656: NC(=O)NN=CC1=CC=C(O1)N(O)=O
+#657: NNC1C=CC=CC=1
+#658: O=NN1CCOCC1
+#659: COP(=O)(OC)N1CCOCC1
+#660: COC(N)=O
+#661: OC1=CC(=CC=C1N(CCO)CCO)N(O)=O
+#662: CC1CCC(CC=1)C(C)=C
+#663: CN(C)C1C=CC(=CC=1)N=NC1C=CC=CC=1
+#664: CC(CC1C=CC=CC=1)NOS(=O)(=O)ONC(C)CC1C=CC=CC=1
+#665: CNN
+#666: CC(N)=O
+#667: CNC(=O)CSP(=S)(OC)OC
+#668: C[n]1cc[nH]c1=S
+#669: ClC1(Cl)C2(Cl)C3C4CC(C5OC54)C3C1(Cl)C(Cl)=C2Cl
+#670: C[n]1c(C)cc(=O)[n]1C1C=CC=CC=1
+#671: ON(=O)C1=CC=C2CCC3C=CC=C1C=32
+#672: NC(=O)N(CC(O)=O)N=O
+#673: ON(=O)C1=CC=CC2=CC=CN=C21
+#674: NC1C(Cl)=CC(N)=CC=1Cl
+#675: CNCC(O)C1C=C(O)C=CC=1
+#676: N=c1[nH][nH]c[n]1
+#677: CC1CN(CC(C)N1C(=O)C1C=CC=CC=1)N=O
+#678: CCN1C2=CC=C(N)C=C2C2=CC=CC=C12
+#679: CC1=CC=CC2=CC=CN=C21
+#680: CC1=CC(=CC=C1N)C1C=C(C)C(N)=CC=1
+#681: ON(=O)C1C=C2C=CC=NC2=CC=1
+#682: CCN(N=O)C(=O)OCC
+#683: NC1=CC=C(C=C1Cl)NOS(O)(=O)=O
+#684: NC1=CC(=CC=C1C(O)=O)N(O)=O
+#685: OC(=O)C1=CC=C(C=C1)N(O)=O
+#686: NCCC1C=C(O)C(O)=CC=1
+#687: CC(=O)O[Hg]C1C=CC=CC=1
+#688: CC(=O)NC1C=CC(=CC=1)OCC
+#689: NC1C=CC=CC=1
+#690: CC(N)=S
+#691: NC(N)=S
+#692: COP(=O)(OC=C(Cl)Cl)OC
+#693: CN(C)N=O
+#694: CCCN(CCC)N=O
+#695: CC1=CC=C(C=C1)NC(N)=O
+#696: NC1C=CC(N)=CC=1
+#697: CC1CN(N=O)C(=O)NC1=O
+#698: CCCCCC(N)=O
+#699: NC(=O)CCCCC(N)=O
+#700: CNC(=O)OC1=CC=CC2=CC=CC=C21
+#701: CC(COC1C=CC=CC=1)N(CCCl)CC1C=CC=CC=1
+#702: ClCC(Cl)(Cl)Cl
+#703: CC1=CC(=CC=C1N)C(C1C=CC(N)=CC=1)=C1C=CC(=N)C=C1
+#704: NC1C(Cl)=CC(Cl)=CC=1Cl
+#705: CN(N=O)C(=O)C1C=CC=CC=1
+#706: CC(=O)C(N=NC1=CC=C(C=C1Cl)C1C=C(Cl)C(=CC=1)N=NC(C(=O)NC1C=CC=CC=1)C(C)=O)C(=O)NC1C=CC=CC=1
+#707: CC1=CC=CC=C1N
+#708: CC1=CC=C(N)C=C1N
+#709: CC1=CC(=CC=C1N)NOS(O)(=O)=O
+#710: ON(=O)C1C=C(C(=CC=1)NC1C=C(C(=CC=1)NC1C=CC=CC=1)S(=O)(=O)O[Na])N(O)=O
+#711: CC1C=C(N)C=CC=1
+#712: CCO
+#713: CC1(O)C2CC3C(C(O)=C(C(N)=O)C(=O)C3(O)C(O)=C2C(=O)C2C1=CC=CC=2O)N(C)C
+#714: CC1C=CC(=CC=1)S(=O)(=O)NC(=O)NCCCC
+#715: NC1=CC=C(CC2C=C(Cl)C(N)=CC=2)C=C1Cl
+#716: CC1C=CC(=CC=1)S(=O)(=O)OC1C=CC(=CC=1)N=NC1=CC=C(C=C1C)C1C=C(C)C(=CC=1)N=NC1=C(O)C=CC2=CC(=CC(=C21)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
+#717: COC1=CC=C(C=C1N=NC1C2=CC=CC=C2C=C(C(=O)NC2=CC=CC(=C2)N(O)=O)C=1O)N(O)=O
+#718: OC1=CC=NC(O)=N1
+#719: COS(C)(=O)=O
+#720: ON(=O)C1=CC=C(C=NN2CC(=O)NC2=O)O1
+#721: CCSCCC(N)C(O)=O
+#722: CN(C)(C)CCO
+#723: ClC(Cl)Cl
+#724: ClC(Cl)(Cl)C(Cl)(Cl)Cl
+#725: CNNCC1C=CC(=CC=1)C(=O)NC(C)C
+#726: NC1=CC=C2N=C3C=CC=CN3C2=N1
+#727: CC1=CC=CN2C3=NC(N)=CC=C3N=C21
+#728: CC12CCC3C(CCC4CC(=O)CCC=43)C1CCC2(O)C#C
+#729: CC1C=C2C(NC3=CC=CC=C23)=NC=1N
+#730: CN(N=O)C(N)=O
+#731: OC(CO)C(O)C(O)C(O)CO
+#732: ClCC1=CC=CC=N1
+#733: ClCC1C=NC=CC=1
+#734: CN(N=O)C1C=NC=CC=1
+#735: CN(N=O)C(=N)NN(O)O
+#736: OC1C(CC2C(Cl)=C(Cl)C=C(Cl)C=2O)=C(Cl)C(Cl)=CC=1Cl
+#737: C1C=CC=CC=1
+#738: CC(Cl)(Cl)Cl
+#739: CC1(C)SC2C(NC(=O)C(N)C3C=CC=CC=3)C(=O)N2C1C(O)=O
+#740: ClC1(Cl)C2(Cl)C3C4CC(C5OC54)C3C1(Cl)C(Cl)=C2Cl
+#741: CC12CCC3C(CCC4=CC(=CC=C43)OC)C1CCC2(O)C#C
+#742: COC1C=CC(=CC=1)C(C1C=CC(=CC=1)OC)C(Cl)(Cl)Cl
+#743: ClC(Cl)C(C1=CC=C(Cl)C=C1)C1=CC=C(Cl)C=C1
+#744: ClC(Cl)(Cl)C(C1C=CC(Cl)=CC=1)C1C=CC(Cl)=CC=1
+#745: CCC1=CC=C(C=C1)C(C(Cl)Cl)C1=CC=C(CC)C=C1
+#746: NC1=NC(=NC(N)=N1)C1=CC=C(O1)N(O)=O
+#747: CC1N=C(N)C=C2NC3C=CC=CC=3C2=1
+#748: CN(C)N=NC1C=CC=CC=1
+#749: NC(CC1=CNC2=CC=CC=C21)C(O)=O
+#750: NC1C=C(C(C=CC2=CC=C(N)C=C2S(=O)(=O)O[Na])=CC=1)S(=O)(=O)O[Na]
+#751: C1=CC(=CC=C1NC1C=CC=CC=1)NC1C=CC=CC=1
+#752: CBr
+#753: CCBr
+#754: S=[Se]
+#755: Cl[K]
+#756: Cl[Hg]Cl
+#757: CCCl
+#758: C=CCl
+#759: CC=O
+#760: ClCCl
+#761: C1CO1
+#762: BrC(Br)Br
+#763: ClC(Cl)Br
+#764: CC(Cl)Cl
+#765: C=C(Cl)Cl
+#766: IC(I)I
+#767: CC1CO1
+#768: FC(Cl)(Cl)Cl
+#769: FC(F)(F)CCl
+#770: CC1C(N)=NC(C)=C2C=1NC1C=CC=CC=12
+#771: CP(=O)(OC)OC
+#772: CCN(N=O)C(N)=O
+#773: ClC(Cl)C(Cl)(Cl)Cl
+#774: ON(=O)C(Cl)(Cl)Cl
+#775: ClC1(Cl)C2(Cl)C3C=CC(Cl)C3C1(Cl)C(Cl)=C2Cl
+#776: O[Sn](C1C=CC=CC=1)(C1C=CC=CC=1)C1C=CC=CC=1
+#777: CN1C(N)=NC2C3=CC=CN=C3C=CC1=2
+#778: O=NO[Na]
+#779: [Na]Cl
+#780: O=CC1CO1
+#781: F[Na]
+#782: [Na]OCl
+#783: CC12C3C(C(O)=O)C45CC(O)(CCC4C3(C=CC1O)OC2=O)C(=C)C5
+#784: ClC1(Cl)C(Cl)=C(Cl)C(Cl)=C1Cl
+#785: CCC(Br)(CC)C(=O)NC(N)=O
+#786: O=S1(=O)CC=CC1
+#787: CC1(OC1C(=O)OCC)C1C=CC=CC=1
+#788: Cl[Fe](Cl)Cl
+#789: CC1=CC2=NC=CC=C2C2N=C(N)N(C)C1=2
+#790: NC(=NO)C1=CC=C(O1)N(O)=O
+#791: OO
+#792: CC1C=NC2=CC=C3C(N=C(N)N3C)=C2N=1
+#793: O=Br(=O)O[K]
+#794: Cl[Sn]Cl
+#795: ClCl
+#796: ON(=O)OCC(CON(O)=O)(CON(O)=O)CON(O)=O
+#797: CCOP(=S)(OCC)SC1OCCOC1SP(=S)(OCC)OCC
+#798: CCCCC(COP(=O)(OCC(CCCC)CC)OCC(CCCC)CC)CC
+#799: CC1CC(C)(C)CC(=O)C=1
+#800: CC(Cl)CCl
+#801: ClCC(Cl)Cl
+#802: ClC=C(Cl)Cl
+#803: C=CC(N)=O
+#804: OC(=O)CCl
+#805: ClC(Cl)C(Cl)Cl
+#806: CN(C)C(=O)Cl
+#807: CC(C)N(O)=O
+#808: CCCCCCCCCCCCCCCC(=O)OCC=C(C)C=CC=C(C)C=CC1=C(C)CCCC1(C)C
+#809: CC(C)(C1C=CC(O)=CC=1)C1C=CC(O)=CC=1
+#810: NC1C=CC(=CC=1)S(=O)(=O)C1C=CC(N)=CC=1
+#811: CC(=C)C(=O)OC
+#812: COC1=CC(C=CC(=O)CC(=O)C=CC2C=C(OC)C(O)=CC=2)=CC=C1O
+#813: O=C1NS(=O)(=O)C2=CC=CC=C12
+#814: CCCN(N=O)C(N)=O
+#815: CC1=CC=C2C(=C1N)C(=O)C1=CC=CC=C1C2=O
+#816: ON(=O)C1C(Cl)=C(Cl)C(Cl)=C(Cl)C=1Cl
+#817: CC1OC(CC(C)O1)OC(C)=O
+#818: CC(=C)C1CC2C(=CC=C3C(=O)C4C(COC5C=C(OC)C(=CC=54)OC)OC=23)O1
+#819: NC(=N)NC(=N)NCCC1C=CC=CC=1
+#820: CC1=CC(CC2C=C(C)C(N)=CC=2)=CC=C1N
+#821: O=C1C2=CC=CC=C2C(=O)C2=CC=CC=C12
+#822: OC1=CC=C2C=CC=CC2=C1N=NC1C=CC=CC=1
+#823: O=C1OC(=O)C2=CC=CC=C12
+#824: CCCCOC(=O)C1=CC=CC=C1C(=O)OCC1C=CC=CC=1
+#825: O=NN(C1C=CC=CC=1)C1C=CC=CC=1
+#826: COP(=S)(OC)SC[n]1[n][n]c2ccccc2c1=O
+#827: ON(=O)C1=CC=CC2=CC=CC=C21
+#828: C1C=CC=C2NC3=CC=CC=C3C2=1
+#829: NC(=O)CC1=CC=CC2=CC=CC=C21
+#830: OC(=O)CC1=CC=CC2=CC=CC=C21
+#831: NC(=S)NC1=CC=CC2=CC=CC=C21
+#832: OS(=O)(=O)C1C=C2C(=CC=1)NC(=C1NC3=CC=C(C=C3C1=O)S(O)(=O)=O)C2=O
+#833: COP(=O)OC
+#834: CCCCN(N=O)C(N)=O
+#835: NC1=CC=CC=C1C(=O)OCC=CC1C=CC=CC=1
+#836: OC(=O)CC1=CNC2=CC=CC=C21
+#837: OC(=O)C(Cl)=C(Cl)C=O
+#838: ClC(Cl)=C(Cl)C(Cl)=C(Cl)Cl
+#839: OC1C(Cl)=C(Cl)C(Cl)=C(Cl)C=1Cl
+#840: CN1CCCC1=O
+#841: OC1C(Cl)=CC(Cl)=CC=1Cl
+#842: CC1=CC=CC=C1S(N)(=O)=O
+#843: ON(=O)C1=CC=CC=C1Cl
+#844: CCC(C)C1=CC(=CC(=C1O)N(O)=O)N(O)=O
+#845: NC(=O)C1=CC=CC=C1C(N)=O
+#846: CC1CC(=O)N(N=1)C1C=CC=CC=1
+#847: OC1=CC=CC=C1C1C=CC=CC=1
+#848: CN(C)C1C=CC(=CC=1)C(=O)C1C=CC(=CC=1)N(C)C
+#849: C1=CC=CC2=CC=CC=C21
+#850: COC1=CC=CC=C1N(O)=O
+#851: CC1=CC(C)(C)NC2=CC=C(C=C12)OCC
+#852: NC1C=C2C=CC=CC2=CC=1
+#853: CC1C=C2C=CC=NC2=CC=1
+#854: O=c1ccc2ccccc2o1
+#855: COC1=CC(=CC=C1N=C=O)C1C=C(OC)C(=CC=1)N=C=O
+#856: NC1=CC=C(C=C1Cl)C1C=C(Cl)C(N)=CC=1
+#857: OC1C(=CC2=CC(=CC=C2C=1N=NC1=CC=C(C2=CC=CC=C21)S(O)(=O)=O)S(O)(=O)=O)S(O)(=O)=O
+#858: C1=CC=CC=C1C1C=CC=CC=1
+#859: CC(=O)OC(OC(C)=O)C1=CC=C(O1)N(O)=O
+#860: NC1C=CC(=CC=1)C1C=CC=CC=1
+#861: C1C=CC=C2NC3=CC=CC=C3SC2=1
+#862: NC1C=CC(=CC=1)C1C=CC(N)=CC=1
+#863: CCCCN(CCCC)N=O
+#864: C=CC(=O)NCO
+#865: C1=C2C=CC=CC2=CC=C1NC1C=CC(=CC=1)NC1C=C2C=CC=CC2=CC=1
+#866: OC(=O)COC1=CC(Cl)=C(Cl)C=C1Cl
+#867: O=NN1CCCC1
+#868: O=NN1CCCCCC1
+#869: CCCNC(=O)NS(=O)(=O)C1=CC=C(Cl)C=C1
+#870: O=C(OOC(=O)C1C=CC=CC=1)C1C=CC=CC=1
+#871: ON(=O)C1C=C2NC=NC2=CC=1
+#872: CCCC1C=C2OCOC2=CC=1
+#873: C=CCC1C=C2OCOC2=CC=1
+#874: OC(=O)COC1=CC=C(Cl)C=C1Cl
+#875: CCCCOC(=O)COC1=CC=C(Cl)C=C1Cl
+#876: CCN(CC)C(=S)SCC(=C)Cl
+#877: C1C=CC=C2NN=NC2=1
+#878: ClC1=CC=CC=C1Cl
+#879: CC1=CC=C(N)C=C1Cl
+#880: CC1=CC=C(Cl)C=C1N
+#881: CC1=CC=C(N)C=C1N
+#882: NC1=CC(Cl)=CC=C1N
+#883: NC1=CC2=NC3=CC(N)=CC=C3C=C2C=C1
+#884: C1OC1C1C=CC=CC=1
+#885: ClCC(Br)CBr
+#886: ClC(CCl)CCl
+#887: OCC(O)CCl
+#888: S=C1NCCN1
+#889: O=C1CCCO1
+#890: CC(C)(C)C1C=C(SC2=CC(=C(O)C=C2C)C(C)(C)C)C(C)=CC=1O
+#891: COP(=O)(OC(=CCl)C1=CC(Cl)=C(Cl)C=C1Cl)OC
+#892: CC(=O)C1C=CC(=CC=1)S(=O)(=O)NC(=O)NC1CCCCC1
+#893: OC1C(=CC(Cl)=CC=1Cl)SC1=CC(Cl)=CC(Cl)=C1O
+#894: COC1=CC(CC=C)=CC=C1O
+#895: CC1=CC=CC=C1N=NC1C=C(C)C(N)=CC=1
+#896: CCN(CC)C(=S)SSC(=S)N(CC)CC
+#897: O=CC1=CC=CO1
+#898: CC(O)C1C=CC=CC=1
+#899: NC(=O)C1=CN=CC=N1
+#900: Cc1cc2c(c3cc(C)c(cc3oc2cc1=NCC)NCC)C1=CC=CC=C1C(=O)OCC
+#901: NC1C(Cl)=CC(=CC=1Cl)N(O)=O
+#902: CC1=CC=C(C=C1N)N(O)=O
+#903: NC1=CC(=CC=C1N)N(O)=O
+#904: NC1=CC(=CC=C1O)N(O)=O
+#905: COC1=CC=C(C=C1N)N(O)=O
+#906: CN(C)(C)CCCl
+#907: COC1C=C2OC3OC=CC3C2=C2OC3=CC=CC(O)=C3C(=O)C=12
+#908: C1=CC=CC2NC=CC=21
+#909: 
+#910: 
+#911: 
+#912: 

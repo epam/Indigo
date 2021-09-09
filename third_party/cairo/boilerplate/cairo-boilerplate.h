@@ -26,9 +26,7 @@
 #ifndef _CAIRO_BOILERPLATE_H_
 #define _CAIRO_BOILERPLATE_H_
 
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
+// #include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>

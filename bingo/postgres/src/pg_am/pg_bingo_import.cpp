@@ -95,17 +95,17 @@ public:
         ImportTextData()
         {
         }
-        virtual ~ImportTextData()
+        ~ImportTextData() override
         {
         }
 
         BingoPgText data;
 
-        virtual uintptr_t getDatum()
+        uintptr_t getDatum() override
         {
             return data.getDatum();
         }
-        virtual void convert(const char* str)
+        void convert(const char* str) override
         {
             if (str != 0)
                 data.initFromString(str);
@@ -120,15 +120,15 @@ public:
     class ImportInt8Data : public ImportData
     {
     public:
-        ImportInt8Data() : data(0)
+        ImportInt8Data()
         {
         }
-        virtual ~ImportInt8Data()
+        ~ImportInt8Data() override
         {
         }
-        AutoPtr<int64> data;
+        std::unique_ptr<int64> data;
 
-        virtual void convert(const char* str)
+        void convert(const char* str) override
         {
             if (str == 0)
                 data.reset(0);
@@ -143,12 +143,12 @@ public:
             }
         }
 
-        virtual uintptr_t getDatum()
+        uintptr_t getDatum() override
         {
             if (data.get() == 0)
                 return 0;
             else
-                return Int64GetDatum(data.ref());
+                return Int64GetDatum(*data);
         }
 
     private:
@@ -157,15 +157,15 @@ public:
     class ImportInt4Data : public ImportData
     {
     public:
-        ImportInt4Data() : data(0)
+        ImportInt4Data()
         {
         }
-        virtual ~ImportInt4Data()
+        ~ImportInt4Data() override
         {
         }
-        AutoPtr<int32> data;
+        std::unique_ptr<int32> data;
 
-        virtual void convert(const char* str)
+        void convert(const char* str) override
         {
             if (str == 0)
                 data.reset(0);
@@ -179,18 +179,18 @@ public:
                 BINGO_PG_TRY
                 {
                     data.reset(new int32);
-                    data.ref() = pg_atoi(str2.ptr(), sizeof(int32), 0);
+                    *data = pg_atoi(str2.ptr(), sizeof(int32), 0);
                 }
                 BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int32: %s", message));
             }
         }
 
-        virtual uintptr_t getDatum()
+        uintptr_t getDatum() override
         {
             if (data.get() == 0)
                 return 0;
             else
-                return Int32GetDatum(data.ref());
+                return Int32GetDatum(*data);
         }
 
     private:
@@ -202,7 +202,7 @@ public:
     {
         SPI_connect();
     }
-    virtual ~BingoImportHandler()
+    ~BingoImportHandler() override
     {
         _importData.clear();
         SPI_finish();
@@ -297,7 +297,7 @@ public:
 
     void _addData(const char* data, int col_idx)
     {
-        AutoPtr<ImportData> import_data;
+        std::unique_ptr<ImportData> import_data;
         ImportColumn& import_column = _importColumns[col_idx];
         /*
          * Detect the types and correspond class
@@ -446,20 +446,20 @@ public:
         bingo_res = bingoSDFImportOpen(fname);
         CORE_HANDLE_ERROR(bingo_res, 1, "importSDF", bingoGetError());
     }
-    virtual ~BingoImportSdfHandler()
+    ~BingoImportSdfHandler() override
     {
         bingo_res = bingoSDFImportClose();
         CORE_HANDLE_WARNING(bingo_res, 0, "importSDF close", bingoGetError());
     }
 
-    virtual bool hasNext()
+    bool hasNext() override
     {
         bingo_res = bingoSDFImportEOF();
         CORE_HANDLE_ERROR(bingo_res, 0, "importSDF", bingoGetError());
         return !bingo_res;
     }
 
-    virtual void getNextData()
+    void getNextData() override
     {
 
         const char* data = 0;
@@ -528,13 +528,13 @@ public:
         bingo_res = bingoRDFImportOpen(fname);
         CORE_HANDLE_ERROR(bingo_res, 1, "importRDF", bingoGetError());
     }
-    virtual ~BingoImportRdfHandler()
+    ~BingoImportRdfHandler() override
     {
         bingo_res = bingoRDFImportClose();
         CORE_HANDLE_WARNING(bingo_res, 0, "importRDF close", bingoGetError());
     }
 
-    virtual bool hasNext()
+    bool hasNext() override
     {
         bingo_res = bingoRDFImportEOF();
         CORE_HANDLE_ERROR(bingo_res, 0, "importRDF", bingoGetError());
@@ -542,7 +542,7 @@ public:
         return !bingo_res;
     }
 
-    virtual void getNextData()
+    void getNextData() override
     {
         const char* data = 0;
         _importData.clear();
@@ -610,20 +610,20 @@ public:
         bingo_res = bingoSMILESImportOpen(fname);
         CORE_HANDLE_ERROR(bingo_res, 1, "importSmiles", bingoGetError());
     }
-    virtual ~BingoImportSmilesHandler()
+    ~BingoImportSmilesHandler() override
     {
         bingo_res = bingoSMILESImportClose();
         CORE_HANDLE_WARNING(bingo_res, 0, "importSmiles close", bingoGetError());
     }
 
-    virtual bool hasNext()
+    bool hasNext() override
     {
         bingo_res = bingoSMILESImportEOF();
         CORE_HANDLE_ERROR(bingo_res, 0, "importSmiles", bingoGetError());
         return !bingo_res;
     }
 
-    virtual void getNextData()
+    void getNextData() override
     {
 
         const char* data = 0;

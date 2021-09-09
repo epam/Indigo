@@ -29,6 +29,13 @@ public class IndigoInchi {
     public IndigoInchi(Indigo indigo) {
         loadLibrary(indigo.getUserSpecifiedPath());
         this.indigo = indigo;
+        Indigo.checkResult(this, lib.indigoInchiInit());
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        Indigo.checkResult(this, lib.indigoInchiDispose());
+        super.finalize();
     }
 
     public String version() {

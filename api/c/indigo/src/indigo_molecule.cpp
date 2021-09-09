@@ -90,7 +90,7 @@ const char* IndigoMolecule::getName()
 
 IndigoMolecule* IndigoMolecule::cloneFrom(IndigoObject& obj)
 {
-    AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+    std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
     QS_DEF(Array<int>, mapping);
 
     molptr->mol.clone(obj.getMolecule(), 0, &mapping);
@@ -117,7 +117,7 @@ QueryMolecule& IndigoQueryMolecule::getQueryMolecule()
 
 IndigoQueryMolecule* IndigoQueryMolecule::cloneFrom(IndigoObject& obj)
 {
-    AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
+    std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
     QS_DEF(Array<int>, mapping);
 
     molptr->qmol.clone(obj.getQueryMolecule(), 0, &mapping);
@@ -128,7 +128,7 @@ IndigoQueryMolecule* IndigoQueryMolecule::cloneFrom(IndigoObject& obj)
     return molptr.release();
 }
 
-void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* value, AutoPtr<QueryMolecule::Atom>& atom)
+void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* value, std::unique_ptr<QueryMolecule::Atom>& atom)
 {
     enum KeyType
     {
@@ -184,7 +184,7 @@ void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* valu
                     }
                 }
             }
-            atom.reset(new QueryMolecule::Atom(mappingForKeys[i].value, int_value));
+            atom = std::make_unique<QueryMolecule::Atom>(mappingForKeys[i].value, int_value);
             return;
         }
     }
@@ -197,7 +197,7 @@ void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* valu
             BufferScanner buf_scanner(value);
             int_value = buf_scanner.readInt();
         }
-        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 1 << int_value));
+        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 1 << int_value);
         return;
     }
     else if (strcasecmp(type, "smarts") == 0)
@@ -219,7 +219,7 @@ void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* valu
             else
                 throw IndigoError("unsupported aromaticity type: %s", value);
         }
-        atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, int_value));
+        atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_AROMATICITY, int_value);
         return;
     }
 
@@ -371,7 +371,7 @@ IndigoObject* IndigoAtomsIter::next()
     if (_idx == _mol->vertexEnd())
         return 0;
 
-    AutoPtr<IndigoAtom> atom(new IndigoAtom(*_mol, _idx));
+    std::unique_ptr<IndigoAtom> atom = std::make_unique<IndigoAtom>(*_mol, _idx);
 
     return atom.release();
 }
@@ -450,11 +450,8 @@ IndigoObject* IndigoBondsIter::next()
         _idx = _mol.edgeNext(_idx);
 
     if (_idx == _mol.edgeEnd())
-        return 0;
-
-    AutoPtr<IndigoBond> bond(new IndigoBond(_mol, _idx));
-
-    return bond.release();
+        return nullptr;
+    return new IndigoBond(_mol, _idx);
 }
 
 CEXPORT int indigoLoadMolecule(int source)
@@ -474,7 +471,7 @@ CEXPORT int indigoLoadMolecule(int source)
         loader.treat_stereo_as = self.treat_stereo_as;
         loader.ignore_bad_valence = self.ignore_bad_valence;
 
-        AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
         Molecule& mol = molptr->mol;
 
@@ -496,7 +493,7 @@ CEXPORT int indigoLoadQueryMolecule(int source)
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
 
-        AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
+        std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
         QueryMolecule& qmol = molptr->qmol;
 
@@ -515,7 +512,7 @@ CEXPORT int indigoLoadSmarts(int source)
         IndigoObject& obj = self.getObject(source);
         SmilesLoader loader(IndigoScanner::get(obj));
 
-        AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
+        std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
         QueryMolecule& qmol = molptr->qmol;
 
@@ -625,17 +622,17 @@ int IndigoMoleculeComponent::getIndex()
 
 IndigoObject* IndigoMoleculeComponent::clone()
 {
-    AutoPtr<IndigoObject> res;
+    std::unique_ptr<IndigoObject> res;
     BaseMolecule* newmol;
 
     if (mol.isQueryMolecule())
     {
-        res.reset(new IndigoQueryMolecule());
+        res = std::make_unique<IndigoQueryMolecule>();
         newmol = &(((IndigoQueryMolecule*)res.get())->qmol);
     }
     else
     {
-        res.reset(new IndigoMolecule());
+        res = std::make_unique<IndigoMolecule>();
         newmol = &(((IndigoMolecule*)res.get())->mol);
     }
 
@@ -715,11 +712,7 @@ IndigoObject* IndigoSGroupBondsIter::next()
 
 int _indigoIterateAtoms(Indigo& self, int molecule, int type)
 {
-    BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
-
-    AutoPtr<IndigoAtomsIter> newiter(new IndigoAtomsIter(&mol, type));
-
-    return self.addObject(newiter.release());
+    return self.addObject(new IndigoAtomsIter(&self.getObject(molecule).getBaseMolecule(), type));
 }
 
 CEXPORT int indigoIterateAtoms(int molecule)
@@ -811,10 +804,7 @@ CEXPORT int indigoIterateBonds(int molecule)
             return self.addObject(new IndigoSGroupBondsIter(gg.mol, gg.mol.sgroups.getSGroup(gg.idx)));
         }
         BaseMolecule& mol = obj.getBaseMolecule();
-
-        AutoPtr<IndigoBondsIter> newiter(new IndigoBondsIter(mol));
-
-        return self.addObject(newiter.release());
+        return self.addObject(new IndigoBondsIter(mol));
     }
     INDIGO_END(-1);
 }
@@ -1113,16 +1103,16 @@ IndigoObject* IndigoRGroupFragment::clone()
 {
     BaseMolecule* mol = rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
 
-    AutoPtr<IndigoBaseMolecule> molptr;
+    std::unique_ptr<IndigoBaseMolecule> molptr;
 
     if (mol->isQueryMolecule())
     {
-        molptr.reset(new IndigoQueryMolecule());
+        molptr = std::make_unique<IndigoQueryMolecule>();
         molptr->getQueryMolecule().clone(*mol, 0, 0);
     }
     else
     {
-        molptr.reset(new IndigoMolecule());
+        molptr = std::make_unique<IndigoMolecule>();
         molptr->getMolecule().clone(*mol, 0, 0);
     }
 
@@ -1152,7 +1142,7 @@ bool IndigoRGroupFragmentsIter::hasNext()
 IndigoObject* IndigoRGroupFragmentsIter::next()
 {
     if (!hasNext())
-        return 0;
+        return nullptr;
 
     PtrPool<BaseMolecule>& frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
 
@@ -1160,10 +1150,7 @@ IndigoObject* IndigoRGroupFragmentsIter::next()
         _frag_idx = frags.begin();
     else
         _frag_idx = frags.next(_frag_idx);
-
-    AutoPtr<IndigoRGroupFragment> rgroup(new IndigoRGroupFragment(_mol, _rgroup_idx, _frag_idx));
-
-    return rgroup.release();
+    return new IndigoRGroupFragment(_mol, _rgroup_idx, _frag_idx);
 }
 
 CEXPORT int indigoIterateRGroupFragments(int rgroup)
@@ -1171,9 +1158,7 @@ CEXPORT int indigoIterateRGroupFragments(int rgroup)
     INDIGO_BEGIN
     {
         IndigoRGroup& rgp = IndigoRGroup::cast(self.getObject(rgroup));
-
-        AutoPtr<IndigoRGroupFragmentsIter> newiter(new IndigoRGroupFragmentsIter(rgp));
-        return self.addObject(newiter.release());
+        return self.addObject(new IndigoRGroupFragmentsIter(rgp));
     }
     INDIGO_END(-1);
 }
@@ -1211,7 +1196,7 @@ IndigoObject* IndigoRGroupsIter::next()
         return 0;
 
     _idx += 1;
-    AutoPtr<IndigoRGroup> rgroup(new IndigoRGroup());
+    std::unique_ptr<IndigoRGroup> rgroup = std::make_unique<IndigoRGroup>();
 
     rgroup->mol = _mol;
     rgroup->idx = _idx;
@@ -1565,7 +1550,7 @@ CEXPORT int indigoRemoveConstraints(int item, const char* str_type)
         if (strcasecmp(str_type, "smarts") == 0)
             throw IndigoError("indigoRemoveConstraints(): type 'smarts' is not supported", str_type);
 
-        AutoPtr<QueryMolecule::Atom> atom;
+        std::unique_ptr<QueryMolecule::Atom> atom;
         IndigoQueryMolecule::parseAtomConstraint(str_type, NULL, atom);
 
         if (atom->children.size() != 0)
@@ -1586,7 +1571,7 @@ CEXPORT int indigoAddConstraint(int atom, const char* type, const char* value)
         IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
 
         QueryMolecule& qmol = ia.mol.asQueryMolecule();
-        AutoPtr<QueryMolecule::Atom> atom_constraint;
+        std::unique_ptr<QueryMolecule::Atom> atom_constraint;
 
         IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
 
@@ -1605,7 +1590,7 @@ CEXPORT int indigoAddConstraintNot(int atom, const char* type, const char* value
         IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
 
         QueryMolecule& qmol = ia.mol.asQueryMolecule();
-        AutoPtr<QueryMolecule::Atom> atom_constraint;
+        std::unique_ptr<QueryMolecule::Atom> atom_constraint;
 
         IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
 
@@ -1624,7 +1609,7 @@ CEXPORT int indigoAddConstraintOr(int atom, const char* type, const char* value)
         IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
 
         QueryMolecule& qmol = ia.mol.asQueryMolecule();
-        AutoPtr<QueryMolecule::Atom> atom_constraint;
+        std::unique_ptr<QueryMolecule::Atom> atom_constraint;
 
         IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
 
@@ -1645,7 +1630,7 @@ CEXPORT int indigoAddConstraintOrNot(int atom, const char* type, const char* val
 
       BaseMolecule *mol = ia.mol;
       QueryMolecule& qmol = mol->asQueryMolecule();
-      AutoPtr<QueryMolecule::Atom> atom_constraint;
+      std::unique_ptr<QueryMolecule::Atom> atom_constraint;
 
       IndigoQueryMolecule::parseAtomConstraint(type, value, atom_constraint);
 
@@ -1725,14 +1710,14 @@ CEXPORT int indigoCreateSubmolecule(int molecule, int nvertices, int* vertices)
 
         if (mol.isQueryMolecule())
         {
-            AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
+            std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
             molptr->qmol.makeSubmolecule(mol, vertices_arr, 0, 0);
             return self.addObject(molptr.release());
         }
         else
         {
-            AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+            std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
             molptr->mol.makeSubmolecule(mol, vertices_arr, 0, 0);
             return self.addObject(molptr.release());
@@ -1765,9 +1750,7 @@ CEXPORT int indigoGetSubmolecule(int molecule, int nvertices, int* vertices)
             if (vertices_mask[edge.beg] && vertices_mask[edge.end])
                 edges.push(i);
         }
-
-        AutoPtr<IndigoSubmolecule> subptr(new IndigoSubmolecule(mol, vertices_arr, edges));
-        return self.addObject(subptr.release());
+        return self.addObject(new IndigoSubmolecule(mol, vertices_arr, edges));
     }
     INDIGO_END(-1);
 }
@@ -1786,14 +1769,14 @@ CEXPORT int indigoCreateEdgeSubmolecule(int molecule, int nvertices, int* vertic
 
         if (mol.isQueryMolecule())
         {
-            AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
+            std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
             molptr->qmol.makeEdgeSubmolecule(mol, vertices_arr, edges_arr, 0, 0);
             return self.addObject(molptr.release());
         }
         else
         {
-            AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+            std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
             molptr->mol.makeEdgeSubmolecule(mol, vertices_arr, edges_arr, 0, 0);
             return self.addObject(molptr.release());
@@ -2138,7 +2121,7 @@ IndigoObject* IndigoDataSGroupsIter::next()
     else
         _idx++;
 
-    AutoPtr<IndigoDataSGroup> sgroup(new IndigoDataSGroup(_mol, _refs[_idx]));
+    std::unique_ptr<IndigoDataSGroup> sgroup = std::make_unique<IndigoDataSGroup>(_mol, _refs[_idx]);
     return sgroup.release();
 }
 
@@ -2250,7 +2233,7 @@ IndigoObject* IndigoSuperatomsIter::next()
     else
         _idx++;
 
-    AutoPtr<IndigoSuperatom> sgroup(new IndigoSuperatom(_mol, _refs[_idx]));
+    std::unique_ptr<IndigoSuperatom> sgroup = std::make_unique<IndigoSuperatom>(_mol, _refs[_idx]);
     return sgroup.release();
 }
 
@@ -2312,7 +2295,7 @@ IndigoObject* IndigoRepeatingUnitsIter::next()
     else
         _idx++;
 
-    AutoPtr<IndigoRepeatingUnit> sgroup(new IndigoRepeatingUnit(_mol, _refs[_idx]));
+    std::unique_ptr<IndigoRepeatingUnit> sgroup = std::make_unique<IndigoRepeatingUnit>(_mol, _refs[_idx]);
     return sgroup.release();
 }
 
@@ -2374,7 +2357,7 @@ IndigoObject* IndigoMultipleGroupsIter::next()
     else
         _idx++;
 
-    AutoPtr<IndigoMultipleGroup> sgroup(new IndigoMultipleGroup(_mol, _refs[_idx]));
+    std::unique_ptr<IndigoMultipleGroup> sgroup = std::make_unique<IndigoMultipleGroup>(_mol, _refs[_idx]);
     return sgroup.release();
 }
 
@@ -2436,7 +2419,7 @@ IndigoObject* IndigoGenericSGroupsIter::next()
     else
         _idx++;
 
-    AutoPtr<IndigoGenericSGroup> sgroup(new IndigoGenericSGroup(_mol, _refs[_idx]));
+    std::unique_ptr<IndigoGenericSGroup> sgroup = std::make_unique<IndigoGenericSGroup>(_mol, _refs[_idx]);
     return sgroup.release();
 }
 
@@ -2522,7 +2505,7 @@ IndigoObject* IndigoSGroupsIter::next()
     else
         _idx++;
 
-    AutoPtr<IndigoSGroup> sgroup(new IndigoSGroup(_mol, _refs[_idx]));
+    std::unique_ptr<IndigoSGroup> sgroup = std::make_unique<IndigoSGroup>(_mol, _refs[_idx]);
     return sgroup.release();
 }
 
@@ -2610,7 +2593,7 @@ IndigoObject* IndigoTGroupsIter::next()
     else
         _idx++;
 
-    AutoPtr<IndigoTGroup> tgroup(new IndigoTGroup(_mol, _idx));
+    std::unique_ptr<IndigoTGroup> tgroup = std::make_unique<IndigoTGroup>(_mol, _idx);
     return tgroup.release();
 }
 
@@ -3568,7 +3551,7 @@ CEXPORT int indigoCloneComponent(int molecule, int index)
             throw IndigoError("indigoCloneComponent(): bad index %d (0-%d allowed)", index, bm.countComponents() - 1);
 
         Filter filter(bm.getDecomposition().ptr(), Filter::EQ, index);
-        AutoPtr<IndigoMolecule> im(new IndigoMolecule());
+        std::unique_ptr<IndigoMolecule> im = std::make_unique<IndigoMolecule>();
         im->mol.makeSubmolecule(bm, filter, 0, 0);
         return self.addObject(im.release());
     }
@@ -3752,7 +3735,7 @@ CEXPORT int indigoCreateMolecule()
 {
     INDIGO_BEGIN
     {
-        AutoPtr<IndigoMolecule> obj(new IndigoMolecule());
+        std::unique_ptr<IndigoMolecule> obj = std::make_unique<IndigoMolecule>();
         return self.addObject(obj.release());
     }
     INDIGO_END(-1);
@@ -3774,7 +3757,7 @@ CEXPORT int indigoMerge(int where, int what)
         BaseMolecule& mol_where = self.getObject(where).getBaseMolecule();
         BaseMolecule& mol_what = self.getObject(what).getBaseMolecule();
 
-        AutoPtr<IndigoMapping> res(new IndigoMapping(mol_what, mol_where));
+        std::unique_ptr<IndigoMapping> res = std::make_unique<IndigoMapping>(mol_what, mol_where);
 
         mol_where.mergeWithMolecule(mol_what, &res->mapping, 0);
 
@@ -4071,11 +4054,11 @@ void IndigoSubmolecule::_createSubMolecule()
     }
     if (_mol.isQueryMolecule())
     {
-        _submol.reset(new QueryMolecule());
+        _submol = std::make_unique<QueryMolecule>();
     }
     else
     {
-        _submol.reset(new Molecule());
+        _submol = std::make_unique<Molecule>();
     }
     _submol->makeEdgeSubmolecule(_mol, vertices, edges, 0, 0);
     _submol_revision = _mol.getEditRevision();
@@ -4084,7 +4067,7 @@ void IndigoSubmolecule::_createSubMolecule()
 BaseMolecule& IndigoSubmolecule::getBaseMolecule()
 {
     _createSubMolecule();
-    return _submol.ref();
+    return *_submol;
 }
 
 int IndigoSubmolecule::getIndex()
@@ -4097,17 +4080,17 @@ int IndigoSubmolecule::getIndex()
 
 IndigoObject* IndigoSubmolecule::clone()
 {
-    AutoPtr<IndigoObject> res;
+    std::unique_ptr<IndigoObject> res;
     BaseMolecule* newmol;
 
     if (_mol.isQueryMolecule())
     {
-        res.reset(new IndigoQueryMolecule());
+        res = std::make_unique<IndigoQueryMolecule>();
         newmol = &(((IndigoQueryMolecule*)res.get())->qmol);
     }
     else
     {
-        res.reset(new IndigoMolecule());
+        res = std::make_unique<IndigoMolecule>();
         newmol = &(((IndigoMolecule*)res.get())->mol);
     }
 
@@ -4208,7 +4191,7 @@ IndigoObject* IndigoSSSRIter::next()
     List<int>& vertices = _mol.sssrVertices(_idx);
     List<int>& edges = _mol.sssrEdges(_idx);
 
-    AutoPtr<IndigoSubmolecule> res(new IndigoSubmolecule(_mol, vertices, edges));
+    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, vertices, edges);
     res->idx = _idx;
     return res.release();
 }
@@ -4248,7 +4231,7 @@ IndigoObject* IndigoSubtreesIter::next()
         return 0;
 
     _idx++;
-    AutoPtr<IndigoSubmolecule> res(new IndigoSubmolecule(_mol, _vertices[_idx], _edges[_idx]));
+    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, _vertices[_idx], _edges[_idx]);
     res->idx = _idx;
     return res.release();
 }
@@ -4298,7 +4281,7 @@ IndigoObject* IndigoRingsIter::next()
         return 0;
 
     _idx++;
-    AutoPtr<IndigoSubmolecule> res(new IndigoSubmolecule(_mol, _vertices[_idx], _edges[_idx]));
+    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, _vertices[_idx], _edges[_idx]);
     res->idx = _idx;
     return res.release();
 }
@@ -4351,7 +4334,7 @@ IndigoObject* IndigoEdgeSubmoleculeIter::next()
         return 0;
 
     _idx++;
-    AutoPtr<IndigoSubmolecule> res(new IndigoSubmolecule(_mol, _vertices[_idx], _edges[_idx]));
+    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, _vertices[_idx], _edges[_idx]);
     res->idx = _idx;
     return res.release();
 }
@@ -4500,7 +4483,7 @@ CEXPORT int indigoNameToStructure(const char* name, const char* params)
             }
         }
 
-        AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
         Molecule& mol = molptr->mol;
         parser.parseMolecule(name, mol);

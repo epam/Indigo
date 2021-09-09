@@ -33,16 +33,16 @@ class IndigoRdfData : public IndigoObject
 public:
     IndigoRdfData(int type, Array<char>& data, int index, long long offset);
     IndigoRdfData(int type, Array<char>& data, PropertiesMap& properties, int index, long long offset);
-    virtual ~IndigoRdfData();
+    ~IndigoRdfData() override;
 
     Array<char>& getRawData();
-    //   virtual RedBlackStringObjMap< Array<char> > * getProperties () {return &_properties.getProperties();}
-    virtual PropertiesMap& getProperties()
+    //   RedBlackStringObjMap< Array<char> > * getProperties () override {return &_properties.getProperties();}
+    PropertiesMap& getProperties() override
     {
         return _properties;
     }
 
-    virtual int getIndex();
+    int getIndex() override;
     long long tell();
 
 protected:
@@ -58,12 +58,12 @@ class IndigoRdfMolecule : public IndigoRdfData
 {
 public:
     IndigoRdfMolecule(Array<char>& data, PropertiesMap& properties, int index, long long offset);
-    virtual ~IndigoRdfMolecule();
+    ~IndigoRdfMolecule() override;
 
-    virtual Molecule& getMolecule();
-    virtual BaseMolecule& getBaseMolecule();
-    virtual const char* getName();
-    virtual IndigoObject* clone();
+    Molecule& getMolecule() override;
+    BaseMolecule& getBaseMolecule() override;
+    const char* getName() override;
+    IndigoObject* clone() override;
 
 protected:
     Molecule _mol;
@@ -73,12 +73,12 @@ class IndigoRdfReaction : public IndigoRdfData
 {
 public:
     IndigoRdfReaction(Array<char>& data, PropertiesMap& properties, int index, long long offset);
-    virtual ~IndigoRdfReaction();
+    ~IndigoRdfReaction() override;
 
-    virtual Reaction& getReaction();
-    virtual BaseReaction& getBaseReaction();
-    virtual const char* getName();
-    virtual IndigoObject* clone();
+    Reaction& getReaction() override;
+    BaseReaction& getBaseReaction() override;
+    const char* getName() override;
+    IndigoObject* clone() override;
 
 protected:
     Reaction _rxn;
@@ -89,15 +89,15 @@ class IndigoSdfLoader : public IndigoObject
 public:
     IndigoSdfLoader(Scanner& scanner);
     IndigoSdfLoader(const char* filename);
-    virtual ~IndigoSdfLoader();
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    ~IndigoSdfLoader() override;
+    IndigoObject* next() override;
+    bool hasNext() override;
     IndigoObject* at(int index);
     long long tell();
-    AutoPtr<SdfLoader> sdf_loader;
+    std::unique_ptr<SdfLoader> sdf_loader;
 
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };
 
 /*
@@ -106,14 +106,14 @@ class IndigoJSONLoader : public IndigoObject
 public:
     IndigoJSONLoader(Scanner& scanner);
     IndigoJSONLoader(const char* filename);
-    virtual ~IndigoJSONLoader();
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    ~IndigoJSONLoader() override;
+    IndigoObject* next() override;
+    bool hasNext() override;
     IndigoObject* at(int index);
-    AutoPtr<JSONLoader> json_loader;
+    std::unique_ptr<JSONLoader> json_loader;
     
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };*/
 
 
@@ -122,19 +122,19 @@ class IndigoRdfLoader : public IndigoObject
 public:
     IndigoRdfLoader(Scanner& scanner);
     IndigoRdfLoader(const char* filename);
-    virtual ~IndigoRdfLoader();
+    ~IndigoRdfLoader() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
     IndigoObject* at(int index);
 
     long long tell();
 
-    AutoPtr<RdfLoader> rdf_loader;
+    std::unique_ptr<RdfLoader> rdf_loader;
 
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };
 
 
@@ -142,11 +142,11 @@ class IndigoJSONMolecule : public IndigoObject
 {
 public:
     IndigoJSONMolecule( rapidjson::Value& node, rapidjson::Value& rgroups, int index );
-    virtual ~IndigoJSONMolecule();
-    virtual Molecule& getMolecule();
-    virtual BaseMolecule& getBaseMolecule();
-    virtual const char* getName();
-    virtual IndigoObject* clone();
+    ~IndigoJSONMolecule() override;
+    Molecule& getMolecule() override;
+    BaseMolecule& getBaseMolecule() override;
+    const char* getName() override;
+    IndigoObject* clone() override;
     
 protected:
     Molecule _mol;
@@ -159,12 +159,12 @@ class IndigoSmilesMolecule : public IndigoRdfData
 {
 public:
     IndigoSmilesMolecule(Array<char>& smiles, int index, long long offset);
-    virtual ~IndigoSmilesMolecule();
+    ~IndigoSmilesMolecule() override;
 
-    virtual Molecule& getMolecule();
-    virtual BaseMolecule& getBaseMolecule();
-    virtual const char* getName();
-    virtual IndigoObject* clone();
+    Molecule& getMolecule() override;
+    BaseMolecule& getBaseMolecule() override;
+    const char* getName() override;
+    IndigoObject* clone() override;
 
 protected:
     Molecule _mol;
@@ -174,12 +174,12 @@ class IndigoSmilesReaction : public IndigoRdfData
 {
 public:
     IndigoSmilesReaction(Array<char>& data, int index, long long offset);
-    virtual ~IndigoSmilesReaction();
+    ~IndigoSmilesReaction() override;
 
-    virtual Reaction& getReaction();
-    virtual BaseReaction& getBaseReaction();
-    virtual const char* getName();
-    virtual IndigoObject* clone();
+    Reaction& getReaction() override;
+    BaseReaction& getBaseReaction() override;
+    const char* getName() override;
+    IndigoObject* clone() override;
 
 protected:
     Reaction _rxn;
@@ -190,12 +190,12 @@ class IndigoMultilineSmilesLoader : public IndigoObject
 public:
     IndigoMultilineSmilesLoader(Scanner& scanner);
     IndigoMultilineSmilesLoader(const char* filename);
-    virtual ~IndigoMultilineSmilesLoader();
+    ~IndigoMultilineSmilesLoader() override;
 
     long long tell();
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
     IndigoObject* at(int index);
     int count();
@@ -203,7 +203,7 @@ public:
 protected:
     Scanner* _scanner;
     Array<char> _str;
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 
     void _advance();
 
@@ -222,14 +222,14 @@ class IndigoCmlMolecule : public IndigoRdfData
 {
 public:
     IndigoCmlMolecule(Array<char>& data_, int index, long long offset);
-    virtual ~IndigoCmlMolecule();
+    ~IndigoCmlMolecule() override;
 
-    virtual Molecule& getMolecule();
-    virtual BaseMolecule& getBaseMolecule();
-    virtual const char* getName();
-    virtual IndigoObject* clone();
+    Molecule& getMolecule() override;
+    BaseMolecule& getBaseMolecule() override;
+    const char* getName() override;
+    IndigoObject* clone() override;
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
 protected:
     Molecule _mol;
@@ -239,14 +239,14 @@ class IndigoCmlReaction : public IndigoRdfData
 {
 public:
     IndigoCmlReaction(Array<char>& data_, int index, long long offset);
-    virtual ~IndigoCmlReaction();
+    ~IndigoCmlReaction() override;
 
-    virtual Reaction& getReaction();
-    virtual BaseReaction& getBaseReaction();
-    virtual const char* getName();
-    virtual IndigoObject* clone();
+    Reaction& getReaction() override;
+    BaseReaction& getBaseReaction() override;
+    const char* getName() override;
+    IndigoObject* clone() override;
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
 protected:
     Reaction _rxn;
@@ -257,19 +257,19 @@ class IndigoMultipleCmlLoader : public IndigoObject
 public:
     IndigoMultipleCmlLoader(Scanner& scanner);
     IndigoMultipleCmlLoader(const char* filename);
-    virtual ~IndigoMultipleCmlLoader();
+    ~IndigoMultipleCmlLoader() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
     IndigoObject* at(int index);
 
     long long tell();
 
-    AutoPtr<MultipleCmlLoader> loader;
+    std::unique_ptr<MultipleCmlLoader> loader;
 
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };
 
 namespace indigo
@@ -281,14 +281,14 @@ class IndigoCdxMolecule : public IndigoRdfData
 {
 public:
     IndigoCdxMolecule(Array<char>& data_, PropertiesMap& properties, int index, long long offset);
-    virtual ~IndigoCdxMolecule();
+    ~IndigoCdxMolecule() override;
 
-    virtual Molecule& getMolecule();
-    virtual BaseMolecule& getBaseMolecule();
-    virtual const char* getName();
-    virtual IndigoObject* clone();
+    Molecule& getMolecule() override;
+    BaseMolecule& getBaseMolecule() override;
+    const char* getName() override;
+    IndigoObject* clone() override;
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
 protected:
     Molecule _mol;
@@ -298,14 +298,14 @@ class IndigoCdxReaction : public IndigoRdfData
 {
 public:
     IndigoCdxReaction(Array<char>& data_, PropertiesMap& properties, int index, long long offset);
-    virtual ~IndigoCdxReaction();
+    ~IndigoCdxReaction() override;
 
-    virtual Reaction& getReaction();
-    virtual BaseReaction& getBaseReaction();
-    virtual const char* getName();
-    virtual IndigoObject* clone();
+    Reaction& getReaction() override;
+    BaseReaction& getBaseReaction() override;
+    const char* getName() override;
+    IndigoObject* clone() override;
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
 protected:
     Reaction _rxn;
@@ -316,19 +316,19 @@ class IndigoMultipleCdxLoader : public IndigoObject
 public:
     IndigoMultipleCdxLoader(Scanner& scanner);
     IndigoMultipleCdxLoader(const char* filename);
-    virtual ~IndigoMultipleCdxLoader();
+    ~IndigoMultipleCdxLoader() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
     IndigoObject* at(int index);
 
     long long tell();
 
-    AutoPtr<MultipleCdxLoader> loader;
+    std::unique_ptr<MultipleCdxLoader> loader;
 
 protected:
-    AutoPtr<Scanner> _own_scanner;
+    std::unique_ptr<Scanner> _own_scanner;
 };
 
 #endif

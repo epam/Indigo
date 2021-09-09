@@ -9,6 +9,8 @@ import sys
 import time
 import runpy
 import traceback
+import gc
+
 
 if sys.platform == 'cli':
     import clr
@@ -21,8 +23,8 @@ if sys.platform == 'cli':
 
 base_root = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 sys.path.append(os.path.join(base_root, 'common'))
-from env_indigo import Indigo, getPlatform, dll_full_path, open_file_utf8, dir_exists, makedirs, file_size, file_exists
-
+from env_indigo import Indigo, getPlatform, isJython, isIronPython, dll_full_path, open_file_utf8, dir_exists, makedirs, file_size, file_exists
+from util import overridePlatform
 
 class Logger(object):
     def __init__(self, output_file_name):
@@ -72,6 +74,10 @@ def write_difference(fn_1, fn_2, fn_3):
             if line2:
                 f_3.write("+ " + line2 + "\n")
     f_3.close()
+    with open("{}.html".format(fn_3), "w") as pretty_file:
+        pretty_diff = difflib.HtmlDiff()
+        html_cont = pretty_diff.make_file(lines_1, lines_2)
+        pretty_file.write(html_cont)
     return difference_counter
 
 
@@ -115,6 +121,8 @@ def main():
             junit_report_name = sys.argv[i + 1]
         elif sys.argv[i] == '-exec':
             python_exec = sys.argv[i + 1]
+        elif sys.argv[i] == '-platform':
+            overridePlatform( sys.argv[i + 1] )
         else:
             print("Unexpected options: %s" % (sys.argv[i]))
             exit()
@@ -132,14 +140,14 @@ def main():
     print("Date & time: " + datetime.datetime.now().strftime("%d.%m.%Y %H:%M"))
     if sys.platform == 'cli':
         import System.Environment
-    print("Platform: {}".format(platform.platform() if sys.platform != 'cli' else System.Environment.OSVersion.ToString()))
-    print("Processor: {}".format(platform.processor() if sys.platform != 'cli' else 'x86_64' if System.Environment.Is64BitProcess else 'x86'))
+    #print("Platform: {}".format(platform.platform() if sys.platform != 'cli' else System.Environment.OSVersion.ToString()))
+    #print("Processor: {}".format(platform.processor() if sys.platform != 'cli' else 'x86_64' if System.Environment.Is64BitProcess else 'x86'))
     print("Python: " + sys.version.replace('\n', '\t'))
     print("Executable: " + python_exec)
     import socket
     print("Host name: " + socket.gethostname()) # platform.node())
     print("")
-
+    del indigo
     # Collect tests and sort them
     tests_dir = os.path.join(base_root, 'tests')
     tests = sorted(get_tests(tests_dir))
@@ -193,6 +201,7 @@ def main():
             t0 = time.time()
             try:
                 runpy.run_path(filename, run_name='__main__')
+                gc.collect()
             except:
                 sys.stderr.write(traceback.format_exc())
             tspent = time.time() - t0
@@ -216,9 +225,14 @@ def main():
         if file_exists(base_output_file):
             diff_file = os.path.join(test_dir, filename + ".diff")
             # copy reference file
-            system_name = getPlatform()
-            if system_name and file_exists(os.path.join(base_dir, system_name, filename + '.out')):
-                base_output_file = os.path.join(base_dir, system_name, filename + '.out')
+            if isJython() and file_exists(os.path.join(base_dir, "jython", filename + '.out')):
+                base_output_file = os.path.join(base_dir,"jython", filename + '.out')
+            elif isIronPython() and file_exists(os.path.join(base_dir, "iron", filename + '.out')):
+                base_output_file = os.path.join(base_dir,"iron", filename + '.out')
+            else:
+                sn = getPlatform()
+                if sn and file_exists(os.path.join(base_dir, sn, filename + '.out')):
+                    base_output_file = os.path.join(base_dir, sn, filename + '.out')
             new_ref_file = os.path.join(test_dir, filename + ".std")
             if not os.path.normpath(os.path.abspath(base_output_file)) == os.path.normpath(os.path.abspath(new_ref_file)):
                 if not sys.platform == 'cli':

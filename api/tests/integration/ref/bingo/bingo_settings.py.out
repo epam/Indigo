@@ -1,0 +1,6 @@
+*** Test if Indigo and Bingo use the same settings for fingerprints ***
+indigo fp_params: sim 1, ord 0, tau 0, any 0, ext False
+*** Insert molecules ***
+*** Compare similarities ***
+ 0: bingo sim 0.136364; smiles C1CNNCC1
+ 1: bingo sim 0.888889; smiles C1CNNCC1

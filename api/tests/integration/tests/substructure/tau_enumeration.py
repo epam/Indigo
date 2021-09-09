@@ -30,14 +30,14 @@ print("This is the case when not all tautomers are found for the first time and 
 testEnumTautomersForMolecule (indigo.loadMolecule('OC1N=C2C(=NC(N)=NC(=O)2)NC(O)=1'));
 
 print("Test tautomers1-small.sdf")
-testEnumTautomersForSDF(joinPath('molecules', 'tautomers1-small.sdf'))
+testEnumTautomersForSDF(joinPathPy('molecules/tautomers1-small.sdf', __file__))
 
 print("Test tautomers2-small.sdf")
-testEnumTautomersForSDF(joinPath('molecules', 'tautomers2-small.sdf'))
+testEnumTautomersForSDF(joinPathPy('molecules/tautomers2-small.sdf', __file__))
 
 print("Test tautomers1-large.sdf")
-testEnumTautomersForSDF(joinPath('molecules', 'tautomers1-large.sdf.gz'))
+testEnumTautomersForSDF(joinPathPy('molecules/tautomers1-large.sdf.gz', __file__))
 
 print("Test tautomers2-large.sdf")
-testEnumTautomersForSDF(joinPath('molecules', 'tautomers2-large.sdf.gz'))
+testEnumTautomersForSDF(joinPathPy('molecules/tautomers2-large.sdf.gz', __file__))
 

@@ -37,8 +37,8 @@ MangoFetchContext::MangoFetchContext(int id_, MangoOracleContext& context, const
     fresh = false;
     fetch_engine = 0;
 
-    shadow_fetch.reset(new MangoShadowFetch(*this));
-    fast_index.reset(new MangoFastIndex(*this));
+    shadow_fetch = std::make_unique<MangoShadowFetch>(*this);
+    fast_index = std::make_unique<MangoFastIndex>(*this);
 }
 
 MangoFetchContext& MangoFetchContext::get(int id)
@@ -64,7 +64,7 @@ MangoFetchContext& MangoFetchContext::create(MangoOracleContext& context, const 
         if (_instances[i]->id >= id)
             id = _instances[i]->id + 1;
 
-    AutoPtr<MangoFetchContext> new_context(new MangoFetchContext(id, context, query_id));
+    std::unique_ptr<MangoFetchContext> new_context = std::make_unique<MangoFetchContext>(id, context, query_id);
 
     const BingoOracleContext& boc = context.context();
 

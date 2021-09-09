@@ -37,7 +37,7 @@ using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
 
-BaseMolecule::BaseMolecule() : cis_trans(*this), stereocenters(*this), allene_stereo(*this)
+BaseMolecule::BaseMolecule()
 {
     _edit_revision = 0;
 }
@@ -379,16 +379,16 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
     // stereo
     if (!(skip_flags & SKIP_STEREOCENTERS))
-        stereocenters.buildOnSubmolecule(mol.stereocenters, mapping.ptr());
+        buildOnSubmoleculeStereocenters(mol, mapping.ptr());
     else
         stereocenters.clear();
 
     if (!(skip_flags & SKIP_CIS_TRANS))
-        cis_trans.buildOnSubmolecule(mol, mapping.ptr());
+        buildOnSubmoleculeCisTrans(mol, mapping.ptr());
     else
         cis_trans.clear();
 
-    allene_stereo.buildOnSubmolecule(mol.allene_stereo, mapping.ptr());
+    buildOnSubmoleculeAlleneStereo(mol, mapping.ptr());
 
     // subclass stuff (Molecule or QueryMolecule)
     _postMergeWithSubmolecule(mol, vertices, edges, mapping, skip_flags);
@@ -563,7 +563,7 @@ int BaseMolecule::mergeAtoms(int atom1, int atom2)
 void BaseMolecule::flipBond(int atom_parent, int atom_from, int atom_to)
 {
     stereocenters.flipBond(atom_parent, atom_from, atom_to);
-    cis_trans.flipBond(atom_parent, atom_from, atom_to);
+    cis_trans.flipBond(*this, atom_parent, atom_from, atom_to);
 
     // subclass (Molecule or QueryMolecule) adds the new bond
     _flipBond(atom_parent, atom_from, atom_to);
@@ -704,9 +704,9 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
     }
 
     // stereo
-    stereocenters.removeAtoms(indices);
-    cis_trans.buildOnSubmolecule(*this, mapping.ptr());
-    allene_stereo.removeAtoms(indices);
+    removeAtomsStereocenters(indices);
+    buildOnSubmoleculeCisTrans(*this, mapping.ptr());
+    removeAtomsAlleneStereo(indices);
 
     // highlighting and stereo
     int b_idx;
@@ -776,8 +776,8 @@ void BaseMolecule::removeBonds(const Array<int>& indices)
     // subclass (Molecule or QueryMolecule) removes its data
     _removeBonds(indices);
 
-    stereocenters.removeBonds(indices);
-    allene_stereo.removeBonds(indices);
+    removeBondsStereocenters(indices);
+    removeBondsAlleneStereo(indices);
 
     for (int i = 0; i < indices.size(); i++)
     {
@@ -3139,8 +3139,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     if (su.sa_natreplace.size() > 0)
         tg.tgroup_natreplace.copy(su.sa_natreplace);
 
-    AutoPtr<BaseMolecule> new_fragment(this->neu());
-    tg.fragment.reset(new_fragment.release());
+    tg.fragment.reset(this->neu());
     tg.fragment->makeSubmolecule(*this, su.atoms, &mapping, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS);
 
     sg_atoms.clear();
@@ -3910,7 +3909,7 @@ void BaseMolecule::invalidateAtom(int index, int mask)
         // Cis-trans and stereocenters can be removed
         if (stereocenters.exists(index))
         {
-            if (!stereocenters.isPossibleStereocenter(index))
+            if (!isPossibleStereocenter(index))
                 stereocenters.remove(index);
         }
 
@@ -4129,4 +4128,129 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& n
         }
     }
     return 1;
+}
+
+const int* BaseMolecule::getPyramidStereocenters(int idx) const
+{
+    return stereocenters.getPyramid(idx);
+}
+
+void BaseMolecule::markBondsStereocenters()
+{
+    stereocenters.markBonds(*this);
+}
+
+void BaseMolecule::markBondStereocenters(int atom_idx)
+{
+    stereocenters.markBond(*this, atom_idx);
+}
+
+void BaseMolecule::addStereocenters(int atom_idx, int type, int group, const int pyramid[4])
+{
+    stereocenters.add(*this, atom_idx, type, group, pyramid);
+}
+
+void BaseMolecule::addStereocenters(int atom_idx, int type, int group, bool inverse_pyramid)
+{
+    stereocenters.add(*this, atom_idx, type, group, inverse_pyramid);
+}
+
+void BaseMolecule::removeAtomsStereocenters(const Array<int>& indices)
+{
+    stereocenters.removeAtoms(*this, indices);
+}
+
+void BaseMolecule::removeBondsStereocenters(const Array<int>& indices)
+{
+    stereocenters.removeBonds( *this, indices );
+}
+
+void BaseMolecule::buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out)
+{
+    stereocenters.buildFromBonds(*this, options, sensible_bonds_out);
+}
+
+void BaseMolecule::buildFrom3dCoordinatesStereocenters(const StereocentersOptions& options)
+{
+    stereocenters.buildFrom3dCoordinates(*this, options);
+}
+
+bool BaseMolecule::isPossibleStereocenter(int atom_idx, bool* possible_implicit_h, bool* possible_lone_pair)
+{
+    return stereocenters.isPossibleStereocenter(*this, atom_idx, possible_implicit_h, possible_lone_pair);
+}
+
+void BaseMolecule::buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping)
+{
+    stereocenters.buildOnSubmolecule(*this, super, mapping);
+}
+
+void BaseMolecule::getSubstituents_All(int bond_idx, int subst[4])
+{
+    cis_trans.getSubstituents_All(*this, bond_idx, subst);
+}
+
+void BaseMolecule::restoreSubstituents(int bond_idx)
+{
+    cis_trans.restoreSubstituents(*this, bond_idx);
+}
+
+void BaseMolecule::buildCisTrans(int* exclude_bonds)
+{
+    cis_trans.build(*this, exclude_bonds);
+}
+
+bool BaseMolecule::registerBondAndSubstituentsCisTrans(int idx)
+{
+    return cis_trans.registerBondAndSubstituents(*this, idx);
+}
+
+void BaseMolecule::registerUnfoldedHydrogenCisTrans(int atom_idx, int added_hydrogen)
+{
+    cis_trans.registerUnfoldedHydrogen(*this, atom_idx, added_hydrogen);
+}
+
+void BaseMolecule::buildFromSmilesCisTrans(int* dirs)
+{
+    cis_trans.buildFromSmiles( *this, dirs );
+}
+
+void BaseMolecule::buildOnSubmoleculeCisTrans(BaseMolecule& super, int* mapping)
+{
+    cis_trans.buildOnSubmolecule(*this, super, mapping);
+}
+
+void BaseMolecule::validateCisTrans()
+{
+    cis_trans.validate(*this);
+}
+
+bool BaseMolecule::convertableToImplicitHydrogenCisTrans(int idx)
+{
+    return cis_trans.convertableToImplicitHydrogen(*this, idx );
+}
+
+void BaseMolecule::markBondsAlleneStereo()
+{
+    allene_stereo.markBonds(*this);
+}
+
+void BaseMolecule::buildOnSubmoleculeAlleneStereo(BaseMolecule& super, int* mapping)
+{
+    allene_stereo.buildOnSubmolecule(*this, super, mapping);
+}
+
+void BaseMolecule::removeAtomsAlleneStereo(const Array<int>& indices)
+{
+    allene_stereo.removeAtoms(*this, indices);
+}
+
+void BaseMolecule::removeBondsAlleneStereo(const Array<int>& indices)
+{
+    allene_stereo.removeBonds(*this, indices);
+}
+
+void BaseMolecule::buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_bonds_out)
+{
+    allene_stereo.buildFromBonds(*this, ignore_errors, sensible_bonds_out);
 }

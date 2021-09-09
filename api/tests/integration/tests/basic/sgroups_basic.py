@@ -11,7 +11,7 @@ indigo.setOption("molfile-saving-skip-date", True)
 print("****** Change basis of Sgroup ********")
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/all_features_mol.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/all_features_mol.mol", __file__))
 
 print(m.molfile());
 print("****** remove fisrt atom from sgroup ********")

@@ -155,7 +155,7 @@ namespace indigo
         static void _permutation(Array<int>&, ObjArray<Array<int>>&);
 
         BaseReaction& _initReaction;
-        AutoPtr<BaseReaction> _reactionCopy;
+        std::unique_ptr<BaseReaction> _reactionCopy;
 
         Array<int> _usedVertices;
         int _maxMapUsed;
@@ -185,12 +185,12 @@ namespace indigo
         RSubstructureMcs(BaseReaction& reaction, const ReactionAutomapper& context);
         RSubstructureMcs(BaseReaction& reaction, int subNum, int superNum, const ReactionAutomapper& context);
         RSubstructureMcs(BaseReaction& reaction, BaseMolecule& sub, BaseMolecule& super, const ReactionAutomapper& context);
-        virtual ~RSubstructureMcs()
+        ~RSubstructureMcs() override
         {
         }
 
         // molecules substructure search
-        virtual bool searchSubstructure(Array<int>* map);
+        bool searchSubstructure(Array<int>* map) override;
         // reaction molecules substructure search
         bool searchSubstructureReact(BaseMolecule& init_rmol, const Array<int>* in_map, Array<int>* out_map);
         // reaction molecules mcs search
@@ -250,7 +250,7 @@ namespace indigo
 
         ObjArray<Array<int>> _autoMaps;
 
-        AutoPtr<BaseMolecule> _transposedQuery;
+        std::unique_ptr<BaseMolecule> _transposedQuery;
         Array<int> _transposition;
         Array<int> _invTransposition;
         Array<int> _bondTransposition;

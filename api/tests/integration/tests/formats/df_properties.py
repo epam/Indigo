@@ -14,16 +14,16 @@ def testReload (mol):
     return molfile2
 
 
-if dir_exists(joinPath("out")):
-    rmdir(joinPath("out"))
-makedirs(joinPath("out"))
+if dir_exists(joinPathPy("out", __file__)):
+    rmdir(joinPathPy("out", __file__))
+makedirs(joinPathPy("out", __file__))
 
 print("********* Save and load molecule properties from SDF ****")
-sdf_file_name = joinPath("out", "sdf-properties.sdf")
+sdf_file_name = joinPathPy("out/sdf-properties.sdf", __file__)
 
 saver_sd = indigo.createFileSaver(sdf_file_name, "sdf")
 
-rdf_file_name = joinPath("out", "rdf-properties.sdf")
+rdf_file_name = joinPathPy("out/rdf-properties.sdf", __file__)
 saver_rd = indigo.createFileSaver(rdf_file_name, "rdf")
 
 mol = indigo.loadMolecule("CN(c1ccccc1)C=O")

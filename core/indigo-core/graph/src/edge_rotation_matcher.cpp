@@ -49,7 +49,7 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
 
     in_cycle.clear_resize(_subgraph.edgeEnd());
     edge_queue.clear();
-    states.clear_resize(__max(_subgraph.edgeEnd(), _subgraph.vertexEnd() + 1));
+    states.clear_resize(std::max(_subgraph.edgeEnd(), _subgraph.vertexEnd() + 1));
 
     int i, j, k, bottom;
 

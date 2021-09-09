@@ -1,8 +1,8 @@
 /*
  * International Chemical Identifier (InChI)
  * Version 1
- * Software version 1.05
- * January 27, 2017
+ * Software version 1.06
+ * December 15, 2020
  *
  * The InChI library and programs are free software developed under the
  * auspices of the International Union of Pure and Applied Chemistry (IUPAC).
@@ -14,7 +14,7 @@
  *
  * IUPAC/InChI-Trust Licence No.1.0 for the
  * International Chemical Identifier (InChI)
- * Copyright (C) IUPAC and InChI Trust Limited
+ * Copyright (C) IUPAC and InChI Trust
  *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the IUPAC/InChI Trust InChI Licence No.1.0,
@@ -25,14 +25,9 @@
  * See the IUPAC/InChI-Trust InChI Licence No.1.0 for more details.
  *
  * You should have received a copy of the IUPAC/InChI Trust InChI
- * Licence No. 1.0 with this library; if not, please write to:
+ * Licence No. 1.0 with this library; if not, please e-mail:
  *
- * The InChI Trust
- * 8 Cavendish Avenue
- * Cambridge CB1 7US
- * UK
- *
- * or e-mail to alan@inchi-trust.org
+ * info@inchi-trust.org
  *
  */
 
@@ -61,6 +56,8 @@ typedef struct tagCOMPONENT_TREAT_INFO
 
     int bPointedEdgeStereo;
     int vABParityUnknown; /* actual value of constant for unknown parity (2009-12-10 ) */
+    int bLooseTSACheck;
+    int bStereoAtZz;
 
     INCHI_MODE bTautFlags;
     INCHI_MODE bTautFlagsDone;
@@ -82,9 +79,9 @@ typedef struct tagINCHIGEN_CONTROL
     INPUT_PARMS     InpParms;
 
     unsigned long   ulTotalProcessingTime;
-    char            szTitle[MAX_SDF_HEADER+MAX_SDF_VALUE+256];
+    char            szTitle[MAX_SDF_HEADER + MAX_SDF_VALUE + 256];
     /* Expandable string buffer */
-    INCHI_IOSTREAM_STRING strbuf_container;
+    INCHI_IOS_STRING strbuf_container;
                                     /*char            *pStr;*/
     long            num_err;
     long            num_inp;
@@ -104,23 +101,23 @@ typedef struct tagINCHIGEN_CONTROL
     INP_ATOM_DATA   *InpNormAtData[INCHI_NUM];
     INP_ATOM_DATA   *InpNormTautData[INCHI_NUM];
 
-    COMP_ATOM_DATA  composite_norm_data[INCHI_NUM][TAUT_NUM+1];
+    COMP_ATOM_DATA  composite_norm_data[INCHI_NUM][TAUT_NUM + 1];
                                         /* TAUT_NUM=2;   0   non-tautomeric
                                                             1   tautomeric
                                                             2   intermediate tautomeric */
 
     NORM_CANON_FLAGS
-                    ncFlags;
+        ncFlags;
 
-    /* For each connected component of structures: */
+/* For each connected component of structures: */
     PINChI2         *pINChI[INCHI_NUM];
     PINChI_Aux2     *pINChI_Aux[INCHI_NUM];
 
     /* For each connected component of structures: */
     COMPONENT_TREAT_INFO
-                    *cti[INCHI_NUM];
+        *cti[INCHI_NUM];
 
-    /* Placed at the end intentionally */
+/* Placed at the end intentionally */
     INCHI_IOSTREAM      inchi_file[3];
 } INCHIGEN_CONTROL;
 
@@ -133,22 +130,22 @@ Exported functions
 
 #if (defined( _WIN32 ) && defined( _MSC_VER ) && defined(BUILD_LINK_AS_DLL) )
     /* Win32 & MS VC ++, compile and link as a DLL */
-    #ifdef _USRDLL
-        /* InChI library dll */
-        #define INCHI_API __declspec(dllexport)
-        #define EXPIMP_TEMPLATE
-        #define INCHI_DECL
-     #else
-        /* calling the InChI dll program */
-        #define INCHI_API __declspec(dllimport)
-        #define EXPIMP_TEMPLATE extern
-        #define INCHI_DECL
-     #endif
+#ifdef _USRDLL
+    /* InChI library dll */
+#define INCHI_API __declspec(dllexport)
+#define EXPIMP_TEMPLATE
+#define INCHI_DECL
+#else
+   /* calling the InChI dll program */
+#define INCHI_API __declspec(dllimport)
+#define EXPIMP_TEMPLATE extern
+#define INCHI_DECL
+#endif
 #else
     /* create a statically linked InChI library or link to an executable */
-    #define INCHI_API
-    #define EXPIMP_TEMPLATE
-    #define INCHI_DECL
+#define INCHI_API
+#define EXPIMP_TEMPLATE
+#define INCHI_DECL
 #endif
 
 
@@ -164,7 +161,7 @@ extern "C" {
 
 
 /* Local functions */
-void make_norm_atoms_from_inp_atoms(INCHIGEN_DATA *gendata, INCHIGEN_CONTROL *genctl);
+void make_norm_atoms_from_inp_atoms( INCHIGEN_DATA *gendata, INCHIGEN_CONTROL *genctl );
 
 #ifndef COMPILE_ALL_CPP
 #ifdef __cplusplus
@@ -172,7 +169,7 @@ void make_norm_atoms_from_inp_atoms(INCHIGEN_DATA *gendata, INCHIGEN_CONTROL *ge
 #endif
 #endif
 
-#define PSTR_BUFFER_SIZE 511999
+#define PSTR_BUFFER_SIZE 524288
 
 
 #endif /* __INCHI_DLL_A_H__ */

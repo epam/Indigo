@@ -195,7 +195,7 @@ namespace indigo
                     return false;
             }
 
-            if (!MoleculeStereocenters::checkSub(reactant.stereocenters, product.stereocenters, aam_mapping.ptr(), false))
+            if (!MoleculeStereocenters::checkSub(reactant, product, aam_mapping.ptr(), false))
                 return false;
 
             return true;

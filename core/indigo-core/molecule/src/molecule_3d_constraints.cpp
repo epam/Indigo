@@ -33,9 +33,7 @@ void Molecule3dConstraints::init()
 {
     for (int i : _mol.vertices())
     {
-        AutoPtr<PointByAtom> constr;
-
-        constr.create();
+        std::unique_ptr<PointByAtom> constr = std::make_unique<PointByAtom>();
         constr->atom_idx = i;
         _constraints.add(constr.release());
     }
@@ -121,9 +119,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (mapping[atom_idx] < 0)
                     continue;
 
-                AutoPtr<PointByAtom> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<PointByAtom> newconstr = std::make_unique<PointByAtom>();
                 newconstr->atom_idx = mapping[atom_idx];
 
                 sub.add(newconstr.release());
@@ -138,9 +134,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (beg_id < 0 || end_id < 0)
                     continue;
 
-                AutoPtr<PointByDistance> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<PointByDistance> newconstr = std::make_unique<PointByDistance>();
                 newconstr->beg_id = beg_id;
                 newconstr->end_id = end_id;
                 newconstr->distance = constr.distance;
@@ -157,9 +151,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (beg_id < 0 || end_id < 0)
                     continue;
 
-                AutoPtr<PointByPercentage> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<PointByPercentage> newconstr = std::make_unique<PointByPercentage>();
                 newconstr->beg_id = beg_id;
                 newconstr->end_id = end_id;
                 newconstr->percentage = constr.percentage;
@@ -175,9 +167,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (org_id < 0 || norm_id < 0)
                     continue;
 
-                AutoPtr<PointByNormale> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<PointByNormale> newconstr = std::make_unique<PointByNormale>();
                 newconstr->norm_id = norm_id;
                 newconstr->org_id = org_id;
                 newconstr->distance = constr.distance;
@@ -187,8 +177,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
             case POINT_CENTROID: {
                 const Centroid& constr = (const Centroid&)base;
 
-                AutoPtr<Centroid> newconstr;
-                newconstr.create();
+                std::unique_ptr<Centroid> newconstr = std::make_unique<Centroid>();
 
                 for (j = 0; j < constr.point_ids.size(); j++)
                 {
@@ -215,9 +204,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (plane_id < 0 || point_id < 0)
                     continue;
 
-                AutoPtr<Normale> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<Normale> newconstr = std::make_unique<Normale>();
                 newconstr->plane_id = plane_id;
                 newconstr->point_id = point_id;
 
@@ -227,9 +214,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
             case LINE_BEST_FIT: {
                 const BestFitLine& constr = (const BestFitLine&)base;
 
-                AutoPtr<BestFitLine> newconstr;
-                newconstr.create();
-
+                std::unique_ptr<BestFitLine> newconstr = std::make_unique<BestFitLine>();
                 for (j = 0; j < constr.point_ids.size(); j++)
                 {
                     int pt_idx = cmapping[constr.point_ids[j]];
@@ -250,9 +235,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
             case PLANE_BEST_FIT: {
                 const BestFitPlane& constr = (const BestFitPlane&)base;
 
-                AutoPtr<BestFitPlane> newconstr;
-                newconstr.create();
-
+                std::unique_ptr<BestFitPlane> newconstr = std::make_unique<BestFitPlane>();
                 for (j = 0; j < constr.point_ids.size(); j++)
                 {
                     int pt_idx = cmapping[constr.point_ids[j]];
@@ -279,9 +262,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (line_id < 0 || point_id < 0)
                     continue;
 
-                AutoPtr<PlaneByPoint> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<PlaneByPoint> newconstr = std::make_unique<PlaneByPoint>();
                 newconstr->line_id = line_id;
                 newconstr->point_id = point_id;
                 sub.add(newconstr.release());
@@ -297,9 +278,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (point1_id < 0 || point2_id < 0 || point3_id < 0)
                     continue;
 
-                AutoPtr<AngleByPoints> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<AngleByPoints> newconstr = std::make_unique<AngleByPoints>();
                 newconstr->point1_id = point1_id;
                 newconstr->point2_id = point2_id;
                 newconstr->point3_id = point3_id;
@@ -318,9 +297,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (line1_id < 0 || line2_id < 0)
                     continue;
 
-                AutoPtr<AngleByLines> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<AngleByLines> newconstr = std::make_unique<AngleByLines>();
                 newconstr->line1_id = line1_id;
                 newconstr->line2_id = line2_id;
 
@@ -338,9 +315,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (plane1_id < 0 || plane2_id < 0)
                     continue;
 
-                AutoPtr<AngleByPlanes> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<AngleByPlanes> newconstr = std::make_unique<AngleByPlanes>();
                 newconstr->plane1_id = plane1_id;
                 newconstr->plane2_id = plane2_id;
 
@@ -360,9 +335,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (point1_id < 0 || point2_id < 0 || point3_id < 0 || point4_id < 0)
                     continue;
 
-                AutoPtr<AngleDihedral> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<AngleDihedral> newconstr = std::make_unique<AngleDihedral>();
                 newconstr->point1_id = point1_id;
                 newconstr->point2_id = point2_id;
                 newconstr->point3_id = point3_id;
@@ -382,9 +355,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (beg_id < 0 || end_id < 0)
                     continue;
 
-                AutoPtr<DistanceByPoints> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<DistanceByPoints> newconstr = std::make_unique<DistanceByPoints>();
                 newconstr->beg_id = beg_id;
                 newconstr->end_id = end_id;
                 newconstr->bottom = constr.bottom;
@@ -401,9 +372,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (line_id < 0 || point_id < 0)
                     continue;
 
-                AutoPtr<DistanceByLine> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<DistanceByLine> newconstr = std::make_unique<DistanceByLine>();
                 newconstr->line_id = line_id;
                 newconstr->point_id = point_id;
                 newconstr->top = constr.top;
@@ -420,9 +389,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (plane_id < 0 || point_id < 0)
                     continue;
 
-                AutoPtr<DistanceByPlane> newconstr;
-
-                newconstr.create();
+                std::unique_ptr<DistanceByPlane> newconstr = std::make_unique<DistanceByPlane>();
                 newconstr->plane_id = plane_id;
                 newconstr->point_id = point_id;
                 newconstr->bottom = constr.bottom;
@@ -438,10 +405,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
                 if (center_id < 0)
                     continue;
 
-                AutoPtr<ExclusionSphere> newconstr;
-
-                newconstr.create();
-
+                std::unique_ptr<ExclusionSphere> newconstr = std::make_unique<ExclusionSphere>();
                 for (j = 0; j < constr.allowed_atoms.size(); j++)
                 {
                     int atom_idx = mapping[constr.allowed_atoms[j]];

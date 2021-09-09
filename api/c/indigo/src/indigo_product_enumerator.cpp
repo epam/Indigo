@@ -195,7 +195,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
 
             transformed_flag = rt.transform(mol, query_rxn, &mapping);
 
-            AutoPtr<IndigoMapping> mptr(new IndigoMapping(input_mol, mol));
+            std::unique_ptr<IndigoMapping> mptr = std::make_unique<IndigoMapping>(input_mol, mol);
 
             mptr.get()->mapping.copy(mapping);
 
@@ -204,7 +204,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
         else if (monomers_object.type == IndigoObject::ARRAY)
         {
             IndigoArray& monomers_array = IndigoArray::cast(self.getObject(monomers));
-            AutoPtr<IndigoArray> out_array(new IndigoArray());
+            std::unique_ptr<IndigoArray> out_array = std::make_unique<IndigoArray>();
 
             for (int i = 0; i < monomers_array.objects.size(); i++)
             {
@@ -217,7 +217,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
                 if (rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn, &mapping))
                     transformed_flag = true;
 
-                AutoPtr<IndigoMapping> mptr(new IndigoMapping(input_mol, mol));
+                std::unique_ptr<IndigoMapping> mptr = std::make_unique<IndigoMapping>(input_mol, mol);
                 mptr.get()->mapping.copy(mapping);
 
                 out_array.get()->objects.add(mptr.release());
@@ -237,54 +237,3 @@ CEXPORT int indigoTransform(int reaction, int monomers)
     }
     INDIGO_END(-1);
 }
-
-void indigoProductEnumeratorSetOneTubeMode(const char* mode_string)
-{
-    Indigo& self = indigoGetInstance();
-    if (strcmp(mode_string, "one-tube") == 0)
-        self.rpe_params.is_one_tube = true;
-    else if (strcmp(mode_string, "grid") == 0)
-        self.rpe_params.is_one_tube = false;
-    else
-        throw IndigoError("%s is bad reaction product enumerator mode string", mode_string);
-}
-
-static void copyString(const char* source, char* dest, int len)
-{
-    if (strlen(source) > len)
-        throw IndigoError("invalid string value len: expected len: %d, actual len: %d", len, strlen(source));
-    strcpy(dest, source);
-}
-
-void indigoProductEnumeratorGetOneTubeMode(Array<char>& value)
-{
-    Indigo& self = indigoGetInstance();
-    if (self.rpe_params.is_one_tube)
-        value.readString("one-tube", true);
-    else
-        value.readString("grid", true);
-}
-
-class _IndigoRPEOptionsHandlersSetter
-{
-public:
-    _IndigoRPEOptionsHandlersSetter();
-};
-
-_IndigoRPEOptionsHandlersSetter::_IndigoRPEOptionsHandlersSetter()
-{
-    IndigoOptionManager& mgr = indigoGetOptionManager();
-    OsLocker locker(mgr.lock);
-
-#define indigo indigoGetInstance()
-
-    mgr.setOptionHandlerBool("rpe-multistep-reactions", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_multistep_reactions));
-    mgr.setOptionHandlerString("rpe-mode", indigoProductEnumeratorSetOneTubeMode, indigoProductEnumeratorGetOneTubeMode);
-    mgr.setOptionHandlerBool("rpe-self-reaction", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_self_react));
-    mgr.setOptionHandlerInt("rpe-max-depth", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_deep_level));
-    mgr.setOptionHandlerInt("rpe-max-products-count", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_product_count));
-    mgr.setOptionHandlerBool("rpe-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_layout));
-    mgr.setOptionHandlerBool("transform-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.transform_is_layout));
-}
-
-_IndigoRPEOptionsHandlersSetter _indigo_rpe_options_handlers_setter;

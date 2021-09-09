@@ -52,8 +52,8 @@ float MoleculeCdxmlSaver::textLineHeight() const
 
 void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
 {
-    _doc.reset(new TiXmlDocument());
-    AutoPtr<TiXmlElement> root(new TiXmlElement("CDXML"));
+    _doc = std::make_unique<TiXmlDocument>();
+    std::unique_ptr<TiXmlElement> root = std::make_unique<TiXmlElement>("CDXML");
 
     _doc->LinkEndChild(new TiXmlDeclaration("1.0", "UTF-8", ""));
     TiXmlUnknown* doctype = new TiXmlUnknown();
@@ -669,8 +669,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 }
                 if (parity == MoleculeCisTrans::TRANS)
                 {
-                    int tmp;
-                    __swap(s3, s4, tmp);
+
+                    std::swap(s3, s4);
                 }
                 QS_DEF(Array<char>, buf);
                 ArrayOutput out(buf);

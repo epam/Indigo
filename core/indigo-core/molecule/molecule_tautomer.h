@@ -264,15 +264,15 @@ namespace indigo
         };
 
         TautomerSuperStructure(Molecule& mol);
-        virtual ~TautomerSuperStructure();
+        ~TautomerSuperStructure() override;
 
-        virtual void clear();
+        void clear() override;
 
-        virtual int getBondOrder(int idx);
-        virtual int getBondTopology(int idx);
-        virtual bool possibleBondOrder(int idx, int order);
+        int getBondOrder(int idx) override;
+        int getBondTopology(int idx) override;
+        bool possibleBondOrder(int idx, int order) override;
 
-        virtual int getAtomTotalH(int idx);
+        int getAtomTotalH(int idx) override;
 
         bool isZeroedBond(int idx);
 

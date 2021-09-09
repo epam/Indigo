@@ -15,7 +15,7 @@ indigo.setOption("fp-tau-qwords", 0)
 indigo.setOption("fp-any-qwords", 0)
 
 
-for i, molecule in enumerate(indigo.iterateSmilesFile(joinPath("molecules", "b2000.smi"))):
+for i, molecule in enumerate(indigo.iterateSmilesFile(joinPathPy("molecules/b2000.smi", __file__))):
     print(i + 1)
     print(molecule.smiles())
 

@@ -1,0 +1,114 @@
+01b4b097_1ab8_48c4_8b39_4b33574ff5e1.mol:    OK
+07186584_5230_4092_9fb3_d2af6e398704.mol:    OK
+1057.mol:    OK
+1202.mol:    OK
+1211.mol:    OK
+1213.mol:    OK
+1218.mol:    OK
+1261.mol:    OK
+1282.mol:    OK
+1343.mol:    OK
+1586.mol:    OK
+1634.mol:    OK
+1675.mol:    OK
+214.mol:    OK
+266.mol:    OK
+531.mol:    OK
+532.mol:    OK
+533.mol:    OK
+612.mol:    OK
+656.mol:    OK
+691.mol:    OK
+****Invalid structures****
+** 0 **
+molecule auto loader: SMILES loader: unexpected end of input
+** 1 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 2 **
+molecule auto loader: SMILES loader: 'h' specifier is not supported
+** 3 **
+molecule auto loader: SMILES loader: 'D' specifier is allowed only for query molecules
+** 4 **
+molecule auto loader: SMILES loader: cycle number 0 is not allowed
+** 5 **
+scanner: appendLine(): end of stream
+** 6 **
+molecule auto loader: SMILES loader: invalid character within atom description: 't'
+** 7 **
+molecule auto loader: element: fromString(): element T not supported
+** 8 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 9 **
+molecule auto loader: SMILES loader: cycle number 0 is not allowed
+** 10 **
+scanner: appendLine(): end of stream
+** 11 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 12 **
+molecule auto loader: SMILES loader: unrecognized lowercase symbol: e
+** 13 **
+C1C=CC=CC=1
+** 14 **
+molecule auto loader: SMILES loader: cycle number 0 is not allowed
+** 15 **
+scanner: appendLine(): end of stream
+** 16 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 17 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 18 **
+C1=CC=C2C3=CC=CC=C3C3C(C1=C2)=CC(C1=CC(C)=CC(C)=C1)=CC=3C1=CC(C)=CC(C)=C1
+** 19 **
+molecule auto loader: SMILES loader: cycle number 0 is not allowed
+** 20 **
+scanner: appendLine(): end of stream
+** 21 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 22 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 23 **
+
+** 24 **
+molecule auto loader: SMILES loader: cycle number 0 is not allowed
+** 25 **
+scanner: appendLine(): end of stream
+** 26 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 27 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 28 **
+
+** 29 **
+molecule auto loader: SMILES loader: cycle number 0 is not allowed
+** 30 **
+scanner: appendLine(): end of stream
+** 31 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 32 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 33 **
+
+** 34 **
+molecule auto loader: SMILES loader: cycle number 0 is not allowed
+** 35 **
+scanner: appendLine(): end of stream
+** 36 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 37 **
+molecule auto loader: SMILES loader: invalid character within atom description: '"'
+** 38 **
+molecule auto loader: SMILES loader: invalid character within atom description: '_'
+** 39 **
+molecule auto loader: SMILES loader: cycle number 0 is not allowed
+** 40 **
+scanner: appendLine(): end of stream
+** 41 **
+molecule auto loader: SMILES loader: unrecognized lowercase symbol: m
+** 42 **
+molecule auto loader: SMILES loader: unrecognized lowercase symbol: m
+** 43 **
+
+** 44 **
+molecule auto loader: SMILES loader: cycle number 0 is not allowed
+** 45 **
+molecule auto loader: SMILES loader: atom without a label

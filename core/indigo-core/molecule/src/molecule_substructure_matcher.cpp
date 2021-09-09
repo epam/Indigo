@@ -18,7 +18,7 @@
 
 #include "molecule/molecule_substructure_matcher.h"
 #include "base_cpp/array.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "graph/edge_rotation_matcher.h"
 #include "graph/filter.h"
 #include "graph/graph.h"
@@ -105,7 +105,7 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A(QueryMolecule::
 {
     if (atom->type == QueryMolecule::ATOM_FRAGMENT)
     {
-        if (_shouldUnfoldTargetHydrogens(atom->fragment.ref(), true, find_all_embeddings))
+        if (_shouldUnfoldTargetHydrogens(*atom->fragment, true, find_all_embeddings))
             return true;
     }
     else if (atom->type == QueryMolecule::OP_AND || atom->type == QueryMolecule::OP_OR || atom->type == QueryMolecule::OP_NOT)
@@ -214,12 +214,12 @@ void MoleculeSubstructureMatcher::setQuery(QueryMolecule& query)
 
     if (query.rgroups.getRGroupCount() > 0)
     {
-        _markush.reset(new MarkushContext(query, _target));
+        _markush = std::make_unique<MarkushContext>(query, _target);
         _query = &_markush->query;
     }
     else
     {
-        _markush.reset(0);
+        _markush.reset(nullptr);
         _query = &query;
     }
 
@@ -741,7 +741,7 @@ int MoleculeSubstructureMatcher::_embedding_common(int* core_sub, int* core_supe
 {
     QueryMolecule& query = *_query;
 
-    if (!MoleculeStereocenters::checkSub(query.stereocenters, _target.stereocenters, core_sub, false))
+    if (!MoleculeStereocenters::checkSub(query, _target, core_sub, false))
         return 1;
 
     if (!MoleculeCisTrans::checkSub(query, _target, core_sub))
@@ -936,7 +936,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
     int cur_site = context.sites[context.depth];
 
     int src_att_idx1 = -1, src_att_idx2 = -1;
-    AutoPtr<QueryMolecule::Bond> rg_qbond1;
+    std::unique_ptr<QueryMolecule::Bond> rg_qbond1;
 
     // Parameters for stereocenter restoration
     bool stereo_was_saved = false;
@@ -966,7 +966,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
             if (cur_site_vertex.neiVertex(nei_idx1) != nei_atom_idx1)
             {
                 // Swap attachment neighbors according to attachment orders (first and second)
-                __swap(nei_idx1, nei_idx2, i);
+                std::swap(nei_idx1, nei_idx2);
             }
 
             if (cur_site_vertex.neiVertex(nei_idx1) != nei_atom_idx1 || cur_site_vertex.neiVertex(nei_idx2) != nei_atom_idx2)
@@ -1157,10 +1157,9 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
         // Restore stereocenter
         if (stereo_was_saved)
         {
-            MoleculeStereocenters& qstereo = context.query.stereocenters;
-            if (qstereo.exists(src_att_idx1))
-                qstereo.remove(src_att_idx1);
-            qstereo.add(src_att_idx1, saved_stereo_type, saved_stereo_group, saved_stereo_pyramid);
+            if (context.query.stereocenters.exists(src_att_idx1))
+                context.query.stereocenters.remove(src_att_idx1);
+            context.query.addStereocenters(src_att_idx1, saved_stereo_type, saved_stereo_group, saved_stereo_pyramid);
         }
     }
 
@@ -1438,10 +1437,10 @@ int MoleculeSubstructureMatcher::_compare_frequency_asc(BaseMolecule& mol, int i
     int label2 = mol.getAtomNumber(i2);
     int idx1, idx2;
 
-    for (idx1 = 0; idx1 < (int)NELEM(labels_by_freq); idx1++)
+    for (idx1 = 0; idx1 < NELEM(labels_by_freq); idx1++)
         if (label1 == labels_by_freq[idx1])
             break;
-    for (idx2 = 0; idx2 < (int)NELEM(labels_by_freq); idx2++)
+    for (idx2 = 0; idx2 < NELEM(labels_by_freq); idx2++)
         if (label2 == labels_by_freq[idx2])
             break;
 

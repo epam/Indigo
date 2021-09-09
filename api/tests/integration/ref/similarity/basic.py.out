@@ -1,0 +1,167 @@
+*** Self-similarity ***
+119914: C[C@H](CCO)NC(=O)C1CSC(CCCCCCC)N1C(=O)CCN1C2=CC=CC=C2SC2C=CC=CC1=2
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119915: C[C@H](CCO)NC(=O)C1CSC(C2CC3CC2CC3)N1C(=O)CCCCSC1C=CC(Cl)=CC=1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119916: C[C@H](CCO)NC(=O)C1CSC(C2CC3CC2CC3)N1C(=O)CSC1C=NC2=CC=CC=C2N=1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119917: CCCCCCCC1SCC(C(=O)NC2CC2)N1C(=O)CSC1C=NC2=CC=CC=C2N=1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119918: C=CCCC(=O)N1C(SCC1C(=O)NCC1C=CC(Cl)=CC=1)C1CC2CC1CC2
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119919: CN(CC(=O)N1C(CSC1C1CC2CCC1C2)C(=O)NCC1C=CC=C(C=1)C1=CC=CC=C1)C1=CC=CC=C1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119920: O=C(CCCC1C=CC=CC=1)N1C(SCC1C(=O)NC1CC1)C1CC2CC1CC2
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119921: C[C@H](CCO)NC(=O)C1CSC(C2C=CC=CC=2)N1C(=O)CSC1=NC2C=CC=CC=2S1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119922: CCCNC(=O)C1CSC(CCCCCCC)N1C(=O)CSC1C=NC2=CC=CC=C2N=1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+119923: C[C@H](CCO)NC(=O)C1CSC(C2C=CC=CC=2)N1C(=O)CCC1=CC(O)=C(O)C=C1
+  tversky: 1.0
+  tversky 1 0: 1.0
+  tversky 0 1: 1.0
+  tversky 0.7 0.3: 1.0
+  None: 1.0
+  euclid-sub: 1.0
+*** Test 01 ***
+m1: CC(C)(C)[C@@H](OC(=O)Nc1ccc(cc1C)OC)C(=O)N1CC(C[C@@H]1C(=O)NC1(CC1C=C)C(=O)NS(=O)(=O)C1CC1)Oc1cc([n]c2cc(ccc12)OC)-c1ccccc1 |&1:4,24,r|
+m1: CC(C)(C)[C@@H](OC(=O)Nc1ccc(cc1C)OC)C(=O)N1CC(C[C@@H]1C(=O)NC1(CCC1=C)C(=O)NS(=O)(=O)C1CC1)Oc1cc([n]c2cc(ccc12)OC)-c1ccccc1 |&1:4,24,r|
+Similarity: 0.9699
+*** Test for edit distance ***
+tanimoto
+1: C(CC1C=CC=CC=1)COCC1C=CC=CC=1
+2: C(CC1C=CC=CC=1)CNCC1C=CC=CC=1
+3: C(CC1C=CC=CC1)CNCC1C=CC=CC=1
+4: C(CC1C=CS=CC1)CNCC1C=CC=CC=1
+5: C(CC1C=CS=CC1)CNCC1C=CCCC=1
+6: CCCC1C=CC=SC1
+7: C1C=CS=CC1
+ 1.000 0.395 0.400 0.322 0.317 0.364 0.178
+ 0.395 1.000 0.853 0.592 0.580 0.224 0.152
+ 0.400 0.853 1.000 0.653 0.673 0.286 0.143
+ 0.322 0.592 0.653 1.000 0.980 0.368 0.479
+ 0.317 0.580 0.673 0.980 1.000 0.362 0.469
+ 0.364 0.224 0.286 0.368 0.362 1.000 0.359
+ 0.178 0.152 0.143 0.479 0.469 0.359 1.000
+tversky
+1: C(CC1C=CC=CC=1)COCC1C=CC=CC=1
+2: C(CC1C=CC=CC=1)CNCC1C=CC=CC=1
+3: C(CC1C=CC=CC1)CNCC1C=CC=CC=1
+4: C(CC1C=CS=CC1)CNCC1C=CC=CC=1
+5: C(CC1C=CS=CC1)CNCC1C=CCCC=1
+6: CCCC1C=CC=SC1
+7: C1C=CS=CC1
+ 1.000 0.567 0.571 0.487 0.481 0.533 0.302
+ 0.567 1.000 0.921 0.744 0.734 0.367 0.264
+ 0.571 0.921 1.000 0.790 0.805 0.444 0.250
+ 0.487 0.744 0.790 1.000 0.990 0.538 0.648
+ 0.481 0.734 0.805 0.990 1.000 0.532 0.639
+ 0.533 0.367 0.444 0.538 0.532 1.000 0.528
+ 0.302 0.264 0.250 0.648 0.639 0.528 1.000
+normalized-edit
+1: C(CC1C=CC=CC=1)COCC1C=CC=CC=1
+2: C(CC1C=CC=CC=1)CNCC1C=CC=CC=1
+3: C(CC1C=CC=CC1)CNCC1C=CC=CC=1
+4: C(CC1C=CS=CC1)CNCC1C=CC=CC=1
+5: C(CC1C=CS=CC1)CNCC1C=CCCC=1
+6: CCCC1C=CC=SC1
+7: C1C=CS=CC1
+ 1.000 0.956 0.906 0.851 0.794 0.332 0.128
+ 0.956 1.000 0.956 0.906 0.851 0.332 0.128
+ 0.906 0.956 1.000 0.956 0.906 0.332 0.128
+ 0.851 0.906 0.956 1.000 0.956 0.392 0.167
+ 0.794 0.851 0.906 0.956 1.000 0.392 0.167
+ 0.332 0.332 0.332 0.392 0.392 1.000 0.617
+ 0.128 0.128 0.128 0.167 0.167 0.617 1.000
+*** Test for single atom fingerprints ***
+tanimoto
+1: [H][H]
+2: C
+3: N
+4: CN
+5: CCN
+6: CCNN
+7: FOF
+ 0.000 0.000 0.000 0.000 0.000 0.000 0.000
+ 0.000 1.000 0.000 0.333 0.200 0.125 0.000
+ 0.000 0.000 1.000 0.333 0.200 0.125 0.000
+ 0.000 0.333 0.333 1.000 0.600 0.375 0.000
+ 0.000 0.200 0.200 0.600 1.000 0.625 0.000
+ 0.000 0.125 0.125 0.375 0.625 1.000 0.000
+ 0.000 0.000 0.000 0.000 0.000 0.000 1.000
+tversky
+1: [H][H]
+2: C
+3: N
+4: CN
+5: CCN
+6: CCNN
+7: FOF
+ 0.000 0.000 0.000 0.000 0.000 0.000 0.000
+ 0.000 1.000 0.000 0.500 0.333 0.222 0.000
+ 0.000 0.000 1.000 0.500 0.333 0.222 0.000
+ 0.000 0.500 0.500 1.000 0.750 0.545 0.000
+ 0.000 0.333 0.333 0.750 1.000 0.769 0.000
+ 0.000 0.222 0.222 0.545 0.769 1.000 0.000
+ 0.000 0.000 0.000 0.000 0.000 0.000 1.000
+normalized-edit
+1: [H][H]
+2: C
+3: N
+4: CN
+5: CCN
+6: CCNN
+7: FOF
+ 1.000 0.000 0.000 0.045 0.019 0.009 0.019
+ 0.000 1.000 0.000 0.157 0.045 0.019 0.000
+ 0.000 0.000 1.000 0.157 0.045 0.019 0.000
+ 0.045 0.157 0.157 1.000 0.519 0.272 0.019
+ 0.019 0.045 0.045 0.519 1.000 0.685 0.079
+ 0.009 0.019 0.019 0.272 0.685 1.000 0.045
+ 0.019 0.000 0.000 0.019 0.079 0.045 1.000

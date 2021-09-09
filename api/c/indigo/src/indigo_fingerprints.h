@@ -30,10 +30,10 @@ class DLLEXPORT IndigoFingerprint : public IndigoObject
 {
 public:
     IndigoFingerprint();
-    virtual ~IndigoFingerprint();
+    ~IndigoFingerprint() override;
 
-    virtual void toString(Array<char>& str);
-    virtual void toBuffer(Array<char>& buf);
+    void toString(Array<char>& str) override;
+    void toBuffer(Array<char>& buf) override;
 
     static IndigoFingerprint& cast(IndigoObject& obj);
 

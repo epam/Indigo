@@ -46,10 +46,6 @@
 #include "reaction/reaction_json_loader.h"
 #include "reaction/reaction_json_saver.h"
 
-#define CHECKRGB(r, g, b)                                                                                                                                      \
-    if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6)                                                                                                   \
-    throw IndigoError("Some of the color components are out of range [0..1]")
-
 CEXPORT int indigoAromatize(int object)
 {
     INDIGO_BEGIN
@@ -480,7 +476,7 @@ static bool _removeHydrogens(Molecule& mol)
     if (to_remove.size() > 0)
         mol.removeAtoms(to_remove);
     for (int i = 0; i < sterecenters_to_validate.size(); i++)
-        mol.stereocenters.markBond(sterecenters_to_validate[i]);
+        mol.markBondStereocenters(sterecenters_to_validate[i]);
     return to_remove.size() > 0;
 }
 
@@ -689,7 +685,7 @@ CEXPORT int indigoUnserialize(const byte* buf, int size)
         {
             BufferScanner scanner(buf, size);
             IcmLoader loader(scanner);
-            AutoPtr<IndigoMolecule> im(new IndigoMolecule());
+            std::unique_ptr<IndigoMolecule> im = std::make_unique<IndigoMolecule>();
             loader.loadMolecule(im->mol);
             return self.addObject(im.release());
         }
@@ -697,7 +693,7 @@ CEXPORT int indigoUnserialize(const byte* buf, int size)
         {
             BufferScanner scanner(buf, size);
             IcrLoader loader(scanner);
-            AutoPtr<IndigoReaction> ir(new IndigoReaction());
+            std::unique_ptr<IndigoReaction> ir = std::make_unique<IndigoReaction>();
             loader.loadReaction(ir->rxn);
             return self.addObject(ir.release());
         }
@@ -1036,7 +1032,7 @@ CEXPORT int indigoNormalize(int structure, const char* options)
         {
             // Validate cs-trans because it can disappear
             // For example: [O-]/[N+](=C\C1C=CC=CC=1)/C1C=CC=CC=1
-            mol.cis_trans.validate();
+            mol.validateCisTrans();
         }
 
         return changed;
@@ -1208,7 +1204,7 @@ CEXPORT int indigoTransformHELMtoSCSR(int object)
 
         if (obj.type == IndigoObject::RDF_MOLECULE)
         {
-            AutoPtr<IndigoMolecule> im(new IndigoMolecule());
+            std::unique_ptr<IndigoMolecule> im = std::make_unique<IndigoMolecule>();
             im->mol.clone(obj.getMolecule(), 0, 0);
 
             auto& props = obj.getProperties();
@@ -1359,9 +1355,9 @@ CEXPORT int indigoCheckStereo(int item)
 
             for (auto i : target.vertices())
             {
-                if (!target.stereocenters.exists(i) && target.stereocenters.isPossibleStereocenter(i))
+                if (!target.stereocenters.exists(i) && target.isPossibleStereocenter(i))
                 {
-                    target.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+                    target.addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 0, false);
                 }
             }
 

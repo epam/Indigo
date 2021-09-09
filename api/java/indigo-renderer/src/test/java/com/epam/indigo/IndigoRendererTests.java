@@ -18,7 +18,6 @@ public class IndigoRendererTests {
         indigo.setOption("render-output-format", "svg");
         byte[] bytes = indigoRenderer.renderToBuffer(indigoObject);
 
-
         assertEquals(
                 60,
                 bytes[0],
@@ -28,11 +27,6 @@ public class IndigoRendererTests {
                 10,
                 bytes[bytes.length - 1],
                 "last rendered bytes should be the same"
-        );
-        assertEquals(
-                2399,
-                bytes.length,
-                "rendered bytes should be the same length"
         );
     }
 }
