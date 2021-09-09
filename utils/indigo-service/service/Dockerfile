@@ -34,10 +34,10 @@ COPY ./uwsgi/uwsgi.ini /etc/uwsgi.ini
 EXPOSE 8002
 ENV INDIGO_UWSGI_RUN_PARAMETERS --plugin python3
 
-# Install Indigodf
-COPY ./lib/*indigo*linux*.whl /opt/
-RUN ls /opt
-RUN python3 -m pip install /opt/*linux*.whl
+# Install Indigo
+# COPY ./lib/*indigo*linux*.whl /opt/
+# RUN ls /opt
+RUN python3 -m pip install epam.indigo
 
 # # Install Indigo Uploader
 # COPY ./lib/indigo-uploader-*.zip /opt/
@@ -61,10 +61,10 @@ COPY ./service/v2/ /srv/api/v2/
 COPY ./service/*.py /srv/api/
 
 # Clean
-RUN apt-get purge -y p7zip-full unzip git python3-pip python3-wheel
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get autoremove -y && \
-    rm -rf /opt/* /var/lib/apt/lists/*
+# RUN apt-get purge -y p7zip-full unzip git python3-pip python3-wheel
+#
+# RUN DEBIAN_FRONTEND=noninteractive apt-get autoremove -y && \
+#     rm -rf /opt/* /var/lib/apt/lists/*
 
 WORKDIR /srv/api
 

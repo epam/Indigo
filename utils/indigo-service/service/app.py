@@ -32,7 +32,7 @@ app.register_blueprint(indigo_api, url_prefix='/v2/indigo')
 app.register_blueprint(common_api,url_prefix='/v2')
 
 
-Swagger(app)
+swagger = Swagger(app)
 # logging.basicConfig(, level=logging.INFO)
 logging.basicConfig(stream=sys.stdout, format = u'[%(asctime)s: %(levelname)-8s/%(filename)s:%(lineno)d]  %(message)s', level = app.config.get('LOG_LEVEL'))
 

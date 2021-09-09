@@ -22,7 +22,7 @@ class IndigoRendererSchema(InputFormatSchema):
     options = fields.Dict(missing={})
 
     @validates_schema
-    def structure_or_query_exists(self, data):
+    def structure_or_query_exists(self, data, **kwargs):
         if not data['struct'] and not data['query']:
             raise ValidationError('No query or structure parameter in client request.')
 
@@ -34,7 +34,7 @@ class IndigoBaseSchema(InputFormatSchema):
     selected = fields.List(fields.Integer, missing=[])
 
     @validates_schema
-    def check_struct(self, data):
+    def check_struct(self, data, **kwargs):
         if not data['struct']:
             raise ValidationError("Empty structure")
 
@@ -47,7 +47,7 @@ class IndigoRequestSchema(IndigoBaseSchema):
         return '>>' in molstr or molstr.startswith('$RXN') or '<reactantList>' in molstr
 
     @validates_schema
-    def check_struct_rxnfile(self, data):
+    def check_struct_rxnfile(self, data, **kwargs):
         if 'output_format' in data and data['output_format'] == 'chemical/x-mdl-molfile' and self.is_rxn(data['struct']):
             data['output_format'] = 'chemical/x-mdl-rxnfile'
 
@@ -60,7 +60,7 @@ class IndigoCheckSchema(IndigoBaseSchema):
                                              'rgroups'])
 
     @validates_schema
-    def check_types(self, data):
+    def check_types(self, data, **kwargs):
         if 'types' in data:
             for t in data['types']:
                 if t not in IndigoCheckSchema.verify_types:
@@ -73,7 +73,7 @@ class IndigoCalculateSchema(IndigoBaseSchema):
     precision = fields.Int(missing=7)
 
     @validates_schema
-    def check_properties(self, data):
+    def check_properties(self, data, **kwargs):
         if 'properties' in data:
             for p in data['properties']:
                 if p not in IndigoCalculateSchema.calculate_properties:
@@ -104,29 +104,29 @@ class SearcherSchema(Schema):
         data['query_text'] = data['query_text'].strip()
 
     @validates_schema
-    def query_exists(self, data):
+    def query_exists(self, data, **kwargs):
         if not data['query_structure'] and not data['query_text']:
             raise ValidationError('Empty queries.')
 
     @validates_schema
-    def search_type_exists(self, data):
+    def search_type_exists(self, data, **kwargs):
         if 'search_type' not in data:
             raise ValidationError("No search type selected, must be one of: 'sub', 'exact, sim', 'molFormula'")
         if data['search_type'] not in ('sub', 'exact', 'sim', 'molFormula'):
             raise ValidationError("Wrong search type {0}, must be one of 'sub', 'exact, sim', 'molFormula'".format(data['search_type']))
 
     @validates_schema
-    def sim_min_max(self, data):
+    def sim_min_max(self, data, **kwargs):
         if data.get('search_type') and 'sim' in data.get('search_type') and data.get('min_sim') > data.get('max_sim'):
             raise ValidationError('Similarity min can not be greater than max')
 
     @validates_schema
-    def sim_min_range(self, data):
+    def sim_min_range(self, data, **kwargs):
         if data.get('search_type') and 'sim' in data.get('search_type') and (data.get('min_sim') < 0 or data.get('min_sim') >= 1):
             raise ValidationError('Invalid similarity min range. Should be within [0; 1)')
 
     @validates_schema
-    def sim_max_range(self, data):
+    def sim_max_range(self, data, **kwargs):
         print(data, data.get('search_type'), data.get('max_sim'), data.get('min_sim'))
         if data.get('search_type') and 'sim' in data.get('search_type') and (data.get('max_sim') <= 0 or data.get('max_sim') > 1):
             raise ValidationError('Invalid similarity max range. Should be within (0; 1]')
