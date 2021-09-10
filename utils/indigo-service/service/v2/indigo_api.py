@@ -1023,17 +1023,6 @@ def render():
     tags:
       - indigo
     description: 'Returns a molecule image'
-    consumes:
-      - application/json
-      # - chemical/x-mdl-molfile
-      # - chemical/x-mdl-rxnfile
-      # - chemical/x-daylight-smiles
-      # - chemical/x-cml
-      # - chemical/x-inchi
-    produces:
-      - image/png
-      - image/svg+xml
-      - application/pdf
     parameters:
       - name: json_request
         in: body
@@ -1043,15 +1032,19 @@ def render():
           properties:
             struct:
               type: string
-              default: C1=CC=CC=C1
+              examples: C1=CC=CC=C1
             query:
               type: string
-              default: CCC
+              examples: C
             output_format:
               type: string
               default: image/svg+xml
             options:
               type: array
+          example:
+            struct: C1=CC=CC=C1
+            query: C
+            output_format: image/svg+xml
     responses:
       200:
         description: 'A rendered molecule image'
