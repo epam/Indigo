@@ -270,15 +270,6 @@ def load_moldata(molstr, indigo=None, options={}, query=False, mime_type=None, s
             raise HttpException('Problem with Indigo initialization: {0}'.format(e), 501)
     md = MolData()
 
-    # TODO: rewrite to use indigo function
-    # params = ''
-    # if mime_type == 'chemical/x-daylight-smarts':
-    #     params = 'smarts'
-    #     md.is_query = True
-
-    # md.struct = indigo.loadStructure(molstr, params)
-    # md.is_query = md.struct.checkQuery()
-
     if molstr.startswith('InChI'):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
@@ -449,15 +440,28 @@ def aromatize():
           properties:
             struct:
               type: string
-              default: C1=CC=CC=C1
+              required: true
               examples: C1=CC=CC=C1
             output_format:
               type: string
               default: chemical/x-mdl-molfile
-              examples: chemical/x-mdl-molfile
+              examples: chemical/x-daylight-smiles
+              enum:
+                - chemical/x-mdl-rxnfile
+                - chemical/x-mdl-molfile
+                - chemical/x-daylight-smiles
+                - chemical/x-chemaxon-cxsmiles
+                - chemical/x-cml
+                - chemical/x-inchi
+                - chemical/x-iupac
+                - chemical/x-daylight-smarts
+                - chemical/x-inchi-aux
+          example:
+            struct: C1=CC=CC=C1
+            output_format: chemical/x-daylight-smiles
     responses:
       200:
-        description: Aromatized molecule
+        description: Aromatized chemical structure
         schema:
           id: IndigoResponse
           required:
@@ -519,13 +523,28 @@ def dearomatize():
           properties:
             struct:
               type: string
-              default: c1ccccc1
+              required: true
+              examples: c1ccccc1
             output_format:
               type: string
               default: chemical/x-mdl-molfile
+              examples: chemical/x-daylight-smiles
+              enum:
+                - chemical/x-mdl-rxnfile
+                - chemical/x-mdl-molfile
+                - chemical/x-daylight-smiles
+                - chemical/x-chemaxon-cxsmiles
+                - chemical/x-cml
+                - chemical/x-inchi
+                - chemical/x-iupac
+                - chemical/x-daylight-smarts
+                - chemical/x-inchi-aux
+          example:
+            struct: c1ccccc1
+            output_format: chemical/x-daylight-smiles
     responses:
       200:
-        description: Aromatized molecule
+        description: Dearomatized chemical structure
         schema:
           $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
       400:
@@ -562,12 +581,11 @@ def convert():
           properties:
             struct:
               type: string
-              default: C1=CC=CC=C1
               required: true
+              examples: C1=CC=CC=C1
             output_format:
               type: string
               default: chemical/x-mdl-molfile
-              required: true
               enum:
                 - chemical/x-mdl-rxnfile
                 - chemical/x-mdl-molfile
@@ -577,10 +595,13 @@ def convert():
                 - chemical/x-inchi
                 - chemical/x-iupac
                 - chemical/x-daylight-smarts
-                - chemical/x-inchi-aux'
+                - chemical/x-inchi-aux
+          example:
+            struct: C1=CC=CC=C1
+            output_format: chemical/x-mdl-molfile
     responses:
       200:
-        description: Aromatized molecule
+        description: Chemical structure in requested format
         schema:
           $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
       400:
@@ -634,13 +655,27 @@ def layout():
           properties:
             struct:
               type: string
-              default: C1=CC=CC=C1
+              required: true
+              examples: C1=CC=CC=C1
             output_format:
               type: string
               default: chemical/x-mdl-molfile
+              enum:
+                - chemical/x-mdl-rxnfile
+                - chemical/x-mdl-molfile
+                - chemical/x-daylight-smiles
+                - chemical/x-chemaxon-cxsmiles
+                - chemical/x-cml
+                - chemical/x-inchi
+                - chemical/x-iupac
+                - chemical/x-daylight-smarts
+                - chemical/x-inchi-aux
+          example:
+            struct: C1=CC=CC=C1
+            output_format: chemical/x-mdl-molfile
     responses:
       200:
-        description: Molecule with calculated correct coordinates
+        description: Chemical structure with calculated correct coordinates
         schema:
           $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
       400:
@@ -676,16 +711,27 @@ def clean():
           properties:
             struct:
               type: string
-              default: C1=CC=CC=C1
+              required: true
+              examples: C1=CC=CC=C1
             output_format:
               type: string
               default: chemical/x-mdl-molfile
-            selected:
-              type: array
-              default: [1, 2, 3]
+              enum:
+                - chemical/x-mdl-rxnfile
+                - chemical/x-mdl-molfile
+                - chemical/x-daylight-smiles
+                - chemical/x-chemaxon-cxsmiles
+                - chemical/x-cml
+                - chemical/x-inchi
+                - chemical/x-iupac
+                - chemical/x-daylight-smarts
+                - chemical/x-inchi-aux
+          example:
+            struct: C1=CC=CC=C1
+            output_format: chemical/x-mdl-molfile
     responses:
       200:
-        description: Molecule with calculated coordinates
+        description: Chemical structure with approximately corrected coordinates
         schema:
           $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
       400:
@@ -714,7 +760,53 @@ def clean():
 @indigo_api.route('/automap', methods=['POST'])
 @check_exceptions
 def automap():
-    data = IndigoAutomapSchema(strict=True).load(get_request_data(request))
+    """
+    Automatically calculate reaction atoms mapping
+    ---
+    tags:
+      - indigo
+    parameters:
+      - name: json_request
+        in: body
+        required: true
+        schema:
+          id: IndigoAutomapRequest
+          properties:
+            struct:
+              type: string
+              required: true
+              examples: C1=CC=CC=C1.N>>C1=CC=CC=N1.C
+            output_format:
+              type: string
+              default: chemical/x-mdl-rxnfile
+              enum:
+                - chemical/x-mdl-rxnfile
+                - chemical/x-mdl-molfile
+                - chemical/x-daylight-smiles
+                - chemical/x-chemaxon-cxsmiles
+                - chemical/x-cml
+                - chemical/x-inchi
+                - chemical/x-iupac
+                - chemical/x-daylight-smarts
+                - chemical/x-inchi-aux
+          example:
+            struct: C1=CC=CC=C1.N>>C1=CC=CC=N1.C
+            output_format: chemical/x-mdl-rxnfile
+    responses:
+      200:
+        description: Reaction with calculated atom-to-atom mappings
+        schema:
+          $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
+      400:
+        description: 'A problem with supplied client data'
+        schema:
+          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+      500:
+        description: 'A problem on server side'
+        schema:
+          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+    """
+    data = IndigoAutomapSchema().load(get_request_data(request))
     LOG_DATA('[REQUEST] /automap', data['input_format'], data['output_format'], data['mode'], data['struct'],
              data['options'])
     md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
@@ -725,6 +817,52 @@ def automap():
 @indigo_api.route('/calculate_cip', methods=['POST'])
 @check_exceptions
 def calculate_cip():
+    """
+    Calculate CIP
+    ---
+    tags:
+      - indigo
+    parameters:
+      - name: json_request
+        in: body
+        required: true
+        schema:
+          id: IndigoCalculateCipRequest
+          properties:
+            struct:
+              type: string
+              required: true
+              examples: C1=CC=CC=C1
+            output_format:
+              type: string
+              default: chemical/x-mdl-molfile
+              enum:
+                - chemical/x-mdl-rxnfile
+                - chemical/x-mdl-molfile
+                - chemical/x-daylight-smiles
+                - chemical/x-chemaxon-cxsmiles
+                - chemical/x-cml
+                - chemical/x-inchi
+                - chemical/x-iupac
+                - chemical/x-daylight-smarts
+                - chemical/x-inchi-aux
+          example:
+            struct: C1=CC=CC=C1
+            output_format: chemical/x-mdl-molfile
+    responses:
+      200:
+        description: Chemical structure with calculaated CIP
+        schema:
+          $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
+      400:
+        description: 'A problem with supplied client data'
+        schema:
+          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+      500:
+        description: 'A problem on server side'
+        schema:
+          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+    """
     data = IndigoRequestSchema().load(get_request_data(request))
     LOG_DATA('[REQUEST] /calculate_cip', data['input_format'], data['output_format'], data['struct'], data['options'])
     md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
@@ -735,13 +873,62 @@ def calculate_cip():
 @indigo_api.route('/check', methods=['POST', ])
 @check_exceptions
 def check():
-    data = IndigoCheckSchema(strict=True).load(get_request_data(request))
+    """
+    Check chemical structure
+    ---
+    tags:
+      - indigo
+    parameters:
+      - name: json_request
+        in: body
+        required: true
+        schema:
+          id: IndigoCheckRequest
+          properties:
+            struct:
+              type: string
+              required: true
+              examples: C1=CC=CC=C1
+            types:
+              type: array
+              default: ["valence", "ambiguous_h", "query", "pseudoatoms", "radicals", "stereo", "overlapping_atoms", "overlapping_bonds", "3d", "sgroups", "v3000", "rgroups"]
+              enum:
+                - valence
+                - ambiguous_h
+                - query
+                - pseudoatoms
+                - radicals
+                - stereo
+                - overlapping_atoms
+                - overlapping_bonds
+                - 3d
+                - sgroups
+                - v3000
+                - rgroups
+          example:
+            struct: "[C+5]"
+            types: ["valence", "ambiguous_h"]
+    responses:
+      200:
+        description: JSON with errors for given types if errors present
+        schema:
+          id: IndigoCheckResponse
+      400:
+        description: 'A problem with supplied client data'
+        schema:
+          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+      500:
+        description: 'A problem on server side'
+        schema:
+          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+    """
+    data = IndigoCheckSchema().load(get_request_data(request))
     try:
         indigo = indigo_init(data['options'])
     except Exception as e:
         raise HttpException('Problem with Indigo initialization: {0}'.format(e), 501)
     LOG_DATA('[REQUEST] /check', data['types'], data['struct'], data['options'])
-    result = indigo.check(data['struct'], data['types']);
+    result = indigo.check(data['struct'], json.dumps(data['types']));
     return result, 200, {'Content-Type': 'application/json'}
 
 
@@ -752,29 +939,31 @@ def calculate():
     Calculate properites for input structure
     ---
     tags:
-      - indigo
+    - indigo
     parameters:
-      - name: json_request
-        in: body
-        required: true
-        schema:
-          id: IndigoCalculateRequest
+    - name: json_request
+      in: body
+      required: true
+      schema:
+        id: IndigoCalculateRequest
+        properties:
+          struct:
+            type: string
+            required: true
+            examples: C1=CC=CC=C1
           properties:
-            struct:
-              type: string
-              default: C1=CC=CC=C1
-            'properties':
-              type: array
-              default: ["molecular-weight"]
-      - name: struct
-        in: json_request
-        type: string
-      - name: properties
-        in: json_request
-        required: true
-        type: string
-        enum: ['molecular-weight', 'most-abundant-mass', 'monoisotopic-mass', 'gross', 'mass-composition']
-        default: ["molecular-weight"]
+            type: array
+            default: ["molecular-weight"]
+            examples: ["molecular-weight"]
+            enum:
+             - molecular-weight
+             - most-abundant-mass
+             - monoisotopic-mass
+             - gross
+             - mass-composition
+        example:
+          struct: C1=CC=CC=C1
+          properties: ["molecular-weight"]
     responses:
       200:
         description: Calculated properties
@@ -782,8 +971,12 @@ def calculate():
         description: 'A problem with supplied client data'
         schema:
           $ref: "#/definitions/indigo_api_aromatize_post_Error"
+      500:
+        description: 'A problem on server side'
+        schema:
+          $ref: "#/definitions/indigo_api_aromatize_post_Error"
     """
-    data = IndigoCalculateSchema(strict=True).load(get_request_data(request))
+    data = IndigoCalculateSchema().load(get_request_data(request))
     LOG_DATA('[REQUEST] /calculate', data['properties'], data['selected'], data['struct'], data['options'])
     md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'],
                       selected=data['selected'])
@@ -888,7 +1081,7 @@ def render():
         except ValueError:
             return get_error_response('Invalid input JSON: {0}'.format(request.data), 400)
 
-        data = IndigoRendererSchema(strict=True).load(input_dict)
+        data = IndigoRendererSchema().load(input_dict)
         if data['struct'] and not data['query']:
             md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
         elif data['query'] and not data['struct']:
@@ -919,7 +1112,7 @@ def render():
                 md = load_moldata(input_dict['struct'])
                 mdq = load_moldata(input_dict['query'], indigo=md.struct.dispatcher, query=True)
                 md.struct = highlight(md.struct.dispatcher, md.struct, mdq.struct)
-            data = IndigoRendererSchema(strict=True).load(input_dict)
+            data = IndigoRendererSchema().load(input_dict)
         except Exception as e:
             return get_error_response('Invalid GET query {}'.format(str(e)), 400)
 

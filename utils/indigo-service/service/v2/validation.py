@@ -81,6 +81,7 @@ class IndigoCalculateSchema(IndigoBaseSchema):
 
 
 class IndigoAutomapSchema(IndigoRequestSchema):
+    output_format = fields.Str(missing='chemical/x-mdl-rxnfile', validate=OneOf(IndigoBaseSchema.struct_mime_types))
     mode = fields.Str(missing='discard', validate=OneOf(('discard', 'alter', 'clear', 'keep')))
 
 
