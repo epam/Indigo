@@ -476,7 +476,7 @@ def aromatize():
       400:
         description: 'A problem with supplied client data'
         schema:
-          id: Error
+          id: ClientError
           required:
             - error
           properties:
@@ -485,7 +485,7 @@ def aromatize():
       500:
         description: 'A problem on server side'
         schema:
-          id: Error
+          id: ServerError
           required:
             - error
           properties:
@@ -546,11 +546,15 @@ def dearomatize():
       200:
         description: Dearomatized chemical structure
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
+          $ref: "#/definitions/IndigoResponse"
       400:
         description: 'A problem with supplied client data'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ClientError"
+      500:
+        description: 'A problem on server side'
+        schema:
+          $ref: "#/definitions/ServerError"
     """
     data = IndigoRequestSchema().load(get_request_data(request))
 
@@ -603,11 +607,15 @@ def convert():
       200:
         description: Chemical structure in requested format
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
+          $ref: "#/definitions/IndigoResponse"
       400:
         description: 'A problem with supplied client data'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ClientError"
+      500:
+        description: 'A problem on server side'
+        schema:
+          $ref: "#/definitions/ServerError"
     """
     if request.method == 'POST':
         data = IndigoRequestSchema().load(get_request_data(request))
@@ -677,15 +685,15 @@ def layout():
       200:
         description: Chemical structure with calculated correct coordinates
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
+          $ref: "#/definitions/IndigoResponse"
       400:
         description: 'A problem with supplied client data'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ClientError"
       500:
         description: 'A problem on server side'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ServerError"
     """
     data = IndigoRequestSchema().load(get_request_data(request))
     LOG_DATA('[REQUEST] /layout', data['input_format'], data['output_format'], data['struct'], data['options'])
@@ -733,15 +741,15 @@ def clean():
       200:
         description: Chemical structure with approximately corrected coordinates
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
+          $ref: "#/definitions/IndigoResponse"
       400:
         description: 'A problem with supplied client data'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ClientError"
       500:
         description: 'A problem on server side'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ServerError"
     """
     data = IndigoRequestSchema().load(get_request_data(request))
     LOG_DATA('[REQUEST] /clean', data['input_format'], data['output_format'], data['struct'], data['options'])
@@ -796,15 +804,15 @@ def automap():
       200:
         description: Reaction with calculated atom-to-atom mappings
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
+          $ref: "#/definitions/IndigoResponse"
       400:
         description: 'A problem with supplied client data'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ClientError"
       500:
         description: 'A problem on server side'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ServerError"
     """
     data = IndigoAutomapSchema().load(get_request_data(request))
     LOG_DATA('[REQUEST] /automap', data['input_format'], data['output_format'], data['mode'], data['struct'],
@@ -853,15 +861,15 @@ def calculate_cip():
       200:
         description: Chemical structure with calculaated CIP
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
+          $ref: "#/definitions/IndigoResponse"
       400:
         description: 'A problem with supplied client data'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ClientError"
       500:
         description: 'A problem on server side'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ServerError"
     """
     data = IndigoRequestSchema().load(get_request_data(request))
     LOG_DATA('[REQUEST] /calculate_cip', data['input_format'], data['output_format'], data['struct'], data['options'])
@@ -916,11 +924,11 @@ def check():
       400:
         description: 'A problem with supplied client data'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ClientError"
       500:
         description: 'A problem on server side'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ServerError"
     """
     data = IndigoCheckSchema().load(get_request_data(request))
     try:
@@ -970,11 +978,11 @@ def calculate():
       400:
         description: 'A problem with supplied client data'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ClientError"
       500:
         description: 'A problem on server side'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ServerError"
     """
     data = IndigoCalculateSchema().load(get_request_data(request))
     LOG_DATA('[REQUEST] /calculate', data['properties'], data['selected'], data['struct'], data['options'])
@@ -1053,7 +1061,11 @@ def render():
       400:
         description: 'A problem with supplied client data'
         schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
+          $ref: "#/definitions/ClientError"
+      500:
+        description: 'A problem on server side'
+        schema:
+          $ref: "#/definitions/ServerError"
     """
     render_format_dict = {
         'image/svg+xml': 'svg',
