@@ -35,9 +35,8 @@ EXPOSE 8002
 ENV INDIGO_UWSGI_RUN_PARAMETERS --plugin python3
 
 # Install Indigo
-# COPY ./lib/*indigo*linux*.whl /opt/
-# RUN ls /opt
-RUN python3 -m pip install epam.indigo
+COPY ./lib/*indigo*linux*.whl /opt/
+RUN python3 -m pip install /opt/*indigo*linux*.whl
 
 # # Install Indigo Uploader
 # COPY ./lib/indigo-uploader-*.zip /opt/
