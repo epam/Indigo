@@ -20,7 +20,7 @@
 #define __molecule_json_loader__
 
 #include <unordered_set>
-
+#include <vector>
 #include <rapidjson/document.h>
 
 #include "base_c/defs.h"
@@ -50,19 +50,19 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        explicit MoleculeJsonLoader( rapidjson::Value& molecule, rapidjson::Value& rgroups );
-        void loadMolecule( BaseMolecule& mol );
+        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups);
+        void loadMolecule(BaseMolecule& mol);
         StereocentersOptions stereochemistry_options;
 
-	protected:
-        int addAtomToMoleculeQuery( const char* label, int element, int charge, int valence, int radical, int isotope );
-        int addBondToMoleculeQuery( int beg, int end, int order, int topology = 0 );
-        void validateMoleculeBond( int order );
-        void parseAtoms( const rapidjson::Value& atoms, BaseMolecule& mol );
-        void parseBonds( const rapidjson::Value& bonds, BaseMolecule& mol, int atom_base_idx );
-        void parseHighlight( const rapidjson::Value& highlight, BaseMolecule& mol );
+    protected:
+        int addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope);
+        int addBondToMoleculeQuery(int beg, int end, int order, int topology = 0);
+        void validateMoleculeBond(int order);
+        void parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol);
+        void parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol, int atom_base_idx);
+        void parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol);
         void parseSelection(const rapidjson::Value& selection, BaseMolecule& mol);
-        void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol );
+        void parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
     private:
@@ -70,7 +70,16 @@ namespace indigo
         rapidjson::Value& _rgroups;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
-
+        struct EnhancedStereoCenter
+        {
+            EnhancedStereoCenter(int atom_idx, int type, int group) : _atom_idx(atom_idx), _type(type), _group(group)
+            {
+            }
+            int _atom_idx;
+            int _type;
+            int _group;
+        };
+        std::vector<EnhancedStereoCenter> _stereo_centers;
     };
 
 } // namespace indigo
