@@ -767,8 +767,6 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
-      - name: Create folder for native libs
-        run: mkdir dist
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
@@ -778,6 +776,8 @@ jobs:
         run: docker build -f ./utils/indigo-service/service/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service
       - name: Test
         run: |
-          container_id=$(docker run --detach -it --rm -p 80:80 epmlsop/indigo-service:latest)
-          curl localhost/v2/info
+          container_id=$(docker run --detach -it --rm -p 12345:80 epmlsop/indigo-service:latest)
+          echo ${container_id}
+          curl http://localhost:12345/v2/indigo/info
+          docker logs ${container_id}
           docker stop ${container_id}
