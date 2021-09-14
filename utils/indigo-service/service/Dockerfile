@@ -61,6 +61,6 @@ RUN apt-get purge -y unzip git python3-pip python3-wheel && \
     apt-get autoremove -y && \
     rm -rf /opt/* /var/lib/apt/lists/*
 
-EXPOSE 8080
+EXPOSE 80
 WORKDIR /srv/api
-CMD gunicorn --bind 0.0.0.0:8080 app:app
+CMD gunicorn --bind 0.0.0.0:80 app:app
