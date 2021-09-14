@@ -1,10 +1,12 @@
 Flask
-Flask-HTTPAuth
-SQLAlchemy
+# Flask-HTTPAuth
+# SQLAlchemy
 flask-restful
 flasgger
 marshmallow
-pyparsing
-celery
-setuptools
-vine
+gunicorn
+# pyparsing
+# celery
+# setuptools
+# vine
+

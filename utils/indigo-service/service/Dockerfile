@@ -1,13 +1,11 @@
-FROM debian:stable-slim
+FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y --no-install-recommends \
-    unzip libcairo2 uwsgi python3 python3-pip \
-    uwsgi-plugin-python3 \
-    p7zip-full git python3-setuptools python3-wheel
+    unzip python3 python3-pip python3-wheel python3-setuptools libfreetype6-dev libfontconfig1-dev
 
 # Write service version into file
 # COPY ./ /opt/git/
@@ -17,7 +15,7 @@ RUN apt-get install -y --no-install-recommends \
 
 # Install python dependencies using pip
 COPY ./service/requirements.txt /opt/
-RUN pip3 install -r /opt/requirements.txt
+RUN pip3 install --no-cache-dir -r /opt/requirements.txt
 
 # Install Celery
 # COPY ./celery/celeryd.conf /etc/default/celeryd
@@ -29,10 +27,9 @@ RUN pip3 install -r /opt/requirements.txt
 # COPY ./celery/redis.auto.conf /etc/supervisor/conf.d/
 
 # Install uwsgi runner
-COPY ./uwsgi/uwsgi.ini /etc/uwsgi.ini
+# COPY ./uwsgi/uwsgi.ini /etc/uwsgi.ini
 # COPY ./uwsgi/uwsgi.auto.conf /etc/supervisor/conf.d/
-EXPOSE 8002
-ENV INDIGO_UWSGI_RUN_PARAMETERS --plugin python3
+# ENV INDIGO_UWSGI_RUN_PARAMETERS --plugin python3
 
 # Install Indigo
 COPY ./lib/*indigo*linux*.whl /opt/
@@ -60,12 +57,10 @@ COPY ./service/v2/ /srv/api/v2/
 COPY ./service/*.py /srv/api/
 
 # Clean
-# RUN apt-get purge -y p7zip-full unzip git python3-pip python3-wheel
-#
-# RUN DEBIAN_FRONTEND=noninteractive apt-get autoremove -y && \
-#     rm -rf /opt/* /var/lib/apt/lists/*
+RUN apt-get purge -y unzip git python3-pip python3-wheel && \
+    apt-get autoremove -y && \
+    rm -rf /opt/* /var/lib/apt/lists/*
 
+EXPOSE 8080
 WORKDIR /srv/api
-
-# CMD supervisord -n
-CMD python3 app.py -s 0.0.0.0 -p 8002
+CMD gunicorn --bind 0.0.0.0:8080 app:app
