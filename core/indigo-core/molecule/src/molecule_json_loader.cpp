@@ -266,6 +266,27 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         if (rsite_idx)
             mol.allowRGroupOnRSite(atom_idx, rsite_idx);
 
+        if (a.HasMember("stereoLabel"))
+        {
+            std::string sl = a["stereoLabel"].GetString();
+            if (sl.find("abs") != std::string::npos)
+            {
+                _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_ABS, 1);
+            }
+            else if (sl.find("or") != std::string::npos)
+            {
+                int grp = std::stoi(sl.substr(2));
+                if (grp)
+                    _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_OR, grp);
+            }
+            else if (sl.find("and") != std::string::npos)
+            {
+                int grp = std::stoi(sl.substr(3));
+                if( grp )
+                    _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_AND, grp);
+            }
+        }
+
         if (a.HasMember("location"))
         {
             const Value& coords = a["location"];
@@ -712,6 +733,19 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
     mol.buildCisTrans(ignore_cistrans.data());
     if (mol.stereocenters.size() == 0)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
+
+    for (const auto& sc : _stereo_centers)
+    {
+        if (mol.stereocenters.getType(sc._atom_idx) == 0)
+        {
+            throw Error("stereo type specified for atom #%d, but the bond "
+                            "directions does not say that it is a stereocenter",
+                        sc._atom_idx);
+        }
+        else
+            mol.stereocenters.setType(sc._atom_idx, sc._type, sc._group);
+    }
+
     MoleculeLayout ml(mol, false);
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();
