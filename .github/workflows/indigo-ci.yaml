@@ -130,7 +130,7 @@ jobs:
           path: dist/*.nupkg
 
   test_indigo_python_x86_64:
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -174,7 +174,7 @@ jobs:
           check_name: "${{ matrix.os }}_python_test_report"
 
   test_indigo_java_x86_64:
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -218,7 +218,7 @@ jobs:
           check_name: "${{ matrix.os }}_java_test_report"
 
   test_indigo_dotnet_x86_64:
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -756,7 +756,7 @@ jobs:
           ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
 
   build_test_publish_indigo_service:
-    timeout-minutes: 30
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     needs: build_indigo_wrappers
     steps:
