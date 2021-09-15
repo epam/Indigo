@@ -4,9 +4,9 @@ import errno
 sys.path.append('../../common')
 from env_indigo import *
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -16,10 +16,10 @@ indigo = Indigo()
 
 def testMultipleSave(smifile, iterfunc, issmi):
     print("TESTING " + relativePath(smifile))
-    sdfout = indigo.writeFile(joinPath("out/structures.sdf"))
-    cmlout = indigo.writeFile(joinPath("out/structures.cml"))
-    rdfout = indigo.writeFile(joinPath("out/structures.rdf"))
-    smiout = indigo.writeFile(joinPath("out/structures.smi"))
+    sdfout = indigo.writeFile(joinPathPy("out/structures.sdf", __file__))
+    cmlout = indigo.writeFile(joinPathPy("out/structures.cml", __file__))
+    rdfout = indigo.writeFile(joinPathPy("out/structures.rdf", __file__))
+    smiout = indigo.writeFile(joinPathPy("out/structures.smi", __file__))
     rdfout.rdfHeader()
     cmlout.cmlHeader()
     for item in iterfunc(smifile):
@@ -64,10 +64,10 @@ def testMultipleSave(smifile, iterfunc, issmi):
     rdfout.close()
     smiout.close()
 
-    cmliter = indigo.iterateCMLFile(joinPath("out/structures.cml"))
-    sdfiter = indigo.iterateSDFile(joinPath("out/structures.sdf"))
-    rdfiter = indigo.iterateRDFile(joinPath("out/structures.rdf"))
-    smiiter = indigo.iterateSmilesFile(joinPath("out/structures.smi"))
+    cmliter = indigo.iterateCMLFile(joinPathPy("out/structures.cml", __file__))
+    sdfiter = indigo.iterateSDFile(joinPathPy("out/structures.sdf", __file__))
+    rdfiter = indigo.iterateRDFile(joinPathPy("out/structures.rdf", __file__))
+    smiiter = indigo.iterateSmilesFile(joinPathPy("out/structures.smi", __file__))
 
     idx = 1
     while sdfiter.hasNext():
@@ -100,7 +100,7 @@ def testMultipleSave(smifile, iterfunc, issmi):
         idx += 1
 
 
-testMultipleSave(joinPath("../../../../../data/molecules/basic/helma.smi"), indigo.iterateSmilesFile, True)
-testMultipleSave(joinPath("molecules/chemical-structures.smi"), indigo.iterateSmilesFile, True)
-testMultipleSave(joinPath("molecules/pubchem_7m_err.sdf"), indigo.iterateSDFile, False)
-testMultipleSave(joinPath("molecules/acd2d_err.sdf"), indigo.iterateSDFile, False)
+testMultipleSave(joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__), indigo.iterateSmilesFile, True)
+testMultipleSave(joinPathPy("molecules/chemical-structures.smi", __file__), indigo.iterateSmilesFile, True)
+testMultipleSave(joinPathPy("molecules/pubchem_7m_err.sdf", __file__), indigo.iterateSDFile, False)
+testMultipleSave(joinPathPy("molecules/acd2d_err.sdf", __file__), indigo.iterateSDFile, False)

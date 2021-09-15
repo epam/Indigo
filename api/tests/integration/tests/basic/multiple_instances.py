@@ -18,7 +18,7 @@ if c1 != "C":
    sys.stderr.write("%s != C\n" % c1)
 if c2 != "N":
    sys.stderr.write("%s != N\n" % c1)
-for m1, m2 in zip(indigo.iterateSmilesFile(joinPath("molecules/helma.smi")), indigo2.iterateSmilesFile(joinPath("molecules/helma.smi"))):
+for m1, m2 in zip(indigo.iterateSmilesFile(joinPathPy("molecules/helma.smi", __file__)), indigo2.iterateSmilesFile(joinPathPy("molecules/helma.smi", __file__))):
    try:
       c1 = m1.canonicalSmiles()
    except IndigoException as e:

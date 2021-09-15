@@ -31,5 +31,5 @@ def testSerializeBadMols (filename):
     mol2 = indigo.unserialize(buf)
     print(reducePrecision(mol2.molfile()))
     
-testSerializeBadMols(joinPath('molecules/crazystereo.mol'))
-testSerializeBadMols(joinPath('molecules/crazystereo-badvalence.mol'))
+testSerializeBadMols(joinPathPy('molecules/crazystereo.mol', __file__))
+testSerializeBadMols(joinPathPy('molecules/crazystereo-badvalence.mol', __file__))

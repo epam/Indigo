@@ -8,10 +8,10 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("molfile-saving-mode", "3000")
 
-templates = indigo.loadMoleculeFromFile(joinPath("molecules/BIOVIADraw_all_templates.mol"))
+templates = indigo.loadMoleculeFromFile(joinPathPy("molecules/BIOVIADraw_all_templates.mol", __file__))
 
 indigo.setOption("ignore-stereochemistry-errors", "true")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/SCSR_test.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/SCSR_test.mol", __file__))
 tind = m.findTemplate("ala")
 print("Template ala found: %d" % tind)
 tind = m.findTemplate("val")

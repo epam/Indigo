@@ -4,7 +4,7 @@ sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '
 from env_indigo import *
 
 indigo = Indigo()
-for m in indigo.iterateSDFile(joinPath('molecules', 'partial_arom.sdf')):
+for m in indigo.iterateSDFile(joinPathPy('molecules/partial_arom.sdf', __file__)):
    print("Smiles: " + m.smiles())
    # count number of aromatic bonds
    arom_bonds = len([1 for b in m.iterateBonds() if b.bondOrder() == 4])

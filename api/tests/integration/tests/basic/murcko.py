@@ -8,9 +8,9 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -69,14 +69,14 @@ def calculateMurckoScaffold (mol):
             
             hanging_atoms = hanging_next
             
-saver = indigo.createFileSaver(joinPath("out/murcko.sdf"), "sdf")
+saver = indigo.createFileSaver(joinPathPy("out/murcko.sdf", __file__), "sdf")
 
 m = indigo.loadMolecule("CCCCCC1CCCCC1")
 calculateMurckoScaffold(m)
 print(m.smiles())
 saver.append(m)
 
-for m in indigo.iterateSDFile(joinPath("molecules/murcko.sdf")):
+for m in indigo.iterateSDFile(joinPathPy("molecules/murcko.sdf", __file__)):
     m2 = m.clone()
     calculateMurckoScaffold(m2)
     print(m2.smiles())

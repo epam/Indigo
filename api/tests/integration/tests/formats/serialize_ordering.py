@@ -10,7 +10,7 @@ indigo.setOption("molfile-saving-skip-date", True)
 def getAtomString (a, reaction, hasCoord):
     xyzStr = ""
     if hasCoord:
-        x, y, z = [round(v, 3) for v in a.xyz()]
+        x, y, z = [round(v, 1) for v in a.xyz()]
         xyzStr = " (%0.1f %0.1f %0.1f)" % (x, y, z)
     str = "%s%s" % (a.symbol(), xyzStr)
 
@@ -47,13 +47,13 @@ def compareMolecules(m1, m2, r1, r2):
 indigo.setOption("serialize-preserve-ordering", True)
 
 print("Molecules")
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/ordering.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/ordering.mol", __file__))
 buf = mol.serialize()
 mol2 = indigo.unserialize(buf)
 compareMolecules(mol, mol2, None, None)
 
 print("Reactions")
-rxn = indigo.loadReactionFromFile(joinPath("reactions/ordering.rxn"))
+rxn = indigo.loadReactionFromFile(joinPathPy("reactions/ordering.rxn", __file__))
 buf = rxn.serialize()
 rxn2 = indigo.unserialize(buf)
 for mol in rxn.iterateMolecules():

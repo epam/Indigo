@@ -15,7 +15,7 @@ def doTest (m):
     except IndigoException as e:
         print("Exception: %s" % (getIndigoExceptionText(e)))
 
-for idx, m in enumerate(indigo.iterateSDFile(joinPath("molecules", "bad_valence.sdf"))):
+for idx, m in enumerate(indigo.iterateSDFile(joinPathPy("molecules/bad_valence.sdf", __file__))):
     print("** %d **" % idx)
     doTest(m)
     print(m.checkBadValence())

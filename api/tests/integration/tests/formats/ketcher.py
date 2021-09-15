@@ -31,7 +31,7 @@ def test_simple_load_save_load(indigo):
 
 
 def test_simple_cis_trans_load(indigo):
-    m1 = indigo.loadMoleculeFromFile(joinPath("molecules/cis_trans.mol"))
+    m1 = indigo.loadMoleculeFromFile(joinPathPy("molecules/cis_trans.mol", __file__))
     js = m1.json()
     m2 = indigo.loadMolecule(js)
     exact_check(indigo, m2, m2)
@@ -39,10 +39,10 @@ def test_simple_cis_trans_load(indigo):
 
 def test_complex_load_save_load(indigo):
     """Check load-save-load for some files"""
-    paths = ("molecules/ketcher.mol", "molecules/all2000.mol")
+    paths = ("molecules/ketcher.mol", "molecules/all2000.mol", "molecules/enhanced_stereo1.mol", "molecules/enhanced_stereo2.mol", "molecules/enhanced_stereo3.mol")
     for path in paths:
         print(path)
-        m1 = indigo.loadMoleculeFromFile(joinPath(path))
+        m1 = indigo.loadMoleculeFromFile(joinPathPy(path, __file__))
         js = m1.json()
         m2 = indigo.loadMolecule(js)
         # indigo.dbgBreakpoint()
@@ -55,7 +55,7 @@ def test_reactions_load_save_load(indigo):
              "reactions/cdxml/CN_Bond-S-GRP.rxn", "reactions/cdxml/CN_Bond.rxn",
              "reactions/cdxml/CN_Bond_map.rxn")
     for path in paths:
-        m1 = indigo.loadReactionFromFile(joinPath(path))
+        m1 = indigo.loadReactionFromFile(joinPathPy(path, __file__))
         js = m1.json()
         m2 = indigo.loadReaction(js)
         # indigo.dbgBreakpoint()

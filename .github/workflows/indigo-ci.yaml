@@ -25,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -75,7 +75,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -130,6 +130,7 @@ jobs:
           path: dist/*.nupkg
 
   test_indigo_python_x86_64:
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -140,7 +141,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -173,6 +174,7 @@ jobs:
           check_name: "${{ matrix.os }}_python_test_report"
 
   test_indigo_java_x86_64:
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -183,7 +185,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -206,7 +208,7 @@ jobs:
           ls ${env:INDIGO_PATH} || echo failed
           echo ${INDIGO_PATH} || echo failed
           ls ${INDIGO_PATH} || echo failed
-          java -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -216,6 +218,7 @@ jobs:
           check_name: "${{ matrix.os }}_java_test_report"
 
   test_indigo_dotnet_x86_64:
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -226,7 +229,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -266,20 +269,26 @@ jobs:
           Expand-Archive IronPython.2.7.11.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
-      - name: Test UNIX
-        if: ${{ matrix.os != 'windows' }}
+      - name: Test Linux
+        if: ${{ matrix.os == 'ubuntu' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
-          export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
           dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+      - name: Test macOS
+        if: ${{ matrix.os == 'macos' }}
+        env:
+          INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
+        run: |
+          export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todos -platform mac
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo -platform ironwin
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -301,7 +310,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Create folder for native libs
         run: mkdir dist
@@ -340,7 +349,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
@@ -364,6 +373,7 @@ jobs:
         working-directory: bingo/bingo-elastic/java
 
   build_indigo_windows_mingw_x86_64:
+    timeout-minutes: 60
     runs-on: windows-latest
     defaults:
       run:
@@ -372,7 +382,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - uses: msys2/setup-msys2@v2
         with:
@@ -397,7 +407,7 @@ jobs:
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests
         run: |
-          python api/tests/integration/test.py -j junit_report.xml -e todo
+          python api/tests/integration/test.py -j junit_report.xml -e todo -platform mingw
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -417,7 +427,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags
@@ -449,7 +459,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -494,7 +504,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -519,7 +529,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - uses: msys2/setup-msys2@v2
         with:
@@ -544,7 +554,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -571,7 +581,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -605,7 +615,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -638,7 +648,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -669,7 +679,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+          lfs: false
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
@@ -685,49 +695,97 @@ jobs:
           name: bingo-sqlserver-${{ matrix.os }}-x86_64
           path: dist/bingo-sqlserver*.zip
 
-#  publish:
-#    if: startsWith(github.ref, 'refs/tags/indigo-')
-#    runs-on: ubuntu-latest
-#    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
-#    container: epmlsop/indigo-tester:latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#        with:
-#          lfs: true
-#          fetch-depth: 500
-#      - name: Git fetch tags
-#        run: git fetch --tags -f
-#      - name: Create folder for native libs
-#        run: mkdir dist
-#      - name: Download native shared libraries
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: indigo-native-shared-libs
-#          path: dist/
-#      - name: Update Wrappers version
-#        run: python3 build_scripts/indigo-update-version.py
-#      - name: Publish Python wheels to PyPI
-#        env:
-#          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-#        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal --publish
-#      - name: Publish Java jars to Maven Central
-#        env:
-#          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
-#          MAVEN_USER: ${{ secrets.MAVEN_USER }}
-#          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-#          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
-#          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
+  publish_indigo:
+    if: startsWith(github.ref, 'refs/tags/indigo-')
+    runs-on: ubuntu-latest
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64]
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir -p dist/lib
+      - name: Download native shared libraries
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-native-shared-libs
+          path: dist/lib
+      - name: Download Python wheels
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-python
+          path: dist/
+      - name: Download .NET nupkg
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-dotnet
+          path: dist/
+      - name: Publish Python wheels to PyPI
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*win*.whl
+             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*linux*.whl
+             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*mac*.whl
+      - name: Publish .NET nupkg to Nuget
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push dist/*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Publish Java jars to Maven Central
+        env:
+          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
+          MAVEN_USER: ${{ secrets.MAVEN_USER }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
+        run: |
+          pwd
+          set -eux
+          apt install -y gnupg
+          mkdir /root/.m2
+          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
+          echo ${GPG_PRIVATE_KEY} > gpg.key
+          gpg --batch --import gpg.key
+          rm gpg.key
+          cd api/java
+          ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
+
+  build_test_publish_indigo_service:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs: build_indigo_wrappers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-python
+          path: utils/indigo-service/lib/
+      - name: Build
+        run: docker build -f ./utils/indigo-service/service/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service
+# TODO: add tests
+#      - name: Test
 #        run: |
-#          set -eux
-#          apt install -y gnupg
-#          mkdir /root/.m2
-#          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
-#          echo ${GPG_PRIVATE_KEY} > gpg.key
-#          gpg --batch --import gpg.key
-#          rm gpg.key
-#          python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
-#      - name: Publish .NET nupkg to Nuget
-#        env:
-#          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-#        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal --publish
+#          container_id=$(docker run --detach -it --rm -p 12345:80 epmlsop/indigo-service:latest)
+#          echo ${container_id}
+#          docker logs ${container_id}
+#          docker ps
+#          curl http://localhost:12345/v2/indigo/info
+#          docker logs ${container_id}
+#          docker stop ${container_id}
+      - name: Publish
+        if: startsWith(github.ref, 'refs/tags/indigo-')
+        run: |
+          docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_TOKEN}
+          docker push epmlsop/indigo-service:latest

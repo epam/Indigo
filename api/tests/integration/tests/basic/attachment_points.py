@@ -8,14 +8,14 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
-outfile = joinPath("out/replaced_r_fragments.sdf")
+outfile = joinPathPy("out/replaced_r_fragments.sdf", __file__)
 replaced_r_fragments = indigo.createFileSaver(outfile, "sdf")
 m1 = indigo.loadMolecule("CC1=CC2CC3CCCCC3CC2C=C1O")
 m2 = indigo.loadMolecule("CC1=CC(CO)C(CF)C(C)=C1O")

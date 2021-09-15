@@ -8,7 +8,7 @@ from env_indigo import *
 indigo = Indigo()
 
 print("****** Check bad valence ********")
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/issue_243.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/issue_243.mol", __file__))
 
 print("Check result (molecule) = %s" % mol.check("VALENCE"))
 
@@ -30,18 +30,18 @@ for bond in mol.iterateBonds():
     print("Check result (bond) %d = %s" % (bond.index(), bond.check("VALENCE")))
 
 
-for idx, m in enumerate(indigo.iterateSDFile(joinPath("molecules", "bad_valence.sdf"))):
+for idx, m in enumerate(indigo.iterateSDFile(joinPathPy("molecules/bad_valence.sdf", __file__))):
     print("** %d **" % idx)
     print("Check result (molecule) = %s" % m.check())
 
 
 print("****** Check chiral flag ********")
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/wrong_chiral_flag.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/wrong_chiral_flag.mol", __file__))
 print("Check result (molecule) = %s" % mol.check())
 
 
 print("****** Check stereogenic center ********")
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/stereogenic.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/stereogenic.mol", __file__))
 print("Structure is chiral      = %d" % mol.isChiral())
 print("Chiral flag consistency  = %d" % mol.checkChirality())
 print("3D stereo centers exist = %d" % mol.check3DStereo())
@@ -50,7 +50,7 @@ print("Check result = %s" % mol.check())
 
 
 print("****** Check 3D stereo center ********")
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/stereo_3d.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/stereo_3d.mol", __file__))
 print("Structure is chiral      = %d" % mol.isChiral())
 print("Chiral flag consistency  = %d" % mol.checkChirality())
 print("3D stereo centers exist = %d" % mol.check3DStereo())
@@ -58,18 +58,18 @@ print("Undefined stereo centers exist = %d" % mol.checkStereo())
 print("Check result = %s" % mol.check())
 
 print("****** Check overlapped atoms/bonds ********")
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/overlapped.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/overlapped.mol", __file__))
 print("Check result = %s" % mol.check())
 
 print("****** Check query/stereo fetures ********")
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/query_test.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/query_test.mol", __file__))
 print("Check result = %s" % mol.check())
 
 
 print("****** Check reactions ********")
 indigo.setOption("ignore-stereochemistry-errors", "true")
 
-for idx, m in enumerate(indigo.iterateRDFile(joinPath("reactions", "rxns.rdf"))):
+for idx, m in enumerate(indigo.iterateRDFile(joinPathPy("reactions/rxns.rdf", __file__))):
     print("** %d **" % idx)
 
     try:

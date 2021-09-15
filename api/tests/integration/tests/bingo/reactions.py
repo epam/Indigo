@@ -41,12 +41,12 @@ def searchExact(bingo, q, options=''):
     result.close()
 
 indigo = Indigo()
-bingo = Bingo.createDatabaseFile(indigo, joinPath('db_reaction'), 'reaction', '')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('db_reaction', __file__), 'reaction', '')
 
 index = 0
 wrongStructures = 0
 
-for rxn in indigo.iterateSmilesFile(joinPath('reactions', 'rhea.smiles')):
+for rxn in indigo.iterateSmilesFile(joinPathPy('reactions/rhea.smiles', __file__)):
     try:
         bingo.insert(rxn)
     except BingoException as e:
@@ -59,7 +59,7 @@ for rxn in indigo.iterateSmilesFile(joinPath('reactions', 'rhea.smiles')):
 print('Finished indexing {0} structures. {1} wrong structures excluded'.format(index, wrongStructures))
 
 cnt = 0
-for rxn in indigo.iterateSmilesFile(joinPath('reactions', 'smi_queries.smi')):
+for rxn in indigo.iterateSmilesFile(joinPathPy('reactions/smi_queries.smi', __file__)):
     print('Reaction #{0}'.format(cnt))
     cnt = cnt + 1;
     qrxn = indigo.loadQueryReaction(rxn.rawData())
@@ -69,7 +69,7 @@ for rxn in indigo.iterateSmilesFile(joinPath('reactions', 'smi_queries.smi')):
     searchSim(bingo, rxn, 0.9, 1, 'euclid-sub')
     searchExact(bingo, rxn, '')
 
-for rxn in itertools.islice(indigo.iterateSmilesFile(joinPath('reactions', 'rhea.smiles')), 100):
+for rxn in itertools.islice(indigo.iterateSmilesFile(joinPathPy('reactions/rhea.smiles', __file__)), 100):
     searchExact(bingo, rxn)
 
 bingo.close()

@@ -4,7 +4,7 @@ from env_indigo import *
 
 indigo = Indigo()
 
-with open(joinPath('molecules/stereo_parity.sdf')) as f:
+with open(joinPathPy('molecules/stereo_parity.sdf', __file__)) as f:
     data = f.read()
 print(data)
 print("*** SDF loadString ***")
@@ -25,7 +25,7 @@ for m in indigo.iterateSDF(indigo.loadBuffer(data)):
     except IndigoException as e:
         print(getIndigoExceptionText(e))
 
-with open(joinPath('molecules/helma.smi')) as f:
+with open(joinPathPy('molecules/helma.smi', __file__)) as f:
     data = f.read()
 print(data)
 print("*** SMILES loadString ***")
@@ -46,7 +46,7 @@ for m in indigo.iterateSmiles(indigo.loadBuffer(data)):
     except IndigoException as e:
         print(getIndigoExceptionText(e))
 
-with open(joinPath('../../../../../data/molecules/basic/tetrahedral-all.cml')) as f:
+with open(joinPathPy('../../../../../data/molecules/basic/tetrahedral-all.cml', __file__)) as f:
     data = f.read()
 print(data)
 print("*** CML loadString ***")
@@ -67,7 +67,7 @@ for m in indigo.iterateCML(indigo.loadBuffer(data)):
     except IndigoException as e:
         print(getIndigoExceptionText(e))
 
-with open(joinPath('reactions/rxns.rdf')) as f:
+with open(joinPathPy('reactions/rxns.rdf', __file__)) as f:
     data = f.read()
 print(data)
 print("*** RDF loadString ***")

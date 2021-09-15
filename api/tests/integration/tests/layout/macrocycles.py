@@ -15,20 +15,20 @@ indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("smart-layout", "1")
 indigo.setOption("molfile-saving-skip-date", "1")
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
 print("**** Test Macrocycles ****")
 
-saver = indigo.writeFile(joinPath("out", "macrocycles.sdf"))
+saver = indigo.writeFile(joinPathPy("out/macrocycles.sdf", __file__))
 
 ref_path = getRefFilepath("macrocycles.sdf")
 ref = indigo.iterateSDFile(ref_path)
-for idx, item in enumerate(indigo.iterateSmilesFile(joinPath("molecules", "macrocycles_test.smi"))):
+for idx, item in enumerate(indigo.iterateSmilesFile(joinPathPy("molecules/macrocycles_test.smi", __file__))):
     try:
         print("Test Item #{} ".format(idx))
         mol = item.clone()

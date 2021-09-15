@@ -63,14 +63,14 @@ def processToDearomatize (m):
     except IndigoException as err:
         print("  %s" % (getIndigoExceptionText(err)))
         
-for m in indigo.iterateSmilesFile(joinPath("molecules", "dearomatization.smi")):
+for m in indigo.iterateSmilesFile(joinPathPy("molecules/dearomatization.smi", __file__)):
     print(m.rawData())
     processToDearomatize(m)
     m2 = indigo.loadMolecule(m.molfile())
     processToDearomatize(m2)
 
 print("***** Radical *****")
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "benzene_radical.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/benzene_radical.mol", __file__))
 print(m.smiles())
 print("Aromatize")
 try:
@@ -125,7 +125,7 @@ def noneFunc (m):
     pass
         
 indigo = Indigo()
-for root, dirnames, filenames in os.walk(joinPath("molecules/arom-test")):
+for root, dirnames, filenames in os.walk(joinPathPy("molecules/arom-test", __file__)):
     filenames.sort()
     for filename in filenames:
         sys.stdout.write("%s: \n" % filename)
@@ -152,7 +152,7 @@ def printMoleculeWithRGroups (m):
             print("  Fragment=%d:" % fr.index())
             print("    " + fr.smiles())
 
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/arom_rgroup_member.mol")) 
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/arom_rgroup_member.mol", __file__))
 printMoleculeWithRGroups(mol)
 print("")
 print("Aromatized:")
@@ -222,7 +222,7 @@ m.dearomatize()
 print(m.smiles())
 
 print("***** Invalid connectivity *****")
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "invalid-connectivity.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/invalid-connectivity.mol", __file__))
 print(m.smiles())
 m.aromatize()
 print(m.smiles())
@@ -253,17 +253,17 @@ for model in ["basic", "generic"]:
 print("***** Process arom atoms  *****")
 indigo = Indigo()
 
-for mol in indigo.iterateSDFile(joinPath("molecules", "issue_22.sdf")):
+for mol in indigo.iterateSDFile(joinPathPy("molecules/issue_22.sdf", __file__)):
     mol.dearomatize()
     print(mol.smiles())
 
 print("***** Process ferrocene-like structure  *****")
 indigo = Indigo()
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "BoPhoz(R).mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/BoPhoz(R).mol", __file__))
 m.aromatize()
 print(m.smiles())
 
-q = indigo.loadQueryMoleculeFromFile(joinPath("molecules", "BoPhoz(R).mol"))
+q = indigo.loadQueryMoleculeFromFile(joinPathPy("molecules/BoPhoz(R).mol", __file__))
 q.aromatize()
 print(q.smiles())
 
@@ -274,7 +274,7 @@ assert(matcher.match(q) != None)
 print("***** Dearomatization for R-Groups  *****")
 
 indigo = Indigo()
-mol = indigo.loadMoleculeFromFile(joinPath("..", "..", "..", "..", "..", "data", "molecules", "rgroups", "Rgroup_for_Dearomatize.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("../../../../../data/molecules/rgroups/Rgroup_for_Dearomatize.mol", __file__))
 
 mol.aromatize()
 print("before")

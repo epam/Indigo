@@ -60,7 +60,7 @@ class NullOuput():
     
 print("Testing set of molecules")
 idx = 1
-for item in indigo.iterateSDFile(joinPath("molecules/rings.sdf")):
+for item in indigo.iterateSDFile(joinPathPy("molecules/rings.sdf", __file__)):
     print("#%d: " % (idx))
     rings = iterateLoops(item, sys.stdout)
     for pc in range(5):

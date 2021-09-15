@@ -9,7 +9,7 @@ indigo = Indigo()
 
 def run(file, options):
     print("### (file: %s; options: \"%s\") ###" % (file, options))
-    mol = indigo.loadMoleculeFromFile(joinPath(file))
+    mol = indigo.loadMoleculeFromFile(joinPathPy(file, __file__))
     all = indigo.rgroupComposition(mol, "")
     mi = 1
     for m in all:

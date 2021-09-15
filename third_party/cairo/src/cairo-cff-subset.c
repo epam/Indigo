@@ -250,7 +250,7 @@ decode_integer (unsigned char *p, int *integer)
         *integer = (int)(p[1]<<8 | p[2]);
         p += 3;
     } else if (*p == 29) {
-        *integer = (int)((p[1] << 24) | (p[2] << 16) | (p[3] << 8) | p[4]);
+        *integer = (int)(((uint32_t)p[1] << 24) | (p[2] << 16) | (p[3] << 8) | p[4]);
         p += 5;
     } else if (*p >= 32 && *p <= 246) {
         *integer = *p++ - 139;
@@ -554,7 +554,7 @@ cff_index_append_copy (cairo_array_t *index,
     element.length = length;
     element.is_copy = TRUE;
     element.data = _cairo_malloc (element.length);
-    if (unlikely (element.data == NULL))
+    if (unlikely (element.data == NULL && length != 0))
 	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
     memcpy (element.data, object, element.length);
@@ -991,6 +991,8 @@ cairo_cff_font_read_fdselect (cairo_cff_font_t *font, unsigned char *p)
             p += 2;
             fd = *p++;
             last = get_unaligned_be16 (p);
+            if (last > font->num_glyphs)
+                return CAIRO_INT_STATUS_UNSUPPORTED;
             for (j = first; j < last; j++)
                 font->fdselect[j] = fd;
         }
@@ -1106,7 +1108,7 @@ cairo_cff_font_read_cid_fontdict (cairo_cff_font_t *font, unsigned char *ptr)
             goto fail;
     }
 
-    return CAIRO_STATUS_SUCCESS;
+    status = CAIRO_STATUS_SUCCESS;
 
 fail:
     cff_index_fini (&index);
@@ -1604,6 +1606,8 @@ cairo_cff_parse_charstring (cairo_cff_font_t *font,
 		}
             } else {
                 sub_num = font->type2_stack_top_value + font->local_sub_bias;
+		if (sub_num >= _cairo_array_num_elements(&font->local_sub_index))
+		    return CAIRO_INT_STATUS_UNSUPPORTED;
                 element = _cairo_array_index (&font->local_sub_index, sub_num);
                 if (! font->local_subs_used[sub_num] ||
 		    (need_width && !font->type2_found_width))

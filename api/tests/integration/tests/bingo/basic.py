@@ -33,12 +33,12 @@ def searchSim(bingo, q, minSim, maxSim, metric=None):
 
 indigo = Indigo()
 
-if dir_exists(joinPath("out", 'basic')):
-    rmdir(joinPath("out", 'basic'))
-makedirs(joinPath("out", 'basic'))
+if dir_exists(joinPathPy("out/basic", __file__)):
+    rmdir(joinPathPy("out/basic", __file__))
+makedirs(joinPathPy("out/basic", __file__))
 
 print("*** Creating temporary database ****")
-bingo = Bingo.createDatabaseFile(indigo, joinPath('out', 'basic'), 'molecule', '')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('out', 'basic'), 'molecule', '')
 print(bingo.version())
 m = indigo.loadMolecule('C1CCCCC1')
 bingo.insert(m)
@@ -64,7 +64,7 @@ except BingoException as e:
 bingo.close()
 
 print("*** Loading existing database ****")
-bingo = Bingo.loadDatabaseFile(indigo, joinPath('out', 'basic'), '')
+bingo = Bingo.loadDatabaseFile(indigo, joinPathPy('out', 'basic'), '')
 m = indigo.loadMolecule('C1CCCCC1')
 searchSim(bingo, m, 0.9, 1, 'tanimoto')
 searchSim(bingo, m, 0.9, 1, 'tversky')
@@ -75,7 +75,7 @@ searchSim(bingo, m, 0.9, 1, 'euclid-sub')
 
 try:
     print("*** Loading non-existent database ***")
-    bingo = Bingo.loadDatabaseFile(indigo, joinPath('db', 'idonotexist'), 'molecule')
+    bingo = Bingo.loadDatabaseFile(indigo, joinPathPy('db', 'idonotexist'), 'molecule')
 except BingoException as e:
     print("BingoException: {0}".format(getIndigoExceptionText(e)))
 
@@ -98,7 +98,7 @@ indigo.setOption("fp-ext-enabled", True)
 
 
 print("*** Simple exact search ****")
-bingo = Bingo.createDatabaseFile(indigo, joinPath('out', 'basic'), 'molecule')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('out', 'basic'), 'molecule')
 mol1 = indigo.loadMolecule("ICCCCOC(=O)C1=CC([N+]([O-])=O)=C([N+]([O-])=O)C=C1")
 mol2 = indigo.loadMolecule("CCCC")
 bingo.insert(mol1)
@@ -108,7 +108,7 @@ searchExact(bingo, mol2)
 bingo.close()
 
 print("*** Simple enumerate id ****")
-bingo = Bingo.createDatabaseFile(indigo, joinPath('out', 'basic'), 'molecule')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('out/basic', __file__), 'molecule')
 mol = indigo.loadMolecule("CCCC")
 bingo.insert(mol)
 bingo.insert(mol)

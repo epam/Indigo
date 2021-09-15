@@ -6,14 +6,14 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
-if not os.path.exists(joinPath("out")):
-    os.mkdir(joinPath("out"))
+if not os.access(joinPathPy("out", __file__), os.F_OK):
+    os.mkdir(joinPathPy("out", __file__))
 
 print("**** Read SDF.GZ ****")
 
 
 def readSdfAndPrintInfo(fname):
-    for idx, m in enumerate(indigo.iterateSDFile(joinPath(fname))):
+    for idx, m in enumerate(indigo.iterateSDFile(joinPathPy(fname, __file__))):
         print("*****")
         print(idx)
         print("Smiles:")
@@ -30,7 +30,7 @@ def readSdfAndPrintInfo(fname):
 readSdfAndPrintInfo('../../../../../data/molecules/basic/Compound_0000001_0000250.sdf.gz')
 
 print("**** Save and load molecule names from SDF ****")
-sdf_file_name = joinPath("out", "sdf-names.sdf")
+sdf_file_name = joinPathPy("out/sdf-names.sdf", __file__)
 saver = indigo.createFileSaver(sdf_file_name, "sdf")
 names = []
 for i in range(10):
@@ -56,7 +56,7 @@ def checkMolNames(names, sdf_file_name):
 checkMolNames(names, sdf_file_name)
 
 print("** Use sdfAppend **")
-sdf_file_name = joinPath("out", "sdf-names-2.sdf")
+sdf_file_name = joinPathPy("out/sdf-names-2.sdf", __file__)
 sdf = indigo.writeFile(sdf_file_name)
 
 for name in names:

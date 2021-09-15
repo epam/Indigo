@@ -5,9 +5,9 @@ from env_indigo import *
 
 indigo = Indigo()
 # load queries
-targets = list(indigo.iterateSDFile(joinPath("molecules/rgroup_targets.sdf")))
+targets = list(indigo.iterateSDFile(joinPathPy("molecules/rgroup_targets.sdf", __file__)))
 queries = []
-query_dir = joinPath("molecules", "rgroups")
+query_dir = joinPathPy("molecules/rgroups", __file__)
 for root, dirnames, filenames in os.walk(query_dir):
    filenames.sort()
    for filename in filenames:
@@ -59,12 +59,12 @@ for q in queries:
 performTest()
 
 print("*** Another tests *** ")
-q_11 = indigo.loadQueryMoleculeFromFile(joinPath('molecules/q_11.mol'))
-t_123 = indigo.loadMoleculeFromFile(joinPath('molecules/t_123.mol'))
+q_11 = indigo.loadQueryMoleculeFromFile(joinPathPy('molecules/q_11.mol', __file__))
+t_123 = indigo.loadMoleculeFromFile(joinPathPy('molecules/t_123.mol', __file__))
 matcher = indigo.substructureMatcher(t_123)
 print('t_123: {0}'.format('True' if matcher.match(q_11) is not None else 'False'))
 
-t_1578 = indigo.loadMoleculeFromFile(joinPath('molecules/t_1578.mol'))
+t_1578 = indigo.loadMoleculeFromFile(joinPathPy('molecules/t_1578.mol', __file__))
 matcher = indigo.substructureMatcher(t_1578)
 print('t_1578: {0}'.format('True' if matcher.match(q_11) is not None else 'False'))
 

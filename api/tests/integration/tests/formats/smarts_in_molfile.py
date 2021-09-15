@@ -31,4 +31,4 @@ def testSmartsMolfile (filename):
     else:
         print("not matched")
       
-testSmartsMolfile(joinPath('molecules/smarts-mrv.mol'))
+testSmartsMolfile(joinPathPy('molecules/smarts-mrv.mol', __file__))

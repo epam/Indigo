@@ -5,9 +5,9 @@ import errno
 sys.path.append('../../common')
 from env_indigo import *
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -35,10 +35,10 @@ def checkCisTransLayout (m):
 
 
 print("Cis-trans check for inverse")
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "cid-62301-changed.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/cid-62301-changed.mol", __file__))
 checkCisTransLayout(m)
 
 print("Cis-trans check for bad angle")
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "cid-1006416-changed.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/cid-1006416-changed.mol", __file__))
 checkCisTransLayout(m)
 

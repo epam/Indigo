@@ -7,11 +7,11 @@ from rendering import *
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
-out_dir = joinPath("out", "smarts")
+out_dir = joinPathPy("out/smarts", __file__)
 
-if not os.path.exists(joinPath("out/smarts")):
+if not os.path.exists(out_dir):
     try:
-        os.makedirs(joinPath("out/smarts"))
+        os.makedirs(out_dir)
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
@@ -21,7 +21,7 @@ indigo.setOption("render-coloring", "true")
 idx = 1
 render_rarefiy_index = 0
 render_rerefiy_coeff = 20
-for line in open(joinPath("molecules/smarts.sma")):
+for line in open(joinPathPy("molecules/smarts.sma", __file__)):
     line = line.rstrip()
     print("%d: %s" % (idx, line))
     render_rarefiy_index += 1
@@ -41,5 +41,7 @@ for line in open(joinPath("molecules/smarts.sma")):
     except IndigoException as e:
         print("  %s" % (getIndigoExceptionText(e)))
     idx += 1
-   
-   
+
+if isIronPython():
+    renderer.Dispose()
+    indigo.Dispose()

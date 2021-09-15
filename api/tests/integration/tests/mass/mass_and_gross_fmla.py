@@ -35,15 +35,15 @@ def handleMoleculeWithExceptions(m):
         print(getIndigoExceptionText(e))
 
 
-for item in indigo.iterateSDFile(joinPath('molecules/mass.sdf')):
+for item in indigo.iterateSDFile(joinPathPy('molecules/mass.sdf', __file__)):
     handleMolecule(item)
 handleMolecule(indigo.loadMolecule("CS=C"))
 handleMolecule(indigo.loadMolecule("C[S]=C"))
-for item in indigo.iterateSDFile(joinPath('molecules/elements.sdf')):
+for item in indigo.iterateSDFile(joinPathPy('molecules/elements.sdf', __file__)):
     handleMolecule(item)
 
 print("*** Molecule fragments ***")
-m = indigo.loadMoleculeFromFile(joinPath('molecules/components.mol'))
+m = indigo.loadMoleculeFromFile(joinPathPy('molecules/components.mol', __file__))
 big_fragment = None
 for comp in m.iterateComponents():
     comp_mol = comp.clone()
@@ -56,7 +56,7 @@ print(big_fragment.smiles())
 
 print("*** Invalid valence ***")
 try:
-    print(indigo.loadMoleculeFromFile(joinPath("molecules", "invalid.mol")).grossFormula())
+    print(indigo.loadMoleculeFromFile(joinPathPy("molecules/invalid.mol", __file__)).grossFormula())
 except IndigoException as e:
     print("Exception:  %s" % (getIndigoExceptionText(e)))
 

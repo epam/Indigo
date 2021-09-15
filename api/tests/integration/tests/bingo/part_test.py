@@ -16,7 +16,7 @@ def insertSmi(db, pid, input_smi, output=None):
     wrongStructures = 0
     #outPrint('Inserting molecules from:{1}'.format(pid, input_smi), pid, output)
 
-    smi_path = joinPath('molecules', input_smi)
+    smi_path = joinPathPy(os.path.join('molecules', input_smi), __file__)
     for mol in indigo.iterateSmilesFile(smi_path):
         try:
             db.insert(mol)
@@ -66,17 +66,17 @@ def makeSearchExact(db, pid, query, options, output=None):
 
 
 def partCreate():
-    bingo = Bingo.createDatabaseFile(indigo, joinPath('mol_part_db'), 'molecule', 'mt_size:2000')
+    bingo = Bingo.createDatabaseFile(indigo, joinPathPy('mol_part_db', __file__), 'molecule', 'mt_size:2000')
 
     insertSmi(bingo, 0, 'sample_100000.smi')
 
     bingo.close()
 
 def partTest(size, type = 'sub'):
-    bingo = Bingo.loadDatabaseFile(indigo, joinPath('mol_part_db'), '')
+    bingo = Bingo.loadDatabaseFile(indigo, joinPathPy('mol_part_db', __file__), '')
     index = 0
 
-    for m in indigo.iterateSDFile(joinPath('molecules', 'rand_queries_small.sdf')):
+    for m in indigo.iterateSDFile(joinPathPy('molecules/rand_queries_small.sdf', __file__)):
         try:
             print('\nQuery #{0}'.format(index + 1))
 

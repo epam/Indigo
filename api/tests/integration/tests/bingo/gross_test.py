@@ -3,9 +3,9 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-bingo = Bingo.createDatabaseFile(indigo, joinPath('db_gross_mol'), 'molecule', '')
+bingo = Bingo.createDatabaseFile(indigo, joinPathPy('db_gross_mol', __file__), 'molecule', '')
 
-for idx, mol in enumerate(indigo.iterateSmilesFile(joinPath('molecules', 'gross_200.smi'))):
+for idx, mol in enumerate(indigo.iterateSmilesFile(joinPathPy('molecules/gross_200.smi', __file__))):
     bingo.insert(mol, idx)
 
 def searchGross(bingo, q, requiredId = None, options=''):
@@ -44,7 +44,7 @@ except BingoException as e:
     print("BingoException: {0}".format(getIndigoExceptionText(e)))
 
 print("*** Search ***")
-for idx, mol in enumerate(indigo.iterateSmilesFile(joinPath('molecules', 'gross_200.smi'))):
+for idx, mol in enumerate(indigo.iterateSmilesFile(joinPathPy('molecules/gross_200.smi', __file__))):
     searchGross(bingo, mol.grossFormula(), requiredId=idx)
 
 bingo.close()

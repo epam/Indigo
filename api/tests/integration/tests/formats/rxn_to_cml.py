@@ -8,6 +8,6 @@ indigo = Indigo()
 
 print("*** Rxn to CML ***")
 
-rxn = indigo.loadReactionFromFile(joinPath('molecules/reaction_for_cml.rxn'))
+rxn = indigo.loadReactionFromFile(joinPathPy('molecules/reaction_for_cml.rxn', __file__))
 print(rxn.cml())
 

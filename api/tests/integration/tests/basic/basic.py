@@ -7,7 +7,7 @@ indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("ignore-noncritical-query-features", "true")
 
 print("****** Query reload ********")
-q = indigo.loadQueryMoleculeFromFile(joinPath("molecules/q_atom_list.mol"))
+q = indigo.loadQueryMoleculeFromFile(joinPathPy("molecules/q_atom_list.mol", __file__))
 qmf1 = q.molfile()
 print(qmf1)
 q2 = indigo.loadQueryMolecule(q.molfile())
@@ -100,7 +100,7 @@ except IndigoException as e:
     sys.stderr.write("Error: %s" % (getIndigoExceptionText(e)))
 
 print("****** Unmarked stereobonds ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/stereo.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/stereo.mol", __file__))
 print(m.canonicalSmiles())
 m.clearStereocenters()
 print(m.canonicalSmiles())
@@ -146,7 +146,7 @@ for molfile in mols:
     for loader, type in [ (indigo.loadMoleculeFromFile, "molecule"), (indigo.loadQueryMoleculeFromFile, "query") ]:
         print(molfile + " " + type + ":")
         try:
-            m = loader(joinPath(molfile))
+            m = loader(joinPathPy(molfile, __file__))
             m.molfile() # check molfile generation
             print("  " + m.smiles())
         except IndigoException as e:
@@ -186,9 +186,9 @@ print(q3.smiles())
 print(q3.molfile())
 
 print("****** Large symmetric molecule ********")
-m = indigo.loadMoleculeFromFile(joinPath("molecules/large-symmetric.smi"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/large-symmetric.smi", __file__))
 print(m.smiles())
-m = indigo.loadMoleculeFromFile(joinPath("molecules/large-symmetric.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/large-symmetric.mol", __file__))
 print(m.smiles())
 
 
@@ -210,7 +210,7 @@ m.removeBonds([1, 3, 4])
 print(m.smiles())
 
 print("****** Overlapping stereocenters due to hydrogens folding bug fix check *****")
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "pubchem-150858.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/pubchem-150858.mol", __file__))
 cs = m.canonicalSmiles()
 print(cs)
 m.foldHydrogens()
@@ -229,7 +229,7 @@ if cs != cs3:
     print("Bug!")
 
 print("****** SMILES cis-trans check *****")
-m = indigo.loadMoleculeFromFile(joinPath("molecules", "016_26-large.mol"))
+m = indigo.loadMoleculeFromFile(joinPathPy("molecules/016_26-large.mol", __file__))
 print(m.smiles())
 print(m.canonicalSmiles())
 

@@ -3,7 +3,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-target_mol = indigo.loadMoleculeFromFile(joinPath("molecules/for_ignore.mol"))
+target_mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/for_ignore.mol", __file__))
 queries = [ "C1CCCC1", "C1CCCCC1", "OC=O", "C=C", "C1CCNCC1" ] 
 queries_mol = []
 match_dict = dict()

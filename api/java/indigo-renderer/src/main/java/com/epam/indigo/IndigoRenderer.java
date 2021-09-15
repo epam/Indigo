@@ -31,7 +31,8 @@ public class IndigoRenderer {
     }
 
     @Override
-    protected void finalize() throws Throwable {
+    public void finalize() throws Throwable {
+        indigo.setSessionID();
         Indigo.checkResult(this, lib.indigoRendererDispose());
         super.finalize();
     }

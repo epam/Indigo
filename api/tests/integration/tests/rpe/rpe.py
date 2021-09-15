@@ -22,17 +22,17 @@ def loadSdf(sdf_path):
 
 
 def buildRpeReactions(test_dir):
-    reaction = indigo.loadQueryReactionFromFile(joinPath("tests", test_dir, "reaction.rxn"))
+    reaction = indigo.loadQueryReactionFromFile(joinPathPy(os.path.join("tests", test_dir, "reaction.rxn"), __file__))
     mons = []
     for i in range(reaction.countReactants()):
-        reactant_mons = loadSdf(joinPath("tests", test_dir, "mons{0}.sdf".format(i + 1)))
+        reactant_mons = loadSdf(joinPathPy(os.path.join("tests", test_dir, "mons{0}.sdf".format(i + 1)), __file__))
         mons.append(reactant_mons)
 
     return indigo.reactionProductEnumerate(reaction, mons)
 
 
 def testRpe():
-    for test_dir in sorted(os.listdir(joinPath("tests"))):
+    for test_dir in sorted(os.listdir(joinPathPy("tests", __file__))):
         print("Test %s" % test_dir)
         rpe_reactions = buildRpeReactions(test_dir)
         products_smiles = []

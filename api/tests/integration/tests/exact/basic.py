@@ -16,8 +16,8 @@ def checkHasMatchMol (indigo, m, q):
 
 def checkHasMatch (indigo, targetName, queryName):
     print(targetName + " " + queryName)
-    q = indigo.loadMoleculeFromFile(joinPath(queryName))
-    m = indigo.loadMoleculeFromFile(joinPath(targetName))
+    q = indigo.loadMoleculeFromFile(joinPathPy(queryName, __file__))
+    m = indigo.loadMoleculeFromFile(joinPathPy(targetName, __file__))
     checkHasMatchMol(indigo, m, q)
 
 print("***** Structure should match itself *****")

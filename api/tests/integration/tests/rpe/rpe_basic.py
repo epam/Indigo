@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append('../../common')
-from env_indigo import Indigo, IndigoException, getIndigoExceptionText, joinPath
+from env_indigo import Indigo, IndigoException, getIndigoExceptionText, joinPathPy
 
 indigo = Indigo()
 
@@ -171,15 +171,15 @@ testTransformation("[*:1]:[c]([*:2]):[c:10]([*:3]):[n]([*:4]):[*:5]>>[*:1]:[n]([
 testTransformation("[!O:1][S;X3:2](=[O:3])[!O:4]>>[!O:1][S+;X3:2]([O-:3])[!O:4]", ["CNC(=O)ON=CC(C)(C)S(C)=O"])
 testTransformationMolfile(
     "[H:1][O:2][C:3]([H,*:4])=[C:5]([H,*;!O:6])[H,*;!O:7]>>[O:2]=[C:3]([H,*:4])[C:5]([H,*:6])([H:1])[H,*:7]",
-    joinPath("tests_rpe_basic/1/reactant.mol"))
-testTransformationMolfile("[N+:1]~[CH3]>>[N:1]", joinPath("tests_rpe_basic/2/mol.mol"))
+    joinPathPy("tests_rpe_basic/1/reactant.mol", __file__))
+testTransformationMolfile("[N+:1]~[CH3]>>[N:1]", joinPathPy("tests_rpe_basic/2/mol.mol", __file__))
 
-startRPE(joinPath("tests_rpe_basic/ind_671/reaction.rxn"),
-         [joinPath("tests_rpe_basic/ind_671/P1.mol"), joinPath("tests_rpe_basic/ind_671/P2.mol"),
-          joinPath("tests_rpe_basic/ind_671/P3.mol")], True)
-startRPE(joinPath("tests_rpe_basic/ind_671/reaction.rxn"),
-         [joinPath("tests_rpe_basic/ind_671/P1.smi"), joinPath("tests_rpe_basic/ind_671/P2.smi"),
-          joinPath("tests_rpe_basic/ind_671/P3.smi")], True)
+startRPE(joinPathPy("tests_rpe_basic/ind_671/reaction.rxn", __file__),
+         [joinPathPy("tests_rpe_basic/ind_671/P1.mol", __file__), joinPathPy("tests_rpe_basic/ind_671/P2.mol", __file__),
+          joinPathPy("tests_rpe_basic/ind_671/P3.mol", __file__)], True)
+startRPE(joinPathPy("tests_rpe_basic/ind_671/reaction.rxn", __file__),
+         [joinPathPy("tests_rpe_basic/ind_671/P1.smi", __file__), joinPathPy("tests_rpe_basic/ind_671/P2.smi", __file__),
+          joinPathPy("tests_rpe_basic/ind_671/P3.smi", __file__)], True)
 
-startRPE(joinPath("tests_rpe_basic/3/rxn.smi"), [joinPath("tests_rpe_basic/3/mol.mol")], True)
-startRPE(joinPath("tests_rpe_basic/3/rxn.smi"), [joinPath("tests_rpe_basic/3/mol.mol")], False)
+startRPE(joinPathPy("tests_rpe_basic/3/rxn.smi", __file__), [joinPathPy("tests_rpe_basic/3/mol.mol", __file__)], True)
+startRPE(joinPathPy("tests_rpe_basic/3/rxn.smi", __file__), [joinPathPy("tests_rpe_basic/3/mol.mol", __file__)], False)

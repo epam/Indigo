@@ -67,14 +67,12 @@ def testScaffold(filename, mode, print_molfile):
 
 
 try:
-    testScaffold(joinPath("../../../../../data/molecules/basic/thiazolidines.sdf"), "exact 5", False)
+    testScaffold(joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), "exact 5", False)
 except IndigoException as e:
     print('caught ' + getIndigoExceptionText(e))
 
-# TODO: Uncomment this line and get either segfault on Linux or "array: invalid index 0 (size=0)" on other OS
-testScaffold(joinPath("../../../../../data/molecules/basic/thiazolidines.sdf"), "exact 10000", False)
-testScaffold(joinPath("../../../../../data/molecules/basic/thiazolidines.sdf"), "approx", False)
-# TODO: Uncomment this line and get either segfault on Linux or "array: invalid index 0 (size=0)" on other OS
-testScaffold(joinPath("../../../../../data/molecules/basic/thiazolidines.sdf"), "approx 3", False)
-testScaffold(joinPath("../../../../../data/molecules/basic/sugars.sdf"), "exact", True)
-testScaffold(joinPath("../../../../../data/molecules/basic/sugars.sdf"), "approx", False)
+testScaffold(joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), "exact 10000", False)
+testScaffold(joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), "approx", False)
+testScaffold(joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), "approx 3", False)
+testScaffold(joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), "exact", True)
+testScaffold(joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), "approx", False)

@@ -20,8 +20,8 @@ def testSerializeAttachmentPoints (filename):
             if frag.canonicalSmiles() != frag2.canonicalSmiles():
                 print("    MISMATCH!!!")
           
-testSerializeAttachmentPoints(joinPath("molecules/recursive1.mol"))
-testSerializeAttachmentPoints(joinPath("molecules/recursive2.mol"))
-testSerializeAttachmentPoints(joinPath("molecules/r_occur.mol"))
-testSerializeAttachmentPoints(joinPath("molecules/r_occur_2.mol"))
-testSerializeAttachmentPoints(joinPath("molecules/sub_mar_q01.mol"))
+testSerializeAttachmentPoints(joinPathPy("molecules/recursive1.mol", __file__))
+testSerializeAttachmentPoints(joinPathPy("molecules/recursive2.mol", __file__))
+testSerializeAttachmentPoints(joinPathPy("molecules/r_occur.mol", __file__))
+testSerializeAttachmentPoints(joinPathPy("molecules/r_occur_2.mol", __file__))
+testSerializeAttachmentPoints(joinPathPy("molecules/sub_mar_q01.mol", __file__))

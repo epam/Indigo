@@ -4,11 +4,11 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-indigo.setOption("molfile-saving-skip-date", "1");
+indigo.setOption("molfile-saving-skip-date", "1")
 
 print("This test checks if Fischer projection exist")
 
-for root, dirnames, filenames in os.walk(joinPath("molecules/fischer")):
+for root, dirnames, filenames in os.walk(joinPathPy("molecules/fischer", __file__)):
     filenames.sort()
     for filename in filenames:
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))

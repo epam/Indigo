@@ -9,6 +9,8 @@ import sys
 import time
 import runpy
 import traceback
+import gc
+
 
 if sys.platform == 'cli':
     import clr
@@ -21,8 +23,8 @@ if sys.platform == 'cli':
 
 base_root = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 sys.path.append(os.path.join(base_root, 'common'))
-from env_indigo import Indigo, getPlatform, dll_full_path, open_file_utf8, dir_exists, makedirs, file_size, file_exists
-
+from env_indigo import Indigo, getPlatform, isJython, isIronPython, dll_full_path, open_file_utf8, dir_exists, makedirs, file_size, file_exists
+from util import overridePlatform
 
 class Logger(object):
     def __init__(self, output_file_name):
@@ -119,6 +121,8 @@ def main():
             junit_report_name = sys.argv[i + 1]
         elif sys.argv[i] == '-exec':
             python_exec = sys.argv[i + 1]
+        elif sys.argv[i] == '-platform':
+            overridePlatform( sys.argv[i + 1] )
         else:
             print("Unexpected options: %s" % (sys.argv[i]))
             exit()
@@ -197,6 +201,7 @@ def main():
             t0 = time.time()
             try:
                 runpy.run_path(filename, run_name='__main__')
+                gc.collect()
             except:
                 sys.stderr.write(traceback.format_exc())
             tspent = time.time() - t0
@@ -220,9 +225,14 @@ def main():
         if file_exists(base_output_file):
             diff_file = os.path.join(test_dir, filename + ".diff")
             # copy reference file
-            system_name = getPlatform()
-            if system_name and file_exists(os.path.join(base_dir, system_name, filename + '.out')):
-                base_output_file = os.path.join(base_dir, system_name, filename + '.out')
+            if isJython() and file_exists(os.path.join(base_dir, "jython", filename + '.out')):
+                base_output_file = os.path.join(base_dir,"jython", filename + '.out')
+            elif isIronPython() and file_exists(os.path.join(base_dir, "iron", filename + '.out')):
+                base_output_file = os.path.join(base_dir,"iron", filename + '.out')
+            else:
+                sn = getPlatform()
+                if sn and file_exists(os.path.join(base_dir, sn, filename + '.out')):
+                    base_output_file = os.path.join(base_dir, sn, filename + '.out')
             new_ref_file = os.path.join(test_dir, filename + ".std")
             if not os.path.normpath(os.path.abspath(base_output_file)) == os.path.normpath(os.path.abspath(new_ref_file)):
                 if not sys.platform == 'cli':

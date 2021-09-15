@@ -23,8 +23,6 @@
  * Author: Carl D. Worth <cworth@cworth.org>
  */
 
-#define _GNU_SOURCE 1 /* for vasprintf */
-
 #include "cairo-boilerplate.h"
 #include "cairo-boilerplate-system.h"
 

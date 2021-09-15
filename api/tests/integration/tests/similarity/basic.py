@@ -14,7 +14,7 @@ def checkOne(mol, metric):
    if v != 1.0:
       sys.stderr.write("    mol %s, metric %s, sim = %s but must be 1\n" % (mol.name(), metric, v))
 
-for m in indigo.iterateSDFile(joinPath("molecules/thiazolidines_slice.sdf")):
+for m in indigo.iterateSDFile(joinPathPy("molecules/thiazolidines_slice.sdf", __file__)):
    print("%s: %s" % (m.name(), m.canonicalSmiles()))
    checkOne(m, "tversky")
    checkOne(m, "tversky 1 0")
@@ -24,8 +24,8 @@ for m in indigo.iterateSDFile(joinPath("molecules/thiazolidines_slice.sdf")):
    checkOne(m, "euclid-sub")
 
 print("*** Test 01 ***")
-m1 = indigo.loadMoleculeFromFile(joinPath("molecules", "ind-452-a1.mol"))
-m2 = indigo.loadMoleculeFromFile(joinPath("molecules", "ind-452-a2.mol"))
+m1 = indigo.loadMoleculeFromFile(joinPathPy("molecules/ind-452-a1.mol", __file__))
+m2 = indigo.loadMoleculeFromFile(joinPathPy("molecules/ind-452-a2.mol", __file__))
 print("m1: %s" % (m1.canonicalSmiles()))
 print("m1: %s" % (m2.canonicalSmiles()))
 print("Similarity: %0.4f" % (indigo.similarity(m1, m2, "tanimoto")))

@@ -8,7 +8,7 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 indigo.setOption("ignore-noncritical-query-features", "true")
 
-mol = indigo.loadMoleculeFromFile(joinPath("molecules/Query_for_check.mol"))
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/Query_for_check.mol", __file__))
 
 print(mol.molfile())
 
@@ -19,7 +19,7 @@ for bond in mol.iterateBonds():
     print("Check query for bond %d returns %d" % (bond.index(), bond.checkQuery()))
 
 
-mol = indigo.loadQueryMoleculeFromFile(joinPath("molecules/Query_for_check.mol"))
+mol = indigo.loadQueryMoleculeFromFile(joinPathPy("molecules/Query_for_check.mol", __file__))
 
 print(mol.molfile())
 

@@ -1,7 +1,7 @@
 import sys
 import os
 import platform
-from env_indigo import isIronPython, isJython
+from env_indigo import isIronPython, isJython, getPlatform
 
 if sys.version_info > (3, 0):
     from bistring3 import BitString
@@ -166,25 +166,27 @@ def checkBitmapSimilarity(filename, ref_filename):
     if ref_filename is None:
         ref_filename = filename
     try:
-        if os.name == 'nt':
-            system = 'win'
-        elif os.name == 'posix':
-            if not platform.mac_ver()[0]:
-                system = 'linux'
-            else:
-                system = 'mac'
-        elif os.name == 'java':
-            osName = System.getProperty("os.name")
-            if osName.find("Windows") != -1:
+        system = getPlatform()
+        if system != 'mac' and system != 'linux':
+            if os.name == 'nt':
                 system = 'win'
-            elif osName.find('Linux') != -1:
-                system = 'linux'
-            elif osName.find('Mac OS') != -1:
-                system = 'mac'
+            elif os.name == 'posix':
+                if not platform.mac_ver()[0]:
+                    system = 'linux'
+                else:
+                    system = 'mac'
+            elif os.name == 'java':
+                osName = System.getProperty("os.name")
+                if osName.find("Windows") != -1:
+                    system = 'win'
+                elif osName.find('Linux') != -1:
+                    system = 'linux'
+                elif osName.find('Mac OS') != -1:
+                    system = 'mac'
+                else:
+                    raise RenderingTestException("No reference images for this operating system: {0}".format(osName))
             else:
-                raise RenderingTestException("No reference images for this operating system: {0}".format(osName))
-        else:
-            raise RenderingTestException("No reference images for this operating system: {0}".format(os.name))
+                raise RenderingTestException("No reference images for this operating system: {0}".format(os.name))
         dirname = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'tests', 'rendering')))
         results = imageDiff('%s/ref/%s/%s' % (dirname, system, ref_filename), '%s/out/%s' % (dirname, filename))
     except RenderingTestException as e:

@@ -254,6 +254,12 @@ namespace com.epam.indigo
             checkResult(IndigoLib.indigoSetOptionFloat(name, value));
         }
 
+        public void setOption(string name, double value)
+        {
+            setSessionID();
+            checkResult(IndigoLib.indigoSetOptionFloat(name, (float) value));
+        }
+
         public void setOption(string name, int value)
         {
             setSessionID();
@@ -264,6 +270,12 @@ namespace com.epam.indigo
         {
             setSessionID();
             checkResult(IndigoLib.indigoSetOptionColor(name, valuer / 255.0f, valueg / 255.0f, valueb / 255.0f));
+        }
+
+        public void setOption(string name, double valuer, double valueg, double valueb)
+        {
+            setSessionID();
+            checkResult(IndigoLib.indigoSetOptionColor(name, (float) valuer / 255.0f, (float) valueg / 255.0f, (float) valueb / 255.0f));
         }
 
         public void setOption(string name, Color value)
@@ -809,10 +821,15 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(checkResult(IndigoLib.indigoCreateFileSaver(filename, format))));
         }
 
-        public void transform(IndigoObject reaction, IndigoObject monomer)
+        public IndigoObject transform(IndigoObject reaction, IndigoObject monomer)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoTransform(reaction.self, monomer.self));
+            int result = checkResult(IndigoLib.indigoTransform(reaction.self, monomer.self));
+            if (result == 0)
+            {
+                return null;
+            }
+            return new IndigoObject(this, result);
         }
 
         public IndigoObject loadBuffer(byte[] buf)

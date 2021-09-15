@@ -5,7 +5,7 @@ from env_indigo import *
 
 indigo = Indigo()
 
-for idx, r in enumerate(indigo.iterateSDFile(joinPath('molecules', 'e-z-isomerism.sdf'))):
+for idx, r in enumerate(indigo.iterateSDFile(joinPathPy('molecules/e-z-isomerism.sdf', __file__))):
     print("*** %d ***" % (idx))
     try:
         print(r.smiles())

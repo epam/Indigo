@@ -62,6 +62,22 @@ To build the project from the sources, the following tools should be installed:
 * Emscripten SDK
 * Ninja
 
+## Build instruction ##
+
+Create build folder and use cmake with desired options. For instance:
+
+```
+Indigo/build>cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_INDIGO_UTILS=ON
+```
+
+To build Indigo from console:
+```
+Indigo/build>cmake --build . --config Release --target all
+```
+
+or any of the following targets could be specified: --target { indigo-dotnet | indigo-java | indigo-python }
+Build results could be collected from Indigo/dist folder.
+
 ## How to build Indigo-WASM ##
 
 ### Build tools prerequisites ###

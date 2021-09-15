@@ -22,7 +22,7 @@ def setStereo(m):
 
 indigo.setOption("stereochemistry-detect-haworth-projection", "true")
 
-for name in listFiles(joinPath("molecules/haworth") + "/*.mol"):
+for name in listFiles(joinPathPy("molecules/haworth", __file__) + "/*.mol"):
     sys.stdout.write(basename(name) + " ")
     smi_file = name.rpartition('.')[0] + ".smi"
     try:
@@ -45,8 +45,8 @@ print("****** Check search ********")
 indigo = Indigo()
 
 def checkSub (qname, tname):
-    q = indigo.loadQueryMoleculeFromFile(joinPath(qname))
-    t = indigo.loadMoleculeFromFile(joinPath(tname))
+    q = indigo.loadQueryMoleculeFromFile(joinPathPy(qname, __file__))
+    t = indigo.loadMoleculeFromFile(joinPathPy(tname, __file__))
     matcher = indigo.substructureMatcher(t)
     return matcher.match(q) != None
 

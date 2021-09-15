@@ -3,5 +3,5 @@ sys.path.append('../../common')
 from env_indigo import *
 
 indigo = Indigo()
-print(indigo.loadMoleculeFromFile(joinPath('molecules/13rsites.mol')).smiles())
-print(indigo.loadMoleculeFromFile(joinPath('molecules/1e-0.mol')).smiles())
+print(indigo.loadMoleculeFromFile(joinPathPy('molecules/13rsites.mol', __file__)).smiles())
+print(indigo.loadMoleculeFromFile(joinPathPy('molecules/1e-0.mol', __file__)).smiles())

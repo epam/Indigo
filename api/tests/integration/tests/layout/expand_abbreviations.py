@@ -14,21 +14,21 @@ m_sets = [
    'molecules/abbreviations_tests3.sdf',
 ]
 
-if not os.path.exists(joinPath("out")):
+if not os.path.exists(joinPathPy("out", __file__)):
     try:
-        os.makedirs(joinPath("out"))
+        os.makedirs(joinPathPy("out", __file__))
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
    
-saver = indigo.createFileSaver(joinPath("out/abbreviations_test_out.sdf"), "SDF")
-saver_failed = indigo.createFileSaver(joinPath("out/abbreviations_test_failed.sdf"), "SDF")
+saver = indigo.createFileSaver(joinPathPy("out/abbreviations_test_out.sdf", __file__), "SDF")
+saver_failed = indigo.createFileSaver(joinPathPy("out/abbreviations_test_failed.sdf", __file__), "SDF")
 
 for set in m_sets:
     print(set)
-    for mol in indigo.iterateSDFile(joinPath(set)):
+    for mol in indigo.iterateSDFile(joinPathPy(set, __file__)):
         print(mol.smiles())
-        mol.saveMolfile(joinPath("out/last_abbr.mol"))
+        mol.saveMolfile(joinPathPy("out/last_abbr.mol", __file__))
         
         try:
             mol.expandAbbreviations()
