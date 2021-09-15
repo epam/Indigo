@@ -14,8 +14,8 @@ import traceback
 import types
 
 from indigo import Indigo
-from indigo_renderer import IndigoRenderer
-from indigo_inchi import IndigoInchi
+from indigo.renderer import IndigoRenderer
+from indigo.inchi import IndigoInchi
 
 from .celery_app import celery
 import config
@@ -33,10 +33,10 @@ imago_api_app.route = types.MethodType(api_route, imago_api_app)
 allowed_types = imago_api.config['ALLOWED_TYPES']
 
 versions = []
-with open('/srv/service_version', 'r') as ver:
-    for line in ver.readlines():
-        if line.startswith("imago-console-"):
-            versions.append(re.search('imago-console-(.*)\..*', line).group(1))
+# with open('/srv/service_version', 'r') as ver:
+#     for line in ver.readlines():
+#         if line.startswith("imago-console-"):
+#             versions.append(re.search('imago-console-(.*)\..*', line).group(1))
 
 @celery.task(bind=True)
 def recognize_image(self, args):

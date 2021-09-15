@@ -18,12 +18,13 @@ ALLOWED_EXTENSIONS = ('sdf', 'sd', 'gz')
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_IMPORTS = ('v2.imago_api', 'v2.libraries_api')
+# CELERY_IMPORTS = ('v2.imago_api', 'v2.libraries_api')
 CELERY_ACCEPT_CONTENT = ('json', )
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = 'Etc/UTC'
+CELERYD_POOL = 'prefork'
 
 # Logging option
 LOG_LEVEL = 'INFO'
