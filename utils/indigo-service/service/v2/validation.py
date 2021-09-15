@@ -5,7 +5,7 @@ from marshmallow.validate import OneOf
 
 
 class InputFormatSchema(Schema):
-    struct_mime_types = ('chemical/x-mdl-rxnfile', 'chemical/x-mdl-molfile', 'chemical/x-daylight-smiles',
+    struct_mime_types = ('chemical/x-mdl-rxnfile', 'chemical/x-mdl-molfile', 'chemical/x-mdl-molfile', 'chemical/x-daylight-smiles',
                      'chemical/x-cml', 'chemical/x-inchi', 'chemical/x-iupac', 'chemical/x-daylight-smarts',
                      'chemical/x-inchi-aux', 'chemical/x-chemaxon-cxsmiles')
     input_format = fields.Str(missing=None, validate=OneOf(struct_mime_types))

@@ -299,6 +299,8 @@ def load_moldata(molstr, indigo=None, options={}, query=False, mime_type=None, s
 def save_moldata(md, output_format=None, options={}):
     if output_format in ('chemical/x-mdl-molfile', 'chemical/x-mdl-rxnfile'):
         return md.struct.rxnfile() if md.is_rxn else md.struct.molfile()
+    elif output_format == 'chemical/x-indigo-ket':
+        return md.struct.json()
     elif output_format == 'chemical/x-daylight-smiles':
         if options.get('smiles') == 'canonical':
             return md.struct.canonicalSmiles()
@@ -449,6 +451,7 @@ def aromatize():
               enum:
                 - chemical/x-mdl-rxnfile
                 - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
                 - chemical/x-daylight-smiles
                 - chemical/x-chemaxon-cxsmiles
                 - chemical/x-cml
@@ -532,6 +535,7 @@ def dearomatize():
               enum:
                 - chemical/x-mdl-rxnfile
                 - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
                 - chemical/x-daylight-smiles
                 - chemical/x-chemaxon-cxsmiles
                 - chemical/x-cml
@@ -593,6 +597,7 @@ def convert():
               enum:
                 - chemical/x-mdl-rxnfile
                 - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
                 - chemical/x-daylight-smiles
                 - chemical/x-chemaxon-cxsmiles
                 - chemical/x-cml
@@ -671,6 +676,7 @@ def layout():
               enum:
                 - chemical/x-mdl-rxnfile
                 - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
                 - chemical/x-daylight-smiles
                 - chemical/x-chemaxon-cxsmiles
                 - chemical/x-cml
@@ -727,6 +733,7 @@ def clean():
               enum:
                 - chemical/x-mdl-rxnfile
                 - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
                 - chemical/x-daylight-smiles
                 - chemical/x-chemaxon-cxsmiles
                 - chemical/x-cml
@@ -790,6 +797,7 @@ def automap():
               enum:
                 - chemical/x-mdl-rxnfile
                 - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
                 - chemical/x-daylight-smiles
                 - chemical/x-chemaxon-cxsmiles
                 - chemical/x-cml
@@ -847,6 +855,7 @@ def calculate_cip():
               enum:
                 - chemical/x-mdl-rxnfile
                 - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
                 - chemical/x-daylight-smiles
                 - chemical/x-chemaxon-cxsmiles
                 - chemical/x-cml
