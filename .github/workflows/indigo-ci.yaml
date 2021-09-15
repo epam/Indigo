@@ -778,6 +778,8 @@ jobs:
         run: |
           container_id=$(docker run --detach -it --rm -p 12345:80 epmlsop/indigo-service:latest)
           echo ${container_id}
+          docker logs ${container_id}
+          docker ps
           curl http://localhost:12345/v2/indigo/info
           docker logs ${container_id}
           docker stop ${container_id}
