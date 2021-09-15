@@ -19,6 +19,8 @@
 #ifndef __bingo_index__
 #define __bingo_index__
 
+#include <mutex>
+
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
