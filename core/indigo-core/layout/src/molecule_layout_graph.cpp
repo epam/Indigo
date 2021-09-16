@@ -25,6 +25,7 @@
 using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
+static OsLock _patterns_lock;
 
 MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
 {
@@ -375,6 +376,7 @@ int MoleculeLayoutGraphSimple::_pattern_cmp2(PatternLayout& p1, int n_v, int n_e
 void MoleculeLayoutGraphSimple::_initPatterns()
 {
     //TL_GET(ObjArray<PatternLayout>, _patterns);
+    OsLocker locker(_patterns_lock);
     auto& _patterns = _getPatterns();
 
     struct LayoutPattenItem
