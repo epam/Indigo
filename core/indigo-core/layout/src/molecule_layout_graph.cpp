@@ -25,6 +25,8 @@
 using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
+static OsLock _patterns_lock;
+TL_DEF(MoleculeLayoutGraphSimple, ObjArray<PatternLayout>, _patterns);
 
 MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
 {
@@ -203,7 +205,6 @@ void MoleculeLayoutGraph::makeOnGraph(Graph& graph)
 }
 
 IMPL_ERROR(MoleculeLayoutGraphSimple, "layout_graph");
-TL_DEF(MoleculeLayoutGraphSimple, ObjArray<PatternLayout>, _patterns);
 
 MoleculeLayoutGraphSimple::MoleculeLayoutGraphSimple() : MoleculeLayoutGraph()
 {
@@ -211,7 +212,7 @@ MoleculeLayoutGraphSimple::MoleculeLayoutGraphSimple() : MoleculeLayoutGraph()
 
 MoleculeLayoutGraphSimple::~MoleculeLayoutGraphSimple()
 {
-    const std::lock_guard<std::mutex> lock(_patterns_mutex);
+    OsLocker locker(_patterns_lock);
     TL_GET(ObjArray<PatternLayout>, _patterns);
     _patterns.clear();
 }
@@ -369,7 +370,7 @@ int MoleculeLayoutGraphSimple::_pattern_cmp2(PatternLayout& p1, int n_v, int n_e
 
 void MoleculeLayoutGraphSimple::_initPatterns()
 {
-    const std::lock_guard<std::mutex> lock(_patterns_mutex);
+    OsLocker locker(_patterns_lock);
     TL_GET(ObjArray<PatternLayout>, _patterns);
 
     struct LayoutPattenItem

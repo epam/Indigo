@@ -411,7 +411,6 @@ namespace indigo
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
 
         TL_DECL(ObjArray<PatternLayout>, _patterns);
-        std::mutex _patterns_mutex;
     };
 
     struct local_pair_ii
