@@ -211,6 +211,9 @@ MoleculeLayoutGraphSimple::MoleculeLayoutGraphSimple() : MoleculeLayoutGraph()
 
 MoleculeLayoutGraphSimple::~MoleculeLayoutGraphSimple()
 {
+    const std::lock_guard<std::mutex> lock(_patterns_mutex);
+    TL_GET(ObjArray<PatternLayout>, _patterns);
+    _patterns.clear();
 }
 
 MoleculeLayoutGraph* MoleculeLayoutGraphSimple::getInstance()
@@ -366,6 +369,7 @@ int MoleculeLayoutGraphSimple::_pattern_cmp2(PatternLayout& p1, int n_v, int n_e
 
 void MoleculeLayoutGraphSimple::_initPatterns()
 {
+    const std::lock_guard<std::mutex> lock(_patterns_mutex);
     TL_GET(ObjArray<PatternLayout>, _patterns);
 
     struct LayoutPattenItem

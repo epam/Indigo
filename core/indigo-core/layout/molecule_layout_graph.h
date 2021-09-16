@@ -19,6 +19,7 @@
 #ifndef __molecule_layout_graph_h__
 #define __molecule_layout_graph_h__
 
+#include <mutex>
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/obj.h"
 #include "base_cpp/obj_array.h"
@@ -410,6 +411,7 @@ namespace indigo
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
 
         TL_DECL(ObjArray<PatternLayout>, _patterns);
+        std::mutex _patterns_mutex;
     };
 
     struct local_pair_ii
