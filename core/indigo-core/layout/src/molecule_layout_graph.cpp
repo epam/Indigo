@@ -202,15 +202,8 @@ void MoleculeLayoutGraph::makeOnGraph(Graph& graph)
     }
 }
 
-//TL_DEF(MoleculeLayoutGraphSimple, ObjArray<PatternLayout>, _patterns);
-
-ObjArray<PatternLayout>& MoleculeLayoutGraphSimple::_getPatterns()
-{
-    static ObjArray<PatternLayout> patterns;
-    return patterns;
-}
-
 IMPL_ERROR(MoleculeLayoutGraphSimple, "layout_graph");
+TL_DEF(MoleculeLayoutGraphSimple, ObjArray<PatternLayout>, _patterns);
 
 MoleculeLayoutGraphSimple::MoleculeLayoutGraphSimple() : MoleculeLayoutGraph()
 {
@@ -267,8 +260,7 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
 
 void MoleculeLayoutGraphSimple::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing)
 {
-    //TL_GET(ObjArray<PatternLayout>, _patterns);
-    const auto& _patterns = _getPatterns();
+    TL_GET(ObjArray<PatternLayout>, _patterns);
 
     if (molecule.vertexCount() == 0)
         return;
@@ -374,8 +366,7 @@ int MoleculeLayoutGraphSimple::_pattern_cmp2(PatternLayout& p1, int n_v, int n_e
 
 void MoleculeLayoutGraphSimple::_initPatterns()
 {
-    //TL_GET(ObjArray<PatternLayout>, _patterns);
-    auto& _patterns = _getPatterns();
+    TL_GET(ObjArray<PatternLayout>, _patterns);
 
     struct LayoutPattenItem
     {

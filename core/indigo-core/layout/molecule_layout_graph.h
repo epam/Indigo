@@ -357,8 +357,6 @@ namespace indigo
             _flipped = true;
         };
 
-        static ObjArray<PatternLayout>& _getPatterns();
-
 #ifdef M_LAYOUT_DEBUG
         void saveDebug();
 #endif

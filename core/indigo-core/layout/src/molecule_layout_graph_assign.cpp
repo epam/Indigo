@@ -1121,8 +1121,7 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int& fixed_component, const 
 bool MoleculeLayoutGraphSimple::_tryToFindPattern(int& fixed_component)
 {
     // try to find pattern
-    // TL_GET(ObjArray<PatternLayout>, _patterns);
-    auto& _patterns = MoleculeLayoutGraphSimple::_getPatterns();
+    TL_GET(ObjArray<PatternLayout>, _patterns);
 
     MorganCode morgan(*this);
     QS_DEF(Array<long>, morgan_codes);
