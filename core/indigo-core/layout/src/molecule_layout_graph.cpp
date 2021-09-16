@@ -21,11 +21,12 @@
 #include "graph/morgan_code.h"
 
 #include <memory>
+#include <mutex>
 
 using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
-static OsLock _patterns_lock;
+static std::mutex _patterns_mutex;
 
 MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
 {
@@ -203,7 +204,7 @@ void MoleculeLayoutGraph::makeOnGraph(Graph& graph)
     }
 }
 
-//TL_DEF(MoleculeLayoutGraphSimple, ObjArray<PatternLayout>, _patterns);
+// TL_DEF(MoleculeLayoutGraphSimple, ObjArray<PatternLayout>, _patterns);
 
 ObjArray<PatternLayout>& MoleculeLayoutGraphSimple::_getPatterns()
 {
@@ -268,7 +269,7 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
 
 void MoleculeLayoutGraphSimple::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing)
 {
-    //TL_GET(ObjArray<PatternLayout>, _patterns);
+    // TL_GET(ObjArray<PatternLayout>, _patterns);
     const auto& _patterns = _getPatterns();
 
     if (molecule.vertexCount() == 0)
@@ -375,8 +376,8 @@ int MoleculeLayoutGraphSimple::_pattern_cmp2(PatternLayout& p1, int n_v, int n_e
 
 void MoleculeLayoutGraphSimple::_initPatterns()
 {
-    //TL_GET(ObjArray<PatternLayout>, _patterns);
-    OsLocker locker(_patterns_lock);
+    // TL_GET(ObjArray<PatternLayout>, _patterns);
+    const std::lock_guard<std::mutex> lock(_patterns_mutex);
     auto& _patterns = _getPatterns();
 
     struct LayoutPattenItem
