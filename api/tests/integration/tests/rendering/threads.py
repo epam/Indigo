@@ -7,7 +7,7 @@ sys.path.append('../../common')
 from env_indigo import *
 
 ext = 'svg'
-thread_count = 100
+thread_count = 1000
 a = {}
 
 if not os.path.exists(joinPathPy("out/threads", __file__)):
