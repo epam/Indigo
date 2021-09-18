@@ -14,7 +14,9 @@ namespace indigo_cpp
         IndigoSession();
         ~IndigoSession();
 
+        IndigoSession(IndigoSession&&) =default;
         IndigoSession(IndigoSession const&) = delete;
+        IndigoSession& operator=(IndigoSession&&) = delete;
         void operator=(IndigoSession const&) = delete;
 
         unsigned long long getSessionId() const;

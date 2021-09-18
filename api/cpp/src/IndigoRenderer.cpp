@@ -20,7 +20,7 @@ IndigoRenderer::IndigoRenderer(const IndigoSession& session) : _session(session)
     ss << "T_" << std::this_thread::get_id() << ": IndigoRenderer(" << _session.getSessionId() << ")\n";
     std::cout << ss.str();
 #endif
-    session.setSessionId();
+    _session.setSessionId();
     indigoRendererInit();
 }
 
