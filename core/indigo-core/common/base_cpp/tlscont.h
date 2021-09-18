@@ -22,6 +22,7 @@
 #include <memory>
 #include <typeinfo>
 #include <unordered_map>
+#include <vector>
 
 #include "base_c/defs.h"
 #include "base_c/os_tls.h"
@@ -70,7 +71,7 @@ namespace indigo
         qword _lastNewSID;
         // Array with vacant SIDs
         Array<qword> _vacantSIDs;
-
+        std::vector<qword*> _pIds;
     };
 
 // Macros for managing session IDs for current thread
