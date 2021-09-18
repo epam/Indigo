@@ -10,12 +10,15 @@ namespace com.epam.indigo
     public unsafe class IndigoInchi : IDisposable
     {
         private Indigo _indigo;
+        private bool initialized;
 
         public IndigoInchi(Indigo indigo)
         {
             _indigo = indigo;
+            _indigo.setSessionID();
              // Preloads native library to register options
             _indigo.checkResult(IndigoInchiLib.indigoInchiInit());
+            initialized = true;
         }
 
         ~IndigoInchi()
@@ -25,7 +28,12 @@ namespace com.epam.indigo
 
         public void Dispose()
         {
-            _indigo.checkResult(IndigoInchiLib.indigoInchiDispose());
+            if (initialized)
+            {
+                _indigo.setSessionID();
+                _indigo.checkResult(IndigoInchiLib.indigoInchiDispose());
+                initialized = false;
+            }
         }
 
         public String version()

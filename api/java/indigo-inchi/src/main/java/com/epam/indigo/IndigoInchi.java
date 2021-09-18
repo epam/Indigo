@@ -29,13 +29,20 @@ public class IndigoInchi {
     public IndigoInchi(Indigo indigo) {
         loadLibrary(indigo.getUserSpecifiedPath());
         this.indigo = indigo;
+        this.indigo.setSessionID();
         Indigo.checkResult(this, lib.indigoInchiInit());
+        initialized = true;
     }
 
     @Override
     protected void finalize() throws Throwable {
-        Indigo.checkResult(this, lib.indigoInchiDispose());
-        super.finalize();
+        if (initialized)
+        {
+            indigo.setSessionID();
+            Indigo.checkResult(this, lib.indigoInchiDispose());
+            super.finalize();
+            initialized = false;
+        }
     }
 
     public String version() {
@@ -95,4 +102,5 @@ public class IndigoInchi {
 
     final Indigo indigo;
     static IndigoInchiLib lib;
+    boolean initialized;
 }

@@ -100,13 +100,16 @@ class Bingo(object):
         self._lib.bingoMinCell.argtypes = [c_int]
         self._lib.bingoMaxCell.restype = c_int
         self._lib.bingoMaxCell.argtypes = [c_int]
+        # init
+        self._indigo._setSessionId()
+        self.version()
 
     def __del__(self):
         self.close()
 
     def close(self):
-        self._indigo._setSessionId()
         if self._id >= 0:
+            self._indigo._setSessionId()
             Bingo._checkResult(self._indigo, self._lib.bingoCloseDatabase(self._id))
             self._id = -1
 

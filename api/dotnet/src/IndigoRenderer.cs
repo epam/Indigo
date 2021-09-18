@@ -11,12 +11,15 @@ namespace com.epam.indigo
     {
         private Indigo _indigo;
         private IndigoRendererLib IndigoRendererLib;
+        private bool initialized;
 
         public IndigoRenderer(Indigo indigo)
         {
             _indigo = indigo;
+             _indigo.setSessionID();
              // Preloads native library to register renderer options
             _indigo.checkResult(IndigoRendererLib.indigoRendererInit());
+            initialized = true;
         }
 
         ~IndigoRenderer()
@@ -26,7 +29,12 @@ namespace com.epam.indigo
 
         public void Dispose()
         {
-            _indigo.checkResult(IndigoRendererLib.indigoRendererDispose());
+            if (initialized)
+            {
+                _indigo.setSessionID();
+                _indigo.checkResult(IndigoRendererLib.indigoRendererDispose());
+                initialized = false;
+            }
         }
 
         public void renderToFile(IndigoObject obj, string filename)
