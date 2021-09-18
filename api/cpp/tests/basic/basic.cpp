@@ -12,7 +12,13 @@ TEST(Basic, Molfile)
     std::cout << m.molfile();
 }
 
-TEST(Basic, Session)
+TEST(Basic, SingleSession)
 {
     const auto& session = IndigoSession();
+}
+
+TEST(Basic, TwoSessions)
+{
+    const auto& session_1 = IndigoSession();
+    const auto& session_2 = IndigoSession();
 }

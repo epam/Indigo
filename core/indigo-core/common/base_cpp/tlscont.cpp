@@ -20,6 +20,9 @@
 
 using namespace indigo;
 
+#include <iostream>
+#include <sstream>
+
 IMPL_ERROR(_SIDManager, "TLS");
 
 _SIDManager& _SIDManager::getInst()
@@ -97,7 +100,13 @@ qword _SIDManager::getSessionId(void)
 void _SIDManager::releaseSessionId(qword id)
 {
     OsLocker locker(_SIDManager::getLock());
-
+    qword* pId;
+    osTlsGetValue((void**)&pId, _tlsIdx);
+    std::stringstream ss;
+    ss << "releaseSessionId " << pId << '\n';
+    std::cout << ss.str();
+    delete pId;
+    osTlsFree(_tlsIdx);
     _vacantSIDs.push(id);
 }
 
