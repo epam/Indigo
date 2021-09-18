@@ -25,7 +25,6 @@ namespace
         const auto& session = IndigoSession();
         const auto& renderer = IndigoRenderer(session);
         const auto& smiles = randomSmiles();
-        std::cout << smiles << "\n";
         const auto& m = session.loadMolecule(smiles);
         const auto& result_1 = renderer.png(m);
         const auto& result_2 = renderer.png(m);
