@@ -1,20 +1,20 @@
 /****************************************************************************
-* Copyright (C) from 2009 to Present EPAM Systems.
-*
-* This file is part of Indigo toolkit.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-***************************************************************************/
+ * Copyright (C) from 2009 to Present EPAM Systems.
+ *
+ * This file is part of Indigo toolkit.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 
 #include <thread>
 
@@ -28,8 +28,6 @@
 #include "common.h"
 
 using namespace indigo;
-
-#include <iostream>
 
 namespace
 {
@@ -52,9 +50,6 @@ namespace
             int m = indigoLoadMoleculeFromString("CC1C=CC=CC=1");
             int buf = indigoWriteBuffer();
             indigoRender(m, buf);
-            std::stringstream ss;
-            ss << session << ' ' << m << '\n';
-            std::cout << ss.str();
             indigoFree(buf);
             indigoFree(m);
         }
@@ -68,7 +63,6 @@ namespace
     }
 }
 
-
 TEST(IndigoRenderTest, render_superatoms)
 {
     std::vector<std::thread> threads;
@@ -78,7 +72,7 @@ TEST(IndigoRenderTest, render_superatoms)
         threads.emplace_back(testRender);
     }
 
-    for (auto& thread: threads)
+    for (auto& thread : threads)
     {
         thread.join();
     }
