@@ -6,6 +6,7 @@
 namespace indigo_cpp
 {
     class IndigoMolecule;
+    class IndigoQueryMolecule;
     class IndigoWriteBuffer;
 
     class IndigoSession
@@ -34,6 +35,7 @@ namespace indigo_cpp
         std::string version() const;
 
         IndigoMolecule loadMolecule(const std::string& data) const;
+        IndigoQueryMolecule loadQueryMolecule(const std::string& data) const;
         IndigoWriteBuffer writeBuffer() const;
 
     private:

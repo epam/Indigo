@@ -6,7 +6,7 @@
 
 using namespace indigo_cpp;
 
-TEST(RenderingBasic, Basic)
+TEST(RenderingBasic, BasicSVG)
 {
     const auto& session = IndigoSession();
     const auto& renderer = IndigoRenderer(session);

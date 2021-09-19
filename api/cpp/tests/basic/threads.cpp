@@ -1,7 +1,7 @@
+#include <gtest/gtest.h>
+
 #include <random>
 #include <thread>
-
-#include <gtest/gtest.h>
 
 #include <IndigoMolecule.h>
 #include <IndigoRenderer.h>
@@ -21,28 +21,26 @@ namespace
         return choices[uni(rng)];
     }
 
-    void testRender()
+    void testCanonicalSmiles()
     {
         const auto& smiles = randomSmiles();
         const auto& session_1 = IndigoSession();
-        const auto& renderer_1 = IndigoRenderer(session_1);
         const auto& session_2 = IndigoSession();
-        const auto& renderer_2 = IndigoRenderer(session_2);
         const auto& m_1 = session_1.loadMolecule(smiles);
         const auto& m_2 = session_2.loadMolecule(smiles);
-        const auto& result_1 = renderer_1.png(m_1);
-        const auto& result_2 = renderer_2.png(m_2);
+        const auto& result_1 = m_1.smiles();
+        const auto& result_2 = m_2.smiles();
         ASSERT_EQ(result_1, result_2);
     }
 } // namespace
 
-TEST(RenderingThreads, Basic)
+TEST(BasicThreads, Basic)
 {
     std::vector<std::thread> threads;
-    threads.reserve(1000);
-    for (auto i = 0; i < 1000; i++)
+    threads.reserve(100);
+    for (auto i = 0; i < 100; i++)
     {
-        threads.emplace_back(testRender);
+        threads.emplace_back(testCanonicalSmiles);
     }
     for (auto& thread : threads)
     {

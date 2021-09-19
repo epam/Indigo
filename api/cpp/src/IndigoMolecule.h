@@ -1,14 +1,12 @@
 #pragma once
 
-#include "IndigoChemicalEntity.h"
+#include "IndigoBaseMolecule.h"
 
 namespace indigo_cpp
 {
-    class IndigoMolecule : public IndigoChemicalEntity
+    class IndigoMolecule : public IndigoBaseMolecule
     {
     public:
         IndigoMolecule(int id, const IndigoSession& indigo);
-        std::string molfile() const;
-        std::string ctfile() const override;
     };
 }

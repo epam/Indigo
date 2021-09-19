@@ -4,14 +4,15 @@
 
 #include "IndigoException.h"
 #include "IndigoMolecule.h"
+#include "IndigoQueryMolecule.h"
 #include "IndigoWriteBuffer.h"
 
 using namespace indigo_cpp;
 
 #ifdef INDIGO_CPP_DEBUG
 #include <iostream>
-#include <thread>
 #include <sstream>
+#include <thread>
 #endif
 
 IndigoSession::IndigoSession() : id(indigoAllocSessionId())
@@ -19,7 +20,7 @@ IndigoSession::IndigoSession() : id(indigoAllocSessionId())
 #ifdef INDIGO_CPP_DEBUG
     std::stringstream ss;
     ss << "T_" << std::this_thread::get_id() << ": IndigoSession(" << id << ")\n";
-    std:: cout << ss.str();
+    std::cout << ss.str();
 #endif
 }
 
@@ -28,7 +29,7 @@ IndigoSession::~IndigoSession()
 #ifdef INDIGO_CPP_DEBUG
     std::stringstream ss;
     ss << "T_" << std::this_thread::get_id() << ": ~IndigoSession(" << id << ")\n";
-    std:: cout << ss.str();
+    std::cout << ss.str();
 #endif
     indigoReleaseSessionId(id);
 }
@@ -40,11 +41,11 @@ unsigned long long IndigoSession::getSessionId() const
 
 void IndigoSession::setSessionId() const
 {
-//#ifdef INDIGO_CPP_DEBUG
-//    std::stringstream ss;
-//    ss << "T_" << std::this_thread::get_id() << ": IndigoSession::_setSessionId(" << id << ")\n";
-//    std:: cout << ss.str();
-//#endif
+    //#ifdef INDIGO_CPP_DEBUG
+    //    std::stringstream ss;
+    //    ss << "T_" << std::this_thread::get_id() << ": IndigoSession::_setSessionId(" << id << ")\n";
+    //    std:: cout << ss.str();
+    //#endif
     indigoSetSessionId(id);
 }
 
@@ -112,6 +113,12 @@ IndigoMolecule IndigoSession::loadMolecule(const std::string& data) const
 {
     setSessionId();
     return {_checkResult(indigoLoadMoleculeFromString(data.c_str())), *this};
+}
+
+IndigoQueryMolecule IndigoSession::loadQueryMolecule(const std::string& data) const
+{
+    setSessionId();
+    return {_checkResult(indigoLoadQueryMoleculeFromString(data.c_str())), *this};
 }
 
 IndigoWriteBuffer IndigoSession::writeBuffer() const
