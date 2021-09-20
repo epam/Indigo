@@ -101,6 +101,7 @@ def main():
     exclude_pattern_list = []
     nunit_report_name = ""
     junit_report_name = ""
+    iterations = 1
 
     if 'LABEL' in os.environ:
         binenv = os.environ['LABEL'].upper()
@@ -119,6 +120,8 @@ def main():
             output_dir_base = sys.argv[i + 1]
         elif sys.argv[i] == '-n':
             nunit_report_name = sys.argv[i + 1]
+        elif sys.argv[i] == '-i':
+            iterations = int(sys.argv[i + 1])
         elif sys.argv[i] == '-j':
             junit_report_name = sys.argv[i + 1]
         elif sys.argv[i] == '-exec':
@@ -188,96 +191,100 @@ def main():
                 if skip_test:
                     continue
 
-        sys.stdout.write("%s" % test_name)
-        sys.stdout.flush()
+        for i in range(iterations):
+            sys.stdout.write("%s" % test_name)
+            sys.stdout.flush()
 
-        spacer_len = max_name_len - len(test_name)
+            spacer_len = max_name_len - len(test_name)
 
-        test_root = os.path.join(tests_dir, root)
+            test_root = os.path.join(tests_dir, root)
 
-        old_dir = os.path.abspath(os.curdir)
-        os.chdir(test_root)
-        out_filename = os.path.join(test_dir, filename + '.out')
-        err_filename = os.path.join(test_dir, filename + '.err')
-        with open_file_utf8(out_filename) as sys.stdout, open_file_utf8(err_filename) as sys.stderr:
-            t0 = time.time()
-            try:
-                runpy.run_path(filename, run_name='__main__')
-                gc.collect()
-            except:
-                sys.stderr.write(traceback.format_exc())
-            tspent = time.time() - t0
-        os.chdir(old_dir)
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
+            old_dir = os.path.abspath(os.curdir)
 
-        output_file = os.path.join(test_dir, filename + '.out')
-        error_file = os.path.join(test_dir, filename + '.err')
-        failed_stderr = False
-        if not file_size(error_file):
-            os.remove(error_file)
-        else:
-            failed_stderr = True
-        base_dir = os.path.join(output_dir_base, root)
-        base_output_file = os.path.join(base_dir, filename + ".out")
+            os.chdir(test_root)
+            out_filename = os.path.join(test_dir, filename + "_" + str(i) + '.out')
+            err_filename = os.path.join(test_dir, filename + "_" + str(i) + '.err')
 
-        base_exists = False
-        ndiffcnt = 0
-        diff_file = None
-        if file_exists(base_output_file):
-            diff_file = os.path.join(test_dir, filename + ".diff")
-            # copy reference file
-            if isJython() and file_exists(os.path.join(base_dir, "jython", filename + '.out')):
-                base_output_file = os.path.join(base_dir,"jython", filename + '.out')
-            elif isIronPython() and file_exists(os.path.join(base_dir, "iron", filename + '.out')):
-                base_output_file = os.path.join(base_dir,"iron", filename + '.out')
+            with open_file_utf8(out_filename) as sys.stdout, open_file_utf8(err_filename) as sys.stderr:
+                t0 = time.time()
+                try:
+                    runpy.run_path(filename, run_name='__main__')
+                    gc.collect()
+                except:
+                    sys.stderr.write(traceback.format_exc())
+                tspent = time.time() - t0
+            os.chdir(old_dir)
+            sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
+
+            output_file = out_filename
+            error_file = err_filename
+
+            failed_stderr = False
+            if not file_size(error_file):
+                os.remove(error_file)
             else:
-                sn = getPlatform()
-                if sn and file_exists(os.path.join(base_dir, sn, filename + '.out')):
-                    base_output_file = os.path.join(base_dir, sn, filename + '.out')
-            new_ref_file = os.path.join(test_dir, filename + ".std")
-            if not os.path.normpath(os.path.abspath(base_output_file)) == os.path.normpath(os.path.abspath(new_ref_file)):
-                if not sys.platform == 'cli':
-                    shutil.copy(base_output_file, new_ref_file)
+                failed_stderr = True
+            base_dir = os.path.join(output_dir_base, root)
+            base_output_file = os.path.join(base_dir, filename + ".out")
+
+            base_exists = False
+            ndiffcnt = 0
+            diff_file = None
+            if file_exists(base_output_file):
+                diff_file = os.path.join(test_dir, filename + ".diff")
+                # copy reference file
+                if isJython() and file_exists(os.path.join(base_dir, "jython", filename + '.out')):
+                    base_output_file = os.path.join(base_dir,"jython", filename + '.out')
+                elif isIronPython() and file_exists(os.path.join(base_dir, "iron", filename + '.out')):
+                    base_output_file = os.path.join(base_dir,"iron", filename + '.out')
                 else:
-                    import clr
-                    clr.AddReference("System.IO.FileSystem")
-                    from System.IO import File
-                    File.Copy(base_output_file, new_ref_file, True)
+                    sn = getPlatform()
+                    if sn and file_exists(os.path.join(base_dir, sn, filename + '.out')):
+                        base_output_file = os.path.join(base_dir, sn, filename + '.out')
+                new_ref_file = os.path.join(test_dir, filename + ".std")
+                if not os.path.normpath(os.path.abspath(base_output_file)) == os.path.normpath(os.path.abspath(new_ref_file)):
+                    if not sys.platform == 'cli':
+                        shutil.copy(base_output_file, new_ref_file)
+                    else:
+                        import clr
+                        clr.AddReference("System.IO.FileSystem")
+                        from System.IO import File
+                        File.Copy(base_output_file, new_ref_file, True)
 
-            ndiffcnt = write_difference(new_ref_file, output_file, diff_file)
-            # remove empty diff file
-            if not ndiffcnt:
-                os.remove(diff_file)
-            base_exists = True
+                ndiffcnt = write_difference(new_ref_file, output_file, diff_file)
+                # remove empty diff file
+                if not ndiffcnt:
+                    os.remove(diff_file)
+                base_exists = True
 
-        spacer = '.'
-        msg = ''
-        if failed_stderr:
-            test_status = "[ERROR]"
-            tests_status |= 2
-        elif not base_exists:
-            test_status = "[NEW]"
-        elif not ndiffcnt:
-            test_status = "[PASSED]"
-            spacer = ' '
-            spacer_len += 2
-        else:
-            test_status = "[FAILED]"
-            if root != 'todo':
-                tests_status |= 1
+            spacer = '.'
+            msg = ''
+            if failed_stderr:
+                test_status = "[ERROR]"
+                tests_status |= 2
+            elif not base_exists:
+                test_status = "[NEW]"
+            elif not ndiffcnt:
+                test_status = "[PASSED]"
+                spacer = ' '
+                spacer_len += 2
+            else:
+                test_status = "[FAILED]"
+                if root != 'todo':
+                    tests_status |= 1
 
-        print("{}{}    {:.2f} sec".format(spacer * spacer_len, test_status, tspent))
-        if diff_file and file_exists(diff_file):
-            f = open(diff_file, 'rt')
-            msg = 'Diff:\n' + f.read()
-            f.close()
-        if error_file and file_exists(error_file):
-            f = open(error_file, 'rt')
-            msg = 'Error:\n' + f.read()
-            f.close()
+            print("{}{}    {:.2f} sec".format(spacer * spacer_len, test_status, tspent))
+            if diff_file and file_exists(diff_file):
+                f = open(diff_file, 'rt')
+                msg = 'Diff:\n' + f.read()
+                f.close()
+            if error_file and file_exists(error_file):
+                f = open(error_file, 'rt')
+                msg = 'Error:\n' + f.read()
+                f.close()
 
-        test_results.append((root, filename, test_status, msg, tspent))
+            test_results.append((root, filename, test_status, msg, tspent))
 
     total_time = time.time() - total_time
     print("\nTotal time: {:.2f} sec".format(total_time))
@@ -294,4 +301,6 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    result = main()
+    if result:
+        sys.exit(result)

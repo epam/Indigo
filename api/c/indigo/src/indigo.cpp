@@ -104,7 +104,7 @@ void Indigo::init()
     }
 }
 
-Indigo::Indigo() : _next_id(1001)
+Indigo::Indigo() : _next_id(1000)
 {
     init();
 }

@@ -36,9 +36,11 @@ OsLock& _SIDManager::getLock()
 
 _SIDManager::~_SIDManager(void)
 {
-    qword* pId;
-    osTlsGetValue((void**)&pId, _tlsIdx);
-    delete pId;
+    for (auto* pId : _pIds)
+    {
+        delete pId;
+    }
+
     osTlsFree(_tlsIdx);
 }
 
@@ -53,6 +55,7 @@ void _SIDManager::setSessionId(qword id)
     if (pId == NULL)
     {
         pId = new qword(id);
+        _pIds.emplace_back(pId);
         osTlsSetValue(_tlsIdx, (void*)pId);
     }
     else
@@ -97,7 +100,6 @@ qword _SIDManager::getSessionId(void)
 void _SIDManager::releaseSessionId(qword id)
 {
     OsLocker locker(_SIDManager::getLock());
-
     _vacantSIDs.push(id);
 }
 

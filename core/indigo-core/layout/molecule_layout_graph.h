@@ -25,7 +25,7 @@
 #include "base_cpp/tlscont.h"
 #include "graph/filter.h"
 #include "graph/graph.h"
-#include "layout/layout_pattern.h"
+#include "layout/layout_pattern_holder.h"
 #include "math/algebra.h"
 #include "molecule/molecule.h"
 
@@ -357,7 +357,7 @@ namespace indigo
             _flipped = true;
         };
 
-        static ObjArray<PatternLayout>& _getPatterns();
+        ObjArray<PatternLayout>& getPatterns();
 
 #ifdef M_LAYOUT_DEBUG
         void saveDebug();
@@ -367,9 +367,7 @@ namespace indigo
 
     protected:
         // patterns
-        void _initPatterns();
-        static int _pattern_cmp(PatternLayout& p1, PatternLayout& p2, void* context);
-        static int _pattern_cmp2(PatternLayout& p1, int n_v, int n_e, long code);
+        static int _pattern_cmp2(const PatternLayout& p1, int n_v, int n_e, long code);
         static bool _match_pattern_bond(Graph& subgraph, Graph& supergraph, int self_idx, int other_idx, void* userdata);
         static int _pattern_embedding(Graph& subgraph, Graph& supergraph, int* core_sub, int* core_super, void* userdata);
 
@@ -410,8 +408,6 @@ namespace indigo
 
         void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
-
-        TL_DECL(ObjArray<PatternLayout>, _patterns);
     };
 
     struct local_pair_ii
