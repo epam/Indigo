@@ -47,7 +47,7 @@ namespace indigo
     {
     public:
         static _SIDManager& getInst(void);
-        static OsLock& getLock();
+        static std::mutex& getLock();
 
         _SIDManager(void);
         ~_SIDManager(void);
@@ -91,7 +91,7 @@ namespace indigo
 
         T& getLocalCopy(const qword id)
         {
-            OsLocker locker(_lock.ref());
+            std::lock_guard<std::mutex> locker(_lock.ref());
             if (!_map.count(id))
             {
                 _map[id] = std::unique_ptr<T>(new T());
@@ -106,7 +106,7 @@ namespace indigo
 
         void removeLocalCopy(const qword id)
         {
-            OsLocker locker(_lock.ref());
+            std::lock_guard<std::mutex> locker(_lock.ref());
             if (_map.count(id))
             {
                 _map.erase(id);
@@ -117,7 +117,7 @@ namespace indigo
         using _Map = std::unordered_map<qword, std::unique_ptr<T>>;
 
         _Map _map;
-        ThreadSafeStaticObj<OsLock> _lock;
+        ThreadSafeStaticObj<std::mutex> _lock;
     };
 
     // Helpful templates to deal with commas in template type names
@@ -164,7 +164,7 @@ namespace indigo
 
         T& getVacant(int& idx)
         {
-            OsLocker locker(_lock);
+            std::lock_guard<std::mutex> locker(_lock);
             if (_vacant_indices.size() != 0)
             {
                 idx = _vacant_indices.pop();
@@ -178,7 +178,7 @@ namespace indigo
 
         void release(int idx)
         {
-            OsLocker locker(_lock);
+            std::lock_guard<std::mutex> locker(_lock);
             _vacant_indices.push(idx);
         }
 
@@ -188,7 +188,7 @@ namespace indigo
         }
 
     private:
-        OsLock _lock;
+        std::mutex _lock;
         bool is_valid;
 
         PtrArray<T> _objects;

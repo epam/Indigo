@@ -19,59 +19,17 @@
 #ifndef __os_sync_wrapper_h__
 #define __os_sync_wrapper_h__
 
+#include <mutex>
+#include <condition_variable>
+
 #include "base_c/defs.h"
-#include "base_c/os_sync.h"
 #include "base_cpp/exception.h"
 
 namespace indigo
 {
 
-    // os_mutex wrapper
-    class DLLEXPORT OsLock
-    {
-    public:
-        OsLock();
-        ~OsLock();
-
-        void Lock();
-        void Unlock();
-
-    private:
-        os_mutex _mutex;
-    };
-
-    // Automatic lock/unlock
-
-    template <typename T, bool lock_can_be_null> class OsLockerT
-    {
-    public:
-        OsLockerT(T* lock) : _lock(lock)
-        {
-            if (_lock != NULL)
-                _lock->Lock();
-            else if (!lock_can_be_null)
-                throw Exception("Passed lock object pointer is NULL");
-        }
-
-        OsLockerT(T& lock) : _lock(&lock)
-        {
-            _lock->Lock();
-        }
-
-        ~OsLockerT()
-        {
-            if (_lock != NULL)
-                _lock->Unlock();
-        }
-
-    private:
-        T* _lock;
-    };
-    typedef OsLockerT<OsLock, false> OsLocker;
-    typedef OsLockerT<OsLock, true> OsLockerNullable;
-
     //
-    // Semaphore wrapper
+    // Semaphore
     //
     class DLLEXPORT OsSemaphore
     {
@@ -83,7 +41,10 @@ namespace indigo
         void Post();
 
     private:
-        os_semaphore _sem;
+        std::mutex _mutex;
+        std::condition_variable _cond;
+        int _count;
+        const int _max_count;
     };
 
     //
@@ -102,8 +63,8 @@ namespace indigo
         OsSemaphore _sendSem;
         OsSemaphore _finishRecvSem;
 
-        OsLock _sendLock;
-        OsLock _recvLock;
+        std::mutex _sendLock;
+        std::mutex _recvLock;
 
         volatile int _localMessage;
         void* volatile _localParam;
@@ -113,9 +74,9 @@ namespace indigo
     // Thread-safe static local variables initialization object
     //
 
-    DLLEXPORT OsLock& osStaticObjConstructionLock();
+    DLLEXPORT std::mutex& osStaticObjConstructionLock();
 
-    // Local static variables with constructors should have OsLock
+    // Local static variables with constructors should have std::mutex
     // guard to avoid thread conflicts.
     // This object should be declared as ONLY static object because
     // _was_created variable should be zero by default.
@@ -150,7 +111,7 @@ namespace indigo
         {
             if (!_was_created)
             {
-                OsLocker locker(osStaticObjConstructionLock());
+                std::lock_guard<std::mutex> locker(osStaticObjConstructionLock());
 
                 if (!_was_created)
                 {

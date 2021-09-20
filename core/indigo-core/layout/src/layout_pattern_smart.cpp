@@ -45,7 +45,7 @@ public:
 };
 
 static vector<unique_ptr<PatternLayoutSmart>> _patterns;
-static OsLock _patterns_lock;
+static std::mutex _patterns_lock;
 
 bool PatternLayoutFinder::tryToFindPattern(MoleculeLayoutGraphSmart& layout_graph)
 {
@@ -67,7 +67,7 @@ bool PatternLayoutFinder::tryToFindPattern(MoleculeLayoutGraphSmart& layout_grap
         if (plg.edgeCount() != layout_graph.edgeCount())
             continue;
 
-        OsLocker locker(_patterns_lock);
+        std::lock_guard<std::mutex> locker(_patterns_lock);
 
         profTimerStart(t0, "layout.find-pattern");
 
@@ -108,7 +108,7 @@ void PatternLayoutFinder::_initPatterns()
     if (!_patterns.empty())
         return;
 
-    OsLocker locker(_patterns_lock);
+    std::lock_guard<std::mutex> locker(_patterns_lock);
 
     if (!_patterns.empty())
         return;

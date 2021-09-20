@@ -50,8 +50,8 @@ void MoleculeInChIUtils::_ensureLabelsInitialized()
     // Double-checked locking
     if (_atom_lables_sorted.size() == 0)
     {
-        static ThreadSafeStaticObj<OsLock> lock;
-        OsLocker locker(lock.ref());
+        static ThreadSafeStaticObj<std::mutex> lock;
+        std::lock_guard<std::mutex> locker(lock.ref());
 
         if (_atom_lables_sorted.size() == 0)
             _initializeAtomLabels();

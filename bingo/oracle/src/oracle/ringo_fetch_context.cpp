@@ -22,7 +22,7 @@
 #include "oracle/bingo_oracle_context.h"
 
 TL_DEF(RingoFetchContext, PtrArray<RingoFetchContext>, _instances);
-OsLock RingoFetchContext::_instances_lock;
+std::mutex RingoFetchContext::_instances_lock;
 
 IMPL_ERROR(RingoFetchContext, "ringo fetch context");
 
@@ -41,7 +41,7 @@ RingoFetchContext::RingoFetchContext(int id_, RingoOracleContext& context, const
 
 RingoFetchContext& RingoFetchContext::get(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoFetchContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -53,7 +53,7 @@ RingoFetchContext& RingoFetchContext::get(int id)
 
 RingoFetchContext& RingoFetchContext::create(RingoOracleContext& context, const Array<char>& query_id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoFetchContext>, _instances);
 
     int id = 1;
@@ -73,7 +73,7 @@ RingoFetchContext& RingoFetchContext::create(RingoOracleContext& context, const 
 
 RingoFetchContext* RingoFetchContext::findFresh(int context_id, const Array<char>& query_id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoFetchContext>, _instances);
 
     int i;
@@ -99,7 +99,7 @@ RingoFetchContext* RingoFetchContext::findFresh(int context_id, const Array<char
 
 void RingoFetchContext::remove(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoFetchContext>, _instances);
     int i;
 
@@ -115,7 +115,7 @@ void RingoFetchContext::remove(int id)
 
 void RingoFetchContext::removeByContextID(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoFetchContext>, _instances);
     int i;
 

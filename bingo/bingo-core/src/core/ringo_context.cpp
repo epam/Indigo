@@ -21,7 +21,7 @@
 
 TL_DEF(RingoContext, PtrArray<RingoContext>, _instances);
 
-OsLock RingoContext::_instances_lock;
+std::mutex RingoContext::_instances_lock;
 
 IMPL_ERROR(RingoContext, "ringo context");
 
@@ -35,7 +35,7 @@ RingoContext::~RingoContext()
 
 RingoContext* RingoContext::_get(int id, BingoContext& context)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -47,7 +47,7 @@ RingoContext* RingoContext::_get(int id, BingoContext& context)
 
 RingoContext* RingoContext::existing(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -59,7 +59,7 @@ RingoContext* RingoContext::existing(int id)
 
 RingoContext* RingoContext::get(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -73,7 +73,7 @@ RingoContext* RingoContext::get(int id)
 
 void RingoContext::remove(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoContext>, _instances);
     int i;
 
@@ -90,7 +90,7 @@ void RingoContext::remove(int id)
 
 int RingoContext::begin()
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoContext>, _instances);
 
     if (_instances.size() < 1)
@@ -107,7 +107,7 @@ int RingoContext::begin()
 
 int RingoContext::end()
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoContext>, _instances);
 
     if (_instances.size() < 1)
@@ -126,7 +126,7 @@ int RingoContext::next(int k)
 {
     int i, next_id = end();
 
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<RingoContext>, _instances);
 
     for (i = 0; i < _instances.size(); i++)

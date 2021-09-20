@@ -29,7 +29,7 @@
 #include "reaction/reaction_automapper.h"
 #include "reaction/reaction_fingerprint.h"
 
-void RingoIndex::prepare(Scanner& rxnfile, Output& output, OsLock* lock_for_exclusive_access)
+void RingoIndex::prepare(Scanner& rxnfile, Output& output, std::mutex* lock_for_exclusive_access)
 {
     QS_DEF(Reaction, reaction);
 
@@ -67,7 +67,10 @@ void RingoIndex::prepare(Scanner& rxnfile, Output& output, OsLock* lock_for_excl
     {
         // CrfSaver modifies _context->cmf_dict and
         // requires exclusive access for this
-        OsLockerNullable locker(lock_for_exclusive_access);
+        auto locker = lock_for_exclusive_access ?
+                      std::unique_lock<std::mutex>(*lock_for_exclusive_access) :
+                      std::unique_lock<std::mutex>();
+        
         CrfSaver saver(_context->cmf_dict, output_crf);
         saver.saveReaction(reaction);
     }

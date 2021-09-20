@@ -351,7 +351,7 @@ protected:
     RedBlackMap<int, IndigoObject*> _objects;
 
     int _next_id;
-    OsLock _objects_lock;
+    std::mutex _objects_lock;
 
     int _indigo_id;
 };

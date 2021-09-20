@@ -36,7 +36,7 @@ class BingoContext;
 class MangoIndex : public BingoIndex
 {
 public:
-    void prepare(Scanner& molfile, Output& output, OsLock* lock_for_exclusive_access);
+    void prepare(Scanner& molfile, Output& output, std::mutex* lock_for_exclusive_access);
 
     const Array<char>& getCmf() const;
     const Array<char>& getXyz() const;

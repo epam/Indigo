@@ -468,7 +468,7 @@ namespace bingo
         static PtrArray<BingoAllocator> _instances;
         std::string _filename;
         int _index_id;
-        static OsLock _instances_lock;
+        static std::mutex _instances_lock;
 
         static void _create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, ObjArray<MMFile>* mm_files, int index_id);
 

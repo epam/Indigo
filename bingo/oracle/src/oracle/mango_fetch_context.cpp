@@ -23,7 +23,7 @@
 #include "oracle/mango_shadow_fetch.h"
 
 TL_DEF(MangoFetchContext, PtrArray<MangoFetchContext>, _instances);
-OsLock MangoFetchContext::_instances_lock;
+std::mutex MangoFetchContext::_instances_lock;
 
 IMPL_ERROR(MangoFetchContext, "mango fetch context");
 
@@ -43,7 +43,7 @@ MangoFetchContext::MangoFetchContext(int id_, MangoOracleContext& context, const
 
 MangoFetchContext& MangoFetchContext::get(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoFetchContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -55,7 +55,7 @@ MangoFetchContext& MangoFetchContext::get(int id)
 
 MangoFetchContext& MangoFetchContext::create(MangoOracleContext& context, const Array<char>& query_id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoFetchContext>, _instances);
 
     int id = 1;
@@ -76,7 +76,7 @@ MangoFetchContext& MangoFetchContext::create(MangoOracleContext& context, const 
 
 MangoFetchContext* MangoFetchContext::findFresh(int context_id, const Array<char>& query_id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoFetchContext>, _instances);
 
     int i;
@@ -102,7 +102,7 @@ MangoFetchContext* MangoFetchContext::findFresh(int context_id, const Array<char
 
 void MangoFetchContext::remove(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoFetchContext>, _instances);
     int i;
 
@@ -118,7 +118,7 @@ void MangoFetchContext::remove(int id)
 
 void MangoFetchContext::removeByContextID(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoFetchContext>, _instances);
     int i;
 

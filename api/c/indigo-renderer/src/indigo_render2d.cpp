@@ -639,7 +639,7 @@ CEXPORT int indigoRenderWriteHDC(void* hdc, int printingHdc)
 void IndigoRenderer::setOptionsHandlers()
 {
     IndigoOptionManager& mgr = indigoGetOptionManager(indigo_id);
-    OsLocker locker(mgr.lock);
+    std::lock_guard<std::mutex> locker(mgr.lock);
 
 #define rp indigoRendererGetInstance().renderParams
 #define cdxmlContext getCdxmlContext()

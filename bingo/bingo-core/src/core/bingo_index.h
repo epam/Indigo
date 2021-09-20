@@ -19,6 +19,8 @@
 #ifndef __bingo_index__
 #define __bingo_index__
 
+#include <mutex>
+
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -28,11 +30,6 @@
 using namespace indigo;
 
 class BingoContext;
-
-namespace indigo
-{
-    class OsLock;
-}
 
 class BingoIndex
 {
@@ -50,7 +47,7 @@ public:
         _context = &context;
     };
 
-    virtual void prepare(Scanner& scanner, Output& output, OsLock* lock_for_exclusive_access) = 0;
+    virtual void prepare(Scanner& scanner, Output& output, std::mutex* lock_for_exclusive_access) = 0;
 
     bool skip_calculate_fp;
 

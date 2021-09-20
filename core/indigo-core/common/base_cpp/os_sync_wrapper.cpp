@@ -21,50 +21,35 @@
 using namespace indigo;
 
 //
-// osLock
+// Semaphore
 //
-
-OsLock::OsLock()
+OsSemaphore::OsSemaphore(int initial_count, int max_count) : _max_count{ max_count < 1 ? 1 : max_count }
 {
-    osMutexCreate(&_mutex);
-}
-
-OsLock::~OsLock()
-{
-    osMutexDelete(&_mutex);
-}
-
-void OsLock::Lock()
-{
-    osMutexLock(&_mutex);
-}
-
-void OsLock::Unlock()
-{
-    osMutexUnlock(&_mutex);
-}
-
-//
-// Semaphore wrapper
-//
-OsSemaphore::OsSemaphore(int initial_count, int max_count)
-{
-    osSemaphoreCreate(&_sem, initial_count, max_count);
+    _count = initial_count < 0 ? 0 : initial_count > _max_count ? _max_count : initial_count;
 }
 
 OsSemaphore::~OsSemaphore()
 {
-    osSemaphoreDelete(&_sem);
 }
 
 void OsSemaphore::Wait()
 {
-    osSemaphoreWait(&_sem);
+    std::unique_lock<std::mutex> lock{ _mutex };
+    
+    _cond.wait(lock, [this](){ return _count > 0; });
+    
+    --_count;
 }
 
 void OsSemaphore::Post()
 {
-    osSemaphorePost(&_sem);
+    std::unique_lock<std::mutex> lock { _mutex };
+    
+    if (_count < _max_count)
+    {
+        ++_count;
+        _cond.notify_one();
+    }
 }
 
 //
@@ -73,7 +58,7 @@ void OsSemaphore::Post()
 
 void OsMessageSystem::SendMsg(int message, void* param)
 {
-    OsLocker locker(_sendLock);
+    std::lock_guard<std::mutex> locker(_sendLock);
 
     _localMessage = message;
     _localParam = param;
@@ -84,7 +69,7 @@ void OsMessageSystem::SendMsg(int message, void* param)
 
 void OsMessageSystem::RecvMsg(int* message, void** result)
 {
-    OsLocker locker(_recvLock);
+    std::lock_guard<std::mutex> locker(_recvLock);
 
     // Wait for sending
     _sendSem.Wait();
@@ -106,9 +91,9 @@ OsMessageSystem::OsMessageSystem() : _sendSem(0, 1), _finishRecvSem(0, 1)
 
 namespace indigo
 {
-    DLLEXPORT OsLock& osStaticObjConstructionLock()
+    DLLEXPORT std::mutex& osStaticObjConstructionLock()
     {
-        static OsLock _static_obj_construction_lock;
+        static std::mutex _static_obj_construction_lock;
         return _static_obj_construction_lock;
     }
 } // namespace indigo

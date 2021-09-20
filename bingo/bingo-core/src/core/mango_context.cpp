@@ -21,7 +21,7 @@
 
 TL_DEF(MangoContext, PtrArray<MangoContext>, _instances);
 
-OsLock MangoContext::_instances_lock;
+std::mutex MangoContext::_instances_lock;
 
 IMPL_ERROR(MangoContext, "mango context");
 
@@ -36,7 +36,7 @@ MangoContext::~MangoContext()
 
 MangoContext* MangoContext::_get(int id, BingoContext& context)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -48,7 +48,7 @@ MangoContext* MangoContext::_get(int id, BingoContext& context)
 
 MangoContext* MangoContext::existing(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -60,7 +60,7 @@ MangoContext* MangoContext::existing(int id)
 
 MangoContext* MangoContext::get(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
@@ -74,7 +74,7 @@ MangoContext* MangoContext::get(int id)
 
 void MangoContext::remove(int id)
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoContext>, _instances);
     int i;
 
@@ -91,7 +91,7 @@ void MangoContext::remove(int id)
 
 int MangoContext::begin()
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoContext>, _instances);
 
     if (_instances.size() < 1)
@@ -108,7 +108,7 @@ int MangoContext::begin()
 
 int MangoContext::end()
 {
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoContext>, _instances);
 
     if (_instances.size() < 1)
@@ -127,7 +127,7 @@ int MangoContext::next(int k)
 {
     int i, next_id = end();
 
-    OsLocker locker(_instances_lock);
+    std::lock_guard<std::mutex> locker(_instances_lock);
     TL_GET(PtrArray<MangoContext>, _instances);
 
     for (i = 0; i < _instances.size(); i++)

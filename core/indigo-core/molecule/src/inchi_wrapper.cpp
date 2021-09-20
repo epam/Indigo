@@ -31,7 +31,7 @@
 using namespace indigo;
 
 // Inchi doesn't seem to support multithreading
-static OsLock inchi_lock;
+static std::mutex inchi_lock;
 
 namespace indigo
 {
@@ -131,7 +131,7 @@ static inchi_BondType getInchiBondType(int bond_order)
 void InchiWrapper::loadMoleculeFromAux(const char* aux, Molecule& mol)
 {
     // lock
-    OsLocker locker(inchi_lock);
+    std::lock_guard<std::mutex> locker(inchi_lock);
 
     InchiMemObject<inchi_Input> data_inp_obj(Free_inchi_Input);
     inchi_Input& data_inp = data_inp_obj.ref();
@@ -156,7 +156,7 @@ void InchiWrapper::loadMoleculeFromAux(const char* aux, Molecule& mol)
 void InchiWrapper::loadMoleculeFromInchi(const char* inchi_string, Molecule& mol)
 {
     // lock
-    OsLocker locker(inchi_lock);
+    std::lock_guard<std::mutex> locker(inchi_lock);
 
     inchi_InputINCHI inchi_input;
     inchi_input.szInChI = (char*)inchi_string;
@@ -631,7 +631,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
     inchi_Output& output = inchi_output_obj.ref();
 
     // lock
-    OsLocker locker(inchi_lock);
+    std::lock_guard<std::mutex> locker(inchi_lock);
 
     int ret = GetINCHI(&input, &output);
 
@@ -673,7 +673,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
 void InchiWrapper::InChIKey(const char* inchi, Array<char>& output)
 {
     // lock
-    OsLocker locker(inchi_lock);
+    std::lock_guard<std::mutex> locker(inchi_lock);
 
     output.resize(28);
     output.zerofill();

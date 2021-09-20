@@ -95,9 +95,9 @@ void Indigo::init()
     ignore_bad_valence = false;
 
     // Update global index
-    static ThreadSafeStaticObj<OsLock> lock;
+    static ThreadSafeStaticObj<std::mutex> lock;
     {
-        OsLocker locker(lock.ref());
+        std::lock_guard<std::mutex> locker(lock.ref());
         static int global_id;
 
         _indigo_id = global_id++;
@@ -111,7 +111,7 @@ Indigo::Indigo() : _next_id(1000)
 
 void Indigo::removeAllObjects()
 {
-    OsLocker lock(_objects_lock);
+    std::lock_guard<std::mutex> lock(_objects_lock);
     int i;
 
     for (i = _objects.begin(); i != _objects.end(); i = _objects.next(i))
@@ -234,7 +234,7 @@ CEXPORT void indigoSetErrorMessage(const char* message)
 
 int Indigo::addObject(IndigoObject* obj)
 {
-    OsLocker lock(_objects_lock);
+    std::lock_guard<std::mutex> lock(_objects_lock);
     int id = _next_id++;
     _objects.insert(id, obj);
     return id;
@@ -242,7 +242,7 @@ int Indigo::addObject(IndigoObject* obj)
 
 void Indigo::removeObject(int id)
 {
-    OsLocker lock(_objects_lock);
+    std::lock_guard<std::mutex> lock(_objects_lock);
     if (_objects.at2(id) == 0)
         return;
     delete _objects.at(id);
@@ -251,7 +251,7 @@ void Indigo::removeObject(int id)
 
 IndigoObject& Indigo::getObject(int handle)
 {
-    OsLocker lock(_objects_lock);
+    std::lock_guard<std::mutex> lock(_objects_lock);
 
     try
     {
@@ -265,7 +265,7 @@ IndigoObject& Indigo::getObject(int handle)
 
 int Indigo::countObjects()
 {
-    OsLocker lock(_objects_lock);
+    std::lock_guard<std::mutex> lock(_objects_lock);
 
     return _objects.size();
 }

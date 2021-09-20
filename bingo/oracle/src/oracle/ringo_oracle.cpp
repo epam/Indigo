@@ -66,7 +66,7 @@ RingoOracleContext& RingoOracleContext::get(OracleEnv& env, int id, bool lock)
 
     if (already == 0)
     {
-        OsLocker locker(_instances_lock);
+        std::lock_guard<std::mutex> locker(_instances_lock);
         TL_GET(PtrArray<RingoContext>, _instances);
 
         _instances.add(res.release());
