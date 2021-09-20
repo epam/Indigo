@@ -2639,6 +2639,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 }
 
             if (qatom.get() != 0)
+
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_CHARGE, atom.charge);
         }
         else if (next == 'a') // can be [as] or SMARTS aromaticity flag

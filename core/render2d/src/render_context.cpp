@@ -222,17 +222,14 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int
     case MODE_PDF:
         _surface = cairo_pdf_surface_create_for_stream(writer, opt.output, _width, _height);
         cairoCheckSurfaceStatus();
-        cairo_scaled_font_map_destroy();
         break;
     case MODE_SVG:
         _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
         cairoCheckSurfaceStatus();
-        cairo_scaled_font_map_destroy();
         break;
     case MODE_PNG:
         _surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, _width, _height);
         cairoCheckSurfaceStatus();
-        cairo_scaled_font_map_destroy();
         break;
     case MODE_HDC:
 #ifdef _WIN32

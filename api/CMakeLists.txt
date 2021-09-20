@@ -11,9 +11,12 @@ if (BUILD_INDIGO)
     add_subdirectory(c/indigo-renderer)
     add_subdirectory(c/bingo-nosql)
 
+    add_subdirectory(cpp)
+
     if (ENABLE_TESTS)
         add_subdirectory(c/tests/dlopen)
         add_subdirectory(c/tests/unit)
+        add_subdirectory(cpp/tests)
         add_subdirectory(tests/integration)
     endif ()
 

@@ -27,14 +27,20 @@ public class IndigoRenderer {
     public IndigoRenderer(Indigo indigo) {
         loadLibrary(indigo.getUserSpecifiedPath());
         this.indigo = indigo;
+        this.indigo.setSessionID();
         Indigo.checkResult(this, lib.indigoRendererInit());
+        initialized = true;
     }
 
     @Override
     public void finalize() throws Throwable {
-        indigo.setSessionID();
-        Indigo.checkResult(this, lib.indigoRendererDispose());
-        super.finalize();
+        if (initialized)
+        {
+            indigo.setSessionID();
+            Indigo.checkResult(this, lib.indigoRendererDispose());
+            super.finalize();
+            initialized = false;
+        }
     }
 
     public void render(IndigoObject obj, IndigoObject output) {
@@ -102,4 +108,5 @@ public class IndigoRenderer {
 
     final Indigo indigo;
     static IndigoRendererLib lib;
+    boolean initialized;
 }

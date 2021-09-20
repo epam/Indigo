@@ -55,11 +55,13 @@ class IndigoInchi(object):
         # Init Indigo-InChI context and options
         self.indigo._setSessionId()
         self.indigo._checkResult(self._lib.indigoInchiInit())
+        self._initialized = True
 
     def __del__(self):
-        self.indigo._setSessionId()
-        self.indigo._checkResult(self._lib.indigoInchiDispose())
-
+        if self._initialized:
+            self.indigo._setSessionId()
+            self.indigo._checkResult(self._lib.indigoInchiDispose())
+            self._initialized = False
 
     def resetOptions(self):
         self.indigo._setSessionId()

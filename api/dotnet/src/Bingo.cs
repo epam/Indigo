@@ -16,6 +16,7 @@ namespace com.epam.indigo
         {
             _indigo = indigo;
             _id = id;
+            _indigo.setSessionID();
             version(); // Preloads native library
         }
 

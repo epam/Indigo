@@ -385,6 +385,7 @@ protected:
                 self.error_handler(ex.message(), self.error_handler_context);                                                                                  \
             return fail;                                                                                                                                       \
         }                                                                                                                                                      \
+        return fail;                                                                                                                                           \
     }
 
 #define INDIGO_END_CHECKMSG(success, fail)                                                                                                                     \

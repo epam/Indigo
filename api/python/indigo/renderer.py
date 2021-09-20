@@ -65,10 +65,13 @@ class IndigoRenderer(object):
         # Init context
         self.indigo._setSessionId()
         self.indigo._checkResult(self._lib.indigoRendererInit())
+        self._initialized = True
 
     def __del__(self):
-        self.indigo._setSessionId()
-        self.indigo._checkResult(self._lib.indigoRendererDispose())
+        if self._initialized:
+            self.indigo._setSessionId()
+            self.indigo._checkResult(self._lib.indigoRendererDispose())
+            self._initialized = False
 
     def renderToBuffer(self, obj):
         self.indigo._setSessionId()

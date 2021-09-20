@@ -30,23 +30,25 @@ def threadFunction(i):
         renderer.Dispose()
         indigo.Dispose()
 
+
 def runThreads():
     threads_list = []
     for i in range(thread_count):
-        t = Thread(target=threadFunction, args=(i,))    
+        t = Thread(target=threadFunction, args=(i,))
         t.start()
         threads_list.append(t)
-            
+
     for t in threads_list:
         t.join()
-    
+
     for i in range(1, thread_count):
         if a[i] != a[i - 1]:
             # check number of lines because SVG have different id in different iterations with the same meaning:
             # -<g id="surface45">
             # +<g id="surface13">
             if len(a[i].split("\n")) != len(a[i - 1].split("\n")):
-                result = unified_diff(a[i].splitlines(), a[i-1].splitlines())
+                result = unified_diff(a[i].splitlines(), a[i - 1].splitlines())
                 print('\n'.join(result))
+
 
 runThreads()

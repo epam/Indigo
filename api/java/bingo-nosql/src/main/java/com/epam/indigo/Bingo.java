@@ -36,10 +36,10 @@ public class Bingo {
 
     public Bingo(Indigo indigo, String location, String options) {
         loadLibrary(indigo.getUserSpecifiedPath());
-        id = Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, options));
         this.indigo = indigo;
+        this.indigo.setSessionID();
+        id = Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, options));
     }
-
 
     protected void finalize() {
         dispose();
