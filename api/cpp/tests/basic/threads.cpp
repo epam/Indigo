@@ -29,10 +29,10 @@ using namespace indigo_cpp;
 
 namespace
 {
-    static std::string choices[] = {"C", "CC", "CCC", "CCCC", "CCCCC", "CCCCCC"};
+    static constexpr char* choices[] = {"C", "CC", "CCC", "CCCC", "CCCCC", "CCCCCC"};
     static std::random_device rd;
     static std::mt19937 rng(rd());
-    static std::uniform_int_distribution<int> uni(0, 6);
+    static std::uniform_int_distribution<int> uni(0, 5);
 
     std::string randomSmiles()
     {
