@@ -151,6 +151,7 @@ namespace indigo
         void _adjustAngle(Vec2f& l, const BondEnd& be1, const BondEnd& be2, bool left);
         void _bondBoldStereo(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
         void _bondSingle(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
+        void _bondHydrogen(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
         void _bondDouble(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
         void _bondSingleOrAromatic(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
         void _bondDoubleOrAromatic(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);

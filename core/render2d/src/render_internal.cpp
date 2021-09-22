@@ -2347,6 +2347,8 @@ void MoleculeRenderInternal::_initBondEndData()
                 be.width = 2 * _settings.bondSpace + _settings.bondLineWidth;
         else if (bd.type == BOND_DOUBLE || bd.type == BOND_AROMATIC || bd.type == BOND_TRIPLE || bd.queryType >= 0)
             be.width = 4 * _settings.bondSpace + _settings.bondLineWidth;
+        else if (bd.type == _BOND_HYDROGEN )
+            be.width = 2 * (_settings.bondSpace + _settings.bondLineWidth);
         else
         {
             Array<char> buf;
@@ -3623,6 +3625,9 @@ void MoleculeRenderInternal::_drawBond(int b)
     case BOND_AROMATIC:
         _bondAromatic(bd, be1, be2);
         break;
+    case _BOND_HYDROGEN:
+        _bondHydrogen(bd, be1, be2);
+        break;
     default:
         switch (bd.queryType)
         {
@@ -3858,6 +3863,26 @@ void MoleculeRenderInternal::_bondBoldStereo(BondDescr& bd, const BondEnd& be1, 
     _adjustAngle(r0, be2, be1, true);
     _adjustAngle(l0, be2, be1, false);
     _cw.fillHex(be1.p, r0, r1, be2.p, l1, l0);
+}
+
+void MoleculeRenderInternal::_bondHydrogen(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    _cw.setDash(_settings.bondDashHydro, Vec2f::dist(be1.p, be2.p));
+    double len = Vec2f::dist(be2.p, be1.p);
+    Vec2f l(be2.p), r(be2.p);
+    float w = _settings.bondSpace;
+    l.addScaled(bd.norm, -w);
+    r.addScaled(bd.norm, w);
+    bd.extP = bd.extN = w;
+
+    float lw = _cw.currentLineWidth();
+    Vec2f r0(be1.p), l0(be1.p);
+    l0.addScaled(bd.norm, -lw / 2);
+    r0.addScaled(bd.norm, lw / 2);
+
+    _cw.drawLine(be1.p, be2.p);
+    bd.extP = bd.extN = lw / 2;
+    _cw.resetDash();
 }
 
 void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)

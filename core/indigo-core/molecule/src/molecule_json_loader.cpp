@@ -23,7 +23,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups) : _mol_
 int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology)
 {
     std::unique_ptr<QueryMolecule::Bond> bond;
-    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
+    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION || order == _BOND_HYDROGEN )
         bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
     else if (order == _BOND_SINGLE_OR_DOUBLE)
         bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
@@ -151,7 +151,8 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
 
 void MoleculeJsonLoader::validateMoleculeBond(int order)
 {
-    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
+    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
+        order == _BOND_HYDROGEN)
         return;
     else if (order == _BOND_SINGLE_OR_DOUBLE)
         throw Error("'single or double' bonds are allowed only for queries");

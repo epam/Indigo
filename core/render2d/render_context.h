@@ -22,6 +22,7 @@
 #include <cairo-pdf.h>
 #include <cairo-svg.h>
 #include <cairo.h>
+#include <vector>
 
 #include "render_common.h"
 
@@ -62,7 +63,7 @@ namespace indigo
         void drawBracket(RenderItemBracket& bracket);
         void drawAttachmentPoint(RenderItemAttachmentPoint& ri, bool idle);
         void drawRSiteAttachmentIndex(RenderItemRSiteAttachmentIndex& ri);
-        void drawLine(const Vec2f& v0, const Vec2f& v1);
+        void drawLine(const Vec2f& v0, const Vec2f& v1 );
         void fillHex(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4, const Vec2f& v5);
         void fillQuad(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);
         void fillQuadStripes(const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, int cnt);
