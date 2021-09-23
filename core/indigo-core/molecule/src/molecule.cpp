@@ -456,6 +456,9 @@ int Molecule::calcAtomConnectivity_noImplH(int idx)
         if (order == -1) // can happen on TautomerSuperStructure
             continue;
 
+        if (order == _BOND_HYDROGEN || order == _BOND_COORDINATION)
+            continue;
+
         conn += order;
     }
 

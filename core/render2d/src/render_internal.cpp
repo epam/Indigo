@@ -2347,7 +2347,7 @@ void MoleculeRenderInternal::_initBondEndData()
                 be.width = 2 * _settings.bondSpace + _settings.bondLineWidth;
         else if (bd.type == BOND_DOUBLE || bd.type == BOND_AROMATIC || bd.type == BOND_TRIPLE || bd.queryType >= 0)
             be.width = 4 * _settings.bondSpace + _settings.bondLineWidth;
-        else if (bd.type == _BOND_HYDROGEN )
+        else if (bd.type == _BOND_HYDROGEN || bd.type == _BOND_COORDINATION)
             be.width = 2 * (_settings.bondSpace + _settings.bondLineWidth);
         else
         {
@@ -3628,6 +3628,10 @@ void MoleculeRenderInternal::_drawBond(int b)
     case _BOND_HYDROGEN:
         _bondHydrogen(bd, be1, be2);
         break;
+    case _BOND_COORDINATION:
+        _bondCoordination(bd, be1, be2);
+        break;
+
     default:
         switch (bd.queryType)
         {
@@ -3881,8 +3885,32 @@ void MoleculeRenderInternal::_bondHydrogen(BondDescr& bd, const BondEnd& be1, co
     r0.addScaled(bd.norm, lw / 2);
 
     _cw.drawLine(be1.p, be2.p);
-    bd.extP = bd.extN = lw / 2;
     _cw.resetDash();
+}
+
+void MoleculeRenderInternal::_bondCoordination(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    double len = Vec2f::dist(be2.p, be1.p);
+    Vec2f l(be2.p), r(be2.p);
+    float w = _settings.bondSpace;
+    l.addScaled(bd.norm, -w);
+    r.addScaled(bd.norm, w);
+    bd.extP = bd.extN = w;
+
+    float lw = _cw.currentLineWidth();
+    Vec2f r0(be1.p), l0(be1.p);
+    l0.addScaled(bd.norm, -lw / 2);
+    r0.addScaled(bd.norm, lw / 2);
+
+    _cw.drawLine(be1.p, be2.p);
+
+    double arrow_length = lw * 5;
+    double shorten = len - arrow_length;
+    Vec2f reduced =  (be2.p - be1.p) * ( 1 - shorten / len );
+    Vec2f slope_right(-reduced.y * 0.25, reduced.x * 0.25);
+    _cw.drawLine(be2.p, (be2.p - reduced) + slope_right);
+    Vec2f slope_left(reduced.y * 0.25, -reduced.x * 0.25);
+    _cw.drawLine(be2.p, (be2.p - reduced) + slope_left);
 }
 
 void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)

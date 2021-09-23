@@ -1317,7 +1317,7 @@ void MoleculeStandardizer::_clearDativeBonds(BaseMolecule& mol)
     {
         const Edge& edge = mol.getEdge(i);
 
-        if ((mol.getBondOrder(i) == BOND_ZERO) && (mol.getAtomNumber(edge.beg) != ELEM_H) && (mol.getAtomNumber(edge.end) != ELEM_H))
+        if ((mol.getBondOrder(i) == _BOND_COORDINATION) && (mol.getAtomNumber(edge.beg) != ELEM_H) && (mol.getAtomNumber(edge.end) != ELEM_H))
             remove_bonds.push(i);
     }
 
@@ -1334,7 +1334,7 @@ void MoleculeStandardizer::_clearHydrogenBonds(BaseMolecule& mol)
     {
         const Edge& edge = mol.getEdge(i);
 
-        if ((mol.getBondOrder(i) == BOND_ZERO) && ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H)))
+        if ((mol.getBondOrder(i) == _BOND_HYDROGEN) && ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H)))
             remove_bonds.push(i);
     }
 
