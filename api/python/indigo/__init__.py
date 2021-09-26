@@ -30,6 +30,7 @@ ENCODE_ENCODING = "utf-8"
 
 
 class IndigoException(Exception):
+    """Docstring for class IndigoException."""
     def __init__(self, value):
         if sys.version_info > (3, 0) and not isinstance(value, str):
             self.value = value.decode(DECODE_ENCODING)
@@ -3494,6 +3495,16 @@ class Indigo(object):
         )
 
     def loadMoleculeFromFile(self, filename):
+        """
+        Loads molecule from a given file. Automatically detects input format
+
+        Args:
+            filename (str): full path to a file
+        Returns:
+            IndigoObject: loaded molecular structure
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
         self._setSessionId()
         return self.IndigoObject(
             self,
@@ -3506,22 +3517,19 @@ class Indigo(object):
 
     def loadMoleculeFromBuffer(self, data):
         """
-        Loads molecule from given buffer. Automatically detects input format
+        Loads molecule from a given buffer. Automatically detects input format
 
         Args:
-            * buf - byte array
-
-        Usage:
-            ```
-            with open (..), 'rb') as f:
-                m = indigo.loadMoleculeFromBuffer(f.read())
-            ```
+            data (bytes): input byte array with a structure
+        Returns:
+            IndigoObject: loaded molecular structure
         Raises:
-            Exception if structure format is incorrect
+            IndigoException: Exception if structure format is incorrect
+        Examples:
+            .. code-block:: python
 
-        ::
-
-            Since version 1.3.0
+                with open (..), 'rb') as f:
+                    m = indigo.loadMoleculeFromBuffer(f.read())
         """
         if sys.version_info[0] < 3:
             buf = map(ord, data)
@@ -3731,7 +3739,7 @@ class Indigo(object):
 
         :param descriptors:  list of normalized numbers (roughly) between 0.0 and 1.0
         :param size:         size of the fingerprint in bytes
-        :param density:      approximate density of '1's vs `0`s in the fingerprint
+        :param density:      approximate density of '1's vs '0's in the fingerprint
         :return:             a fingerprint object
 
         Since version 1.3.0
@@ -4063,15 +4071,12 @@ class Indigo(object):
         Converts a chemical name into a corresponding structure
 
         Args:
-            * name - a name to parse
-            * params - a string containing parsing options or nullptr if no options are changed
+            name (str): a name to parse
+            params (str): a string (optional) containing parsing options or nullptr if no options are changed
 
         Raises:
-            Exception if parsing fails or no structure is found
+            IndigoException: if parsing fails or no structure is found
 
-        ::
-
-            Since version 1.3.0
         """
         if params is None:
             params = ""
