@@ -78,7 +78,7 @@ class IndigoObject(object):
 
     def __next__(self):
         obj = self._next()
-        if obj == None:
+        if obj is None:
             raise StopIteration
         return obj
 
@@ -4115,4 +4115,3 @@ class Indigo(object):
         return self._checkResultString(
             Indigo._lib.indigoCheck(moltext.encode(ENCODE_ENCODING), checkflags.encode(ENCODE_ENCODING), props.encode(ENCODE_ENCODING))
         )
-
