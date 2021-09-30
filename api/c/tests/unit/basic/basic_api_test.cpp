@@ -189,11 +189,16 @@ TEST(IndigoBasicApiTest, test_sgroup_utf)
             //         flog << indigoData(sg);
             ASSERT_STREQ("single-value-бензол", indigoData(sg));
         }
+
+        indigoFree(iter);
+        indigoFree(mol);
     }
     catch (Exception& e)
     {
         ASSERT_STREQ("", e.message());
     }
+
+    indigoReleaseSessionId(session);
 }
 
 TEST(IndigoBasicApiTest, test_reset_options)

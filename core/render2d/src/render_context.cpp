@@ -500,7 +500,10 @@ void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
     lineTo(v1);
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
+    {
+        std::lock_guard<std::mutex> _lock(_cairo_mutex);
+        cairo_stroke(_cr);
+    }
     cairoCheckStatus();
 }
 

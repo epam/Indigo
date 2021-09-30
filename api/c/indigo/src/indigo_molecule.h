@@ -324,7 +324,7 @@ public:
 class IndigoSGroupsIter : public IndigoObject
 {
 public:
-    IndigoSGroupsIter(BaseMolecule& molecule, Array<int>& sgs);
+    IndigoSGroupsIter(BaseMolecule& molecule, Array<int>&& sgs);
 
     ~IndigoSGroupsIter() override;
 
@@ -336,7 +336,7 @@ public:
 protected:
     int _idx;
     BaseMolecule& _mol;
-    Array<int>& _refs;
+    Array<int> _refs;
 };
 
 class IndigoDataSGroup : public IndigoObject
@@ -358,7 +358,7 @@ public:
 class IndigoDataSGroupsIter : public IndigoObject
 {
 public:
-    IndigoDataSGroupsIter(BaseMolecule& molecule, Array<int>& refs);
+    IndigoDataSGroupsIter(BaseMolecule& molecule, Array<int>&& refs);
     ~IndigoDataSGroupsIter() override;
 
     IndigoObject* next() override;
@@ -367,7 +367,7 @@ public:
 protected:
     int _idx;
     BaseMolecule& _mol;
-    Array<int>& _refs;
+    Array<int> _refs;
 };
 
 class IndigoSuperatom : public IndigoObject

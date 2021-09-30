@@ -67,7 +67,7 @@ TEST(IndigoRenderTest, render_superatoms)
 {
     std::vector<std::thread> threads;
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 100; i++)
     {
         threads.emplace_back(testRender);
     }

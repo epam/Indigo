@@ -42,6 +42,13 @@ namespace indigo
         {
         }
 
+        Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
+        {
+            other._array = nullptr;
+            other._length = 0;
+            other._reserved = 0;
+        }
+
         ~Array()
         {
             if (_array != nullptr)

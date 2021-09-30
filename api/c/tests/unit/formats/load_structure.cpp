@@ -287,9 +287,9 @@ TEST(IndigoLoadTest, fromGzFile)
 
     try
     {
-        int obj = indigoLoadStructureFromFile(dataPath("molecules/basic/pharmapendium.sdf.gz").c_str(), "query");
-        EXPECT_EQ(68, indigoCountAtoms(obj));
-        EXPECT_EQ(71, indigoCountBonds(obj));
+        int obj = indigoLoadStructureFromFile(dataPath("molecules/basic/Compound_0000001_0000250.sdf.gz").c_str(), "query");
+        EXPECT_EQ(31, indigoCountAtoms(obj));
+        EXPECT_EQ(30, indigoCountBonds(obj));
     }
     catch (Exception& e)
     {
