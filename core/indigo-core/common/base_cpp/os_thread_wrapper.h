@@ -155,6 +155,4 @@ namespace indigo
 
 } // namespace indigo
 
-int osGetProcessorsCount(void);
-
 #endif // __cmd_thread_h__

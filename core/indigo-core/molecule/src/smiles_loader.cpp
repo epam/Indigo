@@ -32,11 +32,9 @@ using namespace indigo;
 
 IMPL_ERROR(SmilesLoader, "SMILES loader");
 
-CP_DEF(SmilesLoader);
 
 SmilesLoader::SmilesLoader(Scanner& scanner)
-    : _scanner(scanner), CP_INIT, TL_CP_GET(_atom_stack), TL_CP_GET(_cycles), TL_CP_GET(_pending_bonds_pool), TL_CP_GET(_neipool), TL_CP_GET(_atoms),
-      TL_CP_GET(_bonds), TL_CP_GET(_polymer_repetitions)
+    : _scanner(scanner)
 {
     ignorable_aam = 0;
     inside_rsmiles = false;

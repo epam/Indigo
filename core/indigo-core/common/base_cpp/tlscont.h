@@ -91,10 +91,10 @@ namespace indigo
 
         T& getLocalCopy(const qword id)
         {
-            std::lock_guard<std::mutex> locker(_lock.ref());
+            std::lock_guard<std::mutex> locker(_lock);
             if (!_map.count(id))
             {
-                _map[id] = std::unique_ptr<T>(new T());
+                _map[id] = std::make_unique<T>();
             }
             return *_map.at(id);
         }
@@ -106,7 +106,7 @@ namespace indigo
 
         void removeLocalCopy(const qword id)
         {
-            std::lock_guard<std::mutex> locker(_lock.ref());
+            std::lock_guard<std::mutex> locker(_lock);
             if (_map.count(id))
             {
                 _map.erase(id);
@@ -114,10 +114,8 @@ namespace indigo
         }
 
     private:
-        using _Map = std::unordered_map<qword, std::unique_ptr<T>>;
-
-        _Map _map;
-        ThreadSafeStaticObj<std::mutex> _lock;
+        std::unordered_map<qword, std::unique_ptr<T>> _map;
+        std::mutex _lock;
     };
 
     // Helpful templates to deal with commas in template type names
@@ -328,26 +326,26 @@ namespace indigo
 } // namespace indigo
 
 // "Quasi-static" variable definition. Calls clear() at the end
-#define QS_DEF(TYPE, name)                                                                                                                                     \
-    static ThreadSafeStaticObj<_ReusableVariablesPool<_GET_TYPE(TYPE)>> _POOL_##name;                                                                          \
-    int _POOL_##name##_idx;                                                                                                                                    \
-    _GET_TYPE(TYPE)& name = _POOL_##name->getVacant(_POOL_##name##_idx);                                                                                       \
-    _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release;                                                                                \
-    _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());                                                                                  \
-    name.clear();
+//#define QS_DEF(TYPE, name)                                                                                                                                     \
+//    static ThreadSafeStaticObj<_ReusableVariablesPool<_GET_TYPE(TYPE)>> _POOL_##name;                                                                          \
+//    int _POOL_##name##_idx;                                                                                                                                    \
+//    _GET_TYPE(TYPE)& name = _POOL_##name->getVacant(_POOL_##name##_idx);                                                                                       \
+//    _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release;                                                                                \
+//    _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());                                                                                  \
+//    name.clear();
 // Use this for debug purposes if you suspect QS_DEF in something bad
-// #define QS_DEF(TYPE, name) TYPE name;
+#define QS_DEF(TYPE, name) TYPE name;
 
 // "Quasi-static" variable definition. Calls clear_resize() at the end
-#define QS_DEF_RES(TYPE, name, len)                                                                                                                            \
-    static ThreadSafeStaticObj<_ReusableVariablesPool<_GET_TYPE(TYPE)>> _POOL_##name;                                                                          \
-    int _POOL_##name##_idx;                                                                                                                                    \
-    _GET_TYPE(TYPE)& name = _POOL_##name->getVacant(_POOL_##name##_idx);                                                                                       \
-    _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release;                                                                                \
-    _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());                                                                                  \
-    name.clear_resize(len);
+//#define QS_DEF_RES(TYPE, name, len)                                                                                                                            \
+//    static ThreadSafeStaticObj<_ReusableVariablesPool<_GET_TYPE(TYPE)>> _POOL_##name;                                                                          \
+//    int _POOL_##name##_idx;                                                                                                                                    \
+//    _GET_TYPE(TYPE)& name = _POOL_##name->getVacant(_POOL_##name##_idx);                                                                                       \
+//    _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release;                                                                                \
+//    _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());                                                                                  \
+//    name.clear_resize(len);
 // Use this for debug purposes if you suspect QS_DEF in something bad
-// #define QS_DEF_RES(TYPE, name, len) TYPE name; name.clear_resize(len);
+#define QS_DEF_RES(TYPE, name, len) TYPE name; name.clear_resize(len);
 
 // Reusable class members definition
 // By tradition this macros start with TL_, but should start with SL_

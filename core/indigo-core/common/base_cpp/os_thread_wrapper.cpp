@@ -69,7 +69,7 @@ OsCommandDispatcher::OsCommandDispatcher(int handling_order, bool same_session_I
 
 void OsCommandDispatcher::run()
 {
-    _run(3 * osGetProcessorsCount() / 2 + 1);
+    _run(3 * std::thread::hardware_concurrency() / 2 + 1);
 }
 
 void OsCommandDispatcher::run(int nthreads)
@@ -446,54 +446,4 @@ void OsCommandDispatcher::_startStandalone()
 
     _availableResults.add(result);
     _availableCommands.add(command);
-}
-
-int osGetProcessorsCount(void)
-{
-    static ThreadSafeStaticObj<std::mutex> _processors_lock;
-    std::lock_guard<std::mutex> locker(_processors_lock.ref());
-
-    static int processors_count = 0;
-    if (processors_count == 0)
-    {
-#ifdef _WIN32
-        SYSTEM_INFO info;
-        GetSystemInfo(&info);
-        processors_count = info.dwNumberOfProcessors;
-#elif __APPLE__ // MacOS X
-        int mib[2];
-        size_t len = sizeof(processors_count);
-
-        /* set the mib for hw.ncpu */
-        mib[0] = CTL_HW;
-        mib[1] = HW_AVAILCPU; // alternatively, try HW_NCPU;
-
-        /* get the number of CPUs from the system */
-        sysctl(mib, 2, &processors_count, &len, NULL, 0);
-
-        if (processors_count < 1)
-        {
-            mib[1] = HW_NCPU;
-            sysctl(mib, 2, &processors_count, &len, NULL, 0);
-
-            if (processors_count < 1)
-                processors_count = 1;
-        }
-
-#else
-        char line[200];
-        FILE* cpuinfo_file = fopen("/proc/cpuinfo", "rt");
-        if (cpuinfo_file)
-        {
-            while (fgets(line, sizeof(line), cpuinfo_file))
-                if (!strncmp("processor", line, 9))
-                    processors_count++;
-            fclose(cpuinfo_file);
-        }
-        if (processors_count == 0)
-            processors_count = 1;
-#endif
-    }
-
-    return processors_count;
 }

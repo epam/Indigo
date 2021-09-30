@@ -19,6 +19,8 @@
 #include "indigo_internal.h"
 #include "indigo_version.h"
 
+#include <atomic>
+
 #include "locale.h"
 
 #include "base_cpp/output.h"
@@ -38,6 +40,10 @@ DLLEXPORT Indigo& indigoGetInstance()
 CEXPORT const char* indigoVersion()
 {
     return INDIGO_VERSION "-" INDIGO_PLATFORM;
+}
+
+namespace
+{
 }
 
 void Indigo::init()
@@ -95,13 +101,8 @@ void Indigo::init()
     ignore_bad_valence = false;
 
     // Update global index
-    static ThreadSafeStaticObj<std::mutex> lock;
-    {
-        std::lock_guard<std::mutex> locker(lock.ref());
-        static int global_id;
-
-        _indigo_id = global_id++;
-    }
+    static std::atomic<int> global_id;
+    _indigo_id = global_id++;
 }
 
 Indigo::Indigo() : _next_id(1000)

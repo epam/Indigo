@@ -48,8 +48,8 @@ namespace
         const auto& renderer_2 = IndigoRenderer(session_2);
         const auto& m_1 = session_1.loadMolecule(smiles);
         const auto& m_2 = session_2.loadMolecule(smiles);
-        const auto& result_1 = renderer_1.png(m_1);
-        const auto& result_2 = renderer_2.png(m_2);
+        const auto& result_1 = renderer_1.svg(m_1);
+        const auto& result_2 = renderer_2.svg(m_2);
         ASSERT_EQ(result_1, result_2);
     }
 } // namespace
@@ -57,8 +57,8 @@ namespace
 TEST(RenderingThreads, Basic)
 {
     std::vector<std::thread> threads;
-    threads.reserve(1000);
-    for (auto i = 0; i < 1000; i++)
+    threads.reserve(100);
+    for (auto i = 0; i < 100; i++)
     {
         threads.emplace_back(testRender);
     }
