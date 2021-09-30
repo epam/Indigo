@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "IndigoObject.h"
 
 namespace indigo_cpp

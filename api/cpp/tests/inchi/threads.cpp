@@ -16,12 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <gtest/gtest.h>
-
 #include <array>
 #include <random>
 #include <thread>
 
+#include <gtest/gtest.h>
+
+#include <IndigoInChI.h>
 #include <IndigoMolecule.h>
 #include <IndigoSession.h>
 
@@ -39,26 +40,28 @@ namespace
         return choices.at(uni(rng));
     }
 
-    void testCanonicalSmiles()
+    void testRender()
     {
         const auto& smiles = randomSmiles();
         const auto& session_1 = IndigoSession();
+        const auto& InChI_1 = IndigoInChI(session_1);
         const auto& session_2 = IndigoSession();
+        const auto& InChI_2 = IndigoInChI(session_2);
         const auto& m_1 = session_1.loadMolecule(smiles);
         const auto& m_2 = session_2.loadMolecule(smiles);
-        const auto& result_1 = m_1.smiles();
-        const auto& result_2 = m_2.smiles();
+        const auto& result_1 = InChI_1.getInChI(m_1);
+        const auto& result_2 = InChI_2.getInChI(m_2);
         ASSERT_EQ(result_1, result_2);
     }
-}
+} // namespace
 
-TEST(BasicThreads, Basic)
+TEST(InChIThreads, Basic)
 {
     std::vector<std::thread> threads;
     threads.reserve(100);
     for (auto i = 0; i < 100; i++)
     {
-        threads.emplace_back(testCanonicalSmiles);
+        threads.emplace_back(testRender);
     }
     for (auto& thread : threads)
     {

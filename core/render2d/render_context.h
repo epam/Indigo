@@ -161,38 +161,7 @@ namespace indigo
         float _currentLineWidth;
         cairo_pattern_t* _pattern;
 
-        class TextLock
-        {
-        public:
-            TextLock()
-            {
-            }
-
-            ~TextLock()
-            {
-            }
-
-            void lock()
-            {
-#ifdef _WIN32
-                _mutex.lock();
-#endif
-            }
-
-            void unlock()
-            {
-#ifdef _WIN32
-                _mutex.unlock();
-#endif
-            }
-
-        private:
-#ifdef _WIN32
-            std::mutex _mutex;
-#endif
-        };
-
-        static TextLock _tlock;
+        static std::mutex _cairo_mutex;
 
         CP_DECL;
         TL_CP_DECL(Array<char>, _fontfamily);

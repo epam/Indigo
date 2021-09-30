@@ -20,6 +20,8 @@
 
 #include <indigo.h>
 
+#include "IndigoSession.h"
+
 #ifdef INDIGO_CPP_DEBUG
 #include <iostream>
 #include <thread>

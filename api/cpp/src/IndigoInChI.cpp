@@ -6,7 +6,7 @@
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
-*
+* 
 * http://www.apache.org/licenses/LICENSE-2.0
 *
 * Unless required by applicable law or agreed to in writing, software
@@ -16,7 +16,7 @@
 * limitations under the License.
 ***************************************************************************/
 
-#include "IndigoRenderer.h"
+#include "IndigoInChI.h"
 
 #ifdef INDIGO_CPP_DEBUG
 #include <iostream>
@@ -24,50 +24,37 @@
 #include <sstream>
 #endif
 
-#include <indigo-renderer.h>
+#include <indigo-inchi.h>
 
 #include "IndigoChemicalEntity.h"
 #include "IndigoSession.h"
-#include "IndigoWriteBuffer.h"
 
 using namespace indigo_cpp;
 
-IndigoRenderer::IndigoRenderer(const IndigoSession& session) : _session(session)
+IndigoInChI::IndigoInChI(const IndigoSession& session) : _session(session)
 {
 #ifdef INDIGO_CPP_DEBUG
     std::stringstream ss;
-    ss << "T_" << std::this_thread::get_id() << ": IndigoRenderer(" << _session.getSessionId() << ")\n";
+    ss << "T_" << std::this_thread::get_id() << ": IndigoInChI(" << _session.getSessionId() << ")\n";
     std::cout << ss.str();
 #endif
     _session.setSessionId();
-    indigoRendererInit();
+    indigoInchiInit();
 }
 
-IndigoRenderer::~IndigoRenderer()
+IndigoInChI::~IndigoInChI()
 {
 #ifdef INDIGO_CPP_DEBUG
     std::stringstream ss;
-    ss << "T_" << std::this_thread::get_id() << ": ~IndigoRenderer(" << _session.getSessionId() << ")\n";
+    ss << "T_" << std::this_thread::get_id() << ": ~IndigoInChI(" << _session.getSessionId() << ")\n";
     std::cout << ss.str();
 #endif
     _session.setSessionId();
-    indigoRendererDispose();
+    indigoInchiDispose();
 }
 
-std::string IndigoRenderer::svg(const IndigoChemicalEntity& data) const
+std::string IndigoInChI::getInChI(const IndigoChemicalEntity& data) const
 {
     _session.setSessionId();
-    _session.setOption("render-output-format", std::string("svg"));
-    const auto buffer = _session.writeBuffer();
-    _session._checkResult(indigoRender(data.id, buffer.id));
-    return buffer.toString();
-}
-
-std::vector<char> IndigoRenderer::png(const IndigoChemicalEntity& data) const
-{
-    _session.setSessionId();
-    _session.setOption("render-output-format", std::string("png"));
-    const auto buffer = _session.writeBuffer();
-    _session._checkResult(indigoRender(data.id, buffer.id));
-    return buffer.toBuffer();
+    return {_session._checkResultString(indigoInchiGetInchi(data.id))};
 }

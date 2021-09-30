@@ -17,6 +17,7 @@
 ***************************************************************************/
 
 #include "IndigoChemicalEntity.h"
+#include <IndigoSession.h>
 
 #include <indigo-inchi.h>
 

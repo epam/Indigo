@@ -16,17 +16,17 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <ctype.h>
-
-#include "molecule/smiles_loader.h"
+#include <cctype>
 
 #include <memory>
+
 #include "base_cpp/scanner.h"
 #include "graph/cycle_basis.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
+#include "molecule/smiles_loader.h"
 
 using namespace indigo;
 

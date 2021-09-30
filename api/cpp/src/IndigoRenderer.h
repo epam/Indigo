@@ -18,13 +18,13 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
-
-#include "IndigoSession.h"
 
 namespace indigo_cpp
 {
     class IndigoChemicalEntity;
+    class IndigoSession;
 
     class IndigoRenderer
     {

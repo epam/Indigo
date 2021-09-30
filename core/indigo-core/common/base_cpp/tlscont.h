@@ -182,6 +182,7 @@ namespace indigo
 
         T& getByIndex(int idx)
         {
+            std::lock_guard<std::mutex> locker(_lock);
             return *_objects[idx];
         }
 
@@ -334,7 +335,7 @@ namespace indigo
 //    _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());                                                                                  \
 //    name.clear();
 // Use this for debug purposes if you suspect QS_DEF in something bad
-#define QS_DEF(TYPE, name) TYPE name;
+ #define QS_DEF(TYPE, name) TYPE name;
 
 // "Quasi-static" variable definition. Calls clear_resize() at the end
 //#define QS_DEF_RES(TYPE, name, len)                                                                                                                            \
@@ -345,7 +346,7 @@ namespace indigo
 //    _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());                                                                                  \
 //    name.clear_resize(len);
 // Use this for debug purposes if you suspect QS_DEF in something bad
-#define QS_DEF_RES(TYPE, name, len) TYPE name; name.clear_resize(len);
+ #define QS_DEF_RES(TYPE, name, len) TYPE name; name.clear_resize(len);
 
 // Reusable class members definition
 // By tradition this macros start with TL_, but should start with SL_
@@ -354,7 +355,7 @@ namespace indigo
 // in the constructor via CP_INIT before any TL_CP_ initializations
 //
 
-// Add this to class definition
+//// Add this to class definition
 #define TL_CP_DECL(TYPE, name)                                                                                                                                 \
     typedef _GET_TYPE(TYPE) _##name##_TYPE;                                                                                                                    \
     _GET_TYPE(TYPE) & name
@@ -372,11 +373,11 @@ namespace indigo
 #define CP_DEF(cls)                                                                                                                                            \
     _LocalVariablesPool& cls::_getLocalPool(_LocalVariablesPoolAutoRelease& auto_release)                                                                      \
     {                                                                                                                                                          \
-        static ThreadSafeStaticObj<_ReusableVariablesPool<_LocalVariablesPool>> _shared_pool;                                                                  \
+        static _ReusableVariablesPool<_LocalVariablesPool> _shared_pool;                                                                  \
                                                                                                                                                                \
         int idx;                                                                                                                                               \
-        _LocalVariablesPool& var = _shared_pool->getVacant(idx);                                                                                               \
-        auto_release.init(idx, _shared_pool.ptr());                                                                                                            \
+        _LocalVariablesPool& var = _shared_pool.getVacant(idx);                                                                                               \
+        auto_release.init(idx, &_shared_pool);                                                                                                            \
         return var;                                                                                                                                            \
     }
 

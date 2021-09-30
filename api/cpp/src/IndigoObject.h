@@ -18,10 +18,10 @@
 
 #pragma once
 
-#include "IndigoSession.h"
-
 namespace indigo_cpp
 {
+    class IndigoSession;
+
     class IndigoObject
     {
     public:

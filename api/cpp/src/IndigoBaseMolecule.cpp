@@ -17,6 +17,7 @@
 ***************************************************************************/
 
 #include "IndigoBaseMolecule.h"
+#include "IndigoSession.h"
 
 #include <indigo.h>
 

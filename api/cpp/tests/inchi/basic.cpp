@@ -19,16 +19,16 @@
 #include <gtest/gtest.h>
 
 #include <IndigoMolecule.h>
-#include <IndigoRenderer.h>
+#include <IndigoInChI.h>
 #include <IndigoSession.h>
 
 using namespace indigo_cpp;
 
-TEST(RenderingBasic, BasicSVG)
+TEST(InchiBasic, GetInChI)
 {
     const auto& session = IndigoSession();
-    const auto& renderer = IndigoRenderer(session);
+    const auto& inchi = IndigoInChI(session);
     const auto& m = session.loadMolecule("C");
-    const auto& result = renderer.svg(m);
-    ASSERT_TRUE(result.rfind("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 0) == 0);
+    const auto& result = inchi.getInChI(m);
+    ASSERT_EQ(result, "InChI=1S/CH4/h1H4");
 }

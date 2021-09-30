@@ -16,6 +16,7 @@
 * limitations under the License.
 ***************************************************************************/
 
+#include <array>
 #include <random>
 #include <thread>
 
@@ -29,14 +30,14 @@ using namespace indigo_cpp;
 
 namespace
 {
-    static constexpr char* choices[] = {"C", "CC", "CCC", "CCCC", "CCCCC", "CCCCCC"};
-    static std::random_device rd;
-    static std::mt19937 rng(rd());
-    static std::uniform_int_distribution<int> uni(0, 5);
+    constexpr const std::array<const char*, 6> choices = {"C", "CC", "CCC", "CCCC", "CCCCC", "CCCCCC"};
+    thread_local std::random_device rd;
+    thread_local std::mt19937 rng(rd());
+    thread_local std::uniform_int_distribution<int> uni(0, 5);
 
     std::string randomSmiles()
     {
-        return choices[uni(rng)];
+        return choices.at(uni(rng));
     }
 
     void testRender()
@@ -48,9 +49,12 @@ namespace
         const auto& renderer_2 = IndigoRenderer(session_2);
         const auto& m_1 = session_1.loadMolecule(smiles);
         const auto& m_2 = session_2.loadMolecule(smiles);
-        const auto& result_1 = renderer_1.svg(m_1);
-        const auto& result_2 = renderer_2.svg(m_2);
-        ASSERT_EQ(result_1, result_2);
+        const auto& result_svg_1 = renderer_1.svg(m_1);
+        const auto& result_svg_2 = renderer_2.svg(m_2);
+        ASSERT_EQ(result_svg_1, result_svg_2);
+        const auto& result_png_1 = renderer_1.png(m_1);
+        const auto& result_png_2 = renderer_2.png(m_2);
+        ASSERT_EQ(result_png_1, result_png_2);
     }
 } // namespace
 

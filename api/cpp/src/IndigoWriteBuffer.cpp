@@ -17,6 +17,7 @@
 ***************************************************************************/
 
 #include "IndigoWriteBuffer.h"
+#include "IndigoSession.h"
 
 #include <indigo.h>
 
