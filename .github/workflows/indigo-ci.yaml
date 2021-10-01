@@ -37,7 +37,7 @@ jobs:
             /bin/sh -c "
             mkdir build &&
             cd build &&
-            cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF &&
+            cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF &&
             cmake --build . --config Release --target all -- -j $(nproc) &&
             ctest --verbose
             "
@@ -46,7 +46,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
       - name: Build Windows
@@ -54,7 +54,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF
           cmake --build . --config Release --target ALL_BUILD
           ctest --verbose -C Release
       - name: Upload artifacts
@@ -100,7 +100,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF
           cmake --build . --config Release --target indigo-${{ matrix.wrapper }}
           ls -alh ../dist
       - name: Upload native shared libs
@@ -393,7 +393,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DPython3_ROOT_DIR=/mingw64
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DPython3_ROOT_DIR=/mingw64
           cmake --build . --config Release --target all -- -j $(nproc) --output-sync
       - name: Test native libs
         run: |
@@ -403,7 +403,7 @@ jobs:
         run: |
           cd build
           # python -m pip install wheel
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DPython3_ROOT_DIR=/mingw64
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DPython3_ROOT_DIR=/mingw64
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests
         run: |
@@ -471,7 +471,7 @@ jobs:
             /bin/sh -c "
             mkdir build &&
             cd build &&
-            cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=ON &&
+            cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DBUILD_INDIGO_UTILS=ON &&
             cmake --build . --config Release --target all -- -j $(nproc) &&
             ctest --verbose
             "
@@ -480,7 +480,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=ON
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DBUILD_INDIGO_UTILS=ON
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
       - name: Build utils Windows
@@ -488,7 +488,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -BUILD_INDIGO_UTILS=ON
           cmake --build . --config Release --target ALL_BUILD
           ctest --verbose -C Release
       - name: Upload artifacts
@@ -512,7 +512,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -540,7 +540,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -562,7 +562,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
           cmake --build . --config Release --target package-bingo-oracle
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -597,7 +597,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
           cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -630,7 +630,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(resolve-path $pwd/../pgsql)"
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DPostgreSQL_ROOT="$(resolve-path $pwd/../pgsql)"
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -654,14 +654,14 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          case ${{ matrix.postgres_major_version }} in 12) pg_version=12.6;; "11") pg_version=11.11;; 10) pg_version=10.16;; 9.6) pg_version=9.6.21;; esac;
+          case ${{ matrix.postgres_major_version }} in 12) pg_version=12.8;; "11") pg_version=11.13;; 10) pg_version=10.18;; 9.6) pg_version=9.6.23;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
       - name: Build bingo-postgres
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
