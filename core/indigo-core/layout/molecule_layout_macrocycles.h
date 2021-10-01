@@ -60,7 +60,7 @@ namespace indigo
 
         int getVertexStereo(int v);
 
-        Vec2f& getPos(int v) const;
+        const Vec2f& getPos(int v) const;
 
         void doLayout();
 
@@ -170,7 +170,7 @@ namespace indigo
         void updateTouchingPoints(Array<local_pair_id>&, CycleLayout&);
         void smoothingStep(CycleLayout& cl, int vertex_number, float coef, Array<local_pair_id>&);
         void smoothing(CycleLayout& cl);
-        Vec2f& getPos(int v) const;
+        const Vec2f& getPos(int v) const;
         float preliminary_layout(CycleLayout& cl);
 
         DECL_ERROR;
