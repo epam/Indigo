@@ -42,10 +42,6 @@ CEXPORT const char* indigoVersion()
     return INDIGO_VERSION "-" INDIGO_PLATFORM;
 }
 
-namespace
-{
-}
-
 void Indigo::init()
 {
     error_handler = nullptr;
