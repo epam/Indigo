@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
-if (NOT WIN32)
-	message(WARNING "Bingo-SqlServer could be built only on Windows")
+if (NOT MSVC)
+	message(WARNING "Bingo-SqlServer could be built only on Windows and MSVC")
 else()
 	project(bingo-sqlserver LANGUAGES CSharp)
 
