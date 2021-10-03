@@ -42,7 +42,7 @@ class IndigoException(Exception):
 
 
 class IndigoObject(object):
-    """Docstring for class IndigoObject."""
+    """Keeps all Indigo model objects"""
 
     def __init__(self, dispatcher, id, parent=None):
         self.id = id
@@ -84,15 +84,30 @@ class IndigoObject(object):
         return obj
 
     def next(self):
+        """Geneeric iterator method
+
+        Returns:
+            IndigoObject: next item in a collection
+        """
         return self.__next__()
 
     def oneBitsList(self):
+        """Fingerprint method to return one bits
+
+        Returns:
+            str: one bits string for the fingerprint
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoOneBitsList(self.id)
         )
 
     def mdlct(self):
+        """Saves MDL CT into a buffer
+
+        Returns:
+            IndigoObject: buffer contained the MDLCT
+        """
         buf = self.dispatcher.writeBuffer()
         self.dispatcher._setSessionId()
         self.dispatcher._checkResult(
@@ -101,6 +116,14 @@ class IndigoObject(object):
         return buf.toBuffer()
 
     def xyz(self):
+        """Atom method to get coordinatess
+
+        Raises:
+            IndigoException: raises an exception if no XYZ for the object
+
+        Returns:
+            list: 3-element array with coordinates
+        """
         self.dispatcher._setSessionId()
         xyz = Indigo._lib.indigoXYZ(self.id)
         if xyz is None:
@@ -108,6 +131,19 @@ class IndigoObject(object):
         return [xyz[0], xyz[1], xyz[2]]
 
     def alignAtoms(self, atom_ids, desired_xyz):
+        """Determines and applies the best transformation for the given molecule
+        so that the specified atoms move as close as possible to the desired positions
+
+        Args:
+            atom_ids (list): atom indexes
+            desired_xyz (list): desired coordinats for atoms (size atom_ids * 3)
+
+        Raises:
+            IndigoException: if input array size does not match
+
+        Returns:
+            float: root-mean-square measure of the difference between the desired and obtained positions
+        """
         if len(atom_ids) * 3 != len(desired_xyz):
             raise IndigoException(
                 "alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]"
