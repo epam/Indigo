@@ -162,12 +162,29 @@ class IndigoObject(object):
         )
 
     def addStereocenter(self, type, v1, v2, v3, v4=-1):
+        """Atom method. Adds stereo information for a given atom
+
+        Args:
+            type (int): Stereocenter type. Use Indigo constants ABS, OR, AND, EITHER
+            v1 (int): pyramid info
+            v2 (int): pyramid info
+            v3 (int): pyramid info
+            v4 (int, optional): pyramid info. Defaults to -1.
+
+        Returns:
+            int: 1 stereocenter added successfully
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoAddStereocenter(self.id, type, v1, v2, v3, v4)
         )
 
     def clone(self):
+        """Clones IndigoObject
+
+        Returns:
+            IndigoObject: cloned object
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -175,6 +192,14 @@ class IndigoObject(object):
         )
 
     def check(self, checkflags=""):
+        """Molecule object. Performs verification of input structure
+
+        Args:
+            checkflags (str, optional): Flags to verify. Defaults to "".
+
+        Returns:
+            str: verification result as a JSON string
+        """
         if checkflags is None:
             checkflags = ""
         self.dispatcher._setSessionId()
@@ -183,24 +208,52 @@ class IndigoObject(object):
         )
 
     def close(self):
+        """FileOutput method closes file descriptor
+
+        Returns:
+            int: 1 if file is closed successfully. -1 otherwise
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoClose(self.id))
 
     def hasNext(self):
+        """Iterator method returns presense of a next element
+
+        Returns:
+            bool: true if has next element, false otherwise
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(Indigo._lib.indigoHasNext(self.id))
         )
 
     def index(self):
+        """Atom method returns index of an element
+
+        Returns:
+            int: element index
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoIndex(self.id))
 
     def remove(self):
+        """Container method removes an element
+
+        Returns:
+            int: 1 if element was removed
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoRemove(self.id))
 
     def saveMolfile(self, filename):
+        """Molecule method saves structure into a molfile
+
+        Args:
+            filename (str): full file path to the file
+
+        Returns:
+            int: 1 if file is saved
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSaveMolfileToFile(
@@ -209,12 +262,25 @@ class IndigoObject(object):
         )
 
     def molfile(self):
+        """Molecule method returns structure as molfile
+
+        Returns:
+            str: molfile string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoMolfile(self.id)
         )
 
     def saveCml(self, filename):
+        """Molecule method saves CML into a file
+
+        Args:
+            filename (str): full path to the file to be saved
+
+        Returns:
+            [type]: [description]
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSaveCmlToFile(
@@ -223,12 +289,25 @@ class IndigoObject(object):
         )
 
     def cml(self):
+        """Molecule method returns CML format for a structure
+
+        Returns:
+            str: CML string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoCml(self.id)
         )
 
     def saveCdxml(self, filename):
+        """Molecule method saves the structure into CDXML file
+
+        Args:
+            filename (str): full path to the file
+
+        Returns:
+            int: 1 if a file was saved successfully
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSaveCdxmlToFile(
@@ -237,36 +316,78 @@ class IndigoObject(object):
         )
 
     def cdxml(self):
+        """Molecule method returns the structure as CDXML string
+
+        Returns:
+            str: CDXML string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoCdxml(self.id)
         )
 
     def json(self):
+        """Structure method saves into KET format
+
+        Returns:
+            str: KET format for the structure
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoJson(self.id)
         )
 
     def saveMDLCT(self, output):
+        """Structure method saves MDLCT format into a given buffer
+
+        Args:
+            output (IndigoObject): buffer to be updated
+
+        Returns:
+            int: 1f structure is saved
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSaveMDLCT(self.id, output.id)
         )
 
     def addReactant(self, molecule):
+        """Reaction method adds given molecule copy to reactants
+
+        Args:
+            molecule (IndigoObject): molecule to be added
+
+        Returns:
+            int: 1 if a molecule was added correctly
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoAddReactant(self.id, molecule.id)
         )
 
     def addProduct(self, molecule):
+        """Reaction method adds given molecule copy to products
+
+        Args:
+            molecule (IndigoObject): molecule to be added
+
+        Returns:
+            int: 1 if a molecule was added correctly
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoAddProduct(self.id, molecule.id)
         )
 
     def addCatalyst(self, molecule):
+        """Reaction method adds given molecule copy to catalysts
+
+        Args:
+            molecule (IndigoObject): molecule to be added
+
+        Returns:
+            int: 1 if a molecule was added correctly
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoAddCatalyst(self.id, molecule.id)
