@@ -239,7 +239,7 @@ void MoleculeRenderData::clear()
 CP_DEF(RenderSettings);
 
 RenderSettings::RenderSettings()
-    : CP_INIT, TL_CP_GET(bondDashAromatic), TL_CP_GET(bondDashAny), TL_CP_GET(bondDashSingleOrAromatic), TL_CP_GET(bondDashDoubleOrAromatic)
+    : CP_INIT, TL_CP_GET(bondDashAromatic), TL_CP_GET(bondDashAny), TL_CP_GET(bondDashSingleOrAromatic), TL_CP_GET(bondDashDoubleOrAromatic), TL_CP_GET(bondDashHydro)
 {
     init(1.0f, 1.0f);
 }
@@ -306,6 +306,8 @@ void RenderSettings::init(float sf, float lwf)
         bondDashAny.push(val);
         bondDashAromatic.push(val);
     }
+
+    bondDashHydro.push(dashUnit);
 
     layoutMarginHorizontal = 0.4f;
     layoutMarginVertical = 0.6f;

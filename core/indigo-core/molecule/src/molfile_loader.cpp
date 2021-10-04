@@ -575,7 +575,8 @@ void MolfileLoader::_readCtab2000()
 
         if (_mol != 0)
         {
-            if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
+            if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_HYDROGEN ||
+                order == _BOND_COORDINATION)
                 _mol->addBond_Silent(beg - 1, end - 1, order);
             else if (order == _BOND_SINGLE_OR_DOUBLE)
                 throw Error("'single or double' bonds are allowed only for queries");
@@ -592,7 +593,8 @@ void MolfileLoader::_readCtab2000()
         {
             std::unique_ptr<QueryMolecule::Bond> bond;
 
-            if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
+            if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_HYDROGEN ||
+                order == _BOND_COORDINATION)
                 bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
             else if (order == _BOND_SINGLE_OR_DOUBLE)
                 bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
@@ -2803,7 +2805,8 @@ void MolfileLoader::_readCtab3000()
 
             if (_mol != 0)
             {
-                if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
+                if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
+                    order == _BOND_HYDROGEN)
                     _mol->addBond_Silent(beg, end, order);
                 else if (order == _BOND_COORDINATION || order == _BOND_HYDROGEN)
                     _mol->addBond_Silent(beg, end, BOND_ZERO);
@@ -2822,10 +2825,9 @@ void MolfileLoader::_readCtab3000()
             {
                 std::unique_ptr<QueryMolecule::Bond> bond;
 
-                if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
+                if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
+                    order == _BOND_HYDROGEN)
                     bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
-                else if (order == _BOND_COORDINATION || order == _BOND_HYDROGEN)
-                    bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, BOND_ZERO);
                 else if (order == _BOND_SINGLE_OR_DOUBLE)
                 {
                     bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),

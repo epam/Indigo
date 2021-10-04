@@ -172,6 +172,7 @@ promise.then(indigo => {
     let mol_smiles = "C1=CC=CC=C1";
     let qmol_smarts = "[$([NX1-]=[NX2+]=[NX1-]),$([NX1]#[NX2+]-[NX1-2])]";
     let rxn_smiles = "C1=CC=CC=C1.N>>C1=CC=CC=N1.[CH3-]";
+    let inchi = "InChI=1S/C4H10/c1-3-4-2/h3-4H2,1-2H3";
     // Check convert and options settings - first save molfile v2000, then v3000
     console.log("********* Check options settings - saving molfiles 2000 and 3000 *********");
     options.set('molfile-saving-mode', '3000');
@@ -187,6 +188,7 @@ promise.then(indigo => {
     console.log(indigo.convert(rxn_smiles, "cml", options));
     console.log(indigo.convert(mol_smiles, "inchi", options));
     console.log(indigo.convert(mol_smiles, "inchi-aux", options));
+    console.log(indigo.convert(inchi,"molfile",options));
     // Check exception throwing for wrong input molecule
     console.log("********* Check exception throwing because of wrong input molecule *********")
     try {
