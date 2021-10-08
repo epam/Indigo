@@ -206,6 +206,7 @@ CEXPORT int bingoCloseDatabase(int db)
 {
     BINGO_BEGIN_DB(db)
     {
+        std::lock_guard<std::mutex> _guard(_bingo_lock);
         _bingo_instances.remove(db);
         return 1;
     }
