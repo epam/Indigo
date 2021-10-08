@@ -80,7 +80,7 @@ TEST(BingoThreads, CreateSingleThread)
     }
 }
 
-TEST(BingoThreads, CreatуMultipleThreads)
+TEST(BingoThreads, CreateMultipleThreads)
 {
     std::vector<std::thread> threads;
     threads.reserve(10);
