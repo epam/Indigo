@@ -27,6 +27,7 @@ BingoNoSQL::BingoNoSQL(const IndigoSession& indigo, const int id) : indigo(indig
 
 BingoNoSQL::~BingoNoSQL()
 {
+    close();
 }
 
 BingoNoSQL BingoNoSQL::createDatabaseFile(const IndigoSession& session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options)
