@@ -20,10 +20,12 @@
 
 #include <array>
 #include <random>
+#include <sstream>
 #include <thread>
 
 #include <IndigoMolecule.h>
 #include <IndigoSession.h>
+#include <BingoNoSQL.h>
 
 using namespace indigo_cpp;
 
@@ -39,26 +41,84 @@ namespace
         return choices.at(uni(rng));
     }
 
-    void testCanonicalSmiles()
+    void testCreate()
     {
         const auto& smiles = randomSmiles();
         const auto& session_1 = IndigoSession();
         const auto& session_2 = IndigoSession();
         const auto& m_1 = session_1.loadMolecule(smiles);
         const auto& m_2 = session_2.loadMolecule(smiles);
-        const auto& result_1 = m_1.smiles();
-        const auto& result_2 = m_2.smiles();
-        ASSERT_EQ(result_1, result_2);
+        std::stringstream ss;
+        ss << "test_" << std::this_thread::get_id();
+        const auto bingo_1 = BingoNoSQL::createDatabaseFile(session_1, ss.str() + "_1.db", BingoNoSqlDataBaseType::MOLECULE, "");
+        const auto bingo_2 = BingoNoSQL::createDatabaseFile(session_2, ss.str() + "_2.db", BingoNoSqlDataBaseType::MOLECULE, "");
+    }
+
+    void testInsert(const BingoNoSQL& bingo)
+    {
+        for (auto i = 0; i < 100; i++)
+        {
+            bingo.insertRecord(bingo.indigo.loadMolecule(randomSmiles()));
+        }
+    }
+
+    void testInsertDelete(const BingoNoSQL& bingo)
+    {
+        for (auto i = 0; i < 100; i++)
+        {
+            auto id = bingo.insertRecord(bingo.indigo.loadMolecule(randomSmiles()));
+            bingo.deleteRecord(id);
+        }
     }
 }
 
-TEST(BasicThreads, Basic)
+TEST(BingoThreads, CreateSingleThread)
+{
+    for (auto i = 0; i < 10; i++)
+    {
+        testCreate();
+    }
+}
+
+TEST(BingoThreads, CreatуMultipleThreads)
 {
     std::vector<std::thread> threads;
-    threads.reserve(100);
-    for (auto i = 0; i < 100; i++)
+    threads.reserve(10);
+    for (auto i = 0; i < 10; i++)
     {
-        threads.emplace_back(testCanonicalSmiles);
+        threads.emplace_back(testCreate);
+    }
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
+}
+
+TEST(BingoThreads, Insert)
+{
+    const auto& session = IndigoSession();
+    auto bingo = BingoNoSQL::createDatabaseFile(session, "test.db", BingoNoSqlDataBaseType::MOLECULE, "");
+    std::vector<std::thread> threads;
+    threads.reserve(10);
+    for (auto i = 0; i < 10; i++)
+    {
+        threads.emplace_back(testInsert, std::cref(bingo));
+    }
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
+}
+
+TEST(BingoThreads, InsertDelete)
+{
+    const auto& session = IndigoSession();
+    auto bingo = BingoNoSQL::createDatabaseFile(session, "test.db", BingoNoSqlDataBaseType::MOLECULE, "");
+    std::vector<std::thread> threads;
+    threads.reserve(10);
+    for (auto i = 0; i < 10; i++)
+    {
+        threads.emplace_back(testInsertDelete, std::cref(bingo));
     }
     for (auto& thread : threads)
     {

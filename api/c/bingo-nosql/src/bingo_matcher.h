@@ -488,7 +488,7 @@ namespace bingo
 
         virtual bool _tryCurrent() /* const */ = 0;
 
-        virtual void _initPartition();
+        virtual void _initPartition() override;
     };
 
     class MolGrossMatcher : public BaseGrossMatcher

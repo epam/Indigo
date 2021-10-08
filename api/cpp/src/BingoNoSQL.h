@@ -17,7 +17,7 @@ namespace indigo_cpp
         BingoNoSQL() = delete;
         BingoNoSQL(const BingoNoSQL&) = delete;
         BingoNoSQL& operator=(const BingoNoSQL&) = delete;
-        BingoNoSQL(BingoNoSQL&&) = delete;
+        BingoNoSQL(BingoNoSQL&&) = default;
         BingoNoSQL& operator=(BingoNoSQL&&) = delete;
         ~BingoNoSQL();
 
@@ -27,12 +27,15 @@ namespace indigo_cpp
 
         void close();
 
+
         int insertRecord(const IndigoChemicalEntity& entity) const;
         void deleteRecord(int recordId) const;
 
-    private : BingoNoSQL(const IndigoSession& indigo, int e);
-
         const IndigoSession& indigo;
+
+    private:
+        BingoNoSQL(const IndigoSession& indigo, int e);
+
         int id;
     };
 }

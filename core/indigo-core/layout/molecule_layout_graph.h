@@ -592,10 +592,8 @@ namespace indigo
         }
 
         float _get_square();
-        void flipped()
-        {
-            ;
-        }
+        void flipped() override;
+
 
 #ifdef M_LAYOUT_DEBUG
         void saveDebug();
@@ -607,10 +605,10 @@ namespace indigo
         // THERE
 
         // for whole graph
-        void _assignAbsoluteCoordinates(float bond_length);
+        void _assignAbsoluteCoordinates(float bond_length) override;
 
         // for components
-        void _calcMorganCodes();
+        void _calcMorganCodes() override;
 
         // assigning coordinates
         struct interval
@@ -629,7 +627,7 @@ namespace indigo
             }
         };
 
-        void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph);
+        void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) override;
         void _get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list);
         int _search_separated_component(Cycle& cycle, Array<interval>& interval_list);
         void _search_path(int start, int finish, Array<int>& path, int component_number);
@@ -667,11 +665,11 @@ namespace indigo
         void _splitCycle2(const Cycle& cycle, const Array<int>& cycle_vertex_types, ObjArray<Array<int>>& chains_ext) const;
 
         // border functions
-        void _getBorder(Cycle& border) const;
+        void _getBorder(Cycle& border) const override;
         void _getSurroundCycle(Cycle& cycle, Vec2f p) const;
         void _splitBorder(int v1, int v2, Array<int>& part1v, Array<int>& part1e, Array<int>& part2v, Array<int>& part2e) const;
-        bool _isPointOutside(const Vec2f& p) const;
-        bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const;
+        bool _isPointOutside(const Vec2f& p) const override;
+        bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const override;
 
         // geometry functions
         const float _energyOfPoint(Vec2f p) const;

@@ -19,11 +19,10 @@
 #pragma once
 
 #include "IndigoBaseMolecule.h"
-#include "IndigoQueryChemicalEntity.h"
 
 namespace indigo_cpp
 {
-    class IndigoQueryMolecule : public IndigoBaseMolecule, IndigoQueryChemicalEntity
+    class IndigoQueryMolecule : public IndigoBaseMolecule
     {
     public:
         IndigoQueryMolecule(int id, const IndigoSession& indigo);

@@ -33,12 +33,12 @@ void BingoAllocator::_create(const char* filename, size_t min_size, size_t max_s
     if ((mmf_ptr == 0) || (min_size == 0) || (min_size < sizeof(BingoAllocator)))
         throw Exception("BingoAllocator: Incorrect instance initialization");
 
-    _instances_lock.lock();
-    _instances.expand(index_id + 1);
-    _instances.reset(index_id, new BingoAllocator());
-    _instances_lock.unlock();
-
-    BingoAllocator* inst = _instances[index_id];
+    BingoAllocator* inst = new BingoAllocator();
+    {
+        std::lock_guard<std::mutex> _guard(_instances_lock);
+        _instances.expand(index_id + 1);
+        _instances.reset(index_id, inst);
+    }
 
     inst->_data_offset = alloc_off;
     _BingoAllocatorData* allocator_data = (_BingoAllocatorData*)(mmf_ptr + alloc_off);
@@ -71,12 +71,12 @@ void BingoAllocator::_load(const char* filename, size_t alloc_off, ObjArray<MMFi
     if ((mmf_ptr == 0) || (size == 0) || (size < sizeof(BingoAllocator)))
         throw Exception("BingoAllocator: Incorrect instance initialization");
 
-    _instances_lock.lock();
-    _instances.expand(index_id + 1);
-    _instances.reset(index_id, new BingoAllocator());
-    _instances_lock.unlock();
-
-    BingoAllocator* inst = _instances[index_id];
+    BingoAllocator* inst = new BingoAllocator();
+    {
+        std::lock_guard<std::mutex> guard(_instances_lock);
+        _instances.expand(index_id + 1);
+        _instances.reset(index_id, inst);
+    }
 
     _BingoAllocatorData* allocator_data = (_BingoAllocatorData*)(mmf_ptr + alloc_off);
 
@@ -101,13 +101,20 @@ void BingoAllocator::_load(const char* filename, size_t alloc_off, ObjArray<MMFi
 BingoAllocator* BingoAllocator::_getInstance()
 {
     int database_id = MMFStorage::getDatabaseId();
-    if (_instances.size() <= database_id)
-        throw Exception("BingoAllocator: Incorrect session id");
-
-    if (_instances[database_id] == 0)
+    BingoAllocator* result = nullptr;
+    {
+        std::lock_guard<std::mutex> _guard(_instances_lock);
+        if (_instances.size() <= database_id)
+        {
+            throw Exception("BingoAllocator: Incorrect session id");
+        }
+        result = _instances.at(database_id);
+    }
+    if (result == nullptr)
+    {
         throw Exception("BingoAllocator: instance is not initialized");
-
-    return _instances[database_id];
+    }
+    return result;
 }
 
 byte* BingoAllocator::_get(size_t file_id, size_t offset)

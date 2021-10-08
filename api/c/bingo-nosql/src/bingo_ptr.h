@@ -1,15 +1,16 @@
 #ifndef __bingo_ptr__
 #define __bingo_ptr__
 
+#include <new>
+#include <string>
+#include <thread>
+
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/profiling.h"
 #include "base_cpp/tlscont.h"
 #include "bingo_mmf.h"
-#include <new>
-#include <string>
-#include <thread>
 
 using namespace indigo;
 
@@ -466,9 +467,10 @@ namespace bingo
         size_t _data_offset;
 
         static PtrArray<BingoAllocator> _instances;
+        static std::mutex _instances_lock;
+
         std::string _filename;
         int _index_id;
-        static std::mutex _instances_lock;
 
         static void _create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, ObjArray<MMFile>* mm_files, int index_id);
 
