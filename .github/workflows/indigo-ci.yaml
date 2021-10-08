@@ -164,7 +164,7 @@ jobs:
         if: ${{ matrix.os == 'macos' }}
         run: python3 -m pip install dist/*macos*.whl
       - name: Test
-        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo
+        run: python3 api/tests/integration/test.py -i 10 -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -208,7 +208,7 @@ jobs:
           ls ${env:INDIGO_PATH} || echo failed
           echo ${INDIGO_PATH} || echo failed
           ls ${INDIGO_PATH} || echo failed
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -i 10 -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -275,20 +275,20 @@ jobs:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -i 10 -j junit_report.xml -e todo
       - name: Test macOS
         if: ${{ matrix.os == 'macos' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo -platform mac
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -i 10 -j junit_report.xml -e todo -platform mac
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo -platform ironwin
+        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -i 10 -j junit_report.xml -e todo -platform ironwin
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -407,7 +407,7 @@ jobs:
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests
         run: |
-          python api/tests/integration/test.py -j junit_report.xml -e todo -platform mingw
+          python api/tests/integration/test.py -i 10 -j junit_report.xml -e todo -platform mingw
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
