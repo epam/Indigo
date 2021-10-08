@@ -16,16 +16,17 @@
 * limitations under the License.
 ***************************************************************************/
 
-#pragma once
+#include <gtest/gtest.h>
 
-#include "IndigoBaseMolecule.h"
-#include "IndigoQueryChemicalEntity.h"
+#include <BingoNoSQL.h>
+#include <IndigoMolecule.h>
+#include <IndigoSession.h>
 
-namespace indigo_cpp
+using namespace indigo_cpp;
+
+TEST(Bingo, Create)
 {
-    class IndigoQueryMolecule : public IndigoBaseMolecule, IndigoQueryChemicalEntity
-    {
-    public:
-        IndigoQueryMolecule(int id, const IndigoSession& indigo);
-    };
+    const auto& session = IndigoSession();
+    auto bingo = BingoNoSQL::createDatabaseFile(session, "test.db", BingoNoSqlDataBaseType::MOLECULE, "");
+    bingo.close();
 }

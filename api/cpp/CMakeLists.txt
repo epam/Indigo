@@ -10,13 +10,12 @@ add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})
 target_include_directories(${PROJECT_NAME}-object
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(${PROJECT_NAME}-object
-        PUBLIC indigo indigo-inchi indigo-renderer)
+        PUBLIC indigo indigo-inchi indigo-renderer bingo-nosql)
 
 if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME} STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
     target_link_libraries(${PROJECT_NAME}
-            PRIVATE indigo indigo-inchi indigo-renderer
-            )
+            PRIVATE indigo indigo-inchi indigo-renderer bingo-nosql)
 endif ()
