@@ -44,8 +44,8 @@ namespace
     void testCreate()
     {
         const auto& smiles = randomSmiles();
-        const auto& session_1 = IndigoSession();
-        const auto& session_2 = IndigoSession();
+        auto session_1 = IndigoSession();
+        auto session_2 = IndigoSession();
         const auto& m_1 = session_1.loadMolecule(smiles);
         const auto& m_2 = session_2.loadMolecule(smiles);
         std::stringstream ss;
@@ -54,7 +54,7 @@ namespace
         const auto bingo_2 = BingoNoSQL::createDatabaseFile(session_2, ss.str() + "_2.db", BingoNoSqlDataBaseType::MOLECULE, "");
     }
 
-    void testInsert(const BingoNoSQL& bingo)
+    void testInsert(BingoNoSQL& bingo)
     {
         for (auto i = 0; i < 100; i++)
         {
@@ -62,7 +62,7 @@ namespace
         }
     }
 
-    void testInsertDelete(const BingoNoSQL& bingo)
+    void testInsertDelete(BingoNoSQL& bingo)
     {
         for (auto i = 0; i < 100; i++)
         {
@@ -96,13 +96,13 @@ TEST(BingoThreads, CreateMultipleThreads)
 
 TEST(BingoThreads, Insert)
 {
-    const auto& session = IndigoSession();
+    auto session = IndigoSession();
     auto bingo = BingoNoSQL::createDatabaseFile(session, "test.db", BingoNoSqlDataBaseType::MOLECULE, "");
     std::vector<std::thread> threads;
     threads.reserve(10);
     for (auto i = 0; i < 10; i++)
     {
-        threads.emplace_back(testInsert, std::cref(bingo));
+        threads.emplace_back(testInsert, std::ref(bingo));
     }
     for (auto& thread : threads)
     {
@@ -112,13 +112,13 @@ TEST(BingoThreads, Insert)
 
 TEST(BingoThreads, InsertDelete)
 {
-    const auto& session = IndigoSession();
+    auto session = IndigoSession();
     auto bingo = BingoNoSQL::createDatabaseFile(session, "test.db", BingoNoSqlDataBaseType::MOLECULE, "");
     std::vector<std::thread> threads;
     threads.reserve(10);
     for (auto i = 0; i < 10; i++)
     {
-        threads.emplace_back(testInsertDelete, std::cref(bingo));
+        threads.emplace_back(testInsertDelete, std::ref(bingo));
     }
     for (auto& thread : threads)
     {

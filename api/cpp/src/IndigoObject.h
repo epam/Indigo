@@ -28,7 +28,9 @@ namespace indigo_cpp
         const int id;
         const IndigoSession& indigo;
 
-        IndigoObject(int id, const IndigoSession& indigo);
         virtual ~IndigoObject();
+
+    protected:
+        IndigoObject(int id, const IndigoSession& indigo);
     };
 }

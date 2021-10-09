@@ -42,8 +42,8 @@ namespace
     void testCanonicalSmiles()
     {
         const auto& smiles = randomSmiles();
-        const auto& session_1 = IndigoSession();
-        const auto& session_2 = IndigoSession();
+        auto session_1 = IndigoSession();
+        auto session_2 = IndigoSession();
         const auto& m_1 = session_1.loadMolecule(smiles);
         const auto& m_2 = session_2.loadMolecule(smiles);
         const auto& result_1 = m_1.smiles();

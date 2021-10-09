@@ -21,6 +21,9 @@
 #include <IndigoMolecule.h>
 #include <IndigoQueryMolecule.h>
 #include <IndigoSession.h>
+#include <IndigoSDFileIterator.h>
+
+#include "common.h"
 
 using namespace indigo_cpp;
 
@@ -37,7 +40,7 @@ TEST(Basic, TwoSessionIdle)
 
 TEST(Basic, Molfile)
 {
-    const auto& session = IndigoSession();
+    auto session = IndigoSession();
     const auto& m = session.loadMolecule("C");
     const auto& molfile = m.molfile();
 
@@ -47,6 +50,21 @@ TEST(Basic, Molfile)
 // TODO: This causes a memory leak that could be catched by Valgrind
 TEST(Basic, LoadQueryMolecule)
 {
-    const auto& session = IndigoSession();
+    auto session = IndigoSession();
     const auto& m_1 = session.loadQueryMolecule("* |$Q_e$|");
+}
+
+TEST(Basic, IterateSDFile)
+{
+    auto session = IndigoSession();
+    auto counter = 0;
+    std::vector<IndigoMolecule> molecules;
+    for (const auto& molecule : session.iterateSDFile(dataPath("molecules/basic/Compound_0000001_0000250.sdf.gz")))
+    {
+        EXPECT_NE("", molecule.smiles().c_str());
+        ++counter;
+        molecules.emplace_back(molecule);
+    }
+    EXPECT_EQ(counter, 245);
+    EXPECT_EQ(molecules.size(), 245);
 }

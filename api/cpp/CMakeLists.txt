@@ -8,6 +8,7 @@ file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
 add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})
 # target_compile_definitions(${PROJECT_NAME}-object PRIVATE INDIGO_CPP_DEBUG=1)
 target_include_directories(${PROJECT_NAME}-object
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(${PROJECT_NAME}-object
         PUBLIC indigo indigo-inchi indigo-renderer bingo-nosql)

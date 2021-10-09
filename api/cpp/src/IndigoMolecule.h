@@ -26,5 +26,6 @@ namespace indigo_cpp
     {
     public:
         IndigoMolecule(int id, const IndigoSession& indigo);
+        IndigoMolecule(const IndigoMolecule&);
     };
 }

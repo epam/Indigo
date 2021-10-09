@@ -22,6 +22,8 @@
 
 #include "IndigoSession.h"
 
+#define INDIGO_CPP_DEBUG
+
 #ifdef INDIGO_CPP_DEBUG
 #include <iostream>
 #include <thread>

@@ -26,7 +26,7 @@ using namespace indigo_cpp;
 
 TEST(InchiBasic, GetInChI)
 {
-    const auto& session = IndigoSession();
+    auto session = IndigoSession();
     const auto& inchi = IndigoInChI(session);
     const auto& m = session.loadMolecule("C");
     const auto& result = inchi.getInChI(m);

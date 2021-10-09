@@ -43,9 +43,9 @@ namespace
     void testRender()
     {
         const auto& smiles = randomSmiles();
-        const auto& session_1 = IndigoSession();
+        auto session_1 = IndigoSession();
+        auto session_2 = IndigoSession();
         const auto& renderer_1 = IndigoRenderer(session_1);
-        const auto& session_2 = IndigoSession();
         const auto& renderer_2 = IndigoRenderer(session_2);
         const auto& m_1 = session_1.loadMolecule(smiles);
         const auto& m_2 = session_2.loadMolecule(smiles);

@@ -27,8 +27,6 @@ namespace indigo_cpp
     class IndigoChemicalEntity : public IndigoObject
     {
     public:
-        IndigoChemicalEntity(int id, const IndigoSession& indigo);
-
         void aromatize() const;
 
         void dearomatize() const;
@@ -44,5 +42,9 @@ namespace indigo_cpp
         std::string inchi() const;
 
         virtual std::string ctfile() const = 0;
+
+    protected:
+        IndigoChemicalEntity(int id, const IndigoSession& indigo);
+        friend class IndigoSession;
     };
 } // namespace indigo_cpp

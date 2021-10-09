@@ -21,7 +21,7 @@ namespace
     }
 }
 
-BingoNoSQL::BingoNoSQL(const IndigoSession& indigo, const int id) : indigo(indigo), id(id)
+BingoNoSQL::BingoNoSQL(IndigoSession& indigo, const int id) : indigo(indigo), id(id)
 {
 }
 
@@ -30,13 +30,13 @@ BingoNoSQL::~BingoNoSQL()
     close();
 }
 
-BingoNoSQL BingoNoSQL::createDatabaseFile(const IndigoSession& session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options)
+BingoNoSQL BingoNoSQL::createDatabaseFile(IndigoSession& session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options)
 {
     session.setSessionId();
     return {session, session._checkResult(bingoCreateDatabaseFile(path.c_str(), bingoNoSqlDataBaseTypeToCharArray(type), options.c_str()))};
 }
 
-BingoNoSQL BingoNoSQL::loadDatabaseFile(const IndigoSession& session, const std::string& path, const std::string& options)
+BingoNoSQL BingoNoSQL::loadDatabaseFile(IndigoSession& session, const std::string& path, const std::string& options)
 {
     session.setSessionId();
     int id = bingoLoadDatabaseFile(path.c_str(), options.c_str());

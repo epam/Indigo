@@ -21,20 +21,18 @@ namespace indigo_cpp
         BingoNoSQL& operator=(BingoNoSQL&&) = delete;
         ~BingoNoSQL();
 
-        static BingoNoSQL createDatabaseFile(const IndigoSession& session, const std::string& path, const BingoNoSqlDataBaseType& type,
-                                             const std::string& options);
-        static BingoNoSQL loadDatabaseFile(const IndigoSession& session, const std::string& path, const std::string& options);
+        static BingoNoSQL createDatabaseFile(IndigoSession& session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options);
+        static BingoNoSQL loadDatabaseFile(IndigoSession& session, const std::string& path, const std::string& options);
 
         void close();
-
 
         int insertRecord(const IndigoChemicalEntity& entity) const;
         void deleteRecord(int recordId) const;
 
-        const IndigoSession& indigo;
+        IndigoSession& indigo;
 
     private:
-        BingoNoSQL(const IndigoSession& indigo, int e);
+        BingoNoSQL(IndigoSession& indigo, int e);
 
         int id;
     };

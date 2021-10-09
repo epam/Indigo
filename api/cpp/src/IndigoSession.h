@@ -25,6 +25,7 @@ namespace indigo_cpp
     class IndigoMolecule;
     class IndigoQueryMolecule;
     class IndigoWriteBuffer;
+    class IndigoSDFileIterator;
 
     class IndigoSession
     {
@@ -54,6 +55,8 @@ namespace indigo_cpp
         IndigoMolecule loadMolecule(const std::string& data) const;
         IndigoQueryMolecule loadQueryMolecule(const std::string& data) const;
         IndigoWriteBuffer writeBuffer() const;
+
+        IndigoSDFileIterator iterateSDFile(const std::string& path) const;
 
     private:
         const unsigned long long id;

@@ -90,6 +90,7 @@ bingo/sqlserver/Resources/bingo-core-c.dll
 api/tests/integration/**/out
 api/tests/integration/_c/test.h
 api/c/tests/unit/common.h
+api/cpp/tests/common.h
 
 third_party/cairo/src/config.h
 third_party/cairo/src/cairo-features.h.h

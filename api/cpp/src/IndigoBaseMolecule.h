@@ -24,8 +24,11 @@ namespace indigo_cpp
 {
     class IndigoBaseMolecule : public IndigoChemicalEntity
     {
-    public:
+    protected:
         IndigoBaseMolecule(int id, const IndigoSession& indigo);
+        friend class IndigoSession;
+
+    public:
         std::string molfile() const;
         std::string ctfile() const override;
     };

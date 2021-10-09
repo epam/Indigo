@@ -26,7 +26,7 @@ using namespace indigo_cpp;
 
 TEST(Bingo, Create)
 {
-    const auto& session = IndigoSession();
+    auto session = IndigoSession();
     auto bingo = BingoNoSQL::createDatabaseFile(session, "test.db", BingoNoSqlDataBaseType::MOLECULE, "");
     bingo.close();
 }

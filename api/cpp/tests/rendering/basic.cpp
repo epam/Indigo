@@ -26,7 +26,7 @@ using namespace indigo_cpp;
 
 TEST(RenderingBasic, BasicSVG)
 {
-    const auto& session = IndigoSession();
+    auto session = IndigoSession();
     const auto& renderer = IndigoRenderer(session);
     const auto& m = session.loadMolecule("C");
     const auto& result = renderer.svg(m);

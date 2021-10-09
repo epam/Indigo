@@ -23,6 +23,7 @@
 #include "IndigoException.h"
 #include "IndigoMolecule.h"
 #include "IndigoQueryMolecule.h"
+#include "IndigoSDFileIterator.h"
 #include "IndigoWriteBuffer.h"
 
 using namespace indigo_cpp;
@@ -143,4 +144,10 @@ IndigoWriteBuffer IndigoSession::writeBuffer() const
 {
     setSessionId();
     return {_checkResult(indigoWriteBuffer()), *this};
+}
+
+IndigoSDFileIterator IndigoSession::iterateSDFile(const std::string& path) const
+{
+    setSessionId();
+    return {_checkResult(indigoIterateSDFile(path.c_str())), *this};
 }
