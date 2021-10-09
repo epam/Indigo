@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include "IndigoBaseMolecule.h"
 
 namespace indigo_cpp
@@ -28,4 +30,6 @@ namespace indigo_cpp
         IndigoMolecule(int id, const IndigoSession& indigo);
         IndigoMolecule(const IndigoMolecule&);
     };
+
+    using IndigoMoleculeSPtr = std::shared_ptr<IndigoMolecule>;
 }

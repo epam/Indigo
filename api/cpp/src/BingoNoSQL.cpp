@@ -17,6 +17,8 @@ namespace
             return "molecule";
         case BingoNoSqlDataBaseType::REACTION:
             return "reaction";
+        default:
+            return "";
         }
     }
 }

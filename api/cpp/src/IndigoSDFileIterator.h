@@ -2,9 +2,8 @@
 
 #include <memory>
 
-//#include "IndigoMolecule.h"
+#include "IndigoMolecule.h"
 #include "IndigoObject.h"
-//#include "IndigoSession.h"
 
 namespace indigo_cpp
 {
@@ -14,7 +13,7 @@ namespace indigo_cpp
     class IndigoSDFileIterator : public IndigoObject
     {
     private:
-        std::unique_ptr<IndigoMolecule> _current = nullptr;
+        IndigoMoleculeSPtr _current = nullptr;
 
     public:
         class iterator
@@ -23,14 +22,14 @@ namespace indigo_cpp
             IndigoSDFileIterator* _obj;
 
         public:
-            using value_type = IndigoMolecule;
-            using reference = const value_type&;
+            using value_type = IndigoMoleculeSPtr;
+            using reference = value_type&;
             using pointer = const value_type*;
             using iterator_category = std::input_iterator_tag;
 
             explicit iterator(IndigoSDFileIterator* obj);
 
-            reference operator*() const;
+            reference operator*();
             iterator& operator++();
 
             bool operator==(iterator rhs) const;

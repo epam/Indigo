@@ -1,10 +1,7 @@
 #include "IndigoSDFileIterator.h"
 
-#include <memory>
-
 #include <indigo.h>
 
-#include "IndigoMolecule.h"
 #include "IndigoSession.h"
 
 using namespace indigo_cpp;
@@ -13,9 +10,9 @@ IndigoSDFileIterator::iterator::iterator(IndigoSDFileIterator* obj) : _obj{obj}
 {
 }
 
-IndigoSDFileIterator::iterator::reference IndigoSDFileIterator::iterator::operator*() const
+IndigoSDFileIterator::iterator::reference IndigoSDFileIterator::iterator::operator*()
 {
-    return *_obj->_current;
+    return _obj->_current;
 }
 
 IndigoSDFileIterator::iterator& IndigoSDFileIterator::iterator::operator++()
@@ -67,7 +64,7 @@ void IndigoSDFileIterator::next()
     }
     else
     {
-        _current = std::make_unique<IndigoMolecule>(nextId, indigo);
+        _current = std::make_shared<IndigoMolecule>(nextId, indigo);
     }
 }
 

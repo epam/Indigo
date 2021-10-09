@@ -25,6 +25,7 @@
 #endif
 
 #include <memory>
+#include <mutex>
 #include <utility>
 
 #include "indigo.h"

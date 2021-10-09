@@ -58,10 +58,10 @@ TEST(Basic, IterateSDFile)
 {
     auto session = IndigoSession();
     auto counter = 0;
-    std::vector<IndigoMolecule> molecules;
+    std::vector<IndigoMoleculeSPtr> molecules;
+    molecules.reserve(245);
     for (const auto& molecule : session.iterateSDFile(dataPath("molecules/basic/Compound_0000001_0000250.sdf.gz")))
     {
-        EXPECT_NE("", molecule.smiles().c_str());
         ++counter;
         molecules.emplace_back(molecule);
     }
