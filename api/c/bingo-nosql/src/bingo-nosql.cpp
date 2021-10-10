@@ -17,17 +17,16 @@
  ***************************************************************************/
 
 #include "bingo-nosql.h"
-#include "bingo_object.h"
 
+#include <cstdio>
+#include <string>
+#include <shared_mutex>
+
+#include "bingo_index.h"
 #include "bingo_internal.h"
 #include "indigo_internal.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
-
-#include "bingo_index.h"
-
-#include <stdio.h>
-#include <string>
 
 using namespace indigo;
 using namespace bingo;
@@ -37,7 +36,7 @@ IMPL_EXCEPTION(indigo, BingoException, "bingo");
 
 static PtrPool<Index> _bingo_instances;
 static std::mutex _bingo_lock;
-static PtrArray<DatabaseLockData> _lockers;
+static PtrArray<std::shared_timed_mutex> _lockers;
 static PtrPool<Matcher> _searches;
 static std::mutex _searches_lock;
 static Array<int> _searches_db;
@@ -93,8 +92,7 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
     {
         std::lock_guard<std::mutex> bingo_locker(_bingo_lock);
         _bingo_instances[db_id] = context.release();
-        _lockers.expand(db_id + 1);
-        _lockers[db_id] = new DatabaseLockData();
+        _lockers.add(new std::shared_timed_mutex());
     }
 
     return db_id;
@@ -289,7 +287,7 @@ CEXPORT int bingoDeleteRecord(int db, int id)
     {
         Index& bingo_index = _bingo_instances.ref(db);
 
-        WriteLock wlock(*_lockers[db]);
+        std::unique_lock<std::shared_timed_mutex> wlock(*_lockers[db]);
         bingo_index.remove(id);
 
         return id;
@@ -303,7 +301,7 @@ CEXPORT int bingoGetRecordObj(int db, int id)
     {
         Index& bingo_index = _bingo_instances.ref(db);
 
-        ReadLock rlock(*_lockers[db]);
+        std::shared_lock<std::shared_timed_mutex> wlock(*_lockers[db]);
 
         int cf_len;
         const byte* cf_buf = bingo_index.getObjectCf(id, cf_len);
@@ -343,7 +341,7 @@ CEXPORT int bingoOptimize(int db)
     {
         Index& bingo_index = _bingo_instances.ref(db);
 
-        WriteLock wlock(*_lockers[db]);
+        std::unique_lock<std::shared_timed_mutex> wlock(*_lockers[db]);
         bingo_index.optimize();
 
         return 0;
@@ -719,7 +717,7 @@ CEXPORT int bingoNext(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        ReadLock rlock(*_lockers[_searches_db[search_obj]]);
+        std::shared_lock<std::shared_timed_mutex> wlock(*_lockers[_searches_db[search_obj]]);
         return getMatcher(search_obj).next();
     }
     BINGO_END(-1);

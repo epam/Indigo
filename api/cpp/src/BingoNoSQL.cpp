@@ -66,3 +66,10 @@ void BingoNoSQL::deleteRecord(const int recordId) const
     indigo.setSessionId();
     indigo._checkResult(bingoDeleteRecord(id, recordId));
 }
+
+
+BingoObject BingoNoSQL::searchSub(const IndigoQueryMolecule& query, const std::string& options = "")
+{
+    indigo.setSessionId();
+    return BingoObject(indigo.checkResult(bingoSearchSub(id, query.id, options)), indigo);
+}

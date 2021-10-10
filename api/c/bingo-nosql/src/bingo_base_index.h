@@ -1,11 +1,12 @@
 #ifndef __bingo_base_index__
 #define __bingo_base_index__
 
+#include <shared_mutex>
+
 #include "bingo_cf_storage.h"
 #include "bingo_exact_storage.h"
 #include "bingo_fp_storage.h"
 #include "bingo_gross_storage.h"
-#include "bingo_lock.h"
 #include "bingo_mapping.h"
 #include "bingo_mmf_storage.h"
 #include "bingo_object.h"
@@ -45,9 +46,9 @@ namespace bingo
 
         virtual void load(const char* location, const char* options, int index_id) = 0;
 
-        virtual int add(IndexObject& obj, int obj_id, DatabaseLockData& lock_data) = 0;
+        virtual int add(IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data) = 0;
 
-        virtual int addWithExtFP(IndexObject& obj, int obj_id, DatabaseLockData& lock_data, IndigoObject& fp) = 0;
+        virtual int addWithExtFP(IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data, IndigoObject& fp) = 0;
 
         virtual void optimize() = 0;
 
@@ -86,9 +87,9 @@ namespace bingo
 
         void load(const char* location, const char* options, int index_id) override;
 
-        int add(IndexObject& obj, int obj_id, DatabaseLockData& lock_data) override;
+        int add(IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data) override;
 
-        int addWithExtFP(IndexObject& obj, int obj_id, DatabaseLockData& lock_data, IndigoObject& fp) override;
+        int addWithExtFP(IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data, IndigoObject& fp) override;
 
         void optimize() override;
 

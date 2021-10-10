@@ -1,9 +1,11 @@
+#include "IndigoQueryMolecule.h"
 #include <string>
 
 namespace indigo_cpp
 {
     class IndigoChemicalEntity;
     class IndigoSession;
+    class BingoObject;
 
     enum class BingoNoSqlDataBaseType
     {
@@ -29,11 +31,18 @@ namespace indigo_cpp
         int insertRecord(const IndigoChemicalEntity& entity) const;
         void deleteRecord(int recordId) const;
 
+        BingoObject searchSub(const IndigoQueryMolecule& query, const std::string& options = "");
+
         IndigoSession& indigo;
 
     private:
         BingoNoSQL(IndigoSession& indigo, int e);
 
         int id;
+    };
+
+    class BingoObject
+    {
+        const Indigo&;
     };
 }

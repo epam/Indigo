@@ -156,7 +156,7 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
     GrossStorage::load(_gross_storage, _header.ptr()->gross_offset);
 }
 
-int BaseIndex::add(/* const */ IndexObject& obj, int obj_id, DatabaseLockData& lock_data)
+int BaseIndex::add(/* const */ IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data)
 {
     if (_read_only)
         throw Exception("insert fail: Read only index can't be changed");
@@ -164,7 +164,7 @@ int BaseIndex::add(/* const */ IndexObject& obj, int obj_id, DatabaseLockData& l
     BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     {
-        WriteLock wlock(lock_data);
+        std::shared_lock<std::shared_timed_mutex> wlock(lock_data);
         if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
             throw Exception("insert fail: This id was already used");
     }
@@ -175,11 +175,11 @@ int BaseIndex::add(/* const */ IndexObject& obj, int obj_id, DatabaseLockData& l
         _prepareIndexData(obj, _obj_data);
     }
 
-    WriteLock wlock(lock_data);
+    std::unique_lock<std::shared_timed_mutex> wlock(lock_data);
     profTimerStart(t_after, "exclusive_write");
-
     {
         profTimerStart(t_in, "add_obj_data");
+        // TODO: CORRECT MOVE?
         _insertIndexData(_obj_data);
     }
 
@@ -207,7 +207,7 @@ int BaseIndex::add(/* const */ IndexObject& obj, int obj_id, DatabaseLockData& l
     return obj_id;
 }
 
-int BaseIndex::addWithExtFP(/* const */ IndexObject& obj, int obj_id, DatabaseLockData& lock_data, IndigoObject& fp)
+int BaseIndex::addWithExtFP(/* const */ IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data, IndigoObject& fp)
 {
     if (_read_only)
         throw Exception("insert fail: Read only index can't be changed");
@@ -215,7 +215,7 @@ int BaseIndex::addWithExtFP(/* const */ IndexObject& obj, int obj_id, DatabaseLo
     BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     {
-        WriteLock wlock(lock_data);
+        std::shared_lock<std::shared_timed_mutex> wlock(lock_data);
         if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
             throw Exception("insert fail: This id was already used");
     }
@@ -226,7 +226,7 @@ int BaseIndex::addWithExtFP(/* const */ IndexObject& obj, int obj_id, DatabaseLo
         _prepareIndexDataWithExtFP(obj, _obj_data, fp);
     }
 
-    WriteLock wlock(lock_data);
+    std::unique_lock<std::shared_timed_mutex> wlock(lock_data);
     profTimerStart(t_after, "exclusive_write");
 
     {
