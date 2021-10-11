@@ -4,6 +4,7 @@
 #include "IndigoMolecule.h"
 #include "IndigoQueryMolecule.h"
 #include "IndigoSession.h"
+#include "IndigoSimilarityMetric.h"
 
 #include <string>
 
@@ -18,7 +19,7 @@ namespace indigo_cpp
         BingoNoSQL() = delete;
         BingoNoSQL(const BingoNoSQL&) = delete;
         BingoNoSQL& operator=(const BingoNoSQL&) = delete;
-        BingoNoSQL(BingoNoSQL&&) = default;
+        BingoNoSQL(BingoNoSQL&&) noexcept = default;
         BingoNoSQL& operator=(BingoNoSQL&&) = delete;
         ~BingoNoSQL();
 
@@ -33,6 +34,8 @@ namespace indigo_cpp
         void deleteRecord(int recordId);
 
         BingoResultIterator<target_t> searchSub(const query_t& query, const std::string& options = "");
+        BingoResultIterator<target_t> searchSim(const target_t& query, double min, double max = 1.0,
+                                                IndigoSimilarityMetric metric = IndigoSimilarityMetric::TANIMOTO);
 
         IndigoSessionPtr session;
 

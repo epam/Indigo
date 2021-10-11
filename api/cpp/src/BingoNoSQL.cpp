@@ -22,6 +22,20 @@ namespace
     }
 }
 
+template <typename target_t, typename query_t> BingoNoSQL<target_t, query_t>::BingoNoSQL(IndigoSessionPtr session, int id) : session(std::move(session)), id(id)
+{
+}
+
+template <typename target_t, typename query_t> BingoNoSQL<target_t, query_t>::~BingoNoSQL()
+{
+    if (id >= 0)
+    {
+        session->setSessionId();
+        session->_checkResult(bingoCloseDatabase(id));
+        id = -1;
+    }
+}
+
 template <typename target_t, typename query_t>
 BingoNoSQL<target_t, query_t> BingoNoSQL<target_t, query_t>::createDatabaseFile(IndigoSessionPtr session, const std::string& path, const std::string& options)
 {
@@ -67,18 +81,12 @@ BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSub(const que
     return {session->_checkResult(bingoSearchSub(id, query.id, options.c_str())), session};
 }
 
-template <typename target_t, typename query_t> BingoNoSQL<target_t, query_t>::BingoNoSQL(IndigoSessionPtr session, int id) : session(std::move(session)), id(id)
+template <typename target_t, typename query_t>
+BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSim(const target_t& query, const double min, const double max,
+                                                                       const IndigoSimilarityMetric metric)
 {
-}
-
-template <typename target_t, typename query_t> BingoNoSQL<target_t, query_t>::~BingoNoSQL()
-{
-    if (id >= 0)
-    {
-        session->setSessionId();
-        session->_checkResult(bingoCloseDatabase(id));
-        id = -1;
-    }
+    session->setSessionId();
+    return {session->_checkResult(bingoSearchSim(id, query.id, min, max, to_string(metric))), session};
 }
 
 template class indigo_cpp::BingoNoSQL<IndigoMolecule, IndigoQueryMolecule>;

@@ -32,40 +32,54 @@ TEST(Bingo, Create)
     auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
 }
 
-TEST(Bingo, InsertSearchDelete)
+TEST(Bingo, CreateClose)
+{
+    auto session = IndigoSession::create();
+    auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
+    bingo.close();
+}
+
+TEST(Bingo, InsertSearchSubDelete)
 {
     auto session = IndigoSession::create();
     auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
     auto insert_counter = 0;
-    for (const auto& m : bingo.session->iterateSDFile(dataPath("molecules/basic/zinc-slice.sdf.gz")))
+    for (const auto& item : {"C", "CC", "CCC"})
     {
-        bingo.insertRecord(*m);
+        bingo.insertRecord(session->loadMolecule(item));
         ++insert_counter;
     }
-    EXPECT_EQ(insert_counter, 992);
+    EXPECT_EQ(insert_counter, 3);
 
-    // Search common
     {
         auto search_counter = 0;
         for (const auto& result : bingo.searchSub(session->loadQueryMolecule("C")))
         {
             ++search_counter;
         }
-        EXPECT_EQ(search_counter, 992);
+        EXPECT_EQ(search_counter, 3);
     }
 
-    // Search something less common
     {
         auto search_counter = 0;
-        for (const auto& result : bingo.searchSub(session->loadQueryMolecule("C1=CN=CC=C1")))
+        for (const auto& result : bingo.searchSub(session->loadQueryMolecule("CC")))
         {
             ++search_counter;
         }
-        EXPECT_LT(search_counter, 992);
+        EXPECT_EQ(search_counter, 2);
     }
 
     {
-        for (int i = 0; i < 992; i++)
+        auto search_counter = 0;
+        for (const auto& result : bingo.searchSub(session->loadQueryMolecule("CO")))
+        {
+            ++search_counter;
+        }
+        EXPECT_EQ(search_counter, 0);
+    }
+
+    {
+        for (int i = 0; i < 3; i++)
         {
             bingo.deleteRecord(i);
         }
@@ -75,5 +89,34 @@ TEST(Bingo, InsertSearchDelete)
             ++search_counter;
         }
         EXPECT_EQ(search_counter, 0);
+    }
+}
+
+TEST(Bingo, SearchSim)
+{
+    auto session = IndigoSession::create();
+    auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
+
+    for (const auto& item : {"C1=CC=CC=C1", "C1=CN=CC=C1"})
+    {
+        bingo.insertRecord(session->loadMolecule(item));
+    }
+    const auto m = session->loadMolecule("C1=CC=CC=C1");
+
+    {
+        auto counter = 0;
+        for (const auto& result : bingo.searchSim(m, 0.4))
+        {
+            ++counter;
+        }
+        EXPECT_EQ(counter, 1);
+    }
+    {
+        auto counter = 0;
+        for (const auto& result : bingo.searchSim(m, 0.3))
+        {
+            ++counter;
+        }
+        EXPECT_EQ(counter, 2);
     }
 }

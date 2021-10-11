@@ -80,7 +80,7 @@ int IndigoSession::_checkResult(int result) const
 
 double IndigoSession::_checkResultFloat(double result) const
 {
-    if (result < 0.5)
+    if (result < -0.5)
     {
         setSessionId();
         throw(IndigoException(indigoGetLastError()));
