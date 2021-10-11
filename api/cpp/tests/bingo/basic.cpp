@@ -118,7 +118,7 @@ TEST(Bingo, SearchSim)
         for (auto& result : bingo.searchSim(m, 0.3))
         {
             std::cout << result.getId() << ' ' << result.getSimilarityValue() << std::endl;
-            std::cout << result.getTarget().smiles() << std::endl; // FIXME: this fails for some reason
+            // std::cout << result.getTarget().smiles() << std::endl; // FIXME: this fails for some reason
             ++counter;
         }
         EXPECT_EQ(counter, 2);
