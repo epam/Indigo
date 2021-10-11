@@ -1,19 +1,18 @@
+#pragma once
+
+#include "BingoResultIterator.h"
+#include "IndigoMolecule.h"
 #include "IndigoQueryMolecule.h"
+#include "IndigoSession.h"
+
 #include <string>
 
 namespace indigo_cpp
 {
     class IndigoChemicalEntity;
     class IndigoSession;
-    class BingoObject;
 
-    enum class BingoNoSqlDataBaseType
-    {
-        MOLECULE,
-        REACTION
-    };
-
-    class BingoNoSQL
+    template <typename target_t, typename query_t> class BingoNoSQL
     {
     public:
         BingoNoSQL() = delete;
@@ -23,15 +22,17 @@ namespace indigo_cpp
         BingoNoSQL& operator=(BingoNoSQL&&) = delete;
         ~BingoNoSQL();
 
-        static BingoNoSQL createDatabaseFile(IndigoSessionPtr session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options);
-        static BingoNoSQL loadDatabaseFile(IndigoSessionPtr session, const std::string& path, const std::string& options);
+        static BingoNoSQL createDatabaseFile(IndigoSessionPtr session, const std::string& path, const std::string& options = "");
+
+        static BingoNoSQL loadDatabaseFile(IndigoSessionPtr session, const std::string& path, const std::string& options = "");
 
         void close();
 
-        int insertRecord(const IndigoChemicalEntity& entity) const;
-        void deleteRecord(int recordId) const;
+        int insertRecord(const target_t& entity);
 
-        BingoObject searchSub(const IndigoQueryMolecule& query, const std::string& options = "");
+        void deleteRecord(int recordId);
+
+        BingoResultIterator<target_t> searchSub(const query_t& query, const std::string& options = "");
 
         IndigoSessionPtr session;
 
@@ -41,12 +42,5 @@ namespace indigo_cpp
         int id;
     };
 
-    class BingoObject
-    {
-    public:
-        BingoObject(int id, IndigoSessionPtr session);
-    private:
-        int id;
-        IndigoSessionPtr session;
-    };
+    using BingoMolecule = BingoNoSQL<IndigoMolecule, IndigoQueryMolecule>;
 }

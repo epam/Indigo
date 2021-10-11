@@ -2,51 +2,43 @@
 
 #include <bingo-nosql.h>
 
-#include "IndigoChemicalEntity.h"
-#include "IndigoSession.h"
-
 using namespace indigo_cpp;
 
 namespace
 {
-    const char* bingoNoSqlDataBaseTypeToCharArray(const BingoNoSqlDataBaseType& type)
+    template <typename target_t, typename query_t> constexpr const char* getDBTypeString()
     {
-        switch (type)
+        if (std::is_same<target_t, IndigoMolecule>::value)
         {
-        case BingoNoSqlDataBaseType::MOLECULE:
+            static_assert(std::is_same<query_t, IndigoQueryMolecule>::value, "");
             return "molecule";
-        case BingoNoSqlDataBaseType::REACTION:
-            return "reaction";
-        default:
-            return "";
         }
+        //    else if (std::is_same<target_t, IndigoReaction>::value)
+        //    {
+        //        static_assert(std::is_same<query_t, IndigoQueryReaction>::value, "");
+        //        return "reaction";
+        //    }
+        throw std::runtime_error("Unknown DB type");
     }
 }
 
-BingoNoSQL::BingoNoSQL(IndigoSessionPtr session, const int id) : session(std::move(session)), id(id)
-{
-}
-
-BingoNoSQL::~BingoNoSQL()
-{
-    close();
-}
-
-BingoNoSQL BingoNoSQL::createDatabaseFile(IndigoSessionPtr session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options)
+template <typename target_t, typename query_t>
+BingoNoSQL<target_t, query_t> BingoNoSQL<target_t, query_t>::createDatabaseFile(IndigoSessionPtr session, const std::string& path, const std::string& options)
 {
     session->setSessionId();
-    int id = session->_checkResult(bingoCreateDatabaseFile(path.c_str(), bingoNoSqlDataBaseTypeToCharArray(type), options.c_str()));
+    int id = session->_checkResult(bingoCreateDatabaseFile(path.c_str(), getDBTypeString<target_t, query_t>(), options.c_str()));
     return {std::move(session), id};
 }
 
-BingoNoSQL BingoNoSQL::loadDatabaseFile(IndigoSessionPtr session, const std::string& path, const std::string& options)
+template <typename target_t, typename query_t>
+BingoNoSQL<target_t, query_t> BingoNoSQL<target_t, query_t>::loadDatabaseFile(IndigoSessionPtr session, const std::string& path, const std::string& options)
 {
     session->setSessionId();
     int id = session->_checkResult(bingoLoadDatabaseFile(path.c_str(), options.c_str()));
     return {std::move(session), id};
 }
 
-void BingoNoSQL::close()
+template <typename target_t, typename query_t> void BingoNoSQL<target_t, query_t>::close()
 {
     if (id >= 0)
     {
@@ -56,24 +48,37 @@ void BingoNoSQL::close()
     }
 }
 
-int BingoNoSQL::insertRecord(const IndigoChemicalEntity& entity) const
+template <typename target_t, typename query_t> int BingoNoSQL<target_t, query_t>::insertRecord(const target_t& entity)
 {
     session->setSessionId();
     return session->_checkResult(bingoInsertRecordObj(id, entity.id));
 }
 
-void BingoNoSQL::deleteRecord(const int recordId) const
+template <typename target_t, typename query_t> void BingoNoSQL<target_t, query_t>::deleteRecord(int recordId)
 {
     session->setSessionId();
     session->_checkResult(bingoDeleteRecord(id, recordId));
 }
 
-BingoObject BingoNoSQL::searchSub(const IndigoQueryMolecule& query, const std::string& options)
+template <typename target_t, typename query_t>
+BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSub(const query_t& query, const std::string& options)
 {
     session->setSessionId();
     return {session->_checkResult(bingoSearchSub(id, query.id, options.c_str())), session};
 }
 
-BingoObject::BingoObject(int id, IndigoSessionPtr session) : id(id), session(std::move(session))
+template <typename target_t, typename query_t> BingoNoSQL<target_t, query_t>::BingoNoSQL(IndigoSessionPtr session, int id) : session(std::move(session)), id(id)
 {
 }
+
+template <typename target_t, typename query_t> BingoNoSQL<target_t, query_t>::~BingoNoSQL()
+{
+    if (id >= 0)
+    {
+        session->setSessionId();
+        session->_checkResult(bingoCloseDatabase(id));
+        id = -1;
+    }
+}
+
+template class indigo_cpp::BingoNoSQL<IndigoMolecule, IndigoQueryMolecule>;
