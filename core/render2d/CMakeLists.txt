@@ -10,6 +10,7 @@ get_target_property(IndigoCore_INCLUDE_DIRECTORIES indigo-core INCLUDE_DIRECTORI
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${IndigoCore_INCLUDE_DIRECTORIES}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
+target_link_libraries(${PROJECT_NAME} PUBLIC object_threadsafe)
 
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}

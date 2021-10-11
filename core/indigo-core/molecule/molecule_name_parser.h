@@ -242,10 +242,7 @@ namespace indigo
         class Parse : public NonCopyable
         {
         public:
-            inline explicit Parse(const std::string& in)
-            {
-                input = in;
-            }
+            inline explicit Parse(const std::string& in, const MoleculeNameParser& mnp) : input(in), mnp(mnp) {};
 
             /*
             Performs by-symbol input scan, determines basic tokens
@@ -264,6 +261,7 @@ namespace indigo
             Lexemes lexemes;                  // a list of lexemes that form the input
             Failures failures;                // a list of fragments failed to having being parsed
 
+            const MoleculeNameParser& mnp;
         private:
             DECL_ERROR;
 
@@ -719,8 +717,6 @@ namespace indigo
 
         DictionaryManager dictionaryManager;
     }; // class MoleculeNameParser
-
-    MoleculeNameParser& getMoleculeNameParserInstance();
 } // namespace indigo
 
 #ifdef _WIN32

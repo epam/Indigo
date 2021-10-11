@@ -8,17 +8,16 @@
 
 using namespace bingo;
 
-// TODO: implement real thread local storage - not session local
-static _SIDManager _database_id;
+thread_local int MMFStorage::databaseId;
 
 int MMFStorage::getDatabaseId()
 {
-    return (int)_database_id.getSessionId();
+    return databaseId;
 }
 
 void MMFStorage::setDatabaseId(int db)
 {
-    _database_id.setSessionId((int)db);
+    databaseId = db;
 }
 
 MMFStorage::MMFStorage()

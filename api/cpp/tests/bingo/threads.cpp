@@ -46,8 +46,8 @@ namespace
 
     void testCreate()
     {
-        auto session_1 = IndigoSession();
-        auto session_2 = IndigoSession();
+        auto session_1 = IndigoSession::create();
+        auto session_2 = IndigoSession::create();
         std::stringstream ss;
         ss << "test_" << std::this_thread::get_id();
         const auto bingo_1 = BingoNoSQL::createDatabaseFile(session_1, ss.str() + "_1.db", BingoNoSqlDataBaseType::MOLECULE, "");
@@ -56,19 +56,21 @@ namespace
 
     void testInsert(BingoNoSQL& bingo)
     {
-        for (const auto& m: bingo.indigo.iterateSDFile(dataPath("molecules/basic/zinc-slice.sdf.gz")))
+        for (const auto& m: bingo.session->iterateSDFile(dataPath("molecules/basic/zinc-slice.sdf.gz")))
         {
             bingo.insertRecord(*m);
         }
+        // TODO: add check
     }
 
     void testInsertDelete(BingoNoSQL& bingo)
     {
-        for (const auto& m: bingo.indigo.iterateSDFile(dataPath("molecules/basic/zinc-slice.sdf.gz")))
+        for (const auto& m: bingo.session->iterateSDFile(dataPath("molecules/basic/zinc-slice.sdf.gz")))
         {
             auto id = bingo.insertRecord(*m);
             bingo.deleteRecord(id);
         }
+        // TODO: add check
     }
 }
 
@@ -96,10 +98,10 @@ TEST(BingoThreads, CreateMultipleThreads)
 
 TEST(BingoThreads, InsertSingleThread)
 {
-    auto session = IndigoSession();
-    session.setOption("ignore-stereochemistry-errors", true);
+    auto session = IndigoSession::create();
+    session->setOption("ignore-stereochemistry-errors", true);
     auto bingo = BingoNoSQL::createDatabaseFile(session, "test.db", BingoNoSqlDataBaseType::MOLECULE, "");
-    for (auto i = 0; i < 16; i++)
+    for (auto i = 0; i < 1; i++)
     {
         testInsert(bingo);
     }
@@ -107,8 +109,8 @@ TEST(BingoThreads, InsertSingleThread)
 
 TEST(BingoThreads, Insert)
 {
-    auto session = IndigoSession();
-    session.setOption("ignore-stereochemistry-errors", true);
+    auto session = IndigoSession::create();
+    session->setOption("ignore-stereochemistry-errors", true);
     auto bingo = BingoNoSQL::createDatabaseFile(session, "test.db", BingoNoSqlDataBaseType::MOLECULE, "");
     std::vector<std::thread> threads;
     threads.reserve(16);
@@ -124,7 +126,7 @@ TEST(BingoThreads, Insert)
 
 TEST(BingoThreads, InsertDelete)
 {
-    auto session = IndigoSession();
+    auto session = IndigoSession::create();
     auto bingo = BingoNoSQL::createDatabaseFile(session, "test.db", BingoNoSqlDataBaseType::MOLECULE, "");
     std::vector<std::thread> threads;
     threads.reserve(16);

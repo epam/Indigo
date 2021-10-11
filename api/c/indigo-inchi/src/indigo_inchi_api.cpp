@@ -73,7 +73,7 @@ CEXPORT int indigoInchiInit(void)
 {
     INDIGO_BEGIN
     {
-        IndigoInchiContext& inchi_context = indigoInchiGetInstance();
+        IndigoInchiContext& inchi_context = inchi_wrapper_self.createOrGetLocalCopy();
         return 0;
     }
     INDIGO_END(-1);
@@ -83,7 +83,7 @@ CEXPORT int indigoInchiDispose()
 {
     INDIGO_BEGIN
     {
-        inchi_wrapper_self.removeLocalCopy(TL_GET_SESSION_ID());
+        inchi_wrapper_self.removeLocalCopy();
         return 0;
     }
     INDIGO_END(-1);

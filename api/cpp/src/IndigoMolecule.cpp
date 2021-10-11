@@ -24,14 +24,12 @@
 
 using namespace indigo_cpp;
 
-IndigoMolecule::IndigoMolecule(const int id, const IndigoSession& indigo) : IndigoBaseMolecule(id, indigo)
+IndigoMolecule::IndigoMolecule(const int id, IndigoSessionPtr session) : IndigoBaseMolecule(id, std::move(session))
 {
 }
 
-#include <iostream>
-
-IndigoMolecule::IndigoMolecule(const IndigoMolecule& other) : IndigoBaseMolecule(other.id, other.indigo)
+IndigoMolecule::IndigoMolecule(const IndigoMolecule& other) : IndigoBaseMolecule(other.id, other.session)
 {
-    indigo.setSessionId();
-    const_cast<int&>(id) = indigo._checkResult(indigoClone(other.id));
+    session->setSessionId();
+    const_cast<int&>(id) = session->_checkResult(indigoClone(other.id));
 }

@@ -31,14 +31,14 @@
 
 using namespace indigo_cpp;
 
-IndigoInChI::IndigoInChI(const IndigoSession& session) : _session(session)
+IndigoInChI::IndigoInChI(IndigoSessionPtr session) : session(std::move(session))
 {
 #ifdef INDIGO_CPP_DEBUG
     std::stringstream ss;
-    ss << "T_" << std::this_thread::get_id() << ": IndigoInChI(" << _session.getSessionId() << ")\n";
+    ss << "T_" << std::this_thread::get_id() << ": IndigoInChI(" << session->getSessionId() << ")\n";
     std::cout << ss.str();
 #endif
-    _session.setSessionId();
+    this->session->setSessionId();
     indigoInchiInit();
 }
 
@@ -46,15 +46,15 @@ IndigoInChI::~IndigoInChI()
 {
 #ifdef INDIGO_CPP_DEBUG
     std::stringstream ss;
-    ss << "T_" << std::this_thread::get_id() << ": ~IndigoInChI(" << _session.getSessionId() << ")\n";
+    ss << "T_" << std::this_thread::get_id() << ": ~IndigoInChI(" << session->getSessionId() << ")\n";
     std::cout << ss.str();
 #endif
-    _session.setSessionId();
+    session->setSessionId();
     indigoInchiDispose();
 }
 
 std::string IndigoInChI::getInChI(const IndigoChemicalEntity& data) const
 {
-    _session.setSessionId();
-    return {_session._checkResultString(indigoInchiGetInchi(data.id))};
+    session->setSessionId();
+    return {session->_checkResultString(indigoInchiGetInchi(data.id))};
 }

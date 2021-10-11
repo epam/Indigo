@@ -131,11 +131,10 @@ IndigoObjectTypes::IndigoObjectTypes()
     }
 }
 
-_SessionLocalContainer<IndigoObjectTypes> IndigoObjectTypesDictionary;
-
 const IndigoObjectTypes& getObjectTypesMap()
 {
-    return IndigoObjectTypesDictionary.getLocalCopy();
+    static IndigoObjectTypes indigoObjectTypes;
+    return indigoObjectTypes;
 }
 
 IndigoObject::IndigoObject(int type_)

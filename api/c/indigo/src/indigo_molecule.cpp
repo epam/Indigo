@@ -4468,7 +4468,7 @@ CEXPORT int indigoNameToStructure(const char* name, const char* params)
             throw IndigoError("indigoNameToStructure: invalid parameter");
         }
 
-        MoleculeNameParser& parser = getMoleculeNameParserInstance();
+        MoleculeNameParser parser;
         if (params)
         {
             /*

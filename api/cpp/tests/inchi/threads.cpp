@@ -40,28 +40,28 @@ namespace
         return choices.at(uni(rng));
     }
 
-    void testRender()
+    void testInChI()
     {
         const auto& smiles = randomSmiles();
-        auto session_1 = IndigoSession();
-        auto session_2 = IndigoSession();
+        auto session_1 = IndigoSession::create();
+        auto session_2 = IndigoSession::create();
         const auto& InChI_1 = IndigoInChI(session_1);
         const auto& InChI_2 = IndigoInChI(session_2);
-        const auto& m_1 = session_1.loadMolecule(smiles);
-        const auto& m_2 = session_2.loadMolecule(smiles);
+        const auto& m_1 = session_1->loadMolecule(smiles);
+        const auto& m_2 = session_2->loadMolecule(smiles);
         const auto& result_1 = InChI_1.getInChI(m_1);
         const auto& result_2 = InChI_2.getInChI(m_2);
         ASSERT_EQ(result_1, result_2);
     }
 } // namespace
 
-TEST(InChIThreads, Basic)
+TEST(InchiThreads, Basic)
 {
     std::vector<std::thread> threads;
     threads.reserve(100);
     for (auto i = 0; i < 100; i++)
     {
-        threads.emplace_back(testRender);
+        threads.emplace_back(testInChI);
     }
     for (auto& thread : threads)
     {

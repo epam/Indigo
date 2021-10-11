@@ -41,6 +41,7 @@ namespace indigo
 
         IndigoAbbreviations::IndigoAbbreviations()
         {
+            indigoCreateAbbreviationsInstance();
             clear();
         }
 
@@ -103,6 +104,11 @@ namespace indigo
         IndigoAbbreviations& indigoGetAbbreviationsInstance()
         {
             return indigo_abbreviations_self.getLocalCopy();
+        }
+
+        IndigoAbbreviations& indigoCreateAbbreviationsInstance()
+        {
+            return indigo_abbreviations_self.createOrGetLocalCopy();
         }
 
     } // namespace abbreviations

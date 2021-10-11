@@ -46,8 +46,8 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 if (UNIX OR MINGW)
-    string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden -g -Wthread-safety")
-    string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden -g -Wthread-safety")
+    string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden -g")# -Wthread-safety -fsanitize=thread")
+    string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden -g")# -Wthread-safety -fsanitize=thread")
 
     if (CMAKE_CXX_COMPILER_ID STREQUAL Clang)
         string(APPEND CMAKE_C_FLAGS_RELEASE " -flto=thin")

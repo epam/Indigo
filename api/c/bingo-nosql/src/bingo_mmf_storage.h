@@ -28,6 +28,7 @@ namespace bingo
     private:
         ObjArray<MMFile> _mm_files;
         bool _read_only;
+        static thread_local int databaseId;
     };
 }; // namespace bingo
 

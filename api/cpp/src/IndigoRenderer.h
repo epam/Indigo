@@ -21,15 +21,16 @@
 #include <string>
 #include <vector>
 
+#include "IndigoSession.h"
+
 namespace indigo_cpp
 {
     class IndigoChemicalEntity;
-    class IndigoSession;
 
     class IndigoRenderer
     {
     public:
-        IndigoRenderer(const IndigoSession& session);
+        IndigoRenderer(IndigoSessionPtr session);
         ~IndigoRenderer();
 
         IndigoRenderer(IndigoRenderer const&) = delete;
@@ -39,6 +40,6 @@ namespace indigo_cpp
         std::vector<char> png(const IndigoChemicalEntity& data) const;
 
     private:
-        const IndigoSession& _session;
+        IndigoSessionPtr session;
     };
 } // namespace indigo_cpp

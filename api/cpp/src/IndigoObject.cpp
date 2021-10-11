@@ -32,14 +32,14 @@
 
 using namespace indigo_cpp;
 
-IndigoObject::IndigoObject(const int id, const IndigoSession& indigo) : id(id), indigo(indigo)
+IndigoObject::IndigoObject(int id, IndigoSessionPtr session) : id(id), session(std::move(session))
 {
 #ifdef INDIGO_CPP_DEBUG
     std::stringstream ss;
     ss << "T_" << std::this_thread::get_id() << ": IndigoObject(" << indigo.getSessionId() << ", " << id << ")\n";
     std:: cout << ss.str();
 #endif
-    indigo._checkResult(id);
+    this->session->_checkResult(id);
 }
 
 IndigoObject::~IndigoObject()
@@ -49,6 +49,6 @@ IndigoObject::~IndigoObject()
     ss << "T_" << std::this_thread::get_id() << ": ~IndigoObject(" << indigo.getSessionId() << ", " << id << ")\n";
     std:: cout << ss.str();
 #endif
-    indigo.setSessionId();
+    session->setSessionId();
     indigoFree(id);
 }

@@ -42,10 +42,10 @@ namespace
     void testCanonicalSmiles()
     {
         const auto& smiles = randomSmiles();
-        auto session_1 = IndigoSession();
-        auto session_2 = IndigoSession();
-        const auto& m_1 = session_1.loadMolecule(smiles);
-        const auto& m_2 = session_2.loadMolecule(smiles);
+        auto session_1 = IndigoSession::create();
+        auto session_2 = IndigoSession::create();
+        const auto& m_1 = session_1->loadMolecule(smiles);
+        const auto& m_2 = session_2->loadMolecule(smiles);
         const auto& result_1 = m_1.smiles();
         const auto& result_2 = m_2.smiles();
         ASSERT_EQ(result_1, result_2);

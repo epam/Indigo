@@ -28,7 +28,7 @@ namespace indigo_cpp
     class IndigoWriteBuffer : public IndigoObject
     {
     public:
-        IndigoWriteBuffer(int, const IndigoSession&);
+        IndigoWriteBuffer(int id, IndigoSessionPtr session);
         std::vector<char> toBuffer() const;
         std::string toString() const;
     };

@@ -40,7 +40,7 @@ void IndigoSDFileIterator::iterator::increment()
     }
 }
 
-IndigoSDFileIterator::IndigoSDFileIterator(const int id, const IndigoSession& session) : IndigoObject(id, session)
+IndigoSDFileIterator::IndigoSDFileIterator(const int id, IndigoSessionPtr session) : IndigoObject(id, std::move(session))
 {
 }
 
@@ -56,15 +56,15 @@ IndigoSDFileIterator::iterator IndigoSDFileIterator::end()
 
 void IndigoSDFileIterator::next()
 {
-    indigo.setSessionId();
-    auto nextId = indigo._checkResult(indigoNext(id));
+    session->setSessionId();
+    auto nextId = session->_checkResult(indigoNext(id));
     if (nextId == 0)
     {
         _current = nullptr;
     }
     else
     {
-        _current = std::make_shared<IndigoMolecule>(nextId, indigo);
+        _current = std::make_shared<IndigoMolecule>(nextId, session);
     }
 }
 

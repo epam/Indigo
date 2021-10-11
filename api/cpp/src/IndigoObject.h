@@ -18,19 +18,19 @@
 
 #pragma once
 
+#include "IndigoSession.h"
+
 namespace indigo_cpp
 {
-    class IndigoSession;
-
     class IndigoObject
     {
     public:
         const int id;
-        const IndigoSession& indigo;
+        const IndigoSessionPtr session;
 
         virtual ~IndigoObject();
 
     protected:
-        IndigoObject(int id, const IndigoSession& indigo);
+        IndigoObject(int id, IndigoSessionPtr indigo);
     };
 }

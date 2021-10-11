@@ -23,7 +23,7 @@ namespace
     }
 }
 
-BingoNoSQL::BingoNoSQL(IndigoSession& indigo, const int id) : indigo(indigo), id(id)
+BingoNoSQL::BingoNoSQL(IndigoSessionPtr session, const int id) : session(std::move(session)), id(id)
 {
 }
 
@@ -32,44 +32,48 @@ BingoNoSQL::~BingoNoSQL()
     close();
 }
 
-BingoNoSQL BingoNoSQL::createDatabaseFile(IndigoSession& session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options)
+BingoNoSQL BingoNoSQL::createDatabaseFile(IndigoSessionPtr session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options)
 {
-    session.setSessionId();
-    return {session, session._checkResult(bingoCreateDatabaseFile(path.c_str(), bingoNoSqlDataBaseTypeToCharArray(type), options.c_str()))};
+    session->setSessionId();
+    int id = session->_checkResult(bingoCreateDatabaseFile(path.c_str(), bingoNoSqlDataBaseTypeToCharArray(type), options.c_str()));
+    return {std::move(session), id};
 }
 
-BingoNoSQL BingoNoSQL::loadDatabaseFile(IndigoSession& session, const std::string& path, const std::string& options)
+BingoNoSQL BingoNoSQL::loadDatabaseFile(IndigoSessionPtr session, const std::string& path, const std::string& options)
 {
-    session.setSessionId();
-    int id = bingoLoadDatabaseFile(path.c_str(), options.c_str());
-    return {session, id};
+    session->setSessionId();
+    int id = session->_checkResult(bingoLoadDatabaseFile(path.c_str(), options.c_str()));
+    return {std::move(session), id};
 }
 
 void BingoNoSQL::close()
 {
     if (id >= 0)
     {
-        indigo.setSessionId();
-        indigo._checkResult(bingoCloseDatabase(id));
+        session->setSessionId();
+        session->_checkResult(bingoCloseDatabase(id));
         id = -1;
     }
 }
 
 int BingoNoSQL::insertRecord(const IndigoChemicalEntity& entity) const
 {
-    indigo.setSessionId();
-    return indigo._checkResult(bingoInsertRecordObj(id, entity.id));
+    session->setSessionId();
+    return session->_checkResult(bingoInsertRecordObj(id, entity.id));
 }
 
 void BingoNoSQL::deleteRecord(const int recordId) const
 {
-    indigo.setSessionId();
-    indigo._checkResult(bingoDeleteRecord(id, recordId));
+    session->setSessionId();
+    session->_checkResult(bingoDeleteRecord(id, recordId));
 }
 
-
-BingoObject BingoNoSQL::searchSub(const IndigoQueryMolecule& query, const std::string& options = "")
+BingoObject BingoNoSQL::searchSub(const IndigoQueryMolecule& query, const std::string& options)
 {
-    indigo.setSessionId();
-    return BingoObject(indigo.checkResult(bingoSearchSub(id, query.id, options)), indigo);
+    session->setSessionId();
+    return {session->_checkResult(bingoSearchSub(id, query.id, options.c_str())), session};
+}
+
+BingoObject::BingoObject(int id, IndigoSessionPtr session) : id(id), session(std::move(session))
+{
 }

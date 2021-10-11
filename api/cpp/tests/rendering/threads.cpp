@@ -43,12 +43,12 @@ namespace
     void testRender()
     {
         const auto& smiles = randomSmiles();
-        auto session_1 = IndigoSession();
-        auto session_2 = IndigoSession();
+        auto session_1 = IndigoSession::create();
+        auto session_2 = IndigoSession::create();
         const auto& renderer_1 = IndigoRenderer(session_1);
         const auto& renderer_2 = IndigoRenderer(session_2);
-        const auto& m_1 = session_1.loadMolecule(smiles);
-        const auto& m_2 = session_2.loadMolecule(smiles);
+        const auto& m_1 = session_1->loadMolecule(smiles);
+        const auto& m_2 = session_2->loadMolecule(smiles);
         const auto& result_svg_1 = renderer_1.svg(m_1);
         const auto& result_svg_2 = renderer_2.svg(m_2);
         ASSERT_EQ(result_svg_1, result_svg_2);

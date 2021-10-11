@@ -25,6 +25,6 @@ namespace indigo_cpp
     class IndigoQueryMolecule : public IndigoBaseMolecule
     {
     public:
-        IndigoQueryMolecule(int id, const IndigoSession& indigo);
+        IndigoQueryMolecule(int id, IndigoSessionPtr session);
     };
 }

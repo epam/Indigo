@@ -29,19 +29,19 @@ using namespace indigo_cpp;
 
 TEST(Basic, SingleSessionIdle)
 {
-    const auto& session = IndigoSession();
+    const auto& session = IndigoSession::create();
 }
 
 TEST(Basic, TwoSessionIdle)
 {
-    const auto& session_1 = IndigoSession();
-    const auto& session_2 = IndigoSession();
+    const auto& session_1 = IndigoSession::create();
+    const auto& session_2 = IndigoSession::create();
 }
 
 TEST(Basic, Molfile)
 {
-    auto session = IndigoSession();
-    const auto& m = session.loadMolecule("C");
+    auto session = IndigoSession::create();
+    const auto& m = session->loadMolecule("C");
     const auto& molfile = m.molfile();
 
     ASSERT_TRUE(molfile.rfind("M  END") != -1);
@@ -50,17 +50,17 @@ TEST(Basic, Molfile)
 // TODO: This causes a memory leak that could be catched by Valgrind
 TEST(Basic, LoadQueryMolecule)
 {
-    auto session = IndigoSession();
-    const auto& m_1 = session.loadQueryMolecule("* |$Q_e$|");
+    auto session = IndigoSession::create();
+    const auto& m_1 = session->loadQueryMolecule("* |$Q_e$|");
 }
 
 TEST(Basic, IterateSDFile)
 {
-    auto session = IndigoSession();
+    auto session = IndigoSession::create();
     auto counter = 0;
     std::vector<IndigoMoleculeSPtr> molecules;
     molecules.reserve(245);
-    for (const auto& molecule : session.iterateSDFile(dataPath("molecules/basic/Compound_0000001_0000250.sdf.gz")))
+    for (const auto& molecule : session->iterateSDFile(dataPath("molecules/basic/Compound_0000001_0000250.sdf.gz")))
     {
         ++counter;
         molecules.emplace_back(molecule);

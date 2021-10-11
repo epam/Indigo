@@ -40,7 +40,7 @@ namespace indigo_cpp
         };
 
     private:
-        IndigoSDFileIterator(int id, const IndigoSession& session);
+        IndigoSDFileIterator(int id, IndigoSessionPtr session);
 
         friend class IndigoSession;
 

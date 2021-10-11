@@ -23,14 +23,14 @@
 
 using namespace indigo_cpp;
 
-IndigoBaseMolecule::IndigoBaseMolecule(const int id, const IndigoSession& indigo) : IndigoChemicalEntity(id, indigo)
+IndigoBaseMolecule::IndigoBaseMolecule(const int id, IndigoSessionPtr session) : IndigoChemicalEntity(id, std::move(session))
 {
 }
 
 std::string IndigoBaseMolecule::molfile() const
 {
-    indigo.setSessionId();
-    return indigo._checkResultString(indigoMolfile(id));
+    session->setSessionId();
+    return session->_checkResultString(indigoMolfile(id));
 }
 
 std::string IndigoBaseMolecule::ctfile() const

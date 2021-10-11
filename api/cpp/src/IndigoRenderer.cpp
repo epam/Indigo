@@ -32,14 +32,14 @@
 
 using namespace indigo_cpp;
 
-IndigoRenderer::IndigoRenderer(const IndigoSession& session) : _session(session)
+IndigoRenderer::IndigoRenderer(IndigoSessionPtr session) : session(std::move(session))
 {
 #ifdef INDIGO_CPP_DEBUG
     std::stringstream ss;
     ss << "T_" << std::this_thread::get_id() << ": IndigoRenderer(" << _session.getSessionId() << ")\n";
     std::cout << ss.str();
 #endif
-    _session.setSessionId();
+    this->session->setSessionId();
     indigoRendererInit();
 }
 
@@ -50,24 +50,24 @@ IndigoRenderer::~IndigoRenderer()
     ss << "T_" << std::this_thread::get_id() << ": ~IndigoRenderer(" << _session.getSessionId() << ")\n";
     std::cout << ss.str();
 #endif
-    _session.setSessionId();
+    session->setSessionId();
     indigoRendererDispose();
 }
 
 std::string IndigoRenderer::svg(const IndigoChemicalEntity& data) const
 {
-    _session.setSessionId();
-    _session.setOption("render-output-format", std::string("svg"));
-    const auto buffer = _session.writeBuffer();
-    _session._checkResult(indigoRender(data.id, buffer.id));
+    session->setSessionId();
+    session->setOption("render-output-format", std::string("svg"));
+    const auto buffer = session->writeBuffer();
+    session->_checkResult(indigoRender(data.id, buffer.id));
     return buffer.toString();
 }
 
 std::vector<char> IndigoRenderer::png(const IndigoChemicalEntity& data) const
 {
-    _session.setSessionId();
-    _session.setOption("render-output-format", std::string("png"));
-    const auto buffer = _session.writeBuffer();
-    _session._checkResult(indigoRender(data.id, buffer.id));
+    session->setSessionId();
+    session->setOption("render-output-format", std::string("png"));
+    const auto buffer = session->writeBuffer();
+    session->_checkResult(indigoRender(data.id, buffer.id));
     return buffer.toBuffer();
 }

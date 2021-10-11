@@ -20,14 +20,17 @@
 #define __tlscont_h__
 
 #include <memory>
+#include <stack>
 #include <typeinfo>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
+
+#include <safe_ptr.h>
 
 #include "base_c/defs.h"
 #include "base_c/os_tls.h"
 #include "base_cpp/array.h"
-#include <memory>
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/pool.h"
 #include "base_cpp/ptr_array.h"
@@ -46,15 +49,12 @@ namespace indigo
     class DLLEXPORT _SIDManager
     {
     public:
-        static _SIDManager& getInst(void);
-        static std::mutex& getLock();
-
-        _SIDManager(void);
-        ~_SIDManager(void);
+        static _SIDManager& getInst();
 
         void setSessionId(qword id);
-        qword allocSessionId(void);
-        qword getSessionId(void);
+        qword getSessionId() const;
+
+        qword allocSessionId();
         // Add specified SID to the vacant list.
         // This method should be called before thread exit if SID was
         // assigned automatically (not by manual TL_SET_SESSION_ID call)
@@ -63,15 +63,18 @@ namespace indigo
         DECL_ERROR;
 
     private:
-        qword* _getID() const;
+        _SIDManager() = default;
 
         // Thread local key for storing current session ID
-        TLS_IDX_TYPE _tlsIdx;
-        RedBlackSet<qword> _allSIDs;
-        qword _lastNewSID;
-        // Array with vacant SIDs
-        Array<qword> _vacantSIDs;
-        std::vector<qword*> _pIds;
+        static thread_local qword _sessionId;
+
+        struct SIDDataHolder
+        {
+            std::stack<qword> vacantSIDs;
+            qword lastNewSID;
+        };
+
+        sf::safe_hide_obj<SIDDataHolder> _sidDataHolder;
     };
 
 // Macros for managing session IDs for current thread
@@ -84,86 +87,65 @@ namespace indigo
     template <typename T> class _SessionLocalContainer
     {
     public:
-        T& getLocalCopy()
+        T& createOrGetLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            return getLocalCopy(TL_GET_SESSION_ID());
-        }
-
-        T& getLocalCopy(const qword id)
-        {
-            std::lock_guard<std::mutex> locker(_lock);
-            if (!_map.count(id))
+            auto map = sf::xlock_safe_ptr(_map);
+            if (!map->count(id))
             {
-                _map[id] = std::make_unique<T>();
+                map->emplace(id, std::make_unique<T>());
             }
-            return *_map.at(id);
+            return *map->at(id);
         }
 
-        void removeLocalCopy()
+        T& getLocalCopy(const qword id = TL_GET_SESSION_ID()) const
         {
-            removeLocalCopy(TL_GET_SESSION_ID());
+            const auto map = sf::slock_safe_ptr(_map);
+            return *map->at(id);
         }
 
-        void removeLocalCopy(const qword id)
+        void removeLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            std::lock_guard<std::mutex> locker(_lock);
-            if (_map.count(id))
-            {
-                _map.erase(id);
-            }
+            auto map = sf::xlock_safe_ptr(_map);
+            map->erase(id);
         }
 
     private:
-        std::unordered_map<qword, std::unique_ptr<T>> _map;
-        std::mutex _lock;
+        sf::safe_hide_obj<std::unordered_map<qword, std::unique_ptr<T>>, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>,
+                          std::shared_lock<std::shared_timed_mutex>>
+            _map;
     };
-
-    // Helpful templates to deal with commas in template type names
-    // to be able to write like
-    // QS_DEF((std::unordered_map<std::string, int>), atoms_id);
-    // See http://stackoverflow.com/a/13842784
-    template <typename T> struct ArgumentType;
-    template <typename T, typename U> struct ArgumentType<T(U)>
-    {
-        typedef U Type;
-    };
-#define _GET_TYPE(t) ArgumentType<void(t)>::Type
 
 // Macros for working with global variables per each session
 // By tradition this macros start with TL_, but should start with SL_
-#define TL_DECL_EXT(type, name) extern _SessionLocalContainer<_GET_TYPE(type)> TLSCONT_##name
-#define TL_DECL(type, name) static _SessionLocalContainer<_GET_TYPE(type)> TLSCONT_##name
-#define TL_GET(type, name) _GET_TYPE(type)& name = (TLSCONT_##name).getLocalCopy()
-#define TL_DECL_GET(type, name)                                                                                                                                \
-    TL_DECL(type, name);                                                                                                                                       \
-    TL_GET(type, name)
-#define TL_GET2(type, name, realname) _GET_TYPE(type)& name = (TLSCONT_##realname).getLocalCopy()
-#define TL_GET_BY_ID(type, name, id) _GET_TYPE(type)& name = (TLSCONT_##name).getLocalCopy(id)
-#define TL_DEF(className, type, name) _SessionLocalContainer<_GET_TYPE(type)> className::TLSCONT_##name
-#define TL_DEF_EXT(type, name) _SessionLocalContainer<_GET_TYPE(type)> TLSCONT_##name
-} // namespace indigo
+#define TL_DECL(type, name) static _SessionLocalContainer<type> TLSCONT_##name
+#define TL_GET(type, name) type& name = (TLSCONT_##name).getLocalCopy()
+#define TL_GET_BY_ID(type, name, id) type& name = (TLSCONT_##name).getLocalCopy(id)
+#define TL_DEF(className, type, name) _SessionLocalContainer<type> className::TLSCONT_##name
+}
 
 // "Quasi-static" variable definition. Calls clear() at the end
-//#define QS_DEF(TYPE, name)                                                                                                                                     \
+//#define QS_DEF(TYPE, name) \
 //    static _ReusableVariablesPool<_GET_TYPE(TYPE)> _POOL_##name;                                                                          \
-//    int _POOL_##name##_idx;                                                                                                                                    \
-//    _GET_TYPE(TYPE)& name = _POOL_##name.getVacant(_POOL_##name##_idx);                                                                                       \
-//    _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release;                                                                                \
+//    int _POOL_##name##_idx; \
+//    _GET_TYPE(TYPE)& name = _POOL_##name.getVacant(_POOL_##name##_idx); \
+//    _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release; \
 //    _POOL_##name##_auto_release.init(_POOL_##name##_idx, &_POOL_##name);                                                                                  \
 //    name.clear();
 // Use this for debug purposes if you suspect QS_DEF in something bad
 #define QS_DEF(TYPE, name) TYPE name;
 
 // "Quasi-static" variable definition. Calls clear_resize() at the end
-//#define QS_DEF_RES(TYPE, name, len)                                                                                                                            \
+//#define QS_DEF_RES(TYPE, name, len) \
 //    static _ReusableVariablesPool<_GET_TYPE(TYPE)> _POOL_##name;                                                                          \
-//    int _POOL_##name##_idx;                                                                                                                                    \
-//    _GET_TYPE(TYPE)& name = _POOL_##name.getVacant(_POOL_##name##_idx);                                                                                       \
-//    _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release;                                                                                \
+//    int _POOL_##name##_idx; \
+//    _GET_TYPE(TYPE)& name = _POOL_##name.getVacant(_POOL_##name##_idx); \
+//    _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release; \
 //    _POOL_##name##_auto_release.init(_POOL_##name##_idx, &_POOL_##name);                                                                                  \
 //    name.clear_resize(len);
 // Use this for debug purposes if you suspect QS_DEF in something bad
-#define QS_DEF_RES(TYPE, name, len) TYPE name; name.clear_resize(len);
+#define QS_DEF_RES(TYPE, name, len)                                                                                                                            \
+    TYPE name;                                                                                                                                                 \
+    name.clear_resize(len);
 
 // Reusable class members definition
 // By tradition this macros start with TL_, but should start with SL_
@@ -173,14 +155,12 @@ namespace indigo
 //
 
 // Add this to class definition
-#define TL_CP_DECL(TYPE, name)                                                                                                                                 \
-    TYPE name
+#define TL_CP_DECL(TYPE, name) TYPE name
 
 // Add this to constructor initialization list
 #define TL_CP_GET(name) name()
 
-#define CP_DECL                                                                                                                                                \
-    bool _cp_decl_pseudo_init;
+#define CP_DECL bool _cp_decl_pseudo_init;
 
 #define CP_INIT _cp_decl_pseudo_init(true)
 

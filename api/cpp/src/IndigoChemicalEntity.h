@@ -44,7 +44,7 @@ namespace indigo_cpp
         virtual std::string ctfile() const = 0;
 
     protected:
-        IndigoChemicalEntity(int id, const IndigoSession& indigo);
+        IndigoChemicalEntity(int id, IndigoSessionPtr session);
         friend class IndigoSession;
     };
 } // namespace indigo_cpp

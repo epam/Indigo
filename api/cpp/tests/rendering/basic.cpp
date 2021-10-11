@@ -26,9 +26,9 @@ using namespace indigo_cpp;
 
 TEST(RenderingBasic, BasicSVG)
 {
-    auto session = IndigoSession();
+    auto session = IndigoSession::create();
     const auto& renderer = IndigoRenderer(session);
-    const auto& m = session.loadMolecule("C");
+    const auto& m = session->loadMolecule("C");
     const auto& result = renderer.svg(m);
     ASSERT_TRUE(result.rfind("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 0) == 0);
 }

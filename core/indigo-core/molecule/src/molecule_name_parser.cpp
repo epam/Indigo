@@ -18,7 +18,6 @@
 
 #include "molecule/molecule_name_parser.h"
 
-
 using namespace std;
 using namespace indigo;
 
@@ -254,7 +253,7 @@ Text fragments require further processing
 */
 void MoleculeNameParser::Parse::scan()
 {
-    const DictionaryManager& dm = getMoleculeNameParserInstance().dictionaryManager;
+    const DictionaryManager& dm = mnp.dictionaryManager;
     const SymbolDictionary& sd = dm.dictionary;
     const string& separators = dm.separators;
 
@@ -370,7 +369,7 @@ Sets up the failure flag if unparsable fragment is encountered
 */
 void MoleculeNameParser::Parse::_processTextFragment(const string& fragment)
 {
-    const DictionaryManager& dm = getMoleculeNameParserInstance().dictionaryManager;
+    const DictionaryManager& dm = mnp.dictionaryManager;
     const LexemesTrie& root = dm.lexemesTrie;
 
     const size_t fLength = fragment.length();
@@ -452,7 +451,7 @@ know the word in question
 */
 bool MoleculeNameParser::Parse::_tryElision(const string& failure)
 {
-    const DictionaryManager& dm = getMoleculeNameParserInstance().dictionaryManager;
+    const DictionaryManager& dm = mnp.dictionaryManager;
     const LexemesTrie& root = dm.lexemesTrie;
 
     string endings = "aoey";
@@ -645,8 +644,7 @@ Returns true if condition matches
 */
 bool MoleculeNameParser::TreeBuilder::_checkParserOption(ParserOptionsType options)
 {
-    const MoleculeNameParser& instance = getMoleculeNameParserInstance();
-    return (instance.getOptions() & options) == options;
+    return ( _parse->mnp.getOptions() & options) == options;
 }
 
 /*
@@ -1668,7 +1666,7 @@ void MoleculeNameParser::parseMolecule(const char* name, Molecule& molecule)
     std::transform(input.begin(), input.end(), input.begin(), [](unsigned long c) { return std::tolower(c); });
 
     _checkBrackets(input);
-    Parse parse(input);
+    Parse parse(input, *this);
     parse.scan();
 
     if (parse.hasFailures)
@@ -1766,11 +1764,4 @@ void MoleculeNameParser::_setOption(const char* option)
     {
         on ? _options |= ParserOptions::IUPAC_STRICT : _options &= ~ParserOptions::IUPAC_STRICT;
     }
-}
-
-_SessionLocalContainer<MoleculeNameParser> MoleculeNameParser_self;
-
-MoleculeNameParser& indigo::getMoleculeNameParserInstance()
-{
-    return MoleculeNameParser_self.getLocalCopy();
 }

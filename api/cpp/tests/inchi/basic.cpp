@@ -26,9 +26,9 @@ using namespace indigo_cpp;
 
 TEST(InchiBasic, GetInChI)
 {
-    auto session = IndigoSession();
+    auto session = IndigoSession::create();
     const auto& inchi = IndigoInChI(session);
-    const auto& m = session.loadMolecule("C");
+    const auto& m = session->loadMolecule("C");
     const auto& result = inchi.getInChI(m);
     ASSERT_EQ(result, "InChI=1S/CH4/h1H4");
 }

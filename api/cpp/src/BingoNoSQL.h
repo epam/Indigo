@@ -23,8 +23,8 @@ namespace indigo_cpp
         BingoNoSQL& operator=(BingoNoSQL&&) = delete;
         ~BingoNoSQL();
 
-        static BingoNoSQL createDatabaseFile(IndigoSession& session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options);
-        static BingoNoSQL loadDatabaseFile(IndigoSession& session, const std::string& path, const std::string& options);
+        static BingoNoSQL createDatabaseFile(IndigoSessionPtr session, const std::string& path, const BingoNoSqlDataBaseType& type, const std::string& options);
+        static BingoNoSQL loadDatabaseFile(IndigoSessionPtr session, const std::string& path, const std::string& options);
 
         void close();
 
@@ -33,16 +33,20 @@ namespace indigo_cpp
 
         BingoObject searchSub(const IndigoQueryMolecule& query, const std::string& options = "");
 
-        IndigoSession& indigo;
+        IndigoSessionPtr session;
 
     private:
-        BingoNoSQL(IndigoSession& indigo, int e);
+        BingoNoSQL(IndigoSessionPtr indigo, int e);
 
         int id;
     };
 
     class BingoObject
     {
-        const Indigo&;
+    public:
+        BingoObject(int id, IndigoSessionPtr session);
+    private:
+        int id;
+        IndigoSessionPtr session;
     };
 }

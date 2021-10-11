@@ -91,6 +91,11 @@ namespace indigo
         return prev;
     }
 
+    void createCancellationHandler(const qword sessionId)
+    {
+        cancellation_handler.createOrGetLocalCopy(sessionId);
+    }
+
     AutoCancellationHandler::AutoCancellationHandler(CancellationHandler* hand)
     {
         resetCancellationHandler(hand);

@@ -61,6 +61,7 @@ namespace indigo
     // Returns previous cancellation handler.
     // TAKES Ownership!!!
     DLLEXPORT std::unique_ptr<CancellationHandler> resetCancellationHandler(CancellationHandler* handler);
+    void createCancellationHandler(qword id);
 
     class AutoCancellationHandler
     {

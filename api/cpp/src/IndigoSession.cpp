@@ -128,26 +128,31 @@ std::string IndigoSession::version() const
     return _checkResultString(indigoVersion());
 }
 
-IndigoMolecule IndigoSession::loadMolecule(const std::string& data) const
+IndigoMolecule IndigoSession::loadMolecule(const std::string& data)
 {
     setSessionId();
-    return {_checkResult(indigoLoadMoleculeFromString(data.c_str())), *this};
+    return {_checkResult(indigoLoadMoleculeFromString(data.c_str())), shared_from_this()};
 }
 
-IndigoQueryMolecule IndigoSession::loadQueryMolecule(const std::string& data) const
+IndigoQueryMolecule IndigoSession::loadQueryMolecule(const std::string& data)
 {
     setSessionId();
-    return {_checkResult(indigoLoadQueryMoleculeFromString(data.c_str())), *this};
+    return {_checkResult(indigoLoadQueryMoleculeFromString(data.c_str())), shared_from_this()};
 }
 
-IndigoWriteBuffer IndigoSession::writeBuffer() const
+IndigoWriteBuffer IndigoSession::writeBuffer()
 {
     setSessionId();
-    return {_checkResult(indigoWriteBuffer()), *this};
+    return {_checkResult(indigoWriteBuffer()), shared_from_this()};
 }
 
-IndigoSDFileIterator IndigoSession::iterateSDFile(const std::string& path) const
+IndigoSDFileIterator IndigoSession::iterateSDFile(const std::string& path)
 {
     setSessionId();
-    return {_checkResult(indigoIterateSDFile(path.c_str())), *this};
+    return {_checkResult(indigoIterateSDFile(path.c_str())), shared_from_this()};
+}
+
+IndigoSessionPtr IndigoSession::create()
+{
+    return IndigoSessionPtr(new IndigoSession());
 }

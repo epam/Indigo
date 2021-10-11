@@ -90,16 +90,29 @@ IndigoRenderer::~IndigoRenderer()
 
 DINGO_MODE indigoRenderMapOutputFormat(const char* format)
 {
-    TL_DECL_GET(StringIntMap, outFmtMap);
-    if (outFmtMap.size() == 0)
+    std::string format_string(format);
+    DINGO_MODE mode = MODE_NONE;
+    if (format_string == "pdf")
     {
-        outFmtMap.insert("pdf", MODE_PDF);
-        outFmtMap.insert("png", MODE_PNG);
-        outFmtMap.insert("svg", MODE_SVG);
-        outFmtMap.insert("emf", MODE_EMF);
-        outFmtMap.insert("cdxml", MODE_CDXML);
+        mode = MODE_PDF;
     }
-    return outFmtMap.find(format) ? (DINGO_MODE)outFmtMap.at(format) : MODE_NONE;
+    else if (format_string == "png")
+    {
+        mode = MODE_PNG;
+    }
+    else if (format_string == "svg")
+    {
+        mode = MODE_SVG;
+    }
+    else if (format_string == "emf")
+    {
+        mode = MODE_EMF;
+    }
+    else if (format_string == "cdxml")
+    {
+        mode = indigo::MODE_CDXML;
+    }
+    return mode;
 }
 
 const char* indigoRenderOutputFormatToString(DINGO_MODE mode)
@@ -136,15 +149,26 @@ void indigoRenderGetOutputFormat(Array<char>& value)
 
 void indigoRenderSetStereoStyle(const char* mode)
 {
-    TL_DECL_GET(StringIntMap, stereoStyleMap);
-    if (stereoStyleMap.size() == 0)
+    std::string mode_string(mode);
+    STEREO_STYLE result;
+    if (mode_string == "ext")
     {
-        stereoStyleMap.insert("ext", STEREO_STYLE_EXT);
-        stereoStyleMap.insert("old", STEREO_STYLE_OLD);
-        stereoStyleMap.insert("none", STEREO_STYLE_NONE);
+        result = STEREO_STYLE_EXT;
+    }
+    else if (mode_string == "old")
+    {
+        result = STEREO_STYLE_OLD;
+    }
+    else if (mode_string == "none")
+    {
+        result = STEREO_STYLE_NONE;
+    }
+    else
+    {
+        throw IndigoError("Invalid stereo style, should be 'ext', 'old' or 'none'");
     }
     RenderParams& rp = indigoRendererGetInstance().renderParams;
-    rp.rOpt.stereoMode = (STEREO_STYLE)stereoStyleMap.at(mode);
+    rp.rOpt.stereoMode = result;
 }
 
 void indigoRenderGetStereoStyle(Array<char>& value)
@@ -166,16 +190,30 @@ void indigoRenderGetStereoStyle(Array<char>& value)
 
 void indigoRenderSetLabelMode(const char* mode)
 {
-    TL_DECL_GET(StringIntMap, labelMap);
-    if (labelMap.size() == 0)
+    std::string mode_string(mode);
+    LABEL_MODE result;
+    if (mode_string == "none")
     {
-        labelMap.insert("none", LABEL_MODE_NONE);
-        labelMap.insert("hetero", LABEL_MODE_HETERO);
-        labelMap.insert("terminal-hetero", LABEL_MODE_TERMINAL_HETERO);
-        labelMap.insert("all", LABEL_MODE_ALL);
+        result = LABEL_MODE_NONE;
+    }
+    else if (mode_string == "hetero")
+    {
+        result = LABEL_MODE_HETERO;
+    }
+    else if (mode_string == "terminal-hetero")
+    {
+        result = LABEL_MODE_TERMINAL_HETERO;
+    }
+    else if (mode_string == "all")
+    {
+        result = LABEL_MODE_ALL;
+    }
+    else
+    {
+        throw IndigoError("Invalid label mode, should be 'none', 'hetero', 'terminal-hetero' or 'all'");
     }
     RenderParams& rp = indigoRendererGetInstance().renderParams;
-    rp.rOpt.labelMode = (LABEL_MODE)labelMap.at(mode);
+    rp.rOpt.labelMode = result;
 }
 
 void indigoRenderGetLabelMode(Array<char>& value)
@@ -200,14 +238,23 @@ void indigoRenderGetLabelMode(Array<char>& value)
 
 void indigoRenderSetCatalystsPlacement(const char* mode)
 {
-    TL_DECL_GET(StringIntMap, agentPlacementMap);
-    if (agentPlacementMap.size() == 0)
+    int result;
+    std::string mode_string(mode);
+    if (mode_string == "above")
     {
-        agentPlacementMap.insert("above", 0);
-        agentPlacementMap.insert("above-and-below", 1);
+        result = 0;
     }
+    else if (mode_string == "above_and_below")
+    {
+        result = 1;
+    }
+    else
+    {
+        throw IndigoError("Unknown agent placement map, should be 'above' or 'above_and_below'");
+    }
+
     RenderParams& rp = indigoRendererGetInstance().renderParams;
-    rp.rOpt.agentsBelowArrow = agentPlacementMap.at(mode) != 0;
+    rp.rOpt.agentsBelowArrow = result != 0;
 }
 
 void indigoRenderGetCatalystsPlacement(Array<char>& value)
@@ -221,14 +268,22 @@ void indigoRenderGetCatalystsPlacement(Array<char>& value)
 
 void indigoRenderSetSuperatomMode(const char* mode)
 {
-    TL_DECL_GET(StringIntMap, stereoAtomMode);
-    if (stereoAtomMode.size() == 0)
+    std::string mode_string(mode);
+    int result;
+    if (mode_string == "expand")
     {
-        stereoAtomMode.insert("expand", 0);
-        stereoAtomMode.insert("collapse", 1);
+        result = 0;
+    }
+    else if (mode_string == "collapse")
+    {
+        result = 1;
+    }
+    else
+    {
+        throw IndigoError("Invalid label mode, should be 'expand' or 'collapse'");
     }
     RenderParams& rp = indigoRendererGetInstance().renderParams;
-    rp.rOpt.collapseSuperatoms = stereoAtomMode.at(mode) != 0;
+    rp.rOpt.collapseSuperatoms = result != 0;
 }
 
 void indigoRenderGetSuperatomMode(Array<char>& value)
@@ -325,14 +380,22 @@ void indigoRenderGetTitleAlignment(Array<char>& value)
 
 void indigoRenderSetCommentPosition(const char* pos)
 {
-    TL_DECL_GET(StringIntMap, map);
-    if (map.size() == 0)
+    std::string pos_string(pos);
+    COMMENT_POS result;
+    if (pos_string == "top")
     {
-        map.insert("top", COMMENT_POS_TOP);
-        map.insert("bottom", COMMENT_POS_BOTTOM);
+        result = COMMENT_POS_TOP;
+    }
+    else if (pos_string == "bottom")
+    {
+        result = COMMENT_POS_BOTTOM;
+    }
+    else
+    {
+        throw IndigoError("Invalid comment position, should be 'top' or 'bottom'");
     }
     RenderParams& rp = indigoRendererGetInstance().renderParams;
-    rp.cnvOpt.commentPos = (COMMENT_POS)map.at(pos);
+    rp.cnvOpt.commentPos = result;
 }
 
 void indigoRenderGetCommentPosition(Array<char>& value)
@@ -374,12 +437,11 @@ void indigoRenderGetCdxmlPropertiesKeyAlignment(Array<char>& value)
         value.readString("right", true);
 }
 
-
 CEXPORT int indigoRendererInit(void)
 {
     INDIGO_BEGIN
     {
-        const auto& context = indigoRendererGetInstance();
+        const auto& context = indigo_renderer_self.createOrGetLocalCopy();
         return 0;
     }
     INDIGO_END(-1);
@@ -394,7 +456,6 @@ CEXPORT int indigoRendererDispose()
     }
     INDIGO_END(-1);
 }
-
 
 CEXPORT int indigoRender(int object, int output)
 {

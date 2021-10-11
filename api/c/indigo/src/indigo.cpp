@@ -161,10 +161,12 @@ CEXPORT qword indigoAllocSessionId()
 {
     qword id = TL_ALLOC_SESSION_ID();
     TL_SET_SESSION_ID(id);
-    Indigo& indigo = indigo_self.getLocalCopy(id);
+    Indigo& indigo = indigo_self.createOrGetLocalCopy(id);
     indigo.init();
     setlocale(LC_NUMERIC, "C");
+    IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
+    createCancellationHandler(id);
     return id;
 }
 

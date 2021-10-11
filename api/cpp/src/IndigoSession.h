@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 namespace indigo_cpp
@@ -26,11 +27,13 @@ namespace indigo_cpp
     class IndigoQueryMolecule;
     class IndigoWriteBuffer;
     class IndigoSDFileIterator;
+    class IndigoSession;
+    using IndigoSessionPtr = std::shared_ptr<IndigoSession>;
 
-    class IndigoSession
+
+    class IndigoSession : public std::enable_shared_from_this<IndigoSession>
     {
     public:
-        IndigoSession();
         ~IndigoSession();
 
         IndigoSession(IndigoSession&&) = default;
@@ -52,13 +55,16 @@ namespace indigo_cpp
 
         std::string version() const;
 
-        IndigoMolecule loadMolecule(const std::string& data) const;
-        IndigoQueryMolecule loadQueryMolecule(const std::string& data) const;
-        IndigoWriteBuffer writeBuffer() const;
+        static IndigoSessionPtr create();
 
-        IndigoSDFileIterator iterateSDFile(const std::string& path) const;
+        IndigoMolecule loadMolecule(const std::string& data);
+        IndigoQueryMolecule loadQueryMolecule(const std::string& data);
+        IndigoWriteBuffer writeBuffer();
+
+        IndigoSDFileIterator iterateSDFile(const std::string& path);
 
     private:
+        IndigoSession();
         const unsigned long long id;
     };
-} // namespace indigo_cpp
+}

@@ -25,7 +25,7 @@ namespace indigo_cpp
     class IndigoBaseMolecule : public IndigoChemicalEntity
     {
     protected:
-        IndigoBaseMolecule(int id, const IndigoSession& indigo);
+        IndigoBaseMolecule(int id, IndigoSessionPtr session);
         friend class IndigoSession;
 
     public:

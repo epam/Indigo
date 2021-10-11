@@ -21,15 +21,16 @@
 #include <string>
 #include <vector>
 
+#include "IndigoSession.h"
+
 namespace indigo_cpp
 {
     class IndigoChemicalEntity;
-    class IndigoSession;
 
     class IndigoInChI
     {
     public:
-        IndigoInChI(const IndigoSession& session);
+        IndigoInChI(IndigoSessionPtr session);
         ~IndigoInChI();
 
         IndigoInChI(IndigoInChI const&) = delete;
@@ -38,6 +39,6 @@ namespace indigo_cpp
         std::string getInChI(const IndigoChemicalEntity& data) const;
 
     private:
-        const IndigoSession& _session;
+        IndigoSessionPtr session;
     };
 }
