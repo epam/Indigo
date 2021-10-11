@@ -108,6 +108,7 @@ static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, Ind
         if (!IndigoMolecule::is(indigo_obj))
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
 
+        // TODO: Don't aromatize input molecule, aromatize ind_mol instead
         indigo_obj.getBaseMolecule().aromatize(self.arom_options);
 
         IndexMolecule ind_mol(indigo_obj.getMolecule());
@@ -301,7 +302,7 @@ CEXPORT int bingoGetRecordObj(int db, int id)
     {
         Index& bingo_index = _bingo_instances.ref(db);
 
-        std::shared_lock<std::shared_timed_mutex> wlock(*_lockers[db]);
+        std::shared_lock<std::shared_timed_mutex> rlock(*_lockers[db]);
 
         int cf_len;
         const byte* cf_buf = bingo_index.getObjectCf(id, cf_len);
@@ -717,7 +718,7 @@ CEXPORT int bingoNext(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        std::shared_lock<std::shared_timed_mutex> wlock(*_lockers[_searches_db[search_obj]]);
+        std::shared_lock<std::shared_timed_mutex> rlock(*_lockers[_searches_db[search_obj]]);
         return getMatcher(search_obj).next();
     }
     BINGO_END(-1);

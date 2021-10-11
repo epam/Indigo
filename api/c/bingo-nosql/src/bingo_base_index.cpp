@@ -164,7 +164,7 @@ int BaseIndex::add(/* const */ IndexObject& obj, int obj_id, std::shared_timed_m
     BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     {
-        std::shared_lock<std::shared_timed_mutex> wlock(lock_data);
+        std::shared_lock<std::shared_timed_mutex> rlock(lock_data);
         if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
             throw Exception("insert fail: This id was already used");
     }
@@ -179,7 +179,6 @@ int BaseIndex::add(/* const */ IndexObject& obj, int obj_id, std::shared_timed_m
     profTimerStart(t_after, "exclusive_write");
     {
         profTimerStart(t_in, "add_obj_data");
-        // TODO: CORRECT MOVE?
         _insertIndexData(_obj_data);
     }
 
@@ -215,7 +214,7 @@ int BaseIndex::addWithExtFP(/* const */ IndexObject& obj, int obj_id, std::share
     BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     {
-        std::shared_lock<std::shared_timed_mutex> wlock(lock_data);
+        std::shared_lock<std::shared_timed_mutex> rlock(lock_data);
         if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
             throw Exception("insert fail: This id was already used");
     }

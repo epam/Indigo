@@ -265,7 +265,7 @@ bool BaseMatcher::_loadCurrentObject()
 {
     try
     {
-        if (_current_obj == 0)
+        if (_current_obj == nullptr)
             throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
         profTimerStart(t_get_cmf, "loadCurObj_get_cf");

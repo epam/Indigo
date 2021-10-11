@@ -50,7 +50,11 @@ template <typename target_t> BingoResult<target_t>& BingoResultIterator<target_t
 
 template <typename target_t> typename BingoResultIterator<target_t>::iterator& BingoResultIterator<target_t>::iterator::operator++()
 {
-    increment();
+    _obj->next();
+    if (!_obj->valid())
+    {
+        _obj = nullptr;
+    }
     return *this;
 }
 
@@ -62,15 +66,6 @@ template <typename target_t> bool BingoResultIterator<target_t>::iterator::opera
 template <typename target_t> bool BingoResultIterator<target_t>::iterator::operator!=(iterator rhs) const
 {
     return !(rhs == *this);
-}
-
-template <typename target_t> void BingoResultIterator<target_t>::iterator::increment()
-{
-    _obj->next();
-    if (!_obj->valid())
-    {
-        _obj = nullptr;
-    }
 }
 
 template <typename target_t> typename BingoResultIterator<target_t>::iterator BingoResultIterator<target_t>::begin()

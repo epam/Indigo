@@ -35,9 +35,6 @@ namespace indigo_cpp
             bool operator==(iterator rhs) const;
 
             bool operator!=(iterator rhs) const;
-
-        protected:
-            void increment();
         };
 
         iterator begin();
