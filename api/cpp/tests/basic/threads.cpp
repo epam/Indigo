@@ -22,6 +22,8 @@
 #include <random>
 #include <thread>
 
+#include <safe_ptr.h>
+
 #include <IndigoMolecule.h>
 #include <IndigoSession.h>
 
@@ -50,6 +52,30 @@ namespace
         const auto& result_2 = m_2.smiles();
         ASSERT_EQ(result_1, result_2);
     }
+
+    void testLoadAromatize(const IndigoSessionPtr& session)
+    {
+        auto m = session->loadMolecule("C1=CC=CC=C1");
+        m.aromatize();
+    }
+
+    void testLoadDearomatize(const IndigoSessionPtr& session)
+    {
+        auto m = session->loadMolecule("c1ccccc1");
+        m.dearomatize();
+    }
+
+    void testAromatize(sf::safe_shared_hide_obj<IndigoMolecule>& m_hidden)
+    {
+        auto m = sf::xlock_safe_ptr(m_hidden);
+        m->aromatize();
+    }
+
+    void testDearomatize(sf::safe_shared_hide_obj<IndigoMolecule>& m_hidden)
+    {
+        auto m = sf::xlock_safe_ptr(m_hidden);
+        m->dearomatize();
+    }
 }
 
 TEST(BasicThreads, Basic)
@@ -59,6 +85,52 @@ TEST(BasicThreads, Basic)
     for (auto i = 0; i < 100; i++)
     {
         threads.emplace_back(testCanonicalSmiles);
+    }
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
+}
+
+
+TEST(BasicThreads, SingleSessionMultiThreads)
+{
+    auto session = IndigoSession::create();
+    std::vector<std::thread> threads;
+    threads.reserve(100);
+    for (auto i = 0; i < 100; i++)
+    {
+        if (i % 2)
+        {
+            threads.emplace_back(testLoadAromatize, std::cref(session));
+        }
+        else
+        {
+            threads.emplace_back(testLoadDearomatize, std::cref(session));
+        }
+    }
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
+}
+
+TEST(BasicThreads, SingleObjectMultiThreads)
+{
+    auto session = IndigoSession::create();
+    sf::safe_shared_hide_obj<IndigoMolecule> m(std::move(session->loadMolecule("C1=CC=CC=C1")));
+    std::vector<std::thread> threads;
+    threads.reserve(100);
+    for (auto i = 0; i < 100; i++)
+    {
+        if (i % 2)
+        {
+            threads.emplace_back(testAromatize, std::ref(m));
+        }
+        else
+        {
+            threads.emplace_back(testDearomatize, std::ref(m));
+        }
     }
     for (auto& thread : threads)
     {

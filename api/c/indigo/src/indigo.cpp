@@ -30,7 +30,9 @@
 #include "molecule/molfile_saver.h"
 #include "reaction/rxnfile_saver.h"
 
-_SessionLocalContainer<Indigo> indigo_self;
+static _SessionLocalContainer<Indigo> indigo_self;
+//std::mutex Indigo::_indigo_begin_mutex;
+thread_local Array<char> Indigo::error_message;
 
 DLLEXPORT Indigo& indigoGetInstance()
 {
@@ -166,7 +168,6 @@ CEXPORT qword indigoAllocSessionId()
     setlocale(LC_NUMERIC, "C");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
-    createCancellationHandler(id);
     return id;
 }
 

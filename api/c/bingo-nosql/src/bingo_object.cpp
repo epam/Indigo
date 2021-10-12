@@ -19,7 +19,10 @@
 using namespace indigo;
 using namespace bingo;
 
-static const int _fp_calc_timeout = 10000;
+namespace
+{
+    constexpr const int _fp_calc_timeout = 10000;
+}
 
 BaseMoleculeQuery::BaseMoleculeQuery(BaseMolecule& mol, bool needs_query_fingerprint) : _base_mol(mol), _needs_query_fingerprint(needs_query_fingerprint)
 {

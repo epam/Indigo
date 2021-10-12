@@ -45,7 +45,7 @@ IndigoBaseMolecule::~IndigoBaseMolecule()
 {
 }
 
-const char* IndigoBaseMolecule::debugInfo()
+const char* IndigoBaseMolecule::debugInfo() const
 {
     return "<base molecule>";
 }
@@ -54,7 +54,7 @@ IndigoMolecule::IndigoMolecule() : IndigoBaseMolecule(MOLECULE)
 {
 }
 
-bool IndigoBaseMolecule::is(IndigoObject& object)
+bool IndigoBaseMolecule::is(const IndigoObject& object)
 {
     int type = object.type;
 
@@ -72,6 +72,11 @@ IndigoMolecule::~IndigoMolecule()
 }
 
 Molecule& IndigoMolecule::getMolecule()
+{
+    return mol;
+}
+
+const Molecule& IndigoMolecule::getMolecule() const
 {
     return mol;
 }
@@ -270,7 +275,7 @@ int IndigoAtom::getIndex()
     return idx;
 }
 
-const char* IndigoAtom::debugInfo()
+const char* IndigoAtom::debugInfo() const
 {
     return "<atom>";
 }
@@ -390,7 +395,7 @@ int IndigoBond::getIndex()
     return idx;
 }
 
-const char* IndigoBond::debugInfo()
+const char* IndigoBond::debugInfo() const
 {
     return "<bond>";
 }
@@ -1820,7 +1825,7 @@ IndigoObject* IndigoMolecule::clone()
     return cloneFrom(*this);
 }
 
-const char* IndigoMolecule::debugInfo()
+const char* IndigoMolecule::debugInfo() const
 {
     return "<molecule>";
 }
@@ -1830,7 +1835,7 @@ IndigoObject* IndigoQueryMolecule::clone()
     return cloneFrom(*this);
 }
 
-const char* IndigoQueryMolecule::debugInfo()
+const char* IndigoQueryMolecule::debugInfo() const
 {
     return "<query molecule>";
 }
@@ -2445,7 +2450,7 @@ IndigoSGroup::~IndigoSGroup()
 {
 }
 
-const char* IndigoSGroup::debugInfo()
+const char* IndigoSGroup::debugInfo() const
 {
     return "<sgroup>";
 }
@@ -2483,7 +2488,7 @@ IndigoSGroupsIter::~IndigoSGroupsIter()
 {
 }
 
-const char* IndigoSGroupsIter::debugInfo()
+const char* IndigoSGroupsIter::debugInfo() const
 {
     return "<sgroups iterator>";
 }
@@ -2534,7 +2539,7 @@ IndigoTGroup::~IndigoTGroup()
 {
 }
 
-const char* IndigoTGroup::debugInfo()
+const char* IndigoTGroup::debugInfo() const
 {
     return "<tgroup>";
 }
@@ -2571,7 +2576,7 @@ IndigoTGroupsIter::~IndigoTGroupsIter()
 {
 }
 
-const char* IndigoTGroupsIter::debugInfo()
+const char* IndigoTGroupsIter::debugInfo() const
 {
     return "<tgroups iterator>";
 }

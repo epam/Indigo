@@ -55,7 +55,7 @@ public:
     void setOptionsHandlers();
 };
 
-_SessionLocalContainer<IndigoInchiContext> inchi_wrapper_self;
+static _SessionLocalContainer<IndigoInchiContext> inchi_wrapper_self;
 
 IndigoInchiContext& indigoInchiGetInstance()
 {

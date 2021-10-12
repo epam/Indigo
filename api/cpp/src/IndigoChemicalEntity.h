@@ -27,13 +27,13 @@ namespace indigo_cpp
     class IndigoChemicalEntity : public IndigoObject
     {
     public:
-        void aromatize() const;
+        void aromatize();
 
-        void dearomatize() const;
+        void dearomatize();
 
-        void layout() const;
+        void layout();
 
-        void clean2d() const;
+        void clean2d();
 
         std::string smiles() const;
 

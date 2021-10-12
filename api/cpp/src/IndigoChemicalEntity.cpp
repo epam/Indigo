@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "IndigoChemicalEntity.h"
-#include <Indigosession.h>
+#include "IndigoSession.h"
 
 #include <indigo-inchi.h>
 
@@ -27,25 +27,25 @@ IndigoChemicalEntity::IndigoChemicalEntity(const int id, IndigoSessionPtr sessio
 {
 }
 
-void IndigoChemicalEntity::aromatize() const
+void IndigoChemicalEntity::aromatize()
 {
     session->setSessionId();
     session->_checkResult(indigoAromatize(id));
 }
 
-void IndigoChemicalEntity::dearomatize() const
+void IndigoChemicalEntity::dearomatize()
 {
     session->setSessionId();
     session->_checkResult(indigoDearomatize(id));
 }
 
-void IndigoChemicalEntity::layout() const
+void IndigoChemicalEntity::layout()
 {
     session->setSessionId();
     session->_checkResult(indigoLayout(id));
 }
 
-void IndigoChemicalEntity::clean2d() const
+void IndigoChemicalEntity::clean2d()
 {
     session->setSessionId();
     session->_checkResult(indigoClean2d(id));

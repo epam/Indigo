@@ -68,3 +68,27 @@ TEST(Basic, IterateSDFile)
     EXPECT_EQ(counter, 245);
     EXPECT_EQ(molecules.size(), 245);
 }
+
+#include <IndigoException.h>
+#include <iostream>
+
+TEST(Basic, IterateSDFilePharmapendium)
+{
+    auto session = IndigoSession::create();
+    auto counter = 0;
+    std::vector<IndigoMoleculeSPtr> molecules;
+    molecules.reserve(245);
+    for (const auto& molecule : session->iterateSDFile(dataPath("molecules/basic/pharmapendium.sdf.gz")))
+    {
+        try
+        {
+            ++counter;
+            molecules.emplace_back(molecule);
+            std::cout << counter << ' ' << molecule->smiles() << std::endl;
+        }
+        catch (const IndigoException&)
+        {}
+    }
+    EXPECT_EQ(counter, 3128);
+    EXPECT_EQ(molecules.size(), 3128);
+}

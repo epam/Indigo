@@ -37,6 +37,8 @@ namespace indigo
         virtual bool isCancelled() = 0;
         virtual const char* cancelledRequestMessage() = 0;
         virtual ~CancellationHandler() = default;
+
+        thread_local static std::unique_ptr<CancellationHandler> cancellation_handler;
     };
 
     class DLLEXPORT TimeoutCancellationHandler : public CancellationHandler

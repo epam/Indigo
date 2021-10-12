@@ -681,7 +681,7 @@ IndigoObject* IndigoCmlMolecule::clone()
     return IndigoMolecule::cloneFrom(*this);
 }
 
-const char* IndigoCmlMolecule::debugInfo()
+const char* IndigoCmlMolecule::debugInfo() const
 {
     return "<cml molecule>";
 }
@@ -725,7 +725,7 @@ IndigoObject* IndigoCmlReaction::clone()
     return IndigoReaction::cloneFrom(*this);
 }
 
-const char* IndigoCmlReaction::debugInfo()
+const char* IndigoCmlReaction::debugInfo() const
 {
     return "<cml reaction>";
 }
@@ -832,7 +832,7 @@ IndigoObject* IndigoCdxMolecule::clone()
     return IndigoMolecule::cloneFrom(*this);
 }
 
-const char* IndigoCdxMolecule::debugInfo()
+const char* IndigoCdxMolecule::debugInfo() const
 {
     return "<cdx molecule>";
 }
@@ -877,7 +877,7 @@ IndigoObject* IndigoCdxReaction::clone()
     return IndigoReaction::cloneFrom(*this);
 }
 
-const char* IndigoCdxReaction::debugInfo()
+const char* IndigoCdxReaction::debugInfo() const
 {
     return "<cdx reaction>";
 }

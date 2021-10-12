@@ -2,22 +2,22 @@
 #ifndef SAFE_PTR_H
 #define SAFE_PTR_H
 
-#include <iostream>
-#include <string>
-#include <vector>
+#include <algorithm>
+#include <array>
 #include <atomic>
+#include <cassert>
+#include <condition_variable>
+#include <iomanip>
+#include <iostream>
+#include <map>
 #include <memory>
 #include <mutex>
-#include <thread>
-#include <map>
-#include <unordered_map>
-#include <condition_variable>
-#include <array>
-#include <sstream>
-#include <cassert>
 #include <random>
-#include <iomanip>
-#include <algorithm>
+#include <sstream>
+#include <string>
+#include <thread>
+#include <unordered_map>
+#include <vector>
 
 // Autodetect C++14
 #if (__cplusplus >= 201402L || _MSC_VER >= 1900)
@@ -442,10 +442,13 @@ namespace sf {
                 for (auto &i : shared_locks_array) i.value = -1;
             }
 
+        bool unregister_thread()
+        {
+            return get_or_set_index(unregister_thread_op) >= 0;
+        }
 
-            bool unregister_thread() { return get_or_set_index(unregister_thread_op) >= 0; }
-
-            int register_thread() {
+        int register_thread()
+        {
                 int cur_index = get_or_set_index();
 
                 if (cur_index == -1) {
@@ -624,7 +627,13 @@ namespace sf {
     };
     // ---------------------------------------------------------------
 
+    template <typename T>
+    using safe_shared_hide_obj =
+        safe_hide_obj<T, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>, std::shared_lock<std::shared_timed_mutex>>;
 
+    template <typename T>
+    using safe_shared_hide_ptr =
+        safe_hide_ptr<T, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>, std::shared_lock<std::shared_timed_mutex>>;
 }
 
 

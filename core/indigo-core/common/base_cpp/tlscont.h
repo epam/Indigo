@@ -97,6 +97,7 @@ namespace indigo
             return *map->at(id);
         }
 
+        // FIXME:MK: it's not thread safe, decide what to do
         T& getLocalCopy(const qword id = TL_GET_SESSION_ID()) const
         {
             const auto map = sf::slock_safe_ptr(_map);
@@ -110,9 +111,7 @@ namespace indigo
         }
 
     private:
-        sf::safe_hide_obj<std::unordered_map<qword, std::unique_ptr<T>>, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>,
-                          std::shared_lock<std::shared_timed_mutex>>
-            _map;
+        sf::safe_shared_hide_obj<std::unordered_map<qword, std::unique_ptr<T>>> _map;
     };
 
 // Macros for working with global variables per each session
@@ -120,7 +119,7 @@ namespace indigo
 #define TL_DECL(type, name) static _SessionLocalContainer<type> TLSCONT_##name
 #define TL_GET(type, name) type& name = (TLSCONT_##name).getLocalCopy()
 #define TL_GET_BY_ID(type, name, id) type& name = (TLSCONT_##name).getLocalCopy(id)
-#define TL_DEF(className, type, name) _SessionLocalContainer<type> className::TLSCONT_##name
+#define TL_DEF(className, type, name) static _SessionLocalContainer<type> className::TLSCONT_##name
 }
 
 // "Quasi-static" variable definition. Calls clear() at the end

@@ -45,9 +45,9 @@ public:
         return _properties;
     }
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
-    static bool is(IndigoObject& object);
+    static bool is(const IndigoObject& object);
 
     indigo::PropertiesMap _properties;
 };
@@ -67,7 +67,7 @@ public:
     static void parseAtomConstraint(const char* type, const char* value, std::unique_ptr<QueryMolecule::Atom>&);
     static QueryMolecule::Atom* parseAtomSMARTS(const char* string);
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     IndigoObject* clone() override;
 
@@ -89,11 +89,13 @@ public:
 
     BaseMolecule& getBaseMolecule() override;
     Molecule& getMolecule() override;
+    const Molecule& getMolecule() const override;
+
     const char* getName() override;
 
     static IndigoMolecule* cloneFrom(IndigoObject& obj);
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     IndigoObject* clone() override;
 
@@ -117,7 +119,7 @@ public:
 
     int getIndex() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 };
 
 class DLLEXPORT IndigoRGroup : public IndigoObject
@@ -168,7 +170,7 @@ public:
     int idx;
 
     int getIndex() override;
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 };
 
 class IndigoAtomNeighbor : public IndigoAtom
@@ -277,7 +279,7 @@ public:
     int getIndex() override;
     void remove() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     static IndigoTGroup& cast(IndigoObject& obj);
     TGroup& get();
@@ -293,7 +295,7 @@ public:
 
     ~IndigoTGroupsIter() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     IndigoObject* next() override;
     bool hasNext() override;
@@ -312,7 +314,7 @@ public:
     int getIndex() override;
     void remove() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     static IndigoSGroup& cast(IndigoObject& obj);
     SGroup& get();
@@ -328,7 +330,7 @@ public:
 
     ~IndigoSGroupsIter() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     IndigoObject* next() override;
     bool hasNext() override;

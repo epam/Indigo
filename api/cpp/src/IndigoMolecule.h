@@ -28,7 +28,10 @@ namespace indigo_cpp
     {
     public:
         IndigoMolecule(int id, IndigoSessionPtr session);
+        IndigoMolecule(IndigoMolecule&&);
+        IndigoMolecule& operator=(IndigoMolecule&&) = default;
         IndigoMolecule(const IndigoMolecule&);
+        IndigoMolecule& operator=(const IndigoMolecule&) = default;
     };
 
     using IndigoMoleculeSPtr = std::shared_ptr<IndigoMolecule>;

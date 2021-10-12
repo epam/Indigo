@@ -168,13 +168,14 @@ public:
     int type;
     virtual const char* getTypeName() const;
 
-    virtual const char* debugInfo();
+    virtual const char* debugInfo() const;
 
     virtual void toString(Array<char>& str);
     virtual void toBuffer(Array<char>& buf);
     virtual BaseMolecule& getBaseMolecule();
     virtual QueryMolecule& getQueryMolecule();
     virtual Molecule& getMolecule();
+    virtual const Molecule& getMolecule() const;
 
     virtual BaseReaction& getBaseReaction();
     virtual QueryReaction& getQueryReaction();
@@ -199,8 +200,6 @@ public:
     virtual void copyProperties(PropertiesMap&);
     virtual void copyProperties(RedBlackStringObjMap<Array<char>>& other);
 
-protected:
-    std::unique_ptr<Array<char>> _dbg_info; // allocated by debugInfo() on demand
 private:
     IndigoObject(const IndigoObject&);
 };
@@ -260,9 +259,10 @@ public:
     Indigo();
     ~Indigo();
 
-    Array<char> error_message;
+    thread_local static Array<char> error_message;
     INDIGO_ERROR_HANDLER error_handler;
     void* error_handler_context;
+//    static std::mutex _indigo_begin_mutex;
 
     IndigoObject& getObject(int handle);
     int countObjects();
@@ -374,19 +374,20 @@ protected:
         Indigo& self = indigoGetInstance();                                                                                                                    \
         try                                                                                                                                                    \
         {                                                                                                                                                      \
-            self.error_message.clear();                                                                                                                        \
-            self.updateCancellationHandler();
-
+            {                                                                                                                                                  \
+                self.error_message.clear();                                                                                                                    \
+                self.updateCancellationHandler();                                                                                                              \
+            }
 #define INDIGO_END(fail)                                                                                                                                       \
-        }                                                                                                                                                      \
-        catch (Exception & ex)                                                                                                                                 \
-        {                                                                                                                                                      \
-            self.error_message.readString(ex.message(), true);                                                                                                 \
-            if (self.error_handler != 0)                                                                                                                       \
-                self.error_handler(ex.message(), self.error_handler_context);                                                                                  \
-            return fail;                                                                                                                                       \
-        }                                                                                                                                                      \
+    }                                                                                                                                                          \
+    catch (Exception & ex)                                                                                                                                     \
+    {                                                                                                                                                          \
+        self.error_message.readString(ex.message(), true);                                                                                                     \
+        if (self.error_handler != 0)                                                                                                                           \
+            self.error_handler(ex.message(), self.error_handler_context);                                                                                      \
         return fail;                                                                                                                                           \
+    }                                                                                                                                                          \
+    return fail;                                                                                                                                               \
     }
 
 #define INDIGO_END_CHECKMSG(success, fail)                                                                                                                     \

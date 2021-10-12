@@ -24,6 +24,7 @@
 #include <thread>
 
 #include <BingoNoSQL.h>
+#include <IndigoException.h>
 #include <IndigoSDFileIterator.h>
 #include <IndigoSession.h>
 
@@ -33,16 +34,6 @@ using namespace indigo_cpp;
 
 namespace
 {
-    //    constexpr const std::array<const char*, 6> choices = {"C", "CC", "CCC", "CCCC", "CCCCC", "CCCCCC"};
-    //    thread_local std::random_device rd;
-    //    thread_local std::mt19937 rng(rd());
-    //    thread_local std::uniform_int_distribution<int> uni(0, 5);
-    //
-    //    std::string randomSmiles()
-    //    {
-    //        return choices.at(uni(rng));
-    //    }
-
     void testCreate()
     {
         auto session_1 = IndigoSession::create();
@@ -55,9 +46,15 @@ namespace
 
     void testInsert(BingoMolecule& bingo)
     {
-        for (const auto& m : bingo.session->iterateSDFile(dataPath("molecules/basic/zinc-slice.sdf.gz")))
+        for (const auto& m : bingo.session->iterateSDFile(dataPath("molecules/basic/pharmapendium.sdf.gz")))
         {
-            bingo.insertRecord(*m);
+            try
+            {
+                bingo.insertRecord(*m);
+            }
+            catch (const IndigoException& e)
+            {
+            }
         }
         // TODO: add check
     }
@@ -110,7 +107,7 @@ TEST(BingoThreads, Insert)
 {
     auto session = IndigoSession::create();
     session->setOption("ignore-stereochemistry-errors", true);
-    auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
+    auto bingo = BingoMolecule::createDatabaseFile(session, "BingoThreads_Insert.db");
     std::vector<std::thread> threads;
     threads.reserve(16);
     for (auto i = 0; i < 16; i++)
@@ -121,6 +118,13 @@ TEST(BingoThreads, Insert)
     {
         thread.join();
     }
+
+    auto search_counter = 0;
+    for (const auto& m : bingo.searchSub(session->loadQueryMolecule("C")))
+    {
+        ++search_counter;
+    }
+    EXPECT_EQ(search_counter, 3128 * 16);
 }
 
 TEST(BingoThreads, InsertDelete)

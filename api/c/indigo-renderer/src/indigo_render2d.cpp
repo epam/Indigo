@@ -35,7 +35,7 @@
 
 using namespace indigo;
 
-_SessionLocalContainer<IndigoRenderer> indigo_renderer_self;
+static _SessionLocalContainer<IndigoRenderer> indigo_renderer_self;
 
 IndigoRenderer& indigoRendererGetInstance()
 {

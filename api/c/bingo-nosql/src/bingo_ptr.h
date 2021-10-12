@@ -5,6 +5,8 @@
 #include <string>
 #include <thread>
 
+#include <safe_ptr.h>
+
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/os_sync_wrapper.h"
@@ -462,7 +464,7 @@ namespace bingo
             size_t _free_off;
         };
 
-        ObjArray<MMFile>* _mm_files;
+        sf::safe_shared_hide_obj<ObjArray<MMFile>>* _mm_files;
 
         size_t _data_offset;
 
@@ -472,27 +474,34 @@ namespace bingo
         std::string _filename;
         int _index_id;
 
-        static void _create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, ObjArray<MMFile>* mm_files, int index_id);
+        static void _create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, sf::safe_shared_hide_obj<ObjArray<MMFile>>& mm_files, int index_id);
 
-        static void _load(const char* filename, size_t alloc_off, ObjArray<MMFile>* mm_files, int index_id, bool read_only);
+        static void _load(const char* filename, size_t alloc_off, sf::safe_shared_hide_obj<ObjArray<MMFile>>& mm_files, int index_id, bool read_only);
 
         template <typename T> BingoAddr allocate(int count = 1)
         {
-            byte* mmf_ptr = (byte*)_mm_files->at(0).ptr();
+            size_t alloc_size, file_idx, file_off, file_size;
+            _BingoAllocatorData* allocator_data;
+            {
+                const auto mm_files = sf::slock_safe_ptr(*_mm_files);
+                byte* mmf_ptr = (byte*)mm_files->at(0).ptr();
 
-            _BingoAllocatorData* allocator_data = (_BingoAllocatorData*)(mmf_ptr + _data_offset);
+                allocator_data = (_BingoAllocatorData*)(mmf_ptr + _data_offset);
 
-            size_t alloc_size = sizeof(T) * count;
+                alloc_size = sizeof(T) * count;
 
-            size_t file_idx = allocator_data->_cur_file_id;
-            size_t file_off = allocator_data->_free_off;
-            size_t file_size = _mm_files->at((int)file_idx).size();
+                file_idx = allocator_data->_cur_file_id;
+                file_off = allocator_data->_free_off;
+                file_size = mm_files->at((int)file_idx).size();
+            }
 
             if (alloc_size > file_size - file_off)
                 _addFile(alloc_size);
 
+            const auto mm_files = sf::slock_safe_ptr(*_mm_files);
+
             file_idx = allocator_data->_cur_file_id;
-            file_size = _mm_files->at((int)file_idx).size();
+            file_size = mm_files->at((int)file_idx).size();
 
             size_t res_off = allocator_data->_free_off;
             size_t res_id = allocator_data->_cur_file_id;

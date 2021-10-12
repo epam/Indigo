@@ -121,9 +121,7 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
 
     _read_only = _getAccessType(option_map);
 
-    BingoPtr<char> h_ptr;
-
-    _mmf_storage.load(_mmf_path.c_str(), h_ptr, index_id, _read_only);
+    _mmf_storage.load(_mmf_path.c_str(), index_id, _read_only);
 
     _header = BingoPtr<_Header>(BingoAddr(0, MMFStorage::max_header_len + BingoAllocator::getAllocatorDataSize()));
 

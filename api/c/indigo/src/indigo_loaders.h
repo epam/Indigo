@@ -229,7 +229,7 @@ public:
     const char* getName() override;
     IndigoObject* clone() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
 protected:
     Molecule _mol;
@@ -246,7 +246,7 @@ public:
     const char* getName() override;
     IndigoObject* clone() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
 protected:
     Reaction _rxn;
@@ -288,7 +288,7 @@ public:
     const char* getName() override;
     IndigoObject* clone() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
 protected:
     Molecule _mol;
@@ -305,7 +305,7 @@ public:
     const char* getName() override;
     IndigoObject* clone() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
 protected:
     Reaction _rxn;

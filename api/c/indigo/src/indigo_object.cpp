@@ -159,16 +159,9 @@ const char* IndigoObject::getTypeName() const
     }
 }
 
-const char* IndigoObject::debugInfo()
+const char* IndigoObject::debugInfo() const
 {
-    if (_dbg_info.get() != 0)
-        return _dbg_info->ptr();
-
-    _dbg_info = std::make_unique<Array<char>>();
-    ArrayOutput out(*_dbg_info);
-    out.printf("<%s>", getTypeName());
-    out.writeChar(0);
-    return _dbg_info->ptr();
+    return getTypeName();
 }
 
 void IndigoObject::toString(Array<char>& str)
@@ -182,6 +175,11 @@ void IndigoObject::toBuffer(Array<char>& buf)
 }
 
 Molecule& IndigoObject::getMolecule()
+{
+    throw IndigoError("%s is not a molecule", debugInfo());
+}
+
+const Molecule& IndigoObject::getMolecule() const
 {
     throw IndigoError("%s is not a molecule", debugInfo());
 }

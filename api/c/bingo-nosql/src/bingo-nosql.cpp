@@ -103,15 +103,17 @@ static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, Ind
     profTimerStart(t, "_insertObjectToDatabase");
     if (bingo_index.getType() == Index::MOLECULE)
     {
-
         profTimerStart(t1, "_preadd");
         if (!IndigoMolecule::is(indigo_obj))
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
 
-        // TODO: Don't aromatize input molecule, aromatize ind_mol instead
-        indigo_obj.getBaseMolecule().aromatize(self.arom_options);
+        Molecule cloned;
+        Array<int> mapping;
+        Array<int> inv_mapping;
+        cloned.clone(indigo_obj.getMolecule(), &mapping, &inv_mapping);
+        cloned.aromatize(self.arom_options);
 
-        IndexMolecule ind_mol(indigo_obj.getMolecule());
+        IndexMolecule ind_mol(cloned);
         profTimerStop(t1);
 
         int id = bingo_index.add(ind_mol, obj_id, *_lockers[db]);
@@ -124,7 +126,14 @@ static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, Ind
 
         indigo_obj.getBaseReaction().aromatize(self.arom_options);
 
-        IndexReaction ind_rxn(indigo_obj.getReaction());
+        Reaction cloned;
+        Array<int> mol_mapping;
+        ObjArray<Array<int>> mapping;
+        ObjArray<Array<int>> inv_mapping;
+        cloned.clone(indigo_obj.getReaction(), &mol_mapping, &mapping, &inv_mapping);
+        cloned.aromatize(self.arom_options);
+
+        IndexReaction ind_rxn(cloned);
 
         int id = bingo_index.add(ind_rxn, obj_id, *_lockers[db]);
         return id;

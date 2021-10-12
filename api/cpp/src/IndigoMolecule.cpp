@@ -28,8 +28,21 @@ IndigoMolecule::IndigoMolecule(const int id, IndigoSessionPtr session) : IndigoB
 {
 }
 
-IndigoMolecule::IndigoMolecule(const IndigoMolecule& other) : IndigoBaseMolecule(other.id, other.session)
+IndigoMolecule::IndigoMolecule(IndigoMolecule&& other) : IndigoBaseMolecule(0, other.session)
 {
-    session->setSessionId();
-    const_cast<int&>(id) = session->_checkResult(indigoClone(other.id));
+    std::swap(const_cast<int&>(id), const_cast<int&>(other.id));
+}
+
+namespace
+{
+    int makeClone(const IndigoMolecule& other)
+    {
+        other.session->setSessionId();
+        return other.session->_checkResult(indigoClone(other.id));
+    }
+
+}
+
+IndigoMolecule::IndigoMolecule(const IndigoMolecule& other) : IndigoBaseMolecule(makeClone(other), other.session)
+{
 }
