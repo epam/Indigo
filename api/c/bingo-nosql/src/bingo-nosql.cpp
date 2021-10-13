@@ -109,11 +109,9 @@ static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, Ind
         if (!IndigoMolecule::is(indigo_obj))
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
 
-        Molecule cloned;
-        cloned.clone(indigo_obj.getMolecule());
-        cloned.aromatize(self.arom_options);
-
-        IndexMolecule ind_mol(cloned);
+        // FIXME: MK: for some reason we need to aromatize input molecule. If we first clone and aromatize cloned, it won't work
+        indigo_obj.getMolecule().aromatize(self.arom_options);
+        IndexMolecule ind_mol(indigo_obj.getMolecule(), self.arom_options);
         t1_timer.stop();
 
         int id = bingo_index.add(ind_mol, obj_id, *_lockers[db]);
@@ -124,11 +122,8 @@ static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, Ind
         if (!IndigoReaction::is(indigo_obj))
             throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");
 
-        Reaction cloned;
-        cloned.clone(indigo_obj.getReaction());
-        cloned.aromatize(self.arom_options);
-        IndexReaction ind_rxn(cloned);
-
+        indigo_obj.getReaction().aromatize(self.arom_options);
+        IndexReaction ind_rxn(indigo_obj.getReaction(), self.arom_options);
         int id = bingo_index.add(ind_rxn, obj_id, *_lockers[db]);
         return id;
     }
@@ -148,9 +143,7 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, Index& bingo_i
         if (!IndigoMolecule::is(indigo_obj))
             throw BingoException("insertObjectWithExtFPToDatabase: Only molecule objects can be added to molecule index");
 
-        indigo_obj.getBaseMolecule().aromatize(self.arom_options);
-
-        IndexMolecule ind_mol(indigo_obj.getMolecule());
+        IndexMolecule ind_mol(indigo_obj.getMolecule(), self.arom_options);
         profTimerStop(t1);
 
         int id = bingo_index.addWithExtFP(ind_mol, obj_id, *_lockers[db], fp);
@@ -161,9 +154,7 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, Index& bingo_i
         if (!IndigoReaction::is(indigo_obj))
             throw BingoException("insertObjectWithExtFPToDatabase: Only reaction objects can be added to reaction index");
 
-        indigo_obj.getBaseReaction().aromatize(self.arom_options);
-
-        IndexReaction ind_rxn(indigo_obj.getReaction());
+        IndexReaction ind_rxn(indigo_obj.getReaction(), self.arom_options);
 
         int id = bingo_index.addWithExtFP(ind_rxn, obj_id, *_lockers[db], fp);
         return id;
@@ -206,13 +197,11 @@ CEXPORT int bingoLoadDatabaseFile(const char* location, const char* options)
 
 CEXPORT int bingoCloseDatabase(int db)
 {
-    BINGO_BEGIN_DB(db)
-    {
-        std::lock_guard<std::mutex> _guard(_bingo_lock);
-        _bingo_instances.remove(db);
-        return 1;
-    }
-    BINGO_END(-1);
+    std::lock_guard<std::mutex> _guard(_bingo_lock);
+    if (((db) < _bingo_instances.begin()) || ((db) >= _bingo_instances.end()) || !_bingo_instances.hasElement(db))                                \
+        throw BingoException("Incorrect database object");                                                                                                 \
+    _bingo_instances.remove(db);
+    return 1;
 }
 
 CEXPORT int bingoInsertRecordObj(int db, int obj)
@@ -704,17 +693,10 @@ CEXPORT int bingoEnumerateId(int db)
 
 CEXPORT int bingoEndSearch(int search_obj)
 {
-    BINGO_BEGIN_SEARCH(search_obj)
-    {
-        // Ensure that such matcher exists
-        std::lock_guard<std::mutex> searches_locker(_searches_lock);
-
-        getMatcher(search_obj);
-
-        _searches.remove(search_obj);
-        return 1;
-    }
-    BINGO_END(-1);
+    std::lock_guard<std::mutex> searches_locker(_searches_lock);
+    getMatcher(search_obj);
+    _searches.remove(search_obj);
+    return 1;
 }
 
 CEXPORT int bingoNext(int search_obj)

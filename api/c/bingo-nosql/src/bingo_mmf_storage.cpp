@@ -44,9 +44,10 @@ void MMFStorage::create(const char* filename, size_t min_size, size_t max_size, 
 
 void MMFStorage::load(const char* filename, int index_id, bool read_only)
 {
-    auto mm_files = sf::xlock_safe_ptr(_mm_files);
-    mm_files->clear();
-
+    {
+        auto mm_files = sf::xlock_safe_ptr(_mm_files);
+        mm_files->clear();
+    }
     BingoAllocator::_load(filename, max_header_len, _mm_files, index_id, read_only);
 }
 
