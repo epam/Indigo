@@ -20,8 +20,7 @@
 #include "indigo_version.h"
 
 #include <atomic>
-
-#include "locale.h"
+#include <clocale>
 
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
@@ -30,8 +29,13 @@
 #include "molecule/molfile_saver.h"
 #include "reaction/rxnfile_saver.h"
 
+//#define INDIGO_DEBUG
+
+#ifdef INDIGO_DEBUG
+#include <iostream>
+#endif
+
 static _SessionLocalContainer<Indigo> indigo_self;
-//std::mutex Indigo::_indigo_begin_mutex;
 thread_local Array<char> Indigo::error_message;
 
 DLLEXPORT Indigo& indigoGetInstance()
@@ -168,6 +172,11 @@ CEXPORT qword indigoAllocSessionId()
     setlocale(LC_NUMERIC, "C");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "IndigoSession(" << id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
     return id;
 }
 
@@ -183,6 +192,11 @@ CEXPORT void indigoReleaseSessionId(qword id)
     IndigoOptionManager::getIndigoOptionManager().removeLocalCopy(id);
     indigo_self.removeLocalCopy(id);
     TL_RELEASE_SESSION_ID(id);
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~IndigoSession(" << id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
 }
 
 CEXPORT const char* indigoGetLastError(void)
@@ -200,13 +214,17 @@ CEXPORT void indigoSetErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
 
 CEXPORT int indigoFree(int handle)
 {
-    try
+    // In some runtimes (e.g. Python) session could be removed before objects during resource releasing stage)
+    if (indigo_self.hasLocalCopy())
     {
-        Indigo& self = indigoGetInstance();
-        self.removeObject(handle);
-    }
-    catch (Exception&)
-    {
+        try
+        {
+            Indigo& self = indigoGetInstance();
+            self.removeObject(handle);
+        }
+        catch (Exception&)
+        {
+        }
     }
     return 1;
 }

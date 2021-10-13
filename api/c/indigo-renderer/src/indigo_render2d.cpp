@@ -33,6 +33,12 @@
 #include "reaction/reaction.h"
 #include "render_cdxml.h"
 
+//#define INDIGO_DEBUG
+
+#ifdef INDIGO_DEBUG
+#include <iostream>
+#endif
+
 using namespace indigo;
 
 static _SessionLocalContainer<IndigoRenderer> indigo_renderer_self;
@@ -437,24 +443,26 @@ void indigoRenderGetCdxmlPropertiesKeyAlignment(Array<char>& value)
         value.readString("right", true);
 }
 
-CEXPORT int indigoRendererInit(void)
+CEXPORT int indigoRendererInit()
 {
-    INDIGO_BEGIN
-    {
-        const auto& context = indigo_renderer_self.createOrGetLocalCopy();
-        return 0;
-    }
-    INDIGO_END(-1);
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "IndigoRenderer(" << TL_GET_SESSION_ID() << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    const auto& context = indigo_renderer_self.createOrGetLocalCopy();
+    return 0;
 }
 
 CEXPORT int indigoRendererDispose()
 {
-    INDIGO_BEGIN
-    {
-        indigo_renderer_self.removeLocalCopy(TL_GET_SESSION_ID());
-        return 0;
-    }
-    INDIGO_END(-1);
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~IndigoRenderer(" << TL_GET_SESSION_ID() << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    indigo_renderer_self.removeLocalCopy(TL_GET_SESSION_ID());
+    return 0;
 }
 
 CEXPORT int indigoRender(int object, int output)

@@ -262,7 +262,6 @@ public:
     thread_local static Array<char> error_message;
     INDIGO_ERROR_HANDLER error_handler;
     void* error_handler_context;
-//    static std::mutex _indigo_begin_mutex;
 
     IndigoObject& getObject(int handle);
     int countObjects();

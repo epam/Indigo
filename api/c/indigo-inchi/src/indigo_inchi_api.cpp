@@ -21,6 +21,12 @@
 #include "indigo_internal.h"
 #include "indigo_molecule.h"
 
+//#define INDIGO_DEBUG
+
+#ifdef INDIGO_DEBUG
+#include <iostream>
+#endif
+
 using namespace indigo;
 
 CEXPORT const char* indigoInchiVersion()
@@ -69,24 +75,26 @@ IndigoInchiContext& indigoInchiGetInstance()
 //
 
 
-CEXPORT int indigoInchiInit(void)
+CEXPORT int indigoInchiInit()
 {
-    INDIGO_BEGIN
-    {
-        IndigoInchiContext& inchi_context = inchi_wrapper_self.createOrGetLocalCopy();
-        return 0;
-    }
-    INDIGO_END(-1);
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "IndigoInchi(" << TL_GET_SESSION_ID() << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    IndigoInchiContext& inchi_context = inchi_wrapper_self.createOrGetLocalCopy();
+    return 0;
 }
 
 CEXPORT int indigoInchiDispose()
 {
-    INDIGO_BEGIN
-    {
-        inchi_wrapper_self.removeLocalCopy();
-        return 0;
-    }
-    INDIGO_END(-1);
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~IndigoInchi(" << TL_GET_SESSION_ID() << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    inchi_wrapper_self.removeLocalCopy();
+    return 0;
 }
 
 CEXPORT int indigoInchiResetOptions(void)

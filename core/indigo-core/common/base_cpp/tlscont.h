@@ -109,6 +109,12 @@ namespace indigo
             map->erase(id);
         }
 
+        bool hasLocalCopy(const qword id = TL_GET_SESSION_ID()) const
+        {
+            const auto map = sf::slock_safe_ptr(_map);
+            return map->count(id) > 0;
+        }
+
     private:
         sf::safe_shared_hide_obj<std::unordered_map<qword, std::unique_ptr<T>>> _map;
     };
