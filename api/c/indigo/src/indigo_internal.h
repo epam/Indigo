@@ -25,7 +25,6 @@
 #endif
 
 #include <memory>
-#include <mutex>
 #include <utility>
 
 #include "indigo.h"
@@ -264,7 +263,7 @@ public:
     void* error_handler_context;
 
     IndigoObject& getObject(int handle);
-    int countObjects();
+    int countObjects() const;
 
     int addObject(IndigoObject* obj);
 
@@ -347,11 +346,13 @@ public:
 
     bool scsr_ignore_chem_templates;
 
-protected:
-    RedBlackMap<int, IndigoObject*> _objects;
-
-    int _next_id;
-    std::mutex _objects_lock;
+private:
+    struct ObjectsHolder
+    {
+        RedBlackMap<int, IndigoObject*> objects;
+        int next_id = 1000; // FIXME:MK: Why does it matter?
+    };
+    sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
 
     int _indigo_id;
 };

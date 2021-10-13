@@ -107,20 +107,26 @@ void Indigo::init()
     _indigo_id = global_id++;
 }
 
-Indigo::Indigo() : _next_id(1000)
+Indigo::Indigo()
 {
     init();
 }
 
 void Indigo::removeAllObjects()
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
+    auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
     int i;
 
-    for (i = _objects.begin(); i != _objects.end(); i = _objects.next(i))
-        delete _objects.value(i);
-
-    _objects.clear();
+    for (i = objects_holder->objects.begin(); i != objects_holder->objects.end(); i = objects_holder->objects.next(i))
+    {
+#ifdef INDIGO_DEBUG
+        std::stringstream ss;
+        ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << _objects.key(i) << ")";
+        std::cout << ss.str() << std::endl;
+#endif
+        delete objects_holder->objects.value(i);
+    }
+    objects_holder->objects.clear();
 }
 
 void Indigo::updateCancellationHandler()
@@ -252,28 +258,38 @@ CEXPORT void indigoSetErrorMessage(const char* message)
 
 int Indigo::addObject(IndigoObject* obj)
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
-    int id = _next_id++;
-    _objects.insert(id, obj);
+    auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
+    int id = objects_holder->next_id++;
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    objects_holder->objects.insert(id, obj);
     return id;
 }
 
 void Indigo::removeObject(int id)
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
-    if (_objects.at2(id) == 0)
+    auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    if (objects_holder->objects.at2(id) == 0)
         return;
-    delete _objects.at(id);
-    _objects.remove(id);
+    delete objects_holder->objects.at(id);
+    objects_holder->objects.remove(id);
 }
 
 IndigoObject& Indigo::getObject(int handle)
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
+    auto objects_holder = sf::slock_safe_ptr(_objects_holder);
 
     try
     {
-        return *_objects.at(handle);
+        return *objects_holder->objects.at(handle);
     }
     catch (RedBlackMap<int, IndigoObject*>::Error& e)
     {
@@ -281,11 +297,10 @@ IndigoObject& Indigo::getObject(int handle)
     }
 }
 
-int Indigo::countObjects()
+int Indigo::countObjects() const
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
-
-    return _objects.size();
+    auto objects_holder = sf::slock_safe_ptr(_objects_holder);
+    return objects_holder->objects.size();
 }
 
 static TemporaryThreadObjManager<Indigo::TmpData> _indigo_temporary_obj_manager;
