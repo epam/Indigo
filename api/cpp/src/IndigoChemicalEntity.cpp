@@ -68,3 +68,9 @@ std::string IndigoChemicalEntity::inchi() const
     session->setSessionId();
     return session->_checkResultString(indigoInchiGetInchi(id));
 }
+
+std::string IndigoChemicalEntity::rawData() const
+{
+    session->setSessionId();
+    return session->_checkResultString(indigoRawData(id));
+}

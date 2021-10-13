@@ -33,9 +33,9 @@ namespace indigo_cpp
 
         void deleteRecord(int recordId);
 
-        BingoResultIterator<target_t> searchSub(const query_t& query, const std::string& options = "");
+        BingoResultIterator<target_t> searchSub(const query_t& query, const std::string& options = "") const;
         BingoResultIterator<target_t> searchSim(const target_t& query, double min, double max = 1.0,
-                                                IndigoSimilarityMetric metric = IndigoSimilarityMetric::TANIMOTO);
+                                                IndigoSimilarityMetric metric = IndigoSimilarityMetric::TANIMOTO) const;
 
         IndigoSessionPtr session;
 

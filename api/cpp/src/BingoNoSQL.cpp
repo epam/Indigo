@@ -75,7 +75,7 @@ template <typename target_t, typename query_t> void BingoNoSQL<target_t, query_t
 }
 
 template <typename target_t, typename query_t>
-BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSub(const query_t& query, const std::string& options)
+BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSub(const query_t& query, const std::string& options) const
 {
     session->setSessionId();
     return {session->_checkResult(bingoSearchSub(id, query.id, options.c_str())), session};
@@ -83,7 +83,7 @@ BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSub(const que
 
 template <typename target_t, typename query_t>
 BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSim(const target_t& query, const double min, const double max,
-                                                                       const IndigoSimilarityMetric metric)
+                                                                       const IndigoSimilarityMetric metric) const
 {
     session->setSessionId();
     return {session->_checkResult(bingoSearchSim(id, query.id, min, max, to_string(metric))), session};

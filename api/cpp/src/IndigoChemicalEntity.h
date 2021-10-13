@@ -43,6 +43,8 @@ namespace indigo_cpp
 
         virtual std::string ctfile() const = 0;
 
+        std::string rawData() const;
+
     protected:
         IndigoChemicalEntity(int id, IndigoSessionPtr session);
         friend class IndigoSession;

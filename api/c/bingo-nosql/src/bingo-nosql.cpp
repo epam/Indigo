@@ -108,9 +108,7 @@ static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, Ind
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
 
         Molecule cloned;
-        Array<int> mapping;
-        Array<int> inv_mapping;
-        cloned.clone(indigo_obj.getMolecule(), &mapping, &inv_mapping);
+        cloned.clone(indigo_obj.getMolecule());
         cloned.aromatize(self.arom_options);
 
         IndexMolecule ind_mol(cloned);
@@ -124,15 +122,9 @@ static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, Ind
         if (!IndigoReaction::is(indigo_obj))
             throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");
 
-        indigo_obj.getBaseReaction().aromatize(self.arom_options);
-
         Reaction cloned;
-        Array<int> mol_mapping;
-        ObjArray<Array<int>> mapping;
-        ObjArray<Array<int>> inv_mapping;
-        cloned.clone(indigo_obj.getReaction(), &mol_mapping, &mapping, &inv_mapping);
+        cloned.clone(indigo_obj.getReaction());
         cloned.aromatize(self.arom_options);
-
         IndexReaction ind_rxn(cloned);
 
         int id = bingo_index.add(ind_rxn, obj_id, *_lockers[db]);

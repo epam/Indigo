@@ -3014,10 +3014,20 @@ void MolfileLoader::_fillSGroupsParentIndices()
     for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        auto& set = indices.get(sgroup.parent_group);
+        const auto& set = indices.get(sgroup.parent_group);
         if (set.size() == 1)
         {
-            sgroup.parent_idx = set.key(set.begin());
+            // TODO: check fix
+            auto parent_idx = set.key(set.begin());
+            SGroup& parent_sgroup = sgroups.getSGroup(parent_idx);
+            if (&sgroup != &parent_sgroup)
+            {
+                sgroup.parent_idx = set.key(set.begin());
+            }
+            else
+            {
+                sgroup.parent_idx = -1;
+            }
         }
         else
         {

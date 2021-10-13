@@ -44,9 +44,9 @@ namespace
         const auto bingo_2 = BingoMolecule::createDatabaseFile(session_2, ss.str() + "_2.db");
     }
 
-    void testInsert(BingoMolecule& bingo)
+    void testInsert(BingoMolecule& bingo, const char* path)
     {
-        for (const auto& m : bingo.session->iterateSDFile(dataPath("molecules/basic/pharmapendium.sdf.gz")))
+        for (const auto& m : bingo.session->iterateSDFile(dataPath(path)))
         {
             try
             {
@@ -56,17 +56,25 @@ namespace
             {
             }
         }
-        // TODO: add check
     }
 
-    void testInsertDelete(BingoMolecule& bingo)
+    void testInsertDelete(BingoMolecule& bingo, const char* path)
     {
-        for (const auto& m : bingo.session->iterateSDFile(dataPath("molecules/basic/zinc-slice.sdf.gz")))
+        for (const auto& m : bingo.session->iterateSDFile(dataPath(path)))
         {
             auto id = bingo.insertRecord(*m);
             bingo.deleteRecord(id);
         }
-        // TODO: add check
+    }
+
+    void checkCount(const BingoMolecule& bingo, const size_t count, const char* substructure = "C")
+    {
+        auto counter = 0;
+        for (const auto& m : bingo.searchSub(bingo.session->loadQueryMolecule(substructure)))
+        {
+            ++counter;
+        }
+        EXPECT_EQ(counter, count);
     }
 }
 
@@ -99,11 +107,25 @@ TEST(BingoThreads, InsertSingleThread)
     auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
     for (auto i = 0; i < 1; i++)
     {
-        testInsert(bingo);
+        testInsert(bingo, "molecules/basic/zinc-slice.sdf.gz");
     }
+    checkCount(bingo, 992);
 }
 
-TEST(BingoThreads, Insert)
+TEST(BingoThreads, DISABLED_InsertSingleThreadPharmapendium)
+{
+    auto session = IndigoSession::create();
+    session->setOption("ignore-stereochemistry-errors", true);
+    auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
+    for (auto i = 0; i < 1; i++)
+    {
+        testInsert(bingo, "molecules/basic/pharmapendium.sdf.gz");
+    }
+    checkCount(bingo, 3029);
+}
+
+
+TEST(BingoThreads, InsertMultipleThreads)
 {
     auto session = IndigoSession::create();
     session->setOption("ignore-stereochemistry-errors", true);
@@ -112,22 +134,17 @@ TEST(BingoThreads, Insert)
     threads.reserve(16);
     for (auto i = 0; i < 16; i++)
     {
-        threads.emplace_back(testInsert, std::ref(bingo));
+        threads.emplace_back(testInsert, std::ref(bingo), "molecules/basic/zinc-slice.sdf.gz");
     }
     for (auto& thread : threads)
     {
         thread.join();
     }
 
-    auto search_counter = 0;
-    for (const auto& m : bingo.searchSub(session->loadQueryMolecule("C")))
-    {
-        ++search_counter;
-    }
-    EXPECT_EQ(search_counter, 3128 * 16);
+    checkCount(bingo, 992 * 16);
 }
 
-TEST(BingoThreads, InsertDelete)
+TEST(BingoThreads, InsertDeleteMultipleThreads)
 {
     auto session = IndigoSession::create();
     auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
@@ -135,10 +152,12 @@ TEST(BingoThreads, InsertDelete)
     threads.reserve(16);
     for (auto i = 0; i < 16; i++)
     {
-        threads.emplace_back(testInsertDelete, std::ref(bingo));
+        threads.emplace_back(testInsertDelete, std::ref(bingo), "molecules/basic/zinc-slice.sdf.gz");
     }
     for (auto& thread : threads)
     {
         thread.join();
     }
+
+    checkCount(bingo, 0);
 }

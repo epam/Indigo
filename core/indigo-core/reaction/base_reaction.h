@@ -208,7 +208,7 @@ namespace indigo
 
         static bool haveCoord(BaseReaction& reaction);
 
-        void clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<Array<int>>* mappings, ObjArray<Array<int>>* inv_mappings);
+        void clone(BaseReaction& other, Array<int>* mol_mapping = nullptr, ObjArray<Array<int>>* mappings = nullptr, ObjArray<Array<int>>* inv_mappings = nullptr);
 
         Array<char> name;
 

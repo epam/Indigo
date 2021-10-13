@@ -72,7 +72,7 @@ TEST(Basic, IterateSDFile)
 #include <IndigoException.h>
 #include <iostream>
 
-TEST(Basic, IterateSDFilePharmapendium)
+TEST(Basic, DISABLED_IterateSDFilePharmapendium)
 {
     auto session = IndigoSession::create();
     auto counter = 0;
