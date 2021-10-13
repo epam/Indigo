@@ -19,6 +19,9 @@
 #ifndef __profiling_h__
 #define __profiling_h__
 
+#include <atomic>
+#include <safe_ptr.h>
+
 #include "base_c/nano.h"
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
@@ -30,15 +33,11 @@
 #endif
 
 #define _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
-    static int var_name##_name_index;                                                                                                                          \
+    static std::atomic<int> var_name##_name_index;                                                                                                             \
     if (var_name##_name_index == 0)                                                                                                                            \
     {                                                                                                                                                          \
-        std::lock_guard<std::mutex> locker(indigo::_profiling_global_lock);                                                                                               \
-        if (var_name##_name_index == 0)                                                                                                                        \
-        {                                                                                                                                                      \
-            indigo::ProfilingSystem& inst = indigo::ProfilingSystem::getInstance();                                                                            \
-            var_name##_name_index = inst.getNameIndex(name);                                                                                                   \
-        }                                                                                                                                                      \
+        auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                                                                \
+        var_name##_name_index = inst->getNameIndex(name);                                                                                                      \
     }
 
 #define profTimerStart(var_name, name)                                                                                                                         \
@@ -55,22 +54,22 @@
     do                                                                                                                                                         \
     {                                                                                                                                                          \
         _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
-        indigo::ProfilingSystem& inst = indigo::ProfilingSystem::getInstance();                                                                                \
-        inst.addTimer(var_name##_name_index, dt);                                                                                                              \
+        auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                                                                \
+        inst->addTimer(var_name##_name_index, dt);                                                                                                             \
     } while (false)
 
 #define profIncCounter(name, count)                                                                                                                            \
     do                                                                                                                                                         \
     {                                                                                                                                                          \
         _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
-        indigo::ProfilingSystem& inst = indigo::ProfilingSystem::getInstance();                                                                                \
-        inst.addCounter(var_name##_name_index, count);                                                                                                         \
+        auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                                                                \
+        inst->addCounter(var_name##_name_index, count);                                                                                                        \
     } while (false)
 
-#define profTimersReset() indigo::ProfilingSystem::getInstance().reset(false)
-#define profTimersResetSession() indigo::ProfilingSystem::getInstance().reset(true)
+#define profTimersReset() sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance())->reset(false)
+#define profTimersResetSession() sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance())->reset(true)
 
-#define profGetStatistics(output, all) indigo::ProfilingSystem::getInstance().getStatistics(output, all)
+#define profGetStatistics(output, all) sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance())->getStatistics(output, all)
 
 namespace indigo
 {
@@ -79,7 +78,7 @@ namespace indigo
     class DLLEXPORT ProfilingSystem
     {
     public:
-        static ProfilingSystem& getInstance();
+        static sf::safe_shared_hide_obj<ProfilingSystem>& getInstance();
 
         static int getNameIndex(const char* name, bool add_if_not_exists = true);
 
@@ -135,7 +134,7 @@ namespace indigo
         Array<int> _sorted_records;
         std::mutex _lock;
 
-        static ObjArray<Array<char>>& getNames();
+        static sf::safe_shared_hide_obj<ObjArray<Array<char>>> _names;
     };
 
     // This class shouldn't be used explicitly
@@ -143,6 +142,7 @@ namespace indigo
     {
     public:
         explicit _ProfilingTimer(int name_index);
+        ~_ProfilingTimer();
 
         qword stop();
         qword getTime() const;
@@ -152,9 +152,6 @@ namespace indigo
         int _name_index;
         qword _start_time, _dt;
     };
-
-    extern DLLEXPORT std::mutex _profiling_global_lock;
-
 } // namespace indigo
 
 #ifdef _WIN32

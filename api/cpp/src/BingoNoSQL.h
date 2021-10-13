@@ -39,6 +39,8 @@ namespace indigo_cpp
 
         IndigoSessionPtr session;
 
+        std::string getStatistics(bool for_session = true) const;
+
     private:
         BingoNoSQL(IndigoSessionPtr indigo, int e);
 

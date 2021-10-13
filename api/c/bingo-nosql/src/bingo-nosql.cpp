@@ -19,8 +19,8 @@
 #include "bingo-nosql.h"
 
 #include <cstdio>
-#include <string>
 #include <shared_mutex>
+#include <string>
 
 #include "bingo_index.h"
 #include "bingo_internal.h"
@@ -101,9 +101,25 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
 static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, IndigoObject& indigo_obj, int obj_id)
 {
     profTimerStart(t, "_insertObjectToDatabase");
+    //    static std::atomic<int> t_name_index;                                                                                                                          \
+//    if (t_name_index == 0)                                                                                                                            \
+//    {                                                                                                                                                     \
+//        auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                          \
+//        t_name_index = inst->getNameIndex("_insertObjectToDatabase");                                                                                                   \
+//    }
+    //    indigo::_ProfilingTimer t_timer(t_name_index);
+
     if (bingo_index.getType() == Index::MOLECULE)
     {
         profTimerStart(t1, "_preadd");
+        //        static std::atomic<int> t1_name_index;                                                                                                                          \
+//        if (t1_name_index == 0)                                                                                                                            \
+//        {                                                                                                                                                     \
+//            auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                          \
+//            t1_name_index = inst->getNameIndex("_preadd");                                                                                                   \
+//        }
+        //        indigo::_ProfilingTimer t1_timer(t1_name_index);
+
         if (!IndigoMolecule::is(indigo_obj))
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
 
@@ -112,7 +128,7 @@ static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, Ind
         cloned.aromatize(self.arom_options);
 
         IndexMolecule ind_mol(cloned);
-        profTimerStop(t1);
+        t1_timer.stop();
 
         int id = bingo_index.add(ind_mol, obj_id, *_lockers[db]);
         return id;
@@ -830,4 +846,17 @@ CEXPORT int bingoGetObject(int search_obj)
         return self.addObject(matcher.currentObject());
     }
     BINGO_END(-1);
+}
+
+CEXPORT const char* bingoProfilingGetStatistics(int for_session)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput output(tmp.string);
+        profGetStatistics(output, for_session);
+        output.writeByte(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(nullptr);
 }

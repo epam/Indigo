@@ -89,4 +89,10 @@ BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSim(const tar
     return {session->_checkResult(bingoSearchSim(id, query.id, min, max, to_string(metric))), session};
 }
 
+template <typename target_t, typename query_t> std::string BingoNoSQL<target_t, query_t>::getStatistics(bool for_session) const
+{
+    session->setSessionId();
+    return session->_checkResultString(bingoProfilingGetStatistics(static_cast<int>(for_session)));
+}
+
 template class indigo_cpp::BingoNoSQL<IndigoMolecule, IndigoQueryMolecule>;

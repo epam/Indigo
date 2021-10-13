@@ -124,6 +124,7 @@ TEST(BingoThreads, DISABLED_InsertSingleThreadPharmapendium)
     checkCount(bingo, 3029);
 }
 
+#include <iostream>
 
 TEST(BingoThreads, InsertMultipleThreads)
 {
@@ -134,14 +135,16 @@ TEST(BingoThreads, InsertMultipleThreads)
     threads.reserve(16);
     for (auto i = 0; i < 16; i++)
     {
-        threads.emplace_back(testInsert, std::ref(bingo), "molecules/basic/zinc-slice.sdf.gz");
+        threads.emplace_back(testInsert, std::ref(bingo), "molecules/basic/Compound_0000001_0000250.sdf.gz");
     }
     for (auto& thread : threads)
     {
         thread.join();
     }
 
-    checkCount(bingo, 992 * 16);
+    checkCount(bingo, 241 * 16);
+
+    std::cout << bingo.getStatistics();
 }
 
 TEST(BingoThreads, InsertDeleteMultipleThreads)

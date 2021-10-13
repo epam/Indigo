@@ -368,7 +368,8 @@ CEXPORT qword indigoDbgProfilingGetCounter(const char* name, int whole_session)
 {
     INDIGO_BEGIN
     {
-        return indigo::ProfilingSystem::getInstance().getLabelCallCount(name, whole_session != 0);
+        auto prof_inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());
+        return prof_inst->getLabelCallCount(name, whole_session != 0);
     }
     INDIGO_END(-1);
 }
