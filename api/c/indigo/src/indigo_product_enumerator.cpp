@@ -128,6 +128,12 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
                 ReactionLayout layout(out_reaction, self.smart_layout);
                 layout.layout_orientation = (layout_orientation_value)self.layout_orientation;
                 layout.make();
+                Array<char> buff;
+                ArrayOutput out(buff);
+                RxnfileSaver rxn_saver(out);
+                rxn_saver.saveReaction(out_reaction);
+                out.writeByte(0);
+                printf("%s\n", buff.ptr());
                 out_reaction.markStereocenterBonds();
             }
 
