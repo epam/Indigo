@@ -65,7 +65,7 @@ template <typename target_t, typename query_t> void BingoNoSQL<target_t, query_t
 template <typename target_t, typename query_t> int BingoNoSQL<target_t, query_t>::insertRecord(const target_t& entity)
 {
     session->setSessionId();
-    return session->_checkResult(bingoInsertRecordObj(id, entity.id));
+    return session->_checkResult(bingoInsertRecordObj(id, entity.id()));
 }
 
 template <typename target_t, typename query_t> void BingoNoSQL<target_t, query_t>::deleteRecord(int recordId)
@@ -78,7 +78,7 @@ template <typename target_t, typename query_t>
 BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSub(const query_t& query, const std::string& options) const
 {
     session->setSessionId();
-    return {session->_checkResult(bingoSearchSub(id, query.id, options.c_str())), session};
+    return {session->_checkResult(bingoSearchSub(id, query.id(), options.c_str())), session};
 }
 
 template <typename target_t, typename query_t>
@@ -86,7 +86,7 @@ BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSim(const tar
                                                                        const IndigoSimilarityMetric metric) const
 {
     session->setSessionId();
-    return {session->_checkResult(bingoSearchSim(id, query.id, min, max, to_string(metric))), session};
+    return {session->_checkResult(bingoSearchSim(id, query.id(), min, max, to_string(metric))), session};
 }
 
 template <typename target_t, typename query_t> std::string BingoNoSQL<target_t, query_t>::getStatistics(bool for_session) const

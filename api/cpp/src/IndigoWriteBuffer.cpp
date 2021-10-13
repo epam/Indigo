@@ -29,11 +29,11 @@ IndigoWriteBuffer::IndigoWriteBuffer(const int id, IndigoSessionPtr session) : I
 
 std::vector<char> IndigoWriteBuffer::toBuffer() const
 {
-    session->setSessionId();
+    session()->setSessionId();
     char* buffer = nullptr;
     int size = 0;
-    session->_checkResult(indigoToBuffer(id, &buffer, &size));
-    return std::vector<char>(buffer, buffer + size);
+    session()->_checkResult(indigoToBuffer(id(), &buffer, &size));
+    return {buffer, buffer + size};  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
 std::string IndigoWriteBuffer::toString() const

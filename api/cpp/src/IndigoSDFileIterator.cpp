@@ -56,15 +56,15 @@ IndigoSDFileIterator::iterator IndigoSDFileIterator::end()
 
 void IndigoSDFileIterator::next()
 {
-    session->setSessionId();
-    auto nextId = session->_checkResult(indigoNext(id));
+    session()->setSessionId();
+    auto nextId = session()->_checkResult(indigoNext(id()));
     if (nextId == 0)
     {
         _current = nullptr;
     }
     else
     {
-        _current = std::make_shared<IndigoMolecule>(nextId, session);
+        _current = std::make_shared<IndigoMolecule>(nextId, session());
     }
 }
 

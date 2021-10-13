@@ -26,7 +26,7 @@
 
 #include <indigo-inchi.h>
 
-#include "IndigoChemicalEntity.h"
+#include "IndigoChemicalStructure.h"
 #include "IndigoSession.h"
 
 using namespace indigo_cpp;
@@ -53,8 +53,8 @@ IndigoInChI::~IndigoInChI()
     indigoInchiDispose();
 }
 
-std::string IndigoInChI::getInChI(const IndigoChemicalEntity& data) const
+std::string IndigoInChI::getInChI(const IndigoChemicalStructure& data) const
 {
     session->setSessionId();
-    return {session->_checkResultString(indigoInchiGetInchi(data.id))};
+    return {session->_checkResultString(indigoInchiGetInchi(data.id()))};
 }

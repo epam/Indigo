@@ -16,8 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __profiling_h__
-#define __profiling_h__
+#pragma once
 
 #include <atomic>
 #include <safe_ptr.h>
@@ -27,12 +26,7 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/os_sync_wrapper.h"
 
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
-
-#define _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
+#define PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
     static std::atomic<int> var_name##_name_index;                                                                                                             \
     if (var_name##_name_index == 0)                                                                                                                            \
     {                                                                                                                                                          \
@@ -41,8 +35,8 @@
     }
 
 #define profTimerStart(var_name, name)                                                                                                                         \
-    _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                       \
-    indigo::_ProfilingTimer var_name##_timer(var_name##_name_index)
+    PROF_GET_NAME_INDEX(var_name, name)                                                                                                                       \
+    indigo::ProfilingTimer var_name##_timer(var_name##_name_index)
 
 #define profTimerStop(var_name) var_name##_timer.stop()
 
@@ -53,7 +47,7 @@
 #define profIncTimer(name, dt)                                                                                                                                 \
     do                                                                                                                                                         \
     {                                                                                                                                                          \
-        _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
+        PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
         auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                                                                \
         inst->addTimer(var_name##_name_index, dt);                                                                                                             \
     } while (false)
@@ -61,7 +55,7 @@
 #define profIncCounter(name, count)                                                                                                                            \
     do                                                                                                                                                         \
     {                                                                                                                                                          \
-        _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
+        PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
         auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                                                                \
         inst->addCounter(var_name##_name_index, count);                                                                                                        \
     } while (false)
@@ -80,7 +74,7 @@ namespace indigo
     public:
         static sf::safe_shared_hide_obj<ProfilingSystem>& getInstance();
 
-        static int getNameIndex(const char* name, bool add_if_not_exists = true);
+        int getNameIndex(const char* name, bool add_if_not_exists = true);
 
         void addTimer(int name_index, qword dt);
         void addCounter(int name_index, int value);
@@ -97,7 +91,7 @@ namespace indigo
     private:
         struct Record
         {
-            enum
+            enum class RecordType
             {
                 TYPE_TIMER,
                 TYPE_COUNTER
@@ -117,7 +111,7 @@ namespace indigo
 
             Data current, total;
 
-            int type;
+            RecordType type;
 
             void reset(bool all);
         };
@@ -125,24 +119,25 @@ namespace indigo
         static int _recordsCmp(int idx1, int idx2, void* context);
 
         void _printTimerData(const Record::Data& data, Output& output);
-        void _printCounterData(const Record::Data& data, Output& output);
+        static void _printCounterData(const Record::Data& data, Output& output);
 
         bool _hasLabelIndex(int name_index);
         void _ensureRecordExistanceLocked(int name_index);
 
+        ObjArray<Array<char>> _names;
         ObjArray<Record> _records;
         Array<int> _sorted_records;
-        std::mutex _lock;
-
-        static sf::safe_shared_hide_obj<ObjArray<Array<char>>> _names;
     };
 
-    // This class shouldn't be used explicitly
-    class DLLEXPORT _ProfilingTimer
+    class DLLEXPORT ProfilingTimer
     {
     public:
-        explicit _ProfilingTimer(int name_index);
-        ~_ProfilingTimer();
+        explicit ProfilingTimer(int name_index);
+        ProfilingTimer(ProfilingTimer&&) = delete;
+        ProfilingTimer& operator=(ProfilingTimer&&) = delete;
+        ProfilingTimer(const ProfilingTimer&) = delete;
+        ProfilingTimer& operator=(const ProfilingTimer&) = delete;
+        ~ProfilingTimer();
 
         qword stop();
         qword getTime() const;
@@ -152,10 +147,4 @@ namespace indigo
         int _name_index;
         qword _start_time, _dt;
     };
-} // namespace indigo
-
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
-
-#endif // __profiling_h__
+}

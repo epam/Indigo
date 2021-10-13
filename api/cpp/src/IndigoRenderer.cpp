@@ -26,7 +26,7 @@
 
 #include <indigo-renderer.h>
 
-#include "IndigoChemicalEntity.h"
+#include "IndigoChemicalStructure.h"
 #include "IndigoSession.h"
 #include "IndigoWriteBuffer.h"
 
@@ -54,20 +54,20 @@ IndigoRenderer::~IndigoRenderer()
     indigoRendererDispose();
 }
 
-std::string IndigoRenderer::svg(const IndigoChemicalEntity& data) const
+std::string IndigoRenderer::svg(const IndigoChemicalStructure& data) const
 {
     session->setSessionId();
     session->setOption("render-output-format", std::string("svg"));
-    const auto buffer = session->writeBuffer();
-    session->_checkResult(indigoRender(data.id, buffer.id));
+    const auto& buffer = session->writeBuffer();
+    session->_checkResult(indigoRender(data.id(), buffer.id()));
     return buffer.toString();
 }
 
-std::vector<char> IndigoRenderer::png(const IndigoChemicalEntity& data) const
+std::vector<char> IndigoRenderer::png(const IndigoChemicalStructure& data) const
 {
     session->setSessionId();
     session->setOption("render-output-format", std::string("png"));
-    const auto buffer = session->writeBuffer();
-    session->_checkResult(indigoRender(data.id, buffer.id));
+    const auto& buffer = session->writeBuffer();
+    session->_checkResult(indigoRender(data.id(), buffer.id()));
     return buffer.toBuffer();
 }

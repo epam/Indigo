@@ -25,7 +25,7 @@ namespace indigo_cpp
             using value_type = IndigoMoleculeSPtr;
             using reference = value_type&;
             using pointer = const value_type*;
-            using iterator_category = std::input_iterator_tag;
+            // using iterator_category = std::input_iterator_tag;
 
             explicit iterator(IndigoSDFileIterator* obj);
 

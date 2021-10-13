@@ -25,7 +25,7 @@
 
 namespace indigo_cpp
 {
-    class IndigoChemicalEntity;
+    class IndigoChemicalStructure;
 
     class IndigoRenderer
     {
@@ -36,8 +36,8 @@ namespace indigo_cpp
         IndigoRenderer(IndigoRenderer const&) = delete;
         void operator=(IndigoRenderer const&) = delete;
 
-        std::string svg(const IndigoChemicalEntity& data) const;
-        std::vector<char> png(const IndigoChemicalEntity& data) const;
+        std::string svg(const IndigoChemicalStructure& data) const;
+        std::vector<char> png(const IndigoChemicalStructure& data) const;
 
     private:
         IndigoSessionPtr session;

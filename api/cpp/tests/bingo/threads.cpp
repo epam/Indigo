@@ -67,6 +67,16 @@ namespace
         }
     }
 
+    void testSearchSub(const BingoMolecule& bingo, const IndigoQueryMolecule& q)
+    {
+        auto counter = 0;
+        for (const auto& t : bingo.searchSub(q))
+        {
+            ++counter;
+        }
+        EXPECT_GT(counter, 0);
+    }
+
     void checkCount(const BingoMolecule& bingo, const size_t count, const char* substructure = "C")
     {
         auto counter = 0;
@@ -105,11 +115,11 @@ TEST(BingoThreads, InsertSingleThread)
     auto session = IndigoSession::create();
     session->setOption("ignore-stereochemistry-errors", true);
     auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
-    for (auto i = 0; i < 1; i++)
+    for (auto i = 0; i < 16; i++)
     {
-        testInsert(bingo, "molecules/basic/zinc-slice.sdf.gz");
+        testInsert(bingo, "molecules/basic/Compound_0000001_0000250.sdf.gz");
     }
-    checkCount(bingo, 992);
+    checkCount(bingo, 241 * 16);
 }
 
 TEST(BingoThreads, DISABLED_InsertSingleThreadPharmapendium)
@@ -123,8 +133,6 @@ TEST(BingoThreads, DISABLED_InsertSingleThreadPharmapendium)
     }
     checkCount(bingo, 3029);
 }
-
-#include <iostream>
 
 TEST(BingoThreads, InsertMultipleThreads)
 {
@@ -143,8 +151,6 @@ TEST(BingoThreads, InsertMultipleThreads)
     }
 
     checkCount(bingo, 241 * 16);
-
-    std::cout << bingo.getStatistics();
 }
 
 TEST(BingoThreads, InsertDeleteMultipleThreads)
@@ -155,7 +161,7 @@ TEST(BingoThreads, InsertDeleteMultipleThreads)
     threads.reserve(16);
     for (auto i = 0; i < 16; i++)
     {
-        threads.emplace_back(testInsertDelete, std::ref(bingo), "molecules/basic/zinc-slice.sdf.gz");
+        threads.emplace_back(testInsertDelete, std::ref(bingo), "molecules/basic/Compound_0000001_0000250.sdf.gz");
     }
     for (auto& thread : threads)
     {
@@ -163,4 +169,34 @@ TEST(BingoThreads, InsertDeleteMultipleThreads)
     }
 
     checkCount(bingo, 0);
+}
+
+TEST(BingoThreads, SearchSingleThread)
+{
+    auto session = IndigoSession::create();
+    auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
+    testInsert(bingo, "molecules/basic/Compound_0000001_0000250.sdf.gz");
+    const auto q = session->loadQueryMolecule("C1=CC=CC=C1");
+    for (auto i = 0; i < 16; i++)
+    {
+        testSearchSub(bingo, q);
+    }
+}
+
+TEST(BingoThreads, SearchMultipleThreads)
+{
+    auto session = IndigoSession::create();
+    auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
+    testInsert(bingo, "molecules/basic/Compound_0000001_0000250.sdf.gz");
+    std::vector<std::thread> threads;
+    threads.reserve(16);
+    const auto q = session->loadQueryMolecule("C1=CC=CC=C1");
+    for (auto i = 0; i < 16; i++)
+    {
+        threads.emplace_back(testSearchSub, std::cref(bingo), std::cref(q));
+    }
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
 }

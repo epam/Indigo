@@ -25,7 +25,7 @@
 
 namespace indigo_cpp
 {
-    class IndigoChemicalEntity;
+    class IndigoChemicalStructure;
 
     class IndigoInChI
     {
@@ -36,7 +36,7 @@ namespace indigo_cpp
         IndigoInChI(IndigoInChI const&) = delete;
         void operator=(IndigoInChI const&) = delete;
 
-        std::string getInChI(const IndigoChemicalEntity& data) const;
+        std::string getInChI(const IndigoChemicalStructure& data) const;
 
     private:
         IndigoSessionPtr session;

@@ -22,7 +22,7 @@
 
 #include "IndigoSession.h"
 
-// #define INDIGO_CPP_DEBUG
+//#define INDIGO_CPP_DEBUG
 
 #ifdef INDIGO_CPP_DEBUG
 #include <iostream>
@@ -32,32 +32,39 @@
 
 using namespace indigo_cpp;
 
-IndigoObject::IndigoObject(int id, IndigoSessionPtr session) : id(id), session(std::move(session))
+IndigoObject::IndigoObject(int id, IndigoSessionPtr session) : _id(std::make_unique<int>(id)), _session(std::move(session))
 {
 #ifdef INDIGO_CPP_DEBUG
     if (id != 0)
     {
         std::stringstream ss;
-        ss << "T_" << std::this_thread::get_id() << ": IndigoObject(" << this->session->getSessionId() << ", " << id << ")\n";
+        ss << "T_" << std::this_thread::get_id() << ": IndigoObject(" << this->session()->getSessionId() << ", " << this->id() << ")\n";
         std::cout << ss.str();
     }
 #endif
-    this->session->_checkResult(id);
+    this->session()->_checkResult(id);
 }
 
 IndigoObject::~IndigoObject()
 {
+    if (_id != nullptr)
+    {
 #ifdef INDIGO_CPP_DEBUG
-    if (id != 0)
-    {
         std::stringstream ss;
-        ss << "T_" << std::this_thread::get_id() << ": ~IndigoObject(" << session->getSessionId() << ", " << id << ")\n";
+        ss << "T_" << std::this_thread::get_id() << ": ~IndigoObject(" << session()->getSessionId() << ", " << id() << ")\n";
         std::cout << ss.str();
-    }
 #endif
-    if (id > 0)
-    {
-        session->setSessionId();
-        indigoFree(id);
+        session()->setSessionId();
+        indigoFree(id());
     }
+}
+
+int IndigoObject::id() const
+{
+    return *_id;
+}
+
+const IndigoSessionPtr& IndigoObject::session() const
+{
+    return _session;
 }

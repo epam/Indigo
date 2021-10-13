@@ -22,9 +22,14 @@
 
 namespace indigo_cpp
 {
-    class IndigoQueryMolecule : public IndigoBaseMolecule
+    class IndigoQueryMolecule final : public IndigoBaseMolecule
     {
     public:
         IndigoQueryMolecule(int id, IndigoSessionPtr session);
+        IndigoQueryMolecule(IndigoQueryMolecule&&) = default;
+        IndigoQueryMolecule& operator=(IndigoQueryMolecule&&) = default;
+        IndigoQueryMolecule(const IndigoQueryMolecule&);
+        IndigoQueryMolecule& operator=(const IndigoQueryMolecule&) = default;
+        ~IndigoQueryMolecule() final = default;
     };
 }

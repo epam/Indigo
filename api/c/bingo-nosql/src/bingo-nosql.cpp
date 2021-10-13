@@ -101,24 +101,10 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
 static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, IndigoObject& indigo_obj, int obj_id)
 {
     profTimerStart(t, "_insertObjectToDatabase");
-    //    static std::atomic<int> t_name_index;                                                                                                                          \
-//    if (t_name_index == 0)                                                                                                                            \
-//    {                                                                                                                                                     \
-//        auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                          \
-//        t_name_index = inst->getNameIndex("_insertObjectToDatabase");                                                                                                   \
-//    }
-    //    indigo::_ProfilingTimer t_timer(t_name_index);
 
     if (bingo_index.getType() == Index::MOLECULE)
     {
         profTimerStart(t1, "_preadd");
-        //        static std::atomic<int> t1_name_index;                                                                                                                          \
-//        if (t1_name_index == 0)                                                                                                                            \
-//        {                                                                                                                                                     \
-//            auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                          \
-//            t1_name_index = inst->getNameIndex("_preadd");                                                                                                   \
-//        }
-        //        indigo::_ProfilingTimer t1_timer(t1_name_index);
 
         if (!IndigoMolecule::is(indigo_obj))
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");

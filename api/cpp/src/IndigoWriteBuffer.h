@@ -28,8 +28,17 @@ namespace indigo_cpp
     class IndigoWriteBuffer : public IndigoObject
     {
     public:
-        IndigoWriteBuffer(int id, IndigoSessionPtr session);
+        IndigoWriteBuffer(IndigoWriteBuffer&&) = default;
+        IndigoWriteBuffer& operator=(IndigoWriteBuffer&&) = default;
+        IndigoWriteBuffer(const IndigoWriteBuffer&) = delete;
+        IndigoWriteBuffer& operator=(const IndigoWriteBuffer&) = delete;
+        ~IndigoWriteBuffer() override = default;
+
         std::vector<char> toBuffer() const;
         std::string toString() const;
+
+    private:
+        IndigoWriteBuffer(int id, IndigoSessionPtr session);
+        friend class IndigoSession;
     };
-} // namespace indigo_cpp
+}

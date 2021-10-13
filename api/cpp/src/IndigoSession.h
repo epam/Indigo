@@ -34,12 +34,11 @@ namespace indigo_cpp
     class IndigoSession : public std::enable_shared_from_this<IndigoSession>
     {
     public:
-        ~IndigoSession();
-
         IndigoSession(IndigoSession&&) = default;
-        IndigoSession(IndigoSession const&) = delete;
         IndigoSession& operator=(IndigoSession&&) = delete;
+        IndigoSession(IndigoSession const&) = delete;
         void operator=(IndigoSession const&) = delete;
+        ~IndigoSession();
 
         unsigned long long getSessionId() const;
         void setSessionId() const;
@@ -65,6 +64,7 @@ namespace indigo_cpp
 
     private:
         IndigoSession();
+
         const unsigned long long id;
     };
 }

@@ -28,6 +28,8 @@
 
 using namespace indigo_cpp;
 
+//#define INDIGO_CPP_DEBUG
+
 #ifdef INDIGO_CPP_DEBUG
 #include <iostream>
 #include <sstream>

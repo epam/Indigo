@@ -10,7 +10,7 @@
 
 namespace indigo_cpp
 {
-    class IndigoChemicalEntity;
+    class IndigoChemicalStructure;
     class IndigoSession;
 
     template <typename target_t, typename query_t> class BingoNoSQL
