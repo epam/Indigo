@@ -359,6 +359,16 @@ namespace indigo
             std::swap(_length, other._length);
         }
 
+        T* begin()
+        {
+            return _array;
+        }
+
+        T* end()
+        {
+            return _array + _length;
+        }
+
         // CMP_FUNCTOR has two arguments and returns sign of comparation
         template <typename CmpFunctor> void insertionSort(int start, int end, CmpFunctor cmp)
         {
