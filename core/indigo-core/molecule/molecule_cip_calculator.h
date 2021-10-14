@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <array>
+
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
 

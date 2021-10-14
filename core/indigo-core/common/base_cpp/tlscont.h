@@ -65,7 +65,7 @@ namespace indigo
         _SIDManager() = default;
 
         // Thread local key for storing current session ID
-        static thread_local qword _sessionId;
+        static qword& _sessionId();
 
         struct SIDDataHolder
         {

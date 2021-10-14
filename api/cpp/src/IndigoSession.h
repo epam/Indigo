@@ -30,7 +30,6 @@ namespace indigo_cpp
     class IndigoSession;
     using IndigoSessionPtr = std::shared_ptr<IndigoSession>;
 
-
     class IndigoSession : public std::enable_shared_from_this<IndigoSession>
     {
     public:

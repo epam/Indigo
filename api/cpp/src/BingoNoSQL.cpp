@@ -2,6 +2,8 @@
 
 #include <bingo-nosql.h>
 
+#include "IndigoException.h"
+
 using namespace indigo_cpp;
 
 namespace
@@ -18,7 +20,7 @@ namespace
         //        static_assert(std::is_same<query_t, IndigoQueryReaction>::value, "");
         //        return "reaction";
         //    }
-        throw std::runtime_error("Unknown DB type");
+        throw IndigoException("Unknown DB type");
     }
 }
 

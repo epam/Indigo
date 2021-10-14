@@ -23,13 +23,17 @@
 
 using namespace indigo;
 
-thread_local std::unique_ptr<CancellationHandler> CancellationHandler::cancellation_handler;
-
 namespace indigo
 {
     //
     // TimeoutCancellationHandler
     //
+
+    std::unique_ptr<CancellationHandler>& CancellationHandler::cancellation_handler()
+    {
+        thread_local std::unique_ptr<CancellationHandler> _cancellation_handler;
+        return _cancellation_handler;
+    }
 
     TimeoutCancellationHandler::TimeoutCancellationHandler(int mseconds)
     {
@@ -66,13 +70,13 @@ namespace indigo
 
     CancellationHandler* getCancellationHandler()
     {
-        return CancellationHandler::cancellation_handler.get();
+        return CancellationHandler::cancellation_handler().get();
     }
 
     std::unique_ptr<CancellationHandler> resetCancellationHandler(CancellationHandler* handler)
     {
         std::unique_ptr<CancellationHandler> prev(handler);
-        CancellationHandler::cancellation_handler.swap(prev);
+        CancellationHandler::cancellation_handler().swap(prev);
         return prev;
     }
 

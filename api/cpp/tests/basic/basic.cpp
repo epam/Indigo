@@ -18,6 +18,7 @@
 
 #include <gtest/gtest.h>
 
+#include <IndigoException.h>
 #include <IndigoMolecule.h>
 #include <IndigoQueryMolecule.h>
 #include <IndigoSession.h>
@@ -69,9 +70,6 @@ TEST(Basic, IterateSDFile)
     EXPECT_EQ(molecules.size(), 245);
 }
 
-#include <IndigoException.h>
-#include <iostream>
-
 TEST(Basic, DISABLED_IterateSDFilePharmapendium)
 {
     auto session = IndigoSession::create();
@@ -84,7 +82,6 @@ TEST(Basic, DISABLED_IterateSDFilePharmapendium)
         {
             ++counter;
             molecules.emplace_back(molecule);
-            std::cout << counter << ' ' << molecule->smiles() << std::endl;
         }
         catch (const IndigoException&)
         {}

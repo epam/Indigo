@@ -1,5 +1,4 @@
 #include "IndigoCopyableObject.h"
-#include "IndigoObject.h"
 
 #include <indigo.h>
 

@@ -291,23 +291,9 @@ namespace sf {
     class recursive_spinlock_t {
         std::atomic_flag lock_flag;
         int64_t recursive_counter;
-#if (_WIN32 && _MSC_VER < 1900)
-		typedef int64_t thread_id_t;
-		std::atomic<thread_id_t> owner_thread_id;
-        int64_t get_fast_this_thread_id() {
-            static __declspec(thread) int64_t fast_this_thread_id = 0;  // MSVS 2013 thread_local partially supported - only POD
-            if (fast_this_thread_id == 0) {
-                std::stringstream ss;
-                ss << std::this_thread::get_id();   // https://connect.microsoft.com/VisualStudio/feedback/details/1558211
-                fast_this_thread_id = std::stoll(ss.str());
-			}
-            return fast_this_thread_id;
-		}
-#else
 		typedef std::thread::id thread_id_t;
 		std::atomic<std::thread::id> owner_thread_id;
         std::thread::id get_fast_this_thread_id() { return std::this_thread::get_id(); }
-#endif
 
     public:
         recursive_spinlock_t() : recursive_counter(0), owner_thread_id(thread_id_t()) { lock_flag.clear(); }
@@ -360,38 +346,6 @@ namespace sf {
 
 		enum index_op_t { unregister_thread_op, get_index_op, register_thread_op };
 
-#if (_WIN32 && _MSC_VER < 1900) // only for MSVS 2013
-        typedef int64_t thread_id_t;
-		std::atomic<thread_id_t> owner_thread_id;
-        std::array<int64_t, contention_free_count> register_thread_array;
-        int64_t get_fast_this_thread_id() {
-            static __declspec(thread) int64_t fast_this_thread_id = 0;  // MSVS 2013 thread_local partially supported - only POD
-            if (fast_this_thread_id == 0) {
-                std::stringstream ss;
-                ss << std::this_thread::get_id();   // https://connect.microsoft.com/VisualStudio/feedback/details/1558211
-                fast_this_thread_id = std::stoll(ss.str());
-            }
-            return fast_this_thread_id;
-        }
-
-		int get_or_set_index(index_op_t index_op = get_index_op, int set_index = -1) {
-			if (index_op == get_index_op) {  // get index
-				auto const thread_id = get_fast_this_thread_id();
-
-				for (size_t i = 0; i < register_thread_array.size(); ++i) {
-					if (register_thread_array[i] == thread_id) {
-						set_index = i;   // thread already registred                
-						break;
-					}
-				}
-			}
-			else if (index_op == register_thread_op) {  // register thread
-				register_thread_array[set_index] = get_fast_this_thread_id();
-			}
-			return set_index;
-		}
-
-#else
 		typedef std::thread::id thread_id_t;
 		std::atomic<std::thread::id> owner_thread_id;
 		std::thread::id get_fast_this_thread_id() { return std::this_thread::get_id(); }
@@ -430,8 +384,6 @@ namespace sf {
             }
             return set_index;
         }
-
-#endif
 
         public:
             contention_free_shared_mutex() :
@@ -627,13 +579,16 @@ namespace sf {
     };
     // ---------------------------------------------------------------
 
+// It seems like MinGW has problems with shared mutexes, using standard ones as a fallback
+#ifdef __MINGW32__
+    template <typename T>
+    using safe_shared_hide_obj =
+        safe_hide_obj<T, std::mutex, std::unique_lock<std::mutex>, std::unique_lock<std::mutex>>;
+#else
     template <typename T>
     using safe_shared_hide_obj =
         safe_hide_obj<T, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>, std::shared_lock<std::shared_timed_mutex>>;
-
-    template <typename T>
-    using safe_shared_hide_ptr =
-        safe_hide_ptr<T, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>, std::shared_lock<std::shared_timed_mutex>>;
+#endif
 }
 
 

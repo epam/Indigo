@@ -92,8 +92,6 @@ TEST(Bingo, InsertSearchSubDelete)
     }
 }
 
-#include <iostream>
-
 TEST(Bingo, SearchSim)
 {
     auto session = IndigoSession::create();
@@ -117,8 +115,6 @@ TEST(Bingo, SearchSim)
         auto counter = 0;
         for (auto& result : bingo.searchSim(m, 0.3))
         {
-            std::cout << result.getId() << ' ' << result.getSimilarityValue() << std::endl;
-            // std::cout << result.getTarget().smiles() << std::endl; // FIXME: this fails for some reason
             ++counter;
         }
         EXPECT_EQ(counter, 2);

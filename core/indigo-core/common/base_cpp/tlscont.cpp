@@ -20,8 +20,6 @@
 
 using namespace indigo;
 
-thread_local qword _SIDManager::_sessionId;
-
 _SIDManager& _SIDManager::getInst()
 {
     static _SIDManager _instance;
@@ -30,12 +28,12 @@ _SIDManager& _SIDManager::getInst()
 
 void _SIDManager::setSessionId(qword id)
 {
-    _sessionId = id;
+    _sessionId() = id;
 }
 
 qword _SIDManager::getSessionId() const
 {
-    return _sessionId;
+    return _sessionId();
 }
 
 qword _SIDManager::allocSessionId()
@@ -55,4 +53,10 @@ void _SIDManager::releaseSessionId(qword id)
 {
     auto sidDataHolder = sf::xlock_safe_ptr(_sidDataHolder);
     sidDataHolder->vacantSIDs.push(id);
+}
+
+qword& _SIDManager::_sessionId()
+{
+    static thread_local qword _sessionId;
+    return _sessionId;
 }
