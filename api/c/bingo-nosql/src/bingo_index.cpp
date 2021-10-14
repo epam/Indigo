@@ -5,7 +5,7 @@
 
 using namespace bingo;
 
-MoleculeIndex::MoleculeIndex() : BaseIndex(MOLECULE)
+MoleculeIndex::MoleculeIndex() : BaseIndex(IndexType::MOLECULE)
 {
 }
 
@@ -96,7 +96,7 @@ Matcher* MoleculeIndex::createMatcherTopNWithExtFP(const char* type, MatcherQuer
     return nullptr;
 }
 
-ReactionIndex::ReactionIndex() : BaseIndex(REACTION)
+ReactionIndex::ReactionIndex() : BaseIndex(IndexType::REACTION)
 {
 }
 

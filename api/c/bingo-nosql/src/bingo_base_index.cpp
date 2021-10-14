@@ -69,9 +69,9 @@ void BaseIndex::create(const char* location, const MoleculeFingerprintParameters
     size_t min_mmf_size = _getMinMMfSize(option_map);
     size_t max_mmf_size = _getMaxMMfSize(option_map);
 
-    if (_type == MOLECULE)
+    if (_type == IndexType::MOLECULE)
         _mmf_storage.create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _molecule_type, index_id);
-    else if (_type == REACTION)
+    else if (_type == IndexType::REACTION)
         _mmf_storage.create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _reaction_type, index_id);
     else
         throw Exception("incorrect index type");
@@ -132,7 +132,7 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
     if (strcmp(ver, BINGO_VERSION) != 0)
         throw Exception("BaseIndex: load(): incorrect database version");
 
-    const char* type_str = (_type == MOLECULE ? _molecule_type : _reaction_type);
+    const char* type_str = (_type == IndexType::MOLECULE ? _molecule_type : _reaction_type);
     if (strcmp(_properties->get("base_type"), type_str) != 0)
         throw Exception("Loading databse: wrong type propety");
 
@@ -154,78 +154,17 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
     GrossStorage::load(_gross_storage, _header.ptr()->gross_offset);
 }
 
-int BaseIndex::add(/* const */ IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data)
+int BaseIndex::add(int obj_id, const ObjectIndexData& _obj_data)
 {
     if (_read_only)
         throw Exception("insert fail: Read only index can't be changed");
 
     BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
-    {
-        std::shared_lock<std::shared_timed_mutex> rlock(lock_data);
-        if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
-            throw Exception("insert fail: This id was already used");
-    }
+    if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
+        throw Exception("insert fail: This id was already used");
 
-    _ObjectIndexData _obj_data;
-    {
-        profTimerStart(t_in, "prepare_obj_data");
-        _prepareIndexData(obj, _obj_data);
-    }
-
-    std::unique_lock<std::shared_timed_mutex> wlock(lock_data);
     profTimerStart(t_after, "exclusive_write");
-    {
-        profTimerStart(t_in, "add_obj_data");
-        _insertIndexData(_obj_data);
-    }
-
-    {
-        profTimerStart(t_in, "mapping_changing_1");
-        if (obj_id == -1)
-        {
-            int i = _header->first_free_id;
-            while (back_id_mapping.get(i) != (size_t)-1)
-                i++;
-
-            _header->first_free_id = i;
-
-            obj_id = _header->first_free_id;
-        }
-    }
-
-    int base_id = _header->object_count;
-    _header->object_count++;
-    {
-        profTimerStart(t_in, "mapping_changing_2");
-        _mappingAdd(obj_id, base_id);
-    }
-
-    return obj_id;
-}
-
-int BaseIndex::addWithExtFP(/* const */ IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data, IndigoObject& fp)
-{
-    if (_read_only)
-        throw Exception("insert fail: Read only index can't be changed");
-
-    BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
-
-    {
-        std::shared_lock<std::shared_timed_mutex> rlock(lock_data);
-        if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
-            throw Exception("insert fail: This id was already used");
-    }
-
-    _ObjectIndexData _obj_data;
-    {
-        profTimerStart(t_in, "prepare_obj_data");
-        _prepareIndexDataWithExtFP(obj, _obj_data, fp);
-    }
-
-    std::unique_lock<std::shared_timed_mutex> wlock(lock_data);
-    profTimerStart(t_after, "exclusive_write");
-
     {
         profTimerStart(t_in, "add_obj_data");
         _insertIndexData(_obj_data);
@@ -332,7 +271,7 @@ const byte* BaseIndex::getObjectCf(int id, int& len)
     return cf_buf;
 }
 
-const char* BaseIndex::getIdPropertyName()
+const char* BaseIndex::getIdPropertyName() const
 {
     return _properties.ref().getNoThrow(_id_key_prop);
 }
@@ -342,12 +281,12 @@ const char* BaseIndex::getVersion()
     return BINGO_VERSION;
 }
 
-Index::IndexType BaseIndex::getType() const
+IndexType BaseIndex::getType() const
 {
     return _type;
 }
 
-Index::IndexType BaseIndex::determineType(const char* location)
+IndexType BaseIndex::determineType(const char* location)
 {
     std::string path(location);
     path += '/';
@@ -362,9 +301,9 @@ Index::IndexType BaseIndex::determineType(const char* location)
     file.read(type, _type_len);
 
     if (strcmp(type, _molecule_type) == 0)
-        return MOLECULE;
+        return IndexType::MOLECULE;
     else if (strcmp(type, _reaction_type) == 0)
-        return REACTION;
+        return IndexType::REACTION;
     else
         throw Exception("BingoIndex: determineType(): Database format is not compatible with this version.");
 }
@@ -443,7 +382,7 @@ bool BaseIndex::_getAccessType(std::map<std::string, std::string>& option_map)
 void BaseIndex::_saveProperties(const MoleculeFingerprintParameters& fp_params, int sub_block_size, int sim_block_size, int cf_block_size,
                                 std::map<std::string, std::string>& option_map)
 {
-    _properties.ref().add("base_type", (_type == MOLECULE ? _molecule_type : _reaction_type));
+    _properties.ref().add("base_type", (_type == IndexType::MOLECULE ? _molecule_type : _reaction_type));
 
     _properties.ref().add("fp_ext", _fp_params.ext);
     _properties.ref().add("fp_ord", _fp_params.ord_qwords);
@@ -461,50 +400,49 @@ void BaseIndex::_saveProperties(const MoleculeFingerprintParameters& fp_params, 
     }
 }
 
-bool BaseIndex::_prepareIndexData(IndexObject& obj, _ObjectIndexData& obj_data)
+ObjectIndexData BaseIndex::prepareIndexData(IndexObject& obj) const
 {
+    ObjectIndexData obj_data;
     {
         profTimerStart(t, "prepare_cf");
-        if (!obj.buildCfString(obj_data.cf_str))
-            return false;
+        obj.buildCfString(obj_data.cf_str);
     }
 
     {
         profTimerStart(t, "prepare_formula");
-        if (!obj.buildGrossString(obj_data.gross_str))
-            return false;
+        obj.buildGrossString(obj_data.gross_str);
     }
 
     {
         profTimerStart(t, "prepare_fp");
-        if (!obj.buildFingerprint(_fp_params, &obj_data.sub_fp, &obj_data.sim_fp))
-            return false;
+        obj.buildFingerprint(_fp_params, &obj_data.sub_fp, &obj_data.sim_fp);
     }
 
-    if (!obj.buildHash(obj_data.hash))
-        return false;
+    {
+        profTimerStart(t, "prepare_hash");
+        obj.buildHash(obj_data.hash);
+    }
 
-    return true;
+    return obj_data;
 }
 
-bool BaseIndex::_prepareIndexDataWithExtFP(IndexObject& obj, _ObjectIndexData& obj_data, IndigoObject& fp)
+ObjectIndexData BaseIndex::prepareIndexDataWithExtFP(IndexObject& obj, IndigoObject& fp) const
 {
+    ObjectIndexData obj_data;
+
     {
         profTimerStart(t, "prepare_cf");
-        if (!obj.buildCfString(obj_data.cf_str))
-            return false;
+        obj.buildCfString(obj_data.cf_str);
     }
 
     {
         profTimerStart(t, "prepare_formula");
-        if (!obj.buildGrossString(obj_data.gross_str))
-            return false;
+        obj.buildGrossString(obj_data.gross_str);
     }
 
     {
         profTimerStart(t, "prepare_fp");
-        if (!obj.buildFingerprint(_fp_params, &obj_data.sub_fp, 0))
-            return false;
+        obj.buildFingerprint(_fp_params, &obj_data.sub_fp, 0);
         IndigoFingerprint& ext_fp = IndigoFingerprint::cast(fp);
         if (8 * _fp_params.sim_qwords == ext_fp.bytes.size())
             obj_data.sim_fp.copy(ext_fp.bytes);
@@ -512,13 +450,12 @@ bool BaseIndex::_prepareIndexDataWithExtFP(IndexObject& obj, _ObjectIndexData& o
             throw Exception("insert fail: external fingerprint is incompatible with current database");
     }
 
-    if (!obj.buildHash(obj_data.hash))
-        return false;
+    obj.buildHash(obj_data.hash);
 
-    return true;
+    return obj_data;
 }
 
-void BaseIndex::_insertIndexData(_ObjectIndexData& obj_data)
+void BaseIndex::_insertIndexData(const ObjectIndexData& obj_data)
 {
     _sub_fp_storage.ptr()->add(obj_data.sub_fp.ptr());
     _sim_fp_storage.ptr()->add(obj_data.sim_fp.ptr(), _header->object_count);

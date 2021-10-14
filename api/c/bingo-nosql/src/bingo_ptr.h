@@ -468,8 +468,7 @@ namespace bingo
 
         size_t _data_offset;
 
-        static PtrArray<BingoAllocator> _instances;
-        static std::mutex _instances_lock;
+        static sf::safe_shared_hide_obj<PtrArray<BingoAllocator>>  _instances;
 
         std::string _filename;
         int _index_id;
@@ -498,10 +497,10 @@ namespace bingo
             if (alloc_size > file_size - file_off)
                 _addFile(alloc_size);
 
-            const auto mm_files = sf::slock_safe_ptr(*_mm_files);
 
             file_idx = allocator_data->_cur_file_id;
-            file_size = mm_files->at((int)file_idx).size();
+
+            file_size = sf::slock_safe_ptr(*_mm_files)->at((int)file_idx).size();
 
             size_t res_off = allocator_data->_free_off;
             size_t res_id = allocator_data->_cur_file_id;
@@ -515,7 +514,7 @@ namespace bingo
 
         static BingoAllocator* _getInstance();
 
-        byte* _get(size_t file_id, size_t offset);
+        byte* _get(size_t file_id, size_t offset) const;
 
         BingoAllocator();
 
@@ -529,14 +528,14 @@ namespace bingo
     // Implementations for BingoPtr and BingoAllocator are dependent and thus implementation is here
     template <typename T> T* BingoPtr<T>::ptr()
     {
-        BingoAllocator* _allocator = BingoAllocator::_getInstance();
+        const BingoAllocator* _allocator = BingoAllocator::_getInstance();
 
         return (T*)(_allocator->_get(_addr.file_id, _addr.offset));
     }
 
     template <typename T> const T* BingoPtr<T>::ptr() const
     {
-        BingoAllocator* _allocator = BingoAllocator::_getInstance();
+        const BingoAllocator* _allocator = BingoAllocator::_getInstance();
 
         return (T*)(_allocator->_get(_addr.file_id, _addr.offset));
     }

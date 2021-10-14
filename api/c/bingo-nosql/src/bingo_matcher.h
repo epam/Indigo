@@ -169,7 +169,7 @@ namespace bingo
         virtual bool next() = 0;
         virtual int currentId() = 0;
         virtual IndigoObject* currentObject() = 0;
-        virtual const Index& getIndex() = 0;
+        virtual const BaseIndex& getIndex() = 0;
         virtual float currentSimValue() = 0;
         virtual void setOptions(const char* options) = 0;
         virtual void resetThresholdLimit(float min) = 0;
@@ -194,7 +194,7 @@ namespace bingo
 
         IndigoObject* currentObject() override;
 
-        const Index& getIndex() override;
+        const BaseIndex& getIndex() override;
 
         float currentSimValue() override;
 
@@ -252,9 +252,9 @@ namespace bingo
 
         virtual bool _tryCurrent() /* const */ = 0;
 
-        virtual void _setParameters(const char* params);
+        void _setParameters(const char* params) override;
 
-        virtual void _initPartition();
+        void _initPartition() override;
 
     private:
         Array<int> _candidates;
@@ -430,7 +430,7 @@ namespace bingo
 
         virtual bool _tryCurrent() /* const */ = 0;
 
-        virtual void _initPartition();
+        void _initPartition() override;
     };
 
     class MolExactMatcher : public BaseExactMatcher

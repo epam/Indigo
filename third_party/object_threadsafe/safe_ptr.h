@@ -45,6 +45,9 @@ namespace sf {
                 auto_lock_t(T * const _ptr, mutex_t& _mtx) : ptr(_ptr), lock(_mtx) {}
                 T* operator -> () { return ptr; }
                 const T* operator -> () const { return ptr; }
+
+                T& operator* () { return *ptr; };
+                const T& operator* () const { return *ptr; };
             };
 
             template<typename req_lock>
@@ -62,6 +65,10 @@ namespace sf {
             using auto_nolock_t = auto_lock_obj_t<no_lock_t>;
 
             T * get_obj_ptr() const { return ptr.get(); }
+
+            T& operator*() { return *ptr; }
+            const T& operator*() const { return *ptr; }
+
             mutex_t * get_mtx_ptr() const { return mtx_ptr.get(); }
 
             template<typename... Args> void lock_shared() const { get_mtx_ptr()->lock_shared(); }
@@ -87,9 +94,9 @@ namespace sf {
             safe_ptr(Args... args) : ptr(std::make_shared<T>(args...)), mtx_ptr(std::make_shared<mutex_t>()) {}
 
             auto_lock_t<x_lock_t> operator -> () { return auto_lock_t<x_lock_t>(get_obj_ptr(), *get_mtx_ptr()); }
-            auto_lock_obj_t<x_lock_t> operator * () { return auto_lock_obj_t<x_lock_t>(get_obj_ptr(), *get_mtx_ptr()); }
+//            auto_lock_t<x_lock_t> operator * () { return auto_lock_t<x_lock_t>(get_obj_ptr(), *get_mtx_ptr()); }
             const auto_lock_t<s_lock_t> operator -> () const { return auto_lock_t<s_lock_t>(get_obj_ptr(), *get_mtx_ptr()); }
-            const auto_lock_obj_t<s_lock_t> operator * () const { return auto_lock_obj_t<s_lock_t>(get_obj_ptr(), *get_mtx_ptr()); }
+//            const auto_lock_t<s_lock_t> operator * () const { return auto_lock_t<s_lock_t>(get_obj_ptr(), *get_mtx_ptr()); }
 
             typedef mutex_t mtx_t;
             typedef T obj_t;
@@ -121,8 +128,11 @@ namespace sf {
             template<typename some_type> friend struct xlocked_safe_ptr;
             template<typename some_type> friend struct slocked_safe_ptr;
         public:
+            safe_obj(T&& obj) : obj(std::move(obj)) {}
             template<typename... Args>
             safe_obj(Args... args) : obj(args...) {}
+            safe_obj(safe_obj&& safe_obj) noexcept { std::lock_guard<mutex_t> lock(safe_obj.mtx); obj = std::move(safe_obj.obj); }
+            safe_obj& operator=(safe_obj&& safe_obj) noexcept = default;
             safe_obj(safe_obj const& safe_obj) { std::lock_guard<mutex_t> lock(safe_obj.mtx); obj = safe_obj.obj; }
             explicit operator T() const { s_lock_t lock(mtx); T obj_tmp = obj; return obj_tmp; };
 
@@ -164,6 +174,24 @@ namespace sf {
         typename s_lock_t = std::unique_lock<mutex_t >>
     class safe_hide_obj : protected safe_obj<T, mutex_t, x_lock_t, s_lock_t> {
         public:
+            explicit safe_hide_obj(T&& obj) : safe_obj<T, mutex_t, x_lock_t, s_lock_t>(std::move(obj)) {}
+
+            safe_hide_obj(safe_hide_obj&& safe_hide_obj) noexcept
+            {
+                std::lock_guard<mutex_t> lock(safe_hide_obj.mtx);
+                this->obj = std::move(safe_hide_obj.obj);
+            }
+
+            safe_hide_obj& operator=(safe_hide_obj&& safe_hide_obj) noexcept
+            {
+                if (this != &safe_hide_obj)
+                {
+                    std::lock_guard<mutex_t> lock(safe_hide_obj.mtx);
+                    this->obj = std::move(safe_hide_obj.obj);
+                }
+                return *this;
+            };
+
             template<typename... Args> safe_hide_obj(Args... args) : safe_obj<T, mutex_t, x_lock_t, s_lock_t>(args...) {}
             explicit operator T() const { return static_cast< safe_obj<T, mutex_t, x_lock_t, s_lock_t> >(*this); };
 
@@ -256,7 +284,7 @@ namespace sf {
         typename T::xlock_t xlock;
         xlocked_safe_ptr(T const& p) : ref_safe(*const_cast<T*>(&p)), xlock(*(ref_safe.get_mtx_ptr())) {}// ++xp;}
         typename T::obj_t* operator -> () { return ref_safe.get_obj_ptr(); }
-        typename T::auto_nolock_t operator * () { return typename T::auto_nolock_t(ref_safe.get_obj_ptr(), *ref_safe.get_mtx_ptr()); }
+        typename T::obj_t& operator * () { return *(ref_safe.get_obj_ptr()); }
         operator typename T::obj_t() { return ref_safe.obj; } // only for safe_obj
     };
 
@@ -269,7 +297,7 @@ namespace sf {
         typename T::slock_t slock;
         slocked_safe_ptr(T const& p) : ref_safe(*const_cast<T*>(&p)), slock(*(ref_safe.get_mtx_ptr())) { }//++sp;}
         typename T::obj_t const* operator -> () const { return ref_safe.get_obj_ptr(); }
-        const typename T::auto_nolock_t operator * () const { return typename T::auto_nolock_t(ref_safe.get_obj_ptr(), *ref_safe.get_mtx_ptr()); }
+        typename T::obj_t const& operator* () const { return *(ref_safe.get_obj_ptr()); }
         operator typename T::obj_t() const { return ref_safe.obj; } // only for safe_obj
     };
 
@@ -584,10 +612,18 @@ namespace sf {
     template <typename T>
     using safe_shared_hide_obj =
         safe_hide_obj<T, std::mutex, std::unique_lock<std::mutex>, std::unique_lock<std::mutex>>;
+
+    template <typename T>
+    using safe_shared_hide_ptr =
+        safe_hide_ptr<T, std::mutex, std::unique_lock<std::mutex>, std::unique_lock<std::mutex>>;
 #else
     template <typename T>
     using safe_shared_hide_obj =
         safe_hide_obj<T, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>, std::shared_lock<std::shared_timed_mutex>>;
+
+    template <typename T>
+    using safe_shared_hide_ptr =
+        safe_hide_ptr<T, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>, std::shared_lock<std::shared_timed_mutex>>;
 #endif
 }
 

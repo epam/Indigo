@@ -176,7 +176,7 @@ IndigoObject* BaseMatcher::currentObject()
     return _current_obj;
 }
 
-const Index& BaseMatcher::getIndex()
+const BaseIndex& BaseMatcher::getIndex()
 {
     return _index;
 }

@@ -10,8 +10,7 @@
 using namespace indigo;
 using namespace bingo;
 
-PtrArray<BingoAllocator> BingoAllocator::_instances;
-std::mutex BingoAllocator::_instances_lock;
+sf::safe_shared_hide_obj<PtrArray<BingoAllocator>> BingoAllocator::_instances;
 const BingoAddr BingoAddr::bingo_null = BingoAddr(-1, -1);
 
 int BingoAllocator::getAllocatorDataSize()
@@ -36,9 +35,9 @@ void BingoAllocator::_create(const char* filename, size_t min_size, size_t max_s
 
     BingoAllocator* inst = new BingoAllocator();
     {
-        std::lock_guard<std::mutex> _guard(_instances_lock);
-        _instances.expand(index_id + 1);
-        _instances.reset(index_id, inst);
+        auto instances = sf::xlock_safe_ptr(_instances);
+        instances->expand(index_id + 1);
+        instances->reset(index_id, inst);
     }
 
     inst->_data_offset = alloc_off;
@@ -77,9 +76,9 @@ void BingoAllocator::_load(const char* filename, size_t alloc_off, sf::safe_shar
 
     BingoAllocator* inst = new BingoAllocator();
     {
-        std::lock_guard<std::mutex> guard(_instances_lock);
-        _instances.expand(index_id + 1);
-        _instances.reset(index_id, inst);
+        auto instances = sf::xlock_safe_ptr(_instances);
+        instances->expand(index_id + 1);
+        instances->reset(index_id, inst);
     }
 
     _BingoAllocatorData* allocator_data = (_BingoAllocatorData*)(mmf_ptr + alloc_off);
@@ -109,15 +108,14 @@ void BingoAllocator::_load(const char* filename, size_t alloc_off, sf::safe_shar
 BingoAllocator* BingoAllocator::_getInstance()
 {
     int database_id = MMFStorage::getDatabaseId();
-    BingoAllocator* result = nullptr;
-    {
-        std::lock_guard<std::mutex> _guard(_instances_lock);
-        if (_instances.size() <= database_id)
+    BingoAllocator* result = [&]() {
+        const auto instances = sf::slock_safe_ptr(_instances);
+        if (instances->size() <= database_id)
         {
             throw Exception("BingoAllocator: Incorrect session id");
         }
-        result = _instances.at(database_id);
-    }
+        return (BingoAllocator*)instances->at(database_id);
+    }();
     if (result == nullptr)
     {
         throw Exception("BingoAllocator: instance is not initialized");
@@ -125,7 +123,7 @@ BingoAllocator* BingoAllocator::_getInstance()
     return result;
 }
 
-byte* BingoAllocator::_get(size_t file_id, size_t offset)
+byte* BingoAllocator::_get(size_t file_id, size_t offset) const
 {
     // byte * mmf_ptr = (byte *)_mm_files->at(0).ptr();
 

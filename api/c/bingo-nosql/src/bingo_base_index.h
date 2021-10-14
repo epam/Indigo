@@ -1,8 +1,6 @@
 #ifndef __bingo_base_index__
 #define __bingo_base_index__
 
-#include <shared_mutex>
-
 #include "bingo_cf_storage.h"
 #include "bingo_exact_storage.h"
 #include "bingo_fp_storage.h"
@@ -24,48 +22,23 @@ namespace bingo
     class Matcher;
     class MatcherQueryData;
 
-    class Index
+    enum class IndexType
     {
-    public:
-        typedef enum
-        {
-            MOLECULE,
-            REACTION,
-            UNKNOWN
-        } IndexType;
-
-        virtual Matcher* createMatcher(const char* type, MatcherQueryData* query_data, const char* options) = 0;
-
-        virtual Matcher* createMatcherWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, IndigoObject& fp) = 0;
-
-        virtual Matcher* createMatcherTopN(const char* type, MatcherQueryData* query_data, const char* options, int limit) = 0;
-
-        virtual Matcher* createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp) = 0;
-
-        virtual void create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id) = 0;
-
-        virtual void load(const char* location, const char* options, int index_id) = 0;
-
-        virtual int add(IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data) = 0;
-
-        virtual int addWithExtFP(IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data, IndigoObject& fp) = 0;
-
-        virtual void optimize() = 0;
-
-        virtual void remove(int id) = 0;
-
-        virtual const byte* getObjectCf(int id, int& len) = 0;
-
-        virtual const char* getIdPropertyName() = 0;
-
-        virtual const char* getVersion() = 0;
-
-        virtual IndexType getType() const = 0;
-
-        virtual ~Index(){};
+        MOLECULE,
+        REACTION,
+        UNKNOWN
     };
 
-    class BaseIndex : public Index
+    struct ObjectIndexData
+    {
+        Array<byte> sub_fp;
+        Array<byte> sim_fp;
+        Array<char> cf_str;
+        Array<char> gross_str;
+        dword hash;
+    };
+
+    class BaseIndex
     {
     private:
         struct _Header
@@ -83,17 +56,22 @@ namespace bingo
         };
 
     public:
-        void create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id) override;
+        virtual ~BaseIndex();
 
-        void load(const char* location, const char* options, int index_id) override;
+        virtual Matcher* createMatcher(const char* type, MatcherQueryData* query_data, const char* options) = 0;
+        virtual Matcher* createMatcherWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, IndigoObject& fp) = 0;
+        virtual Matcher* createMatcherTopN(const char* type, MatcherQueryData* query_data, const char* options, int limit) = 0;
+        virtual Matcher* createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp) = 0;
 
-        int add(IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data) override;
+        void create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id);
 
-        int addWithExtFP(IndexObject& obj, int obj_id, std::shared_timed_mutex& lock_data, IndigoObject& fp) override;
+        void load(const char* location, const char* options, int index_id);
 
-        void optimize() override;
+        int add(int obj_id, const ObjectIndexData&);
 
-        void remove(int id) override;
+        void optimize();
+
+        void remove(int id);
 
         const MoleculeFingerprintParameters& getFingerprintParams() const;
 
@@ -113,17 +91,18 @@ namespace bingo
 
         int getObjectsCount() const;
 
-        const byte* getObjectCf(int id, int& len) override;
+        const byte* getObjectCf(int id, int& len);
 
-        const char* getIdPropertyName() override;
+        const char* getIdPropertyName() const;
 
-        const char* getVersion() override;
+        const char* getVersion();
 
-        IndexType getType() const override;
+        IndexType getType() const;
 
         static IndexType determineType(const char* location);
 
-        ~BaseIndex() override;
+        ObjectIndexData prepareIndexData(IndexObject& obj) const;
+        ObjectIndexData prepareIndexDataWithExtFP(IndexObject& obj, IndigoObject& fp) const;
 
     protected:
         BaseIndex(IndexType type);
@@ -131,15 +110,6 @@ namespace bingo
         bool _read_only;
 
     private:
-        struct _ObjectIndexData
-        {
-            Array<byte> sub_fp;
-            Array<byte> sim_fp;
-            Array<char> cf_str;
-            Array<char> gross_str;
-            dword hash;
-        };
-
         MMFStorage _mmf_storage;
         BingoPtr<_Header> _header;
         BingoPtr<BingoArray<int>> _id_mapping_ptr;
@@ -167,11 +137,7 @@ namespace bingo
         void _saveProperties(const MoleculeFingerprintParameters& fp_params, int sub_block_size, int sim_block_size, int cf_block_size,
                              std::map<std::string, std::string>& option_map);
 
-        bool _prepareIndexData(IndexObject& obj, _ObjectIndexData& obj_data);
-
-        bool _prepareIndexDataWithExtFP(IndexObject& obj, _ObjectIndexData& obj_data, IndigoObject& fp);
-
-        void _insertIndexData(_ObjectIndexData& obj_data);
+        void _insertIndexData(const ObjectIndexData& obj_data);
 
         void _mappingCreate();
 
