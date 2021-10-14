@@ -44,9 +44,17 @@ namespace indigo
             }
             void clear()
             {
-                explicitVerticalOffset = false;
-                over = false;
+                type = 0;
+                id = 0;
                 fragment = false;
+                over = false;
+                explicitVerticalOffset = false;
+                verticalOffset = 0.0;
+                min.zero();
+                max.zero();
+                scaledSize.zero();
+                scaledOffset.zero();
+                scaleFactor.zero();
             }
             int type;
             int id;
