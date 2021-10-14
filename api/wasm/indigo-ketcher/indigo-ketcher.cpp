@@ -150,10 +150,12 @@ namespace indigo
         IndigoSession() : id(indigoAllocSessionId())
         {
             indigoSetSessionId(id);
+            _checkResult( indigoInchiInit() );
         }
 
         ~IndigoSession()
         {
+            indigoInchiDispose();
             indigoReleaseSessionId(id);
         }
 
@@ -186,21 +188,15 @@ namespace indigo
     {
         std::vector<std::string> exceptionMessages;
         exceptionMessages.reserve(4);
-        // Let's try a simple molecule
-        int objectId = indigoLoadMoleculeFromString(data);
-        if (objectId >= 0)
+        
+        int objectId = -1;
+        if( std::string( data ).find("InChI") == 0 )
         {
-            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            objectId = indigoInchiLoadMolecule( data );
+            if( objectId >= 0 )
+               return IndigoKetcherObject( objectId, IndigoKetcherObject::EKETMolecule);
         }
-        exceptionMessages.emplace_back(indigoGetLastError());
-        // Let's try query molecule
-        objectId = indigoLoadQueryMoleculeFromString(data);
-        if (objectId >= 0)
-        {
-            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
-        }
-        exceptionMessages.emplace_back(indigoGetLastError());
-        // Let's try simple reaction
+        
         objectId = indigoLoadReactionFromString(data);
         if (objectId >= 0)
         {
@@ -212,6 +208,20 @@ namespace indigo
         if (objectId >= 0)
         {
             return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
+        }
+        exceptionMessages.emplace_back(indigoGetLastError());
+        // Let's try a simple molecule
+        objectId = indigoLoadMoleculeFromString(data);
+        if (objectId >= 0)
+        {
+            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+        }
+        exceptionMessages.emplace_back(indigoGetLastError());
+        // Let's try query molecule
+        objectId = indigoLoadQueryMoleculeFromString(data);
+        if (objectId >= 0)
+        {
+            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
         }
         exceptionMessages.emplace_back(indigoGetLastError());
         // It's not anything we can load, let's throw an exception

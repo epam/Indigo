@@ -393,6 +393,7 @@ namespace indigo
         TL_CP_DECL(Array<double>, bondDashAny);
         TL_CP_DECL(Array<double>, bondDashSingleOrAromatic);
         TL_CP_DECL(Array<double>, bondDashDoubleOrAromatic);
+        TL_CP_DECL(Array<double>, bondDashHydro);
 
         float labelInternalOffset;
         float lowerIndexShift;

@@ -25,6 +25,7 @@
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include <algorithm>
+#include <array>
 
 using namespace indigo;
 
@@ -1599,8 +1600,8 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
 
     if (atom.type > ATOM_ANY)
     {
-        Vec3f dirs[4];
-
+        std::array<Vec3f,4> dirs;
+        dirs.fill({0.0,0.0,0.0});
         for (j = 0; j < size; j++)
         {
             dirs[j] = baseMolecule.getAtomXyz(pyramid[j]);

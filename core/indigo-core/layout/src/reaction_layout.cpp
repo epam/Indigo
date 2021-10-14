@@ -24,7 +24,8 @@
 using namespace indigo;
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
-    : bond_length(1), plus_interval_factor(1), arrow_interval_factor(1), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout)
+    : bond_length(1), plus_interval_factor(1), arrow_interval_factor(1), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
+      horizontal_interval_factor(0.5f)
 {
     max_iterations = 0;
 }
