@@ -38,9 +38,6 @@
 #endif
 
 static _SessionLocalContainer<Indigo> indigo_self;
-thread_local Array<char> Indigo::error_message;
-thread_local INDIGO_ERROR_HANDLER Indigo::error_handler;
-thread_local void* Indigo::error_handler_context;
 
 DLLEXPORT Indigo& indigoGetInstance()
 {
@@ -54,8 +51,8 @@ CEXPORT const char* indigoVersion()
 
 void Indigo::init()
 {
-    error_handler = nullptr;
-    error_handler_context = nullptr;
+    error_handler() = nullptr;
+    error_handler_context() = nullptr;
 
     stereochemistry_options.reset();
     ignore_noncritical_query_features = false;
@@ -173,32 +170,50 @@ int Indigo::getId() const
 
 const Array<char>& Indigo::getErrorMessage()
 {
-    return error_message;
+    return error_message();
 }
 
 void Indigo::clearErrorMessage()
 {
-    error_message.clear();
+    error_message().clear();
 }
 
 void Indigo::setErrorMessage(const char* message)
 {
-    error_message.readString(message, true);
+    error_message().readString(message, true);
 }
 
 void Indigo::handleError(const char* message)
 {
     setErrorMessage(message);
-    if (error_handler != nullptr)
+    if (error_handler() != nullptr)
     {
-        error_handler(message, error_handler_context);
+        error_handler()(message, error_handler_context());
     }
 }
 
 void Indigo::setErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
 {
-    error_handler = handler;
-    error_handler_context = context;
+    error_handler() = handler;
+    error_handler_context() = context;
+}
+
+Array<char>& Indigo::error_message()
+{
+    thread_local static Array<char> _error_message;
+    return _error_message;
+}
+
+INDIGO_ERROR_HANDLER& Indigo::error_handler()
+{
+    thread_local static INDIGO_ERROR_HANDLER _error_handler;
+    return _error_handler;
+}
+
+void*& Indigo::error_handler_context()
+{
+    thread_local static void* _error_handler_context;
+    return _error_handler_context;
 }
 
 CEXPORT qword indigoAllocSessionId()

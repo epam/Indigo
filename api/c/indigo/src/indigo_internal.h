@@ -349,15 +349,17 @@ public:
     static void setErrorHandler(INDIGO_ERROR_HANDLER handler, void* context);
 
 private:
+    static Array<char>& error_message();
+    static INDIGO_ERROR_HANDLER& error_handler();
+    static void*& error_handler_context();
+
     struct ObjectsHolder
     {
         RedBlackMap<int, IndigoObject*> objects;
         int next_id = 1000; // FIXME:MK: Why does it matter?
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
-    thread_local static Array<char> error_message;
-    thread_local static INDIGO_ERROR_HANDLER error_handler;
-    thread_local static void* error_handler_context;
+
     int _indigo_id;
 };
 
