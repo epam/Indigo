@@ -28,6 +28,12 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 
+//#define INDIGO_DEBUG
+
+#ifdef INDIGO_DEBUG
+#include <iostream>
+#endif
+
 using namespace indigo;
 using namespace bingo;
 
@@ -81,7 +87,7 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
     int db_id;
     {
         std::lock_guard<std::mutex> bingo_locker(_bingo_lock);
-        db_id = _bingo_instances.add(0);
+        db_id = _bingo_instances.add(nullptr);
     }
 
     if (create)
@@ -95,6 +101,11 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
         _lockers.add(new std::shared_timed_mutex());
     }
 
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "Bingo(" << db_id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
     return db_id;
 }
 
@@ -197,11 +208,18 @@ CEXPORT int bingoLoadDatabaseFile(const char* location, const char* options)
 
 CEXPORT int bingoCloseDatabase(int db)
 {
-    std::lock_guard<std::mutex> _guard(_bingo_lock);
-    if (((db) < _bingo_instances.begin()) || ((db) >= _bingo_instances.end()) || !_bingo_instances.hasElement(db))                                \
-        throw BingoException("Incorrect database object");                                                                                                 \
-    _bingo_instances.remove(db);
-    return 1;
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~Bingo(" << db << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    BINGO_BEGIN_DB_STATIC(db)
+    {
+        std::lock_guard<std::mutex> _guard(_bingo_lock);
+        _bingo_instances.remove(db);
+        return 1;
+    }
+    BINGO_END(-1);
 }
 
 CEXPORT int bingoInsertRecordObj(int db, int obj)
@@ -693,10 +711,19 @@ CEXPORT int bingoEnumerateId(int db)
 
 CEXPORT int bingoEndSearch(int search_obj)
 {
-    std::lock_guard<std::mutex> searches_locker(_searches_lock);
-    getMatcher(search_obj);
-    _searches.remove(search_obj);
-    return 1;
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~BingoObject(" << search_obj << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    BINGO_BEGIN_SEARCH_STATIC(search_obj)
+    {
+        std::lock_guard<std::mutex> searches_locker(_searches_lock);
+        getMatcher(search_obj);
+        _searches.remove(search_obj);
+        return 1;
+    }
+    BINGO_END(-1);
 }
 
 CEXPORT int bingoNext(int search_obj)

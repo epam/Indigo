@@ -40,8 +40,24 @@ namespace indigo
             throw BingoException("Incorrect database object");                                                                                                 \
         MMFStorage::setDatabaseId(db_id);
 
+// Used when we don't need Indigo session, just handle errors
+#define BINGO_BEGIN_DB_STATIC(db_id)                                                                                                                                  \
+    INDIGO_BEGIN_STATIC                                                                                                                                               \
+    {                                                                                                                                                          \
+        if (((db_id) < _bingo_instances.begin()) || ((db_id) >= _bingo_instances.end()) || !_bingo_instances.hasElement(db_id))                                \
+            throw BingoException("Incorrect database object");                                                                                                 \
+        MMFStorage::setDatabaseId(db_id);
+
 #define BINGO_BEGIN_SEARCH(search_id)                                                                                                                          \
-    INDIGO_BEGIN                                                                                                                                               \
+    INDIGO_BEGIN                                                                                                                                       \
+    {                                                                                                                                                          \
+        if (((search_id) < 0) || ((search_id) >= _searches_db.size()) || (_searches_db[(search_id)] == -1))                                                    \
+            throw BingoException("Incorrect search object");                                                                                                   \
+        MMFStorage::setDatabaseId(_searches_db[(search_id)]);
+
+// Used when we don't need Indigo session, just handle errors
+#define BINGO_BEGIN_SEARCH_STATIC(search_id)                                                                                                                          \
+    INDIGO_BEGIN_STATIC                                                                                                                                      \
     {                                                                                                                                                          \
         if (((search_id) < 0) || ((search_id) >= _searches_db.size()) || (_searches_db[(search_id)] == -1))                                                    \
             throw BingoException("Incorrect search object");                                                                                                   \

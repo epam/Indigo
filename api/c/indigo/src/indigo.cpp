@@ -29,6 +29,8 @@
 #include "molecule/molfile_saver.h"
 #include "reaction/rxnfile_saver.h"
 
+#include "indigo_abbreviations.h"
+
 //#define INDIGO_DEBUG
 
 #ifdef INDIGO_DEBUG
@@ -37,6 +39,8 @@
 
 static _SessionLocalContainer<Indigo> indigo_self;
 thread_local Array<char> Indigo::error_message;
+thread_local INDIGO_ERROR_HANDLER Indigo::error_handler;
+thread_local void* Indigo::error_handler_context;
 
 DLLEXPORT Indigo& indigoGetInstance()
 {
@@ -115,13 +119,11 @@ Indigo::Indigo()
 void Indigo::removeAllObjects()
 {
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
-    int i;
-
-    for (i = objects_holder->objects.begin(); i != objects_holder->objects.end(); i = objects_holder->objects.next(i))
+    for (auto i = objects_holder->objects.begin(); i != objects_holder->objects.end(); i = objects_holder->objects.next(i))
     {
 #ifdef INDIGO_DEBUG
         std::stringstream ss;
-        ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << _objects.key(i) << ")";
+        ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << objects_holder->objects.key(i) << ")";
         std::cout << ss.str() << std::endl;
 #endif
         delete objects_holder->objects.value(i);
@@ -169,6 +171,36 @@ int Indigo::getId() const
     return _indigo_id;
 }
 
+const Array<char>& Indigo::getErrorMessage()
+{
+    return error_message;
+}
+
+void Indigo::clearErrorMessage()
+{
+    error_message.clear();
+}
+
+void Indigo::setErrorMessage(const char* message)
+{
+    error_message.readString(message, true);
+}
+
+void Indigo::handleError(const char* message)
+{
+    setErrorMessage(message);
+    if (error_handler != nullptr)
+    {
+        error_handler(message, error_handler_context);
+    }
+}
+
+void Indigo::setErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
+{
+    error_handler = handler;
+    error_handler_context = context;
+}
+
 CEXPORT qword indigoAllocSessionId()
 {
     qword id = TL_ALLOC_SESSION_ID();
@@ -178,6 +210,7 @@ CEXPORT qword indigoAllocSessionId()
     setlocale(LC_NUMERIC, "C");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
+    abbreviations::indigoCreateAbbreviationsInstance();
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
     ss << "IndigoSession(" << id << ")";
@@ -207,15 +240,12 @@ CEXPORT void indigoReleaseSessionId(qword id)
 
 CEXPORT const char* indigoGetLastError(void)
 {
-    Indigo& self = indigoGetInstance();
-    return self.error_message.ptr();
+    return Indigo::getErrorMessage().ptr();
 }
 
 CEXPORT void indigoSetErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
 {
-    Indigo& self = indigoGetInstance();
-    self.error_handler = handler;
-    self.error_handler_context = context;
+    Indigo::setErrorHandler(handler, context);
 }
 
 CEXPORT int indigoFree(int handle)
@@ -253,7 +283,7 @@ CEXPORT int indigoCountReferences(void)
 CEXPORT void indigoSetErrorMessage(const char* message)
 {
     Indigo& self = indigoGetInstance();
-    self.error_message.readString(message, true);
+    self.setErrorMessage(message);
 }
 
 int Indigo::addObject(IndigoObject* obj)

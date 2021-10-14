@@ -450,8 +450,12 @@ CEXPORT int indigoRendererInit()
     ss << "IndigoRenderer(" << TL_GET_SESSION_ID() << ")";
     std::cout << ss.str() << std::endl;
 #endif
-    const auto& context = indigo_renderer_self.createOrGetLocalCopy();
-    return 0;
+    INDIGO_BEGIN_STATIC
+    {
+        const auto& context = indigo_renderer_self.createOrGetLocalCopy();
+        return 0;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoRendererDispose()
@@ -461,8 +465,12 @@ CEXPORT int indigoRendererDispose()
     ss << "~IndigoRenderer(" << TL_GET_SESSION_ID() << ")";
     std::cout << ss.str() << std::endl;
 #endif
-    indigo_renderer_self.removeLocalCopy(TL_GET_SESSION_ID());
-    return 0;
+    INDIGO_BEGIN_STATIC
+    {
+        indigo_renderer_self.removeLocalCopy(TL_GET_SESSION_ID());
+        return 0;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoRender(int object, int output)

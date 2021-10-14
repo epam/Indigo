@@ -74,7 +74,6 @@ IndigoInchiContext& indigoInchiGetInstance()
 // C interface functions
 //
 
-
 CEXPORT int indigoInchiInit()
 {
 #ifdef INDIGO_DEBUG
@@ -82,8 +81,12 @@ CEXPORT int indigoInchiInit()
     ss << "IndigoInchi(" << TL_GET_SESSION_ID() << ")";
     std::cout << ss.str() << std::endl;
 #endif
-    IndigoInchiContext& inchi_context = inchi_wrapper_self.createOrGetLocalCopy();
-    return 0;
+    INDIGO_BEGIN_STATIC
+    {
+        IndigoInchiContext& inchi_context = inchi_wrapper_self.createOrGetLocalCopy();
+        return 0;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoInchiDispose()
@@ -93,8 +96,12 @@ CEXPORT int indigoInchiDispose()
     ss << "~IndigoInchi(" << TL_GET_SESSION_ID() << ")";
     std::cout << ss.str() << std::endl;
 #endif
-    inchi_wrapper_self.removeLocalCopy();
-    return 0;
+    INDIGO_BEGIN_STATIC
+    {
+        inchi_wrapper_self.removeLocalCopy();
+        return 0;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoInchiResetOptions(void)

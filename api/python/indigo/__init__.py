@@ -3291,12 +3291,12 @@ class Indigo(object):
     def setOption(self, option, value1, value2=None, value3=None):
         self._setSessionId()
         if (
-            (
-                type(value1).__name__ == "str"
-                or type(value1).__name__ == "unicode"
-            )
-            and value2 is None
-            and value3 is None
+                (
+                        type(value1).__name__ == "str"
+                        or type(value1).__name__ == "unicode"
+                )
+                and value2 is None
+                and value3 is None
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOption(
@@ -3305,9 +3305,9 @@ class Indigo(object):
                 )
             )
         elif (
-            type(value1).__name__ == "int"
-            and value2 is None
-            and value3 is None
+                type(value1).__name__ == "int"
+                and value2 is None
+                and value3 is None
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOptionInt(
@@ -3315,9 +3315,9 @@ class Indigo(object):
                 )
             )
         elif (
-            type(value1).__name__ == "float"
-            and value2 is None
-            and value3 is None
+                type(value1).__name__ == "float"
+                and value2 is None
+                and value3 is None
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOptionFloat(
@@ -3325,9 +3325,9 @@ class Indigo(object):
                 )
             )
         elif (
-            type(value1).__name__ == "bool"
-            and value2 is None
-            and value3 is None
+                type(value1).__name__ == "bool"
+                and value2 is None
+                and value3 is None
         ):
             value1_b = 0
             if value1:
@@ -3338,10 +3338,10 @@ class Indigo(object):
                 )
             )
         elif (
-            type(value1).__name__ == "int"
-            and value2
-            and type(value2).__name__ == "int"
-            and value3 is None
+                type(value1).__name__ == "int"
+                and value2
+                and type(value2).__name__ == "int"
+                and value3 is None
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOptionXY(
@@ -3349,11 +3349,11 @@ class Indigo(object):
                 )
             )
         elif (
-            type(value1).__name__ == "float"
-            and value2
-            and type(value2).__name__ == "float"
-            and value3
-            and type(value3).__name__ == "float"
+                type(value1).__name__ == "float"
+                and value2
+                and type(value2).__name__ == "float"
+                and value3
+                and type(value3).__name__ == "float"
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOptionColor(
@@ -4113,6 +4113,6 @@ class Indigo(object):
             checkflags = ""
         self._setSessionId()
         return self._checkResultString(
-            Indigo._lib.indigoCheck(moltext.encode(ENCODE_ENCODING), checkflags.encode(ENCODE_ENCODING), props.encode(ENCODE_ENCODING))
+            Indigo._lib.indigoCheck(moltext.encode(ENCODE_ENCODING), checkflags.encode(ENCODE_ENCODING),
+                                    props.encode(ENCODE_ENCODING))
         )
-

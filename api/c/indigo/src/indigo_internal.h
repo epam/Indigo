@@ -258,10 +258,6 @@ public:
     Indigo();
     ~Indigo();
 
-    thread_local static Array<char> error_message;
-    INDIGO_ERROR_HANDLER error_handler;
-    void* error_handler_context;
-
     IndigoObject& getObject(int handle);
     int countObjects() const;
 
@@ -346,6 +342,12 @@ public:
 
     bool scsr_ignore_chem_templates;
 
+    static const Array<char>& getErrorMessage();
+    static void clearErrorMessage();
+    static void setErrorMessage(const char* message);
+    static void handleError(const char* message);
+    static void setErrorHandler(INDIGO_ERROR_HANDLER handler, void* context);
+
 private:
     struct ObjectsHolder
     {
@@ -353,7 +355,9 @@ private:
         int next_id = 1000; // FIXME:MK: Why does it matter?
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
-
+    thread_local static Array<char> error_message;
+    thread_local static INDIGO_ERROR_HANDLER error_handler;
+    thread_local static void* error_handler_context;
     int _indigo_id;
 };
 
@@ -369,43 +373,26 @@ protected:
     int indigo_id;
 };
 
-#define INDIGO_BEGIN                                                                                                                                           \
+// Used when we don't need Indigo session, just handle errors
+#define INDIGO_BEGIN_STATIC                                                                                                                                    \
     {                                                                                                                                                          \
-        Indigo& self = indigoGetInstance();                                                                                                                    \
         try                                                                                                                                                    \
         {                                                                                                                                                      \
-            {                                                                                                                                                  \
-                self.error_message.clear();                                                                                                                    \
-                self.updateCancellationHandler();                                                                                                              \
-            }
+            Indigo::clearErrorMessage();
+
+#define INDIGO_BEGIN                                                                                                                                           \
+    INDIGO_BEGIN_STATIC                                                                                                                                        \
+    Indigo& self = indigoGetInstance();                                                                                                                        \
+    self.updateCancellationHandler();
+
 #define INDIGO_END(fail)                                                                                                                                       \
     }                                                                                                                                                          \
     catch (Exception & ex)                                                                                                                                     \
     {                                                                                                                                                          \
-        self.error_message.readString(ex.message(), true);                                                                                                     \
-        if (self.error_handler != 0)                                                                                                                           \
-            self.error_handler(ex.message(), self.error_handler_context);                                                                                      \
+        Indigo::handleError(ex.message());                                                                                                                     \
         return fail;                                                                                                                                           \
     }                                                                                                                                                          \
     return fail;                                                                                                                                               \
-    }
-
-#define INDIGO_END_CHECKMSG(success, fail)                                                                                                                     \
-    }                                                                                                                                                          \
-    catch (Exception & ex)                                                                                                                                     \
-    {                                                                                                                                                          \
-        self.error_message.readLine(ex.message(), true);                                                                                                       \
-        if (self.error_handler != 0)                                                                                                                           \
-            self.error_handler(ex.message(), self.error_handler_context);                                                                                      \
-        return fail;                                                                                                                                           \
-    }                                                                                                                                                          \
-    if (self.error_message.size() > 0)                                                                                                                         \
-    {                                                                                                                                                          \
-        if (self.error_handler != 0)                                                                                                                           \
-            self.error_handler(self.error_message.ptr(), self.error_handler_context);                                                                          \
-        return fail;                                                                                                                                           \
-    }                                                                                                                                                          \
-    return success;                                                                                                                                            \
     }
 
 DLLEXPORT Indigo& indigoGetInstance();

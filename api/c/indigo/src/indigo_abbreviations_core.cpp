@@ -41,7 +41,6 @@ namespace indigo
 
         IndigoAbbreviations::IndigoAbbreviations()
         {
-            indigoCreateAbbreviationsInstance();
             clear();
         }
 

@@ -52,8 +52,8 @@ testSGroupsInstrumentation()
 
 print("****** Create/Modify/Remove S-groups ********")
 indigo.setOption("molfile-saving-mode", "2000")
-m = indigo.loadMoleculeFromFile(joinPathPy("molecules/sgroups-base.mol", __file__))
-t = indigo.loadQueryMoleculeFromFile(joinPathPy("molecules/sgroups-template.mol", __file__))
+m = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/sgroups-base.mol"))
+t = indigo.loadQueryMoleculeFromFile(dataPath("molecules/sgroups/sgroups-template.mol"))
 matcher = indigo.substructureMatcher(m)
 print(matcher.countMatches(t))
 
@@ -78,7 +78,7 @@ print(m.molfile())
 
 print("****** Get/Set Multiplier ********")
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(joinPathPy("molecules/all_features_mol.mol", __file__))
+m = indigo.loadMoleculeFromFile(dataPath("molecules/basic/all_features_mol.mol"))
 print(m.molfile())
 for sg in m.iterateMultipleGroups():
     mp = sg.getSGroupMultiplier()
@@ -91,7 +91,7 @@ print(m.molfile())
 print("****** Get/Set DataSGroup properties ********")
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(joinPathPy("molecules/all_features_mol.mol", __file__))
+m = indigo.loadMoleculeFromFile(dataPath("molecules/basic/all_features_mol.mol"))
 print(m.molfile())
 for sg in m.iterateDataSGroups():
     sg.setSGroupData("Test Data S-group")
@@ -117,7 +117,7 @@ print(m.molfile())
 print("****** Find SGroups by properties ********")
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(joinPathPy("molecules/all_features_mol.mol", __file__))
+m = indigo.loadMoleculeFromFile(dataPath("molecules/basic/all_features_mol.mol"))
 print(m.molfile())
 
 sgs = m.findSGroups("SG_TYPE", "SUP")
@@ -178,7 +178,7 @@ for sg in sgs:
 print("****** Remove SGroups and check hierarchy ********")
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(joinPathPy("molecules/sgroups-V3000.mol", __file__))
+m = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/sgroups-V3000.mol"))
 print(m.molfile())
 
 sgs = m.findSGroups("SG_TYPE", "GEN")
@@ -199,7 +199,7 @@ print(m.molfile())
 
 print("******  Data and Multiple SGroups manipulation ********")
 
-m = indigo.loadMoleculeFromFile(joinPathPy("molecules/rep-dat.mol", __file__))
+m = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/rep-dat.mol"))
 indigo.setOption("render-atom-ids-visible", "true")
 renderer.renderToFile(m, joinPathPy('out/result_1.png', __file__))
 
