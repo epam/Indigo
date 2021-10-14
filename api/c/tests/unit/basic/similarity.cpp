@@ -24,7 +24,6 @@ class IndigoSimilarityTest : public ::testing::Test
 {
 public:
     qword session;
-    Indigo& indigo_instance = indigoGetInstance();
 
     int m1;
     int m2; // `m1` with a small chain
@@ -42,13 +41,18 @@ protected:
         m3 = indigoLoadMoleculeFromString("C1=CC=C(OCCCC)C=C1");
         m4 = indigoLoadMoleculeFromString("Cl[2H].OC(=O)[C@@H](N)CC1=CC([2H])=C(O)C([2H])=C1");
     }
+
+    void TearDown() override
+    {
+        indigoReleaseSessionId(session);
+    }
 };
 
 TEST_F(IndigoSimilarityTest, generate_fingerprints)
 {
     for (int mol : {m1, m2, m4})
     {
-        for (auto& type : {"sim", "sub", "sub-res", "sub-tau", "full"})
+        for (const auto& type : {"sim", "sub", "sub-res", "sub-tau", "full"})
         {
             ASSERT_NE(-1, indigoFingerprint(mol, type));
         }
@@ -63,7 +67,7 @@ TEST_F(IndigoSimilarityTest, generate_fingerprints)
 
         for (auto& mode : similarity_type_names)
         {
-            indigo_instance.fp_params.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(mode);
+            indigoGetInstance().fp_params.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(mode);
             ASSERT_NE(-1, indigoFingerprint(mol, "sim"));
         }
     }
@@ -76,7 +80,7 @@ TEST_F(IndigoSimilarityTest, generate_fingerprints_sim_modes)
         for (auto simType :
              {SimilarityType::SIM, SimilarityType::CHEM, SimilarityType::ECFP2, SimilarityType::ECFP4, SimilarityType::ECFP6, SimilarityType::ECFP8})
         {
-            indigo_instance.fp_params.similarity_type = simType;
+            indigoGetInstance().fp_params.similarity_type = simType;
             ASSERT_NE(-1, indigoFingerprint(mol, "sim"));
         }
     }
@@ -89,8 +93,8 @@ TEST_F(IndigoSimilarityTest, similarity_sim)
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_sub)
@@ -100,8 +104,8 @@ TEST_F(IndigoSimilarityTest, similarity_sub)
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_subres)
@@ -111,8 +115,8 @@ TEST_F(IndigoSimilarityTest, similarity_subres)
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_subtau)
@@ -122,8 +126,8 @@ TEST_F(IndigoSimilarityTest, similarity_subtau)
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_full)
@@ -133,8 +137,8 @@ TEST_F(IndigoSimilarityTest, similarity_full)
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.85, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_normilized_edit)
@@ -143,77 +147,77 @@ TEST_F(IndigoSimilarityTest, similarity_normilized_edit)
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
 
-    ASSERT_LT(0.80, indigoSimilarity(m1, m2, "normalized-edit"));
-    ASSERT_EQ(1.00, indigoSimilarity(m2, m3, "normalized-edit"));
-    ASSERT_EQ(-1, indigoSimilarity(f1, f2, "normalized-edit"));
+    EXPECT_LT(0.80, indigoSimilarity(m1, m2, "normalized-edit"));
+    EXPECT_EQ(1.00, indigoSimilarity(m2, m3, "normalized-edit"));
+    EXPECT_EQ(-1, indigoSimilarity(f1, f2, "normalized-edit"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_sim_chem_mode)
 {
     const char* type = "sim";
     SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("CHEM");
-    indigo_instance.fp_params.similarity_type = similarityType;
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.80, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.80, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_sim_ECFP2_mode)
 {
     const char* type = "sim";
     SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("ECFP2");
-    indigo_instance.fp_params.similarity_type = similarityType;
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.80, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.06, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_sim_ECFP4_mode)
 {
     const char* type = "sim";
     SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("ECFP4");
-    indigo_instance.fp_params.similarity_type = similarityType;
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.80, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.5, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_sim_ECFP6_mode)
 {
     const char* type = "sim";
     SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("ECFP6");
-    indigo_instance.fp_params.similarity_type = similarityType;
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.80, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.4, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
 TEST_F(IndigoSimilarityTest, similarity_sim_ECFP8_mode)
 {
     const char* type = "sim";
     SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("ECFP8");
-    indigo_instance.fp_params.similarity_type = similarityType;
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
 
-    ASSERT_LT(0.80, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
-    ASSERT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+    EXPECT_LT(0.4, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }

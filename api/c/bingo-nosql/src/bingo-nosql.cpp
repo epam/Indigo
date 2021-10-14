@@ -40,12 +40,19 @@ using namespace bingo;
 // TODO: warning C4273: 'indigo::BingoException::BingoException' : inconsistent dll linkage
 IMPL_EXCEPTION(indigo, BingoException, "bingo");
 
-static PtrPool<Index> _bingo_instances;
-static std::mutex _bingo_lock;
+namespace
+{
+    struct SearchesData
+    {
+        PtrPool<Matcher> searches;
+        Array<int> db;
+    };
+}
+
+static sf::safe_shared_hide_obj<PtrPool<Index>> _bingo_instances;
+static sf::safe_shared_hide_obj<SearchesData> _searches_data;
+// TODO: replace with sf::safe_hide object
 static PtrArray<std::shared_timed_mutex> _lockers;
-static PtrPool<Matcher> _searches;
-static std::mutex _searches_lock;
-static Array<int> _searches_db;
 
 static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* options, bool create, const char* type = 0)
 {
@@ -86,8 +93,8 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
 
     int db_id;
     {
-        std::lock_guard<std::mutex> bingo_locker(_bingo_lock);
-        db_id = _bingo_instances.add(nullptr);
+        auto bingo_instances = sf::xlock_safe_ptr(_bingo_instances);
+        db_id = bingo_instances->add(nullptr);
     }
 
     if (create)
@@ -96,8 +103,8 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
         context->load(loc_dir.c_str(), options, db_id);
 
     {
-        std::lock_guard<std::mutex> bingo_locker(_bingo_lock);
-        _bingo_instances[db_id] = context.release();
+        auto bingo_instances = sf::xlock_safe_ptr(_bingo_instances);
+        bingo_instances->at(db_id) = context.release();
         _lockers.add(new std::shared_timed_mutex());
     }
 
@@ -178,9 +185,10 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, Index& bingo_i
 
 Matcher& getMatcher(int id)
 {
-    if (id < _searches.begin() || id >= _searches.end() || !_searches.hasElement(id))
+    auto searches_data = sf::xlock_safe_ptr(_searches_data);
+    if (id < searches_data->searches.begin() || id >= searches_data->searches.end() || !searches_data->searches.hasElement(id))
         throw BingoException("Incorrect search object id=%d", id);
-    return *_searches[id];
+    return *searches_data->searches[id];
 }
 
 CEXPORT const char* bingoVersion()
@@ -215,8 +223,8 @@ CEXPORT int bingoCloseDatabase(int db)
 #endif
     BINGO_BEGIN_DB_STATIC(db)
     {
-        std::lock_guard<std::mutex> _guard(_bingo_lock);
-        _bingo_instances.remove(db);
+        auto bingo_instances = sf::xlock_safe_ptr(_bingo_instances);
+        bingo_instances->remove(db);
         return 1;
     }
     BINGO_END(-1);
@@ -227,7 +235,7 @@ CEXPORT int bingoInsertRecordObj(int db, int obj)
     BINGO_BEGIN_DB(db)
     {
         IndigoObject& indigo_obj = self.getObject(obj);
-        Index& bingo_index = _bingo_instances.ref(db);
+        Index& bingo_index = sf::xlock_safe_ptr(_bingo_instances)->ref(db);
 
         long obj_id = -1;
         auto& properties = indigo_obj.getProperties();
@@ -249,7 +257,7 @@ CEXPORT int bingoInsertRecordObjWithId(int db, int obj, int id)
     BINGO_BEGIN_DB(db)
     {
         IndigoObject& indigo_obj = self.getObject(obj);
-        Index& bingo_index = _bingo_instances.ref(db);
+        Index& bingo_index = sf::xlock_safe_ptr(_bingo_instances)->ref(db);
 
         return _insertObjectToDatabase(db, self, bingo_index, indigo_obj, id);
     }
@@ -261,7 +269,7 @@ CEXPORT int bingoInsertRecordObjWithExtFP(int db, int obj, int fp)
     BINGO_BEGIN_DB(db)
     {
         IndigoObject& indigo_obj = self.getObject(obj);
-        Index& bingo_index = _bingo_instances.ref(db);
+        Index& bingo_index = sf::xlock_safe_ptr(_bingo_instances)->ref(db);
         IndigoObject& ext_fp = self.getObject(fp);
 
         long obj_id = -1;
@@ -284,7 +292,7 @@ CEXPORT int bingoInsertRecordObjWithIdAndExtFP(int db, int obj, int id, int fp)
     BINGO_BEGIN_DB(db)
     {
         IndigoObject& indigo_obj = self.getObject(obj);
-        Index& bingo_index = _bingo_instances.ref(db);
+        Index& bingo_index = sf::xlock_safe_ptr(_bingo_instances)->ref(db);
         IndigoObject& ext_fp = self.getObject(fp);
 
         return _insertObjectWithExtFPToDatabase(db, self, bingo_index, indigo_obj, id, ext_fp);
@@ -296,7 +304,7 @@ CEXPORT int bingoDeleteRecord(int db, int id)
 {
     BINGO_BEGIN_DB(db)
     {
-        Index& bingo_index = _bingo_instances.ref(db);
+        Index& bingo_index = sf::xlock_safe_ptr(_bingo_instances)->ref(db);
 
         std::unique_lock<std::shared_timed_mutex> wlock(*_lockers[db]);
         bingo_index.remove(id);
@@ -310,7 +318,7 @@ CEXPORT int bingoGetRecordObj(int db, int id)
 {
     BINGO_BEGIN_DB(db)
     {
-        Index& bingo_index = _bingo_instances.ref(db);
+        Index& bingo_index = sf::xlock_safe_ptr(_bingo_instances)->ref(db);
 
         std::shared_lock<std::shared_timed_mutex> rlock(*_lockers[db]);
 
@@ -350,7 +358,7 @@ CEXPORT int bingoOptimize(int db)
 {
     BINGO_BEGIN_DB(db)
     {
-        Index& bingo_index = _bingo_instances.ref(db);
+        Index& bingo_index = sf::xlock_safe_ptr(_bingo_instances)->ref(db);
 
         std::unique_lock<std::shared_timed_mutex> wlock(*_lockers[db]);
         bingo_index.optimize();
@@ -372,15 +380,15 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
 
             std::unique_ptr<MoleculeSubstructureQueryData> query_data = std::make_unique<MoleculeSubstructureQueryData>(obj.getQueryMolecule());
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
+            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             MoleculeSubMatcher* matcher = dynamic_cast<MoleculeSubMatcher*>(bingo_index.createMatcher("sub", query_data.release(), options));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -391,15 +399,15 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
 
             std::unique_ptr<ReactionSubstructureQueryData> query_data = std::make_unique<ReactionSubstructureQueryData>(obj.getQueryReaction());
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
+            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             ReactionSubMatcher* matcher = dynamic_cast<ReactionSubMatcher*>(bingo_index.createMatcher("sub", query_data.release(), options));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -422,15 +430,15 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
 
             std::unique_ptr<MoleculeExactQueryData> query_data = std::make_unique<MoleculeExactQueryData>(obj.getMolecule());
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
+            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             MolExactMatcher* matcher = dynamic_cast<MolExactMatcher*>(bingo_index.createMatcher("exact", query_data.release(), options));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -441,15 +449,15 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
 
             std::unique_ptr<ReactionExactQueryData> query_data = std::make_unique<ReactionExactQueryData>(obj.getReaction());
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
+            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             RxnExactMatcher* matcher = dynamic_cast<RxnExactMatcher*>(bingo_index.createMatcher("exact", query_data.release(), options));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -469,15 +477,15 @@ CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options
 
         std::unique_ptr<GrossQueryData> query_data = std::make_unique<GrossQueryData>(gross_str);
 
-        BaseIndex& bingo_index = dynamic_cast<BaseIndex&>(_bingo_instances.ref(db));
+        BaseIndex& bingo_index = dynamic_cast<BaseIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
         MolGrossMatcher* matcher = dynamic_cast<MolGrossMatcher*>(bingo_index.createMatcher("formula", query_data.release(), options));
 
         int search_id;
         {
-            std::lock_guard<std::mutex> searches_locker(_searches_lock);
-            search_id = _searches.add(matcher);
-            _searches_db.expand(search_id + 1);
-            _searches_db[search_id] = db;
+            auto searches_data = sf::xlock_safe_ptr(_searches_data);
+            search_id = searches_data->searches.add(matcher);
+            searches_data->db.expand(search_id + 1);
+            searches_data->db[search_id] = db;
         }
 
         return search_id;
@@ -497,15 +505,15 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
 
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, max);
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
+            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             MoleculeSimMatcher* matcher = dynamic_cast<MoleculeSimMatcher*>(bingo_index.createMatcher("sim", query_data.release(), options));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -516,15 +524,15 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
 
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, max);
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
+            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             ReactionSimMatcher* matcher = dynamic_cast<ReactionSimMatcher*>(bingo_index.createMatcher("sim", query_data.release(), options));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -548,15 +556,15 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
 
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, max);
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
+            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             MoleculeSimMatcher* matcher = dynamic_cast<MoleculeSimMatcher*>(bingo_index.createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -567,15 +575,15 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
 
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, max);
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
+            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             ReactionSimMatcher* matcher = dynamic_cast<ReactionSimMatcher*>(bingo_index.createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -598,15 +606,15 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
 
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, 1.0);
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
+            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             MoleculeTopNSimMatcher* matcher = dynamic_cast<MoleculeTopNSimMatcher*>(bingo_index.createMatcherTopN("sim", query_data.release(), options, limit));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -617,15 +625,15 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
 
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, 1.0);
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
+            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             ReactionTopNSimMatcher* matcher = dynamic_cast<ReactionTopNSimMatcher*>(bingo_index.createMatcherTopN("sim", query_data.release(), options, limit));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -649,16 +657,16 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
 
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, 1.0);
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
+            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             MoleculeTopNSimMatcher* matcher =
                 dynamic_cast<MoleculeTopNSimMatcher*>(bingo_index.createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -669,16 +677,16 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
 
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, 1.0);
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
+            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(sf::xlock_safe_ptr(_bingo_instances)->ref(db));
             ReactionTopNSimMatcher* matcher =
                 dynamic_cast<ReactionTopNSimMatcher*>(bingo_index.createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
 
             int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                search_id = searches_data->searches.add(matcher);
+                searches_data->db.expand(search_id + 1);
+                searches_data->db[search_id] = db;
             }
 
             return search_id;
@@ -693,15 +701,15 @@ CEXPORT int bingoEnumerateId(int db)
 {
     BINGO_BEGIN_DB(db)
     {
-        Index& index = _bingo_instances.ref(db);
+        Index& index = sf::xlock_safe_ptr(_bingo_instances)->ref(db);
         EnumeratorMatcher* matcher = dynamic_cast<EnumeratorMatcher*>(index.createMatcher("enum", nullptr, nullptr));
 
         int search_id;
         {
-            std::lock_guard<std::mutex> searches_locker(_searches_lock);
-            search_id = _searches.add(matcher);
-            _searches_db.expand(search_id + 1);
-            _searches_db[search_id] = db;
+            auto searches_data = sf::xlock_safe_ptr(_searches_data);
+            search_id = searches_data->searches.add(matcher);
+            searches_data->db.expand(search_id + 1);
+            searches_data->db[search_id] = db;
         }
 
         return search_id;
@@ -718,9 +726,9 @@ CEXPORT int bingoEndSearch(int search_obj)
 #endif
     BINGO_BEGIN_SEARCH_STATIC(search_obj)
     {
-        std::lock_guard<std::mutex> searches_locker(_searches_lock);
-        getMatcher(search_obj);
-        _searches.remove(search_obj);
+        auto searches_data = sf::xlock_safe_ptr(_searches_data);
+//        getMatcher(search_obj);
+        searches_data->searches.remove(search_obj);
         return 1;
     }
     BINGO_END(-1);
@@ -730,7 +738,7 @@ CEXPORT int bingoNext(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        std::shared_lock<std::shared_timed_mutex> rlock(*_lockers[_searches_db[search_obj]]);
+        std::shared_lock<std::shared_timed_mutex> rlock(*_lockers[sf::slock_safe_ptr(_searches_data)->db[search_obj]]);
         return getMatcher(search_obj).next();
     }
     BINGO_END(-1);

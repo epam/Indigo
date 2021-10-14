@@ -21,11 +21,6 @@
 
 #include "base_cpp/exception.h"
 
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
-
 namespace indigo
 {
 
@@ -36,40 +31,52 @@ namespace indigo
 #define BINGO_BEGIN_DB(db_id)                                                                                                                                  \
     INDIGO_BEGIN                                                                                                                                               \
     {                                                                                                                                                          \
-        if (((db_id) < _bingo_instances.begin()) || ((db_id) >= _bingo_instances.end()) || !_bingo_instances.hasElement(db_id))                                \
-            throw BingoException("Incorrect database object");                                                                                                 \
+        {                                                                                                                                                      \
+            auto bingo_instances = sf::slock_safe_ptr(_bingo_instances);                                                                                       \
+            if (((db_id) < bingo_instances->begin()) || ((db_id) >= bingo_instances->end()) || !bingo_instances->hasElement(db_id))                            \
+                throw BingoException("Incorrect database object");                                                                                             \
+        }                                                                                                                                                      \
         MMFStorage::setDatabaseId(db_id);
 
 // Used when we don't need Indigo session, just handle errors
-#define BINGO_BEGIN_DB_STATIC(db_id)                                                                                                                                  \
-    INDIGO_BEGIN_STATIC                                                                                                                                               \
+#define BINGO_BEGIN_DB_STATIC(db_id)                                                                                                                           \
+    INDIGO_BEGIN_STATIC                                                                                                                                        \
     {                                                                                                                                                          \
-        if (((db_id) < _bingo_instances.begin()) || ((db_id) >= _bingo_instances.end()) || !_bingo_instances.hasElement(db_id))                                \
-            throw BingoException("Incorrect database object");                                                                                                 \
+        {                                                                                                                                                      \
+            auto bingo_instances = sf::slock_safe_ptr(_bingo_instances);                                                                                       \
+            if (((db_id) < bingo_instances->begin()) || ((db_id) >= bingo_instances->end()) || !bingo_instances->hasElement(db_id))                            \
+                throw BingoException("Incorrect database object");                                                                                             \
+        }                                                                                                                                                      \
         MMFStorage::setDatabaseId(db_id);
 
 #define BINGO_BEGIN_SEARCH(search_id)                                                                                                                          \
-    INDIGO_BEGIN                                                                                                                                       \
+    INDIGO_BEGIN                                                                                                                                               \
     {                                                                                                                                                          \
-        if (((search_id) < 0) || ((search_id) >= _searches_db.size()) || (_searches_db[(search_id)] == -1))                                                    \
-            throw BingoException("Incorrect search object");                                                                                                   \
-        MMFStorage::setDatabaseId(_searches_db[(search_id)]);
+        {                                                                                                                                                      \
+            const auto searches_data = sf::slock_safe_ptr(_searches_data);                                                                                           \
+            if (((search_id) < 0) || ((search_id) >= searches_data->db.size()) || (searches_data->db[(search_id)] == -1))                                      \
+            {                                                                                                                                                  \
+                throw BingoException("Incorrect search object");                                                                                               \
+            }                                                                                                                                                  \
+            MMFStorage::setDatabaseId(searches_data->db[search_id]);                                                                                           \
+        }
 
 // Used when we don't need Indigo session, just handle errors
-#define BINGO_BEGIN_SEARCH_STATIC(search_id)                                                                                                                          \
-    INDIGO_BEGIN_STATIC                                                                                                                                      \
+#define BINGO_BEGIN_SEARCH_STATIC(search_id)                                                                                                                   \
+    INDIGO_BEGIN_STATIC                                                                                                                                        \
     {                                                                                                                                                          \
-        if (((search_id) < 0) || ((search_id) >= _searches_db.size()) || (_searches_db[(search_id)] == -1))                                                    \
-            throw BingoException("Incorrect search object");                                                                                                   \
-        MMFStorage::setDatabaseId(_searches_db[(search_id)]);
+        {                                                                                                                                                      \
+            const auto searches_data = sf::slock_safe_ptr(_searches_data);                                                                                           \
+            if (((search_id) < 0) || ((search_id) >= searches_data->db.size()) || (searches_data->db[(search_id)] == -1))                                      \
+            {                                                                                                                                                  \
+                throw BingoException("Incorrect search object");                                                                                               \
+            }                                                                                                                                                  \
+            MMFStorage::setDatabaseId(searches_data->db[search_id]);                                                                                           \
+        }
 
 #define BINGO_END(fail)                                                                                                                                        \
     MMFStorage::setDatabaseId(-1);                                                                                                                             \
     }                                                                                                                                                          \
     INDIGO_END(fail)
-
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
 
 #endif // __bingo_internal__
