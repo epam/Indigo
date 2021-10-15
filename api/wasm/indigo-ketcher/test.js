@@ -3,9 +3,11 @@ const assert = require('assert').strict;
 
 // Extremely simple test framework, thanks to @sohamkamari (https://github.com/sohamkamani/nodejs-test-without-library)
 let tests = []
+
 function test(group, name, fn) {
     tests.push({group, name, fn})
 }
+
 function run() {
     let succeeded = 0;
     let failed = 0;
@@ -23,6 +25,10 @@ function run() {
     })
     const total = succeeded + failed;
     console.log(`\n${total} tests executed. ${succeeded} succeeded, ${failed} failed.`)
+
+    if (failed) {
+        process.exit(1);
+    }
 }
 
 // Tests definition
@@ -274,8 +280,8 @@ M  END
             let options = new indigo.MapStringString();
             options.set("ignore-stereochemistry-errors", "true");
             const molfile_cip = indigo.calculateCip("CN1C=C(/C=C2/SC(=S)N(CC([O-])=O)C/2=O)C2=CC=CC=C12", options);
-            assert(molfile_cip.indexOf("INDIGO_CIP_DESC") != -1);
-            assert(molfile_cip.indexOf("(E)") != -1);
+            assert(molfile_cip.indexOf("INDIGO_CIP_DESC") !== -1);
+            assert(molfile_cip.indexOf("(E)") !== -1);
             delete options;
         });
     }
@@ -293,7 +299,7 @@ M  END
             delete options;
         });
 
-        test("clean2d", "selectged", () => {
+        test("clean2d", "selected", () => {
             let options = new indigo.MapStringString();
             let selected = new indigo.VectorInt();
             selected.push_back(1);
@@ -312,8 +318,8 @@ M  END
             let options = new indigo.MapStringString();
             options.set('molfile-saving-mode', '2000');
             const molfile_2000 = indigo.convert(mol_smiles, "molfile", options);
-            assert(molfile_2000.indexOf("V3000") == -1);
-            assert(molfile_2000.indexOf("V2000") != -1);
+            assert(molfile_2000.indexOf("V3000") === -1);
+            assert(molfile_2000.indexOf("V2000") !== -1);
             delete options;
         });
 
@@ -321,8 +327,8 @@ M  END
             let options = new indigo.MapStringString();
             options.set('molfile-saving-mode', '3000');
             const molfile_2000 = indigo.convert(mol_smiles, "molfile", options);
-            assert(molfile_2000.indexOf("V3000") != -1);
-            assert(molfile_2000.indexOf("V2000") == -1);
+            assert(molfile_2000.indexOf("V3000") !== -1);
+            assert(molfile_2000.indexOf("V2000") === -1);
             delete options;
         });
 
@@ -330,8 +336,8 @@ M  END
             let options = new indigo.MapStringString();
             options.set('molfile-saving-mode', '2000');
             const rxnfile_2000 = indigo.convert(rxn_smiles, "rxnfile", options);
-            assert(rxnfile_2000.indexOf("V3000") == -1);
-            assert(rxnfile_2000.indexOf("V2000") != -1);
+            assert(rxnfile_2000.indexOf("V3000") === -1);
+            assert(rxnfile_2000.indexOf("V2000") !== -1);
             delete options;
         });
 
@@ -339,8 +345,8 @@ M  END
             let options = new indigo.MapStringString();
             options.set('molfile-saving-mode', '3000');
             const rxnfile_3000 = indigo.convert(rxn_smiles, "rxnfile", options);
-            assert(rxnfile_3000.indexOf("V3000") != -1);
-            assert(rxnfile_3000.indexOf("V2000") == -1);
+            assert(rxnfile_3000.indexOf("V3000") !== -1);
+            assert(rxnfile_3000.indexOf("V2000") === -1);
             delete options;
         });
 
@@ -368,16 +374,16 @@ M  END
         test("convert", "cml", () => {
             let options = new indigo.MapStringString();
             const cml = indigo.convert(mol_smiles, "cml", options);
-            assert(cml.indexOf("<cml>") != -1);
-            assert(cml.indexOf("<molecule>") != -1);
+            assert(cml.indexOf("<cml>") !== -1);
+            assert(cml.indexOf("<molecule>") !== -1);
             delete options;
         });
 
         test("convert", "rcml", () => {
             let options = new indigo.MapStringString();
             const rcml = indigo.convert(rxn_smiles, "cml", options);
-            assert(rcml.indexOf("<cml>") != -1);
-            assert(rcml.indexOf("<reaction>") != -1);
+            assert(rcml.indexOf("<cml>") !== -1);
+            assert(rcml.indexOf("<reaction>") !== -1);
             delete options;
         });
 
@@ -418,7 +424,7 @@ M  END
     {
         test("layout", "basic", () => {
             let options = new indigo.MapStringString();
-            assert(indigo.layout(mol_smiles, options).indexOf("-1.6") != -1);
+            assert(indigo.layout(mol_smiles, options).indexOf("-1.6") !== -1);
             delete options;
         });
     }
@@ -429,7 +435,7 @@ M  END
             let options = new indigo.MapStringString();
             options.set("render-output-format", "svg");
             const svg = Buffer.from(indigo.render(mol_smiles, options), "base64").toString();
-            assert(svg.indexOf("<svg") != -1);
+            assert(svg.indexOf("<svg") !== -1);
             delete options;
         });
 
@@ -437,14 +443,14 @@ M  END
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");
             const png = Buffer.from(indigo.render(mol_smiles, options), "base64");
-            assert(png[0] == 137);
-            assert(png[1] == 80);
-            assert(png[2] == 78);
-            assert(png[3] == 71);
-            assert(png[4] == 13);
-            assert(png[5] == 10);
-            assert(png[6] == 26);
-            assert(png[7] == 10);
+            assert(png[0] === 137);
+            assert(png[1] === 80);
+            assert(png[2] === 78);
+            assert(png[3] === 71);
+            assert(png[4] === 13);
+            assert(png[5] === 10);
+            assert(png[6] === 26);
+            assert(png[7] === 10);
             delete options;
         });
 
@@ -452,7 +458,7 @@ M  END
             let options = new indigo.MapStringString();
             options.set("render-output-format", "pdf");
             const pdf = Buffer.from(indigo.render(mol_smiles, options), "base64").toString();
-            assert(pdf.indexOf("%PDF-") != -1);
+            assert(pdf.indexOf("%PDF-") !== -1);
             delete options;
         });
     }
@@ -497,7 +503,7 @@ M  END
     // Version
     {
         test("version", "basic", () => {
-            assert(indigo.version().indexOf("wasm") != -1);
+            assert(indigo.version().indexOf("wasm") !== -1);
         });
     }
 
