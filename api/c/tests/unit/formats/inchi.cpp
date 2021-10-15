@@ -26,7 +26,7 @@ using namespace indigo;
 
 TEST(IndigoInChITest, basic)
 {
-    const auto qword id = indigoAllocSessionId();
+    const auto id = indigoAllocSessionId();
     indigoInchiInit();
     indigoSetErrorHandler(errorHandling, nullptr);
 
