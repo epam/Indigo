@@ -176,11 +176,11 @@ namespace bingo
 
         virtual int esimateRemainingResultsCount(int& delta) = 0;
         virtual float esimateRemainingTime(float& delta) = 0;
-        virtual int containersCount() = 0;
-        virtual int cellsCount() = 0;
-        virtual int currentCell() = 0;
-        virtual int minCell() = 0;
-        virtual int maxCell() = 0;
+        virtual int containersCount() const = 0;
+        virtual int cellsCount() const = 0;
+        virtual int currentCell() const = 0;
+        virtual int minCell() const = 0;
+        virtual int maxCell() const = 0;
 
         virtual ~Matcher(){};
     };
@@ -203,11 +203,11 @@ namespace bingo
 
         int esimateRemainingResultsCount(int& delta) override;
         float esimateRemainingTime(float& delta) override;
-        int containersCount() override;
-        int cellsCount() override;
-        int currentCell() override;
-        int minCell() override;
-        int maxCell() override;
+        int containersCount() const  override;
+        int cellsCount() const  override;
+        int currentCell() const  override;
+        int minCell() const  override;
+        int maxCell() const  override;
 
     protected:
         BaseIndex& _index;
@@ -311,11 +311,11 @@ namespace bingo
         float esimateRemainingTime(float& delta) override;
         void resetThresholdLimit(float min) override;
 
-        int containersCount() override;
-        int cellsCount() override;
-        int currentCell() override;
-        int minCell() override;
-        int maxCell() override;
+        int containersCount() const override;
+        int cellsCount() const override;
+        int currentCell() const override;
+        int minCell() const override;
+        int maxCell() const override;
 
         float currentSimValue() const override;
 
