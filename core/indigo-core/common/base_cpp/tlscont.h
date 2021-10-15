@@ -122,9 +122,9 @@ namespace indigo
 // Macros for working with global variables per each session
 // By tradition this macros start with TL_, but should start with SL_
 #define TL_DECL(type, name) static _SessionLocalContainer<type> TLSCONT_##name
-#define TL_GET(type, name) type& name = (TLSCONT_##name).getLocalCopy()
-#define TL_GET_BY_ID(type, name, id) type& name = (TLSCONT_##name).getLocalCopy(id)
-#define TL_DEF(className, type, name) static _SessionLocalContainer<type> className::TLSCONT_##name
+#define TL_GET(type, name) type& name = (TLSCONT_##name).createOrGetLocalCopy()
+#define TL_GET_BY_ID(type, name, id) type& name = (TLSCONT_##name).createOrGetLocalCopy(id)
+#define TL_DEF(className, type, name) _SessionLocalContainer<type> className::TLSCONT_##name
 }
 
 // "Quasi-static" variable definition. Calls clear() at the end
