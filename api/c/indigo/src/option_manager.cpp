@@ -23,13 +23,13 @@
 
 #include "option_manager.h"
 
-_SessionLocalContainer<IndigoOptionManager>& IndigoOptionManager::getIndigoOptionManager()
+_SessionLocalContainer<sf::safe_shared_hide_obj<IndigoOptionManager>>& IndigoOptionManager::getIndigoOptionManager()
 {
-    static _SessionLocalContainer<IndigoOptionManager> mgr;
+    static _SessionLocalContainer<sf::safe_shared_hide_obj<IndigoOptionManager>> mgr;
     return mgr;
 }
 
-DLLEXPORT IndigoOptionManager& indigoGetOptionManager(const qword id)
+DLLEXPORT sf::safe_shared_hide_obj<IndigoOptionManager>& indigoGetOptionManager(const qword id)
 {
     return IndigoOptionManager::getIndigoOptionManager().getLocalCopy(id);
 }
@@ -91,14 +91,14 @@ void IndigoOptionManager::callOptionHandlerXY(const char* name, int x, int y)
     xySetters.at(name)(x, y);
 }
 
-void IndigoOptionManager::getOptionValueInt(const char* name, int& value)
+void IndigoOptionManager::getOptionValueInt(const char* name, int& value) const
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_INT);
     intGetters.at(name)(value);
 }
 
-void IndigoOptionManager::getOptionValueStr(const char* name, Array<char>& value)
+void IndigoOptionManager::getOptionValueStr(const char* name, Array<char>& value) const
 {
     CHECK_OPT_DEFINED(name);
 
@@ -157,35 +157,35 @@ void IndigoOptionManager::getOptionValueStr(const char* name, Array<char>& value
     }
 }
 
-void IndigoOptionManager::getOptionValueBool(const char* name, int& value)
+void IndigoOptionManager::getOptionValueBool(const char* name, int& value) const
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_BOOL);
     boolGetters.at(name)(value);
 }
 
-void IndigoOptionManager::getOptionValueFloat(const char* name, float& value)
+void IndigoOptionManager::getOptionValueFloat(const char* name, float& value) const
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_FLOAT);
     floatGetters.at(name)(value);
 }
 
-void IndigoOptionManager::getOptionValueColor(const char* name, float& r, float& g, float& b)
+void IndigoOptionManager::getOptionValueColor(const char* name, float& r, float& g, float& b) const
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_COLOR);
     colorGetters.at(name)(r, g, b);
 }
 
-void IndigoOptionManager::getOptionValueXY(const char* name, int& x, int& y)
+void IndigoOptionManager::getOptionValueXY(const char* name, int& x, int& y) const
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_XY);
     xyGetters.at(name)(x, y);
 }
 
-void IndigoOptionManager::getOptionType(const char* name, Array<char>& value)
+void IndigoOptionManager::getOptionType(const char* name, Array<char>& value) const
 {
     CHECK_OPT_DEFINED(name);
     if (!typeMap.find(name))
@@ -220,7 +220,7 @@ void IndigoOptionManager::getOptionType(const char* name, Array<char>& value)
     }
 }
 
-bool IndigoOptionManager::hasOptionHandler(const char* name)
+bool IndigoOptionManager::hasOptionHandler(const char* name) const
 {
     return typeMap.find(name);
 }

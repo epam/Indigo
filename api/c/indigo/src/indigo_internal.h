@@ -63,7 +63,8 @@ namespace indigo
 
     typedef ObjArray<PropertiesMap> MonomersProperties;
 } // namespace indigo
-extern DLLEXPORT IndigoOptionManager& indigoGetOptionManager(const qword id = TL_GET_SESSION_ID());
+
+extern DLLEXPORT sf::safe_shared_hide_obj<IndigoOptionManager>& indigoGetOptionManager(const qword id = TL_GET_SESSION_ID());
 
 class DLLEXPORT IndigoObject
 {

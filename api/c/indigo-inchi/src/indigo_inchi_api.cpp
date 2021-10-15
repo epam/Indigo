@@ -219,7 +219,6 @@ void indigoInchiGetInchiOptions(Array<char>& value)
 
 void IndigoInchiContext::setOptionsHandlers()
 {
-    IndigoOptionManager& mgr = indigoGetOptionManager(indigo_id);
-    std::lock_guard<std::mutex> locker(mgr.lock);
-    mgr.setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions, indigoInchiGetInchiOptions);
+    auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager(indigo_id));
+    mgr->setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions, indigoInchiGetInchiOptions);
 }
