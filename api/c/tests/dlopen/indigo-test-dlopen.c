@@ -25,6 +25,9 @@ typedef int (*INT_RET_INT_INT)(int, int);
 typedef int (*INT_RET_STR_STR)(const char*, const char*);
 typedef int (*INT_RET_STR_STR_STR)(const char*, const char*, const char*);
 typedef int (*INT_RET_INT)(int);
+typedef unsigned long long (*QWORD_RET_VOID)(void);
+typedef void (*VOID_RET_QWORD)(unsigned long long);
+typedef int (*INT_RET_VOID)(void);
 
 /* Try to dynamically load library and check load status. */
 HANDLE dlOpenWithCheck(const char* libraryPath)
@@ -55,6 +58,9 @@ int main(int argc, char** argv)
     HANDLE bingoHandle;
 
     STR_RET_VOID indigoVersion;
+    QWORD_RET_VOID indigoAllocSessionId;
+    VOID_RET_QWORD indigoSetSessionId;
+    VOID_RET_QWORD indigoReleaseSessionId;
     INT_RET_STR indigoLoadReactionFromString;
     INT_RET_STR indigoLoadMoleculeFromString;
     STR_RET_VOID indigoGetLastError;
@@ -65,6 +71,10 @@ int main(int argc, char** argv)
     INT_RET_STR_STR_STR bingoCreateDatabaseFile;
     INT_RET_INT bingoCloseDatabase;
     STR_RET_VOID bingoVersion;
+    INT_RET_VOID indigoInchiInit;
+    INT_RET_VOID indigoInchiDispose;
+    INT_RET_VOID indigoRendererInit;
+    INT_RET_VOID indigoRendererDispose;
 
     int indigoTest = 0;
     int indigoInChITest = 0;
@@ -75,6 +85,7 @@ int main(int argc, char** argv)
     const char* indigoInChILibraryPath;
     const char* indigoRendererLibraryPath;
     const char* bingoLibraryPath;
+    unsigned long long session;
 
     int i = 0;
 
@@ -105,6 +116,7 @@ int main(int argc, char** argv)
     /* Tests */
     if (indigoTest)
     {
+        printf("*** Testing libindigo ***\n");
         int r;
         /* Load Indigo */
         indigoHandle = dlOpenWithCheck(indigoLibraryPath);
@@ -113,20 +125,29 @@ int main(int argc, char** argv)
             printf("Cannot load %s\n", indigoLibraryPath);
             return 1;
         }
-        printf("Indigo instance: %p\n", indigoHandle);
+        printf("Indigo address: %p\n", indigoHandle);
         /* Execute Indigo function */
         indigoVersion = (STR_RET_VOID)DLSYM(indigoHandle, "indigoVersion");
-        printf("Indigo version: %s\n", indigoVersion());
+        indigoAllocSessionId = (QWORD_RET_VOID)DLSYM(indigoHandle, "indigoAllocSessionId");
+        indigoSetSessionId = (VOID_RET_QWORD)DLSYM(indigoHandle, "indigoSetSessionId");
         indigoLoadReactionFromString = (INT_RET_STR)DLSYM(indigoHandle, "indigoLoadReactionFromString");
         indigoGetLastError = (STR_RET_VOID)DLSYM(indigoHandle, "indigoGetLastError");
+        indigoReleaseSessionId = (VOID_RET_QWORD)DLSYM(indigoHandle, "indigoReleaseSessionId");
+
+        printf("Indigo version: %s\n", indigoVersion());
+        session = indigoAllocSessionId();
+        indigoSetSessionId(session);
+        printf("Indigo session: %llu\n", session);
         r = indigoLoadReactionFromString("C");
         if (r < 0)
         {
             printf("Error handled: %s\n", indigoGetLastError());
         }
+        indigoReleaseSessionId(session);
     }
     if (indigoInChITest)
     {
+        printf("*** Testing libindigo-inchi ***\n");
         int m;
         /* Load IndigoInChI */
         indigoInChIHandle = dlOpenWithCheck(indigoInChILibraryPath);
@@ -136,13 +157,23 @@ int main(int argc, char** argv)
             return 1;
         }
         printf("IndigoInChI address: %p\n", indigoInChIHandle);
-        indigoInchiGetInchi = (STR_RET_INT)DLSYM(indigoInChIHandle, "indigoInchiGetInchi");
         indigoLoadMoleculeFromString = (INT_RET_STR)DLSYM(indigoHandle, "indigoLoadMoleculeFromString");
+        indigoInchiGetInchi = (STR_RET_INT)DLSYM(indigoInChIHandle, "indigoInchiGetInchi");
+        indigoInchiInit = (INT_RET_VOID)DLSYM(indigoInChIHandle, "indigoInchiInit");
+        indigoInchiDispose = (INT_RET_VOID)DLSYM(indigoInChIHandle, "indigoInchiDispose");
+
+        session = indigoAllocSessionId();
+        indigoSetSessionId(session);
+        indigoInchiInit();
+        printf("Indigo session: %llu\n", session);
         m = indigoLoadMoleculeFromString("C");
         printf("indigoInChI InChI: %s\n", indigoInchiGetInchi(m));
+        indigoInchiDispose();
+        indigoReleaseSessionId(session);
     }
     if (indigoRendererTest)
     {
+        printf("*** Testing libindigo-renderer ***\n");
         int m, buf, res;
         /* Load IndigoRenderer */
         indigoRendererHandle = dlOpenWithCheck(indigoRendererLibraryPath);
@@ -154,16 +185,26 @@ int main(int argc, char** argv)
         printf("IndigoRenderer address: %p\n", indigoRendererHandle);
         indigoLoadMoleculeFromString = (INT_RET_STR)DLSYM(indigoHandle, "indigoLoadMoleculeFromString");
         indigoWriteBuffer = (INT_RET)DLSYM(indigoHandle, "indigoWriteBuffer");
-        indigoRender = (INT_RET_INT_INT)DLSYM(indigoRendererHandle, "indigoRender");
         indigoSetOption = (INT_RET_STR_STR)DLSYM(indigoHandle, "indigoSetOption");
+        indigoRender = (INT_RET_INT_INT)DLSYM(indigoRendererHandle, "indigoRender");
+        indigoRendererInit = (INT_RET_VOID)DLSYM(indigoRendererHandle, "indigoRendererInit");
+        indigoRendererDispose = (INT_RET_VOID)DLSYM(indigoRendererHandle, "indigoRendererDispose");
+
+        session = indigoAllocSessionId();
+        indigoSetSessionId(session);
+        indigoRendererInit();
+        printf("Indigo session: %llu\n", session);
         indigoSetOption("render-output-format", "png");
         m = indigoLoadMoleculeFromString("C");
         buf = indigoWriteBuffer();
         res = indigoRender(m, buf);
         printf("indigoRender result: %d\n", res);
+        indigoRendererDispose();
+        indigoReleaseSessionId(session);
     }
     if (bingoTest)
     {
+        printf("*** Testing libbingo-nosql ***\n");
         int db;
         /* Load Bingo */
         bingoHandle = dlOpenWithCheck(bingoLibraryPath);
@@ -177,9 +218,14 @@ int main(int argc, char** argv)
         printf("Bingo version: %s\n", bingoVersion());
         bingoCreateDatabaseFile = (INT_RET_STR_STR_STR)DLSYM(bingoHandle, "bingoCreateDatabaseFile");
         bingoCloseDatabase = (INT_RET_INT)DLSYM(bingoHandle, "bingoCloseDatabase");
+
+        session = indigoAllocSessionId();
+        indigoSetSessionId(session);
+        printf("Indigo session: %llu\n", session);
         db = bingoCreateDatabaseFile("test.db", "molecule", "");
         printf("Bingo database ID: %d\n", db);
         printf("Bingo close database status: %d\n", bingoCloseDatabase(db));
+        indigoReleaseSessionId(session);
     }
     /* Close libraries */
     if (bingoTest)
