@@ -20,31 +20,29 @@
 
 #include <indigo_internal.h>
 
-class IndigoSimilarityTest : public ::testing::Test
+#include "common.h"
+
+class IndigoSimilarityTest : public IndigoApiTest
 {
 public:
-    qword session;
-
     int m1;
     int m2; // `m1` with a small chain
     int m3; // `m2` written in a non-canonical way
     int m4; // contains explicit hydrogen atoms
 
 protected:
-    void SetUp() override
+    void SetUp() final
     {
-        session = indigoAllocSessionId();
-        indigoSetSessionId(session);
-
+        IndigoApiTest::SetUp();
         m1 = indigoLoadMoleculeFromString("C1C=C(OCC)C=CC=1");
         m2 = indigoLoadMoleculeFromString("C1C=C(OCCCC)C=CC=1");
         m3 = indigoLoadMoleculeFromString("C1=CC=C(OCCCC)C=C1");
         m4 = indigoLoadMoleculeFromString("Cl[2H].OC(=O)[C@@H](N)CC1=CC([2H])=C(O)C([2H])=C1");
     }
 
-    void TearDown() override
+    void TearDown() final
     {
-        indigoReleaseSessionId(session);
+        IndigoApiTest::TearDown();
     }
 };
 
@@ -141,8 +139,9 @@ TEST_F(IndigoSimilarityTest, similarity_full)
     EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
 
-TEST_F(IndigoSimilarityTest, similarity_normilized_edit)
+TEST_F(IndigoSimilarityTest, similarity_normalized_edit)
 {
+    indigoSetErrorHandler(nullptr, nullptr);
     const char* type = "full";
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);

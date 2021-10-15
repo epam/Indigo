@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-project(indigo-api-unit-tests LANGUAGES CXX)
+project(indigo-core-unit-tests LANGUAGES CXX)
 
 if (ENABLE_TESTS)
     set(DATA_PATH ${CMAKE_SOURCE_DIR}/data)
@@ -8,7 +8,7 @@ if (ENABLE_TESTS)
 
     file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp)
     add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES} common.cpp main.cpp)
-    target_link_libraries(${PROJECT_NAME} indigo bingo-nosql indigo-renderer indigo-inchi indigo-core gtest)
+    target_link_libraries(${PROJECT_NAME} indigo-core gtest)
     target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     if(MSVC)
         target_link_options(${PROJECT_NAME}
@@ -20,5 +20,5 @@ if (ENABLE_TESTS)
         target_link_options(${PROJECT_NAME}
                 PRIVATE -Wl,--allow-multiple-definition)
     endif()
-    add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} --gtest_output=xml:indigo_unit_tests.xml)
+    add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} --gtest_output=xml:indigo_core_unit_tests.xml)
 endif()

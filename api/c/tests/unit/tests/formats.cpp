@@ -1,26 +1,24 @@
 /****************************************************************************
-* Copyright (C) from 2009 to Present EPAM Systems.
-*
-* This file is part of Indigo toolkit.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-***************************************************************************/
-
-#include <string>
+ * Copyright (C) from 2009 to Present EPAM Systems.
+ *
+ * This file is part of Indigo toolkit.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 
 #include <gtest/gtest.h>
 
-#include <base_cpp/exception.h>
+#include <molecule/molecule_mass.h>
 
 #include <indigo.h>
 
@@ -29,13 +27,12 @@
 using namespace std;
 using namespace indigo;
 
-TEST(IndigoLoadTest, molecule)
+class IndigoApiFormatsTest : public IndigoApiTest
 {
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
+};
 
-    indigoSetErrorHandler(errorHandling, 0);
-
+TEST_F(IndigoApiFormatsTest, molecule)
+{
     try
     {
         string mStr = "c1ccccc1N";
@@ -82,15 +79,10 @@ TEST(IndigoLoadTest, molecule)
     }
 }
 
-TEST(IndigoLoadTest, reaction)
+TEST_F(IndigoApiFormatsTest, reaction)
 {
     const string react = "C1=C(*)C=CC=C1>>C1=CC=CC(*)=C1";
     const string expected = "C1C=CC=CC=1*>>C1C=C(*)C=CC=1";
-
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
 
     try
     {
@@ -120,16 +112,9 @@ TEST(IndigoLoadTest, reaction)
     }
 }
 
-TEST(IndigoLoadTest, smarts)
+TEST_F(IndigoApiFormatsTest, smarts)
 {
     const string mStr = "[OH]c1ccccc1";
-    //    const string expectedQuery  = "[#8;H]-[#6;a]1:[#6;a]:[#6;a]:[#6;a]:[#6;a]:[#6;a]:1";
-    //    const string expectedSmarts = "[#8;A;H]-[#6;a]1-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:1";
-
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
 
     try
     {
@@ -154,15 +139,9 @@ TEST(IndigoLoadTest, smarts)
     }
 }
 
-TEST(IndigoLoadTest, query)
+TEST_F(IndigoApiFormatsTest, query)
 {
     const string mStr = "c1[nH]c2c(c(N)[n+]([O-])c[n]2)[n]1";
-    //"[#8;A]-[*]-[#6;A](-[#9])(-[#9])-[#9]"
-
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
 
     try
     {
@@ -188,15 +167,10 @@ TEST(IndigoLoadTest, query)
 }
 
 // TODO: #417
-TEST(IndigoLoadTest, loadAssert)
+TEST_F(IndigoApiFormatsTest, loadAssert)
 {
     const string mStr = "C1=C(*)C=?C=C1";
     const string expectedError = "molecule auto loader: SMILES loader: Character #63 is unexpected during bond parsing";
-
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
 
     try
     {
@@ -209,15 +183,10 @@ TEST(IndigoLoadTest, loadAssert)
     }
 }
 
-TEST(IndigoLoadTest, fromBuffer)
+TEST_F(IndigoApiFormatsTest, fromBuffer)
 {
     const byte mStr[] = "[CX4H3][#6]";
     const int buffSize = sizeof(mStr);
-
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
 
     try
     {
@@ -241,12 +210,8 @@ TEST(IndigoLoadTest, fromBuffer)
     }
 }
 
-TEST(IndigoLoadTest, fromFile)
+TEST_F(IndigoApiFormatsTest, fromFile)
 {
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-    indigoSetErrorHandler(errorHandling, 0);
-
     try
     {
         int obj = -1;
@@ -267,12 +232,8 @@ TEST(IndigoLoadTest, fromFile)
     }
 }
 
-TEST(IndigoLoadTest, fromGzFile)
+TEST_F(IndigoApiFormatsTest, fromGzFile)
 {
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-    indigoSetErrorHandler(errorHandling, 0);
-
     try
     {
         int obj = indigoLoadStructureFromFile(dataPath("molecules/basic/benzene.mol.gz").c_str(), "query");
@@ -297,16 +258,12 @@ TEST(IndigoLoadTest, fromGzFile)
     }
 }
 
-TEST(IndigoLoadTest, noFile)
+TEST_F(IndigoApiFormatsTest, noFile)
 {
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
-
     ASSERT_THROW(
-    {
-        int obj = -1;
-        obj = indigoLoadStructureFromFile("/wrong/path/to/non/existent/file", "");
-    }, Exception);
+        {
+            int obj = -1;
+            obj = indigoLoadStructureFromFile("/wrong/path/to/non/existent/file", "");
+        },
+        Exception);
 }

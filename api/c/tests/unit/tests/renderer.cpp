@@ -18,7 +18,7 @@
 
 #include <thread>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include <base_cpp/exception.h>
 
@@ -29,15 +29,27 @@
 
 using namespace indigo;
 
-namespace
+class IndigoApiRendererTest : public IndigoApiTest
 {
-    void testRender()
+protected:
+    void SetUp() final
     {
-        qword session = indigoAllocSessionId();
-        indigoSetSessionId(session);
+        IndigoApiTest::SetUp();
         indigoRendererInit();
+    }
 
-        indigoSetErrorHandler(errorHandling, 0);
+    void TearDown() final
+    {
+        indigoRendererDispose();
+        IndigoApiTest::TearDown();
+    }
+
+    static void testRender()
+    {
+        qword _session = indigoAllocSessionId();
+        indigoSetSessionId(_session);
+        indigoRendererInit();
+        indigoSetErrorHandler(errorHandler, nullptr);
 
         indigoSetOption("render-coloring", "true");
         indigoSetOption("render-stereo-style", "none");
@@ -59,11 +71,57 @@ namespace
         }
 
         indigoRendererDispose();
-        indigoReleaseSessionId(session);
+        indigoReleaseSessionId(_session);
+    }
+};
+
+TEST_F(IndigoApiRendererTest, layout_rings)
+{
+    try
+    {
+        int m = indigoLoadMoleculeFromString("C1CCCCCCCCCCCCCC1");
+
+        indigoSetOption("smart-layout", "1");
+
+        indigoLayout(m);
+
+        indigoSetOption("render-coloring", "true");
+        indigoSetOption("render-stereo-style", "none");
+        indigoSetOptionXY("render-image-size", 400, 400);
+        indigoSetOption("render-output-format", "png");
+        indigoSetOption("render-superatom-mode", "collapse");
+        indigoRenderToFile(m, "ring.png");
+    }
+    catch (Exception& e)
+    {
+        ASSERT_STREQ("", e.message());
     }
 }
 
-TEST(IndigoRenderTest, render_superatoms)
+TEST_F(IndigoApiRendererTest, layout_crown)
+{
+    try
+    {
+        int m = indigoLoadMoleculeFromString("C1OCCOCCOCCOCCOCCOCCOCCOCCOCCOC1");
+
+        indigoSetOption("smart-layout", "1");
+
+        indigoLayout(m);
+
+        indigoSetOption("render-coloring", "true");
+        indigoSetOption("render-stereo-style", "none");
+        indigoSetOptionXY("render-image-size", 400, 400);
+        indigoSetOption("render-output-format", "png");
+        indigoSetOption("render-superatom-mode", "collapse");
+        indigoRenderToFile(m, "crown.png");
+    }
+    catch (Exception& e)
+    {
+        ASSERT_STREQ("", e.message());
+    }
+}
+
+TEST_F(IndigoApiRendererTest, render_superatoms)
 {
     std::vector<std::thread> threads;
 

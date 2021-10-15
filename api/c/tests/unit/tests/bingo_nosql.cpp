@@ -16,35 +16,48 @@
 * limitations under the License.
 ***************************************************************************/
 
-#include <fstream>
+#include <functional>
 
 #include <gtest/gtest.h>
 
-#include <base_cpp/exception.h>
 #include <base_cpp/output.h>
+#include <base_cpp/profiling.h>
 #include <base_cpp/scanner.h>
+#include <molecule/cmf_loader.h>
 #include <molecule/molecule.h>
-#include <molecule/molecule_auto_loader.h>
-#include <molecule/molecule_cdxml_saver.h>
+#include <molecule/molecule_substructure_matcher.h>
+#include <molecule/molfile_loader.h>
+#include <molecule/sdf_loader.h>
+#include <molecule/smiles_loader.h>
 
-#include <indigo_internal.h>
+#include <bingo-nosql.h>
+#include <indigo.h>
 
 #include "common.h"
 
 using namespace indigo;
 
-TEST(IndigoCdxmlTest, cdxml_test1)
+class BingoNosqlTest : public IndigoApiTest
 {
-    Molecule t_mol;
+};
 
-    loadMolecule("c1ccccc1N", t_mol);
+TEST_F(BingoNosqlTest, test_enumerate_id)
+{
+    int db = bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", "");
+    int obj = indigoLoadMoleculeFromString("C1CCNCC1");
+    bingoInsertRecordObj(db, obj);
+    bingoInsertRecordObj(db, obj);
+    bingoInsertRecordObj(db, obj);
 
-    Array<char> out;
-    ArrayOutput std_out(out);
-    MoleculeCdxmlSaver saver(std_out);
-    saver.saveMolecule(t_mol);
-    loadMolecule("c1ccccc1", t_mol);
-    saver.saveMolecule(t_mol);
+    int count = 0;
+    int e = bingoEnumerateId(db);
+    while (bingoNext(e))
+    {
+        count++;
+    }
 
-    ASSERT_TRUE(out.size() > 2000);
+    bingoEndSearch(e);
+    bingoCloseDatabase(db);
+
+    EXPECT_EQ(count, 3);
 }

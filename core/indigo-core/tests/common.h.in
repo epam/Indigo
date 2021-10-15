@@ -1,0 +1,17 @@
+#cmakedefine DATA_PATH "@DATA_PATH@"
+
+#include <string>
+
+#include <gtest/gtest.h>
+
+#include <molecule/molecule.h>
+
+namespace indigo
+{
+    class IndigoCoreTest : public ::testing::Test
+    {
+    protected:
+        static void loadMolecule(const char* buf, Molecule& molecule);
+        static std::string dataPath(const char* dataPathSuffix);
+    };
+}

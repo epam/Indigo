@@ -28,8 +28,9 @@
 
 using namespace indigo;
 
-namespace
+class IndigoCoreMcsTest : public IndigoCoreTest
 {
+protected:
     static bool hasSolution(const Array<int>& map)
     {
         bool result = false;
@@ -40,7 +41,7 @@ namespace
         }
         return result;
     }
-
+    
     static int mapSize(const Array<int>& map)
     {
         int result = 0;
@@ -51,9 +52,9 @@ namespace
         }
         return result;
     }
-}
+};
 
-TEST(IndigoMcsBasicTest, mcs_one_atom)
+TEST_F(IndigoCoreMcsTest, one_atom)
 {
     Molecule t_mol;
     Molecule q_mol;
@@ -73,7 +74,7 @@ TEST(IndigoMcsBasicTest, mcs_one_atom)
     ASSERT_EQ(0, v_map[0]);
 }
 
-TEST(IndigoMcsBasicTest, mcs_find_2_atom_mcs)
+TEST_F(IndigoCoreMcsTest, find_2_atom_mcs)
 {
     Molecule t_mol;
     Molecule q_mol;
@@ -91,7 +92,7 @@ TEST(IndigoMcsBasicTest, mcs_find_2_atom_mcs)
     ASSERT_TRUE(hasSolution(e_map));
 }
 
-TEST(IndigoMcsBasicTest, mcs_find_2_atom_mcs_with_input_map)
+TEST_F(IndigoCoreMcsTest, find_2_atom_mcs_with_input_map)
 {
     Molecule t_mol;
     Molecule q_mol;
@@ -113,7 +114,7 @@ TEST(IndigoMcsBasicTest, mcs_find_2_atom_mcs_with_input_map)
     ASSERT_EQ(1, v_map[1]);
 }
 
-TEST(IndigoMcsBasicTest, mcs_find_2_atom_and_edges)
+TEST_F(IndigoCoreMcsTest, find_2_atom_and_edges)
 {
     Molecule t_mol;
     Molecule q_mol;
@@ -133,7 +134,7 @@ TEST(IndigoMcsBasicTest, mcs_find_2_atom_and_edges)
     ASSERT_EQ(0, mcs.parametersForExact.numberOfSolutions);
 }
 
-TEST(IndigoMcsBasicTest, DISABLED_mcs_finish_on_timeout)
+TEST_F(IndigoCoreMcsTest, finish_on_timeout)
 {
     Molecule t_mol;
     Molecule q_mol;
@@ -160,7 +161,7 @@ TEST(IndigoMcsBasicTest, DISABLED_mcs_finish_on_timeout)
     ASSERT_EQ(0, mcs.parametersForExact.numberOfSolutions);
 }
 
-TEST(IndigoMcsBasicTest, mcs_test_rings)
+TEST_F(IndigoCoreMcsTest, rings)
 {
     Molecule t_mol;
     Molecule q_mol;

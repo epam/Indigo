@@ -1,26 +1,25 @@
 /****************************************************************************
-* Copyright (C) from 2009 to Present EPAM Systems.
-*
-* This file is part of Indigo toolkit.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-***************************************************************************/
+ * Copyright (C) from 2009 to Present EPAM Systems.
+ *
+ * This file is part of Indigo toolkit.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 
 #include <gtest/gtest.h>
 
 #include <molecule/molecule_mass.h>
 
-#include <indigo-inchi.h>
 #include <indigo-renderer.h>
 #include <indigo.h>
 #include <indigo_internal.h>
@@ -29,66 +28,36 @@
 
 using namespace indigo;
 
-TEST(IndigoBasicApiTest, test_mass)
+class IndigoApiBasicTest : public IndigoApiTest
 {
-    Molecule t_mol;
+};
 
-    loadMolecule("[81Br]", t_mol);
-
-    MoleculeMass mm;
-
-    auto m = mm.monoisotopicMass(t_mol);
-    ASSERT_NEAR(80.9163, m, 0.01);
-}
-
-TEST(IndigoBasicApiTest, test_inchi)
+TEST_F(IndigoApiBasicTest, arom_test_merge)
 {
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-    indigoInchiInit();
-
-    indigoSetErrorHandler(errorHandling, nullptr);
-
-    int mol = indigoInchiLoadMolecule("InChI=1S/C18H18/c1-2-4-6-8-10-12-14-16-18-17-15-13-11-9-7-5-3-1/h1-18H/"
-                                      "b2-1-,3-1+,4-2+,5-3+,6-4+,7-5-,8-6-,9-7+,10-8+,11-9+,12-10+,13-11-,14-12-,15-13+,16-14+,17-15+,18-16+,18-17-");
-    ASSERT_GT(mol, 0);
-
-    indigoInchiDispose();
-    indigoReleaseSessionId(session);
-}
-
-int sum(int s, int x)
-{
-    if (x > 5)
+    try
     {
-        return s;
+        int m = indigoLoadMoleculeFromString("c1ccccc1.c1ccccc1");
+        int c = indigoComponent(m, 0);
+        int cc = indigoClone(c);
+        indigoDearomatize(cc);
+        Array<int> vertices;
+        for (int i = 0; i < 6; ++i)
+            vertices.push(i);
+
+        indigoRemoveAtoms(m, vertices.size(), vertices.ptr());
+        //      printf("%s\n", indigoSmiles(cc));
+
+        indigoMerge(m, cc);
+        ASSERT_STREQ("C1C=CC=CC=1.c1ccccc1", indigoSmiles(m));
     }
-    QS_DEF(Array<int>, xs);
-    xs.push(x);
-
-    int top = xs[0];
-
-    for (int i = 0; i < x; ++i)
+    catch (Exception& e)
     {
-        sum(s, x + 1);
+        ASSERT_STREQ("", e.message());
     }
-
-    return s + (top - x);
 }
 
-TEST(IndigoBasicApiTest, test_qsdef)
+TEST_F(IndigoApiBasicTest, test_smarts_match)
 {
-    int res = sum(0, 0);
-    ASSERT_EQ(res, 0);
-}
-
-TEST(IndigoBasicApiTest, test_smarts_match)
-{
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
-
     try
     {
         {
@@ -122,13 +91,8 @@ TEST(IndigoBasicApiTest, test_smarts_match)
     }
 }
 
-TEST(IndigoBasicApiTest, test_rgroup_dearom)
+TEST_F(IndigoApiBasicTest, test_rgroup_dearom)
 {
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
-
     try
     {
 
@@ -153,13 +117,8 @@ TEST(IndigoBasicApiTest, test_rgroup_dearom)
     }
 }
 
-TEST(IndigoBasicApiTest, test_valence)
+TEST_F(IndigoApiBasicTest, test_valence)
 {
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
-
     try
     {
 
@@ -172,13 +131,8 @@ TEST(IndigoBasicApiTest, test_valence)
     }
 }
 
-TEST(IndigoBasicApiTest, test_sgroup_utf)
+TEST_F(IndigoApiBasicTest, test_sgroup_utf)
 {
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
-
     try
     {
 
@@ -201,18 +155,10 @@ TEST(IndigoBasicApiTest, test_sgroup_utf)
     {
         ASSERT_STREQ("", e.message());
     }
-
-    indigoReleaseSessionId(session);
 }
 
-TEST(IndigoBasicApiTest, test_reset_options)
+TEST_F(IndigoApiBasicTest, test_reset_options)
 {
-
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
-
     indigoSetOption("ignore-noncritical-query-features", "true");
     indigoSetOption("max-embeddings", "10");
 
@@ -227,14 +173,8 @@ TEST(IndigoBasicApiTest, test_reset_options)
     ASSERT_EQ(self.max_embeddings, 10000);
 }
 
-TEST(IndigoBasicApiTest, test_getter_function)
+TEST_F(IndigoApiBasicTest, test_getter_function)
 {
-
-    qword session = indigoAllocSessionId();
-    indigoSetSessionId(session);
-
-    indigoSetErrorHandler(errorHandling, 0);
-
     int bl;
     indigoSetOption("ignore-noncritical-query-features", "true");
     indigoGetOptionBool("ignore-noncritical-query-features", &bl);
@@ -279,5 +219,77 @@ TEST(IndigoBasicApiTest, test_getter_function)
     ASSERT_STREQ(chXY, "[250, 400]");
 
     indigoRendererDispose();
-    indigoReleaseSessionId(session);
+}
+
+TEST_F(IndigoApiBasicTest, test_exact_match)
+{;
+    int mol = indigoLoadMoleculeFromFile(dataPath("molecules/other/39004.1src.mol").c_str());
+
+    byte* buf;
+    int size;
+    indigoSerialize(mol, &buf, &size);
+    Array<char> buffer;
+    buffer.copy((const char*)buf, size);
+    int mol2 = indigoUnserialize((const byte*)buffer.ptr(), buffer.size());
+
+    int res = indigoExactMatch(mol, mol2, "");
+
+    ASSERT_NE(0, res);
+}
+
+TEST_F(IndigoApiBasicTest, name2structure_alkanes)
+{
+    const char* data = "ethane";
+    int molecule = indigoNameToStructure(data, nullptr);
+    EXPECT_NE(-1, molecule);
+
+    const char* smiles = indigoCanonicalSmiles(molecule);
+    EXPECT_STREQ(smiles, "CC");
+}
+
+TEST_F(IndigoApiBasicTest, submolecule_test_layout)
+{
+    try
+    {
+        int mol = indigoLoadMoleculeFromString("CC.NN.PP.OO");
+        Array<int> vertices;
+        vertices.push(6);
+        vertices.push(7);
+        int sub_mol = indigoGetSubmolecule(mol, vertices.size(), vertices.ptr());
+        indigoLayout(sub_mol);
+        indigoClean2d(sub_mol);
+    }
+    catch (Exception& e)
+    {
+        ASSERT_STREQ("", e.message());
+    }
+}
+
+TEST_F(IndigoApiBasicTest, submolecule_test_general)
+{
+    try
+    {
+        int mol = indigoLoadMoleculeFromString("C1=CC=CC=C1.C1=CC=CC=C1");
+        Array<int> vertices;
+        for (int i = 0; i < 6; ++i)
+            vertices.push(i);
+
+        int sub_mol = indigoGetSubmolecule(mol, vertices.size(), vertices.ptr());
+
+        ASSERT_STREQ("C1C=CC=CC=1", indigoCanonicalSmiles(sub_mol));
+        ASSERT_TRUE(strlen(indigoMolfile(sub_mol)) < 650);
+
+        indigoAromatize(sub_mol);
+        ASSERT_STREQ("c1ccccc1", indigoCanonicalSmiles(sub_mol));
+
+        ASSERT_NEAR(78.1118, indigoMolecularWeight(sub_mol), 0.1);
+        ASSERT_NEAR(78.1118, indigoMostAbundantMass(sub_mol), 0.1);
+        ASSERT_NEAR(78.1118, indigoMonoisotopicMass(sub_mol), 0.1);
+        ASSERT_STREQ("C 92.26 H 7.74", indigoMassComposition(sub_mol));
+        ASSERT_STREQ("C6 H6", indigoToString(indigoGrossFormula(sub_mol)));
+    }
+    catch (Exception& e)
+    {
+        ASSERT_STREQ("", e.message());
+    }
 }

@@ -488,7 +488,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -BUILD_INDIGO_UTILS=ON
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DBUILD_INDIGO_UTILS=ON
           cmake --build . --config Release --target ALL_BUILD
           ctest --verbose -C Release
       - name: Upload artifacts
