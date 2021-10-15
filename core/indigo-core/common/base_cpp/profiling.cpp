@@ -204,7 +204,7 @@ void ProfilingSystem::getStatistics(Output& output, const bool get_all)
     table_output.flush();
 }
 
-void ProfilingSystem::_printTimerData(const Record::Data& data, Output& output)
+void ProfilingSystem::_printTimerData(const Record::Data& data, Output& output) const
 {
     if (data.count == 0)
     {
@@ -236,7 +236,7 @@ void ProfilingSystem::_printCounterData(const Record::Data& data, Output& output
     output.printf("%0.0lf\t%0.0lf\t%0.1f\t%0.1lf\t%0.0lf", (double)data.value, (double)data.count, avg_value, sqrt(sigma_sq), (double)data.max_value);
 }
 
-bool ProfilingSystem::_hasLabelIndex(const int name_index)
+bool ProfilingSystem::_hasLabelIndex(const int name_index) const
 {
     if (name_index >= _records.size())
     {

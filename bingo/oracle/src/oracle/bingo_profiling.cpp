@@ -52,12 +52,14 @@ ORAEXT OCINumber* oraProfilingGetCount(OCIExtProcContext* ctx, char* key_name, s
         qword value;
 
         // Try to find in profiling data
-        ProfilingSystem& inst = ProfilingSystem::getInstance();
-        if (inst.hasLabel(key_name))
-            // throw BingoError("Key wasn't found");
-            value = inst.getLabelCallCount(key_name);
-        else
-            value = 0;
+        {
+            auto inst = sf::xlock_safe_ptr(ProfilingSystem::getInstance());
+            if (inst->hasLabel(key_name))
+                // throw BingoError("Key wasn't found");
+                value = inst->getLabelCallCount(key_name);
+            else
+                value = 0;
+        }
 
         result = (OCINumber*)OCIExtProcAllocCallMemory(ctx, sizeof(OCINumber));
 
@@ -89,12 +91,14 @@ ORAEXT OCINumber* oraProfilingGetTime(OCIExtProcContext* ctx, char* key_name, sh
         float value;
 
         // Try to find in profiling data
-        ProfilingSystem& inst = ProfilingSystem::getInstance();
-        if (inst.hasLabel(key_name))
-            // throw BingoError("Key wasn't found");
-            value = inst.getLabelExecTime(key_name);
-        else
-            value = 0;
+        {
+            auto inst = sf::xlock_safe_ptr(ProfilingSystem::getInstance());
+            if (inst->hasLabel(key_name))
+                // throw BingoError("Key wasn't found");
+                value = inst->getLabelExecTime(key_name);
+            else
+                value = 0;
+        }
 
         result = (OCINumber*)OCIExtProcAllocCallMemory(ctx, sizeof(OCINumber));
 

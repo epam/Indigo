@@ -118,10 +118,10 @@ namespace indigo
 
         static int _recordsCmp(int idx1, int idx2, void* context);
 
-        void _printTimerData(const Record::Data& data, Output& output);
+        void _printTimerData(const Record::Data& data, Output& output) const;
         static void _printCounterData(const Record::Data& data, Output& output);
 
-        bool _hasLabelIndex(int name_index);
+        bool _hasLabelIndex(int name_index) const;
         void _ensureRecordExistanceLocked(int name_index);
 
         ObjArray<Array<char>> _names;

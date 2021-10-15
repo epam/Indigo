@@ -79,14 +79,22 @@ CEXPORT const char* bingoGetVersion()
     return BINGO_VERSION;
 }
 
-CEXPORT const char* bingoGetError(){BINGO_BEGIN{return self.error.ptr();
-}
-BINGO_END("", "")
+CEXPORT const char* bingoGetError()
+{
+    BINGO_BEGIN
+    {
+        return self.error.ptr();
+    }
+    BINGO_END("", "");
 }
 
-CEXPORT const char* bingoGetWarning(){BINGO_BEGIN{return self.warning.ptr();
-}
-BINGO_END("", "")
+CEXPORT const char* bingoGetWarning()
+{
+    BINGO_BEGIN
+    {
+        return self.warning.ptr();
+    }
+    BINGO_END("", "");
 }
 
 CEXPORT qword bingoAllocateSessionID()
@@ -363,46 +371,64 @@ CEXPORT int bingoImportParseFieldList(const char* fields_str)
     }
     BINGO_END(0, -1);
 }
-CEXPORT const char* bingoImportGetColumnName(int idx){
-    BINGO_BEGIN{if (self.import_columns.get() == 0) throw BingoError("bingo import list has not been parsed yet");
-return self.import_columns.ref().at(idx);
+
+CEXPORT const char* bingoImportGetColumnName(int idx)
+{
+    BINGO_BEGIN
+    {
+        if (self.import_columns.get() == 0)
+            throw BingoError("bingo import list has not been parsed yet");
+        return self.import_columns.ref().at(idx);
+    }
+    BINGO_END("", "");
 }
-BINGO_END("", "")
-}
-CEXPORT const char* bingoImportGetPropertyName(int idx){
-    BINGO_BEGIN{if (self.import_properties.get() == 0) throw BingoError("bingo import list has not been parsed yet");
-return self.import_properties.ref().at(idx);
-}
-BINGO_END("", "")
+
+CEXPORT const char* bingoImportGetPropertyName(int idx)
+{
+    BINGO_BEGIN
+    {
+        if (self.import_properties.get() == 0)
+            throw BingoError("bingo import list has not been parsed yet");
+        return self.import_properties.ref().at(idx);
+    }
+    BINGO_END("", "");
 }
 /*
  * Get value by parsed field list
  */
-CEXPORT const char* bingoImportGetPropertyValue(int idx){
-    BINGO_BEGIN{if (self.import_properties.get() == 0) throw BingoError("bingo import list has not been parsed yet");
-const char* property_name = self.import_properties.ref().at(idx);
-if (self.sdf_loader.get())
+CEXPORT const char* bingoImportGetPropertyValue(int idx)
 {
-    return self.sdf_loader->properties.at(property_name);
-}
-else if (self.rdf_loader.get())
-{
-    return self.rdf_loader->properties.at(property_name);
-}
-else
-{
-    throw BingoError("bingo import has not been initialized yet");
-}
-}
-BINGO_END("", 0)
+    BINGO_BEGIN
+    {
+        if (self.import_properties.get() == 0)
+            throw BingoError("bingo import list has not been parsed yet");
+        const char* property_name = self.import_properties.ref().at(idx);
+        if (self.sdf_loader.get())
+        {
+            return self.sdf_loader->properties.at(property_name);
+        }
+        else if (self.rdf_loader.get())
+        {
+            return self.rdf_loader->properties.at(property_name);
+        }
+        else
+        {
+            throw BingoError("bingo import has not been initialized yet");
+        }
+    }
+    BINGO_END("", 0);
 }
 
-CEXPORT int bingoSDFImportOpen(const char* file_name){BINGO_BEGIN{bingoSDFImportClose();
-self.file_scanner.create(file_name);
-self.sdf_loader.create(self.file_scanner.ref());
-return 1;
-}
-BINGO_END(-1, -1)
+CEXPORT int bingoSDFImportOpen(const char* file_name)
+{
+    BINGO_BEGIN
+    {
+        bingoSDFImportClose();
+        self.file_scanner.create(file_name);
+        self.sdf_loader.create(self.file_scanner.ref());
+        return 1;
+    }
+    BINGO_END(-1, -1);
 }
 
 CEXPORT int bingoSDFImportClose()
@@ -415,29 +441,46 @@ CEXPORT int bingoSDFImportClose()
     BINGO_END(0, -1);
 }
 
-CEXPORT int bingoSDFImportEOF(){BINGO_BEGIN{return self.sdf_loader->isEOF() ? 1 : 0;
-}
-BINGO_END(0, -1)
-}
-CEXPORT const char* bingoSDFImportGetNext(){BINGO_BEGIN{profTimerStart(t, "sdf_loader.readNext");
-self.sdf_loader->readNext();
-self.sdf_loader->data.push(0);
-return self.sdf_loader->data.ptr();
-}
-BINGO_END("", 0)
+CEXPORT int bingoSDFImportEOF()
+{
+    BINGO_BEGIN
+    {
+        return self.sdf_loader->isEOF() ? 1 : 0;
+    }
+    BINGO_END(0, -1);
 }
 
-CEXPORT const char* bingoSDFImportGetProperty(const char* param_name){BINGO_BEGIN{return self.sdf_loader->properties.at(param_name);
-}
-BINGO_END("", 0)
+CEXPORT const char* bingoSDFImportGetNext()
+{
+    BINGO_BEGIN
+    {
+        profTimerStart(t, "sdf_loader.readNext");
+        self.sdf_loader->readNext();
+        self.sdf_loader->data.push(0);
+        return self.sdf_loader->data.ptr();
+    }
+    BINGO_END("", 0);
 }
 
-CEXPORT int bingoRDFImportOpen(const char* file_name){BINGO_BEGIN{bingoRDFImportClose();
-self.file_scanner.create(file_name);
-self.rdf_loader.create(self.file_scanner.ref());
-return 1;
+CEXPORT const char* bingoSDFImportGetProperty(const char* param_name)
+{
+    BINGO_BEGIN
+    {
+        return self.sdf_loader->properties.at(param_name);
+    }
+    BINGO_END("", nullptr);
 }
-BINGO_END(-1, -1)
+
+CEXPORT int bingoRDFImportOpen(const char* file_name)
+{
+    BINGO_BEGIN
+    {
+        bingoRDFImportClose();
+        self.file_scanner.create(file_name);
+        self.rdf_loader.create(self.file_scanner.ref());
+        return 1;
+    }
+    BINGO_END(-1, -1);
 }
 
 CEXPORT int bingoRDFImportClose()
@@ -450,87 +493,123 @@ CEXPORT int bingoRDFImportClose()
     BINGO_END(0, -1);
 }
 
-CEXPORT int bingoRDFImportEOF(){BINGO_BEGIN{return self.rdf_loader->isEOF() ? 1 : 0;
-}
-BINGO_END(0, -1)
-}
-CEXPORT const char* bingoRDFImportGetNext(){BINGO_BEGIN{self.rdf_loader->readNext();
-self.rdf_loader->data.push(0);
-return self.rdf_loader->data.ptr();
-}
-BINGO_END("", 0)
+CEXPORT int bingoRDFImportEOF()
+{
+    BINGO_BEGIN
+    {
+        return self.rdf_loader->isEOF() ? 1 : 0;
+    }
+    BINGO_END(0, -1);
 }
 
-CEXPORT const char* bingoRDFImportGetProperty(const char* param_name){BINGO_BEGIN{return self.rdf_loader->properties.at(param_name);
+CEXPORT const char* bingoRDFImportGetNext()
+{
+    BINGO_BEGIN
+    {
+        self.rdf_loader->readNext();
+        self.rdf_loader->data.push(0);
+        return self.rdf_loader->data.ptr();
+    }
+    BINGO_END("", 0);
 }
-BINGO_END("", 0)
+
+CEXPORT const char* bingoRDFImportGetProperty(const char* param_name)
+{
+    BINGO_BEGIN
+    {
+        return self.rdf_loader->properties.at(param_name);
+    }
+    BINGO_END("", 0);
 }
 
 CEXPORT void bingoProfilingReset(byte reset_whole_session)
 {
-    ProfilingSystem::getInstance().reset(reset_whole_session != 0);
+
+    sf::xlock_safe_ptr(ProfilingSystem::getInstance())->reset(reset_whole_session != 0);
 }
 
-CEXPORT const char* bingoProfilingGetStatistics(bool for_session){BINGO_BEGIN{ArrayOutput output(self.buffer);
-profGetStatistics(output, for_session);
-output.writeByte(0);
-return self.buffer.ptr();
-}
-BINGO_END("<unknown>", "<unknown>")
-}
-
-CEXPORT float bingoProfilingGetTime(const char* counter_name,
-                                    byte for_session){BINGO_BEGIN{return ProfilingSystem::getInstance().getLabelExecTime(counter_name, for_session != 0);
-}
-BINGO_END(-1, -1)
+CEXPORT const char* bingoProfilingGetStatistics(bool for_session)
+{
+    BINGO_BEGIN
+    {
+        ArrayOutput output(self.buffer);
+        profGetStatistics(output, for_session);
+        output.writeByte(0);
+        return self.buffer.ptr();
+    }
+    BINGO_END("<unknown>", "<unknown>");
 }
 
-CEXPORT qword bingoProfilingGetValue(const char* counter_name,
-                                     byte for_session){BINGO_BEGIN{return ProfilingSystem::getInstance().getLabelValue(counter_name, for_session != 0);
+CEXPORT float bingoProfilingGetTime(const char* counter_name, byte for_session)
+{
+    BINGO_BEGIN
+    {
+        return sf::xlock_safe_ptr(ProfilingSystem::getInstance())->getLabelExecTime(counter_name, for_session != 0);
+    }
+    BINGO_END(-1, -1);
 }
-BINGO_END(-1, -1)
+
+CEXPORT qword bingoProfilingGetValue(const char* counter_name, byte for_session)
+{
+    BINGO_BEGIN
+    {
+        return sf::xlock_safe_ptr(ProfilingSystem::getInstance())->getLabelValue(counter_name, for_session != 0);
+    }
+    BINGO_END(-1, -1);
 }
 
 CEXPORT qword bingoProfilingGetCount(const char* counter_name, byte for_session)
 {
     BINGO_BEGIN
     {
-        return ProfilingSystem::getInstance().getLabelCallCount(counter_name, for_session != 0);
+        return sf::xlock_safe_ptr(ProfilingSystem::getInstance())->getLabelCallCount(counter_name, for_session != 0);
     }
-    BINGO_END(-1, -1)
+    BINGO_END(-1, -1);
 }
 
 #include <exception>
 
-CEXPORT int bingoCheckMemoryAllocate(int size){BINGO_BEGIN{try {self.test_ptr = 0;
-self.test_ptr = (byte*)malloc(size);
-
-if (self.test_ptr == 0)
+CEXPORT int bingoCheckMemoryAllocate(int size)
 {
-    self.error.readString("self.test_ptr == 0", true);
-    return -1;
-}
-for (int i = 0; i < size; i++)
-    self.test_ptr[i] = i;
+    BINGO_BEGIN
+    {
+        try
+        {
+            self.test_ptr = 0;
+            self.test_ptr = (byte*)malloc(size);
 
-return 1;
+            if (self.test_ptr == 0)
+            {
+                self.error.readString("self.test_ptr == 0", true);
+                return -1;
+            }
+            for (int i = 0; i < size; i++)
+                self.test_ptr[i] = i;
+
+            return 1;
+        }
+        catch (std::exception& ex)
+        {
+            self.error.readString(ex.what(), true);
+            return -1;
+        }
+    }
+    BINGO_END(-1, -1);
 }
-catch (std::exception& ex)
+
+CEXPORT int bingoCheckMemoryFree()
 {
-    self.error.readString(ex.what(), true);
-    return -1;
-}
-}
-BINGO_END(-1, -1)
-}
+    BINGO_BEGIN
+    {
+        if (self.test_ptr != 0)
+        {
+            free(self.test_ptr);
+        }
 
-CEXPORT int bingoCheckMemoryFree(){BINGO_BEGIN{if (self.test_ptr != 0){free(self.test_ptr);
-}
-
-self.test_ptr = 0;
-return 1;
-}
-BINGO_END(-1, -1)
+        self.test_ptr = 0;
+        return 1;
+    }
+    BINGO_END(-1, -1);
 }
 
 CEXPORT qword bingoProfNanoClock()
@@ -540,28 +619,32 @@ CEXPORT qword bingoProfNanoClock()
 
 CEXPORT void bingoProfIncTimer(const char* name, qword dt)
 {
-    ProfilingSystem& inst = ProfilingSystem::getInstance();
-    int name_index = inst.getNameIndex(name);
-    inst.addTimer(name_index, dt);
+    auto inst = sf::xlock_safe_ptr(ProfilingSystem::getInstance());
+    int name_index = inst->getNameIndex(name);
+    inst->addTimer(name_index, dt);
 }
 
 CEXPORT void bingoProfIncCounter(const char* name, int dv)
 {
-    ProfilingSystem& inst = ProfilingSystem::getInstance();
-    int name_index = inst.getNameIndex(name);
-    inst.addCounter(name_index, dv);
+    auto inst = sf::xlock_safe_ptr(ProfilingSystem::getInstance());
+    int name_index = inst->getNameIndex(name);
+    inst->addCounter(name_index, dv);
 }
 
-CEXPORT const char* bingoGetNameCore(const char* target_buf, int target_buf_len){BINGO_BEGIN{QS_DEF(Array<char>, source);
-QS_DEF(Array<char>, name);
+CEXPORT const char* bingoGetNameCore(const char* target_buf, int target_buf_len)
+{
+    BINGO_BEGIN
+    {
+        QS_DEF(Array<char>, source);
+        QS_DEF(Array<char>, name);
 
-BufferScanner scanner(target_buf, target_buf_len);
-bingoGetName(scanner, self.buffer);
-self.buffer.push(0);
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
-}
+        BufferScanner scanner(target_buf, target_buf_len);
+        bingoGetName(scanner, self.buffer);
+        self.buffer.push(0);
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
+};
 
 CEXPORT int bingoIndexMarkTermintate()
 {
@@ -571,7 +654,7 @@ CEXPORT int bingoIndexMarkTermintate()
             self.parallel_indexing_dispatcher->markToTerminate();
         return 1;
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 static void _bingoIndexEnd(BingoCore& self)
@@ -593,67 +676,98 @@ static void _bingoIndexEnd(BingoCore& self)
     self.index_record_data.free();
 }
 
-CEXPORT int bingoIndexEnd(){BINGO_BEGIN{_bingoIndexEnd(self);
-return 1;
-}
-BINGO_END(-2, -2)
-}
-
-CEXPORT int bingoIndexBegin(){BINGO_BEGIN{if (!self.bingo_context->fp_parameters_ready) throw BingoError("fingerprint parameters not set");
-
-_bingoIndexEnd(self);
-
-self.index_record_data.create();
-return 1;
-}
-BINGO_END(-2, -2)
-}
-
-CEXPORT int bingoIndexSetSkipFP(bool skip){BINGO_BEGIN{self.skip_calculate_fp = skip;
-return 1;
-}
-BINGO_END(-2, -2)
-}
-
-CEXPORT int bingoSMILESImportOpen(const char* file_name){BINGO_BEGIN{self.file_scanner.free();
-self.file_scanner.create(file_name);
-
-// detect if input is gzipped
-byte magic[2];
-int pos = self.file_scanner->tell();
-self.file_scanner->readCharsFix(2, (char*)magic);
-self.file_scanner->seek(pos, SEEK_SET);
-if (magic[0] == 0x1f && magic[1] == 0x8b)
+CEXPORT int bingoIndexEnd()
 {
-    self.gz_scanner = std::make_unique<GZipScanner>(self.file_scanner.ref());
-    self.smiles_scanner = self.gz_scanner.get();
-}
-else
-    self.smiles_scanner = self.file_scanner.get();
-return 1;
-}
-BINGO_END(-2, -2)
+    BINGO_BEGIN
+    {
+        _bingoIndexEnd(self);
+        return 1;
+    }
+    BINGO_END(-2, -2);
 }
 
-CEXPORT int bingoSMILESImportClose(){BINGO_BEGIN{self.gz_scanner.reset(nullptr);
-self.file_scanner.free();
-self.smiles_scanner = 0;
-}
-BINGO_END(0, -1)
+CEXPORT int bingoIndexBegin()
+{
+    BINGO_BEGIN
+    {
+        if (!self.bingo_context->fp_parameters_ready)
+            throw BingoError("fingerprint parameters not set");
+
+        _bingoIndexEnd(self);
+
+        self.index_record_data.create();
+        return 1;
+    }
+    BINGO_END(-2, -2);
 }
 
-CEXPORT int bingoSMILESImportEOF(){BINGO_BEGIN{if (self.smiles_scanner == 0) throw BingoError("SMILES import wasn't initialized");
-return self.smiles_scanner->isEOF() ? 1 : 0;
-}
-BINGO_END(-2, -2)
+CEXPORT int bingoIndexSetSkipFP(bool skip)
+{
+    BINGO_BEGIN
+    {
+        self.skip_calculate_fp = skip;
+        return 1;
+    }
+    BINGO_END(-2, -2);
 }
 
-CEXPORT const char* bingoSMILESImportGetNext(){BINGO_BEGIN{if (self.smiles_scanner == 0) throw BingoError("SMILES import wasn't initialized");
-// TODO: Name should be also extracted here...
-self.smiles_scanner->readLine(self.buffer, true);
-return self.buffer.ptr();
+CEXPORT int bingoSMILESImportOpen(const char* file_name)
+{
+    BINGO_BEGIN
+    {
+        self.file_scanner.free();
+        self.file_scanner.create(file_name);
+
+        // detect if input is gzipped
+        byte magic[2];
+        int pos = self.file_scanner->tell();
+        self.file_scanner->readCharsFix(2, (char*)magic);
+        self.file_scanner->seek(pos, SEEK_SET);
+        if (magic[0] == 0x1f && magic[1] == 0x8b)
+        {
+            self.gz_scanner = std::make_unique<GZipScanner>(self.file_scanner.ref());
+            self.smiles_scanner = self.gz_scanner.get();
+        }
+        else
+            self.smiles_scanner = self.file_scanner.get();
+        return 1;
+    }
+    BINGO_END(-2, -2);
 }
-BINGO_END("", 0)
+
+CEXPORT int bingoSMILESImportClose()
+{
+    BINGO_BEGIN
+    {
+        self.gz_scanner.reset(nullptr);
+        self.file_scanner.free();
+        self.smiles_scanner = 0;
+    }
+    BINGO_END(0, -1);
+}
+
+CEXPORT int bingoSMILESImportEOF()
+{
+    BINGO_BEGIN
+    {
+        if (self.smiles_scanner == 0)
+            throw BingoError("SMILES import wasn't initialized");
+        return self.smiles_scanner->isEOF() ? 1 : 0;
+    }
+    BINGO_END(-2, -2);
+}
+
+CEXPORT const char* bingoSMILESImportGetNext()
+{
+    BINGO_BEGIN
+    {
+        if (self.smiles_scanner == 0)
+            throw BingoError("SMILES import wasn't initialized");
+        // TODO: Name should be also extracted here...
+        self.smiles_scanner->readLine(self.buffer, true);
+        return self.buffer.ptr();
+    }
+    BINGO_END("", 0);
 }
 
 CEXPORT const char* bingoSMILESImportGetId()
@@ -684,5 +798,5 @@ CEXPORT const char* bingoSMILESImportGetId()
         else
             return (const char*)strscan.curptr();
     }
-    BINGO_END("", 0)
+    BINGO_END("", 0);
 }
