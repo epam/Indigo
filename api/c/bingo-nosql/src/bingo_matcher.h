@@ -167,10 +167,10 @@ namespace bingo
     {
     public:
         virtual bool next() = 0;
-        virtual int currentId() = 0;
+        virtual int currentId() const = 0;
         virtual IndigoObject* currentObject() = 0;
         virtual const BaseIndex& getIndex() = 0;
-        virtual float currentSimValue() = 0;
+        virtual float currentSimValue() const = 0;
         virtual void setOptions(const char* options) = 0;
         virtual void resetThresholdLimit(float min) = 0;
 
@@ -190,13 +190,13 @@ namespace bingo
     public:
         BaseMatcher(BaseIndex& index, IndigoObject*& current_obj);
 
-        int currentId() override;
+        int currentId() const override;
 
         IndigoObject* currentObject() override;
 
         const BaseIndex& getIndex() override;
 
-        float currentSimValue() override;
+        float currentSimValue() const override;
 
         void setOptions(const char* options) override;
         void resetThresholdLimit(float min) override;
@@ -317,7 +317,7 @@ namespace bingo
         int minCell() override;
         int maxCell() override;
 
-        float currentSimValue() override;
+        float currentSimValue() const override;
 
     protected:
         float _current_sim_value;

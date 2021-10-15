@@ -32,9 +32,9 @@ namespace indigo
     INDIGO_BEGIN                                                                                                                                               \
     {                                                                                                                                                          \
         {                                                                                                                                                      \
-            auto bingo_indexes = sf::slock_safe_ptr(_bingo_indexes);                                                                                           \
-            if (!bingo_indexes->has(db_id))                                                                                                                    \
-                throw BingoException("Incorrect database instance");                                                                                             \
+            auto indexes = sf::slock_safe_ptr(_indexes);                                                                                                       \
+            if (!indexes->has(db_id))                                                                                                                          \
+                throw BingoException("Incorrect database instance");                                                                                           \
         }                                                                                                                                                      \
         MMFStorage::setDatabaseId(db_id);
 
@@ -43,9 +43,9 @@ namespace indigo
     INDIGO_BEGIN_STATIC                                                                                                                                        \
     {                                                                                                                                                          \
         {                                                                                                                                                      \
-            auto bingo_indexes = sf::slock_safe_ptr(_bingo_indexes);                                                                                           \
-            if (!bingo_indexes->has(db_id))                                                                                                                    \
-                throw BingoException("Incorrect database instance");                                                                                             \
+            auto indexes = sf::slock_safe_ptr(_indexes);                                                                                                       \
+            if (!indexes->has(db_id))                                                                                                                          \
+                throw BingoException("Incorrect database instance");                                                                                           \
         }                                                                                                                                                      \
         MMFStorage::setDatabaseId(db_id);
 
@@ -54,11 +54,11 @@ namespace indigo
     {                                                                                                                                                          \
         {                                                                                                                                                      \
             const auto searches_data = sf::slock_safe_ptr(_searches_data);                                                                                     \
-            if (((search_id) < 0) || ((search_id) >= searches_data->db.size()) || (searches_data->db[(search_id)] == -1))                                      \
+            if (!searches_data->searches.has(search_id))                                                                                                       \
             {                                                                                                                                                  \
                 throw BingoException("Incorrect search object");                                                                                               \
             }                                                                                                                                                  \
-            MMFStorage::setDatabaseId(searches_data->db[search_id]);                                                                                           \
+            MMFStorage::setDatabaseId(searches_data->db.at(search_id));                                                                                           \
         }
 
 // Used when we don't need Indigo session, just handle errors
@@ -67,11 +67,11 @@ namespace indigo
     {                                                                                                                                                          \
         {                                                                                                                                                      \
             const auto searches_data = sf::slock_safe_ptr(_searches_data);                                                                                     \
-            if (((search_id) < 0) || ((search_id) >= searches_data->db.size()) || (searches_data->db[(search_id)] == -1))                                      \
+            if (!searches_data->searches.has(search_id))                                                                                                       \
             {                                                                                                                                                  \
                 throw BingoException("Incorrect search object");                                                                                               \
             }                                                                                                                                                  \
-            MMFStorage::setDatabaseId(searches_data->db[search_id]);                                                                                           \
+            MMFStorage::setDatabaseId(searches_data->db.at(search_id));                                                                                           \
         }
 
 #define BINGO_END(fail)                                                                                                                                        \

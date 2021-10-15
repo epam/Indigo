@@ -160,7 +160,7 @@ BaseMatcher::~BaseMatcher()
         delete _current_obj;
 }
 
-int BaseMatcher::currentId()
+int BaseMatcher::currentId() const
 {
     BingoArray<int>& id_mapping = _index.getIdMapping();
     return id_mapping[_current_id];
@@ -181,7 +181,7 @@ const BaseIndex& BaseMatcher::getIndex()
     return _index;
 }
 
-float BaseMatcher::currentSimValue()
+float BaseMatcher::currentSimValue() const
 {
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
@@ -922,7 +922,7 @@ int BaseSimilarityMatcher::maxCell()
     return _max_cell;
 }
 
-float BaseSimilarityMatcher::currentSimValue()
+float BaseSimilarityMatcher::currentSimValue() const
 {
     return _current_sim_value;
 }
