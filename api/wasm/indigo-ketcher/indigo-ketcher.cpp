@@ -102,13 +102,53 @@ namespace indigo
             objtype = type;
         }
 
-        std::string toString() const
+        std::string toString( const std::map<std::string, std::string>& options, const std::string& outputFormat ) const
         {
-            if (is_reaction())
-            {
-                return _checkResultString(indigoRxnfile(id()));
+            if (outputFormat == "molfile" || outputFormat == "rxnfile" || outputFormat == "chemical/x-mdl-molfile" || outputFormat == "chemical/x-mdl-rxnfile")
+           {
+                if (is_reaction())
+                {
+                    return _checkResultString(indigoRxnfile(id()));
+                }
+                return _checkResultString(indigoMolfile(id()));
             }
-            return _checkResultString(indigoMolfile(id()));
+            else if (outputFormat == "smiles" || outputFormat == "chemical/x-daylight-smiles" || outputFormat == "chemical/x-chemaxon-cxsmiles")
+            {
+                 if (options.count("smiles") > 0 && options.at("smiles") == "canonical")
+                {
+                    return _checkResultString(indigoCanonicalSmiles(id()));
+                }
+                return _checkResultString(indigoSmiles(id()));
+            }
+            else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
+            {
+                if (options.count("smarts") > 0 && options.at("smarts") == "canonical")
+                {
+                    return _checkResultString(indigoCanonicalSmarts(id()));
+                }
+                return _checkResultString(indigoSmarts(id()));
+            }
+            else if (outputFormat == "cml" || outputFormat == "chemical/x-cml")
+            {
+                return _checkResultString(indigoCml(id()));
+            }
+            else if (outputFormat == "inchi" || outputFormat == "chemical/x-inchi")
+            {
+                return _checkResultString(indigoInchiGetInchi(id()));
+            }
+            else if (outputFormat == "inchi-aux" || outputFormat == "chemical/x-inchi-aux")
+            {
+                std::stringstream ss;
+                ss << _checkResultString(indigoInchiGetInchi(id())) << '\n' << _checkResultString(indigoInchiGetAuxInfo());
+                return ss.str();
+            } else if (outputFormat == "ket" || outputFormat == "chemical/x-indigo-ket")
+            {
+                return _checkResultString(indigoJson(id()));
+            }
+
+            std::stringstream ss;
+            ss << "Unknown output format: " << outputFormat;
+            jsThrow(ss.str().c_str());
         }
 
         IndigoKetcherObject substructure(const std::vector<int>& selected_atoms) const
@@ -242,101 +282,61 @@ namespace indigo
         return _checkResultString(indigoVersion());
     }
 
-    std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
+    std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options )
     {
         const IndigoSession session;
         indigoSetOptions(options);
         IndigoKetcherObject iko = loadMoleculeOrReaction(data.c_str());
-        if (outputFormat == "molfile" || outputFormat == "rxnfile" || outputFormat == "chemical/x-mdl-molfile" || outputFormat == "chemical/x-mdl-rxnfile")
-        {
-            if (iko.is_reaction())
-            {
-                return _checkResultString(indigoRxnfile(iko.id()));
-            }
-            return _checkResultString(indigoMolfile(iko.id()));
-        }
-        if (outputFormat == "smiles" or outputFormat == "chemical/x-daylight-smiles" || outputFormat == "chemical/x-chemaxon-cxsmiles")
-        {
-            if (options.count("smiles") > 0 && options.at("smiles") == "canonical")
-            {
-                return _checkResultString(indigoCanonicalSmiles(iko.id()));
-            }
-            return _checkResultString(indigoSmiles(iko.id()));
-        }
-        if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
-        {
-            if (options.count("smarts") > 0 && options.at("smarts") == "canonical")
-            {
-                return _checkResultString(indigoCanonicalSmarts(iko.id()));
-            }
-            return _checkResultString(indigoSmarts(iko.id()));
-        }
-        if (outputFormat == "cml" || outputFormat == "chemical/x-cml")
-        {
-            return _checkResultString(indigoCml(iko.id()));
-        }
-        if (outputFormat == "inchi" || outputFormat == "chemical/x-inchi")
-        {
-            return _checkResultString(indigoInchiGetInchi(iko.id()));
-        }
-        if (outputFormat == "inchi-aux" || outputFormat == "chemical/x-inchi-aux")
-        {
-            std::stringstream ss;
-            ss << _checkResultString(indigoInchiGetInchi(iko.id())) << '\n' << _checkResultString(indigoInchiGetAuxInfo());
-            return ss.str();
-        }
-        std::stringstream ss;
-        ss << "Unknown output format: " << outputFormat;
-        jsThrow(ss.str().c_str());
+        return iko.toString( options, outputFormat.size() ? outputFormat :  "molfile" );
     }
 
-    std::string aromatize(const std::string& data, const std::map<std::string, std::string>& options)
+    std::string aromatize(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options  )
     {
         const IndigoSession session;
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
         _checkResult(indigoAromatize(iko.id()));
-        return iko.toString();
+        return iko.toString( options, outputFormat.size() ? outputFormat :  "molfile" );
     }
 
-    std::string dearomatize(const std::string& data, const std::map<std::string, std::string>& options)
+    std::string dearomatize(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options )
     {
         const IndigoSession session;
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
         _checkResult(indigoDearomatize(iko.id()));
-        return iko.toString();
+        return iko.toString( options, outputFormat.size() ? outputFormat :  "molfile" );
     }
 
-    std::string layout(const std::string& data, const std::map<std::string, std::string>& options)
+    std::string layout(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options )
     {
         const IndigoSession session;
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
         _checkResult(indigoLayout(iko.id()));
-        return iko.toString();
+        return iko.toString( options, outputFormat.size() ? outputFormat :  "molfile" );
     }
 
-    std::string clean2d(const std::string& data, const std::map<std::string, std::string>& options, const std::vector<int>& selected_atoms)
+    std::string clean2d(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options, const std::vector<int>& selected_atoms  )
     {
         const IndigoSession session;
         indigoSetOptions(options);
         auto iko = loadMoleculeOrReaction(data.c_str());
         const auto& subiko = (selected_atoms.empty()) ? iko : iko.substructure(selected_atoms);
         _checkResult(indigoClean2d(subiko.id()));
-        return iko.toString();
+        return iko.toString(options, outputFormat.size() ? outputFormat :  "molfile" );
     }
 
-    std::string automap(const std::string& data, const std::string& mode, const std::map<std::string, std::string>& options)
+    std::string automap(const std::string& data, const std::string& mode, const std::string& outputFormat, const std::map<std::string, std::string>& options )
     {
         const IndigoSession session;
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
         _checkResult(indigoAutomap(iko.id(), mode.c_str()));
-        return iko.toString();
+        return iko.toString( options, outputFormat.size() ? outputFormat :  "molfile" );
     }
 
-    std::string check(const std::string& data, const std::string& properties, const std::map<std::string, std::string>& options)
+    std::string check(const std::string& data, const std::string& properties, const std::map<std::string, std::string>& options )
     {
         const IndigoSession session;
         indigoSetOptions(options);
@@ -344,13 +344,13 @@ namespace indigo
         return _checkResultString(indigoCheckObj(iko.id(), properties.c_str()));
     }
 
-    std::string calculateCip(const std::string& data, const std::map<std::string, std::string>& options)
+    std::string calculateCip(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options  )
     {
         const IndigoSession session;
         indigoSetOptions(options);
         indigoSetOption("molfile-saving-add-stereo-desc", "true");
         const auto iko = loadMoleculeOrReaction(data.c_str());
-        return iko.toString();
+        return iko.toString( options, outputFormat.size() ? outputFormat :  "molfile" );
     }
 
     void qmol2mol(IndigoKetcherObject& iko, const std::set<int>& selected_set)
