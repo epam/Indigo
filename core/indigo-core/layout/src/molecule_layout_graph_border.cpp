@@ -518,6 +518,10 @@ float MoleculeLayoutGraphSmart::_get_square()
     return fabs(sq / 2);
 }
 
+void MoleculeLayoutGraphSmart::flipped()
+{
+}
+
 // Extract component border
 void MoleculeLayoutGraphSmart::_getBorder(Cycle& border) const
 {

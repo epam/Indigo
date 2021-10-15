@@ -18,14 +18,20 @@
 
 #pragma once
 
-#include "IndigoChemicalEntity.h"
+#include "IndigoChemicalStructure.h"
 
 namespace indigo_cpp
 {
-    class IndigoBaseMolecule : public IndigoChemicalEntity
+    class IndigoBaseMolecule : public IndigoChemicalStructure
     {
+    protected:
+        IndigoBaseMolecule(int id, IndigoSessionPtr session);
+        IndigoBaseMolecule(IndigoBaseMolecule&&) = default;
+        IndigoBaseMolecule& operator =(IndigoBaseMolecule&&) = default;
+        IndigoBaseMolecule(const IndigoBaseMolecule& other);
+        IndigoBaseMolecule& operator=(const IndigoBaseMolecule&) = default;
+        ~IndigoBaseMolecule() override = default;
     public:
-        IndigoBaseMolecule(int id, const IndigoSession& indigo);
         std::string molfile() const;
         std::string ctfile() const override;
     };

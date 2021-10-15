@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-project(indigo-unit-tests LANGUAGES CXX)
+project(indigo-api-unit-tests LANGUAGES CXX)
 
 if (ENABLE_TESTS)
     set(DATA_PATH ${CMAKE_SOURCE_DIR}/data)

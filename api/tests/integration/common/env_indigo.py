@@ -159,6 +159,10 @@ class Memoize:
 #     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\',
 #                                                                                                                  '/')
 
+def dataPath(args):
+    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(__file__), '..', '..', '..', '..', '..',
+                                                         'data', args)))
+
 def joinPathPy(args, file_py):
     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(file_py)), args))).replace('\\',
                                                                                                                  '/')

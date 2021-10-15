@@ -34,7 +34,7 @@ public:
     Molecule& getMolecule() override;
     IndigoObject* clone() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     PropertiesMap& getProperties() override
     {
@@ -58,7 +58,7 @@ public:
     IndigoObject* next() override;
     bool hasNext() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
 protected:
     TautomerEnumerator _enumerator;

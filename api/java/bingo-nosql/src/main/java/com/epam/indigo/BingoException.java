@@ -39,8 +39,8 @@ public class BingoException extends RuntimeException {
     // object (which can be thrown from every Indigo or IndigoObject method).
     // As long as the JVM sees that the reference is still used somewhere
     // afterwards the method call, it does not garbage-collect the object.
-    public BingoException(Object obj_, String message) {
+    public BingoException(Object _obj, String message) {
         super(message);
-        obj = obj_;
+        obj = _obj;
     }
 }

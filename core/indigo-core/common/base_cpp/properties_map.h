@@ -51,8 +51,8 @@ namespace indigo
         const char* value(int);
         Array<char>& valueBuf(const char* key);
 
-        bool contains(const char* key);
-        const char* at(const char* key);
+        bool contains(const char* key) const;
+        const char* at(const char* key) const;
         void remove(const char* key);
         void clear();
 

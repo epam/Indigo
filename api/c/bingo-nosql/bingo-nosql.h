@@ -76,4 +76,6 @@ CEXPORT int bingoGetObject(int search_obj);
 
 CEXPORT int bingoEndSearch(int search_obj);
 
+CEXPORT const char* bingoProfilingGetStatistics(int for_session);
+
 #endif // __indigo_bingo__

@@ -1,0 +1,8 @@
+#cmakedefine DATA_PATH "@DATA_PATH@"
+
+#include <string>
+
+namespace indigo_cpp
+{
+    std::string dataPath(const char* dataPathSuffix);
+}

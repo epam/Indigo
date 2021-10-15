@@ -89,12 +89,12 @@ void PropertiesMap::clear()
     _propertyNames.clear();
 }
 
-bool PropertiesMap::contains(const char* key)
+bool PropertiesMap::contains(const char* key) const
 {
     return _properties.find(key);
 }
 
-const char* PropertiesMap::at(const char* key)
+const char* PropertiesMap::at(const char* key) const
 {
     return _properties.at(key).ptr();
 }

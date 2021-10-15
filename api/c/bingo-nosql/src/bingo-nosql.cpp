@@ -17,17 +17,21 @@
  ***************************************************************************/
 
 #include "bingo-nosql.h"
-#include "bingo_object.h"
 
+#include <cstdio>
+#include <string>
+
+#include "bingo_index.h"
 #include "bingo_internal.h"
 #include "indigo_internal.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 
-#include "bingo_index.h"
+//#define INDIGO_DEBUG
 
-#include <stdio.h>
-#include <string>
+#ifdef INDIGO_DEBUG
+#include <iostream>
+#endif
 
 using namespace indigo;
 using namespace bingo;
@@ -35,12 +39,61 @@ using namespace bingo;
 // TODO: warning C4273: 'indigo::BingoException::BingoException' : inconsistent dll linkage
 IMPL_EXCEPTION(indigo, BingoException, "bingo");
 
-static PtrPool<Index> _bingo_instances;
-static std::mutex _bingo_lock;
-static PtrArray<DatabaseLockData> _lockers;
-static PtrPool<Matcher> _searches;
-static std::mutex _searches_lock;
-static Array<int> _searches_db;
+namespace
+{
+    template <class T> class BingoPool
+    {
+    public:
+        bool has(size_t id) const
+        {
+            return map.count(id) > 0;
+        }
+
+        sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(size_t id)
+        {
+            return map.at(id);
+        }
+
+        const sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(size_t id) const
+        {
+            return map.at(id);
+        }
+
+        void insert(size_t id, std::unique_ptr<T>&& obj)
+        {
+            map[id] = std::move(sf::safe_shared_hide_obj<std::unique_ptr<T>>(std::move(obj)));
+        }
+
+        size_t insert(std::unique_ptr<T>&& obj)
+        {
+            map[next_id] = std::move(sf::safe_shared_hide_obj<std::unique_ptr<T>>(std::move(obj)));
+            return next_id++;
+        }
+
+        void remove(size_t id)
+        {
+            map.erase(id);
+        }
+
+        size_t getNextId()
+        {
+            return next_id++;
+        }
+
+    private:
+        std::unordered_map<size_t, sf::safe_shared_hide_obj<std::unique_ptr<T>>> map;
+        size_t next_id = 0;
+    };
+
+    struct SearchesData
+    {
+        BingoPool<Matcher> searches;
+        std::unordered_map<size_t, size_t> db;
+    };
+}
+
+static sf::safe_shared_hide_obj<BingoPool<BaseIndex>> _indexes;
+static sf::safe_shared_hide_obj<SearchesData> _searches_data;
 
 static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* options, bool create, const char* type = 0)
 {
@@ -63,121 +116,179 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
     if (loc_dir.find_last_of('/') != loc_dir.length() - 1)
         loc_dir += '/';
 
-    BaseIndex::IndexType ind_type = BaseIndex::UNKNOWN;
+    IndexType ind_type = IndexType::UNKNOWN;
     if (!create)
         ind_type = BaseIndex::determineType(location);
     else if (type && strcmp(type, "molecule") == 0)
-        ind_type = BaseIndex::MOLECULE;
+        ind_type = IndexType::MOLECULE;
     else if (type && strcmp(type, "reaction") == 0)
-        ind_type = BaseIndex::REACTION;
+        ind_type = IndexType::REACTION;
 
-    std::unique_ptr<Index> context;
-    if (ind_type == BaseIndex::MOLECULE)
+    std::unique_ptr<BaseIndex> context;
+    if (ind_type == IndexType::MOLECULE)
         context = std::make_unique<MoleculeIndex>();
-    else if (ind_type == BaseIndex::REACTION)
+    else if (ind_type == IndexType::REACTION)
         context = std::make_unique<ReactionIndex>();
     else
         throw BingoException("Unknown database type");
 
-    int db_id;
-    {
-        std::lock_guard<std::mutex> bingo_locker(_bingo_lock);
-        db_id = _bingo_instances.add(0);
-    }
-
+    const auto db_id = sf::xlock_safe_ptr(_indexes)->getNextId();
     if (create)
-        context->create(loc_dir.c_str(), fp_params, options, db_id);
-    else
-        context->load(loc_dir.c_str(), options, db_id);
-
     {
-        std::lock_guard<std::mutex> bingo_locker(_bingo_lock);
-        _bingo_instances[db_id] = context.release();
-        _lockers.expand(db_id + 1);
-        _lockers[db_id] = new DatabaseLockData();
+        context->create(loc_dir.c_str(), fp_params, options, db_id);
+    }
+    else
+    {
+        context->load(loc_dir.c_str(), options, db_id);
     }
 
+    {
+        auto bingo_indexes = sf::xlock_safe_ptr(_indexes);
+        bingo_indexes->insert(db_id, std::move(context));
+    }
+
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "Bingo(" << db_id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
     return db_id;
 }
 
-static int _insertObjectToDatabase(int db, Indigo& self, Index& bingo_index, IndigoObject& indigo_obj, int obj_id)
+static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_obj, int obj_id)
 {
     profTimerStart(t, "_insertObjectToDatabase");
-    if (bingo_index.getType() == Index::MOLECULE)
+    const IndexType index_type = [db]() {
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        auto bingo_index = sf::slock_safe_ptr(bingo_indexes->at(db));
+        return (**bingo_index).getType();
+    }();
+
+    if (index_type == IndexType::MOLECULE)
     {
-
         profTimerStart(t1, "_preadd");
+
         if (!IndigoMolecule::is(indigo_obj))
+        {
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
-
-        indigo_obj.getBaseMolecule().aromatize(self.arom_options);
-
-        IndexMolecule ind_mol(indigo_obj.getMolecule());
+        }
+        // FIXME: MK: for some reason we need to aromatize input molecule. If we first clone and aromatize cloned, it won't work
+        indigo_obj.getMolecule().aromatize(self.arom_options);
+        IndexMolecule ind_mol(indigo_obj.getMolecule(), self.arom_options);
         profTimerStop(t1);
 
-        int id = bingo_index.add(ind_mol, obj_id, *_lockers[db]);
-        return id;
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto obj_data = [&]() {
+            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->prepareIndexData(ind_mol);
+        }();
+        {
+            auto bingo_index_ptr = sf::xlock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->add(obj_id, obj_data);
+        }
     }
-    else if (bingo_index.getType() == Index::REACTION)
+    else if (index_type == IndexType::REACTION)
     {
         if (!IndigoReaction::is(indigo_obj))
+        {
             throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");
+        }
 
-        indigo_obj.getBaseReaction().aromatize(self.arom_options);
+        indigo_obj.getReaction().aromatize(self.arom_options);
+        IndexReaction ind_rxn(indigo_obj.getReaction(), self.arom_options);
 
-        IndexReaction ind_rxn(indigo_obj.getReaction());
-
-        int id = bingo_index.add(ind_rxn, obj_id, *_lockers[db]);
-        return id;
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto obj_data = [&]() {
+            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->prepareIndexData(ind_rxn);
+        }();
+        {
+            auto bingo_index_ptr = sf::xlock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->add(obj_id, obj_data);
+        }
     }
     else
+    {
         throw BingoException("bingoInsertRecordObj: Incorrect database");
-
-    return -1;
+    }
 }
 
-static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, Index& bingo_index, IndigoObject& indigo_obj, int obj_id, IndigoObject& fp)
+static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& indigo_obj, int obj_id, IndigoObject& fp)
 {
     profTimerStart(t, "_insertObjectWithExtFPToDatabase");
-    if (bingo_index.getType() == Index::MOLECULE)
-    {
+    const IndexType index_type = [db]() {
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+        return (*bingo_index_ptr)->getType();
+    }();
 
+    if (index_type == IndexType::MOLECULE)
+    {
         profTimerStart(t1, "_preadd");
         if (!IndigoMolecule::is(indigo_obj))
+        {
             throw BingoException("insertObjectWithExtFPToDatabase: Only molecule objects can be added to molecule index");
+        }
 
-        indigo_obj.getBaseMolecule().aromatize(self.arom_options);
-
-        IndexMolecule ind_mol(indigo_obj.getMolecule());
+        indigo_obj.getMolecule().aromatize(self.arom_options);
+        IndexMolecule ind_mol(indigo_obj.getMolecule(), self.arom_options);
         profTimerStop(t1);
 
-        int id = bingo_index.addWithExtFP(ind_mol, obj_id, *_lockers[db], fp);
-        return id;
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto obj_data = [&]() {
+            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->prepareIndexDataWithExtFP(ind_mol, fp);
+        }();
+        {
+            auto bingo_index_ptr = sf::xlock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->add(obj_id, obj_data);
+        }
     }
-    else if (bingo_index.getType() == Index::REACTION)
+    else if (index_type == IndexType::REACTION)
     {
         if (!IndigoReaction::is(indigo_obj))
+        {
             throw BingoException("insertObjectWithExtFPToDatabase: Only reaction objects can be added to reaction index");
+        }
 
-        indigo_obj.getBaseReaction().aromatize(self.arom_options);
+        indigo_obj.getReaction().aromatize(self.arom_options);
+        IndexReaction ind_rxn(indigo_obj.getReaction(), self.arom_options);
 
-        IndexReaction ind_rxn(indigo_obj.getReaction());
-
-        int id = bingo_index.addWithExtFP(ind_rxn, obj_id, *_lockers[db], fp);
-        return id;
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto obj_data = [&]() {
+            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->prepareIndexDataWithExtFP(ind_rxn, fp);
+        }();
+        {
+            auto bingo_index_ptr = sf::xlock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->add(obj_id, obj_data);
+        }
     }
     else
+    {
         throw BingoException("insertObjectWithExtFPToDatabase: Incorrect database");
-
-    return -1;
+    }
 }
 
-Matcher& getMatcher(int id)
-{
-    if (id < _searches.begin() || id >= _searches.end() || !_searches.hasElement(id))
-        throw BingoException("Incorrect search object id=%d", id);
-    return *_searches[id];
-}
+#define getMatcherConst(id)                                                                                                                                    \
+    const auto searches_data = sf::slock_safe_ptr(_searches_data);                                                                                             \
+    if (!searches_data->searches.has(id))                                                                                                                      \
+    {                                                                                                                                                          \
+        throw BingoException("Incorrect search object id=%d", id);                                                                                             \
+    }                                                                                                                                                          \
+    const auto matcher_ptr = sf::slock_safe_ptr(searches_data->searches.at(id));                                                                               \
+    const auto index = sf::slock_safe_ptr(sf::slock_safe_ptr(_indexes)->at(searches_data->db.at(id)));                                                         \
+    const auto& matcher = **matcher_ptr;
+
+#define getMatcher(id)                                                                                                                                         \
+    const auto searches_data = sf::slock_safe_ptr(_searches_data);                                                                                             \
+    if (!searches_data->searches.has(id))                                                                                                                      \
+    {                                                                                                                                                          \
+        throw BingoException("Incorrect search object id=%d", id);                                                                                             \
+    }                                                                                                                                                          \
+    auto matcher_ptr = sf::xlock_safe_ptr(searches_data->searches.at(id));                                                                                     \
+    const auto index = sf::slock_safe_ptr(sf::slock_safe_ptr(_indexes)->at(searches_data->db.at(id)));                                                         \
+    auto& matcher = **matcher_ptr;
 
 CEXPORT const char* bingoVersion()
 {
@@ -204,9 +315,15 @@ CEXPORT int bingoLoadDatabaseFile(const char* location, const char* options)
 
 CEXPORT int bingoCloseDatabase(int db)
 {
-    BINGO_BEGIN_DB(db)
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~Bingo(" << db << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    BINGO_BEGIN_DB_STATIC(db)
     {
-        _bingo_instances.remove(db);
+        auto bingo_indexes = sf::xlock_safe_ptr(_indexes);
+        bingo_indexes->remove(db);
         return 1;
     }
     BINGO_END(-1);
@@ -217,19 +334,22 @@ CEXPORT int bingoInsertRecordObj(int db, int obj)
     BINGO_BEGIN_DB(db)
     {
         IndigoObject& indigo_obj = self.getObject(obj);
-        Index& bingo_index = _bingo_instances.ref(db);
 
         long obj_id = -1;
         auto& properties = indigo_obj.getProperties();
 
-        const char* key_name = bingo_index.getIdPropertyName();
+        const char* key_name = [db]() {
+            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->getIdPropertyName();
+        }();
 
-        if (key_name != 0 && properties.contains(key_name))
+        if (key_name != nullptr && properties.contains(key_name))
         {
             obj_id = strtol(properties.at(key_name), NULL, 10);
         }
 
-        return _insertObjectToDatabase(db, self, bingo_index, indigo_obj, obj_id);
+        return _insertObjectToDatabase(db, self, indigo_obj, obj_id);
     }
     BINGO_END(-1);
 }
@@ -239,9 +359,7 @@ CEXPORT int bingoInsertRecordObjWithId(int db, int obj, int id)
     BINGO_BEGIN_DB(db)
     {
         IndigoObject& indigo_obj = self.getObject(obj);
-        Index& bingo_index = _bingo_instances.ref(db);
-
-        return _insertObjectToDatabase(db, self, bingo_index, indigo_obj, id);
+        return _insertObjectToDatabase(db, self, indigo_obj, id);
     }
     BINGO_END(-1);
 }
@@ -251,20 +369,23 @@ CEXPORT int bingoInsertRecordObjWithExtFP(int db, int obj, int fp)
     BINGO_BEGIN_DB(db)
     {
         IndigoObject& indigo_obj = self.getObject(obj);
-        Index& bingo_index = _bingo_instances.ref(db);
         IndigoObject& ext_fp = self.getObject(fp);
 
         long obj_id = -1;
         auto& properties = indigo_obj.getProperties();
 
-        const char* key_name = bingo_index.getIdPropertyName();
+        const char* key_name = [db]() {
+            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->getIdPropertyName();
+        }();
 
         if (key_name != 0 && properties.contains(key_name))
         {
             obj_id = strtol(properties.at(key_name), NULL, 10);
         }
 
-        return _insertObjectWithExtFPToDatabase(db, self, bingo_index, indigo_obj, obj_id, ext_fp);
+        return _insertObjectWithExtFPToDatabase(db, self, indigo_obj, obj_id, ext_fp);
     }
     BINGO_END(-1);
 }
@@ -274,10 +395,8 @@ CEXPORT int bingoInsertRecordObjWithIdAndExtFP(int db, int obj, int id, int fp)
     BINGO_BEGIN_DB(db)
     {
         IndigoObject& indigo_obj = self.getObject(obj);
-        Index& bingo_index = _bingo_instances.ref(db);
         IndigoObject& ext_fp = self.getObject(fp);
-
-        return _insertObjectWithExtFPToDatabase(db, self, bingo_index, indigo_obj, id, ext_fp);
+        return _insertObjectWithExtFPToDatabase(db, self, indigo_obj, id, ext_fp);
     }
     BINGO_END(-1);
 }
@@ -286,11 +405,9 @@ CEXPORT int bingoDeleteRecord(int db, int id)
 {
     BINGO_BEGIN_DB(db)
     {
-        Index& bingo_index = _bingo_instances.ref(db);
-
-        WriteLock wlock(*_lockers[db]);
-        bingo_index.remove(id);
-
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        auto bingo_index_ptr = sf::xlock_safe_ptr(bingo_indexes->at(db));
+        (*bingo_index_ptr)->remove(id);
         return id;
     }
     BINGO_END(-1);
@@ -300,17 +417,17 @@ CEXPORT int bingoGetRecordObj(int db, int id)
 {
     BINGO_BEGIN_DB(db)
     {
-        Index& bingo_index = _bingo_instances.ref(db);
-
-        ReadLock rlock(*_lockers[db]);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+        const auto& bingo_index = *bingo_index_ptr;
 
         int cf_len;
-        const byte* cf_buf = bingo_index.getObjectCf(id, cf_len);
+        const byte* cf_buf = bingo_index->getObjectCf(id, cf_len);
         int indigo_obj_id = -1;
 
         BufferScanner buf_scn(cf_buf, cf_len);
 
-        if (bingo_index.getType() == Index::MOLECULE)
+        if (bingo_index->getType() == IndexType::MOLECULE)
         {
             std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
             Molecule& mol = molptr->mol;
@@ -318,7 +435,7 @@ CEXPORT int bingoGetRecordObj(int db, int id)
             cmf_loader.loadMolecule(mol);
             indigo_obj_id = self.addObject(molptr.release());
         }
-        else if (bingo_index.getType() == Index::REACTION)
+        else if (bingo_index->getType() == IndexType::REACTION)
         {
             std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
 
@@ -329,7 +446,9 @@ CEXPORT int bingoGetRecordObj(int db, int id)
             indigo_obj_id = self.addObject(rxnptr.release());
         }
         else
+        {
             throw BingoException("bingoInsertRecordObj: Incorrect database");
+        }
 
         return indigo_obj_id;
     }
@@ -340,11 +459,9 @@ CEXPORT int bingoOptimize(int db)
 {
     BINGO_BEGIN_DB(db)
     {
-        Index& bingo_index = _bingo_instances.ref(db);
-
-        WriteLock wlock(*_lockers[db]);
-        bingo_index.optimize();
-
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        auto bingo_index_ptr = sf::xlock_safe_ptr(bingo_indexes->at(db));
+        (*bingo_index_ptr)->optimize();
         return 0;
     }
     BINGO_END(-1);
@@ -362,18 +479,18 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
 
             std::unique_ptr<MoleculeSubstructureQueryData> query_data = std::make_unique<MoleculeSubstructureQueryData>(obj.getQueryMolecule());
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
-            MoleculeSubMatcher* matcher = dynamic_cast<MoleculeSubMatcher*>(bingo_index.createMatcher("sub", query_data.release(), options));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return (*bingo_index_ptr)->createMatcher("sub", query_data.release(), options);
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else if (IndigoQueryReaction::is(obj))
         {
@@ -381,18 +498,18 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
 
             std::unique_ptr<ReactionSubstructureQueryData> query_data = std::make_unique<ReactionSubstructureQueryData>(obj.getQueryReaction());
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
-            ReactionSubMatcher* matcher = dynamic_cast<ReactionSubMatcher*>(bingo_index.createMatcher("sub", query_data.release(), options));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return (*bingo_index_ptr)->createMatcher("sub", query_data.release(), options);
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else
             throw BingoException("bingoSearchSub: only query molecule and query reaction can be set as query object");
@@ -412,18 +529,17 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
 
             std::unique_ptr<MoleculeExactQueryData> query_data = std::make_unique<MoleculeExactQueryData>(obj.getMolecule());
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
-            MolExactMatcher* matcher = dynamic_cast<MolExactMatcher*>(bingo_index.createMatcher("exact", query_data.release(), options));
-
-            int search_id;
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return (*bingo_index_ptr)->createMatcher("exact", query_data.release(), options);
+            }();
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else if (IndigoReaction::is(obj))
         {
@@ -431,18 +547,17 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
 
             std::unique_ptr<ReactionExactQueryData> query_data = std::make_unique<ReactionExactQueryData>(obj.getReaction());
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
-            RxnExactMatcher* matcher = dynamic_cast<RxnExactMatcher*>(bingo_index.createMatcher("exact", query_data.release(), options));
-
-            int search_id;
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return (*bingo_index_ptr)->createMatcher("exact", query_data.release(), options);
+            }();
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else
             throw BingoException("bingoSearchExact: only non-query molecules and reactions can be set as query object");
@@ -459,18 +574,17 @@ CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options
 
         std::unique_ptr<GrossQueryData> query_data = std::make_unique<GrossQueryData>(gross_str);
 
-        BaseIndex& bingo_index = dynamic_cast<BaseIndex&>(_bingo_instances.ref(db));
-        MolGrossMatcher* matcher = dynamic_cast<MolGrossMatcher*>(bingo_index.createMatcher("formula", query_data.release(), options));
-
-        int search_id;
+        auto matcher = [&]() {
+            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+            return (*bingo_index_ptr)->createMatcher("formula", query_data.release(), options);
+        }();
         {
-            std::lock_guard<std::mutex> searches_locker(_searches_lock);
-            search_id = _searches.add(matcher);
-            _searches_db.expand(search_id + 1);
-            _searches_db[search_id] = db;
+            auto searches_data = sf::xlock_safe_ptr(_searches_data);
+            auto search_id = searches_data->searches.insert(std::move(matcher));
+            searches_data->db[search_id] = db;
+            return search_id;
         }
-
-        return search_id;
     }
     BINGO_END(-1);
 }
@@ -487,18 +601,18 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
 
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, max);
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
-            MoleculeSimMatcher* matcher = dynamic_cast<MoleculeSimMatcher*>(bingo_index.createMatcher("sim", query_data.release(), options));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return ((*bingo_index_ptr)->createMatcher("sim", query_data.release(), options));
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else if (IndigoReaction::is(obj))
         {
@@ -506,18 +620,18 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
 
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, max);
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
-            ReactionSimMatcher* matcher = dynamic_cast<ReactionSimMatcher*>(bingo_index.createMatcher("sim", query_data.release(), options));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return ((*bingo_index_ptr)->createMatcher("sim", query_data.release(), options));
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else
             throw BingoException("bingoSearchSim: only query molecule and query reaction can be set as query object");
@@ -538,18 +652,18 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
 
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, max);
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
-            MoleculeSimMatcher* matcher = dynamic_cast<MoleculeSimMatcher*>(bingo_index.createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return ((*bingo_index_ptr)->createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else if (IndigoReaction::is(obj))
         {
@@ -557,18 +671,18 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
 
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, max);
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
-            ReactionSimMatcher* matcher = dynamic_cast<ReactionSimMatcher*>(bingo_index.createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return ((*bingo_index_ptr)->createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else
             throw BingoException("bingoSearchSim: only query molecule and query reaction can be set as query object");
@@ -588,18 +702,18 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
 
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, 1.0);
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
-            MoleculeTopNSimMatcher* matcher = dynamic_cast<MoleculeTopNSimMatcher*>(bingo_index.createMatcherTopN("sim", query_data.release(), options, limit));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return ((*bingo_index_ptr)->createMatcherTopN("sim", query_data.release(), options, limit));
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else if (IndigoReaction::is(obj))
         {
@@ -607,18 +721,18 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
 
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, 1.0);
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
-            ReactionTopNSimMatcher* matcher = dynamic_cast<ReactionTopNSimMatcher*>(bingo_index.createMatcherTopN("sim", query_data.release(), options, limit));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return ((*bingo_index_ptr)->createMatcherTopN("sim", query_data.release(), options, limit));
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else
             throw BingoException("bingoSearchSimTopN: only query molecule and query reaction can be set as query object");
@@ -639,19 +753,18 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
 
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, 1.0);
 
-            MoleculeIndex& bingo_index = dynamic_cast<MoleculeIndex&>(_bingo_instances.ref(db));
-            MoleculeTopNSimMatcher* matcher =
-                dynamic_cast<MoleculeTopNSimMatcher*>(bingo_index.createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return ((*bingo_index_ptr)->createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else if (IndigoReaction::is(obj))
         {
@@ -659,19 +772,18 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
 
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, 1.0);
 
-            ReactionIndex& bingo_index = dynamic_cast<ReactionIndex&>(_bingo_instances.ref(db));
-            ReactionTopNSimMatcher* matcher =
-                dynamic_cast<ReactionTopNSimMatcher*>(bingo_index.createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
+            auto matcher = [&]() {
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+                return ((*bingo_index_ptr)->createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
+            }();
 
-            int search_id;
             {
-                std::lock_guard<std::mutex> searches_locker(_searches_lock);
-                search_id = _searches.add(matcher);
-                _searches_db.expand(search_id + 1);
-                _searches_db[search_id] = db;
+                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto search_id = searches_data->searches.insert(std::move(matcher));
+                searches_data->db[search_id] = db;
+                return search_id;
             }
-
-            return search_id;
         }
         else
             throw BingoException("bingoSearchSimTopN: only query molecule and query reaction can be set as query object");
@@ -683,32 +795,33 @@ CEXPORT int bingoEnumerateId(int db)
 {
     BINGO_BEGIN_DB(db)
     {
-        Index& index = _bingo_instances.ref(db);
-        EnumeratorMatcher* matcher = dynamic_cast<EnumeratorMatcher*>(index.createMatcher("enum", nullptr, nullptr));
+        auto matcher = [&]() {
+            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+            return ((*bingo_index_ptr)->createMatcher("enum", nullptr, nullptr));
+        }();
 
-        int search_id;
         {
-            std::lock_guard<std::mutex> searches_locker(_searches_lock);
-            search_id = _searches.add(matcher);
-            _searches_db.expand(search_id + 1);
-            _searches_db[search_id] = db;
+            auto searches_data = sf::xlock_safe_ptr(_searches_data);
+            auto search_id = searches_data->searches.insert(std::move(matcher));
+            searches_data->db[search_id] = db;
+            return search_id;
         }
-
-        return search_id;
     }
     BINGO_END(-1);
 }
 
 CEXPORT int bingoEndSearch(int search_obj)
 {
-    BINGO_BEGIN_SEARCH(search_obj)
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~BingoObject(" << search_obj << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    BINGO_BEGIN_SEARCH_STATIC(search_obj)
     {
-        // Ensure that such matcher exists
-        std::lock_guard<std::mutex> searches_locker(_searches_lock);
-
-        getMatcher(search_obj);
-
-        _searches.remove(search_obj);
+        auto searches_data = sf::xlock_safe_ptr(_searches_data);
+        searches_data->searches.remove(search_obj);
         return 1;
     }
     BINGO_END(-1);
@@ -718,8 +831,8 @@ CEXPORT int bingoNext(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        ReadLock rlock(*_lockers[_searches_db[search_obj]]);
-        return getMatcher(search_obj).next();
+        getMatcher(search_obj);
+        return matcher.next();
     }
     BINGO_END(-1);
 }
@@ -728,7 +841,8 @@ CEXPORT int bingoGetCurrentId(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        return getMatcher(search_obj).currentId();
+        getMatcherConst(search_obj);
+        return matcher.currentId();
     }
     BINGO_END(-1);
 }
@@ -737,7 +851,8 @@ CEXPORT float bingoGetCurrentSimilarityValue(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        return getMatcher(search_obj).currentSimValue();
+        getMatcherConst(search_obj);
+        return matcher.currentSimValue();
     }
     BINGO_END(-1);
 }
@@ -747,7 +862,8 @@ CEXPORT int bingoEstimateRemainingResultsCount(int search_obj)
     BINGO_BEGIN_SEARCH(search_obj)
     {
         int delta;
-        return getMatcher(search_obj).esimateRemainingResultsCount(delta);
+        getMatcher(search_obj);
+        return matcher.esimateRemainingResultsCount(delta);
     }
     BINGO_END(-1);
 }
@@ -756,7 +872,8 @@ CEXPORT int bingoContainersCount(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        return getMatcher(search_obj).containersCount();
+        getMatcherConst(search_obj);
+        return matcher.containersCount();
     }
     BINGO_END(-1);
 }
@@ -765,7 +882,8 @@ CEXPORT int bingoCellsCount(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        return getMatcher(search_obj).cellsCount();
+        getMatcherConst(search_obj);
+        return matcher.cellsCount();
     }
     BINGO_END(-1);
 }
@@ -774,7 +892,8 @@ CEXPORT int bingoCurrentCell(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        return getMatcher(search_obj).currentCell();
+        getMatcherConst(search_obj);
+        return matcher.currentCell();
     }
     BINGO_END(-1);
 }
@@ -783,7 +902,8 @@ CEXPORT int bingoMinCell(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        return getMatcher(search_obj).minCell();
+        getMatcherConst(search_obj);
+        return matcher.minCell();
     }
     BINGO_END(-1);
 }
@@ -792,7 +912,8 @@ CEXPORT int bingoMaxCell(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        return getMatcher(search_obj).maxCell();
+        getMatcherConst(search_obj);
+        return matcher.maxCell();
     }
     BINGO_END(-1);
 }
@@ -802,7 +923,8 @@ CEXPORT int bingoEstimateRemainingResultsCountError(int search_obj)
     BINGO_BEGIN_SEARCH(search_obj)
     {
         int delta;
-        getMatcher(search_obj).esimateRemainingResultsCount(delta);
+        getMatcher(search_obj);
+        matcher.esimateRemainingResultsCount(delta);
         return delta;
     }
     BINGO_END(-1);
@@ -813,7 +935,8 @@ CEXPORT int bingoEstimateRemainingTime(int search_obj, float* time_sec)
     BINGO_BEGIN_SEARCH(search_obj)
     {
         float delta;
-        *time_sec = getMatcher(search_obj).esimateRemainingTime(delta);
+        getMatcher(search_obj);
+        *time_sec = matcher.esimateRemainingTime(delta);
         return 1;
     }
     BINGO_END(-1);
@@ -823,10 +946,22 @@ CEXPORT int bingoGetObject(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        Matcher& matcher = getMatcher(search_obj);
-        const Index& bingo_index = matcher.getIndex();
-
+        getMatcher(search_obj);
+        const auto& bingo_index = matcher.getIndex();
         return self.addObject(matcher.currentObject());
     }
     BINGO_END(-1);
+}
+
+CEXPORT const char* bingoProfilingGetStatistics(int for_session)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput output(tmp.string);
+        profGetStatistics(output, for_session);
+        output.writeByte(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(nullptr);
 }

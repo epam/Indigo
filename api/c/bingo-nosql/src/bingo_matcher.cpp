@@ -160,7 +160,7 @@ BaseMatcher::~BaseMatcher()
         delete _current_obj;
 }
 
-int BaseMatcher::currentId()
+int BaseMatcher::currentId() const
 {
     BingoArray<int>& id_mapping = _index.getIdMapping();
     return id_mapping[_current_id];
@@ -176,37 +176,37 @@ IndigoObject* BaseMatcher::currentObject()
     return _current_obj;
 }
 
-const Index& BaseMatcher::getIndex()
+const BaseIndex& BaseMatcher::getIndex()
 {
     return _index;
 }
 
-float BaseMatcher::currentSimValue()
+float BaseMatcher::currentSimValue() const
 {
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
 
-int BaseMatcher::containersCount()
+int BaseMatcher::containersCount() const
 {
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
 
-int BaseMatcher::cellsCount()
+int BaseMatcher::cellsCount() const
 {
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
 
-int BaseMatcher::currentCell()
+int BaseMatcher::currentCell() const
 {
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
 
-int BaseMatcher::minCell()
+int BaseMatcher::minCell() const
 {
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
 
-int BaseMatcher::maxCell()
+int BaseMatcher::maxCell() const
 {
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
@@ -265,7 +265,7 @@ bool BaseMatcher::_loadCurrentObject()
 {
     try
     {
-        if (_current_obj == 0)
+        if (_current_obj == nullptr)
             throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
         profTimerStart(t_get_cmf, "loadCurObj_get_cf");
@@ -897,32 +897,32 @@ float BaseSimilarityMatcher::esimateRemainingTime(float& delta)
     return _match_time_esimate.mean() * left_cont_count;
 }
 
-int BaseSimilarityMatcher::containersCount()
+int BaseSimilarityMatcher::containersCount() const
 {
     return _containers_count;
 }
 
-int BaseSimilarityMatcher::cellsCount()
+int BaseSimilarityMatcher::cellsCount() const
 {
     return _max_cell - _min_cell + 1;
 }
 
-int BaseSimilarityMatcher::currentCell()
+int BaseSimilarityMatcher::currentCell() const
 {
     return _current_cell;
 }
 
-int BaseSimilarityMatcher::minCell()
+int BaseSimilarityMatcher::minCell() const
 {
     return _min_cell;
 }
 
-int BaseSimilarityMatcher::maxCell()
+int BaseSimilarityMatcher::maxCell() const
 {
     return _max_cell;
 }
 
-float BaseSimilarityMatcher::currentSimValue()
+float BaseSimilarityMatcher::currentSimValue() const
 {
     return _current_sim_value;
 }

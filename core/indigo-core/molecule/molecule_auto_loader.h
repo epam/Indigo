@@ -61,8 +61,9 @@ namespace indigo
         int treat_stereo_as;
 
         // Loaded properties
-        CP_DECL;
-        TL_CP_DECL(PropertiesMap, properties);
+        //CP_DECL;
+        // TL_CP_DECL(PropertiesMap, properties);
+        PropertiesMap properties;
 
         DECL_ERROR;
 

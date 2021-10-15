@@ -19,7 +19,10 @@
 using namespace indigo;
 using namespace bingo;
 
-static const int _fp_calc_timeout = 10000;
+namespace
+{
+    constexpr const int _fp_calc_timeout = 10000;
+}
 
 BaseMoleculeQuery::BaseMoleculeQuery(BaseMolecule& mol, bool needs_query_fingerprint) : _base_mol(mol), _needs_query_fingerprint(needs_query_fingerprint)
 {
@@ -109,9 +112,10 @@ SimilarityReactionQuery::SimilarityReactionQuery(/* const */ Reaction& rxn) : Ba
     _rxn.clone(rxn, 0, 0, 0);
 }
 
-IndexMolecule::IndexMolecule(/* const */ Molecule& mol)
+IndexMolecule::IndexMolecule(/* const */ Molecule& mol, const AromaticityOptions& arom_options)
 {
-    _mol.clone(mol, 0, 0);
+    _mol.clone(mol, nullptr, nullptr);
+    // _mol.aromatize(arom_options);
 }
 
 bool IndexMolecule::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
@@ -155,9 +159,10 @@ bool IndexMolecule::buildHash(dword& hash)
     return true;
 }
 
-IndexReaction::IndexReaction(/* const */ Reaction& rxn)
+IndexReaction::IndexReaction(/* const */ Reaction& rxn, const AromaticityOptions& arom_options)
 {
-    _rxn.clone(rxn, 0, 0, 0);
+    _rxn.clone(rxn);
+    // _rxn.aromatize(arom_options);
 }
 
 bool IndexReaction::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const

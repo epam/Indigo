@@ -98,7 +98,7 @@ void Properties::add(const char* prop_name, unsigned long value)
     add(prop_name, osstr.str().c_str());
 }
 
-const char* Properties::getNoThrow(const char* prop_name)
+const char* Properties::getNoThrow(const char* prop_name) const
 {
     int prop_id;
 

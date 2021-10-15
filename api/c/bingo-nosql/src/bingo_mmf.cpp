@@ -39,7 +39,13 @@ void* MMFile::ptr()
     return _ptr;
 }
 
-const char* MMFile::name()
+const void* MMFile::ptr() const
+{
+    return _ptr;
+}
+
+
+const char* MMFile::name() const
 {
     return _filename.c_str();
 }
@@ -58,7 +64,7 @@ char* MMFile::_getSystemErrorMsg()
 #endif
 }
 
-size_t MMFile::size()
+size_t MMFile::size() const
 {
     return _len;
 }

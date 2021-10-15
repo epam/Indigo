@@ -18,43 +18,55 @@
 
 #include "profiling.h"
 
+#include <algorithm>
 #include <cmath>
+
+#include <safe_ptr.h>
 
 #include "base_cpp/output.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/smart_output.h"
-#include <algorithm>
 
 using namespace indigo;
 
 //
-// _ProfilingTimer
+// ProfilingTimer
 //
 
-_ProfilingTimer::_ProfilingTimer(int name_index) : _name_index(name_index), _start_time(nanoClock()), _dt(0)
+ProfilingTimer::ProfilingTimer(int name_index) : _name_index(name_index), _start_time(nanoClock()), _dt(0)
 {
 }
 
-qword _ProfilingTimer::stop()
+ProfilingTimer::~ProfilingTimer()
+{
+    stop();
+}
+
+qword ProfilingTimer::stop()
 {
     if (_name_index == -1)
+    {
         return 0;
-
-    ProfilingSystem& inst = ProfilingSystem::getInstance();
+    }
     _dt = nanoClock() - _start_time;
-    inst.addTimer(_name_index, _dt);
+    {
+        auto inst = sf::xlock_safe_ptr(ProfilingSystem::getInstance());
+        inst->addTimer(_name_index, _dt);
+    }
     _name_index = -1;
     return _dt;
 }
 
-qword _ProfilingTimer::getTime() const
+qword ProfilingTimer::getTime() const
 {
     if (_name_index == -1)
+    {
         return _dt;
+    }
     return nanoClock() - _start_time;
 }
 
-float _ProfilingTimer::getTimeSec() const
+float ProfilingTimer::getTimeSec() const
 {
     return nanoHowManySeconds(getTime());
 }
@@ -67,81 +79,72 @@ IMPL_ERROR(ProfilingSystem, "Profiling system");
 
 namespace indigo
 {
-    DLLEXPORT std::mutex _profiling_global_lock, _profiling_global_names_lock;
 }
 
-ObjArray<Array<char>>& ProfilingSystem::getNames()
+sf::safe_shared_hide_obj<ProfilingSystem>& ProfilingSystem::getInstance()
 {
-    static ObjArray<Array<char>> _names;
-    return _names;
-}
-
-ProfilingSystem& ProfilingSystem::getInstance()
-{
-    thread_local ProfilingSystem _profiling_system;
+    static sf::safe_shared_hide_obj<ProfilingSystem> _profiling_system;
     return _profiling_system;
 }
 
 int ProfilingSystem::getNameIndex(const char* name, bool add_if_not_exists)
 {
-    std::lock_guard<std::mutex> locker(_profiling_global_names_lock);
-    auto& _names = getNames();
-
     for (int i = 0; i < _names.size(); i++)
-        if (strcmp(_names[i].ptr(), name) == 0)
+    {
+        if (strcmp(_names.at(i).ptr(), name) == 0)
+        {
             return i;
+        }
+    }
     if (!add_if_not_exists)
+    {
         return -1;
+    }
     // Add new label
     Array<char>& name_record = _names.push();
-    name_record.copy(name, strlen(name) + 1);
+    name_record.copy(name, static_cast<int>(strlen(name)) + 1);
     return _names.size() - 1;
 }
 
-void ProfilingSystem::addTimer(int name_index, qword dt)
+void ProfilingSystem::addTimer(const int name_index, const qword dt)
 {
-    std::lock_guard<std::mutex> locker(_lock);
-
     _ensureRecordExistanceLocked(name_index);
     Record& rec = _records[name_index];
-    rec.type = Record::TYPE_TIMER;
+    rec.type = Record::RecordType::TYPE_TIMER;
     rec.current.add(dt);
     rec.total.add(dt);
 }
 
-void ProfilingSystem::addCounter(int name_index, int value)
+void ProfilingSystem::addCounter(const int name_index, const int value)
 {
-    std::lock_guard<std::mutex> locker(_lock);
-
     _ensureRecordExistanceLocked(name_index);
     Record& rec = _records[name_index];
-    rec.type = Record::TYPE_COUNTER;
+    rec.type = Record::RecordType::TYPE_COUNTER;
     rec.current.add(value);
     rec.total.add(value);
 }
 
-void ProfilingSystem::reset(bool all)
+void ProfilingSystem::reset(const bool all)
 {
-    std::lock_guard<std::mutex> locker(_lock);
     for (int i = 0; i < _records.size(); i++)
+    {
         _records[i].reset(all);
+    }
 }
 
-int ProfilingSystem::_recordsCmp(int idx1, int idx2, void* context)
+int ProfilingSystem::_recordsCmp(const int idx1, const int idx2, void* context)
 {
-    auto& _names = getNames();
-    return strcmp(_names[idx1].ptr(), _names[idx2].ptr());
+    auto* this_ = static_cast<ProfilingSystem*>(context);
+    return strcmp(this_->_names.at(idx1).ptr(), this_->_names.at(idx2).ptr());
 }
 
-void ProfilingSystem::getStatistics(Output& output, bool get_all)
+void ProfilingSystem::getStatistics(Output& output, const bool get_all)
 {
-    std::lock_guard<std::mutex> locker(_lock);
-    std::lock_guard<std::mutex> names_locker(_profiling_global_names_lock);
-    auto& _names = getNames();
-
     // Print formatted statistics
     while (_sorted_records.size() < _records.size())
+    {
         _sorted_records.push(_sorted_records.size());
+    }
     _sorted_records.qsort(_recordsCmp, this);
 
     // Find maximum name length
@@ -149,10 +152,14 @@ void ProfilingSystem::getStatistics(Output& output, bool get_all)
     for (int i = 0; i < _records.size(); i++)
     {
         if (!_hasLabelIndex(i))
+        {
             continue;
+        }
 
-        if (_names[i].size() > max_len)
-            max_len = _names[i].size();
+        if (_names.at(i).size() > max_len)
+        {
+            max_len = _names.at(i).size();
+        }
     }
 
     SmartTableOutput table_output(output, true);
@@ -175,9 +182,9 @@ void ProfilingSystem::getStatistics(Output& output, bool get_all)
         if (!get_all && rec.current.count == 0)
             continue;
 
-        table_output.printf("%s\t", _names[idx].ptr());
+        table_output.printf("%s\t", _names.at(idx).ptr());
 
-        if (rec.type == Record::TYPE_TIMER)
+        if (rec.type == Record::RecordType::TYPE_TIMER)
         {
             _printTimerData(rec.current, table_output);
             table_output.printf("\t");
@@ -197,7 +204,7 @@ void ProfilingSystem::getStatistics(Output& output, bool get_all)
     table_output.flush();
 }
 
-void ProfilingSystem::_printTimerData(const Record::Data& data, Output& output)
+void ProfilingSystem::_printTimerData(const Record::Data& data, Output& output) const
 {
     if (data.count == 0)
     {
@@ -229,10 +236,12 @@ void ProfilingSystem::_printCounterData(const Record::Data& data, Output& output
     output.printf("%0.0lf\t%0.0lf\t%0.1f\t%0.1lf\t%0.0lf", (double)data.value, (double)data.count, avg_value, sqrt(sigma_sq), (double)data.max_value);
 }
 
-bool ProfilingSystem::_hasLabelIndex(int name_index)
+bool ProfilingSystem::_hasLabelIndex(const int name_index) const
 {
     if (name_index >= _records.size())
+    {
         return false;
+    }
     return _records[name_index].total.count > 0;
 }
 
@@ -240,65 +249,71 @@ bool ProfilingSystem::hasLabel(const char* name)
 {
     int name_index = getNameIndex(name, false);
     if (name_index == -1)
+    {
         return false;
+    }
     return _hasLabelIndex(name_index);
 }
 
-void ProfilingSystem::_ensureRecordExistanceLocked(int name_index)
+void ProfilingSystem::_ensureRecordExistanceLocked(const int name_index)
 {
     while (_records.size() <= name_index)
+    {
         _records.push();
+    }
 }
 
-float ProfilingSystem::getLabelExecTime(const char* name, bool total)
+float ProfilingSystem::getLabelExecTime(const char* name, const bool total)
 {
     int idx = getNameIndex(name);
-    std::lock_guard<std::mutex> locker(_lock);
     _ensureRecordExistanceLocked(idx);
 
     if (total)
+    {
         return nanoHowManySeconds(_records[idx].total.value);
-    else
-        return nanoHowManySeconds(_records[idx].current.value);
+    }
+    return nanoHowManySeconds(_records[idx].current.value);
 }
 
-qword ProfilingSystem::getLabelValue(const char* name, bool total)
+qword ProfilingSystem::getLabelValue(const char* name, const bool total)
 {
     int idx = getNameIndex(name);
-    std::lock_guard<std::mutex> locker(_lock);
     _ensureRecordExistanceLocked(idx);
     if (total)
+    {
         return _records[idx].total.value;
-    else
-        return _records[idx].current.value;
+    }
+    return _records[idx].current.value;
 }
 
-qword ProfilingSystem::getLabelCallCount(const char* name, bool total)
+qword ProfilingSystem::getLabelCallCount(const char* name, const bool total)
 {
     int idx = getNameIndex(name);
-    std::lock_guard<std::mutex> locker(_lock);
     _ensureRecordExistanceLocked(idx);
     if (total)
+    {
         return _records[idx].total.count;
-    else
-        return _records[idx].current.count;
+    }
+    return _records[idx].current.count;
 }
 
 //
 // ProfilingSystem::Record
 //
-void ProfilingSystem::Record::reset(bool all)
+void ProfilingSystem::Record::reset(const bool all)
 {
     current.reset();
     if (all)
+    {
         total.reset();
+    }
 }
 
 //
 // ProfilingSystem::Record::Data
 //
 
-ProfilingSystem::Record::Data::Data()
+ProfilingSystem::Record::Data::Data() : count(0), value(0), max_value(0), square_sum(0.0)
 {
     reset();
 }
@@ -309,12 +324,12 @@ void ProfilingSystem::Record::Data::reset()
     square_sum = 0;
 }
 
-void ProfilingSystem::Record::Data::add(qword adding_value)
+void ProfilingSystem::Record::Data::add(const qword adding_value)
 {
     count++;
     value += adding_value;
     max_value = std::max(max_value, adding_value);
 
-    double adding_value_dbl = (double)adding_value;
+    const auto adding_value_dbl = static_cast<double>(adding_value);
     square_sum += adding_value_dbl * adding_value_dbl;
 }

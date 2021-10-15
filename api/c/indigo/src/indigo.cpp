@@ -19,7 +19,8 @@
 #include "indigo_internal.h"
 #include "indigo_version.h"
 
-#include "locale.h"
+#include <atomic>
+#include <clocale>
 
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
@@ -28,7 +29,15 @@
 #include "molecule/molfile_saver.h"
 #include "reaction/rxnfile_saver.h"
 
-_SessionLocalContainer<Indigo> indigo_self;
+#include "indigo_abbreviations.h"
+
+//#define INDIGO_DEBUG
+
+#ifdef INDIGO_DEBUG
+#include <iostream>
+#endif
+
+static _SessionLocalContainer<Indigo> indigo_self;
 
 DLLEXPORT Indigo& indigoGetInstance()
 {
@@ -42,8 +51,8 @@ CEXPORT const char* indigoVersion()
 
 void Indigo::init()
 {
-    error_handler = nullptr;
-    error_handler_context = nullptr;
+    error_handler() = nullptr;
+    error_handler_context() = nullptr;
 
     stereochemistry_options.reset();
     ignore_noncritical_query_features = false;
@@ -95,29 +104,28 @@ void Indigo::init()
     ignore_bad_valence = false;
 
     // Update global index
-    static ThreadSafeStaticObj<std::mutex> lock;
-    {
-        std::lock_guard<std::mutex> locker(lock.ref());
-        static int global_id;
-
-        _indigo_id = global_id++;
-    }
+    static std::atomic<int> global_id;
+    _indigo_id = global_id++;
 }
 
-Indigo::Indigo() : _next_id(1000)
+Indigo::Indigo()
 {
     init();
 }
 
 void Indigo::removeAllObjects()
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
-    int i;
-
-    for (i = _objects.begin(); i != _objects.end(); i = _objects.next(i))
-        delete _objects.value(i);
-
-    _objects.clear();
+    auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
+    for (auto i = objects_holder->objects.begin(); i != objects_holder->objects.end(); i = objects_holder->objects.next(i))
+    {
+#ifdef INDIGO_DEBUG
+        std::stringstream ss;
+        ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << objects_holder->objects.key(i) << ")";
+        std::cout << ss.str() << std::endl;
+#endif
+        delete objects_holder->objects.value(i);
+    }
+    objects_holder->objects.clear();
 }
 
 void Indigo::updateCancellationHandler()
@@ -160,14 +168,69 @@ int Indigo::getId() const
     return _indigo_id;
 }
 
+const Array<char>& Indigo::getErrorMessage()
+{
+    return error_message();
+}
+
+void Indigo::clearErrorMessage()
+{
+    error_message().clear();
+}
+
+void Indigo::setErrorMessage(const char* message)
+{
+    error_message().readString(message, true);
+}
+
+void Indigo::handleError(const char* message)
+{
+    setErrorMessage(message);
+    if (error_handler() != nullptr)
+    {
+        error_handler()(message, error_handler_context());
+    }
+}
+
+void Indigo::setErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
+{
+    error_handler() = handler;
+    error_handler_context() = context;
+}
+
+Array<char>& Indigo::error_message()
+{
+    thread_local static Array<char> _error_message;
+    return _error_message;
+}
+
+INDIGO_ERROR_HANDLER& Indigo::error_handler()
+{
+    thread_local static INDIGO_ERROR_HANDLER _error_handler;
+    return _error_handler;
+}
+
+void*& Indigo::error_handler_context()
+{
+    thread_local static void* _error_handler_context;
+    return _error_handler_context;
+}
+
 CEXPORT qword indigoAllocSessionId()
 {
     qword id = TL_ALLOC_SESSION_ID();
     TL_SET_SESSION_ID(id);
-    Indigo& indigo = indigo_self.getLocalCopy(id);
+    Indigo& indigo = indigo_self.createOrGetLocalCopy(id);
     indigo.init();
     setlocale(LC_NUMERIC, "C");
+    IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
+    abbreviations::indigoCreateAbbreviationsInstance();
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "IndigoSession(" << id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
     return id;
 }
 
@@ -183,30 +246,36 @@ CEXPORT void indigoReleaseSessionId(qword id)
     IndigoOptionManager::getIndigoOptionManager().removeLocalCopy(id);
     indigo_self.removeLocalCopy(id);
     TL_RELEASE_SESSION_ID(id);
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~IndigoSession(" << id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
 }
 
 CEXPORT const char* indigoGetLastError(void)
 {
-    Indigo& self = indigoGetInstance();
-    return self.error_message.ptr();
+    return Indigo::getErrorMessage().ptr();
 }
 
 CEXPORT void indigoSetErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
 {
-    Indigo& self = indigoGetInstance();
-    self.error_handler = handler;
-    self.error_handler_context = context;
+    Indigo::setErrorHandler(handler, context);
 }
 
 CEXPORT int indigoFree(int handle)
 {
-    try
+    // In some runtimes (e.g. Python) session could be removed before objects during resource releasing stage)
+    if (indigo_self.hasLocalCopy())
     {
-        Indigo& self = indigoGetInstance();
-        self.removeObject(handle);
-    }
-    catch (Exception&)
-    {
+        try
+        {
+            Indigo& self = indigoGetInstance();
+            self.removeObject(handle);
+        }
+        catch (Exception&)
+        {
+        }
     }
     return 1;
 }
@@ -229,33 +298,43 @@ CEXPORT int indigoCountReferences(void)
 CEXPORT void indigoSetErrorMessage(const char* message)
 {
     Indigo& self = indigoGetInstance();
-    self.error_message.readString(message, true);
+    self.setErrorMessage(message);
 }
 
 int Indigo::addObject(IndigoObject* obj)
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
-    int id = _next_id++;
-    _objects.insert(id, obj);
+    auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
+    int id = objects_holder->next_id++;
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    objects_holder->objects.insert(id, obj);
     return id;
 }
 
 void Indigo::removeObject(int id)
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
-    if (_objects.at2(id) == 0)
+    auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    if (objects_holder->objects.at2(id) == 0)
         return;
-    delete _objects.at(id);
-    _objects.remove(id);
+    delete objects_holder->objects.at(id);
+    objects_holder->objects.remove(id);
 }
 
 IndigoObject& Indigo::getObject(int handle)
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
+    auto objects_holder = sf::slock_safe_ptr(_objects_holder);
 
     try
     {
-        return *_objects.at(handle);
+        return *objects_holder->objects.at(handle);
     }
     catch (RedBlackMap<int, IndigoObject*>::Error& e)
     {
@@ -263,11 +342,10 @@ IndigoObject& Indigo::getObject(int handle)
     }
 }
 
-int Indigo::countObjects()
+int Indigo::countObjects() const
 {
-    std::lock_guard<std::mutex> lock(_objects_lock);
-
-    return _objects.size();
+    auto objects_holder = sf::slock_safe_ptr(_objects_holder);
+    return objects_holder->objects.size();
 }
 
 static TemporaryThreadObjManager<Indigo::TmpData> _indigo_temporary_obj_manager;
@@ -368,7 +446,8 @@ CEXPORT qword indigoDbgProfilingGetCounter(const char* name, int whole_session)
 {
     INDIGO_BEGIN
     {
-        return indigo::ProfilingSystem::getInstance().getLabelCallCount(name, whole_session != 0);
+        auto prof_inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());
+        return prof_inst->getLabelCallCount(name, whole_session != 0);
     }
     INDIGO_END(-1);
 }

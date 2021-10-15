@@ -257,7 +257,7 @@ void MoleculeLayoutMacrocyclesLattice::rotate_cycle(int shift)
     _rotate_ar_v(_positions, temp_v, shift);
 }
 
-Vec2f& MoleculeLayoutMacrocyclesLattice::getPos(int v) const
+const Vec2f& MoleculeLayoutMacrocyclesLattice::getPos(int v) const
 {
     return _positions[v];
 }

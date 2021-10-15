@@ -2,14 +2,14 @@ FROM debian:stable-slim
 
 ARG JDK_VERSION_MAJOR=8u292
 ARG JDK_VERSION_MINOR=b10
-ARG MAVEN_VERSION=3.8.1
+ARG MAVEN_VERSION=3.8.3
 ARG JYTHON_VERSION=2.7.2
 ARG DOTNET_VERSION=3.1
 ARG IRONPYTHON_VERSION=2.7.11
 
 RUN apt update && \
     apt upgrade -y && \
-    apt install -y --no-install-recommends build-essential cmake make git git-lfs python3 python3-pip python3-distutils curl unzip libc6-dev libgdiplus libx11-dev && \
+    apt install -y --no-install-recommends build-essential cmake make git python3 python3-pip python3-distutils curl unzip libc6-dev libgdiplus libx11-dev && \
     apt install -y gnupg && \
     # Java JDK
     curl -OL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR}/OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \

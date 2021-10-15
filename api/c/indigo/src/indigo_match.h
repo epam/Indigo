@@ -55,7 +55,7 @@ public:
 
     int countMatches(int embeddings_limit);
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     MoleculeSubstructureMatcher matcher;
     MoleculeSubstructureMatcher::FragmentMatchCache fmcache;
@@ -84,7 +84,7 @@ public:
 
     int countMatches(int embeddings_limit);
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     MoleculeTautomerSubstructureMatcher matcher;
 
@@ -125,7 +125,7 @@ public:
     void unignoreAtom(int atom_index);
     void unignoreAllAtoms();
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     Molecule& target;
     Molecule moleculeFound;
@@ -153,7 +153,7 @@ public:
 
     static IndigoReactionSubstructureMatcher& cast(IndigoObject& obj);
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     Reaction& original_target;
     Reaction target;

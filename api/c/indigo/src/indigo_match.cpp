@@ -336,7 +336,7 @@ IndigoMoleculeSubstructureMatchIter::~IndigoMoleculeSubstructureMatchIter()
 {
 }
 
-const char* IndigoMoleculeSubstructureMatchIter::debugInfo()
+const char* IndigoMoleculeSubstructureMatchIter::debugInfo() const
 {
     return "<molecule substructure match iterator>";
 }
@@ -416,7 +416,7 @@ IndigoTautomerSubstructureMatchIter::~IndigoTautomerSubstructureMatchIter()
 {
 }
 
-const char* IndigoTautomerSubstructureMatchIter::debugInfo()
+const char* IndigoTautomerSubstructureMatchIter::debugInfo() const
 {
     return "<tautomer substructure match iterator>";
 }
@@ -548,7 +548,7 @@ IndigoMoleculeSubstructureMatcher::~IndigoMoleculeSubstructureMatcher()
 {
 }
 
-const char* IndigoMoleculeSubstructureMatcher::debugInfo()
+const char* IndigoMoleculeSubstructureMatcher::debugInfo() const
 {
     return "<molecule substructure matcher>";
 }
@@ -1006,7 +1006,7 @@ int indigoIterateMatches(int target_matcher, int query)
     INDIGO_END(-1);
 }
 
-const char* IndigoReactionSubstructureMatcher::debugInfo()
+const char* IndigoReactionSubstructureMatcher::debugInfo() const
 {
     return "<reaction substructure matcher>";
 }

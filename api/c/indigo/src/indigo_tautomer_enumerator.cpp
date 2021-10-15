@@ -46,7 +46,7 @@ IndigoTautomerIter::IndigoTautomerIter(Molecule& molecule, TautomerMethod method
         _currentPosition = _enumerator.beginNotAromatized();
 }
 
-const char* IndigoTautomerIter::debugInfo()
+const char* IndigoTautomerIter::debugInfo() const
 {
     return "<tautomer iterator>";
 }
@@ -81,7 +81,7 @@ IndigoMoleculeTautomer::IndigoMoleculeTautomer(TautomerEnumerator& enumerator, i
     enumerator.constructMolecule(_molInstance, index);
 }
 
-const char* IndigoMoleculeTautomer::debugInfo()
+const char* IndigoMoleculeTautomer::debugInfo() const
 {
     return "<molecule tautomer>";
 }

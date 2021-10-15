@@ -266,120 +266,119 @@ void indigoProductEnumeratorGetOneTubeMode(Array<char>& value)
 
 void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
 {
-    IndigoOptionManager& mgr = indigoGetOptionManager(id);
-    std::lock_guard<std::mutex> locker(mgr.lock);
+    auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager(id));
 
 #define indigo indigoGetInstance()
 
-    mgr.setOptionHandlerBool("ignore-stereochemistry-errors", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.ignore_errors));
-    mgr.setOptionHandlerBool("ignore-noncritical-query-features", SETTER_GETTER_BOOL_OPTION(indigo.ignore_noncritical_query_features));
-    mgr.setOptionHandlerBool("ignore-no-chiral-flag", SETTER_GETTER_BOOL_OPTION(indigo.ignore_no_chiral_flag));
-    mgr.setOptionHandlerString("treat-stereo-as", indigoSetStereoOption, indigoGetStereoOption);
-    mgr.setOptionHandlerBool("ignore-closing-bond-direction-mismatch", SETTER_GETTER_BOOL_OPTION(indigo.ignore_closing_bond_direction_mismatch));
-    mgr.setOptionHandlerBool("ignore-bad-valence", SETTER_GETTER_BOOL_OPTION(indigo.ignore_bad_valence));
-    mgr.setOptionHandlerBool("treat-x-as-pseudoatom", SETTER_GETTER_BOOL_OPTION(indigo.treat_x_as_pseudoatom));
-    mgr.setOptionHandlerBool("skip-3d-chirality", SETTER_GETTER_BOOL_OPTION(indigo.skip_3d_chirality));
-    mgr.setOptionHandlerBool("deconvolution-aromatization", SETTER_GETTER_BOOL_OPTION(indigo.deconvolution_aromatization));
-    mgr.setOptionHandlerBool("deco-save-ap-bond-orders", SETTER_GETTER_BOOL_OPTION(indigo.deco_save_ap_bond_orders));
-    mgr.setOptionHandlerBool("deco-ignore-errors", SETTER_GETTER_BOOL_OPTION(indigo.deco_ignore_errors));
-    mgr.setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode, indigoGetMolfileSavingMode);
-    mgr.setOptionHandlerInt("molfile-saving-no-chiral", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_no_chiral));
-    mgr.setOptionHandlerInt("molfile-saving-chiral-flag", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_chiral_flag));
-    mgr.setOptionHandlerBool("molfile-saving-skip-date", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_skip_date));
-    mgr.setOptionHandlerBool("molfile-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_stereo_desc));
-    mgr.setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
-    mgr.setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));
-    mgr.setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);
-    mgr.setOptionHandlerInt("fp-ord-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.ord_qwords));
-    mgr.setOptionHandlerInt("fp-sim-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.sim_qwords));
-    mgr.setOptionHandlerInt("fp-any-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.any_qwords));
-    mgr.setOptionHandlerInt("fp-tau-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.tau_qwords));
-    mgr.setOptionHandlerBool("fp-ext-enabled", SETTER_GETTER_BOOL_OPTION(indigo.fp_params.ext));
-    mgr.setOptionHandlerBool("smart-layout", SETTER_GETTER_BOOL_OPTION(indigo.smart_layout));
-    mgr.setOptionHandlerString("layout-orientation", indigoSetLayoutOrientation, indigoGetLayoutOrientation);
-    mgr.setOptionHandlerString(
+    mgr->setOptionHandlerBool("ignore-stereochemistry-errors", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.ignore_errors));
+    mgr->setOptionHandlerBool("ignore-noncritical-query-features", SETTER_GETTER_BOOL_OPTION(indigo.ignore_noncritical_query_features));
+    mgr->setOptionHandlerBool("ignore-no-chiral-flag", SETTER_GETTER_BOOL_OPTION(indigo.ignore_no_chiral_flag));
+    mgr->setOptionHandlerString("treat-stereo-as", indigoSetStereoOption, indigoGetStereoOption);
+    mgr->setOptionHandlerBool("ignore-closing-bond-direction-mismatch", SETTER_GETTER_BOOL_OPTION(indigo.ignore_closing_bond_direction_mismatch));
+    mgr->setOptionHandlerBool("ignore-bad-valence", SETTER_GETTER_BOOL_OPTION(indigo.ignore_bad_valence));
+    mgr->setOptionHandlerBool("treat-x-as-pseudoatom", SETTER_GETTER_BOOL_OPTION(indigo.treat_x_as_pseudoatom));
+    mgr->setOptionHandlerBool("skip-3d-chirality", SETTER_GETTER_BOOL_OPTION(indigo.skip_3d_chirality));
+    mgr->setOptionHandlerBool("deconvolution-aromatization", SETTER_GETTER_BOOL_OPTION(indigo.deconvolution_aromatization));
+    mgr->setOptionHandlerBool("deco-save-ap-bond-orders", SETTER_GETTER_BOOL_OPTION(indigo.deco_save_ap_bond_orders));
+    mgr->setOptionHandlerBool("deco-ignore-errors", SETTER_GETTER_BOOL_OPTION(indigo.deco_ignore_errors));
+    mgr->setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode, indigoGetMolfileSavingMode);
+    mgr->setOptionHandlerInt("molfile-saving-no-chiral", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_no_chiral));
+    mgr->setOptionHandlerInt("molfile-saving-chiral-flag", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_chiral_flag));
+    mgr->setOptionHandlerBool("molfile-saving-skip-date", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_skip_date));
+    mgr->setOptionHandlerBool("molfile-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_stereo_desc));
+    mgr->setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
+    mgr->setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));
+    mgr->setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);
+    mgr->setOptionHandlerInt("fp-ord-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.ord_qwords));
+    mgr->setOptionHandlerInt("fp-sim-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.sim_qwords));
+    mgr->setOptionHandlerInt("fp-any-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.any_qwords));
+    mgr->setOptionHandlerInt("fp-tau-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.tau_qwords));
+    mgr->setOptionHandlerBool("fp-ext-enabled", SETTER_GETTER_BOOL_OPTION(indigo.fp_params.ext));
+    mgr->setOptionHandlerBool("smart-layout", SETTER_GETTER_BOOL_OPTION(indigo.smart_layout));
+    mgr->setOptionHandlerString("layout-orientation", indigoSetLayoutOrientation, indigoGetLayoutOrientation);
+    mgr->setOptionHandlerString(
         "similarity-type", [](const char* value) { indigo.fp_params.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(value); },
         [](Array<char>& value) {
             const char* str = MoleculeFingerprintBuilder::printSimilarityType(indigo.fp_params.similarity_type);
             value.copy(str, strlen(str));
         });
 
-    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness, indigoGetEmbeddingUniqueness);
-    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings, indigoGetMaxEmbeddings);
+    mgr->setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness, indigoGetEmbeddingUniqueness);
+    mgr->setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings, indigoGetMaxEmbeddings);
 
-    mgr.setOptionHandlerInt("layout-max-iterations", SETTER_GETTER_INT_OPTION(indigo.layout_max_iterations));
+    mgr->setOptionHandlerInt("layout-max-iterations", SETTER_GETTER_INT_OPTION(indigo.layout_max_iterations));
 
-    mgr.setOptionHandlerFloat("layout-horintervalfactor", indigoSetLayoutHorIntervalFactor, indigoGetLayoutHorIntervalFactor);
+    mgr->setOptionHandlerFloat("layout-horintervalfactor", indigoSetLayoutHorIntervalFactor, indigoGetLayoutHorIntervalFactor);
 
-    mgr.setOptionHandlerInt("aam-timeout", SETTER_GETTER_INT_OPTION(indigo.aam_cancellation_timeout));
-    mgr.setOptionHandlerInt("timeout", SETTER_GETTER_INT_OPTION(indigo.cancellation_timeout));
+    mgr->setOptionHandlerInt("aam-timeout", SETTER_GETTER_INT_OPTION(indigo.aam_cancellation_timeout));
+    mgr->setOptionHandlerInt("timeout", SETTER_GETTER_INT_OPTION(indigo.cancellation_timeout));
 
-    mgr.setOptionHandlerBool("serialize-preserve-ordering", SETTER_GETTER_BOOL_OPTION(indigo.preserve_ordering_in_serialize));
+    mgr->setOptionHandlerBool("serialize-preserve-ordering", SETTER_GETTER_BOOL_OPTION(indigo.preserve_ordering_in_serialize));
 
-    mgr.setOptionHandlerString("aromaticity-model", indigoSetAromaticityModel, indigoGetAromaticityModel);
-    mgr.setOptionHandlerBool("dearomatize-verification", SETTER_GETTER_BOOL_OPTION(indigo.arom_options.dearomatize_check));
-    mgr.setOptionHandlerBool("unique-dearomatization", SETTER_GETTER_BOOL_OPTION(indigo.unique_dearomatization));
-    mgr.setOptionHandlerBool("stereochemistry-bidirectional-mode", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.bidirectional_mode));
-    mgr.setOptionHandlerBool("stereochemistry-detect-haworth-projection",
+    mgr->setOptionHandlerString("aromaticity-model", indigoSetAromaticityModel, indigoGetAromaticityModel);
+    mgr->setOptionHandlerBool("dearomatize-verification", SETTER_GETTER_BOOL_OPTION(indigo.arom_options.dearomatize_check));
+    mgr->setOptionHandlerBool("unique-dearomatization", SETTER_GETTER_BOOL_OPTION(indigo.unique_dearomatization));
+    mgr->setOptionHandlerBool("stereochemistry-bidirectional-mode", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.bidirectional_mode));
+    mgr->setOptionHandlerBool("stereochemistry-detect-haworth-projection",
                              SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.detect_haworth_projection));
 
-    mgr.setOptionHandlerBool("standardize-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_stereo));
-    mgr.setOptionHandlerBool("standardize-charges", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_charges));
-    mgr.setOptionHandlerBool("standardize-center-molecule", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.center_molecule));
-    mgr.setOptionHandlerBool("standardize-remove-single-atoms", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.remove_single_atom_fragments));
-    mgr.setOptionHandlerBool("standardize-keep-smallest", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.keep_smallest_fragment));
-    mgr.setOptionHandlerBool("standardize-keep-largest", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.keep_largest_fragment));
-    mgr.setOptionHandlerBool("standardize-remove-largest", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.remove_largest_fragment));
-    mgr.setOptionHandlerBool("standardize-make-non-h-to-c-atoms", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.make_non_h_atoms_c_atoms));
-    mgr.setOptionHandlerBool("standardize-make-non-h-to-a-atoms", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.make_non_h_atoms_a_atoms));
-    mgr.setOptionHandlerBool("standardize-make-non-h-c-to-q-atoms", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.make_non_c_h_atoms_q_atoms));
-    mgr.setOptionHandlerBool("standardize-make-all-bonds-single", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.make_all_bonds_single));
-    mgr.setOptionHandlerBool("standardize-clear-coordinates", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_coordinates));
-    mgr.setOptionHandlerBool("standardize-straighten-triple-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.straighten_triple_bonds));
-    mgr.setOptionHandlerBool("standardize-straighten-allens", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.straighten_allenes));
-    mgr.setOptionHandlerBool("standardize-clear-molecule", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_molecule));
-    mgr.setOptionHandlerBool("standardize-clear-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_stereo));
-    mgr.setOptionHandlerBool("standardize-clear-enhanced-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_enhanced_stereo));
-    mgr.setOptionHandlerBool("standardize-clear-unknown-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unknown_stereo));
-    mgr.setOptionHandlerBool("standardize-clear-unknown-atom-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unknown_atom_stereo));
-    mgr.setOptionHandlerBool("standardize-clear-unknown-bond-stereo",
+    mgr->setOptionHandlerBool("standardize-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_stereo));
+    mgr->setOptionHandlerBool("standardize-charges", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_charges));
+    mgr->setOptionHandlerBool("standardize-center-molecule", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.center_molecule));
+    mgr->setOptionHandlerBool("standardize-remove-single-atoms", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.remove_single_atom_fragments));
+    mgr->setOptionHandlerBool("standardize-keep-smallest", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.keep_smallest_fragment));
+    mgr->setOptionHandlerBool("standardize-keep-largest", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.keep_largest_fragment));
+    mgr->setOptionHandlerBool("standardize-remove-largest", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.remove_largest_fragment));
+    mgr->setOptionHandlerBool("standardize-make-non-h-to-c-atoms", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.make_non_h_atoms_c_atoms));
+    mgr->setOptionHandlerBool("standardize-make-non-h-to-a-atoms", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.make_non_h_atoms_a_atoms));
+    mgr->setOptionHandlerBool("standardize-make-non-h-c-to-q-atoms", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.make_non_c_h_atoms_q_atoms));
+    mgr->setOptionHandlerBool("standardize-make-all-bonds-single", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.make_all_bonds_single));
+    mgr->setOptionHandlerBool("standardize-clear-coordinates", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_coordinates));
+    mgr->setOptionHandlerBool("standardize-straighten-triple-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.straighten_triple_bonds));
+    mgr->setOptionHandlerBool("standardize-straighten-allens", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.straighten_allenes));
+    mgr->setOptionHandlerBool("standardize-clear-molecule", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_molecule));
+    mgr->setOptionHandlerBool("standardize-clear-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_stereo));
+    mgr->setOptionHandlerBool("standardize-clear-enhanced-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_enhanced_stereo));
+    mgr->setOptionHandlerBool("standardize-clear-unknown-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unknown_stereo));
+    mgr->setOptionHandlerBool("standardize-clear-unknown-atom-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unknown_atom_stereo));
+    mgr->setOptionHandlerBool("standardize-clear-unknown-bond-stereo",
                              SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unknown_cis_trans_bond_stereo));
-    mgr.setOptionHandlerBool("standardize-clear-cis-trans", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_cis_trans_bond_stereo));
-    mgr.setOptionHandlerBool("standardize-stereo-from-coordinates", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.set_stereo_from_coordinates));
-    mgr.setOptionHandlerBool("standardize-reposition-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.reposition_stereo_bonds));
-    mgr.setOptionHandlerBool("standardize-reposition-axial-stereo-bonds",
+    mgr->setOptionHandlerBool("standardize-clear-cis-trans", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_cis_trans_bond_stereo));
+    mgr->setOptionHandlerBool("standardize-stereo-from-coordinates", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.set_stereo_from_coordinates));
+    mgr->setOptionHandlerBool("standardize-reposition-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.reposition_stereo_bonds));
+    mgr->setOptionHandlerBool("standardize-reposition-axial-stereo-bonds",
                              SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.reposition_axial_stereo_bonds));
-    mgr.setOptionHandlerBool("standardize-fix-direction-wedge-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.fix_direction_of_wedge_bonds));
-    mgr.setOptionHandlerBool("standardize-clear-charges", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_charges));
-    mgr.setOptionHandlerBool("standardize-highlight-colors", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_highlight_colors));
-    mgr.setOptionHandlerBool("standardize-neutralize-zwitterions", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.neutralize_bonded_zwitterions));
-    mgr.setOptionHandlerBool("standardize-clear-unusual-valences", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unusual_valence));
-    mgr.setOptionHandlerBool("standardize-clear-isotopes", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_isotopes));
-    mgr.setOptionHandlerBool("standardize-clear-dative-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_dative_bonds));
-    mgr.setOptionHandlerBool("standardize-clear-hydrogen-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_hydrogen_bonds));
-    mgr.setOptionHandlerBool("standardize-localize-markush-r-atoms-on-rings",
+    mgr->setOptionHandlerBool("standardize-fix-direction-wedge-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.fix_direction_of_wedge_bonds));
+    mgr->setOptionHandlerBool("standardize-clear-charges", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_charges));
+    mgr->setOptionHandlerBool("standardize-highlight-colors", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_highlight_colors));
+    mgr->setOptionHandlerBool("standardize-neutralize-zwitterions", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.neutralize_bonded_zwitterions));
+    mgr->setOptionHandlerBool("standardize-clear-unusual-valences", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unusual_valence));
+    mgr->setOptionHandlerBool("standardize-clear-isotopes", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_isotopes));
+    mgr->setOptionHandlerBool("standardize-clear-dative-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_dative_bonds));
+    mgr->setOptionHandlerBool("standardize-clear-hydrogen-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_hydrogen_bonds));
+    mgr->setOptionHandlerBool("standardize-localize-markush-r-atoms-on-rings",
                              SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.localize_markush_r_atoms_on_rings));
-    mgr.setOptionHandlerBool("standardize-create-dative-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_coordination_bonds));
-    mgr.setOptionHandlerBool("standardize-create-hydrogen-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_hydrogen_bonds));
-    mgr.setOptionHandlerBool("standardize-remove-extra-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.remove_extra_stereo_bonds));
+    mgr->setOptionHandlerBool("standardize-create-dative-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_coordination_bonds));
+    mgr->setOptionHandlerBool("standardize-create-hydrogen-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_hydrogen_bonds));
+    mgr->setOptionHandlerBool("standardize-remove-extra-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.remove_extra_stereo_bonds));
 
-    mgr.setOptionHandlerString("pKa-model", indigoSetPkaModel, indigoGetPkaModel);
-    mgr.setOptionHandlerInt("pKa-model-level", SETTER_GETTER_INT_OPTION(indigo.ionize_options.level));
-    mgr.setOptionHandlerInt("pKa-model-min-level", SETTER_GETTER_INT_OPTION(indigo.ionize_options.min_level));
+    mgr->setOptionHandlerString("pKa-model", indigoSetPkaModel, indigoGetPkaModel);
+    mgr->setOptionHandlerInt("pKa-model-level", SETTER_GETTER_INT_OPTION(indigo.ionize_options.level));
+    mgr->setOptionHandlerInt("pKa-model-min-level", SETTER_GETTER_INT_OPTION(indigo.ionize_options.min_level));
 
-    mgr.setOptionHandlerVoid("reset-basic-options", indigoResetBasicOptions);
+    mgr->setOptionHandlerVoid("reset-basic-options", indigoResetBasicOptions);
 
-    mgr.setOptionHandlerBool("mass-skip-error-on-pseudoatoms", SETTER_GETTER_BOOL_OPTION(indigo.mass_options.skip_error_on_pseudoatoms));
-    mgr.setOptionHandlerBool("gross-formula-add-rsites", SETTER_GETTER_BOOL_OPTION(indigo.gross_formula_options.add_rsites));
-    mgr.setOptionHandlerBool("gross-formula-add-isotopes", SETTER_GETTER_BOOL_OPTION(indigo.gross_formula_options.add_isotopes));
+    mgr->setOptionHandlerBool("mass-skip-error-on-pseudoatoms", SETTER_GETTER_BOOL_OPTION(indigo.mass_options.skip_error_on_pseudoatoms));
+    mgr->setOptionHandlerBool("gross-formula-add-rsites", SETTER_GETTER_BOOL_OPTION(indigo.gross_formula_options.add_rsites));
+    mgr->setOptionHandlerBool("gross-formula-add-isotopes", SETTER_GETTER_BOOL_OPTION(indigo.gross_formula_options.add_isotopes));
 
-    mgr.setOptionHandlerBool("scsr-ignore-chem-templates", SETTER_GETTER_BOOL_OPTION(indigo.scsr_ignore_chem_templates));
+    mgr->setOptionHandlerBool("scsr-ignore-chem-templates", SETTER_GETTER_BOOL_OPTION(indigo.scsr_ignore_chem_templates));
 
-    mgr.setOptionHandlerBool("rpe-multistep-reactions", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_multistep_reactions));
-    mgr.setOptionHandlerString("rpe-mode", indigoProductEnumeratorSetOneTubeMode, indigoProductEnumeratorGetOneTubeMode);
-    mgr.setOptionHandlerBool("rpe-self-reaction", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_self_react));
-    mgr.setOptionHandlerInt("rpe-max-depth", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_deep_level));
-    mgr.setOptionHandlerInt("rpe-max-products-count", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_product_count));
-    mgr.setOptionHandlerBool("rpe-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_layout));
-    mgr.setOptionHandlerBool("transform-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.transform_is_layout));
+    mgr->setOptionHandlerBool("rpe-multistep-reactions", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_multistep_reactions));
+    mgr->setOptionHandlerString("rpe-mode", indigoProductEnumeratorSetOneTubeMode, indigoProductEnumeratorGetOneTubeMode);
+    mgr->setOptionHandlerBool("rpe-self-reaction", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_self_react));
+    mgr->setOptionHandlerInt("rpe-max-depth", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_deep_level));
+    mgr->setOptionHandlerInt("rpe-max-products-count", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_product_count));
+    mgr->setOptionHandlerBool("rpe-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_layout));
+    mgr->setOptionHandlerBool("transform-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.transform_is_layout));
 }

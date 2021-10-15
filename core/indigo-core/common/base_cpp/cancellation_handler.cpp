@@ -20,13 +20,20 @@
 
 #include "base_c/nano.h"
 #include "base_cpp/output.h"
-#include "base_cpp/tlscont.h"
+
+using namespace indigo;
 
 namespace indigo
 {
     //
     // TimeoutCancellationHandler
     //
+
+    std::unique_ptr<CancellationHandler>& CancellationHandler::cancellation_handler()
+    {
+        thread_local std::unique_ptr<CancellationHandler> _cancellation_handler;
+        return _cancellation_handler;
+    }
 
     TimeoutCancellationHandler::TimeoutCancellationHandler(int mseconds)
     {
@@ -61,33 +68,15 @@ namespace indigo
         _currentTime = nanoClock();
     }
 
-    //
-    // Global thread-local cancellation handler
-    //
-
-    class CancellationHandlerWrapper
-    {
-    public:
-        CancellationHandlerWrapper() : handler(nullptr)
-        {
-        }
-
-        std::unique_ptr<CancellationHandler> handler;
-    };
-
-    static _SessionLocalContainer<CancellationHandlerWrapper> cancellation_handler;
-
     CancellationHandler* getCancellationHandler()
     {
-        CancellationHandlerWrapper& wrapper = cancellation_handler.getLocalCopy();
-        return wrapper.handler.get();
+        return CancellationHandler::cancellation_handler().get();
     }
 
     std::unique_ptr<CancellationHandler> resetCancellationHandler(CancellationHandler* handler)
     {
-        CancellationHandlerWrapper& wrapper = cancellation_handler.getLocalCopy();
-        std::unique_ptr<CancellationHandler> prev(wrapper.handler.release());
-        wrapper.handler.reset(handler);
+        std::unique_ptr<CancellationHandler> prev(handler);
+        CancellationHandler::cancellation_handler().swap(prev);
         return prev;
     }
 

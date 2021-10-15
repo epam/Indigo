@@ -42,6 +42,13 @@ namespace indigo
         {
         }
 
+        Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
+        {
+            other._array = nullptr;
+            other._length = 0;
+            other._reserved = 0;
+        }
+
         ~Array()
         {
             if (_array != nullptr)
@@ -350,6 +357,16 @@ namespace indigo
 
             std::swap(_reserved, other._reserved);
             std::swap(_length, other._length);
+        }
+
+        T* begin()
+        {
+            return _array;
+        }
+
+        T* end()
+        {
+            return _array + _length;
         }
 
         // CMP_FUNCTOR has two arguments and returns sign of comparation

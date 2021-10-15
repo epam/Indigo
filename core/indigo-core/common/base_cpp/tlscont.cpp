@@ -20,98 +20,43 @@
 
 using namespace indigo;
 
-IMPL_ERROR(_SIDManager, "TLS");
-
 _SIDManager& _SIDManager::getInst()
 {
     static _SIDManager _instance;
     return _instance;
 }
 
-std::mutex& _SIDManager::getLock()
-{
-    static std::mutex _lock;
-    return _lock;
-}
-
-_SIDManager::~_SIDManager(void)
-{
-    for (auto* pId : _pIds)
-    {
-        delete pId;
-    }
-
-    osTlsFree(_tlsIdx);
-}
-
 void _SIDManager::setSessionId(qword id)
 {
-    std::lock_guard<std::mutex> locker(_SIDManager::getLock());
-
-    if (!_allSIDs.find(id))
-        _allSIDs.insert(id);
-
-    qword* pId = _getID();
-    if (pId == NULL)
-    {
-        pId = new qword(id);
-        _pIds.emplace_back(pId);
-        osTlsSetValue(_tlsIdx, (void*)pId);
-    }
-    else
-        *pId = id;
+    _sessionId() = id;
 }
 
-qword _SIDManager::allocSessionId(void)
+qword _SIDManager::getSessionId() const
 {
-    std::lock_guard<std::mutex> locker(_SIDManager::getLock());
-
-    qword id;
-    if (_vacantSIDs.size() > 0)
-        id = _vacantSIDs.pop();
-    else
-    {
-        while (_allSIDs.find(_lastNewSID))
-            ++_lastNewSID;
-
-        id = _lastNewSID;
-        _allSIDs.insert(id);
-
-        ++_lastNewSID;
-    }
-    return id;
+    return _sessionId();
 }
 
-qword _SIDManager::getSessionId(void)
+qword _SIDManager::allocSessionId()
 {
-    qword* pId = _getID();
-    qword id;
-    if (pId == NULL)
+    auto sidDataHolder = sf::xlock_safe_ptr(_sidDataHolder);
+    auto& vacantSIDs = sidDataHolder->vacantSIDs;
+    if (!vacantSIDs.empty())
     {
-        id = allocSessionId();
-        setSessionId(id);
+        auto id = vacantSIDs.top();
+        vacantSIDs.pop();
+        return id;
     }
-    else
-        id = *pId;
-
-    return id;
+    return sidDataHolder->lastNewSID++;
 }
 
 void _SIDManager::releaseSessionId(qword id)
 {
-    std::lock_guard<std::mutex> locker(_SIDManager::getLock());
-    _vacantSIDs.push(id);
+    auto sidDataHolder = sf::xlock_safe_ptr(_sidDataHolder);
+    sidDataHolder->vacantSIDs.push(id);
 }
 
-qword* _SIDManager::_getID(void) const
+qword& _SIDManager::_sessionId()
 {
-    void* pId;
-    osTlsGetValue(&pId, _tlsIdx);
-    return (qword*)pId;
-}
-
-_SIDManager::_SIDManager(void) : _lastNewSID(0)
-{
-    if (osTlsAlloc(&_tlsIdx) == 0)
-        throw Error("can't allocate thread local storage cell");
+    static thread_local qword _sessionId;
+    return _sessionId;
 }

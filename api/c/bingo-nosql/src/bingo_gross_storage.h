@@ -22,7 +22,7 @@ namespace bingo
 
         static void load(BingoPtr<GrossStorage>& gross_ptr, BingoAddr offset);
 
-        void add(Array<char>& gross_formula, int id);
+        void add(const Array<char>& gross_formula, int id);
 
         void find(Array<char>& query_formula, Array<int>& indices, int part_id = -1, int part_count = -1);
 

@@ -1,20 +1,20 @@
 /****************************************************************************
-* Copyright (C) from 2009 to Present EPAM Systems.
-*
-* This file is part of Indigo toolkit.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-***************************************************************************/
+ * Copyright (C) from 2009 to Present EPAM Systems.
+ *
+ * This file is part of Indigo toolkit.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 
 #include "IndigoSession.h"
 
@@ -23,9 +23,12 @@
 #include "IndigoException.h"
 #include "IndigoMolecule.h"
 #include "IndigoQueryMolecule.h"
+#include "IndigoSDFileIterator.h"
 #include "IndigoWriteBuffer.h"
 
 using namespace indigo_cpp;
+
+//#define INDIGO_CPP_DEBUG
 
 #ifdef INDIGO_CPP_DEBUG
 #include <iostream>
@@ -79,7 +82,7 @@ int IndigoSession::_checkResult(int result) const
 
 double IndigoSession::_checkResultFloat(double result) const
 {
-    if (result < 0.5)
+    if (result < -0.5)
     {
         setSessionId();
         throw(IndigoException(indigoGetLastError()));
@@ -127,20 +130,31 @@ std::string IndigoSession::version() const
     return _checkResultString(indigoVersion());
 }
 
-IndigoMolecule IndigoSession::loadMolecule(const std::string& data) const
+IndigoMolecule IndigoSession::loadMolecule(const std::string& data)
 {
     setSessionId();
-    return {_checkResult(indigoLoadMoleculeFromString(data.c_str())), *this};
+    return {_checkResult(indigoLoadMoleculeFromString(data.c_str())), shared_from_this()};
 }
 
-IndigoQueryMolecule IndigoSession::loadQueryMolecule(const std::string& data) const
+IndigoQueryMolecule IndigoSession::loadQueryMolecule(const std::string& data)
 {
     setSessionId();
-    return {_checkResult(indigoLoadQueryMoleculeFromString(data.c_str())), *this};
+    return {_checkResult(indigoLoadQueryMoleculeFromString(data.c_str())), shared_from_this()};
 }
 
-IndigoWriteBuffer IndigoSession::writeBuffer() const
+IndigoWriteBuffer IndigoSession::writeBuffer()
 {
     setSessionId();
-    return {_checkResult(indigoWriteBuffer()), *this};
+    return {_checkResult(indigoWriteBuffer()), shared_from_this()};
+}
+
+IndigoSDFileIterator IndigoSession::iterateSDFile(const std::string& path)
+{
+    setSessionId();
+    return {_checkResult(indigoIterateSDFile(path.c_str())), shared_from_this()};
+}
+
+IndigoSessionPtr IndigoSession::create()
+{
+    return IndigoSessionPtr(new IndigoSession());
 }

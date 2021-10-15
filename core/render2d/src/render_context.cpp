@@ -23,7 +23,7 @@
 
 using namespace indigo;
 
-RenderContext::TextLock RenderContext::_tlock;
+std::mutex RenderContext::_cairo_mutex;
 
 IMPL_ERROR(RenderContext, "render context");
 
@@ -214,49 +214,55 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int
 {
     int mode = opt.mode;
     if (writer == NULL && (mode == MODE_HDC || mode == MODE_PRN))
-        mode = MODE_PDF;
-    switch (mode)
     {
-    case MODE_NONE:
-        throw Error("mode not set");
-    case MODE_PDF:
-        _surface = cairo_pdf_surface_create_for_stream(writer, opt.output, _width, _height);
-        cairoCheckSurfaceStatus();
-        break;
-    case MODE_SVG:
-        _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
-        cairoCheckSurfaceStatus();
-        break;
-    case MODE_PNG:
-        _surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, _width, _height);
-        cairoCheckSurfaceStatus();
-        break;
-    case MODE_HDC:
+        mode = MODE_PDF;
+    }
+
+    {
+        std::lock_guard<std::mutex> _lock(_cairo_mutex);
+        switch (mode)
+        {
+        case MODE_NONE:
+            throw Error("mode not set");
+        case MODE_PDF:
+            _surface = cairo_pdf_surface_create_for_stream(writer, opt.output, _width, _height);
+            cairoCheckSurfaceStatus();
+            break;
+        case MODE_SVG:
+            _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
+            cairoCheckSurfaceStatus();
+            break;
+        case MODE_PNG:
+            _surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, _width, _height);
+            cairoCheckSurfaceStatus();
+            break;
+        case MODE_HDC:
 #ifdef _WIN32
-        _surface = createWin32Surface();
+            _surface = createWin32Surface();
 #else
-        throw Error("mode \"HDC\" is not supported on this platform");
+            throw Error("mode \"HDC\" is not supported on this platform");
 #endif
-        break;
-    case MODE_PRN:
+            break;
+        case MODE_PRN:
 #ifdef _WIN32
-        _surface = createWin32PrintingSurfaceForHDC();
+            _surface = createWin32PrintingSurfaceForHDC();
 #else
-        throw Error("mode \"PRN\" is not supported on this platform");
+            throw Error("mode \"PRN\" is not supported on this platform");
 #endif
-        break;
-    case MODE_EMF:
+            break;
+        case MODE_EMF:
 #ifdef _WIN32
-        bool isLarge;
-        _surface = createWin32PrintingSurfaceForMetafile(isLarge);
-        if (isLarge)
-            metafileFontsToCurves = true;
+            bool isLarge;
+            _surface = createWin32PrintingSurfaceForMetafile(isLarge);
+            if (isLarge)
+                metafileFontsToCurves = true;
 #else
-        throw Error("mode \"EMF\" is not supported on this platform");
+            throw Error("mode \"EMF\" is not supported on this platform");
 #endif
-        break;
-    default:
-        throw Error("unknown mode: %d", mode);
+            break;
+        default:
+            throw Error("unknown mode: %d", mode);
+        }
     }
 }
 
@@ -272,14 +278,16 @@ void RenderContext::init()
 {
     fontsInit();
     cairo_text_extents_t te;
-    cairo_select_font_face(_cr, _fontfamily.ptr(), CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-    cairoCheckStatus();
-    cairo_set_font_size(_cr, _settings.fzz[FONT_SIZE_ATTR]);
-    cairoCheckStatus();
-    _tlock.lock();
-    cairo_text_extents(_cr, "N", &te);
-    _tlock.unlock();
-    cairoCheckStatus();
+
+    {
+        std::lock_guard<std::mutex> _lock(_cairo_mutex);
+        cairo_select_font_face(_cr, _fontfamily.ptr(), CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+        cairoCheckStatus();
+        cairo_set_font_size(_cr, _settings.fzz[FONT_SIZE_ATTR]);
+        cairoCheckStatus();
+        cairo_text_extents(_cr, "N", &te);
+        cairoCheckStatus();
+    }
 
     cairo_set_antialias(_cr, CAIRO_ANTIALIAS_GRAY);
     cairoCheckStatus();
@@ -307,9 +315,6 @@ void RenderContext::initNullContext()
     scale(_defaultScale);
 }
 
-#include <stdlib.h>
-#include <iostream>
-
 void RenderContext::initContext(int width, int height)
 {
     _width = width;
@@ -329,6 +334,7 @@ void RenderContext::closeContext(bool discard)
 {
     if (_cr != NULL)
     {
+        std::lock_guard<std::mutex> _lock(_cairo_mutex);
         cairo_destroy(_cr);
         _cr = NULL;
     }
@@ -357,6 +363,7 @@ void RenderContext::closeContext(bool discard)
 
     if (_surface != NULL)
     {
+        std::lock_guard<std::mutex> _lock(_cairo_mutex);
         cairo_surface_destroy(_surface);
         _surface = NULL;
     }
@@ -385,12 +392,15 @@ void RenderContext::storeTransform()
     cairo_get_matrix(_cr, &t);
     cairoCheckStatus();
 }
+
 void RenderContext::restoreTransform()
 {
+    std::lock_guard<std::mutex> _lock(_cairo_mutex);
     cairo_matrix_t& t = transforms.top();
     cairo_set_matrix(_cr, &t);
     cairoCheckStatus();
 }
+
 void RenderContext::removeStoredTransform()
 {
     transforms.pop();
@@ -490,7 +500,10 @@ void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
     lineTo(v1);
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
+    {
+        std::lock_guard<std::mutex> _lock(_cairo_mutex);
+        cairo_stroke(_cr);
+    }
     cairoCheckStatus();
 }
 
@@ -664,10 +677,10 @@ void RenderContext::drawArc(const Vec2f& center, const float r, const float a0, 
 void RenderContext::arc(cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2)
 {
 #ifdef __EMSCRIPTEN__
-    // In the WASM build this workaround fixes function signature issues with cairo_arc. 
+    // In the WASM build this workaround fixes function signature issues with cairo_arc.
     const double arc_parts = 18;
-    double diff = angle2-angle1;
-    for (double phi = angle1; phi <= angle2; phi += diff / arc_parts ) 
+    double diff = angle2 - angle1;
+    for (double phi = angle1; phi <= angle2; phi += diff / arc_parts)
         lineTo(Vec2f(_settings.graphItemDotRadius * cos(phi) + xc, _settings.graphItemDotRadius * sin(phi) + yc));
 #else
     cairo_arc(cr, xc, yc, radius, angle1, angle2);

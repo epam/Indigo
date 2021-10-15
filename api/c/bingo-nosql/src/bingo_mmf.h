@@ -19,10 +19,11 @@ namespace bingo
         void resize(size_t new_size);
 
         void* ptr();
+        const void* ptr() const;
 
-        const char* name();
+        const char* name() const;
 
-        size_t size();
+        size_t size() const;
 
         void close();
 

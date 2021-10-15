@@ -1,34 +1,34 @@
 #include "common.h"
 
-#include "base_cpp/scanner.h"
-#include "molecule/molecule_auto_loader.h"
+#include <base_cpp/exception.h>
+
+#include <indigo.h>
+
+using namespace indigo;
 
 namespace
 {
-    const std::string dataPathPrefix = DATA_PATH;
+    const std::string dataPathPrefix = DATA_PATH; // NOLINT
 }
 
-std::string indigo::dataPath(const char* dataPathSuffix)
+void IndigoApiTest::SetUp()
+{
+    session = indigoAllocSessionId();
+    indigoSetSessionId(session);
+    indigoSetErrorHandler(errorHandler, nullptr);
+}
+
+void IndigoApiTest::TearDown()
+{
+    indigoReleaseSessionId(session);
+}
+
+std::string IndigoApiTest::dataPath(const char* dataPathSuffix)
 {
     return dataPathPrefix + "/" + dataPathSuffix;
 }
 
-void indigo::errorHandling(const char* message, void* context)
+void IndigoApiTest::errorHandler(const char* message, void*) // NOLINT
 {
-    throw indigo::Exception(message);
-}
-
-void indigo::printMap(Array<int>& map)
-{
-    for (int i = 0; i < map.size(); ++i)
-    {
-        printf("%d %d\n", i, map[i]);
-    }
-}
-
-void indigo::loadMolecule(const char* buf, indigo::Molecule& mol)
-{
-    indigo::BufferScanner scanner(buf);
-    indigo::MoleculeAutoLoader loader(scanner);
-    loader.loadMolecule(mol);
+    throw Exception(message);
 }

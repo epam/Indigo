@@ -25,10 +25,21 @@ namespace indigo_cpp
     class IndigoObject
     {
     public:
-        const int id;
-        const IndigoSession& indigo;
+        int id() const;
+        const IndigoSessionPtr& session() const;
 
-        IndigoObject(int id, const IndigoSession& indigo);
+        IndigoObject(const IndigoObject&) = delete;
+        IndigoObject& operator=(const IndigoObject&) = delete;
         virtual ~IndigoObject();
+
+    protected:
+        IndigoObject(int id, IndigoSessionPtr indigo);
+        IndigoObject(IndigoObject&&) = default;
+        IndigoObject& operator=(IndigoObject&&) = default;
+
+    private:
+        friend class IndigoCopyableObject;
+        std::unique_ptr<const int> _id = nullptr;
+        IndigoSessionPtr _session = nullptr;
     };
 }

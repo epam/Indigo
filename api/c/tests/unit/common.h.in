@@ -2,12 +2,20 @@
 
 #include <string>
 
-#include "molecule/molecule.h"
+#include <gtest/gtest.h>
 
 namespace indigo
 {
-    std::string dataPath(const char* dataPathSuffix);
-    void errorHandling(const char* message, void* context);
-    void printMap(Array<int>& map);
-    void loadMolecule(const char* buf, Molecule& mol);
+
+    class IndigoApiTest : public ::testing::Test
+    {
+    protected:
+        void SetUp() override;
+        void TearDown() override;
+
+        static std::string dataPath(const char* dataPathSuffix);
+        static void errorHandler(const char* message, void* context);
+
+        unsigned long long session;
+    };
 }

@@ -53,7 +53,7 @@ bool IndigoBaseReaction::is(IndigoObject& obj)
     return false;
 }
 
-const char* IndigoBaseReaction::debugInfo()
+const char* IndigoBaseReaction::debugInfo() const
 {
     return "<base reaction>";
 }
@@ -66,7 +66,7 @@ IndigoReaction::IndigoReaction() : IndigoBaseReaction(REACTION)
 {
 }
 
-const char* IndigoReaction::debugInfo()
+const char* IndigoReaction::debugInfo() const
 {
     return "<reaction>";
 }
@@ -100,7 +100,7 @@ IndigoQueryReaction::IndigoQueryReaction() : IndigoBaseReaction(QUERY_REACTION)
 {
 }
 
-const char* IndigoQueryReaction::debugInfo()
+const char* IndigoQueryReaction::debugInfo() const
 {
     return "<query reaction>";
 }
@@ -143,7 +143,7 @@ IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, MonomersP
     }
 }
 
-const char* IndigoReactionMolecule::debugInfo()
+const char* IndigoReactionMolecule::debugInfo() const
 {
     return "<reaction molecule>";
 }
@@ -201,7 +201,7 @@ IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, int subtype) : IndigoO
     _idx = -1;
 }
 
-const char* IndigoReactionIter::debugInfo()
+const char* IndigoReactionIter::debugInfo() const
 {
     return "<reaction molecule iterator>";
 }

@@ -272,7 +272,7 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
 
     // Fill distances by infinity
     for (int j = 0; j < distances.size(); j++) {
-        distances[j] = INT_MAX;
+        distances[j] = INT_MAX / 2;
         parents[j] = -1;
     }
     QS_DEF(Queue<int>, front);
@@ -293,7 +293,7 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
         for (int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
         {
             int vn = vertex.neiVertex(j);
-            if (distances[vn] == INT_MAX)
+            if (distances[vn] == INT_MAX / 2)
             {
                 distances[vn] = distances[active] + 1;
                 parents[vn] = active;
@@ -306,7 +306,7 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
         int cur = dest[j];
         int cur_dest = dest[j];
         // Check chain
-        if (distances[cur_dest] != INT_MAX)
+        if (distances[cur_dest] != INT_MAX / 2)
         {
             int inRingCount = 0;
             int doubleBondsCount = 0, tripleBondsCount = 0;
@@ -329,10 +329,10 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
             }
 
             if (inRingCount > 1)
-                distances[cur_dest] = 2 * INT_MAX;
+                distances[cur_dest] = INT_MAX;
             else if (inRingCount == 0)
                 if (doubleBondsCount > 1 || tripleBondsCount > 0)
-                    distances[cur_dest] = 2 * INT_MAX;
+                    distances[cur_dest] = INT_MAX;
         }
         result[j] = distances[cur_dest];
     }

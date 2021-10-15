@@ -47,7 +47,7 @@ public:
 
     static bool is(IndigoObject& obj);
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     inline void clear()
     {
@@ -73,7 +73,7 @@ public:
 
     static IndigoReaction* cloneFrom(IndigoObject& obj);
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     Reaction rxn;
 };
@@ -92,7 +92,7 @@ public:
 
     static IndigoQueryReaction* cloneFrom(IndigoObject& obj);
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     QueryReaction rxn;
 };
@@ -115,7 +115,7 @@ public:
         return _properties;
     }
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     BaseReaction& rxn;
     int idx;
@@ -140,7 +140,7 @@ public:
     IndigoObject* next() override;
     bool hasNext() override;
 
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
 protected:
     int _begin();
