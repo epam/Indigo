@@ -17,18 +17,16 @@
  ***************************************************************************/
 
 #include "render.h"
+
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/output.h"
-#include "base_cpp/reusable_obj_array.h"
-#include "layout/metalayout.h"
 #include "math/algebra.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
+
 #include "render_context.h"
-#include "render_item.h"
 #include "render_item_factory.h"
 
 using namespace indigo;

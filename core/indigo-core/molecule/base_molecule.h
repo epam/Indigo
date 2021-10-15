@@ -282,7 +282,7 @@ namespace indigo
         void makeSubmolecule(BaseMolecule& other, const Filter& filter, Array<int>* mapping_out, Array<int>* inv_mapping, int skip_flags = 0);
         void makeEdgeSubmolecule(BaseMolecule& mol, const Array<int>& vertices, const Array<int>& edges, Array<int>* v_mapping, int skip_flags = 0);
 
-        void clone(BaseMolecule& other, Array<int>* mapping, Array<int>* inv_mapping, int skip_flags = 0);
+        void clone(BaseMolecule& other, Array<int>* mapping = nullptr, Array<int>* inv_mapping = nullptr, int skip_flags = 0);
 
         // This is a bad hack for those who are too lazy to handle the mappings.
         // NEVER USE IT.

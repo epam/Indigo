@@ -84,16 +84,3 @@ void OsMessageSystem::RecvMsg(int* message, void** result)
 OsMessageSystem::OsMessageSystem() : _sendSem(0, 1), _finishRecvSem(0, 1)
 {
 }
-
-//
-// ThreadSafeStaticObj
-//
-
-namespace indigo
-{
-    DLLEXPORT std::mutex& osStaticObjConstructionLock()
-    {
-        static std::mutex _static_obj_construction_lock;
-        return _static_obj_construction_lock;
-    }
-} // namespace indigo

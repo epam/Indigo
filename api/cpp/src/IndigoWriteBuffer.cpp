@@ -17,22 +17,23 @@
 ***************************************************************************/
 
 #include "IndigoWriteBuffer.h"
+#include "IndigoSession.h"
 
 #include <indigo.h>
 
 using namespace indigo_cpp;
 
-IndigoWriteBuffer::IndigoWriteBuffer(const int id, const IndigoSession& session) : IndigoObject(id, session)
+IndigoWriteBuffer::IndigoWriteBuffer(const int id, IndigoSessionPtr session) : IndigoObject(id, std::move(session))
 {
 }
 
 std::vector<char> IndigoWriteBuffer::toBuffer() const
 {
-    indigo.setSessionId();
+    session()->setSessionId();
     char* buffer = nullptr;
     int size = 0;
-    indigo._checkResult(indigoToBuffer(id, &buffer, &size));
-    return std::vector<char>(buffer, buffer + size);
+    session()->_checkResult(indigoToBuffer(id(), &buffer, &size));
+    return {buffer, buffer + size};  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
 std::string IndigoWriteBuffer::toString() const

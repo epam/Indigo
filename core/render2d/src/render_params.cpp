@@ -186,18 +186,6 @@ int RenderParamInterface::multilineTextUnit(RenderItemFactory& factory, int type
 
 void RenderParamInterface::render(RenderParams& params)
 {
-    // Disable multithreaded SVG rendering due to the Cairo issue. See IND-482
-    std::mutex* render_lock = 0;
-    if (params.rOpt.mode == MODE_SVG)
-    {
-        static ThreadSafeStaticObj<std::mutex> svg_lock;
-        render_lock = svg_lock.ptr();
-    }
-
-    auto locker = render_lock ?
-                  std::unique_lock<std::mutex>(*render_lock) :
-                  std::unique_lock<std::mutex>();
-
     if (params.rmode == RENDER_NONE)
         throw Error("No object to render specified");
 

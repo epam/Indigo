@@ -134,7 +134,7 @@ void IndigoSdfSaver::append(Output& out, IndigoObject& obj)
     out.flush();
 }
 
-const char* IndigoSdfSaver::debugInfo()
+const char* IndigoSdfSaver::debugInfo() const
 {
     return "<SDF saver>";
 }
@@ -237,7 +237,7 @@ void IndigoSmilesSaver::append(Output& output, IndigoObject& object)
     output.flush();
 }
 
-const char* IndigoSmilesSaver::debugInfo()
+const char* IndigoSmilesSaver::debugInfo() const
 {
     return "<smiles saver>";
 }
@@ -328,7 +328,7 @@ void IndigoCanonicalSmilesSaver::generateSmarts(IndigoObject& obj, Array<char>& 
     out_buffer.push(0);
 }
 
-const char* IndigoCanonicalSmilesSaver::debugInfo()
+const char* IndigoCanonicalSmilesSaver::debugInfo() const
 {
     return "<smiles saver>";
 }
@@ -372,7 +372,7 @@ void IndigoCmlSaver::appendFooter(Output& out)
     out.printf("</cml>\n");
 }
 
-const char* IndigoCmlSaver::debugInfo()
+const char* IndigoCmlSaver::debugInfo() const
 {
     return "<CML saver>";
 }
@@ -478,7 +478,7 @@ void IndigoRdfSaver::appendHeader(Output& out)
     out.printfCR("$DATM    %02d/%02d/%02d %02d:%02d", lt.tm_mon + 1, lt.tm_mday, lt.tm_year % 100, lt.tm_hour, lt.tm_min);
 }
 
-const char* IndigoRdfSaver::debugInfo()
+const char* IndigoRdfSaver::debugInfo() const
 {
     return "<smiles saver>";
 }

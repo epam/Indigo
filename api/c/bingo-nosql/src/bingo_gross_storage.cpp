@@ -21,7 +21,7 @@ void GrossStorage::load(BingoPtr<GrossStorage>& gross_ptr, BingoAddr offset)
     gross_ptr = BingoPtr<GrossStorage>(offset);
 }
 
-void GrossStorage::add(Array<char>& gross_formula, int id)
+void GrossStorage::add(const Array<char>& gross_formula, int id)
 {
     _gross_formulas.add((byte*)gross_formula.ptr(), gross_formula.size(), id);
     dword hash = _calculateGrossHash(gross_formula.ptr(), gross_formula.size());

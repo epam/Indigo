@@ -133,7 +133,7 @@ namespace bingo
         Molecule _mol;
 
     public:
-        IndexMolecule(/* const */ Molecule& mol);
+        IndexMolecule(/* const */ Molecule& mol, const AromaticityOptions& arom_options);
 
         bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
 
@@ -150,7 +150,7 @@ namespace bingo
         Reaction _rxn;
 
     public:
-        IndexReaction(/* const */ Reaction& rxn);
+        IndexReaction(/* const */ Reaction& rxn, const AromaticityOptions& arom_options);
 
         bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/ override;
 

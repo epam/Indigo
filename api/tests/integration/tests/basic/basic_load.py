@@ -81,13 +81,13 @@ print(m.canonicalSmiles())
 print(m.molfile())
 
 print("****** S-group's SPL (PARENT) support ********")
-m = indigo.loadMoleculeFromFile(joinPathPy("molecules/sgroups-V2000.mol", __file__))
+m = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/sgroups-V2000.mol"))
 indigo.setOption("molfile-saving-mode", "2000")
 print(m.canonicalSmiles())
 print(m.molfile())
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(joinPathPy("molecules/sgroups-V3000.mol", __file__))
+m = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/sgroups-V3000.mol"))
 print(m.canonicalSmiles())
 print(m.molfile())
 

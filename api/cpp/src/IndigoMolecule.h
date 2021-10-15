@@ -18,13 +18,22 @@
 
 #pragma once
 
+#include <memory>
+
 #include "IndigoBaseMolecule.h"
 
 namespace indigo_cpp
 {
-    class IndigoMolecule : public IndigoBaseMolecule
+    class IndigoMolecule final : public IndigoBaseMolecule
     {
     public:
-        IndigoMolecule(int id, const IndigoSession& indigo);
+        IndigoMolecule(int id, IndigoSessionPtr session);
+        IndigoMolecule(IndigoMolecule&&) = default;
+        IndigoMolecule& operator=(IndigoMolecule&&) = default;
+        IndigoMolecule(const IndigoMolecule&);
+        IndigoMolecule& operator=(const IndigoMolecule&) = default;
+        ~IndigoMolecule() final = default;
     };
+
+    using IndigoMoleculeSPtr = std::shared_ptr<IndigoMolecule>;
 }

@@ -21,6 +21,12 @@
 #include "indigo_internal.h"
 #include "indigo_molecule.h"
 
+//#define INDIGO_DEBUG
+
+#ifdef INDIGO_DEBUG
+#include <iostream>
+#endif
+
 using namespace indigo;
 
 CEXPORT const char* indigoInchiVersion()
@@ -55,7 +61,7 @@ public:
     void setOptionsHandlers();
 };
 
-_SessionLocalContainer<IndigoInchiContext> inchi_wrapper_self;
+static _SessionLocalContainer<IndigoInchiContext> inchi_wrapper_self;
 
 IndigoInchiContext& indigoInchiGetInstance()
 {
@@ -68,12 +74,16 @@ IndigoInchiContext& indigoInchiGetInstance()
 // C interface functions
 //
 
-
-CEXPORT int indigoInchiInit(void)
+CEXPORT int indigoInchiInit()
 {
-    INDIGO_BEGIN
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "IndigoInchi(" << TL_GET_SESSION_ID() << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    INDIGO_BEGIN_STATIC
     {
-        IndigoInchiContext& inchi_context = indigoInchiGetInstance();
+        IndigoInchiContext& inchi_context = inchi_wrapper_self.createOrGetLocalCopy();
         return 0;
     }
     INDIGO_END(-1);
@@ -81,9 +91,14 @@ CEXPORT int indigoInchiInit(void)
 
 CEXPORT int indigoInchiDispose()
 {
-    INDIGO_BEGIN
+#ifdef INDIGO_DEBUG
+    std::stringstream ss;
+    ss << "~IndigoInchi(" << TL_GET_SESSION_ID() << ")";
+    std::cout << ss.str() << std::endl;
+#endif
+    INDIGO_BEGIN_STATIC
     {
-        inchi_wrapper_self.removeLocalCopy(TL_GET_SESSION_ID());
+        inchi_wrapper_self.removeLocalCopy();
         return 0;
     }
     INDIGO_END(-1);
@@ -204,7 +219,6 @@ void indigoInchiGetInchiOptions(Array<char>& value)
 
 void IndigoInchiContext::setOptionsHandlers()
 {
-    IndigoOptionManager& mgr = indigoGetOptionManager(indigo_id);
-    std::lock_guard<std::mutex> locker(mgr.lock);
-    mgr.setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions, indigoInchiGetInchiOptions);
+    auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager(indigo_id));
+    mgr->setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions, indigoInchiGetInchiOptions);
 }

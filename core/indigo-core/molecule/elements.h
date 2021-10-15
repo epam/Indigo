@@ -20,7 +20,7 @@
 #define __elements_h__
 
 #include <map>
-#include <vector>
+#include <array>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
@@ -287,7 +287,7 @@ namespace indigo
         };
 
         std::map<const char*, int, cmp_str> _map;
-        std::vector<ElementParameters> _element_parameters;
+        std::array<ElementParameters, ELEM_MAX> _element_parameters;
         std::map<IsotopeKey, IsotopeValue> _isotope_parameters_map;
     };
 } // namespace indigo

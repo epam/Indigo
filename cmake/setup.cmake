@@ -29,32 +29,34 @@ if (NOT CMAKE_BUILD_TYPE)
 endif ()
 
 if (EMSCRIPTEN)
-    string(APPEND CMAKE_CXX_FLAGS " -c -fexceptions --bind -s DISABLE_EXCEPTION_CATCHING=0 -s FILESYSTEM=0 -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0 -s")
-    string(APPEND CMAKE_C_FLAGS   " -c -fexceptions --bind -s DISABLE_EXCEPTION_CATCHING=0 -s FILESYSTEM=0 -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0 -s")
+    string(APPEND CMAKE_CXX_FLAGS " -c -fexceptions --bind -s DISABLE_EXCEPTION_CATCHING=0 -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0 -s")
+    string(APPEND CMAKE_C_FLAGS   " -c -fexceptions --bind -s DISABLE_EXCEPTION_CATCHING=0 -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0 -s")
 
     set(CMAKE_CXX_FLAGS_RELEASE "-Oz -DNDEBUG -flto")
     set(CMAKE_C_FLAGS_RELEASE   "-Oz -DNDEBUG -flto")
 
-    set(CMAKE_CXX_FLAGS_DEBUG "-g4")
-    set(CMAKE_C_FLAGS_DEBUG   "-g4")
-
-    set(CMAKE_AR "emar")
-    set(CMAKE_C_CREATE_STATIC_LIBRARY   "<CMAKE_AR> qc <TARGET> <LINK_FLAGS> <OBJECTS>")
-    set(CMAKE_CXX_CREATE_STATIC_LIBRARY "<CMAKE_AR> qc <TARGET> <LINK_FLAGS> <OBJECTS>")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g3")
+    set(CMAKE_C_FLAGS_DEBUG   "-g3")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 if (UNIX OR MINGW)
-    string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden")
-    string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden")
-    if (BUILD_STANDALONE AND NOT EMSCRIPTEN)
+    string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden -g $ENV{CFLAGS}")
+    string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden -g $ENV{CXXFLAGS}")
+
+    if (CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+        string(APPEND CMAKE_C_FLAGS_RELEASE " -flto=thin")
+        string(APPEND CMAKE_CXX_FLAGS_RELEASE " -flto=thin")
+    endif()
+
+    if(BUILD_STANDALONE AND NOT EMSCRIPTEN)
         if (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
             string(APPEND CMAKE_CXX_FLAGS " -static-libstdc++ -static-libgcc")
-        elseif  (CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+        elseif(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
             string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -stdlib=libc++")
         endif()
-    endif ()
+    endif()
 
     if(MSYS OR CYGWIN OR MINGW)
         set(CMAKE_SHARED_LIBRARY_PREFIX "")

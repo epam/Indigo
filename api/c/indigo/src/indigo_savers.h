@@ -57,7 +57,7 @@ public:
     IndigoSdfSaver(Output& output) : IndigoSaver(output)
     {
     }
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
     static void append(Output& output, IndigoObject& object);
     static void appendMolfile(Output& output, IndigoObject& object);
 
@@ -71,7 +71,7 @@ public:
     IndigoSmilesSaver(Output& output) : IndigoSaver(output)
     {
     }
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     static void generateSmiles(IndigoObject& obj, Array<char>& out_buffer);
 
@@ -89,7 +89,7 @@ public:
     IndigoCanonicalSmilesSaver(Output& output) : IndigoSaver(output)
     {
     }
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
 
     static void generateSmiles(IndigoObject& obj, Array<char>& out_buffer);
 
@@ -104,7 +104,7 @@ public:
     IndigoCmlSaver(Output& output) : IndigoSaver(output)
     {
     }
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
     static void append(Output& output, IndigoObject& object);
     static void appendHeader(Output& output);
     static void appendFooter(Output& output);
@@ -121,7 +121,7 @@ public:
     IndigoRdfSaver(Output& output) : IndigoSaver(output)
     {
     }
-    const char* debugInfo() override;
+    const char* debugInfo() const override;
     static void append(Output& output, IndigoObject& object);
     static void appendRXN(Output& output, IndigoObject& object);
     static void appendHeader(Output& output);

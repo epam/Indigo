@@ -113,6 +113,7 @@ namespace indigo
         {
             return *_ptrpool[index];
         }
+
         T& ref(int index)
         {
             return *_ptrpool[index];

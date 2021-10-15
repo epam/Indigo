@@ -20,8 +20,8 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cctype>
+#include <vector>
 
-#include "base_c/defs.h"
 #include "base_cpp/array.h"
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
@@ -38,8 +38,6 @@ const Element& Element::_instance()
 
 Element::Element() noexcept
 {
-    _element_parameters.resize(ELEM_MAX);
-
     _initAllPeriodic();
     _initAllIsotopes();
     _initAromatic();
@@ -47,7 +45,7 @@ Element::Element() noexcept
 
 void Element::_initPeriodic(int element, const char* name, int period, int group) noexcept
 {
-    ElementParameters& parameters = _element_parameters[element];
+    ElementParameters& parameters = _element_parameters.at(element);
 
     strncpy(parameters.name, name, 3);
     parameters.group = group;

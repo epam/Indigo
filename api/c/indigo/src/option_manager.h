@@ -113,7 +113,7 @@ public:
     DEF_SET_GET_OPT_HANDLERS(XY, optf_xy_t, get_optf_xy_t, OPTION_XY, xySetters, xyGetters)
     DEF_HANDLER(Void, optf_void_t, OPTION_VOID, voidFunctions)
 
-    bool hasOptionHandler(const char* name);
+    bool hasOptionHandler(const char* name) const;
 
     void callOptionHandlerInt(const char* name, int value);
     void callOptionHandlerBool(const char* name, int value);
@@ -123,20 +123,18 @@ public:
     void callOptionHandlerVoid(const char* name);
     void callOptionHandler(const char* name, const char* value);
 
-    void getOptionValueStr(const char* name, Array<char>& value);
-    void getOptionValueInt(const char* name, int& value);
-    void getOptionValueBool(const char* name, int& value);
-    void getOptionValueFloat(const char* name, float& value);
-    void getOptionValueColor(const char* name, float& r, float& g, float& b);
-    void getOptionValueXY(const char* name, int& x, int& y);
+    void getOptionValueStr(const char* name, Array<char>& value) const;
+    void getOptionValueInt(const char* name, int& value) const;
+    void getOptionValueBool(const char* name, int& value) const;
+    void getOptionValueFloat(const char* name, float& value) const;
+    void getOptionValueColor(const char* name, float& r, float& g, float& b) const;
+    void getOptionValueXY(const char* name, int& x, int& y) const;
 
     int nOptions() const;
 
-    void getOptionType(const char* name, Array<char>& value);
+    void getOptionType(const char* name, Array<char>& value) const;
 
-    std::mutex lock;
-
-    static _SessionLocalContainer<IndigoOptionManager>& getIndigoOptionManager();
+    static _SessionLocalContainer<sf::safe_shared_hide_obj<IndigoOptionManager>>& getIndigoOptionManager();
 
 protected:
     enum OPTION_TYPE

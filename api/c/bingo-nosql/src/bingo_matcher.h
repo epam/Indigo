@@ -167,20 +167,20 @@ namespace bingo
     {
     public:
         virtual bool next() = 0;
-        virtual int currentId() = 0;
+        virtual int currentId() const = 0;
         virtual IndigoObject* currentObject() = 0;
-        virtual const Index& getIndex() = 0;
-        virtual float currentSimValue() = 0;
+        virtual const BaseIndex& getIndex() = 0;
+        virtual float currentSimValue() const = 0;
         virtual void setOptions(const char* options) = 0;
         virtual void resetThresholdLimit(float min) = 0;
 
         virtual int esimateRemainingResultsCount(int& delta) = 0;
         virtual float esimateRemainingTime(float& delta) = 0;
-        virtual int containersCount() = 0;
-        virtual int cellsCount() = 0;
-        virtual int currentCell() = 0;
-        virtual int minCell() = 0;
-        virtual int maxCell() = 0;
+        virtual int containersCount() const = 0;
+        virtual int cellsCount() const = 0;
+        virtual int currentCell() const = 0;
+        virtual int minCell() const = 0;
+        virtual int maxCell() const = 0;
 
         virtual ~Matcher(){};
     };
@@ -190,24 +190,24 @@ namespace bingo
     public:
         BaseMatcher(BaseIndex& index, IndigoObject*& current_obj);
 
-        int currentId() override;
+        int currentId() const override;
 
         IndigoObject* currentObject() override;
 
-        const Index& getIndex() override;
+        const BaseIndex& getIndex() override;
 
-        float currentSimValue() override;
+        float currentSimValue() const override;
 
         void setOptions(const char* options) override;
         void resetThresholdLimit(float min) override;
 
         int esimateRemainingResultsCount(int& delta) override;
         float esimateRemainingTime(float& delta) override;
-        int containersCount() override;
-        int cellsCount() override;
-        int currentCell() override;
-        int minCell() override;
-        int maxCell() override;
+        int containersCount() const  override;
+        int cellsCount() const  override;
+        int currentCell() const  override;
+        int minCell() const  override;
+        int maxCell() const  override;
 
     protected:
         BaseIndex& _index;
@@ -252,9 +252,9 @@ namespace bingo
 
         virtual bool _tryCurrent() /* const */ = 0;
 
-        virtual void _setParameters(const char* params);
+        void _setParameters(const char* params) override;
 
-        virtual void _initPartition();
+        void _initPartition() override;
 
     private:
         Array<int> _candidates;
@@ -311,13 +311,13 @@ namespace bingo
         float esimateRemainingTime(float& delta) override;
         void resetThresholdLimit(float min) override;
 
-        int containersCount() override;
-        int cellsCount() override;
-        int currentCell() override;
-        int minCell() override;
-        int maxCell() override;
+        int containersCount() const override;
+        int cellsCount() const override;
+        int currentCell() const override;
+        int minCell() const override;
+        int maxCell() const override;
 
-        float currentSimValue() override;
+        float currentSimValue() const override;
 
     protected:
         float _current_sim_value;
@@ -430,7 +430,7 @@ namespace bingo
 
         virtual bool _tryCurrent() /* const */ = 0;
 
-        virtual void _initPartition();
+        void _initPartition() override;
     };
 
     class MolExactMatcher : public BaseExactMatcher
@@ -488,7 +488,7 @@ namespace bingo
 
         virtual bool _tryCurrent() /* const */ = 0;
 
-        virtual void _initPartition();
+        virtual void _initPartition() override;
     };
 
     class MolGrossMatcher : public BaseGrossMatcher

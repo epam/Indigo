@@ -16,27 +16,25 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <ctype.h>
-
-#include "molecule/smiles_loader.h"
+#include <cctype>
 
 #include <memory>
+
 #include "base_cpp/scanner.h"
 #include "graph/cycle_basis.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
+#include "molecule/smiles_loader.h"
 
 using namespace indigo;
 
 IMPL_ERROR(SmilesLoader, "SMILES loader");
 
-CP_DEF(SmilesLoader);
 
 SmilesLoader::SmilesLoader(Scanner& scanner)
-    : _scanner(scanner), CP_INIT, TL_CP_GET(_atom_stack), TL_CP_GET(_cycles), TL_CP_GET(_pending_bonds_pool), TL_CP_GET(_neipool), TL_CP_GET(_atoms),
-      TL_CP_GET(_bonds), TL_CP_GET(_polymer_repetitions)
+    : _scanner(scanner)
 {
     ignorable_aam = 0;
     inside_rsmiles = false;

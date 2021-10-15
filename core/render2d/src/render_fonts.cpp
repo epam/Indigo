@@ -104,6 +104,7 @@ double RenderContext::fontGetSize(FONT_SIZE size)
 
 void RenderContext::fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold)
 {
+    std::lock_guard<std::mutex> _lock(_cairo_mutex);
     cairo_select_font_face(cr, _fontfamily.ptr(), CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
     cairoCheckStatus();
     cairo_set_font_size(cr, fontGetSize(size));
@@ -112,10 +113,9 @@ void RenderContext::fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold)
 
 void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry)
 {
+    std::lock_guard<std::mutex> _lock(_cairo_mutex);
     cairo_text_extents_t te;
-    _tlock.lock();
     cairo_text_extents(cr, text, &te);
-    _tlock.unlock();
     cairoCheckStatus();
 
     dx = (float)te.width;
@@ -164,28 +164,32 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool b
         return;
     }
     moveToRel(ti.relpos);
-    _tlock.lock();
-    cairo_text_path(_cr, ti.text.ptr());
+
+    {
+        std::lock_guard<std::mutex> _lock(_cairo_mutex);
+        cairo_text_path(_cr, ti.text.ptr());
+    }
+
     bbIncludePath(false);
-    _tlock.unlock();
     cairo_new_path(_cr);
     moveTo(ti.bbp);
     moveToRel(ti.relpos);
 
     if (metafileFontsToCurves)
     { // TODO: remove
-        _tlock.lock();
-        cairo_text_path(_cr, ti.text.ptr());
-        _tlock.unlock();
+        {
+            std::lock_guard<std::mutex> _lock(_cairo_mutex);
+            cairo_text_path(_cr, ti.text.ptr());
+        }
+
         cairoCheckStatus();
         cairo_fill(_cr);
         cairoCheckStatus();
     }
     else
     {
-        _tlock.lock();
+        std::lock_guard<std::mutex> _lock(_cairo_mutex);
         cairo_show_text(_cr, ti.text.ptr());
-        _tlock.unlock();
         cairoCheckStatus();
     }
 }

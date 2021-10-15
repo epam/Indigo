@@ -43,7 +43,7 @@ IMPL_EXCEPTION2(indigo, NonUniqueDearomatizationException, DearomatizationExcept
 //    but is not treated as aromatic because of this double bond.
 //
 
-static int _dearomatizationParams = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION;
+thread_local int _dearomatizationParams = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION;
 
 CP_DEF(Dearomatizer);
 

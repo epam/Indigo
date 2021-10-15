@@ -27,6 +27,7 @@
 #include "indigo_properties.h"
 #include "indigo_reaction.h"
 #include "indigo_savers.h"
+#include "indigo_structure_checker.h"
 #include "molecule/elements.h"
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"
@@ -37,7 +38,6 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
-#include "indigo_structure_checker.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
 
@@ -84,7 +84,7 @@ CEXPORT int indigoDearomatize(int object)
     {                                                                                                                                                          \
         INDIGO_BEGIN                                                                                                                                           \
         {                                                                                                                                                      \
-            indigoGetOptionManager().callOptionHandler##SUFFIX(name, value);                                                                                   \
+            sf::xlock_safe_ptr(indigoGetOptionManager())->callOptionHandler##SUFFIX(name, value);                                                              \
             return 1;                                                                                                                                          \
         }                                                                                                                                                      \
         INDIGO_END(-1);                                                                                                                                        \
@@ -99,7 +99,7 @@ CEXPORT int indigoSetOptionColor(const char* name, float r, float g, float b)
 {
     INDIGO_BEGIN
     {
-        indigoGetOptionManager().callOptionHandlerColor(name, r, g, b);
+        sf::xlock_safe_ptr(indigoGetOptionManager())->callOptionHandlerColor(name, r, g, b);
         return 1;
     }
     INDIGO_END(-1);
@@ -108,7 +108,7 @@ CEXPORT int indigoSetOptionXY(const char* name, int x, int y)
 {
     INDIGO_BEGIN
     {
-        indigoGetOptionManager().callOptionHandlerXY(name, x, y);
+        sf::xlock_safe_ptr(indigoGetOptionManager())->callOptionHandlerXY(name, x, y);
         return 1;
     }
     INDIGO_END(-1);
@@ -119,7 +119,7 @@ CEXPORT const char* indigoGetOption(const char* name)
     INDIGO_BEGIN
     {
         auto& tmp = self.getThreadTmpData();
-        indigoGetOptionManager().getOptionValueStr(name, tmp.string);
+        sf::slock_safe_ptr(indigoGetOptionManager())->getOptionValueStr(name, tmp.string);
         return tmp.string.ptr();
     }
     INDIGO_END(0);
@@ -131,7 +131,7 @@ CEXPORT int indigoGetOptionInt(const char* name, int* value)
     {
         if (value)
         {
-            indigoGetOptionManager().getOptionValueInt(name, *value);
+            sf::slock_safe_ptr(indigoGetOptionManager())->getOptionValueInt(name, *value);
             return 1;
         }
     }
@@ -144,7 +144,7 @@ CEXPORT int indigoGetOptionBool(const char* name, int* value)
     {
         if (value)
         {
-            indigoGetOptionManager().getOptionValueBool(name, *value);
+            sf::slock_safe_ptr(indigoGetOptionManager())->getOptionValueBool(name, *value);
             return 1;
         }
     }
@@ -157,7 +157,7 @@ CEXPORT int indigoGetOptionFloat(const char* name, float* value)
     {
         if (value)
         {
-            indigoGetOptionManager().getOptionValueFloat(name, *value);
+            sf::slock_safe_ptr(indigoGetOptionManager())->getOptionValueFloat(name, *value);
             return 1;
         }
     }
@@ -170,7 +170,7 @@ CEXPORT int indigoGetOptionColor(const char* name, float* r, float* g, float* b)
     {
         if (r && g && b)
         {
-            indigoGetOptionManager().getOptionValueColor(name, *r, *g, *b);
+            sf::slock_safe_ptr(indigoGetOptionManager())->getOptionValueColor(name, *r, *g, *b);
             return 1;
         }
     }
@@ -183,7 +183,7 @@ CEXPORT int indigoGetOptionXY(const char* name, int* x, int* y)
     {
         if (x && y)
         {
-            indigoGetOptionManager().getOptionValueXY(name, *x, *y);
+            sf::slock_safe_ptr(indigoGetOptionManager())->getOptionValueXY(name, *x, *y);
             return 1;
         }
     }
@@ -195,7 +195,7 @@ CEXPORT const char* indigoGetOptionType(const char* name)
     INDIGO_BEGIN
     {
         auto& tmp = self.getThreadTmpData();
-        indigoGetOptionManager().getOptionType(name, tmp.string);
+        sf::slock_safe_ptr(indigoGetOptionManager())->getOptionType(name, tmp.string);
         return tmp.string.ptr();
     }
     INDIGO_END(0);
@@ -205,13 +205,14 @@ CEXPORT int indigoResetOptions()
 {
     INDIGO_BEGIN
     {
-        if (indigoGetOptionManager().hasOptionHandler("reset-basic-options"))
+        auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager());
+        if (mgr->hasOptionHandler("reset-basic-options"))
         {
-            indigoGetOptionManager().callOptionHandlerVoid("reset-basic-options");
+            mgr->callOptionHandlerVoid("reset-basic-options");
         }
-        if (indigoGetOptionManager().hasOptionHandler("reset-render-options"))
+        if (mgr->hasOptionHandler("reset-render-options"))
         {
-            indigoGetOptionManager().callOptionHandlerVoid("reset-render-options");
+            mgr->callOptionHandlerVoid("reset-render-options");
         }
         return 1;
     }
@@ -816,7 +817,6 @@ CEXPORT int indigoIsHighlighted(int item)
     INDIGO_END(-1);
 }
 
-
 CEXPORT int indigoSelect(int item)
 {
     INDIGO_BEGIN
@@ -906,7 +906,6 @@ CEXPORT int indigoIsSelected(int item)
     }
     INDIGO_END(-1);
 }
-
 
 CEXPORT int indigoOptimize(int query, const char* options)
 {

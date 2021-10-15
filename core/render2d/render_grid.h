@@ -54,9 +54,9 @@ namespace indigo
         Vec2f commentSize;
         int _width, _height;
 
-        float _getScaleGivenSize(int w, int h);
-        int _getDefaultWidth(const float s);
-        int _getDefaultHeight(const float s);
+        float _getScaleGivenSize(int w, int h) override;
+        int _getDefaultWidth(float s) override;
+        int _getDefaultHeight(float s) override;
     };
 
 } // namespace indigo

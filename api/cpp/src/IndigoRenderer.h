@@ -18,27 +18,28 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "IndigoSession.h"
 
 namespace indigo_cpp
 {
-    class IndigoChemicalEntity;
+    class IndigoChemicalStructure;
 
     class IndigoRenderer
     {
     public:
-        IndigoRenderer(const IndigoSession& session);
+        IndigoRenderer(IndigoSessionPtr session);
         ~IndigoRenderer();
 
         IndigoRenderer(IndigoRenderer const&) = delete;
         void operator=(IndigoRenderer const&) = delete;
 
-        std::string svg(const IndigoChemicalEntity& data) const;
-        std::vector<char> png(const IndigoChemicalEntity& data) const;
+        std::string svg(const IndigoChemicalStructure& data) const;
+        std::vector<char> png(const IndigoChemicalStructure& data) const;
 
     private:
-        const IndigoSession& _session;
+        IndigoSessionPtr session;
     };
 } // namespace indigo_cpp
