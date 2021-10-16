@@ -394,30 +394,58 @@ class IndigoObject(object):
         )
 
     def countReactants(self):
+        """Reaction method returns number of reactants
+
+        Returns:
+            int: number of reactants
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountReactants(self.id)
         )
 
     def countProducts(self):
+        """Reaction method returns number of products
+
+        Returns:
+            int: number of products
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountProducts(self.id)
         )
 
     def countCatalysts(self):
+        """Reaction method returns number of catalysts
+
+        Returns:
+            int: number of catalysts
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountCatalysts(self.id)
         )
 
     def countMolecules(self):
+        """Reaction method returns number of reactants, products and catalysts
+
+        Returns:
+            int: number of reactants, products and catalysts
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountMolecules(self.id)
         )
 
     def getMolecule(self, index):
+        """Reaction method returns a molecule by index
+
+        Args:
+            index (int): molecule index
+
+        Returns:
+            IndigoObject: molecule object
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -427,6 +455,11 @@ class IndigoObject(object):
         )
 
     def iterateReactants(self):
+        """Reaction method iterates reactants
+
+        Returns:
+            IndigoObject: reactant iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -436,6 +469,11 @@ class IndigoObject(object):
         )
 
     def iterateProducts(self):
+        """Reaction method iterates products
+
+        Returns:
+            IndigoObject: product iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -445,6 +483,11 @@ class IndigoObject(object):
         )
 
     def iterateCatalysts(self):
+        """Reaction method iterates catalysts
+
+        Returns:
+            IndigoObject: catalyst iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -454,6 +497,11 @@ class IndigoObject(object):
         )
 
     def iterateMolecules(self):
+        """Reaction method iterates molecules
+
+        Returns:
+            IndigoObject: reactant, products and catalysts iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -463,6 +511,14 @@ class IndigoObject(object):
         )
 
     def saveRxnfile(self, filename):
+        """Reaction method saves reaction into RXN format
+
+        Args:
+            filename (str): file path for the reaction
+
+        Returns:
+            int: 1 if everthing saved without issues
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSaveRxnfileToFile(
@@ -471,6 +527,11 @@ class IndigoObject(object):
         )
 
     def rxnfile(self):
+        """Reaction method saves reaction into RXN string
+
+        Returns:
+            str: RXN string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoRxnfile(self.id)
