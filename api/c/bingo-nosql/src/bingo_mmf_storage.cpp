@@ -1,10 +1,5 @@
 #include "bingo_mmf_storage.h"
 #include "base_cpp/exception.h"
-#include <fstream>
-#include <new>
-#include <stdio.h>
-
-#include "base_cpp/tlscont.h"
 
 using namespace bingo;
 
@@ -29,8 +24,7 @@ void MMFStorage::create(const char* filename, size_t min_size, size_t max_size, 
     size_t header_len = strlen(header);
 
     {
-        auto mm_files = sf::xlock_safe_ptr(_mm_files);
-        mm_files->clear();
+        _mm_files.clear();
     }
 
     if (header_len >= max_header_len)
@@ -45,18 +39,16 @@ void MMFStorage::create(const char* filename, size_t min_size, size_t max_size, 
 void MMFStorage::load(const char* filename, int index_id, bool read_only)
 {
     {
-        auto mm_files = sf::xlock_safe_ptr(_mm_files);
-        mm_files->clear();
+        _mm_files.clear();
     }
     BingoAllocator::_load(filename, max_header_len, _mm_files, index_id, read_only);
 }
 
 void MMFStorage::close()
 {
-    auto mm_files = sf::xlock_safe_ptr(_mm_files);
-    for (int i = 0; i < mm_files->size(); i++)
+    for (int i = 0; i < _mm_files.size(); i++)
     {
-        mm_files->at(i).close();
+        _mm_files.at(i).close();
     }
-    mm_files->clear();
+    _mm_files.clear();
 }

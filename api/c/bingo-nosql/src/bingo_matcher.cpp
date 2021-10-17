@@ -357,7 +357,7 @@ BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, In
 bool BaseSubstructureMatcher::next()
 {
     // int fp_size_in_bits = _fp_size * 8;
-    static int sub_cnt = 0;
+    // static int sub_cnt = 0;
 
     _current_cand_id++;
     while (!((_current_pack == _final_pack) && (_current_cand_id == _candidates.size())))

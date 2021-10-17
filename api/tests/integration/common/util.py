@@ -1,7 +1,6 @@
 import os
 import platform
 import re
-import sys
 
 
 REPO_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', '..', '..'))
@@ -130,7 +129,6 @@ def download_jna(jna_version, path):
             return False
         print("Checked JNA at {}, sha1 {} verified".format(output_path, jna_file_sha1))
         return True
-    import urllib
 
     output_path = os.path.join(path, 'jna-{}.jar'.format(jna_version))
     jna_url = "https://search.maven.org/remotecontent?filepath=net/java/dev/jna/jna/{0}/jna-{0}.jar".format(jna_version)

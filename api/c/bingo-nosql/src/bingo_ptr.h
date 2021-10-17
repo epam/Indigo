@@ -18,8 +18,6 @@ using namespace indigo;
 
 namespace bingo
 {
-    class BingoAllocator;
-
     struct BingoAddr
     {
         BingoAddr()
@@ -43,12 +41,91 @@ namespace bingo
         static const BingoAddr bingo_null;
     };
 
+    class BingoAllocator
+    {
+    public:
+        template <typename T> friend class BingoPtr;
+        friend class MMFStorage;
+        static int getAllocatorDataSize();
+
+    private:
+        struct _BingoAllocatorData
+        {
+            _BingoAllocatorData() : _min_file_size(0), _max_file_size(0), _cur_file_id(0), _existing_files(0), _free_off(0)
+            {
+            }
+
+            size_t _min_file_size;
+            size_t _max_file_size;
+            size_t _cur_file_id;
+            dword _existing_files;
+            size_t _free_off;
+        };
+
+        ObjArray<MMFile>* _mm_files;
+
+        size_t _data_offset;
+
+        static sf::safe_shared_hide_obj<std::unordered_map<int, std::unique_ptr<BingoAllocator>>> _instances;
+
+        std::string _filename;
+        int _index_id;
+
+        static void _create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, ObjArray<MMFile>& mm_files, int index_id);
+
+        static void _load(const char* filename, size_t alloc_off, ObjArray<MMFile>& mm_files, int index_id, bool read_only);
+
+        template <typename T> BingoAddr allocate(int count = 1)
+        {
+            size_t alloc_size, file_idx, file_off, file_size;
+            _BingoAllocatorData* allocator_data;
+            {
+                byte* mmf_ptr = (byte*)_mm_files->at(0).ptr();
+
+                allocator_data = (_BingoAllocatorData*)(mmf_ptr + _data_offset);
+
+                alloc_size = sizeof(T) * count;
+
+                file_idx = allocator_data->_cur_file_id;
+                file_off = allocator_data->_free_off;
+                file_size = _mm_files->at((int)file_idx).size();
+            }
+
+            if (alloc_size > file_size - file_off)
+                _addFile(alloc_size);
+
+            file_idx = allocator_data->_cur_file_id;
+
+            file_size = _mm_files->at((int)file_idx).size();
+
+            size_t res_off = allocator_data->_free_off;
+            size_t res_id = allocator_data->_cur_file_id;
+            allocator_data->_free_off += alloc_size;
+
+            if (allocator_data->_free_off == file_size)
+                _addFile(0);
+
+            return BingoAddr(res_id, res_off);
+        }
+
+        static BingoAllocator* _getInstance();
+
+        byte* _get(size_t file_id, size_t offset) const;
+
+        BingoAllocator();
+
+        void _addFile(size_t alloc_size);
+
+        static size_t _getFileSize(size_t idx, size_t min_size, size_t max_size, dword sizes);
+
+        static void _genFilename(int idx, const char* filename, std::string& out_name);
+    };
+
+
     template <typename T> class BingoPtr
     {
     public:
-        BingoPtr()
-        {
-        }
+        BingoPtr() = default;
 
         explicit BingoPtr(BingoAddr addr) : _addr(addr)
         {
@@ -117,7 +194,26 @@ namespace bingo
         }
 
     private:
+        BingoAllocator* _getAllocator()
+        {
+            if (_allocator == nullptr)
+            {
+                _allocator = BingoAllocator::_getInstance();
+            }
+            return _allocator;
+        }
+
+        const BingoAllocator* _getAllocator() const
+        {
+            if (_allocator == nullptr)
+            {
+                _allocator = BingoAllocator::_getInstance();
+            }
+            return _allocator;
+        }
+
         BingoAddr _addr;
+        mutable BingoAllocator* _allocator = nullptr;
     };
 
     template <typename T> class BingoArray
@@ -442,109 +538,20 @@ namespace bingo
 
     class MMFStorage;
 
-    class BingoAllocator
-    {
-    public:
-        template <typename T> friend class BingoPtr;
-        friend class MMFStorage;
-
-        static int getAllocatorDataSize();
-
-    private:
-        struct _BingoAllocatorData
-        {
-            _BingoAllocatorData() : _min_file_size(0), _max_file_size(0), _cur_file_id(0), _existing_files(0), _free_off(0)
-            {
-            }
-
-            size_t _min_file_size;
-            size_t _max_file_size;
-            size_t _cur_file_id;
-            dword _existing_files;
-            size_t _free_off;
-        };
-
-        sf::safe_shared_hide_obj<ObjArray<MMFile>>* _mm_files;
-
-        size_t _data_offset;
-
-        static sf::safe_shared_hide_obj<PtrArray<BingoAllocator>>  _instances;
-
-        std::string _filename;
-        int _index_id;
-
-        static void _create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, sf::safe_shared_hide_obj<ObjArray<MMFile>>& mm_files, int index_id);
-
-        static void _load(const char* filename, size_t alloc_off, sf::safe_shared_hide_obj<ObjArray<MMFile>>& mm_files, int index_id, bool read_only);
-
-        template <typename T> BingoAddr allocate(int count = 1)
-        {
-            size_t alloc_size, file_idx, file_off, file_size;
-            _BingoAllocatorData* allocator_data;
-            {
-                const auto mm_files = sf::slock_safe_ptr(*_mm_files);
-                byte* mmf_ptr = (byte*)mm_files->at(0).ptr();
-
-                allocator_data = (_BingoAllocatorData*)(mmf_ptr + _data_offset);
-
-                alloc_size = sizeof(T) * count;
-
-                file_idx = allocator_data->_cur_file_id;
-                file_off = allocator_data->_free_off;
-                file_size = mm_files->at((int)file_idx).size();
-            }
-
-            if (alloc_size > file_size - file_off)
-                _addFile(alloc_size);
-
-
-            file_idx = allocator_data->_cur_file_id;
-
-            file_size = sf::slock_safe_ptr(*_mm_files)->at((int)file_idx).size();
-
-            size_t res_off = allocator_data->_free_off;
-            size_t res_id = allocator_data->_cur_file_id;
-            allocator_data->_free_off += alloc_size;
-
-            if (allocator_data->_free_off == file_size)
-                _addFile(0);
-
-            return BingoAddr(res_id, res_off);
-        }
-
-        static BingoAllocator* _getInstance();
-
-        byte* _get(size_t file_id, size_t offset) const;
-
-        BingoAllocator();
-
-        void _addFile(size_t alloc_size);
-
-        static size_t _getFileSize(size_t idx, size_t min_size, size_t max_size, dword sizes);
-
-        static void _genFilename(int idx, const char* filename, std::string& out_name);
-    };
-
-    // Implementations for BingoPtr and BingoAllocator are dependent and thus implementation is here
+    //     Implementations for BingoPtr and BingoAllocator are dependent and thus implementation is here
     template <typename T> T* BingoPtr<T>::ptr()
     {
-        const BingoAllocator* _allocator = BingoAllocator::_getInstance();
-
-        return (T*)(_allocator->_get(_addr.file_id, _addr.offset));
+        return (T*)(_getAllocator()->_get(_addr.file_id, _addr.offset));
     }
 
     template <typename T> const T* BingoPtr<T>::ptr() const
     {
-        const BingoAllocator* _allocator = BingoAllocator::_getInstance();
-
-        return (T*)(_allocator->_get(_addr.file_id, _addr.offset));
+        return (T*)(_getAllocator()->_get(_addr.file_id, _addr.offset));
     }
 
     template <typename T> void BingoPtr<T>::allocate(int count)
     {
-        BingoAllocator* _allocator = BingoAllocator::_getInstance();
-
-        _addr = _allocator->allocate<T>(count);
+        _addr = _getAllocator()->template allocate<T>(count);
     }
 }; // namespace bingo
 

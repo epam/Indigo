@@ -26,9 +26,8 @@ namespace bingo
         void load(const char* filename, int index_id, bool read_only);
 
         void close();
-
     private:
-        sf::safe_shared_hide_obj<ObjArray<MMFile>> _mm_files;
+        ObjArray<MMFile> _mm_files;
         bool _read_only;
         static thread_local int databaseId;
     };

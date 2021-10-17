@@ -1,5 +1,4 @@
 #include "bingo_base_index.h"
-#include "bingo_mmf.h"
 #include "bingo_ptr.h"
 
 #include "indigo_fingerprints.h"

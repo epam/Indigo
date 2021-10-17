@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include <array>
+#include <iostream>
 #include <random>
 #include <sstream>
 #include <thread>
@@ -191,6 +192,32 @@ TEST(BingoThreads, SearchMultipleThreads)
     std::vector<std::thread> threads;
     threads.reserve(16);
     const auto q = session->loadQueryMolecule("C1=CC=CC=C1");
+    for (auto i = 0; i < 16; i++)
+    {
+        threads.emplace_back(testSearchSub, std::cref(bingo), std::cref(q));
+    }
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
+}
+
+TEST(BingoThreads, DISABLED_Insert_Pubchem_1M)
+{
+    auto session = IndigoSession::create();
+    session->setOption("ignore-stereochemistry-errors", true);
+    auto bingo = BingoMolecule::createDatabaseFile(session, "Pubchem_1M.db");
+    bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000000001_000500000.sdf.gz")));
+    bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000000001_000500000.sdf.gz")));
+}
+
+TEST(BingoThreads, DISABLED_SearchSubMultipleThreads_Pubchem_1M)
+{
+    auto session = IndigoSession::create();
+    auto bingo = BingoMolecule::loadDatabaseFile(session, "Pubchem_1M.db");
+    std::vector<std::thread> threads;
+    threads.reserve(16);
+    const auto q = session->loadQueryMolecule("CN1C=NC2=C1C(=O)N(C(=O)N2C)C");
     for (auto i = 0; i < 16; i++)
     {
         threads.emplace_back(testSearchSub, std::cref(bingo), std::cref(q));

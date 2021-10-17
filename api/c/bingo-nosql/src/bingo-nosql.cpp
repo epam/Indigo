@@ -213,6 +213,62 @@ static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_ob
     }
 }
 
+#include <iostream>
+
+static int _insertIteratorToDatabase(int db, Indigo& self, IndigoObject& iter, long obj_id)
+{
+    profTimerStart(t, "_insertObjectToDatabase");
+    auto bingo_index_ptr = sf::xlock_safe_ptr(sf::slock_safe_ptr(_indexes)->at(db));
+    const auto index_type = (*bingo_index_ptr)->getType();
+
+    if (index_type == IndexType::MOLECULE)
+    {
+        int counter = 0;
+        while (true)
+        {
+            try
+            {
+                IndigoObject* next_obj_ptr = iter.next();
+                if (next_obj_ptr == nullptr)
+                {
+                    break;
+                }
+                IndigoObject& next_obj = *next_obj_ptr;
+
+                profTimerStart(t1, "_preadd");
+
+                if (!IndigoMolecule::is(next_obj))
+                {
+                    throw BingoException("_insertIteratorToDatabase: Only molecule objects can be added to molecule index");
+                }
+                // FIXME: MK: for some reason we need to aromatize input molecule. If we first clone and aromatize cloned, it won't work
+                next_obj.getMolecule().aromatize(self.arom_options);
+                IndexMolecule ind_mol(next_obj.getMolecule(), self.arom_options);
+                profTimerStop(t1);
+                const auto obj_data = (*bingo_index_ptr)->prepareIndexData(ind_mol);
+                {
+                    (*bingo_index_ptr)->add(obj_id, obj_data);
+                }
+
+                if (++counter % 10000 == 0)
+                {
+                    std::cout << counter << '\n';
+                }
+            }
+            catch (const Exception& e)
+            {
+                std::cerr << e.message() << '\n';
+            }
+        }
+    }
+    else
+    {
+        throw BingoException("bingoInsertRecordObj: Incorrect database");
+    }
+
+    return 1;
+}
+
 static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& indigo_obj, int obj_id, IndigoObject& fp)
 {
     profTimerStart(t, "_insertObjectWithExtFPToDatabase");
@@ -277,7 +333,6 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& 
         throw BingoException("Incorrect search object id=%d", id);                                                                                             \
     }                                                                                                                                                          \
     const auto matcher_ptr = sf::slock_safe_ptr(searches_data->searches.at(id));                                                                               \
-    const auto index = sf::slock_safe_ptr(sf::slock_safe_ptr(_indexes)->at(searches_data->db.at(id)));                                                         \
     const auto& matcher = **matcher_ptr;
 
 #define getMatcher(id)                                                                                                                                         \
@@ -287,7 +342,6 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& 
         throw BingoException("Incorrect search object id=%d", id);                                                                                             \
     }                                                                                                                                                          \
     auto matcher_ptr = sf::xlock_safe_ptr(searches_data->searches.at(id));                                                                                     \
-    const auto index = sf::slock_safe_ptr(sf::slock_safe_ptr(_indexes)->at(searches_data->db.at(id)));                                                         \
     auto& matcher = **matcher_ptr;
 
 CEXPORT const char* bingoVersion()
@@ -350,6 +404,29 @@ CEXPORT int bingoInsertRecordObj(int db, int obj)
         }
 
         return _insertObjectToDatabase(db, self, indigo_obj, obj_id);
+    }
+    BINGO_END(-1);
+}
+
+CEXPORT int bingoInsertIteratorObj(int db, int iterator_obj_id)
+{
+    BINGO_BEGIN_DB(db)
+    {
+        IndigoObject& iterator_obj = self.getObject(iterator_obj_id);
+        long obj_id = -1;
+//        auto& properties = iterator_obj.getProperties();
+//
+//        const char* key_name = [db]() {
+//            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+//            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+//            return (*bingo_index_ptr)->getIdPropertyName();
+//        }();
+
+//        if (key_name != nullptr && properties.contains(key_name))
+//        {
+//            obj_id = strtol(properties.at(key_name), NULL, 10);
+//        }
+        return _insertIteratorToDatabase(db, self, iterator_obj, obj_id);
     }
     BINGO_END(-1);
 }
@@ -826,6 +903,8 @@ CEXPORT int bingoEndSearch(int search_obj)
     }
     BINGO_END(-1);
 }
+
+#include <iostream>
 
 CEXPORT int bingoNext(int search_obj)
 {

@@ -3,6 +3,7 @@
 #include <bingo-nosql.h>
 
 #include "IndigoException.h"
+#include "IndigoSDFileIterator.h"
 
 using namespace indigo_cpp;
 
@@ -68,6 +69,12 @@ template <typename target_t, typename query_t> int BingoNoSQL<target_t, query_t>
 {
     session->setSessionId();
     return session->_checkResult(bingoInsertRecordObj(id, entity.id()));
+}
+
+template <typename target_t, typename query_t> int BingoNoSQL<target_t, query_t>::insertIterator(const IndigoSDFileIterator& iterator)
+{
+    session->setSessionId();
+    return session->_checkResult(bingoInsertIteratorObj(id, iterator.id()));
 }
 
 template <typename target_t, typename query_t> void BingoNoSQL<target_t, query_t>::deleteRecord(int recordId)

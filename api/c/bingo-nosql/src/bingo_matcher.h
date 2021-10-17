@@ -262,6 +262,7 @@ namespace bingo
         int _current_pack;
         int _final_pack;
         const TranspFpStorage& _fp_storage;
+        int sub_cnt;
     };
 
     class MoleculeSubMatcher : public BaseSubstructureMatcher
