@@ -678,7 +678,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                     writer.String((std::string("or") + std::to_string(mol.stereocenters.getGroup(i))).c_str());
                     break;
                 case MoleculeStereocenters::ATOM_AND:
-                    writer.String((std::string("and") + std::to_string(mol.stereocenters.getGroup(i))).c_str());
+                    writer.String((std::string("&") + std::to_string(mol.stereocenters.getGroup(i))).c_str());
                     break;
                 default:
                     throw Error("Unknows enhanced stereo type %d", enh_stereo_type);
