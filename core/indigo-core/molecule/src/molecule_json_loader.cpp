@@ -280,9 +280,9 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 if (grp)
                     _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_OR, grp);
             }
-            else if (sl.find("and") != std::string::npos)
+            else if (sl.find("&") != std::string::npos)
             {
-                int grp = std::stoi(sl.substr(3));
+                int grp = std::stoi(sl.substr(1));
                 if( grp )
                     _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_AND, grp);
             }
