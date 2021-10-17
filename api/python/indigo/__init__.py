@@ -136,7 +136,7 @@ class IndigoObject(object):
 
         Args:
             atom_ids (list): atom indexes
-            desired_xyz (list): desired coordinats for atoms (size atom_ids * 3)
+            desired_xyz (list): desired coordinates for atoms (size atom_ids * 3)
 
         Raises:
             IndigoException: if input array size does not match
@@ -538,6 +538,14 @@ class IndigoObject(object):
         )
 
     def optimize(self, options=""):
+        """QueryReaction or QueryMolecule method for query optimizations for faster substructure search
+
+        Args:
+            options (str, optional): Options for optimization. Defaults to "".
+
+        Returns:
+            int: 1 if optimization is performed without issues
+        """
         if options is None:
             options = ""
         self.dispatcher._setSessionId()
@@ -548,6 +556,15 @@ class IndigoObject(object):
         )
 
     def normalize(self, options=""):
+        """Molecule method for structure normalization.
+        It neutralizes charges, resolves 5-valence Nitrogen, removes hydrogens and etc.
+
+        Args:
+            options (str, optional): Normalization options. Defaults to "".
+
+        Returns:
+            int: 1 if normalization is performed without issues
+        """
         if options is None:
             options = ""
         self.dispatcher._setSessionId()
@@ -560,18 +577,43 @@ class IndigoObject(object):
         )
 
     def standardize(self):
+        """Molecule method for structure standardization.
+        It standardize charges, stereo and etc.
+
+        Returns:
+            int: 1 if standardization is performed without issues
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoStandardize(self.id)
         )
 
     def ionize(self, pH, pH_toll):
+        """Method for structure ionization at specified pH and pH tolerance
+
+        Args:
+            pH (float): pH value
+            pH_toll (float): pH tolerance
+
+        Returns:
+            int: 1 if ionization is performed without issues
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoIonize(self.id, pH, pH_toll)
         )
 
     def getAcidPkaValue(self, atom, level, min_level):
+        """Molecule method calculates acid pKa value
+
+        Args:
+            atom (int): input atom index
+            level (int): pka level
+            min_level (int): pka min level
+
+        Returns:
+            float: pka result
+        """
         self.dispatcher._setSessionId()
         result = self.dispatcher._checkResultPtr(
             Indigo._lib.indigoGetAcidPkaValue(
@@ -581,6 +623,16 @@ class IndigoObject(object):
         return result[0]
 
     def getBasicPkaValue(self, atom, level, min_level):
+        """Molecule method calculates basic pKa value
+
+        Args:
+            atom (int): input atom index
+            level (int): pka level
+            min_level (int): pka min level
+
+        Returns:
+            float: pka result
+        """
         self.dispatcher._setSessionId()
         result = self.dispatcher._checkResultPtr(
             Indigo._lib.indigoGetBasicPkaValue(
@@ -590,6 +642,25 @@ class IndigoObject(object):
         return result[0]
 
     def automap(self, mode=""):
+        """Automatic reaction atom-to-atom mapping
+
+        Args:
+            mode (str, optional): mode is one of the following (separated by a space) . Defaults to "discard".
+            "discard" : discards the existing mapping entirely and considers only
+                        the existing reaction centers (the default)
+            "keep"    : keeps the existing mapping and maps unmapped atoms
+            "alter"   : alters the existing mapping, and maps the rest of the
+                        reaction but may change the existing mapping
+            "clear"   : removes the mapping from the reaction.
+
+            "ignore_charges" : do not consider atom charges while searching
+            "ignore_isotopes" : do not consider atom isotopes while searching
+            "ignore_valence" : do not consider atom valence while searching
+            "ignore_radicals" : do not consider atom radicals while searching
+
+        Returns:
+            int: 1 if atom mapping is done without errors
+        """
         if mode is None:
             mode = ""
         self.dispatcher._setSessionId()
@@ -598,12 +669,29 @@ class IndigoObject(object):
         )
 
     def atomMappingNumber(self, reaction_atom):
+        """Reaction atom method returns assigned mapping
+
+        Args:
+            reaction_atom (IndigoObject): reaction molecule atom
+
+        Returns:
+            int: atom mapping value
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoGetAtomMappingNumber(self.id, reaction_atom.id)
         )
 
     def setAtomMappingNumber(self, reaction_atom, number):
+        """Reaction atom method sets atom mapping
+
+        Args:
+            reaction_atom (IndigoObject): reaction molecule atom
+            number (int): atom mapping
+
+        Returns:
+            int: 1 if atom mapping is set
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetAtomMappingNumber(
@@ -612,6 +700,20 @@ class IndigoObject(object):
         )
 
     def reactingCenter(self, reaction_bond):
+        """Reaction bond method returns reacting center
+
+        Args:
+            reaction_bond (IndigoObject): reaction molecule bond
+
+        Returns:
+            int: reacting center enum. One of values
+            RC_NOT_CENTER = -1
+            RC_UNMARKED = 0
+            RC_CENTER = 1
+            RC_UNCHANGED = 2
+            RC_MADE_OR_BROKEN = 4
+            RC_ORDER_CHANGED = 8
+        """
         value = c_int()
         self.dispatcher._setSessionId()
         res = self.dispatcher._checkResult(
@@ -624,6 +726,15 @@ class IndigoObject(object):
         return value.value
 
     def setReactingCenter(self, reaction_bond, rc):
+        """Reaction bond method
+
+        Args:
+            reaction_bond ([type]): [description]
+            rc ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetReactingCenter(self.id, reaction_bond.id, rc)
