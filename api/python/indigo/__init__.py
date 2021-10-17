@@ -942,7 +942,7 @@ class IndigoObject(object):
         """Atom method changes stereocentertyp
 
         Args:
-            type (int): stereo type. 
+            type (int): stereo type.
             ABS = 1
             OR = 2
             AND = 3
@@ -1155,11 +1155,10 @@ class IndigoObject(object):
         return self.dispatcher._checkResult(Indigo._lib.indigoValence(self.id))
 
     def checkValence(self):
+        """Atom method validates valence
 
-        """
-        ::
-
-            Since version 1.3.0
+        Returns:
+            int: 1 if valence has no errors, 0 otherwise
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
@@ -1167,10 +1166,10 @@ class IndigoObject(object):
         )
 
     def checkQuery(self):
-        """
-        ::
+        """Atom, Bond, Molecule, Reaction method verifies if object is query
 
-            Since version 1.3.0
+        Returns:
+            int: 1 if object is query, 0 otherwise
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
@@ -1178,10 +1177,10 @@ class IndigoObject(object):
         )
 
     def checkRGroups(self):
-        """
-        ::
+        """Molecule method verifies if structure contains r-groups
 
-            Since version 1.3.0
+        Returns:
+            int: 1 if molecule contains r-groups, 0 otherwise
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
@@ -1189,11 +1188,10 @@ class IndigoObject(object):
         )
 
     def checkChirality(self):
+        """Molecule method verifies if structure has a chiral flag
 
-        """
-        ::
-
-            Since version 1.3.0
+        Returns:
+            int: 1 if there is chiral flag, 0 otherwise
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
@@ -1201,11 +1199,10 @@ class IndigoObject(object):
         )
 
     def check3DStereo(self):
+        """Molecule method verifies if structure contains 3d stereo
 
-        """
-        ::
-
-            Since version 1.3.0
+        Returns:
+            int: 1 if contains 3d stereo, 0 otherwise
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
@@ -1213,11 +1210,10 @@ class IndigoObject(object):
         )
 
     def checkStereo(self):
+        """Molecule method verifies if structure contains stereocenters
 
-        """
-        ::
-
-            Since version 1.3.0
+        Returns:
+            int: 1 if molecule contains stereo, 0 otherwise
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
@@ -1225,6 +1221,11 @@ class IndigoObject(object):
         )
 
     def countHydrogens(self):
+        """Atom or Molecule method returns number of hydrogens
+
+        Returns:
+            int: number of hydrogens
+        """
         value = c_int()
         self.dispatcher._setSessionId()
         res = self.dispatcher._checkResult(
@@ -1235,48 +1236,93 @@ class IndigoObject(object):
         return value.value
 
     def countImplicitHydrogens(self):
+        """Atom or Molecule method returns number of implicit hydrogens
+
+        Returns:
+            int: number of hydrogens
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountImplicitHydrogens(self.id)
         )
 
     def setXYZ(self, x, y, z):
+        """Atom methods sets coordinates
+
+        Args:
+            x (float): X coordinate
+            y (float): Y coordinate
+            z (float): Z coordinate
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetXYZ(self.id, x, y, z)
         )
 
     def countSuperatoms(self):
+        """Molecule method calculates number of super atoms
+
+        Returns:
+            int: number of super atoms
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountSuperatoms(self.id)
         )
 
     def countDataSGroups(self):
+        """Molecule method returns number of data s-groups
+
+        Returns:
+            int: number of s-groups
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountDataSGroups(self.id)
         )
 
     def countRepeatingUnits(self):
+        """Molecule method returns number of repeating units
+
+        Returns:
+            int: number of repeating units
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountRepeatingUnits(self.id)
         )
 
     def countMultipleGroups(self):
+        """Molecule method returns number of multiple s-groups
+
+        Returns:
+            int: number of multiple s-groups
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountMultipleGroups(self.id)
         )
 
     def countGenericSGroups(self):
+        """Molecule method returns number of generic s-groups
+
+        Returns:
+            int: number of generic -groups
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountGenericSGroups(self.id)
         )
 
     def iterateDataSGroups(self):
+        """Molecule method iterates data s-groups
+
+        Returns:
+            IndigoObject: s-groups iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1286,6 +1332,11 @@ class IndigoObject(object):
         )
 
     def iterateSuperatoms(self):
+        """Molecule method iterates superatoms
+
+        Returns:
+            IndigoObject: superatoms iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1295,6 +1346,11 @@ class IndigoObject(object):
         )
 
     def iterateGenericSGroups(self):
+        """Molecule method iterates generic s-groups
+
+        Returns:
+            IndigoObject: generic s-groups iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1304,6 +1360,11 @@ class IndigoObject(object):
         )
 
     def iterateRepeatingUnits(self):
+        """Molecule method iterates repeating units
+
+        Returns:
+            IndigoObject: repeating units iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1313,6 +1374,11 @@ class IndigoObject(object):
         )
 
     def iterateMultipleGroups(self):
+        """Molecule method iterates Mul s-groups
+
+        Returns:
+            IndigoObject: Mul s-groups iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1322,6 +1388,11 @@ class IndigoObject(object):
         )
 
     def iterateSGroups(self):
+        """Molecule method iterates s-groups
+
+        Returns:
+            IndigoObject: s-groups iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1331,6 +1402,11 @@ class IndigoObject(object):
         )
 
     def iterateTGroups(self):
+        """Molecule method iterates t-groups
+
+        Returns:
+            IndigoObject: t-groups iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1340,6 +1416,14 @@ class IndigoObject(object):
         )
 
     def getSuperatom(self, index):
+        """Molecule method returns superatom
+
+        Args:
+            index (int): super atom index
+
+        Returns:
+            IndigoObject: super atom
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1349,6 +1433,14 @@ class IndigoObject(object):
         )
 
     def getDataSGroup(self, index):
+        """Molecule method returns data s-groups
+
+        Args:
+            index (int): sgroup index
+
+        Returns:
+            IndigoObject: data sgroup
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1358,6 +1450,14 @@ class IndigoObject(object):
         )
 
     def getGenericSGroup(self, index):
+        """Molecule method returns generic s-group
+
+        Args:
+            index (int): s-group index
+
+        Returns:
+            IndigoObject: generic s-group
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1367,6 +1467,14 @@ class IndigoObject(object):
         )
 
     def getMultipleGroup(self, index):
+        """Molecule method returns Mul s-group
+
+        Args:
+            index (int): mul s-group index
+
+        Returns:
+            IndigoObject: mul s-group
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1376,6 +1484,14 @@ class IndigoObject(object):
         )
 
     def getRepeatingUnit(self, index):
+        """Molecule method returns repeating unit
+
+        Args:
+            index (int): repeating unit index
+
+        Returns:
+            IndigoObject: repeating unit
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1385,18 +1501,39 @@ class IndigoObject(object):
         )
 
     def description(self):
+        """Data s-group method returns description
+
+        Returns:
+            str: s-group description
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoDescription(self.id)
         )
 
     def data(self):
+        """Data s-group method returns data
+
+        Returns:
+            str: s-group data
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoData(self.id)
         )
 
     def addDataSGroup(self, atoms, bonds, description, data):
+        """Molecule method adds data s-group
+
+        Args:
+            atoms (list): atom index list
+            bonds (list): bond index list
+            description (str): data s-group description
+            data (str): data s-group data
+
+        Returns:
+            IndigoObject: SGroup object
+        """
         arr2 = (c_int * len(atoms))()
         for i in range(len(atoms)):
             arr2[i] = atoms[i]
@@ -1420,6 +1557,15 @@ class IndigoObject(object):
         )
 
     def addSuperatom(self, atoms, name):
+        """Molecule method adds superatom
+
+        Args:
+            atoms (list): atom index list
+            name (str): superatom name
+
+        Returns:
+            IndigoObject: superatom object
+        """
         arr2 = (c_int * len(atoms))()
         for i in range(len(atoms)):
             arr2[i] = atoms[i]
@@ -1434,6 +1580,16 @@ class IndigoObject(object):
         )
 
     def setDataSGroupXY(self, x, y, options=""):
+        """SGroup method sets coordinates
+
+        Args:
+            x (float): X coordinate
+            y (float): Y coordinate
+            options (str, optional): options. Defaults to "".
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         if options is None:
             options = ""
