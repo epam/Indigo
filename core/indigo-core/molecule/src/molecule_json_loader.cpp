@@ -320,6 +320,16 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
         if (b.HasMember("topology"))
         {
             topology = b["topology"].GetInt();
+            if (topology != 0 && _pqmol )
+                if (!ignore_noncritical_query_features)
+                    throw Error("bond topology is allowed only for queries");
+
+        }
+
+        int rcenter = 0;
+        if (b.HasMember("rcenter"))
+        {
+            rcenter = b["rcenter"].GetInt();
         }
 
         int order = b["type"].GetInt();
@@ -352,6 +362,12 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                 default:
                     break;
                 }
+            }
+            if ( rcenter )
+            {
+                if(_pmol->reaction_bond_reacting_center.size() != bonds.Size())
+                    _pmol->reaction_bond_reacting_center.clear_resize(bonds.Size());
+                _pmol->reaction_bond_reacting_center[bond_idx] = rcenter;
             }
         }
         else

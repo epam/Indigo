@@ -377,6 +377,13 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson
                 }
             }
 
+            int rcenter = _pmol->reaction_bond_reacting_center[i];
+            if (rcenter)
+            {
+                writer.Key("rcenter");
+                writer.Uint(rcenter);
+            }
+
             const Edge& e1 = mol.getEdge(i);
             writer.Key("atoms");
             writer.StartArray();

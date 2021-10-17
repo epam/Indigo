@@ -53,6 +53,23 @@ namespace indigo
         explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups);
         void loadMolecule(BaseMolecule& mol);
         StereocentersOptions stereochemistry_options;
+        bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
+        bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
+        bool ignore_no_chiral_flag; // ignore chiral flag absence (treat stereo "as drawn")
+                                    // (depricated, use treat_stereo-as instead of this option)
+        bool ignore_bad_valence;    // ignore bad valence (default value is false)
+
+        // When true, the "bond topology", "stereo care", "ring bond count", and "unsaturation"
+        // specifications are ignored when a non-query molecule is being loaded.
+        // Otherwise, an error is thrown (this is the default).
+        bool ignore_noncritical_query_features;
+
+        int treat_stereo_as; // treat stereo as 'ucf', 'abs', 'rel', 'rac', 'any'
+                             //  = 0 ('ucf') - use chiral flag (default value)
+                             //  = ATOM_ABS ('abs')
+                             //  = ATOM_OR  ('rel')
+                             //  = ATOM_AND ('rac')
+                             //  = ATOM_ANY ('any')
 
     protected:
         int addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope);
