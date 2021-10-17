@@ -244,6 +244,7 @@ enum
     OEXT_RDF,
     OEXT_CML,
     OEXT_KET,
+    OEXT_KER,
     OEXT_OTHER
 };
 
@@ -855,6 +856,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_CML;
     else if (strcmp(p.outfile_ext, "ket") == 0)
         p.out_ext = OEXT_KET;
+    else if (strcmp(p.outfile_ext, "ker") == 0)
+        p.out_ext = OEXT_KER;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
