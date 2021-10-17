@@ -726,14 +726,20 @@ class IndigoObject(object):
         return value.value
 
     def setReactingCenter(self, reaction_bond, rc):
-        """Reaction bond method
+        """Reaction bond method sets reacting center
 
         Args:
-            reaction_bond ([type]): [description]
-            rc ([type]): [description]
+            reaction_bond (IndigoObject): reaction molecule bond
+            rc (int): reacting center, one of the following
+            RC_NOT_CENTER = -1
+            RC_UNMARKED = 0
+            RC_CENTER = 1
+            RC_UNCHANGED = 2
+            RC_MADE_OR_BROKEN = 4
+            RC_ORDER_CHANGED = 8
 
         Returns:
-            [type]: [description]
+            int: 1 if there are no errors
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
@@ -741,18 +747,34 @@ class IndigoObject(object):
         )
 
     def clearAAM(self):
+        """Reaction method clears atom mapping for atoms
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoClearAAM(self.id)
         )
 
     def correctReactingCenters(self):
+        """Reaction method corrects reacting centers according to AAM
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCorrectReactingCenters(self.id)
         )
 
     def iterateAtoms(self):
+        """Molecule method returns an iterator for all atoms
+        including r-sites and pseudoatoms
+
+        Returns:
+            IndigoObject: atom iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -762,6 +784,11 @@ class IndigoObject(object):
         )
 
     def iteratePseudoatoms(self):
+        """Molecule method returns an iterator for all pseudoatoms
+
+        Returns:
+            IndigoObject: atom iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -771,6 +798,11 @@ class IndigoObject(object):
         )
 
     def iterateRSites(self):
+        """Molecule method returns an iterator for all r-sites
+
+        Returns:
+            IndigoObject: atom iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -780,6 +812,11 @@ class IndigoObject(object):
         )
 
     def iterateStereocenters(self):
+        """Molecule method returns an iterator for all atom with stereocenters
+
+        Returns:
+            IndigoObject: atom iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -789,6 +826,11 @@ class IndigoObject(object):
         )
 
     def iterateAlleneCenters(self):
+        """Molecule method returns an iterator for all atom with allene centers
+
+        Returns:
+            IndigoObject: atom iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -798,6 +840,11 @@ class IndigoObject(object):
         )
 
     def iterateRGroups(self):
+        """Molecule method returns an iterator for all r-group
+
+        Returns:
+            IndigoObject: r-group iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -807,12 +854,22 @@ class IndigoObject(object):
         )
 
     def countRGroups(self):
+        """Molecule method returns number of r-groups
+
+        Returns:
+            int: number of r-groups
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountRGroups(self.id)
         )
 
     def isPseudoatom(self):
+        """Atom method returns true if atom is pseudoatom
+
+        Returns:
+            bool: True if pseudoatom
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(
@@ -821,12 +878,22 @@ class IndigoObject(object):
         )
 
     def isRSite(self):
+        """Atom method returns true if atom is R-site
+
+        Returns:
+            bool: True if R-site
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(Indigo._lib.indigoIsRSite(self.id))
         )
 
     def isTemplateAtom(self):
+        """Atom method returns true if atom is a template atom
+
+        Returns:
+            bool: True if template
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(
@@ -835,42 +902,85 @@ class IndigoObject(object):
         )
 
     def stereocenterType(self):
+        """Atom method returns stereo center type
+
+        Returns:
+            int: type of stereocenter
+            ABS = 1
+            OR = 2
+            AND = 3
+            EITHER = 4
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoStereocenterType(self.id)
         )
 
     def stereocenterGroup(self):
+        """Atom method returns stereocenter group
+
+        Returns:
+            int: group index
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoStereocenterGroup(self.id)
         )
 
     def setStereocenterGroup(self, group):
+        """Atom method sets stereocenter group
+
+        Args:
+            group (int): group index
+        """
         self.dispatcher._setSessionId()
         self.dispatcher._checkResult(
             Indigo._lib.indigoSetStereocenterGroup(self.id, group)
         )
 
     def changeStereocenterType(self, type):
+        """Atom method changes stereocentertyp
+
+        Args:
+            type (int): stereo type. 
+            ABS = 1
+            OR = 2
+            AND = 3
+            EITHER = 4
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoChangeStereocenterType(self.id, type)
         )
 
     def validateChirality(self):
+        """Molecule or reaction method validates chirality
+        """
         self.dispatcher._setSessionId()
         self.dispatcher._checkResult(
             Indigo._lib.indigoValidateChirality(self.id)
         )
 
     def singleAllowedRGroup(self):
+        """Atom method returns single allowed r-group
+
+        Returns:
+            int: single allowed r-group
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSingleAllowedRGroup(self.id)
         )
 
     def iterateRGroupFragments(self):
+        """RGroup method iterates r-group fragments
+
+        Returns:
+            IndigoObject: r-group fragment iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -880,12 +990,25 @@ class IndigoObject(object):
         )
 
     def countAttachmentPoints(self):
+        """Molecule or RGroup method returns number of attachment points
+
+        Returns:
+            int: number of attachment points
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountAttachmentPoints(self.id)
         )
 
     def iterateAttachmentPoints(self, order):
+        """Molecule method iterates attachment points
+
+        Args:
+            order (int): attachment points order
+
+        Returns:
+            IndigoObject: attachment points iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -895,16 +1018,31 @@ class IndigoObject(object):
         )
 
     def symbol(self):
+        """Atom method returns string symbol
+
+        Returns:
+            str: atom symbol
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoSymbol(self.id)
         )
 
     def degree(self):
+        """Atom method returns atom number of neighbors
+
+        Returns:
+            int: number of atom neighbors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoDegree(self.id))
 
     def charge(self):
+        """Atom method returns charge of the atom
+
+        Returns:
+            int: charge
+        """
         value = c_int()
         self.dispatcher._setSessionId()
         res = self.dispatcher._checkResult(
@@ -915,6 +1053,11 @@ class IndigoObject(object):
         return value.value
 
     def getExplicitValence(self):
+        """Atom method returns explicit valence
+
+        Returns:
+            int: valence
+        """
         value = c_int()
         self.dispatcher._setSessionId()
         res = self.dispatcher._checkResult(
@@ -925,12 +1068,25 @@ class IndigoObject(object):
         return value.value
 
     def setExplicitValence(self, valence):
+        """Atom method sets explicit valence
+
+        Args:
+            valence (int): valence
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetExplicitValence(self.id, valence)
         )
 
     def radicalElectrons(self):
+        """Atom method returns number of radical electrons
+
+        Returns:
+            int: radical electrons number
+        """
         value = c_int()
         self.dispatcher._setSessionId()
         res = self.dispatcher._checkResult(
@@ -941,6 +1097,11 @@ class IndigoObject(object):
         return value.value
 
     def radical(self):
+        """Atom method returns radical value
+
+        Returns:
+            int: radical value
+        """
         value = c_int()
         self.dispatcher._setSessionId()
         res = self.dispatcher._checkResult(
@@ -951,22 +1112,45 @@ class IndigoObject(object):
         return value.value
 
     def setRadical(self, radical):
+        """Atom method sets radical value
+
+        Args:
+            radical (int): radical value
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetRadical(self.id, radical)
         )
 
     def atomicNumber(self):
+        """Atom method returns atomic number
+
+        Returns:
+            int: atomic number
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoAtomicNumber(self.id)
         )
 
     def isotope(self):
+        """Atom method returns isotope number
+
+        Returns:
+            int: isotope number
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoIsotope(self.id))
 
     def valence(self):
+        """Atom method returns valence
+
+        Returns:
+            int: atom valence
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoValence(self.id))
 
