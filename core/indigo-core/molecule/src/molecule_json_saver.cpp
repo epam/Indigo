@@ -377,11 +377,14 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson
                 }
             }
 
-            int rcenter = _pmol->reaction_bond_reacting_center[i];
-            if (rcenter)
+            if (i < _pmol->reaction_bond_reacting_center.size() )
             {
-                writer.Key("rcenter");
-                writer.Uint(rcenter);
+                int rcenter = _pmol->reaction_bond_reacting_center[i];
+                if (rcenter)
+                {
+                    writer.Key("rcenter");
+                    writer.Uint(rcenter);
+                }
             }
 
             const Edge& e1 = mol.getEdge(i);
