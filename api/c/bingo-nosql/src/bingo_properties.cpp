@@ -116,9 +116,10 @@ const char* Properties::get(const char* prop_name)
 {
     const char* res = getNoThrow(prop_name);
 
-    if (res == 0)
+    if (res == nullptr)
+    {
         throw Exception("Unknown property field");
-
+    }
     return res;
 }
 

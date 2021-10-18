@@ -211,14 +211,14 @@ TEST(BingoThreads, DISABLED_Insert_Pubchem_1M)
     bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000000001_000500000.sdf.gz")));
 }
 
-TEST(BingoThreads, DISABLED_SearchSubMultipleThreads_Pubchem_1M)
+TEST(BingoThreads, SearchSubMultipleThreads_Pubchem_1M)
 {
     auto session = IndigoSession::create();
     auto bingo = BingoMolecule::loadDatabaseFile(session, "Pubchem_1M.db");
     std::vector<std::thread> threads;
-    threads.reserve(16);
+    threads.reserve(1);
     const auto q = session->loadQueryMolecule("CN1C=NC2=C1C(=O)N(C(=O)N2C)C");
-    for (auto i = 0; i < 16; i++)
+    for (auto i = 0; i < 1; i++)
     {
         threads.emplace_back(testSearchSub, std::cref(bingo), std::cref(q));
     }

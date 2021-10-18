@@ -20,20 +20,16 @@ namespace bingo
 {
     struct BingoAddr
     {
-        BingoAddr()
-        {
-            file_id = (size_t)-1;
-            offset = (size_t)-1;
-        }
+        BingoAddr() = default;
 
         BingoAddr(size_t f_id, size_t off) : file_id(f_id), offset(off)
         {
         }
 
-        size_t file_id;
-        size_t offset;
+        size_t file_id = -1;
+        size_t offset = -1;
 
-        bool operator==(const BingoAddr& other)
+        bool operator==(const BingoAddr& other) const
         {
             return (file_id == other.file_id) && (offset == other.offset);
         }
@@ -47,6 +43,8 @@ namespace bingo
         template <typename T> friend class BingoPtr;
         friend class MMFStorage;
         static int getAllocatorDataSize();
+
+        static void removeInstance();
 
     private:
         struct _BingoAllocatorData
@@ -62,7 +60,7 @@ namespace bingo
             size_t _free_off;
         };
 
-        ObjArray<MMFile>* _mm_files;
+        std::vector<MMFile>* _mm_files;
 
         size_t _data_offset;
 
@@ -71,9 +69,9 @@ namespace bingo
         std::string _filename;
         int _index_id;
 
-        static void _create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, ObjArray<MMFile>& mm_files, int index_id);
+        static void _create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, std::vector<MMFile>& mm_files, int index_id);
 
-        static void _load(const char* filename, size_t alloc_off, ObjArray<MMFile>& mm_files, int index_id, bool read_only);
+        static void _load(const char* filename, size_t alloc_off, std::vector<MMFile>& mm_files, int index_id, bool read_only);
 
         template <typename T> BingoAddr allocate(int count = 1)
         {
@@ -112,7 +110,7 @@ namespace bingo
 
         byte* _get(size_t file_id, size_t offset) const;
 
-        BingoAllocator();
+        BingoAllocator() = default;
 
         void _addFile(size_t alloc_size);
 
@@ -120,7 +118,6 @@ namespace bingo
 
         static void _genFilename(int idx, const char* filename, std::string& out_name);
     };
-
 
     template <typename T> class BingoPtr
     {
@@ -219,10 +216,8 @@ namespace bingo
     template <typename T> class BingoArray
     {
     public:
-        BingoArray(int block_size = 10000) : _block_size(block_size)
+        BingoArray(int block_size = 10000) : _block_size(block_size), _size(0), _block_count(0)
         {
-            _size = 0;
-            _block_count = 0;
         }
 
         void resize(int new_size)

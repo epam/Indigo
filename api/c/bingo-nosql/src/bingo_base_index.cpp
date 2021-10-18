@@ -31,11 +31,8 @@ static const size_t _max_mmf_size = 536870912; // 512Mb
 static const int _small_base_size = 10000;
 static const int _sim_mt_size = 50000;
 
-BaseIndex::BaseIndex(IndexType type)
+BaseIndex::BaseIndex(IndexType type) : _type(type), _read_only(false)
 {
-    _type = type;
-    _read_only = false;
-    _index_id = -1;
 }
 
 void BaseIndex::create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id)

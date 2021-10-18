@@ -19,7 +19,8 @@ namespace bingo
 
         static constexpr const int max_header_len = 128;
 
-        MMFStorage();
+        MMFStorage() = default;
+        ~MMFStorage();
 
         void create(const char* filename, size_t min_size, size_t max_size, const char* header, int index_id);
 
@@ -27,7 +28,7 @@ namespace bingo
 
         void close();
     private:
-        ObjArray<MMFile> _mm_files;
+        std::vector<MMFile> _mm_files;
         bool _read_only;
         static thread_local int databaseId;
     };

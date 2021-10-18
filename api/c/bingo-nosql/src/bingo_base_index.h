@@ -61,7 +61,8 @@ namespace bingo
         virtual std::unique_ptr<Matcher> createMatcher(const char* type, MatcherQueryData* query_data, const char* options) = 0;
         virtual std::unique_ptr<Matcher> createMatcherWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, IndigoObject& fp) = 0;
         virtual std::unique_ptr<Matcher> createMatcherTopN(const char* type, MatcherQueryData* query_data, const char* options, int limit) = 0;
-        virtual std::unique_ptr<Matcher> createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp) = 0;
+        virtual std::unique_ptr<Matcher> createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit,
+                                                                    IndigoObject& fp) = 0;
 
         void create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id);
 
@@ -123,8 +124,6 @@ namespace bingo
 
         MoleculeFingerprintParameters _fp_params;
         std::string _location;
-
-        int _index_id;
 
         static void _checkOptions(std::map<std::string, std::string>& option_map, bool is_create);
 

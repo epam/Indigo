@@ -21,7 +21,7 @@ int BingoAllocator::getAllocatorDataSize()
     return sizeof(_BingoAllocatorData);
 }
 
-void BingoAllocator::_create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, ObjArray<MMFile>& mm_files, int index_id)
+void BingoAllocator::_create(const char* filename, size_t min_size, size_t max_size, size_t alloc_off, std::vector<MMFile>& mm_files, int index_id)
 {
     MMFile file;
 
@@ -49,13 +49,13 @@ void BingoAllocator::_create(const char* filename, size_t min_size, size_t max_s
     allocator_data->_max_file_size = max_size;
     allocator_data->_cur_file_id = 0;
     {
-        inst->_mm_files->push(file);
+        inst->_mm_files->push_back(file);
     }
     inst->_filename.assign(filename);
     inst->_index_id = index_id;
 }
 
-void BingoAllocator::_load(const char* filename, size_t alloc_off, ObjArray<MMFile>& mm_files, int index_id, bool read_only)
+void BingoAllocator::_load(const char* filename, size_t alloc_off, std::vector<MMFile>& mm_files, int index_id, bool read_only)
 {
     std::string name;
     _genFilename(0, filename, name);
@@ -82,21 +82,16 @@ void BingoAllocator::_load(const char* filename, size_t alloc_off, ObjArray<MMFi
 
     inst->_data_offset = alloc_off;
     inst->_mm_files = &mm_files;
-    {
-        inst->_mm_files->push(file);
-    }
+    inst->_mm_files->push_back(file);
     inst->_filename.assign(filename);
     inst->_index_id = index_id;
 
     for (int i = 1; i < (int)allocator_data->_cur_file_id + 1; i++)
     {
         _genFilename(i, inst->_filename.c_str(), name);
-
-        MMFile& file = inst->_mm_files->push();
-
+        inst->_mm_files->emplace_back();
         size_t file_size = _getFileSize(i, allocator_data->_min_file_size, allocator_data->_max_file_size, allocator_data->_existing_files);
-
-        file.open(name.c_str(), file_size, false, read_only);
+        inst->_mm_files->at(inst->_mm_files->size() - 1).open(name.c_str(), file_size, false, read_only);
     }
 }
 
@@ -119,10 +114,6 @@ byte* BingoAllocator::_get(size_t file_id, size_t offset) const
     byte* file_ptr = (byte*)(_mm_files->at(static_cast<int>(file_id)).ptr());
 
     return file_ptr + offset;
-}
-
-BingoAllocator::BingoAllocator()
-{
 }
 
 size_t BingoAllocator::_getFileSize(size_t idx, size_t min_size, size_t max_size, dword existing_files)
@@ -173,11 +164,11 @@ void BingoAllocator::_addFile(size_t alloc_size)
     if (alloc_size > file_size)
         throw Exception("BingoAllocator: Too big allocation size");
 
-    MMFile& file = _mm_files->push();
+    _mm_files->emplace_back();
 
     std::string name;
     _genFilename(_mm_files->size() - 1, _filename.c_str(), name);
-    file.open(name.c_str(), file_size, true, false);
+    _mm_files->at(_mm_files->size() - 1).open(name.c_str(), file_size, true, false);
 
     allocator_data->_cur_file_id++;
     allocator_data->_free_off = 0;
@@ -191,4 +182,14 @@ void BingoAllocator::_genFilename(int idx, const char* filename, std::string& ou
     name_str << idx;
 
     out_name.assign(name_str.str());
+}
+
+void BingoAllocator::removeInstance()
+{
+    const auto database_id = MMFStorage::getDatabaseId();
+    auto instances = sf::xlock_safe_ptr(_instances);
+    if (instances->count(database_id) > 0)
+    {
+        instances->erase(database_id);
+    }
 }
