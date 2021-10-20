@@ -24,6 +24,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/query_molecule.h"
+#include "molecule/molecule_savers.h"
 
 using namespace indigo;
 using namespace rapidjson;
@@ -377,11 +378,14 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson
                 }
             }
 
-            int rcenter = _pmol->reaction_bond_reacting_center[i];
-            if (rcenter)
+            if (i < mol.reaction_bond_reacting_center.size())
             {
-                writer.Key("rcenter");
-                writer.Uint(rcenter);
+                int rcenter = mol.reaction_bond_reacting_center[i];
+                if (rcenter)
+                {
+                    writer.Key("center");
+                    writer.Uint(rcenter);
+                }
             }
 
             const Edge& e1 = mol.getEdge(i);
@@ -579,6 +583,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
     {
         for (auto i : mol.vertices())
         {
+            buf.clear();
             int anum = mol.getAtomNumber(i);
             int isotope = mol.getAtomIsotope(i);
             writer.StartObject();
@@ -604,26 +609,61 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
             }
             else
             {
-                if (!mol.isPseudoAtom(i))
+                int query_atom_type = -1;
+                bool is_quatom_list = false;
+                QS_DEF(Array<int>, qatom_list);
+                if (mol.isPseudoAtom(i))
                 {
+                    buf.readString(mol.getPseudoAtom(i), true);
+                } else if (mol.isTemplateAtom(i))
+                {
+                    buf.readString(mol.getTemplateAtom(i), true);
+                }
+                else if (anum != -1)
+                {
+                    buf.readString(Element::toString(anum), true);
                     radical = mol.getAtomRadical(i);
+                    if (anum == ELEM_H)
+                    {
+                        if (isotope == 2)
+                        {
+                            buf.clear();
+                            buf.appendString("D", true);
+                        }
+                        if (isotope == 3)
+                        {
+                            buf.clear();
+                            buf.appendString("T", true);
+                        }
+                    }
                 }
-                mol.getAtomSymbol(i, buf);
-                if (anum == ELEM_H)
+                else if (_pqmol && (query_atom_type = QueryMolecule::parseQueryAtom(*_pqmol, i, qatom_list)) != -1)
                 {
-                    if (isotope == 2)
+                    if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
                     {
-                        buf.clear();
-                        buf.appendString("D", true);
+                        is_quatom_list = true;
+                        writer.Key("type");
+                        writer.String("atom-list");
+                        if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                        {
+                            writer.Key("notList");
+                            writer.Bool(true);
+                        }
+                        writer.Key("elements");
+                        writer.StartArray();
+                        for (int k = 0; k < qatom_list.size(); k++)
+                            writer.String(Element::toString(qatom_list[k]));
+                        writer.EndArray();
                     }
-                    if (isotope == 3)
-                    {
-                        buf.clear();
-                        buf.appendString("T", true);
-                    }
+                    else
+                        QueryMolecule::getQueryAtomLabel(query_atom_type, buf);
                 }
-                writer.Key("label");
-                writer.String(buf.ptr());
+
+                if (!is_quatom_list)
+                {
+                    writer.Key("label");
+                    writer.String(buf.ptr());
+                }
             }
             if (BaseMolecule::hasCoord(mol))
             {
@@ -638,31 +678,82 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
             int charge = mol.getAtomCharge(i);
             int evalence = mol.getExplicitValence(i);
             int mapping = mol.reaction_atom_mapping[i];
+            int inv_ret = mol.reaction_atom_inversion[i];
+            bool ecflag = mol.reaction_atom_exact_change[i];
+
+            if (_pqmol)
+            {
+                int subst = 0, rbc = 0;
+                if (MoleculeSavers::getRingBondCountFlagValue(*_pqmol, i, rbc))
+                {
+                    writer.Key("ringBondCount");
+                    writer.Int(rbc);
+                }
+                if (MoleculeSavers::getSubstitutionCountFlagValue(*_pqmol, i, subst))
+                {
+                    writer.Key("substitutionCount");
+                    writer.Int(subst);
+
+                }
+
+                int unsat = 0;
+                if (_pqmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
+                {
+                    writer.Key("unsaturatedAtom");
+                    writer.Bool(true);
+                }
+
+                int hcount = MoleculeSavers::getHCount(mol, i, anum, charge);
+                if (hcount == -1)
+                    hcount = 0;
+                else
+                    hcount++;
+                if (hcount > 0)
+                {
+                    writer.Key("hCount");
+                    writer.Int(hcount);
+                }
+            }
+
             if (mapping)
             {
                 writer.Key("mapping");
                 writer.Int(mapping);
             }
-            if (charge)
+
+            if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
             {
                 writer.Key("charge");
                 writer.Int(charge);
             }
+
             if (evalence > 0)
             {
                 writer.Key("explicitValence");
                 writer.Int(evalence);
             }
-            if (radical)
+            if (radical > 0)
             {
                 writer.Key("radical");
                 writer.Int(radical);
             }
 
-            if (isotope && anum != ELEM_H)
+            if (isotope > 0 && anum != ELEM_H)
             {
                 writer.Key("isotope");
                 writer.Int(isotope);
+            }
+
+            if (inv_ret > 0)
+            {
+                writer.Key("invRet");
+                writer.Int(inv_ret);
+            }
+
+            if (ecflag)
+            {
+                writer.Key("exactChangeFlag");
+                writer.Bool( ecflag );
             }
 
             int enh_stereo_type = mol.stereocenters.getType(i);
@@ -725,8 +816,6 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
 
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& writer)
 {
-    // bool have_z = BaseMolecule::hasZCoord(*_mol);
-    int chiral = bmol.getChiralFlag();
     std::unique_ptr<BaseMolecule> mol;
     _pmol = nullptr;
     _pqmol = nullptr;
@@ -782,11 +871,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
     writer.StartObject();
     writer.Key("type");
     writer.String("molecule");
-    if (chiral)
-    {
-        writer.Key("chiral");
-        writer.Int(chiral);
-    }
     writer.Key("atoms");
     writer.StartArray();
     saveAtoms(*mol, writer);

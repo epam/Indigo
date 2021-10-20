@@ -23,7 +23,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups) : _mol_
 int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology)
 {
     std::unique_ptr<QueryMolecule::Bond> bond;
-    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION || order == _BOND_HYDROGEN )
+    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
+        order == _BOND_HYDROGEN)
         bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
     else if (order == _BOND_SINGLE_OR_DOUBLE)
         bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
@@ -50,7 +51,7 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
 int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope)
 {
     std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
-    if (element != -1 && element != ELEM_RSITE)
+    if (element != -1 && element < ELEM_MAX)
         atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, element);
     else
     {
@@ -128,6 +129,8 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
         case _ATOM_R:
             atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
             break;
+        default:
+            atom = std::make_unique<QueryMolecule::Atom>(); // ATOM_LIST
         }
     }
 
@@ -168,10 +171,21 @@ void MoleculeJsonLoader::validateMoleculeBond(int order)
 
 void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol)
 {
+    mol.reaction_atom_mapping.clear_resize(atoms.Size());
+    mol.reaction_atom_mapping.zerofill();
+    mol.reaction_atom_inversion.clear_resize(atoms.Size());
+    mol.reaction_atom_inversion.zerofill();
+    mol.reaction_atom_exact_change.clear_resize(atoms.Size());
+    mol.reaction_atom_exact_change.zerofill();
+
+    std::vector<int> hcounts;
+    hcounts.resize(atoms.Size(), 0);
     for (SizeType i = 0; i < atoms.Size(); i++)
     {
         std::string label;
-        int atom_idx = 0, charge = 0, valence = 0, radical = 0, isotope = 0, elem = 0, rsite_idx = 0, mapping = 0;
+        int atom_idx = 0, charge = 0, valence = 0, radical = 0, isotope = 0, elem = 0, rsite_idx = 0, mapping = 0, atom_type = 0;
+        bool is_not_list = false;
+        std::unique_ptr<QueryMolecule::Atom> atomlist;
         const Value& a = atoms[i];
         if (a.HasMember("isotope"))
             isotope = a["isotope"].GetInt();
@@ -181,6 +195,27 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             for (int att_idx = 0; (1 << att_idx) <= val; att_idx++)
                 if (val & (1 << att_idx))
                     mol.addAttachmentPoint(att_idx + 1, i);
+        }
+
+        if (a.HasMember("invRet"))
+        {
+            mol.reaction_atom_inversion[i] = a["invRet"].GetInt();
+        }
+
+        if (a.HasMember("unsaturatedAtom"))
+        {
+            if (!_pqmol)
+            {
+                if (!ignore_noncritical_query_features)
+                    throw Error("unsaturation flag is allowed only for queries");
+            }
+            if (a["unsaturatedAtom"].GetBool())
+                _pqmol->resetAtom(i, QueryMolecule::Atom::und(_pqmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+        }
+
+        if (a.HasMember("exactChangeFlag"))
+        {
+            mol.reaction_atom_exact_change[i] = a["exactChangeFlag"].GetBool();
         }
 
         if (a.HasMember("mapping"))
@@ -202,6 +237,37 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 }
                 else
                     throw Error("invalid refs: %s", ref.c_str());
+            }
+            else if (atom_type == "atom-list")
+            {
+                if (!_pqmol)
+                    throw Error("atom-list is allowed only for queries");
+                is_not_list = a.HasMember("notList") ? a["notList"].GetBool() : false;
+                const Value& elements = a["elements"];
+                int pseudo_count = 0;
+                for (int j = 0; j < elements.Size(); ++j)
+                {
+                    auto elem_label = elements[j].GetString();
+                    int list_elem = Element::fromString2(elem_label);
+                    std::unique_ptr<QueryMolecule::Atom> cur_atom;
+                    if (elem == -1)
+                    {
+                        pseudo_count++;
+                        if (pseudo_count > 1)
+                            throw Error("%s inside atom list, if present, must be single", elem_label);
+                        if (elem != -1)
+                            cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, elem);
+                    }
+                    else
+                    {
+                        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, elem_label);
+                    }
+
+                    if (atomlist.get() == 0)
+                        atomlist.reset(cur_atom.release());
+                    else
+                        atomlist.reset(QueryMolecule::Atom::oder(atomlist.release(), cur_atom.release()));
+                }
             }
             else
                 throw Error("invalid atom type: %s", atom_type.c_str());
@@ -257,7 +323,72 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             }
         }
         else
+        {
             atom_idx = addAtomToMoleculeQuery(label.c_str(), elem, charge, valence, radical, isotope);
+            if (atomlist.get())
+                _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), atomlist.release()));
+        }
+
+        if (a.HasMember("ringBondCount"))
+        {
+            if (!_pqmol && !ignore_noncritical_query_features)
+                throw Error("ring bond count is allowed only for queries");
+            int rbcount = a["ringBondCount"].GetInt();
+            if (rbcount == -1) // no ring bonds
+                _pqmol->resetAtom(atom_idx,
+                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
+            else if (rbcount == -2) // as drawn
+            {
+                int k, rbonds = 0;
+                const Vertex& vertex = _pqmol->getVertex(atom_idx);
+
+                for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                    if (_pqmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
+                        rbonds++;
+
+                _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                                                                     new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
+            }
+            else if (rbcount > 1)
+                _pqmol->resetAtom(atom_idx,
+                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                                                           new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbcount, (rbcount < 4 ? rbcount : 100))));
+            else
+                throw Error("ring bond count = %d makes no sense", rbcount);
+        }
+
+        if (a.HasMember("substitutionCount"))
+        {
+            if (!_pqmol)
+                throw Error("substitution counts are allowed only for queries");
+            int sub_count = a["substitutionCount"].GetInt();
+
+            if (sub_count == -1) // no substitution
+                _pqmol->resetAtom(atom_idx,
+                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, 0)));
+            else if (sub_count == -2)
+            {
+                _pqmol->resetAtom(atom_idx,
+                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN,
+                                                                                                                  _pqmol->getVertex(atom_idx).degree())));
+            }
+            else if (sub_count > 0)
+                _pqmol->resetAtom(atom_idx,
+                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
+                                                                                                                  (sub_count < 6 ? sub_count : 100))));
+            else
+                throw Error("invalid SUB value: %d", sub_count);
+        }
+
+        if (a.HasMember("hCount"))
+        {
+            if (!_pqmol)
+            {
+                if (!ignore_noncritical_query_features)
+                    throw Error("H count is allowed only for queries");
+            }
+            hcounts[atom_idx] = a["hCount"].GetInt();
+        }
 
         if (mapping)
         {
@@ -283,7 +414,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             else if (sl.find("&") != std::string::npos)
             {
                 int grp = std::stoi(sl.substr(1));
-                if( grp )
+                if (grp)
                     _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_AND, grp);
             }
         }
@@ -301,10 +432,44 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             }
         }
     }
+
+    if (_pqmol)
+        for (int k = 0; k < hcounts.size(); k++)
+        {
+            int expl_h = 0;
+
+            if (hcounts[k] >= 0)
+            {
+                // count explicit hydrogens
+                const Vertex& vertex = mol.getVertex(k);
+                int i;
+
+                for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+                {
+                    if (mol.getAtomNumber(vertex.neiVertex(i)) == ELEM_H)
+                        expl_h++;
+                }
+            }
+
+            if (hcounts[k] == 1)
+            {
+                // no hydrogens unless explicitly drawn
+                _pqmol->resetAtom(k, QueryMolecule::Atom::und(_pqmol->releaseAtom(k), new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_H, expl_h)));
+            }
+            else if (hcounts[k] > 1)
+            {
+                // no hydrogens unless explicitly drawn
+                _pqmol->resetAtom(
+                    k, QueryMolecule::Atom::und(_pqmol->releaseAtom(k), new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_H, expl_h + hcounts[k] - 1, 100)));
+            }
+        }
 }
 
 void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol, int atom_base_idx)
 {
+    mol.reaction_bond_reacting_center.clear_resize(bonds.Size());
+    mol.reaction_bond_reacting_center.zerofill();
+
     for (SizeType i = 0; i < bonds.Size(); i++)
     {
         const Value& b = bonds[i];
@@ -320,16 +485,15 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
         if (b.HasMember("topology"))
         {
             topology = b["topology"].GetInt();
-            if (topology != 0 && _pqmol )
+            if (topology != 0 && _pmol)
                 if (!ignore_noncritical_query_features)
                     throw Error("bond topology is allowed only for queries");
-
         }
 
         int rcenter = 0;
-        if (b.HasMember("rcenter"))
+        if (b.HasMember("center"))
         {
-            rcenter = b["rcenter"].GetInt();
+            rcenter = b["center"].GetInt();
         }
 
         int order = b["type"].GetInt();
@@ -363,11 +527,12 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                     break;
                 }
             }
-            if ( rcenter )
+            if (_pqmol)
             {
-                if(_pmol->reaction_bond_reacting_center.size() != bonds.Size())
-                    _pmol->reaction_bond_reacting_center.clear_resize(bonds.Size());
-                _pmol->reaction_bond_reacting_center[bond_idx] = rcenter;
+                if (rcenter)
+                {
+                    _pqmol->reaction_bond_reacting_center[i] = rcenter;
+                }
             }
         }
         else
@@ -756,7 +921,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         if (mol.stereocenters.getType(sc._atom_idx) == 0)
         {
             throw Error("stereo type specified for atom #%d, but the bond "
-                            "directions does not say that it is a stereocenter",
+                        "directions does not say that it is a stereocenter",
                         sc._atom_idx);
         }
         else

@@ -88,9 +88,6 @@ namespace indigo
 
         static int _getStereocenterParity(BaseMolecule& mol, int idx);
 
-        bool _getRingBondCountFlagValue(QueryMolecule& qmol, int idx, int& value);
-        bool _getSubstitutionCountFlagValue(QueryMolecule& qmol, int idx, int& value);
-
         Output& _output;
         bool _v2000;
 

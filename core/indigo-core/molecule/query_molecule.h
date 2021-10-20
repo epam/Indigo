@@ -336,6 +336,7 @@ namespace indigo
         static bool isSingleOrDouble(Bond& qb);
         static int getQueryBondType(Bond& qb);
         static int getAtomType( const char* label );
+        static void getQueryAtomLabel(int qa, Array<char>& result);
 
         bool bondStereoCare(int idx) override;
         void setBondStereoCare(int idx, bool stereo_care);
