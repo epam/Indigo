@@ -33,6 +33,8 @@ namespace indigo
     {
     public:
         static int getHCount(BaseMolecule& mol, int index, int atom_number, int atom_charge);
+        static bool MoleculeSavers::getRingBondCountFlagValue(QueryMolecule& qmol, int idx, int& value);
+        static bool MoleculeSavers::getSubstitutionCountFlagValue(QueryMolecule& qmol, int idx, int& value);
     };
 
 } // namespace indigo

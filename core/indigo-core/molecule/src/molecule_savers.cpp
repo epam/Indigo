@@ -51,3 +51,60 @@ int MoleculeSavers::getHCount(BaseMolecule& mol, int index, int atom_number, int
     }
     return hydrogens_count;
 }
+
+
+bool MoleculeSavers::getRingBondCountFlagValue(QueryMolecule& qmol, int idx, int& value)
+{
+    QueryMolecule::Atom& atom = qmol.getAtom(idx);
+    int rbc;
+    if (atom.hasConstraint(QueryMolecule::ATOM_RING_BONDS))
+    {
+        if (atom.sureValue(QueryMolecule::ATOM_RING_BONDS, rbc))
+        {
+            value = rbc;
+            if (value == 0)
+                value = -1;
+            return true;
+        }
+        int rbc_values[1] = {4};
+        if (atom.sureValueBelongs(QueryMolecule::ATOM_RING_BONDS, rbc_values, 1))
+        {
+            value = 4;
+            return true;
+        }
+    }
+    else if (atom.sureValue(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbc))
+    {
+        value = -2;
+        return true;
+    }
+    return false;
+}
+
+bool MoleculeSavers::getSubstitutionCountFlagValue(QueryMolecule& qmol, int idx, int& value)
+{
+    QueryMolecule::Atom& atom = qmol.getAtom(idx);
+    int v;
+    if (atom.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS))
+    {
+        if (atom.sureValue(QueryMolecule::ATOM_SUBSTITUENTS, v))
+        {
+            value = v;
+            if (value == 0)
+                value = -1;
+            return true;
+        }
+        int values[1] = {6};
+        if (atom.sureValueBelongs(QueryMolecule::ATOM_SUBSTITUENTS, values, 1))
+        {
+            value = 6;
+            return true;
+        }
+    }
+    else if (atom.sureValue(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, v))
+    {
+        value = -2;
+        return true;
+    }
+    return false;
+}
