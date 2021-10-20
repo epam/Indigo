@@ -527,12 +527,9 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                     break;
                 }
             }
-            if (_pqmol)
+            if (rcenter)
             {
-                if (rcenter)
-                {
-                    _pqmol->reaction_bond_reacting_center[i] = rcenter;
-                }
+                mol.reaction_bond_reacting_center[i] = rcenter;
             }
         }
         else
