@@ -481,7 +481,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
             stereo = b["stereo"].GetInt();
         }
 
-        int topology = -1;
+        int topology = 0;
         if (b.HasMember("topology"))
         {
             topology = b["topology"].GetInt();
