@@ -53,6 +53,10 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
     std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
     if (element != -1 && element < ELEM_MAX)
         atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, element);
+    else if (element == ELEM_ATOMLIST)
+    {
+        atom = std::make_unique<QueryMolecule::Atom>(); // ATOM_LIST
+    }
     else
     {
         int atom_type = QueryMolecule::getAtomType(label);
@@ -129,8 +133,6 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
         case _ATOM_R:
             atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
             break;
-        default:
-            atom = std::make_unique<QueryMolecule::Atom>(); // ATOM_LIST
         }
     }
 
@@ -197,32 +199,6 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                     mol.addAttachmentPoint(att_idx + 1, i);
         }
 
-        if (a.HasMember("invRet"))
-        {
-            mol.reaction_atom_inversion[i] = a["invRet"].GetInt();
-        }
-
-        if (a.HasMember("unsaturatedAtom"))
-        {
-            if (!_pqmol)
-            {
-                if (!ignore_noncritical_query_features)
-                    throw Error("unsaturation flag is allowed only for queries");
-            }
-            if (a["unsaturatedAtom"].GetBool())
-                _pqmol->resetAtom(i, QueryMolecule::Atom::und(_pqmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
-        }
-
-        if (a.HasMember("exactChangeFlag"))
-        {
-            mol.reaction_atom_exact_change[i] = a["exactChangeFlag"].GetBool();
-        }
-
-        if (a.HasMember("mapping"))
-        {
-            mapping = a["mapping"].GetInt();
-        }
-
         if (a.HasMember("type"))
         {
             std::string atom_type = a["type"].GetString();
@@ -245,21 +221,21 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 is_not_list = a.HasMember("notList") ? a["notList"].GetBool() : false;
                 const Value& elements = a["elements"];
                 int pseudo_count = 0;
+                elem = ELEM_ATOMLIST;
                 for (int j = 0; j < elements.Size(); ++j)
                 {
                     auto elem_label = elements[j].GetString();
                     int list_elem = Element::fromString2(elem_label);
                     std::unique_ptr<QueryMolecule::Atom> cur_atom;
-                    if (elem == -1)
+                    if (list_elem != -1)
+                    {
+                        cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, list_elem);
+                    }
+                    else
                     {
                         pseudo_count++;
                         if (pseudo_count > 1)
                             throw Error("%s inside atom list, if present, must be single", elem_label);
-                        if (elem != -1)
-                            cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, elem);
-                    }
-                    else
-                    {
                         cur_atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, elem_label);
                     }
 
@@ -268,6 +244,9 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                     else
                         atomlist.reset(QueryMolecule::Atom::oder(atomlist.release(), cur_atom.release()));
                 }
+
+                if ( is_not_list )
+                    atomlist.reset(QueryMolecule::Atom::nicht(atomlist.release()));
             }
             else
                 throw Error("invalid atom type: %s", atom_type.c_str());
@@ -325,6 +304,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         else
         {
             atom_idx = addAtomToMoleculeQuery(label.c_str(), elem, charge, valence, radical, isotope);
+
             if (atomlist.get())
                 _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), atomlist.release()));
         }
@@ -390,9 +370,30 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             hcounts[atom_idx] = a["hCount"].GetInt();
         }
 
-        if (mapping)
+        if (a.HasMember("invRet"))
         {
-            mol.reaction_atom_mapping[atom_idx] = mapping;
+            mol.reaction_atom_inversion[atom_idx] = a["invRet"].GetInt();
+        }
+
+        if (a.HasMember("unsaturatedAtom"))
+        {
+            if (!_pqmol)
+            {
+                if (!ignore_noncritical_query_features)
+                    throw Error("unsaturation flag is allowed only for queries");
+            }
+            if (a["unsaturatedAtom"].GetBool())
+                _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+        }
+
+        if (a.HasMember("exactChangeFlag"))
+        {
+            mol.reaction_atom_exact_change[atom_idx] = a["exactChangeFlag"].GetBool();
+        }
+
+        if (a.HasMember("mapping"))
+        {
+            mol.reaction_atom_mapping[atom_idx] = a["mapping"].GetInt();
         }
 
         if (rsite_idx)
