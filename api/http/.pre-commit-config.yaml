@@ -13,5 +13,8 @@ repos:
     hooks:
     -   id: black
         language_version: python3
-        args:
-          - --line-length=79
+
+-   repo: https://github.com/pre-commit/mirrors-pylint
+    rev: "v2.7.4"
+    hooks:
+    -   id: pylint

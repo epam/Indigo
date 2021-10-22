@@ -5,10 +5,10 @@ packages = ["indigo_service"]
 package_data = {"": ["*"]}
 
 install_requires = [
-    "aiofiles>=0.7.0,<0.8.0",
-    "epam.indigo>=1.4.3,<2.0.0",
-    "fastapi>=0.63.0,<0.64.0",
-    "uvicorn[standard]>=0.13.3,<0.14.0",
+    "aiofiles>=0.7.0",
+    "epam.indigo>=1.4.3",
+    "fastapi>=0.63.0",
+    "uvicorn[standard]>=0.13.3",
 ]
 
 entry_points = {
