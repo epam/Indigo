@@ -335,8 +335,6 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson
     ArrayOutput out(buf);
     if (mol.edgeCount() > 0)
     {
-        writer.Key("bonds");
-        writer.StartArray();
         for (auto i : mol.edges())
         {
             writer.StartObject();
@@ -438,7 +436,6 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson
             }
             writer.EndObject();
         }
-        writer.EndArray();
     }
 }
 
@@ -811,6 +808,7 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
     for (int j = fragments.begin(); j != fragments.end(); j = fragments.next(j))
         saveBonds(*fragments[j], writer);
     writer.EndArray();
+
     writer.EndObject();
 }
 
@@ -847,10 +845,13 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
     writer.Key("nodes");
     writer.StartArray();
 
-    writer.StartObject();
-    writer.Key("$ref");
-    writer.String("mol0");
-    writer.EndObject();
+    if (bmol.vertexCount())
+    {
+        writer.StartObject();
+        writer.Key("$ref");
+        writer.String("mol0");
+        writer.EndObject();
+    }
 
     int n_rgroups = mol->rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; ++i)
@@ -867,21 +868,28 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
     writer.EndArray();  // nodes
     writer.EndObject(); // root
 
-    writer.Key("mol0");
-    writer.StartObject();
-    writer.Key("type");
-    writer.String("molecule");
-    writer.Key("atoms");
-    writer.StartArray();
-    saveAtoms(*mol, writer);
-    writer.EndArray();
+    if (bmol.vertexCount())
+    {
+        writer.Key("mol0");
+        writer.StartObject();
+        writer.Key("type");
+        writer.String("molecule");
+        writer.Key("atoms");
+        writer.StartArray();
+        saveAtoms(*mol, writer);
+        writer.EndArray();
 
-    saveBonds(*mol, writer);
-    saveSGroups(bmol, writer);
-    saveHighlights(*mol, writer);
-    saveSelection(*mol, writer);
+        writer.Key("bonds");
+        writer.StartArray();
+        saveBonds(*mol, writer);
+        writer.EndArray();
 
-    writer.EndObject(); // mol0
+        saveSGroups(bmol, writer);
+        saveHighlights(*mol, writer);
+        saveSelection(*mol, writer);
+
+        writer.EndObject(); // mol0
+    }
 
     for (int i = 1; i <= n_rgroups; i++)
     {

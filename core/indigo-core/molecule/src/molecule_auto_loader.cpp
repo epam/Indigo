@@ -289,7 +289,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         _scanner->skipSpace();
         if (_scanner->lookNext() == '{')
         {
-            if (_scanner->findWord("molecule")) // is it really reliable detection?
+            if (_scanner->findWord("root") && _scanner->findWord("nodes") && _scanner->findWord("$ref")) // is it really reliable detection?
             {
                 using namespace rapidjson;
                 _scanner->seek(pos, SEEK_SET);
@@ -333,7 +333,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                         }
                     } else
                         throw Error("Ketcher's JSON has no root node");
-                    if( mol_nodes.Size() )
+                    if( mol_nodes.Size() || rgroups.Size() )
                     {
                         MoleculeJsonLoader loader( mol_nodes, rgroups );
                         loader.stereochemistry_options = stereochemistry_options;
