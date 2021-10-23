@@ -2859,6 +2859,14 @@ class IndigoObject(object):
         )
 
     def merge(self, what):
+        """Molecule method merges molecule with given structure
+
+        Args:
+            what (IndigoObject): molecule object to merge with
+
+        Returns:
+            IndigoObject: mapping object for merged structure
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2868,18 +2876,33 @@ class IndigoObject(object):
         )
 
     def highlight(self):
+        """Atom or bond method to add hightlighting
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoHighlight(self.id)
         )
 
     def unhighlight(self):
+        """Atom or bond method to remove hightlighting
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoUnhighlight(self.id)
         )
 
     def isHighlighted(self):
+        """Atom or bond method returns True if highlighted
+
+        Returns:
+            bool: True if highlighted, False otherwise
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(
@@ -2888,18 +2911,33 @@ class IndigoObject(object):
         )
 
     def countComponents(self):
+        """Molecule method returns number of components
+
+        Returns:
+            int: number of components
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountComponents(self.id)
         )
 
     def componentIndex(self):
+        """Atom method returns component index
+
+        Returns:
+            int: component index
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoComponentIndex(self.id)
         )
 
     def iterateComponents(self):
+        """Molecule method returns components iterator
+
+        Returns:
+            IndigoObject: molecule components iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2909,6 +2947,14 @@ class IndigoObject(object):
         )
 
     def component(self, index):
+        """Molecule method returns component by index
+
+        Args:
+            index (int): component index
+
+        Returns:
+            IndigoObject: molecule component object
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2918,12 +2964,22 @@ class IndigoObject(object):
         )
 
     def countSSSR(self):
+        """Molecule method returns size of a smallest set of smallest rings
+
+        Returns:
+            int: SSSR rings count
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountSSSR(self.id)
         )
 
     def iterateSSSR(self):
+        """Molecule method returns smallest set of smallest rings iterator
+
+        Returns:
+            IndigoObject: SSSR iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2933,6 +2989,15 @@ class IndigoObject(object):
         )
 
     def iterateSubtrees(self, min_atoms, max_atoms):
+        """Molecule method returns subtrees iterator
+
+        Args:
+            min_atoms (int): min atoms neighbors limit
+            max_atoms (int): max atoms neighbors limit
+
+        Returns:
+            IndigoObject: subtrees iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2944,6 +3009,15 @@ class IndigoObject(object):
         )
 
     def iterateRings(self, min_atoms, max_atoms):
+        """Molecule method returns rings
+
+        Args:
+            min_atoms (int): min atoms neighbors limit
+            max_atoms (int): max atoms neighbors limit
+
+        Returns:
+            IndigoObject: rings iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2953,6 +3027,15 @@ class IndigoObject(object):
         )
 
     def iterateEdgeSubmolecules(self, min_bonds, max_bonds):
+        """Molecule method returns edge submolecules iteratro
+
+        Args:
+            min_bonds (int): min bonds neighbors limit
+            max_bonds (int): max bonds neighbors limit
+
+        Returns:
+            IndigoObject: submolecules iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2964,12 +3047,22 @@ class IndigoObject(object):
         )
 
     def countHeavyAtoms(self):
+        """Molecule method returns number of heavy atoms
+
+        Returns:
+            int: heavy atom count
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountHeavyAtoms(self.id)
         )
 
     def grossFormula(self):
+        """Molecule method returns gross formula
+
+        Returns:
+            str: gross formula
+        """
         self.dispatcher._setSessionId()
         gfid = self.dispatcher._checkResult(
             Indigo._lib.indigoGrossFormula(self.id)
@@ -2980,48 +3073,88 @@ class IndigoObject(object):
         )
 
     def molecularWeight(self):
+        """Molecule method returns molecular weight
+
+        Returns:
+            float: molecular weight value
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultFloat(
             Indigo._lib.indigoMolecularWeight(self.id)
         )
 
     def mostAbundantMass(self):
+        """Molecule method returns most abundant mass
+
+        Returns:
+            float: most abundant mass
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultFloat(
             Indigo._lib.indigoMostAbundantMass(self.id)
         )
 
     def monoisotopicMass(self):
+        """Molecule method returns most monoisotopic mass
+
+        Returns:
+            float: most monoisotopic mass
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultFloat(
             Indigo._lib.indigoMonoisotopicMass(self.id)
         )
 
     def massComposition(self):
+        """Molecule method returns mass composition
+
+        Returns:
+            str: mass composition string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoMassComposition(self.id)
         )
 
     def canonicalSmiles(self):
+        """Molecule or reaction method returns canonical smiles
+
+        Returns:
+            str: canonical smiles string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoCanonicalSmiles(self.id)
         )
 
     def canonicalSmarts(self):
+        """Molecule method returns canonical smarts
+
+        Returns:
+            str: canonical smarts
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoCanonicalSmarts(self.id)
         )
 
     def layeredCode(self):
+        """Molecule method returns layered code
+
+        Returns:
+            str: layered code string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoLayeredCode(self.id)
         )
 
     def symmetryClasses(self):
+        """Molecule method returns symmetry classes
+
+        Returns:
+            str: symmetry classes string
+        """
         c_size = c_int()
         self.dispatcher._setSessionId()
         c_buf = self.dispatcher._checkResultPtr(
@@ -3033,24 +3166,47 @@ class IndigoObject(object):
         return res
 
     def hasCoord(self):
+        """Molecule method returns True if structure contains coordinates
+
+        Returns:
+            bool: True if contains coordinates, False otherwise
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(Indigo._lib.indigoHasCoord(self.id))
         )
 
     def hasZCoord(self):
+        """Molecule method returns True if structure contains Z coordinate
+
+        Returns:
+            bool: True if contains Z coordinate, False otherwise
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(Indigo._lib.indigoHasZCoord(self.id))
         )
 
     def isChiral(self):
+        """Molecule method returns True if structure contains chiral flag
+
+        Returns:
+            bool: True if contains chiral flag, False otherwise
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(Indigo._lib.indigoIsChiral(self.id))
         )
 
     def isPossibleFischerProjection(self, options):
+        """Molecule method returns True if structure contains possible Fischer projection
+
+        Args:
+            options (str): projection options
+
+        Returns:
+            bool: True if structure contains possible Fischer projection
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(
