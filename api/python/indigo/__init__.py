@@ -2854,11 +2854,8 @@ class IndigoObject(object):
             int: 1 if there are no errors
         """
         self.dispatcher._setSessionId()
-        return self.dispatcher.IndigoObject(
-            self.dispatcher,
-            self.dispatcher._checkResult(
-                Indigo._lib.indigoSetBondOrder(self.id, order)
-            ),
+        return self.dispatcher._checkResult(
+            Indigo._lib.indigoSetBondOrder(self.id, order)
         )
 
     def merge(self, what):
