@@ -1600,6 +1600,14 @@ class IndigoObject(object):
         )
 
     def setSGroupData(self, data):
+        """SGroup method adds data
+
+        Args:
+            data (str): data string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupData(
@@ -1608,12 +1616,29 @@ class IndigoObject(object):
         )
 
     def setSGroupCoords(self, x, y):
+        """SGroup method sets coordinates
+
+        Args:
+            x (float): X coordinate
+            y (float): Y coordinate
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupCoords(self.id, x, y)
         )
 
     def setSGroupDescription(self, description):
+        """SGroup method sets description
+
+        Args:
+            description (str): description string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupDescription(
@@ -1622,6 +1647,14 @@ class IndigoObject(object):
         )
 
     def setSGroupFieldName(self, name):
+        """SGroup method sets field name
+
+        Args:
+            name (str): name string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupFieldName(
@@ -1630,6 +1663,14 @@ class IndigoObject(object):
         )
 
     def setSGroupQueryCode(self, code):
+        """SGroup methods sets query code
+
+        Args:
+            code (str): code string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupQueryCode(
@@ -1638,6 +1679,14 @@ class IndigoObject(object):
         )
 
     def setSGroupQueryOper(self, oper):
+        """SGroup method sets query oper
+
+        Args:
+            oper (str): query oper string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupQueryOper(
@@ -1646,6 +1695,14 @@ class IndigoObject(object):
         )
 
     def setSGroupDisplay(self, option):
+        """SGroup method sets display
+
+        Args:
+            option (str): display string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupDisplay(
@@ -1654,6 +1711,14 @@ class IndigoObject(object):
         )
 
     def setSGroupLocation(self, option):
+        """SGroup method sets location
+
+        Args:
+            option (str): location string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupLocation(
@@ -1662,6 +1727,14 @@ class IndigoObject(object):
         )
 
     def setSGroupTag(self, tag):
+        """SGroup method sets tag
+
+        Args:
+            tag (str): tag string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupTag(
@@ -1670,12 +1743,28 @@ class IndigoObject(object):
         )
 
     def setSGroupTagAlign(self, tag_align):
+        """SGroup method sets tag align
+
+        Args:
+            tag_align (int): tag align value
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupTagAlign(self.id, tag_align)
         )
 
     def setSGroupDataType(self, data_type):
+        """SGroup method sets data type
+
+        Args:
+            data_type (str): data type string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupDataType(
@@ -1684,18 +1773,44 @@ class IndigoObject(object):
         )
 
     def setSGroupXCoord(self, x):
+        """Sgroup method sets X coordinate
+
+        Args:
+            x (float): X coordinate
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupXCoord(self.id, x)
         )
 
     def setSGroupYCoord(self, y):
+        """Sgroup method sets Y coordinate
+
+        Args:
+            y (float): Y coordinate
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupYCoord(self.id, y)
         )
 
     def createSGroup(self, sgtype, mapping, name):
+        """Molecule method creates SGroup
+
+        Args:
+            sgtype (str): sgroup type
+            mapping (IndigoObject): mapping object
+            name (str): sgroup name
+
+        Returns:
+            IndigoObject: sgroup object
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -1709,6 +1824,14 @@ class IndigoObject(object):
         )
 
     def setSGroupClass(self, sgclass):
+        """SGroup method sets class
+
+        Args:
+            sgclass (str): sgroup class
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupClass(
@@ -1717,6 +1840,14 @@ class IndigoObject(object):
         )
 
     def setSGroupName(self, sgname):
+        """SGroup method sets group name
+
+        Args:
+            sgname (str): sgroup name string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupName(
@@ -1725,24 +1856,49 @@ class IndigoObject(object):
         )
 
     def getSGroupClass(self):
+        """SGroup method returns sgroup class
+
+        Returns:
+            str: sgroup class string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoGetSGroupClass(self.id)
         )
 
     def getSGroupName(self):
+        """SGroup method returns sgroup name
+
+        Returns:
+            str: sgroup name string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoGetSGroupName(self.id)
         )
 
     def getSGroupNumCrossBonds(self):
+        """SGroup method returns number of cross bonds
+
+        Returns:
+            int: number of cross bonds
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoGetSGroupNumCrossBonds(self.id)
         )
 
     def addSGroupAttachmentPoint(self, aidx, lvidx, apid):
+        """SGroup method sets attachment point info
+
+        Args:
+            aidx (int): index
+            lvidx (int): index
+            apid (str): id string
+
+        Returns:
+            int: attachment point index
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoAddSGroupAttachmentPoint(
@@ -1751,35 +1907,63 @@ class IndigoObject(object):
         )
 
     def deleteSGroupAttachmentPoint(self, apidx):
+        """SGroup method removes attachment point
+
+        Args:
+            apidx (int): attachment point index
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoDeleteSGroupAttachmentPoint(self.id, apidx)
         )
 
     def getSGroupDisplayOption(self):
+        """SGroup method returns display option
+
+        Returns:
+            int: display option
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoGetSGroupDisplayOption(self.id)
         )
 
     def setSGroupDisplayOption(self, option):
+        """SGroup method sets display option
+
+        Args:
+            option (int): display option
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetSGroupDisplayOption(self.id, option)
         )
 
     def getSGroupSeqId(self):
+        """SGroup method returns SEQID
+
+        Returns:
+            int: SEQID value
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoGetSGroupSeqId(self.id)
         )
 
     def getSGroupCoords(self):
-        """
+        """Sgroup method returns coordinates
+
+        Raises:
+            IndigoException: if no coordinates exist for the sgroup
+
         Returns:
-            XY coordinates for Data sgroup
-        ::
-            Since 1.3.0
+            list: [x, y] coordinates
         """
         self.dispatcher._setSessionId()
         xyz = Indigo._lib.indigoGetSGroupCoords(self.id)
@@ -1788,12 +1972,22 @@ class IndigoObject(object):
         return [xyz[0], xyz[1]]
 
     def getRepeatingUnitSubscript(self):
+        """Repeating unit method resturns subscript
+
+        Returns:
+            str: subscript value
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoGetRepeatingUnitSubscript(self.id)
         )
 
     def getRepeatingUnitConnectivity(self):
+        """Repeating unit method returns connectivity
+
+        Returns:
+            int: connectivity value
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoGetRepeatingUnitConnectivity(self.id)
