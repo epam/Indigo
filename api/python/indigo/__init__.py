@@ -2720,6 +2720,14 @@ class IndigoObject(object):
         )
 
     def addAtom(self, symbol):
+        """Molecule method adds atom
+
+        Args:
+            symbol (str): atom symbol
+
+        Returns:
+            IndigoObject: atom object
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2731,6 +2739,11 @@ class IndigoObject(object):
         )
 
     def resetAtom(self, symbol):
+        """Atom method resets atom to the new symbol
+
+        Args:
+            symbol (str): atom symbol
+        """
         self.dispatcher._setSessionId()
         self.dispatcher._checkResult(
             Indigo._lib.indigoResetAtom(
@@ -2739,6 +2752,14 @@ class IndigoObject(object):
         )
 
     def addRSite(self, name):
+        """Molecule method adds r-site
+
+        Args:
+            name (str): r-site name
+
+        Returns:
+            IndigoObject: atom object
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2750,30 +2771,71 @@ class IndigoObject(object):
         )
 
     def setRSite(self, name):
+        """Atom method sets r-site
+
+        Args:
+            name (str): r-site name
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetRSite(self.id, name.encode(ENCODE_ENCODING))
         )
 
     def setCharge(self, charge):
+        """Atom method sets charge
+
+        Args:
+            name (int): charge value
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetCharge(self.id, charge)
         )
 
     def setIsotope(self, isotope):
+        """Atom method sets isotope
+
+        Args:
+            name (int): isotope value
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetIsotope(self.id, isotope)
         )
 
     def setImplicitHCount(self, impl_h):
+        """Atom method sets implicit hydrogen count
+
+        Args:
+            name (int): implicit hydrogen count
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetImplicitHCount(self.id, impl_h)
         )
 
     def addBond(self, destination, order):
+        """Atom method adds bond
+
+        Args:
+            destination (IndigoObject): atom object destination
+            order (int): bond order
+
+        Returns:
+            IndigoObject: bond object
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -2783,6 +2845,14 @@ class IndigoObject(object):
         )
 
     def setBondOrder(self, order):
+        """Bond method sets order
+
+        Args:
+            order (int): order value
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
