@@ -916,11 +916,14 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
 
     for (const auto& sc : _stereo_centers)
     {
+        // const int undefined_pyramid[] = {-1, -1, -1, -1};
         if (mol.stereocenters.getType(sc._atom_idx) == 0)
         {
-            throw Error("stereo type specified for atom #%d, but the bond "
+            if( !stereochemistry_options.ignore_errors )
+                throw Error("stereo type specified for atom #%d, but the bond "
                         "directions does not say that it is a stereocenter",
                         sc._atom_idx);
+            mol.addStereocenters(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
         }
         else
             mol.stereocenters.setType(sc._atom_idx, sc._type, sc._group);
