@@ -23,8 +23,8 @@
 #include "layout/molecule_layout.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_saver.h"
-#include "molecule/query_molecule.h"
 #include "molecule/molecule_savers.h"
+#include "molecule/query_molecule.h"
 
 using namespace indigo;
 using namespace rapidjson;
@@ -612,7 +612,8 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                 if (mol.isPseudoAtom(i))
                 {
                     buf.readString(mol.getPseudoAtom(i), true);
-                } else if (mol.isTemplateAtom(i))
+                }
+                else if (mol.isTemplateAtom(i))
                 {
                     buf.readString(mol.getTemplateAtom(i), true);
                 }
@@ -690,7 +691,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                 {
                     writer.Key("substitutionCount");
                     writer.Int(subst);
-
                 }
 
                 int unsat = 0;
@@ -750,7 +750,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
             if (ecflag)
             {
                 writer.Key("exactChangeFlag");
-                writer.Bool( ecflag );
+                writer.Bool(ecflag);
             }
 
             int enh_stereo_type = mol.stereocenters.getType(i);
@@ -835,6 +835,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         ml.make();
     }
     BaseMolecule::collapse(*mol);
+    if (_pmol)
+        _pmol->setIgnoreBadValenceFlag(true);
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     std::set<int> rgrp_full_list;
