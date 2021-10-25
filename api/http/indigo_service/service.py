@@ -16,17 +16,17 @@
 # limitations under the License.
 #
 
-from enum import Enum
 from typing import List, Optional, Tuple, Union
 
 from indigo import IndigoObject
-from pydantic import BaseModel
 
 from indigo_service import jsonapi
 from indigo_service.indigo_tools import indigo
 
 
-def extract_compounds(pairs: List[Tuple[str, Enum]]) -> List[IndigoObject]:
+def extract_compounds(
+    pairs: List[Tuple[str, jsonapi.CompoundFormat]]
+) -> List[IndigoObject]:
     result = []
     for compound, compound_type in pairs:
         if compound_type == jsonapi.CompoundFormat.AUTO:
@@ -39,7 +39,7 @@ def extract_compounds(pairs: List[Tuple[str, Enum]]) -> List[IndigoObject]:
 
 
 def extract_pairs(
-    compounds: Union[BaseModel, List[BaseModel]]
+    compounds: Union[jsonapi.CompoundObject, List[jsonapi.CompoundObject]]
 ) -> List[Tuple[str, jsonapi.CompoundFormat]]:
     if isinstance(compounds, list):
         return [(comp.structure, comp.format) for comp in compounds]
@@ -60,23 +60,23 @@ def to_string(
     if string_format == jsonapi.CompoundFormat.CML:
         return compound.cml(), string_format
     if string_format == jsonapi.CompoundFormat.SMARTS:
-        return compound.SMARTS(), string_format
+        return compound.smarts(), string_format
     raise RuntimeError(f"{string_format} is not supported")
 
 
 def map_match_output(
     match: Optional[IndigoObject],
     output_format: jsonapi.MatchOutputFormat,
-    target,
+    target: IndigoObject,
 ) -> Union[str, jsonapi.MapBondModel, jsonapi.MapAtomModel]:
     if match is None:
         raise AttributeError("Empty result")
     if output_format == jsonapi.MatchOutputFormat.HIGHLIGHTED_TARGET_MOLFILE:
-        return match.highlightedTarget().molfile()
+        return match.highlightedTarget().molfile()  # type: ignore
     if output_format == jsonapi.MatchOutputFormat.HIGHLIGHTED_TARGET_SMILES:
-        return match.highlightedTarget().smiles()
+        return match.highlightedTarget().smiles()  # type: ignore
     if output_format == jsonapi.MatchOutputFormat.HIGHLIGHTED_TARGET_CML:
-        return match.highlightedTarget().cml()
+        return match.highlightedTarget().cml()  # type: ignore
     if output_format == jsonapi.MatchOutputFormat.MAP_ATOM:
         return map_atom(match, target)
     if output_format == jsonapi.MatchOutputFormat.MAP_BOND:

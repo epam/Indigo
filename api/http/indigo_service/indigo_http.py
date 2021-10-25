@@ -16,15 +16,13 @@
 # limitations under the License.
 #
 
-from typing import List, Tuple
+from typing import Awaitable, Callable, List, Tuple, Union
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from indigo import IndigoException
 
-from indigo_service import jsonapi
-from indigo_service import service
-
+from indigo_service import jsonapi, service
 from indigo_service.indigo_tools import indigo, indigo_new
 
 app = FastAPI()
@@ -35,7 +33,9 @@ RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
 
 
 @app.middleware("http")
-async def isolate_indigo_session(request: Request, call_next):
+async def isolate_indigo_session(
+    request: Request, call_next: Callable[[Request], Awaitable[JSONResponse]]
+) -> JSONResponse:
     with indigo_new():
         response = await call_next(request)
         if not request.scope["path"].startswith(
@@ -48,25 +48,29 @@ async def isolate_indigo_session(request: Request, call_next):
 @app.exception_handler(IndigoException)
 def unicorn_exception_handler(
     request: Request, exc: IndigoException  # pylint: disable=unused-argument
-):
+) -> JSONResponse:
     error = jsonapi.make_error_response(exc)
     return JSONResponse(status_code=400, content=error.dict())
 
 
 def compounds(
-    request: jsonapi.CompoundRequest,
+    request: Union[
+        jsonapi.DescriptorRequest,
+        jsonapi.ValidationRequest,
+        jsonapi.CompoundConvertRequest,
+    ],
 ) -> List[Tuple[str, jsonapi.CompoundFormat]]:
     return service.extract_pairs(request.data.attributes.compound)
 
 
 def source(
-    request: jsonapi.CompoundRequest,
+    request: jsonapi.SourceTargetsRequest,
 ) -> List[Tuple[str, jsonapi.CompoundFormat]]:
     return service.extract_pairs(request.data.attributes.source)
 
 
 def targets(
-    request: jsonapi.CompoundRequest,
+    request: jsonapi.SourceTargetsRequest,
 ) -> List[Tuple[str, jsonapi.CompoundFormat]]:
     return service.extract_pairs(request.data.attributes.targets)
 
@@ -85,9 +89,7 @@ def indigo_version() -> jsonapi.VersionResponse:
     response_model_exclude_unset=True,
 )
 def similarities(
-    request: jsonapi.Request[
-        jsonapi.SimilaritiesModelType, jsonapi.SimilaritiesModel
-    ]
+    request: jsonapi.SimilaritiesRequest,
 ) -> jsonapi.SimilaritiesResponse:
 
     fingerprint = request.data.attributes.fingerprint
@@ -115,14 +117,10 @@ def similarities(
 
 @app.post(
     f"{BASE_URL_INDIGO}/exactMatch",
-    response_model=jsonapi.MatchResponse,
+    response_model=jsonapi.MatchResponse,  # type: ignore
     response_model_exclude_unset=True,
 )
-def exact_match(
-    request: jsonapi.Request[
-        jsonapi.MatchModelType, jsonapi.MatchModel[jsonapi.MatchOutputFormat]
-    ]
-) -> jsonapi.MatchResponse:
+def exact_match(request: jsonapi.MatchRequest) -> jsonapi.MatchResponse:
     compound, *_ = service.extract_compounds(source(request))
     target_pairs = targets(request)
     target_compounds = service.extract_compounds(target_pairs)
@@ -139,9 +137,9 @@ def exact_match(
                 )
             )
         except AttributeError:
-            results.append(None)
+            results.append("")
 
-    return jsonapi.make_match_response(results, output_format)
+    return jsonapi.make_match_response(results, output_format)  # type: ignore
 
 
 @app.post(
@@ -206,9 +204,9 @@ def common_bits(
     return jsonapi.make_common_bits_response(result)
 
 
-def run_debug():
+def run_debug() -> None:
     # Debug server for dev purpose only
-    import uvicorn
+    import uvicorn  # pylint: disable=import-outside-toplevel
 
     uvicorn.run(
         "indigo_service.indigo_http:app",

@@ -131,16 +131,11 @@ class CompoundObject(BaseModel):
 
 class CompoundModel(GenericModel, Generic[OutputFormatT]):
     compound: CompoundObject
-    outputFormat: Optional[OutputFormatT]
+    outputFormat: OutputFormatT
 
 
 class CompoundArrayModel(GenericModel, Generic[OutputFormatT]):
     array: List[CompoundObject]
-    outputFormat: Optional[OutputFormatT]
-
-
-class SourceModel(GenericModel, Generic[OutputFormatT]):
-    source: CompoundObject
     outputFormat: Optional[OutputFormatT]
 
 
@@ -150,7 +145,9 @@ class Compounds(GenericModel, Generic[OutputFormatT]):
 
 
 class CompoundPair(GenericModel, Generic[OutputFormatT]):
-    compounds: conlist(CompoundObject, min_items=2, max_items=2)
+    # fmt: off
+    compounds: conlist(CompoundObject, min_items=2, max_items=2)  # type: ignore # pylint: disable=line-too-long
+    # fmt: on
     outputFormat: Optional[OutputFormatT]
 
 
@@ -168,7 +165,9 @@ CompoundPairPrimitiveRequest = Request[
     CompoundPairModelType, CompoundPair[PrimitiveFormat]
 ]
 CompoundResponse = Response[CompoundModelType, CompoundObject]
-CompoundListResponse = Response[CompoundArrayModelType, CompoundArrayModel]
+CompoundListResponse = Response[
+    CompoundArrayModelType, CompoundArrayModel[CompoundFormat]
+]
 
 
 def make_compound_response(
@@ -234,10 +233,6 @@ class MapBondModel(BaseModel):
     targetBonds: List[int]
 
 
-class MatchAttributes(CompoundPair, Generic[OutputFormatT]):
-    flag: Optional[str] = ""
-
-
 class MatchOutputFormat(str, Enum):
     MAP_ATOM = "mapAtom"
     MAP_BOND = "mapBond"
@@ -250,13 +245,16 @@ class MatchModelType(BaseModel):
     __root__: str = "match"
 
 
-class MatchModel(SourceModel, Generic[OutputFormatT]):
+class MatchModel(BaseModel, Generic[OutputFormatT]):
+    source: CompoundObject
     targets: List[CompoundObject]
+    outputFormat: OutputFormatT
     flag: Optional[str] = "ALL"
 
 
 MapAtomResponse = Response[MapAtomModelType, MapModel[MapAtomModel]]
 MapBondResponse = Response[MapBondModelType, MapModel[MapBondModel]]
+MatchRequest = Request[MatchModelType, MatchModel[MatchOutputFormat]]
 MatchResponse = Union[MapAtomResponse, MapBondResponse, CompoundListResponse]
 
 
@@ -291,9 +289,9 @@ def make_match_response(
     output_format: MatchOutputFormat,
 ) -> MatchResponse:
     if output_format == MatchOutputFormat.MAP_ATOM:
-        return make_map_atom_response(raw_response)
+        return make_map_atom_response(raw_response)  # type: ignore
     if output_format == MatchOutputFormat.MAP_BOND:
-        return make_map_bond_response(raw_response)
+        return make_map_bond_response(raw_response)  # type: ignore
 
     response_fn = functools.partial(make_list_compound_response, raw_response)
     if output_format == MatchOutputFormat.HIGHLIGHTED_TARGET_MOLFILE:
@@ -387,12 +385,17 @@ class SimilaritiesModel(BaseModel):
 
     @validator("alpha", "beta")
     def tversky_factor(
-        cls, factor
-    ) -> float:  # pylint: disable=no-self-argument,no-self-use
-        if not 0 <= factor <= 1:
-            raise ValueError("alpha and beta should be between 0 and 1")
+        cls, factor: Optional[float]
+    ) -> Optional[
+        float
+    ]:  # pylint: disable=no-self-argument,no-self-use,line-too-long
+        if factor is not None:
+            if not 0 <= factor <= 1:
+                raise ValueError("alpha and beta should be between 0 and 1")
         return factor
 
+
+SimilaritiesRequest = Request[SimilaritiesModelType, SimilaritiesModel]
 
 SimilaritiesResponse = Response[
     SimilaritiesValuesType, SimilaritiesValuesModel
@@ -456,7 +459,9 @@ ValidationResponse = Response[
 ValidationRequest = Request[ValidationModelType, ValidationModel]
 
 
-def make_validation_response(validations: Dict[str, str]):
+def make_validation_response(
+    validations: Dict[Validations, str]
+) -> ValidationResponse:
     return ValidationResponse(
         **{"data": {"type": "validationResults", "attributes": validations}}
     )
@@ -552,7 +557,14 @@ DescriptorRequest = Request[DescriptorModelType, DescriptorModel]
 DescriptorResponse = Response[DescriptorResultModelType, DescriptorResultModel]
 
 
-def make_descriptor_response(descriptors: Dict[str, str]):
+def make_descriptor_response(
+    descriptors: Dict[Descriptors, str]
+) -> DescriptorResponse:
     return DescriptorResponse(
         **{"data": {"type": "descriptorResult", "attributes": descriptors}}
     )
+
+
+SourceTargetsRequest = Union[
+    CommonBitsRequest, SimilaritiesRequest, MatchRequest
+]

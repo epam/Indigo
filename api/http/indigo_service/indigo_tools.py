@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-import os
-import tempfile
 import threading
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -30,7 +28,7 @@ __cur_thread: ContextVar[int] = ContextVar(
 )
 
 
-def indigo(thread_local=False) -> Indigo:
+def indigo(thread_local: bool = False) -> Indigo:
     if thread_local:
         ident = threading.get_ident()
         if __cur_thread.get() != ident:
@@ -48,11 +46,3 @@ def indigo_new() -> Indigo:
         yield
     finally:
         __indigo.reset(token)
-
-
-def create_temp_png_file():
-    _, path = tempfile.mkstemp(suffix=".png")
-    try:
-        yield path
-    finally:
-        os.unlink(path)
