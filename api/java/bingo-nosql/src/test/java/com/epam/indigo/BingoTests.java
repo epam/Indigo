@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.Assertions;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BingoTests {
     @Test
@@ -16,7 +16,7 @@ public class BingoTests {
     void checkBingoVersion(@TempDir Path tempDir) {
         Indigo indigo = new Indigo(Paths.get(System.getProperty("user.dir"), "..", "..", "..", "dist", "lib").normalize().toAbsolutePath().toString());
         Bingo bingo = Bingo.createDatabaseFile(indigo, tempDir.toString(), "molecule", "");
-        assertEquals(
+        Assertions.assertEquals(
                 "v0.72",
                 bingo.version(),
                 "Checking version of the Bingo"
@@ -33,18 +33,34 @@ public class BingoTests {
         bingo.insert(indigo.loadMolecule("CC"));
         BingoObject enumerator = bingo.enumerateId();
         int i = 0;
-        while (enumerator.next()) {
-            assertEquals(
-                i,
-                enumerator.getCurrentId(),
-                "Checking currentId"
-            );
-            i++;
-        }
-        assertEquals(
+        // unfolding while (enumerator.next()):
+        Assertions.assertTrue(
+            enumerator.next(),
+            "Checking next(), iteration 1"
+        );
+        Assertions.assertDoesNotThrow(
+            ()->{ enumerator.getCurrentId(); },
+            "Checking that getCurrentId() works at iteration 1"
+        );
+        i++;
+        Assertions.assertTrue(
+            enumerator.next(),
+            "Checking next(), iteration 2"
+        );
+        Assertions.assertDoesNotThrow(
+            ()->{ enumerator.getCurrentId(); },
+            "Checking that getCurrentId() works at iteration 2"
+        );
+        i++;
+        Assertions.assertFalse(
+            enumerator.next(),
+            "Checking next() after end"
+        );
+        Assertions.assertEquals(
             i,
             2,
             "Checking count"
         );
+        bingo.close();
     }
 }

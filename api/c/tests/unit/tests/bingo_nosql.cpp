@@ -45,17 +45,31 @@ TEST_F(BingoNosqlTest, test_enumerate_id)
 {
     int db = bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", "");
     int obj = indigoLoadMoleculeFromString("C1CCNCC1");
+
+    // checking next() of empty enumerator
+    int e_empty = bingoEnumerateId(db);
+    EXPECT_FALSE(bingoNext(e_empty));
+    EXPECT_ANY_THROW(bingoGetCurrentId(e_empty));
+    bingoEndSearch(e_empty);
+
+    // Main scenario: 3 elements in enumerator
     bingoInsertRecordObj(db, obj);
     bingoInsertRecordObj(db, obj);
     bingoInsertRecordObj(db, obj);
 
     int count = 0;
     int e = bingoEnumerateId(db);
-    while (bingoNext(e))
-    {
-        ASSERT_EQ(count, bingoGetCurrentId(e));
-        count++;
-    }
+    // unfolding while (bingoNext(e))
+    EXPECT_TRUE(bingoNext(e));
+    EXPECT_NO_THROW(bingoGetCurrentId(e));
+    count++;
+    EXPECT_TRUE(bingoNext(e));
+    EXPECT_NO_THROW(bingoGetCurrentId(e));
+    count++;
+    EXPECT_TRUE(bingoNext(e));
+    EXPECT_NO_THROW(bingoGetCurrentId(e));
+    count++;
+    EXPECT_FALSE(bingoNext(e));
 
     bingoEndSearch(e);
     bingoCloseDatabase(db);

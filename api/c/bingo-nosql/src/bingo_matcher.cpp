@@ -1603,7 +1603,6 @@ bool MolGrossMatcher::_tryCurrent() /* const */
 EnumeratorMatcher::EnumeratorMatcher(BaseIndex& index) : BaseMatcher(index, (IndigoObject*&)_indigoObject)
 {
     _id_numbers = index.getIdMapping().size();
-    _current_id = -1;
     _indigoObject = nullptr;
 }
 
