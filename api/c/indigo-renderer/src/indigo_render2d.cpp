@@ -52,6 +52,7 @@ IndigoRenderer& indigoRendererGetInstance()
 
 void IndigoRenderer::init()
 {
+    setOptionsHandlers();
     renderParams.clear();
 }
 
@@ -67,8 +68,6 @@ typedef RedBlackStringMap<int, false> StringIntMap;
 IndigoRenderer::IndigoRenderer()
 {
     indigo_id = TL_GET_SESSION_ID();
-    setOptionsHandlers();
-    init();
 }
 
 IndigoRenderer::~IndigoRenderer()
@@ -452,7 +451,8 @@ CEXPORT int indigoRendererInit()
 #endif
     INDIGO_BEGIN_STATIC
     {
-        const auto& context = indigo_renderer_self.createOrGetLocalCopy();
+        auto& context = indigo_renderer_self.createOrGetLocalCopy();
+        context.init();
         return 0;
     }
     INDIGO_END(-1);
@@ -715,73 +715,79 @@ CEXPORT int indigoRenderWriteHDC(void* hdc, int printingHdc)
 
 void IndigoRenderer::setOptionsHandlers()
 {
-    auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager(indigo_id));
+    if (!options_set)
+    {
+        auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager(indigo_id));
 
 #define rp indigoRendererGetInstance().renderParams
 #define cdxmlContext getCdxmlContext()
 
-   mgr->setOptionHandlerInt("render-comment-offset", SETTER_GETTER_INT_OPTION(rp.cnvOpt.commentOffset));
-   mgr->setOptionHandlerInt("render-image-width", SETTER_GETTER_INT_OPTION(rp.cnvOpt.width));
-   mgr->setOptionHandlerInt("render-image-height", SETTER_GETTER_INT_OPTION(rp.cnvOpt.height));
-   mgr->setOptionHandlerInt("render-image-max-width", SETTER_GETTER_INT_OPTION(rp.cnvOpt.maxWidth));
-   mgr->setOptionHandlerInt("render-image-max-height", SETTER_GETTER_INT_OPTION(rp.cnvOpt.maxHeight));
+        mgr->setOptionHandlerInt("render-comment-offset", SETTER_GETTER_INT_OPTION(rp.cnvOpt.commentOffset));
+        mgr->setOptionHandlerInt("render-image-width", SETTER_GETTER_INT_OPTION(rp.cnvOpt.width));
+        mgr->setOptionHandlerInt("render-image-height", SETTER_GETTER_INT_OPTION(rp.cnvOpt.height));
+        mgr->setOptionHandlerInt("render-image-max-width", SETTER_GETTER_INT_OPTION(rp.cnvOpt.maxWidth));
+        mgr->setOptionHandlerInt("render-image-max-height", SETTER_GETTER_INT_OPTION(rp.cnvOpt.maxHeight));
 
-   mgr->setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat, indigoRenderGetOutputFormat);
+        mgr->setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat, indigoRenderGetOutputFormat);
 
-   mgr->setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode, indigoRenderGetLabelMode);
-   mgr->setOptionHandlerString("render-comment", SETTER_GETTER_STR_OPTION(rp.cnvOpt.comment));
-   mgr->setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition, indigoRenderGetCommentPosition);
-   mgr->setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle, indigoRenderGetStereoStyle);
-   mgr->setOptionHandlerString("render-catalysts-placement", indigoRenderSetCatalystsPlacement, indigoRenderGetCatalystsPlacement);
-   mgr->setOptionHandlerString("render-superatom-mode", indigoRenderSetSuperatomMode, indigoRenderGetSuperatomMode);
-   mgr->setOptionHandlerString("render-atom-color-property", SETTER_GETTER_STR_OPTION(rp.rOpt.atomColorProp));
+        mgr->setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode, indigoRenderGetLabelMode);
+        mgr->setOptionHandlerString("render-comment", SETTER_GETTER_STR_OPTION(rp.cnvOpt.comment));
+        mgr->setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition, indigoRenderGetCommentPosition);
+        mgr->setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle, indigoRenderGetStereoStyle);
+        mgr->setOptionHandlerString("render-catalysts-placement", indigoRenderSetCatalystsPlacement, indigoRenderGetCatalystsPlacement);
+        mgr->setOptionHandlerString("render-superatom-mode", indigoRenderSetSuperatomMode, indigoRenderGetSuperatomMode);
+        mgr->setOptionHandlerString("render-atom-color-property", SETTER_GETTER_STR_OPTION(rp.rOpt.atomColorProp));
 
-   mgr->setOptionHandlerBool("render-coloring", SETTER_GETTER_BOOL_OPTION(rp.rOpt.atomColoring));
-   mgr->setOptionHandlerBool("render-valences-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showValences));
-   mgr->setOptionHandlerBool("render-atom-ids-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showAtomIds));
-   mgr->setOptionHandlerBool("render-bond-ids-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showBondIds));
-   mgr->setOptionHandlerBool("render-atom-bond-ids-from-one", SETTER_GETTER_BOOL_OPTION(rp.rOpt.atomBondIdsFromOne));
-   mgr->setOptionHandlerBool("render-highlight-thickness-enabled", SETTER_GETTER_BOOL_OPTION(rp.rOpt.highlightThicknessEnable));
-   mgr->setOptionHandlerBool("render-highlight-color-enabled", SETTER_GETTER_BOOL_OPTION(rp.rOpt.highlightColorEnable));
-   mgr->setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", SETTER_GETTER_BOOL_OPTION(rp.rOpt.centerDoubleBondWhenStereoAdjacent));
-   mgr->setOptionHandlerBool("render-implicit-hydrogens-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.implHVisible));
-   mgr->setOptionHandlerBool("render-highlighted-labels-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.highlightedLabelsVisible));
-   mgr->setOptionHandlerBool("render-bold-bond-detection", SETTER_GETTER_BOOL_OPTION(rp.rOpt.boldBondDetection));
+        mgr->setOptionHandlerBool("render-coloring", SETTER_GETTER_BOOL_OPTION(rp.rOpt.atomColoring));
+        mgr->setOptionHandlerBool("render-valences-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showValences));
+        mgr->setOptionHandlerBool("render-atom-ids-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showAtomIds));
+        mgr->setOptionHandlerBool("render-bond-ids-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showBondIds));
+        mgr->setOptionHandlerBool("render-atom-bond-ids-from-one", SETTER_GETTER_BOOL_OPTION(rp.rOpt.atomBondIdsFromOne));
+        mgr->setOptionHandlerBool("render-highlight-thickness-enabled", SETTER_GETTER_BOOL_OPTION(rp.rOpt.highlightThicknessEnable));
+        mgr->setOptionHandlerBool("render-highlight-color-enabled", SETTER_GETTER_BOOL_OPTION(rp.rOpt.highlightColorEnable));
+        mgr->setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", SETTER_GETTER_BOOL_OPTION(rp.rOpt.centerDoubleBondWhenStereoAdjacent));
+        mgr->setOptionHandlerBool("render-implicit-hydrogens-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.implHVisible));
+        mgr->setOptionHandlerBool("render-highlighted-labels-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.highlightedLabelsVisible));
+        mgr->setOptionHandlerBool("render-bold-bond-detection", SETTER_GETTER_BOOL_OPTION(rp.rOpt.boldBondDetection));
 
-   mgr->setOptionHandlerFloat("render-bond-length", SETTER_GETTER_FLOAT_OPTION(rp.cnvOpt.bondLength));
-   mgr->setOptionHandlerFloat("render-relative-thickness", SET_POSITIVE_FLOAT_OPTION(rp.relativeThickness, "relative thickness must be positive"));
-   mgr->setOptionHandlerFloat("render-bond-line-width", SET_POSITIVE_FLOAT_OPTION(rp.bondLineWidthFactor, "bond line width factor must be positive"));
-   mgr->setOptionHandlerFloat("render-comment-font-size", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.commentFontFactor));
-   mgr->setOptionHandlerString("render-comment-alignment", indigoRenderSetCommentAlignment, indigoRenderGetCommentAlignment);
-   mgr->setOptionHandlerFloat("render-comment-spacing", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.commentSpacing));
+        mgr->setOptionHandlerFloat("render-bond-length", SETTER_GETTER_FLOAT_OPTION(rp.cnvOpt.bondLength));
+        mgr->setOptionHandlerFloat("render-relative-thickness", SET_POSITIVE_FLOAT_OPTION(rp.relativeThickness, "relative thickness must be positive"));
+        mgr->setOptionHandlerFloat("render-bond-line-width", SET_POSITIVE_FLOAT_OPTION(rp.bondLineWidthFactor, "bond line width factor must be positive"));
+        mgr->setOptionHandlerFloat("render-comment-font-size", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.commentFontFactor));
+        mgr->setOptionHandlerString("render-comment-alignment", indigoRenderSetCommentAlignment, indigoRenderGetCommentAlignment);
+        mgr->setOptionHandlerFloat("render-comment-spacing", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.commentSpacing));
 
-   mgr->setOptionHandlerColor("render-background-color", SETTER_GETTER_COLOR_OPTION(rp.rOpt.backgroundColor));
-   mgr->setOptionHandlerColor("render-base-color", SETTER_GETTER_COLOR_OPTION(rp.rOpt.baseColor));
-   mgr->setOptionHandlerColor("render-highlight-color", CHECK_AND_SETTER_GETTER_COLOR_OPTION(rp.rOpt.highlightColor));
-   mgr->setOptionHandlerColor("render-aam-color", CHECK_AND_SETTER_GETTER_COLOR_OPTION(rp.rOpt.aamColor));
-   mgr->setOptionHandlerColor("render-comment-color", CHECK_AND_SETTER_GETTER_COLOR_OPTION(rp.rOpt.commentColor));
-   mgr->setOptionHandlerColor("render-data-sgroup-color", CHECK_AND_SETTER_GETTER_COLOR_OPTION(rp.rOpt.dataGroupColor));
+        mgr->setOptionHandlerColor("render-background-color", SETTER_GETTER_COLOR_OPTION(rp.rOpt.backgroundColor));
+        mgr->setOptionHandlerColor("render-base-color", SETTER_GETTER_COLOR_OPTION(rp.rOpt.baseColor));
+        mgr->setOptionHandlerColor("render-highlight-color", CHECK_AND_SETTER_GETTER_COLOR_OPTION(rp.rOpt.highlightColor));
+        mgr->setOptionHandlerColor("render-aam-color", CHECK_AND_SETTER_GETTER_COLOR_OPTION(rp.rOpt.aamColor));
+        mgr->setOptionHandlerColor("render-comment-color", CHECK_AND_SETTER_GETTER_COLOR_OPTION(rp.rOpt.commentColor));
+        mgr->setOptionHandlerColor("render-data-sgroup-color", CHECK_AND_SETTER_GETTER_COLOR_OPTION(rp.rOpt.dataGroupColor));
 
-   mgr->setOptionHandlerXY("render-image-size", SETTER_GETTER_XY_OPTION(rp.cnvOpt.width, rp.cnvOpt.height));
-   mgr->setOptionHandlerXY("render-hdc-offset", SETTER_GETTER_XY_OPTION(rp.cnvOpt.xOffset, rp.cnvOpt.yOffset));
-   mgr->setOptionHandlerXY("render-margins", SETTER_GETTER_XY_OPTION(rp.cnvOpt.marginX, rp.cnvOpt.marginY));
+        mgr->setOptionHandlerXY("render-image-size", SETTER_GETTER_XY_OPTION(rp.cnvOpt.width, rp.cnvOpt.height));
+        mgr->setOptionHandlerXY("render-hdc-offset", SETTER_GETTER_XY_OPTION(rp.cnvOpt.xOffset, rp.cnvOpt.yOffset));
+        mgr->setOptionHandlerXY("render-margins", SETTER_GETTER_XY_OPTION(rp.cnvOpt.marginX, rp.cnvOpt.marginY));
 
-   mgr->setOptionHandlerXY("render-grid-margins", SETTER_GETTER_XY_OPTION(rp.cnvOpt.gridMarginX, rp.cnvOpt.gridMarginY));
-   mgr->setOptionHandlerFloat("render-grid-title-spacing", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.titleSpacing));
-   mgr->setOptionHandlerString("render-grid-title-alignment", indigoRenderSetTitleAlignment, indigoRenderGetTitleAlignment);
-   mgr->setOptionHandlerFloat("render-grid-title-font-size", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.titleFontFactor));
-   mgr->setOptionHandlerString("render-grid-title-property", SETTER_GETTER_STR_OPTION(rp.cnvOpt.titleProp));
-   mgr->setOptionHandlerInt("render-grid-title-offset", SETTER_GETTER_INT_OPTION(rp.cnvOpt.titleOffset));
+        mgr->setOptionHandlerXY("render-grid-margins", SETTER_GETTER_XY_OPTION(rp.cnvOpt.gridMarginX, rp.cnvOpt.gridMarginY));
+        mgr->setOptionHandlerFloat("render-grid-title-spacing", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.titleSpacing));
+        mgr->setOptionHandlerString("render-grid-title-alignment", indigoRenderSetTitleAlignment, indigoRenderGetTitleAlignment);
+        mgr->setOptionHandlerFloat("render-grid-title-font-size", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.titleFontFactor));
+        mgr->setOptionHandlerString("render-grid-title-property", SETTER_GETTER_STR_OPTION(rp.cnvOpt.titleProp));
+        mgr->setOptionHandlerInt("render-grid-title-offset", SETTER_GETTER_INT_OPTION(rp.cnvOpt.titleOffset));
 
-   mgr->setOptionHandlerBool("render-cdxml-properties-enabled", SETTER_GETTER_BOOL_OPTION(cdxmlContext.enabled));
-   mgr->setOptionHandlerString("render-cdxml-properties-fonttable", SETTER_GETTER_STR_OPTION(cdxmlContext.fonttable));
-   mgr->setOptionHandlerString("render-cdxml-properties-colortable", SETTER_GETTER_STR_OPTION(cdxmlContext.colortable));
-   mgr->setOptionHandlerString("render-cdxml-properties-name-property", SETTER_GETTER_STR_OPTION(cdxmlContext.propertyNameCaption));
-   mgr->setOptionHandlerString("render-cdxml-properties-value-property", SETTER_GETTER_STR_OPTION(cdxmlContext.propertyValueCaption));
-   mgr->setOptionHandlerString("render-cdxml-properties-key-alignment", indigoRenderSetCdxmlPropertiesKeyAlignment, indigoRenderGetCdxmlPropertiesKeyAlignment);
-   mgr->setOptionHandlerFloat("render-cdxml-properties-size", SETTER_GETTER_FLOAT_OPTION(cdxmlContext.propertyFontSize));
-   mgr->setOptionHandlerString("render-cdxml-title-font", SETTER_GETTER_STR_OPTION(cdxmlContext.titleFont));
-   mgr->setOptionHandlerString("render-cdxml-title-face", SETTER_GETTER_STR_OPTION(cdxmlContext.titleFace));
+        mgr->setOptionHandlerBool("render-cdxml-properties-enabled", SETTER_GETTER_BOOL_OPTION(cdxmlContext.enabled));
+        mgr->setOptionHandlerString("render-cdxml-properties-fonttable", SETTER_GETTER_STR_OPTION(cdxmlContext.fonttable));
+        mgr->setOptionHandlerString("render-cdxml-properties-colortable", SETTER_GETTER_STR_OPTION(cdxmlContext.colortable));
+        mgr->setOptionHandlerString("render-cdxml-properties-name-property", SETTER_GETTER_STR_OPTION(cdxmlContext.propertyNameCaption));
+        mgr->setOptionHandlerString("render-cdxml-properties-value-property", SETTER_GETTER_STR_OPTION(cdxmlContext.propertyValueCaption));
+        mgr->setOptionHandlerString("render-cdxml-properties-key-alignment", indigoRenderSetCdxmlPropertiesKeyAlignment,
+                                    indigoRenderGetCdxmlPropertiesKeyAlignment);
+        mgr->setOptionHandlerFloat("render-cdxml-properties-size", SETTER_GETTER_FLOAT_OPTION(cdxmlContext.propertyFontSize));
+        mgr->setOptionHandlerString("render-cdxml-title-font", SETTER_GETTER_STR_OPTION(cdxmlContext.titleFont));
+        mgr->setOptionHandlerString("render-cdxml-title-face", SETTER_GETTER_STR_OPTION(cdxmlContext.titleFace));
 
-   mgr->setOptionHandlerVoid("reset-render-options", indigoRenderResetOptions);
+        mgr->setOptionHandlerVoid("reset-render-options", indigoRenderResetOptions);
+
+        options_set = true;
+    }
 }

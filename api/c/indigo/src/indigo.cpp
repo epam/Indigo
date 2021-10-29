@@ -222,7 +222,11 @@ CEXPORT qword indigoAllocSessionId()
     TL_SET_SESSION_ID(id);
     Indigo& indigo = indigo_self.createOrGetLocalCopy(id);
     indigo.init();
-    setlocale(LC_NUMERIC, "C");
+    {
+        static std::mutex locale_mutex;
+        std::lock_guard<std::mutex> locale_guard(locale_mutex);
+        std::setlocale(LC_NUMERIC, "C");
+    }
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
     abbreviations::indigoCreateAbbreviationsInstance();

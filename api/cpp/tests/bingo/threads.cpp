@@ -211,7 +211,7 @@ TEST(BingoThreads, DISABLED_Insert_Pubchem_1M)
     bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000000001_000500000.sdf.gz")));
 }
 
-TEST(BingoThreads, SearchSubMultipleThreads_Pubchem_1M)
+TEST(BingoThreads, DISABLED_SearchSubMultipleThreads_Pubchem_1M)
 {
     auto session = IndigoSession::create();
     auto bingo = BingoMolecule::loadDatabaseFile(session, "Pubchem_1M.db");
