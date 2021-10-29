@@ -25,7 +25,7 @@ from indigo import IndigoException
 from indigo_service import jsonapi, service
 from indigo_service.indigo_tools import indigo, indigo_new
 
-app = FastAPI()
+app = FastAPI(title="Indigo service JSON:API", version=indigo().version())
 
 
 BASE_URL_INDIGO = "/indigo"
@@ -39,7 +39,7 @@ async def isolate_indigo_session(
     with indigo_new():
         response = await call_next(request)
         if not request.scope["path"].startswith(
-            ("/docs", f"{BASE_URL_INDIGO}/render")
+            ("/docs", "/redoc", f"{BASE_URL_INDIGO}/render")
         ):
             response.headers["Content-Type"] = RESP_HEADER_CONTENT_TYPE
         return response
