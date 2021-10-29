@@ -252,12 +252,12 @@ static int _insertIteratorToDatabase(int db, Indigo& self, IndigoObject& iter, l
 
                 if (++counter % 10000 == 0)
                 {
-                    std::cout << counter << '\n';
+                    std::cout << counter << std::endl;
                 }
             }
             catch (const Exception& e)
             {
-                std::cerr << e.message() << '\n';
+                std::cerr << e.message() << std::endl;
             }
         }
     }

@@ -202,13 +202,13 @@ TEST(BingoThreads, SearchMultipleThreads)
     }
 }
 
-TEST(BingoThreads, DISABLED_Insert_Pubchem_1M)
+TEST(BingoThreads, Insert_Pubchem_1M)
 {
     auto session = IndigoSession::create();
     session->setOption("ignore-stereochemistry-errors", true);
     auto bingo = BingoMolecule::createDatabaseFile(session, "Pubchem_1M.db");
-    bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000000001_000500000.sdf.gz")));
-    bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000000001_000500000.sdf.gz")));
+    // bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000000001_000500000.sdf.gz")));
+    bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000500001_001000000.sdf.gz")));
 }
 
 TEST(BingoThreads, DISABLED_SearchSubMultipleThreads_Pubchem_1M)
