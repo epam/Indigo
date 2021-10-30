@@ -1,22 +1,18 @@
 #ifndef __bingo_mmf_storage__
 #define __bingo_mmf_storage__
 
-#include <safe_ptr.h>
+#include <memory>
+#include <vector>
 
-#include "base_cpp/obj_array.h"
-#include "bingo_mmf.h"
-#include "bingo_ptr.h"
-
-using namespace indigo;
+#include "mmfile.h"
 
 namespace bingo
 {
+    class MMFAllocator;
+
     class MMFStorage
     {
     public:
-        static int getDatabaseId();
-        static void setDatabaseId(int db);
-
         static constexpr const int max_header_len = 128;
 
         MMFStorage() = default;
@@ -27,10 +23,10 @@ namespace bingo
         void load(const char* filename, int index_id, bool read_only);
 
         void close();
+
     private:
         std::vector<MMFile> _mm_files;
-        bool _read_only;
-        static thread_local int databaseId;
+        std::unique_ptr<MMFAllocator> _allocator = nullptr;
     };
 }; // namespace bingo
 

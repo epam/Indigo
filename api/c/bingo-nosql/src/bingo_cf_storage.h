@@ -1,18 +1,18 @@
 #ifndef __cf_storage__
 #define __cf_storage__
 
-#include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
-#include "base_cpp/tlscont.h"
-
-#include "bingo_ptr.h"
-
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
-using namespace indigo;
+#include "base_cpp/array.h"
+#include "base_cpp/obj_array.h"
+#include "base_cpp/tlscont.h"
+
+#include "mmf/mmf_address.h"
+#include "mmf/mmf_array.h"
+#include "mmf/mmf_ptr.h"
 
 namespace bingo
 {
@@ -21,9 +21,9 @@ namespace bingo
     public:
         ByteBufferStorage(int block_size);
 
-        static BingoAddr create(BingoPtr<ByteBufferStorage>& cf_ptr, int block_size);
+        static MMFAddress create(MMFPtr<ByteBufferStorage>& cf_ptr, int block_size);
 
-        static void load(BingoPtr<ByteBufferStorage>& cf_ptr, BingoAddr offset);
+        static void load(MMFPtr<ByteBufferStorage>& cf_ptr, MMFAddress offset);
 
         const byte* get(int idx, int& len);
         void add(const byte* data, int len, int idx);
@@ -40,8 +40,8 @@ namespace bingo
 
         int _block_size;
         int _free_pos;
-        BingoArray<BingoPtr<byte>> _blocks;
-        BingoArray<_Addr> _addresses;
+        MMFArray<MMFPtr<byte>> _blocks;
+        MMFArray<_Addr> _addresses;
     };
 }; // namespace bingo
 

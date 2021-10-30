@@ -19,16 +19,16 @@ Properties::Properties()
 {
 }
 
-BingoAddr Properties::create(BingoPtr<Properties>& ptr)
+MMFAddress Properties::create(MMFPtr<Properties>& ptr)
 {
     ptr.allocate();
     new (ptr.ptr()) Properties();
-    return (BingoAddr)ptr;
+    return (MMFAddress)ptr;
 }
 
-void Properties::load(BingoPtr<Properties>& ptr, BingoAddr offset)
+void Properties::load(MMFPtr<Properties>& ptr, MMFAddress offset)
 {
-    ptr = BingoPtr<Properties>(offset);
+    ptr = MMFPtr<Properties>(offset);
 }
 
 void Properties::parseOptions(const char* options, std::map<std::string, std::string>& option_map, std::vector<std::string>* allowed_props)

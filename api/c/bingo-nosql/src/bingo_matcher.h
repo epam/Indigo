@@ -14,8 +14,6 @@
 #include "molecule/molecule_substructure_matcher.h"
 #include "reaction/reaction_exact_matcher.h"
 
-using namespace indigo;
-
 namespace bingo
 {
     ///////////////////////////////////////

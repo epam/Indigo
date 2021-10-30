@@ -8,17 +8,17 @@ GrossStorage::GrossStorage(size_t gross_block_size) : _gross_formulas(gross_bloc
 {
 }
 
-BingoAddr GrossStorage::create(BingoPtr<GrossStorage>& gross_ptr, size_t gross_block_size)
+MMFAddress GrossStorage::create(MMFPtr<GrossStorage>& gross_ptr, size_t gross_block_size)
 {
     gross_ptr.allocate();
     new (gross_ptr.ptr()) GrossStorage(gross_block_size);
 
-    return (BingoAddr)gross_ptr;
+    return (MMFAddress)gross_ptr;
 }
 
-void GrossStorage::load(BingoPtr<GrossStorage>& gross_ptr, BingoAddr offset)
+void GrossStorage::load(MMFPtr<GrossStorage>& gross_ptr, MMFAddress offset)
 {
-    gross_ptr = BingoPtr<GrossStorage>(offset);
+    gross_ptr = MMFPtr<GrossStorage>(offset);
 }
 
 void GrossStorage::add(const Array<char>& gross_formula, int id)

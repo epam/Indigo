@@ -7,7 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "bingo_ptr.h"
+#include "mmf/mmf_array.h"
+#include "mmf/mmf_ptr.h"
 
 namespace bingo
 {
@@ -16,9 +17,9 @@ namespace bingo
     public:
         Properties();
 
-        static BingoAddr create(BingoPtr<Properties>& ptr);
+        static MMFAddress create(MMFPtr<Properties>& ptr);
 
-        static void load(BingoPtr<Properties>& ptr, BingoAddr offset);
+        static void load(MMFPtr<Properties>& ptr, MMFAddress offset);
 
         static void parseOptions(const char* options, std::map<std::string, std::string>& option_map, std::vector<std::string>* allowed_props = 0);
 
@@ -37,8 +38,8 @@ namespace bingo
     private:
         struct _PropertyPair
         {
-            BingoPtr<char> name;
-            BingoPtr<char> value;
+            MMFPtr<char> name;
+            MMFPtr<char> value;
         };
 
         void _rewritePropFile();
@@ -46,7 +47,7 @@ namespace bingo
         static void _parseProperty(const std::string& line, std::string& prop_out, std::string& value_out);
 
         static const int max_prop_len = 1024;
-        BingoArray<_PropertyPair> _props;
+        MMFArray<_PropertyPair> _props;
     };
 }; // namespace bingo
 

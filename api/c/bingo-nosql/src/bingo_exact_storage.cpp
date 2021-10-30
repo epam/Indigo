@@ -1,28 +1,29 @@
 #include "bingo_exact_storage.h"
 
-#include "base_cpp/crc32.h"
-#include "bingo_mmf_storage.h"
+#include "base_cpp/profiling.h"
+#include "graph/subgraph_hash.h"
 #include "molecule/elements.h"
 
-#include "graph/subgraph_hash.h"
+#include "mmf/mmf_storage.h"
 
 using namespace bingo;
+using namespace indigo;
 
 ExactStorage::ExactStorage()
 {
 }
 
-BingoAddr ExactStorage::create(BingoPtr<ExactStorage>& exact_ptr)
+MMFAddress ExactStorage::create(MMFPtr<ExactStorage>& exact_ptr)
 {
     exact_ptr.allocate();
     new (exact_ptr.ptr()) ExactStorage();
 
-    return (BingoAddr)exact_ptr;
+    return (MMFAddress)exact_ptr;
 }
 
-void ExactStorage::load(BingoPtr<ExactStorage>& exact_ptr, BingoAddr offset)
+void ExactStorage::load(MMFPtr<ExactStorage>& exact_ptr, MMFAddress offset)
 {
-    exact_ptr = BingoPtr<ExactStorage>(offset);
+    exact_ptr = MMFPtr<ExactStorage>(offset);
 }
 
 void ExactStorage::add(dword hash, int id)

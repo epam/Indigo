@@ -2,10 +2,9 @@
 #define __cell_container__
 
 #include "base_cpp/d_bitset.h"
-#include "bingo_ptr.h"
-#include "bingo_sim_coef.h"
 
-using namespace indigo;
+#include "mmf/mmf_ptr.h"
+#include "bingo_sim_coef.h"
 
 namespace bingo
 {
@@ -21,8 +20,8 @@ namespace bingo
         {
         }
 
-        virtual void build(BingoPtr<byte> fingerprints, int fp_count, int min_fp_bit_number, int max_fp_bit_number) = 0;
-        virtual void findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices) = 0;
+        virtual void build(MMFPtr<byte> fingerprints, int fp_count, int min_fp_bit_number, int max_fp_bit_number) = 0;
+        virtual void findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, indigo::Array<SimResult>& sim_fp_indices) = 0;
     };
 };     // namespace bingo
 #endif /* _cell_container_ */

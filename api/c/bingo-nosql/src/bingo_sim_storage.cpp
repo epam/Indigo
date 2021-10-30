@@ -1,32 +1,33 @@
-#include "bingo_sim_storge.h"
+#include "bingo_sim_storage.h"
 
 #include <iostream>
 
 using namespace bingo;
+using namespace indigo;
 
 SimStorage::SimStorage(int fp_size, int mt_size, int inc_size)
-    : _fingerprint_table(BingoAddr::bingo_null), _inc_size(inc_size), _mt_size(mt_size), _fp_size(fp_size)
+    : _fingerprint_table(MMFAddress::bingo_null), _inc_size(inc_size), _mt_size(mt_size), _fp_size(fp_size)
 {
     _inc_buffer.allocate(_inc_size * _fp_size);
     _inc_id_buffer.allocate(_inc_size * _fp_size);
 }
 
-BingoAddr SimStorage::create(BingoPtr<SimStorage>& ptr, int fp_size, int mt_size, int inc_size)
+MMFAddress SimStorage::create(MMFPtr<SimStorage>& ptr, int fp_size, int mt_size, int inc_size)
 {
     ptr.allocate();
     new (ptr.ptr()) SimStorage(fp_size, mt_size, inc_size);
 
-    return (BingoAddr)ptr;
+    return (MMFAddress)ptr;
 }
 
-void SimStorage::load(BingoPtr<SimStorage>& ptr, BingoAddr offset)
+void SimStorage::load(MMFPtr<SimStorage>& ptr, MMFAddress offset)
 {
-    ptr = BingoPtr<SimStorage>(offset);
+    ptr = MMFPtr<SimStorage>(offset);
 }
 
 void SimStorage::add(const byte* fingerprint, int id)
 {
-    if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
+    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
     {
         memcpy(_inc_buffer.ptr() + (_inc_fp_count * _fp_size), fingerprint, _fp_size);
         _inc_id_buffer[_inc_fp_count] = id;
@@ -50,7 +51,7 @@ void SimStorage::add(const byte* fingerprint, int id)
 
 void SimStorage::optimize()
 {
-    if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
+    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
         return;
 
     _fingerprint_table->optimize();
@@ -58,7 +59,7 @@ void SimStorage::optimize()
 
 int SimStorage::getCellCount() const
 {
-    if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
+    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
         throw Exception("SimStorage: fingerptint table wasn't built");
 
     return _fingerprint_table->getCellCount();
@@ -66,7 +67,7 @@ int SimStorage::getCellCount() const
 
 int SimStorage::getCellSize(int cell_idx) const
 {
-    if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
+    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
         throw Exception("SimStorage: fingerptint table wasn't built");
 
     return _fingerprint_table->getCellSize(cell_idx);
@@ -74,7 +75,7 @@ int SimStorage::getCellSize(int cell_idx) const
 
 void SimStorage::getCellsInterval(const byte* query, SimCoef& sim_coef, double min_coef, int& min_cell, int& max_cell)
 {
-    if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
+    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
         throw Exception("SimStorage: fingerptint table wasn't built");
 
     _fingerprint_table->getCellsInterval(query, sim_coef, min_coef, min_cell, max_cell);
@@ -82,7 +83,7 @@ void SimStorage::getCellsInterval(const byte* query, SimCoef& sim_coef, double m
 
 int SimStorage::firstFitCell(int query_bit_count, int min_cell, int max_cell) const
 {
-    if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
+    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
         throw Exception("SimStorage: fingerptint table wasn't built");
 
     return _fingerprint_table->firstFitCell(query_bit_count, min_cell, max_cell);
@@ -90,7 +91,7 @@ int SimStorage::firstFitCell(int query_bit_count, int min_cell, int max_cell) co
 
 int SimStorage::nextFitCell(int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx) const
 {
-    if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
+    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
         throw Exception("SimStorage: fingerptint table wasn't built");
 
     return _fingerprint_table->nextFitCell(query_bit_count, first_fit_cell, min_cell, max_cell, idx);
@@ -98,7 +99,7 @@ int SimStorage::nextFitCell(int query_bit_count, int first_fit_cell, int min_cel
 
 int SimStorage::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cell_idx, int cont_idx)
 {
-    if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
+    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
         throw Exception("SimStorage: fingerptint table wasn't built");
 
     return _fingerprint_table->getSimilar(query, sim_coef, min_coef, sim_fp_indices, cell_idx, cont_idx);
@@ -106,7 +107,7 @@ int SimStorage::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef
 
 bool SimStorage::isSmallBase()
 {
-    if ((BingoAddr)_fingerprint_table == BingoAddr::bingo_null)
+    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
         return true;
     return false;
 }

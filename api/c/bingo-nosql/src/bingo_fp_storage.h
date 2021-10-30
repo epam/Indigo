@@ -1,10 +1,12 @@
 #ifndef __bingo_fp_storage__
 #define __bingo_fp_storage__
 
-#include "bingo_ptr.h"
 #include <fstream>
 #include <iostream>
 #include <vector>
+
+#include "mmf/mmf_ptr.h"
+#include "mmf/mmf_array.h"
 
 namespace bingo
 {
@@ -13,9 +15,9 @@ namespace bingo
     public:
         TranspFpStorage(int fp_size, int block_size, int small_base_size);
 
-        static BingoAddr create(BingoPtr<TranspFpStorage>& ptr, int fp_size, int block_size, int small_base_size);
+        static MMFAddress create(MMFPtr<TranspFpStorage>& ptr, int fp_size, int block_size, int small_base_size);
 
-        static void load(BingoPtr<TranspFpStorage>& ptr, BingoAddr offset);
+        static void load(MMFPtr<TranspFpStorage>& ptr, MMFAddress offset);
 
         void add(const byte* fp);
 
@@ -35,7 +37,7 @@ namespace bingo
 
         virtual ~TranspFpStorage();
 
-        BingoArray<int>& getFpBitUsageCounts();
+        MMFArray<int>& getFpBitUsageCounts();
 
     protected:
         int _fp_size;
@@ -43,14 +45,14 @@ namespace bingo
         int _block_size;
         int _pack_count;
         bool _small_flag;
-        BingoArray<BingoPtr<byte>> _storage;
+        MMFArray<MMFPtr<byte>> _storage;
 
-        BingoPtr<byte> _inc_buffer;
+        MMFPtr<byte> _inc_buffer;
         int _inc_size;
         int _inc_fp_count;
         int _small_inc_size;
 
-        BingoArray<int> _fp_bit_usage_counts;
+        MMFArray<int> _fp_bit_usage_counts;
 
         void _createFpStorage(int fp_size, int inc_fp_capacity, const char* inc_filename);
 

@@ -7,22 +7,22 @@ ByteBufferStorage::ByteBufferStorage(int block_size) : _block_size(block_size)
     _free_pos = 0;
 }
 
-BingoAddr ByteBufferStorage::create(BingoPtr<ByteBufferStorage>& cf_ptr, int block_size)
+MMFAddress ByteBufferStorage::create(MMFPtr<ByteBufferStorage>& cf_ptr, int block_size)
 {
     cf_ptr.allocate();
     new (cf_ptr.ptr()) ByteBufferStorage(block_size);
-    return (BingoAddr)cf_ptr;
+    return (MMFAddress)cf_ptr;
 }
 
-void ByteBufferStorage::load(BingoPtr<ByteBufferStorage>& cf_ptr, BingoAddr offset)
+void ByteBufferStorage::load(MMFPtr<ByteBufferStorage>& cf_ptr, MMFAddress offset)
 {
-    cf_ptr = BingoPtr<ByteBufferStorage>(offset);
+    cf_ptr = MMFPtr<ByteBufferStorage>(offset);
 }
 
 const byte* ByteBufferStorage::get(int idx, int& len)
 {
     if (_addresses.size() <= idx)
-        throw Exception("ByteBufferStorage: incorrect buffer id");
+        throw indigo::Exception("ByteBufferStorage: incorrect buffer id");
 
     if (_addresses[idx].len < 0)
     {
@@ -38,7 +38,7 @@ void ByteBufferStorage::add(const byte* data, int len, int idx)
 {
     if ((_blocks.size() == 0) || (_block_size - _free_pos < len))
     {
-        BingoPtr<byte>& new_block = _blocks.push();
+        MMFPtr<byte>& new_block = _blocks.push();
         new_block.allocate(_block_size);
         _free_pos = 0;
     }
@@ -58,7 +58,7 @@ void ByteBufferStorage::add(const byte* data, int len, int idx)
 void ByteBufferStorage::remove(int idx)
 {
     if (_addresses.size() <= idx)
-        throw Exception("ByteBufferStorage: incorrect buffer id");
+        throw indigo::Exception("ByteBufferStorage: incorrect buffer id");
 
     _addresses[idx].len = -1;
 }

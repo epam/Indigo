@@ -1,4 +1,4 @@
-#include "bingo_mmf.h"
+#include "mmfile.h"
 
 #include "base_cpp/exception.h"
 
@@ -19,7 +19,7 @@
 using namespace bingo;
 using namespace indigo;
 
-MMFile::MMFile() : _ptr(0)
+MMFile::MMFile() : _ptr(nullptr)
 {
 #ifdef _WIN32
     _h_file = 0;
@@ -34,14 +34,14 @@ MMFile::~MMFile()
     // close();
 }
 
-void* MMFile::ptr()
+byte* MMFile::ptr()
 {
-    return _ptr;
+    return static_cast<byte*>(_ptr);
 }
 
-const void* MMFile::ptr() const
+const byte* MMFile::ptr() const
 {
-    return _ptr;
+    return static_cast<byte*>(_ptr);
 }
 
 
@@ -140,9 +140,9 @@ void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool 
     if (read_only)
         prot_flags = PROT_READ;
 
-    _ptr = mmap((caddr_t)0, _len, prot_flags, MAP_SHARED, _fd, 0);
+    _ptr = mmap(static_cast<caddr_t>(nullptr), _len, prot_flags, MAP_SHARED, _fd, 0);
 
-    if (_ptr == (void*)MAP_FAILED)
+    if (_ptr == MAP_FAILED)
         throw Exception("BingoMMF: Could not map view of file. Error message: %s", _getSystemErrorMsg());
 #endif
 }
@@ -174,10 +174,10 @@ void MMFile::close()
         _ptr = 0;
     }
 #elif (defined __GNUC__ || defined __APPLE__)
-    if (_ptr != 0)
+    if (_ptr != nullptr)
     {
-        munmap((caddr_t)_ptr, _len);
-        _ptr = 0;
+        munmap(static_cast<caddr_t>(_ptr), _len);
+        _ptr = nullptr;
     }
 
     if (_fd != -1)

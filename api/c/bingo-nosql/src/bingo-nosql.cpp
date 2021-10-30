@@ -379,7 +379,7 @@ CEXPORT int bingoCloseDatabase(int db)
 
         auto bingo_indexes = sf::xlock_safe_ptr(_indexes);
         bingo_indexes->remove(db);
-        BingoAllocator::removeInstance();
+        // BingoAllocator::removeInstance();
         return 1;
     }
     BINGO_END(-1);

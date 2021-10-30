@@ -1,9 +1,11 @@
 #ifndef __bingo_mmf__
 #define __bingo_mmf__
 
+#include <cstdio>
 #include <new>
-#include <stdio.h>
 #include <string>
+
+#include <common/base_c/defs.h>
 
 namespace bingo
 {
@@ -18,8 +20,8 @@ namespace bingo
 
         void resize(size_t new_size);
 
-        void* ptr();
-        const void* ptr() const;
+        byte* ptr();
+        const byte* ptr() const;
 
         const char* name() const;
 

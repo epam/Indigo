@@ -1,15 +1,12 @@
 #include "bingo_base_index.h"
-#include "bingo_ptr.h"
 
-#include "indigo_fingerprints.h"
-
-#include <limits.h>
+#include <climits>
 #include <sstream>
 #include <string>
 
 #include "base_c/os_dir.h"
-#include "base_cpp/output.h"
-#include "base_cpp/profiling.h"
+
+#include "indigo_fingerprints.h"
 
 using namespace bingo;
 
@@ -38,7 +35,7 @@ BaseIndex::BaseIndex(IndexType type) : _type(type), _read_only(false)
 void BaseIndex::create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id)
 {
     // TODO: introduce global parameters table, local parameters table and constants
-    MMFStorage::setDatabaseId(index_id);
+    // MMFStorage::setDatabaseId(index_id);
 
     int sub_block_size = 8192;
     int sim_block_size = 8192;
@@ -97,7 +94,7 @@ void BaseIndex::create(const char* location, const MoleculeFingerprintParameters
 
 void BaseIndex::load(const char* location, const char* options, int index_id)
 {
-    MMFStorage::setDatabaseId(index_id);
+    // MMFStorage::setDatabaseId(index_id);
 
     if (osDirExists(location) == OS_DIR_NOTFOUND)
         throw Exception("database directory missed");
@@ -119,7 +116,7 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
 
     _mmf_storage.load(_mmf_path.c_str(), index_id, _read_only);
 
-    _header = BingoPtr<_Header>(BingoAddr(0, MMFStorage::max_header_len + BingoAllocator::getAllocatorDataSize()));
+    _header = MMFPtr<_Header>(MMFAddress(0, MMFStorage::max_header_len + MMFAllocator::getAllocatorDataSize()));
 
     Properties::load(_properties, _header->properties_offset);
 
@@ -155,7 +152,7 @@ int BaseIndex::add(int obj_id, const ObjectIndexData& _obj_data)
     if (_read_only)
         throw Exception("insert fail: Read only index can't be changed");
 
-    BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
+    MMFMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
         throw Exception("insert fail: This id was already used");
@@ -203,7 +200,7 @@ void BaseIndex::remove(int obj_id)
     if (_read_only)
         throw Exception("remove fail: Read only index can't be changed");
 
-    BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
+    MMFMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     if (obj_id < 0 || back_id_mapping.get(obj_id) == (size_t)-1)
         throw Exception("There is no object with this id");
@@ -237,12 +234,12 @@ GrossStorage& BaseIndex::getGrossStorage()
     return _gross_storage.ref();
 }
 
-BingoArray<int>& BaseIndex::getIdMapping()
+MMFArray<int>& BaseIndex::getIdMapping()
 {
     return _id_mapping_ptr.ref();
 }
 
-BingoMapping& BaseIndex::getBackIdMapping()
+MMFMapping& BaseIndex::getBackIdMapping()
 {
     return _back_id_mapping_ptr.ref();
 }
@@ -462,8 +459,8 @@ void BaseIndex::_insertIndexData(const ObjectIndexData& obj_data)
 
 void BaseIndex::_mappingLoad()
 {
-    _id_mapping_ptr = BingoPtr<BingoArray<int>>(_header->mapping_offset);
-    _back_id_mapping_ptr = BingoPtr<BingoMapping>(_header->back_mapping_offset);
+    _id_mapping_ptr = MMFPtr<MMFArray<int>>(_header->mapping_offset);
+    _back_id_mapping_ptr = MMFPtr<MMFMapping>(_header->back_mapping_offset);
 
     return;
 }
@@ -471,18 +468,18 @@ void BaseIndex::_mappingLoad()
 void BaseIndex::_mappingCreate()
 {
     _id_mapping_ptr.allocate();
-    new (_id_mapping_ptr.ptr()) BingoArray<int>();
-    _header->mapping_offset = (BingoAddr)_id_mapping_ptr;
+    new (_id_mapping_ptr.ptr()) MMFArray<int>();
+    _header->mapping_offset = (MMFAddress)_id_mapping_ptr;
 
     _back_id_mapping_ptr.allocate();
-    new (_back_id_mapping_ptr.ptr()) BingoMapping();
-    _header->back_mapping_offset = (BingoAddr)_back_id_mapping_ptr;
+    new (_back_id_mapping_ptr.ptr()) MMFMapping();
+    _header->back_mapping_offset = (MMFAddress)_back_id_mapping_ptr;
 }
 
 void BaseIndex::_mappingAssign(int obj_id, int base_id)
 {
-    BingoArray<int>& id_mapping = _id_mapping_ptr.ref();
-    BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
+    MMFArray<int>& id_mapping = _id_mapping_ptr.ref();
+    MMFMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     int old_size = id_mapping.size();
 
@@ -510,8 +507,8 @@ void BaseIndex::_mappingAdd(int obj_id, int base_id)
 
 void BaseIndex::_mappingRemove(int obj_id)
 {
-    // BingoArray<int> & id_mapping = _id_mapping_ptr.ref();
-    BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
+    // MMFArray<int> & id_mapping = _id_mapping_ptr.ref();
+    MMFMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     back_id_mapping.remove(obj_id);
 }

@@ -22,16 +22,16 @@ TranspFpStorage::TranspFpStorage(int fp_size, int block_size, int small_base_siz
     _fp_bit_usage_counts.resize(_fp_size * 8);
 }
 
-BingoAddr TranspFpStorage::create(BingoPtr<TranspFpStorage>& ptr, int fp_size, int block_size, int small_base_size)
+MMFAddress TranspFpStorage::create(MMFPtr<TranspFpStorage>& ptr, int fp_size, int block_size, int small_base_size)
 {
     ptr.allocate();
     new (ptr.ptr()) TranspFpStorage(fp_size, block_size, small_base_size);
-    return (BingoAddr)ptr;
+    return (MMFAddress)ptr;
 }
 
-void TranspFpStorage::load(BingoPtr<TranspFpStorage>& ptr, BingoAddr offset)
+void TranspFpStorage::load(MMFPtr<TranspFpStorage>& ptr, MMFAddress offset)
 {
-    ptr = BingoPtr<TranspFpStorage>(offset);
+    ptr = MMFPtr<TranspFpStorage>(offset);
 }
 
 void TranspFpStorage::add(const byte* fp)
@@ -150,7 +150,7 @@ void TranspFpStorage::load (int fp_size, const char *info_filename)
       fp_bit_usage_counts.zerofill();
 }*/
 
-BingoArray<int>& TranspFpStorage::getFpBitUsageCounts()
+MMFArray<int>& TranspFpStorage::getFpBitUsageCounts()
 {
     return _fp_bit_usage_counts;
 }

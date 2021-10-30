@@ -12,7 +12,6 @@
 
 #include <vector>
 
-using namespace indigo;
 namespace bingo
 {
     class SimStorage
@@ -20,9 +19,9 @@ namespace bingo
     public:
         SimStorage(int fp_size, int mt_size, int inc_size);
 
-        static BingoAddr create(BingoPtr<SimStorage>& ptr, int fp_size, int mt_size, int inc_size);
+        static MMFAddress create(MMFPtr<SimStorage>& ptr, int fp_size, int mt_size, int inc_size);
 
-        static void load(BingoPtr<SimStorage>& ptr, BingoAddr offset);
+        static void load(MMFPtr<SimStorage>& ptr, MMFAddress offset);
 
         void add(const byte* fingerprint, int id);
 
@@ -38,18 +37,18 @@ namespace bingo
 
         int nextFitCell(int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx) const;
 
-        int getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cell_idx, int cont_idx);
+        int getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, indigo::Array<SimResult>& sim_fp_indices, int cell_idx, int cont_idx);
 
         bool isSmallBase();
 
-        int getIncSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices);
+        int getIncSimilar(const byte* query, SimCoef& sim_coef, double min_coef, indigo::Array<SimResult>& sim_fp_indices);
 
         ~SimStorage();
 
     private:
-        BingoPtr<FingerprintTable> _fingerprint_table;
-        BingoPtr<byte> _inc_buffer;
-        BingoPtr<size_t> _inc_id_buffer;
+        MMFPtr<FingerprintTable> _fingerprint_table;
+        MMFPtr<byte> _inc_buffer;
+        MMFPtr<size_t> _inc_id_buffer;
         int _inc_size;
         int _inc_fp_count;
 
