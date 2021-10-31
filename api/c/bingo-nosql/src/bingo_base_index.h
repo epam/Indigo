@@ -12,8 +12,8 @@
 #include "bingo_object.h"
 #include "bingo_properties.h"
 #include "bingo_sim_storage.h"
+#include "mmf/mmf_mapping.h"
 #include "mmf/mmf_storage.h"
-#include "src/mmf/mmf_mapping.h"
 
 #define BINGO_VERSION "v0.72"
 
@@ -111,7 +111,6 @@ namespace bingo
         bool _read_only;
 
     private:
-        MMFStorage _mmf_storage;
         MMFPtr<_Header> _header;
         MMFPtr<MMFArray<int>> _id_mapping_ptr;
         MMFPtr<MMFMapping> _back_id_mapping_ptr;

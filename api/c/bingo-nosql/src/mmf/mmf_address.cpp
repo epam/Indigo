@@ -12,3 +12,8 @@ bool MMFAddress::operator==(const MMFAddress& other) const
 {
     return (file_id == other.file_id) && (offset == other.offset);
 }
+
+bool MMFAddress::operator!=(const MMFAddress& other) const
+{
+    return !operator==(other);
+}

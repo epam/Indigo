@@ -63,9 +63,9 @@ void BaseIndex::create(const char* location, const MoleculeFingerprintParameters
     size_t max_mmf_size = _getMaxMMfSize(option_map);
 
     if (_type == IndexType::MOLECULE)
-        _mmf_storage.create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _molecule_type, index_id);
+        MMFAllocator::create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _molecule_type, index_id);
     else if (_type == IndexType::REACTION)
-        _mmf_storage.create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _reaction_type, index_id);
+        MMFAllocator::create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _reaction_type, index_id);
     else
         throw Exception("incorrect index type");
 
@@ -114,9 +114,9 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
 
     _read_only = _getAccessType(option_map);
 
-    _mmf_storage.load(_mmf_path.c_str(), index_id, _read_only);
+    MMFAllocator::load(_mmf_path.c_str(), index_id, _read_only);
 
-    _header = MMFPtr<_Header>(MMFAddress(0, MMFStorage::max_header_len + MMFAllocator::getAllocatorDataSize()));
+    _header = MMFPtr<_Header>(MMFAddress(0, MMFStorage::MAX_HEADER_LEN + MMFAllocator::getAllocatorDataSize()));
 
     Properties::load(_properties, _header->properties_offset);
 
@@ -303,7 +303,7 @@ IndexType BaseIndex::determineType(const char* location)
 
 BaseIndex::~BaseIndex()
 {
-    _mmf_storage.close();
+    MMFAllocator::getAllocator().close();
 }
 
 void BaseIndex::_checkOptions(std::map<std::string, std::string>& option_map, bool is_create)
@@ -469,11 +469,11 @@ void BaseIndex::_mappingCreate()
 {
     _id_mapping_ptr.allocate();
     new (_id_mapping_ptr.ptr()) MMFArray<int>();
-    _header->mapping_offset = (MMFAddress)_id_mapping_ptr;
+    _header->mapping_offset = _id_mapping_ptr.getAddress();
 
     _back_id_mapping_ptr.allocate();
     new (_back_id_mapping_ptr.ptr()) MMFMapping();
-    _header->back_mapping_offset = (MMFAddress)_back_id_mapping_ptr;
+    _header->back_mapping_offset = _back_id_mapping_ptr.getAddress();
 }
 
 void BaseIndex::_mappingAssign(int obj_id, int base_id)

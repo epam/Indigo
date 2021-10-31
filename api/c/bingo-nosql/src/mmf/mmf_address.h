@@ -10,6 +10,7 @@ namespace bingo
         MMFAddress(int f_id, ptrdiff_t off) noexcept;
 
         bool operator==(const MMFAddress& other) const;
+        bool operator!=(const MMFAddress& other) const;
         static const MMFAddress bingo_null;
 
         int file_id = -1;

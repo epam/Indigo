@@ -13,20 +13,18 @@ namespace bingo
     class MMFStorage
     {
     public:
-        static constexpr const int max_header_len = 128;
+        static constexpr const int MAX_HEADER_LEN = 128;
 
         MMFStorage() = default;
         ~MMFStorage();
 
-        void create(const char* filename, size_t min_size, size_t max_size, const char* header, int index_id);
+        void create(const char* header, MMFAllocator& allocator);
 
-        void load(const char* filename, int index_id, bool read_only);
+        void load();
 
         void close();
 
-    private:
         std::vector<MMFile> _mm_files;
-        std::unique_ptr<MMFAllocator> _allocator = nullptr;
     };
 }; // namespace bingo
 

@@ -23,7 +23,7 @@ MMFAddress Properties::create(MMFPtr<Properties>& ptr)
 {
     ptr.allocate();
     new (ptr.ptr()) Properties();
-    return (MMFAddress)ptr;
+    return ptr.getAddress();
 }
 
 void Properties::load(MMFPtr<Properties>& ptr, MMFAddress offset)

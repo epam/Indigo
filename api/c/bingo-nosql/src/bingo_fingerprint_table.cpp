@@ -29,7 +29,7 @@ MMFAddress FingerprintTable::create(MMFPtr<FingerprintTable>& ptr, int fp_size, 
     ptr.allocate();
     new (ptr.ptr()) FingerprintTable(fp_size, borders, mt_size);
 
-    return (MMFAddress)ptr;
+    return ptr.getAddress();
 }
 
 void FingerprintTable::load(MMFPtr<FingerprintTable>& ptr, MMFAddress offset)

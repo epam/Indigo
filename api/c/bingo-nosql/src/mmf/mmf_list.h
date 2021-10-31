@@ -28,7 +28,7 @@ namespace bingo
         {
             MMFPtr<_Link> cur_link;
 
-            Iterator() : cur_link(MMFPtr<T>(-1, -1))
+            Iterator() : cur_link(MMFAddress::bingo_null)
             {
             }
             Iterator(MMFPtr<_Link> link) : cur_link(link)
@@ -57,7 +57,7 @@ namespace bingo
 
             bool operator==(const Iterator& it) const
             {
-                if ((MMFAddress)cur_link == (MMFAddress)it.cur_link)
+                if (cur_link.getAddress() == it.cur_link.getAddress())
                     return true;
                 return false;
             }
@@ -69,7 +69,7 @@ namespace bingo
 
             Iterator& operator++(int)
             {
-                if ((MMFAddress)(cur_link->next_link) == MMFAddress::bingo_null)
+                if (cur_link->next_link.getAddress() == MMFAddress::bingo_null)
                     throw indigo::Exception("MMFList::Iterator:operator++ There's no next link");
 
                 cur_link = cur_link->next_link;
@@ -79,7 +79,7 @@ namespace bingo
 
             Iterator& operator--(int)
             {
-                if ((MMFAddress)(cur_link->prev_link) == MMFAddress::bingo_null)
+                if (cur_link->prev_link.getAddress() == MMFAddress::bingo_null)
                     throw indigo::Exception("MMFList::Iterator:operator-- There's no previous link");
 
                 cur_link = cur_link->prev_link;
@@ -119,11 +119,11 @@ namespace bingo
             new_link->next_link = pos.cur_link;
             new_link->prev_link = pos.cur_link->prev_link;
 
-            if (!((MMFAddress)(pos.cur_link->prev_link) == MMFAddress::bingo_null))
+            if (pos.cur_link->prev_link.getAddress() != MMFAddress::bingo_null)
                 pos.cur_link->prev_link->next_link = new_link;
             pos.cur_link->prev_link = new_link;
 
-            if ((MMFAddress)(pos.cur_link) == (MMFAddress)(_begin_link))
+            if (pos.cur_link.getAddress() == _begin_link.getAddress())
                 _begin_link = new_link;
 
             _size++;

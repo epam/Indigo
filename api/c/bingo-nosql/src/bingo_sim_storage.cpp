@@ -17,7 +17,7 @@ MMFAddress SimStorage::create(MMFPtr<SimStorage>& ptr, int fp_size, int mt_size,
     ptr.allocate();
     new (ptr.ptr()) SimStorage(fp_size, mt_size, inc_size);
 
-    return (MMFAddress)ptr;
+    return ptr.getAddress();
 }
 
 void SimStorage::load(MMFPtr<SimStorage>& ptr, MMFAddress offset)
@@ -27,7 +27,7 @@ void SimStorage::load(MMFPtr<SimStorage>& ptr, MMFAddress offset)
 
 void SimStorage::add(const byte* fingerprint, int id)
 {
-    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
+    if (_fingerprint_table.getAddress() == MMFAddress::bingo_null)
     {
         memcpy(_inc_buffer.ptr() + (_inc_fp_count * _fp_size), fingerprint, _fp_size);
         _inc_id_buffer[_inc_fp_count] = id;
@@ -51,7 +51,7 @@ void SimStorage::add(const byte* fingerprint, int id)
 
 void SimStorage::optimize()
 {
-    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
+    if (_fingerprint_table.getAddress() == MMFAddress::bingo_null)
         return;
 
     _fingerprint_table->optimize();
@@ -59,55 +59,55 @@ void SimStorage::optimize()
 
 int SimStorage::getCellCount() const
 {
-    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
-        throw Exception("SimStorage: fingerptint table wasn't built");
+    if (_fingerprint_table.getAddress() == MMFAddress::bingo_null)
+        throw Exception("SimStorage: fingerprint table wasn't built");
 
     return _fingerprint_table->getCellCount();
 }
 
 int SimStorage::getCellSize(int cell_idx) const
 {
-    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
-        throw Exception("SimStorage: fingerptint table wasn't built");
+    if (_fingerprint_table.getAddress() == MMFAddress::bingo_null)
+        throw Exception("SimStorage: fingerprint table wasn't built");
 
     return _fingerprint_table->getCellSize(cell_idx);
 }
 
 void SimStorage::getCellsInterval(const byte* query, SimCoef& sim_coef, double min_coef, int& min_cell, int& max_cell)
 {
-    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
-        throw Exception("SimStorage: fingerptint table wasn't built");
+    if (_fingerprint_table.getAddress() == MMFAddress::bingo_null)
+        throw Exception("SimStorage: fingerprint table wasn't built");
 
     _fingerprint_table->getCellsInterval(query, sim_coef, min_coef, min_cell, max_cell);
 }
 
 int SimStorage::firstFitCell(int query_bit_count, int min_cell, int max_cell) const
 {
-    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
-        throw Exception("SimStorage: fingerptint table wasn't built");
+    if (_fingerprint_table.getAddress() == MMFAddress::bingo_null)
+        throw Exception("SimStorage: fingerprint table wasn't built");
 
     return _fingerprint_table->firstFitCell(query_bit_count, min_cell, max_cell);
 }
 
 int SimStorage::nextFitCell(int query_bit_count, int first_fit_cell, int min_cell, int max_cell, int idx) const
 {
-    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
-        throw Exception("SimStorage: fingerptint table wasn't built");
+    if (_fingerprint_table.getAddress() == MMFAddress::bingo_null)
+        throw Exception("SimStorage: fingerprint table wasn't built");
 
     return _fingerprint_table->nextFitCell(query_bit_count, first_fit_cell, min_cell, max_cell, idx);
 }
 
 int SimStorage::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cell_idx, int cont_idx)
 {
-    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
-        throw Exception("SimStorage: fingerptint table wasn't built");
+    if (_fingerprint_table.getAddress() == MMFAddress::bingo_null)
+        throw Exception("SimStorage: fingerprint table wasn't built");
 
     return _fingerprint_table->getSimilar(query, sim_coef, min_coef, sim_fp_indices, cell_idx, cont_idx);
 }
 
 bool SimStorage::isSmallBase()
 {
-    if ((MMFAddress)_fingerprint_table == MMFAddress::bingo_null)
+    if (_fingerprint_table.getAddress() == MMFAddress::bingo_null)
         return true;
     return false;
 }

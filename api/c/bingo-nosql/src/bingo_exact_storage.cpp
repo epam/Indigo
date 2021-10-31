@@ -18,7 +18,7 @@ MMFAddress ExactStorage::create(MMFPtr<ExactStorage>& exact_ptr)
     exact_ptr.allocate();
     new (exact_ptr.ptr()) ExactStorage();
 
-    return (MMFAddress)exact_ptr;
+    return exact_ptr.getAddress();
 }
 
 void ExactStorage::load(MMFPtr<ExactStorage>& exact_ptr, MMFAddress offset)

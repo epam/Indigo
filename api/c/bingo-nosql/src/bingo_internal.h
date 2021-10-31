@@ -35,7 +35,8 @@ namespace indigo
             auto indexes = sf::slock_safe_ptr(_indexes);                                                                                                       \
             if (!indexes->has(db_id))                                                                                                                          \
                 throw BingoException("Incorrect database instance");                                                                                           \
-        }
+        }                                                                                                                                                      \
+        bingo::MMFAllocator::setDatabaseId(db_id);
 
 // Used when we don't need Indigo session, just handle errors
 #define BINGO_BEGIN_DB_STATIC(db_id)                                                                                                                           \
@@ -45,7 +46,8 @@ namespace indigo
             auto indexes = sf::slock_safe_ptr(_indexes);                                                                                                       \
             if (!indexes->has(db_id))                                                                                                                          \
                 throw BingoException("Incorrect database instance");                                                                                           \
-        }
+        }                                                                                                                                                      \
+        bingo::MMFAllocator::setDatabaseId(db_id);
 
 #define BINGO_BEGIN_SEARCH(search_id)                                                                                                                          \
     INDIGO_BEGIN                                                                                                                                               \
@@ -56,6 +58,7 @@ namespace indigo
             {                                                                                                                                                  \
                 throw BingoException("Incorrect search object");                                                                                               \
             }                                                                                                                                                  \
+            bingo::MMFAllocator::setDatabaseId(searches_data->db.at(search_id));                                                                               \
         }
 
 // Used when we don't need Indigo session, just handle errors
@@ -72,6 +75,7 @@ namespace indigo
 
 #define BINGO_END(fail)                                                                                                                                        \
     }                                                                                                                                                          \
+    bingo::MMFAllocator::setDatabaseId(-1);                                                                                                                    \
     INDIGO_END(fail)
 
 #endif // __bingo_internal__

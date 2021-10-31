@@ -95,7 +95,7 @@ namespace
 static sf::safe_shared_hide_obj<BingoPool<BaseIndex>> _indexes;
 static sf::safe_shared_hide_obj<SearchesData> _searches_data;
 
-static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* options, bool create, const char* type = 0)
+static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* options, bool create, const char* type = nullptr)
 {
     Indigo& self = indigoGetInstance();
     MoleculeFingerprintParameters fp_params(self.fp_params);
@@ -379,7 +379,6 @@ CEXPORT int bingoCloseDatabase(int db)
 
         auto bingo_indexes = sf::xlock_safe_ptr(_indexes);
         bingo_indexes->remove(db);
-        // BingoAllocator::removeInstance();
         return 1;
     }
     BINGO_END(-1);
@@ -416,18 +415,18 @@ CEXPORT int bingoInsertIteratorObj(int db, int iterator_obj_id)
     {
         IndigoObject& iterator_obj = self.getObject(iterator_obj_id);
         long obj_id = -1;
-//        auto& properties = iterator_obj.getProperties();
-//
-//        const char* key_name = [db]() {
-//            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
-//            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
-//            return (*bingo_index_ptr)->getIdPropertyName();
-//        }();
+        //        auto& properties = iterator_obj.getProperties();
+        //
+        //        const char* key_name = [db]() {
+        //            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        //            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+        //            return (*bingo_index_ptr)->getIdPropertyName();
+        //        }();
 
-//        if (key_name != nullptr && properties.contains(key_name))
-//        {
-//            obj_id = strtol(properties.at(key_name), NULL, 10);
-//        }
+        //        if (key_name != nullptr && properties.contains(key_name))
+        //        {
+        //            obj_id = strtol(properties.at(key_name), NULL, 10);
+        //        }
         return _insertIteratorToDatabase(db, self, iterator_obj, obj_id);
     }
     BINGO_END(-1);

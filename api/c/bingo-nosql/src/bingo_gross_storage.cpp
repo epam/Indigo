@@ -13,7 +13,7 @@ MMFAddress GrossStorage::create(MMFPtr<GrossStorage>& gross_ptr, size_t gross_bl
     gross_ptr.allocate();
     new (gross_ptr.ptr()) GrossStorage(gross_block_size);
 
-    return (MMFAddress)gross_ptr;
+    return gross_ptr.getAddress();
 }
 
 void GrossStorage::load(MMFPtr<GrossStorage>& gross_ptr, MMFAddress offset)

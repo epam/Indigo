@@ -12,25 +12,18 @@ MMFStorage::~MMFStorage()
     close();
 }
 
-void MMFStorage::create(const char* filename, size_t min_size, size_t max_size, const char* header, int index_id)
+void MMFStorage::create(const char* header, MMFAllocator& allocator)
 {
-    size_t header_len = strlen(header);
-
-    _mm_files.clear();
-
-    if (header_len >= max_header_len)
-        throw indigo::Exception("MMfStorage: create(): Too long header");
-
-    _allocator = MMFAllocator::create(filename, min_size, max_size, max_header_len, _mm_files, index_id);
-
+    const auto header_len = std::strlen(header);
     MMFPtr<char> header_ptr(0, 0);
-    strcpy(header_ptr.ptr(), header);
+    std::strcpy(header_ptr.ptr(allocator), header);
+    if (header_len >= MAX_HEADER_LEN)
+        throw indigo::Exception("MMFStorage: create(): Too long header");
 }
 
-void MMFStorage::load(const char* filename, int index_id, bool read_only)
+void MMFStorage::load()
 {
     _mm_files.clear();
-    _allocator = MMFAllocator::load(filename, max_header_len, _mm_files, index_id, read_only);
 }
 
 void MMFStorage::close()

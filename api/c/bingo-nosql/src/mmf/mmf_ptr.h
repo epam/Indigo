@@ -16,23 +16,32 @@ namespace bingo
         {
         }
 
+        MMFPtr(const MMFPtr<T>& ptr) : _addr(ptr.getAddress())
+        {
+        }
+
         explicit MMFPtr(int file_id, ptrdiff_t offset) : _addr(file_id, offset)
         {
         }
 
         void allocate(int count = 1)
         {
-            _addr = _allocator->template allocate<T>(count);
+            _addr = MMFAllocator::getAllocator().template allocate<T>(count);
+        }
+
+        T* ptr(MMFAllocator& allocator)
+        {
+            return reinterpret_cast<T*>(allocator.get(_addr.file_id, _addr.offset));
         }
 
         T* ptr()
         {
-            return reinterpret_cast<T*>(_allocator->get(_addr.file_id, _addr.offset));
+            return reinterpret_cast<T*>(MMFAllocator::getAllocator().get(_addr.file_id, _addr.offset));
         }
 
         const T* ptr() const
         {
-            return reinterpret_cast<const T*>(_allocator->get(_addr.file_id, _addr.offset));
+            return reinterpret_cast<const T*>(MMFAllocator::getAllocator().get(_addr.file_id, _addr.offset));
         }
 
         T& ref()
@@ -68,17 +77,14 @@ namespace bingo
         bool isNull()
         {
             return (_addr.offset == (size_t)-1) && (_addr.file_id == (size_t)-1);
-    }
+        }
 
-        operator MMFAddress() const
+        MMFAddress getAddress() const
         {
             return _addr;
         }
 
     private:
-        MMFAddress _addr;
-
-        // TODO: Currently it's always nullptr, we need to somehow initialize it
-        MMFAllocator* _allocator = nullptr;
+        MMFAddress _addr = MMFAddress::bingo_null;
     };
 }

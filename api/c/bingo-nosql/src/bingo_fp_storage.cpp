@@ -26,7 +26,7 @@ MMFAddress TranspFpStorage::create(MMFPtr<TranspFpStorage>& ptr, int fp_size, in
 {
     ptr.allocate();
     new (ptr.ptr()) TranspFpStorage(fp_size, block_size, small_base_size);
-    return (MMFAddress)ptr;
+    return ptr.getAddress();
 }
 
 void TranspFpStorage::load(MMFPtr<TranspFpStorage>& ptr, MMFAddress offset)

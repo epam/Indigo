@@ -11,7 +11,7 @@ MMFAddress ByteBufferStorage::create(MMFPtr<ByteBufferStorage>& cf_ptr, int bloc
 {
     cf_ptr.allocate();
     new (cf_ptr.ptr()) ByteBufferStorage(block_size);
-    return (MMFAddress)cf_ptr;
+    return cf_ptr.getAddress();
 }
 
 void ByteBufferStorage::load(MMFPtr<ByteBufferStorage>& cf_ptr, MMFAddress offset)
