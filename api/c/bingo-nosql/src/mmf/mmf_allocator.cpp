@@ -31,7 +31,7 @@ void MMFAllocator::create(const char* filename, size_t min_size, size_t max_size
     const auto* mmf_ptr = file.ptr();
 
     if ((mmf_ptr == nullptr) || (min_size == 0) || (min_size < sizeof(MMFAllocator)))
-        throw Exception("BingoAllocator: Incorrect instance initialization");
+        throw Exception("MMFAllocator: Incorrect instance initialization");
 
     auto inst = std::make_unique<MMFAllocator>();
     inst->_data_offset = MMFStorage::MAX_HEADER_LEN;
@@ -69,7 +69,7 @@ void MMFAllocator::load(const char* filename, int index_id, bool read_only)
     const auto* mmf_ptr = file.ptr();
 
     if ((mmf_ptr == nullptr) || (size == 0) || (size < sizeof(MMFAllocator)))
-        throw Exception("BingoAllocator: Incorrect instance initialization");
+        throw Exception("MMFAllocator: Incorrect instance initialization");
 
     auto inst = std::make_unique<MMFAllocator>();
     inst->_mmf_storage.load();
@@ -150,7 +150,7 @@ void MMFAllocator::_addFile(size_t alloc_size)
         file_size = allocator_data->_max_file_size;
 
     if (alloc_size > file_size)
-        throw Exception("BingoAllocator: Too big allocation size");
+        throw Exception("MMFAllocator: Too big allocation size");
 
     _mmf_storage._mm_files.emplace_back();
 
@@ -193,13 +193,3 @@ void MMFAllocator::setDatabaseId(int db_id)
         _current_allocator = allocators->at(db_id).get();
     }
 }
-
-// void BingoAllocator::removeInstance()
-//{
-//     // const auto database_id = MMFStorage::getDatabaseId();
-//     auto instances = sf::xlock_safe_ptr(_instances);
-//     if (instances->count(database_id) > 0)
-//     {
-//         instances->erase(database_id);
-//     }
-// }

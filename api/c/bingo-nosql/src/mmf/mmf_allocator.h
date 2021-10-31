@@ -62,11 +62,6 @@ namespace bingo
 
         static void setDatabaseId(int db_id);
 
-//        static int getDatabaseId()
-//        {
-//            return _current_db_id;
-//        }
-
     private:
         struct MMFAllocatorData
         {

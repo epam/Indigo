@@ -7,11 +7,9 @@
 #undef min
 #undef max
 #elif (defined __GNUC__ || defined __APPLE__)
-#include <errno.h>
+#include <cerrno>
 #include <fcntl.h>
-#include <stdlib.h>
 #include <sys/mman.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #endif
@@ -27,11 +25,6 @@ MMFile::MMFile() : _ptr(nullptr)
 #elif (defined __GNUC__ || defined __APPLE__)
     _fd = -1;
 #endif
-}
-
-MMFile::~MMFile()
-{
-    // close();
 }
 
 byte* MMFile::ptr()
@@ -87,7 +80,7 @@ void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool 
     _h_file = CreateFile((LPCSTR)_filename.c_str(), dwflags, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 
     if (_h_file == INVALID_HANDLE_VALUE)
-        throw Exception("BingoMMF: Could not open file. Error message: %s", _getSystemErrorMsg());
+        throw Exception("MMF: Could not open file. Error message: %s", _getSystemErrorMsg());
 
     dword access_info = PAGE_READWRITE;
 
@@ -102,7 +95,7 @@ void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool 
                                     0);                    // name of mapping object
 
     if (_h_map_file == NULL)
-        throw Exception("BingoMMF: Could not create file mapping object. Error message: %s", _getSystemErrorMsg());
+        throw Exception("MMF: Could not create file mapping object. Error message: %s", _getSystemErrorMsg());
 
     dword map_access_permission = FILE_MAP_ALL_ACCESS;
     if (read_only)
@@ -112,7 +105,7 @@ void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool 
                                 map_access_permission, 0, 0, buf_size);
 
     if (_ptr == NULL)
-        throw Exception("BingoMMF: Could not map view of file. Error message: %s", _getSystemErrorMsg());
+        throw Exception("MMF: Could not map view of file. Error message: %s", _getSystemErrorMsg());
 
 #elif (defined __GNUC__ || defined __APPLE__)
     int flags;
@@ -127,7 +120,7 @@ void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool 
     }
 
     if ((_fd = ::open(_filename.c_str(), flags, permissions)) == -1)
-        throw Exception("BingoMMF: Could not open file. Error message: %s", _getSystemErrorMsg());
+        throw Exception("MMF: Could not open file. Error message: %s", _getSystemErrorMsg());
 
     auto trunc_res = ftruncate(_fd, _len);
     if (trunc_res < 0)
@@ -143,7 +136,7 @@ void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool 
     _ptr = mmap(static_cast<caddr_t>(nullptr), _len, prot_flags, MAP_SHARED, _fd, 0);
 
     if (_ptr == MAP_FAILED)
-        throw Exception("BingoMMF: Could not map view of file. Error message: %s", _getSystemErrorMsg());
+        throw Exception("MMF: Could not map view of file. Error message: %s", _getSystemErrorMsg());
 #endif
 }
 

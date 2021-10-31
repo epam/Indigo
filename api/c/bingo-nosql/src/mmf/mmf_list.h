@@ -17,9 +17,9 @@ namespace bingo
 
             _Link()
             {
-                data_ptr = MMFPtr<T>(MMFAddress::bingo_null);
-                next_link = MMFPtr<_Link>(MMFAddress::bingo_null);
-                prev_link = MMFPtr<_Link>(MMFAddress::bingo_null);
+                data_ptr = MMFPtr<T>(MMFAddress::null);
+                next_link = MMFPtr<_Link>(MMFAddress::null);
+                prev_link = MMFPtr<_Link>(MMFAddress::null);
             }
         };
 
@@ -28,7 +28,7 @@ namespace bingo
         {
             MMFPtr<_Link> cur_link;
 
-            Iterator() : cur_link(MMFAddress::bingo_null)
+            Iterator() : cur_link(MMFAddress::null)
             {
             }
             Iterator(MMFPtr<_Link> link) : cur_link(link)
@@ -69,7 +69,7 @@ namespace bingo
 
             Iterator& operator++(int)
             {
-                if (cur_link->next_link.getAddress() == MMFAddress::bingo_null)
+                if (cur_link->next_link.getAddress() == MMFAddress::null)
                     throw indigo::Exception("MMFList::Iterator:operator++ There's no next link");
 
                 cur_link = cur_link->next_link;
@@ -79,7 +79,7 @@ namespace bingo
 
             Iterator& operator--(int)
             {
-                if (cur_link->prev_link.getAddress() == MMFAddress::bingo_null)
+                if (cur_link->prev_link.getAddress() == MMFAddress::null)
                     throw indigo::Exception("MMFList::Iterator:operator-- There's no previous link");
 
                 cur_link = cur_link->prev_link;
@@ -119,7 +119,7 @@ namespace bingo
             new_link->next_link = pos.cur_link;
             new_link->prev_link = pos.cur_link->prev_link;
 
-            if (pos.cur_link->prev_link.getAddress() != MMFAddress::bingo_null)
+            if (pos.cur_link->prev_link.getAddress() != MMFAddress::null)
                 pos.cur_link->prev_link->next_link = new_link;
             pos.cur_link->prev_link = new_link;
 

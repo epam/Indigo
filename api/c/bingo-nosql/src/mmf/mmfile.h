@@ -1,5 +1,4 @@
-#ifndef __bingo_mmf__
-#define __bingo_mmf__
+#pragma once
 
 #include <cstdio>
 #include <new>
@@ -13,12 +12,9 @@ namespace bingo
     {
     public:
         MMFile();
-
-        ~MMFile();
+        ~MMFile() = default;
 
         void open(const char* filename, size_t buf_size, bool create_flag, bool read_only);
-
-        void resize(size_t new_size);
 
         byte* ptr();
         const byte* ptr() const;
@@ -42,6 +38,4 @@ namespace bingo
 
         static char* _getSystemErrorMsg();
     };
-}; // namespace bingo
-
-#endif // __bingo_mmf__
+}

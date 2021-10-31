@@ -85,6 +85,6 @@ namespace bingo
         }
 
     private:
-        MMFAddress _addr = MMFAddress::bingo_null;
+        MMFAddress _addr = MMFAddress::null;
     };
 }

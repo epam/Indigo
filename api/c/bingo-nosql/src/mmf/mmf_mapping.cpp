@@ -24,7 +24,7 @@ void MMFMapping::getAll(size_t id1, Array<size_t>& id2_array)
 {
     id2_array.clear();
 
-    if (_mapping_table[_hashFunc(id1)].getAddress() == MMFAddress::bingo_null)
+    if (_mapping_table[_hashFunc(id1)].getAddress() == MMFAddress::null)
         return;
 
     _MapList::Iterator it;
@@ -43,7 +43,7 @@ void MMFMapping::getAll(size_t id1, Array<size_t>& id2_array)
 
 void MMFMapping::add(size_t id1, size_t id2)
 {
-    if (_mapping_table[_hashFunc(id1)].getAddress() == MMFAddress::bingo_null)
+    if (_mapping_table[_hashFunc(id1)].getAddress() == MMFAddress::null)
     {
         _mapping_table[_hashFunc(id1)].allocate();
         new (_mapping_table[_hashFunc(id1)].ptr()) _MapList();
@@ -66,8 +66,8 @@ void MMFMapping::add(size_t id1, size_t id2)
 
 void MMFMapping::remove(size_t id)
 {
-    if (_mapping_table[_hashFunc(id)].getAddress() == MMFAddress::bingo_null)
-        throw Exception("BingoMapping: There is no such id");
+    if (_mapping_table[_hashFunc(id)].getAddress() == MMFAddress::null)
+        throw Exception("MMFMapping: There is no such id");
 
     _MapList::Iterator it;
 
@@ -75,7 +75,7 @@ void MMFMapping::remove(size_t id)
     bool res = _findElem(id, it, idx_in_block);
 
     if (!res)
-        throw Exception("BingoMapping: There is no such id");
+        throw Exception("MMFMapping: There is no such id");
 
     it->buf[idx_in_block].first = -1;
     it->buf[idx_in_block].second = -1;
@@ -88,7 +88,7 @@ size_t MMFMapping::_hashFunc(size_t id)
 
 bool MMFMapping::_findElem(size_t id, _MapIterator& iter, int& idx_in_block)
 {
-    if (_mapping_table[_hashFunc(id)].getAddress() == MMFAddress::bingo_null)
+    if (_mapping_table[_hashFunc(id)].getAddress() == MMFAddress::null)
         return false;
 
     _MapList::Iterator it;

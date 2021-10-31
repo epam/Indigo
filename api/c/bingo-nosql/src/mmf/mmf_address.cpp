@@ -2,7 +2,7 @@
 
 using namespace bingo;
 
-const MMFAddress MMFAddress::bingo_null = MMFAddress(-1, -1);
+const MMFAddress MMFAddress::null = MMFAddress(-1, -1);
 
 MMFAddress::MMFAddress(int f_id, ptrdiff_t off) noexcept : file_id(f_id), offset(off)
 {
