@@ -201,8 +201,7 @@ def cpu_count():
     if num >= 1:
         return num
     else:
-        raise RuntimeWarning('cannot determine number of cpus, falling back to single thread execution')
-        num = 1
+        return 1
 
 
 class TimeoutError(Exception):

@@ -416,7 +416,81 @@ void IndigoPluginContext::validate()
 
 #ifdef _WIN32
 #include <Windows.h>
+#elif defined(__linux__)
+#include <ctype.h>
+#include <fcntl.h>
+#include <string.h>
+#include <unistd.h>
+#elif defined(__APPLE__)
+#include <cassert>
+#include <sys/sysctl.h>
+#include <unistd.h>
 #endif
+
+namespace
+{
+    void sleepMs(int ms)
+    {
+#ifdef _WIN32
+        Sleep(ms);
+#else
+        sleep(ms);
+#endif
+    }
+
+    bool debuggerIsAttached()
+    {
+#ifdef _WIN32
+        return IsDebuggerPresent();
+#elif defined(__APPLE__)
+        int junk;
+        int mib[4];
+        struct kinfo_proc info;
+        size_t size;
+
+        info.kp_proc.p_flag = 0;
+
+        mib[0] = CTL_KERN;
+        mib[1] = KERN_PROC;
+        mib[2] = KERN_PROC_PID;
+        mib[3] = getpid();
+
+        size = sizeof(info);
+        junk = sysctl(mib, sizeof(mib) / sizeof(*mib), &info, &size, NULL, 0);
+        assert(junk == 0);
+
+        return ((info.kp_proc.p_flag & P_TRACED) != 0);
+#else
+        char buf[4096];
+
+        const int status_fd = ::open("/proc/self/status", O_RDONLY);
+        if (status_fd == -1)
+            return false;
+
+        const ssize_t num_read = ::read(status_fd, buf, sizeof(buf) - 1);
+        ::close(status_fd);
+
+        if (num_read <= 0)
+            return false;
+
+        buf[num_read] = '\0';
+        constexpr char tracerPidString[] = "TracerPid:";
+        const auto tracer_pid_ptr = ::strstr(buf, tracerPidString);
+        if (!tracer_pid_ptr)
+            return false;
+
+        for (const char* characterPtr = tracer_pid_ptr + sizeof(tracerPidString) - 1; characterPtr <= buf + num_read; ++characterPtr)
+        {
+            if (::isspace(*characterPtr))
+                continue;
+            else
+                return ::isdigit(*characterPtr) != 0 && *characterPtr != '0';
+        }
+
+        return false;
+#endif
+    }
+}
 
 CEXPORT void indigoDbgBreakpoint(void)
 {
@@ -433,6 +507,12 @@ CEXPORT void indigoDbgBreakpoint(void)
         }
     }
 #else
+    fprintf(stderr, "Awaiting debugger for PID %d\n", getpid());
+    while (!debuggerIsAttached())
+    {
+        sleepMs(100);
+    }
+    fprintf(stderr, "Debugger attached, continuing...\n");
 #endif
 }
 

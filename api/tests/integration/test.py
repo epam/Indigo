@@ -107,7 +107,6 @@ def main():
     output_dir = os.path.join(base_root, "out")
     pattern_list = []
     exclude_pattern_list = []
-    nunit_report_name = ""
     junit_report_name = ""
     iterations = 1
     threads_number = cpu_count()
@@ -127,8 +126,6 @@ def main():
             output_dir = sys.argv[i + 1]
         elif sys.argv[i] == '-b':
             output_dir_base = sys.argv[i + 1]
-        elif sys.argv[i] == '-n':
-            nunit_report_name = sys.argv[i + 1]
         elif sys.argv[i] == '-i':
             iterations = int(sys.argv[i + 1])
         elif sys.argv[i] == '-j':
