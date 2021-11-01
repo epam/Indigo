@@ -417,13 +417,12 @@ void IndigoPluginContext::validate()
 #ifdef _WIN32
 #include <Windows.h>
 #elif defined(__linux__)
-#include <ctype.h>
 #include <fcntl.h>
-#include <string.h>
 #include <unistd.h>
 #elif defined(__APPLE__)
-#include <cassert>
 #include <sys/sysctl.h>
+#include <unistd.h>
+#elif defined(__EMSCRIPTEN__)
 #include <unistd.h>
 #endif
 
@@ -444,15 +443,15 @@ namespace
         return IsDebuggerPresent();
 #elif defined(__APPLE__)
         int mib[4];
-        struct kinfo_proc info;
-        size_t size;
+        kinfo_proc info;
         info.kp_proc.p_flag = 0;
         mib[0] = CTL_KERN;
         mib[1] = KERN_PROC;
         mib[2] = KERN_PROC_PID;
         mib[3] = getpid();
-        size = sizeof(info);
         return ((info.kp_proc.p_flag & P_TRACED) != 0);
+#elif defined(__EMSCRIPTEN__)
+        return false;
 #else
         char buf[4096];
         const int status_fd = ::open("/proc/self/status", O_RDONLY);
@@ -487,6 +486,7 @@ CEXPORT void indigoDbgBreakpoint(void)
                 Sleep(1000);
         }
     }
+#elif __EMSCRIPTEN__
 #else
     fprintf(stderr, "Awaiting debugger for PID %d\n", getpid());
     while (!debuggerIsAttached())
