@@ -45,6 +45,7 @@ import sys
 import threading
 import time
 import weakref
+
 if sys.version_info[0] < 3:
     import Queue
 else:
@@ -162,46 +163,26 @@ class Finalize(object):
 
 
 def cpu_count():
-    '''
+    """
     Returns the number of CPUs in the system
-    '''
-    if not os.name == 'java':
-        platform = sys.platform
-        if platform == 'cli':
-            if os.name == 'nt':
-                platform = 'win32'
-            else:
-                # Try darwin, go to linux as fallback
-                platform = 'darwin'
+    """
+    if os.name == 'java':
+        import java
+        return java.lang.Runtime.getRuntime().availableProcessors()
+    elif sys.platform == 'cli':
+        import System.Environment
+        return System.Environment.ProcessorCount
     else:
-        platform = sys.platform.getshadow()
-
-    num = 0
-    if platform == 'win32':
-        try:
-            num = int(os.environ['NUMBER_OF_PROCESSORS'])
-        except (ValueError, KeyError):
-            num = 0
-    elif 'bsd' in platform or platform == 'darwin':
-        comm = '/sbin/sysctl -n hw.ncpu'
-        if platform == 'darwin':
-            comm = '/usr' + comm
-        try:
+        if sys.platform == 'win32':
+            return int(os.environ['NUMBER_OF_PROCESSORS'])
+        elif 'bsd' in sys.platform or sys.platform == 'darwin':
+            comm = '/sbin/sysctl -n hw.ncpu'
+            if sys.platform == 'darwin':
+                comm = '/usr' + comm
             with os.popen(comm) as p:
-                num = int(p.read())
-        except ValueError:
-            num = 0
-
-    if num == 0:
-        try:
-            num = os.sysconf('SC_NPROCESSORS_ONLN')
-        except (ValueError, OSError, AttributeError):
-            num = 0
-
-    if num >= 1:
-        return num
-    else:
-        return 1
+                return int(p.read())
+        else:
+            return os.sysconf('SC_NPROCESSORS_ONLN')
 
 
 class TimeoutError(Exception):
