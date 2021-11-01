@@ -216,17 +216,35 @@ void*& Indigo::error_handler_context()
     return _error_handler_context;
 }
 
+namespace
+{
+    class IndigoLocaleHandler
+    {
+    public:
+        void setLocale(int locale_type, const char* locale)
+        {
+            std::setlocale(locale_type, locale);
+        }
+
+        static sf::safe_hide_obj<IndigoLocaleHandler>& handler()
+        {
+            static sf::safe_hide_obj<IndigoLocaleHandler> _handler;
+            return _handler;
+        }
+
+    private:
+        friend class sf::safe_obj<IndigoLocaleHandler>;
+        IndigoLocaleHandler() = default;
+    };
+}
+
 CEXPORT qword indigoAllocSessionId()
 {
     qword id = TL_ALLOC_SESSION_ID();
     TL_SET_SESSION_ID(id);
     Indigo& indigo = indigo_self.createOrGetLocalCopy(id);
     indigo.init();
-    {
-        static std::mutex locale_mutex;
-        std::lock_guard<std::mutex> locale_guard(locale_mutex);
-        std::setlocale(LC_NUMERIC, "C");
-    }
+    sf::xlock_safe_ptr(IndigoLocaleHandler::handler())->setLocale(LC_NUMERIC, "C");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
     abbreviations::indigoCreateAbbreviationsInstance();
