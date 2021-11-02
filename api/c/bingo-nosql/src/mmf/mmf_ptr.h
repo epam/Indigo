@@ -31,17 +31,17 @@ namespace bingo
 
         T* ptr(MMFAllocator& allocator)
         {
-            return reinterpret_cast<T*>(allocator.get(_addr.file_id, _addr.offset));
+            return static_cast<T*>(allocator.get(_addr.file_id, _addr.offset));
         }
 
         T* ptr()
         {
-            return reinterpret_cast<T*>(MMFAllocator::getAllocator().get(_addr.file_id, _addr.offset));
+            return static_cast<T*>(MMFAllocator::getAllocator().get(_addr.file_id, _addr.offset));
         }
 
         const T* ptr() const
         {
-            return reinterpret_cast<const T*>(MMFAllocator::getAllocator().get(_addr.file_id, _addr.offset));
+            return static_cast<const T*>(MMFAllocator::getAllocator().get(_addr.file_id, _addr.offset));
         }
 
         T& ref()

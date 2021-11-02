@@ -9,7 +9,6 @@
 #include "base_c/defs.h"
 
 #include "mmf_address.h"
-#include "mmf_storage.h"
 #include "mmfile.h"
 
 namespace bingo
@@ -27,28 +26,27 @@ namespace bingo
 
         static MMFAllocator& getAllocator();
 
-        const byte* get(int file_id, ptrdiff_t offset) const;
-        byte* get(int file_id, ptrdiff_t offset);
+        const void* get(int file_id, ptrdiff_t offset) const;
+        void* get(int file_id, ptrdiff_t offset);
 
         template <typename T> MMFAddress allocate(int count = 1)
         {
             size_t alloc_size, file_idx, file_off, file_size;
 
-            auto* mmf_ptr = _mmf_storage._mm_files.at(0).ptr();
-            auto* allocator_data = reinterpret_cast<MMFAllocatorData*>(mmf_ptr + _data_offset);
+            auto* allocator_data = static_cast<MMFAllocatorData*>( _mm_files.at(0)->ptr(MAX_HEADER_LEN));
 
             alloc_size = sizeof(T) * count;
 
             file_idx = allocator_data->_cur_file_id;
             file_off = allocator_data->_free_off;
-            file_size = _mmf_storage._mm_files.at(file_idx).size();
+            file_size = _mm_files.at(file_idx)->size();
 
             if (alloc_size > file_size - file_off)
                 _addFile(alloc_size);
 
             file_idx = allocator_data->_cur_file_id;
 
-            file_size = _mmf_storage._mm_files.at(file_idx).size();
+            file_size = _mm_files.at(file_idx)->size();
 
             size_t res_off = allocator_data->_free_off;
             size_t res_id = allocator_data->_cur_file_id;
@@ -61,6 +59,9 @@ namespace bingo
         }
 
         static void setDatabaseId(int db_id);
+
+        static constexpr const int MAX_HEADER_LEN = 128;
+        ~MMFAllocator();
 
     private:
         struct MMFAllocatorData
@@ -76,18 +77,18 @@ namespace bingo
             size_t _free_off;
         };
 
-        MMFAllocator() = default;
+        MMFAllocator();
 
         void _addFile(size_t alloc_size);
 
         static size_t _getFileSize(size_t idx, size_t min_size, size_t max_size, dword sizes);
 
-        static void _genFilename(int idx, const char* filename, std::string& out_name);
+        static std::string _genFilename(int idx, const char* filename);
 
-        ptrdiff_t _data_offset;
+        void _addHeader(const char* header);
+
         std::string _filename;
-        int _index_id;
-        MMFStorage _mmf_storage;
+        std::vector<std::unique_ptr<MMFile>> _mm_files;
 
         static sf::safe_shared_hide_obj<std::unordered_map<int, std::unique_ptr<MMFAllocator>>> _allocators;
         static thread_local MMFAllocator* _current_allocator;

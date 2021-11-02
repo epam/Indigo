@@ -116,7 +116,7 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
 
     MMFAllocator::load(_mmf_path.c_str(), index_id, _read_only);
 
-    _header = MMFPtr<_Header>(MMFAddress(0, MMFStorage::MAX_HEADER_LEN + MMFAllocator::getAllocatorDataSize()));
+    _header = MMFPtr<_Header>(MMFAddress(0, MMFAllocator::MAX_HEADER_LEN + MMFAllocator::getAllocatorDataSize()));
 
     Properties::load(_properties, _header->properties_offset);
 

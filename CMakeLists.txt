@@ -30,6 +30,7 @@ option(BUILD_BINGO "Build all existing Bingo cartridges" ON)
 option(BUILD_BINGO_POSTGRES "Build Bingo Postgres cartridge" ON)
 option(BUILD_BINGO_SQLSERVER "Build Bingo MS SqlServer cartridge" ON)
 option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge" ON)
+option(BUILD_BINGO_ELASTIC "Build Bingo Elastic cartridges for Java and Python" ON)
 
 # Auto-set dependent options
 
@@ -57,11 +58,13 @@ if (BUILD_BINGO)
     set(BUILD_BINGO_POSTGRES ON)
     set(BUILD_BINGO_SQLSERVER ON)
     set(BUILD_BINGO_ORACLE ON)
+    set(BUILD_BINGO_ELASTIC ON)
 else()
     message(STATUS "Disabling BUILD_BINGO_POSTGRES, BUILD_BINGO_SQLSERVER, BUILD_BINGO_ORACLE because BUILD_BINGO=OFF")
     set(BUILD_BINGO_POSTGRES OFF)
     set(BUILD_BINGO_SQLSERVER OFF)
     set(BUILD_BINGO_ORACLE OFF)
+    set(BUILD_BINGO_ELASTIC OFF)
 endif()
 
 if (EMSCRIPTEN)
@@ -83,6 +86,10 @@ if (BUILD_INDIGO OR BUILD_INDIGO_UTILS OR BUILD_BINGO_SQLSERVER OR BUILD_BINGO_O
     set(BUILD_NATIVE ON)
 endif()
 
+if (BUILD_BINGO_ELASTIC)
+    set(BUILD_NATIVE ON)
+    set(BUILD_INDIGO_WRAPPERS ON)
+endif()
 
 # Print all options and settings
 message(STATUS "ENABLE_TESTS=${ENABLE_TESTS}")
@@ -97,6 +104,7 @@ message(STATUS "BUILD_INDIGO_UTILS=${BUILD_INDIGO_UTILS}")
 message(STATUS "BUILD_BINGO_POSTGRES=${BUILD_BINGO_POSTGRES}")
 message(STATUS "BUILD_BINGO_SQLSERVER=${BUILD_BINGO_SQLSERVER}")
 message(STATUS "BUILD_BINGO_ORACLE=${BUILD_BINGO_ORACLE}")
+message(STATUS "BUILD_BINGO_ELASTIC=${BUILD_BINGO_ELASTIC}")
 
 # Set up compiler flags and other preparatory steps
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)

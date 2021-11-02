@@ -7,36 +7,32 @@
 #undef min
 #undef max
 #elif (defined __GNUC__ || defined __APPLE__)
+namespace c
+{
 #include <cerrno>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <unistd.h>
+}
 #endif
 
 using namespace bingo;
 using namespace indigo;
 
-MMFile::MMFile() : _ptr(nullptr)
+#include <iostream>
+#include <utility>
+
+void* MMFile::ptr(const ptrdiff_t offset)
 {
-#ifdef _WIN32
-    _h_file = 0;
-    _h_map_file = 0;
-#elif (defined __GNUC__ || defined __APPLE__)
-    _fd = -1;
-#endif
+    return static_cast<void*>(static_cast<byte*>(_ptr) + offset);
 }
 
-byte* MMFile::ptr()
+const void* MMFile::ptr(const ptrdiff_t offset) const
 {
-    return static_cast<byte*>(_ptr);
+    return static_cast<void*>(static_cast<byte*>(_ptr) + offset);
+    ;
 }
-
-const byte* MMFile::ptr() const
-{
-    return static_cast<byte*>(_ptr);
-}
-
 
 const char* MMFile::name() const
 {
@@ -62,14 +58,14 @@ size_t MMFile::size() const
     return _len;
 }
 
-void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool read_only)
+MMFile::MMFile(std::string filename, size_t buf_size, bool create_flag, bool read_only) : _len(buf_size), _filename(std::move(filename))
 {
-    _len = buf_size;
-
-    _filename.assign(filename);
+//    std::cout << "MMFile(" << this << ")" << std::endl;
 
     if (create_flag)
-        std::remove(filename);
+    {
+        std::remove(_filename.c_str());
+    }
 
 #ifdef _WIN32
     DWORD dwflags = GENERIC_READ | GENERIC_WRITE;
@@ -104,7 +100,7 @@ void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool 
     _ptr = (char*)MapViewOfFile(_h_map_file, // handle to map object
                                 map_access_permission, 0, 0, buf_size);
 
-    if (_ptr == NULL)
+    if (_ptr == nullptr)
         throw Exception("MMF: Could not map view of file. Error message: %s", _getSystemErrorMsg());
 
 #elif (defined __GNUC__ || defined __APPLE__)
@@ -119,10 +115,10 @@ void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool 
         permissions = S_IRUSR | S_IWUSR;
     }
 
-    if ((_fd = ::open(_filename.c_str(), flags, permissions)) == -1)
+    if ((_fd = c::open(_filename.c_str(), flags, permissions)) == -1)
         throw Exception("MMF: Could not open file. Error message: %s", _getSystemErrorMsg());
 
-    auto trunc_res = ftruncate(_fd, _len);
+    auto trunc_res = c::ftruncate(_fd, _len);
     if (trunc_res < 0)
     {
         // TODO check result
@@ -133,15 +129,20 @@ void MMFile::open(const char* filename, size_t buf_size, bool create_flag, bool 
     if (read_only)
         prot_flags = PROT_READ;
 
-    _ptr = mmap(static_cast<caddr_t>(nullptr), _len, prot_flags, MAP_SHARED, _fd, 0);
+    _ptr = c::mmap(static_cast<c::caddr_t>(nullptr), _len, prot_flags, MAP_SHARED, _fd, 0);
 
     if (_ptr == MAP_FAILED)
+    {
+        _ptr = nullptr;
         throw Exception("MMF: Could not map view of file. Error message: %s", _getSystemErrorMsg());
+    }
 #endif
 }
 
-void MMFile::close()
+MMFile::~MMFile()
 {
+//    std::cout << "~MMFile(" << this << ")" << std::endl;
+
 #ifdef _WIN32
     if (_filename.size() != 0)
     {
@@ -149,33 +150,33 @@ void MMFile::close()
         _filename.clear();
     }
 
-    if (_h_file != 0)
+    if (_h_file != nullptr)
     {
         CloseHandle(_h_file);
-        _h_file = 0;
+        _h_file = nullptr;
     }
 
-    if (_h_map_file != 0)
+    if (_h_map_file != nullptr)
     {
         CloseHandle(_h_map_file);
-        _h_map_file = 0;
+        _h_map_file = nullptr;
     }
 
-    if (_ptr != 0)
+    if (_ptr != nullptr)
     {
         UnmapViewOfFile(_ptr);
-        _ptr = 0;
+        _ptr = nullptr;
     }
 #elif (defined __GNUC__ || defined __APPLE__)
     if (_ptr != nullptr)
     {
-        munmap(static_cast<caddr_t>(_ptr), _len);
+        c::munmap(static_cast<c::caddr_t>(_ptr), _len);
         _ptr = nullptr;
     }
 
     if (_fd != -1)
     {
-        ::close(_fd);
+        c::close(_fd);
         _fd = -1;
     }
 #endif

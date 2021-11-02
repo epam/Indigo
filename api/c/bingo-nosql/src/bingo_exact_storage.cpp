@@ -4,8 +4,6 @@
 #include "graph/subgraph_hash.h"
 #include "molecule/elements.h"
 
-#include "mmf/mmf_storage.h"
-
 using namespace bingo;
 using namespace indigo;
 

@@ -34,10 +34,10 @@ abstract public class NoSQLElasticCompareAbstract {
                 .withRefreshInterval("1s")
                 .build();
         bingoDb = Bingo.createDatabaseFile(indigo, "src/test/resources/bingo_nosql", "molecule");
-
     }
 
     public static void tearDownDataStore() {
+        bingoDb.close();
         elasticsearchContainer.stop();
     }
 

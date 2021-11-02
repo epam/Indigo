@@ -49,13 +49,7 @@ namespace
     {
         for (const auto& m : bingo.session->iterateSDFile(dataPath(path)))
         {
-            try
-            {
-                bingo.insertRecord(*m);
-            }
-            catch (const IndigoException& e)
-            {
-            }
+            bingo.insertRecord(*m);
         }
     }
 
@@ -116,11 +110,12 @@ TEST(BingoThreads, InsertSingleThread)
     auto session = IndigoSession::create();
     session->setOption("ignore-stereochemistry-errors", true);
     auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
-    for (auto i = 0; i < 16; i++)
+    constexpr int ITERATIONS = 16;
+    for (auto i = 0; i < ITERATIONS; i++)
     {
         testInsert(bingo, "molecules/basic/Compound_0000001_0000250.sdf.gz");
     }
-    checkCount(bingo, 241 * 16);
+    checkCount(bingo, 241 * ITERATIONS);
 }
 
 TEST(BingoThreads, DISABLED_InsertSingleThreadPharmapendium)

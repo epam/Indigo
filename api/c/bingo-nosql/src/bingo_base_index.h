@@ -13,7 +13,6 @@
 #include "bingo_properties.h"
 #include "bingo_sim_storage.h"
 #include "mmf/mmf_mapping.h"
-#include "mmf/mmf_storage.h"
 
 #define BINGO_VERSION "v0.72"
 

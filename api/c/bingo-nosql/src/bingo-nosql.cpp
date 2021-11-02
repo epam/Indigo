@@ -44,56 +44,56 @@ namespace
     template <class T> class BingoPool
     {
     public:
-        bool has(size_t id) const
+        bool has(long long id) const
         {
             return map.count(id) > 0;
         }
 
-        sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(size_t id)
+        sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(long long id)
         {
             return map.at(id);
         }
 
-        const sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(size_t id) const
+        const sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(long long id) const
         {
             return map.at(id);
         }
 
-        void insert(size_t id, std::unique_ptr<T>&& obj)
+        void insert(long long id, std::unique_ptr<T>&& obj)
         {
             map[id] = std::move(sf::safe_shared_hide_obj<std::unique_ptr<T>>(std::move(obj)));
         }
 
-        size_t insert(std::unique_ptr<T>&& obj)
+        long long insert(std::unique_ptr<T>&& obj)
         {
             map[next_id] = std::move(sf::safe_shared_hide_obj<std::unique_ptr<T>>(std::move(obj)));
             return next_id++;
         }
 
-        void remove(size_t id)
+        void remove(long long id)
         {
             map.erase(id);
         }
 
-        size_t getNextId()
+        long long getNextId()
         {
             return next_id++;
         }
 
     private:
-        std::unordered_map<size_t, sf::safe_shared_hide_obj<std::unique_ptr<T>>> map;
-        size_t next_id = 0;
+        std::unordered_map<long long, sf::safe_shared_hide_obj<std::unique_ptr<T>>> map;
+        long long next_id = 0;
     };
 
     struct SearchesData
     {
         BingoPool<Matcher> searches;
-        std::unordered_map<size_t, size_t> db;
+        std::unordered_map<long long, long long> db;
     };
-}
 
-static sf::safe_shared_hide_obj<BingoPool<BaseIndex>> _indexes;
-static sf::safe_shared_hide_obj<SearchesData> _searches_data;
+    static sf::safe_shared_hide_obj<BingoPool<BaseIndex>> _indexes;
+    static sf::safe_shared_hide_obj<SearchesData> _searches_data;
+}
 
 static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* options, bool create, const char* type = nullptr)
 {

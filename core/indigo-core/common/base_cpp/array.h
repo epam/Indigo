@@ -53,8 +53,10 @@ namespace indigo
         {
             if (_array != nullptr)
             {
-                free(_array);
+                std::free(static_cast<void*>(_array));
                 _array = nullptr;
+                _length = 0;
+                _reserved = 0;
             }
         }
 
@@ -74,18 +76,20 @@ namespace indigo
                 {
                     if (_array != nullptr)
                     {
-                        free(_array);
+                        std::free(static_cast<void*>(_array));
                         _array = nullptr;
+                        _length = 0;
+                        _reserved = 0;
                     }
                 }
 
                 T* oldptr = _array;
 
-                _array = static_cast<T*>(std::realloc(_array, sizeof(T) * to_reserve));
+                _array = static_cast<T*>(std::realloc(static_cast<void*>(_array), sizeof(T) * to_reserve));
                 if (_array == nullptr)
                 {
                     _array = oldptr;
-                    throw Error("reserve(): no memory");
+                    throw std::bad_alloc(); // ("reserve(): no memory");
                 }
                 _reserved = to_reserve;
             }
@@ -121,11 +125,17 @@ namespace indigo
 
         const T& operator[](int index) const
         {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
             return _array[index];
         }
 
         T& operator[](int index)
         {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
             return _array[index];
         }
 

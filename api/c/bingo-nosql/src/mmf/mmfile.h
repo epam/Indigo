@@ -11,19 +11,21 @@ namespace bingo
     class MMFile
     {
     public:
-        MMFile();
-        ~MMFile() = default;
+        MMFile(std::string filename, size_t buf_size, bool create_flag, bool read_only);
+        ~MMFile();
 
-        void open(const char* filename, size_t buf_size, bool create_flag, bool read_only);
+        MMFile& operator=(const MMFile&) = delete;
+        MMFile(const MMFile&) = delete;
+        MMFile& operator=(MMFile&&) = delete;
+        MMFile(MMFile&&) = default;
+        MMFile() = delete;
 
-        byte* ptr();
-        const byte* ptr() const;
+        void* ptr(ptrdiff_t offset = 0);
+        const void* ptr(ptrdiff_t offset = 0) const;
 
         const char* name() const;
 
         size_t size() const;
-
-        void close();
 
     private:
 #ifdef _WIN32
