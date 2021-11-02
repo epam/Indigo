@@ -349,12 +349,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java-version }}
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+      #- name: Cache Maven packages
+      #  uses: actions/cache@v2
+      #  with:
+      #    path: ~/.m2
+      #    key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+      #    restore-keys: ${{ runner.os }}-m2
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
@@ -363,7 +363,8 @@ jobs:
       - name: Install Indigo jars
         run: find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
       - name: Build bingo-elastic
-        run: mvn -B --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
+        #run: mvn -B --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
+        run: mvn -B --file pom.xml clean test
         working-directory: bingo/bingo-elastic/java
 
   build_indigo_windows_mingw_x86_64:
