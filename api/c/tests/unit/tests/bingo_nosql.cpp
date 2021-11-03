@@ -23,6 +23,8 @@
 #include <bingo-nosql.h>
 #include <indigo.h>
 
+#include <base_cpp/exception.h>
+
 #include "common.h"
 
 using namespace indigo;
@@ -55,19 +57,10 @@ TEST_F(BingoNosqlTest, test_enumerate_id)
 TEST_F(BingoNosqlTest, multiple_instances_same_name)
 {
     std::vector<int> db_ids;
-    db_ids.reserve(100);
-    for (int i = 0; i < 100; i++)
-    {
-        db_ids.emplace_back(bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", ""));
-    }
-    for (int i = 0; i < 100; i++)
-    {
-        int obj = indigoLoadMoleculeFromString("C1CCNCC1");
-        bingoInsertRecordObj(db_ids[i], obj);
-        indigoFree(obj);
-    }
-    for (int i = 0; i < 100; i++)
-    {
-        bingoCloseDatabase(db_ids[i]);
-    }
+    EXPECT_THROW({
+        for (int i = 0; i < 100; i++)
+        {
+            db_ids.emplace_back(bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", ""));
+        }
+    }, Exception);
 }

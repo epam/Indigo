@@ -4,6 +4,14 @@
 #include <sstream>
 #include <string>
 
+#ifndef _WIN32
+#include <fcntl.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
 #include "base_c/os_dir.h"
 
 #include "indigo_fingerprints.h"
@@ -28,15 +36,44 @@ static const size_t _max_mmf_size = 536870912; // 512Mb
 static const int _small_base_size = 10000;
 static const int _sim_mt_size = 50000;
 
+namespace
+{
+    int tryGetDirLock(const std::string& loc_dir)
+    {
+#ifndef _WIN32
+        const auto lockName = loc_dir + "/lock";
+        mode_t m = umask(0);
+        int fd = open(lockName.c_str(), O_RDWR | O_CREAT, 0666);
+        umask(m);
+        if (fd >= 0 && flock(fd, LOCK_EX | LOCK_NB) < 0)
+        {
+            close(fd);
+            fd = -1;
+        }
+        return fd;
+#else
+        return 0;
+#endif
+    }
+
+    void releaseFileLock(int fd, const std::string& loc_dir)
+    {
+#ifndef _WIN32
+        const auto lockName = loc_dir + "/lock";
+        if (fd < 0)
+            return;
+        remove(lockName.c_str());
+        close(fd);
+#endif
+    }
+}
+
 BaseIndex::BaseIndex(IndexType type) : _type(type), _read_only(false)
 {
 }
 
 void BaseIndex::create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id)
 {
-    // TODO: introduce global parameters table, local parameters table and constants
-    // MMFStorage::setDatabaseId(index_id);
-
     int sub_block_size = 8192;
     int sim_block_size = 8192;
     int cf_block_size = 1048576;
@@ -44,6 +81,12 @@ void BaseIndex::create(const char* location, const MoleculeFingerprintParameters
     osDirCreate(location);
 
     _location = location;
+
+    _lock_fd = tryGetDirLock(_location);
+    if (_lock_fd == -1)
+    {
+        throw Exception("Cannot lock Bingo database folder. Seems like it's already in use.");
+    }
 
     std::string _cf_data_path = _location + _cf_data_filename;
     std::string _cf_offset_path = _location + _cf_offset_filename;
@@ -100,8 +143,14 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
         throw Exception("database directory missed");
 
     osDirCreate(location);
-
     _location = location;
+
+    _lock_fd = tryGetDirLock(_location);
+    if (_lock_fd == -1)
+    {
+        throw Exception("Cannot lock Bingo database folder. Seems like it's already in use.");
+    }
+
     std::string _cf_data_path = _location + _cf_data_filename;
     std::string _cf_offset_path = _location + _cf_offset_filename;
     std::string _mapping_path = _location + _id_mapping_filename;
@@ -303,6 +352,7 @@ IndexType BaseIndex::determineType(const char* location)
 
 BaseIndex::~BaseIndex()
 {
+    releaseFileLock(_lock_fd, _location);
     MMFAllocator::getAllocator().close();
 }
 

@@ -122,6 +122,7 @@ namespace bingo
 
         MoleculeFingerprintParameters _fp_params;
         std::string _location;
+        int _lock_fd = -1;
 
         static void _checkOptions(std::map<std::string, std::string>& option_map, bool is_create);
 
