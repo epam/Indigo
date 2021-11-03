@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 #include <utility>
 
 #include "base_c/defs.h"
@@ -89,7 +90,7 @@ namespace indigo
                 if (_array == nullptr)
                 {
                     _array = oldptr;
-                    throw std::bad_alloc(); // ("reserve(): no memory");
+                    throw std::bad_alloc();
                 }
                 _reserved = to_reserve;
             }

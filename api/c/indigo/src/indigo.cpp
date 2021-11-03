@@ -24,7 +24,6 @@
 
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
-#include "base_cpp/temporary_thread_obj.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molfile_saver.h"
 #include "reaction/rxnfile_saver.h"
@@ -370,10 +369,19 @@ int Indigo::countObjects() const
     return objects_holder->objects.size();
 }
 
-static TemporaryThreadObjManager<Indigo::TmpData> _indigo_temporary_obj_manager;
+void Indigo::TmpData::clear()
+{
+        string.clear();
+        xyz[0] = 0.0;
+        xyz[1] = 0.0;
+        xyz[2] = 0.0;
+};
+
 Indigo::TmpData& Indigo::getThreadTmpData()
 {
-    return _indigo_temporary_obj_manager.getObject();
+    static thread_local Indigo::TmpData _data;
+    _data.clear();
+    return _data;
 }
 
 //

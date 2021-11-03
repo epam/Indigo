@@ -2926,8 +2926,9 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         for (int j = 0; j < lvgroups.size(); j++)
         {
             if (lvg.atoms.find(lvgroups[j]) > -1)
-                //              (lvg.atoms.size() == 1 && fragment.getAtomNumber(lvg.atoms[0]) == ELEM_H) )
+            {
                 fragment.removeSGroupWithBasis(sgs[i]);
+            }
         }
     }
 
