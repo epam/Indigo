@@ -175,6 +175,8 @@ def main():
     test_args = []
     for root, filename in tests:
         test_dir = os.path.join(output_dir, root)
+        if not dir_exists(test_dir):
+            os.makedirs(test_dir)
         test_name = os.path.join(root, filename).replace('\\', '/')
 
         if test_name != "":
@@ -221,8 +223,6 @@ def main():
 
 def run_analyze_test(args):
     filename, i, max_name_len, output_dir_base, root, test_dir, test_name, tests_dir = args
-    if not dir_exists(test_dir):
-        os.makedirs(test_dir)
     out_message = test_name
     spacer_len = max_name_len - len(test_name)
     out_filename = os.path.join(test_dir, filename + "_" + str(i) + '.out')
