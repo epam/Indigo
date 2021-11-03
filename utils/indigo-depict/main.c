@@ -245,6 +245,8 @@ enum
     OEXT_CML,
     OEXT_KET,
     OEXT_KER,
+    OEXT_CDX,
+    OEXT_CDXML,
     OEXT_OTHER
 };
 
@@ -331,7 +333,7 @@ int parseParams(Params* p, int argc, char* argv[])
         }
 
         p->file_to_load = argv[1];
-        if (strcasecmp(p->infile_ext, "mol") == 0 || strcasecmp(p->infile_ext, "ket") == 0)
+        if (strcasecmp(p->infile_ext, "mol") == 0 || strcasecmp(p->infile_ext, "ket") || strcasecmp(p->infile_ext, "cdxml") == 0)
             p->mode = MODE_SINGLE_MOLECULE;
         else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0)
             p->mode = MODE_SINGLE_REACTION;
@@ -384,6 +386,7 @@ int parseParams(Params* p, int argc, char* argv[])
     indigoSetOptionBool("treat-x-as-pseudoatom", 1);
     indigoSetOptionBool("render-coloring", 1);
     indigoSetOptionBool("render-highlight-color-enabled", 1);
+    indigoSetOption("molfile-saving-mode", "3000");
 
     for (; i < argc; i++)
     {

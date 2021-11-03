@@ -26,6 +26,7 @@
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdx_loader.h"
+#include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molfile_loader.h"
@@ -283,6 +284,22 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         _scanner->seek(pos, SEEK_SET);
     }
 
+    // check for CDXML format
+    {
+        long long pos = _scanner->tell();
+        _scanner->skipSpace();
+        if (_scanner->lookNext() == '<' && _scanner->findWord("CDXML"))
+        {
+            _scanner->seek(pos, SEEK_SET);
+            MoleculeCdxmlLoader loader(*_scanner);
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.loadMolecule(mol);
+            printf("bond dir:%d\n", mol.getBondDirection(0));
+            return;
+        }
+        _scanner->seek(pos, SEEK_SET);
+    }
+
     // check json format
     {
         long long pos = _scanner->tell();
@@ -457,6 +474,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
        }
     */
     // default is Molfile format
+
     {
         SdfLoader sdf_loader(*_scanner);
         sdf_loader.readNext();
