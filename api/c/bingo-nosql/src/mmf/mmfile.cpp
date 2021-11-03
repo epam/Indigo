@@ -1,5 +1,7 @@
 #include "mmfile.h"
 
+#include <utility>
+
 #include "base_cpp/exception.h"
 
 #ifdef _WIN32
@@ -7,21 +9,15 @@
 #undef min
 #undef max
 #elif (defined __GNUC__ || defined __APPLE__)
-namespace c
-{
 #include <cerrno>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <unistd.h>
-}
 #endif
 
 using namespace bingo;
 using namespace indigo;
-
-#include <iostream>
-#include <utility>
 
 void* MMFile::ptr(const ptrdiff_t offset)
 {
@@ -31,7 +27,6 @@ void* MMFile::ptr(const ptrdiff_t offset)
 const void* MMFile::ptr(const ptrdiff_t offset) const
 {
     return static_cast<void*>(static_cast<byte*>(_ptr) + offset);
-    ;
 }
 
 const char* MMFile::name() const
@@ -60,8 +55,6 @@ size_t MMFile::size() const
 
 MMFile::MMFile(std::string filename, size_t buf_size, bool create_flag, bool read_only) : _len(buf_size), _filename(std::move(filename))
 {
-//    std::cout << "MMFile(" << this << ")" << std::endl;
-
     if (create_flag)
     {
         std::remove(_filename.c_str());
@@ -115,10 +108,10 @@ MMFile::MMFile(std::string filename, size_t buf_size, bool create_flag, bool rea
         permissions = S_IRUSR | S_IWUSR;
     }
 
-    if ((_fd = c::open(_filename.c_str(), flags, permissions)) == -1)
+    if ((_fd = open(_filename.c_str(), flags, permissions)) == -1)
         throw Exception("MMF: Could not open file. Error message: %s", _getSystemErrorMsg());
 
-    auto trunc_res = c::ftruncate(_fd, _len);
+    auto trunc_res = ftruncate(_fd, _len);
     if (trunc_res < 0)
     {
         // TODO check result
@@ -129,7 +122,7 @@ MMFile::MMFile(std::string filename, size_t buf_size, bool create_flag, bool rea
     if (read_only)
         prot_flags = PROT_READ;
 
-    _ptr = c::mmap(static_cast<c::caddr_t>(nullptr), _len, prot_flags, MAP_SHARED, _fd, 0);
+    _ptr = mmap(static_cast<caddr_t>(nullptr), _len, prot_flags, MAP_SHARED, _fd, 0);
 
     if (_ptr == MAP_FAILED)
     {
@@ -141,7 +134,7 @@ MMFile::MMFile(std::string filename, size_t buf_size, bool create_flag, bool rea
 
 MMFile::~MMFile()
 {
-//    std::cout << "~MMFile(" << this << ")" << std::endl;
+    //    std::cout << "~MMFile(" << this << ")" << std::endl;
 
 #ifdef _WIN32
     if (_filename.size() != 0)
@@ -170,13 +163,13 @@ MMFile::~MMFile()
 #elif (defined __GNUC__ || defined __APPLE__)
     if (_ptr != nullptr)
     {
-        c::munmap(static_cast<c::caddr_t>(_ptr), _len);
+        munmap(static_cast<caddr_t>(_ptr), _len);
         _ptr = nullptr;
     }
 
     if (_fd != -1)
     {
-        c::close(_fd);
+        close(_fd);
         _fd = -1;
     }
 #endif

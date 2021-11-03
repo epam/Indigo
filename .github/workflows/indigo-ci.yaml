@@ -506,7 +506,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -534,7 +534,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -556,7 +556,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-oracle
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -591,7 +591,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -624,7 +624,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DPostgreSQL_ROOT="$(resolve-path $pwd/../pgsql)"
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DPostgreSQL_ROOT="$(resolve-path $pwd/../pgsql)"
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -655,7 +655,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -681,7 +681,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_SQLSERVER=ON -DBUILD_BINGO_POSTGRES=OFF -DBUILD_BINGO_ORACLE=OFF  -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake .. -DBUILD_BINGO_SQLSERVER=ON -DBUILD_BINGO_POSTGRES=OFF -DBUILD_BINGO_ORACLE=OFF  -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-sqlserver
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
