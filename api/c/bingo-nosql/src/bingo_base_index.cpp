@@ -353,6 +353,7 @@ IndexType BaseIndex::determineType(const char* location)
 BaseIndex::~BaseIndex()
 {
     releaseFileLock(_lock_fd, _location);
+    _lock_fd = -1;
     MMFAllocator::getAllocator().close();
 }
 
