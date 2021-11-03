@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.9)
+
 if(POLICY CMP0068)
     # https://cmake.org/cmake/help/v3.9/policy/CMP0068.html
     cmake_policy(SET CMP0068 NEW)
@@ -42,16 +44,11 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 if (UNIX OR MINGW)
-    string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden -g $ENV{CFLAGS}")
-    string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden -g $ENV{CXXFLAGS}")
+    string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden $ENV{CFLAGS}")
+    string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden $ENV{CXXFLAGS}")
 
-    if (CMAKE_CXX_COMPILER_ID STREQUAL Clang)
-        string(APPEND CMAKE_C_FLAGS_RELEASE " -flto=thin")
-        string(APPEND CMAKE_CXX_FLAGS_RELEASE " -flto=thin")
-    elseif (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
-        string(APPEND CMAKE_C_FLAGS_RELEASE " -flto")
-        string(APPEND CMAKE_CXX_FLAGS_RELEASE " -flto")
-    endif()
+    string(APPEND CMAKE_C_FLAGS_RELEASE " -flto")
+    string(APPEND CMAKE_CXX_FLAGS_RELEASE " -flto")
 
     if(BUILD_STANDALONE AND NOT EMSCRIPTEN)
         if (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
@@ -71,6 +68,11 @@ if (UNIX OR MINGW)
 elseif (MSVC)
     string(APPEND CMAKE_C_FLAGS " -MP -D_CRT_SECURE_NO_WARNINGS -D_WIN32_WINNT=0x0601 -DWINVER=0x0601")
     string(APPEND CMAKE_CXX_FLAGS " -MP -EHs -D_CRT_SECURE_NO_WARNINGS -D_WIN32_WINNT=0x0601 -DWINVER=0x0601")
+    string(APPEND CMAKE_C_FLAGS_RELEASE " -GL")
+    string(APPEND CMAKE_CXX_FLAGS_RELEASE " -GL")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " -LTCG -OPT:REF -OPT:ICF")
+    string(APPEND CMAKE_SHARED_LINKER_FLAGS_RELEASE " -LTCG -OPT:REF -OPT:ICF")
+    string(APPEND CMAKE_STATIC_LINKER_FLAGS_RELEASE " -LTCG")
 endif ()
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
