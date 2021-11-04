@@ -109,7 +109,6 @@ def partTest(size, type = 'sub'):
             for out in outputs:
                print(out)
 
-            inpex = index + 1
         except BingoException as e:
             print('Query {0} fail: {1}'.format(getIndigoExceptionText(e)))
         index += 1

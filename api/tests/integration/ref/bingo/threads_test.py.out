@@ -63,7 +63,8 @@ ExactSearch:
 PID 0) Total count 1
 
 
-MULTYTHREADING TEST
+MULTITHREADING TEST
+
 
 Finished indexing 2000 structures. 0 wrong structures excluded
 Finished indexing 2000 structures. 0 wrong structures excluded
@@ -75,15 +76,6 @@ Finished indexing 2000 structures. 0 wrong structures excluded
 Finished indexing 2000 structures. 0 wrong structures excluded
 Finished indexing 2000 structures. 0 wrong structures excluded
 Finished indexing 2000 structures. 0 wrong structures excluded
-
-
-
-
-
-
-
-
-
 
 check..
 Database #1

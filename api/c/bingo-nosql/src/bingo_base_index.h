@@ -1,21 +1,20 @@
 #ifndef __bingo_base_index__
 #define __bingo_base_index__
 
+#include "molecule/molecule_fingerprint.h"
+
+#include "indigo_internal.h"
+
 #include "bingo_cf_storage.h"
 #include "bingo_exact_storage.h"
 #include "bingo_fp_storage.h"
 #include "bingo_gross_storage.h"
-#include "bingo_mapping.h"
-#include "bingo_mmf_storage.h"
 #include "bingo_object.h"
 #include "bingo_properties.h"
-#include "bingo_sim_storge.h"
-#include "indigo_internal.h"
-#include "molecule/molecule_fingerprint.h"
+#include "bingo_sim_storage.h"
+#include "mmf/mmf_mapping.h"
 
 #define BINGO_VERSION "v0.72"
-
-using namespace indigo;
 
 namespace bingo
 {
@@ -43,14 +42,14 @@ namespace bingo
     private:
         struct _Header
         {
-            BingoAddr properties_offset;
-            BingoAddr mapping_offset;
-            BingoAddr back_mapping_offset;
-            BingoAddr cf_offset;
-            BingoAddr sub_offset;
-            BingoAddr sim_offset;
-            BingoAddr exact_offset;
-            BingoAddr gross_offset;
+            MMFAddress properties_offset;
+            MMFAddress mapping_offset;
+            MMFAddress back_mapping_offset;
+            MMFAddress cf_offset;
+            MMFAddress sub_offset;
+            MMFAddress sim_offset;
+            MMFAddress exact_offset;
+            MMFAddress gross_offset;
             int object_count;
             int first_free_id;
         };
@@ -61,7 +60,8 @@ namespace bingo
         virtual std::unique_ptr<Matcher> createMatcher(const char* type, MatcherQueryData* query_data, const char* options) = 0;
         virtual std::unique_ptr<Matcher> createMatcherWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, IndigoObject& fp) = 0;
         virtual std::unique_ptr<Matcher> createMatcherTopN(const char* type, MatcherQueryData* query_data, const char* options, int limit) = 0;
-        virtual std::unique_ptr<Matcher> createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp) = 0;
+        virtual std::unique_ptr<Matcher> createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit,
+                                                                    IndigoObject& fp) = 0;
 
         void create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id);
 
@@ -83,9 +83,9 @@ namespace bingo
 
         GrossStorage& getGrossStorage();
 
-        BingoArray<int>& getIdMapping();
+        MMFArray<int>& getIdMapping();
 
-        BingoMapping& getBackIdMapping();
+        MMFMapping& getBackIdMapping();
 
         ByteBufferStorage& getCfStorage();
 
@@ -110,21 +110,19 @@ namespace bingo
         bool _read_only;
 
     private:
-        MMFStorage _mmf_storage;
-        BingoPtr<_Header> _header;
-        BingoPtr<BingoArray<int>> _id_mapping_ptr;
-        BingoPtr<BingoMapping> _back_id_mapping_ptr;
-        BingoPtr<TranspFpStorage> _sub_fp_storage;
-        BingoPtr<SimStorage> _sim_fp_storage;
-        BingoPtr<ExactStorage> _exact_storage;
-        BingoPtr<GrossStorage> _gross_storage;
-        BingoPtr<ByteBufferStorage> _cf_storage;
-        BingoPtr<Properties> _properties;
+        MMFPtr<_Header> _header;
+        MMFPtr<MMFArray<int>> _id_mapping_ptr;
+        MMFPtr<MMFMapping> _back_id_mapping_ptr;
+        MMFPtr<TranspFpStorage> _sub_fp_storage;
+        MMFPtr<SimStorage> _sim_fp_storage;
+        MMFPtr<ExactStorage> _exact_storage;
+        MMFPtr<GrossStorage> _gross_storage;
+        MMFPtr<ByteBufferStorage> _cf_storage;
+        MMFPtr<Properties> _properties;
 
         MoleculeFingerprintParameters _fp_params;
         std::string _location;
-
-        int _index_id;
+        int _lock_fd = -1;
 
         static void _checkOptions(std::map<std::string, std::string>& option_map, bool is_create);
 
@@ -149,6 +147,6 @@ namespace bingo
 
         void _mappingRemove(int obj_id);
     };
-}; // namespace bingo
+}
 
 #endif // __bingo_base_index__

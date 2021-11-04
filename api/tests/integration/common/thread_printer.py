@@ -1,36 +1,43 @@
-from __future__ import with_statement
 import sys
-if sys.version_info < (3, 0):
-	from cStringIO import StringIO
-else:
-	from io import StringIO
 
-import inspect
-import os
+from io import BytesIO
 
-class ThreadPrinter(object): 
-    def __init__(self, lock): 
-        self.fhs = {}
-        self.lock = lock
-        
-    def write(self, value): 
-        with self.lock:
-            frm = inspect.stack()[1][1]
-            splittedFromPath = frm.split(os.path.sep)            
-            test_group = splittedFromPath[-2]
-            test = splittedFromPath[-1]
-            curTestName = '%s/%s' % (test_group, test)
-            if curTestName in self.fhs:
-                f = self.fhs[curTestName]            
-            else:
-                f = StringIO()
-            f.write(value)
-            self.fhs[curTestName] = f
-        
-    def getValueByTestName(self, testName):
-        result = ''
-        for key, value in self.fhs.items():
-            key = key.replace('_modified', '')
-            if key == testName:
-                result = value.getvalue()
+from threading import Lock, current_thread
+from collections import defaultdict
+
+
+class ThreadPrinter:
+    def __init__(self):
+        self.lock = Lock()
+        self.outputs = defaultdict(BytesIO)
+
+    @property
+    def _thread_id(self):
+        return current_thread().ident
+
+    def write(self, value):
+        # with self.lock:
+        stream = self.outputs[self._thread_id]
+        stream.write(value.encode('utf-8'))
+
+    def read_and_clean(self):
+        result = b""
+        if self._thread_id in self.outputs:
+            # with self.lock:
+            stream = self.outputs.pop(self._thread_id)
+            stream.seek(0)
+            result = stream.read()
         return result
+
+
+class ThreadPrinterManager:
+    def __init__(self, stdout, stderr):
+        self._stdout = stdout
+        self._stderr = stderr
+
+    def __enter__(self):
+        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
+        sys.stdout, sys.stderr = self._stdout, self._stderr
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        sys.stdout, sys.stderr = self.old_stdout, self.old_stderr

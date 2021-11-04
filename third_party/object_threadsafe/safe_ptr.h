@@ -85,7 +85,7 @@ namespace sf {
 #else
             template<class mutex_type> friend class std::lock_guard;  // other compilers
 #endif
-#ifdef SHARED_MTX    
+#ifdef SHARED_MTX
             template<typename mutex_type> friend class std::shared_lock;  // C++14
 #endif
 
@@ -362,7 +362,7 @@ namespace sf {
         //struct cont_free_flag_t { alignas(std::hardware_destructive_interference_size) std::atomic<int> value; cont_free_flag_t() { value = 0; } }; // C++17
 		struct cont_free_flag_t { char tmp[60]; std::atomic<int> value; cont_free_flag_t() { value = 0; } };   // tmp[] to avoid false sharing
         typedef std::array<cont_free_flag_t, contention_free_count> array_slock_t;
-        
+
 		const std::shared_ptr<array_slock_t> shared_locks_array_ptr;  // 0 - unregistred, 1 registred & free, 2... - busy
 		char avoid_falsesharing_1[64];
 
@@ -463,7 +463,7 @@ namespace sf {
                         shared_locks_array[register_index].value.store(recursion_depth + 1, std::memory_order_seq_cst); // if first -> sequential
                         while (want_x_lock.load(std::memory_order_seq_cst)) {
                             shared_locks_array[register_index].value.store(recursion_depth, std::memory_order_seq_cst);
-                            for (volatile size_t i = 0; want_x_lock.load(std::memory_order_seq_cst); ++i) 
+                            for (volatile size_t i = 0; want_x_lock.load(std::memory_order_seq_cst); ++i)
 								if (i % 100000 == 0) std::this_thread::yield();
                             shared_locks_array[register_index].value.store(recursion_depth + 1, std::memory_order_seq_cst);
                         }
@@ -612,20 +612,11 @@ namespace sf {
     template <typename T>
     using safe_shared_hide_obj =
         safe_hide_obj<T, std::mutex, std::unique_lock<std::mutex>, std::unique_lock<std::mutex>>;
-
-    template <typename T>
-    using safe_shared_hide_ptr =
-        safe_hide_ptr<T, std::mutex, std::unique_lock<std::mutex>, std::unique_lock<std::mutex>>;
 #else
     template <typename T>
     using safe_shared_hide_obj =
         safe_hide_obj<T, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>, std::shared_lock<std::shared_timed_mutex>>;
-
-    template <typename T>
-    using safe_shared_hide_ptr =
-        safe_hide_ptr<T, std::shared_timed_mutex, std::unique_lock<std::shared_timed_mutex>, std::shared_lock<std::shared_timed_mutex>>;
 #endif
 }
-
 
 #endif // #ifndef SAFE_PTR_H

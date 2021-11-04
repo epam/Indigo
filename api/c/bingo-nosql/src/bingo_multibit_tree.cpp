@@ -1,6 +1,7 @@
 #include "bingo_multibit_tree.h"
 
 using namespace bingo;
+using namespace indigo;
 
 int MultibitTree::_compareBitWeights(_DistrWeight& bw1, _DistrWeight& bw2, void* context)
 {
@@ -12,9 +13,9 @@ int MultibitTree::_compareBitWeights(_DistrWeight& bw1, _DistrWeight& bw2, void*
         return 0;
 }
 
-BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_fp_indices, const Array<bool>& is_parrent_mb, int level)
+MMFPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_fp_indices, const Array<bool>& is_parrent_mb, int level)
 {
-    BingoPtr<_MultibitNode> node_ptr;
+    MMFPtr<_MultibitNode> node_ptr;
     node_ptr.allocate();
     _MultibitNode* node = new (node_ptr.ptr()) _MultibitNode();
     byte* fingerprints = _fingerprints_ptr.ptr();
@@ -163,7 +164,7 @@ void MultibitTree::_findLinear(_MultibitNode* node, const byte* query, int query
     }
 }
 
-void MultibitTree::_findSimilarInNode(BingoPtr<_MultibitNode> node_ptr, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef,
+void MultibitTree::_findSimilarInNode(MMFPtr<_MultibitNode> node_ptr, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef,
                                       Array<SimResult>& sim_indices, int m01, int m10)
 {
     if (node_ptr.isNull())
@@ -219,7 +220,7 @@ MultibitTree::MultibitTree(int fp_size) : _fp_size(fp_size)
     _max_level = 6;
 }
 
-void MultibitTree::build(BingoPtr<byte> fingerprints, BingoPtr<int> indices, int fp_count, int min_fp_bit_number, int max_fp_bit_number)
+void MultibitTree::build(MMFPtr<byte> fingerprints, MMFPtr<int> indices, int fp_count, int min_fp_bit_number, int max_fp_bit_number)
 {
     _fingerprints_ptr = fingerprints;
     _indices_ptr = indices;
