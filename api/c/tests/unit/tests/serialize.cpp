@@ -43,7 +43,7 @@ TEST_F(IndigoSerializeTest, isotopes_basic)
             indigoSetIsotope(atom, isotope);
             indigoSerialize(m, &buffer, &size);
         }
-        catch (Exception& e)
+        catch (const Exception& e)
         {
             ASSERT_EQ(isotope, 168);
             ASSERT_STREQ("CMF saver: unexpected C isotope: 168", e.message());

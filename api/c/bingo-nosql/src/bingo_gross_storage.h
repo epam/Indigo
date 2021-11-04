@@ -2,14 +2,13 @@
 #define __bingo_gross_storage__
 
 #include "base_cpp/scanner.h"
-#include "bingo_cf_storage.h"
-#include "bingo_mapping.h"
-#include "bingo_ptr.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_gross_formula.h"
 #include "reaction/reaction.h"
 
-using namespace indigo;
+#include "bingo_cf_storage.h"
+#include "mmf/mmf_ptr.h"
+#include "src/mmf/mmf_mapping.h"
 
 namespace bingo
 {
@@ -18,29 +17,29 @@ namespace bingo
     public:
         GrossStorage(size_t gross_block_size);
 
-        static BingoAddr create(BingoPtr<GrossStorage>& gross_ptr, size_t gross_block_size);
+        static MMFAddress create(MMFPtr<GrossStorage>& gross_ptr, size_t gross_block_size);
 
-        static void load(BingoPtr<GrossStorage>& gross_ptr, BingoAddr offset);
+        static void load(MMFPtr<GrossStorage>& gross_ptr, MMFAddress offset);
 
-        void add(const Array<char>& gross_formula, int id);
+        void add(const indigo::Array<char>& gross_formula, int id);
 
-        void find(Array<char>& query_formula, Array<int>& indices, int part_id = -1, int part_count = -1);
+        void find(indigo::Array<char>& query_formula, indigo::Array<int>& indices, int part_id = -1, int part_count = -1);
 
-        void findCandidates(Array<char>& query_formula, Array<int>& candidates, int part_id = -1, int part_count = -1);
+        void findCandidates(indigo::Array<char>& query_formula, indigo::Array<int>& candidates, int part_id = -1, int part_count = -1);
 
-        int findNext(Array<char>& query_formula, Array<int>& candidates, int& cur_candidate);
+        int findNext(indigo::Array<char>& query_formula, indigo::Array<int>& candidates, int& cur_candidate);
 
-        bool tryCandidate(Array<int>& query_array, int id);
+        bool tryCandidate(indigo::Array<int>& query_array, int id);
 
-        static void calculateMolFormula(Molecule& mol, Array<char>& gross_formula);
+        static void calculateMolFormula(indigo::Molecule& mol, indigo::Array<char>& gross_formula);
 
-        static void calculateRxnFormula(Reaction& rxn, Array<char>& gross_formula);
+        static void calculateRxnFormula(indigo::Reaction& rxn, indigo::Array<char>& gross_formula);
 
     private:
-        BingoMapping _hashes;
+        MMFMapping _hashes;
         ByteBufferStorage _gross_formulas;
 
-        static dword _calculateGrossHashForMolArray(Array<int>& gross_array);
+        static dword _calculateGrossHashForMolArray(indigo::Array<int>& gross_array);
 
         static dword _calculateGrossHashForMol(const char* gross_str, int len);
 

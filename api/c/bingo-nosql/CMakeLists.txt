@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.4)
 project(bingo-nosql LANGUAGES CXX)
 
 file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/mmf/*.cpp)
 
 if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})

@@ -53,8 +53,8 @@ public class LoadMoleculeFromFileTest {
     }
 
     @AfterAll
-    public static void tearDownBingoNoSQL() {
-
+    public static void tearDownBingoNoSQL() throws Throwable {
+        indigo.finalize();
     }
 
     @BeforeEach
@@ -66,8 +66,8 @@ public class LoadMoleculeFromFileTest {
     @AfterEach
     public void deleteIndex() throws IOException {
         repository.deleteAllRecords();
+        bingoDb.close();
     }
-
 
     /**
      * Use this method to test additional/custom fields loaded into record

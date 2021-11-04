@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.9)
+
 if(POLICY CMP0068)
     # https://cmake.org/cmake/help/v3.9/policy/CMP0068.html
     cmake_policy(SET CMP0068 NEW)
@@ -41,14 +43,10 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+# Compile flags
 if (UNIX OR MINGW)
-    string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden -g $ENV{CFLAGS}")
-    string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden -g $ENV{CXXFLAGS}")
-
-    if (CMAKE_CXX_COMPILER_ID STREQUAL Clang)
-        string(APPEND CMAKE_C_FLAGS_RELEASE " -flto=thin")
-        string(APPEND CMAKE_CXX_FLAGS_RELEASE " -flto=thin")
-    endif()
+    string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden $ENV{CFLAGS}")
+    string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden $ENV{CXXFLAGS}")
 
     if(BUILD_STANDALONE AND NOT EMSCRIPTEN)
         if (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
@@ -69,6 +67,22 @@ elseif (MSVC)
     string(APPEND CMAKE_C_FLAGS " -MP -D_CRT_SECURE_NO_WARNINGS -D_WIN32_WINNT=0x0601 -DWINVER=0x0601")
     string(APPEND CMAKE_CXX_FLAGS " -MP -EHs -D_CRT_SECURE_NO_WARNINGS -D_WIN32_WINNT=0x0601 -DWINVER=0x0601")
 endif ()
+
+# NOTE: Link-time optimization flags - turned off for now due to issues with exception handling
+#if (UNIX OR MINGW)
+#    string(APPEND CMAKE_C_FLAGS_RELEASE " -flto -g")
+#    string(APPEND CMAKE_CXX_FLAGS_RELEASE " -flto -g")
+#    if (UNIX AND NOT APPLE)
+#        string(APPEND CMAKE_C_FLAGS_RELEASE " -fuse-ld=gold")
+#        string(APPEND CMAKE_CXX_FLAGS_RELEASE " -fuse-ld=gold")
+#    endif()
+#elseif (MSVC)
+#    string(APPEND CMAKE_C_FLAGS_RELEASE " -GL")
+#    string(APPEND CMAKE_CXX_FLAGS_RELEASE " -GL")
+#    string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " -LTCG -OPT:REF -OPT:ICF")
+#    string(APPEND CMAKE_SHARED_LINKER_FLAGS_RELEASE " -LTCG -OPT:REF -OPT:ICF")
+#    string(APPEND CMAKE_STATIC_LINKER_FLAGS_RELEASE " -LTCG")
+#endif()
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -107,6 +121,9 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
 elseif(CMAKE_BUILD_TYPE STREQUAL Release)
     message(STATUS "CMAKE_C_FLAGS_RELEASE=${CMAKE_C_FLAGS_RELEASE}")
     message(STATUS "CMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
+elseif(CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
+    message(STATUS "CMAKE_C_FLAGS_RELWITHDEBINFO=${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+    message(STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO=${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 endif()
 message(STATUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
 message(STATUS "CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}")

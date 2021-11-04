@@ -15,3 +15,7 @@ if (BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_SQLSERVER)
         add_subdirectory(sqlserver)
     endif()
 endif()
+
+if (BUILD_BINGO_ELASTIC)
+    add_subdirectory(bingo-elastic)
+endif()

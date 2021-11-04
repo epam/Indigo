@@ -384,11 +384,8 @@ bool TautomerChainChecker::check()
 
     if (_tau_bonds_to_match == 0 && _path_length == 0 && _matchAromatizedQuery())
     {
-        _context.core_1.clear_resize(_context.g1.vertexEnd());
-        _context.core_2.clear_resize(_context.g2.vertexEnd());
-
-        memcpy(_context.core_1.ptr(), _core_1.ptr(), sizeof(int) * _context.g1.vertexEnd());
-        memcpy(_context.core_2.ptr(), _core_2.ptr(), sizeof(int) * _context.g2.vertexEnd());
+        _context.core_1.copy(_core_1);
+        _context.core_2.copy(_core_2);
 
         return false;
     }

@@ -17,7 +17,7 @@ namespace indigo
          public string end;
       }
 
-      private static object _get (SqlConnection connection, string bingo_schema, 
+      private static object get (SqlConnection connection, string bingo_schema,
          string name, int id, string table)
       {
          using (SqlCommand cmd = new SqlCommand())
@@ -58,29 +58,29 @@ namespace indigo
 
       public static int getInt (SqlConnection connection, string bingo_schema, string name, int id)
       {
-         object res = _get(connection, bingo_schema, name, id, "CONFIG");
+         object res = get(connection, bingo_schema, name, id, "CONFIG");
          return Convert.ToInt32(res);
       }
 
       public static double getDouble (SqlConnection connection, string bingo_schema, string name, int id)
       {
-         object res = _get(connection, bingo_schema, name, id, "CONFIG");
+         object res = get(connection, bingo_schema, name, id, "CONFIG");
          return Convert.ToDouble(res);
       }
 
       public static string getString (SqlConnection connection, string bingo_schema, string name, int id)
       {
-         object res = _get(connection, bingo_schema, name, id, "CONFIG");
+         object res = get(connection, bingo_schema, name, id, "CONFIG");
          return Convert.ToString(res);
       }
 
       public static byte[] getBinary (SqlConnection connection, string bingo_schema, string name, int id)
       {
-         object res = _get(connection, bingo_schema, name, id, "CONFIG_BIN");
+         object res = get(connection, bingo_schema, name, id, "CONFIG_BIN");
          return (byte[])res;
       }
 
-      public static void setBinary (SqlConnection connection, string bingo_schema, 
+      public static void setBinary (SqlConnection connection, string bingo_schema,
          string name, int id, byte[] data)
       {
          _set(connection, bingo_schema, name, id, "CONFIG_BIN", data);

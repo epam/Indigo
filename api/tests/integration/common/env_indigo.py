@@ -150,22 +150,17 @@ class Memoize:
         return self.memo[args]
 
 
-# We use memoization because inspect works very slow on Jython
-# @Memoize
-# def joinPath(*args):
-#     inspectStackLock.acquire()
-#     frm = inspect.stack()[2][1]
-#     inspectStackLock.release()
-#     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\',
-#                                                                                                                  '/')
-
 def dataPath(args):
     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(__file__), '..', '..', '..', '..', '..',
                                                          'data', args)))
 
+
 def joinPathPy(args, file_py):
-    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(file_py)), args))).replace('\\',
-                                                                                                                 '/')
+    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(file_py)), args))).replace(
+        '\\',
+        '/')
+
+
 def relativePath(args):
     inspectStackLock.acquire()
     frm = inspect.stack()[1][1]
@@ -237,7 +232,7 @@ def getRefFilepath(filename):
         return os.path.normpath(os.path.abspath(os.path.join(ref_path, filename)))
 
     raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (
-    filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
+        filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
 
 
 def getRefFilepath2(filename):
@@ -255,7 +250,7 @@ def getRefFilepath2(filename):
         return os.path.normpath(os.path.abspath(os.path.join(ref_path, sys_name, filename)))
 
     raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (
-    filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
+        filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
 
 
 def subprocess_communicate(name, arguments, wd, env):
@@ -290,12 +285,26 @@ def open_file_utf8(filename):
         return open(filename, 'wt')
     elif isIronPython():
         # TODO: FIXME (maybe on C# site?)
-        return codecs.open(filename, 'wb', encoding='utf-8')  # FAILED: wrong symbols
-        # return open(filename, 'wt') # ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\uFFFD' in position 814: ordinal not in range(128)
-        # return open(filename, 'wb') # ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\uFFFD' in position 724: ordinal not in range(128)
-        # return codecs.open(filename, 'wb') #  # ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\uFFFD' in position 724: ordinal not in range(128)
+        return codecs.open(filename, 'wb', encoding='utf-8')
     else:
         if sys.version_info.major < 3:
             return open(filename, 'wt')
         else:
             return codecs.open(filename, 'wb', encoding='utf-8')
+
+
+class RedirectStdStreamsManager:
+    def __init__(self, stdout=None, stderr=None):
+        self._stdout = stdout or sys.stdout
+        self._stderr = stderr or sys.stderr
+
+    def __enter__(self):
+        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
+        self.old_stdout.flush()
+        self.old_stderr.flush()
+        sys.stdout, sys.stderr = self._stdout, self._stderr
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._stdout.flush()
+        self._stderr.flush()
+        sys.stdout, sys.stderr = self.old_stdout, self.old_stderr
