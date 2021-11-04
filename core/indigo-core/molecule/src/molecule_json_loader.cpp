@@ -1,14 +1,15 @@
 #include "molecule/molecule_json_loader.h"
+
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "layout/molecule_layout.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
-#include <iostream>
-#include <string>
-#include <unordered_map>
-#include <vector>
 
 using namespace rapidjson;
 using namespace indigo;

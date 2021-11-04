@@ -44,58 +44,67 @@ namespace
     template <class T> class BingoPool
     {
     public:
-        bool has(size_t id) const
+        bool has(long long id) const
         {
             return map.count(id) > 0;
         }
 
-        sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(size_t id)
+        sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(long long id)
         {
             return map.at(id);
         }
 
-        const sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(size_t id) const
+        const sf::safe_shared_hide_obj<std::unique_ptr<T>>& at(long long id) const
         {
             return map.at(id);
         }
 
-        void insert(size_t id, std::unique_ptr<T>&& obj)
+        void insert(long long id, std::unique_ptr<T>&& obj)
         {
             map[id] = std::move(sf::safe_shared_hide_obj<std::unique_ptr<T>>(std::move(obj)));
         }
 
-        size_t insert(std::unique_ptr<T>&& obj)
+        long long insert(std::unique_ptr<T>&& obj)
         {
             map[next_id] = std::move(sf::safe_shared_hide_obj<std::unique_ptr<T>>(std::move(obj)));
             return next_id++;
         }
 
-        void remove(size_t id)
+        void remove(long long id)
         {
             map.erase(id);
         }
 
-        size_t getNextId()
+        long long getNextId()
         {
             return next_id++;
         }
 
     private:
-        std::unordered_map<size_t, sf::safe_shared_hide_obj<std::unique_ptr<T>>> map;
-        size_t next_id = 0;
+        std::unordered_map<long long, sf::safe_shared_hide_obj<std::unique_ptr<T>>> map;
+        long long next_id = 0;
     };
 
     struct SearchesData
     {
         BingoPool<Matcher> searches;
-        std::unordered_map<size_t, size_t> db;
+        std::unordered_map<long long, long long> db;
     };
+
+    static sf::safe_shared_hide_obj<BingoPool<BaseIndex>>& _indexes()
+    {
+        static sf::safe_shared_hide_obj<BingoPool<BaseIndex>> indexes;
+        return indexes;
+    }
+
+    static sf::safe_shared_hide_obj<SearchesData>& _searches_data()
+    {
+        static sf::safe_shared_hide_obj<SearchesData> searches_data;
+        return searches_data;
+    }
 }
 
-static sf::safe_shared_hide_obj<BingoPool<BaseIndex>> _indexes;
-static sf::safe_shared_hide_obj<SearchesData> _searches_data;
-
-static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* options, bool create, const char* type = 0)
+static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* options, bool create, const char* type = nullptr)
 {
     Indigo& self = indigoGetInstance();
     MoleculeFingerprintParameters fp_params(self.fp_params);
@@ -132,7 +141,7 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
     else
         throw BingoException("Unknown database type");
 
-    const auto db_id = sf::xlock_safe_ptr(_indexes)->getNextId();
+    const auto db_id = sf::xlock_safe_ptr(_indexes())->getNextId();
     if (create)
     {
         context->create(loc_dir.c_str(), fp_params, options, db_id);
@@ -143,7 +152,7 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
     }
 
     {
-        auto bingo_indexes = sf::xlock_safe_ptr(_indexes);
+        auto bingo_indexes = sf::xlock_safe_ptr(_indexes());
         bingo_indexes->insert(db_id, std::move(context));
     }
 
@@ -159,7 +168,7 @@ static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_ob
 {
     profTimerStart(t, "_insertObjectToDatabase");
     const IndexType index_type = [db]() {
-        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         auto bingo_index = sf::slock_safe_ptr(bingo_indexes->at(db));
         return (**bingo_index).getType();
     }();
@@ -177,7 +186,7 @@ static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_ob
         IndexMolecule ind_mol(indigo_obj.getMolecule(), self.arom_options);
         profTimerStop(t1);
 
-        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         const auto obj_data = [&]() {
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
             return (*bingo_index_ptr)->prepareIndexData(ind_mol);
@@ -197,7 +206,7 @@ static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_ob
         indigo_obj.getReaction().aromatize(self.arom_options);
         IndexReaction ind_rxn(indigo_obj.getReaction(), self.arom_options);
 
-        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         const auto obj_data = [&]() {
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
             return (*bingo_index_ptr)->prepareIndexData(ind_rxn);
@@ -213,11 +222,60 @@ static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_ob
     }
 }
 
+static int _insertIteratorToDatabase(int db, Indigo& self, IndigoObject& iter, long obj_id)
+{
+    profTimerStart(t, "_insertObjectToDatabase");
+    auto bingo_index_ptr = sf::xlock_safe_ptr(sf::slock_safe_ptr(_indexes())->at(db));
+    const auto index_type = (*bingo_index_ptr)->getType();
+
+    if (index_type == IndexType::MOLECULE)
+    {
+        int counter = 0;
+        while (true)
+        {
+            try
+            {
+                IndigoObject* next_obj_ptr = iter.next();
+                if (next_obj_ptr == nullptr)
+                {
+                    break;
+                }
+                IndigoObject& next_obj = *next_obj_ptr;
+
+                profTimerStart(t1, "_preadd");
+
+                if (!IndigoMolecule::is(next_obj))
+                {
+                    throw BingoException("_insertIteratorToDatabase: Only molecule objects can be added to molecule index");
+                }
+                // FIXME: MK: for some reason we need to aromatize input molecule. If we first clone and aromatize cloned, it won't work
+                next_obj.getMolecule().aromatize(self.arom_options);
+                IndexMolecule ind_mol(next_obj.getMolecule(), self.arom_options);
+                profTimerStop(t1);
+                const auto obj_data = (*bingo_index_ptr)->prepareIndexData(ind_mol);
+                {
+                    (*bingo_index_ptr)->add(obj_id, obj_data);
+                }
+            }
+            catch (const Exception& e)
+            {
+                std::cerr << e.message() << std::endl;
+            }
+        }
+    }
+    else
+    {
+        throw BingoException("bingoInsertRecordObj: Incorrect database");
+    }
+
+    return 1;
+}
+
 static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& indigo_obj, int obj_id, IndigoObject& fp)
 {
     profTimerStart(t, "_insertObjectWithExtFPToDatabase");
     const IndexType index_type = [db]() {
-        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
         return (*bingo_index_ptr)->getType();
     }();
@@ -234,7 +292,7 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& 
         IndexMolecule ind_mol(indigo_obj.getMolecule(), self.arom_options);
         profTimerStop(t1);
 
-        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         const auto obj_data = [&]() {
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
             return (*bingo_index_ptr)->prepareIndexDataWithExtFP(ind_mol, fp);
@@ -254,7 +312,7 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& 
         indigo_obj.getReaction().aromatize(self.arom_options);
         IndexReaction ind_rxn(indigo_obj.getReaction(), self.arom_options);
 
-        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         const auto obj_data = [&]() {
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
             return (*bingo_index_ptr)->prepareIndexDataWithExtFP(ind_rxn, fp);
@@ -271,23 +329,21 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& 
 }
 
 #define getMatcherConst(id)                                                                                                                                    \
-    const auto searches_data = sf::slock_safe_ptr(_searches_data);                                                                                             \
+    const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                           \
     if (!searches_data->searches.has(id))                                                                                                                      \
     {                                                                                                                                                          \
         throw BingoException("Incorrect search object id=%d", id);                                                                                             \
     }                                                                                                                                                          \
     const auto matcher_ptr = sf::slock_safe_ptr(searches_data->searches.at(id));                                                                               \
-    const auto index = sf::slock_safe_ptr(sf::slock_safe_ptr(_indexes)->at(searches_data->db.at(id)));                                                         \
     const auto& matcher = **matcher_ptr;
 
 #define getMatcher(id)                                                                                                                                         \
-    const auto searches_data = sf::slock_safe_ptr(_searches_data);                                                                                             \
+    const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                           \
     if (!searches_data->searches.has(id))                                                                                                                      \
     {                                                                                                                                                          \
         throw BingoException("Incorrect search object id=%d", id);                                                                                             \
     }                                                                                                                                                          \
     auto matcher_ptr = sf::xlock_safe_ptr(searches_data->searches.at(id));                                                                                     \
-    const auto index = sf::slock_safe_ptr(sf::slock_safe_ptr(_indexes)->at(searches_data->db.at(id)));                                                         \
     auto& matcher = **matcher_ptr;
 
 CEXPORT const char* bingoVersion()
@@ -322,7 +378,8 @@ CEXPORT int bingoCloseDatabase(int db)
 #endif
     BINGO_BEGIN_DB_STATIC(db)
     {
-        auto bingo_indexes = sf::xlock_safe_ptr(_indexes);
+
+        auto bingo_indexes = sf::xlock_safe_ptr(_indexes());
         bingo_indexes->remove(db);
         return 1;
     }
@@ -339,7 +396,7 @@ CEXPORT int bingoInsertRecordObj(int db, int obj)
         auto& properties = indigo_obj.getProperties();
 
         const char* key_name = [db]() {
-            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+            const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
             return (*bingo_index_ptr)->getIdPropertyName();
         }();
@@ -350,6 +407,29 @@ CEXPORT int bingoInsertRecordObj(int db, int obj)
         }
 
         return _insertObjectToDatabase(db, self, indigo_obj, obj_id);
+    }
+    BINGO_END(-1);
+}
+
+CEXPORT int bingoInsertIteratorObj(int db, int iterator_obj_id)
+{
+    BINGO_BEGIN_DB(db)
+    {
+        IndigoObject& iterator_obj = self.getObject(iterator_obj_id);
+        long obj_id = -1;
+        //        auto& properties = iterator_obj.getProperties();
+        //
+        //        const char* key_name = [db]() {
+        //            const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
+        //            const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+        //            return (*bingo_index_ptr)->getIdPropertyName();
+        //        }();
+
+        //        if (key_name != nullptr && properties.contains(key_name))
+        //        {
+        //            obj_id = strtol(properties.at(key_name), NULL, 10);
+        //        }
+        return _insertIteratorToDatabase(db, self, iterator_obj, obj_id);
     }
     BINGO_END(-1);
 }
@@ -375,7 +455,7 @@ CEXPORT int bingoInsertRecordObjWithExtFP(int db, int obj, int fp)
         auto& properties = indigo_obj.getProperties();
 
         const char* key_name = [db]() {
-            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+            const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
             return (*bingo_index_ptr)->getIdPropertyName();
         }();
@@ -405,7 +485,7 @@ CEXPORT int bingoDeleteRecord(int db, int id)
 {
     BINGO_BEGIN_DB(db)
     {
-        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         auto bingo_index_ptr = sf::xlock_safe_ptr(bingo_indexes->at(db));
         (*bingo_index_ptr)->remove(id);
         return id;
@@ -417,7 +497,7 @@ CEXPORT int bingoGetRecordObj(int db, int id)
 {
     BINGO_BEGIN_DB(db)
     {
-        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
         const auto& bingo_index = *bingo_index_ptr;
 
@@ -459,7 +539,7 @@ CEXPORT int bingoOptimize(int db)
 {
     BINGO_BEGIN_DB(db)
     {
-        const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+        const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         auto bingo_index_ptr = sf::xlock_safe_ptr(bingo_indexes->at(db));
         (*bingo_index_ptr)->optimize();
         return 0;
@@ -480,13 +560,13 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
             std::unique_ptr<MoleculeSubstructureQueryData> query_data = std::make_unique<MoleculeSubstructureQueryData>(obj.getQueryMolecule());
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return (*bingo_index_ptr)->createMatcher("sub", query_data.release(), options);
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -499,13 +579,13 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
             std::unique_ptr<ReactionSubstructureQueryData> query_data = std::make_unique<ReactionSubstructureQueryData>(obj.getQueryReaction());
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return (*bingo_index_ptr)->createMatcher("sub", query_data.release(), options);
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -530,12 +610,12 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
             std::unique_ptr<MoleculeExactQueryData> query_data = std::make_unique<MoleculeExactQueryData>(obj.getMolecule());
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return (*bingo_index_ptr)->createMatcher("exact", query_data.release(), options);
             }();
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -548,12 +628,12 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
             std::unique_ptr<ReactionExactQueryData> query_data = std::make_unique<ReactionExactQueryData>(obj.getReaction());
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return (*bingo_index_ptr)->createMatcher("exact", query_data.release(), options);
             }();
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -575,12 +655,12 @@ CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options
         std::unique_ptr<GrossQueryData> query_data = std::make_unique<GrossQueryData>(gross_str);
 
         auto matcher = [&]() {
-            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+            const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
             return (*bingo_index_ptr)->createMatcher("formula", query_data.release(), options);
         }();
         {
-            auto searches_data = sf::xlock_safe_ptr(_searches_data);
+            auto searches_data = sf::xlock_safe_ptr(_searches_data());
             auto search_id = searches_data->searches.insert(std::move(matcher));
             searches_data->db[search_id] = db;
             return search_id;
@@ -602,13 +682,13 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, max);
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return ((*bingo_index_ptr)->createMatcher("sim", query_data.release(), options));
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -621,13 +701,13 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, max);
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return ((*bingo_index_ptr)->createMatcher("sim", query_data.release(), options));
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -653,13 +733,13 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, max);
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return ((*bingo_index_ptr)->createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -672,13 +752,13 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, max);
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return ((*bingo_index_ptr)->createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -703,13 +783,13 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, 1.0);
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return ((*bingo_index_ptr)->createMatcherTopN("sim", query_data.release(), options, limit));
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -722,13 +802,13 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, 1.0);
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return ((*bingo_index_ptr)->createMatcherTopN("sim", query_data.release(), options, limit));
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -754,13 +834,13 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
             std::unique_ptr<MoleculeSimilarityQueryData> query_data = std::make_unique<MoleculeSimilarityQueryData>(obj.getMolecule(), min, 1.0);
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return ((*bingo_index_ptr)->createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -773,13 +853,13 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
             std::unique_ptr<ReactionSimilarityQueryData> query_data = std::make_unique<ReactionSimilarityQueryData>(obj.getReaction(), min, 1.0);
 
             auto matcher = [&]() {
-                const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+                const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
                 const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
                 return ((*bingo_index_ptr)->createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
             }();
 
             {
-                auto searches_data = sf::xlock_safe_ptr(_searches_data);
+                auto searches_data = sf::xlock_safe_ptr(_searches_data());
                 auto search_id = searches_data->searches.insert(std::move(matcher));
                 searches_data->db[search_id] = db;
                 return search_id;
@@ -796,13 +876,13 @@ CEXPORT int bingoEnumerateId(int db)
     BINGO_BEGIN_DB(db)
     {
         auto matcher = [&]() {
-            const auto bingo_indexes = sf::slock_safe_ptr(_indexes);
+            const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
             return ((*bingo_index_ptr)->createMatcher("enum", nullptr, nullptr));
         }();
 
         {
-            auto searches_data = sf::xlock_safe_ptr(_searches_data);
+            auto searches_data = sf::xlock_safe_ptr(_searches_data());
             auto search_id = searches_data->searches.insert(std::move(matcher));
             searches_data->db[search_id] = db;
             return search_id;
@@ -820,7 +900,7 @@ CEXPORT int bingoEndSearch(int search_obj)
 #endif
     BINGO_BEGIN_SEARCH_STATIC(search_obj)
     {
-        auto searches_data = sf::xlock_safe_ptr(_searches_data);
+        auto searches_data = sf::xlock_safe_ptr(_searches_data());
         searches_data->searches.remove(search_obj);
         return 1;
     }

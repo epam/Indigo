@@ -24,7 +24,6 @@
 
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
-#include "base_cpp/temporary_thread_obj.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molfile_saver.h"
 #include "reaction/rxnfile_saver.h"
@@ -216,13 +215,35 @@ void*& Indigo::error_handler_context()
     return _error_handler_context;
 }
 
+namespace
+{
+    class IndigoLocaleHandler
+    {
+    public:
+        void setLocale(int locale_type, const char* locale)
+        {
+            std::setlocale(locale_type, locale);
+        }
+
+        static sf::safe_hide_obj<IndigoLocaleHandler>& handler()
+        {
+            static sf::safe_hide_obj<IndigoLocaleHandler> _handler;
+            return _handler;
+        }
+
+    private:
+        friend class sf::safe_obj<IndigoLocaleHandler>;
+        IndigoLocaleHandler() = default;
+    };
+}
+
 CEXPORT qword indigoAllocSessionId()
 {
     qword id = TL_ALLOC_SESSION_ID();
     TL_SET_SESSION_ID(id);
     Indigo& indigo = indigo_self.createOrGetLocalCopy(id);
     indigo.init();
-    setlocale(LC_NUMERIC, "C");
+    sf::xlock_safe_ptr(IndigoLocaleHandler::handler())->setLocale(LC_NUMERIC, "C");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
     abbreviations::indigoCreateAbbreviationsInstance();
@@ -348,10 +369,19 @@ int Indigo::countObjects() const
     return objects_holder->objects.size();
 }
 
-static TemporaryThreadObjManager<Indigo::TmpData> _indigo_temporary_obj_manager;
+void Indigo::TmpData::clear()
+{
+        string.clear();
+        xyz[0] = 0.0;
+        xyz[1] = 0.0;
+        xyz[2] = 0.0;
+};
+
 Indigo::TmpData& Indigo::getThreadTmpData()
 {
-    return _indigo_temporary_obj_manager.getObject();
+    static thread_local Indigo::TmpData _data;
+    _data.clear();
+    return _data;
 }
 
 //
@@ -394,7 +424,61 @@ void IndigoPluginContext::validate()
 
 #ifdef _WIN32
 #include <Windows.h>
+#elif defined(__linux__)
+#include <fcntl.h>
+#include <unistd.h>
+#elif defined(__APPLE__)
+#include <sys/sysctl.h>
+#include <unistd.h>
+#elif defined(__EMSCRIPTEN__)
+#include <unistd.h>
 #endif
+
+namespace
+{
+    void sleepMs(int ms)
+    {
+#ifdef _WIN32
+        Sleep(ms);
+#else
+        sleep(ms * 1e-3);
+#endif
+    }
+
+    bool debuggerIsAttached()
+    {
+#ifdef _WIN32
+        return IsDebuggerPresent();
+#elif defined(__APPLE__)
+        int mib[4];
+        kinfo_proc info;
+        info.kp_proc.p_flag = 0;
+        mib[0] = CTL_KERN;
+        mib[1] = KERN_PROC;
+        mib[2] = KERN_PROC_PID;
+        mib[3] = getpid();
+        return ((info.kp_proc.p_flag & P_TRACED) != 0);
+#elif defined(__EMSCRIPTEN__)
+        return false;
+#else
+        char buf[4096];
+        const int status_fd = ::open("/proc/self/status", O_RDONLY);
+        if (status_fd == -1)
+            return false;
+        const ssize_t num_read = ::read(status_fd, buf, sizeof(buf) - 1);
+        ::close(status_fd);
+        if (num_read <= 0)
+            return false;
+        buf[num_read] = '\0';
+        constexpr char tracerPidString[] = "TracerPid:";
+        const auto tracer_pid_ptr = ::strstr(buf, tracerPidString);
+        if (!tracer_pid_ptr)
+            return false;
+        const char character = *(tracer_pid_ptr + sizeof(tracerPidString));
+        return character != '0';
+#endif
+    }
+}
 
 CEXPORT void indigoDbgBreakpoint(void)
 {
@@ -407,10 +491,17 @@ CEXPORT void indigoDbgBreakpoint(void)
         if (ret == IDOK)
         {
             while (!IsDebuggerPresent())
-                Sleep(100);
+                Sleep(1000);
         }
     }
+#elif __EMSCRIPTEN__
 #else
+    fprintf(stderr, "Awaiting debugger for PID %d\n", getpid());
+    while (!debuggerIsAttached())
+    {
+        sleepMs(1000);
+    }
+    fprintf(stderr, "Debugger attached, continuing...\n");
 #endif
 }
 

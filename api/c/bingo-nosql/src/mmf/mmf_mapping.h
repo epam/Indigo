@@ -1,20 +1,23 @@
-#ifndef __bingo_mapping__
-#define __bingo_mapping__
+#pragma once
 
 #include <vector>
 
-#include "bingo_ptr.h"
+#include "base_cpp/array.h"
+
+#include "mmf_array.h"
+#include "mmf_list.h"
+#include "mmf_ptr.h"
 
 namespace bingo
 {
-    class BingoMapping
+    class MMFMapping
     {
     public:
-        BingoMapping(size_t safe_prime = 200087);
+        MMFMapping(size_t safe_prime = 200087);
 
         size_t get(size_t id);
 
-        void getAll(size_t id1, Array<size_t>& id2_array);
+        void getAll(size_t id1, indigo::Array<size_t>& id2_array);
 
         void add(size_t id1, size_t id2);
 
@@ -25,7 +28,7 @@ namespace bingo
 
         struct _ListCell
         {
-            BingoPtr<_KeyPair> buf;
+            MMFPtr<_KeyPair> buf;
             int count;
 
             _ListCell(int size)
@@ -35,8 +38,8 @@ namespace bingo
             }
         };
 
-        typedef BingoList<_ListCell> _MapList;
-        typedef BingoList<_ListCell>::Iterator _MapIterator;
+        typedef MMFList<_ListCell> _MapList;
+        typedef MMFList<_ListCell>::Iterator _MapIterator;
 
         size_t _hashFunc(size_t id);
 
@@ -44,8 +47,6 @@ namespace bingo
 
         size_t _prime;
         int _block_size;
-        BingoArray<BingoPtr<_MapList>> _mapping_table;
+        MMFArray<MMFPtr<_MapList>> _mapping_table;
     };
-} // namespace bingo
-
-#endif //__bingo_mapping__
+}

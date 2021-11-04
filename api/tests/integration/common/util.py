@@ -3,28 +3,21 @@ import platform
 import re
 import sys
 
-
 REPO_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', '..', '..'))
 system_name = None
 
-def overridePlatform( platform ):
+
+def overridePlatform(platform):
     global system_name
     system_name = platform
 
+
 def isIronPython():
-    try:
-        import clr
-        return True
-    except:
-        return False
+    return sys.platform == 'cli'
 
 
 def isJython():
-    try:
-        import java
-        return True
-    except:
-        return False
+    return os.name == 'java'
 
 
 def getIndigoVersion():
@@ -113,24 +106,25 @@ def file_sha1(path):
     import hashlib
     sha1sum = hashlib.sha1()
     with open(path, 'rb') as source:
-        block = source.read(2**16)
+        block = source.read(2 ** 16)
         while len(block) != 0:
             sha1sum.update(block)
-            block = source.read(2**16)
+            block = source.read(2 ** 16)
     return sha1sum.hexdigest()
 
 
 def download_jna(jna_version, path):
+    import urllib
     def check_jna_sha1():
         jna_sha1_url = "{}.sha1".format(jna_url)
         jna_ref_sha1 = urllib.urlopen(jna_sha1_url).read()
         jna_file_sha1 = file_sha1(output_path)
         if jna_ref_sha1 != jna_file_sha1:
-            print("Checked JNA at {}, sha1 {} is not equal to reference {}".format(output_path, jna_file_sha1, jna_ref_sha1))
+            print("Checked JNA at {}, sha1 {} is not equal to reference {}".format(output_path, jna_file_sha1,
+                                                                                   jna_ref_sha1))
             return False
         print("Checked JNA at {}, sha1 {} verified".format(output_path, jna_file_sha1))
         return True
-    import urllib
 
     output_path = os.path.join(path, 'jna-{}.jar'.format(jna_version))
     jna_url = "https://search.maven.org/remotecontent?filepath=net/java/dev/jna/jna/{0}/jna-{0}.jar".format(jna_version)

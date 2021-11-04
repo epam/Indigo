@@ -1,16 +1,20 @@
 #include "bingo_base_index.h"
-#include "bingo_mmf.h"
-#include "bingo_ptr.h"
 
-#include "indigo_fingerprints.h"
-
-#include <limits.h>
+#include <climits>
 #include <sstream>
 #include <string>
 
+#ifndef _WIN32
+#include <fcntl.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
 #include "base_c/os_dir.h"
-#include "base_cpp/output.h"
-#include "base_cpp/profiling.h"
+
+#include "indigo_fingerprints.h"
 
 using namespace bingo;
 
@@ -32,18 +36,44 @@ static const size_t _max_mmf_size = 536870912; // 512Mb
 static const int _small_base_size = 10000;
 static const int _sim_mt_size = 50000;
 
-BaseIndex::BaseIndex(IndexType type)
+namespace
 {
-    _type = type;
-    _read_only = false;
-    _index_id = -1;
+    int tryGetDirLock(const std::string& loc_dir)
+    {
+#ifndef _WIN32
+        const auto lockName = loc_dir + "/lock";
+        mode_t m = umask(0);
+        int fd = open(lockName.c_str(), O_RDWR | O_CREAT, 0666);
+        umask(m);
+        if (fd >= 0 && flock(fd, LOCK_EX | LOCK_NB) < 0)
+        {
+            close(fd);
+            fd = -1;
+        }
+        return fd;
+#else
+        return 0;
+#endif
+    }
+
+    void releaseFileLock(int fd, const std::string& loc_dir)
+    {
+#ifndef _WIN32
+        const auto lockName = loc_dir + "/lock";
+        if (fd < 0)
+            return;
+        remove(lockName.c_str());
+        close(fd);
+#endif
+    }
+}
+
+BaseIndex::BaseIndex(IndexType type) : _type(type), _read_only(false)
+{
 }
 
 void BaseIndex::create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id)
 {
-    // TODO: introduce global parameters table, local parameters table and constants
-    MMFStorage::setDatabaseId(index_id);
-
     int sub_block_size = 8192;
     int sim_block_size = 8192;
     int cf_block_size = 1048576;
@@ -51,6 +81,12 @@ void BaseIndex::create(const char* location, const MoleculeFingerprintParameters
     osDirCreate(location);
 
     _location = location;
+
+    _lock_fd = tryGetDirLock(_location);
+    if (_lock_fd == -1)
+    {
+        throw Exception("Cannot lock Bingo database folder. Seems like it's already in use.");
+    }
 
     std::string _cf_data_path = _location + _cf_data_filename;
     std::string _cf_offset_path = _location + _cf_offset_filename;
@@ -70,9 +106,9 @@ void BaseIndex::create(const char* location, const MoleculeFingerprintParameters
     size_t max_mmf_size = _getMaxMMfSize(option_map);
 
     if (_type == IndexType::MOLECULE)
-        _mmf_storage.create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _molecule_type, index_id);
+        MMFAllocator::create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _molecule_type, index_id);
     else if (_type == IndexType::REACTION)
-        _mmf_storage.create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _reaction_type, index_id);
+        MMFAllocator::create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _reaction_type, index_id);
     else
         throw Exception("incorrect index type");
 
@@ -101,14 +137,20 @@ void BaseIndex::create(const char* location, const MoleculeFingerprintParameters
 
 void BaseIndex::load(const char* location, const char* options, int index_id)
 {
-    MMFStorage::setDatabaseId(index_id);
+    // MMFStorage::setDatabaseId(index_id);
 
     if (osDirExists(location) == OS_DIR_NOTFOUND)
         throw Exception("database directory missed");
 
     osDirCreate(location);
-
     _location = location;
+
+    _lock_fd = tryGetDirLock(_location);
+    if (_lock_fd == -1)
+    {
+        throw Exception("Cannot lock Bingo database folder. Seems like it's already in use.");
+    }
+
     std::string _cf_data_path = _location + _cf_data_filename;
     std::string _cf_offset_path = _location + _cf_offset_filename;
     std::string _mapping_path = _location + _id_mapping_filename;
@@ -121,9 +163,9 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
 
     _read_only = _getAccessType(option_map);
 
-    _mmf_storage.load(_mmf_path.c_str(), index_id, _read_only);
+    MMFAllocator::load(_mmf_path.c_str(), index_id, _read_only);
 
-    _header = BingoPtr<_Header>(BingoAddr(0, MMFStorage::max_header_len + BingoAllocator::getAllocatorDataSize()));
+    _header = MMFPtr<_Header>(MMFAddress(0, MMFAllocator::MAX_HEADER_LEN + MMFAllocator::getAllocatorDataSize()));
 
     Properties::load(_properties, _header->properties_offset);
 
@@ -159,7 +201,7 @@ int BaseIndex::add(int obj_id, const ObjectIndexData& _obj_data)
     if (_read_only)
         throw Exception("insert fail: Read only index can't be changed");
 
-    BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
+    MMFMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
         throw Exception("insert fail: This id was already used");
@@ -207,7 +249,7 @@ void BaseIndex::remove(int obj_id)
     if (_read_only)
         throw Exception("remove fail: Read only index can't be changed");
 
-    BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
+    MMFMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     if (obj_id < 0 || back_id_mapping.get(obj_id) == (size_t)-1)
         throw Exception("There is no object with this id");
@@ -241,12 +283,12 @@ GrossStorage& BaseIndex::getGrossStorage()
     return _gross_storage.ref();
 }
 
-BingoArray<int>& BaseIndex::getIdMapping()
+MMFArray<int>& BaseIndex::getIdMapping()
 {
     return _id_mapping_ptr.ref();
 }
 
-BingoMapping& BaseIndex::getBackIdMapping()
+MMFMapping& BaseIndex::getBackIdMapping()
 {
     return _back_id_mapping_ptr.ref();
 }
@@ -310,7 +352,9 @@ IndexType BaseIndex::determineType(const char* location)
 
 BaseIndex::~BaseIndex()
 {
-    _mmf_storage.close();
+    releaseFileLock(_lock_fd, _location);
+    _lock_fd = -1;
+    MMFAllocator::getAllocator().close();
 }
 
 void BaseIndex::_checkOptions(std::map<std::string, std::string>& option_map, bool is_create)
@@ -466,8 +510,8 @@ void BaseIndex::_insertIndexData(const ObjectIndexData& obj_data)
 
 void BaseIndex::_mappingLoad()
 {
-    _id_mapping_ptr = BingoPtr<BingoArray<int>>(_header->mapping_offset);
-    _back_id_mapping_ptr = BingoPtr<BingoMapping>(_header->back_mapping_offset);
+    _id_mapping_ptr = MMFPtr<MMFArray<int>>(_header->mapping_offset);
+    _back_id_mapping_ptr = MMFPtr<MMFMapping>(_header->back_mapping_offset);
 
     return;
 }
@@ -475,18 +519,18 @@ void BaseIndex::_mappingLoad()
 void BaseIndex::_mappingCreate()
 {
     _id_mapping_ptr.allocate();
-    new (_id_mapping_ptr.ptr()) BingoArray<int>();
-    _header->mapping_offset = (BingoAddr)_id_mapping_ptr;
+    new (_id_mapping_ptr.ptr()) MMFArray<int>();
+    _header->mapping_offset = _id_mapping_ptr.getAddress();
 
     _back_id_mapping_ptr.allocate();
-    new (_back_id_mapping_ptr.ptr()) BingoMapping();
-    _header->back_mapping_offset = (BingoAddr)_back_id_mapping_ptr;
+    new (_back_id_mapping_ptr.ptr()) MMFMapping();
+    _header->back_mapping_offset = _back_id_mapping_ptr.getAddress();
 }
 
 void BaseIndex::_mappingAssign(int obj_id, int base_id)
 {
-    BingoArray<int>& id_mapping = _id_mapping_ptr.ref();
-    BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
+    MMFArray<int>& id_mapping = _id_mapping_ptr.ref();
+    MMFMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     int old_size = id_mapping.size();
 
@@ -514,8 +558,8 @@ void BaseIndex::_mappingAdd(int obj_id, int base_id)
 
 void BaseIndex::_mappingRemove(int obj_id)
 {
-    // BingoArray<int> & id_mapping = _id_mapping_ptr.ref();
-    BingoMapping& back_id_mapping = _back_id_mapping_ptr.ref();
+    // MMFArray<int> & id_mapping = _id_mapping_ptr.ref();
+    MMFMapping& back_id_mapping = _back_id_mapping_ptr.ref();
 
     back_id_mapping.remove(obj_id);
 }

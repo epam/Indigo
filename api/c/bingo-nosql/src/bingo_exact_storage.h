@@ -1,12 +1,11 @@
 #ifndef __bingo_exact_storage__
 #define __bingo_exact_storage__
 
-#include "bingo_mapping.h"
-#include "bingo_ptr.h"
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
 
-using namespace indigo;
+#include "mmf/mmf_ptr.h"
+#include "src/mmf/mmf_mapping.h"
 
 namespace bingo
 {
@@ -15,22 +14,22 @@ namespace bingo
     public:
         ExactStorage();
 
-        static BingoAddr create(BingoPtr<ExactStorage>& exact_ptr);
+        static MMFAddress create(MMFPtr<ExactStorage>& exact_ptr);
 
-        static void load(BingoPtr<ExactStorage>& exact_ptr, BingoAddr offset);
+        static void load(MMFPtr<ExactStorage>& exact_ptr, MMFAddress offset);
 
         size_t getOffset();
 
         void add(dword hash, int id);
 
-        void findCandidates(dword query_hash, Array<int>& candidates, int part_id = -1, int part_count = -1);
+        void findCandidates(dword query_hash, indigo::Array<int>& candidates, int part_id = -1, int part_count = -1);
 
-        static dword calculateMolHash(Molecule& mol);
+        static dword calculateMolHash(indigo::Molecule& mol);
 
-        static dword calculateRxnHash(Reaction& rxn);
+        static dword calculateRxnHash(indigo::Reaction& rxn);
 
     private:
-        BingoMapping _molecule_hashes;
+        MMFMapping _molecule_hashes;
     };
 } // namespace bingo
 

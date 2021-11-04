@@ -20,21 +20,16 @@
 #define __molecule_name_parser__
 
 #include <algorithm>
+#include <cctype>
+#include <cstdlib>
+#include <iterator>
 #include <list>
 #include <map>
 #include <stack>
 #include <string>
 #include <vector>
-#include <cctype>
-#include <cstdlib>
-#include <iostream>
-#include <iterator>
 
-#include "tinyxml.h"
-
-#include "base_cpp/scanner.h"
-
-#include "molecule/smiles_loader.h"
+#include <tinyxml.h>
 
 #include "molecule/alkanes.inc"
 #include "molecule/basic_elements.inc"
@@ -46,17 +41,13 @@
 #include "molecule/token_types.inc"
 #include "molecule/trivial.inc"
 
-
-
-#ifdef DEBUG
-#include <iostream>
-#endif
-
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
+#include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
 #include "base_cpp/trie.h"
 #include "elements.h"
+#include "molecule/smiles_loader.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -242,7 +233,7 @@ namespace indigo
         class Parse : public NonCopyable
         {
         public:
-            inline explicit Parse(const std::string& in, const MoleculeNameParser& mnp) : input(in), mnp(mnp) {};
+            inline explicit Parse(const std::string& in, const MoleculeNameParser& mnp) : input(in), mnp(mnp){};
 
             /*
             Performs by-symbol input scan, determines basic tokens
@@ -262,6 +253,7 @@ namespace indigo
             Failures failures;                // a list of fragments failed to having being parsed
 
             const MoleculeNameParser& mnp;
+
         private:
             DECL_ERROR;
 

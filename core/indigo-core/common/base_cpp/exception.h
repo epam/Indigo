@@ -23,24 +23,25 @@
 #include <cstring>
 #include <type_traits>
 #include <cstdio>
+#include <stdexcept>
 
 #include "base_c/defs.h"
 
 namespace indigo
 {
 
-    class DLLEXPORT Exception
+    class DLLEXPORT Exception : public std::exception
     {
         Exception() = delete;
 
     public:
         Exception(const Exception&) = default;
-        virtual ~Exception() = default;
+        ~Exception() = default;
 
         explicit Exception(const char* format, ...);
 
         const char* message() const noexcept { return _message; };
-
+        const char* what() const noexcept override { return _message; };
         void appendMessage(const char* format, ...);
 
     protected:

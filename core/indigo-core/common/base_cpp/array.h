@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 #include <utility>
 
 #include "base_c/defs.h"
@@ -53,8 +54,10 @@ namespace indigo
         {
             if (_array != nullptr)
             {
-                free(_array);
+                std::free(static_cast<void*>(_array));
                 _array = nullptr;
+                _length = 0;
+                _reserved = 0;
             }
         }
 
@@ -65,11 +68,7 @@ namespace indigo
 
         void reserve(int to_reserve)
         {
-            // Addtional check for unexpectedly large memory allocations (larger than 1 GB)
-            if (to_reserve * sizeof(T) >= 1 << 30)
-                throw Error("memory to reserve (%d x %d) is larger than the allowed threshold", to_reserve, (int)sizeof(T));
-
-            if (to_reserve <= 0)
+            if (to_reserve < 0)
                 throw Error("to_reserve = %d", to_reserve);
 
             if (to_reserve > _reserved)
@@ -78,18 +77,20 @@ namespace indigo
                 {
                     if (_array != nullptr)
                     {
-                        free(_array);
+                        std::free(static_cast<void*>(_array));
                         _array = nullptr;
+                        _length = 0;
+                        _reserved = 0;
                     }
                 }
 
                 T* oldptr = _array;
 
-                _array = (T*)realloc(_array, sizeof(T) * to_reserve);
+                _array = static_cast<T*>(std::realloc(static_cast<void*>(_array), sizeof(T) * to_reserve));
                 if (_array == nullptr)
                 {
                     _array = oldptr;
-                    throw Error("reserve(): no memory");
+                    throw std::bad_alloc();
                 }
                 _reserved = to_reserve;
             }
@@ -141,11 +142,17 @@ namespace indigo
 
         const T& at(int index) const
         {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
             return (*this)[index];
         }
 
         T& at(int index)
         {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
             return (*this)[index];
         }
 
@@ -352,9 +359,7 @@ namespace indigo
 
         void swap(Array<T>& other)
         {
-
             std::swap(_array, other._array);
-
             std::swap(_reserved, other._reserved);
             std::swap(_length, other._length);
         }

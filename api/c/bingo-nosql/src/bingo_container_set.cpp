@@ -39,7 +39,7 @@ int ContainerSet::getMaxBorder() const
 bool ContainerSet::add(const byte* fingerprint, int id, int fp_ones_count)
 {
     if (_inc_count == _container_size)
-        throw Exception("ContainerSet: Increment is full");
+        throw indigo::Exception("ContainerSet: Increment is full");
 
     byte* inc = _increment.ptr();
     int* indices = _indices.ptr();
@@ -71,7 +71,7 @@ void ContainerSet::buildContainer()
 void ContainerSet::splitSet(ContainerSet& new_set)
 {
     if (_set.size() > 0)
-        throw Exception("ContainerSet: Set with built containers can't be splited");
+        throw indigo::Exception("ContainerSet: Set with built containers can't be splited");
 
     int new_border = (_inc_total_ones_count / _inc_count) + 1;
 
@@ -109,7 +109,7 @@ void ContainerSet::splitSet(ContainerSet& new_set)
     _inc_count = inc_count_cur;
 }
 
-void ContainerSet::findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_indices)
+void ContainerSet::findSimilar(const byte* query, SimCoef& sim_coef, double min_coef, indigo::Array<SimResult>& sim_indices)
 {
     sim_indices.clear();
 
@@ -117,7 +117,7 @@ void ContainerSet::findSimilar(const byte* query, SimCoef& sim_coef, double min_
 
     // int query_bit_number = bitGetOnesCount(query, _fp_size);
 
-    QS_DEF(Array<SimResult>, cell_sim_indices);
+    QS_DEF(indigo::Array<SimResult>, cell_sim_indices);
     for (int i = 0; i < _set.size(); i++)
     {
         MultibitTree& container = _set[i];
@@ -148,12 +148,12 @@ void ContainerSet::optimize()
     _inc_count = 0;
 }
 
-int ContainerSet::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_fp_indices, int cont_idx)
+int ContainerSet::getSimilar(const byte* query, SimCoef& sim_coef, double min_coef, indigo::Array<SimResult>& sim_fp_indices, int cont_idx)
 {
     profTimerStart(cs_s, "getSimilar");
 
     if (cont_idx >= getContCount())
-        throw Exception("ContainerSet: Incorrect container index");
+        throw indigo::Exception("ContainerSet: Incorrect container index");
 
     if (cont_idx == _set.size())
     {
@@ -177,7 +177,7 @@ int ContainerSet::getSimilar(const byte* query, SimCoef& sim_coef, double min_co
     return sim_fp_indices.size();
 }
 
-int ContainerSet::_findSimilarInc(const byte* query, SimCoef& sim_coef, double min_coef, Array<SimResult>& sim_indices)
+int ContainerSet::_findSimilarInc(const byte* query, SimCoef& sim_coef, double min_coef, indigo::Array<SimResult>& sim_indices)
 {
     byte* inc = _increment.ptr();
     int* indices = _indices.ptr();

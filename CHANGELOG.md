@@ -1,20 +1,21 @@
 # Indigo 1.5.1
-Released 2021-10-x.
+Released 2021-11-x.
 
 ## Features
 * PoC implementation of Indigo modern C++ user API written on top of low-level C API. Later it will be used
   in Indigo-WASM and probably other languages.
+* Bingo-NoSQL major refactoring with significant multithreading performance improvements.
 
 ## Improvements
 * C++ unittests were splitted in API and Core parts.
 * CMake build system by default tries to enable as many components as possible and warns if building something
   is not possible on the current platform.
 * Migrated to modern C++ standard mutexes and locks instead of own-written implementation.
-* Start using Rust-like thread-safe hidden objects to improve parallel execution. 
-* Lots of small modern C++ related refactorings: added 'override', replaced plain C functions with corresponding from std.
-
+* Using thread-safe objects in Indigo API instead of raw mutexes to guarantee thread safety.
+* C++ code modernization: added 'override', replaced plain C functions with corresponding from std, etc.
+* Indigo API integration tests engine parallelized. 
 ## Bugfixes
-* Fixed lots of data races in API and especially in Bingo-NoSQL (#476).
+* Fixed multiple data races in API and especially in Bingo-NoSQL (#476).
 
 
 # Indigo 1.5.0
