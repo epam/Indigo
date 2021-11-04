@@ -3217,6 +3217,14 @@ class IndigoObject(object):
         )
 
     def createSubmolecule(self, vertices):
+        """Molecule method creates submolecule from given atom list
+
+        Args:
+            vertices (list): list of atom indexes
+
+        Returns:
+            IndigoObject: molecule object as submolecule
+        """
         arr2 = (c_int * len(vertices))()
         for i in range(len(vertices)):
             arr2[i] = vertices[i]
@@ -3229,6 +3237,15 @@ class IndigoObject(object):
         )
 
     def createEdgeSubmolecule(self, vertices, edges):
+        """Molecule method creates submolecule from given vertex atom and bond list
+
+        Args:
+            vertices (list): list of atom indexes
+            edges (list): list of bond indexes
+
+        Returns:
+            IndigoObject: molecule object as submolecule
+        """
         arr2 = (c_int * len(vertices))()
         for i in range(len(vertices)):
             arr2[i] = vertices[i]
@@ -3246,6 +3263,14 @@ class IndigoObject(object):
         )
 
     def getSubmolecule(self, vertices):
+        """Molecule method returns submolecule by given atom list
+
+        Args:
+            vertices (list): list of atom indexes
+
+        Returns:
+            IndigoObject: submolecule object
+        """
         arr2 = (c_int * len(vertices))()
         for i in range(len(vertices)):
             arr2[i] = vertices[i]
@@ -3259,6 +3284,14 @@ class IndigoObject(object):
         )
 
     def removeAtoms(self, vertices):
+        """Molecule method removes atoms
+
+        Args:
+            vertices (list): atom indexes list
+
+        Returns:
+            int: 1 if there are no errors
+        """
         arr2 = (c_int * len(vertices))()
         for i in range(len(vertices)):
             arr2[i] = vertices[i]
@@ -3268,6 +3301,14 @@ class IndigoObject(object):
         )
 
     def removeBonds(self, bonds):
+        """Molecule method removes bonds
+
+        Args:
+            bonds (list): bond indexes list
+
+        Returns:
+            int: 1 if there are no errors
+        """
         arr2 = (c_int * len(bonds))()
         for i in range(len(bonds)):
             arr2[i] = bonds[i]
@@ -3277,58 +3318,111 @@ class IndigoObject(object):
         )
 
     def aromatize(self):
+        """Molecule or reaction method aromatizes input structure
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoAromatize(self.id)
         )
 
     def dearomatize(self):
+        """Molecule or reaction method de-aromatizes input structure
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoDearomatize(self.id)
         )
 
     def foldHydrogens(self):
+        """Molecule or reaction method folds hydrogens
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoFoldHydrogens(self.id)
         )
 
     def unfoldHydrogens(self):
+        """Molecule or reaction method unfolds hydrogens
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoUnfoldHydrogens(self.id)
         )
 
     def layout(self):
+        """Molecule or reaction method calculates layout for a structure
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoLayout(self.id))
 
     def smiles(self):
+        """Molecule or reaction method calculates SMILES for a given structure
+
+        Returns:
+            str: smiles string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoSmiles(self.id)
         )
 
     def smarts(self):
+        """Molecule or reaction method calculates SMARTS for a given structure
+
+        Returns:
+            str: smarts string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoSmarts(self.id)
         )
 
     def name(self):
+        """IndigoObject method returns name
+
+        Returns:
+            str: name string
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoName(self.id)
         )
 
     def setName(self, name):
+        """IndigoObject method sets name
+
+        Args:
+            name (str): name string
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetName(self.id, name.encode(ENCODE_ENCODING))
         )
 
     def serialize(self):
+        """IndigoObject method serializes object into byte array
+
+        Returns:
+            list: array of bytes
+        """
         c_size = c_int()
         c_buf = POINTER(c_byte)()
         self.dispatcher._setSessionId()
@@ -3343,6 +3437,14 @@ class IndigoObject(object):
         return res
 
     def hasProperty(self, prop):
+        """Object method returns True if property exists
+
+        Args:
+            prop (str): property name
+
+        Returns:
+            bool: flag True if property exists
+        """
         self.dispatcher._setSessionId()
         return bool(
             self.dispatcher._checkResult(
@@ -3351,6 +3453,14 @@ class IndigoObject(object):
         )
 
     def getProperty(self, prop):
+        """Object method returns property by given name
+
+        Args:
+            prop (str): property name
+
+        Returns:
+            str: property value
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoGetProperty(
@@ -3359,6 +3469,15 @@ class IndigoObject(object):
         )
 
     def setProperty(self, prop, value):
+        """Object methods sets property
+
+        Args:
+            prop (str): property name
+            value (str): property value
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSetProperty(
@@ -3369,6 +3488,14 @@ class IndigoObject(object):
         )
 
     def removeProperty(self, prop):
+        """Object method removes property
+
+        Args:
+            prop (str): property name
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoRemoveProperty(
@@ -3377,6 +3504,11 @@ class IndigoObject(object):
         )
 
     def iterateProperties(self):
+        """Object method returns properties iterator
+
+        Returns:
+            IndigoObject: properties iterator
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -3386,24 +3518,47 @@ class IndigoObject(object):
         )
 
     def clearProperties(self):
+        """Object method clears all properties
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoClearProperties(self.id)
         )
 
     def checkBadValence(self):
+        """Molecule, atom or reaction method validates bad valence
+
+        Returns:
+            str: string containing valence validation errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoCheckBadValence(self.id)
         )
 
     def checkAmbiguousH(self):
+        """Molecule or reaction method validates ambiguous hydrogens
+
+        Returns:
+            str: string containing hydrogens validation errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoCheckAmbiguousH(self.id)
         )
 
     def fingerprint(self, type):
+        """Molecule or reaction method returns fingerprint representation
+
+        Args:
+            type (str): fingerprint type. One of the following: sim, sub, sub-res, sub-tau, full
+
+        Returns:
+            IndigoObject: fingerprint object
+        """
         self.dispatcher._setSessionId()
         newobj = self.dispatcher._checkResult(
             Indigo._lib.indigoFingerprint(
@@ -3415,76 +3570,162 @@ class IndigoObject(object):
         return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
 
     def countBits(self):
+        """Fingerprint method returns count of 1 bits
+
+        Returns:
+            int: number of 1 bits
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCountBits(self.id)
         )
 
     def rawData(self):
+        """Object method returns string representation
+
+        Returns:
+            str: string for the object
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoRawData(self.id)
         )
 
     def tell(self):
+        """Object method returns size of the content, e.g. SDF number of structures
+
+        Returns:
+            int: size of the content
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoTell(self.id))
 
     def sdfAppend(self, item):
+        """SDF nethod adds a new structure
+
+        Args:
+            item (IndigoObject): structure to be added
+
+        Returns:
+            int: 1 if there are errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSdfAppend(self.id, item.id)
         )
 
     def smilesAppend(self, item):
+        """Smiles builder methods adds a new structure
+
+        Args:
+            item (IndigoObject): structure to be added
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoSmilesAppend(self.id, item.id)
         )
 
     def rdfHeader(self):
+        """RDF builder adds header
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoRdfHeader(self.id)
         )
 
     def rdfAppend(self, item):
+        """RDF builder method adds new structure
+
+        Args:
+            item (IndigoObject): new structure to be added
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoRdfAppend(self.id, item.id)
         )
 
     def cmlHeader(self):
+        """CML builder adds header
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCmlHeader(self.id)
         )
 
     def cmlAppend(self, item):
+        """CML builder adds a new structure
+
+        Args:
+            item (IndigoObject): new structure to be added
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCmlAppend(self.id, item.id)
         )
 
     def cmlFooter(self):
+        """CML builder adds footer information
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCmlFooter(self.id)
         )
 
     def append(self, object):
+        """Saver method adds a new object
+
+        Args:
+            object (IndigoObject): object to be added
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoAppend(self.id, object.id)
         )
 
     def arrayAdd(self, object):
+        """Array method adds a new object
+
+        Args:
+            object (IndigoObject): object to be added
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoArrayAdd(self.id, object.id)
         )
 
     def at(self, index):
+        """Loader method returns element for given index
+
+        Args:
+            index (int): element index
+
+        Returns:
+            IndigoObject: element object
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(
             self.dispatcher,
@@ -3492,14 +3733,29 @@ class IndigoObject(object):
         )
 
     def count(self):
+        """Loader method returns number of elements
+
+        Returns:
+            int: number of elements
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCount(self.id))
 
     def clear(self):
+        """Array, molecule or reaction method clears object
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoClear(self.id))
 
     def iterateArray(self):
+        """Array method returns iterator for elements
+
+        Returns:
+            IndigoObject: elements iterator
+        """
         self.dispatcher._setSessionId()
         newobj = self.dispatcher._checkResult(
             Indigo._lib.indigoIterateArray(self.id)
@@ -3510,24 +3766,53 @@ class IndigoObject(object):
             return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
 
     def ignoreAtom(self, atom_object):
+        """Matcher method adds atom to ignore list
+
+        Args:
+            atom_object (IndigoObject): atom to ignore
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoIgnoreAtom(self.id, atom_object.id)
         )
 
     def unignoreAtom(self, atom_object):
+        """Matcher method removes atom from ignore list
+
+        Args:
+            atom_object (IndigoObject): atom to remove from ignore
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoUnignoreAtom(self.id, atom_object.id)
         )
 
     def unignoreAllAtoms(self):
+        """Matcher method clears ignore list
+
+        Returns:
+            int: 1 if there are no errors
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(
             Indigo._lib.indigoUnignoreAllAtoms(self.id)
         )
 
     def match(self, query):
+        """Matcher method executes matching
+
+        Args:
+            query (IndigoObject): query structure
+
+        Returns:
+            IndigoObject: mapping object
+        """
         self.dispatcher._setSessionId()
         newobj = self.dispatcher._checkResult(
             Indigo._lib.indigoMatch(self.id, query.id)
