@@ -289,7 +289,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         _scanner->skipSpace();
         if (_scanner->lookNext() == '{')
         {
-            if (_scanner->findWord("molecule")) // is it really reliable detection?
+            if (_scanner->findWord("root") && _scanner->findWord("nodes") && _scanner->findWord("$ref")) // is it really reliable detection?
             {
                 using namespace rapidjson;
                 _scanner->seek(pos, SEEK_SET);
@@ -310,26 +310,39 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                         // rewind to first molecule node
                         for( int i = 0; i < nodes.Size(); ++i )
                         {
-                            const char* node_name = nodes[i]["$ref"].GetString();
-                            Value& node = data[ node_name ];
-                            std::string node_type = node["type"].GetString();
-                            if( node_type.compare("molecule") == 0 )
+                            if (nodes[i].HasMember("$ref"))
                             {
-                                mol_nodes.PushBack( node, data.GetAllocator() );
-                            } else if (node_type.compare("rgroup") == 0 )
+                                const char* node_name = nodes[i]["$ref"].GetString();
+                                Value& node = data[node_name];
+                                std::string node_type = node["type"].GetString();
+                                if (node_type.compare("molecule") == 0)
+                                {
+                                    mol_nodes.PushBack(node, data.GetAllocator());
+                                }
+                                else if (node_type.compare("rgroup") == 0)
+                                {
+                                    rgroups.PushBack(node, data.GetAllocator());
+                                }
+                                else
+                                    throw Error("Unknows node type: %s", node_type.c_str());
+                            }
+                            else
                             {
-                                rgroups.PushBack( node, data.GetAllocator() );
-                            } else
-                                throw Error("Unknows JSON node: %s", node_type.c_str());
+                                throw Error("Unsupported node for molecule");
+                            }
                         }
                     } else
                         throw Error("Ketcher's JSON has no root node");
-                    if( mol_nodes.Size() )
+                    if( mol_nodes.Size() || rgroups.Size() )
                     {
                         MoleculeJsonLoader loader( mol_nodes, rgroups );
                         loader.stereochemistry_options = stereochemistry_options;
+                        loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+                        loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+                        loader.skip_3d_chirality = skip_3d_chirality;
+                        loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+                        loader.treat_stereo_as = treat_stereo_as;
                         loader.loadMolecule(mol);
-
                     } else
                     {
                         throw Error("Molecule JSON description not found");

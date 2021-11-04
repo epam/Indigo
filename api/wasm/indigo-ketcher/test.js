@@ -43,7 +43,7 @@ indigoModuleFn().then(indigo => {
     {
         test("aromatize", "basic", () => {
             let options = new indigo.MapStringString();
-            const aromatized_smiles = indigo.convert(indigo.aromatize(mol_smiles, options), "smiles", options);
+            const aromatized_smiles = indigo.convert(indigo.aromatize(mol_smiles, "molfile", options), "smiles", options);
             assert.equal(aromatized_smiles, mol_smiles_aromatized);
             delete options;
         });
@@ -54,7 +54,7 @@ indigoModuleFn().then(indigo => {
         test("automap", "basic", () => {
             let options = new indigo.MapStringString();
             assert.doesNotThrow(() => {
-                const result = indigo.automap(rxn_smiles, "discard", options);
+                const result = indigo.automap(rxn_smiles, "discard", "molfile",options);
                 assert.equal(result.indexOf("$RXN"), 0);
             });
             delete options;
@@ -279,7 +279,7 @@ M  END
         test("cip", "basic", () => {
             let options = new indigo.MapStringString();
             options.set("ignore-stereochemistry-errors", "true");
-            const molfile_cip = indigo.calculateCip("CN1C=C(/C=C2/SC(=S)N(CC([O-])=O)C/2=O)C2=CC=CC=C12", options);
+            const molfile_cip = indigo.calculateCip("CN1C=C(/C=C2/SC(=S)N(CC([O-])=O)C/2=O)C2=CC=CC=C12", "molfile", options);
             assert(molfile_cip.indexOf("INDIGO_CIP_DESC") !== -1);
             assert(molfile_cip.indexOf("(E)") !== -1);
             delete options;
@@ -293,7 +293,7 @@ M  END
             let options = new indigo.MapStringString();
             let selected = new indigo.VectorInt();
             assert.doesNotThrow(() => {
-                indigo.clean2d(mol_smiles, options, selected)
+                indigo.clean2d(mol_smiles, "molfile", options, selected)
             });
             delete selected;
             delete options;
@@ -305,7 +305,7 @@ M  END
             selected.push_back(1);
             selected.push_back(2);
             assert.doesNotThrow(() => {
-                indigo.clean2d(mol_smiles, options, selected)
+                indigo.clean2d(mol_smiles,"molfile",options, selected)
             });
             delete selected;
             delete options;
@@ -406,7 +406,7 @@ M  END
     {
         test("dearomatize", "basic", () => {
             let options = new indigo.MapStringString();
-            const dearomatized_smiles = indigo.convert(indigo.dearomatize(mol_smiles_aromatized, options), "smiles", options);
+            const dearomatized_smiles = indigo.convert(indigo.dearomatize(mol_smiles_aromatized, "molfile",  options), "smiles", options);
             assert.equal(dearomatized_smiles, "C1C=CC=CC=1");
             delete options;
         });
@@ -414,7 +414,7 @@ M  END
         test("dearomatize", "query_mol", () => {
             let options = new indigo.MapStringString();
             assert.throws(() => {
-                indigo.dearomatize(qmol_smarts, options);
+                indigo.dearomatize(qmol_smarts, "molfile", options);
             });
             delete options;
         });
@@ -424,7 +424,7 @@ M  END
     {
         test("layout", "basic", () => {
             let options = new indigo.MapStringString();
-            assert(indigo.layout(mol_smiles, options).indexOf("-1.6") !== -1);
+            assert(indigo.layout(mol_smiles,"molfile", options).indexOf("-1.6") !== -1);
             delete options;
         });
     }

@@ -157,8 +157,8 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
         std::get<LEFT_BOUND_IDX>(rc) = a.x;
     }
 
-    const rapidjson::Value& arrow_location = _arrows[0]["location"];
-    float arrow_x = arrow_location[0].GetFloat();
+    const rapidjson::Value& arrow_pos = _arrows[0]["data"]["pos"][0];
+    float arrow_x = arrow_pos["x"].GetFloat();
     components.emplace_back(arrow_x, ReactionFramentType::ARROW, nullptr);
     for (int i = 0; i < _pluses.Size(); ++i)
     {

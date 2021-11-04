@@ -3991,22 +3991,7 @@ void BaseMolecule::getAtomSymbol(int v, Array<char>& result)
 
         if (isQueryMolecule() && (query_atom_type = QueryMolecule::parseQueryAtom(asQueryMolecule(), v, list)) != -1)
         {
-            if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
-            {
-                result.readString("A", true);
-                return;
-            }
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
-            {
-                result.readString("Q", true);
-                return;
-            }
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
-            {
-                result.readString("X", true);
-                return;
-            }
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+            if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
             {
                 int k;
                 ArrayOutput output(result);
@@ -4024,6 +4009,8 @@ void BaseMolecule::getAtomSymbol(int v, Array<char>& result)
                 output.writeChar(']');
                 output.writeChar(0);
             }
+            else
+                QueryMolecule::getQueryAtomLabel(query_atom_type, result);
         }
     }
     if (result.size() == 0)
