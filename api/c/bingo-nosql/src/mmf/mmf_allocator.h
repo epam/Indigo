@@ -33,7 +33,7 @@ namespace bingo
         {
             size_t alloc_size, file_idx, file_off, file_size;
 
-            auto* allocator_data = static_cast<MMFAllocatorData*>( _mm_files.at(0)->ptr(MAX_HEADER_LEN));
+            auto* allocator_data = static_cast<MMFAllocatorData*>(_mm_files.at(0)->ptr(MAX_HEADER_LEN));
 
             alloc_size = sizeof(T) * count;
 
@@ -61,7 +61,6 @@ namespace bingo
         static void setDatabaseId(int db_id);
 
         static constexpr const int MAX_HEADER_LEN = 128;
-        ~MMFAllocator();
 
     private:
         struct MMFAllocatorData
@@ -77,7 +76,7 @@ namespace bingo
             size_t _free_off;
         };
 
-        MMFAllocator();
+        MMFAllocator() = default;
 
         void _addFile(size_t alloc_size);
 
@@ -90,7 +89,8 @@ namespace bingo
         std::string _filename;
         std::vector<std::unique_ptr<MMFile>> _mm_files;
 
-        static sf::safe_shared_hide_obj<std::unordered_map<int, std::unique_ptr<MMFAllocator>>> _allocators;
+        static sf::safe_shared_hide_obj<std::unordered_map<int, std::unique_ptr<MMFAllocator>>>& _allocators();
+
         static thread_local MMFAllocator* _current_allocator;
         static thread_local int _current_db_id;
     };

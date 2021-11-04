@@ -54,7 +54,6 @@ public class LoadMoleculeFromFileTest {
 
     @AfterAll
     public static void tearDownBingoNoSQL() throws Throwable {
-        bingoDb.close();
         indigo.finalize();
     }
 
@@ -67,6 +66,7 @@ public class LoadMoleculeFromFileTest {
     @AfterEach
     public void deleteIndex() throws IOException {
         repository.deleteAllRecords();
+        bingoDb.close();
     }
 
     /**

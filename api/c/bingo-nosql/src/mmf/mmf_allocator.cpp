@@ -12,7 +12,6 @@
 using namespace bingo;
 using namespace indigo;
 
-sf::safe_shared_hide_obj<std::unordered_map<int, std::unique_ptr<MMFAllocator>>> MMFAllocator::_allocators;
 thread_local MMFAllocator* MMFAllocator::_current_allocator = nullptr;
 thread_local int MMFAllocator::_current_db_id = -1;
 
@@ -40,7 +39,7 @@ void MMFAllocator::create(const char* filename, size_t min_size, size_t max_size
     inst->_filename.assign(filename);
     inst->_addHeader(index_type);
     {
-        auto allocators = sf::xlock_safe_ptr(_allocators);
+        auto allocators = sf::xlock_safe_ptr(_allocators());
         allocators->emplace(index_id, std::move(inst));
     }
 
@@ -73,7 +72,7 @@ void MMFAllocator::load(const char* filename, int index_id, bool read_only)
     }
 
     {
-        auto allocators = sf::xlock_safe_ptr(_allocators);
+        auto allocators = sf::xlock_safe_ptr(_allocators());
         allocators->emplace(index_id, std::move(inst));
     }
     setDatabaseId(index_id);
@@ -151,7 +150,7 @@ std::string MMFAllocator::_genFilename(int idx, const char* filename)
 
 void MMFAllocator::close()
 {
-    auto allocators = sf::xlock_safe_ptr(_allocators);
+    auto allocators = sf::xlock_safe_ptr(_allocators());
     allocators->erase(_current_db_id);
 }
 
@@ -165,7 +164,7 @@ void MMFAllocator::setDatabaseId(int db_id)
     if (_current_db_id != db_id)
     {
         _current_db_id = db_id;
-        auto allocators = sf::xlock_safe_ptr(_allocators);
+        auto allocators = sf::xlock_safe_ptr(_allocators());
         _current_allocator = allocators->at(db_id).get();
     }
 }
@@ -181,14 +180,8 @@ void MMFAllocator::_addHeader(const char* header)
     }
 }
 
-#include <iostream>
-
-MMFAllocator::MMFAllocator()
+sf::safe_shared_hide_obj<std::unordered_map<int, std::unique_ptr<MMFAllocator>>>& MMFAllocator::_allocators()
 {
-//    std::cout << "MMFAllocator(" << this << ")" << std::endl;
-}
-
-MMFAllocator::~MMFAllocator()
-{
-//    std::cout << "~MMFAllocator(" << this << ")" << std::endl;
+    static sf::safe_shared_hide_obj<std::unordered_map<int, std::unique_ptr<MMFAllocator>>> allocators;
+    return allocators;
 }
