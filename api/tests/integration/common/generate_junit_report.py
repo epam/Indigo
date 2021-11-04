@@ -22,9 +22,14 @@ def indent(elem, level=0):
 def create_test_case(group_name, name, time, status, msg):
     test_case = Element('testcase', name=name, attrib={'time': time, 'classname': group_name})
     if status != "[PASSED]":
-        error_type = 'failure' if status.startswith('[FAILED]') else 'error'
-        failure = Element(error_type, attrib={'message': status})
-        failure.text = msg
+        if status in ('[TODO]', '[NEW]'):
+            error_type = 'system-out'
+            failure = Element(error_type)
+            failure.text = msg
+        else:
+            error_type = 'failure' if status.startswith('[FAILED]') else 'error'
+            failure = Element(error_type, attrib={'message': status})
+            failure.text = msg
         test_case.append(failure)
     return test_case
 
@@ -46,7 +51,7 @@ def generate_junit_report(test_results, report_filename):
         for group_root, filename, status, msg, tspend in group:
             group_time += tspend
             group_tests += 1
-            if status != '[PASSED]':
+            if status not in ('[PASSED]', '[TODO]'):
                 if status.startswith('[FAILED]'):
                     group_failures += 1
                 else:
