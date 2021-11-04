@@ -222,8 +222,6 @@ static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_ob
     }
 }
 
-#include <iostream>
-
 static int _insertIteratorToDatabase(int db, Indigo& self, IndigoObject& iter, long obj_id)
 {
     profTimerStart(t, "_insertObjectToDatabase");
@@ -257,11 +255,6 @@ static int _insertIteratorToDatabase(int db, Indigo& self, IndigoObject& iter, l
                 const auto obj_data = (*bingo_index_ptr)->prepareIndexData(ind_mol);
                 {
                     (*bingo_index_ptr)->add(obj_id, obj_data);
-                }
-
-                if (++counter % 10000 == 0)
-                {
-                    std::cout << counter << std::endl;
                 }
             }
             catch (const Exception& e)
@@ -336,7 +329,7 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& 
 }
 
 #define getMatcherConst(id)                                                                                                                                    \
-    const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                             \
+    const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                           \
     if (!searches_data->searches.has(id))                                                                                                                      \
     {                                                                                                                                                          \
         throw BingoException("Incorrect search object id=%d", id);                                                                                             \
@@ -345,7 +338,7 @@ static int _insertObjectWithExtFPToDatabase(int db, Indigo& self, IndigoObject& 
     const auto& matcher = **matcher_ptr;
 
 #define getMatcher(id)                                                                                                                                         \
-    const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                             \
+    const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                           \
     if (!searches_data->searches.has(id))                                                                                                                      \
     {                                                                                                                                                          \
         throw BingoException("Incorrect search object id=%d", id);                                                                                             \
@@ -913,8 +906,6 @@ CEXPORT int bingoEndSearch(int search_obj)
     }
     BINGO_END(-1);
 }
-
-#include <iostream>
 
 CEXPORT int bingoNext(int search_obj)
 {

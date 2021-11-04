@@ -19,9 +19,7 @@
 #include <gtest/gtest.h>
 
 #include <array>
-#include <iostream>
 #include <random>
-#include <sstream>
 #include <thread>
 
 #include <BingoNoSQL.h>

@@ -2,7 +2,6 @@
 #define __bingo_fp_storage__
 
 #include <fstream>
-#include <iostream>
 #include <vector>
 
 #include "mmf/mmf_ptr.h"

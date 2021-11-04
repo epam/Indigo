@@ -533,8 +533,6 @@ void CmfSaver::_encodeAtom(Molecule& mol, int idx, const int* mapping)
             deviation += 100;
             if (deviation < 0 || deviation > 255)
             {
-                // const auto error = Error("unexpected %s isotope: %d", Element::toString(number), isotope);
-                // throw error;
                 throw Error("unexpected %s isotope: %d", Element::toString(number), isotope);
             }
             _encode(CMF_ISOTOPE_OTHER);

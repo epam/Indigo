@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <fstream>
-#include <iostream>
 
 #include "base_c/bitarray.h"
 #include "base_cpp/exception.h"

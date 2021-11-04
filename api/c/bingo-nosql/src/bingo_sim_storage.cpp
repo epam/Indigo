@@ -1,7 +1,5 @@
 #include "bingo_sim_storage.h"
 
-#include <iostream>
-
 using namespace bingo;
 using namespace indigo;
 

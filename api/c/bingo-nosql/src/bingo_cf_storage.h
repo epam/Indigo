@@ -2,7 +2,6 @@
 #define __cf_storage__
 
 #include <fstream>
-#include <iostream>
 #include <string>
 #include <vector>
 

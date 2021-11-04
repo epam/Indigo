@@ -1,14 +1,15 @@
 #include "molecule/molecule_json_loader.h"
+
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "layout/molecule_layout.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
-#include <iostream>
-#include <string>
-#include <unordered_map>
-#include <vector>
 
 using namespace rapidjson;
 using namespace indigo;
@@ -23,7 +24,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups) : _mol_
 int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology)
 {
     std::unique_ptr<QueryMolecule::Bond> bond;
-    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION || order == _BOND_HYDROGEN )
+    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
+        order == _BOND_HYDROGEN)
         bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
     else if (order == _BOND_SINGLE_OR_DOUBLE)
         bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
@@ -283,7 +285,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             else if (sl.find("and") != std::string::npos)
             {
                 int grp = std::stoi(sl.substr(3));
-                if( grp )
+                if (grp)
                     _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_AND, grp);
             }
         }
@@ -740,7 +742,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         if (mol.stereocenters.getType(sc._atom_idx) == 0)
         {
             throw Error("stereo type specified for atom #%d, but the bond "
-                            "directions does not say that it is a stereocenter",
+                        "directions does not say that it is a stereocenter",
                         sc._atom_idx);
         }
         else
