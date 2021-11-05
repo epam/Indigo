@@ -19,9 +19,11 @@
 #ifndef __cancellation_handler_h__
 #define __cancellation_handler_h__
 
+#include <memory>
+#include <string>
+
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
-#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -53,7 +55,7 @@ namespace indigo
         void reset(int mseconds);
 
     private:
-        Array<char> _message;
+        std::string _message;
         int _mseconds;
         qword _currentTime;
     };

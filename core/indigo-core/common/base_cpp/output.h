@@ -16,35 +16,34 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __output_h__
-#define __output_h__
+#pragma once
 
-#include <cstdio>
-
+#include "base_c/defs.h"
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 #include "base_cpp/io_base.h"
 
 namespace indigo
 {
-
     class DLLEXPORT Output
     {
     public:
         DECL_ERROR;
 
-        explicit Output();
-        virtual ~Output();
+        Output() = default;
+        Output(Output&&) = delete;
+        Output& operator=(Output&&) = delete;
+        Output(const Output&) = delete;
+        Output& operator=(const Output&) = delete;
+        virtual ~Output() = default;
 
         virtual void write(const void* data, int size) = 0;
-        virtual void seek(long long offset, int from) = 0;
-        virtual long long tell() = 0;
         virtual void flush() = 0;
 
         virtual void writeByte(byte value);
 
         void writeChar(char value);
         void writeBinaryInt(int value);
-        void writeBinaryDword(dword value);
         void writeBinaryWord(word value);
         void writeBinaryFloat(float value);
         void writePackedShort(short value);
@@ -54,40 +53,51 @@ namespace indigo
         void writeCR();
         void writeArray(const Array<char>& data);
 
-        void skip(int count);
-
         void printf(const char* format, ...);
         void vprintf(const char* format, va_list args);
         void printfCR(const char* format, ...);
     };
 
-    class DLLEXPORT FileOutput : public Output
+    class DLLEXPORT OutputTell
+    {
+        virtual long long tell() const noexcept = 0;
+    };
+
+    class DLLEXPORT OutputSeek
+    {
+        virtual void seek(long long offset, int from) = 0;
+        void skip(int count);
+    };
+
+    class DLLEXPORT FileOutput : public Output, public OutputSeek, public OutputTell
     {
     public:
         FileOutput(Encoding filename_encoding, const char* filename);
         explicit FileOutput(const char* name);
         // explicit FileOutput (const char *format, ...);
         explicit FileOutput(bool append, const char* format, ...);
+        FileOutput(FileOutput&&) = delete;
+        FileOutput& operator=(FileOutput&&) = delete;
+        FileOutput(const FileOutput&) = delete;
+        FileOutput& operator=(const FileOutput&) = delete;
         ~FileOutput() override;
 
         void write(const void* data, int size) override;
         void seek(long long offset, int from) override;
-        long long tell() override;
+        long long tell() const noexcept override;
         void flush() override;
 
     protected:
         FILE* _file;
     };
 
-    class DLLEXPORT ArrayOutput : public Output
+    class DLLEXPORT ArrayOutput : public Output, public OutputTell
     {
     public:
         explicit ArrayOutput(Array<char>& arr);
-        ~ArrayOutput() override;
 
         void write(const void* data, int size) override;
-        void seek(long long offset, int from) override;
-        long long tell() override;
+        long long tell() const noexcept override;
         void flush() override;
 
         void clear();
@@ -96,15 +106,29 @@ namespace indigo
         Array<char>& _arr;
     };
 
-    class DLLEXPORT StandardOutput : public Output
+    class DLLEXPORT StringOutput : public Output, public OutputTell
+    {
+    public:
+        StringOutput() = delete;
+        explicit StringOutput(std::string& str);
+
+        void write(const void* data, int size) override;
+        long long tell() const noexcept override;
+        void flush() override;
+
+        void clear() noexcept;
+
+    protected:
+        std::string& _str;
+    };
+
+    class DLLEXPORT StandardOutput : public Output, public OutputTell
     {
     public:
         explicit StandardOutput();
-        ~StandardOutput() override;
 
         void write(const void* data, int size) override;
-        void seek(long long offset, int from) override;
-        long long tell() override;
+        long long tell() const noexcept override;
         void flush() override;
 
     protected:
@@ -114,17 +138,9 @@ namespace indigo
     class DLLEXPORT NullOutput : public Output
     {
     public:
-        explicit NullOutput();
-        ~NullOutput() override;
-
         void write(const void* data, int size) override;
-        void seek(long long offset, int from) override;
-        long long tell() override;
         void flush() override;
     };
 
     DLLEXPORT void bprintf(Array<char>& buf, const char* format, ...);
-
-} // namespace indigo
-
-#endif
+}

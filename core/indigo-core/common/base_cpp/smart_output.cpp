@@ -74,16 +74,6 @@ void SmartTableOutput::write(const void* data, int size)
     }
 }
 
-void SmartTableOutput::seek(long long offset, int from)
-{
-    throw Error("seek is not supported");
-}
-
-long long SmartTableOutput::tell()
-{
-    throw Error("tell is not supported");
-}
-
 void SmartTableOutput::flush()
 {
     // TODO: MR: merge this with flushTable?
