@@ -16,29 +16,27 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __cancellation_handler_h__
-#define __cancellation_handler_h__
+#pragma once
 
 #include <memory>
 #include <string>
 
 #include "base_c/defs.h"
-#include "base_cpp/array.h"
-
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
 
 namespace indigo
 {
-
     class DLLEXPORT CancellationHandler
     {
     public:
+        CancellationHandler() = default;
+        CancellationHandler(CancellationHandler&&) = delete;
+        CancellationHandler(const CancellationHandler&) = delete;
+        CancellationHandler& operator=(CancellationHandler&&) = delete;
+        CancellationHandler& operator=(const CancellationHandler&) = delete;
+        virtual ~CancellationHandler() = default;
+
         virtual bool isCancelled() = 0;
         virtual const char* cancelledRequestMessage() = 0;
-        virtual ~CancellationHandler() = default;
 
         static std::unique_ptr<CancellationHandler>& cancellation_handler();
     };
@@ -46,8 +44,13 @@ namespace indigo
     class DLLEXPORT TimeoutCancellationHandler : public CancellationHandler
     {
     public:
+        TimeoutCancellationHandler() = delete;
         explicit TimeoutCancellationHandler(int mseconds = 0);
-        ~TimeoutCancellationHandler() override;
+        TimeoutCancellationHandler(TimeoutCancellationHandler&&) = delete;
+        TimeoutCancellationHandler(const TimeoutCancellationHandler&) = delete;
+        TimeoutCancellationHandler& operator=(TimeoutCancellationHandler&&) = delete;
+        TimeoutCancellationHandler& operator=(const TimeoutCancellationHandler&) = delete;
+        ~TimeoutCancellationHandler() override = default;
 
         bool isCancelled() override;
         const char* cancelledRequestMessage() override;
@@ -62,23 +65,19 @@ namespace indigo
 
     // Global thread-local cancellation handler
     DLLEXPORT CancellationHandler* getCancellationHandler();
-    // Returns previous cancellation handler.
-    // TAKES Ownership!!!
+
+    // Returns previous cancellation handler. TAKES Ownership!!!
     DLLEXPORT std::unique_ptr<CancellationHandler> resetCancellationHandler(CancellationHandler* handler);
-    void createCancellationHandler(qword id);
 
     class AutoCancellationHandler
     {
     public:
-        AutoCancellationHandler(CancellationHandler*);
+        AutoCancellationHandler() = delete;
+        explicit AutoCancellationHandler(CancellationHandler*);
+        AutoCancellationHandler(AutoCancellationHandler&&) = delete;
+        AutoCancellationHandler(const AutoCancellationHandler&) = delete;
+        AutoCancellationHandler& operator=(AutoCancellationHandler&&) = delete;
+        AutoCancellationHandler& operator=(const AutoCancellationHandler&) = delete;
         ~AutoCancellationHandler();
     };
-} // namespace indigo
-
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
-
-#endif /* __cancellation_handler_h__ */
-
-/* END OF 'cancellation_handler.H' FILE */
+}
