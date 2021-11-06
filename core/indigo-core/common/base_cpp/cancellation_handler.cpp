@@ -29,15 +29,14 @@ std::unique_ptr<CancellationHandler>& CancellationHandler::cancellation_handler(
     return _cancellation_handler;
 }
 
-TimeoutCancellationHandler::TimeoutCancellationHandler(int mseconds)
+TimeoutCancellationHandler::TimeoutCancellationHandler(int mseconds) : _mseconds(mseconds), _currentTime(nanoClock())
 {
-    reset(mseconds);
 }
 
 bool TimeoutCancellationHandler::isCancelled()
 {
     qword dif_time = nanoClock() - _currentTime;
-    if (_mseconds > 0 && nanoHowManySeconds(dif_time) * 1000 > _mseconds)
+    if (_mseconds > 0 && static_cast<size_t>(nanoHowManySeconds(dif_time)) * 1000 > _mseconds)
     {
         StringOutput mes_out(_message);
         mes_out.printf("The operation timed out: %d ms", _mseconds);
