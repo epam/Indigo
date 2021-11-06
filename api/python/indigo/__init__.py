@@ -169,7 +169,7 @@ class IndigoObject(object):
             v1 (int): pyramid info
             v2 (int): pyramid info
             v3 (int): pyramid info
-            v4 (int, optional): pyramid info. Defaults to -1.
+            v4 (int): pyramid info. Optional, defaults to -1.
 
         Returns:
             int: 1 stereocenter added successfully
@@ -195,7 +195,7 @@ class IndigoObject(object):
         """Molecule object. Performs verification of input structure
 
         Args:
-            checkflags (str, optional): Flags to verify. Defaults to "".
+            checkflags (str): Flags to verify. Optional, defaults to "".
 
         Returns:
             str: verification result as a JSON string
@@ -541,7 +541,7 @@ class IndigoObject(object):
         """QueryReaction or QueryMolecule method for query optimizations for faster substructure search
 
         Args:
-            options (str, optional): Options for optimization. Defaults to "".
+            options (str): Options for optimization. Optional, defaults to "".
 
         Returns:
             int: 1 if optimization is performed without issues
@@ -560,7 +560,7 @@ class IndigoObject(object):
         It neutralizes charges, resolves 5-valence Nitrogen, removes hydrogens and etc.
 
         Args:
-            options (str, optional): Normalization options. Defaults to "".
+            options (str): Normalization options. Optional, defaults to "".
 
         Returns:
             int: 1 if normalization is performed without issues
@@ -645,7 +645,7 @@ class IndigoObject(object):
         """Automatic reaction atom-to-atom mapping
 
         Args:
-            mode (str, optional): mode is one of the following (separated by a space) . Defaults to "discard".
+            mode (str): mode is one of the following (separated by a space) . Optional, defaults to "discard".
             "discard" : discards the existing mapping entirely and considers only
                         the existing reaction centers (the default)
             "keep"    : keeps the existing mapping and maps unmapped atoms
@@ -1585,7 +1585,7 @@ class IndigoObject(object):
         Args:
             x (float): X coordinate
             y (float): Y coordinate
-            options (str, optional): options. Defaults to "".
+            options (str): options. Optional, defaults to "".
 
         Returns:
             int: 1 if there are no errors
@@ -5151,8 +5151,8 @@ class Indigo(object):
         Args:
             option (str): option name
             value1 (int, str, bool, float): option value
-            value2 (int, float, optional): option value for tuples. Defaults to None.
-            value3 (float, optional): option value for triple. Defaults to None.
+            value2 (int, float): option value for tuples. Optional, defaults to None.
+            value3 (float): option value for triple. Optional, defaults to None.
 
         Raises:
             IndigoException: if option does not exist
@@ -5716,7 +5716,7 @@ class Indigo(object):
 
         Args:
             structureStr (str): string with structure format
-            parameter (str, optional): parameters for loading. Defaults to None.
+            parameter (str): parameters for loading. Optional, defaults to None.
 
         Returns:
             IndigoObject: loaded object
@@ -5738,7 +5738,7 @@ class Indigo(object):
 
         Args:
             structureData (list): array of bytes
-            parameter (str, optional): parameters for loading. Defaults to None.
+            parameter (str): parameters for loading. Optional, defaults to None.
 
         Returns:
             IndigoObject: loaded object
@@ -5766,7 +5766,7 @@ class Indigo(object):
 
         Args:
             filename (str): full path with structure information
-            parameter (str, optional): parameters to load. Defaults to None.
+            parameter (str): parameters to load. Optional, defaults to None.
 
         Returns:
             IndigoObject: loaded object
@@ -5788,7 +5788,7 @@ class Indigo(object):
 
         Args:
             structure (IndigoObject):structure object
-            props (str, optional): Parameters for validation. Defaults to "".
+            props (str): Parameters for validation. Optional, defaults to "".
 
         Returns:
            str: validation results string
@@ -5877,7 +5877,7 @@ class Indigo(object):
         Args:
             item1 (IndigoObject): target1 structure (molecule or reaction)
             item2 (IndigoObject): target2 structure (molecule or reaction)
-            flags (str, optional): exact match options. Defaults to "".
+            flags (str): exact match options. Optional, defaults to "".
 
         Returns:
             IndigoObject: match object
@@ -5956,7 +5956,7 @@ class Indigo(object):
         Args:
             item1 (IndigoObject): molecule, reaction or fingerprint objects
             item2 (IndigoObject): molecule, reaction or fingerprint objects
-            metrics (str, optional): "tanimoto", "tversky", "tversky <alpha> <beta>", "euclid-sub" or "normalized-edit". Defaults to "tanimoto".
+            metrics (str): "tanimoto", "tversky", "tversky <alpha> <beta>", "euclid-sub" or "normalized-edit". Optional, defaults to "tanimoto".
 
         Returns:
             float: [description]
@@ -6122,7 +6122,7 @@ class Indigo(object):
 
         Args:
             target (IndigoObject): target molecule or reaction
-            mode (str, optional): substructure mode. Defaults to "".
+            mode (str): substructure mode. Optional, defaults to "".
 
         Returns:
             IndigoObject: substructure mode
@@ -6145,7 +6145,7 @@ class Indigo(object):
 
         Args:
             structures (IndigoObject): array object of molecule structures
-            options (str, optional): extration options. Defaults to "".
+            options (str): extration options. Optional, defaults to "".
 
         Returns:
             IndigoObject: scaffold object
@@ -6191,7 +6191,7 @@ class Indigo(object):
 
         Args:
             molecule (IndigoObject): target molecule object
-            options (str, optional): rgroup composition object. Defaults to "".
+            options (str): rgroup composition object. Optional, defaults to "".
 
         Returns:
             IndigoObject: composition iterator
@@ -6214,7 +6214,7 @@ class Indigo(object):
 
         Args:
             elem (IndigoObject): composition element object
-            options (str, optional): Fragmantation options. Defaults to "".
+            options (str): Fragmantation options. Optional, defaults to "".
 
         Returns:
             IndigoObject: fragmented structure object
@@ -6455,7 +6455,7 @@ class Indigo(object):
             filename (str): full path to the file
 
         Returns:
-            int: 1 level > 0, 0 otherwise
+            int: 1 if level > 0, 0 otherwise
         """
         self._setSessionId()
         return self._checkResult(
@@ -6484,8 +6484,8 @@ class Indigo(object):
 
         Args:
             moltext (str): input structure string
-            checkflags (str, optional): validation flags. Defaults to "".
-            props (str, optional): validation properties. Defaults to "".
+            checkflags (str): validation flags. Optional, defaults to "".
+            props (str): validation properties. Optional, defaults to "".
 
         Returns:
             str: validation string
