@@ -45,7 +45,7 @@ namespace indigo
     {
     public:
         TimeoutCancellationHandler() = delete;
-        explicit TimeoutCancellationHandler(int mseconds = 0);
+        explicit TimeoutCancellationHandler(int mseconds);
         TimeoutCancellationHandler(TimeoutCancellationHandler&&) = delete;
         TimeoutCancellationHandler(const TimeoutCancellationHandler&) = delete;
         TimeoutCancellationHandler& operator=(TimeoutCancellationHandler&&) = delete;
