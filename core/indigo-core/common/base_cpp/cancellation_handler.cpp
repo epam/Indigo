@@ -23,71 +23,57 @@
 
 using namespace indigo;
 
-namespace indigo
+std::unique_ptr<CancellationHandler>& CancellationHandler::cancellation_handler()
 {
-    //
-    // TimeoutCancellationHandler
-    //
+    thread_local std::unique_ptr<CancellationHandler> _cancellation_handler;
+    return _cancellation_handler;
+}
 
-    std::unique_ptr<CancellationHandler>& CancellationHandler::cancellation_handler()
+TimeoutCancellationHandler::TimeoutCancellationHandler(int mseconds) : _mseconds(mseconds), _currentTime(nanoClock())
+{
+}
+
+bool TimeoutCancellationHandler::isCancelled()
+{
+    qword dif_time = nanoClock() - _currentTime;
+    if (_mseconds > 0 && static_cast<size_t>(nanoHowManySeconds(dif_time)) * 1000 > _mseconds)
     {
-        thread_local std::unique_ptr<CancellationHandler> _cancellation_handler;
-        return _cancellation_handler;
+        StringOutput mes_out(_message);
+        mes_out.printf("The operation timed out: %d ms", _mseconds);
+        return true;
     }
+    return false;
+}
 
-    TimeoutCancellationHandler::TimeoutCancellationHandler(int mseconds)
-    {
-        reset(mseconds);
-    }
+const char* TimeoutCancellationHandler::cancelledRequestMessage()
+{
+    return _message.c_str();
+}
 
-    TimeoutCancellationHandler::~TimeoutCancellationHandler()
-    {
-    }
+void TimeoutCancellationHandler::reset(int mseconds)
+{
+    _mseconds = mseconds;
+    _currentTime = nanoClock();
+}
 
-    bool TimeoutCancellationHandler::isCancelled()
-    {
-        qword dif_time = nanoClock() - _currentTime;
-        if (_mseconds > 0 && nanoHowManySeconds(dif_time) * 1000 > _mseconds)
-        {
-            ArrayOutput mes_out(_message);
-            mes_out.printf("The operation timed out: %d ms", _mseconds);
-            mes_out.writeChar(0);
-            return true;
-        }
-        return false;
-    }
+CancellationHandler* indigo::getCancellationHandler()
+{
+    return CancellationHandler::cancellation_handler().get();
+}
 
-    const char* TimeoutCancellationHandler::cancelledRequestMessage()
-    {
-        return _message.ptr();
-    }
+std::unique_ptr<CancellationHandler> indigo::resetCancellationHandler(CancellationHandler* handler)
+{
+    std::unique_ptr<CancellationHandler> prev(handler);
+    CancellationHandler::cancellation_handler().swap(prev);
+    return prev;
+}
 
-    void TimeoutCancellationHandler::reset(int mseconds)
-    {
-        _mseconds = mseconds;
-        _currentTime = nanoClock();
-    }
+AutoCancellationHandler::AutoCancellationHandler(CancellationHandler* hand)
+{
+    resetCancellationHandler(hand);
+}
 
-    CancellationHandler* getCancellationHandler()
-    {
-        return CancellationHandler::cancellation_handler().get();
-    }
-
-    std::unique_ptr<CancellationHandler> resetCancellationHandler(CancellationHandler* handler)
-    {
-        std::unique_ptr<CancellationHandler> prev(handler);
-        CancellationHandler::cancellation_handler().swap(prev);
-        return prev;
-    }
-
-    AutoCancellationHandler::AutoCancellationHandler(CancellationHandler* hand)
-    {
-        resetCancellationHandler(hand);
-    }
-
-    AutoCancellationHandler::~AutoCancellationHandler()
-    {
-        resetCancellationHandler(nullptr);
-    }
-
-} // namespace indigo
+AutoCancellationHandler::~AutoCancellationHandler()
+{
+    resetCancellationHandler(nullptr);
+}
