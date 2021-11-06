@@ -731,12 +731,12 @@ class IndigoObject(object):
         Args:
             reaction_bond (IndigoObject): reaction molecule bond
             rc (int): reacting center, one of the following
-            RC_NOT_CENTER = -1
-            RC_UNMARKED = 0
-            RC_CENTER = 1
-            RC_UNCHANGED = 2
-            RC_MADE_OR_BROKEN = 4
-            RC_ORDER_CHANGED = 8
+                RC_NOT_CENTER = -1
+                RC_UNMARKED = 0
+                RC_CENTER = 1
+                RC_UNCHANGED = 2
+                RC_MADE_OR_BROKEN = 4
+                RC_ORDER_CHANGED = 8
 
         Returns:
             int: 1 if there are no errors
@@ -943,10 +943,10 @@ class IndigoObject(object):
 
         Args:
             type (int): stereo type.
-            ABS = 1
-            OR = 2
-            AND = 3
-            EITHER = 4
+                ABS = 1
+                OR = 2
+                AND = 3
+                EITHER = 4
 
         Returns:
             int: 1 if there are no errors
