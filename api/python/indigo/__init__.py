@@ -5349,7 +5349,7 @@ class Indigo(object):
             IndigoException: if object is not iterable
 
         Returns:
-            IndigoOBject: array object
+            IndigoObject: array object
         """
         if isinstance(iteratable, IndigoObject):
             return iteratable
@@ -6169,7 +6169,7 @@ class Indigo(object):
 
         Args:
             scaffold (IndigoObject): query molecule object
-            structures (IndigoOBject): array of molecule structures
+            structures (IndigoObject): array of molecule structures
 
         Returns:
             IndigoObject: deconvolution object
@@ -6471,7 +6471,7 @@ class Indigo(object):
             item (IndigoObject): object with HELM information
 
         Returns:
-            IndigoOBject: molecule with SCSR object
+            IndigoObject: molecule with SCSR object
         """
         self._setSessionId()
         return self.IndigoObject(
