@@ -14,7 +14,7 @@ This repository includes:
 * Bingo: Chemistry search engine for Oracle, Microsoft SQL Server and PostgreSQL databases
 * Bingo-Elastic: Set of APIs for efficient chemistry search in Elasticsearch
   - Java API. Full README is available [here](/bingo/bingo-elastic/java/README.md)
-  - Python API. Full README is available [here](/api/bingo-elastic/python/README.md)
+  - Python API. Full README is available [here](/bingo/bingo-elastic/python/README.md)
 * Indigo: Universal cheminformatics library with bindings to .NET, Java, Python, R and WebAssembly, and the following tools:
   - Legio: GUI application for combinatorial chemistry
   - ChemDiff: Visual comparison of two SDF or SMILES files
