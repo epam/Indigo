@@ -2,13 +2,12 @@ import sys
 
 from io import BytesIO
 
-from threading import Lock, current_thread
+from threading import current_thread
 from collections import defaultdict
 
 
 class ThreadPrinter:
     def __init__(self):
-        self.lock = Lock()
         self.outputs = defaultdict(BytesIO)
 
     @property
@@ -16,14 +15,12 @@ class ThreadPrinter:
         return current_thread().ident
 
     def write(self, value):
-        # with self.lock:
         stream = self.outputs[self._thread_id]
         stream.write(value.encode('utf-8'))
 
     def read_and_clean(self):
         result = b""
         if self._thread_id in self.outputs:
-            # with self.lock:
             stream = self.outputs.pop(self._thread_id)
             stream.seek(0)
             result = stream.read()
