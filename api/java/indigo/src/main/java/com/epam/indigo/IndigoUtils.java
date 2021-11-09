@@ -120,8 +120,14 @@ public class IndigoUtils {
             path = "linux-";
         } else throw new Error("Operating system not recognized");
 
-        if (Platform.is64Bit()) path += "x86_64";
-        else path += "i386";
+        String os_arch = System.getProperty("os.arch");
+        if (os_arch == "amd64" || os_arch == "x86_64" || os_arch == "x64") {
+            path += "x86_64";
+        } else if (os_arch == "x86" || os_arch == "i386") {
+            path += "i386";
+        } else if (os_arch == "aarch64" || os_arch == "arm64" || os_arch == "arm64e") {
+            path += "aarch64";
+        } else throw new Error("Machine architecture not supported");
 
         return path;
     }
