@@ -127,7 +127,7 @@ public class IndigoUtils {
             path += "i386";
         } else if (os_arch.equals("aarch64") || os_arch.equals("arm64") || os_arch.equals("arm64e")) {
             path += "aarch64";
-        } else throw new Error(String.format("Machine architecture not supported: %s", os_arch);
+        } else throw new Error(String.format("Machine architecture not supported: %s", os_arch));
 
         return path;
     }
