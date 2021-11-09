@@ -11,7 +11,7 @@ This SDK is intended to:
 
 #### Supported Elasticsearch versions and distributions
 
-We are supporting 7.10.x Elasticsearch and most major distributions available (AWS, Elastic, OpenDistro, etc)
+We are supporting 7.15.x Elasticsearch and most major distributions available (AWS, Elastic, OpenDistro, etc)
 
 *TBD test against other 7.x versions*
 
@@ -37,12 +37,13 @@ compile group: 'com.epam.indigo', name: 'bingo-elastic', version: 'VERSION'
 
 it will work the same for other major dependency managers
 
-#### Elastisearch installation
+#### Elasticsearch installation
 
 You could use any favourite Elasticsearch distribution:
 
 - [Open Distro Elasticsearch](https://opendistro.github.io/for-elasticsearch-docs/docs/install/)
 - [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html)
+- [OpenSearch](https://opensearch.org/docs/latest/opensearch/install/index/)
 - many many more available on premise and as cloud products & services
 
 Something simple could be done as following:

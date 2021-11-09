@@ -16,6 +16,6 @@ public class WildcardQuery<T extends IndigoRecord> extends FilterPredicate<T> {
 
     @Override
     public QueryBuilder generateQuery() {
-        return QueryBuilders.wildcardQuery(field, textToSearch);
+        return QueryBuilders.wildcardQuery(field, textToSearch).caseInsensitive(true);
     }
 }

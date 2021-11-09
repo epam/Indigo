@@ -25,7 +25,7 @@ public class BatchTest {
     public static void setUpDataStore() {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
-                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
+                        .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
                         .withTag(ElasticsearchVersion.VERSION)
         );
         elasticsearchContainer.start();

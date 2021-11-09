@@ -11,7 +11,7 @@ This SDK is intended to:
 
 #### Supported Elasticsearch versions and distributions
 
-We are supporting 7.9.x Elasticsearch and most major distributions available (AWS, Elastic, OpenDistro, etc)
+We are supporting 7.15.x Elasticsearch and most major distributions available (AWS, Elastic, OpenDistro, etc)
 
 *TBD test against other 7.x versions*
 
