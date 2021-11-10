@@ -49,7 +49,7 @@ You could use any favourite Elasticsearch distribution:
 Something simple could be done as following:
 
 ```
-docker run -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_security.disabled=true" amazon/opendistro-for-elasticsearch:latest
+docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.15.1
 ```
 
 ### Usage 

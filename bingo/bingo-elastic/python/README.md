@@ -32,12 +32,13 @@ You could use any favourite Elasticsearch distribution:
 
 - [Open Distro Elasticsearch](https://opendistro.github.io/for-elasticsearch-docs/docs/install/)
 - [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html)
+- [OpenSearch](https://opensearch.org/docs/latest/opensearch/install/index/)
 - many many more available on premise and as cloud products & services
 
 Something simple could be done as following:
 
 ```
-docker run -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_security.disabled=true" amazon/opendistro-for-elasticsearch:latest
+docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.15.1
 ```
 
 ### Usage 
