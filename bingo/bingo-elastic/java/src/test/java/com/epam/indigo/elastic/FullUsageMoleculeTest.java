@@ -32,7 +32,7 @@ public class FullUsageMoleculeTest {
         indigo = new Indigo();
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
-                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
+                        .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
                         .withTag(ElasticsearchVersion.VERSION)
         );
         elasticsearchContainer.start();

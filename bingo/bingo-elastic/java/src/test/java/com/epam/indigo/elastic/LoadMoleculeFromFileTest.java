@@ -33,7 +33,7 @@ public class LoadMoleculeFromFileTest {
     public static void setUpElastic() {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
-                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
+                        .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
                         .withTag(ElasticsearchVersion.VERSION)
         );
         elasticsearchContainer.start();
@@ -54,7 +54,7 @@ public class LoadMoleculeFromFileTest {
 
     @AfterAll
     public static void tearDownBingoNoSQL() throws Throwable {
-        indigo.finalize();
+//        indigo.finalize();
     }
 
     @BeforeEach
