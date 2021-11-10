@@ -10,17 +10,15 @@ namespace com.epam.indigo
         [TestMethod]
         public void TestIndigoVersion()
         {
-            var indigo = new Indigo();
-            Console.WriteLine(indigo.getSID());
+            using var indigo = new Indigo();
             Assert.AreNotEqual(indigo.version(), null);
-            Console.WriteLine(indigo.version());
-            indigo.Dispose();
         }
 
         [TestMethod]
         public void TestIndigoGetOneBitsList()
         {
-            var indigo = new Indigo();
+            using var indigo = new Indigo();
+            // var indigo = new Indigo();
             var indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
 
             Assert.AreEqual(
@@ -32,36 +30,27 @@ namespace com.epam.indigo
         [TestMethod]
         public void TestIndigoSmiles()
         {
-            var indigo = new Indigo();
-            Console.WriteLine(indigo.getSID());
+            using var indigo = new Indigo();
             var molecule = indigo.loadMolecule("c1ccccc1");
-            Console.WriteLine(molecule.self);
             Assert.AreEqual(molecule.smiles(), "c1ccccc1");
-            indigo.Dispose();
         }
 
         [TestMethod]
         public void TestIndigoMultipleInstances()
         {
-            var indigo1 = new Indigo();
-            var indigo2 = new Indigo();
-            Console.WriteLine(indigo1.getSID());
-            Console.WriteLine(indigo2.getSID());
+            using var indigo1 = new Indigo();
+            using var indigo2 = new Indigo();
             Assert.AreNotEqual(indigo1.getSID(), indigo2.getSID());
             var molecule1 = indigo1.loadMolecule("c1ccccc1");
             var molecule2 = indigo2.loadMolecule("c1ccccc1");
-            Console.WriteLine(molecule1.self);
-            Console.WriteLine(molecule2.self);
             Assert.AreEqual(molecule1.smiles(), molecule2.canonicalSmiles());
-            indigo2.Dispose();
-            indigo1.Dispose();
         }
 
         [TestMethod]
         public void IndigoInchiTest()
         {
-            var indigo = new Indigo();
-            var indigoInchi = new IndigoInchi(indigo);
+            using var indigo = new Indigo();
+            using var indigoInchi = new IndigoInchi(indigo);
             var m = indigo.loadMolecule("C");
             Assert.AreEqual("InChI=1S/CH4/h1H4", indigoInchi.getInchi(m));
         }
@@ -69,8 +58,8 @@ namespace com.epam.indigo
         [TestMethod]
         public void IndigoRendererTest()
         {
-            var indigo = new Indigo();
-            var indigoRenderer = new IndigoRenderer(indigo);
+            using var indigo = new Indigo();
+            using var indigoRenderer = new IndigoRenderer(indigo);
             indigo.setOption("render-output-format", "png");
             var m = indigo.loadMolecule("C");
             Assert.IsTrue(indigoRenderer.renderToBuffer(m).Length > 0);
@@ -81,10 +70,19 @@ namespace com.epam.indigo
         {
             try
             {
-                var indigo = new Indigo();
-                var bingo = Bingo.createDatabaseFile(indigo, "test.db", "molecule");
+                using var indigo = new Indigo();
+                using var bingo = Bingo.createDatabaseFile(indigo, "test.db", "molecule");
+                var m = indigo.loadMolecule("C");
+                bingo.insert(m);
+                var q = indigo.loadQueryMolecule("C");
+                var bingoObject = bingo.searchSub(q);
+                var count = 0;
+                while (bingoObject.next())
+                {
+                    count++;
+                }
+                Assert.AreEqual(count, 1);
                 bingo.close();
-                System.Console.WriteLine(bingo.version());
                 Assert.IsTrue(bingo.version().Length > 0);
             }
             finally
@@ -94,6 +92,37 @@ namespace com.epam.indigo
                     File.Delete("test.db");
                 }
             }
+        }
+
+        [TestMethod]
+        public void TestUtf8()
+        {
+            const string molfile = @"
+  Ketcher 02051318482D 1   1.00000     0.00000     0
+
+  5  4  0     0  0            999 V2000
+   -4.1250   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.2590   -8.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.3929   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.5269   -8.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.6609   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0     0  0
+  2  3  1  0     0  0
+  3  4  1  0     0  0
+  4  5  1  0     0  0
+M  STY  1   1 DAT
+M  SLB  1   1   1
+M  SAL   1  2   4   5
+M  SDT   1 single-name                    F                         
+M  SDD   1     1.6314   -1.1000    DR    ALL  1      1  
+M  SED   1 single-value-бензол                                                        
+M  END
+";
+            using var indigo = new Indigo();
+            var m = indigo.loadMolecule(molfile);
+            var cml = m.cml();
+            Assert.IsTrue(cml.Contains("бензол"));
+            Assert.IsFalse(cml.Contains("??????"));
         }
     }
 }
