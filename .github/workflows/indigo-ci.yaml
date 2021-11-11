@@ -325,7 +325,7 @@ jobs:
         run: poetry run pylint bingo_elastic
         working-directory: bingo/bingo-elastic/python
       - name: Setup elasticsearch
-        run: docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:latest
+        run: docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.15.1
       - name: Wait elastic is ready
         run: sleep 30s
       - name: Run tests
