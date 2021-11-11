@@ -64,10 +64,20 @@ class IndigoInchi(object):
             self._initialized = False
 
     def resetOptions(self):
+        """Resets option for inchi
+        """
         self.indigo._setSessionId()
         self.indigo._checkResult(self._lib.indigoInchiResetOptions())
 
     def loadMolecule(self, inchi):
+        """Loads molecule from inChi string
+
+        Args:
+            inchi (str): inchi string
+
+        Returns:
+            IndigoObject: molecule object
+        """
         self.indigo._setSessionId()
         res = self.indigo._checkResult(self._lib.indigoInchiLoadMolecule(inchi.encode('ascii')))
         if res == 0:
@@ -75,25 +85,61 @@ class IndigoInchi(object):
         return self.indigo.IndigoObject(self.indigo, res)
 
     def version(self):
+        """Returns InChi version
+
+        Returns:
+            str: version string
+        """
         self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiVersion())
 
     def getInchi(self, molecule):
+        """Returns InChi string for given molecule
+
+        Args:
+            molecule (IndigoObject): molecule object
+
+        Returns:
+            str: InChi string
+        """
         self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetInchi(molecule.id))
 
     def getInchiKey(self, inchi):
+        """Returns InChi key for the given inchi
+
+        Args:
+            inchi (str): inchi string
+
+        Returns:
+            str: inchi key
+        """
         self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetInchiKey(inchi.encode('ascii')))
 
     def getWarning(self):
+        """Returns warning message
+
+        Returns:
+            str: warning string
+        """
         self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetWarning())
 
     def getLog(self):
+        """Returns logs while InChi calculation
+
+        Returns:
+            str: log string
+        """
         self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetLog())
 
     def getAuxInfo(self):
+        """Returns aux info for the Inchi
+
+        Returns:
+            str: InChi aux info string
+        """
         self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetAuxInfo())
