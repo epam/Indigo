@@ -664,7 +664,6 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
             }
         }
     }
-    // sgroup.bonds.copy( xbonds );
 }
 
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)

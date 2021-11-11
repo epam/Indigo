@@ -31,6 +31,11 @@
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
 
+typedef unsigned short int UINT16;
+typedef int INT32;
+typedef unsigned int UINT32;
+#include "molecule/CDXConstants.h"
+
 class TiXmlHandle;
 class TiXmlElement;
 class TiXmlNode;
@@ -74,16 +79,16 @@ namespace indigo
         int atom_id;
     };
 
-    struct CdxmlAtom
+    struct CdxmlNode
     {
-        CdxmlAtom() : element(ELEM_C) // Carbon by default
+        CdxmlNode() : element(ELEM_C), type( kCDXNodeType_Element ) // Carbon by default
         {
         }
         AutoInt id;
         std::string label;
         AutoInt element;
         Vec3f pos;
-        AutoInt type;
+        int type;
         AutoInt isotope;
         AutoInt charge;
         AutoInt radical;
@@ -111,6 +116,19 @@ namespace indigo
         bool swap_bond;
     };
 
+    struct CdxmlBracket
+    {
+        CdxmlBracket() : repeat_pattern(RepeatingUnit::HEAD_TO_TAIL)
+        {
+        }
+        std::vector<AutoInt> bracketed_list;
+        int usage;
+        AutoInt repeat_count;
+        int repeat_pattern;
+        std::string sru_label;
+    };
+
+
     inline std::vector<std::string> split(const std::string& str, char delim)
     {
         std::vector<std::string> strings;
@@ -135,20 +153,30 @@ namespace indigo
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
+        bool _has_bounding_box;
+        Rect2f _cdxml_bbox;
+        AutoInt _cdxml_bond_length;
 
     protected:
         Scanner* _scanner;
         const TiXmlNode* _fragment;
-        void _loadFragment(BaseMolecule& mol, TiXmlElement* fragment);
-        void _parseAtom(CdxmlAtom& atom, TiXmlAttribute* pAttr);
-        void _parseBond(CdxmlBond& atom, TiXmlAttribute* pAttr);
+        void _loadFragments(BaseMolecule& mol, const std::vector<TiXmlElement*>& fragments, const std::vector<TiXmlElement*>& brackets );
+        void _parseCDXMLAttributes(TiXmlAttribute* pAttr);
+        void _parseNode(CdxmlNode& node, TiXmlAttribute* pAttr);
+        void _parseBond(CdxmlBond& bond, TiXmlAttribute* pAttr);
+        void _parseBracket(CdxmlBracket& bracket, TiXmlAttribute* pAttr);
+
         void _applyDispatcher(TiXmlAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher);
-        void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<CdxmlAtom>& atoms, const std::vector<CdxmlBond>& bonds);
+        void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<CdxmlNode>& atoms, const std::vector<CdxmlBond>& bonds);
+        void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket );
+        void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
         TiXmlElement* _findFragment(TiXmlElement* elem);
+        void _enumerateData(TiXmlElement* elem, std::vector<TiXmlElement*>& fragments, std::vector<TiXmlElement*>& brackets);
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
         Molecule* _pmol;
         QueryMolecule* _pqmol;
+        std::unordered_map<int, int> _id_to_idx;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy
