@@ -62,7 +62,7 @@ public class ReactionsTest extends BaseElasticTest {
 
     @Test
     public void exactMatchTest() {
-        IndigoRecordReaction targetReaction = reactions.get(0);
+        IndigoRecordReaction targetReaction = getTargetReaction("38368.rxn");
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
                 .filter(new ExactMatch<>(targetReaction))
                 .collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class ReactionsTest extends BaseElasticTest {
 
     @Test
     public void similarityMatchTest() {
-        IndigoRecordReaction targetReaction = reactions.get(1);
+        IndigoRecordReaction targetReaction = getTargetReaction("38369.rxn");
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
                 .filter(new SimilarityMatch<>(targetReaction, 1))
                 .collect(Collectors.toList());
