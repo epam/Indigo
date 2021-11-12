@@ -64,16 +64,16 @@ class IndigoInchi(object):
             self._initialized = False
 
     def resetOptions(self):
-        """Resets option for inchi
+        """Resets options for InChi
         """
         self.indigo._setSessionId()
         self.indigo._checkResult(self._lib.indigoInchiResetOptions())
 
     def loadMolecule(self, inchi):
-        """Loads molecule from inChi string
+        """Loads molecule from InChi string
 
         Args:
-            inchi (str): inchi string
+            inchi (str): InChi string
 
         Returns:
             IndigoObject: molecule object
@@ -94,7 +94,7 @@ class IndigoInchi(object):
         return self.indigo._checkResultString(self._lib.indigoInchiVersion())
 
     def getInchi(self, molecule):
-        """Returns InChi string for given molecule
+        """Returns InChi string for Indigo molecule
 
         Args:
             molecule (IndigoObject): molecule object
@@ -106,13 +106,13 @@ class IndigoInchi(object):
         return self.indigo._checkResultString(self._lib.indigoInchiGetInchi(molecule.id))
 
     def getInchiKey(self, inchi):
-        """Returns InChi key for the given inchi
+        """Returns InChi key for InChi string
 
         Args:
-            inchi (str): inchi string
+            inchi (str): InChi string
 
         Returns:
-            str: inchi key
+            str: InChi key
         """
         self.indigo._setSessionId()
         return self.indigo._checkResultString(self._lib.indigoInchiGetInchiKey(inchi.encode('ascii')))
@@ -136,7 +136,7 @@ class IndigoInchi(object):
         return self.indigo._checkResultString(self._lib.indigoInchiGetLog())
 
     def getAuxInfo(self):
-        """Returns aux info for the Inchi
+        """Returns aux info for the InChi
 
         Returns:
             str: InChi aux info string
