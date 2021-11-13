@@ -22,19 +22,30 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
             -g)
 endif ()
 
-add_custom_target(${PROJECT_NAME}-js
+add_custom_target(${PROJECT_NAME}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         COMMAND emcc
-            -o ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libindigo-ketcher.js
-            ${EMCC_FLAGS}
-            $<TARGET_OBJECTS:${PROJECT_NAME}-object>
-            $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:cairo> $<TARGET_FILE:png> $<TARGET_FILE:pixman> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml> $<TARGET_FILE:z>
+        -o ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/indigo-ketcher.js
+        ${EMCC_FLAGS}
+        $<TARGET_OBJECTS:${PROJECT_NAME}-object>
+        $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:cairo> $<TARGET_FILE:png> $<TARGET_FILE:pixman> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml> $<TARGET_FILE:z>
         DEPENDS ${PROJECT_NAME}-object
         )
 
-add_custom_target(${PROJECT_NAME}-js-test
+add_custom_target(${PROJECT_NAME}-test
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/test.js ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
-        COMMAND node test.js
+        COMMAND node test
         WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-        DEPENDS ${PROJECT_NAME}-js
+        DEPENDS ${PROJECT_NAME}
+        )
+
+add_custom_target(${PROJECT_NAME}-package
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/package.json ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/LICENSE ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND npm test
+        COMMAND npm pack
+        COMMAND ${COPY_COMMAND} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}${SEP}${PROJECT_NAME}*.tgz ${NATIVE_DIST_DIRECTORY}${SEP}
+        WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        DEPENDS ${PROJECT_NAME}-test
         )
