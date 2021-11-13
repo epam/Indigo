@@ -427,21 +427,17 @@ jobs:
         run: git fetch --tags
       - name: Install Emcripten SDK
         uses: mymindstorm/setup-emsdk@v7
-      - name: Build
+      - name: Build, Test, Pack
         run: |
           mkdir build
           cd build
           emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release --target indigo-ketcher-js -- -j $(nproc)
-      - name : Test
-        run: |
-          cd build
-          cmake --build . --config Release --target indigo-ketcher-js-test
+          cmake --build . --config Release --target indigo-ketcher-package -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-wasm-ketcher
-          path: build/bin/libindigo-ketcher.js
+          name: indigo-ketcher
+          path: dist/indigo-ketcher*.tgz
 
   build_indigo_utils_x86_64:
     strategy:

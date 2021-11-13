@@ -1,4 +1,4 @@
-const indigoModuleFn = require('./libindigo-ketcher.js')
+const indigoModuleFn = require('./indigo-ketcher.js')
 const assert = require('assert').strict;
 
 // Extremely simple test framework, thanks to @sohamkamari (https://github.com/sohamkamani/nodejs-test-without-library)
@@ -8,14 +8,21 @@ function test(group, name, fn) {
     tests.push({group, name, fn})
 }
 
+function parseHrtimeToSeconds(hrtime) {
+    return (hrtime[0] + (hrtime[1] / 1e9)).toFixed(3);
+}
+
 function run() {
     let succeeded = 0;
     let failed = 0;
     console.log("Starting tests...\n")
+    var startTestsTime = process.hrtime();
     tests.forEach(t => {
         try {
+            var startTestTime = process.hrtime();
             t.fn()
-            console.log(`✅ ${t.group}.${t.name}`);
+            const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestTime));
+            console.log(`✅ ${t.group}.${t.name} [${elapsedSeconds}s]`);
             succeeded++;
         } catch (e) {
             console.log(`❌ ${t.group}.${t.name}`)
@@ -23,8 +30,9 @@ function run() {
             failed++
         }
     })
+    const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestsTime));
     const total = succeeded + failed;
-    console.log(`\n${total} tests executed. ${succeeded} succeeded, ${failed} failed.`)
+    console.log(`\n${total} tests executed in ${elapsedSeconds} seconds. ${succeeded} succeeded, ${failed} failed.`)
 
     if (failed) {
         process.exit(1);
@@ -42,10 +50,10 @@ indigoModuleFn().then(indigo => {
     // Aromatize
     {
         test("aromatize", "basic", () => {
-            let options = new indigo.MapStringString();
+            var options = new indigo.MapStringString();
             const aromatized_smiles = indigo.convert(indigo.aromatize(mol_smiles, "molfile", options), "smiles", options);
             assert.equal(aromatized_smiles, mol_smiles_aromatized);
-            delete options;
+            options.delete();
         });
     }
 
@@ -57,7 +65,7 @@ indigoModuleFn().then(indigo => {
                 const result = indigo.automap(rxn_smiles, "discard", "molfile",options);
                 assert.equal(result.indexOf("$RXN"), 0);
             });
-            delete options;
+            options.delete();
         });
     }
 
@@ -68,8 +76,8 @@ indigoModuleFn().then(indigo => {
             selected = new indigo.VectorInt();
             const values = JSON.parse(indigo.calculate("C.N.P.O", options, selected));
             assert.equal(values['gross-formula'], "C H4; H3 N; H3 P; H2 O");
-            delete selected;
-            delete options;
+            selected.delete();
+            options.delete();
         });
 
         test("calculate", "selected", () => {
@@ -79,8 +87,8 @@ indigoModuleFn().then(indigo => {
             selected.push_back(2);
             const values = JSON.parse(indigo.calculate("C.N.P.O", options, selected));
             assert.equal(values['gross-formula'], "H3 N; H3 P");
-            delete selected;
-            delete options;
+            selected.delete();
+            options.delete();
         });
 
         test("calculate", "complex", () => {
@@ -184,7 +192,7 @@ M  END
             let options = new indigo.MapStringString();
             const values = JSON.parse(indigo.check(mol_smiles, "", options));
             assert.equal(values.coord, 'Structure has no atoms coordinates');
-            delete options;
+            options.delete();
         });
 
         test("check", "complex", () => {
@@ -282,7 +290,7 @@ M  END
             const molfile_cip = indigo.calculateCip("CN1C=C(/C=C2/SC(=S)N(CC([O-])=O)C/2=O)C2=CC=CC=C12", "molfile", options);
             assert(molfile_cip.indexOf("INDIGO_CIP_DESC") !== -1);
             assert(molfile_cip.indexOf("(E)") !== -1);
-            delete options;
+            options.delete();
         });
     }
 
@@ -295,8 +303,8 @@ M  END
             assert.doesNotThrow(() => {
                 indigo.clean2d(mol_smiles, "molfile", options, selected)
             });
-            delete selected;
-            delete options;
+            selected.delete();
+            options.delete();
         });
 
         test("clean2d", "selected", () => {
@@ -307,8 +315,8 @@ M  END
             assert.doesNotThrow(() => {
                 indigo.clean2d(mol_smiles,"molfile",options, selected)
             });
-            delete selected;
-            delete options;
+            selected.delete();
+            options.delete();
         });
     }
 
@@ -320,7 +328,7 @@ M  END
             const molfile_2000 = indigo.convert(mol_smiles, "molfile", options);
             assert(molfile_2000.indexOf("V3000") === -1);
             assert(molfile_2000.indexOf("V2000") !== -1);
-            delete options;
+            options.delete();
         });
 
         test("convert", "molfile3000", () => {
@@ -329,7 +337,7 @@ M  END
             const molfile_2000 = indigo.convert(mol_smiles, "molfile", options);
             assert(molfile_2000.indexOf("V3000") !== -1);
             assert(molfile_2000.indexOf("V2000") === -1);
-            delete options;
+            options.delete();
         });
 
         test("convert", "rxnfile2000", () => {
@@ -338,7 +346,7 @@ M  END
             const rxnfile_2000 = indigo.convert(rxn_smiles, "rxnfile", options);
             assert(rxnfile_2000.indexOf("V3000") === -1);
             assert(rxnfile_2000.indexOf("V2000") !== -1);
-            delete options;
+            options.delete();
         });
 
         test("convert", "rxnfile3000", () => {
@@ -347,28 +355,28 @@ M  END
             const rxnfile_3000 = indigo.convert(rxn_smiles, "rxnfile", options);
             assert(rxnfile_3000.indexOf("V3000") !== -1);
             assert(rxnfile_3000.indexOf("V2000") === -1);
-            delete options;
+            options.delete();
         });
 
         test("convert", "smiles", () => {
             let options = new indigo.MapStringString();
             const smiles = indigo.convert(mol_smiles, "smiles", options);
             assert.equal(smiles, "C1C=CC=CC=1");
-            delete options;
+            options.delete();
         });
 
         test("convert", "rsmiles", () => {
             let options = new indigo.MapStringString();
             const rsmiles = indigo.convert(rxn_smiles, "smiles", options);
             assert.equal(rsmiles, "C1C=CC=CC=1.N>>C1N=CC=CC=1.[CH3-]");
-            delete options;
+            options.delete();
         });
 
         test("convert", "smarts", () => {
             let options = new indigo.MapStringString();
             const smarts = indigo.convert(qmol_smarts, "smarts", options);
             assert.equal(smarts, "[$([NX1-]=[NX2+]=[NX1-]),$([NX1]#[NX2+]-[NX1-2])]");
-            delete options;
+            options.delete();
         });
 
         test("convert", "cml", () => {
@@ -376,7 +384,7 @@ M  END
             const cml = indigo.convert(mol_smiles, "cml", options);
             assert(cml.indexOf("<cml>") !== -1);
             assert(cml.indexOf("<molecule>") !== -1);
-            delete options;
+            options.delete();
         });
 
         test("convert", "rcml", () => {
@@ -384,21 +392,21 @@ M  END
             const rcml = indigo.convert(rxn_smiles, "cml", options);
             assert(rcml.indexOf("<cml>") !== -1);
             assert(rcml.indexOf("<reaction>") !== -1);
-            delete options;
+            options.delete();
         });
 
         test("convert", "inchi", () => {
             let options = new indigo.MapStringString();
             const inchi = indigo.convert(mol_smiles, "inchi", options);
             assert.equal(inchi, "InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H");
-            delete options;
+            options.delete();
         });
 
         test("convert", "inchi-aux", () => {
             let options = new indigo.MapStringString();
             const inchi_aux = indigo.convert(mol_smiles, "inchi-aux", options);
             assert.equal(inchi_aux, "InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H\nAuxInfo=1/0/N:1,2,6,3,5,4/E:(1,2,3,4,5,6)/rA:6CCCCCC/rB:d1;s2;d3;s4;s1d5;/rC:;;;;;;");
-            delete options;
+            options.delete();
         });
     }
 
@@ -408,7 +416,7 @@ M  END
             let options = new indigo.MapStringString();
             const dearomatized_smiles = indigo.convert(indigo.dearomatize(mol_smiles_aromatized, "molfile",  options), "smiles", options);
             assert.equal(dearomatized_smiles, "C1C=CC=CC=1");
-            delete options;
+            options.delete();
         });
 
         test("dearomatize", "query_mol", () => {
@@ -416,7 +424,7 @@ M  END
             assert.throws(() => {
                 indigo.dearomatize(qmol_smarts, "molfile", options);
             });
-            delete options;
+            options.delete();
         });
     }
 
@@ -425,7 +433,7 @@ M  END
         test("layout", "basic", () => {
             let options = new indigo.MapStringString();
             assert(indigo.layout(mol_smiles,"molfile", options).indexOf("-1.6") !== -1);
-            delete options;
+            options.delete();
         });
     }
 
@@ -436,7 +444,7 @@ M  END
             options.set("render-output-format", "svg");
             const svg = Buffer.from(indigo.render(mol_smiles, options), "base64").toString();
             assert(svg.indexOf("<svg") !== -1);
-            delete options;
+            options.delete();
         });
 
         test("render", "png", () => {
@@ -451,7 +459,7 @@ M  END
             assert(png[5] === 10);
             assert(png[6] === 26);
             assert(png[7] === 10);
-            delete options;
+            options.delete();
         });
 
         test("render", "pdf", () => {
@@ -459,7 +467,7 @@ M  END
             options.set("render-output-format", "pdf");
             const pdf = Buffer.from(indigo.render(mol_smiles, options), "base64").toString();
             assert(pdf.indexOf("%PDF-") !== -1);
-            delete options;
+            options.delete();
         });
     }
 
@@ -470,7 +478,7 @@ M  END
             assert.throws(() => {
                 indigo.convert("C1C2", "molfile", options);
             });
-            delete options;
+            options.delete();
         });
 
         test("throws", "wrong_format", () => {
@@ -478,7 +486,7 @@ M  END
             assert.throws(() => {
                 indigo.convert(mol_smiles, "smils", options);
             });
-            delete options;
+            options.delete();
         });
 
         test("throws", "wrong_options", () => {
@@ -487,7 +495,7 @@ M  END
             assert.throws(() => {
                 indigo.convert(mol_smiles, "smiles", options);
             });
-            delete options;
+            options.delete();
         });
 
         test("throws", "wrong_selected", () => {
@@ -496,7 +504,7 @@ M  END
             assert.throws(() => {
                 indigo.clean2d(mol_smiles, options, selected)
             });
-            delete options;
+            options.delete();
         });
     }
 

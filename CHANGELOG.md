@@ -4,9 +4,9 @@ Released 2021-11-x.
 ## Features
 * PoC implementation of Indigo modern C++ user API written on top of low-level C API. Later it will be used
   in Indigo-WASM and probably other languages.
-* Bingo-NoSQL major refactoring with significant multithreading performance improvements.
 
 ## Improvements
+* Bingo-NoSQL major refactoring with significant multithreading performance improvements.
 * C++ unittests were splitted in API and Core parts.
 * CMake build system by default tries to enable as many components as possible and warns if building something
   is not possible on the current platform.
@@ -14,6 +14,8 @@ Released 2021-11-x.
 * Using thread-safe objects in Indigo API instead of raw mutexes to guarantee thread safety.
 * C++ code modernization: added 'override', replaced plain C functions with corresponding from std, etc.
 * Indigo API integration tests engine parallelized. 
+* Indigo WASM API for Ketcher reached stable status and is now published to NPM public repository.
+
 ## Bugfixes
 * Fixed multiple data races in API and especially in Bingo-NoSQL (#476).
 
