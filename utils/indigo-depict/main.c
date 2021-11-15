@@ -902,6 +902,7 @@ int main(int argc, char* argv[])
         }
         else
         {
+            indigoLayout(obj);
             _setComment(obj, &p);
             renderToFile(obj, p.outfile);
         }

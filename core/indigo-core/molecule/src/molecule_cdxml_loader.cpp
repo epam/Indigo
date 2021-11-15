@@ -86,7 +86,7 @@ void MoleculeCdxmlLoader::_parseCDXMLAttributes(TiXmlAttribute* pAttr)
 {
     auto cdxml_bbox_lambda = [this](std::string& data) {
         std::vector<std::string> coords = split(data, ' ');
-        if ( coords.size() == 4 )
+        if (coords.size() == 4)
         {
             this->_has_bounding_box = true;
             this->_cdxml_bbox = Rect2f(Vec2f(std::stof(coords[0]), std::stof(coords[1])), Vec2f(std::stof(coords[2]), std::stof(coords[3])));
@@ -98,8 +98,22 @@ void MoleculeCdxmlLoader::_parseCDXMLAttributes(TiXmlAttribute* pAttr)
     auto& bond_length = _cdxml_bond_length;
     auto cdxml_bond_length_lambda = [&bond_length](std::string& data) { bond_length = data; };
     static const std::unordered_map<std::string, std::function<void(std::string&)>> cdxml_dispatcher = {{"BoundingBox", cdxml_bbox_lambda},
-                                                                                                       {"BondLength", cdxml_bond_length_lambda}};
+                                                                                                        {"BondLength", cdxml_bond_length_lambda}};
     _applyDispatcher(pAttr, cdxml_dispatcher);
+}
+
+void MoleculeCdxmlLoader::_collectFragments(TiXmlElement* elem, std::vector<TiXmlElement*>& fragments, std::vector<TiXmlElement*>& brackets)
+{
+    auto pElem = elem->FirstChildElement();
+    for (pElem; pElem; pElem = pElem->NextSiblingElement())
+    {
+        if (std::string(pElem->Value()).compare("fragment") == 0)
+            fragments.push_back(pElem);
+        if (std::string(pElem->Value()).compare("group") == 0)
+            _collectFragments( pElem, fragments, brackets );
+        if (std::string(pElem->Value()).compare("bracketedgroup") == 0)
+            brackets.push_back(pElem);
+    }
 }
 
 void MoleculeCdxmlLoader::_enumerateData(TiXmlElement* elem, std::vector<TiXmlElement*>& fragments, std::vector<TiXmlElement*>& brackets)
@@ -107,33 +121,16 @@ void MoleculeCdxmlLoader::_enumerateData(TiXmlElement* elem, std::vector<TiXmlEl
     auto pElem = elem->FirstChildElement();
     for (pElem; pElem; pElem = pElem->NextSiblingElement())
     {
-        if (std::string(pElem->Value()).compare("fragment") == 0)
-            fragments.push_back(pElem);
-        if (std::string(pElem->Value()).compare("bracketedgroup") == 0)
-            brackets.push_back(pElem);
-        _enumerateData(pElem, fragments, brackets);
+        if (std::string(pElem->Value()).compare("page") == 0)
+        {
+            _collectFragments(pElem, fragments, brackets);
+        }
     }
-}
-
-TiXmlElement* MoleculeCdxmlLoader::_findFragment(TiXmlElement* elem)
-{
-    auto pElem = elem->FirstChildElement();
-    for (pElem; pElem; pElem = pElem->NextSiblingElement())
-    {
-        printf("%s\n", pElem->Value());
-        if (std::string(pElem->Value()).compare("fragment") == 0)
-            return pElem;
-        auto pFrag = _findFragment(pElem);
-        if (pFrag)
-            return pFrag;
-    }
-    return NULL;
 }
 
 void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector<CdxmlNode>& atoms, const std::vector<CdxmlBond>& bonds)
 {
-    const float COORD_COEF = 1.0f / 1857710.0f;
-    _id_to_idx.clear();
+    _id_to_atom_idx.clear();
     mol.reaction_atom_mapping.clear_resize(atoms.size());
     mol.reaction_atom_mapping.zerofill();
     mol.reaction_atom_inversion.clear_resize(atoms.size());
@@ -147,9 +144,8 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
         if (_pmol)
         {
             atom_idx = _pmol->addAtom(atom.element);
-            _id_to_idx.emplace(atom.id, atom_idx);
-            Vec3f scaled_pos(atom.pos.x * COORD_COEF, atom.pos.y * COORD_COEF, atom.pos.z * COORD_COEF);
-            mol.setAtomXyz(atom_idx, scaled_pos);
+            _id_to_atom_idx.emplace(atom.id, atom_idx);
+            mol.setAtomXyz(atom_idx, atom.pos);
             _pmol->setAtomCharge_Silent(atom_idx, atom.charge);
             if (atom.valence)
                 _pmol->setExplicitValence(atom_idx, atom.valence);
@@ -169,9 +165,9 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
         if (_pmol)
         {
             if (bond.swap_bond)
-                bond_idx = _pmol->addBond_Silent(_id_to_idx.at(bond.be.second), _id_to_idx.at(bond.be.first), bond.order);
+                bond_idx = _pmol->addBond_Silent(_id_to_atom_idx.at(bond.be.second), _id_to_atom_idx.at(bond.be.first), bond.order);
             else
-                bond_idx = _pmol->addBond_Silent(_id_to_idx.at(bond.be.first), _id_to_idx.at(bond.be.second), bond.order);
+                bond_idx = _pmol->addBond_Silent(_id_to_atom_idx.at(bond.be.first), _id_to_atom_idx.at(bond.be.second), bond.order);
             if (bond.dir > 0)
                 _pmol->setBondDirection(bond_idx, bond.dir);
         }
@@ -181,17 +177,17 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
 void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bracket)
 {
     static const std::unordered_map<int, int> implemeted_brackets = {
-        {kCDXBracketUsage_SRU, SGroup::SG_TYPE_SRU}, {kCDXBracketUsage_MultipleGroup, SGroup::SG_TYPE_MUL}, {kCDXBracketUsage_Generic, SGroup::SG_TYPE_GEN }};
+        {kCDXBracketUsage_SRU, SGroup::SG_TYPE_SRU}, {kCDXBracketUsage_MultipleGroup, SGroup::SG_TYPE_MUL}, {kCDXBracketUsage_Generic, SGroup::SG_TYPE_GEN}};
 
     auto it = implemeted_brackets.find(bracket.usage);
-    if( it != implemeted_brackets.end() )
+    if (it != implemeted_brackets.end())
     {
         int grp_idx = mol.sgroups.addSGroup(it->second);
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
         std::unordered_set<int> sgroup_atoms;
         for (auto atom_id : bracket.bracketed_list)
         {
-            int atom_idx = _id_to_idx.at(atom_id);
+            int atom_idx = _id_to_atom_idx.at(atom_id);
             sgroup.atoms.push(atom_idx);
             sgroup_atoms.insert(atom_idx);
             if (bracket.usage == kCDXBracketUsage_MultipleGroup)
@@ -358,13 +354,15 @@ void MoleculeCdxmlLoader::_loadFragments(BaseMolecule& mol, const std::vector<Ti
         case kCDXNodeType_ElementList:
             atoms.push_back(node);
             break;
+        case kCDXNodeType_ExternalConnectionPoint:
+            break;
         default:
             printf("unhandled node type: %d\n", node.type);
             break;
         }
     }
 
-    _addAtomsAndBonds(mol, nodes, bonds);
+    _addAtomsAndBonds(mol, atoms, bonds);
 
     for (auto& brk : brackets)
     {
@@ -394,7 +392,8 @@ void MoleculeCdxmlLoader::_applyDispatcher(TiXmlAttribute* pAttr, const std::uno
         auto it = dispatcher.find(pAttr->Name());
         if (it != dispatcher.end())
         {
-            it->second(std::string(pAttr->Value()));
+            std::string str_arg(pAttr->Value());
+            it->second(str_arg);
         }
         else
             printf("Unknown attribute: %s\n", pAttr->Name());
@@ -462,7 +461,6 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, TiXmlAttribute* pAttr)
         node.element_list.assign(elements.begin(), elements.end());
     };
 
-    //
     static const std::unordered_map<std::string, std::function<void(std::string&)>> atom_dispatcher = {{"id", id_lambda},
                                                                                                        {"p", pos_lambda},
                                                                                                        {"xyz", pos_lambda},

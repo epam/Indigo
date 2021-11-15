@@ -171,12 +171,12 @@ namespace indigo
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket );
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
-        TiXmlElement* _findFragment(TiXmlElement* elem);
         void _enumerateData(TiXmlElement* elem, std::vector<TiXmlElement*>& fragments, std::vector<TiXmlElement*>& brackets);
+        void _collectFragments(TiXmlElement* elem, std::vector<TiXmlElement*>& fragments, std::vector<TiXmlElement*>& brackets);
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
         Molecule* _pmol;
         QueryMolecule* _pqmol;
-        std::unordered_map<int, int> _id_to_idx;
+        std::unordered_map<int, int> _id_to_atom_idx;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy
