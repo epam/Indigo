@@ -715,6 +715,11 @@ jobs:
         with:
           name: indigo-dotnet
           path: dist/
+      - name: Download indigo-ketcher NPM package
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-ketcher
+          path: dist/
       - name: Publish Python wheels to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
@@ -744,6 +749,15 @@ jobs:
           rm gpg.key
           cd api/java
           ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
+      - name: Publish indigo-ketcher to NPM
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
+        run: |
+          echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
+          echo email=${NPM_EMAIL} >> ~/.npmrc
+          echo always-auth=true >> ~/.npmrc
+          npm publish ./dist/indigo-*.tgz
 
   build_test_publish_indigo_service:
     timeout-minutes: 60
