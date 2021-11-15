@@ -19,22 +19,28 @@
 from typing import List, Optional, Tuple, Union
 
 from indigo import IndigoObject
+from indigo.inchi import IndigoInchi
 
 from indigo_service import jsonapi
 from indigo_service.indigo_tools import indigo
 
 
 def extract_compounds(
-    pairs: List[Tuple[str, jsonapi.CompoundFormat]]
+    pairs: List[Tuple[str, jsonapi.CompoundFormat]],
+    modifiers: Optional[List[jsonapi.CompoundModifiers]] = None,
 ) -> List[IndigoObject]:
     result = []
     for compound, compound_type in pairs:
         if compound_type == jsonapi.CompoundFormat.AUTO:
-            result.append(indigo().loadMolecule(compound))
+            indigo_object = indigo().loadMolecule(compound)
         elif compound_type == jsonapi.CompoundFormat.SMARTS:
-            result.append(indigo().loadSmarts(compound))
+            indigo_object = indigo().loadSmarts(compound)
         else:
             raise RuntimeError(f"{compound_type=} is not supported")
+        if modifiers:
+            for mod in modifiers:
+                getattr(indigo_object, mod)()
+        result.append(indigo_object)
     return result
 
 
@@ -61,6 +67,8 @@ def to_string(
         return compound.cml(), string_format
     if string_format == jsonapi.CompoundFormat.SMARTS:
         return compound.smarts(), string_format
+    if string_format == jsonapi.CompoundFormat.INCHI:
+        return IndigoInchi(indigo()).getInchi(compound), string_format
     raise RuntimeError(f"{string_format} is not supported")
 
 

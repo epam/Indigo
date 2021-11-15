@@ -41,6 +41,7 @@ class CompoundFormat(str, Enum):
     SMILES = "smiles"
     CML = "cml"
     SMARTS = "smarts"
+    INCHI = "inchi"
 
 
 class PrimitiveFormat(BaseModel):
@@ -124,13 +125,23 @@ class CompoundConvertModelType(BaseModel):
     __root__: str = "convert"
 
 
+class CompoundModifiers(str, Enum):
+    AROMATIZE = "aromatize"
+    DEAROMATIZE = "dearomatize"
+    CLEAN2D = "clean2d"
+
+
 class CompoundObject(BaseModel):
     structure: str
     format: CompoundFormat = CompoundFormat.AUTO
 
 
+class CompoundObjectWithModifiers(CompoundObject):
+    modifiers: Optional[List[CompoundModifiers]]
+
+
 class CompoundModel(GenericModel, Generic[OutputFormatT]):
-    compound: CompoundObject
+    compound: CompoundObjectWithModifiers
     outputFormat: OutputFormatT
 
 
@@ -245,16 +256,16 @@ class MatchModelType(BaseModel):
     __root__: str = "match"
 
 
-class MatchModel(BaseModel, Generic[OutputFormatT]):
+class MatchModel(BaseModel):
     source: CompoundObject
     targets: List[CompoundObject]
-    outputFormat: OutputFormatT
+    outputFormat: MatchOutputFormat
     flag: Optional[str] = "ALL"
 
 
 MapAtomResponse = Response[MapAtomModelType, MapModel[MapAtomModel]]
 MapBondResponse = Response[MapBondModelType, MapModel[MapBondModel]]
-MatchRequest = Request[MatchModelType, MatchModel[MatchOutputFormat]]
+MatchRequest = Request[MatchModelType, MatchModel]
 MatchResponse = Union[MapAtomResponse, MapBondResponse, CompoundListResponse]
 
 

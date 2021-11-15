@@ -1,4 +1,7 @@
 import itertools
+from typing import List
+
+import pytest
 
 from fastapi.testclient import TestClient
 
@@ -10,7 +13,39 @@ client = TestClient(app)
 test_structures = [
     {"structure": "CNC", "format": "auto"},
     {"structure": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "format": "auto"},
+    {"structure": "InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3", "format": "auto"}
 ]
+
+
+# Convert
+
+@pytest.mark.parametrize("test_input,target,modifiers,expected", [
+    (["CNC", "inchi", [], "InChI=1S/C2H7N/c1-3-2/h3H,1-2H3"]),
+    (["InChI=1S/C2H7N/c1-3-2/h3H,1-2H3", "smiles", [], "CNC"]),
+    (["InChI=1S/C8Cl2N2O2/c9-5-6(10)8(14)4(2-12)3(1-11)7(5)13",
+      "inchi", ["aromatize", "clean2d"],
+      "InChI=1S/C8Cl2N2O2/c9-5-6(10)8(14)4(2-12)3(1-11)7(5)13"]),
+])
+def test_convert(test_input: str, target: str,
+                 modifiers: List[str], expected: str) -> None:
+    response = client.post(
+        "/indigo/convert",
+        json={
+            "data": {
+                "type": "convert",
+                "attributes": {
+                    "compound": {
+                        "structure": test_input,
+                        "format": "auto",
+                        "modifiers": modifiers
+                    },
+                    "outputFormat": target
+                }
+            }
+        })
+    assert response.status_code == 200
+    assert response.json()["data"]["attributes"]["structure"] == expected
+    assert response.json()["data"]["attributes"]["format"] == target
 
 
 # Similarities

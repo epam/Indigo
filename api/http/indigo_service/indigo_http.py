@@ -150,7 +150,9 @@ def exact_match(request: jsonapi.MatchRequest) -> jsonapi.MatchResponse:
 def convert(
     request: jsonapi.CompoundConvertRequest,
 ) -> jsonapi.CompoundResponse:
-    compound, *_ = service.extract_compounds(compounds(request))
+    compound, *_ = service.extract_compounds(
+        compounds(request), request.data.attributes.compound.modifiers
+    )
     return jsonapi.make_compound_response(
         *service.to_string(compound, request.data.attributes.outputFormat)
     )
