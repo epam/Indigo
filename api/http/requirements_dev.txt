@@ -1,0 +1,16 @@
+-r requirements.txt
+attrs==21.2.0
+certifi==2021.10.8
+charset-normalizer==2.0.7
+iniconfig==1.1.1
+mypy==0.910
+packaging==21.0
+pluggy==1.0.0
+py==1.10.0
+pyparsing==2.4.7
+pytest==6.2.5
+requests==2.26.0
+toml==0.10.2
+urllib3==1.26.7
+isort==5.9.3
+pylint==2.11.1

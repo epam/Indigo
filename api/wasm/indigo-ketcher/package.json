@@ -1,0 +1,38 @@
+{
+  "name": "indigo-ketcher",
+  "version": "1.5.1",
+  "description": "WASM implementation of Indigo organic chemistry toolkit web service for Ketcher",
+  "main": "indigo-ketcher.js",
+  "files": [
+    "indigo-ketcher.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "indigo",
+    "ketcher",
+    "chemistry",
+    "cheminformatics",
+    "wasm",
+    "webassembly",
+    "molfile",
+    "smiles",
+    "inchi",
+    "rxnfile",
+    "cml",
+    "smarts"
+  ],
+  "author": "Mikhail Kviatkovskii <mikhail_kviatkovskii@epam.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/epam/Indigo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/epam/Indigo/issues"
+  },
+  "homepage": "https://lifescience.opensource.epam.com/indigo/api/index.html",
+  "scripts": {
+    "test": "node test.js"
+  }
+}
