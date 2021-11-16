@@ -42,6 +42,7 @@ class CompoundFormat(str, Enum):
     CML = "cml"
     SMARTS = "smarts"
     INCHI = "inchi"
+    KET = "ket"
 
 
 class PrimitiveFormat(BaseModel):
@@ -129,6 +130,7 @@ class CompoundModifiers(str, Enum):
     AROMATIZE = "aromatize"
     DEAROMATIZE = "dearomatize"
     CLEAN2D = "clean2d"
+    LAYOUT = "layout"
 
 
 class CompoundObject(BaseModel):

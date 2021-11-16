@@ -1,4 +1,7 @@
 import itertools
+import json
+import os
+import pathlib
 from typing import List
 
 import pytest
@@ -26,6 +29,7 @@ test_structures = [
     (["InChI=1S/C8Cl2N2O2/c9-5-6(10)8(14)4(2-12)3(1-11)7(5)13",
       "inchi", ["aromatize", "clean2d"],
       "InChI=1S/C8Cl2N2O2/c9-5-6(10)8(14)4(2-12)3(1-11)7(5)13"]),
+    (["C1=CC=CC=C1", "smiles", ["aromatize"], "c1ccccc1"]),
 ])
 def test_convert(test_input: str, target: str,
                  modifiers: List[str], expected: str) -> None:
@@ -49,8 +53,32 @@ def test_convert(test_input: str, target: str,
     assert response.json()["data"]["attributes"]["format"] == target
 
 
-# Similarities
+def test_ket_convert() -> None:
+    resources = "tests/test_resources/kets"
+    *_, files = next(os.walk(resources))
+    for file_ in files:
+        with open(pathlib.Path(resources) / file_) as f:
+            smiles = pathlib.Path(file_).stem
+            # ket = json.loads(f.read())
+            response = client.post(
+                "/indigo/convert",
+                json={
+                    "data": {
+                        "type": "convert",
+                        "attributes": {
+                            "compound": {
+                                "structure": smiles,
+                                "format": "auto",
+                                "modifiers": []
+                            },
+                            "outputFormat": "ket"
+                        }
+                    }
+                })
+            assert response.status_code == 200
 
+
+# Similarities
 
 def similarity_request(  # pylint: disable=too-many-arguments
     source: dict,

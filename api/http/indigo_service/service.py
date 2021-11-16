@@ -67,6 +67,8 @@ def to_string(
         return compound.cml(), string_format
     if string_format == jsonapi.CompoundFormat.SMARTS:
         return compound.smarts(), string_format
+    if string_format == jsonapi.CompoundFormat.KET:
+        return compound.json(), string_format
     if string_format == jsonapi.CompoundFormat.INCHI:
         return IndigoInchi(indigo()).getInchi(compound), string_format
     raise RuntimeError(f"{string_format} is not supported")
