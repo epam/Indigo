@@ -58,7 +58,7 @@ namespace com.epam.indigo
         public const int SG_TYPE_FOR = 13;
         public const int SG_TYPE_ANY = 14;
 
-        public const uint MAX_SIZE = 1000000000;
+        public const uint CSTRING_MAX_SIZE = 1000000000;
 
 
         private long _sid = -1;
@@ -114,9 +114,9 @@ namespace com.epam.indigo
             checkResult(IndigoLib.indigoDbgResetProfiling(whole_session ? 1 : 0));
         }
 
-        private static int strLen(sbyte* input)
+        private static int strLen(byte* input)
         {
-            int res = 0;
+            var res = 0;
             do
             {
                 if (input[res] == 0)
@@ -124,18 +124,27 @@ namespace com.epam.indigo
                     break;
                 }
                 res++;
-            } while (res < MAX_SIZE);
+            } while (res < CSTRING_MAX_SIZE);
+
+            if (res == CSTRING_MAX_SIZE)
+            {
+                throw new ArgumentException("Could not find terminate zero in c-style string");
+            }
+
             return res;
         }
 
-        private static string _sbyteToStringUTF8(sbyte* input)
+        public static string bytePtrToStringUtf8(byte* input)
         {
-            return new string(input, 0, strLen(input), Encoding.UTF8);
+            int len = strLen(input);
+            byte[] bytes = new byte[len];
+            Marshal.Copy((IntPtr)input, bytes, 0, len);
+            return Encoding.UTF8.GetString(bytes);
         }
 
-        private static void _handleError(sbyte* message, Indigo self)
+        private static void _handleError(byte* message, Indigo self)
         {
-            throw new IndigoException(_sbyteToStringUTF8(message));
+            throw new IndigoException(bytePtrToStringUtf8(message));
         }
 
         private void init(string lib_path)
@@ -148,7 +157,7 @@ namespace com.epam.indigo
         {
             if (result < 0)
             {
-                throw new IndigoException(_sbyteToStringUTF8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
             }
 
             return result;
@@ -158,7 +167,7 @@ namespace com.epam.indigo
         {
             if (result < 0)
             {
-                throw new IndigoException(_sbyteToStringUTF8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
             }
 
             return result;
@@ -168,27 +177,27 @@ namespace com.epam.indigo
         {
             if (result < 0)
             {
-                throw new IndigoException(_sbyteToStringUTF8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
             }
 
             return result;
         }
 
-        public string checkResult(sbyte* result)
+        public string checkResult(byte* result)
         {
             if (result == null)
             {
-                throw new IndigoException(_sbyteToStringUTF8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
             }
 
-            return _sbyteToStringUTF8(result);
+            return bytePtrToStringUtf8(result);
         }
 
         public float* checkResult(float* result)
         {
             if (result == null)
             {
-                throw new IndigoException(_sbyteToStringUTF8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
             }
 
             return result;
@@ -198,7 +207,7 @@ namespace com.epam.indigo
         {
             if (result == null)
             {
-                throw new IndigoException(_sbyteToStringUTF8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
             }
 
             return result;

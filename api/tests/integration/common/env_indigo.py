@@ -134,20 +134,7 @@ def getIndigoExceptionText(e):
         return value.replace("\\'", "'")
 
 
-absPathDict = {}
-relPathDict = {}
 inspectStackLock = threading.RLock()
-
-
-class Memoize:
-    def __init__(self, f):
-        self.f = f
-        self.memo = {}
-
-    def __call__(self, *args):
-        if not args in self.memo:
-            self.memo[args] = self.f(*args)
-        return self.memo[args]
 
 
 def dataPath(args):
@@ -251,60 +238,3 @@ def getRefFilepath2(filename):
 
     raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (
         filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
-
-
-def subprocess_communicate(name, arguments, wd, env):
-    if sys.platform == 'cli':
-        p = System.Diagnostics.Process()
-        p.StartInfo.UseShellExecute = False
-        p.StartInfo.RedirectStandardError = True
-        p.StartInfo.RedirectStandardOutput = True
-        p.StartInfo.FileName = name
-        p.StartInfo.Arguments = ' '.join(arguments)
-        p.StartInfo.WorkingDirectory = wd
-        for key, value in env.items():
-            p.StartInfo.EnvironmentVariables[str(key)] = str(value)
-        p.Start()
-        stdout = p.StandardOutput.ReadToEnd()
-        stderr = p.StandardError.ReadToEnd()
-        p.WaitForExit()
-    else:
-        p = subprocess.Popen(
-            [name, ] + arguments,
-            cwd=wd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=dict(os.environ).update(env))
-        stdout, stderr = p.communicate()
-    return stdout, stderr
-
-
-def open_file_utf8(filename):
-    import codecs
-    if isJython():
-        return open(filename, 'wt')
-    elif isIronPython():
-        # TODO: FIXME (maybe on C# site?)
-        return codecs.open(filename, 'wb', encoding='utf-8')
-    else:
-        if sys.version_info.major < 3:
-            return open(filename, 'wt')
-        else:
-            return codecs.open(filename, 'wb', encoding='utf-8')
-
-
-class RedirectStdStreamsManager:
-    def __init__(self, stdout=None, stderr=None):
-        self._stdout = stdout or sys.stdout
-        self._stderr = stderr or sys.stderr
-
-    def __enter__(self):
-        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
-        self.old_stdout.flush()
-        self.old_stderr.flush()
-        sys.stdout, sys.stderr = self._stdout, self._stderr
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self._stdout.flush()
-        self._stderr.flush()
-        sys.stdout, sys.stderr = self.old_stdout, self.old_stderr

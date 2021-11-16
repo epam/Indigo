@@ -4170,7 +4170,7 @@ class Indigo(object):
     def _initStatic(self, _=None):
         indigo_found = False
         system_name = platform.system().lower()
-        machine_name = platform.machine().lower().replace('amd64', 'x86_64')
+        machine_name = platform.machine().lower().replace('amd64', 'x86_64').replace('arm64', 'aarch64')
         if system_name == 'linux':
             library_prefix = 'lib'
             library_suffix = '.so'

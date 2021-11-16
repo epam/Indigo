@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import datetime
 import difflib
+import io
 import os
 import re
 import shutil
@@ -24,7 +25,7 @@ if sys.platform == 'cli':
 base_root = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 sys.path.append(os.path.join(base_root, 'common'))
 from env_indigo import (Indigo, getPlatform, isJython, isIronPython, dll_full_path, dir_exists,
-                        makedirs, file_size, file_exists, open_file_utf8)
+                        makedirs, file_size, file_exists)
 from util import overridePlatform
 from thread_printer import ThreadPrinter, ThreadPrinterManager
 from thread_pool import ThreadPool, cpu_count
@@ -34,27 +35,10 @@ stderr_thredd_printer = ThreadPrinter()
 stdout_lock = Lock()
 
 
-# class Logger(object):
-#     def __init__(self, output_file_name):
-#         self.terminal = sys.stdout
-#         self.log = open(output_file_name, "w")
-#
-#     def write(self, message):
-#         self.terminal.write(message)
-#         self.log.write(message)
-#
-#     def flush(self):
-#         self.terminal.flush()
-#         self.log.flush()
-
-
 def write_difference(fn_1, fn_2, fn_3):
-    f_1 = open(fn_1, 'r')
-    f_2 = open(fn_2, 'r')
-    lines_1 = f_1.readlines()
-    lines_2 = f_2.readlines()
-    f_2.close()
-    f_1.close()
+    with io.open(fn_1, 'rt', encoding="utf-8") as f_1, io.open(fn_2, 'rt', encoding="utf-8") as f_2:
+        lines_1 = f_1.readlines()
+        lines_2 = f_2.readlines()
 
     s1 = [s.splitlines()[0] for s in lines_1]
     s2 = [s.splitlines()[0] for s in lines_2]
@@ -62,29 +46,27 @@ def write_difference(fn_1, fn_2, fn_3):
     s = difflib.SequenceMatcher()
     s.set_seqs(s1, s2)
 
-    f_3 = open(fn_3, 'w')
-
-    difference_counter = 0
-    for tag, i1, i2, j1, j2 in s.get_opcodes():
-        if tag == 'equal':
-            continue
-        sub1 = s1[i1:i2]
-        sub2 = s2[j1:j2]
-        difference_counter += len(sub1) + len(sub2)
-        # we cannot use zip_longest or map because code have to compatible for Python 2.4 .. 3.x
-        while len(sub1) < len(sub2):
-            sub1.append('')
-        while len(sub2) < len(sub1):
-            sub2.append('')
-        for line1, line2 in zip(sub1, sub2):
-            if line1:
-                f_3.write("- " + line1 + "\n")
-            if line2:
-                f_3.write("+ " + line2 + "\n")
-    f_3.close()
+    with io.open(fn_3, 'wt', encoding="utf-8") as f_3:
+        difference_counter = 0
+        for tag, i1, i2, j1, j2 in s.get_opcodes():
+            if tag == 'equal':
+                continue
+            sub1 = s1[i1:i2]
+            sub2 = s2[j1:j2]
+            difference_counter += len(sub1) + len(sub2)
+            # we cannot use zip_longest or map because code have to compatible for Python 2.4 .. 3.x
+            while len(sub1) < len(sub2):
+                sub1.append('')
+            while len(sub2) < len(sub1):
+                sub2.append('')
+            for line1, line2 in zip(sub1, sub2):
+                if line1:
+                    f_3.write("- " + line1 + "\n")
+                if line2:
+                    f_3.write("+ " + line2 + "\n")
     # On Linux and macOS Jython and IronPython work for hours in some cases to build this diff. Use Python.
     if not isJython() and not isIronPython():
-        with open("{}.html".format(fn_3), "w") as pretty_file:
+        with io.open("{}.html".format(fn_3), "wt", encoding="utf-8") as pretty_file:
             pretty_diff = difflib.HtmlDiff()
             html_cont = pretty_diff.make_file(lines_1, lines_2)
             pretty_file.write(html_cont)
@@ -205,6 +187,9 @@ def main():
     total_time = time.time()
     with ThreadPrinterManager(stdout=stdout_thread_printer, stderr=stderr_thredd_printer):
         test_results = tuple(p.imap_unordered(run_analyze_test, test_args))
+        # test_results = []
+        # for test_arg in test_args:
+        #     test_results.append(run_analyze_test(test_arg))
     test_status = 0
     for test_result in test_results:
         if test_result[2] == '[FAILED]':
@@ -287,11 +272,11 @@ def run_analyze_test(args):
         test_status = "[FAILED]" if root != 'todo' else '[TODO]'
     out_message += "{}{}    {:.2f} sec".format(spacer * spacer_len, test_status, tspent)
     if diff_file and file_exists(diff_file):
-        f = open(diff_file, 'rt')
+        f = io.open(diff_file, 'rt', encoding="utf-8")
         msg = 'Diff:\n' + f.read()
         f.close()
     if err_filename and file_exists(err_filename):
-        f = open(err_filename, 'rt')
+        f = io.open(err_filename, 'rt', encoding="utf-8")
         msg = 'Error:\n' + f.read()
         f.close()
     with stdout_lock:

@@ -52,6 +52,10 @@ if sys.argv[1] == "bdist_wheel":
             PLATFORM_NAME = opt.split("=")[1]
             if PLATFORM_NAME.startswith("macosx_10_7_intel"):
                 INDIGO_LIBS = "lib/darwin-x86_64/*.dylib"
+            elif PLATFORM_NAME.startswith("macosx_11_0_arm64"):
+                INDIGO_LIBS = "lib/darwin-aarch64/*.dylib"
+            elif PLATFORM_NAME == "manylinux1_aarch64":
+                INDIGO_LIBS = "lib/linux-aarch64/*.so"
             elif PLATFORM_NAME == "manylinux1_x86_64":
                 INDIGO_LIBS = "lib/linux-x86_64/*.so"
             elif PLATFORM_NAME == "manylinux1_i686":
@@ -66,7 +70,7 @@ if sys.argv[1] == "bdist_wheel":
 
     if not INDIGO_LIBS:
         raise ValueError(
-            "Wrong --plat-name value! Should be one of: macosx_10_7_intel, manylinux1_x86_64, manylinux1_i686, win_amd64, win32"
+            "Wrong --plat-name value! Should be one of: macosx_11_0_arm64, macosx_10_7_intel, manylinux1_x86_64, manylinux1_aarch64, manylinux1_i686, win_amd64, win32"
         )
 
     if not glob.glob(os.path.join(indigo_python_directory, INDIGO_LIBS)):
