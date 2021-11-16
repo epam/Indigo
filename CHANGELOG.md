@@ -4,6 +4,8 @@ Released 2021-10-x.
 ## Features
 * PoC implementation of Indigo modern C++ user API written on top of low-level C API. Later it will be used
   in Indigo-WASM and probably other languages.
+* New Indigo service added as preview. Modernized Indigo service implements JSON:API protocol and can be installed as Docker
+  image `epmlsop/indigo-service:enhanced-latest`.
 
 ## Improvements
 * C++ unittests were splitted in API and Core parts.
