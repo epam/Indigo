@@ -757,7 +757,7 @@ jobs:
           echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
           echo email=${NPM_EMAIL} >> ~/.npmrc
           echo always-auth=true >> ~/.npmrc
-          npm publish ./dist/indigo-*.tgz
+          npm publish ./dist/indigo-ketcher-*.tgz
 
   build_test_publish_indigo_service:
     timeout-minutes: 60
