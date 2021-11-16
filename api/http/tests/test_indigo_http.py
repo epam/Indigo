@@ -13,7 +13,8 @@ client = TestClient(app)
 test_structures = [
     {"structure": "CNC", "format": "auto"},
     {"structure": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "format": "auto"},
-    {"structure": "InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)7(13)12(3)8(14)11(6)2/h4H,1-3H3", "format": "auto"}
+    {"structure": "InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)"
+                  "7(13)12(3)8(14)11(6)2/h4H,1-3H3", "format": "auto"}
 ]
 
 

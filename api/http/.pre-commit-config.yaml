@@ -22,7 +22,9 @@ repos:
         args:
             [
                 "-sn",
-                "--rcfile=api/http/pylintrc"
+                "--rcfile=api/http/pylintrc",
+                "indigo_service",
+                "tests"
             ]
         language: system
         types: [ python ]
