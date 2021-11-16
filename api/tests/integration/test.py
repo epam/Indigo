@@ -186,10 +186,10 @@ def main():
     p = ThreadPool(threads_number)
     total_time = time.time()
     with ThreadPrinterManager(stdout=stdout_thread_printer, stderr=stderr_thredd_printer):
-        # test_results = tuple(p.imap_unordered(run_analyze_test, test_args))
-        test_results = []
-        for test_arg in test_args:
-            test_results.append(run_analyze_test(test_arg))
+        test_results = tuple(p.imap_unordered(run_analyze_test, test_args))
+        # test_results = []
+        # for test_arg in test_args:
+        #     test_results.append(run_analyze_test(test_arg))
     test_status = 0
     for test_result in test_results:
         if test_result[2] == '[FAILED]':
