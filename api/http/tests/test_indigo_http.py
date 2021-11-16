@@ -1,5 +1,4 @@
 import itertools
-import json
 import os
 import pathlib
 from typing import List
@@ -16,23 +15,36 @@ client = TestClient(app)
 test_structures = [
     {"structure": "CNC", "format": "auto"},
     {"structure": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", "format": "auto"},
-    {"structure": "InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)"
-                  "7(13)12(3)8(14)11(6)2/h4H,1-3H3", "format": "auto"}
+    {
+        "structure": "InChI=1S/C8H10N4O2/c1-10-4-9-6-5(10)"
+        "7(13)12(3)8(14)11(6)2/h4H,1-3H3",
+        "format": "auto",
+    },
 ]
 
 
 # Convert
 
-@pytest.mark.parametrize("test_input,target,modifiers,expected", [
-    (["CNC", "inchi", [], "InChI=1S/C2H7N/c1-3-2/h3H,1-2H3"]),
-    (["InChI=1S/C2H7N/c1-3-2/h3H,1-2H3", "smiles", [], "CNC"]),
-    (["InChI=1S/C8Cl2N2O2/c9-5-6(10)8(14)4(2-12)3(1-11)7(5)13",
-      "inchi", ["aromatize", "clean2d"],
-      "InChI=1S/C8Cl2N2O2/c9-5-6(10)8(14)4(2-12)3(1-11)7(5)13"]),
-    (["C1=CC=CC=C1", "smiles", ["aromatize"], "c1ccccc1"]),
-])
-def test_convert(test_input: str, target: str,
-                 modifiers: List[str], expected: str) -> None:
+
+@pytest.mark.parametrize(
+    "test_input,target,modifiers,expected",
+    [
+        (["CNC", "inchi", [], "InChI=1S/C2H7N/c1-3-2/h3H,1-2H3"]),
+        (["InChI=1S/C2H7N/c1-3-2/h3H,1-2H3", "smiles", [], "CNC"]),
+        (
+            [
+                "InChI=1S/C8Cl2N2O2/c9-5-6(10)8(14)4(2-12)3(1-11)7(5)13",
+                "inchi",
+                ["aromatize", "clean2d"],
+                "InChI=1S/C8Cl2N2O2/c9-5-6(10)8(14)4(2-12)3(1-11)7(5)13",
+            ]
+        ),
+        (["C1=CC=CC=C1", "smiles", ["aromatize"], "c1ccccc1"]),
+    ],
+)
+def test_convert(
+    test_input: str, target: str, modifiers: List[str], expected: str
+) -> None:
     response = client.post(
         "/indigo/convert",
         json={
@@ -42,12 +54,13 @@ def test_convert(test_input: str, target: str,
                     "compound": {
                         "structure": test_input,
                         "format": "auto",
-                        "modifiers": modifiers
+                        "modifiers": modifiers,
                     },
-                    "outputFormat": target
-                }
+                    "outputFormat": target,
+                },
             }
-        })
+        },
+    )
     assert response.status_code == 200
     assert response.json()["data"]["attributes"]["structure"] == expected
     assert response.json()["data"]["attributes"]["format"] == target
@@ -57,7 +70,8 @@ def test_ket_convert() -> None:
     resources = "tests/test_resources/kets"
     *_, files = next(os.walk(resources))
     for file_ in files:
-        with open(pathlib.Path(resources) / file_) as f:
+        # pylint: disable=unspecified-encoding
+        with open(pathlib.Path(resources) / file_):
             smiles = pathlib.Path(file_).stem
             # ket = json.loads(f.read())
             response = client.post(
@@ -69,16 +83,18 @@ def test_ket_convert() -> None:
                             "compound": {
                                 "structure": smiles,
                                 "format": "auto",
-                                "modifiers": []
+                                "modifiers": [],
                             },
-                            "outputFormat": "ket"
-                        }
+                            "outputFormat": "ket",
+                        },
                     }
-                })
+                },
+            )
             assert response.status_code == 200
 
 
 # Similarities
+
 
 def similarity_request(  # pylint: disable=too-many-arguments
     source: dict,
@@ -120,7 +136,7 @@ def test_similarities_error():
 # Descriptors
 
 
-def descriptors_request(compound: dict, descriptors: list) -> dict:
+def descriptors_request(compound: dict, descriptors: tuple) -> dict:
     return {
         "data": {
             "type": "descriptor",
