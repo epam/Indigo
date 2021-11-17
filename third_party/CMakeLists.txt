@@ -25,3 +25,4 @@ if (ENABLE_TESTS)
 endif()
 
 add_subdirectory(object_threadsafe)
+add_subdirectory(pcg)

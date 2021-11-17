@@ -42,5 +42,7 @@ for i, smi in enumerate(
     current = testThread(i, smi.rawData())
     threads.append(current)
     current.start()
+    if i == 100:
+        break
 for thread in threads:
     thread.join()
