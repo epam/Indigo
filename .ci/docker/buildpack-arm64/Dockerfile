@@ -42,6 +42,6 @@ RUN cmake --version && \
 #     cd indigo && \
 #     mkdir build && \
 #     cd build && \
-#     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF && \
+#     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DCMAKE_SYSTEM_PROCESSOR_LOWER=aarch64 && \
 #     cmake --build . --config Release -- -j $(nproc) && \
 #     ctest --verbose

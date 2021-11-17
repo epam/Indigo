@@ -63,13 +63,81 @@ jobs:
           name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist
 
+  build_indigo_libs_i386:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows ]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build Windows
+        if: ${{ matrix.os == 'windows' }}
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "Visual Studio 16 2019" -A Win32 -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_SYSTEM_PROCESSOR_LOWER=i386
+          cmake --build . --config Release --target ALL_BUILD
+          ctest --verbose -C Release
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-i386
+          path: dist
+
+  build_indigo_libs_aarch64:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos, ubuntu ]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build Linux
+        if: ${{ matrix.os == 'ubuntu' }}
+        uses: docker://epmlsop/buildpack-arm64:latest
+        with:
+          args: >
+            /bin/sh -c "
+            mkdir build &&
+            cd build &&
+            cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_SYSTEM_PROCESSOR_LOWER=aarch64 &&
+            cmake --build . --config Release --target all -- -j $(nproc) &&
+            ctest --verbose
+            "
+      - name: Build macOS
+        if: ${{ matrix.os == 'macos' }}
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_SYSTEM_PROCESSOR_LOWER=aarch64 -DCMAKE_OSX_ARCHITECTURES=arm64
+          cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
+          ctest --verbose
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-aarch64
+          path: dist
+
   build_indigo_wrappers:
     strategy:
       fail-fast: false
       matrix:
         wrapper: [ python, java, dotnet ]
     runs-on: ubuntu-latest
-    needs: [ build_indigo_libs_x86_64 ]
+    needs: [ build_indigo_libs_x86_64, build_indigo_libs_aarch64, build_indigo_libs_i386 ]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -81,20 +149,35 @@ jobs:
         run: git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
-      - name: Download Linux native libs
+      - name: Download Linux native libs x86_64
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-linux-x86_64
           path: dist/
-      - name: Download Windows native libs
+      - name: Download Linux native libs aarch64
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-libs-linux-aarch64
+          path: dist/
+      - name: Download Windows native libs x86_64
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-windows-x86_64
           path: dist/
-      - name: Download macOS native libs
+      - name: Download Windows native libs i386
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-libs-windows-i386
+          path: dist/
+      - name: Download macOS native libs x86_64
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-macos-x86_64
+          path: dist/
+      - name: Download macOS native libs aarch64
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-libs-macos-aarch64
           path: dist/
       - name: Build wrappers
         run: |
