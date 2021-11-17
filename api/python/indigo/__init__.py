@@ -23,7 +23,7 @@ import sys
 import warnings
 from array import array
 from ctypes import (CDLL, POINTER, RTLD_GLOBAL, c_byte, c_char_p, c_double,
-                    c_float, c_int, c_ulonglong, pointer)
+                    c_float, c_int, c_ulonglong, pointer, sizeof, c_void_p)
 
 DECODE_ENCODING = "utf-8"
 ENCODE_ENCODING = "utf-8"
@@ -4186,6 +4186,10 @@ class Indigo(object):
             system_name = 'windows'
         else:
             raise ValueError('Unsupported OS: {}'.format(system_name))
+
+        if machine_name == 'x86_64':
+            if sizeof(c_void_p) == 4:
+                machine_name = 'i386'
 
         library_base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib")
         libraries_directory = "{}-{}".format(system_name, machine_name)
