@@ -1292,7 +1292,7 @@ void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout& cl)
 
         bool is_angle = rand.next() & 1;
         bool is_next = rand.next() & 1;
-        int base_vertex = rand.next(cl.vertex_count + 1);
+        int base_vertex = rand.nextMod(cl.vertex_count + 1);
 
         if ((cl.point[0] - cl.point[cl.vertex_count]).lengthSqr() != 0)
         {
@@ -1368,7 +1368,7 @@ void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout& cl)
     {
         if ((i & (i - 1)) == 0)
             updateTouchingPoints(touching_points, cl);
-        int current_vertex = rand.next(cl.vertex_count);
+        int current_vertex = rand.nextMod(cl.vertex_count);
         smoothingStep(cl, current_vertex, coef *= CHANGE_FACTOR, touching_points);
     }
 }

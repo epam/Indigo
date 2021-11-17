@@ -4,25 +4,31 @@
 
 using namespace indigo;
 
-Random::Random(int seed)
+Random::Random(unsigned int seed) : _rng(seed)
 {
-    _rng = std::make_unique<pcg32_fast>(seed);
 }
 
-int Random::next()
+unsigned int Random::next(const unsigned int min, const unsigned int max)
 {
-    std::uniform_int_distribution<int> uniform_dist(0);
-    return uniform_dist(*_rng);
+    std::uniform_int_distribution<unsigned int> uniform_dist(min, max);
+    return uniform_dist(_rng);
 }
 
-int Random::next(int mod)
+unsigned int Random::nextMod(const int mod)
 {
-    std::uniform_int_distribution<int> uniform_dist(-mod, mod);
-    return uniform_dist(*_rng);
+    if (mod > 0)
+    {
+        return next() % mod;
+    }
+    if (mod < 0)
+    {
+        return -(next() % -mod);
+    }
+    return 0;
 }
 
 double Random::nextDouble()
 {
-    std::uniform_real_distribution<double> uniform_dist;
-    return uniform_dist(*_rng);
+    std::uniform_real_distribution<> uniform_dist;
+    return uniform_dist(_rng);
 }

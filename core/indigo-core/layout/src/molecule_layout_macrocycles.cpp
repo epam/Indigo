@@ -513,7 +513,7 @@ void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int* rotateAngle
     int iter_count = max(50 * molSize, 2000);
 
     for (int i = 0; i < iter_count; i++)
-        improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, profi, i >= iter_count / 2, 0.1f, rand.next(ind));
+        improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, profi, i >= iter_count / 2, 0.1f, rand.nextMod(ind));
 }
 
 void MoleculeLayoutMacrocycles::smoothing2(int vertex_count, int cycle_size, int* rotate_angle, int* edge_lenght, int* vertex_number, Vec2f* p)
@@ -532,7 +532,7 @@ void MoleculeLayoutMacrocycles::smoothing2(int vertex_count, int cycle_size, int
         }
         bool angle = rand.next() & 1;
         bool next = rand.next() & 1;
-        int base_vertex = rand.next(vertex_count + 1);
+        int base_vertex = rand.nextMod(vertex_count + 1);
 
         if ((p[0] - p[vertex_count]).lengthSqr() != 0)
         {

@@ -9,14 +9,13 @@ namespace indigo
     class Random
     {
     private:
-        std::unique_ptr<pcg32_fast> _rng;
+        pcg32_fast _rng;
 
     public:
-        Random() = delete;
-        explicit Random(int seed);
+        explicit Random(unsigned int seed = 0);
 
-        int next();
-        int next(int mod);
+        unsigned int next(unsigned int min = 0, unsigned int max = std::numeric_limits<unsigned int>::max());
+        unsigned int nextMod(int mod);
 
         double nextDouble();
     };
