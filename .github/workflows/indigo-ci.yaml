@@ -115,7 +115,7 @@ jobs:
             cd build &&
             cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_SYSTEM_PROCESSOR_LOWER=aarch64 &&
             cmake --build . --config Release --target all -- -j $(nproc) &&
-            ctest --verbose
+            ctest --verbose -R dlopen
             "
       - name: Build macOS
         if: ${{ matrix.os == 'macos' }}
@@ -124,7 +124,7 @@ jobs:
           cd build
           cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_SYSTEM_PROCESSOR_LOWER=aarch64 -DCMAKE_OSX_ARCHITECTURES=arm64
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
-          ctest --verbose
+          # ctest --verbose  # NOTE: We can't run tests until we have native ARM64 node
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:

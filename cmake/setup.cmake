@@ -136,6 +136,8 @@ elseif(CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo)
 endif()
 message(STATUS "CMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
 message(STATUS "CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}")
+message(STATUS "OS=${CMAKE_SYSTEM_NAME_LOWER}")
+message(STATUS "ARCH=${CMAKE_SYSTEM_PROCESSOR_LOWER}")
 
 # Fix problem with CMake not supporting copy with wildcards on windows
 # Use like ${COPY_COMMAND} ${SEP}some${SEP}path${sep}file.txt ${NATIVE_DIST_DIRECTORY}${SEP}

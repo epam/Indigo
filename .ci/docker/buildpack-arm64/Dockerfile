@@ -30,6 +30,7 @@ RUN apt update && \
 
 ENV CC=aarch64-linux-gnu-gcc-5
 ENV CXX=aarch64-linux-gnu-g++-5
+ENV INDIGO_QEMU_BINARY=qemu-aarch64-static
 
 RUN cmake --version && \
     aarch64-linux-gnu-gcc-5 --version && \
