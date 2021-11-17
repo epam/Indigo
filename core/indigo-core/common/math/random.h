@@ -14,7 +14,12 @@ namespace indigo
     public:
         explicit Random(unsigned int seed = 0);
 
-        unsigned int next(unsigned int min = 0, unsigned int max = std::numeric_limits<unsigned int>::max());
+        void setSeed(unsigned int seed);
+
+        unsigned int next();
+        unsigned int next(unsigned int max);
+        unsigned int next(unsigned int min, unsigned int max);
+
         unsigned int nextMod(int mod);
 
         double nextDouble();

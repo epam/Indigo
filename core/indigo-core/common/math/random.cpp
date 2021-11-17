@@ -8,6 +8,23 @@ Random::Random(unsigned int seed) : _rng(seed)
 {
 }
 
+void Random::setSeed(unsigned int seed)
+{
+    _rng.seed(seed);
+}
+
+unsigned int Random::next()
+{
+    std::uniform_int_distribution<unsigned int> uniform_dist;
+    return uniform_dist(_rng);
+}
+
+unsigned int Random::next(const unsigned int max)
+{
+    std::uniform_int_distribution<unsigned int> uniform_dist(0, max);
+    return uniform_dist(_rng);
+}
+
 unsigned int Random::next(const unsigned int min, const unsigned int max)
 {
     std::uniform_int_distribution<unsigned int> uniform_dist(min, max);

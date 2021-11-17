@@ -27,7 +27,7 @@
 #include "base_cpp/tlscont.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/graph.h"
-#include "math.h"
+#include "math/random.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -43,7 +43,7 @@ namespace indigo
         DECL_ERROR;
 
         MaxCommonSubgraph(Graph& subgraph, Graph& supergraph);
-        ~MaxCommonSubgraph();
+        virtual ~MaxCommonSubgraph() = default;
 
         void setGraphs(Graph& subgraph, Graph& supergraph);
         // two main methods for maximum common subgraph search
@@ -76,8 +76,6 @@ namespace indigo
             int numberOfSolutions;
             // if this parameter set to false then only max solution would be writen. true - then all solution and at first place max solution
             bool randomize;
-
-            bool standardRandom;
         };
 
         // two callbacks for edge and vertices matching
@@ -610,128 +608,6 @@ namespace indigo
             RandomDisDec(const RandomDisDec&); // no implicit copy
         };
 
-        // Randomizator for approximate algorithm
-        class DLLEXPORT RandomHandler
-        {
-        public:
-            enum
-            {
-                DEFSEED = 54217137,
-                BIG_PRIME = 899999963
-            };
-
-            RandomHandler(int ijkl) : strand(false)
-            {
-                ranmarin(ijkl % BIG_PRIME);
-            }
-            RandomHandler(long ijkl) : strand(false)
-            {
-                ranmarin(ijkl % BIG_PRIME);
-            }
-            RandomHandler() : strand(false)
-            {
-                ranmarin(DEFSEED);
-            };
-
-            void ranmarin(int ijkl)
-            {
-                int ij, kl;
-                int i, ii, j, jj, k, l, m;
-                double s, t;
-
-                u.resize(97);
-                uvec.resize(97);
-
-                ij = ijkl / 30082;
-                kl = ijkl - 30082 * ij;
-
-                i = ((ij / 177) % 177) + 2;
-                j = (ij % 177) + 2;
-                k = ((kl / 169) % 178) + 1;
-                l = kl % 169;
-                for (ii = 0; ii < 97; ++ii)
-                {
-                    s = 0.0;
-                    t = 0.5;
-                    for (jj = 0; jj < 24; ++jj)
-                    {
-                        m = (((i * j) % 179) * k) % 179;
-                        i = j;
-                        j = k;
-                        k = m;
-                        l = (53 * l + 1) % 169;
-                        if (((l * m) % 64) >= 32)
-                            s += t;
-                        t *= 0.5;
-                    }
-                    u[ii] = s;
-                }
-                c = 362436.0 / 16777216.0;
-                cd = 7654321.0 / 16777216.0;
-                cm = 16777213.0 / 16777216.0;
-                i97 = 96;
-                j97 = 32;
-            }
-
-            inline double next()
-            {
-                double uni;
-                uni = u[i97] - u[j97];
-                if (uni < 0.0)
-                    uni += 1.0;
-                u[i97] = uni;
-                if (--i97 < 0)
-                    i97 = 96;
-                if (--j97 < 0)
-                    j97 = 96;
-                c -= cd;
-                if (c < 0.0)
-                    c += cm;
-                uni -= c;
-                if (uni < 0.0)
-                    uni += 1.0;
-                return uni;
-            }
-
-            inline int next(int max)
-            {
-                if (strand)
-                    return (rand() % max);
-                else
-                    return (int)(max * next());
-            }
-
-            void next(Array<double>& d)
-            {
-                double uni;
-                int n = d.size();
-                for (int i = 0; i < n; ++i)
-                {
-                    uni = u[i97] - u[j97];
-                    if (uni < 0.0)
-                        uni += 1.0;
-                    u[i97] = uni;
-                    if (--i97 < 0)
-                        i97 = 96;
-                    if (--j97 < 0)
-                        j97 = 96;
-                    c -= cd;
-                    if (c < 0.0)
-                        c += cm;
-                    uni -= c;
-                    if (uni < 0.0)
-                        uni += 1.0;
-                    d[i] = uni;
-                }
-            }
-
-            double c, cd, cm;
-            Array<double> u;
-            Array<double> uvec;
-            int i97, j97;
-            bool strand;
-        };
-
     protected:
         // keeping graphs
         Graph* _subgraph;
@@ -751,7 +627,7 @@ namespace indigo
         // next '[0]' elements for vertex map, next '[1]' for edge map (in sum 2+vertexEnd()+edgeEnd() elements)
         ObjArray<Array<int>> _vertEdgeSolMap;
 
-        RandomHandler _random;
+        Random _random;
 
     private:
         MaxCommonSubgraph(const MaxCommonSubgraph&); // no implicit copy

@@ -19,8 +19,6 @@
 #include "graph/max_common_subgraph.h"
 #include "base_cpp/array.h"
 #include "base_cpp/cancellation_handler.h"
-#include "time.h"
-#include <algorithm>
 
 using namespace indigo;
 
@@ -39,12 +37,7 @@ MaxCommonSubgraph::MaxCommonSubgraph(Graph& subgraph, Graph& supergraph)
     parametersForApproximate.error = 0;
     parametersForApproximate.maxIteration = 1000;
     parametersForApproximate.numberOfSolutions = 0;
-    parametersForApproximate.standardRandom = false;
     parametersForApproximate.randomize = false;
-}
-
-MaxCommonSubgraph::~MaxCommonSubgraph()
-{
 }
 
 void MaxCommonSubgraph::setGraphs(Graph& subgraph, Graph& supergraph)
@@ -1332,28 +1325,28 @@ void MaxCommonSubgraph::AdjMatricesStore::_createCorrespondence()
 
     // shuffle cr[i]
 
+    Random& random_handler = _context._random;
+
     if (_context.parametersForApproximate.randomize)
     {
-        time_t t1;
+        time_t t1 = 0;
         time(&t1);
-        srand((int)t1);
+        random_handler.setSeed(static_cast<unsigned int>(t1));
     }
     else
     {
-        srand(0);
+        random_handler.setSeed(0);
     }
 
-    RandomHandler& random_handler = _context._random;
-    random_handler.strand = _context.parametersForApproximate.standardRandom;
     int r;
     for (i = 0; i < _size1; i++)
     {
-        r = random_handler.next(_size1);
+        r = random_handler.next(_size1 - 1);
         std::swap(_cr1[i], _cr1[r]);
     }
     for (i = 0; i < _size2; i++)
     {
-        r = random_handler.next(_size2);
+        r = random_handler.next(_size2 - 1);
         std::swap(_cr2[i], _cr2[r]);
     }
 }
@@ -1772,18 +1765,18 @@ void MaxCommonSubgraph::RandomDisDec::refinementStage()
     _makeLe();
     int r, p, q, a, b;
 
+    Random& random_handler = _adjMstore._context._random;
+
     if (_adjMstore._context.parametersForApproximate.randomize)
     {
-        time_t clock;
+        time_t clock = 0;
         time(&clock);
-        srand((int)clock);
+        random_handler.setSeed(static_cast<unsigned int>(clock));
     }
     else
     {
-        srand(0);
+        random_handler.setSeed(0);
     }
-    RandomHandler& random_handler = _adjMstore._context._random;
-    random_handler.strand = _adjMstore._context.parametersForApproximate.standardRandom;
 
     while (true)
     {
@@ -1817,7 +1810,7 @@ void MaxCommonSubgraph::RandomDisDec::refinementStage()
         // select random vertex in list of error vertices to swap or move
         while (true)
         {
-            r = random_handler.next(_listErrVertices[0]) + 1;
+            r = random_handler.next(_listErrVertices[0] - 1) + 1;
             p = _listErrVertices[r];
             if (!((_adjMstore.getFLSize(p) == 1 && _x[p] == _adjMstore.getFLV(p, 0)) || (_adjMstore.getFLSize(p) == 0)))
                 break;
@@ -1826,7 +1819,7 @@ void MaxCommonSubgraph::RandomDisDec::refinementStage()
         a = _x[p];
         r = a;
         while (r == a)
-            r = _adjMstore.getFLV(p, random_handler.next(_adjMstore.getFLSize(p)));
+            r = _adjMstore.getFLV(p, random_handler.next(_adjMstore.getFLSize(p) - 1));
         q = r;
 
         if (_y[q] >= 0)
