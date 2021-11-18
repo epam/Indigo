@@ -9,7 +9,7 @@ import java.util.Map;
 
 public final class EuclidSimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
 
-    public EuclidSimilarityMatch(T target, float threshold) {
+    public EuclidSimilarityMatch(T target, double threshold) {
         super(target, threshold);
     }
 

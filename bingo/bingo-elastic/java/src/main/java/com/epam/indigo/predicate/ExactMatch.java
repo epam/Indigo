@@ -28,7 +28,7 @@ public class ExactMatch<T extends IndigoRecord> extends BaseMatch<T> {
     }
 
     @Override
-    public float getThreshold() {
+    public double getThreshold() {
         return 1.0f;
     }
 

@@ -22,7 +22,7 @@ public class IndigoRecord {
     protected final Map<String, Object> objects = new HashMap<>();
     // Internal Elastic ID
     protected String internalID = null;
-    protected float score;
+    protected double score;
     // todo: rename? and add ability to extend?
     protected List<Integer> simFingerprint;
     protected List<Integer> subFingerprint;
@@ -61,7 +61,7 @@ public class IndigoRecord {
         return objects;
     }
 
-    public float getScore() {
+    public double getScore() {
         return score;
     }
 
@@ -142,7 +142,7 @@ public class IndigoRecord {
             return this;
         }
 
-        public IndigoRecordBuilder<T> withScore(float score) {
+        public IndigoRecordBuilder<T> withScore(double score) {
             operations.add(record -> record.score = score);
             return this;
         }

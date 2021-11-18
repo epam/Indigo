@@ -9,13 +9,13 @@ import org.elasticsearch.script.Script;
 public abstract class BaseMatch<T extends IndigoRecord> extends IndigoPredicate<T> {
 
     private final T target;
-    private final float threshold;
+    private final double threshold;
 
     public BaseMatch(T target) {
         this(target, 0.0f);
     }
 
-    public BaseMatch(T target, float threshold) {
+    public BaseMatch(T target, double threshold) {
         this.target = target;
         this.threshold = threshold;
     }
@@ -24,7 +24,7 @@ public abstract class BaseMatch<T extends IndigoRecord> extends IndigoPredicate<
         return target;
     }
 
-    public float getThreshold() {
+    public double getThreshold() {
         return threshold;
     }
 

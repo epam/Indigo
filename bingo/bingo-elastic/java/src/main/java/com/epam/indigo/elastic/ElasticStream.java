@@ -102,7 +102,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         } else {
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
             Script script = null;
-            float threshold = 0.0f;
+            double threshold = 0.0;
             for (IndigoPredicate<? super T> predicate : this.predicates) {
                 if (predicate instanceof BaseMatch) {
                     if (similarityRequested)
@@ -137,7 +137,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
                 script = generateIdentityScore();
             }
             searchSourceBuilder.fetchSource(new String[]{"*"}, new String[]{SIM_FINGERPRINT, SIM_FINGERPRINT_LEN, SUB_FINGERPRINT_LEN, SUB_FINGERPRINT});
-            searchSourceBuilder.minScore(threshold);
+            searchSourceBuilder.minScore((float)threshold);
             searchSourceBuilder.size(this.size);
             searchSourceBuilder.query(QueryBuilders.scriptScoreQuery(boolQueryBuilder, script));
         }

@@ -79,7 +79,7 @@ public class Helpers {
 
     // TODO: Generalize next two methods
     // TODO: Move from helpers
-    public static IndigoRecordMolecule moleculeFromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
+    public static IndigoRecordMolecule moleculeFromElastic(String id, Map<String, Object> source, double score) throws BingoElasticException {
 
         IndigoRecordMolecule.IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordMolecule.IndigoRecordBuilder();
         for (Map.Entry<String, Object> entry : source.entrySet()) {
@@ -99,7 +99,7 @@ public class Helpers {
         return indigoRecordBuilder.build();
     }
 
-    public static IndigoRecordReaction reactionFromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
+    public static IndigoRecordReaction reactionFromElastic(String id, Map<String, Object> source, double score) throws BingoElasticException {
 
         IndigoRecordReaction.IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordReaction.IndigoRecordBuilder();
         for (Map.Entry<String, Object> entry : source.entrySet()) {

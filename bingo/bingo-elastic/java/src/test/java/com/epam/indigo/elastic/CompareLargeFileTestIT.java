@@ -58,27 +58,27 @@ public class CompareLargeFileTestIT extends NoSQLElasticCompareAbstract {
         tearDownDataStore();
     }
 
-    protected List<Tuple<String, Float>> bingoNoSQLSimilarity(String similarity, IndigoObject bingoNeedle, float threshold) {
+    protected List<Tuple<String, Double>> bingoNoSQLSimilarity(String similarity, IndigoObject bingoNeedle, double threshold) {
 
         BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, threshold, 1, similarity);
 
-        List<Tuple<String, Float>> nosqlListResult = new ArrayList<>();
+        List<Tuple<String, Double>> nosqlListResult = new ArrayList<>();
         IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
         while (bingoObjectResult.next()) {
             String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
             nosqlListResult.add(new Tuple<>(bingoFoundSmiles, bingoObjectResult.getCurrentSimilarityValue()));
         }
-        nosqlListResult.sort((o1, o2) -> -Float.compare(o1.v2(), o2.v2()));
+        nosqlListResult.sort((o1, o2) -> -Double.compare(o1.v2(), o2.v2()));
         return nosqlListResult;
     }
 
-    protected List<Tuple<String, Float>> elasticSimilarity(BaseMatch<IndigoRecord> similarity, IndigoRecord elasticNeedle) {
-        List<Tuple<String, Float>> elasticListResult = new ArrayList<>();
+    protected List<Tuple<String, Double>> elasticSimilarity(BaseMatch<IndigoRecord> similarity, IndigoRecord elasticNeedle) {
+        List<Tuple<String, Double>> elasticListResult = new ArrayList<>();
         List<IndigoRecord> elasticResults = repository.stream().limit(1000)
                 .filter(similarity)
                 .collect(Collectors.toList());
         for (IndigoRecord indigoRecordResult : elasticResults) {
-            Tuple<String, Float> elasticTuple = new Tuple<>(indigoRecordResult.getIndigoObject(indigo).canonicalSmiles(), indigoRecordResult.getScore());
+            Tuple<String, Double> elasticTuple = new Tuple<>(indigoRecordResult.getIndigoObject(indigo).canonicalSmiles(), indigoRecordResult.getScore());
             elasticListResult.add(elasticTuple);
         }
         return elasticListResult;
@@ -90,10 +90,10 @@ public class CompareLargeFileTestIT extends NoSQLElasticCompareAbstract {
         for (String curSmiles : smiles) {
             IndigoObject bingoNeedle = indigo.loadMolecule(curSmiles);
             IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
-            float threshold = 0.7f;
+            double threshold = 0.7f;
 
-            List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new SimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
-            List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("tanimoto", bingoNeedle, threshold);
+            List<Tuple<String, Double>> elasticListResult = elasticSimilarity(new SimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
+            List<Tuple<String, Double>> nosqlListResult = bingoNoSQLSimilarity("tanimoto", bingoNeedle, threshold);
 
             assertEquals(elasticListResult.size(), nosqlListResult.size());
         }
@@ -105,10 +105,10 @@ public class CompareLargeFileTestIT extends NoSQLElasticCompareAbstract {
         for (String curSmiles : smiles) {
             IndigoObject bingoNeedle = indigo.loadMolecule(curSmiles);
             IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
-            float threshold = 0.9f;
+            double threshold = 0.9f;
 
-            List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new EuclidSimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
-            List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("euclid-sub", bingoNeedle, threshold);
+            List<Tuple<String, Double>> elasticListResult = elasticSimilarity(new EuclidSimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
+            List<Tuple<String, Double>> nosqlListResult = bingoNoSQLSimilarity("euclid-sub", bingoNeedle, threshold);
             assertEquals(elasticListResult.size(), nosqlListResult.size());
         }
     }
@@ -119,10 +119,10 @@ public class CompareLargeFileTestIT extends NoSQLElasticCompareAbstract {
         for (String curSmiles : smiles) {
             IndigoObject bingoNeedle = indigo.loadMolecule(curSmiles);
             IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
-            float threshold = 0.9f;
+            double threshold = 0.9f;
 
-            List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new TverskySimilarityMatch<>(elasticNeedle, threshold, 0.5f, 0.5f), elasticNeedle);
-            List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("tversky", bingoNeedle, threshold);
+            List<Tuple<String, Double>> elasticListResult = elasticSimilarity(new TverskySimilarityMatch<>(elasticNeedle, threshold, 0.5f, 0.5f), elasticNeedle);
+            List<Tuple<String, Double>> nosqlListResult = bingoNoSQLSimilarity("tversky", bingoNeedle, threshold);
             assertEquals(elasticListResult.size(), nosqlListResult.size());
         }
     }

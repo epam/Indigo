@@ -249,10 +249,9 @@ jobs:
         run: python3 api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}-x86_64-python_test_report"
 
   test_indigo_python_aarch64:
@@ -293,10 +292,9 @@ jobs:
             python3 api/tests/integration/test.py -p basic -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}-aarch64-python_test_report"
 
   test_indigo_python_i386:
@@ -336,10 +334,9 @@ jobs:
         run: python api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}-i386-python_test_report"
 
   test_indigo_java_x86_64:
@@ -375,10 +372,9 @@ jobs:
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}-x86_64-java_test_report"
 
   test_indigo_java_aarch64:
@@ -419,10 +415,9 @@ jobs:
             java -Xss4m -jar jython.jar api/tests/integration/test.py -p basic -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}-aarch64-java_test_report"
 
   test_indigo_java_i386:
@@ -463,10 +458,9 @@ jobs:
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}-i386-java_test_report"
 
   test_indigo_dotnet_x86_64:
@@ -543,10 +537,9 @@ jobs:
         run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -t 1 -j junit_report.xml -platform ironwin
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}-x86_64-dotnet_test_report"
 
   test_indigo_dotnet_i386:
@@ -593,10 +586,9 @@ jobs:
         run: ./IronPython/net45/ipy32.exe -X:ExceptionDetail api/tests/integration/test.py -t 1 -j junit_report.xml -platform ironwin
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}_i386_dotnet_test_report"
 
   test_bingo_elastic_python_linux_x86_64:
@@ -698,6 +690,8 @@ jobs:
       - name: Build native libs
         run: |
           case ${{ matrix.mingw-version }} in i686) mingw_prefix=/mingw32;; x86_64) mingw_prefix=/mingw64;; ucrt-x86_64) mingw_prefix=/ucrt64;; esac;
+          export PATH=${mingw_prefix}/bin:${PATH}
+          echo ${PATH}
           mkdir build
           cd build
           cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=${pg_version}
@@ -717,10 +711,9 @@ jobs:
           python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "windows-mingw_python_test_report"
       - name: Upload artifacts
         uses: actions/upload-artifact@v2

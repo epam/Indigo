@@ -9,16 +9,16 @@ import java.util.Map;
 
 public final class TverskySimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
 
-    private final float alpha;
-    private final float beta;
+    private final double alpha;
+    private final double beta;
 
-    public TverskySimilarityMatch(T target, float threshold, float alpha, float beta) {
+    public TverskySimilarityMatch(T target, double threshold, double alpha, double beta) {
         super(target, threshold);
         this.alpha = alpha;
         this.beta = beta;
     }
 
-    public TverskySimilarityMatch(T target, float alpha, float beta) {
+    public TverskySimilarityMatch(T target, double alpha, double beta) {
         super(target);
         this.alpha = alpha;
         this.beta = beta;

@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public final class SimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
 
-    public SimilarityMatch(T target, float threshold) {
+    public SimilarityMatch(T target, double threshold) {
         super(target, threshold);
     }
 

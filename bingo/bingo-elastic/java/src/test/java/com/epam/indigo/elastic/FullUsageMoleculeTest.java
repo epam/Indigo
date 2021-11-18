@@ -109,7 +109,7 @@ public class FullUsageMoleculeTest {
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
-            float threshold = 0.8f;
+            double threshold = 0.8f;
             List<IndigoRecordMolecule> similarRecords = repository.stream()
                     .filter(new TverskySimilarityMatch<>(target, threshold, 0.5f, 0.5f))
                     .collect(Collectors.toList());
@@ -127,7 +127,7 @@ public class FullUsageMoleculeTest {
             Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
-            float threshold = 0.5f;
+            double threshold = 0.5f;
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new EuclidSimilarityMatch<>(target, threshold))
