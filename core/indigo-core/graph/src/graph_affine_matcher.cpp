@@ -31,7 +31,7 @@ GraphAffineMatcher::GraphAffineMatcher(Graph& subgraph, Graph& supergraph, const
     fixed_vertices = 0;
 }
 
-bool GraphAffineMatcher::match(float rms_threshold)
+bool GraphAffineMatcher::match(double rms_threshold)
 {
     if (cb_get_xyz == 0)
         throw Error("cb_get_xyz not set");
@@ -72,7 +72,7 @@ bool GraphAffineMatcher::match(float rms_threshold)
     if (points.size() < 1)
         return true;
 
-    float sqsum;
+    double sqsum;
 
     if (!matr.bestFit(points.size(), points.ptr(), goals.ptr(), &sqsum))
         return false;

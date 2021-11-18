@@ -34,7 +34,7 @@ EdgeRotationMatcher::EdgeRotationMatcher(Graph& subgraph, Graph& supergraph, con
     equalize_edges = false;
 }
 
-bool EdgeRotationMatcher::match(float rms_threshold, float eps)
+bool EdgeRotationMatcher::match(double rms_threshold, double eps)
 {
     if (cb_get_xyz == 0)
         throw Error("cb_get_xyz not specified");
@@ -90,12 +90,12 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
         return afm.match(rms_threshold);
     }
 
-    float scale = 1.f;
+    double scale = 1.f;
 
     // detect scaling factor by average bond length
     if (equalize_edges)
     {
-        float sum_sub = 0.f, sum_super = 0.f;
+        double sum_sub = 0.f, sum_super = 0.f;
 
         for (i = _subgraph.edgeBegin(); i < _subgraph.edgeEnd(); i = _subgraph.edgeNext(i))
         {
@@ -283,7 +283,7 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
 
         const Vertex& edge_end_vertex = _subgraph.getVertex(edge_end);
 
-        float max_sum_len = -1;
+        double max_sum_len = -1;
 
         for (j = edge_end_vertex.neiBegin(); j != edge_end_vertex.neiEnd(); j = edge_end_vertex.neiNext(j))
         {
@@ -305,8 +305,8 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
             nei1_pos.sub(edge_end_pos);
             nei2_pos.sub(edge_end_pos);
 
-            float dot1 = Vec3f::dot(nei1_pos, rot_axis);
-            float dot2 = Vec3f::dot(nei2_pos, rot_axis);
+            double dot1 = Vec3f::dot(nei1_pos, rot_axis);
+            double dot2 = Vec3f::dot(nei2_pos, rot_axis);
 
             nei1_pos.addScaled(rot_axis, -dot1);
             nei2_pos.addScaled(rot_axis, -dot2);
@@ -335,7 +335,7 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
             if (Vec3f::dot(cross, rot_axis) < 0)
                 ang = -ang;
 
-            matr.rotation(rot_axis.x, rot_axis.y, rot_axis.z, (float)ang);
+            matr.rotation(rot_axis.x, rot_axis.y, rot_axis.z, (double)ang);
             matr.translateLocalInv(edge_end_pos);
             matr.translate(edge_end_pos);
         }
@@ -348,7 +348,7 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
         }
     }
 
-    float sqsum = 0;
+    double sqsum = 0;
 
     for (k = 0; k < xyz_sub.size(); k++)
         sqsum += Vec3f::distSqr(xyz_sub[k], xyz_super[k]);

@@ -776,11 +776,11 @@ void CmfSaver::_encode(byte symbol)
     _output->writeByte(symbol);
 }
 
-void CmfSaver::_writeFloatInRange(Output& output, float v, float min, float range)
+void CmfSaver::_writeFloatInRange(Output& output, double v, double min, double range)
 {
     if (range > EPSILON)
     {
-        float v2 = (((v - min) / range) * 65535 + 0.5f);
+        double v2 = (((v - min) / range) * 65535 + 0.5f);
         if (v2 < 0 || v2 > 65536)
             throw Error("Internal error: Value %f is outsize of [%f, %f]", v, min, min + range);
         output.writeBinaryWord((word)v2);

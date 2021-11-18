@@ -165,7 +165,7 @@ public:
 };
 
 DLLEXPORT bool _indigoParseTautomerFlags(const char* flags, IndigoTautomerParams& params);
-DLLEXPORT int _indigoParseExactFlags(const char* flags, bool reaction, float* rms_threshold);
+DLLEXPORT int _indigoParseExactFlags(const char* flags, bool reaction, double* rms_threshold);
 
 #ifdef _WIN32
 #pragma warning(pop)

@@ -47,15 +47,15 @@ namespace indigo
         void _updatePositions();
         void _addCoef(int ver, int index, Vec2f value);
         void _calcCoef(int to, int from0, int from1);
-        void _calcCoef(int to, int from0, int from1, float alpha);
+        void _calcCoef(int to, int from0, int from1, double alpha);
         void _updateGradient();
         void _updateGradient2();
         bool _isBasePoint(int i);
-        float _energy();
+        double _energy();
         Vec2f _energyDiff(int v);
-        float _localEnergy(int v);
-        float _edgeEnergy(int i, int j);
-        float _angleEnergy(int i, int v1, int v2);
+        double _localEnergy(int v);
+        double _edgeEnergy(int i, int j);
+        double _angleEnergy(int i, int v1, int v2);
 
         void _initComponents(bool use_beconnected_decomposition);
         void _initBasePointIndex();
@@ -89,7 +89,7 @@ namespace indigo
         ObjArray<Array<int>> common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
         ObjArray<Array<int>> common_bicon_comp; // common_bicon_comp[i][j] = number of biconnected component wich is contains both vertices i and j (or -1 if
                                                 // there isnt such component)
-        float target_len; // target length of bonds
+        double target_len; // target length of bonds
         bool clean_external_angles;
         Array<bool> _is_trivial; // is component single edge or straightline chain
         Array<bool> _is_straightline_vertex;
@@ -103,7 +103,7 @@ namespace indigo
             return Vec2f(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
         } // complex multiplication of two complex numbers
 
-        const float APPROX_STEP = 0.01f;   // step of derivate approximation
+        const double APPROX_STEP = 0.01f;   // step of derivate approximation
         const Vec2f ZERO = Vec2f(0.f, 0.f); // complex zero
         const Vec2f ONE = Vec2f(1.f, 0.f);  // complex one
     };

@@ -193,14 +193,14 @@ TEST_F(IndigoApiBasicTest, test_getter_function)
     const char* ch = indigoGetOption("filename-encoding");
     ASSERT_STREQ(ch, "ASCII");
 
-    float f;
+    double f;
     indigoSetOptionFloat("layout-horintervalfactor", 20.5f);
     indigoGetOptionFloat("layout-horintervalfactor", &f);
     ASSERT_NEAR(f, 20.5f, 0.1f);
     const char* chFloat = indigoGetOption("layout-horintervalfactor");
     ASSERT_STREQ(chFloat, "20.5");
 
-    float r, g, b;
+    double r, g, b;
     indigoRendererInit();
     indigoSetOptionColor("render-background-color", 50, 100, 150);
     indigoGetOptionColor("render-background-color", &r, &g, &b);

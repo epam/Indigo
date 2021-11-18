@@ -65,13 +65,13 @@ namespace indigo
         void ignoreTargetAtom(int idx);
         void ignoreQueryAtom(int idx);
 
-        static void parseConditions(const char* params, int& flags, float& rms_threshold);
+        static void parseConditions(const char* params, int& flags, double& rms_threshold);
 
         static bool matchAtoms(BaseMolecule& query, BaseMolecule& target, int sub_idx, int super_idx, int flags);
         static bool matchBonds(BaseMolecule& query, BaseMolecule& target, int sub_idx, int super_idx, int flags);
 
         int flags;
-        float rms_threshold; // for affine match
+        double rms_threshold; // for affine match
 
         bool needCoords();
 

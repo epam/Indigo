@@ -39,7 +39,7 @@ void RefinementState::calcDistance(int v1, int v2)
 
 void RefinementState::calcHeight()
 {
-    float min = 1000.f, max = -1000.f;
+    double min = 1000.f, max = -1000.f;
     int i;
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
@@ -83,7 +83,7 @@ void RefinementState::applyToGraph()
 void RefinementState::calcEnergy()
 {
     int i, j;
-    float r;
+    double r;
     Vec2f d;
 
     energy = 0;
@@ -112,7 +112,7 @@ void RefinementState::calcEnergy()
 void RefinementState::flipBranch(const Filter& branch, const RefinementState& state, int v1_idx, int v2_idx)
 {
     int i;
-    float r, t;
+    double r, t;
 
     const Vec2f& v1 = state.layout[v1_idx];
     const Vec2f& v2 = state.layout[v2_idx];
@@ -142,10 +142,10 @@ void RefinementState::flipBranch(const Filter& branch, const RefinementState& st
 }
 
 // Rotate branch around vertex v1
-void RefinementState::rotateBranch(const Filter& branch, const RefinementState& state, int v_idx, float angle)
+void RefinementState::rotateBranch(const Filter& branch, const RefinementState& state, int v_idx, double angle)
 {
     int i;
-    float co, si;
+    double co, si;
 
     const Vec2f& v = state.layout[v_idx];
     Vec2f d;
@@ -175,7 +175,7 @@ void RefinementState::rotateBranch(const Filter& branch, const RefinementState& 
 void RefinementState::stretchBranch(const Filter& branch, const RefinementState& state, int v1_idx, int v2_idx, int val)
 {
     int i;
-    float r, sh = 0.1f * val;
+    double r, sh = 0.1f * val;
 
     const Vec2f& v1 = state.layout[v1_idx];
     const Vec2f& v2 = state.layout[v2_idx];
@@ -204,10 +204,10 @@ void RefinementState::stretchBranch(const Filter& branch, const RefinementState&
 }
 
 // Rotate layout around vertex v (in degrees)
-void RefinementState::rotateLayout(const RefinementState& state, int v_idx, float angle)
+void RefinementState::rotateLayout(const RefinementState& state, int v_idx, double angle)
 {
     int i;
-    float co, si;
+    double co, si;
 
     const Vec2f& v = state.layout[v_idx];
     Vec2f d;
@@ -241,7 +241,7 @@ bool RefinementState::is_small_cycle()
     return answ;
 }
 
-float RefinementState::calc_best_angle()
+double RefinementState::calc_best_angle()
 {
     QS_DEF(Array<int>, convex_hull);
     QS_DEF(Array<bool>, take);
@@ -262,7 +262,7 @@ float RefinementState::calc_best_angle()
     while (true)
     {
         int next = -1;
-        float bestcross = 0;
+        double bestcross = 0;
         for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v))
             if (v != convex_hull[index - 1])
             {
@@ -285,16 +285,16 @@ float RefinementState::calc_best_angle()
 
     int base = -1;
     int oppsite = 1;
-    float high = -1;
+    double high = -1;
     int best_base = 0;
     do
     {
         base++;
         Vec2f vec = layout[convex_hull[base + 1]] - layout[convex_hull[base]];
-        float A = vec.y;
-        float B = -vec.x;
-        float C = Vec2f::cross(layout[convex_hull[base + 1]], layout[convex_hull[base]]);
-        float len = sqrt(A * A + B * B);
+        double A = vec.y;
+        double B = -vec.x;
+        double C = Vec2f::cross(layout[convex_hull[base + 1]], layout[convex_hull[base]]);
+        double len = sqrt(A * A + B * B);
         A /= len;
         B /= len;
         C /= len;

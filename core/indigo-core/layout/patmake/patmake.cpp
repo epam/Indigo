@@ -35,7 +35,7 @@ int edge_cmp(const int& e1, const int& e2, const void* context)
     v1.z = 0.f;
     v2.z = 0.f;
 
-    float len1 = Vec3f::dist(v1, v2);
+    double len1 = Vec3f::dist(v1, v2);
 
     v1 = mol.getAtomPos(edge2.beg);
     v2 = mol.getAtomPos(edge2.end);
@@ -43,7 +43,7 @@ int edge_cmp(const int& e1, const int& e2, const void* context)
     v1.z = 0.f;
     v2.z = 0.f;
 
-    float len2 = Vec3f::dist(v1, v2);
+    double len2 = Vec3f::dist(v1, v2);
 
     if (len2 > len1)
         return 1;
@@ -104,7 +104,7 @@ void convertMolfile(char* path, char* filename, FileOutput& cpp_file)
     v1.z = 0.f;
     v2.z = 0.f;
 
-    float scale = Vec3f::dist(v1, v2);
+    double scale = Vec3f::dist(v1, v2);
 
     if (scale < 0.0001f)
     {
@@ -159,8 +159,8 @@ void convertMolfile(char* path, char* filename, FileOutput& cpp_file)
 
     i = first_idx;
 
-    float max_angle, cur_angle;
-    float i_angle = 0;
+    double max_angle, cur_angle;
+    double i_angle = 0;
     int next_nei = 0;
     int point_idx = 0;
 
@@ -206,7 +206,7 @@ void convertMolfile(char* path, char* filename, FileOutput& cpp_file)
 
         i = vert.neiVertex(next_nei);
 
-        float dist, min_dist = 0.f;
+        double dist, min_dist = 0.f;
         int int_edge;
         Vec2f cur_v1 = pos_i;
         Vec2f cur_v2(mol.getAtomPos(i).x, mol.getAtomPos(i).y);
@@ -247,9 +247,9 @@ void convertMolfile(char* path, char* filename, FileOutput& cpp_file)
                 cur_v3v.diff(cur_v3, inter);
                 cur_v4v.diff(cur_v4, inter);
 
-                float angle1 = cur_v1v.tiltAngle2();
-                float angle3 = cur_v3v.tiltAngle2() - angle1;
-                float angle4 = cur_v4v.tiltAngle2() - angle1;
+                double angle1 = cur_v1v.tiltAngle2();
+                double angle3 = cur_v3v.tiltAngle2() - angle1;
+                double angle4 = cur_v4v.tiltAngle2() - angle1;
 
                 if (angle3 < 0)
                     angle3 += 2 * M_PI;

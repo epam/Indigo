@@ -20,9 +20,9 @@
 
 using namespace indigo;
 
-float Vec3f::length() const
+double Vec3f::length() const
 {
-    return (float)sqrt(lengthSqr());
+    return (double)sqrt(lengthSqr());
 }
 
 void Vec3f::transformPoint(const Transform3f& matr)
@@ -88,37 +88,37 @@ void Vec3f::invVectorTransformation(const Vec3f& v, const Transform3f& matr)
     z = matr.elements[8] * v.x + matr.elements[9] * v.y + matr.elements[10] * v.z;
 }
 
-void Vec3f::rotateX(float angle)
+void Vec3f::rotateX(double angle)
 {
-    float sine = (float)sin(angle);
-    float cosine = (float)cos(angle);
-    float yy = y * cosine - z * sine;
+    double sine = (double)sin(angle);
+    double cosine = (double)cos(angle);
+    double yy = y * cosine - z * sine;
 
     z = y * sine + z * cosine;
     y = yy;
 }
 
-void Vec3f::rotateY(float angle)
+void Vec3f::rotateY(double angle)
 {
-    float sine = (float)sin(angle);
-    float cosine = (float)cos(angle);
-    float xx = x * cosine + z * sine;
+    double sine = (double)sin(angle);
+    double cosine = (double)cos(angle);
+    double xx = x * cosine + z * sine;
 
     z = -x * sine + z * cosine;
     x = xx;
 }
 
-void Vec3f::rotateZ(float angle)
+void Vec3f::rotateZ(double angle)
 {
-    float sine = (float)sin(angle);
-    float cosine = (float)cos(angle);
-    float xx = x * cosine - y * sine;
+    double sine = (double)sin(angle);
+    double cosine = (double)cos(angle);
+    double xx = x * cosine - y * sine;
 
     y = x * sine + y * cosine;
     x = xx;
 }
 
-void Vec3f::rotate(const Vec3f& around, float angle)
+void Vec3f::rotate(const Vec3f& around, double angle)
 {
     Transform3f matr;
 
@@ -128,12 +128,12 @@ void Vec3f::rotate(const Vec3f& around, float angle)
 
 bool Vec3f::normalize()
 {
-    float l = lengthSqr();
+    double l = lengthSqr();
 
     if (l < EPSILON * EPSILON)
         return false;
 
-    l = (float)sqrt(l);
+    l = (double)sqrt(l);
 
     x /= l;
     y /= l;
@@ -144,12 +144,12 @@ bool Vec3f::normalize()
 
 bool Vec3f::normalization(const Vec3f& v)
 {
-    float l = v.lengthSqr();
+    double l = v.lengthSqr();
 
     if (l < EPSILON * EPSILON)
         return false;
 
-    l = (float)sqrt(l);
+    l = (double)sqrt(l);
 
     x = v.x / l;
     y = v.y / l;
@@ -158,10 +158,10 @@ bool Vec3f::normalization(const Vec3f& v)
     return true;
 }
 
-bool Vec3f::angle(const Vec3f& a, const Vec3f& b, float& res)
+bool Vec3f::angle(const Vec3f& a, const Vec3f& b, double& res)
 {
-    float a_len = a.length();
-    float b_len = b.length();
+    double a_len = a.length();
+    double b_len = b.length();
 
     if (a_len < EPSILON || b_len < EPSILON)
         return false;
@@ -170,21 +170,21 @@ bool Vec3f::angle(const Vec3f& a, const Vec3f& b, float& res)
     return true;
 }
 
-float Vec3f::dot(const Vec3f& a, const Vec3f& b)
+double Vec3f::dot(const Vec3f& a, const Vec3f& b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-float Vec3f::distSqr(const Vec3f& a, const Vec3f& b)
+double Vec3f::distSqr(const Vec3f& a, const Vec3f& b)
 {
-    float dx = b.x - a.x;
-    float dy = b.y - a.y;
-    float dz = b.z - a.z;
+    double dx = b.x - a.x;
+    double dy = b.y - a.y;
+    double dz = b.z - a.z;
 
     return dx * dx + dy * dy + dz * dz;
 }
 
-float Vec3f::dist(const Vec3f& a, const Vec3f& b)
+double Vec3f::dist(const Vec3f& a, const Vec3f& b)
 {
-    return (float)sqrt(distSqr(a, b));
+    return (double)sqrt(distSqr(a, b));
 }

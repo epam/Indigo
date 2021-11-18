@@ -26,7 +26,7 @@ IMPL_ERROR(Transform3f, "transform3f");
 
 void Transform3f::copy(const Transform3f& other)
 {
-    memcpy(elements, other.elements, 16 * sizeof(float));
+    memcpy(elements, other.elements, 16 * sizeof(double));
 }
 
 void Transform3f::getOrigin(Vec3f& origin)
@@ -39,7 +39,7 @@ bool Transform3f::inversion(const Transform3f& matr)
     if (&matr == this)
         throw Error("can not do inversion() of self");
 
-    if ((float)fabs(matr.elements[3]) > EPSILON || (float)fabs(matr.elements[7]) > EPSILON || (float)fabs(matr.elements[11]) > EPSILON)
+    if ((double)fabs(matr.elements[3]) > EPSILON || (double)fabs(matr.elements[7]) > EPSILON || (double)fabs(matr.elements[11]) > EPSILON)
         return false;
 
     elements[0] = matr.elements[0];
@@ -64,10 +64,10 @@ bool Transform3f::inversion(const Transform3f& matr)
     return true;
 }
 
-void Transform3f::rotation(float x, float y, float z, float angle)
+void Transform3f::rotation(double x, double y, double z, double angle)
 {
-    float len = (float)sqrt(x * x + y * y + z * z);
-    float Sin = (float)sin(angle), Cos = (float)cos(angle), Vers = 1 - Cos;
+    double len = (double)sqrt(x * x + y * y + z * z);
+    double Sin = (double)sin(angle), Cos = (double)cos(angle), Vers = 1 - Cos;
 
     if (len > EPSILON)
     {
@@ -113,7 +113,7 @@ void Transform3f::transformLocal(const Transform3f& transform)
     copy(tmp);
 }
 
-void Transform3f::rotateX(float angle)
+void Transform3f::rotateX(double angle)
 {
     Transform3f rot;
 
@@ -121,7 +121,7 @@ void Transform3f::rotateX(float angle)
     transform(rot);
 }
 
-void Transform3f::rotateY(float angle)
+void Transform3f::rotateY(double angle)
 {
     Transform3f rot;
 
@@ -129,7 +129,7 @@ void Transform3f::rotateY(float angle)
     transform(rot);
 }
 
-void Transform3f::rotateZ(float angle)
+void Transform3f::rotateZ(double angle)
 {
     Transform3f rot;
 
@@ -137,7 +137,7 @@ void Transform3f::rotateZ(float angle)
     transform(rot);
 }
 
-void Transform3f::rotateXLocal(float angle)
+void Transform3f::rotateXLocal(double angle)
 {
     Transform3f rot;
 
@@ -145,7 +145,7 @@ void Transform3f::rotateXLocal(float angle)
     transformLocal(rot);
 }
 
-void Transform3f::rotateYLocal(float angle)
+void Transform3f::rotateYLocal(double angle)
 {
     Transform3f rot;
 
@@ -153,7 +153,7 @@ void Transform3f::rotateYLocal(float angle)
     transformLocal(rot);
 }
 
-void Transform3f::rotateZLocal(float angle)
+void Transform3f::rotateZLocal(double angle)
 {
     Transform3f rot;
 
@@ -175,11 +175,11 @@ void Transform3f::translateInv(const Vec3f& translation)
     elements[14] -= translation.z;
 }
 
-void Transform3f::rotationX(float angle)
+void Transform3f::rotationX(double angle)
 {
-    float sine = (float)sin(angle), cosine = (float)cos(angle);
+    double sine = (double)sin(angle), cosine = (double)cos(angle);
 
-    memset(elements, 0, 16 * sizeof(float));
+    memset(elements, 0, 16 * sizeof(double));
 
     elements[0] = 1.f;
     elements[5] = cosine;
@@ -189,11 +189,11 @@ void Transform3f::rotationX(float angle)
     elements[15] = 1.f;
 }
 
-void Transform3f::rotationY(float angle)
+void Transform3f::rotationY(double angle)
 {
-    float sine = (float)sin(angle), cosine = (float)cos(angle);
+    double sine = (double)sin(angle), cosine = (double)cos(angle);
 
-    memset(elements, 0, 16 * sizeof(float));
+    memset(elements, 0, 16 * sizeof(double));
 
     elements[0] = cosine;
     elements[2] = -sine;
@@ -203,11 +203,11 @@ void Transform3f::rotationY(float angle)
     elements[15] = 1.f;
 }
 
-void Transform3f::rotationZ(float angle)
+void Transform3f::rotationZ(double angle)
 {
-    float sine = (float)sin(angle), cosine = (float)cos(angle);
+    double sine = (double)sin(angle), cosine = (double)cos(angle);
 
-    memset(elements, 0, 16 * sizeof(float));
+    memset(elements, 0, 16 * sizeof(double));
 
     elements[0] = cosine;
     elements[1] = sine;
@@ -239,7 +239,7 @@ void Transform3f::composition(const Transform3f& a, const Transform3f& b)
 
 void Transform3f::identity(void)
 {
-    memset(elements, 0, 16 * sizeof(float));
+    memset(elements, 0, 16 * sizeof(double));
 
     elements[0] = 1.f;
     elements[5] = 1.f;
@@ -247,7 +247,7 @@ void Transform3f::identity(void)
     elements[15] = 1.f;
 }
 
-void Transform3f::translateLocal(float x, float y, float z)
+void Transform3f::translateLocal(double x, double y, double z)
 {
     elements[12] += elements[0] * x + elements[4] * y + elements[8] * z;
     elements[13] += elements[1] * x + elements[5] * y + elements[9] * z;
@@ -264,7 +264,7 @@ void Transform3f::translateLocalInv(const Vec3f& translation)
     translateLocal(-translation.x, -translation.y, -translation.z);
 }
 
-void Transform3f::setOrigin(float x, float y, float z)
+void Transform3f::setOrigin(double x, double y, double z)
 {
     elements[12] = x;
     elements[13] = y;
@@ -294,9 +294,9 @@ bool Transform3f::rotationVecVec(const Vec3f& v1, const Vec3f& v2)
         return true;
     }
 
-    float dot = Vec3f::dot(v1_norm, v2_norm);
+    double dot = Vec3f::dot(v1_norm, v2_norm);
 
-    float ang;
+    double ang;
 
     if (dot > 1.f - EPSILON)
         ang = 0.f;

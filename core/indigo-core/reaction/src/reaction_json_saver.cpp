@@ -33,7 +33,7 @@ using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonSaver, "reaction KET saver");
 
-void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale)
+void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, double scale)
 {
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {

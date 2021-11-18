@@ -45,7 +45,7 @@ namespace indigo
         void writeChar(char value);
         void writeBinaryInt(int value);
         void writeBinaryWord(word value);
-        void writeBinaryFloat(float value);
+        void writeBinaryFloat(double value);
         void writePackedShort(short value);
         void writePackedUInt(unsigned int value);
         void writeString(const char* string);

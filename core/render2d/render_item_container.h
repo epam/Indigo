@@ -35,9 +35,9 @@ namespace indigo
         DECL_ERROR;
 
         void estimateSize() override;
-        void setObjScale(float scale) override;
-        float getTotalBondLength() override;
-        float getTotalClosestAtomDistance() override;
+        void setObjScale(double scale) override;
+        double getTotalBondLength() override;
+        double getTotalClosestAtomDistance() override;
         int getBondCount() override;
         int getAtomCount() override;
 

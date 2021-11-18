@@ -227,7 +227,7 @@ namespace indigo
         virtual void invalidateAtom(int index, int mask);
 
         Vec3f& getAtomXyz(int idx);
-        void setAtomXyz(int idx, float x, float y, float z);
+        void setAtomXyz(int idx, double x, double y, double z);
         void setAtomXyz(int idx, const Vec3f& v);
 
         void clearXyz();

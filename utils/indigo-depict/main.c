@@ -84,7 +84,7 @@ void usage(void)
             "-commentpos <top|bottom>\n"
             "   Text comment position (bottom by default)\n"
             "-commentalign <0..1>\n"
-            "   Text comment alignment, a float value: 0 = left, 0.5 = center, 1 = right\n"
+            "   Text comment alignment, a double value: 0 = left, 0.5 = center, 1 = right\n"
             "-coloring <on|off>\n"
             "   Enable/disable coloring (enabled by default)\n"
             "-hlthick\n"
@@ -131,7 +131,7 @@ void usage(void)
         return -1;                                                                                                                                             \
     }
 
-int parseColor(char* argv[], int i, float* rr, float* gg, float* bb)
+int parseColor(char* argv[], int i, double* rr, double* gg, double* bb)
 {
     int r, g, b;
 
@@ -441,7 +441,7 @@ int parseParams(Params* p, int argc, char* argv[])
         }
         else if (strcmp(argv[i], "-thickness") == 0)
         {
-            float rt;
+            double rt;
 
             if (++i == argc)
             {
@@ -458,7 +458,7 @@ int parseParams(Params* p, int argc, char* argv[])
         }
         else if (strcmp(argv[i], "-linewidth") == 0)
         {
-            float rt;
+            double rt;
 
             if (++i == argc)
             {
@@ -511,7 +511,7 @@ int parseParams(Params* p, int argc, char* argv[])
         }
         else if (strcmp(argv[i], "-hlcolor") == 0)
         {
-            float r, g, b;
+            double r, g, b;
 
             if (i + 3 >= argc)
             {
@@ -528,7 +528,7 @@ int parseParams(Params* p, int argc, char* argv[])
         }
         else if (strcmp(argv[i], "-bgcolor") == 0)
         {
-            float r, g, b;
+            double r, g, b;
 
             if (i + 3 >= argc)
             {
@@ -543,7 +543,7 @@ int parseParams(Params* p, int argc, char* argv[])
         }
         else if (strcmp(argv[i], "-basecolor") == 0)
         {
-            float r, g, b;
+            double r, g, b;
 
             if (i + 3 >= argc)
             {
@@ -558,7 +558,7 @@ int parseParams(Params* p, int argc, char* argv[])
         }
         else if (strcmp(argv[i], "-aamcolor") == 0)
         {
-            float r, g, b;
+            double r, g, b;
 
             if (i + 3 >= argc)
             {
@@ -574,7 +574,7 @@ int parseParams(Params* p, int argc, char* argv[])
         }
         else if (strcmp(argv[i], "-dsgcolor") == 0)
         {
-            float r, g, b;
+            double r, g, b;
 
             if (i + 3 >= argc)
             {
@@ -714,11 +714,11 @@ int parseParams(Params* p, int argc, char* argv[])
                 fprintf(stderr, "%s is not a valid font size\n", argv[i]);
                 return -1;
             }
-            indigoSetOptionFloat("render-comment-font-size", (float)commentsize);
+            indigoSetOptionFloat("render-comment-font-size", (double)commentsize);
         }
         else if (strcmp(argv[i], "-commentcolor") == 0)
         {
-            float r, g, b;
+            double r, g, b;
 
             if (i + 3 >= argc)
             {
@@ -769,7 +769,7 @@ int parseParams(Params* p, int argc, char* argv[])
     }
 
     if (p->bond > 0)
-        indigoSetOptionFloat("render-bond-length", (float)p->bond);
+        indigoSetOptionFloat("render-bond-length", (double)p->bond);
 
     if (p->width > 0)
         indigoSetOptionInt("render-image-width", p->width);

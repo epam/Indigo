@@ -35,13 +35,13 @@ namespace indigo
         DECL_ERROR;
 
         void init() override;
-        void setVerticalSpacing(float spacing);
+        void setVerticalSpacing(double spacing);
         void setAlignment(MultilineTextLayout::Alignment alignment);
         void estimateSize() override;
         void render(bool idle) override;
 
     private:
-        float vSpace;
+        double vSpace;
         MultilineTextLayout::Alignment alignment;
     };
 

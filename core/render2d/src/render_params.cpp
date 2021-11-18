@@ -162,7 +162,7 @@ void RenderParamInterface::_prepareReaction(RenderParams& params, BaseReaction& 
     }
 }
 
-int RenderParamInterface::multilineTextUnit(RenderItemFactory& factory, int type, const Array<char>& titleStr, const float spacing,
+int RenderParamInterface::multilineTextUnit(RenderItemFactory& factory, int type, const Array<char>& titleStr, const double spacing,
                                             const MultilineTextLayout::Alignment alignment)
 {
     int title = factory.addItemColumn();
@@ -193,7 +193,7 @@ void RenderParamInterface::render(RenderParams& params)
 
     bool bondLengthSet = params.cnvOpt.bondLength > 0;
     int bondLength = (int)(bondLengthSet ? params.cnvOpt.bondLength : 100);
-    rc.setDefaultScale((float)bondLength); // TODO: fix bondLength type
+    rc.setDefaultScale((double)bondLength); // TODO: fix bondLength type
 
     RenderItemFactory factory(rc);
     int obj = -1;

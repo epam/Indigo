@@ -167,7 +167,7 @@ namespace indigo
 
         bool standardize(const StandardizeOptions& options);
 
-        bool ionize(float ph, float ph_toll, const IonizeOptions& options);
+        bool ionize(double ph, double ph_toll, const IonizeOptions& options);
 
         bool isPossibleFischerProjection(const char* options);
 

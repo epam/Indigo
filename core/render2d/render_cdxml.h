@@ -50,7 +50,7 @@ namespace indigo
 
         bool enabled;
         int keyAlignment;
-        float propertyFontSize;
+        double propertyFontSize;
         Array<char> titleFont;
         Array<char> titleFace;
         Array<char> fonttable;

@@ -8,9 +8,9 @@ namespace bingo
     struct SimResult
     {
         int id;
-        float sim_value;
+        double sim_value;
 
-        SimResult(int new_id, float new_sim_value) : id(new_id), sim_value(new_sim_value)
+        SimResult(int new_id, double new_sim_value) : id(new_id), sim_value(new_sim_value)
         {
         }
     };

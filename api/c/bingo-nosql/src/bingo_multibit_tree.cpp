@@ -160,7 +160,7 @@ void MultibitTree::_findLinear(_MultibitNode* node, const byte* query, int query
         if (coef < min_coef)
             continue;
 
-        sim_indices.push(SimResult(indices[fp_indices[i]], (float)coef));
+        sim_indices.push(SimResult(indices[fp_indices[i]], (double)coef));
     }
 }
 

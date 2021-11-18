@@ -61,7 +61,7 @@ namespace indigo
             bool fragment;
             bool over;
             bool explicitVerticalOffset;
-            float verticalOffset;
+            double verticalOffset;
 
             Vec2f min, max;
             Vec2f scaledSize, scaledOffset;
@@ -76,8 +76,8 @@ namespace indigo
             void clear();
 
             ObjArray<LayoutItem> items;
-            float height;
-            float width;
+            double height;
+            double width;
 
         private:
             LayoutLine(const LayoutLine&);
@@ -87,8 +87,8 @@ namespace indigo
         void clear();
         bool isEmpty() const;
         void prepare();
-        float getAverageBondLength() const;
-        float getScaleFactor() const;
+        double getAverageBondLength() const;
+        double getScaleFactor() const;
         const Vec2f& getContentSize() const;
         void setScaleFactor();
         void process();
@@ -101,23 +101,23 @@ namespace indigo
         void (*cb_process)(LayoutItem& item, const Vec2f& pos, void* context);
         BaseMolecule& (*cb_getMol)(int id, void* context);
 
-        static float getTotalMoleculeBondLength(BaseMolecule& mol);
-        static float getTotalMoleculeClosestDist(BaseMolecule& mol);
+        static double getTotalMoleculeBondLength(BaseMolecule& mol);
+        static double getTotalMoleculeClosestDist(BaseMolecule& mol);
 
         // utility function to use in MoleculeLayout & ReactionLayout
         void adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos);
 
-        float horizontalIntervalFactor;
-        float verticalIntervalFactor;
-        float bondLength;
+        double horizontalIntervalFactor;
+        double verticalIntervalFactor;
+        double bondLength;
 
         DECL_ERROR;
 
     private:
         Vec2f _contentSize;
-        float _avel, _scaleFactor, _offset;
+        double _avel, _scaleFactor, _offset;
 
-        float _getAverageBondLength();
+        double _getAverageBondLength();
 
         ReusableObjArray<LayoutLine> _layout;
     };

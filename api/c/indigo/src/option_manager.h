@@ -59,10 +59,10 @@ using namespace indigo;
 
 #define SETTER_GETTER_INT_OPTION(option) [](int value) { option = value; }, [](int& value) { value = option; }
 
-#define SETTER_GETTER_FLOAT_OPTION(option) [](float value) { option = value; }, [](float& value) { value = option; }
+#define SETTER_GETTER_FLOAT_OPTION(option) [](double value) { option = value; }, [](double& value) { value = option; }
 
 #define SETTER_GETTER_COLOR_OPTION(option)                                                                                                                     \
-    [](float r, float g, float b) { option.set(r, g, b); }, [](float& r, float& g, float& b) {                                                                 \
+    [](double r, double g, double b) { option.set(r, g, b); }, [](double& r, double& g, double& b) {                                                                 \
         r = option.x;                                                                                                                                          \
         g = option.y;                                                                                                                                          \
         b = option.z;                                                                                                                                          \
@@ -92,16 +92,16 @@ public:
     typedef void (*optf_string_t)(const char*);
     typedef void (*optf_int_t)(int);
     typedef void (*optf_bool_t)(int);
-    typedef void (*optf_float_t)(float);
-    typedef void (*optf_color_t)(float, float, float);
+    typedef void (*optf_float_t)(double);
+    typedef void (*optf_color_t)(double, double, double);
     typedef void (*optf_xy_t)(int, int);
     typedef void (*optf_void_t)();
 
     typedef void (*get_optf_string_t)(Array<char>& value);
     typedef void (*get_optf_int_t)(int&);
     typedef void (*get_optf_bool_t)(int&);
-    typedef void (*get_optf_float_t)(float&);
-    typedef void (*get_optf_color_t)(float&, float&, float&);
+    typedef void (*get_optf_float_t)(double&);
+    typedef void (*get_optf_color_t)(double&, double&, double&);
     typedef void (*get_optf_xy_t)(int&, int&);
 
     DECL_ERROR;
@@ -117,8 +117,8 @@ public:
 
     void callOptionHandlerInt(const char* name, int value);
     void callOptionHandlerBool(const char* name, int value);
-    void callOptionHandlerFloat(const char* name, float value);
-    void callOptionHandlerColor(const char* name, float r, float g, float b);
+    void callOptionHandlerFloat(const char* name, double value);
+    void callOptionHandlerColor(const char* name, double r, double g, double b);
     void callOptionHandlerXY(const char* name, int x, int y);
     void callOptionHandlerVoid(const char* name);
     void callOptionHandler(const char* name, const char* value);
@@ -126,8 +126,8 @@ public:
     void getOptionValueStr(const char* name, Array<char>& value) const;
     void getOptionValueInt(const char* name, int& value) const;
     void getOptionValueBool(const char* name, int& value) const;
-    void getOptionValueFloat(const char* name, float& value) const;
-    void getOptionValueColor(const char* name, float& r, float& g, float& b) const;
+    void getOptionValueFloat(const char* name, double& value) const;
+    void getOptionValueColor(const char* name, double& r, double& g, double& b) const;
     void getOptionValueXY(const char* name, int& x, int& y) const;
 
     int nOptions() const;
@@ -150,8 +150,8 @@ protected:
 
     int _parseInt(const char* str, int& val);
     int _parseBool(const char* str, int& val);
-    int _parseFloat(const char* str, float& val);
-    int _parseColor(const char* str, float& r, float& g, float& b);
+    int _parseFloat(const char* str, double& val);
+    int _parseColor(const char* str, double& r, double& g, double& b);
     int _parseSize(const char* str, int& w, int& h);
 
     RedBlackStringMap<OPTION_TYPE, false> typeMap;

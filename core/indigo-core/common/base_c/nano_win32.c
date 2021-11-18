@@ -30,7 +30,7 @@ qword nanoClock(void)
     return (qword)(counter.QuadPart);
 }
 
-float nanoHowManySeconds(qword val)
+double nanoHowManySeconds(qword val)
 {
     LARGE_INTEGER freq;
     double quot;
@@ -40,5 +40,5 @@ float nanoHowManySeconds(qword val)
 
     quot = (double)val / freq.QuadPart;
 
-    return (float)quot;
+    return (double)quot;
 }

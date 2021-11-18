@@ -43,9 +43,9 @@ Render::~Render()
 {
 }
 
-float Render::_getObjScale(int item)
+double Render::_getObjScale(int item)
 {
-    float avgBondLength = 1.0f;
+    double avgBondLength = 1.0f;
     int bondCount = _factory.getItem(item).getBondCount();
     int atomCount = _factory.getItem(item).getAtomCount();
     if (bondCount > 0)
@@ -60,7 +60,7 @@ float Render::_getObjScale(int item)
     {
         avgBondLength = 1.0f;
     }
-    float objScale = 1 / avgBondLength;
+    double objScale = 1 / avgBondLength;
     return objScale;
 }
 
@@ -76,17 +76,17 @@ int Render::_getMaxHeight()
     return _cnvOpt.maxHeight > 0 ? std::min(_cnvOpt.maxHeight, maxPageSize) : maxPageSize;
 }
 
-float Render::_getScale(int w, int h)
+double Render::_getScale(int w, int h)
 {
-    float scale = _getMaxScale(w, h);
+    double scale = _getMaxScale(w, h);
     if (_bondLength > 0 && _bondLength < scale)
-        return (float)_bondLength;
+        return (double)_bondLength;
     return scale;
 }
 
-float Render::_getMaxScale(int w, int h)
+double Render::_getMaxScale(int w, int h)
 {
-    float s = (float)(_bondLength > 0 ? _bondLength : 100);
+    double s = (double)(_bondLength > 0 ? _bondLength : 100);
     int maxWidth = _getMaxWidth();
     int maxHeight = _getMaxHeight();
     int defaultWidth = _getDefaultWidth(s);

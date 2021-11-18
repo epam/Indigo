@@ -29,18 +29,18 @@ namespace indigo
     public:
         MeanEstimator();
 
-        void addValue(float value);
+        void addValue(double value);
 
         int getCount() const;
         // Manual change of the count parameter to avoid a lot addValue(0)
         void setCount(int count);
 
-        float mean() const;
-        float meanEsimationError() const;
+        double mean() const;
+        double meanEsimationError() const;
 
     private:
         int _count;
-        float _sum, _sum_sq;
+        double _sum, _sum_sq;
     };
 
 } // namespace indigo

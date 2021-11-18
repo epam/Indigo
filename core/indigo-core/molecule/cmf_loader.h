@@ -139,7 +139,7 @@ namespace indigo
         void _readVec3f(Scanner& scanner, Vec3f& pos, const CmfSaver::VecRange& range);
         void _readVec2f(Scanner& scanner, Vec2f& pos, const CmfSaver::VecRange& range);
         void _readDir2f(Scanner& scanner, Vec2f& dir, const CmfSaver::VecRange& range);
-        float _readFloatInRange(Scanner& scanner, float min, float range);
+        double _readFloatInRange(Scanner& scanner, double min, double range);
 
         Scanner* _scanner;
 

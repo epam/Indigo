@@ -135,13 +135,13 @@ DLLEXPORT bool _indigoParseTautomerFlags(const char* flags, IndigoTautomerParams
     return true;
 }
 
-DLLEXPORT int _indigoParseExactFlags(const char* flags, bool reaction, float* rms_threshold)
+DLLEXPORT int _indigoParseExactFlags(const char* flags, bool reaction, double* rms_threshold)
 {
     if (flags == 0)
         throw IndigoError("_indigoParseExactFlags(): zero string pointer");
 
     if (!reaction && rms_threshold == 0)
-        throw IndigoError("_indigoParseExactFlags(): zero float pointer");
+        throw IndigoError("_indigoParseExactFlags(): zero double pointer");
 
     static struct
     {

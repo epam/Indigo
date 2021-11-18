@@ -31,9 +31,9 @@ namespace bingo
     class SimilarityQueryData : public MatcherQueryData
     {
     public:
-        virtual float getMin() const = 0;
-        virtual float getMax() const = 0;
-        virtual void setMin(float min);
+        virtual double getMin() const = 0;
+        virtual double getMax() const = 0;
+        virtual void setMin(double min);
     };
 
     class SubstructureQueryData : public MatcherQueryData
@@ -58,35 +58,35 @@ namespace bingo
     class MoleculeSimilarityQueryData : public SimilarityQueryData
     {
     public:
-        MoleculeSimilarityQueryData(/* const */ Molecule& mol, float min_coef, float max_coef);
+        MoleculeSimilarityQueryData(/* const */ Molecule& mol, double min_coef, double max_coef);
 
         /*const*/ QueryObject& getQueryObject() /*const*/ override;
 
-        float getMin() const override;
-        float getMax() const override;
-        void setMin(float min) override;
+        double getMin() const override;
+        double getMax() const override;
+        void setMin(double min) override;
 
     private:
         SimilarityMoleculeQuery _obj;
-        float _min;
-        float _max;
+        double _min;
+        double _max;
     };
 
     class ReactionSimilarityQueryData : public SimilarityQueryData
     {
     public:
-        ReactionSimilarityQueryData(/* const */ Reaction& rxn, float min_coef, float max_coef);
+        ReactionSimilarityQueryData(/* const */ Reaction& rxn, double min_coef, double max_coef);
 
         /*const*/ QueryObject& getQueryObject() /*const*/ override;
 
-        float getMin() const override;
-        float getMax() const override;
-        void setMin(float min) override;
+        double getMin() const override;
+        double getMax() const override;
+        void setMin(double min) override;
 
     protected:
         SimilarityReactionQuery _obj;
-        float _min;
-        float _max;
+        double _min;
+        double _max;
     };
 
     class MoleculeExactQueryData : public ExactQueryData
@@ -168,12 +168,12 @@ namespace bingo
         virtual int currentId() const = 0;
         virtual IndigoObject* currentObject() = 0;
         virtual const BaseIndex& getIndex() = 0;
-        virtual float currentSimValue() const = 0;
+        virtual double currentSimValue() const = 0;
         virtual void setOptions(const char* options) = 0;
-        virtual void resetThresholdLimit(float min) = 0;
+        virtual void resetThresholdLimit(double min) = 0;
 
         virtual int esimateRemainingResultsCount(int& delta) = 0;
-        virtual float esimateRemainingTime(float& delta) = 0;
+        virtual double esimateRemainingTime(double& delta) = 0;
         virtual int containersCount() const = 0;
         virtual int cellsCount() const = 0;
         virtual int currentCell() const = 0;
@@ -194,13 +194,13 @@ namespace bingo
 
         const BaseIndex& getIndex() override;
 
-        float currentSimValue() const override;
+        double currentSimValue() const override;
 
         void setOptions(const char* options) override;
-        void resetThresholdLimit(float min) override;
+        void resetThresholdLimit(double min) override;
 
         int esimateRemainingResultsCount(int& delta) override;
-        float esimateRemainingTime(float& delta) override;
+        double esimateRemainingTime(double& delta) override;
         int containersCount() const  override;
         int cellsCount() const  override;
         int currentCell() const  override;
@@ -307,8 +307,8 @@ namespace bingo
         ~BaseSimilarityMatcher() override;
 
         int esimateRemainingResultsCount(int& delta) override;
-        float esimateRemainingTime(float& delta) override;
-        void resetThresholdLimit(float min) override;
+        double esimateRemainingTime(double& delta) override;
+        void resetThresholdLimit(double min) override;
 
         int containersCount() const override;
         int cellsCount() const override;
@@ -316,10 +316,10 @@ namespace bingo
         int minCell() const override;
         int maxCell() const override;
 
-        float currentSimValue() const override;
+        double currentSimValue() const override;
 
     protected:
-        float _current_sim_value;
+        double _current_sim_value;
         std::unique_ptr<SimilarityQueryData> _query_data;
 
     private:
@@ -335,7 +335,7 @@ namespace bingo
         Array<SimResult> _current_portion;
         int _current_portion_id;
 
-        // float _current_sim_value;
+        // double _current_sim_value;
 
         std::unique_ptr<SimCoef> _sim_coef;
 
@@ -378,7 +378,7 @@ namespace bingo
 
     protected:
         void _findTopN();
-        void _initModelDistribution(Array<float>& thrs, Array<int>& nhits_per_block);
+        void _initModelDistribution(Array<double>& thrs, Array<int>& nhits_per_block);
         static int _cmp_sim_res(SimResult& res1, SimResult& res2, void* context);
 
     private:
@@ -386,7 +386,7 @@ namespace bingo
         int _limit;
         Array<SimResult> _current_results;
         Array<int> _result_ids;
-        Array<float> _result_sims;
+        Array<double> _result_sims;
     };
 
     class MoleculeTopNSimMatcher : public TopNSimMatcher
@@ -439,7 +439,7 @@ namespace bingo
 
     private:
         IndexCurrentMolecule* _current_mol;
-        float _rms_threshold;
+        double _rms_threshold;
 
         dword _calcHash() override;
 

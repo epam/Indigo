@@ -52,9 +52,9 @@ MolfileSaver::MolfileSaver(Output& output) : _output(output), CP_INIT, TL_CP_GET
 /*
  * Utility functions
  */
-const float XYZ_EPSILON = 0.0001f;
+const double XYZ_EPSILON = 0.0001f;
 
-void write_c(float c, std::stringstream& coords)
+void write_c(double c, std::stringstream& coords)
 {
     int strip = (int)c;
     if (fabs(c - strip) < XYZ_EPSILON)
@@ -67,7 +67,7 @@ void write_c(float c, std::stringstream& coords)
     }
 }
 /*
- * Converts float to string
+ * Converts double to string
  */
 void convert_xyz_to_string(Vec3f& xyz, std::stringstream& coords)
 {

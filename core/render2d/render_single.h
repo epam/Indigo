@@ -35,7 +35,7 @@ namespace indigo
 
         int obj;
         int comment;
-        float scale;
+        double scale;
         int commentOffset;
         Vec2f objSize;
         Vec2f commentSize;
@@ -44,9 +44,9 @@ namespace indigo
         int width, height;
 
     private:
-        float _getScaleGivenSize(int w, int h);
-        int _getDefaultWidth(const float s);
-        int _getDefaultHeight(const float s);
+        double _getScaleGivenSize(int w, int h);
+        int _getDefaultWidth(const double s);
+        int _getDefaultHeight(const double s);
         void _drawComment();
         void _drawObj();
     };

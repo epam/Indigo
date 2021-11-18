@@ -52,10 +52,10 @@ int MoleculeCisTrans::sameside(const Vec3f& beg, const Vec3f& end, const Vec3f& 
         return 0;
     // throw Error("cannot normalize neighbor bond of stereo double bond");
 
-    float prod_beg = Vec3f::dot(norm_beg, norm);
-    float prod_end = Vec3f::dot(norm_end, norm);
+    double prod_beg = Vec3f::dot(norm_beg, norm);
+    double prod_end = Vec3f::dot(norm_end, norm);
 
-    if ((float)(fabs(prod_beg)) < 0.1 || (float)(fabs(prod_end)) < 0.1)
+    if ((double)(fabs(prod_beg)) < 0.1 || (double)(fabs(prod_end)) < 0.1)
         return 0;
     // throw Error("double stereo bond is collinear with its neighbor bond");
 
@@ -80,7 +80,7 @@ bool MoleculeCisTrans::sameline(const Vec3f& beg, const Vec3f& end, const Vec3f&
 
     Vec3f cross;
     cross.cross(norm_diff, norm_beg);
-    float sin_angle = cross.lengthSqr();
+    double sin_angle = cross.lengthSqr();
     if (fabs(sin_angle) < 0.01)
         return true;
 

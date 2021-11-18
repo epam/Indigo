@@ -75,19 +75,19 @@ IndigoRenderer::~IndigoRenderer()
 }
 
 #define SET_POSITIVE_FLOAT_OPTION(option, error)                                                                                                               \
-    [](float value) {                                                                                                                                          \
+    [](double value) {                                                                                                                                          \
         if (value <= 0.0f)                                                                                                                                     \
             throw IndigoError(error);                                                                                                                          \
         option = value;                                                                                                                                        \
     },                                                                                                                                                         \
-        [](float& value) { value = option; }
+        [](double& value) { value = option; }
 
 #define CHECK_AND_SETTER_GETTER_COLOR_OPTION(option)                                                                                                           \
-    [](float r, float g, float b) {                                                                                                                            \
+    [](double r, double g, double b) {                                                                                                                            \
         CHECKRGB(r, g, b);                                                                                                                                     \
         option.set(r, g, b);                                                                                                                                   \
     },                                                                                                                                                         \
-        [](float& r, float& g, float& b) {                                                                                                                     \
+        [](double& r, double& g, double& b) {                                                                                                                     \
             r = option.x;                                                                                                                                      \
             g = option.y;                                                                                                                                      \
             b = option.z;                                                                                                                                      \
@@ -302,12 +302,12 @@ void indigoRenderGetSuperatomMode(Array<char>& value)
 
 static MultilineTextLayout _parseTextLayout(const char* text)
 {
-    // Try to read as float for compatibility with previous versions
+    // Try to read as double for compatibility with previous versions
     BufferScanner scanner(text);
-    float val;
+    double val;
     if (scanner.tryReadFloat(val))
     {
-        const float eps = 1e-6f;
+        const double eps = 1e-6f;
         if (fabs(val) < eps)
             text = "left";
         else if (fabs(val - 0.5f) < eps)

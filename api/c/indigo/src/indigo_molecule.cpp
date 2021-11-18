@@ -1414,7 +1414,7 @@ CEXPORT int indigoSetRadical(int atom, int radical)
     INDIGO_END(-1);
 }
 
-CEXPORT float* indigoXYZ(int atom)
+CEXPORT double* indigoXYZ(int atom)
 {
     INDIGO_BEGIN
     {
@@ -1431,7 +1431,7 @@ CEXPORT float* indigoXYZ(int atom)
     INDIGO_END(0);
 }
 
-CEXPORT int indigoSetXYZ(int atom, float x, float y, float z)
+CEXPORT int indigoSetXYZ(int atom, double x, double y, double z)
 {
     INDIGO_BEGIN
     {
@@ -2009,7 +2009,7 @@ CEXPORT int indigoBond(int nei)
     INDIGO_END(-1);
 }
 
-CEXPORT float indigoAlignAtoms(int molecule, int natoms, int* atom_ids, float* desired_xyz)
+CEXPORT double indigoAlignAtoms(int molecule, int natoms, int* atom_ids, double* desired_xyz)
 {
     INDIGO_BEGIN
     {
@@ -2036,7 +2036,7 @@ CEXPORT float indigoAlignAtoms(int molecule, int natoms, int* atom_ids, float* d
         if (points.size() < 1)
             return true;
 
-        float sqsum;
+        double sqsum;
         Transform3f matr;
 
         if (!matr.bestFit(points.size(), points.ptr(), goals.ptr(), &sqsum))
@@ -2045,7 +2045,7 @@ CEXPORT float indigoAlignAtoms(int molecule, int natoms, int* atom_ids, float* d
         for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
             mol.getAtomXyz(i).transformPoint(matr);
 
-        return (float)(sqrt(sqsum / natoms));
+        return (double)(sqrt(sqsum / natoms));
     }
     INDIGO_END(-1);
 }
@@ -2803,7 +2803,7 @@ CEXPORT int indigoAddSuperatom(int molecule, int natoms, int* atoms, const char*
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSetDataSGroupXY(int sgroup, float x, float y, const char* options)
+CEXPORT int indigoSetDataSGroupXY(int sgroup, double x, double y, const char* options)
 {
     INDIGO_BEGIN
     {
@@ -2842,7 +2842,7 @@ CEXPORT int indigoSetSGroupData(int sgroup, const char* data)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSetSGroupCoords(int sgroup, float x, float y)
+CEXPORT int indigoSetSGroupCoords(int sgroup, double x, double y)
 {
     INDIGO_BEGIN
     {
@@ -3002,7 +3002,7 @@ CEXPORT int indigoSetSGroupDataType(int sgroup, const char* data_type)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSetSGroupXCoord(int sgroup, float x)
+CEXPORT int indigoSetSGroupXCoord(int sgroup, double x)
 {
     INDIGO_BEGIN
     {
@@ -3015,7 +3015,7 @@ CEXPORT int indigoSetSGroupXCoord(int sgroup, float x)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSetSGroupYCoord(int sgroup, float y)
+CEXPORT int indigoSetSGroupYCoord(int sgroup, double y)
 {
     INDIGO_BEGIN
     {
@@ -3206,7 +3206,7 @@ CEXPORT int indigoGetSGroupSeqId(int sgroup)
     INDIGO_END(0);
 }
 
-CEXPORT float* indigoGetSGroupCoords(int sgroup)
+CEXPORT double* indigoGetSGroupCoords(int sgroup)
 {
     INDIGO_BEGIN
     {
@@ -3264,7 +3264,7 @@ CEXPORT int indigoSetSGroupMultiplier(int sgroup, int multiplier)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
+CEXPORT int indigoSetSGroupBrackets(int sgroup, int brk_style, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
 {
     INDIGO_BEGIN
     {

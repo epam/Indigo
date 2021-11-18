@@ -63,7 +63,7 @@ void RenderSingle::_drawComment()
         return;
     _rc.storeTransform();
     {
-        float diff = (float)(width - 2 * outerMargin.x - commentSize.x);
+        double diff = (double)(width - 2 * outerMargin.x - commentSize.x);
         _rc.translate(diff * _cnvOpt.commentAlign.getBboxRelativeOffset(), 0);
         _factory.getItem(comment).render(false);
     }
@@ -80,7 +80,7 @@ void RenderSingle::draw()
 
     _factory.getItem(obj).init();
 
-    float objScale = _getObjScale(obj);
+    double objScale = _getObjScale(obj);
     _factory.getItem(obj).setObjScale(objScale);
     _factory.getItem(obj).estimateSize();
 
@@ -95,8 +95,8 @@ void RenderSingle::draw()
         commentSize.copy(_factory.getItem(comment).size);
         commentOffset = _cnvOpt.commentOffset;
     }
-    outerMargin.x = (float)(minMarg + _cnvOpt.marginX);
-    outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
+    outerMargin.x = (double)(minMarg + _cnvOpt.marginX);
+    outerMargin.y = (double)(minMarg + _cnvOpt.marginY);
 
     width = std::min(width, _getMaxWidth());
     height = std::min(height, _getMaxHeight());
@@ -107,25 +107,25 @@ void RenderSingle::draw()
         height = _getDefaultHeight(scale);
 
     _rc.initContext(width, height);
-    objArea.set((float)width, (float)height);
+    objArea.set((double)width, (double)height);
     objArea.addScaled(outerMargin, -2);
     objArea.y -= commentSize.y + commentOffset;
     _rc.init();
-    _rc.translate((float)outerMargin.x, (float)outerMargin.y);
+    _rc.translate((double)outerMargin.x, (double)outerMargin.y);
     if (_cnvOpt.xOffset > 0 || _cnvOpt.yOffset > 0)
-        _rc.translate((float)_cnvOpt.xOffset, (float)_cnvOpt.yOffset);
+        _rc.translate((double)_cnvOpt.xOffset, (double)_cnvOpt.yOffset);
     _rc.storeTransform();
     {
         if (_cnvOpt.commentPos == COMMENT_POS_TOP)
         {
             _drawComment();
-            _rc.translate(0, (float)commentOffset);
+            _rc.translate(0, (double)commentOffset);
             _drawObj();
         }
         else
         {
             _drawObj();
-            _rc.translate(0, (float)commentOffset);
+            _rc.translate(0, (double)commentOffset);
             _drawComment();
         }
     }
@@ -133,21 +133,21 @@ void RenderSingle::draw()
     _rc.removeStoredTransform();
 }
 
-int RenderSingle::_getDefaultWidth(const float s)
+int RenderSingle::_getDefaultWidth(const double s)
 {
-    return (int)ceil(std::max(std::max(objSize.x * s, commentSize.x) + outerMargin.x * 2, 1.f));
+    return (int)ceil(std::max(std::max(objSize.x * s, commentSize.x) + outerMargin.x * 2, 1.0));
 }
 
-int RenderSingle::_getDefaultHeight(const float s)
+int RenderSingle::_getDefaultHeight(const double s)
 {
-    return (int)ceil(std::max(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2, 1.f));
+    return (int)ceil(std::max(objSize.y * s + commentOffset + commentSize.y + outerMargin.y * 2, 1.0));
 }
 
-float RenderSingle::_getScaleGivenSize(int w, int h)
+double RenderSingle::_getScaleGivenSize(int w, int h)
 {
-    float absX = 2 * outerMargin.x;
-    float absY = commentSize.y + 2 * outerMargin.y + commentOffset;
-    float x = w - absX, y = h - absY;
+    double absX = 2 * outerMargin.x;
+    double absY = commentSize.y + 2 * outerMargin.y + commentOffset;
+    double x = w - absX, y = h - absY;
     if (x < commentSize.x + 1 || y < 1)
         throw Error("Image too small, the layout requires at least %dx%d", (int)(absX + commentSize.x + 2), (int)(absY + 2));
     if (x * objSize.y < y * objSize.x)

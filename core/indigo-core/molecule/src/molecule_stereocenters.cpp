@@ -596,23 +596,23 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
 // 4 -- in the 'positive' straight angle, 8 -- in the 'negative' straight angle
 int MoleculeStereocenters::_xyzzy(const Vec3f& v1, const Vec3f& v2, const Vec3f& u)
 {
-    const float eps = 1e-3f;
+    const double eps = 1e-3f;
 
     Vec3f cross;
 
     cross.cross(v1, v2);
 
-    float sine1 = cross.z;
-    float cosine1 = Vec3f::dot(v1, v2);
+    double sine1 = cross.z;
+    double cosine1 = Vec3f::dot(v1, v2);
 
     cross.cross(v1, u);
 
-    float sine2 = cross.z;
-    float cosine2 = Vec3f::dot(v1, u);
+    double sine2 = cross.z;
+    double cosine2 = Vec3f::dot(v1, u);
 
-    if ((float)fabs(sine1) < eps)
+    if ((double)fabs(sine1) < eps)
     {
-        if ((float)fabs(sine2) < eps)
+        if ((double)fabs(sine2) < eps)
             throw Error("degenerate case -- bonds overlap");
 
         return (sine2 > 0) ? 4 : 8;
@@ -630,14 +630,14 @@ int MoleculeStereocenters::_xyzzy(const Vec3f& v1, const Vec3f& v2, const Vec3f&
 int MoleculeStereocenters::_sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3)
 {
     // Check the angle between bonds
-    float dot_eps = 0.997f; // Corresponds to 4.5 degrees
-    //   float dot_eps = 0.99999f; // Corresponds to 0 degrees
+    double dot_eps = 0.997f; // Corresponds to 4.5 degrees
+    //   double dot_eps = 0.99999f; // Corresponds to 0 degrees
     if (Vec3f::dot(v1, v2) > dot_eps * v1.length() * v2.length() || Vec3f::dot(v1, v3) > dot_eps * v1.length() * v3.length() ||
         Vec3f::dot(v2, v3) > dot_eps * v2.length() * v3.length())
         throw Error("angle between bonds is too small");
 
-    float res = (v1.x - v3.x) * (v2.y - v3.y) - (v1.y - v3.y) * (v2.x - v3.x);
-    const float eps = 1e-3f;
+    double res = (v1.x - v3.x) * (v2.y - v3.y) - (v1.y - v3.y) * (v2.x - v3.x);
+    const double eps = 1e-3f;
 
     if (res > eps)
         return 1;
@@ -650,7 +650,7 @@ int MoleculeStereocenters::_sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& 
 int MoleculeStereocenters::_onPlane(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3, const Vec3f& u)
 {
     Vec3f v1u, v2u, v3u, p;
-    const float eps = 0.1f;
+    const double eps = 0.1f;
 
     v1u.diff(v1, u);
     v1u.normalize();
@@ -659,18 +659,18 @@ int MoleculeStereocenters::_onPlane(const Vec3f& v1, const Vec3f& v2, const Vec3
     v3u.diff(v3, u);
     v3u.normalize();
 
-    float a12, a23, a13;
+    double a12, a23, a13;
     Vec3f::angle(v1u, v2u, a12);
     Vec3f::angle(v2u, v3u, a23);
     Vec3f::angle(v1u, v3u, a13);
 
-    float angle_sum = a12 + a23 + a13;
+    double angle_sum = a12 + a23 + a13;
 
     if (fabs(angle_sum - 2 * M_PI) < eps)
         return 0;
 
     p.cross(v2u, v3u);
-    float det = Vec3f::dot(v1u, p);
+    double det = Vec3f::dot(v1u, p);
 
     if (det > 0)
         return 1;

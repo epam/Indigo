@@ -547,7 +547,7 @@ jobs:
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "${{ matrix.os }}-x86_64-_dotnet_test_report"
+          check_name: "${{ matrix.os }}-x86_64-dotnet_test_report"
 
   test_indigo_dotnet_i386:
     timeout-minutes: 60

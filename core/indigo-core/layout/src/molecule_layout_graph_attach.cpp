@@ -170,7 +170,7 @@ void MoleculeLayoutGraphSimple::_splitCycle2(const Cycle& cycle, const Array<int
 }
 
 // Attach cycle outside component border. Component must have given number of common edges or any (if 0)
-bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float length, int n_common_edges)
+bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, double length, int n_common_edges)
 {
     int n_common_e = 0, n_common_v = 0;
     QS_DEF(Array<int>, cycle_vertex_types);
@@ -237,7 +237,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
         if (length > 1)
         {
             k = chain_ext.size() - 2;
-            float dist = Vec2f::dist(_layout_vertices[c_beg].pos, _layout_vertices[c_end].pos);
+            double dist = Vec2f::dist(_layout_vertices[c_beg].pos, _layout_vertices[c_end].pos);
 
             if (dist > (k + 1) * length)
                 length = 0.2f + dist / (k + 1);
@@ -330,7 +330,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
 
 // Attach cycle inside component border.
 // Everything can be attached outside is already attached.
-bool MoleculeLayoutGraphSimple::_attachCycleInside(const Cycle& cycle, float length)
+bool MoleculeLayoutGraphSimple::_attachCycleInside(const Cycle& cycle, double length)
 {
     int n_common_e = 0, n_common_v = 0;
     int i, j;
@@ -457,7 +457,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleInside(const Cycle& cycle, float len
 // Attach cycle with intersections.
 // Everything can be attached w/o intersections is already attached.
 // Not all cycle vertices are drawn
-bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle, float length)
+bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle, double length)
 {
     int n_common_e = 0, n_common_v = 0;
     int i, j, k;
@@ -499,12 +499,12 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
         Array<int>& chain_ext = chains_ext[chain_idx];
         int c_beg = chain_ext[0], c_end = chain_ext[chain_ext.size() - 1];
 
-        float max_length = length * 4; // to avoid infinite values
+        double max_length = length * 4; // to avoid infinite values
 
         // Complete regular polygon by chain_ext (on the one side if n_try == 1 and other side if n_try == 2
         // Mark new vertices and edges as not planar
         k = chain_ext.size() - 2;
-        float dist = Vec2f::dist(getPos(c_beg), getPos(c_end));
+        double dist = Vec2f::dist(getPos(c_beg), getPos(c_end));
 
         if (dist > (k + 1) * length)
         {
@@ -523,7 +523,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
 
             // Choose position with minimal energy
             Vec2f& pos1 = getPos(chain_ext[1]);
-            float s = 0;
+            double s = 0;
 
             for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
                 if (_layout_vertices[i].type == ELEMENT_INTERNAL || _layout_vertices[i].type == ELEMENT_BOUNDARY)
@@ -534,7 +534,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
 
             _drawRegularCurve(chain_ext, c_beg, c_end, length, false, ELEMENT_NOT_PLANAR);
 
-            float sn = 0;
+            double sn = 0;
 
             for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             {
@@ -591,7 +591,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
 void MoleculeLayoutGraph::_attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos)
 {
     Vec2f v1, v2, v3, v4;
-    float phi = _2FLOAT(13. * M_PI / 24.);
+    double phi = _2FLOAT(13. * M_PI / 24.);
     const Vertex& vert = getVertex(vert_idx);
 
     _layout_vertices[ears[0]].type = ELEMENT_IGNORE;
@@ -825,9 +825,9 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
 
     const Vertex& vert = getVertex(vert_idx);
     Vec2f v1, v2, p0;
-    float phi;
+    double phi;
 
-    QS_DEF(Array<float>, angles); // polar angles of drawn edges
+    QS_DEF(Array<double>, angles); // polar angles of drawn edges
     QS_DEF(Array<int>, edges);    // edge indices in CCW order
 
     angles.clear();
@@ -884,7 +884,7 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, Array<int
     // Drawn is first vertex, other in CCW order
 
     Vec2f v1, v2;
-    float phi;
+    double phi;
     const Vertex& vert = getVertex(vert_idx);
 
     if (adjacent_list.size() > 1)
@@ -1030,10 +1030,10 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, Array<int
 
 void MoleculeLayoutGraph::_orderByEnergy(Array<Vec2f>& positions)
 {
-    QS_DEF(Array<float>, energies);
-    QS_DEF(Array<float>, norm_a);
-    float norm = 0.0;
-    float r = 0.f;
+    QS_DEF(Array<double>, energies);
+    QS_DEF(Array<double>, norm_a);
+    double norm = 0.0;
+    double r = 0.f;
     Vec2f p0;
 
     int n_pos = positions.size();

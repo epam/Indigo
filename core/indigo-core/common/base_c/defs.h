@@ -95,10 +95,10 @@ typedef unsigned short word;
 
 #ifndef _2FLOAT
 #ifdef __cplusplus
-#define _2FLOAT(x) static_cast<float>(x)
+#define _2FLOAT(x) static_cast<double>(x)
 #define _2DOUBLE(x) static_cast<double>(x)
 #else // __cplusplus
-#define _2FLOAT(x) (float)(x)
+#define _2FLOAT(x) (double)(x)
 #define _2DOUBLE(x) (double)(x)
 #endif // __cplusplus
 #endif // _2FLOAT

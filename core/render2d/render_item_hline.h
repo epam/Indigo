@@ -38,7 +38,7 @@ namespace indigo
         void estimateSize() override;
         void render(bool idle) override;
 
-        float hSpace;
+        double hSpace;
     };
 
 } // namespace indigo

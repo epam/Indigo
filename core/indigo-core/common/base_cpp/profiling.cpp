@@ -66,7 +66,7 @@ qword ProfilingTimer::getTime() const
     return nanoClock() - _start_time;
 }
 
-float ProfilingTimer::getTimeSec() const
+double ProfilingTimer::getTimeSec() const
 {
     return nanoHowManySeconds(getTime());
 }
@@ -211,13 +211,13 @@ void ProfilingSystem::_printTimerData(const Record::Data& data, Output& output) 
         output.printf("-\t0\t\t\t");
         return;
     }
-    float total_sec = nanoHowManySeconds(data.value);
-    float avg_ms = nanoHowManySeconds(data.value / data.count) * 1000;
-    float max_ms = nanoHowManySeconds(data.max_value) * 1000;
+    double total_sec = nanoHowManySeconds(data.value);
+    double avg_ms = nanoHowManySeconds(data.value / data.count) * 1000;
+    double max_ms = nanoHowManySeconds(data.max_value) * 1000;
 
     double avg_value = (double)data.value / data.count;
     double sigma_sq = data.square_sum / data.count - avg_value * avg_value;
-    float sigma_ms = nanoHowManySeconds((qword)sqrt(sigma_sq)) * 1000;
+    double sigma_ms = nanoHowManySeconds((qword)sqrt(sigma_sq)) * 1000;
 
     output.printf("%0.2fs\t%0.0lf\t%0.1fms\t%0.1lfms\t%0.1fms", total_sec, (double)data.count, avg_ms, sigma_ms, max_ms);
 }
@@ -229,7 +229,7 @@ void ProfilingSystem::_printCounterData(const Record::Data& data, Output& output
         output.printf("-\t0\t\t\t");
         return;
     }
-    float avg_value = (float)data.value / data.count;
+    double avg_value = (double)data.value / data.count;
 
     // To avoid platform-specific code qwords were casted to doubles
     double sigma_sq = data.square_sum / data.count - avg_value * avg_value;
@@ -263,7 +263,7 @@ void ProfilingSystem::_ensureRecordExistanceLocked(const int name_index)
     }
 }
 
-float ProfilingSystem::getLabelExecTime(const char* name, const bool total)
+double ProfilingSystem::getLabelExecTime(const char* name, const bool total)
 {
     int idx = getNameIndex(name);
     _ensureRecordExistanceLocked(idx);

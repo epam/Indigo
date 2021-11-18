@@ -46,7 +46,7 @@ void RenderGrid::_drawComment()
         return;
     _rc.storeTransform();
     {
-        float diff = (float)(_width - 2 * outerMargin.x - commentSize.x);
+        double diff = (double)(_width - 2 * outerMargin.x - commentSize.x);
         _rc.translate(diff * _cnvOpt.commentAlign.getBboxRelativeOffset(), 0);
         _factory.getItem(comment).render(false);
     }
@@ -82,7 +82,7 @@ void RenderGrid::draw()
 
     maxsz.set(0, 0);
     Vec2f refSizeLT, refSizeRB;
-    Array<float> columnExtentLeft, columnExtentRight, rowExtentTop, rowExtentBottom;
+    Array<double> columnExtentLeft, columnExtentRight, rowExtentTop, rowExtentBottom;
     columnExtentLeft.clear_resize(nColumns);
     columnExtentRight.clear_resize(nColumns);
     columnExtentLeft.fill(0);
@@ -133,8 +133,8 @@ void RenderGrid::draw()
         }
     }
 
-    outerMargin.x = (float)(minMarg + _cnvOpt.marginX);
-    outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
+    outerMargin.x = (double)(minMarg + _cnvOpt.marginX);
+    outerMargin.y = (double)(minMarg + _cnvOpt.marginY);
 
     _width = std::min(_width, _getMaxWidth());
     _height = std::min(_height, _getMaxHeight());
@@ -149,12 +149,12 @@ void RenderGrid::draw()
     clientArea.set(cellsz.x * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), cellsz.y * nRows + _cnvOpt.gridMarginY * (nRows - 1));
     _rc.init();
     if (_cnvOpt.xOffset > 0 || _cnvOpt.yOffset > 0)
-        _rc.translate((float)_cnvOpt.xOffset, (float)_cnvOpt.yOffset);
+        _rc.translate((double)_cnvOpt.xOffset, (double)_cnvOpt.yOffset);
     _rc.translate(outerMargin.x, outerMargin.y);
     if (_cnvOpt.commentPos == COMMENT_POS_TOP)
     {
         _drawComment();
-        _rc.translate(0, (float)commentOffset);
+        _rc.translate(0, (double)commentOffset);
     }
     _rc.storeTransform();
     {
@@ -208,21 +208,21 @@ void RenderGrid::draw()
     }
 }
 
-int RenderGrid::_getDefaultWidth(const float s)
+int RenderGrid::_getDefaultWidth(const double s)
 {
     return (int)ceil(std::max(std::max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
 }
-int RenderGrid::_getDefaultHeight(const float s)
+int RenderGrid::_getDefaultHeight(const double s)
 {
     return (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y +
                      commentOffset);
 }
 
-float RenderGrid::_getScaleGivenSize(int w, int h)
+double RenderGrid::_getScaleGivenSize(int w, int h)
 {
-    float absX = _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2;
-    float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset;
-    float x = w - absX, y = h - absY;
+    double absX = _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2;
+    double absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset;
+    double x = w - absX, y = h - absY;
     if (x < maxTitleSize.x * nRows + 1 || w < commentSize.x + outerMargin.x * 2 + 1 || y < 1)
         throw Error("Image too small, the layout requires at least %dx%d", (int)std::max(absX + maxTitleSize.x * nRows + 2, commentSize.x + outerMargin.x * 2 + 2),
                     (int)(absY + 2));

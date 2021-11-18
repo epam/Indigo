@@ -870,7 +870,7 @@ Vec3f& BaseMolecule::getAtomXyz(int idx)
     return _xyz[idx];
 }
 
-void BaseMolecule::setAtomXyz(int idx, float x, float y, float z)
+void BaseMolecule::setAtomXyz(int idx, double x, double y, double z)
 {
     _xyz[idx].set(x, y, z);
     updateEditRevision();

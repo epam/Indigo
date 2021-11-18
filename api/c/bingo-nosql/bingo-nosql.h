@@ -46,11 +46,11 @@ CEXPORT int bingoOptimize(int db);
 CEXPORT int bingoSearchSub(int db, int query_obj, const char* options);
 CEXPORT int bingoSearchExact(int db, int query_obj, const char* options);
 CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options);
-CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const char* options);
-CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max, int fp, const char* options);
+CEXPORT int bingoSearchSim(int db, int query_obj, double min, double max, const char* options);
+CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, double min, double max, int fp, const char* options);
 
-CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, const char* options);
-CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float min, int fp, const char* options);
+CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, double min, const char* options);
+CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, double min, int fp, const char* options);
 
 CEXPORT int bingoEnumerateId(int db);
 
@@ -59,12 +59,12 @@ CEXPORT int bingoEnumerateId(int db);
 //
 CEXPORT int bingoNext(int search_obj);
 CEXPORT int bingoGetCurrentId(int search_obj);
-CEXPORT float bingoGetCurrentSimilarityValue(int search_obj);
+CEXPORT double bingoGetCurrentSimilarityValue(int search_obj);
 
 // Estimation methods
 CEXPORT int bingoEstimateRemainingResultsCount(int search_obj);
 CEXPORT int bingoEstimateRemainingResultsCountError(int search_obj);
-CEXPORT int bingoEstimateRemainingTime(int search_obj, float* time_sec);
+CEXPORT int bingoEstimateRemainingTime(int search_obj, double* time_sec);
 CEXPORT int bingoContainersCount(int search_obj);
 CEXPORT int bingoCellsCount(int search_obj);
 CEXPORT int bingoCurrentCell(int search_obj);

@@ -240,17 +240,17 @@ bool Scanner::_readDouble(double& res, int max)
     return digit;
 }
 
-float Scanner::readFloat(void)
+double Scanner::readFloat(void)
 {
     double res;
 
     if (!_readDouble(res, 0))
         throw Error("readFloat(): error parsing");
 
-    return (float)res;
+    return (double)res;
 }
 
-bool Scanner::tryReadFloat(float& value)
+bool Scanner::tryReadFloat(double& value)
 {
     long long pos = tell();
     double res;
@@ -261,7 +261,7 @@ bool Scanner::tryReadFloat(float& value)
         return false;
     }
 
-    value = (float)res;
+    value = (double)res;
     return true;
 }
 
@@ -294,7 +294,7 @@ void Scanner::readWord(Array<char>& word, const char* delimiters)
     word.push(0);
 }
 
-float Scanner::readFloatFix(int digits)
+double Scanner::readFloatFix(int digits)
 {
     long long pos = tell();
     double res;
@@ -311,7 +311,7 @@ float Scanner::readFloatFix(int digits)
             throw Error("readFloatFix(): garbage after the number");
     }
 
-    return (float)res;
+    return (double)res;
 }
 
 char Scanner::readChar()
@@ -456,11 +456,11 @@ int Scanner::readBinaryInt()
     //*res = ntohl(*res);
 }
 
-float Scanner::readBinaryFloat()
+double Scanner::readBinaryFloat()
 {
-    float res;
+    double res;
 
-    read(sizeof(float), &res);
+    read(sizeof(double), &res);
 
     return res;
 }

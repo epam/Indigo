@@ -28,7 +28,7 @@ extern "C"
 
     qword nanoClock(void);
 
-    float nanoHowManySeconds(qword val);
+    double nanoHowManySeconds(qword val);
 
 #ifdef __cplusplus
 }

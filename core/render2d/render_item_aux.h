@@ -45,18 +45,18 @@ namespace indigo
         {
             _renderIdle();
         }
-        void setObjScale(float scale) override
+        void setObjScale(double scale) override
         {
         }
         void init() override
         {
         }
         void render(bool idle) override;
-        float getTotalBondLength() override
+        double getTotalBondLength() override
         {
             return 0.0f;
         }
-        float getTotalClosestAtomDistance() override
+        double getTotalClosestAtomDistance() override
         {
             return 0.0f;
         }
@@ -73,7 +73,7 @@ namespace indigo
         Array<char> text;
         BaseMolecule* mol;
         int rLabelIdx;
-        float arrowLength;
+        double arrowLength;
 
     private:
         void _drawRGroupLabel(bool idle);

@@ -12,7 +12,7 @@ using namespace indigo;
 
 CP_DEF(HaworthProjectionFinder);
 
-const float COS10_THRESHOLD = 0.015f;
+const double COS10_THRESHOLD = 0.015f;
 
 HaworthProjectionFinder::HaworthProjectionFinder(BaseMolecule& mol)
     : _mol(mol), CP_INIT, TL_CP_GET(_atoms_mask), TL_CP_GET(_bonds_mask), TL_CP_GET(_bold_bonds_mask)
@@ -141,11 +141,11 @@ bool HaworthProjectionFinder::_processRing(bool add_stereo, const Array<int>& ve
         if (ring_cnt != 2)
             return false;
 
-        float c = _getAngleCos(vi, e1i, e2i);
+        double c = _getAngleCos(vi, e1i, e2i);
         if (c > 1 - COS10_THRESHOLD)
             return false; // Angle is too small
 
-        float s = _getAngleSin(vi, e1i, e2i);
+        double s = _getAngleSin(vi, e1i, e2i);
         if (sign == 0)
             sign = __sign(s);
         else if (sign != __sign(s))
@@ -185,8 +185,8 @@ bool HaworthProjectionFinder::_processRing(bool add_stereo, const Array<int>& ve
         // Check if bond is a angle bisector
         if (subs_cnt == 1)
         {
-            float a1 = _getAngleCos(vi, subs_bond_idx, e1i);
-            float a2 = _getAngleCos(vi, subs_bond_idx, e2i);
+            double a1 = _getAngleCos(vi, subs_bond_idx, e1i);
+            double a2 = _getAngleCos(vi, subs_bond_idx, e2i);
             if (fabs(a1 - a2) < 1e-3)
             {
                 // Check if angle bisector is allowed
@@ -214,7 +214,7 @@ bool HaworthProjectionFinder::_processRing(bool add_stereo, const Array<int>& ve
             if (_mol.getEdgeTopology(b) == TOPOLOGY_RING)
                 continue;
 
-            float c2 = _getAngleCos(vi, b, 0.0f, 1.0f);
+            double c2 = _getAngleCos(vi, b, 0.0f, 1.0f);
             if (fabs(c2) > COS10_THRESHOLD)
             {
                 // Count only non-horizontal bonds
@@ -312,10 +312,10 @@ void HaworthProjectionFinder::_addRingStereocenters(const Array<int>& vertices, 
 {
     // Find left vertex
     int j_left = -1;
-    float x_left = 1e20f;
+    double x_left = 1e20f;
     for (int j = 0; j < vertices.size(); j++)
     {
-        float x = _mol.getAtomXyz(vertices[j]).x;
+        double x = _mol.getAtomXyz(vertices[j]).x;
         if (x < x_left)
         {
             x_left = x;
@@ -326,8 +326,8 @@ void HaworthProjectionFinder::_addRingStereocenters(const Array<int>& vertices, 
     // Check direction and make it from top to bottom
     int left_next = (j_left + 1) % vertices.size();
     int left_prev = (j_left + vertices.size() - 1) % vertices.size();
-    float yn = _mol.getAtomXyz(vertices[left_next]).y;
-    float yp = _mol.getAtomXyz(vertices[left_prev]).y;
+    double yn = _mol.getAtomXyz(vertices[left_next]).y;
+    double yp = _mol.getAtomXyz(vertices[left_prev]).y;
 
     int parity = __sign(yn - yp);
 
@@ -343,7 +343,7 @@ void HaworthProjectionFinder::_addRingStereocenters(const Array<int>& vertices, 
         int vi_next = vertices[v_next];
         int vi_prev = vertices[v_prev];
 
-        float yc = _mol.getAtomXyz(vi).y;
+        double yc = _mol.getAtomXyz(vi).y;
 
         int vi_top = -1, vi_bottom = -1;
         const Vertex& v = _mol.getVertex(vi);
@@ -365,7 +365,7 @@ void HaworthProjectionFinder::_addRingStereocenters(const Array<int>& vertices, 
                 break;
             }
 
-            float yn = _mol.getAtomXyz(vn).y;
+            double yn = _mol.getAtomXyz(vn).y;
             if (yn > yc)
                 vi_top = vn;
             else
@@ -414,19 +414,19 @@ bool HaworthProjectionFinder::_isCornerVertex(int v, int e1, int e2)
     return __sign(d1.x * d2.x) == 1;
 }
 
-bool HaworthProjectionFinder::_isHorizontalEdge(int e, float cos_threshold)
+bool HaworthProjectionFinder::_isHorizontalEdge(int e, double cos_threshold)
 {
     int v = _mol.getEdge(e).beg;
     return fabs(_getAngleCos(v, e, 1.0f, 0.0f)) > 1 - cos_threshold;
 }
 
-bool HaworthProjectionFinder::_isVerticalEdge(int e, float cos_threshold)
+bool HaworthProjectionFinder::_isVerticalEdge(int e, double cos_threshold)
 {
     int v = _mol.getEdge(e).beg;
     return fabs(_getAngleCos(v, e, 0.0f, 1.0f)) > 1 - cos_threshold;
 }
 
-float HaworthProjectionFinder::_getAngleCos(int v, int e, float dx, float dy)
+double HaworthProjectionFinder::_getAngleCos(int v, int e, double dx, double dy)
 {
     int v1 = _mol.getEdgeEnd(v, e);
     Vec3f pv = _mol.getAtomXyz(v);
@@ -438,7 +438,7 @@ float HaworthProjectionFinder::_getAngleCos(int v, int e, float dx, float dy)
     return Vec2f::dot(d1, d2) / d1.length() / d2.length();
 }
 
-float HaworthProjectionFinder::_getAngleCos(int v, int e1, int e2)
+double HaworthProjectionFinder::_getAngleCos(int v, int e1, int e2)
 {
     int v2 = _mol.getEdgeEnd(v, e2);
     Vec3f pv = _mol.getAtomXyz(v);
@@ -446,7 +446,7 @@ float HaworthProjectionFinder::_getAngleCos(int v, int e1, int e2)
     return _getAngleCos(v, e1, pv2.x - pv.x, pv2.y - pv.y);
 }
 
-float HaworthProjectionFinder::_getAngleSin(int v, int e1, int e2)
+double HaworthProjectionFinder::_getAngleSin(int v, int e1, int e2)
 {
     int v1 = _mol.getEdgeEnd(v, e1);
     int v2 = _mol.getEdgeEnd(v, e2);

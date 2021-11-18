@@ -478,7 +478,7 @@ bool Molecule3dConstraintsChecker::check(BaseMolecule& target, const int* mappin
         {
         case MC::ANGLE_DIHEDRAL:
         case MC::ANGLE_3POINTS: {
-            float value = _getAngle(i);
+            double value = _getAngle(i);
             const MC::AngleBase& constr = (const MC::AngleBase&)base;
 
             if (value < constr.bottom || value > constr.top)
@@ -487,7 +487,7 @@ bool Molecule3dConstraintsChecker::check(BaseMolecule& target, const int* mappin
         }
         case MC::ANGLE_2LINES:
         case MC::ANGLE_2PLANES: {
-            float value = _getAngle(i);
+            double value = _getAngle(i);
             const MC::AngleBase& constr = (const MC::AngleBase&)base;
 
             if ((value < constr.bottom || value > constr.top) && (M_PI - value < constr.bottom || M_PI - value > constr.top))
@@ -497,7 +497,7 @@ bool Molecule3dConstraintsChecker::check(BaseMolecule& target, const int* mappin
         case MC::DISTANCE_2POINTS:
         case MC::DISTANCE_POINT_LINE:
         case MC::DISTANCE_POINT_PLANE: {
-            float value = _getDistance(i);
+            double value = _getDistance(i);
             const MC::DistanceBase& constr = (const MC::DistanceBase&)base;
 
             if (value < constr.bottom || value > constr.top)
@@ -540,7 +540,7 @@ bool Molecule3dConstraintsChecker::check(BaseMolecule& target, const int* mappin
 
             const Line3f& bfl = _cache_l.at(i);
             const MC::BestFitLine& constr = (const MC::BestFitLine&)base;
-            float rms = .0f, dist = .0f;
+            double rms = .0f, dist = .0f;
 
             for (int i = 0; i < constr.point_ids.size(); i++)
             {
@@ -557,7 +557,7 @@ bool Molecule3dConstraintsChecker::check(BaseMolecule& target, const int* mappin
 
             const Plane3f& bfp = _cache_p.at(i);
             const MC::BestFitPlane& constr = (const MC::BestFitPlane&)base;
-            float rms = .0f, dist = .0f;
+            double rms = .0f, dist = .0f;
 
             for (int i = 0; i < constr.point_ids.size(); i++)
             {
@@ -754,7 +754,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
     }
 }
 
-float Molecule3dConstraintsChecker::_getAngle(int idx)
+double Molecule3dConstraintsChecker::_getAngle(int idx)
 {
     const MC::Base& base = _constraints.at(idx);
 
@@ -776,7 +776,7 @@ float Molecule3dConstraintsChecker::_getAngle(int idx)
         dir1.diff(v1, v2);
         dir3.diff(v3, v2);
 
-        float ang;
+        double ang;
 
         if (!Vec3f::angle(dir1, dir3, ang))
             throw Error("angle by points: degerenate");
@@ -792,7 +792,7 @@ float Molecule3dConstraintsChecker::_getAngle(int idx)
         const Line3f& line1 = _cache_l.at(constr.line1_id);
         const Line3f& line2 = _cache_l.at(constr.line2_id);
 
-        float ang;
+        double ang;
 
         if (!Vec3f::angle(line1.dir, line2.dir, ang))
             throw Error("angle by lines: degerenate");
@@ -808,7 +808,7 @@ float Molecule3dConstraintsChecker::_getAngle(int idx)
         const Plane3f& plane1 = _cache_p.at(constr.plane1_id);
         const Plane3f& plane2 = _cache_p.at(constr.plane2_id);
 
-        float ang;
+        double ang;
 
         if (!Vec3f::angle(plane1.getNorm(), plane2.getNorm(), ang))
             throw Error("angle by planes: degerenate");
@@ -840,7 +840,7 @@ float Molecule3dConstraintsChecker::_getAngle(int idx)
         d1.addScaled(axis, -Vec3f::dot(d1, axis));
         d2.addScaled(axis, -Vec3f::dot(d2, axis));
 
-        float ang;
+        double ang;
 
         if (!Vec3f::angle(d1, d2, ang))
             throw Error("dihedral angle: degenerate");
@@ -852,7 +852,7 @@ float Molecule3dConstraintsChecker::_getAngle(int idx)
     }
 }
 
-float Molecule3dConstraintsChecker::_getDistance(int idx)
+double Molecule3dConstraintsChecker::_getDistance(int idx)
 {
     const MC::Base& base = _constraints.at(idx);
 

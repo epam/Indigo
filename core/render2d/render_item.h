@@ -38,17 +38,17 @@ namespace indigo
         DECL_ERROR;
 
         virtual void estimateSize() = 0;
-        virtual void setObjScale(float scale) = 0;
+        virtual void setObjScale(double scale) = 0;
         virtual void init() = 0;
         virtual void render(bool idle) = 0;
-        virtual float getTotalBondLength() = 0;
-        virtual float getTotalClosestAtomDistance() = 0;
+        virtual double getTotalBondLength() = 0;
+        virtual double getTotalClosestAtomDistance() = 0;
         virtual int getBondCount() = 0;
         virtual int getAtomCount() = 0;
 
         Vec2f size;
         Vec2f origin;
-        float referenceY;
+        double referenceY;
 
     protected:
         RenderItemFactory& _factory;

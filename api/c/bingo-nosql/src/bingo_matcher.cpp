@@ -28,12 +28,12 @@ QueryObject& GrossQueryData::getQueryObject()
     return _obj;
 }
 
-void SimilarityQueryData::setMin(float min)
+void SimilarityQueryData::setMin(double min)
 {
     throw Exception("SimilarityQueryData does not support this method");
 }
 
-MoleculeSimilarityQueryData::MoleculeSimilarityQueryData(/* const */ Molecule& qmol, float min_coef, float max_coef)
+MoleculeSimilarityQueryData::MoleculeSimilarityQueryData(/* const */ Molecule& qmol, double min_coef, double max_coef)
     : _obj(qmol), _min(min_coef), _max(max_coef)
 {
 }
@@ -43,22 +43,22 @@ MoleculeSimilarityQueryData::MoleculeSimilarityQueryData(/* const */ Molecule& q
     return _obj;
 }
 
-float MoleculeSimilarityQueryData::getMin() const
+double MoleculeSimilarityQueryData::getMin() const
 {
     return _min;
 }
 
-float MoleculeSimilarityQueryData::getMax() const
+double MoleculeSimilarityQueryData::getMax() const
 {
     return _max;
 }
 
-void MoleculeSimilarityQueryData::setMin(float min)
+void MoleculeSimilarityQueryData::setMin(double min)
 {
     _min = min;
 }
 
-ReactionSimilarityQueryData::ReactionSimilarityQueryData(/* const */ Reaction& qrxn, float min_coef, float max_coef)
+ReactionSimilarityQueryData::ReactionSimilarityQueryData(/* const */ Reaction& qrxn, double min_coef, double max_coef)
     : _obj(qrxn), _min(min_coef), _max(max_coef)
 {
 }
@@ -68,17 +68,17 @@ ReactionSimilarityQueryData::ReactionSimilarityQueryData(/* const */ Reaction& q
     return _obj;
 }
 
-float ReactionSimilarityQueryData::getMin() const
+double ReactionSimilarityQueryData::getMin() const
 {
     return _min;
 }
 
-float ReactionSimilarityQueryData::getMax() const
+double ReactionSimilarityQueryData::getMax() const
 {
     return _max;
 }
 
-void ReactionSimilarityQueryData::setMin(float min)
+void ReactionSimilarityQueryData::setMin(double min)
 {
     _min = min;
 }
@@ -181,7 +181,7 @@ const BaseIndex& BaseMatcher::getIndex()
     return _index;
 }
 
-float BaseMatcher::currentSimValue() const
+double BaseMatcher::currentSimValue() const
 {
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
@@ -211,7 +211,7 @@ int BaseMatcher::maxCell() const
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
 
-void BaseMatcher::resetThresholdLimit(float min)
+void BaseMatcher::resetThresholdLimit(double min)
 {
     throw Exception("BaseMatcher: Matcher does not support this method");
 }
@@ -316,8 +316,8 @@ int BaseMatcher::esimateRemainingResultsCount(int& delta)
 {
     _match_probability_esimate.setCount(_current_id + 1);
 
-    float p = _match_probability_esimate.mean();
-    float error = _match_probability_esimate.meanEsimationError();
+    double p = _match_probability_esimate.mean();
+    double error = _match_probability_esimate.meanEsimationError();
 
     int left_obj_count = _index.getObjectsCount() - _match_time_esimate.getCount();
     delta = (int)(error * left_obj_count);
@@ -325,12 +325,12 @@ int BaseMatcher::esimateRemainingResultsCount(int& delta)
     return (int)(left_obj_count * p);
 }
 
-float BaseMatcher::esimateRemainingTime(float& delta)
+double BaseMatcher::esimateRemainingTime(double& delta)
 {
     _match_time_esimate.setCount(_current_id + 1);
 
-    float mean_time = _match_time_esimate.mean();
-    float error = _match_time_esimate.meanEsimationError();
+    double mean_time = _match_time_esimate.mean();
+    double error = _match_time_esimate.meanEsimationError();
 
     int left_obj_count = _index.getObjectsCount() - _match_time_esimate.getCount();
     delta = error * left_obj_count;
@@ -392,7 +392,7 @@ bool BaseSubstructureMatcher::next()
         if (status)
             profIncCounter("sub_found", 1);
 
-        _match_probability_esimate.addValue((float)status);
+        _match_probability_esimate.addValue((double)status);
         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
 
         if (status)
@@ -689,7 +689,7 @@ bool BaseSimilarityMatcher::next()
             }
 
             _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
-            _match_probability_esimate.addValue((float)_current_portion.size());
+            _match_probability_esimate.addValue((double)_current_portion.size());
 
             continue;
         }
@@ -775,7 +775,7 @@ void BaseSimilarityMatcher::setQueryDataWithExtFP(SimilarityQueryData* query_dat
         _containers_count += sim_storage.getCellSize(i);
 }
 
-void BaseSimilarityMatcher::resetThresholdLimit(float min)
+void BaseSimilarityMatcher::resetThresholdLimit(double min)
 {
     SimStorage& sim_storage = _index.getSimStorage();
 
@@ -879,19 +879,19 @@ int BaseSimilarityMatcher::esimateRemainingResultsCount(int& delta)
 {
     int left_cont_count = _containers_count - _match_probability_esimate.getCount();
 
-    float error = _match_probability_esimate.meanEsimationError();
+    double error = _match_probability_esimate.meanEsimationError();
     delta = (int)(error * left_cont_count);
 
     return (int)(_match_probability_esimate.mean() * left_cont_count);
 }
 
-float BaseSimilarityMatcher::esimateRemainingTime(float& delta)
+double BaseSimilarityMatcher::esimateRemainingTime(double& delta)
 {
     _match_time_esimate.setCount(_match_probability_esimate.getCount());
 
     int left_cont_count = _containers_count - _match_probability_esimate.getCount();
 
-    float error = _match_time_esimate.meanEsimationError();
+    double error = _match_time_esimate.meanEsimationError();
     delta = error * left_cont_count;
 
     return _match_time_esimate.mean() * left_cont_count;
@@ -922,7 +922,7 @@ int BaseSimilarityMatcher::maxCell() const
     return _max_cell;
 }
 
-float BaseSimilarityMatcher::currentSimValue() const
+double BaseSimilarityMatcher::currentSimValue() const
 {
     return _current_sim_value;
 }
@@ -984,7 +984,7 @@ bool TopNSimMatcher::next()
 
 void TopNSimMatcher::_findTopN()
 {
-    QS_DEF(Array<float>, thrs);
+    QS_DEF(Array<double>, thrs);
     QS_DEF(Array<int>, nhits_per_block);
     QS_DEF(Array<int>, blocks);
     QS_DEF(Array<int>, cells);
@@ -996,7 +996,7 @@ void TopNSimMatcher::_findTopN()
 
     SimStorage& sim_storage = _index.getSimStorage();
 
-    float thr_low_limit = _query_data->getMin();
+    double thr_low_limit = _query_data->getMin();
     int hits_limit = _limit;
 
     _initModelDistribution(thrs, nhits_per_block);
@@ -1007,9 +1007,9 @@ void TopNSimMatcher::_findTopN()
 
     bool already_found = false;
     bool too_many = false;
-    float thr_proc = 0.0f;
-    float cur_thr = 0.0f;
-    float thr_too_many = 0.0f;
+    double thr_proc = 0.0f;
+    double cur_thr = 0.0f;
+    double thr_too_many = 0.0f;
     int nhits = 0;
     int start_iter = thrs.size();
 
@@ -1143,8 +1143,8 @@ void TopNSimMatcher::_findTopN()
     if (!already_found)
     {
         bool adjusted = false;
-        float next_thr = 0.0f;
-        float prev_thr = 0.0f;
+        double next_thr = 0.0f;
+        double prev_thr = 0.0f;
 
         i = start_iter;
 
@@ -1264,7 +1264,7 @@ int TopNSimMatcher::_cmp_sim_res(SimResult& res1, SimResult& res2, void* context
     return 0;
 }
 
-void TopNSimMatcher::_initModelDistribution(Array<float>& model_thrs, Array<int>& model_nhits_per_block)
+void TopNSimMatcher::_initModelDistribution(Array<double>& model_thrs, Array<int>& model_nhits_per_block)
 {
     for (int i = 0; i < 9; i++)
     {
@@ -1317,7 +1317,7 @@ bool BaseExactMatcher::next()
         if (status)
             profIncCounter("exact_found", 1);
 
-        _match_probability_esimate.addValue((float)status);
+        _match_probability_esimate.addValue((double)status);
         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
 
         if (status)
@@ -1542,7 +1542,7 @@ bool BaseGrossMatcher::next()
         if (status)
             profIncCounter("exact_found", 1);
 
-        _match_probability_esimate.addValue((float)status);
+        _match_probability_esimate.addValue((double)status);
         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
 
         if (status)

@@ -666,7 +666,7 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph& subgraph, Graph& supergraph
             total_fixed = query.fixed_atoms.size();
         }
 
-        if (!matcher.match(self->rms_threshold * sqrt((float)total_fixed)))
+        if (!matcher.match(self->rms_threshold * sqrt((double)total_fixed)))
             return false;
     }
 

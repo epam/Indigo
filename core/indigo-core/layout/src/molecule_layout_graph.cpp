@@ -263,7 +263,7 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
     }
 }
 
-void MoleculeLayoutGraphSimple::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing)
+void MoleculeLayoutGraphSimple::layout(BaseMolecule& molecule, double bond_length, const Filter* filter, bool respect_existing)
 {
     if (molecule.vertexCount() == 0)
         return;
@@ -344,7 +344,7 @@ int MoleculeLayoutGraphSimple::_pattern_cmp2(const PatternLayout& p1, int n_v, i
     return n_e - p1.edgeCount();
 }
 
-void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
+void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, double bond_length)
 {
     QS_DEF(Array<Vec2f>, src_layout);
     QS_DEF(Array<int>, molecule_edge_mapping);
@@ -411,8 +411,8 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule
     }
 
     // position components
-    float x_min, x_max, x_start = 0.f, dx;
-    float y_min, y_max, y_start = 0.f, max_height = 0.f, dy;
+    double x_min, x_max, x_start = 0.f, dx;
+    double y_min, y_max, y_start = 0.f, max_height = 0.f, dy;
     int col_count;
     int row, col;
     int n_fixed = 0;
@@ -465,7 +465,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule
         }
     }
 
-    col_count = (int)ceil(sqrt((float)n_components - n_fixed));
+    col_count = (int)ceil(sqrt((double)n_components - n_fixed));
 
     for (i = 0, k = 0; i < n_components; i++)
     {
@@ -522,7 +522,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule
     }
 }
 
-void MoleculeLayoutGraphSimple::_layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
+void MoleculeLayoutGraphSimple::_layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, double bond_length)
 {
     QS_DEF(Array<Vec2f>, src_layout);
     QS_DEF(Array<int>, molecule_edge_mapping);

@@ -82,7 +82,7 @@ Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, i
     return item;
 }
 
-Metalayout::LayoutItem& ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, float size)
+Metalayout::LayoutItem& ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, double size)
 {
     Metalayout::LayoutItem& item = line.items.push();
     item.type = 1;

@@ -778,7 +778,7 @@ namespace indigo
                 IndigoObject& obj = self.getObject(molecule);
                 Molecule& mol = obj.getMolecule();
 
-                float avg_bond_length = 0;
+                double avg_bond_length = 0;
                 if (Molecule::hasCoord(mol))
                 {
                     // Detect average bond length

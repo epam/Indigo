@@ -74,7 +74,7 @@ namespace indigo
         void _encodeBond(Molecule& mol, int idx, const int* mapping);
         void _encodeCycleNumer(int n);
 
-        void _writeFloatInRange(Output& output, float v, float min, float range);
+        void _writeFloatInRange(Output& output, double v, double min, double range);
 
         struct Mapping
         {

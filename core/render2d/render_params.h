@@ -47,8 +47,8 @@ namespace indigo
         void clear();
         void clearArrays();
 
-        float relativeThickness;
-        float bondLineWidthFactor;
+        double relativeThickness;
+        double bondLineWidthFactor;
         bool smart_layout = false;
         RENDER_MODE rmode;
 
@@ -70,7 +70,7 @@ namespace indigo
     public:
         DECL_ERROR;
         static void render(RenderParams& params);
-        static int multilineTextUnit(RenderItemFactory& factory, int type, const Array<char>& titleStr, const float spacing,
+        static int multilineTextUnit(RenderItemFactory& factory, int type, const Array<char>& titleStr, const double spacing,
                                      const MultilineTextLayout::Alignment alignment);
 
     private:

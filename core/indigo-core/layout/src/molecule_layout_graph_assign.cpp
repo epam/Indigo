@@ -72,7 +72,7 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
     return v1.morgan_code - v2.morgan_code;
 }
 
-void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates(float bond_length)
+void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates(double bond_length)
 {
     BiconnectedDecomposer bc_decom(*this);
     QS_DEF(Array<int>, bc_tree);
@@ -432,7 +432,7 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle)
 {
     // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code
     int i, n;
-    float phi;
+    double phi;
 
     n = cycle.vertexCount();
 
@@ -447,7 +447,7 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle)
     _layout_vertices[cycle.getVertex(0)].pos.set(0.f, 0.f);
     _layout_vertices[cycle.getVertex(1)].pos.set(1.f, 0.f);
 
-    phi = (float)M_PI * (n - 2) / n;
+    phi = (double)M_PI * (n - 2) / n;
 
     for (i = 1; i < n - 1; i++)
     {
@@ -518,9 +518,9 @@ void MoleculeLayoutGraph::_buildOutline(void)
     Vec2f pos_i;
     int i, j;
     int first_idx = vertexBegin();
-    float min_y = getPos(first_idx).y;
-    const float EPS = 0.0001f;
-    const float EPS_ANGLE = 1e-6f;
+    double min_y = getPos(first_idx).y;
+    const double EPS = 0.0001f;
+    const double EPS_ANGLE = 1e-6f;
 
     for (i = vertexNext(first_idx); i < vertexEnd(); i = vertexNext(i))
     {
@@ -533,8 +533,8 @@ void MoleculeLayoutGraph::_buildOutline(void)
 
     i = first_idx;
 
-    float max_angle, cur_angle;
-    float i_angle = 0;
+    double max_angle, cur_angle;
+    double i_angle = 0;
     int next_nei = 0;
 
     pos_i = getPos(i);
@@ -588,7 +588,7 @@ void MoleculeLayoutGraph::_buildOutline(void)
 
         i = vert.neiVertex(next_nei);
 
-        float dist, min_dist = 0.f;
+        double dist, min_dist = 0.f;
         int int_edge = -1;
         Vec2f cur_v1 = pos_i;
         Vec2f cur_v2 = getPos(i);
@@ -634,9 +634,9 @@ void MoleculeLayoutGraph::_buildOutline(void)
                 cur_v3v.diff(cur_v3, inter);
                 cur_v4v.diff(cur_v4, inter);
 
-                float angle1 = cur_v1v.tiltAngle2();
-                float angle3 = cur_v3v.tiltAngle2() - angle1;
-                float angle4 = cur_v4v.tiltAngle2() - angle1;
+                double angle1 = cur_v1v.tiltAngle2();
+                double angle3 = cur_v3v.tiltAngle2() - angle1;
+                double angle4 = cur_v4v.tiltAngle2() - angle1;
 
                 if (angle3 < 0.f)
                     angle3 += _2FLOAT(2. * M_PI);
@@ -723,7 +723,7 @@ void MoleculeLayoutGraph::_getAnchor(int& v1, int& v2, int& v3) const
 }
 
 // Scale and transform
-void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout)
+void MoleculeLayoutGraph::_assignFinalCoordinates(double bond_length, const Array<Vec2f>& src_layout)
 {
     int i;
 
@@ -750,7 +750,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             QS_DEF(Array<int>, rgroup_list);
             Vec2f r1_pos, highest_pos(0.f, -1000.f);
             bool r1_exist = false;
-            float center_x = 0.f;
+            double center_x = 0.f;
 
             for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             {
@@ -790,8 +790,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             for (i = first; i != vertexEnd(); i = vertexNext(i))
                 last = i;
 
-            const float EPS = 0.0001f;
-            float diff = _layout_vertices[first].pos.x - _layout_vertices[last].pos.x;
+            const double EPS = 0.0001f;
+            double diff = _layout_vertices[first].pos.x - _layout_vertices[last].pos.x;
 
             if (diff > EPS)
                 for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
@@ -800,7 +800,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     }
 
     // 1. Choose scale ratio and first edge to match
-    float scale = bond_length, src_norm, norm;
+    double scale = bond_length, src_norm, norm;
     int v1, v2, v3;
     Vec2f p1, p2, p;
 
@@ -840,7 +840,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         _layout_vertices[i].pos.sub(p);
 
     // 4. Rotate CCW on Alpha angle between (first, second) edge and (first, second) edge in source graph
-    float phi1, phi2, alpha, sina, cosa;
+    double phi1, phi2, alpha, sina, cosa;
 
     phi1 = p1.tiltAngle();
     phi2 = p2.tiltAngle();
@@ -862,7 +862,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     // 7. If needed turn around (first, second)
     if (vertexCount() > 2)
     {
-        float crit = 0.f;
+        double crit = 0.f;
         // If v3 lays on the other side of line (first, second) - turn
         p1 = getPos(v1);
         p.diff(getPos(v2), p1);

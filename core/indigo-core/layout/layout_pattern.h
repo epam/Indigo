@@ -57,8 +57,8 @@ namespace indigo
         ~PatternLayout() override;
 
         int addBond(int atom_beg, int atom_end, int type);
-        int addAtom(float x, float y);
-        int addOutlinePoint(float x, float y);
+        int addAtom(double x, double y);
+        int addOutlinePoint(double x, double y);
         bool isFixed() const
         {
             return _fixed;

@@ -37,7 +37,7 @@ namespace indigo
         bool (*cb_can_rotate)(Graph& graph, int edge_idx);
         bool equalize_edges;
 
-        bool match(float rsm_threshold, float eps);
+        bool match(double rsm_threshold, double eps);
 
         DECL_ERROR;
 

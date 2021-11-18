@@ -551,7 +551,7 @@ void MoleculeCleaner2d::_initAdjMatrix()
 
 void MoleculeCleaner2d::_calcTargetLen()
 {
-    std::vector<float> lens;
+    std::vector<double> lens;
     for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e))
         lens.push_back(Vec2f::dist(plane(_mol.getAtomXyz(_mol.getEdge(e).beg)), plane(_mol.getAtomXyz(_mol.getEdge(e).end))));
 
@@ -639,10 +639,10 @@ void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1)
     Vec2f A2 = plane(_mol.getAtomXyz(to));
 
     Vec2f vec = A1 - A0;
-    float dist2 = vec.lengthSqr();
+    double dist2 = vec.lengthSqr();
 
-    float cross = Vec2f::cross(A1 - A0, A2 - A0); // c1
-    float dot = Vec2f::dot(A1 - A0, A2 - A0);     // c2
+    double cross = Vec2f::cross(A1 - A0, A2 - A0); // c1
+    double dot = Vec2f::dot(A1 - A0, A2 - A0);     // c2
 
     Vec2f _coef = Vec2f(dot, cross) / dist2;
 
@@ -658,7 +658,7 @@ void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1)
     }
 }
 
-void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1, float alpha)
+void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1, double alpha)
 {
     int len = std::max(coef[from0].size(), coef[from1].size());
 
@@ -692,7 +692,7 @@ void MoleculeCleaner2d::_updateGradient()
 
     // 1. edges
 
-    // float sqrt3 = sqrt(3.);
+    // double sqrt3 = sqrt(3.);
 
     if (1)
         for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e))
@@ -702,7 +702,7 @@ void MoleculeCleaner2d::_updateGradient()
             int v1 = _mol.getEdge(e).beg;
             int v2 = _mol.getEdge(e).end;
 
-            float len = (pos[v1] - pos[v2]).length();
+            double len = (pos[v1] - pos[v2]).length();
 
             pregradient[v1] += (pos[v1] - pos[v2]) * 2 * (len - target_len) / len / (target_len * target_len);
             pregradient[v2] += (pos[v2] - pos[v1]) * 2 * (len - target_len) / len / (target_len * target_len);
@@ -714,11 +714,11 @@ void MoleculeCleaner2d::_updateGradient()
             for (int j = _mol.vertexBegin(); j < i; j = _mol.vertexNext(j))
                 if (common_comp[i][j] == -1)
                 {
-                    float dist2 = Vec2f::distSqr(pos[i], pos[j]);
+                    double dist2 = Vec2f::distSqr(pos[i], pos[j]);
                     if (dist2 < target_len * target_len)
                     {
                         // printf("[%d, %d]\n", i, j);
-                        float dist = sqrt(dist2);
+                        double dist = sqrt(dist2);
                         pregradient[i] += (pos[i] - pos[j]) * (2 * (dist - target_len) / dist) / (target_len * target_len);
                         pregradient[j] += (pos[j] - pos[i]) * (2 * (dist - target_len) / dist) / (target_len * target_len);
                     }
@@ -743,15 +743,15 @@ void MoleculeCleaner2d::_updateGradient()
                         Vec2f vec1 = pos[v1] - pos[i];
                         Vec2f vec2 = pos[v2] - pos[i];
 
-                        float dot = Vec2f::dot(vec1, vec2);
-                        float cross = Vec2f::cross(vec1, vec2);
-                        float signcross = cross > 0.f ? 1.f : cross == 0.f ? 0.f : -1.f;
+                        double dot = Vec2f::dot(vec1, vec2);
+                        double cross = Vec2f::cross(vec1, vec2);
+                        double signcross = cross > 0.f ? 1.f : cross == 0.f ? 0.f : -1.f;
 
-                        float l1 = vec1.length();
-                        float l2 = vec2.length();
+                        double l1 = vec1.length();
+                        double l2 = vec2.length();
 
-                        float cos = dot / (l1 * l2);
-                        float sin = cross / (l1 * l2);
+                        double cos = dot / (l1 * l2);
+                        double sin = cross / (l1 * l2);
 
                         if (cos < -1)
                             cos = -1;
@@ -765,14 +765,14 @@ void MoleculeCleaner2d::_updateGradient()
                         if (fabs(sin) > 1e-6)
                         {
 
-                            float x = 1.f - cos * cos;
-                            float acosd = -1.f / sqrt(x);
+                            double x = 1.f - cos * cos;
+                            double acosd = -1.f / sqrt(x);
                             Vec2f alphadv1 = (vec2 * l1 * l2 - vec1 * dot * l2 / l1) * acosd / (l1 * l1 * l2 * l2) * signcross;
                             Vec2f alphadv2 = (vec1 * l1 * l2 - vec2 * dot * l1 / l2) * acosd / (l1 * l1 * l2 * l2) * signcross;
                             Vec2f alphadv = ((vec1 + vec2) * (-l1 * l2) + (vec1 * l2 / l1 + vec2 * l1 / l2) * dot) * acosd / (l1 * l1 * l2 * l2) * signcross;
 
-                            float alpha = acos(cos) * signcross;
-                            float target_alpha = _2FLOAT((2. * M_PI / 3.) * signcross);
+                            double alpha = acos(cos) * signcross;
+                            double target_alpha = _2FLOAT((2. * M_PI / 3.) * signcross);
 
                             pregradient[i] += alphadv * (alpha - target_alpha) * 2;
                             pregradient[v1] += alphadv1 * (alpha - target_alpha) * 2;
@@ -817,8 +817,8 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
 
     // for (int i = 0; i < vertex_count; i++) printf("%d: (%.5f, %.5f)\n", i, pos[i].x, pos[i].y);
 
-    QS_DEF(Array<float>, mult);
-    QS_DEF(Array<float>, energies);
+    QS_DEF(Array<double>, mult);
+    QS_DEF(Array<double>, energies);
 
     int k = 20;
     mult.clear_resize(k + 1);
@@ -828,7 +828,7 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
     for (int i = 2; i <= k; i++)
         mult[i] = mult[i - 1] * 0.5f;
 
-    float need_len = target_len;
+    double need_len = target_len;
 
     TimeoutCancellationHandler timeout(CLEAN_TIMER_MS);
 
@@ -838,11 +838,11 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
         /*if (iter < 10) {
             for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f) \n", base_point[i], gradient[i].x, gradient[i].y);
         }*/
-        float len = 0;
+        double len = 0;
         for (int i = 0; i < base_point.size(); i++)
             len += gradient[i].lengthSqr();
         len = sqrt(len);
-        float factor = std::min(need_len / len, 1.f);
+        double factor = std::min(need_len / len, 1.0);
         for (int i = 0; i < base_point.size(); i++)
             gradient[i] *= factor;
 
@@ -886,19 +886,19 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
         _mol.setAtomXyz(i, Vec3f(pos[i].x, pos[i].y, 0));
 }
 
-float MoleculeCleaner2d::_energy()
+double MoleculeCleaner2d::_energy()
 {
     profTimerStart(t, "Total energy");
-    float result = 0;
+    double result = 0;
 
     // 1. edges
     if (1)
         for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e))
         {
             int c = edge_comp[e];
-            float e_len = (pos[_mol.getEdge(e).beg] - pos[_mol.getEdge(e).end]).length();
+            double e_len = (pos[_mol.getEdge(e).beg] - pos[_mol.getEdge(e).end]).length();
 
-            float diff = (e_len - target_len) / target_len;
+            double diff = (e_len - target_len) / target_len;
             result += diff * diff;
         }
 
@@ -908,11 +908,11 @@ float MoleculeCleaner2d::_energy()
             for (int j = _mol.vertexBegin(); j < i; j = _mol.vertexNext(j))
                 if (common_comp[i][j] == -1)
                 {
-                    float dist2 = Vec2f::distSqr(pos[i], pos[j]);
+                    double dist2 = Vec2f::distSqr(pos[i], pos[j]);
                     if (dist2 < target_len * target_len)
                     {
-                        float dist = sqrt(dist2);
-                        float diff = (dist - target_len) / target_len;
+                        double dist = sqrt(dist2);
+                        double diff = (dist - target_len) / target_len;
                         result += diff * diff;
                     }
                 }
@@ -926,13 +926,13 @@ float MoleculeCleaner2d::_energy()
             const Vertex& vert = _mol.getVertex(i);
             if (clean_external_angles)
             {
-                QS_DEF(Array<float>, angles);
+                QS_DEF(Array<double>, angles);
                 angles.clear();
                 for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1))
                 {
                     int v = vert.neiVertex(n1);
                     Vec2f vec = pos[v] - pos[i];
-                    float alpha = atan2(vec.y, vec.x);
+                    double alpha = atan2(vec.y, vec.x);
                     angles.push(alpha);
                 }
 
@@ -944,21 +944,21 @@ float MoleculeCleaner2d::_energy()
                 angles.push(_2FLOAT(angles[0] + 2. * M_PI));
                 if (vert.degree() > 2)
                 {
-                    float target_angle = _2FLOAT(2. * M_PI / angles.size());
+                    double target_angle = _2FLOAT(2. * M_PI / angles.size());
                     for (int j = 0; j < angles.size() - 1; j++)
                     {
-                        float diff = angles[j + 1] - angles[j] - target_angle;
+                        double diff = angles[j + 1] - angles[j] - target_angle;
                         result += diff * diff;
                     }
                 }
                 else
                 {
-                    float diff0 = angles[1] - angles[0];
-                    float diff1 = angles[2] - angles[1];
+                    double diff0 = angles[1] - angles[0];
+                    double diff1 = angles[2] - angles[1];
                     if (diff0 > diff1)
                         std::swap(diff0, diff1);
-                    float target_angle0 = _2FLOAT(2. * M_PI / 3.);
-                    float target_angle1 = _2FLOAT(4. * M_PI / 3.);
+                    double target_angle0 = _2FLOAT(2. * M_PI / 3.);
+                    double target_angle1 = _2FLOAT(4. * M_PI / 3.);
                     if (_is_straightline_vertex[i])
                         target_angle0 = target_angle1 = _2FLOAT(M_PI);
                     result += (diff0 - target_angle0) * (diff0 - target_angle0);
@@ -983,17 +983,17 @@ float MoleculeCleaner2d::_energy()
                         Vec2f vec1 = pos[v1] - pos[i];
                         Vec2f vec2 = pos[v2] - pos[i];
 
-                        float dot = Vec2f::dot(vec1, vec2);
-                        float cross = Vec2f::cross(vec1, vec2);
-                        float signcross = cross > 0.f ? 1.f : cross == 0.f ? 0.f : -1.f;
+                        double dot = Vec2f::dot(vec1, vec2);
+                        double cross = Vec2f::cross(vec1, vec2);
+                        double signcross = cross > 0.f ? 1.f : cross == 0.f ? 0.f : -1.f;
 
-                        float l1 = vec1.length();
-                        float l2 = vec2.length();
+                        double l1 = vec1.length();
+                        double l2 = vec2.length();
 
-                        float cos = dot / (l1 * l2);
-                        float sin = cross / (l1 * l2);
+                        double cos = dot / (l1 * l2);
+                        double sin = cross / (l1 * l2);
 
-                        float alpha;
+                        double alpha;
 
                         if (fabs(cos) < 0.5)
                         {
@@ -1011,7 +1011,7 @@ float MoleculeCleaner2d::_energy()
                             }
                         }
 
-                        float target_alpha;
+                        double target_alpha;
                         if (_is_straightline_vertex[i])
                             target_alpha = _2FLOAT(alpha > 0.f ? M_PI : -M_PI);
                         else
@@ -1028,23 +1028,23 @@ float MoleculeCleaner2d::_energy()
 Vec2f MoleculeCleaner2d::_energyDiff(int v)
 {
     _updatePositions();
-    float e = _localEnergy(v);
+    double e = _localEnergy(v);
     pos[v].x += APPROX_STEP;
     _updatePositions();
-    float ex = _localEnergy(v);
+    double ex = _localEnergy(v);
     pos[v].x -= APPROX_STEP;
     pos[v].y += APPROX_STEP;
     _updatePositions();
-    float ey = _localEnergy(v);
+    double ey = _localEnergy(v);
     pos[v].y -= APPROX_STEP;
 
     return Vec2f(ex - e, ey - e) / APPROX_STEP;
 }
 
-float MoleculeCleaner2d::_localEnergy(int v)
+double MoleculeCleaner2d::_localEnergy(int v)
 {
     return _energy();
-    float result = 0;
+    double result = 0;
 
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
         if (v != i)
@@ -1068,21 +1068,21 @@ float MoleculeCleaner2d::_localEnergy(int v)
     return result;
 }
 
-float MoleculeCleaner2d::_edgeEnergy(int i, int j)
+double MoleculeCleaner2d::_edgeEnergy(int i, int j)
 {
     profTimerStart(t, "Edge enegry");
-    float len = Vec2f::distSqr(pos[i], pos[j]);
+    double len = Vec2f::distSqr(pos[i], pos[j]);
 
     if (len < target_len * target_len || adj_matrix[i][j])
     {
         len = sqrt(len);
-        float diff = (len - target_len) / target_len;
+        double diff = (len - target_len) / target_len;
         return diff * diff;
     }
     return 0;
 }
 
-float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2)
+double MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2)
 {
 
     profTimerStart(t, "Angle enegry");
@@ -1091,17 +1091,17 @@ float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2)
     Vec2f vec1 = pos[v1] - pos[i];
     Vec2f vec2 = pos[v2] - pos[i];
 
-    float dot = Vec2f::dot(vec1, vec2);
-    float cross = Vec2f::cross(vec1, vec2);
-    float signcross = cross > 0.f ? 1.f : cross == 0.f ? 0.f : -1.f;
+    double dot = Vec2f::dot(vec1, vec2);
+    double cross = Vec2f::cross(vec1, vec2);
+    double signcross = cross > 0.f ? 1.f : cross == 0.f ? 0.f : -1.f;
 
-    float l1 = vec1.length();
-    float l2 = vec2.length();
+    double l1 = vec1.length();
+    double l2 = vec2.length();
 
-    float cos = dot / (l1 * l2);
-    float sin = cross / (l1 * l2);
+    double cos = dot / (l1 * l2);
+    double sin = cross / (l1 * l2);
 
-    float alpha;
+    double alpha;
 
     if (fabs(cos) < 0.5)
     {
@@ -1119,7 +1119,7 @@ float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2)
         }
     }
 
-    float target_alpha;
+    double target_alpha;
     if (_is_straightline_vertex[i])
         target_alpha = _2FLOAT(alpha > 0.f ? M_PI : -M_PI);
     else

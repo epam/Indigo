@@ -138,13 +138,13 @@ static void indigoGetEmbeddingUniqueness(Array<char>& value)
         value.readString("bonds", true);
 }
 
-static void indigoSetLayoutHorIntervalFactor(float value)
+static void indigoSetLayoutHorIntervalFactor(double value)
 {
     Indigo& self = indigoGetInstance();
     self.layout_horintervalfactor = value;
 }
 
-static void indigoGetLayoutHorIntervalFactor(float& value)
+static void indigoGetLayoutHorIntervalFactor(double& value)
 {
     Indigo& self = indigoGetInstance();
     value = self.layout_horintervalfactor;

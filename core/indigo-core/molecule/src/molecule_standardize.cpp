@@ -1479,7 +1479,7 @@ bool MoleculeStandardizer::isFragmentLinear(BaseMolecule& mol, int idx)
     bond2.diff(nei_coords[1], central_atom);
     bond2.normalize();
 
-    float angle;
+    double angle;
     Vec3f::angle(bond1, bond2, angle);
 
     if (fabs(angle - M_PI) > EPSILON)

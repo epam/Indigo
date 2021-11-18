@@ -34,7 +34,7 @@ namespace indigo
         ~MoleculeRenderInternal();
         void setMolecule(BaseMolecule* mol);
         void setIsRFragment(bool isRFragment);
-        void setScaleFactor(const float scaleFactor, const Vec2f& min, const Vec2f& max);
+        void setScaleFactor(const double scaleFactor, const Vec2f& min, const Vec2f& max);
         void render();
 
         void setReactionComponentProperties(const Array<int>* aam, const Array<int>* reactingCenters, const Array<int>* inversions);
@@ -62,9 +62,9 @@ namespace indigo
         AtomDesc& _ad(int aid);
         const AtomDesc& _ad(int aid) const;
         void _checkSettings();
-        void _extendRenderItem(RenderItem& item, const float extent);
-        bool _clipRaySegment(float& offset, const Vec2f& p, const Vec2f& d, const Vec2f& n0, const Vec2f& a, const Vec2f& b, const float w);
-        bool _clipRayBox(float& offset, const Vec2f& p, const Vec2f& d, const Vec2f& rp, const Vec2f& sz, const float w);
+        void _extendRenderItem(RenderItem& item, const double extent);
+        bool _clipRaySegment(double& offset, const Vec2f& p, const Vec2f& d, const Vec2f& n0, const Vec2f& a, const Vec2f& b, const double w);
+        bool _clipRayBox(double& offset, const Vec2f& p, const Vec2f& d, const Vec2f& rp, const Vec2f& sz, const double w);
         void _findMinMax();
         void _objCoordTransform(Vec2f& p, const Vec2f& v) const;
         void _objDistTransform(Vec2f& p, const Vec2f& v) const;
@@ -111,7 +111,7 @@ namespace indigo
         void _renderBonds();
         void _applyBondOffset();
         void _setBondCenter();
-        float _getBondOffset(int aid, const Vec2f& pos, const Vec2f& dir, const float bondWidth);
+        double _getBondOffset(int aid, const Vec2f& pos, const Vec2f& dir, const double bondWidth);
         void _calculateBondOffset();
         void _findNeighbors();
         void _findCenteredCase();
@@ -126,8 +126,8 @@ namespace indigo
         void _writeQueryAtomToString(Output& output, int aid);
         bool _writeDelimiter(bool needDelimiter, Output& output);
         void _writeQueryModifier(Output& output, int aid);
-        int _findClosestCircle(Vec2f& p, int aid, float radius, int skip = -1);
-        int _findClosestBox(Vec2f& p, int aid, const Vec2f& sz, float mrg, int skip = -1);
+        int _findClosestCircle(Vec2f& p, int aid, double radius, int skip = -1);
+        int _findClosestBox(Vec2f& p, int aid, const Vec2f& sz, double mrg, int skip = -1);
         void _preparePseudoAtom(int aid, int color, bool highlighted);
         void _prepareChargeLabel(int aid, int color, bool highlighted);
         void _prepareLabelText(int aid);
@@ -139,11 +139,11 @@ namespace indigo
         int _pushGraphItem(AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
         int _pushGraphItem(Sgroup& ad, RenderItem::TYPE type, int color = CWC_BASE);
         const char* _valenceText(const int valence);
-        float _ctghalf(float cs);
+        double _ctghalf(double cs);
         void _drawBond(int b);
         void _drawTopology(BondDescr& bd);
         void _drawReactingCenter(BondDescr& bd, int rc);
-        float _doubleBondShiftValue(const BondEnd& be, bool right, bool centered);
+        double _doubleBondShiftValue(const BondEnd& be, bool right, bool centered);
         void _prepareDoubleBondCoords(Vec2f* coord, BondDescr& bd, const BondEnd& be1, const BondEnd& be2, bool allowCentered);
         void _drawStereoCareBox(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
         double _getAdjustmentFactor(const int aid, const int anei, const double acos, const double asin, const double tgb, const double csb, const double snb,
@@ -160,7 +160,7 @@ namespace indigo
         void _bondAromatic(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
         void _bondTriple(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
         void _bondAny(BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
-        int _parseColorString(Scanner& str, float& r, float& g, float& b);
+        int _parseColorString(Scanner& str, double& r, double& g, double& b);
 
         void _cloneAndFillMappings();
         void _precalcScale();
@@ -208,7 +208,7 @@ namespace indigo
             return Rect2f(ILLEGAL_POINT(), ILLEGAL_POINT());
         }
 
-        inline static bool IS_NAN(float x)
+        inline static bool IS_NAN(double x)
         {
             return x != x;
         }
@@ -226,7 +226,7 @@ namespace indigo
         BaseMolecule* _mol;
         bool _own_mol = false;
         RenderContext& _cw;
-        float _scale;
+        double _scale;
         Vec2f _min, _max;
         LocalOptions _lopt;
         bool isRFragment;

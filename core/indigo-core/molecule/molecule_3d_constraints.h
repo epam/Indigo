@@ -85,8 +85,8 @@ namespace indigo
             {
             }
 
-            float bottom;
-            float top;
+            double bottom;
+            double top;
         };
 
         struct DistanceBase : public Base
@@ -98,8 +98,8 @@ namespace indigo
             {
             }
 
-            float bottom;
-            float top;
+            double bottom;
+            double top;
         };
 
         struct Normale : public Base
@@ -124,7 +124,7 @@ namespace indigo
             {
             }
 
-            float max_deviation;
+            double max_deviation;
             Array<int> point_ids;
         };
 
@@ -151,7 +151,7 @@ namespace indigo
 
             int beg_id;
             int end_id;
-            float distance;
+            double distance;
         };
 
         struct PointByPercentage : public Base
@@ -165,7 +165,7 @@ namespace indigo
 
             int beg_id;
             int end_id;
-            float percentage;
+            double percentage;
         };
 
         struct PointByNormale : public Base
@@ -179,7 +179,7 @@ namespace indigo
 
             int org_id;
             int norm_id;
-            float distance;
+            double distance;
         };
 
         struct Centroid : public Base
@@ -203,7 +203,7 @@ namespace indigo
             {
             }
 
-            float max_deviation;
+            double max_deviation;
             Array<int> point_ids;
         };
 
@@ -324,7 +324,7 @@ namespace indigo
             }
 
             int center_id;
-            float radius;
+            double radius;
             bool allow_unconnected;
             Array<int> allowed_atoms;
         };
@@ -372,8 +372,8 @@ namespace indigo
 
     protected:
         void _cache(int idx);
-        float _getAngle(int idx);
-        float _getDistance(int idx);
+        double _getAngle(int idx);
+        double _getDistance(int idx);
         void _mark(int idx);
 
         const Molecule3dConstraints& _constraints;

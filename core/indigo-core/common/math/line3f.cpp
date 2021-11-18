@@ -32,13 +32,13 @@ void Line3f::copy(Line3f& other)
     dir.copy(other.dir);
 }
 
-float Line3f::distFromPoint(const Vec3f& point) const
+double Line3f::distFromPoint(const Vec3f& point) const
 {
     Vec3f diff;
 
     diff.diff(point, org);
 
-    float prod = Vec3f::dot(dir, diff);
+    double prod = Vec3f::dot(dir, diff);
 
     diff.addScaled(dir, -prod);
 

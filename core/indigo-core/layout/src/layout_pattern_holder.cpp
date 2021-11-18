@@ -48,7 +48,7 @@ void LayoutPatternHolder::_initPatterns()
             int type;
             int idx_or_type;
             int v1, v2;
-            float x, y;
+            double x, y;
         };
 
 #define BEGIN_PATTERN(name)                                                                                                                                    \

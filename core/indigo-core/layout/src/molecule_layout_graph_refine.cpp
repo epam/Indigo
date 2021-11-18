@@ -412,7 +412,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             else
             {
 
-                for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
+                for (double angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
                 {
                     new_state.rotateLayout(beg_state, center, angle);
                     new_state.calcHeight();
@@ -433,7 +433,7 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections()
 {
     QS_DEF(Array<int>, edges);
     int i, j, res, beg1, end1, beg2, end2;
-    float norm1, norm2;
+    double norm1, norm2;
     Vec2f a, b;
 
     edges.clear();
@@ -505,7 +505,7 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections()
                     a = getPos(beg2);
                     b = getPos(end2);
 
-                    float t = norm1 / norm2;
+                    double t = norm1 / norm2;
 
                     getPos(end2).lineCombin2(a, 1.f - t, b, t);
                     break;
@@ -514,7 +514,7 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections()
                 a = getPos(beg1);
                 b = getPos(end1);
 
-                float t = norm2 / norm1;
+                double t = norm2 / norm1;
 
                 getPos(end1).lineCombin2(a, 1.f - t, b, t);
                 break;

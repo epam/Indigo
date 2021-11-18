@@ -25,14 +25,14 @@ IMPL_ERROR(Vec2f, "Vec2f");
 
 bool Vec2f::normalize()
 {
-    float l = lengthSqr();
+    double l = lengthSqr();
 
     if (l < EPSILON * EPSILON)
     {
         return false;
     }
 
-    l = (float)sqrt(l);
+    l = (double)sqrt(l);
 
     x /= l;
     y /= l;
@@ -42,12 +42,12 @@ bool Vec2f::normalize()
 
 bool Vec2f::normalization(const Vec2f& v)
 {
-    float l = v.lengthSqr();
+    double l = v.lengthSqr();
 
     if (l < EPSILON * EPSILON)
         return false;
 
-    l = (float)sqrt(l);
+    l = (double)sqrt(l);
 
     x = v.x / l;
     y = v.y / l;
@@ -55,12 +55,12 @@ bool Vec2f::normalization(const Vec2f& v)
     return true;
 }
 
-void Vec2f::rotate(float angle)
+void Vec2f::rotate(double angle)
 {
     rotate(sin(angle), cos(angle));
 }
 
-void Vec2f::rotate(float si, float co)
+void Vec2f::rotate(double si, double co)
 {
     Vec2f a(*this);
 
@@ -78,17 +78,17 @@ void Vec2f::rotateL(Vec2f vec)
     rotateL(vec.y, vec.x);
 }
 
-void Vec2f::rotateL(float angle)
+void Vec2f::rotateL(double angle)
 {
     rotateL(sin(angle), cos(angle));
 }
 
-void Vec2f::rotateL(float si, float co)
+void Vec2f::rotateL(double si, double co)
 {
     rotate(-si, co);
 }
 
-void Vec2f::rotateAroundSegmentEnd(const Vec2f& a, const Vec2f& b, float angle)
+void Vec2f::rotateAroundSegmentEnd(const Vec2f& a, const Vec2f& b, double angle)
 {
     Vec2f c;
 
@@ -98,9 +98,9 @@ void Vec2f::rotateAroundSegmentEnd(const Vec2f& a, const Vec2f& b, float angle)
     sum(b, c);
 }
 
-float Vec2f::tiltAngle()
+double Vec2f::tiltAngle()
 {
-    float l = length();
+    double l = length();
 
     if (l < EPSILON)
         throw Error("zero length");
@@ -110,9 +110,9 @@ float Vec2f::tiltAngle()
     return -acos(x / l);
 }
 
-float Vec2f::tiltAngle2()
+double Vec2f::tiltAngle2()
 {
-    float l = length();
+    double l = length();
 
     if (l < EPSILON)
         throw Error("zero length");
@@ -122,7 +122,7 @@ float Vec2f::tiltAngle2()
     return _2FLOAT(2. * M_PI - acos(x / l));
 }
 
-float Vec2f::calc_angle(Vec2f a, Vec2f b)
+double Vec2f::calc_angle(Vec2f a, Vec2f b)
 {
     a -= *this;
     b -= *this;
@@ -133,10 +133,10 @@ float Vec2f::calc_angle(Vec2f a, Vec2f b)
 
     double cross = Vec2f::cross(a, b);
     double dot = Vec2f::dot(a, b);
-    float cos = _2FLOAT(dot / sqr);
-    float sin = _2FLOAT(cross / sqr);
+    double cos = _2FLOAT(dot / sqr);
+    double sin = _2FLOAT(cross / sqr);
 
-    float angle;
+    double angle;
     if (2 * cos * cos < 1)
     {
         angle = acos_stable(cos);
@@ -158,33 +158,33 @@ float Vec2f::calc_angle(Vec2f a, Vec2f b)
     return angle;
 }
 
-float Vec2f::calc_angle_pos(Vec2f a, Vec2f b)
+double Vec2f::calc_angle_pos(Vec2f a, Vec2f b)
 {
-    float angle = this->calc_angle(a, b);
+    double angle = this->calc_angle(a, b);
     if (angle < 0)
         angle += _2FLOAT(2. * M_PI);
     return angle;
 }
 
-float Vec2f::distSqr(const Vec2f& a, const Vec2f& b)
+double Vec2f::distSqr(const Vec2f& a, const Vec2f& b)
 {
-    float dx = b.x - a.x;
-    float dy = b.y - a.y;
+    double dx = b.x - a.x;
+    double dy = b.y - a.y;
 
     return dx * dx + dy * dy;
 }
 
-float Vec2f::dist(const Vec2f& a, const Vec2f& b)
+double Vec2f::dist(const Vec2f& a, const Vec2f& b)
 {
-    return (float)sqrt(distSqr(a, b));
+    return (double)sqrt(distSqr(a, b));
 }
 
-float Vec2f::dot(const Vec2f& a, const Vec2f& b)
+double Vec2f::dot(const Vec2f& a, const Vec2f& b)
 {
     return a.x * b.x + a.y * b.y;
 }
 
-float Vec2f::cross(const Vec2f& a, const Vec2f& b)
+double Vec2f::cross(const Vec2f& a, const Vec2f& b)
 {
     return a.x * b.y - a.y * b.x;
 }
@@ -211,8 +211,8 @@ void Vec2f::projectZ(Vec2f& v2, const Vec3f& v3)
 //       (x2_2 - x2_1)(y1_2 - y1_1) - (x1_2 - x1_1)(y2_2 - y2_1)    a2 * b1 - a1 * b2
 bool Vec2f::intersection(const Vec2f& v1_1, const Vec2f& v1_2, const Vec2f& v2_1, const Vec2f& v2_2, Vec2f& p)
 {
-    float a1, a12, b12, a2, b1, b2;
-    float delta, delta1, delta2, t1, t2;
+    double a1, a12, b12, a2, b1, b2;
+    double delta, delta1, delta2, t1, t2;
 
     a1 = v1_2.x - v1_1.x;
     b1 = v1_2.y - v1_1.y;
@@ -243,7 +243,7 @@ bool Vec2f::intersection(const Vec2f& v1_1, const Vec2f& v1_2, const Vec2f& v2_1
     return true;
 }
 
-float Vec2f::triangleArea(const Vec2f& a, const Vec2f& b, const Vec2f& c)
+double Vec2f::triangleArea(const Vec2f& a, const Vec2f& b, const Vec2f& c)
 {
     return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 }
@@ -251,16 +251,16 @@ float Vec2f::triangleArea(const Vec2f& a, const Vec2f& b, const Vec2f& c)
 bool Vec2f::segmentsIntersect(const Vec2f& a0, const Vec2f& a1, const Vec2f& b0, const Vec2f& b1)
 {
 
-    float maxax = std::max(a0.x, a1.x);
-    float maxay = std::max(a0.y, a1.y);
-    float maxbx = std::max(b0.x, b1.x);
-    float maxby = std::max(b0.y, b1.y);
-    float minax = std::min(a0.x, a1.x);
-    float minay = std::min(a0.y, a1.y);
-    float minbx = std::min(b0.x, b1.x);
-    float minby = std::min(b0.y, b1.y);
+    double maxax = std::max(a0.x, a1.x);
+    double maxay = std::max(a0.y, a1.y);
+    double maxbx = std::max(b0.x, b1.x);
+    double maxby = std::max(b0.y, b1.y);
+    double minax = std::min(a0.x, a1.x);
+    double minay = std::min(a0.y, a1.y);
+    double minbx = std::min(b0.x, b1.x);
+    double minby = std::min(b0.y, b1.y);
 
-    float big_eps = 0.001f;
+    double big_eps = 0.001f;
 
     if (maxax + big_eps < minbx || maxbx + big_eps < minax || maxay + big_eps < minby || maxby + big_eps < minay)
         return false;
@@ -272,16 +272,16 @@ bool Vec2f::segmentsIntersect(const Vec2f& a0, const Vec2f& a1, const Vec2f& b0,
 bool Vec2f::segmentsIntersectInternal(const Vec2f& a0, const Vec2f& a1, const Vec2f& b0, const Vec2f& b1)
 {
 
-    float maxax = std::max(a0.x, a1.x);
-    float maxay = std::max(a0.y, a1.y);
-    float maxbx = std::max(b0.x, b1.x);
-    float maxby = std::max(b0.y, b1.y);
-    float minax = std::min(a0.x, a1.x);
-    float minay = std::min(a0.y, a1.y);
-    float minbx = std::min(b0.x, b1.x);
-    float minby = std::min(b0.y, b1.y);
+    double maxax = std::max(a0.x, a1.x);
+    double maxay = std::max(a0.y, a1.y);
+    double maxbx = std::max(b0.x, b1.x);
+    double maxby = std::max(b0.y, b1.y);
+    double minax = std::min(a0.x, a1.x);
+    double minay = std::min(a0.y, a1.y);
+    double minbx = std::min(b0.x, b1.x);
+    double minby = std::min(b0.y, b1.y);
 
-    float big_eps = 0.001f;
+    double big_eps = 0.001f;
 
     if (maxax < minbx + big_eps || maxbx < minax + big_eps || maxay < minby + big_eps || maxby < minay + big_eps)
         return false;
@@ -290,7 +290,7 @@ bool Vec2f::segmentsIntersectInternal(const Vec2f& a0, const Vec2f& a1, const Ve
     return triangleArea(a0, a1, b0) * triangleArea(a0, a1, b1) < -EPSILON && triangleArea(b0, b1, a0) * triangleArea(b0, b1, a1) < -EPSILON;
 }
 
-float Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r)
+double Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r)
 {
     if (dot(p - q, r - q) <= 0)
         return dist(p, q);
@@ -299,15 +299,15 @@ float Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r)
 
     Vec2f normal = r - q;
     normal.rotate(_2FLOAT(M_PI / 2.));
-    float c = cross(q, r);
-    float s = normal.length();
+    double c = cross(q, r);
+    double s = normal.length();
 
-    float t = -c - dot(normal, p);
+    double t = -c - dot(normal, p);
 
     return fabs(t / s);
 }
 
-float Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s)
+double Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s)
 {
     if (Vec2f::segmentsIntersect(p, q, r, s))
         return 0;
@@ -315,7 +315,7 @@ float Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s)
     return std::min(std::min(distPointSegment(p, r, s), distPointSegment(q, r, s)), std::min(distPointSegment(r, p, q), distPointSegment(s, p, q)));
 }
 
-Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, float angle)
+Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, double angle)
 {
 
     Vec2f vec(q - p);
@@ -327,11 +327,11 @@ Vec2f Vec2f::get_circle_center(Vec2f a, Vec2f p, Vec2f q)
 {
     p -= a;
     q -= a;
-    float cross = Vec2f::cross(p, q);
+    double cross = Vec2f::cross(p, q);
     if (fabs(cross) < EPSILON)
         return (p + q) / 2 + a;
-    float c1 = -p.lengthSqr() / 2;
-    float c2 = -q.lengthSqr() / 2;
+    double c1 = -p.lengthSqr() / 2;
+    double c2 = -q.lengthSqr() / 2;
 
     Vec2f center(c1 * q.x - c2 * p.x, p.y * c2 - q.y * c1);
     return center / cross + a;

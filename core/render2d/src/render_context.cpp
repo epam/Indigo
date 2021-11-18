@@ -73,8 +73,8 @@ cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile(bool& isLa
     int vs = GetDeviceCaps(dc, VERTSIZE);
     // physical display size in millimeters, divided over the resolution and
     //    multiplied by 100, as metafile dimensions are specified in 0.01mm units
-    float cfx = hs * 100.0f / hr;
-    float cfy = vs * 100.0f / vr; // it may differ for x and y
+    double cfx = hs * 100.0f / hr;
+    double cfy = vs * 100.0f / vr; // it may differ for x and y
     int w = (int)(_width * cfx);
     int h = (int)(_height * cfy);
     RECT rc = {0, 0, w, h}, crc;
@@ -118,7 +118,7 @@ void RenderContext::storeAndDestroyMetafile(bool discard)
 
 CP_DEF(RenderContext);
 
-RenderContext::RenderContext(const RenderOptions& ropt, float sf, float lwf)
+RenderContext::RenderContext(const RenderOptions& ropt, double sf, double lwf)
     : CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms), metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt),
       _pattern(NULL)
 {
@@ -133,7 +133,7 @@ void RenderContext::bbIncludePoint(const Vec2f& v)
 {
     double x = v.x, y = v.y;
     cairo_user_to_device(_cr, &x, &y);
-    Vec2f u((float)x, (float)y);
+    Vec2f u((double)x, (double)y);
     if (bbmin.x > bbmax.x)
     { // init
         bbmin.x = bbmax.x = u.x;
@@ -150,7 +150,7 @@ void RenderContext::_bbVecToUser(Vec2f& d, const Vec2f& s)
 {
     double x = s.x, y = s.y;
     cairo_device_to_user(_cr, &x, &y);
-    d.set((float)x, (float)y);
+    d.set((double)x, (double)y);
 }
 
 void RenderContext::bbGetMin(Vec2f& v)
@@ -165,7 +165,7 @@ void RenderContext::bbGetMax(Vec2f& v)
 
 void RenderContext::bbIncludePoint(double x, double y)
 {
-    Vec2f v((float)x, (float)y);
+    Vec2f v((double)x, (double)y);
     bbIncludePoint(v);
 }
 
@@ -180,7 +180,7 @@ void RenderContext::bbIncludePath(bool stroke)
     bbIncludePoint(x2, y2);
 }
 
-void RenderContext::setDefaultScale(float scale)
+void RenderContext::setDefaultScale(double scale)
 {
     _defaultScale = scale;
 }
@@ -374,13 +374,13 @@ void RenderContext::closeContext(bool discard)
     fontsDispose();
 }
 
-void RenderContext::translate(float dx, float dy)
+void RenderContext::translate(double dx, double dy)
 {
     cairo_translate(_cr, dx, dy);
     cairoCheckStatus();
 }
 
-void RenderContext::scale(float s)
+void RenderContext::scale(double s)
 {
     cairo_scale(_cr, s, s);
     cairoCheckStatus();
@@ -416,7 +416,7 @@ void RenderContext::resetTransform()
 
 void RenderContext::setLineWidth(double width)
 {
-    _currentLineWidth = (float)width;
+    _currentLineWidth = (double)width;
     cairo_set_line_width(_cr, width);
     cairoCheckStatus();
 }
@@ -640,7 +640,7 @@ void RenderContext::drawTriangleZigzag(const Vec2f& v0, const Vec2f& v1, const V
     cairoCheckStatus();
 }
 
-void RenderContext::drawCircle(const Vec2f& center, const float r)
+void RenderContext::drawCircle(const Vec2f& center, const double r)
 {
     cairo_new_path(_cr);
     arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
@@ -652,7 +652,7 @@ void RenderContext::drawCircle(const Vec2f& center, const float r)
     cairo_new_path(_cr);
 }
 
-void RenderContext::fillCircle(const Vec2f& center, const float r)
+void RenderContext::fillCircle(const Vec2f& center, const double r)
 {
     arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
     cairoCheckStatus();
@@ -662,7 +662,7 @@ void RenderContext::fillCircle(const Vec2f& center, const float r)
     cairoCheckStatus();
 }
 
-void RenderContext::drawArc(const Vec2f& center, const float r, const float a0, const float a1)
+void RenderContext::drawArc(const Vec2f& center, const double r, const double a0, const double a1)
 {
     cairo_new_path(_cr);
     cairoCheckStatus();
@@ -750,12 +750,12 @@ void RenderContext::drawAttachmentPoint(RenderItemAttachmentPoint& ri, bool idle
     n.rotateL(1, 0);
     Vec2f p, q, r;
     int waveCnt = 10;
-    float waveLength = 0.5f;
-    float waveWidth = waveLength / waveCnt;
-    float slopeFactor = 0.2f;
+    double waveLength = 0.5f;
+    double waveWidth = waveLength / waveCnt;
+    double slopeFactor = 0.2f;
     p.lineCombin(ri.p1, n, -0.5f * waveLength);
     moveTo(p);
-    float step = waveLength / waveCnt;
+    double step = waveLength / waveCnt;
     for (int i = 0; i < waveCnt; ++i)
     {
         int turn = ((i & 1) ? 1 : -1);
@@ -778,7 +778,7 @@ void RenderContext::drawAttachmentPoint(RenderItemAttachmentPoint& ri, bool idle
         bprintf(ti.text, "%d", ri.number);
         ti.fontsize = FONT_SIZE_ATTACHMENT_POINT_INDEX;
         setTextItemSize(ti, ri.p1);
-        float sz = ti.bbsz.length();
+        double sz = ti.bbsz.length();
         ti.bbp.addScaled(n, -(sz / 2 + _settings.unit));
         ti.bbp.addScaled(ri.dir, -(sz / 2 + waveWidth + _settings.unit));
         drawTextItemText(ti, idle);
@@ -882,7 +882,7 @@ void RenderContext::fillRect(double x, double y, double w, double h)
     cairoCheckStatus();
 }
 
-void RenderContext::drawEquality(const Vec2f& pos, const float linewidth, const float size, const float interval)
+void RenderContext::drawEquality(const Vec2f& pos, const double linewidth, const double size, const double interval)
 {
     moveTo(pos);
     moveToRel(0, -interval / 2);
@@ -897,9 +897,9 @@ void RenderContext::drawEquality(const Vec2f& pos, const float linewidth, const 
     cairoCheckStatus();
 }
 
-void RenderContext::drawPlus(const Vec2f& pos, const float linewidth, const float size)
+void RenderContext::drawPlus(const Vec2f& pos, const double linewidth, const double size)
 {
-    float hsz = size / 2;
+    double hsz = size / 2;
     moveTo(pos);
 
     moveToRel(-hsz, 0);
@@ -913,11 +913,11 @@ void RenderContext::drawPlus(const Vec2f& pos, const float linewidth, const floa
     cairoCheckStatus();
 }
 
-void RenderContext::drawArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
+void RenderContext::drawArrow(const Vec2f& p1, const Vec2f& p2, const double width, const double headwidth, const double headsize)
 {
     Vec2f d, n, p(p1);
     d.diff(p2, p1);
-    float len = d.length();
+    double len = d.length();
     d.normalize();
     n.copy(d);
     n.rotate(1, 0);
@@ -944,12 +944,12 @@ void RenderContext::drawArrow(const Vec2f& p1, const Vec2f& p2, const float widt
     cairoCheckStatus();
 }
 
-float RenderContext::highlightedBondLineWidth() const
+double RenderContext::highlightedBondLineWidth() const
 {
     return _settings.bondLineWidth * (opt.highlightThicknessEnable ? opt.highlightThicknessFactor : 1.0f);
 }
 
-float RenderContext::currentLineWidth() const
+double RenderContext::currentLineWidth() const
 {
     return _currentLineWidth;
 }
@@ -976,7 +976,7 @@ void RenderContext::resetHighlight()
 void RenderContext::getColorVec(Vec3f& v, int color)
 {
     getColor(v.x, v.y, v.z, color);
-    float y, ymax = 0.5f;
+    double y, ymax = 0.5f;
     if (color >= CWC_COUNT)
     {
         y = 0.299f * v.x + 0.587f * v.y + 0.114f * v.z;
@@ -1024,10 +1024,10 @@ void RenderContext::clearPattern()
     }
 }
 
-float RenderContext::_getDashedLineAlignmentOffset(float length)
+double RenderContext::_getDashedLineAlignmentOffset(double length)
 {
-    float offset = 0;
-    float delta = length - floorf(length / _settings.dashUnit);
+    double offset = 0;
+    double delta = length - floorf(length / _settings.dashUnit);
     if (delta > 0.5)
         offset = 1 - delta - _settings.eps * _settings.dashUnit;
     else
@@ -1035,7 +1035,7 @@ float RenderContext::_getDashedLineAlignmentOffset(float length)
     return offset;
 }
 
-void RenderContext::setDash(const Array<double>& dash, float length)
+void RenderContext::setDash(const Array<double>& dash, double length)
 {
     cairo_set_dash(_cr, dash.ptr(), dash.size(), _getDashedLineAlignmentOffset(length));
     cairoCheckStatus();
@@ -1053,7 +1053,7 @@ void RenderContext::lineTo(const Vec2f& v)
     cairoCheckStatus();
 }
 
-void RenderContext::lineToRel(float x, float y)
+void RenderContext::lineToRel(double x, double y)
 {
     cairo_rel_line_to(_cr, x, y);
     cairoCheckStatus();
@@ -1071,7 +1071,7 @@ void RenderContext::moveTo(const Vec2f& v)
     cairoCheckStatus();
 }
 
-void RenderContext::moveToRel(float x, float y)
+void RenderContext::moveToRel(double x, double y)
 {
     cairo_rel_move_to(_cr, x, y);
     cairoCheckStatus();
@@ -1088,7 +1088,7 @@ int RenderContext::getElementColor(int label)
     return label - ELEM_H + CWC_COUNT;
 }
 
-void RenderContext::getColor(float& r, float& g, float& b, int c)
+void RenderContext::getColor(double& r, double& g, double& b, int c)
 {
     static double colors[][3] = {
         {1.0f, 1.0f, 1.0f}, // WHITE
@@ -1118,16 +1118,16 @@ void RenderContext::getColor(float& r, float& g, float& b, int c)
 
     if (c == CWC_BASE)
     {
-        r = (float)opt.baseColor.x;
-        g = (float)opt.baseColor.y;
-        b = (float)opt.baseColor.z;
+        r = (double)opt.baseColor.x;
+        g = (double)opt.baseColor.y;
+        b = (double)opt.baseColor.z;
         return;
     }
 
     if (c < 0 || c >= NELEM(colors))
         throw Error("unknown color: %d", c);
 
-    r = (float)colors[c][0];
-    g = (float)colors[c][1];
-    b = (float)colors[c][2];
+    r = (double)colors[c][0];
+    g = (double)colors[c][1];
+    b = (double)colors[c][2];
 }

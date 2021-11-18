@@ -22,7 +22,7 @@
 
 using namespace indigo;
 
-bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[], float* sqsum_out)
+bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[], double* sqsum_out)
 {
     QS_DEF(Array<double>, X); // set of points
     QS_DEF(Array<double>, Y); // set of goals
@@ -90,12 +90,12 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
 
         if (RTR.elements[0] > 2 * EPSILON)
         {
-            //         float norm_b0,norm_b1,norm_b2;
+            //         double norm_b0,norm_b1,norm_b2;
             Vec3f a0, a1, a2;
             Vec3f b0, b1, b2;
 
-            a0.set((float)evectors_matrix.elements[0], (float)evectors_matrix.elements[3], (float)evectors_matrix.elements[6]);
-            a1.set((float)evectors_matrix.elements[1], (float)evectors_matrix.elements[4], (float)evectors_matrix.elements[7]);
+            a0.set((double)evectors_matrix.elements[0], (double)evectors_matrix.elements[3], (double)evectors_matrix.elements[6]);
+            a1.set((double)evectors_matrix.elements[1], (double)evectors_matrix.elements[4], (double)evectors_matrix.elements[7]);
             a2.cross(a0, a1);
 
             R.matrixVectorMultiply(a0, b0);
@@ -103,7 +103,7 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
             //         norm_b0 = b0.length();
             //         norm_b1 = b1.length();
             Line3f l1, l2;
-            float sqs1, sqs2;
+            double sqs1, sqs2;
             l1.bestFit(npoints, points, &sqs1);
             l2.bestFit(npoints, goals, &sqs2);
             if (sqs1 < 2 * EPSILON && sqs2 < 2 * EPSILON)
@@ -156,13 +156,13 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
     scale = 1.0;
     if (res && npoints > 1)
     {
-        float l1 = 0.0;
-        float l2 = 0.0;
+        double l1 = 0.0;
+        double l2 = 0.0;
         Vec3f vx, vy;
         for (i = 0; i < npoints; i++)
         {
-            Vec3f vx((float)X[i * 3 + 0], (float)X[i * 3 + 1], (float)X[i * 3 + 2]);
-            Vec3f vy((float)Y[i * 3 + 0], (float)Y[i * 3 + 1], (float)Y[i * 3 + 2]);
+            Vec3f vx((double)X[i * 3 + 0], (double)X[i * 3 + 1], (double)X[i * 3 + 2]);
+            Vec3f vy((double)Y[i * 3 + 0], (double)Y[i * 3 + 1], (double)Y[i * 3 + 2]);
             rotation.matrixVectorMultiply(vx, vec);
             l1 += Vec3f::dot(vy, vec);
             l2 += Vec3f::dot(vec, vec);
@@ -174,10 +174,10 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
     Y.clear();
 
     // Calc translation
-    translation.set((float)cgoals[0], (float)cgoals[1], (float)cgoals[2]);
-    tmp = Vec3f((float)cpoints[0], (float)cpoints[1], (float)cpoints[2]);
+    translation.set((double)cgoals[0], (double)cgoals[1], (double)cgoals[2]);
+    tmp = Vec3f((double)cpoints[0], (double)cpoints[1], (double)cpoints[2]);
     rotation.matrixVectorMultiply(tmp, vec);
-    vec.scale((float)scale);
+    vec.scale((double)scale);
     translation.sub(vec);
 
     identity();
@@ -185,7 +185,7 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
     {
         for (j = 0; j < 3; j++)
         {
-            elements[i * 4 + j] = (float)rotation.elements[j * 3 + i];
+            elements[i * 4 + j] = (double)rotation.elements[j * 3 + i];
         }
     }
     elements[15] = 1.0f;
@@ -194,7 +194,7 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
     {
         for (j = 0; j < 3; j++)
         {
-            elements[i * 4 + j] *= (float)scale;
+            elements[i * 4 + j] *= (double)scale;
         }
     }
 
@@ -202,7 +202,7 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
     if (sqsum_out)
     {
         *sqsum_out = 0;
-        float d = .0f;
+        double d = .0f;
         for (i = 0; i < npoints; i++)
         {
             vec.pointTransformation(points[i], *this);
@@ -213,7 +213,7 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
     return true;
 }
 
-bool Plane3f::bestFit(int npoints, const Vec3f points[], float* sqsum_out)
+bool Plane3f::bestFit(int npoints, const Vec3f points[], double* sqsum_out)
 {
     QS_DEF(Array<double>, m);
     m.clear_resize(npoints * 3);
@@ -247,9 +247,9 @@ bool Plane3f::bestFit(int npoints, const Vec3f points[], float* sqsum_out)
     }
 
     A.eigenSystem(evec);
-    _norm.x = (float)evec.elements[2];
-    _norm.y = (float)evec.elements[5];
-    _norm.z = (float)evec.elements[8];
+    _norm.x = (double)evec.elements[2];
+    _norm.y = (double)evec.elements[5];
+    _norm.z = (double)evec.elements[8];
 
     _d = -Vec3f::dot(_norm, c);
 
@@ -258,14 +258,14 @@ bool Plane3f::bestFit(int npoints, const Vec3f points[], float* sqsum_out)
         *sqsum_out = 0;
         for (i = 0; i < npoints; i++)
         {
-            float d = distFromPoint(points[i]);
+            double d = distFromPoint(points[i]);
             *sqsum_out += d * d;
         }
     }
     return true;
 }
 
-bool Line3f::bestFit(int npoints, const Vec3f points[], float* sqsum_out)
+bool Line3f::bestFit(int npoints, const Vec3f points[], double* sqsum_out)
 {
     QS_DEF(Array<double>, m);
     Matr3x3d A;
@@ -299,9 +299,9 @@ bool Line3f::bestFit(int npoints, const Vec3f points[], float* sqsum_out)
         }
     }
     A.eigenSystem(evec);
-    dir.x = (float)evec.elements[0];
-    dir.y = (float)evec.elements[3];
-    dir.z = (float)evec.elements[6];
+    dir.x = (double)evec.elements[0];
+    dir.y = (double)evec.elements[3];
+    dir.z = (double)evec.elements[6];
     dir.normalize();
 
     if (sqsum_out != 0)
@@ -309,7 +309,7 @@ bool Line3f::bestFit(int npoints, const Vec3f points[], float* sqsum_out)
         *sqsum_out = 0;
         for (int i = 0; i < npoints; i++)
         {
-            float d = distFromPoint(points[i]);
+            double d = distFromPoint(points[i]);
             *sqsum_out += d * d;
         }
     }

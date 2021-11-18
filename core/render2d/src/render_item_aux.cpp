@@ -74,7 +74,7 @@ void RenderItemAuxiliary::_drawRGroupLabel(bool idle)
     tiR.bbp.set(0, 0);
     _rc.drawTextItemText(tiR, idle);
 
-    float ypos = tiR.bbp.y + tiR.bbsz.y + _settings.unit;
+    double ypos = tiR.bbp.y + tiR.bbsz.y + _settings.unit;
 
     if (rg.occurrence.size() > 0)
     {
@@ -125,7 +125,7 @@ void RenderItemAuxiliary::_drawRIfThen(bool idle)
     BaseMolecule& bm = *mol;
     MoleculeRGroups& rgs = bm.rgroups;
 
-    float ypos = 0;
+    double ypos = 0;
     for (int i = 1; i <= rgs.getRGroupCount(); ++i)
     {
         const RGroup& rg = rgs.getRGroup(i);

@@ -32,7 +32,7 @@ PatternLayout::~PatternLayout()
 {
 }
 
-int PatternLayout::addAtom(float x, float y)
+int PatternLayout::addAtom(double x, double y)
 {
     int idx = addVertex();
 
@@ -53,7 +53,7 @@ int PatternLayout::addBond(int atom_beg, int atom_end, int type)
     return idx;
 }
 
-int PatternLayout::addOutlinePoint(float x, float y)
+int PatternLayout::addOutlinePoint(double x, double y)
 {
     Vec2f& p = _outline.push();
 

@@ -35,13 +35,13 @@ struct Pos
 
     // Final offset for the coordinates
     Vec2f offset;
-    float title_offset_y;
+    double title_offset_y;
 
     // Structure scaling coefficient
-    float scale;
+    double scale;
 };
 
-void _getBounds(BaseMolecule& mol, Vec2f& min, Vec2f& max, float scale)
+void _getBounds(BaseMolecule& mol, Vec2f& min, Vec2f& max, double scale)
 {
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {

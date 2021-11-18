@@ -37,7 +37,7 @@ void RenderItemColumn::init()
 {
 }
 
-void RenderItemColumn::setVerticalSpacing(float spacing)
+void RenderItemColumn::setVerticalSpacing(double spacing)
 {
     vSpace = spacing;
 }

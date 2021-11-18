@@ -37,15 +37,15 @@ namespace indigo
         void applyToGraph();
 
         void flipBranch(const Filter& branch, const RefinementState& state, int v1_idx, int v2_idx);
-        void rotateBranch(const Filter& branch, const RefinementState& state, int v_idx, float angle);
+        void rotateBranch(const Filter& branch, const RefinementState& state, int v_idx, double angle);
         void stretchBranch(const Filter& branch, const RefinementState& state, int v1, int v2, int d);
-        void rotateLayout(const RefinementState& state, int v_idx, float angle);
+        void rotateLayout(const RefinementState& state, int v_idx, double angle);
         bool is_small_cycle();
-        float calc_best_angle();
+        double calc_best_angle();
 
-        float dist;
+        double dist;
         double energy;
-        float height;
+        double height;
         CP_DECL;
         TL_CP_DECL(Array<Vec2f>, layout);
 

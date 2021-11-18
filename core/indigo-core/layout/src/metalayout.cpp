@@ -62,12 +62,12 @@ void Metalayout::prepare()
     _scaleFactor = bondLength / _avel;
 }
 
-float Metalayout::getAverageBondLength() const
+double Metalayout::getAverageBondLength() const
 {
     return _avel;
 }
 
-float Metalayout::getScaleFactor() const
+double Metalayout::getScaleFactor() const
 {
     return _scaleFactor;
 }
@@ -105,7 +105,7 @@ void Metalayout::process()
 void Metalayout::calcContentSize()
 {
     _contentSize.set(0, 0);
-    float regularWidth = 0.0f;
+    double regularWidth = 0.0f;
     for (int i = 0; i < _layout.size(); ++i)
     {
         LayoutLine& line = _layout[i];
@@ -144,10 +144,10 @@ void Metalayout::scaleSz()
         }
 }
 
-float Metalayout::_getAverageBondLength()
+double Metalayout::_getAverageBondLength()
 {
     // get total bond length and count
-    float totalBondLength = 0;
+    double totalBondLength = 0;
     int totalBondCount = 0;
     for (int i = 0; i < _layout.size(); ++i)
     {
@@ -169,7 +169,7 @@ float Metalayout::_getAverageBondLength()
         return totalBondLength / totalBondCount;
 
     // get sum of distances from each vertex to the closest one
-    float totalClosestDist = 0;
+    double totalClosestDist = 0;
     int totalAtomCount = 0;
     for (int i = 0; i < _layout.size(); ++i)
     {
@@ -221,10 +221,10 @@ void Metalayout::getBoundRect(Vec2f& min, Vec2f& max, BaseMolecule& mol)
     }
 }
 
-float Metalayout::getTotalMoleculeBondLength(BaseMolecule& mol)
+double Metalayout::getTotalMoleculeBondLength(BaseMolecule& mol)
 {
     Vec2f v1, v2;
-    float sum = 0;
+    double sum = 0;
     for (int i = mol.edgeBegin(); i < mol.edgeEnd(); i = mol.edgeNext(i))
     {
         const Edge& edge = mol.getEdge(i);
@@ -236,10 +236,10 @@ float Metalayout::getTotalMoleculeBondLength(BaseMolecule& mol)
     return sum;
 }
 
-float Metalayout::getTotalMoleculeClosestDist(BaseMolecule& mol)
+double Metalayout::getTotalMoleculeClosestDist(BaseMolecule& mol)
 {
-    QS_DEF(Array<float>, dst);
-    float sum = 0;
+    QS_DEF(Array<double>, dst);
+    double sum = 0;
 
     dst.clear_resize(mol.vertexEnd());
     for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
@@ -251,7 +251,7 @@ float Metalayout::getTotalMoleculeClosestDist(BaseMolecule& mol)
             Vec2f u, v;
             Vec2f::projectZ(u, mol.getAtomXyz(i));
             Vec2f::projectZ(v, mol.getAtomXyz(j));
-            float d = Vec2f::dist(u, v);
+            double d = Vec2f::dist(u, v);
             if (dst[i] < 0 || dst[i] > d)
                 dst[i] = d;
             if (dst[j] < 0 || dst[j] > d)
@@ -264,7 +264,7 @@ float Metalayout::getTotalMoleculeClosestDist(BaseMolecule& mol)
 
 void Metalayout::adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos)
 {
-    float scaleFactor = getScaleFactor();
+    double scaleFactor = getScaleFactor();
 
     // Compute center points for the data sgroups
     QS_DEF(Array<Vec2f>, data_centers);

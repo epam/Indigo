@@ -35,10 +35,10 @@ namespace indigo
 
         void make();
 
-        float bond_length;
-        float plus_interval_factor;
-        float arrow_interval_factor;
-        float horizontal_interval_factor;
+        double bond_length;
+        double plus_interval_factor;
+        double arrow_interval_factor;
+        double horizontal_interval_factor;
         bool preserve_molecule_layout;
         int max_iterations;
         bool _smart_layout;
@@ -46,7 +46,7 @@ namespace indigo
 
     private:
         Metalayout::LayoutItem& _pushMol(Metalayout::LayoutLine& line, int id);
-        Metalayout::LayoutItem& _pushSpace(Metalayout::LayoutLine& line, float size);
+        Metalayout::LayoutItem& _pushSpace(Metalayout::LayoutLine& line, double size);
         BaseMolecule& _getMol(int id);
         void _shiftMol(const Metalayout::LayoutItem& item, const Vec2f& pos);
         void _make();

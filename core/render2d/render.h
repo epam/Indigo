@@ -34,14 +34,14 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        float _getObjScale(int item);
+        double _getObjScale(int item);
         int _getMaxWidth();
         int _getMaxHeight();
-        float _getScale(int w, int h);
-        float _getMaxScale(int w, int h);
-        virtual float _getScaleGivenSize(int w, int h) = 0;
-        virtual int _getDefaultWidth(float s) = 0;
-        virtual int _getDefaultHeight(float s) = 0;
+        double _getScale(int w, int h);
+        double _getMaxScale(int w, int h);
+        virtual double _getScaleGivenSize(int w, int h) = 0;
+        virtual int _getDefaultWidth(double s) = 0;
+        virtual int _getDefaultHeight(double s) = 0;
 
         int minMarg;
         RenderContext& _rc;

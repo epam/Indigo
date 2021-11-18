@@ -268,9 +268,9 @@ static void check_query(BaseMolecule& mol, const std::unordered_set<int>& select
     }
 }
 
-static float calc_mean_dist(BaseMolecule& mol)
+static double calc_mean_dist(BaseMolecule& mol)
 {
-    float mean_dist = 0.0;
+    double mean_dist = 0.0;
     for (const auto i : mol.edges())
     {
         const Edge& edge = mol.getEdge(i);

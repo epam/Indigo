@@ -158,8 +158,8 @@ void BondEnd::clear()
     lRing = next = -1;
     centered = false;
     prolong = false;
-    lang = (float)(2 * M_PI);
-    rang = (float)(2 * M_PI);
+    lang = (double)(2 * M_PI);
+    rang = (double)(2 * M_PI);
     rcos = lcos = -1;
     rsin = lsin = 0;
     rnei = lnei = -1;
@@ -244,7 +244,7 @@ RenderSettings::RenderSettings()
     init(1.0f, 1.0f);
 }
 
-void RenderSettings::init(float sf, float lwf)
+void RenderSettings::init(double sf, double lwf)
 {
     unit = sf / 30;
     bondLineWidth = lwf * unit;
@@ -361,7 +361,7 @@ MultilineTextLayout::MultilineTextLayout(Alignment bbox, Alignment inbox) : bbox
 {
 }
 
-float MultilineTextLayout::getRelativeOffset(Alignment alignment)
+double MultilineTextLayout::getRelativeOffset(Alignment alignment)
 {
     if (alignment == Center)
         return 0.5f;
@@ -372,12 +372,12 @@ float MultilineTextLayout::getRelativeOffset(Alignment alignment)
     return 1.0f;
 }
 
-float MultilineTextLayout::getBboxRelativeOffset() const
+double MultilineTextLayout::getBboxRelativeOffset() const
 {
     return getRelativeOffset(bbox_alignment);
 }
 
-float MultilineTextLayout::getInboxRelativeOffset() const
+double MultilineTextLayout::getInboxRelativeOffset() const
 {
     return getRelativeOffset(inbox_alignment);
 }
@@ -388,8 +388,8 @@ void MultilineTextLayout::clear()
     inbox_alignment = Center;
 }
 
-float MultilineTextLayout::getAnchorPoint(float area_x, float area_width, float text_width)
+double MultilineTextLayout::getAnchorPoint(double area_x, double area_width, double text_width)
 {
-    float bbox_x = area_x + (area_width - text_width) * getBboxRelativeOffset();
+    double bbox_x = area_x + (area_width - text_width) * getBboxRelativeOffset();
     return bbox_x + text_width * getInboxRelativeOffset();
 }

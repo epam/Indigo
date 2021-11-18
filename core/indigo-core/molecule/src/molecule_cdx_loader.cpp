@@ -141,7 +141,7 @@ void MoleculeCdxLoader::_loadMolecule()
             _mol->setAtomIsotope(idx, _nodes[i].isotope);
             _mol->setAtomRadical(idx, _nodes[i].radical);
             //         _mol->setExplicitValence(idx, _nodes[i].valence);
-            _bmol->setAtomXyz(idx, (float)_nodes[i].x * COORD_COEF, (float)_nodes[i].y * COORD_COEF, (float)_nodes[i].z * COORD_COEF);
+            _bmol->setAtomXyz(idx, (double)_nodes[i].x * COORD_COEF, (double)_nodes[i].y * COORD_COEF, (double)_nodes[i].z * COORD_COEF);
             _nodes[i].index = idx;
             _atom_mapping.insert(_nodes[i].id, i);
         }

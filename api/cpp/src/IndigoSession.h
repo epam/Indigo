@@ -48,7 +48,7 @@ namespace indigo_cpp
 
         void setOption(const std::string& key, const std::string& value) const;
         void setOption(const std::string& key, int value) const;
-        void setOption(const std::string& key, float value) const;
+        void setOption(const std::string& key, double value) const;
         void setOption(const std::string& key, bool value) const;
 
         std::string version() const;

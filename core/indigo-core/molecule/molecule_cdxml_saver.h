@@ -57,10 +57,10 @@ namespace indigo
         void addFontToTable(int id, const char* charset, const char* name);
         void addColorTable(const char* color);
         void addColorToTable(int id, int r, int g, int b);
-        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int id, Array<int>& nodes_ids);
+        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, double scale, int id, Array<int>& nodes_ids);
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);
-        void addCustomText(const Vec2f& pos, const char* alignment, float line_height, const char* text);
+        void addCustomText(const Vec2f& pos, const char* alignment, double line_height, const char* text);
         void addTitle(const Vec2f& pos, const char* text);
         void addGraphic(int id, const Vec2f& p1, const Vec2f& p2, PropertiesMap& attrs);
         void addCustomElement(int id, Array<char>& name, PropertiesMap& attrs);
@@ -70,8 +70,8 @@ namespace indigo
         void endDocument();
         int getHydrogenCount(BaseMolecule& mol, int idx, int charge, int radical);
 
-        float pageHeight() const;
-        float textLineHeight() const;
+        double pageHeight() const;
+        double textLineHeight() const;
 
         void addDefaultFontTable();
         void addDefaultColorTable();
@@ -81,9 +81,9 @@ namespace indigo
     protected:
         Output& _output;
 
-        float _bond_length;
+        double _bond_length;
         int _pages_height;
-        float _max_page_height;
+        double _max_page_height;
 
         TiXmlElement* _root;
         TiXmlElement* _page;

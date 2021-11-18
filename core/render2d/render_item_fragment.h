@@ -35,14 +35,14 @@ namespace indigo
         DECL_ERROR;
 
         void estimateSize() override;
-        void setObjScale(float scale) override
+        void setObjScale(double scale) override
         {
             _scaleFactor = scale;
         }
         void init() override;
         void render(bool idle) override;
-        float getTotalBondLength() override;
-        float getTotalClosestAtomDistance() override;
+        double getTotalBondLength() override;
+        double getTotalClosestAtomDistance() override;
         int getBondCount() override;
         int getAtomCount() override;
 
@@ -56,7 +56,7 @@ namespace indigo
         Vec2f refAtomPos;
 
     private:
-        float _scaleFactor;
+        double _scaleFactor;
         Vec2f _min, _max;
 
         void _renderIdle();

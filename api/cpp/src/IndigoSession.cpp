@@ -112,7 +112,7 @@ void IndigoSession::setOption(const std::string& key, const int value) const
     _checkResult(indigoSetOptionInt(key.c_str(), value));
 }
 
-void IndigoSession::setOption(const std::string& key, const float value) const
+void IndigoSession::setOption(const std::string& key, const double value) const
 {
     setSessionId();
     _checkResult(indigoSetOptionFloat(key.c_str(), value));

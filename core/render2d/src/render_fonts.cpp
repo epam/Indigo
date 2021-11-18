@@ -111,17 +111,17 @@ void RenderContext::fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold)
     cairoCheckStatus();
 }
 
-void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry)
+void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int size, double& dx, double& dy, double& rx, double& ry)
 {
     std::lock_guard<std::mutex> _lock(_cairo_mutex);
     cairo_text_extents_t te;
     cairo_text_extents(cr, text, &te);
     cairoCheckStatus();
 
-    dx = (float)te.width;
-    dy = (float)te.height;
-    rx = (float)-te.x_bearing;
-    ry = (float)-te.y_bearing;
+    dx = (double)te.width;
+    dy = (double)te.height;
+    rx = (double)-te.x_bearing;
+    ry = (double)-te.y_bearing;
 }
 
 void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold, bool idle)
@@ -153,7 +153,7 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool b
     moveTo(ti.bbp);
     cairo_matrix_t m;
     cairo_get_matrix(_cr, &m);
-    float scale = (float)m.xx;
+    double scale = (double)m.xx;
     double v = scale * fontGetSize(ti.fontsize);
     if (opt.mode != MODE_PDF && opt.mode != MODE_SVG && v < 1.5)
     {

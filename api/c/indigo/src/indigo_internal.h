@@ -275,7 +275,7 @@ public:
     struct TmpData
     {
         Array<char> string;
-        float xyz[3];
+        double xyz[3];
 
         void clear();
     };
@@ -321,7 +321,7 @@ public:
 
     int layout_max_iterations; // default is zero -- no limit
     bool smart_layout = false;
-    float layout_horintervalfactor = 1.4f;
+    double layout_horintervalfactor = 1.4f;
 
     int layout_orientation = 0;
 

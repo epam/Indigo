@@ -36,8 +36,8 @@ namespace indigo
 
         void checkPathNonEmpty() const;
 
-        RenderContext(const RenderOptions& opt, float sf, float lwf);
-        void setDefaultScale(float scale);
+        RenderContext(const RenderOptions& opt, double sf, double lwf);
+        void setDefaultScale(double scale);
         void setHDC(PVOID hdc);
         int getMaxPageSize() const;
         void setLineWidth(double width);
@@ -49,8 +49,8 @@ namespace indigo
         void initNullContext();
         void initContext(int width, int height);
         void closeContext(bool discard);
-        void translate(float dx, float dy);
-        void scale(float s);
+        void translate(double dx, double dy);
+        void scale(double s);
         void storeTransform();
         void restoreTransform();
         void resetTransform();
@@ -70,9 +70,9 @@ namespace indigo
         void fillPentagon(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4);
         void drawQuad(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);
         void drawTriangleZigzag(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, int cnt);
-        void drawCircle(const Vec2f& center, const float r);
-        void fillCircle(const Vec2f& center, const float r);
-        void drawArc(const Vec2f& center, const float r, const float a0, const float a1);
+        void drawCircle(const Vec2f& center, const double r);
+        void fillCircle(const Vec2f& center, const double r);
+        void drawArc(const Vec2f& center, const double r, const double a0, const double a1);
         void drawPoly(const Array<Vec2f>& v);
         void setFontSize(double fontSize);
         void setTextItemSize(TextItem& ti);
@@ -83,21 +83,21 @@ namespace indigo
         void drawGraphItem(GraphItem& gi);
         void drawGraphItem(GraphItem& gi, const Vec3f& color);
         void fillRect(double x, double y, double w, double h);
-        void getColor(float& r, float& g, float& b, int c);
+        void getColor(double& r, double& g, double& b, int c);
         int getElementColor(int label);
         void getColorVec(Vec3f& v, int color);
         void setSingleSource(int color);
         void setSingleSource(const Vec3f& color);
         void setGradientSource(const Vec3f& color1, const Vec3f& color2, const Vec2f& pos1, const Vec2f& pos2);
         void clearPattern();
-        float _getDashedLineAlignmentOffset(float length);
-        void setDash(const Array<double>& dash, float offset = 0);
+        double _getDashedLineAlignmentOffset(double length);
+        void setDash(const Array<double>& dash, double offset = 0);
         void resetDash();
-        void drawPlus(const Vec2f& pos, const float linewidth, const float size);
-        void drawEquality(const Vec2f& pos, const float linewidth, const float size, const float interval);
-        void drawArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
-        float highlightedBondLineWidth() const;
-        float currentLineWidth() const;
+        void drawPlus(const Vec2f& pos, const double linewidth, const double size);
+        void drawEquality(const Vec2f& pos, const double linewidth, const double size, const double interval);
+        void drawArrow(const Vec2f& p1, const Vec2f& p2, const double width, const double headwidth, const double headsize);
+        double highlightedBondLineWidth() const;
+        double currentLineWidth() const;
         void setHighlight();
         void resetHighlight();
         void resetHighlightThickness();
@@ -130,7 +130,7 @@ namespace indigo
         void fontsDispose();
         double fontGetSize(FONT_SIZE size);
         void fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold);
-        void fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry);
+        void fontsGetTextExtents(cairo_t* cr, const char* text, int size, double& dx, double& dy, double& rx, double& ry);
         void fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold, bool idle);
 
         void bbIncludePoint(const Vec2f& v);
@@ -147,19 +147,19 @@ namespace indigo
 
         void _drawGraphItem(GraphItem& gi);
         void lineTo(const Vec2f& v);
-        void lineToRel(float x, float y);
+        void lineToRel(double x, double y);
         void lineToRel(const Vec2f& v);
         void moveTo(const Vec2f& v);
-        void moveToRel(float x, float y);
+        void moveToRel(double x, double y);
         void moveToRel(const Vec2f& v);
         void arc( cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2 );
         
         int _width;
         int _height;
-        float _defaultScale;
+        double _defaultScale;
         Vec3f _backColor;
         Vec3f _baseColor;
-        float _currentLineWidth;
+        double _currentLineWidth;
         cairo_pattern_t* _pattern;
 
         static std::mutex _cairo_mutex;

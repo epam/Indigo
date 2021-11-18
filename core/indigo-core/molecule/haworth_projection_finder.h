@@ -55,11 +55,11 @@ namespace indigo
         void _addRingStereocenters(const Array<int>& vertices, const Array<int>& edges);
 
         bool _isCornerVertex(int v, int e1, int e2);
-        bool _isHorizontalEdge(int e, float cos_threshold);
-        bool _isVerticalEdge(int e, float cos_threshold);
-        float _getAngleCos(int v, int e, float dx, float dy);
-        float _getAngleCos(int v, int e1, int e2);
-        float _getAngleSin(int v, int e1, int e2);
+        bool _isHorizontalEdge(int e, double cos_threshold);
+        bool _isVerticalEdge(int e, double cos_threshold);
+        double _getAngleCos(int v, int e, double dx, double dy);
+        double _getAngleCos(int v, int e1, int e2);
+        double _getAngleSin(int v, int e1, int e2);
 
         BaseMolecule& _mol;
         CP_DECL;

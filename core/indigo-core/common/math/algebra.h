@@ -33,7 +33,7 @@
 namespace indigo
 {
 
-    const float EPSILON = 0.000001f;
+    const double EPSILON = 0.000001f;
 
     // frac of type 1/n for acos_stable
     const double frac1[25] = {0.,      1.,      1. / 2,  1. / 3,  1. / 4,  1. / 5,  1. / 6,  1. / 7,  1. / 8,  1. / 9,  1. / 10, 1. / 11, 1. / 12,
@@ -52,13 +52,13 @@ namespace indigo
         Vec2f(const Vec2f& a) : x(a.x), y(a.y)
         {
         }
-        Vec2f(float xx, float yy) : x(xx), y(yy)
+        Vec2f(double xx, double yy) : x(xx), y(yy)
         {
         }
 
-        float x, y;
+        double x, y;
 
-        inline void set(float xx, float yy)
+        inline void set(double xx, double yy)
         {
             x = xx;
             y = yy;
@@ -129,12 +129,12 @@ namespace indigo
             y = std::max(y, a.y);
         }
 
-        inline float lengthSqr() const
+        inline double lengthSqr() const
         {
             return x * x + y * y;
         }
 
-        inline float length() const
+        inline double length() const
         {
             return _2FLOAT(sqrt(lengthSqr()));
         }
@@ -151,12 +151,12 @@ namespace indigo
             return Vec2f(x - a.x, y - a.y);
         }
 
-        inline Vec2f operator*(float t) const
+        inline Vec2f operator*(double t) const
         {
             return Vec2f(x * t, y * t);
         }
 
-        inline Vec2f operator/(float t) const
+        inline Vec2f operator/(double t) const
         {
             return Vec2f(x / t, y / t);
         }
@@ -175,14 +175,14 @@ namespace indigo
             return *this;
         }
 
-        inline Vec2f operator*=(float t)
+        inline Vec2f operator*=(double t)
         {
             x *= t;
             y *= t;
             return *this;
         }
 
-        inline Vec2f operator/=(float t)
+        inline Vec2f operator/=(double t)
         {
             x /= t;
             y /= t;
@@ -193,69 +193,69 @@ namespace indigo
 
         DLLEXPORT bool normalization(const Vec2f& v);
 
-        DLLEXPORT float tiltAngle();
+        DLLEXPORT double tiltAngle();
 
-        DLLEXPORT float tiltAngle2();
+        DLLEXPORT double tiltAngle2();
 
-        DLLEXPORT float calc_angle(Vec2f a, Vec2f b);
+        DLLEXPORT double calc_angle(Vec2f a, Vec2f b);
 
-        DLLEXPORT float calc_angle_pos(Vec2f a, Vec2f b);
+        DLLEXPORT double calc_angle_pos(Vec2f a, Vec2f b);
 
-        inline void scale(float s)
+        inline void scale(double s)
         {
             x *= s;
             y *= s;
         }
 
-        inline void scaled(const Vec2f& v, float s)
+        inline void scaled(const Vec2f& v, double s)
         {
             x = v.x * s;
             y = v.y * s;
         }
 
-        inline void addScaled(const Vec2f& v, float s)
+        inline void addScaled(const Vec2f& v, double s)
         {
             x += v.x * s;
             y += v.y * s;
         }
 
-        inline void lineCombin(const Vec2f& a, const Vec2f& b, float t)
+        inline void lineCombin(const Vec2f& a, const Vec2f& b, double t)
         {
             x = a.x + b.x * t;
             y = a.y + b.y * t;
         }
 
-        inline void lineCombin2(const Vec2f& a, float ta, const Vec2f& b, float tb)
+        inline void lineCombin2(const Vec2f& a, double ta, const Vec2f& b, double tb)
         {
             x = a.x * ta + b.x * tb;
             y = a.y * ta + b.y * tb;
         }
 
-        DLLEXPORT void rotate(float angle);
-        DLLEXPORT void rotate(float si, float co);
+        DLLEXPORT void rotate(double angle);
+        DLLEXPORT void rotate(double si, double co);
         DLLEXPORT void rotate(Vec2f vec);
-        DLLEXPORT void rotateL(float angle);
-        DLLEXPORT void rotateL(float si, float co);
+        DLLEXPORT void rotateL(double angle);
+        DLLEXPORT void rotateL(double si, double co);
         DLLEXPORT void rotateL(Vec2f vec);
-        DLLEXPORT void rotateAroundSegmentEnd(const Vec2f& a, const Vec2f& b, float angle);
+        DLLEXPORT void rotateAroundSegmentEnd(const Vec2f& a, const Vec2f& b, double angle);
 
-        DLLEXPORT static float distSqr(const Vec2f& a, const Vec2f& b);
-        DLLEXPORT static float dist(const Vec2f& a, const Vec2f& b);
-        DLLEXPORT static float dot(const Vec2f& a, const Vec2f& b);
-        DLLEXPORT static float cross(const Vec2f& a, const Vec2f& b);
+        DLLEXPORT static double distSqr(const Vec2f& a, const Vec2f& b);
+        DLLEXPORT static double dist(const Vec2f& a, const Vec2f& b);
+        DLLEXPORT static double dot(const Vec2f& a, const Vec2f& b);
+        DLLEXPORT static double cross(const Vec2f& a, const Vec2f& b);
         DLLEXPORT static void projectZ(Vec2f& v2, const Vec3f& v3);
         DLLEXPORT static bool intersection(const Vec2f& v1_1, const Vec2f& v1_2, const Vec2f& v2_1, const Vec2f& v2_2, Vec2f& p);
-        DLLEXPORT static float triangleArea(const Vec2f& a, const Vec2f& b, const Vec2f& c);
+        DLLEXPORT static double triangleArea(const Vec2f& a, const Vec2f& b, const Vec2f& c);
         DLLEXPORT static bool segmentsIntersect(const Vec2f& a0, const Vec2f& a1, const Vec2f& b0, const Vec2f& b1);
         DLLEXPORT static bool segmentsIntersectInternal(const Vec2f& a0, const Vec2f& a1, const Vec2f& b0, const Vec2f& b1);
 
-        DLLEXPORT static float distPointSegment(Vec2f p, Vec2f q, Vec2f r);
-        DLLEXPORT static float distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s);
+        DLLEXPORT static double distPointSegment(Vec2f p, Vec2f q, Vec2f r);
+        DLLEXPORT static double distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s);
 
-        DLLEXPORT static Vec2f get_circle_center(Vec2f p, Vec2f q, float angle);
+        DLLEXPORT static Vec2f get_circle_center(Vec2f p, Vec2f q, double angle);
         DLLEXPORT static Vec2f get_circle_center(Vec2f a, Vec2f b, Vec2f c);
 
-        DLLEXPORT static float asin_stable(float x)
+        DLLEXPORT static double asin_stable(double x)
         {
             double x2 = _2DOUBLE(x) * _2DOUBLE(x);
             double res = 0.;
@@ -268,7 +268,7 @@ namespace indigo
             return _2FLOAT(res);
         }
 
-        DLLEXPORT static float acos_stable(float x)
+        DLLEXPORT static double acos_stable(double x)
         {
             return _2FLOAT((M_PI / 2.) - asin_stable(x));
         }
@@ -303,28 +303,28 @@ namespace indigo
             _rightTop = other._rightTop;
         }
 
-        inline float left() const
+        inline double left() const
         {
             return _leftBottom.x;
         }
-        inline float right() const
+        inline double right() const
         {
             return _rightTop.x;
         }
-        inline float bottom() const
+        inline double bottom() const
         {
             return _leftBottom.y;
         }
-        inline float top() const
+        inline double top() const
         {
             return _rightTop.y;
         }
 
-        inline float middleX() const
+        inline double middleX() const
         {
             return (_leftBottom.x + _rightTop.x) / 2;
         }
-        inline float middleY() const
+        inline double middleY() const
         {
             return (_leftBottom.y + _rightTop.y) / 2;
         }
@@ -380,16 +380,16 @@ namespace indigo
         Vec3f() : x(0), y(0), z(0)
         {
         }
-        Vec3f(float xx, float yy, float zz) : x(xx), y(yy), z(zz)
+        Vec3f(double xx, double yy, double zz) : x(xx), y(yy), z(zz)
         {
         }
         Vec3f(Vec2f& v) : x(v.x), y(v.y), z(0)
         {
         }
 
-        float x, y, z;
+        double x, y, z;
 
-        inline void set(float xx, float yy, float zz)
+        inline void set(double xx, double yy, double zz)
         {
             x = xx;
             y = yy;
@@ -478,45 +478,45 @@ namespace indigo
             z = a.x * b.y - a.y * b.x;
         }
 
-        inline float lengthSqr() const
+        inline double lengthSqr() const
         {
             return x * x + y * y + z * z;
         }
 
-        DLLEXPORT float length() const;
+        DLLEXPORT double length() const;
 
         DLLEXPORT bool normalize();
         DLLEXPORT bool normalization(const Vec3f& v);
 
-        inline void scale(float s)
+        inline void scale(double s)
         {
             x *= s;
             y *= s;
             z *= s;
         }
 
-        inline void scaled(const Vec3f& v, float s)
+        inline void scaled(const Vec3f& v, double s)
         {
             x = v.x * s;
             y = v.y * s;
             z = v.z * s;
         }
 
-        inline void addScaled(const Vec3f& v, float s)
+        inline void addScaled(const Vec3f& v, double s)
         {
             x += v.x * s;
             y += v.y * s;
             z += v.z * s;
         }
 
-        inline void lineCombin(const Vec3f& a, const Vec3f& b, float t)
+        inline void lineCombin(const Vec3f& a, const Vec3f& b, double t)
         {
             x = a.x + b.x * t;
             y = a.y + b.y * t;
             z = a.z + b.z * t;
         }
 
-        inline void lineCombin2(const Vec3f& a, float ta, const Vec3f& b, float tb)
+        inline void lineCombin2(const Vec3f& a, double ta, const Vec3f& b, double tb)
         {
             x = a.x * ta + b.x * tb;
             y = a.y * ta + b.y * tb;
@@ -528,11 +528,11 @@ namespace indigo
             return Vec2f(x, y);
         }
 
-        DLLEXPORT void rotateX(float angle);
-        DLLEXPORT void rotateY(float angle);
-        DLLEXPORT void rotateZ(float angle);
+        DLLEXPORT void rotateX(double angle);
+        DLLEXPORT void rotateY(double angle);
+        DLLEXPORT void rotateZ(double angle);
 
-        DLLEXPORT void rotate(const Vec3f& around, float angle);
+        DLLEXPORT void rotate(const Vec3f& around, double angle);
 
         DLLEXPORT void transformPoint(const Transform3f& matr);
         DLLEXPORT void transformVector(const Transform3f& matr);
@@ -543,10 +543,10 @@ namespace indigo
         DLLEXPORT void invVectorTransformation(const Vec3f& v, const Transform3f& matr);
 
         // returns value in range 0..pi
-        DLLEXPORT static bool angle(const Vec3f& a, const Vec3f& b, float& res);
-        DLLEXPORT static float dot(const Vec3f& a, const Vec3f& b);
-        DLLEXPORT static float dist(const Vec3f& a, const Vec3f& b);
-        DLLEXPORT static float distSqr(const Vec3f& a, const Vec3f& b);
+        DLLEXPORT static bool angle(const Vec3f& a, const Vec3f& b, double& res);
+        DLLEXPORT static double dot(const Vec3f& a, const Vec3f& b);
+        DLLEXPORT static double dist(const Vec3f& a, const Vec3f& b);
+        DLLEXPORT static double distSqr(const Vec3f& a, const Vec3f& b);
     };
 
     const Vec3f VZero3f(0.f, 0.f, 0.f);
@@ -555,16 +555,16 @@ namespace indigo
     {
         DECL_ERROR;
 
-        float elements[16];
+        double elements[16];
 
-        void rotation(float x, float y, float z, float angle);
+        void rotation(double x, double y, double z, double angle);
 
-        void rotationX(float angle);
-        void rotationY(float angle);
-        void rotationZ(float angle);
+        void rotationX(double angle);
+        void rotationY(double angle);
+        void rotationZ(double angle);
 
         bool rotationVecVec(const Vec3f& v1, const Vec3f& v2);
-        bool rotationQuat(float quat[4]);
+        bool rotationQuat(double quat[4]);
 
         bool inversion(const Transform3f& matr);
 
@@ -578,23 +578,23 @@ namespace indigo
         void transform(const Transform3f& transform);
         void transformLocal(const Transform3f& transform);
 
-        void setOrigin(float x, float y, float z);
+        void setOrigin(double x, double y, double z);
         void setOrigin(const Vec3f& origin);
         void translate(const Vec3f& translation);
-        void translateLocal(float x, float y, float z);
+        void translateLocal(double x, double y, double z);
         void translateLocal(const Vec3f& translation);
         void translateLocalInv(const Vec3f& translation);
         void translateInv(const Vec3f& translation);
 
-        void rotateX(float angle);
-        void rotateY(float angle);
-        void rotateZ(float angle);
+        void rotateX(double angle);
+        void rotateY(double angle);
+        void rotateZ(double angle);
 
-        void rotateXLocal(float angle);
-        void rotateYLocal(float angle);
-        void rotateZLocal(float angle);
+        void rotateXLocal(double angle);
+        void rotateYLocal(double angle);
+        void rotateZLocal(double angle);
 
-        bool bestFit(int npoints, const Vec3f points[], const Vec3f goals[], float* sqsum_out);
+        bool bestFit(int npoints, const Vec3f points[], const Vec3f goals[], double* sqsum_out);
     };
 
     struct Matr3x3d
@@ -624,13 +624,13 @@ namespace indigo
     {
         LSeg3f(const Vec3f& beg, const Vec3f& end);
 
-        float distToPoint(const Vec3f& point, Vec3f* closest) const;
+        double distToPoint(const Vec3f& point, Vec3f* closest) const;
 
     protected:
         Vec3f _beg;
         Vec3f _end;
         Vec3f _diff;
-        float _length_sqr;
+        double _length_sqr;
         bool _is_degenerate;
     };
 
@@ -643,9 +643,9 @@ namespace indigo
 
         void copy(Line3f& other);
 
-        float distFromPoint(const Vec3f& point) const;
+        double distFromPoint(const Vec3f& point) const;
 
-        bool bestFit(int npoints, const Vec3f points[], float* sqsum_out);
+        bool bestFit(int npoints, const Vec3f points[], double* sqsum_out);
     };
 
     struct Plane3f
@@ -658,20 +658,20 @@ namespace indigo
         {
             return _norm;
         }
-        inline const float& getD() const
+        inline const double& getD() const
         {
             return _d;
         }
 
         void projection(const Vec3f& point, Vec3f& proj_out) const;
         bool byPointAndLine(const Vec3f& point, const Line3f& line);
-        float distFromPoint(const Vec3f& point) const;
+        double distFromPoint(const Vec3f& point) const;
 
-        bool bestFit(int npoints, const Vec3f points[], float* sqsum_out);
+        bool bestFit(int npoints, const Vec3f points[], double* sqsum_out);
 
     protected:
         Vec3f _norm;
-        float _d;
+        double _d;
     };
 
 } // namespace indigo

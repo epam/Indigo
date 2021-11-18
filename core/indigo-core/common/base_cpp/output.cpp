@@ -40,9 +40,9 @@ void Output::writeBinaryInt(int value)
     write(&value, sizeof(int));
 }
 
-void Output::writeBinaryFloat(float value)
+void Output::writeBinaryFloat(double value)
 {
-    write(&value, sizeof(float));
+    write(&value, sizeof(double));
 }
 
 void Output::writeByte(byte value)

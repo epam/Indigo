@@ -42,10 +42,10 @@ int MoleculeAlleneStereo::sameside(const Vec3f& dir1, const Vec3f& dir2, const V
     if (!norm.normalize())
         throw Error("internal: zero vector length");
 
-    float prod1 = Vec3f::dot(dir1, norm);
-    float prod2 = Vec3f::dot(dir2, norm);
+    double prod1 = Vec3f::dot(dir1, norm);
+    double prod2 = Vec3f::dot(dir2, norm);
 
-    if ((float)(fabs(prod1)) < 1e-3 || (float)(fabs(prod2)) < 1e-3)
+    if ((double)(fabs(prod1)) < 1e-3 || (double)(fabs(prod2)) < 1e-3)
         return 0;
 
     return (prod1 * prod2 > 0) ? 1 : -1;

@@ -791,9 +791,9 @@ void CmfLoader::_readSGroup(int code, Molecule& mol)
     _sgroup_order.push(idx);
 }
 
-float CmfLoader::_readFloatInRange(Scanner& scanner, float min, float range)
+double CmfLoader::_readFloatInRange(Scanner& scanner, double min, double range)
 {
-    return min + ((float)scanner.readBinaryWord() / 65535) * range;
+    return min + ((double)scanner.readBinaryWord() / 65535) * range;
 }
 
 void CmfLoader::_readVec3f(Scanner& scanner, Vec3f& pos, const CmfSaver::VecRange& range)

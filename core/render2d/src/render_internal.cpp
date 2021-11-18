@@ -243,7 +243,7 @@ void MoleculeRenderInternal::setIsRFragment(bool isRFragment)
     this->isRFragment = isRFragment;
 }
 
-void MoleculeRenderInternal::setScaleFactor(const float scaleFactor, const Vec2f& min, const Vec2f& max)
+void MoleculeRenderInternal::setScaleFactor(const double scaleFactor, const Vec2f& min, const Vec2f& max)
 {
     _scale = scaleFactor;
     _min.copy(min);
@@ -402,7 +402,7 @@ void MoleculeRenderInternal::_determineDoubleBondShift()
             const BondEnd& ber2 = _be(be2.lnei);
 
             // angles adjacent to the bond
-            float al1 = be1.lang, ar1 = ber1.lang, al2 = bel2.lang, ar2 = be2.lang;
+            double al1 = be1.lang, ar1 = ber1.lang, al2 = bel2.lang, ar2 = be2.lang;
             int neiBalance = (al1 < M_PI ? 1 : 0) + (al2 < M_PI ? 1 : 0) + (ar1 < M_PI ? -1 : 0) + (ar2 < M_PI ? -1 : 0);
             if (neiBalance > 0)
                 bd.lineOnTheRight = false;
@@ -434,7 +434,7 @@ void MoleculeRenderInternal::_determineDoubleBondShift()
     }
 }
 
-void MoleculeRenderInternal::_extendRenderItem(RenderItem& item, const float extent)
+void MoleculeRenderInternal::_extendRenderItem(RenderItem& item, const double extent)
 {
     Vec2f exv(extent, extent);
     item.bbsz.addScaled(exv, 2);
@@ -443,24 +443,24 @@ void MoleculeRenderInternal::_extendRenderItem(RenderItem& item, const float ext
 }
 
 #define __minmax(inv, t1, t2) (inv ? std::min(t1, t2) : std::max(t1, t2))
-bool MoleculeRenderInternal::_clipRaySegment(float& offset, const Vec2f& p, const Vec2f& d, const Vec2f& n0, const Vec2f& a, const Vec2f& b, const float w)
+bool MoleculeRenderInternal::_clipRaySegment(double& offset, const Vec2f& p, const Vec2f& d, const Vec2f& n0, const Vec2f& a, const Vec2f& b, const double w)
 {
     Vec2f ab, pa, pb;
     ab.diff(b, a);
     ab.normalize();
     Vec2f n(n0);
-    float dot = Vec2f::dot(ab, n);
+    double dot = Vec2f::dot(ab, n);
     if (fabs(dot) < 1e-4)
         return 0;
     if (dot < 0)
         n.negate();
     pa.diff(a, p);
     pb.diff(b, p);
-    float ta = Vec2f::dot(pa, n);
-    float tb = Vec2f::dot(pb, n);
-    float tl = -w / 2;
-    float tr = w / 2;
-    float t = 0;
+    double ta = Vec2f::dot(pa, n);
+    double tb = Vec2f::dot(pb, n);
+    double tl = -w / 2;
+    double tr = w / 2;
+    double t = 0;
     bool f = false;
     bool inv = Vec2f::dot(ab, d) < 0;
     if (ta < tl + 1e-8 && tl < tb + 1e-8)
@@ -491,12 +491,12 @@ bool MoleculeRenderInternal::_clipRaySegment(float& offset, const Vec2f& p, cons
     return true;
 }
 
-bool MoleculeRenderInternal::_clipRayBox(float& offset, const Vec2f& p, const Vec2f& d, const Vec2f& rp, const Vec2f& sz, const float w)
+bool MoleculeRenderInternal::_clipRayBox(double& offset, const Vec2f& p, const Vec2f& d, const Vec2f& rp, const Vec2f& sz, const double w)
 {
     Vec2f n(-d.y, d.x);
     Vec2f a, b;
     bool f = false;
-    float t = 0, tt = 0;
+    double t = 0, tt = 0;
 
     a.set(rp.x, rp.y);
     b.set(rp.x + sz.x, rp.y);
@@ -552,7 +552,7 @@ const char* MoleculeRenderInternal::_getStereoGroupText(int type)
     }
 }
 
-int MoleculeRenderInternal::_parseColorString(Scanner& scanner, float& r, float& g, float& b)
+int MoleculeRenderInternal::_parseColorString(Scanner& scanner, double& r, double& g, double& b)
 {
     if (!scanner.tryReadFloat(r))
         return -1;
@@ -808,8 +808,8 @@ void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
     if (bracket.invertUpperLowerIndex)
         lower = !lower;
     _cw.setTextItemSize(index, lower ? bracket.p1 : bracket.p0);
-    float xShift = (fabs(index.bbsz.x * bracket.n.x) + fabs(index.bbsz.y * bracket.n.y)) / 2 + _settings.unit;
-    float yShift = (fabs(index.bbsz.x * bracket.d.x) + fabs(index.bbsz.y * bracket.d.y)) / 2;
+    double xShift = (fabs(index.bbsz.x * bracket.n.x) + fabs(index.bbsz.y * bracket.n.y)) / 2 + _settings.unit;
+    double yShift = (fabs(index.bbsz.x * bracket.d.x) + fabs(index.bbsz.y * bracket.d.y)) / 2;
     index.bbp.addScaled(bracket.n, -xShift);
     index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
 }
@@ -837,7 +837,7 @@ void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms,
             max.max(b);
         }
     }
-    float extent = _settings.unit * 3;
+    double extent = _settings.unit * 3;
     min.sub(Vec2f(extent, extent));
     max.add(Vec2f(extent, extent));
     left[0].set(min.x, max.y);
@@ -997,9 +997,9 @@ int evcmp(const Event& a, const Event& b, void* context)
     return 0;
 }
 
-float getFreeAngle(const ObjArray<Vec2f>& pp)
+double getFreeAngle(const ObjArray<Vec2f>& pp)
 {
-    QS_DEF(Array<float>, angle);
+    QS_DEF(Array<double>, angle);
     angle.clear();
     int len = pp.size();
     for (int j = 0; j < len; ++j)
@@ -1010,10 +1010,10 @@ float getFreeAngle(const ObjArray<Vec2f>& pp)
     }
     angle.qsort(dblcmp, NULL);
     int j0 = -1;
-    float maxAngle = -1;
+    double maxAngle = -1;
     for (int j = 0; j < angle.size() - 1; ++j)
     {
-        float a = angle[j + 1] - angle[j];
+        double a = angle[j + 1] - angle[j];
         if (a > maxAngle)
         {
             maxAngle = a;
@@ -1102,9 +1102,9 @@ private:
     SegmentList(const SegmentList& other);
 };
 
-float getMinDotProduct(const ObjArray<Vec2f>& pp, float tilt)
+double getMinDotProduct(const ObjArray<Vec2f>& pp, double tilt)
 {
-    float minDot = 1.0;
+    double minDot = 1.0;
     for (int j = 0; j < pp.size(); ++j)
     {
         Vec2f a, b, d;
@@ -1113,7 +1113,7 @@ float getMinDotProduct(const ObjArray<Vec2f>& pp, float tilt)
         a.rotate(tilt);
         b.rotate(tilt);
         d.diff(b, a);
-        float dot = fabs(d.x / d.length());
+        double dot = fabs(d.x / d.length());
         if (dot < minDot)
             minDot = dot;
     }
@@ -1151,7 +1151,7 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
         pp.push().copy(_ad(_be(ring.bondEnds[j]).aid).pos);
     }
 
-    float tilt = getFreeAngle(pp) + (float)(M_PI / 2);
+    double tilt = getFreeAngle(pp) + (double)(M_PI / 2);
 
     QS_DEF(ObjArray<Event>, events);
     events.clear();
@@ -1258,13 +1258,13 @@ void MoleculeRenderInternal::_findRings()
 
         // for the inner loops, sum of the angles should be (n-2)*pi,
         // for the outer ones (n+2)*pi
-        float angleSum = 0;
+        double angleSum = 0;
         for (int j = 0; j < ring.bondEnds.size(); ++j)
         {
             int j1 = (j + 1) % ring.bondEnds.size();
             const Vec2f& da = _be(ring.bondEnds[j]).dir;
             const Vec2f& db = _be(ring.bondEnds[j1]).dir;
-            float angle = (float)M_PI - atan2(-Vec2f::cross(da, db), Vec2f::dot(da, db));
+            double angle = (double)M_PI - atan2(-Vec2f::cross(da, db), Vec2f::dot(da, db));
             angleSum += angle;
         }
 
@@ -1284,7 +1284,7 @@ void MoleculeRenderInternal::_findRings()
 
         if (_opt.showCycles)
         {
-            float cycleLineOffset = _settings.unit * 9;
+            double cycleLineOffset = _settings.unit * 9;
             QS_DEF(Array<Vec2f>, vv);
             vv.clear();
             for (int j = 0; j < ring.bondEnds.size() + 1; ++j)
@@ -1323,13 +1323,13 @@ void MoleculeRenderInternal::_findRings()
         //   _cw.drawTextItemText(ti);
         //}
 
-        float r = -1;
+        double r = -1;
         for (int j = 0; j < ring.bondEnds.size(); ++j)
         {
             Vec2f df;
             BondEnd& be = _be(ring.bondEnds[j]);
             df.diff(pp[j], ring.center);
-            float l = fabs(Vec2f::dot(df, be.lnorm));
+            double l = fabs(Vec2f::dot(df, be.lnorm));
             if (r < 0 || l < r)
                 r = l;
             ring.angles.push(atan2(df.y, df.x));
@@ -1482,7 +1482,7 @@ bool MoleculeRenderInternal::_hasQueryModifiers(int aid)
 
 void MoleculeRenderInternal::_findNearbyAtoms()
 {
-    float maxDistance = _settings.neighboringAtomDistanceTresholdA * 2;
+    double maxDistance = _settings.neighboringAtomDistanceTresholdA * 2;
     RedBlackObjMap<int, RedBlackObjMap<int, Array<int>>> buckets;
 
     for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
@@ -1535,7 +1535,7 @@ void MoleculeRenderInternal::_findNearbyAtoms()
     // printf("\n");
 }
 
-int _argMax(float* vv, int length)
+int _argMax(double* vv, int length)
 {
     int iMax = 0;
     for (int i = 1; i < length; ++i)
@@ -1546,7 +1546,7 @@ int _argMax(float* vv, int length)
     return iMax;
 }
 
-float _sqr(float a)
+double _sqr(double a)
 {
     return a * a;
 }
@@ -1582,8 +1582,8 @@ int MoleculeRenderInternal::_hydroPosFindConflict(int i)
         Vec2f d;
         d.diff(_ad(aid).pos, ad.pos);
         HYDRO_POS orientation = d.x < d.y ? (d.x > -d.y ? HYDRO_POS_DOWN : HYDRO_POS_LEFT) : (d.x > -d.y ? HYDRO_POS_RIGHT : HYDRO_POS_UP);
-        float aDist = std::max(fabs(d.x), fabs(d.y));
-        float bDist = std::min(fabs(d.x), fabs(d.y));
+        double aDist = std::max(fabs(d.x), fabs(d.y));
+        double bDist = std::min(fabs(d.x), fabs(d.y));
         if (orientation == ad.hydroPos && bDist < _settings.neighboringAtomDistanceTresholdB &&
             (aDist < _settings.neighboringAtomDistanceTresholdA ||
              (aDist < _settings.neighboringAtomDistanceTresholdA * 2 && _ad(aid).hydroPos == 3 - ad.hydroPos)))
@@ -1766,7 +1766,7 @@ void MoleculeRenderInternal::_initAtomData()
                 int k2 = vertex.neiNext(k1);
                 if (_bd(vertex.neiEdge(k1)).type == _bd(vertex.neiEdge(k2)).type)
                 {
-                    float dot = Vec2f::dot(_getBondEnd(i, k1).dir, _getBondEnd(i, k2).dir);
+                    double dot = Vec2f::dot(_getBondEnd(i, k1).dir, _getBondEnd(i, k2).dir);
                     if (dot < -0.97)
                         ad.showLabel = true;
                 }
@@ -1846,10 +1846,10 @@ void MoleculeRenderInternal::_findAnglesOverPi()
         {
             BondEnd& rmbe = _be(rightmost);
             BondEnd& lmbe = _be(leftmost);
-            float dot = Vec2f::dot(rmbe.dir, lmbe.dir);
+            double dot = Vec2f::dot(rmbe.dir, lmbe.dir);
             if (dot > 0 || 1 + dot < 1e-4)
                 continue;
-            float ahs = sqrt((1 + dot) / (1 - dot));
+            double ahs = sqrt((1 + dot) / (1 - dot));
             lmbe.offset = rmbe.offset = -ahs * std::min(_bd(lmbe.bid).thickness, _bd(rmbe.bid).thickness) / 2;
         }
     }
@@ -1901,13 +1901,13 @@ void MoleculeRenderInternal::_renderBondIds()
             BondEnd& be = _be(i);
             BondEnd& be1 = _be(be.lnei);
             BondEnd& be2 = _be(be.rnei);
-            float a0 = atan2(be.dir.y, be.dir.x) - 0.1f;
-            float a1 = atan2(be1.dir.y, be1.dir.x) + 0.1f;
+            double a0 = atan2(be.dir.y, be.dir.x) - 0.1f;
+            double a1 = atan2(be1.dir.y, be1.dir.x) + 0.1f;
             _cw.setSingleSource(CWC_RED);
             _cw.drawArc(_ad(be.aid).pos, _settings.bondSpace * 3, a1, a0);
 
-            float a2 = atan2(be2.dir.y, be2.dir.x) - 0.1f;
-            float a3 = atan2(be.dir.y, be.dir.x) + 0.1f;
+            double a2 = atan2(be2.dir.y, be2.dir.x) - 0.1f;
+            double a3 = atan2(be.dir.y, be.dir.x) + 0.1f;
             _cw.setSingleSource(CWC_DARKGREEN);
             _cw.drawArc(_ad(be.aid).pos, _settings.bondSpace * 3 + _settings.unit, a3, a2);
         }
@@ -1942,7 +1942,7 @@ void MoleculeRenderInternal::_renderEmptyRFragment()
     int attachmentPointCount = 2;
 
     Vec2f pos, dir1(1, 0), dir2(-1, 0);
-    float offset = 0.4f;
+    double offset = 0.4f;
     {
         RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
 
@@ -1981,13 +1981,13 @@ void MoleculeRenderInternal::_renderRings()
         const Ring& ring = _data.rings[i];
         if (ring.aromatic)
         {
-            float r = 0.75f * ring.radius;
+            double r = 0.75f * ring.radius;
             for (int k = 0; k < ring.bondEnds.size(); ++k)
             {
                 BondEnd& be = _be(ring.bondEnds[k]);
                 if (_edgeIsHighlighted(be.bid))
                     _cw.setHighlight();
-                float a0 = ring.angles[k], a1 = ring.angles[(k + 1) % ring.bondEnds.size()];
+                double a0 = ring.angles[k], a1 = ring.angles[(k + 1) % ring.bondEnds.size()];
                 if (fabs(a1 - a0) > M_PI)
                     _cw.drawArc(ring.center, r, std::max(a0, a1), std::min(a0, a1));
                 else
@@ -2076,12 +2076,12 @@ void MoleculeRenderInternal::_findNeighbors()
                         continue;
                     int be2idx = _getBondEndIdx(i, k);
                     BondEnd& be2 = _be(be2idx);
-                    float dot = Vec2f::dot(be1.dir, be2.dir);
-                    float cross = -Vec2f::cross(be1.dir, be2.dir);
-                    float angle = atan2(cross, dot);
+                    double dot = Vec2f::dot(be1.dir, be2.dir);
+                    double cross = -Vec2f::cross(be1.dir, be2.dir);
+                    double angle = atan2(cross, dot);
                     if (angle < 0)
-                        angle += 2 * (float)M_PI;
-                    float rAngle = (2 * (float)M_PI - angle);
+                        angle += 2 * (double)M_PI;
+                    double rAngle = (2 * (double)M_PI - angle);
                     if (be1.lnei < 0 || angle < be1.lang)
                     {
                         be1.lnei = be2idx;
@@ -2107,7 +2107,7 @@ void MoleculeRenderInternal::_findNeighbors()
                 be1.lnei = be1.rnei = be1idx;
                 be1.lsin = be1.rsin = 0;
                 be1.lcos = be1.rcos = 1;
-                be1.lang = be1.rang = (float)(2 * M_PI);
+                be1.lang = be1.rang = (double)(2 * M_PI);
             }
         }
     }
@@ -2164,12 +2164,12 @@ void MoleculeRenderInternal::_findCenteredCase()
     }
 }
 
-float MoleculeRenderInternal::_getBondOffset(int aid, const Vec2f& pos, const Vec2f& dir, const float bondWidth)
+double MoleculeRenderInternal::_getBondOffset(int aid, const Vec2f& pos, const Vec2f& dir, const double bondWidth)
 {
     if (!_ad(aid).showLabel)
         return -1;
 
-    float maxOffset = 0, offset = 0;
+    double maxOffset = 0, offset = 0;
     for (int k = 0; k < _ad(aid).ticount; ++k)
     {
         TextItem& item = _data.textitems[_ad(aid).tibegin + k];
@@ -2209,13 +2209,13 @@ void MoleculeRenderInternal::_calculateBondOffset()
         BondEnd& be2 = _be(bd.be2);
 
         // if the offsets may result in too short bond,
-        float offsum = be1.offset + be2.offset;
+        double offsum = be1.offset + be2.offset;
         if (offsum > 1e-3f && bd.length < offsum + _settings.minBondLength)
         {
             // if possible, scale down the offsets so that the bond has at least the specified length
             if (bd.length > _settings.minBondLength)
             {
-                float factor = (bd.length - _settings.minBondLength) / offsum;
+                double factor = (bd.length - _settings.minBondLength) / offsum;
                 be1.offset *= factor;
                 be2.offset *= factor;
             }
@@ -2230,7 +2230,7 @@ void MoleculeRenderInternal::_calculateBondOffset()
 
 void MoleculeRenderInternal::_initBondData()
 {
-    float thicknessHighlighted = _cw.highlightedBondLineWidth();
+    double thicknessHighlighted = _cw.highlightedBondLineWidth();
 
     for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
     {
@@ -2562,12 +2562,12 @@ static void _expandBoundRect(AtomDesc& ad, const RenderItem& item)
     ad.boundBoxMax.max(max);
 }
 
-int MoleculeRenderInternal::_findClosestBox(Vec2f& p, int aid, const Vec2f& sz, float mrg, int skip)
+int MoleculeRenderInternal::_findClosestBox(Vec2f& p, int aid, const Vec2f& sz, double mrg, int skip)
 {
     const Vertex& vertex = _mol->getVertex(aid);
     const AtomDesc& ad = _ad(aid);
-    float w2 = sz.x / 2 + mrg;
-    float h2 = sz.y / 2 + mrg;
+    double w2 = sz.x / 2 + mrg;
+    double h2 = sz.y / 2 + mrg;
 
     if (vertex.degree() == 0)
     {
@@ -2577,9 +2577,9 @@ int MoleculeRenderInternal::_findClosestBox(Vec2f& p, int aid, const Vec2f& sz, 
     }
     if (vertex.degree() == 1)
     {
-        float offset = 0;
+        double offset = 0;
         const Vec2f& d = _getBondEnd(aid, vertex.neiBegin()).dir;
-        float val = -1, dx = fabs(d.x), dy = fabs(d.y);
+        double val = -1, dx = fabs(d.x), dy = fabs(d.y);
         if (dx > 0.01)
             if (val < 0 || val > w2 / dx)
                 val = w2 / dx;
@@ -2603,8 +2603,8 @@ int MoleculeRenderInternal::_findClosestBox(Vec2f& p, int aid, const Vec2f& sz, 
         const BondDescr& rdb = _bd(rbe.bid);
 
         // correction of positioning according to bond types
-        float turn = atan(_settings.bondSpace / lbd.length);
-        float leftShift = 0, rightShift = 0;
+        double turn = atan(_settings.bondSpace / lbd.length);
+        double leftShift = 0, rightShift = 0;
         bool leftBondCentered = _be(lbd.be1).centered && _be(lbd.be2).centered;
         bool leftTurn = false, rightTurn = false;
         bool leftIsSourceEnd = (lbd.beg == aid);
@@ -2657,22 +2657,22 @@ int MoleculeRenderInternal::_findClosestBox(Vec2f& p, int aid, const Vec2f& sz, 
         if (rightTurn)
             rightDir.rotateL(-turn);
         Vec2f origin;
-        float si = Vec2f::cross(leftDir, rightDir);
-        float co = Vec2f::dot(leftDir, rightDir);
-        float ang = atan2(si, co);
+        double si = Vec2f::cross(leftDir, rightDir);
+        double co = Vec2f::dot(leftDir, rightDir);
+        double ang = atan2(si, co);
         if (ang < 0)
-            ang += 2 * (float)M_PI;
+            ang += 2 * (double)M_PI;
 
-        float factor = fabs(sin(ang / 2));
+        double factor = fabs(sin(ang / 2));
         Vec2f rightNorm(rightDir), leftNorm(leftDir);
-        rightNorm.rotateL((float)M_PI / 2);
-        leftNorm.rotateL(-(float)M_PI / 2);
+        rightNorm.rotateL((double)M_PI / 2);
+        leftNorm.rotateL(-(double)M_PI / 2);
 
-        float rightOffset = 0, leftOffset = 0;
+        double rightOffset = 0, leftOffset = 0;
         rightOffset = w2 * fabs(leftNorm.x) + h2 * fabs(leftNorm.y);
         leftOffset = w2 * fabs(rightNorm.x) + h2 * fabs(rightNorm.y);
 
-        float t = std::max(leftShift + rightOffset, leftOffset + rightShift) / factor;
+        double t = std::max(leftShift + rightOffset, leftOffset + rightShift) / factor;
         Vec2f median(rightDir);
         median.rotateL(ang / 2);
         q.addScaled(median, t);
@@ -2686,7 +2686,7 @@ int MoleculeRenderInternal::_findClosestBox(Vec2f& p, int aid, const Vec2f& sz, 
     return iMin;
 }
 
-int MoleculeRenderInternal::_findClosestCircle(Vec2f& p, int aid, float radius, int skip)
+int MoleculeRenderInternal::_findClosestCircle(Vec2f& p, int aid, double radius, int skip)
 {
     const Vertex& vertex = _mol->getVertex(aid);
     const AtomDesc& ad = _ad(aid);
@@ -2714,8 +2714,8 @@ int MoleculeRenderInternal::_findClosestCircle(Vec2f& p, int aid, float radius, 
         const BondDescr& lbd = _bd(lbe.bid);
 
         // correction of positioning according to bond types
-        float turn = atan(_settings.bondSpace / rbd.length);
-        float rightShift = 0, leftShift = 0;
+        double turn = atan(_settings.bondSpace / rbd.length);
+        double rightShift = 0, leftShift = 0;
         bool rightBondCentered = _be(rbd.be1).centered && _be(rbd.be2).centered;
         bool rightTurn = false, leftTurn = false;
         bool rightIsSourceEnd = rbd.beg == aid;
@@ -2770,13 +2770,13 @@ int MoleculeRenderInternal::_findClosestCircle(Vec2f& p, int aid, float radius, 
         if (leftTurn)
             leftDir.rotate(-turn);
         Vec2f origin;
-        float si = Vec2f::cross(rightDir, leftDir);
-        float co = Vec2f::dot(rightDir, leftDir);
-        float ang = atan2(si, co);
+        double si = Vec2f::cross(rightDir, leftDir);
+        double co = Vec2f::dot(rightDir, leftDir);
+        double ang = atan2(si, co);
         if (ang < 0)
-            ang += (float)(2 * M_PI);
+            ang += (double)(2 * M_PI);
 
-        float factor = std::max(fabsf(si), 0.01f);
+        double factor = std::max(fabsf(si), 0.01f);
         if (rightShift > 0)
             origin.addScaled(leftDir, rightShift / factor);
         if (leftShift > 0)
@@ -2785,7 +2785,7 @@ int MoleculeRenderInternal::_findClosestCircle(Vec2f& p, int aid, float radius, 
         q.copy(rightDir);
         q.rotate(ang / 2);
 
-        float dst = radius / (float)sin2c(Vec2f::dot(rightDir, leftDir));
+        double dst = radius / (double)sin2c(Vec2f::dot(rightDir, leftDir));
         q.scale(dst);
         q.add(origin);
 
@@ -2839,7 +2839,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
     fake.text.push('C');
     fake.text.push((char)0);
     _cw.setTextItemSize(fake, ad.pos);
-    float xpos = fake.bbp.x, width = fake.bbsz.x, offset = _settings.unit / 2, totalwdt = 0, upshift = -0.6f, downshift = 0.2f, space = width / 2;
+    double xpos = fake.bbp.x, width = fake.bbsz.x, offset = _settings.unit / 2, totalwdt = 0, upshift = -0.6f, downshift = 0.2f, space = width / 2;
     ad.ypos = fake.bbp.y;
     ad.height = fake.bbsz.y;
     ad.leftMargin = ad.rightMargin = xpos;
@@ -2960,7 +2960,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
                 }
                 else
                 {
-                    float shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
+                    double shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
                     int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
                     tis.push(id);
                     TextItem& item = _data.textitems[id];
@@ -2984,7 +2984,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
     ad.rightMargin += totalwdt;
     if (ad.hydroPos == HYDRO_POS_LEFT)
     {
-        float dx = totalwdt - width;
+        double dx = totalwdt - width;
         for (int i = 0; i < tis.size(); ++i)
             _data.textitems[tis[i]].bbp.x -= dx;
         for (int i = 0; i < gis.size(); ++i)
@@ -3136,7 +3136,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                     _cw.setTextItemSize(ti, ad.pos);
                     TextItem& label = _data.textitems[tilabel];
                     // this is just an upper bound, it won't be used
-                    float shift = item.bbsz.length() + label.bbsz.length();
+                    double shift = item.bbsz.length() + label.bbsz.length();
                     // one of the next conditions should be satisfied
                     if (fabs(be.dir.x) > 1e-3)
                         shift = std::min(shift, (item.bbsz.x + label.bbsz.x) / 2.f / fabsf(be.dir.x));
@@ -3298,7 +3298,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 GraphItem& itemRadical1 = _data.graphitems[giRadical1];
                 GraphItem& itemRadical2 = _data.graphitems[giRadical2];
 
-                float dist;
+                double dist;
                 if (radical == RADICAL_SINGLET)
                 {
                     _cw.setGraphItemSizeDot(itemRadical1);
@@ -3353,10 +3353,10 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             // label visible - put stereo group label on the over or under the label
             const Vertex& v = bm.getVertex(aid);
-            float vMin = 0, vMax = 0;
+            double vMin = 0, vMax = 0;
             for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
             {
-                float y = _getBondEnd(aid, i).dir.y;
+                double y = _getBondEnd(aid, i).dir.y;
                 if (y > vMax)
                     vMax = y;
                 if (y < vMin)
@@ -3407,7 +3407,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     }
 
     // prepare R-group attachment point labels
-    QS_DEF(Array<float>, angles);
+    QS_DEF(Array<double>, angles);
     QS_DEF(Array<int>, split);
     QS_DEF(Array<int>, rGroupAttachmentIndices);
 
@@ -3421,7 +3421,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
             {
-                float a = _getBondEnd(aid, i).lang;
+                double a = _getBondEnd(aid, i).lang;
                 angles.push(a);
                 split.push(1);
             }
@@ -3454,14 +3454,14 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 attachmentDirection.push().set(0, -1);
             else if (rGroupAttachmentIndices.size() == 2)
             {
-                attachmentDirection.push().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
-                attachmentDirection.push().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
+                attachmentDirection.push().set(cos((double)M_PI / 6), -sin((double)M_PI / 6));
+                attachmentDirection.push().set(cos(5 * (double)M_PI / 6), -sin(5 * (double)M_PI / 6));
             }
             else
             {
                 for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
                 {
-                    float a = j * 2 * (float)M_PI / rGroupAttachmentIndices.size();
+                    double a = j * 2 * (double)M_PI / rGroupAttachmentIndices.size();
                     attachmentDirection.push().set(cos(a), sin(a));
                 }
             }
@@ -3498,10 +3498,10 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
         {
             RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
-            float offset = std::min(std::max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.unit), 0.f), 0.4f);
+            double offset = std::min(std::max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.unit), 0.0), 0.4);
             attachmentPoint.dir.copy(attachmentDirection[j]);
             attachmentPoint.p0.lineCombin(ad.pos, attachmentDirection[j], offset);
-            attachmentPoint.p1.lineCombin(ad.pos, attachmentDirection[j], 0.8f);
+            attachmentPoint.p1.lineCombin(ad.pos, attachmentDirection[j], 0.8);
             attachmentPoint.color = CWC_BASE;
             attachmentPoint.highlighted = false;
             if (multipleAttachmentPoints)
@@ -3694,7 +3694,7 @@ void MoleculeRenderInternal::_drawTopology(BondDescr& bd)
         throw Error("Unknown topology value");
 
     _cw.setTextItemSize(ti);
-    float shift = (fabs(bd.norm.x * ti.bbsz.x) + fabs(bd.norm.y * ti.bbsz.y)) / 2 + _settings.unit;
+    double shift = (fabs(bd.norm.x * ti.bbsz.x) + fabs(bd.norm.y * ti.bbsz.y)) / 2 + _settings.unit;
 
     if (bd.extP < bd.extN)
         shift = shift + bd.extP;
@@ -3714,7 +3714,7 @@ void MoleculeRenderInternal::_drawReactingCenter(BondDescr& bd, int rc)
     Vec2f p[rcNumPnts];
     for (int i = 0; i < rcNumPnts; ++i)
         p[i].copy(bd.center);
-    float alongIntRc = _settings.unit,           // half interval along for RC_CENTER
+    double alongIntRc = _settings.unit,           // half interval along for RC_CENTER
         alongIntMadeBroken = 2 * _settings.unit, // half interval between along for RC_MADE_OR_BROKEN
         alongSz = 1.5f * _settings.bondSpace,    // half size along for RC_CENTER
         acrossInt = 1.5f * _settings.bondSpace,  // half interval across for RC_CENTER
@@ -3856,7 +3856,7 @@ void MoleculeRenderInternal::_adjustAngle(Vec2f& l, const BondEnd& be1, const Bo
 void MoleculeRenderInternal::_bondBoldStereo(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
     Vec2f r0(be1.p), l0(be1.p), r1(be2.p), l1(be2.p);
-    float w = _settings.bondSpace;
+    double w = _settings.bondSpace;
     l0.addScaled(bd.norm, -w);
     r0.addScaled(bd.norm, w);
     l1.addScaled(bd.norm, -w);
@@ -3874,12 +3874,12 @@ void MoleculeRenderInternal::_bondHydrogen(BondDescr& bd, const BondEnd& be1, co
     _cw.setDash(_settings.bondDashHydro, Vec2f::dist(be1.p, be2.p));
     double len = Vec2f::dist(be2.p, be1.p);
     Vec2f l(be2.p), r(be2.p);
-    float w = _settings.bondSpace;
+    double w = _settings.bondSpace;
     l.addScaled(bd.norm, -w);
     r.addScaled(bd.norm, w);
     bd.extP = bd.extN = w;
 
-    float lw = _cw.currentLineWidth();
+    double lw = _cw.currentLineWidth();
     Vec2f r0(be1.p), l0(be1.p);
     l0.addScaled(bd.norm, -lw / 2);
     r0.addScaled(bd.norm, lw / 2);
@@ -3892,12 +3892,12 @@ void MoleculeRenderInternal::_bondCoordination(BondDescr& bd, const BondEnd& be1
 {
     double len = Vec2f::dist(be2.p, be1.p);
     Vec2f l(be2.p), r(be2.p);
-    float w = _settings.bondSpace;
+    double w = _settings.bondSpace;
     l.addScaled(bd.norm, -w);
     r.addScaled(bd.norm, w);
     bd.extP = bd.extN = w;
 
-    float lw = _cw.currentLineWidth();
+    double lw = _cw.currentLineWidth();
     Vec2f r0(be1.p), l0(be1.p);
     l0.addScaled(bd.norm, -lw / 2);
     r0.addScaled(bd.norm, lw / 2);
@@ -3923,12 +3923,12 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
         return;
     }
     Vec2f l(be2.p), r(be2.p);
-    float w = _settings.bondSpace;
+    double w = _settings.bondSpace;
     l.addScaled(bd.norm, -w);
     r.addScaled(bd.norm, w);
     bd.extP = bd.extN = w;
 
-    float lw = _cw.currentLineWidth();
+    double lw = _cw.currentLineWidth();
     Vec2f r0(be1.p), l0(be1.p);
     l0.addScaled(bd.norm, -lw / 2);
     r0.addScaled(bd.norm, lw / 2);
@@ -3973,23 +3973,23 @@ void MoleculeRenderInternal::_bondAny(BondDescr& bd, const BondEnd& be1, const B
     bd.extP = bd.extN = _settings.bondLineWidth / 2;
 }
 
-float MoleculeRenderInternal::_ctghalf(float cs)
+double MoleculeRenderInternal::_ctghalf(double cs)
 {
     return sqrt(1 - cs * cs) / (1 - cs);
 }
 
-float MoleculeRenderInternal::_doubleBondShiftValue(const BondEnd& be, bool right, bool centered)
+double MoleculeRenderInternal::_doubleBondShiftValue(const BondEnd& be, bool right, bool centered)
 {
     const BondDescr& bd = _bd(_be(right ? be.rnei : be.lnei).bid);
-    float si = right ? be.rsin : be.lsin, co = right ? be.rcos : be.lcos;
+    double si = right ? be.rsin : be.lsin, co = right ? be.rcos : be.lcos;
     if (centered && bd.type == BOND_SINGLE && bd.end == be.aid && bd.stereodir != 0)
     {
-        float tga = si / co;
+        double tga = si / co;
         Vec2f dd;
         dd.diff(_be(bd.be1).p, _be(bd.be2).p);
-        float len = dd.length();
-        float tgb = (_settings.bondSpace + _settings.bondLineWidth) / len;
-        float tgab = (tga + tgb) / (1 - tga * tgb);
+        double len = dd.length();
+        double tgb = (_settings.bondSpace + _settings.bondLineWidth) / len;
+        double tgab = (tga + tgb) / (1 - tga * tgb);
         return -(len * si - _settings.bondSpace) / tgab + len * co - _settings.bondLineWidth / 2;
     }
     else
@@ -4043,7 +4043,7 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords(Vec2f* coord, BondDescr& b
         p0.sum(be1.p, ns);
         p1.sum(be2.p, ns);
 
-        float cs;
+        double cs;
         if (!_ad(be1.aid).showLabel)
         {
             cs = bd.lineOnTheRight ? be1.rcos : be1.lcos;
@@ -4079,7 +4079,7 @@ void MoleculeRenderInternal::_drawStereoCareBox(BondDescr& bd, const BondEnd& be
         bd.extP = bd.extN = _settings.stereoCareBoxSize / 2 + _settings.unit / 2;
         if (!bd.centered)
         {
-            float shift = Vec2f::dot(ns, bd.norm);
+            double shift = Vec2f::dot(ns, bd.norm);
             bd.extP += shift;
             bd.extN -= shift;
             p0.add(ns);
@@ -4146,7 +4146,7 @@ void MoleculeRenderInternal::_bondSingleOrDouble(BondDescr& bd, const BondEnd& b
     ns.scaled(bd.norm, 2 * _settings.bondSpace);
 
     ds.diff(be2.p, be1.p);
-    float len = ds.length();
+    double len = ds.length();
     ds.normalize();
 
     // Get number of segments of single-or-double bond
@@ -4155,7 +4155,7 @@ void MoleculeRenderInternal::_bondSingleOrDouble(BondDescr& bd, const BondEnd& b
     int numSegments = std::max((int)(len / 0.4f), 1) * 2 + 1;
 
     Vec2f r0, r1, p0, p1, q0, q1;
-    float step = len / numSegments;
+    double step = len / numSegments;
     ns.scale(0.5f);
     for (int i = 0; i < numSegments; ++i)
     {
@@ -4297,7 +4297,7 @@ void MoleculeRenderInternal::_precalcScale()
             max_index = i;
         }
     }
-    float scale_modificator = 1.0;
+    double scale_modificator = 1.0;
     if (max_index >= 0)
     {
         const Vertex& max_length_vertex = bm.getVertex(max_index);
@@ -4310,5 +4310,5 @@ void MoleculeRenderInternal::_precalcScale()
             }
         }
     }
-    _scale = std::max(_scale, float(max_output_length) / ((float)10.0 * scale_modificator));
+    _scale = std::max(_scale, double(max_output_length) / ((double)10.0 * scale_modificator));
 }

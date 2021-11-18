@@ -246,9 +246,9 @@ void MolfileLoader::_readCtab2000()
         BufferScanner atom_line(str);
 
         // read coordinates
-        float x = atom_line.readFloatFix(10);
-        float y = atom_line.readFloatFix(10);
-        float z = atom_line.readFloatFix(10);
+        double x = atom_line.readFloatFix(10);
+        double y = atom_line.readFloatFix(10);
+        double z = atom_line.readFloatFix(10);
 
         atom_line.skip(1);
 
@@ -1753,8 +1753,8 @@ void MolfileLoader::_read3dFeature2000()
         constr->point1_id = _scanner.readIntFix(3) - 1;
         constr->point2_id = _scanner.readIntFix(3) - 1;
         constr->point3_id = _scanner.readIntFix(3) - 1;
-        constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
-        constr->top = (float)(_scanner.readFloatFix(10) * M_PI / 180);
+        constr->bottom = (double)(_scanner.readFloatFix(10) * M_PI / 180);
+        constr->top = (double)(_scanner.readFloatFix(10) * M_PI / 180);
         _scanner.skipLine();
         constraints->add(constr.release());
         break;
@@ -1765,8 +1765,8 @@ void MolfileLoader::_read3dFeature2000()
         _scanner.skip(6);
         constr->line1_id = _scanner.readIntFix(3) - 1;
         constr->line2_id = _scanner.readIntFix(3) - 1;
-        constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
-        constr->top = (float)(_scanner.readFloatFix(10) * M_PI / 180);
+        constr->bottom = (double)(_scanner.readFloatFix(10) * M_PI / 180);
+        constr->top = (double)(_scanner.readFloatFix(10) * M_PI / 180);
         _scanner.skipLine();
         constraints->add(constr.release());
         break;
@@ -1777,8 +1777,8 @@ void MolfileLoader::_read3dFeature2000()
         _scanner.skip(6);
         constr->plane1_id = _scanner.readIntFix(3) - 1;
         constr->plane2_id = _scanner.readIntFix(3) - 1;
-        constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
-        constr->top = (float)(_scanner.readFloatFix(10) * M_PI / 180);
+        constr->bottom = (double)(_scanner.readFloatFix(10) * M_PI / 180);
+        constr->top = (double)(_scanner.readFloatFix(10) * M_PI / 180);
         _scanner.skipLine();
 
         constraints->add(constr.release());
@@ -1792,8 +1792,8 @@ void MolfileLoader::_read3dFeature2000()
         constr->point2_id = _scanner.readIntFix(3) - 1;
         constr->point3_id = _scanner.readIntFix(3) - 1;
         constr->point4_id = _scanner.readIntFix(3) - 1;
-        constr->bottom = (float)(_scanner.readFloatFix(10) * M_PI / 180);
-        constr->top = (float)(_scanner.readFloatFix(10) * M_PI / 180);
+        constr->bottom = (double)(_scanner.readFloatFix(10) * M_PI / 180);
+        constr->top = (double)(_scanner.readFloatFix(10) * M_PI / 180);
         _scanner.skipLine();
         constraints->add(constr.release());
         break;
@@ -1808,7 +1808,7 @@ void MolfileLoader::_read3dFeature2000()
         constr->center_id = _scanner.readIntFix(3) - 1;
         constr->allow_unconnected = (_scanner.readIntFix(3) != 0);
         allowed_atoms_amount = _scanner.readIntFix(3);
-        constr->radius = (float)(_scanner.readFloatFix(10));
+        constr->radius = (double)(_scanner.readFloatFix(10));
 
         if (allowed_atoms_amount > 0)
         {
@@ -2410,11 +2410,11 @@ void MolfileLoader::_readCtab3000()
             }
 
             strscan.skipSpace();
-            float x = strscan.readFloat();
+            double x = strscan.readFloat();
             strscan.skipSpace();
-            float y = strscan.readFloat();
+            double y = strscan.readFloat();
             strscan.skipSpace();
-            float z = strscan.readFloat();
+            double z = strscan.readFloat();
             strscan.skipSpace();
             int aamap = strscan.readInt1();
 
@@ -3401,15 +3401,15 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 throw Error("BRKXYZ number is %d (must be 9)", n);
 
             scanner.skipSpace();
-            float x1 = scanner.readFloat();
+            double x1 = scanner.readFloat();
             scanner.skipSpace();
-            float y1 = scanner.readFloat();
+            double y1 = scanner.readFloat();
             scanner.skipSpace();
             scanner.readFloat();
             scanner.skipSpace(); // skip z
-            float x2 = scanner.readFloat();
+            double x2 = scanner.readFloat();
             scanner.skipSpace();
-            float y2 = scanner.readFloat();
+            double y2 = scanner.readFloat();
             scanner.skipSpace();
             scanner.readFloat();
             scanner.skipSpace(); // skip z

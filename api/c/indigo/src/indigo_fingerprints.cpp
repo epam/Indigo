@@ -208,7 +208,7 @@ void IndigoFingerprint::toBuffer(Array<char>& buf)
     buf.copy((char*)bytes.ptr(), bytes.size());
 }
 
-static float _indigoSimilarity2(const byte* arr1, const byte* arr2, int size, const char* metrics)
+static double _indigoSimilarity2(const byte* arr1, const byte* arr2, int size, const char* metrics)
 {
     int ones1 = bitGetOnesCount(arr1, size);
     int ones2 = bitGetOnesCount(arr2, size);
@@ -219,11 +219,11 @@ static float _indigoSimilarity2(const byte* arr1, const byte* arr2, int size, co
         if (common_ones == 0)
             return 0.f;
 
-        return (float)common_ones / (ones1 + ones2 - common_ones);
+        return (double)common_ones / (ones1 + ones2 - common_ones);
     }
     else if (strlen(metrics) >= 7 && strncasecmp(metrics, "tversky", 7) == 0)
     {
-        float alpha = 0.5f, beta = 0.5f;
+        double alpha = 0.5f, beta = 0.5f;
 
         const char* params = metrics + 7;
 
@@ -239,7 +239,7 @@ static float _indigoSimilarity2(const byte* arr1, const byte* arr2, int size, co
         if (common_ones == 0)
             return 0;
 
-        float denom = (ones1 - common_ones) * alpha + (ones2 - common_ones) * beta + common_ones;
+        double denom = (ones1 - common_ones) * alpha + (ones2 - common_ones) * beta + common_ones;
 
         if (denom < 1e-6f)
             throw IndigoError("bad denominator");
@@ -251,13 +251,13 @@ static float _indigoSimilarity2(const byte* arr1, const byte* arr2, int size, co
         if (common_ones == 0)
             return 0;
 
-        return (float)common_ones / ones1;
+        return (double)common_ones / ones1;
     }
     else
         throw IndigoError("unknown metrics: %s", metrics);
 }
 
-static float _indigoSimilarity(Array<byte>& arr1, Array<byte>& arr2, const char* metrics)
+static double _indigoSimilarity(Array<byte>& arr1, Array<byte>& arr2, const char* metrics)
 {
     int size = arr1.size();
 
@@ -367,7 +367,7 @@ static void _getCountersDifference(RedBlackStringMap<int>& c1, RedBlackStringMap
     common /= 2;
 }
 
-static float _indigoSimilarityNormalizedEdit(BaseMolecule& mol1, BaseMolecule& mol2)
+static double _indigoSimilarityNormalizedEdit(BaseMolecule& mol1, BaseMolecule& mol2)
 {
     QS_DEF(RedBlackStringMap<int>, c1);
     QS_DEF(RedBlackStringMap<int>, c2);
@@ -391,10 +391,10 @@ static float _indigoSimilarityNormalizedEdit(BaseMolecule& mol1, BaseMolecule& m
         if (diff1 != 0 || diff2 != 0)
         {
             // Use Tversky Index
-            float alpha = 0.7f, beta = 0.7f;
+            double alpha = 0.7f, beta = 0.7f;
 
-            float sim = common / (alpha * diff1 + beta * diff2 + common);
-            float scaling = sim * sim * (3 - 2 * sim);
+            double sim = common / (alpha * diff1 + beta * diff2 + common);
+            double scaling = sim * sim * (3 - 2 * sim);
             return sim * scaling;
         }
     }
@@ -402,7 +402,7 @@ static float _indigoSimilarityNormalizedEdit(BaseMolecule& mol1, BaseMolecule& m
     return 1;
 }
 
-CEXPORT float indigoSimilarity(int item1, int item2, const char* metrics)
+CEXPORT double indigoSimilarity(int item1, int item2, const char* metrics)
 {
     INDIGO_BEGIN
     {

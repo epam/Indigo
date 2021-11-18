@@ -48,7 +48,7 @@
 typedef unsigned char byte;
 #endif
 
-/* All integer and float functions return -1 on error. */
+/* All integer and double functions return -1 on error. */
 /* All string functions return zero pointer on error. */
 
 /* Almost all string functions return the same pointer on success;
@@ -91,16 +91,16 @@ CEXPORT int indigoFreeAllObjects();
 CEXPORT int indigoSetOption(const char* name, const char* value);
 CEXPORT int indigoSetOptionInt(const char* name, int value);
 CEXPORT int indigoSetOptionBool(const char* name, int value);
-CEXPORT int indigoSetOptionFloat(const char* name, float value);
-CEXPORT int indigoSetOptionColor(const char* name, float r, float g, float b);
+CEXPORT int indigoSetOptionFloat(const char* name, double value);
+CEXPORT int indigoSetOptionColor(const char* name, double r, double g, double b);
 CEXPORT int indigoSetOptionXY(const char* name, int x, int y);
 CEXPORT int indigoResetOptions();
 
 CEXPORT const char* indigoGetOption(const char* name);
 CEXPORT int indigoGetOptionInt(const char* name, int* value);
 CEXPORT int indigoGetOptionBool(const char* name, int* value);
-CEXPORT int indigoGetOptionFloat(const char* name, float* value);
-CEXPORT int indigoGetOptionColor(const char* name, float* r, float* g, float* b);
+CEXPORT int indigoGetOptionFloat(const char* name, double* value);
+CEXPORT int indigoGetOptionColor(const char* name, double* r, double* g, double* b);
 CEXPORT int indigoGetOptionXY(const char* name, int* x, int* y);
 
 CEXPORT const char* indigoGetOptionType(const char* name);
@@ -289,13 +289,13 @@ CEXPORT int indigoNormalize(int structure, const char* options);
 CEXPORT int indigoStandardize(int item);
 
 // Method for structure ionization at specified pH and pH tollerance
-CEXPORT int indigoIonize(int item, float pH, float pH_toll);
+CEXPORT int indigoIonize(int item, double pH, double pH_toll);
 
 // Method for building PKA model
-CEXPORT int indigoBuildPkaModel(int max_level, float threshold, const char* filename);
+CEXPORT int indigoBuildPkaModel(int max_level, double threshold, const char* filename);
 
-CEXPORT float* indigoGetAcidPkaValue(int item, int atom, int level, int min_level);
-CEXPORT float* indigoGetBasicPkaValue(int item, int atom, int level, int min_level);
+CEXPORT double* indigoGetAcidPkaValue(int item, int atom, int level, int min_level);
+CEXPORT double* indigoGetBasicPkaValue(int item, int atom, int level, int min_level);
 
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following (separated by a space):
@@ -433,9 +433,9 @@ CEXPORT int indigoCountImplicitHydrogens(int item);
 
 // On success, returns always the same pointer to a 3-element array;
 // you should not free() it, but rather memcpy() it if you want to keep it.
-CEXPORT float* indigoXYZ(int atom);
+CEXPORT double* indigoXYZ(int atom);
 
-CEXPORT int indigoSetXYZ(int atom, float x, float y, float z);
+CEXPORT int indigoSetXYZ(int atom, double x, double y, double z);
 
 CEXPORT int indigoCountSuperatoms(int molecule);
 CEXPORT int indigoCountDataSGroups(int molecule);
@@ -463,10 +463,10 @@ CEXPORT int indigoAddDataSGroup(int molecule, int natoms, int* atoms, int nbonds
 
 CEXPORT int indigoAddSuperatom(int molecule, int natoms, int* atoms, const char* name);
 
-CEXPORT int indigoSetDataSGroupXY(int sgroup, float x, float y, const char* options);
+CEXPORT int indigoSetDataSGroupXY(int sgroup, double x, double y, const char* options);
 
 CEXPORT int indigoSetSGroupData(int sgroup, const char* data);
-CEXPORT int indigoSetSGroupCoords(int sgroup, float x, float y);
+CEXPORT int indigoSetSGroupCoords(int sgroup, double x, double y);
 CEXPORT int indigoSetSGroupDescription(int sgroup, const char* description);
 CEXPORT int indigoSetSGroupFieldName(int sgroup, const char* name);
 CEXPORT int indigoSetSGroupQueryCode(int sgroup, const char* querycode);
@@ -476,8 +476,8 @@ CEXPORT int indigoSetSGroupLocation(int sgroup, const char* option);
 CEXPORT int indigoSetSGroupTag(int sgroup, const char* tag);
 CEXPORT int indigoSetSGroupTagAlign(int sgroup, int tag_align);
 CEXPORT int indigoSetSGroupDataType(int sgroup, const char* type);
-CEXPORT int indigoSetSGroupXCoord(int sgroup, float x);
-CEXPORT int indigoSetSGroupYCoord(int sgroup, float y);
+CEXPORT int indigoSetSGroupXCoord(int sgroup, double x);
+CEXPORT int indigoSetSGroupYCoord(int sgroup, double y);
 
 CEXPORT int indigoCreateSGroup(const char* type, int mapping, const char* name);
 CEXPORT const char* indigoGetSGroupClass(int sgroup);
@@ -491,7 +491,7 @@ CEXPORT int indigoDeleteSGroupAttachmentPoint(int sgroup, int index);
 CEXPORT int indigoGetSGroupDisplayOption(int sgroup);
 CEXPORT int indigoSetSGroupDisplayOption(int sgroup, int option);
 CEXPORT int indigoGetSGroupSeqId(int sgroup);
-CEXPORT float* indigoGetSGroupCoords(int sgroup);
+CEXPORT double* indigoGetSGroupCoords(int sgroup);
 
 CEXPORT int indigoGetSGroupMultiplier(int sgroup);
 CEXPORT int indigoSetSGroupMultiplier(int sgroup, int multiplier);
@@ -499,7 +499,7 @@ CEXPORT int indigoSetSGroupMultiplier(int sgroup, int multiplier);
 CEXPORT const char* indigoGetRepeatingUnitSubscript(int sgroup);
 CEXPORT int indigoGetRepeatingUnitConnectivity(int sgroup);
 
-CEXPORT int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
+CEXPORT int indigoSetSGroupBrackets(int sgroup, int brk_style, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
 
 CEXPORT int indigoFindSGroups(int item, const char* property, const char* value);
 
@@ -699,7 +699,7 @@ CEXPORT int indigoRemoveBonds(int molecule, int nbonds, int* bonds);
 // positions. The size of desired_xyz is equal to 3 * natoms.
 // The return value is the root-mean-square measure of the difference
 // between the desired and obtained positions.
-CEXPORT float indigoAlignAtoms(int molecule, int natoms, int* atom_ids, float* desired_xyz);
+CEXPORT double indigoAlignAtoms(int molecule, int natoms, int* atom_ids, double* desired_xyz);
 
 /* Things that work for both molecules and reactions */
 
@@ -813,7 +813,7 @@ CEXPORT int indigoLoadFingerprintFromDescriptors(const double* arr, int arr_len,
 // Metrics: "tanimoto", "tversky", "tversky <alpha> <beta>", "euclid-sub" or "normalized-edit"
 // Zero pointer or empty string defaults to "tanimoto".
 // "tversky" without numbers defaults to alpha = beta = 0.5
-CEXPORT float indigoSimilarity(int item1, int item2, const char* metrics);
+CEXPORT double indigoSimilarity(int item1, int item2, const char* metrics);
 
 /* Working with SDF/RDF/SMILES/CML/CDX files  */
 

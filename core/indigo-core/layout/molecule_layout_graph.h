@@ -143,14 +143,14 @@ namespace indigo
 
         int findVertexByExtIdx(int ext_idx) const;
 
-        virtual float calculateAngle(int v, int& v1, int& v2) const = 0;
+        virtual double calculateAngle(int v, int& v1, int& v2) const = 0;
 
         void makeOnGraph(Graph& graph);
         virtual void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& filter) = 0;
         void cloneLayoutGraph(MoleculeLayoutGraph& other, Array<int>* mapping);
         void copyLayoutTo(MoleculeLayoutGraph& other, const Array<int>& mapping) const;
 
-        virtual void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing) = 0;
+        virtual void layout(BaseMolecule& molecule, double bond_length, const Filter* filter, bool respect_existing) = 0;
 
         const BaseMolecule* getMolecule(const int** molecule_edge_mapping)
         {
@@ -278,13 +278,13 @@ namespace indigo
         int _calcIntersection(int edge1, int edge2) const;
         bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const;
         bool _isVertexOnSomeEdge(int vert_idx) const;
-        void _shiftEdge(int edge_idx, float delta);
-        bool _drawRegularCurve(const Array<int>& chain, int begin, int end, float length, bool ccw, int type);
-        bool _drawRegularCurveEx(const Array<int>& chain, int begin, int end, float length, bool ccw, int type, const Array<int>& mapping);
-        static void _findAngles(int k, float s, float& x, float& y);
-        static float _dichotomy1(float a0, float b0, int L, float s);
-        static float _dichotomy2(float a0, float b0, int L, float s);
-        static void _calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v);
+        void _shiftEdge(int edge_idx, double delta);
+        bool _drawRegularCurve(const Array<int>& chain, int begin, int end, double length, bool ccw, int type);
+        bool _drawRegularCurveEx(const Array<int>& chain, int begin, int end, double length, bool ccw, int type, const Array<int>& mapping);
+        static void _findAngles(int k, double s, double& x, double& y);
+        static double _dichotomy1(double a0, double b0, int L, double s);
+        static double _dichotomy2(double a0, double b0, int L, double s);
+        static void _calculatePos(double phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v);
 
         // border functions
         virtual void _getBorder(Cycle& border) const = 0;
@@ -297,7 +297,7 @@ namespace indigo
         virtual void _calcMorganCodes() = 0;
 
         // for whole graph
-        virtual void _assignAbsoluteCoordinates(float bond_length) = 0;
+        virtual void _assignAbsoluteCoordinates(double bond_length) = 0;
 
         bool _checkBadTryBorderIntersection(Array<int>& chain_ext, MoleculeLayoutGraph& next_bc, Array<int>& mapping);
         bool _checkBadTryChainOutside(Array<int>& chain_ext, MoleculeLayoutGraph& next_bc, Array<int>& mapping);
@@ -325,7 +325,7 @@ namespace indigo
         void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
         bool _prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                   Array<int>& bc_tree);
-        void _assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout);
+        void _assignFinalCoordinates(double bond_length, const Array<Vec2f>& src_layout);
         void _copyLayout(MoleculeLayoutGraph& component);
         void _getAnchor(int& v1, int& v2, int& v3) const;
 
@@ -346,11 +346,11 @@ namespace indigo
 
         void clear() override;
 
-        float calculateAngle(int v, int& v1, int& v2) const;
+        double calculateAngle(int v, int& v1, int& v2) const;
 
         void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& filter);
 
-        void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing);
+        void layout(BaseMolecule& molecule, double bond_length, const Filter* filter, bool respect_existing);
 
         void flipped()
         {
@@ -374,7 +374,7 @@ namespace indigo
         // THERE
 
         // for whole graph
-        void _assignAbsoluteCoordinates(float bond_length);
+        void _assignAbsoluteCoordinates(double bond_length);
 
         // for components
         void _calcMorganCodes();
@@ -385,11 +385,11 @@ namespace indigo
         void _assignFirstCycle(const Cycle& cycle);
 
         // attaching cycles
-        bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);
+        bool _attachCycleOutside(const Cycle& cycle, double length, int n_common);
         bool _drawEdgesWithoutIntersection(const Cycle& cycle, Array<int>& cycle_vertex_types);
 
-        bool _attachCycleInside(const Cycle& cycle, float length);
-        bool _attachCycleWithIntersections(const Cycle& cycle, float length);
+        bool _attachCycleInside(const Cycle& cycle, double length);
+        bool _attachCycleWithIntersections(const Cycle& cycle, double length);
         void _setChainType(const Array<int>& chain, const Array<int>& mapping, int type);
         bool _splitCycle(const Cycle& cycle, const Array<int>& cycle_vertex_types, bool check_boundary, Array<int>& chain_ext, Array<int>& chain_int,
                          int& c_beg, int& c_end) const;
@@ -406,8 +406,8 @@ namespace indigo
         // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
         static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, Array<int>& tree);
 
-        void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
-        void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
+        void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, double bond_length);
+        void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, double bond_length);
     };
 
     struct local_pair_ii
@@ -425,9 +425,9 @@ namespace indigo
     struct local_pair_id
     {
         int left;
-        float right;
+        double right;
 
-        local_pair_id(int l, float r)
+        local_pair_id(int l, double r)
         {
             left = l;
             right = r;
@@ -442,7 +442,7 @@ namespace indigo
     {
 
     private:
-        float _length;
+        double _length;
         Array<Vec2f> _pos;
         int _finish_number;
         int _start_number;
@@ -450,11 +450,11 @@ namespace indigo
         Vec2f& _finish;
         Vec2f _center;
         int _layout_component_number;
-        float _square;
-        float _radius;
+        double _square;
+        double _radius;
 
         Vec2f _getPosition(Vec2f);
-        float calc_radius(Vec2f);
+        double calc_radius(Vec2f);
 
     public:
         MoleculeLayoutGraphSmart& _graph;
@@ -464,8 +464,8 @@ namespace indigo
         Vec2f getIntPosition(int) const;
         void shiftStartBy(Vec2f shift);
         void shiftFinishBy(Vec2f shift);
-        float getLength() const;
-        float getLengthCoef() const;
+        double getLength() const;
+        double getLengthCoef() const;
         Vec2f getCenter();
         Vec2f getIntCenter();
         void updateStartFinish();
@@ -474,11 +474,11 @@ namespace indigo
         void set_layout_component_number(int number);
         void inverse();
         void set_start_finish_number(int, int);
-        float get_square();
+        double get_square();
         void calculate_square();
         int get_start() const;
         int get_finish() const;
-        float get_radius();
+        double get_radius();
         bool can_touch_to(MoleculeLayoutSmoothingSegment&);
 
         bool is_start(int v)
@@ -490,31 +490,31 @@ namespace indigo
             return v == _finish_number;
         }
 
-        float get_min_x();
-        float get_min_y();
-        float get_max_x();
-        float get_max_y();
+        double get_min_x();
+        double get_min_y();
+        double get_max_x();
+        double get_max_y();
     };
 
     class DLLEXPORT SmoothingCycle
     {
     public:
         CP_DECL;
-        SmoothingCycle(Array<Vec2f>&, Array<float>&);
-        SmoothingCycle(Array<Vec2f>&, Array<float>&, Array<int>&, int);
-        SmoothingCycle(Array<Vec2f>&, Array<float>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
+        SmoothingCycle(Array<Vec2f>&, Array<double>&);
+        SmoothingCycle(Array<Vec2f>&, Array<double>&, Array<int>&, int);
+        SmoothingCycle(Array<Vec2f>&, Array<double>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
 
         int cycle_length;
         Array<Vec2f>& point;
-        Array<float>& target_angle;
+        Array<double>& target_angle;
         MoleculeLayoutSmoothingSegment* segment;
-        TL_CP_DECL(Array<float>, edge_length);
+        TL_CP_DECL(Array<double>, edge_length);
 
         bool is_simple_component(int i)
         {
             return segment == 0 || segment[i].get_layout_component_number() < 0;
         }
-        float get_radius(int i)
+        double get_radius(int i)
         {
             return segment == 0 ? (point[(i + 1) % cycle_length] - point[i]).length() / 2 : segment[i].get_radius();
         }
@@ -522,7 +522,7 @@ namespace indigo
         {
             return segment == 0 ? (point[(i + 1) % cycle_length] + point[i]) / 2 : segment[i].getCenter();
         }
-        float get_length(int i)
+        double get_length(int i)
         {
             return edge_length[i];
         }
@@ -531,11 +531,11 @@ namespace indigo
 
         void _do_smoothing(int iter_count);
 
-        void _gradient_step(float coef, Array<local_pair_ii>& touching_segments, bool);
+        void _gradient_step(double coef, Array<local_pair_ii>& touching_segments, bool);
 
-        static Vec2f _get_len_derivative(Vec2f current_vector, float target_dist, bool);
-        static Vec2f _get_len_derivative_simple(Vec2f current_vector, float target_dist);
-        static Vec2f _get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle, bool flag = false);
+        static Vec2f _get_len_derivative(Vec2f current_vector, double target_dist, bool);
+        static Vec2f _get_len_derivative_simple(Vec2f current_vector, double target_dist);
+        static Vec2f _get_angle_derivative(Vec2f left_point, Vec2f right_point, double target_angle, bool flag = false);
     };
 
     class DLLEXPORT MoleculeLayoutGraphSmart : public MoleculeLayoutGraph
@@ -565,11 +565,11 @@ namespace indigo
             return _layout_vertices[idx].type != ELEMENT_NOT_DRAWN;
         }
 
-        float calculateAngle(int v, int& v1, int& v2) const;
+        double calculateAngle(int v, int& v1, int& v2) const;
 
         void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& vertex_filter);
         void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& vertex_filter, Filter* edge_filter);
-        void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing);
+        void layout(BaseMolecule& molecule, double bond_length, const Filter* filter, bool respect_existing);
 
         void calcMorganCode();
         long getMorganCode();
@@ -591,7 +591,7 @@ namespace indigo
             return _molecule_edge_mapping;
         }
 
-        float _get_square();
+        double _get_square();
         void flipped() override;
 
 
@@ -605,7 +605,7 @@ namespace indigo
         // THERE
 
         // for whole graph
-        void _assignAbsoluteCoordinates(float bond_length) override;
+        void _assignAbsoluteCoordinates(double bond_length) override;
 
         // for components
         void _calcMorganCodes() override;
@@ -639,26 +639,26 @@ namespace indigo
         void _update_touching_segments(Array<local_pair_ii>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
         void _segment_smoothing_prepearing(const Cycle& cycle, Array<int>& rotation_vertex, Array<Vec2f>& rotation_point,
                                            ObjArray<MoleculeLayoutSmoothingSegment>& segment, MoleculeLayoutMacrocyclesLattice& layout);
-        void _segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice& layout, Array<int>& rotation_vertex, Array<float>& target_angle,
+        void _segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice& layout, Array<int>& rotation_vertex, Array<double>& target_angle,
                                              ObjArray<MoleculeLayoutSmoothingSegment>& segment);
         void _segment_update_rotation_points(const Cycle& cycle, Array<int>& rotation_vertex, Array<Vec2f>& rotation_point,
                                              ObjArray<MoleculeLayoutSmoothingSegment>& segment);
         void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _do_segment_smoothing(Array<Vec2f>& rotation_point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _segment_improoving(Array<Vec2f>& rotation_point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, int, float,
+        void _do_segment_smoothing(Array<Vec2f>& rotation_point, Array<double>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
+        void _segment_improoving(Array<Vec2f>& rotation_point, Array<double>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, int, double,
                                  Array<local_pair_ii>&);
-        void _do_segment_smoothing_gradient(Array<Vec2f>& rotation_point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _gradient_step(Array<Vec2f>& point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, float coef,
+        void _do_segment_smoothing_gradient(Array<Vec2f>& rotation_point, Array<double>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
+        void _gradient_step(Array<Vec2f>& point, Array<double>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, double coef,
                             Array<local_pair_ii>& touching_segments);
 
         void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos);
 
         // attaching cycles
-        bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);
+        bool _attachCycleOutside(const Cycle& cycle, double length, int n_common);
         bool _drawEdgesWithoutIntersection(const Cycle& cycle, Array<int>& cycle_vertex_types);
 
-        bool _attachCycleInside(const Cycle& cycle, float length);
-        bool _attachCycleWithIntersections(const Cycle& cycle, float length);
+        bool _attachCycleInside(const Cycle& cycle, double length);
+        bool _attachCycleWithIntersections(const Cycle& cycle, double length);
         void _setChainType(const Array<int>& chain, const Array<int>& mapping, int type);
         bool _splitCycle(const Cycle& cycle, const Array<int>& cycle_vertex_types, bool check_boundary, Array<int>& chain_ext, Array<int>& chain_int,
                          int& c_beg, int& c_end) const;
@@ -672,14 +672,14 @@ namespace indigo
         bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const override;
 
         // geometry functions
-        const float _energyOfPoint(Vec2f p) const;
+        const double _energyOfPoint(Vec2f p) const;
         int _isCisConfiguratuin(Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4);
 
         // make tree of biconnected components (tree[i] - -1 or component incoming to vertex i)
         static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, Array<int>& tree);
 
-        void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
-        void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
+        void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, double bond_length);
+        void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, double bond_length);
 
         Array<int> _layout_component_number; // number of layout component of certain edge
         int _layout_component_count;

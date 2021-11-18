@@ -42,7 +42,7 @@ void RenderItemContainer::estimateSize()
     }
 }
 
-void RenderItemContainer::setObjScale(float scale)
+void RenderItemContainer::setObjScale(double scale)
 {
     for (int i = 0; i < items.size(); ++i)
     {
@@ -51,9 +51,9 @@ void RenderItemContainer::setObjScale(float scale)
     }
 }
 
-float RenderItemContainer::getTotalBondLength()
+double RenderItemContainer::getTotalBondLength()
 {
-    float sum = 0.0;
+    double sum = 0.0;
     for (int i = 0; i < items.size(); ++i)
     {
         RenderItemBase& item = _factory.getItem(items[i]);
@@ -62,9 +62,9 @@ float RenderItemContainer::getTotalBondLength()
     return sum;
 }
 
-float RenderItemContainer::getTotalClosestAtomDistance()
+double RenderItemContainer::getTotalClosestAtomDistance()
 {
-    float sum = 0.0;
+    double sum = 0.0;
     for (int i = 0; i < items.size(); ++i)
     {
         RenderItemBase& item = _factory.getItem(items[i]);

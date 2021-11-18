@@ -49,7 +49,7 @@ namespace indigo
 
         void setCancellationHandler(CancellationHandler* cancellation);
 
-        float bond_length;
+        double bond_length;
         bool respect_existing_layout;
         Filter* filter;
         int max_iterations;

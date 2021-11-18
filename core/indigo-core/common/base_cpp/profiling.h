@@ -82,7 +82,7 @@ namespace indigo
         void getStatistics(Output& output, bool get_all);
 
         bool hasLabel(const char* name);
-        float getLabelExecTime(const char* name, bool total = false);
+        double getLabelExecTime(const char* name, bool total = false);
         qword getLabelValue(const char* name, bool total = false);
         qword getLabelCallCount(const char* name, bool total = false);
 
@@ -141,7 +141,7 @@ namespace indigo
 
         qword stop();
         qword getTime() const;
-        float getTimeSec() const;
+        double getTimeSec() const;
 
     private:
         int _name_index;

@@ -142,9 +142,9 @@ void Matr3x3d::getTransposed(Matr3x3d& matr_out) const
 
 void Matr3x3d::matrixVectorMultiply(const Vec3f& a, Vec3f& b) const
 {
-    b.x = (float)(elements[0] * a.x + elements[1] * a.y + elements[2] * a.z);
-    b.y = (float)(elements[3] * a.x + elements[4] * a.y + elements[5] * a.z);
-    b.z = (float)(elements[6] * a.x + elements[7] * a.y + elements[8] * a.z);
+    b.x = (double)(elements[0] * a.x + elements[1] * a.y + elements[2] * a.z);
+    b.y = (double)(elements[3] * a.x + elements[4] * a.y + elements[5] * a.z);
+    b.z = (double)(elements[6] * a.x + elements[7] * a.y + elements[8] * a.z);
 }
 
 void Matr3x3d::transpose()

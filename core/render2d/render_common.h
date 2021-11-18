@@ -187,7 +187,7 @@ namespace indigo
         }
         void clear();
         Vec2f p0, p1, q0, q1, d, n;
-        float width, length;
+        double width, length;
         bool invertUpperLowerIndex;
     };
 
@@ -210,7 +210,7 @@ namespace indigo
         }
         void clear();
         int number;
-        float radius;
+        double radius;
     };
 
     struct AtomDesc
@@ -253,10 +253,10 @@ namespace indigo
         Array<int> nearbyAtoms;
         int aam;
         int inversion;
-        float implHPosWeights[4];
-        float upperSin, lowerSin, rightSin, leftSin;
+        double implHPosWeights[4];
+        double upperSin, lowerSin, rightSin, leftSin;
 
-        float leftMargin, rightMargin, ypos, height;
+        double leftMargin, rightMargin, ypos, height;
 
     private:
         AtomDesc(const AtomDesc& ad);
@@ -283,25 +283,25 @@ namespace indigo
         Vec2f dir;
         Vec2f lnorm;
         Vec2f p; // corrected position
-        float rcos;
-        float rsin;
+        double rcos;
+        double rsin;
 
         // these are bond end ids in the _data.bondend array, NOT neighbor indices in the molecule!
         int rnei;
         int lnei;
 
-        float rang;
-        float lcos;
-        float lsin;
+        double rang;
+        double lcos;
+        double lsin;
         int next;
-        float lang;
+        double lang;
         bool centered;
         int aid;
         int bid;
-        float offset;
+        double offset;
         bool prolong;
         int lRing;
-        float width;
+        double width;
 
     private:
         BondEnd(const BondEnd& be);
@@ -318,8 +318,8 @@ namespace indigo
         int getBondEnd(int aid) const;
 
         Vec2f norm, dir, vb, ve, center;
-        float thickness;
-        float bahs, eahs;
+        double thickness;
+        double bahs, eahs;
 
         bool inRing;
         bool aromRing;
@@ -331,9 +331,9 @@ namespace indigo
         bool cistrans;
         int type;
         int queryType;
-        float length;
+        double length;
         int be1, be2;
-        float extP, extN;
+        double extP, extN;
         int tiTopology;
         int topology;
         int reactingCenter;
@@ -348,11 +348,11 @@ namespace indigo
         void clear();
 
         Array<int> bondEnds;
-        Array<float> angles;
+        Array<double> angles;
         int dblBondCount;
         bool aromatic;
         Vec2f center;
-        float radius;
+        double radius;
 
     private:
         Ring(const Ring& r);
@@ -386,7 +386,7 @@ namespace indigo
     {
     public:
         RenderSettings();
-        void init(float sf, float lwf);
+        void init(double sf, double lwf);
 
         CP_DECL;
         TL_CP_DECL(Array<double>, bondDashAromatic);
@@ -395,50 +395,50 @@ namespace indigo
         TL_CP_DECL(Array<double>, bondDashDoubleOrAromatic);
         TL_CP_DECL(Array<double>, bondDashHydro);
 
-        float labelInternalOffset;
-        float lowerIndexShift;
-        float unit;
-        float bondLineWidth;
-        float bondSpace;
-        float boundExtent;
-        float upperIndexShift;
-        float radicalRightOffset;
-        float radicalRightVertShift;
-        float radicalTopOffset;
-        float radicalTopDistDot;
-        float radicalTopDistCap;
-        float stereoGroupLabelOffset;
-        float dashUnit;
-        float eps;
-        float stereoCareBoxSize;
-        float cosineTreshold;
-        float prolongAdjSinTreshold;
-        float minBondLength;
-        float graphItemDotRadius;
-        float graphItemCapSlope;
-        float graphItemCapBase;
-        float graphItemCapWidth;
-        float graphItemDigitWidth;
-        float graphItemDigitHeight;
-        float graphItemSignLineWidth;
-        float graphItemPlusEdge;
+        double labelInternalOffset;
+        double lowerIndexShift;
+        double unit;
+        double bondLineWidth;
+        double bondSpace;
+        double boundExtent;
+        double upperIndexShift;
+        double radicalRightOffset;
+        double radicalRightVertShift;
+        double radicalTopOffset;
+        double radicalTopDistDot;
+        double radicalTopDistCap;
+        double stereoGroupLabelOffset;
+        double dashUnit;
+        double eps;
+        double stereoCareBoxSize;
+        double cosineTreshold;
+        double prolongAdjSinTreshold;
+        double minBondLength;
+        double graphItemDotRadius;
+        double graphItemCapSlope;
+        double graphItemCapBase;
+        double graphItemCapWidth;
+        double graphItemDigitWidth;
+        double graphItemDigitHeight;
+        double graphItemSignLineWidth;
+        double graphItemPlusEdge;
 
-        float fzz[FONT_SIZE_COUNT];
+        double fzz[FONT_SIZE_COUNT];
 
         // Layout params, relative to average bond length units
-        float layoutMarginHorizontal;
-        float layoutMarginVertical;
-        float plusSize;
-        float metaLineWidth;
-        float arrowLength;
-        float arrowHeadWidth;
-        float arrowHeadSize;
-        float equalityInterval;
-        float rGroupIfThenInterval;
-        float neighboringLabelTolerance;
-        float minSin;
-        float neighboringAtomDistanceTresholdA;
-        float neighboringAtomDistanceTresholdB;
+        double layoutMarginHorizontal;
+        double layoutMarginVertical;
+        double plusSize;
+        double metaLineWidth;
+        double arrowLength;
+        double arrowHeadWidth;
+        double arrowHeadSize;
+        double equalityInterval;
+        double rGroupIfThenInterval;
+        double neighboringLabelTolerance;
+        double minSin;
+        double neighboringAtomDistanceTresholdA;
+        double neighboringAtomDistanceTresholdB;
 
     private:
         RenderSettings(const RenderSettings& settings);
@@ -482,11 +482,11 @@ namespace indigo
         void clear();
 
         // Returns values from 0.0 to 1.0 depending on the title box alignment
-        float getBboxRelativeOffset() const;
-        float getInboxRelativeOffset() const;
-        static float getRelativeOffset(Alignment alignment);
+        double getBboxRelativeOffset() const;
+        double getInboxRelativeOffset() const;
+        static double getRelativeOffset(Alignment alignment);
 
-        float getAnchorPoint(float area_x, float area_width, float text_width);
+        double getAnchorPoint(double area_x, double area_width, double text_width);
     };
 
     struct CanvasOptions
@@ -500,7 +500,7 @@ namespace indigo
         int maxHeight;
         int xOffset;
         int yOffset;
-        float bondLength;
+        double bondLength;
         int gridMarginX;
         int gridMarginY;
         int marginX;
@@ -528,14 +528,14 @@ namespace indigo
         Vec3f backgroundColor;
         Vec3f baseColor;
         bool highlightThicknessEnable;
-        float highlightThicknessFactor;
+        double highlightThicknessFactor;
         bool highlightColorEnable;
         Vec3f highlightColor;
         Vec3f aamColor;
-        float commentFontFactor;
-        float commentSpacing;
-        float titleFontFactor;
-        float titleSpacing;
+        double commentFontFactor;
+        double commentSpacing;
+        double titleFontFactor;
+        double titleSpacing;
         Vec3f commentColor;
         Vec3f titleColor;
         Vec3f dataGroupColor;

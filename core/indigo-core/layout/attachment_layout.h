@@ -31,7 +31,7 @@ namespace indigo
         explicit AttachmentLayout(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const Array<int>& bc_tree,
                                   MoleculeLayoutGraph& graph, int src_vertex);
 
-        float calculateEnergy();
+        double calculateEnergy();
         virtual void applyLayout() = 0;
         void markDrawnVertices();
 
@@ -41,13 +41,13 @@ namespace indigo
         TL_CP_DECL(Array<int>, _src_vertex_map); // _src_vertex_map[j] - index of the vertex _src_vertex in j component
         TL_CP_DECL(Array<int>, _attached_bc);    // BCnumbers[j] - index of j component attached;
                                                  // BCnumbers[size-1] - drawn
-        TL_CP_DECL(Array<float>, _bc_angles);    // BCangles[j] - internal angle of j component attached, 0 if single edge
+        TL_CP_DECL(Array<double>, _bc_angles);    // BCangles[j] - internal angle of j component attached, 0 if single edge
         TL_CP_DECL(Array<int>, _vertices_l);     // _vertices_l[j] - index of the vertex in j component such the j component
                                                  // lays on the left (CCW) from edge (v, _vertices_l[j]];
-        float _alpha;                            // if positive then angle between components
+        double _alpha;                            // if positive then angle between components
         TL_CP_DECL(Array<int>, _new_vertices);   // indices in source graph of new verices
         TL_CP_DECL(Array<Vec2f>, _layout);       // layout of new vertices
-        float _energy;                           // current energy between drawn part and new part
+        double _energy;                           // current energy between drawn part and new part
 
         const PtrArray<MoleculeLayoutGraph>& _bc_components;
         MoleculeLayoutGraph& _graph;
@@ -86,7 +86,7 @@ namespace indigo
         void _makeLayout();
 
         int _n_components;
-        float _cur_energy;
+        double _cur_energy;
         CP_DECL;
         TL_CP_DECL(Array<int>, _comp_permutation);
         TL_CP_DECL(Array<int>, _rest_numbers);

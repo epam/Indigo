@@ -660,7 +660,7 @@ void SmilesLoader::_readOtherStuff()
         {
             for (int i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
             {
-                float x, y, z = 0;
+                double x, y, z = 0;
 
                 x = _scanner.readFloat();
                 if (_scanner.readChar() != ',')

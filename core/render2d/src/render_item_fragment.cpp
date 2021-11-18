@@ -98,14 +98,14 @@ void RenderItemFragment::render(bool idle)
     rnd.render();
 }
 
-static float get2dDist(const Vec3f& v1, const Vec3f& v2)
+static double get2dDist(const Vec3f& v1, const Vec3f& v2)
 {
     return sqrt((v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y));
 }
 
-float RenderItemFragment::getTotalBondLength()
+double RenderItemFragment::getTotalBondLength()
 {
-    float sum = 0.0;
+    double sum = 0.0;
     for (int i = mol->edgeBegin(); i < mol->edgeEnd(); i = mol->edgeNext(i))
     {
         const Edge& edge = mol->getEdge(i);
@@ -114,19 +114,19 @@ float RenderItemFragment::getTotalBondLength()
     return sum;
 }
 
-float RenderItemFragment::getTotalClosestAtomDistance()
+double RenderItemFragment::getTotalClosestAtomDistance()
 {
     if (mol->vertexCount() < 2)
         return 0;
-    float sum = 0.0;
+    double sum = 0.0;
     for (int i = mol->vertexBegin(); i < mol->vertexEnd(); i = mol->vertexNext(i))
     {
-        float minDist = -1;
+        double minDist = -1;
         for (int j = mol->vertexBegin(); j < mol->vertexEnd(); j = mol->vertexNext(j))
         {
             if (i == j)
                 continue;
-            float dist = get2dDist(mol->getAtomXyz(i), mol->getAtomXyz(j));
+            double dist = get2dDist(mol->getAtomXyz(i), mol->getAtomXyz(j));
             if (minDist < 0 || dist < minDist)
                 minDist = dist;
         }

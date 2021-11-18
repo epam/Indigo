@@ -106,7 +106,7 @@ void MoleculeLayoutGraphSmart::makeLayoutSubgraph(MoleculeLayoutGraph& graph, Fi
     _layout_component_count = 0;
 }
 
-void MoleculeLayoutGraphSmart::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing)
+void MoleculeLayoutGraphSmart::layout(BaseMolecule& molecule, double bond_length, const Filter* filter, bool respect_existing)
 {
     if (molecule.vertexCount() == 0)
         return;
@@ -172,7 +172,7 @@ void MoleculeLayoutGraphSmart::_makeComponentsTree(BiconnectedDecomposer& decon,
     }
 }
 
-void MoleculeLayoutGraphSmart::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
+void MoleculeLayoutGraphSmart::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, double bond_length)
 {
     QS_DEF(Array<Vec2f>, src_layout);
     QS_DEF(Array<int>, molecule_edge_mapping);
@@ -240,8 +240,8 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents(BaseMolecule& molecule,
     }
 
     // position components
-    float x_min, x_max, x_start = 0.f, dx;
-    float y_min, y_max, y_start = 0.f, max_height = 0.f, dy;
+    double x_min, x_max, x_start = 0.f, dx;
+    double y_min, y_max, y_start = 0.f, max_height = 0.f, dy;
     int col_count;
     int row, col;
     int n_fixed = 0;
@@ -294,7 +294,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents(BaseMolecule& molecule,
         }
     }
 
-    col_count = (int)ceil(sqrt((float)n_components - n_fixed));
+    col_count = (int)ceil(sqrt((double)n_components - n_fixed));
 
     for (i = 0, k = 0; i < n_components; i++)
     {
@@ -351,7 +351,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents(BaseMolecule& molecule,
     }
 }
 
-void MoleculeLayoutGraphSmart::_layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
+void MoleculeLayoutGraphSmart::_layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, double bond_length)
 {
     QS_DEF(Array<Vec2f>, src_layout);
     QS_DEF(Array<int>, molecule_edge_mapping);
@@ -445,7 +445,7 @@ MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGra
     }
 
     // double ternary search of center of component
-    float MLx = 0, Ly = 0, MRx = 0, Ry = 0, Lx, Rx;
+    double MLx = 0, Ly = 0, MRx = 0, Ry = 0, Lx, Rx;
     for (int v : _graph.vertices())
     {
         MLx = std::min(MLx, _pos[v].x);
@@ -455,17 +455,17 @@ MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGra
     }
     while (Ry - Ly > EPSILON)
     {
-        float dy = (Ry - Ly) / 3;
-        float ry[2];
-        float My = Ly + dy;
+        double dy = (Ry - Ly) / 3;
+        double ry[2];
+        double My = Ly + dy;
         for (int i = 0; i < 2; i++)
         {
             Lx = MLx, Rx = MRx;
-            float rx[2];
+            double rx[2];
             while (Rx - Lx > EPSILON)
             {
-                float dx = (Rx - Lx) / 3;
-                float Mx = Lx + dx;
+                double dx = (Rx - Lx) / 3;
+                double Mx = Lx + dx;
                 for (int j = 0; j < 2; j++)
                 {
                     rx[j] = calc_radius(Vec2f(Mx, My));
@@ -490,16 +490,16 @@ MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGra
     _radius = 0;
     Vec2f center(0.5, 0);
     for (int v : _graph.vertices()) {
-       float dist = (center - _pos[v]).length();
+       double dist = (center - _pos[v]).length();
        if (dist > _radius) _radius = dist;
     }
     _center = center;*/
     _square = 0;
 }
 
-float MoleculeLayoutSmoothingSegment::calc_radius(Vec2f c)
+double MoleculeLayoutSmoothingSegment::calc_radius(Vec2f c)
 {
-    float answer = 0;
+    double answer = 0;
     for (int v : _graph.vertices())
         answer = std::max(answer, (c - _pos[v]).lengthSqr());
     return sqrt(answer);
@@ -518,7 +518,7 @@ void MoleculeLayoutSmoothingSegment::updateStartFinish()
     _length = (_start - _finish).length();
 }
 
-float MoleculeLayoutSmoothingSegment::get_radius()
+double MoleculeLayoutSmoothingSegment::get_radius()
 {
     return _radius * _length;
 }
@@ -553,63 +553,63 @@ void MoleculeLayoutSmoothingSegment::shiftFinishBy(Vec2f shift)
     _finish += shift;
 }
 
-float MoleculeLayoutSmoothingSegment::getLength() const
+double MoleculeLayoutSmoothingSegment::getLength() const
 {
     return _length;
 }
 
-float MoleculeLayoutSmoothingSegment::getLengthCoef() const
+double MoleculeLayoutSmoothingSegment::getLengthCoef() const
 {
-    float l = (_finish - _start).length();
+    double l = (_finish - _start).length();
     return (_graph.vertexCount() > 2 ? 5 : 1) * (_length - l) / l;
 }
 
-float MoleculeLayoutSmoothingSegment::get_min_x()
+double MoleculeLayoutSmoothingSegment::get_min_x()
 {
-    float answer = 1000000.0;
+    double answer = 1000000.0;
 
     for (int v : _graph.vertices())
     {
-        float xx = getPosition(v).x;
+        double xx = getPosition(v).x;
         answer = std::min(answer, xx);
     }
 
     return answer;
 }
 
-float MoleculeLayoutSmoothingSegment::get_min_y()
+double MoleculeLayoutSmoothingSegment::get_min_y()
 {
-    float answer = 1000000.0;
+    double answer = 1000000.0;
 
     for (int v : _graph.vertices())
     {
-        float yy = getPosition(v).y;
+        double yy = getPosition(v).y;
         answer = std::min(answer, yy);
     }
 
     return answer;
 }
 
-float MoleculeLayoutSmoothingSegment::get_max_x()
+double MoleculeLayoutSmoothingSegment::get_max_x()
 {
-    float answer = -1000000.0;
+    double answer = -1000000.0;
 
     for (int v : _graph.vertices())
     {
-        float xx = getPosition(v).x;
+        double xx = getPosition(v).x;
         answer = std::max(answer, getPosition(v).x);
     }
 
     return answer;
 }
 
-float MoleculeLayoutSmoothingSegment::get_max_y()
+double MoleculeLayoutSmoothingSegment::get_max_y()
 {
-    float answer = -1000000.0;
+    double answer = -1000000.0;
 
     for (int v : _graph.vertices())
     {
-        float yy = getPosition(v).y;
+        double yy = getPosition(v).y;
         answer = std::max(answer, yy);
     }
 
@@ -672,7 +672,7 @@ void MoleculeLayoutSmoothingSegment::set_start_finish_number(int s, int f)
     _radius = 0;
     for (int v : _graph.vertices())
     {
-        float dist = (_center - _pos[v]).length();
+        double dist = (_center - _pos[v]).length();
         if (dist > _radius)
             _radius = dist;
     }
@@ -680,7 +680,7 @@ void MoleculeLayoutSmoothingSegment::set_start_finish_number(int s, int f)
     calculate_square();
 }
 
-float MoleculeLayoutSmoothingSegment::get_square()
+double MoleculeLayoutSmoothingSegment::get_square()
 {
     return _square;
 }

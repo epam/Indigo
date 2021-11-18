@@ -82,7 +82,7 @@ namespace indigo
         bool restore_unfolded_h;
 
         int match_3d;        // 0 or AFFINE or CONFORMATION
-        float rms_threshold; // for AFFINE and CONFORMATION
+        double rms_threshold; // for AFFINE and CONFORMATION
 
         void ignoreQueryAtom(int idx);
         void ignoreTargetAtom(int idx);

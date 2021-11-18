@@ -92,7 +92,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
         ARROW
     };
 
-    using ReactionComponent = std::tuple<float, ReactionFramentType, std::unique_ptr<BaseMolecule>>;
+    using ReactionComponent = std::tuple<double, ReactionFramentType, std::unique_ptr<BaseMolecule>>;
 
     MoleculeJsonLoader loader(_molecule, _rgroups);
     _prxn = dynamic_cast<Reaction*>(&rxn);
@@ -158,7 +158,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     }
 
     const rapidjson::Value& arrow_pos = _arrows[0]["data"]["pos"][0];
-    float arrow_x = arrow_pos["x"].GetFloat();
+    double arrow_x = arrow_pos["x"].GetFloat();
     components.emplace_back(arrow_x, ReactionFramentType::ARROW, nullptr);
     for (int i = 0; i < _pluses.Size(); ++i)
     {

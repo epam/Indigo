@@ -41,14 +41,14 @@ namespace indigo
         void render(bool idle) override;
 
         BaseReaction* rxn;
-        float hSpace, catalystOffset;
+        double hSpace, catalystOffset;
 
     private:
         int _addFragment(int id);
         int _addPlus();
         int _reactantLine, _catalystLineUpper, _catalystLineLower, _productLine, _arrow;
         bool _splitCatalysts;
-        float _arrowWidth;
+        double _arrowWidth;
     };
 
 } // namespace indigo

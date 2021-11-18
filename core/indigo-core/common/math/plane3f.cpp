@@ -32,9 +32,9 @@ void Plane3f::copy(const Plane3f& other)
     _d = other._d;
 }
 
-float Plane3f::distFromPoint(const Vec3f& point) const
+double Plane3f::distFromPoint(const Vec3f& point) const
 {
-    return (float)fabs(Vec3f::dot(point, _norm) + _d);
+    return (double)fabs(Vec3f::dot(point, _norm) + _d);
 }
 
 void Plane3f::projection(const Vec3f& point, Vec3f& proj_out) const

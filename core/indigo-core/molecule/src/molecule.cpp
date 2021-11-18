@@ -1720,7 +1720,7 @@ bool Molecule::standardize(const StandardizeOptions& options)
     return MoleculeStandardizer::standardize(*this, options);
 }
 
-bool Molecule::ionize(float ph, float ph_toll, const IonizeOptions& options)
+bool Molecule::ionize(double ph, double ph_toll, const IonizeOptions& options)
 {
     updateEditRevision();
     return MoleculeIonizer::ionize(*this, ph, ph_toll, options);
@@ -1750,7 +1750,7 @@ bool Molecule::isPossibleFischerProjection(const char* options)
                 nei_coords[nei_count++] = getAtomXyz(v.neiVertex(j));
             }
 
-            float angle;
+            double angle;
             Vec3f bond1, bond2;
             int ncount = 0;
             for (auto j = 0; j < 4; j++)

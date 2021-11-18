@@ -40,12 +40,12 @@ MoleculeCdxmlSaver::~MoleculeCdxmlSaver()
 {
 }
 
-float MoleculeCdxmlSaver::pageHeight() const
+double MoleculeCdxmlSaver::pageHeight() const
 {
     return _max_page_height;
 }
 
-float MoleculeCdxmlSaver::textLineHeight() const
+double MoleculeCdxmlSaver::textLineHeight() const
 {
     return 12.75f / _bond_length;
 }
@@ -80,8 +80,8 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
         int dpi_logical = 72;
         int dpi_print = 600;
 
-        float x_inch = bounds->max.x * _bond_length / dpi_logical + 1;
-        float y_inch = bounds->max.y * _bond_length / dpi_logical + 1;
+        double x_inch = bounds->max.x * _bond_length / dpi_logical + 1;
+        double y_inch = bounds->max.y * _bond_length / dpi_logical + 1;
 
         int width = (int)(x_inch * dpi_print);
         int height = (int)(y_inch * dpi_print);
@@ -90,7 +90,7 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
         int max_height = (int)((_max_page_height * _bond_length / dpi_logical + 1) * dpi_print);
         if (height > max_height)
         {
-            _pages_height = (int)ceil((float)height / max_height);
+            _pages_height = (int)ceil((double)height / max_height);
             height = max_height;
         }
 
@@ -239,9 +239,9 @@ void MoleculeCdxmlSaver::addDefaultColorTable()
     addColorTable(color.ptr());
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int id, Array<int>& ids)
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, double structure_scale, int id, Array<int>& ids)
 {
-    float scale = structure_scale * _bond_length;
+    double scale = structure_scale * _bond_length;
 
     LocaleGuard locale_guard;
 
@@ -820,7 +820,7 @@ void MoleculeCdxmlSaver::endCurrentElement()
     _current = (TiXmlElement*)node;
 }
 
-void MoleculeCdxmlSaver::addCustomText(const Vec2f& pos, const char* alignment, float line_height, const char* text)
+void MoleculeCdxmlSaver::addCustomText(const Vec2f& pos, const char* alignment, double line_height, const char* text)
 {
     TiXmlElement* t = new TiXmlElement("t");
     _current->LinkEndChild(t);

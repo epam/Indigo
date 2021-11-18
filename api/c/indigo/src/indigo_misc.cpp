@@ -93,9 +93,9 @@ CEXPORT int indigoDearomatize(int object)
 INDIGO_SET_OPTION(, const char*)
 INDIGO_SET_OPTION(Int, int)
 INDIGO_SET_OPTION(Bool, int)
-INDIGO_SET_OPTION(Float, float)
+INDIGO_SET_OPTION(Float, double)
 
-CEXPORT int indigoSetOptionColor(const char* name, float r, float g, float b)
+CEXPORT int indigoSetOptionColor(const char* name, double r, double g, double b)
 {
     INDIGO_BEGIN
     {
@@ -151,7 +151,7 @@ CEXPORT int indigoGetOptionBool(const char* name, int* value)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoGetOptionFloat(const char* name, float* value)
+CEXPORT int indigoGetOptionFloat(const char* name, double* value)
 {
     INDIGO_BEGIN
     {
@@ -164,7 +164,7 @@ CEXPORT int indigoGetOptionFloat(const char* name, float* value)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoGetOptionColor(const char* name, float* r, float* g, float* b)
+CEXPORT int indigoGetOptionColor(const char* name, double* r, double* g, double* b)
 {
     INDIGO_BEGIN
     {
@@ -1064,7 +1064,7 @@ CEXPORT int indigoStandardize(int object)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoIonize(int object, float pH, float pH_toll)
+CEXPORT int indigoIonize(int object, double pH, double pH_toll)
 {
     INDIGO_BEGIN
     {
@@ -1076,7 +1076,7 @@ CEXPORT int indigoIonize(int object, float pH, float pH_toll)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoBuildPkaModel(int max_level, float threshold, const char* filename)
+CEXPORT int indigoBuildPkaModel(int max_level, double threshold, const char* filename)
 {
     INDIGO_BEGIN
     {
@@ -1088,7 +1088,7 @@ CEXPORT int indigoBuildPkaModel(int max_level, float threshold, const char* file
     INDIGO_END(-1);
 }
 
-CEXPORT float* indigoGetAcidPkaValue(int object, int atom, int level, int min_level)
+CEXPORT double* indigoGetAcidPkaValue(int object, int atom, int level, int min_level)
 {
     INDIGO_BEGIN
     {
@@ -1100,7 +1100,7 @@ CEXPORT float* indigoGetAcidPkaValue(int object, int atom, int level, int min_le
             Molecule& mol = m_obj.getMolecule();
             IndigoAtom& site = IndigoAtom::cast(self.getObject(atom));
             auto& tmp = self.getThreadTmpData();
-            float pka = MoleculePkaModel::getAcidPkaValue(mol, site.getIndex(), level, min_level);
+            double pka = MoleculePkaModel::getAcidPkaValue(mol, site.getIndex(), level, min_level);
             tmp.xyz[0] = pka;
             return tmp.xyz;
         }
@@ -1111,7 +1111,7 @@ CEXPORT float* indigoGetAcidPkaValue(int object, int atom, int level, int min_le
     INDIGO_END(0);
 }
 
-CEXPORT float* indigoGetBasicPkaValue(int object, int atom, int level, int min_level)
+CEXPORT double* indigoGetBasicPkaValue(int object, int atom, int level, int min_level)
 {
     INDIGO_BEGIN
     {
@@ -1123,7 +1123,7 @@ CEXPORT float* indigoGetBasicPkaValue(int object, int atom, int level, int min_l
             Molecule& mol = m_obj.getMolecule();
             IndigoAtom& site = IndigoAtom::cast(self.getObject(atom));
             auto& tmp = self.getThreadTmpData();
-            float pka = MoleculePkaModel::getBasicPkaValue(mol, site.getIndex(), level, min_level);
+            double pka = MoleculePkaModel::getBasicPkaValue(mol, site.getIndex(), level, min_level);
             tmp.xyz[0] = pka;
             return tmp.xyz;
         }

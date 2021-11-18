@@ -52,7 +52,7 @@ namespace indigo
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
 
-        const float COORD_COEF;
+        const double COORD_COEF;
 
         CP_DECL;
         TL_CP_DECL(RedBlackStringObjMap<Array<char>>, properties);

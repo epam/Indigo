@@ -209,7 +209,7 @@ bool MoleculeExactMatcher::_MatchToken::compare(const char* text) const
     return strcasecmp(t_text, text) == 0 ? true : false;
 }
 
-void MoleculeExactMatcher::parseConditions(const char* params, int& flags, float& rms_threshold)
+void MoleculeExactMatcher::parseConditions(const char* params, int& flags, double& rms_threshold)
 {
     if (params == 0)
         throw Error("zero pointer passed to parseConditions()");

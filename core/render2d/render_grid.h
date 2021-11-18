@@ -45,7 +45,7 @@ namespace indigo
         void _drawComment();
 
         int nRows;
-        float scale;
+        double scale;
         Vec2f maxsz;
         Vec2f cellsz;
         Vec2f outerMargin;
@@ -54,9 +54,9 @@ namespace indigo
         Vec2f commentSize;
         int _width, _height;
 
-        float _getScaleGivenSize(int w, int h) override;
-        int _getDefaultWidth(float s) override;
-        int _getDefaultHeight(float s) override;
+        double _getScaleGivenSize(int w, int h) override;
+        int _getDefaultWidth(double s) override;
+        int _getDefaultHeight(double s) override;
     };
 
 } // namespace indigo

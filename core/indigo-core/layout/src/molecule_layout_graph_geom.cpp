@@ -20,10 +20,10 @@
 
 using namespace indigo;
 
-float f1(float X, int L, float s)
+double f1(double X, int L, double s)
 {
     int i, min1;
-    float f;
+    double f;
 
     min1 = 1;
     f = (1 - s) / 2;
@@ -36,10 +36,10 @@ float f1(float X, int L, float s)
     return f;
 }
 
-float f2(float X, int L, float s)
+double f2(double X, int L, double s)
 {
     int i, min1;
-    float f;
+    double f;
 
     min1 = -1;
     f = -s / 2;
@@ -52,10 +52,10 @@ float f2(float X, int L, float s)
     return f;
 }
 
-void MoleculeLayoutGraph::_findAngles(int k, float s, float& x, float& y)
+void MoleculeLayoutGraph::_findAngles(int k, double s, double& x, double& y)
 {
     int L;
-    float a0, b0;
+    double a0, b0;
 
     if (k % 2 == 0)
         L = k / 2;
@@ -103,13 +103,13 @@ void MoleculeLayoutGraph::_findAngles(int k, float s, float& x, float& y)
     }
 }
 
-float MoleculeLayoutGraph::_dichotomy1(float a0, float b0, int L, float s)
+double MoleculeLayoutGraph::_dichotomy1(double a0, double b0, int L, double s)
 {
     // Return root of the equation f1 ( x,l,S]=0;
     // if there are a root at the [a0,b0].;
     // Assumption:f1 ( a0]*f1 ( b0]<0;
-    float C, pr;
-    float pr1, fa0;
+    double C, pr;
+    double pr1, fa0;
 
     fa0 = f1(a0, L, s);
 
@@ -136,13 +136,13 @@ float MoleculeLayoutGraph::_dichotomy1(float a0, float b0, int L, float s)
     }
 }
 
-float MoleculeLayoutGraph::_dichotomy2(float a0, float b0, int L, float s)
+double MoleculeLayoutGraph::_dichotomy2(double a0, double b0, int L, double s)
 {
     // Return root of the equation f2 ( x,l,S]=0;
     // if there are a root at the [a0,b0].;
     // Assumption:f1 ( a0]*f2 ( b0]<0;
-    float C, pr;
-    float pr1, fa0;
+    double C, pr;
+    double pr1, fa0;
 
     fa0 = f2(a0, L, s);
 
@@ -170,7 +170,7 @@ float MoleculeLayoutGraph::_dichotomy2(float a0, float b0, int L, float s)
 }
 
 // Complete regular curve from v1 to v2 by vertices in chain
-bool MoleculeLayoutGraph::_drawRegularCurve(const Array<int>& chain, int v1, int v2, float length, bool ccw, int type)
+bool MoleculeLayoutGraph::_drawRegularCurve(const Array<int>& chain, int v1, int v2, double length, bool ccw, int type)
 {
     QS_DEF(Array<int>, mapping);
 
@@ -182,13 +182,13 @@ bool MoleculeLayoutGraph::_drawRegularCurve(const Array<int>& chain, int v1, int
     return _drawRegularCurveEx(chain, v1, v2, length, ccw, type, mapping);
 }
 
-bool MoleculeLayoutGraph::_drawRegularCurveEx(const Array<int>& chain, int v1, int v2, float length, bool ccw, int type, const Array<int>& mapping)
+bool MoleculeLayoutGraph::_drawRegularCurveEx(const Array<int>& chain, int v1, int v2, double length, bool ccw, int type, const Array<int>& mapping)
 {
-    float s, x0 = 0.f, y0 = 0.f;
+    double s, x0 = 0.f, y0 = 0.f;
     int i, k, L;
-    float x1, x2, y1, y2;
+    double x1, x2, y1, y2;
     int min1;
-    float cosa, sina;
+    double cosa, sina;
 
     k = chain.size() - 2;
     s = Vec2f::dist(getPos(mapping[v1]), getPos(mapping[v2]));
@@ -286,8 +286,8 @@ bool MoleculeLayoutGraph::_drawRegularCurveEx(const Array<int>& chain, int v1, i
 // Check vertex is inside the edge
 bool MoleculeLayoutGraph::_isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const
 {
-    float a1, a0, b1, b0, t;
-    const float eps = 0.05f;
+    double a1, a0, b1, b0, t;
+    const double eps = 0.05f;
     const Vec2f& pos = getPos(vert_idx);
     const Vec2f& pos1 = getPos(edge_beg);
     const Vec2f& pos2 = getPos(edge_end);
@@ -366,9 +366,9 @@ bool MoleculeLayoutGraph::_isVertexOnSomeEdge(int vert_idx) const
 }
 
 // Translate edge by delta orthogonally
-void MoleculeLayoutGraph::_shiftEdge(int edge_idx, float delta)
+void MoleculeLayoutGraph::_shiftEdge(int edge_idx, double delta)
 {
-    float norm;
+    double norm;
     const Edge& edge = getEdge(edge_idx);
     Vec2f& pos1 = getPos(edge.beg);
     Vec2f& pos2 = getPos(edge.end);
@@ -384,12 +384,12 @@ void MoleculeLayoutGraph::_shiftEdge(int edge_idx, float delta)
 // Calculate angle v1vv2 such the edge (v,v1) is on the right and (v,v2) is on the left
 // if component is trivial return 0
 // if v is internal return 2pi
-float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
+double MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
 {
     int i, j;
     Vec2f p, p0;
-    float beta = 0.f;
-    QS_DEF(Array<float>, angles);
+    double beta = 0.f;
+    QS_DEF(Array<double>, angles);
     QS_DEF(Array<int>, edges);
     QS_DEF(Array<int>, on_left);
 
@@ -441,7 +441,7 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
     p.y += 0.2f * sin(beta);
     on_left.top() = _isPointOutside(p);
 
-    float comp_angle;
+    double comp_angle;
 
     if (vert.degree() == 2)
     {
@@ -481,7 +481,7 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
     }
 
     // TODO: if vertex is internal - choose maximal free angle
-    float max_angle = 0.f;
+    double max_angle = 0.f;
 
     for (i = 0; i < vert.degree() - 1; i++)
     {
@@ -506,9 +506,9 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
 }
 
 // Calculate position by adding one unit with given angle to the segment
-void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v)
+void MoleculeLayoutGraph::_calculatePos(double phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v)
 {
-    float alpha;
+    double alpha;
     Vec2f dir;
 
     dir.diff(v2, v1);
@@ -537,14 +537,14 @@ void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f&
 //  0 <= t <= 1;
 int MoleculeLayoutGraph::_calcIntersection(int edge1_idx, int edge2_idx) const
 {
-    float a11, a12, a21, a22, b1, b2;
-    float delta, delta1, delta2, t, s;
-    float a, b, pr;
+    double a11, a12, a21, a22, b1, b2;
+    double delta, delta1, delta2, t, s;
+    double a, b, pr;
 
     const Edge& edge1 = getEdge(edge1_idx);
     const Edge& edge2 = getEdge(edge2_idx);
 
-    const float eps = 0.01f;
+    const double eps = 0.01f;
 
     if (getVertexType(edge1.beg) == ELEMENT_NOT_DRAWN || getVertexType(edge1.end) == ELEMENT_NOT_DRAWN || getVertexType(edge2.beg) == ELEMENT_NOT_DRAWN ||
         getVertexType(edge2.end) == ELEMENT_NOT_DRAWN)
@@ -644,12 +644,12 @@ int MoleculeLayoutGraph::_calcIntersection(int edge1_idx, int edge2_idx) const
 // Calculate angle v1vv2 such the edge (v,v1) is on the right and (v,v2) is on the left
 // if component is trivial return 0
 // if v is internal return 2pi
-float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
+double MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
 {
     int i, j;
     Vec2f p, p0;
-    float beta = 0.f;
-    QS_DEF(Array<float>, angles);
+    double beta = 0.f;
+    QS_DEF(Array<double>, angles);
     QS_DEF(Array<int>, edges);
     QS_DEF(Array<int>, on_left);
 
@@ -701,8 +701,8 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
     p.y += 0.2f * sin(beta);
     on_left.top() = _isPointOutside(p);
 
-    float comp_angle;
-    float cur_energy = 0;
+    double comp_angle;
+    double cur_energy = 0;
 
     /*   if (vert.degree() == 2)
     {
@@ -729,7 +729,7 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
         _molecule->cis_trans.getParity(getEdgeExtIdx(vert.neiEdge(vert.neiNext(vert.neiBegin())))) != 0)
     {
 
-        float best_angle = _2FLOAT(2. * M_PI);
+        double best_angle = _2FLOAT(2. * M_PI);
 
         for (i = 0; i < vert.degree(); i++)
         {
@@ -740,7 +740,7 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
             comp_angle = _2FLOAT(2. * M_PI - (angles[ii] - angles[i]));
             if (ii == 0)
                 comp_angle -= _2FLOAT(2 * M_PI);
-            const float eps = 0.1f;
+            const double eps = 0.1f;
             if (i == 0 || comp_angle < best_angle - eps)
             {
                 best_angle = comp_angle;
@@ -783,7 +783,7 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
         }
     }
     // TODO: if vertex is internal - choose maximal free angle
-    float best_angle = _2FLOAT(2 * M_PI);
+    double best_angle = _2FLOAT(2 * M_PI);
 
     for (i = 0; i < vert.degree(); i++)
     {
@@ -802,11 +802,11 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
 
         p.x += 1 * cos(beta);
         p.y += 1 * sin(beta);
-        float energy = _energyOfPoint(p);
+        double energy = _energyOfPoint(p);
         comp_angle = _2FLOAT(2. * M_PI - (angles[ii] - angles[i]));
         if (ii == 0)
             comp_angle -= _2FLOAT(2 * M_PI);
-        const float eps = 0.1f;
+        const double eps = 0.1f;
         //      printf("%d: %5.5f %5.5f %d\n", i, energy, comp_angle, on_left[i]);
         if (i == 0 || energy + eps < cur_energy || (fabs(energy - cur_energy) < eps && comp_angle < best_angle - eps) ||
             (fabs(energy - cur_energy) < eps && fabs(comp_angle - best_angle) < eps && on_left[i]))
@@ -837,14 +837,14 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
     return best_angle;
 }
 
-const float MoleculeLayoutGraphSmart::_energyOfPoint(Vec2f p) const
+const double MoleculeLayoutGraphSmart::_energyOfPoint(Vec2f p) const
 {
 
-    float energy = 0.f;
+    double energy = 0.f;
     for (int i = _graph->vertexBegin(); i < _graph->vertexEnd(); i = _graph->vertexNext(i))
         if (_graph->getLayoutVertex(i).type != ELEMENT_NOT_DRAWN)
         {
-            float d = Vec2f::dist(p, _graph->getPos(i));
+            double d = Vec2f::dist(p, _graph->getPos(i));
             if (d <= 1.5f)
                 if (d >= 0.5f)
                     energy += 1.0f / d;

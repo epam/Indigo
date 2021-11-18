@@ -30,7 +30,7 @@ qword nanoClock(void)
     return t.tv_usec + t.tv_sec * 1000000ULL;
 }
 
-float nanoHowManySeconds(qword val)
+double nanoHowManySeconds(qword val)
 {
-    return (float)((double)val / 1000000.);
+    return (double)((double)val / 1000000.);
 }

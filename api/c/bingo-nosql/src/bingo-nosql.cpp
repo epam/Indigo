@@ -669,7 +669,7 @@ CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options
     BINGO_END(-1);
 }
 
-CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const char* options)
+CEXPORT int bingoSearchSim(int db, int query_obj, double min, double max, const char* options)
 {
     BINGO_BEGIN_DB(db)
     {
@@ -719,7 +719,7 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
     BINGO_END(-1);
 }
 
-CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max, int fp, const char* options)
+CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, double min, double max, int fp, const char* options)
 {
     BINGO_BEGIN_DB(db)
     {
@@ -770,7 +770,7 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
     BINGO_END(-1);
 }
 
-CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, const char* options)
+CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, double min, const char* options)
 {
     BINGO_BEGIN_DB(db)
     {
@@ -820,7 +820,7 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
     BINGO_END(-1);
 }
 
-CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float min, int fp, const char* options)
+CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, double min, int fp, const char* options)
 {
     BINGO_BEGIN_DB(db)
     {
@@ -927,7 +927,7 @@ CEXPORT int bingoGetCurrentId(int search_obj)
     BINGO_END(-1);
 }
 
-CEXPORT float bingoGetCurrentSimilarityValue(int search_obj)
+CEXPORT double bingoGetCurrentSimilarityValue(int search_obj)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
@@ -1010,11 +1010,11 @@ CEXPORT int bingoEstimateRemainingResultsCountError(int search_obj)
     BINGO_END(-1);
 }
 
-CEXPORT int bingoEstimateRemainingTime(int search_obj, float* time_sec)
+CEXPORT int bingoEstimateRemainingTime(int search_obj, double* time_sec)
 {
     BINGO_BEGIN_SEARCH(search_obj)
     {
-        float delta;
+        double delta;
         getMatcher(search_obj);
         *time_sec = matcher.esimateRemainingTime(delta);
         return 1;

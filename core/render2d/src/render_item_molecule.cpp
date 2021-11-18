@@ -111,7 +111,7 @@ void RenderItemMolecule::estimateSize()
     origin.set(0, 0);
     size.set(0, 0);
 
-    float vSpace = _settings.layoutMarginVertical;
+    double vSpace = _settings.layoutMarginVertical;
     for (int i = 0; i < items.size(); ++i)
     {
         RenderItemHLine& line = _factory.getItemHLine(items[i]);
@@ -127,7 +127,7 @@ void RenderItemMolecule::estimateSize()
 void RenderItemMolecule::render(bool idle)
 {
     _rc.translate(-origin.x, -origin.y);
-    float vSpace = _settings.layoutMarginVertical;
+    double vSpace = _settings.layoutMarginVertical;
     for (int i = 0; i < items.size(); ++i)
     {
         RenderItemHLine& line = _factory.getItemHLine(items[i]);

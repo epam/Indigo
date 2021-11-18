@@ -33,7 +33,7 @@ namespace indigo
         // takes mapping from subgraph to supergraph
         GraphAffineMatcher(Graph& subgraph, Graph& supergraph, const int* mapping);
 
-        bool match(float rms_threshold);
+        bool match(double rms_threshold);
 
         void (*cb_get_xyz)(Graph& graph, int vertex_idx, Vec3f& pos);
 

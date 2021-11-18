@@ -30,7 +30,7 @@ MeanEstimator::MeanEstimator() : _count(0), _sum(0), _sum_sq(0)
 {
 }
 
-void MeanEstimator::addValue(float value)
+void MeanEstimator::addValue(double value)
 {
     _sum += value;
     _sum_sq += value * value;
@@ -47,7 +47,7 @@ void MeanEstimator::setCount(int count)
     _count = count;
 }
 
-float MeanEstimator::mean() const
+double MeanEstimator::mean() const
 {
     if (_count == 0)
         return 0;
@@ -55,7 +55,7 @@ float MeanEstimator::mean() const
     return _sum / _count;
 }
 
-float MeanEstimator::meanEsimationError() const
+double MeanEstimator::meanEsimationError() const
 {
     if (_count == 0)
         return 0;

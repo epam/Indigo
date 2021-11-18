@@ -29,7 +29,7 @@ LSeg3f::LSeg3f(const Vec3f& beg, const Vec3f& end) : _beg(beg), _end(end)
     _is_degenerate = (_length_sqr < EPSILON);
 }
 
-float LSeg3f::distToPoint(const Vec3f& point, Vec3f* closest) const
+double LSeg3f::distToPoint(const Vec3f& point, Vec3f* closest) const
 {
     if (_is_degenerate)
     {
@@ -40,7 +40,7 @@ float LSeg3f::distToPoint(const Vec3f& point, Vec3f* closest) const
     }
 
     Vec3f p;
-    float t;
+    double t;
 
     p.diff(point, _beg);
     t = Vec3f::dot(p, _diff) / _length_sqr;

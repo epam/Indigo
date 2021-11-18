@@ -28,7 +28,7 @@ AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const 
       TL_CP_GET(_new_vertices), TL_CP_GET(_layout), _energy(0.f), _bc_components(bc_components), _graph(graph)
 {
     int i, v1, v2;
-    float sum = 0.f;
+    double sum = 0.f;
 
     int n_comp = bc_decom.getIncomingCount(_src_vertex);
 
@@ -100,12 +100,12 @@ AttachmentLayoutSmart::AttachmentLayoutSmart(const BiconnectedDecomposer& bc_dec
 }
 
 // Calculate energy of the drawn part of graph
-float AttachmentLayout::calculateEnergy()
+double AttachmentLayout::calculateEnergy()
 {
     int i, j;
-    float sum_a;
-    float r;
-    QS_DEF(Array<float>, norm_a);
+    double sum_a;
+    double r;
+    QS_DEF(Array<double>, norm_a);
     QS_DEF(Array<int>, drawn_vertices);
 
     drawn_vertices.clear_resize(_graph.vertexEnd());
@@ -267,11 +267,11 @@ void LayoutChooser::_perform(int level)
 void LayoutChooser::_makeLayout()
 {
     int i, j, k;
-    float cur_angle;
+    double cur_angle;
     int v1C, v2C, v1, v2;
     Vec2f p, p1;
-    float phi, phi1, phi2;
-    float cosa, sina;
+    double phi, phi1, phi2;
+    double cosa, sina;
     int v;
 
     // cur_angle - angle between first edge of the drawn component and most "right" edge of current component
@@ -401,7 +401,7 @@ void LayoutChooser::_makeLayout()
 
                 d.diff(v2, v1);
 
-                float r = d.lengthSqr();
+                double r = d.lengthSqr();
 
                 // if (r < 0.000000001f)
                 //   throw Error("too small edge");
@@ -410,7 +410,7 @@ void LayoutChooser::_makeLayout()
                 {
                     const Vec2f& vi = _layout._layout[i];
 
-                    float t = ((vi.x - v1.x) * d.x + (vi.y - v1.y) * d.y) / r;
+                    double t = ((vi.x - v1.x) * d.x + (vi.y - v1.y) * d.y) / r;
                     _layout._layout[i].set(2 * d.x * t + 2 * v1.x - vi.x, 2 * d.y * t + 2 * v1.y - vi.y);
                 }
 
