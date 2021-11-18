@@ -850,7 +850,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public double[] xyz() {
         dispatcher.setSessionID();
         Pointer ptr = Indigo.checkResultPointer(this, lib.indigoXYZ(self));
-        return ptr.getFloatArray(0, 3);
+        return ptr.getDoubleArray(0, 3);
     }
 
     public void setXYZ(double x, double y, double z) {
@@ -1055,7 +1055,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public double[] getSGroupCoords() {
         dispatcher.setSessionID();
         Pointer ptr = Indigo.checkResultPointer(this, lib.indigoGetSGroupCoords(self));
-        return ptr.getFloatArray(0, 2);
+        return ptr.getDoubleArray(0, 2);
     }
 
     public int setSGroupDisplayOption(int option) {
@@ -1361,7 +1361,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     }
 
     public double alignAtoms(Collection<Integer> atom_ids, Collection<Float> desired_xyz) {
-        return alignAtoms(Indigo.toIntArray(atom_ids), Indigo.toFloatArray(desired_xyz));
+        return alignAtoms(Indigo.toIntArray(atom_ids), Indigo.toDoubleArray(desired_xyz));
     }
 
     public void aromatize() {
@@ -1786,7 +1786,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         Pointer ptr =
                 Indigo.checkResultPointer(
                         this, lib.indigoGetAcidPkaValue(self, atom.self, level, min_level));
-        return ptr.getFloat(0);
+        return ptr.getDouble(0);
     }
 
     public double getBasicPkaValue(IndigoObject atom, int level, int min_level) {
@@ -1794,7 +1794,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         Pointer ptr =
                 Indigo.checkResultPointer(
                         this, lib.indigoGetBasicPkaValue(self, atom.self, level, min_level));
-        return ptr.getFloat(0);
+        return ptr.getDouble(0);
     }
 
     public int expandAbbreviations() {

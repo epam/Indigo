@@ -163,16 +163,6 @@ namespace com.epam.indigo
             return result;
         }
 
-        public double checkResult(double result)
-        {
-            if (result < 0)
-            {
-                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
-            }
-
-            return result;
-        }
-
         public int checkResult(int result)
         {
             if (result < 0)
@@ -263,12 +253,6 @@ namespace com.epam.indigo
             checkResult(IndigoLib.indigoSetOptionFloat(name, value));
         }
 
-        public void setOption(string name, double value)
-        {
-            setSessionID();
-            checkResult(IndigoLib.indigoSetOptionFloat(name, (double) value));
-        }
-
         public void setOption(string name, int value)
         {
             setSessionID();
@@ -278,19 +262,13 @@ namespace com.epam.indigo
         public void setOption(string name, double valuer, double valueg, double valueb)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoSetOptionColor(name, valuer / 255.0f, valueg / 255.0f, valueb / 255.0f));
-        }
-
-        public void setOption(string name, double valuer, double valueg, double valueb)
-        {
-            setSessionID();
-            checkResult(IndigoLib.indigoSetOptionColor(name, (double) valuer / 255.0f, (double) valueg / 255.0f, (double) valueb / 255.0f));
+            checkResult(IndigoLib.indigoSetOptionColor(name, valuer / 255.0, valueg / 255.0, valueb / 255.0));
         }
 
         public void setOption(string name, Color value)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoSetOptionColor(name, value.R / 255.0f, value.G / 255.0f, value.B / 255.0f));
+            checkResult(IndigoLib.indigoSetOptionColor(name, value.R / 255.0, value.G / 255.0, value.B / 255.0));
         }
 
 

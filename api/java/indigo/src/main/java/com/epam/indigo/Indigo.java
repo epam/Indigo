@@ -142,7 +142,7 @@ public class Indigo {
         return res;
     }
 
-    public static double[] toFloatArray(Collection<Float> collection) {
+    public static double[] toDoubleArray(Collection<Float> collection) {
         if (collection == null) return new double[0];
 
         double[] res = new double[collection.size()];
@@ -227,11 +227,6 @@ public class Indigo {
     public void setOption(String option, double value) {
         setSessionID();
         checkResult(this, lib.indigoSetOptionFloat(option, value));
-    }
-
-    public void setOption(String option, double value) {
-        setSessionID();
-        checkResult(this, lib.indigoSetOptionFloat(option, (double) value));
     }
 
     public String getOption(String option) {
