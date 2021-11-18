@@ -134,7 +134,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, double threshold, const char*
                 Array<double> a_pka;
                 while (!scan_apka.isEOF())
                 {
-                    double val = scan_apka.readFloat();
+                    double val = scan_apka.readDouble();
                     a_pka.push(val);
                 }
 
@@ -185,7 +185,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, double threshold, const char*
                 Array<double> b_pka;
                 while (!scan_bpka.isEOF())
                 {
-                    double val = scan_bpka.readFloat();
+                    double val = scan_bpka.readDouble();
                     b_pka.push(val);
                 }
 

@@ -191,7 +191,7 @@ bool Scanner::_readDouble(double& res, int max)
         {
             if (denom > 1)
             {
-                res += (c - '0') / (double)denom;
+                res += (c - '0') / denom;
                 denom *= 10;
             }
             else
@@ -240,14 +240,14 @@ bool Scanner::_readDouble(double& res, int max)
     return digit;
 }
 
-double Scanner::readFloat(void)
+double Scanner::readDouble(void)
 {
     double res;
 
     if (!_readDouble(res, 0))
-        throw Error("readFloat(): error parsing");
+        throw Error("readDouble(): error parsing");
 
-    return (double)res;
+    return res;
 }
 
 bool Scanner::tryReadFloat(double& value)
@@ -261,7 +261,7 @@ bool Scanner::tryReadFloat(double& value)
         return false;
     }
 
-    value = (double)res;
+    value = res;
     return true;
 }
 
@@ -311,7 +311,7 @@ double Scanner::readFloatFix(int digits)
             throw Error("readFloatFix(): garbage after the number");
     }
 
-    return (double)res;
+    return res;
 }
 
 char Scanner::readChar()
@@ -456,7 +456,7 @@ int Scanner::readBinaryInt()
     //*res = ntohl(*res);
 }
 
-double Scanner::readBinaryFloat()
+double Scanner::readBinaryDouble()
 {
     double res;
 

@@ -930,13 +930,13 @@ void CmfLoader::loadXyz(Scanner& scanner)
 
     CmfSaver::VecRange range;
 
-    range.xyz_min.x = scanner.readBinaryFloat();
-    range.xyz_min.y = scanner.readBinaryFloat();
-    range.xyz_min.z = scanner.readBinaryFloat();
+    range.xyz_min.x = scanner.readBinaryDouble();
+    range.xyz_min.y = scanner.readBinaryDouble();
+    range.xyz_min.z = scanner.readBinaryDouble();
 
-    range.xyz_range.x = scanner.readBinaryFloat();
-    range.xyz_range.y = scanner.readBinaryFloat();
-    range.xyz_range.z = scanner.readBinaryFloat();
+    range.xyz_range.x = scanner.readBinaryDouble();
+    range.xyz_range.y = scanner.readBinaryDouble();
+    range.xyz_range.z = scanner.readBinaryDouble();
 
     range.have_z = (scanner.readByte() != 0);
 

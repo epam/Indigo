@@ -143,7 +143,7 @@ requests = ["requests (>=2.4.0,<3.0.0)"]
 
 [[package]]
 name = "epam.indigo"
-version = "1.5.0"
+version = "1.5.1"
 description = "Indigo universal cheminformatics toolkit"
 category = "main"
 optional = false

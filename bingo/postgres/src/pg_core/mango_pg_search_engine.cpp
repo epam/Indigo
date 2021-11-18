@@ -470,14 +470,14 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr)
         {
             char* mass_string = DatumGetCString(key_data.sk_argument);
             BufferScanner mass_scanner(mass_string);
-            max_mass = mass_scanner.readFloat();
+            max_mass = mass_scanner.readDouble();
             max_mass_flag = true;
         }
         else if (key_data.sk_strategy == BingoPgCommon::MOL_MASS_GREAT)
         {
             char* mass_string = DatumGetCString(key_data.sk_argument);
             BufferScanner mass_scanner(mass_string);
-            min_mass = mass_scanner.readFloat();
+            min_mass = mass_scanner.readDouble();
             min_mass_flag = true;
         }
         else

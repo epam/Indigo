@@ -235,7 +235,7 @@ public:
 
         static void _handleNumber(double& number, indigo::Scanner* scanner, indigo::Output* output) {
             if (scanner) {
-                number = scanner->readBinaryFloat();
+                number = scanner->readBinaryDouble();
             }
             if (output) {
                 output->writeBinaryFloat(number);

@@ -7,7 +7,7 @@ authors = ["EPAM Systems Life Science Department"]
 [tool.poetry.dependencies]
 python = "^3.7"
 elasticsearch = "7.15.1"
-"epam.indigo" = "^1.5.0"
+"epam.indigo" = "^1.5.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"

@@ -662,11 +662,11 @@ void SmilesLoader::_readOtherStuff()
             {
                 double x, y, z = 0;
 
-                x = _scanner.readFloat();
+                x = _scanner.readDouble();
                 if (_scanner.readChar() != ',')
                     throw Error("expected comma after X coordinate");
 
-                y = _scanner.readFloat();
+                y = _scanner.readDouble();
                 if (_scanner.lookNext() != ';' && _scanner.lookNext() != ')')
                 {
                     if (_scanner.readChar() != ',')
@@ -676,7 +676,7 @@ void SmilesLoader::_readOtherStuff()
                     else if (_scanner.lookNext() == ')')
                         ;
                     else
-                        z = _scanner.readFloat();
+                        z = _scanner.readDouble();
                 }
                 else
                 {

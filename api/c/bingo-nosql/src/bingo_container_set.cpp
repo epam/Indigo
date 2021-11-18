@@ -195,7 +195,7 @@ int ContainerSet::_findSimilarInc(const byte* query, SimCoef& sim_coef, double m
         if (coef < min_coef)
             continue;
 
-        sim_indices.push(SimResult(indices[i], (double)coef));
+        sim_indices.push(SimResult(indices[i], coef));
     }
 
     return sim_indices.size();

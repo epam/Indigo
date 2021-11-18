@@ -56,7 +56,7 @@ namespace indigo
         word readBinaryWord();
         int readBinaryInt();
         dword readBinaryDword();
-        double readBinaryFloat();
+        double readBinaryDouble();
         short readPackedShort();
         unsigned int readPackedUInt();
 
@@ -68,7 +68,7 @@ namespace indigo
 
         void skipUntil(const char* delimiters);
 
-        double readFloat(void);
+        double readDouble(void);
         bool tryReadFloat(double& value);
         int readInt(void);
         int readInt1(void);

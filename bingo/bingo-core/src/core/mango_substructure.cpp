@@ -369,7 +369,7 @@ bool MangoSubstructure::parse(const char* params)
                 match_3d = MoleculeSubstructureMatcher::CONFORMATION;
 
             scanner.skipSpace();
-            rms_threshold = scanner.readFloat();
+            rms_threshold = scanner.readDouble();
         }
         else if (strcasecmp(word.ptr(), "RES") == 0)
             _use_pi_systems_matcher = true;

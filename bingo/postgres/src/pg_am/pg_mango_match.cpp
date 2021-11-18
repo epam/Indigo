@@ -264,7 +264,7 @@ Datum _match_mass_less(PG_FUNCTION_ARGS)
         bingo_handler.setFunctionName("mass less");
 
         BufferScanner scanner(mass_datum);
-        double usr_mass = scanner.readFloat();
+        double usr_mass = scanner.readDouble();
 
         BingoPgText mol_text(mol_datum);
 
@@ -295,7 +295,7 @@ Datum _match_mass_great(PG_FUNCTION_ARGS)
         bingo_handler.setFunctionName("mass great");
 
         BufferScanner scanner(mass_datum);
-        double usr_mass = scanner.readFloat();
+        double usr_mass = scanner.readDouble();
 
         BingoPgText mol_text(mol_datum);
 

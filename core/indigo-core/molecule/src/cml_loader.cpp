@@ -26,13 +26,13 @@
 
 using namespace indigo;
 
-static double readFloat(const char* point_str)
+static double readDouble(const char* point_str)
 {
     double res = 0;
     if (point_str != 0)
     {
         BufferScanner strscan(point_str);
-        res = strscan.readFloat();
+        res = strscan.readDouble();
     }
     return res;
 }
@@ -784,15 +784,15 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
 
             if (!a.x.empty())
             {
-                a_pos.x = readFloat(a.x.c_str());
+                a_pos.x = readDouble(a.x.c_str());
             }
             if (!a.y.empty())
             {
-                a_pos.y = readFloat(a.y.c_str());
+                a_pos.y = readDouble(a.y.c_str());
             }
             if (!a.z.empty())
             {
-                a_pos.z = readFloat(a.z.c_str());
+                a_pos.z = readDouble(a.z.c_str());
             }
 
             _bmol->setAtomXyz(idx, a_pos);
@@ -1323,8 +1323,8 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");
 
-                    double x = readFloat(point_x);
-                    double y = readFloat(point_y);
+                    double x = readDouble(point_x);
+                    double y = readDouble(point_y);
 
                     pbrackets[point_idx].x = x;
                     pbrackets[point_idx].y = y;
@@ -1350,14 +1350,14 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (disp_x != 0)
             {
                 BufferScanner strscan(disp_x);
-                dsg->display_pos.x = strscan.readFloat();
+                dsg->display_pos.x = strscan.readDouble();
             }
 
             const char* disp_y = elem->Attribute("y");
             if (disp_y != 0)
             {
                 BufferScanner strscan(disp_y);
-                dsg->display_pos.y = strscan.readFloat();
+                dsg->display_pos.y = strscan.readDouble();
             }
 
             const char* detached = elem->Attribute("dataDetached");
@@ -1481,13 +1481,13 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                     if (point_x != 0)
                     {
                         BufferScanner strscan(point_x);
-                        x = strscan.readFloat();
+                        x = strscan.readDouble();
                     }
                     const char* point_y = pPoint->Attribute("y");
                     if (point_y != 0)
                     {
                         BufferScanner strscan(point_y);
-                        y = strscan.readFloat();
+                        y = strscan.readDouble();
                     }
                     pbrackets[point_idx].x = x;
                     pbrackets[point_idx].y = y;
@@ -1559,13 +1559,13 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                     if (point_x != 0)
                     {
                         BufferScanner strscan(point_x);
-                        x = strscan.readFloat();
+                        x = strscan.readDouble();
                     }
                     const char* point_y = pPoint->Attribute("y");
                     if (point_y != 0)
                     {
                         BufferScanner strscan(point_y);
-                        y = strscan.readFloat();
+                        y = strscan.readDouble();
                     }
                     pbrackets[point_idx].x = x;
                     pbrackets[point_idx].y = y;
@@ -1668,13 +1668,13 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                     if (point_x != 0)
                     {
                         BufferScanner strscan(point_x);
-                        x = strscan.readFloat();
+                        x = strscan.readDouble();
                     }
                     const char* point_y = pPoint->Attribute("y");
                     if (point_y != 0)
                     {
                         BufferScanner strscan(point_y);
-                        y = strscan.readFloat();
+                        y = strscan.readDouble();
                     }
                     pbrackets[point_idx].x = x;
                     pbrackets[point_idx].y = y;
@@ -1751,8 +1751,8 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");
 
-                    double x = readFloat(point_x);
-                    double y = readFloat(point_y);
+                    double x = readDouble(point_x);
+                    double y = readDouble(point_y);
 
                     pbrackets[point_idx].x = x;
                     pbrackets[point_idx].y = y;

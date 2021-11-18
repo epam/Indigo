@@ -1086,13 +1086,13 @@ void MolfileLoader::_readCtab2000()
                             Vec2f* brackets = sgroup->brackets.push();
 
                             _scanner.skipSpace();
-                            brackets[0].x = _scanner.readFloat();
+                            brackets[0].x = _scanner.readDouble();
                             _scanner.skipSpace();
-                            brackets[0].y = _scanner.readFloat();
+                            brackets[0].y = _scanner.readDouble();
                             _scanner.skipSpace();
-                            brackets[1].x = _scanner.readFloat();
+                            brackets[1].x = _scanner.readDouble();
                             _scanner.skipSpace();
-                            brackets[1].y = _scanner.readFloat();
+                            brackets[1].y = _scanner.readDouble();
                         }
                     }
                     else
@@ -1303,9 +1303,9 @@ void MolfileLoader::_readCtab2000()
                     _scanner.skip(1);
                     bond.bond_idx = _scanner.readIntFix(3) - 1;
                     _scanner.skipSpace();
-                    bond.bond_dir.x = _scanner.readFloat();
+                    bond.bond_dir.x = _scanner.readDouble();
                     _scanner.skipSpace();
-                    bond.bond_dir.y = _scanner.readFloat();
+                    bond.bond_dir.y = _scanner.readDouble();
                 }
                 _scanner.skipLine();
             }
@@ -2410,11 +2410,11 @@ void MolfileLoader::_readCtab3000()
             }
 
             strscan.skipSpace();
-            double x = strscan.readFloat();
+            double x = strscan.readDouble();
             strscan.skipSpace();
-            double y = strscan.readFloat();
+            double y = strscan.readDouble();
             strscan.skipSpace();
-            double z = strscan.readFloat();
+            double z = strscan.readDouble();
             strscan.skipSpace();
             int aamap = strscan.readInt1();
 
@@ -3401,24 +3401,24 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 throw Error("BRKXYZ number is %d (must be 9)", n);
 
             scanner.skipSpace();
-            double x1 = scanner.readFloat();
+            double x1 = scanner.readDouble();
             scanner.skipSpace();
-            double y1 = scanner.readFloat();
+            double y1 = scanner.readDouble();
             scanner.skipSpace();
-            scanner.readFloat();
+            scanner.readDouble();
             scanner.skipSpace(); // skip z
-            double x2 = scanner.readFloat();
+            double x2 = scanner.readDouble();
             scanner.skipSpace();
-            double y2 = scanner.readFloat();
+            double y2 = scanner.readDouble();
             scanner.skipSpace();
-            scanner.readFloat();
+            scanner.readDouble();
             scanner.skipSpace(); // skip z
             // skip 3-rd point
-            scanner.readFloat();
+            scanner.readDouble();
             scanner.skipSpace();
-            scanner.readFloat();
+            scanner.readDouble();
             scanner.skipSpace();
-            scanner.readFloat();
+            scanner.readDouble();
             scanner.skipSpace();
             Vec2f* brackets = sgroup->brackets.push();
             brackets[0].set(x1, y1);
@@ -3550,9 +3550,9 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 int idx = scanner.readInt() - 1;
                 bond.bond_idx = idx;
                 scanner.skipSpace();
-                bond.bond_dir.x = scanner.readFloat();
+                bond.bond_dir.x = scanner.readDouble();
                 scanner.skipSpace();
-                bond.bond_dir.y = scanner.readFloat();
+                bond.bond_dir.y = scanner.readDouble();
                 scanner.skipSpace();
 
                 scanner.skipUntil(")"); // Skip z coordinate
@@ -3606,7 +3606,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 n = scanner.readInt1();
                 while (n-- > 0)
                 {
-                    scanner.readFloat();
+                    scanner.readDouble();
                     scanner.skipSpace();
                 }
                 scanner.skip(1); // )
