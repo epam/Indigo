@@ -1,5 +1,6 @@
+#include <cfloat>
+
 #include "bingo_pg_fix_pre.h"
-#include "double.h"
 
 extern "C"
 {
@@ -169,7 +170,7 @@ static void parse_one_reloption(relopt_value* option, char* text_str, int text_l
         #else
             parsed = parse_real(value, &option->values.real_val);
         #endif
-        
+
         if (validate && !parsed)
             ereport(ERROR, (errmsg("invalid value for floating point option \"%s\": %s", option->gen->name, value)));
         if (validate && (option->values.real_val < optreal->min || option->values.real_val > optreal->max))

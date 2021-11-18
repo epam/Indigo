@@ -3,7 +3,7 @@
  * generic-msvc.h
  *	  Atomic operations support when using MSVC
  *
- * Portions Copyright (c) 1996-2016, PostgreSQL Global Development Group
+ * Portions Copyright (c) 1996-2019, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
  *
  * NOTES:
@@ -17,19 +17,17 @@
  *-------------------------------------------------------------------------
  */
 #include <intrin.h>
-#include <windows.h>
 
 /* intentionally no include guards, should only be included by atomics.h */
 #ifndef INSIDE_ATOMICS_H
 #error "should be included via atomics.h"
 #endif
 
-/* Should work on both MSVC and Borland. */
 #pragma intrinsic(_ReadWriteBarrier)
-#define pg_compiler_barrier_impl()	_ReadWriteBarrier()
+#define pg_compiler_barrier_impl() _ReadWriteBarrier()
 
 #ifndef pg_memory_barrier_impl
-#define pg_memory_barrier_impl()	MemoryBarrier()
+#define pg_memory_barrier_impl() MemoryBarrier()
 #endif
 
 #if defined(HAVE_ATOMICS)
@@ -37,34 +35,30 @@
 #define PG_HAVE_ATOMIC_U32_SUPPORT
 typedef struct pg_atomic_uint32
 {
-	volatile uint32 value;
+    volatile uint32 value;
 } pg_atomic_uint32;
 
 #define PG_HAVE_ATOMIC_U64_SUPPORT
 typedef struct __declspec(align(8)) pg_atomic_uint64
 {
-	volatile uint64 value;
+    volatile uint64 value;
 } pg_atomic_uint64;
 
-
 #define PG_HAVE_ATOMIC_COMPARE_EXCHANGE_U32
-static inline bool
-pg_atomic_compare_exchange_u32_impl(volatile pg_atomic_uint32 *ptr,
-									uint32 *expected, uint32 newval)
+static inline bool pg_atomic_compare_exchange_u32_impl(volatile pg_atomic_uint32* ptr, uint32* expected, uint32 newval)
 {
-	bool	ret;
-	uint32	current;
-	current = InterlockedCompareExchange(&ptr->value, newval, *expected);
-	ret = current == *expected;
-	*expected = current;
-	return ret;
+    bool ret;
+    uint32 current;
+    current = InterlockedCompareExchange(&ptr->value, newval, *expected);
+    ret = current == *expected;
+    *expected = current;
+    return ret;
 }
 
 #define PG_HAVE_ATOMIC_FETCH_ADD_U32
-static inline uint32
-pg_atomic_fetch_add_u32_impl(volatile pg_atomic_uint32 *ptr, int32 add_)
+static inline uint32 pg_atomic_fetch_add_u32_impl(volatile pg_atomic_uint32* ptr, int32 add_)
 {
-	return InterlockedExchangeAdd(&ptr->value, add_);
+    return InterlockedExchangeAdd(&ptr->value, add_);
 }
 
 /*
@@ -76,16 +70,14 @@ pg_atomic_fetch_add_u32_impl(volatile pg_atomic_uint32 *ptr, int32 add_)
 #pragma intrinsic(_InterlockedCompareExchange64)
 
 #define PG_HAVE_ATOMIC_COMPARE_EXCHANGE_U64
-static inline bool
-pg_atomic_compare_exchange_u64_impl(volatile pg_atomic_uint64 *ptr,
-									uint64 *expected, uint64 newval)
+static inline bool pg_atomic_compare_exchange_u64_impl(volatile pg_atomic_uint64* ptr, uint64* expected, uint64 newval)
 {
-	bool	ret;
-	uint64	current;
-	current = _InterlockedCompareExchange64((volatile LONG64 *)&ptr->value, newval, *expected);
-	ret = current == *expected;
-	*expected = current;
-	return ret;
+    bool ret;
+    uint64 current;
+    current = _InterlockedCompareExchange64((volatile LONG64*)&ptr->value, newval, *expected);
+    ret = current == *expected;
+    *expected = current;
+    return ret;
 }
 
 /* Only implemented on itanium and 64bit builds */
@@ -93,10 +85,9 @@ pg_atomic_compare_exchange_u64_impl(volatile pg_atomic_uint64 *ptr,
 #pragma intrinsic(_InterlockedExchangeAdd64)
 
 #define PG_HAVE_ATOMIC_FETCH_ADD_U64
-static inline uint64
-pg_atomic_fetch_add_u64_impl(volatile pg_atomic_uint64 *ptr, int64 add_)
+static inline uint64 pg_atomic_fetch_add_u64_impl(volatile pg_atomic_uint64* ptr, int64 add_)
 {
-	return _InterlockedExchangeAdd64((volatile LONG64 *)&ptr->value, add_);
+    return _InterlockedExchangeAdd64((volatile LONG64*)&ptr->value, add_);
 }
 #endif /* _WIN64 */
 

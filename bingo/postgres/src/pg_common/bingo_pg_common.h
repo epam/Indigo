@@ -7,14 +7,15 @@
 #undef max
 #endif
 
-#include <math.h>
+#include <cmath>
+#include <memory>
+
 #include "bingo_postgres.h"
 #include "base_cpp/array.h"
 #include "base_c/bitarray.h"
-#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
-#include "base_cpp/tlscont.h"
+#include <base_cpp/red_black.h>
 
 namespace indigo {
     struct MoleculeFingerprintParameters;
@@ -239,22 +240,6 @@ public:
             }
             if (output) {
                 output->writeBinaryFloat(number);
-            }
-        }
-
-        static void _handleNumber(double& number, indigo::Scanner* scanner, indigo::Output* output) {
-            /*
-             * Double workaround with string saving
-             */
-            indigo::Array<char> d_string;
-            d_string.clear();
-            if (scanner) {
-                handleArray(d_string, scanner, output);
-                number = atof(d_string.ptr());
-            }
-            if (output) {
-                indigo::bprintf(d_string, "%.16e", number);
-                handleArray(d_string, scanner, output);
             }
         }
     };
