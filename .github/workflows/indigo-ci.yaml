@@ -907,7 +907,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "9.6", "10", "11", "12" ]
+        postgres_major_version: [ "10", "11", "12" ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -940,7 +940,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 9.6, 10, 11, 12 ]
+        postgres_major_version: [ 10, 11, 12 ]
     runs-on: macos-latest
     steps:
       - name: Checkout
