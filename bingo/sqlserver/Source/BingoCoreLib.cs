@@ -104,7 +104,7 @@ namespace indigo
          out IntPtr counter_elements_str,
          out IntPtr fingerprint_buf, out int fingerprint_buf_len,
          out IntPtr fingerprint_sim_str,
-         out float mass, out int sim_fp_bits_count);
+         out double mass, out int sim_fp_bits_count);
 
       int ringoIndexReadPreparedReaction (
          out int id,
@@ -183,7 +183,7 @@ namespace indigo
          out IntPtr max_bound);
 
       int mangoSimilaritySetMinMaxBounds (
-         float min_bound, float max_bound);
+         double min_bound, double max_bound);
 
       int mangoSimilarityGetScore (out Single score);
 
@@ -213,7 +213,7 @@ namespace indigo
 
       int mangoMass (
          [MarshalAs(UnmanagedType.LPArray)] byte[] target_buf, int target_buf_len,
-         [MarshalAs(UnmanagedType.LPStr)] string type, out float mass);
+         [MarshalAs(UnmanagedType.LPStr)] string type, out double mass);
 
       sbyte* mangoGrossGetConditions ();
 
@@ -225,7 +225,7 @@ namespace indigo
 
       sbyte* bingoProfilingGetStatistics ([MarshalAs(UnmanagedType.I1)] bool for_session);
 
-      float bingoProfilingGetTime (
+      double bingoProfilingGetTime (
          [MarshalAs(UnmanagedType.LPStr)] string counter_name,
          [MarshalAs(UnmanagedType.I1)] bool whole_session);
 

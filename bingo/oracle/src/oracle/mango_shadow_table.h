@@ -45,7 +45,7 @@ public:
     bool getMoleculeLocation(OracleEnv& env, const char* rowid, int& blockno, int& offset);
     void deleteMolecule(OracleEnv& env, const char* rowid);
     void addMolecule(OracleEnv& env, const char* rowid, int blockno, int offset, const char* data_cmf, int len_cmf, const char* data_xyz, int len_xyz,
-                     const MangoExact::Hash& hash, const char* gross, const Array<int>& counters, float molecular_mass, const char* fp_ord, bool append);
+                     const MangoExact::Hash& hash, const char* gross, const Array<int>& counters, double molecular_mass, const char* fp_ord, bool append);
     void flush(OracleEnv& env);
 
     void analyze(OracleEnv& env);
@@ -73,7 +73,7 @@ protected:
     Array<char[512]> _pending_gross;
     ObjArray<OracleRaw> _pending_cmf;
     ObjArray<OracleRaw> _pending_xyz;
-    Array<float> _pending_mass;
+    Array<double> _pending_mass;
     Array<int> _pending_fragcount;
     ObjArray<Array<int>> _pending_counters;
 

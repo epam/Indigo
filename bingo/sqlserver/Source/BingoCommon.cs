@@ -9,6 +9,6 @@ namespace indigo
 
       public int id { get; set; }
       public string str { get; set; }
-      public float value;
+      public double value;
    }
 }

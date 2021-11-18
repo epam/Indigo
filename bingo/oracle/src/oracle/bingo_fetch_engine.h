@@ -34,10 +34,10 @@ public:
     {
     }
 
-    virtual float calcSelectivity(OracleEnv& env, int total_count) = 0;
+    virtual double calcSelectivity(OracleEnv& env, int total_count) = 0;
     virtual void fetch(OracleEnv& env, int maxrows) = 0;
     virtual bool end() = 0;
-    virtual int getIOCost(OracleEnv& env, float selectivity) = 0;
+    virtual int getIOCost(OracleEnv& env, double selectivity) = 0;
 
     // In case of exceptions this rowid corresponds to the structure that was tried to be matched last time
     virtual bool getLastRowid(OraRowidText& id) = 0;

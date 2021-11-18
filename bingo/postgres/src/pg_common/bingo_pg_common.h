@@ -42,7 +42,7 @@ public:
 
     static void getSearchTypeString(int, indigo::Array<char>& result, bool molecule);
 
-//   static float getBingoSim(char*, int, char*, int);
+//   static double getBingoSim(char*, int, char*, int);
 
 //   static void formIndexTuple(BingoPgBuffer& buffer, void* map_data, int size);
 //   static void* getIndexData(BingoPgBuffer& pg_buffer, int& data_len);
@@ -233,7 +233,7 @@ public:
             }
         }
 
-        static void _handleNumber(float& number, indigo::Scanner* scanner, indigo::Output* output) {
+        static void _handleNumber(double& number, indigo::Scanner* scanner, indigo::Output* output) {
             if (scanner) {
                 number = scanner->readBinaryFloat();
             }
@@ -259,10 +259,10 @@ public:
         }
     };
 
-    static void convertTo(const indigo::Array<char>& value_str, float& val) {
+    static void convertTo(const indigo::Array<char>& value_str, double& val) {
         indigo::BufferScanner scanner(value_str);
         if (!scanner.tryReadFloat(val))
-            throw Error("can not read float value in string %s\n", value_str.ptr());
+            throw Error("can not read double value in string %s\n", value_str.ptr());
     }
 
     static void convertTo(const indigo::Array<char>& value_str, bool& val) {

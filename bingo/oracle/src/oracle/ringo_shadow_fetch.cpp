@@ -86,7 +86,7 @@ int RingoShadowFetch::countOracleBlocks(OracleEnv& env)
     return res;
 }
 
-int RingoShadowFetch::getIOCost(OracleEnv& env, float selectivity)
+int RingoShadowFetch::getIOCost(OracleEnv& env, double selectivity)
 {
     return (int)(countOracleBlocks(env) * selectivity);
 }
@@ -96,7 +96,7 @@ bool RingoShadowFetch::end()
     return _end;
 }
 
-float RingoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
+double RingoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
 {
     int nrows_select_total;
 
@@ -127,7 +127,7 @@ float RingoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
         throw Error("selectivity: no processed rows");
     }
 
-    return (float)nrows_select_total * matched.size() / (total_count * _processed_rows);
+    return (double)nrows_select_total * matched.size() / (total_count * _processed_rows);
 }
 
 void RingoShadowFetch::prepareNonSubstructure(OracleEnv& env)

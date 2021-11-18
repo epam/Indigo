@@ -51,7 +51,7 @@ public:
 
     const char* getFingerprint_Sim_Str() const;
 
-    float getMolecularMass() const;
+    double getMolecularMass() const;
 
     int getFpSimilarityBitsCount() const;
 
@@ -80,7 +80,7 @@ private:
     Array<int> _counted_elem_counters;
 
     // Molecular mass
-    float _molecular_mass;
+    double _molecular_mass;
 
     // Number of one bits in similarity fingerprint
     int _fp_sim_bits_count;

@@ -230,7 +230,7 @@ void BingoOracleContext::configSetInt(OracleEnv& env, const char* name, int valu
     _config_changed = true;
 }
 
-bool BingoOracleContext::configGetFloat(OracleEnv& env, const char* name, float& value)
+bool BingoOracleContext::configGetFloat(OracleEnv& env, const char* name, double& value)
 {
     if (!OracleStatement::executeSingleFloat(value, env,
                                              "SELECT value FROM "
@@ -242,7 +242,7 @@ bool BingoOracleContext::configGetFloat(OracleEnv& env, const char* name, float&
     return true;
 }
 
-void BingoOracleContext::configSetFloat(OracleEnv& env, const char* name, float value)
+void BingoOracleContext::configSetFloat(OracleEnv& env, const char* name, double value)
 {
     configReset(env, name);
     OracleStatement::executeSingle(env, "INSERT INTO CONFIG_FLOAT VALUES(%d, upper('%s'), %f)", id, name, value);
@@ -486,7 +486,7 @@ void BingoOracleContext::atomicMassLoad(OracleEnv& env)
     QS_DEF(Array<char>, element_str);
     element_str.resize(_relative_atomic_mass.size());
 
-    float mass;
+    double mass;
     int pos;
 
     while (sscanf(buffer, "%s%f%n", element_str.ptr(), &mass, &pos) > 1)
@@ -511,7 +511,7 @@ void BingoOracleContext::atomicMassLoad(OracleEnv& env)
         for (int i = relative_atomic_mass_map.begin(); i != relative_atomic_mass_map.end(); i = relative_atomic_mass_map.next(i))
         {
             int elem = relative_atomic_mass_map.key(i);
-            float mass = relative_atomic_mass_map.value(i);
+            double mass = relative_atomic_mass_map.value(i);
             env.dbgPrintf("%s %g; ", Element::toString(elem), mass);
         }
         env.dbgPrintf("\n");

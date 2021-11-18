@@ -21,7 +21,7 @@ extern "C"
 #include "bingo_pg_index.h"
 #include "bingo_pg_text.h"
 #include "ringo_pg_search_engine.h"
-#include <float.h>
+#include <double.h>
 
 using namespace indigo;
 

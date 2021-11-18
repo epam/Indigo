@@ -388,7 +388,7 @@ void MangoFastIndex::prepareTautomerSubstructure(OracleEnv& env)
     _unmatched = 0;
 }
 
-float MangoFastIndex::calcSelectivity(OracleEnv& env, int total_count)
+double MangoFastIndex::calcSelectivity(OracleEnv& env, int total_count)
 {
     if (_matched + _unmatched == 0)
         throw Error("calcSelectivity() called before fetch()");
@@ -399,29 +399,29 @@ float MangoFastIndex::calcSelectivity(OracleEnv& env, int total_count)
     {
         if (fingerprints.ableToScreen(_screening))
         {
-            return (float)_matched * _screening.items_passed / (_screening.items_read * (_matched + _unmatched));
+            return (double)_matched * _screening.items_passed / (_screening.items_read * (_matched + _unmatched));
         }
         else
         {
             if (_matched == 0)
                 return 0;
-            return (float)_matched / (_matched + _unmatched);
+            return (double)_matched / (_matched + _unmatched);
         }
     }
     else // _fetch_type == _SIMILARITY
     {
         if (_matched == 0)
             return 0;
-        return (float)_matched / (_matched + _unmatched);
+        return (double)_matched / (_matched + _unmatched);
     }
 }
 
-int MangoFastIndex::getIOCost(OracleEnv& env, float selectivity)
+int MangoFastIndex::getIOCost(OracleEnv& env, double selectivity)
 {
     BingoFingerprints& fingerprints = _context.context().fingerprints;
 
     int blocks = fingerprints.countOracleBlocks(env);
-    float ratio = fingerprints.queryOnesRatio(_screening);
+    double ratio = fingerprints.queryOnesRatio(_screening);
 
     return (int)(blocks * ratio);
 }

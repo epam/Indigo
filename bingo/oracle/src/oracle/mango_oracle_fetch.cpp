@@ -118,8 +118,8 @@ static void _mangoIndexStart(OracleEnv& env, MangoFetchContext& context, const c
         context.similarity.setMetrics(params);
         context.similarity.loadQuery(query_buf);
 
-        float bottom = -0.1f;
-        float top = 1.1f;
+        double bottom = -0.1f;
+        double top = 1.1f;
 
         if (p_strt == 0 && p_stop == 0)
             throw BingoError("no bounds for similarity search");
@@ -153,8 +153,8 @@ static void _mangoIndexStart(OracleEnv& env, MangoFetchContext& context, const c
     }
     else if (strcasecmp(oper, "MASS") == 0)
     {
-        float bottom = 0;
-        float top = 1e10;
+        double bottom = 0;
+        double top = 1e10;
 
         if (p_strt == 0 && p_stop == 0)
             throw BingoError("no bounds for molecular mass search");
@@ -335,7 +335,7 @@ ORAEXT OCINumber* oraMangoIndexSelectivity(OCIExtProcContext* ctx, int context_i
         fetch_context->fetch_engine->fetch(env, 100);
         fetch_context->fresh = true;
 
-        float res = fetch_context->fetch_engine->calcSelectivity(env, context.fingerprints.getTotalCount(env));
+        double res = fetch_context->fetch_engine->calcSelectivity(env, context.fingerprints.getTotalCount(env));
 
         env.dbgPrintfTS("calculated selectivity = %.2f\n", res);
 
@@ -369,7 +369,7 @@ if (strt_ind != OCI_IND_NOTNULL)
 if (stop_ind != OCI_IND_NOTNULL)
     p_stop = 0;
 
-float sel = OracleUtil::numberToFloat(env, p_sel);
+double sel = OracleUtil::numberToFloat(env, p_sel);
 
 QS_DEF(Array<char>, query_buf);
 OracleLOB query_lob(env, query_loc);

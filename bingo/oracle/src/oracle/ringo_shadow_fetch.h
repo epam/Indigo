@@ -32,10 +32,10 @@ public:
     RingoShadowFetch(RingoFetchContext& context);
     ~RingoShadowFetch() override;
 
-    float calcSelectivity(OracleEnv& env, int total_count) override;
+    double calcSelectivity(OracleEnv& env, int total_count) override;
     void fetch(OracleEnv& env, int maxrows) override;
     bool end() override;
-    int getIOCost(OracleEnv& env, float selectivity) override;
+    int getIOCost(OracleEnv& env, double selectivity) override;
     virtual int getTotalCount(OracleEnv& env);
 
     bool getLastRowid(OraRowidText& id) override;

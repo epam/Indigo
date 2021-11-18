@@ -39,16 +39,16 @@ namespace com.epam.indigo
         public static extern int bingoSearchSub(int db, int query_obj, string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchSim(int db, int query_obj, float min, float max, string options);
+        public static extern int bingoSearchSim(int db, int query_obj, double min, double max, string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max, int ext_fp, string options);
+        public static extern int bingoSearchSimWithExtFP(int db, int query_obj, double min, double max, int ext_fp, string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchSimTopN(int db, int query_obj, int limit, float minSim, string options);
+        public static extern int bingoSearchSimTopN(int db, int query_obj, int limit, double minSim, string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float minSim, int ext_fp, string options);
+        public static extern int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, double minSim, int ext_fp, string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
         public static extern int bingoSearchExact(int db, int query_obj, string options);
@@ -66,7 +66,7 @@ namespace com.epam.indigo
         public static extern int bingoGetCurrentId(int search_obj);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern float bingoGetCurrentSimilarityValue(int search_obj);
+        public static extern double bingoGetCurrentSimilarityValue(int search_obj);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
         public static extern int bingoEstimateRemainingResultsCount(int search_obj);
@@ -75,7 +75,7 @@ namespace com.epam.indigo
         public static extern int bingoEstimateRemainingResultsCountError(int search_obj);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoEstimateRemainingTime(int search_obj, float* time_sec);
+        public static extern int bingoEstimateRemainingTime(int search_obj, double* time_sec);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
         public static extern int bingoGetObject(int search_obj);

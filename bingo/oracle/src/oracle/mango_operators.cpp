@@ -118,7 +118,7 @@ static OCINumber* _mangoSim(OracleEnv& env, MangoOracleContext& context, const A
 
     TRY_READ_TARGET_MOL
     {
-        float result = instance.calc(target_buf);
+        double result = instance.calc(target_buf);
 
         return OracleExtproc::createDouble(env, (double)result);
     }

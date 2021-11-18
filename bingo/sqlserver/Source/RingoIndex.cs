@@ -5,7 +5,7 @@ namespace indigo
 {
    public class RingoIndex
    {
-      public float mass;
+      public double mass;
       public byte[] crf;
 
       public byte[] fingerprint;

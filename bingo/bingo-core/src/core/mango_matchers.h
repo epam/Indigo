@@ -65,7 +65,7 @@ public:
 
     // parameters to pass to MoleculeSubstructureMatcher
     int match_3d;
-    float rms_threshold;
+    double rms_threshold;
 
     bool preserve_bonds_on_highlighting;
 
@@ -155,7 +155,7 @@ protected:
     Molecule _target;
     Hash _query_hash;
     int _flags;
-    float _rms_threshold;
+    double _rms_threshold;
 
     void _initQuery(Molecule& query);
     static void _initTarget(Molecule& target, bool from_database);
@@ -182,11 +182,11 @@ public:
         // Metric type
         int type;
         // Additional parameters for tversky metric
-        float tversky_alpha, tversky_beta;
+        double tversky_alpha, tversky_beta;
     };
 
     Metrics metrics;
-    float bottom, top;
+    double bottom, top;
 
     bool include_bottom;
     bool include_top;
@@ -198,8 +198,8 @@ public:
     void loadQuery(Scanner& scanner);
     void loadQuery(const char* str);
 
-    float calc(const Array<char>& target_buf);
-    float calc(Scanner& scanner);
+    double calc(const Array<char>& target_buf);
+    double calc(Scanner& scanner);
 
     // upper and lower bounds for common ones
     int getLowerBound(int target_ones);
@@ -211,7 +211,7 @@ public:
     const byte* getQueryFingerprint();
 
     // Returns stored similarity score after calc, match or matchBinary
-    float getSimilarityScore();
+    double getSimilarityScore();
 
     DECL_ERROR;
 
@@ -220,12 +220,12 @@ protected:
     Array<byte> _query_fp;
     int _query_ones;
 
-    float _numerator_value, _denominator_value;
+    double _numerator_value, _denominator_value;
 
     static void _initQuery(Molecule& query);
-    static float _similarity(int ones1, int ones2, int ones_common, Metrics metrics, float& num, float& den);
-    static float _numerator(int ones1, int ones2, int ones_common, Metrics metrics);
-    static float _denominator(int ones1, int ones2, int ones_common, Metrics metrics);
+    static double _similarity(int ones1, int ones2, int ones_common, Metrics metrics, double& num, double& den);
+    static double _numerator(int ones1, int ones2, int ones_common, Metrics metrics);
+    static double _denominator(int ones1, int ones2, int ones_common, Metrics metrics);
 };
 
 class MangoTautomer
@@ -319,7 +319,7 @@ class MangoMass
 {
 public:
     // Mass bounds
-    float top, bottom;
+    double top, bottom;
 };
 
 #endif

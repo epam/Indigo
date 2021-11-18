@@ -63,13 +63,13 @@ class Bingo(object):
         self._lib.bingoSearchMolFormula.restype = c_int
         self._lib.bingoSearchMolFormula.argtypes = [c_int, c_char_p, c_char_p]
         self._lib.bingoSearchSim.restype = c_int
-        self._lib.bingoSearchSim.argtypes = [c_int, c_int, c_float, c_float, c_char_p]
+        self._lib.bingoSearchSim.argtypes = [c_int, c_int, c_double, c_double, c_char_p]
         self._lib.bingoSearchSimWithExtFP.restype = c_int
-        self._lib.bingoSearchSimWithExtFP.argtypes = [c_int, c_int, c_float, c_float, c_int, c_char_p]
+        self._lib.bingoSearchSimWithExtFP.argtypes = [c_int, c_int, c_double, c_double, c_int, c_char_p]
         self._lib.bingoSearchSimTopN.restype = c_int
-        self._lib.bingoSearchSimTopN.argtypes = [c_int, c_int, c_int, c_float, c_char_p]
+        self._lib.bingoSearchSimTopN.argtypes = [c_int, c_int, c_int, c_double, c_char_p]
         self._lib.bingoSearchSimTopNWithExtFP.restype = c_int
-        self._lib.bingoSearchSimTopNWithExtFP.argtypes = [c_int, c_int, c_int, c_float, c_int, c_char_p]
+        self._lib.bingoSearchSimTopNWithExtFP.argtypes = [c_int, c_int, c_int, c_double, c_int, c_char_p]
         self._lib.bingoEnumerateId.restype = c_int
         self._lib.bingoEnumerateId.argtypes = [c_int]
         self._lib.bingoNext.restype = c_int
@@ -80,7 +80,7 @@ class Bingo(object):
         self._lib.bingoGetObject.argtypes = [c_int]
         self._lib.bingoEndSearch.restype = c_int
         self._lib.bingoEndSearch.argtypes = [c_int]
-        self._lib.bingoGetCurrentSimilarityValue.restype = c_float
+        self._lib.bingoGetCurrentSimilarityValue.restype = c_double
         self._lib.bingoGetCurrentSimilarityValue.argtypes = [c_int]
         self._lib.bingoOptimize.restype = c_int
         self._lib.bingoOptimize.argtypes = [c_int]
@@ -89,7 +89,7 @@ class Bingo(object):
         self._lib.bingoEstimateRemainingResultsCountError.restype = c_int
         self._lib.bingoEstimateRemainingResultsCountError.argtypes = [c_int]
         self._lib.bingoEstimateRemainingTime.restype = c_int
-        self._lib.bingoEstimateRemainingTime.argtypes = [c_int, POINTER(c_float)]
+        self._lib.bingoEstimateRemainingTime.argtypes = [c_int, POINTER(c_double)]
         self._lib.bingoContainersCount.restype = c_int
         self._lib.bingoContainersCount.argtypes = [c_int]
         self._lib.bingoCellsCount.restype = c_int
@@ -314,7 +314,7 @@ class BingoObject(object):
 
     def estimateRemainingTime(self):
         self._indigo._setSessionId()
-        value = c_float()
+        value = c_double()
         Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingTime(self._id, pointer(value)))
         return value.value
 

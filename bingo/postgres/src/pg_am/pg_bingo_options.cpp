@@ -1,5 +1,5 @@
 #include "bingo_pg_fix_pre.h"
-#include "float.h"
+#include "double.h"
 
 extern "C"
 {

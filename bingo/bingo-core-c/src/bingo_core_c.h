@@ -77,7 +77,7 @@ CEXPORT const char* bingoSMILESImportGetId();
 
 CEXPORT void bingoProfilingReset(byte reset_whole_session);
 CEXPORT const char* bingoProfilingGetStatistics(bool for_session);
-CEXPORT float bingoProfilingGetTime(const char* counter_name, byte for_session);
+CEXPORT double bingoProfilingGetTime(const char* counter_name, byte for_session);
 CEXPORT qword bingoProfilingGetValue(const char* counter_name, byte for_session);
 CEXPORT qword bingoProfilingGetCount(const char* counter_name, byte for_session);
 CEXPORT int bingoCheckMemoryAllocate(int size);
@@ -101,7 +101,7 @@ CEXPORT int mangoIndexProcessSingleRecord();
 
 CEXPORT int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* cmf_buf_len, const char** xyz_buf, int* xyz_buf_len, const char** gross_str,
                                            const char** counter_elements_str, const char** fingerprint_buf, int* fingerprint_buf_len,
-                                           const char** fingerprint_sim_str, float* mass, int* sim_fp_bits_count);
+                                           const char** fingerprint_sim_str, double* mass, int* sim_fp_bits_count);
 
 CEXPORT int mangoGetHash(bool for_index, int index, int* count, dword* hash);
 CEXPORT int mangoGetAtomCount(const char* target_buf, int target_buf_len);
@@ -109,8 +109,8 @@ CEXPORT int mangoGetBondCount(const char* target_buf, int target_buf_len);
 CEXPORT int mangoSetupMatch(const char* search_type, const char* query, const char* options);
 CEXPORT int mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, int** min_bound_ptr, int** max_bound_ptr);
 
-CEXPORT int mangoSimilarityGetScore(float* score);
-CEXPORT int mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound);
+CEXPORT int mangoSimilarityGetScore(double* score);
+CEXPORT int mangoSimilaritySetMinMaxBounds(double min_bound, double max_bound);
 // Return value:
 //   1 if the query is a substructure of the taret
 //   0 if it is not
@@ -136,7 +136,7 @@ CEXPORT const char* mangoGetCountedElementName(int index);
 CEXPORT int mangoNeedCoords();
 CEXPORT byte mangoExactNeedComponentMatching();
 CEXPORT const char* mangoTauGetQueryGross();
-CEXPORT int mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out);
+CEXPORT int mangoMass(const char* target_buf, int target_buf_len, const char* type, double* out);
 CEXPORT int mangoMassD(const char* target_buf, int target_buf_len, const char* type, double* out);
 CEXPORT const char* mangoGross(const char* target_buf, int target_buf_len);
 CEXPORT const char* mangoGrossGetConditions();

@@ -737,11 +737,11 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoGetSGroupSeqId(self));
         }
 
-        public float[] getSGroupCoords()
+        public double[] getSGroupCoords()
         {
             dispatcher.setSessionID();
-            float* ptr = dispatcher.checkResult(IndigoLib.indigoGetSGroupCoords(self));
-            float[] res = new float[2];
+            double* ptr = dispatcher.checkResult(IndigoLib.indigoGetSGroupCoords(self));
+            double[] res = new double[2];
             res[0] = ptr[0];
             res[1] = ptr[1];
             return res;
@@ -764,7 +764,7 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoSetSGroupData(self, data));
         }
-        public int setSGroupCoords(float x, float y)
+        public int setSGroupCoords(double x, double y)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoSetSGroupCoords(self, x, y));
@@ -814,18 +814,18 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoSetSGroupDataType(self, data_type));
         }
-        public int setSGroupXCoord(float x)
+        public int setSGroupXCoord(double x)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoSetSGroupXCoord(self, x));
         }
-        public int setSGroupYCoord(float y)
+        public int setSGroupYCoord(double y)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoSetSGroupYCoord(self, y));
         }
-        public int setSGroupBrackets(int brk_style, float x1, float y1, float x2, float y2,
-                                     float x3, float y3, float x4, float y4)
+        public int setSGroupBrackets(int brk_style, double x1, double y1, double x2, double y2,
+                                     double x3, double y3, double x4, double y4)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoSetSGroupBrackets(self, brk_style, x1, y1, x2, y2, x3, y3, x4, y4));
@@ -944,29 +944,29 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoAddStereocenter(self, type, v1, v2, v3, v4));
         }
 
-        public void setDataSGroupXY(float x, float y)
+        public void setDataSGroupXY(double x, double y)
         {
             setDataSGroupXY(x, y, "");
         }
 
-        public void setDataSGroupXY(float x, float y, string options)
+        public void setDataSGroupXY(double x, double y, string options)
         {
             dispatcher.setSessionID();
             dispatcher.checkResult(IndigoLib.indigoSetDataSGroupXY(self, x, y, options));
         }
 
-        public float[] xyz()
+        public double[] xyz()
         {
             dispatcher.setSessionID();
-            float* ptr = dispatcher.checkResult(IndigoLib.indigoXYZ(self));
-            float[] res = new float[3];
+            double* ptr = dispatcher.checkResult(IndigoLib.indigoXYZ(self));
+            double[] res = new double[3];
             res[0] = ptr[0];
             res[1] = ptr[1];
             res[2] = ptr[2];
             return res;
         }
 
-        public void setXYZ(float x, float y, float z)
+        public void setXYZ(double x, double y, double z)
         {
             dispatcher.setSessionID();
             dispatcher.checkResult(IndigoLib.indigoSetXYZ(self, x, y, z));
@@ -1497,7 +1497,7 @@ namespace com.epam.indigo
             removeBonds(Indigo.toIntArray(bonds));
         }
 
-        public float alignAtoms(int[] atom_ids, float[] desired_xyz)
+        public double alignAtoms(int[] atom_ids, double[] desired_xyz)
         {
             if (atom_ids.Length * 3 != desired_xyz.Length)
             {
@@ -1508,7 +1508,7 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoAlignAtoms(self, atom_ids.Length, atom_ids, desired_xyz));
         }
 
-        public float alignAtoms(ICollection atom_ids, ICollection desired_xyz)
+        public double alignAtoms(ICollection atom_ids, ICollection desired_xyz)
         {
             return alignAtoms(Indigo.toIntArray(atom_ids), Indigo.toFloatArray(desired_xyz));
         }
@@ -2044,29 +2044,29 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoStandardize(self));
         }
 
-        public void ionize(float pH, float pHToll)
+        public void ionize(double pH, double pHToll)
         {
             dispatcher.setSessionID();
             dispatcher.checkResult(IndigoLib.indigoIonize(self, pH, pHToll));
         }
 
-        public float getAcidPkaValue(IndigoObject atom, int level, int min_level)
+        public double getAcidPkaValue(IndigoObject atom, int level, int min_level)
         {
             dispatcher.setSessionID();
-            float* ptr = dispatcher.checkResult(IndigoLib.indigoGetAcidPkaValue(self, atom.self, level, min_level));
-            float pka = ptr[0];
+            double* ptr = dispatcher.checkResult(IndigoLib.indigoGetAcidPkaValue(self, atom.self, level, min_level));
+            double pka = ptr[0];
             return pka;
         }
 
-        public float getBasicPkaValue(IndigoObject atom, int level, int min_level)
+        public double getBasicPkaValue(IndigoObject atom, int level, int min_level)
         {
             dispatcher.setSessionID();
-            float* ptr = dispatcher.checkResult(IndigoLib.indigoGetBasicPkaValue(self, atom.self, level, min_level));
-            float pka = ptr[0];
+            double* ptr = dispatcher.checkResult(IndigoLib.indigoGetBasicPkaValue(self, atom.self, level, min_level));
+            double pka = ptr[0];
             return pka;
         }
 
-        public int buildPkaModel(int level, float threshold, string filename)
+        public int buildPkaModel(int level, double threshold, string filename)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoBuildPkaModel(level, threshold, filename));

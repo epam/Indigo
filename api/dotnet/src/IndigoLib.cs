@@ -42,10 +42,10 @@ namespace com.epam.indigo
         public static extern int indigoSetOptionBool(string name, int value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetOptionFloat(string name, float value);
+        public static extern int indigoSetOptionFloat(string name, double value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetOptionColor(string name, float r, float g, float b);
+        public static extern int indigoSetOptionColor(string name, double r, double g, double b);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSetOptionXY(string name, int x, int y);
@@ -60,7 +60,7 @@ namespace com.epam.indigo
         public static extern int indigoGetOptionBool(string name, int* value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoGetOptionFloat(string name, float* value);
+        public static extern int indigoGetOptionFloat(string name, double* value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoGetOptionType(string name);
@@ -282,16 +282,16 @@ namespace com.epam.indigo
         public static extern int indigoStandardize(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoIonize(int item, float pH, float pH_toll);
+        public static extern int indigoIonize(int item, double pH, double pH_toll);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern float* indigoGetAcidPkaValue(int item, int atom, int level, int min_level);
+        public static extern double* indigoGetAcidPkaValue(int item, int atom, int level, int min_level);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern float* indigoGetBasicPkaValue(int item, int atom, int level, int min_level);
+        public static extern double* indigoGetBasicPkaValue(int item, int atom, int level, int min_level);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoBuildPkaModel(int level, float theshold, string filename);
+        public static extern int indigoBuildPkaModel(int level, double theshold, string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIterateAtoms(int molecule);
@@ -453,7 +453,7 @@ namespace com.epam.indigo
         public static extern int indigoAddDataSGroup(int molecule, int natoms, int[] atoms, int nbonds, int[] bonds, string description, string data);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetDataSGroupXY(int sgroup, float x, float y, string options);
+        public static extern int indigoSetDataSGroupXY(int sgroup, double x, double y, string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoAddSuperatom(int molecule, int natoms, int[] atoms, string name);
@@ -498,7 +498,7 @@ namespace com.epam.indigo
         public static extern int indigoGetSGroupSeqId(int sgroup);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern float* indigoGetSGroupCoords(int sgroup);
+        public static extern double* indigoGetSGroupCoords(int sgroup);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoGetSGroupMultiplier(int sgroup);
@@ -510,7 +510,7 @@ namespace com.epam.indigo
         public static extern int indigoSetSGroupData(int sgroup, string data);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupCoords(int sgroup, float x, float y);
+        public static extern int indigoSetSGroupCoords(int sgroup, double x, double y);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSetSGroupDescription(int sgroup, string description);
@@ -540,14 +540,14 @@ namespace com.epam.indigo
         public static extern int indigoSetSGroupDataType(int sgroup, string type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupXCoord(int sgroup, float x);
+        public static extern int indigoSetSGroupXCoord(int sgroup, double x);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupYCoord(int sgroup, float y);
+        public static extern int indigoSetSGroupYCoord(int sgroup, double y);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
-                                                         float x3, float y3, float x4, float y4);
+        public static extern int indigoSetSGroupBrackets(int sgroup, int brk_style, double x1, double y1, double x2, double y2,
+                                                         double x3, double y3, double x4, double y4);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoFindSGroups(int molecule, string property, string value);
@@ -601,10 +601,10 @@ namespace com.epam.indigo
         public static extern int indigoSetTemplateAtomClass(int atom, string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern float* indigoXYZ(int atom);
+        public static extern double* indigoXYZ(int atom);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetXYZ(int atom, float x, float y, float z);
+        public static extern int indigoSetXYZ(int atom, double x, double y, double z);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoResetCharge(int atom);
@@ -844,7 +844,7 @@ namespace com.epam.indigo
         public static extern int indigoGetSubmolecule(int molecule, int nvertices, int[] vertices);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern float indigoAlignAtoms(int molecule, int natoms, int[] atom_ids, float[] desired_xyz);
+        public static extern double indigoAlignAtoms(int molecule, int natoms, int[] atom_ids, double[] desired_xyz);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoAromatize(int item);
@@ -958,7 +958,7 @@ namespace com.epam.indigo
         public static extern int indigoCommonBits(int fingerprint1, int fingerprint2);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern float indigoSimilarity(int molecule1, int molecule2, string metrics);
+        public static extern double indigoSimilarity(int molecule1, int molecule2, string metrics);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIterateSDF(int reader);

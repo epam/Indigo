@@ -114,7 +114,7 @@ public:
     int getStorageIndex(Screening& screening, int local_idx);
     int getStorageIndex_NoMap(Screening& screening, int local_idx);
 
-    float queryOnesRatio(Screening& screening);
+    double queryOnesRatio(Screening& screening);
     int countOracleBlocks(OracleEnv& env);
     int getTotalCount(OracleEnv& env);
 

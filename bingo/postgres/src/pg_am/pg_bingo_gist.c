@@ -388,7 +388,7 @@
 ///*
 //   GISTENTRY  *origentry = (GISTENTRY *) PG_GETARG_POINTER(0); // always ISSIGNKEY
 //   GISTENTRY  *newentry = (GISTENTRY *) PG_GETARG_POINTER(1);
-//   float      *penalty = (float *) PG_GETARG_POINTER(2);
+//   double      *penalty = (double *) PG_GETARG_POINTER(2);
 //   TRGM      *origval = (TRGM *) DatumGetPointer(origentry->key);
 //   TRGM      *newval = (TRGM *) DatumGetPointer(newentry->key);
 //   BITVECP      orig = GETSIGN(origval);
@@ -402,7 +402,7 @@
 //      makesign(sign, newval);
 //
 //      if (ISALLTRUE(origval))
-//         *penalty = ((float) (SIGLENBIT - sizebitvec(sign))) / (float) (SIGLENBIT + 1);
+//         *penalty = ((double) (SIGLENBIT - sizebitvec(sign))) / (double) (SIGLENBIT + 1);
 //      else
 //         *penalty = hemdistsign(sign, orig);
 //   }

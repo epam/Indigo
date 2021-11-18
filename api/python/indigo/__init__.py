@@ -23,7 +23,7 @@ import sys
 import warnings
 from array import array
 from ctypes import (CDLL, POINTER, RTLD_GLOBAL, c_byte, c_char_p, c_double,
-                    c_float, c_int, c_ulonglong, pointer, sizeof, c_void_p)
+                    c_int, c_ulonglong, pointer, sizeof, c_void_p)
 
 DECODE_ENCODING = "utf-8"
 ENCODE_ENCODING = "utf-8"
@@ -151,7 +151,7 @@ class IndigoObject(object):
         atoms = (c_int * len(atom_ids))()
         for i in range(len(atoms)):
             atoms[i] = atom_ids[i]
-        xyz = (c_float * len(desired_xyz))()
+        xyz = (c_double * len(desired_xyz))()
         for i in range(len(desired_xyz)):
             xyz[i] = desired_xyz[i]
         self.dispatcher._setSessionId()
@@ -4243,13 +4243,13 @@ class Indigo(object):
         Indigo._lib.indigoSetOptionBool.restype = c_int
         Indigo._lib.indigoSetOptionBool.argtypes = [c_char_p, c_int]
         Indigo._lib.indigoSetOptionFloat.restype = c_int
-        Indigo._lib.indigoSetOptionFloat.argtypes = [c_char_p, c_float]
+        Indigo._lib.indigoSetOptionFloat.argtypes = [c_char_p, c_double]
         Indigo._lib.indigoSetOptionColor.restype = c_int
         Indigo._lib.indigoSetOptionColor.argtypes = [
             c_char_p,
-            c_float,
-            c_float,
-            c_float,
+            c_double,
+            c_double,
+            c_double,
         ]
         Indigo._lib.indigoSetOptionXY.restype = c_int
         Indigo._lib.indigoSetOptionXY.argtypes = [c_char_p, c_int, c_int]
@@ -4261,14 +4261,14 @@ class Indigo(object):
         Indigo._lib.indigoGetOptionBool.restype = c_int
         Indigo._lib.indigoGetOptionFloat.argtypes = [
             c_char_p,
-            POINTER(c_float),
+            POINTER(c_double),
         ]
         Indigo._lib.indigoGetOptionFloat.restype = c_int
         Indigo._lib.indigoGetOptionColor.argtypes = [
             c_char_p,
-            POINTER(c_float),
-            POINTER(c_float),
-            POINTER(c_float),
+            POINTER(c_double),
+            POINTER(c_double),
+            POINTER(c_double),
         ]
         Indigo._lib.indigoGetOptionColor.restype = c_int
         Indigo._lib.indigoGetOptionXY.argtypes = [
@@ -4355,7 +4355,7 @@ class Indigo(object):
         Indigo._lib.indigoUnserialize.argtypes = [POINTER(c_byte), c_int]
         Indigo._lib.indigoCommonBits.restype = c_int
         Indigo._lib.indigoCommonBits.argtypes = [c_int, c_int]
-        Indigo._lib.indigoSimilarity.restype = c_float
+        Indigo._lib.indigoSimilarity.restype = c_double
         Indigo._lib.indigoSimilarity.argtypes = [c_int, c_int, c_char_p]
         Indigo._lib.indigoIterateSDF.restype = c_int
         Indigo._lib.indigoIterateSDF.argtypes = [c_int]
@@ -4472,17 +4472,17 @@ class Indigo(object):
         Indigo._lib.indigoStandardize.restype = c_int
         Indigo._lib.indigoStandardize.argtypes = [c_int]
         Indigo._lib.indigoIonize.restype = c_int
-        Indigo._lib.indigoIonize.argtypes = [c_int, c_float, c_float]
+        Indigo._lib.indigoIonize.argtypes = [c_int, c_double, c_double]
         Indigo._lib.indigoBuildPkaModel.restype = c_int
-        Indigo._lib.indigoBuildPkaModel.argtypes = [c_int, c_float, c_char_p]
-        Indigo._lib.indigoGetAcidPkaValue.restype = POINTER(c_float)
+        Indigo._lib.indigoBuildPkaModel.argtypes = [c_int, c_double, c_char_p]
+        Indigo._lib.indigoGetAcidPkaValue.restype = POINTER(c_double)
         Indigo._lib.indigoGetAcidPkaValue.argtypes = [
             c_int,
             c_int,
             c_int,
             c_int,
         ]
-        Indigo._lib.indigoGetBasicPkaValue.restype = POINTER(c_float)
+        Indigo._lib.indigoGetBasicPkaValue.restype = POINTER(c_double)
         Indigo._lib.indigoGetBasicPkaValue.argtypes = [
             c_int,
             c_int,
@@ -4589,10 +4589,10 @@ class Indigo(object):
         Indigo._lib.indigoCountHydrogens.argtypes = [c_int, POINTER(c_int)]
         Indigo._lib.indigoCountImplicitHydrogens.restype = c_int
         Indigo._lib.indigoCountImplicitHydrogens.argtypes = [c_int]
-        Indigo._lib.indigoXYZ.restype = POINTER(c_float)
+        Indigo._lib.indigoXYZ.restype = POINTER(c_double)
         Indigo._lib.indigoXYZ.argtypes = [c_int]
         Indigo._lib.indigoSetXYZ.restype = c_int
-        Indigo._lib.indigoSetXYZ.argtypes = [c_int, c_float, c_float, c_float]
+        Indigo._lib.indigoSetXYZ.argtypes = [c_int, c_double, c_double, c_double]
         Indigo._lib.indigoCountSuperatoms.restype = c_int
         Indigo._lib.indigoCountSuperatoms.argtypes = [c_int]
         Indigo._lib.indigoCountDataSGroups.restype = c_int
@@ -4651,14 +4651,14 @@ class Indigo(object):
         Indigo._lib.indigoSetDataSGroupXY.restype = c_int
         Indigo._lib.indigoSetDataSGroupXY.argtypes = [
             c_int,
-            c_float,
-            c_float,
+            c_double,
+            c_double,
             c_char_p,
         ]
         Indigo._lib.indigoSetSGroupData.restype = c_int
         Indigo._lib.indigoSetSGroupData.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoSetSGroupCoords.restype = c_int
-        Indigo._lib.indigoSetSGroupCoords.argtypes = [c_int, c_float, c_float]
+        Indigo._lib.indigoSetSGroupCoords.argtypes = [c_int, c_double, c_double]
         Indigo._lib.indigoSetSGroupDescription.restype = c_int
         Indigo._lib.indigoSetSGroupDescription.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoSetSGroupFieldName.restype = c_int
@@ -4678,9 +4678,9 @@ class Indigo(object):
         Indigo._lib.indigoSetSGroupDataType.restype = c_int
         Indigo._lib.indigoSetSGroupDataType.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoSetSGroupXCoord.restype = c_int
-        Indigo._lib.indigoSetSGroupXCoord.argtypes = [c_int, c_float]
+        Indigo._lib.indigoSetSGroupXCoord.argtypes = [c_int, c_double]
         Indigo._lib.indigoSetSGroupYCoord.restype = c_int
-        Indigo._lib.indigoSetSGroupYCoord.argtypes = [c_int, c_float]
+        Indigo._lib.indigoSetSGroupYCoord.argtypes = [c_int, c_double]
         Indigo._lib.indigoCreateSGroup.restype = c_int
         Indigo._lib.indigoCreateSGroup.argtypes = [c_char_p, c_int, c_char_p]
         Indigo._lib.indigoSetSGroupClass.restype = c_int
@@ -4708,7 +4708,7 @@ class Indigo(object):
         Indigo._lib.indigoSetSGroupDisplayOption.argtypes = [c_int, c_int]
         Indigo._lib.indigoGetSGroupSeqId.restype = c_int
         Indigo._lib.indigoGetSGroupSeqId.argtypes = [c_int]
-        Indigo._lib.indigoGetSGroupCoords.restype = POINTER(c_float)
+        Indigo._lib.indigoGetSGroupCoords.restype = POINTER(c_double)
         Indigo._lib.indigoGetSGroupCoords.argtypes = [c_int]
         Indigo._lib.indigoGetRepeatingUnitSubscript.restype = c_char_p
         Indigo._lib.indigoGetRepeatingUnitSubscript.argtypes = [c_int]
@@ -4722,14 +4722,14 @@ class Indigo(object):
         Indigo._lib.indigoSetSGroupBrackets.argtypes = [
             c_int,
             c_int,
-            c_float,
-            c_float,
-            c_float,
-            c_float,
-            c_float,
-            c_float,
-            c_float,
-            c_float,
+            c_double,
+            c_double,
+            c_double,
+            c_double,
+            c_double,
+            c_double,
+            c_double,
+            c_double,
         ]
         Indigo._lib.indigoFindSGroups.restype = c_int
         Indigo._lib.indigoFindSGroups.argtypes = [c_int, c_char_p, c_char_p]
@@ -4948,12 +4948,12 @@ class Indigo(object):
         Indigo._lib.indigoRemoveAtoms.argtypes = [c_int, c_int, POINTER(c_int)]
         Indigo._lib.indigoRemoveBonds.restype = c_int
         Indigo._lib.indigoRemoveBonds.argtypes = [c_int, c_int, POINTER(c_int)]
-        Indigo._lib.indigoAlignAtoms.restype = c_float
+        Indigo._lib.indigoAlignAtoms.restype = c_double
         Indigo._lib.indigoAlignAtoms.argtypes = [
             c_int,
             c_int,
             POINTER(c_int),
-            POINTER(c_float),
+            POINTER(c_double),
         ]
         Indigo._lib.indigoAromatize.restype = c_int
         Indigo._lib.indigoAromatize.argtypes = [c_int]
@@ -5297,7 +5297,7 @@ class Indigo(object):
             float: option value
         """
         self._setSessionId()
-        value = c_float()
+        value = c_double()
         self._checkResult(
             Indigo._lib.indigoGetOptionFloat(
                 option.encode(ENCODE_ENCODING), pointer(value)

@@ -31,11 +31,11 @@ public:
     {
     }
 
-    void setMass(float mass)
+    void setMass(double mass)
     {
         _mass = mass;
     }
-    float getMass() const
+    double getMass() const
     {
         return _mass;
     }
@@ -64,7 +64,7 @@ public:
 private:
     MangoPgFpData(const MangoPgFpData&); // no implicit copy
 
-    float _mass;
+    double _mass;
     int _fragments;
     /*
      * Map: hash - components count
@@ -117,7 +117,7 @@ private:
     void _prepareMassSearch(PG_OBJECT scan_desc);
     void _prepareSimSearch(PG_OBJECT scan_desc);
     void _getScanQueries(uintptr_t arg_datum, indigo::Array<char>& str1, indigo::Array<char>& str2);
-    void _getScanQueries(uintptr_t arg_datum, float& min_bound, float& max_bound, indigo::Array<char>& str1, indigo::Array<char>& str2);
+    void _getScanQueries(uintptr_t arg_datum, double& min_bound, double& max_bound, indigo::Array<char>& str1, indigo::Array<char>& str2);
 
     static void _errorHandler(const char* message, void* context);
 

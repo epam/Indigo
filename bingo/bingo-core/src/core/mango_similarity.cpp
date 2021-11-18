@@ -120,7 +120,7 @@ void MangoSimilarity::_initQuery(Molecule& query)
     MoleculeAromatizer::aromatizeBonds(query, AromaticityOptions::BASIC);
 }
 
-float MangoSimilarity::_similarity(int ones1, int ones2, int ones_common, Metrics metrics, float& numerator, float& denominator)
+double MangoSimilarity::_similarity(int ones1, int ones2, int ones_common, Metrics metrics, double& numerator, double& denominator)
 {
     numerator = _numerator(ones1, ones2, ones_common, metrics);
 
@@ -132,38 +132,38 @@ float MangoSimilarity::_similarity(int ones1, int ones2, int ones_common, Metric
     if (denominator < 1e-6f)
         throw Error("attempt to divide by zero");
 
-    return (float)numerator / denominator;
+    return (double)numerator / denominator;
 }
 
-float MangoSimilarity::getSimilarityScore()
+double MangoSimilarity::getSimilarityScore()
 {
-    return (float)_numerator_value / _denominator_value;
+    return (double)_numerator_value / _denominator_value;
 }
 
-float MangoSimilarity::_numerator(int ones1, int ones2, int ones_common, Metrics metrics)
+double MangoSimilarity::_numerator(int ones1, int ones2, int ones_common, Metrics metrics)
 {
     switch (metrics.type)
     {
     case BIT_METRICS_TANIMOTO:
     case BIT_METRICS_EUCLID_SUB:
-        return (float)ones_common;
+        return (double)ones_common;
     case BIT_METRICS_TVERSKY:
-        return (float)ones_common;
+        return (double)ones_common;
     default:
         throw Error("bad metrics: %d", metrics.type);
     }
 }
 
-float MangoSimilarity::_denominator(int ones1, int ones2, int ones_common, Metrics metrics)
+double MangoSimilarity::_denominator(int ones1, int ones2, int ones_common, Metrics metrics)
 {
     switch (metrics.type)
     {
     case BIT_METRICS_TANIMOTO:
-        return (float)(ones1 + ones2 - ones_common);
+        return (double)(ones1 + ones2 - ones_common);
     case BIT_METRICS_TVERSKY:
         return metrics.tversky_alpha * ones1 + metrics.tversky_beta * ones2 + (1 - metrics.tversky_alpha - metrics.tversky_beta) * ones_common;
     case BIT_METRICS_EUCLID_SUB:
-        return (float)ones1;
+        return (double)ones1;
     default:
         throw Error("bad metrics: %d", metrics.type);
     }
@@ -211,7 +211,7 @@ bool MangoSimilarity::match(int ones_target, int ones_common)
     if (_denominator_value < 1e-6f && _numerator_value > 1e-6f)
         throw Error("attempt to divide by zero");
 
-    float top_lim = top * _denominator_value;
+    double top_lim = top * _denominator_value;
 
     if (include_top && _numerator_value > top_lim + 1e-6f)
         return false;
@@ -219,7 +219,7 @@ bool MangoSimilarity::match(int ones_target, int ones_common)
     if (!include_top && _numerator_value > top_lim - 1e-6f)
         return false;
 
-    float bottom_lim = bottom * _denominator_value;
+    double bottom_lim = bottom * _denominator_value;
 
     if (_numerator_value < 1e-6 && _denominator_value < 1e-6)
     {
@@ -238,7 +238,7 @@ bool MangoSimilarity::match(int ones_target, int ones_common)
     return true;
 }
 
-float MangoSimilarity::calc(Scanner& scanner)
+double MangoSimilarity::calc(Scanner& scanner)
 {
     QS_DEF(Molecule, target);
 
@@ -269,7 +269,7 @@ float MangoSimilarity::calc(Scanner& scanner)
     return _similarity(_query_ones, target_ones, common, metrics, _numerator_value, _denominator_value);
 }
 
-float MangoSimilarity::calc(const Array<char>& target_buf)
+double MangoSimilarity::calc(const Array<char>& target_buf)
 {
     BufferScanner scanner(target_buf);
 

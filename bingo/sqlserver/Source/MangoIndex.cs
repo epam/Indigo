@@ -7,7 +7,7 @@ namespace indigo
    {
       public const int COUNTED_ELEMENTS_COUNT = 6;
 
-      public float mass;
+      public double mass;
       public byte[] cmf;
       public byte[] xyz;
 

@@ -229,7 +229,7 @@ ORAEXT OCINumber* oraRingoIndexSelectivity(OCIExtProcContext* ctx, int context_i
         fetch_context->fetch_engine->fetch(env, 100);
         fetch_context->fresh = true;
 
-        float res = fetch_context->fetch_engine->calcSelectivity(env, context.fingerprints.getTotalCount(env));
+        double res = fetch_context->fetch_engine->calcSelectivity(env, context.fingerprints.getTotalCount(env));
 
         env.dbgPrintfTS("calculated selectivity = %.2f\n", res);
 
@@ -263,7 +263,7 @@ if (strt_ind != OCI_IND_NOTNULL)
 if (stop_ind != OCI_IND_NOTNULL)
     p_stop = 0;
 
-float sel = OracleUtil::numberToFloat(env, p_sel);
+double sel = OracleUtil::numberToFloat(env, p_sel);
 
 QS_DEF(Array<char>, query_buf);
 OracleLOB query_lob(env, query_loc);

@@ -88,7 +88,7 @@ ORAEXT OCINumber* oraProfilingGetTime(OCIExtProcContext* ctx, char* key_name, sh
         if (key_name_indicator != OCI_IND_NOTNULL)
             throw BingoError("Null key is given");
 
-        float value;
+        double value;
 
         // Try to find in profiling data
         {

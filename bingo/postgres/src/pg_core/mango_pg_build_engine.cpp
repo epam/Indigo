@@ -1,4 +1,4 @@
-#include <float.h>
+#include <double.h>
 
 #include "bingo_pg_fix_pre.h"
 
@@ -274,7 +274,7 @@ bool MangoPgBuildEngine::_readPreparedInfo(int* id, MangoPgFpData& data, int fp_
     const char* fp_buf;
     int fp_len;
     const char* fp_sim_str;
-    float mass;
+    double mass;
     int sim_fp_bits_count;
     /*
      * Get prepared data

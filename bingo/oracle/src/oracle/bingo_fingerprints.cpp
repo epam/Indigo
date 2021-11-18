@@ -664,12 +664,12 @@ int BingoFingerprints::countOracleBlocks(OracleEnv& env)
     return res;
 }
 
-float BingoFingerprints::queryOnesRatio(Screening& screening)
+double BingoFingerprints::queryOnesRatio(Screening& screening)
 {
     if (_fp_bytes == 0)
         throw Error("_fp_bytes = 0 -> division by zero");
 
-    return (float)screening.query_ones.size() / (_fp_bytes * 8);
+    return (double)screening.query_ones.size() / (_fp_bytes * 8);
 }
 
 int BingoFingerprints::getTotalCount(OracleEnv& env)

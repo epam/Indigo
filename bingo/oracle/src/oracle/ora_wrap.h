@@ -109,14 +109,14 @@ namespace indigo
         void prepare();
 
         void defineIntByPos(int pos, int* value);
-        void defineFloatByPos(int pos, float* value);
+        void defineFloatByPos(int pos, double* value);
         void defineBlobByPos(int pos, OracleLOB& lob);
         void defineClobByPos(int pos, OracleLOB& lob);
         void defineRowidByPos(int pos, OracleRowID& rowid);
         void defineRawByPos(int pos, OracleRaw& raw);
         void defineStringByPos(int pos, char* string, int max_len);
         void bindIntByName(const char* name, int* value);
-        void bindFloatByName(const char* name, float* value);
+        void bindFloatByName(const char* name, double* value);
         void bindBlobByName(const char* name, OracleLOB& lob);
         void bindBlobPtrByName(const char* name, OCILobLocator** lob, short* indicators);
         void bindClobByName(const char* name, OracleLOB& lob);
@@ -150,7 +150,7 @@ namespace indigo
         static void executeSingle(OracleEnv& env, const char* format, ...);
         static void executeSingle_BindString(OracleEnv& env, const char* bind, const char* value, const char* format, ...);
         static bool executeSingleInt(int& result, OracleEnv& env, const char* format, ...);
-        static bool executeSingleFloat(float& result, OracleEnv& env, const char* format, ...);
+        static bool executeSingleFloat(double& result, OracleEnv& env, const char* format, ...);
         static bool executeSingleString(Array<char>& result, OracleEnv& env, const char* format, ...);
         static bool executeSingleBlob(Array<char>& result, OracleEnv& env, const char* format, ...);
         static bool executeSingleClob(Array<char>& result, OracleEnv& env, const char* format, ...);
@@ -291,7 +291,7 @@ namespace indigo
     {
     public:
         static int numberToInt(OracleEnv& env, OCINumber* number);
-        static float numberToFloat(OracleEnv& env, OCINumber* number);
+        static double numberToFloat(OracleEnv& env, OCINumber* number);
         static double numberToDouble(OracleEnv& env, OCINumber* number);
     };
 

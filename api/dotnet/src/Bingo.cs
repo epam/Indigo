@@ -59,7 +59,7 @@ namespace com.epam.indigo
             return result;
         }
 
-        internal static float checkResult(float result)
+        internal static double checkResult(double result)
         {
             if (result < 0.0)
             {
@@ -241,7 +241,7 @@ namespace com.epam.indigo
         /// <param name="max">Maximum similairy value</param>
         /// <param name="metric">Default value is "tanimoto"</param>
         /// <returns>Bingo search object instance</returns>
-        public BingoObject searchSim(IndigoObject query, float min, float max, string metric)
+        public BingoObject searchSim(IndigoObject query, double min, double max, string metric)
         {
             if (metric == null)
             {
@@ -258,7 +258,7 @@ namespace com.epam.indigo
         /// <param name="min">Minimum similarity value</param>
         /// <param name="max">Maximum similairy value</param>
         /// <returns>Bingo search object instance</returns>
-        public BingoObject searchSim(IndigoObject query, float min, float max)
+        public BingoObject searchSim(IndigoObject query, double min, double max)
         {
             return searchSim(query, min, max, null);
         }
@@ -272,7 +272,7 @@ namespace com.epam.indigo
         /// <param name="ext_fp">Indigo object with a external similarity fingerprint</param>
         /// <param name="metric">Default value is "tanimoto"</param>
         /// <returns>Bingo search object instance</returns>
-        public BingoObject searchSimWithExtFP(IndigoObject query, float min, float max, IndigoObject ext_fp, string metric)
+        public BingoObject searchSimWithExtFP(IndigoObject query, double min, double max, IndigoObject ext_fp, string metric)
         {
             if (metric == null)
             {
@@ -291,7 +291,7 @@ namespace com.epam.indigo
         /// <param name="metric"> Default value is "tanimoto"</param>
         /// <returns> Bingo search object instance</returns>
 
-        public BingoObject searchSimTopN(IndigoObject query, int limit, float minSim, string metric)
+        public BingoObject searchSimTopN(IndigoObject query, int limit, double minSim, string metric)
         {
             if (metric == null)
             {
@@ -308,7 +308,7 @@ namespace com.epam.indigo
 		/// <param name="minSim"> Minimum similarity value</param>
 		/// <returns>Bingo search object instance</returns>
 
-        public BingoObject searchSimTopN(IndigoObject query, int limit, float minSim)
+        public BingoObject searchSimTopN(IndigoObject query, int limit, double minSim)
         {
             return searchSimTopN(query, limit, minSim, null);
         }
@@ -323,7 +323,7 @@ namespace com.epam.indigo
         /// <param name="extFp"> Indigo object with a external similarity fingerprint (molecule or reaction)</param>
         /// <returns> Bingo search object instance</returns>
 
-        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, float minSim, IndigoObject extFp, string metric)
+        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, double minSim, IndigoObject extFp, string metric)
         {
             if (metric == null)
             {
@@ -342,7 +342,7 @@ namespace com.epam.indigo
         /// <param name="extFp"> Indigo object with a external similarity fingerprint (molecule or reaction)</param>
         /// <returns> Bingo search object instance</returns>
 
-        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, float minSim, IndigoObject extFp)
+        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, double minSim, IndigoObject extFp)
         {
             return searchSimTopNWithExtFP(query, limit, minSim, extFp, null);
         }

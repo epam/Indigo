@@ -378,11 +378,11 @@ void OracleStatement::defineIntByPos(int pos, int* value)
     _env.callOCI(OCIDefineByPos(_statement, &defnp, _env.errhp(), pos, value, (sword)sizeof(int), SQLT_INT, 0, 0, 0, OCI_DEFAULT));
 }
 
-void OracleStatement::defineFloatByPos(int pos, float* value)
+void OracleStatement::defineFloatByPos(int pos, double* value)
 {
     OCIDefine* defnp = (OCIDefine*)0;
 
-    _env.callOCI(OCIDefineByPos(_statement, &defnp, _env.errhp(), pos, value, (sword)sizeof(float), SQLT_FLT, 0, 0, 0, OCI_DEFAULT));
+    _env.callOCI(OCIDefineByPos(_statement, &defnp, _env.errhp(), pos, value, (sword)sizeof(double), SQLT_FLT, 0, 0, 0, OCI_DEFAULT));
 }
 
 void OracleStatement::defineStringByPos(int pos, char* string, int max_len)
@@ -492,11 +492,11 @@ void OracleStatement::bindIntByName(const char* name, int* value)
     _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text*)name, -1, (dvoid*)value, sizeof(int), SQLT_INT, 0, 0, 0, 0, 0, OCI_DEFAULT));
 }
 
-void OracleStatement::bindFloatByName(const char* name, float* value)
+void OracleStatement::bindFloatByName(const char* name, double* value)
 {
     OCIBind* bndp = (OCIBind*)0;
 
-    _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text*)name, -1, (dvoid*)value, sizeof(float), SQLT_FLT, 0, 0, 0, 0, 0, OCI_DEFAULT));
+    _env.callOCI(OCIBindByName(_statement, &bndp, _env.errhp(), (text*)name, -1, (dvoid*)value, sizeof(double), SQLT_FLT, 0, 0, 0, 0, 0, OCI_DEFAULT));
 }
 
 void OracleStatement::bindClobByName(const char* name, OracleLOB& lob)
@@ -604,7 +604,7 @@ bool OracleStatement::executeSingleInt(int& result, OracleEnv& env, const char* 
     return true;
 }
 
-bool OracleStatement::executeSingleFloat(float& result, OracleEnv& env, const char* format, ...)
+bool OracleStatement::executeSingleFloat(double& result, OracleEnv& env, const char* format, ...)
 {
     OracleStatement statement(env);
     va_list args;
@@ -792,13 +792,13 @@ int OracleUtil::numberToInt(OracleEnv& env, OCINumber* number)
     return res;
 }
 
-float OracleUtil::numberToFloat(OracleEnv& env, OCINumber* number)
+double OracleUtil::numberToFloat(OracleEnv& env, OCINumber* number)
 {
     double res;
 
     env.callOCI(OCINumberToReal(env.errhp(), number, sizeof(res), &res));
 
-    return (float)res;
+    return (double)res;
 }
 
 double OracleUtil::numberToDouble(OracleEnv& env, OCINumber* number)

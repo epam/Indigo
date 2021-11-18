@@ -458,8 +458,8 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr)
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
     bool min_mass_flag = false;
     bool max_mass_flag = false;
-    float min_mass = 0;
-    float max_mass = FLT_MAX;
+    double min_mass = 0;
+    double max_mass = FLT_MAX;
     QS_DEF(Array<char>, where_clause_str);
     ArrayOutput where_clause(where_clause_str);
 
@@ -501,7 +501,7 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr)
     Array<char> search_query;
     Array<char> search_options;
     int bingo_res;
-    float min_bound = 0, max_bound = 1;
+    double min_bound = 0, max_bound = 1;
     BingoPgFpData& data = *_queryFpData;
 
     BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
@@ -591,7 +591,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, Array<char>& str1
     BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", message));
 }
 
-void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, float& min_bound, float& max_bound, indigo::Array<char>& str1_out, indigo::Array<char>& str2_out)
+void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, double& min_bound, double& max_bound, indigo::Array<char>& str1_out, indigo::Array<char>& str2_out)
 {
     /*
      * Get query info

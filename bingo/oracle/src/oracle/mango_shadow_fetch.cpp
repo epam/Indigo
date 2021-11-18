@@ -92,7 +92,7 @@ int MangoShadowFetch::countOracleBlocks(OracleEnv& env)
     return res;
 }
 
-int MangoShadowFetch::getIOCost(OracleEnv& env, float selectivity)
+int MangoShadowFetch::getIOCost(OracleEnv& env, double selectivity)
 {
     return (int)(countOracleBlocks(env) * selectivity);
 }
@@ -102,7 +102,7 @@ bool MangoShadowFetch::end()
     return _end;
 }
 
-float MangoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
+double MangoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
 {
     int nrows_select_total;
 
@@ -137,7 +137,7 @@ float MangoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
         throw Error("selectivity: no processed rows");
     }
 
-    return (float)nrows_select_total * matched.size() / (total_count * _processed_rows);
+    return (double)nrows_select_total * matched.size() / (total_count * _processed_rows);
 }
 
 void MangoShadowFetch::prepareNonSubstructure(OracleEnv& env)

@@ -75,7 +75,7 @@ BINGO_END(1, -1)
 
 CEXPORT int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* cmf_buf_len, const char** xyz_buf, int* xyz_buf_len, const char** gross_str,
                                            const char** counter_elements_str, const char** fingerprint_buf, int* fingerprint_buf_len,
-                                           const char** fingerprint_sim_str, float* mass,
+                                           const char** fingerprint_sim_str, double* mass,
                                            int* sim_fp_bits_count){BINGO_BEGIN{if (id) * id = self.index_record_data_id;
 
 const Array<char>& cmf = self.mango_index->getCmf();
@@ -287,14 +287,14 @@ for (int i = 0; i < count; i++)
 BINGO_END(1, -2)
 }
 
-CEXPORT int mangoSimilarityGetScore(float* score){BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
+CEXPORT int mangoSimilarityGetScore(double* score){BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
 MangoSimilarity& similarity = self.mango_context->similarity;
 *score = similarity.getSimilarityScore();
 }
 BINGO_END(-2, 1)
 }
 
-CEXPORT int mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound){
+CEXPORT int mangoSimilaritySetMinMaxBounds(double min_bound, double max_bound){
     BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
 MangoSimilarity& similarity = self.mango_context->similarity;
 similarity.bottom = min_bound;
@@ -635,7 +635,7 @@ return tautomer.getQueryGross();
 BINGO_END(0, 0)
 }
 
-CEXPORT int mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
+CEXPORT int mangoMass(const char* target_buf, int target_buf_len, const char* type, double* out){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
 
 BufferScanner scanner(target_buf, target_buf_len);
 

@@ -21,7 +21,7 @@ create table CONFIG_STR (n int, name varchar2(100), value varchar2(4000));
 create index CONFIG_STR_N on CONFIG_STR(n);
 create table CONFIG_INT (n int, name varchar2(100), value int);
 create index CONFIG_INT_N on CONFIG_INT(n);
-create table CONFIG_FLOAT (n int, name varchar2(100), value float);
+create table CONFIG_FLOAT (n int, name varchar2(100), value double);
 create index CONFIG_FLOAT_N on CONFIG_FLOAT(n);
 create table CONFIG_CLOB (n int, name varchar2(100), value CLOB);
 create index CONFIG_CLOB_N on CONFIG_CLOB(n);

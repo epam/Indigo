@@ -74,7 +74,7 @@ namespace com.epam.indigo
         /// Method to return current similarity value. Should be called after next() method.
         /// </summary>
         /// <returns>Similarity value</returns>
-        public float getCurrentSimilarityValue()
+        public double getCurrentSimilarityValue()
         {
             _indigo.setSessionID();
             return Bingo.checkResult(BingoLib.bingoGetCurrentSimilarityValue(_id));
@@ -116,9 +116,9 @@ namespace com.epam.indigo
         /// Method to estimate remaining search time
         /// </summary>
         /// <returns>Estimated remainin search time</returns>
-        public float estimateRemainingTime()
+        public double estimateRemainingTime()
         {
-            float esimated_time;
+            double esimated_time;
             _indigo.setSessionID();
             Bingo.checkResult(BingoLib.bingoEstimateRemainingTime(_id, &esimated_time));
             return esimated_time;

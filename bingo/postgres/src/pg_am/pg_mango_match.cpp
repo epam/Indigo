@@ -179,7 +179,7 @@ Datum getsimilarity(PG_FUNCTION_ARGS)
     Datum query_datum = PG_GETARG_DATUM(1);
     Datum options_datum = PG_GETARG_DATUM(2);
 
-    float res = 0;
+    double res = 0;
     PG_BINGO_BEGIN
     {
         int result = 0;
@@ -227,8 +227,8 @@ Datum _gross_internal(PG_FUNCTION_ARGS)
 
 Datum _sim_internal(PG_FUNCTION_ARGS)
 {
-    float min_bound = PG_GETARG_FLOAT4(0);
-    float max_bound = PG_GETARG_FLOAT4(1);
+    double min_bound = PG_GETARG_FLOAT4(0);
+    double max_bound = PG_GETARG_FLOAT4(1);
     Datum query_datum = PG_GETARG_DATUM(2);
     Datum target_datum = PG_GETARG_DATUM(3);
     Datum options_datum = PG_GETARG_DATUM(4);
@@ -237,7 +237,7 @@ Datum _sim_internal(PG_FUNCTION_ARGS)
     PG_BINGO_BEGIN
     {
         _MangoContextHandler bingo_context(BingoPgCommon::MOL_SIM, fcinfo->flinfo->fn_oid);
-        float mol_sim = 0;
+        double mol_sim = 0;
         result = bingo_context.matchInternal(query_datum, target_datum, options_datum);
 
         if (result < 0)
@@ -264,11 +264,11 @@ Datum _match_mass_less(PG_FUNCTION_ARGS)
         bingo_handler.setFunctionName("mass less");
 
         BufferScanner scanner(mass_datum);
-        float usr_mass = scanner.readFloat();
+        double usr_mass = scanner.readFloat();
 
         BingoPgText mol_text(mol_datum);
 
-        float mol_mass = 0;
+        double mol_mass = 0;
 
         int buf_len, bingo_res;
         const char* buf = mol_text.getText(buf_len);
@@ -295,11 +295,11 @@ Datum _match_mass_great(PG_FUNCTION_ARGS)
         bingo_handler.setFunctionName("mass great");
 
         BufferScanner scanner(mass_datum);
-        float usr_mass = scanner.readFloat();
+        double usr_mass = scanner.readFloat();
 
         BingoPgText mol_text(mol_datum);
 
-        float mol_mass = 0;
+        double mol_mass = 0;
 
         int buf_len, bingo_res;
         const char* buf = mol_text.getText(buf_len);

@@ -909,8 +909,8 @@ namespace indigo
          else if (search_type == "SIM")
          {
             MangoFastIndexFetch fetch_sim = new MangoFastIndexFetch((MangoIndexData)index_data);
-            float min = (float)ext_options[0];
-            float max = (float)ext_options[1];
+            double min = (double)ext_options[0];
+            double max = (double)ext_options[1];
 
             fetch_sim.prepareSimilarity(query.Value, options_str, min, max);
             fetch_sim.nextAfterStorageId = storage_id_next_from;
@@ -919,8 +919,8 @@ namespace indigo
          else if (search_type == "MASS")
          {
             MangoShadowFetch fetch_mass = new MangoShadowFetch((MangoIndexData)index_data);
-            float? min = (float?)ext_options[0];
-            float? max = (float?)ext_options[1];
+            double? min = (double?)ext_options[0];
+            double? max = (double?)ext_options[1];
 
             fetch_mass.prepareMass(min, max);
             fetch_mass.nextAfterStorageId = storage_id_next_from;
@@ -1082,11 +1082,11 @@ namespace indigo
       public static IEnumerable SearchSim (SqlString table, SqlString query,
                  SqlString metric, SqlString bingo_schema, SqlDouble min_bound, SqlDouble max_bound)
       {
-         float min = -0.1f, max = 1.1f;
+         double min = -0.1f, max = 1.1f;
          if (!min_bound.IsNull)
-            min = (float)min_bound.Value;
+            min = (double)min_bound.Value;
          if (!max_bound.IsNull)
-            max = (float)max_bound.Value;
+            max = (double)max_bound.Value;
 
          return _MakeSearch(query, table, metric, bingo_schema, "SIM", false, min, max);
       }
@@ -1099,11 +1099,11 @@ namespace indigo
       public static IEnumerable SearchMolecularWeight (SqlString table, SqlDouble min_bound,
          SqlDouble max_bound, SqlString options, SqlString bingo_schema)
       {
-         float? min = null, max = null;
+         double? min = null, max = null;
          if (!min_bound.IsNull)
-            min = (float)min_bound.Value;
+            min = (double)min_bound.Value;
          if (!max_bound.IsNull)
-            max = (float)max_bound.Value;
+            max = (double)max_bound.Value;
 
          return _MakeSearch(null, table, options.Value, bingo_schema, "MASS", false, min, max);
       }
@@ -1728,7 +1728,7 @@ namespace indigo
                prepareContext(conn, bingo_schema.Value, 0, 0);
             }
 
-            float mass;
+            double mass;
             int ret = BingoCore.lib.mangoMass(molecule.Value, molecule.Value.Length, type.Value, out mass);
             if (ret != 1)
                return SqlSingle.Null;
@@ -1988,7 +1988,7 @@ namespace indigo
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunction]
-      public static float ProfilingGetTime (SqlString counter_name, 
+      public static double ProfilingGetTime (SqlString counter_name,
          SqlBoolean whole_session, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())

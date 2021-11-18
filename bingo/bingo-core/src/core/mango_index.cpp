@@ -177,7 +177,7 @@ const char* MangoIndex::getFingerprint_Sim_Str() const
     return _fp_sim_str.ptr();
 }
 
-float MangoIndex::getMolecularMass() const
+double MangoIndex::getMolecularMass() const
 {
     return _molecular_mass;
 }

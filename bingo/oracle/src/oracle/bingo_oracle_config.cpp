@@ -65,7 +65,7 @@ double value_float;
 env.callOCI(OCINumberToReal(env.errhp(), value, sizeof(value_float), &value_float));
 
 BingoOracleContext& context = BingoOracleContext::get(env, context_id, false, 0);
-context.configSetFloat(env, key_name, (float)value_float);
+context.configSetFloat(env, key_name, (double)value_float);
 }
 ORABLOCK_END
 }
@@ -129,7 +129,7 @@ ORAEXT OCINumber* oraConfigGetFloat(OCIExtProcContext* ctx, int context_id, char
         if (key_name_indicator != OCI_IND_NOTNULL)
             throw BingoError("Null key is given");
 
-        float value;
+        double value;
         BingoOracleContext& context = BingoOracleContext::get(env, context_id, false, 0);
         if (!context.configGetFloat(env, key_name, value))
             throw BingoError("Key wasn't found");

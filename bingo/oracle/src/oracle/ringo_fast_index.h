@@ -36,8 +36,8 @@ public:
 
     void fetch(OracleEnv& env, int maxrows) override;
     bool end() override;
-    float calcSelectivity(OracleEnv& env, int total_count) override;
-    int getIOCost(OracleEnv& env, float selectivity) override;
+    double calcSelectivity(OracleEnv& env, int total_count) override;
+    int getIOCost(OracleEnv& env, double selectivity) override;
 
     bool getLastRowid(OraRowidText& id) override;
 

@@ -37,7 +37,7 @@ namespace indigo
          this.highlighting = highlighting;
       }
 
-      public void prepareSimilarity (string query, string options, float min, float max)
+      public void prepareSimilarity (string query, string options, double min, double max)
       {
          int res = BingoCore.lib.mangoSetupMatch("SIM", query, options);
          if (res < 0)

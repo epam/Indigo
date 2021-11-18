@@ -540,7 +540,7 @@ CEXPORT const char* bingoProfilingGetStatistics(bool for_session)
     BINGO_END("<unknown>", "<unknown>");
 }
 
-CEXPORT float bingoProfilingGetTime(const char* counter_name, byte for_session)
+CEXPORT double bingoProfilingGetTime(const char* counter_name, byte for_session)
 {
     BINGO_BEGIN
     {

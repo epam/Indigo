@@ -153,7 +153,7 @@ namespace com.epam.indigo
             setSessionID();
         }
 
-        public float checkResult(float result)
+        public double checkResult(double result)
         {
             if (result < 0)
             {
@@ -193,7 +193,7 @@ namespace com.epam.indigo
             return bytePtrToStringUtf8(result);
         }
 
-        public float* checkResult(float* result)
+        public double* checkResult(double* result)
         {
             if (result == null)
             {
@@ -257,7 +257,7 @@ namespace com.epam.indigo
             checkResult(IndigoLib.indigoSetOptionBool(name, value ? 1 : 0));
         }
 
-        public void setOption(string name, float value)
+        public void setOption(string name, double value)
         {
             setSessionID();
             checkResult(IndigoLib.indigoSetOptionFloat(name, value));
@@ -266,7 +266,7 @@ namespace com.epam.indigo
         public void setOption(string name, double value)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoSetOptionFloat(name, (float) value));
+            checkResult(IndigoLib.indigoSetOptionFloat(name, (double) value));
         }
 
         public void setOption(string name, int value)
@@ -275,7 +275,7 @@ namespace com.epam.indigo
             checkResult(IndigoLib.indigoSetOptionInt(name, value));
         }
 
-        public void setOption(string name, float valuer, float valueg, float valueb)
+        public void setOption(string name, double valuer, double valueg, double valueb)
         {
             setSessionID();
             checkResult(IndigoLib.indigoSetOptionColor(name, valuer / 255.0f, valueg / 255.0f, valueb / 255.0f));
@@ -284,7 +284,7 @@ namespace com.epam.indigo
         public void setOption(string name, double valuer, double valueg, double valueb)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoSetOptionColor(name, (float) valuer / 255.0f, (float) valueg / 255.0f, (float) valueb / 255.0f));
+            checkResult(IndigoLib.indigoSetOptionColor(name, (double) valuer / 255.0f, (double) valueg / 255.0f, (double) valueb / 255.0f));
         }
 
         public void setOption(string name, Color value)
@@ -319,10 +319,10 @@ namespace com.epam.indigo
             return res > 0;
         }
 
-        public float? getOptionFloat(string option)
+        public double? getOptionFloat(string option)
         {
             setSessionID();
-            float res;
+            double res;
             if (checkResult(IndigoLib.indigoGetOptionFloat(option, &res)) == 1)
             {
                 return res;
@@ -626,12 +626,12 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoCreateArray()));
         }
 
-        public float similarity(IndigoObject obj1, IndigoObject obj2)
+        public double similarity(IndigoObject obj1, IndigoObject obj2)
         {
             return similarity(obj1, obj2, "");
         }
 
-        public float similarity(IndigoObject obj1, IndigoObject obj2, string metrics)
+        public double similarity(IndigoObject obj1, IndigoObject obj2, string metrics)
         {
             setSessionID();
             if (metrics == null)
@@ -756,14 +756,14 @@ namespace com.epam.indigo
             return res;
         }
 
-        public static float[] toFloatArray(ICollection collection)
+        public static double[] toFloatArray(ICollection collection)
         {
             if (collection == null)
             {
-                return new float[0];
+                return new double[0];
             }
 
-            float[] res = new float[collection.Count];
+            double[] res = new double[collection.Count];
             int i = 0;
 
             foreach (object x in collection)
@@ -941,7 +941,7 @@ namespace com.epam.indigo
             return new IndigoObject(this, result, molecule);
         }
 
-        public int buildPkaModel(int level, float threshold, string filename)
+        public int buildPkaModel(int level, double threshold, string filename)
         {
             setSessionID();
             return checkResult(IndigoLib.indigoBuildPkaModel(level, threshold, filename));

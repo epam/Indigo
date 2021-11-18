@@ -58,7 +58,7 @@ namespace indigo
          where_clause = BingoCore.mangoGrossGetConditions();
       }
 
-      public void prepareMass (float? min, float? max)
+      public void prepareMass (double? min, double? max)
       {
          search_type = SearchType.MASS;
 
@@ -160,7 +160,7 @@ namespace indigo
                   {
                      FetchedData data = new FetchedData(id);
                      if (search_type == SearchType.MASS)
-                        data.value = (float)reader[1];
+                        data.value = (double)reader[1];
 
                      yield return data;
                   }
