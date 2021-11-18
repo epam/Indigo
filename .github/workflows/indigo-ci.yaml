@@ -698,6 +698,8 @@ jobs:
           cmake --build . --config Release --target all -- -j $(nproc) --output-sync
       - name: Test native libs
         run: |
+          case ${{ matrix.mingw-version }} in i686) mingw_prefix=/mingw32;; x86_64) mingw_prefix=/mingw64;; ucrt-x86_64) mingw_prefix=/ucrt64;; esac;
+          export PATH=${mingw_prefix}/bin:${PATH}
           cd build
           ctest --verbose
       - name: Prepare integration tests
@@ -714,7 +716,7 @@ jobs:
         uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'junit_report.xml'
-          check_name: "windows-mingw_python_test_report"
+          check_name: "windows-mingw-${{ matrix.mingw-version }}_python_test_report"
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
