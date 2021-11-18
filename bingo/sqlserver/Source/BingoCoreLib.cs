@@ -185,7 +185,7 @@ namespace indigo
       int mangoSimilaritySetMinMaxBounds (
          double min_bound, double max_bound);
 
-      int mangoSimilarityGetScore (out Single score);
+      int mangoSimilarityGetScore (out Double score);
 
       int mangoSetHightlightingMode (int enable);
 

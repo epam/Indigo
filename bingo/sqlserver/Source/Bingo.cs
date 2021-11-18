@@ -137,13 +137,13 @@ namespace indigo
       [SqlFunction(DataAccess = DataAccessKind.Read,
         SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunctionForReader(str_bin = "target")]
-      public static SqlSingle Sim (SqlBinary target, SqlString query, SqlString metrics, SqlString bingo_schema)
+      public static SqlDouble Sim (SqlBinary target, SqlString query, SqlString metrics, SqlString bingo_schema)
       {
-         SqlSingle score = SqlSingle.Null;
+         SqlDouble score = SqlDouble.Null;
          bingoCallback handler =
             () =>
             {
-               Single score_value;
+               Double score_value;
                BingoCore.lib.mangoSimilarityGetScore(out score_value);
                score = score_value;
             };
@@ -770,11 +770,11 @@ namespace indigo
          id = new SqlInt32(data.id);
          str = new SqlString(data.str);
       }
-      public static void FillRowIntFloat (Object obj, out SqlInt32 id, out SqlSingle value)
+      public static void FillRowIntFloat (Object obj, out SqlInt32 id, out SqlDouble value)
       {
          FetchedData data = (FetchedData)obj;
          id = new SqlInt32(data.id);
-         value = new SqlSingle(data.value);
+         value = new SqlDouble(data.value);
       }
 
       private static Dictionary<string, string> ParseOptions (ref string options)
@@ -1718,7 +1718,7 @@ namespace indigo
       [SqlFunction(DataAccess = DataAccessKind.Read,
          SystemDataAccess = SystemDataAccessKind.Read)]
       [BingoSqlFunctionForReader(str_bin = "molecule")]
-      public static SqlSingle Mass (SqlBinary molecule, SqlString type, SqlString bingo_schema)
+      public static SqlDouble Mass (SqlBinary molecule, SqlString type, SqlString bingo_schema)
       {
          using (BingoSession session = new BingoSession())
          {
@@ -1731,7 +1731,7 @@ namespace indigo
             double mass;
             int ret = BingoCore.lib.mangoMass(molecule.Value, molecule.Value.Length, type.Value, out mass);
             if (ret != 1)
-               return SqlSingle.Null;
+               return SqlDouble.Null;
             return mass;
          }
       }
