@@ -1,12 +1,12 @@
 #include "bingo_pg_fix_pre.h"
-
 extern "C"
 {
 #include "postgres.h"
 #include "fmgr.h"
 }
-
 #include "bingo_pg_fix_post.h"
+
+#include <cfloat>
 
 #include "ringo_pg_build_engine.h"
 
@@ -21,7 +21,6 @@ extern "C"
 #include "bingo_pg_index.h"
 #include "bingo_pg_text.h"
 #include "ringo_pg_search_engine.h"
-#include <double.h>
 
 using namespace indigo;
 

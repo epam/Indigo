@@ -21,6 +21,7 @@ else()
             PUBLIC bingo-core-c-static)
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${PostgreSQL_INCLUDE_DIRS}
+            PUBLIC ${PostgreSQL_INCLUDE_DIRS}/postgresql/server
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core)
 
