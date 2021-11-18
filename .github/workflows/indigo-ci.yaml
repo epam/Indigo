@@ -674,7 +674,11 @@ jobs:
         run: mvn -B --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
         working-directory: bingo/bingo-elastic/java
 
-  build_indigo_windows_mingw_x86_64:
+  build_indigo_windows_mingw:
+    strategy:
+      fail-fast: false
+      matrix:
+        mingw-version: [ i686, x86_64, ucrt-x86_64 ]
     timeout-minutes: 60
     runs-on: windows-latest
     defaults:
@@ -688,14 +692,15 @@ jobs:
           fetch-depth: 500
       - uses: msys2/setup-msys2@v2
         with:
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
+          install: mingw-w64-${{ matrix.mingw-version }}-gcc mingw-w64-${{ matrix.mingw-version }}-make mingw-w64-${{ matrix.mingw-version }}-cmake git mingw-w64-${{ matrix.mingw-version }}-python mingw-w64-${{ matrix.mingw-version }}-python-pip mingw-w64-${{ matrix.mingw-version }}-python-wheel mingw-w64-${{ matrix.mingw-version }}-python-pillow
       - name: Git fetch tags
         run: git fetch --tags -f
       - name: Build native libs
         run: |
+          case ${{ matrix.mingw-version }} in i686) mingw_prefix=/mingw32;; x86_64) mingw_prefix=/mingw64;; ucrt-x86_64) mingw_prefix=/ucrt64;; esac;
           mkdir build
           cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=${pg_version}
           cmake --build . --config Release --target all -- -j $(nproc) --output-sync
       - name: Test native libs
         run: |
