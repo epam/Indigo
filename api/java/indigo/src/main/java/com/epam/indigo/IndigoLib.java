@@ -47,9 +47,9 @@ public interface IndigoLib extends Library {
 
     int indigoSetOptionBool(String name, int value);
 
-    int indigoSetOptionFloat(String name, float value);
+    int indigoSetOptionFloat(String name, double value);
 
-    int indigoSetOptionColor(String name, float r, float g, float b);
+    int indigoSetOptionColor(String name, double r, double g, double b);
 
     int indigoSetOptionXY(String name, int x, int y);
 
@@ -204,13 +204,13 @@ public interface IndigoLib extends Library {
 
     int indigoStandardize(int item);
 
-    int indigoIonize(int item, float pH, float pH_toll);
+    int indigoIonize(int item, double pH, double pH_toll);
 
     Pointer indigoGetAcidPkaValue(int item, int atom, int level, int min_level);
 
     Pointer indigoGetBasicPkaValue(int item, int atom, int level, int min_level);
 
-    int indigoBuildPkaModel(int level, float theshold, String filename);
+    int indigoBuildPkaModel(int level, double theshold, String filename);
 
     int indigoAutomap(int reaction, String mode);
 
@@ -306,7 +306,7 @@ public interface IndigoLib extends Library {
 
     Pointer indigoXYZ(int atom);
 
-    int indigoSetXYZ(int atom, float x, float y, float z);
+    int indigoSetXYZ(int atom, double x, double y, double z);
 
     int indigoCountSuperatoms(int molecule);
 
@@ -355,7 +355,7 @@ public interface IndigoLib extends Library {
             String description,
             String data);
 
-    int indigoSetDataSGroupXY(int sgroup, float x, float y, String options);
+    int indigoSetDataSGroupXY(int sgroup, double x, double y, String options);
 
     int indigoCreateSGroup(String type, int mapping, String name);
 
@@ -390,20 +390,20 @@ public interface IndigoLib extends Library {
     int indigoSetSGroupBrackets(
             int sgroup,
             int brk_style,
-            float x1,
-            float y1,
-            float x2,
-            float y2,
-            float x3,
-            float y3,
-            float x4,
-            float y4);
+            double x1,
+            double y1,
+            double x2,
+            double y2,
+            double x3,
+            double y3,
+            double x4,
+            double y4);
 
     Pointer indigoGetSGroupCoords(int sgroup);
 
     int indigoSetSGroupData(int sgroup, String data);
 
-    int indigoSetSGroupCoords(int sgroup, float x, float y);
+    int indigoSetSGroupCoords(int sgroup, double x, double y);
 
     int indigoSetSGroupDescription(int sgroup, String description);
 
@@ -423,9 +423,9 @@ public interface IndigoLib extends Library {
 
     int indigoSetSGroupDataType(int sgroup, String type);
 
-    int indigoSetSGroupXCoord(int sgroup, float x);
+    int indigoSetSGroupXCoord(int sgroup, double x);
 
-    int indigoSetSGroupYCoord(int sgroup, float y);
+    int indigoSetSGroupYCoord(int sgroup, double y);
 
     int indigoFindSGroups(int molecule, String property, String value);
 
@@ -622,7 +622,7 @@ public interface IndigoLib extends Library {
 
     int indigoRemoveBonds(int molecule, int nbonds, int[] bonds);
 
-    float indigoAlignAtoms(int molecule, int natoms, int[] atom_ids, float[] desired_xyz);
+    double indigoAlignAtoms(int molecule, int natoms, int[] atom_ids, double[] desired_xyz);
 
     int indigoAromatize(int item);
 
@@ -686,7 +686,7 @@ public interface IndigoLib extends Library {
 
     int indigoCommonBits(int fingerprint1, int fingerprint2);
 
-    float indigoSimilarity(int item1, int item2, String metrics);
+    double indigoSimilarity(int item1, int item2, String metrics);
 
     int indigoIterateSDF(int reader);
 

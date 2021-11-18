@@ -58,7 +58,7 @@ public class BingoObject {
      *
      * @return Similarity value
      */
-    public float getCurrentSimilarityValue() {
+    public double getCurrentSimilarityValue() {
         indigo.setSessionID();
         return Bingo.checkResult(indigo, bingoLib.bingoGetCurrentSimilarityValue(id));
     }
@@ -100,7 +100,7 @@ public class BingoObject {
      *
      * @return Estimated remaining search time
      */
-    public float estimateRemainingTime() {
+    public double estimateRemainingTime() {
         FloatByReference estimated_time = new FloatByReference();
         indigo.setSessionID();
         Bingo.checkResult(indigo, bingoLib.bingoEstimateRemainingTime(id, estimated_time));

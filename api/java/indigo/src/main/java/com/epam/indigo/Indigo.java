@@ -110,7 +110,7 @@ public class Indigo {
         return result;
     }
 
-    public static float checkResultFloat(Object obj, float result) {
+    public static double checkResultFloat(Object obj, double result) {
         if (result < 0) throw new IndigoException(obj, lib.indigoGetLastError());
         return result;
     }
@@ -142,10 +142,10 @@ public class Indigo {
         return res;
     }
 
-    public static float[] toFloatArray(Collection<Float> collection) {
-        if (collection == null) return new float[0];
+    public static double[] toFloatArray(Collection<Float> collection) {
+        if (collection == null) return new double[0];
 
-        float[] res = new float[collection.size()];
+        double[] res = new double[collection.size()];
         int i = 0;
 
         for (Float x : collection) res[i++] = x;
@@ -214,7 +214,7 @@ public class Indigo {
         checkResult(this, lib.indigoSetOptionXY(option, x, y));
     }
 
-    public void setOption(String option, float r, float g, float b) {
+    public void setOption(String option, double r, double g, double b) {
         setSessionID();
         checkResult(this, lib.indigoSetOptionColor(option, r, g, b));
     }
@@ -224,14 +224,14 @@ public class Indigo {
         checkResult(this, lib.indigoSetOptionBool(option, value ? 1 : 0));
     }
 
-    public void setOption(String option, float value) {
+    public void setOption(String option, double value) {
         setSessionID();
         checkResult(this, lib.indigoSetOptionFloat(option, value));
     }
 
     public void setOption(String option, double value) {
         setSessionID();
-        checkResult(this, lib.indigoSetOptionFloat(option, (float) value));
+        checkResult(this, lib.indigoSetOptionFloat(option, (double) value));
     }
 
     public String getOption(String option) {
@@ -512,11 +512,11 @@ public class Indigo {
         checkResult(this, lib.indigoClearTautomerRules());
     }
 
-    public float similarity(IndigoObject obj1, IndigoObject obj2) {
+    public double similarity(IndigoObject obj1, IndigoObject obj2) {
         return similarity(obj1, obj2, "");
     }
 
-    public float similarity(IndigoObject obj1, IndigoObject obj2, String metrics) {
+    public double similarity(IndigoObject obj1, IndigoObject obj2, String metrics) {
         if (metrics == null) metrics = "";
         Object[] guard = new Object[] {this, obj1, obj2};
         setSessionID();
@@ -784,7 +784,7 @@ public class Indigo {
         return new IndigoObject(this, result, molecule);
     }
 
-    public int buildPkaModel(int level, float threshold, String filename) {
+    public int buildPkaModel(int level, double threshold, String filename) {
         setSessionID();
         return checkResult(this, lib.indigoBuildPkaModel(level, threshold, filename));
     }

@@ -42,13 +42,13 @@ public interface BingoLib extends Library {
 
     int bingoSearchSub(int db, int query_obj, String options);
 
-    int bingoSearchSim(int db, int query_obj, float min, float max, String options);
+    int bingoSearchSim(int db, int query_obj, double min, double max, String options);
 
-    int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max, int ext_fp, String options);
+    int bingoSearchSimWithExtFP(int db, int query_obj, double min, double max, int ext_fp, String options);
 
-    int bingoSearchSimTopN(int db, int query_obj, int limit, float minSim, String options);
+    int bingoSearchSimTopN(int db, int query_obj, int limit, double minSim, String options);
 
-    int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float minSim, int ext_fp, String options);
+    int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, double minSim, int ext_fp, String options);
 
     int bingoSearchExact(int db, int query_obj, String options);
 
@@ -60,7 +60,7 @@ public interface BingoLib extends Library {
 
     int bingoGetCurrentId(int search_obj);
 
-    float bingoGetCurrentSimilarityValue(int search_obj);
+    double bingoGetCurrentSimilarityValue(int search_obj);
 
     int bingoEstimateRemainingResultsCount(int search_obj);
 

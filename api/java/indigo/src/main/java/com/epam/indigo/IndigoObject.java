@@ -847,18 +847,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoIsPossibleFischerProjection(self, options)) == 1;
     }
 
-    public float[] xyz() {
+    public double[] xyz() {
         dispatcher.setSessionID();
         Pointer ptr = Indigo.checkResultPointer(this, lib.indigoXYZ(self));
         return ptr.getFloatArray(0, 3);
     }
 
-    public void setXYZ(float x, float y, float z) {
+    public void setXYZ(double x, double y, double z) {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoSetXYZ(self, x, y, z));
     }
 
-    public void setXYZ(float[] xyz) {
+    public void setXYZ(double[] xyz) {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoSetXYZ(self, xyz[0], xyz[1], xyz[2]));
     }
@@ -1052,7 +1052,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoGetSGroupSeqId(self));
     }
 
-    public float[] getSGroupCoords() {
+    public double[] getSGroupCoords() {
         dispatcher.setSessionID();
         Pointer ptr = Indigo.checkResultPointer(this, lib.indigoGetSGroupCoords(self));
         return ptr.getFloatArray(0, 2);
@@ -1090,7 +1090,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoSetSGroupData(self, data));
     }
 
-    public int setSGroupCoords(float x, float y) {
+    public int setSGroupCoords(double x, double y) {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoSetSGroupCoords(self, x, y));
     }
@@ -1155,12 +1155,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoSetSGroupDataType(self, data_type));
     }
 
-    public int setSGroupXCoord(float x) {
+    public int setSGroupXCoord(double x) {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoSetSGroupXCoord(self, x));
     }
 
-    public int setSGroupYCoord(float y) {
+    public int setSGroupYCoord(double y) {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoSetSGroupYCoord(self, y));
     }
@@ -1261,24 +1261,24 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
     public int setSGroupBrackets(
             int brk_style,
-            float x1,
-            float y1,
-            float x2,
-            float y2,
-            float x3,
-            float y3,
-            float x4,
-            float y4) {
+            double x1,
+            double y1,
+            double x2,
+            double y2,
+            double x3,
+            double y3,
+            double x4,
+            double y4) {
         dispatcher.setSessionID();
         return Indigo.checkResult(
                 this, lib.indigoSetSGroupBrackets(self, brk_style, x1, y1, x2, y2, x3, y3, x4, y4));
     }
 
-    public void setDataSGroupXY(float x, float y) {
+    public void setDataSGroupXY(double x, double y) {
         setDataSGroupXY(x, y, "");
     }
 
-    public void setDataSGroupXY(float x, float y, String options) {
+    public void setDataSGroupXY(double x, double y, String options) {
         dispatcher.setSessionID();
 
         if (options == null) options = "";
@@ -1351,7 +1351,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         removeBonds(Indigo.toIntArray(bonds));
     }
 
-    public float alignAtoms(int[] atom_ids, float[] desired_xyz) {
+    public double alignAtoms(int[] atom_ids, double[] desired_xyz) {
         if (atom_ids.length * 3 != desired_xyz.length)
             throw new IndigoException(
                     this, "desired_xyz[] must be exactly 3 times bigger than atom_ids[]");
@@ -1360,7 +1360,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
                 this, lib.indigoAlignAtoms(self, atom_ids.length, atom_ids, desired_xyz));
     }
 
-    public float alignAtoms(Collection<Integer> atom_ids, Collection<Float> desired_xyz) {
+    public double alignAtoms(Collection<Integer> atom_ids, Collection<Float> desired_xyz) {
         return alignAtoms(Indigo.toIntArray(atom_ids), Indigo.toFloatArray(desired_xyz));
     }
 
@@ -1776,12 +1776,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         Indigo.checkResult(this, lib.indigoStandardize(self));
     }
 
-    public void ionize(float pH, float pHToll) {
+    public void ionize(double pH, double pHToll) {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoIonize(self, pH, pHToll));
     }
 
-    public float getAcidPkaValue(IndigoObject atom, int level, int min_level) {
+    public double getAcidPkaValue(IndigoObject atom, int level, int min_level) {
         dispatcher.setSessionID();
         Pointer ptr =
                 Indigo.checkResultPointer(
@@ -1789,7 +1789,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return ptr.getFloat(0);
     }
 
-    public float getBasicPkaValue(IndigoObject atom, int level, int min_level) {
+    public double getBasicPkaValue(IndigoObject atom, int level, int min_level) {
         dispatcher.setSessionID();
         Pointer ptr =
                 Indigo.checkResultPointer(
