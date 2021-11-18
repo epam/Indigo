@@ -182,7 +182,7 @@ bool MoleculeAlleneStereo::_isAlleneCenter(BaseMolecule& mol, int idx, _Atom& at
         throw Error("zero bond length");
 
     // they should go in one line
-    // 0.04 is equivalent to 16 degress because it is hard to draw a straight line accurately
+    // 0.04 is equivalent to 16 degrees because it is hard to draw a straight line accurately
     if (fabs(Vec3f::dot(vec_left, vec_right) + 1) > 0.04)
         return false;
 
@@ -225,13 +225,13 @@ bool MoleculeAlleneStereo::_isAlleneCenter(BaseMolecule& mol, int idx, _Atom& at
     const Vertex& v_right = mol.getVertex(atom.right);
 
     // mark bonds as sensible
-    for (k = 0, j = v_left.neiBegin(); j != v_left.neiEnd(); j = v_left.neiNext(j))
+    for (j = v_left.neiBegin(); j != v_left.neiEnd(); j = v_left.neiNext(j))
     {
         int dir = mol.getBondDirection2(atom.left, v_left.neiVertex(j));
         if (dir != 0)
             sensible_bonds_out[v_left.neiEdge(j)] = 1;
     }
-    for (k = 0, j = v_right.neiBegin(); j != v_right.neiEnd(); j = v_right.neiNext(j))
+    for (j = v_right.neiBegin(); j != v_right.neiEnd(); j = v_right.neiNext(j))
     {
         int dir = mol.getBondDirection2(atom.right, v_right.neiVertex(j));
         if (dir != 0)
