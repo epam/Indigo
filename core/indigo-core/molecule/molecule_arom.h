@@ -19,6 +19,7 @@
 #ifndef __molecule_arom_h__
 #define __molecule_arom_h__
 
+#include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
 #ifdef _WIN32

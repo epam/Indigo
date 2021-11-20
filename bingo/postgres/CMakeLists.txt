@@ -1,15 +1,15 @@
 if (WIN32 OR APPLE)
     # We need PostgreSQL_TYPE_INCLUDE_DIR definition
     cmake_minimum_required(VERSION 3.17)
-else()
+else ()
     cmake_minimum_required(VERSION 3.4)
-endif()
+endif ()
 
 find_package(PostgreSQL)
 
 if (NOT PostgreSQL_FOUND)
     message(WARNING "PostgreSQL not found, Bingo-Postgres could not be built")
-else()
+else ()
     project(bingo-postgres C CXX)
 
     file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
@@ -20,8 +20,6 @@ else()
     target_link_libraries(${PROJECT_NAME}
             PUBLIC bingo-core-c-static)
     target_include_directories(${PROJECT_NAME}
-            PUBLIC ${PostgreSQL_INCLUDE_DIRS}
-            PUBLIC ${PostgreSQL_INCLUDE_DIRS}/postgresql/server
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core)
 
@@ -30,20 +28,25 @@ else()
         if (MSVC)
             target_include_directories(${PROJECT_NAME}
                     PUBLIC ${PostgreSQL_TYPE_INCLUDE_DIR}/port/win32_msvc)
-        elseif(MINGW)
+        elseif (MINGW)
             target_link_options(${PROJECT_NAME} PRIVATE -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive)
             target_compile_definitions(${PROJECT_NAME}
                     PRIVATE -DHAVE_LONG_INT_64 -D_TIMEZONE_DEFINED -DHAVE_GETTIMEOFDAY)
-        endif()
+        endif ()
         target_include_directories(${PROJECT_NAME}
+                PUBLIC ${PostgreSQL_TYPE_INCLUDE_DIR}/
                 PUBLIC ${PostgreSQL_TYPE_INCLUDE_DIR}/port/win32)
         target_link_libraries(${PROJECT_NAME}
                 PUBLIC ${PostgreSQL_LIBRARIES})
+    else ()
+        target_include_directories(${PROJECT_NAME}
+                PUBLIC ${PostgreSQL_INCLUDE_DIRS}/
+                )
     endif ()
 
     if (APPLE)
         target_link_options(${PROJECT_NAME} PRIVATE -undefined suppress -flat_namespace)
-    endif()
+    endif ()
 
     if (UNIX)
         # We need to explicitly export "Pg_magic_func", we need to remove visibility=hidden for this library
@@ -65,11 +68,11 @@ else()
         set(ARCHIVE_FORMAT zip)
         set(ARCHIVE_FLAGS cvf)
         set(ARCHIVE_FLAGS_2 --format=zip)
-    else()
+    else ()
         set(BINGO_POSTGRES_SETUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/setup/bingo-pg-install.sh)
         set(ARCHIVE_FLAGS cfvz)
         set(ARCHIVE_FORMAT tgz)
-    endif()
+    endif ()
     add_custom_target(package-bingo-postgres
             COMMAND ${CMAKE_COMMAND} -E remove_directory ${BINGO_POSTGRES_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${BINGO_POSTGRES_PACKAGE_DIR}/lib
@@ -83,4 +86,4 @@ else()
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             DEPENDS ${PROJECT_NAME}
             )
-endif()
+endif ()

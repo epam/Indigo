@@ -21,19 +21,12 @@
 
 #include <memory>
 #include <stack>
-#include <typeinfo>
 #include <unordered_map>
-#include <unordered_set>
-#include <vector>
 
 #include <safe_ptr.h>
 
 #include "base_c/defs.h"
-#include "base_cpp/array.h"
-#include "base_cpp/os_sync_wrapper.h"
-#include "base_cpp/pool.h"
-#include "base_cpp/ptr_array.h"
-#include "base_cpp/red_black.h"
+#include "base_cpp/exception.h"
 
 #ifdef _WIN32
 #pragma warning(push)

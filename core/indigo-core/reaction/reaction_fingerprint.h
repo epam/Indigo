@@ -19,6 +19,7 @@
 #ifndef __reaction_fingerprint__
 #define __reaction_fingerprint__
 
+#include "base_cpp/array.h"
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/tlscont.h"
 

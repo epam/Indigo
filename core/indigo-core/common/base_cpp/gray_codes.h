@@ -20,6 +20,7 @@
 #define __gray_codes_h__
 
 #include "base_c/defs.h"
+#include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
 namespace indigo

@@ -2,7 +2,8 @@
 
 extern "C"
 {
-#include "postgres.h"
+#include <postgres.h>
+
 #include "access/heapam.h"
 #include "access/itup.h"
 #include "catalog/namespace.h"
@@ -20,13 +21,13 @@ extern "C"
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
+#include "molecule/molecule.h"
+
 #include "bingo_core_c.h"
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_common.h"
 #include "bingo_pg_config.h"
 #include "bingo_pg_ext_bitset.h"
-#include "molecule/molecule.h"
-
 
 extern "C"
 {

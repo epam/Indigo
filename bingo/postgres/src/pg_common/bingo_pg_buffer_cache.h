@@ -1,15 +1,15 @@
 #ifndef _BINGO_PG_BUFFER_CASHE__
 #define _BINGO_PG_BUFFER_CASHE__
 
+#include "bingo_pg_fix_pre.h"
+
 extern "C"
 {
 #include "c.h"
 #include "storage/itemptr.h"
 }
 
-#ifdef qsort
-#undef qsort
-#endif
+#include "bingo_pg_fix_post.h"
 
 #include "base_cpp/exception.h"
 #include "bingo_pg_buffer.h"
