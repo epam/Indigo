@@ -140,63 +140,69 @@ CEXPORT int bingoSetContext(int id)
     BINGO_END(1, 0);
 }
 
+int BingoCore::bingoSetConfigInt(const char* name, int value)
+{
+    if (self.bingo_context == 0)
+        throw BingoError("context not set");
+    if (strcasecmp(name, "treat-x-as-pseudoatom") == 0 || strcasecmp(name, "treat_x_as_pseudoatom") == 0)
+        self.bingo_context->treat_x_as_pseudoatom = (value != 0);
+    else if (strcasecmp(name, "ignore-closing-bond-direction-mismatch") == 0 || strcasecmp(name, "ignore_closing_bond_direction_mismatch") == 0)
+        self.bingo_context->ignore_closing_bond_direction_mismatch = (value != 0);
+    else if (strcasecmp(name, "nthreads") == 0)
+        self.bingo_context->nthreads = value;
+    else if (strcasecmp(name, "timeout") == 0)
+        self.bingo_context->timeout = value;
+    else if (strcasecmp(name, "ignore-cistrans-errors") == 0 || strcasecmp(name, "ignore_cistrans_errors") == 0)
+        self.bingo_context->ignore_cistrans_errors = (value != 0);
+    else if (strcasecmp(name, "ignore-stereocenter-errors") == 0 || strcasecmp(name, "ignore_stereocenter_errors") == 0)
+        self.bingo_context->ignore_stereocenter_errors = (value != 0);
+    else if (strcasecmp(name, "stereochemistry-bidirectional-mode") == 0 || strcasecmp(name, "stereochemistry_bidirectional_mode") == 0)
+        self.bingo_context->stereochemistry_bidirectional_mode = (value != 0);
+    else if (strcasecmp(name, "stereochemistry-detect-haworth-projection") == 0 || strcasecmp(name, "stereochemistry_detect_haworth_projection") == 0)
+        self.bingo_context->stereochemistry_detect_haworth_projection = (value != 0);
+    else if (strcasecmp(name, "allow-non-unique-dearomatization") == 0 || strcasecmp(name, "allow_non_unique_dearomatization") == 0)
+        self.bingo_context->allow_non_unique_dearomatization = (value != 0);
+    else if (strcasecmp(name, "zero-unknown-aromatic-hydrogens") == 0 || strcasecmp(name, "zero_unknown_aromatic_hydrogens") == 0)
+        self.bingo_context->zero_unknown_aromatic_hydrogens = (value != 0);
+    else if (strcasecmp(name, "reject-invalid-structures") == 0 || strcasecmp(name, "reject_invalid_structures") == 0)
+        self.bingo_context->reject_invalid_structures = (value != 0);
+    else if (strcasecmp(name, "ignore-bad-valence") == 0 || strcasecmp(name, "ignore_bad_valence") == 0)
+        self.bingo_context->ignore_bad_valence = (value != 0);
+    else
+    {
+        bool set = true;
+        if (strcasecmp(name, "FP_ORD_SIZE") == 0)
+            self.bingo_context->fp_parameters.ord_qwords = value;
+        else if (strcasecmp(name, "FP_ANY_SIZE") == 0)
+            self.bingo_context->fp_parameters.any_qwords = value;
+        else if (strcasecmp(name, "FP_TAU_SIZE") == 0)
+            self.bingo_context->fp_parameters.tau_qwords = value;
+        else if (strcasecmp(name, "FP_SIM_SIZE") == 0)
+            self.bingo_context->fp_parameters.sim_qwords = value;
+        else if (strcasecmp(name, "SUB_SCREENING_MAX_BITS") == 0)
+            self.sub_screening_max_bits = value;
+        else if (strcasecmp(name, "SIM_SCREENING_PASS_MARK") == 0)
+            self.sim_screening_pass_mark = value;
+        else
+            set = false;
+
+        if (set)
+        {
+            self.bingo_context->fp_parameters.ext = true;
+            self.bingo_context->fp_parameters_ready = true;
+        }
+
+        if (!set)
+            throw BingoError("Unknown parameter name: '%s'", name);
+    }
+    return 0;
+}
+
 CEXPORT int bingoSetConfigInt(const char* name, int value)
 {
     BINGO_BEGIN
     {
-        if (self.bingo_context == 0)
-            throw BingoError("context not set");
-        if (strcasecmp(name, "treat-x-as-pseudoatom") == 0 || strcasecmp(name, "treat_x_as_pseudoatom") == 0)
-            self.bingo_context->treat_x_as_pseudoatom = (value != 0);
-        else if (strcasecmp(name, "ignore-closing-bond-direction-mismatch") == 0 || strcasecmp(name, "ignore_closing_bond_direction_mismatch") == 0)
-            self.bingo_context->ignore_closing_bond_direction_mismatch = (value != 0);
-        else if (strcasecmp(name, "nthreads") == 0)
-            self.bingo_context->nthreads = value;
-        else if (strcasecmp(name, "timeout") == 0)
-            self.bingo_context->timeout = value;
-        else if (strcasecmp(name, "ignore-cistrans-errors") == 0 || strcasecmp(name, "ignore_cistrans_errors") == 0)
-            self.bingo_context->ignore_cistrans_errors = (value != 0);
-        else if (strcasecmp(name, "ignore-stereocenter-errors") == 0 || strcasecmp(name, "ignore_stereocenter_errors") == 0)
-            self.bingo_context->ignore_stereocenter_errors = (value != 0);
-        else if (strcasecmp(name, "stereochemistry-bidirectional-mode") == 0 || strcasecmp(name, "stereochemistry_bidirectional_mode") == 0)
-            self.bingo_context->stereochemistry_bidirectional_mode = (value != 0);
-        else if (strcasecmp(name, "stereochemistry-detect-haworth-projection") == 0 || strcasecmp(name, "stereochemistry_detect_haworth_projection") == 0)
-            self.bingo_context->stereochemistry_detect_haworth_projection = (value != 0);
-        else if (strcasecmp(name, "allow-non-unique-dearomatization") == 0 || strcasecmp(name, "allow_non_unique_dearomatization") == 0)
-            self.bingo_context->allow_non_unique_dearomatization = (value != 0);
-        else if (strcasecmp(name, "zero-unknown-aromatic-hydrogens") == 0 || strcasecmp(name, "zero_unknown_aromatic_hydrogens") == 0)
-            self.bingo_context->zero_unknown_aromatic_hydrogens = (value != 0);
-        else if (strcasecmp(name, "reject-invalid-structures") == 0 || strcasecmp(name, "reject_invalid_structures") == 0)
-            self.bingo_context->reject_invalid_structures = (value != 0);
-        else if (strcasecmp(name, "ignore-bad-valence") == 0 || strcasecmp(name, "ignore_bad_valence") == 0)
-            self.bingo_context->ignore_bad_valence = (value != 0);
-        else
-        {
-            bool set = true;
-            if (strcasecmp(name, "FP_ORD_SIZE") == 0)
-                self.bingo_context->fp_parameters.ord_qwords = value;
-            else if (strcasecmp(name, "FP_ANY_SIZE") == 0)
-                self.bingo_context->fp_parameters.any_qwords = value;
-            else if (strcasecmp(name, "FP_TAU_SIZE") == 0)
-                self.bingo_context->fp_parameters.tau_qwords = value;
-            else if (strcasecmp(name, "FP_SIM_SIZE") == 0)
-                self.bingo_context->fp_parameters.sim_qwords = value;
-            else if (strcasecmp(name, "SUB_SCREENING_MAX_BITS") == 0)
-                self.sub_screening_max_bits = value;
-            else if (strcasecmp(name, "SIM_SCREENING_PASS_MARK") == 0)
-                self.sim_screening_pass_mark = value;
-            else
-                set = false;
-
-            if (set)
-            {
-                self.bingo_context->fp_parameters.ext = true;
-                self.bingo_context->fp_parameters_ready = true;
-            }
-
-            if (!set)
-                throw BingoError("Unknown parameter name: '%s'", name);
-        }
+        return self.bingoSetConfigInt(name, value);
     }
     BINGO_END(1, 0);
 }
@@ -318,25 +324,29 @@ CEXPORT int bingoClearTautomerRules()
     }
     BINGO_END(1, 0);
 }
+int BingoCore::bingoAddTautomerRule(int n, const char* beg, const char* end)
+{
+    if (self.bingo_context == 0)
+        throw BingoError("context not set");
 
+    if (n < 1 || n >= 32)
+        throw BingoError("tautomer rule index %d is out of range", n);
+
+    std::unique_ptr<TautomerRule> rule = std::make_unique<TautomerRule>();
+
+    bingoGetTauCondition(beg, rule->aromaticity1, rule->list1);
+    bingoGetTauCondition(end, rule->aromaticity2, rule->list2);
+
+    self.bingo_context->tautomer_rules.expand(n);
+    self.bingo_context->tautomer_rules.reset(n - 1);
+    self.bingo_context->tautomer_rules.set(n - 1, rule.release());
+    return 0;
+}
 CEXPORT int bingoAddTautomerRule(int n, const char* beg, const char* end)
 {
     BINGO_BEGIN
     {
-        if (self.bingo_context == 0)
-            throw BingoError("context not set");
-
-        if (n < 1 || n >= 32)
-            throw BingoError("tautomer rule index %d is out of range", n);
-
-        std::unique_ptr<TautomerRule> rule = std::make_unique<TautomerRule>();
-
-        bingoGetTauCondition(beg, rule->aromaticity1, rule->list1);
-        bingoGetTauCondition(end, rule->aromaticity2, rule->list2);
-
-        self.bingo_context->tautomer_rules.expand(n);
-        self.bingo_context->tautomer_rules.reset(n - 1);
-        self.bingo_context->tautomer_rules.set(n - 1, rule.release());
+        return bingoAddTautomerRule(n, beg, end);
     }
     BINGO_END(1, 0);
 }
@@ -359,39 +369,44 @@ CEXPORT int bingoTautomerRulesReady(int n, const char* beg, const char* end)
     BINGO_END(1, 0);
 }
 
+int BingoCore::bingoImportParseFieldList(const char* fields_str)
+{
+    QS_DEF(Array<char>, prop);
+    QS_DEF(Array<char>, column);
+    BufferScanner scanner(fields_str);
+
+    self.import_properties.free();
+    self.import_columns.free();
+    self.import_properties.create();
+    self.import_columns.create();
+
+    scanner.skipSpace();
+
+    while (!scanner.isEOF())
+    {
+        scanner.readWord(prop, " ,");
+        scanner.skipSpace();
+        scanner.readWord(column, " ,");
+        scanner.skipSpace();
+
+        self.import_properties.ref().add(prop.ptr());
+        self.import_columns.ref().add(column.ptr());
+
+        if (scanner.isEOF())
+            break;
+
+        if (scanner.readChar() != ',')
+            throw BingoError("importParseFieldList(): comma expected");
+        scanner.skipSpace();
+    }
+    return self.import_properties.ref().size();
+}
+
 CEXPORT int bingoImportParseFieldList(const char* fields_str)
 {
     BINGO_BEGIN
     {
-        QS_DEF(Array<char>, prop);
-        QS_DEF(Array<char>, column);
-        BufferScanner scanner(fields_str);
-
-        self.import_properties.free();
-        self.import_columns.free();
-        self.import_properties.create();
-        self.import_columns.create();
-
-        scanner.skipSpace();
-
-        while (!scanner.isEOF())
-        {
-            scanner.readWord(prop, " ,");
-            scanner.skipSpace();
-            scanner.readWord(column, " ,");
-            scanner.skipSpace();
-
-            self.import_properties.ref().add(prop.ptr());
-            self.import_columns.ref().add(column.ptr());
-
-            if (scanner.isEOF())
-                break;
-
-            if (scanner.readChar() != ',')
-                throw BingoError("importParseFieldList(): comma expected");
-            scanner.skipSpace();
-        }
-        return self.import_properties.ref().size();
+        return self.bingoImportParseFieldList(fields_str);
     }
     BINGO_END(0, -1);
 }
@@ -417,6 +432,27 @@ CEXPORT const char* bingoImportGetPropertyName(int idx)
     }
     BINGO_END("", "");
 }
+
+const char* BingoCore::bingoImportGetPropertyValue(int idx)
+{
+    if (self.import_properties.get() == 0)
+        throw BingoError("bingo import list has not been parsed yet");
+    const char* property_name = self.import_properties.ref().at(idx);
+    if (self.sdf_loader.get())
+    {
+        return self.sdf_loader->properties.at(property_name);
+    }
+    else if (self.rdf_loader.get())
+    {
+        return self.rdf_loader->properties.at(property_name);
+    }
+    else
+    {
+        throw BingoError("bingo import has not been initialized yet");
+    }
+    return "";
+}
+
 /*
  * Get value by parsed field list
  */
@@ -424,64 +460,71 @@ CEXPORT const char* bingoImportGetPropertyValue(int idx)
 {
     BINGO_BEGIN
     {
-        if (self.import_properties.get() == 0)
-            throw BingoError("bingo import list has not been parsed yet");
-        const char* property_name = self.import_properties.ref().at(idx);
-        if (self.sdf_loader.get())
-        {
-            return self.sdf_loader->properties.at(property_name);
-        }
-        else if (self.rdf_loader.get())
-        {
-            return self.rdf_loader->properties.at(property_name);
-        }
-        else
-        {
-            throw BingoError("bingo import has not been initialized yet");
-        }
+        return self.bingoImportGetPropertyValue(idx);
     }
     BINGO_END("", 0);
+}
+
+int BingoCore::bingoSDFImportOpen(const char* file_name)
+{
+    self.bingoSDFImportClose();
+    self.file_scanner.create(file_name);
+    self.sdf_loader.create(self.file_scanner.ref());
+    return 1;
 }
 
 CEXPORT int bingoSDFImportOpen(const char* file_name)
 {
     BINGO_BEGIN
     {
-        bingoSDFImportClose();
-        self.file_scanner.create(file_name);
-        self.sdf_loader.create(self.file_scanner.ref());
-        return 1;
+        return self.bingoSDFImportOpen(file_name);
     }
     BINGO_END(-1, -1);
+}
+
+int BingoCore::bingoSDFImportClose()
+{
+    self.sdf_loader.free();
+    self.file_scanner.free();
+    return 0;
 }
 
 CEXPORT int bingoSDFImportClose()
 {
     BINGO_BEGIN
     {
-        self.sdf_loader.free();
-        self.file_scanner.free();
+        return self.bingoSDFImportClose();
     }
     BINGO_END(0, -1);
+}
+
+int BingoCore::bingoSDFImportEOF()
+{
+    return self.sdf_loader->isEOF() ? 1 : 0;
 }
 
 CEXPORT int bingoSDFImportEOF()
 {
     BINGO_BEGIN
     {
-        return self.sdf_loader->isEOF() ? 1 : 0;
+        return self.bingoSDFImportEOF();
     }
     BINGO_END(0, -1);
+}
+
+const char* BingoCore::bingoSDFImportGetNext()
+{
+    profTimerStart(t, "sdf_loader.readNext");
+    self.sdf_loader->readNext();
+    self.sdf_loader->data.push(0);
+    return self.sdf_loader->data.ptr();
 }
 
 CEXPORT const char* bingoSDFImportGetNext()
 {
     BINGO_BEGIN
     {
-        profTimerStart(t, "sdf_loader.readNext");
-        self.sdf_loader->readNext();
-        self.sdf_loader->data.push(0);
-        return self.sdf_loader->data.ptr();
+        return self.bingoSDFImportGetNext();
     }
     BINGO_END("", 0);
 }

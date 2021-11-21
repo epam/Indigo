@@ -79,13 +79,29 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
 
     elog(DEBUG1, "bingo: index build: start create index '%s'", rel_name);
 
-    BingoPgConfig bingo_config;
+    
     /*
      * Safety check
      */
     if (RelationGetNumberOfBlocks(index) != 0)
         throw Error("cannot initialize non-empty bingo index \"%s\"", RelationGetRelationName(index));
 
+    /*
+     * Define index type
+     */
+    if (strcasecmp(func_name, "matchsub") == 0)
+    {
+        fp_engine = std::make_unique<MangoPgBuildEngine>(rel_name);
+    }
+    else if (strcasecmp(func_name, "matchrsub") == 0)
+    {
+        fp_engine = std::make_unique<RingoPgBuildEngine>(rel_name);
+    }
+    else
+    {
+        throw Error("internal error: unknown index build function %s", func_name);
+    }
+    BingoPgConfig bingo_config(fp_engine->bingoCore);
     /*
      * Set up configuration from postgres table
      */
@@ -94,22 +110,7 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
      * Update configuration from pg_class.reloptions
      */
     bingo_config.updateByIndexConfig(index);
-
-    /*
-     * Define index type
-     */
-    if (strcasecmp(func_name, "matchsub") == 0)
-    {
-        fp_engine = std::make_unique<MangoPgBuildEngine>(bingo_config, rel_name);
-    }
-    else if (strcasecmp(func_name, "matchrsub") == 0)
-    {
-        fp_engine = std::make_unique<RingoPgBuildEngine>(bingo_config, rel_name);
-    }
-    else
-    {
-        throw Error("internal error: unknown index build function %s", func_name);
-    }
+    fp_engine->setUpConfiguration(bingo_config);
 
     /*
      * If new build then create a metapage and initial section
@@ -127,20 +128,21 @@ void BingoPgBuild::_prepareUpdating()
 
     elog(DEBUG1, "bingo: index build: start update index '%s'", rel_name);
 
-    BingoPgConfig bingo_config;
-
     _bufferIndex.readMetaInfo();
-    _bufferIndex.readConfigParameters(bingo_config);
 
     /*
      * Define index type
      */
     if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_MOLECULE)
-        fp_engine = std::make_unique<MangoPgBuildEngine>(bingo_config, rel_name);
+        fp_engine = std::make_unique<MangoPgBuildEngine>(rel_name);
     else if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_REACTION)
-        fp_engine = std::make_unique<RingoPgBuildEngine>(bingo_config, rel_name);
+        fp_engine = std::make_unique<RingoPgBuildEngine>(rel_name);
     else
         throw Error("internal error: unknown index type %d", _bufferIndex.getIndexType());
+    BingoPgConfig bingo_config(fp_engine->bingoCore);
+    _bufferIndex.readConfigParameters(bingo_config);
+    bingo_config.setUpBingoConfiguration();
+
 
     /*
      * Prepare for an update

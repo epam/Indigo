@@ -13,7 +13,6 @@
 
 class BingoPgText;
 class BingoPgIndex;
-class BingoPgConfig;
 class BingoPgFpData;
 class MangoPgFpData;
 
@@ -23,7 +22,7 @@ class MangoPgFpData;
 class MangoPgBuildEngine : public BingoPgBuildEngine
 {
 public:
-    MangoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name);
+    MangoPgBuildEngine(const char* rel_name);
     ~MangoPgBuildEngine() override;
 
     bool processStructure(StructCache& struct_cache) override;

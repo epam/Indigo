@@ -10,7 +10,6 @@
 
 class BingoPgText;
 class BingoPgIndex;
-class BingoPgConfig;
 class BingoPgFpData;
 class RingoPgFpData;
 
@@ -20,7 +19,7 @@ class RingoPgFpData;
 class RingoPgBuildEngine : public BingoPgBuildEngine
 {
 public:
-    RingoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name);
+    RingoPgBuildEngine(const char* rel_name);
     ~RingoPgBuildEngine() override;
 
     bool processStructure(StructCache& struct_cache) override;

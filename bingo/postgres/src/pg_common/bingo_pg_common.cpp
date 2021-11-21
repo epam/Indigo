@@ -220,9 +220,6 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id)
     }
     BINGO_PG_HANDLE(throw Error("internal error while trying get namespace name: %s", message));
 
-    BingoPgConfig bingo_config;
-    bingo_config.readDefaultConfig(schema_name);
-
     _bingoContext = std::make_unique<BingoContext>(0);
     _mangoContext = std::make_unique<MangoContext>(*_bingoContext.get());
     _ringoContext = std::make_unique<RingoContext>(*_bingoContext.get());
@@ -231,11 +228,14 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id)
     bingoCore.mango_context = _mangoContext.get();
     bingoCore.ringo_context = _ringoContext.get();
 
+    BingoPgConfig bingo_config(bingoCore);
+    bingo_config.readDefaultConfig(schema_name);
+
     // _sessionId = bingoAllocateSessionID();
     // refresh();
 
     bingo_config.setUpBingoConfiguration();
-    bingoTautomerRulesReady(0, 0, 0);
+    bingoCore.bingoTautomerRulesReady(0, 0, 0);
 }
 
 BingoPgCommon::BingoSessionHandler::~BingoSessionHandler()

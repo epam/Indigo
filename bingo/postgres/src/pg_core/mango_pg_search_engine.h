@@ -19,7 +19,6 @@
 
 class BingoPgText;
 class BingoPgIndex;
-class BingoPgConfig;
 
 class MangoPgFpData : public BingoPgFpData
 {
@@ -83,7 +82,7 @@ public:
     {
         MAX_HASH_ELEMENTS = 5
     };
-    MangoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name);
+    MangoPgSearchEngine(const char* rel_name);
     ~MangoPgSearchEngine() override;
 
     bool matchTarget(int section_idx, int structure_idx) override;

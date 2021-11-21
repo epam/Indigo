@@ -236,7 +236,7 @@ public:
          */
         if (_parseColumns)
         {
-            int column_count = bingoImportParseFieldList(other_columns_text.getString());
+            int column_count = bingoCore.bingoImportParseFieldList(other_columns_text.getString());
             for (int col_idx = 0; col_idx < column_count; ++col_idx)
             {
                 ImportColumn& idCol = _importColumns.push();
@@ -443,18 +443,18 @@ public:
     {
         _parseColumns = true;
         setFunctionName("importSDF");
-        bingo_res = bingoSDFImportOpen(fname);
+        bingo_res = bingoCore.bingoSDFImportOpen(fname);
         CORE_HANDLE_ERROR(bingo_res, 1, "importSDF", bingoGetError());
     }
     ~BingoImportSdfHandler() override
     {
-        bingo_res = bingoSDFImportClose();
+        bingo_res = bingoCore.bingoSDFImportClose();
         CORE_HANDLE_WARNING(bingo_res, 0, "importSDF close", bingoGetError());
     }
 
     bool hasNext() override
     {
-        bingo_res = bingoSDFImportEOF();
+        bingo_res = bingoCore.bingoSDFImportEOF();
         CORE_HANDLE_ERROR(bingo_res, 0, "importSDF", bingoGetError());
         return !bingo_res;
     }
@@ -468,17 +468,17 @@ public:
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
             if (col_idx == 0)
-                data = bingoSDFImportGetNext();
+                data = bingoCore.bingoSDFImportGetNext();
             else
-                data = bingoImportGetPropertyValue(col_idx - 1);
+                data = bingoCore.bingoImportGetPropertyValue(col_idx - 1);
 
             if (data == 0)
             {
                 /*
                  * Handle incorrect format errors
                  */
-                if (strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
-                    throw BingoPgError(bingoGetError());
+                // if (strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
+                //     throw BingoPgError(bingoGetError());
                 CORE_HANDLE_WARNING(0, 1, "importSDF", bingoGetError());
             }
 

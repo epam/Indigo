@@ -71,13 +71,21 @@ namespace indigo
             int ringoIndexProcessSingleRecord();
             int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* crf_buf_len, const char** fingerprint_buf, int* fingerprint_buf_len);
             int ringoGetHash(bool for_index, dword* hash);
+            int bingoSDFImportOpen(const char* file_name);
+            int bingoSDFImportClose();
+            int bingoSDFImportEOF();
+            const char* bingoSDFImportGetNext();
+            const char* bingoImportGetPropertyValue(int idx);
+            int bingoSetConfigInt(const char* name, int value);
             int bingoSetConfigBin(const char* name, const char* value, int len);
             int bingoGetConfigBin(const char* name, const char** value, int* len);
             int bingoGetConfigInt(const char* name, int* value);
+            int bingoAddTautomerRule(int n, const char* beg, const char* end);
             int bingoSetIndexRecordData(int id, const char* data, int data_size);
             int bingoTautomerRulesReady(int n, const char* beg, const char* end);
             int bingoIndexBegin();
             int bingoIndexEnd();
+            int bingoImportParseFieldList(const char* fields_str);
             int bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
                               void (*process_error_cb)(int id, void* context), void* context);
             int getTimeout();
@@ -142,7 +150,7 @@ namespace indigo
         BingoCore& self = BingoCore::getInstance();                                                                                                            \
         try                                                                                                                                                    \
         {                                                                                                                                                      \
-            self.error.clear();
+            throw Exception("unexpected call"); self.error.clear();
 
 #define BINGO_END(success, fail)                                                                                                                               \
     }                                                                                                                                                          \

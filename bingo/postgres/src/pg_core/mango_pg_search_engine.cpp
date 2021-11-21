@@ -51,15 +51,14 @@ void MangoPgFpData::setGrossStr(const char* gross_str, const char* counter_str)
 
 IMPL_ERROR(MangoPgSearchEngine, "molecule search engine");
 
-MangoPgSearchEngine::MangoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name) : BingoPgSearchEngine(), _searchType(-1)
+MangoPgSearchEngine::MangoPgSearchEngine(const char* rel_name) : BingoPgSearchEngine(), _searchType(-1)
 {
-    _setBingoContext();
+    // _setBingoContext();
     /*
      * Set up bingo configuration
      */
-    bingo_config.setUpBingoConfiguration();
-    bingoTautomerRulesReady(0, 0, 0);
-    bingoIndexBegin();
+    bingoCore.bingoTautomerRulesReady(0, 0, 0);
+    bingoCore.bingoIndexBegin();
 
     _relName.readString(rel_name, true);
     _shadowRelName.readString(rel_name, true);
@@ -70,8 +69,8 @@ MangoPgSearchEngine::MangoPgSearchEngine(BingoPgConfig& bingo_config, const char
 
 MangoPgSearchEngine::~MangoPgSearchEngine()
 {
-    _setBingoContext();
-    bingoIndexEnd();
+    // _setBingoContext();
+    bingoCore.bingoIndexEnd();
 }
 
 bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)

@@ -15,6 +15,7 @@ extern "C"
 #include "base_cpp/tlscont.h"
 
 #include "bingo_pg_index.h"
+#include "bingo_pg_config.h"
 
 using namespace indigo;
 
@@ -33,6 +34,15 @@ BingoPgBuildEngine::BingoPgBuildEngine() : _bufferIndexPtr(0)
 BingoPgBuildEngine::~BingoPgBuildEngine()
 {
     // bingoReleaseSessionID(_bingoSession);
+}
+
+void BingoPgBuildEngine::setUpConfiguration(BingoPgConfig& bingo_config) {
+    /*
+     * Set up bingo configuration
+     */
+    bingo_config.setUpBingoConfiguration();
+    bingoCore.bingoTautomerRulesReady(0, 0, 0);
+    bingoCore.bingoIndexBegin();
 }
 
 // void BingoPgBuildEngine::_setBingoContext()

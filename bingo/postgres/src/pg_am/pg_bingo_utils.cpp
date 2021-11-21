@@ -306,7 +306,15 @@ Datum _precache_database(PG_FUNCTION_ARGS)
         /*
          * Read config and offset blocks as meta
          */
-        BingoPgConfig bingo_config;
+        auto bingoContext = std::make_unique<BingoContext>(0);
+        auto mangoContext = std::make_unique<MangoContext>(*bingoContext.get());
+        auto ringoContext = std::make_unique<RingoContext>(*bingoContext.get());
+        bingo_core::BingoCore bingoCore;
+
+        bingoCore.bingo_context = bingoContext.get();
+        bingoCore.mango_context = mangoContext.get();
+        bingoCore.ringo_context = ringoContext.get();
+        BingoPgConfig bingo_config(bingoCore);
         bingo_index.readConfigParameters(bingo_config);
         index_metapages_size += BINGO_METABLOCKS_NUM * BingoPgBufferCacheBin::BUFFER_SIZE;
 

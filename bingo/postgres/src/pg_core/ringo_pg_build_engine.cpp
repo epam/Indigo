@@ -25,14 +25,13 @@ extern "C"
 
 using namespace indigo;
 
-RingoPgBuildEngine::RingoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name) : BingoPgBuildEngine(), _searchType(-1)
+RingoPgBuildEngine::RingoPgBuildEngine(const char* rel_name) : BingoPgBuildEngine(), _searchType(-1)
 {
     // _setBingoContext();
     //   bingoSetErrorHandler(_errorHandler, 0);
     /*
      * Set up bingo configuration
      */
-    bingo_config.setUpBingoConfiguration();
     bingoCore.bingoTautomerRulesReady(0, 0, 0);
     bingoCore.bingoIndexBegin();
 

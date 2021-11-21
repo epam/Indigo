@@ -26,16 +26,9 @@ extern "C"
 
 using namespace indigo;
 
-MangoPgBuildEngine::MangoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name) : BingoPgBuildEngine(), _searchType(-1)
+MangoPgBuildEngine::MangoPgBuildEngine(const char* rel_name) : BingoPgBuildEngine(), _searchType(-1)
 {
     // _setBingoContext();
-    /*
-     * Set up bingo configuration
-     */
-    bingo_config.setUpBingoConfiguration();
-    bingoCore.bingoTautomerRulesReady(0, 0, 0);
-    bingoCore.bingoIndexBegin();
-
     _relName.readString(rel_name, true);
     _shadowRelName.readString(rel_name, true);
     _shadowRelName.appendString("_shadow", true);
