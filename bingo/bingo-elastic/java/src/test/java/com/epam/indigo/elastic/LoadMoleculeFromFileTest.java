@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class LoadMoleculeFromFileTest {
 
@@ -34,8 +35,8 @@ public class LoadMoleculeFromFileTest {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
                         .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
-                        .withTag(ElasticsearchVersion.VERSION)
-        );
+                        .withTag(ElasticsearchVersion.VERSION))
+                .withEnv("xpack.security.enabled", "false");
         elasticsearchContainer.start();
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder

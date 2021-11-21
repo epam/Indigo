@@ -21,8 +21,8 @@ abstract public class NoSQLElasticCompareAbstract {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
                         .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
-                        .withTag(ElasticsearchVersion.VERSION)
-        );
+                        .withTag(ElasticsearchVersion.VERSION))
+                .withEnv("xpack.security.enabled", "false");
         elasticsearchContainer.start();
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder

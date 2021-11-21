@@ -18,7 +18,8 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FullUsageMoleculeTest {
 
@@ -33,8 +34,8 @@ public class FullUsageMoleculeTest {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
                         .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
-                        .withTag(ElasticsearchVersion.VERSION)
-        );
+                        .withTag(ElasticsearchVersion.VERSION))
+                .withEnv("xpack.security.enabled", "false");
         elasticsearchContainer.start();
         ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepositoryBuilder<>();
         repository = builder
@@ -172,7 +173,7 @@ public class FullUsageMoleculeTest {
             Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             String fieldName = "weight";
             int cnt = 0;
-            for (IndigoRecord rec: indigoRecordList) {
+            for (IndigoRecord rec : indigoRecordList) {
                 int weight = r.nextInt(1000);
                 if (weight >= 10 && weight <= 100)
                     cnt++;
@@ -228,9 +229,9 @@ public class FullUsageMoleculeTest {
             repository.indexRecords(indigoRecordList, 1000);
             TimeUnit.SECONDS.sleep(10);
             List<IndigoRecordMolecule> records = repository.stream()
-                                .filter(new RangeQuery<>("ind_number", 1, 10))
-                                .limit(20)
-                                .collect(Collectors.toList());
+                    .filter(new RangeQuery<>("ind_number", 1, 10))
+                    .limit(20)
+                    .collect(Collectors.toList());
             assertEquals(records.size(), 10);
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
@@ -264,7 +265,7 @@ public class FullUsageMoleculeTest {
     @DisplayName("Testing TanimotoSimilarityMatch reaction")
     public void reactionTanimoto() {
         try {
-            
+
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }

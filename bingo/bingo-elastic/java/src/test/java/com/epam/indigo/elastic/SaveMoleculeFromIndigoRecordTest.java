@@ -31,8 +31,8 @@ public class SaveMoleculeFromIndigoRecordTest {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
                         .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
-                        .withTag(ElasticsearchVersion.VERSION)
-        );
+                        .withTag(ElasticsearchVersion.VERSION))
+                .withEnv("xpack.security.enabled", "false");
         elasticsearchContainer.start();
         ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepositoryBuilder<>();
         repository = builder
