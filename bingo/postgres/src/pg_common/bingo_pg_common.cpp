@@ -223,8 +223,16 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id)
     BingoPgConfig bingo_config;
     bingo_config.readDefaultConfig(schema_name);
 
-    _sessionId = bingoAllocateSessionID();
-    refresh();
+    _bingoContext = std::make_unique<BingoContext>(0);
+    _mangoContext = std::make_unique<MangoContext>(*_bingoContext.get());
+    _ringoContext = std::make_unique<RingoContext>(*_bingoContext.get());
+
+    bingoCore.bingo_context = _bingoContext.get();
+    bingoCore.mango_context = _mangoContext.get();
+    bingoCore.ringo_context = _ringoContext.get();
+
+    // _sessionId = bingoAllocateSessionID();
+    // refresh();
 
     bingo_config.setUpBingoConfiguration();
     bingoTautomerRulesReady(0, 0, 0);
@@ -232,15 +240,15 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id)
 
 BingoPgCommon::BingoSessionHandler::~BingoSessionHandler()
 {
-    bingoReleaseSessionID(_sessionId);
+    // bingoReleaseSessionID(_sessionId);
 }
 
-void BingoPgCommon::BingoSessionHandler::refresh()
-{
-    bingoSetSessionID(_sessionId);
-    bingoSetContext(0);
+// void BingoPgCommon::BingoSessionHandler::refresh()
+// {
+    // bingoSetSessionID(_sessionId);
+    // bingoSetContext(0);
     //   bingoSetErrorHandler(bingoErrorHandler, this);
-}
+// }
 
 // void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, void* self_ptr) {
 //   BingoSessionHandler* self = (BingoSessionHandler*)self_ptr;

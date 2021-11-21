@@ -11,6 +11,7 @@
 #include "bingo_postgres.h"
 #include "base_cpp/array.h"
 #include "base_c/bitarray.h"
+#include "bingo_core_c_internal.h"
 #include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -287,6 +288,7 @@ public:
     public:
         BingoSessionHandler(unsigned int func_id);
         virtual ~BingoSessionHandler();
+        bingo_core::BingoCore bingoCore;
 
 //      static void bingoErrorHandler(const char *message, void *context);
 
@@ -298,11 +300,15 @@ public:
             _functionName.readString(name, true);
         }
 
-        void refresh();
+        // void refresh();
     private:
         BingoSessionHandler(const BingoSessionHandler&); //no implicit copy
-        qword _sessionId;
+        // qword _sessionId;
         indigo::Array<char> _functionName;
+        
+        std::unique_ptr<BingoContext> _bingoContext;
+        std::unique_ptr<MangoContext> _mangoContext;
+        std::unique_ptr<RingoContext> _ringoContext;
     };
 
     DECL_ERROR;

@@ -420,7 +420,7 @@ public:
             /*
              * Return back session id and error handler
              */
-            refresh();
+            // refresh();
         }
     }
 

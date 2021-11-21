@@ -90,11 +90,12 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
     QS_DEF(Array<char>, xyz_buf);
     mol_buf.clear();
     xyz_buf.clear();
+    // _setBingoContext();
 
     if (_searchType == BingoPgCommon::MOL_SUB || _searchType == BingoPgCommon::MOL_EXACT || _searchType == BingoPgCommon::MOL_SMARTS)
     {
         _bufferIndexPtr->readCmfItem(section_idx, structure_idx, mol_buf);
-        bingo_res = mangoNeedCoords();
+        bingo_res = bingoCore.mangoNeedCoords();
         CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while getting coordinates flag", bingoGetError());
 
         if (bingo_res > 0)
@@ -103,7 +104,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
         }
 
         //      CORE_HANDLE_WARNING_TID(0, 1, "matching binary target", section_idx, structure_idx, " ");
-        bingo_res = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
+        bingo_res = bingoCore.mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
         CORE_HANDLE_ERROR_TID(bingo_res, -1, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetError());
         CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetWarning());
 

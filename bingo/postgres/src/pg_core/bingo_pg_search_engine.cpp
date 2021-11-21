@@ -59,12 +59,19 @@ void BingoPgFpData::setXyz(const char* xyz_buf, int xyz_len)
 BingoPgSearchEngine::BingoPgSearchEngine()
     : _fetchFound(false), _currentSection(-1), _currentIdx(-1), _blockBegin(0), _blockEnd(0), _bufferIndexPtr(0), _sectionBitset(BINGO_MOLS_PER_SECTION)
 {
-    _bingoSession = bingoAllocateSessionID();
+    // _bingoSession = bingoAllocateSessionID();
+    _bingoContext = std::make_unique<BingoContext>(0);
+    _mangoContext = std::make_unique<MangoContext>(*_bingoContext.get());
+    _ringoContext = std::make_unique<RingoContext>(*_bingoContext.get());
+
+    bingoCore.bingo_context = _bingoContext.get();
+    bingoCore.mango_context = _mangoContext.get();
+    bingoCore.ringo_context = _ringoContext.get();
 }
 
 BingoPgSearchEngine::~BingoPgSearchEngine()
 {
-    bingoReleaseSessionID(_bingoSession);
+    // bingoReleaseSessionID(_bingoSession);
 }
 
 void BingoPgSearchEngine::setItemPointer(PG_OBJECT result_ptr)
@@ -220,8 +227,8 @@ using namespace indigo;
 
 void BingoPgSearchEngine::_setBingoContext()
 {
-    bingoSetSessionID(_bingoSession);
-    bingoSetContext(0);
+    // bingoSetSessionID(_bingoSession);
+    // bingoSetContext(0);
 }
 
 bool BingoPgSearchEngine::_fetchForNext()

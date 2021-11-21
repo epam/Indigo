@@ -228,7 +228,7 @@ Datum getweight(PG_FUNCTION_ARGS)
         int buf_len, bingo_res;
         const char* buf = mol_text.getText(buf_len);
 
-        bingo_res = mangoMassD(buf, buf_len, mol_options.getString(), &result);
+        bingo_res = bingo_handler.bingoCore.mangoMassD(buf, buf_len, mol_options.getString(), &result);
         CORE_HANDLE_REJECT_WARNING(bingo_res < 1, "getweight", PG_RETURN_NULL());
     }
     PG_BINGO_END

@@ -24,7 +24,7 @@
 
 using namespace indigo::bingo_core;
 
-BingoCore::BingoCore()
+BingoCore::BingoCore(): self(*this)
 {
     bingo_context = 0;
     mango_context = 0;

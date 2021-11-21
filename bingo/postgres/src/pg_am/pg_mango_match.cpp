@@ -100,7 +100,7 @@ public:
             }
         }
 
-        res = mangoMatchTarget(target_data, target_size);
+        res = bingoCore.mangoMatchTarget(target_data, target_size);
 
         if (res < 0)
         {

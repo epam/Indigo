@@ -13,6 +13,7 @@
 #include "bingo_pg_ext_bitset.h"
 #include "bingo_postgres.h"
 #include "pg_bingo_context.h"
+#include "bingo_core_c_internal.h"
 
 class BingoPgText;
 class BingoPgIndex;
@@ -142,6 +143,7 @@ public:
     void setItemPointer(PG_OBJECT result_ptr);
 
     void loadDictionary(BingoPgIndex&);
+    bingo_core::BingoCore bingoCore;
     //   const char* getDictionary(int& size);
 
 private:
@@ -155,7 +157,7 @@ protected:
 
     void _getBlockParameters(indigo::Array<char>& params);
 
-    qword _bingoSession;
+    // qword _bingoSession;
 
     bool _fetchFound;
     int _currentSection;
@@ -169,6 +171,9 @@ protected:
     BingoPgExternalBitset _sectionBitset;
     std::unique_ptr<BingoPgFpData> _queryFpData;
     std::unique_ptr<BingoPgCursor> _searchCursor;
+    std::unique_ptr<BingoContext> _bingoContext;
+    std::unique_ptr<MangoContext> _mangoContext;
+    std::unique_ptr<RingoContext> _ringoContext;
 };
 
 #endif /* BINGO_PG_SEARCH_ENGINE_H */

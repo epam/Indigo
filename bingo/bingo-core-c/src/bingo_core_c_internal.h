@@ -57,7 +57,13 @@ namespace indigo
             void reset();
 
             static BingoCore& getInstance();
+            int mangoSetupMatch(const char* search_type, const char* query, const char* options);
+            int mangoMassD(const char* target_buf, int target_buf_len, const char* type, double* out);
+            int mangoMatchTarget(const char* target, int target_buf_len);
+            int mangoMatchTargetBinary(const char* target_bin, int target_bin_len, const char* target_xyz, int target_xyz_len);
+            int mangoNeedCoords();
             int getTimeout();
+            BingoCore& self;
 
             Array<char> error;
             Array<char> warning;
@@ -111,6 +117,7 @@ namespace indigo
 
             byte* test_ptr;
         };
+        
 
 #define BINGO_BEGIN                                                                                                                                            \
     {                                                                                                                                                          \
