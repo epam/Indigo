@@ -20,36 +20,43 @@ using namespace indigo;
 
 BingoPgBuildEngine::BingoPgBuildEngine() : _bufferIndexPtr(0)
 {
-    _bingoSession = bingoAllocateSessionID();
+    // _bingoSession = bingoAllocateSessionID();
+    _bingoContext = std::make_unique<BingoContext>(0);
+    _mangoContext = std::make_unique<MangoContext>(*_bingoContext.get());
+    _ringoContext = std::make_unique<RingoContext>(*_bingoContext.get());
+
+    bingoCore.bingo_context = _bingoContext.get();
+    bingoCore.mango_context = _mangoContext.get();
+    bingoCore.ringo_context = _ringoContext.get();
 }
 
 BingoPgBuildEngine::~BingoPgBuildEngine()
 {
-    bingoReleaseSessionID(_bingoSession);
+    // bingoReleaseSessionID(_bingoSession);
 }
 
-void BingoPgBuildEngine::_setBingoContext()
-{
-    bingoSetSessionID(_bingoSession);
-    bingoSetContext(0);
-}
+// void BingoPgBuildEngine::_setBingoContext()
+// {
+    // bingoSetSessionID(_bingoSession);
+    // bingoSetContext(0);
+// }
 
 void BingoPgBuildEngine::loadDictionary(BingoPgIndex& bingo_index)
 {
-    _setBingoContext();
+    // _setBingoContext();
 
     QS_DEF(Array<char>, dict);
     bingo_index.readDictionary(dict);
-    bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
+    bingoCore.bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
 }
 
 const char* BingoPgBuildEngine::getDictionary(int& size)
 {
-    _setBingoContext();
+    // _setBingoContext();
 
     const char* dict_buf;
 
-    bingoGetConfigBin("cmf-dict", &dict_buf, &size);
+    bingoCore.bingoGetConfigBin("cmf-dict", &dict_buf, &size);
 
     return dict_buf;
 }
@@ -61,9 +68,9 @@ int BingoPgBuildEngine::getNthreads()
 
     if (!nThreads.hasValue())
     {
-        _setBingoContext();
+        // _setBingoContext();
         int result;
-        bingoGetConfigInt("nthreads", &result);
+        bingoCore.bingoGetConfigInt("nthreads", &result);
         nThreads.set(result);
     }
 
@@ -87,7 +94,7 @@ int BingoPgBuildEngine::_getNextRecordCb(void* context)
     /*
      * Set target data. There is no need to handle errors
      */
-    bingoSetIndexRecordData(cache_idx, struct_ptr, struct_size);
+    engine->bingoCore.bingoSetIndexRecordData(cache_idx, struct_ptr, struct_size);
     ++cache_idx;
     return 1;
 }

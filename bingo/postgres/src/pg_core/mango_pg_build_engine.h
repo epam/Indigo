@@ -43,7 +43,7 @@ private:
     MangoPgBuildEngine(const MangoPgBuildEngine&); // no implicit copy
 
     static void _processResultCb(void* context);
-    static bool _readPreparedInfo(int* id, MangoPgFpData& data, int fp_size);
+    bool _readPreparedInfo(int* id, MangoPgFpData& data, int fp_size);
 
     //   void _handleError(int res, int success_res, const char* message, bool only_warn);
 

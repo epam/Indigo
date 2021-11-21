@@ -34,48 +34,71 @@
 
 using namespace indigo::bingo_core;
 
-CEXPORT int ringoIndexProcessSingleRecord(){BINGO_BEGIN{BufferScanner scanner(self.index_record_data.ref());
+int BingoCore::ringoIndexProcessSingleRecord() {
+    BufferScanner scanner(self.index_record_data.ref());
 
-NullOutput output;
+    NullOutput output;
 
-TRY_READ_TARGET_RXN
-{
-    try
+    TRY_READ_TARGET_RXN
     {
-        if (self.single_ringo_index.get() == NULL)
+        try
         {
-            self.single_ringo_index.create();
-            self.single_ringo_index->init(*self.bingo_context);
-            self.single_ringo_index->skip_calculate_fp = self.skip_calculate_fp;
+            if (self.single_ringo_index.get() == NULL)
+            {
+                self.single_ringo_index.create();
+                self.single_ringo_index->init(*self.bingo_context);
+                self.single_ringo_index->skip_calculate_fp = self.skip_calculate_fp;
+            }
+
+            self.ringo_index = self.single_ringo_index.get();
+            self.ringo_index->prepare(scanner, output, NULL);
         }
-
-        self.ringo_index = self.single_ringo_index.get();
-        self.ringo_index->prepare(scanner, output, NULL);
+        catch (CmfSaver::Error& e)
+        {
+            if (self.bingo_context->reject_invalid_structures)
+                throw;
+            self.warning.readString(e.message(), true);
+            return 0;
+        }
+        catch (CrfSaver::Error& e)
+        {
+            if (self.bingo_context->reject_invalid_structures)
+                throw;
+            self.warning.readString(e.message(), true);
+            return 0;
+        }
     }
-    catch (CmfSaver::Error& e)
-    {
+    CATCH_READ_TARGET_RXN({
         if (self.bingo_context->reject_invalid_structures)
             throw;
-        self.warning.readString(e.message(), true);
-        return 0;
-    }
-    catch (CrfSaver::Error& e)
-    {
-        if (self.bingo_context->reject_invalid_structures)
-            throw;
-        self.warning.readString(e.message(), true);
-        return 0;
-    }
-}
-CATCH_READ_TARGET_RXN({
-    if (self.bingo_context->reject_invalid_structures)
-        throw;
 
-    self.warning.readString(e.message(), true);
+        self.warning.readString(e.message(), true);
+        return 0;
+    });
     return 0;
-});
 }
-BINGO_END(1, -1)
+
+CEXPORT int ringoIndexProcessSingleRecord(){
+    BINGO_BEGIN {
+        return self.ringoIndexProcessSingleRecord();
+    }
+    BINGO_END(1, -1)
+}
+
+int BingoCore::ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* crf_buf_len, const char** fingerprint_buf, int* fingerprint_buf_len)
+{
+    if (id)
+        *id = self.index_record_data_id;
+
+    const Array<char>& crf = self.ringo_index->getCrf();
+
+    *crf_buf = crf.ptr();
+    *crf_buf_len = crf.size();
+
+    *fingerprint_buf = (const char*)self.ringo_index->getFingerprint();
+    *fingerprint_buf_len = self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2;
+
+    return 1;
 }
 
 CEXPORT int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* crf_buf_len, const char** fingerprint_buf, int* fingerprint_buf_len)
@@ -84,18 +107,7 @@ CEXPORT int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* c
 
     BINGO_BEGIN
     {
-        if (id)
-            *id = self.index_record_data_id;
-
-        const Array<char>& crf = self.ringo_index->getCrf();
-
-        *crf_buf = crf.ptr();
-        *crf_buf_len = crf.size();
-
-        *fingerprint_buf = (const char*)self.ringo_index->getFingerprint();
-        *fingerprint_buf_len = self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2;
-
-        return 1;
+        return self.ringoIndexReadPreparedReaction(id, crf_buf, crf_buf_len, fingerprint_buf, fingerprint_buf_len);
     }
     BINGO_END(-2, -2)
 }
@@ -419,20 +431,28 @@ return self.buffer.ptr();
 BINGO_END(0, 0)
 }
 
-CEXPORT int ringoGetHash(bool for_index, dword* hash){BINGO_BEGIN{if (for_index){* hash = self.ringo_index->getHash();
-return 1;
-}
-else
-{
-    if (self.ringo_search_type != BingoCore::_EXACT)
-        throw BingoError("Hash is valid only for exact search type");
+int BingoCore::ringoGetHash(bool for_index, dword* hash){
+    if (for_index){
+        * hash = self.ringo_index->getHash();
+        return 1;
+    }
+    else
+    {
+        if (self.ringo_search_type != BingoCore::_EXACT)
+            throw BingoError("Hash is valid only for exact search type");
 
-    RingoExact& exact = self.ringo_context->exact;
-    *hash = exact.getQueryHash();
-    return 1;
+        RingoExact& exact = self.ringo_context->exact;
+        *hash = exact.getQueryHash();
+        return 1;
+    }
+    return 0;
 }
-}
-BINGO_END(-2, -2)
+
+CEXPORT int ringoGetHash(bool for_index, dword* hash){
+    BINGO_BEGIN{
+        return self.ringoGetHash(for_index, hash);
+    }
+    BINGO_END(-2, -2)
 }
 
 CEXPORT const char* ringoFingerprint(const char* reaction, int reaction_len, const char* options, int* out_len)

@@ -46,7 +46,7 @@ private:
     RingoPgBuildEngine(const RingoPgBuildEngine&); // no implicit copy
 
     static void _processResultCb(void* context);
-    static bool _readPreparedInfo(int* id, RingoPgFpData& data, int fp_size);
+    bool _readPreparedInfo(int* id, RingoPgFpData& data, int fp_size);
 
     indigo::Array<char> _relName;
     indigo::Array<char> _shadowRelName;

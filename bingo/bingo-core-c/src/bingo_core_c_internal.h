@@ -62,6 +62,24 @@ namespace indigo
             int mangoMatchTarget(const char* target, int target_buf_len);
             int mangoMatchTargetBinary(const char* target_bin, int target_bin_len, const char* target_xyz, int target_xyz_len);
             int mangoNeedCoords();
+            int mangoIndexProcessSingleRecord();
+            int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* cmf_buf_len, const char** xyz_buf, int* xyz_buf_len, const char** gross_str,
+                                           const char** counter_elements_str, const char** fingerprint_buf, int* fingerprint_buf_len,
+                                           const char** fingerprint_sim_str, float* mass,
+                                           int* sim_fp_bits_count);
+            int mangoGetHash(bool for_index, int index, int* count, dword* hash);
+            int ringoIndexProcessSingleRecord();
+            int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* crf_buf_len, const char** fingerprint_buf, int* fingerprint_buf_len);
+            int ringoGetHash(bool for_index, dword* hash);
+            int bingoSetConfigBin(const char* name, const char* value, int len);
+            int bingoGetConfigBin(const char* name, const char** value, int* len);
+            int bingoGetConfigInt(const char* name, int* value);
+            int bingoSetIndexRecordData(int id, const char* data, int data_size);
+            int bingoTautomerRulesReady(int n, const char* beg, const char* end);
+            int bingoIndexBegin();
+            int bingoIndexEnd();
+            int bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
+                              void (*process_error_cb)(int id, void* context), void* context);
             int getTimeout();
             BingoCore& self;
 

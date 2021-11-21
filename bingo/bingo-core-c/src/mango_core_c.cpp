@@ -36,110 +36,132 @@
 
 using namespace indigo::bingo_core;
 
-CEXPORT int mangoIndexProcessSingleRecord(){BINGO_BEGIN{BufferScanner scanner(self.index_record_data.ref());
+int BingoCore::mangoIndexProcessSingleRecord(){
+    BufferScanner scanner(self.index_record_data.ref());
 
-NullOutput output;
+    NullOutput output;
 
-TRY_READ_TARGET_MOL
-{
-    try
+    TRY_READ_TARGET_MOL
     {
-        if (self.single_mango_index.get() == NULL)
+        try
         {
-            self.single_mango_index.create();
-            self.single_mango_index->init(*self.bingo_context);
-            self.single_mango_index->skip_calculate_fp = self.skip_calculate_fp;
-        }
+            if (self.single_mango_index.get() == NULL)
+            {
+                self.single_mango_index.create();
+                self.single_mango_index->init(*self.bingo_context);
+                self.single_mango_index->skip_calculate_fp = self.skip_calculate_fp;
+            }
 
-        self.mango_index = self.single_mango_index.get();
-        self.mango_index->prepare(scanner, output, NULL);
+            self.mango_index = self.single_mango_index.get();
+            self.mango_index->prepare(scanner, output, NULL);
+        }
+        catch (CmfSaver::Error& e)
+        {
+            if (self.bingo_context->reject_invalid_structures)
+                throw;
+            self.warning.readString(e.message(), true);
+            return 0;
+        }
     }
-    catch (CmfSaver::Error& e)
-    {
+    CATCH_READ_TARGET_MOL({
         if (self.bingo_context->reject_invalid_structures)
             throw;
+
         self.warning.readString(e.message(), true);
         return 0;
-    }
-}
-CATCH_READ_TARGET_MOL({
-    if (self.bingo_context->reject_invalid_structures)
-        throw;
-
-    self.warning.readString(e.message(), true);
+    });
     return 0;
-});
 }
-BINGO_END(1, -1)
+
+CEXPORT int mangoIndexProcessSingleRecord(){
+    BINGO_BEGIN {
+        return self.mangoIndexProcessSingleRecord();
+    }
+    BINGO_END(1, -1)
+}
+
+int BingoCore::mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* cmf_buf_len, const char** xyz_buf, int* xyz_buf_len, const char** gross_str,
+                                           const char** counter_elements_str, const char** fingerprint_buf, int* fingerprint_buf_len,
+                                           const char** fingerprint_sim_str, float* mass,
+                                           int* sim_fp_bits_count){
+    if (id) * id = self.index_record_data_id;
+
+    const Array<char>& cmf = self.mango_index->getCmf();
+    const Array<char>& xyz = self.mango_index->getXyz();
+
+    *cmf_buf = cmf.ptr();
+    *cmf_buf_len = cmf.size();
+
+    *xyz_buf = xyz.ptr();
+    *xyz_buf_len = xyz.size();
+
+    *fingerprint_buf = (const char*)self.mango_index->getFingerprint();
+    *fingerprint_buf_len = self.bingo_context->fp_parameters.fingerprintSize();
+
+    *fingerprint_sim_str = self.mango_index->getFingerprint_Sim_Str();
+    *mass = self.mango_index->getMolecularMass();
+    *gross_str = self.mango_index->getGrossString();
+
+    *counter_elements_str = self.mango_index->getCountedElementsString();
+
+    *sim_fp_bits_count = self.mango_index->getFpSimilarityBitsCount();
+    return 1;
 }
 
 CEXPORT int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* cmf_buf_len, const char** xyz_buf, int* xyz_buf_len, const char** gross_str,
                                            const char** counter_elements_str, const char** fingerprint_buf, int* fingerprint_buf_len,
                                            const char** fingerprint_sim_str, float* mass,
                                            int* sim_fp_bits_count){
-    BINGO_BEGIN { 
-        if (id) * id = self.index_record_data_id;
-
-        const Array<char>& cmf = self.mango_index->getCmf();
-        const Array<char>& xyz = self.mango_index->getXyz();
-
-        *cmf_buf = cmf.ptr();
-        *cmf_buf_len = cmf.size();
-
-        *xyz_buf = xyz.ptr();
-        *xyz_buf_len = xyz.size();
-
-        *fingerprint_buf = (const char*)self.mango_index->getFingerprint();
-        *fingerprint_buf_len = self.bingo_context->fp_parameters.fingerprintSize();
-
-        *fingerprint_sim_str = self.mango_index->getFingerprint_Sim_Str();
-        *mass = self.mango_index->getMolecularMass();
-        *gross_str = self.mango_index->getGrossString();
-
-        *counter_elements_str = self.mango_index->getCountedElementsString();
-
-        *sim_fp_bits_count = self.mango_index->getFpSimilarityBitsCount();
-        return 1;
+    BINGO_BEGIN {
+        return self.mangoIndexReadPreparedMolecule(id, cmf_buf, cmf_buf_len, xyz_buf, xyz_buf_len, gross_str,
+                                           counter_elements_str, fingerprint_buf, fingerprint_buf_len,
+                                           fingerprint_sim_str, mass, sim_fp_bits_count);
     }
     BINGO_END(-2, -2)
+}
+
+int BingoCore::mangoGetHash(bool for_index, int index, int* count, dword* hash)
+{
+    if (for_index)
+    {
+        // For index
+        if (index == -1)
+        {
+            *count = self.mango_index->getHash().size();
+        }
+        else
+        {
+            const MangoExact::HashElement& elem = self.mango_index->getHash()[index];
+
+            *count = elem.count;
+            *hash = elem.hash;
+        }
+        return 1;
+    }
+    else
+    {
+        if (self.mango_search_type != BingoCore::_EXACT)
+            throw BingoError("Hash is valid only for exact search type");
+
+        MangoExact& exact = self.mango_context->exact;
+        const MangoExact::Hash& hash_components = exact.getQueryHash();
+        if (index == -1)
+            *count = hash_components.size();
+        else
+        {
+            *count = hash_components[index].count;
+            *hash = hash_components[index].hash;
+        }
+        return 1;
+    }
+    return 0;
 }
 
 CEXPORT int mangoGetHash(bool for_index, int index, int* count, dword* hash)
 {
     BINGO_BEGIN
     {
-        if (for_index)
-        {
-            // For index
-            if (index == -1)
-            {
-                *count = self.mango_index->getHash().size();
-            }
-            else
-            {
-                const MangoExact::HashElement& elem = self.mango_index->getHash()[index];
-
-                *count = elem.count;
-                *hash = elem.hash;
-            }
-            return 1;
-        }
-        else
-        {
-            if (self.mango_search_type != BingoCore::_EXACT)
-                throw BingoError("Hash is valid only for exact search type");
-
-            MangoExact& exact = self.mango_context->exact;
-            const MangoExact::Hash& hash_components = exact.getQueryHash();
-            if (index == -1)
-                *count = hash_components.size();
-            else
-            {
-                *count = hash_components[index].count;
-                *hash = hash_components[index].hash;
-            }
-            return 1;
-        }
+        return self.mangoGetHash(for_index, index, count, hash);
     }
     BINGO_END(-2, -2)
 }

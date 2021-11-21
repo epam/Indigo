@@ -27,14 +27,14 @@ using namespace indigo;
 
 RingoPgBuildEngine::RingoPgBuildEngine(BingoPgConfig& bingo_config, const char* rel_name) : BingoPgBuildEngine(), _searchType(-1)
 {
-    _setBingoContext();
+    // _setBingoContext();
     //   bingoSetErrorHandler(_errorHandler, 0);
     /*
      * Set up bingo configuration
      */
     bingo_config.setUpBingoConfiguration();
-    bingoTautomerRulesReady(0, 0, 0);
-    bingoIndexBegin();
+    bingoCore.bingoTautomerRulesReady(0, 0, 0);
+    bingoCore.bingoIndexBegin();
 
     _relName.readString(rel_name, true);
     _shadowRelName.readString(rel_name, true);
@@ -51,7 +51,7 @@ RingoPgBuildEngine::~RingoPgBuildEngine()
 bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
 {
 
-    _setBingoContext();
+    // _setBingoContext();
 
     ItemPointer item_ptr = &struct_cache.ptr;
     int block_number = ItemPointerGetBlockNumber(item_ptr);
@@ -62,11 +62,11 @@ bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
     /*
      * Set target data
      */
-    bingoSetIndexRecordData(0, struct_ptr, struct_size);
+    bingoCore.bingoSetIndexRecordData(0, struct_ptr, struct_size);
     /*
      * Process target
      */
-    bingo_res = ringoIndexProcessSingleRecord();
+    bingo_res = bingoCore.ringoIndexProcessSingleRecord();
     CORE_HANDLE_ERROR_TID_NO_INDEX(bingo_res, 0, "reaction build engine: error while processing records", block_number, offset_number, bingoGetError());
     CORE_HANDLE_WARNING_TID_NO_INDEX(bingo_res, 1, "reaction build engine: error while processing record", block_number, offset_number, bingoGetWarning());
     if (bingo_res < 1)
@@ -89,7 +89,7 @@ bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
 
 void RingoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
 {
-    _setBingoContext();
+    // _setBingoContext();
     int bingo_res;
 
     _currentCache = 0;
@@ -99,9 +99,9 @@ void RingoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
     /*
      * Process target
      */
-    bingo_res = bingoIndexProcess(true, _getNextRecordCb, _processResultCb, _processErrorCb, this);
+    bingo_res = bingoCore.bingoIndexProcess(true, _getNextRecordCb, _processResultCb, _processErrorCb, this);
     CORE_HANDLE_ERROR(bingo_res, 0, "reaction build engine: error while processing records", bingoGetError());
-    _setBingoContext();
+    // _setBingoContext();
 }
 void RingoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
 {
@@ -119,9 +119,9 @@ void RingoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
 int RingoPgBuildEngine::getFpSize()
 {
     int result;
-    _setBingoContext();
+    // _setBingoContext();
 
-    bingoGetConfigInt("reaction-fp-size-bytes", &result);
+    bingoCore.bingoGetConfigInt("reaction-fp-size-bytes", &result);
 
     return result * 8;
 }
@@ -174,7 +174,7 @@ void RingoPgBuildEngine::_processResultCb(void* context)
     /*
      * Prepare info
      */
-    if (_readPreparedInfo(&cache_idx, *fp_data, engine->_fpSize))
+    if (engine->_readPreparedInfo(&cache_idx, *fp_data, engine->_fpSize))
     {
         StructCache& struct_cache = struct_caches[cache_idx];
         struct_cache.data.reset(fp_data.release());
@@ -207,7 +207,7 @@ bool RingoPgBuildEngine::_readPreparedInfo(int* id, RingoPgFpData& data, int fp_
     /*
      * Get prepared data
      */
-    bingo_res = ringoIndexReadPreparedReaction(id, &crf_buf, &crf_len, &fp_buf, &fp_len);
+    bingo_res = bingoCore.ringoIndexReadPreparedReaction(id, &crf_buf, &crf_len, &fp_buf, &fp_len);
     CORE_HANDLE_WARNING(bingo_res, 1, "reaction build engine: error while prepare record", bingoGetError());
     if (bingo_res < 1)
         return false;
@@ -216,7 +216,7 @@ bool RingoPgBuildEngine::_readPreparedInfo(int* id, RingoPgFpData& data, int fp_
      * Set hash information
      */
     dword ex_hash;
-    bingo_res = ringoGetHash(1, &ex_hash);
+    bingo_res = bingoCore.ringoGetHash(1, &ex_hash);
     CORE_HANDLE_WARNING(bingo_res, 1, "reaction build engine: error while get hash", bingoGetError());
     if (bingo_res < 1)
         return false;

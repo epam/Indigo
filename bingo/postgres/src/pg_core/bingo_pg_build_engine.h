@@ -85,12 +85,16 @@ public:
 private:
     BingoPgBuildEngine(const BingoPgBuildEngine&); // no implicit copy
 protected:
-    void _setBingoContext();
+    // void _setBingoContext();
 
     static int _getNextRecordCb(void* context);
     static void _processErrorCb(int id, void* context);
 
-    qword _bingoSession;
+    // qword _bingoSession;
+    bingo_core::BingoCore bingoCore;
+    std::unique_ptr<BingoContext> _bingoContext;
+    std::unique_ptr<MangoContext> _mangoContext;
+    std::unique_ptr<RingoContext> _ringoContext;
     BingoPgIndex* _bufferIndexPtr;
 
     indigo::ObjArray<StructCache>* _structCaches;

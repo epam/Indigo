@@ -201,89 +201,107 @@ CEXPORT int bingoSetConfigInt(const char* name, int value)
     BINGO_END(1, 0);
 }
 
+int BingoCore::bingoGetConfigInt(const char* name, int* value)
+{
+    if (self.bingo_context == 0)
+        throw BingoError("context not set");
+
+    if (strcasecmp(name, "treat-x-as-pseudoatom") == 0 || strcasecmp(name, "treat_x_as_pseudoatom") == 0)
+        *value = (int)self.bingo_context->treat_x_as_pseudoatom;
+    else if (strcasecmp(name, "ignore-closing-bond-direction-mismatch") == 0 || strcasecmp(name, "ignore_closing_bond_direction_mismatch") == 0)
+        *value = (int)self.bingo_context->ignore_closing_bond_direction_mismatch;
+    else if (strcasecmp(name, "fp-size-bytes") == 0 || strcasecmp(name, "fp_size_bytes") == 0)
+        *value = self.bingo_context->fp_parameters.fingerprintSize();
+    else if (strcasecmp(name, "reaction-fp-size-bytes") == 0 || strcasecmp(name, "reaction_fp_size_bytes") == 0)
+        *value = self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2;
+    else if (strcasecmp(name, "SUB_SCREENING_MAX_BITS") == 0)
+        *value = self.sub_screening_max_bits;
+    else if (strcasecmp(name, "SIM_SCREENING_PASS_MARK") == 0)
+        *value = self.sim_screening_pass_mark;
+    else if (strcasecmp(name, "nthreads") == 0)
+        *value = self.bingo_context->nthreads;
+    else if (strcasecmp(name, "timeout") == 0)
+        *value = self.bingo_context->timeout;
+    else if (strcasecmp(name, "ignore-cistrans-errors") == 0 || strcasecmp(name, "ignore_cistrans_errors") == 0)
+        *value = (int)self.bingo_context->ignore_cistrans_errors;
+    else if (strcasecmp(name, "ignore-stereocenter-errors") == 0 || strcasecmp(name, "ignore_stereocenter_errors") == 0)
+        *value = (int)self.bingo_context->ignore_stereocenter_errors;
+    else if (strcasecmp(name, "stereochemistry-bidirectional-mode") == 0 || strcasecmp(name, "stereochemistry_bidirectional_mode") == 0)
+        *value = (int)self.bingo_context->stereochemistry_bidirectional_mode;
+    else if (strcasecmp(name, "stereochemistry-detect-haworth-projection") == 0 || strcasecmp(name, "stereochemistry_detect_haworth_projection") == 0)
+        *value = (int)self.bingo_context->stereochemistry_detect_haworth_projection;
+    else if (strcasecmp(name, "allow-non-unique-dearomatization") == 0 || strcasecmp(name, "allow_non_unique_dearomatization") == 0)
+        *value = (int)self.bingo_context->allow_non_unique_dearomatization;
+    else if (strcasecmp(name, "zero-unknown-aromatic-hydrogens") == 0 || strcasecmp(name, "zero_unknown_aromatic_hydrogens") == 0)
+        *value = (int)self.bingo_context->zero_unknown_aromatic_hydrogens;
+    else if (strcasecmp(name, "reject-invalid-structures") == 0 || strcasecmp(name, "reject_invalid_structures") == 0)
+        *value = (int)self.bingo_context->reject_invalid_structures;
+    else if (strcasecmp(name, "ignore-bad-valence") == 0 || strcasecmp(name, "ignore_bad_valence") == 0)
+        *value = (int)self.bingo_context->ignore_bad_valence;
+    else
+        throw BingoError("unknown parameter name: %s", name);
+    return 0;
+}
+
 CEXPORT int bingoGetConfigInt(const char* name, int* value)
 {
     BINGO_BEGIN
     {
-        if (self.bingo_context == 0)
-            throw BingoError("context not set");
-
-        if (strcasecmp(name, "treat-x-as-pseudoatom") == 0 || strcasecmp(name, "treat_x_as_pseudoatom") == 0)
-            *value = (int)self.bingo_context->treat_x_as_pseudoatom;
-        else if (strcasecmp(name, "ignore-closing-bond-direction-mismatch") == 0 || strcasecmp(name, "ignore_closing_bond_direction_mismatch") == 0)
-            *value = (int)self.bingo_context->ignore_closing_bond_direction_mismatch;
-        else if (strcasecmp(name, "fp-size-bytes") == 0 || strcasecmp(name, "fp_size_bytes") == 0)
-            *value = self.bingo_context->fp_parameters.fingerprintSize();
-        else if (strcasecmp(name, "reaction-fp-size-bytes") == 0 || strcasecmp(name, "reaction_fp_size_bytes") == 0)
-            *value = self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2;
-        else if (strcasecmp(name, "SUB_SCREENING_MAX_BITS") == 0)
-            *value = self.sub_screening_max_bits;
-        else if (strcasecmp(name, "SIM_SCREENING_PASS_MARK") == 0)
-            *value = self.sim_screening_pass_mark;
-        else if (strcasecmp(name, "nthreads") == 0)
-            *value = self.bingo_context->nthreads;
-        else if (strcasecmp(name, "timeout") == 0)
-            *value = self.bingo_context->timeout;
-        else if (strcasecmp(name, "ignore-cistrans-errors") == 0 || strcasecmp(name, "ignore_cistrans_errors") == 0)
-            *value = (int)self.bingo_context->ignore_cistrans_errors;
-        else if (strcasecmp(name, "ignore-stereocenter-errors") == 0 || strcasecmp(name, "ignore_stereocenter_errors") == 0)
-            *value = (int)self.bingo_context->ignore_stereocenter_errors;
-        else if (strcasecmp(name, "stereochemistry-bidirectional-mode") == 0 || strcasecmp(name, "stereochemistry_bidirectional_mode") == 0)
-            *value = (int)self.bingo_context->stereochemistry_bidirectional_mode;
-        else if (strcasecmp(name, "stereochemistry-detect-haworth-projection") == 0 || strcasecmp(name, "stereochemistry_detect_haworth_projection") == 0)
-            *value = (int)self.bingo_context->stereochemistry_detect_haworth_projection;
-        else if (strcasecmp(name, "allow-non-unique-dearomatization") == 0 || strcasecmp(name, "allow_non_unique_dearomatization") == 0)
-            *value = (int)self.bingo_context->allow_non_unique_dearomatization;
-        else if (strcasecmp(name, "zero-unknown-aromatic-hydrogens") == 0 || strcasecmp(name, "zero_unknown_aromatic_hydrogens") == 0)
-            *value = (int)self.bingo_context->zero_unknown_aromatic_hydrogens;
-        else if (strcasecmp(name, "reject-invalid-structures") == 0 || strcasecmp(name, "reject_invalid_structures") == 0)
-            *value = (int)self.bingo_context->reject_invalid_structures;
-        else if (strcasecmp(name, "ignore-bad-valence") == 0 || strcasecmp(name, "ignore_bad_valence") == 0)
-            *value = (int)self.bingo_context->ignore_bad_valence;
-        else
-            throw BingoError("unknown parameter name: %s", name);
+        return self.bingoGetConfigInt(name, value);
     }
     BINGO_END(1, 0);
+}
+
+int BingoCore::bingoGetConfigBin(const char* name, const char** value, int* len)
+{
+    if (self.bingo_context == 0)
+        throw BingoError("context not set");
+
+    if (strcasecmp(name, "cmf-dict") == 0 || strcasecmp(name, "cmf_dict") == 0)
+    {
+        ArrayOutput output(self.buffer);
+        self.bingo_context->cmf_dict.save(output);
+        *value = self.buffer.ptr();
+        *len = self.buffer.size();
+    }
+    else
+        throw BingoError("unknown parameter name: %s", name);
+    return 0;
 }
 
 CEXPORT int bingoGetConfigBin(const char* name, const char** value, int* len)
 {
     BINGO_BEGIN
     {
-        if (self.bingo_context == 0)
-            throw BingoError("context not set");
-
-        if (strcasecmp(name, "cmf-dict") == 0 || strcasecmp(name, "cmf_dict") == 0)
-        {
-            ArrayOutput output(self.buffer);
-            self.bingo_context->cmf_dict.save(output);
-            *value = self.buffer.ptr();
-            *len = self.buffer.size();
-        }
-        else
-            throw BingoError("unknown parameter name: %s", name);
+        return self.bingoGetConfigBin(name, value, len);
     }
     BINGO_END(1, 0);
+}
+
+int BingoCore::bingoSetConfigBin(const char* name, const char* value, int len)
+{
+    if (self.bingo_context == 0)
+        throw BingoError("context not set");
+
+    if (strcasecmp(name, "cmf-dict") == 0 || strcasecmp(name, "cmf_dict") == 0)
+    {
+        BufferScanner scanner(value, len);
+        self.bingo_context->cmf_dict.load(scanner);
+    }
+    else if (strcasecmp(name, "SIMILARITY_TYPE") == 0 || strcasecmp(name, "SIMILARITY-TYPE") == 0)
+    {
+        self.bingo_context->fp_parameters.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(value);
+    }
+    else
+        throw BingoError("unknown parameter name: %s", name);
+    return 0;
 }
 
 CEXPORT int bingoSetConfigBin(const char* name, const char* value, int len)
 {
     BINGO_BEGIN
     {
-        if (self.bingo_context == 0)
-            throw BingoError("context not set");
-
-        if (strcasecmp(name, "cmf-dict") == 0 || strcasecmp(name, "cmf_dict") == 0)
-        {
-            BufferScanner scanner(value, len);
-            self.bingo_context->cmf_dict.load(scanner);
-        }
-        else if (strcasecmp(name, "SIMILARITY_TYPE") == 0 || strcasecmp(name, "SIMILARITY-TYPE") == 0)
-        {
-            self.bingo_context->fp_parameters.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(value);
-        }
-        else
-            throw BingoError("unknown parameter name: %s", name);
+        return self.bingoSetConfigBin(name, value, len);
     }
     BINGO_END(1, 0);
 }
@@ -323,14 +341,20 @@ CEXPORT int bingoAddTautomerRule(int n, const char* beg, const char* end)
     BINGO_END(1, 0);
 }
 
+int BingoCore::bingoTautomerRulesReady(int n, const char* beg, const char* end)
+{
+    if (self.bingo_context == 0)
+        throw BingoError("context not set");
+
+    self.bingo_context->tautomer_rules_ready = true;
+    return 0;
+}
+
 CEXPORT int bingoTautomerRulesReady(int n, const char* beg, const char* end)
 {
     BINGO_BEGIN
     {
-        if (self.bingo_context == 0)
-            throw BingoError("context not set");
-
-        self.bingo_context->tautomer_rules_ready = true;
+        return self.bingoTautomerRulesReady(n, beg, end);
     }
     BINGO_END(1, 0);
 }
@@ -676,27 +700,37 @@ static void _bingoIndexEnd(BingoCore& self)
     self.index_record_data.free();
 }
 
+int BingoCore::bingoIndexEnd()
+{
+    _bingoIndexEnd(self);
+    return 1;
+}
+
 CEXPORT int bingoIndexEnd()
 {
     BINGO_BEGIN
     {
-        _bingoIndexEnd(self);
-        return 1;
+        return self.bingoIndexEnd();
     }
     BINGO_END(-2, -2);
+}
+
+int BingoCore::bingoIndexBegin()
+{
+    if (!self.bingo_context->fp_parameters_ready)
+        throw BingoError("fingerprint parameters not set");
+
+    _bingoIndexEnd(self);
+
+    self.index_record_data.create();
+    return 1;
 }
 
 CEXPORT int bingoIndexBegin()
 {
     BINGO_BEGIN
     {
-        if (!self.bingo_context->fp_parameters_ready)
-            throw BingoError("fingerprint parameters not set");
-
-        _bingoIndexEnd(self);
-
-        self.index_record_data.create();
-        return 1;
+        return self.bingoIndexBegin();
     }
     BINGO_END(-2, -2);
 }
