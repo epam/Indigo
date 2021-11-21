@@ -225,9 +225,9 @@ void MangoPgBuildEngine::finishShadowProcessing()
     const char* shadow_rel_name = _shadowRelName.ptr();
     const char* shadow_hash_rel_name = _shadowHashRelName.ptr();
 
-    BingoPgCommon::executeQuery("CREATE INDEX %s_mass_idx ON %s using hash(mass)", shadow_rel_name, shadow_rel_name);
+    BingoPgCommon::executeQuery("CREATE INDEX %s_mass_idx ON %s (mass)", shadow_rel_name, shadow_rel_name);
     BingoPgCommon::executeQuery("CREATE INDEX %s_cmf_idx ON %s(b_id)", shadow_rel_name, shadow_rel_name);
-    BingoPgCommon::executeQuery("CREATE INDEX %s_hash_idx ON %s using hash(ex_hash)", shadow_hash_rel_name, shadow_hash_rel_name);
+    BingoPgCommon::executeQuery("CREATE INDEX %s_hash_idx ON %s (ex_hash)", shadow_hash_rel_name, shadow_hash_rel_name);
 }
 
 void MangoPgBuildEngine::_processResultCb(void* context)

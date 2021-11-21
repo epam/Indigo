@@ -162,7 +162,7 @@ void RingoPgBuildEngine::finishShadowProcessing()
      */
     const char* shadow_rel_name = _shadowRelName.ptr();
 
-    BingoPgCommon::executeQuery("CREATE INDEX %s_hash_idx ON %s using hash(ex_hash)", shadow_rel_name, shadow_rel_name);
+    BingoPgCommon::executeQuery("CREATE INDEX %s_hash_idx ON %s (ex_hash)", shadow_rel_name, shadow_rel_name);
 }
 
 void RingoPgBuildEngine::_processResultCb(void* context)
