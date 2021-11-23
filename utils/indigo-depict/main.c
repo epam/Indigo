@@ -386,7 +386,6 @@ int parseParams(Params* p, int argc, char* argv[])
     indigoSetOptionBool("treat-x-as-pseudoatom", 1);
     indigoSetOptionBool("render-coloring", 1);
     indigoSetOptionBool("render-highlight-color-enabled", 1);
-    indigoSetOption("molfile-saving-mode", "3000");
 
     for (; i < argc; i++)
     {
@@ -902,7 +901,6 @@ int main(int argc, char* argv[])
         }
         else
         {
-            indigoLayout(obj);
             _setComment(obj, &p);
             renderToFile(obj, p.outfile);
         }
