@@ -24,6 +24,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <functional>
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"

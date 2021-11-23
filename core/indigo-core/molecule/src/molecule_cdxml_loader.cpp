@@ -22,8 +22,6 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
 #include "tinyxml.h"
-#include <unordered_map>
-#include <unordered_set>
 
 using namespace indigo;
 
