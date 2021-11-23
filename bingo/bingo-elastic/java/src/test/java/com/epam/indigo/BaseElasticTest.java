@@ -24,9 +24,10 @@ public class BaseElasticTest {
             indigo = new Indigo();
             elasticsearchContainer = new ElasticsearchContainer(
                     DockerImageName
-                            .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
+                            .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
                             .withTag(ElasticsearchVersion.VERSION)
-            ).withEnv("indices.query.bool.max_clause_count", "4096");
+            ).withEnv("indices.query.bool.max_clause_count", "4096").withEnv("xpack.security.enabled", "false");
+
             elasticsearchContainer.start();
         }
         String className = recordClassRepository.getName();

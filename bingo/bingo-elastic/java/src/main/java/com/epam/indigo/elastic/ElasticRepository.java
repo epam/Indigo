@@ -8,6 +8,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -307,6 +308,9 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 }
             } catch (IOException e) {
                 throw new BingoElasticException("Elasticsearch isn't started at " + repository.hostName + ":" + repository.port);
+            } catch (ElasticsearchException e) {
+                throw  new BingoElasticException("Elasticsearch isn't started at " + repository.hostName + ":" + repository.port
+                + " " + e.getDetailedMessage());
             }
 
         }

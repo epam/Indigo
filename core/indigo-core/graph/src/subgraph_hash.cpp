@@ -51,8 +51,8 @@ dword SubgraphHash::getHash()
     QS_DEF(Array<int>, edges);
     int i;
 
-    vertices.clear();
-    edges.clear();
+    vertices.reserve(_g.vertexCount());
+    edges.reserve(_g.edgeCount());
 
     for (i = _g.vertexBegin(); i != _g.vertexEnd(); i = _g.vertexNext(i))
         vertices.push(i);

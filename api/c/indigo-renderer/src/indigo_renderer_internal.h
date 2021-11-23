@@ -34,6 +34,8 @@ public:
     void init() override;
 private:
     void setOptionsHandlers();
+
+    bool options_set = false;
 };
 
 class IndigoHDCOutput : public IndigoObject

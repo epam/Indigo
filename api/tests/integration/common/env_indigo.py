@@ -134,38 +134,20 @@ def getIndigoExceptionText(e):
         return value.replace("\\'", "'")
 
 
-absPathDict = {}
-relPathDict = {}
 inspectStackLock = threading.RLock()
 
-
-class Memoize:
-    def __init__(self, f):
-        self.f = f
-        self.memo = {}
-
-    def __call__(self, *args):
-        if not args in self.memo:
-            self.memo[args] = self.f(*args)
-        return self.memo[args]
-
-
-# We use memoization because inspect works very slow on Jython
-# @Memoize
-# def joinPath(*args):
-#     inspectStackLock.acquire()
-#     frm = inspect.stack()[2][1]
-#     inspectStackLock.release()
-#     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(frm)), *args))).replace('\\',
-#                                                                                                                  '/')
 
 def dataPath(args):
     return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(__file__), '..', '..', '..', '..', '..',
                                                          'data', args)))
 
+
 def joinPathPy(args, file_py):
-    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(file_py)), args))).replace('\\',
-                                                                                                                 '/')
+    return os.path.normpath(os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(file_py)), args))).replace(
+        '\\',
+        '/')
+
+
 def relativePath(args):
     inspectStackLock.acquire()
     frm = inspect.stack()[1][1]
@@ -237,7 +219,7 @@ def getRefFilepath(filename):
         return os.path.normpath(os.path.abspath(os.path.join(ref_path, filename)))
 
     raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (
-    filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
+        filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
 
 
 def getRefFilepath2(filename):
@@ -255,47 +237,4 @@ def getRefFilepath2(filename):
         return os.path.normpath(os.path.abspath(os.path.join(ref_path, sys_name, filename)))
 
     raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (
-    filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
-
-
-def subprocess_communicate(name, arguments, wd, env):
-    if sys.platform == 'cli':
-        p = System.Diagnostics.Process()
-        p.StartInfo.UseShellExecute = False
-        p.StartInfo.RedirectStandardError = True
-        p.StartInfo.RedirectStandardOutput = True
-        p.StartInfo.FileName = name
-        p.StartInfo.Arguments = ' '.join(arguments)
-        p.StartInfo.WorkingDirectory = wd
-        for key, value in env.items():
-            p.StartInfo.EnvironmentVariables[str(key)] = str(value)
-        p.Start()
-        stdout = p.StandardOutput.ReadToEnd()
-        stderr = p.StandardError.ReadToEnd()
-        p.WaitForExit()
-    else:
-        p = subprocess.Popen(
-            [name, ] + arguments,
-            cwd=wd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=dict(os.environ).update(env))
-        stdout, stderr = p.communicate()
-    return stdout, stderr
-
-
-def open_file_utf8(filename):
-    import codecs
-    if isJython():
-        return open(filename, 'wt')
-    elif isIronPython():
-        # TODO: FIXME (maybe on C# site?)
-        return codecs.open(filename, 'wb', encoding='utf-8')  # FAILED: wrong symbols
-        # return open(filename, 'wt') # ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\uFFFD' in position 814: ordinal not in range(128)
-        # return open(filename, 'wb') # ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\uFFFD' in position 724: ordinal not in range(128)
-        # return codecs.open(filename, 'wb') #  # ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\uFFFD' in position 724: ordinal not in range(128)
-    else:
-        if sys.version_info.major < 3:
-            return open(filename, 'wt')
-        else:
-            return codecs.open(filename, 'wb', encoding='utf-8')
+        filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))

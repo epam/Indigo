@@ -27,7 +27,7 @@
 namespace indigo
 {
 
-    class GZipOutput : public Output
+    class GZipOutput : public Output, OutputTell
     {
     public:
         enum
@@ -39,8 +39,7 @@ namespace indigo
         ~GZipOutput() override;
 
         void write(const void* data, int size) override;
-        void seek(long long offset, int from) override;
-        long long tell() override;
+        long long tell() const noexcept override;
         void flush() override;
 
         DECL_ERROR;

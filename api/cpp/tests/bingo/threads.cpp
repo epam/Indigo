@@ -20,7 +20,6 @@
 
 #include <array>
 #include <random>
-#include <sstream>
 #include <thread>
 
 #include <BingoNoSQL.h>
@@ -48,13 +47,7 @@ namespace
     {
         for (const auto& m : bingo.session->iterateSDFile(dataPath(path)))
         {
-            try
-            {
-                bingo.insertRecord(*m);
-            }
-            catch (const IndigoException& e)
-            {
-            }
+            bingo.insertRecord(*m);
         }
     }
 
@@ -115,11 +108,12 @@ TEST(BingoThreads, InsertSingleThread)
     auto session = IndigoSession::create();
     session->setOption("ignore-stereochemistry-errors", true);
     auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
-    for (auto i = 0; i < 16; i++)
+    constexpr int ITERATIONS = 16;
+    for (auto i = 0; i < ITERATIONS; i++)
     {
         testInsert(bingo, "molecules/basic/Compound_0000001_0000250.sdf.gz");
     }
-    checkCount(bingo, 241 * 16);
+    checkCount(bingo, 241 * ITERATIONS);
 }
 
 TEST(BingoThreads, DISABLED_InsertSingleThreadPharmapendium)
@@ -194,6 +188,38 @@ TEST(BingoThreads, SearchMultipleThreads)
     for (auto i = 0; i < 16; i++)
     {
         threads.emplace_back(testSearchSub, std::cref(bingo), std::cref(q));
+    }
+    for (auto& thread : threads)
+    {
+        thread.join();
+    }
+}
+
+TEST(BingoThreads, DISABLED_Insert_Pubchem_1M)
+{
+    auto session = IndigoSession::create();
+    session->setOption("ignore-stereochemistry-errors", true);
+    auto bingo = BingoMolecule::createDatabaseFile(session, "Pubchem_1M.db");
+    bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000000001_000500000.sdf.gz")));
+    bingo.insertIterator(session->iterateSDFile(dataPath("molecules/basic/Compound_000500001_001000000.sdf.gz")));
+}
+
+TEST(BingoThreads, DISABLED_SearchSubSingleThread_Pubchem_1M)
+{
+    auto session = IndigoSession::create();
+    auto bingo = BingoMolecule::loadDatabaseFile(session, "Pubchem_1M.db");
+    checkCount(bingo, 2531, "CN1C=NC2=C1C(=O)N(C(=O)N2C)C");
+}
+
+TEST(BingoThreads, DISABLED_SearchSubMultipleThreads_Pubchem_1M)
+{
+    auto session = IndigoSession::create();
+    auto bingo = BingoMolecule::loadDatabaseFile(session, "Pubchem_1M.db");
+    std::vector<std::thread> threads;
+    threads.reserve(1);
+    for (auto i = 0; i < 16; i++)
+    {
+        threads.emplace_back(checkCount, std::cref(bingo), 2531, "CN1C=NC2=C1C(=O)N(C(=O)N2C)C");
     }
     for (auto& thread : threads)
     {

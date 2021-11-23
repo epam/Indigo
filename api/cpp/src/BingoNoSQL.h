@@ -30,7 +30,7 @@ namespace indigo_cpp
         void close();
 
         int insertRecord(const target_t& entity);
-
+        int insertIterator(const IndigoSDFileIterator& iterator);
         void deleteRecord(int recordId);
 
         BingoResultIterator<target_t> searchSub(const query_t& query, const std::string& options = "") const;

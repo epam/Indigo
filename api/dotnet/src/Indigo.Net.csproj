@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-		<Version>1.5.0</Version>
+		<Version>1.5.1</Version>
 		<Authors>EPAM Systems Life Science Department</Authors>
 		<Company>EPAM Systems</Company>
 		<Description>Universal cheminformatics toolkit</Description>
@@ -27,9 +27,19 @@
 			<PackagePath>runtimes/linux-x64/native/libindigo.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="runtimes/linux-arm64/native/libindigo.so">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/linux-arm64/native/libindigo.so</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="runtimes/osx-x64/native/libindigo.dylib">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/osx-x64/native/libindigo.dylib</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/osx-arm64/native/libindigo.dylib">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/osx-arm64/native/libindigo.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="runtimes/win-x64/native/indigo.dll">
@@ -37,9 +47,29 @@
 			<PackagePath>runtimes/win-x64/native/indigo.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="runtimes/win-arm64/native/indigo.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-arm64/native/indigo.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/win-x86/native/indigo.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-x86/native/indigo.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="runtimes/win-x64/native/msvcp140.dll">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/win-x64/native/msvcp140.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/win-arm64/native/msvcp140.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-arm64/native/msvcp140.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/win-x86/native/msvcp140.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-x86/native/msvcp140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="runtimes/win-x64/native/vcruntime140.dll">
@@ -47,14 +77,40 @@
 			<PackagePath>runtimes/win-x64/native/vcruntime140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="runtimes/win-arm64/native/vcruntime140.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-arm64/native/vcruntime140.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/win-x86/native/vcruntime140.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-x86/native/vcruntime140.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="runtimes/win-x64/native/vcruntime140_1.dll">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/win-x64/native/vcruntime140_1.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="runtimes/win-arm64/native/vcruntime140_1.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-arm64/native/vcruntime140_1.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/win-x86/native/vcruntime140_1.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-x86/native/vcruntime140_1.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<!-- InChI -->
 		<Content Include="runtimes/linux-x64/native/libindigo-inchi.so">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/linux-x64/native/libindigo-inchi.so</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/linux-arm64/native/libindigo-inchi.so">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/linux-arm64/native/libindigo-inchi.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="runtimes/osx-x64/native/libindigo-inchi.dylib">
@@ -62,14 +118,35 @@
 			<PackagePath>runtimes/osx-x64/native/libindigo-inchi.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="runtimes/osx-arm64/native/libindigo-inchi.dylib">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/osx-arm64/native/libindigo-inchi.dylib</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="runtimes/win-x64/native/indigo-inchi.dll">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/win-x64/native/indigo-inchi.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="runtimes/win-arm64/native/indigo-inchi.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-arm64/native/indigo-inchi.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/win-x86/native/indigo-inchi.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-x86/native/indigo-inchi.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<!-- Renderer -->
 		<Content Include="runtimes/linux-x64/native/libindigo-renderer.so">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/linux-x64/native/libindigo-renderer.so</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/linux-arm64/native/libindigo-renderer.so">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/linux-arm64/native/libindigo-renderer.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="runtimes/osx-x64/native/libindigo-renderer.dylib">
@@ -77,14 +154,35 @@
 			<PackagePath>runtimes/osx-x64/native/libindigo-renderer.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="runtimes/osx-arm64/native/libindigo-renderer.dylib">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/osx-arm64/native/libindigo-renderer.dylib</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="runtimes/win-x64/native/indigo-renderer.dll">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/win-x64/native/indigo-renderer.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="runtimes/win-arm64/native/indigo-renderer.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-arm64/native/indigo-renderer.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/win-x86/native/indigo-renderer.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-x86/native/indigo-renderer.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<!-- Bingo -->
 		<Content Include="runtimes/linux-x64/native/libbingo-nosql.so">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/linux-x64/native/libbingo-nosql.so</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/linux-arm64/native/libbingo-nosql.so">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/linux-arm64/native/libbingo-nosql.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="runtimes/osx-x64/native/libbingo-nosql.dylib">
@@ -92,9 +190,24 @@
 			<PackagePath>runtimes/osx-x64/native/libbingo-nosql.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="runtimes/osx-arm64/native/libbingo-nosql.dylib">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/osx-arm64/native/libbingo-nosql.dylib</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="runtimes/win-x64/native/bingo-nosql.dll">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/win-x64/native/bingo-nosql.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/win-arm64/native/bingo-nosql.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-arm64/native/bingo-nosql.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="runtimes/win-x86/native/bingo-nosql.dll">
+			<Pack>true</Pack>
+			<PackagePath>runtimes/win-x86/native/bingo-nosql.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>

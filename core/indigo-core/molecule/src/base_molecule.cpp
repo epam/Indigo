@@ -21,17 +21,17 @@
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
+#include "graph/dfs_walk.h"
 #include "molecule/elements.h"
+#include "molecule/inchi_wrapper.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
 #include "molecule/molecule_substructure_matcher.h"
+#include "molecule/molecule_tautomer_enumerator.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
-#include "molecule/inchi_wrapper.h"
-#include "molecule/molecule_tautomer_enumerator.h"
 #include "molecule/smiles_saver.h"
-#include "graph/dfs_walk.h"
 
 using namespace indigo;
 
@@ -2920,14 +2920,19 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         }
     }
 
-    for (int i = 0; i < sgs.size(); i++)
+    for (const auto sg_index : sgs)
     {
-        SGroup& lvg = fragment.sgroups.getSGroup(sgs[i]);
-        for (int j = 0; j < lvgroups.size(); j++)
+        const SGroup& lvg = fragment.sgroups.getSGroup(sg_index);
+        for (const auto lvgroup_index : lvgroups)
         {
-            if (lvg.atoms.find(lvgroups[j]) > -1)
-                //              (lvg.atoms.size() == 1 && fragment.getAtomNumber(lvg.atoms[0]) == ELEM_H) )
-                fragment.removeSGroupWithBasis(sgs[i]);
+            if (lvg.atoms.find(lvgroup_index) > -1)
+            {
+                fragment.removeSGroupWithBasis(sg_index);
+                if (!fragment.sgroups.hasSGroup(sg_index))
+                {
+                    break;
+                }
+            }
         }
     }
 
@@ -3558,9 +3563,9 @@ void BaseMolecule::unhighlightAll()
 
 void BaseMolecule::unselectAll()
 {
-	_sl_atoms.clear();
-	_sl_bonds.clear();
-	updateEditRevision();
+    _sl_atoms.clear();
+    _sl_bonds.clear();
+    updateEditRevision();
 }
 
 void BaseMolecule::highlightAtom(int idx)
@@ -3572,11 +3577,10 @@ void BaseMolecule::highlightAtom(int idx)
 
 void BaseMolecule::selectAtom(int idx)
 {
-	_sl_atoms.expandFill(idx + 1, 0);
-	_sl_atoms[idx] = 1;
-	updateEditRevision();
+    _sl_atoms.expandFill(idx + 1, 0);
+    _sl_atoms[idx] = 1;
+    updateEditRevision();
 }
-
 
 void BaseMolecule::highlightBond(int idx)
 {
@@ -3587,9 +3591,9 @@ void BaseMolecule::highlightBond(int idx)
 
 void BaseMolecule::selectBond(int idx)
 {
-	_sl_bonds.expandFill(idx + 1, 0);
-	_sl_bonds[idx] = 1;
-	updateEditRevision();
+    _sl_bonds.expandFill(idx + 1, 0);
+    _sl_bonds[idx] = 1;
+    updateEditRevision();
 }
 
 void BaseMolecule::highlightAtoms(const Filter& filter)
@@ -3604,12 +3608,12 @@ void BaseMolecule::highlightAtoms(const Filter& filter)
 
 void BaseMolecule::selectAtoms(const Filter& filter)
 {
-	int i;
+    int i;
 
-	for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-		if (filter.valid(i))
-			selectAtom(i);
-	updateEditRevision();
+    for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+        if (filter.valid(i))
+            selectAtom(i);
+    updateEditRevision();
 }
 
 void BaseMolecule::highlightBonds(const Filter& filter)
@@ -3624,12 +3628,12 @@ void BaseMolecule::highlightBonds(const Filter& filter)
 
 void BaseMolecule::selectBonds(const Filter& filter)
 {
-	int i;
+    int i;
 
-	for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
-		if (filter.valid(i))
-			selectBond(i);
-	updateEditRevision();
+    for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
+        if (filter.valid(i))
+            selectBond(i);
+    updateEditRevision();
 }
 
 void BaseMolecule::unhighlightAtom(int idx)
@@ -3643,13 +3647,12 @@ void BaseMolecule::unhighlightAtom(int idx)
 
 void BaseMolecule::unselectAtom(int idx)
 {
-	if (_sl_atoms.size() > idx)
-	{
-		_sl_atoms[idx] = 0;
-		updateEditRevision();
-	}
+    if (_sl_atoms.size() > idx)
+    {
+        _sl_atoms[idx] = 0;
+        updateEditRevision();
+    }
 }
-
 
 void BaseMolecule::unhighlightBond(int idx)
 {
@@ -3662,11 +3665,11 @@ void BaseMolecule::unhighlightBond(int idx)
 
 void BaseMolecule::unselectBond(int idx)
 {
-	if (_sl_bonds.size() > idx)
-	{
-		_sl_bonds[idx] = 0;
-		updateEditRevision();
-	}
+    if (_sl_bonds.size() > idx)
+    {
+        _sl_bonds[idx] = 0;
+        updateEditRevision();
+    }
 }
 
 int BaseMolecule::countHighlightedAtoms()
@@ -3685,43 +3688,42 @@ int BaseMolecule::countHighlightedAtoms()
 
 int BaseMolecule::countSelectedAtoms()
 {
-	int i, res = 0;
+    int i, res = 0;
 
-	for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-	{
-		if (i >= _sl_atoms.size())
-			break;
-		res += _sl_atoms[i];
-	}
+    for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+    {
+        if (i >= _sl_atoms.size())
+            break;
+        res += _sl_atoms[i];
+    }
 
-	return res;
+    return res;
 }
 
-void BaseMolecule::getAtomSelection( std::set<int>& selection )
+void BaseMolecule::getAtomSelection(std::set<int>& selection)
 {
     selection.clear();
-	for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-	{
-		if (i >= _sl_atoms.size())
-			break;
-        if( _sl_atoms[i] )
-        selection.insert( i );
-	}
+    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+    {
+        if (i >= _sl_atoms.size())
+            break;
+        if (_sl_atoms[i])
+            selection.insert(i);
+    }
 }
 
 int BaseMolecule::countHighlightedBonds()
 {
-	int i, res = 0;
+    int i, res = 0;
 
-	for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
-	{
-		if (i >= _hl_bonds.size())
-			break;
-		res += _hl_bonds[i];
-	}
-	return res;
+    for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
+    {
+        if (i >= _hl_bonds.size())
+            break;
+        res += _hl_bonds[i];
+    }
+    return res;
 }
-
 
 int BaseMolecule::countSelectedBonds()
 {
@@ -3744,9 +3746,8 @@ bool BaseMolecule::hasHighlighting()
 
 bool BaseMolecule::hasSelection()
 {
-	return countSelectedAtoms() > 0 || countSelectedBonds() > 0;
+    return countSelectedAtoms() > 0 || countSelectedBonds() > 0;
 }
-
 
 bool BaseMolecule::isAtomHighlighted(int idx)
 {
@@ -3755,7 +3756,7 @@ bool BaseMolecule::isAtomHighlighted(int idx)
 
 bool BaseMolecule::isAtomSelected(int idx)
 {
-	return _sl_atoms.size() > idx && _sl_atoms[idx] == 1;
+    return _sl_atoms.size() > idx && _sl_atoms[idx] == 1;
 }
 
 bool BaseMolecule::isBondHighlighted(int idx)
@@ -3765,9 +3766,8 @@ bool BaseMolecule::isBondHighlighted(int idx)
 
 bool BaseMolecule::isBondSelected(int idx)
 {
-	return _sl_bonds.size() > idx && _sl_bonds[idx] == 1;
+    return _sl_bonds.size() > idx && _sl_bonds[idx] == 1;
 }
-
 
 void BaseMolecule::highlightSubmolecule(BaseMolecule& subgraph, const int* mapping, bool entire)
 {
@@ -3798,29 +3798,29 @@ void BaseMolecule::highlightSubmolecule(BaseMolecule& subgraph, const int* mappi
 
 void BaseMolecule::selectSubmolecule(BaseMolecule& subgraph, const int* mapping, bool entire)
 {
-	int i;
+    int i;
 
-	for (i = subgraph.vertexBegin(); i != subgraph.vertexEnd(); i = subgraph.vertexNext(i))
-		if (mapping[i] >= 0 && (entire || subgraph.isAtomSelected(i)))
-			selectAtom(mapping[i]);
+    for (i = subgraph.vertexBegin(); i != subgraph.vertexEnd(); i = subgraph.vertexNext(i))
+        if (mapping[i] >= 0 && (entire || subgraph.isAtomSelected(i)))
+            selectAtom(mapping[i]);
 
-	for (i = subgraph.edgeBegin(); i != subgraph.edgeEnd(); i = subgraph.edgeNext(i))
-	{
-		if (!entire && !subgraph.isBondSelected(i))
-			continue;
+    for (i = subgraph.edgeBegin(); i != subgraph.edgeEnd(); i = subgraph.edgeNext(i))
+    {
+        if (!entire && !subgraph.isBondSelected(i))
+            continue;
 
-		const Edge& edge = subgraph.getEdge(i);
+        const Edge& edge = subgraph.getEdge(i);
 
-		int beg = mapping[edge.beg];
-		int end = mapping[edge.end];
+        int beg = mapping[edge.beg];
+        int end = mapping[edge.end];
 
-		if (beg >= 0 && end >= 0)
-		{
-			int edge_idx = findEdgeIndex(beg, end);
-			if (edge_idx >= 0)
-				selectBond(edge_idx);
-		}
-	}
+        if (beg >= 0 && end >= 0)
+        {
+            int edge_idx = findEdgeIndex(beg, end);
+            if (edge_idx >= 0)
+                selectBond(edge_idx);
+        }
+    }
 }
 
 int BaseMolecule::countSGroups()
@@ -4149,7 +4149,7 @@ void BaseMolecule::removeAtomsStereocenters(const Array<int>& indices)
 
 void BaseMolecule::removeBondsStereocenters(const Array<int>& indices)
 {
-    stereocenters.removeBonds( *this, indices );
+    stereocenters.removeBonds(*this, indices);
 }
 
 void BaseMolecule::buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out)
@@ -4199,7 +4199,7 @@ void BaseMolecule::registerUnfoldedHydrogenCisTrans(int atom_idx, int added_hydr
 
 void BaseMolecule::buildFromSmilesCisTrans(int* dirs)
 {
-    cis_trans.buildFromSmiles( *this, dirs );
+    cis_trans.buildFromSmiles(*this, dirs);
 }
 
 void BaseMolecule::buildOnSubmoleculeCisTrans(BaseMolecule& super, int* mapping)
@@ -4214,7 +4214,7 @@ void BaseMolecule::validateCisTrans()
 
 bool BaseMolecule::convertableToImplicitHydrogenCisTrans(int idx)
 {
-    return cis_trans.convertableToImplicitHydrogen(*this, idx );
+    return cis_trans.convertableToImplicitHydrogen(*this, idx);
 }
 
 void BaseMolecule::markBondsAlleneStereo()

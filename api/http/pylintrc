@@ -1,0 +1,11 @@
+[FORMAT]
+max-line-length = 79
+
+[MESSAGE CONTROL]
+disable = missing-module-docstring,
+          missing-class-docstring,
+          missing-function-docstring,
+          import-error,
+          wrong-import-order,
+          too-few-public-methods,
+          no-name-in-module

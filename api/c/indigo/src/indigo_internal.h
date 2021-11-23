@@ -276,9 +276,12 @@ public:
     {
         Array<char> string;
         float xyz[3];
+
+        void clear();
     };
+
     // Method that returns temporary buffer that can be returned from Indigo C API methods
-    TmpData& getThreadTmpData();
+    static TmpData& getThreadTmpData();
 
     ProductEnumeratorParams rpe_params;
     MoleculeFingerprintParameters fp_params;

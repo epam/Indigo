@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class LoadMoleculeFromFileTest {
 
@@ -33,9 +34,9 @@ public class LoadMoleculeFromFileTest {
     public static void setUpElastic() {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
-                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
-                        .withTag(ElasticsearchVersion.VERSION)
-        );
+                        .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
+                        .withTag(ElasticsearchVersion.VERSION))
+                .withEnv("xpack.security.enabled", "false");
         elasticsearchContainer.start();
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
@@ -53,8 +54,8 @@ public class LoadMoleculeFromFileTest {
     }
 
     @AfterAll
-    public static void tearDownBingoNoSQL() {
-
+    public static void tearDownBingoNoSQL() throws Throwable {
+//        indigo.finalize();
     }
 
     @BeforeEach
@@ -66,8 +67,8 @@ public class LoadMoleculeFromFileTest {
     @AfterEach
     public void deleteIndex() throws IOException {
         repository.deleteAllRecords();
+        bingoDb.close();
     }
-
 
     /**
      * Use this method to test additional/custom fields loaded into record

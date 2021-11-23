@@ -35,8 +35,6 @@ namespace indigo
         ~SmartTableOutput() override;
 
         void write(const void* data, int size) override;
-        void seek(long long offset, int from) override;
-        long long tell() override;
         void flush() override;
 
         void setLineFormat(const char* line_format);

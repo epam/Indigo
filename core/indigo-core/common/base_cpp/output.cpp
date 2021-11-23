@@ -16,15 +16,14 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <errno.h>
-#include <math.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "base_c/defs.h"
-#include "base_cpp/array.h"
 #include "base_cpp/output.h"
+
+#include <cerrno>
+#include <cmath>
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
+
 #include "base_cpp/tlscont.h"
 
 #ifndef va_copy
@@ -35,23 +34,10 @@ using namespace indigo;
 
 IMPL_ERROR(Output, "output");
 
-Output::Output()
-{
-}
-
-Output::~Output()
-{
-}
-
 void Output::writeBinaryInt(int value)
 {
     // value = htonl(value);
     write(&value, sizeof(int));
-}
-
-void Output::writeBinaryDword(dword value)
-{
-    write(&value, sizeof(dword));
 }
 
 void Output::writeBinaryFloat(float value)
@@ -184,7 +170,7 @@ void Output::writePackedUInt(unsigned int value)
     }
 }
 
-void Output::skip(int count)
+void OutputSeek::skip(int count)
 {
     seek(count, SEEK_CUR);
 }
@@ -254,7 +240,7 @@ void FileOutput::seek(long long offset, int from)
 #endif
 }
 
-long long FileOutput::tell()
+long long FileOutput::tell() const noexcept
 {
 #ifdef _WIN32
     return _ftelli64(_file);
@@ -268,10 +254,6 @@ ArrayOutput::ArrayOutput(Array<char>& arr) : _arr(arr)
     _arr.clear();
 }
 
-ArrayOutput::~ArrayOutput()
-{
-}
-
 void ArrayOutput::write(const void* data, int size)
 {
     int old_size = _arr.size();
@@ -280,7 +262,7 @@ void ArrayOutput::write(const void* data, int size)
     memcpy(_arr.ptr() + old_size, data, size);
 }
 
-long long ArrayOutput::tell()
+long long ArrayOutput::tell() const noexcept
 {
     return _arr.size();
 }
@@ -289,22 +271,12 @@ void ArrayOutput::flush()
 {
 }
 
-void ArrayOutput::seek(long long offset, int from)
-{
-    throw Error("not implemented");
-}
-
 void ArrayOutput::clear()
 {
     _arr.clear();
 }
 
-StandardOutput::StandardOutput()
-{
-    _count = 0;
-}
-
-StandardOutput::~StandardOutput()
+StandardOutput::StandardOutput(): _count(0)
 {
 }
 
@@ -321,12 +293,7 @@ void StandardOutput::write(const void* data, int size)
     _count += size;
 }
 
-void StandardOutput::seek(long long offset, int from)
-{
-    throw Error("can not seek in standard output");
-}
-
-long long StandardOutput::tell()
+long long StandardOutput::tell() const noexcept
 {
     return _count;
 }
@@ -336,30 +303,36 @@ void StandardOutput::flush()
     fflush(stdout);
 }
 
-NullOutput::NullOutput()
-{
-}
-
-NullOutput::~NullOutput()
-{
-}
-
 void NullOutput::write(const void* data, int size)
 {
 }
 
-void NullOutput::seek(long long offset, int from)
-{
-    throw Error("not implemented");
-}
-
-long long NullOutput::tell()
-{
-    throw Error("not implemented");
-}
-
 void NullOutput::flush()
 {
+}
+
+StringOutput::StringOutput(std::string& str) : _str(str)
+{
+}
+
+void StringOutput::write(const void* data, const int size)
+{
+    const std::string tmp_str(static_cast<const char*>(data), size);
+    _str += tmp_str;
+}
+
+long long StringOutput::tell() const noexcept
+{
+    return static_cast<long long>(_str.size());
+}
+
+void StringOutput::flush()
+{
+}
+
+void StringOutput::clear() noexcept
+{
+    _str.clear();
 }
 
 namespace indigo
@@ -373,4 +346,5 @@ namespace indigo
         output.writeChar(0);
         va_end(args);
     }
+
 } // namespace indigo

@@ -4,9 +4,9 @@ import platform
 from env_indigo import isIronPython, isJython, getPlatform
 
 if sys.version_info > (3, 0):
-    from bistring3 import BitString
+    from .bistring3 import BitString
 else:
-    from bistring1 import BitString
+    from .bistring1 import BitString
 
 HASH_SIZE = 32
 
@@ -19,15 +19,19 @@ if isIronPython():
     import System
     import System.Environment
     import System.Runtime.InteropServices.RuntimeInformation
+
     dotnet_framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
     if dotnet_framework.startswith('.NET Core'):
-        clr.AddReferenceToFileAndPath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dotnet', 'System.Drawing.Common.dll'))
+        clr.AddReferenceToFileAndPath(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dotnet', 'System.Drawing.Common.dll'))
         os_version = System.Environment.OSVersion.ToString()
 
         if os_version.startswith('Unix'):
-            clr.AddReferenceToFileAndPath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dotnet', 'System.Drawing.Common.unix.dll'))
+            clr.AddReferenceToFileAndPath(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dotnet', 'System.Drawing.Common.unix.dll'))
         elif os_version.startswith('Microsoft Windows'):
-            clr.AddReferenceToFileAndPath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dotnet', 'System.Drawing.Common.win.dll'))
+            clr.AddReferenceToFileAndPath(
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dotnet', 'System.Drawing.Common.win.dll'))
         else:
             raise SystemError("Unsupported OS: " + os_version)
 
@@ -120,10 +124,13 @@ class ImageHash(object):
 def imageDiff(imp1, imp2):
     imh1, im1_width, im1_height = ImageHash(imp1, HASH_SIZE).average_hash_and_sizes()
     imh2, im2_width, im2_height = ImageHash(imp2, HASH_SIZE).average_hash_and_sizes()
-    if (abs((float(im1_width) / float(im2_width)) - 1.0) > 0.1) or (abs((float(im1_height) / float(im2_height)) - 1.0) > 0.1):
-        raise RenderingTestException("Images have different sizes: %sx%s (ref) and %sx%s (out)" % (im1_width, im1_height, im2_width, im2_height))
+    if (abs((float(im1_width) / float(im2_width)) - 1.0) > 0.1) or (
+            abs((float(im1_height) / float(im2_height)) - 1.0) > 0.1):
+        raise RenderingTestException(
+            "Images have different sizes: %sx%s (ref) and %sx%s (out)" % (im1_width, im1_height, im2_width, im2_height))
     if len(imh1) != len(imh2):
-        raise RenderingTestException("Images have different channels count: %s (ref) and %s (out)" % (len(imh1), len(imh2)))
+        raise RenderingTestException(
+            "Images have different channels count: %s (ref) and %s (out)" % (len(imh1), len(imh2)))
     results = []
     for i in range(len(imh1)):
         results.append((imh1[i] ^ imh2[i]).bin.count("1"))
@@ -187,7 +194,8 @@ def checkBitmapSimilarity(filename, ref_filename):
                     raise RenderingTestException("No reference images for this operating system: {0}".format(osName))
             else:
                 raise RenderingTestException("No reference images for this operating system: {0}".format(os.name))
-        dirname = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'tests', 'rendering')))
+        dirname = os.path.normpath(
+            os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'tests', 'rendering')))
         results = imageDiff('%s/ref/%s/%s' % (dirname, system, ref_filename), '%s/out/%s' % (dirname, filename))
     except RenderingTestException as e:
         return '%s rendering status: Problem: %s' % (filename, str(e))
@@ -195,7 +203,8 @@ def checkBitmapSimilarity(filename, ref_filename):
     channels = ['red', 'green', 'blue', 'alpha']
     for i, result in enumerate(results):
         if result > (HASH_SIZE ** 2) * 0.1:
-            return '%s rendering status: Problem: PNG similarity is %s for %s channel' % (filename, round(1 - (result / float(HASH_SIZE ** 2)), 2), channels[i])
+            return '%s rendering status: Problem: PNG similarity is %s for %s channel' % (
+            filename, round(1 - (result / float(HASH_SIZE ** 2)), 2), channels[i])
 
     return '%s rendering status: OK' % filename
 

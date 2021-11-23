@@ -847,7 +847,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     while (len > 0)
                     {
                         int j;
-                        for (j = 0; j < len; j++)
+                        for (j = 0; j < len - 1; j++)
                             if (data[j] == '\n')
                                 break;
 

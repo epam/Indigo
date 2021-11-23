@@ -144,7 +144,7 @@ IndexCurrentReaction::~IndexCurrentReaction()
 BaseMatcher::BaseMatcher(BaseIndex& index, IndigoObject*& current_obj) : _index(index), _current_obj(current_obj)
 {
     _current_obj_used = false;
-    _current_id = 0;
+    _current_id = -1;
     _part_id = -1;
     _part_count = -1;
 }
@@ -162,7 +162,7 @@ BaseMatcher::~BaseMatcher()
 
 int BaseMatcher::currentId() const
 {
-    BingoArray<int>& id_mapping = _index.getIdMapping();
+    MMFArray<int>& id_mapping = _index.getIdMapping();
     return id_mapping[_current_id];
 }
 
@@ -357,7 +357,7 @@ BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, In
 bool BaseSubstructureMatcher::next()
 {
     // int fp_size_in_bits = _fp_size * 8;
-    static int sub_cnt = 0;
+    // static int sub_cnt = 0;
 
     _current_cand_id++;
     while (!((_current_pack == _final_pack) && (_current_cand_id == _candidates.size())))
@@ -426,7 +426,7 @@ void BaseSubstructureMatcher::setQueryData(SubstructureQueryData* query_data)
     }
 
     // Sort bits accoring to the bits frequency
-    BingoArray<int>& fp_bit_usage = _index.getSubStorage().getFpBitUsageCounts();
+    MMFArray<int>& fp_bit_usage = _index.getSubStorage().getFpBitUsageCounts();
     std::sort(_query_fp_bits_used.ptr(), _query_fp_bits_used.ptr() + _query_fp_bits_used.size(),
               [&](int i1, int i2) { return fp_bit_usage[i1] < fp_bit_usage[i2]; });
 }
@@ -1603,17 +1603,15 @@ bool MolGrossMatcher::_tryCurrent() /* const */
 EnumeratorMatcher::EnumeratorMatcher(BaseIndex& index) : BaseMatcher(index, (IndigoObject*&)_indigoObject)
 {
     _id_numbers = index.getIdMapping().size();
-    _current_id = 0;
     _indigoObject = nullptr;
 }
 
 bool EnumeratorMatcher::next()
 {
-    if (_current_id < _id_numbers)
+    if (_current_id + 1 < _id_numbers)
     {
         _current_id++;
         return true;
     }
-
     return false;
 }

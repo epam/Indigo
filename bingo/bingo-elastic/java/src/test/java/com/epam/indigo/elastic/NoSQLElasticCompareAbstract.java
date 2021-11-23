@@ -20,9 +20,9 @@ abstract public class NoSQLElasticCompareAbstract {
     public static void setUpDataStore() {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
-                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
-                        .withTag(ElasticsearchVersion.VERSION)
-        );
+                        .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
+                        .withTag(ElasticsearchVersion.VERSION))
+                .withEnv("xpack.security.enabled", "false");
         elasticsearchContainer.start();
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
@@ -34,10 +34,10 @@ abstract public class NoSQLElasticCompareAbstract {
                 .withRefreshInterval("1s")
                 .build();
         bingoDb = Bingo.createDatabaseFile(indigo, "src/test/resources/bingo_nosql", "molecule");
-
     }
 
     public static void tearDownDataStore() {
+        bingoDb.close();
         elasticsearchContainer.stop();
     }
 

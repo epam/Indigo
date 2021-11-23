@@ -32,6 +32,7 @@ CEXPORT int bingoCloseDatabase(int db);
 // Record insertion/deletion
 //
 CEXPORT int bingoInsertRecordObj(int db, int obj);
+CEXPORT int bingoInsertIteratorObj(int db, int iterator_obj_id);
 CEXPORT int bingoInsertRecordObjWithId(int db, int obj, int id);
 CEXPORT int bingoInsertRecordObjWithExtFP(int db, int obj, int fp);
 CEXPORT int bingoInsertRecordObjWithIdAndExtFP(int db, int obj, int id, int fp);
