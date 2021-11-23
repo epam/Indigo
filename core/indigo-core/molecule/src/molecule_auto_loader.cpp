@@ -294,7 +294,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
             MoleculeCdxmlLoader loader(*_scanner);
             loader.stereochemistry_options = stereochemistry_options;
             loader.loadMolecule(mol);
-            printf("bond dir:%d\n", mol.getBondDirection(0));
             return;
         }
         _scanner->seek(pos, SEEK_SET);

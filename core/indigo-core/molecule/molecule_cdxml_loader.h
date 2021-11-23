@@ -22,6 +22,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "base_cpp/array.h"
@@ -76,7 +77,7 @@ namespace indigo
     {
         int bond_id;
         int point_id;
-        int atom_id;
+        int atom_idx;
     };
 
     struct CdxmlNode
@@ -100,6 +101,8 @@ namespace indigo
         AutoInt index;
         bool is_not_list;
         std::vector<AutoInt> element_list;
+        std::unordered_map<int, int> bond_id_to_connection_idx;
+        std::unordered_map<int, int> node_id_to_connection_idx;
         std::vector<_ExtConnection> connections;
     };
 
@@ -108,11 +111,11 @@ namespace indigo
         CdxmlBond() : order(1)
         {
         }
+        AutoInt id;
         std::pair<AutoInt, AutoInt> be;
         AutoInt order;
         AutoInt stereo;
         AutoInt dir;
-        AutoInt index;
         bool swap_bond;
     };
 
@@ -156,27 +159,40 @@ namespace indigo
         bool _has_bounding_box;
         Rect2f _cdxml_bbox;
         AutoInt _cdxml_bond_length;
+        std::vector<CdxmlNode> _nodes;
+        std::vector<CdxmlBond> _bonds;
+        std::vector<CdxmlBracket> _brackets;
 
     protected:
         Scanner* _scanner;
         const TiXmlNode* _fragment;
-        void _loadFragments(BaseMolecule& mol, const std::vector<TiXmlElement*>& fragments, const std::vector<TiXmlElement*>& brackets );
         void _parseCDXMLAttributes(TiXmlAttribute* pAttr);
-        void _parseNode(CdxmlNode& node, TiXmlAttribute* pAttr);
+        void _parseNode(CdxmlNode& node, TiXmlElement* pElem);
+        void _addNode(CdxmlNode& node);
+
         void _parseBond(CdxmlBond& bond, TiXmlAttribute* pAttr);
+        void _addBond(CdxmlBond& node);
+
         void _parseBracket(CdxmlBracket& bracket, TiXmlAttribute* pAttr);
 
         void _applyDispatcher(TiXmlAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher);
-        void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<CdxmlNode>& atoms, const std::vector<CdxmlBond>& bonds);
+        void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket );
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
-        void _enumerateData(TiXmlElement* elem, std::vector<TiXmlElement*>& fragments, std::vector<TiXmlElement*>& brackets);
-        void _collectFragments(TiXmlElement* elem, std::vector<TiXmlElement*>& fragments, std::vector<TiXmlElement*>& brackets);
+        void _parseCDXMLPage(TiXmlElement* pElem);
+        void _parseCDXMLFragment(TiXmlElement* pElem);
+        void _parseFragmentAttributes(TiXmlAttribute* pAttr);
+
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
+        void _updateConnection(const CdxmlNode& node, int atom_idx);
+
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::unordered_map<int, int> _id_to_atom_idx;
+        std::unordered_map<int, int> _id_to_node_index;
+        std::unordered_map<int, int> _id_to_bond_index;
+        std::vector<int> _fragment_nodes;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy
