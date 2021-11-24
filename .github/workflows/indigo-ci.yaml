@@ -460,7 +460,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/dist
         run: |
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -590,7 +590,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x86/native
-        run: ./IronPython/net45/ipy32.exe -X:ExceptionDetail api/tests/integration/test.py -t 1 -j junit_report.xml -platform ironwin
+        run: ./IronPython/net45/ipy32.exe -X:ExceptionDetail api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml -platform ironwin
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -639,6 +639,16 @@ jobs:
       - name: Run tests
         run: poetry run pytest tests
         working-directory: bingo/bingo-elastic/python
+      - name: Build wheel
+        working-directory: bingo/bingo-elastic/python
+        run: |
+          poetry build
+          cp dist/*.whl ${GITHUB_WORKSPACE}/dist/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-elastic-python
+          path: dist
 
   test_bingo_elastic_java_linux_x86_64:
     strategy:
@@ -996,7 +1006,7 @@ jobs:
   publish_indigo:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
-    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64]
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -1022,6 +1032,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: indigo-dotnet
+          path: dist/
+      - name: Download bingo-elastic-python
+        uses: actions/download-artifact@v2
+        with:
+          name: bingo-elastic-python
           path: dist/
       - name: Download indigo-ketcher NPM package
         uses: actions/download-artifact@v2
@@ -1055,6 +1070,8 @@ jobs:
           rm gpg.key
           cd api/java
           ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
+          cd ${GITHUB_WORKSPACE}/bingo/bingo-elastic/java/
+          ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
       - name: Publish indigo-ketcher to NPM
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
