@@ -2,12 +2,13 @@ FROM debian:stable-slim
 
 ARG JDK_VERSION_MAJOR=8u292
 ARG JDK_VERSION_MINOR=b10
-ARG MAVEN_VERSION=3.8.3
+ARG MAVEN_VERSION=3.8.4
 ARG JYTHON_VERSION=2.7.2
 ARG DOTNET_VERSION=3.1
 ARG IRONPYTHON_VERSION=2.7.11
 
-RUN apt update && \
+RUN set -eux && \
+    apt update && \
     apt upgrade -y && \
     apt install -y --no-install-recommends build-essential cmake make git python3 python3-pip python3-distutils curl unzip libc6-dev libgdiplus libx11-dev && \
     apt install -y gnupg && \
@@ -17,7 +18,7 @@ RUN apt update && \
     mv jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR} /opt/jdk && \
     rm OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
     # Maven
-    curl -OL http://mirror.linux-ia64.org/apache/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+    curl -OL https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     tar -xzf apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     mv apache-maven-${MAVEN_VERSION} /opt/maven && \
     rm apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
