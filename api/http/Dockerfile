@@ -32,7 +32,8 @@ COPY setup.py *manylinux1_x86_64*.whl ./
 
 # Required for indigo-renderer
 RUN apt-get update && \
-    apt-get upgrade && \ apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
+    apt-get upgrade && \
+    apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
 
 # Install if exists
 RUN if ls ./*manylinux1_x86_64*.whl 1> /dev/null 2>&1; then pip3 install ./*manylinux1_x86_64*.whl; fi
