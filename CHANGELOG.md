@@ -1,11 +1,14 @@
-# Indigo 1.5.1
-Released 2021-11-x.
+# Indigo 1.6.0
+Released 2021-11-24.
 
 ## Features
 * PoC implementation of Indigo modern C++ user API written on top of low-level C API. Later it will be used
   in Indigo-WASM and probably other languages.
-* New Indigo service added as preview. Modernized Indigo service implements JSON:API protocol and can be installed as Docker
-  image `epmlsop/indigo-service:enhanced-latest`.
+* New Indigo service added as preview. Modernized Indigo service implements JSON:API protocol and can be installed as 
+  Docker image `epmlsop/indigo-service:enhanced-latest`.
+* Indigo API ported to ARM64 processor architecture. Python, Java and C# wrappers now contain required native libraries 
+  for macOS (Apple M1) and Linux.
+* Implemented loader for CDXML format.
 
 ## Improvements
 * Bingo-NoSQL major refactoring with significant multithreading performance improvements.
@@ -17,6 +20,7 @@ Released 2021-11-x.
 * C++ code modernization: added 'override', replaced plain C functions with corresponding from std, etc.
 * Indigo API integration tests engine parallelized. 
 * Indigo WASM API for Ketcher reached stable status and is now published to NPM public repository.
+* Indigo i386 libraries for Windows prepared.
 
 ## Bugfixes
 * Fixed multiple data races in API and especially in Bingo-NoSQL (#476).

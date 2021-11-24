@@ -10,7 +10,7 @@ else()
             COMMAND ${Python3_EXECUTABLE} setup.py test
             COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=macosx_11_0_arm64 --python-tag=py2.py3
             COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=macosx_10_7_intel --python-tag=py2.py3
-            COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=manylinux1_aarch64 --python-tag=py2.py3
+            COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=linux_aarch64 --python-tag=py2.py3
             COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=manylinux1_x86_64 --python-tag=py2.py3
             COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=manylinux1_i686 --python-tag=py2.py3
             COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=win_amd64 --python-tag=py2.py3
