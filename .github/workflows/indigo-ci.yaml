@@ -63,13 +63,81 @@ jobs:
           name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist
 
+  build_indigo_libs_i386:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows ]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build Windows
+        if: ${{ matrix.os == 'windows' }}
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "Visual Studio 16 2019" -A Win32 -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_SYSTEM_PROCESSOR_LOWER=i386
+          cmake --build . --config Release --target ALL_BUILD
+          ctest --verbose -C Release
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-i386
+          path: dist
+
+  build_indigo_libs_aarch64:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos, ubuntu ]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build Linux
+        if: ${{ matrix.os == 'ubuntu' }}
+        uses: docker://epmlsop/buildpack-arm64:latest
+        with:
+          args: >
+            /bin/sh -c "
+            mkdir build &&
+            cd build &&
+            cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_SYSTEM_PROCESSOR_LOWER=aarch64 &&
+            cmake --build . --config Release --target all -- -j $(nproc) &&
+            ctest --verbose -R dlopen
+            "
+      - name: Build macOS
+        if: ${{ matrix.os == 'macos' }}
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_SYSTEM_PROCESSOR_LOWER=aarch64 -DCMAKE_OSX_ARCHITECTURES=arm64
+          cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
+          # ctest --verbose  # NOTE: We can't run tests until we have native ARM64 node
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-aarch64
+          path: dist
+
   build_indigo_wrappers:
     strategy:
       fail-fast: false
       matrix:
         wrapper: [ python, java, dotnet ]
     runs-on: ubuntu-latest
-    needs: [ build_indigo_libs_x86_64 ]
+    needs: [ build_indigo_libs_x86_64, build_indigo_libs_aarch64, build_indigo_libs_i386 ]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -81,20 +149,35 @@ jobs:
         run: git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
-      - name: Download Linux native libs
+      - name: Download Linux native libs x86_64
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-linux-x86_64
           path: dist/
-      - name: Download Windows native libs
+      - name: Download Linux native libs aarch64
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-libs-linux-aarch64
+          path: dist/
+      - name: Download Windows native libs x86_64
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-windows-x86_64
           path: dist/
-      - name: Download macOS native libs
+      - name: Download Windows native libs i386
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-libs-windows-i386
+          path: dist/
+      - name: Download macOS native libs x86_64
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-macos-x86_64
+          path: dist/
+      - name: Download macOS native libs aarch64
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-libs-macos-aarch64
           path: dist/
       - name: Build wrappers
         run: |
@@ -155,13 +238,13 @@ jobs:
         run: python3 -m pip install Pillow
       - name: Install wrappers Linux
         if: ${{ matrix.os == 'ubuntu' }}
-        run: python3 -m pip install dist/*linux*.whl
+        run: python3 -m pip install dist/*manylinux1_x86_64*.whl
       - name: Install wrappers Windows
         if: ${{ matrix.os == 'windows' }}
-        run: Get-ChildItem dist -Filter *win*.whl -Recurse | % { python3 -m pip install $_.FullName }
+        run: Get-ChildItem dist -Filter *win_amd64*.whl -Recurse | % { python3 -m pip install $_.FullName }
       - name: Install wrappers macOS
         if: ${{ matrix.os == 'macos' }}
-        run: python3 -m pip install dist/*macos*.whl
+        run: python3 -m pip install dist/*macosx_10_7_intel*.whl
       - name: Test
         run: python3 api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
@@ -170,7 +253,94 @@ jobs:
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "${{ matrix.os }}_python_test_report"
+          check_name: "${{ matrix.os }}-x86_64-python_test_report"
+
+  test_indigo_python_aarch64:
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu ]
+    runs-on: ${{ matrix.os }}-latest
+    needs: build_indigo_wrappers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-python
+          path: dist/
+      - name: Test Linux
+        if: ${{ matrix.os == 'ubuntu' }}
+        uses: uraimo/run-on-arch-action@v2.0.5
+        with:
+          arch: aarch64
+          distro: ubuntu20.04
+          githubToken: ${{ github.token }}
+          run: |
+            apt update
+            apt install -y --no-install-recommends python3 python3-pip
+            python3 -m pip install Pillow
+            python3 -m pip install dist/*linux_aarch64*.whl
+            python3 api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "${{ matrix.os }}-aarch64-python_test_report"
+
+  test_indigo_python_i386:
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows ]
+    runs-on: ${{ matrix.os }}-latest
+    needs: build_indigo_wrappers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-python
+          path: dist/
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+          architecture: x86
+      - name: Install Pillow
+        run: python -m pip install Pillow
+      - name: Install wrappers Windows
+        if: ${{ matrix.os == 'windows' }}
+        run: Get-ChildItem dist -Filter *win32*.whl -Recurse | % { python -m pip install $_.FullName }
+      - name: Test
+        run: python api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "${{ matrix.os }}-i386-python_test_report"
 
   test_indigo_java_x86_64:
     timeout-minutes: 60
@@ -209,7 +379,95 @@ jobs:
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "${{ matrix.os }}_java_test_report"
+          check_name: "${{ matrix.os }}-x86_64-java_test_report"
+
+  test_indigo_java_aarch64:
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu ]
+    runs-on: ${{ matrix.os }}-latest
+    needs: build_indigo_wrappers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-java
+          path: dist/
+      - name: Test Linux
+        if: ${{ matrix.os == 'ubuntu' }}
+        uses: uraimo/run-on-arch-action@v2.0.5
+        with:
+          arch: aarch64
+          distro: ubuntu20.04
+          githubToken: ${{ github.token }}
+          run: |
+            apt update
+            apt install -y curl default-jre
+            curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
+            export INDIGO_PATH=${{ github.workspace }}/dist
+            java -Xss4m -jar jython.jar api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "${{ matrix.os }}-aarch64-java_test_report"
+
+  test_indigo_java_i386:
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows ]
+    runs-on: ${{ matrix.os }}-latest
+    needs: build_indigo_wrappers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-java
+          path: dist/
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt-hotspot'
+          java-version: '11'
+          architecture: x86
+      - name: Install Jython
+        run: |
+          curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
+      - name: Test
+        env:
+          INDIGO_PATH: ${{ github.workspace }}/dist
+        run: |
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "${{ matrix.os }}-i386-java_test_report"
 
   test_indigo_dotnet_x86_64:
     timeout-minutes: 60
@@ -289,7 +547,57 @@ jobs:
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "${{ matrix.os }}_dotnet_test_report"
+          check_name: "${{ matrix.os }}-x86_64-dotnet_test_report"
+
+  test_indigo_dotnet_i386:
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows ]
+    runs-on: ${{ matrix.os }}-latest
+    needs: build_indigo_wrappers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-dotnet
+          path: dist/
+      - name: Prepare Common
+        run: |
+          mkdir IronPython
+          mkdir tmp
+          cd IronPython
+          curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.11/IronPython.2.7.11.zip
+      - name: Prepare Windows
+        if: ${{ matrix.os == 'windows' }}
+        run: |
+          cd IronPython
+          Expand-Archive IronPython.2.7.11.zip .
+          cd ../tmp
+          Expand-Archive ../dist/Indigo.Net.*.nupkg .
+      - name: Test Windows
+        if: ${{ matrix.os == 'windows' }}
+        env:
+          INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
+          PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x86/native
+        run: ./IronPython/net45/ipy32.exe -X:ExceptionDetail api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml -platform ironwin
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "${{ matrix.os }}_i386_dotnet_test_report"
 
   test_bingo_elastic_python_linux_x86_64:
     runs-on: ubuntu-latest
@@ -331,6 +639,16 @@ jobs:
       - name: Run tests
         run: poetry run pytest tests
         working-directory: bingo/bingo-elastic/python
+      - name: Build wheel
+        working-directory: bingo/bingo-elastic/python
+        run: |
+          poetry build
+          cp dist/*.whl ${GITHUB_WORKSPACE}/dist/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-elastic-python
+          path: dist
 
   test_bingo_elastic_java_linux_x86_64:
     strategy:
@@ -688,7 +1006,7 @@ jobs:
   publish_indigo:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
-    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64]
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -715,6 +1033,11 @@ jobs:
         with:
           name: indigo-dotnet
           path: dist/
+      - name: Download bingo-elastic-python
+        uses: actions/download-artifact@v2
+        with:
+          name: bingo-elastic-python
+          path: dist/
       - name: Download indigo-ketcher NPM package
         uses: actions/download-artifact@v2
         with:
@@ -724,9 +1047,7 @@ jobs:
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
-             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*win*.whl
-             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*linux*.whl
-             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*mac*.whl
+             twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*.whl
       - name: Publish .NET nupkg to Nuget
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
@@ -749,6 +1070,8 @@ jobs:
           rm gpg.key
           cd api/java
           ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
+          cd ${GITHUB_WORKSPACE}/bingo/bingo-elastic/java/
+          ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
       - name: Publish indigo-ketcher to NPM
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -759,7 +1082,7 @@ jobs:
           echo always-auth=true >> ~/.npmrc
           npm publish ./dist/indigo-ketcher-*.tgz
 
-  build_test_publish_indigo_service:
+  build_test_publish_indigo_service_old:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     needs: build_indigo_wrappers
@@ -794,10 +1117,10 @@ jobs:
           docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_TOKEN}
           docker push epmlsop/indigo-service:latest
 
-  build-indigo-service:
-    strategy:
-      fail-fast: false
+  build_test_publish_indigo_service_new:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
+    needs: build_indigo_wrappers
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -806,6 +1129,11 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-python
+          path: api/http/
       - name: Build
         run: docker build -f ./api/http/Dockerfile -t epmlsop/indigo-service:enhanced-latest ./api/http
       - name: Publish

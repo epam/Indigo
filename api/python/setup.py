@@ -20,6 +20,7 @@ Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
 Programming Language :: Python :: 3.9
+Programming Language :: Python :: 3.10
 Programming Language :: Python :: Implementation :: CPython
 Topic :: Software Development
 Topic :: Scientific/Engineering :: Chemistry
@@ -54,7 +55,7 @@ if sys.argv[1] == "bdist_wheel":
                 INDIGO_LIBS = "lib/darwin-x86_64/*.dylib"
             elif PLATFORM_NAME.startswith("macosx_11_0_arm64"):
                 INDIGO_LIBS = "lib/darwin-aarch64/*.dylib"
-            elif PLATFORM_NAME == "manylinux1_aarch64":
+            elif PLATFORM_NAME == "linux_aarch64":
                 INDIGO_LIBS = "lib/linux-aarch64/*.so"
             elif PLATFORM_NAME == "manylinux1_x86_64":
                 INDIGO_LIBS = "lib/linux-x86_64/*.so"
@@ -70,7 +71,7 @@ if sys.argv[1] == "bdist_wheel":
 
     if not INDIGO_LIBS:
         raise ValueError(
-            "Wrong --plat-name value! Should be one of: macosx_11_0_arm64, macosx_10_7_intel, manylinux1_x86_64, manylinux1_aarch64, manylinux1_i686, win_amd64, win32"
+            "Wrong --plat-name value! Should be one of: macosx_11_0_arm64, macosx_10_7_intel, manylinux1_x86_64, linux_aarch64, manylinux1_i686, win_amd64, win32"
         )
 
     if not glob.glob(os.path.join(indigo_python_directory, INDIGO_LIBS)):
@@ -86,7 +87,7 @@ if os.path.exists("indigo_chem.egg-info"):
 
 setup(
     name="epam.indigo",
-    version="1.5.1",
+    version="1.6.0",
     description="Indigo universal cheminformatics toolkit",
     author="EPAM Systems Life Science Department",
     author_email="lifescience.opensource@epam.com",
