@@ -665,7 +665,6 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
             }
         }
     }
-    // sgroup.bonds.copy( xbonds );
 }
 
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
@@ -806,10 +805,13 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
 
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
 {
-    _pmol = dynamic_cast<Molecule*>(&mol);
-    _pqmol = dynamic_cast<QueryMolecule*>(&mol);
-    if (_pmol == NULL && _pqmol == NULL)
-        throw Error("unknown molecule type: %s", typeid(mol).name());
+    _pmol = NULL;
+    _pqmol = NULL;
+    if (mol.isQueryMolecule())
+    {
+        _pqmol = &mol.asQueryMolecule();
+    } else _pmol = &mol.asMolecule();
+
     int atoms_count = 0;
     for (int node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
