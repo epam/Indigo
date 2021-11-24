@@ -1082,7 +1082,7 @@ jobs:
           echo always-auth=true >> ~/.npmrc
           npm publish ./dist/indigo-ketcher-*.tgz
 
-  build_test_publish_indigo_service:
+  build_test_publish_indigo_service_old:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     needs: build_indigo_wrappers
@@ -1117,10 +1117,10 @@ jobs:
           docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_TOKEN}
           docker push epmlsop/indigo-service:latest
 
-  build-indigo-service:
-    strategy:
-      fail-fast: false
+  build_test_publish_indigo_service_new:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
+    needs: build_indigo_wrappers
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -1129,6 +1129,11 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-python
+          path: api/http/
       - name: Build
         run: docker build -f ./api/http/Dockerfile -t epmlsop/indigo-service:enhanced-latest ./api/http
       - name: Publish

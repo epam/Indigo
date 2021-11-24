@@ -27,14 +27,21 @@ COPY pylintrc ./
 COPY requirements.txt ./
 COPY requirements_dev.txt ./
 COPY tests ./tests
-COPY setup.py ./
+# Optionally copy whl if exists. It's required for CI and local testing
+COPY setup.py *manylinux1_x86_64*.whl ./
+
+# Required for indigo-renderer
+RUN apt-get update && \
+    apt-get upgrade && \ apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
+
+# Install if exists
+RUN if ls ./*manylinux1_x86_64*.whl 1> /dev/null 2>&1; then pip3 install ./*manylinux1_x86_64*.whl; fi
 
 RUN pip3 install -r requirements_dev.txt && \
     pylint -sn --rcfile=pylintrc indigo_service tests && \
     mypy indigo_service && \
     pip3 install -e . && \
     pytest
-
 
 FROM python:3.9-slim-buster
 
@@ -43,6 +50,10 @@ WORKDIR /opt/indigo
 
 COPY indigo_service ./indigo_service
 COPY setup.py ./
+
+# Cleanup
+RUN apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install .
 # OVERRIDE ON ORCHESTRATION LEVEL
