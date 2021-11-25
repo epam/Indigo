@@ -1114,7 +1114,7 @@ jobs:
       - name: Publish
         if: startsWith(github.ref, 'refs/tags/indigo-')
         run: |
-          docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_TOKEN}
+          cat ${DOCKERHUB_TOKEN} | docker login --username ${DOCKERHUB_USERNAME} --password-stdin
           docker push epmlsop/indigo-service:latest
 
   build_test_publish_indigo_service_new:
@@ -1139,5 +1139,5 @@ jobs:
       - name: Publish
         if: startsWith(github.ref, 'refs/tags/indigo-')
         run: |
-          docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_TOKEN}
+          cat ${DOCKERHUB_TOKEN} | docker login --username ${DOCKERHUB_USERNAME} --password-stdin
           docker push epmlsop/indigo-service:enhanced-latest
