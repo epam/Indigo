@@ -742,7 +742,7 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Install Emcripten SDK
         uses: mymindstorm/setup-emsdk@v7
       - name: Build, Test, Pack
@@ -756,6 +756,17 @@ jobs:
         with:
           name: indigo-ketcher
           path: dist/indigo-ketcher*.tgz
+      - name: Push to NPM Beta
+        if: github.ref == 'refs/heads/master'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
+        run: |
+            echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
+            echo email=${NPM_EMAIL} >> ~/.npmrc
+            echo always-auth=true >> ~/.npmrc
+            npm publish --tag beta ./dist/indigo-ketcher-*.tgz
+
 
   build_indigo_utils_x86_64:
     strategy:
@@ -1114,7 +1125,7 @@ jobs:
       - name: Publish
         if: startsWith(github.ref, 'refs/tags/indigo-')
         run: |
-          docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_TOKEN}
+          cat ${DOCKERHUB_TOKEN} | docker login --username ${DOCKERHUB_USERNAME} --password-stdin
           docker push epmlsop/indigo-service:latest
 
   build_test_publish_indigo_service_new:
@@ -1139,5 +1150,5 @@ jobs:
       - name: Publish
         if: startsWith(github.ref, 'refs/tags/indigo-')
         run: |
-          docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_TOKEN}
+          cat ${DOCKERHUB_TOKEN} | docker login --username ${DOCKERHUB_USERNAME} --password-stdin
           docker push epmlsop/indigo-service:enhanced-latest

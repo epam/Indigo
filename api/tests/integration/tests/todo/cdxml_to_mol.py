@@ -9,9 +9,7 @@ indigo.setOption("molfile-saving-skip-date", True)
 print("*** CDXML to mol ***")
 
 root = joinPathPy("molecules/cdxml2", __file__)
-files = os.listdir(root)
-files.sort()
-for filename in files:
+for filename in sorted(os.listdir(root)):
     print(filename)
     try:
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
