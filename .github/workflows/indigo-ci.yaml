@@ -742,7 +742,7 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Install Emcripten SDK
         uses: mymindstorm/setup-emsdk@v7
       - name: Build, Test, Pack
