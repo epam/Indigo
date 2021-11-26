@@ -31,12 +31,6 @@ IMPL_ERROR(RingoPgSearchEngine, "reaction search engine");
 RingoPgSearchEngine::RingoPgSearchEngine(const char* rel_name) : BingoPgSearchEngine(), _searchType(-1)
 {
     // _setBingoContext();
-    /*
-     * Set up bingo configuration
-     */
-    bingoCore.bingoTautomerRulesReady(0, 0, 0);
-    bingoCore.bingoIndexBegin();
-
     _relName.readString(rel_name, true);
     _shadowRelName.readString(rel_name, true);
     _shadowRelName.appendString("_shadow", true);

@@ -398,50 +398,44 @@ CEXPORT int mangoMatchTarget(const char* target, int target_buf_len)
 
 int BingoCore::mangoMatchTargetBinary(const char* target_bin, int target_bin_len, const char* target_xyz, int target_xyz_len) 
 {
-    profTimerStart(t0, "match.match_target_binary");
+    if (self.mango_search_type == BingoCore::_UNDEF)
+        throw BingoError("Undefined search type");
 
-    BINGO_BEGIN_TIMEOUT
+    TRY_READ_TARGET_MOL
     {
-        if (self.mango_search_type == BingoCore::_UNDEF)
-            throw BingoError("Undefined search type");
-
-        TRY_READ_TARGET_MOL
+        BufferScanner scanner(target_bin, target_bin_len);
+        BufferScanner* xyz_scanner = 0;
+        Obj<BufferScanner> xyz_scanner_obj;
+        if (target_xyz_len != 0)
         {
-            BufferScanner scanner(target_bin, target_bin_len);
-            BufferScanner* xyz_scanner = 0;
-            Obj<BufferScanner> xyz_scanner_obj;
-            if (target_xyz_len != 0)
-            {
-                xyz_scanner_obj.create(target_xyz, target_xyz_len);
-                xyz_scanner = xyz_scanner_obj.get();
-            }
-
-            if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
-            {
-                MangoSubstructure& substructure = self.mango_context->substructure;
-                return substructure.matchBinary(scanner, xyz_scanner) ? 1 : 0;
-            }
-            else if (self.mango_search_type == BingoCore::_TAUTOMER)
-            {
-                MangoTautomer& tautomer = self.mango_context->tautomer;
-                return tautomer.matchBinary(scanner) ? 1 : 0;
-            }
-            else if (self.mango_search_type == BingoCore::_EXACT)
-            {
-                MangoExact& exact = self.mango_context->exact;
-                return exact.matchBinary(scanner, xyz_scanner) ? 1 : 0;
-            }
-            else if (self.mango_search_type == BingoCore::_SIMILARITY)
-            {
-                MangoSimilarity& similarity = self.mango_context->similarity;
-                return similarity.matchBinary(scanner) ? 1 : 0;
-            }
-            else
-                throw BingoError("Invalid search type");
+            xyz_scanner_obj.create(target_xyz, target_xyz_len);
+            xyz_scanner = xyz_scanner_obj.get();
         }
-        CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), 1); return -1;);
+
+        if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
+        {
+            MangoSubstructure& substructure = self.mango_context->substructure;
+            return substructure.matchBinary(scanner, xyz_scanner) ? 1 : 0;
+        }
+        else if (self.mango_search_type == BingoCore::_TAUTOMER)
+        {
+            MangoTautomer& tautomer = self.mango_context->tautomer;
+            return tautomer.matchBinary(scanner) ? 1 : 0;
+        }
+        else if (self.mango_search_type == BingoCore::_EXACT)
+        {
+            MangoExact& exact = self.mango_context->exact;
+            return exact.matchBinary(scanner, xyz_scanner) ? 1 : 0;
+        }
+        else if (self.mango_search_type == BingoCore::_SIMILARITY)
+        {
+            MangoSimilarity& similarity = self.mango_context->similarity;
+            return similarity.matchBinary(scanner) ? 1 : 0;
+        }
+        else
+            throw BingoError("Invalid search type");
     }
-    BINGO_END(-2, -2)
+    CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), 1); return -1;);
     return 0;
 }
 
@@ -602,36 +596,41 @@ return self.buffer.ptr();
 BINGO_END(0, 0)
 }
 
+void BingoCore::mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
+{
+    if (self.mango_search_type == BingoCore::_UNDEF)
+        throw BingoError("Undefined search type");
+
+    if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
+    {
+        MangoSubstructure& substructure = self.mango_context->substructure;
+
+        self.buffer.copy((const char*)substructure.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
+    }
+    else if (self.mango_search_type == BingoCore::_TAUTOMER)
+    {
+        MangoTautomer& tautomer = self.mango_context->tautomer;
+        self.buffer.copy((const char*)tautomer.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
+    }
+    else if (self.mango_search_type == BingoCore::_SIMILARITY)
+    {
+        MangoSimilarity& similarity = self.mango_context->similarity;
+        self.buffer.copy((const char*)similarity.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
+    }
+    else
+        throw BingoError("Invalid search type");
+
+    *query_fp = self.buffer.ptr();
+    *query_fp_len = self.buffer.size();
+}
+
 CEXPORT int mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
 {
     profTimerStart(t0, "match.query_fingerprint");
 
     BINGO_BEGIN
     {
-        if (self.mango_search_type == BingoCore::_UNDEF)
-            throw BingoError("Undefined search type");
-
-        if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
-        {
-            MangoSubstructure& substructure = self.mango_context->substructure;
-
-            self.buffer.copy((const char*)substructure.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
-        }
-        else if (self.mango_search_type == BingoCore::_TAUTOMER)
-        {
-            MangoTautomer& tautomer = self.mango_context->tautomer;
-            self.buffer.copy((const char*)tautomer.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
-        }
-        else if (self.mango_search_type == BingoCore::_SIMILARITY)
-        {
-            MangoSimilarity& similarity = self.mango_context->similarity;
-            self.buffer.copy((const char*)similarity.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
-        }
-        else
-            throw BingoError("Invalid search type");
-
-        *query_fp = self.buffer.ptr();
-        *query_fp_len = self.buffer.size();
+        self.mangoGetQueryFingerprint(query_fp, query_fp_len);
     }
     BINGO_END(1, -2)
 }

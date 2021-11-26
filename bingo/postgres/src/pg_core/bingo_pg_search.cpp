@@ -108,9 +108,16 @@ void BingoPgSearch::_initScanSearch()
     /*
      * Read configuration from index tuple
      */
-    BingoPgConfig bingo_config(_fpEngine->bingoCore);
+    auto& bingo_core = _fpEngine->bingoCore;
+
+    BingoPgConfig bingo_config(bingo_core);
     _bufferIndex.readConfigParameters(bingo_config);
+    /*
+     * Set up bingo configuration
+     */
     bingo_config.setUpBingoConfiguration();
+    bingo_core.bingoTautomerRulesReady(0, 0, 0);
+    bingo_core.bingoIndexBegin();
 
     /*
      * Process query structure with parameters

@@ -54,12 +54,6 @@ IMPL_ERROR(MangoPgSearchEngine, "molecule search engine");
 MangoPgSearchEngine::MangoPgSearchEngine(const char* rel_name) : BingoPgSearchEngine(), _searchType(-1)
 {
     // _setBingoContext();
-    /*
-     * Set up bingo configuration
-     */
-    bingoCore.bingoTautomerRulesReady(0, 0, 0);
-    bingoCore.bingoIndexBegin();
-
     _relName.readString(rel_name, true);
     _shadowRelName.readString(rel_name, true);
     _shadowRelName.appendString("_shadow", true);
@@ -352,14 +346,14 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    bingo_res = bingoCore.mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
     CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sub search context", bingoGetError());
 
     const char* fingerprint_buf;
     int fp_len;
 
-    bingo_res = mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get sub query fingerprint", bingoGetError());
+    bingoCore.mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
+    // CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get sub query fingerprint", bingoGetError());
 
     int size_bits = fp_len * 8;
     data.setFingerPrints(fingerprint_buf, size_bits);

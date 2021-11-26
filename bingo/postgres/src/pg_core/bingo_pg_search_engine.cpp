@@ -83,7 +83,7 @@ void BingoPgSearchEngine::loadDictionary(BingoPgIndex& bingo_index)
 {
     QS_DEF(Array<char>, dict);
     bingo_index.readDictionary(dict);
-    bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
+    bingoCore.bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
 }
 
 // const char* BingoPgSearchEngine::getDictionary(int& size) {

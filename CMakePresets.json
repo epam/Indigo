@@ -18,7 +18,8 @@
                 "BUILD_INDIGO_UTILS": "OFF"
             },
             "environment": {
-                "PostgreSQL_ROOT": "/usr/local/pgsql"
+                "PostgreSQL_ROOT": "/usr/local/pgsql",
+                "CMAKE_BUILD_PARALLEL_LEVEL": "8"
             }
         }
     ],
@@ -26,6 +27,12 @@
         {
             "name": "default",
             "configurePreset": "default"
+        },
+        {
+            "name": "debug",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "default debug"
         }
     ],
     "testPresets": [
