@@ -289,7 +289,7 @@ jobs:
             apt update
             apt install -y --no-install-recommends python3 python3-pip
             python3 -m pip install Pillow
-            python3 -m pip install dist/*linux_aarch64*.whl
+            python3 -m pip install dist/*manylinux2014_aarch64*.whl
             python3 api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
