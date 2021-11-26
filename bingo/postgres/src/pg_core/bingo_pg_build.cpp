@@ -139,9 +139,15 @@ void BingoPgBuild::_prepareUpdating()
         fp_engine = std::make_unique<RingoPgBuildEngine>(rel_name);
     else
         throw Error("internal error: unknown index type %d", _bufferIndex.getIndexType());
-    BingoPgConfig bingo_config(fp_engine->bingoCore);
+    auto& bingo_core = fp_engine->bingoCore;
+    BingoPgConfig bingo_config(bingo_core);
     _bufferIndex.readConfigParameters(bingo_config);
+    /*
+     * Set up bingo configuration
+     */
     bingo_config.setUpBingoConfiguration();
+    bingo_core.bingoTautomerRulesReady(0, 0, 0);
+    bingo_core.bingoIndexBegin();
 
 
     /*

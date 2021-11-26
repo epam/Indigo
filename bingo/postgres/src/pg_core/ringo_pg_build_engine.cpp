@@ -29,12 +29,6 @@ RingoPgBuildEngine::RingoPgBuildEngine(const char* rel_name) : BingoPgBuildEngin
 {
     // _setBingoContext();
     //   bingoSetErrorHandler(_errorHandler, 0);
-    /*
-     * Set up bingo configuration
-     */
-    bingoCore.bingoTautomerRulesReady(0, 0, 0);
-    bingoCore.bingoIndexBegin();
-
     _relName.readString(rel_name, true);
     _shadowRelName.readString(rel_name, true);
     _shadowRelName.appendString("_shadow", true);
