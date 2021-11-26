@@ -298,24 +298,31 @@ CEXPORT int mangoSetupMatch(const char* search_type, const char* query, const ch
     BINGO_END(-2, -2)
 }
 
-CEXPORT int mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, int** min_bound_ptr, int** max_bound_ptr){
-    BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
-MangoSimilarity& similarity = self.mango_context->similarity;
+void BingoCore::mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, int** min_bound_ptr, int** max_bound_ptr) {
+    if (self.mango_search_type != BingoCore::_SIMILARITY) {
+        throw BingoError("Undefined search type");
+    }
+    MangoSimilarity& similarity = self.mango_context->similarity;
 
-self.buffer.resize(sizeof(int) * 2 * count);
+    self.buffer.resize(sizeof(int) * 2 * count);
 
-int* min_bounds = (int*)self.buffer.ptr();
-int* max_bounds = min_bounds + count;
-for (int i = 0; i < count; i++)
-{
-    max_bounds[i] = similarity.getUpperBound(target_ones[i]);
-    min_bounds[i] = similarity.getLowerBound(target_ones[i]);
+    int* min_bounds = (int*)self.buffer.ptr();
+    int* max_bounds = min_bounds + count;
+    for (int i = 0; i < count; i++)
+    {
+        max_bounds[i] = similarity.getUpperBound(target_ones[i]);
+        min_bounds[i] = similarity.getLowerBound(target_ones[i]);
+    }
+
+    *min_bound_ptr = min_bounds;
+    *max_bound_ptr = max_bounds;
 }
 
-*min_bound_ptr = min_bounds;
-*max_bound_ptr = max_bounds;
-}
-BINGO_END(1, -2)
+CEXPORT int mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, int** min_bound_ptr, int** max_bound_ptr) {
+    BINGO_BEGIN{
+        self.mangoSimilarityGetBitMinMaxBoundsArray(count, target_ones, min_bound_ptr, max_bound_ptr);
+    }
+    BINGO_END(1, -2)
 }
 
 CEXPORT int mangoSimilarityGetScore(float* score){BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
@@ -325,15 +332,22 @@ MangoSimilarity& similarity = self.mango_context->similarity;
 BINGO_END(-2, 1)
 }
 
-CEXPORT int mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound){
-    BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
-MangoSimilarity& similarity = self.mango_context->similarity;
-similarity.bottom = min_bound;
-similarity.top = max_bound;
-similarity.include_bottom = true;
-similarity.include_top = true;
+void BingoCore::mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound) {
+    if (self.mango_search_type != BingoCore::_SIMILARITY) {
+        throw BingoError("Undefined search type");
+    }
+    MangoSimilarity& similarity = self.mango_context->similarity;
+    similarity.bottom = min_bound;
+    similarity.top = max_bound;
+    similarity.include_bottom = true;
+    similarity.include_top = true;
 }
-BINGO_END(1, -2)
+
+CEXPORT int mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound) {
+    BINGO_BEGIN{
+        self.mangoSimilaritySetMinMaxBounds(min_bound, max_bound);
+    }
+    BINGO_END(1, -2)
 }
 
 int BingoCore::mangoMatchTarget(const char* target, int target_buf_len) {
@@ -678,16 +692,28 @@ CEXPORT int mangoNeedCoords()
     BINGO_END(-2, -2)
 }
 
-CEXPORT byte mangoExactNeedComponentMatching(){BINGO_BEGIN{MangoExact& exact = self.mango_context->exact;
-return exact.needComponentMatching();
-}
-BINGO_END(-2, -2)
+byte BingoCore::mangoExactNeedComponentMatching(){
+    MangoExact& exact = self.mango_context->exact;
+    return exact.needComponentMatching();
 }
 
-CEXPORT const char* mangoTauGetQueryGross(){BINGO_BEGIN{MangoTautomer& tautomer = self.mango_context->tautomer;
-return tautomer.getQueryGross();
+CEXPORT byte mangoExactNeedComponentMatching(){
+    BINGO_BEGIN {
+        return self.mangoExactNeedComponentMatching();
+    }
+    BINGO_END(-2, -2)
 }
-BINGO_END(0, 0)
+
+const char* BingoCore::mangoTauGetQueryGross(){
+    MangoTautomer& tautomer = self.mango_context->tautomer;
+    return tautomer.getQueryGross();
+}
+
+CEXPORT const char* mangoTauGetQueryGross(){
+    BINGO_BEGIN {
+        return self.mangoTauGetQueryGross();
+    }
+    BINGO_END(0, 0)
 }
 
 CEXPORT int mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
@@ -770,14 +796,22 @@ return self.buffer.ptr();
 BINGO_END(0, 0)
 }
 
-CEXPORT const char* mangoGrossGetConditions(){BINGO_BEGIN{if (self.bingo_context == 0) throw BingoError("context not set");
+const char* BingoCore::mangoGrossGetConditions() {
+    if (self.bingo_context == 0) {
+        throw BingoError("context not set");
+    }
 
-if (self.mango_search_type != BingoCore::_GROSS)
-    throw BingoError("Search type must be 'GROSS'");
+    if (self.mango_search_type != BingoCore::_GROSS)
+        throw BingoError("Search type must be 'GROSS'");
 
-return self.mango_context->gross.getConditions();
+    return self.mango_context->gross.getConditions();
 }
-BINGO_END(0, 0)
+
+CEXPORT const char* mangoGrossGetConditions() {
+    BINGO_BEGIN {
+        return self.mangoGrossGetConditions();
+    }
+    BINGO_END(0, 0)
 }
 
 CEXPORT const char* mangoCheckMolecule(const char* molecule, int molecule_len){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);

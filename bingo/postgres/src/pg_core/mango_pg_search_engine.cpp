@@ -215,7 +215,7 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
 
     what_clause.printf("sh.b_id");
 
-    bingo_res = mangoGetHash(false, -1, &hash_elements_count, &hash);
+    bingo_res = bingoCore.mangoGetHash(false, -1, &hash_elements_count, &hash);
     CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting hash", bingoGetError());
 
     if (hash_elements_count > MAX_HASH_ELEMENTS)
@@ -245,7 +245,7 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
          */
         for (int i = 0; i < hash_elements_count; i++)
         {
-            bingo_res = mangoGetHash(false, i, &count, &hash);
+            bingo_res = bingoCore.mangoGetHash(false, i, &count, &hash);
             CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting hash", bingoGetError());
 
             where_clause.printf("t%d.ex_hash = %d AND ", i, hash);
@@ -255,7 +255,7 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
          * components count mast must target components count
          */
         Array<char> rel;
-        bingo_res = mangoExactNeedComponentMatching();
+        bingo_res = bingoCore.mangoExactNeedComponentMatching();
         CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while getting need matching", bingoGetError());
 
         if (bingo_res > 0)
@@ -267,13 +267,13 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
         {
             if (i != 0)
                 where_clause.printf("AND ");
-            bingo_res = mangoGetHash(false, i, &count, &hash);
+            bingo_res = bingoCore.mangoGetHash(false, i, &count, &hash);
             CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting hash", bingoGetError());
 
             where_clause.printf("t%d.f_count %s %d ", i, rel.ptr(), count);
         }
     }
-    bingo_res = mangoExactNeedComponentMatching();
+    bingo_res = bingoCore.mangoExactNeedComponentMatching();
     CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while getting need matching", bingoGetError());
     if (bingo_res == 0)
     {
@@ -286,7 +286,7 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
         int query_fragments_count = 0;
         for (int i = 0; i < hash_elements_count; i++)
         {
-            bingo_res = mangoGetHash(false, i, &count, &hash);
+            bingo_res = bingoCore.mangoGetHash(false, i, &count, &hash);
             CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting hash", bingoGetError());
             query_fragments_count += count;
         }
@@ -307,7 +307,7 @@ void MangoPgSearchEngine::_prepareExactTauStrings(indigo::Array<char>& what_clau
     what_clause.printf("b_id");
     from_clause.printf("%s", _shadowRelName.ptr());
 
-    const char* query_gross = mangoTauGetQueryGross();
+    const char* query_gross = bingoCore.mangoTauGetQueryGross();
     if (query_gross == 0)
         CORE_HANDLE_ERROR(0, 1, "molecule search engine: error while constructing gross string", bingoGetError());
 
@@ -386,7 +386,7 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
      * Set up matching parameters
      */
     //   elog(WARNING, "processing query: %s", search_query.ptr());
-    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    bingo_res = bingoCore.mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
     CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set exact search context", bingoGetError());
 
     if (strcasestr(search_options.ptr(), "TAU") != 0)
@@ -433,10 +433,10 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = mangoSetupMatch(search_type.ptr(), gross_query.ptr(), 0);
+    bingo_res = bingoCore.mangoSetupMatch(search_type.ptr(), gross_query.ptr(), 0);
     CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set gross search context", bingoGetError());
 
-    const char* gross_conditions = mangoGrossGetConditions();
+    const char* gross_conditions = bingoCore.mangoGrossGetConditions();
     if (gross_conditions == 0)
         CORE_HANDLE_ERROR(0, 1, "molecule search engine: can not get gross conditions", bingoGetError());
     _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions);
@@ -515,20 +515,20 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    bingo_res = bingoCore.mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
     CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sim search context", bingoGetError());
 
     if (min_bound > max_bound)
         throw Error("min bound %f can not be greater then max bound %f", min_bound, max_bound);
 
-    bingo_res = mangoSimilaritySetMinMaxBounds(min_bound, max_bound);
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get similarity min max bounds", bingoGetError());
+    bingoCore.mangoSimilaritySetMinMaxBounds(min_bound, max_bound);
+    // CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get similarity min max bounds", bingoGetError());
 
     const char* fingerprint_buf;
     int fp_len;
 
-    bingo_res = mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get query fingerprint", bingoGetError());
+    bingoCore.mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
+    // CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get query fingerprint", bingoGetError());
 
     int size_bits = fp_len * 8;
     data.setFingerPrints(fingerprint_buf, size_bits);
@@ -696,10 +696,10 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
              * Prepare min max bounds
              */
             //         profTimerStart(t3, "mango_pg.get_min_max");
-            bingo_res = mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
+            bingoCore.mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
             //         profTimerStop(t3);
 
-            CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting similarity bounds array", bingoGetError());
+            // CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting similarity bounds array", bingoGetError());
 
             /*
              * Prepare common bits array
