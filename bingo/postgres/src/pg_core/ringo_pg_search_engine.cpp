@@ -38,20 +38,22 @@ RingoPgSearchEngine::RingoPgSearchEngine(const char* rel_name) : BingoPgSearchEn
 
 RingoPgSearchEngine::~RingoPgSearchEngine()
 {
-    bingoIndexEnd();
+    bingoCore.bingoIndexEnd();
 }
 
 bool RingoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
 {
     bool result = false;
-    int bingo_res;
+    int bingo_res = 1;
     QS_DEF(Array<char>, react_buf);
     react_buf.clear();
 
     _bufferIndexPtr->readCmfItem(section_idx, structure_idx, react_buf);
-    bingo_res = ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes());
-    CORE_HANDLE_ERROR_TID(bingo_res, -1, "reaction search engine: error while matching target", section_idx, structure_idx, bingoGetError());
-    CORE_RETURN_WARNING_TID(bingo_res, 0, "reaction search engine: error while matching target", section_idx, structure_idx, bingoGetWarning());
+    try {
+        bingo_res = ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes());
+    } CORE_CATCH_ERROR_TID("reaction search engine: error while matching target", section_idx, structure_idx)
+
+    CORE_RETURN_WARNING_TID(bingo_res, 0, "reaction search engine: error while matching target", section_idx, structure_idx, bingoCore.warning.ptr());
 
     result = (bingo_res == 1);
 
@@ -73,7 +75,6 @@ void RingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
     }
     _queryFpData = std::make_unique<RingoPgFpData>();
 
-    _setBingoContext();
     BingoPgSearchEngine::prepareQuerySearch(bingo_idx, scan_desc);
 
     switch (_searchType)
@@ -140,7 +141,6 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
 {
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
     QS_DEF(Array<char>, search_type);
-    int bingo_res;
     Array<char> search_query;
     Array<char> search_options;
     BingoPgFpData& data = *_queryFpData;
@@ -164,14 +164,16 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rsub search context", bingoGetError());
+    try {
+        ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    } CORE_CATCH_ERROR("reaction search engine: can not set rsub search context")
 
     const char* fingerprint_buf;
     int fp_len;
 
-    bingo_res = ringoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-    CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not get query fingerprint", bingoGetError());
+    try {
+        ringoGetQueryFingerprint(&fingerprint_buf, &fp_len);
+    } CORE_CATCH_ERROR("reaction search engine: can not get query fingerprint")
 
     int size_bits = fp_len * 8;
     data.setFingerPrints(fingerprint_buf, size_bits);
@@ -202,8 +204,9 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rexact search context", bingoGetError());
+    try {
+        ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    } CORE_CATCH_ERROR("reaction search engine: can not set rexact search context")
 
     _prepareExactQueryStrings(what_clause, from_clause, where_clause);
 

@@ -127,40 +127,44 @@ void _ringoCheckPseudoAndCBDM(BingoCore& self)
         throw BingoError("ignore_closing_bond_direction_mismatch option not set");
 }
 
+int BingoCore::ringoSetupMatch(const char* search_type, const char* query, const char* options) {
+    _ringoCheckPseudoAndCBDM(self);
+
+    if (strcasecmp(search_type, "RSUB") == 0 || strcasecmp(search_type, "RSMARTS") == 0)
+    {
+        RingoSubstructure& substructure = self.ringo_context->substructure;
+
+        if (substructure.parse(options))
+        {
+            if (strcasecmp(search_type, "RSUB") == 0)
+                substructure.loadQuery(query);
+            else
+                substructure.loadSMARTS(query);
+            self.ringo_search_type = BingoCore::_SUBSTRUCTRE;
+            return 1;
+        }
+    }
+    else if (strcasecmp(search_type, "REXACT") == 0)
+    {
+        RingoExact& exact = self.ringo_context->exact;
+        exact.setParameters(options);
+        exact.loadQuery(query);
+        self.ringo_search_type = BingoCore::_EXACT;
+        return 1;
+    }
+    self.ringo_search_type = BingoCore::_UNDEF;
+    throw BingoError("Unknown search type '%s' or options string '%s'", search_type, options);
+}
+
 CEXPORT int ringoSetupMatch(const char* search_type, const char* query, const char* options)
 {
     profTimerStart(t0, "match.setup_match");
 
     BINGO_BEGIN
     {
-        _ringoCheckPseudoAndCBDM(self);
-
         TRY_READ_TARGET_RXN
         {
-            if (strcasecmp(search_type, "RSUB") == 0 || strcasecmp(search_type, "RSMARTS") == 0)
-            {
-                RingoSubstructure& substructure = self.ringo_context->substructure;
-
-                if (substructure.parse(options))
-                {
-                    if (strcasecmp(search_type, "RSUB") == 0)
-                        substructure.loadQuery(query);
-                    else
-                        substructure.loadSMARTS(query);
-                    self.ringo_search_type = BingoCore::_SUBSTRUCTRE;
-                    return 1;
-                }
-            }
-            else if (strcasecmp(search_type, "REXACT") == 0)
-            {
-                RingoExact& exact = self.ringo_context->exact;
-                exact.setParameters(options);
-                exact.loadQuery(query);
-                self.ringo_search_type = BingoCore::_EXACT;
-                return 1;
-            }
-            self.ringo_search_type = BingoCore::_UNDEF;
-            throw BingoError("Unknown search type '%s' or options string '%s'", search_type, options);
+            return self.ringoSetupMatch(search_type, query, options);
         }
         CATCH_READ_TARGET_RXN(self.error.readString(e.message(), 1); return -1;);
     }
@@ -204,6 +208,31 @@ CEXPORT int ringoMatchTarget(const char* target, int target_buf_len)
     BINGO_END(-2, -2)
 }
 
+int BingoCore::ringoMatchTargetBinary(const char* target_bin, int target_bin_len) {
+    if (self.ringo_search_type == BingoCore::_UNDEF)
+        throw BingoError("Undefined search type");
+
+    TRY_READ_TARGET_RXN
+    {
+        BufferScanner scanner(target_bin, target_bin_len);
+
+        if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
+        {
+            RingoSubstructure& substructure = self.ringo_context->substructure;
+            return substructure.matchBinary(scanner) ? 1 : 0;
+        }
+        else if (self.ringo_search_type == BingoCore::_EXACT)
+        {
+            RingoExact& exact = self.ringo_context->exact;
+            return exact.matchBinary(scanner) ? 1 : 0;
+        }
+        else
+            throw BingoError("Invalid search type");
+    }
+    CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), 1); return -1;);
+    return 0;
+}
+
 // Return value:
 //   1 if the query is a substructure of the taret
 //   0 if it is not
@@ -215,27 +244,7 @@ CEXPORT int ringoMatchTargetBinary(const char* target_bin, int target_bin_len)
 
     BINGO_BEGIN
     {
-        if (self.ringo_search_type == BingoCore::_UNDEF)
-            throw BingoError("Undefined search type");
-
-        TRY_READ_TARGET_RXN
-        {
-            BufferScanner scanner(target_bin, target_bin_len);
-
-            if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
-            {
-                RingoSubstructure& substructure = self.ringo_context->substructure;
-                return substructure.matchBinary(scanner) ? 1 : 0;
-            }
-            else if (self.ringo_search_type == BingoCore::_EXACT)
-            {
-                RingoExact& exact = self.ringo_context->exact;
-                return exact.matchBinary(scanner) ? 1 : 0;
-            }
-            else
-                throw BingoError("Invalid search type");
-        }
-        CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), 1); return -1;);
+        return ringoMatchTargetBinary(target_bin, target_bin_len);
     }
     BINGO_END(-2, -2)
 }
@@ -349,26 +358,30 @@ catch (...)
 BINGO_END(0, 0)
 }
 
+void BingoCore::ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len) {
+    if (self.ringo_search_type == BingoCore::_UNDEF)
+            throw BingoError("Undefined search type");
+
+    if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
+    {
+        RingoSubstructure& substructure = self.ringo_context->substructure;
+
+        self.buffer.copy((const char*)substructure.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2);
+    }
+    else
+        throw BingoError("Invalid search type");
+
+    *query_fp = self.buffer.ptr();
+    *query_fp_len = self.buffer.size();
+}
+
 CEXPORT int ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
 {
     profTimerStart(t0, "match.query_fingerprint");
 
     BINGO_BEGIN
     {
-        if (self.ringo_search_type == BingoCore::_UNDEF)
-            throw BingoError("Undefined search type");
-
-        if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
-        {
-            RingoSubstructure& substructure = self.ringo_context->substructure;
-
-            self.buffer.copy((const char*)substructure.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2);
-        }
-        else
-            throw BingoError("Invalid search type");
-
-        *query_fp = self.buffer.ptr();
-        *query_fp_len = self.buffer.size();
+        self.ringoGetQueryFingerprint(query_fp, query_fp_len);
     }
     BINGO_END(1, -2)
 }

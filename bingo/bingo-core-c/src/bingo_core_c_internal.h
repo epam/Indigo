@@ -77,6 +77,9 @@ namespace indigo
             int ringoIndexProcessSingleRecord();
             int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* crf_buf_len, const char** fingerprint_buf, int* fingerprint_buf_len);
             int ringoGetHash(bool for_index, dword* hash);
+            int ringoMatchTargetBinary(const char* target_bin, int target_bin_len);
+            int ringoSetupMatch(const char* search_type, const char* query, const char* options);
+            void ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len);
             int bingoSDFImportOpen(const char* file_name);
             int bingoSDFImportClose();
             int bingoSDFImportEOF();
