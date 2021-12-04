@@ -70,7 +70,7 @@ int BingoCore::mangoIndexProcessSingleRecord(){
         self.warning.readString(e.message(), true);
         return 0;
     });
-    return 0;
+    return 1;
 }
 
 CEXPORT int mangoIndexProcessSingleRecord(){
@@ -154,7 +154,7 @@ int BingoCore::mangoGetHash(bool for_index, int index, int* count, dword* hash)
         }
         return 1;
     }
-    return 0;
+    return 1;
 }
 
 CEXPORT int mangoGetHash(bool for_index, int index, int* count, dword* hash)

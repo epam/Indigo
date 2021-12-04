@@ -92,7 +92,7 @@ namespace indigo
             int bingoIndexBegin();
             int bingoIndexEnd();
             int bingoImportParseFieldList(const char* fields_str);
-            int bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
+            void bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
                               void (*process_error_cb)(int id, void* context), void* context);
             int getTimeout();
             BingoCore& self;
@@ -156,7 +156,7 @@ namespace indigo
         BingoCore& self = BingoCore::getInstance();                                                                                                            \
         try                                                                                                                                                    \
         {                                                                                                                                                      \
-            throw Exception("unexpected call"); self.error.clear();
+            self.error.clear();
 
 #define BINGO_END(success, fail)                                                                                                                               \
     }                                                                                                                                                          \

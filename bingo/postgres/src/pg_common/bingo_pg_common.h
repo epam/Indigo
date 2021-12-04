@@ -412,6 +412,44 @@ public:
     }
 };
 
+#define CORE_CATCH_ERROR(suffix)\
+   catch (indigo::Exception& e) { \
+      throw BingoPgError("%s: %s", suffix, e.message());\
+   } catch (...) { \
+      throw BingoPgError("%s: bingo unknown error", suffix);\
+   }
+
+#define CORE_CATCH_ERROR_TID_NO_INDEX(suffix, block, offset)\
+   catch (indigo::Exception& e) { \
+      throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, e.message());\
+   } catch (...) { \
+      throw BingoPgError("%s with ctid='(%d,%d)'::tid: bingo unknown error", suffix, block, offset);\
+   }
+
+#define CORE_CATCH_ERROR_TID(suffix, section_idx, structure_idx)\
+   catch (indigo::Exception& e) { \
+      ItemPointerData target_item;\
+      _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);\
+      int block_number = ItemPointerGetBlockNumber(&target_item);\
+      int offset_number = ItemPointerGetOffsetNumber(&target_item);\
+      throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block_number, offset_number, e.message());\
+   } catch (...) { \
+      ItemPointerData target_item;\
+      _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);\
+      int block_number = ItemPointerGetBlockNumber(&target_item);\
+      int offset_number = ItemPointerGetOffsetNumber(&target_item);\
+      throw BingoPgError("%s with ctid='(%d,%d)'::tid: bingo unknown error", suffix, block_number, offset_number);\
+   }
+
+#define CORE_CATCH_WARNING_RETURN(suffix)\
+   catch (indigo::Exception& e) { \
+      elog(WARNING, "%s: %s", suffix, e.message());\
+      return false; \
+   } catch (...) { \
+      elog(WARNING, "%s: bingo unknown error", suffix);\
+      return false; \
+   }
+
 #define CORE_HANDLE_ERROR(res, success_res, suffix, message)\
    if (res < success_res) {\
       throw BingoPgError("%s: %s", suffix, message);\
