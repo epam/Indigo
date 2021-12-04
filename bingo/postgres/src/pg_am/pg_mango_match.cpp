@@ -51,6 +51,9 @@ public:
     {
         BingoPgCommon::getSearchTypeString(_type, _typeStr, true);
         setFunctionName(_typeStr.ptr());
+        _errorStr.readString("Error while bingo", true);
+        _errorStr.appendString(_typeStr.ptr(), true);
+        _errorStr.appendString(" loading molecule", true);
     }
 
     ~_MangoContextHandler() override
@@ -71,10 +74,9 @@ public:
         /*
          * Set up match parameters
          */
-        int res = mangoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
-
-        if (res < 0)
-            throw BingoPgError("Error while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetError());
+        try {
+            bingoCore.mangoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
+        } CORE_CATCH_ERROR(_errorStr.ptr())
 
         int target_size;
         const char* target_data = target_text.getText(target_size);
@@ -83,7 +85,7 @@ public:
         if (_type == BingoPgCommon::MOL_GROSS)
         {
             buffer_warn.readString(_typeStr.ptr(), true);
-            const char* mol_name = bingoGetNameCore(target_data, target_size);
+            const char* mol_name = bingoCore.bingoGetNameCore(target_data, target_size);
             if (mol_name != 0 && strlen(mol_name) > 0)
             {
                 buffer_warn.appendString(" molecule with name='", true);
@@ -92,13 +94,11 @@ public:
             }
 
             setFunctionName(buffer_warn.ptr());
-            target_data = mangoGross(target_data, target_size);
-            if (target_data == 0)
-            {
-                CORE_HANDLE_WARNING(0, 1, "bingo.gross", bingoGetError());
-                return -1;
-            }
+            try {
+                target_data = bingoCore.mangoGross(target_data, target_size);
+            } CORE_CATCH_WARNING_RETURN("bingo.gross", -1)
         }
+        int res;
 
         res = bingoCore.mangoMatchTarget(target_data, target_size);
 
@@ -119,6 +119,7 @@ private:
     _MangoContextHandler(const _MangoContextHandler&); // no implicit copy
     int _type;
     indigo::Array<char> _typeStr;
+    indigo::Array<char> _errorStr;
 };
 
 Datum _sub_internal(PG_FUNCTION_ARGS)

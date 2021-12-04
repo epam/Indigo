@@ -776,24 +776,29 @@ CEXPORT int mangoMassD(const char* target_buf, int target_buf_len, const char* t
     BINGO_END(-1, -1)
 }
 
-CEXPORT const char* mangoGross(const char* target_buf, int target_buf_len){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
+const char* BingoCore::mangoGross(const char* target_buf, int target_buf_len) {
+    _mangoCheckPseudoAndCBDM(self);
 
-BufferScanner scanner(target_buf, target_buf_len);
+    BufferScanner scanner(target_buf, target_buf_len);
 
-QS_DEF(Molecule, target);
+    QS_DEF(Molecule, target);
 
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadMolecule(target);
+    MoleculeAutoLoader loader(scanner);
+    self.bingo_context->setLoaderSettings(loader);
+    loader.loadMolecule(target);
 
-QS_DEF(Array<int>, gross);
-MoleculeGrossFormula::collect(target, gross);
-MoleculeGrossFormula::toString(gross, self.buffer);
-self.buffer.push(0);
+    QS_DEF(Array<int>, gross);
+    MoleculeGrossFormula::collect(target, gross);
+    MoleculeGrossFormula::toString(gross, self.buffer);
+    self.buffer.push(0);
 
-return self.buffer.ptr();
+    return self.buffer.ptr();
 }
-BINGO_END(0, 0)
+CEXPORT const char* mangoGross(const char* target_buf, int target_buf_len) {
+    BINGO_BEGIN{
+        return mangoGross(target_buf, target_buf_len);
+    }
+    BINGO_END(0, 0)
 }
 
 const char* BingoCore::mangoGrossGetConditions() {

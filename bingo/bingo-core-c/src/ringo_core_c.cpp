@@ -244,7 +244,7 @@ CEXPORT int ringoMatchTargetBinary(const char* target_bin, int target_bin_len)
 
     BINGO_BEGIN
     {
-        return ringoMatchTargetBinary(target_bin, target_bin_len);
+        return self.ringoMatchTargetBinary(target_bin, target_bin_len);
     }
     BINGO_END(-2, -2)
 }

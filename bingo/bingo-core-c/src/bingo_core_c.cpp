@@ -346,7 +346,7 @@ CEXPORT int bingoAddTautomerRule(int n, const char* beg, const char* end)
 {
     BINGO_BEGIN
     {
-        return bingoAddTautomerRule(n, beg, end);
+        return self.bingoAddTautomerRule(n, beg, end);
     }
     BINGO_END(1, 0);
 }
@@ -698,17 +698,21 @@ CEXPORT void bingoProfIncCounter(const char* name, int dv)
     inst->addCounter(name_index, dv);
 }
 
+const char* BingoCore::bingoGetNameCore(const char* target_buf, int target_buf_len) {
+    QS_DEF(Array<char>, source);
+    QS_DEF(Array<char>, name);
+
+    BufferScanner scanner(target_buf, target_buf_len);
+    bingoGetName(scanner, self.buffer);
+    self.buffer.push(0);
+    return self.buffer.ptr();
+}
+
 CEXPORT const char* bingoGetNameCore(const char* target_buf, int target_buf_len)
 {
     BINGO_BEGIN
     {
-        QS_DEF(Array<char>, source);
-        QS_DEF(Array<char>, name);
-
-        BufferScanner scanner(target_buf, target_buf_len);
-        bingoGetName(scanner, self.buffer);
-        self.buffer.push(0);
-        return self.buffer.ptr();
+        return self.bingoGetNameCore(target_buf, target_buf_len);
     }
     BINGO_END(0, 0);
 };

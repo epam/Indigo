@@ -441,13 +441,13 @@ public:
       throw BingoPgError("%s with ctid='(%d,%d)'::tid: bingo unknown error", suffix, block_number, offset_number);\
    }
 
-#define CORE_CATCH_WARNING_RETURN(suffix)\
+#define CORE_CATCH_WARNING_RETURN(suffix, return_value)\
    catch (indigo::Exception& e) { \
       elog(WARNING, "%s: %s", suffix, e.message());\
-      return false; \
+      return return_value; \
    } catch (...) { \
       elog(WARNING, "%s: bingo unknown error", suffix);\
-      return false; \
+      return return_value; \
    }
 
 #define CORE_HANDLE_ERROR(res, success_res, suffix, message)\

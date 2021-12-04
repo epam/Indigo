@@ -272,7 +272,7 @@ bool MangoPgBuildEngine::_readPreparedInfo(int* id, MangoPgFpData& data, int fp_
         */
         bingoCore.mangoIndexReadPreparedMolecule(id, &cmf_buf, &cmf_len, &xyz_buf, &xyz_len, &gross_str, &counter_elements_str, &fp_buf, &fp_len, &fp_sim_str,
                                                &mass, &sim_fp_bits_count);
-    } CORE_CATCH_WARNING_RETURN("molecule build engine: error while prepare record")
+    } CORE_CATCH_WARNING_RETURN("molecule build engine: error while prepare record", false)
 
     /*
      * Set gross formula
@@ -286,7 +286,7 @@ bool MangoPgBuildEngine::_readPreparedInfo(int* id, MangoPgFpData& data, int fp_
     int ex_hash_count;
     try {
         bingoCore.mangoGetHash(1, -1, &ex_hash_count, &ex_hash);
-    } CORE_CATCH_WARNING_RETURN("molecule build engine: error while calculating hash for a record")
+    } CORE_CATCH_WARNING_RETURN("molecule build engine: error while calculating hash for a record", false)
 
     int target_fragments = 0;
     for (int comp_idx = 0; comp_idx < ex_hash_count; ++comp_idx)
@@ -294,7 +294,7 @@ bool MangoPgBuildEngine::_readPreparedInfo(int* id, MangoPgFpData& data, int fp_
         int comp_count;
         try {
             bingoCore.mangoGetHash(1, comp_idx, &comp_count, &ex_hash);
-        } CORE_CATCH_WARNING_RETURN("molecule build engine: error while calculating hash for a record")
+        } CORE_CATCH_WARNING_RETURN("molecule build engine: error while calculating hash for a record", false)
 
         data.insertHash(ex_hash, comp_count);
         target_fragments += comp_count;
