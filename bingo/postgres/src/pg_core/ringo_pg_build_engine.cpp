@@ -46,7 +46,7 @@ bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
     int block_number = ItemPointerGetBlockNumber(item_ptr);
     int offset_number = ItemPointerGetOffsetNumber(item_ptr);
 
-    int struct_size, bingo_res;
+    int struct_size, bingo_res = 1;
     const char* struct_ptr = struct_cache.text->getText(struct_size);
     try {
         /*
@@ -188,7 +188,6 @@ void RingoPgBuildEngine::_processResultCb(void* context)
 
 bool RingoPgBuildEngine::_readPreparedInfo(int* id, RingoPgFpData& data, int fp_size)
 {
-    int bingo_res;
     const char* crf_buf;
     int crf_len;
     const char* fp_buf;

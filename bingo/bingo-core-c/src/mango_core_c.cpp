@@ -209,82 +209,78 @@ CEXPORT int mangoGetBondCount(const char* target_buf, int target_buf_len){
 
 int BingoCore::mangoSetupMatch(const char* search_type, const char* query, const char* options) {
     _mangoCheckPseudoAndCBDM(self);
-
-    TRY_READ_TARGET_MOL
+    
+    if (strcasecmp(search_type, "SUB") == 0)
     {
-        if (strcasecmp(search_type, "SUB") == 0)
-        {
-            MangoSubstructure& substructure = self.mango_context->substructure;
-            MangoTautomer& tautomer = self.mango_context->tautomer;
+        MangoSubstructure& substructure = self.mango_context->substructure;
+        MangoTautomer& tautomer = self.mango_context->tautomer;
 
-            if (substructure.parse(options))
-            {
-                substructure.loadQuery(query);
-                self.mango_search_type = BingoCore::_SUBSTRUCTRE;
-                return 1;
-            }
-            if (tautomer.parseSub(options))
-            {
-                if (!self.bingo_context->tautomer_rules_ready)
-                    throw BingoError("tautomer rules not set");
-
-                tautomer.loadQuery(query);
-                self.mango_search_type = BingoCore::_TAUTOMER;
-                return 1;
-            }
-        }
-        else if (strcasecmp(search_type, "SMARTS") == 0)
+        if (substructure.parse(options))
         {
-            MangoSubstructure& substructure = self.mango_context->substructure;
-            if (substructure.parse(options))
-            {
-                substructure.loadSMARTS(query);
-                self.mango_search_type = BingoCore::_SUBSTRUCTRE;
-                return 1;
-            }
-        }
-        else if (strcasecmp(search_type, "EXACT") == 0)
-        {
-            MangoExact& exact = self.mango_context->exact;
-            MangoTautomer& tautomer = self.mango_context->tautomer;
-
-            if (exact.parse(options))
-            {
-                exact.loadQuery(query);
-                self.mango_search_type = BingoCore::_EXACT;
-                return 1;
-            }
-            if (tautomer.parseExact(options))
-            {
-                // TODO: pass this check inside MangoSubstructure
-                if (!self.bingo_context->tautomer_rules_ready)
-                    throw BingoError("tautomer rules not set");
-
-                tautomer.loadQuery(query);
-                self.mango_search_type = BingoCore::_TAUTOMER;
-                return 1;
-            }
-        }
-        else if (strcasecmp(search_type, "SIM") == 0)
-        {
-            MangoSimilarity& similarity = self.mango_context->similarity;
-            similarity.loadQuery(query);
-            similarity.setMetrics(options);
-            self.mango_search_type = BingoCore::_SIMILARITY;
+            substructure.loadQuery(query);
+            self.mango_search_type = BingoCore::_SUBSTRUCTRE;
             return 1;
         }
-        else if (strcasecmp(search_type, "GROSS") == 0)
+        if (tautomer.parseSub(options))
         {
-            MangoGross& gross = self.mango_context->gross;
-            gross.parseQuery(query);
-            self.mango_search_type = BingoCore::_GROSS;
+            if (!self.bingo_context->tautomer_rules_ready)
+                throw BingoError("tautomer rules not set");
+
+            tautomer.loadQuery(query);
+            self.mango_search_type = BingoCore::_TAUTOMER;
             return 1;
         }
-        self.mango_search_type = BingoCore::_UNDEF;
-        throw BingoError("Unknown search type '%s' or options string '%s'", search_type, options);
     }
-    CATCH_READ_TARGET_MOL(self.error.readString(e.message(), 1); return -1;);
-    return 0;
+    else if (strcasecmp(search_type, "SMARTS") == 0)
+    {
+        MangoSubstructure& substructure = self.mango_context->substructure;
+        if (substructure.parse(options))
+        {
+            substructure.loadSMARTS(query);
+            self.mango_search_type = BingoCore::_SUBSTRUCTRE;
+            return 1;
+        }
+    }
+    else if (strcasecmp(search_type, "EXACT") == 0)
+    {
+        MangoExact& exact = self.mango_context->exact;
+        MangoTautomer& tautomer = self.mango_context->tautomer;
+
+        if (exact.parse(options))
+        {
+            exact.loadQuery(query);
+            self.mango_search_type = BingoCore::_EXACT;
+            return 1;
+        }
+        if (tautomer.parseExact(options))
+        {
+            // TODO: pass this check inside MangoSubstructure
+            if (!self.bingo_context->tautomer_rules_ready)
+                throw BingoError("tautomer rules not set");
+
+            tautomer.loadQuery(query);
+            self.mango_search_type = BingoCore::_TAUTOMER;
+            return 1;
+        }
+    }
+    else if (strcasecmp(search_type, "SIM") == 0)
+    {
+        MangoSimilarity& similarity = self.mango_context->similarity;
+        similarity.loadQuery(query);
+        similarity.setMetrics(options);
+        self.mango_search_type = BingoCore::_SIMILARITY;
+        return 1;
+    }
+    else if (strcasecmp(search_type, "GROSS") == 0)
+    {
+        MangoGross& gross = self.mango_context->gross;
+        gross.parseQuery(query);
+        self.mango_search_type = BingoCore::_GROSS;
+        return 1;
+    }
+    self.mango_search_type = BingoCore::_UNDEF;
+
+    throw BingoError("Unknown search type '%s' or options string '%s'", search_type, options);
 }
 
 CEXPORT int mangoSetupMatch(const char* search_type, const char* query, const char* options)
@@ -293,7 +289,11 @@ CEXPORT int mangoSetupMatch(const char* search_type, const char* query, const ch
 
     BINGO_BEGIN
     {
-        return self.mangoSetupMatch(search_type, query, options);
+        TRY_READ_TARGET_MOL
+        {
+            return self.mangoSetupMatch(search_type, query, options);
+        }
+        CATCH_READ_TARGET_MOL(self.error.readString(e.message(), 1); return -1;);
     }
     BINGO_END(-2, -2)
 }
