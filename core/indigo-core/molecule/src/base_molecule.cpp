@@ -278,6 +278,12 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         reaction_atom_exact_change[mapping[i]] = mol.reaction_atom_exact_change[i];
     }
 
+    if (skip_flags & FORCE_BOND_DIRECTIONS)
+    {
+        _bond_directions.expandFill( edgeEnd() + mol.edgeEnd(), 0);
+    } else
+      _bond_directions.expandFill(  mol.edgeEnd(), 0);
+
     for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
     {
         const Edge& edge = mol.getEdge(j);
@@ -286,14 +292,14 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         {
             int bond_idx = findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
             if (bond_idx > -1)
+            {
                 reaction_bond_reacting_center[bond_idx] = mol.reaction_bond_reacting_center[j];
+            }
         }
     }
 
-    _bond_directions.expandFill(mol.edgeEnd(), 0);
-
     // trick for molecules with incorrect stereochemistry, of which we do permutations
-    if (vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount())
+    if ( (skip_flags & FORCE_BOND_DIRECTIONS) || ( vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount()))
     {
         for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
         {
@@ -4120,6 +4126,35 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& n
 const int* BaseMolecule::getPyramidStereocenters(int idx) const
 {
     return stereocenters.getPyramid(idx);
+}
+
+void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
+{
+    _stereo_flag_positions[frag_index] = pos;
+}
+
+bool BaseMolecule::getStereoFlagPosition(int frag_index, Vec3f& pos)
+{
+    auto it = _stereo_flag_positions.find(frag_index);
+    if (it != _stereo_flag_positions.end())
+    {
+        pos = it->second;
+        return true;
+    }
+    return false;
+}
+
+void BaseMolecule::addFragmentMapping(int frag_index, Array<int>& mapping)
+{
+    if (_fragment_mappings.size() < frag_index + 1)
+        _fragment_mappings.resize(frag_index + 1);
+    auto& map = _fragment_mappings[frag_index];
+    map.assign(mapping.begin(), mapping.begin() + mapping.size());
+}
+
+int BaseMolecule::countFragments()
+{
+    return _fragment_mappings.size();
 }
 
 void BaseMolecule::markBondsStereocenters()
