@@ -27,8 +27,6 @@ using namespace indigo;
 
 RingoPgBuildEngine::RingoPgBuildEngine(const char* rel_name) : BingoPgBuildEngine(), _searchType(-1)
 {
-    // _setBingoContext();
-    //   bingoSetErrorHandler(_errorHandler, 0);
     _relName.readString(rel_name, true);
     _shadowRelName.readString(rel_name, true);
     _shadowRelName.appendString("_shadow", true);
@@ -44,24 +42,24 @@ RingoPgBuildEngine::~RingoPgBuildEngine()
 bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
 {
 
-    // _setBingoContext();
-
     ItemPointer item_ptr = &struct_cache.ptr;
     int block_number = ItemPointerGetBlockNumber(item_ptr);
     int offset_number = ItemPointerGetOffsetNumber(item_ptr);
 
     int struct_size, bingo_res;
     const char* struct_ptr = struct_cache.text->getText(struct_size);
-    /*
-     * Set target data
-     */
-    bingoCore.bingoSetIndexRecordData(0, struct_ptr, struct_size);
-    /*
-     * Process target
-     */
-    bingo_res = bingoCore.ringoIndexProcessSingleRecord();
-    CORE_HANDLE_ERROR_TID_NO_INDEX(bingo_res, 0, "reaction build engine: error while processing records", block_number, offset_number, bingoGetError());
-    CORE_HANDLE_WARNING_TID_NO_INDEX(bingo_res, 1, "reaction build engine: error while processing record", block_number, offset_number, bingoGetWarning());
+    try {
+        /*
+        * Set target data
+        */
+        bingoCore.bingoSetIndexRecordData(0, struct_ptr, struct_size);
+        /*
+        * Process target
+        */
+        bingo_res = bingoCore.ringoIndexProcessSingleRecord();
+    } CORE_CATCH_ERROR_TID_NO_INDEX ("reaction build engine: error while processing records", block_number, offset_number)
+
+    CORE_HANDLE_WARNING_TID_NO_INDEX(bingo_res, 1, "reaction build engine: error while processing record", block_number, offset_number, bingoCore.warning.ptr());
     if (bingo_res < 1)
         return false;
 
@@ -82,19 +80,17 @@ bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
 
 void RingoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
 {
-    // _setBingoContext();
-    int bingo_res;
-
     _currentCache = 0;
     _structCaches = &struct_caches;
     _fpSize = getFpSize();
 
-    /*
-     * Process target
-     */
-    bingo_res = bingoCore.bingoIndexProcess(true, _getNextRecordCb, _processResultCb, _processErrorCb, this);
-    CORE_HANDLE_ERROR(bingo_res, 0, "reaction build engine: error while processing records", bingoGetError());
-    // _setBingoContext();
+    try {
+        /*
+        * Process target
+        */
+        bingoCore.bingoIndexProcess(true, _getNextRecordCb, _processResultCb, _processErrorCb, this);
+    } CORE_CATCH_ERROR("reaction build engine: error while processing records")
+
 }
 void RingoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
 {
@@ -197,22 +193,21 @@ bool RingoPgBuildEngine::_readPreparedInfo(int* id, RingoPgFpData& data, int fp_
     int crf_len;
     const char* fp_buf;
     int fp_len;
-    /*
-     * Get prepared data
-     */
-    bingo_res = bingoCore.ringoIndexReadPreparedReaction(id, &crf_buf, &crf_len, &fp_buf, &fp_len);
-    CORE_HANDLE_WARNING(bingo_res, 1, "reaction build engine: error while prepare record", bingoGetError());
-    if (bingo_res < 1)
-        return false;
+    try {
+        /*
+        * Get prepared data
+        */
+        bingoCore.ringoIndexReadPreparedReaction(id, &crf_buf, &crf_len, &fp_buf, &fp_len);
+    } CORE_CATCH_WARNING_RETURN("reaction build engine: error while prepare record")
 
     /*
      * Set hash information
      */
     dword ex_hash;
-    bingo_res = bingoCore.ringoGetHash(1, &ex_hash);
-    CORE_HANDLE_WARNING(bingo_res, 1, "reaction build engine: error while get hash", bingoGetError());
-    if (bingo_res < 1)
-        return false;
+
+    try {
+        bingoCore.ringoGetHash(1, &ex_hash);
+    } CORE_CATCH_WARNING_RETURN("reaction build engine: error while get hash")
     data.setHash(ex_hash);
 
     /*

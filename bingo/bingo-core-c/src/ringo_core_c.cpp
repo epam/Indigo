@@ -75,7 +75,7 @@ int BingoCore::ringoIndexProcessSingleRecord() {
         self.warning.readString(e.message(), true);
         return 0;
     });
-    return 0;
+    return 1;
 }
 
 CEXPORT int ringoIndexProcessSingleRecord(){
@@ -445,7 +445,7 @@ int BingoCore::ringoGetHash(bool for_index, dword* hash){
         *hash = exact.getQueryHash();
         return 1;
     }
-    return 0;
+    return 1;
 }
 
 CEXPORT int ringoGetHash(bool for_index, dword* hash){

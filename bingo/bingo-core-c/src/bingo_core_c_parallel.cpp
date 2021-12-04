@@ -28,15 +28,14 @@
 
 using namespace indigo::bingo_core;
 
-int BingoCore::bingoSetIndexRecordData(int id, const char* data, int data_size){
+void BingoCore::bingoSetIndexRecordData(int id, const char* data, int data_size){
     self.index_record_data->copy(data, data_size);
     self.index_record_data_id = id;
-    return 0;
 }
 
 CEXPORT int bingoSetIndexRecordData(int id, const char* data, int data_size){
     BINGO_BEGIN{
-        return self.bingoSetIndexRecordData(id, data, data_size);
+        self.bingoSetIndexRecordData(id, data, data_size);
     }
     BINGO_END(0, -1)
 }

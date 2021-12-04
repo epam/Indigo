@@ -28,7 +28,6 @@ using namespace indigo;
 
 MangoPgBuildEngine::MangoPgBuildEngine(const char* rel_name) : BingoPgBuildEngine(), _searchType(-1)
 {
-    // _setBingoContext();
     _relName.readString(rel_name, true);
     _shadowRelName.readString(rel_name, true);
     _shadowRelName.appendString("_shadow", true);
@@ -41,14 +40,12 @@ MangoPgBuildEngine::MangoPgBuildEngine(const char* rel_name) : BingoPgBuildEngin
 MangoPgBuildEngine::~MangoPgBuildEngine()
 {
     elog(DEBUG1, "bingo: mango build: finish building '%s'", _relName.ptr());
-    // _setBingoContext();
     bingoCore.bingoIndexEnd();
 }
 
 bool MangoPgBuildEngine::processStructure(StructCache& struct_cache)
 {
 
-    // _setBingoContext();
     int bingo_res = 1;
 
     BingoPgText& struct_text = *struct_cache.text;
@@ -133,7 +130,6 @@ void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
     //     }
     // }
     
-    // _setBingoContext();
 }
 
 void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)

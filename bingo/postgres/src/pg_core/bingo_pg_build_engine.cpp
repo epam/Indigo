@@ -116,5 +116,5 @@ void BingoPgBuildEngine::_processErrorCb(int id, void* context)
     ItemPointer item_ptr = &(struct_caches[id].ptr);
     int block_number = ItemPointerGetBlockNumber(item_ptr);
     int offset_number = ItemPointerGetOffsetNumber(item_ptr);
-    elog(WARNING, "build engine: error while processing record with ctid='(%d,%d)'::tid: %s", block_number, offset_number, bingoGetWarning());
+    elog(WARNING, "build engine: error while processing record with ctid='(%d,%d)'::tid: %s", block_number, offset_number, engine->bingoCore.warning.ptr());
 }

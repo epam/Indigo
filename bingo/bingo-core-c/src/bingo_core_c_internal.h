@@ -87,7 +87,7 @@ namespace indigo
             int bingoGetConfigBin(const char* name, const char** value, int* len);
             int bingoGetConfigInt(const char* name, int* value);
             int bingoAddTautomerRule(int n, const char* beg, const char* end);
-            int bingoSetIndexRecordData(int id, const char* data, int data_size);
+            void bingoSetIndexRecordData(int id, const char* data, int data_size);
             int bingoTautomerRulesReady(int n, const char* beg, const char* end);
             int bingoIndexBegin();
             int bingoIndexEnd();
