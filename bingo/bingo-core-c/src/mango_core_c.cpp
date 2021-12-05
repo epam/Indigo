@@ -370,6 +370,8 @@ CEXPORT int mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound) {
 int BingoCore::mangoMatchTarget(const char* target, int target_buf_len) {
     if (self.mango_search_type == BingoCore::_UNDEF)
             throw BingoError("Undefined search type");
+    int timeout = self.getTimeout();
+    AutoCancellationHandler handler(new TimeoutCancellationHandler(timeout));
 
     TRY_READ_TARGET_MOL
     {
@@ -431,6 +433,8 @@ int BingoCore::mangoMatchTargetBinary(const char* target_bin, int target_bin_len
 {
     if (self.mango_search_type == BingoCore::_UNDEF)
         throw BingoError("Undefined search type");
+    int timeout = self.getTimeout();
+    AutoCancellationHandler handler(new TimeoutCancellationHandler(timeout));
 
     TRY_READ_TARGET_MOL
     {
@@ -479,7 +483,7 @@ CEXPORT int mangoMatchTargetBinary(const char* target_bin, int target_bin_len, c
 {
     profTimerStart(t0, "match.match_target_binary");
 
-    BINGO_BEGIN_TIMEOUT
+    BINGO_BEGIN
     {
         return self.mangoMatchTargetBinary(target_bin, target_bin_len, target_xyz, target_xyz_len);
     }

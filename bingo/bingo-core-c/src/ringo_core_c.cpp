@@ -174,6 +174,8 @@ CEXPORT int ringoSetupMatch(const char* search_type, const char* query, const ch
 int BingoCore::ringoMatchTarget(const char* target, int target_buf_len) {
     if (self.ringo_search_type == BingoCore::_UNDEF)
             throw BingoError("Undefined search type");
+    int timeout = self.getTimeout();
+    AutoCancellationHandler handler(new TimeoutCancellationHandler(timeout));
 
     TRY_READ_TARGET_RXN
     {
@@ -216,6 +218,8 @@ CEXPORT int ringoMatchTarget(const char* target, int target_buf_len)
 int BingoCore::ringoMatchTargetBinary(const char* target_bin, int target_bin_len) {
     if (self.ringo_search_type == BingoCore::_UNDEF)
         throw BingoError("Undefined search type");
+    int timeout = self.getTimeout();
+    AutoCancellationHandler handler(new TimeoutCancellationHandler(timeout));
 
     TRY_READ_TARGET_RXN
     {
