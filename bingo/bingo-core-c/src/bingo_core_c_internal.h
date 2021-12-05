@@ -84,6 +84,15 @@ namespace indigo
             int ringoSetupMatch(const char* search_type, const char* query, const char* options);
             void ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len);
             int ringoMatchTarget(const char* target, int target_buf_len);
+            const char* ringoAAM(const char* reaction, int reaction_len, const char* mode);
+            const char* ringoRSMILES(const char* target_buf, int target_buf_len);
+            const char* ringoRxnfile(const char* reaction, int reaction_len);
+            const char* ringoRCML(const char* reaction, int reaction_len);
+            const char* ringoCheckReaction(const char* reaction, int reaction_len);
+            int ringoSetHightlightingMode(int enable);
+            const char* ringoGetHightlightedReaction();
+            const char* ringoICR(const char* reaction, int reaction_len, bool save_xyz, int* out_len);
+            const char* ringoFingerprint(const char* reaction, int reaction_len, const char* options, int* out_len);
             void bingoSDFImportOpen(const char* file_name);
             void bingoSDFImportClose();
             int bingoSDFImportEOF();

@@ -457,6 +457,27 @@ public:
       elog(WARNING, "%s: bingo unknown error", suffix);\
    }
 
+#define CORE_CATCH_REJECT_WARNING(suffix, return_exp) \
+   catch (indigo::Exception& e) { \
+      int val = 0; \
+      bingoCore,bingoGetConfigInt("reject_invalid_structures", &val); \
+      if (val > 0) { \
+         throw BingoPgError("%s: %s", suffix, e.message()); \
+      } else { \
+          elog(WARNING, "%s: %s", suffix, e.message());\
+          return_exp; \
+      } \
+   } catch (...) { \
+      int val = 0; \
+      bingoCore,bingoGetConfigInt("reject_invalid_structures", &val); \
+      if (val > 0) { \
+         throw BingoPgError("%s: bingo unknown error", suffix); \
+      } else { \
+          elog(WARNING, "%s: bingo unknown error", suffix);\
+          return_exp; \
+      } \
+   }
+
 #define CORE_HANDLE_ERROR(res, success_res, suffix, message)\
    if (res < success_res) {\
       throw BingoPgError("%s: %s", suffix, message);\

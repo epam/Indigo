@@ -254,118 +254,149 @@ CEXPORT int ringoMatchTargetBinary(const char* target_bin, int target_bin_len)
     BINGO_END(-2, -2)
 }
 
+const char* BingoCore::ringoRSMILES(const char* target_buf, int target_buf_len)
+{
+    _ringoCheckPseudoAndCBDM(self);
+
+    BufferScanner scanner(target_buf, target_buf_len);
+
+    QS_DEF(Reaction, target);
+
+    ReactionAutoLoader loader(scanner);
+    self.bingo_context->setLoaderSettings(loader);
+    loader.loadReaction(target);
+
+    ArrayOutput out(self.buffer);
+
+    RSmilesSaver saver(out);
+
+    saver.saveReaction(target);
+    out.writeByte(0);
+    return self.buffer.ptr();
+}
+
 CEXPORT const char* ringoRSMILES(const char* target_buf, int target_buf_len)
 {
     profTimerStart(t0, "rsmiles");
 
     BINGO_BEGIN
     {
-        _ringoCheckPseudoAndCBDM(self);
-
-        BufferScanner scanner(target_buf, target_buf_len);
-
-        QS_DEF(Reaction, target);
-
-        ReactionAutoLoader loader(scanner);
-        self.bingo_context->setLoaderSettings(loader);
-        loader.loadReaction(target);
-
-        ArrayOutput out(self.buffer);
-
-        RSmilesSaver saver(out);
-
-        saver.saveReaction(target);
-        out.writeByte(0);
-        return self.buffer.ptr();
+        return self.ringoRSMILES(target_buf, target_buf_len);
     }
     BINGO_END(0, 0)
 }
 
-CEXPORT const char* ringoRxnfile(const char* reaction, int reaction_len){BINGO_BEGIN{_ringoCheckPseudoAndCBDM(self);
+const char* BingoCore::ringoRxnfile(const char* reaction, int reaction_len) {
+    _ringoCheckPseudoAndCBDM(self);
 
-BufferScanner scanner(reaction, reaction_len);
+    BufferScanner scanner(reaction, reaction_len);
 
-QS_DEF(Reaction, target);
+    QS_DEF(Reaction, target);
 
-ReactionAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadReaction(target);
+    ReactionAutoLoader loader(scanner);
+    self.bingo_context->setLoaderSettings(loader);
+    loader.loadReaction(target);
 
-ArrayOutput out(self.buffer);
+    ArrayOutput out(self.buffer);
 
-RxnfileSaver saver(out);
+    RxnfileSaver saver(out);
 
-saver.saveReaction(target);
-out.writeByte(0);
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
-}
-
-CEXPORT const char* ringoRCML(const char* reaction, int reaction_len){BINGO_BEGIN{// TODO: remove copy/paste in ringoRCML, ringoRxnfile and etc.
-                                                                                  _ringoCheckPseudoAndCBDM(self);
-
-BufferScanner scanner(reaction, reaction_len);
-
-QS_DEF(Reaction, target);
-
-ReactionAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadReaction(target);
-
-ArrayOutput out(self.buffer);
-
-ReactionCmlSaver saver(out);
-
-saver.saveReaction(target);
-out.writeByte(0);
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
-}
-
-CEXPORT const char* ringoAAM(const char* reaction, int reaction_len, const char* mode){BINGO_BEGIN{_ringoCheckPseudoAndCBDM(self);
-
-self.ringo_context->ringoAAM.parse(mode);
-
-BufferScanner reaction_scanner(reaction, reaction_len);
-self.ringo_context->ringoAAM.loadReaction(reaction_scanner);
-
-self.ringo_context->ringoAAM.getResult(self.buffer);
-self.buffer.push(0);
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
-}
-
-CEXPORT const char* ringoCheckReaction(const char* reaction, int reaction_len){BINGO_BEGIN{TRY_READ_TARGET_RXN{_ringoCheckPseudoAndCBDM(self);
-
-QS_DEF(Reaction, rxn);
-
-BufferScanner reaction_scanner(reaction, reaction_len);
-ReactionAutoLoader loader(reaction_scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadReaction(rxn);
-Reaction::checkForConsistency(rxn);
-}
-CATCH_READ_TARGET_RXN(self.buffer.readString(e.message(), true); return self.buffer.ptr())
-catch (Exception& e)
-{
-    e.appendMessage(" INTERNAL ERROR");
-    self.buffer.readString(e.message(), true);
+    saver.saveReaction(target);
+    out.writeByte(0);
     return self.buffer.ptr();
 }
-catch (...)
-{
-    return "INTERNAL UNKNOWN ERROR";
+
+CEXPORT const char* ringoRxnfile(const char* reaction, int reaction_len) {
+    BINGO_BEGIN {
+        return self.ringoRxnfile(reaction, reaction_len);
+    }
+    BINGO_END(0, 0)
 }
+
+const char* BingoCore::ringoRCML(const char* reaction, int reaction_len) {
+    // TODO: remove copy/paste in ringoRCML, ringoRxnfile and etc.
+    _ringoCheckPseudoAndCBDM(self);
+
+    BufferScanner scanner(reaction, reaction_len);
+
+    QS_DEF(Reaction, target);
+
+    ReactionAutoLoader loader(scanner);
+    self.bingo_context->setLoaderSettings(loader);
+    loader.loadReaction(target);
+
+    ArrayOutput out(self.buffer);
+
+    ReactionCmlSaver saver(out);
+
+    saver.saveReaction(target);
+    out.writeByte(0);
+    return self.buffer.ptr();
 }
-BINGO_END(0, 0)
+
+CEXPORT const char* ringoRCML(const char* reaction, int reaction_len) {
+    BINGO_BEGIN{
+        return self.ringoRCML(reaction, reaction_len);
+    }
+    BINGO_END(0, 0)
+}
+
+const char* BingoCore::ringoAAM(const char* reaction, int reaction_len, const char* mode) {
+    _ringoCheckPseudoAndCBDM(self);
+
+    self.ringo_context->ringoAAM.parse(mode);
+
+    BufferScanner reaction_scanner(reaction, reaction_len);
+    self.ringo_context->ringoAAM.loadReaction(reaction_scanner);
+
+    self.ringo_context->ringoAAM.getResult(self.buffer);
+    self.buffer.push(0);
+    return self.buffer.ptr();
+}
+
+CEXPORT const char* ringoAAM(const char* reaction, int reaction_len, const char* mode) {
+    BINGO_BEGIN{
+        return self.ringoAAM(reaction, reaction_len, mode);
+    }
+    BINGO_END(0, 0)
+}
+
+const char* BingoCore::ringoCheckReaction(const char* reaction, int reaction_len) {
+    TRY_READ_TARGET_RXN{
+        _ringoCheckPseudoAndCBDM(self);
+
+        QS_DEF(Reaction, rxn);
+
+        BufferScanner reaction_scanner(reaction, reaction_len);
+        ReactionAutoLoader loader(reaction_scanner);
+        self.bingo_context->setLoaderSettings(loader);
+        loader.loadReaction(rxn);
+        Reaction::checkForConsistency(rxn);
+    } CATCH_READ_TARGET_RXN(self.buffer.readString(e.message(), true); return self.buffer.ptr())
+    catch (Exception& e)
+    {
+        e.appendMessage(" INTERNAL ERROR");
+        self.buffer.readString(e.message(), true);
+        return self.buffer.ptr();
+    }
+    catch (...)
+    {
+        self.buffer.readString("INTERNAL UNKNOWN ERROR", true);
+        return self.buffer.ptr();
+    }
+    return "";
+}
+
+CEXPORT const char* ringoCheckReaction(const char* reaction, int reaction_len) {
+    BINGO_BEGIN{
+        return self.ringoCheckReaction(reaction, reaction_len);
+    }
+    BINGO_END(0, 0)
 }
 
 void BingoCore::ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len) {
     if (self.ringo_search_type == BingoCore::_UNDEF)
-            throw BingoError("Undefined search type");
+        throw BingoError("Undefined search type");
 
     if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
     {
@@ -391,62 +422,78 @@ CEXPORT int ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
     BINGO_END(1, -2)
 }
 
+int BingoCore::ringoSetHightlightingMode(int enable)
+{
+    if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
+    {
+        RingoSubstructure& substructure = self.ringo_context->substructure;
+        return substructure.preserve_bonds_on_highlighting = (enable != 0);
+    }
+    else
+        throw BingoError("Invalid search type");
+}
+
 CEXPORT int ringoSetHightlightingMode(int enable)
 {
     BINGO_BEGIN
     {
-        if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
-        {
-            RingoSubstructure& substructure = self.ringo_context->substructure;
-            return substructure.preserve_bonds_on_highlighting = (enable != 0);
-        }
-        else
-            throw BingoError("Invalid search type");
+        return self.ringoSetHightlightingMode(enable);
     }
     BINGO_END(1, -2);
+}
+
+const char* BingoCore::ringoGetHightlightedReaction()
+{
+    if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
+    {
+        RingoSubstructure& substructure = self.ringo_context->substructure;
+        substructure.getHighlightedTarget(self.buffer);
+    }
+    else
+        throw BingoError("Invalid search type");
+
+    self.buffer.push(0);
+    return self.buffer.ptr();
 }
 
 CEXPORT const char* ringoGetHightlightedReaction()
 {
     BINGO_BEGIN
     {
-        if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
-        {
-            RingoSubstructure& substructure = self.ringo_context->substructure;
-            substructure.getHighlightedTarget(self.buffer);
-        }
-        else
-            throw BingoError("Invalid search type");
-
-        self.buffer.push(0);
-        return self.buffer.ptr();
+        return ringoGetHightlightedReaction();
     }
     BINGO_END(0, 0);
 }
 
-CEXPORT const char* ringoICR(const char* reaction, int reaction_len, bool save_xyz, int* out_len){BINGO_BEGIN{_ringoCheckPseudoAndCBDM(self);
+const char* BingoCore::ringoICR(const char* reaction, int reaction_len, bool save_xyz, int* out_len) {
+    _ringoCheckPseudoAndCBDM(self);
 
-BufferScanner scanner(reaction, reaction_len);
+    BufferScanner scanner(reaction, reaction_len);
 
-QS_DEF(Reaction, target);
+    QS_DEF(Reaction, target);
 
-ReactionAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadReaction(target);
+    ReactionAutoLoader loader(scanner);
+    self.bingo_context->setLoaderSettings(loader);
+    loader.loadReaction(target);
 
-ArrayOutput out(self.buffer);
+    ArrayOutput out(self.buffer);
 
-if ((save_xyz != 0) && !Reaction::haveCoord(target))
-    throw BingoError("reaction has no XYZ");
+    if ((save_xyz != 0) && !Reaction::haveCoord(target))
+        throw BingoError("reaction has no XYZ");
 
-IcrSaver saver(out);
-saver.save_xyz = (save_xyz != 0);
-saver.saveReaction(target);
+    IcrSaver saver(out);
+    saver.save_xyz = (save_xyz != 0);
+    saver.saveReaction(target);
 
-*out_len = self.buffer.size();
-return self.buffer.ptr();
+    *out_len = self.buffer.size();
+    return self.buffer.ptr();
 }
-BINGO_END(0, 0)
+
+CEXPORT const char* ringoICR(const char* reaction, int reaction_len, bool save_xyz, int* out_len) {
+    BINGO_BEGIN {
+        return self.ringoICR(reaction, reaction_len, save_xyz, out_len);
+    }
+    BINGO_END(0, 0)
 }
 
 int BingoCore::ringoGetHash(bool for_index, dword* hash){
@@ -473,35 +520,40 @@ CEXPORT int ringoGetHash(bool for_index, dword* hash){
     BINGO_END(-2, -2)
 }
 
+const char* BingoCore::ringoFingerprint(const char* reaction, int reaction_len, const char* options, int* out_len)
+{
+    _ringoCheckPseudoAndCBDM(self);
+
+    if (!self.bingo_context->fp_parameters_ready)
+        throw BingoError("Fingerprint settings not ready");
+
+    BufferScanner scanner(reaction, reaction_len);
+
+    QS_DEF(Reaction, target);
+
+    ReactionAutoLoader loader(scanner);
+    self.bingo_context->setLoaderSettings(loader);
+    loader.loadReaction(target);
+
+    ReactionFingerprintBuilder builder(target, self.bingo_context->fp_parameters);
+    builder.parseFingerprintType(options, false);
+
+    builder.process();
+
+    const char* buf = (const char*)builder.get();
+    int buf_len = self.bingo_context->fp_parameters.fingerprintSizeExtOrdSim() * 2;
+
+    self.buffer.copy(buf, buf_len);
+
+    *out_len = self.buffer.size();
+    return self.buffer.ptr();
+}
+
 CEXPORT const char* ringoFingerprint(const char* reaction, int reaction_len, const char* options, int* out_len)
 {
     BINGO_BEGIN
     {
-        _ringoCheckPseudoAndCBDM(self);
-
-        if (!self.bingo_context->fp_parameters_ready)
-            throw BingoError("Fingerprint settings not ready");
-
-        BufferScanner scanner(reaction, reaction_len);
-
-        QS_DEF(Reaction, target);
-
-        ReactionAutoLoader loader(scanner);
-        self.bingo_context->setLoaderSettings(loader);
-        loader.loadReaction(target);
-
-        ReactionFingerprintBuilder builder(target, self.bingo_context->fp_parameters);
-        builder.parseFingerprintType(options, false);
-
-        builder.process();
-
-        const char* buf = (const char*)builder.get();
-        int buf_len = self.bingo_context->fp_parameters.fingerprintSizeExtOrdSim() * 2;
-
-        self.buffer.copy(buf, buf_len);
-
-        *out_len = self.buffer.size();
-        return self.buffer.ptr();
+        return self.ringoFingerprint(reaction, reaction_len, options, out_len);
     }
     BINGO_END(0, 0)
 }
