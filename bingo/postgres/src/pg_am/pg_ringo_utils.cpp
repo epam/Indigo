@@ -141,7 +141,9 @@ Datum checkreaction(PG_FUNCTION_ARGS)
         const char* react_buf = react_text.getText(buf_size);
         try {
             const char* bingo_result = bingoCore.ringoCheckReaction(react_buf, buf_size);
-
+            if (bingo_result == 0) {
+                PG_RETURN_NULL();
+            }
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();

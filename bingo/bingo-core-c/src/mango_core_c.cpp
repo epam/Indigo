@@ -913,7 +913,7 @@ const char* BingoCore::mangoCheckMolecule(const char* molecule, int molecule_len
     {
         return "INTERNAL UNKNOWN ERROR";
     }
-    return "";
+    return 0;
 }
 
 CEXPORT const char* mangoCheckMolecule(const char* molecule, int molecule_len) {

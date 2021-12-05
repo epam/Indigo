@@ -388,7 +388,7 @@ const char* BingoCore::ringoCheckReaction(const char* reaction, int reaction_len
         self.buffer.readString("INTERNAL UNKNOWN ERROR", true);
         return self.buffer.ptr();
     }
-    return "";
+    return 0;
 }
 
 CEXPORT const char* ringoCheckReaction(const char* reaction, int reaction_len) {

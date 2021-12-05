@@ -176,6 +176,9 @@ Datum checkmolecule(PG_FUNCTION_ARGS)
         const char* mol_buf = mol_text.getText(buf_size);
         try {
             const char* bingo_result = bingoCore.mangoCheckMolecule(mol_buf, buf_size);
+            if (bingo_result == 0) {
+                PG_RETURN_NULL();
+            }
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
