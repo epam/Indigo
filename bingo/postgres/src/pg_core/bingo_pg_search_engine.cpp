@@ -127,7 +127,7 @@ bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr)
         return true;
     }
 
-    _searchCursor.reset(nullptr);
+    // _searchCursor.reset(nullptr);
     return false;
 }
 

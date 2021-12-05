@@ -68,7 +68,7 @@ MangoPgSearchEngine::~MangoPgSearchEngine()
 bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
 {
 
-    profTimerStart(t0, "mango_pg.match_target");
+    // profTimerStart(t0, "mango_pg.match_target");
 
     if (_searchType == BingoPgCommon::MOL_SIM || _searchType == BingoPgCommon::MOL_MASS)
     {
@@ -128,7 +128,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
 void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT scan_desc_ptr)
 {
 
-    profTimerStart(t0, "mango_pg.prepare_query_search");
+    // profTimerStart(t0, "mango_pg.prepare_query_search");
 
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
 
@@ -374,7 +374,7 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
                            scan_desc->numberOfKeys);
     }
 
-    profTimerStart(t0, "mango_pg.prepare_exact_search");
+    // profTimerStart(t0, "mango_pg.prepare_exact_search");
 
     BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
     _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
@@ -396,9 +396,9 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
         _prepareExactQueryStrings(what_clause, from_clause, where_clause);
     }
     _searchCursor.reset(nullptr);
-    profTimerStart(t4, "mango_pg.exact_search_cursor");
+    // profTimerStart(t4, "mango_pg.exact_search_cursor");
     _searchCursor = std::make_unique<BingoPgCursor>("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
-    profTimerStop(t4);
+    // profTimerStop(t4);
     //   if(nanoHowManySeconds(profTimerGetTime(t4) )> 1)
     //      elog(WARNING, "select %s from %s where %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
 }
@@ -640,7 +640,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, float& min_bound,
 bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
 {
 
-    profTimerStart(t0, "mango_pg.search_sim");
+    // profTimerStart(t0, "mango_pg.search_sim");
     /*
      * If there are mathces found on the previous steps
      */
@@ -785,7 +785,7 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
              */
             if (_fetchForNext())
             {
-                profTimerStop(t0);
+                // profTimerStop(t0);
                 setItemPointer(result_ptr);
                 /*
                  * Set fetch found to return on the next steps
