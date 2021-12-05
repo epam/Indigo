@@ -458,7 +458,7 @@ public:
 #define CORE_CATCH_REJECT_WARNING(suffix, return_exp) \
    catch (indigo::Exception& e) { \
       int val = 0; \
-      bingoCore,bingoGetConfigInt("reject_invalid_structures", &val); \
+      bingoCore.bingoGetConfigInt("reject_invalid_structures", &val); \
       if (val > 0) { \
          throw BingoPgError("%s: %s", suffix, e.message()); \
       } else { \
@@ -467,7 +467,7 @@ public:
       } \
    } catch (...) { \
       int val = 0; \
-      bingoCore,bingoGetConfigInt("reject_invalid_structures", &val); \
+      bingoCore.bingoGetConfigInt("reject_invalid_structures", &val); \
       if (val > 0) { \
          throw BingoPgError("%s: bingo unknown error", suffix); \
       } else { \

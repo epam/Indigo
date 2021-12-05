@@ -122,10 +122,10 @@ namespace indigo
             int bingoSMILESImportEOF();
             const char* bingoSMILESImportGetNext();
             const char* bingoSMILESImportGetId();
-            int bingoSetConfigInt(const char* name, int value);
-            int bingoSetConfigBin(const char* name, const char* value, int len);
-            int bingoGetConfigBin(const char* name, const char** value, int* len);
-            int bingoGetConfigInt(const char* name, int* value);
+            void bingoSetConfigInt(const char* name, int value);
+            void bingoSetConfigBin(const char* name, const char* value, int len);
+            void bingoGetConfigBin(const char* name, const char** value, int* len);
+            void bingoGetConfigInt(const char* name, int* value);
             int bingoAddTautomerRule(int n, const char* beg, const char* end);
             void bingoSetIndexRecordData(int id, const char* data, int data_size);
             int bingoTautomerRulesReady(int n, const char* beg, const char* end);

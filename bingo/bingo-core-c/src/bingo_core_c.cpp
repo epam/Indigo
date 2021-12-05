@@ -57,12 +57,12 @@ void BingoCore::reset()
     error.push(0);
 }
 
-TL_DECL(BingoCore, self);
+TL_DECL(BingoCore, selfInstance);
 
 BingoCore& BingoCore::getInstance()
 {
-    TL_GET(BingoCore, self);
-    return self;
+    TL_GET(BingoCore, selfInstance);
+    return selfInstance;
 }
 
 int BingoCore::getTimeout()
@@ -101,8 +101,8 @@ CEXPORT qword bingoAllocateSessionID()
 {
     qword id = TL_ALLOC_SESSION_ID();
 
-    TL_GET_BY_ID(BingoCore, self, id);
-    self.reset();
+    TL_GET_BY_ID(BingoCore, selfInstance, id);
+    selfInstance.reset();
 
     return id;
 }
@@ -140,7 +140,7 @@ CEXPORT int bingoSetContext(int id)
     BINGO_END(1, 0);
 }
 
-int BingoCore::bingoSetConfigInt(const char* name, int value)
+void BingoCore::bingoSetConfigInt(const char* name, int value)
 {
     if (self.bingo_context == 0)
         throw BingoError("context not set");
@@ -195,19 +195,18 @@ int BingoCore::bingoSetConfigInt(const char* name, int value)
         if (!set)
             throw BingoError("Unknown parameter name: '%s'", name);
     }
-    return 0;
 }
 
 CEXPORT int bingoSetConfigInt(const char* name, int value)
 {
     BINGO_BEGIN
     {
-        return self.bingoSetConfigInt(name, value);
+        self.bingoSetConfigInt(name, value);
     }
     BINGO_END(1, 0);
 }
 
-int BingoCore::bingoGetConfigInt(const char* name, int* value)
+void BingoCore::bingoGetConfigInt(const char* name, int* value)
 {
     if (self.bingo_context == 0)
         throw BingoError("context not set");
@@ -246,19 +245,18 @@ int BingoCore::bingoGetConfigInt(const char* name, int* value)
         *value = (int)self.bingo_context->ignore_bad_valence;
     else
         throw BingoError("unknown parameter name: %s", name);
-    return 0;
 }
 
 CEXPORT int bingoGetConfigInt(const char* name, int* value)
 {
     BINGO_BEGIN
     {
-        return self.bingoGetConfigInt(name, value);
+        self.bingoGetConfigInt(name, value);
     }
     BINGO_END(1, 0);
 }
 
-int BingoCore::bingoGetConfigBin(const char* name, const char** value, int* len)
+void BingoCore::bingoGetConfigBin(const char* name, const char** value, int* len)
 {
     if (self.bingo_context == 0)
         throw BingoError("context not set");
@@ -272,19 +270,18 @@ int BingoCore::bingoGetConfigBin(const char* name, const char** value, int* len)
     }
     else
         throw BingoError("unknown parameter name: %s", name);
-    return 0;
 }
 
 CEXPORT int bingoGetConfigBin(const char* name, const char** value, int* len)
 {
     BINGO_BEGIN
     {
-        return self.bingoGetConfigBin(name, value, len);
+        self.bingoGetConfigBin(name, value, len);
     }
     BINGO_END(1, 0);
 }
 
-int BingoCore::bingoSetConfigBin(const char* name, const char* value, int len)
+void BingoCore::bingoSetConfigBin(const char* name, const char* value, int len)
 {
     if (self.bingo_context == 0)
         throw BingoError("context not set");
@@ -300,14 +297,13 @@ int BingoCore::bingoSetConfigBin(const char* name, const char* value, int len)
     }
     else
         throw BingoError("unknown parameter name: %s", name);
-    return 0;
 }
 
 CEXPORT int bingoSetConfigBin(const char* name, const char* value, int len)
 {
     BINGO_BEGIN
     {
-        return self.bingoSetConfigBin(name, value, len);
+        self.bingoSetConfigBin(name, value, len);
     }
     BINGO_END(1, 0);
 }
