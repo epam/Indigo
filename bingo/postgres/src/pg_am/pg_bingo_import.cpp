@@ -464,12 +464,11 @@ public:
 
     void getNextData() override
     {
-
-        const char* data = 0;
         _importData.clear();
 
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
+            const char* data = 0;
             try {
                 if (col_idx == 0)
                     data = bingoCore.bingoSDFImportGetNext();
@@ -550,11 +549,11 @@ public:
 
     void getNextData() override
     {
-        const char* data = 0;
         _importData.clear();
 
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
+            const char* data = 0;
             try {
                 if (col_idx == 0)
                     data = bingoCore.bingoRDFImportGetNext();
