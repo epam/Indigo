@@ -444,10 +444,10 @@ public:
 #define CORE_CATCH_WARNING_RETURN(suffix, return_value)\
    catch (indigo::Exception& e) { \
       elog(WARNING, "%s: %s", suffix, e.message());\
-      return return_value; \
+      return_value; \
    } catch (...) { \
       elog(WARNING, "%s: bingo unknown error", suffix);\
-      return return_value; \
+      return_value; \
    }
 
 #define CORE_CATCH_WARNING(suffix)\

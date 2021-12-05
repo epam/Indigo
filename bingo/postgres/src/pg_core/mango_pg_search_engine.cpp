@@ -696,11 +696,10 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
              * Prepare min max bounds
              */
             //         profTimerStart(t3, "mango_pg.get_min_max");
-            bingoCore.mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
+            try {
+                bingoCore.mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
+            } CORE_CATCH_ERROR("molecule search engine: error while getting similarity bounds array")
             //         profTimerStop(t3);
-
-            // CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting similarity bounds array", bingoGetError());
-
             /*
              * Prepare common bits array
              */

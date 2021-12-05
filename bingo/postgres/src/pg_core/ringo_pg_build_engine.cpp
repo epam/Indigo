@@ -197,7 +197,7 @@ bool RingoPgBuildEngine::_readPreparedInfo(int* id, RingoPgFpData& data, int fp_
         * Get prepared data
         */
         bingoCore.ringoIndexReadPreparedReaction(id, &crf_buf, &crf_len, &fp_buf, &fp_len);
-    } CORE_CATCH_WARNING_RETURN("reaction build engine: error while prepare record", false)
+    } CORE_CATCH_WARNING_RETURN("reaction build engine: error while prepare record", return false)
 
     /*
      * Set hash information
@@ -206,7 +206,7 @@ bool RingoPgBuildEngine::_readPreparedInfo(int* id, RingoPgFpData& data, int fp_
 
     try {
         bingoCore.ringoGetHash(1, &ex_hash);
-    } CORE_CATCH_WARNING_RETURN("reaction build engine: error while get hash", false)
+    } CORE_CATCH_WARNING_RETURN("reaction build engine: error while get hash", return false)
     data.setHash(ex_hash);
 
     /*

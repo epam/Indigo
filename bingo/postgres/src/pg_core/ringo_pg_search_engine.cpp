@@ -127,8 +127,9 @@ void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
     from_clause.printf("%s", _shadowRelName.ptr());
 
     dword ex_hash;
-    int bingo_res = bingoCore.ringoGetHash(0, &ex_hash);
-    CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: error while getting hash", bingoGetError());
+    try {
+        bingoCore.ringoGetHash(0, &ex_hash);
+    } CORE_CATCH_ERROR("reaction search engine: error while getting hash")
 
     where_clause.printf("ex_hash=%d", ex_hash);
 

@@ -606,16 +606,13 @@ Datum getname(PG_FUNCTION_ARGS)
         int buf_size;
         const char* target_buf = mol_text.getText(buf_size);
 
-        const char* bingo_result = bingoGetNameCore(target_buf, buf_size);
-        if (bingo_result == 0)
-        {
-            CORE_HANDLE_WARNING(0, 1, "bingo.getname", bingoGetError());
-            PG_RETURN_NULL();
-        }
+        try {
+            const char* bingo_result = bingoCore.bingoGetNameCore(target_buf, buf_size);
 
-        BingoPgText result_text;
-        result_text.initFromString(bingo_result);
-        result = result_text.release();
+            BingoPgText result_text;
+            result_text.initFromString(bingo_result);
+            result = result_text.release();
+        } CORE_CATCH_WARNING_RETURN("bingo.getname", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
