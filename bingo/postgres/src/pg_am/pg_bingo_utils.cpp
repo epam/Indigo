@@ -607,7 +607,7 @@ Datum getname(PG_FUNCTION_ARGS)
         const char* target_buf = mol_text.getText(buf_size);
 
         try {
-            const char* bingo_result = bingoCore.bingoGetNameCore(target_buf, buf_size);
+            const char* bingo_result = bingo_handler.bingoCore.bingoGetNameCore(target_buf, buf_size);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);

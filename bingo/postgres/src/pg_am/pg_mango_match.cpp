@@ -99,7 +99,7 @@ public:
             setFunctionName(buffer_warn.ptr());
             try {
                 target_data = bingoCore.mangoGross(target_data, target_size);
-            } CORE_CATCH_WARNING_RETURN("bingo.gross", -1)
+            } CORE_CATCH_WARNING_RETURN("bingo.gross", return -1)
         }
         int res;
 
