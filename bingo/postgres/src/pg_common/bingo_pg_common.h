@@ -525,17 +525,4 @@ public:
    }
 
 
-#define CORE_HANDLE_REJECT_WARNING(validation, suffix, null_exp) \
-   if(validation) { \
-         int val = 0; \
-         bingoGetConfigInt("reject_invalid_structures", &val); \
-         const char* message = bingoGetError(); \
-         if (val > 0) { \
-            throw BingoPgError("%s: %s", suffix, message); \
-         } else { \
-            elog(WARNING, "%s: %s", suffix, message);\
-            null_exp; \
-         } \
-      }
-
 #endif	/* BINGO_PG_COMMON_H */

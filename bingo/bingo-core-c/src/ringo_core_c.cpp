@@ -422,12 +422,12 @@ CEXPORT int ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
     BINGO_END(1, -2)
 }
 
-int BingoCore::ringoSetHightlightingMode(int enable)
+void BingoCore::ringoSetHightlightingMode(int enable)
 {
     if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
     {
         RingoSubstructure& substructure = self.ringo_context->substructure;
-        return substructure.preserve_bonds_on_highlighting = (enable != 0);
+        substructure.preserve_bonds_on_highlighting = (enable != 0);
     }
     else
         throw BingoError("Invalid search type");
@@ -437,7 +437,7 @@ CEXPORT int ringoSetHightlightingMode(int enable)
 {
     BINGO_BEGIN
     {
-        return self.ringoSetHightlightingMode(enable);
+        self.ringoSetHightlightingMode(enable);
     }
     BINGO_END(1, -2);
 }
