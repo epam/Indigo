@@ -115,22 +115,22 @@ void BingoPgCommon::printFPBitset(const char* name, unsigned char* bitset, int s
     elog(NOTICE, "%s", bits.ptr());
 }
 
-void BingoPgCommon::setDefaultOptions()
-{
-    bingoSetConfigInt("treat-x-as-pseudoatom", 0);
-    bingoSetConfigInt("ignore-closing-bond-direction-mismatch", 0);
+// void BingoPgCommon::setDefaultOptions(bingo_core::BingoCore& bingoCore)
+// {
+//     bingoCore.bingoSetConfigInt("treat-x-as-pseudoatom", 0);
+//     bingoCore.bingoSetConfigInt("ignore-closing-bond-direction-mismatch", 0);
 
-    bingoSetConfigInt("FP_ORD_SIZE", 25);
-    bingoSetConfigInt("FP_ANY_SIZE", 15);
-    bingoSetConfigInt("FP_TAU_SIZE", 10);
-    bingoSetConfigInt("FP_SIM_SIZE", 8);
-    bingoSetConfigInt("SUB_SCREENING_MAX_BITS", 8);
-    bingoSetConfigInt("SIM_SCREENING_PASS_MARK", 128);
+//     bingoCore.bingoSetConfigInt("FP_ORD_SIZE", 25);
+//     bingoCore.bingoSetConfigInt("FP_ANY_SIZE", 15);
+//     bingoCore.bingoSetConfigInt("FP_TAU_SIZE", 10);
+//     bingoCore.bingoSetConfigInt("FP_SIM_SIZE", 8);
+//     bingoCore.bingoSetConfigInt("SUB_SCREENING_MAX_BITS", 8);
+//     bingoCore.bingoSetConfigInt("SIM_SCREENING_PASS_MARK", 128);
 
-    bingoAddTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te");
-    bingoAddTautomerRule(2, "0C", "N,O,P,S");
-    bingoAddTautomerRule(3, "1C", "N,O");
-}
+//     bingoCore.bingoAddTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te");
+//     bingoCore.bingoAddTautomerRule(2, "0C", "N,O,P,S");
+//     bingoCore.bingoAddTautomerRule(3, "1C", "N,O");
+// }
 
 static int rnd_check = rand();
 
@@ -231,45 +231,14 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id)
     BingoPgConfig bingo_config(bingoCore);
     bingo_config.readDefaultConfig(schema_name);
 
-    // _sessionId = bingoAllocateSessionID();
-    // refresh();
-
     bingo_config.setUpBingoConfiguration();
     bingoCore.bingoTautomerRulesReady(0, 0, 0);
 }
 
 BingoPgCommon::BingoSessionHandler::~BingoSessionHandler()
 {
-    // bingoReleaseSessionID(_sessionId);
 }
 
-// void BingoPgCommon::BingoSessionHandler::refresh()
-// {
-    // bingoSetSessionID(_sessionId);
-    // bingoSetContext(0);
-    //   bingoSetErrorHandler(bingoErrorHandler, this);
-// }
-
-// void BingoPgCommon::BingoSessionHandler::bingoErrorHandler(const char* message, void* self_ptr) {
-//   BingoSessionHandler* self = (BingoSessionHandler*)self_ptr;
-//
-//   const char* func = self->getFunctionName();
-//
-//   if(self->raise_error) {
-//      if (func)
-//         throw BingoPgError("runtime error in bingo.'%s': %s", func, message);
-//      else
-//         throw BingoPgError("runtime error: %s", message);
-//   } else {
-//      self->error_raised = true;
-//      if (func)
-//         elog(WARNING, "warning in bingo.'%s': %s", func, message);
-//      else
-//         elog(WARNING, "warning: %s", message);
-//   }
-//
-//
-//}
 // dword BingoPgCommon::getFunctionOid(const char* name, indigo::Array<dword>& types) {
 //   indigo::Array<char> fname;
 //   fname.readString(name, true);

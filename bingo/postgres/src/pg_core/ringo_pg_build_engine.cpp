@@ -36,7 +36,7 @@ RingoPgBuildEngine::RingoPgBuildEngine(const char* rel_name) : BingoPgBuildEngin
 RingoPgBuildEngine::~RingoPgBuildEngine()
 {
     elog(DEBUG1, "bingo: ringo build: finish building '%s'", _relName.ptr());
-    bingoIndexEnd();
+    bingoCore.bingoIndexEnd();
 }
 
 bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)

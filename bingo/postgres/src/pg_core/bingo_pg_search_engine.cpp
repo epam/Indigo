@@ -70,7 +70,6 @@ BingoPgSearchEngine::BingoPgSearchEngine()
 
 BingoPgSearchEngine::~BingoPgSearchEngine()
 {
-    // bingoReleaseSessionID(_bingoSession);
 }
 
 void BingoPgSearchEngine::setItemPointer(PG_OBJECT result_ptr)
@@ -84,16 +83,6 @@ void BingoPgSearchEngine::loadDictionary(BingoPgIndex& bingo_index)
     bingo_index.readDictionary(dict);
     bingoCore.bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
 }
-
-// const char* BingoPgSearchEngine::getDictionary(int& size) {
-//   _setBingoContext();
-//
-//   const char* dict_buf;
-//
-//   bingoGetConfigBin("cmf-dict", &dict_buf, &size);
-//
-//   return dict_buf;
-//}
 
 bool BingoPgSearchEngine::matchTarget(ItemPointerData& item_data)
 {
@@ -226,8 +215,6 @@ using namespace indigo;
 
 void BingoPgSearchEngine::_setBingoContext()
 {
-    // bingoSetSessionID(_bingoSession);
-    // bingoSetContext(0);
 }
 
 bool BingoPgSearchEngine::_fetchForNext()

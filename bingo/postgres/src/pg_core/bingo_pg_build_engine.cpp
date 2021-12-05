@@ -21,7 +21,6 @@ using namespace indigo;
 
 BingoPgBuildEngine::BingoPgBuildEngine() : _bufferIndexPtr(0)
 {
-    // _bingoSession = bingoAllocateSessionID();
     _bingoContext = std::make_unique<BingoContext>(0);
     _mangoContext = std::make_unique<MangoContext>(*_bingoContext.get());
     _ringoContext = std::make_unique<RingoContext>(*_bingoContext.get());
@@ -33,7 +32,6 @@ BingoPgBuildEngine::BingoPgBuildEngine() : _bufferIndexPtr(0)
 
 BingoPgBuildEngine::~BingoPgBuildEngine()
 {
-    // bingoReleaseSessionID(_bingoSession);
 }
 
 void BingoPgBuildEngine::setUpConfiguration(BingoPgConfig& bingo_config) {
@@ -44,12 +42,6 @@ void BingoPgBuildEngine::setUpConfiguration(BingoPgConfig& bingo_config) {
     bingoCore.bingoTautomerRulesReady(0, 0, 0);
     bingoCore.bingoIndexBegin();
 }
-
-// void BingoPgBuildEngine::_setBingoContext()
-// {
-    // bingoSetSessionID(_bingoSession);
-    // bingoSetContext(0);
-// }
 
 void BingoPgBuildEngine::loadDictionary(BingoPgIndex& bingo_index)
 {

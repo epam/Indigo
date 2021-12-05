@@ -240,7 +240,7 @@ public:
             for (int col_idx = 0; col_idx < column_count; ++col_idx)
             {
                 ImportColumn& idCol = _importColumns.push();
-                idCol.columnName.readString(bingoImportGetColumnName(col_idx), true);
+                idCol.columnName.readString(bingoCore.bingoImportGetColumnName(col_idx), true);
                 column_names.printf(", %s", idCol.columnName.ptr());
             }
         }

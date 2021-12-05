@@ -78,7 +78,7 @@ public:
         {
             QS_DEF(Array<char>, buffer_warn);
             buffer_warn.readString(bingoCore.warning.ptr(), true);
-            const char* react_name = bingoGetNameCore(target_data, target_size);
+            const char* react_name = bingoCore.bingoGetNameCore(target_data, target_size);
             if (react_name != 0 && strlen(react_name) > 0)
                 elog(WARNING, "warning while bingo%s loading a reaction with name='%s': %s", _typeStr.ptr(), react_name, buffer_warn.ptr());
             else

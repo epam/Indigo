@@ -530,7 +530,7 @@ void bingo_desc(StringInfo buf, uint8 xl_info, char* rec)
 Datum getversion(PG_FUNCTION_ARGS)
 {
     BingoPgText result_text;
-    result_text.initFromString(bingoGetVersion());
+    result_text.initFromString(BINGO_VERSION);
 
     PG_RETURN_TEXT_P(result_text.release());
 }
@@ -704,22 +704,6 @@ static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum o
 
     return data_key;
 }
-
-// class BingoExportSdfHandler : public BingoPgCommon::BingoSessionHandler {
-// public:
-//   BingoExportSdfHandler(unsigned int func_id, const char* fname):BingoSessionHandler(func_id, true) {
-//      setFunctionName("exportSDF");
-//      bingoSDFExportOpen(fname);
-////      SPI_connect();
-//   }
-//   virtual ~BingoImportSdfHandler() {
-////      SPI_finish();
-//      bingoSDFExportClose();
-//   }
-//
-// private:
-//   BingoExportSdfHandler(const BingoExportSdfHandler&); //no implicit copy
-//};
 
 Datum exportsdf(PG_FUNCTION_ARGS)
 {

@@ -157,8 +157,6 @@ protected:
 
     void _getBlockParameters(indigo::Array<char>& params);
 
-    // qword _bingoSession;
-
     bool _fetchFound;
     int _currentSection;
     int _currentIdx;

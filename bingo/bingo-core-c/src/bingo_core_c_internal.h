@@ -135,6 +135,7 @@ namespace indigo
             void bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
                               void (*process_error_cb)(int id, void* context), void* context);
             const char* bingoGetNameCore(const char* target_buf, int target_buf_len);
+            const char* bingoImportGetColumnName(int idx);
             int getTimeout();
             BingoCore& self;
 

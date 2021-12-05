@@ -111,7 +111,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
         gross_text.getText(gross_len);
 
         try {
-            bingo_res = mangoMatchTarget(gross_text.getString(), gross_len);
+            bingo_res = bingoCore.mangoMatchTarget(gross_text.getString(), gross_len);
         } CORE_CATCH_ERROR("molecule search engine: error while matching gross target")
 
         CORE_RETURN_WARNING(bingo_res, 0, "molecule search engine: error while matching gross target", bingoCore.warning.ptr());

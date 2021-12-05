@@ -411,13 +411,18 @@ CEXPORT int bingoImportParseFieldList(const char* fields_str)
     BINGO_END(0, -1);
 }
 
+const char* BingoCore::bingoImportGetColumnName(int idx)
+{
+    if (self.import_columns.get() == 0)
+        throw BingoError("bingo import list has not been parsed yet");
+    return self.import_columns.ref().at(idx);
+}
+
 CEXPORT const char* bingoImportGetColumnName(int idx)
 {
     BINGO_BEGIN
     {
-        if (self.import_columns.get() == 0)
-            throw BingoError("bingo import list has not been parsed yet");
-        return self.import_columns.ref().at(idx);
+        return self.bingoImportGetColumnName(idx);
     }
     BINGO_END("", "");
 }

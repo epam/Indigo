@@ -50,7 +50,7 @@ bool RingoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
 
     _bufferIndexPtr->readCmfItem(section_idx, structure_idx, react_buf);
     try {
-        bingo_res = ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes());
+        bingo_res = bingoCore.ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes());
     } CORE_CATCH_ERROR_TID("reaction search engine: error while matching target", section_idx, structure_idx)
 
     CORE_RETURN_WARNING_TID(bingo_res, 0, "reaction search engine: error while matching target", section_idx, structure_idx, bingoCore.warning.ptr());
@@ -166,14 +166,14 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
      * Set up matching parameters
      */
     try {
-        ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+        bingoCore.ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
     } CORE_CATCH_ERROR("reaction search engine: can not set rsub search context")
 
     const char* fingerprint_buf;
     int fp_len;
 
     try {
-        ringoGetQueryFingerprint(&fingerprint_buf, &fp_len);
+        bingoCore.ringoGetQueryFingerprint(&fingerprint_buf, &fp_len);
     } CORE_CATCH_ERROR("reaction search engine: can not get query fingerprint")
 
     int size_bits = fp_len * 8;
@@ -206,7 +206,7 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
      * Set up matching parameters
      */
     try {
-        ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+        bingoCore.ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
     } CORE_CATCH_ERROR("reaction search engine: can not set rexact search context")
 
     _prepareExactQueryStrings(what_clause, from_clause, where_clause);
