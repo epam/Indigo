@@ -325,11 +325,19 @@ CEXPORT int mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, 
     BINGO_END(1, -2)
 }
 
-CEXPORT int mangoSimilarityGetScore(float* score){BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
-MangoSimilarity& similarity = self.mango_context->similarity;
-*score = similarity.getSimilarityScore();
+void BingoCore::mangoSimilarityGetScore(float* score) {
+    if (self.mango_search_type != BingoCore::_SIMILARITY) {
+        throw BingoError("Undefined search type");
+    }
+    MangoSimilarity& similarity = self.mango_context->similarity;
+    *score = similarity.getSimilarityScore();
 }
-BINGO_END(-2, 1)
+
+CEXPORT int mangoSimilarityGetScore(float* score){
+    BINGO_BEGIN{
+        self.mangoSimilarityGetScore(score);
+    }
+    BINGO_END(1, -2)
 }
 
 void BingoCore::mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound) {
@@ -716,31 +724,36 @@ CEXPORT const char* mangoTauGetQueryGross(){
     BINGO_END(0, 0)
 }
 
-CEXPORT int mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
+void BingoCore::mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out) {
+    _mangoCheckPseudoAndCBDM(self);
 
-BufferScanner scanner(target_buf, target_buf_len);
+    BufferScanner scanner(target_buf, target_buf_len);
 
-QS_DEF(Molecule, target);
+    QS_DEF(Molecule, target);
 
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.skip_3d_chirality = true;
-loader.loadMolecule(target);
+    MoleculeAutoLoader loader(scanner);
+    self.bingo_context->setLoaderSettings(loader);
+    loader.skip_3d_chirality = true;
+    loader.loadMolecule(target);
 
-MoleculeMass mass_calulator;
-mass_calulator.relative_atomic_mass_map = &self.bingo_context->relative_atomic_mass_map;
+    MoleculeMass mass_calulator;
+    mass_calulator.relative_atomic_mass_map = &self.bingo_context->relative_atomic_mass_map;
 
-if (type == 0 || strlen(type) == 0 || strcasecmp(type, "molecular-weight") == 0)
-    *out = mass_calulator.molecularWeight(target);
-else if (strcasecmp(type, "most-abundant-mass") == 0)
-    *out = mass_calulator.mostAbundantMass(target);
-else if (strcasecmp(type, "monoisotopic-mass") == 0)
-    *out = mass_calulator.monoisotopicMass(target);
-else
-    throw BingoError("unknown mass specifier: %s", type);
-return 1;
+    if (type == 0 || strlen(type) == 0 || strcasecmp(type, "molecular-weight") == 0)
+        *out = mass_calulator.molecularWeight(target);
+    else if (strcasecmp(type, "most-abundant-mass") == 0)
+        *out = mass_calulator.mostAbundantMass(target);
+    else if (strcasecmp(type, "monoisotopic-mass") == 0)
+        *out = mass_calulator.monoisotopicMass(target);
+    else
+        throw BingoError("unknown mass specifier: %s", type);
 }
-BINGO_END(-1, -1)
+
+CEXPORT int mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out){
+    BINGO_BEGIN {
+        self.mangoMass(target_buf, target_buf_len, type, out);
+    }
+    BINGO_END(1, -1)
 }
 
 int BingoCore::mangoMassD(const char* target_buf, int target_buf_len, const char* type, double* out) {

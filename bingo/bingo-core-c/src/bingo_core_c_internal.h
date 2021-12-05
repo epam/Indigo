@@ -75,6 +75,8 @@ namespace indigo
             void mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, int** min_bound_ptr, int** max_bound_ptr);
             void mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound);
             const char* mangoGross(const char* target_buf, int target_buf_len);
+            void mangoSimilarityGetScore(float* score);
+            void mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out);
             int ringoIndexProcessSingleRecord();
             int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* crf_buf_len, const char** fingerprint_buf, int* fingerprint_buf_len);
             int ringoGetHash(bool for_index, dword* hash);
