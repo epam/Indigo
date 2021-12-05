@@ -171,6 +171,32 @@ CEXPORT int ringoSetupMatch(const char* search_type, const char* query, const ch
     BINGO_END(-2, -2)
 }
 
+int BingoCore::ringoMatchTarget(const char* target, int target_buf_len) {
+    if (self.ringo_search_type == BingoCore::_UNDEF)
+            throw BingoError("Undefined search type");
+
+    TRY_READ_TARGET_RXN
+    {
+        BufferScanner scanner(target, target_buf_len);
+        if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
+        {
+            RingoSubstructure& substructure = self.ringo_context->substructure;
+            substructure.loadTarget(scanner);
+            return substructure.matchLoadedTarget() ? 1 : 0;
+        }
+        else if (self.ringo_search_type == BingoCore::_EXACT)
+        {
+            RingoExact& exact = self.ringo_context->exact;
+            exact.loadTarget(scanner);
+            return exact.matchLoadedTarget() ? 1 : 0;
+        }
+        else
+            throw BingoError("Invalid search type");
+    }
+    CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), 1); return -1;);
+    return 0;
+}
+
 // Return value:
 //   1 if the query is a substructure of the taret
 //   0 if it is not
@@ -182,28 +208,7 @@ CEXPORT int ringoMatchTarget(const char* target, int target_buf_len)
 
     BINGO_BEGIN
     {
-        if (self.ringo_search_type == BingoCore::_UNDEF)
-            throw BingoError("Undefined search type");
-
-        TRY_READ_TARGET_RXN
-        {
-            BufferScanner scanner(target, target_buf_len);
-            if (self.ringo_search_type == BingoCore::_SUBSTRUCTRE)
-            {
-                RingoSubstructure& substructure = self.ringo_context->substructure;
-                substructure.loadTarget(scanner);
-                return substructure.matchLoadedTarget() ? 1 : 0;
-            }
-            else if (self.ringo_search_type == BingoCore::_EXACT)
-            {
-                RingoExact& exact = self.ringo_context->exact;
-                exact.loadTarget(scanner);
-                return exact.matchLoadedTarget() ? 1 : 0;
-            }
-            else
-                throw BingoError("Invalid search type");
-        }
-        CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), 1); return -1;);
+        return self.ringoMatchTarget(target, target_buf_len);
     }
     BINGO_END(-2, -2)
 }

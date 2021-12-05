@@ -83,6 +83,7 @@ namespace indigo
             int ringoMatchTargetBinary(const char* target_bin, int target_bin_len);
             int ringoSetupMatch(const char* search_type, const char* query, const char* options);
             void ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len);
+            int ringoMatchTarget(const char* target, int target_buf_len);
             int bingoSDFImportOpen(const char* file_name);
             int bingoSDFImportClose();
             int bingoSDFImportEOF();
