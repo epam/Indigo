@@ -450,6 +450,13 @@ public:
       return return_value; \
    }
 
+#define CORE_CATCH_WARNING(suffix)\
+   catch (indigo::Exception& e) { \
+      elog(WARNING, "%s: %s", suffix, e.message());\
+   } catch (...) { \
+      elog(WARNING, "%s: bingo unknown error", suffix);\
+   }
+
 #define CORE_HANDLE_ERROR(res, success_res, suffix, message)\
    if (res < success_res) {\
       throw BingoPgError("%s: %s", suffix, message);\
