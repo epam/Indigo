@@ -19,12 +19,12 @@ using namespace std;
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups, rapidjson::Value& simple_objects)
-    : _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(simple_objects), _pmol(0), _pqmol(0)
+    : _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(simple_objects), _pmol(0), _pqmol(0), _empty_array(kArrayType)
 {
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups)
-: _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty), _pmol(0), _pqmol(0)
+    : _empty_array(kArrayType) , _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty_array), _pmol(0), _pqmol(0)
 {
 }
 

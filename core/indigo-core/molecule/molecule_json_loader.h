@@ -95,10 +95,10 @@ namespace indigo
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
     private:
+        rapidjson::Value _empty_array;
         rapidjson::Value& _mol_nodes;
         rapidjson::Value& _rgroups;
         rapidjson::Value& _simple_objects;
-        rapidjson::Value _empty;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
