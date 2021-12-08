@@ -42,8 +42,17 @@ AromatizerBase::AromatizerBase(BaseMolecule& molecule)
     _bonds_arom_count.resize(molecule.edgeEnd());
 
     _cycle_atoms.clear_resize(_basemol.vertexEnd());
-
     reset();
+    // collect superatoms' atoms for fast check
+    for (int i = molecule.sgroups.begin(); i != molecule.sgroups.end(); i = molecule.sgroups.next(i))
+    {
+        SGroup& sgroup = molecule.sgroups.getSGroup(i);
+        if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+        {
+            for (int i = 0; i < sgroup.atoms.size(); i++)
+                _inside_superatoms.insert(sgroup.atoms[i]);
+        }
+    }
 }
 
 AromatizerBase::~AromatizerBase()
@@ -279,6 +288,7 @@ void AromatizerBase::reset(void)
 
     _cyclesHandled = 0;
     _unsureCyclesCount = 0;
+    _inside_superatoms.clear();
 }
 
 void AromatizerBase::setBondAromaticCount(int e_idx, int count)
@@ -305,6 +315,9 @@ int MoleculeAromatizer::_getPiLabel(int v_idx)
         return -1;
 
     const Vertex& vertex = _basemol.getVertex(v_idx);
+
+    if (_options.aromatize_skip_superatoms && _inside_superatoms.size() && _inside_superatoms.find(v_idx) != _inside_superatoms.end())
+        return -1;
 
     if (_basemol.isPseudoAtom(v_idx))
         return -1;
@@ -627,6 +640,9 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel(int v_idx)
             break;
         }
     }
+
+    if (_options.aromatize_skip_superatoms && _inside_superatoms.size() && _inside_superatoms.find(v_idx) != _inside_superatoms.end())
+        return PiValue(-1, -1);
 
     if (query.isRSite(v_idx))
     {

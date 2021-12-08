@@ -109,6 +109,7 @@ namespace indigo
         void _setHighlightOpt();
         void _resetHighlightOpt();
         void _renderBonds();
+        void _renderMeta();
         void _applyBondOffset();
         void _setBondCenter();
         float _getBondOffset(int aid, const Vec2f& pos, const Vec2f& dir, const float bondWidth);

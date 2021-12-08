@@ -50,7 +50,7 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups);
+        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups, rapidjson::Value& simple_objects = rapidjson::Value());
         void loadMolecule(BaseMolecule& mol);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
@@ -96,6 +96,7 @@ namespace indigo
     private:
         rapidjson::Value& _mol_nodes;
         rapidjson::Value& _rgroups;
+        rapidjson::Value& _simple_objects;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;

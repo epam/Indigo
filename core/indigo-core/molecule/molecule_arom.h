@@ -46,6 +46,7 @@ namespace indigo
         bool dearomatize_check;
 
         bool unique_dearomatization;
+        bool aromatize_skip_superatoms;
 
         AromaticityOptions(Method method = BASIC) : method(method), dearomatize_check(true), unique_dearomatization(false)
         {
@@ -104,6 +105,8 @@ namespace indigo
         TL_CP_DECL(Array<int>, _bonds_arom_count);
         TL_CP_DECL(Array<CycleDef>, _unsure_cycles);
         TL_CP_DECL(Array<int>, _cycle_atoms);
+        TL_CP_DECL(std::unordered_set<int>, _inside_superatoms);
+
         int _cycle_atoms_mark;
 
         bool _checkDoubleBonds(const int* cycle, int cycle_len);

@@ -25,6 +25,7 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
+#include "molecule/ket_commons.h"
 
 using namespace indigo;
 using namespace rapidjson;
@@ -845,6 +846,91 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         }
     }
 
+    if (bmol.metaData().size())
+    {
+        for (auto& obj : bmol.metaData())
+        {
+            switch (obj->_class_id)
+            {
+                case KETSimpleObject::cid:
+                {
+                    auto simple_obj = (KETSimpleObject*)(obj.get());
+                    writer.StartObject();
+                    writer.Key("type");
+                    writer.String("simpleObject");
+                    writer.Key("data");
+                    writer.StartObject();
+                    writer.Key("mode");
+                    switch (simple_obj->_mode)
+                    {
+                        case KETSimpleObject::EKETEllipse:
+                        writer.String("ellipse");
+                        break;
+                        case KETSimpleObject::EKETRectangle:
+                        writer.String("rectangle");
+                        break;
+                        case KETSimpleObject::EKETLine:
+                        writer.String("line");
+                        break;
+                    }
+                    writer.Key("pos");
+                    writer.StartArray();
+
+                    // point1
+                    writer.StartObject();
+                    writer.Key("x");
+                    writer.Double(simple_obj->_rect.left());
+                    writer.Key("y");
+                    writer.Double(simple_obj->_rect.bottom());
+                    writer.Key("z");
+                    writer.Double(0);
+                    writer.EndObject();
+
+                    // point2
+                    writer.StartObject();
+                    writer.Key("x");
+                    writer.Double(simple_obj->_rect.right());
+                    writer.Key("y");
+                    writer.Double(simple_obj->_rect.top());
+                    writer.Key("z");
+                    writer.Double(0);
+                    writer.EndObject();
+
+                    writer.EndArray();
+
+                    // end data
+                    writer.EndObject();
+                    // end node
+                    writer.EndObject();
+                    break;
+                }
+                case KETTextObject::cid: 
+                {
+                    auto simple_obj = (KETTextObject*)(obj.get());
+                    writer.StartObject();
+                    writer.Key("type");
+                    writer.String("text");
+                    writer.Key("data");
+                    writer.StartObject();
+                    writer.Key("content");
+                    writer.String(simple_obj->_content.c_str());
+                    writer.Key("position");
+                    writer.StartObject();
+                    writer.Key("x");
+                    writer.Double( simple_obj->_pos.x );
+                    writer.Key("y");
+                    writer.Double(simple_obj->_pos.y);
+                    writer.Key("z");
+                    writer.Double(simple_obj->_pos.z);
+                    writer.EndObject(); // end position
+                    writer.EndObject(); // end data
+                    writer.EndObject(); // end node
+                    break;
+                }
+            }
+        }
+    }
+
     int n_rgroups = mol->rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; ++i)
     {
@@ -920,7 +1006,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         if (rgrp.fragments.size())
             saveRGroup(rgrp.fragments, i, writer);
     }
-
     writer.EndObject();
 }
 

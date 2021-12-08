@@ -114,6 +114,21 @@ int Graph::getEdgeEnd(int beg, int edge) const
     return -1;
 }
 
+void Graph::addMetaObject(std::unique_ptr<GraphMetaObject> obj)
+{
+    _meta_data.push_back( std::move(obj));
+}
+
+void Graph::resetMetaData()
+{
+    _meta_data.clear();
+}
+
+const std::list< std::unique_ptr<GraphMetaObject> >& Graph::metaData() const
+{
+    return _meta_data;
+}
+
 int Graph::addEdge(int beg, int end)
 {
     if (beg == end)

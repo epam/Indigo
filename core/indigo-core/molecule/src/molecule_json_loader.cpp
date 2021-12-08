@@ -10,6 +10,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
+#include "molecule/ket_commons.h"
 
 using namespace rapidjson;
 using namespace indigo;
@@ -17,7 +18,8 @@ using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups) : _mol_nodes(mol_nodes), _rgroups(rgroups), _pmol(0), _pqmol(0)
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups, rapidjson::Value& simple_objects)
+    : _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(simple_objects), _pmol(0), _pqmol(0)
 {
 }
 
@@ -467,7 +469,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         }
 }
 
-void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol )
+void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol)
 {
     mol.reaction_bond_reacting_center.clear_resize(bonds.Size());
     mol.reaction_bond_reacting_center.zerofill();
@@ -878,10 +880,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         Array<int> mapping;
         mol.mergeWithMolecule(*pmol, &mapping, FORCE_BOND_DIRECTIONS);
 
-        for( auto& sc : stereo_centers )
+        for (auto& sc : stereo_centers)
         {
             sc._atom_idx = mapping[sc._atom_idx];
-            _stereo_centers.push_back( sc );
+            _stereo_centers.push_back(sc);
         }
         mol.addFragmentMapping(node_idx, mapping);
     }
@@ -968,4 +970,56 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
     MoleculeLayout ml(mol, false);
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();
+    if (_simple_objects.IsArray())
+    {
+        for (int obj_idx = 0; obj_idx < _simple_objects.Size(); ++obj_idx)
+        {
+            auto& simple_object = _simple_objects[obj_idx];
+            if (simple_object.HasMember("mode")) // ellipse or rectangle or line
+            {
+                int mode = 0;
+                Vec2f p1, p2;
+                std::string obj_mode = simple_object["mode"].GetString();
+                if (obj_mode.compare("ellipse") == 0)
+                {
+                    mode = KETSimpleObject::EKETEllipse;
+                }
+                else if (obj_mode.compare("rectangle") == 0)
+                {
+                    mode = KETSimpleObject::EKETRectangle;
+                }
+                else if (obj_mode.compare("line") == 0)
+                {
+                    mode = KETSimpleObject::EKETLine;
+                }
+                else
+                    throw Error("Unknown simple object mode:%s", obj_mode.c_str());
+                if (simple_object.HasMember("pos"))
+                {
+                    auto& pos = simple_object["pos"].GetArray();
+                    if (pos.Size() == 2)
+                    {
+                        p1.x = pos[0]["x"].GetDouble();
+                        p1.y = pos[0]["y"].GetDouble();
+                        p2.x = pos[1]["x"].GetDouble();
+                        p2.y = pos[1]["y"].GetDouble();
+                    }
+                    else
+                        throw("Bad pos array size %d. Most be equal to 2.", pos.Size());
+                }
+                std::unique_ptr<GraphMetaObject> ket_obj(new KETSimpleObject(mode, Rect2f(p1,p2)));
+                mol.addMetaObject( std::move(ket_obj));
+            }
+            else if (simple_object.HasMember("content") && simple_object.HasMember("position"))
+            {
+                std::string content = simple_object["content"].GetString();
+                Vec3f text_origin;
+                text_origin.x = simple_object["position"]["x"].GetDouble();
+                text_origin.y = simple_object["position"]["y"].GetDouble();
+                text_origin.z = simple_object["position"]["z"].GetDouble();
+                std::unique_ptr<GraphMetaObject> ket_obj(new KETTextObject(text_origin, content));
+                mol.addMetaObject( std::move(ket_obj));
+            }
+        }
+    }
 }
