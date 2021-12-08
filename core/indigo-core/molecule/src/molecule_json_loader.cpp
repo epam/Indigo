@@ -23,6 +23,11 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups, rapidjs
 {
 }
 
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups)
+: _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty), _pmol(0), _pqmol(0)
+{
+}
+
 int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology)
 {
     std::unique_ptr<QueryMolecule::Bond> bond;
