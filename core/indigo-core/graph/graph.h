@@ -19,13 +19,14 @@
 #ifndef __graph_h__
 #define __graph_h__
 
-#include <list>
-#include <memory>
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/obj_pool.h"
+#include <list>
+#include <memory>
+#include "base_cpp/ptr_array.h"
 #include "graph/filter.h"
 #include "graph/graph_iterators.h"
 
@@ -190,9 +191,9 @@ namespace indigo
 
         int addVertex();
         int addEdge(int beg, int end);
-        void addMetaObject(std::unique_ptr<GraphMetaObject> obj);
+        void addMetaObject(GraphMetaObject* pobj); // moves ownership
         void resetMetaData();
-        const std::list<std::unique_ptr<GraphMetaObject>>& metaData() const;
+        const PtrArray<GraphMetaObject>& metaData() const;
 
         int findEdgeIndex(int beg, int end) const;
         bool haveEdge(int beg, int end) const;
@@ -266,7 +267,8 @@ namespace indigo
         Array<int> _component_ecount;
         bool _components_valid;
         int _components_count;
-        std::list<std::unique_ptr<GraphMetaObject>> _meta_data;
+
+        PtrArray<GraphMetaObject> _meta_data;
 
         void _calculateTopology();
         void _calculateSSSR();

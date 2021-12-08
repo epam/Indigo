@@ -434,9 +434,9 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (coords.Size() > 0)
             {
                 Vec3f a_pos;
-                a_pos.x = _2FLOAT(coords[0].GetDouble());
-                a_pos.y = _2FLOAT(coords[1].GetDouble());
-                a_pos.z = _2FLOAT(coords[2].GetDouble());
+                a_pos.x = coords[0].GetFloat();
+                a_pos.y = coords[1].GetFloat();
+                a_pos.z = coords[2].GetFloat();
                 mol.setAtomXyz(atom_idx, a_pos);
             }
         }
@@ -1004,26 +1004,24 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
                     auto pos = simple_object["pos"].GetArray();
                     if (pos.Size() == 2)
                     {
-                        p1.x = pos[0]["x"].GetDouble();
-                        p1.y = pos[0]["y"].GetDouble();
-                        p2.x = pos[1]["x"].GetDouble();
-                        p2.y = pos[1]["y"].GetDouble();
+                        p1.x = pos[0]["x"].GetFloat();
+                        p1.y = pos[0]["y"].GetFloat();
+                        p2.x = pos[1]["x"].GetFloat();
+                        p2.y = pos[1]["y"].GetFloat();
                     }
                     else
                         throw("Bad pos array size %d. Most be equal to 2.", pos.Size());
                 }
-                std::unique_ptr<GraphMetaObject> ket_obj(new KETSimpleObject(mode, Rect2f(p1,p2)));
-                mol.addMetaObject( std::move(ket_obj));
+                mol.addMetaObject(new KETSimpleObject(mode, Rect2f(p1, p2)));
             }
             else if (simple_object.HasMember("content") && simple_object.HasMember("position"))
             {
                 std::string content = simple_object["content"].GetString();
                 Vec3f text_origin;
-                text_origin.x = simple_object["position"]["x"].GetDouble();
-                text_origin.y = simple_object["position"]["y"].GetDouble();
-                text_origin.z = simple_object["position"]["z"].GetDouble();
-                std::unique_ptr<GraphMetaObject> ket_obj(new KETTextObject(text_origin, content));
-                mol.addMetaObject( std::move(ket_obj));
+                text_origin.x = simple_object["position"]["x"].GetFloat();
+                text_origin.y = simple_object["position"]["y"].GetFloat();
+                text_origin.z = simple_object["position"]["z"].GetFloat();
+                mol.addMetaObject(new KETTextObject(text_origin, content));
             }
         }
     }

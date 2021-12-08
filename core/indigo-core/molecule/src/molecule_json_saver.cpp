@@ -848,13 +848,15 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
 
     if (bmol.metaData().size())
     {
-        for (auto& obj : bmol.metaData())
+        auto& meta = bmol.metaData();
+        for (int meta_index = 0; meta_index < meta.size(); ++meta_index)
         {
-            switch (obj->_class_id)
+            auto pobj = meta[ meta_index ];
+            switch (pobj->_class_id)
             {
                 case KETSimpleObject::cid:
                 {
-                    auto simple_obj = (KETSimpleObject*)(obj.get());
+                    auto simple_obj = (KETSimpleObject*)pobj;
                     writer.StartObject();
                     writer.Key("type");
                     writer.String("simpleObject");
@@ -906,7 +908,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
                 }
                 case KETTextObject::cid: 
                 {
-                    auto simple_obj = (KETTextObject*)(obj.get());
+                    auto simple_obj = (KETTextObject*)pobj;
                     writer.StartObject();
                     writer.Key("type");
                     writer.String("text");
