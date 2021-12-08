@@ -1001,7 +1001,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
                     throw Error("Unknown simple object mode:%s", obj_mode.c_str());
                 if (simple_object.HasMember("pos"))
                 {
-                    auto& pos = simple_object["pos"].GetArray();
+                    auto pos = simple_object["pos"].GetArray();
                     if (pos.Size() == 2)
                     {
                         p1.x = pos[0]["x"].GetDouble();
