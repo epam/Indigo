@@ -25,6 +25,8 @@ from array import array
 from ctypes import (CDLL, POINTER, RTLD_GLOBAL, c_byte, c_char_p, c_double,
                     c_float, c_int, c_ulonglong, pointer, sizeof, c_void_p)
 
+from indigo.salts import SALTS
+
 DECODE_ENCODING = "utf-8"
 ENCODE_ENCODING = "utf-8"
 
@@ -1219,6 +1221,24 @@ class IndigoObject(object):
         return self.dispatcher._checkResult(
             Indigo._lib.indigoCheckStereo(self.id)
         )
+
+    def checkSalt(self):
+        """Molecule method verifies if the structure(?) contains salt
+        or ion.
+
+        Returns:
+            bool: True if structure contains salt
+        """
+        self.dispatcher._setSessionId()
+        for target_fragment in self.iterateComponents():
+            target_fragment = target_fragment.clone()
+            for salt in SALTS:
+                query_molecular_salt = self.dispatcher.loadMolecule(salt)
+                if self.dispatcher.exactMatch(
+                        target_fragment, query_molecular_salt
+                    ):
+                    return True
+        return False
 
     def countHydrogens(self):
         """Atom or Molecule method returns the number of hydrogens
