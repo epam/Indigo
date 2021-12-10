@@ -1223,8 +1223,7 @@ class IndigoObject(object):
         )
 
     def checkSalt(self):
-        """Molecule method verifies if the structure(?) contains salt
-        or ion.
+        """Molecule method verifies if the structure contains salt.
 
         Returns:
             bool: True if structure contains salt
