@@ -6,7 +6,7 @@ SALTS = [
     "[O-][As](=O)([O-])[O-]", "[O-]S(=O)[O-]", "[O-]S(=O)(=O)[O-]",
     "C(=O)([O-])[O-]", "[O-][Si](=O)[O-]", "[O-][Cr](=O)(=O)[O-] ",
     "[O-][Cr](=O)(=O)O[Cr](=O)(=O)[O-]", "[O-][Mn](=O)(=O)=O", "[O-]Cl",
-    "[[O-]Cl=O]", "[O-]Cl(=O)=O", "[O-]Cl(=O)(=O)=O",
+    "[O-]Cl=O", "[O-]Cl(=O)=O", "[O-]Cl(=O)(=O)=O",
     "C(=O)[O-]", "CC(=O)[O-]", "CCC(=O)[O-]", "CCCC(=O)[O-]", "CCCCC(=O)[O-]",
     "CCCCCCCCCCCCCCCC(=O)[O-]", "CCCCCCCCCCCCCCCCCC(=O)[O-]",
     "C(C(=O)[O-])Cl", "C(C(=O)[O-])(Cl)Cl", "C(=O)(C(Cl)(Cl)Cl)[O-]",
