@@ -23,7 +23,7 @@ import sys
 import warnings
 from array import array
 from ctypes import (CDLL, POINTER, RTLD_GLOBAL, c_byte, c_char_p, c_double,
-                    c_float, c_int, c_ulonglong, pointer, sizeof, c_void_p)
+                    c_float, c_int, c_ulonglong, c_void_p, pointer, sizeof)
 
 from indigo.salts import SALTS
 
