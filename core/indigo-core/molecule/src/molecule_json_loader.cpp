@@ -890,7 +890,6 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
             sc._atom_idx = mapping[sc._atom_idx];
             _stereo_centers.push_back(sc);
         }
-        mol.addFragmentMapping(node_idx, mapping);
     }
 
     MoleculeRGroups& rgroups = mol.rgroups;

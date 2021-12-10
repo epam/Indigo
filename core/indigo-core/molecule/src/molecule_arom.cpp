@@ -50,7 +50,7 @@ AromatizerBase::AromatizerBase(BaseMolecule& molecule)
         if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             for (int i = 0; i < sgroup.atoms.size(); i++)
-                _inside_superatoms.insert(sgroup.atoms[i]);
+                _inside_superatoms.find_or_insert(sgroup.atoms[i]);
         }
     }
 }
@@ -316,7 +316,7 @@ int MoleculeAromatizer::_getPiLabel(int v_idx)
 
     const Vertex& vertex = _basemol.getVertex(v_idx);
 
-    if (_options.aromatize_skip_superatoms && _inside_superatoms.size() && _inside_superatoms.find(v_idx) != _inside_superatoms.end())
+    if (_options.aromatize_skip_superatoms && _inside_superatoms.find(v_idx))
         return -1;
 
     if (_basemol.isPseudoAtom(v_idx))

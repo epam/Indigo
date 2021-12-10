@@ -4130,31 +4130,30 @@ const int* BaseMolecule::getPyramidStereocenters(int idx) const
 
 void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
 {
-    _stereo_flag_positions[frag_index] = pos;
+    try
+    {
+        _stereo_flag_positions.insert(frag_index, pos);
+    }
+    catch (...)
+    {
+
+    }
 }
 
 bool BaseMolecule::getStereoFlagPosition(int frag_index, Vec3f& pos)
 {
-    auto it = _stereo_flag_positions.find(frag_index);
-    if (it != _stereo_flag_positions.end())
+    auto pval = _stereo_flag_positions.at2(frag_index);
+    if (pval)
     {
-        pos = it->second;
+        pos = *pval;
         return true;
     }
     return false;
 }
 
-void BaseMolecule::addFragmentMapping(int frag_index, Array<int>& mapping)
+int BaseMolecule::countStereoFlags()
 {
-    if (_fragment_mappings.size() < frag_index + 1)
-        _fragment_mappings.resize(frag_index + 1);
-    auto& map = _fragment_mappings[frag_index];
-    map.assign(mapping.begin(), mapping.begin() + mapping.size());
-}
-
-int BaseMolecule::countFragments()
-{
-    return _fragment_mappings.size();
+    return _stereo_flag_positions.size();
 }
 
 void BaseMolecule::markBondsStereocenters()

@@ -85,7 +85,7 @@ namespace indigo
     // merging with molecule and cloning procedures
     enum
     {
-        SKIP_ALL = -1,
+        SKIP_ALL = 0x7F,
         SKIP_CIS_TRANS = 0x01,
         SKIP_STEREOCENTERS = 0x02,
         SKIP_XYZ = 0x04,
@@ -369,8 +369,7 @@ namespace indigo
 
         void setStereoFlagPosition(int frag_index, const Vec3f& pos);
         bool getStereoFlagPosition(int frag_index, Vec3f& pos);
-        void addFragmentMapping(int frag_index, Array<int>& mapping);
-        int countFragments();
+        int countStereoFlags();
 
 
         // proxy methods for stereocenters
@@ -455,9 +454,8 @@ namespace indigo
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
-        std::unordered_map<int,Vec3f> _stereo_flag_positions;
-        std::vector<std::vector<int>> _fragment_mappings;
-
+        RedBlackMap<int,Vec3f> _stereo_flag_positions;
+  
         ObjArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
 

@@ -19,6 +19,7 @@
 #ifndef __molecule_arom_h__
 #define __molecule_arom_h__
 
+#include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 
 #ifdef _WIN32
@@ -105,7 +106,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _bonds_arom_count);
         TL_CP_DECL(Array<CycleDef>, _unsure_cycles);
         TL_CP_DECL(Array<int>, _cycle_atoms);
-        TL_CP_DECL(std::unordered_set<int>, _inside_superatoms);
+        TL_CP_DECL(RedBlackSet<int>, _inside_superatoms);
 
         int _cycle_atoms_mark;
 
