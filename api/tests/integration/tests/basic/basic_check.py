@@ -90,7 +90,3 @@ print("Check result = %s" % indigo.checkStructure(c))
 
 c = "benzene"    
 print("Check result = %s" % indigo.checkStructure(c))
-
-print("****** Check salt ********")
-mol = indigo.loadMolecule("[Na+].C")
-print("Check result (molecule) = {}".format(mol.checkSalt()))

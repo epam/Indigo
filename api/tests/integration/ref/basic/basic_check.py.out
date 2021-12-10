@@ -716,5 +716,3 @@ Check result = {"valence":"Structure contains atoms with unusuall valence,(2)","
 Check result = {"LOAD":{"message":"Error at loading structure"}}
 Check result = {"LOAD":{"message":"Error at loading structure"}}
 Check result = {"stereo":"Structure contains stereocenters defined by 3D coordinates,(0,1,2,3,4,5)","salt":"Not implemented yet: check salt","coord":"Structure has no atoms coordinates"}
-****** Check salt ********
-Check result (molecule) = True
