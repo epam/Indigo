@@ -179,7 +179,7 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
      */
     int block_number = ItemPointerGetBlockNumber((ItemPointer)item_ptr);
     int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
-    profTimerStart(t0, "bingo_pg.insert");
+    // profTimerStart(t0, "bingo_pg.insert");
 
     BingoPgBuildEngine::StructCache struct_cache;
     struct_cache.text = std::make_unique<BingoPgText>(text_ptr);
@@ -222,7 +222,7 @@ void BingoPgBuild::insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_pt
 
 void BingoPgBuild::flush()
 {
-    profTimerStart(t0, "bingo_pg.flush");
+    // profTimerStart(t0, "bingo_pg.flush");
 
     if (_parrallelCache.size() == 0)
         return;
@@ -233,7 +233,7 @@ void BingoPgBuild::flush()
 
     for (int c_idx = 0; c_idx < _parrallelCache.size(); ++c_idx)
     {
-        profTimerStart(t1, "bingo_pg.insert_idx");
+        // profTimerStart(t1, "bingo_pg.insert_idx");
         BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache[c_idx];
         if (struct_cache.data.get() == 0)
         {

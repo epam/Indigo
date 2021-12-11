@@ -101,7 +101,7 @@ void BingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT)
 
 bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr)
 {
-    profTimerStart(t0, "bingo_pg.search_cursor");
+    // profTimerStart(t0, "bingo_pg.search_cursor");
     ItemPointerData cmf_item;
     /*
      * Iterate through the cursor
@@ -127,14 +127,14 @@ bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr)
         return true;
     }
 
-    // _searchCursor.reset(nullptr);
+    _searchCursor.reset(nullptr);
     return false;
 }
 
 bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr)
 {
 
-    profTimerStart(t0, "bingo_pg.search_sub");
+    // profTimerStart(t0, "bingo_pg.search_sub");
     BingoPgFpData& query_data = *_queryFpData;
     BingoPgIndex& bingo_index = *_bufferIndexPtr;
     /*
@@ -153,7 +153,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr)
             ++_currentSection;
         }
     }
-    profTimerStart(t1, "bingo_pg.search_fp");
+    // profTimerStart(t1, "bingo_pg.search_fp");
 
     if (_currentSection < 0)
         _currentSection = _blockBegin;
@@ -194,7 +194,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr)
              */
             if (_fetchForNext())
             {
-                profTimerStop(t1);
+                // profTimerStop(t1);
                 setItemPointer(result_ptr);
                 /*
                  * Set fetch found to return on the next steps

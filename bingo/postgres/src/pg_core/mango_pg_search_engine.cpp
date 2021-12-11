@@ -689,17 +689,17 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
             /*
              * Read structures bits count
              */
-            //         profTimerStart(t5, "mango_pg.get_section_bits");
+            // profTimerStart(t5, "mango_pg.get_section_bits");
             bingo_index.getSectionBitsCount(_currentSection, bits_count);
-            //         profTimerStop(t5);
+            // profTimerStop(t5);
             /*
              * Prepare min max bounds
              */
-            //         profTimerStart(t3, "mango_pg.get_min_max");
+            // profTimerStart(t3, "mango_pg.get_min_max");
             try {
                 bingoCore.mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
             } CORE_CATCH_ERROR("molecule search engine: error while getting similarity bounds array")
-            //         profTimerStop(t3);
+            // profTimerStop(t3);
             /*
              * Prepare common bits array
              */
@@ -716,19 +716,19 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
                 /*
                  * Copy passed structures on each iteration step
                  */
-                //            profTimerStart(t7, "mango_pg.copy");
+                // profTimerStart(t7, "mango_pg.copy");
                 screening_bitset.copy(_sectionBitset);
-                //            profTimerStop(t7);
+                // profTimerStop(t7);
 
                 /*
                  * Get commons in fingerprint buffer
                  */
 
-                //            profTimerStart(t2, "mango_pg.andwith");
+                // profTimerStart(t2, "mango_pg.andwith");
                 bingo_index.andWithBitset(_currentSection, fp_block, screening_bitset);
-                //            profTimerStop(t2);
+                // profTimerStop(t2);
 
-                //            profTimerStart(t4, "mango_pg.new_common_ones");
+                // profTimerStart(t4, "mango_pg.new_common_ones");
                 int screen_idx = screening_bitset.begin();
                 for (; screen_idx != screening_bitset.end() && possible_str_count > 0; screen_idx = screening_bitset.next(screen_idx))
                 {
@@ -746,14 +746,14 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
                         --possible_str_count;
                     }
                 }
-                //            profTimerStop(t4);
+                // profTimerStop(t4);
                 ++iteration_idx;
             }
 
             /*
              * Screen the last time for all the possible structures
              */
-            //         profTimerStart(t6, "mango_pg.lst_screen");
+            // profTimerStart(t6, "mango_pg.lst_screen");
             int screen_idx = _sectionBitset.begin();
             for (; screen_idx != _sectionBitset.end() && possible_str_count > 0; screen_idx = _sectionBitset.next(screen_idx))
             {
@@ -767,7 +767,7 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
                     --possible_str_count;
                 }
             }
-            //         profTimerStop(t6);
+            // profTimerStop(t6);
         }
         /*
          * Return false on empty fingerprint
