@@ -11,6 +11,7 @@ extern "C"
 
 #include "bingo_pg_fix_post.h"
 
+#include "base_c/nano.h"
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
 #include "bingo_pg_common.h"
@@ -19,8 +20,6 @@ extern "C"
 #include "pg_bingo_context.h"
 
 using namespace indigo;
-
-static int cursor_idx = 0;
 
 IMPL_ERROR(BingoPgCursor, "bingo cursor access");
 
@@ -204,9 +203,9 @@ void BingoPgCursor::_init(indigo::Array<char>& query_str)
         SPI_connect();
         SPIPlanPtr plan_ptr = SPI_prepare_cursor(query_str.ptr(), arg_types.size(), arg_types.ptr(), 0);
 
-        ++cursor_idx;
+        auto cursor_idx = nanoClock();
         ArrayOutput cursor_name_out(_cursorName);
-        cursor_name_out.printf("bingo_cursor_%d", cursor_idx);
+        cursor_name_out.printf("bingo_cursor_%llu", cursor_idx);
         cursor_name_out.writeChar(0);
 
         _cursorPtr = SPI_cursor_open(_cursorName.ptr(), plan_ptr, 0, 0, true);
