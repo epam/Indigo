@@ -24,8 +24,6 @@
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/obj_pool.h"
-#include <list>
-#include <memory>
 #include "base_cpp/ptr_array.h"
 #include "graph/filter.h"
 #include "graph/graph_iterators.h"

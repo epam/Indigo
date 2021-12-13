@@ -2010,24 +2010,6 @@ void MoleculeRenderInternal::_renderBonds()
 
 void MoleculeRenderInternal::_renderMeta()
 {
-    /*
-    if (_mol->metaData().size())
-    {
-        for (auto& obj : _mol->metaData())
-        {
-            switch (obj->_class_id)
-            {
-                case KETSimpleObject::EKETEllipse:
-
-                break;
-                case KETSimpleObject::EKETRectangle:
-
-                break;
-                case KETSimpleObject::EKETLine:
-                break;
-            }
-        }
-    }*/
 }
 
 void MoleculeRenderInternal::_renderSGroups()

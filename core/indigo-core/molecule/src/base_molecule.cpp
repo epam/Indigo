@@ -280,9 +280,10 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
     if (skip_flags & COPY_BOND_DIRECTIONS)
     {
-        _bond_directions.expandFill( edgeEnd() + mol.edgeEnd(), 0);
-    } else
-      _bond_directions.expandFill(  mol.edgeEnd(), 0);
+        _bond_directions.expandFill(edgeEnd() + mol.edgeEnd(), 0);
+    }
+    else
+        _bond_directions.expandFill(mol.edgeEnd(), 0);
 
     for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
     {
@@ -299,7 +300,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     }
 
     // trick for molecules with incorrect stereochemistry, of which we do permutations
-    if ( (skip_flags & COPY_BOND_DIRECTIONS) || ( vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount()))
+    if ((skip_flags & COPY_BOND_DIRECTIONS) || (vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount()))
     {
         for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
         {
@@ -4134,9 +4135,8 @@ void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
     {
         _stereo_flag_positions.insert(frag_index, pos);
     }
-    catch (...)
+    catch (Exception& ex)
     {
-
     }
 }
 
