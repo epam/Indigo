@@ -296,14 +296,13 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         if (_pmol)
         {
             atom_idx = _pmol->addAtom(elem);
-            if (charge)
-                _pmol->setAtomCharge_Silent(atom_idx, charge);
-            if (valence)
+            _pmol->setAtomCharge_Silent(atom_idx, charge);
+            _pmol->setAtomRadical(atom_idx, radical);
+            _pmol->setAtomIsotope(atom_idx, isotope);
+            if (valence > 0 && valence <= 14)
                 _pmol->setExplicitValence(atom_idx, valence);
-            if (radical)
-                _pmol->setAtomRadical(atom_idx, radical);
-            if (isotope)
-                _pmol->setAtomIsotope(atom_idx, isotope);
+            if (valence == 15)
+                _pmol->setExplicitValence(atom_idx, 0);
             if (elem == ELEM_PSEUDO)
             {
                 _pmol->setPseudoAtom(atom_idx, label.c_str());
@@ -838,7 +837,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
             _pqmol = &pmol->asQueryMolecule();
         }
         else
+        {
             _pmol = &pmol->asMolecule();
+        }
 
         auto& mol_node = _mol_nodes[node_idx];
         std::string type = mol_node["type"].GetString();
@@ -882,8 +883,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         {
             throw Error("unknown type: %s", type.c_str());
         }
+
         Array<int> mapping;
-        mol.mergeWithMolecule(*pmol, &mapping, FORCE_BOND_DIRECTIONS);
+        mol.mergeWithMolecule(*pmol, &mapping, COPY_BOND_DIRECTIONS);
 
         for (auto& sc : stereo_centers)
         {

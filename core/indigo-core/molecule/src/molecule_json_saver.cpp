@@ -32,6 +32,17 @@ using namespace rapidjson;
 
 IMPL_ERROR(MoleculeJsonSaver, "molecule json saver");
 
+void dumpAtoms(BaseMolecule& mol)
+{
+    for (auto i : mol.vertices())
+    {
+        Array<char> buff;
+        mol.getAtomSymbol(i, buff);
+        printf("%s,", buff.ptr());
+    }
+    printf("\n");
+}
+
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output)
 {
 }

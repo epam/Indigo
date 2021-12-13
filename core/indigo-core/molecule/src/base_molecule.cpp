@@ -278,7 +278,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         reaction_atom_exact_change[mapping[i]] = mol.reaction_atom_exact_change[i];
     }
 
-    if (skip_flags & FORCE_BOND_DIRECTIONS)
+    if (skip_flags & COPY_BOND_DIRECTIONS)
     {
         _bond_directions.expandFill( edgeEnd() + mol.edgeEnd(), 0);
     } else
@@ -299,7 +299,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     }
 
     // trick for molecules with incorrect stereochemistry, of which we do permutations
-    if ( (skip_flags & FORCE_BOND_DIRECTIONS) || ( vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount()))
+    if ( (skip_flags & COPY_BOND_DIRECTIONS) || ( vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount()))
     {
         for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
         {

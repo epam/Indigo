@@ -58,7 +58,6 @@ namespace indigo
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
         bool ignore_no_chiral_flag; // ignore chiral flag absence (treat stereo "as drawn")
                                     // (depricated, use treat_stereo-as instead of this option)
-        bool ignore_bad_valence;    // ignore bad valence (default value is false)
 
         // When true, the "bond topology", "stereo care", "ring bond count", and "unsaturation"
         // specifications are ignored when a non-query molecule is being loaded.

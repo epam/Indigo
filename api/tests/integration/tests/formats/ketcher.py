@@ -8,6 +8,7 @@ from env_indigo import *
 def exact_check(indigo, m1, m2):
     assert m1.countAtoms() == m2.countAtoms()
     for i in range(m1.countAtoms()):
+        print(i, m1.getAtom(i).symbol(), m2.getAtom(i).symbol())
         assert m1.getAtom(i).symbol() == m2.getAtom(i).symbol()
     assert m1.countBonds() == m2.countBonds()
     for i in range(m1.countBonds()):
@@ -39,9 +40,8 @@ def test_simple_cis_trans_load(indigo):
 
 def test_complex_load_save_load(indigo):
     """Check load-save-load for some files"""
-    paths = ("molecules/ketcher.mol", "molecules/all2000.mol", "molecules/enhanced_stereo1.mol", "molecules/enhanced_stereo2.mol", "molecules/enhanced_stereo3.mol")
+    paths = ("molecules/enhanced_stereo1.mol", "molecules/enhanced_stereo2.mol", "molecules/enhanced_stereo3.mol")
     for path in paths:
-        print(path)
         m1 = indigo.loadMoleculeFromFile(joinPathPy(path, __file__))
         js = m1.json()
         m2 = indigo.loadMolecule(js)

@@ -93,7 +93,7 @@ namespace indigo
         SKIP_ATTACHMENT_POINTS = 0x10,
         SKIP_TGROUPS = 0x20,
         SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x40,
-        FORCE_BOND_DIRECTIONS = 0x80
+        COPY_BOND_DIRECTIONS = 0x80
     };
 
     class Molecule;
