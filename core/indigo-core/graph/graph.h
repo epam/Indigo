@@ -19,6 +19,7 @@
 #ifndef __graph_h__
 #define __graph_h__
 
+#include <list>
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
 #include "base_cpp/non_copyable.h"
