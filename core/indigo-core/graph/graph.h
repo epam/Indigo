@@ -19,11 +19,13 @@
 #ifndef __graph_h__
 #define __graph_h__
 
+#include <list>
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/obj_pool.h"
+#include "base_cpp/ptr_array.h"
 #include "graph/filter.h"
 #include "graph/graph_iterators.h"
 
@@ -123,6 +125,15 @@ namespace indigo
         }
     };
 
+    class GraphMetaObject
+    {
+    public:
+        GraphMetaObject(int class_id) : _class_id(class_id)
+        {
+        }
+        int _class_id;
+    };
+
     class CycleBasis;
 
     class DLLEXPORT Graph : public NonCopyable
@@ -179,6 +190,9 @@ namespace indigo
 
         int addVertex();
         int addEdge(int beg, int end);
+        void addMetaObject(GraphMetaObject* pobj); // moves ownership
+        void resetMetaData();
+        const PtrArray<GraphMetaObject>& metaData() const;
 
         int findEdgeIndex(int beg, int end) const;
         bool haveEdge(int beg, int end) const;
@@ -252,6 +266,8 @@ namespace indigo
         Array<int> _component_ecount;
         bool _components_valid;
         int _components_count;
+
+        PtrArray<GraphMetaObject> _meta_data;
 
         void _calculateTopology();
         void _calculateSSSR();
