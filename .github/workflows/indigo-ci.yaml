@@ -765,6 +765,9 @@ jobs:
             echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
             echo email=${NPM_EMAIL} >> ~/.npmrc
             echo always-auth=true >> ~/.npmrc
+            ver=$(git describe --abbrev=0 --tags --match "indigo-*")-$(git rev-list $(git describe --abbrev=0 --tags --match "indigo-*").. --count)
+            ver=${${ver}/indigo-/}
+            npm version ${ver}
             npm publish --tag beta ./dist/indigo-ketcher-*.tgz
 
 
