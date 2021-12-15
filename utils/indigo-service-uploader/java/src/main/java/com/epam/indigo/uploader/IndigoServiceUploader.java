@@ -1,16 +1,14 @@
 package com.epam.indigo.uploader;
 
+import org.apache.logging.log4j.LogManager;
+
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 public class IndigoServiceUploader {
    public static void main(String[] args) {
-      PropertyConfigurator.configure(IndigoServiceUploader.class.getClass().getResourceAsStream("/log4j.properties"));
       if (args.length != 2) {
         System.out.println("Usage: uploader <file_path> <table_name>");
         return;
@@ -41,20 +39,17 @@ public class IndigoServiceUploader {
             str_num = insert.processParallel(molScanner, max_num);
          else
             str_num = insert.process(molScanner, max_num);
-      } catch (FileNotFoundException ex) {
-         Logger.getRootLogger().error(ex.getMessage(), ex);
-         System.exit(0);
       } catch (IOException ex) {
-         Logger.getRootLogger().error(ex.getMessage(), ex);
+         LogManager.getRootLogger().error(ex.getMessage(), ex);
          System.exit(0);
       }
 
 //      PostgresEnv.createBingoIndex(table_name);
       total_time = (System.currentTimeMillis() - total_time);
 
-      Logger.getLogger("").info("Insert total time = " + total_time + " ms");
-      Logger.getLogger("").info("Average insert time = " + (int)((double)str_num / total_time * 1000.0) + " structures per second");
-      Logger.getLogger("").info("Total structures processed = " + str_num);
+      LogManager.getLogger("").info("Insert total time = " + total_time + " ms");
+      LogManager.getLogger("").info("Average insert time = " + (int)((double)str_num / total_time * 1000.0) + " structures per second");
+      LogManager.getLogger("").info("Total structures processed = " + str_num);
       return str_num;
    }
    
