@@ -34,34 +34,34 @@ class TestIndigo(TestIndigoBase):
 
     def test_check_simple_molecular_salt(self) -> None:
         m1 = self.indigo.loadMolecule('OS(=O)(=O)O.C')
-        m2 = self.indigo.loadMolecule('B(Cl)(Cl)Cl.C')
-        m3 = self.indigo.loadMolecule('[Ca](I)I.C')
-        m4 = self.indigo.loadMolecule('[Na]Cl.C')
+        m2 = self.indigo.loadMolecule('N.C')
+        m3 = self.indigo.loadMolecule('O=[Si]=O.C')
+        m4 = self.indigo.loadMolecule('S=[Fe].C')
         self.assertTrue(
             m1.checkSalt(), '{} contains sulfuric acid.'.format(m1.smiles())
         )
         self.assertTrue(
-            m2.checkSalt(), '{} contains trichloroborane.'.format(m2.smiles())
+            m2.checkSalt(), '{} contains ammonia.'.format(m2.smiles())
         )
         self.assertTrue(
-            m3.checkSalt(), '{} contains calcium iodide.'.format(m3.smiles())
+            m3.checkSalt(), '{} contains silicon dioxide.'.format(m3.smiles())
         )
         self.assertTrue(
-            m4.checkSalt(), '{} contains sodium chloride.'.format(m4.smiles())
+            m4.checkSalt(), '{} contains ferrous sulfide.'.format(m4.smiles())
         )
 
     def test_check_complex_ion(self) -> None:
-        m1 = self.indigo.loadMolecule('OS(=O)(=O)[O-].C')
-        m2 = self.indigo.loadMolecule('[O-][Si](=O)[O-].C')
+        m1 = self.indigo.loadMolecule('OP(=O)(O)[O-].C')
+        m2 = self.indigo.loadMolecule('O[Se](=O)[O-].C')
         m3 = self.indigo.loadMolecule('[O-]N(=O).C')
         m4 = self.indigo.loadMolecule('[O-]Cl.C')
         self.assertTrue(
             m1.checkSalt(),
-            '{} contains hydrosulfate ion.'.format(m1.smiles())
+            '{} contains dihydrophosphate ion.'.format(m1.smiles())
         ),
         self.assertTrue(
             m2.checkSalt(),
-            '{} contains silicate ion.'.format(m2.smiles())
+            '{} contains hydrogenselenite ion.'.format(m2.smiles())
         )
         self.assertTrue(
             m3.checkSalt(),
@@ -77,7 +77,7 @@ class TestIndigo(TestIndigoBase):
         m = self.indigo.loadMolecule('[Na+].[Cl-].C')
         self.assertTrue(
             m.checkSalt(),
-            '{} contains Na+ and Cl-.'.format(m.smiles())
+            '{} contains sodium and chloride ions.'.format(m.smiles())
         )
 
     def test_check_no_ions(self) -> None:
@@ -100,27 +100,3 @@ class TestIndigo(TestIndigoBase):
             m.checkSalt(),
             '{} doesn`t contain any salts.'.format(m.smiles())
         )
-
-    def test_check_hydrides(self) -> None:
-        # TODO: aren`t matched as expected,
-        #  related issue https://github.com/epam/Indigo/issues/557
-        m1 = self.indigo.loadMolecule('Cl.C')
-        m2 = self.indigo.loadMolecule('S.C')
-        m3 = self.indigo.loadMolecule('N.C')
-        m4 = self.indigo.loadMolecule('[SiH4].C')
-        # self.assertTrue(
-        #     m1.checkSalt(),
-        #     '{} contains hydrogen chloride.'.format(m1.smiles())
-        # )
-        # self.assertTrue(
-        #     m2.checkSalt(),
-        #     '{} contains hydrogen sulfide.'.format(m2.smiles())
-        # )
-        # self.assertTrue(
-        #     m3.checkSalt(),
-        #     '{} contains ammonia.'.format(m3.smiles())
-        # )
-        # self.assertTrue(
-        #     m4.checkSalt(),
-        #     '{} contains ammonia.'.format(m4.smiles())
-        # )
