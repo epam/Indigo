@@ -24,6 +24,7 @@
 #include "IndigoMolecule.h"
 #include "IndigoQueryMolecule.h"
 #include "IndigoSDFileIterator.h"
+#include "IndigoSubstructureMatcher.h"
 #include "IndigoWriteBuffer.h"
 
 using namespace indigo_cpp;
@@ -157,4 +158,10 @@ IndigoSDFileIterator IndigoSession::iterateSDFile(const std::string& path)
 IndigoSessionPtr IndigoSession::create()
 {
     return IndigoSessionPtr(new IndigoSession());
+}
+
+IndigoSubstructureMatcher IndigoSession::substructureMatcher(const IndigoMolecule& molecule, const std::string& mode)
+{
+    setSessionId();
+    return {_checkResult(indigoSubstructureMatcher(molecule.id(), mode.c_str())), shared_from_this()};
 }
