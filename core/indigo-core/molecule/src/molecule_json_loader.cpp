@@ -10,6 +10,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
+#include "molecule/ket_commons.h"
 
 using namespace rapidjson;
 using namespace indigo;
@@ -17,7 +18,13 @@ using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups) : _mol_nodes(mol_nodes), _rgroups(rgroups), _pmol(0), _pqmol(0)
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups, rapidjson::Value& simple_objects)
+    : _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(simple_objects), _pmol(0), _pqmol(0), _empty_array(kArrayType)
+{
+}
+
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups)
+    : _empty_array(kArrayType) , _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty_array), _pmol(0), _pqmol(0)
 {
 }
 
@@ -172,7 +179,7 @@ void MoleculeJsonLoader::validateMoleculeBond(int order)
         throw Error("unknown bond type: %d", order);
 }
 
-void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol)
+void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol, std::vector<EnhancedStereoCenter>& stereo_centers)
 {
     mol.reaction_atom_mapping.clear_resize(atoms.Size());
     mol.reaction_atom_mapping.zerofill();
@@ -246,7 +253,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                         atomlist.reset(QueryMolecule::Atom::oder(atomlist.release(), cur_atom.release()));
                 }
 
-                if ( is_not_list )
+                if (is_not_list)
                     atomlist.reset(QueryMolecule::Atom::nicht(atomlist.release()));
             }
             else
@@ -289,14 +296,13 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         if (_pmol)
         {
             atom_idx = _pmol->addAtom(elem);
-            if (charge)
-                _pmol->setAtomCharge_Silent(atom_idx, charge);
-            if (valence)
+            _pmol->setAtomCharge_Silent(atom_idx, charge);
+            _pmol->setAtomRadical(atom_idx, radical);
+            _pmol->setAtomIsotope(atom_idx, isotope);
+            if (valence > 0 && valence <= 14)
                 _pmol->setExplicitValence(atom_idx, valence);
-            if (radical)
-                _pmol->setAtomRadical(atom_idx, radical);
-            if (isotope)
-                _pmol->setAtomIsotope(atom_idx, isotope);
+            if (valence == 15)
+                _pmol->setExplicitValence(atom_idx, 0);
             if (elem == ELEM_PSEUDO)
             {
                 _pmol->setPseudoAtom(atom_idx, label.c_str());
@@ -405,19 +411,19 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             std::string sl = a["stereoLabel"].GetString();
             if (sl.find("abs") != std::string::npos)
             {
-                _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_ABS, 1);
+                stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_ABS, 1);
             }
             else if (sl.find("or") != std::string::npos)
             {
                 int grp = std::stoi(sl.substr(2));
                 if (grp)
-                    _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_OR, grp);
+                    stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_OR, grp);
             }
             else if (sl.find("&") != std::string::npos)
             {
                 int grp = std::stoi(sl.substr(1));
                 if (grp)
-                    _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_AND, grp);
+                    stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_AND, grp);
             }
         }
 
@@ -427,9 +433,9 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (coords.Size() > 0)
             {
                 Vec3f a_pos;
-                a_pos.x = _2FLOAT(coords[0].GetDouble());
-                a_pos.y = _2FLOAT(coords[1].GetDouble());
-                a_pos.z = _2FLOAT(coords[2].GetDouble());
+                a_pos.x = coords[0].GetFloat();
+                a_pos.y = coords[1].GetFloat();
+                a_pos.z = coords[2].GetFloat();
                 mol.setAtomXyz(atom_idx, a_pos);
             }
         }
@@ -467,7 +473,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         }
 }
 
-void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol, int atom_base_idx)
+void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol)
 {
     mol.reaction_bond_reacting_center.clear_resize(bonds.Size());
     mol.reaction_bond_reacting_center.zerofill();
@@ -503,8 +509,8 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
             validateMoleculeBond(order);
         if (refs.Size() > 1)
         {
-            int a1 = refs[0].GetInt() + atom_base_idx;
-            int a2 = refs[1].GetInt() + atom_base_idx;
+            int a1 = refs[0].GetInt();
+            int a2 = refs[1].GetInt();
             int bond_idx = 0;
             bond_idx = _pmol ? _pmol->addBond_Silent(a1, a2, order) : addBondToMoleculeQuery(a1, a2, order, topology);
             if (stereo)
@@ -667,6 +673,21 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
     }
 }
 
+void MoleculeJsonLoader::setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol)
+{
+    Vec3f s_pos;
+    if (pos.HasMember("x"))
+        s_pos.x = pos["x"].GetFloat();
+
+    if (pos.HasMember("y"))
+        s_pos.y = pos["y"].GetFloat();
+
+    if (pos.HasMember("z"))
+        s_pos.z = pos["z"].GetFloat();
+
+    mol.setStereoFlagPosition(fragment_index, s_pos);
+}
+
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
 {
     for (SizeType i = 0; i < sgroups.Size(); i++)
@@ -805,53 +826,71 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
 
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
 {
-    _pmol = NULL;
-    _pqmol = NULL;
-    if (mol.isQueryMolecule())
-    {
-        _pqmol = &mol.asQueryMolecule();
-    } else _pmol = &mol.asMolecule();
-
-    int atoms_count = 0;
     for (int node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
+        std::vector<EnhancedStereoCenter> stereo_centers;
+        std::unique_ptr<BaseMolecule> pmol(mol.neu());
+        _pmol = NULL;
+        _pqmol = NULL;
+        if (pmol->isQueryMolecule())
+        {
+            _pqmol = &pmol->asQueryMolecule();
+        }
+        else
+        {
+            _pmol = &pmol->asMolecule();
+        }
+
         auto& mol_node = _mol_nodes[node_idx];
         std::string type = mol_node["type"].GetString();
         if (type.compare("molecule") == 0 || type.compare("rgroup") == 0)
         {
-            int chiral = 0;
+            /* int chiral = 0;
             if (mol_node.HasMember("chiral"))
                 chiral = mol_node["chiral"].GetInt();
-            mol.setChiralFlag(chiral);
+            pmol->setChiralFlag(chiral); */
             // parse atoms
             auto& atoms = mol_node["atoms"];
-            parseAtoms(atoms, mol);
+            parseAtoms(atoms, *pmol, stereo_centers);
             // parse bonds
             if (mol_node.HasMember("bonds"))
             {
-                parseBonds(mol_node["bonds"], mol, atoms_count);
+                parseBonds(mol_node["bonds"], *pmol);
             }
-            atoms_count += atoms.Size();
-            mol.unhighlightAll();
+            pmol->unhighlightAll();
             if (mol_node.HasMember("highlight"))
             {
-                parseHighlight(mol_node["highlight"], mol);
+                parseHighlight(mol_node["highlight"], *pmol);
             }
 
             if (mol_node.HasMember("selection"))
             {
-                parseSelection(mol_node["selection"], mol);
+                parseSelection(mol_node["selection"], *pmol);
             }
 
             // parse SGroups
             if (mol_node.HasMember("sgroups"))
             {
-                parseSGroups(mol_node["sgroups"], mol);
+                parseSGroups(mol_node["sgroups"], *pmol);
+            }
+
+            if (mol_node.HasMember("stereoFlagPosition"))
+            {
+                setStereoFlagPosition(mol_node["stereoFlagPosition"], node_idx, mol);
             }
         }
         else
         {
             throw Error("unknown type: %s", type.c_str());
+        }
+
+        Array<int> mapping;
+        mol.mergeWithMolecule(*pmol, &mapping, COPY_BOND_DIRECTIONS);
+
+        for (auto& sc : stereo_centers)
+        {
+            sc._atom_idx = mapping[sc._atom_idx];
+            _stereo_centers.push_back(sc);
         }
     }
 
@@ -915,17 +954,19 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
 
     mol.buildCisTrans(ignore_cistrans.data());
     if (mol.stereocenters.size() == 0)
+    {
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
+    }
 
     for (const auto& sc : _stereo_centers)
     {
         // const int undefined_pyramid[] = {-1, -1, -1, -1};
         if (mol.stereocenters.getType(sc._atom_idx) == 0)
         {
-            if( !stereochemistry_options.ignore_errors )
+            if (!stereochemistry_options.ignore_errors)
                 throw Error("stereo type specified for atom #%d, but the bond "
-                        "directions does not say that it is a stereocenter",
-                        sc._atom_idx);
+                            "directions does not say that it is a stereocenter",
+                            sc._atom_idx);
             mol.addStereocenters(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
         }
         else
@@ -935,4 +976,54 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
     MoleculeLayout ml(mol, false);
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();
+    if (_simple_objects.IsArray())
+    {
+        for (int obj_idx = 0; obj_idx < _simple_objects.Size(); ++obj_idx)
+        {
+            auto& simple_object = _simple_objects[obj_idx];
+            if (simple_object.HasMember("mode")) // ellipse or rectangle or line
+            {
+                int mode = 0;
+                Vec2f p1, p2;
+                std::string obj_mode = simple_object["mode"].GetString();
+                if (obj_mode.compare("ellipse") == 0)
+                {
+                    mode = KETSimpleObject::EKETEllipse;
+                }
+                else if (obj_mode.compare("rectangle") == 0)
+                {
+                    mode = KETSimpleObject::EKETRectangle;
+                }
+                else if (obj_mode.compare("line") == 0)
+                {
+                    mode = KETSimpleObject::EKETLine;
+                }
+                else
+                    throw Error("Unknown simple object mode:%s", obj_mode.c_str());
+                if (simple_object.HasMember("pos"))
+                {
+                    auto pos = simple_object["pos"].GetArray();
+                    if (pos.Size() == 2)
+                    {
+                        p1.x = pos[0]["x"].GetFloat();
+                        p1.y = pos[0]["y"].GetFloat();
+                        p2.x = pos[1]["x"].GetFloat();
+                        p2.y = pos[1]["y"].GetFloat();
+                    }
+                    else
+                        throw("Bad pos array size %d. Most be equal to 2.", pos.Size());
+                }
+                mol.addMetaObject(new KETSimpleObject(mode, Rect2f(p1, p2)));
+            }
+            else if (simple_object.HasMember("content") && simple_object.HasMember("position"))
+            {
+                std::string content = simple_object["content"].GetString();
+                Vec3f text_origin;
+                text_origin.x = simple_object["position"]["x"].GetFloat();
+                text_origin.y = simple_object["position"]["y"].GetFloat();
+                text_origin.z = simple_object["position"]["z"].GetFloat();
+                mol.addMetaObject(new KETTextObject(text_origin, content));
+            }
+        }
+    }
 }

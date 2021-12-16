@@ -114,6 +114,23 @@ int Graph::getEdgeEnd(int beg, int edge) const
     return -1;
 }
 
+void Graph::addMetaObject( GraphMetaObject* pobj)
+{
+    int index = _meta_data.size();
+    _meta_data.expand( index + 1 );
+    _meta_data.set( index, pobj );
+}
+
+void Graph::resetMetaData()
+{
+    _meta_data.clear();
+}
+
+const PtrArray<GraphMetaObject>& Graph::metaData() const
+{
+    return _meta_data;
+}
+
 int Graph::addEdge(int beg, int end)
 {
     if (beg == end)

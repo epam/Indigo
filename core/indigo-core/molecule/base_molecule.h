@@ -85,14 +85,15 @@ namespace indigo
     // merging with molecule and cloning procedures
     enum
     {
-        SKIP_ALL = -1,
+        SKIP_ALL = 0x7F,
         SKIP_CIS_TRANS = 0x01,
         SKIP_STEREOCENTERS = 0x02,
         SKIP_XYZ = 0x04,
         SKIP_RGROUP_FRAGMENTS = 0x08,
         SKIP_ATTACHMENT_POINTS = 0x10,
         SKIP_TGROUPS = 0x20,
-        SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x40
+        SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x40,
+        COPY_BOND_DIRECTIONS = 0x80
     };
 
     class Molecule;
@@ -173,6 +174,7 @@ namespace indigo
         int getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id);
 
         void addAttachmentPoint(int order, int atom_index);
+
         int getAttachmentPoint(int order, int index) const;
         void removeAttachmentPointsFromAtom(int atom_index);
         int attachmentPointCount() const;
@@ -363,6 +365,13 @@ namespace indigo
         int getChiralFlag();
         void setChiralFlag(int flag);
 
+        // multifragments management methods
+
+        void setStereoFlagPosition(int frag_index, const Vec3f& pos);
+        bool getStereoFlagPosition(int frag_index, Vec3f& pos);
+        int countStereoFlags();
+
+
         // proxy methods for stereocenters
         const int* getPyramidStereocenters(int idx) const;
         void markBondsStereocenters();
@@ -445,6 +454,8 @@ namespace indigo
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
+        RedBlackMap<int,Vec3f> _stereo_flag_positions;
+  
         ObjArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
 

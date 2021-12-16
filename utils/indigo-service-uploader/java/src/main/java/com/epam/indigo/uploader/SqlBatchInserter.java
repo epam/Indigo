@@ -13,7 +13,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPOutputStream;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
 import org.postgresql.util.PGobject;
 
 
@@ -48,7 +49,7 @@ public class SqlBatchInserter {
             try (OutputStreamWriter sd = new OutputStreamWriter(new GZIPOutputStream(buf))) {
                sd.append(sdItem.mol);
             } catch (IOException ex) {
-               Logger.getRootLogger().error(ex.getMessage(), ex);
+               LogManager.getRootLogger().error(ex.getMessage(), ex);
             }
             String paramsJson = parser.get().parseParametersIntoJson(sdItem.props);
             PGobject dataObject = new PGobject();
@@ -96,7 +97,7 @@ public class SqlBatchInserter {
             }
             ps.executeBatch();
          } catch (SQLException ex) {
-            Logger.getRootLogger().error(ex.getMessage(), ex);
+            LogManager.getRootLogger().error(ex.getMessage(), ex);
          }
       }
 
@@ -127,7 +128,7 @@ public class SqlBatchInserter {
             exec.submit(new SDWorker(sdQueue, str));
             iter_num++;
             if(iter_num % 1000 == 0) {
-               Logger.getRootLogger().info("Processed " + iter_num);
+               LogManager.getRootLogger().info("Processed " + iter_num);
             }
             if (max_num > 0 && iter_num > max_num) {
                break;
@@ -164,7 +165,7 @@ public class SqlBatchInserter {
             try (OutputStreamWriter sd = new OutputStreamWriter(new GZIPOutputStream(buf))) {
                sd.append(str.mol);
             } catch (IOException ex) {
-               Logger.getRootLogger().error(ex.getMessage(), ex);
+               LogManager.getRootLogger().error(ex.getMessage(), ex);
             }
             params.append(parser.parseParametersIntoJson(str.props));
 
@@ -181,7 +182,7 @@ public class SqlBatchInserter {
                long batch_start = System.currentTimeMillis();
                ps.executeBatch();
                batch_time += (System.currentTimeMillis() - batch_start);
-               Logger.getLogger("").info("Processed " + iter_num);
+               LogManager.getLogger("").info("Processed " + iter_num);
             }
             iter_num++;
             if (max_num > 0 && iter_num > max_num) {
@@ -190,11 +191,11 @@ public class SqlBatchInserter {
          }
          ps.executeBatch();
       } catch (SQLException ex) {
-         Logger.getRootLogger().error(ex.getMessage(), ex);
+         LogManager.getRootLogger().error(ex.getMessage(), ex);
       }
 
-      Logger.getLogger("").info("Batch time = " + batch_time + " ms");
-      Logger.getLogger("").info("Other time = " + other_time + " ms");
+      LogManager.getLogger("").info("Batch time = " + batch_time + " ms");
+      LogManager.getLogger("").info("Other time = " + other_time + " ms");
       return iter_num;
    }
 

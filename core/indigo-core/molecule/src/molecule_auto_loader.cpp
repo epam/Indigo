@@ -305,11 +305,11 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         _scanner->skipSpace();
         if (_scanner->lookNext() == '{')
         {
-            if (_scanner->findWord("root") && _scanner->findWord("nodes") && _scanner->findWord("$ref")) // is it really reliable detection?
+            if (_scanner->findWord("root") && _scanner->findWord("nodes")) // is it really reliable detection?
             {
                 using namespace rapidjson;
                 _scanner->seek(pos, SEEK_SET);
-//                try
+                //                try
                 {
                     Array<char> buf;
                     _scanner->readAll(buf);
@@ -317,14 +317,16 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     Document data;
                     Value rgroups(kArrayType);
                     Value mol_nodes(kArrayType);
-                    if ( data.Parse(buf.ptr()).HasParseError())
-                      throw Error("Error at parsing JSON: %s", buf.ptr());
-                    if( data.HasMember( "root" ) )
+                    Value simple_objects(kArrayType);
+
+                    if (data.Parse(buf.ptr()).HasParseError())
+                        throw Error("Error at parsing JSON: %s", buf.ptr());
+                    if (data.HasMember("root"))
                     {
-                        const Value& root = data["root"];
-                        const Value& nodes = root["nodes"];
+                        Value& root = data["root"];
+                        Value& nodes = root["nodes"];
                         // rewind to first molecule node
-                        for( int i = 0; i < nodes.Size(); ++i )
+                        for (int i = 0; i < nodes.Size(); ++i)
                         {
                             if (nodes[i].HasMember("$ref"))
                             {
@@ -342,16 +344,26 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                                 else
                                     throw Error("Unknows node type: %s", node_type.c_str());
                             }
-                            else
+                            else if (nodes[i].HasMember("type"))
                             {
-                                throw Error("Unsupported node for molecule");
+                                std::string node_type = nodes[i]["type"].GetString();
+                                if (node_type.compare("simpleObject") == 0 || node_type.compare("text") == 0)
+                                {
+                                    if (nodes[i].HasMember("data"))
+                                    {
+                                        simple_objects.PushBack(nodes[i]["data"], data.GetAllocator());
+                                    }
+                                }
                             }
+                            else
+                                throw Error("Unsupported node for molecule");
                         }
-                    } else
+                    }
+                    else
                         throw Error("Ketcher's JSON has no root node");
-                    if( mol_nodes.Size() || rgroups.Size() )
+                    if (mol_nodes.Size() || rgroups.Size() || simple_objects.Size() )
                     {
-                        MoleculeJsonLoader loader( mol_nodes, rgroups );
+                        MoleculeJsonLoader loader(mol_nodes, rgroups, simple_objects);
                         loader.stereochemistry_options = stereochemistry_options;
                         loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
                         loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
@@ -359,15 +371,16 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                         loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
                         loader.treat_stereo_as = treat_stereo_as;
                         loader.loadMolecule(mol);
-                    } else
+                    }
+                    else
                     {
                         throw Error("Molecule JSON description not found");
                     }
                     return;
                 }
-  //              catch (...)
-  //              {
-  //              }
+                //              catch (...)
+                //              {
+                //              }
             }
         }
         _scanner->seek(pos, SEEK_SET);
@@ -378,7 +391,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
     {
         // check for InChI format
         {
-            char prefix[6] = { '\0' };
+            char prefix[6] = {'\0'};
             long long start = _scanner->tell();
 
             bool inchi = false;

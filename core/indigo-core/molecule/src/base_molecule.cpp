@@ -278,6 +278,13 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         reaction_atom_exact_change[mapping[i]] = mol.reaction_atom_exact_change[i];
     }
 
+    if (skip_flags & COPY_BOND_DIRECTIONS)
+    {
+        _bond_directions.expandFill(edgeEnd() + mol.edgeEnd(), 0);
+    }
+    else
+        _bond_directions.expandFill(mol.edgeEnd(), 0);
+
     for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
     {
         const Edge& edge = mol.getEdge(j);
@@ -286,14 +293,14 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         {
             int bond_idx = findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
             if (bond_idx > -1)
+            {
                 reaction_bond_reacting_center[bond_idx] = mol.reaction_bond_reacting_center[j];
+            }
         }
     }
 
-    _bond_directions.expandFill(mol.edgeEnd(), 0);
-
     // trick for molecules with incorrect stereochemistry, of which we do permutations
-    if (vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount())
+    if ((skip_flags & COPY_BOND_DIRECTIONS) || (vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount()))
     {
         for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
         {
@@ -4120,6 +4127,33 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& n
 const int* BaseMolecule::getPyramidStereocenters(int idx) const
 {
     return stereocenters.getPyramid(idx);
+}
+
+void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
+{
+    try
+    {
+        _stereo_flag_positions.insert(frag_index, pos);
+    }
+    catch (Exception& ex)
+    {
+    }
+}
+
+bool BaseMolecule::getStereoFlagPosition(int frag_index, Vec3f& pos)
+{
+    auto pval = _stereo_flag_positions.at2(frag_index);
+    if (pval)
+    {
+        pos = *pval;
+        return true;
+    }
+    return false;
+}
+
+int BaseMolecule::countStereoFlags()
+{
+    return _stereo_flag_positions.size();
 }
 
 void BaseMolecule::markBondsStereocenters()

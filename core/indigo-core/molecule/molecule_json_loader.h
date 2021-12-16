@@ -50,14 +50,14 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups);
+        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups, rapidjson::Value& simple_objects);
+        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups );
         void loadMolecule(BaseMolecule& mol);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
         bool ignore_no_chiral_flag; // ignore chiral flag absence (treat stereo "as drawn")
                                     // (depricated, use treat_stereo-as instead of this option)
-        bool ignore_bad_valence;    // ignore bad valence (default value is false)
 
         // When true, the "bond topology", "stereo care", "ring bond count", and "unsaturation"
         // specifications are ignored when a non-query molecule is being loaded.
@@ -72,21 +72,6 @@ namespace indigo
                              //  = ATOM_ANY ('any')
 
     protected:
-        int addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope);
-        int addBondToMoleculeQuery(int beg, int end, int order, int topology = 0);
-        void validateMoleculeBond(int order);
-        void parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol);
-        void parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol, int atom_base_idx);
-        void parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol);
-        void parseSelection(const rapidjson::Value& selection, BaseMolecule& mol);
-        void parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol);
-        void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
-
-    private:
-        rapidjson::Value& _mol_nodes;
-        rapidjson::Value& _rgroups;
-        Molecule* _pmol;
-        QueryMolecule* _pqmol;
         struct EnhancedStereoCenter
         {
             EnhancedStereoCenter(int atom_idx, int type, int group) : _atom_idx(atom_idx), _type(type), _group(group)
@@ -96,6 +81,25 @@ namespace indigo
             int _type;
             int _group;
         };
+
+        int addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope);
+        int addBondToMoleculeQuery(int beg, int end, int order, int topology = 0);
+        void validateMoleculeBond(int order);
+        void parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol, std::vector<EnhancedStereoCenter>& stereo_centers );
+        void parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol);
+        void parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol);
+        void parseSelection(const rapidjson::Value& selection, BaseMolecule& mol);
+        void parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol);
+        void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
+        void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
+
+    private:
+        rapidjson::Value _empty_array;
+        rapidjson::Value& _mol_nodes;
+        rapidjson::Value& _rgroups;
+        rapidjson::Value& _simple_objects;
+        Molecule* _pmol;
+        QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
     };
 

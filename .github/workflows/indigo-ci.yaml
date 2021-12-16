@@ -289,7 +289,7 @@ jobs:
             apt update
             apt install -y --no-install-recommends python3 python3-pip
             python3 -m pip install Pillow
-            python3 -m pip install dist/*linux_aarch64*.whl
+            python3 -m pip install dist/*manylinux2014_aarch64*.whl
             python3 api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
@@ -745,6 +745,12 @@ jobs:
         run: git fetch --tags -f
       - name: Install Emcripten SDK
         uses: mymindstorm/setup-emsdk@v7
+      - name: Update version
+        run: |
+          cd api/wasm/indigo-ketcher
+          ver=$(git describe --abbrev=0 --tags --match "indigo-*")-$(git rev-list $(git describe --abbrev=0 --tags --match "indigo-*").. --count)
+          ver=$(echo $ver | sed 's/indigo-//g')
+          npm version ${ver}
       - name: Build, Test, Pack
         run: |
           mkdir build
@@ -766,7 +772,6 @@ jobs:
             echo email=${NPM_EMAIL} >> ~/.npmrc
             echo always-auth=true >> ~/.npmrc
             npm publish --tag beta ./dist/indigo-ketcher-*.tgz
-
 
   build_indigo_utils_x86_64:
     strategy:
