@@ -61,6 +61,14 @@ class IndigoObject(object):
     def __del__(self):
         self.dispose()
 
+    def __str__(self):
+        internal_type = self.dbgInternalType()
+        if internal_type == '#02: <molecule>':
+            return self.smiles()
+        elif internal_type == '#03: <query molecule>':
+            return self.smarts()
+        return object.__str__(self)
+
     def dispose(self):
         if self.id >= 0:
             if getattr(Indigo, "_lib", None) is not None:
@@ -1232,10 +1240,11 @@ class IndigoObject(object):
         for target_fragment in self.iterateComponents():
             target_fragment = target_fragment.clone()
             for salt in SALTS:
-                query_molecular_salt = self.dispatcher.loadMolecule(salt)
-                if self.dispatcher.exactMatch(
-                        target_fragment, query_molecular_salt
-                    ):
+                query_salt = self.dispatcher.loadQueryMolecule(salt)
+                matcher = self.dispatcher.substructureMatcher(
+                    target_fragment
+                )
+                if matcher.match(query_salt):
                     return True
         return False
 
