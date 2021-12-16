@@ -967,7 +967,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
                 throw Error("stereo type specified for atom #%d, but the bond "
                             "directions does not say that it is a stereocenter",
                             sc._atom_idx);
-            mol.addStereocenters(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
+            mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
         }
         else
             mol.stereocenters.setType(sc._atom_idx, sc._type, sc._group);
