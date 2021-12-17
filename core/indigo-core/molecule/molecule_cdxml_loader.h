@@ -19,12 +19,12 @@
 #ifndef __cdxml_loader__
 #define __cdxml_loader__
 
+#include <functional>
 #include <sstream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <functional>
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
@@ -57,7 +57,8 @@ namespace indigo
         AutoInt(int v) : val(v){};
 
         AutoInt(const std::string& v) : val(std::stoi(v))
-        {}
+        {
+        }
 
         operator int() const
         {
@@ -66,13 +67,12 @@ namespace indigo
 
         operator std::string() const
         {
-            return std::to_string( val );
+            return std::to_string(val);
         }
 
     private:
         int val;
     };
-
 
     struct _ExtConnection
     {
@@ -83,7 +83,7 @@ namespace indigo
 
     struct CdxmlNode
     {
-        CdxmlNode() : element(ELEM_C), type( kCDXNodeType_Element ) // Carbon by default
+        CdxmlNode() : element(ELEM_C), type(kCDXNodeType_Element) // Carbon by default
         {
         }
         AutoInt id;
@@ -109,7 +109,7 @@ namespace indigo
 
     struct CdxmlBond
     {
-        CdxmlBond() : order(1)
+        CdxmlBond() : order(1), stereo(0), dir(0), swap_bond(false)
         {
         }
         AutoInt id;
@@ -131,7 +131,6 @@ namespace indigo
         int repeat_pattern;
         std::string sru_label;
     };
-
 
     inline std::vector<std::string> split(const std::string& str, char delim)
     {
@@ -178,7 +177,7 @@ namespace indigo
 
         void _applyDispatcher(TiXmlAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher);
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
-        void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket );
+        void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
         void _parseCDXMLPage(TiXmlElement* pElem);

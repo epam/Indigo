@@ -678,10 +678,21 @@ void RenderContext::arc(cairo_t* cr, double xc, double yc, double radius, double
 {
 #ifdef __EMSCRIPTEN__
     // In the WASM build this workaround fixes function signature issues with cairo_arc.
-    const double arc_parts = 18;
+    while (angle2 < angle1)
+        angle2 += 2 * M_PI;
+    const double arc_parts = 36;
     double diff = angle2 - angle1;
-    for (double phi = angle1; phi <= angle2; phi += diff / arc_parts)
-        lineTo(Vec2f(_settings.graphItemDotRadius * cos(phi) + xc, _settings.graphItemDotRadius * sin(phi) + yc));
+    double phi = angle1;
+    double step = diff / arc_parts;
+    for (int i = 0; i <= arc_parts; ++i)
+    {
+        Vec2f p(radius * cos(phi) + xc, radius * sin(phi) + yc);
+        if (i)
+            cairo_line_to(cr, p.x, p.y);
+        else
+            cairo_move_to(cr, p.x, p.y);
+        phi += step;
+    }
 #else
     cairo_arc(cr, xc, yc, radius, angle1, angle2);
 #endif

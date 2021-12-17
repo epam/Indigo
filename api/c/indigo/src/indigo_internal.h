@@ -293,6 +293,7 @@ public:
 
     bool ignore_noncritical_query_features;
     bool treat_x_as_pseudoatom;
+    bool aromatize_skip_superatoms;
     bool skip_3d_chirality;
     bool ignore_no_chiral_flag;
     int treat_stereo_as;

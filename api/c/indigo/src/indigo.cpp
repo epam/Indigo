@@ -58,6 +58,7 @@ void Indigo::init()
     ignore_no_chiral_flag = false;
     treat_stereo_as = 0;
     treat_x_as_pseudoatom = false;
+    aromatize_skip_superatoms = false;
     skip_3d_chirality = false;
     deconvolution_aromatization = true;
     deco_save_ap_bond_orders = false;

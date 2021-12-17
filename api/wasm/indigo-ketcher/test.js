@@ -275,7 +275,7 @@ M  END
                     "query": "Structure contains query features",
                     "charge": "Structure has non-zero charge",
                     "salt": "Not implemented yet: check salt",
-                    "ambigous_h": "Structure contains query features, so ambiguous H could not be checked"
+                    "ambiguous_h": "Structure contains query features, so ambiguous H could not be checked"
                 }
             );
             options.delete();

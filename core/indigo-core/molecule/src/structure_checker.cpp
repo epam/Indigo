@@ -414,7 +414,7 @@ static void check_salt(BaseMolecule& mol, const std::unordered_set<int>& selecte
     message(result, StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL);
 }
 
-static void check_ambigous_h(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_ambiguous_h(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                              StructureChecker::CheckResult& result)
 {
     if (isQueryMolecule(mol))
@@ -480,7 +480,7 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
     {"valence",
      {StructureChecker::CheckTypeCode::CHECK_VALENCE,
       &check_valence,
-      {{StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE, "Structure contains atoms with unusuall valence"},
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE, "Structure contains atoms with unusual valence"},
        {StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_QUERY, "Structure contains query features, so valency could not be checked"},
        {StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP, "Structure contains RGroup components, so valency could not be checked"},
        {StructureChecker::CheckMessageCode::CHECK_MSG_IGNORE_VALENCE_ERROR, "IGNORE_BAD_VALENCE flag is active, so valency could not be checked"}}}},
@@ -557,9 +557,9 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
       {{StructureChecker::CheckMessageCode::CHECK_MSG_SALT, "Structure contains charged fragments (possible salt)"},
        {StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL, "Not implemented yet: check salt"}}}},
 
-    {"ambigous_h",
+    {"ambiguous_h",
      {StructureChecker::CheckTypeCode::CHECK_AMBIGUOUS_H,
-      &check_ambigous_h,
+      &check_ambiguous_h,
       {{StructureChecker::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H, "Structure contains ambiguous hydrogens"},
        {StructureChecker::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H_NOT_CHECKED_QUERY,
         "Structure contains query features, so ambiguous H could not be checked"}}}},

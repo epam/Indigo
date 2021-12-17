@@ -61,7 +61,7 @@ print("****** Check overlapped atoms/bonds ********")
 mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/overlapped.mol", __file__))
 print("Check result = %s" % mol.check())
 
-print("****** Check query/stereo fetures ********")
+print("****** Check query/stereo features ********")
 mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/query_test.mol", __file__))
 print("Check result = %s" % mol.check())
 
@@ -78,7 +78,7 @@ for idx, m in enumerate(indigo.iterateRDFile(joinPathPy("reactions/rxns.rdf", __
        print(getIndigoExceptionText(e))
 
 
-print("****** Check strcuture ********")
+print("****** Check structure ********")
 c = "C1=C(*)C=CC=C1"
 print("Check result = %s" % indigo.checkStructure(c))
 

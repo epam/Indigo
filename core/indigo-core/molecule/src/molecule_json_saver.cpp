@@ -25,11 +25,23 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
+#include "molecule/ket_commons.h"
 
 using namespace indigo;
 using namespace rapidjson;
 
 IMPL_ERROR(MoleculeJsonSaver, "molecule json saver");
+
+void dumpAtoms(BaseMolecule& mol)
+{
+    for (auto i : mol.vertices())
+    {
+        Array<char> buff;
+        mol.getAtomSymbol(i, buff);
+        printf("%s,", buff.ptr());
+    }
+    printf("\n");
+}
 
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output)
 {
@@ -808,26 +820,14 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
     for (int j = fragments.begin(); j != fragments.end(); j = fragments.next(j))
         saveBonds(*fragments[j], writer);
     writer.EndArray();
-
     writer.EndObject();
 }
 
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& writer)
 {
-    std::unique_ptr<BaseMolecule> mol;
-    _pmol = nullptr;
-    _pqmol = nullptr;
-    if (bmol.isQueryMolecule())
-    {
-        mol = std::make_unique<QueryMolecule>();
-        _pqmol = static_cast<QueryMolecule*>(mol.get());
-    }
-    else
-    {
-        mol = std::make_unique<Molecule>();
-        _pmol = static_cast<Molecule*>(mol.get());
-    }
+    std::unique_ptr<BaseMolecule> mol( bmol.neu());
     mol->clone_KeepIndices(bmol);
+
     if (!BaseMolecule::hasCoord(*mol))
     {
         MoleculeLayout ml(*mol, false);
@@ -835,8 +835,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         ml.make();
     }
     BaseMolecule::collapse(*mol);
-    if (_pmol)
-        _pmol->setIgnoreBadValenceFlag(true);
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     std::set<int> rgrp_full_list;
@@ -849,10 +847,101 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
 
     if (bmol.vertexCount())
     {
-        writer.StartObject();
-        writer.Key("$ref");
-        writer.String("mol0");
-        writer.EndObject();
+        for (int idx = 0; idx < bmol.countComponents(); ++idx)
+        {
+            writer.StartObject();
+            writer.Key("$ref");
+            std::string mol_node = std::string("mol") + std::to_string(idx);
+            writer.String( mol_node.c_str());
+            writer.EndObject();
+        }
+    }
+
+    if (bmol.metaData().size())
+    {
+        auto& meta = bmol.metaData();
+        for (int meta_index = 0; meta_index < meta.size(); ++meta_index)
+        {
+            auto pobj = meta[ meta_index ];
+            switch (pobj->_class_id)
+            {
+                case KETSimpleObject::cid:
+                {
+                    auto simple_obj = (KETSimpleObject*)pobj;
+                    writer.StartObject();
+                    writer.Key("type");
+                    writer.String("simpleObject");
+                    writer.Key("data");
+                    writer.StartObject();
+                    writer.Key("mode");
+                    switch (simple_obj->_mode)
+                    {
+                        case KETSimpleObject::EKETEllipse:
+                        writer.String("ellipse");
+                        break;
+                        case KETSimpleObject::EKETRectangle:
+                        writer.String("rectangle");
+                        break;
+                        case KETSimpleObject::EKETLine:
+                        writer.String("line");
+                        break;
+                    }
+                    writer.Key("pos");
+                    writer.StartArray();
+
+                    // point1
+                    writer.StartObject();
+                    writer.Key("x");
+                    writer.Double(simple_obj->_rect.left());
+                    writer.Key("y");
+                    writer.Double(simple_obj->_rect.bottom());
+                    writer.Key("z");
+                    writer.Double(0);
+                    writer.EndObject();
+
+                    // point2
+                    writer.StartObject();
+                    writer.Key("x");
+                    writer.Double(simple_obj->_rect.right());
+                    writer.Key("y");
+                    writer.Double(simple_obj->_rect.top());
+                    writer.Key("z");
+                    writer.Double(0);
+                    writer.EndObject();
+
+                    writer.EndArray();
+
+                    // end data
+                    writer.EndObject();
+                    // end node
+                    writer.EndObject();
+                    break;
+                }
+                case KETTextObject::cid: 
+                {
+                    auto simple_obj = (KETTextObject*)pobj;
+                    writer.StartObject();
+                    writer.Key("type");
+                    writer.String("text");
+                    writer.Key("data");
+                    writer.StartObject();
+                    writer.Key("content");
+                    writer.String(simple_obj->_content.c_str());
+                    writer.Key("position");
+                    writer.StartObject();
+                    writer.Key("x");
+                    writer.Double( simple_obj->_pos.x );
+                    writer.Key("y");
+                    writer.Double(simple_obj->_pos.y);
+                    writer.Key("z");
+                    writer.Double(simple_obj->_pos.z);
+                    writer.EndObject(); // end position
+                    writer.EndObject(); // end data
+                    writer.EndObject(); // end node
+                    break;
+                }
+            }
+        }
     }
 
     int n_rgroups = mol->rgroups.getRGroupCount();
@@ -870,27 +959,58 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
     writer.EndArray();  // nodes
     writer.EndObject(); // root
 
-    if (bmol.vertexCount())
+    for (int idx = 0; idx < mol->countComponents(); idx++)
     {
-        writer.Key("mol0");
-        writer.StartObject();
-        writer.Key("type");
-        writer.String("molecule");
-        writer.Key("atoms");
-        writer.StartArray();
-        saveAtoms(*mol, writer);
-        writer.EndArray();
+        _pmol = nullptr;
+        _pqmol = nullptr;
 
-        writer.Key("bonds");
-        writer.StartArray();
-        saveBonds(*mol, writer);
-        writer.EndArray();
+        Filter filt(mol->getDecomposition().ptr(), Filter::EQ, idx);
+        std::unique_ptr<BaseMolecule> component(mol->neu());
+        component->makeSubmolecule(*mol, filt, NULL, NULL);
 
-        saveSGroups(bmol, writer);
-        saveHighlights(*mol, writer);
-        saveSelection(*mol, writer);
+        if (component->isQueryMolecule())
+            _pqmol = &component->asQueryMolecule();
+        else
+            _pmol = &component->asMolecule();
 
-        writer.EndObject(); // mol0
+        if (_pmol)
+            _pmol->setIgnoreBadValenceFlag(true);
+
+        if (component->vertexCount())
+        {
+            std::string mol_node = std::string("mol") + std::to_string(idx);
+            writer.Key(mol_node.c_str());
+            writer.StartObject();
+            writer.Key("type");
+            writer.String("molecule");
+            writer.Key("atoms");
+            writer.StartArray();
+            saveAtoms(*component, writer);
+            writer.EndArray();
+
+            writer.Key("bonds");
+            writer.StartArray();
+            saveBonds(*component, writer);
+            writer.EndArray();
+
+            saveSGroups(*component, writer);
+            saveHighlights(*component, writer);
+            saveSelection(*component, writer);
+            Vec3f flag_pos;
+            if (bmol.getStereoFlagPosition(idx, flag_pos))
+            {
+                writer.Key("stereoFlagPosition");
+                writer.StartObject();
+                writer.Key("x");
+                writer.Double(flag_pos.x);
+                writer.Key("y");
+                writer.Double(flag_pos.y);
+                writer.Key("z");
+                writer.Double(flag_pos.z);
+                writer.EndObject();
+            }
+            writer.EndObject();
+        }
     }
 
     for (int i = 1; i <= n_rgroups; i++)
@@ -899,7 +1019,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         if (rgrp.fragments.size())
             saveRGroup(rgrp.fragments, i, writer);
     }
-
     writer.EndObject();
 }
 
