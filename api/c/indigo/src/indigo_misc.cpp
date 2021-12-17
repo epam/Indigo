@@ -70,6 +70,7 @@ CEXPORT int indigoDearomatize(int object)
 
         AromaticityOptions arom_options = self.arom_options;
         arom_options.unique_dearomatization = self.unique_dearomatization;
+        arom_options.aromatize_skip_superatoms = self.aromatize_skip_superatoms;
 
         if (IndigoBaseMolecule::is(obj))
             return obj.getBaseMolecule().dearomatize(arom_options) ? 1 : 0;
