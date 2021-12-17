@@ -51,4 +51,3 @@ Released 2021-09-06.
 
 ## Bugfixes
 * api: sessions fixed, now options are session-scoped, not global.
-
