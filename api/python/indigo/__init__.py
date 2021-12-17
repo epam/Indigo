@@ -64,9 +64,9 @@ class IndigoObject(object):
     def __str__(self):
         internal_type = self.dbgInternalType()
         if internal_type == '#02: <molecule>':
-            return self.smiles()
+            return 'molecule ({})'.format(self.smiles())
         elif internal_type == '#03: <query molecule>':
-            return self.smarts()
+            return 'query_molecule ({})'.format(self.smarts())
         return object.__str__(self)
 
     def dispose(self):
