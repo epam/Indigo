@@ -279,6 +279,24 @@ def load_moldata(molstr, indigo=None, options={}, query=False, mime_type=None, s
         if mime_type == 'chemical/x-daylight-smarts':
             md.struct = indigo.loadReactionSmarts(molstr) if md.is_rxn else indigo.loadSmarts(molstr)
             md.is_query = True
+        else if mime_type == 'chemical/x-indigo-ket':
+            try:
+                md.struct = indigo.loadMolecule(molstr)
+                md.is_query = False
+            except:
+                try:
+                    md.struct = indigo.loadQueryMolecule(molstr)
+                    md.is_query = True
+                except:
+                    try:
+                        md.struct = indigo.loadReaction(molstr)
+                        md.is_query = False
+                    except:
+                        try:
+                            md.struct = indigo.loadQueryReaction(molstr)
+                            md.is_query = True
+                        except:
+                            raise HttpException("ket data not recognized as molecule, query, reaction or reaction query", 400)
         else:
             if not query:
                 try:
