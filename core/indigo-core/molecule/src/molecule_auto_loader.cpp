@@ -354,6 +354,10 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                                         simple_objects.PushBack(nodes[i]["data"], data.GetAllocator());
                                     }
                                 }
+                                else if (node_type.compare("arrow") == 0)
+                                {
+                                    throw Error("Arrow nodes supported only for reactions");
+                                }
                             }
                             else
                                 throw Error("Unsupported node for molecule");
