@@ -804,6 +804,10 @@ void Graph::_cloneGraph_KeepIndices(const Graph& other)
         if (addVertex() != i)
             throw Error("_clone_KeepIndices: unexpected vertex index");
 
+    auto& meta = other.metaData();
+    for (i = 0; i < meta.size(); i++)
+        addMetaObject(meta[i]->clone());
+
     i_prev = -1;
 
     for (i = other.vertexBegin(); i != other.vertexEnd(); i = other.vertexNext(i))

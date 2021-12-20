@@ -2010,6 +2010,61 @@ void MoleculeRenderInternal::_renderBonds()
 
 void MoleculeRenderInternal::_renderMeta()
 {
+    auto& md = _mol->metaData();
+    for (int i = 0; i < md.size(); ++i)
+    {
+        auto& simple = *md[i];
+        switch (simple._class_id)
+        {
+        case KETSimpleObject::cid: {
+            const KETSimpleObject& ko = static_cast<const KETSimpleObject&>(simple);
+            _renderSimpleObject(ko);
+        }
+        break;
+        case KETTextObject::cid: {
+            const KETTextObject& ko = static_cast<const KETTextObject&>(simple);
+        }
+        break;
+        }
+    }
+}
+
+void MoleculeRenderInternal::_renderSimpleObject(const KETSimpleObject& simple)
+{
+    _cw.setLineWidth(_settings.bondLineWidth);
+
+    auto lb = simple._rect.leftBottom();
+    auto rt = simple._rect.rightTop();
+
+    switch (simple._mode)
+    {
+        case KETSimpleObject::EKETEllipse:
+            _cw.drawEllipse( lb, rt );
+        break;
+
+        case KETSimpleObject::EKETRectangle: 
+        {
+            Array<Vec2f> pts;
+            pts.push() = lb;
+            pts.push() = simple._rect.leftTop();
+            pts.push() = rt;
+            pts.push() = simple._rect.rightBottom();
+            pts.push() = lb;
+            _cw.drawPoly(pts);
+        }
+        break;
+
+        case KETSimpleObject::EKETLine:
+        {
+            Array<Vec2f> pts;
+            auto& vec1 = pts.push();
+            auto& vec2 = pts.push();
+            vec1 = lb;
+            vec2 = rt;
+            _cw.drawPoly( pts );
+        }
+        break;
+    }
 }
 
 void MoleculeRenderInternal::_renderSGroups()
@@ -2244,2080 +2299,2079 @@ void MoleculeRenderInternal::_initBondData()
         BondDescr& d = _bd(i);
         d.type = _mol->getBondOrder(i);
         d.thickness = _edgeIsHighlighted(i) ? thicknessHighlighted :
-                    _settings.bondLineWidth;
-                    d.queryType = -1;
-                    QUERY_MOL_BEGIN(_mol);
-                    {
-                        QueryMolecule::Bond& qb = qmol.getBond(i);
-                        d.queryType = QueryMolecule::getQueryBondType(qb);
-                        d.stereoCare = qmol.bondStereoCare(i);
-                        if (qb.hasConstraint(QueryMolecule::BOND_TOPOLOGY))
-                        {
-                            bool chainPossible = qb.possibleValue(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_CHAIN);
-                            bool ringPossible = qb.possibleValue(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_RING);
-                            d.topology = 0;
-                            if (chainPossible && !ringPossible)
-                            {
-                                d.topology = TOPOLOGY_CHAIN;
-                            }
-                            if (ringPossible && !chainPossible)
-                            {
-                                d.topology = TOPOLOGY_RING;
-                            }
-                        }
-                    }
-                    QUERY_MOL_END;
-                    const Edge& edge = _mol->getEdge(i);
-                    d.beg = edge.beg;
-                    d.end = edge.end;
-                    d.vb = _ad(d.beg).pos;
-                    d.ve = _ad(d.end).pos;
-                    d.dir.diff(d.ve, d.vb);
-                    d.length = d.dir.length();
-                    d.dir.normalize();
-                    d.norm.set(-d.dir.y, d.dir.x);
-                    d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2; // TODO: check
-
-                    d.stereodir = _mol->getBondDirection(i);
-                    d.cistrans = _mol->cis_trans.isIgnored(i);
-                    int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
-                    if (_data.reactingCenters.size() > ubid)
-                        d.reactingCenter = _data.reactingCenters[ubid];
-                }
-        }
-
-        void MoleculeRenderInternal::_initBoldStereoBonds()
-        {
-            if (!_opt.boldBondDetection)
-                return;
-            for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
-            {
-                BondDescr& d = _bd(i);
-                const Vertex& v1 = _mol->getVertex(d.beg);
-                const Vertex& v2 = _mol->getVertex(d.end);
-                bool hasNeighboringUpBond1 = false;
-                for (int j = v1.neiBegin(); j < v1.neiEnd(); j = v1.neiNext(j))
-                    if (v1.neiEdge(j) != i && _bd(v1.neiEdge(j)).stereodir == BOND_UP && _bd(v1.neiEdge(j)).end == d.beg)
-                        hasNeighboringUpBond1 = true;
-                bool hasNeighboringUpBond2 = false;
-                for (int j = v2.neiBegin(); j < v2.neiEnd(); j = v2.neiNext(j))
-                    if (v2.neiEdge(j) != i && _bd(v2.neiEdge(j)).stereodir == BOND_UP && _bd(v2.neiEdge(j)).end == d.end)
-                        hasNeighboringUpBond2 = true;
-                if (hasNeighboringUpBond1 && hasNeighboringUpBond2)
-                    d.stereodir = BOND_STEREO_BOLD;
-            }
-        }
-
-        void MoleculeRenderInternal::_initBondEndData()
-        {
-            for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
-            {
-                const Edge& edge = _mol->getEdge(i);
-                const AtomDesc& bdesc = _ad(edge.beg);
-                const AtomDesc& edesc = _ad(edge.end);
-
-                BondDescr& bondd = _bd(i);
-
-                bondd.be1 = _data.bondends.size();
-                _data.bondends.push();
-                bondd.be2 = _data.bondends.size();
-                _data.bondends.push();
-
-                BondEnd& be1 = _be(bondd.be1);
-                BondEnd& be2 = _be(bondd.be2);
-                be1.clear();
-                be2.clear();
-                be1.bid = be2.bid = i;
-                be1.aid = edge.beg;
-                be1.dir.diff(edesc.pos, bdesc.pos);
-                be1.dir.normalize();
-                be1.lnorm.copy(be1.dir);
-                be1.lnorm.rotate(1, 0);
-                be1.p.copy(bdesc.pos);
-
-                be2.aid = edge.end;
-                be2.dir.negation(be1.dir);
-                be2.lnorm.negation(be1.lnorm);
-                be2.p.copy(edesc.pos);
-            }
-
-            for (int i = 0; i < _data.bondends.size(); ++i)
-            {
-                BondEnd& be = _be(i);
-                const BondDescr& bd = _bd(be.bid);
-                if (bd.type == BOND_SINGLE)
-                    if (bd.stereodir != 0)
-                        if (bd.be1 == i) // is source end?
-                            be.width = 0;
-                        else
-                            be.width = 2 * (_settings.bondSpace + _settings.bondLineWidth);
-                    else
-                        be.width = 2 * _settings.bondSpace + _settings.bondLineWidth;
-                else if (bd.type == BOND_DOUBLE || bd.type == BOND_AROMATIC || bd.type == BOND_TRIPLE || bd.queryType >= 0)
-                    be.width = 4 * _settings.bondSpace + _settings.bondLineWidth;
-                else if (bd.type == _BOND_HYDROGEN || bd.type == _BOND_COORDINATION)
-                    be.width = 2 * (_settings.bondSpace + _settings.bondLineWidth);
-                else
-                {
-                    Array<char> buf;
-                    _mol->getBondDescription(be.bid, buf);
-                    throw Error("Unknown bond type %s. Can not determine bond width.", buf.ptr());
-                }
-            }
-        }
-
-        void MoleculeRenderInternal::_extendRenderItems()
-        {
-            for (int i = 0; i < _data.textitems.size(); ++i)
-                _extendRenderItem(_data.textitems[i], _settings.boundExtent);
-            for (int i = 0; i < _data.graphitems.size(); ++i)
-                _extendRenderItem(_data.graphitems[i], _settings.boundExtent);
-        }
-
-        BondEnd& MoleculeRenderInternal::_getBondEnd(int aid, int nei)
-        {
-            return _be(_getBondEndIdx(aid, nei));
-        }
-
-        int MoleculeRenderInternal::_getBondEndIdx(int aid, int nei)
-        {
-            int ne = _mol->getVertex(aid).neiEdge(nei);
-            int be = _bd(ne).getBondEnd(aid);
-            return be;
-        }
-
-        void MoleculeRenderInternal::_drawAtom(const AtomDesc& desc)
-        {
-#ifdef RENDER_SHOW_BACKGROUND
-            for (int i = 0; i < desc.ticount; ++i)
-                _cw.drawItemBackground(_data.textitems[i + desc.tibegin]);
-            for (int i = 0; i < desc.gicount; ++i)
-                _cw.drawItemBackground(_data.graphitems[i + desc.gibegin]);
-#endif
-
-            _cw.setSingleSource(desc.color);
-            for (int i = 0; i < desc.ticount; ++i)
-            {
-                if (desc.hcolorSet)
-                    _cw.drawTextItemText(_data.textitems[i + desc.tibegin], desc.hcolor, _idle);
-                else
-                    _cw.drawTextItemText(_data.textitems[i + desc.tibegin], _idle);
-            }
-            for (int i = 0; i < desc.attachmentPointCount; ++i)
-                _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i], _idle);
-            for (int i = 0; i < desc.rSiteAttachmentIndexCount; ++i)
-                _cw.drawRSiteAttachmentIndex(_data.rSiteAttachmentIndices[desc.rSiteAttachmentIndexBegin + i]);
-            for (int i = 0; i < desc.gicount; ++i)
-            {
-                if (desc.hcolorSet)
-                    _cw.drawGraphItem(_data.graphitems[i + desc.gibegin], desc.hcolor);
-                else
-                    _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
-            }
-        }
-
-        void MoleculeRenderInternal::_writeQueryAtomToString(Output & output, int aid)
-        {
-            BaseMolecule& bm = *_mol;
-            AtomDesc& ad = _ad(aid);
-
-            if (bm.isRSite(aid))
-            {
-                QS_DEF(Array<int>, rg);
-                bm.getAllowedRGroups(aid, rg);
-
-                if (rg.size() == 0)
-                    output.printf("R");
-                else
-                    for (int i = 0; i < rg.size(); ++i)
-                    {
-                        if (i > 0)
-                            output.printf(",");
-                        output.printf("R%i", rg[i]);
-                    }
-            }
-            else
-            {
-                if (!bm.isQueryMolecule())
-                    throw Error("Atom type %d not supported in non-queries", ad.queryLabel);
-
-                if (ad.queryLabel == QueryMolecule::QUERY_ATOM_A)
-                {
-                    output.printf("A");
-                }
-                else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_X)
-                {
-                    output.printf("X");
-                }
-                else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_Q)
-                {
-                    output.printf("Q");
-                }
-                else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_LIST || ad.queryLabel == QueryMolecule::QUERY_ATOM_NOTLIST)
-                {
-                    if (ad.queryLabel == QueryMolecule::QUERY_ATOM_NOTLIST)
-                        output.printf("!");
-                    output.printf("[");
-                    for (int i = 0; i < ad.list.size(); ++i)
-                    {
-                        if (i > 0)
-                            output.printf(",");
-                        output.printf("%s", Element::toString(ad.list[i]));
-                    }
-                    output.printf("]");
-                }
-                else
-                {
-                    throw Error("Query atom type %d not supported", ad.queryLabel);
-                }
-            }
-        }
-
-        bool MoleculeRenderInternal::_writeDelimiter(bool needDelimiter, Output& output)
-        {
-            if (needDelimiter)
-                output.printf(",");
-            else
-                output.printf("(");
-            return true;
-        }
-
-        QueryMolecule::Atom* atomNodeInConjunction(QueryMolecule::Atom & qa, int type)
-        {
-            if (qa.type != QueryMolecule::OP_AND)
-                return NULL;
-            for (int i = 0; i < qa.children.size(); ++i)
-                if (qa.child(i)->type == type)
-                    return qa.child(i);
-            return NULL;
-        }
-
-        void MoleculeRenderInternal::_writeQueryModifier(Output & output, int aid)
-        {
+            _settings.bondLineWidth;
+            d.queryType = -1;
             QUERY_MOL_BEGIN(_mol);
             {
-                bool needDelimiter = false;
-                QueryMolecule::Atom& qa = qmol.getAtom(aid);
-
-                if (qa.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS))
+                QueryMolecule::Bond& qb = qmol.getBond(i);
+                d.queryType = QueryMolecule::getQueryBondType(qb);
+                d.stereoCare = qmol.bondStereoCare(i);
+                if (qb.hasConstraint(QueryMolecule::BOND_TOPOLOGY))
                 {
-                    int subst = qmol.getAtomSubstCount(aid);
-                    needDelimiter = _writeDelimiter(needDelimiter, output);
-                    if (subst >= 0)
-                        output.printf("s%i", subst);
-                }
-
-                if (qa.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN))
-                {
-                    needDelimiter = _writeDelimiter(needDelimiter, output);
-                    output.printf("s*");
-                }
-
-                if (qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS))
-                {
-                    int ringBondCount = qmol.getAtomRingBondsCount(aid);
-                    needDelimiter = _writeDelimiter(needDelimiter, output);
-                    if (ringBondCount >= 0)
-                        output.printf("rb%i", ringBondCount);
-                }
-
-                if (qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN))
-                {
-                    needDelimiter = _writeDelimiter(needDelimiter, output);
-                    output.printf("rb*");
-                }
-
-                if (qa.hasConstraint(QueryMolecule::ATOM_UNSATURATION))
-                {
-                    needDelimiter = _writeDelimiter(needDelimiter, output);
-                    output.printf("u");
-                }
-
-                if (qa.hasConstraint(QueryMolecule::ATOM_TOTAL_H))
-                {
-                    QueryMolecule::Atom* qc = atomNodeInConjunction(qa, QueryMolecule::ATOM_TOTAL_H);
-                    if (qc != NULL)
+                    bool chainPossible = qb.possibleValue(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_CHAIN);
+                    bool ringPossible = qb.possibleValue(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_RING);
+                    d.topology = 0;
+                    if (chainPossible && !ringPossible)
                     {
-                        int totalH = qc->value_min;
-                        needDelimiter = _writeDelimiter(needDelimiter, output);
-                        output.printf("H%i", totalH);
+                        d.topology = TOPOLOGY_CHAIN;
                     }
-                }
-
-                if (_ad(aid).fixed)
-                {
-                    needDelimiter = _writeDelimiter(needDelimiter, output);
-                    output.printf("f");
-                }
-
-                if (needDelimiter)
-                    output.printf(")");
-
-                if (_ad(aid).exactChange)
-                {
-                    output.printf(".ext.");
+                    if (ringPossible && !chainPossible)
+                    {
+                        d.topology = TOPOLOGY_RING;
+                    }
                 }
             }
             QUERY_MOL_END;
+            const Edge& edge = _mol->getEdge(i);
+            d.beg = edge.beg;
+            d.end = edge.end;
+            d.vb = _ad(d.beg).pos;
+            d.ve = _ad(d.end).pos;
+            d.dir.diff(d.ve, d.vb);
+            d.length = d.dir.length();
+            d.dir.normalize();
+            d.norm.set(-d.dir.y, d.dir.x);
+            d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2; // TODO: check
+
+            d.stereodir = _mol->getBondDirection(i);
+            d.cistrans = _mol->cis_trans.isIgnored(i);
+            int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
+            if (_data.reactingCenters.size() > ubid)
+                d.reactingCenter = _data.reactingCenters[ubid];
+        }
+}
+
+void MoleculeRenderInternal::_initBoldStereoBonds()
+{
+    if (!_opt.boldBondDetection)
+        return;
+    for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
+    {
+        BondDescr& d = _bd(i);
+        const Vertex& v1 = _mol->getVertex(d.beg);
+        const Vertex& v2 = _mol->getVertex(d.end);
+        bool hasNeighboringUpBond1 = false;
+        for (int j = v1.neiBegin(); j < v1.neiEnd(); j = v1.neiNext(j))
+            if (v1.neiEdge(j) != i && _bd(v1.neiEdge(j)).stereodir == BOND_UP && _bd(v1.neiEdge(j)).end == d.beg)
+                hasNeighboringUpBond1 = true;
+        bool hasNeighboringUpBond2 = false;
+        for (int j = v2.neiBegin(); j < v2.neiEnd(); j = v2.neiNext(j))
+            if (v2.neiEdge(j) != i && _bd(v2.neiEdge(j)).stereodir == BOND_UP && _bd(v2.neiEdge(j)).end == d.end)
+                hasNeighboringUpBond2 = true;
+        if (hasNeighboringUpBond1 && hasNeighboringUpBond2)
+            d.stereodir = BOND_STEREO_BOLD;
+    }
+}
+
+void MoleculeRenderInternal::_initBondEndData()
+{
+    for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
+    {
+        const Edge& edge = _mol->getEdge(i);
+        const AtomDesc& bdesc = _ad(edge.beg);
+        const AtomDesc& edesc = _ad(edge.end);
+
+        BondDescr& bondd = _bd(i);
+
+        bondd.be1 = _data.bondends.size();
+        _data.bondends.push();
+        bondd.be2 = _data.bondends.size();
+        _data.bondends.push();
+
+        BondEnd& be1 = _be(bondd.be1);
+        BondEnd& be2 = _be(bondd.be2);
+        be1.clear();
+        be2.clear();
+        be1.bid = be2.bid = i;
+        be1.aid = edge.beg;
+        be1.dir.diff(edesc.pos, bdesc.pos);
+        be1.dir.normalize();
+        be1.lnorm.copy(be1.dir);
+        be1.lnorm.rotate(1, 0);
+        be1.p.copy(bdesc.pos);
+
+        be2.aid = edge.end;
+        be2.dir.negation(be1.dir);
+        be2.lnorm.negation(be1.lnorm);
+        be2.p.copy(edesc.pos);
+    }
+
+    for (int i = 0; i < _data.bondends.size(); ++i)
+    {
+        BondEnd& be = _be(i);
+        const BondDescr& bd = _bd(be.bid);
+        if (bd.type == BOND_SINGLE)
+            if (bd.stereodir != 0)
+                if (bd.be1 == i) // is source end?
+                    be.width = 0;
+                else
+                    be.width = 2 * (_settings.bondSpace + _settings.bondLineWidth);
+            else
+                be.width = 2 * _settings.bondSpace + _settings.bondLineWidth;
+        else if (bd.type == BOND_DOUBLE || bd.type == BOND_AROMATIC || bd.type == BOND_TRIPLE || bd.queryType >= 0)
+            be.width = 4 * _settings.bondSpace + _settings.bondLineWidth;
+        else if (bd.type == _BOND_HYDROGEN || bd.type == _BOND_COORDINATION)
+            be.width = 2 * (_settings.bondSpace + _settings.bondLineWidth);
+        else
+        {
+            Array<char> buf;
+            _mol->getBondDescription(be.bid, buf);
+            throw Error("Unknown bond type %s. Can not determine bond width.", buf.ptr());
+        }
+    }
+}
+
+void MoleculeRenderInternal::_extendRenderItems()
+{
+    for (int i = 0; i < _data.textitems.size(); ++i)
+        _extendRenderItem(_data.textitems[i], _settings.boundExtent);
+    for (int i = 0; i < _data.graphitems.size(); ++i)
+        _extendRenderItem(_data.graphitems[i], _settings.boundExtent);
+}
+
+BondEnd& MoleculeRenderInternal::_getBondEnd(int aid, int nei)
+{
+    return _be(_getBondEndIdx(aid, nei));
+}
+
+int MoleculeRenderInternal::_getBondEndIdx(int aid, int nei)
+{
+    int ne = _mol->getVertex(aid).neiEdge(nei);
+    int be = _bd(ne).getBondEnd(aid);
+    return be;
+}
+
+void MoleculeRenderInternal::_drawAtom(const AtomDesc& desc)
+{
+#ifdef RENDER_SHOW_BACKGROUND
+    for (int i = 0; i < desc.ticount; ++i)
+        _cw.drawItemBackground(_data.textitems[i + desc.tibegin]);
+    for (int i = 0; i < desc.gicount; ++i)
+        _cw.drawItemBackground(_data.graphitems[i + desc.gibegin]);
+#endif
+
+    _cw.setSingleSource(desc.color);
+    for (int i = 0; i < desc.ticount; ++i)
+    {
+        if (desc.hcolorSet)
+            _cw.drawTextItemText(_data.textitems[i + desc.tibegin], desc.hcolor, _idle);
+        else
+            _cw.drawTextItemText(_data.textitems[i + desc.tibegin], _idle);
+    }
+    for (int i = 0; i < desc.attachmentPointCount; ++i)
+        _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i], _idle);
+    for (int i = 0; i < desc.rSiteAttachmentIndexCount; ++i)
+        _cw.drawRSiteAttachmentIndex(_data.rSiteAttachmentIndices[desc.rSiteAttachmentIndexBegin + i]);
+    for (int i = 0; i < desc.gicount; ++i)
+    {
+        if (desc.hcolorSet)
+            _cw.drawGraphItem(_data.graphitems[i + desc.gibegin], desc.hcolor);
+        else
+            _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
+    }
+}
+
+void MoleculeRenderInternal::_writeQueryAtomToString(Output& output, int aid)
+{
+    BaseMolecule& bm = *_mol;
+    AtomDesc& ad = _ad(aid);
+
+    if (bm.isRSite(aid))
+    {
+        QS_DEF(Array<int>, rg);
+        bm.getAllowedRGroups(aid, rg);
+
+        if (rg.size() == 0)
+            output.printf("R");
+        else
+            for (int i = 0; i < rg.size(); ++i)
+            {
+                if (i > 0)
+                    output.printf(",");
+                output.printf("R%i", rg[i]);
+            }
+    }
+    else
+    {
+        if (!bm.isQueryMolecule())
+            throw Error("Atom type %d not supported in non-queries", ad.queryLabel);
+
+        if (ad.queryLabel == QueryMolecule::QUERY_ATOM_A)
+        {
+            output.printf("A");
+        }
+        else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_X)
+        {
+            output.printf("X");
+        }
+        else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_Q)
+        {
+            output.printf("Q");
+        }
+        else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_LIST || ad.queryLabel == QueryMolecule::QUERY_ATOM_NOTLIST)
+        {
+            if (ad.queryLabel == QueryMolecule::QUERY_ATOM_NOTLIST)
+                output.printf("!");
+            output.printf("[");
+            for (int i = 0; i < ad.list.size(); ++i)
+            {
+                if (i > 0)
+                    output.printf(",");
+                output.printf("%s", Element::toString(ad.list[i]));
+            }
+            output.printf("]");
+        }
+        else
+        {
+            throw Error("Query atom type %d not supported", ad.queryLabel);
+        }
+    }
+}
+
+bool MoleculeRenderInternal::_writeDelimiter(bool needDelimiter, Output& output)
+{
+    if (needDelimiter)
+        output.printf(",");
+    else
+        output.printf("(");
+    return true;
+}
+
+QueryMolecule::Atom* atomNodeInConjunction(QueryMolecule::Atom& qa, int type)
+{
+    if (qa.type != QueryMolecule::OP_AND)
+        return NULL;
+    for (int i = 0; i < qa.children.size(); ++i)
+        if (qa.child(i)->type == type)
+            return qa.child(i);
+    return NULL;
+}
+
+void MoleculeRenderInternal::_writeQueryModifier(Output& output, int aid)
+{
+    QUERY_MOL_BEGIN(_mol);
+    {
+        bool needDelimiter = false;
+        QueryMolecule::Atom& qa = qmol.getAtom(aid);
+
+        if (qa.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS))
+        {
+            int subst = qmol.getAtomSubstCount(aid);
+            needDelimiter = _writeDelimiter(needDelimiter, output);
+            if (subst >= 0)
+                output.printf("s%i", subst);
         }
 
-        static void _expandBoundRect(AtomDesc & ad, const RenderItem& item)
+        if (qa.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN))
         {
-            Vec2f min, max;
-            min.diff(item.bbp, ad.pos);
-            max.sum(min, item.bbsz);
-            ad.boundBoxMin.min(min);
-            ad.boundBoxMax.max(max);
+            needDelimiter = _writeDelimiter(needDelimiter, output);
+            output.printf("s*");
         }
 
-        int MoleculeRenderInternal::_findClosestBox(Vec2f & p, int aid, const Vec2f& sz, float mrg, int skip)
+        if (qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS))
         {
-            const Vertex& vertex = _mol->getVertex(aid);
-            const AtomDesc& ad = _ad(aid);
-            float w2 = sz.x / 2 + mrg;
-            float h2 = sz.y / 2 + mrg;
+            int ringBondCount = qmol.getAtomRingBondsCount(aid);
+            needDelimiter = _writeDelimiter(needDelimiter, output);
+            if (ringBondCount >= 0)
+                output.printf("rb%i", ringBondCount);
+        }
 
-            if (vertex.degree() == 0)
+        if (qa.hasConstraint(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN))
+        {
+            needDelimiter = _writeDelimiter(needDelimiter, output);
+            output.printf("rb*");
+        }
+
+        if (qa.hasConstraint(QueryMolecule::ATOM_UNSATURATION))
+        {
+            needDelimiter = _writeDelimiter(needDelimiter, output);
+            output.printf("u");
+        }
+
+        if (qa.hasConstraint(QueryMolecule::ATOM_TOTAL_H))
+        {
+            QueryMolecule::Atom* qc = atomNodeInConjunction(qa, QueryMolecule::ATOM_TOTAL_H);
+            if (qc != NULL)
             {
-                p.set(0, -h2);
-                p.add(ad.pos);
-                return -1;
+                int totalH = qc->value_min;
+                needDelimiter = _writeDelimiter(needDelimiter, output);
+                output.printf("H%i", totalH);
             }
-            if (vertex.degree() == 1)
+        }
+
+        if (_ad(aid).fixed)
+        {
+            needDelimiter = _writeDelimiter(needDelimiter, output);
+            output.printf("f");
+        }
+
+        if (needDelimiter)
+            output.printf(")");
+
+        if (_ad(aid).exactChange)
+        {
+            output.printf(".ext.");
+        }
+    }
+    QUERY_MOL_END;
+}
+
+static void _expandBoundRect(AtomDesc& ad, const RenderItem& item)
+{
+    Vec2f min, max;
+    min.diff(item.bbp, ad.pos);
+    max.sum(min, item.bbsz);
+    ad.boundBoxMin.min(min);
+    ad.boundBoxMax.max(max);
+}
+
+int MoleculeRenderInternal::_findClosestBox(Vec2f& p, int aid, const Vec2f& sz, float mrg, int skip)
+{
+    const Vertex& vertex = _mol->getVertex(aid);
+    const AtomDesc& ad = _ad(aid);
+    float w2 = sz.x / 2 + mrg;
+    float h2 = sz.y / 2 + mrg;
+
+    if (vertex.degree() == 0)
+    {
+        p.set(0, -h2);
+        p.add(ad.pos);
+        return -1;
+    }
+    if (vertex.degree() == 1)
+    {
+        float offset = 0;
+        const Vec2f& d = _getBondEnd(aid, vertex.neiBegin()).dir;
+        float val = -1, dx = fabs(d.x), dy = fabs(d.y);
+        if (dx > 0.01)
+            if (val < 0 || val > w2 / dx)
+                val = w2 / dx;
+        if (dy > 0.01)
+            if (val < 0 || val > h2 / dy)
+                val = h2 / dy;
+        if (val > offset)
+            offset = val;
+        p.lineCombin(ad.pos, d, -offset);
+        return vertex.neiBegin();
+    }
+    int iMin = -1;
+    for (int i = vertex.neiBegin(); i < vertex.neiEnd(); i = vertex.neiNext(i))
+    {
+        if (skip == i)
+            continue;
+        Vec2f q;
+        const BondEnd& lbe = _getBondEnd(aid, i);
+        const BondEnd& rbe = _be(lbe.rnei);
+        const BondDescr& lbd = _bd(lbe.bid);
+        const BondDescr& rdb = _bd(rbe.bid);
+
+        // correction of positioning according to bond types
+        float turn = atan(_settings.bondSpace / lbd.length);
+        float leftShift = 0, rightShift = 0;
+        bool leftBondCentered = _be(lbd.be1).centered && _be(lbd.be2).centered;
+        bool leftTurn = false, rightTurn = false;
+        bool leftIsSourceEnd = (lbd.beg == aid);
+        bool leftBondOrientedInwards = (leftIsSourceEnd == lbd.lineOnTheRight);
+        bool leftIsStereo = lbd.stereodir > 0;
+        bool rightBondCentered = _be(rdb.be1).centered && _be(rdb.be2).centered;
+        bool rightIsSourceEnd = (rdb.beg == aid);
+        bool rightIsStereo = rdb.stereodir > 0;
+        bool rightBondOrientedInwards = (rightIsSourceEnd == !rdb.lineOnTheRight);
+
+        if (lbd.type == BOND_DOUBLE)
+        {
+            if (leftBondCentered)
+                leftShift = _settings.bondSpace;
+            else if (leftBondOrientedInwards)
+                leftShift = 2 * _settings.bondSpace;
+        }
+        else if (lbd.type == BOND_TRIPLE)
+            leftShift = 2 * _settings.bondSpace;
+        else if (leftIsStereo)
+        {
+            if (leftIsSourceEnd)
+                leftTurn = true;
+            else
+                leftShift = _settings.bondSpace;
+        }
+
+        if (rdb.type == BOND_DOUBLE)
+        {
+            if (rightBondCentered)
+                rightShift = _settings.bondSpace;
+            else if (rightBondOrientedInwards)
+                rightShift = 2 * _settings.bondSpace;
+        }
+        else if (rdb.type == BOND_TRIPLE)
+            rightShift = 2 * _settings.bondSpace;
+        else if (rightIsStereo)
+        {
+            if (rightIsSourceEnd)
+                rightTurn = true;
+            else
+                rightShift = _settings.bondSpace;
+        }
+
+        Vec2f leftDir, rightDir;
+        leftDir.copy(lbe.dir);
+        rightDir.copy(rbe.dir);
+        if (leftTurn)
+            leftDir.rotateL(turn);
+        if (rightTurn)
+            rightDir.rotateL(-turn);
+        Vec2f origin;
+        float si = Vec2f::cross(leftDir, rightDir);
+        float co = Vec2f::dot(leftDir, rightDir);
+        float ang = atan2(si, co);
+        if (ang < 0)
+            ang += 2 * (float)M_PI;
+
+        float factor = fabs(sin(ang / 2));
+        Vec2f rightNorm(rightDir), leftNorm(leftDir);
+        rightNorm.rotateL((float)M_PI / 2);
+        leftNorm.rotateL(-(float)M_PI / 2);
+
+        float rightOffset = 0, leftOffset = 0;
+        rightOffset = w2 * fabs(leftNorm.x) + h2 * fabs(leftNorm.y);
+        leftOffset = w2 * fabs(rightNorm.x) + h2 * fabs(rightNorm.y);
+
+        float t = std::max(leftShift + rightOffset, leftOffset + rightShift) / factor;
+        Vec2f median(rightDir);
+        median.rotateL(ang / 2);
+        q.addScaled(median, t);
+        if (iMin < 0 || q.lengthSqr() < p.lengthSqr())
+        {
+            iMin = i;
+            p.copy(q);
+        }
+    }
+    p.add(ad.pos);
+    return iMin;
+}
+
+int MoleculeRenderInternal::_findClosestCircle(Vec2f& p, int aid, float radius, int skip)
+{
+    const Vertex& vertex = _mol->getVertex(aid);
+    const AtomDesc& ad = _ad(aid);
+    if (vertex.degree() == 0)
+    {
+        p.copy(ad.pos);
+        p.y -= radius;
+        return -1;
+    }
+    if (vertex.degree() == 1)
+    {
+        p.lineCombin(ad.pos, _getBondEnd(aid, vertex.neiBegin()).dir, -radius);
+        return vertex.neiBegin();
+    }
+    int iMin = -1;
+    for (int i = vertex.neiBegin(); i < vertex.neiEnd(); i = vertex.neiNext(i))
+    {
+        if (skip == i)
+            continue;
+        Vec2f q;
+        const BondEnd& rbe = _be(i);
+        const BondEnd& lbe = _be(rbe.lnei);
+        ;
+        const BondDescr& rbd = _bd(rbe.bid);
+        const BondDescr& lbd = _bd(lbe.bid);
+
+        // correction of positioning according to bond types
+        float turn = atan(_settings.bondSpace / rbd.length);
+        float rightShift = 0, leftShift = 0;
+        bool rightBondCentered = _be(rbd.be1).centered && _be(rbd.be2).centered;
+        bool rightTurn = false, leftTurn = false;
+        bool rightIsSourceEnd = rbd.beg == aid;
+        bool rightBondOrientationLeft = !rbd.lineOnTheRight;
+        bool rightBondOrientedInwards = (rightIsSourceEnd && rightBondOrientationLeft) || (!rightIsSourceEnd && !rightBondOrientationLeft);
+        bool rightIsStereo = rbd.stereodir > 0;
+        bool leftBondCentered = _getBondEnd(aid, lbd.be1).centered && _getBondEnd(aid, lbd.be2).centered;
+        bool leftIsSourceEnd = lbd.beg == aid;
+        bool leftIsStereo = lbd.stereodir > 0;
+        bool leftBondOrientationRight = lbd.lineOnTheRight;
+        bool leftBondOrientedInwards = (leftIsSourceEnd && leftBondOrientationRight) || (!leftIsSourceEnd && !leftBondOrientationRight);
+
+        if (rbd.type == BOND_DOUBLE)
+        {
+            if (rightBondCentered)
+                rightShift = _settings.bondSpace;
+            else if (rightBondOrientedInwards)
+                rightShift = 2 * _settings.bondSpace;
+        }
+        else if (rbd.type == BOND_TRIPLE)
+            rightShift = 2 * _settings.bondSpace;
+        else if (rightIsStereo)
+        {
+            if (rightIsSourceEnd)
+                rightTurn = true;
+            else
+                rightShift = _settings.bondSpace;
+        }
+
+        if (lbd.type == BOND_DOUBLE)
+        {
+            if (leftBondCentered)
+                leftShift = _settings.bondSpace;
+            else if (leftBondOrientedInwards)
+                leftShift = 2 * _settings.bondSpace;
+        }
+        else if (lbd.type == BOND_TRIPLE)
+            leftShift = 2 * _settings.bondSpace;
+        else if (leftIsStereo)
+        {
+            if (leftIsSourceEnd)
+                leftTurn = true;
+            else
+                leftShift = _settings.bondSpace;
+        }
+
+        Vec2f rightDir, leftDir;
+        rightDir.copy(rbe.dir);
+        leftDir.copy(lbe.dir);
+        if (rightTurn)
+            rightDir.rotate(turn);
+        if (leftTurn)
+            leftDir.rotate(-turn);
+        Vec2f origin;
+        float si = Vec2f::cross(rightDir, leftDir);
+        float co = Vec2f::dot(rightDir, leftDir);
+        float ang = atan2(si, co);
+        if (ang < 0)
+            ang += (float)(2 * M_PI);
+
+        float factor = std::max(fabsf(si), 0.01f);
+        if (rightShift > 0)
+            origin.addScaled(leftDir, rightShift / factor);
+        if (leftShift > 0)
+            origin.addScaled(rightDir, leftShift / factor);
+
+        q.copy(rightDir);
+        q.rotate(ang / 2);
+
+        float dst = radius / (float)sin2c(Vec2f::dot(rightDir, leftDir));
+        q.scale(dst);
+        q.add(origin);
+
+        if (iMin < 0 || q.lengthSqr() < p.lengthSqr())
+        {
+            iMin = i;
+            p.copy(q);
+        }
+        q.add(ad.pos);
+        //_cw.setLineWidth(_settings.unit);
+        //_cw.setSingleSource(CWC_BLUE);
+        //_cw.drawCircle(q, radius);
+    }
+    p.add(ad.pos);
+    return iMin;
+}
+
+enum CHARCAT
+{
+    DIGIT = 0,
+    LETTER,
+    TAG_SUPERSCRIPT,
+    TAG_SUBSCRIPT,
+    TAG_NORMAL,
+    SIGN,
+    WHITESPACE
+};
+enum SCRIPT
+{
+    MAIN,
+    SUB,
+    SUPER
+};
+
+void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlighted)
+{
+    AtomDesc& ad = _ad(aid);
+    const char* str = ad.pseudo.ptr();
+
+    int cnt = 0;
+    CHARCAT a = WHITESPACE, b = WHITESPACE;
+    int i0 = 0, i1;
+    SCRIPT script = MAIN, newscript = MAIN;
+    int len = (int)strlen(str);
+    GraphItem::TYPE signType;
+    // TODO: replace remembering item ids and shifting each of them with single offset value for an atom
+    Array<int> tis, gis;
+
+    TextItem fake;
+    fake.fontsize = FONT_SIZE_LABEL;
+    fake.text.push('C');
+    fake.text.push((char)0);
+    _cw.setTextItemSize(fake, ad.pos);
+    float xpos = fake.bbp.x, width = fake.bbsz.x, offset = _settings.unit / 2, totalwdt = 0, upshift = -0.6f, downshift = 0.2f, space = width / 2;
+    ad.ypos = fake.bbp.y;
+    ad.height = fake.bbsz.y;
+    ad.leftMargin = ad.rightMargin = xpos;
+
+    if (ad.pseudoAtomStringVerbose)
+    {
+        int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
+        tis.push(id);
+        TextItem& item = _data.textitems[id];
+        item.fontsize = FONT_SIZE_ATTR;
+        item.text.copy(str, len);
+        item.text.push((char)0);
+        _cw.setTextItemSize(item);
+        item.bbp.set(xpos, ad.ypos);
+        _expandBoundRect(ad, item);
+        totalwdt += item.bbsz.x;
+    }
+    else
+    {
+        for (int i = 0; i <= len; ++i)
+        {
+            i1 = i;
+            a = b;
+
+            bool tag = false;
             {
-                float offset = 0;
-                const Vec2f& d = _getBondEnd(aid, vertex.neiBegin()).dir;
-                float val = -1, dx = fabs(d.x), dy = fabs(d.y);
-                if (dx > 0.01)
-                    if (val < 0 || val > w2 / dx)
-                        val = w2 / dx;
-                if (dy > 0.01)
-                    if (val < 0 || val > h2 / dy)
-                        val = h2 / dy;
-                if (val > offset)
-                    offset = val;
-                p.lineCombin(ad.pos, d, -offset);
-                return vertex.neiBegin();
+                char c = (i == len ? ' ' : str[i]);
+                if (isspace(c))
+                {
+                    b = WHITESPACE;
+                }
+                else if (isdigit(c))
+                {
+                    b = DIGIT;
+                }
+                else if (c == '+' || c == '-')
+                {
+                    b = SIGN, signType = ((c == '+') ? GraphItem::PLUS : GraphItem::MINUS);
+                }
+                else if (c == '\\' && i < len - 1 && str[i + 1] == 'S')
+                {
+                    b = TAG_SUPERSCRIPT, ++i, tag = true;
+                }
+                else if (c == '\\' && i < len - 1 && str[i + 1] == 's')
+                {
+                    b = TAG_SUBSCRIPT, ++i, tag = true;
+                }
+                else if (c == '\\' && i < len - 1 && str[i + 1] == 'n')
+                {
+                    b = TAG_NORMAL, ++i, tag = true;
+                }
+                else
+                {
+                    b = LETTER;
+                }
             }
-            int iMin = -1;
-            for (int i = vertex.neiBegin(); i < vertex.neiEnd(); i = vertex.neiNext(i))
+
             {
-                if (skip == i)
+                bool aTag = a == TAG_SUPERSCRIPT || a == TAG_SUBSCRIPT || a == TAG_NORMAL;
+                if (b == TAG_SUPERSCRIPT)
+                {
+                    newscript = SUPER;
+                }
+                else if (b == TAG_SUBSCRIPT)
+                {
+                    newscript = SUB;
+                }
+                else if (b == TAG_NORMAL)
+                {
+                    newscript = MAIN;
+                }
+                else if ((b == WHITESPACE && a != WHITESPACE) || (b != WHITESPACE && a == WHITESPACE) || (b == LETTER && !aTag))
+                {
+                    newscript = MAIN;
+                }
+                else if (b == DIGIT && a == SIGN)
+                {
+                    newscript = script;
+                }
+                else if (b == DIGIT && a != DIGIT && !aTag)
+                {
+                    newscript = ((a == LETTER) ? SUB : MAIN);
+                }
+                else if (b == SIGN)
+                {
+                    if (a == LETTER || a == DIGIT)
+                    {
+                        newscript = SUPER;
+                    }
+                }
+                else if (a == SIGN && script == SUPER)
+                {
+                    newscript = MAIN;
+                }
+                else
+                {
                     continue;
-                Vec2f q;
-                const BondEnd& lbe = _getBondEnd(aid, i);
-                const BondEnd& rbe = _be(lbe.rnei);
-                const BondDescr& lbd = _bd(lbe.bid);
-                const BondDescr& rdb = _bd(rbe.bid);
-
-                // correction of positioning according to bond types
-                float turn = atan(_settings.bondSpace / lbd.length);
-                float leftShift = 0, rightShift = 0;
-                bool leftBondCentered = _be(lbd.be1).centered && _be(lbd.be2).centered;
-                bool leftTurn = false, rightTurn = false;
-                bool leftIsSourceEnd = (lbd.beg == aid);
-                bool leftBondOrientedInwards = (leftIsSourceEnd == lbd.lineOnTheRight);
-                bool leftIsStereo = lbd.stereodir > 0;
-                bool rightBondCentered = _be(rdb.be1).centered && _be(rdb.be2).centered;
-                bool rightIsSourceEnd = (rdb.beg == aid);
-                bool rightIsStereo = rdb.stereodir > 0;
-                bool rightBondOrientedInwards = (rightIsSourceEnd == !rdb.lineOnTheRight);
-
-                if (lbd.type == BOND_DOUBLE)
-                {
-                    if (leftBondCentered)
-                        leftShift = _settings.bondSpace;
-                    else if (leftBondOrientedInwards)
-                        leftShift = 2 * _settings.bondSpace;
-                }
-                else if (lbd.type == BOND_TRIPLE)
-                    leftShift = 2 * _settings.bondSpace;
-                else if (leftIsStereo)
-                {
-                    if (leftIsSourceEnd)
-                        leftTurn = true;
-                    else
-                        leftShift = _settings.bondSpace;
-                }
-
-                if (rdb.type == BOND_DOUBLE)
-                {
-                    if (rightBondCentered)
-                        rightShift = _settings.bondSpace;
-                    else if (rightBondOrientedInwards)
-                        rightShift = 2 * _settings.bondSpace;
-                }
-                else if (rdb.type == BOND_TRIPLE)
-                    rightShift = 2 * _settings.bondSpace;
-                else if (rightIsStereo)
-                {
-                    if (rightIsSourceEnd)
-                        rightTurn = true;
-                    else
-                        rightShift = _settings.bondSpace;
-                }
-
-                Vec2f leftDir, rightDir;
-                leftDir.copy(lbe.dir);
-                rightDir.copy(rbe.dir);
-                if (leftTurn)
-                    leftDir.rotateL(turn);
-                if (rightTurn)
-                    rightDir.rotateL(-turn);
-                Vec2f origin;
-                float si = Vec2f::cross(leftDir, rightDir);
-                float co = Vec2f::dot(leftDir, rightDir);
-                float ang = atan2(si, co);
-                if (ang < 0)
-                    ang += 2 * (float)M_PI;
-
-                float factor = fabs(sin(ang / 2));
-                Vec2f rightNorm(rightDir), leftNorm(leftDir);
-                rightNorm.rotateL((float)M_PI / 2);
-                leftNorm.rotateL(-(float)M_PI / 2);
-
-                float rightOffset = 0, leftOffset = 0;
-                rightOffset = w2 * fabs(leftNorm.x) + h2 * fabs(leftNorm.y);
-                leftOffset = w2 * fabs(rightNorm.x) + h2 * fabs(rightNorm.y);
-
-                float t = std::max(leftShift + rightOffset, leftOffset + rightShift) / factor;
-                Vec2f median(rightDir);
-                median.rotateL(ang / 2);
-                q.addScaled(median, t);
-                if (iMin < 0 || q.lengthSqr() < p.lengthSqr())
-                {
-                    iMin = i;
-                    p.copy(q);
                 }
             }
-            p.add(ad.pos);
-            return iMin;
+
+            if (i1 > i0)
+            {
+                if (a == SIGN && script == SUPER)
+                {
+                    int id = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
+                    gis.push(id);
+                    GraphItem& sign = _data.graphitems[id];
+                    _cw.setGraphItemSizeSign(sign, signType);
+
+                    totalwdt += offset;
+                    sign.bbp.set(xpos + totalwdt, ad.ypos + ad.height - sign.bbsz.y + upshift * ad.height);
+                    _expandBoundRect(ad, sign);
+                    totalwdt += sign.bbsz.x;
+                }
+                else if (a == WHITESPACE)
+                {
+                    totalwdt += space * (i1 - i0);
+                }
+                else
+                {
+                    float shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
+                    int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
+                    tis.push(id);
+                    TextItem& item = _data.textitems[id];
+                    item.fontsize = (script == MAIN) ? FONT_SIZE_LABEL : FONT_SIZE_ATTR;
+                    item.text.copy(str + i0, i1 - i0);
+                    item.text.push((char)0);
+                    _cw.setTextItemSize(item);
+
+                    if (cnt > 0)
+                        totalwdt += offset;
+                    item.bbp.set(xpos + totalwdt, ad.ypos + ad.height - item.relpos.y + shift * ad.height);
+                    _expandBoundRect(ad, item);
+                    totalwdt += item.bbsz.x;
+                }
+                cnt++;
+            }
+            script = newscript;
+            i0 = i + (tag ? 1 : 0);
+        }
+    }
+    ad.rightMargin += totalwdt;
+    if (ad.hydroPos == HYDRO_POS_LEFT)
+    {
+        float dx = totalwdt - width;
+        for (int i = 0; i < tis.size(); ++i)
+            _data.textitems[tis[i]].bbp.x -= dx;
+        for (int i = 0; i < gis.size(); ++i)
+            _data.graphitems[gis[i]].bbp.x -= dx;
+        ad.leftMargin -= dx;
+        ad.rightMargin -= dx;
+    }
+}
+
+void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highlighted)
+{
+    AtomDesc& ad = _ad(aid);
+    BaseMolecule& bm = *_mol;
+
+    int charge = bm.getAtomCharge(aid);
+    if (charge != CHARGE_UNKNOWN && charge != 0)
+    {
+        ad.rightMargin += _settings.labelInternalOffset;
+        if (abs(charge) != 1)
+        {
+            int tiChargeValue = _pushTextItem(ad, RenderItem::RIT_CHARGEVAL, color, highlighted);
+
+            TextItem& itemChargeValue = _data.textitems[tiChargeValue];
+            itemChargeValue.fontsize = FONT_SIZE_ATTR;
+            bprintf(itemChargeValue.text, "%i", abs(charge));
+            _cw.setTextItemSize(itemChargeValue);
+
+            itemChargeValue.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
+            _expandBoundRect(ad, itemChargeValue);
+            ad.rightMargin += itemChargeValue.bbsz.x;
         }
 
-        int MoleculeRenderInternal::_findClosestCircle(Vec2f & p, int aid, float radius, int skip)
+        GraphItem::TYPE type = charge > 0 ? GraphItem::PLUS : GraphItem::MINUS;
+        int giChargeSign = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
+
+        GraphItem& itemChargeSign = _data.graphitems[giChargeSign];
+        _cw.setGraphItemSizeSign(itemChargeSign, type);
+
+        itemChargeSign.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
+        _expandBoundRect(ad, itemChargeSign);
+        ad.rightMargin += itemChargeSign.bbsz.x;
+    }
+}
+
+void MoleculeRenderInternal::_prepareLabelText(int aid)
+{
+    AtomDesc& ad = _ad(aid);
+    BaseMolecule& bm = *_mol;
+    ad.boundBoxMin.set(0, 0);
+    ad.boundBoxMax.set(0, 0);
+
+    int color = ad.color;
+    bool highlighted = _vertexIsHighlighted(aid);
+
+    int tilabel = -1, tihydro = -1, tiHydroIndex = -1, tiChargeValue = -1, tiValence = -1, tiIsotope = -1, tiindex = -1;
+    int giChargeSign = -1, giRadical = -1, giRadical1 = -1, giRadical2 = -1;
+    ad.rightMargin = ad.leftMargin = ad.ypos = ad.height = 0;
+    int isotope = bm.getAtomIsotope(aid);
+
+    if (ad.type == AtomDesc::TYPE_PSEUDO)
+    {
+        _preparePseudoAtom(aid, CWC_BASE, highlighted);
+
+        bool chargeSignAdded = false;
+        for (auto i = 0; i < _data.graphitems.size(); i++)
         {
-            const Vertex& vertex = _mol->getVertex(aid);
-            const AtomDesc& ad = _ad(aid);
-            if (vertex.degree() == 0)
+            if (_data.graphitems[i].ritype == RenderItem::RIT_CHARGESIGN)
             {
-                p.copy(ad.pos);
-                p.y -= radius;
-                return -1;
+                chargeSignAdded = true;
+                break;
             }
-            if (vertex.degree() == 1)
-            {
-                p.lineCombin(ad.pos, _getBondEnd(aid, vertex.neiBegin()).dir, -radius);
-                return vertex.neiBegin();
-            }
-            int iMin = -1;
-            for (int i = vertex.neiBegin(); i < vertex.neiEnd(); i = vertex.neiNext(i))
-            {
-                if (skip == i)
-                    continue;
-                Vec2f q;
-                const BondEnd& rbe = _be(i);
-                const BondEnd& lbe = _be(rbe.lnei);
-                ;
-                const BondDescr& rbd = _bd(rbe.bid);
-                const BondDescr& lbd = _bd(lbe.bid);
-
-                // correction of positioning according to bond types
-                float turn = atan(_settings.bondSpace / rbd.length);
-                float rightShift = 0, leftShift = 0;
-                bool rightBondCentered = _be(rbd.be1).centered && _be(rbd.be2).centered;
-                bool rightTurn = false, leftTurn = false;
-                bool rightIsSourceEnd = rbd.beg == aid;
-                bool rightBondOrientationLeft = !rbd.lineOnTheRight;
-                bool rightBondOrientedInwards = (rightIsSourceEnd && rightBondOrientationLeft) || (!rightIsSourceEnd && !rightBondOrientationLeft);
-                bool rightIsStereo = rbd.stereodir > 0;
-                bool leftBondCentered = _getBondEnd(aid, lbd.be1).centered && _getBondEnd(aid, lbd.be2).centered;
-                bool leftIsSourceEnd = lbd.beg == aid;
-                bool leftIsStereo = lbd.stereodir > 0;
-                bool leftBondOrientationRight = lbd.lineOnTheRight;
-                bool leftBondOrientedInwards = (leftIsSourceEnd && leftBondOrientationRight) || (!leftIsSourceEnd && !leftBondOrientationRight);
-
-                if (rbd.type == BOND_DOUBLE)
-                {
-                    if (rightBondCentered)
-                        rightShift = _settings.bondSpace;
-                    else if (rightBondOrientedInwards)
-                        rightShift = 2 * _settings.bondSpace;
-                }
-                else if (rbd.type == BOND_TRIPLE)
-                    rightShift = 2 * _settings.bondSpace;
-                else if (rightIsStereo)
-                {
-                    if (rightIsSourceEnd)
-                        rightTurn = true;
-                    else
-                        rightShift = _settings.bondSpace;
-                }
-
-                if (lbd.type == BOND_DOUBLE)
-                {
-                    if (leftBondCentered)
-                        leftShift = _settings.bondSpace;
-                    else if (leftBondOrientedInwards)
-                        leftShift = 2 * _settings.bondSpace;
-                }
-                else if (lbd.type == BOND_TRIPLE)
-                    leftShift = 2 * _settings.bondSpace;
-                else if (leftIsStereo)
-                {
-                    if (leftIsSourceEnd)
-                        leftTurn = true;
-                    else
-                        leftShift = _settings.bondSpace;
-                }
-
-                Vec2f rightDir, leftDir;
-                rightDir.copy(rbe.dir);
-                leftDir.copy(lbe.dir);
-                if (rightTurn)
-                    rightDir.rotate(turn);
-                if (leftTurn)
-                    leftDir.rotate(-turn);
-                Vec2f origin;
-                float si = Vec2f::cross(rightDir, leftDir);
-                float co = Vec2f::dot(rightDir, leftDir);
-                float ang = atan2(si, co);
-                if (ang < 0)
-                    ang += (float)(2 * M_PI);
-
-                float factor = std::max(fabsf(si), 0.01f);
-                if (rightShift > 0)
-                    origin.addScaled(leftDir, rightShift / factor);
-                if (leftShift > 0)
-                    origin.addScaled(rightDir, leftShift / factor);
-
-                q.copy(rightDir);
-                q.rotate(ang / 2);
-
-                float dst = radius / (float)sin2c(Vec2f::dot(rightDir, leftDir));
-                q.scale(dst);
-                q.add(origin);
-
-                if (iMin < 0 || q.lengthSqr() < p.lengthSqr())
-                {
-                    iMin = i;
-                    p.copy(q);
-                }
-                q.add(ad.pos);
-                //_cw.setLineWidth(_settings.unit);
-                //_cw.setSingleSource(CWC_BLUE);
-                //_cw.drawCircle(q, radius);
-            }
-            p.add(ad.pos);
-            return iMin;
         }
 
-        enum CHARCAT
+        if (!chargeSignAdded)
         {
-            DIGIT = 0,
-            LETTER,
-            TAG_SUPERSCRIPT,
-            TAG_SUBSCRIPT,
-            TAG_NORMAL,
-            SIGN,
-            WHITESPACE
-        };
-        enum SCRIPT
+            _prepareChargeLabel(aid, color, highlighted);
+        }
+    }
+    else if (ad.showLabel)
+    {
+        tilabel = _pushTextItem(ad, RenderItem::RIT_LABEL, color, highlighted);
         {
-            MAIN,
-            SUB,
-            SUPER
-        };
+            TextItem& label = _data.textitems[tilabel];
+            label.fontsize = FONT_SIZE_LABEL;
+            ArrayOutput output(label.text);
+            if (ad.type == AtomDesc::TYPE_REGULAR)
+                if (ad.label == ELEM_H && isotope == 2)
+                    output.printf("D");
+                else if (ad.label == ELEM_H && isotope == 3)
+                    output.printf("T");
+                else
+                    output.printf(Element::toString(ad.label));
+            else if (ad.type == AtomDesc::TYPE_QUERY)
+                _writeQueryAtomToString(output, aid);
+            else
+                throw Error("Neither label nor query atom type available");
 
-        void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlighted)
+            _writeQueryModifier(output, aid);
+            output.writeChar(0);
+
+            _cw.setTextItemSize(label, ad.pos);
+            _expandBoundRect(ad, label);
+            ad.rightMargin = label.bbp.x + label.bbsz.x;
+            ad.leftMargin = label.bbp.x;
+            ad.ypos = label.bbp.y;
+            ad.height = label.bbsz.y;
+        }
+
+        if (bm.isRSite(aid) && bm.getVertex(aid).degree() > 1)
         {
-            AtomDesc& ad = _ad(aid);
-            const char* str = ad.pseudo.ptr();
+            // show indices for attachment bonds
+            const Vertex& v = bm.getVertex(aid);
+            ad.rSiteAttachmentIndexBegin = _data.rSiteAttachmentIndices.size();
 
-            int cnt = 0;
-            CHARCAT a = WHITESPACE, b = WHITESPACE;
-            int i0 = 0, i1;
-            SCRIPT script = MAIN, newscript = MAIN;
-            int len = (int)strlen(str);
-            GraphItem::TYPE signType;
-            // TODO: replace remembering item ids and shifting each of them with single offset value for an atom
-            Array<int> tis, gis;
-
-            TextItem fake;
-            fake.fontsize = FONT_SIZE_LABEL;
-            fake.text.push('C');
-            fake.text.push((char)0);
-            _cw.setTextItemSize(fake, ad.pos);
-            float xpos = fake.bbp.x, width = fake.bbsz.x, offset = _settings.unit / 2, totalwdt = 0, upshift = -0.6f, downshift = 0.2f, space = width / 2;
-            ad.ypos = fake.bbp.y;
-            ad.height = fake.bbsz.y;
-            ad.leftMargin = ad.rightMargin = xpos;
-
-            if (ad.pseudoAtomStringVerbose)
+            // Check if there are indices for attachment bonds
+            bool hasAttachmentIndex = false, hasNoAttachmentIndex = false;
+            for (int k = v.neiBegin(), j = 0; k < v.neiEnd(); k = v.neiNext(k), ++j)
             {
-                int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
-                tis.push(id);
-                TextItem& item = _data.textitems[id];
-                item.fontsize = FONT_SIZE_ATTR;
-                item.text.copy(str, len);
-                item.text.push((char)0);
-                _cw.setTextItemSize(item);
-                item.bbp.set(xpos, ad.ypos);
-                _expandBoundRect(ad, item);
-                totalwdt += item.bbsz.x;
+                int apIdx = bm.getRSiteAttachmentPointByOrder(aid, j);
+                hasAttachmentIndex |= (apIdx != -1);
+                hasNoAttachmentIndex |= (apIdx == -1);
+            }
+            if (hasAttachmentIndex && hasNoAttachmentIndex)
+                throw Error("RSite %d is invalid: some attachments indices are specified and some are not");
+            if (hasNoAttachmentIndex)
+                ad.rSiteAttachmentIndexCount = 0;
+            else
+            {
+                ad.rSiteAttachmentIndexCount = v.degree();
+
+                for (int k = v.neiBegin(), j = 0; k < v.neiEnd(); k = v.neiNext(k), ++j)
+                {
+                    int apIdx = bm.getRSiteAttachmentPointByOrder(aid, j);
+                    int i = v.findNeiVertex(apIdx);
+                    BondEnd& be = _getBondEnd(aid, i);
+                    int tii = _pushTextItem(ad, RenderItem::RIT_ATTACHMENTPOINT, CWC_BASE, false);
+                    TextItem& ti = _data.textitems[tii];
+                    RenderItemRSiteAttachmentIndex& item = _data.rSiteAttachmentIndices.push();
+                    item.number = j + 1;
+                    item.radius = 0.7f * _settings.fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX];
+                    item.bbsz.set(2 * item.radius, 2 * item.radius);
+                    item.bbp = ad.pos;
+                    item.color = CWC_BASE;
+                    item.highlighted = false;
+                    item.noBondOffset = true;
+                    bprintf(ti.text, "%d", item.number);
+                    ti.fontsize = FONT_SIZE_RSITE_ATTACHMENT_INDEX;
+                    ti.noBondOffset = true;
+                    _cw.setTextItemSize(ti, ad.pos);
+                    TextItem& label = _data.textitems[tilabel];
+                    // this is just an upper bound, it won't be used
+                    float shift = item.bbsz.length() + label.bbsz.length();
+                    // one of the next conditions should be satisfied
+                    if (fabs(be.dir.x) > 1e-3)
+                        shift = std::min(shift, (item.bbsz.x + label.bbsz.x) / 2.f / fabsf(be.dir.x));
+                    if (fabs(be.dir.y) > 1e-3)
+                        shift = std::min(shift, (item.bbsz.y + label.bbsz.y) / 2.f / fabsf(be.dir.y));
+                    shift += _settings.unit;
+                    item.bbp.addScaled(be.dir, shift);
+                    ti.bbp.addScaled(be.dir, shift);
+                    be.offset = shift + item.radius;
+                }
+            }
+        }
+
+        // isotope
+        if (isotope > 0 && (ad.label != ELEM_H || isotope > 3 || isotope < 2))
+        {
+            tiIsotope = _pushTextItem(ad, RenderItem::RIT_ISOTOPE, color, highlighted);
+
+            TextItem& itemIsotope = _data.textitems[tiIsotope];
+            itemIsotope.fontsize = FONT_SIZE_ATTR;
+            bprintf(itemIsotope.text, "%i", isotope);
+            _cw.setTextItemSize(itemIsotope);
+
+            ad.leftMargin -= _settings.labelInternalOffset + itemIsotope.bbsz.x;
+            itemIsotope.bbp.set(ad.leftMargin, ad.ypos + _settings.upperIndexShift * ad.height);
+            _expandBoundRect(ad, itemIsotope);
+        }
+
+        // hydrogen drawing
+        ad.showHydro = false;
+        if (!bm.isQueryMolecule())
+        {
+            int implicit_h = 0;
+
+            if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid) && !bm.isTemplateAtom(aid))
+                implicit_h = bm.asMolecule().getImplicitH_NoThrow(aid, 0);
+
+            if (implicit_h > 0 && _opt.implHVisible)
+            {
+                ad.showHydro = true;
+
+                tihydro = _pushTextItem(ad, RenderItem::RIT_HYDROGEN, color, highlighted);
+                Vec2f hydrogenGroupSz;
+                {
+
+                    TextItem& itemHydrogen = _data.textitems[tihydro];
+                    itemHydrogen.fontsize = FONT_SIZE_LABEL;
+                    bprintf(itemHydrogen.text, "H");
+                    _cw.setTextItemSize(itemHydrogen, ad.pos);
+                    hydrogenGroupSz.x = itemHydrogen.bbsz.x + _settings.labelInternalOffset;
+                    hydrogenGroupSz.y = itemHydrogen.bbsz.y;
+                }
+
+                if (implicit_h > 1)
+                {
+                    tiHydroIndex = _pushTextItem(ad, RenderItem::RIT_HYDROINDEX, color, highlighted);
+
+                    TextItem& itemHydroIndex = _data.textitems[tiHydroIndex];
+                    TextItem& itemHydrogen = _data.textitems[tihydro];
+                    itemHydroIndex.fontsize = FONT_SIZE_ATTR;
+                    bprintf(itemHydroIndex.text, "%i", implicit_h);
+                    _cw.setTextItemSize(itemHydroIndex, ad.pos);
+                    hydrogenGroupSz.x += itemHydroIndex.bbsz.x + _settings.labelInternalOffset;
+                    hydrogenGroupSz.y = std::max(hydrogenGroupSz.y, _settings.lowerIndexShift * itemHydrogen.bbsz.y + itemHydroIndex.bbsz.y);
+                }
+
+                // take new reference, old one may be corrupted after adding 'tiHydroIndex'
+                TextItem& itemHydrogen = _data.textitems[tihydro];
+                if (ad.hydroPos == HYDRO_POS_LEFT)
+                {
+                    ad.leftMargin -= hydrogenGroupSz.x;
+                    itemHydrogen.bbp.set(ad.leftMargin, ad.ypos);
+                }
+                else if (ad.hydroPos == HYDRO_POS_RIGHT)
+                {
+                    ad.rightMargin += _settings.labelInternalOffset;
+                    itemHydrogen.bbp.set(ad.rightMargin, ad.ypos);
+                    ad.rightMargin += hydrogenGroupSz.x;
+                }
+                else if (ad.hydroPos == HYDRO_POS_UP)
+                {
+                    itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMin.y - hydrogenGroupSz.y - _settings.unit;
+                }
+                else if (ad.hydroPos == HYDRO_POS_DOWN)
+                {
+                    itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMax.y + _settings.unit;
+                }
+                else
+                {
+                    throw Error("hydrogen position value invalid");
+                }
+                _expandBoundRect(ad, itemHydrogen);
+                if (tiHydroIndex > 0)
+                {
+                    _data.textitems[tiHydroIndex].bbp.set(itemHydrogen.bbp.x + itemHydrogen.bbsz.x + _settings.labelInternalOffset,
+                                                          itemHydrogen.bbp.y + _settings.lowerIndexShift * itemHydrogen.bbsz.y);
+                    _expandBoundRect(ad, _data.textitems[tiHydroIndex]);
+                }
+            }
+        }
+
+        // charge
+        _prepareChargeLabel(aid, color, highlighted);
+
+        // valence
+        int valence = bm.getExplicitValence(aid);
+
+        if (_opt.showValences && valence >= 0)
+        {
+            tiValence = _pushTextItem(ad, RenderItem::RIT_VALENCE, color, highlighted);
+
+            TextItem& itemValence = _data.textitems[tiValence];
+            itemValence.fontsize = FONT_SIZE_ATTR;
+            bprintf(itemValence.text, _valenceText(valence));
+            _cw.setTextItemSize(itemValence);
+
+            ad.rightMargin += _settings.labelInternalOffset;
+            itemValence.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
+            _expandBoundRect(ad, itemValence);
+            ad.rightMargin += itemValence.bbsz.x;
+        }
+
+        // radical
+        int radical = -1;
+
+        if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid) && !bm.isTemplateAtom(aid))
+            radical = bm.getAtomRadical_NoThrow(aid, -1);
+
+        if (radical > 0)
+        {
+            const TextItem& label = _data.textitems[tilabel];
+            Vec2f ltc(label.bbp);
+
+            if (radical == RADICAL_DOUBLET)
+            {
+                giRadical = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
+                GraphItem& itemRadical = _data.graphitems[giRadical];
+                _cw.setGraphItemSizeDot(itemRadical);
+
+                if (!(ad.showHydro && ad.hydroPos == HYDRO_POS_RIGHT) && giChargeSign < 0 && tiValence < 0)
+                {
+                    ltc.x += label.bbsz.x + _settings.radicalRightOffset;
+                    ltc.y += _settings.radicalRightVertShift * ad.height;
+                    itemRadical.bbp.copy(ltc);
+                }
+                else
+                {
+                    ltc.x += label.bbsz.x / 2 - itemRadical.bbsz.x / 2;
+                    ltc.y -= itemRadical.bbsz.y + _settings.radicalTopOffset;
+                    itemRadical.bbp.copy(ltc);
+                }
+                _expandBoundRect(ad, itemRadical);
             }
             else
             {
-                for (int i = 0; i <= len; ++i)
+                giRadical1 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
+                giRadical2 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
+
+                GraphItem& itemRadical1 = _data.graphitems[giRadical1];
+                GraphItem& itemRadical2 = _data.graphitems[giRadical2];
+
+                float dist;
+                if (radical == RADICAL_SINGLET)
                 {
-                    i1 = i;
-                    a = b;
-
-                    bool tag = false;
-                    {
-                        char c = (i == len ? ' ' : str[i]);
-                        if (isspace(c))
-                        {
-                            b = WHITESPACE;
-                        }
-                        else if (isdigit(c))
-                        {
-                            b = DIGIT;
-                        }
-                        else if (c == '+' || c == '-')
-                        {
-                            b = SIGN, signType = ((c == '+') ? GraphItem::PLUS : GraphItem::MINUS);
-                        }
-                        else if (c == '\\' && i < len - 1 && str[i + 1] == 'S')
-                        {
-                            b = TAG_SUPERSCRIPT, ++i, tag = true;
-                        }
-                        else if (c == '\\' && i < len - 1 && str[i + 1] == 's')
-                        {
-                            b = TAG_SUBSCRIPT, ++i, tag = true;
-                        }
-                        else if (c == '\\' && i < len - 1 && str[i + 1] == 'n')
-                        {
-                            b = TAG_NORMAL, ++i, tag = true;
-                        }
-                        else
-                        {
-                            b = LETTER;
-                        }
-                    }
-
-                    {
-                        bool aTag = a == TAG_SUPERSCRIPT || a == TAG_SUBSCRIPT || a == TAG_NORMAL;
-                        if (b == TAG_SUPERSCRIPT)
-                        {
-                            newscript = SUPER;
-                        }
-                        else if (b == TAG_SUBSCRIPT)
-                        {
-                            newscript = SUB;
-                        }
-                        else if (b == TAG_NORMAL)
-                        {
-                            newscript = MAIN;
-                        }
-                        else if ((b == WHITESPACE && a != WHITESPACE) || (b != WHITESPACE && a == WHITESPACE) || (b == LETTER && !aTag))
-                        {
-                            newscript = MAIN;
-                        }
-                        else if (b == DIGIT && a == SIGN)
-                        {
-                            newscript = script;
-                        }
-                        else if (b == DIGIT && a != DIGIT && !aTag)
-                        {
-                            newscript = ((a == LETTER) ? SUB : MAIN);
-                        }
-                        else if (b == SIGN)
-                        {
-                            if (a == LETTER || a == DIGIT)
-                            {
-                                newscript = SUPER;
-                            }
-                        }
-                        else if (a == SIGN && script == SUPER)
-                        {
-                            newscript = MAIN;
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-
-                    if (i1 > i0)
-                    {
-                        if (a == SIGN && script == SUPER)
-                        {
-                            int id = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
-                            gis.push(id);
-                            GraphItem& sign = _data.graphitems[id];
-                            _cw.setGraphItemSizeSign(sign, signType);
-
-                            totalwdt += offset;
-                            sign.bbp.set(xpos + totalwdt, ad.ypos + ad.height - sign.bbsz.y + upshift * ad.height);
-                            _expandBoundRect(ad, sign);
-                            totalwdt += sign.bbsz.x;
-                        }
-                        else if (a == WHITESPACE)
-                        {
-                            totalwdt += space * (i1 - i0);
-                        }
-                        else
-                        {
-                            float shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
-                            int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
-                            tis.push(id);
-                            TextItem& item = _data.textitems[id];
-                            item.fontsize = (script == MAIN) ? FONT_SIZE_LABEL : FONT_SIZE_ATTR;
-                            item.text.copy(str + i0, i1 - i0);
-                            item.text.push((char)0);
-                            _cw.setTextItemSize(item);
-
-                            if (cnt > 0)
-                                totalwdt += offset;
-                            item.bbp.set(xpos + totalwdt, ad.ypos + ad.height - item.relpos.y + shift * ad.height);
-                            _expandBoundRect(ad, item);
-                            totalwdt += item.bbsz.x;
-                        }
-                        cnt++;
-                    }
-                    script = newscript;
-                    i0 = i + (tag ? 1 : 0);
+                    _cw.setGraphItemSizeDot(itemRadical1);
+                    _cw.setGraphItemSizeDot(itemRadical2);
+                    dist = _settings.radicalTopDistDot;
                 }
-            }
-            ad.rightMargin += totalwdt;
-            if (ad.hydroPos == HYDRO_POS_LEFT)
-            {
-                float dx = totalwdt - width;
-                for (int i = 0; i < tis.size(); ++i)
-                    _data.textitems[tis[i]].bbp.x -= dx;
-                for (int i = 0; i < gis.size(); ++i)
-                    _data.graphitems[gis[i]].bbp.x -= dx;
-                ad.leftMargin -= dx;
-                ad.rightMargin -= dx;
+                else // if (radical == RADICAL_TRIPLET)
+                {
+                    _cw.setGraphItemSizeCap(itemRadical1);
+                    _cw.setGraphItemSizeCap(itemRadical2);
+                    dist = _settings.radicalTopDistCap;
+                }
+
+                ltc.y -= itemRadical1.bbsz.y + _settings.radicalTopOffset;
+                ltc.x += label.bbsz.x / 2 - dist / 2 - itemRadical1.bbsz.x;
+                itemRadical1.bbp.copy(ltc);
+                ltc.x += dist + itemRadical1.bbsz.x;
+                itemRadical2.bbp.copy(ltc);
+                _expandBoundRect(ad, itemRadical1);
+                _expandBoundRect(ad, itemRadical2);
             }
         }
+    }
 
-        void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highlighted)
+    int bondEndRightToStereoGroupLabel = -1;
+    // prepare stereogroup labels
+    if ((ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY) || ad.inversion == STEREO_INVERTS || ad.inversion == STEREO_RETAINS)
+    {
+        int tiStereoGroup = _pushTextItem(ad, RenderItem::RIT_STEREOGROUP, CWC_BASE, false);
+
+        TextItem& itemStereoGroup = _data.textitems[tiStereoGroup];
+        itemStereoGroup.fontsize = FONT_SIZE_ATTR;
+        ArrayOutput itemOutput(itemStereoGroup.text);
+        if (ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY)
         {
-            AtomDesc& ad = _ad(aid);
-            BaseMolecule& bm = *_mol;
+            const char* stereoGroupText = _getStereoGroupText(ad.stereoGroupType);
+            itemOutput.printf("%s", stereoGroupText);
+            if (ad.stereoGroupType != MoleculeStereocenters::ATOM_ABS)
+                itemOutput.printf("%i", ad.stereoGroupNumber);
+        }
+        if (ad.inversion == STEREO_INVERTS || ad.inversion == STEREO_RETAINS)
+        {
+            if (itemOutput.tell() > 0)
+                itemOutput.printf(",");
+            itemOutput.printf("%s", ad.inversion == STEREO_INVERTS ? "Inv" : "Ret");
+        }
+        itemOutput.writeChar(0);
 
-            int charge = bm.getAtomCharge(aid);
-            if (charge != CHARGE_UNKNOWN && charge != 0)
+        _cw.setTextItemSize(itemStereoGroup);
+
+        if (ad.showLabel)
+        {
+            // label visible - put stereo group label on the over or under the label
+            const Vertex& v = bm.getVertex(aid);
+            float vMin = 0, vMax = 0;
+            for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
             {
-                ad.rightMargin += _settings.labelInternalOffset;
-                if (abs(charge) != 1)
-                {
-                    int tiChargeValue = _pushTextItem(ad, RenderItem::RIT_CHARGEVAL, color, highlighted);
+                float y = _getBondEnd(aid, i).dir.y;
+                if (y > vMax)
+                    vMax = y;
+                if (y < vMin)
+                    vMin = y;
+            }
+            if (vMax > -vMin)
+                itemStereoGroup.bbp.set(ad.pos.x - itemStereoGroup.bbsz.x / 2,
+                                        ad.pos.y + ad.boundBoxMin.y - itemStereoGroup.bbsz.y - _settings.stereoGroupLabelOffset);
+            else
+                itemStereoGroup.bbp.set(ad.pos.x - itemStereoGroup.bbsz.x / 2, ad.pos.y + ad.boundBoxMax.y + _settings.stereoGroupLabelOffset);
+        }
+        else
+        {
+            // label hidden - position stereo group label independently
+            Vec2f p;
+            bondEndRightToStereoGroupLabel = _findClosestBox(p, aid, itemStereoGroup.bbsz, _settings.unit);
 
-                    TextItem& itemChargeValue = _data.textitems[tiChargeValue];
-                    itemChargeValue.fontsize = FONT_SIZE_ATTR;
-                    bprintf(itemChargeValue.text, "%i", abs(charge));
-                    _cw.setTextItemSize(itemChargeValue);
+            p.addScaled(itemStereoGroup.bbsz, -0.5);
+            itemStereoGroup.bbp.copy(p);
+        }
+        _expandBoundRect(ad, itemStereoGroup);
+    }
 
-                    itemChargeValue.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
-                    _expandBoundRect(ad, itemChargeValue);
-                    ad.rightMargin += itemChargeValue.bbsz.x;
-                }
+    // prepare AAM labels
+    if (ad.aam > 0)
+    {
+        int tiAAM = _pushTextItem(ad, RenderItem::RIT_AAM, CWC_BASE, false);
 
-                GraphItem::TYPE type = charge > 0 ? GraphItem::PLUS : GraphItem::MINUS;
-                int giChargeSign = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
+        TextItem& itemAAM = _data.textitems[tiAAM];
+        itemAAM.fontsize = FONT_SIZE_ATTR;
+        bprintf(itemAAM.text, "%i", abs(ad.aam));
+        _cw.setTextItemSize(itemAAM);
 
-                GraphItem& itemChargeSign = _data.graphitems[giChargeSign];
-                _cw.setGraphItemSizeSign(itemChargeSign, type);
+        if (ad.showLabel)
+        {
+            ad.leftMargin -= itemAAM.bbsz.x + _settings.labelInternalOffset;
+            itemAAM.bbp.set(ad.leftMargin, ad.ypos + _settings.lowerIndexShift * ad.height);
+        }
+        else
+        {
+            Vec2f p;
+            _findClosestBox(p, aid, itemAAM.bbsz, _settings.unit, bondEndRightToStereoGroupLabel);
 
-                itemChargeSign.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
-                _expandBoundRect(ad, itemChargeSign);
-                ad.rightMargin += itemChargeSign.bbsz.x;
+            p.addScaled(itemAAM.bbsz, -0.5);
+            itemAAM.bbp.copy(p);
+        }
+        _expandBoundRect(ad, itemAAM);
+    }
+
+    // prepare R-group attachment point labels
+    QS_DEF(Array<float>, angles);
+    QS_DEF(Array<int>, split);
+    QS_DEF(Array<int>, rGroupAttachmentIndices);
+
+    if (ad.isRGroupAttachmentPoint)
+    {
+        // collect the angles between adjacent bonds
+        const Vertex& v = bm.getVertex(aid);
+        angles.clear();
+        split.clear();
+        if (v.degree() != 0)
+        {
+            for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
+            {
+                float a = _getBondEnd(aid, i).lang;
+                angles.push(a);
+                split.push(1);
             }
         }
-
-        void MoleculeRenderInternal::_prepareLabelText(int aid)
+        // collect attachment point indices
+        rGroupAttachmentIndices.clear();
+        bool multipleAttachmentPoints = _mol->attachmentPointCount() > 1;
+        for (int i = 1; i <= _mol->attachmentPointCount(); ++i)
+            for (int j = 0, k; (k = _mol->getAttachmentPoint(i, j)) >= 0; ++j)
+                if (k == aid)
+                    rGroupAttachmentIndices.push(i);
+        if (v.degree() != 0)
         {
-            AtomDesc& ad = _ad(aid);
-            BaseMolecule& bm = *_mol;
-            ad.boundBoxMin.set(0, 0);
-            ad.boundBoxMax.set(0, 0);
-
-            int color = ad.color;
-            bool highlighted = _vertexIsHighlighted(aid);
-
-            int tilabel = -1, tihydro = -1, tiHydroIndex = -1, tiChargeValue = -1, tiValence = -1, tiIsotope = -1, tiindex = -1;
-            int giChargeSign = -1, giRadical = -1, giRadical1 = -1, giRadical2 = -1;
-            ad.rightMargin = ad.leftMargin = ad.ypos = ad.height = 0;
-            int isotope = bm.getAtomIsotope(aid);
-
-            if (ad.type == AtomDesc::TYPE_PSEUDO)
+            for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
             {
-                _preparePseudoAtom(aid, CWC_BASE, highlighted);
-
-                bool chargeSignAdded = false;
-                for (auto i = 0; i < _data.graphitems.size(); i++)
-                {
-                    if (_data.graphitems[i].ritype == RenderItem::RIT_CHARGESIGN)
-                    {
-                        chargeSignAdded = true;
-                        break;
-                    }
-                }
-
-                if (!chargeSignAdded)
-                {
-                    _prepareChargeLabel(aid, color, highlighted);
-                }
+                int i0 = -1;
+                for (int i = 0; i < angles.size(); ++i)
+                    if (i0 < 0 || angles[i] / (split[i] + 1) > angles[i0] / (split[i0] + 1))
+                        i0 = i;
+                split[i0]++;
             }
-            else if (ad.showLabel)
+        }
+        // arrange the directions of the attachment points
+        QS_DEF(Array<Vec2f>, attachmentDirection);
+        attachmentDirection.clear();
+        if (v.degree() == 0)
+        {
+            // if no adjacent bonds present
+            if (rGroupAttachmentIndices.size() == 1)
+                attachmentDirection.push().set(0, -1);
+            else if (rGroupAttachmentIndices.size() == 2)
             {
-                tilabel = _pushTextItem(ad, RenderItem::RIT_LABEL, color, highlighted);
-                {
-                    TextItem& label = _data.textitems[tilabel];
-                    label.fontsize = FONT_SIZE_LABEL;
-                    ArrayOutput output(label.text);
-                    if (ad.type == AtomDesc::TYPE_REGULAR)
-                        if (ad.label == ELEM_H && isotope == 2)
-                            output.printf("D");
-                        else if (ad.label == ELEM_H && isotope == 3)
-                            output.printf("T");
-                        else
-                            output.printf(Element::toString(ad.label));
-                    else if (ad.type == AtomDesc::TYPE_QUERY)
-                        _writeQueryAtomToString(output, aid);
-                    else
-                        throw Error("Neither label nor query atom type available");
-
-                    _writeQueryModifier(output, aid);
-                    output.writeChar(0);
-
-                    _cw.setTextItemSize(label, ad.pos);
-                    _expandBoundRect(ad, label);
-                    ad.rightMargin = label.bbp.x + label.bbsz.x;
-                    ad.leftMargin = label.bbp.x;
-                    ad.ypos = label.bbp.y;
-                    ad.height = label.bbsz.y;
-                }
-
-                if (bm.isRSite(aid) && bm.getVertex(aid).degree() > 1)
-                {
-                    // show indices for attachment bonds
-                    const Vertex& v = bm.getVertex(aid);
-                    ad.rSiteAttachmentIndexBegin = _data.rSiteAttachmentIndices.size();
-
-                    // Check if there are indices for attachment bonds
-                    bool hasAttachmentIndex = false, hasNoAttachmentIndex = false;
-                    for (int k = v.neiBegin(), j = 0; k < v.neiEnd(); k = v.neiNext(k), ++j)
-                    {
-                        int apIdx = bm.getRSiteAttachmentPointByOrder(aid, j);
-                        hasAttachmentIndex |= (apIdx != -1);
-                        hasNoAttachmentIndex |= (apIdx == -1);
-                    }
-                    if (hasAttachmentIndex && hasNoAttachmentIndex)
-                        throw Error("RSite %d is invalid: some attachments indices are specified and some are not");
-                    if (hasNoAttachmentIndex)
-                        ad.rSiteAttachmentIndexCount = 0;
-                    else
-                    {
-                        ad.rSiteAttachmentIndexCount = v.degree();
-
-                        for (int k = v.neiBegin(), j = 0; k < v.neiEnd(); k = v.neiNext(k), ++j)
-                        {
-                            int apIdx = bm.getRSiteAttachmentPointByOrder(aid, j);
-                            int i = v.findNeiVertex(apIdx);
-                            BondEnd& be = _getBondEnd(aid, i);
-                            int tii = _pushTextItem(ad, RenderItem::RIT_ATTACHMENTPOINT, CWC_BASE, false);
-                            TextItem& ti = _data.textitems[tii];
-                            RenderItemRSiteAttachmentIndex& item = _data.rSiteAttachmentIndices.push();
-                            item.number = j + 1;
-                            item.radius = 0.7f * _settings.fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX];
-                            item.bbsz.set(2 * item.radius, 2 * item.radius);
-                            item.bbp = ad.pos;
-                            item.color = CWC_BASE;
-                            item.highlighted = false;
-                            item.noBondOffset = true;
-                            bprintf(ti.text, "%d", item.number);
-                            ti.fontsize = FONT_SIZE_RSITE_ATTACHMENT_INDEX;
-                            ti.noBondOffset = true;
-                            _cw.setTextItemSize(ti, ad.pos);
-                            TextItem& label = _data.textitems[tilabel];
-                            // this is just an upper bound, it won't be used
-                            float shift = item.bbsz.length() + label.bbsz.length();
-                            // one of the next conditions should be satisfied
-                            if (fabs(be.dir.x) > 1e-3)
-                                shift = std::min(shift, (item.bbsz.x + label.bbsz.x) / 2.f / fabsf(be.dir.x));
-                            if (fabs(be.dir.y) > 1e-3)
-                                shift = std::min(shift, (item.bbsz.y + label.bbsz.y) / 2.f / fabsf(be.dir.y));
-                            shift += _settings.unit;
-                            item.bbp.addScaled(be.dir, shift);
-                            ti.bbp.addScaled(be.dir, shift);
-                            be.offset = shift + item.radius;
-                        }
-                    }
-                }
-
-                // isotope
-                if (isotope > 0 && (ad.label != ELEM_H || isotope > 3 || isotope < 2))
-                {
-                    tiIsotope = _pushTextItem(ad, RenderItem::RIT_ISOTOPE, color, highlighted);
-
-                    TextItem& itemIsotope = _data.textitems[tiIsotope];
-                    itemIsotope.fontsize = FONT_SIZE_ATTR;
-                    bprintf(itemIsotope.text, "%i", isotope);
-                    _cw.setTextItemSize(itemIsotope);
-
-                    ad.leftMargin -= _settings.labelInternalOffset + itemIsotope.bbsz.x;
-                    itemIsotope.bbp.set(ad.leftMargin, ad.ypos + _settings.upperIndexShift * ad.height);
-                    _expandBoundRect(ad, itemIsotope);
-                }
-
-                // hydrogen drawing
-                ad.showHydro = false;
-                if (!bm.isQueryMolecule())
-                {
-                    int implicit_h = 0;
-
-                    if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid) && !bm.isTemplateAtom(aid))
-                        implicit_h = bm.asMolecule().getImplicitH_NoThrow(aid, 0);
-
-                    if (implicit_h > 0 && _opt.implHVisible)
-                    {
-                        ad.showHydro = true;
-
-                        tihydro = _pushTextItem(ad, RenderItem::RIT_HYDROGEN, color, highlighted);
-                        Vec2f hydrogenGroupSz;
-                        {
-
-                            TextItem& itemHydrogen = _data.textitems[tihydro];
-                            itemHydrogen.fontsize = FONT_SIZE_LABEL;
-                            bprintf(itemHydrogen.text, "H");
-                            _cw.setTextItemSize(itemHydrogen, ad.pos);
-                            hydrogenGroupSz.x = itemHydrogen.bbsz.x + _settings.labelInternalOffset;
-                            hydrogenGroupSz.y = itemHydrogen.bbsz.y;
-                        }
-
-                        if (implicit_h > 1)
-                        {
-                            tiHydroIndex = _pushTextItem(ad, RenderItem::RIT_HYDROINDEX, color, highlighted);
-
-                            TextItem& itemHydroIndex = _data.textitems[tiHydroIndex];
-                            TextItem& itemHydrogen = _data.textitems[tihydro];
-                            itemHydroIndex.fontsize = FONT_SIZE_ATTR;
-                            bprintf(itemHydroIndex.text, "%i", implicit_h);
-                            _cw.setTextItemSize(itemHydroIndex, ad.pos);
-                            hydrogenGroupSz.x += itemHydroIndex.bbsz.x + _settings.labelInternalOffset;
-                            hydrogenGroupSz.y = std::max(hydrogenGroupSz.y, _settings.lowerIndexShift * itemHydrogen.bbsz.y + itemHydroIndex.bbsz.y);
-                        }
-
-                        // take new reference, old one may be corrupted after adding 'tiHydroIndex'
-                        TextItem& itemHydrogen = _data.textitems[tihydro];
-                        if (ad.hydroPos == HYDRO_POS_LEFT)
-                        {
-                            ad.leftMargin -= hydrogenGroupSz.x;
-                            itemHydrogen.bbp.set(ad.leftMargin, ad.ypos);
-                        }
-                        else if (ad.hydroPos == HYDRO_POS_RIGHT)
-                        {
-                            ad.rightMargin += _settings.labelInternalOffset;
-                            itemHydrogen.bbp.set(ad.rightMargin, ad.ypos);
-                            ad.rightMargin += hydrogenGroupSz.x;
-                        }
-                        else if (ad.hydroPos == HYDRO_POS_UP)
-                        {
-                            itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMin.y - hydrogenGroupSz.y - _settings.unit;
-                        }
-                        else if (ad.hydroPos == HYDRO_POS_DOWN)
-                        {
-                            itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMax.y + _settings.unit;
-                        }
-                        else
-                        {
-                            throw Error("hydrogen position value invalid");
-                        }
-                        _expandBoundRect(ad, itemHydrogen);
-                        if (tiHydroIndex > 0)
-                        {
-                            _data.textitems[tiHydroIndex].bbp.set(itemHydrogen.bbp.x + itemHydrogen.bbsz.x + _settings.labelInternalOffset,
-                                                                  itemHydrogen.bbp.y + _settings.lowerIndexShift * itemHydrogen.bbsz.y);
-                            _expandBoundRect(ad, _data.textitems[tiHydroIndex]);
-                        }
-                    }
-                }
-
-                // charge
-                _prepareChargeLabel(aid, color, highlighted);
-
-                // valence
-                int valence = bm.getExplicitValence(aid);
-
-                if (_opt.showValences && valence >= 0)
-                {
-                    tiValence = _pushTextItem(ad, RenderItem::RIT_VALENCE, color, highlighted);
-
-                    TextItem& itemValence = _data.textitems[tiValence];
-                    itemValence.fontsize = FONT_SIZE_ATTR;
-                    bprintf(itemValence.text, _valenceText(valence));
-                    _cw.setTextItemSize(itemValence);
-
-                    ad.rightMargin += _settings.labelInternalOffset;
-                    itemValence.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
-                    _expandBoundRect(ad, itemValence);
-                    ad.rightMargin += itemValence.bbsz.x;
-                }
-
-                // radical
-                int radical = -1;
-
-                if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid) && !bm.isTemplateAtom(aid))
-                    radical = bm.getAtomRadical_NoThrow(aid, -1);
-
-                if (radical > 0)
-                {
-                    const TextItem& label = _data.textitems[tilabel];
-                    Vec2f ltc(label.bbp);
-
-                    if (radical == RADICAL_DOUBLET)
-                    {
-                        giRadical = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-                        GraphItem& itemRadical = _data.graphitems[giRadical];
-                        _cw.setGraphItemSizeDot(itemRadical);
-
-                        if (!(ad.showHydro && ad.hydroPos == HYDRO_POS_RIGHT) && giChargeSign < 0 && tiValence < 0)
-                        {
-                            ltc.x += label.bbsz.x + _settings.radicalRightOffset;
-                            ltc.y += _settings.radicalRightVertShift * ad.height;
-                            itemRadical.bbp.copy(ltc);
-                        }
-                        else
-                        {
-                            ltc.x += label.bbsz.x / 2 - itemRadical.bbsz.x / 2;
-                            ltc.y -= itemRadical.bbsz.y + _settings.radicalTopOffset;
-                            itemRadical.bbp.copy(ltc);
-                        }
-                        _expandBoundRect(ad, itemRadical);
-                    }
-                    else
-                    {
-                        giRadical1 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-                        giRadical2 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-
-                        GraphItem& itemRadical1 = _data.graphitems[giRadical1];
-                        GraphItem& itemRadical2 = _data.graphitems[giRadical2];
-
-                        float dist;
-                        if (radical == RADICAL_SINGLET)
-                        {
-                            _cw.setGraphItemSizeDot(itemRadical1);
-                            _cw.setGraphItemSizeDot(itemRadical2);
-                            dist = _settings.radicalTopDistDot;
-                        }
-                        else // if (radical == RADICAL_TRIPLET)
-                        {
-                            _cw.setGraphItemSizeCap(itemRadical1);
-                            _cw.setGraphItemSizeCap(itemRadical2);
-                            dist = _settings.radicalTopDistCap;
-                        }
-
-                        ltc.y -= itemRadical1.bbsz.y + _settings.radicalTopOffset;
-                        ltc.x += label.bbsz.x / 2 - dist / 2 - itemRadical1.bbsz.x;
-                        itemRadical1.bbp.copy(ltc);
-                        ltc.x += dist + itemRadical1.bbsz.x;
-                        itemRadical2.bbp.copy(ltc);
-                        _expandBoundRect(ad, itemRadical1);
-                        _expandBoundRect(ad, itemRadical2);
-                    }
-                }
+                attachmentDirection.push().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
+                attachmentDirection.push().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
             }
-
-            int bondEndRightToStereoGroupLabel = -1;
-            // prepare stereogroup labels
-            if ((ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY) || ad.inversion == STEREO_INVERTS ||
-                ad.inversion == STEREO_RETAINS)
+            else
             {
-                int tiStereoGroup = _pushTextItem(ad, RenderItem::RIT_STEREOGROUP, CWC_BASE, false);
-
-                TextItem& itemStereoGroup = _data.textitems[tiStereoGroup];
-                itemStereoGroup.fontsize = FONT_SIZE_ATTR;
-                ArrayOutput itemOutput(itemStereoGroup.text);
-                if (ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY)
-                {
-                    const char* stereoGroupText = _getStereoGroupText(ad.stereoGroupType);
-                    itemOutput.printf("%s", stereoGroupText);
-                    if (ad.stereoGroupType != MoleculeStereocenters::ATOM_ABS)
-                        itemOutput.printf("%i", ad.stereoGroupNumber);
-                }
-                if (ad.inversion == STEREO_INVERTS || ad.inversion == STEREO_RETAINS)
-                {
-                    if (itemOutput.tell() > 0)
-                        itemOutput.printf(",");
-                    itemOutput.printf("%s", ad.inversion == STEREO_INVERTS ? "Inv" : "Ret");
-                }
-                itemOutput.writeChar(0);
-
-                _cw.setTextItemSize(itemStereoGroup);
-
-                if (ad.showLabel)
-                {
-                    // label visible - put stereo group label on the over or under the label
-                    const Vertex& v = bm.getVertex(aid);
-                    float vMin = 0, vMax = 0;
-                    for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
-                    {
-                        float y = _getBondEnd(aid, i).dir.y;
-                        if (y > vMax)
-                            vMax = y;
-                        if (y < vMin)
-                            vMin = y;
-                    }
-                    if (vMax > -vMin)
-                        itemStereoGroup.bbp.set(ad.pos.x - itemStereoGroup.bbsz.x / 2,
-                                                ad.pos.y + ad.boundBoxMin.y - itemStereoGroup.bbsz.y - _settings.stereoGroupLabelOffset);
-                    else
-                        itemStereoGroup.bbp.set(ad.pos.x - itemStereoGroup.bbsz.x / 2, ad.pos.y + ad.boundBoxMax.y + _settings.stereoGroupLabelOffset);
-                }
-                else
-                {
-                    // label hidden - position stereo group label independently
-                    Vec2f p;
-                    bondEndRightToStereoGroupLabel = _findClosestBox(p, aid, itemStereoGroup.bbsz, _settings.unit);
-
-                    p.addScaled(itemStereoGroup.bbsz, -0.5);
-                    itemStereoGroup.bbp.copy(p);
-                }
-                _expandBoundRect(ad, itemStereoGroup);
-            }
-
-            // prepare AAM labels
-            if (ad.aam > 0)
-            {
-                int tiAAM = _pushTextItem(ad, RenderItem::RIT_AAM, CWC_BASE, false);
-
-                TextItem& itemAAM = _data.textitems[tiAAM];
-                itemAAM.fontsize = FONT_SIZE_ATTR;
-                bprintf(itemAAM.text, "%i", abs(ad.aam));
-                _cw.setTextItemSize(itemAAM);
-
-                if (ad.showLabel)
-                {
-                    ad.leftMargin -= itemAAM.bbsz.x + _settings.labelInternalOffset;
-                    itemAAM.bbp.set(ad.leftMargin, ad.ypos + _settings.lowerIndexShift * ad.height);
-                }
-                else
-                {
-                    Vec2f p;
-                    _findClosestBox(p, aid, itemAAM.bbsz, _settings.unit, bondEndRightToStereoGroupLabel);
-
-                    p.addScaled(itemAAM.bbsz, -0.5);
-                    itemAAM.bbp.copy(p);
-                }
-                _expandBoundRect(ad, itemAAM);
-            }
-
-            // prepare R-group attachment point labels
-            QS_DEF(Array<float>, angles);
-            QS_DEF(Array<int>, split);
-            QS_DEF(Array<int>, rGroupAttachmentIndices);
-
-            if (ad.isRGroupAttachmentPoint)
-            {
-                // collect the angles between adjacent bonds
-                const Vertex& v = bm.getVertex(aid);
-                angles.clear();
-                split.clear();
-                if (v.degree() != 0)
-                {
-                    for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
-                    {
-                        float a = _getBondEnd(aid, i).lang;
-                        angles.push(a);
-                        split.push(1);
-                    }
-                }
-                // collect attachment point indices
-                rGroupAttachmentIndices.clear();
-                bool multipleAttachmentPoints = _mol->attachmentPointCount() > 1;
-                for (int i = 1; i <= _mol->attachmentPointCount(); ++i)
-                    for (int j = 0, k; (k = _mol->getAttachmentPoint(i, j)) >= 0; ++j)
-                        if (k == aid)
-                            rGroupAttachmentIndices.push(i);
-                if (v.degree() != 0)
-                {
-                    for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
-                    {
-                        int i0 = -1;
-                        for (int i = 0; i < angles.size(); ++i)
-                            if (i0 < 0 || angles[i] / (split[i] + 1) > angles[i0] / (split[i0] + 1))
-                                i0 = i;
-                        split[i0]++;
-                    }
-                }
-                // arrange the directions of the attachment points
-                QS_DEF(Array<Vec2f>, attachmentDirection);
-                attachmentDirection.clear();
-                if (v.degree() == 0)
-                {
-                    // if no adjacent bonds present
-                    if (rGroupAttachmentIndices.size() == 1)
-                        attachmentDirection.push().set(0, -1);
-                    else if (rGroupAttachmentIndices.size() == 2)
-                    {
-                        attachmentDirection.push().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
-                        attachmentDirection.push().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
-                    }
-                    else
-                    {
-                        for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
-                        {
-                            float a = j * 2 * (float)M_PI / rGroupAttachmentIndices.size();
-                            attachmentDirection.push().set(cos(a), sin(a));
-                        }
-                    }
-                }
-                else
-                {
-                    // split the angles
-                    for (int i = 0; i < split.size(); ++i)
-                    {
-                        angles[i] /= split[i];
-                    }
-                    for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
-                    {
-                        int i0 = -1, n = v.neiBegin();
-                        for (int i = 0; i < split.size(); ++i, n = v.neiNext(n))
-                        {
-                            if (split[i] > 1)
-                            {
-                                i0 = i;
-                                break;
-                            }
-                        }
-                        if (i0 < 0)
-                            throw Error("Error while arranging attachment points");
-                        Vec2f d;
-                        d.copy(_getBondEnd(aid, n).dir);
-                        d.rotateL(angles[i0] * (--split[i0]));
-                        attachmentDirection.push(d);
-                    }
-                }
-                // create the attachment point items
-                ad.attachmentPointBegin = _data.attachmentPoints.size();
-                ad.attachmentPointCount = rGroupAttachmentIndices.size();
                 for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
                 {
-                    RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
-                    float offset = std::min(std::max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.unit), 0.f), 0.4f);
-                    attachmentPoint.dir.copy(attachmentDirection[j]);
-                    attachmentPoint.p0.lineCombin(ad.pos, attachmentDirection[j], offset);
-                    attachmentPoint.p1.lineCombin(ad.pos, attachmentDirection[j], 0.8f);
-                    attachmentPoint.color = CWC_BASE;
-                    attachmentPoint.highlighted = false;
-                    if (multipleAttachmentPoints)
+                    float a = j * 2 * (float)M_PI / rGroupAttachmentIndices.size();
+                    attachmentDirection.push().set(cos(a), sin(a));
+                }
+            }
+        }
+        else
+        {
+            // split the angles
+            for (int i = 0; i < split.size(); ++i)
+            {
+                angles[i] /= split[i];
+            }
+            for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
+            {
+                int i0 = -1, n = v.neiBegin();
+                for (int i = 0; i < split.size(); ++i, n = v.neiNext(n))
+                {
+                    if (split[i] > 1)
                     {
-                        attachmentPoint.number = rGroupAttachmentIndices[j];
-                    }
-                }
-            }
-
-            // prepare atom id's
-            if (_opt.showAtomIds)
-            {
-                tiindex = _pushTextItem(ad, RenderItem::RIT_ATOMID, CWC_BLUE, false);
-
-                TextItem& index = _data.textitems[tiindex];
-                index.fontsize = FONT_SIZE_INDICES;
-
-                int base = _opt.atomBondIdsFromOne ? 1 : 0;
-                bprintf(index.text, "%i", aid + base);
-                _cw.setTextItemSize(index, ad.pos);
-
-                if (ad.showLabel)
-                    index.bbp.set(ad.rightMargin + _settings.labelInternalOffset, ad.ypos + 0.5f * ad.height);
-            }
-        }
-
-        int MoleculeRenderInternal::_pushTextItem(RenderItem::TYPE ritype, int color, bool highlighted)
-        {
-            _data.textitems.push();
-            _data.textitems.top().clear();
-            _data.textitems.top().ritype = ritype;
-            _data.textitems.top().color = color;
-            _data.textitems.top().highlighted = highlighted;
-            return _data.textitems.size() - 1;
-        }
-
-        int MoleculeRenderInternal::_pushTextItem(AtomDesc & ad, RenderItem::TYPE ritype, int color, bool highlighted)
-        {
-            int res = _pushTextItem(ritype, color, highlighted);
-            if (ad.tibegin < 0)
-                ad.tibegin = res;
-            ad.ticount++;
-            return res;
-        }
-
-        int MoleculeRenderInternal::_pushTextItem(Sgroup & sg, RenderItem::TYPE ritype, int color)
-        {
-            int res = _pushTextItem(ritype, color, false);
-            if (sg.tibegin < 0)
-                sg.tibegin = res;
-            sg.ticount++;
-            return res;
-        }
-
-        int MoleculeRenderInternal::_pushGraphItem(RenderItem::TYPE ritype, int color, bool highlighted)
-        {
-            _data.graphitems.push();
-            _data.graphitems.top().clear();
-            _data.graphitems.top().ritype = ritype;
-            _data.graphitems.top().color = color;
-            _data.graphitems.top().highlighted = highlighted;
-            return _data.graphitems.size() - 1;
-        }
-
-        int MoleculeRenderInternal::_pushGraphItem(AtomDesc & ad, RenderItem::TYPE ritype, int color, bool highlighted)
-        {
-            int res = _pushGraphItem(ritype, color, highlighted);
-            if (ad.gibegin < 0)
-                ad.gibegin = res;
-            ad.gicount++;
-            return res;
-        }
-
-        const char* MoleculeRenderInternal::_valenceText(const int valence)
-        {
-            const char* vt[] = {"(0)", "(I)", "(II)", "(III)", "(IV)", "(V)", "(VI)", "(VII)", "(VIII)", "(IX)", "(X)", "(XI)", "(XII)", "(XIII)"};
-            if (valence < 0 || valence >= NELEM(vt))
-                throw Error("valence value %i out of range", valence);
-            return vt[valence];
-        }
-
-        void MoleculeRenderInternal::_drawBond(int b)
-        {
-            BondDescr& bd = _bd(b);
-            const BondEnd& be1 = _be(bd.be1);
-            const BondEnd& be2 = _be(bd.be2);
-            const AtomDesc& ad1 = _ad(be1.aid);
-            const AtomDesc& ad2 = _ad(be2.aid);
-
-            _cw.setLineWidth(_settings.bondLineWidth);
-
-            _cw.setSingleSource(CWC_BASE);
-            if (_edgeIsHighlighted(b))
-                _cw.setHighlight();
-            else if (ad1.hcolorSet || ad2.hcolorSet)
-            {
-                Vec3f color1, color2;
-                _cw.getColorVec(color1, CWC_BASE);
-                _cw.getColorVec(color2, CWC_BASE);
-                if (ad1.hcolorSet)
-                    color1.copy(ad1.hcolor);
-                if (ad2.hcolorSet)
-                    color2.copy(ad2.hcolor);
-                if (color1.x == color2.x && color1.y == color2.y && color1.z == color2.z)
-                    _cw.setSingleSource(color1);
-                else
-                    _cw.setGradientSource(color1, color2, ad1.pos, ad2.pos);
-            }
-
-            switch (bd.type)
-            {
-            case BOND_SINGLE:
-                _bondSingle(bd, be1, be2);
-                break;
-            case BOND_DOUBLE:
-                _bondDouble(bd, be1, be2);
-                break;
-            case BOND_TRIPLE:
-                _bondTriple(bd, be1, be2);
-                break;
-            case BOND_AROMATIC:
-                _bondAromatic(bd, be1, be2);
-                break;
-            case _BOND_HYDROGEN:
-                _bondHydrogen(bd, be1, be2);
-                break;
-            case _BOND_COORDINATION:
-                _bondCoordination(bd, be1, be2);
-                break;
-
-            default:
-                switch (bd.queryType)
-                {
-                case QueryMolecule::QUERY_BOND_ANY:
-                    _bondAny(bd, be1, be2);
-                    break;
-                case QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE:
-                    _bondSingleOrDouble(bd, be1, be2);
-                    break;
-                case QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC:
-                    _bondDoubleOrAromatic(bd, be1, be2);
-                    break;
-                case QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC:
-                    _bondSingleOrAromatic(bd, be1, be2);
-                    break;
-                default:
-                    throw Error("Unknown type");
-                }
-            }
-
-            _cw.resetHighlightThickness();
-
-            if (bd.reactingCenter != RC_UNMARKED)
-            {
-                int rc = bd.reactingCenter;
-                if (rc == RC_NOT_CENTER)
-                    _drawReactingCenter(bd, RC_NOT_CENTER);
-                else
-                {
-                    if (rc & RC_CENTER)
-                        _drawReactingCenter(bd, RC_CENTER);
-                    if ((rc & RC_UNCHANGED) && (_opt.showReactingCenterUnchanged || (rc & (~RC_UNCHANGED))))
-                        _drawReactingCenter(bd, RC_UNCHANGED);
-                    if (rc & RC_MADE_OR_BROKEN)
-                        _drawReactingCenter(bd, RC_MADE_OR_BROKEN);
-                    if (rc & RC_ORDER_CHANGED)
-                        _drawReactingCenter(bd, RC_ORDER_CHANGED);
-                }
-            }
-
-            _cw.resetHighlight();
-            _cw.clearPattern(); // destroy the linear gradient pattern if one was used
-
-            if (bd.topology > 0)
-                _drawTopology(bd);
-        }
-
-        void MoleculeRenderInternal::_drawTopology(BondDescr & bd)
-        {
-            if (bd.topology < 0)
-                return;
-            bd.tiTopology = _pushTextItem(RenderItem::RIT_TOPOLOGY, CWC_BASE, false);
-            TextItem& ti = _data.textitems[bd.tiTopology];
-            ti.fontsize = FONT_SIZE_ATTR;
-            if (bd.topology == TOPOLOGY_RING)
-                bprintf(ti.text, "rng");
-            else if (bd.topology == TOPOLOGY_CHAIN)
-                bprintf(ti.text, "chn");
-            else
-                throw Error("Unknown topology value");
-
-            _cw.setTextItemSize(ti);
-            float shift = (fabs(bd.norm.x * ti.bbsz.x) + fabs(bd.norm.y * ti.bbsz.y)) / 2 + _settings.unit;
-
-            if (bd.extP < bd.extN)
-                shift = shift + bd.extP;
-            else
-                shift = -shift - bd.extN;
-            Vec2f c;
-            c.copy(bd.center);
-            c.addScaled(bd.norm, shift);
-            c.addScaled(ti.bbsz, -0.5f);
-            ti.bbp.copy(c);
-            _cw.drawTextItemText(ti, _idle);
-        }
-
-        void MoleculeRenderInternal::_drawReactingCenter(BondDescr & bd, int rc)
-        {
-            const int rcNumPnts = 8;
-            Vec2f p[rcNumPnts];
-            for (int i = 0; i < rcNumPnts; ++i)
-                p[i].copy(bd.center);
-            float alongIntRc = _settings.unit,           // half interval along for RC_CENTER
-                alongIntMadeBroken = 2 * _settings.unit, // half interval between along for RC_MADE_OR_BROKEN
-                alongSz = 1.5f * _settings.bondSpace,    // half size along for RC_CENTER
-                acrossInt = 1.5f * _settings.bondSpace,  // half interval across for RC_CENTER
-                acrossSz = 3.0f * _settings.bondSpace,   // half size across for all
-                tiltTan = 0.2f,                          // tangent of the tilt angle
-                radius = _settings.bondSpace;            // radius of the circle for RC_UNCHANGED
-            int numLines = 0;
-
-            _cw.setLineWidth(_settings.unit);
-            switch (rc)
-            {
-            case RC_NOT_CENTER: // X
-                // across
-                p[0].addScaled(bd.norm, acrossSz);
-                p[1].addScaled(bd.norm, -acrossSz);
-                p[2].copy(p[0]);
-                p[3].copy(p[1]);
-                p[0].addScaled(bd.dir, tiltTan * acrossSz);
-                p[1].addScaled(bd.dir, -tiltTan * acrossSz);
-                p[2].addScaled(bd.dir, -tiltTan * acrossSz);
-                p[3].addScaled(bd.dir, tiltTan * acrossSz);
-                numLines = 2;
-                break;
-            case RC_CENTER: // #
-                // across
-                p[0].addScaled(bd.norm, acrossSz);
-                p[0].addScaled(bd.dir, tiltTan * acrossSz);
-                p[1].addScaled(bd.norm, -acrossSz);
-                p[1].addScaled(bd.dir, -tiltTan * acrossSz);
-                p[2].copy(p[0]);
-                p[3].copy(p[1]);
-                p[0].addScaled(bd.dir, alongIntRc);
-                p[1].addScaled(bd.dir, alongIntRc);
-                p[2].addScaled(bd.dir, -alongIntRc);
-                p[3].addScaled(bd.dir, -alongIntRc);
-
-                // along
-                p[4].addScaled(bd.dir, alongSz);
-                p[5].addScaled(bd.dir, -alongSz);
-                p[6].copy(p[4]);
-                p[7].copy(p[5]);
-                p[4].addScaled(bd.norm, acrossInt);
-                p[5].addScaled(bd.norm, acrossInt);
-                p[6].addScaled(bd.norm, -acrossInt);
-                p[7].addScaled(bd.norm, -acrossInt);
-                numLines = 4;
-                break;
-            case RC_UNCHANGED: // o
-                _cw.fillCircle(bd.center, radius);
-                break;
-            case RC_MADE_OR_BROKEN:
-                // across
-                p[0].addScaled(bd.norm, acrossSz);
-                p[1].addScaled(bd.norm, -acrossSz);
-                p[2].copy(p[0]);
-                p[3].copy(p[1]);
-                p[0].addScaled(bd.dir, alongIntMadeBroken);
-                p[1].addScaled(bd.dir, alongIntMadeBroken);
-                p[2].addScaled(bd.dir, -alongIntMadeBroken);
-                p[3].addScaled(bd.dir, -alongIntMadeBroken);
-                numLines = 2;
-                break;
-            case RC_ORDER_CHANGED:
-                // across
-                p[0].addScaled(bd.norm, acrossSz);
-                p[1].addScaled(bd.norm, -acrossSz);
-                numLines = 1;
-                break;
-            case RC_TOTAL:
-                break;
-            }
-            for (int i = 0; i < numLines; ++i)
-                _cw.drawLine(p[2 * i], p[2 * i + 1]);
-            if (rc == RC_UNCHANGED)
-            {
-                bd.extN = std::max(bd.extN, radius);
-                bd.extP = std::max(bd.extP, radius);
-            }
-            else
-            {
-                bd.extN = std::max(bd.extN, acrossSz);
-                bd.extP = std::max(bd.extP, acrossSz);
-            }
-        }
-
-        double MoleculeRenderInternal::_getAdjustmentFactor(const int aid, const int anei, const double acos, const double asin, const double tgb,
-                                                            const double csb, const double snb, const double len, const double w, double& csg, double& sng)
-        {
-            csg = csb;
-            sng = snb;
-            bool adjustLeft = acos < 0.99 && acos > -0.99;
-            if (!adjustLeft || _bd(_be(anei).bid).isShort)
-                return -1;
-            const BondDescr& nbd = _bd(_be(anei).bid);
-            if (nbd.type == BOND_DOUBLE && nbd.centered)
-            {
-                if (asin <= 0)
-                    return -1;
-                return (len * asin - _settings.bondSpace) / (snb * acos + csb * asin);
-            }
-            if ((_bd(_be(anei).bid).stereodir == BOND_UP && _bd(_be(anei).bid).end == aid) || _bd(_be(anei).bid).stereodir == BOND_STEREO_BOLD)
-            {
-                if (fabs(asin) < 0.01)
-                    return -1;
-                double sna = sqrt((1 - acos) / 2);                       // sin(a/2)
-                double csa = (asin > 0 ? 1 : -1) * sqrt((1 + acos) / 2); // cos(a/2)
-                double gamma = w / sna;
-                double x = sqrt(len * len + gamma * gamma - 2 * gamma * len * csa);
-                sng = gamma * sna / x;
-                csg = sqrt(1 - sng * sng);
-                return x;
-            }
-            if (asin > 0.01)
-                return len / (acos * snb / asin + csb);
-            return -1;
-        }
-
-        void MoleculeRenderInternal::_adjustAngle(Vec2f & l, const BondEnd& be1, const BondEnd& be2, bool left)
-        {
-            const Vec2f& p1 = _ad(be1.aid).pos;
-            const Vec2f& p2 = _ad(be2.aid).pos;
-            const double len = Vec2f::dist(p1, p2);
-            double w = _settings.bondSpace;
-            double tgb = w / len;
-            double csb = sqrt(1 / (1 + tgb * tgb));
-            double snb = tgb * csb;
-            double sng = 0, csg = 0;
-            double ttr = left ? _getAdjustmentFactor(be2.aid, be2.rnei, be2.rcos, be2.rsin, tgb, csb, snb, len, w, csg, sng)
-                              : _getAdjustmentFactor(be2.aid, be2.lnei, be2.lcos, be2.lsin, tgb, csb, snb, len, w, csg, sng);
-            if (ttr < 0)
-                return;
-            l.diff(p2, p1);
-            l.normalize();
-            l.scale(_2FLOAT(ttr));
-            l.rotateL(_2FLOAT(left ? sng : -sng), _2FLOAT(csg));
-            l.add(p1);
-        }
-
-        void MoleculeRenderInternal::_bondBoldStereo(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            Vec2f r0(be1.p), l0(be1.p), r1(be2.p), l1(be2.p);
-            float w = _settings.bondSpace;
-            l0.addScaled(bd.norm, -w);
-            r0.addScaled(bd.norm, w);
-            l1.addScaled(bd.norm, -w);
-            r1.addScaled(bd.norm, w);
-
-            _adjustAngle(l1, be1, be2, true);
-            _adjustAngle(r1, be1, be2, false);
-            _adjustAngle(r0, be2, be1, true);
-            _adjustAngle(l0, be2, be1, false);
-            _cw.fillHex(be1.p, r0, r1, be2.p, l1, l0);
-        }
-
-        void MoleculeRenderInternal::_bondHydrogen(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            _cw.setDash(_settings.bondDashHydro, Vec2f::dist(be1.p, be2.p));
-            double len = Vec2f::dist(be2.p, be1.p);
-            Vec2f l(be2.p), r(be2.p);
-            float w = _settings.bondSpace;
-            l.addScaled(bd.norm, -w);
-            r.addScaled(bd.norm, w);
-            bd.extP = bd.extN = w;
-
-            float lw = _cw.currentLineWidth();
-            Vec2f r0(be1.p), l0(be1.p);
-            l0.addScaled(bd.norm, -lw / 2);
-            r0.addScaled(bd.norm, lw / 2);
-
-            _cw.drawLine(be1.p, be2.p);
-            _cw.resetDash();
-        }
-
-        void MoleculeRenderInternal::_bondCoordination(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            double len = Vec2f::dist(be2.p, be1.p);
-            Vec2f l(be2.p), r(be2.p);
-            float w = _settings.bondSpace;
-            l.addScaled(bd.norm, -w);
-            r.addScaled(bd.norm, w);
-            bd.extP = bd.extN = w;
-
-            float lw = _cw.currentLineWidth();
-            Vec2f r0(be1.p), l0(be1.p);
-            l0.addScaled(bd.norm, -lw / 2);
-            r0.addScaled(bd.norm, lw / 2);
-
-            _cw.drawLine(be1.p, be2.p);
-
-            double arrow_length = lw * 5;
-            double shorten = len - arrow_length;
-            Vec2f reduced = (be2.p - be1.p) * (1 - shorten / len);
-            Vec2f slope_right(-reduced.y * 0.25, reduced.x * 0.25);
-            _cw.drawLine(be2.p, (be2.p - reduced) + slope_right);
-            Vec2f slope_left(reduced.y * 0.25, -reduced.x * 0.25);
-            _cw.drawLine(be2.p, (be2.p - reduced) + slope_left);
-        }
-
-        void MoleculeRenderInternal::_bondSingle(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            double len = Vec2f::dist(be2.p, be1.p);
-
-            if (bd.stereodir == BOND_STEREO_BOLD)
-            {
-                _bondBoldStereo(bd, be1, be2);
-                return;
-            }
-            Vec2f l(be2.p), r(be2.p);
-            float w = _settings.bondSpace;
-            l.addScaled(bd.norm, -w);
-            r.addScaled(bd.norm, w);
-            bd.extP = bd.extN = w;
-
-            float lw = _cw.currentLineWidth();
-            Vec2f r0(be1.p), l0(be1.p);
-            l0.addScaled(bd.norm, -lw / 2);
-            r0.addScaled(bd.norm, lw / 2);
-
-            if (bd.stereodir == 0)
-            {
-                _cw.drawLine(be1.p, be2.p);
-                bd.extP = bd.extN = lw / 2;
-            }
-            else if (bd.stereodir == BOND_UP)
-            {
-                if (_ad(be2.aid).showLabel == false && !bd.isShort)
-                {
-                    _adjustAngle(l, be1, be2, true);
-                    _adjustAngle(r, be1, be2, false);
-                    _cw.fillPentagon(r0, r, be2.p, l, l0);
-                }
-                else
-                {
-                    _cw.fillQuad(r0, r, l, l0);
-                }
-            }
-            else if (bd.stereodir == BOND_DOWN)
-            {
-                int stripeCnt = std::max((int)((len) / lw / 2), 4);
-                _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
-            }
-            else if (bd.stereodir == BOND_EITHER)
-            {
-                int stripeCnt = std::max((int)((len) / lw / 1.5), 5);
-                _cw.drawTriangleZigzag(be1.p, r, l, stripeCnt);
-            }
-            else
-                throw Error("Unknown single bond stereo type");
-        }
-
-        void MoleculeRenderInternal::_bondAny(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            _cw.setDash(_settings.bondDashAny, Vec2f::dist(be1.p, be2.p));
-            _cw.drawLine(be1.p, be2.p);
-            _cw.resetDash();
-            bd.extP = bd.extN = _settings.bondLineWidth / 2;
-        }
-
-        float MoleculeRenderInternal::_ctghalf(float cs)
-        {
-            return sqrt(1 - cs * cs) / (1 - cs);
-        }
-
-        float MoleculeRenderInternal::_doubleBondShiftValue(const BondEnd& be, bool right, bool centered)
-        {
-            const BondDescr& bd = _bd(_be(right ? be.rnei : be.lnei).bid);
-            float si = right ? be.rsin : be.lsin, co = right ? be.rcos : be.lcos;
-            if (centered && bd.type == BOND_SINGLE && bd.end == be.aid && bd.stereodir != 0)
-            {
-                float tga = si / co;
-                Vec2f dd;
-                dd.diff(_be(bd.be1).p, _be(bd.be2).p);
-                float len = dd.length();
-                float tgb = (_settings.bondSpace + _settings.bondLineWidth) / len;
-                float tgab = (tga + tgb) / (1 - tga * tgb);
-                return -(len * si - _settings.bondSpace) / tgab + len * co - _settings.bondLineWidth / 2;
-            }
-            else
-                return co * _settings.bondSpace / si;
-        }
-
-        void MoleculeRenderInternal::_prepareDoubleBondCoords(Vec2f * coord, BondDescr & bd, const BondEnd& be1, const BondEnd& be2, bool allowCentered)
-        {
-            Vec2f ns, ds;
-            ns.scaled(bd.norm, 2 * _settings.bondSpace + (bd.stereodir == BOND_STEREO_BOLD ? 1 : 0) * _settings.bondLineWidth);
-
-            if (!(bd.stereodir == BOND_STEREO_BOLD) && ((allowCentered && bd.centered) || bd.cistrans))
-            {
-                Vec2f p0, p1, q0, q1;
-                ns.scale(0.5f);
-                p0.sum(be1.p, ns);
-                p1.sum(be2.p, ns);
-                q0.diff(be1.p, ns);
-                q1.diff(be2.p, ns);
-
-                if (be1.prolong)
-                {
-                    p0.addScaled(be1.dir, _doubleBondShiftValue(be1, true, bd.centered));
-                    q0.addScaled(be1.dir, _doubleBondShiftValue(be1, false, bd.centered));
-                }
-                if (be2.prolong)
-                {
-                    p1.addScaled(be2.dir, _doubleBondShiftValue(be2, false, bd.centered));
-                    q1.addScaled(be2.dir, _doubleBondShiftValue(be2, true, bd.centered));
-                }
-
-                coord[0].copy(p0);
-                coord[1].copy(p1);
-                coord[2].copy(q0);
-                coord[3].copy(q1);
-                bd.extP = bd.extN = _settings.bondSpace + _settings.bondLineWidth / 2;
-            }
-            else
-            {
-                bd.extP = ns.length() + _settings.bondLineWidth / 2;
-                bd.extN = _settings.bondLineWidth / 2;
-
-                if (!bd.lineOnTheRight)
-                {
-
-                    std::swap(bd.extP, bd.extN);
-                    ns.negate();
-                }
-
-                Vec2f p0, p1;
-                p0.sum(be1.p, ns);
-                p1.sum(be2.p, ns);
-
-                float cs;
-                if (!_ad(be1.aid).showLabel)
-                {
-                    cs = bd.lineOnTheRight ? be1.rcos : be1.lcos;
-                    if (fabs(cs) < _settings.cosineTreshold)
-                        p0.addScaled(be1.dir, _settings.bondSpace * _ctghalf(cs) * 2);
-                }
-
-                if (!_ad(be2.aid).showLabel)
-                {
-                    cs = bd.lineOnTheRight ? be2.lcos : be2.rcos;
-                    if (fabs(cs) < _settings.cosineTreshold)
-                        p1.addScaled(be2.dir, _settings.bondSpace * _ctghalf(cs) * 2);
-                }
-
-                coord[0].copy(be1.p);
-                coord[1].copy(be2.p);
-                coord[2].copy(p0);
-                coord[3].copy(p1);
-            }
-        }
-
-        void MoleculeRenderInternal::_drawStereoCareBox(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            Vec2f ns;
-            ns.scaled(bd.norm, _settings.bondSpace);
-            if (!bd.lineOnTheRight)
-                ns.negate();
-            if (bd.stereoCare)
-            {
-                Vec2f p0, p1, p2, p3;
-                p0.lineCombin(be1.p, bd.dir, (bd.length - _settings.stereoCareBoxSize) / 2);
-                p0.addScaled(bd.norm, -_settings.stereoCareBoxSize / 2);
-                bd.extP = bd.extN = _settings.stereoCareBoxSize / 2 + _settings.unit / 2;
-                if (!bd.centered)
-                {
-                    float shift = Vec2f::dot(ns, bd.norm);
-                    bd.extP += shift;
-                    bd.extN -= shift;
-                    p0.add(ns);
-                }
-                p1.lineCombin(p0, bd.dir, _settings.stereoCareBoxSize);
-                p2.lineCombin(p1, bd.norm, _settings.stereoCareBoxSize);
-                p3.lineCombin(p0, bd.norm, _settings.stereoCareBoxSize);
-
-                _cw.setLineWidth(_settings.unit);
-                _cw.drawQuad(p0, p1, p2, p3);
-            }
-        }
-
-        void MoleculeRenderInternal::_bondDouble(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            Vec2f coord[4];
-            _prepareDoubleBondCoords(coord, bd, be1, be2, true);
-            if (bd.stereodir == BOND_STEREO_BOLD)
-            {
-                _bondBoldStereo(bd, be1, be2);
-                _cw.drawLine(coord[2], coord[3]);
-            }
-            else if (bd.cistrans)
-            {
-                _cw.drawLine(coord[0], coord[3]);
-                _cw.drawLine(coord[2], coord[1]);
-            }
-            else
-            {
-                _cw.drawLine(coord[0], coord[1]);
-                _cw.drawLine(coord[2], coord[3]);
-            }
-
-            _drawStereoCareBox(bd, be1, be2);
-        }
-
-        void MoleculeRenderInternal::_bondSingleOrAromatic(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            Vec2f coord[4];
-            _prepareDoubleBondCoords(coord, bd, be1, be2, true);
-            _cw.drawLine(coord[0], coord[1]);
-            _cw.setDash(_settings.bondDashSingleOrAromatic);
-            _cw.drawLine(coord[2], coord[3]);
-            _cw.resetDash();
-
-            _drawStereoCareBox(bd, be1, be2);
-        }
-
-        void MoleculeRenderInternal::_bondDoubleOrAromatic(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            Vec2f coord[4];
-            _prepareDoubleBondCoords(coord, bd, be1, be2, true);
-            _cw.setDash(_settings.bondDashDoubleOrAromatic);
-            _cw.drawLine(coord[0], coord[1]);
-            _cw.drawLine(coord[2], coord[3]);
-            _cw.resetDash();
-
-            _drawStereoCareBox(bd, be1, be2);
-        }
-
-        void MoleculeRenderInternal::_bondSingleOrDouble(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            Vec2f ns, ds;
-            ns.scaled(bd.norm, 2 * _settings.bondSpace);
-
-            ds.diff(be2.p, be1.p);
-            float len = ds.length();
-            ds.normalize();
-
-            // Get number of segments of single-or-double bond
-            // An average bond in our coordinates has length 1. We want an average bond to have 5 segments, like -=-=-
-            // For longer bond more segments may be necessary, for shorter one - less, but not less then 3 segments, like -=-
-            int numSegments = std::max((int)(len / 0.4f), 1) * 2 + 1;
-
-            Vec2f r0, r1, p0, p1, q0, q1;
-            float step = len / numSegments;
-            ns.scale(0.5f);
-            for (int i = 0; i < numSegments; ++i)
-            {
-                r0.lineCombin(be1.p, ds, i * step);
-                r1.lineCombin(be1.p, ds, (i + 1) * step);
-                if (i & 1)
-                {
-                    p0.sum(r0, ns);
-                    p1.sum(r1, ns);
-                    q0.diff(r0, ns);
-                    q1.diff(r1, ns);
-                    _cw.drawLine(p0, p1);
-                    _cw.drawLine(q0, q1);
-                }
-                else
-                    _cw.drawLine(r0, r1);
-            }
-        }
-
-        void MoleculeRenderInternal::_bondAromatic(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-
-            if (bd.aromRing)
-            {
-                // bond is in a ring, draw only a single line
-                _cw.drawLine(be1.p, be2.p);
-                bd.extP = bd.extN = _settings.bondLineWidth / 2;
-            }
-            else
-            {
-                Vec2f coord[4];
-                _prepareDoubleBondCoords(coord, bd, be1, be2, false);
-
-                _cw.drawLine(coord[0], coord[1]);
-                _cw.setDash(_settings.bondDashAromatic);
-                _cw.drawLine(coord[2], coord[3]);
-                _cw.resetDash();
-            }
-        }
-
-        void MoleculeRenderInternal::_bondTriple(BondDescr & bd, const BondEnd& be1, const BondEnd& be2)
-        {
-            Vec2f ns;
-            ns.scaled(bd.norm, _settings.bondSpace * 2);
-
-            Vec2f vr1(be1.p), vr2(be2.p), vl1(be1.p), vl2(be2.p);
-            vr1.add(ns);
-            vr2.add(ns);
-            vl1.sub(ns);
-            vl2.sub(ns);
-
-            _cw.drawLine(be1.p, be2.p);
-            _cw.drawLine(vr1, vr2);
-            _cw.drawLine(vl1, vl2);
-
-            bd.extP = bd.extN = _settings.bondSpace * 2 + _settings.bondLineWidth / 2;
-        }
-
-        void MoleculeRenderInternal::_precalcScale()
-        {
-            // Check structure for long atom labels (pseudoatoms, SMARTS) and change scale to fix
-            // the issue with labels overlapping each other
-            long long int max_output_length = 4;
-            BaseMolecule& bm = *_mol;
-            Array<long long int> output_lengths;
-            int max_index = -1;
-            output_lengths.resize(_mol->vertexEnd());
-            for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
-            {
-                long long int output_length = 0;
-                Array<int> iarr;
-                Array<char> carr;
-                if (bm.isPseudoAtom(i))
-                {
-                    carr.readString(bm.getPseudoAtom(i), true);
-                    output_length = carr.size();
-                }
-                else if (bm.isTemplateAtom(i))
-                {
-                    carr.readString(bm.getTemplateAtom(i), true);
-                    output_length = carr.size();
-                }
-                else if (bm.isRSite(i))
-                {
-                    output_length = 0;
-                    QS_DEF(Array<int>, rg);
-                    bm.getAllowedRGroups(i, rg);
-                    if (rg.size() == 0)
-                    {
-                        output_length += 1;
-                    }
-                    else
-                    {
-                        for (int j = 0; j < rg.size(); ++j)
-                        {
-                            if (j > 0)
-                            {
-                                output_length += 1;
-                            }
-                            output_length += 2;
-                        }
-                    }
-                }
-                else if (_mol->isQueryMolecule())
-                {
-                    QueryMolecule& qmol = _mol->asQueryMolecule();
-                    int queryLabel = QueryMolecule::parseQueryAtom(qmol, i, iarr);
-                    if (queryLabel < 0)
-                    {
-                        bm.getAtomDescription(i, carr);
-                        output_length = carr.size();
-                    }
-                    else if (!QueryMolecule::queryAtomIsRegular(qmol, i))
-                    {
-                        output_length = 1;
-                        for (int j = 0; j < iarr.size(); ++j)
-                        {
-                            if (j > 0)
-                            {
-                                output_length += 1;
-                            }
-                            output_length += strlen(Element::toString(iarr[j]));
-                        }
-                        output_length += 1;
-                    }
-                    else
-                    {
-                        output_length = strlen(Element::toString(bm.getAtomNumber(i)));
-                    }
-                }
-                else
-                {
-                    output_length = strlen(Element::toString(bm.getAtomNumber(i)));
-                }
-                output_lengths[i] = output_length;
-                if (max_output_length < output_lengths[i])
-                {
-                    max_output_length = output_lengths[i];
-                    max_index = i;
-                }
-            }
-            float scale_modificator = 1.0;
-            if (max_index >= 0)
-            {
-                const Vertex& max_length_vertex = bm.getVertex(max_index);
-                for (auto nei = max_length_vertex.neiBegin(); nei != max_length_vertex.neiEnd(); nei = max_length_vertex.neiNext(nei))
-                {
-                    if (max_output_length - output_lengths[max_length_vertex.neiVertex(nei)] > 10)
-                    {
-                        scale_modificator = 2.0;
+                        i0 = i;
                         break;
                     }
                 }
+                if (i0 < 0)
+                    throw Error("Error while arranging attachment points");
+                Vec2f d;
+                d.copy(_getBondEnd(aid, n).dir);
+                d.rotateL(angles[i0] * (--split[i0]));
+                attachmentDirection.push(d);
             }
-            _scale = std::max(_scale, float(max_output_length) / ((float)10.0 * scale_modificator));
         }
+        // create the attachment point items
+        ad.attachmentPointBegin = _data.attachmentPoints.size();
+        ad.attachmentPointCount = rGroupAttachmentIndices.size();
+        for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
+        {
+            RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
+            float offset = std::min(std::max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.unit), 0.f), 0.4f);
+            attachmentPoint.dir.copy(attachmentDirection[j]);
+            attachmentPoint.p0.lineCombin(ad.pos, attachmentDirection[j], offset);
+            attachmentPoint.p1.lineCombin(ad.pos, attachmentDirection[j], 0.8f);
+            attachmentPoint.color = CWC_BASE;
+            attachmentPoint.highlighted = false;
+            if (multipleAttachmentPoints)
+            {
+                attachmentPoint.number = rGroupAttachmentIndices[j];
+            }
+        }
+    }
+
+    // prepare atom id's
+    if (_opt.showAtomIds)
+    {
+        tiindex = _pushTextItem(ad, RenderItem::RIT_ATOMID, CWC_BLUE, false);
+
+        TextItem& index = _data.textitems[tiindex];
+        index.fontsize = FONT_SIZE_INDICES;
+
+        int base = _opt.atomBondIdsFromOne ? 1 : 0;
+        bprintf(index.text, "%i", aid + base);
+        _cw.setTextItemSize(index, ad.pos);
+
+        if (ad.showLabel)
+            index.bbp.set(ad.rightMargin + _settings.labelInternalOffset, ad.ypos + 0.5f * ad.height);
+    }
+}
+
+int MoleculeRenderInternal::_pushTextItem(RenderItem::TYPE ritype, int color, bool highlighted)
+{
+    _data.textitems.push();
+    _data.textitems.top().clear();
+    _data.textitems.top().ritype = ritype;
+    _data.textitems.top().color = color;
+    _data.textitems.top().highlighted = highlighted;
+    return _data.textitems.size() - 1;
+}
+
+int MoleculeRenderInternal::_pushTextItem(AtomDesc& ad, RenderItem::TYPE ritype, int color, bool highlighted)
+{
+    int res = _pushTextItem(ritype, color, highlighted);
+    if (ad.tibegin < 0)
+        ad.tibegin = res;
+    ad.ticount++;
+    return res;
+}
+
+int MoleculeRenderInternal::_pushTextItem(Sgroup& sg, RenderItem::TYPE ritype, int color)
+{
+    int res = _pushTextItem(ritype, color, false);
+    if (sg.tibegin < 0)
+        sg.tibegin = res;
+    sg.ticount++;
+    return res;
+}
+
+int MoleculeRenderInternal::_pushGraphItem(RenderItem::TYPE ritype, int color, bool highlighted)
+{
+    _data.graphitems.push();
+    _data.graphitems.top().clear();
+    _data.graphitems.top().ritype = ritype;
+    _data.graphitems.top().color = color;
+    _data.graphitems.top().highlighted = highlighted;
+    return _data.graphitems.size() - 1;
+}
+
+int MoleculeRenderInternal::_pushGraphItem(AtomDesc& ad, RenderItem::TYPE ritype, int color, bool highlighted)
+{
+    int res = _pushGraphItem(ritype, color, highlighted);
+    if (ad.gibegin < 0)
+        ad.gibegin = res;
+    ad.gicount++;
+    return res;
+}
+
+const char* MoleculeRenderInternal::_valenceText(const int valence)
+{
+    const char* vt[] = {"(0)", "(I)", "(II)", "(III)", "(IV)", "(V)", "(VI)", "(VII)", "(VIII)", "(IX)", "(X)", "(XI)", "(XII)", "(XIII)"};
+    if (valence < 0 || valence >= NELEM(vt))
+        throw Error("valence value %i out of range", valence);
+    return vt[valence];
+}
+
+void MoleculeRenderInternal::_drawBond(int b)
+{
+    BondDescr& bd = _bd(b);
+    const BondEnd& be1 = _be(bd.be1);
+    const BondEnd& be2 = _be(bd.be2);
+    const AtomDesc& ad1 = _ad(be1.aid);
+    const AtomDesc& ad2 = _ad(be2.aid);
+
+    _cw.setLineWidth(_settings.bondLineWidth);
+
+    _cw.setSingleSource(CWC_BASE);
+    if (_edgeIsHighlighted(b))
+        _cw.setHighlight();
+    else if (ad1.hcolorSet || ad2.hcolorSet)
+    {
+        Vec3f color1, color2;
+        _cw.getColorVec(color1, CWC_BASE);
+        _cw.getColorVec(color2, CWC_BASE);
+        if (ad1.hcolorSet)
+            color1.copy(ad1.hcolor);
+        if (ad2.hcolorSet)
+            color2.copy(ad2.hcolor);
+        if (color1.x == color2.x && color1.y == color2.y && color1.z == color2.z)
+            _cw.setSingleSource(color1);
+        else
+            _cw.setGradientSource(color1, color2, ad1.pos, ad2.pos);
+    }
+
+    switch (bd.type)
+    {
+    case BOND_SINGLE:
+        _bondSingle(bd, be1, be2);
+        break;
+    case BOND_DOUBLE:
+        _bondDouble(bd, be1, be2);
+        break;
+    case BOND_TRIPLE:
+        _bondTriple(bd, be1, be2);
+        break;
+    case BOND_AROMATIC:
+        _bondAromatic(bd, be1, be2);
+        break;
+    case _BOND_HYDROGEN:
+        _bondHydrogen(bd, be1, be2);
+        break;
+    case _BOND_COORDINATION:
+        _bondCoordination(bd, be1, be2);
+        break;
+
+    default:
+        switch (bd.queryType)
+        {
+        case QueryMolecule::QUERY_BOND_ANY:
+            _bondAny(bd, be1, be2);
+            break;
+        case QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE:
+            _bondSingleOrDouble(bd, be1, be2);
+            break;
+        case QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC:
+            _bondDoubleOrAromatic(bd, be1, be2);
+            break;
+        case QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC:
+            _bondSingleOrAromatic(bd, be1, be2);
+            break;
+        default:
+            throw Error("Unknown type");
+        }
+    }
+
+    _cw.resetHighlightThickness();
+
+    if (bd.reactingCenter != RC_UNMARKED)
+    {
+        int rc = bd.reactingCenter;
+        if (rc == RC_NOT_CENTER)
+            _drawReactingCenter(bd, RC_NOT_CENTER);
+        else
+        {
+            if (rc & RC_CENTER)
+                _drawReactingCenter(bd, RC_CENTER);
+            if ((rc & RC_UNCHANGED) && (_opt.showReactingCenterUnchanged || (rc & (~RC_UNCHANGED))))
+                _drawReactingCenter(bd, RC_UNCHANGED);
+            if (rc & RC_MADE_OR_BROKEN)
+                _drawReactingCenter(bd, RC_MADE_OR_BROKEN);
+            if (rc & RC_ORDER_CHANGED)
+                _drawReactingCenter(bd, RC_ORDER_CHANGED);
+        }
+    }
+
+    _cw.resetHighlight();
+    _cw.clearPattern(); // destroy the linear gradient pattern if one was used
+
+    if (bd.topology > 0)
+        _drawTopology(bd);
+}
+
+void MoleculeRenderInternal::_drawTopology(BondDescr& bd)
+{
+    if (bd.topology < 0)
+        return;
+    bd.tiTopology = _pushTextItem(RenderItem::RIT_TOPOLOGY, CWC_BASE, false);
+    TextItem& ti = _data.textitems[bd.tiTopology];
+    ti.fontsize = FONT_SIZE_ATTR;
+    if (bd.topology == TOPOLOGY_RING)
+        bprintf(ti.text, "rng");
+    else if (bd.topology == TOPOLOGY_CHAIN)
+        bprintf(ti.text, "chn");
+    else
+        throw Error("Unknown topology value");
+
+    _cw.setTextItemSize(ti);
+    float shift = (fabs(bd.norm.x * ti.bbsz.x) + fabs(bd.norm.y * ti.bbsz.y)) / 2 + _settings.unit;
+
+    if (bd.extP < bd.extN)
+        shift = shift + bd.extP;
+    else
+        shift = -shift - bd.extN;
+    Vec2f c;
+    c.copy(bd.center);
+    c.addScaled(bd.norm, shift);
+    c.addScaled(ti.bbsz, -0.5f);
+    ti.bbp.copy(c);
+    _cw.drawTextItemText(ti, _idle);
+}
+
+void MoleculeRenderInternal::_drawReactingCenter(BondDescr& bd, int rc)
+{
+    const int rcNumPnts = 8;
+    Vec2f p[rcNumPnts];
+    for (int i = 0; i < rcNumPnts; ++i)
+        p[i].copy(bd.center);
+    float alongIntRc = _settings.unit,           // half interval along for RC_CENTER
+        alongIntMadeBroken = 2 * _settings.unit, // half interval between along for RC_MADE_OR_BROKEN
+        alongSz = 1.5f * _settings.bondSpace,    // half size along for RC_CENTER
+        acrossInt = 1.5f * _settings.bondSpace,  // half interval across for RC_CENTER
+        acrossSz = 3.0f * _settings.bondSpace,   // half size across for all
+        tiltTan = 0.2f,                          // tangent of the tilt angle
+        radius = _settings.bondSpace;            // radius of the circle for RC_UNCHANGED
+    int numLines = 0;
+
+    _cw.setLineWidth(_settings.unit);
+    switch (rc)
+    {
+    case RC_NOT_CENTER: // X
+        // across
+        p[0].addScaled(bd.norm, acrossSz);
+        p[1].addScaled(bd.norm, -acrossSz);
+        p[2].copy(p[0]);
+        p[3].copy(p[1]);
+        p[0].addScaled(bd.dir, tiltTan * acrossSz);
+        p[1].addScaled(bd.dir, -tiltTan * acrossSz);
+        p[2].addScaled(bd.dir, -tiltTan * acrossSz);
+        p[3].addScaled(bd.dir, tiltTan * acrossSz);
+        numLines = 2;
+        break;
+    case RC_CENTER: // #
+        // across
+        p[0].addScaled(bd.norm, acrossSz);
+        p[0].addScaled(bd.dir, tiltTan * acrossSz);
+        p[1].addScaled(bd.norm, -acrossSz);
+        p[1].addScaled(bd.dir, -tiltTan * acrossSz);
+        p[2].copy(p[0]);
+        p[3].copy(p[1]);
+        p[0].addScaled(bd.dir, alongIntRc);
+        p[1].addScaled(bd.dir, alongIntRc);
+        p[2].addScaled(bd.dir, -alongIntRc);
+        p[3].addScaled(bd.dir, -alongIntRc);
+
+        // along
+        p[4].addScaled(bd.dir, alongSz);
+        p[5].addScaled(bd.dir, -alongSz);
+        p[6].copy(p[4]);
+        p[7].copy(p[5]);
+        p[4].addScaled(bd.norm, acrossInt);
+        p[5].addScaled(bd.norm, acrossInt);
+        p[6].addScaled(bd.norm, -acrossInt);
+        p[7].addScaled(bd.norm, -acrossInt);
+        numLines = 4;
+        break;
+    case RC_UNCHANGED: // o
+        _cw.fillCircle(bd.center, radius);
+        break;
+    case RC_MADE_OR_BROKEN:
+        // across
+        p[0].addScaled(bd.norm, acrossSz);
+        p[1].addScaled(bd.norm, -acrossSz);
+        p[2].copy(p[0]);
+        p[3].copy(p[1]);
+        p[0].addScaled(bd.dir, alongIntMadeBroken);
+        p[1].addScaled(bd.dir, alongIntMadeBroken);
+        p[2].addScaled(bd.dir, -alongIntMadeBroken);
+        p[3].addScaled(bd.dir, -alongIntMadeBroken);
+        numLines = 2;
+        break;
+    case RC_ORDER_CHANGED:
+        // across
+        p[0].addScaled(bd.norm, acrossSz);
+        p[1].addScaled(bd.norm, -acrossSz);
+        numLines = 1;
+        break;
+    case RC_TOTAL:
+        break;
+    }
+    for (int i = 0; i < numLines; ++i)
+        _cw.drawLine(p[2 * i], p[2 * i + 1]);
+    if (rc == RC_UNCHANGED)
+    {
+        bd.extN = std::max(bd.extN, radius);
+        bd.extP = std::max(bd.extP, radius);
+    }
+    else
+    {
+        bd.extN = std::max(bd.extN, acrossSz);
+        bd.extP = std::max(bd.extP, acrossSz);
+    }
+}
+
+double MoleculeRenderInternal::_getAdjustmentFactor(const int aid, const int anei, const double acos, const double asin, const double tgb, const double csb,
+                                                    const double snb, const double len, const double w, double& csg, double& sng)
+{
+    csg = csb;
+    sng = snb;
+    bool adjustLeft = acos < 0.99 && acos > -0.99;
+    if (!adjustLeft || _bd(_be(anei).bid).isShort)
+        return -1;
+    const BondDescr& nbd = _bd(_be(anei).bid);
+    if (nbd.type == BOND_DOUBLE && nbd.centered)
+    {
+        if (asin <= 0)
+            return -1;
+        return (len * asin - _settings.bondSpace) / (snb * acos + csb * asin);
+    }
+    if ((_bd(_be(anei).bid).stereodir == BOND_UP && _bd(_be(anei).bid).end == aid) || _bd(_be(anei).bid).stereodir == BOND_STEREO_BOLD)
+    {
+        if (fabs(asin) < 0.01)
+            return -1;
+        double sna = sqrt((1 - acos) / 2);                       // sin(a/2)
+        double csa = (asin > 0 ? 1 : -1) * sqrt((1 + acos) / 2); // cos(a/2)
+        double gamma = w / sna;
+        double x = sqrt(len * len + gamma * gamma - 2 * gamma * len * csa);
+        sng = gamma * sna / x;
+        csg = sqrt(1 - sng * sng);
+        return x;
+    }
+    if (asin > 0.01)
+        return len / (acos * snb / asin + csb);
+    return -1;
+}
+
+void MoleculeRenderInternal::_adjustAngle(Vec2f& l, const BondEnd& be1, const BondEnd& be2, bool left)
+{
+    const Vec2f& p1 = _ad(be1.aid).pos;
+    const Vec2f& p2 = _ad(be2.aid).pos;
+    const double len = Vec2f::dist(p1, p2);
+    double w = _settings.bondSpace;
+    double tgb = w / len;
+    double csb = sqrt(1 / (1 + tgb * tgb));
+    double snb = tgb * csb;
+    double sng = 0, csg = 0;
+    double ttr = left ? _getAdjustmentFactor(be2.aid, be2.rnei, be2.rcos, be2.rsin, tgb, csb, snb, len, w, csg, sng)
+                      : _getAdjustmentFactor(be2.aid, be2.lnei, be2.lcos, be2.lsin, tgb, csb, snb, len, w, csg, sng);
+    if (ttr < 0)
+        return;
+    l.diff(p2, p1);
+    l.normalize();
+    l.scale(_2FLOAT(ttr));
+    l.rotateL(_2FLOAT(left ? sng : -sng), _2FLOAT(csg));
+    l.add(p1);
+}
+
+void MoleculeRenderInternal::_bondBoldStereo(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    Vec2f r0(be1.p), l0(be1.p), r1(be2.p), l1(be2.p);
+    float w = _settings.bondSpace;
+    l0.addScaled(bd.norm, -w);
+    r0.addScaled(bd.norm, w);
+    l1.addScaled(bd.norm, -w);
+    r1.addScaled(bd.norm, w);
+
+    _adjustAngle(l1, be1, be2, true);
+    _adjustAngle(r1, be1, be2, false);
+    _adjustAngle(r0, be2, be1, true);
+    _adjustAngle(l0, be2, be1, false);
+    _cw.fillHex(be1.p, r0, r1, be2.p, l1, l0);
+}
+
+void MoleculeRenderInternal::_bondHydrogen(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    _cw.setDash(_settings.bondDashHydro, Vec2f::dist(be1.p, be2.p));
+    double len = Vec2f::dist(be2.p, be1.p);
+    Vec2f l(be2.p), r(be2.p);
+    float w = _settings.bondSpace;
+    l.addScaled(bd.norm, -w);
+    r.addScaled(bd.norm, w);
+    bd.extP = bd.extN = w;
+
+    float lw = _cw.currentLineWidth();
+    Vec2f r0(be1.p), l0(be1.p);
+    l0.addScaled(bd.norm, -lw / 2);
+    r0.addScaled(bd.norm, lw / 2);
+
+    _cw.drawLine(be1.p, be2.p);
+    _cw.resetDash();
+}
+
+void MoleculeRenderInternal::_bondCoordination(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    double len = Vec2f::dist(be2.p, be1.p);
+    Vec2f l(be2.p), r(be2.p);
+    float w = _settings.bondSpace;
+    l.addScaled(bd.norm, -w);
+    r.addScaled(bd.norm, w);
+    bd.extP = bd.extN = w;
+
+    float lw = _cw.currentLineWidth();
+    Vec2f r0(be1.p), l0(be1.p);
+    l0.addScaled(bd.norm, -lw / 2);
+    r0.addScaled(bd.norm, lw / 2);
+
+    _cw.drawLine(be1.p, be2.p);
+
+    double arrow_length = lw * 5;
+    double shorten = len - arrow_length;
+    Vec2f reduced = (be2.p - be1.p) * (1 - shorten / len);
+    Vec2f slope_right(-reduced.y * 0.25, reduced.x * 0.25);
+    _cw.drawLine(be2.p, (be2.p - reduced) + slope_right);
+    Vec2f slope_left(reduced.y * 0.25, -reduced.x * 0.25);
+    _cw.drawLine(be2.p, (be2.p - reduced) + slope_left);
+}
+
+void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    double len = Vec2f::dist(be2.p, be1.p);
+
+    if (bd.stereodir == BOND_STEREO_BOLD)
+    {
+        _bondBoldStereo(bd, be1, be2);
+        return;
+    }
+    Vec2f l(be2.p), r(be2.p);
+    float w = _settings.bondSpace;
+    l.addScaled(bd.norm, -w);
+    r.addScaled(bd.norm, w);
+    bd.extP = bd.extN = w;
+
+    float lw = _cw.currentLineWidth();
+    Vec2f r0(be1.p), l0(be1.p);
+    l0.addScaled(bd.norm, -lw / 2);
+    r0.addScaled(bd.norm, lw / 2);
+
+    if (bd.stereodir == 0)
+    {
+        _cw.drawLine(be1.p, be2.p);
+        bd.extP = bd.extN = lw / 2;
+    }
+    else if (bd.stereodir == BOND_UP)
+    {
+        if (_ad(be2.aid).showLabel == false && !bd.isShort)
+        {
+            _adjustAngle(l, be1, be2, true);
+            _adjustAngle(r, be1, be2, false);
+            _cw.fillPentagon(r0, r, be2.p, l, l0);
+        }
+        else
+        {
+            _cw.fillQuad(r0, r, l, l0);
+        }
+    }
+    else if (bd.stereodir == BOND_DOWN)
+    {
+        int stripeCnt = std::max((int)((len) / lw / 2), 4);
+        _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
+    }
+    else if (bd.stereodir == BOND_EITHER)
+    {
+        int stripeCnt = std::max((int)((len) / lw / 1.5), 5);
+        _cw.drawTriangleZigzag(be1.p, r, l, stripeCnt);
+    }
+    else
+        throw Error("Unknown single bond stereo type");
+}
+
+void MoleculeRenderInternal::_bondAny(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    _cw.setDash(_settings.bondDashAny, Vec2f::dist(be1.p, be2.p));
+    _cw.drawLine(be1.p, be2.p);
+    _cw.resetDash();
+    bd.extP = bd.extN = _settings.bondLineWidth / 2;
+}
+
+float MoleculeRenderInternal::_ctghalf(float cs)
+{
+    return sqrt(1 - cs * cs) / (1 - cs);
+}
+
+float MoleculeRenderInternal::_doubleBondShiftValue(const BondEnd& be, bool right, bool centered)
+{
+    const BondDescr& bd = _bd(_be(right ? be.rnei : be.lnei).bid);
+    float si = right ? be.rsin : be.lsin, co = right ? be.rcos : be.lcos;
+    if (centered && bd.type == BOND_SINGLE && bd.end == be.aid && bd.stereodir != 0)
+    {
+        float tga = si / co;
+        Vec2f dd;
+        dd.diff(_be(bd.be1).p, _be(bd.be2).p);
+        float len = dd.length();
+        float tgb = (_settings.bondSpace + _settings.bondLineWidth) / len;
+        float tgab = (tga + tgb) / (1 - tga * tgb);
+        return -(len * si - _settings.bondSpace) / tgab + len * co - _settings.bondLineWidth / 2;
+    }
+    else
+        return co * _settings.bondSpace / si;
+}
+
+void MoleculeRenderInternal::_prepareDoubleBondCoords(Vec2f* coord, BondDescr& bd, const BondEnd& be1, const BondEnd& be2, bool allowCentered)
+{
+    Vec2f ns, ds;
+    ns.scaled(bd.norm, 2 * _settings.bondSpace + (bd.stereodir == BOND_STEREO_BOLD ? 1 : 0) * _settings.bondLineWidth);
+
+    if (!(bd.stereodir == BOND_STEREO_BOLD) && ((allowCentered && bd.centered) || bd.cistrans))
+    {
+        Vec2f p0, p1, q0, q1;
+        ns.scale(0.5f);
+        p0.sum(be1.p, ns);
+        p1.sum(be2.p, ns);
+        q0.diff(be1.p, ns);
+        q1.diff(be2.p, ns);
+
+        if (be1.prolong)
+        {
+            p0.addScaled(be1.dir, _doubleBondShiftValue(be1, true, bd.centered));
+            q0.addScaled(be1.dir, _doubleBondShiftValue(be1, false, bd.centered));
+        }
+        if (be2.prolong)
+        {
+            p1.addScaled(be2.dir, _doubleBondShiftValue(be2, false, bd.centered));
+            q1.addScaled(be2.dir, _doubleBondShiftValue(be2, true, bd.centered));
+        }
+
+        coord[0].copy(p0);
+        coord[1].copy(p1);
+        coord[2].copy(q0);
+        coord[3].copy(q1);
+        bd.extP = bd.extN = _settings.bondSpace + _settings.bondLineWidth / 2;
+    }
+    else
+    {
+        bd.extP = ns.length() + _settings.bondLineWidth / 2;
+        bd.extN = _settings.bondLineWidth / 2;
+
+        if (!bd.lineOnTheRight)
+        {
+
+            std::swap(bd.extP, bd.extN);
+            ns.negate();
+        }
+
+        Vec2f p0, p1;
+        p0.sum(be1.p, ns);
+        p1.sum(be2.p, ns);
+
+        float cs;
+        if (!_ad(be1.aid).showLabel)
+        {
+            cs = bd.lineOnTheRight ? be1.rcos : be1.lcos;
+            if (fabs(cs) < _settings.cosineTreshold)
+                p0.addScaled(be1.dir, _settings.bondSpace * _ctghalf(cs) * 2);
+        }
+
+        if (!_ad(be2.aid).showLabel)
+        {
+            cs = bd.lineOnTheRight ? be2.lcos : be2.rcos;
+            if (fabs(cs) < _settings.cosineTreshold)
+                p1.addScaled(be2.dir, _settings.bondSpace * _ctghalf(cs) * 2);
+        }
+
+        coord[0].copy(be1.p);
+        coord[1].copy(be2.p);
+        coord[2].copy(p0);
+        coord[3].copy(p1);
+    }
+}
+
+void MoleculeRenderInternal::_drawStereoCareBox(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    Vec2f ns;
+    ns.scaled(bd.norm, _settings.bondSpace);
+    if (!bd.lineOnTheRight)
+        ns.negate();
+    if (bd.stereoCare)
+    {
+        Vec2f p0, p1, p2, p3;
+        p0.lineCombin(be1.p, bd.dir, (bd.length - _settings.stereoCareBoxSize) / 2);
+        p0.addScaled(bd.norm, -_settings.stereoCareBoxSize / 2);
+        bd.extP = bd.extN = _settings.stereoCareBoxSize / 2 + _settings.unit / 2;
+        if (!bd.centered)
+        {
+            float shift = Vec2f::dot(ns, bd.norm);
+            bd.extP += shift;
+            bd.extN -= shift;
+            p0.add(ns);
+        }
+        p1.lineCombin(p0, bd.dir, _settings.stereoCareBoxSize);
+        p2.lineCombin(p1, bd.norm, _settings.stereoCareBoxSize);
+        p3.lineCombin(p0, bd.norm, _settings.stereoCareBoxSize);
+
+        _cw.setLineWidth(_settings.unit);
+        _cw.drawQuad(p0, p1, p2, p3);
+    }
+}
+
+void MoleculeRenderInternal::_bondDouble(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    Vec2f coord[4];
+    _prepareDoubleBondCoords(coord, bd, be1, be2, true);
+    if (bd.stereodir == BOND_STEREO_BOLD)
+    {
+        _bondBoldStereo(bd, be1, be2);
+        _cw.drawLine(coord[2], coord[3]);
+    }
+    else if (bd.cistrans)
+    {
+        _cw.drawLine(coord[0], coord[3]);
+        _cw.drawLine(coord[2], coord[1]);
+    }
+    else
+    {
+        _cw.drawLine(coord[0], coord[1]);
+        _cw.drawLine(coord[2], coord[3]);
+    }
+
+    _drawStereoCareBox(bd, be1, be2);
+}
+
+void MoleculeRenderInternal::_bondSingleOrAromatic(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    Vec2f coord[4];
+    _prepareDoubleBondCoords(coord, bd, be1, be2, true);
+    _cw.drawLine(coord[0], coord[1]);
+    _cw.setDash(_settings.bondDashSingleOrAromatic);
+    _cw.drawLine(coord[2], coord[3]);
+    _cw.resetDash();
+
+    _drawStereoCareBox(bd, be1, be2);
+}
+
+void MoleculeRenderInternal::_bondDoubleOrAromatic(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    Vec2f coord[4];
+    _prepareDoubleBondCoords(coord, bd, be1, be2, true);
+    _cw.setDash(_settings.bondDashDoubleOrAromatic);
+    _cw.drawLine(coord[0], coord[1]);
+    _cw.drawLine(coord[2], coord[3]);
+    _cw.resetDash();
+
+    _drawStereoCareBox(bd, be1, be2);
+}
+
+void MoleculeRenderInternal::_bondSingleOrDouble(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    Vec2f ns, ds;
+    ns.scaled(bd.norm, 2 * _settings.bondSpace);
+
+    ds.diff(be2.p, be1.p);
+    float len = ds.length();
+    ds.normalize();
+
+    // Get number of segments of single-or-double bond
+    // An average bond in our coordinates has length 1. We want an average bond to have 5 segments, like -=-=-
+    // For longer bond more segments may be necessary, for shorter one - less, but not less then 3 segments, like -=-
+    int numSegments = std::max((int)(len / 0.4f), 1) * 2 + 1;
+
+    Vec2f r0, r1, p0, p1, q0, q1;
+    float step = len / numSegments;
+    ns.scale(0.5f);
+    for (int i = 0; i < numSegments; ++i)
+    {
+        r0.lineCombin(be1.p, ds, i * step);
+        r1.lineCombin(be1.p, ds, (i + 1) * step);
+        if (i & 1)
+        {
+            p0.sum(r0, ns);
+            p1.sum(r1, ns);
+            q0.diff(r0, ns);
+            q1.diff(r1, ns);
+            _cw.drawLine(p0, p1);
+            _cw.drawLine(q0, q1);
+        }
+        else
+            _cw.drawLine(r0, r1);
+    }
+}
+
+void MoleculeRenderInternal::_bondAromatic(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+
+    if (bd.aromRing)
+    {
+        // bond is in a ring, draw only a single line
+        _cw.drawLine(be1.p, be2.p);
+        bd.extP = bd.extN = _settings.bondLineWidth / 2;
+    }
+    else
+    {
+        Vec2f coord[4];
+        _prepareDoubleBondCoords(coord, bd, be1, be2, false);
+
+        _cw.drawLine(coord[0], coord[1]);
+        _cw.setDash(_settings.bondDashAromatic);
+        _cw.drawLine(coord[2], coord[3]);
+        _cw.resetDash();
+    }
+}
+
+void MoleculeRenderInternal::_bondTriple(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+{
+    Vec2f ns;
+    ns.scaled(bd.norm, _settings.bondSpace * 2);
+
+    Vec2f vr1(be1.p), vr2(be2.p), vl1(be1.p), vl2(be2.p);
+    vr1.add(ns);
+    vr2.add(ns);
+    vl1.sub(ns);
+    vl2.sub(ns);
+
+    _cw.drawLine(be1.p, be2.p);
+    _cw.drawLine(vr1, vr2);
+    _cw.drawLine(vl1, vl2);
+
+    bd.extP = bd.extN = _settings.bondSpace * 2 + _settings.bondLineWidth / 2;
+}
+
+void MoleculeRenderInternal::_precalcScale()
+{
+    // Check structure for long atom labels (pseudoatoms, SMARTS) and change scale to fix
+    // the issue with labels overlapping each other
+    long long int max_output_length = 4;
+    BaseMolecule& bm = *_mol;
+    Array<long long int> output_lengths;
+    int max_index = -1;
+    output_lengths.resize(_mol->vertexEnd());
+    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
+    {
+        long long int output_length = 0;
+        Array<int> iarr;
+        Array<char> carr;
+        if (bm.isPseudoAtom(i))
+        {
+            carr.readString(bm.getPseudoAtom(i), true);
+            output_length = carr.size();
+        }
+        else if (bm.isTemplateAtom(i))
+        {
+            carr.readString(bm.getTemplateAtom(i), true);
+            output_length = carr.size();
+        }
+        else if (bm.isRSite(i))
+        {
+            output_length = 0;
+            QS_DEF(Array<int>, rg);
+            bm.getAllowedRGroups(i, rg);
+            if (rg.size() == 0)
+            {
+                output_length += 1;
+            }
+            else
+            {
+                for (int j = 0; j < rg.size(); ++j)
+                {
+                    if (j > 0)
+                    {
+                        output_length += 1;
+                    }
+                    output_length += 2;
+                }
+            }
+        }
+        else if (_mol->isQueryMolecule())
+        {
+            QueryMolecule& qmol = _mol->asQueryMolecule();
+            int queryLabel = QueryMolecule::parseQueryAtom(qmol, i, iarr);
+            if (queryLabel < 0)
+            {
+                bm.getAtomDescription(i, carr);
+                output_length = carr.size();
+            }
+            else if (!QueryMolecule::queryAtomIsRegular(qmol, i))
+            {
+                output_length = 1;
+                for (int j = 0; j < iarr.size(); ++j)
+                {
+                    if (j > 0)
+                    {
+                        output_length += 1;
+                    }
+                    output_length += strlen(Element::toString(iarr[j]));
+                }
+                output_length += 1;
+            }
+            else
+            {
+                output_length = strlen(Element::toString(bm.getAtomNumber(i)));
+            }
+        }
+        else
+        {
+            output_length = strlen(Element::toString(bm.getAtomNumber(i)));
+        }
+        output_lengths[i] = output_length;
+        if (max_output_length < output_lengths[i])
+        {
+            max_output_length = output_lengths[i];
+            max_index = i;
+        }
+    }
+    float scale_modificator = 1.0;
+    if (max_index >= 0)
+    {
+        const Vertex& max_length_vertex = bm.getVertex(max_index);
+        for (auto nei = max_length_vertex.neiBegin(); nei != max_length_vertex.neiEnd(); nei = max_length_vertex.neiNext(nei))
+        {
+            if (max_output_length - output_lengths[max_length_vertex.neiVertex(nei)] > 10)
+            {
+                scale_modificator = 2.0;
+                break;
+            }
+        }
+    }
+    _scale = std::max(_scale, float(max_output_length) / ((float)10.0 * scale_modificator));
+}

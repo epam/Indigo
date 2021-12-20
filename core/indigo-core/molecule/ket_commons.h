@@ -43,9 +43,17 @@ namespace indigo
             _mode = mode;
             _rect = rect;
         };
+
+        GraphMetaObject* clone() const override
+        {
+            return new KETSimpleObject(_mode, _rect);
+        }
+
         enum
         {
-            EKETEllipse, EKETRectangle, EKETLine
+            EKETEllipse,
+            EKETRectangle,
+            EKETLine
         };
         int _mode;
         Rect2f _rect;
@@ -60,6 +68,11 @@ namespace indigo
         {
             _pos = pos;
             _content = content;
+        }
+
+        GraphMetaObject* clone() const override
+        {
+            return new KETTextObject(_pos, _content);
         }
 
         struct KETTextStyle
