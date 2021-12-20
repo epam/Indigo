@@ -376,10 +376,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                         loader.treat_stereo_as = treat_stereo_as;
                         loader.loadMolecule(mol);
                     }
-                    else
-                    {
-                        throw Error("Molecule JSON description not found");
-                    }
                     return;
                 }
                 //              catch (...)
