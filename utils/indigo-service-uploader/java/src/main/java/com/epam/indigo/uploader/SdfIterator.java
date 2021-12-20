@@ -17,36 +17,33 @@ public class SdfIterator implements Iterable<SdfIterator.SDItem> {
    private  String _nextElement;
 
    public Iterable<String> delimIter() {
-      return new Iterable<String>() {
-         @Override
-         public Iterator<String> iterator() {
-            _readNextElement();
-            return new Iterator<String>() {
+      return () -> {
+         _readNextElement();
+         return new Iterator<String>() {
 
-               @Override
-               public boolean hasNext() {
-                  return (_nextElement != null);
-               }
+            @Override
+            public boolean hasNext() {
+               return (_nextElement != null);
+            }
 
-               @Override
-               public String next() {
-                  String result = _nextElement;
-                  _readNextElement();
-                  return result;
-               }
+            @Override
+            public String next() {
+               String result = _nextElement;
+               _readNextElement();
+               return result;
+            }
 
-               @Override
-               public void remove() {
-                  throw new UnsupportedOperationException();
-               }
-            };
-         }
+            @Override
+            public void remove() {
+               throw new UnsupportedOperationException();
+            }
+         };
       };
    }
 
    public static class SDItem {
       public String mol = "";
-      public Properties props = new Properties();
+      public final Properties props = new Properties();
       public static final String  SD_PROPERTIES = "\\Q\n>\\E.*\\Q<\\E";
       public byte[] buf;
       public Object jsonObject;
@@ -104,7 +101,7 @@ public class SdfIterator implements Iterable<SdfIterator.SDItem> {
    @Override
    public Iterator<SdfIterator.SDItem> iterator() {
       _readNextElement();
-      return new Iterator() {
+      return new Iterator<SdfIterator.SDItem>() {
          @Override
          public boolean hasNext() {
             return (_nextElement != null);

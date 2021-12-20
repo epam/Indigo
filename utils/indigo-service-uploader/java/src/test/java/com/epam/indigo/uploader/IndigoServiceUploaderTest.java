@@ -16,7 +16,7 @@ import org.junit.rules.TestName;
 public class IndigoServiceUploaderTest {
    public static final String TEST_SCHEME = "test_upload";
    
-   @Rule public TestName name = new TestName();
+   @Rule public final TestName name = new TestName();
    
 //   @BeforeClass
 //   public static void init() throws SQLException {
@@ -29,9 +29,8 @@ public class IndigoServiceUploaderTest {
 
    @Test
    public void testDatabaseBingoVersion() throws SQLException {
-      StringBuilder sqlBuilder = new StringBuilder();
-      sqlBuilder.append("select bingo.getversion()");
-      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder.toString());
+      String sqlBuilder = "select bingo.getversion()";
+      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder);
       int str_num = 0;
       while (resultSet.next()) {
          ++str_num;
@@ -52,7 +51,7 @@ public class IndigoServiceUploaderTest {
       assertEquals(325, p);
    }
    @Test
-   public void testBasicSDScope() throws FileNotFoundException, IOException {
+   public void testBasicSDScope() throws IOException {
       try (InputStream test = new GZIPInputStream(new FileInputStream("data/test-18.sd.gz"))) {
          SdfIterator sd = new SdfIterator(test);
          int x = 0, p = 0;
@@ -92,7 +91,7 @@ public class IndigoServiceUploaderTest {
    }
 
    @Test
-   public void testSDInsertBasic() throws FileNotFoundException, IOException, SQLException {
+   public void testSDInsertBasic() throws IOException, SQLException {
       String table_name = TEST_SCHEME + "." + name.getMethodName();
       PostgresEnv.dropCreateTable(table_name);
       SqlBatchInserter insert = new SqlBatchInserter(table_name);
@@ -100,12 +99,11 @@ public class IndigoServiceUploaderTest {
          insert.process(molScanner);
       }
 
-      StringBuilder sqlBuilder = new StringBuilder();
-      sqlBuilder.append("select elems->>'a',elems->>'b' from ")
-              .append(table_name)
-              .append(",jsonb_array_elements(p) elems where elems->>'x' like '%mass%' and (elems->>'y')::float > 300");
+      String sqlBuilder = "select elems->>'a',elems->>'b' from " +
+              table_name +
+              ",jsonb_array_elements(p) elems where elems->>'x' like '%mass%' and (elems->>'y')::float > 300";
 
-      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder.toString());
+      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder);
       int str_num = 0;
       while (resultSet.next()) {
          ++str_num;
@@ -114,7 +112,7 @@ public class IndigoServiceUploaderTest {
    }
 
    @Test
-   public void testSDInsertParallelBasic() throws FileNotFoundException, IOException, SQLException {
+   public void testSDInsertParallelBasic() throws IOException, SQLException {
       String table_name = TEST_SCHEME + "." + name.getMethodName();
       PostgresEnv.dropCreateTable(table_name);
       SqlBatchInserter insert = new SqlBatchInserter(table_name);
@@ -122,12 +120,11 @@ public class IndigoServiceUploaderTest {
          insert.processParallel(molScanner);
       }
 
-      StringBuilder sqlBuilder = new StringBuilder();
-      sqlBuilder.append("select elems->>'a',elems->>'b' from ")
-              .append(table_name)
-              .append(",jsonb_array_elements(p) elems where elems->>'x' like '%mass%' and (elems->>'y')::float > 300");
+      String sqlBuilder = "select elems->>'a',elems->>'b' from " +
+              table_name +
+              ",jsonb_array_elements(p) elems where elems->>'x' like '%mass%' and (elems->>'y')::float > 300";
 
-      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder.toString());
+      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder);
       int str_num = 0;
       String last_key = "";
       String last_val = "";
@@ -140,7 +137,7 @@ public class IndigoServiceUploaderTest {
       assertEquals("PUBCHEM_EXACT_MASS", last_key);
    }
    @Test
-   public void testSDInsertMaybridge() throws FileNotFoundException, IOException, SQLException {
+   public void testSDInsertMaybridge() throws IOException, SQLException {
       String table_name = TEST_SCHEME + "." + name.getMethodName();
       PostgresEnv.dropCreateTable(table_name);
       SqlBatchInserter insert = new SqlBatchInserter(table_name);
@@ -148,12 +145,11 @@ public class IndigoServiceUploaderTest {
          insert.processParallel(molScanner);
       }
 
-      StringBuilder sqlBuilder = new StringBuilder();
-      sqlBuilder.append("select elems->>'a',elems->>'b' from ")
-              .append(table_name)
-              .append(",jsonb_array_elements(p) elems where elems->>'x' like '%logp%' and (elems->>'y')::float > 5");
+      String sqlBuilder = "select elems->>'a',elems->>'b' from " +
+              table_name +
+              ",jsonb_array_elements(p) elems where elems->>'x' like '%logp%' and (elems->>'y')::float > 5";
 
-      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder.toString());
+      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder);
       int str_num = 0;
       String last_key = "";
       String last_val = "";
@@ -172,7 +168,7 @@ public class IndigoServiceUploaderTest {
       assertEquals(108, str_num);
    }
    @Test
-   public void testSDInsertParrallelCorrect18() throws FileNotFoundException, IOException, SQLException {
+   public void testSDInsertParrallelCorrect18() throws IOException, SQLException {
       String table_name = TEST_SCHEME + "." + name.getMethodName();
       PostgresEnv.dropCreateTable(table_name);
       SqlBatchInserter insert = new SqlBatchInserter(table_name);
@@ -180,22 +176,21 @@ public class IndigoServiceUploaderTest {
          insert.processParallel(molScanner);
       }
 
-      StringBuilder sqlBuilder = new StringBuilder();
-      sqlBuilder.append("select bingo.checkmolecule(m) from  ")
-              .append(table_name);
+      String sqlBuilder = "select bingo.checkmolecule(m) from  " +
+              table_name;
 
-      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder.toString());
+      ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder);
       int str_num = 0;
       String last_key;
       while (resultSet.next()) {
          ++str_num;
          last_key = resultSet.getString(1);
-         assertEquals(null, last_key);
+         assertNull(last_key);
       }
       assertEquals(18, str_num);
    }
    @Test
-   public void testSDFloatNumbers() throws FileNotFoundException, IOException, SQLException {
+   public void testSDFloatNumbers() throws IOException, SQLException {
       String table_name = TEST_SCHEME + "." + name.getMethodName();
       PostgresEnv.dropCreateTable(table_name);
       SqlBatchInserter insert = new SqlBatchInserter(table_name);
@@ -203,12 +198,11 @@ public class IndigoServiceUploaderTest {
          insert.processParallel(molScanner);
       }
       {
-         StringBuilder sqlBuilder = new StringBuilder();
-         sqlBuilder.append("select elems->>'a',elems->>'b' from ")
-                 .append(table_name)
-                 .append(",jsonb_array_elements(p) elems where elems->>'x' like '%logs%' and (elems->>'y')::float > 0.5");
+         String sqlBuilder = "select elems->>'a',elems->>'b' from " +
+                 table_name +
+                 ",jsonb_array_elements(p) elems where elems->>'x' like '%logs%' and (elems->>'y')::float > 0.5";
 
-         ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder.toString());
+         ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder);
          int str_num = 0;
          int contains = 0;
          while (resultSet.next()) {
@@ -219,12 +213,11 @@ public class IndigoServiceUploaderTest {
          assertEquals(1, contains);
       }
       {
-         StringBuilder sqlBuilder = new StringBuilder();
-         sqlBuilder.append("select elems->>'a',elems->>'b' from ")
-                 .append(table_name)
-                 .append(",jsonb_array_elements(p) elems where elems->>'x' like '%logs%' and (elems->>'y')::float > 1");
+         String sqlBuilder = "select elems->>'a',elems->>'b' from " +
+                 table_name +
+                 ",jsonb_array_elements(p) elems where elems->>'x' like '%logs%' and (elems->>'y')::float > 1";
 
-         ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder.toString());
+         ResultSet resultSet = PostgresEnv.getStatement().executeQuery(sqlBuilder);
           int str_num = 0;
          int contains = 0;
          while (resultSet.next()) {
