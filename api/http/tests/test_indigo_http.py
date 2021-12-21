@@ -5,6 +5,7 @@ from typing import Any, List
 
 import pytest
 from fastapi.testclient import TestClient
+
 from indigo_service import jsonapi
 from indigo_service.indigo_http import app
 from indigo_service.jsonapi import Descriptors

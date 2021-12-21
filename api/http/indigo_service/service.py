@@ -18,11 +18,11 @@
 
 from typing import List, Optional, Tuple, Union
 
-from indigo_service import jsonapi
-from indigo_service.indigo_tools import indigo
-
 from indigo import IndigoObject
 from indigo.inchi import IndigoInchi
+
+from indigo_service import jsonapi
+from indigo_service.indigo_tools import indigo
 
 
 def extract_compounds(
