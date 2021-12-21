@@ -28,7 +28,7 @@ jobs:
         run: git fetch --tags -f
       - name: Check
         run: |
-          .ci/static_analysis.sh
+          .ci/static_analysis_check.sh
 
   build_indigo_libs_x86_64:
     strategy:
