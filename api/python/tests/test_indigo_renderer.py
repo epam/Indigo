@@ -1,6 +1,5 @@
-from tests import TestIndigoBase
-
 from indigo.renderer import IndigoRenderer
+from tests import TestIndigoBase
 
 
 class TestIndigoRenderer(TestIndigoBase):

@@ -9,17 +9,17 @@ import types
 import zlib
 from time import time
 
-import config
 import flask_restful
 import redis
 from flask import Blueprint, Response, request
 from flask_httpauth import HTTPBasicAuth
-from marshmallow.exceptions import ValidationError
-from pyparsing import ParseException
-
 from indigo import Indigo, IndigoException
 from indigo.inchi import IndigoInchi
 from indigo.renderer import IndigoRenderer
+from marshmallow.exceptions import ValidationError
+from pyparsing import ParseException
+
+import config
 
 from .celery_app import celery
 from .common.util import api_route, item_to_sdf_chunk, merge_dicts

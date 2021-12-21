@@ -11,13 +11,13 @@ import traceback
 from functools import wraps
 from threading import local
 
-import config
 from flask import Blueprint, jsonify, request
-from marshmallow.exceptions import ValidationError
-
 from indigo import Indigo, IndigoException
 from indigo.inchi import IndigoInchi
 from indigo.renderer import IndigoRenderer
+from marshmallow.exceptions import ValidationError
+
+import config
 
 from .common.util import highlight
 from .validation import (

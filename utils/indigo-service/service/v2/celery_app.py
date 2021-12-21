@@ -1,5 +1,6 @@
-import config
 from celery import Celery
+
+import config
 
 celery = Celery(
     __name__,

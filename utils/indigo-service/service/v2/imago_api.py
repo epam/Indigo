@@ -7,13 +7,13 @@ import traceback
 import types
 from time import time
 
-import config
 import flask_restful
 from flask import Blueprint, request
-
 from indigo import Indigo
 from indigo.inchi import IndigoInchi
 from indigo.renderer import IndigoRenderer
+
+import config
 
 from .celery_app import celery
 from .common.util import api_route

@@ -2,6 +2,8 @@ import time
 from pathlib import Path
 
 import pytest
+from indigo import Indigo
+
 from bingo_elastic.elastic import ElasticRepository
 from bingo_elastic.model.helpers import iterate_file
 from bingo_elastic.model.record import IndigoRecordMolecule, as_iob
@@ -12,8 +14,6 @@ from bingo_elastic.queries import (
     TverskySimilarityMatch,
     WildcardQuery,
 )
-
-from indigo import Indigo
 
 
 def test_create_index(

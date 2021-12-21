@@ -49,7 +49,7 @@ RUN set -eux && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 packages
     python3 -m pip install --upgrade pip && \
-    python3 -m pip install --upgrade Pillow setuptools wheel twine pyproject-flake8 mypy isort black && \
+    python3 -m pip install --upgrade Pillow setuptools wheel twine pyproject-flake8 mypy==0.910 isort black && \
     apt autoremove -y
 
 ENV JAVA_HOME=/opt/jdk

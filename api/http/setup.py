@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup  # type: ignore
 
 packages = ["indigo_service"]
 

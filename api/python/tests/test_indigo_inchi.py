@@ -1,6 +1,5 @@
-from tests import TestIndigoBase
-
 from indigo.inchi import IndigoInchi
+from tests import TestIndigoBase
 
 
 class TestIndigoInchi(TestIndigoBase):

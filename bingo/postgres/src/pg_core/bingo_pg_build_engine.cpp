@@ -12,7 +12,6 @@ extern "C"
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
-
 #include "bingo_core_c.h"
 #include "bingo_pg_build_engine.h"
 

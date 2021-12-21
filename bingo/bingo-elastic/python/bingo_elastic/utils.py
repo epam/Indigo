@@ -1,8 +1,8 @@
 from typing import Callable, Dict, List, Optional, Tuple
 
-from bingo_elastic.model.record import IndigoRecord
-
 from indigo import Indigo
+
+from bingo_elastic.model.record import IndigoRecord
 
 PostprocessType = List[
     Callable[[IndigoRecord, Indigo], Optional[IndigoRecord]]

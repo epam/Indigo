@@ -1,6 +1,7 @@
 from time import sleep
 
 import pytest
+
 from bingo_elastic.elastic import ElasticRepository
 from bingo_elastic.model.record import (
     IndigoRecord,

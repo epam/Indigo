@@ -1,6 +1,5 @@
 #include "bingo_pg_fix_pre.h"
 
-
 extern "C"
 {
 #include "postgres.h"
@@ -16,10 +15,10 @@ extern "C"
 
 #include "base_cpp/tlscont.h"
 
-#include "bingo_pg_search.h"
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_common.h"
 #include "bingo_pg_config.h"
+#include "bingo_pg_search.h"
 #include "mango_pg_search_engine.h"
 #include "ringo_pg_search_engine.h"
 

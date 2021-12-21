@@ -1,8 +1,9 @@
-import config
 import psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
+
+import config
 
 pg_conf = config.__dict__.get("BINGO_POSTGRES")
 

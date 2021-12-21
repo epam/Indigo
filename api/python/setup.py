@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 
-from setuptools import setup
+from setuptools import setup  # type: ignore
 
 CLASSIFIERS = """\
 Development Status :: 4 - Beta

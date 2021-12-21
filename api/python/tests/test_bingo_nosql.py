@@ -1,9 +1,8 @@
 import shutil
 import tempfile
 
-from tests import TestIndigoBase
-
 from indigo.bingo import Bingo
+from tests import TestIndigoBase
 
 
 class TestBingo(TestIndigoBase):
