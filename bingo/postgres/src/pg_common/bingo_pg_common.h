@@ -366,34 +366,67 @@ private:
    bool pg_raise_error = false; \
    try
 
-#define PG_BINGO_END \
-   catch (indigo::Exception& e) { \
-      pg_raise_error = true; \
-      errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-      pg_err_mess = errmsg("error: %s", e.message()); \
-   } catch (...) { \
-      pg_raise_error = true; \
-      errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-      pg_err_mess = errmsg("bingo unknown error"); \
-   } \
-   if (pg_raise_error) { \
-      errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
-   }}
+#if PG_VERSION_NUM / 100 > 1200
+    #define PG_BINGO_END \
+       catch (indigo::Exception& e) { \
+          pg_raise_error = true; \
+          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
+          pg_err_mess = errmsg("error: %s", e.message()); \
+       } catch (...) { \
+          pg_raise_error = true; \
+          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
+          pg_err_mess = errmsg("bingo unknown error"); \
+       } \
+       if (pg_raise_error) { \
+          errfinish(__FILE__, __LINE__, PG_FUNCNAME_MACRO); \
+       }}
+#else
+    #define PG_BINGO_END \
+        catch (indigo::Exception& e) { \
+            pg_raise_error = true; \
+            errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
+            pg_err_mess = errmsg("error: %s", e.message()); \
+        } catch (...) { \
+            pg_raise_error = true; \
+            errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
+            pg_err_mess = errmsg("bingo unknown error"); \
+        } \
+        if (pg_raise_error) { \
+            errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
+        }}
+#endif
 
-#define PG_BINGO_HANDLE(statement) \
-   catch (indigo::Exception& e) { \
-      pg_raise_error = true; \
-      errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-      pg_err_mess = errmsg("error: %s", e.message()); \
-   } catch (...) { \
-      pg_raise_error = true; \
-      errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-      pg_err_mess = errmsg("bingo unknown error"); \
-   } \
-   if (pg_raise_error) { \
-      statement; \
-      errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
-   }}
+#if PG_VERSION_NUM / 100 > 1200
+    #define PG_BINGO_HANDLE(statement) \
+       catch (indigo::Exception& e) { \
+          pg_raise_error = true; \
+          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
+          pg_err_mess = errmsg("error: %s", e.message()); \
+       } catch (...) { \
+          pg_raise_error = true; \
+          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
+          pg_err_mess = errmsg("bingo unknown error"); \
+       } \
+       if (pg_raise_error) { \
+          statement; \
+        errfinish(__FILE__, __LINE__, PG_FUNCNAME_MACRO); \
+       }}
+#else
+    #define PG_BINGO_HANDLE(statement) \
+       catch (indigo::Exception& e) { \
+          pg_raise_error = true; \
+          errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
+          pg_err_mess = errmsg("error: %s", e.message()); \
+       } catch (...) { \
+          pg_raise_error = true; \
+          errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
+          pg_err_mess = errmsg("bingo unknown error"); \
+       } \
+       if (pg_raise_error) { \
+          statement; \
+          errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
+       }}
+#endif
 
 class DLLEXPORT BingoPgError : public indigo::Exception {
 public:
