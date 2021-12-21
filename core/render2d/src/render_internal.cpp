@@ -2010,10 +2010,10 @@ void MoleculeRenderInternal::_renderBonds()
 
 void MoleculeRenderInternal::_renderMeta()
 {
-    auto& md = _mol->metaData();
+    const auto& md = _mol->metaData();
     for (int i = 0; i < md.size(); ++i)
     {
-        auto& simple = *md[i];
+        const auto& simple = *md[i];
         switch (simple._class_id)
         {
         case KETSimpleObject::cid: {
