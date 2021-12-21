@@ -172,7 +172,8 @@ protected:
     RedBlackStringMap<get_optf_color_t, false> colorGetters;
     RedBlackStringMap<get_optf_xy_t, false> xyGetters;
 
-    template <typename T> void callOptionHandlerT(const char* name, T arg)
+    template <typename T>
+    void callOptionHandlerT(const char* name, T arg)
     {
         // Convert to string for default string parsing
         std::stringstream ss;

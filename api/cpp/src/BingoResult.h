@@ -6,7 +6,8 @@
 
 namespace indigo_cpp
 {
-    template <typename target_t> class BingoResult
+    template <typename target_t>
+    class BingoResult
     {
     public:
         BingoResult(int id, IndigoSessionPtr session);

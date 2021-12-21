@@ -13,7 +13,8 @@ namespace indigo_cpp
     class IndigoChemicalStructure;
     class IndigoSession;
 
-    template <typename target_t, typename query_t> class BingoNoSQL
+    template <typename target_t, typename query_t>
+    class BingoNoSQL
     {
     public:
         BingoNoSQL() = delete;

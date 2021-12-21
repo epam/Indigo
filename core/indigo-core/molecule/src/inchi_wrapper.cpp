@@ -46,7 +46,8 @@ namespace indigo
 
 IMPL_ERROR(InchiWrapper, "inchi-wrapper")
 
-template <typename T> class InchiMemObject
+template <typename T>
+class InchiMemObject
 {
 public:
     typedef void (*DestructorT)(T* obj);

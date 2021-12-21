@@ -29,7 +29,8 @@ namespace bingo
         const void* get(int file_id, ptrdiff_t offset) const;
         void* get(int file_id, ptrdiff_t offset);
 
-        template <typename T> MMFAddress allocate(int count = 1)
+        template <typename T>
+        MMFAddress allocate(int count = 1)
         {
             size_t alloc_size, file_idx, file_off, file_size;
 
