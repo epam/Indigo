@@ -36,13 +36,13 @@ extern "C"
  *	Insert an index tuple into a bingo table.
  *
  */
-#if PG_VERSION_NUM / 100 >= 1300
+#if PG_VERSION_NUM / 100 >= 1400
 CEXPORT bool bingo_insert(Relation index, Datum* values, bool* isnull, ItemPointer ht_ctid, Relation heapRelation, IndexUniqueCheck checkUnique,
                           bool indexUnchanged, struct IndexInfo* indexInfo)
 {
 #elif PG_VERSION_NUM / 100 >= 1000
 CEXPORT bool bingo_insert(Relation index, Datum* values, bool* isnull, ItemPointer ht_ctid, Relation heapRelation, IndexUniqueCheck checkUnique,
-                        struct IndexInfo* indexInfo)
+                          struct IndexInfo* indexInfo)
 {
 #elif PG_VERSION_NUM / 100 >= 906
 CEXPORT bool bingo_insert(Relation index, Datum* values, bool* isnull, ItemPointer ht_ctid, Relation heapRelation, IndexUniqueCheck checkUnique)

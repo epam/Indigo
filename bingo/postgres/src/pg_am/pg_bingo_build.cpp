@@ -50,7 +50,7 @@ PG_MODULE_MAGIC;
     CEXPORT IndexBuildResult* bingo_build(Relation, Relation, struct IndexInfo*);
     CEXPORT void bingo_buildempty(Relation);
 
-#if PG_VERSION_NUM / 100 >= 1300
+#if PG_VERSION_NUM / 100 >= 1400
     CEXPORT bool bingo_insert(Relation, Datum*, bool*, ItemPointer, Relation, IndexUniqueCheck, bool indexUnchanged, struct IndexInfo*);
     CEXPORT void bingo_costestimate120(struct PlannerInfo*, struct IndexPath*, double, Cost*, Cost*, Selectivity*, double*, double*);
 #elif PG_VERSION_NUM / 100 >= 1200
