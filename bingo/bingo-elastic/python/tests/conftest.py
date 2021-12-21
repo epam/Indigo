@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Callable
 
 import pytest
-from indigo import Indigo
+from indigo import Indigo  # type: ignore
 
 from bingo_elastic.elastic import ElasticRepository, IndexName
 from bingo_elastic.model.helpers import iterate_file, load_reaction

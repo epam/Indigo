@@ -27,8 +27,8 @@ do
 done
 
 mypy --version
-# TODO: bingo/bingo-elastic/python utils/indigo-service/service
-for folder in api/http api/python
+# TODO: utils/indigo-service/service
+for folder in api/http api/python bingo/bingo-elastic/python
 do
     cd ${folder}
     export PYTHONPATH=${PWD}
