@@ -21,6 +21,7 @@ isort --verbose --check .
 pflake8 --version
 pflake8 --verbose .
 
+mypy --version
 mypy api/python
 mypy api/http
 # TODO
