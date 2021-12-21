@@ -3,13 +3,10 @@ from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
-from indigo import Indigo
-
-from bingo_elastic.model.record import (
-    IndigoRecord,
-    IndigoRecordMolecule,
-)
+from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 from bingo_elastic.utils import PostprocessType, head_by_path
+
+from indigo import Indigo
 
 
 def clauses(fingerprint, fingerprint_name) -> List[Dict]:
@@ -201,6 +198,7 @@ class TanimotoSimilarityMatch(BaseMatch):
 
     @property
     def script(self) -> Dict:
+        assert self.target.sim_fingerprint
         return {
             "source": "_score / (params.a + "
             "doc['sim_fingerprint_len'].value - _score)",
@@ -208,6 +206,7 @@ class TanimotoSimilarityMatch(BaseMatch):
         }
 
     def min_should_match(self, length: int) -> str:
+        assert self.target.sim_fingerprint
         min_match = (
             math.floor(
                 (self._threshold * (len(self.target.sim_fingerprint) + 1))

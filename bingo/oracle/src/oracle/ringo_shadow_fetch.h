@@ -19,8 +19,8 @@
 #ifndef __ringo_shadow_fetch__
 #define __ringo_shadow_fetch__
 
-#include <memory>
 #include "oracle/bingo_fetch_engine.h"
+#include <memory>
 
 using namespace indigo;
 

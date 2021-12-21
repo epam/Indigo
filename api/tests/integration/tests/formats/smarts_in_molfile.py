@@ -1,14 +1,17 @@
 import sys
-sys.path.append('../../common')
+
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
-def testSmartsMolfile (filename):
+
+
+def testSmartsMolfile(filename):
     print(relativePath(filename))
     try:
         indigo.loadMoleculeFromFile(filename)
     except IndigoException as e:
-        print('caught ' + getIndigoExceptionText(e))
+        print("caught " + getIndigoExceptionText(e))
     indigo.setOption("ignore-noncritical-query-features", True)
     print(indigo.loadMoleculeFromFile(filename).canonicalSmiles())
     query = indigo.loadQueryMoleculeFromFile(filename)
@@ -30,5 +33,6 @@ def testSmartsMolfile (filename):
         print("matched")
     else:
         print("not matched")
-      
-testSmartsMolfile(joinPathPy('molecules/smarts-mrv.mol', __file__))
+
+
+testSmartsMolfile(joinPathPy("molecules/smarts-mrv.mol", __file__))

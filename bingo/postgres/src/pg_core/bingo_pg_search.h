@@ -5,8 +5,8 @@
 #define _BINGO_PG_SEARCH_H__
 
 #include "base_cpp/array.h"
-#include <memory>
 #include "base_cpp/exception.h"
+#include <memory>
 
 #include "bingo_pg_index.h"
 #include "bingo_pg_text.h"

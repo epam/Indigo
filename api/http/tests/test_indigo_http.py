@@ -4,9 +4,7 @@ import pathlib
 from typing import List
 
 import pytest
-
 from fastapi.testclient import TestClient
-
 from indigo_service import jsonapi
 from indigo_service.indigo_http import app
 

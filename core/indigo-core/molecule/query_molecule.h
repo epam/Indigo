@@ -19,11 +19,11 @@
 #ifndef __query_molecule_h__
 #define __query_molecule_h__
 
-#include <memory>
 #include "base_cpp/ptr_array.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_arom.h"
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -59,7 +59,7 @@ namespace indigo
         _ATOM_TEMPLATE,
         _ATOM_ELEMENT
     };
-    
+
     class Output;
 
     class DLLEXPORT QueryMolecule : public BaseMolecule
@@ -323,7 +323,7 @@ namespace indigo
             QUERY_BOND_SINGLE_OR_DOUBLE,
             QUERY_BOND_ANY
         };
-        
+
         static bool isKnownAttr(QueryMolecule::Atom& qa);
         static bool isNotAtom(QueryMolecule::Atom& qa, int elem);
         static QueryMolecule::Atom* stripKnownAttrs(QueryMolecule::Atom& qa);
@@ -335,7 +335,7 @@ namespace indigo
         static bool isOrBond(Bond& qb, int type1, int type2);
         static bool isSingleOrDouble(Bond& qb);
         static int getQueryBondType(Bond& qb);
-        static int getAtomType( const char* label );
+        static int getAtomType(const char* label);
         static void getQueryAtomLabel(int qa, Array<char>& result);
 
         bool bondStereoCare(int idx) override;
@@ -386,7 +386,7 @@ namespace indigo
         void _flipBond(int atom_parent, int atom_from, int atom_to) override;
         void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags) override;
         void _postMergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping,
-                                               int skip_flags) override;
+                                       int skip_flags) override;
         void _removeAtoms(const Array<int>& indices, const int* mapping) override;
         void _removeBonds(const Array<int>& indices) override;
 

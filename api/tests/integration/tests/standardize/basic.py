@@ -1,5 +1,6 @@
 import sys
-sys.path.append('../../common')
+
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -183,7 +184,9 @@ mol.standardize()
 print(mol.molfile())
 indigo.setOption("standardize-make-non-h-to-a-atoms", "false")
 
-print("****** make all non-Hydrogen and non-Carbon atoms to the Q query atom type ********")
+print(
+    "****** make all non-Hydrogen and non-Carbon atoms to the Q query atom type ********"
+)
 indigo.setOption("standardize-make-non-h-c-to-q-atoms", "true")
 mol = indigo.loadQueryMolecule("CN1C=*C(=C1)C(=O)O")
 print(mol.molfile())
@@ -214,7 +217,9 @@ indigo.setOption("standardize-clear-coordinates", "false")
 
 print("****** straighten triple bonds ********")
 indigo.setOption("standardize-straighten-triple-bonds", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/test-triple.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/test-triple.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -222,7 +227,9 @@ indigo.setOption("standardize-straighten-triple-bonds", "false")
 
 print("****** straighten allenes ********")
 indigo.setOption("standardize-straighten-allens", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/test-allene.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/test-allene.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -230,7 +237,9 @@ indigo.setOption("standardize-straighten-allens", "false")
 
 print("****** clear molecule ********")
 indigo.setOption("standardize-clear-molecule", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/test-allene.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/test-allene.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -252,7 +261,9 @@ mol.standardize()
 print(mol.molfile())
 indigo.setOption("standardize-clear-enhanced-stereo", "false")
 
-print("****** make all atoms and bonds marked UnknownStereo to NoStereo ********")
+print(
+    "****** make all atoms and bonds marked UnknownStereo to NoStereo ********"
+)
 indigo.setOption("standardize-clear-unknown-stereo", "true")
 mol = indigo.loadMolecule("[H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|")
 print(mol.molfile())
@@ -277,12 +288,13 @@ print(mol.molfile())
 indigo.setOption("standardize-clear-unknown-bond-stereo", "false")
 
 
-
 print("****** set stereo from coordinates ********")
 print("****** from 3D coordinates ********")
 indigo.setOption("standardize-stereo-from-coordinates", "true")
 indigo.setOption("skip-3d-chirality", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/3D-stereo.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/3D-stereo.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -292,7 +304,9 @@ indigo.setOption("standardize-stereo-from-coordinates", "false")
 print("****** from 2D coordinates ********")
 indigo.setOption("standardize-stereo-from-coordinates", "true")
 indigo.setOption("skip-3d-chirality", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/2D-stereo.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/2D-stereo.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -302,7 +316,9 @@ indigo.setOption("standardize-stereo-from-coordinates", "false")
 print("****** reposition stereo bonds to best position ********")
 indigo.setOption("standardize-reposition-stereo-bonds", "true")
 indigo.setOption("skip-3d-chirality", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/2D-stereo.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/2D-stereo.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -312,7 +328,9 @@ indigo.setOption("standardize-reposition-stereo-bonds", "false")
 print("****** reposition axial stereo bonds to best position ********")
 indigo.setOption("standardize-reposition-axial-stereo-bonds", "true")
 indigo.setOption("skip-3d-chirality", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/cis-trans-stereo.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/cis-trans-stereo.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -323,8 +341,10 @@ print("****** fix direction of wedge bonds ********")
 indigo.setOption("standardize-fix-direction-wedge-bonds", "true")
 indigo.setOption("ignore-stereochemistry-errors", "true")
 indigo.setOption("skip-3d-chirality", "true")
-mol = indigo.loadMolecule("CC(=O)N[C@@H]1[C@@H](O)C[C@@](O)(O[C@H]1[C@H](O)[C@H](O)CO)C(O)=O")
-mol.layout();
+mol = indigo.loadMolecule(
+    "CC(=O)N[C@@H]1[C@@H](O)C[C@@](O)(O[C@H]1[C@H](O)[C@H](O)CO)C(O)=O"
+)
+mol.layout()
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -365,7 +385,9 @@ indigo.setOption("molfile-saving-mode", "3000")
 
 print("****** clear zero-order dative type bonds ********")
 indigo.setOption("standardize-clear-dative-bonds", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/ferrocene.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/ferrocene.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -381,7 +403,9 @@ indigo.setOption("standardize-clear-hydrogen-bonds", "false")
 
 print("****** create zero-order coordination bonds ********")
 indigo.setOption("standardize-create-dative-bonds", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/wrong_complex.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/wrong_complex.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
@@ -389,7 +413,9 @@ indigo.setOption("standardize-create-dative-bonds", "false")
 
 print("****** create zero-order hydrogen type bonds ********")
 indigo.setOption("standardize-create-hydrogen-bonds", "true")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/wrong_h_bond.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/wrong_h_bond.mol", __file__)
+)
 print(mol.molfile())
 mol.standardize()
 print(mol.molfile())

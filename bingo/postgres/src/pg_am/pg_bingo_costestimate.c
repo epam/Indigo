@@ -1,8 +1,8 @@
 #include <ctype.h>
 #include <math.h>
 
-#include "postgres.h"
 #include "fmgr.h"
+#include "postgres.h"
 #if PG_VERSION_NUM / 100 >= 1200
 #include "access/relation.h"
 #include "optimizer/optimizer.h"
@@ -307,18 +307,15 @@
 //     *indexCorrelation = -1.0;
 // }
 
-
-
-
 #if PG_VERSION_NUM / 100 >= 1200
 
 void bingo_costestimate120(struct PlannerInfo* root, struct IndexPath* path, double loop_count, Cost* indexStartupCost, Cost* indexTotalCost,
-                           Selectivity* indexSelectivity, double* indexCorrelation, double* indexPages) {
-
+                           Selectivity* indexSelectivity, double* indexCorrelation, double* indexPages)
+{
 
     GenericCosts costs;
     MemSet(&costs, 0, sizeof(costs));
-	costs.numIndexTuples = 1;
+    costs.numIndexTuples = 1;
     costs.numIndexPages = 1;
     genericcostestimate(root, path, loop_count, &costs);
 
@@ -327,9 +324,9 @@ void bingo_costestimate120(struct PlannerInfo* root, struct IndexPath* path, dou
     costs.numIndexPages = 1;
 
     *indexStartupCost = costs.indexStartupCost;
-	*indexTotalCost = costs.indexTotalCost;
-	*indexSelectivity = costs.indexSelectivity;
-	*indexCorrelation = costs.indexCorrelation;
+    *indexTotalCost = costs.indexTotalCost;
+    *indexSelectivity = costs.indexSelectivity;
+    *indexCorrelation = costs.indexCorrelation;
     *indexPages = costs.numIndexPages;
 }
 
@@ -584,10 +581,6 @@ void bingo_costestimate101(struct PlannerInfo* root, struct IndexPath* path, dou
 }
 #endif
 
-
-
-
-
 // #if PG_VERSION_NUM / 100 >= 904
 // PGDLLEXPORT PG_FUNCTION_INFO_V1(bingo_costestimate);
 // Datum bingo_costestimate(PG_FUNCTION_ARGS)
@@ -683,8 +676,6 @@ void bingo_costestimate101(struct PlannerInfo* root, struct IndexPath* path, dou
 
 //     PG_RETURN_VOID();
 // }
-
-
 
 /*
 Datum

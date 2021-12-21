@@ -3,13 +3,11 @@ from pathlib import Path
 from typing import Callable
 
 import pytest
-from indigo import Indigo
-
 from bingo_elastic.elastic import ElasticRepository, IndexName
 from bingo_elastic.model.helpers import iterate_file, load_reaction
-from bingo_elastic.model.record import (
-    IndigoRecordMolecule,
-)
+from bingo_elastic.model.record import IndigoRecordMolecule
+
+from indigo import Indigo
 
 
 @pytest.fixture()

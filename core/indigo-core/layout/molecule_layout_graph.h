@@ -594,7 +594,6 @@ namespace indigo
         float _get_square();
         void flipped() override;
 
-
 #ifdef M_LAYOUT_DEBUG
         void saveDebug();
 #endif

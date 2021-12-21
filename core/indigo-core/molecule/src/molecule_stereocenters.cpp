@@ -133,7 +133,7 @@ void MoleculeStereocenters::_buildOneFrom3dCoordinates(BaseMolecule& baseMolecul
 {
     Vec3f& v_pos = baseMolecule.getAtomXyz(idx);
 
-    if (!isPossibleStereocenter(baseMolecule,idx))
+    if (!isPossibleStereocenter(baseMolecule, idx))
         return;
 
     int pyramid[4];
@@ -264,8 +264,7 @@ bool MoleculeStereocenters::isPossibleStereocenter(BaseMolecule& baseMolecule, i
 // can be determined by normal direction then do not check if opposite directions
 // contradicts original ones.
 bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom_idx, int* sensible_bonds_out, bool bidirectional_mode,
-                                            bool bidirectional_either_mode,
-                                            const Array<bool>& bond_ignore)
+                                            bool bidirectional_either_mode, const Array<bool>& bond_ignore)
 {
     const Vertex& vertex = baseMolecule.getVertex(atom_idx);
 
@@ -344,10 +343,10 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
 
     // Local synonym to get bond direction
     auto getDir = [&](int from, int to) {
-      int idx = baseMolecule.findEdgeIndex(from, to);
-      if (bond_ignore[idx])
-          return 0;
-      return _getDirection(baseMolecule, from, to, bidirectional_mode);
+        int idx = baseMolecule.findEdgeIndex(from, to);
+        if (bond_ignore[idx])
+            return 0;
+        return _getDirection(baseMolecule, from, to, bidirectional_mode);
     };
 
     if (is_either)
@@ -866,8 +865,7 @@ bool MoleculeStereocenters::haveAllAndAny()
     return true;
 }
 
-bool MoleculeStereocenters::checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping, bool reset_h_isotopes,
-                                     Filter* stereocenters_vertex_filter)
+bool MoleculeStereocenters::checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping, bool reset_h_isotopes, Filter* stereocenters_vertex_filter)
 {
     QS_DEF(Array<int>, flags);
 
@@ -1069,8 +1067,8 @@ bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, 
     throw Error("IsPyramidMappingRigid: size = %d", size);
 }
 
-void MoleculeStereocenters::getPyramidMapping( BaseMolecule& query, BaseMolecule& target, int query_atom, const int* mapping,
-                                               int* mapping_out, bool reset_h_isotopes)
+void MoleculeStereocenters::getPyramidMapping(BaseMolecule& query, BaseMolecule& target, int query_atom, const int* mapping, int* mapping_out,
+                                              bool reset_h_isotopes)
 {
     int i, j;
 
@@ -1600,8 +1598,8 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
 
     if (atom.type > ATOM_ANY)
     {
-        std::array<Vec3f,4> dirs;
-        dirs.fill({0.0,0.0,0.0});
+        std::array<Vec3f, 4> dirs;
+        dirs.fill({0.0, 0.0, 0.0});
         for (j = 0; j < size; j++)
         {
             dirs[j] = baseMolecule.getAtomXyz(pyramid[j]);
@@ -1638,7 +1636,7 @@ void MoleculeStereocenters::markBonds(BaseMolecule& baseMolecule)
     int i;
 
     for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-        markBond(baseMolecule,_stereocenters.key(i));
+        markBond(baseMolecule, _stereocenters.key(i));
 }
 
 bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter)

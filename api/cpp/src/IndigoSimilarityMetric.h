@@ -1,6 +1,5 @@
 #pragma once
 
-
 namespace indigo_cpp
 {
     enum class IndigoSimilarityMetric

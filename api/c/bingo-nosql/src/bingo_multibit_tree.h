@@ -8,8 +8,8 @@
 #include "math/algebra.h"
 
 #include "bingo_cell_container.h"
-#include "mmf/mmf_ptr.h"
 #include "bingo_sim_coef.h"
+#include "mmf/mmf_ptr.h"
 
 namespace bingo
 {
@@ -79,8 +79,8 @@ namespace bingo
 
         void _build();
 
-        void _findLinear(_MultibitNode* node, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef, indigo::Array<SimResult>& sim_indices,
-                         int fp_bit_number = -1);
+        void _findLinear(_MultibitNode* node, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef,
+                         indigo::Array<SimResult>& sim_indices, int fp_bit_number = -1);
 
         void _findSimilarInNode(MMFPtr<_MultibitNode> node_ptr, const byte* query, int query_bit_number, SimCoef& sim_coef, double min_coef,
                                 indigo::Array<SimResult>& sim_indices, int m01, int m10);

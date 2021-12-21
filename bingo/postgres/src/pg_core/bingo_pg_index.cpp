@@ -2,8 +2,8 @@
 
 extern "C"
 {
-#include "postgres.h"
 #include "fmgr.h"
+#include "postgres.h"
 #include "storage/bufmgr.h"
 }
 

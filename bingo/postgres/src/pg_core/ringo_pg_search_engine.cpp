@@ -2,10 +2,10 @@
 
 extern "C"
 {
-#include "postgres.h"
 #include "access/genam.h"
 #include "access/relscan.h"
 #include "fmgr.h"
+#include "postgres.h"
 #include "utils/typcache.h"
 }
 

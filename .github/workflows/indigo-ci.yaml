@@ -15,6 +15,21 @@ on:
   repository_dispatch:
 
 jobs:
+  static_analysis:
+    runs-on: ubuntu-latest
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Check
+        run: |
+          .ci/static_analysis.sh
+
   build_indigo_libs_x86_64:
     strategy:
       fail-fast: false

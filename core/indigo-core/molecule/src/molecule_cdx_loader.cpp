@@ -295,7 +295,7 @@ void MoleculeCdxLoader::_readFragment(UINT32 fragment_id)
             default:
                 _scanner->seek(size, SEEK_CUR);
                 break;
-           }
+            }
         }
         if (level == 0)
             return;

@@ -1,16 +1,9 @@
 import time
 from pathlib import Path
-from typing import List
 
 import pytest
-from indigo import Indigo, IndigoObject
-
 from bingo_elastic.elastic import ElasticRepository
-from bingo_elastic.model.helpers import (
-    iterate_file,
-    load_reaction,
-    load_molecule,
-)
+from bingo_elastic.model.helpers import iterate_file
 from bingo_elastic.model.record import IndigoRecordMolecule, as_iob
 from bingo_elastic.queries import (
     EuclidSimilarityMatch,
@@ -18,8 +11,9 @@ from bingo_elastic.queries import (
     TanimotoSimilarityMatch,
     TverskySimilarityMatch,
     WildcardQuery,
-    ExactMatch,
 )
+
+from indigo import Indigo
 
 
 def test_create_index(

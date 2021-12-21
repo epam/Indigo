@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import Callable, Generator, Optional, Union
 
-from indigo import Indigo, IndigoObject
-
 from bingo_elastic.model.record import (
     IndigoRecordMolecule,
     IndigoRecordReaction,
 )
+
+from indigo import Indigo, IndigoObject
 
 
 def iterate_file(

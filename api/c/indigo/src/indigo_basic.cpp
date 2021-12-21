@@ -16,10 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_internal.h"
+#include <memory>
 
 CEXPORT int indigoNext(int iter)
 {

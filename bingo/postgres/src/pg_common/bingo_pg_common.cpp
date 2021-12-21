@@ -2,13 +2,13 @@
 
 extern "C"
 {
-#include "postgres.h"
 #include "access/heapam.h"
 #include "access/itup.h"
 #include "catalog/namespace.h"
 #include "catalog/pg_type.h"
 #include "executor/spi.h"
 #include "fmgr.h"
+#include "postgres.h"
 #include "storage/bufmgr.h"
 #include "storage/lock.h"
 #include "utils/lsyscache.h"

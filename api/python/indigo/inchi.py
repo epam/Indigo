@@ -15,16 +15,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from indigo import *
+import os
+import platform
+from ctypes import CDLL, c_char_p, c_int
+
+from indigo import IndigoException
 
 
 class IndigoInchi(object):
     def __init__(self, indigo):
         self.indigo = indigo
 
-        if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
+        if (
+            os.name == "posix"
+            and not platform.mac_ver()[0]
+            and not platform.system().startswith("CYGWIN")
+        ):
             self._lib = CDLL(indigo._dll_dir + "/libindigo-inchi.so")
-        elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
+        elif os.name == "nt" or platform.system().startswith("CYGWIN"):
             self._lib = CDLL(indigo._dll_dir + "/indigo-inchi.dll")
         elif platform.mac_ver()[0]:
             self._lib = CDLL(indigo._dll_dir + "/libindigo-inchi.dylib")
@@ -64,8 +72,7 @@ class IndigoInchi(object):
             self._initialized = False
 
     def resetOptions(self):
-        """Resets options for InChi
-        """
+        """Resets options for InChi"""
         self.indigo._setSessionId()
         self.indigo._checkResult(self._lib.indigoInchiResetOptions())
 
@@ -79,7 +86,9 @@ class IndigoInchi(object):
             IndigoObject: molecule object
         """
         self.indigo._setSessionId()
-        res = self.indigo._checkResult(self._lib.indigoInchiLoadMolecule(inchi.encode('ascii')))
+        res = self.indigo._checkResult(
+            self._lib.indigoInchiLoadMolecule(inchi.encode("ascii"))
+        )
         if res == 0:
             return None
         return self.indigo.IndigoObject(self.indigo, res)
@@ -103,7 +112,9 @@ class IndigoInchi(object):
             str: InChi string
         """
         self.indigo._setSessionId()
-        return self.indigo._checkResultString(self._lib.indigoInchiGetInchi(molecule.id))
+        return self.indigo._checkResultString(
+            self._lib.indigoInchiGetInchi(molecule.id)
+        )
 
     def getInchiKey(self, inchi):
         """Returns InChi key for InChi string
@@ -115,7 +126,9 @@ class IndigoInchi(object):
             str: InChi key
         """
         self.indigo._setSessionId()
-        return self.indigo._checkResultString(self._lib.indigoInchiGetInchiKey(inchi.encode('ascii')))
+        return self.indigo._checkResultString(
+            self._lib.indigoInchiGetInchiKey(inchi.encode("ascii"))
+        )
 
     def getWarning(self):
         """Returns warning message
@@ -124,7 +137,9 @@ class IndigoInchi(object):
             str: warning string
         """
         self.indigo._setSessionId()
-        return self.indigo._checkResultString(self._lib.indigoInchiGetWarning())
+        return self.indigo._checkResultString(
+            self._lib.indigoInchiGetWarning()
+        )
 
     def getLog(self):
         """Returns logs while InChi calculation
@@ -142,4 +157,6 @@ class IndigoInchi(object):
             str: InChi aux info string
         """
         self.indigo._setSessionId()
-        return self.indigo._checkResultString(self._lib.indigoInchiGetAuxInfo())
+        return self.indigo._checkResultString(
+            self._lib.indigoInchiGetAuxInfo()
+        )

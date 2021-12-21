@@ -372,10 +372,10 @@ int Indigo::countObjects() const
 
 void Indigo::TmpData::clear()
 {
-        string.clear();
-        xyz[0] = 0.0;
-        xyz[1] = 0.0;
-        xyz[2] = 0.0;
+    string.clear();
+    xyz[0] = 0.0;
+    xyz[1] = 0.0;
+    xyz[2] = 0.0;
 };
 
 Indigo::TmpData& Indigo::getThreadTmpData()

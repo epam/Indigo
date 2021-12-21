@@ -1,28 +1,84 @@
 import sys
-sys.path.append('../../common')
+
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 mol_db_names = [
-   (joinPathPy("../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__), indigo.iterateSDFile),
-   (joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), indigo.iterateSDFile),
-   (joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), indigo.iterateSDFile),
-   (joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__), indigo.iterateSmilesFile),
-   (joinPathPy("molecules/cis_trans.smi", __file__), indigo.iterateSmilesFile),
-   (joinPathPy("../../../../../data/molecules/stereo/stereo_cis_trans.sdf", __file__), indigo.iterateSDFile),
-   (joinPathPy("molecules/set1.sdf", __file__), indigo.iterateSDFile),
-   (joinPathPy("molecules/cano_stereocenters.sdf", __file__), indigo.iterateSDFile),
-   (joinPathPy("../../../../../data/molecules/basic/tetrahedral-all.cml", __file__), indigo.iterateCMLFile),
-   (joinPathPy("molecules/cis_trans_set.sdf", __file__), indigo.iterateSDFile),
-   (joinPathPy("molecules/cis_trans_expl_h.sdf", __file__), indigo.iterateSDFile),
-   (joinPathPy("molecules/bad_valence.smi", __file__), indigo.iterateSmilesFile),
-   (joinPathPy("molecules/arom-ambiguous.smi", __file__), indigo.iterateSmilesFile),
-   (joinPathPy("molecules/arom-ambiguous.sdf", __file__), indigo.iterateSDFile),
-   (joinPathPy("../../../../../data/molecules/basic/explicit_valence.sdf", __file__), indigo.iterateSDFile),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/basic/thiazolidines.sdf", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__),
+        indigo.iterateSmilesFile,
+    ),
+    (
+        joinPathPy("molecules/cis_trans.smi", __file__),
+        indigo.iterateSmilesFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/stereo/stereo_cis_trans.sdf",
+            __file__,
+        ),
+        indigo.iterateSDFile,
+    ),
+    (joinPathPy("molecules/set1.sdf", __file__), indigo.iterateSDFile),
+    (
+        joinPathPy("molecules/cano_stereocenters.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/basic/tetrahedral-all.cml", __file__
+        ),
+        indigo.iterateCMLFile,
+    ),
+    (
+        joinPathPy("molecules/cis_trans_set.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("molecules/cis_trans_expl_h.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("molecules/bad_valence.smi", __file__),
+        indigo.iterateSmilesFile,
+    ),
+    (
+        joinPathPy("molecules/arom-ambiguous.smi", __file__),
+        indigo.iterateSmilesFile,
+    ),
+    (
+        joinPathPy("molecules/arom-ambiguous.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/basic/explicit_valence.sdf",
+            __file__,
+        ),
+        indigo.iterateSDFile,
+    ),
 ]
 
-def getNameAndCano (m):
+
+def getNameAndCano(m):
     try:
         name = m.name()
     except IndigoException as e:
@@ -36,6 +92,7 @@ def getNameAndCano (m):
     except IndigoException as e:
         sm = getIndigoExceptionText(e)
     return name, cansm, sm
+
 
 for db_name, load_fund in mol_db_names:
     print("Database: %s" % relativePath(db_name))

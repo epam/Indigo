@@ -45,7 +45,9 @@ namespace indigo
         };
         enum
         {
-            EKETEllipse, EKETRectangle, EKETLine
+            EKETEllipse,
+            EKETRectangle,
+            EKETLine
         };
         int _mode;
         Rect2f _rect;

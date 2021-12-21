@@ -27,7 +27,6 @@
 #include "molecule/molecule_dearom.h"
 // #include "mode.h"
 
-
 using namespace indigo;
 
 // Inchi doesn't seem to support multithreading

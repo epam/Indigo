@@ -1,12 +1,12 @@
-import sys
-from threading import Thread
-from difflib import unified_diff
 import errno
+import sys
+from difflib import unified_diff
+from threading import Thread
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
-ext = 'svg'
+ext = "svg"
 thread_count = 100
 a = {}
 
@@ -23,8 +23,12 @@ def threadFunction(i):
     renderer = IndigoRenderer(indigo)
     mol = indigo.loadMolecule("C")
     indigo.setOption("render-output-format", ext)
-    renderer.renderToFile(mol, joinPathPy('out/threads/thread_%s.%s' % (i, ext), __file__))
-    with open(joinPathPy('out/threads/thread_%s.%s' % (i, ext), __file__), 'r') as f:
+    renderer.renderToFile(
+        mol, joinPathPy("out/threads/thread_%s.%s" % (i, ext), __file__)
+    )
+    with open(
+        joinPathPy("out/threads/thread_%s.%s" % (i, ext), __file__), "r"
+    ) as f:
         a[i] = f.read()
     if isIronPython():
         renderer.Dispose()
@@ -48,7 +52,7 @@ def runThreads():
             # +<g id="surface13">
             if len(a[i].split("\n")) != len(a[i - 1].split("\n")):
                 result = unified_diff(a[i].splitlines(), a[i - 1].splitlines())
-                print('\n'.join(result))
+                print("\n".join(result))
 
 
 runThreads()

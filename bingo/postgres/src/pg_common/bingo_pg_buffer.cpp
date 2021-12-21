@@ -2,9 +2,9 @@
 
 extern "C"
 {
-#include "postgres.h"
 #include "access/itup.h"
 #include "fmgr.h"
+#include "postgres.h"
 #include "storage/bufmgr.h"
 #include "storage/lock.h"
 #include "utils/rel.h"
@@ -283,29 +283,29 @@ void BingoPgBuffer::formIndexTuple(void* map_data, int size)
     {
         Page page = BufferGetPage(getBuffer());
         Datum map_datum = PointerGetDatum(map_data);
-        #if PG_VERSION_NUM / 100 >= 1200
+#if PG_VERSION_NUM / 100 >= 1200
         TupleDesc index_desc = CreateTemplateTupleDesc(1);
-        #else
+#else
         TupleDesc index_desc = CreateTemplateTupleDesc(1, false);
-        #endif
+#endif
 
-        #if PG_VERSION_NUM / 100 >= 1100
-            index_desc->attrs[0].attlen = size;
-            index_desc->attrs[0].attalign = 'c';
-            index_desc->attrs[0].attbyval = false;
-        #else
-            index_desc->attrs[0]->attlen = size;
-            index_desc->attrs[0]->attalign = 'c';
-            index_desc->attrs[0]->attbyval = false;
-        #endif
+#if PG_VERSION_NUM / 100 >= 1100
+        index_desc->attrs[0].attlen = size;
+        index_desc->attrs[0].attalign = 'c';
+        index_desc->attrs[0].attbyval = false;
+#else
+        index_desc->attrs[0]->attlen = size;
+        index_desc->attrs[0]->attalign = 'c';
+        index_desc->attrs[0]->attbyval = false;
+#endif
         bool isnull = false;
 
         IndexTuple itup = index_form_tuple(index_desc, &map_datum, &isnull);
-        #if PG_VERSION_NUM / 100 >= 1100
-            int itemsz = IndexTupleSize(itup);
-        #else
-            int itemsz = IndexTupleDSize(*itup);
-        #endif
+#if PG_VERSION_NUM / 100 >= 1100
+        int itemsz = IndexTupleSize(itup);
+#else
+        int itemsz = IndexTupleDSize(*itup);
+#endif
         itemsz = MAXALIGN(itemsz);
 
         if (PageAddItem(page, (Item)itup, itemsz, 0, false, false) == InvalidOffsetNumber)

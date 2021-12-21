@@ -53,7 +53,7 @@ class WithIndigoObject:
 
         try:
             setattr(instance, "name", value.name())
-        except indigo.IndigoException as err_:
+        except indigo.IndigoException:
             pass
 
         try:
@@ -73,13 +73,13 @@ class IndigoRecord:
         - IndigoRecordReaction
     """
 
-    cmf: bytes = None
-    name: str = None
-    sim_fingerprint: List[str] = None
-    sub_fingerprint: List[str] = None
+    cmf: Optional[bytes] = None
+    name: Optional[str] = None
+    sim_fingerprint: Optional[List[str]] = None
+    sub_fingerprint: Optional[List[str]] = None
     indigo_object = WithIndigoObject()
     elastic_response = WithElasticResponse()
-    record_id: str = None
+    record_id: Optional[str] = None
     error_handler: Optional[Callable[[object, BaseException], None]] = None
 
     def __init__(self, **kwargs) -> None:
@@ -103,7 +103,7 @@ class IndigoRecord:
         # First check if skip_errors flag passed
         # If no flag passed add error_handler function from arguments
         if kwargs.get("skip_errors", False):
-            self.error_handler = skip_errors
+            self.error_handler = skip_errors  # typing: ignore
         else:
             self.error_handler = kwargs.get("error_handler", None)
 
@@ -121,7 +121,8 @@ class IndigoRecord:
         }
 
     def as_indigo_object(self, session: Indigo):
-        return session.deserialize(list(map(int, self.cmf.split(" "))))
+        assert self.cmf
+        return session.deserialize(list(map(int, self.cmf.split(b" "))))
 
 
 class IndigoRecordMolecule(IndigoRecord):

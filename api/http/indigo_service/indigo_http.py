@@ -20,10 +20,10 @@ from typing import Awaitable, Callable, List, Tuple, Union
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from indigo import IndigoException
-
 from indigo_service import jsonapi, service
 from indigo_service.indigo_tools import indigo, indigo_new
+
+from indigo import IndigoException
 
 app = FastAPI(title="Indigo service JSON:API", version=indigo().version())
 

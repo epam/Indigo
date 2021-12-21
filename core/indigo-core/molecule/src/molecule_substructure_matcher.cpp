@@ -18,7 +18,6 @@
 
 #include "molecule/molecule_substructure_matcher.h"
 #include "base_cpp/array.h"
-#include <memory>
 #include "graph/edge_rotation_matcher.h"
 #include "graph/filter.h"
 #include "graph/graph.h"
@@ -32,6 +31,7 @@
 #include "molecule/molecule_neighbourhood_counters.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
+#include <memory>
 
 using namespace indigo;
 

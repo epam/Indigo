@@ -2,11 +2,6 @@ from ast import Str
 from enum import Enum
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
-from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import NotFoundError, RequestError
-from elasticsearch.helpers import streaming_bulk
-from indigo import Indigo
-
 from bingo_elastic.model.record import (
     IndigoRecord,
     IndigoRecordMolecule,
@@ -14,6 +9,11 @@ from bingo_elastic.model.record import (
 )
 from bingo_elastic.queries import BaseMatch, query_factory
 from bingo_elastic.utils import PostprocessType
+from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import NotFoundError, RequestError
+from elasticsearch.helpers import streaming_bulk
+
+from indigo import Indigo
 
 
 class IndexName(Enum):

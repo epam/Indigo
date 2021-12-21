@@ -19,7 +19,6 @@
 #ifndef __molecule_substructure_matcher__
 #define __molecule_substructure_matcher__
 
-#include <memory>
 #include "base_cpp/obj.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/embeddings_storage.h"
@@ -27,6 +26,7 @@
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_pi_systems_matcher.h"
 #include "molecule/query_molecule.h"
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)

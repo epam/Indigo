@@ -19,8 +19,8 @@
 #ifndef __elements_h__
 #define __elements_h__
 
-#include <map>
 #include <array>
+#include <map>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
@@ -215,8 +215,8 @@ namespace indigo
 
         Element(const Element&) = delete;
         Element(Element&&) = delete;
-        Element& operator= (const Element&) = delete;
-        Element& operator= (Element&&) = delete;
+        Element& operator=(const Element&) = delete;
+        Element& operator=(Element&&) = delete;
         static const Element& _instance();
 
     private:
@@ -281,7 +281,7 @@ namespace indigo
 
         struct cmp_str
         {
-            bool operator()(char const *a, char const *b) const
+            bool operator()(char const* a, char const* b) const
             {
                 return std::strcmp(a, b) < 0;
             }

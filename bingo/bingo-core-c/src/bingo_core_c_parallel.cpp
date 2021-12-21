@@ -36,8 +36,8 @@ BINGO_END(0, -1)
 
 // Method for index molecules
 CEXPORT int bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
-                              void (*process_error_cb)(int id, void* context), void* context){
-    BINGO_BEGIN{if (self.parallel_indexing_dispatcher.get() == 0){if (is_reaction) self.parallel_indexing_dispatcher = std::make_unique<RingoIndexingDispatcher>(self);
+                              void (*process_error_cb)(int id, void* context), void* context){BINGO_BEGIN{
+    if (self.parallel_indexing_dispatcher.get() == 0){if (is_reaction) self.parallel_indexing_dispatcher = std::make_unique<RingoIndexingDispatcher>(self);
 else self.parallel_indexing_dispatcher = std::make_unique<MangoIndexingDispatcher>(self);
 }
 

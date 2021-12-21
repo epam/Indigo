@@ -19,9 +19,9 @@
 #ifndef __mango_shadow_fetch__
 #define __mango_shadow_fetch__
 
-#include <memory>
 #include "oracle/bingo_fetch_engine.h"
 #include "oracle/mango_shadow_table.h"
+#include <memory>
 
 using namespace indigo;
 

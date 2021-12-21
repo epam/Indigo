@@ -16,12 +16,12 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "oracle/ora_wrap.h"
 #include "oracle/mango_oracle.h"
-#include <memory>
 #include "base_cpp/output.h"
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/mango_shadow_table.h"
+#include "oracle/ora_wrap.h"
+#include <memory>
 
 const char* bad_molecule_warning = "WARNING: bad molecule: %s\n";
 const char* bad_molecule_warning_rowid = "WARNING: bad molecule %s: %s\n";

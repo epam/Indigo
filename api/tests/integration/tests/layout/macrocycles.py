@@ -1,13 +1,12 @@
 import errno
-import sys
-
 import math
+import sys
 from math import *
 
 MIN_DIST = 0.1
 eps = 0.01
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -28,14 +27,20 @@ saver = indigo.writeFile(joinPathPy("out/macrocycles.sdf", __file__))
 
 ref_path = getRefFilepath("macrocycles.sdf")
 ref = indigo.iterateSDFile(ref_path)
-for idx, item in enumerate(indigo.iterateSmilesFile(joinPathPy("molecules/macrocycles_test.smi", __file__))):
+for idx, item in enumerate(
+    indigo.iterateSmilesFile(
+        joinPathPy("molecules/macrocycles_test.smi", __file__)
+    )
+):
     try:
         print("Test Item #{} ".format(idx))
         mol = item.clone()
         mol.layout()
-        res = moleculeLayoutDiff(indigo, mol, ref.at(idx).rawData(), ref_is_file=False)
+        res = moleculeLayoutDiff(
+            indigo, mol, ref.at(idx).rawData(), ref_is_file=False
+        )
         print("  Result: {}".format(res))
-        mol.setProperty('test', "Item #{} ".format(idx))
+        mol.setProperty("test", "Item #{} ".format(idx))
         saver.sdfAppend(mol)
     except IndigoException as e:
         print("Exception for #%s: %s" % (idx, getIndigoExceptionText(e)))
@@ -75,7 +80,12 @@ def dif_free_try(item):
                     xyz[0] -= xyz2[0]
                     xyz[1] -= xyz2[1]
                     xyz[2] -= xyz2[2]
-                    dist[i][j] = math.sqrt(xyz[0] * xyz[0] + xyz[1] * xyz[1] + xyz[2] * xyz[2]) / 1.6
+                    dist[i][j] = (
+                        math.sqrt(
+                            xyz[0] * xyz[0] + xyz[1] * xyz[1] + xyz[2] * xyz[2]
+                        )
+                        / 1.6
+                    )
                     dist[i][j] = max(dist[i][j], eps)
                     dist[i][j] = 1 / dist[i][j]
 
@@ -84,7 +94,7 @@ def dif_free_try(item):
             e = mol.getBond(t)
             i = e.source().index()
             j = e.destination().index()
-            if (j < i):
+            if j < i:
                 temp = i
                 i = j
                 j = temp
@@ -105,10 +115,38 @@ def dif_free_try(item):
                 a2 = e2.source().index()
                 b2 = e2.destination().index()
                 if (a1 - a2) * (a1 - b2) * (b1 - a2) * (b1 - b2) != 0:
-                    s1 = area(co[a1][0], co[a1][1], co[a2][0], co[a2][1], co[b2][0], co[b2][1])
-                    s2 = area(co[b1][0], co[b1][1], co[a2][0], co[a2][1], co[b2][0], co[b2][1])
-                    s3 = area(co[a2][0], co[a2][1], co[a1][0], co[a1][1], co[b1][0], co[b1][1])
-                    s4 = area(co[b2][0], co[b2][1], co[a1][0], co[a1][1], co[b1][0], co[b1][1])
+                    s1 = area(
+                        co[a1][0],
+                        co[a1][1],
+                        co[a2][0],
+                        co[a2][1],
+                        co[b2][0],
+                        co[b2][1],
+                    )
+                    s2 = area(
+                        co[b1][0],
+                        co[b1][1],
+                        co[a2][0],
+                        co[a2][1],
+                        co[b2][0],
+                        co[b2][1],
+                    )
+                    s3 = area(
+                        co[a2][0],
+                        co[a2][1],
+                        co[a1][0],
+                        co[a1][1],
+                        co[b1][0],
+                        co[b1][1],
+                    )
+                    s4 = area(
+                        co[b2][0],
+                        co[b2][1],
+                        co[a1][0],
+                        co[a1][1],
+                        co[b1][0],
+                        co[b1][1],
+                    )
                     if (s1 * s2 <= 0) and (s3 * s4 <= 0):
                         sum_dist += 1 / sqrt(eps)
 
@@ -169,7 +207,7 @@ def dif_free_try(item):
                             forbid = 0
                     for i in range(len(need[deg])):
                         if i != forbid:
-                            mx = 0;
+                            mx = 0
                             for j in range(deg):
                                 if need[deg][i][j] == 0:
                                     if abs(a1[j]) < eps:
