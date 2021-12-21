@@ -61,6 +61,10 @@ RUN git --version && \
     python3 --version && \
     twine --version && \
     wheel version && \
+    black --version && \
+    isort --version && \
+    pflake8 --version && \
+    mypy --version && \
     java -version && \
     mvn --version && \
     gpg --version && \
@@ -68,4 +72,5 @@ RUN git --version && \
     dotnet --version && \
     dotnet nuget --version && \
     ipy -V && \
-    powershell --version
+    powershell --version && \
+    clang-format --version
