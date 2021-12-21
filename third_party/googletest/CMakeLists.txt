@@ -120,4 +120,4 @@ include_directories(${gtest_build_include_dirs})
 # are used for other targets, to ensure that gtest can be compiled by a user
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
-target_include_directories(gtest INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(gtest SYSTEM INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
