@@ -1,27 +1,25 @@
 #include "bingo_pg_fix_pre.h"
 
+
 extern "C"
 {
+#include "postgres.h"
+
 #include "access/genam.h"
 #include "access/relscan.h"
 #include "fmgr.h"
-#include "postgres.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
 }
 
 #include "bingo_pg_fix_post.h"
 
-#include "bingo_pg_search.h"
-
 #include "base_cpp/tlscont.h"
-#include "bingo_core_c.h"
 
+#include "bingo_pg_search.h"
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_common.h"
 #include "bingo_pg_config.h"
-#include "bingo_pg_ext_bitset.h"
-#include "bingo_pg_text.h"
 #include "mango_pg_search_engine.h"
 #include "ringo_pg_search_engine.h"
 

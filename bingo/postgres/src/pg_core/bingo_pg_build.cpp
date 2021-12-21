@@ -1,9 +1,12 @@
 #include "bingo_pg_fix_pre.h"
 
+#include <memory>
+
 extern "C"
 {
-#include "fmgr.h"
 #include "postgres.h"
+
+#include "fmgr.h"
 #include "storage/bufmgr.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
@@ -14,13 +17,10 @@ extern "C"
 #include "bingo_pg_build.h"
 
 #include "base_cpp/profiling.h"
-#include "bingo_core_c.h"
-#include <memory>
 
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_common.h"
 #include "bingo_pg_config.h"
-#include "bingo_pg_ext_bitset.h"
 #include "bingo_pg_search_engine.h"
 #include "bingo_pg_text.h"
 #include "mango_pg_build_engine.h"

@@ -1,8 +1,7 @@
-#include <ctype.h>
-#include <math.h>
+#include "postgres.h"
 
 #include "fmgr.h"
-#include "postgres.h"
+
 #if PG_VERSION_NUM / 100 >= 1200
 #include "access/relation.h"
 #include "optimizer/optimizer.h"

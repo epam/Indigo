@@ -4,17 +4,18 @@
 
 extern "C"
 {
-#include "fmgr.h"
 #include "postgres.h"
+
+#include "fmgr.h"
 }
 
 #include "bingo_pg_fix_post.h"
 
 #include "mango_pg_build_engine.h"
 
-#include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
+
 #include "bingo_core_c.h"
 
 #include "bingo_pg_common.h"

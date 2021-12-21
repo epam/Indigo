@@ -2,9 +2,10 @@
 
 extern "C"
 {
+#include "postgres.h"
+
 #include "access/itup.h"
 #include "fmgr.h"
-#include "postgres.h"
 #include "storage/bufmgr.h"
 #include "storage/lock.h"
 #include "utils/rel.h"

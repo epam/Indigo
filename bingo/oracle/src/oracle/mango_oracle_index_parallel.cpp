@@ -1,6 +1,7 @@
-#include "oracle/mango_oracle_index_parallel.h"
 #include "base_cpp/profiling.h"
+
 #include "oracle/bingo_oracle_context.h"
+#include "oracle/mango_oracle_index_parallel.h"
 #include "oracle/ora_wrap.h"
 
 //
