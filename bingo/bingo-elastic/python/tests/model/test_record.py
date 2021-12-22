@@ -4,11 +4,11 @@ import pytest
 
 from bingo_elastic.elastic import ElasticRepository
 from bingo_elastic.model.record import (
+    IndigoRecord,
     IndigoRecordMolecule,
     IndigoRecordReaction,
     as_iob,
 )
-
 from bingo_elastic.queries import SimilarityMatch
 
 
@@ -17,7 +17,7 @@ def test_empty_create(indigo_fixture):
     with pytest.raises(Exception):
         IndigoRecordMolecule(indigo_object=mol)
 
-    def err_handler(instance: object, err_: BaseException) -> None:
+    def err_handler(instance: IndigoRecord, err_: BaseException) -> None:
         assert isinstance(instance.record_id, str)
         assert isinstance(err_, ValueError)
 
@@ -72,8 +72,8 @@ def test_create_reaction(
     for found_react in elastic_repository_reaction.filter(
         similarity=SimilarityMatch(indigo_reaction, 0.9)
     ):
-        found_react = as_iob(found_react, indigo_fixture)
-        assert count_products == found_react.countProducts()
-        assert count_reactants == found_react.countReactants()
-        for reactant in found_react.iterateReactants():
+        found_react_obj = as_iob(found_react, indigo_fixture)
+        assert count_products == found_react_obj.countProducts()
+        assert count_reactants == found_react_obj.countReactants()
+        for reactant in found_react_obj.iterateReactants():
             assert reactant.canonicalSmiles() in test_smiles

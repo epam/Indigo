@@ -49,8 +49,7 @@ static void message(StructureChecker::CheckResult& result, StructureChecker::Che
     result.messages.push_back(StructureChecker::CheckMessage(code, index, ids, subresult));
 }
 
-static void message(StructureChecker::CheckResult& result, StructureChecker::CheckMessageCode code, int index,
-                    const StructureChecker::CheckResult& subresult)
+static void message(StructureChecker::CheckResult& result, StructureChecker::CheckMessageCode code, int index, const StructureChecker::CheckResult& subresult)
 {
     message(result, code, index, std::vector<int>(), subresult);
 }
@@ -147,7 +146,7 @@ static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& sele
     {
         message(result,
                 StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_QUERY); // 'Structure contains query features, so valency could not be
-                                                                                           // checked'
+                                                                                          // checked'
     }
     else if (hasRGroups(mol))
     {
@@ -224,13 +223,13 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
         }
 
         FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_3D_STEREO, [](BaseMolecule& mol, int idx) {
-            bool stereo_3d = true;
+            bool stereo_3d = false;
             if (BaseMolecule::hasZCoord(mol) && mol.stereocenters.exists(idx))
             {
                 const Vertex& vertex = mol.getVertex(idx);
                 for (auto j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
                     if (mol.getBondDirection2(idx, vertex.neiVertex(j)) > 0)
-                        stereo_3d = false;
+                        stereo_3d = true;
             }
             return stereo_3d;
         });
@@ -244,9 +243,10 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
                              [&target](BaseMolecule& mol, int idx) { return !mol.stereocenters.exists(idx) && target->stereocenters.exists(idx); });
 
         mol.asMolecule().setIgnoreBadValenceFlag(saved_valence_flag);
-    } else
+    }
+    else
     {
-        message( result, StructureChecker::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO );
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO);
     }
 }
 static void check_query(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
@@ -415,7 +415,7 @@ static void check_salt(BaseMolecule& mol, const std::unordered_set<int>& selecte
 }
 
 static void check_ambiguous_h(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
-                             StructureChecker::CheckResult& result)
+                              StructureChecker::CheckResult& result)
 {
     if (isQueryMolecule(mol))
     {
@@ -547,15 +547,13 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
       {{StructureChecker::CheckMessageCode::CHECK_MSG_3D_COORD, "Structure contains 3D coordinates"}}}},
 
     {"charge",
-     {StructureChecker::CheckTypeCode::CHECK_CHARGE,
-      &check_charge,
-      {{StructureChecker::CheckMessageCode::CHECK_MSG_CHARGE, "Structure has non-zero charge"}}}},
+     {StructureChecker::CheckTypeCode::CHECK_CHARGE, &check_charge, {{StructureChecker::CheckMessageCode::CHECK_MSG_CHARGE, "Structure has non-zero charge"}}}},
 
-    {"salt",
-     {StructureChecker::CheckTypeCode::CHECK_SALT,
-      &check_salt,
-      {{StructureChecker::CheckMessageCode::CHECK_MSG_SALT, "Structure contains charged fragments (possible salt)"},
-       {StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL, "Not implemented yet: check salt"}}}},
+//    {"salt",
+//     {StructureChecker::CheckTypeCode::CHECK_SALT,
+//      &check_salt,
+//      {{StructureChecker::CheckMessageCode::CHECK_MSG_SALT, "Structure contains charged fragments (possible salt)"},
+//       {StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL, "Not implemented yet: check salt"}}}},
 
     {"ambiguous_h",
      {StructureChecker::CheckTypeCode::CHECK_AMBIGUOUS_H,
@@ -611,7 +609,7 @@ std::string StructureChecker::getCheckMessage(StructureChecker::CheckMessageCode
     return check_names_map.messages.at((int)code);
 }
 
-StructureChecker::CheckTypeCode StructureChecker::getCheckTypeByMsgCode( StructureChecker::CheckMessageCode code )
+StructureChecker::CheckTypeCode StructureChecker::getCheckTypeByMsgCode(StructureChecker::CheckMessageCode code)
 {
     return check_names_map.code2type.at((int)code);
 }
@@ -669,15 +667,15 @@ StructureChecker::CheckResult StructureChecker::checkMolecule(const BaseMolecule
     auto pars = check_params_from_string(check_types_and_selections);
     return checkMolecule(item, pars.check_types, pars.selected_atoms, pars.selected_bonds);
 }
-StructureChecker::CheckResult StructureChecker::checkMolecule(const BaseMolecule& item, const std::string& check_types,
-                                                                const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
+StructureChecker::CheckResult StructureChecker::checkMolecule(const BaseMolecule& item, const std::string& check_types, const std::vector<int>& selected_atoms,
+                                                              const std::vector<int>& selected_bonds)
 {
     auto pars = check_params_from_string(check_types);
     return checkMolecule(item, pars.check_types, selected_atoms, selected_bonds);
 }
 
 StructureChecker::CheckResult StructureChecker::checkMolecule(const BaseMolecule& bmol, const std::vector<CheckTypeCode>& check_types,
-                                                                const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
+                                                              const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
 {
     StructureChecker::CheckResult result;
 
@@ -738,7 +736,7 @@ StructureChecker::CheckResult StructureChecker::checkReaction(const BaseReaction
         CheckResult res = checkMolecule(brxn->getBaseMolecule(i), check_types);                                                                                \
         if (!res.isEmpty())                                                                                                                                    \
         {                                                                                                                                                      \
-            message(r, StructureChecker::CheckMessageCode::CHECK_MSG_REACTION, i, res);                                                                       \
+            message(r, StructureChecker::CheckMessageCode::CHECK_MSG_REACTION, i, res);                                                                        \
         }                                                                                                                                                      \
     }
     CHECK_REACTION_COMPONENT(reactant)
@@ -753,7 +751,7 @@ StructureChecker::CheckMessage::CheckMessage()
 }
 
 StructureChecker::CheckMessage::CheckMessage(StructureChecker::CheckMessageCode _code, int _index, const std::vector<int>& _ids,
-                                              const StructureChecker::CheckResult& _subresult)
+                                             const StructureChecker::CheckResult& _subresult)
     : code(_code), index(_index), ids(_ids), subresult(_subresult)
 {
     std::sort(ids.begin(), ids.end());

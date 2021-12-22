@@ -310,7 +310,7 @@ int OracleEnv::ociMajorVersion()
 #ifdef OCI_MAJOR_VERSION
     return OCI_MAJOR_VERSION;
 #else
-    #if OCI_HTYPE_LAST >= 29
+#if OCI_HTYPE_LAST >= 29
     return 10; // Oracle 10g2
 #elif OCI_HTYPE_LAST >= 27
     return 9; // Oracle 9i2

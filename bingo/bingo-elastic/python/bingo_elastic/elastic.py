@@ -1,11 +1,10 @@
-from ast import Str
 from enum import Enum
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError, RequestError
 from elasticsearch.helpers import streaming_bulk
-from indigo import Indigo
+from indigo import Indigo  # type: ignore
 
 from bingo_elastic.model.record import (
     IndigoRecord,
@@ -17,7 +16,6 @@ from bingo_elastic.utils import PostprocessType
 
 
 class IndexName(Enum):
-
     BINGO_MOLECULE = "bingo-molecules"
     BINGO_REACTION = "bingo-reactions"
 
@@ -53,10 +51,10 @@ class ElasticRepository:
         self,
         index_name: IndexName,
         *,
-        host: Union[str, List[Str]] = "localhost",
+        host: Union[str, List[str]] = "localhost",
         port: int = 9200,
-        scheme: Str = "",
-        http_auth: Optional[Tuple[Str]] = None,
+        scheme: str = "",
+        http_auth: Optional[Tuple[str]] = None,
         ssl_context: Any = None,
         request_timeout: int = 60,
         retry_on_timeout: bool = True,
@@ -90,7 +88,7 @@ class ElasticRepository:
 
         self.index_name = index_name.value
 
-        self.el_client = Elasticsearch(**arguments)
+        self.el_client = Elasticsearch(**arguments)  # type: ignore
 
     def __prepare(
         self, records: Generator[IndigoRecord, None, None]
@@ -141,6 +139,7 @@ class ElasticRepository:
         try:
             self.el_client.indices.create(index=self.index_name, body=body)
         except RequestError as err_:
+            assert isinstance(err_.info, dict)
             cause = err_.info.get("error", {}).get("root_cause", [])
             if (
                 len(cause) == 1
@@ -180,7 +179,7 @@ class ElasticRepository:
         for el_response in res.get("hits", {}).get("hits", []):
             record = get_record_by_index(el_response, self.index_name)
             for action_fn in postprocess_actions:
-                record = action_fn(record, indigo_session)
+                record = action_fn(record, indigo_session)  # type: ignore
                 if not record:
                     continue
             yield record

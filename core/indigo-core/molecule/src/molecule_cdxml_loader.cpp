@@ -118,7 +118,7 @@ void MoleculeCdxmlLoader::_parseCDXMLAttributes(TiXmlAttribute* pAttr)
     auto& bond_length = _cdxml_bond_length;
     auto cdxml_bond_length_lambda = [&bond_length](std::string& data) { bond_length = data; };
     std::unordered_map<std::string, std::function<void(std::string&)>> cdxml_dispatcher = {{"BoundingBox", cdxml_bbox_lambda},
-                                                                                                        {"BondLength", cdxml_bond_length_lambda}};
+                                                                                           {"BondLength", cdxml_bond_length_lambda}};
     _applyDispatcher(pAttr, cdxml_dispatcher);
 }
 
@@ -138,11 +138,11 @@ void MoleculeCdxmlLoader::_parseCDXMLFragment(TiXmlElement* pElem)
 {
     auto node_lambda = [this](TiXmlElement* pElem) {
         CdxmlNode node;
-		this->_parseNode(node, pElem);
+        this->_parseNode(node, pElem);
         _addNode(node);
         if (node.type == kCDXNodeType_Fragment)
             this->_parseCDXMLFragment(pElem->FirstChildElement());
-	};
+    };
 
     auto bond_lambda = [this](TiXmlElement* pElem) {
         CdxmlBond bond;
@@ -256,7 +256,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             else if (fn.type == kCDXNodeType_Fragment && bond_second_it != _id_to_atom_idx.end())
             {
                 auto bit_beg = fn.bond_id_to_connection_idx.find(bond.id);
-                if (bit_beg != fn.bond_id_to_connection_idx.end() )
+                if (bit_beg != fn.bond_id_to_connection_idx.end())
                 {
                     int a1 = fn.connections[bit_beg->second].atom_idx;
                     int a2 = bond_second_it->second;
@@ -540,18 +540,18 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, TiXmlElement* pElem)
     };
 
     std::unordered_map<std::string, std::function<void(std::string&)>> node_dispatcher = {{"id", id_lambda},
-                                                                                                       {"p", pos_lambda},
-                                                                                                       {"xyz", pos_lambda},
-                                                                                                       {"NumHydrogens", hydrogens_lambda},
-                                                                                                       {"Charge", charge_lambda},
-                                                                                                       {"Isotope", isotope_lambda},
-                                                                                                       {"Radical", radical_lambda},
-                                                                                                       {"AS", stereo_lambda},
-                                                                                                       {"NodeType", node_type_lambda},
-                                                                                                       {"Element", element_lambda},
-                                                                                                       {"GenericNickname", label_lambda},
-                                                                                                       {"ElementList", element_list_lambda},
-                                                                                                       {"BondOrdering", bond_ordering_lambda}};
+                                                                                          {"p", pos_lambda},
+                                                                                          {"xyz", pos_lambda},
+                                                                                          {"NumHydrogens", hydrogens_lambda},
+                                                                                          {"Charge", charge_lambda},
+                                                                                          {"Isotope", isotope_lambda},
+                                                                                          {"Radical", radical_lambda},
+                                                                                          {"AS", stereo_lambda},
+                                                                                          {"NodeType", node_type_lambda},
+                                                                                          {"Element", element_lambda},
+                                                                                          {"GenericNickname", label_lambda},
+                                                                                          {"ElementList", element_list_lambda},
+                                                                                          {"BondOrdering", bond_ordering_lambda}};
 
     _applyDispatcher(pElem->FirstAttribute(), node_dispatcher);
 }
@@ -644,10 +644,10 @@ void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, TiXmlAttribute* p
     auto sru_label_lambda = [&bracket](std::string& data) { bracket.sru_label = data; };
 
     std::unordered_map<std::string, std::function<void(std::string&)>> bracket_dispatcher = {{"BracketedObjectIDs", bracketed_ids_lambda},
-                                                                                                          {"BracketUsage", bracket_usage_lambda},
-                                                                                                          {"RepeatCount", repeat_count_lambda},
-                                                                                                          {"PolymerRepeatPattern", repeat_pattern_lambda},
-                                                                                                          {"SRULabel", sru_label_lambda}};
+                                                                                             {"BracketUsage", bracket_usage_lambda},
+                                                                                             {"RepeatCount", repeat_count_lambda},
+                                                                                             {"PolymerRepeatPattern", repeat_pattern_lambda},
+                                                                                             {"SRULabel", sru_label_lambda}};
 
     _applyDispatcher(pAttr, bracket_dispatcher);
 }

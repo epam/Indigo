@@ -224,8 +224,8 @@ float RenderGrid::_getScaleGivenSize(int w, int h)
     float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset;
     float x = w - absX, y = h - absY;
     if (x < maxTitleSize.x * nRows + 1 || w < commentSize.x + outerMargin.x * 2 + 1 || y < 1)
-        throw Error("Image too small, the layout requires at least %dx%d", (int)std::max(absX + maxTitleSize.x * nRows + 2, commentSize.x + outerMargin.x * 2 + 2),
-                    (int)(absY + 2));
+        throw Error("Image too small, the layout requires at least %dx%d",
+                    (int)std::max(absX + maxTitleSize.x * nRows + 2, commentSize.x + outerMargin.x * 2 + 2), (int)(absY + 2));
     Vec2f totalScaleableSize(maxsz.x * nColumns, maxsz.y * nRows);
     if (x * totalScaleableSize.y < y * totalScaleableSize.x)
         return x / totalScaleableSize.x;

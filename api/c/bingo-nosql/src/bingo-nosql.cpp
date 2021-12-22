@@ -41,7 +41,8 @@ IMPL_EXCEPTION(indigo, BingoException, "bingo");
 
 namespace
 {
-    template <class T> class BingoPool
+    template <class T>
+    class BingoPool
     {
     public:
         bool has(long long id) const

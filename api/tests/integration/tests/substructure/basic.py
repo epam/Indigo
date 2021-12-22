@@ -1,23 +1,26 @@
 import sys
-sys.path.append('../../common')
+
+sys.path.append("../../common")
 from env_indigo import *
 
-def checkHasMatchMol (indigo, m, q):
+
+def checkHasMatchMol(indigo, m, q):
     q.aromatize()
     m.checkBadValence()
     m.checkBadValence()
     matcher = indigo.substructureMatcher(m)
-    assert(matcher.match(q) != None)
+    assert matcher.match(q) != None
 
     m2 = indigo.unserialize(m.serialize())
     matcher2 = indigo.substructureMatcher(m2)
-    assert(matcher2.match(q) != None)
+    assert matcher2.match(q) != None
 
     q.optimize()
-    assert(matcher.match(q) != None)
-    assert(matcher2.match(q) != None)
+    assert matcher.match(q) != None
+    assert matcher2.match(q) != None
 
-def checkHasMatch (indigo, targetName, queryName):
+
+def checkHasMatch(indigo, targetName, queryName):
     print(targetName + " " + queryName)
     q = indigo.loadQueryMoleculeFromFile(joinPathPy(queryName, __file__))
     m = indigo.loadMoleculeFromFile(joinPathPy(targetName, __file__))
@@ -40,9 +43,17 @@ checkHasMatchMol(indigo, m, q)
 
 print("***** Structure should match itself *****")
 indigo = Indigo()
-checkHasMatch(indigo, "molecules/Calcitonin_Salmon.mol", "molecules/Calcitonin_Salmon.mol")
+checkHasMatch(
+    indigo,
+    "molecules/Calcitonin_Salmon.mol",
+    "molecules/Calcitonin_Salmon.mol",
+)
 indigo.setOption("stereochemistry-bidirectional-mode", True)
-checkHasMatch(indigo, "molecules/Calcitonin_Salmon.mol", "molecules/Calcitonin_Salmon.mol")
+checkHasMatch(
+    indigo,
+    "molecules/Calcitonin_Salmon.mol",
+    "molecules/Calcitonin_Salmon.mol",
+)
 
 print("***** Check specific SMILES/SMARTS behaviour *****")
 indigo = Indigo()
@@ -51,13 +62,10 @@ queries_sm = [
     "C1=CC=CC2=C1N=C(N2)[*;#6,#7,#8]",
     "c1cccc2c1nc(n2)C",
     "C1=CC=CC2=C1N=C(N2)C",
-    "[$([#6,#7,#8]c1nc2ccccc2n1)]"
+    "[$([#6,#7,#8]c1nc2ccccc2n1)]",
 ]
 
-targets_sm = [
-    "Cn1c(CN)nc2ccccc12",
-    "c1ccc(cc1)-c1nc2ccccc2[nH]1"    
-]
+targets_sm = ["Cn1c(CN)nc2ccccc12", "c1ccc(cc1)-c1nc2ccccc2[nH]1"]
 
 queires = []
 for q_sm in queries_sm:
@@ -69,12 +77,14 @@ for q_sm in queries_sm:
         q = None
     queires.append(q)
 
-def checkMatch (matcher, q):
+
+def checkMatch(matcher, q):
     if q is None:
         return "none"
     if matcher.match(q):
         return "match"
     return "not match"
+
 
 for t_sm in targets_sm:
     print(t_sm)
@@ -82,4 +92,3 @@ for t_sm in targets_sm:
     matcher = indigo.substructureMatcher(t)
     for idx, q in enumerate(queires):
         print("  %d - %s" % (idx, checkMatch(matcher, q)))
-

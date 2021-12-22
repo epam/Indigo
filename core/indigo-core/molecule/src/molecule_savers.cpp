@@ -52,7 +52,6 @@ int MoleculeSavers::getHCount(BaseMolecule& mol, int index, int atom_number, int
     return hydrogens_count;
 }
 
-
 bool MoleculeSavers::getRingBondCountFlagValue(QueryMolecule& qmol, int idx, int& value)
 {
     QueryMolecule::Atom& atom = qmol.getAtom(idx);

@@ -3,6 +3,7 @@
 extern "C"
 {
 #include "postgres.h"
+
 #include "catalog/pg_type.h"
 #include "executor/spi.h"
 #include "fmgr.h"
@@ -13,6 +14,7 @@ extern "C"
 
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
+
 #include "bingo_pg_common.h"
 #include "bingo_pg_cursor.h"
 #include "bingo_pg_text.h"
@@ -182,12 +184,11 @@ unsigned int BingoPgCursor::getArgOid(int arg_idx)
         TupleDesc tupdesc = SPI_tuptable->tupdesc;
         if (arg_idx >= tupdesc->natts)
             elog(ERROR, "internal error: can not get argument %d natts = %d", arg_idx, tupdesc->natts);
-        #if PG_VERSION_NUM / 100 >= 1100
-            result = tupdesc->attrs[arg_idx].atttypid;
-        #else
-            result = tupdesc->attrs[arg_idx]->atttypid;
-        #endif
-        
+#if PG_VERSION_NUM / 100 >= 1100
+        result = tupdesc->attrs[arg_idx].atttypid;
+#else
+        result = tupdesc->attrs[arg_idx]->atttypid;
+#endif
     }
     BINGO_PG_HANDLE(throw Error("internal error: can not get datum from the tuple: %s", message));
 

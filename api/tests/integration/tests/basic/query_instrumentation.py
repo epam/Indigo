@@ -1,11 +1,11 @@
-import sys
 import errno
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
-indigo.setOption("molfile-saving-skip-date", "1");
+indigo.setOption("molfile-saving-skip-date", "1")
 
 if not os.path.exists(joinPathPy("out", __file__)):
     try:
@@ -14,7 +14,8 @@ if not os.path.exists(joinPathPy("out", __file__)):
         if e.errno != errno.EEXIST:
             raise
 
-t = indigo.loadMolecule("CC1=NC(C)=C(C)C(C)=N1")   
+t = indigo.loadMolecule("CC1=NC(C)=C(C)C(C)=N1")
+
 
 def testMatch(t, q):
     matcher = indigo.substructureMatcher(t)
@@ -24,7 +25,8 @@ def testMatch(t, q):
     else:
         msg = "False"
     print("Match: %s. Count = %d" % (msg, matcher.countMatches(q)))
-   
+
+
 print("****** 1 ********")
 q = indigo.createQueryMolecule()
 a1 = q.addAtom("C")
@@ -42,7 +44,7 @@ testMatch(t, q)
 
 print("****** 2 ********")
 indigo.setOption("embedding-uniqueness", "none")
-q = indigo.loadSmarts("c1c[nH]c[nH]c1")   
+q = indigo.loadSmarts("c1c[nH]c[nH]c1")
 testMatch(t, q)
 for a in q.iterateAtoms():
     a.removeConstraints("hydrogens")
@@ -100,12 +102,12 @@ constrants = [
     ("ring-bonds", "2"),
     ("rsite-mask", "2"),
     ("rsite", "2"),
-    ("aromaticity", "aliphatic")
+    ("aromaticity", "aliphatic"),
 ]
 
 for c, v in constrants:
     a1.addConstraint(c, v)
-print(q.smiles())    
+print(q.smiles())
 testMatch(t, q)
 
 for c, v in constrants:
@@ -116,7 +118,7 @@ for c, v in constrants:
     a1.removeConstraints(c)
 for c, v in constrants:
     a1.addConstraint(c, v)
-print(q.smiles())    
+print(q.smiles())
 testMatch(t, q)
 
 a1.resetAtom("")

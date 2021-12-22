@@ -95,9 +95,7 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, std::mutex* lock_for_
     {
         // CmfSaver modifies _context->cmf_dict and
         // requires exclusive access for this
-        auto locker = lock_for_exclusive_access ?
-                      std::unique_lock<std::mutex>(*lock_for_exclusive_access) :
-                      std::unique_lock<std::mutex>();
+        auto locker = lock_for_exclusive_access ? std::unique_lock<std::mutex>(*lock_for_exclusive_access) : std::unique_lock<std::mutex>();
 
         CmfSaver saver(_context->cmf_dict, output_cmf);
 

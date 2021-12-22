@@ -29,10 +29,12 @@ namespace indigo
 {
 
     // Forward declaration
-    template <typename T> class Trie;
+    template <typename T>
+    class Trie;
 
     // Type alias for (sub)trie
-    template <typename T> using Leaves = std::map<char, Trie<T>*>;
+    template <typename T>
+    using Leaves = std::map<char, Trie<T>*>;
 
     // A collection of words that a (sub)trie holds
     typedef std::set<std::string> Wordset;
@@ -42,7 +44,8 @@ namespace indigo
      Also holds an arbitrary data type, associated with a given trie
      Currently, doesn't provide a delete/remove operation
      */
-    template <typename T> class Trie : public NonCopyable
+    template <typename T>
+    class Trie : public NonCopyable
     {
 
         T _data;           // A dataset associated with a given word
@@ -97,7 +100,8 @@ namespace indigo
         bool isWord(const std::string& word) const;
     }; // class Trie
 
-    template <typename T> Trie<T>::~Trie()
+    template <typename T>
+    Trie<T>::~Trie()
     {
         for (auto& it : _leaves)
         {
@@ -106,7 +110,8 @@ namespace indigo
     }
 
     // Adds a word into the trie, setting up data in the end
-    template <typename T> void Trie<T>::addWord(const std::string& word, const T& data)
+    template <typename T>
+    void Trie<T>::addWord(const std::string& word, const T& data)
     {
         if (!word.empty())
         {
@@ -140,7 +145,8 @@ namespace indigo
     }
 
     // Retrieves a list of words that a given (sub)trie holds
-    template <typename T> void Trie<T>::getWords(Wordset& words) const
+    template <typename T>
+    void Trie<T>::getWords(Wordset& words) const
     {
         std::string buffer;
         words.clear();
@@ -148,7 +154,8 @@ namespace indigo
     }
 
     // Retrievs a list of words which start from a given prefix
-    template <typename T> void Trie<T>::getWordsWithPrefix(const std::string& prefix, Wordset& words) const
+    template <typename T>
+    void Trie<T>::getWordsWithPrefix(const std::string& prefix, Wordset& words) const
     {
         std::string buffer;
         words.clear();
@@ -159,7 +166,8 @@ namespace indigo
     Returns a terminating node for a given word,
     nullptr if there's no such word in a trie
     */
-    template <typename T> const Trie<T>* Trie<T>::getNode(const std::string& word) const
+    template <typename T>
+    const Trie<T>* Trie<T>::getNode(const std::string& word) const
     {
         // if no input, return current node
         if (word.empty())
@@ -186,7 +194,8 @@ namespace indigo
         return leaf;
     }
 
-    template <typename T> void Trie<T>::getWords(Wordset& words, std::string& buffer) const
+    template <typename T>
+    void Trie<T>::getWords(Wordset& words, std::string& buffer) const
     {
         if (_mark)
         {
@@ -205,7 +214,8 @@ namespace indigo
         }
     }
 
-    template <typename T> void Trie<T>::getWordsWithPrefix(const std::string& prefix, Wordset& words, std::string& buffer) const
+    template <typename T>
+    void Trie<T>::getWordsWithPrefix(const std::string& prefix, Wordset& words, std::string& buffer) const
     {
         if (prefix.empty())
         {
@@ -224,7 +234,8 @@ namespace indigo
         }
     }
 
-    template <typename T> bool Trie<T>::isWord(const std::string& word) const
+    template <typename T>
+    bool Trie<T>::isWord(const std::string& word) const
     {
         if (word.empty())
         {

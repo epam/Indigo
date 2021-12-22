@@ -420,7 +420,6 @@ void MoleculeLayout::updateSGroups()
     _updateRepeatingUnits();
 }
 
-
 void MoleculeLayout::make()
 {
     _make();

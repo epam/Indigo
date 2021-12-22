@@ -1,36 +1,32 @@
-import base64
-import config
-from datetime import datetime, timedelta
-import sys
-import os
-from flask import request, Blueprint
-import flask_restful
+import json
 import logging
+import os
 import re
 import subprocess
-from time import time
-import json
 import traceback
 import types
+from time import time
 
+import flask_restful
+from flask import Blueprint, request
 from indigo import Indigo
-from indigo.renderer import IndigoRenderer
 from indigo.inchi import IndigoInchi
+from indigo.renderer import IndigoRenderer
 
-from .celery_app import celery
 import config
 
+from .celery_app import celery
 from .common.util import api_route
 
-imago_api = Blueprint('imago', __name__)
-imago_api_logger = logging.getLogger('imago')
+imago_api = Blueprint("imago", __name__)
+imago_api_logger = logging.getLogger("imago")
 imago_api.config = config.__dict__
 imago_api.indigo = Indigo()
 imago_api.renderer = IndigoRenderer(imago_api.indigo)
 imago_api.indigo_inchi = IndigoInchi(imago_api.indigo)
 imago_api_app = flask_restful.Api(imago_api)
 imago_api_app.route = types.MethodType(api_route, imago_api_app)
-allowed_types = imago_api.config['ALLOWED_TYPES']
+allowed_types = imago_api.config["ALLOWED_TYPES"]
 
 versions = []
 # with open('/srv/service_version', 'r') as ver:
@@ -38,34 +34,36 @@ versions = []
 #         if line.startswith("imago-console-"):
 #             versions.append(re.search('imago-console-(.*)\..*', line).group(1))
 
+
 @celery.task(bind=True)
 def recognize_image(self, args):
-    '''
+    """
     Celery task to pass image as an asynchronous process for its recognizing.
     Image passed as a mol file in string format to GET request, which use id to retrieve it.
     :param self:
     :param args: list of imago console commands
     :return: dictionary with recognized molecule as a mol file as a string.
-    '''
+    """
     try:
-        self.update_state(state='PROCESSING', meta={'stage': 'RECOGNIZING'})
+        self.update_state(state="PROCESSING", meta={"stage": "RECOGNIZING"})
         result_dict = ImagoUpload.imago_recognize(args)
-        self.update_state(state='SUCCESS', meta=result_dict)
+        self.update_state(state="SUCCESS", meta=result_dict)
         return result_dict
     except Exception as e:
-        self.update_state('FAILURE', meta={'error': str(e)})
-        return {'error': 'Internal server error: {}'.format(str(e))}, 500
+        self.update_state("FAILURE", meta={"error": str(e)})
+        return {"error": "Internal server error: {}".format(str(e))}, 500
+
 
 @celery.task(bind=True)
 def remove_task(self, task_id, args):
-    '''
+    """
     Deletes task by id after. Because forget() behavior  in celery is, to a certain extent, unpredictable ,
     image deleted after launching task to ensure removing task.
     :param self:
     :param task_id: id of task result to be deleted
     :param args: list of imago console commands
     :return:
-    '''
+    """
     pass_args.AsyncResult(task_id).forget()
     for arg in args[1:]:
         # deletes image files by path in arg
@@ -73,83 +71,87 @@ def remove_task(self, task_id, args):
             os.remove(arg)
 
 
-
-
-
 @celery.task(bind=True)
 def pass_to_res(self, args, time=None):
-    '''
+    """
     Parent task to remove_task and pass_args. Used to return id of pass_args
     and launch time limit in seconds for task's results existence if it was passed in request.
     :param self:
     :param args: list of imago console commands
     :param time: time limit in seconds of task existence
     :return: task id for retrieving results by POST request
-    '''
-    task_id = pass_args.apply_async(args=(args, )).id
+    """
+    task_id = pass_args.apply_async(args=(args,)).id
     if time:
         # launch deleting task results after certain
-        remove_task.apply_async(kwargs={'task_id':task_id, 'args':args}, countdown=time)
+        remove_task.apply_async(
+            kwargs={"task_id": task_id, "args": args}, countdown=time
+        )
     return task_id
 
 
 @celery.task(bind=True)
 def pass_args(self, args):
-    '''
+    """
     Passes arguments to be used for imago for saved image.
     Arguments will be retrieved after launching request by task id.
     :param self:
     :param args: list of imago console commands
     :return: dictionary with arguments as a list
-    '''
+    """
     try:
-        result = {'args':args}
-        self.update_state(state='SUCCESS', meta=result)
+        result = {"args": args}
+        self.update_state(state="SUCCESS", meta=result)
         return result
     except Exception as e:
-        self.update_state('FAILURE', meta={'error': str(e)})
-        return {'error': 'Internal server error: {}'.format(str(e))}, 500
+        self.update_state("FAILURE", meta={"error": str(e)})
+        return {"error": "Internal server error: {}".format(str(e))}, 500
 
 
-@imago_api_app.route('/uploads', methods=['GET', 'POST'])
+@imago_api_app.route("/uploads", methods=["GET", "POST"])
 class ImagoUpload(flask_restful.Resource):
-    '''
+    """
     Upload in server and recognize image by Imago.
-    '''
+    """
 
     @staticmethod
     def save_file(stream, f_type):
-        '''
+        """
         Saves byte stream of image into selected type.
         Image saved in selected format, which is passed by POST request.
         :param stream: image as a stream of bytes
         :param f_type: image format
         :return: path to image on server
-        '''
-        path = os.path.join(imago_api.config['UPLOAD_FOLDER'], "{0}.{1}".format(int(time() * 1000), f_type))
-        with open(path, 'wb') as f:
+        """
+        path = os.path.join(
+            imago_api.config["UPLOAD_FOLDER"],
+            "{0}.{1}".format(int(time() * 1000), f_type),
+        )
+        with open(path, "wb") as f:
             data = stream.read()
             f.write(data)
         return path
 
-
     @staticmethod
     def save_config(settings):
-        '''
+        """
         Gets settings in JSON format to be passed in text file for imago console
         and save it on server. Return configuration file in txt format
         :param settings: settings in JSON to be processed in configuration file
         :return: path to configuration file on server
-        '''
-        path = os.path.join(imago_api.config['UPLOAD_FOLDER'], "{0}.{1}".format(int(time() * 1000), 'txt'))
+        """
+        path = os.path.join(
+            imago_api.config["UPLOAD_FOLDER"],
+            "{0}.{1}".format(int(time() * 1000), "txt"),
+        )
         data = json.loads(settings)
-        with open(path, 'w') as f:
+        with open(path, "w") as f:
             for param, value in data.items():
-                f.write(param+" = "+value+";")
+                f.write(param + " = " + value + ";")
         return path
 
     def post(self):
-        '''
+        """
         Upload and recognize image
         ---
         tags:
@@ -227,58 +229,69 @@ class ImagoUpload(flask_restful.Resource):
                   properties:
                      error:
                         type: string
-        '''
+        """
         args = []
-        full_mime_type = request.headers.get('Content-Type')
+        full_mime_type = request.headers.get("Content-Type")
         params = request.args
         # gets version from params or pass the latest
-        if 'version' in params:
-            if params['version'] in versions:
-                version = 'imago-console-'+params['version']
+        if "version" in params:
+            if params["version"] in versions:
+                version = "imago-console-" + params["version"]
             else:
-                return {'error': 'Incorrect version {0}, should be one of [{1}]'.format(request.headers['Version'], ', '.join(versions))}, 400
+                return {
+                    "error": "Incorrect version {0}, should be one of [{1}]".format(
+                        request.headers["Version"], ", ".join(versions)
+                    )
+                }, 400
         else:
-            version = 'imago-console-'+versions[-1]
-        args.append(os.path.join('/srv', 'imago', version, 'imago_console'))
+            version = "imago-console-" + versions[-1]
+        args.append(os.path.join("/srv", "imago", version, "imago_console"))
 
         # gets setting from params
-        if 'settings' in params:
+        if "settings" in params:
             try:
-                settings = self.save_config(params['settings'])
-                args.extend(['-config', settings])
+                settings = self.save_config(params["settings"])
+                args.extend(["-config", settings])
             except Exception as e:
-                return {'error': 'Returned with error {0}'.format(e)}, 400
-
+                return {"error": "Returned with error {0}".format(e)}, 400
 
         # gets tine limit for task id existence of POST wait request
-        if 'expires' in params:
-            expire = float(params['expires'])
+        if "expires" in params:
+            expire = float(params["expires"])
         else:
             expire = None
 
-
         # optional parameters might be appended, get just the type
-        mime_type = re.search("\A([^;]+)", full_mime_type)
+        mime_type = re.search(r"\A([^;]+)", full_mime_type)
         if not mime_type:
-            return {'error': "Incorrect Content-Type '{0}', should be one of [{1}]".format(full_mime_type, ', '.join(allowed_types))}, 415
+            return {
+                "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
+                    full_mime_type, ", ".join(allowed_types)
+                )
+            }, 415
 
         mime_type = mime_type.group(1)
-        imago_api_logger.info("[REQUEST] POST /imago/uploads Content-Type: {0}".format(mime_type))
+        imago_api_logger.info(
+            "[REQUEST] POST /imago/uploads Content-Type: {0}".format(mime_type)
+        )
 
         if mime_type not in allowed_types:
-            return {'error': "Incorrect Content-Type '{0}', should be one of [{1}]".format(mime_type, ', '.join(allowed_types))}, 415
+            return {
+                "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
+                    mime_type, ", ".join(allowed_types)
+                )
+            }, 415
         try:
 
-
             select_exten = {
-            'cmu-raster' : 'ras',
-            'tiff' : 'tiff',
-            'png' : 'png',
-            'jpeg' : 'jpg',
-            'x-portable-bitmap' : 'pbm',
-            'bmp' : 'bmp',
-            'svg+xml' : 'svg',
-            'gif': 'gif'
+                "cmu-raster": "ras",
+                "tiff": "tiff",
+                "png": "png",
+                "jpeg": "jpg",
+                "x-portable-bitmap": "pbm",
+                "bmp": "bmp",
+                "svg+xml": "svg",
+                "gif": "gif",
             }
 
             type_of_image = re.search("/([a-z-+]+)", mime_type).group(1)
@@ -286,41 +299,52 @@ class ImagoUpload(flask_restful.Resource):
             f_type = select_exten[type_of_image]
             path = self.save_file(request.stream, f_type)
             mol_path = "{}.mol".format(path)
-            args.extend([path, '-o', mol_path])
+            args.extend([path, "-o", mol_path])
             # Determines logic of POST request
             # if action wait selected image will be saved on server
             # and will wait for settings to be sent
             # else pass image for GET request
-            if 'action' in params:
-                if params['action'] == 'wait':
-                    pass_task = pass_to_res.apply_async(args=(args, expire, ), )
+            if "action" in params:
+                if params["action"] == "wait":
+                    pass_task = pass_to_res.apply_async(
+                        args=(
+                            args,
+                            expire,
+                        ),
+                    )
                     id_args = pass_to_res.AsyncResult(pass_task.id).get()
-                    return {'upload_id': id_args}
+                    return {"upload_id": id_args}
                 else:
-                    return {'error': 'Incorrect action parameter.'}, 500
+                    return {"error": "Incorrect action parameter."}, 500
 
             else:
                 upload = recognize_image.apply_async((args,))
-            if 'mol_str' in upload.get():
-                if not upload.get()['mol_str']:
-                    return {'error': 'Imago returned empty string.'}, 204
-            return {'upload_id': upload.id}
+            if "mol_str" in upload.get():
+                if not upload.get()["mol_str"]:
+                    return {"error": "Imago returned empty string."}, 204
+            return {"upload_id": upload.id}
         except Exception as e:
-            imago_api_logger.error('[RESPONSE-500] internal error: {}\n{}'.format(str(e), traceback.format_exc()))
-            return {'error': 'Internal server error.'}, 500
+            imago_api_logger.error(
+                "[RESPONSE-500] internal error: {}\n{}".format(
+                    str(e), traceback.format_exc()
+                )
+            )
+            return {"error": "Internal server error."}, 500
 
     @staticmethod
     def imago_recognize(args):
-        '''
+        """
         Recognize image by Imago and returns mol file of molecule in string format
         :param args: list of imago console commands
         :return: dictionary with mol file in string format
-        '''
-        proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        """
+        proc = subprocess.Popen(
+            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         out, err = proc.communicate()
-        mol_str = ''
+        mol_str = ""
         if os.path.isfile(args[-1]):
-            with open(args[-1], 'r') as f:
+            with open(args[-1], "r") as f:
                 mol_str = f.read()
         # imago_api.indigo.setOption("render-coloring", True)
         # imago_api.indigo.setOption("render-output-format", 'png')
@@ -329,13 +353,13 @@ class ImagoUpload(flask_restful.Resource):
         # m = imago_api.indigo.loadMolecule(mol_str)
         # result = imago_api.renderer.renderToBuffer(m)
         # result = result.tostring() if sys.version_info < (3, 2) else result.tobytes()
-        return {'mol_str': mol_str}
+        return {"mol_str": mol_str}
 
 
-@imago_api_app.route('/uploads/<upload_id>')
+@imago_api_app.route("/uploads/<upload_id>")
 class ImagoUploadStatus(flask_restful.Resource):
     def get(self, upload_id):
-        '''
+        """
         Check upload status for selected upload_id
         ---
         tags:
@@ -365,25 +389,35 @@ class ImagoUploadStatus(flask_restful.Resource):
                schema:
                   $ref: "#/definitions/imago_imagoupload_post_Error"
 
-        '''
-        imago_api_logger.info("[REQUEST] GET /imago/uploads/{0}".format(upload_id))
+        """
+        imago_api_logger.info(
+            "[REQUEST] GET /imago/uploads/{0}".format(upload_id)
+        )
         try:
             # retrieve recognized molecule in mol_format
             task = recognize_image.AsyncResult(upload_id)
-            result_dict = {'state': task.state}
+            result_dict = {"state": task.state}
             if task.info:
-                result_dict['metadata'] = task.info
-                if 'error' in json.dumps(task.info):
-                    imago_api_logger.error("[RESPONSE-400] {0}".format(result_dict))
+                result_dict["metadata"] = task.info
+                if "error" in json.dumps(task.info):
+                    imago_api_logger.error(
+                        "[RESPONSE-400] {0}".format(result_dict)
+                    )
                     return result_dict, 400
-            imago_api_logger.info("[RESPONSE-200] {0}".format(result_dict['state']))
+            imago_api_logger.info(
+                "[RESPONSE-200] {0}".format(result_dict["state"])
+            )
             return result_dict
         except Exception as e:
-            imago_api_logger.error('[RESPONSE-500] internal error: {}\n{}'.format(str(e), traceback.format_exc()))
-            return {'error': 'Internal server error.'}, 500
+            imago_api_logger.error(
+                "[RESPONSE-500] internal error: {}\n{}".format(
+                    str(e), traceback.format_exc()
+                )
+            )
+            return {"error": "Internal server error."}, 500
 
     def post(self, upload_id):
-        '''
+        """
         Pass configuration for Imago to specific image
         ---
         tags:
@@ -422,54 +456,79 @@ class ImagoUploadStatus(flask_restful.Resource):
                schema:
                  $ref: "#/definitions/imago_imagoupload_post_Error"
 
-        '''
+        """
         upload = ImagoUpload()
         params = request.args
-        imago_api_logger.info("[REQUEST] POST /imago/uploads/{0}".format(upload_id))
+        imago_api_logger.info(
+            "[REQUEST] POST /imago/uploads/{0}".format(upload_id)
+        )
         # assert if correct action were sent in request
-        if 'action' in params:
-            if params['action'] != 'run':
-                imago_api_logger.error("[RESPONSE-406] Incorrect parameter {0} in request.".format(request.headers['action']))
-                return {'error': 'Incorrect parameter {0} in request.'.format(request.headers['action'])}, 400
+        if "action" in params:
+            if params["action"] != "run":
+                imago_api_logger.error(
+                    "[RESPONSE-406] Incorrect parameter {0} in request.".format(
+                        request.headers["action"]
+                    )
+                )
+                return {
+                    "error": "Incorrect parameter {0} in request.".format(
+                        request.headers["action"]
+                    )
+                }, 400
         else:
-            imago_api_logger.error("[RESPONSE-400] Parameter action not in request.")
-            return {'error': 'Paramter action not in request.'}, 400
-
+            imago_api_logger.error(
+                "[RESPONSE-400] Parameter action not in request."
+            )
+            return {"error": "Paramter action not in request."}, 400
 
         try:
             # Retrieve arguments for imago console command by task id.
             if pass_args.AsyncResult(upload_id).info:
                 param = pass_args.AsyncResult(upload_id).get()
-                if not os.path.isfile(param['args'][-3]):
-                    imago_api_logger.error("[RESPONSE-410] Image are not available because of time limit.")
-                    return {'error': 'Image are not available because of time limit'}, 410
+                if not os.path.isfile(param["args"][-3]):
+                    imago_api_logger.error(
+                        "[RESPONSE-410] Image are not available because of time limit."
+                    )
+                    return {
+                        "error": "Image are not available because of time limit"
+                    }, 410
             else:
-                imago_api_logger.error("[RESPONSE-410] Image are not available because of time limit.")
-                return {'error': 'Image are not available because of time limit'}, 410
+                imago_api_logger.error(
+                    "[RESPONSE-410] Image are not available because of time limit."
+                )
+                return {
+                    "error": "Image are not available because of time limit"
+                }, 410
 
-            if 'error' in param:
+            if "error" in param:
                 imago_api_logger.error("[RESPONSE-400] {0}".format(param))
                 return param, 400
-            args = param['args']
+            args = param["args"]
 
             # Save settings in config file and extend args with -config oprtion
             if request.data:
                 try:
                     settings = self.save_config(request.get_json())
-                    for x in reversed(['-config', settings]): args.insert(1,x)
+                    for x in reversed(["-config", settings]):
+                        args.insert(1, x)
                 except Exception as e:
-                    return {'error': 'Returned with error {0}'.format(e)}, 400
+                    return {"error": "Returned with error {0}".format(e)}, 400
 
             result = upload.imago_recognize(args)
-            if not result['mol_str']:
-                    imago_api_logger.error("[RESPONSE-204] Imago returned empty string.")
-                    return result, 204
+            if not result["mol_str"]:
+                imago_api_logger.error(
+                    "[RESPONSE-204] Imago returned empty string."
+                )
+                return result, 204
             imago_api_logger.info("[RESPONSE-200] SUCCESS")
             return result
         except Exception as e:
-            imago_api_logger.error('[RESPONSE-500] internal error: {}\n{}'.format(str(e), traceback.format_exc()))
-            return {'error': 'Internal server error.'}, 500
-
+            imago_api_logger.error(
+                "[RESPONSE-500] internal error: {}\n{}".format(
+                    str(e), traceback.format_exc()
+                )
+            )
+            return {"error": "Internal server error."}, 500
 
     @staticmethod
     def save_config(data):
@@ -478,8 +537,11 @@ class ImagoUploadStatus(flask_restful.Resource):
         :param data: settings in JSON format
         :return: Path to config file
         """
-        path = os.path.join(imago_api.config['UPLOAD_FOLDER'], "{0}.{1}".format(int(time() * 1000), 'txt'))
-        with open(path, 'w') as f:
+        path = os.path.join(
+            imago_api.config["UPLOAD_FOLDER"],
+            "{0}.{1}".format(int(time() * 1000), "txt"),
+        )
+        with open(path, "w") as f:
             for param, value in data.items():
-                f.write(param+" = "+value+";")
+                f.write(param + " = " + value + ";")
         return path

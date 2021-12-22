@@ -1,5 +1,6 @@
 import sys
-sys.path.append('../../common')
+
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -8,8 +9,16 @@ print("*** Molecules ***")
 
 
 def handleMolecule(mol):
-    print('%0.3f %0.3f %0.3f %s %s' % (
-        mol.molecularWeight(), mol.monoisotopicMass(), mol.mostAbundantMass(), mol.grossFormula(), mol.massComposition()))
+    print(
+        "%0.3f %0.3f %0.3f %s %s"
+        % (
+            mol.molecularWeight(),
+            mol.monoisotopicMass(),
+            mol.mostAbundantMass(),
+            mol.grossFormula(),
+            mol.massComposition(),
+        )
+    )
 
 
 def handleMoleculeWithExceptions(m):
@@ -35,15 +44,19 @@ def handleMoleculeWithExceptions(m):
         print(getIndigoExceptionText(e))
 
 
-for item in indigo.iterateSDFile(joinPathPy('molecules/mass.sdf', __file__)):
+for item in indigo.iterateSDFile(joinPathPy("molecules/mass.sdf", __file__)):
     handleMolecule(item)
 handleMolecule(indigo.loadMolecule("CS=C"))
 handleMolecule(indigo.loadMolecule("C[S]=C"))
-for item in indigo.iterateSDFile(joinPathPy('molecules/elements.sdf', __file__)):
+for item in indigo.iterateSDFile(
+    joinPathPy("molecules/elements.sdf", __file__)
+):
     handleMolecule(item)
 
 print("*** Molecule fragments ***")
-m = indigo.loadMoleculeFromFile(joinPathPy('molecules/components.mol', __file__))
+m = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/components.mol", __file__)
+)
 big_fragment = None
 for comp in m.iterateComponents():
     comp_mol = comp.clone()
@@ -56,29 +69,45 @@ print(big_fragment.smiles())
 
 print("*** Invalid valence ***")
 try:
-    print(indigo.loadMoleculeFromFile(joinPathPy("molecules/invalid.mol", __file__)).grossFormula())
+    print(
+        indigo.loadMoleculeFromFile(
+            joinPathPy("molecules/invalid.mol", __file__)
+        ).grossFormula()
+    )
 except IndigoException as e:
     print("Exception:  %s" % (getIndigoExceptionText(e)))
 
-print("*** INDSP-222 [indigo-general] Problem with monoisotopic mass calculation in KNIME molecule properties ***")
+print(
+    "*** INDSP-222 [indigo-general] Problem with monoisotopic mass calculation in KNIME molecule properties ***"
+)
 m = indigo.loadMolecule("CBr")
 handleMolecule(m)
-m = indigo.loadMolecule("[C].[C].[C].[C].[C].[C].[C].[C].[O].[O].[O].[O].[O].[O].[O].[O].[Ru].[Ru]")
+m = indigo.loadMolecule(
+    "[C].[C].[C].[C].[C].[C].[C].[C].[O].[O].[O].[O].[O].[O].[O].[O].[Ru].[Ru]"
+)
 handleMolecule(m)
 
-m = indigo.loadMolecule("ClCCN(CCCl)C1=CC=C(C=C1)C1N(CC2=C(Cl)C=C(C=C2)N(CCCl)CCCl)CCCN1CC1=C(Cl)C=C(C=C1)N(CCCl)CCCl")
+m = indigo.loadMolecule(
+    "ClCCN(CCCl)C1=CC=C(C=C1)C1N(CC2=C(Cl)C=C(C=C2)N(CCCl)CCCl)CCCN1CC1=C(Cl)C=C(C=C1)N(CCCl)CCCl"
+)
 handleMolecule(m)
 
-m = indigo.loadMolecule("BrCCCCCCCCCCBr.BrCCCCCCCCCCBr.BrCCCCCCCCCCBr.BrCCCCCCCCCCCBr")
+m = indigo.loadMolecule(
+    "BrCCCCCCCCCCBr.BrCCCCCCCCCCBr.BrCCCCCCCCCCBr.BrCCCCCCCCCCCBr"
+)
 handleMolecule(m)
 
-m = indigo.loadMolecule("CC(=O)C1=CC2=C(O[SnH2]O2)C=C1C(C)=O.CC(=O)C1=CC2=C(O[SnH2]O2)C=C1C(C)=O.CC(=O)C1=CC2=C(O[SnH2]O2)C=C1C(C)=O.CC(=O)C1=CC2=C(O[SnH2]O2)C=C1C(C)=O")
+m = indigo.loadMolecule(
+    "CC(=O)C1=CC2=C(O[SnH2]O2)C=C1C(C)=O.CC(=O)C1=CC2=C(O[SnH2]O2)C=C1C(C)=O.CC(=O)C1=CC2=C(O[SnH2]O2)C=C1C(C)=O.CC(=O)C1=CC2=C(O[SnH2]O2)C=C1C(C)=O"
+)
 handleMolecule(m)
 
 m = indigo.loadMolecule("[Sn].[Sn].[Sn].[Sn]")
 handleMolecule(m)
 
-m = indigo.loadMolecule("[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn]")
+m = indigo.loadMolecule(
+    "[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn].[Sn]"
+)
 handleMolecule(m)
 
 print("*** Unambigious Hydrogens in aromatic form ***")
@@ -93,10 +122,11 @@ m = indigo.loadMolecule("n1cccnc1C")
 print(m.grossFormula())
 handleMolecule(m)
 
-m = indigo.loadMolecule('')
+m = indigo.loadMolecule("")
 handleMolecule(m)
 
-m = indigo.loadMolecule('''
+m = indigo.loadMolecule(
+    """
   Ketcher 11031611352D 1   1.00000     0.00000     0
 
   3  2  0     0  0            999 V2000
@@ -114,10 +144,12 @@ M  SBL   1  2   1   2
 M  SDI   1  4    4.5580   -7.1500    4.5580   -5.6500
 M  SDI   1  4    5.4240   -5.6500    5.4240   -7.1500
 M  END
-''')
+"""
+)
 handleMoleculeWithExceptions(m)
 
-m = indigo.loadMolecule('''
+m = indigo.loadMolecule(
+    """
   Ketcher 11031612052D 1   1.00000     0.00000     0
 
  18 17  0     0  0            999 V2000
@@ -173,11 +205,13 @@ M  SBL   2  2  10  13
 M  SDI   2  4   15.0022   -8.2500   15.0022   -6.7500
 M  SDI   2  4   17.6003   -6.7500   17.6003   -8.2500
 M  END
-''')
+"""
+)
 handleMoleculeWithExceptions(m)
-m = indigo.loadMolecule('CCCCCCCCCCCCCCCCCC')
+m = indigo.loadMolecule("CCCCCCCCCCCCCCCCCC")
 handleMoleculeWithExceptions(m)
-m = indigo.loadMolecule('''
+m = indigo.loadMolecule(
+    """
 git Ketcher 11031612072D 1   1.00000     0.00000     0
 
  18 17  0     0  0            999 V2000
@@ -241,9 +275,11 @@ M  SBL   3  2   7   8
 M  SDI   3  4   12.4042   -8.2500   12.4042   -6.7500
 M  SDI   3  4   13.2702   -6.7500   13.2702   -8.2500
 M  END
-''')
+"""
+)
 handleMoleculeWithExceptions(m)
-m = indigo.loadMolecule('''
+m = indigo.loadMolecule(
+    """
   Ketcher 11231618132D 1   1.00000     0.00000     0
 
   6  6  0     0  0            999 V2000
@@ -261,9 +297,11 @@ m = indigo.loadMolecule('''
   6  1  2  0     0  0
 M  RGP  1   2   1
 M  END
-''')
+"""
+)
 handleMoleculeWithExceptions(m)
-m = indigo.loadMolecule('''
+m = indigo.loadMolecule(
+    """
   Ketcher 11231618102D 1   1.00000     0.00000     0
 
   6  6  0     0  0            999 V2000
@@ -281,18 +319,20 @@ m = indigo.loadMolecule('''
   6  1  2  0     0  0
 M  RGP  2   2   1   4   2
 M  END
-''')
+"""
+)
 handleMoleculeWithExceptions(m)
 
 # Check option mass-skip-error-on-pseudoatoms
-indigo.setOption('mass-skip-error-on-pseudoatoms', False)
+indigo.setOption("mass-skip-error-on-pseudoatoms", False)
 handleMoleculeWithExceptions(m)
 
 
 # Check option gross-formula-add-rsites
 print("*** R-sites in gross formula ***")
 indigo.setOption("gross-formula-add-rsites", True)
-m = indigo.loadMolecule('''
+m = indigo.loadMolecule(
+    """
   Ketcher 12091616032D 1   1.00000     0.00000     0
 
   6  6  0     0  0            999 V2000
@@ -310,7 +350,8 @@ m = indigo.loadMolecule('''
   6  1  2  0     0  0
 M  RGP  1   2   1
 M  END
-''')
+"""
+)
 handleMoleculeWithExceptions(m)
 indigo.setOption("gross-formula-add-rsites", False)
 handleMoleculeWithExceptions(m)
@@ -319,7 +360,8 @@ handleMoleculeWithExceptions(m)
 # Check option gross-formula-add-isotopes
 print("*** Isotopic gross formula ***")
 indigo.setOption("gross-formula-add-isotopes", True)
-m = indigo.loadMolecule('''
+m = indigo.loadMolecule(
+    """
   Ketcher  2 81812332D 1   1.00000     0.00000     0
 
   9  8  0     0  0            999 V2000
@@ -342,7 +384,8 @@ m = indigo.loadMolecule('''
   3  9  1  0     0  0
 M  ISO  4   2  11   4  14   8   2   9   3
 M  END
-''')
+"""
+)
 handleMoleculeWithExceptions(m)
 print("*** Gross formula ignoring isotopes ***")
 indigo.setOption("gross-formula-add-isotopes", False)

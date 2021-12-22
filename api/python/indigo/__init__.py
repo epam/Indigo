@@ -22,8 +22,20 @@ import platform
 import sys
 import warnings
 from array import array
-from ctypes import (CDLL, POINTER, RTLD_GLOBAL, c_byte, c_char_p, c_double,
-                    c_float, c_int, c_ulonglong, c_void_p, pointer, sizeof)
+from ctypes import (
+    CDLL,
+    POINTER,
+    RTLD_GLOBAL,
+    c_byte,
+    c_char_p,
+    c_double,
+    c_float,
+    c_int,
+    c_ulonglong,
+    c_void_p,
+    pointer,
+    sizeof,
+)
 
 from indigo.salts import SALTS
 
@@ -33,6 +45,7 @@ ENCODE_ENCODING = "utf-8"
 
 class IndigoException(Exception):
     """Docstring for class IndigoException."""
+
     def __init__(self, value):
         if sys.version_info > (3, 0) and not isinstance(value, str):
             self.value = value.decode(DECODE_ENCODING)
@@ -214,7 +227,9 @@ class IndigoObject(object):
             checkflags = ""
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
-            Indigo._lib.indigoCheckObj(self.id, checkflags.encode(ENCODE_ENCODING))
+            Indigo._lib.indigoCheckObj(
+                self.id, checkflags.encode(ENCODE_ENCODING)
+            )
         )
 
     def close(self):
@@ -967,8 +982,7 @@ class IndigoObject(object):
         )
 
     def validateChirality(self):
-        """Molecule or reaction method validates chirality
-        """
+        """Molecule or reaction method validates chirality"""
         self.dispatcher._setSessionId()
         self.dispatcher._checkResult(
             Indigo._lib.indigoValidateChirality(self.id)
@@ -1241,9 +1255,7 @@ class IndigoObject(object):
             target_fragment = target_fragment.clone()
             for salt in SALTS:
                 query_salt = self.dispatcher.loadQueryMolecule(salt)
-                matcher = self.dispatcher.substructureMatcher(
-                    target_fragment
-                )
+                matcher = self.dispatcher.substructureMatcher(target_fragment)
                 if matcher.match(query_salt):
                     return True
         return False
@@ -4191,39 +4203,47 @@ class Indigo(object):
     _lib = None
     _dll_path = None
     _dll_dir = None
-    _native_libraries_handlers = []
 
     # Python embeds path into .pyc code if method is marked with @staticmethod
     # This causes an error when Indigo is loaded from different places by relative path
     def _initStatic(self, _=None):
         indigo_found = False
         system_name = platform.system().lower()
-        machine_name = platform.machine().lower().replace('amd64', 'x86_64').replace('arm64', 'aarch64')
-        if system_name == 'linux':
-            library_prefix = 'lib'
-            library_suffix = '.so'
-        elif system_name == 'darwin':
-            library_prefix = 'lib'
-            library_suffix = '.dylib'
-        elif system_name == 'windows':
-            library_prefix = ''
-            library_suffix = '.dll'
-        elif system_name.startswith('msys_nt'):
-            library_prefix = ''
-            library_suffix = '.dll'
-            system_name = 'windows'
+        machine_name = (
+            platform.machine()
+            .lower()
+            .replace("amd64", "x86_64")
+            .replace("arm64", "aarch64")
+        )
+        if system_name == "linux":
+            library_prefix = "lib"
+            library_suffix = ".so"
+        elif system_name == "darwin":
+            library_prefix = "lib"
+            library_suffix = ".dylib"
+        elif system_name == "windows":
+            library_prefix = ""
+            library_suffix = ".dll"
+        elif system_name.startswith("msys_nt"):
+            library_prefix = ""
+            library_suffix = ".dll"
+            system_name = "windows"
         else:
-            raise ValueError('Unsupported OS: {}'.format(system_name))
+            raise ValueError("Unsupported OS: {}".format(system_name))
 
-        if machine_name == 'x86_64':
+        if machine_name == "x86_64":
             if sizeof(c_void_p) == 4:
-                machine_name = 'i386'
+                machine_name = "i386"
 
-        library_base_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib")
+        library_base_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "lib"
+        )
         libraries_directory = "{}-{}".format(system_name, machine_name)
-        library_name = '{}indigo{}'.format(library_prefix, library_suffix)
+        library_name = "{}indigo{}".format(library_prefix, library_suffix)
 
-        library_path = os.path.join(library_base_path, libraries_directory, library_name)
+        library_path = os.path.join(
+            library_base_path, libraries_directory, library_name
+        )
         if os.path.exists(library_path):
             Indigo._lib = CDLL(library_path, mode=RTLD_GLOBAL)
             Indigo._dll_path = library_path
@@ -5191,12 +5211,12 @@ class Indigo(object):
         """
         self._setSessionId()
         if (
-                (
-                        type(value1).__name__ == "str"
-                        or type(value1).__name__ == "unicode"
-                )
-                and value2 is None
-                and value3 is None
+            (
+                type(value1).__name__ == "str"
+                or type(value1).__name__ == "unicode"
+            )
+            and value2 is None
+            and value3 is None
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOption(
@@ -5205,9 +5225,9 @@ class Indigo(object):
                 )
             )
         elif (
-                type(value1).__name__ == "int"
-                and value2 is None
-                and value3 is None
+            type(value1).__name__ == "int"
+            and value2 is None
+            and value3 is None
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOptionInt(
@@ -5215,9 +5235,9 @@ class Indigo(object):
                 )
             )
         elif (
-                type(value1).__name__ == "float"
-                and value2 is None
-                and value3 is None
+            type(value1).__name__ == "float"
+            and value2 is None
+            and value3 is None
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOptionFloat(
@@ -5225,9 +5245,9 @@ class Indigo(object):
                 )
             )
         elif (
-                type(value1).__name__ == "bool"
-                and value2 is None
-                and value3 is None
+            type(value1).__name__ == "bool"
+            and value2 is None
+            and value3 is None
         ):
             value1_b = 0
             if value1:
@@ -5238,10 +5258,10 @@ class Indigo(object):
                 )
             )
         elif (
-                type(value1).__name__ == "int"
-                and value2
-                and type(value2).__name__ == "int"
-                and value3 is None
+            type(value1).__name__ == "int"
+            and value2
+            and type(value2).__name__ == "int"
+            and value3 is None
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOptionXY(
@@ -5249,11 +5269,11 @@ class Indigo(object):
                 )
             )
         elif (
-                type(value1).__name__ == "float"
-                and value2
-                and type(value2).__name__ == "float"
-                and value3
-                and type(value3).__name__ == "float"
+            type(value1).__name__ == "float"
+            and value2
+            and type(value2).__name__ == "float"
+            and value3
+            and type(value3).__name__ == "float"
         ):
             self._checkResult(
                 Indigo._lib.indigoSetOptionColor(
@@ -5348,8 +5368,7 @@ class Indigo(object):
         )
 
     def resetOptions(self):
-        """Resets options to default state
-        """
+        """Resets options to default state"""
         self._setSessionId()
         self._checkResult(Indigo._lib.indigoResetOptions())
 
@@ -6548,6 +6567,9 @@ class Indigo(object):
             checkflags = ""
         self._setSessionId()
         return self._checkResultString(
-            Indigo._lib.indigoCheck(moltext.encode(ENCODE_ENCODING), checkflags.encode(ENCODE_ENCODING),
-                                    props.encode(ENCODE_ENCODING))
+            Indigo._lib.indigoCheck(
+                moltext.encode(ENCODE_ENCODING),
+                checkflags.encode(ENCODE_ENCODING),
+                props.encode(ENCODE_ENCODING),
+            )
         )

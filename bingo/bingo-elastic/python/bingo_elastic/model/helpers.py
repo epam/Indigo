@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Generator, Optional, Union
 
-from indigo import Indigo, IndigoObject
+from indigo import Indigo, IndigoObject  # type: ignore
 
 from bingo_elastic.model.record import (
     IndigoRecordMolecule,

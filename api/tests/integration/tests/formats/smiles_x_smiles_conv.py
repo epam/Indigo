@@ -1,7 +1,7 @@
-import sys
 import errno
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 if not os.path.exists(joinPathPy("out", __file__)):
@@ -28,7 +28,7 @@ def testMultipleSave(smifile, iterfunc, issmi):
             item.countAtoms()
             item.smiles()
         except IndigoException as e:
-            print('{0} : {1}'.format(item.index(), getIndigoExceptionText(e)))
+            print("{0} : {1}".format(item.index(), getIndigoExceptionText(e)))
             if issmi:
                 print(item.rawData())
             exc = True
@@ -40,13 +40,19 @@ def testMultipleSave(smifile, iterfunc, issmi):
             try:
                 item.markEitherCisTrans()
             except IndigoException as e:
-                print('{0} (while markEitherCisTrans) : {1}'.format(item.index(), getIndigoExceptionText(e)))
+                print(
+                    "{0} (while markEitherCisTrans) : {1}".format(
+                        item.index(), getIndigoExceptionText(e)
+                    )
+                )
                 if issmi:
                     print(item.rawData())
                 continue
 
             if issmi:
-                item.setName("structure-{0} {1}".format((item.index()), item.rawData()))
+                item.setName(
+                    "structure-{0} {1}".format((item.index()), item.rawData())
+                )
             else:
                 item.setName("structure-{0}".format(item.index()))
             item.setProperty("NUMBER", str(item.index()))
@@ -67,7 +73,9 @@ def testMultipleSave(smifile, iterfunc, issmi):
     cmliter = indigo.iterateCMLFile(joinPathPy("out/structures.cml", __file__))
     sdfiter = indigo.iterateSDFile(joinPathPy("out/structures.sdf", __file__))
     rdfiter = indigo.iterateRDFile(joinPathPy("out/structures.rdf", __file__))
-    smiiter = indigo.iterateSmilesFile(joinPathPy("out/structures.smi", __file__))
+    smiiter = indigo.iterateSmilesFile(
+        joinPathPy("out/structures.smi", __file__)
+    )
 
     idx = 1
     while sdfiter.hasNext():
@@ -76,7 +84,7 @@ def testMultipleSave(smifile, iterfunc, issmi):
         rdf = rdfiter.next()
         smi = smiiter.next()
 
-        print('{0} {1}'.format(sdf.index(), sdf.name()))
+        print("{0} {1}".format(sdf.index(), sdf.name()))
         sdf.resetSymmetricCisTrans()
         rdf.resetSymmetricCisTrans()
         try:
@@ -100,7 +108,23 @@ def testMultipleSave(smifile, iterfunc, issmi):
         idx += 1
 
 
-testMultipleSave(joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__), indigo.iterateSmilesFile, True)
-testMultipleSave(joinPathPy("molecules/chemical-structures.smi", __file__), indigo.iterateSmilesFile, True)
-testMultipleSave(joinPathPy("molecules/pubchem_7m_err.sdf", __file__), indigo.iterateSDFile, False)
-testMultipleSave(joinPathPy("molecules/acd2d_err.sdf", __file__), indigo.iterateSDFile, False)
+testMultipleSave(
+    joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__),
+    indigo.iterateSmilesFile,
+    True,
+)
+testMultipleSave(
+    joinPathPy("molecules/chemical-structures.smi", __file__),
+    indigo.iterateSmilesFile,
+    True,
+)
+testMultipleSave(
+    joinPathPy("molecules/pubchem_7m_err.sdf", __file__),
+    indigo.iterateSDFile,
+    False,
+)
+testMultipleSave(
+    joinPathPy("molecules/acd2d_err.sdf", __file__),
+    indigo.iterateSDFile,
+    False,
+)

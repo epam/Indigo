@@ -3,12 +3,13 @@ from uuid import uuid4
 
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from .database import Base
 
+
 class LibraryMeta(Base):
-    __tablename__ = 'library_metadata'
+    __tablename__ = "library_metadata"
     library_id = Column(String(36), primary_key=True)
     user_data = Column(JSONB)
     service_data = Column(JSONB)
@@ -19,14 +20,15 @@ class LibraryMeta(Base):
 
         current_timestamp = int(time() * 1000)
         self.service_data = {
-            'name': name,
-            'created_timestamp': current_timestamp,
-            'updated_timestamp': current_timestamp,
-            'structures_count': 0,
+            "name": name,
+            "created_timestamp": current_timestamp,
+            "updated_timestamp": current_timestamp,
+            "structures_count": 0,
         }
 
+
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
     user_id = Column(Integer, primary_key=True)
     username = Column(String(50))
     email = Column(String(100), unique=True)
@@ -35,14 +37,14 @@ class User(Base):
     foreign_auth_id = Column(Integer)
 
     def __init__(self, params):
-        self.username = params['username']
-        self.email = params['email']
-        self.foreign_auth_provider = params['foreign_auth_provider']
-        self.foreign_auth_id = params['foreign_auth_id']
-        self.set_password(params['password'])
+        self.username = params["username"]
+        self.email = params["email"]
+        self.foreign_auth_provider = params["foreign_auth_provider"]
+        self.foreign_auth_id = params["foreign_auth_id"]
+        self.set_password(params["password"])
 
     def __repr__(self):
-        return '<User %r, id=%r>' % (self.username, self.user_id)
+        return "<User %r, id=%r>" % (self.username, self.user_id)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

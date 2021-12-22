@@ -27,7 +27,8 @@ namespace indigo
 
     DECL_EXCEPTION(CyclicArrayError);
     // Cyclic array
-    template <typename T> struct CyclicArray
+    template <typename T>
+    struct CyclicArray
     {
     public:
         DECL_TPL_ERROR(CyclicArrayError);

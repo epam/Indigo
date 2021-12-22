@@ -17,12 +17,12 @@
  ***************************************************************************/
 
 #include "oracle/bingo_storage.h"
-#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/shmem.h"
 #include "base_cpp/tlscont.h"
 #include "oracle/ora_logger.h"
 #include "oracle/ora_wrap.h"
+#include <memory>
 
 IMPL_ERROR(BingoStorage, "storage");
 

@@ -62,7 +62,7 @@ set(PUBLIC_HEADERS
     cppcodec/detail/stream_codec.hpp)
 
 add_library(cppcodec OBJECT ${PUBLIC_HEADERS}) # unnecessary for building, but makes headers show up in IDEs
-target_include_directories(cppcodec PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(cppcodec SYSTEM PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(cppcodec PROPERTIES LINKER_LANGUAGE CXX)
 
 foreach(h ${PUBLIC_HEADERS})

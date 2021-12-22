@@ -20,10 +20,10 @@
 #define __exception_h__
 
 #include <cstdarg>
-#include <cstring>
-#include <type_traits>
 #include <cstdio>
+#include <cstring>
 #include <stdexcept>
+#include <type_traits>
 
 #include "base_c/defs.h"
 
@@ -40,22 +40,29 @@ namespace indigo
 
         explicit Exception(const char* format, ...);
 
-        const char* message() const noexcept { return _message; };
-        const char* what() const noexcept override { return _message; };
+        const char* message() const noexcept
+        {
+            return _message;
+        };
+        const char* what() const noexcept override
+        {
+            return _message;
+        };
         void appendMessage(const char* format, ...);
 
     protected:
         char _message[1024];
     };
 
-#define DECL_EXCEPTION_BODY(ExceptionName, Parent)                                      \
-    ExceptionName:                                                                      \
-public                                                                                  \
-    Parent                                                                              \
-    {                                                                                   \
-        ExceptionName() = delete;                                                       \
-    public:                                                                             \
-        explicit ExceptionName(const char* format, ...);                                \
+#define DECL_EXCEPTION_BODY(ExceptionName, Parent)                                                                                                             \
+    ExceptionName:                                                                                                                                             \
+public                                                                                                                                                         \
+    Parent                                                                                                                                                     \
+    {                                                                                                                                                          \
+        ExceptionName() = delete;                                                                                                                              \
+                                                                                                                                                               \
+    public:                                                                                                                                                    \
+        explicit ExceptionName(const char* format, ...);                                                                                                       \
     }
 
 #define DECL_EXCEPTION2(ExceptionName, Parent) class DLLEXPORT DECL_EXCEPTION_BODY(ExceptionName, Parent)
@@ -66,16 +73,15 @@ public                                                                          
 
 #define DECL_EXCEPTION_NO_EXP(ExceptionName) DECL_EXCEPTION_NO_EXP2(ExceptionName, indigo::Exception)
 
-#define IMPL_EXCEPTION2(Namespace, ExceptionName, Parent, prefix)                            \
-    Namespace::ExceptionName::ExceptionName(const char* format, ...) : Parent(prefix ": ")   \
-    {                                                                                        \
-        va_list args;                                                                        \
-        va_start(args, format);                                                              \
-        const size_t len = strlen(_message);                                                 \
-        vsnprintf(_message + len, sizeof(_message) - len, format, args);                     \
-        va_end(args);                                                                        \
-    }                                                                                        \
-
+#define IMPL_EXCEPTION2(Namespace, ExceptionName, Parent, prefix)                                                                                              \
+    Namespace::ExceptionName::ExceptionName(const char* format, ...) : Parent(prefix ": ")                                                                     \
+    {                                                                                                                                                          \
+        va_list args;                                                                                                                                          \
+        va_start(args, format);                                                                                                                                \
+        const size_t len = strlen(_message);                                                                                                                   \
+        vsnprintf(_message + len, sizeof(_message) - len, format, args);                                                                                       \
+        va_end(args);                                                                                                                                          \
+    }
 
 #define IMPL_EXCEPTION(Namespace, ExceptionName, prefix) IMPL_EXCEPTION2(Namespace, ExceptionName, indigo::Exception, prefix)
 

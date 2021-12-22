@@ -742,7 +742,7 @@ void Molecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool impl
             }
 
             stereocenters.registerUnfoldedHydrogen(i, new_h_idx);
-            cis_trans.registerUnfoldedHydrogen(*this,i, new_h_idx);
+            cis_trans.registerUnfoldedHydrogen(*this, i, new_h_idx);
             allene_stereo.registerUnfoldedHydrogen(i, new_h_idx);
             sgroups.registerUnfoldedHydrogen(i, new_h_idx);
         }
@@ -1122,13 +1122,19 @@ int Molecule::getAtomValence(int idx)
             _radicals[idx] = radical;
         }
         else
+        {
             // no information about implicit H, but sure about radical --
             // this is a commmon situtation for Molfiles or non-bracketed SMILES atoms.
             // Will throw an error on 5-valent carbon and such.
             if (_ignore_bad_valence)
-            Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
-        else
-            Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
+            {
+                Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
+            }
+            else
+            {
+                Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
+            }
+        }
 
         _implicit_h.expandFill(idx + 1, -1);
         _implicit_h[idx] = impl_h;
@@ -1575,7 +1581,7 @@ bool Molecule::convertableToImplicitHydrogen(int idx)
                 if (getVertex(nei).degree() == 3)
                     return false; // not ignoring hydrogens around stereocenters with lone pair
 
-            if (!cis_trans.convertableToImplicitHydrogen(*this,idx))
+            if (!cis_trans.convertableToImplicitHydrogen(*this, idx))
                 return false;
 
             return true;

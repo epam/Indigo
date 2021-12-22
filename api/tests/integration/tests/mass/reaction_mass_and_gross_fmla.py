@@ -1,7 +1,7 @@
 import sys
-sys.path.append('../../common')
-from env_indigo import *
 
+sys.path.append("../../common")
+from env_indigo import *
 
 indigo = Indigo()
 
@@ -12,7 +12,8 @@ print(r.grossFormula())
 r = indigo.loadReaction("CC.C>>C.CC")
 print(r.grossFormula())
 
-r = indigo.loadReaction('''$RXN
+r = indigo.loadReaction(
+    """$RXN
 
 
 
@@ -123,5 +124,6 @@ $MOL
  16 17  1  0     0  0
  17 18  1  0     0  0
 M  END
-''')
+"""
+)
 print(r.grossFormula())

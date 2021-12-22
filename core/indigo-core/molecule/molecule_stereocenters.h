@@ -106,9 +106,7 @@ namespace indigo
         bool isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
 
     public:
-
-        static bool checkSub( BaseMolecule& query, BaseMolecule& target, const int* mapping, bool reset_h_isotopes,
-                              Filter* stereocenters_vertex_filter = 0);
+        static bool checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping, bool reset_h_isotopes, Filter* stereocenters_vertex_filter = 0);
 
         static bool isPyramidMappingRigid(const int* pyramid, int size, const int* mapping);
         static bool isPyramidMappingRigid(const int mapping[4]);
@@ -122,13 +120,11 @@ namespace indigo
 
         DECL_ERROR;
 
-        static void getPyramidMapping( BaseMolecule& query, BaseMolecule& target, int query_atom, const int* mapping,
-                                       int* mapping_out, bool reset_h_isotopes);
+        static void getPyramidMapping(BaseMolecule& query, BaseMolecule& target, int query_atom, const int* mapping, int* mapping_out, bool reset_h_isotopes);
 
         static void rotatePyramid(int* pyramid);
 
     private:
-
         struct _Atom
         {
             int type;  // ANY, AND, OR, ABS

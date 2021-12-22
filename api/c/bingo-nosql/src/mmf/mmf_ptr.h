@@ -7,7 +7,8 @@ namespace bingo
 {
     class MMFAllocator;
 
-    template <typename T> class MMFPtr
+    template <typename T>
+    class MMFPtr
     {
     public:
         MMFPtr() = default;

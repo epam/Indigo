@@ -4,9 +4,9 @@
 #ifndef _BINGO_PG_BUILD_H__
 #define _BINGO_PG_BUILD_H__
 
-#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
+#include <memory>
 
 #include "bingo_pg_build_engine.h"
 #include "bingo_pg_index.h"

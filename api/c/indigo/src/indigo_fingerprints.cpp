@@ -19,7 +19,6 @@
 #include "indigo_fingerprints.h"
 
 #include "base_c/bitarray.h"
-#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_io.h"
@@ -29,6 +28,7 @@
 #include "reaction/reaction.h"
 #include "reaction/reaction_fingerprint.h"
 #include <math.h>
+#include <memory>
 
 IndigoFingerprint::IndigoFingerprint() : IndigoObject(FINGERPRINT)
 {

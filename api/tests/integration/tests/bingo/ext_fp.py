@@ -1,13 +1,20 @@
-import sys
 import array
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
+
 
 def searchSimExt(bingo, q, minSim, maxSim, ext_fp, metric=None):
     print("** searchSimExt({0}) metric='{1}' **".format(q.smiles(), metric))
-    result = bingo.searchSimWithExtFP(q, minSim, maxSim,ext_fp,  metric)
-    print("{0} {1} {2}".format(result.estimateRemainingResultsCount(), result.estimateRemainingResultsCountError(), result.estimateRemainingTime()))
+    result = bingo.searchSimWithExtFP(q, minSim, maxSim, ext_fp, metric)
+    print(
+        "{0} {1} {2}".format(
+            result.estimateRemainingResultsCount(),
+            result.estimateRemainingResultsCountError(),
+            result.estimateRemainingTime(),
+        )
+    )
     rm = result.getIndigoObject()
     while result.next():
         print(result.getCurrentId())
@@ -23,14 +30,16 @@ print("*** Add external fingerprints ****")
 
 indigo = Indigo()
 
-bingo = Bingo.createDatabaseFile(indigo, joinPathPy('extfp', __file__), 'molecule', '')
+bingo = Bingo.createDatabaseFile(
+    indigo, joinPathPy("extfp", __file__), "molecule", ""
+)
 print(bingo.version())
-m = indigo.loadMolecule('C1CCCCC1')
+m = indigo.loadMolecule("C1CCCCC1")
 bingo.insert(m)
-m = indigo.loadMolecule('C1CCNCC1')
+m = indigo.loadMolecule("C1CCNCC1")
 bingo.insert(m)
 
-m = indigo.loadMolecule('C1CCCCC1')
+m = indigo.loadMolecule("C1CCCCC1")
 
 indigo.setOption("fp-sim-qwords", 8)
 indigo.setOption("fp-ord-qwords", 0)
@@ -45,6 +54,7 @@ buffer = bytearray([0xFF, 0x00] * 32)
 
 if isIronPython():
     from System import Array, Byte
+
     buf_arr = Array[Byte](buffer)
 else:
     buf_arr = bytes(buffer)
@@ -52,27 +62,26 @@ else:
 ext_fp1 = indigo.loadFingerprintFromBuffer(buf_arr)
 print(ext_fp1.toString())
 
-m1 = indigo.loadMolecule('C1CNNCC1')
+m1 = indigo.loadMolecule("C1CNNCC1")
 bingo.insertWithExtFP(m1, ext_fp1)
 
 ext_fp2 = m1.fingerprint("sim")
 print(ext_fp2.toString())
 bingo.insertWithExtFP(m1, ext_fp2)
 
-searchSimExt(bingo, m, 0.9, 1, ext_fp, 'tanimoto')
-searchSimExt(bingo, m, 0.9, 1, ext_fp, 'tversky')
-searchSimExt(bingo, m, 0.9, 1, ext_fp, 'tversky 0.1 0.9')
-searchSimExt(bingo, m, 0.9, 1, ext_fp, 'tversky 0.9 0.1')
-searchSimExt(bingo, m, 0.9, 1, ext_fp, 'euclid-sub')
+searchSimExt(bingo, m, 0.9, 1, ext_fp, "tanimoto")
+searchSimExt(bingo, m, 0.9, 1, ext_fp, "tversky")
+searchSimExt(bingo, m, 0.9, 1, ext_fp, "tversky 0.1 0.9")
+searchSimExt(bingo, m, 0.9, 1, ext_fp, "tversky 0.9 0.1")
+searchSimExt(bingo, m, 0.9, 1, ext_fp, "euclid-sub")
 
-searchSimExt(bingo, m1, 0.9, 1, ext_fp1, 'tanimoto')
-searchSimExt(bingo, m1, 0.9, 1, ext_fp2, 'tanimoto')
+searchSimExt(bingo, m1, 0.9, 1, ext_fp1, "tanimoto")
+searchSimExt(bingo, m1, 0.9, 1, ext_fp2, "tanimoto")
 
 
 print("*** Add external fingerprint with id ****")
 
-m = indigo.loadMolecule('C1CNNCC1')
+m = indigo.loadMolecule("C1CNNCC1")
 bingo.insertWithExtFP(m, ext_fp1, 100)
 
-searchSimExt(bingo, m, 0.9, 1, ext_fp1, 'tanimoto')
-
+searchSimExt(bingo, m, 0.9, 1, ext_fp1, "tanimoto")

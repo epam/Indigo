@@ -92,7 +92,6 @@ TEST(BasicThreads, Basic)
     }
 }
 
-
 TEST(BasicThreads, SingleSessionMultiThreads)
 {
     auto session = IndigoSession::create();

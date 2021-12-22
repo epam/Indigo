@@ -1,12 +1,18 @@
 import os
 import sys
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
+
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
 from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 
-def testReactionInstrumentation ():
+
+def testReactionInstrumentation():
     rxn = indigo.loadReaction("[PH5].CN>CC>")
     rxn.addReactant(indigo.loadMolecule("Oc1ccccc1"))
     rxn.addProduct(indigo.loadMolecule("n1ccccc1"))
@@ -42,5 +48,6 @@ def testReactionInstrumentation ():
         print("CATALYST: " + mol.canonicalSmiles())
     for mol in rxn.iterateProducts():
         print("PRODUCT:  " + mol.canonicalSmiles())
-      
+
+
 testReactionInstrumentation()

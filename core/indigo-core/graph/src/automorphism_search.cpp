@@ -608,7 +608,8 @@ int AutomorphismSearch::_processNode(int level, int numcells)
     if (numcells != _n) // discrete partition?
         return level;
 
-    if (_cancellation_handler != nullptr && _cancellation_handler->isCancelled()) {
+    if (_cancellation_handler != nullptr && _cancellation_handler->isCancelled())
+    {
         throw TimeoutException("%s", _cancellation_handler->cancelledRequestMessage());
     }
 

@@ -16,8 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <string.h>
 #include <algorithm>
+#include <string.h>
 
 #include "base_cpp/smart_output.h"
 

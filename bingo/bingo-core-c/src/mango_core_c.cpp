@@ -36,70 +36,78 @@
 
 using namespace indigo::bingo_core;
 
-CEXPORT int mangoIndexProcessSingleRecord(){BINGO_BEGIN{BufferScanner scanner(self.index_record_data.ref());
-
-NullOutput output;
-
-TRY_READ_TARGET_MOL
+CEXPORT int mangoIndexProcessSingleRecord()
 {
-    try
+    BINGO_BEGIN
     {
-        if (self.single_mango_index.get() == NULL)
+        BufferScanner scanner(self.index_record_data.ref());
+
+        NullOutput output;
+
+        TRY_READ_TARGET_MOL
         {
-            self.single_mango_index.create();
-            self.single_mango_index->init(*self.bingo_context);
-            self.single_mango_index->skip_calculate_fp = self.skip_calculate_fp;
+            try
+            {
+                if (self.single_mango_index.get() == NULL)
+                {
+                    self.single_mango_index.create();
+                    self.single_mango_index->init(*self.bingo_context);
+                    self.single_mango_index->skip_calculate_fp = self.skip_calculate_fp;
+                }
+
+                self.mango_index = self.single_mango_index.get();
+                self.mango_index->prepare(scanner, output, NULL);
+            }
+            catch (CmfSaver::Error& e)
+            {
+                if (self.bingo_context->reject_invalid_structures)
+                    throw;
+                self.warning.readString(e.message(), true);
+                return 0;
+            }
         }
+        CATCH_READ_TARGET_MOL({
+            if (self.bingo_context->reject_invalid_structures)
+                throw;
 
-        self.mango_index = self.single_mango_index.get();
-        self.mango_index->prepare(scanner, output, NULL);
+            self.warning.readString(e.message(), true);
+            return 0;
+        });
     }
-    catch (CmfSaver::Error& e)
-    {
-        if (self.bingo_context->reject_invalid_structures)
-            throw;
-        self.warning.readString(e.message(), true);
-        return 0;
-    }
-}
-CATCH_READ_TARGET_MOL({
-    if (self.bingo_context->reject_invalid_structures)
-        throw;
-
-    self.warning.readString(e.message(), true);
-    return 0;
-});
-}
-BINGO_END(1, -1)
+    BINGO_END(1, -1);
 }
 
 CEXPORT int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* cmf_buf_len, const char** xyz_buf, int* xyz_buf_len, const char** gross_str,
                                            const char** counter_elements_str, const char** fingerprint_buf, int* fingerprint_buf_len,
-                                           const char** fingerprint_sim_str, float* mass,
-                                           int* sim_fp_bits_count){BINGO_BEGIN{if (id) * id = self.index_record_data_id;
+                                           const char** fingerprint_sim_str, float* mass, int* sim_fp_bits_count)
+{
+    BINGO_BEGIN
+    {
+        if (id)
+            *id = self.index_record_data_id;
 
-const Array<char>& cmf = self.mango_index->getCmf();
-const Array<char>& xyz = self.mango_index->getXyz();
+        const Array<char>& cmf = self.mango_index->getCmf();
+        const Array<char>& xyz = self.mango_index->getXyz();
 
-*cmf_buf = cmf.ptr();
-*cmf_buf_len = cmf.size();
+        *cmf_buf = cmf.ptr();
+        *cmf_buf_len = cmf.size();
 
-*xyz_buf = xyz.ptr();
-*xyz_buf_len = xyz.size();
+        *xyz_buf = xyz.ptr();
+        *xyz_buf_len = xyz.size();
 
-*fingerprint_buf = (const char*)self.mango_index->getFingerprint();
-*fingerprint_buf_len = self.bingo_context->fp_parameters.fingerprintSize();
+        *fingerprint_buf = (const char*)self.mango_index->getFingerprint();
+        *fingerprint_buf_len = self.bingo_context->fp_parameters.fingerprintSize();
 
-*fingerprint_sim_str = self.mango_index->getFingerprint_Sim_Str();
-*mass = self.mango_index->getMolecularMass();
-*gross_str = self.mango_index->getGrossString();
+        *fingerprint_sim_str = self.mango_index->getFingerprint_Sim_Str();
+        *mass = self.mango_index->getMolecularMass();
+        *gross_str = self.mango_index->getGrossString();
 
-*counter_elements_str = self.mango_index->getCountedElementsString();
+        *counter_elements_str = self.mango_index->getCountedElementsString();
 
-*sim_fp_bits_count = self.mango_index->getFpSimilarityBitsCount();
-return 1;
-}
-BINGO_END(-2, -2)
+        *sim_fp_bits_count = self.mango_index->getFpSimilarityBitsCount();
+        return 1;
+    }
+    BINGO_END(-2, -2);
 }
 
 CEXPORT int mangoGetHash(bool for_index, int index, int* count, dword* hash)
@@ -139,7 +147,7 @@ CEXPORT int mangoGetHash(bool for_index, int index, int* count, dword* hash)
             return 1;
         }
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 void _mangoCheckPseudoAndCBDM(BingoCore& self)
@@ -157,28 +165,36 @@ void _mangoCheckPseudoAndCBDM(BingoCore& self)
         throw BingoError("ignore_closing_bond_direction_mismatch option not set");
 }
 
-CEXPORT int mangoGetAtomCount(const char* target_buf, int target_buf_len){BINGO_BEGIN{BufferScanner scanner(target_buf, target_buf_len);
+CEXPORT int mangoGetAtomCount(const char* target_buf, int target_buf_len)
+{
+    BINGO_BEGIN
+    {
+        BufferScanner scanner(target_buf, target_buf_len);
 
-QS_DEF(Molecule, target);
+        QS_DEF(Molecule, target);
 
-MoleculeAutoLoader loader(scanner);
-loader.loadMolecule(target);
+        MoleculeAutoLoader loader(scanner);
+        loader.loadMolecule(target);
 
-return target.vertexCount();
+        return target.vertexCount();
+    }
+    BINGO_END(-1, -1);
 }
-BINGO_END(-1, -1)
-}
 
-CEXPORT int mangoGetBondCount(const char* target_buf, int target_buf_len){BINGO_BEGIN{BufferScanner scanner(target_buf, target_buf_len);
+CEXPORT int mangoGetBondCount(const char* target_buf, int target_buf_len)
+{
+    BINGO_BEGIN
+    {
+        BufferScanner scanner(target_buf, target_buf_len);
 
-QS_DEF(Molecule, target);
+        QS_DEF(Molecule, target);
 
-MoleculeAutoLoader loader(scanner);
-loader.loadMolecule(target);
+        MoleculeAutoLoader loader(scanner);
+        loader.loadMolecule(target);
 
-return target.edgeCount();
-}
-BINGO_END(-1, -1)
+        return target.edgeCount();
+    }
+    BINGO_END(-1, -1);
 }
 
 CEXPORT int mangoSetupMatch(const char* search_type, const char* query, const char* options)
@@ -264,45 +280,58 @@ CEXPORT int mangoSetupMatch(const char* search_type, const char* query, const ch
         }
         CATCH_READ_TARGET_MOL(self.error.readString(e.message(), 1); return -1;);
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
-CEXPORT int mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, int** min_bound_ptr, int** max_bound_ptr){
-    BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
-MangoSimilarity& similarity = self.mango_context->similarity;
-
-self.buffer.resize(sizeof(int) * 2 * count);
-
-int* min_bounds = (int*)self.buffer.ptr();
-int* max_bounds = min_bounds + count;
-for (int i = 0; i < count; i++)
+CEXPORT int mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, int** min_bound_ptr, int** max_bound_ptr)
 {
-    max_bounds[i] = similarity.getUpperBound(target_ones[i]);
-    min_bounds[i] = similarity.getLowerBound(target_ones[i]);
+    BINGO_BEGIN
+    {
+        if (self.mango_search_type != BingoCore::_SIMILARITY)
+            throw BingoError("Undefined search type");
+        MangoSimilarity& similarity = self.mango_context->similarity;
+
+        self.buffer.resize(sizeof(int) * 2 * count);
+
+        int* min_bounds = (int*)self.buffer.ptr();
+        int* max_bounds = min_bounds + count;
+        for (int i = 0; i < count; i++)
+        {
+            max_bounds[i] = similarity.getUpperBound(target_ones[i]);
+            min_bounds[i] = similarity.getLowerBound(target_ones[i]);
+        }
+
+        *min_bound_ptr = min_bounds;
+        *max_bound_ptr = max_bounds;
+    }
+    BINGO_END(1, -2);
 }
 
-*min_bound_ptr = min_bounds;
-*max_bound_ptr = max_bounds;
-}
-BINGO_END(1, -2)
+CEXPORT int mangoSimilarityGetScore(float* score)
+{
+    BINGO_BEGIN
+    {
+        if (self.mango_search_type != BingoCore::_SIMILARITY)
+            throw BingoError("Undefined search type");
+        MangoSimilarity& similarity = self.mango_context->similarity;
+        *score = similarity.getSimilarityScore();
+    }
+    BINGO_END(-2, 1);
 }
 
-CEXPORT int mangoSimilarityGetScore(float* score){BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
-MangoSimilarity& similarity = self.mango_context->similarity;
-*score = similarity.getSimilarityScore();
-}
-BINGO_END(-2, 1)
-}
-
-CEXPORT int mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound){
-    BINGO_BEGIN{if (self.mango_search_type != BingoCore::_SIMILARITY) throw BingoError("Undefined search type");
-MangoSimilarity& similarity = self.mango_context->similarity;
-similarity.bottom = min_bound;
-similarity.top = max_bound;
-similarity.include_bottom = true;
-similarity.include_top = true;
-}
-BINGO_END(1, -2)
+CEXPORT int mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound)
+{
+    BINGO_BEGIN
+    {
+        if (self.mango_search_type != BingoCore::_SIMILARITY)
+            throw BingoError("Undefined search type");
+        MangoSimilarity& similarity = self.mango_context->similarity;
+        similarity.bottom = min_bound;
+        similarity.top = max_bound;
+        similarity.include_bottom = true;
+        similarity.include_top = true;
+    }
+    BINGO_END(1, -2);
 }
 
 // Return value:
@@ -357,7 +386,7 @@ CEXPORT int mangoMatchTarget(const char* target, int target_buf_len)
         }
         CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), 1); return -1;);
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 // Return value:
@@ -410,7 +439,7 @@ CEXPORT int mangoMatchTargetBinary(const char* target_bin, int target_bin_len, c
         }
         CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), 1); return -1;);
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 CEXPORT int mangoLoadTargetBinaryXyz(const char* target_xyz, int target_xyz_len)
@@ -432,46 +461,56 @@ CEXPORT int mangoLoadTargetBinaryXyz(const char* target_xyz, int target_xyz_len)
         else
             throw BingoError("Invalid search type");
     }
-    BINGO_END(1, -2)
+    BINGO_END(1, -2);
 }
 
-CEXPORT int mangoSetHightlightingMode(int enable){BINGO_BEGIN{if (self.mango_context == 0) throw BingoError("mango_context not set");
-
-if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
+CEXPORT int mangoSetHightlightingMode(int enable)
 {
-    MangoSubstructure& substructure = self.mango_context->substructure;
-    substructure.preserve_bonds_on_highlighting = (enable != 0);
-}
-else if (self.mango_search_type == BingoCore::_TAUTOMER)
-{
-    MangoTautomer& tautomer = self.mango_context->tautomer;
-    tautomer.preserve_bonds_on_highlighting = (enable != 0);
-}
-else
-    throw BingoError("Unsupported search type in mangoSetHightlightingMode");
-}
-BINGO_END(1, -2)
+    BINGO_BEGIN
+    {
+        if (self.mango_context == 0)
+            throw BingoError("mango_context not set");
+
+        if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
+        {
+            MangoSubstructure& substructure = self.mango_context->substructure;
+            substructure.preserve_bonds_on_highlighting = (enable != 0);
+        }
+        else if (self.mango_search_type == BingoCore::_TAUTOMER)
+        {
+            MangoTautomer& tautomer = self.mango_context->tautomer;
+            tautomer.preserve_bonds_on_highlighting = (enable != 0);
+        }
+        else
+            throw BingoError("Unsupported search type in mangoSetHightlightingMode");
+    }
+    BINGO_END(1, -2);
 }
 
-CEXPORT const char* mangoGetHightlightedMolecule(){BINGO_BEGIN{if (self.mango_context == 0) throw BingoError("mango_context not set");
-
-if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
+CEXPORT const char* mangoGetHightlightedMolecule()
 {
-    MangoSubstructure& substructure = self.mango_context->substructure;
-    substructure.getHighlightedTarget(self.buffer);
-}
-else if (self.mango_search_type == BingoCore::_TAUTOMER)
-{
-    MangoTautomer& tautomer = self.mango_context->tautomer;
-    tautomer.getHighlightedTarget(self.buffer);
-}
-else
-    throw BingoError("Unsupported search type in mangoGetHightlightedMolecule");
+    BINGO_BEGIN
+    {
+        if (self.mango_context == 0)
+            throw BingoError("mango_context not set");
 
-self.buffer.push(0);
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
+        if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
+        {
+            MangoSubstructure& substructure = self.mango_context->substructure;
+            substructure.getHighlightedTarget(self.buffer);
+        }
+        else if (self.mango_search_type == BingoCore::_TAUTOMER)
+        {
+            MangoTautomer& tautomer = self.mango_context->tautomer;
+            tautomer.getHighlightedTarget(self.buffer);
+        }
+        else
+            throw BingoError("Unsupported search type in mangoGetHightlightedMolecule");
+
+        self.buffer.push(0);
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
 }
 
 CEXPORT const char* mangoSMILES(const char* target_buf, int target_buf_len, int canonical)
@@ -509,49 +548,56 @@ CEXPORT const char* mangoSMILES(const char* target_buf, int target_buf_len, int 
         out.writeByte(0);
         return self.buffer.ptr();
     }
-    BINGO_END(0, 0)
+    BINGO_END(0, 0);
 }
 
-CEXPORT const char* mangoMolfile(const char* molecule, int molecule_len){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
+CEXPORT const char* mangoMolfile(const char* molecule, int molecule_len)
+{
+    BINGO_BEGIN
+    {
+        _mangoCheckPseudoAndCBDM(self);
 
-BufferScanner scanner(molecule, molecule_len);
+        BufferScanner scanner(molecule, molecule_len);
 
-QS_DEF(Molecule, target);
+        QS_DEF(Molecule, target);
 
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadMolecule(target);
+        MoleculeAutoLoader loader(scanner);
+        self.bingo_context->setLoaderSettings(loader);
+        loader.loadMolecule(target);
 
-ArrayOutput out(self.buffer);
+        ArrayOutput out(self.buffer);
 
-MolfileSaver saver(out);
+        MolfileSaver saver(out);
 
-saver.saveMolecule(target);
-out.writeByte(0);
-return self.buffer.ptr();
+        saver.saveMolecule(target);
+        out.writeByte(0);
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
 }
-BINGO_END(0, 0)
-}
 
-CEXPORT const char* mangoCML(const char* molecule, int molecule_len){BINGO_BEGIN{// TODO: remove copy/paste in mangoCML, mangoMolfile and etc.
-                                                                                 _mangoCheckPseudoAndCBDM(self);
+CEXPORT const char* mangoCML(const char* molecule, int molecule_len)
+{
+    BINGO_BEGIN
+    { // TODO: remove copy/paste in mangoCML, mangoMolfile and etc.
+        _mangoCheckPseudoAndCBDM(self);
 
-BufferScanner scanner(molecule, molecule_len);
+        BufferScanner scanner(molecule, molecule_len);
 
-QS_DEF(Molecule, target);
+        QS_DEF(Molecule, target);
 
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadMolecule(target);
+        MoleculeAutoLoader loader(scanner);
+        self.bingo_context->setLoaderSettings(loader);
+        loader.loadMolecule(target);
 
-ArrayOutput out(self.buffer);
+        ArrayOutput out(self.buffer);
 
-CmlSaver saver(out);
-saver.saveMolecule(target);
-out.writeByte(0);
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
+        CmlSaver saver(out);
+        saver.saveMolecule(target);
+        out.writeByte(0);
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
 }
 
 CEXPORT int mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
@@ -585,16 +631,20 @@ CEXPORT int mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
         *query_fp = self.buffer.ptr();
         *query_fp_len = self.buffer.size();
     }
-    BINGO_END(1, -2)
+    BINGO_END(1, -2);
 }
 
-CEXPORT const char* mangoGetCountedElementName(int index){BINGO_BEGIN{ArrayOutput output(self.buffer);
-output.printf("cnt_%s", Element::toString(MangoIndex::counted_elements[index]));
-self.buffer.push(0);
+CEXPORT const char* mangoGetCountedElementName(int index)
+{
+    BINGO_BEGIN
+    {
+        ArrayOutput output(self.buffer);
+        output.printf("cnt_%s", Element::toString(MangoIndex::counted_elements[index]));
+        self.buffer.push(0);
 
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
 }
 
 CEXPORT int mangoNeedCoords()
@@ -620,211 +670,256 @@ CEXPORT int mangoNeedCoords()
         else
             throw BingoError("Invalid search type");
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
-CEXPORT byte mangoExactNeedComponentMatching(){BINGO_BEGIN{MangoExact& exact = self.mango_context->exact;
-return exact.needComponentMatching();
-}
-BINGO_END(-2, -2)
-}
-
-CEXPORT const char* mangoTauGetQueryGross(){BINGO_BEGIN{MangoTautomer& tautomer = self.mango_context->tautomer;
-return tautomer.getQueryGross();
-}
-BINGO_END(0, 0)
-}
-
-CEXPORT int mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
-
-BufferScanner scanner(target_buf, target_buf_len);
-
-QS_DEF(Molecule, target);
-
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.skip_3d_chirality = true;
-loader.loadMolecule(target);
-
-MoleculeMass mass_calulator;
-mass_calulator.relative_atomic_mass_map = &self.bingo_context->relative_atomic_mass_map;
-
-if (type == 0 || strlen(type) == 0 || strcasecmp(type, "molecular-weight") == 0)
-    *out = mass_calulator.molecularWeight(target);
-else if (strcasecmp(type, "most-abundant-mass") == 0)
-    *out = mass_calulator.mostAbundantMass(target);
-else if (strcasecmp(type, "monoisotopic-mass") == 0)
-    *out = mass_calulator.monoisotopicMass(target);
-else
-    throw BingoError("unknown mass specifier: %s", type);
-return 1;
-}
-BINGO_END(-1, -1)
-}
-
-CEXPORT int mangoMassD(const char* target_buf, int target_buf_len, const char* type, double* out){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
-
-BufferScanner scanner(target_buf, target_buf_len);
-
-QS_DEF(Molecule, target);
-
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.skip_3d_chirality = true;
-loader.loadMolecule(target);
-
-MoleculeMass mass_calulator;
-mass_calulator.relative_atomic_mass_map = &self.bingo_context->relative_atomic_mass_map;
-
-if (type == 0 || strlen(type) == 0 || strcasecmp(type, "molecular-weight") == 0)
-    *out = mass_calulator.molecularWeight(target);
-else if (strcasecmp(type, "most-abundant-mass") == 0)
-    *out = mass_calulator.mostAbundantMass(target);
-else if (strcasecmp(type, "monoisotopic-mass") == 0)
-    *out = mass_calulator.monoisotopicMass(target);
-else
-    throw BingoError("unknown mass specifier: %s", type);
-return 1;
-}
-BINGO_END(-1, -1)
-}
-
-CEXPORT const char* mangoGross(const char* target_buf, int target_buf_len){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
-
-BufferScanner scanner(target_buf, target_buf_len);
-
-QS_DEF(Molecule, target);
-
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadMolecule(target);
-
-QS_DEF(Array<int>, gross);
-MoleculeGrossFormula::collect(target, gross);
-MoleculeGrossFormula::toString(gross, self.buffer);
-self.buffer.push(0);
-
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
-}
-
-CEXPORT const char* mangoGrossGetConditions(){BINGO_BEGIN{if (self.bingo_context == 0) throw BingoError("context not set");
-
-if (self.mango_search_type != BingoCore::_GROSS)
-    throw BingoError("Search type must be 'GROSS'");
-
-return self.mango_context->gross.getConditions();
-}
-BINGO_END(0, 0)
-}
-
-CEXPORT const char* mangoCheckMolecule(const char* molecule, int molecule_len){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
-
-TRY_READ_TARGET_MOL
+CEXPORT byte mangoExactNeedComponentMatching()
 {
-    QS_DEF(Molecule, mol);
-
-    BufferScanner molecule_scanner(molecule, molecule_len);
-    MoleculeAutoLoader loader(molecule_scanner);
-    self.bingo_context->setLoaderSettings(loader);
-    loader.loadMolecule(mol);
-    Molecule::checkForConsistency(mol);
+    BINGO_BEGIN
+    {
+        MangoExact& exact = self.mango_context->exact;
+        return exact.needComponentMatching();
+    }
+    BINGO_END(-2, -2);
 }
-CATCH_READ_TARGET_MOL(self.buffer.readString(e.message(), true); return self.buffer.ptr())
-catch (Exception& e)
+
+CEXPORT const char* mangoTauGetQueryGross()
 {
-    e.appendMessage(" INTERNAL ERROR");
-    self.buffer.readString(e.message(), true);
-    return self.buffer.ptr();
+    BINGO_BEGIN
+    {
+        MangoTautomer& tautomer = self.mango_context->tautomer;
+        return tautomer.getQueryGross();
+    }
+    BINGO_END(0, 0);
 }
-catch (...)
+
+CEXPORT int mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out)
 {
-    return "INTERNAL UNKNOWN ERROR";
-}
-}
-BINGO_END(0, 0)
-}
+    BINGO_BEGIN
+    {
+        _mangoCheckPseudoAndCBDM(self);
 
-CEXPORT const char* mangoICM(const char* molecule, int molecule_len, bool save_xyz, int* out_len){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
+        BufferScanner scanner(target_buf, target_buf_len);
 
-BufferScanner scanner(molecule, molecule_len);
+        QS_DEF(Molecule, target);
 
-QS_DEF(Molecule, target);
+        MoleculeAutoLoader loader(scanner);
+        self.bingo_context->setLoaderSettings(loader);
+        loader.skip_3d_chirality = true;
+        loader.loadMolecule(target);
 
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadMolecule(target);
+        MoleculeMass mass_calulator;
+        mass_calulator.relative_atomic_mass_map = &self.bingo_context->relative_atomic_mass_map;
 
-ArrayOutput out(self.buffer);
-
-if ((save_xyz != 0) && !target.have_xyz)
-    throw BingoError("molecule has no XYZ");
-
-IcmSaver saver(out);
-saver.save_xyz = (save_xyz != 0);
-saver.saveMolecule(target);
-
-*out_len = self.buffer.size();
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
+        if (type == 0 || strlen(type) == 0 || strcasecmp(type, "molecular-weight") == 0)
+            *out = mass_calulator.molecularWeight(target);
+        else if (strcasecmp(type, "most-abundant-mass") == 0)
+            *out = mass_calulator.mostAbundantMass(target);
+        else if (strcasecmp(type, "monoisotopic-mass") == 0)
+            *out = mass_calulator.monoisotopicMass(target);
+        else
+            throw BingoError("unknown mass specifier: %s", type);
+        return 1;
+    }
+    BINGO_END(-1, -1);
 }
 
-CEXPORT const char* mangoFingerprint(const char* molecule, int molecule_len, const char* options, int* out_len){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
+CEXPORT int mangoMassD(const char* target_buf, int target_buf_len, const char* type, double* out)
+{
+    BINGO_BEGIN
+    {
+        _mangoCheckPseudoAndCBDM(self);
 
-if (!self.bingo_context->fp_parameters_ready)
-    throw BingoError("Fingerprint settings not ready");
+        BufferScanner scanner(target_buf, target_buf_len);
 
-BufferScanner scanner(molecule, molecule_len);
+        QS_DEF(Molecule, target);
 
-QS_DEF(Molecule, target);
+        MoleculeAutoLoader loader(scanner);
+        self.bingo_context->setLoaderSettings(loader);
+        loader.skip_3d_chirality = true;
+        loader.loadMolecule(target);
 
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadMolecule(target);
+        MoleculeMass mass_calulator;
+        mass_calulator.relative_atomic_mass_map = &self.bingo_context->relative_atomic_mass_map;
 
-MoleculeFingerprintBuilder builder(target, self.bingo_context->fp_parameters);
-builder.parseFingerprintType(options, false);
-
-builder.process();
-
-const char* buf = (const char*)builder.get();
-int buf_len = self.bingo_context->fp_parameters.fingerprintSize();
-
-self.buffer.copy(buf, buf_len);
-
-*out_len = self.buffer.size();
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
-}
-
-CEXPORT const char* mangoInChI(const char* molecule, int molecule_len, const char* options, int* out_len){BINGO_BEGIN{_mangoCheckPseudoAndCBDM(self);
-
-BufferScanner scanner(molecule, molecule_len);
-
-QS_DEF(Molecule, target);
-
-MoleculeAutoLoader loader(scanner);
-self.bingo_context->setLoaderSettings(loader);
-loader.loadMolecule(target);
-
-InchiWrapper inchi;
-inchi.setOptions(options);
-inchi.saveMoleculeIntoInchi(target, self.buffer);
-
-*out_len = self.buffer.size();
-
-return self.buffer.ptr();
-}
-BINGO_END(0, 0)
+        if (type == 0 || strlen(type) == 0 || strcasecmp(type, "molecular-weight") == 0)
+            *out = mass_calulator.molecularWeight(target);
+        else if (strcasecmp(type, "most-abundant-mass") == 0)
+            *out = mass_calulator.mostAbundantMass(target);
+        else if (strcasecmp(type, "monoisotopic-mass") == 0)
+            *out = mass_calulator.monoisotopicMass(target);
+        else
+            throw BingoError("unknown mass specifier: %s", type);
+        return 1;
+    }
+    BINGO_END(-1, -1);
 }
 
-CEXPORT const char* mangoInChIKey(const char* inchi){BINGO_BEGIN{InchiWrapper::InChIKey(inchi, self.buffer);
-return self.buffer.ptr();
+CEXPORT const char* mangoGross(const char* target_buf, int target_buf_len)
+{
+    BINGO_BEGIN
+    {
+        _mangoCheckPseudoAndCBDM(self);
+
+        BufferScanner scanner(target_buf, target_buf_len);
+
+        QS_DEF(Molecule, target);
+
+        MoleculeAutoLoader loader(scanner);
+        self.bingo_context->setLoaderSettings(loader);
+        loader.loadMolecule(target);
+
+        QS_DEF(Array<int>, gross);
+        MoleculeGrossFormula::collect(target, gross);
+        MoleculeGrossFormula::toString(gross, self.buffer);
+        self.buffer.push(0);
+
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
 }
-BINGO_END(0, 0)
+
+CEXPORT const char* mangoGrossGetConditions()
+{
+    BINGO_BEGIN
+    {
+        if (self.bingo_context == 0)
+            throw BingoError("context not set");
+
+        if (self.mango_search_type != BingoCore::_GROSS)
+            throw BingoError("Search type must be 'GROSS'");
+
+        return self.mango_context->gross.getConditions();
+    }
+    BINGO_END(0, 0);
+}
+
+CEXPORT const char* mangoCheckMolecule(const char* molecule, int molecule_len)
+{
+    BINGO_BEGIN
+    {
+        _mangoCheckPseudoAndCBDM(self);
+
+        TRY_READ_TARGET_MOL
+        {
+            QS_DEF(Molecule, mol);
+
+            BufferScanner molecule_scanner(molecule, molecule_len);
+            MoleculeAutoLoader loader(molecule_scanner);
+            self.bingo_context->setLoaderSettings(loader);
+            loader.loadMolecule(mol);
+            Molecule::checkForConsistency(mol);
+        }
+        CATCH_READ_TARGET_MOL(self.buffer.readString(e.message(), true); return self.buffer.ptr())
+        catch (Exception& e)
+        {
+            e.appendMessage(" INTERNAL ERROR");
+            self.buffer.readString(e.message(), true);
+            return self.buffer.ptr();
+        }
+        catch (...)
+        {
+            return "INTERNAL UNKNOWN ERROR";
+        }
+    }
+    BINGO_END(0, 0);
+}
+
+CEXPORT const char* mangoICM(const char* molecule, int molecule_len, bool save_xyz, int* out_len)
+{
+    BINGO_BEGIN
+    {
+        _mangoCheckPseudoAndCBDM(self);
+
+        BufferScanner scanner(molecule, molecule_len);
+
+        QS_DEF(Molecule, target);
+
+        MoleculeAutoLoader loader(scanner);
+        self.bingo_context->setLoaderSettings(loader);
+        loader.loadMolecule(target);
+
+        ArrayOutput out(self.buffer);
+
+        if ((save_xyz != 0) && !target.have_xyz)
+            throw BingoError("molecule has no XYZ");
+
+        IcmSaver saver(out);
+        saver.save_xyz = (save_xyz != 0);
+        saver.saveMolecule(target);
+
+        *out_len = self.buffer.size();
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
+}
+
+CEXPORT const char* mangoFingerprint(const char* molecule, int molecule_len, const char* options, int* out_len)
+{
+    BINGO_BEGIN
+    {
+        _mangoCheckPseudoAndCBDM(self);
+
+        if (!self.bingo_context->fp_parameters_ready)
+            throw BingoError("Fingerprint settings not ready");
+
+        BufferScanner scanner(molecule, molecule_len);
+
+        QS_DEF(Molecule, target);
+
+        MoleculeAutoLoader loader(scanner);
+        self.bingo_context->setLoaderSettings(loader);
+        loader.loadMolecule(target);
+
+        MoleculeFingerprintBuilder builder(target, self.bingo_context->fp_parameters);
+        builder.parseFingerprintType(options, false);
+
+        builder.process();
+
+        const char* buf = (const char*)builder.get();
+        int buf_len = self.bingo_context->fp_parameters.fingerprintSize();
+
+        self.buffer.copy(buf, buf_len);
+
+        *out_len = self.buffer.size();
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
+}
+
+CEXPORT const char* mangoInChI(const char* molecule, int molecule_len, const char* options, int* out_len)
+{
+    BINGO_BEGIN
+    {
+        _mangoCheckPseudoAndCBDM(self);
+
+        BufferScanner scanner(molecule, molecule_len);
+
+        QS_DEF(Molecule, target);
+
+        MoleculeAutoLoader loader(scanner);
+        self.bingo_context->setLoaderSettings(loader);
+        loader.loadMolecule(target);
+
+        InchiWrapper inchi;
+        inchi.setOptions(options);
+        inchi.saveMoleculeIntoInchi(target, self.buffer);
+
+        *out_len = self.buffer.size();
+
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
+}
+
+CEXPORT const char* mangoInChIKey(const char* inchi)
+{
+    BINGO_BEGIN
+    {
+        InchiWrapper::InChIKey(inchi, self.buffer);
+        return self.buffer.ptr();
+    }
+    BINGO_END(0, 0);
 }
 
 CEXPORT const char* mangoStandardize(const char* molecule, int molecule_len, const char* options)
@@ -852,5 +947,5 @@ CEXPORT const char* mangoStandardize(const char* molecule, int molecule_len, con
         out.writeByte(0);
         return self.buffer.ptr();
     }
-    BINGO_END(0, 0)
+    BINGO_END(0, 0);
 }
