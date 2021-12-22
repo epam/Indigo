@@ -11,6 +11,7 @@
 
 #include <optimizer/cost.h>
 #include <utils/selfuncs.h>
+#include <utils/spccache.h>
 
 /*
 #include "access/sysattr.h"
