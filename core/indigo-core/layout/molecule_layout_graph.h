@@ -315,7 +315,7 @@ namespace indigo
         static bool _path_handle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
 
         // attaching
-        virtual void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos);
+        void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos);
 
         // assigning coordinates
         void _attachDandlingVertices(int vert_idx, Array<int>& adjacent_list);
@@ -651,8 +651,6 @@ namespace indigo
         void _do_segment_smoothing_gradient(Array<Vec2f>& rotation_point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
         void _gradient_step(Array<Vec2f>& point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, float coef,
                             Array<local_pair_ii>& touching_segments);
-
-        void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos) override;
 
         // attaching cycles
         bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);
