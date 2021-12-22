@@ -1127,9 +1127,11 @@ int Molecule::getAtomValence(int idx)
             // this is a commmon situtation for Molfiles or non-bracketed SMILES atoms.
             // Will throw an error on 5-valent carbon and such.
             if (_ignore_bad_valence)
-                {Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
-            }else
-                {
+            {
+                Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
+            }
+            else
+            {
                 Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
             }
         }

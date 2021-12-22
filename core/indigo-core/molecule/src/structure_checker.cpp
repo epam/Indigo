@@ -549,11 +549,11 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
     {"charge",
      {StructureChecker::CheckTypeCode::CHECK_CHARGE, &check_charge, {{StructureChecker::CheckMessageCode::CHECK_MSG_CHARGE, "Structure has non-zero charge"}}}},
 
-//    {"salt",
-//     {StructureChecker::CheckTypeCode::CHECK_SALT,
-//      &check_salt,
-//      {{StructureChecker::CheckMessageCode::CHECK_MSG_SALT, "Structure contains charged fragments (possible salt)"},
-//       {StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL, "Not implemented yet: check salt"}}}},
+    //    {"salt",
+    //     {StructureChecker::CheckTypeCode::CHECK_SALT,
+    //      &check_salt,
+    //      {{StructureChecker::CheckMessageCode::CHECK_MSG_SALT, "Structure contains charged fragments (possible salt)"},
+    //       {StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL, "Not implemented yet: check salt"}}}},
 
     {"ambiguous_h",
      {StructureChecker::CheckTypeCode::CHECK_AMBIGUOUS_H,

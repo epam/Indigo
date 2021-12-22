@@ -21,6 +21,7 @@
 
 #include "base_cpp/tree.h"
 #include "molecule/ket_commons.h"
+
 #include "render_common.h"
 
 namespace indigo

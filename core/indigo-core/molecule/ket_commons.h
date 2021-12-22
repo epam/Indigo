@@ -19,6 +19,8 @@
 #ifndef __ket_commons_h__
 #define __ket_commons_h__
 
+#include <string>
+
 #include "common/math/algebra.h"
 #include "graph/graph.h"
 
