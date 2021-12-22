@@ -158,11 +158,11 @@ using namespace rapidjson;
 void dumpMessage(StructureChecker::CheckMessage& msg, std::string& out_str)
 {
     if (!out_str.empty())
-        out_str += ",";
+        out_str += ", ";
     out_str += msg.message();
     if (!msg.ids.empty())
     {
-        out_str += ",(";
+        out_str += ": (";
         for (int i = 0; i < msg.ids.size(); ++i)
         {
             out_str += std::to_string(msg.ids[i]);

@@ -223,13 +223,13 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
         }
 
         FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_3D_STEREO, [](BaseMolecule& mol, int idx) {
-            bool stereo_3d = true;
+            bool stereo_3d = false;
             if (BaseMolecule::hasZCoord(mol) && mol.stereocenters.exists(idx))
             {
                 const Vertex& vertex = mol.getVertex(idx);
                 for (auto j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
                     if (mol.getBondDirection2(idx, vertex.neiVertex(j)) > 0)
-                        stereo_3d = false;
+                        stereo_3d = true;
             }
             return stereo_3d;
         });
@@ -549,11 +549,11 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
     {"charge",
      {StructureChecker::CheckTypeCode::CHECK_CHARGE, &check_charge, {{StructureChecker::CheckMessageCode::CHECK_MSG_CHARGE, "Structure has non-zero charge"}}}},
 
-    {"salt",
-     {StructureChecker::CheckTypeCode::CHECK_SALT,
-      &check_salt,
-      {{StructureChecker::CheckMessageCode::CHECK_MSG_SALT, "Structure contains charged fragments (possible salt)"},
-       {StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL, "Not implemented yet: check salt"}}}},
+//    {"salt",
+//     {StructureChecker::CheckTypeCode::CHECK_SALT,
+//      &check_salt,
+//      {{StructureChecker::CheckMessageCode::CHECK_MSG_SALT, "Structure contains charged fragments (possible salt)"},
+//       {StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL, "Not implemented yet: check salt"}}}},
 
     {"ambiguous_h",
      {StructureChecker::CheckTypeCode::CHECK_AMBIGUOUS_H,
