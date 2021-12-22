@@ -1,9 +1,10 @@
 import os
 import sys
 
-sys.path.append('../../common')
-from env_indigo import *
+sys.path.append("../../common")
 from itertools import product
+
+from env_indigo import *
 
 indigo = Indigo()
 
@@ -22,10 +23,17 @@ def loadSdf(sdf_path):
 
 
 def buildRpeReactions(test_dir):
-    reaction = indigo.loadQueryReactionFromFile(joinPathPy(os.path.join("tests", test_dir, "reaction.rxn"), __file__))
+    reaction = indigo.loadQueryReactionFromFile(
+        joinPathPy(os.path.join("tests", test_dir, "reaction.rxn"), __file__)
+    )
     mons = []
     for i in range(reaction.countReactants()):
-        reactant_mons = loadSdf(joinPathPy(os.path.join("tests", test_dir, "mons{0}.sdf".format(i + 1)), __file__))
+        reactant_mons = loadSdf(
+            joinPathPy(
+                os.path.join("tests", test_dir, "mons{0}.sdf".format(i + 1)),
+                __file__,
+            )
+        )
         mons.append(reactant_mons)
 
     return indigo.reactionProductEnumerate(reaction, mons)
@@ -52,7 +60,7 @@ opset = [
     product(["rpe-mode"], ["grid", "one-tube"]),
     product(["rpe-self-reaction"], ["0", "1"]),
     product(["rpe-max-depth"], ["1", "3"]),
-    product(["rpe-max-products-count"], ["4", "10"])  # 10 -> 100 very long \
+    product(["rpe-max-products-count"], ["4", "10"]),  # 10 -> 100 very long \
 ]
 # example with bug for test #9
 # opset = [ [ ("rpe-multistep-reactions", "1") ] ]

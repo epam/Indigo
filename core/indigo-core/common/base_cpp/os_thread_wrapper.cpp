@@ -27,12 +27,12 @@
 #include <sys/sysctl.h>
 #endif
 
-#include <thread>
-#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/os_thread_wrapper.h"
 #include "base_cpp/profiling.h"
 #include "base_cpp/tlscont.h"
+#include <memory>
+#include <thread>
 
 using namespace indigo;
 
@@ -101,7 +101,7 @@ void OsCommandDispatcher::_run(int nthreads)
     // Create handling threads
     for (int i = 0; i < _left_thread_count; i++)
     {
-        std::thread thread{ [this]() { this->_threadFunc(); } };
+        std::thread thread{[this]() { this->_threadFunc(); }};
         thread.detach();
     }
 

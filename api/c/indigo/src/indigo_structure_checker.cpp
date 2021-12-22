@@ -22,10 +22,10 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
-#include "indigo_structure_checker.h"
 #include "indigo.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include "indigo_structure_checker.h"
 
 using namespace indigo;
 
@@ -41,8 +41,8 @@ enum class CheckMode
 };
 
 static StructureChecker::CheckResult _check(CheckMode mode, IndigoStructureChecker& thisPtr, int handleitem, const std::string& check_types_str,
-                                             const IndigoObject* objitem, const std::vector<StructureChecker::CheckTypeCode>& check_types,
-                                             const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
+                                            const IndigoObject* objitem, const std::vector<StructureChecker::CheckTypeCode>& check_types,
+                                            const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
 {
     StructureChecker::CheckResult r;
     if (handleitem < 0)
@@ -58,28 +58,28 @@ static StructureChecker::CheckResult _check(CheckMode mode, IndigoStructureCheck
         {
             switch (mode)
             {
-                case CheckMode::STRING_ALL:
-                    r = thisPtr.checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types_str);
-                    break;
-                case CheckMode::STRING_TYPES:
-                    r = thisPtr.checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types_str, selected_atoms, selected_bonds);
-                    break;
-                case CheckMode::BIN_ALL:
-                    r = thisPtr.checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types, selected_atoms, selected_bonds);
-                    break;
+            case CheckMode::STRING_ALL:
+                r = thisPtr.checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types_str);
+                break;
+            case CheckMode::STRING_TYPES:
+                r = thisPtr.checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types_str, selected_atoms, selected_bonds);
+                break;
+            case CheckMode::BIN_ALL:
+                r = thisPtr.checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types, selected_atoms, selected_bonds);
+                break;
             }
         }
         else if (IndigoBaseReaction::is((IndigoObject&)item))
         {
             switch (mode)
             {
-                case CheckMode::STRING_ALL:
-                case CheckMode::STRING_TYPES:
-                    r = thisPtr.checkReaction(((IndigoObject&)item).getBaseReaction(), check_types_str);
-                    break;
-                case CheckMode::BIN_ALL:
-                    r = thisPtr.checkReaction(((IndigoObject&)item).getBaseReaction(), check_types);
-                    break;
+            case CheckMode::STRING_ALL:
+            case CheckMode::STRING_TYPES:
+                r = thisPtr.checkReaction(((IndigoObject&)item).getBaseReaction(), check_types_str);
+                break;
+            case CheckMode::BIN_ALL:
+                r = thisPtr.checkReaction(((IndigoObject&)item).getBaseReaction(), check_types);
+                break;
             }
         }
         else if (IndigoAtom::is((IndigoObject&)item))
@@ -88,13 +88,13 @@ static StructureChecker::CheckResult _check(CheckMode mode, IndigoStructureCheck
             std::vector<int> atoms = {ia.getIndex() + 1};
             switch (mode)
             {
-                case CheckMode::STRING_ALL:
-                case CheckMode::STRING_TYPES:
-                    r = thisPtr.checkMolecule(ia.mol, check_types_str, atoms, {});
-                    break;
-                case CheckMode::BIN_ALL:
-                    r = thisPtr.checkMolecule(ia.mol, check_types, atoms);
-                    break;
+            case CheckMode::STRING_ALL:
+            case CheckMode::STRING_TYPES:
+                r = thisPtr.checkMolecule(ia.mol, check_types_str, atoms, {});
+                break;
+            case CheckMode::BIN_ALL:
+                r = thisPtr.checkMolecule(ia.mol, check_types, atoms);
+                break;
             }
         }
         else if (IndigoBond::is((IndigoObject&)item))
@@ -103,13 +103,13 @@ static StructureChecker::CheckResult _check(CheckMode mode, IndigoStructureCheck
             std::vector<int> bonds = {ib.getIndex() + 1};
             switch (mode)
             {
-                case CheckMode::STRING_ALL:
-                case CheckMode::STRING_TYPES:
-                    r = thisPtr.checkMolecule(ib.mol, check_types_str, std::vector<int>(), bonds);
-                    break;
-                case CheckMode::BIN_ALL:
-                    r = thisPtr.checkMolecule(ib.mol, check_types, std::vector<int>(), bonds);
-                    break;
+            case CheckMode::STRING_ALL:
+            case CheckMode::STRING_TYPES:
+                r = thisPtr.checkMolecule(ib.mol, check_types_str, std::vector<int>(), bonds);
+                break;
+            case CheckMode::BIN_ALL:
+                r = thisPtr.checkMolecule(ib.mol, check_types, std::vector<int>(), bonds);
+                break;
             }
         }
     }
@@ -136,46 +136,46 @@ StructureChecker::CheckResult IndigoStructureChecker::check(int item, const char
 }
 
 StructureChecker::CheckResult IndigoStructureChecker::check(int item, const char* check_types, const std::vector<int>& selected_atoms,
-                                                             const std::vector<int>& selected_bonds)
+                                                            const std::vector<int>& selected_bonds)
 {
     return _check(CheckMode::STRING_TYPES, *this, item, check_types, nullptr, {}, selected_atoms, selected_bonds);
 }
 
 StructureChecker::CheckResult IndigoStructureChecker::check(int item, const std::vector<CheckTypeCode>& check_types, const std::vector<int>& selected_atoms,
-                                                             const std::vector<int>& selected_bonds)
+                                                            const std::vector<int>& selected_bonds)
 {
     return _check(CheckMode::BIN_ALL, *this, item, "", nullptr, check_types, selected_atoms, selected_bonds);
 }
 
 StructureChecker::CheckResult IndigoStructureChecker::check(const IndigoObject& item, const std::vector<CheckTypeCode>& check_types,
-                                                             const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
+                                                            const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
 {
     return _check(CheckMode::BIN_ALL, *this, 0, "", &item, check_types, selected_atoms, selected_bonds);
 }
 
 using namespace rapidjson;
 
-void dumpMessage( StructureChecker::CheckMessage& msg, std::string& out_str )
+void dumpMessage(StructureChecker::CheckMessage& msg, std::string& out_str)
 {
-    if( !out_str.empty() )
-        out_str += ",";
+    if (!out_str.empty())
+        out_str += ", ";
     out_str += msg.message();
     if (!msg.ids.empty())
     {
-        out_str += ",(";    
-        for (int i = 0; i< msg.ids.size(); ++i )
+        out_str += ": (";
+        for (int i = 0; i < msg.ids.size(); ++i)
         {
-            out_str += std::to_string( msg.ids[i] );
-            if( i < msg.ids.size()-1 )
+            out_str += std::to_string(msg.ids[i]);
+            if (i < msg.ids.size() - 1)
                 out_str += ",";
         }
-        out_str += ")";    
+        out_str += ")";
     }
 
     if (!msg.subresult.isEmpty())
     {
-        for( auto sub_msg : msg.subresult.messages )
-            dumpMessage( sub_msg, out_str );
+        for (auto sub_msg : msg.subresult.messages)
+            dumpMessage(sub_msg, out_str);
     }
 }
 
@@ -186,9 +186,9 @@ std::string IndigoStructureChecker::toJson(const StructureChecker::CheckResult& 
     writer.StartObject();
     for (auto msg : res.messages)
     {
-        writer.Key( getCheckType( StructureChecker::getCheckTypeByMsgCode( msg.code)).c_str() );
+        writer.Key(getCheckType(StructureChecker::getCheckTypeByMsgCode(msg.code)).c_str());
         std::string message;
-        dumpMessage( msg, message );
+        dumpMessage(msg, message);
         writer.String(message.c_str());
     }
     writer.EndObject();

@@ -1,8 +1,8 @@
+import errno
 import os
 import sys
-import errno
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 from rendering import *
 
@@ -36,7 +36,7 @@ renderer = IndigoRenderer(indigo)
 mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/simple.ket", __file__))
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(mol, joinPathPy("out/simple.png", __file__))
-print(checkImageSimilarity('simple.png'))
+print(checkImageSimilarity("simple.png"))
 
 if isIronPython():
     renderer.Dispose()

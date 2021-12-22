@@ -82,9 +82,9 @@ void RSmilesLoader::_loadReaction()
     int i;
 
     std::unique_ptr<BaseMolecule> mols[3];
-    std::unique_ptr<BaseMolecule> & rcnt = mols[0];
-    std::unique_ptr<BaseMolecule> & ctlt = mols[1];
-    std::unique_ptr<BaseMolecule> & prod = mols[2];
+    std::unique_ptr<BaseMolecule>& rcnt = mols[0];
+    std::unique_ptr<BaseMolecule>& ctlt = mols[1];
+    std::unique_ptr<BaseMolecule>& prod = mols[2];
 
     QS_DEF(Array<int>, rcnt_aam);
     QS_DEF(Array<int>, ctlt_aam);

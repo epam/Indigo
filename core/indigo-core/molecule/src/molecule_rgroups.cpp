@@ -17,8 +17,8 @@
  ***************************************************************************/
 
 #include "molecule/molecule_rgroups.h"
-#include <memory>
 #include "molecule/query_molecule.h"
+#include <memory>
 
 using namespace indigo;
 

@@ -1,23 +1,63 @@
 import random
 import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 mol_db_names = [
-    (joinPathPy("../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__), indigo.iterateSDFile),
-    (joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), indigo.iterateSDFile),
-    (joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), indigo.iterateSDFile),
-    (joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__), indigo.iterateSmilesFile),
-    (joinPathPy("molecules/cis_trans.smi", __file__), indigo.iterateSmilesFile),
-    (joinPathPy("../../../../../data/molecules/stereo/stereo_cis_trans.sdf", __file__), indigo.iterateSDFile),
-    (joinPathPy("molecules/complicated_cis_trans.sdf", __file__), indigo.iterateSDFile),
-    (joinPathPy("molecules/complicated_cis_trans_h.sdf", __file__), indigo.iterateSDFile),
-    (joinPathPy("molecules/test_explicit_h.smi", __file__), indigo.iterateSmilesFile),
-    (joinPathPy("molecules/arom-ambiguous.smi", __file__), indigo.iterateSmilesFile),
-    (joinPathPy("molecules/arom-ambiguous.sdf", __file__), indigo.iterateSDFile),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/basic/thiazolidines.sdf", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__),
+        indigo.iterateSmilesFile,
+    ),
+    (
+        joinPathPy("molecules/cis_trans.smi", __file__),
+        indigo.iterateSmilesFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/stereo/stereo_cis_trans.sdf",
+            __file__,
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("molecules/complicated_cis_trans.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("molecules/complicated_cis_trans_h.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("molecules/test_explicit_h.smi", __file__),
+        indigo.iterateSmilesFile,
+    ),
+    (
+        joinPathPy("molecules/arom-ambiguous.smi", __file__),
+        indigo.iterateSmilesFile,
+    ),
+    (
+        joinPathPy("molecules/arom-ambiguous.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
 ]
 
 
@@ -36,7 +76,13 @@ def testMol(mol):
     mol_for_test.foldHydrogens()
     base_smiles2 = mol_for_test.canonicalSmiles()
     if base_smiles != base_smiles2:
-        msg = "  Canonical smiles has changes after fold hydrogens: %s -> %s" % (base_smiles, base_smiles2)
+        msg = (
+            "  Canonical smiles has changes after fold hydrogens: %s -> %s"
+            % (
+                base_smiles,
+                base_smiles2,
+            )
+        )
         print(msg)
         sys.stderr.write(msg + "\n")
 
@@ -46,14 +92,19 @@ def testMol(mol):
         print("unfoldHydrogens: %s" % (getIndigoExceptionText(e)))
     base_smiles3 = mol_for_test.canonicalSmiles()
     if base_smiles != base_smiles3:
-        msg = "  Canonical smiles has changes after fold->unfold hydrogens: %s -> %s" % (base_smiles, base_smiles3)
+        msg = (
+            "  Canonical smiles has changes after fold->unfold hydrogens: %s -> %s"
+            % (base_smiles, base_smiles3)
+        )
         print(msg)
         sys.stderr.write(msg + "\n")
     mol_for_test.foldHydrogens()
     base_smiles2 = mol_for_test.canonicalSmiles()
     if base_smiles != base_smiles2:
-        msg = "  Canonical smiles has changes after fold->unfold->fold hydrogens: %s -> %s" % (
-        base_smiles, base_smiles2)
+        msg = (
+            "  Canonical smiles has changes after fold->unfold->fold hydrogens: %s -> %s"
+            % (base_smiles, base_smiles2)
+        )
         print(msg)
         sys.stderr.write(msg + "\n")
 
@@ -89,7 +140,14 @@ def testMol(mol):
 
         perm_cano_sm = perm_mol.canonicalSmiles()
         if perm_cano_sm != base_smiles:
-            msg = "  %d, %d, %d, %d: %s -> %s" % (need_fold, need_unfold, need_fold2, need_unfold2, perm, perm_cano_sm)
+            msg = "  %d, %d, %d, %d: %s -> %s" % (
+                need_fold,
+                need_unfold,
+                need_fold2,
+                need_unfold2,
+                perm,
+                perm_cano_sm,
+            )
             print(msg)
             sys.stderr.write(msg + "\n")
     return base_smiles

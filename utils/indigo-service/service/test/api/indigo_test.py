@@ -3,31 +3,45 @@
 import json
 import os
 import unittest
+
 import requests
+
 
 # @unittest.skip("Skip libraries test case")
 class IndigoTestCase(unittest.TestCase):
     def setUp(self):
-        service_url = 'http://front/v2'
-        if 'INDIGO_SERVICE_URL' in os.environ and len(os.environ['INDIGO_SERVICE_URL']) > 0:
-            service_url = os.environ['INDIGO_SERVICE_URL']
+        service_url = "http://front/v2"
+        if (
+            "INDIGO_SERVICE_URL" in os.environ
+            and len(os.environ["INDIGO_SERVICE_URL"]) > 0
+        ):
+            service_url = os.environ["INDIGO_SERVICE_URL"]
 
-        self.url_prefix = '{}/indigo'.format(service_url)
+        self.url_prefix = "{}/indigo".format(service_url)
 
     def tearDown(self):
         pass
 
     @staticmethod
     def get_headers(d):
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
         data = json.dumps(d)
-        headers['Content-Length'] = len(data)
+        headers["Content-Length"] = len(data)
         return headers, data
 
-    formats = ('chemical/x-mdl-molfile', 'chemical/x-daylight-smiles', 'chemical/x-cml', 'chemical/x-inchi')
+    formats = (
+        "chemical/x-mdl-molfile",
+        "chemical/x-daylight-smiles",
+        "chemical/x-cml",
+        "chemical/x-inchi",
+    )
 
     aromatized_mols = {
-        'chemical/x-mdl-molfile': ('''
+        "chemical/x-mdl-molfile": (
+            """
   -INDIGO-01000000002D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
@@ -44,7 +58,8 @@ class IndigoTestCase(unittest.TestCase):
   5  6  4  0  0  0  0
   6  1  4  0  0  0  0
 M  END
-''', '''
+""",
+            """
   -INDIGO-07261614562D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
@@ -61,9 +76,11 @@ M  END
   4  6  4  0  0  0  0
   5  6  4  0  0  0  0
 M  END
-''', ),
-        'chemical/x-daylight-smiles': ('c1ccccc1',),
-        'chemical/x-cml': ('''<?xml version="1.0" ?>
+""",
+        ),
+        "chemical/x-daylight-smiles": ("c1ccccc1",),
+        "chemical/x-cml": (
+            """<?xml version="1.0" ?>
 <cml>
     <molecule title="">
         <atomArray>
@@ -84,7 +101,8 @@ M  END
         </bondArray>
     </molecule>
 </cml>
-''', '''<?xml version="1.0" ?>
+""",
+            """<?xml version="1.0" ?>
 <cml>
     <molecule>
         <atomArray>
@@ -105,7 +123,8 @@ M  END
         </bondArray>
     </molecule>
 </cml>
-''', '''<?xml version="1.0" ?>
+""",
+            """<?xml version="1.0" ?>
 <cml>
     <molecule>
         <atomArray>
@@ -126,12 +145,14 @@ M  END
         </bondArray>
     </molecule>
 </cml>
-''', ),
-        'chemical/x-inchi': ('InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H',)
+""",
+        ),
+        "chemical/x-inchi": ("InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H",),
     }
 
     dearomatized_mols = {
-        'chemical/x-mdl-molfile': ('''
+        "chemical/x-mdl-molfile": (
+            """
   -INDIGO-01000000002D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
@@ -148,7 +169,8 @@ M  END
   5  6  2  0  0  0  0
   6  1  1  0  0  0  0
 M  END
-''', '''
+""",
+            """
   -INDIGO-07261614382D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
@@ -165,7 +187,8 @@ M  END
   5  6  1  0  0  0  0
   6  1  2  0  0  0  0
 M  END
-''', '''
+""",
+            """
   -INDIGO-07261614432D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
@@ -182,9 +205,11 @@ M  END
   4  6  2  0  0  0  0
   5  6  1  0  0  0  0
 M  END
-'''),
-        'chemical/x-daylight-smiles': ('C1C=CC=CC=1', 'C1=CC=CC=C1'),
-        'chemical/x-cml': ('''<?xml version="1.0" ?>
+""",
+        ),
+        "chemical/x-daylight-smiles": ("C1C=CC=CC=1", "C1=CC=CC=C1"),
+        "chemical/x-cml": (
+            """<?xml version="1.0" ?>
 <cml>
     <molecule title="">
         <atomArray>
@@ -205,7 +230,8 @@ M  END
         </bondArray>
     </molecule>
 </cml>
-''', '''<?xml version="1.0" ?>
+""",
+            """<?xml version="1.0" ?>
 <cml>
     <molecule>
         <atomArray>
@@ -226,7 +252,8 @@ M  END
         </bondArray>
     </molecule>
 </cml>
-''', '''<?xml version="1.0" ?>
+""",
+            """<?xml version="1.0" ?>
 <cml>
     <molecule>
         <atomArray>
@@ -247,7 +274,8 @@ M  END
         </bondArray>
     </molecule>
 </cml>
-''', '''<?xml version="1.0" ?>
+""",
+            """<?xml version="1.0" ?>
 <cml>
     <molecule>
         <atomArray>
@@ -268,211 +296,433 @@ M  END
         </bondArray>
     </molecule>
 </cml>
-'''),
-        'chemical/x-inchi': ('InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H',),
+""",
+        ),
+        "chemical/x-inchi": ("InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H",),
     }
 
     def test_info(self):
         headers, data = self.get_headers({})
-        result = requests.get(self.url_prefix + '/info', headers=headers, data=data)
+        result = requests.get(
+            self.url_prefix + "/info", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertIn('Indigo', result_data)
+        self.assertIn("Indigo", result_data)
 
     def test_aromatize_correct(self):
-        formats = ('chemical/x-mdl-molfile', 'chemical/x-daylight-smiles', 'chemical/x-cml', 'chemical/x-inchi')
+        formats = (
+            "chemical/x-mdl-molfile",
+            "chemical/x-daylight-smiles",
+            "chemical/x-cml",
+            "chemical/x-inchi",
+        )
         for input_format in formats:
             for output_format in formats:
-                result = requests.post(self.url_prefix + '/aromatize', headers={'Content-Type': input_format, 'Accept': output_format}, data=self.dearomatized_mols[input_format][0])
+                result = requests.post(
+                    self.url_prefix + "/aromatize",
+                    headers={
+                        "Content-Type": input_format,
+                        "Accept": output_format,
+                    },
+                    data=self.dearomatized_mols[input_format][0],
+                )
                 self.assertEqual(200, result.status_code)
-                self.assertEqual(output_format, result.headers['Content-Type'])
-                if output_format in ('chemical/x-mdl-molfile', 'chemical/x-mdl-rxnfile'):  # Skip Molfile date
-                    self.assertIn('\n'.join(result.text.splitlines()[2:]).strip(), ['\n'.join(m.splitlines()[2:]).strip() for m in self.aromatized_mols[output_format]])
+                self.assertEqual(output_format, result.headers["Content-Type"])
+                if output_format in (
+                    "chemical/x-mdl-molfile",
+                    "chemical/x-mdl-rxnfile",
+                ):  # Skip Molfile date
+                    self.assertIn(
+                        "\n".join(result.text.splitlines()[2:]).strip(),
+                        [
+                            "\n".join(m.splitlines()[2:]).strip()
+                            for m in self.aromatized_mols[output_format]
+                        ],
+                    )
                 else:
-                    self.assertIn(result.text, self.aromatized_mols[output_format])
+                    self.assertIn(
+                        result.text, self.aromatized_mols[output_format]
+                    )
 
     def test_aromatize_selected(self):
-        headers, data = self.get_headers({
-            'struct': 'C1C=CC=CC=1.C1C=CC=CC=1',
-            'output_format': 'chemical/x-daylight-smiles',
-            'selected': [0, 1, 2, 3, 4, 5]
-        })
-        result = requests.post(self.url_prefix + '/aromatize', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "C1C=CC=CC=1.C1C=CC=CC=1",
+                "output_format": "chemical/x-daylight-smiles",
+                "selected": [0, 1, 2, 3, 4, 5],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/aromatize", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('c1ccccc1.c1ccccc1', result_data['struct'])
+        self.assertEqual("c1ccccc1.c1ccccc1", result_data["struct"])
 
     def test_aromatize_selected_2(self):
-        headers, data = self.get_headers({
-            "struct": "\n  Ketcher 10071619282D 1   1.00000     0.00000     0\n\n 13 13  0     0  0            999 V2000\n    0.0000    0.8660    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9996    0.8661    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4996    1.7321    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.4996    1.7322    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.9997    0.8661    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.4997    0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4997    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8651    2.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.9990    1.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.9990    0.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8650    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7311    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7311    1.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0     0  0\n  2  3  4  0     0  0\n  3  4  4  0     0  0\n  4  5  4  0     0  0\n  5  6  4  0     0  0\n  6  7  4  0     0  0\n  7  2  4  0     0  0\n  8  9  2  0     0  0\n  9 10  1  0     0  0\n 10 11  2  0     0  0\n 11 12  1  0     0  0\n 12 13  2  0     0  0\n 13  8  1  0     0  0\nM  END\n",
-            "selected": [7, 8, 9, 10, 11, 12],
-            "output_format": 'chemical/x-daylight-smiles',
-            "options": {"smart-layout": True, "ignore-stereochemistry-errors": True}
-        })
-        result = requests.post(self.url_prefix + '/aromatize', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "\n  Ketcher 10071619282D 1   1.00000     0.00000     0\n\n 13 13  0     0  0            999 V2000\n    0.0000    0.8660    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9996    0.8661    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4996    1.7321    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.4996    1.7322    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.9997    0.8661    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.4997    0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4997    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8651    2.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.9990    1.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.9990    0.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8650    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7311    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7311    1.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0     0  0\n  2  3  4  0     0  0\n  3  4  4  0     0  0\n  4  5  4  0     0  0\n  5  6  4  0     0  0\n  6  7  4  0     0  0\n  7  2  4  0     0  0\n  8  9  2  0     0  0\n  9 10  1  0     0  0\n 10 11  2  0     0  0\n 11 12  1  0     0  0\n 12 13  2  0     0  0\n 13  8  1  0     0  0\nM  END\n",
+                "selected": [7, 8, 9, 10, 11, 12],
+                "output_format": "chemical/x-daylight-smiles",
+                "options": {
+                    "smart-layout": True,
+                    "ignore-stereochemistry-errors": True,
+                },
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/aromatize", headers=headers, data=data
+        )
         result_data = json.loads(result.text)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('Nc1ccccc1.c1ccccc1', result_data['struct'])
+        self.assertEqual("Nc1ccccc1.c1ccccc1", result_data["struct"])
 
     def test_smiles_wrong(self):
-        result = requests.post(self.url_prefix + '/aromatize', headers={'Content-Type': 'chemical/x-daylight-smiles', 'Accept': 'chemical/x-daylight-smiles'}, data='c1ccccc2')
+        result = requests.post(
+            self.url_prefix + "/aromatize",
+            headers={
+                "Content-Type": "chemical/x-daylight-smiles",
+                "Accept": "chemical/x-daylight-smiles",
+            },
+            data="c1ccccc2",
+        )
         self.assertEqual(400, result.status_code)
-        self.assertEqual("IndigoException: molecule auto loader: SMILES loader: unexpected end of input", result.text)
+        self.assertEqual(
+            "IndigoException: molecule auto loader: SMILES loader: unexpected end of input",
+            result.text,
+        )
 
     def test_headers_is_rxn(self):
-        result = requests.post(self.url_prefix + '/aromatize', headers={'Content-Type': 'chemical/x-daylight-smiles'}, data='CC')
+        result = requests.post(
+            self.url_prefix + "/aromatize",
+            headers={"Content-Type": "chemical/x-daylight-smiles"},
+            data="CC",
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual("chemical/x-mdl-molfile", result.headers['Content-Type'])
-        result = requests.post(self.url_prefix + '/aromatize', headers={'Content-Type': 'chemical/x-daylight-smiles'}, data='CC>>CC')
+        self.assertEqual(
+            "chemical/x-mdl-molfile", result.headers["Content-Type"]
+        )
+        result = requests.post(
+            self.url_prefix + "/aromatize",
+            headers={"Content-Type": "chemical/x-daylight-smiles"},
+            data="CC>>CC",
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual("chemical/x-mdl-rxnfile", result.headers['Content-Type'])
+        self.assertEqual(
+            "chemical/x-mdl-rxnfile", result.headers["Content-Type"]
+        )
 
     def test_headers_wrong(self):
         # Missing both Content-Type and Accept headers
-        result = requests.post(self.url_prefix + '/aromatize', headers={}, data='c1ccccc1')
+        result = requests.post(
+            self.url_prefix + "/aromatize", headers={}, data="c1ccccc1"
+        )
         self.assertEqual(400, result.status_code)
         self.assertIn("'input_format': ['Not a valid choice.']", result.text)
         # Missing Accept header
-        result = requests.post(self.url_prefix + '/aromatize', headers={'Content-Type': 'chemical/x-daylight-smiles'}, data='c1ccccc1')
+        result = requests.post(
+            self.url_prefix + "/aromatize",
+            headers={"Content-Type": "chemical/x-daylight-smiles"},
+            data="c1ccccc1",
+        )
         self.assertEqual(200, result.status_code)
         # Wrong Content-Type header
-        result = requests.post(self.url_prefix + '/aromatize', headers={'Content-Type': 'chemical/x-daylight-smiles1', 'Accept': 'chemical/x-daylight-smiles'}, data='c1ccccc1')
+        result = requests.post(
+            self.url_prefix + "/aromatize",
+            headers={
+                "Content-Type": "chemical/x-daylight-smiles1",
+                "Accept": "chemical/x-daylight-smiles",
+            },
+            data="c1ccccc1",
+        )
         self.assertEqual(400, result.status_code)
-        self.assertEqual("ValidationError: {'input_format': ['Not a valid choice.']}", result.text)
+        self.assertEqual(
+            "ValidationError: {'input_format': ['Not a valid choice.']}",
+            result.text,
+        )
         # Wrong Accept header
-        result = requests.post(self.url_prefix + '/aromatize', headers={'Content-Type': 'chemical/x-daylight-smiles', 'Accept': 'chemical/x-daylight-smiles2'}, data='c1ccccc1')
+        result = requests.post(
+            self.url_prefix + "/aromatize",
+            headers={
+                "Content-Type": "chemical/x-daylight-smiles",
+                "Accept": "chemical/x-daylight-smiles2",
+            },
+            data="c1ccccc1",
+        )
         self.assertEqual(400, result.status_code)
-        self.assertEqual("ValidationError: {'output_format': ['Not a valid choice.']}", result.text)
+        self.assertEqual(
+            "ValidationError: {'output_format': ['Not a valid choice.']}",
+            result.text,
+        )
 
     def test_dearomatize_correct(self):
-        formats = ('chemical/x-mdl-molfile', 'chemical/x-daylight-smiles', 'chemical/x-cml', 'chemical/x-inchi')
+        formats = (
+            "chemical/x-mdl-molfile",
+            "chemical/x-daylight-smiles",
+            "chemical/x-cml",
+            "chemical/x-inchi",
+        )
         for input_format in formats:
             for output_format in formats:
-                result = requests.post(self.url_prefix + '/dearomatize', headers={'Content-Type': input_format, 'Accept': output_format}, data=self.aromatized_mols[input_format][0])
+                result = requests.post(
+                    self.url_prefix + "/dearomatize",
+                    headers={
+                        "Content-Type": input_format,
+                        "Accept": output_format,
+                    },
+                    data=self.aromatized_mols[input_format][0],
+                )
                 self.assertEqual(200, result.status_code)
-                self.assertEqual(output_format, result.headers['Content-Type'])
-                if output_format in ('chemical/x-mdl-molfile', 'chemical/x-mdl-rxnfile'):  # Skip Molfile date
-                    self.assertIn('\n'.join(result.text.splitlines()[2:]), ['\n'.join(m.splitlines()[2:]) for m in self.dearomatized_mols[output_format]])
+                self.assertEqual(output_format, result.headers["Content-Type"])
+                if output_format in (
+                    "chemical/x-mdl-molfile",
+                    "chemical/x-mdl-rxnfile",
+                ):  # Skip Molfile date
+                    self.assertIn(
+                        "\n".join(result.text.splitlines()[2:]),
+                        [
+                            "\n".join(m.splitlines()[2:])
+                            for m in self.dearomatized_mols[output_format]
+                        ],
+                    )
                 else:
-                    self.assertIn(result.text, self.dearomatized_mols[output_format])
+                    self.assertIn(
+                        result.text, self.dearomatized_mols[output_format]
+                    )
 
     def test_dearomatize_selected(self):
-        headers, data = self.get_headers({
-            'struct': 'c1ccccc1.c1ccccc1',
-            'output_format': 'chemical/x-daylight-smiles',
-            'selected': [0, 1, 2, 3, 4, 5]
-        })
-        result = requests.post(self.url_prefix + '/dearomatize', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "c1ccccc1.c1ccccc1",
+                "output_format": "chemical/x-daylight-smiles",
+                "selected": [0, 1, 2, 3, 4, 5],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/dearomatize", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('C1C=CC=CC=1.C1C=CC=CC=1', result_data['struct'])
+        self.assertEqual("C1C=CC=CC=1.C1C=CC=CC=1", result_data["struct"])
 
     def test_dearomatize_query_molecule(self):
-        result = requests.post(self.url_prefix + '/dearomatize', headers={'Content-Type': 'chemical/x-daylight-smiles', 'Accept': 'chemical/x-daylight-smiles'}, data='CX')
+        result = requests.post(
+            self.url_prefix + "/dearomatize",
+            headers={
+                "Content-Type": "chemical/x-daylight-smiles",
+                "Accept": "chemical/x-daylight-smiles",
+            },
+            data="CX",
+        )
         self.assertEqual(400, result.status_code)
-        self.assertEqual("Structures with query features cannot be dearomatized yet", result.text)
+        self.assertEqual(
+            "Structures with query features cannot be dearomatized yet",
+            result.text,
+        )
 
     def test_convert_correct(self):
-        formats = ('chemical/x-mdl-molfile', 'chemical/x-daylight-smiles', 'chemical/x-cml', 'chemical/x-inchi')
+        formats = (
+            "chemical/x-mdl-molfile",
+            "chemical/x-daylight-smiles",
+            "chemical/x-cml",
+            "chemical/x-inchi",
+        )
         # Test for POST request
         for input_format in formats:
             for output_format in formats:
-                result = requests.post(self.url_prefix + '/convert', headers={'Content-Type': input_format, 'Accept': output_format}, data=self.dearomatized_mols[input_format][0])
+                result = requests.post(
+                    self.url_prefix + "/convert",
+                    headers={
+                        "Content-Type": input_format,
+                        "Accept": output_format,
+                    },
+                    data=self.dearomatized_mols[input_format][0],
+                )
                 self.assertEqual(200, result.status_code)
-                self.assertEqual(output_format, result.headers['Content-Type'])
-                if output_format in ('chemical/x-mdl-molfile', 'chemical/x-mdl-rxnfile'):  # Skip Molfile date
-                    self.assertIn('\n'.join(result.text.splitlines()[2:]), ['\n'.join(m.splitlines()[2:]) for m in self.dearomatized_mols[output_format]])
+                self.assertEqual(output_format, result.headers["Content-Type"])
+                if output_format in (
+                    "chemical/x-mdl-molfile",
+                    "chemical/x-mdl-rxnfile",
+                ):  # Skip Molfile date
+                    self.assertIn(
+                        "\n".join(result.text.splitlines()[2:]),
+                        [
+                            "\n".join(m.splitlines()[2:])
+                            for m in self.dearomatized_mols[output_format]
+                        ],
+                    )
                 else:
-                    self.assertIn(result.text, self.dearomatized_mols[output_format])
+                    self.assertIn(
+                        result.text, self.dearomatized_mols[output_format]
+                    )
 
             for output_format in formats:
                 # Test for GET request
-                result = requests.get(self.url_prefix + '/convert',  params={'struct': self.dearomatized_mols[input_format][0], 'output_format': output_format})
+                result = requests.get(
+                    self.url_prefix + "/convert",
+                    params={
+                        "struct": self.dearomatized_mols[input_format][0],
+                        "output_format": output_format,
+                    },
+                )
                 self.assertEqual(200, result.status_code)
-                if output_format in ('chemical/x-mdl-molfile', 'chemical/x-mdl-rxnfile'):  # Skip Molfile date
-                        self.assertIn('\n'.join(result.text.splitlines()[2:]), ['\n'.join(m.splitlines()[2:]) for m in self.dearomatized_mols[output_format]])
+                if output_format in (
+                    "chemical/x-mdl-molfile",
+                    "chemical/x-mdl-rxnfile",
+                ):  # Skip Molfile date
+                    self.assertIn(
+                        "\n".join(result.text.splitlines()[2:]),
+                        [
+                            "\n".join(m.splitlines()[2:])
+                            for m in self.dearomatized_mols[output_format]
+                        ],
+                    )
                 else:
-                        self.assertIn(result.text, self.dearomatized_mols[output_format])
+                    self.assertIn(
+                        result.text, self.dearomatized_mols[output_format]
+                    )
 
     def test_convert_canonical_smiles(self):
-        headers, data = self.get_headers({
-            'struct': 'C1=CC=CC=C1O',
-            'output_format': 'chemical/x-daylight-smiles',
-        })
-        result_standard = requests.post(self.url_prefix + '/convert', headers=headers, data=data)
-        headers, data = self.get_headers({
-            'struct': 'C1=CC=CC=C1O',
-            'output_format': 'chemical/x-daylight-smiles',
-            'options': {
-                'smiles': 'canonical'
+        headers, data = self.get_headers(
+            {
+                "struct": "C1=CC=CC=C1O",
+                "output_format": "chemical/x-daylight-smiles",
             }
-        })
-        result_canonical = requests.post(self.url_prefix + '/convert', headers=headers, data=data)
-        self.assertNotEqual(json.loads(result_canonical.text)['struct'],
-                            json.loads(result_standard.text)['struct'])
+        )
+        result_standard = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": "C1=CC=CC=C1O",
+                "output_format": "chemical/x-daylight-smiles",
+                "options": {"smiles": "canonical"},
+            }
+        )
+        result_canonical = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertNotEqual(
+            json.loads(result_canonical.text)["struct"],
+            json.loads(result_standard.text)["struct"],
+        )
 
     def test_convert_smarts(self):
-        smarts = ['[#8;A]-[!#1]-[#6;A](-[#9])(-[#9])-[#9]', '[#6,#1]', '[#1,#1]', '[#9,#17,#35,#53,#7&A&+,$([OH]-*=[!#6]),+;!#1]']
+        smarts = [
+            "[#8;A]-[!#1]-[#6;A](-[#9])(-[#9])-[#9]",
+            "[#6,#1]",
+            "[#1,#1]",
+            "[#9,#17,#35,#53,#7&A&+,$([OH]-*=[!#6]),+;!#1]",
+        ]
         results = []
         results_get = []
         for mol in smarts:
             params = {
-                'struct': mol,
-                'input_format': 'chemical/x-daylight-smarts',
-                'output_format': 'chemical/x-daylight-smarts'
+                "struct": mol,
+                "input_format": "chemical/x-daylight-smarts",
+                "output_format": "chemical/x-daylight-smarts",
             }
             headers, data = self.get_headers(params)
-            result = requests.post(self.url_prefix + '/convert', headers=headers, data=data)
+            result = requests.post(
+                self.url_prefix + "/convert", headers=headers, data=data
+            )
             self.assertEqual(200, result.status_code)
             result_data = json.loads(result.text)
-            results.append(result_data['struct'])
+            results.append(result_data["struct"])
 
-            result = requests.get(self.url_prefix + '/convert', params=params)
+            result = requests.get(self.url_prefix + "/convert", params=params)
             self.assertEqual(200, result.status_code)
             results_get.append(result.text)
 
         self.assertEqual(smarts, results)
         self.assertEqual(smarts, results_get)
 
-
     def test_convert_name_to_structure(self):
-        names = ["methane", "ethane", "propane", "butane", "ethene", "propene", "butene", "ethyne", "propyne", "butyne",
-                 "oct-3-ene", "oct-5,3-diene", "oct-3-yne", "oct-3,5-diyne", "3-ethyl-octane", "3,5-diethyl-octane",
-                 "3-methyl-5-ethyl-octane", "3-(2,4-dimethyl-pentyl)-octane", "3-methyl-5-ethyl-octane",
-                 "3-(2,4-dimethyl-pentyl)-octane", "cyclooctane", "cyclooctene", "cyclooctyne",
-                 "3-methyl-5-ethyl-cyclooctane", "cyclotetradecane", "cyclododeca-1,3,5,7,9,11-hexaene"]
-        smiles = ['C', 'CC', 'CCC', 'CCCC', 'C=C', 'C=CC', 'C=CCC', 'C#C', 'C#CC', 'C#CCC', 'CCC=CCCCC', 'CCC=CC=CCC',
-                  'CCC#CCCCC', 'CCC#CC#CCC', 'CCC(CCCCC)CC', 'CCC(CC(CCC)CC)CC', 'CCC(CC(CCC)CC)C',
-                  'CCC(CCCCC)CC(CC(C)C)C', 'CCC(CC(CCC)CC)C', 'CCC(CCCCC)CC(CC(C)C)C', 'C1CCCCCCC1', 'C1CCCCCCC=1',
-                  'C1CCCCCCC#1', 'C1CCCC(CC)CC(C)C1', 'C1CCCCCCCCCCCCC1', 'C1C=CC=CC=CC=CC=CC=1']
+        names = [
+            "methane",
+            "ethane",
+            "propane",
+            "butane",
+            "ethene",
+            "propene",
+            "butene",
+            "ethyne",
+            "propyne",
+            "butyne",
+            "oct-3-ene",
+            "oct-5,3-diene",
+            "oct-3-yne",
+            "oct-3,5-diyne",
+            "3-ethyl-octane",
+            "3,5-diethyl-octane",
+            "3-methyl-5-ethyl-octane",
+            "3-(2,4-dimethyl-pentyl)-octane",
+            "3-methyl-5-ethyl-octane",
+            "3-(2,4-dimethyl-pentyl)-octane",
+            "cyclooctane",
+            "cyclooctene",
+            "cyclooctyne",
+            "3-methyl-5-ethyl-cyclooctane",
+            "cyclotetradecane",
+            "cyclododeca-1,3,5,7,9,11-hexaene",
+        ]
+        smiles = [
+            "C",
+            "CC",
+            "CCC",
+            "CCCC",
+            "C=C",
+            "C=CC",
+            "C=CCC",
+            "C#C",
+            "C#CC",
+            "C#CCC",
+            "CCC=CCCCC",
+            "CCC=CC=CCC",
+            "CCC#CCCCC",
+            "CCC#CC#CCC",
+            "CCC(CCCCC)CC",
+            "CCC(CC(CCC)CC)CC",
+            "CCC(CC(CCC)CC)C",
+            "CCC(CCCCC)CC(CC(C)C)C",
+            "CCC(CC(CCC)CC)C",
+            "CCC(CCCCC)CC(CC(C)C)C",
+            "C1CCCCCCC1",
+            "C1CCCCCCC=1",
+            "C1CCCCCCC#1",
+            "C1CCCC(CC)CC(C)C1",
+            "C1CCCCCCCCCCCCC1",
+            "C1C=CC=CC=CC=CC=CC=1",
+        ]
         results = []
         results_get = []
         for name in names:
             params = {
-                'struct': name,
-                'input_format': 'chemical/x-iupac',
-                'output_format': 'chemical/x-daylight-smiles'
+                "struct": name,
+                "input_format": "chemical/x-iupac",
+                "output_format": "chemical/x-daylight-smiles",
             }
 
-            #POST
+            # POST
             headers, data = self.get_headers(params)
-            result = requests.post(self.url_prefix + '/convert', headers=headers, data=data)
+            result = requests.post(
+                self.url_prefix + "/convert", headers=headers, data=data
+            )
             self.assertEqual(200, result.status_code)
             result_data = json.loads(result.text)
-            results.append(result_data['struct'])
+            results.append(result_data["struct"])
 
-            #GET
-            result = requests.get(self.url_prefix + '/convert', params=params)
+            # GET
+            result = requests.get(self.url_prefix + "/convert", params=params)
             results_get.append(result.text)
         self.assertEqual(smiles, results)
         self.assertEqual(smiles, results_get)
 
-
-
     def test_convert_utf8(self):
 
-
-        text = '''
+        text = """
   Ketcher 02051318482D 1   1.00000     0.00000     0
 
   5  4  0     0  0            999 V2000
@@ -492,9 +742,9 @@ M  SDT   1 single-name                    F
 M  SDD   1     1.6314   -1.1000    DR    ALL  1      1
 M  SED   1 single-value-бензол
 M  END
-'''
+"""
 
-        answ='''$MDL  REV  1
+        answ = """$MDL  REV  1
 $MOL
 $HDR
 
@@ -560,29 +810,51 @@ M  END
 $END CTAB
 $END RGP
 $END MOL
-'''
+"""
 
-        #POST
-        result = requests.post(self.url_prefix + '/convert', headers={'Content-Type': 'chemical/x-mdl-molfile', 'Accept': 'chemical/x-cml'},
-                               data=text.encode('utf-8'))
+        # POST
+        result = requests.post(
+            self.url_prefix + "/convert",
+            headers={
+                "Content-Type": "chemical/x-mdl-molfile",
+                "Accept": "chemical/x-cml",
+            },
+            data=text.encode("utf-8"),
+        )
         self.assertEqual(200, result.status_code)
-        result = requests.post(self.url_prefix + '/convert',
-                               headers={'Content-Type': 'chemical/x-mdl-molfile', 'Accept': 'chemical/x-cml'},
-                               data=answ)
+        result = requests.post(
+            self.url_prefix + "/convert",
+            headers={
+                "Content-Type": "chemical/x-mdl-molfile",
+                "Accept": "chemical/x-cml",
+            },
+            data=answ,
+        )
         self.assertEqual(200, result.status_code)
 
-        #GET
-        result = requests.get(self.url_prefix + '/convert', params={'struct': text.encode('utf-8')})
+        # GET
+        result = requests.get(
+            self.url_prefix + "/convert",
+            params={"struct": text.encode("utf-8")},
+        )
         self.assertEqual(200, result.status_code)
-        result = requests.get(self.url_prefix + '/convert', params={'struct': answ})
+        result = requests.get(
+            self.url_prefix + "/convert", params={"struct": answ}
+        )
         self.assertEqual(200, result.status_code)
-
-
 
     def test_layout(self):
-        result = requests.post(self.url_prefix + '/layout', headers={'Content-Type': 'chemical/x-daylight-smiles', 'Accept': 'chemical/x-mdl-molfile'}, data='C1=CC=CC=C1')
+        result = requests.post(
+            self.url_prefix + "/layout",
+            headers={
+                "Content-Type": "chemical/x-daylight-smiles",
+                "Accept": "chemical/x-mdl-molfile",
+            },
+            data="C1=CC=CC=C1",
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual('''
+        self.assertEqual(
+            """
   6  6  0  0  0  0  0  0  0  0999 V2000
     0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
    -1.3856   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -596,29 +868,39 @@ $END MOL
   4  5  1  0  0  0  0
   5  6  2  0  0  0  0
   6  1  1  0  0  0  0
-M  END''', '\n'.join(result.text.splitlines()[2:]))
+M  END""",
+            "\n".join(result.text.splitlines()[2:]),
+        )
 
     def test_layout_selective(self):
-        headers, data = self.get_headers({
-            'struct': 'CCC',
-            'output_format': 'chemical/x-mdl-molfile',
-            'selected': [1, 2]
-        })
-        result = requests.post(self.url_prefix + '/layout', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "CCC",
+                "output_format": "chemical/x-mdl-molfile",
+                "selected": [1, 2],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/layout", headers=headers, data=data
+        )
         result_data = json.loads(result.text)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('''
+        self.assertEqual(
+            """
   3  2  0  0  0  0  0  0  0  0999 V2000
    -1.3856    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
     0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
     1.3856    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
   2  3  1  0  0  0  0
-M  END''', '\n'.join(result_data['struct'].splitlines()[2:]))
+M  END""",
+            "\n".join(result_data["struct"].splitlines()[2:]),
+        )
 
     def test_layout_selective_reaction(self):
-        headers, data = self.get_headers({
-            "struct": '''$RXN
+        headers, data = self.get_headers(
+            {
+                "struct": """$RXN
 
 
 
@@ -690,15 +972,19 @@ $MOL
   5  6  1  0     0  0
   6  1  2  0     0  0
 M  END
-''',
-            "selected": [5, 6],
-            'output_format': 'chemical/x-mdl-rxnfile',
-            'options': {'molfile-saving-skip-date': '1'},
-        })
-        result = requests.post(self.url_prefix + '/layout', headers=headers, data=data)
+""",
+                "selected": [5, 6],
+                "output_format": "chemical/x-mdl-rxnfile",
+                "options": {"molfile-saving-skip-date": "1"},
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/layout", headers=headers, data=data
+        )
         result_data = json.loads(result.text)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('''$RXN
+        self.assertEqual(
+            """$RXN
 
  -INDIGO- 0100000000
 
@@ -770,13 +1056,22 @@ $MOL
   5  6  1  0  0  0  0
   6  1  2  0  0  0  0
 M  END
-''', result_data['struct'])
-
+""",
+            result_data["struct"],
+        )
 
     def test_clean(self):
-        result = requests.post(self.url_prefix + '/clean', headers={'Content-Type': 'chemical/x-daylight-smiles', 'Accept': 'chemical/x-mdl-molfile'}, data='C1=CC=CC=C1')
+        result = requests.post(
+            self.url_prefix + "/clean",
+            headers={
+                "Content-Type": "chemical/x-daylight-smiles",
+                "Accept": "chemical/x-mdl-molfile",
+            },
+            data="C1=CC=CC=C1",
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual('''
+        self.assertEqual(
+            """
   6  6  0  0  0  0  0  0  0  0999 V2000
     0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
     0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -790,89 +1085,147 @@ M  END
   4  5  1  0  0  0  0
   5  6  2  0  0  0  0
   6  1  1  0  0  0  0
-M  END''', '\n'.join(result.text.splitlines()[2:]))
+M  END""",
+            "\n".join(result.text.splitlines()[2:]),
+        )
 
     def test_automap_no_header(self):
-        result = requests.post(self.url_prefix + '/automap', headers={'Content-Type': 'chemical/x-daylight-smiles', 'Accept': 'chemical/x-daylight-smiles'}, data='C>>C')
+        result = requests.post(
+            self.url_prefix + "/automap",
+            headers={
+                "Content-Type": "chemical/x-daylight-smiles",
+                "Accept": "chemical/x-daylight-smiles",
+            },
+            data="C>>C",
+        )
         self.assertEqual(200, result.status_code)
         self.assertEqual("[CH4:1]>>[CH4:1]", result.text)
 
     def test_automap_correct_header(self):
-        result = requests.post(self.url_prefix + '/automap', headers={'Content-Type': 'chemical/x-daylight-smiles', 'Accept': 'chemical/x-daylight-smiles'}, data='C>>C')
+        result = requests.post(
+            self.url_prefix + "/automap",
+            headers={
+                "Content-Type": "chemical/x-daylight-smiles",
+                "Accept": "chemical/x-daylight-smiles",
+            },
+            data="C>>C",
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual('[CH4:1]>>[CH4:1]', result.text)
-        headers, data = self.get_headers({
-            'struct': 'C>>C',
-            'output_format': 'chemical/x-daylight-smiles',
-            'mode': 'discard'
-        })
-        result = requests.post(self.url_prefix + '/automap', headers=headers, data=data)
-        self.assertEqual(200, result.status_code)
-        result_data = json.loads(result.text)
-        self.assertEqual('[CH4:1]>>[CH4:1]', result_data['struct'])
-        headers, data = self.get_headers({
-            'struct': 'C>>C',
-            'output_format': 'chemical/x-daylight-smiles',
-            'mode': 'keep'
-        })
-        result = requests.post(self.url_prefix + '/automap', headers=headers, data=data)
-        self.assertEqual(200, result.status_code)
-        result_data = json.loads(result.text)
-        self.assertEqual('[CH4:1]>>[CH4:1]', result_data['struct'])
-        headers, data = self.get_headers({
-            'struct': 'C>>C',
-            'output_format': 'chemical/x-daylight-smiles',
-            'mode': 'alter'
-        })
-        result = requests.post(self.url_prefix + '/automap', headers=headers, data=data)
+        self.assertEqual("[CH4:1]>>[CH4:1]", result.text)
+        headers, data = self.get_headers(
+            {
+                "struct": "C>>C",
+                "output_format": "chemical/x-daylight-smiles",
+                "mode": "discard",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/automap", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('[CH4:1]>>[CH4:1]', result_data['struct'])
-        headers, data = self.get_headers({
-            'struct': 'C>>C',
-            'output_format': 'chemical/x-daylight-smiles',
-            'mode': 'clear'
-        })
-        result = requests.post(self.url_prefix + '/automap', headers=headers, data=data)
+        self.assertEqual("[CH4:1]>>[CH4:1]", result_data["struct"])
+        headers, data = self.get_headers(
+            {
+                "struct": "C>>C",
+                "output_format": "chemical/x-daylight-smiles",
+                "mode": "keep",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/automap", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('C>>C', result_data['struct'])
+        self.assertEqual("[CH4:1]>>[CH4:1]", result_data["struct"])
+        headers, data = self.get_headers(
+            {
+                "struct": "C>>C",
+                "output_format": "chemical/x-daylight-smiles",
+                "mode": "alter",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/automap", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("[CH4:1]>>[CH4:1]", result_data["struct"])
+        headers, data = self.get_headers(
+            {
+                "struct": "C>>C",
+                "output_format": "chemical/x-daylight-smiles",
+                "mode": "clear",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/automap", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("C>>C", result_data["struct"])
 
     def test_automap_wrong_header(self):
-        headers, data = self.get_headers({
-            'struct': 'C>>C',
-            'output_format': 'chemical/x-daylight-smiles',
-            'mode': 'wrong_mode'
-        })
-        result = requests.post(self.url_prefix + '/automap', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "C>>C",
+                "output_format": "chemical/x-daylight-smiles",
+                "mode": "wrong_mode",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/automap", headers=headers, data=data
+        )
         self.assertEqual(400, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('Not a valid choice.', ''.join(result_data['error']['mode']))
+        self.assertEqual(
+            "Not a valid choice.", "".join(result_data["error"]["mode"])
+        )
 
     def test_automap_wrong_reaction(self):
-        headers, data = self.get_headers({
-            'struct': 'C>C',
-            'output_format': 'chemical/x-daylight-smiles',
-            'mode': 'discard'
-        })
-        result = requests.post(self.url_prefix + '/automap', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "C>C",
+                "output_format": "chemical/x-daylight-smiles",
+                "mode": "discard",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/automap", headers=headers, data=data
+        )
         self.assertEqual(400, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual("IndigoException: molecule auto loader: SMILES loader: invalid character within atom description: '>'", result_data['error'])
+        self.assertEqual(
+            "IndigoException: molecule auto loader: SMILES loader: invalid character within atom description: '>'",
+            result_data["error"],
+        )
 
     def test_automap_molecule_instead_of_reaction(self):
-        headers, data = self.get_headers({
-            'struct': 'C',
-            'output_format': 'chemical/x-daylight-smiles',
-            'mode': 'discard'
-        })
-        result = requests.post(self.url_prefix + '/automap', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "C",
+                "output_format": "chemical/x-daylight-smiles",
+                "mode": "discard",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/automap", headers=headers, data=data
+        )
         self.assertEqual(400, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual("IndigoException: core: <molecule> is not a base reaction", result_data['error'])
+        self.assertEqual(
+            "IndigoException: core: <molecule> is not a base reaction",
+            result_data["error"],
+        )
 
     def test_calculate_cip_correct(self):
-        result = requests.post(self.url_prefix + '/calculate_cip', headers={'Content-Type': 'chemical/x-mdl-molfile', 'Accept': 'chemical/x-mdl-molfile', }, data='''
+        result = requests.post(
+            self.url_prefix + "/calculate_cip",
+            headers={
+                "Content-Type": "chemical/x-mdl-molfile",
+                "Accept": "chemical/x-mdl-molfile",
+            },
+            data="""
   Ketcher 07261618302D 1   1.00000     0.00000     0
 
  12 12  0     0  0            999 V2000
@@ -901,10 +1254,12 @@ M  END''', '\n'.join(result.text.splitlines()[2:]))
   8  9  1  0     0  0
   3 12  1  0     0  0
 M  END
-''')
+""",
+        )
         self.assertEqual(200, result.status_code)
         # print(result.text)
-        self.assertEqual('''
+        self.assertEqual(
+            """
  12 12  0  0  0  0  0  0  0  0999 V2000
     9.3770  -13.9546    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
    10.2427  -13.4548    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -940,90 +1295,143 @@ M  SAL   2  1   7
 M  SDT   2 INDIGO_CIP_DESC
 M  SDD   2     0.0000    0.0000    DR    ALL  1       1
 M  SED   2 (R)
-M  END''', '\n'.join([s.rstrip() for s in result.text.splitlines()[2:]]))
+M  END""",
+            "\n".join([s.rstrip() for s in result.text.splitlines()[2:]]),
+        )
 
     def test_render(self):
-        result = requests.post(self.url_prefix + '/render', headers={'Content-Type': 'chemical/x-daylight-smiles', 'Accept': 'image/svg+xml'}, data='C')
+        result = requests.post(
+            self.url_prefix + "/render",
+            headers={
+                "Content-Type": "chemical/x-daylight-smiles",
+                "Accept": "image/svg+xml",
+            },
+            data="C",
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual('image/svg+xml', result.headers['Content-Type'])
-        headers, data = self.get_headers({'struct': 'C'})
-        result = requests.post(self.url_prefix + '/render', headers=headers, data=data)
+        self.assertEqual("image/svg+xml", result.headers["Content-Type"])
+        headers, data = self.get_headers({"struct": "C"})
+        result = requests.post(
+            self.url_prefix + "/render", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual('image/svg+xml', result.headers['Content-Type'])
-        headers, data = self.get_headers({'struct': 'C', 'output_format': 'application/pdf'})
-        result = requests.post(self.url_prefix + '/render', headers=headers, data=data)
+        self.assertEqual("image/svg+xml", result.headers["Content-Type"])
+        headers, data = self.get_headers(
+            {"struct": "C", "output_format": "application/pdf"}
+        )
+        result = requests.post(
+            self.url_prefix + "/render", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual('application/pdf', result.headers['Content-Type'])
-        headers, data = self.get_headers({'struct': 'C', 'output_format': 'image/png'})
-        result = requests.post(self.url_prefix + '/render', headers=headers, data=data)
+        self.assertEqual("application/pdf", result.headers["Content-Type"])
+        headers, data = self.get_headers(
+            {"struct": "C", "output_format": "image/png"}
+        )
+        result = requests.post(
+            self.url_prefix + "/render", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual('image/png', result.headers['Content-Type'])
+        self.assertEqual("image/png", result.headers["Content-Type"])
 
-        #GET
-        data =  {'struct': 'c1ccccc1', 'output_format': 'image/png'}
-        result = requests.get(self.url_prefix + '/render', params=data)
+        # GET
+        data = {"struct": "c1ccccc1", "output_format": "image/png"}
+        result = requests.get(self.url_prefix + "/render", params=data)
         self.assertEqual(200, result.status_code)
 
-        data =  {'struct': 'c1ccccc1', 'output_format': 'image/svg+xml'}
-        result = requests.get(self.url_prefix + '/render', params=data)
+        data = {"struct": "c1ccccc1", "output_format": "image/svg+xml"}
+        result = requests.get(self.url_prefix + "/render", params=data)
         self.assertEqual(200, result.status_code)
 
-        data =  {'struct': 'c1ccccc1', 'output_format': 'application/pdf'}
-        result = requests.get(self.url_prefix + '/render', params=data)
+        data = {"struct": "c1ccccc1", "output_format": "application/pdf"}
+        result = requests.get(self.url_prefix + "/render", params=data)
         self.assertEqual(200, result.status_code)
-
-
 
     def test_renderhighlight(self):
-        params = {'struct': 'C1=CC=CC=C1', 'query': 'C'}
+        params = {"struct": "C1=CC=CC=C1", "query": "C"}
         headers, data = self.get_headers(params)
-        #POST
-        result = requests.post(self.url_prefix + '/render', headers=headers, data=data)
+        # POST
+        result = requests.post(
+            self.url_prefix + "/render", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
-        self.assertEqual('image/svg+xml', result.headers['Content-Type'])
-        #GET
-        result = requests.get(self.url_prefix + '/render', params=params)
+        self.assertEqual("image/svg+xml", result.headers["Content-Type"])
+        # GET
+        result = requests.get(self.url_prefix + "/render", params=params)
         self.assertEqual(200, result.status_code)
 
     def test_render_exceptions(self):
         # either query or structure should be present
         headers, data = self.get_headers({})
-        result = requests.post(self.url_prefix + '/render', headers=headers, data=data)
+        result = requests.post(
+            self.url_prefix + "/render", headers=headers, data=data
+        )
         self.assertEqual(400, result.status_code)
         result_data = json.loads(result.text)
-        self.assertIn('_schema', result_data['error'])
-        #GET
-        result = requests.get(self.url_prefix + '/render', params={})
+        self.assertIn("_schema", result_data["error"])
+        # GET
+        result = requests.get(self.url_prefix + "/render", params={})
         self.assertEqual(400, result.status_code)
         # render format is wrong
-        headers, data = self.get_headers({'struct': 'C', 'output_format': 'foo'})
-        result = requests.post(self.url_prefix + '/render', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {"struct": "C", "output_format": "foo"}
+        )
+        result = requests.post(
+            self.url_prefix + "/render", headers=headers, data=data
+        )
         self.assertEqual(400, result.status_code)
         result_data = json.loads(result.text)
-        self.assertIn('output_format', result_data['error'])
-        #GET
-        result = requests.get(self.url_prefix + '/render', params={'struct': 'C', 'output_format': 'foo'})
+        self.assertIn("output_format", result_data["error"])
+        # GET
+        result = requests.get(
+            self.url_prefix + "/render",
+            params={"struct": "C", "output_format": "foo"},
+        )
         self.assertEqual(400, result.status_code)
 
     def test_json_aromatize_correct(self):
-        formats = ('chemical/x-mdl-molfile', 'chemical/x-daylight-smiles', 'chemical/x-cml', 'chemical/x-inchi')
+        formats = (
+            "chemical/x-mdl-molfile",
+            "chemical/x-daylight-smiles",
+            "chemical/x-cml",
+            "chemical/x-inchi",
+        )
         for input_format in formats:
             for output_format in formats:
-                headers, data = self.get_headers({'struct': self.dearomatized_mols[input_format][0], 'input_format': input_format, 'output_format': output_format})
-                result = requests.post(self.url_prefix + '/aromatize', headers=headers, data=data)
+                headers, data = self.get_headers(
+                    {
+                        "struct": self.dearomatized_mols[input_format][0],
+                        "input_format": input_format,
+                        "output_format": output_format,
+                    }
+                )
+                result = requests.post(
+                    self.url_prefix + "/aromatize", headers=headers, data=data
+                )
                 self.assertEqual(200, result.status_code)
                 result_data = json.loads(result.text)
-                result_struct = result_data['struct']
-                result_format = result_data['format']
+                result_struct = result_data["struct"]
+                result_format = result_data["format"]
                 self.assertEqual(result_format, output_format)
-                if output_format in ('chemical/x-mdl-molfile', 'chemical/x-mdl-rxnfile'):  # Skip Molfile date
-                    self.assertIn('\n'.join(result_struct.splitlines()[2:]).strip(), ['\n'.join(m.splitlines()[2:]).strip() for m in self.aromatized_mols[output_format]])
+                if output_format in (
+                    "chemical/x-mdl-molfile",
+                    "chemical/x-mdl-rxnfile",
+                ):  # Skip Molfile date
+                    self.assertIn(
+                        "\n".join(result_struct.splitlines()[2:]).strip(),
+                        [
+                            "\n".join(m.splitlines()[2:]).strip()
+                            for m in self.aromatized_mols[output_format]
+                        ],
+                    )
                 else:
-                    self.assertIn(result_struct, self.aromatized_mols[output_format])
+                    self.assertIn(
+                        result_struct, self.aromatized_mols[output_format]
+                    )
 
     def test_json_check(self):
         headers, data = self.get_headers(
-            {'struct': '''
+            {
+                "struct": """
   Ketcher 08151618402D 1   1.00000     0.00000     0
 
  13 13  0     0  0            999 V2000
@@ -1068,16 +1476,29 @@ M  SDT   2 INDIGO_ALIAS
 M  SDD   2     0.8659    1.5001    AA    ALL  1      1
 M  SED   2 Pol
 M  END
-''',    })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+""",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('Structure contains 2 atoms with bad valence', result_data['valence'])
-        self.assertEqual('Structure contains 1 atom with radical electrons', result_data['radicals'])
-        self.assertEqual('Structure has SGroups', result_data['sgroups'])
+        self.assertEqual(
+            "Structure contains 2 atoms with bad valence",
+            result_data["valence"],
+        )
+        self.assertEqual(
+            "Structure contains 1 atom with radical electrons",
+            result_data["radicals"],
+        )
+        self.assertEqual("Structure has SGroups", result_data["sgroups"])
 
     def test_check(self):
-        result = requests.post(self.url_prefix + '/check', headers={'Content-Type': 'chemical/x-mdl-molfile'}, data='''
+        result = requests.post(
+            self.url_prefix + "/check",
+            headers={"Content-Type": "chemical/x-mdl-molfile"},
+            data="""
   Ketcher 08121615592D 1   1.00000     0.00000     0
 
  13 12  0     0  0            999 V2000
@@ -1107,13 +1528,18 @@ M  END
   1 12  1  0     0  0
   1 13  1  0     0  0
 M  END
-''')
+""",
+        )
         self.assertEqual(200, result.status_code)
         result_data = result.text
-        self.assertEqual('valence: Structure contains 1 atom with bad valence', result_data)
+        self.assertEqual(
+            "valence: Structure contains 1 atom with bad valence", result_data
+        )
 
     def test_check_overlap(self):
-        headers, data = self.get_headers({'struct': '''
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 08221617222D 1   1.00000     0.00000     0
 
   6  6  0     0  0            999 V2000
@@ -1131,17 +1557,25 @@ M  END
   6  1  2  0     0  0
 M  END
 
-''',
-             'types': ['overlapping_atoms']
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+""",
+                "types": ["overlapping_atoms"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('Structure contains overlapping atoms', result_data['overlapping_atoms'])
+        self.assertEqual(
+            "Structure contains overlapping atoms",
+            result_data["overlapping_atoms"],
+        )
 
     def test_check_stereo(self):
         # up
-        headers, data = self.get_headers({'struct': '''
+        headers, data = self.get_headers(
+            {
+                "struct": """
   -INDIGO-10201021542D
 
  10 11  0  0  0  0  0  0  0  0999 V2000
@@ -1168,34 +1602,54 @@ M  END
   3  2  1  0  0  0  0
 M  END
 
-''',
-            'types': ['stereo', ],
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+""",
+                "types": [
+                    "stereo",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('Structure has stereochemistry errors', result_data['stereo'])
+        self.assertEqual(
+            "Structure has stereochemistry errors", result_data["stereo"]
+        )
         # cis
-        headers, data = self.get_headers({
-            'struct': 'F/C=C\F',
-            'types': ['stereo', ]
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": r"F/C=C\F",
+                "types": [
+                    "stereo",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual({}, result_data)
         # trans
-        headers, data = self.get_headers({
-            'struct': 'F/C=C/F',
-            'types': ['stereo', ]
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "F/C=C/F",
+                "types": [
+                    "stereo",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual({}, result_data)
         # normal
-        headers, data = self.get_headers({
-            'struct': '''
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 10171617062D 1   1.00000     0.00000     0
 
   6  6  0     0  0            999 V2000
@@ -1212,17 +1666,23 @@ M  END
   6  1  1  0     0  0
   1  2  2  0     0  0
 M  END
-''',
-            'types': ['stereo', ]
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+""",
+                "types": [
+                    "stereo",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual({}, result_data)
 
     def test_check_query(self):
-        headers, data = self.get_headers({
-            'struct': '''
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 09201617322D 1   1.00000     0.00000     0
 
  27 27  0     0  0            999 V2000
@@ -1281,19 +1741,44 @@ M  END
   9 27  1  0     0  0
  16 27  2  0     0  0
 M  END
-''',
-            'types': ['valence', 'ambiguous_h', 'query', 'pseudoatoms', 'radicals', 'stereo', 'overlapping_atoms', 'overlapping_bonds', '3d', 'sgroups', 'v3000', 'rgroups']
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+""",
+                "types": [
+                    "valence",
+                    "ambiguous_h",
+                    "query",
+                    "pseudoatoms",
+                    "radicals",
+                    "stereo",
+                    "overlapping_atoms",
+                    "overlapping_bonds",
+                    "3d",
+                    "sgroups",
+                    "v3000",
+                    "rgroups",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual("Structure contains query features, so valency could not be checked", result_data['valence'])
-        self.assertEqual("Structure contains query features, so ambiguous H could not be checked", result_data['ambiguous_h'])
-        self.assertEqual("Structure contains query features", result_data['query'])
+        self.assertEqual(
+            "Structure contains query features, so valency could not be checked",
+            result_data["valence"],
+        )
+        self.assertEqual(
+            "Structure contains query features, so ambiguous H could not be checked",
+            result_data["ambiguous_h"],
+        )
+        self.assertEqual(
+            "Structure contains query features", result_data["query"]
+        )
 
     def test_check_pseudoatom(self):
-        headers, data = self.get_headers({
-            'struct': '''
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Marvin  02121015302D
 
   9  9  0  0  0  0            999 V2000
@@ -1316,34 +1801,73 @@ M  END
   6  8  1  0  0  0  0
   4  9  1  0  0  0  0
 M  END
-''',
-            'types': ['valence', 'ambiguous_h', 'query', 'pseudoatoms', 'radicals', 'stereo', 'overlapping_atoms', 'overlapping_bonds', '3d', 'sgroups', 'v3000', 'rgroups']
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+""",
+                "types": [
+                    "valence",
+                    "ambiguous_h",
+                    "query",
+                    "pseudoatoms",
+                    "radicals",
+                    "stereo",
+                    "overlapping_atoms",
+                    "overlapping_bonds",
+                    "3d",
+                    "sgroups",
+                    "v3000",
+                    "rgroups",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual("Structure contains pseudoatoms, so radicals could not be checked", result_data['radicals'])
-        self.assertEqual("Structure contains 2 pseudoatoms", result_data['pseudoatoms'])
+        self.assertEqual(
+            "Structure contains pseudoatoms, so radicals could not be checked",
+            result_data["radicals"],
+        )
+        self.assertEqual(
+            "Structure contains 2 pseudoatoms", result_data["pseudoatoms"]
+        )
 
     def test_check_empty(self):
-        headers, data = self.get_headers({
-            'struct': """
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 09221617072D 1   1.00000     0.00000     0
 
   0  0  0     0  0            999 V2000
 M  END
 """,
-            'types': ['valence', 'ambiguous_h', 'query', 'pseudoatoms', 'radicals', 'stereo', 'overlapping_atoms', 'overlapping_bonds', '3d', 'sgroups', 'v3000', 'rgroups']
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+                "types": [
+                    "valence",
+                    "ambiguous_h",
+                    "query",
+                    "pseudoatoms",
+                    "radicals",
+                    "stereo",
+                    "overlapping_atoms",
+                    "overlapping_bonds",
+                    "3d",
+                    "sgroups",
+                    "v3000",
+                    "rgroups",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual({}, result_data)
 
     def test_check_overlapping_bonds(self):
         # intersecting bonds
-        headers, data = self.get_headers({
-            'struct': """
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 09271616302D 1   1.00000     0.00000     0
 
   4  2  0     0  0            999 V2000
@@ -1355,15 +1879,22 @@ M  END
   3  4  1  0     0  0
 M  END
 """,
-            'types': ['overlapping_bonds']
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+                "types": ["overlapping_bonds"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('Structure contains overlapping bonds', result_data['overlapping_bonds'])
+        self.assertEqual(
+            "Structure contains overlapping bonds",
+            result_data["overlapping_bonds"],
+        )
         # two bonds from one atom:
-        headers, data = self.get_headers({
-            'struct': """
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 09271617112D 1   1.00000     0.00000     0
 
   3  2  0     0  0            999 V2000
@@ -1374,15 +1905,19 @@ M  END
   1  3  1  0     0  0
 M  END
 """,
-            'types': ['overlapping_bonds']
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+                "types": ["overlapping_bonds"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual({}, result_data)
         # bonds on the same line
         headers, data = self.get_headers(
-            {'struct': """
+            {
+                "struct": """
   Ketcher 09271617122D 1   1.00000     0.00000     0
 
   4  2  0     0  0            999 V2000
@@ -1394,15 +1929,19 @@ M  END
   3  4  1  0     0  0
 M  END
 """,
-             'types': ['overlapping_bonds']
-             })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+                "types": ["overlapping_bonds"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual({}, result_data)
         # parallel bonds
-        headers, data = self.get_headers({
-            'struct': """
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 09271617122D 1   1.00000     0.00000     0
 
   4  2  0     0  0            999 V2000
@@ -1414,16 +1953,20 @@ M  END
   3  4  1  0     0  0
 M  END
 """,
-            'types': ['overlapping_bonds']
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+                "types": ["overlapping_bonds"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual({}, result_data)
 
     def test_check_reaction_queries(self):
-        headers, data = self.get_headers({
-            'struct': """$RXN
+        headers, data = self.get_headers(
+            {
+                "struct": """$RXN
 
 
 
@@ -1457,28 +2000,40 @@ $MOL
    26.1250   -7.9750    0.0000 Q   0  0  0  0  0  0  0  0  0  0  0  0
 M  END
 """,
-            'types': ['query', 'valence']
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+                "types": ["query", "valence"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual({'valence': 'Structure contains query features, so valency could not be checked', 'query': 'Structure contains query features'}, result_data)
+        self.assertEqual(
+            {
+                "valence": "Structure contains query features, so valency could not be checked",
+                "query": "Structure contains query features",
+            },
+            result_data,
+        )
         # TODO: Uncomment when Ketcher supports JSON format
-        #self.assertEqual({'query': {'reactants': {'0': 'Query'}, 'products': {'1': 'Query'}}, 'valence': {'reactants': {'0': 'Structure contains query features, so valency could not be checked'}, 'products': {'1': 'Structure contains query features, so valency could not be checked'}}}, result_data)
-
+        # self.assertEqual({'query': {'reactants': {'0': 'Query'}, 'products': {'1': 'Query'}}, 'valence': {'reactants': {'0': 'Structure contains query features, so valency could not be checked'}, 'products': {'1': 'Structure contains query features, so valency could not be checked'}}}, result_data)
 
     def test_check_atoms(self):
-        headers, data = self.get_headers({
-            'struct': '''
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 10311615312D 1   1.00000     0.00000     0
 
   2  0  0     0  0            999 V2000
     0.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
     1.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
 M  END
-'''
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+"""
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual({}, result_data)
@@ -1486,38 +2041,56 @@ M  END
     # TODO: Add validation checks for /check
 
     def test_json_calculate(self):
-        headers, data = self.get_headers({
-            'struct': 'C',
-            'properties': ('molecular-weight', 'gross')
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {"struct": "C", "properties": ("molecular-weight", "gross")}
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('C H4', result_data['gross'])
-        self.assertGreater(17, float(result_data['molecular-weight']))
-        self.assertLess(16, float(result_data['molecular-weight']))
+        self.assertEqual("C H4", result_data["gross"])
+        self.assertGreater(17, float(result_data["molecular-weight"]))
+        self.assertLess(16, float(result_data["molecular-weight"]))
 
     def test_calculate(self):
-        result = requests.post(self.url_prefix + '/calculate', headers={'Content-Type': 'chemical/x-daylight-smiles'}, data='C')
+        result = requests.post(
+            self.url_prefix + "/calculate",
+            headers={"Content-Type": "chemical/x-daylight-smiles"},
+            data="C",
+        )
         self.assertEqual(200, result.status_code)
         result_data = result.text
-        self.assertEqual('molecular-weight: 16.0424604', result_data)
+        self.assertEqual("molecular-weight: 16.0424604", result_data)
 
     def test_calculate_components_mol(self):
-        headers, data = self.get_headers({
-            'struct': 'C.CC',
-            'properties': ('molecular-weight', 'gross', 'mass-composition')
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "C.CC",
+                "properties": (
+                    "molecular-weight",
+                    "gross",
+                    "mass-composition",
+                ),
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('16.0424604; 30.0690408', result_data['molecular-weight'])
-        self.assertEqual('C H4; C2 H6', result_data['gross'])
-        self.assertEqual('C 74.87 H 25.13; C 79.89 H 20.11', result_data['mass-composition'])
+        self.assertEqual(
+            "16.0424604; 30.0690408", result_data["molecular-weight"]
+        )
+        self.assertEqual("C H4; C2 H6", result_data["gross"])
+        self.assertEqual(
+            "C 74.87 H 25.13; C 79.89 H 20.11", result_data["mass-composition"]
+        )
 
     def test_calculate_polymer(self):
-        headers, data = self.get_headers({
-            'struct': '''
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 11071615122D 1   1.00000     0.00000     0
 
   7  6  0     0  0            999 V2000
@@ -1551,19 +2124,33 @@ M  SBL   2  2   3   5
 M  SDI   2  4    9.0401   -7.1000    9.0401   -5.6000
 M  SDI   2  4   10.7721   -5.6000   10.7721   -7.1000
 M  END
-''',
-            'properties': ('molecular-weight', 'gross', 'mass-composition')
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+""",
+                "properties": (
+                    "molecular-weight",
+                    "gross",
+                    "mass-composition",
+                ),
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('error: Cannot calculate mass for structure with repeating units', result_data['molecular-weight'])
-        self.assertEqual('C4 H10(C H2)n(C2 H4)kk', result_data['gross'])
-        self.assertEqual('error: Cannot calculate mass for structure with repeating units', result_data['mass-composition'])
+        self.assertEqual(
+            "error: Cannot calculate mass for structure with repeating units",
+            result_data["molecular-weight"],
+        )
+        self.assertEqual("C4 H10(C H2)n(C2 H4)kk", result_data["gross"])
+        self.assertEqual(
+            "error: Cannot calculate mass for structure with repeating units",
+            result_data["mass-composition"],
+        )
 
     def test_calculate_components_rxn(self):
-        headers, data = self.get_headers({
-            'struct': '''$RXN
+        headers, data = self.get_headers(
+            {
+                "struct": """$RXN
 
 
 
@@ -1588,93 +2175,174 @@ $MOL
    24.9250   -5.6250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0     0  0
 M  END
-''',
-            'properties': ('molecular-weight', 'gross', 'mass-composition')
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+""",
+                "properties": (
+                    "molecular-weight",
+                    "gross",
+                    "mass-composition",
+                ),
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('[30.0690408; 16.0424604] > [30.0690408; 16.0424604]', result_data['molecular-weight'])
-        self.assertEqual('[C2 H6; C H4] > [C2 H6; C H4]', result_data['gross'])
-        self.assertEqual('[C 79.89 H 20.11; C 74.87 H 25.13] > [C 79.89 H 20.11; C 74.87 H 25.13]', result_data['mass-composition'])
+        self.assertEqual(
+            "[30.0690408; 16.0424604] > [30.0690408; 16.0424604]",
+            result_data["molecular-weight"],
+        )
+        self.assertEqual("[C2 H6; C H4] > [C2 H6; C H4]", result_data["gross"])
+        self.assertEqual(
+            "[C 79.89 H 20.11; C 74.87 H 25.13] > [C 79.89 H 20.11; C 74.87 H 25.13]",
+            result_data["mass-composition"],
+        )
 
     def test_calculate_rxn(self):
-        headers, data = self.get_headers({
-            'struct': 'C.CC>>CC.C',
-            'properties': ('molecular-weight', 'gross', 'mass-composition', 'most-abundant-mass', 'monoisotopic-mass')
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "C.CC>>CC.C",
+                "properties": (
+                    "molecular-weight",
+                    "gross",
+                    "mass-composition",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                ),
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('[16.0424604] + [30.0690408] > [30.0690408] + [16.0424604]', result_data['molecular-weight'])
-        self.assertEqual('[16.0313001] + [30.0469501] > [30.0469501] + [16.0313001]', result_data['most-abundant-mass'])
-        self.assertEqual('[16.0313001] + [30.0469501] > [30.0469501] + [16.0313001]', result_data['monoisotopic-mass'])
-        self.assertEqual('[C H4] + [C2 H6] > [C2 H6] + [C H4]', result_data['gross'])
-        self.assertEqual('[C 74.87 H 25.13] + [C 79.89 H 20.11] > [C 79.89 H 20.11] + [C 74.87 H 25.13]', result_data['mass-composition'])
+        self.assertEqual(
+            "[16.0424604] + [30.0690408] > [30.0690408] + [16.0424604]",
+            result_data["molecular-weight"],
+        )
+        self.assertEqual(
+            "[16.0313001] + [30.0469501] > [30.0469501] + [16.0313001]",
+            result_data["most-abundant-mass"],
+        )
+        self.assertEqual(
+            "[16.0313001] + [30.0469501] > [30.0469501] + [16.0313001]",
+            result_data["monoisotopic-mass"],
+        )
+        self.assertEqual(
+            "[C H4] + [C2 H6] > [C2 H6] + [C H4]", result_data["gross"]
+        )
+        self.assertEqual(
+            "[C 74.87 H 25.13] + [C 79.89 H 20.11] > [C 79.89 H 20.11] + [C 74.87 H 25.13]",
+            result_data["mass-composition"],
+        )
 
     def test_calculate_selected(self):
-        headers, data = self.get_headers({
-            'struct': 'CC', 'input_format': 'chemical/x-mdl-molfile',
-            'selected': [0, ],
-            'properties': ('molecular-weight', 'gross', 'mass-composition')
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "CC",
+                "input_format": "chemical/x-mdl-molfile",
+                "selected": [
+                    0,
+                ],
+                "properties": (
+                    "molecular-weight",
+                    "gross",
+                    "mass-composition",
+                ),
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('15.0345204', result_data['molecular-weight'])
-        self.assertEqual('C H3', result_data['gross'])
-        self.assertEqual('C 79.89 H 20.11', result_data['mass-composition'])
+        self.assertEqual("15.0345204", result_data["molecular-weight"])
+        self.assertEqual("C H3", result_data["gross"])
+        self.assertEqual("C 79.89 H 20.11", result_data["mass-composition"])
 
     def test_calculate_selected_benzene(self):
-        headers, data = self.get_headers({
-            "struct": "C1(N)=CC=CC=C1",
-            "selected": [0, 2, 3, 4, 5, 6],
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"]
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+        headers, data = self.get_headers(
+            {
+                "struct": "C1(N)=CC=CC=C1",
+                "selected": [0, 2, 3, 4, 5, 6],
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('C6 H5', result_data['gross'])
-        self.assertEqual('77.1039016', result_data['molecular-weight'])
-        self.assertEqual('C 93.46 H 6.54', result_data['mass-composition'])
+        self.assertEqual("C6 H5", result_data["gross"])
+        self.assertEqual("77.1039016", result_data["molecular-weight"])
+        self.assertEqual("C 93.46 H 6.54", result_data["mass-composition"])
 
     def test_calculate_empty(self):
-        headers, data = self.get_headers({
-            "struct": '''
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 10211616132D 1   1.00000     0.00000     0
 
   0  0  0     0  0            999 V2000
 M  END
-''',
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"]
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+""",
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('', result_data['gross'])
-        self.assertEqual('', result_data['molecular-weight'])
-        self.assertEqual('', result_data['most-abundant-mass'])
-        self.assertEqual('', result_data['monoisotopic-mass'])
-        self.assertEqual('', result_data['mass-composition'])
+        self.assertEqual("", result_data["gross"])
+        self.assertEqual("", result_data["molecular-weight"])
+        self.assertEqual("", result_data["most-abundant-mass"])
+        self.assertEqual("", result_data["monoisotopic-mass"])
+        self.assertEqual("", result_data["mass-composition"])
 
-    def test_calculate_selected_benzene(self):
-        headers, data = self.get_headers({
-            "struct": 'C1=CC=CC=C1',
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"],
-            'selected': [0, ]
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+    def test_calculate_selected_benzene_2(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "C1=CC=CC=C1",
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+                "selected": [
+                    0,
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('C H', result_data['gross'])
-        self.assertEqual('13.0186403', result_data['molecular-weight'])
-        self.assertEqual('13.007825', result_data['most-abundant-mass'])
-        self.assertEqual('13.007825', result_data['monoisotopic-mass'])
-        self.assertEqual('C 92.26 H 7.74', result_data['mass-composition'])
+        self.assertEqual("C H", result_data["gross"])
+        self.assertEqual("13.0186403", result_data["molecular-weight"])
+        self.assertEqual("13.007825", result_data["most-abundant-mass"])
+        self.assertEqual("13.007825", result_data["monoisotopic-mass"])
+        self.assertEqual("C 92.26 H 7.74", result_data["mass-composition"])
 
     def test_calculate_query_mol(self):
-        headers, data = self.get_headers({
-            "struct": '''
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 11081614202D 1   1.00000     0.00000     0
 
   3  2  0     0  0            999 V2000
@@ -1684,20 +2352,44 @@ M  END
   1  2  8  0     0  0
   2  3  1  0     0  0
 M  END
-''',
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"]
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+""",
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['gross'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['molecular-weight'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['most-abundant-mass'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['monoisotopic-mass'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['mass-composition'])
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["gross"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["molecular-weight"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["most-abundant-mass"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["monoisotopic-mass"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["mass-composition"],
+        )
 
     def test_calculate_query_mol_selected(self):
-        mol = '''
+        mol = """
   Ketcher 11081614252D 1   1.00000     0.00000     0
 
   3  2  0     0  0            999 V2000
@@ -1707,37 +2399,77 @@ M  END
   1  2  8  0     0  0
   2  3  1  0     0  0
 M  END
-'''
-        headers, data = self.get_headers({
-            "struct": mol,
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"],
-            'selected': [0, ],
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+"""
+        headers, data = self.get_headers(
+            {
+                "struct": mol,
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+                "selected": [
+                    0,
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['gross'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['molecular-weight'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['most-abundant-mass'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['monoisotopic-mass'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['mass-composition'])
-        headers, data = self.get_headers({
-            "struct": mol,
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"],
-            'selected': [2, ],
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["gross"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["molecular-weight"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["most-abundant-mass"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["monoisotopic-mass"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["mass-composition"],
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": mol,
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+                "selected": [
+                    2,
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('C H3', result_data['gross'])
-        self.assertEqual('15.0345204', result_data['molecular-weight'])
-        self.assertEqual('15.0234751', result_data['most-abundant-mass'])
-        self.assertEqual('15.0234751', result_data['monoisotopic-mass'])
-        self.assertEqual('C 79.89 H 20.11', result_data['mass-composition'])
+        self.assertEqual("C H3", result_data["gross"])
+        self.assertEqual("15.0345204", result_data["molecular-weight"])
+        self.assertEqual("15.0234751", result_data["most-abundant-mass"])
+        self.assertEqual("15.0234751", result_data["monoisotopic-mass"])
+        self.assertEqual("C 79.89 H 20.11", result_data["mass-composition"])
 
     def test_calculate_query_rxn(self):
-        headers, data = self.get_headers({
-            "struct": '''$RXN
+        headers, data = self.get_headers(
+            {
+                "struct": """$RXN
 
 
 
@@ -1765,20 +2497,44 @@ $MOL
   2  3  1  0     0  0
 M  END
 
-''',
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"],
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+""",
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['gross'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['molecular-weight'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['most-abundant-mass'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['monoisotopic-mass'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['mass-composition'])
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["gross"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["molecular-weight"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["most-abundant-mass"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["monoisotopic-mass"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["mass-composition"],
+        )
 
     def test_calculate_query_rxn_selected(self):
-        rxn = '''$RXN
+        rxn = """$RXN
 
 
 
@@ -1807,95 +2563,195 @@ $MOL
   2  3  1  0     0  0
   3  4  1  0     0  0
 M  END
-'''
-        headers, data = self.get_headers({
-            "struct": rxn,
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"],
-            'selected': [0, ],
-        })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+"""
+        headers, data = self.get_headers(
+            {
+                "struct": rxn,
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+                "selected": [
+                    0,
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['gross'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['molecular-weight'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['most-abundant-mass'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['monoisotopic-mass'])
-        self.assertEqual('Cannot calculate properties for structures with query features', result_data['mass-composition'])
-        headers, data = self.get_headers({
-            "struct": rxn,
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"],
-            'selected': [2, ], })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["gross"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["molecular-weight"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["most-abundant-mass"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["monoisotopic-mass"],
+        )
+        self.assertEqual(
+            "Cannot calculate properties for structures with query features",
+            result_data["mass-composition"],
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": rxn,
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+                "selected": [
+                    2,
+                ],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('C H3', result_data['gross'])
-        self.assertEqual('15.0345204', result_data['molecular-weight'])
-        self.assertEqual('15.0234751', result_data['most-abundant-mass'])
-        self.assertEqual('15.0234751', result_data['monoisotopic-mass'])
-        self.assertEqual('C 79.89 H 20.11', result_data['mass-composition'])
-        headers, data = self.get_headers({
-            "struct": rxn,
-            "properties": ["molecular-weight", "most-abundant-mass", "monoisotopic-mass", "gross", "mass-composition"],
-            'selected': [2, 3, 4, 5], })
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+        self.assertEqual("C H3", result_data["gross"])
+        self.assertEqual("15.0345204", result_data["molecular-weight"])
+        self.assertEqual("15.0234751", result_data["most-abundant-mass"])
+        self.assertEqual("15.0234751", result_data["monoisotopic-mass"])
+        self.assertEqual("C 79.89 H 20.11", result_data["mass-composition"])
+        headers, data = self.get_headers(
+            {
+                "struct": rxn,
+                "properties": [
+                    "molecular-weight",
+                    "most-abundant-mass",
+                    "monoisotopic-mass",
+                    "gross",
+                    "mass-composition",
+                ],
+                "selected": [2, 3, 4, 5],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('C H3; C2 H6 N', result_data['gross'])
-        self.assertEqual('15.0345204; 44.0757403', result_data['molecular-weight'])
-        self.assertEqual('15.0234751; 44.0500238', result_data['most-abundant-mass'])
-        self.assertEqual('15.0234751; 44.0500238', result_data['monoisotopic-mass'])
-        self.assertEqual('C 79.89 H 20.11; C 54.50 H 13.72 N 31.78', result_data['mass-composition'])
+        self.assertEqual("C H3; C2 H6 N", result_data["gross"])
+        self.assertEqual(
+            "15.0345204; 44.0757403", result_data["molecular-weight"]
+        )
+        self.assertEqual(
+            "15.0234751; 44.0500238", result_data["most-abundant-mass"]
+        )
+        self.assertEqual(
+            "15.0234751; 44.0500238", result_data["monoisotopic-mass"]
+        )
+        self.assertEqual(
+            "C 79.89 H 20.11; C 54.50 H 13.72 N 31.78",
+            result_data["mass-composition"],
+        )
 
     def test_calculate_selected_components_mol(self):
         headers, data = self.get_headers(
-            {'struct': 'CC.CC', 'input_format': 'chemical/x-mdl-molfile', 'selected': [0, 2, 3],
-             'properties': ('molecular-weight', 'gross', 'mass-composition')})
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+            {
+                "struct": "CC.CC",
+                "input_format": "chemical/x-mdl-molfile",
+                "selected": [0, 2, 3],
+                "properties": (
+                    "molecular-weight",
+                    "gross",
+                    "mass-composition",
+                ),
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('15.0345204; 30.0690408', result_data['molecular-weight'])
-        self.assertEqual('C H3; C2 H6', result_data['gross'])
-        self.assertEqual('C 79.89 H 20.11; C 79.89 H 20.11', result_data['mass-composition'])
+        self.assertEqual(
+            "15.0345204; 30.0690408", result_data["molecular-weight"]
+        )
+        self.assertEqual("C H3; C2 H6", result_data["gross"])
+        self.assertEqual(
+            "C 79.89 H 20.11; C 79.89 H 20.11", result_data["mass-composition"]
+        )
 
     def test_calculate_selected_components_rxn(self):
         headers, data = self.get_headers(
-            {'struct': 'CC>>CC.CC', 'input_format': 'chemical/x-mdl-rxnfile', 'selected': [0, 2, 3],
-             'properties': ('molecular-weight', 'gross', 'mass-composition')})
-        result = requests.post(self.url_prefix + '/calculate', headers=headers, data=data)
+            {
+                "struct": "CC>>CC.CC",
+                "input_format": "chemical/x-mdl-rxnfile",
+                "selected": [0, 2, 3],
+                "properties": (
+                    "molecular-weight",
+                    "gross",
+                    "mass-composition",
+                ),
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate", headers=headers, data=data
+        )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual('16.0424604; 30.0690408', result_data['molecular-weight'])
-        self.assertEqual('C H4; C2 H6', result_data['gross'])
-        self.assertEqual('C 74.87 H 25.13; C 79.89 H 20.11', result_data['mass-composition'])
+        self.assertEqual(
+            "16.0424604; 30.0690408", result_data["molecular-weight"]
+        )
+        self.assertEqual("C H4; C2 H6", result_data["gross"])
+        self.assertEqual(
+            "C 74.87 H 25.13; C 79.89 H 20.11", result_data["mass-composition"]
+        )
 
     def test_convert_inchi_aux(self):
-        params =  {'struct': 'c1ccccc1', 'output_format': 'chemical/x-inchi-aux'}
-        headers, data = self.get_headers(
-            params)
-        result = requests.post(self.url_prefix + '/convert', headers=headers, data=data)
+        params = {
+            "struct": "c1ccccc1",
+            "output_format": "chemical/x-inchi-aux",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
         result_data = json.loads(result.text)
-        self.assertEqual('chemical/x-inchi-aux', result_data['format'])
-        self.assertIn('AuxInfo=', result_data['struct'])
+        self.assertEqual("chemical/x-inchi-aux", result_data["format"])
+        self.assertIn("AuxInfo=", result_data["struct"])
 
-        result = requests.get(self.url_prefix+'/convert',params=params)
-        self.assertIn('AuxInfo=', result.text)
+        result = requests.get(self.url_prefix + "/convert", params=params)
+        self.assertIn("AuxInfo=", result.text)
 
     def test_convert_chemaxon_smiles(self):
-        params = {'struct': 'CC[*]', 'output_format': 'chemical/x-chemaxon-cxsmiles'}
-        headers, data = self.get_headers(
-           params)
-        result = requests.post(self.url_prefix + '/convert', headers=headers, data=data)
+        params = {
+            "struct": "CC[*]",
+            "output_format": "chemical/x-chemaxon-cxsmiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
         result_data = json.loads(result.text)
-        self.assertEqual('chemical/x-chemaxon-cxsmiles', result_data['format'])
-        self.assertEqual('CC%91.[*]%91', result_data['struct'])
+        self.assertEqual("chemical/x-chemaxon-cxsmiles", result_data["format"])
+        self.assertEqual("CC%91.[*]%91", result_data["struct"])
 
-        result = requests.get(self.url_prefix + '/convert', params=params)
-        self.assertEqual('CC%91.[*]%91', result.text)
+        result = requests.get(self.url_prefix + "/convert", params=params)
+        self.assertEqual("CC%91.[*]%91", result.text)
+
     # TODO: Add validation checks for /calculate
 
     def test_stereo(self):
-        headers, data = self.get_headers({
-                'struct': """
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 03071819152D 1   1.00000     0.00000     0
 
   7  6  0     0  0            999 V2000
@@ -1915,14 +2771,20 @@ M  END
 M  END
 
     """,
-                'types': ['query', 'stereo']
-
-            })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+                "types": ["query", "stereo"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         result_data = json.loads(result.text)
-        self.assertEqual("Structure contains one or more stereogenic atom(s) with unspecified stereochemistry", result_data['stereo'])
-        headers, data = self.get_headers({
-            'struct':"""
+        self.assertEqual(
+            "Structure contains one or more stereogenic atom(s) with unspecified stereochemistry",
+            result_data["stereo"],
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": """
 Ketcher 03071820162D 1   1.00000     0.00000     0
 
   7  7  0     0  0            999 V2000
@@ -1942,19 +2804,21 @@ Ketcher 03071820162D 1   1.00000     0.00000     0
   1  2  1  1     0  0
 M  END
 """,
-            'types': ['query', 'stereo']
-
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+                "types": ["query", "stereo"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         result_data = json.loads(result.text)
-        self.assertEqual("Structure has stereochemistry errors",
-                         result_data['stereo'])
-
-
+        self.assertEqual(
+            "Structure has stereochemistry errors", result_data["stereo"]
+        )
 
     def test_chiral(self):
-        headers, data = self.get_headers({
-            'struct': """
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 12021612452D 1   1.00000     0.00000     0
 
  45 42  0     0  0            999 V2000
@@ -2048,15 +2912,19 @@ M  END
 M  CHG  2   1  -1  17  -1
 M  END
 """,
-            'types': ['query', 'chiral']
-
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+                "types": ["query", "chiral"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         result_data = json.loads(result.text)
-        self.assertEqual("Structure has 3D Chiral center",
-                         result_data['chiral'])
-        headers, data = self.get_headers({
-            'struct':'''
+        self.assertEqual(
+            "Structure has 3D Chiral center", result_data["chiral"]
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 03071819482D 1   1.00000     0.00000     0
 
   6  6  0     1  1            999 V2000
@@ -2074,11 +2942,14 @@ M  END
   6  1  1  0     0  0
 M  END
 
-''',
-            'types': ['query', 'chiral']
-
-        })
-        result = requests.post(self.url_prefix + '/check', headers=headers, data=data)
+""",
+                "types": ["query", "chiral"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
         result_data = json.loads(result.text)
-        self.assertEqual("Structure has invalid Chiral flag",
-                         result_data['chiral'])
+        self.assertEqual(
+            "Structure has invalid Chiral flag", result_data["chiral"]
+        )

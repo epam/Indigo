@@ -4,8 +4,8 @@
 #include <fstream>
 #include <vector>
 
-#include "mmf/mmf_ptr.h"
 #include "mmf/mmf_array.h"
+#include "mmf/mmf_ptr.h"
 
 namespace bingo
 {

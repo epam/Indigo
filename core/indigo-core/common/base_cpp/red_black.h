@@ -37,7 +37,8 @@ namespace indigo
 
     DECL_EXCEPTION(RedBlackTreeError);
 
-    template <typename Key, typename Node> class RedBlackTree
+    template <typename Key, typename Node>
+    class RedBlackTree
     {
     public:
         DECL_TPL_ERROR(RedBlackTreeError);
@@ -553,12 +554,14 @@ namespace indigo
         RedBlackTree(const RedBlackTree&); // no implicit copy
     };
 
-    template <typename Key> struct RedBlackSetNode : public RedBlackNodeBase
+    template <typename Key>
+    struct RedBlackSetNode : public RedBlackNodeBase
     {
         Key key;
     };
 
-    template <typename Key> class RedBlackSet : public RedBlackTree<Key, RedBlackSetNode<Key>>
+    template <typename Key>
+    class RedBlackSet : public RedBlackTree<Key, RedBlackSetNode<Key>>
     {
         typedef RedBlackTree<Key, RedBlackSetNode<Key>> Parent;
 
@@ -651,13 +654,15 @@ namespace indigo
         RedBlackSet(const RedBlackSet&); // no implicit copy
     };
 
-    template <typename Key, typename Value> struct RedBlackMapNode : public RedBlackNodeBase
+    template <typename Key, typename Value>
+    struct RedBlackMapNode : public RedBlackNodeBase
     {
         Key key;
         Value value;
     };
 
-    template <typename Key, typename Value> class RedBlackMap : public RedBlackTree<Key, RedBlackMapNode<Key, Value>>
+    template <typename Key, typename Value>
+    class RedBlackMap : public RedBlackTree<Key, RedBlackMapNode<Key, Value>>
     {
         typedef RedBlackTree<Key, RedBlackMapNode<Key, Value>> Parent;
 
@@ -760,13 +765,15 @@ namespace indigo
         RedBlackMap(const RedBlackMap&); // no implicit copy
     };
 
-    template <typename Value> struct RedBlackStringMapNode : public RedBlackNodeBase
+    template <typename Value>
+    struct RedBlackStringMapNode : public RedBlackNodeBase
     {
         int key_idx;
         Value value;
     };
 
-    template <typename Value, bool case_sensitive = true> class RedBlackStringMap : public RedBlackTree<const char*, RedBlackStringMapNode<Value>>
+    template <typename Value, bool case_sensitive = true>
+    class RedBlackStringMap : public RedBlackTree<const char*, RedBlackStringMapNode<Value>>
     {
         typedef RedBlackTree<const char*, RedBlackStringMapNode<Value>> Parent;
 
@@ -854,7 +861,8 @@ namespace indigo
         StringPool _pool;
     };
 
-    template <typename Key, typename Value> class RedBlackObjMap : public RedBlackTree<Key, RedBlackMapNode<Key, Value>>
+    template <typename Key, typename Value>
+    class RedBlackObjMap : public RedBlackTree<Key, RedBlackMapNode<Key, Value>>
     {
         typedef RedBlackTree<Key, RedBlackMapNode<Key, Value>> Parent;
 
@@ -906,7 +914,8 @@ namespace indigo
             return _insertObj(key, idx, sign);
         }
 
-        template <typename A> Value& insert(Key key, A& a)
+        template <typename A>
+        Value& insert(Key key, A& a)
         {
             int sign;
             int idx = this->_findClosest(key, sign);
@@ -930,7 +939,8 @@ namespace indigo
             return _insertObj(key, idx, sign);
         }
 
-        template <typename A> Value& findOrInsert(Key key, A& a)
+        template <typename A>
+        Value& findOrInsert(Key key, A& a)
         {
             int sign;
             int idx = this->_findClosest(key, sign);
@@ -1005,7 +1015,8 @@ namespace indigo
             return *value;
         }
 
-        template <typename A> Value& _insertObj(Key key, int parent, int sign, A& a)
+        template <typename A>
+        Value& _insertObj(Key key, int parent, int sign, A& a)
         {
             Value* value = _insert(key, parent, sign);
             new (value) Value(a);
@@ -1016,13 +1027,15 @@ namespace indigo
         RedBlackObjMap(const RedBlackObjMap&); // no implicit copy
     };
 
-    template <typename Value> struct RedBlackStringObjMapNode : public RedBlackNodeBase
+    template <typename Value>
+    struct RedBlackStringObjMapNode : public RedBlackNodeBase
     {
         int key_idx;
         Value value;
     };
 
-    template <typename Value> class RedBlackStringObjMap : public RedBlackTree<const char*, RedBlackStringObjMapNode<Value>>
+    template <typename Value>
+    class RedBlackStringObjMap : public RedBlackTree<const char*, RedBlackStringObjMapNode<Value>>
     {
         typedef RedBlackStringObjMapNode<Value> Node;
         typedef RedBlackTree<const char*, Node> Parent;
@@ -1084,7 +1097,8 @@ namespace indigo
             return _insertObj(key, idx, sign);
         }
 
-        template <typename A> int insert(const char* key, A& a)
+        template <typename A>
+        int insert(const char* key, A& a)
         {
             int sign;
             int idx = this->_findClosest(key, sign);
@@ -1106,7 +1120,8 @@ namespace indigo
             return _insertObj(key, idx, sign);
         }
 
-        template <typename A> int findOrInsert(const char* key, A& a)
+        template <typename A>
+        int findOrInsert(const char* key, A& a)
         {
             int sign;
             int idx = this->_findClosest(key, sign);
@@ -1186,7 +1201,8 @@ namespace indigo
             return idx;
         }
 
-        template <typename A> int _insertObj(const char* key, int parent, int sign, A& a)
+        template <typename A>
+        int _insertObj(const char* key, int parent, int sign, A& a)
         {
             int idx = _insert(key, parent, sign);
             Value* value = &this->value(idx);

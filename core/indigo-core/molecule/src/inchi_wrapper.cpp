@@ -27,7 +27,6 @@
 #include "molecule/molecule_dearom.h"
 // #include "mode.h"
 
-
 using namespace indigo;
 
 // Inchi doesn't seem to support multithreading
@@ -47,7 +46,8 @@ namespace indigo
 
 IMPL_ERROR(InchiWrapper, "inchi-wrapper")
 
-template <typename T> class InchiMemObject
+template <typename T>
+class InchiMemObject
 {
 public:
     typedef void (*DestructorT)(T* obj);

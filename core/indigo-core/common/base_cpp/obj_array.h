@@ -24,7 +24,8 @@
 namespace indigo
 {
 
-    template <typename T> class ObjArray
+    template <typename T>
+    class ObjArray
     {
     public:
         explicit ObjArray()
@@ -71,7 +72,8 @@ namespace indigo
             return _array.top();
         }
 
-        template <typename A> T& push(A& a)
+        template <typename A>
+        T& push(A& a)
         {
             void* addr = &_array.push();
 
@@ -80,7 +82,8 @@ namespace indigo
             return _array.top();
         }
 
-        template <typename A, typename B> T& push(A& a, B* b)
+        template <typename A, typename B>
+        T& push(A& a, B* b)
         {
             void* addr = &_array.push();
 
@@ -89,7 +92,8 @@ namespace indigo
             return _array.top();
         }
 
-        template <typename A, typename B, typename C> T& push(A& a, B& b, C& c)
+        template <typename A, typename B, typename C>
+        T& push(A& a, B& b, C& c)
         {
             void* addr = &_array.push();
 
@@ -98,7 +102,8 @@ namespace indigo
             return _array.top();
         }
 
-        template <typename A, typename B, typename C> T& push(A* a, B b, C c)
+        template <typename A, typename B, typename C>
+        T& push(A* a, B b, C c)
         {
             void* addr = &_array.push();
 
@@ -166,7 +171,8 @@ namespace indigo
             _array.pop();
         }
 
-        template <typename T1, typename T2> void qsort(int (*cmp)(T1, T2, void*), void* context)
+        template <typename T1, typename T2>
+        void qsort(int (*cmp)(T1, T2, void*), void* context)
         {
             _array.qsort(cmp, context);
         }

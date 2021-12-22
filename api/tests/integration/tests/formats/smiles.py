@@ -1,6 +1,11 @@
 import os
 import sys
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
+
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
 from env_indigo import *
 
 indigo = Indigo()
@@ -46,17 +51,17 @@ print("*** Aromatic cis-trans ***")
 mols_smiles = [
     "O=CC=C1N=c2ccccc2=N1 |c:11,t:4|",
     "C\\N=c1/cccc/c/1=N/C=C\\C=O",
-    "O\\N=c1/c(=O)c2ccccc2c(=O)/c/1=N\\O"
+    "O\\N=c1/c(=O)c2ccccc2c(=O)/c/1=N\\O",
 ]
 for sm in mols_smiles:
-        m = indigo.loadMolecule(sm)
-        print(m.smiles())
-        print(m.canonicalSmiles())
+    m = indigo.loadMolecule(sm)
+    print(m.smiles())
+    print(m.canonicalSmiles())
 
 print("*** Closing with cis-trans constraint ***")
 mols_smiles = [
     "CCSc1nnc2c(OC=Nc3ccccc-23)n1 |c:9|",
-    "CCSc1nnc-2c(OC=Nc3ccccc-23)n1 |c:9|"
+    "CCSc1nnc-2c(OC=Nc3ccccc-23)n1 |c:9|",
 ]
 for sm in mols_smiles:
     print(indigo.loadMolecule(sm).smiles())
@@ -81,4 +86,3 @@ for idx, sm in enumerate(mols_qsmiles):
         print("  -> " + sm3)
     except IndigoException as e:
         print(getIndigoExceptionText(e))
-

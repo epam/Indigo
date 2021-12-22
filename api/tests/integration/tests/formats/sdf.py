@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -27,7 +27,9 @@ def readSdfAndPrintInfo(fname):
             print("%s: %s" % (prop.name(), prop.rawData()))
 
 
-readSdfAndPrintInfo('../../../../../data/molecules/basic/Compound_0000001_0000250.sdf.gz')
+readSdfAndPrintInfo(
+    "../../../../../data/molecules/basic/Compound_0000001_0000250.sdf.gz"
+)
 
 print("**** Save and load molecule names from SDF ****")
 sdf_file_name = joinPathPy("out/sdf-names.sdf", __file__)
@@ -69,4 +71,4 @@ sdf.close()
 checkMolNames(names, sdf_file_name)
 
 print("**** Read SDF with invalid header ****")
-readSdfAndPrintInfo('molecules/bad-header.sdf')
+readSdfAndPrintInfo("molecules/bad-header.sdf")

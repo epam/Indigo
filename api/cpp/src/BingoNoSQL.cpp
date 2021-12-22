@@ -9,7 +9,8 @@ using namespace indigo_cpp;
 
 namespace
 {
-    template <typename target_t, typename query_t> constexpr const char* getDBTypeString()
+    template <typename target_t, typename query_t>
+    constexpr const char* getDBTypeString()
     {
         if (std::is_same<target_t, IndigoMolecule>::value)
         {
@@ -25,11 +26,13 @@ namespace
     }
 }
 
-template <typename target_t, typename query_t> BingoNoSQL<target_t, query_t>::BingoNoSQL(IndigoSessionPtr session, int id) : session(std::move(session)), id(id)
+template <typename target_t, typename query_t>
+BingoNoSQL<target_t, query_t>::BingoNoSQL(IndigoSessionPtr session, int id) : session(std::move(session)), id(id)
 {
 }
 
-template <typename target_t, typename query_t> BingoNoSQL<target_t, query_t>::~BingoNoSQL()
+template <typename target_t, typename query_t>
+BingoNoSQL<target_t, query_t>::~BingoNoSQL()
 {
     if (id >= 0)
     {
@@ -55,7 +58,8 @@ BingoNoSQL<target_t, query_t> BingoNoSQL<target_t, query_t>::loadDatabaseFile(In
     return {std::move(session), id};
 }
 
-template <typename target_t, typename query_t> void BingoNoSQL<target_t, query_t>::close()
+template <typename target_t, typename query_t>
+void BingoNoSQL<target_t, query_t>::close()
 {
     if (id >= 0)
     {
@@ -65,19 +69,22 @@ template <typename target_t, typename query_t> void BingoNoSQL<target_t, query_t
     }
 }
 
-template <typename target_t, typename query_t> int BingoNoSQL<target_t, query_t>::insertRecord(const target_t& entity)
+template <typename target_t, typename query_t>
+int BingoNoSQL<target_t, query_t>::insertRecord(const target_t& entity)
 {
     session->setSessionId();
     return session->_checkResult(bingoInsertRecordObj(id, entity.id()));
 }
 
-template <typename target_t, typename query_t> int BingoNoSQL<target_t, query_t>::insertIterator(const IndigoSDFileIterator& iterator)
+template <typename target_t, typename query_t>
+int BingoNoSQL<target_t, query_t>::insertIterator(const IndigoSDFileIterator& iterator)
 {
     session->setSessionId();
     return session->_checkResult(bingoInsertIteratorObj(id, iterator.id()));
 }
 
-template <typename target_t, typename query_t> void BingoNoSQL<target_t, query_t>::deleteRecord(int recordId)
+template <typename target_t, typename query_t>
+void BingoNoSQL<target_t, query_t>::deleteRecord(int recordId)
 {
     session->setSessionId();
     session->_checkResult(bingoDeleteRecord(id, recordId));
@@ -98,7 +105,8 @@ BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSim(const tar
     return {session->_checkResult(bingoSearchSim(id, query.id(), min, max, to_string(metric))), session};
 }
 
-template <typename target_t, typename query_t> std::string BingoNoSQL<target_t, query_t>::getStatistics(bool for_session) const
+template <typename target_t, typename query_t>
+std::string BingoNoSQL<target_t, query_t>::getStatistics(bool for_session) const
 {
     session->setSessionId();
     return session->_checkResultString(bingoProfilingGetStatistics(static_cast<int>(for_session)));

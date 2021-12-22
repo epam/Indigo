@@ -1,14 +1,14 @@
 import itertools
 import os
 import pathlib
-from typing import List
+from typing import Any, List
 
 import pytest
-
 from fastapi.testclient import TestClient
 
 from indigo_service import jsonapi
 from indigo_service.indigo_http import app
+from indigo_service.jsonapi import Descriptors
 
 client = TestClient(app)
 
@@ -97,13 +97,13 @@ def test_ket_convert() -> None:
 
 
 def similarity_request(  # pylint: disable=too-many-arguments
-    source: dict,
-    targets: list[dict],
+    source: dict[Any, Any],
+    targets: list[dict[Any, Any]],
     fingerprint: str = "sim",
     metric: str = "tanimoto",
     alpha: float = 0.5,
     beta: float = 0.5,
-) -> dict:
+) -> dict[str, Any]:
     return {
         "data": {
             "type": "similarities",
@@ -119,7 +119,7 @@ def similarity_request(  # pylint: disable=too-many-arguments
     }
 
 
-def test_similarities_error():
+def test_similarities_error() -> None:
     for structure in test_structures:
         response = client.post(
             "/indigo/similarities",
@@ -136,7 +136,9 @@ def test_similarities_error():
 # Descriptors
 
 
-def descriptors_request(compound: dict, descriptors: tuple) -> dict:
+def descriptors_request(
+    compound: dict[Any, Any], descriptors: tuple[Descriptors, ...]
+) -> dict[str, Any]:
     return {
         "data": {
             "type": "descriptor",

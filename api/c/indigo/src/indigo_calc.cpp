@@ -98,7 +98,7 @@ CEXPORT double indigoMostAbundantMass(int molecule)
         mass.mass_options = self.mass_options;
         return mass.mostAbundantMass(mol.asMolecule());
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT double indigoMonoisotopicMass(int molecule)
@@ -110,7 +110,7 @@ CEXPORT double indigoMonoisotopicMass(int molecule)
         mass.mass_options = self.mass_options;
         return mass.monoisotopicMass(mol.asMolecule());
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT const char* indigoMassComposition(int molecule)

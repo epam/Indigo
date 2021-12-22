@@ -1,9 +1,7 @@
 import sys
-
-from io import BytesIO
-
-from threading import current_thread
 from collections import defaultdict
+from io import BytesIO
+from threading import current_thread
 
 
 class ThreadPrinter:
@@ -16,7 +14,7 @@ class ThreadPrinter:
 
     def write(self, value):
         stream = self.outputs[self._thread_id]
-        stream.write(value.encode('utf-8'))
+        stream.write(value.encode("utf-8"))
 
     def read_and_clean(self):
         result = b""

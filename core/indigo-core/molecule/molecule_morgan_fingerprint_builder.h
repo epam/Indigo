@@ -23,8 +23,8 @@
 #include <vector>
 
 #include "base_c/defs.h"
-#include "base_molecule.h"
 #include "base_cpp/array.h"
+#include "base_molecule.h"
 
 namespace indigo
 {

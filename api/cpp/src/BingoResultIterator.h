@@ -8,7 +8,8 @@
 
 namespace indigo_cpp
 {
-    template <typename target_t> class BingoResultIterator
+    template <typename target_t>
+    class BingoResultIterator
     {
     public:
         BingoResultIterator(int id, IndigoSessionPtr session);

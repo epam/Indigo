@@ -26,7 +26,7 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/os_sync_wrapper.h"
 
-#define PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
+#define PROF_GET_NAME_INDEX(var_name, name)                                                                                                                    \
     static std::atomic<int> var_name##_name_index;                                                                                                             \
     if (var_name##_name_index == 0)                                                                                                                            \
     {                                                                                                                                                          \
@@ -35,7 +35,7 @@
     }
 
 #define profTimerStart(var_name, name)                                                                                                                         \
-    PROF_GET_NAME_INDEX(var_name, name)                                                                                                                       \
+    PROF_GET_NAME_INDEX(var_name, name)                                                                                                                        \
     indigo::ProfilingTimer var_name##_timer(var_name##_name_index)
 
 #define profTimerStop(var_name) var_name##_timer.stop()
@@ -47,7 +47,7 @@
 #define profIncTimer(name, dt)                                                                                                                                 \
     do                                                                                                                                                         \
     {                                                                                                                                                          \
-        PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
+        PROF_GET_NAME_INDEX(var_name, name)                                                                                                                    \
         auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                                                                \
         inst->addTimer(var_name##_name_index, dt);                                                                                                             \
     } while (false)
@@ -55,7 +55,7 @@
 #define profIncCounter(name, count)                                                                                                                            \
     do                                                                                                                                                         \
     {                                                                                                                                                          \
-        PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
+        PROF_GET_NAME_INDEX(var_name, name)                                                                                                                    \
         auto inst = sf::xlock_safe_ptr(indigo::ProfilingSystem::getInstance());                                                                                \
         inst->addCounter(var_name##_name_index, count);                                                                                                        \
     } while (false)

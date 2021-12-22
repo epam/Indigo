@@ -62,7 +62,7 @@ TEST(CopyMove, LoadMoveAssignment)
     EXPECT_EQ(m2.id(), m1_id);
 }
 //
-//TEST(Molecule, LoadCopyConstructor)
+// TEST(Molecule, LoadCopyConstructor)
 //{
 //    auto session = IndigoSession::create();
 //    auto m1 = session->loadMolecule("C1C=CC=CC=1");
@@ -74,7 +74,7 @@ TEST(CopyMove, LoadMoveAssignment)
 //
 //}
 //
-//TEST(Molecule, LoadCopyAssignment)
+// TEST(Molecule, LoadCopyAssignment)
 //{
 //    auto session = IndigoSession::create();
 //    auto m1 = session->loadMolecule("C1C=CC=CC=1");

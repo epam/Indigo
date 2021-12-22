@@ -1,39 +1,43 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
 
+import base64
 import collections
-from functools import wraps
-from flask import Blueprint, request, jsonify
-import itertools
 import json
 import logging
-from marshmallow.exceptions import ValidationError
 import re
 import sys
 import traceback
+from functools import wraps
+from threading import local
 
+from flask import Blueprint, jsonify, request
 from indigo import Indigo, IndigoException
 from indigo.inchi import IndigoInchi
 from indigo.renderer import IndigoRenderer
+from marshmallow.exceptions import ValidationError
+
+import config
 
 from .common.util import highlight
-from .validation import (IndigoRendererSchema, IndigoRequestSchema, IndigoAutomapSchema, IndigoCheckSchema,
-                         IndigoCalculateSchema)
-from math import sqrt
-from threading import local
-import base64
-import config
+from .validation import (
+    IndigoAutomapSchema,
+    IndigoCalculateSchema,
+    IndigoCheckSchema,
+    IndigoRendererSchema,
+    IndigoRequestSchema,
+)
 
 tls = local()
 
-indigo_api = Blueprint('indigo_api', __name__)
+indigo_api = Blueprint("indigo_api", __name__)
 indigo_api.indigo_defaults = {
-    'ignore-stereochemistry-errors': 'true',
-    'smart-layout': 'true',
-    'gross-formula-add-rsites': 'true',
-    'mass-skip-error-on-pseudoatoms': 'false',
+    "ignore-stereochemistry-errors": "true",
+    "smart-layout": "true",
+    "gross-formula-add-rsites": "true",
+    "mass-skip-error-on-pseudoatoms": "false",
 }
-indigo_api_logger = logging.getLogger('indigo')
+indigo_api_logger = logging.getLogger("indigo")
 
 LOG_MAX_SYMBOLS = 50
 
@@ -41,7 +45,9 @@ LOG_MAX_SYMBOLS = 50
 def get_shorten_text(intext):
     if len(intext) < LOG_MAX_SYMBOLS:
         return intext
-    return "{} ...".format(intext.strip().ljust(LOG_MAX_SYMBOLS)[:LOG_MAX_SYMBOLS])
+    return "{} ...".format(
+        intext.strip().ljust(LOG_MAX_SYMBOLS)[:LOG_MAX_SYMBOLS]
+    )
 
 
 def LOG_DATA(*args):
@@ -49,15 +55,15 @@ def LOG_DATA(*args):
     format_str = []
 
     for a in args:
-        if config.__dict__['LOG_LEVEL'] == 'DEBUG':
+        if config.__dict__["LOG_LEVEL"] == "DEBUG":
             format_str.append(str(a))
         else:
             format_shorten.append(get_shorten_text(str(a)))
 
-    if config.__dict__['LOG_LEVEL'] == 'DEBUG':
-        indigo_api_logger.debug("\"{}\"".format('" "'.join(format_str)))
+    if config.__dict__["LOG_LEVEL"] == "DEBUG":
+        indigo_api_logger.debug('"{}"'.format('" "'.join(format_str)))
     else:
-        indigo_api_logger.info("\"{}\"".format('" "'.join(format_shorten)))
+        indigo_api_logger.info('"{}"'.format('" "'.join(format_shorten)))
 
 
 def indigo_init(options={}):
@@ -69,12 +75,14 @@ def indigo_init(options={}):
             tls.indigo.setOption(option, value)
         for option, value in options.items():
             # TODO: Remove this when Indigo API supports smiles type option
-            if option in {'smiles', }:
+            if option in {
+                "smiles",
+            }:
                 continue
             tls.indigo.setOption(option, value)
         return tls.indigo
     except Exception as e:
-        indigo_api_logger.error('indigo-init: {0}'.format(e))
+        indigo_api_logger.error("indigo-init: {0}".format(e))
         return None
 
 
@@ -86,16 +94,27 @@ class MolData:
 
 
 def is_rxn(molstr):
-    return '>>' in molstr or molstr.startswith('$RXN') or '<reactantList>' in molstr
+    return (
+        ">>" in molstr
+        or molstr.startswith("$RXN")
+        or "<reactantList>" in molstr
+    )
 
 
 def qmol_to_mol(m, selected):
     for atom in m.iterateAtoms():
         if not atom.index() in selected:
-            atom.resetAtom('C')
+            atom.resetAtom("C")
     for bond in m.iterateBonds():
-        if not (bond.source().index() in selected or bond.destination().index() in selected):
-            m.removeBonds([bond.index(), ])
+        if not (
+            bond.source().index() in selected
+            or bond.destination().index() in selected
+        ):
+            m.removeBonds(
+                [
+                    bond.index(),
+                ]
+            )
     return m.dispatcher.loadMolecule(m.clone().molfile())
 
 
@@ -107,13 +126,17 @@ def remove_implicit_h_in_selected_components(m, selected):
     if m.countRSites():
         for index in selected:
             if m.getAtom(index).isRSite():
-                raise ImplicitHCalcExpection(b'Cannot calculate properties for RGroups')
+                raise ImplicitHCalcExpection(
+                    b"Cannot calculate properties for RGroups"
+                )
     if m.countAttachmentPoints():
         count = m.countAttachmentPoints()
         for order in range(1, count + 1):
             for ap in m.iterateAttachmentPoints(order):
                 if ap.index() in selected:
-                    raise ImplicitHCalcExpection(b'Cannot calculate properties for RGroups')
+                    raise ImplicitHCalcExpection(
+                        b"Cannot calculate properties for RGroups"
+                    )
     removed_atoms = set()
     implicit_h_decrease = collections.defaultdict(int)
     for c in m.iterateComponents():
@@ -126,12 +149,19 @@ def remove_implicit_h_in_selected_components(m, selected):
                 if n_index not in selected:
                     bond_order = None
                     for bond in m.iterateBonds():
-                        if all(i in [a_index, n_index] for i in (bond.source().index(), bond.destination().index())):
+                        if all(
+                            i in [a_index, n_index]
+                            for i in (
+                                bond.source().index(),
+                                bond.destination().index(),
+                            )
+                        ):
                             bond_order = bond.bondOrder()
                             break
                     if bond_order not in (1, 2, 3):
                         raise ImplicitHCalcExpection(
-                            b"Cannot calculate implicit hydrogens on single atom with query or aromatic bonds")
+                            b"Cannot calculate implicit hydrogens on single atom with query or aromatic bonds"
+                        )
                     implicit_h_decrease[a_index] += bond_order
                     removed_atoms.add(n_index)
     m.removeAtoms(list(removed_atoms))
@@ -139,7 +169,9 @@ def remove_implicit_h_in_selected_components(m, selected):
         a = m.getAtom(index)
         implicit_h_count = a.countImplicitHydrogens() - value
         if implicit_h_count < 0:
-            raise ImplicitHCalcExpection(b'Cannot calculate implicit hydrogenes on atom with bad valence')
+            raise ImplicitHCalcExpection(
+                b"Cannot calculate implicit hydrogenes on atom with bad valence"
+            )
         a.setImplicitHCount(implicit_h_count)
     return m
 
@@ -153,7 +185,7 @@ def iterate_selected_submolecules(r, selected):
                 moleculeAtoms.append(atom - atomCounter)
         atomCounter += m.countAtoms()
         if moleculeAtoms:
-            if r.dbgInternalType() == '#05: <query reaction>':
+            if r.dbgInternalType() == "#05: <query reaction>":
                 m = qmol_to_mol(m, moleculeAtoms)
                 m = remove_implicit_h_in_selected_components(m, moleculeAtoms)
             yield m.getSubmolecule(moleculeAtoms).clone()
@@ -171,46 +203,52 @@ def do_calc(m, func_name, precision):
     try:
         value = getattr(m, func_name)()
     except IndigoException as e:
-        value = 'error: {0}'.format(e.value.split(': ')[-1])
+        value = "error: {0}".format(e.value.split(": ")[-1])
     if type(value) == float:
         value = round(value, precision)
     return str(value)
 
 
 def molecule_calc(m, func_name, precision=None):
-    if m.dbgInternalType() == '#03: <query molecule>':
-        return 'Cannot calculate properties for structures with query features'
+    if m.dbgInternalType() == "#03: <query molecule>":
+        return "Cannot calculate properties for structures with query features"
     if m.countRGroups() or m.countAttachmentPoints():
-        return 'Cannot calculate properties for RGroups'
+        return "Cannot calculate properties for RGroups"
     results = []
     for c in m.iterateComponents():
         results.append(do_calc(c.clone(), func_name, precision))
-    return '; '.join(results)
+    return "; ".join(results)
 
 
 def reaction_calc(rxn, func_name, precision=None):
-    if rxn.dbgInternalType() == '#05: <query reaction>':
-        return 'Cannot calculate properties for structures with query features'
+    if rxn.dbgInternalType() == "#05: <query reaction>":
+        return "Cannot calculate properties for structures with query features"
     for m in rxn.iterateMolecules():
         if m.countRGroups() or m.countAttachmentPoints():
-            return 'Cannot calculate properties for RGroups'
+            return "Cannot calculate properties for RGroups"
     reactants_results = []
     for r in rxn.iterateReactants():
-        reactants_results.append('[{0}]'.format(molecule_calc(r, func_name, precision)))
+        reactants_results.append(
+            "[{0}]".format(molecule_calc(r, func_name, precision))
+        )
     product_results = []
     for p in rxn.iterateProducts():
-        product_results.append('[{0}]'.format(molecule_calc(p, func_name, precision)))
-    return '{0} > {1}'.format(' + '.join(reactants_results), ' + '.join(product_results))
+        product_results.append(
+            "[{0}]".format(molecule_calc(p, func_name, precision))
+        )
+    return "{0} > {1}".format(
+        " + ".join(reactants_results), " + ".join(product_results)
+    )
 
 
 def selected_molecule_calc(m, selected, func_name, precision=None):
-    if m.dbgInternalType() == '#03: <query molecule>':
+    if m.dbgInternalType() == "#03: <query molecule>":
         try:
             m = qmol_to_mol(m, selected)
-        except IndigoException as e:
-            return 'Cannot calculate properties for structures with query features'
+        except IndigoException:
+            return "Cannot calculate properties for structures with query features"
     if m.countRGroups() and max(selected) >= m.countAtoms():
-        return 'Cannot calculate properties for RGroups'
+        return "Cannot calculate properties for RGroups"
     try:
         m = remove_implicit_h_in_selected_components(m, selected)
     except ImplicitHCalcExpection as e:
@@ -219,9 +257,9 @@ def selected_molecule_calc(m, selected, func_name, precision=None):
     for c in iterate_selected_components(m, selected):
         cc = c.clone()
         if cc.countRSites() or cc.countAttachmentPoints():
-            return 'Cannot calculate properties for RGroups'
+            return "Cannot calculate properties for RGroups"
         results.append(do_calc(cc, func_name, precision))
-    return '; '.join(results)
+    return "; ".join(results)
 
 
 def selected_reaction_calc(r, selected, func_name, precision=None):
@@ -229,17 +267,17 @@ def selected_reaction_calc(r, selected, func_name, precision=None):
     total_atoms_count = sum([m.countAtoms() for m in r.iterateMolecules()])
     total_rgroups_count = sum([m.countRGroups() for m in r.iterateMolecules()])
     if total_rgroups_count and max(selected) >= total_atoms_count:
-        return 'Cannot calculate properties for RGroups'
+        return "Cannot calculate properties for RGroups"
     try:
         for csm in iterate_selected_submolecules(r, selected):
             if csm.countRSites() or csm.countAttachmentPoints():
-                return 'Cannot calculate properties for RGroups'
+                return "Cannot calculate properties for RGroups"
             results.append(do_calc(csm, func_name, precision))
     except ImplicitHCalcExpection as e:
         return str(e.value)
-    except IndigoException as e:
-        return 'Cannot calculate properties for structures with query features'
-    return '; '.join(results)
+    except IndigoException:
+        return "Cannot calculate properties for structures with query features"
+    return "; ".join(results)
 
 
 def remove_unselected_repeating_units_m(m, selected):
@@ -262,15 +300,19 @@ def remove_unselected_repeating_units_r(r, selected):
             remove_unselected_repeating_units_m(m, moleculeAtoms)
 
 
-def load_moldata(molstr, indigo=None, options={}, query=False, mime_type=None, selected=[]):
+def load_moldata(
+    molstr, indigo=None, options={}, query=False, mime_type=None, selected=[]
+):
     if not indigo:
         try:
             indigo = indigo_init(options)
         except Exception as e:
-            raise HttpException('Problem with Indigo initialization: {0}'.format(e), 501)
+            raise HttpException(
+                "Problem with Indigo initialization: {0}".format(e), 501
+            )
     md = MolData()
 
-    if molstr.startswith('InChI'):
+    if molstr.startswith("InChI"):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
         md.is_query = False
@@ -293,32 +335,32 @@ def load_moldata(molstr, indigo=None, options={}, query=False, mime_type=None, s
                         md.is_rxn = True
                         md.is_query = True
                     except:
-                        raise HttpException("ket data not recognized as molecule, query, reaction or reaction query", 400)
+                        raise HttpException("struct data not recognized as molecule, query, reaction or reaction query", 400)
     return md
 
 
 def save_moldata(md, output_format=None, options={}):
-    if output_format in ('chemical/x-mdl-molfile', 'chemical/x-mdl-rxnfile'):
+    if output_format in ("chemical/x-mdl-molfile", "chemical/x-mdl-rxnfile"):
         return md.struct.rxnfile() if md.is_rxn else md.struct.molfile()
-    elif output_format == 'chemical/x-indigo-ket':
+    elif output_format == "chemical/x-indigo-ket":
         return md.struct.json()
-    elif output_format == 'chemical/x-daylight-smiles':
-        if options.get('smiles') == 'canonical':
+    elif output_format == "chemical/x-daylight-smiles":
+        if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()
         else:
             return md.struct.smiles()
-    elif output_format == 'chemical/x-chemaxon-cxsmiles':
-        if options.get('smiles') == 'canonical':
+    elif output_format == "chemical/x-chemaxon-cxsmiles":
+        if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()
         else:
             return md.struct.smiles()
-    elif output_format == 'chemical/x-daylight-smarts':
+    elif output_format == "chemical/x-daylight-smarts":
         return md.struct.smarts()
-    elif output_format == 'chemical/x-cml':
+    elif output_format == "chemical/x-cml":
         return md.struct.cml()
-    elif output_format == 'chemical/x-inchi':
+    elif output_format == "chemical/x-inchi":
         return md.struct.dispatcher.inchi.getInchi(md.struct)
-    elif output_format == 'chemical/x-inchi-aux':
+    elif output_format == "chemical/x-inchi-aux":
         res = md.struct.dispatcher.inchi.getInchi(md.struct)
         aux = md.struct.dispatcher.inchi.getAuxInfo()
         return "{}\n{}".format(res, aux)
@@ -326,7 +368,7 @@ def save_moldata(md, output_format=None, options={}):
 
 
 class HttpException(Exception):
-    def __init__(self, value, code, headers={'Content-Type': 'text/plain'}):
+    def __init__(self, value, code, headers={"Content-Type": "text/plain"}):
         self.value = value
         self.code = code
         self.headers = headers
@@ -334,80 +376,131 @@ class HttpException(Exception):
 
 def get_request_data(request):
     request_data = {}
-    if request.content_type == 'application/json':
-        request_data = json.loads(request.data.decode('utf-8'))
-        request_data['json_output'] = True
+    if request.content_type == "application/json":
+        request_data = json.loads(request.data.decode("utf-8"))
+        request_data["json_output"] = True
     else:
-        request_data['struct'] = request.data.decode('utf-8')
-        request_data['input_format'] = request.headers['Content-Type'] if 'Content-Type' in request.headers else None
-        request_data['output_format'] = 'chemical/x-mdl-molfile'
+        request_data["struct"] = request.data.decode("utf-8")
+        request_data["input_format"] = (
+            request.headers["Content-Type"]
+            if "Content-Type" in request.headers
+            else None
+        )
+        request_data["output_format"] = "chemical/x-mdl-molfile"
 
-        if 'Accept' in request.headers and request.headers['Accept'] != '*/*':
-            request_data['output_format'] = request.headers['Accept']
+        if "Accept" in request.headers and request.headers["Accept"] != "*/*":
+            request_data["output_format"] = request.headers["Accept"]
 
-        request_data['json_output'] = False
+        request_data["json_output"] = False
     return request_data
 
 
 def get_response(md, output_struct_format, json_output, options):
     output_mol = save_moldata(md, output_struct_format, options)
-    LOG_DATA('[RESPONSE]', output_struct_format, options, output_mol.encode('utf-8'))
+    LOG_DATA(
+        "[RESPONSE]", output_struct_format, options, output_mol.encode("utf-8")
+    )
 
     if json_output:
-        return jsonify({'struct': output_mol, 'format': output_struct_format}), 200, {
-            'Content-Type': 'application/json'}
+        return (
+            jsonify({"struct": output_mol, "format": output_struct_format}),
+            200,
+            {"Content-Type": "application/json"},
+        )
     else:
-        return output_mol, 200, {'Content-Type': output_struct_format}
+        return output_mol, 200, {"Content-Type": output_struct_format}
 
 
 def get_error_response(value, error_code, json_output=False):
     if json_output:
-        return jsonify({'error': value}), error_code, {'Content-Type': 'application/json'}
+        return (
+            jsonify({"error": value}),
+            error_code,
+            {"Content-Type": "application/json"},
+        )
     else:
-        return value, error_code, {'Content-Type': 'text/plain'}
+        return value, error_code, {"Content-Type": "text/plain"}
 
 
 def check_exceptions(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        json_output = (('Accept' in request.headers and request.headers['Accept'] == 'application/json') or
-                       ('Content-Type' in request.headers and request.headers['Content-Type'] == 'application/json'))
+        json_output = (
+            "Accept" in request.headers
+            and request.headers["Accept"] == "application/json"
+        ) or (
+            "Content-Type" in request.headers
+            and request.headers["Content-Type"] == "application/json"
+        )
         try:
             return f(*args, **kwargs)
         except ValidationError as e:
-            indigo_api_logger.error('[RESPONSE-400] validation error: {0}'.format(e.messages))
+            indigo_api_logger.error(
+                "[RESPONSE-400] validation error: {0}".format(e.messages)
+            )
             indigo_api_logger.debug(traceback.format_exc())
             if json_output:
-                return jsonify({'error': e.messages}), 400, {'Content-Type': 'application/json; charset=utf-8'}
+                return (
+                    jsonify({"error": e.messages}),
+                    400,
+                    {"Content-Type": "application/json; charset=utf-8"},
+                )
             else:
-                return 'ValidationError: {0}'.format(str(e.messages)), 400, {'Content-Type': 'text/plain'}
+                return (
+                    "ValidationError: {0}".format(str(e.messages)),
+                    400,
+                    {"Content-Type": "text/plain"},
+                )
         except HttpException as e:
-            indigo_api_logger.error('HttpException: {0}'.format(e.value))
+            indigo_api_logger.error("HttpException: {0}".format(e.value))
             indigo_api_logger.debug(traceback.format_exc())
             if json_output:
-                return jsonify({'error': e.value}), e.code, e.headers.update({'Content-Type': 'application/json'})
+                return (
+                    jsonify({"error": e.value}),
+                    e.code,
+                    e.headers.update({"Content-Type": "application/json"}),
+                )
             else:
-                return e.value, e.code, e.headers.update({'Content-Type': 'text/plain'})
+                return (
+                    e.value,
+                    e.code,
+                    e.headers.update({"Content-Type": "text/plain"}),
+                )
         except IndigoException as e:
-            indigo_api_logger.error('IndigoException: {0}'.format(e.value))
+            indigo_api_logger.error("IndigoException: {0}".format(e.value))
             indigo_api_logger.debug(traceback.format_exc())
             if json_output:
-                return jsonify({'error': 'IndigoException: {0}'.format(e.value)}), 400, {
-                    'Content-Type': 'application/json'}
+                return (
+                    jsonify({"error": "IndigoException: {0}".format(e.value)}),
+                    400,
+                    {"Content-Type": "application/json"},
+                )
             else:
-                return 'IndigoException: {0}'.format(e.value), 400, {'Content-Type': 'text/plain'}
+                return (
+                    "IndigoException: {0}".format(e.value),
+                    400,
+                    {"Content-Type": "text/plain"},
+                )
         except Exception as e:
-            indigo_api_logger.error('Exception: {0}'.format(e), exc_info=e)
+            indigo_api_logger.error("Exception: {0}".format(e), exc_info=e)
             indigo_api_logger.debug(traceback.format_exc())
             if json_output:
-                return jsonify({'error': '{0}'.format(e)}), 500, {'Content-Type': 'application/json'}
+                return (
+                    jsonify({"error": "{0}".format(e)}),
+                    500,
+                    {"Content-Type": "application/json"},
+                )
             else:
-                return 'Exception: {0}'.format(e), 500, {'Content-Type': 'text/plain'}
+                return (
+                    "Exception: {0}".format(e),
+                    500,
+                    {"Content-Type": "text/plain"},
+                )
 
     return wrapper
 
 
-@indigo_api.route('/info')
+@indigo_api.route("/info")
 @check_exceptions
 def info():
     """
@@ -421,10 +514,14 @@ def info():
     """
     indigo_api_logger.info("[REQUEST] /info")
     indigo = indigo_init()
-    return jsonify({'Indigo': {'version': indigo.version()}}), 200, {'Content-Type': 'application/json'}
+    return (
+        jsonify({"Indigo": {"version": indigo.version()}}),
+        200,
+        {"Content-Type": "application/json"},
+    )
 
 
-@indigo_api.route('/aromatize', methods=['POST'])
+@indigo_api.route("/aromatize", methods=["POST"])
 @check_exceptions
 def aromatize():
     """
@@ -502,15 +599,25 @@ def aromatize():
 
     data = IndigoRequestSchema().load(request_data)
 
-    LOG_DATA('[REQUEST] /aromatize', data['input_format'], data['output_format'], data['struct'], data['options'])
+    LOG_DATA(
+        "[REQUEST] /aromatize",
+        data["input_format"],
+        data["output_format"],
+        data["struct"],
+        data["options"],
+    )
 
-    md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
+    md = load_moldata(
+        data["struct"], mime_type=data["input_format"], options=data["options"]
+    )
 
     md.struct.aromatize()
-    return get_response(md, data['output_format'], data['json_output'], data['options'])
+    return get_response(
+        md, data["output_format"], data["json_output"], data["options"]
+    )
 
 
-@indigo_api.route('/dearomatize', methods=['POST'])
+@indigo_api.route("/dearomatize", methods=["POST"])
 @check_exceptions
 def dearomatize():
     """
@@ -563,17 +670,31 @@ def dearomatize():
     """
     data = IndigoRequestSchema().load(get_request_data(request))
 
-    LOG_DATA('[REQUEST] /dearomatize', data['input_format'], data['output_format'], data['struct'], data['options'])
+    LOG_DATA(
+        "[REQUEST] /dearomatize",
+        data["input_format"],
+        data["output_format"],
+        data["struct"],
+        data["options"],
+    )
 
-    md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
+    md = load_moldata(
+        data["struct"], mime_type=data["input_format"], options=data["options"]
+    )
 
     if md.is_query:
-        return get_error_response("Structures with query features cannot be dearomatized yet", 400, data['json_output'])
+        return get_error_response(
+            "Structures with query features cannot be dearomatized yet",
+            400,
+            data["json_output"],
+        )
     md.struct.dearomatize()
-    return get_response(md, data['output_format'], data['json_output'], data['options'])
+    return get_response(
+        md, data["output_format"], data["json_output"], data["options"]
+    )
 
 
-@indigo_api.route('/convert', methods=['POST'])
+@indigo_api.route("/convert", methods=["POST"])
 @check_exceptions
 def convert():
     """
@@ -623,36 +744,59 @@ def convert():
         schema:
           $ref: "#/definitions/ServerError"
     """
-    if request.method == 'POST':
+    if request.method == "POST":
         data = IndigoRequestSchema().load(get_request_data(request))
 
-        LOG_DATA('[REQUEST] /convert', data['input_format'], data['output_format'], data['struct'].encode('utf-8'),
-                 data['options'])
-        md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
-        return get_response(md, data['output_format'], data['json_output'], data['options'])
-    elif request.method == 'GET':
+        LOG_DATA(
+            "[REQUEST] /convert",
+            data["input_format"],
+            data["output_format"],
+            data["struct"].encode("utf-8"),
+            data["options"],
+        )
+        md = load_moldata(
+            data["struct"],
+            mime_type=data["input_format"],
+            options=data["options"],
+        )
+        return get_response(
+            md, data["output_format"], data["json_output"], data["options"]
+        )
+    elif request.method == "GET":
 
         input_dict = {
-            'struct': request.args['struct'],
-            'output_format': request.args[
-                'output_format'] if 'output_format' in request.args else 'chemical/x-mdl-molfile',
+            "struct": request.args["struct"],
+            "output_format": request.args["output_format"]
+            if "output_format" in request.args
+            else "chemical/x-mdl-molfile",
         }
 
         data = IndigoRequestSchema().load(input_dict)
 
-        LOG_DATA('[REQUEST] /convert', data['input_format'], data['output_format'], data['struct'].encode('utf-8'),
-                 data['options'])
-        md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
+        LOG_DATA(
+            "[REQUEST] /convert",
+            data["input_format"],
+            data["output_format"],
+            data["struct"].encode("utf-8"),
+            data["options"],
+        )
+        md = load_moldata(
+            data["struct"],
+            mime_type=data["input_format"],
+            options=data["options"],
+        )
 
-        if 'json_output' in request.args:
-            data['json_output'] = True
+        if "json_output" in request.args:
+            data["json_output"] = True
         else:
-            data['json_output'] = False
+            data["json_output"] = False
 
-        return get_response(md, data['output_format'], data['json_output'], data['options'])
+        return get_response(
+            md, data["output_format"], data["json_output"], data["options"]
+        )
 
 
-@indigo_api.route('/layout', methods=['POST'])
+@indigo_api.route("/layout", methods=["POST"])
 @check_exceptions
 def layout():
     """
@@ -703,13 +847,23 @@ def layout():
           $ref: "#/definitions/ServerError"
     """
     data = IndigoRequestSchema().load(get_request_data(request))
-    LOG_DATA('[REQUEST] /layout', data['input_format'], data['output_format'], data['struct'], data['options'])
-    md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
+    LOG_DATA(
+        "[REQUEST] /layout",
+        data["input_format"],
+        data["output_format"],
+        data["struct"],
+        data["options"],
+    )
+    md = load_moldata(
+        data["struct"], mime_type=data["input_format"], options=data["options"]
+    )
     md.struct.layout()
-    return get_response(md, data['output_format'], data['json_output'], data['options'])
+    return get_response(
+        md, data["output_format"], data["json_output"], data["options"]
+    )
 
 
-@indigo_api.route('/clean', methods=['POST'])
+@indigo_api.route("/clean", methods=["POST"])
 @check_exceptions
 def clean():
     """
@@ -760,20 +914,36 @@ def clean():
           $ref: "#/definitions/ServerError"
     """
     data = IndigoRequestSchema().load(get_request_data(request))
-    LOG_DATA('[REQUEST] /clean', data['input_format'], data['output_format'], data['struct'], data['options'])
+    LOG_DATA(
+        "[REQUEST] /clean",
+        data["input_format"],
+        data["output_format"],
+        data["struct"],
+        data["options"],
+    )
 
-    md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'],
-                      selected=data['selected'])
-    if md.is_rxn and data['selected']:
-        for sm in iterate_selected_submolecules(md.struct, data['selected']):
+    md = load_moldata(
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        selected=data["selected"],
+    )
+    if md.is_rxn and data["selected"]:
+        for sm in iterate_selected_submolecules(md.struct, data["selected"]):
             sm.clean2d()
     else:
-        md.substruct = md.struct.getSubmolecule(data['selected']) if data['selected'] else md.struct
+        md.substruct = (
+            md.struct.getSubmolecule(data["selected"])
+            if data["selected"]
+            else md.struct
+        )
         md.substruct.clean2d()
-    return get_response(md, data['output_format'], data['json_output'], data['options'])
+    return get_response(
+        md, data["output_format"], data["json_output"], data["options"]
+    )
 
 
-@indigo_api.route('/automap', methods=['POST'])
+@indigo_api.route("/automap", methods=["POST"])
 @check_exceptions
 def automap():
     """
@@ -824,14 +994,24 @@ def automap():
           $ref: "#/definitions/ServerError"
     """
     data = IndigoAutomapSchema().load(get_request_data(request))
-    LOG_DATA('[REQUEST] /automap', data['input_format'], data['output_format'], data['mode'], data['struct'],
-             data['options'])
-    md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
-    md.struct.automap(data['mode'])
-    return get_response(md, data['output_format'], data['json_output'], data['options'])
+    LOG_DATA(
+        "[REQUEST] /automap",
+        data["input_format"],
+        data["output_format"],
+        data["mode"],
+        data["struct"],
+        data["options"],
+    )
+    md = load_moldata(
+        data["struct"], mime_type=data["input_format"], options=data["options"]
+    )
+    md.struct.automap(data["mode"])
+    return get_response(
+        md, data["output_format"], data["json_output"], data["options"]
+    )
 
 
-@indigo_api.route('/calculate_cip', methods=['POST'])
+@indigo_api.route("/calculate_cip", methods=["POST"])
 @check_exceptions
 def calculate_cip():
     """
@@ -882,13 +1062,28 @@ def calculate_cip():
           $ref: "#/definitions/ServerError"
     """
     data = IndigoRequestSchema().load(get_request_data(request))
-    LOG_DATA('[REQUEST] /calculate_cip', data['input_format'], data['output_format'], data['struct'], data['options'])
-    md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
-    md.struct.dispatcher.setOption('molfile-saving-add-stereo-desc', True)
-    return get_response(md, data['output_format'], data['json_output'], data['options'])
+    LOG_DATA(
+        "[REQUEST] /calculate_cip",
+        data["input_format"],
+        data["output_format"],
+        data["struct"],
+        data["options"],
+    )
+    md = load_moldata(
+        data["struct"], mime_type=data["input_format"], options=data["options"]
+    )
+    md.struct.dispatcher.setOption("molfile-saving-add-stereo-desc", True)
+    return get_response(
+        md, data["output_format"], data["json_output"], data["options"]
+    )
 
 
-@indigo_api.route('/check', methods=['POST', ])
+@indigo_api.route(
+    "/check",
+    methods=[
+        "POST",
+    ],
+)
 @check_exceptions
 def check():
     """
@@ -942,15 +1137,24 @@ def check():
     """
     data = IndigoCheckSchema().load(get_request_data(request))
     try:
-        indigo = indigo_init(data['options'])
+        indigo = indigo_init(data["options"])
     except Exception as e:
-        raise HttpException('Problem with Indigo initialization: {0}'.format(e), 501)
-    LOG_DATA('[REQUEST] /check', data['types'], data['struct'], data['options'])
-    result = indigo.check(data['struct'], json.dumps(data['types']));
-    return result, 200, {'Content-Type': 'application/json'}
+        raise HttpException(
+            "Problem with Indigo initialization: {0}".format(e), 501
+        )
+    LOG_DATA(
+        "[REQUEST] /check", data["types"], data["struct"], data["options"]
+    )
+    result = indigo.check(data["struct"], json.dumps(data["types"]))
+    return result, 200, {"Content-Type": "application/json"}
 
 
-@indigo_api.route('/calculate', methods=['POST', ])
+@indigo_api.route(
+    "/calculate",
+    methods=[
+        "POST",
+    ],
+)
 @check_exceptions
 def calculate():
     """
@@ -995,44 +1199,77 @@ def calculate():
           $ref: "#/definitions/ServerError"
     """
     data = IndigoCalculateSchema().load(get_request_data(request))
-    LOG_DATA('[REQUEST] /calculate', data['properties'], data['selected'], data['struct'], data['options'])
-    md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'],
-                      selected=data['selected'])
-    if data['selected']:
+    LOG_DATA(
+        "[REQUEST] /calculate",
+        data["properties"],
+        data["selected"],
+        data["struct"],
+        data["options"],
+    )
+    md = load_moldata(
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        selected=data["selected"],
+    )
+    if data["selected"]:
         if md.is_rxn:
-            remove_unselected_repeating_units_r(md.struct, data['selected'])
+            remove_unselected_repeating_units_r(md.struct, data["selected"])
         else:
-            remove_unselected_repeating_units_m(md.struct, data['selected'])
-    calculate_properties = data['properties']
+            remove_unselected_repeating_units_m(md.struct, data["selected"])
+    calculate_properties = data["properties"]
     result = {}
-    precision = data['precision']
+    precision = data["precision"]
     func_name_dict = {
-        'molecular-weight': 'molecularWeight',
-        'most-abundant-mass': 'mostAbundantMass',
-        'monoisotopic-mass': 'monoisotopicMass',
-        'mass-composition': 'massComposition',
-        'gross': 'grossFormula'
+        "molecular-weight": "molecularWeight",
+        "most-abundant-mass": "mostAbundantMass",
+        "monoisotopic-mass": "monoisotopicMass",
+        "mass-composition": "massComposition",
+        "gross": "grossFormula",
     }
     for p in calculate_properties:
         if md.is_rxn:
-            if data['selected']:
-                result[p] = selected_reaction_calc(md.struct, data['selected'], func_name_dict[p], precision=precision)
+            if data["selected"]:
+                result[p] = selected_reaction_calc(
+                    md.struct,
+                    data["selected"],
+                    func_name_dict[p],
+                    precision=precision,
+                )
             else:
-                result[p] = reaction_calc(md.struct, func_name_dict[p], precision=precision)
+                result[p] = reaction_calc(
+                    md.struct, func_name_dict[p], precision=precision
+                )
         else:
-            if data['selected']:
-                result[p] = selected_molecule_calc(md.struct, data['selected'], func_name_dict[p], precision=precision)
+            if data["selected"]:
+                result[p] = selected_molecule_calc(
+                    md.struct,
+                    data["selected"],
+                    func_name_dict[p],
+                    precision=precision,
+                )
             else:
-                result[p] = molecule_calc(md.struct, func_name_dict[p], precision=precision)
-    if data['json_output']:
-        return jsonify(result), 200, {'Content-Type': 'application/json'}
+                result[p] = molecule_calc(
+                    md.struct, func_name_dict[p], precision=precision
+                )
+    if data["json_output"]:
+        return jsonify(result), 200, {"Content-Type": "application/json"}
     else:
-        return '\n'.join(
-            ['{0}: {1}'.format(key, value) for key, value in {k: v for k, v in result.items() if v}.items()]), 200, {
-                   'Content-Type': 'text/plain'}
+        return (
+            "\n".join(
+                [
+                    "{0}: {1}".format(key, value)
+                    for key, value in {
+                        k: v for k, v in result.items() if v
+                    }.items()
+                ]
+            ),
+            200,
+            {"Content-Type": "text/plain"},
+        )
 
 
-@indigo_api.route('/render', methods=['POST'])
+@indigo_api.route("/render", methods=["POST"])
 @check_exceptions
 def render():
     """
@@ -1094,50 +1331,81 @@ def render():
     if request.method == 'POST':
         LOG_DATA('[REQUEST] /render', request.headers['Content-Type'], request.headers['Accept'], request.data)
         try:
-            if 'application/json' in request.headers['Content-Type']:
+            if "application/json" in request.headers["Content-Type"]:
                 input_dict = json.loads(request.data.decode())
             else:
                 input_dict = {
-                    'struct': request.data,
-                    'output_format': request.headers['Accept'],
+                    "struct": request.data,
+                    "output_format": request.headers["Accept"],
                 }
         except ValueError:
-            return get_error_response('Invalid input JSON: {0}'.format(request.data), 400)
+            return get_error_response(
+                "Invalid input JSON: {0}".format(request.data), 400
+            )
 
         data = IndigoRendererSchema().load(input_dict)
-        if data['struct'] and not data['query']:
-            md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
-        elif data['query'] and not data['struct']:
-            md = load_moldata(data['query'], options=data['options'])
+        if data["struct"] and not data["query"]:
+            md = load_moldata(
+                data["struct"],
+                mime_type=data["input_format"],
+                options=data["options"],
+            )
+        elif data["query"] and not data["struct"]:
+            md = load_moldata(data["query"], options=data["options"])
         else:
-            md = load_moldata(data['struct'], mime_type=data['input_format'], options=data['options'])
-            mdq = load_moldata(data['query'], mime_type=data['input_format'], indigo=md.struct.dispatcher, query=True)
+            md = load_moldata(
+                data["struct"],
+                mime_type=data["input_format"],
+                options=data["options"],
+            )
+            mdq = load_moldata(
+                data["query"],
+                mime_type=data["input_format"],
+                indigo=md.struct.dispatcher,
+                query=True,
+            )
             try:
-                md.struct = highlight(md.struct.dispatcher, md.struct, mdq.struct)
+                md.struct = highlight(
+                    md.struct.dispatcher, md.struct, mdq.struct
+                )
             except RuntimeError:
                 pass
 
-    elif request.method == 'GET':
+    elif request.method == "GET":
 
-        LOG_DATA('[REQUEST] /render GET', request.args)
+        LOG_DATA("[REQUEST] /render GET", request.args)
 
         try:
             input_dict = {
-                'struct': request.args['struct'] if 'struct' in request.args else None,
-                'output_format': request.args['output_format'] if 'output_format' in request.args else 'image/svg+xml',
-                'query': request.args['query'] if 'query' in request.args else None,
+                "struct": request.args["struct"]
+                if "struct" in request.args
+                else None,
+                "output_format": request.args["output_format"]
+                if "output_format" in request.args
+                else "image/svg+xml",
+                "query": request.args["query"]
+                if "query" in request.args
+                else None,
             }
-            if input_dict['struct'] and not input_dict['query']:
-                md = load_moldata(input_dict['struct'])
-            elif input_dict['query'] and not input_dict['struct']:
-                mdq = load_moldata(input_dict['query'])
+            if input_dict["struct"] and not input_dict["query"]:
+                md = load_moldata(input_dict["struct"])
+            elif input_dict["query"] and not input_dict["struct"]:
+                mdq = load_moldata(input_dict["query"])
             else:
-                md = load_moldata(input_dict['struct'])
-                mdq = load_moldata(input_dict['query'], indigo=md.struct.dispatcher, query=True)
-                md.struct = highlight(md.struct.dispatcher, md.struct, mdq.struct)
+                md = load_moldata(input_dict["struct"])
+                mdq = load_moldata(
+                    input_dict["query"],
+                    indigo=md.struct.dispatcher,
+                    query=True,
+                )
+                md.struct = highlight(
+                    md.struct.dispatcher, md.struct, mdq.struct
+                )
             data = IndigoRendererSchema().load(input_dict)
         except Exception as e:
-            return get_error_response('Invalid GET query {}'.format(str(e)), 400)
+            return get_error_response(
+                "Invalid GET query {}".format(str(e)), 400
+            )
 
     indigo = md.struct.dispatcher
     indigo.setOption("render-coloring", True)

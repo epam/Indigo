@@ -19,7 +19,6 @@
 #ifndef __graph_h__
 #define __graph_h__
 
-#include <list>
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
 #include "base_cpp/non_copyable.h"
@@ -28,6 +27,7 @@
 #include "base_cpp/ptr_array.h"
 #include "graph/filter.h"
 #include "graph/graph_iterators.h"
+#include <list>
 
 #ifdef _WIN32
 #pragma warning(push)

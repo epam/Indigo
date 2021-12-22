@@ -2038,32 +2038,30 @@ void MoleculeRenderInternal::_renderSimpleObject(const KETSimpleObject& simple)
 
     switch (simple._mode)
     {
-        case KETSimpleObject::EKETEllipse:
-            _cw.drawEllipse( lb, rt );
+    case KETSimpleObject::EKETEllipse:
+        _cw.drawEllipse(lb, rt);
         break;
 
-        case KETSimpleObject::EKETRectangle: 
-        {
-            Array<Vec2f> pts;
-            pts.push() = lb;
-            pts.push() = simple._rect.leftTop();
-            pts.push() = rt;
-            pts.push() = simple._rect.rightBottom();
-            pts.push() = lb;
-            _cw.drawPoly(pts);
-        }
-        break;
+    case KETSimpleObject::EKETRectangle: {
+        Array<Vec2f> pts;
+        pts.push() = lb;
+        pts.push() = simple._rect.leftTop();
+        pts.push() = rt;
+        pts.push() = simple._rect.rightBottom();
+        pts.push() = lb;
+        _cw.drawPoly(pts);
+    }
+    break;
 
-        case KETSimpleObject::EKETLine:
-        {
-            Array<Vec2f> pts;
-            auto& vec1 = pts.push();
-            auto& vec2 = pts.push();
-            vec1 = lb;
-            vec2 = rt;
-            _cw.drawPoly( pts );
-        }
-        break;
+    case KETSimpleObject::EKETLine: {
+        Array<Vec2f> pts;
+        auto& vec1 = pts.push();
+        auto& vec2 = pts.push();
+        vec1 = lb;
+        vec2 = rt;
+        _cw.drawPoly(pts);
+    }
+    break;
     }
 }
 
@@ -2298,47 +2296,46 @@ void MoleculeRenderInternal::_initBondData()
     {
         BondDescr& d = _bd(i);
         d.type = _mol->getBondOrder(i);
-        d.thickness = _edgeIsHighlighted(i) ? thicknessHighlighted :
-            _settings.bondLineWidth;
-            d.queryType = -1;
-            QUERY_MOL_BEGIN(_mol);
+        d.thickness = _edgeIsHighlighted(i) ? thicknessHighlighted : _settings.bondLineWidth;
+        d.queryType = -1;
+        QUERY_MOL_BEGIN(_mol);
+        {
+            QueryMolecule::Bond& qb = qmol.getBond(i);
+            d.queryType = QueryMolecule::getQueryBondType(qb);
+            d.stereoCare = qmol.bondStereoCare(i);
+            if (qb.hasConstraint(QueryMolecule::BOND_TOPOLOGY))
             {
-                QueryMolecule::Bond& qb = qmol.getBond(i);
-                d.queryType = QueryMolecule::getQueryBondType(qb);
-                d.stereoCare = qmol.bondStereoCare(i);
-                if (qb.hasConstraint(QueryMolecule::BOND_TOPOLOGY))
+                bool chainPossible = qb.possibleValue(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_CHAIN);
+                bool ringPossible = qb.possibleValue(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_RING);
+                d.topology = 0;
+                if (chainPossible && !ringPossible)
                 {
-                    bool chainPossible = qb.possibleValue(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_CHAIN);
-                    bool ringPossible = qb.possibleValue(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_RING);
-                    d.topology = 0;
-                    if (chainPossible && !ringPossible)
-                    {
-                        d.topology = TOPOLOGY_CHAIN;
-                    }
-                    if (ringPossible && !chainPossible)
-                    {
-                        d.topology = TOPOLOGY_RING;
-                    }
+                    d.topology = TOPOLOGY_CHAIN;
+                }
+                if (ringPossible && !chainPossible)
+                {
+                    d.topology = TOPOLOGY_RING;
                 }
             }
-            QUERY_MOL_END;
-            const Edge& edge = _mol->getEdge(i);
-            d.beg = edge.beg;
-            d.end = edge.end;
-            d.vb = _ad(d.beg).pos;
-            d.ve = _ad(d.end).pos;
-            d.dir.diff(d.ve, d.vb);
-            d.length = d.dir.length();
-            d.dir.normalize();
-            d.norm.set(-d.dir.y, d.dir.x);
-            d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2; // TODO: check
-
-            d.stereodir = _mol->getBondDirection(i);
-            d.cistrans = _mol->cis_trans.isIgnored(i);
-            int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
-            if (_data.reactingCenters.size() > ubid)
-                d.reactingCenter = _data.reactingCenters[ubid];
         }
+        QUERY_MOL_END;
+        const Edge& edge = _mol->getEdge(i);
+        d.beg = edge.beg;
+        d.end = edge.end;
+        d.vb = _ad(d.beg).pos;
+        d.ve = _ad(d.end).pos;
+        d.dir.diff(d.ve, d.vb);
+        d.length = d.dir.length();
+        d.dir.normalize();
+        d.norm.set(-d.dir.y, d.dir.x);
+        d.isShort = d.length < (_settings.bondSpace + _settings.bondLineWidth) * 2; // TODO: check
+
+        d.stereodir = _mol->getBondDirection(i);
+        d.cistrans = _mol->cis_trans.isIgnored(i);
+        int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
+        if (_data.reactingCenters.size() > ubid)
+            d.reactingCenter = _data.reactingCenters[ubid];
+    }
 }
 
 void MoleculeRenderInternal::_initBoldStereoBonds()

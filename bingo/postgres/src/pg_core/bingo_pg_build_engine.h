@@ -14,9 +14,9 @@ extern "C"
  * Interface class for procession fingerprint data
  */
 
-#include <memory>
 #include "base_cpp/obj_array.h"
 #include "bingo_postgres.h"
+#include <memory>
 
 #include "base_cpp/nullable.h"
 #include "bingo_pg_search_engine.h"

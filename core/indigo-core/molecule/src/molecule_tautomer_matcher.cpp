@@ -98,7 +98,8 @@ bool MoleculeTautomerMatcher::find()
     if (p_rules_list == 0)
         p_rules_list = &rules_list;
 
-    _context = std::make_unique<TautomerSearchContext>(*_query.get(), *_supermol, *_query_decomposer.get(), *_target_decomposer.get(), *p_rules_list, arom_options);
+    _context =
+        std::make_unique<TautomerSearchContext>(*_query.get(), *_supermol, *_query_decomposer.get(), *_target_decomposer.get(), *p_rules_list, arom_options);
 
     _context->force_hydrogens = _force_hydrogens;
     _context->ring_chain = _ring_chain;

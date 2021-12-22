@@ -21,11 +21,11 @@
 #include <vector>
 
 #include "layout/molecule_layout.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
-#include "molecule/ket_commons.h"
 
 using namespace indigo;
 using namespace rapidjson;
@@ -825,7 +825,7 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
 
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& writer)
 {
-    std::unique_ptr<BaseMolecule> mol( bmol.neu());
+    std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
 
     if (!BaseMolecule::hasCoord(*mol))
@@ -852,7 +852,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
             writer.StartObject();
             writer.Key("$ref");
             std::string mol_node = std::string("mol") + std::to_string(idx);
-            writer.String( mol_node.c_str());
+            writer.String(mol_node.c_str());
             writer.EndObject();
         }
     }
@@ -862,84 +862,82 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         auto& meta = bmol.metaData();
         for (int meta_index = 0; meta_index < meta.size(); ++meta_index)
         {
-            auto pobj = meta[ meta_index ];
+            auto pobj = meta[meta_index];
             switch (pobj->_class_id)
             {
-                case KETSimpleObject::cid:
+            case KETSimpleObject::cid: {
+                auto simple_obj = (KETSimpleObject*)pobj;
+                writer.StartObject();
+                writer.Key("type");
+                writer.String("simpleObject");
+                writer.Key("data");
+                writer.StartObject();
+                writer.Key("mode");
+                switch (simple_obj->_mode)
                 {
-                    auto simple_obj = (KETSimpleObject*)pobj;
-                    writer.StartObject();
-                    writer.Key("type");
-                    writer.String("simpleObject");
-                    writer.Key("data");
-                    writer.StartObject();
-                    writer.Key("mode");
-                    switch (simple_obj->_mode)
-                    {
-                        case KETSimpleObject::EKETEllipse:
-                        writer.String("ellipse");
-                        break;
-                        case KETSimpleObject::EKETRectangle:
-                        writer.String("rectangle");
-                        break;
-                        case KETSimpleObject::EKETLine:
-                        writer.String("line");
-                        break;
-                    }
-                    writer.Key("pos");
-                    writer.StartArray();
-
-                    // point1
-                    writer.StartObject();
-                    writer.Key("x");
-                    writer.Double(simple_obj->_rect.left());
-                    writer.Key("y");
-                    writer.Double(simple_obj->_rect.bottom());
-                    writer.Key("z");
-                    writer.Double(0);
-                    writer.EndObject();
-
-                    // point2
-                    writer.StartObject();
-                    writer.Key("x");
-                    writer.Double(simple_obj->_rect.right());
-                    writer.Key("y");
-                    writer.Double(simple_obj->_rect.top());
-                    writer.Key("z");
-                    writer.Double(0);
-                    writer.EndObject();
-
-                    writer.EndArray();
-
-                    // end data
-                    writer.EndObject();
-                    // end node
-                    writer.EndObject();
+                case KETSimpleObject::EKETEllipse:
+                    writer.String("ellipse");
+                    break;
+                case KETSimpleObject::EKETRectangle:
+                    writer.String("rectangle");
+                    break;
+                case KETSimpleObject::EKETLine:
+                    writer.String("line");
                     break;
                 }
-                case KETTextObject::cid: 
-                {
-                    auto simple_obj = (KETTextObject*)pobj;
-                    writer.StartObject();
-                    writer.Key("type");
-                    writer.String("text");
-                    writer.Key("data");
-                    writer.StartObject();
-                    writer.Key("content");
-                    writer.String(simple_obj->_content.c_str());
-                    writer.Key("position");
-                    writer.StartObject();
-                    writer.Key("x");
-                    writer.Double( simple_obj->_pos.x );
-                    writer.Key("y");
-                    writer.Double(simple_obj->_pos.y);
-                    writer.Key("z");
-                    writer.Double(simple_obj->_pos.z);
-                    writer.EndObject(); // end position
-                    writer.EndObject(); // end data
-                    writer.EndObject(); // end node
-                    break;
-                }
+                writer.Key("pos");
+                writer.StartArray();
+
+                // point1
+                writer.StartObject();
+                writer.Key("x");
+                writer.Double(simple_obj->_rect.left());
+                writer.Key("y");
+                writer.Double(simple_obj->_rect.bottom());
+                writer.Key("z");
+                writer.Double(0);
+                writer.EndObject();
+
+                // point2
+                writer.StartObject();
+                writer.Key("x");
+                writer.Double(simple_obj->_rect.right());
+                writer.Key("y");
+                writer.Double(simple_obj->_rect.top());
+                writer.Key("z");
+                writer.Double(0);
+                writer.EndObject();
+
+                writer.EndArray();
+
+                // end data
+                writer.EndObject();
+                // end node
+                writer.EndObject();
+                break;
+            }
+            case KETTextObject::cid: {
+                auto simple_obj = (KETTextObject*)pobj;
+                writer.StartObject();
+                writer.Key("type");
+                writer.String("text");
+                writer.Key("data");
+                writer.StartObject();
+                writer.Key("content");
+                writer.String(simple_obj->_content.c_str());
+                writer.Key("position");
+                writer.StartObject();
+                writer.Key("x");
+                writer.Double(simple_obj->_pos.x);
+                writer.Key("y");
+                writer.Double(simple_obj->_pos.y);
+                writer.Key("z");
+                writer.Double(simple_obj->_pos.z);
+                writer.EndObject(); // end position
+                writer.EndObject(); // end data
+                writer.EndObject(); // end node
+                break;
+            }
             }
         }
     }

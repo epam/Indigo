@@ -17,7 +17,6 @@
  ***************************************************************************/
 
 #include "base_cpp/array.h"
-#include <memory>
 #include "base_cpp/cyclic_array.h"
 #include "base_cpp/d_bitset.h"
 #include "base_cpp/nullable.h"
@@ -27,6 +26,7 @@
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/queue.h"
 #include "base_cpp/red_black.h"
+#include <memory>
 
 IMPL_EXCEPTION(indigo, NullableError, "Nullable");
 IMPL_EXCEPTION(indigo, ArrayError, "array");

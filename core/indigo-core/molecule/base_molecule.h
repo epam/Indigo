@@ -66,7 +66,7 @@ namespace indigo
         _BOND_COORDINATION = 9,
         _BOND_HYDROGEN = 10
     };
-    
+
     enum
     {
         BOND_UP = 1,
@@ -320,7 +320,7 @@ namespace indigo
         void selectBond(int idx);
         void selectAtoms(const Filter& filter);
         void selectBonds(const Filter& filter);
-        void getAtomSelection( std::set<int>& selection );
+        void getAtomSelection(std::set<int>& selection);
         void unselectAtom(int idx);
         void unselectBond(int idx);
         int countSelectedAtoms();
@@ -329,7 +329,6 @@ namespace indigo
         bool isAtomSelected(int idx);
         bool isBondSelected(int idx);
         void selectSubmolecule(BaseMolecule& sub, const int* mapping, bool entire);
-
 
         static int getVacantPiOrbitals(int group, int charge, int radical, int conn, int* lonepairs_out);
 
@@ -371,7 +370,6 @@ namespace indigo
         bool getStereoFlagPosition(int frag_index, Vec3f& pos);
         int countStereoFlags();
 
-
         // proxy methods for stereocenters
         const int* getPyramidStereocenters(int idx) const;
         void markBondsStereocenters();
@@ -386,13 +384,13 @@ namespace indigo
 
         void buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out);
         void buildFrom3dCoordinatesStereocenters(const StereocentersOptions& options);
-        bool isPossibleStereocenter( int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+        bool isPossibleStereocenter(int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
         void buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping);
 
         // proxy methods for cis_trans
-        void getSubstituents_All( int bond_idx, int subst[4]);
-        void restoreSubstituents( int bond_idx);
-        void buildCisTrans( int* exclude_bonds);
+        void getSubstituents_All(int bond_idx, int subst[4]);
+        void restoreSubstituents(int bond_idx);
+        void buildCisTrans(int* exclude_bonds);
         bool registerBondAndSubstituentsCisTrans(int idx);
         void registerUnfoldedHydrogenCisTrans(int atom_idx, int added_hydrogen);
         void buildFromSmilesCisTrans(int* dirs);
@@ -456,8 +454,8 @@ namespace indigo
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
-        RedBlackMap<int,Vec3f> _stereo_flag_positions;
-  
+        RedBlackMap<int, Vec3f> _stereo_flag_positions;
+
         ObjArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
 

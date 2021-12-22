@@ -2,13 +2,13 @@
 #define _BINGO_PG_SECTION_H__
 
 #include "base_cpp/array.h"
-#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "bingo_pg_buffer_cache.h"
 #include "bingo_postgres.h"
 #include "pg_bingo_context.h"
+#include <memory>
 
 class BingoPgIndex;
 class BingoPgFpData;

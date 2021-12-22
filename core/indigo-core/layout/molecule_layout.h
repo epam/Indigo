@@ -44,7 +44,7 @@ namespace indigo
         explicit MoleculeLayout(BaseMolecule& molecule, bool smart_layout = false);
 
         void make();
-        
+
         void updateSGroups();
 
         void setCancellationHandler(CancellationHandler* cancellation);

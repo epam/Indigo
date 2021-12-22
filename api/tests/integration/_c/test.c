@@ -4,15 +4,17 @@
 
 #include "test.h"
 
-int import_call_execute(int argc, const char *argv[]) {
+int import_call_execute(int argc, const char* argv[])
+{
     int return_value = 0;
-    PyObject *pModule   = NULL;
-    PyObject *pFunc     = NULL;
-    PyObject *pResult   = NULL;
+    PyObject* pModule = NULL;
+    PyObject* pFunc = NULL;
+    PyObject* pResult = NULL;
 
     Py_SetProgramName((wchar_t*)argv[0]);
-    wchar_t** _argv = PyMem_Malloc(sizeof(wchar_t*)*argc);
-    for (int i=0; i<argc; i++) {
+    wchar_t** _argv = PyMem_Malloc(sizeof(wchar_t*) * argc);
+    for (int i = 0; i < argc; i++)
+    {
         wchar_t* arg = Py_DecodeLocale(argv[i], NULL);
         _argv[i] = arg;
     }
@@ -22,27 +24,28 @@ int import_call_execute(int argc, const char *argv[]) {
     PySys_SetArgv(argc, _argv);
     PyMem_Free(_argv);
     pModule = PyImport_ImportModule("test");
-    if (! pModule) {
-        fprintf(stderr,
-                "%s: Failed to load module 'test'", argv[0]);
+    if (!pModule)
+    {
+        fprintf(stderr, "%s: Failed to load module 'test'", argv[0]);
         return_value = -3;
         goto except;
     }
     pFunc = PyObject_GetAttrString(pModule, "main");
-    if (! pFunc) {
-        fprintf(stderr,
-                "%s: Can not find function 'main'", argv[0]);
+    if (!pFunc)
+    {
+        fprintf(stderr, "%s: Can not find function 'main'", argv[0]);
         return_value = -4;
         goto except;
     }
-    if (! PyCallable_Check(pFunc)) {
-        fprintf(stderr,
-                "%s: Function \"%s\" is not callable\n", argv[0], argv[3]);
+    if (!PyCallable_Check(pFunc))
+    {
+        fprintf(stderr, "%s: Function \"%s\" is not callable\n", argv[0], argv[3]);
         return_value = -5;
         goto except;
     }
     pResult = PyObject_CallObject(pFunc, NULL);
-    if (! pResult) {
+    if (!pResult)
+    {
         fprintf(stderr, "%s: Function call failed\n", argv[0]);
         return_value = -6;
         goto except;
@@ -50,7 +53,7 @@ int import_call_execute(int argc, const char *argv[]) {
 #ifdef DEBUG
     printf("%s: PyObject_CallObject() succeeded\n", argv[0]);
 #endif
-    assert(! PyErr_Occurred());
+    assert(!PyErr_Occurred());
     goto finally;
 except:
     assert(PyErr_Occurred());
@@ -63,6 +66,7 @@ finally:
     return return_value;
 }
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char* argv[])
+{
     return import_call_execute(argc, argv);
 }
