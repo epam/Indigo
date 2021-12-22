@@ -132,7 +132,7 @@ namespace indigo
 
     private:
         StructureChecker(const StructureChecker&); // no implicit copy
-    };                                             // namespace indigo
+    };
 
 } // namespace indigo
 
