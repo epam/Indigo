@@ -54,7 +54,6 @@ Dearomatizer::Dearomatizer(BaseMolecule& molecule, const int* atom_external_conn
       // TL_CP_GET(_verticesFixed),
       TL_CP_GET(_submoleculeMapping)
 {
-
     _edgesFixed.resize(_molecule.edgeEnd());
     _verticesFixed.resize(_molecule.vertexEnd());
     _verticesFixed.zeroFill();

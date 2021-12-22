@@ -806,7 +806,9 @@ void Graph::_cloneGraph_KeepIndices(const Graph& other)
 
     const auto& meta = other.metaData();
     for (i = 0; i < meta.size(); i++)
+    {
         addMetaObject(meta[i]->clone());
+    }
 
     i_prev = -1;
 
