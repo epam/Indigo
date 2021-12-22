@@ -1622,7 +1622,7 @@ CEXPORT int indigoDecomposedMoleculeScaffold(int decomp)
             /*
              * Create simple scaffold with rsites
              */
-            IndigoDeconvolutionElem& elem = dynamic_cast<IndigoDeconvolutionElem&> (obj);
+            IndigoDeconvolutionElem& elem = dynamic_cast<IndigoDeconvolutionElem&>(obj);
             IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
 
             if (deco_enum.contexts.size() == 0)

@@ -3,7 +3,6 @@
 
 extern "C"
 {
-#include "postgres.h"
 #include "access/reloptions.h"
 #include "access/relscan.h"
 #include "catalog/index.h"
@@ -13,6 +12,7 @@ extern "C"
 #include "fmgr.h"
 #include "optimizer/cost.h"
 #include "optimizer/plancat.h"
+#include "postgres.h"
 #include "storage/bufmgr.h"
 #include "utils/array.h"
 #include "utils/builtins.h"
@@ -164,12 +164,12 @@ static void parse_one_reloption(relopt_value* option, char* text_str, int text_l
     break;
     case RELOPT_TYPE_REAL: {
         relopt_real* optreal = (relopt_real*)option->gen;
-        #if PG_VERSION_NUM / 100 >= 1200
-            parsed = parse_real(value, &option->values.real_val, 0, NULL);
-        #else
-            parsed = parse_real(value, &option->values.real_val);
-        #endif
-        
+#if PG_VERSION_NUM / 100 >= 1200
+        parsed = parse_real(value, &option->values.real_val, 0, NULL);
+#else
+        parsed = parse_real(value, &option->values.real_val);
+#endif
+
         if (validate && !parsed)
             ereport(ERROR, (errmsg("invalid value for floating point option \"%s\": %s", option->gen->name, value)));
         if (validate && (option->values.real_val < optreal->min || option->values.real_val > optreal->max))

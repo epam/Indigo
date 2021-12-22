@@ -2,15 +2,15 @@
 
 extern "C"
 {
-#include "postgres.h"
 #include "access/relscan.h"
 #include "access/skey.h"
 #include "fmgr.h"
 #include "miscadmin.h"
+#include "postgres.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
 #if PG_VERSION_NUM / 100 >= 1200
-    #include "access/genam.h"
+#include "access/genam.h"
 #endif
 }
 
@@ -229,15 +229,14 @@ Datum bingo_gettuple(PG_FUNCTION_ARGS)
     PG_BINGO_BEGIN
     {
         scan->xs_recheck = false;
-        /*
-         * Fetch to the next item
-         */
-        #if PG_VERSION_NUM / 100 >= 1200
-            result = search_engine->next(scan, &scan->xs_heaptid);
-        #else
-            result = search_engine->next(scan, &scan->xs_ctup.t_self);
-        #endif
-        
+/*
+ * Fetch to the next item
+ */
+#if PG_VERSION_NUM / 100 >= 1200
+        result = search_engine->next(scan, &scan->xs_heaptid);
+#else
+        result = search_engine->next(scan, &scan->xs_ctup.t_self);
+#endif
     }
     PG_BINGO_HANDLE(delete search_engine; scan->opaque = NULL);
     /*

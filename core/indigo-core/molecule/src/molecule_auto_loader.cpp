@@ -365,7 +365,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     }
                     else
                         throw Error("Ketcher's JSON has no root node");
-                    if (mol_nodes.Size() || rgroups.Size() || simple_objects.Size() )
+                    if (mol_nodes.Size() || rgroups.Size() || simple_objects.Size())
                     {
                         MoleculeJsonLoader loader(mol_nodes, rgroups, simple_objects);
                         loader.stereochemistry_options = stereochemistry_options;

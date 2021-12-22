@@ -19,8 +19,8 @@
 #ifndef __render_params_h__
 #define __render_params_h__
 
-#include <memory>
 #include "render_common.h"
+#include <memory>
 
 namespace indigo
 {

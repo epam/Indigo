@@ -2,8 +2,8 @@
 
 extern "C"
 {
-#include "postgres.h"
 #include "fmgr.h"
+#include "postgres.h"
 #include "storage/bufmgr.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
@@ -13,9 +13,9 @@ extern "C"
 
 #include "bingo_pg_build.h"
 
-#include <memory>
 #include "base_cpp/profiling.h"
 #include "bingo_core_c.h"
+#include <memory>
 
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_common.h"

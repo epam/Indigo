@@ -201,11 +201,11 @@ namespace bingo
 
         int esimateRemainingResultsCount(int& delta) override;
         float esimateRemainingTime(float& delta) override;
-        int containersCount() const  override;
-        int cellsCount() const  override;
-        int currentCell() const  override;
-        int minCell() const  override;
-        int maxCell() const  override;
+        int containersCount() const override;
+        int cellsCount() const override;
+        int currentCell() const override;
+        int minCell() const override;
+        int maxCell() const override;
 
     protected:
         BaseIndex& _index;
@@ -517,8 +517,8 @@ namespace bingo
         }
 
     protected:
-        void _setParameters(const char* params) override {};
-        void _initPartition() override {};
+        void _setParameters(const char* params) override{};
+        void _initPartition() override{};
 
     private:
         IndigoObject* _indigoObject;

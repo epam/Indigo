@@ -439,7 +439,7 @@ void RenderContext::drawEllipse(const Vec2f& v1, const Vec2f& v2)
     cairo_translate(_cr, v1.x + width / 2.0, v1.y + height / 2.0);
     cairo_scale(_cr, 1, height / width);
     cairo_translate(_cr, -v1.x - width / 2.0, -v1.y - height / 2.0);
-    cairo_arc(_cr, v1.x + width / 2.0, v1.y + height / 2.0, width / 2.0, 0, 2 * M_PI );
+    cairo_arc(_cr, v1.x + width / 2.0, v1.y + height / 2.0, width / 2.0, 0, 2 * M_PI);
     cairo_set_matrix(_cr, &save_matrix);
 }
 

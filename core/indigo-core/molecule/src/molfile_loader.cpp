@@ -16,9 +16,9 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <memory>
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
+#include <memory>
 
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
@@ -377,7 +377,6 @@ void MolfileLoader::_readCtab2000()
 
         try
         {
-
 
             atom_line.skip(3); // skip atom stereo parity
             _hcount[k] = atom_line.readIntFix(3);

@@ -16,10 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <cctype>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
-#include <cctype>
 #include <vector>
 
 #include "base_cpp/array.h"

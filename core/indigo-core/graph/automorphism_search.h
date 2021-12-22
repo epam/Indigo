@@ -83,6 +83,7 @@ namespace indigo
         DECL_ERROR;
 
         DECL_TIMEOUT_EXCEPTION;
+
     protected:
         enum
         {

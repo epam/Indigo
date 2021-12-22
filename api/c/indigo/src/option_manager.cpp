@@ -36,7 +36,6 @@ DLLEXPORT sf::safe_shared_hide_obj<IndigoOptionManager>& indigoGetOptionManager(
 
 IMPL_ERROR(IndigoOptionManager, "option manager");
 
-
 void IndigoOptionManager::callOptionHandlerInt(const char* name, int value)
 {
     CHECK_OPT_DEFINED(name);

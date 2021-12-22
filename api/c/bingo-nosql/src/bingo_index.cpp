@@ -80,7 +80,8 @@ std::unique_ptr<Matcher> MoleculeIndex::createMatcherTopN(const char* type, Matc
     return nullptr;
 }
 
-std::unique_ptr<Matcher> MoleculeIndex::createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp)
+std::unique_ptr<Matcher> MoleculeIndex::createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit,
+                                                                   IndigoObject& fp)
 {
     if (strcmp(type, "sim") == 0)
     {
@@ -164,7 +165,8 @@ std::unique_ptr<Matcher> ReactionIndex::createMatcherTopN(const char* type, Matc
     return nullptr;
 }
 
-std::unique_ptr<Matcher> ReactionIndex::createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp)
+std::unique_ptr<Matcher> ReactionIndex::createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit,
+                                                                   IndigoObject& fp)
 {
     if (strcmp(type, "sim") == 0)
     {

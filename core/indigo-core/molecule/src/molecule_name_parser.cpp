@@ -644,7 +644,7 @@ Returns true if condition matches
 */
 bool MoleculeNameParser::TreeBuilder::_checkParserOption(ParserOptionsType options)
 {
-    return ( _parse->mnp.getOptions() & options) == options;
+    return (_parse->mnp.getOptions() & options) == options;
 }
 
 /*

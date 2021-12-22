@@ -58,7 +58,8 @@ bool IndigoBaseMolecule::is(const IndigoObject& object)
 {
     int type = object.type;
 
-    if (type == MOLECULE || type == QUERY_MOLECULE || type == REACTION_MOLECULE || type == SCAFFOLD || type == RGROUP_FRAGMENT || type == RDF_MOLECULE || type == SMILES_MOLECULE || type == CML_MOLECULE || type == JSON_MOLECULE || type == CDX_MOLECULE || type == SUBMOLECULE)
+    if (type == MOLECULE || type == QUERY_MOLECULE || type == REACTION_MOLECULE || type == SCAFFOLD || type == RGROUP_FRAGMENT || type == RDF_MOLECULE ||
+        type == SMILES_MOLECULE || type == CML_MOLECULE || type == JSON_MOLECULE || type == CDX_MOLECULE || type == SUBMOLECULE)
         return true;
 
     if (type == ARRAY_ELEMENT)
@@ -2100,7 +2101,8 @@ CEXPORT int indigoCountGenericSGroups(int molecule)
     INDIGO_END(-1);
 }
 
-IndigoDataSGroupsIter::IndigoDataSGroupsIter(BaseMolecule& molecule, Array<int>&& refs) : IndigoObject(DATA_SGROUPS_ITER), _mol(molecule), _refs(std::move(refs))
+IndigoDataSGroupsIter::IndigoDataSGroupsIter(BaseMolecule& molecule, Array<int>&& refs)
+    : IndigoObject(DATA_SGROUPS_ITER), _mol(molecule), _refs(std::move(refs))
 {
     _idx = -1;
 }
@@ -2274,7 +2276,8 @@ RepeatingUnit& IndigoRepeatingUnit::get()
     return (RepeatingUnit&)mol.sgroups.getSGroup(idx);
 }
 
-IndigoRepeatingUnitsIter::IndigoRepeatingUnitsIter(BaseMolecule& molecule, Array<int>&& refs) : IndigoObject(REPEATING_UNITS_ITER), _mol(molecule), _refs(std::move(refs))
+IndigoRepeatingUnitsIter::IndigoRepeatingUnitsIter(BaseMolecule& molecule, Array<int>&& refs)
+    : IndigoObject(REPEATING_UNITS_ITER), _mol(molecule), _refs(std::move(refs))
 {
     _idx = -1;
 }
@@ -2336,7 +2339,8 @@ MultipleGroup& IndigoMultipleGroup::get()
     return (MultipleGroup&)mol.sgroups.getSGroup(idx);
 }
 
-IndigoMultipleGroupsIter::IndigoMultipleGroupsIter(BaseMolecule& molecule, Array<int>&& refs) : IndigoObject(MULTIPLE_GROUPS_ITER), _mol(molecule), _refs(std::move(refs))
+IndigoMultipleGroupsIter::IndigoMultipleGroupsIter(BaseMolecule& molecule, Array<int>&& refs)
+    : IndigoObject(MULTIPLE_GROUPS_ITER), _mol(molecule), _refs(std::move(refs))
 {
     _idx = -1;
 }
@@ -2398,7 +2402,8 @@ SGroup& IndigoGenericSGroup::get()
     return (SGroup&)mol.sgroups.getSGroup(idx);
 }
 
-IndigoGenericSGroupsIter::IndigoGenericSGroupsIter(BaseMolecule& molecule, Array<int>&& refs) : IndigoObject(GENERIC_SGROUPS_ITER), _mol(molecule), _refs(std::move(refs))
+IndigoGenericSGroupsIter::IndigoGenericSGroupsIter(BaseMolecule& molecule, Array<int>&& refs)
+    : IndigoObject(GENERIC_SGROUPS_ITER), _mol(molecule), _refs(std::move(refs))
 {
     _idx = -1;
 }

@@ -3,8 +3,8 @@
 
 #include "base_cpp/d_bitset.h"
 
-#include "mmf/mmf_ptr.h"
 #include "bingo_sim_coef.h"
+#include "mmf/mmf_ptr.h"
 
 namespace bingo
 {

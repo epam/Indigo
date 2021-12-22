@@ -180,7 +180,6 @@ namespace indigo
             // maximum iteratins in exact mcs method
             MAX_ITERATION_NUMBER = 50000,
             HIGH_PRIORITY_SCORE = 1000
-
         };
         RSubstructureMcs(BaseReaction& reaction, const ReactionAutomapper& context);
         RSubstructureMcs(BaseReaction& reaction, int subNum, int superNum, const ReactionAutomapper& context);

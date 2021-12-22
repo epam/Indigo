@@ -276,7 +276,7 @@ void ArrayOutput::clear()
     _arr.clear();
 }
 
-StandardOutput::StandardOutput(): _count(0)
+StandardOutput::StandardOutput() : _count(0)
 {
 }
 

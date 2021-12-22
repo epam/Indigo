@@ -180,6 +180,7 @@ protected:
         std::string converted = ss.str();
         callOptionHandler(name, converted.c_str());
     }
+
 private:
     IndigoOptionManager(const IndigoOptionManager&);
 };

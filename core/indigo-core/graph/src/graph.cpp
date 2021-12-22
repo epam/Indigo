@@ -114,11 +114,11 @@ int Graph::getEdgeEnd(int beg, int edge) const
     return -1;
 }
 
-void Graph::addMetaObject( GraphMetaObject* pobj)
+void Graph::addMetaObject(GraphMetaObject* pobj)
 {
     int index = _meta_data.size();
-    _meta_data.expand( index + 1 );
-    _meta_data.set( index, pobj );
+    _meta_data.expand(index + 1);
+    _meta_data.set(index, pobj);
 }
 
 void Graph::resetMetaData()

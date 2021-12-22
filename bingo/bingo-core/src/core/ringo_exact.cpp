@@ -20,13 +20,13 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "bingo_context.h"
-#include "ringo_matchers.h"
 #include "graph/subgraph_hash.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "reaction/crf_loader.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_exact_matcher.h"
+#include "ringo_matchers.h"
 
 IMPL_ERROR(RingoExact, "Ringo exact");
 
