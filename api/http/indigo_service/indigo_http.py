@@ -16,11 +16,14 @@
 # limitations under the License.
 #
 
+import base64
+import io
 from typing import Awaitable, Callable, List, Tuple, Union
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from indigo import IndigoException
+from indigo.renderer import IndigoRenderer
 
 from indigo_service import jsonapi, service
 from indigo_service.indigo_tools import indigo, indigo_new
@@ -30,6 +33,7 @@ app = FastAPI(title="Indigo service JSON:API", version=indigo().version())
 
 BASE_URL_INDIGO = "/indigo"
 RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
+RENDER_HEADER_CONTENT_TYPE = "image/png"
 
 
 @app.middleware("http")
@@ -39,9 +43,13 @@ async def isolate_indigo_session(
     with indigo_new():
         response = await call_next(request)
         if not request.scope["path"].startswith(
-            ("/docs", "/redoc", f"{BASE_URL_INDIGO}/render")
+            ("/docs", "/redoc")
         ):
             response.headers["Content-Type"] = RESP_HEADER_CONTENT_TYPE
+        if request.scope["path"].startswith(
+                f"{BASE_URL_INDIGO}/render"
+        ):
+            response.headers["Content-Type"] = RENDER_HEADER_CONTENT_TYPE
         return response
 
 
@@ -58,6 +66,7 @@ def compounds(
         jsonapi.DescriptorRequest,
         jsonapi.ValidationRequest,
         jsonapi.CompoundConvertRequest,
+        jsonapi.RenderRequest,
     ],
 ) -> List[Tuple[str, jsonapi.CompoundFormat]]:
     return service.extract_pairs(request.data.attributes.compound)
@@ -206,13 +215,44 @@ def common_bits(
     return jsonapi.make_common_bits_response(result)
 
 
+@app.post(
+    f"{BASE_URL_INDIGO}/render",
+    response_model=jsonapi.RenderResponse,
+    response_model_exclude_unset=True,
+)
+def render(
+    request: jsonapi.RenderRequest,
+):
+    compound, *_ = service.extract_compounds(compounds(request))
+    output_format = request.data.attributes.outputFormat
+    indigo_renderer = IndigoRenderer(indigo())
+    indigo().setOption("render-output-format", output_format.value)
+    options = request.data.attributes.options
+    for option, value in options.items():
+        try:
+            indigo().setOption(option, *value)
+        except IndigoException as exc:
+            jsonapi.make_error_response(exc)
+    result = indigo_renderer.renderToBuffer(compound)
+    result = result.tobytes()
+    image = base64.b64encode(result)
+    # result = 'data:image/png;base64, {}'.format(str(image, 'ascii'))
+    return Response(result, media_type='img/png')
+    # return {"image": image}
+
+
 def run_debug() -> None:
     # Debug server for dev purpose only
     import uvicorn  # pylint: disable=import-outside-toplevel
 
     uvicorn.run(
         "indigo_service.indigo_http:app",
-        host="127.0.0.1",
+        host="0.0.0.0",
         port=8080,
         log_level="debug",
+        reload=True
     )
+
+
+if __name__ == '__main__':
+    run_debug()

@@ -14,7 +14,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+# For test purposes
 FROM python:3.9-slim-buster as indigo_service_dev
 
 RUN mkdir -p /opt/indigo
@@ -44,7 +45,12 @@ RUN pip3 install -r requirements_dev.txt && \
     pip3 install -e . && \
     pytest
 
+# For final build
 FROM python:3.9-slim-buster
+
+RUN apt-get update && \
+    apt-get upgrade && \
+    apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
 
 RUN mkdir -p /opt/indigo
 WORKDIR /opt/indigo

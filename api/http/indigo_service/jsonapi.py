@@ -16,11 +16,13 @@
 # limitations under the License.
 #
 
+import base64
 import functools
 from enum import Enum
-from typing import Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, ByteString, Dict, Generic, List, Optional, Tuple, TypeVar, Union
 
 from pydantic import BaseModel, conlist, validator
+from pydantic.color import Color
 from pydantic.generics import GenericModel
 
 # Generic Types
@@ -581,3 +583,51 @@ def make_descriptor_response(
 SourceTargetsRequest = Union[
     CommonBitsRequest, SimilaritiesRequest, MatchRequest
 ]
+
+
+# Render
+
+
+class ImageFormat(str, Enum):
+    SVG = "svg"
+    PNG = "png"
+    PNG_BASE64 = "png"
+
+
+class RenderModel(BaseModel):
+    compound: CompoundObject
+    outputFormat: ImageFormat
+    options: Dict[str, Any] = None
+
+
+class RenderModelType(BaseModel):
+    __root__ = "render"
+
+
+class RenderResultModelType(BaseModel):
+    __root__ = "renderResult"
+
+
+class RenderResultModel(BaseModel):
+    image: Any
+
+
+RenderRequest = Request[RenderModelType, RenderModel]
+RenderResponse = Response[
+    RenderResultModelType, RenderResultModel
+]
+
+
+def make_render_response(
+    raw_response: Union[bytes, str]
+) -> RenderResponse:
+    if output_format == ImageFormat.SVG:
+        pass
+    if output_format == ImageFormat.PNG:
+        pass
+    if output_format == ImageFormat.PNG_BASE64:
+        png_b64 = base64.b64encode(raw_response)
+        image = 'data:image/png;base64, {}'.format(str(png_b64, 'ascii'))
+        return RenderResponse(
+            **{"data": {"type": "renderResults", "attributes": image}}
+        )
