@@ -517,8 +517,8 @@ namespace bingo
         }
 
     protected:
-        void _setParameters(const char* params) override{};
-        void _initPartition() override{};
+        void _setParameters(const char* params) override;
+        void _initPartition() override;
 
     private:
         IndigoObject* _indigoObject;

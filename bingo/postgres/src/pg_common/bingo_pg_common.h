@@ -80,12 +80,14 @@ public:
     class DataProcessing
     {
     public:
-        template <typename T> static void handleNumber(T& number, indigo::Scanner* scanner, indigo::Output* output)
+        template <typename T>
+        static void handleNumber(T& number, indigo::Scanner* scanner, indigo::Output* output)
         {
             _handleNumber(number, scanner, output);
         }
 
-        template <typename T> static void handleArray(indigo::Array<T>& data, indigo::Scanner* scanner, indigo::Output* output)
+        template <typename T>
+        static void handleArray(indigo::Array<T>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             int size = data.size();
             handleNumber(size, scanner, output);
@@ -97,7 +99,8 @@ public:
             }
         }
 
-        template <typename T> static void handleDArray(indigo::ObjArray<indigo::Array<T>>& data, indigo::Scanner* scanner, indigo::Output* output)
+        template <typename T>
+        static void handleDArray(indigo::ObjArray<indigo::Array<T>>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             int size = data.size();
             handleNumber(size, scanner, output);
@@ -109,7 +112,8 @@ public:
             }
         }
 
-        template <typename T> static void handleRedBlackString(indigo::RedBlackStringMap<T>& data, indigo::Scanner* scanner, indigo::Output* output)
+        template <typename T>
+        static void handleRedBlackString(indigo::RedBlackStringMap<T>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             indigo::Array<char> key_tmp;
             int size = data.size();
@@ -185,7 +189,8 @@ public:
                 }
             }
         }
-        template <typename T, typename R> static void handleRedBlackObject(indigo::RedBlackObjMap<T, R>& data, indigo::Scanner* scanner, indigo::Output* output)
+        template <typename T, typename R>
+        static void handleRedBlackObject(indigo::RedBlackObjMap<T, R>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             int size = data.size();
             handleNumber(size, scanner, output);

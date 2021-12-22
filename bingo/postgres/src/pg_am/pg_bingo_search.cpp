@@ -2,11 +2,12 @@
 
 extern "C"
 {
+#include "postgres.h"
+
 #include "access/relscan.h"
 #include "access/skey.h"
 #include "fmgr.h"
 #include "miscadmin.h"
-#include "postgres.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
 #if PG_VERSION_NUM / 100 >= 1200
@@ -20,7 +21,6 @@ extern "C"
 #include "bingo_pg_common.h"
 #include "bingo_pg_search.h"
 #include "bingo_pg_search_engine.h"
-#include "bingo_postgres.h"
 #include "pg_bingo_context.h"
 
 #if PG_VERSION_NUM / 100 < 906

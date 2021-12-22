@@ -1,23 +1,31 @@
 import os
 import sys
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
+
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
 from env_indigo import *
 
 indigo = Indigo()
-def testExactMatchMolsUnmappedH ():
+
+
+def testExactMatchMolsUnmappedH():
     mol1 = indigo.loadMolecule("C([H])1=CC=CC=C1")
     mol2 = indigo.loadMolecule("C1=CC=C([H])C=C1")
     match = indigo.exactMatch(mol1, mol2)
     for atom in mol1.iterateAtoms():
-        mapped = match.mapAtom(atom)        
+        mapped = match.mapAtom(atom)
         if not mapped:
-            index = '?'
+            index = "?"
         else:
             index = mapped.index()
-        sys.stdout.write(str(index) + ' ')
-    sys.stdout.write('\n')
-    
-def testSingleMatch (mol1, mol2, flags, expected):
+        sys.stdout.write(str(index) + " ")
+    sys.stdout.write("\n")
+
+
+def testSingleMatch(mol1, mol2, flags, expected):
     match = indigo.exactMatch(mol1, mol2, flags)
     if match:
         sys.stdout.write("matched")
@@ -25,9 +33,10 @@ def testSingleMatch (mol1, mol2, flags, expected):
         sys.stdout.write("unmatched")
     if (match is None) == expected:
         sys.stdout.write(" (unexpected)")
-    sys.stdout.write('\n')
+    sys.stdout.write("\n")
 
-def testExactMatchMolsFlags ():
+
+def testExactMatchMolsFlags():
     mol1 = indigo.loadMolecule("C1CCCCC1")
     mol2 = indigo.loadMolecule("c1ccccc1")
     testSingleMatch(mol1, mol2, None, False)
@@ -46,28 +55,30 @@ def testExactMatchMolsFlags ():
     testSingleMatch(mol1, mol2, "STE", False)
     testSingleMatch(mol1, mol2, "FRA", False)
     testSingleMatch(mol1, mol2, "ALL -STE", False)
-    testSingleMatch(mol1, mol2, "ALL -STE -FRA", True) 
+    testSingleMatch(mol1, mol2, "ALL -STE -FRA", True)
     testSingleMatch(mol1, mol2, "MAS ELE", True)
-    
-def testTautomerMatchUnmappedH ():
+
+
+def testTautomerMatchUnmappedH():
     mol1 = indigo.loadMolecule("C([H])1=CC=CC=C1")
     mol2 = indigo.loadMolecule("C1=CC=C([H])C=C1")
     match = indigo.exactMatch(mol1, mol2, "TAU")
     for atom in mol1.iterateAtoms():
         mapped = match.mapAtom(atom)
         if not mapped:
-            index = '?'
+            index = "?"
         else:
             index = mapped.index()
-        sys.stdout.write(str(index) + ' ')
-    sys.stdout.write('\n')
-  
-def testTautomerMatchFlags ():
+        sys.stdout.write(str(index) + " ")
+    sys.stdout.write("\n")
+
+
+def testTautomerMatchFlags():
     indigo.clearTautomerRules()
     indigo.setTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te")
     indigo.setTautomerRule(2, "0C", "N,O,P,S")
     indigo.setTautomerRule(3, "1C", "N,O")
-    
+
     mol1 = indigo.loadMolecule("CC1(C)NC(=O)C2=CC=CC=C2N1")
     mol2 = indigo.loadMolecule("CC(=C)NC1=CC=CC=C1C(N)=O")
     mol2.aromatize()
@@ -96,23 +107,25 @@ def testTautomerMatchFlags ():
     mol2 = indigo.loadMolecule("C=C1CCC(=C)CC1")
     testSingleMatch(mol1, mol2, "TAU", True)
     testSingleMatch(mol1, mol2, "TAU R*", False)
-    
-def testExactReactionMatchUnmappedH ():
+
+
+def testExactReactionMatchUnmappedH():
     rxn1 = indigo.loadReaction("CCO[H]>CCC>OCC")
     rxn2 = indigo.loadReaction("OCC>CC>CCO")
     match = indigo.exactMatch(rxn1, rxn2)
     for mol in rxn1.iterateMolecules():
-        print('mol  {0}'.format(mol.index()))
+        print("mol  {0}".format(mol.index()))
         for atom in mol.iterateAtoms():
             mapped = match.mapAtom(atom)
             if not mapped:
-                mapped = '?'
+                mapped = "?"
             else:
                 mapped = mapped.index()
-            print('atom  {0} -> {1}'.format(atom.index(), mapped))
+            print("atom  {0} -> {1}".format(atom.index(), mapped))
     print(match.highlightedTarget().smiles())
-    
-def testReactionSingleMatch (rxn1, rxn2, expected):
+
+
+def testReactionSingleMatch(rxn1, rxn2, expected):
     rxn1 = indigo.loadReaction(rxn1)
     rxn2 = indigo.loadReaction(rxn2)
     rxn1.aromatize()
@@ -124,9 +137,10 @@ def testReactionSingleMatch (rxn1, rxn2, expected):
         sys.stdout.write("unmatched")
     if (match is None) == expected:
         sys.stdout.write(" (unexpected)")
-    sys.stdout.write('\n')
- 
-def testExactReactionFlags ():
+    sys.stdout.write("\n")
+
+
+def testExactReactionFlags():
     rxn1 = indigo.loadReaction("C1CCCCC1>>N")
     rxn2 = indigo.loadReaction("c1ccccc1>>[13NH3]")
     testSingleMatch(rxn1, rxn2, None, False)
@@ -138,12 +152,18 @@ def testExactReactionFlags ():
     testSingleMatch(rxn1, rxn2, "AAM", False)
     testSingleMatch(rxn1, rxn2, "ALL -STE -AAM", True)
     testSingleMatch(rxn1, rxn2, "MAS ELE RCT", True)
-    testReactionSingleMatch("N.C1C=CC=CC=1>>C(=O)OP", "C1=CC=CC=C1.N>>C(=O)OP", True)
-    testReactionSingleMatch("N.C1C=CC=CC=1>>[14C](=O)OP", "C1=CC=CC=C1.N>>C(=O)OP", False)
+    testReactionSingleMatch(
+        "N.C1C=CC=CC=1>>C(=O)OP", "C1=CC=CC=C1.N>>C(=O)OP", True
+    )
+    testReactionSingleMatch(
+        "N.C1C=CC=CC=1>>[14C](=O)OP", "C1=CC=CC=C1.N>>C(=O)OP", False
+    )
     testReactionSingleMatch("c1ccccc1>>C(=O)OP", "C1=CC=CC=C1>>C(=O)OP", True)
-    testReactionSingleMatch("O.N.C1C=CC=CC=1>>C(=O)OP", "C1=CC=CC=C1.N>>C(=O)OP.C", False)
-  
-  
+    testReactionSingleMatch(
+        "O.N.C1C=CC=CC=1>>C(=O)OP", "C1=CC=CC=C1.N>>C(=O)OP.C", False
+    )
+
+
 testExactMatchMolsUnmappedH()
 testExactMatchMolsFlags()
 testTautomerMatchUnmappedH()

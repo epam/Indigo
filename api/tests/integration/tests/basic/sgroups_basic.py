@@ -1,8 +1,8 @@
+import errno
 import os
 import sys
-import errno
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -11,20 +11,23 @@ indigo.setOption("molfile-saving-skip-date", True)
 print("****** Change basis of Sgroup ********")
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(dataPath("molecules/basic/all_features_mol.mol"))
+m = indigo.loadMoleculeFromFile(
+    dataPath("molecules/basic/all_features_mol.mol")
+)
 
-print(m.molfile());
+print(m.molfile())
 print("****** remove fisrt atom from sgroup ********")
 m.removeAtoms([174])
-print(m.molfile());
+print(m.molfile())
 print("****** remove second atom from sgroup and sgroup itself********")
 m.removeAtoms([175])
-print(m.molfile());
+print(m.molfile())
 print("****** remove bond from sgroup ********")
 m.removeBonds([229])
-print(m.molfile());
+print(m.molfile())
 
-m = indigo.loadMolecule('''
+m = indigo.loadMolecule(
+    """
   Ketcher 10271618342D 1   1.00000     0.00000     0
 
  41 39  0     0  0            999 V2000
@@ -133,13 +136,14 @@ M  SMT   3 3
 M  SDI   3  4   13.9651  -16.9500   13.9651  -15.4500
 M  SDI   3  4   16.5631  -15.4500   16.5631  -16.9500
 M  END
-''')
+"""
+)
 for g in m.iterateRepeatingUnits():
-   	print(g.getRepeatingUnitSubscript())
-   	print(g.getRepeatingUnitConnectivity())
-   	for a in g.iterateAtoms():
-   		print('{0} {1}'.format(a.index(), a.symbol()))
+    print(g.getRepeatingUnitSubscript())
+    print(g.getRepeatingUnitConnectivity())
+    for a in g.iterateAtoms():
+        print("{0} {1}".format(a.index(), a.symbol()))
 for g in m.iterateMultipleGroups():
-   	print(g.getSGroupMultiplier())
-   	for a in g.iterateAtoms():
-	   	print('{0} {1}'.format(a.index(), a.symbol()))
+    print(g.getSGroupMultiplier())
+    for a in g.iterateAtoms():
+        print("{0} {1}".format(a.index(), a.symbol()))

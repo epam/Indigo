@@ -1,15 +1,19 @@
 #include "bingo_pg_fix_pre.h"
 
+#include <algorithm>
+
 extern "C"
 {
-#include "fmgr.h"
 #include "postgres.h"
+
+#include "fmgr.h"
 #include "storage/bufmgr.h"
 }
 
 #include "bingo_pg_fix_post.h"
 
 #include "base_cpp/profiling.h"
+
 #include "bingo_core_c.h"
 #include "bingo_pg_build_engine.h"
 #include "bingo_pg_common.h"
@@ -18,7 +22,6 @@ extern "C"
 #include "bingo_pg_index.h"
 #include "bingo_pg_search_engine.h"
 #include "pg_bingo_context.h"
-#include <algorithm>
 
 IMPL_ERROR(BingoPgIndex, "bingo index");
 

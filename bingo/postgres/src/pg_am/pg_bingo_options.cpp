@@ -3,16 +3,18 @@
 
 extern "C"
 {
+#include "postgres.h"
+
+#include "fmgr.h"
+
 #include "access/reloptions.h"
 #include "access/relscan.h"
 #include "catalog/index.h"
 #include "catalog/pg_tablespace.h"
 #include "catalog/pg_type.h"
 #include "commands/tablespace.h"
-#include "fmgr.h"
 #include "optimizer/cost.h"
 #include "optimizer/plancat.h"
-#include "postgres.h"
 #include "storage/bufmgr.h"
 #include "utils/array.h"
 #include "utils/builtins.h"
@@ -25,7 +27,6 @@ extern "C"
 #include "bingo_pg_fix_post.h"
 
 #include "bingo_pg_common.h"
-#include "bingo_postgres.h"
 #include "pg_bingo_context.h"
 
 #if PG_VERSION_NUM / 100 < 906

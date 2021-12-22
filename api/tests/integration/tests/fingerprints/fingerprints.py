@@ -1,14 +1,27 @@
 import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 mol_db_names = [
-    (joinPathPy("../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__), indigo.iterateSDFile),
-    (joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), indigo.iterateSDFile),
-    (joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), indigo.iterateSDFile)
+    (
+        joinPathPy(
+            "../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/basic/thiazolidines.sdf", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__),
+        indigo.iterateSDFile,
+    ),
 ]
 
 

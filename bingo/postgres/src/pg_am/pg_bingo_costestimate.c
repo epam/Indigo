@@ -1,18 +1,17 @@
-#include <ctype.h>
+#include <postgres.h>
+
+#if PG_VERSION_NUM / 100 >= 1200
+#include <optimizer/optimizer.h>
+#else
 #include <math.h>
 
-#include "fmgr.h"
-#include "postgres.h"
-#if PG_VERSION_NUM / 100 >= 1200
-#include "access/relation.h"
-#include "optimizer/optimizer.h"
-#else
-#include "nodes/relation.h"
-#include "optimizer/predtest.h"
+#include <nodes/relation.h>
+#include <optimizer/predtest.h>
 #endif
-#include "optimizer/cost.h"
-#include "utils/selfuncs.h"
-#include "utils/spccache.h"
+
+#include <optimizer/cost.h>
+#include <utils/selfuncs.h>
+#include <utils/spccache.h>
 
 /*
 #include "access/sysattr.h"

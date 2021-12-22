@@ -24,7 +24,8 @@
 namespace indigo
 {
 
-    template <typename T> class List
+    template <typename T>
+    class List
     {
     public:
         struct Elem

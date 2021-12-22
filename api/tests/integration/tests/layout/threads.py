@@ -1,7 +1,7 @@
-from threading import Thread
 import sys
+from threading import Thread
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 
@@ -25,10 +25,10 @@ class testThread(Thread):
         c1 = str(m1.molfile()).splitlines()
         c2 = str(m2.molfile()).splitlines()
 
-        header_1 = '\n'.join(c1[:3])
-        body_1 = '\n'.join(c1[3:])
-        header_2 = '\n'.join(c2[:3])
-        body_2 = '\n'.join(c2[3:])
+        header_1 = "\n".join(c1[:3])
+        body_1 = "\n".join(c1[3:])
+        header_2 = "\n".join(c2[:3])
+        body_2 = "\n".join(c2[3:])
         # Check that two instances of Indigo even in one thread have different options - headers should differ
         assert header_1 != header_2
         # Bodies should be equal
@@ -38,7 +38,13 @@ class testThread(Thread):
 threads = []
 indigo = Indigo()
 for i, smi in enumerate(
-        indigo.iterateSmilesFile(joinPathPy("../../../../../data/molecules/basic/pubchem_slice_5000.smi", __file__))):
+    indigo.iterateSmilesFile(
+        joinPathPy(
+            "../../../../../data/molecules/basic/pubchem_slice_5000.smi",
+            __file__,
+        )
+    )
+):
     current = testThread(i, smi.rawData())
     threads.append(current)
     current.start()

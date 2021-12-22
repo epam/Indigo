@@ -27,7 +27,8 @@ namespace indigo
 
     DECL_EXCEPTION(PoolError);
 
-    template <typename T> class Pool
+    template <typename T>
+    class Pool
     {
     public:
         DECL_TPL_ERROR(PoolError);

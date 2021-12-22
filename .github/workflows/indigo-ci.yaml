@@ -15,6 +15,21 @@ on:
   repository_dispatch:
 
 jobs:
+  static_analysis:
+    runs-on: ubuntu-latest
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Check
+        run: |
+          .ci/static_analysis_check.sh
+
   build_indigo_libs_x86_64:
     strategy:
       fail-fast: false
@@ -633,7 +648,7 @@ jobs:
         run: poetry run pylint bingo_elastic
         working-directory: bingo/bingo-elastic/python
       - name: Setup elasticsearch
-        run: docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+        run: docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.16.2
       - name: Wait elastic is ready
         run: sleep 30s
       - name: Run tests

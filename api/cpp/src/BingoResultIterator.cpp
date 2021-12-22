@@ -4,11 +4,13 @@
 
 using namespace indigo_cpp;
 
-template <typename target_t> BingoResultIterator<target_t>::BingoResultIterator(int id, IndigoSessionPtr session) : id(id), session(std::move(session))
+template <typename target_t>
+BingoResultIterator<target_t>::BingoResultIterator(int id, IndigoSessionPtr session) : id(id), session(std::move(session))
 {
 }
 
-template <typename target_t> BingoResultIterator<target_t>::~BingoResultIterator()
+template <typename target_t>
+BingoResultIterator<target_t>::~BingoResultIterator()
 {
     if (id >= 0)
     {
@@ -17,7 +19,8 @@ template <typename target_t> BingoResultIterator<target_t>::~BingoResultIterator
     }
 }
 
-template <typename target_t> void BingoResultIterator<target_t>::next()
+template <typename target_t>
+void BingoResultIterator<target_t>::next()
 {
     session->setSessionId();
     auto result_id = session->_checkResult(bingoNext(id));
@@ -34,21 +37,25 @@ template <typename target_t> void BingoResultIterator<target_t>::next()
     }
 }
 
-template <typename target_t> bool BingoResultIterator<target_t>::valid() const
+template <typename target_t>
+bool BingoResultIterator<target_t>::valid() const
 {
     return _current != nullptr;
 };
 
-template <typename target_t> BingoResultIterator<target_t>::iterator::iterator(BingoResultIterator<target_t>* obj) : _obj(obj)
+template <typename target_t>
+BingoResultIterator<target_t>::iterator::iterator(BingoResultIterator<target_t>* obj) : _obj(obj)
 {
 }
 
-template <typename target_t> BingoResult<target_t>& BingoResultIterator<target_t>::iterator::operator*()
+template <typename target_t>
+BingoResult<target_t>& BingoResultIterator<target_t>::iterator::operator*()
 {
     return *_obj->_current;
 }
 
-template <typename target_t> typename BingoResultIterator<target_t>::iterator& BingoResultIterator<target_t>::iterator::operator++()
+template <typename target_t>
+typename BingoResultIterator<target_t>::iterator& BingoResultIterator<target_t>::iterator::operator++()
 {
     _obj->next();
     if (!_obj->valid())
@@ -58,22 +65,26 @@ template <typename target_t> typename BingoResultIterator<target_t>::iterator& B
     return *this;
 }
 
-template <typename target_t> bool BingoResultIterator<target_t>::iterator::operator==(iterator rhs) const
+template <typename target_t>
+bool BingoResultIterator<target_t>::iterator::operator==(iterator rhs) const
 {
     return _obj == rhs._obj;
 }
 
-template <typename target_t> bool BingoResultIterator<target_t>::iterator::operator!=(iterator rhs) const
+template <typename target_t>
+bool BingoResultIterator<target_t>::iterator::operator!=(iterator rhs) const
 {
     return !(rhs == *this);
 }
 
-template <typename target_t> typename BingoResultIterator<target_t>::iterator BingoResultIterator<target_t>::begin()
+template <typename target_t>
+typename BingoResultIterator<target_t>::iterator BingoResultIterator<target_t>::begin()
 {
     return ++iterator{this};
 }
 
-template <typename target_t> typename BingoResultIterator<target_t>::iterator BingoResultIterator<target_t>::end()
+template <typename target_t>
+typename BingoResultIterator<target_t>::iterator BingoResultIterator<target_t>::end()
 {
     return iterator{nullptr};
 }

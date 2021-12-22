@@ -2,11 +2,13 @@
 
 extern "C"
 {
+#include "postgres.h"
+
+#include "fmgr.h"
+
 #include "access/htup.h"
 #include "catalog/index.h"
 #include "catalog/pg_type.h"
-#include "fmgr.h"
-#include "postgres.h"
 #include "storage/bufmgr.h"
 #include "utils/rel.h"
 
@@ -22,6 +24,7 @@ extern "C"
 #include "bingo_pg_fix_post.h"
 
 #include "base_cpp/tlscont.h"
+
 #include "bingo_pg_build.h"
 #include "bingo_pg_common.h"
 #include "bingo_postgres.h"

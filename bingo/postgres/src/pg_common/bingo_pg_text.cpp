@@ -2,15 +2,15 @@
 
 extern "C"
 {
-#include "fmgr.h"
 #include "postgres.h"
+
+#include "fmgr.h"
 #include "utils/builtins.h"
 }
 
 #include "bingo_pg_fix_post.h"
 
 #include "bingo_pg_common.h"
-#include "bingo_pg_index.h"
 #include "bingo_pg_text.h"
 
 using namespace indigo;

@@ -2,8 +2,9 @@
 
 extern "C"
 {
-#include "fmgr.h"
 #include "postgres.h"
+
+#include "fmgr.h"
 }
 
 #include "bingo_pg_fix_post.h"

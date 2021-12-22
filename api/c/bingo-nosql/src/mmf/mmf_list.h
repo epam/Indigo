@@ -6,7 +6,8 @@
 
 namespace bingo
 {
-    template <typename T> class MMFList
+    template <typename T>
+    class MMFList
     {
     private:
         struct _Link
