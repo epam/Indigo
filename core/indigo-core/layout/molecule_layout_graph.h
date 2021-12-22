@@ -152,7 +152,7 @@ namespace indigo
 
         virtual void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing) = 0;
 
-        const BaseMolecule* getMolecule(const int** molecule_edge_mapping)
+        const BaseMolecule* getMolecule(const int** molecule_edge_mapping) const
         {
             *molecule_edge_mapping = _molecule_edge_mapping;
             return _molecule;
@@ -232,7 +232,9 @@ namespace indigo
             long morganCode() const
             {
                 if (!_morgan_code_calculated)
+                {
                     throw Error("Morgan code does not calculated yet.");
+                }
                 return _morgan_code;
             }
             void setVertexWeight(int idx, int w)
@@ -313,7 +315,7 @@ namespace indigo
         static bool _path_handle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
 
         // attaching
-        void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos);
+        virtual void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos);
 
         // assigning coordinates
         void _attachDandlingVertices(int vert_idx, Array<int>& adjacent_list);
@@ -342,17 +344,17 @@ namespace indigo
         explicit MoleculeLayoutGraphSimple();
         ~MoleculeLayoutGraphSimple() override;
 
-        MoleculeLayoutGraph* getInstance();
+        MoleculeLayoutGraph* getInstance() override;
 
         void clear() override;
 
-        float calculateAngle(int v, int& v1, int& v2) const;
+        float calculateAngle(int v, int& v1, int& v2) const override;
 
-        void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& filter);
+        void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& filter) override;
 
-        void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing);
+        void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing) override;
 
-        void flipped()
+        void flipped() override
         {
             _flipped = true;
         };
@@ -374,13 +376,13 @@ namespace indigo
         // THERE
 
         // for whole graph
-        void _assignAbsoluteCoordinates(float bond_length);
+        void _assignAbsoluteCoordinates(float bond_length) override;
 
         // for components
-        void _calcMorganCodes();
+        void _calcMorganCodes() override;
 
         // assigning coordinates
-        void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph);
+        void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) override;
         bool _tryToFindPattern(int& fixed_component);
         void _assignFirstCycle(const Cycle& cycle);
 
@@ -396,10 +398,10 @@ namespace indigo
         void _splitCycle2(const Cycle& cycle, const Array<int>& cycle_vertex_types, ObjArray<Array<int>>& chains_ext) const;
 
         // border functions
-        void _getBorder(Cycle& border) const;
+        void _getBorder(Cycle& border) const override;
         void _splitBorder(int v1, int v2, Array<int>& part1v, Array<int>& part1e, Array<int>& part2v, Array<int>& part2e) const;
-        bool _isPointOutside(const Vec2f& p) const;
-        bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const;
+        bool _isPointOutside(const Vec2f& p) const override;
+        bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const override;
 
         static bool _edge_check(Graph& graph, int e_idx, void* context);
 
@@ -481,11 +483,11 @@ namespace indigo
         float get_radius();
         bool can_touch_to(MoleculeLayoutSmoothingSegment&);
 
-        bool is_start(int v)
+        bool is_start(int v) const
         {
             return v == _start_number;
         }
-        bool is_finish(int v)
+        bool is_finish(int v) const
         {
             return v == _finish_number;
         }
@@ -510,7 +512,7 @@ namespace indigo
         MoleculeLayoutSmoothingSegment* segment;
         TL_CP_DECL(Array<float>, edge_length);
 
-        bool is_simple_component(int i)
+        bool is_simple_component(int i) const
         {
             return segment == 0 || segment[i].get_layout_component_number() < 0;
         }
@@ -544,7 +546,7 @@ namespace indigo
         explicit MoleculeLayoutGraphSmart();
         ~MoleculeLayoutGraphSmart() override;
 
-        MoleculeLayoutGraph* getInstance();
+        MoleculeLayoutGraph* getInstance() override;
 
         void clear() override;
 
@@ -565,11 +567,11 @@ namespace indigo
             return _layout_vertices[idx].type != ELEMENT_NOT_DRAWN;
         }
 
-        float calculateAngle(int v, int& v1, int& v2) const;
+        float calculateAngle(int v, int& v1, int& v2) const override;
 
-        void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& vertex_filter);
+        void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& vertex_filter) override;
         void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& vertex_filter, Filter* edge_filter);
-        void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing);
+        void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing) override;
 
         void calcMorganCode();
         long getMorganCode();
@@ -650,7 +652,7 @@ namespace indigo
         void _gradient_step(Array<Vec2f>& point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, float coef,
                             Array<local_pair_ii>& touching_segments);
 
-        void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos);
+        void _attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos) override;
 
         // attaching cycles
         bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);
