@@ -65,6 +65,10 @@ namespace indigo
 
         void add(BaseMolecule& baseMolecule, int atom_idx, int type, int group, bool inverse_pyramid);
         void add(BaseMolecule& baseMolecule, int atom_idx, int type, int group, const int pyramid[4]);
+
+        void add_ignore(BaseMolecule& baseMolecule, int atom_idx, int type, int group, bool inverse_pyramid);
+        void add_ignore(BaseMolecule& baseMolecule, int atom_idx, int type, int group, const int pyramid[4]);
+
         void get(int i, int& atom_idx, int& type, int& group, int* pyramid) const;
         void remove(int idx);
 

@@ -2010,6 +2010,59 @@ void MoleculeRenderInternal::_renderBonds()
 
 void MoleculeRenderInternal::_renderMeta()
 {
+    const auto& md = _mol->metaData();
+    for (int i = 0; i < md.size(); ++i)
+    {
+        const auto& simple = *md[i];
+        switch (simple._class_id)
+        {
+        case KETSimpleObject::cid: {
+            const KETSimpleObject& ko = static_cast<const KETSimpleObject&>(simple);
+            _renderSimpleObject(ko);
+        }
+        break;
+        case KETTextObject::cid: {
+            const KETTextObject& ko = static_cast<const KETTextObject&>(simple);
+        }
+        break;
+        }
+    }
+}
+
+void MoleculeRenderInternal::_renderSimpleObject(const KETSimpleObject& simple)
+{
+    _cw.setLineWidth(_settings.bondLineWidth);
+
+    auto lb = simple._rect.leftBottom();
+    auto rt = simple._rect.rightTop();
+
+    switch (simple._mode)
+    {
+    case KETSimpleObject::EKETEllipse:
+        _cw.drawEllipse(lb, rt);
+        break;
+
+    case KETSimpleObject::EKETRectangle: {
+        Array<Vec2f> pts;
+        pts.push() = lb;
+        pts.push() = simple._rect.leftTop();
+        pts.push() = rt;
+        pts.push() = simple._rect.rightBottom();
+        pts.push() = lb;
+        _cw.drawPoly(pts);
+    }
+    break;
+
+    case KETSimpleObject::EKETLine: {
+        Array<Vec2f> pts;
+        auto& vec1 = pts.push();
+        auto& vec2 = pts.push();
+        vec1 = lb;
+        vec2 = rt;
+        _cw.drawPoly(pts);
+    }
+    break;
+    }
 }
 
 void MoleculeRenderInternal::_renderSGroups()

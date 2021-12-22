@@ -1273,6 +1273,27 @@ void MoleculeStereocenters::add(BaseMolecule& baseMolecule, int atom_idx, int ty
     _stereocenters.insert(atom_idx, center);
 }
 
+void MoleculeStereocenters::add_ignore(BaseMolecule& baseMolecule, int atom_idx, int type, int group, bool inverse_pyramid)
+{
+    int pyramid[4];
+    _restorePyramid(baseMolecule, atom_idx, pyramid, inverse_pyramid);
+    add_ignore(baseMolecule, atom_idx, type, group, pyramid);
+}
+
+void MoleculeStereocenters::add_ignore(BaseMolecule& baseMolecule, int atom_idx, int type, int group, const int pyramid[4])
+{
+    if (atom_idx < 0)
+        throw Error("stereocenter index is invalid");
+
+    _Atom center;
+
+    center.type = type;
+    center.group = group;
+    memcpy(center.pyramid, pyramid, 4 * sizeof(int));
+
+    _stereocenters.insert(atom_idx, center);
+}
+
 int MoleculeStereocenters::begin() const
 {
     return _stereocenters.begin();

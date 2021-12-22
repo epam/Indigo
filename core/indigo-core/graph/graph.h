@@ -132,6 +132,7 @@ namespace indigo
         {
         }
         int _class_id;
+        virtual GraphMetaObject* clone() const = 0;
     };
 
     class CycleBasis;

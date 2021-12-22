@@ -55,7 +55,8 @@ namespace indigo
         void restoreTransform();
         void resetTransform();
         void removeStoredTransform();
-        void drawRectangle(const Vec2f& p, const Vec2f& sz);
+        void drawRectangle(const Vec2f& v1, const Vec2f& sz);
+        void drawEllipse(const Vec2f& v1, const Vec2f& v2);
         void drawItemBackground(const RenderItem& item);
         void drawTextItemText(const TextItem& ti, bool idle);
         void drawTextItemText(const TextItem& ti, const Vec3f& color, bool idle);

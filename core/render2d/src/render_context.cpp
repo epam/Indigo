@@ -430,6 +430,19 @@ void RenderContext::drawRectangle(const Vec2f& p, const Vec2f& sz)
     cairoCheckStatus();
 }
 
+void RenderContext::drawEllipse(const Vec2f& v1, const Vec2f& v2)
+{
+    auto width = v2.x - v1.x;
+    auto height = v2.y - v1.y;
+    cairo_matrix_t save_matrix;
+    cairo_get_matrix(_cr, &save_matrix);
+    cairo_translate(_cr, v1.x + width / 2.0, v1.y + height / 2.0);
+    cairo_scale(_cr, 1, height / width);
+    cairo_translate(_cr, -v1.x - width / 2.0, -v1.y - height / 2.0);
+    cairo_arc(_cr, v1.x + width / 2.0, v1.y + height / 2.0, width / 2.0, 0, 2 * M_PI);
+    cairo_set_matrix(_cr, &save_matrix);
+}
+
 void RenderContext::drawItemBackground(const RenderItem& item)
 {
     cairo_rectangle(_cr, item.bbp.x, item.bbp.y, item.bbsz.x, item.bbsz.y);

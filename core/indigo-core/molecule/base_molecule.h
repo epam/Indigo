@@ -377,6 +377,8 @@ namespace indigo
 
         void addStereocenters(int atom_idx, int type, int group, const int pyramid[4]);
         void addStereocenters(int atom_idx, int type, int group, bool inverse_pyramid);
+        void addStereocentersIgnoreBad(int atom_idx, int type, int group, bool inverse_pyramid);
+
         void removeAtomsStereocenters(const Array<int>& indices);
         void removeBondsStereocenters(const Array<int>& indices);
 
