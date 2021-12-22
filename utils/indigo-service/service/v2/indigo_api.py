@@ -275,30 +275,25 @@ def load_moldata(molstr, indigo=None, options={}, query=False, mime_type=None, s
         md.is_rxn = False
         md.is_query = False
     else:
-        md.is_rxn = is_rxn(molstr)
-        if mime_type == 'chemical/x-daylight-smarts':
-            md.struct = indigo.loadReactionSmarts(molstr) if md.is_rxn else indigo.loadSmarts(molstr)
-            md.is_query = True
-        else:
+        try:
+            md.struct = indigo.loadMolecule(molstr)
+            md.is_query = False
+        except:
             try:
-                md.struct = indigo.loadMolecule(molstr)
-                md.is_query = False
+                md.struct = indigo.loadQueryMolecule(molstr)
+                md.is_query = True
             except:
                 try:
-                    md.struct = indigo.loadQueryMolecule(molstr)
-                    md.is_query = True
+                    md.struct = indigo.loadReaction(molstr)
+                    md.is_rxn = True
+                    md.is_query = False
                 except:
                     try:
-                        md.struct = indigo.loadReaction(molstr)
+                        md.struct = indigo.loadQueryReaction(molstr)
                         md.is_rxn = True
-                        md.is_query = False
+                        md.is_query = True
                     except:
-                        try:
-                            md.struct = indigo.loadQueryReaction(molstr)
-                            md.is_rxn = True
-                            md.is_query = True
-                        except:
-                            raise HttpException("ket data not recognized as molecule, query, reaction or reaction query", 400)
+                        raise HttpException("ket data not recognized as molecule, query, reaction or reaction query", 400)
     return md
 
 
@@ -1086,8 +1081,16 @@ def render():
         'image/svg+xml': 'svg',
         'image/png': 'png',
         'application/pdf': 'pdf',
-        'image/png;base64': 'png'
+        'image/png;base64': 'png',
+        'image/svg;base64': 'svg'
     }
+    
+    render_format_dict_r = {
+        'png':'image/png;base64',
+        'svg':'image/svg;base64',
+        'pdf':'application/pdf;base64'
+    }
+    
     if request.method == 'POST':
         LOG_DATA('[REQUEST] /render', request.headers['Content-Type'], request.headers['Accept'], request.data)
         try:
@@ -1138,15 +1141,20 @@ def render():
 
     indigo = md.struct.dispatcher
     indigo.setOption("render-coloring", True)
-    indigo.setOption("render-output-format", render_format_dict[data['output_format']])
     indigo.setOption("render-image-width", data['width'])
     indigo.setOption("render-image-height", data['height'])
+    content_type = data['output_format']
+    if 'render-output-format' in data['options']:
+        rof = data['options']['render-output-format']
+        content_type=render_format_dict_r[rof]
+    else:
+        indigo.setOption("render-output-format", render_format_dict[content_type])
+
     result = indigo.renderer.renderToBuffer(md.struct)
     result = result.tostring() if sys.version_info < (3, 2) else result.tobytes()
+    
+    if 'base64' in content_type:
+        result = base64.b64encode(result)
 
-    if 'image/png;base64' in data['output_format']:
-        png_b64 = base64.b64encode(result)
-        result = 'data:image/png;base64, {}'.format(str(png_b64, 'ascii'))
-
-    indigo_api_logger.info("[RESPONSE] Content-Type: {0}".format(data['output_format']))
-    return result, 200, {'Content-Type': data['output_format']}
+    indigo_api_logger.info("[RESPONSE] Content-Type: {0}, Content-Size: {1}".format(content_type, len(result)))
+    return result, 200, {'Content-Type': content_type}
