@@ -25,7 +25,9 @@
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
 #include "molecule/molecule_fingerprint.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_saver.h"
+#include "reaction/reaction_json_saver.h"
 #include "reaction/rxnfile_saver.h"
 
 #include "indigo_abbreviations.h"
@@ -83,6 +85,8 @@ void Indigo::init()
     molfile_saving_skip_date = false;
 
     molfile_saving_add_stereo_desc = false;
+
+    json_saving_add_stereo_desc = false;
 
     molfile_saving_add_implicit_h = true;
 
@@ -148,6 +152,16 @@ void Indigo::initMolfileSaver(MolfileSaver& saver)
     saver.add_stereo_desc = molfile_saving_add_stereo_desc;
     saver.add_implicit_h = molfile_saving_add_implicit_h;
     saver.chiral_flag = molfile_saving_chiral_flag;
+}
+
+void Indigo::initMoleculeJsonSaver(MoleculeJsonSaver& saver)
+{
+    saver._add_stereo_desc = json_saving_add_stereo_desc;
+}
+
+void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver)
+{
+    saver._add_stereo_desc = json_saving_add_stereo_desc;
 }
 
 void Indigo::initRxnfileSaver(RxnfileSaver& saver)

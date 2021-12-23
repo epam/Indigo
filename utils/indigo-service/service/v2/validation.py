@@ -27,6 +27,7 @@ class IndigoRendererSchema(InputFormatSchema):
         "image/png",
         "application/pdf",
         "image/png;base64",
+        "image/svg;base64",
     )
     output_format = fields.Str(
         missing="image/svg+xml", validate=OneOf(images_formats)
