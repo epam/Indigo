@@ -23,10 +23,10 @@
 #include "layout/molecule_layout.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
-#include "molecule/molecule_cip_calculator.h"
 
 using namespace indigo;
 using namespace rapidjson;

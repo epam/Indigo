@@ -25,10 +25,10 @@
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
 #include "molecule/molecule_fingerprint.h"
-#include "molecule/molfile_saver.h"
-#include "reaction/rxnfile_saver.h"
 #include "molecule/molecule_json_saver.h"
+#include "molecule/molfile_saver.h"
 #include "reaction/reaction_json_saver.h"
+#include "reaction/rxnfile_saver.h"
 
 #include "indigo_abbreviations.h"
 
