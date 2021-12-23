@@ -828,6 +828,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
 {
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
+    MoleculeCIPCalculator mcc;
+    mcc.updateCIPStereoDescriptors(*mol, _add_stereo_desc);
 
     if (!BaseMolecule::hasCoord(*mol))
     {
@@ -974,9 +976,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
 
         if (_pmol)
             _pmol->setIgnoreBadValenceFlag(true);
-
-        MoleculeCIPCalculator mcc;
-        mcc.updateCIPStereoDescriptors(*component, _add_stereo_desc);
 
         if (component->vertexCount())
         {
