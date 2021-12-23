@@ -1452,12 +1452,14 @@ CEXPORT const char* indigoJson(int item)
         if (IndigoBaseMolecule::is(obj))
         {
             MoleculeJsonSaver jn(out);
+            self.initMoleculeJsonSaver(jn);
             BaseMolecule& bmol = obj.getBaseMolecule();
             jn.saveMolecule(bmol);
         }
         else if (IndigoBaseReaction::is(obj))
         {
             ReactionJsonSaver jn(out);
+            self.initReactionJsonSaver(jn);
             BaseReaction& br = obj.getBaseReaction();
             jn.saveReaction(br);
         }

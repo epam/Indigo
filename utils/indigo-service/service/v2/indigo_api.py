@@ -1073,6 +1073,7 @@ def calculate_cip():
         data["struct"], mime_type=data["input_format"], options=data["options"]
     )
     md.struct.dispatcher.setOption("json-saving-add-stereo-desc", True)
+    md.struct.dispatcher.setOption("molfile-saving-add-stereo-desc", True)
     return get_response(
         md, data["output_format"], data["json_output"], data["options"]
     )
