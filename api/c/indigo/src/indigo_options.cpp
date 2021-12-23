@@ -287,6 +287,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerInt("molfile-saving-chiral-flag", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_chiral_flag));
     mgr->setOptionHandlerBool("molfile-saving-skip-date", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_skip_date));
     mgr->setOptionHandlerBool("molfile-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_stereo_desc));
+    mgr->setOptionHandlerBool("json-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_add_stereo_desc));
     mgr->setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
     mgr->setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));
     mgr->setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);

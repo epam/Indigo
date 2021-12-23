@@ -302,7 +302,7 @@ namespace indigo
         const IndigoSession session;
         indigoSetOptions(options);
         IndigoKetcherObject iko = loadMoleculeOrReaction(data.c_str());
-        return iko.toString(options, outputFormat.size() ? outputFormat : "molfile");
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
     std::string aromatize(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
@@ -311,7 +311,7 @@ namespace indigo
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
         _checkResult(indigoAromatize(iko.id()));
-        return iko.toString(options, outputFormat.size() ? outputFormat : "molfile");
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
     std::string dearomatize(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
@@ -320,7 +320,7 @@ namespace indigo
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
         _checkResult(indigoDearomatize(iko.id()));
-        return iko.toString(options, outputFormat.size() ? outputFormat : "molfile");
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
     std::string layout(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
@@ -329,7 +329,7 @@ namespace indigo
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
         _checkResult(indigoLayout(iko.id()));
-        return iko.toString(options, outputFormat.size() ? outputFormat : "molfile");
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
     std::string clean2d(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options,
@@ -340,7 +340,7 @@ namespace indigo
         auto iko = loadMoleculeOrReaction(data.c_str());
         const auto& subiko = (selected_atoms.empty()) ? iko : iko.substructure(selected_atoms);
         _checkResult(indigoClean2d(subiko.id()));
-        return iko.toString(options, outputFormat.size() ? outputFormat : "molfile");
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
     std::string automap(const std::string& data, const std::string& mode, const std::string& outputFormat, const std::map<std::string, std::string>& options)
@@ -349,7 +349,7 @@ namespace indigo
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
         _checkResult(indigoAutomap(iko.id(), mode.c_str()));
-        return iko.toString(options, outputFormat.size() ? outputFormat : "molfile");
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
     std::string check(const std::string& data, const std::string& properties, const std::map<std::string, std::string>& options)
@@ -364,9 +364,9 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        indigoSetOption("molfile-saving-add-stereo-desc", "true");
+        indigoSetOption("json-saving-add-stereo-desc", "true");
         const auto iko = loadMoleculeOrReaction(data.c_str());
-        return iko.toString(options, outputFormat.size() ? outputFormat : "molfile");
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
     void qmol2mol(IndigoKetcherObject& iko, const std::set<int>& selected_set)

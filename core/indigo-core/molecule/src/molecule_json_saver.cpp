@@ -26,6 +26,7 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
+#include "molecule/molecule_cip_calculator.h"
 
 using namespace indigo;
 using namespace rapidjson;
@@ -43,7 +44,7 @@ void dumpAtoms(BaseMolecule& mol)
     printf("\n");
 }
 
-MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output), _pmol(nullptr), _pqmol(nullptr)
+MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output), _pmol(nullptr), _pqmol(nullptr), _add_stereo_desc(false)
 {
 }
 
@@ -973,6 +974,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
 
         if (_pmol)
             _pmol->setIgnoreBadValenceFlag(true);
+
+        MoleculeCIPCalculator mcc;
+        mcc.updateCIPStereoDescriptors(*component, _add_stereo_desc);
 
         if (component->vertexCount())
         {

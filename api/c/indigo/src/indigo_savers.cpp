@@ -563,6 +563,7 @@ CEXPORT int indigoSaveJson(int item, int output)
         if (IndigoBaseMolecule::is(obj))
         {
             MoleculeJsonSaver saver(out);
+            self.initMoleculeJsonSaver(saver);
             BaseMolecule& mol = obj.getBaseMolecule();
             saver.saveMolecule(mol);
             out.flush();
@@ -571,6 +572,7 @@ CEXPORT int indigoSaveJson(int item, int output)
         else if (IndigoBaseReaction::is(obj))
         {
             ReactionJsonSaver saver(out);
+            self.initReactionJsonSaver(saver);
             BaseReaction& rxn = obj.getBaseReaction();
             saver.saveReaction(rxn);
             out.flush();

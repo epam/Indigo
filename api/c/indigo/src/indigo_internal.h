@@ -60,6 +60,8 @@ namespace indigo
     class MolfileSaver;
     class RxnfileSaver;
     class PropertiesMap;
+    class MoleculeJsonSaver;
+    class ReactionJsonSaver;
 
     typedef ObjArray<PropertiesMap> MonomersProperties;
 } // namespace indigo
@@ -311,7 +313,7 @@ public:
     bool molfile_saving_skip_date;
     bool molfile_saving_add_stereo_desc;
     bool molfile_saving_add_implicit_h;
-
+    bool json_saving_add_stereo_desc;
     bool smiles_saving_write_name;
     bool smiles_saving_smarts_mode;
 
@@ -334,6 +336,8 @@ public:
 
     void initMolfileSaver(MolfileSaver& saver);
     void initRxnfileSaver(RxnfileSaver& saver);
+    void initMoleculeJsonSaver(MoleculeJsonSaver& saver);
+    void initReactionJsonSaver(ReactionJsonSaver& saver);
 
     bool preserve_ordering_in_serialize;
 
