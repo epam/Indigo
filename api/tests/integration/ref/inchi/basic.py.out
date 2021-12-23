@@ -39,7 +39,7 @@ InChI=1S/Mc
 InChI=1S/Ts
 InChI=1S/Og
 *** Empty input structure test ***
-inchi-wrapper: Indigo-InChI: InChI generation failed: Empty structure. Code: 2.
+InChI=1S//
 *** Load Marvin InChI test ***
 
   -INDIGO-01000000002D

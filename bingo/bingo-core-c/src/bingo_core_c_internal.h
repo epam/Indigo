@@ -102,7 +102,8 @@ namespace indigo
                 _EXACT,
                 _SIMILARITY,
                 _GROSS
-            } mango_search_type, ringo_search_type;
+            } mango_search_type,
+                ringo_search_type;
 
             bool mango_search_type_non;
 

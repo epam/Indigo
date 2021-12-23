@@ -22,10 +22,18 @@ class InputFormatSchema(Schema):
 
 # TODO: Move structure loading to validation phase
 class IndigoRendererSchema(InputFormatSchema):
-    images_formats = ('image/svg+xml', 'image/png', 'application/pdf', 'image/png;base64','image/svg;base64')
-    output_format = fields.Str(missing='image/svg+xml', validate=OneOf(images_formats))
-    width = fields.Str(missing='200px')
-    height = fields.Str(missing='200px')
+    images_formats = (
+        "image/svg+xml",
+        "image/png",
+        "application/pdf",
+        "image/png;base64",
+        "image/svg;base64",
+    )
+    output_format = fields.Str(
+        missing="image/svg+xml", validate=OneOf(images_formats)
+    )
+    width = fields.Str(missing="200px")
+    height = fields.Str(missing="200px")
     struct = fields.Str(missing=None)
     query = fields.Str(missing=None)
     options = fields.Dict(missing={})
