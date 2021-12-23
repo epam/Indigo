@@ -365,6 +365,7 @@ namespace indigo
         const IndigoSession session;
         indigoSetOptions(options);
         indigoSetOption("json-saving-add-stereo-desc", "true");
+        indigoSetOption("molfile-saving-add-stereo-desc", "true");
         const auto iko = loadMoleculeOrReaction(data.c_str());
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
