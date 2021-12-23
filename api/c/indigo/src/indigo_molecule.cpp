@@ -56,32 +56,24 @@ IndigoMolecule::IndigoMolecule() : IndigoBaseMolecule(MOLECULE)
 
 bool IndigoBaseMolecule::is(const IndigoObject& object)
 {
-    int type = object.type;
-
-    const static int myTypes[] =
+    switch (object.type)
     {
-        MOLECULE,
-        QUERY_MOLECULE,
-        REACTION_MOLECULE,
-        SCAFFOLD,
-        RGROUP_FRAGMENT,
-        RDF_MOLECULE,
-        SMILES_MOLECULE,
-        CML_MOLECULE,
-        JSON_MOLECULE,
-        CDX_MOLECULE,
-        SUBMOLECULE
-    };
+    case MOLECULE:
+    case QUERY_MOLECULE:
+    case REACTION_MOLECULE:
+    case SCAFFOLD:
+    case RGROUP_FRAGMENT:
+    case RDF_MOLECULE:
+    case SMILES_MOLECULE:
+    case CML_MOLECULE:
+    case JSON_MOLECULE:
+    case CDX_MOLECULE:
+    case SUBMOLECULE:
+        return true;
 
-    for (const auto t : myTypes)
-    {
-        if (type == t)
-            return true;
-    }
-
-    if (type == ARRAY_ELEMENT)
+    case ARRAY_ELEMENT:
         return is(((IndigoArrayElement&)object).get());
-
+    }
     return false;
 }
 
