@@ -41,7 +41,7 @@ namespace com.epam.indigo
                 // Check that the session is still alive
                 // (.NET has no problem disposing referenced
                 // objects before the objects that reference to them)
-                if (dispatcher.getSID() >= 0)
+                if (dispatcher.hasSID())
                 {
                     dispatcher.setSessionID();
                     dispatcher.free(self);
@@ -238,10 +238,9 @@ namespace com.epam.indigo
 
         public ReactingCenter reactingCenter(IndigoObject bond)
         {
-            int c;
             dispatcher.setSessionID();
 
-            if (dispatcher.checkResult(IndigoLib.indigoGetReactingCenter(self, bond.self, &c)) == 1)
+            if (dispatcher.checkResult(IndigoLib.indigoGetReactingCenter(self, bond.self, out var c)) == 1)
             {
                 return (ReactingCenter)c;
             }
@@ -412,10 +411,9 @@ namespace com.epam.indigo
 
         public int? charge()
         {
-            int c;
             dispatcher.setSessionID();
 
-            if (dispatcher.checkResult(IndigoLib.indigoGetCharge(self, &c)) == 1)
+            if (dispatcher.checkResult(IndigoLib.indigoGetCharge(self, out var c)) == 1)
             {
                 return c;
             }
@@ -425,10 +423,9 @@ namespace com.epam.indigo
 
         public int? explicitValence()
         {
-            int c;
             dispatcher.setSessionID();
 
-            if (dispatcher.checkResult(IndigoLib.indigoGetExplicitValence(self, &c)) == 1)
+            if (dispatcher.checkResult(IndigoLib.indigoGetExplicitValence(self, out var c)) == 1)
             {
                 return c;
             }
@@ -438,10 +435,9 @@ namespace com.epam.indigo
 
         public int? radicalElectrons()
         {
-            int c;
             dispatcher.setSessionID();
 
-            if (dispatcher.checkResult(IndigoLib.indigoGetRadicalElectrons(self, &c)) == 1)
+            if (dispatcher.checkResult(IndigoLib.indigoGetRadicalElectrons(self, out var c)) == 1)
             {
                 return c;
             }
@@ -451,10 +447,9 @@ namespace com.epam.indigo
 
         public int? radical()
         {
-            int c;
             dispatcher.setSessionID();
 
-            if (dispatcher.checkResult(IndigoLib.indigoGetRadical(self, &c)) == 1)
+            if (dispatcher.checkResult(IndigoLib.indigoGetRadical(self, out var c)) == 1)
             {
                 return c;
             }
@@ -500,10 +495,9 @@ namespace com.epam.indigo
 
         public int? countHydrogens()
         {
-            int h;
             dispatcher.setSessionID();
 
-            if (dispatcher.checkResult(IndigoLib.indigoCountHydrogens(self, &h)) == 1)
+            if (dispatcher.checkResult(IndigoLib.indigoCountHydrogens(self, out var h)) == 1)
             {
                 return h;
             }
@@ -1400,8 +1394,7 @@ namespace com.epam.indigo
         public int[] symmetryClasses()
         {
             dispatcher.setSessionID();
-            int count;
-            int* classes = dispatcher.checkResult(IndigoLib.indigoSymmetryClasses(self, &count));
+            int* classes = dispatcher.checkResult(IndigoLib.indigoSymmetryClasses(self, out var count));
 
             int[] res = new int[count];
             for (int i = 0; i < count; ++i)
@@ -1584,8 +1577,7 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             byte* buf;
-            int bufsize;
-            dispatcher.checkResult(IndigoLib.indigoSerialize(self, &buf, &bufsize));
+            dispatcher.checkResult(IndigoLib.indigoSerialize(self, &buf, out var bufsize));
 
             byte[] res = new byte[bufsize];
             for (int i = 0; i < bufsize; ++i)
@@ -1988,9 +1980,8 @@ namespace com.epam.indigo
         public byte[] toBuffer()
         {
             byte* buf;
-            int bufsize;
             dispatcher.setSessionID();
-            dispatcher.checkResult(IndigoLib.indigoToBuffer(self, &buf, &bufsize));
+            dispatcher.checkResult(IndigoLib.indigoToBuffer(self, &buf, out var bufsize));
             byte[] res = new byte[bufsize];
             for (int i = 0; i < bufsize; ++i)
             {

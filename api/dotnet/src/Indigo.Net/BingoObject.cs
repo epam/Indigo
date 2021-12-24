@@ -118,9 +118,8 @@ namespace com.epam.indigo
         /// <returns>Estimated remainin search time</returns>
         public float estimateRemainingTime()
         {
-            float esimated_time;
             _indigo.setSessionID();
-            Bingo.checkResult(BingoLib.bingoEstimateRemainingTime(_id, &esimated_time));
+            Bingo.checkResult(BingoLib.bingoEstimateRemainingTime(_id, out var esimated_time));
             return esimated_time;
         }
     }

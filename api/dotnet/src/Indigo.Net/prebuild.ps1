@@ -21,7 +21,7 @@ function copyOrTouchIfNotExists ([String]  ${srcLibRoot}, [String] ${libPath}, [
     }
 }
 
-${distLibFolder} = [IO.Path]::GetFullPath("${PSScriptRoot}/../../../dist/lib")
+${distLibFolder} = [IO.Path]::GetFullPath("${PSScriptRoot}/../../../../dist/lib")
 ${resourceFolder} = [IO.Path]::GetFullPath("${PSScriptRoot}/runtimes")
 
 Remove-Item ${resourceFolder} -Recurse -Force -ErrorAction Ignore

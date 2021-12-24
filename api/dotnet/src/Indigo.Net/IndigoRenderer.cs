@@ -10,7 +10,6 @@ namespace com.epam.indigo
     public unsafe class IndigoRenderer : IDisposable
     {
         private Indigo _indigo;
-        private IndigoRendererLib IndigoRendererLib;
         private bool initialized;
 
         public IndigoRenderer(Indigo indigo)
@@ -50,8 +49,7 @@ namespace com.epam.indigo
             {
                 _indigo.checkResult(IndigoRendererLib.indigoRender(obj.self, bufh.self));
                 byte* buf;
-                int bufsize;
-                _indigo.checkResult(IndigoLib.indigoToBuffer(bufh.self, &buf, &bufsize));
+                _indigo.checkResult(IndigoLib.indigoToBuffer(bufh.self, &buf, out var bufsize));
 
                 byte[] res = new byte[bufsize];
                 for (int i = 0; i < bufsize; ++i)
@@ -63,7 +61,7 @@ namespace com.epam.indigo
         public void renderToHDC(IndigoObject obj, IntPtr hdc, bool printing)
         {
             _indigo.setSessionID();
-            int hdch = _indigo.checkResult(IndigoRendererLib.indigoRenderWriteHDC((void*)hdc, printing ? 1 : 0));
+            int hdch = _indigo.checkResult(IndigoRendererLib.indigoRenderWriteHDC(hdc, printing ? 1 : 0));
             _indigo.checkResult(IndigoRendererLib.indigoRender(obj.self, hdch));
         }
 

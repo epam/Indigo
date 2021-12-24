@@ -1,101 +1,103 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.IO;
+using FluentAssertions;
+using Xunit;
 
 namespace com.epam.indigo
 {
-    [TestClass]
     public class IndigoTest
     {
-        [TestMethod]
-        public void TestIndigoVersion()
+        [Fact]
+        public void Indigo_Version_Should_NotBeNull()
         {
             using var indigo = new Indigo();
-            Assert.AreNotEqual(indigo.version(), null);
+            
+            indigo.version().Should().NotBe(null);
         }
 
-        [TestMethod]
-        public void TestIndigoGetOneBitsList()
+        [Fact]
+        public void Indigo_Fingerprint_Should_GenerateOneBitsList()
         {
             using var indigo = new Indigo();
-            // var indigo = new Indigo();
             var indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
 
-            Assert.AreEqual(
-                "1698 1719 1749 1806 1909 1914 1971 2056",
-                indigoObject.fingerprint().oneBitsList(),
-                "same one bits as in string 1698 1719 1749 1806 1909 1914 1971 205");
+            indigoObject.fingerprint().oneBitsList().Should().Be("1698 1719 1749 1806 1909 1914 1971 2056");
         }
 
-        [TestMethod]
-        public void TestIndigoSmiles()
+        [Fact]
+        public void Indigo_Should_GenerateSmiles()
         {
             using var indigo = new Indigo();
             var molecule = indigo.loadMolecule("c1ccccc1");
-            Assert.AreEqual(molecule.smiles(), "c1ccccc1");
+            
+            molecule.smiles().Should().Be("c1ccccc1");
         }
 
-        [TestMethod]
-        public void TestIndigoMultipleInstances()
+        [Fact]
+        public void Indigo_Should_WorkInMultiInstanceMode()
         {
             using var indigo1 = new Indigo();
             using var indigo2 = new Indigo();
-            Assert.AreNotEqual(indigo1.getSID(), indigo2.getSID());
+            indigo1.getSID().Should().NotBe(indigo2.getSID());
+            
             var molecule1 = indigo1.loadMolecule("c1ccccc1");
             var molecule2 = indigo2.loadMolecule("c1ccccc1");
-            Assert.AreEqual(molecule1.smiles(), molecule2.canonicalSmiles());
+            var smiles = molecule1.smiles();
+            var canonicalSmiles = molecule2.canonicalSmiles();
+            smiles.Should().Be(canonicalSmiles);
         }
 
-        [TestMethod]
-        public void IndigoInchiTest()
+        [Fact]
+        public void IndigoInchi_Should_GenerateInchi()
         {
             using var indigo = new Indigo();
             using var indigoInchi = new IndigoInchi(indigo);
             var m = indigo.loadMolecule("C");
-            Assert.AreEqual("InChI=1S/CH4/h1H4", indigoInchi.getInchi(m));
+            
+            indigoInchi.getInchi(m).Should().Be("InChI=1S/CH4/h1H4");
         }
 
-        [TestMethod]
-        public void IndigoRendererTest()
+        [Fact]
+        public void IndigoRenderer_Should_RenderToBuffer()
         {
             using var indigo = new Indigo();
             using var indigoRenderer = new IndigoRenderer(indigo);
-            indigo.setOption("render-output-format", "png");
-            var m = indigo.loadMolecule("C");
-            Assert.IsTrue(indigoRenderer.renderToBuffer(m).Length > 0);
+            indigo.setOption("render-output-format", "svg");
+            var m = indigo.loadMolecule("C1=CC=CC=C1");
+
+            indigoRenderer.renderToBuffer(m).Length.Should().BePositive();
         }
 
-        [TestMethod]
-        public void TestBingo()
+        [Fact]
+        public void Bingo_DatabaseFile_Should_SearchSub()
         {
+            var testDbFolder = Path.Combine(Path.GetTempPath(), "indigo-db-test");
             try
             {
                 using var indigo = new Indigo();
-                using var bingo = Bingo.createDatabaseFile(indigo, "test.db", "molecule");
+                using var bingoDb = Bingo.createDatabaseFile(indigo, testDbFolder, "molecule");
                 var m = indigo.loadMolecule("C");
-                bingo.insert(m);
+                bingoDb.insert(m);
                 var q = indigo.loadQueryMolecule("C");
-                var bingoObject = bingo.searchSub(q);
+                var bingoObject = bingoDb.searchSub(q);
                 var count = 0;
                 while (bingoObject.next())
                 {
                     count++;
                 }
-                Assert.AreEqual(count, 1);
-                bingo.close();
-                Assert.IsTrue(bingo.version().Length > 0);
+
+                count.Should().Be(1);
             }
             finally
             {
-                if (File.Exists("test.db"))
+                if (Directory.Exists(testDbFolder))
                 {
-                    File.Delete("test.db");
+                    Directory.Delete(testDbFolder, true);
                 }
             }
         }
 
-        [TestMethod]
-        public void TestUtf8()
+        [Fact]
+        public void Indigo_Cml_Should_SupportUtf8()
         {
             const string molfile = @"
   Ketcher 02051318482D 1   1.00000     0.00000     0
@@ -121,8 +123,9 @@ M  END
             using var indigo = new Indigo();
             var m = indigo.loadMolecule(molfile);
             var cml = m.cml();
-            Assert.IsTrue(cml.Contains("бензол"));
-            Assert.IsFalse(cml.Contains("??????"));
+            
+            cml.Should().Contain("бензол");
+            cml.Should().NotContain("??????");
         }
     }
 }

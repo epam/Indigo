@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace com.epam.indigo
 {
@@ -61,7 +60,7 @@ namespace com.epam.indigo
         public const uint CSTRING_MAX_SIZE = 1000000000;
 
 
-        private long _sid = -1;
+        private ulong? _sid;
         private readonly string _dllpath;
         private readonly int _dll_loader_id;
 
@@ -72,16 +71,16 @@ namespace com.epam.indigo
 
         public void Dispose()
         {
-            if (_sid >= 0)
+            if (_sid.HasValue)
             {
-                IndigoLib.indigoReleaseSessionId(_sid);
-                _sid = -1;
+                IndigoLib.indigoReleaseSessionId(_sid.Value);
+                _sid = null;
             }
         }
 
         public void setSessionID()
         {
-            IndigoLib.indigoSetSessionId(_sid);
+            IndigoLib.indigoSetSessionId(getSID());
         }
 
         public void dbgBreakpoint()
@@ -114,50 +113,27 @@ namespace com.epam.indigo
             checkResult(IndigoLib.indigoDbgResetProfiling(whole_session ? 1 : 0));
         }
 
-        private static int strLen(byte* input)
-        {
-            var res = 0;
-            do
-            {
-                if (input[res] == 0)
-                {
-                    break;
-                }
-                res++;
-            } while (res < CSTRING_MAX_SIZE);
-
-            if (res == CSTRING_MAX_SIZE)
-            {
-                throw new ArgumentException("Could not find terminate zero in c-style string");
-            }
-
-            return res;
-        }
-
-        public static string bytePtrToStringUtf8(byte* input)
-        {
-            int len = strLen(input);
-            byte[] bytes = new byte[len];
-            Marshal.Copy((IntPtr)input, bytes, 0, len);
-            return Encoding.UTF8.GetString(bytes);
-        }
-
-        private static void _handleError(byte* message, Indigo self)
-        {
-            throw new IndigoException(bytePtrToStringUtf8(message));
-        }
-
         private void init(string lib_path)
         {
             _sid = IndigoLib.indigoAllocSessionId();
             setSessionID();
         }
 
+        public string checkResult(string result)
+        {
+            if (result == null)
+            {
+                throw new IndigoException(IndigoLib.indigoGetLastError());
+            }
+
+            return result;
+        }
+
         public float checkResult(float result)
         {
             if (result < 0)
             {
-                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(IndigoLib.indigoGetLastError());
             }
 
             return result;
@@ -167,7 +143,7 @@ namespace com.epam.indigo
         {
             if (result < 0)
             {
-                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(IndigoLib.indigoGetLastError());
             }
 
             return result;
@@ -177,27 +153,17 @@ namespace com.epam.indigo
         {
             if (result < 0)
             {
-                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(IndigoLib.indigoGetLastError());
             }
 
             return result;
-        }
-
-        public string checkResult(byte* result)
-        {
-            if (result == null)
-            {
-                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
-            }
-
-            return bytePtrToStringUtf8(result);
         }
 
         public float* checkResult(float* result)
         {
             if (result == null)
             {
-                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(IndigoLib.indigoGetLastError());
             }
 
             return result;
@@ -207,15 +173,20 @@ namespace com.epam.indigo
         {
             if (result == null)
             {
-                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
+                throw new IndigoException(IndigoLib.indigoGetLastError());
             }
 
             return result;
         }
 
-        public long getSID()
+        public ulong getSID()
         {
-            return _sid;
+            return _sid ?? throw new IndigoException("Session is not initialized");
+        }
+
+        public bool hasSID()
+        {
+            return _sid.HasValue;
         }
 
         public string version()
@@ -303,8 +274,7 @@ namespace com.epam.indigo
         public int? getOptionInt(string option)
         {
             setSessionID();
-            int res;
-            if (checkResult(IndigoLib.indigoGetOptionInt(option, &res)) == 1)
+            if (checkResult(IndigoLib.indigoGetOptionInt(option, out var res)) == 1)
             {
                 return res;
             }
@@ -314,16 +284,14 @@ namespace com.epam.indigo
         public bool getOptionBool(string option)
         {
             setSessionID();
-            int res;
-            checkResult(IndigoLib.indigoGetOptionBool(option, &res));
+            checkResult(IndigoLib.indigoGetOptionBool(option, out var res));
             return res > 0;
         }
 
         public float? getOptionFloat(string option)
         {
             setSessionID();
-            float res;
-            if (checkResult(IndigoLib.indigoGetOptionFloat(option, &res)) == 1)
+            if (checkResult(IndigoLib.indigoGetOptionFloat(option, out var res)) == 1)
             {
                 return res;
             }

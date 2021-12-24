@@ -53,7 +53,7 @@ namespace com.epam.indigo
         {
             if (result < 0)
             {
-                throw new BingoException(Indigo.bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
+                throw new BingoException(IndigoLib.indigoGetLastError());
             }
 
             return result;
@@ -63,7 +63,7 @@ namespace com.epam.indigo
         {
             if (result < 0.0)
             {
-                throw new BingoException(Indigo.bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
+                throw new BingoException(IndigoLib.indigoGetLastError());
             }
 
             return result;
@@ -73,20 +73,10 @@ namespace com.epam.indigo
         {
             if (result == null)
             {
-                throw new BingoException(Indigo.bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
+                throw new BingoException(IndigoLib.indigoGetLastError());
             }
 
             return result;
-        }
-
-        public static string checkResult(byte* result)
-        {
-            if (result == null)
-            {
-                throw new BingoException(Indigo.bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
-            }
-
-            return Indigo.bytePtrToStringUtf8(result);
         }
 
         /// <summary>
