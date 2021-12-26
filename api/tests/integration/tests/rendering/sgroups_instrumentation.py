@@ -1,8 +1,8 @@
+import errno
 import os
 import sys
-import errno
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 from rendering import *
 
@@ -17,7 +17,9 @@ if not os.path.exists(joinPathPy("out", __file__)):
         if e.errno != errno.EEXIST:
             raise
 
-saver = indigo.createFileSaver(joinPathPy("out/sgroups-instrumentation.sdf", __file__), "sdf")
+saver = indigo.createFileSaver(
+    joinPathPy("out/sgroups-instrumentation.sdf", __file__), "sdf"
+)
 
 
 def testSGroupsInstrumentation():
@@ -37,7 +39,7 @@ def testSGroupsInstrumentation():
     saver.append(mol2)
 
     sgroup2.setDataSGroupXY(13, 1)
-    sgroup3.setDataSGroupXY(.3, .3, "relative")
+    sgroup3.setDataSGroupXY(0.3, 0.3, "relative")
     sgroup4.setDataSGroupXY(5, 6, "absolute")
     print(mol.molfile())
     saver.append(mol)
@@ -53,7 +55,9 @@ testSGroupsInstrumentation()
 print("****** Create/Modify/Remove S-groups ********")
 indigo.setOption("molfile-saving-mode", "2000")
 m = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/sgroups-base.mol"))
-t = indigo.loadQueryMoleculeFromFile(dataPath("molecules/sgroups/sgroups-template.mol"))
+t = indigo.loadQueryMoleculeFromFile(
+    dataPath("molecules/sgroups/sgroups-template.mol")
+)
 matcher = indigo.substructureMatcher(m)
 print(matcher.countMatches(t))
 
@@ -78,7 +82,9 @@ print(m.molfile())
 
 print("****** Get/Set Multiplier ********")
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(dataPath("molecules/basic/all_features_mol.mol"))
+m = indigo.loadMoleculeFromFile(
+    dataPath("molecules/basic/all_features_mol.mol")
+)
 print(m.molfile())
 for sg in m.iterateMultipleGroups():
     mp = sg.getSGroupMultiplier()
@@ -91,7 +97,9 @@ print(m.molfile())
 print("****** Get/Set DataSGroup properties ********")
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(dataPath("molecules/basic/all_features_mol.mol"))
+m = indigo.loadMoleculeFromFile(
+    dataPath("molecules/basic/all_features_mol.mol")
+)
 print(m.molfile())
 for sg in m.iterateDataSGroups():
     sg.setSGroupData("Test Data S-group")
@@ -117,68 +125,105 @@ print(m.molfile())
 print("****** Find SGroups by properties ********")
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(dataPath("molecules/basic/all_features_mol.mol"))
+m = indigo.loadMoleculeFromFile(
+    dataPath("molecules/basic/all_features_mol.mol")
+)
 print(m.molfile())
 
 sgs = m.findSGroups("SG_TYPE", "SUP")
 
 for sg in sgs:
-    print("Superatom with label %s found" % (m.getSuperatom(sg.getSGroupIndex())).getSGroupName())
+    print(
+        "Superatom with label %s found"
+        % (m.getSuperatom(sg.getSGroupIndex())).getSGroupName()
+    )
 
 sgs = m.findSGroups("SG_LABEL", "Z")
 print("SGroups with label Z:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 sgs = m.findSGroups("SG_CLASS", "AA")
 print("SGroups with class AA:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 sgs = m.findSGroups("SG_DISPLAY_OPTION", "0")
 print("SGroups expanded:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 sgs = m.findSGroups("SG_BRACKET_STYLE", "0")
 print("SGroups with square brackets:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 sgs = m.findSGroups("SG_DATA", "Selection")
 print("SGroups with data contains Selection:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 sgs = m.findSGroups("SG_DATA_NAME", "comment")
 print("SGroups with data field name comment:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 sgs = m.findSGroups("SG_DATA_DISPLAY", "detached")
 print("SGroups with detached data field:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 sgs = m.findSGroups("SG_DATA_LOCATION", "relative")
 print("SGroups with relative data field:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 sgs = m.findSGroups("SG_ATOMS", "103, 104")
 print("SGroups with atoms 103 and 104:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 sgs = m.findSGroups("SG_BONDS", "249, 245")
 print("SGroups with bonds 245 and 249:")
 for sg in sgs:
-    print("SGroup Index = %d " % sg.getSGroupIndex() + ", SGroup Type = %s" % sg.getSGroupType())
+    print(
+        "SGroup Index = %d " % sg.getSGroupIndex()
+        + ", SGroup Type = %s" % sg.getSGroupType()
+    )
 
 print("****** Remove SGroups and check hierarchy ********")
 
 indigo.setOption("molfile-saving-mode", "3000")
-m = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/sgroups-V3000.mol"))
+m = indigo.loadMoleculeFromFile(
+    dataPath("molecules/sgroups/sgroups-V3000.mol")
+)
 print(m.molfile())
 
 sgs = m.findSGroups("SG_TYPE", "GEN")
@@ -201,7 +246,7 @@ print("******  Data and Multiple SGroups manipulation ********")
 
 m = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/rep-dat.mol"))
 indigo.setOption("render-atom-ids-visible", "true")
-renderer.renderToFile(m, joinPathPy('out/result_1.png', __file__))
+renderer.renderToFile(m, joinPathPy("out/result_1.png", __file__))
 
 # print multiple group information by index
 
@@ -226,7 +271,7 @@ for atom in mul_group.iterateAtoms():
     print("   %s" % atom.index())
 
 mul_group.remove()
-renderer.renderToFile(m, joinPathPy('out/result_2.png', __file__))
+renderer.renderToFile(m, joinPathPy("out/result_2.png", __file__))
 
 # print data s-group description and data
 data_group = m.getDataSGroup(0)

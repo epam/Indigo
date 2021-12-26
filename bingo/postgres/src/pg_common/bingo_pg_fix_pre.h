@@ -9,8 +9,8 @@
 // http://www.postgresql.org/message-id/529D05CC.7070806@gmx.de
 // http://www.postgresql.org/message-id/attachment/31194/VS2013_01.patch
 #if (_MSC_VER >= 1800)
-#include <math.h>
 #include <functional>
+#include <math.h>
 #endif
 
 #endif //#ifndef __bingo_pg_fix_pre_h__

@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -14,16 +14,16 @@ def testSingleTauMatch(mol1, mol2, flags, expected, hl):
         sys.stdout.write("unmatched")
     if (match is None) == expected:
         sys.stdout.write("(unexpected)")
-    print('')
+    print("")
     if match and hl:
         print(match.highlightedTarget().smiles())
         for atom in mol1.iterateAtoms():
             mapped = match.mapAtom(atom)
             if mapped is None:
-                mapped = '?'
+                mapped = "?"
             else:
                 mapped = mapped.index()
-            print('{0} -> {1}'.format(atom.index(), mapped))
+            print("{0} -> {1}".format(atom.index(), mapped))
 
 
 def testTauSubFlags():
@@ -72,7 +72,9 @@ indigo.setTautomerRule(2, "0C", "N,O,P,S")
 indigo.setTautomerRule(3, "1C", "N,O")
 
 mol1 = indigo.loadQueryMolecule("CCC")
-mol2 = indigo.loadMolecule("P(=O)(O[H])(O[H])OC([H])([H])C1=C([H])N=C(C([H])([H])[H])N=C1N([H])[H]")
+mol2 = indigo.loadMolecule(
+    "P(=O)(O[H])(O[H])OC([H])([H])C1=C([H])N=C(C([H])([H])[H])N=C1N([H])[H]"
+)
 mol2.foldHydrogens()
 mol2.aromatize()
 testSingleTauMatch(mol1, mol2, "TAU", True, True)

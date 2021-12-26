@@ -8,9 +8,9 @@
 #include "base_cpp/scanner.h"
 #include "layout/molecule_layout.h"
 #include "molecule/elements.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
-#include "molecule/ket_commons.h"
 
 using namespace rapidjson;
 using namespace indigo;
@@ -24,7 +24,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups, rapidjs
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups)
-    : _empty_array(kArrayType) , _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty_array), _pmol(0), _pqmol(0)
+    : _empty_array(kArrayType), _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty_array), _pmol(0), _pqmol(0)
 {
 }
 
@@ -967,7 +967,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
                 throw Error("stereo type specified for atom #%d, but the bond "
                             "directions does not say that it is a stereocenter",
                             sc._atom_idx);
-            mol.addStereocenters(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
+            mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
         }
         else
             mol.stereocenters.setType(sc._atom_idx, sc._type, sc._group);

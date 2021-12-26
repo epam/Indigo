@@ -32,6 +32,7 @@ public:
     RenderParams renderParams;
 
     void init() override;
+
 private:
     void setOptionsHandlers();
 

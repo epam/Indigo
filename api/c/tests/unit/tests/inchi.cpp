@@ -55,4 +55,8 @@ TEST_F(IndigoApiInchiTest, basic)
     ASSERT_EQ(strcmp(indigoCanonicalSmiles(m), "NC1CC2CC(N)C(O)CC2CC1O"), 0);
     const char* res_inchi = indigoInchiGetInchi(m);
     ASSERT_EQ(strcmp(res_inchi, inchi), 0);
+    const char* empty_inchi = "InChI=1S//";
+    const auto empty = indigoInchiLoadMolecule(empty_inchi);
+    const char* res_empty = indigoInchiGetInchi(empty);
+    ASSERT_EQ(strcmp(res_empty, empty_inchi), 0);
 }

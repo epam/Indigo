@@ -4,14 +4,16 @@ import itertools
 import os
 import pathlib
 import xml.etree.ElementTree as elTree
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import PyPDF2
 import pytest
 from fastapi.testclient import TestClient
+from PIL import Image
+
 from indigo_service import jsonapi
 from indigo_service.indigo_http import app
-from PIL import Image
+from indigo_service.jsonapi import Descriptors
 
 client = TestClient(app)
 
@@ -100,13 +102,13 @@ def test_ket_convert() -> None:
 
 
 def similarity_request(  # pylint: disable=too-many-arguments
-    source: dict,
-    targets: list[dict],
+    source: dict[Any, Any],
+    targets: list[dict[Any, Any]],
     fingerprint: str = "sim",
     metric: str = "tanimoto",
     alpha: float = 0.5,
     beta: float = 0.5,
-) -> dict:
+) -> dict[str, Any]:
     return {
         "data": {
             "type": "similarities",
@@ -122,7 +124,7 @@ def similarity_request(  # pylint: disable=too-many-arguments
     }
 
 
-def test_similarities_error():
+def test_similarities_error() -> None:
     for structure in test_structures:
         response = client.post(
             "/indigo/similarities",
@@ -139,7 +141,9 @@ def test_similarities_error():
 # Descriptors
 
 
-def descriptors_request(compound: dict, descriptors: tuple) -> dict:
+def descriptors_request(
+    compound: dict[Any, Any], descriptors: tuple[Descriptors, ...]
+) -> dict[str, Any]:
     return {
         "data": {
             "type": "descriptor",
@@ -262,9 +266,7 @@ def test_render_pdf() -> None:
     with open("mol.pdf", "rb+") as file:
         file.write(response.content)
         read_file = PyPDF2.PdfFileReader(file)
-        file_info = read_file.getDocumentInfo()
         pages_number = read_file.numPages
-        # page_size = read_file.getPage(0).mediaBox
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/pdf"
     assert (

@@ -17,7 +17,6 @@
  ***************************************************************************/
 
 #include "reaction/reaction_automapper.h"
-#include <memory>
 #include "base_cpp/red_black.h"
 #include "graph/automorphism_search.h"
 #include "molecule/elements.h"
@@ -26,6 +25,7 @@
 #include "reaction/crf_saver.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
+#include <memory>
 
 using namespace indigo;
 
@@ -1457,7 +1457,7 @@ bool RSubstructureMcs::searchSubstructure(Array<int>* map)
     bool result = false;
     /*
      * Disable old logic with timeout waiting for mcs. Can be a different result for some reaction though
-    */
+     */
     // if (_context.cancellation != nullptr)
     // {
     //     try
@@ -1907,7 +1907,7 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
     int proc = 1;
     /*
      * Disable old logic with timeout waiting for mcs. Can be a different result for some reaction though
-    */
+     */
     // if (_context.cancellation != nullptr)
     // {
     //     try

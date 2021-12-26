@@ -1,7 +1,7 @@
-import sys
 import errno
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -56,9 +56,9 @@ print("  Has Z coord: %s" % (rxn.hasZCoord()))
 print(rxn.smiles())
 print("After z set:")
 for m in rxn.iterateMolecules():
-   if m.countAtoms() > 0:
-      m.getAtom(0).setXYZ(1, 2, 3)
-      break
+    if m.countAtoms() > 0:
+        m.getAtom(0).setXYZ(1, 2, 3)
+        break
 print("  Has coord: %s" % (rxn.hasCoord()))
 print("  Has Z coord: %s" % (rxn.hasZCoord()))
 rxn.layout()
@@ -70,7 +70,10 @@ r = indigo.loadReaction("CCCCCC>>CNCNCNCNCN")
 data = r.serialize()
 r2 = indigo.unserialize(data)
 if r.smiles() != r2.smiles():
-   sys.stderr.write("Canonical smiles after serialize: %s != %s" % (r.smiles(), r2.smiles()))
+    sys.stderr.write(
+        "Canonical smiles after serialize: %s != %s"
+        % (r.smiles(), r2.smiles())
+    )
 print("*** Unfold hydrogens ***")
 r = indigo.loadReaction("CCCCCC>>CNCNCNCNCN")
 print(r.smiles())
@@ -80,7 +83,10 @@ print(r.smiles())
 print("*** Get and Map molecule ***")
 rxn = indigo.loadReaction("CCC.NNN.OOO>[W]>CNC.NCN.CNC.N.OOO.CCC.NNN")
 for m in rxn.iterateMolecules():
-    print("%d: %s, %s" % (m.index(), m.smiles(), rxn.getMolecule(m.index()).smiles()))
+    print(
+        "%d: %s, %s"
+        % (m.index(), m.smiles(), rxn.getMolecule(m.index()).smiles())
+    )
 
 q = indigo.loadQueryReaction("NN.OO>>NC.N.O")
 matcher = indigo.substructureMatcher(rxn)

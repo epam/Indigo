@@ -72,12 +72,14 @@ TEST_F(BingoNosqlTest, test_enumerate_id)
 TEST_F(BingoNosqlTest, multiple_instances_same_name)
 {
     std::vector<int> db_ids;
-    EXPECT_THROW({
-        for (int i = 0; i < 100; i++)
+    EXPECT_THROW(
         {
-            db_ids.emplace_back(bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", ""));
-        }
-    }, Exception);
+            for (int i = 0; i < 100; i++)
+            {
+                db_ids.emplace_back(bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", ""));
+            }
+        },
+        Exception);
     for (const auto& db_id : db_ids)
     {
         bingoCloseDatabase(db_id);

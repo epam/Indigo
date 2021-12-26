@@ -354,6 +354,10 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                                         simple_objects.PushBack(nodes[i]["data"], data.GetAllocator());
                                     }
                                 }
+                                else if (node_type.compare("arrow") == 0)
+                                {
+                                    throw Error("Arrow nodes supported only for reactions");
+                                }
                             }
                             else
                                 throw Error("Unsupported node for molecule");
@@ -361,7 +365,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     }
                     else
                         throw Error("Ketcher's JSON has no root node");
-                    if (mol_nodes.Size() || rgroups.Size() || simple_objects.Size() )
+                    if (mol_nodes.Size() || rgroups.Size() || simple_objects.Size())
                     {
                         MoleculeJsonLoader loader(mol_nodes, rgroups, simple_objects);
                         loader.stereochemistry_options = stereochemistry_options;
@@ -371,10 +375,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                         loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
                         loader.treat_stereo_as = treat_stereo_as;
                         loader.loadMolecule(mol);
-                    }
-                    else
-                    {
-                        throw Error("Molecule JSON description not found");
                     }
                     return;
                 }

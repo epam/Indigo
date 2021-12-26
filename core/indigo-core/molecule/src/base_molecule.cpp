@@ -4176,6 +4176,11 @@ void BaseMolecule::addStereocenters(int atom_idx, int type, int group, bool inve
     stereocenters.add(*this, atom_idx, type, group, inverse_pyramid);
 }
 
+void BaseMolecule::addStereocentersIgnoreBad(int atom_idx, int type, int group, bool inverse_pyramid)
+{
+    stereocenters.add_ignore(*this, atom_idx, type, group, inverse_pyramid);
+}
+
 void BaseMolecule::removeAtomsStereocenters(const Array<int>& indices)
 {
     stereocenters.removeAtoms(*this, indices);

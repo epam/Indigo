@@ -128,10 +128,10 @@ void MoleculeGrossFormula::collect(BaseMolecule& molecule, Array<int>& gross_out
     }
 }
 
-std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bool add_isotopes )
+std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bool add_isotopes)
 {
     std::set<int> selected_atoms;
-    mol.getAtomSelection( selected_atoms );
+    mol.getAtomSelection(selected_atoms);
 
     if (!mol.isQueryMolecule())
     {
@@ -184,10 +184,10 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
             {
                 continue;
             }
-            
-            if( selected_atoms.size() && selected_atoms.find( filters[i][j] ) == selected_atoms.end() )
+
+            if (selected_atoms.size() && selected_atoms.find(filters[i][j]) == selected_atoms.end())
                 continue;
-            
+
             int number = mol.getAtomNumber(filters[i][j]);
 
             int isotope = 0;

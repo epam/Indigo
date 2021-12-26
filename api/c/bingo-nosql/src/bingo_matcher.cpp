@@ -1615,3 +1615,11 @@ bool EnumeratorMatcher::next()
     }
     return false;
 }
+
+void EnumeratorMatcher::_setParameters(const char* params)
+{
+}
+
+void EnumeratorMatcher::_initPartition()
+{
+}

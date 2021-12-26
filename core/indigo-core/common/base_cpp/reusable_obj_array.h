@@ -24,7 +24,8 @@
 namespace indigo
 {
 
-    template <typename T> class ReusableObjArray
+    template <typename T>
+    class ReusableObjArray
     {
     public:
         explicit ReusableObjArray()

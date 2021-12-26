@@ -613,7 +613,7 @@ IndigoMoleculeSubstructureMatchIter* IndigoMoleculeSubstructureMatcher::iterateQ
         *prepared = true;
     }
 
-    std::unique_ptr<IndigoMoleculeSubstructureMatchIter> iter = 
+    std::unique_ptr<IndigoMoleculeSubstructureMatchIter> iter =
         std::make_unique<IndigoMoleculeSubstructureMatchIter>(*target_prepared, query, target, (mode == RESONANCE), max_embeddings != 1);
 
     if (query_object.type == IndigoObject::QUERY_MOLECULE)
@@ -659,8 +659,7 @@ IndigoTautomerSubstructureMatchIter* IndigoMoleculeSubstructureMatcher::iterateT
         nei_counters = &_nei_counters_h_unfolded;
     }
 
-    std::unique_ptr<IndigoTautomerSubstructureMatchIter> iter = 
-        std::make_unique<IndigoTautomerSubstructureMatchIter>(target, query, moleculeFound, method);
+    std::unique_ptr<IndigoTautomerSubstructureMatchIter> iter = std::make_unique<IndigoTautomerSubstructureMatchIter>(target, query, moleculeFound, method);
     iter->matcher.find_unique_embeddings = find_unique_embeddings;
     iter->matcher.find_unique_by_edges = embedding_edges_uniqueness;
     iter->matcher.save_for_iteration = for_iteration;
@@ -860,7 +859,8 @@ CEXPORT int indigoMatch(int target_matcher, int query)
                 }
                 case INCHI:
                 case RSMARTS: {
-                    std::unique_ptr<IndigoTautomerSubstructureMatchIter> match_iter(matcher.getTautomerMatchIterator(self, query, true, 1, matcher.tau_params.method));
+                    std::unique_ptr<IndigoTautomerSubstructureMatchIter> match_iter(
+                        matcher.getTautomerMatchIterator(self, query, true, 1, matcher.tau_params.method));
 
                     match_iter->matcher.find_unique_embeddings = false;
 

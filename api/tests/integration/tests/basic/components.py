@@ -1,6 +1,11 @@
 import os
 import sys
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
+
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
 from env_indigo import *
 
 indigo = Indigo()
@@ -12,7 +17,7 @@ except IndigoException as e:
     print(getIndigoExceptionText(e))
 
 print("Loop starting..")
-fail_cnt=0
+fail_cnt = 0
 for i in range(0, 25000):
     try:
         mol = indigo.createMolecule()

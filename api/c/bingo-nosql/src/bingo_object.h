@@ -22,7 +22,9 @@ namespace bingo
     class QueryObject
     {
     public:
-        virtual bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp, indigo::Array<byte>* sim_fp) /* const */ = 0;
+        virtual bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp,
+                                      indigo::Array<byte>* sim_fp) /* const */
+            = 0;
         virtual ~QueryObject(){};
     };
 
@@ -40,7 +42,8 @@ namespace bingo
     public:
         BaseMoleculeQuery(indigo::BaseMolecule& mol, bool needs_query_fingerprint);
 
-        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp, indigo::Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp,
+                              indigo::Array<byte>* sim_fp) /*const*/ override;
 
         const indigo::BaseMolecule& getMolecule();
     };
@@ -68,7 +71,8 @@ namespace bingo
     private:
         indigo::Array<char> _gross_str;
 
-        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp, indigo::Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp,
+                              indigo::Array<byte>* sim_fp) /*const*/ override;
 
     public:
         GrossQuery(/* const */ indigo::Array<char>& str);
@@ -88,7 +92,8 @@ namespace bingo
     public:
         BaseReactionQuery(indigo::BaseReaction& rxn);
 
-        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp, indigo::Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp,
+                              indigo::Array<byte>* sim_fp) /*const*/ override;
 
         const indigo::BaseReaction& getReaction();
     };
@@ -114,7 +119,9 @@ namespace bingo
     class IndexObject
     {
     public:
-        virtual bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp, indigo::Array<byte>* sim_fp) /* const */ = 0;
+        virtual bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp,
+                                      indigo::Array<byte>* sim_fp) /* const */
+            = 0;
 
         virtual bool buildGrossString(indigo::Array<char>& cf) /* const */ = 0;
 
@@ -133,7 +140,8 @@ namespace bingo
     public:
         IndexMolecule(/* const */ indigo::Molecule& mol, const indigo::AromaticityOptions& arom_options);
 
-        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp, indigo::Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp,
+                              indigo::Array<byte>* sim_fp) /*const*/ override;
 
         bool buildGrossString(indigo::Array<char>& gross_string) /* const */ override;
 
@@ -150,7 +158,8 @@ namespace bingo
     public:
         IndexReaction(/* const */ indigo::Reaction& rxn, const indigo::AromaticityOptions& arom_options);
 
-        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp, indigo::Array<byte>* sim_fp) /*const*/ override;
+        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp,
+                              indigo::Array<byte>* sim_fp) /*const*/ override;
 
         bool buildGrossString(indigo::Array<char>& gross_string) /* const */ override;
 

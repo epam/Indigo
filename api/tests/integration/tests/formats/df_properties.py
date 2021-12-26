@@ -1,10 +1,13 @@
-import sys, os
-sys.path.append('../../common')
+import os
+import sys
+
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 
-def testReload (mol):
+
+def testReload(mol):
     molfile = mol.molfile()
     mol2 = indigo.loadMolecule(molfile)
     molfile2 = mol2.molfile()
@@ -44,16 +47,15 @@ saver_rd.append(mol)
 saver_rd.close()
 
 
-
 print("********* Properties after SDF reload")
 for m in indigo.iterateSDFile(sdf_file_name):
-    
+
     for p in m.iterateProperties():
         print("%s: %s" % (p.name(), p.rawData()))
-        
+
 print("********* Properties after RDF reload")
 for m in indigo.iterateRDFile(rdf_file_name):
-    
+
     for p in m.iterateProperties():
         print("%s: %s" % (p.name(), p.rawData()))
 
@@ -70,7 +72,7 @@ print("********* Remove test1")
 mol.removeProperty("test1")
 for p in mol.iterateProperties():
     print("%s: %s" % (p.name(), p.rawData()))
-    
+
 print("********* Remove test2")
 mol.removeProperty("test2")
 for p in mol.iterateProperties():

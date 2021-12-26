@@ -3,8 +3,7 @@
 using namespace bingo;
 using namespace indigo;
 
-SimStorage::SimStorage(int fp_size, int mt_size, int inc_size)
-    : _fingerprint_table(MMFAddress::null), _inc_size(inc_size), _mt_size(mt_size), _fp_size(fp_size)
+SimStorage::SimStorage(int fp_size, int mt_size, int inc_size) : _fingerprint_table(MMFAddress::null), _inc_size(inc_size), _mt_size(mt_size), _fp_size(fp_size)
 {
     _inc_buffer.allocate(_inc_size * _fp_size);
     _inc_id_buffer.allocate(_inc_size * _fp_size);

@@ -16,12 +16,12 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <algorithm>
 #include <ctype.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <algorithm>
 
 #include "base_c/defs.h"
 #include "base_cpp/scanner.h"

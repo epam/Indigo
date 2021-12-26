@@ -22,12 +22,12 @@
 #include "base_cpp/output.h"
 #include "bingo_context.h"
 #include "mango_index.h"
-#include "ringo_matchers.h"
 #include "reaction/crf_saver.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_automapper.h"
 #include "reaction/reaction_fingerprint.h"
+#include "ringo_matchers.h"
 
 void RingoIndex::prepare(Scanner& rxnfile, Output& output, std::mutex* lock_for_exclusive_access)
 {
@@ -67,10 +67,8 @@ void RingoIndex::prepare(Scanner& rxnfile, Output& output, std::mutex* lock_for_
     {
         // CrfSaver modifies _context->cmf_dict and
         // requires exclusive access for this
-        auto locker = lock_for_exclusive_access ?
-                      std::unique_lock<std::mutex>(*lock_for_exclusive_access) :
-                      std::unique_lock<std::mutex>();
-        
+        auto locker = lock_for_exclusive_access ? std::unique_lock<std::mutex>(*lock_for_exclusive_access) : std::unique_lock<std::mutex>();
+
         CrfSaver saver(_context->cmf_dict, output_crf);
         saver.saveReaction(reaction);
     }

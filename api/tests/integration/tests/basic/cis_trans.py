@@ -1,7 +1,7 @@
-import sys
 import errno
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 if not os.path.exists(joinPathPy("out", __file__)):
@@ -13,7 +13,9 @@ if not os.path.exists(joinPathPy("out", __file__)):
 
 # Test for INDSP-126
 indigo = Indigo()
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/cis_trans_either-indsp-126.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/cis_trans_either-indsp-126.mol", __file__)
+)
 print(mol.smiles())
 mol2 = indigo.loadMolecule(mol.molfile())
 print(mol2.smiles())
@@ -24,12 +26,18 @@ print(mol3.smiles())
 
 print("*** Molfile V2000/V3000 ***")
 indigo = Indigo()
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/cis_trans_either-indsp-126.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/cis_trans_either-indsp-126.mol", __file__)
+)
 
-indigo.setOption('molfile-saving-mode', '2000')
-mol.saveMolfile(joinPathPy("out/cis_trans_either-indsp-126-2000.mol", __file__))
+indigo.setOption("molfile-saving-mode", "2000")
+mol.saveMolfile(
+    joinPathPy("out/cis_trans_either-indsp-126-2000.mol", __file__)
+)
 mol2 = indigo.loadMolecule(mol.molfile())
 
-indigo.setOption('molfile-saving-mode', '3000')
-mol.saveMolfile(joinPathPy("out/cis_trans_either-indsp-126-3000.mol", __file__))
-mol3 = indigo.loadMolecule(mol.molfile())    
+indigo.setOption("molfile-saving-mode", "3000")
+mol.saveMolfile(
+    joinPathPy("out/cis_trans_either-indsp-126-3000.mol", __file__)
+)
+mol3 = indigo.loadMolecule(mol.molfile())

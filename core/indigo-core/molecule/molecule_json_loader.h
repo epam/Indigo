@@ -19,9 +19,9 @@
 #ifndef __molecule_json_loader__
 #define __molecule_json_loader__
 
+#include <rapidjson/document.h>
 #include <unordered_set>
 #include <vector>
-#include <rapidjson/document.h>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
@@ -51,7 +51,7 @@ namespace indigo
     public:
         DECL_ERROR;
         explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups, rapidjson::Value& simple_objects);
-        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups );
+        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups);
         void loadMolecule(BaseMolecule& mol);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
@@ -85,7 +85,7 @@ namespace indigo
         int addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope);
         int addBondToMoleculeQuery(int beg, int end, int order, int topology = 0);
         void validateMoleculeBond(int order);
-        void parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol, std::vector<EnhancedStereoCenter>& stereo_centers );
+        void parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol, std::vector<EnhancedStereoCenter>& stereo_centers);
         void parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol);
         void parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol);
         void parseSelection(const rapidjson::Value& selection, BaseMolecule& mol);

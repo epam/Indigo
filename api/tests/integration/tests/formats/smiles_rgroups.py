@@ -1,12 +1,18 @@
 import os
 import sys
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
+
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
 from env_indigo import *
 
 indigo = Indigo()
 
-def testSmilesRGroups (filename):
-    print('\n' + relativePath(filename) + '\n')
+
+def testSmilesRGroups(filename):
+    print("\n" + relativePath(filename) + "\n")
     mol = indigo.loadMoleculeFromFile(filename)
     try:
         sys.stdout.write("  SMILES    :  ")
@@ -14,7 +20,7 @@ def testSmilesRGroups (filename):
         print(smi)
         sys.stdout.write("  CanSMILES :  ")
         cansmi = mol.canonicalSmiles()
-        print(cansmi) 
+        print(cansmi)
         sys.stdout.write("  Match     :  ")
         cansmi2 = indigo.loadMolecule(smi).canonicalSmiles()
         print(cansmi2 == cansmi)
@@ -22,11 +28,11 @@ def testSmilesRGroups (filename):
         cansmi3 = indigo.loadMolecule(cansmi).canonicalSmiles()
         print(cansmi3 == cansmi)
     except IndigoException as e:
-        print('caught ' + getIndigoExceptionText(e))
-  
-    sys.stdout.write('\n')
+        print("caught " + getIndigoExceptionText(e))
+
+    sys.stdout.write("\n")
     for rgroup in mol.iterateRGroups():
-        print('  Rgroup #' + str(rgroup.index()))
+        print("  Rgroup #" + str(rgroup.index()))
         for frag in rgroup.iterateRGroupFragments():
             try:
                 sys.stdout.write("    SMILES    :  ")
@@ -42,11 +48,12 @@ def testSmilesRGroups (filename):
                 cansmi3 = indigo.loadMolecule(cansmi).canonicalSmiles()
                 print(cansmi3 == cansmi)
             except IndigoException as e:
-                print('caught ' + getIndigoExceptionText(e))
-      
-testSmilesRGroups(joinPathPy('molecules/r_occur.mol', __file__))
-testSmilesRGroups(joinPathPy('molecules/rgroup_a0.mol', __file__))
-testSmilesRGroups(joinPathPy('molecules/rgroup_a1.mol', __file__))
-testSmilesRGroups(joinPathPy('molecules/rgroup_all.mol', __file__))
-testSmilesRGroups(joinPathPy('molecules/recursive1.mol', __file__))
-testSmilesRGroups(joinPathPy('molecules/recursive2.mol', __file__))
+                print("caught " + getIndigoExceptionText(e))
+
+
+testSmilesRGroups(joinPathPy("molecules/r_occur.mol", __file__))
+testSmilesRGroups(joinPathPy("molecules/rgroup_a0.mol", __file__))
+testSmilesRGroups(joinPathPy("molecules/rgroup_a1.mol", __file__))
+testSmilesRGroups(joinPathPy("molecules/rgroup_all.mol", __file__))
+testSmilesRGroups(joinPathPy("molecules/recursive1.mol", __file__))
+testSmilesRGroups(joinPathPy("molecules/recursive2.mol", __file__))

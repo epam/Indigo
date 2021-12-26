@@ -17,11 +17,11 @@
  ***************************************************************************/
 
 #include "indigo_io.h"
-#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_savers.h"
 #include "molecule/molecule_gross_formula.h"
+#include <memory>
 
 IndigoScanner::IndigoScanner(Scanner* scanner) : IndigoObject(SCANNER), ptr(scanner)
 {

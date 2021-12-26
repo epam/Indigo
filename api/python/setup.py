@@ -4,7 +4,7 @@ import os
 import shutil
 import sys
 
-from setuptools import setup
+from setuptools import setup  # type: ignore
 
 CLASSIFIERS = """\
 Development Status :: 4 - Beta
@@ -42,7 +42,11 @@ repo_dist_lib_dir = os.path.join(repo_root_dir, "dist", "lib")
 indigo_python_directory = os.path.join(this_dir, "indigo")
 indigo_native_libs_directory = os.path.join(indigo_python_directory, "lib")
 if not os.path.exists(indigo_native_libs_directory):
-    print("No native libs found in {}, looking for them in {}".format(indigo_native_libs_directory, repo_dist_lib_dir))
+    print(
+        "No native libs found in {}, looking for them in {}".format(
+            indigo_native_libs_directory, repo_dist_lib_dir
+        )
+    )
     if os.path.exists(repo_dist_lib_dir):
         print("Copying native libs from {}".format(repo_dist_lib_dir))
         shutil.copytree(repo_dist_lib_dir, indigo_native_libs_directory)
@@ -75,10 +79,14 @@ if sys.argv[1] == "bdist_wheel":
         )
 
     if not glob.glob(os.path.join(indigo_python_directory, INDIGO_LIBS)):
-        print("No native libs found for platform {}, exiting".format(PLATFORM_NAME))
+        print(
+            "No native libs found for platform {}, exiting".format(
+                PLATFORM_NAME
+            )
+        )
         exit(0)
 else:
-    INDIGO_LIBS = 'lib/**/*'
+    INDIGO_LIBS = "lib/**/*"
 
 if os.path.exists("build"):
     distutils.dir_util.remove_tree("build")
@@ -114,5 +122,5 @@ setup(
         "Source Code": "https://github.com/epam/indigo/",
     },
     download_url="https://pypi.org/project/epam.indigo",
-    test_suite='tests'
+    test_suite="tests",
 )

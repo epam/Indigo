@@ -1,7 +1,7 @@
-import sys
 import errno
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 from rendering import *
 
@@ -33,10 +33,10 @@ for line in open(joinPathPy("molecules/smarts.sma", __file__)):
         indigo.setOption("render-comment-color", "0, 0.3, 0.5")
         indigo.setOption("render-output-format", "svg")
         renderer.renderToFile(mol, "%s/%04d.svg" % (out_dir, idx))
-        print(checkImageSimilarity('smarts/%04d.svg' % idx))
+        print(checkImageSimilarity("smarts/%04d.svg" % idx))
         indigo.setOption("render-output-format", "png")
         renderer.renderToFile(mol, "%s/%04d.png" % (out_dir, idx))
-        print(checkImageSimilarity('smarts/%04d.png' % idx))
+        print(checkImageSimilarity("smarts/%04d.png" % idx))
 
     except IndigoException as e:
         print("  %s" % (getIndigoExceptionText(e)))
