@@ -17,11 +17,10 @@
 #
 
 import base64
-import io
 from typing import Awaitable, Callable, List, Tuple, Union
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
 from indigo import IndigoException
 from indigo.renderer import IndigoRenderer
 
@@ -33,7 +32,6 @@ app = FastAPI(title="Indigo service JSON:API", version=indigo().version())
 
 BASE_URL_INDIGO = "/indigo"
 RESP_HEADER_CONTENT_TYPE = "application/vnd.api+json"
-RENDER_HEADER_CONTENT_TYPE = "image/png"
 
 
 @app.middleware("http")
@@ -43,13 +41,9 @@ async def isolate_indigo_session(
     with indigo_new():
         response = await call_next(request)
         if not request.scope["path"].startswith(
-            ("/docs", "/redoc")
+            ("/docs", "/redoc", f"{BASE_URL_INDIGO}/render")
         ):
             response.headers["Content-Type"] = RESP_HEADER_CONTENT_TYPE
-        if request.scope["path"].startswith(
-                f"{BASE_URL_INDIGO}/render"
-        ):
-            response.headers["Content-Type"] = RENDER_HEADER_CONTENT_TYPE
         return response
 
 
@@ -215,30 +209,53 @@ def common_bits(
     return jsonapi.make_common_bits_response(result)
 
 
-@app.post(
-    f"{BASE_URL_INDIGO}/render",
-    response_model=jsonapi.RenderResponse,
-    response_model_exclude_unset=True,
-)
+@app.post(f"{BASE_URL_INDIGO}/render")
 def render(
     request: jsonapi.RenderRequest,
-):
+) -> Union[Response, FileResponse]:
     compound, *_ = service.extract_compounds(compounds(request))
     output_format = request.data.attributes.outputFormat
     indigo_renderer = IndigoRenderer(indigo())
-    indigo().setOption("render-output-format", output_format.value)
+    indigo().setOption(
+        "render-output-format", jsonapi.rendering_formats.get(output_format)
+    )
     options = request.data.attributes.options
     for option, value in options.items():
-        try:
-            indigo().setOption(option, *value)
-        except IndigoException as exc:
-            jsonapi.make_error_response(exc)
-    result = indigo_renderer.renderToBuffer(compound)
-    result = result.tobytes()
-    image = base64.b64encode(result)
-    # result = 'data:image/png;base64, {}'.format(str(image, 'ascii'))
-    return Response(result, media_type='img/png')
-    # return {"image": image}
+        indigo().setOption(option, value)
+    if output_format == "image/png":
+        result = indigo_renderer.renderToBuffer(compound).tobytes()
+        response = Response(
+            result,
+            headers={"Content-Type": "image/png"},
+        )
+    elif output_format == "image/png;base64":
+        result = indigo_renderer.renderToBuffer(compound).tobytes()
+        decoded_image = base64.b64encode(result).decode("utf-8")
+        image_base64 = f"data:image/png;base64,{decoded_image}"
+        response = Response(
+            image_base64,
+            headers={"Content-Type": "image/png;base64"},
+        )
+    elif output_format == "image/svg+xml":
+        result = indigo_renderer.renderToString(compound)
+        response = Response(
+            result,
+            headers={"Content-Type": "image/svg+xml"},
+        )
+    elif output_format == "application/pdf":
+        result = indigo_renderer.renderToBuffer(compound).tobytes()
+        with open("mol.pdf", "wb") as pdf_file:
+            pdf_file.write(result)
+        response = FileResponse(
+            "mol.pdf",
+            headers={
+                "Content-Type": "application/pdf",
+                "Content-Disposition": "attachment; filename=mol.pdf",
+            },
+        )
+    else:
+        raise ValueError(f"Incorrect output format {output_format}")
+    return response
 
 
 def run_debug() -> None:
@@ -250,9 +267,9 @@ def run_debug() -> None:
         host="0.0.0.0",
         port=8080,
         log_level="debug",
-        reload=True
+        reload=True,
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_debug()
