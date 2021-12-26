@@ -1,14 +1,16 @@
+import errno
 import os
 import sys
-import errno
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 
 print("****** Check bad valence ********")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/issue_243.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/issue_243.mol", __file__)
+)
 
 print("Check result (molecule) = %s" % mol.check("VALENCE"))
 
@@ -22,26 +24,38 @@ print("Check result (molecule) = %s" % mol.check("VALENCE, ATOMS:1 4"))
 
 print("Check result (molecule) = %s" % mol.check("VALENCE, BONDS:1 2"))
 
-print("Check result (molecule) = %s" % mol.check("VALENCE, ATOMS:1, BONDS:1 2"))
+print(
+    "Check result (molecule) = %s" % mol.check("VALENCE, ATOMS:1, BONDS:1 2")
+)
 
 for atom in mol.iterateAtoms():
-    print("Check result (atom) %d = %s" % (atom.index(), atom.check("valence")))
+    print(
+        "Check result (atom) %d = %s" % (atom.index(), atom.check("valence"))
+    )
 for bond in mol.iterateBonds():
-    print("Check result (bond) %d = %s" % (bond.index(), bond.check("VALENCE")))
+    print(
+        "Check result (bond) %d = %s" % (bond.index(), bond.check("VALENCE"))
+    )
 
 
-for idx, m in enumerate(indigo.iterateSDFile(joinPathPy("molecules/bad_valence.sdf", __file__))):
+for idx, m in enumerate(
+    indigo.iterateSDFile(joinPathPy("molecules/bad_valence.sdf", __file__))
+):
     print("** %d **" % idx)
     print("Check result (molecule) = %s" % m.check())
 
 
 print("****** Check chiral flag ********")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/wrong_chiral_flag.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/wrong_chiral_flag.mol", __file__)
+)
 print("Check result (molecule) = %s" % mol.check())
 
 
 print("****** Check stereogenic center ********")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/stereogenic.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/stereogenic.mol", __file__)
+)
 print("Structure is chiral      = %d" % mol.isChiral())
 print("Chiral flag consistency  = %d" % mol.checkChirality())
 print("3D stereo centers exist = %d" % mol.check3DStereo())
@@ -50,7 +64,9 @@ print("Check result = %s" % mol.check())
 
 
 print("****** Check 3D stereo center ********")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/stereo_3d.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/stereo_3d.mol", __file__)
+)
 print("Structure is chiral      = %d" % mol.isChiral())
 print("Chiral flag consistency  = %d" % mol.checkChirality())
 print("3D stereo centers exist = %d" % mol.check3DStereo())
@@ -58,35 +74,41 @@ print("Undefined stereo centers exist = %d" % mol.checkStereo())
 print("Check result = %s" % mol.check())
 
 print("****** Check overlapped atoms/bonds ********")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/overlapped.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/overlapped.mol", __file__)
+)
 print("Check result = %s" % mol.check())
 
 print("****** Check query/stereo features ********")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/query_test.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/query_test.mol", __file__)
+)
 print("Check result = %s" % mol.check())
 
 
 print("****** Check reactions ********")
 indigo.setOption("ignore-stereochemistry-errors", "true")
 
-for idx, m in enumerate(indigo.iterateRDFile(joinPathPy("reactions/rxns.rdf", __file__))):
+for idx, m in enumerate(
+    indigo.iterateRDFile(joinPathPy("reactions/rxns.rdf", __file__))
+):
     print("** %d **" % idx)
 
     try:
-       print("Check result (reaction) = %s" % m.check())
+        print("Check result (reaction) = %s" % m.check())
     except IndigoException as e:
-       print(getIndigoExceptionText(e))
+        print(getIndigoExceptionText(e))
 
 
 print("****** Check structure ********")
 c = "C1=C(*)C=CC=C1"
 print("Check result = %s" % indigo.checkStructure(c))
 
-c = "bad structure"    
+c = "bad structure"
 print("Check result = %s" % indigo.checkStructure(c))
 
-c = "sil"    
+c = "sil"
 print("Check result = %s" % indigo.checkStructure(c))
 
-c = "benzene"    
+c = "benzene"
 print("Check result = %s" % indigo.checkStructure(c))

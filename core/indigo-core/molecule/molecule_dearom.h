@@ -127,7 +127,7 @@ namespace indigo
         };
 
     public:
-        DearomatizationsGroups(BaseMolecule& molecule);
+        DearomatizationsGroups(BaseMolecule& molecule, bool skip_superatoms = false);
 
         // for flags see GET_***
         void getGroupData(int group, int flags, GROUP_DATA* data);
@@ -162,6 +162,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _groupEdges);
         TL_CP_DECL(Array<int>, _groupHeteroAtoms);
         TL_CP_DECL(GROUP_DATA, _groupData);
+        TL_CP_DECL(RedBlackSet<int>, _inside_superatoms);
     };
 
     // Molecule dearomatization class.
@@ -235,7 +236,7 @@ namespace indigo
     public:
         DECL_ERROR2(DearomatizationException);
 
-        DearomatizationMatcher(DearomatizationsStorage& dearomatizations, BaseMolecule& molecule, const int* atom_external_conn);
+        DearomatizationMatcher(DearomatizationsStorage& dearomatizations, BaseMolecule& molecule, const int* atom_external_conn, bool skip_superatoms = false);
 
         bool isAbleToFixBond(int edge_idx, int type);
         bool fixBond(int edge_idx, int type);

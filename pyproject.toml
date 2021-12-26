@@ -1,0 +1,14 @@
+[tool.black]
+line_length = 79
+
+[tool.flake8]
+max-line-length = 79
+extend-ignore = "E203, E501, F405"
+exclude = "api/tests/integration"
+
+[tool.isort]
+profile = "black"
+line_length = 79
+
+[tool.mypy]
+ignore_missing_imports = true

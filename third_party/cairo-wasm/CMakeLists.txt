@@ -8,7 +8,7 @@ file(GLOB ${PROJECT_NAME}_SOURCES
 )
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
-target_include_directories(${PROJECT_NAME}
+target_include_directories(${PROJECT_NAME} SYSTEM
         PUBLIC src
         PRIVATE boilerplate
 )

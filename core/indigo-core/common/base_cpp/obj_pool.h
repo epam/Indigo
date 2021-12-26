@@ -24,7 +24,8 @@
 namespace indigo
 {
 
-    template <typename T> class ObjPool
+    template <typename T>
+    class ObjPool
     {
     public:
         ObjPool()
@@ -47,7 +48,8 @@ namespace indigo
             return idx;
         }
 
-        template <typename A> int add(A& a)
+        template <typename A>
+        int add(A& a)
         {
             int idx = _pool.add();
 
@@ -58,7 +60,8 @@ namespace indigo
             return idx;
         }
 
-        template <typename A, typename B> int add(A& a, B& b)
+        template <typename A, typename B>
+        int add(A& a, B& b)
         {
             int idx = _pool.add();
 

@@ -20,7 +20,6 @@
 #include "base_cpp/profiling.h"
 #include "base_cpp/scanner.h"
 #include "bingo_context.h"
-#include "ringo_matchers.h"
 #include "layout/reaction_layout.h"
 #include "molecule/molecule_fingerprint.h"
 #include "reaction/crf_loader.h"
@@ -31,6 +30,7 @@
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
 #include "reaction/rxnfile_saver.h"
+#include "ringo_matchers.h"
 
 IMPL_ERROR(RingoSubstructure, "reaction substructure");
 

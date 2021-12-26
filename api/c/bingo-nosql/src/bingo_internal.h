@@ -32,7 +32,7 @@ namespace indigo
     INDIGO_BEGIN                                                                                                                                               \
     {                                                                                                                                                          \
         {                                                                                                                                                      \
-            auto indexes = sf::slock_safe_ptr(_indexes());                                                                                                       \
+            auto indexes = sf::slock_safe_ptr(_indexes());                                                                                                     \
             if (!indexes->has(db_id))                                                                                                                          \
                 throw BingoException("Incorrect database instance");                                                                                           \
         }                                                                                                                                                      \
@@ -43,7 +43,7 @@ namespace indigo
     INDIGO_BEGIN_STATIC                                                                                                                                        \
     {                                                                                                                                                          \
         {                                                                                                                                                      \
-            auto indexes = sf::slock_safe_ptr(_indexes());                                                                                                       \
+            auto indexes = sf::slock_safe_ptr(_indexes());                                                                                                     \
             if (!indexes->has(db_id))                                                                                                                          \
                 throw BingoException("Incorrect database instance");                                                                                           \
         }                                                                                                                                                      \
@@ -53,7 +53,7 @@ namespace indigo
     INDIGO_BEGIN                                                                                                                                               \
     {                                                                                                                                                          \
         {                                                                                                                                                      \
-            const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                     \
+            const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                   \
             if (!searches_data->searches.has(search_id))                                                                                                       \
             {                                                                                                                                                  \
                 throw BingoException("Incorrect search object");                                                                                               \
@@ -66,7 +66,7 @@ namespace indigo
     INDIGO_BEGIN_STATIC                                                                                                                                        \
     {                                                                                                                                                          \
         {                                                                                                                                                      \
-            const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                     \
+            const auto searches_data = sf::slock_safe_ptr(_searches_data());                                                                                   \
             if (!searches_data->searches.has(search_id))                                                                                                       \
             {                                                                                                                                                  \
                 throw BingoException("Incorrect search object");                                                                                               \

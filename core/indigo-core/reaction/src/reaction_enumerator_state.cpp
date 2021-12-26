@@ -88,7 +88,7 @@ Molecule& ReactionEnumeratorState::ReactionMonomers::getMonomer(int mon_index)
 void ReactionEnumeratorState::ReactionMonomers::addMonomer(int reactant_idx, Molecule& monomer, int deep_level, int tube_idx)
 {
     Molecule* mol_ptr = new Molecule();
-    _monomers.add( mol_ptr );
+    _monomers.add(mol_ptr);
 
     Molecule& new_monomer = *mol_ptr;
     new_monomer.clone(monomer, NULL, NULL);
@@ -109,7 +109,7 @@ void ReactionEnumeratorState::ReactionMonomers::removeMonomer(int idx)
     }
 
     _reactant_indexes.pop();
-    delete(_monomers.pop());
+    delete (_monomers.pop());
     _deep_levels.pop();
     _tube_indexes.pop();
 }

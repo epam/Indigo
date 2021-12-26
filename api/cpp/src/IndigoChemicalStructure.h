@@ -51,7 +51,7 @@ namespace indigo_cpp
     protected:
         IndigoChemicalStructure(int id, IndigoSessionPtr session);
         IndigoChemicalStructure(IndigoChemicalStructure&&) = default;
-        IndigoChemicalStructure& operator =(IndigoChemicalStructure&&) = default;
+        IndigoChemicalStructure& operator=(IndigoChemicalStructure&&) = default;
         IndigoChemicalStructure(const IndigoChemicalStructure& other);
         IndigoChemicalStructure& operator=(const IndigoChemicalStructure&) = default;
         ~IndigoChemicalStructure() override = default;

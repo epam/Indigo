@@ -31,7 +31,8 @@ namespace indigo
 
     DECL_EXCEPTION(PtrArrayError);
 
-    template <typename T> class PtrArray
+    template <typename T>
+    class PtrArray
     {
     public:
         explicit PtrArray()

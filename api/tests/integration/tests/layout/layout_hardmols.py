@@ -1,7 +1,7 @@
-import sys
 import errno
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -12,9 +12,12 @@ if not os.path.exists(joinPathPy("out", __file__)):
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
-saver = indigo.createFileSaver(joinPathPy("out/layout_hardmols.sdf", __file__), "SDF")
+saver = indigo.createFileSaver(
+    joinPathPy("out/layout_hardmols.sdf", __file__), "SDF"
+)
 
 chebi_path = joinPathPy("../../../../../data/molecules/chebi", __file__)
+
 
 def testLayout():
     indigo.setOption("layout-max-iterations", 1)
@@ -28,7 +31,9 @@ def testLayout():
         try:
             mol.layout()
         except IndigoException as e:
-            print("Exception: " + getIndigoExceptionText(e) + " on " + mol.name())
+            print(
+                "Exception: " + getIndigoExceptionText(e) + " on " + mol.name()
+            )
         saver.append(mol)
 
         print(mol.smiles())
@@ -37,7 +42,12 @@ def testLayout():
         try:
             newmol.layout()
         except IndigoException as e:
-            print("Exception: " + getIndigoExceptionText(e) + " on " + newmol.name())
+            print(
+                "Exception: "
+                + getIndigoExceptionText(e)
+                + " on "
+                + newmol.name()
+            )
         saver.append(newmol)
 
 
@@ -45,7 +55,9 @@ testLayout()
 
 print("*** Layout with timeout ***")
 indigo.setOption("timeout", "100")
-m = indigo.loadMoleculeFromFile(joinPathPy("molecules/layout-timeout.mol", __file__))
+m = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/layout-timeout.mol", __file__)
+)
 
 for it in [1, 2, 3, 32, 64, 0]:
     indigo.setOption("layout-max-iterations", it)

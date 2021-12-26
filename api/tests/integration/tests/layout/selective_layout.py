@@ -1,9 +1,16 @@
-import sys
-import os
 import errno
+import os
+import sys
 
-sys.path.append('../../common')
-from env_indigo import Indigo, IndigoException, joinPathPy, getRefFilepath, getIndigoExceptionText, moleculeLayoutDiff
+sys.path.append("../../common")
+from env_indigo import (
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    getRefFilepath,
+    joinPathPy,
+    moleculeLayoutDiff,
+)
 
 if not os.path.exists(joinPathPy("out", __file__)):
     try:
@@ -16,7 +23,7 @@ if not os.path.exists(joinPathPy("out", __file__)):
 def create_sd_test_dict(fname):
     res = dict()
     for item in indigo.iterateSDFile(fname):
-        prop = item.getProperty('test')
+        prop = item.getProperty("test")
         res[prop] = item.rawData()
     return res
 
@@ -38,14 +45,20 @@ atoms_lists.append(atoms_lists[0])
 atoms_lists.append([[7], [56], [26], [29], [66], [76]])
 atoms_lists.append([[0, 1, 2, 3, 4, 5, 6, 7]])
 
-for idx, item in enumerate(indigo.iterateSDFile(joinPathPy("molecules/selective_layout.sdf", __file__))):
+for idx, item in enumerate(
+    indigo.iterateSDFile(
+        joinPathPy("molecules/selective_layout.sdf", __file__)
+    )
+):
     try:
         for atom_list in atoms_lists[idx]:
             mol_test = "item #{} selection {} ".format(idx, atom_list)
             print("Test layout for {}".format(mol_test))
             mol = item.clone()
             mol.getSubmolecule(atom_list).layout()
-            res = moleculeLayoutDiff(indigo, mol, layout_dict[mol_test], ref_is_file=False)
+            res = moleculeLayoutDiff(
+                indigo, mol, layout_dict[mol_test], ref_is_file=False
+            )
             print("  Result: {}".format(res))
             mol.setProperty("test", mol_test)
             saver1.sdfAppend(mol)
@@ -53,7 +66,9 @@ for idx, item in enumerate(indigo.iterateSDFile(joinPathPy("molecules/selective_
             print("Test clean2d for {}".format(mol_test))
             mol = item.clone()
             mol.getSubmolecule(atom_list).clean2d()
-            res = moleculeLayoutDiff(indigo, mol, clean2d_dict[mol_test], ref_is_file=False)
+            res = moleculeLayoutDiff(
+                indigo, mol, clean2d_dict[mol_test], ref_is_file=False
+            )
             print("  Result: {}".format(res))
             mol.setProperty("test", mol_test)
             saver2.sdfAppend(mol)

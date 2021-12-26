@@ -19,11 +19,11 @@
 #ifndef __ringo_fetch_context__
 #define __ringo_fetch_context__
 
-#include <memory>
 #include "core/ringo_matchers.h"
 #include "oracle/ringo_fast_index.h"
 #include "oracle/ringo_oracle.h"
 #include "oracle/ringo_shadow_fetch.h"
+#include <memory>
 
 using namespace indigo;
 

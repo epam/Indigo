@@ -389,7 +389,7 @@ enum CDXDatumID
     kCDXObj_TLCPlate,                  // 0x8023
     kCDXObj_TLCLane,                   // 0x8024
     kCDXObj_TLCSpot,                   // 0x8025
-                     // Add new objects here
+                                       // Add new objects here
     kCDXObj_UnknownObject = 0x8FFF
 };
 
@@ -744,7 +744,6 @@ enum CDXOrbitalType
     kCDXOrbitalType_dz2PlusFilled,     // filled dz2 orbital
     kCDXOrbitalType_dz2MinusFilled,    // filled dz2 orbital (opposite shading)
     kCDXOrbitalType_dxyFilled          // filled dxy orbital
-
 };
 
 enum CDXBracketUsage

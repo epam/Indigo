@@ -1,11 +1,11 @@
-import os
-import sys
 import errno
 import math
+import os
+import sys
 
 eps = 0.01
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 if not os.path.exists(joinPathPy("out", __file__)):
@@ -24,7 +24,9 @@ saver = indigo.writeFile(joinPathPy("out/result_simple_cycles.sdf", __file__))
 idx = 1
 
 print("**** Test simple_cycles *****")
-for item in indigo.iterateSmilesFile(joinPathPy("molecules/simple_cycles.smi", __file__)):
+for item in indigo.iterateSmilesFile(
+    joinPathPy("molecules/simple_cycles.smi", __file__)
+):
     try:
         mol = item.clone()
         mol.layout()
@@ -59,12 +61,17 @@ for item in indigo.iterateSmilesFile(joinPathPy("molecules/simple_cycles.smi", _
             min_radius = min(min_radius, radius[i])
             max_radius = max(max_radius, radius[i])
 
-        if (max_radius - min_radius > eps):
+        if max_radius - min_radius > eps:
             print("Vertices not lies of circle")
         else:
             dist = [0 for i in range(n)]
             for i in range(n):
-                dist[i] = math.sqrt((co[(i + 1) % n][0] - co[i][0]) * (co[(i + 1) % n][0] - co[i][0]) + (co[(i + 1) % n][1] - co[i][1]) * (co[(i + 1) % n][1] - co[i][1]))
+                dist[i] = math.sqrt(
+                    (co[(i + 1) % n][0] - co[i][0])
+                    * (co[(i + 1) % n][0] - co[i][0])
+                    + (co[(i + 1) % n][1] - co[i][1])
+                    * (co[(i + 1) % n][1] - co[i][1])
+                )
 
             min_dist = dist[0]
             max_dist = dist[0]
@@ -72,15 +79,15 @@ for item in indigo.iterateSmilesFile(joinPathPy("molecules/simple_cycles.smi", _
                 min_dist = min(min_dist, dist[i])
                 max_dist = max(max_dist, dist[i])
 
-            if (max_dist - min_dist > eps):
+            if max_dist - min_dist > eps:
                 print("Polygon is not right")
             else:
                 up = 0
                 for i in range(n):
-                    if (co[i][1] > co[up][1]):
+                    if co[i][1] > co[up][1]:
                         up = i
 
-            if (abs(co[up][0]) > eps):
+            if abs(co[up][0]) > eps:
                 print("Cycle is not suspended")
             else:
                 print("OK")
@@ -97,8 +104,14 @@ ref_path = getRefFilepath("cyclopropadiens.sdf")
 ref = indigo.iterateSDFile(ref_path)
 
 print("**** Test cyclopropadiens *****")
-for idx, mol in enumerate(indigo.iterateSmilesFile(joinPathPy("molecules/cyclopropadiens.smi", __file__))):
+for idx, mol in enumerate(
+    indigo.iterateSmilesFile(
+        joinPathPy("molecules/cyclopropadiens.smi", __file__)
+    )
+):
     mol.layout()
-    res = moleculeLayoutDiff(indigo, mol, ref.at(idx).rawData(), ref_is_file = False)
+    res = moleculeLayoutDiff(
+        indigo, mol, ref.at(idx).rawData(), ref_is_file=False
+    )
     print("  Item #{}: Result: {}".format(idx, res))
     saver.sdfAppend(mol)

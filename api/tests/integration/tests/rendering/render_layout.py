@@ -1,7 +1,8 @@
-import sys, os
 import errno
+import os
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 from rendering import *
 
@@ -22,20 +23,28 @@ indigo.setOption("render-output-format", "png")
 
 images_to_check = []
 
-for root, dirnames, filenames in os.walk(joinPathPy("molecules/layout", __file__)):
+for root, dirnames, filenames in os.walk(
+    joinPathPy("molecules/layout", __file__)
+):
     filenames.sort()
     for filename in filenames:
         print("%s: " % filename)
         try:
-            m = indigo.loadMoleculeFromFile(joinPathPy(os.path.join(root, filename), __file__))
+            m = indigo.loadMoleculeFromFile(
+                joinPathPy(os.path.join(root, filename), __file__)
+            )
 
             for idx in range(3):
                 print(m.canonicalSmiles())
                 name = filename + "_%d.png" % idx
-                m.saveMolfile(joinPathPy(os.path.join(out_dir, name + ".mol"), __file__))
+                m.saveMolfile(
+                    joinPathPy(os.path.join(out_dir, name + ".mol"), __file__)
+                )
 
-                renderer.renderToFile(m, joinPathPy(os.path.join(out_dir, name), __file__))
-                images_to_check.append('layout/' + name)
+                renderer.renderToFile(
+                    m, joinPathPy(os.path.join(out_dir, name), __file__)
+                )
+                images_to_check.append("layout/" + name)
                 m = indigo.loadMolecule(m.molfile())
                 m.layout()
 

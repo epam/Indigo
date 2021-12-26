@@ -55,7 +55,8 @@ namespace indigo
         void restoreTransform();
         void resetTransform();
         void removeStoredTransform();
-        void drawRectangle(const Vec2f& p, const Vec2f& sz);
+        void drawRectangle(const Vec2f& v1, const Vec2f& sz);
+        void drawEllipse(const Vec2f& v1, const Vec2f& v2);
         void drawItemBackground(const RenderItem& item);
         void drawTextItemText(const TextItem& ti, bool idle);
         void drawTextItemText(const TextItem& ti, const Vec3f& color, bool idle);
@@ -63,7 +64,7 @@ namespace indigo
         void drawBracket(RenderItemBracket& bracket);
         void drawAttachmentPoint(RenderItemAttachmentPoint& ri, bool idle);
         void drawRSiteAttachmentIndex(RenderItemRSiteAttachmentIndex& ri);
-        void drawLine(const Vec2f& v0, const Vec2f& v1 );
+        void drawLine(const Vec2f& v0, const Vec2f& v1);
         void fillHex(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4, const Vec2f& v5);
         void fillQuad(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);
         void fillQuadStripes(const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, int cnt);
@@ -152,8 +153,8 @@ namespace indigo
         void moveTo(const Vec2f& v);
         void moveToRel(float x, float y);
         void moveToRel(const Vec2f& v);
-        void arc( cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2 );
-        
+        void arc(cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2);
+
         int _width;
         int _height;
         float _defaultScale;

@@ -83,7 +83,8 @@ namespace indigo
 #define TL_RELEASE_SESSION_ID(id) _SIDManager::getInst().releaseSessionId(id)
 
     // Container that keeps one instance of specified type per session
-    template <typename T> class _SessionLocalContainer
+    template <typename T>
+    class _SessionLocalContainer
     {
     public:
         T& createOrGetLocalCopy(const qword id = TL_GET_SESSION_ID())

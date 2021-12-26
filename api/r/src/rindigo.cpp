@@ -3,8 +3,8 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-#include "indigo.h"
 #include "indigo-renderer.h"
+#include "indigo.h"
 
 #ifndef REXPORT_SYMBOL
 #ifdef _WIN32

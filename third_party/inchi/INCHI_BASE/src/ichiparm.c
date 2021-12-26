@@ -1234,6 +1234,10 @@ int ReadCommandLineParms( int argc,
             }
 #endif
             /* Generation options */
+            else if (!inchi_stricmp(pArg, "WarnOnEmptyStructure"))
+            {
+                ip->bAllowEmptyStructure = 1;
+            }
             else if (!inchi_memicmp( pArg, "W", 1 ))
             {
                 long timeout_value;
@@ -1286,11 +1290,6 @@ int ReadCommandLineParms( int argc,
                 {
                     ip->msec_MaxTime = timeout_value;
                 }
-            }
-
-            else if (!inchi_stricmp( pArg, "WarnOnEmptyStructure" ))
-            {
-                ip->bAllowEmptyStructure = 1;
             }
             /*--- Conversion modes ---*/
 #if ( READ_INCHI_STRING == 1 )

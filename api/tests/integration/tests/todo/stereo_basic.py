@@ -1,14 +1,17 @@
 from __future__ import print_function
+
 import sys
-sys.path.append('../../common')
+
+sys.path.append("../../common")
 from env_indigo import Indigo, IndigoException
 
 indigo = Indigo()
-indigo.setOption('ignore-stereochemistry-errors', True)
-indigo.setOption('smart-layout', True)
+indigo.setOption("ignore-stereochemistry-errors", True)
+indigo.setOption("smart-layout", True)
 
 
-for struct in ('''
+for struct in (
+    """
   Ketcher 10171617122D 1   1.00000     0.00000     0
 
   6  6  0     0  0            999 V2000
@@ -25,7 +28,11 @@ for struct in ('''
   6  1  1  0     0  0
   1  2  2  0     0  0
 M  END
-''', 'C1=CC=CC=C1', 'F/C=C/F', 'F/C=C\F'):
+""",
+    "C1=CC=CC=C1",
+    "F/C=C/F",
+    "F/C=C\F",
+):
     print(struct)
     m = indigo.loadMolecule(struct)
     for b in m.iterateBonds():

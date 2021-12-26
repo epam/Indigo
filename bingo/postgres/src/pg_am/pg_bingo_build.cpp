@@ -3,13 +3,14 @@
 extern "C"
 {
 #include "postgres.h"
+
+#include "fmgr.h"
+
 #include "access/htup.h"
 #include "catalog/index.h"
 #include "catalog/pg_type.h"
-#include "fmgr.h"
 #include "storage/bufmgr.h"
 #include "utils/rel.h"
-
 
 #if PG_VERSION_NUM / 100 >= 906
 #include "access/amapi.h"
@@ -23,6 +24,7 @@ extern "C"
 #include "bingo_pg_fix_post.h"
 
 #include "base_cpp/tlscont.h"
+
 #include "bingo_pg_build.h"
 #include "bingo_pg_common.h"
 #include "bingo_postgres.h"
@@ -39,9 +41,9 @@ using namespace indigo;
 extern "C"
 {
 #ifdef __MINGW32__
-EXPORT_SYMBOL PG_MODULE_MAGIC;
+    EXPORT_SYMBOL PG_MODULE_MAGIC;
 #else
-PG_MODULE_MAGIC;
+    PG_MODULE_MAGIC;
 #endif
 
 #if PG_VERSION_NUM / 100 >= 906
@@ -198,14 +200,13 @@ Datum bingo_build(PG_FUNCTION_ARGS)
          */
         BINGO_PG_TRY
         {
-            #if PG_VERSION_NUM / 100 >= 1200
-                reltuples = table_index_build_scan(heap, index, indexInfo, true, true, bingoIndexCallback, (void*)&build_engine, NULL);
-            #elif PG_VERSION_NUM / 100 >= 1100
-                reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine, NULL);
-            #else
-                reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
-            #endif
-
+#if PG_VERSION_NUM / 100 >= 1200
+            reltuples = table_index_build_scan(heap, index, indexInfo, true, true, bingoIndexCallback, (void*)&build_engine, NULL);
+#elif PG_VERSION_NUM / 100 >= 1100
+            reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine, NULL);
+#else
+        reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
+#endif
         }
         BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", message));
 

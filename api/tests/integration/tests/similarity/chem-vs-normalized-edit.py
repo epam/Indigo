@@ -1,8 +1,9 @@
 import sys
-sys.path.append('../../common')
-from env_indigo import *
 
+sys.path.append("../../common")
 from itertools import *
+
+from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", "1")
@@ -33,11 +34,11 @@ worst_problem_difference = 0
 worst_problem_data = (None, None, 0.0, 0.0)
 
 for (m1, m2) in product(control_mols, mols):
-    f1 = m1.fingerprint('sim')
-    f2 = m2.fingerprint('sim')
+    f1 = m1.fingerprint("sim")
+    f2 = m2.fingerprint("sim")
 
-    norm = indigo.similarity(m1, m2, 'normalized-edit')
-    chem = indigo.similarity(f1, f2, 'tversky 0.7 0.7')
+    norm = indigo.similarity(m1, m2, "normalized-edit")
+    chem = indigo.similarity(f1, f2, "tversky 0.7 0.7")
     diff = abs(norm - chem)
 
     check_counter += 1
@@ -62,12 +63,32 @@ print("    Number of pairs: %d" % check_counter)
 
 DEBUG = False  # turn off for reproducible results
 if DEBUG:
-    print("    Out of %d pairs %d pairs were above the similarity threshold %f, which is %d%%" %
-          (check_counter, problems_counter, similarity_threshold, round(100.0 * problems_counter / check_counter)))
-    print("    Out of %d pairs %d pairs were above the zero similarity threshold %f, which is %d%%" %
-          (check_counter, zero_problems_counter, zero_similarity_threshold, round(100.0 * zero_problems_counter / check_counter)))
-    print("    %d pairs were above the alarm similarity threshold %f, which is %d%%" %
-          (alarm_problems_counter, alarm_similarity_threshold, round(100.0 * alarm_problems_counter / check_counter)))
+    print(
+        "    Out of %d pairs %d pairs were above the similarity threshold %f, which is %d%%"
+        % (
+            check_counter,
+            problems_counter,
+            similarity_threshold,
+            round(100.0 * problems_counter / check_counter),
+        )
+    )
+    print(
+        "    Out of %d pairs %d pairs were above the zero similarity threshold %f, which is %d%%"
+        % (
+            check_counter,
+            zero_problems_counter,
+            zero_similarity_threshold,
+            round(100.0 * zero_problems_counter / check_counter),
+        )
+    )
+    print(
+        "    %d pairs were above the alarm similarity threshold %f, which is %d%%"
+        % (
+            alarm_problems_counter,
+            alarm_similarity_threshold,
+            round(100.0 * alarm_problems_counter / check_counter),
+        )
+    )
 
 all_is_fine_flag = True
 
@@ -75,24 +96,33 @@ if 1.0 * alarm_problems_counter / check_counter > 0.0001:
     all_is_fine_flag = False
     (m1, m2, norm, chem) = worst_problem_data
     print("  ALARM!\n")
-    print("    Too many pairs (%d) were above the alarm problem threshold %f\n" %
-          (alarm_problems_counter, alarm_similarity_threshold))
+    print(
+        "    Too many pairs (%d) were above the alarm problem threshold %f\n"
+        % (alarm_problems_counter, alarm_similarity_threshold)
+    )
     print("    mol1: %s\n" % (m1.canonicalSmiles()))
     print("    mol2: %s\n" % (m2.canonicalSmiles()))
     print("    normalized-edit sim: %f, chem sim: %f\n" % (norm, chem))
-    print("    The difference %f is bigger than the alarm threshold %f\n" %
-          (worst_problem_difference, alarm_similarity_threshold))
+    print(
+        "    The difference %f is bigger than the alarm threshold %f\n"
+        % (worst_problem_difference, alarm_similarity_threshold)
+    )
 
 if 1.0 * zero_problems_counter / check_counter > 0.001:
     all_is_fine_flag = False
     print("  ALARM!\n")
-    print("    Too many pairs (%d) were above the zero problem threshold %f\n" %
-          (zero_problems_counter, zero_similarity_threshold))
+    print(
+        "    Too many pairs (%d) were above the zero problem threshold %f\n"
+        % (zero_problems_counter, zero_similarity_threshold)
+    )
 
 if 1.0 * problems_counter / check_counter > 0.25:
     all_is_fine_flag = False
     print("  ALARM!\n")
-    print("    Too many pairs (%d) were above the problem threshold %f\n" % (problems_counter, similarity_threshold))
+    print(
+        "    Too many pairs (%d) were above the problem threshold %f\n"
+        % (problems_counter, similarity_threshold)
+    )
 
 if all_is_fine_flag:
     print("    All seems to be fine")

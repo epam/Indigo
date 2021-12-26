@@ -231,7 +231,7 @@ CEXPORT int indigoInvertStereo(int item)
 
             if (ia.mol.stereocenters.getType(ia.idx) > 0)
             {
-                int *pyramid = ia.mol.stereocenters.getPyramid(ia.idx);
+                int* pyramid = ia.mol.stereocenters.getPyramid(ia.idx);
                 if (pyramid == 0)
                     throw IndigoError("indigoInvertStereo: internal");
                 std::swap(pyramid[0], pyramid[1]);

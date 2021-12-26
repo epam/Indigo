@@ -1,7 +1,8 @@
-import sys
 import os
 import platform
-from env_indigo import isIronPython, isJython, getPlatform
+import sys
+
+from env_indigo import getPlatform, isIronPython, isJython
 
 if sys.version_info > (3, 0):
     from .bistring3 import BitString
@@ -20,29 +21,46 @@ if isIronPython():
     import System.Environment
     import System.Runtime.InteropServices.RuntimeInformation
 
-    dotnet_framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
-    if dotnet_framework.startswith('.NET Core'):
+    dotnet_framework = (
+        System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
+    )
+    if dotnet_framework.startswith(".NET Core"):
         clr.AddReferenceToFileAndPath(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dotnet', 'System.Drawing.Common.dll'))
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "dotnet",
+                "System.Drawing.Common.dll",
+            )
+        )
         os_version = System.Environment.OSVersion.ToString()
 
-        if os_version.startswith('Unix'):
+        if os_version.startswith("Unix"):
             clr.AddReferenceToFileAndPath(
-                os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dotnet', 'System.Drawing.Common.unix.dll'))
-        elif os_version.startswith('Microsoft Windows'):
+                os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    "dotnet",
+                    "System.Drawing.Common.unix.dll",
+                )
+            )
+        elif os_version.startswith("Microsoft Windows"):
             clr.AddReferenceToFileAndPath(
-                os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dotnet', 'System.Drawing.Common.win.dll'))
+                os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    "dotnet",
+                    "System.Drawing.Common.win.dll",
+                )
+            )
         else:
             raise SystemError("Unsupported OS: " + os_version)
 
     clr.AddReference("System.Drawing")
-    from System.Drawing import Bitmap, Graphics, Rectangle, Drawing2D
+    from System.Drawing import Bitmap, Drawing2D, Graphics, Rectangle
 elif isJython():
-    from java.lang import System
+    from java.awt import Image, RenderingHints
     from java.awt.image import BufferedImage
-    from javax.imageio import ImageIO
     from java.io import File
-    from java.awt import RenderingHints, Image
+    from java.lang import System
+    from javax.imageio import ImageIO
 else:
     try:
         import Image
@@ -75,11 +93,22 @@ class ImageHash(object):
             image = ImageIO.read(File(self.image_path))
             height = image.getHeight()
             width = image.getWidth()
-            newImage = BufferedImage(self.hash_size, self.hash_size, BufferedImage.TYPE_INT_ARGB)
+            newImage = BufferedImage(
+                self.hash_size, self.hash_size, BufferedImage.TYPE_INT_ARGB
+            )
             g = newImage.createGraphics()
-            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
-            g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+            g.setRenderingHint(
+                RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BICUBIC,
+            )
+            g.setRenderingHint(
+                RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_QUALITY,
+            )
+            g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON,
+            )
             g.drawImage(image, 0, 0, self.hash_size, self.hash_size, None)
             g.dispose()
             allchannelpixels = [[], [], [], []]
@@ -97,9 +126,13 @@ class ImageHash(object):
             newImage = Bitmap(self.hash_size, self.hash_size)
             gr = Graphics.FromImage(newImage)
             gr.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
-            gr.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+            gr.InterpolationMode = (
+                Drawing2D.InterpolationMode.HighQualityBicubic
+            )
             gr.PixelOffsetMode = Drawing2D.PixelOffsetMode.HighQuality
-            gr.DrawImage(srcImage, Rectangle(0, 0, self.hash_size, self.hash_size))
+            gr.DrawImage(
+                srcImage, Rectangle(0, 0, self.hash_size, self.hash_size)
+            )
             allchannelpixels = [[], [], [], []]
             for i in range(self.hash_size):
                 for j in range(self.hash_size):
@@ -111,9 +144,13 @@ class ImageHash(object):
         else:
             self.image = Image.open(self.image_path)
             width, height = self.image.size
-            image = self.image.resize((self.hash_size, self.hash_size), Image.ANTIALIAS)
+            image = self.image.resize(
+                (self.hash_size, self.hash_size), Image.ANTIALIAS
+            )
             # image.show()
-            allchannelpixels = [list(channel.getdata()) for channel in image.split()]
+            allchannelpixels = [
+                list(channel.getdata()) for channel in image.split()
+            ]
 
         bits = []
         for pixels in allchannelpixels:
@@ -122,15 +159,24 @@ class ImageHash(object):
 
 
 def imageDiff(imp1, imp2):
-    imh1, im1_width, im1_height = ImageHash(imp1, HASH_SIZE).average_hash_and_sizes()
-    imh2, im2_width, im2_height = ImageHash(imp2, HASH_SIZE).average_hash_and_sizes()
+    imh1, im1_width, im1_height = ImageHash(
+        imp1, HASH_SIZE
+    ).average_hash_and_sizes()
+    imh2, im2_width, im2_height = ImageHash(
+        imp2, HASH_SIZE
+    ).average_hash_and_sizes()
     if (abs((float(im1_width) / float(im2_width)) - 1.0) > 0.1) or (
-            abs((float(im1_height) / float(im2_height)) - 1.0) > 0.1):
+        abs((float(im1_height) / float(im2_height)) - 1.0) > 0.1
+    ):
         raise RenderingTestException(
-            "Images have different sizes: %sx%s (ref) and %sx%s (out)" % (im1_width, im1_height, im2_width, im2_height))
+            "Images have different sizes: %sx%s (ref) and %sx%s (out)"
+            % (im1_width, im1_height, im2_width, im2_height)
+        )
     if len(imh1) != len(imh2):
         raise RenderingTestException(
-            "Images have different channels count: %s (ref) and %s (out)" % (len(imh1), len(imh2)))
+            "Images have different channels count: %s (ref) and %s (out)"
+            % (len(imh1), len(imh2))
+        )
     results = []
     for i in range(len(imh1)):
         results.append((imh1[i] ^ imh2[i]).bin.count("1"))
@@ -174,44 +220,63 @@ def checkBitmapSimilarity(filename, ref_filename):
         ref_filename = filename
     try:
         system = getPlatform()
-        if system != 'mac' and system != 'linux':
-            if os.name == 'nt':
-                system = 'win'
-            elif os.name == 'posix':
+        if system != "mac" and system != "linux":
+            if os.name == "nt":
+                system = "win"
+            elif os.name == "posix":
                 if not platform.mac_ver()[0]:
-                    system = 'linux'
+                    system = "linux"
                 else:
-                    system = 'mac'
-            elif os.name == 'java':
+                    system = "mac"
+            elif os.name == "java":
                 osName = System.getProperty("os.name")
                 if osName.find("Windows") != -1:
-                    system = 'win'
-                elif osName.find('Linux') != -1:
-                    system = 'linux'
-                elif osName.find('Mac OS') != -1:
-                    system = 'mac'
+                    system = "win"
+                elif osName.find("Linux") != -1:
+                    system = "linux"
+                elif osName.find("Mac OS") != -1:
+                    system = "mac"
                 else:
-                    raise RenderingTestException("No reference images for this operating system: {0}".format(osName))
+                    raise RenderingTestException(
+                        "No reference images for this operating system: {0}".format(
+                            osName
+                        )
+                    )
             else:
-                raise RenderingTestException("No reference images for this operating system: {0}".format(os.name))
+                raise RenderingTestException(
+                    "No reference images for this operating system: {0}".format(
+                        os.name
+                    )
+                )
         dirname = os.path.normpath(
-            os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'tests', 'rendering')))
-        results = imageDiff('%s/ref/%s/%s' % (dirname, system, ref_filename), '%s/out/%s' % (dirname, filename))
+            os.path.abspath(
+                os.path.join(
+                    os.path.dirname(__file__), "..", "..", "tests", "rendering"
+                )
+            )
+        )
+        results = imageDiff(
+            "%s/ref/%s/%s" % (dirname, system, ref_filename),
+            "%s/out/%s" % (dirname, filename),
+        )
     except RenderingTestException as e:
-        return '%s rendering status: Problem: %s' % (filename, str(e))
+        return "%s rendering status: Problem: %s" % (filename, str(e))
 
-    channels = ['red', 'green', 'blue', 'alpha']
+    channels = ["red", "green", "blue", "alpha"]
     for i, result in enumerate(results):
         if result > (HASH_SIZE ** 2) * 0.1:
-            return '%s rendering status: Problem: PNG similarity is %s for %s channel' % (
-            filename, round(1 - (result / float(HASH_SIZE ** 2)), 2), channels[i])
+            return "%s rendering status: Problem: PNG similarity is %s for %s channel" % (
+                filename,
+                round(1 - (result / float(HASH_SIZE ** 2)), 2),
+                channels[i],
+            )
 
-    return '%s rendering status: OK' % filename
+    return "%s rendering status: OK" % filename
 
 
 def checkImageSimilarity(filename, ref_filename=None):
-    if filename.endswith('.svg'):
+    if filename.endswith(".svg"):
         # checkSvgSimilarity(filename)
-        return ''
+        return ""
     else:
         return checkBitmapSimilarity(filename, ref_filename)

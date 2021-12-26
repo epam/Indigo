@@ -20,10 +20,10 @@
 #define __bingo_core_c_internal_h___
 
 #include "base_c/defs.h"
-#include <memory>
 #include "core/bingo_context.h"
 #include "core/mango_context.h"
 #include "core/ringo_context.h"
+#include <memory>
 
 #include "core/bingo_error.h"
 #include "core/mango_matchers.h"

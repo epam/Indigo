@@ -19,8 +19,8 @@
 #ifndef __os_sync_wrapper_h__
 #define __os_sync_wrapper_h__
 
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"

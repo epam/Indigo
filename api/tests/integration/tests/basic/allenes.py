@@ -1,7 +1,7 @@
-import sys
 import errno
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -14,15 +14,35 @@ if not os.path.exists(joinPathPy("out", __file__)):
         if e.errno != errno.EEXIST:
             raise
 
-saver = indigo.createFileSaver(joinPathPy("out/allenes_out.sdf", __file__), "sdf")
+saver = indigo.createFileSaver(
+    joinPathPy("out/allenes_out.sdf", __file__), "sdf"
+)
 
-allenes_sets = [ 
-    (joinPathPy("molecules/allenes/allenes.smi", __file__), indigo.iterateSmilesFile),
-    (joinPathPy("../../../../../data/molecules/allenes/all-allenes.sdf", __file__), indigo.iterateSDFile),
-    (joinPathPy("molecules/allenes/two-allenes.mol", __file__), indigo.iterateSDFile),
-    (joinPathPy("molecules/allenes/allenes-angle.mol", __file__), indigo.iterateSDFile),
-    (joinPathPy("molecules/allenes/no-coord.mol", __file__), indigo.iterateSDFile),
-    ]
+allenes_sets = [
+    (
+        joinPathPy("molecules/allenes/allenes.smi", __file__),
+        indigo.iterateSmilesFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/allenes/all-allenes.sdf", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("molecules/allenes/two-allenes.mol", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("molecules/allenes/allenes-angle.mol", __file__),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy("molecules/allenes/no-coord.mol", __file__),
+        indigo.iterateSDFile,
+    ),
+]
+
 
 def testSingle(m):
     print("  countAlleneCenters = %d" % (m.countAlleneCenters()))
@@ -39,7 +59,7 @@ def testSingle(m):
     mh.unfoldHydrogens()
     print("  Unfold: " + mh.smiles())
     print("  Cano Unfold: " + mh.canonicalSmiles())
-    
+
     print("  Removing atoms:")
     mr = m.clone()
     while mr.countAtoms() != 0:
@@ -47,8 +67,9 @@ def testSingle(m):
         a.remove()
         print("    %s" % (mr.smiles()))
 
+
 mols = []
-        
+
 idx = 1
 for file, func in allenes_sets:
     print("Molecules set: %s" % (relativePath(file)))
@@ -59,23 +80,21 @@ for file, func in allenes_sets:
             testSingle(m.clone())
             mols.append((idx, m.clone()))
         except IndigoException as e:
-            print("  Error: %s" % (getIndigoExceptionText(e)))        
+            print("  Error: %s" % (getIndigoExceptionText(e)))
         idx += 1
-        
+
 print("Substructure matching")
 qmols = [(idx, indigo.loadQueryMolecule(mq.smiles()), []) for idx, mq in mols]
-    
+
 for ti, t in mols:
     matcher = indigo.substructureMatcher(t)
     for qi, q, matched in qmols:
         match = matcher.match(q)
         if match != None:
             matched.append(ti)
-            
+
 for qi, q, matched in qmols:
     matched_str = ""
     for ti in matched:
         matched_str += " %d" % (ti)
     print("%d: %s" % (qi, matched_str))
-    
-    

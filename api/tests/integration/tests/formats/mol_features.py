@@ -1,16 +1,20 @@
-import sys, os
-sys.path.append('../../common')
+import os
+import sys
+
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 
-def iterateSavingOptions ():
-    for val in [ "auto", "2000", "3000" ]:
+
+def iterateSavingOptions():
+    for val in ["auto", "2000", "3000"]:
         print(" molfile-saving-mode: %s" % (val))
         indigo.setOption("molfile-saving-mode", val)
         yield val
 
-def testReload (mol):
+
+def testReload(mol):
     molfile = mol.molfile()
     mol2 = indigo.loadMolecule(molfile)
     molfile2 = mol2.molfile()
@@ -18,22 +22,31 @@ def testReload (mol):
         print("Molecule is different after resave")
         sys.stderr.write("Molecule is different after resave")
 
+
 indigo.setOption("molfile-saving-skip-date", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
 if not os.access(joinPathPy("out", __file__), os.F_OK):
     os.mkdir(joinPathPy("out", __file__))
-saver = indigo.createFileSaver(joinPathPy("out/mol_features.sdf", __file__), "sdf")
-mol = indigo.loadMoleculeFromFile(joinPathPy('molecules/sgroups_2.mol', __file__))
+saver = indigo.createFileSaver(
+    joinPathPy("out/mol_features.sdf", __file__), "sdf"
+)
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/sgroups_2.mol", __file__)
+)
 for opt in iterateSavingOptions():
     print(mol.molfile())
     saver.append(mol)
-    
-mol = indigo.loadMoleculeFromFile(joinPathPy('molecules/all_features_mol.mol', __file__))
+
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/all_features_mol.mol", __file__)
+)
 for opt in iterateSavingOptions():
     print(mol.molfile())
     saver.append(mol)
 
 print("Iterate Groups")
+
+
 def getGroups(m):
     for g in m.iterateDataSGroups():
         yield "data", g, m.getDataSGroup(g.index())
@@ -46,7 +59,8 @@ def getGroups(m):
     for g in m.iterateRepeatingUnits():
         yield "repeating", g, m.getRepeatingUnit(g.index())
 
-def printGroupsInfo (m):
+
+def printGroupsInfo(m):
     for type, g, g2 in getGroups(m):
         print("%s %d" % (type, g.index()))
         for a, a2 in zip(g.iterateAtoms(), g2.iterateAtoms()):
@@ -56,29 +70,40 @@ def printGroupsInfo (m):
         if type == "data":
             print("  description =  " + g.description())
             print("  data =  " + g.data())
-        
+
+
 printGroupsInfo(mol)
-        
+
 print("*** SGroup hierarchy ***")
-mol = indigo.loadMoleculeFromFile(joinPathPy('molecules/indsp-144-non-stoichio_test1.mol', __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/indsp-144-non-stoichio_test1.mol", __file__)
+)
 printGroupsInfo(mol)
-    
+
 print("*** Checking different MOLFILE features from the specification ***")
-for mol in indigo.iterateSDFile(joinPathPy('molecules/check_specification.sdf', __file__)):
+for mol in indigo.iterateSDFile(
+    joinPathPy("molecules/check_specification.sdf", __file__)
+):
     try:
         print(mol.canonicalSmiles())
     except IndigoException as e:
         print(getIndigoExceptionText(e))
-    
+
 print("")
 print("*** Load query molecules from Molfiles ***")
-saver = indigo.createFileSaver(joinPathPy("out/query-molfile.sdf", __file__), "sdf")
-for root, dirnames, filenames in os.walk(joinPathPy("molecules/query-molfile", __file__)):
+saver = indigo.createFileSaver(
+    joinPathPy("out/query-molfile.sdf", __file__), "sdf"
+)
+for root, dirnames, filenames in os.walk(
+    joinPathPy("molecules/query-molfile", __file__)
+):
     filenames.sort()
     for filename in filenames:
         sys.stdout.write("%s:\n" % filename)
         try:
-            mol = indigo.loadQueryMoleculeFromFile(os.path.join(root, filename))
+            mol = indigo.loadQueryMoleculeFromFile(
+                os.path.join(root, filename)
+            )
             for opt in iterateSavingOptions():
                 print(mol.molfile())
                 saver.append(mol)
@@ -87,7 +112,9 @@ for root, dirnames, filenames in os.walk(joinPathPy("molecules/query-molfile", _
             print("  %s" % (getIndigoExceptionText(e)))
 
 print("*** Test to load large properties ***")
-for root, dirnames, filenames in os.walk(joinPathPy("molecules/ind-459", __file__)):
+for root, dirnames, filenames in os.walk(
+    joinPathPy("molecules/ind-459", __file__)
+):
     filenames.sort()
     for filename in filenames:
         sys.stdout.write("%s:\n" % filename)
@@ -98,14 +125,16 @@ for root, dirnames, filenames in os.walk(joinPathPy("molecules/ind-459", __file_
                     print("  ** %s: %s" % (prop.name(), prop.rawData()))
             except IndigoException as e:
                 print("  %s" % (getIndigoExceptionText(e)))
-            
+
 print("*** Long and multiline SGroup data ***")
-saver = indigo.createFileSaver(joinPathPy("out/multiline.sdf", __file__), "sdf")
-mols = [ 
-    'molecules/multiline-sgroups-ketcher-457-v2000.mol',
-    'molecules/multiline-sgroups-ketcher-457-empty.mol',
-    'molecules/multiline-sgroups-ketcher-457-v3000.mol',
-    'molecules/multiline-sgroups-ketcher-457-single.mol',
+saver = indigo.createFileSaver(
+    joinPathPy("out/multiline.sdf", __file__), "sdf"
+)
+mols = [
+    "molecules/multiline-sgroups-ketcher-457-v2000.mol",
+    "molecules/multiline-sgroups-ketcher-457-empty.mol",
+    "molecules/multiline-sgroups-ketcher-457-v3000.mol",
+    "molecules/multiline-sgroups-ketcher-457-single.mol",
 ]
 for molfile in mols:
     print(molfile)
@@ -115,24 +144,31 @@ for molfile in mols:
         saver.append(mol)
         testReload(mol)
 
-        
+
 print("*** Molfile properties ***")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/mol-with-prop.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/mol-with-prop.mol", __file__)
+)
 print(mol.smiles())
 for prop in mol.iterateProperties():
     print(prop.name() + ":" + prop.rawData())
-    
+
 print("*** Abbreviation attachement points ***")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/new-v3000-sap.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/new-v3000-sap.mol", __file__)
+)
 print(mol.smiles())
 print(mol.molfile())
 
 print("*** 2-digit pseudoatom index ***")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/invalid_pseudo.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/invalid_pseudo.mol", __file__)
+)
 print(mol.smiles())
 
-print('*** INDIGO_ALIAS molfile ***')
-mol = indigo.loadMolecule('''
+print("*** INDIGO_ALIAS molfile ***")
+mol = indigo.loadMolecule(
+    """
   Ketcher 08151618402D 1   1.00000     0.00000     0
 
  13 13  0     0  0            999 V2000
@@ -177,7 +213,8 @@ M  SDT   2 INDIGO_ALIAS
 M  SDD   2     0.8659    1.5001    AA    ALL  1      1
 M  SED   2 Pol
 M  END
-''')
+"""
+)
 
 indigo.setOption("molfile-saving-mode", "2000")
 print(mol.molfile())
@@ -188,5 +225,7 @@ print(mol.molfile())
 print(mol.cml())
 
 print("*** Single atom NOT list ***")
-mol = indigo.loadQueryMoleculeFromFile(joinPathPy("molecules/single_not_list.mol", __file__))
+mol = indigo.loadQueryMoleculeFromFile(
+    joinPathPy("molecules/single_not_list.mol", __file__)
+)
 print(mol.molfile())

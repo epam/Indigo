@@ -24,7 +24,6 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 
-
 namespace indigo
 {
 

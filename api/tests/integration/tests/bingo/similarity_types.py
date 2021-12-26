@@ -1,7 +1,13 @@
 import os
 import sys
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
+
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
 from env_indigo import *
+
 
 def searchSim(bingo, q, minSim, maxSim, metric=None):
     print("\n **** \n")
@@ -15,9 +21,9 @@ def searchSim(bingo, q, minSim, maxSim, metric=None):
     result.close()
 
 
-s1 = 'CC(=O)Oc1ccccc1C(=O)O'
-s2 = 'C(c1c(O)cccc1)(Oc1c(C(=O)O)cccc1)=O'
-s3 = 'COC(=O)c1ccc(-c2cc(OC)c(O)c(C=O)c2)cc1'
+s1 = "CC(=O)Oc1ccccc1C(=O)O"
+s2 = "C(c1c(O)cccc1)(Oc1c(C(=O)O)cccc1)=O"
+s3 = "COC(=O)c1ccc(-c2cc(OC)c(O)c(C=O)c2)cc1"
 
 
 print("*** Testing Similarity Types ***")
@@ -36,11 +42,25 @@ if dir_exists(joinPathPy("out/similarity_types", __file__)):
     rmdir(joinPathPy("out/similarity_types", __file__))
 makedirs(joinPathPy("out/similarity_types", __file__))
 
-supported_similarity_types = ["sim", "chem", "ecfp2", "ecfp4", "ecfp6", "ecfp8"]
+supported_similarity_types = [
+    "sim",
+    "chem",
+    "ecfp2",
+    "ecfp4",
+    "ecfp6",
+    "ecfp8",
+]
 for sim_type in supported_similarity_types:
     indigo.setOption("similarity-type", sim_type)
 
-    bingo = Bingo.createDatabaseFile(indigo, joinPathPy(os.path.join("out", 'similarity_types', sim_type), __file__), 'molecule', '')
+    bingo = Bingo.createDatabaseFile(
+        indigo,
+        joinPathPy(
+            os.path.join("out", "similarity_types", sim_type), __file__
+        ),
+        "molecule",
+        "",
+    )
     bingo.insert(m1)
     bingo.insert(m2)
     bingo.insert(m3)
@@ -48,5 +68,3 @@ for sim_type in supported_similarity_types:
     searchSim(bingo, m1, 0, 1)
 
     bingo.close()
-
-

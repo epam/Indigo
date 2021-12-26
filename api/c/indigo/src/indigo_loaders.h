@@ -25,8 +25,8 @@
 
 #include "base_cpp/properties_map.h"
 #include "molecule/molecule.h"
-#include "reaction/reaction.h"
 #include "molecule/query_molecule.h"
+#include "reaction/reaction.h"
 
 class IndigoRdfData : public IndigoObject
 {
@@ -111,11 +111,10 @@ public:
     bool hasNext() override;
     IndigoObject* at(int index);
     std::unique_ptr<JSONLoader> json_loader;
-    
+
 protected:
     std::unique_ptr<Scanner> _own_scanner;
 };*/
-
 
 class IndigoRdfLoader : public IndigoObject
 {
@@ -137,17 +136,16 @@ protected:
     std::unique_ptr<Scanner> _own_scanner;
 };
 
-
 class IndigoJSONMolecule : public IndigoObject
 {
 public:
-    IndigoJSONMolecule( rapidjson::Value& node, rapidjson::Value& rgroups, int index );
+    IndigoJSONMolecule(rapidjson::Value& node, rapidjson::Value& rgroups, int index);
     ~IndigoJSONMolecule() override;
     Molecule& getMolecule() override;
     BaseMolecule& getBaseMolecule() override;
     const char* getName() override;
     IndigoObject* clone() override;
-    
+
 protected:
     Molecule _mol;
     rapidjson::Value& _node;

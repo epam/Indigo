@@ -1,10 +1,11 @@
 import sys
-sys.path.append('../../common')
+
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 
-with open(joinPathPy('molecules/stereo_parity.sdf', __file__)) as f:
+with open(joinPathPy("molecules/stereo_parity.sdf", __file__)) as f:
     data = f.read()
 print(data)
 print("*** SDF loadString ***")
@@ -16,6 +17,7 @@ for m in indigo.iterateSDF(indigo.loadString(data)):
 print("*** SDF loadBuffer ***")
 if isIronPython():
     from System import Array, Byte
+
     data = Array[Byte]([Byte(ord(symbol)) for symbol in data])
 else:
     data = map(ord, data)
@@ -25,7 +27,7 @@ for m in indigo.iterateSDF(indigo.loadBuffer(data)):
     except IndigoException as e:
         print(getIndigoExceptionText(e))
 
-with open(joinPathPy('molecules/helma.smi', __file__)) as f:
+with open(joinPathPy("molecules/helma.smi", __file__)) as f:
     data = f.read()
 print(data)
 print("*** SMILES loadString ***")
@@ -37,6 +39,7 @@ for m in indigo.iterateSmiles(indigo.loadString(data)):
 print("*** SMILES loadBuffer ***")
 if isIronPython():
     from System import Array, Byte
+
     data = Array[Byte]([Byte(ord(symbol)) for symbol in data])
 else:
     data = map(ord, data)
@@ -46,7 +49,11 @@ for m in indigo.iterateSmiles(indigo.loadBuffer(data)):
     except IndigoException as e:
         print(getIndigoExceptionText(e))
 
-with open(joinPathPy('../../../../../data/molecules/basic/tetrahedral-all.cml', __file__)) as f:
+with open(
+    joinPathPy(
+        "../../../../../data/molecules/basic/tetrahedral-all.cml", __file__
+    )
+) as f:
     data = f.read()
 print(data)
 print("*** CML loadString ***")
@@ -58,6 +65,7 @@ for m in indigo.iterateCML(indigo.loadString(data)):
 print("*** CML loadBuffer ***")
 if isIronPython():
     from System import Array, Byte
+
     data = Array[Byte]([Byte(ord(symbol)) for symbol in data])
 else:
     data = map(ord, data)
@@ -67,7 +75,7 @@ for m in indigo.iterateCML(indigo.loadBuffer(data)):
     except IndigoException as e:
         print(getIndigoExceptionText(e))
 
-with open(joinPathPy('reactions/rxns.rdf', __file__)) as f:
+with open(joinPathPy("reactions/rxns.rdf", __file__)) as f:
     data = f.read()
 print(data)
 print("*** RDF loadString ***")
@@ -79,6 +87,7 @@ for m in indigo.iterateRDF(indigo.loadString(data)):
 print("*** RDF loadBuffer ***")
 if isIronPython():
     from System import Array, Byte
+
     data = Array[Byte]([Byte(ord(symbol)) for symbol in data])
 else:
     data = map(ord, data)

@@ -654,7 +654,7 @@ void MoleculeAlleneStereo::markBonds(BaseMolecule& baseMolecule)
     }
 }
 
-void MoleculeAlleneStereo::removeAtoms(BaseMolecule& baseMolecule,const Array<int>& indices)
+void MoleculeAlleneStereo::removeAtoms(BaseMolecule& baseMolecule, const Array<int>& indices)
 {
     int i, j;
 
@@ -717,7 +717,7 @@ void MoleculeAlleneStereo::removeAtoms(BaseMolecule& baseMolecule,const Array<in
     }
 }
 
-void MoleculeAlleneStereo::removeBonds(BaseMolecule& baseMolecule,const Array<int>& indices)
+void MoleculeAlleneStereo::removeBonds(BaseMolecule& baseMolecule, const Array<int>& indices)
 {
     int i, j;
 

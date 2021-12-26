@@ -38,7 +38,7 @@ namespace indigo
         ~ReactionJsonSaver();
 
         void saveReaction(BaseReaction& rxn);
-
+        bool _add_stereo_desc;
         DECL_ERROR;
 
     protected:
