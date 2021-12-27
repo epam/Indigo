@@ -258,6 +258,11 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, rapidjson::Writer<rap
         Superatom& sa = (Superatom&)sgroup;
         writer.Key("name");
         writer.String(sa.subscript.ptr());
+        if (sa.is_expanded)
+        {
+            writer.Key("expanded");
+            writer.Bool( sa.is_expanded );
+        }
     }
     break;
     case SGroup::SG_TYPE_SRU: {

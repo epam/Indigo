@@ -759,6 +759,8 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             Superatom& sg = (Superatom&)sgroup;
             if (s.HasMember("name"))
                 sg.subscript.readString(s["name"].GetString(), true);
+            if (s.HasMember("expanded"))
+                sg.is_expanded = s["expanded"].GetBool();
         }
         break;
         case SGroup::SG_TYPE_DAT: {
