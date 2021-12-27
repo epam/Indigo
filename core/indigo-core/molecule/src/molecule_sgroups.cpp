@@ -88,7 +88,6 @@ Superatom::Superatom()
     seqid = -1;
     attachment_points.clear();
     bond_connections.clear();
-    is_expanded = false;
 }
 
 Superatom::~Superatom()

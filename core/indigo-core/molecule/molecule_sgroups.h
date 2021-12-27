@@ -171,7 +171,6 @@ namespace indigo
             Vec2f bond_dir;
         };
         Array<_BondConnection> bond_connections; // SBV in Molfile format
-        bool is_expanded; //ket specific
 
     private:
         Superatom(const Superatom&);

@@ -439,6 +439,19 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 mol.setAtomXyz(atom_idx, a_pos);
             }
         }
+
+        if (a.HasMember("alias"))
+        {
+            Array<char> alias;
+            alias.readString(a["alias"].GetString(), true);
+            int idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+            DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(idx);
+            sgroup.atoms.push(atom_idx);
+            sgroup.name.readString("INDIGO_ALIAS", true);
+            sgroup.data.copy(alias);
+            sgroup.display_pos.x = mol.getAtomXyz(atom_idx).x;
+            sgroup.display_pos.y = mol.getAtomXyz(atom_idx).y;
+        }
     }
 
     if (_pqmol)
@@ -760,7 +773,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             if (s.HasMember("name"))
                 sg.subscript.readString(s["name"].GetString(), true);
             if (s.HasMember("expanded"))
-                sg.is_expanded = s["expanded"].GetBool();
+                sg.contracted = s["expanded"].GetBool() ? 0 : 1;
         }
         break;
         case SGroup::SG_TYPE_DAT: {
