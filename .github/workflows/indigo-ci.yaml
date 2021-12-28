@@ -1151,9 +1151,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/indigo-')
         run: |
           export tag=${{ github.ref }}
-          export clean_tag=${tag/indigo-/}
+          export clean_tag=${tag/refs\/tags\/indigo-/}
           docker tag epmlsop/indigo-service:latest epmlsop/indigo-service:${clean_tag}
           docker push epmlsop/indigo-service:${clean_tag}
+          docker push epmlsop/indigo-service:latest
       - name: Publish master
         if: github.ref == 'refs/heads/master'
         run: docker push epmlsop/indigo-service:latest
@@ -1186,9 +1187,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/indigo-')
         run: |
           export tag=${{ github.ref }}
-          export clean_tag=${tag/indigo-/}
+          export clean_tag=${tag/refs\/tags\/indigo-/}
           docker tag epmlsop/indigo-service:enhanced-latest epmlsop/indigo-service:enhanced-${clean_tag}
           docker push epmlsop/indigo-service:${clean_tag}
+          docker push epmlsop/indigo-service:enhanced-latest
       - name: Publish master
         if: github.ref == 'refs/heads/master'
         run: docker push epmlsop/indigo-service:enhanced-latest
