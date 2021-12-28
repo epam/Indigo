@@ -1,3 +1,19 @@
+# Indigo 1.6.1
+Released 2021-12-30
+## Features
+* Multifragment support for KET-format
+* Simple objects support for KET-format
+* Atom's aliases and functional groups' attributes support for KET-format
+* Dative and hydrogen bonds support
+* Partial aromatisation/dearomatization for the structures with superatoms
+
+## Improvements
+* Multiple ket-format improvements
+
+## Bugfixes
+* Inchi bugfix for empty string support
+* Multiple bugfixes in WASM and indigo remote service API
+
 # Indigo 1.6.0
 Released 2021-11-24.
 
