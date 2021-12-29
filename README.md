@@ -24,9 +24,8 @@ This repository includes:
 
 Detailed documentation is available at <http://lifescience.opensource.epam.com>
 
-Changelogs could be found here:
-* [Indigo API](/api/CHANGELOG.md)
-* [Bingo](/bingo/CHANGELOG.md)
+Changelog could be found in [CHANGELOG.md](/CHANGELOG.md).
+
 
 ## Download ##
 <https://lifescience.opensource.epam.com/download/indigo/index.html>
@@ -129,10 +128,10 @@ Note: On Windows, run `emsdk` instead of `./emsdk`, and `emsdk_env.bat` instead 
 
 ### Get Indigo sources ###
 
-Clone (or checkout) Indigo repository, branch `feature/246-indigo-ketcher`
+Clone (or checkout) Indigo repository
 
 ```
->git clone https://github.com/epam/Indigo.git --branch feature/246-indigo-ketcher 
+>git clone https://github.com/epam/Indigo.git
 ```
 
 ### Build Indigo ###

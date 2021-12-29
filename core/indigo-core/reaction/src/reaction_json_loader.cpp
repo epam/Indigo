@@ -95,6 +95,11 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     using ReactionComponent = std::tuple<float, ReactionFramentType, std::unique_ptr<BaseMolecule>>;
 
     MoleculeJsonLoader loader(_molecule, _rgroups);
+    loader.stereochemistry_options = stereochemistry_options;
+    loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+
     _prxn = dynamic_cast<Reaction*>(&rxn);
     _pqrxn = dynamic_cast<QueryReaction*>(&rxn);
 

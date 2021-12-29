@@ -223,7 +223,6 @@ TEST_F(IndigoApiBasicTest, test_getter_function)
 
 TEST_F(IndigoApiBasicTest, test_exact_match)
 {
-    ;
     int mol = indigoLoadMoleculeFromFile(dataPath("molecules/other/39004.1src.mol").c_str());
 
     byte* buf;

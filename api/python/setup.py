@@ -7,7 +7,7 @@ import sys
 from setuptools import setup  # type: ignore
 
 CLASSIFIERS = """\
-Development Status :: 4 - Beta
+Development Status :: 5 - Production/Stable
 Intended Audience :: Science/Research
 Intended Audience :: Developers
 License :: OSI Approved :: Apache Software License
@@ -95,7 +95,7 @@ if os.path.exists("indigo_chem.egg-info"):
 
 setup(
     name="epam.indigo",
-    version="1.6.0",
+    version="1.6.1",
     description="Indigo universal cheminformatics toolkit",
     author="EPAM Systems Life Science Department",
     author_email="lifescience.opensource@epam.com",
