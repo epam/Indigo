@@ -10,6 +10,7 @@ import PyPDF2
 import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
+from requests import Response
 
 from indigo_service import jsonapi
 from indigo_service.indigo_http import app
@@ -184,8 +185,10 @@ def test_base_descriptors() -> None:
 
 
 def render_request(
-    structure: str, output_format: str, options: Optional[Dict] = None
-) -> Dict:
+    structure: str,
+    output_format: str,
+    options: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
     return {
         "data": {
             "type": "render",
@@ -198,7 +201,7 @@ def render_request(
     }
 
 
-def decode_image(response, output_format: str) -> BinaryIO:
+def decode_image(response: Response, output_format: str) -> BinaryIO:
     base64_image = response.json()["data"]["attributes"]["image"]
     str_image = base64_image.replace(f"data:{output_format};base64,", "")
     decoded_image = base64.b64decode(str_image)
