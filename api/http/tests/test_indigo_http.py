@@ -4,7 +4,7 @@ import itertools
 import os
 import pathlib
 import xml.etree.ElementTree as elTree
-from typing import Any, BinaryIO, Dict, List
+from typing import Any, BinaryIO, Dict, List, Optional
 
 import PyPDF2
 import pytest
@@ -184,7 +184,7 @@ def test_base_descriptors() -> None:
 
 
 def render_request(
-    structure: str, output_format: str, options: Dict = None
+    structure: str, output_format: str, options: Optional[Dict] = None
 ) -> Dict:
     return {
         "data": {
