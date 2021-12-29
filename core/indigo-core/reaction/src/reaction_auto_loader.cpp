@@ -196,6 +196,10 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
                     {
                         ReactionJsonLoader loader(data);
                         loader.stereochemistry_options = stereochemistry_options;
+                        loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+                        loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+                        loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+
                         loader.loadReaction(reaction);
                     }
                     else
