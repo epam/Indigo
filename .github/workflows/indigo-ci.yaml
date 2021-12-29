@@ -650,6 +650,7 @@ jobs:
         working-directory: bingo/bingo-elastic/python
         run: |
           pip install .
+          python setup.py bdist_wheel
           cp dist/*.whl ${GITHUB_WORKSPACE}/dist/
       - name: Run pylint
         run: pylint bingo_elastic
