@@ -29,6 +29,6 @@ namespace bingo
         std::unique_ptr<Matcher> createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit,
                                                             IndigoObject& fp) final;
     };
-}; // namespace bingo
+} // namespace bingo
 
 #endif // __bingo_index__
