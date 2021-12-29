@@ -1188,7 +1188,7 @@ jobs:
           export tag=${{ github.ref }}
           export clean_tag=${tag/refs\/tags\/indigo-/}
           docker tag epmlsop/indigo-service:enhanced-latest epmlsop/indigo-service:enhanced-${clean_tag}
-          docker push epmlsop/indigo-service:${clean_tag}
+          docker push epmlsop/indigo-service:enhanced-${clean_tag}
           docker push epmlsop/indigo-service:enhanced-latest
       - name: Publish master
         if: github.ref == 'refs/heads/master'

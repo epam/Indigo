@@ -10,7 +10,21 @@ ARG IRONPYTHON_VERSION=2.7.11
 RUN set -eux && \
     apt update && \
     apt upgrade -y && \
-    apt install -y --no-install-recommends build-essential clang-format cmake make git python3 python3-pip python3-distutils curl unzip libc6-dev libgdiplus libx11-dev && \
+    apt install -y --no-install-recommends \
+     build-essential \
+     clang-format \
+     cmake \
+     make \
+     git \
+     python3 \
+     python3-pip \
+     python3-distutils \
+     curl \
+     unzip \
+     libc6-dev \
+     libgdiplus \
+     libx11-dev \
+     npm && \
     apt install -y gnupg && \
     # Java JDK
     curl -OL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR}/OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
