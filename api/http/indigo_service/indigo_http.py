@@ -16,11 +16,10 @@
 # limitations under the License.
 #
 
-import base64
 from typing import Awaitable, Callable, List, Tuple, Union
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import JSONResponse
 from indigo import IndigoException
 from indigo.renderer import IndigoRenderer
 
