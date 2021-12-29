@@ -19,8 +19,9 @@
 import base64
 import functools
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union
+from typing import Dict, Generic, List, Optional, TypeVar, Union
 
+from fastapi import HTTPException
 from pydantic import BaseModel, conlist, validator
 from pydantic.generics import GenericModel
 
@@ -589,7 +590,6 @@ SourceTargetsRequest = Union[
 
 rendering_formats = {
     "image/png": "png",
-    "image/png;base64": "png",
     "image/svg+xml": "svg",
     "application/pdf": "pdf",
 }
@@ -598,11 +598,47 @@ rendering_formats = {
 class RenderModel(BaseModel):
     compound: CompoundObject
     outputFormat: str
-    options: Dict[str, Union[int, float, bool, str]] = {}
+    options: Optional[Dict[str, Union[int, float, bool, str]]] = None
 
 
 class RenderModelType(BaseModel):
     __root__ = "render"
 
 
+class RenderResultModelType(BaseModel):
+    __root__ = "renderResult"
+
+
+class RenderResultModel(BaseModel):
+    image: str
+
+
 RenderRequest = Request[RenderModelType, RenderModel]
+RenderResponse = Response[RenderResultModelType, RenderResultModel]
+
+
+def make_render_response(
+    raw_image: bytes,
+    output_format: str,
+) -> RenderResponse:
+    if output_format == "image/svg+xml":
+        str_image = raw_image.decode("utf-8")
+        decoded_image = base64.b64encode(str_image.encode("utf-8")).decode(
+            "utf-8"
+        )
+        base64_image = f"data:{output_format};base64,{decoded_image}"
+    elif output_format in ["image/png", "application/pdf"]:
+        decoded_image = base64.b64encode(raw_image).decode("utf-8")
+        base64_image = f"data:{output_format};base64,{decoded_image}"
+    else:
+        raise HTTPException(
+            status_code=400, detail=f"Incorrect output format {output_format}"
+        )
+    return RenderResponse(
+        **{
+            "data": {
+                "type": "renderResult",
+                "attributes": {"image": base64_image},
+            }
+        }
+    )

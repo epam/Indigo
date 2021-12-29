@@ -2,12 +2,16 @@
 attrs==21.2.0
 certifi==2021.10.8
 charset-normalizer==2.0.7
+fastapi==0.70.0
 iniconfig==1.1.1
 mypy==0.910
 packaging==21.0
+Pillow==8.4.0
 pluggy==1.0.0
 py==1.10.0
+pydantic==1.8.2
 pyparsing==2.4.7
+PyPDF2==1.26.0
 pytest==6.2.5
 requests==2.26.0
 toml==0.10.2
