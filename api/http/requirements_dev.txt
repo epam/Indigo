@@ -13,6 +13,8 @@ PyPDF2==1.26.0
 pytest==6.2.5
 requests==2.26.0
 toml==0.10.2
+types-Pillow==8.3.11
+types-requests==2.26.3
 urllib3==1.26.7
 isort==5.9.3
 pylint==2.11.1
