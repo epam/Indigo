@@ -639,7 +639,7 @@ jobs:
       - name: Install latest indigo version
         run: pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl
         working-directory: bingo/bingo-elastic/python
-      - name: Install PyLint
+      - name: Install dev dependencies
         run: pip install -r requirements_dev.txt
         working-directory: bingo/bingo-elastic/python
       - name: Run pylint
