@@ -238,7 +238,7 @@ Datum bingo_build(PG_FUNCTION_ARGS)
 /*
  * Bingo build callback. Accepts heap relation.
  */
-static void bingoIndexCallback(Relation index, PG_OBJECT item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
+static void bingoIndexCallbackImpl(Relation index, PG_OBJECT item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
 {
     /*
      * Skip inserting null tuples
@@ -264,12 +264,12 @@ static void bingoIndexCallback(Relation index, PG_OBJECT item_ptr, Datum* values
 #if PG_VERSION_NUM / 100 > 1200
     static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
     {
-        bingoIndexCallback(index, item_ptr, values, isnull, tupleIsAlive, state);
+        bingoIndexCallbackImpl(index, item_ptr, values, isnull, tupleIsAlive, state);
     }
 #else
     static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
     {
-        bingoIndexCallback(index, &htup->t_self, values, isnull, tupleIsAlive, state);
+        bingoIndexCallbackImpl(index, &htup->t_self, values, isnull, tupleIsAlive, state);
     }
 #endif
 
