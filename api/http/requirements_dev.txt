@@ -1,16 +1,21 @@
--r requirements.txt
 attrs==21.2.0
+black==21.12b0
 certifi==2021.10.8
 charset-normalizer==2.0.7
 iniconfig==1.1.1
 mypy==0.910
 packaging==21.0
+Pillow==8.4.0
 pluggy==1.0.0
 py==1.10.0
 pyparsing==2.4.7
+PyPDF2==1.26.0
+pyproject-flake8==0.0.1a2
 pytest==6.2.5
 requests==2.26.0
 toml==0.10.2
+types-Pillow==8.3.11
+types-requests==2.26.3
 urllib3==1.26.7
 isort==5.9.3
 pylint==2.11.1
