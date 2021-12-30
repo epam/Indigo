@@ -8,4 +8,5 @@ disable = missing-module-docstring,
           import-error,
           wrong-import-order,
           too-few-public-methods,
-          no-name-in-module
+          no-name-in-module,
+          W0511
