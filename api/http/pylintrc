@@ -9,4 +9,4 @@ disable = missing-module-docstring,
           wrong-import-order,
           too-few-public-methods,
           no-name-in-module,
-          W0511
+          fixme

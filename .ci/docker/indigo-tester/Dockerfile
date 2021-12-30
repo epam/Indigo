@@ -49,8 +49,14 @@ RUN set -eux && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 packages
     python3 -m pip install --upgrade pip && \
-    python3 -m pip install --upgrade Pillow setuptools wheel twine pyproject-flake8 mypy==0.910 isort black pydantic fastapi pytest elasticsearch && \
+    python3 -m pip install --upgrade setuptools wheel twine && \
     apt autoremove -y
+
+COPY /api/http/requirements.txt ./api_requirements.txt
+COPY /api/http/requirements_dev.txt ./api_requirements_dev.txt
+COPY /bingo/bingo-elastic/python/requirements_dev.txt ./bingo_requirements_dev.txt
+
+RUN python3 -m pip install -r api_requirements.txt -r api_requirements_dev.txt -r bingo_requirements_dev.txt
 
 ENV JAVA_HOME=/opt/jdk
 ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython
@@ -73,4 +79,5 @@ RUN git --version && \
     dotnet nuget --version && \
     ipy -V && \
     powershell --version && \
-    clang-format --version
+    clang-format --version && \
+    python3 -m pip list

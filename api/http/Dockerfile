@@ -39,7 +39,7 @@ RUN apt-get update && \
 # Install if exists
 RUN if ls ./*manylinux1_x86_64*.whl 1> /dev/null 2>&1; then pip3 install ./*manylinux1_x86_64*.whl; fi
 
-RUN pip3 install -r requirements_dev.txt && \
+RUN pip3 install -r requirements.txt -r requirements_dev.txt && \
     pylint -sn --rcfile=pylintrc indigo_service tests && \
     mypy indigo_service && \
     pip3 install -e . && \
