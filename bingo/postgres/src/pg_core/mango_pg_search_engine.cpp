@@ -395,7 +395,6 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
     {
         _prepareExactQueryStrings(what_clause, from_clause, where_clause);
     }
-    _searchCursor.reset(nullptr);
     // profTimerStart(t4, "mango_pg.exact_search_cursor");
     _searchCursor = std::make_unique<BingoPgCursor>("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
     // profTimerStop(t4);
