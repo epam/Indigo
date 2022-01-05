@@ -271,7 +271,8 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
     parents.resize(vertexEnd());
 
     // Fill distances by infinity
-    for (int j = 0; j < distances.size(); j++) {
+    for (int j = 0; j < distances.size(); j++)
+    {
         distances[j] = INT_MAX / 2;
         parents[j] = -1;
     }
@@ -281,7 +282,7 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
 
     distances[source] = 0;
     parents[source] = -1;
-    
+
     front.push(source);
     while (!front.isEmpty())
     {
@@ -310,18 +311,19 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
         {
             int inRingCount = 0;
             int doubleBondsCount = 0, tripleBondsCount = 0;
-            
+
             int prev = parents[cur];
             while (prev != -1)
             {
                 int edge_idx = findEdgeIndex(cur, prev);
-                if(edge_idx >= 0) {
-                  if (Molecule::getBondTopology(edge_idx) == TOPOLOGY_RING)
-                      inRingCount++;
-                  if (Molecule::getBondOrder(edge_idx) == BOND_DOUBLE)
-                      doubleBondsCount++;
-                  if (Molecule::getBondOrder(edge_idx) == BOND_TRIPLE)
-                      tripleBondsCount++;
+                if (edge_idx >= 0)
+                {
+                    if (Molecule::getBondTopology(edge_idx) == TOPOLOGY_RING)
+                        inRingCount++;
+                    if (Molecule::getBondOrder(edge_idx) == BOND_DOUBLE)
+                        doubleBondsCount++;
+                    if (Molecule::getBondOrder(edge_idx) == BOND_TRIPLE)
+                        tripleBondsCount++;
                 }
 
                 cur = prev;

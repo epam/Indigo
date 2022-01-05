@@ -19,9 +19,9 @@
 #ifndef __molecule_tautomer_matcher__
 #define __molecule_tautomer_matcher__
 
-#include <memory>
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule_tautomer.h"
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)

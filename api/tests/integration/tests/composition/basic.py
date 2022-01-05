@@ -1,14 +1,18 @@
 import os
 import sys
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
-from env_indigo import *
 
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
+from env_indigo import *
 
 indigo = Indigo()
 
 
 def run(file, options):
-    print("### (file: %s; options: \"%s\") ###" % (file, options))
+    print('### (file: %s; options: "%s") ###' % (file, options))
     mol = indigo.loadMoleculeFromFile(joinPathPy(file, __file__))
     all = indigo.rgroupComposition(mol, "")
     mi = 1

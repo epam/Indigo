@@ -27,7 +27,6 @@
 #include "molecule/molecule_dearom.h"
 // #include "mode.h"
 
-
 using namespace indigo;
 
 // Inchi doesn't seem to support multithreading
@@ -47,7 +46,8 @@ namespace indigo
 
 IMPL_ERROR(InchiWrapper, "inchi-wrapper")
 
-template <typename T> class InchiMemObject
+template <typename T>
+class InchiMemObject
 {
 public:
     typedef void (*DestructorT)(T* obj);
@@ -76,7 +76,7 @@ const char* InchiWrapper::version()
     return APP_DESCRIPTION;
 }
 
-InchiWrapper::InchiWrapper()
+InchiWrapper::InchiWrapper() : _stereo_opt(_STEREO_ABS)
 {
     clear();
 }
@@ -172,7 +172,7 @@ void InchiWrapper::loadMoleculeFromInchi(const char* inchi_string, Molecule& mol
     if (inchi_output.szLog)
         log.readString(inchi_output.szLog, true);
 
-    if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING)
+    if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING && retcode != inchi_Ret_EOF) // empty structure is acceptable
         throw Error("Indigo-InChI: InChI loading failed: %s. Code: %d.", inchi_output.szMessage, retcode);
 
     // Check stereo options
@@ -589,7 +589,7 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
 
 void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
 {
-    inchi_Input input;
+    inchi_Input input{nullptr, nullptr, nullptr, 0, 0};
     QS_DEF(Array<inchi_Atom>, atoms);
     QS_DEF(Array<inchi_Stereo0D>, stereo);
 
@@ -642,7 +642,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         const char* unrec_opt_prefix = "Unrecognized option:";
         if (strncmp(output.szLog, unrec_opt_prefix, strlen(unrec_opt_prefix)) == 0)
         {
-            size_t i;
+            size_t i = 0;
             for (i = 0; i < strlen(output.szLog); i++)
                 if (output.szLog[i] == '\n')
                     break;

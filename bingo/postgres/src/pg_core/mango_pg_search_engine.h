@@ -7,9 +7,9 @@
 #include "bingo_pg_search_engine.h"
 
 #include "base_cpp/array.h"
-#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/red_black.h"
+#include <memory>
 
 #include "bingo_pg_cursor.h"
 #include "bingo_postgres.h"

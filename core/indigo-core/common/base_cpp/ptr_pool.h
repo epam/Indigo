@@ -31,7 +31,8 @@ namespace indigo
 
     DECL_EXCEPTION(PtrPoolError);
 
-    template <typename T> class PtrPool
+    template <typename T>
+    class PtrPool
     {
     public:
         explicit PtrPool()

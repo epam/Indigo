@@ -1,7 +1,8 @@
-import sys, os
 import errno
+import os
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 from rendering import *
 
@@ -16,7 +17,8 @@ indigo.setOption("render-image-size", 500, 500)
 indigo.setOption("ignore-stereochemistry-errors", True)
 indigo.setOption("render-relative-thickness", 1.0)
 
-m = indigo.loadMolecule("""
+m = indigo.loadMolecule(
+    """
 
 
  16 16  0  0  0  0  0  0  0  0999 V2000
@@ -53,10 +55,11 @@ m = indigo.loadMolecule("""
   5 16  1  0  0  0  0
   2 14  1  0  0  0  0
 M  END
-""")
+"""
+)
 
-renderer.renderToFile(m, joinPathPy('out/render_haworth.png', __file__))
-print(checkImageSimilarity('render_haworth.png'))
+renderer.renderToFile(m, joinPathPy("out/render_haworth.png", __file__))
+print(checkImageSimilarity("render_haworth.png"))
 
 if isIronPython():
     renderer.Dispose()

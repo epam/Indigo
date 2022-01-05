@@ -1,10 +1,13 @@
 import sys
-sys.path.append('../../common')
+
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 
-reaction = indigo.loadQueryReaction("Cl[C:1]([*:3])=O.[OH:2][*:4]>>[*:4][O:2][C:1]([*:3])=O")
+reaction = indigo.loadQueryReaction(
+    "Cl[C:1]([*:3])=O.[OH:2][*:4]>>[*:4][O:2][C:1]([*:3])=O"
+)
 print("=== Input Reaction ===\n{0}".format(reaction.canonicalSmiles()))
 
 print("=== Input Monomers ===")
@@ -19,7 +22,11 @@ z.setProperty("name", "z")
 
 i = 1
 for monomer in [x, y, z]:
-    print("{0} = {1}".format(monomer.getProperty("name"), monomer.canonicalSmiles()))
+    print(
+        "{0} = {1}".format(
+            monomer.getProperty("name"), monomer.canonicalSmiles()
+        )
+    )
     i = i + 1
 
 monomers_table = indigo.createArray()
@@ -33,7 +40,15 @@ output_reactions = indigo.reactionProductEnumerate(reaction, monomers_table)
 
 i = 1
 for reaction in output_reactions.iterateArray():
-    print("=== Output Reaction #{0} ===\n{1}".format(i, reaction.canonicalSmiles()))
+    print(
+        "=== Output Reaction #{0} ===\n{1}".format(
+            i, reaction.canonicalSmiles()
+        )
+    )
     for monomer in reaction.iterateReactants():
-        print("\t{0} = {1}".format(monomer.getProperty("name"), monomer.canonicalSmiles()))
+        print(
+            "\t{0} = {1}".format(
+                monomer.getProperty("name"), monomer.canonicalSmiles()
+            )
+        )
     i = i + 1

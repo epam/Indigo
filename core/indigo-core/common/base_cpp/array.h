@@ -34,7 +34,8 @@ namespace indigo
 {
     DECL_EXCEPTION(ArrayError);
 
-    template <typename T> class Array
+    template <typename T>
+    class Array
     {
     public:
         DECL_TPL_ERROR(ArrayError);
@@ -375,7 +376,8 @@ namespace indigo
         }
 
         // CMP_FUNCTOR has two arguments and returns sign of comparation
-        template <typename CmpFunctor> void insertionSort(int start, int end, CmpFunctor cmp)
+        template <typename CmpFunctor>
+        void insertionSort(int start, int end, CmpFunctor cmp)
         {
             int i, j;
             char tmp[sizeof(T)]; // can't use T directly because it may have destructor
@@ -396,7 +398,8 @@ namespace indigo
         }
 
         // CMP_FUNCTOR has two arguments and returns sign of comparation
-        template <typename CmpFunctor> void qsort(int start, int end, CmpFunctor cmp)
+        template <typename CmpFunctor>
+        void qsort(int start, int end, CmpFunctor cmp)
         {
             // Sort elements from start to end
             if (start >= end)
@@ -484,12 +487,14 @@ namespace indigo
             }
         }
 
-        template <typename T1, typename T2> void qsort(int start, int end, int (*cmp)(T1, T2, void*), void* context)
+        template <typename T1, typename T2>
+        void qsort(int start, int end, int (*cmp)(T1, T2, void*), void* context)
         {
             this->qsort(start, end, _CmpFunctorCaller<T1, T2>(cmp, context));
         }
 
-        template <typename T1, typename T2> void qsort(int (*cmp)(T1, T2, void*), void* context)
+        template <typename T1, typename T2>
+        void qsort(int (*cmp)(T1, T2, void*), void* context)
         {
             this->qsort(0, _length - 1, cmp, context);
         }
@@ -554,7 +559,8 @@ namespace indigo
         Array(const Array&);                            // no implicit copy
         Array<int>& operator=(const Array<int>& right); // no copy constructor
 
-        template <typename T1, typename T2> class _CmpFunctorCaller
+        template <typename T1, typename T2>
+        class _CmpFunctorCaller
         {
         public:
             _CmpFunctorCaller(int (*cmp)(T1, T2, void*), void* context) : _context(context), _cmp(cmp)
@@ -575,7 +581,8 @@ namespace indigo
 } // namespace indigo
 
 // operators defined here for use with ObjArray<> and ObjPool<>
-template <typename T> void* operator new(size_t size, T* allocated_area)
+template <typename T>
+void* operator new(size_t size, T* allocated_area)
 {
     return allocated_area;
 }

@@ -277,7 +277,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("ignore-closing-bond-direction-mismatch", SETTER_GETTER_BOOL_OPTION(indigo.ignore_closing_bond_direction_mismatch));
     mgr->setOptionHandlerBool("ignore-bad-valence", SETTER_GETTER_BOOL_OPTION(indigo.ignore_bad_valence));
     mgr->setOptionHandlerBool("treat-x-as-pseudoatom", SETTER_GETTER_BOOL_OPTION(indigo.treat_x_as_pseudoatom));
-    mgr->setOptionHandlerBool("aromatize-skip-super-atoms", SETTER_GETTER_BOOL_OPTION(indigo.aromatize_skip_superatoms));
+    mgr->setOptionHandlerBool("aromatize-skip-superatoms", SETTER_GETTER_BOOL_OPTION(indigo.aromatize_skip_superatoms));
     mgr->setOptionHandlerBool("skip-3d-chirality", SETTER_GETTER_BOOL_OPTION(indigo.skip_3d_chirality));
     mgr->setOptionHandlerBool("deconvolution-aromatization", SETTER_GETTER_BOOL_OPTION(indigo.deconvolution_aromatization));
     mgr->setOptionHandlerBool("deco-save-ap-bond-orders", SETTER_GETTER_BOOL_OPTION(indigo.deco_save_ap_bond_orders));
@@ -287,6 +287,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerInt("molfile-saving-chiral-flag", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_chiral_flag));
     mgr->setOptionHandlerBool("molfile-saving-skip-date", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_skip_date));
     mgr->setOptionHandlerBool("molfile-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_stereo_desc));
+    mgr->setOptionHandlerBool("json-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_add_stereo_desc));
     mgr->setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
     mgr->setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));
     mgr->setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);
@@ -320,8 +321,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("dearomatize-verification", SETTER_GETTER_BOOL_OPTION(indigo.arom_options.dearomatize_check));
     mgr->setOptionHandlerBool("unique-dearomatization", SETTER_GETTER_BOOL_OPTION(indigo.unique_dearomatization));
     mgr->setOptionHandlerBool("stereochemistry-bidirectional-mode", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.bidirectional_mode));
-    mgr->setOptionHandlerBool("stereochemistry-detect-haworth-projection",
-                             SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.detect_haworth_projection));
+    mgr->setOptionHandlerBool("stereochemistry-detect-haworth-projection", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.detect_haworth_projection));
 
     mgr->setOptionHandlerBool("standardize-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_stereo));
     mgr->setOptionHandlerBool("standardize-charges", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_charges));
@@ -343,12 +343,11 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("standardize-clear-unknown-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unknown_stereo));
     mgr->setOptionHandlerBool("standardize-clear-unknown-atom-stereo", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unknown_atom_stereo));
     mgr->setOptionHandlerBool("standardize-clear-unknown-bond-stereo",
-                             SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unknown_cis_trans_bond_stereo));
+                              SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_unknown_cis_trans_bond_stereo));
     mgr->setOptionHandlerBool("standardize-clear-cis-trans", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_cis_trans_bond_stereo));
     mgr->setOptionHandlerBool("standardize-stereo-from-coordinates", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.set_stereo_from_coordinates));
     mgr->setOptionHandlerBool("standardize-reposition-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.reposition_stereo_bonds));
-    mgr->setOptionHandlerBool("standardize-reposition-axial-stereo-bonds",
-                             SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.reposition_axial_stereo_bonds));
+    mgr->setOptionHandlerBool("standardize-reposition-axial-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.reposition_axial_stereo_bonds));
     mgr->setOptionHandlerBool("standardize-fix-direction-wedge-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.fix_direction_of_wedge_bonds));
     mgr->setOptionHandlerBool("standardize-clear-charges", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_charges));
     mgr->setOptionHandlerBool("standardize-highlight-colors", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_highlight_colors));
@@ -358,7 +357,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("standardize-clear-dative-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_dative_bonds));
     mgr->setOptionHandlerBool("standardize-clear-hydrogen-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.clear_hydrogen_bonds));
     mgr->setOptionHandlerBool("standardize-localize-markush-r-atoms-on-rings",
-                             SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.localize_markush_r_atoms_on_rings));
+                              SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.localize_markush_r_atoms_on_rings));
     mgr->setOptionHandlerBool("standardize-create-dative-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_coordination_bonds));
     mgr->setOptionHandlerBool("standardize-create-hydrogen-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_hydrogen_bonds));
     mgr->setOptionHandlerBool("standardize-remove-extra-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.remove_extra_stereo_bonds));

@@ -49,7 +49,7 @@ namespace indigo
         bool unique_dearomatization;
         bool aromatize_skip_superatoms;
 
-        AromaticityOptions(Method method = BASIC) : method(method), dearomatize_check(true), unique_dearomatization(false)
+        AromaticityOptions(Method method = BASIC) : method(method), dearomatize_check(true), unique_dearomatization(false), aromatize_skip_superatoms(false)
         {
         }
     };

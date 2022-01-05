@@ -1,5 +1,5 @@
 Package: rindigo
-Version: 1.6.0
+Version: 1.7.0-beta
 Date: 2020-12-10
 Title: R Package for Indigo Toolkit
 Authors@R: c(person(given = "Mikhail", family = "Kviatkovskii", role = c("cre"),

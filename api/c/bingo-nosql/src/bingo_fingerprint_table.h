@@ -12,8 +12,8 @@
 #include "math/algebra.h"
 
 #include "bingo_container_set.h"
-#include "mmf/mmf_ptr.h"
 #include "bingo_sim_coef.h"
+#include "mmf/mmf_ptr.h"
 
 namespace bingo
 {

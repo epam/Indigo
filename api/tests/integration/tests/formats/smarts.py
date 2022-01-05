@@ -1,19 +1,25 @@
 import os
 import sys
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
+
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
 from env_indigo import *
 
 indigo = Indigo()
 
-def testSmarts (m):
+
+def testSmarts(m):
     try:
-       print(m.smarts())
+        print(m.smarts())
     except IndigoException as e:
-       print(getIndigoExceptionText(e))
-       print(m.smiles())
+        print(getIndigoExceptionText(e))
+        print(m.smiles())
 
 
-molstr = '''
+molstr = """
   Ketcher 11241617102D 1   1.00000     0.00000     0
 
   8  7  0     0  0            999 V2000
@@ -34,7 +40,7 @@ molstr = '''
   7  8  1  0     0  0
 M  CHG  1   3   5
 M  END
-'''
+"""
 
 print("**** Load and Save as Query ****")
 m = indigo.loadQueryMolecule(molstr)
@@ -43,4 +49,3 @@ testSmarts(m)
 print("**** Load and Save as Molecule ****")
 m = indigo.loadMolecule(molstr)
 testSmarts(m)
-

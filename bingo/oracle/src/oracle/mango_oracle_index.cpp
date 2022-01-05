@@ -18,7 +18,6 @@
 
 #include "oracle/bingo_oracle.h"
 
-#include <memory>
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/profiling.h"
 #include "base_cpp/scanner.h"
@@ -40,6 +39,7 @@
 #include "oracle/ora_logger.h"
 #include "oracle/ora_wrap.h"
 #include "oracle/rowid_saver.h"
+#include <memory>
 
 bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index, Array<char>& data,
                           std::mutex* lock_for_exclusive_access, std::string& failure_message)
@@ -56,9 +56,7 @@ bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& 
     {
         // RowIDSaver modifies context.context().rid_dict and
         // requires exclusive access for this
-        auto locker = lock_for_exclusive_access ?
-                      std::unique_lock<std::mutex>(*lock_for_exclusive_access) :
-                      std::unique_lock<std::mutex>();
+        auto locker = lock_for_exclusive_access ? std::unique_lock<std::mutex>(*lock_for_exclusive_access) : std::unique_lock<std::mutex>();
 
         RowIDSaver rid_saver(context.context().rid_dict, rid_output);
 
@@ -80,11 +78,9 @@ bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& 
         {
             if (context.context().reject_invalid_structures)
                 throw; // Rethrow this exception further
-            
-            auto locker = lock_for_exclusive_access ?
-                          std::unique_lock<std::mutex>(*lock_for_exclusive_access) :
-                          std::unique_lock<std::mutex>();
-              
+
+            auto locker = lock_for_exclusive_access ? std::unique_lock<std::mutex>(*lock_for_exclusive_access) : std::unique_lock<std::mutex>();
+
             env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message());
             failure_message = e.message();
             return false;

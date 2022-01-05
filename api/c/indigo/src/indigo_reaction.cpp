@@ -17,7 +17,6 @@
  ***************************************************************************/
 
 #include "indigo_reaction.h"
-#include <memory>
 #include "base_cpp/output.h"
 #include "indigo_array.h"
 #include "indigo_io.h"
@@ -28,6 +27,7 @@
 #include "reaction/reaction_automapper.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_saver.h"
+#include <memory>
 
 //
 // IndigoBaseReaction

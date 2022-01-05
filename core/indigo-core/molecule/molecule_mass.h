@@ -18,9 +18,9 @@
 
 #ifndef __molecule_mass_h__
 #define __molecule_mass_h__
-#include <set>
 #include "base_cpp/red_black.h"
 #include "molecule/molecule_mass_options.h"
+#include <set>
 namespace indigo
 {
 
@@ -49,19 +49,19 @@ namespace indigo
         /* Mass of a molecule calculated using the average mass of each
          * element weighted for its natural isotopic abundance
          */
-        double molecularWeight(Molecule& mol );
+        double molecularWeight(Molecule& mol);
 
         /* Mass of a molecule containing most likely
          * isotopic composition for a single random molecule.
          * Notes: in PubChem search engine it is called Exact Mass
          */
-        double mostAbundantMass(Molecule& mol );
+        double mostAbundantMass(Molecule& mol);
 
         /* Mass of a molecule calculated using the mass of
          * the most abundant isotope of each element.
          * Notes: in Marvin it is called Exact Mass
          */
-        double monoisotopicMass( Molecule& mol );
+        double monoisotopicMass(Molecule& mol);
 
         /* Sum of the mass numbers of all constituent atoms.
          */
@@ -69,7 +69,7 @@ namespace indigo
 
         /* Atom weight percentage like "C 77% H 13%"
          */
-        void massComposition(Molecule& molecule, Array<char>& str );
+        void massComposition(Molecule& molecule, Array<char>& str);
     };
 
 } // namespace indigo

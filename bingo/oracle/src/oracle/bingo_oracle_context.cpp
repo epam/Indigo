@@ -17,7 +17,6 @@
  ***************************************************************************/
 
 #include "oracle/bingo_oracle_context.h"
-#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/shmem.h"
@@ -29,6 +28,7 @@
 #include "oracle/bingo_oracle.h"
 #include "oracle/ora_logger.h"
 #include "oracle/ora_wrap.h"
+#include <memory>
 
 BingoOracleContext::BingoOracleContext(OracleEnv& env, int id_) : BingoContext(id_), storage(env, id_), _config_changed(false)
 {

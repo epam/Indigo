@@ -60,8 +60,8 @@ namespace indigo
 
         void add(int atom_idx, int left, int right, int subst[4], int parity);
 
-        void removeAtoms(BaseMolecule& baseMolecule,const Array<int>& indices);
-        void removeBonds(BaseMolecule& baseMolecule,const Array<int>& indices);
+        void removeAtoms(BaseMolecule& baseMolecule, const Array<int>& indices);
+        void removeBonds(BaseMolecule& baseMolecule, const Array<int>& indices);
         void registerUnfoldedHydrogen(int atom_idx, int added_hydrogen);
 
         DECL_ERROR;

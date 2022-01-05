@@ -18,8 +18,8 @@
 
 #include "indigo_array.h"
 // #include "api/indigo.h"
-#include <memory>
 #include "indigo_loaders.h"
+#include <memory>
 
 IndigoArray::IndigoArray() : IndigoObject(ARRAY)
 {

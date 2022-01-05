@@ -1,8 +1,8 @@
+import errno
 import os
 import sys
-import errno
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -46,7 +46,8 @@ mol = indigo.loadMolecule("CCNNCN")
 print(mol.checkRGroups())
 mol.addRSite("R1")
 print(mol.checkRGroups())
-mol = indigo.loadMolecule('''
+mol = indigo.loadMolecule(
+    """
   Ketcher 12091616232D 1   1.00000     0.00000     0
 
   2  1  0     0  0            999 V2000
@@ -55,9 +56,11 @@ mol = indigo.loadMolecule('''
   1  2  1  0     0  0
 M  APO  1   2   1
 M  END
-''')
+"""
+)
 print(mol.checkRGroups())
-mol = indigo.loadMolecule('''$MDL  REV  1
+mol = indigo.loadMolecule(
+    """$MDL  REV  1
 $MOL
 $HDR
 
@@ -82,11 +85,13 @@ M  END
 $END CTAB
 $END RGP
 $END MOL
-''')
+"""
+)
 print(mol.checkRGroups())
 
 
-mol = indigo.loadMolecule('''$MDL  REV  1 0209181741
+mol = indigo.loadMolecule(
+    """$MDL  REV  1 0209181741
 $MOL
 $HDR
 
@@ -139,13 +144,15 @@ M  END
 $END CTAB
 $END RGP
 $END MOL
-''')
+"""
+)
 
 print(mol.molfile())
 
 print(mol.smiles())
 
-mol = indigo.loadMolecule('''$MDL  REV  1
+mol = indigo.loadMolecule(
+    """$MDL  REV  1
 $MOL
 $HDR
 
@@ -195,12 +202,14 @@ M  END
 $END CTAB
 $END RGP
 $END MOL
-''')
+"""
+)
 
 print(mol.smiles())
 
 
-mol = indigo.loadMolecule('''$MDL  REV  1 0212181244
+mol = indigo.loadMolecule(
+    """$MDL  REV  1 0212181244
 $MOL
 $HDR
 
@@ -260,16 +269,21 @@ M  END
 $END CTAB
 $END RGP
 $END MOL
-''')
+"""
+)
 
 print(mol.smiles())
 
 
-m = indigo.loadMolecule("C1O[*]CO[*]1 |$;;_R2;;;_R1$,RG:_R1={C},{N},_R2={C},{N}|")
+m = indigo.loadMolecule(
+    "C1O[*]CO[*]1 |$;;_R2;;;_R1$,RG:_R1={C},{N},_R2={C},{N}|"
+)
 print(m.molfile())
 
 
-m = indigo.loadMolecule("[*]C1CCCCC1[*] |$_R1;;;;;;;_R2$,RG:_R1={CCC},_R2={N},LOG={_R1:;;>0._R2:_R1;H;0,1}|")
+m = indigo.loadMolecule(
+    "[*]C1CCCCC1[*] |$_R1;;;;;;;_R2$,RG:_R1={CCC},_R2={N},LOG={_R1:;;>0._R2:_R1;H;0,1}|"
+)
 print(m.molfile())
 
 m = indigo.loadMolecule("|RG:_R1={CCCCCC}|")

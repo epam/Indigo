@@ -3,12 +3,9 @@ from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
-from indigo import Indigo
+from indigo import Indigo  # type: ignore
 
-from bingo_elastic.model.record import (
-    IndigoRecord,
-    IndigoRecordMolecule,
-)
+from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 from bingo_elastic.utils import PostprocessType, head_by_path
 
 
@@ -38,7 +35,6 @@ def default_script_score(query: Dict) -> None:
 
 
 class CompilableQuery(metaclass=ABCMeta):
-
     field: str = ""
 
     @abstractmethod
@@ -67,7 +63,7 @@ class KeywordQuery(CompilableQuery):
 
 
 class SubstructureQuery(CompilableQuery):
-    def __init__(self, key: str, value: IndigoRecord):
+    def __init__(self, key: str, value: IndigoRecord) -> None:
         if not isinstance(value, IndigoRecord):
             raise AttributeError(
                 "Argument for substructure search must be IndigoRecord"
@@ -85,8 +81,8 @@ class SubstructureQuery(CompilableQuery):
             )
         ):
             return record
+        return None
 
-    @property
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
         return clauses(self._value.sub_fingerprint, "sub_fingerprint")
@@ -101,12 +97,13 @@ class SubstructureQuery(CompilableQuery):
         )
         if not bool_head.get("must"):
             bool_head["must"] = []
-        bool_head["must"] += self.clauses
+        bool_head["must"] += self.clauses()
         script_score_head = head_by_path(query, ("query", "script_score"))
         script_score_head["script"] = {
             "source": "_score / doc['sub_fingerprint_len'].value"
         }
         query["min_score"] = 1
+        assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
 
 
@@ -161,7 +158,6 @@ class BaseMatch(metaclass=ABCMeta):
         self._target = target
         self._threshold = threshold
 
-    @property
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
         return clauses(self._target.sim_fingerprint, "sim_fingerprint")
@@ -175,9 +171,9 @@ class BaseMatch(metaclass=ABCMeta):
         )
         if not bool_head.get("should"):
             bool_head["should"] = []
-        bool_head["should"] += self.clauses
+        bool_head["should"] += self.clauses()
         bool_head["minimum_should_match"] = self.min_should_match(
-            len(self.clauses)
+            len(self.clauses())
         )
 
         script_score_head = head_by_path(query, ("query", "script_score"))
@@ -201,6 +197,7 @@ class TanimotoSimilarityMatch(BaseMatch):
 
     @property
     def script(self) -> Dict:
+        assert self._target.sim_fingerprint
         return {
             "source": "_score / (params.a + "
             "doc['sim_fingerprint_len'].value - _score)",
@@ -208,6 +205,7 @@ class TanimotoSimilarityMatch(BaseMatch):
         }
 
     def min_should_match(self, length: int) -> str:
+        assert self.target.sim_fingerprint
         min_match = (
             math.floor(
                 (self._threshold * (len(self.target.sim_fingerprint) + 1))
@@ -216,23 +214,25 @@ class TanimotoSimilarityMatch(BaseMatch):
             / length
         )
 
-        return f"{int(min_match*100)}%"
+        return f"{int(min_match * 100)}%"
 
 
 class EuclidSimilarityMatch(BaseMatch):
     @property
     def script(self) -> Dict:
+        assert self._target.sim_fingerprint
         return {
             "source": "_score / params.a",
             "params": {"a": len(self._target.sim_fingerprint)},
         }
 
     def min_should_match(self, length: int):
+        assert self._target.sim_fingerprint
         min_match = (
             math.floor(self._threshold * len(self._target.sim_fingerprint))
         ) / length
 
-        return f"{int(min_match*100)}%"
+        return f"{int(min_match * 100)}%"
 
 
 class TverskySimilarityMatch(BaseMatch):
@@ -249,6 +249,7 @@ class TverskySimilarityMatch(BaseMatch):
 
     @property
     def script(self) -> Dict:
+        assert self._target.sim_fingerprint
         return {
             "source": "_score / ((params.a - _score) * "
             "params.alpha + (doc['sim_fingerprint_len'].value - "
@@ -261,17 +262,17 @@ class TverskySimilarityMatch(BaseMatch):
         }
 
     def min_should_match(self, length: int) -> str:
+        assert self._target.sim_fingerprint
         top = self._alpha * len(self._target.sim_fingerprint) + self._beta
         down = self._threshold + self._alpha + self._beta - 1.0
         min_match = math.floor((top / down)) / length
-        return f"{int(min_match*100)}%"
+        return f"{int(min_match * 100)}%"
 
 
 class ExactMatch(CompilableQuery):
     def __init__(self, target):
         self._target = target
 
-    @property
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
         return clauses(self._target.sub_fingerprint, "sub_fingerprint")
@@ -291,6 +292,7 @@ class ExactMatch(CompilableQuery):
             )
         ):
             return record
+        return None
 
     def compile(
         self, query, postprocess_actions: PostprocessType = None
@@ -300,12 +302,13 @@ class ExactMatch(CompilableQuery):
         )
         if not bool_head.get("must"):
             bool_head["must"] = []
-        bool_head["must"] += self.clauses
+        bool_head["must"] += self.clauses()
         script_score_head = head_by_path(query, ("query", "script_score"))
         script_score_head["script"] = {
             "source": "_score / doc['sub_fingerprint_len'].value"
         }
         query["min_score"] = 1
+        assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
 
 
@@ -314,7 +317,6 @@ SimilarityMatch = TanimotoSimilarityMatch
 
 
 def query_factory(key: str, value: Any) -> CompilableQuery:
-
     if key == "exact":
         return ExactMatch(value)
     if key == "substructure":

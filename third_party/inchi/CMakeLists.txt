@@ -8,7 +8,7 @@ file (GLOB ${PROJECT_NAME}_SOURCES
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC -DTARGET_API_LIB)
-target_include_directories(${PROJECT_NAME}
+target_include_directories(${PROJECT_NAME} SYSTEM
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/INCHI_BASE/src
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/INCHI_API/libinchi/src)
 

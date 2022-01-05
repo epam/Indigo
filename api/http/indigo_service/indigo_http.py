@@ -18,9 +18,10 @@
 
 from typing import Awaitable, Callable, List, Tuple, Union
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from indigo import IndigoException
+from indigo.renderer import IndigoRenderer
 
 from indigo_service import jsonapi, service
 from indigo_service.indigo_tools import indigo, indigo_new
@@ -58,6 +59,7 @@ def compounds(
         jsonapi.DescriptorRequest,
         jsonapi.ValidationRequest,
         jsonapi.CompoundConvertRequest,
+        jsonapi.RenderRequest,
     ],
 ) -> List[Tuple[str, jsonapi.CompoundFormat]]:
     return service.extract_pairs(request.data.attributes.compound)
@@ -206,13 +208,95 @@ def common_bits(
     return jsonapi.make_common_bits_response(result)
 
 
+@app.post(f"{BASE_URL_INDIGO}/render", response_model=jsonapi.RenderResponse)
+def render(
+    request: jsonapi.RenderRequest,
+) -> jsonapi.RenderResponse:
+    compound, *_ = service.extract_compounds(compounds(request))
+    output_format = request.data.attributes.outputFormat
+    indigo_renderer = IndigoRenderer(indigo())
+    indigo().setOption(
+        "render-output-format", jsonapi.rendering_formats.get(output_format)
+    )
+    options = request.data.attributes.options
+    if options:
+        for option, value in options.items():
+            if option == "render-output-format":
+                raise HTTPException(
+                    status_code=400, detail="Choose only one output format"
+                )
+            indigo().setOption(option, value)
+    raw_image = indigo_renderer.renderToBuffer(compound).tobytes()
+    return jsonapi.make_render_response(raw_image, output_format)
+
+
 def run_debug() -> None:
     # Debug server for dev purpose only
     import uvicorn  # pylint: disable=import-outside-toplevel
 
     uvicorn.run(
         "indigo_service.indigo_http:app",
-        host="127.0.0.1",
+        host="0.0.0.0",
         port=8080,
         log_level="debug",
+        reload=True,
     )
+
+
+if __name__ == "__main__":
+    run_debug()
+
+
+# TODO: /indigo/render with alternative responses types
+# @app.post(f"{BASE_URL_INDIGO}/render")
+# def render(
+#     request: jsonapi.RenderRequest,
+# ) -> Union[Response, FileResponse]:
+#     compound, *_ = service.extract_compounds(compounds(request))
+#     output_format = request.data.attributes.outputFormat
+#     indigo_renderer = IndigoRenderer(indigo())
+#     indigo().setOption(
+#         "render-output-format", jsonapi.rendering_formats.get(output_format)
+#     )
+#     options = request.data.attributes.options
+#     if options:
+#         for option, value in options.items():
+#             if option == "render-output-format":
+#                 raise HTTPException(
+#                     status_code=400, detail="Choose only one output format"
+#                 )
+#             indigo().setOption(option, value)
+#     if output_format == "image/png":
+#         result = indigo_renderer.renderToBuffer(compound).tobytes()
+#         response = Response(
+#             result,
+#             headers={"Content-Type": "image/png"}
+#         )
+#     elif output_format == "image/png;base64":
+#         result = indigo_renderer.renderToBuffer(compound).tobytes()
+#         decoded_image = base64.b64encode(result).decode("utf-8")
+#         image_base64 = f"data:image/png;base64,{decoded_image}"
+#         response = Response(
+#             image_base64,
+#             headers={"Content-Type": "image/png"}
+#         )
+#     elif output_format == "image/svg+xml":
+#         result = indigo_renderer.renderToString(compound)
+#         response = Response(
+#             result,
+#             headers={"Content-Type": "image/svg+xml"}
+#         )
+#     elif output_format == "application/pdf":
+#         result = indigo_renderer.renderToBuffer(compound).tobytes()
+#         response = Response(
+#             result, headers={
+#                 "Content-Type": "application/pdf",
+#                 "Content-Disposition": "attachment; filename=mol.pdf"
+#             }
+#         )
+#     else:
+#         raise HTTPException(
+#             status_code=400,
+#             detail=f"Incorrect output format {output_format}"
+#         )
+#     return response

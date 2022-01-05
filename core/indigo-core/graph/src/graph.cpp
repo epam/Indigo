@@ -114,11 +114,11 @@ int Graph::getEdgeEnd(int beg, int edge) const
     return -1;
 }
 
-void Graph::addMetaObject( GraphMetaObject* pobj)
+void Graph::addMetaObject(GraphMetaObject* pobj)
 {
     int index = _meta_data.size();
-    _meta_data.expand( index + 1 );
-    _meta_data.set( index, pobj );
+    _meta_data.expand(index + 1);
+    _meta_data.set(index, pobj);
 }
 
 void Graph::resetMetaData()
@@ -803,6 +803,12 @@ void Graph::_cloneGraph_KeepIndices(const Graph& other)
     for (i = 0; i <= max_vertex_idx; i++)
         if (addVertex() != i)
             throw Error("_clone_KeepIndices: unexpected vertex index");
+
+    const auto& meta = other.metaData();
+    for (i = 0; i < meta.size(); i++)
+    {
+        addMetaObject(meta[i]->clone());
+    }
 
     i_prev = -1;
 

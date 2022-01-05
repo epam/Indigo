@@ -54,7 +54,6 @@ namespace indigo
         IndigoAbbreviations& indigoGetAbbreviationsInstance();
         IndigoAbbreviations& indigoCreateAbbreviationsInstance();
 
-
     } // namespace abbreviations
 } // namespace indigo
 

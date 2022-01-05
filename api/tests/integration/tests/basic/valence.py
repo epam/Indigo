@@ -1,18 +1,23 @@
 import sys
-sys.path.append('../../common')
+
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
 print("****** Get valence ********")
-def getMoleculesValence (iter):
+
+
+def getMoleculesValence(iter):
     for num, mol in enumerate(iter):
         print("molecule #%d: " % (num))
         for atom in mol.iterateAtoms():
             msg = atom.checkBadValence()
             if len(msg) > 0:
-               print("Atom index %d has bad valence: %s" % (atom.index(), msg))
+                print(
+                    "Atom index %d has bad valence: %s" % (atom.index(), msg)
+                )
         msg = mol.checkBadValence()
         if len(msg) > 0:
             print(msg)
@@ -21,7 +26,9 @@ def getMoleculesValence (iter):
             print(msg)
 
 
-getMoleculesValence(indigo.iterateSDFile(joinPathPy("molecules/valence_test1.sdf", __file__)))
+getMoleculesValence(
+    indigo.iterateSDFile(joinPathPy("molecules/valence_test1.sdf", __file__))
+)
 
 
 print("****** Set explicit valence ********")
@@ -35,4 +42,11 @@ print(m.smiles())
 print(m.molfile())
 
 print("****** Explicit unusual valence ********")
-getMoleculesValence(indigo.iterateSDFile(joinPathPy("../../../../../data/molecules/basic/explicit_valence.sdf", __file__)))
+getMoleculesValence(
+    indigo.iterateSDFile(
+        joinPathPy(
+            "../../../../../data/molecules/basic/explicit_valence.sdf",
+            __file__,
+        )
+    )
+)

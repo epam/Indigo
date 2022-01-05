@@ -18,7 +18,6 @@
 
 #include "oracle/bingo_oracle.h"
 
-#include <memory>
 #include "base_cpp/output.h"
 #include "graph/embedding_enumerator.h"
 #include "molecule/cmf_saver.h"
@@ -36,6 +35,7 @@
 #include "reaction/crf_saver.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_loader.h"
+#include <memory>
 
 bool _ringoRegisterReaction(OracleEnv& env, const char* rowid, const Array<char>& reaction_buf, RingoOracleContext& context, RingoIndex& index,
                             BingoFingerprints& fingerprints)

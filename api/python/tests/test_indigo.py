@@ -23,12 +23,8 @@ class TestIndigo(TestIndigoBase):
         m10 = self.indigo.loadMolecule("[F-].C")
         m11 = self.indigo.loadMolecule("[S-2].C")
         m12 = self.indigo.loadMolecule("[Se-2].C")
-        self.assertTrue(
-            m1.checkSalt(), "{} contains Na+.".format(m1.smiles())
-        )
-        self.assertTrue(
-            m2.checkSalt(), "{} contains Rb+.".format(m2.smiles())
-        )
+        self.assertTrue(m1.checkSalt(), "{} contains Na+.".format(m1.smiles()))
+        self.assertTrue(m2.checkSalt(), "{} contains Rb+.".format(m2.smiles()))
         self.assertTrue(
             m3.checkSalt(), "{} contains Ca2+.".format(m3.smiles())
         )
@@ -47,9 +43,7 @@ class TestIndigo(TestIndigoBase):
         self.assertTrue(
             m8.checkSalt(), "{} contains Sn4+.".format(m8.smiles())
         )
-        self.assertTrue(
-            m9.checkSalt(), "{} contains Cl-.".format(m9.smiles())
-        )
+        self.assertTrue(m9.checkSalt(), "{} contains Cl-.".format(m9.smiles()))
         self.assertTrue(
             m10.checkSalt(), "{} contains F-.".format(m10.smiles())
         )
@@ -85,7 +79,8 @@ class TestIndigo(TestIndigoBase):
             m5.checkSalt(), "{} contains silicon dioxide.".format(m5.smiles())
         )
         self.assertTrue(
-            m6.checkSalt(), "{} contains manganese dioxide.".format(m6.smiles())
+            m6.checkSalt(),
+            "{} contains manganese dioxide.".format(m6.smiles()),
         )
         self.assertTrue(
             m7.checkSalt(), "{} contains ferrous sulfide.".format(m7.smiles())
@@ -105,35 +100,30 @@ class TestIndigo(TestIndigoBase):
         m8 = self.indigo.loadMolecule("[OH-].C")
         self.assertTrue(
             m1.checkSalt(),
-            "{} contains dihydrogenphosphate ion.".format(m1.smiles())
-        ),
+            "{} contains dihydrogenphosphate ion.".format(m1.smiles()),
+        )
         self.assertTrue(
             m2.checkSalt(),
-            "{} contains dihydrogensulfate ion.".format(m2.smiles())
-        ),
+            "{} contains dihydrogensulfate ion.".format(m2.smiles()),
+        )
         self.assertTrue(
             m3.checkSalt(),
-            "{} contains hydrogenselenite ion.".format(m3.smiles())
+            "{} contains hydrogenselenite ion.".format(m3.smiles()),
         )
         self.assertTrue(
-            m4.checkSalt(),
-            "{} contains nitrate ion.".format(m4.smiles())
+            m4.checkSalt(), "{} contains nitrate ion.".format(m4.smiles())
         )
         self.assertTrue(
-            m5.checkSalt(),
-            "{} contains nitrite ion.".format(m5.smiles())
+            m5.checkSalt(), "{} contains nitrite ion.".format(m5.smiles())
         )
         self.assertTrue(
-            m6.checkSalt(),
-            "{} contains iodite ion.".format(m6.smiles())
+            m6.checkSalt(), "{} contains iodite ion.".format(m6.smiles())
         )
         self.assertTrue(
-            m7.checkSalt(),
-            "{} contains hypochlorite ion.".format(m7.smiles())
+            m7.checkSalt(), "{} contains hypochlorite ion.".format(m7.smiles())
         )
         self.assertTrue(
-            m8.checkSalt(),
-            "{} contains hydroxide ion.".format(m8.smiles())
+            m8.checkSalt(), "{} contains hydroxide ion.".format(m8.smiles())
         )
 
     def test_check_multiple_ions(self) -> None:
@@ -142,45 +132,39 @@ class TestIndigo(TestIndigoBase):
         m2 = self.indigo.loadMolecule("[O-]S(=O)(=O)[O-].[K+].[K+].C")
         self.assertTrue(
             m1.checkSalt(),
-            "{} contains sodium and chloride ions.".format(m1.smiles())
+            "{} contains sodium and chloride ions.".format(m1.smiles()),
         )
         self.assertTrue(
             m2.checkSalt(),
-            "{} contains potassium and sulfate ions.".format(m2.smiles())
+            "{} contains potassium and sulfate ions.".format(m2.smiles()),
         )
 
     def test_check_no_ions(self) -> None:
         m1 = self.indigo.loadMolecule("c1ccccc1")
         m2 = self.indigo.loadMolecule("C1=CC=C2C=CC=CC2=C1")
         self.assertFalse(
-            m1.checkSalt(),
-            "{} doesn`t contain any salts.".format(m1.smiles())
+            m1.checkSalt(), "{} doesn`t contain any salts.".format(m1.smiles())
         )
         self.assertFalse(
-            m2.checkSalt(),
-            "{} doesn`t contain any salts.".format(m2.smiles())
+            m2.checkSalt(), "{} doesn`t contain any salts.".format(m2.smiles())
         )
 
     def test_check_bonded_metal_atom(self) -> None:
         m1 = self.indigo.loadMolecule("CC[Pb](CC)(CC)CC")
         m2 = self.indigo.loadMolecule("C[Al](C)C")
         self.assertFalse(
-            m1.checkSalt(),
-            "{} doesn`t contain any salts.".format(m1.smiles())
+            m1.checkSalt(), "{} doesn`t contain any salts.".format(m1.smiles())
         )
         self.assertFalse(
-            m2.checkSalt(),
-            "{} doesn`t contain any salts.".format(m2.smiles())
+            m2.checkSalt(), "{} doesn`t contain any salts.".format(m2.smiles())
         )
 
     def test_check_bonded_acid_group(self) -> None:
         m1 = self.indigo.loadMolecule("C1=CC=C(C=C1)[N+](=O)[O-]")
         m2 = self.indigo.loadMolecule("C(C(=O)O)S(=O)(=O)O")
         self.assertFalse(
-            m1.checkSalt(),
-            "{} doesn`t contain any salts.".format(m1.smiles())
+            m1.checkSalt(), "{} doesn`t contain any salts.".format(m1.smiles())
         )
         self.assertFalse(
-            m2.checkSalt(),
-            "{} doesn`t contain any salts.".format(m2.smiles())
+            m2.checkSalt(), "{} doesn`t contain any salts.".format(m2.smiles())
         )

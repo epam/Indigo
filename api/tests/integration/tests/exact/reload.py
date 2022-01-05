@@ -1,16 +1,21 @@
 import random
 import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("ignore-stereochemistry-errors", "1")
 mol_db_names = [
-    joinPathPy("../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__),
-    joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__),
-    joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__)]
+    joinPathPy(
+        "../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__
+    ),
+    joinPathPy(
+        "../../../../../data/molecules/basic/thiazolidines.sdf", __file__
+    ),
+    joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__),
+]
 
 
 def random_permutation(iterable, r=None):
@@ -30,13 +35,17 @@ def testMol(mol):
     perm_mol = indigo.loadMolecule(base_smiles)
     perm_smiles = perm_mol.canonicalSmiles()
     if perm_smiles != base_smiles:
-        msg = "  Smiles: %s after reload from smiles %s. Permuted canonical smiles: %s\n" % (
-        mol.name(), base_smiles, perm_smiles)
+        msg = (
+            "  Smiles: %s after reload from smiles %s. Permuted canonical smiles: %s\n"
+            % (mol.name(), base_smiles, perm_smiles)
+        )
         print(msg)
         sys.stderr.write(msg + "\n")
     if not indigo.exactMatch(mol, perm_mol):
-        msg = "  Exact: %s after reload from smiles %s. Permuted canonical smiles: %s\n" % (
-        mol.name(), base_smiles, perm_smiles)
+        msg = (
+            "  Exact: %s after reload from smiles %s. Permuted canonical smiles: %s\n"
+            % (mol.name(), base_smiles, perm_smiles)
+        )
         print(msg)
         sys.stderr.write(msg + "\n")
 

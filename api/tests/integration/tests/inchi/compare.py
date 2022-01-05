@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -9,9 +9,12 @@ indigo.setOption("ignore-noncritical-query-features", "true")
 indigo_inchi = IndigoInchi(indigo)
 
 files = [
-    ("../../../../../data/molecules/basic/pubchem_slice_5000.smi", indigo.iterateSmilesFile),
+    (
+        "../../../../../data/molecules/basic/pubchem_slice_5000.smi",
+        indigo.iterateSmilesFile,
+    ),
     ("molecules/stereo.smi", indigo.iterateSmilesFile),
-    ("molecules/set01.sdf", indigo.iterateSDFile)
+    ("molecules/set01.sdf", indigo.iterateSDFile),
 ]
 
 
@@ -50,9 +53,15 @@ for file, method in files:
             inchi2 = indigo_inchi.getInchi(m2)
             print("  InChI2: " + inchi2)
             if inchi != inchi2:
-                print("Warning: InChIs are different:\n  %s\n  %s\n" % (inchi, inchi2))
+                print(
+                    "Warning: InChIs are different:\n  %s\n  %s\n"
+                    % (inchi, inchi2)
+                )
             if csmiles != csmiles2:
-                print("Warning: CSmiles are different:\n  %s\n  %s\n" % (csmiles, csmiles2))
+                print(
+                    "Warning: CSmiles are different:\n  %s\n  %s\n"
+                    % (csmiles, csmiles2)
+                )
             print("  InChI key: " + indigo_inchi.getInchiKey(inchi))
             warn = indigo_inchi.getWarning()
             if len(warn) > 0:

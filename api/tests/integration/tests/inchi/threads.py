@@ -1,7 +1,7 @@
-from threading import Thread
 import sys
+from threading import Thread
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 
@@ -16,7 +16,11 @@ class testThread(Thread):
         self.result = "???"  # indigo._sid
         id = 0
 
-        for item in indigo.iterateSmilesFile(joinPathPy("../../../../../data/molecules/basic/helma.smi", __file__)):
+        for item in indigo.iterateSmilesFile(
+            joinPathPy(
+                "../../../../../data/molecules/basic/helma.smi", __file__
+            )
+        ):
             c1 = ""
             c2 = ""
             try:

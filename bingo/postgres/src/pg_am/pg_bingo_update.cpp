@@ -3,6 +3,7 @@
 extern "C"
 {
 #include "postgres.h"
+
 #include "catalog/index.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"

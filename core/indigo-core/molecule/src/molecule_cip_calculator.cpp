@@ -25,9 +25,8 @@
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_stereocenters.h"
-#include "molecule/query_molecule.h"
 #include "molecule/molfile_saver.h"
-
+#include "molecule/query_molecule.h"
 
 using namespace indigo;
 
@@ -237,8 +236,8 @@ void MoleculeCIPCalculator::_addCIPSgroups(BaseMolecule& mol, Array<CIPDesc>& at
     }
 }
 
-void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& atom_cip_desc, Array<int>& stereo_passed,
-                                           bool use_stereo, Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used)
+void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& atom_cip_desc,
+                                                    Array<int>& stereo_passed, bool use_stereo, Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used)
 {
     Array<int> ligands;
     Array<int> used1;
@@ -806,7 +805,8 @@ bool MoleculeCIPCalculator::_checkLigandsEquivalence(Array<int>& ligands, Array<
     return neq != 0;
 }
 
-bool MoleculeCIPCalculator::_isPseudoAssymCenter(BaseMolecule& mol, int idx, Array<CIPDesc>& atom_cip_desc, Array<int>& ligands, Array<EquivLigand>& equiv_ligands)
+bool MoleculeCIPCalculator::_isPseudoAssymCenter(BaseMolecule& mol, int idx, Array<CIPDesc>& atom_cip_desc, Array<int>& ligands,
+                                                 Array<EquivLigand>& equiv_ligands)
 {
     int neq = 0;
     for (int k = 0; k < 3; k++)

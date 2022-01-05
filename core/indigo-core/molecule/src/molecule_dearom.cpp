@@ -48,7 +48,8 @@ thread_local int _dearomatizationParams = Dearomatizer::PARAMS_SAVE_ONE_DEAROMAT
 CP_DEF(Dearomatizer);
 
 Dearomatizer::Dearomatizer(BaseMolecule& molecule, const int* atom_external_conn, const AromaticityOptions& options)
-    : _graphMatching(molecule), _molecule(molecule), _options(options), _aromaticGroups(molecule), CP_INIT, TL_CP_GET(_aromaticGroupData),
+    : _graphMatching(molecule), _molecule(molecule), _options(options), _aromaticGroups(molecule, options.aromatize_skip_superatoms), CP_INIT,
+      TL_CP_GET(_aromaticGroupData),
       // TL_CP_GET(_edgesFixed),
       // TL_CP_GET(_verticesFixed),
       TL_CP_GET(_submoleculeMapping)
@@ -550,10 +551,21 @@ DearomatizationsStorage::DearomatizationsStorage(void)
 IMPL_ERROR2(DearomatizationsGroups, DearomatizationException, "Dearomatization groups");
 CP_DEF(DearomatizationsGroups);
 
-DearomatizationsGroups::DearomatizationsGroups(BaseMolecule& molecule)
+DearomatizationsGroups::DearomatizationsGroups(BaseMolecule& molecule, bool skip_superatoms)
     : _molecule(molecule), CP_INIT, TL_CP_GET(_vertexAromaticGroupIndex), TL_CP_GET(_vertexIsAcceptDoubleEdge), TL_CP_GET(_vertexIsAcceptSingleEdge),
       TL_CP_GET(_vertexProcessed), TL_CP_GET(_groupVertices), TL_CP_GET(_groupEdges), TL_CP_GET(_groupHeteroAtoms), TL_CP_GET(_groupData)
 {
+    // collect superatoms
+    if (skip_superatoms)
+        for (int i = molecule.sgroups.begin(); i != molecule.sgroups.end(); i = molecule.sgroups.next(i))
+        {
+            SGroup& sgroup = molecule.sgroups.getSGroup(i);
+            if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+            {
+                for (int i = 0; i < sgroup.atoms.size(); i++)
+                    _inside_superatoms.find_or_insert(sgroup.atoms[i]);
+            }
+        }
 }
 
 void DearomatizationsGroups::getGroupData(int group, int flags, DearomatizationsGroups::GROUP_DATA* data)
@@ -678,6 +690,9 @@ int DearomatizationsGroups::detectAromaticGroups(const int* atom_external_conn)
 
     for (int v_idx = _molecule.vertexBegin(); v_idx < _molecule.vertexEnd(); v_idx = _molecule.vertexNext(v_idx))
     {
+        if (_inside_superatoms.find(v_idx))
+            continue;
+
         if (_vertexAromaticGroupIndex[v_idx] != -1)
             continue;
 
@@ -927,8 +942,9 @@ IMPL_ERROR2(DearomatizationMatcher, DearomatizationException, "Dearomatization m
 
 CP_DEF(DearomatizationMatcher);
 
-DearomatizationMatcher::DearomatizationMatcher(DearomatizationsStorage& dearomatizations, BaseMolecule& molecule, const int* atom_external_conn)
-    : _molecule(molecule), _dearomatizations(dearomatizations), _graphMatchingFixedEdges(molecule), _aromaticGroups(molecule), CP_INIT,
+DearomatizationMatcher::DearomatizationMatcher(DearomatizationsStorage& dearomatizations, BaseMolecule& molecule, const int* atom_external_conn,
+                                               bool skip_superatoms)
+    : _molecule(molecule), _dearomatizations(dearomatizations), _graphMatchingFixedEdges(molecule), _aromaticGroups(molecule, skip_superatoms), CP_INIT,
       TL_CP_GET(_matchedEdges), TL_CP_GET(_matchedEdgesState), TL_CP_GET(_groupExInfo), TL_CP_GET(_verticesInGroup), TL_CP_GET(_verticesAdded),
       TL_CP_GET(_edges2GroupMapping), TL_CP_GET(_edges2IndexInGroupMapping), TL_CP_GET(_correctEdgesArray), TL_CP_GET(_verticesFixCount),
       TL_CP_GET(_aromaticGroupsData)

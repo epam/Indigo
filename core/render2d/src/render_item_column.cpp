@@ -55,7 +55,7 @@ void RenderItemColumn::estimateSize()
     {
         RenderItemBase& item = _factory.getItem(items[i]);
         size.y += (i > 0 ? vSpace : 0) + item.size.y;
-        size.x = std::max(size.x, item.size.x); //std::max(size.x, 2.f * (fabsf(item.referenceY) + item.size.x / 2.f));
+        size.x = std::max(size.x, item.size.x); // std::max(size.x, 2.f * (fabsf(item.referenceY) + item.size.x / 2.f));
     }
 }
 

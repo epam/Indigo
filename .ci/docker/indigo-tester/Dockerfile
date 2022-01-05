@@ -10,7 +10,21 @@ ARG IRONPYTHON_VERSION=2.7.11
 RUN set -eux && \
     apt update && \
     apt upgrade -y && \
-    apt install -y --no-install-recommends build-essential cmake make git python3 python3-pip python3-distutils curl unzip libc6-dev libgdiplus libx11-dev && \
+    apt install -y --no-install-recommends \
+     build-essential \
+     clang-format \
+     cmake \
+     make \
+     git \
+     python3 \
+     python3-pip \
+     python3-distutils \
+     curl \
+     unzip \
+     libc6-dev \
+     libgdiplus \
+     libx11-dev \
+     npm && \
     apt install -y gnupg && \
     # Java JDK
     curl -OL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR}/OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
@@ -49,8 +63,14 @@ RUN set -eux && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 packages
     python3 -m pip install --upgrade pip && \
-    python3 -m pip install --upgrade Pillow setuptools wheel twine && \
+    python3 -m pip install --upgrade setuptools wheel twine && \
     apt autoremove -y
+
+COPY /api/http/requirements.txt ./api_requirements.txt
+COPY /api/http/requirements_dev.txt ./api_requirements_dev.txt
+COPY /bingo/bingo-elastic/python/requirements_dev.txt ./bingo_requirements_dev.txt
+
+RUN python3 -m pip install -r api_requirements.txt -r api_requirements_dev.txt -r bingo_requirements_dev.txt
 
 ENV JAVA_HOME=/opt/jdk
 ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython
@@ -61,6 +81,10 @@ RUN git --version && \
     python3 --version && \
     twine --version && \
     wheel version && \
+    black --version && \
+    isort --version && \
+    pflake8 --version && \
+    mypy --version && \
     java -version && \
     mvn --version && \
     gpg --version && \
@@ -68,4 +92,6 @@ RUN git --version && \
     dotnet --version && \
     dotnet nuget --version && \
     ipy -V && \
-    powershell --version
+    powershell --version && \
+    clang-format --version && \
+    python3 -m pip list

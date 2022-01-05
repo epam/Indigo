@@ -19,7 +19,7 @@ import os
 import platform
 from ctypes import CDLL, POINTER, c_char_p, c_int
 
-from indigo import IndigoException, DECODE_ENCODING
+from indigo import DECODE_ENCODING, IndigoException
 
 
 class IndigoRenderer(object):
@@ -80,7 +80,7 @@ class IndigoRenderer(object):
             obj (IndigoObject): object to render
 
         Returns:
-            list: buffer with byte array
+            buffer with byte array
         """
         self.indigo._setSessionId()
         wb = self.indigo.writeBuffer()

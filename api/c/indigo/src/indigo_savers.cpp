@@ -20,7 +20,6 @@
 
 #include <ctime>
 
-#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "molecule/canonical_smiles_saver.h"
@@ -35,6 +34,7 @@
 #include "reaction/reaction_json_saver.h"
 #include "reaction/rsmiles_saver.h"
 #include "reaction/rxnfile_saver.h"
+#include <memory>
 
 #include "indigo_io.h"
 #include "indigo_molecule.h"
@@ -563,6 +563,7 @@ CEXPORT int indigoSaveJson(int item, int output)
         if (IndigoBaseMolecule::is(obj))
         {
             MoleculeJsonSaver saver(out);
+            self.initMoleculeJsonSaver(saver);
             BaseMolecule& mol = obj.getBaseMolecule();
             saver.saveMolecule(mol);
             out.flush();
@@ -571,6 +572,7 @@ CEXPORT int indigoSaveJson(int item, int output)
         else if (IndigoBaseReaction::is(obj))
         {
             ReactionJsonSaver saver(out);
+            self.initReactionJsonSaver(saver);
             BaseReaction& rxn = obj.getBaseReaction();
             saver.saveReaction(rxn);
             out.flush();
