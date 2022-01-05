@@ -3,6 +3,7 @@
 extern "C"
 {
 #include "postgres.h"
+
 #include "fmgr.h"
 }
 
@@ -10,8 +11,6 @@ extern "C"
 
 #include "ringo_pg_build_engine.h"
 
-#include "base_c/bitarray.h"
-#include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "bingo_core_c.h"
@@ -21,7 +20,6 @@ extern "C"
 #include "bingo_pg_index.h"
 #include "bingo_pg_text.h"
 #include "ringo_pg_search_engine.h"
-#include <float.h>
 
 using namespace indigo;
 

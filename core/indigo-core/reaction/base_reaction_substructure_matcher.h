@@ -19,12 +19,12 @@
 #ifndef __base_reaction__substructure_matcher__
 #define __base_reaction__substructure_matcher__
 
-#include <memory>
 #include "base_cpp/obj.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule_arom_match.h"
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)

@@ -20,7 +20,7 @@ else()
             PRIVATE -DPIXMAN_NO_TLS)
 endif()
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(${PROJECT_NAME} SYSTEM
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/pixman)
 
 message(STATUS "Using local version of ${PROJECT_NAME}")

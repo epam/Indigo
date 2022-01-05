@@ -3,6 +3,7 @@
 extern "C"
 {
 #include "postgres.h"
+
 #include "access/genam.h"
 #include "access/relscan.h"
 #include "fmgr.h"
@@ -19,6 +20,7 @@ extern "C"
 #include "base_cpp/profiling.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
+
 #include "bingo_core_c.h"
 
 #include "bingo_pg_common.h"

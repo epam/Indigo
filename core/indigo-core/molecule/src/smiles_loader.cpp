@@ -32,9 +32,7 @@ using namespace indigo;
 
 IMPL_ERROR(SmilesLoader, "SMILES loader");
 
-
-SmilesLoader::SmilesLoader(Scanner& scanner)
-    : _scanner(scanner)
+SmilesLoader::SmilesLoader(Scanner& scanner) : _scanner(scanner)
 {
     ignorable_aam = 0;
     inside_rsmiles = false;
@@ -1784,7 +1782,7 @@ void SmilesLoader::_addLigandsForStereo()
                     qatom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
                 else
                     qatom.reset(QueryMolecule::Atom::oder(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
-                                                      new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+                                                          new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
 
                 std::unique_ptr<QueryMolecule::Bond> qbond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, BOND_SINGLE);
 

@@ -1,12 +1,10 @@
 from pathlib import Path
-from typing import Union
 
 import bingo_elastic.model.helpers as helpers
 from bingo_elastic.model.record import (
-    IndigoRecordReaction,
     IndigoRecordMolecule,
+    IndigoRecordReaction,
 )
-from indigo import Indigo
 
 
 def test_iterate_sdf(resource_loader):

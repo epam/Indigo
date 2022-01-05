@@ -1,9 +1,9 @@
 #include "bingo_pg_fix_pre.h"
 
 extern "C"
-
 {
 #include "postgres.h"
+
 #include "access/heapam.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"

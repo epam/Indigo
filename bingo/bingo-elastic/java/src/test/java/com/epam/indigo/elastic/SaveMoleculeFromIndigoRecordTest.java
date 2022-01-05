@@ -30,9 +30,9 @@ public class SaveMoleculeFromIndigoRecordTest {
     public static void setUpElastic() {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
-                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
-                        .withTag(ElasticsearchVersion.VERSION)
-        );
+                        .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
+                        .withTag(ElasticsearchVersion.VERSION))
+                .withEnv("xpack.security.enabled", "false");
         elasticsearchContainer.start();
         ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepositoryBuilder<>();
         repository = builder

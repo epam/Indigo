@@ -1,0 +1,6 @@
+version: "3.2"
+services:
+  indigo:
+    build: .
+    ports:
+    - "8181:8080"

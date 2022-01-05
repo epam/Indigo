@@ -169,18 +169,12 @@ TEST_F(IndigoApiFormatsTest, query)
 // TODO: #417
 TEST_F(IndigoApiFormatsTest, loadAssert)
 {
-    const string mStr = "C1=C(*)C=?C=C1";
-    const string expectedError = "molecule auto loader: SMILES loader: Character #63 is unexpected during bond parsing";
-
-    try
-    {
-        int obj = -1;
-        obj = indigoLoadStructureFromString(mStr.c_str(), "");
-    }
-    catch (Exception& e)
-    {
-        ASSERT_STREQ(expectedError.c_str(), e.message());
-    }
+    const auto* mStr = "C1=C(*)C=?C=C1";
+    const auto* expectedError = "molecule auto loader: SMILES loader: Character #63 is unexpected during bond parsing";
+    indigoSetErrorHandler(nullptr, nullptr);
+    const auto result = indigoLoadStructureFromString(mStr, "");
+    ASSERT_EQ(result, -1);
+    ASSERT_STREQ(expectedError, indigoGetLastError());
 }
 
 TEST_F(IndigoApiFormatsTest, fromBuffer)

@@ -42,4 +42,3 @@ void Exception::appendMessage(const char* format, ...)
 
     va_end(args);
 }
-

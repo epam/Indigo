@@ -430,6 +430,19 @@ void RenderContext::drawRectangle(const Vec2f& p, const Vec2f& sz)
     cairoCheckStatus();
 }
 
+void RenderContext::drawEllipse(const Vec2f& v1, const Vec2f& v2)
+{
+    auto width = v2.x - v1.x;
+    auto height = v2.y - v1.y;
+    cairo_matrix_t save_matrix;
+    cairo_get_matrix(_cr, &save_matrix);
+    cairo_translate(_cr, v1.x + width / 2.0, v1.y + height / 2.0);
+    cairo_scale(_cr, 1, height / width);
+    cairo_translate(_cr, -v1.x - width / 2.0, -v1.y - height / 2.0);
+    cairo_arc(_cr, v1.x + width / 2.0, v1.y + height / 2.0, width / 2.0, 0, 2 * M_PI);
+    cairo_set_matrix(_cr, &save_matrix);
+}
+
 void RenderContext::drawItemBackground(const RenderItem& item)
 {
     cairo_rectangle(_cr, item.bbp.x, item.bbp.y, item.bbsz.x, item.bbsz.y);
@@ -678,10 +691,21 @@ void RenderContext::arc(cairo_t* cr, double xc, double yc, double radius, double
 {
 #ifdef __EMSCRIPTEN__
     // In the WASM build this workaround fixes function signature issues with cairo_arc.
-    const double arc_parts = 18;
+    while (angle2 < angle1)
+        angle2 += 2 * M_PI;
+    const double arc_parts = 36;
     double diff = angle2 - angle1;
-    for (double phi = angle1; phi <= angle2; phi += diff / arc_parts)
-        lineTo(Vec2f(_settings.graphItemDotRadius * cos(phi) + xc, _settings.graphItemDotRadius * sin(phi) + yc));
+    double phi = angle1;
+    double step = diff / arc_parts;
+    for (int i = 0; i <= arc_parts; ++i)
+    {
+        Vec2f p(radius * cos(phi) + xc, radius * sin(phi) + yc);
+        if (i)
+            cairo_line_to(cr, p.x, p.y);
+        else
+            cairo_move_to(cr, p.x, p.y);
+        phi += step;
+    }
 #else
     cairo_arc(cr, xc, yc, radius, angle1, angle2);
 #endif

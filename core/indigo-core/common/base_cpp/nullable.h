@@ -27,7 +27,8 @@ namespace indigo
 
     DECL_EXCEPTION(NullableError);
 
-    template <typename T> class Nullable
+    template <typename T>
+    class Nullable
     {
     public:
         Nullable() : _has_value(false)

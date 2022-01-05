@@ -3,9 +3,11 @@
 extern "C"
 {
 #include "postgres.h"
+
+#include "fmgr.h"
+
 #include "catalog/pg_type.h"
 #include "executor/spi.h"
-#include "fmgr.h"
 #include "utils/builtins.h"
 #include "utils/int8.h"
 }
@@ -16,12 +18,13 @@ extern "C"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
+
 #include "bingo_core_c.h"
+
 #include "bingo_pg_common.h"
 #include "bingo_pg_cursor.h"
 #include "bingo_pg_text.h"
 #include "bingo_postgres.h"
-#include "molecule/molecule.h"
 
 extern "C"
 {

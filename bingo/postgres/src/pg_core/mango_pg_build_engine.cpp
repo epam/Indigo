@@ -5,6 +5,7 @@
 extern "C"
 {
 #include "postgres.h"
+
 #include "fmgr.h"
 }
 
@@ -12,9 +13,9 @@ extern "C"
 
 #include "mango_pg_build_engine.h"
 
-#include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
+
 #include "bingo_core_c.h"
 
 #include "bingo_pg_common.h"
@@ -22,7 +23,6 @@ extern "C"
 #include "bingo_pg_index.h"
 #include "bingo_pg_text.h"
 #include "mango_pg_search_engine.h"
-
 
 using namespace indigo;
 

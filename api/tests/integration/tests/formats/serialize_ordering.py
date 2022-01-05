@@ -1,13 +1,14 @@
-import sys
 import binascii
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
-def getAtomString (a, reaction, hasCoord):
+
+def getAtomString(a, reaction, hasCoord):
     xyzStr = ""
     if hasCoord:
         x, y, z = [round(v, 1) for v in a.xyz()]
@@ -19,7 +20,8 @@ def getAtomString (a, reaction, hasCoord):
 
     return str
 
-def getBondString (b, reaction):
+
+def getBondString(b, reaction):
     str = "%d" % (b.bondOrder())
 
     if reaction:
@@ -27,13 +29,14 @@ def getBondString (b, reaction):
 
     return str
 
+
 def compareMolecules(m1, m2, r1, r2):
     print("Atoms:")
     for a1, a2 in zip(m1.iterateAtoms(), m2.iterateAtoms()):
         s1 = getAtomString(a1, r1, m1.hasCoord())
         s2 = getAtomString(a2, r2, m2.hasCoord())
         print("%d, %d: %s - %s" % (a1.index(), a2.index(), s1, s2))
-        #if s1 != s2:
+        # if s1 != s2:
         #    sys.stderr.write("Error: %s != %s" % (s1, s2))
 
     print("Bonds:")
@@ -41,19 +44,24 @@ def compareMolecules(m1, m2, r1, r2):
         s1 = getBondString(b1, r1)
         s2 = getBondString(b2, r2)
         print("%d, %d: %s - %s" % (b1.index(), b2.index(), s1, s2))
-        #if s1 != s2:
+        # if s1 != s2:
         #    sys.stderr.write("Error: %s != %s" % (s1, s2))
+
 
 indigo.setOption("serialize-preserve-ordering", True)
 
 print("Molecules")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/ordering.mol", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/ordering.mol", __file__)
+)
 buf = mol.serialize()
 mol2 = indigo.unserialize(buf)
 compareMolecules(mol, mol2, None, None)
 
 print("Reactions")
-rxn = indigo.loadReactionFromFile(joinPathPy("reactions/ordering.rxn", __file__))
+rxn = indigo.loadReactionFromFile(
+    joinPathPy("reactions/ordering.rxn", __file__)
+)
 buf = rxn.serialize()
 rxn2 = indigo.unserialize(buf)
 for mol in rxn.iterateMolecules():
@@ -66,4 +74,3 @@ mol.getAtom(2).remove()
 buf = mol.serialize()
 mol2 = indigo.unserialize(buf)
 compareMolecules(mol, mol2, None, None)
-

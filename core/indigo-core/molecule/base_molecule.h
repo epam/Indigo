@@ -66,7 +66,7 @@ namespace indigo
         _BOND_COORDINATION = 9,
         _BOND_HYDROGEN = 10
     };
-    
+
     enum
     {
         BOND_UP = 1,
@@ -85,14 +85,15 @@ namespace indigo
     // merging with molecule and cloning procedures
     enum
     {
-        SKIP_ALL = -1,
+        SKIP_ALL = 0x7F,
         SKIP_CIS_TRANS = 0x01,
         SKIP_STEREOCENTERS = 0x02,
         SKIP_XYZ = 0x04,
         SKIP_RGROUP_FRAGMENTS = 0x08,
         SKIP_ATTACHMENT_POINTS = 0x10,
         SKIP_TGROUPS = 0x20,
-        SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x40
+        SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x40,
+        COPY_BOND_DIRECTIONS = 0x80
     };
 
     class Molecule;
@@ -173,6 +174,7 @@ namespace indigo
         int getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id);
 
         void addAttachmentPoint(int order, int atom_index);
+
         int getAttachmentPoint(int order, int index) const;
         void removeAttachmentPointsFromAtom(int atom_index);
         int attachmentPointCount() const;
@@ -318,7 +320,7 @@ namespace indigo
         void selectBond(int idx);
         void selectAtoms(const Filter& filter);
         void selectBonds(const Filter& filter);
-        void getAtomSelection( std::set<int>& selection );
+        void getAtomSelection(std::set<int>& selection);
         void unselectAtom(int idx);
         void unselectBond(int idx);
         int countSelectedAtoms();
@@ -327,7 +329,6 @@ namespace indigo
         bool isAtomSelected(int idx);
         bool isBondSelected(int idx);
         void selectSubmolecule(BaseMolecule& sub, const int* mapping, bool entire);
-
 
         static int getVacantPiOrbitals(int group, int charge, int radical, int conn, int* lonepairs_out);
 
@@ -363,6 +364,12 @@ namespace indigo
         int getChiralFlag();
         void setChiralFlag(int flag);
 
+        // multifragments management methods
+
+        void setStereoFlagPosition(int frag_index, const Vec3f& pos);
+        bool getStereoFlagPosition(int frag_index, Vec3f& pos);
+        int countStereoFlags();
+
         // proxy methods for stereocenters
         const int* getPyramidStereocenters(int idx) const;
         void markBondsStereocenters();
@@ -370,18 +377,20 @@ namespace indigo
 
         void addStereocenters(int atom_idx, int type, int group, const int pyramid[4]);
         void addStereocenters(int atom_idx, int type, int group, bool inverse_pyramid);
+        void addStereocentersIgnoreBad(int atom_idx, int type, int group, bool inverse_pyramid);
+
         void removeAtomsStereocenters(const Array<int>& indices);
         void removeBondsStereocenters(const Array<int>& indices);
 
         void buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out);
         void buildFrom3dCoordinatesStereocenters(const StereocentersOptions& options);
-        bool isPossibleStereocenter( int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+        bool isPossibleStereocenter(int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
         void buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping);
 
         // proxy methods for cis_trans
-        void getSubstituents_All( int bond_idx, int subst[4]);
-        void restoreSubstituents( int bond_idx);
-        void buildCisTrans( int* exclude_bonds);
+        void getSubstituents_All(int bond_idx, int subst[4]);
+        void restoreSubstituents(int bond_idx);
+        void buildCisTrans(int* exclude_bonds);
         bool registerBondAndSubstituentsCisTrans(int idx);
         void registerUnfoldedHydrogenCisTrans(int atom_idx, int added_hydrogen);
         void buildFromSmilesCisTrans(int* dirs);
@@ -445,6 +454,8 @@ namespace indigo
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
+        RedBlackMap<int, Vec3f> _stereo_flag_positions;
+
         ObjArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
 

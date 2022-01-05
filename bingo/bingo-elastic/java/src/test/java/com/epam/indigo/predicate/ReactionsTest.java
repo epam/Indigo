@@ -8,7 +8,6 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,10 +30,7 @@ public class ReactionsTest extends BaseElasticTest {
 
     protected void check(IndigoRecordReaction target, Iterable<IndigoRecordReaction> found) {
         found.forEach(currentReaction -> {
-            assertTrue(Arrays.equals(
-                    currentReaction.getCmf(),
-                    target.getCmf()
-            ));
+            assertArrayEquals(currentReaction.getCmf(), target.getCmf());
             assertEquals(
                     currentReaction.getCmf().length,
                     target.getCmf().length
@@ -55,8 +51,7 @@ public class ReactionsTest extends BaseElasticTest {
         );
         System.out.println("Loaded reactions count:");
         System.out.println(reactions.size());
-        Iterable<IndigoRecordReaction> reactionIterable = reactions;
-        repositoryReaction.indexRecords(reactionIterable, reactions.size());
+        repositoryReaction.indexRecords(reactions, reactions.size());
         TimeUnit.SECONDS.sleep(15);
     }
 
@@ -67,7 +62,7 @@ public class ReactionsTest extends BaseElasticTest {
 
     @Test
     public void exactMatchTest() {
-        IndigoRecordReaction targetReaction = reactions.get(0);
+        IndigoRecordReaction targetReaction = getTargetReaction("38368.rxn");
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
                 .filter(new ExactMatch<>(targetReaction))
                 .collect(Collectors.toList());
@@ -76,7 +71,7 @@ public class ReactionsTest extends BaseElasticTest {
 
     @Test
     public void similarityMatchTest() {
-        IndigoRecordReaction targetReaction = reactions.get(1);
+        IndigoRecordReaction targetReaction = getTargetReaction("38369.rxn");
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
                 .filter(new SimilarityMatch<>(targetReaction, 1))
                 .collect(Collectors.toList());

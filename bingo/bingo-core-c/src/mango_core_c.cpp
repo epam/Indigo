@@ -163,7 +163,7 @@ CEXPORT int mangoGetHash(bool for_index, int index, int* count, dword* hash)
     {
         return self.mangoGetHash(for_index, index, count, hash);
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 void _mangoCheckPseudoAndCBDM(BingoCore& self)
@@ -304,7 +304,7 @@ CEXPORT int mangoSetupMatch(const char* search_type, const char* query, const ch
         }
         CATCH_READ_TARGET_MOL(self.error.readString(e.message(), 1); return -1;);
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 void BingoCore::mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, int** min_bound_ptr, int** max_bound_ptr) {
@@ -514,7 +514,7 @@ CEXPORT int mangoLoadTargetBinaryXyz(const char* target_xyz, int target_xyz_len)
     {
         self.mangoLoadTargetBinaryXyz(target_xyz, target_xyz_len);
     }
-    BINGO_END(1, -2)
+    BINGO_END(1, -2);
 }
 
 void BingoCore::mangoSetHightlightingMode(int enable) {
@@ -614,7 +614,7 @@ CEXPORT const char* mangoSMILES(const char* target_buf, int target_buf_len, int 
     {
         return self.mangoSMILES(target_buf, target_buf_len, canonical);
     }
-    BINGO_END(0, 0)
+    BINGO_END(0, 0);
 }
 
 const char* BingoCore::mangoMolfile(const char* molecule, int molecule_len) {
@@ -707,7 +707,7 @@ CEXPORT int mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
     {
         self.mangoGetQueryFingerprint(query_fp, query_fp_len);
     }
-    BINGO_END(1, -2)
+    BINGO_END(1, -2);
 }
 
 const char* BingoCore::mangoGetCountedElementName(int index){
@@ -754,7 +754,7 @@ CEXPORT int mangoNeedCoords()
     {
         return self.mangoNeedCoords();
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 byte BingoCore::mangoExactNeedComponentMatching(){
@@ -1058,5 +1058,5 @@ CEXPORT const char* mangoStandardize(const char* molecule, int molecule_len, con
     {
         return self.mangoStandardize(molecule, molecule_len, options);
     }
-    BINGO_END(0, 0)
+    BINGO_END(0, 0);
 }

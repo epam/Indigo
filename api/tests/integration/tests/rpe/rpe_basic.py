@@ -1,7 +1,12 @@
 import sys
 
-sys.path.append('../../common')
-from env_indigo import Indigo, IndigoException, getIndigoExceptionText, joinPathPy
+sys.path.append("../../common")
+from env_indigo import (
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
 
@@ -31,7 +36,9 @@ def transform(molset, reaction):
         yield [m, mapping]
 
 
-def transformByString(reaction_string, molecules_smiles, smarts_flag, transform_flag):
+def transformByString(
+    reaction_string, molecules_smiles, smarts_flag, transform_flag
+):
     molset = []
     for m, idx in zip(molecules_smiles, range(len(molecules_smiles))):
         mol = indigo.loadMolecule(m)
@@ -59,8 +66,15 @@ def transformByString(reaction_string, molecules_smiles, smarts_flag, transform_
             print("    %s: %s" % (name, smiles))
             if mapping != None:
                 for atom in molset[idx].iterateAtoms():
-                    if (mapping.mapAtom(atom) != None):
-                        print("[" + str(idx) + "] " + str(atom.index()) + "-" + str(mapping.mapAtom(atom).index()))
+                    if mapping.mapAtom(atom) != None:
+                        print(
+                            "["
+                            + str(idx)
+                            + "] "
+                            + str(atom.index())
+                            + "-"
+                            + str(mapping.mapAtom(atom).index())
+                        )
             idx += 1
     except IndigoException as e:
         msg = "Error: %s" % (getIndigoExceptionText(e))
@@ -141,45 +155,101 @@ def testTransformationMolfile(reaction_string, molfile_path):
     print("\n")
 
 
-testTransformation("O[*:1]>>[*:1][H]", ["C(O)C=C(O)C(O)", "OC(=C)C1=CC=CC=C1O"])
-testTransformation("[H]C([*:2])([*:3])C([*:5])([*:6])[*:7]>>C([*:2])([*:3])=C([*:5])([*:6])",
-                   ["C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)"])
-testTransformation("[H]C([H,*:2])([H,*:3])C([H,*:5])([H,*:6])[H,*:7]>>C([H,*:2])([H,*:3])=C([H,*:5])([H,*:6])",
-                   ["C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)"])
-testTransformation("[H]C([H,*:2])([H,*:3])C([H,*:5])([H,*:6])[H,*:7]>>C([*:2])([*:3])=C([*:5])([H,*:6])",
-                   ["C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)"])
+testTransformation(
+    "O[*:1]>>[*:1][H]", ["C(O)C=C(O)C(O)", "OC(=C)C1=CC=CC=C1O"]
+)
+testTransformation(
+    "[H]C([*:2])([*:3])C([*:5])([*:6])[*:7]>>C([*:2])([*:3])=C([*:5])([*:6])",
+    ["C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)"],
+)
+testTransformation(
+    "[H]C([H,*:2])([H,*:3])C([H,*:5])([H,*:6])[H,*:7]>>C([H,*:2])([H,*:3])=C([H,*:5])([H,*:6])",
+    ["C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)"],
+)
+testTransformation(
+    "[H]C([H,*:2])([H,*:3])C([H,*:5])([H,*:6])[H,*:7]>>C([*:2])([*:3])=C([*:5])([H,*:6])",
+    ["C1(Cl)C(Cl)C(Cl)C(Cl)C(Cl)C1(Cl)"],
+)
 testTransformation("[*:1]C([*:2])=[*:3]>>[*:1]C=[*:3]", ["C=1(Cl)C=CC=CC1"])
 testTransformation("[*:2]c(:[*:1]):[*:3]>>[*:1]:c:[*:3]", ["C=1(Cl)C=CC=CC1"])
 testTransformation("[*:1]>>[*;+:1]", ["C", "[H]"])
 testTransformation("[*:1]>>[*;+0:1]", ["[C+]", "[H]"])
 testTransformation("[*:1]>>[O,N;+:1]", ["O", "N", "C"])
 # Bug?: Incorrect AAM
-testTransformation("[H,*:2]>>N[*:2]", ["C", ])
+testTransformation(
+    "[H,*:2]>>N[*:2]",
+    [
+        "C",
+    ],
+)
 testTransformation("[H,*:1]>>N[H,*:1]", ["C"])
 # Bug!: array: invalid index 14 (size=14)
-testTransformation("[H,*:1]>>[*:1]", ["C[2H]", ])
+testTransformation(
+    "[H,*:1]>>[*:1]",
+    [
+        "C[2H]",
+    ],
+)
 testTransformation("[H,*:1]>>[H,*:1]", ["C[2H]"])
-testTransformation("[H,*:1]>>[*:1]", ["[H]", ])
+testTransformation(
+    "[H,*:1]>>[*:1]",
+    [
+        "[H]",
+    ],
+)
 testTransformation("[H,*:1]>>[H,*:1]", ["[H]"])
 testTransformation(
     "[H:1][O,S,Se,Te:2][C:3]([H,*:7])=[C:4]([H,*:6])[H,*:5]>>[H:1][C:4]([H,*:6])([H,*:5])[C:3]([H,*:7])=[O,S,Se,Te:2]",
-    ["C[C@]1(O)[C@H]2C[C@H]3[C@@H](C(O)=C(C(N)=O)C(=O)[C@@]3(O)C(=O)C2C(=O)C2=C1C=CC=C2O)N(C)C"])
-testTransformation("[H]c1[c:5][c:4][c:3][c:2]c1C(=O)N[H,*:1]>>[H,*:1]NC1=NOc2c1[c:2][c:3][c:4][c:5]2",
-                   ["NC(=O)c1ccccc1"])
-testTransformation("[*:1]:[c]([*:2]):[c:10]([*:3]):[n]([*:4]):[*:5]>>[*:1]:[n]([*:2]):[c:10]([*:3]):[c]([*:4])[*:5]",
-                   ["Oc1ccn(C)c1C"])
-testTransformation("[!O:1][S;X3:2](=[O:3])[!O:4]>>[!O:1][S+;X3:2]([O-:3])[!O:4]", ["CNC(=O)ON=CC(C)(C)S(C)=O"])
+    [
+        "C[C@]1(O)[C@H]2C[C@H]3[C@@H](C(O)=C(C(N)=O)C(=O)[C@@]3(O)C(=O)C2C(=O)C2=C1C=CC=C2O)N(C)C"
+    ],
+)
+testTransformation(
+    "[H]c1[c:5][c:4][c:3][c:2]c1C(=O)N[H,*:1]>>[H,*:1]NC1=NOc2c1[c:2][c:3][c:4][c:5]2",
+    ["NC(=O)c1ccccc1"],
+)
+testTransformation(
+    "[*:1]:[c]([*:2]):[c:10]([*:3]):[n]([*:4]):[*:5]>>[*:1]:[n]([*:2]):[c:10]([*:3]):[c]([*:4])[*:5]",
+    ["Oc1ccn(C)c1C"],
+)
+testTransformation(
+    "[!O:1][S;X3:2](=[O:3])[!O:4]>>[!O:1][S+;X3:2]([O-:3])[!O:4]",
+    ["CNC(=O)ON=CC(C)(C)S(C)=O"],
+)
 testTransformationMolfile(
     "[H:1][O:2][C:3]([H,*:4])=[C:5]([H,*;!O:6])[H,*;!O:7]>>[O:2]=[C:3]([H,*:4])[C:5]([H,*:6])([H:1])[H,*:7]",
-    joinPathPy("tests_rpe_basic/1/reactant.mol", __file__))
-testTransformationMolfile("[N+:1]~[CH3]>>[N:1]", joinPathPy("tests_rpe_basic/2/mol.mol", __file__))
+    joinPathPy("tests_rpe_basic/1/reactant.mol", __file__),
+)
+testTransformationMolfile(
+    "[N+:1]~[CH3]>>[N:1]", joinPathPy("tests_rpe_basic/2/mol.mol", __file__)
+)
 
-startRPE(joinPathPy("tests_rpe_basic/ind_671/reaction.rxn", __file__),
-         [joinPathPy("tests_rpe_basic/ind_671/P1.mol", __file__), joinPathPy("tests_rpe_basic/ind_671/P2.mol", __file__),
-          joinPathPy("tests_rpe_basic/ind_671/P3.mol", __file__)], True)
-startRPE(joinPathPy("tests_rpe_basic/ind_671/reaction.rxn", __file__),
-         [joinPathPy("tests_rpe_basic/ind_671/P1.smi", __file__), joinPathPy("tests_rpe_basic/ind_671/P2.smi", __file__),
-          joinPathPy("tests_rpe_basic/ind_671/P3.smi", __file__)], True)
+startRPE(
+    joinPathPy("tests_rpe_basic/ind_671/reaction.rxn", __file__),
+    [
+        joinPathPy("tests_rpe_basic/ind_671/P1.mol", __file__),
+        joinPathPy("tests_rpe_basic/ind_671/P2.mol", __file__),
+        joinPathPy("tests_rpe_basic/ind_671/P3.mol", __file__),
+    ],
+    True,
+)
+startRPE(
+    joinPathPy("tests_rpe_basic/ind_671/reaction.rxn", __file__),
+    [
+        joinPathPy("tests_rpe_basic/ind_671/P1.smi", __file__),
+        joinPathPy("tests_rpe_basic/ind_671/P2.smi", __file__),
+        joinPathPy("tests_rpe_basic/ind_671/P3.smi", __file__),
+    ],
+    True,
+)
 
-startRPE(joinPathPy("tests_rpe_basic/3/rxn.smi", __file__), [joinPathPy("tests_rpe_basic/3/mol.mol", __file__)], True)
-startRPE(joinPathPy("tests_rpe_basic/3/rxn.smi", __file__), [joinPathPy("tests_rpe_basic/3/mol.mol", __file__)], False)
+startRPE(
+    joinPathPy("tests_rpe_basic/3/rxn.smi", __file__),
+    [joinPathPy("tests_rpe_basic/3/mol.mol", __file__)],
+    True,
+)
+startRPE(
+    joinPathPy("tests_rpe_basic/3/rxn.smi", __file__),
+    [joinPathPy("tests_rpe_basic/3/mol.mol", __file__)],
+    False,
+)

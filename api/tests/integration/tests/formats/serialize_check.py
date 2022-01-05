@@ -1,10 +1,10 @@
-import sys
+import array
 import binascii
 import collections
-import array
 import errno
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
@@ -18,7 +18,9 @@ if not os.path.exists(joinPathPy("out", __file__)):
         if e.errno != errno.EEXIST:
             raise
 
-all_features_mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/all_features_mol.mol", __file__))
+all_features_mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/all_features_mol.mol", __file__)
+)
 
 # Add highlighting
 for index in [1, 4, 5, 6, 7, 10, 40, 12, 13, 18, 20]:
@@ -30,15 +32,25 @@ for index in [5, 8, 1, 4, 5, 85, 10, 15, 112, 13, 2]:
     b.highlight()
 
 hex_output = open(joinPathPy("serialized/serialized.out", __file__), "w")
-unser1 = indigo.createFileSaver(joinPathPy("serialized/unser1.sdf", __file__), "sdf")
-unser2 = indigo.createFileSaver(joinPathPy("serialized/unser2_sm.sdf", __file__), "sdf")
+unser1 = indigo.createFileSaver(
+    joinPathPy("serialized/unser1.sdf", __file__), "sdf"
+)
+unser2 = indigo.createFileSaver(
+    joinPathPy("serialized/unser2_sm.sdf", __file__), "sdf"
+)
 
-unser1_prev = indigo.createFileSaver(joinPathPy("serialized/unser1_prev.sdf", __file__), "sdf")
-unser2_prev = indigo.createFileSaver(joinPathPy("serialized/unser2_sm_prev.sdf", __file__), "sdf")
+unser1_prev = indigo.createFileSaver(
+    joinPathPy("serialized/unser1_prev.sdf", __file__), "sdf"
+)
+unser2_prev = indigo.createFileSaver(
+    joinPathPy("serialized/unser2_sm_prev.sdf", __file__), "sdf"
+)
 
 hex_output_prev = open(joinPathPy("serialized/serialized.std", __file__), "r")
 
-saver = indigo.createFileSaver(joinPathPy("out/serialize_check.sdf", __file__), "sdf")
+saver = indigo.createFileSaver(
+    joinPathPy("out/serialize_check.sdf", __file__), "sdf"
+)
 
 cano_sm_file = open(joinPathPy("out/cano_sm.smi", __file__), "w")
 
@@ -143,7 +155,10 @@ class Processor(object):
         saver.append(m2)
 
         if cano_sm != cano_sm2 and cano_sm != "":
-            sys.stderr.write("Canonical smiles are different:\n%s\n%s\n" % (cano_sm, cano_sm2))
+            sys.stderr.write(
+                "Canonical smiles are different:\n%s\n%s\n"
+                % (cano_sm, cano_sm2)
+            )
             cano_sm_file.write(cano_sm)
             cano_sm_file.write(cano_sm2)
 
@@ -151,11 +166,19 @@ class Processor(object):
         buf = mol.serialize()
         buf2 = m2.serialize()
 
-        hex_ser1 = binascii.hexlify(buf.tostring() if isJython() else (str(buf) if isIronPython() else buf))
-        hex_ser2 = binascii.hexlify(buf2.tostring() if isJython() else (str(buf2) if isIronPython() else buf2))
+        hex_ser1 = binascii.hexlify(
+            buf.tostring()
+            if isJython()
+            else (str(buf) if isIronPython() else buf)
+        )
+        hex_ser2 = binascii.hexlify(
+            buf2.tostring()
+            if isJython()
+            else (str(buf2) if isIronPython() else buf2)
+        )
 
-        hex_output.write(hex_ser1.decode('ascii') + "\n")
-        hex_output.write(hex_ser2.decode('ascii') + "\n")
+        hex_output.write(hex_ser1.decode("ascii") + "\n")
+        hex_output.write(hex_ser2.decode("ascii") + "\n")
 
         # Reload molecule from serialized buffer
         mol_rel = indigo.unserialize(buf)
@@ -171,12 +194,14 @@ class Processor(object):
             arr = binascii.unhexlify(s1)
             if isIronPython():
                 from System import Array, Byte
-                arr = Array[Byte]([Byte( ord( symbol) ) for symbol in arr])
+
+                arr = Array[Byte]([Byte(ord(symbol)) for symbol in arr])
             mol_rel_prev = indigo.unserialize(arr)
             arr = binascii.unhexlify(s2)
             if isIronPython():
                 from System import Array, Byte
-                arr = Array[Byte]([Byte( ord( symbol )) for symbol in arr])
+
+                arr = Array[Byte]([Byte(ord(symbol)) for symbol in arr])
             m2_rel_prev = indigo.unserialize(arr)
 
             unser1_prev.append(mol_rel_prev)
@@ -192,13 +217,17 @@ class Processor(object):
 
         if cano_sm != cano_sm_rel and cano_sm != "":
             sys.stderr.write(
-                "Canonical smiles are different after unserialize(serialize()):\n%s\n%s\n" % (cano_sm, cano_sm_rel))
+                "Canonical smiles are different after unserialize(serialize()):\n%s\n%s\n"
+                % (cano_sm, cano_sm_rel)
+            )
             cano_sm_file.write(cano_sm)
             cano_sm_file.write(cano_sm_rel)
 
         if cano_sm2 != cano_sm2_rel:
             sys.stderr.write(
-                "Canonical smiles are different after unserialize(serialize()):\n%s\n%s\n" % (cano_sm2, cano_sm2_rel))
+                "Canonical smiles are different after unserialize(serialize()):\n%s\n%s\n"
+                % (cano_sm2, cano_sm2_rel)
+            )
             cano_sm_file.write(cano_sm2)
             cano_sm_file.write(cano_sm2_rel)
 
@@ -295,9 +324,24 @@ processMol(all_features_mol)
 
 # Process other molecules
 test_sets = [
-    (joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), indigo.iterateSDFile),
-    (joinPathPy("../../../../../data/molecules/allenes/all-allenes.sdf", __file__), indigo.iterateSDFile),
-    (joinPathPy("../../../../../data/molecules/sgroups/all_sgroups.sdf", __file__), indigo.iterateSDFile),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/basic/thiazolidines.sdf", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/allenes/all-allenes.sdf", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
+    (
+        joinPathPy(
+            "../../../../../data/molecules/sgroups/all_sgroups.sdf", __file__
+        ),
+        indigo.iterateSDFile,
+    ),
     (joinPathPy("molecules/serialize.sdf", __file__), indigo.iterateSDFile),
 ]
 
@@ -314,16 +358,30 @@ for file, func in test_sets:
             print("caught {0}\n".format(getIndigoExceptionText(e)))
 
 print("*** Reactions serialization ***")
-hex_output = open(joinPathPy("serialized/reaction_serialized.out", __file__), "w")
-unser1 = indigo.createFileSaver(joinPathPy("serialized/reaction_unser1.rdf", __file__), "rdf")
-unser2 = indigo.createFileSaver(joinPathPy("serialized/reaction_unser2_sm.rdf", __file__), "rdf")
+hex_output = open(
+    joinPathPy("serialized/reaction_serialized.out", __file__), "w"
+)
+unser1 = indigo.createFileSaver(
+    joinPathPy("serialized/reaction_unser1.rdf", __file__), "rdf"
+)
+unser2 = indigo.createFileSaver(
+    joinPathPy("serialized/reaction_unser2_sm.rdf", __file__), "rdf"
+)
 
-unser1_prev = indigo.createFileSaver(joinPathPy("serialized/reaction_unser1_prev.rdf", __file__), "rdf")
-unser2_prev = indigo.createFileSaver(joinPathPy("serialized/reaction_unser2_sm_prev.rdf", __file__), "rdf")
+unser1_prev = indigo.createFileSaver(
+    joinPathPy("serialized/reaction_unser1_prev.rdf", __file__), "rdf"
+)
+unser2_prev = indigo.createFileSaver(
+    joinPathPy("serialized/reaction_unser2_sm_prev.rdf", __file__), "rdf"
+)
 
-hex_output_prev = open(joinPathPy("serialized/reaction_serialized.std", __file__), "r")
+hex_output_prev = open(
+    joinPathPy("serialized/reaction_serialized.std", __file__), "r"
+)
 
-saver = indigo.createFileSaver(joinPathPy("out/reaction_serialize_check.rdf", __file__), "rdf")
+saver = indigo.createFileSaver(
+    joinPathPy("out/reaction_serialize_check.rdf", __file__), "rdf"
+)
 
 r = indigo.loadReactionFromFile(joinPathPy("reactions/ordering.rxn", __file__))
 processReaction = ReactionProcessor().process
@@ -336,7 +394,10 @@ def iterateReactionSmilesFile(f):
 
 
 test_sets = [
-    (joinPathPy("reactions/reactions.smi", __file__), iterateReactionSmilesFile),
+    (
+        joinPathPy("reactions/reactions.smi", __file__),
+        iterateReactionSmilesFile,
+    ),
 ]
 
 for file, func in test_sets:

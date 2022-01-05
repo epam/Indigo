@@ -87,6 +87,6 @@ namespace com.epam.indigo
         public static extern int bingoGetRecordObj(int db, int obj_id);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern sbyte* bingoVersion();
+        public static extern byte* bingoVersion();
     }
 }

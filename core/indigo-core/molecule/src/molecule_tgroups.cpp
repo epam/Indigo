@@ -17,10 +17,10 @@
  ***************************************************************************/
 
 #include "molecule/molecule_tgroups.h"
-#include <memory>
 #include "base_cpp/scanner.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
+#include <memory>
 
 using namespace indigo;
 

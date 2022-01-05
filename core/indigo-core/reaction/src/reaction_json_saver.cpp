@@ -53,7 +53,7 @@ void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max
     max_vec.scale(scale);
 }
 
-ReactionJsonSaver::ReactionJsonSaver(Output& output) : _output(output)
+ReactionJsonSaver::ReactionJsonSaver(Output& output) : _output(output), _add_stereo_desc(false)
 {
 }
 
@@ -67,6 +67,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
     Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0);
 
     MoleculeJsonSaver json_saver(_output);
+    json_saver._add_stereo_desc = _add_stereo_desc;
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
     {

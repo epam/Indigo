@@ -6,7 +6,8 @@
 
 namespace bingo
 {
-    template <typename T> class MMFArray
+    template <typename T>
+    class MMFArray
     {
     public:
         MMFArray(int block_size = 10000) : _block_size(block_size), _size(0), _block_count(0)
@@ -103,7 +104,8 @@ namespace bingo
             return arr[idx_in_block];
         }
 
-        template <typename A> T& push(A& a)
+        template <typename A>
+        T& push(A& a)
         {
             if (_size % _block_size == 0)
             {

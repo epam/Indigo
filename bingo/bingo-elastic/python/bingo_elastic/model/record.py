@@ -3,8 +3,7 @@ from __future__ import annotations
 from typing import Callable, Dict, List, Optional
 from uuid import uuid4
 
-import indigo
-from indigo import Indigo, IndigoObject
+from indigo import Indigo, IndigoException, IndigoObject  # type: ignore
 
 
 # pylint: disable=unused-argument
@@ -48,19 +47,19 @@ class WithIndigoObject:
                 setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
             except ValueError as err_:
                 check_error(instance, err_)
-            except indigo.IndigoException as err_:
+            except IndigoException as err_:
                 check_error(instance, err_)
 
         try:
             setattr(instance, "name", value.name())
-        except indigo.IndigoException as err_:
+        except IndigoException:
             pass
 
         try:
             setattr(
                 instance, "cmf", " ".join(map(str, list(value.serialize())))
             )
-        except indigo.IndigoException as err_:
+        except IndigoException as err_:
             check_error(instance, err_)
 
 
@@ -73,13 +72,13 @@ class IndigoRecord:
         - IndigoRecordReaction
     """
 
-    cmf: bytes = None
-    name: str = None
-    sim_fingerprint: List[str] = None
-    sub_fingerprint: List[str] = None
+    cmf: Optional[str] = None
+    name: Optional[str] = None
+    sim_fingerprint: Optional[List[str]] = None
+    sub_fingerprint: Optional[List[str]] = None
     indigo_object = WithIndigoObject()
     elastic_response = WithElasticResponse()
-    record_id: str = None
+    record_id: Optional[str] = None
     error_handler: Optional[Callable[[object, BaseException], None]] = None
 
     def __init__(self, **kwargs) -> None:
@@ -103,7 +102,7 @@ class IndigoRecord:
         # First check if skip_errors flag passed
         # If no flag passed add error_handler function from arguments
         if kwargs.get("skip_errors", False):
-            self.error_handler = skip_errors
+            self.error_handler = skip_errors  # type: ignore
         else:
             self.error_handler = kwargs.get("error_handler", None)
 
@@ -121,6 +120,7 @@ class IndigoRecord:
         }
 
     def as_indigo_object(self, session: Indigo):
+        assert self.cmf
         return session.deserialize(list(map(int, self.cmf.split(" "))))
 
 

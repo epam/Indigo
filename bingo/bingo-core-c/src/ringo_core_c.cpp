@@ -109,7 +109,7 @@ CEXPORT int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* c
     {
         return self.ringoIndexReadPreparedReaction(id, crf_buf, crf_buf_len, fingerprint_buf, fingerprint_buf_len);
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 void _ringoCheckPseudoAndCBDM(BingoCore& self)
@@ -168,7 +168,7 @@ CEXPORT int ringoSetupMatch(const char* search_type, const char* query, const ch
         }
         CATCH_READ_TARGET_RXN(self.error.readString(e.message(), 1); return -1;);
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 int BingoCore::ringoMatchTarget(const char* target, int target_buf_len) {
@@ -255,7 +255,7 @@ CEXPORT int ringoMatchTargetBinary(const char* target_bin, int target_bin_len)
     {
         return self.ringoMatchTargetBinary(target_bin, target_bin_len);
     }
-    BINGO_END(-2, -2)
+    BINGO_END(-2, -2);
 }
 
 const char* BingoCore::ringoRSMILES(const char* target_buf, int target_buf_len)
@@ -287,7 +287,7 @@ CEXPORT const char* ringoRSMILES(const char* target_buf, int target_buf_len)
     {
         return self.ringoRSMILES(target_buf, target_buf_len);
     }
-    BINGO_END(0, 0)
+    BINGO_END(0, 0);
 }
 
 const char* BingoCore::ringoRxnfile(const char* reaction, int reaction_len) {
@@ -423,7 +423,7 @@ CEXPORT int ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
     {
         self.ringoGetQueryFingerprint(query_fp, query_fp_len);
     }
-    BINGO_END(1, -2)
+    BINGO_END(1, -2);
 }
 
 void BingoCore::ringoSetHightlightingMode(int enable)

@@ -3,6 +3,7 @@
 extern "C"
 {
 #include "postgres.h"
+
 #include "access/itup.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"
@@ -28,7 +29,6 @@ using namespace indigo;
 
 void BingoPgFpData::setTidItem(PG_OBJECT item_ptr)
 {
-
     ItemPointerData& item_p = *(ItemPointer)item_ptr;
     _mapData.tid_map = (ItemPointerData&)item_p;
 }

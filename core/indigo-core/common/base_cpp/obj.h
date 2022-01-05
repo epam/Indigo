@@ -27,7 +27,8 @@ namespace indigo
     DECL_EXCEPTION(ObjError);
 
     // Reusable storage for object
-    template <typename T> class Obj
+    template <typename T>
+    class Obj
     {
     public:
         Obj() : _initialized(false)
@@ -72,7 +73,8 @@ namespace indigo
             return *_ptr();
         }
 
-        template <typename A> T& create(A& a)
+        template <typename A>
+        T& create(A& a)
         {
             if (_initialized)
                 throw Error("create(): already have object");
@@ -82,13 +84,15 @@ namespace indigo
             return *_ptr();
         }
 
-        template <typename A> T& recreate(A& a)
+        template <typename A>
+        T& recreate(A& a)
         {
             free();
             return create(a);
         }
 
-        template <typename A> T& create(const A& a)
+        template <typename A>
+        T& create(const A& a)
         {
             if (_initialized)
                 throw Error("create(): already have object");
@@ -98,7 +102,8 @@ namespace indigo
             return *_ptr();
         }
 
-        template <typename A, typename B> T& create(A& a, B& b)
+        template <typename A, typename B>
+        T& create(A& a, B& b)
         {
             if (_initialized)
                 throw Error("create(): already have object");
@@ -108,7 +113,8 @@ namespace indigo
             return *_ptr();
         }
 
-        template <typename A, typename B> T& create(A& a, B* b)
+        template <typename A, typename B>
+        T& create(A& a, B* b)
         {
             if (_initialized)
                 throw Error("create(): already have object");
@@ -118,7 +124,8 @@ namespace indigo
             return *_ptr();
         }
 
-        template <typename A, typename B, typename C> T& create(A& a, B& b, C* c)
+        template <typename A, typename B, typename C>
+        T& create(A& a, B& b, C* c)
         {
             if (_initialized)
                 throw Error("create(): already have object");
@@ -128,7 +135,8 @@ namespace indigo
             return *_ptr();
         }
 
-        template <typename A, typename B, typename C> T& create(A& a, B& b, C& c)
+        template <typename A, typename B, typename C>
+        T& create(A& a, B& b, C& c)
         {
             if (_initialized)
                 throw Error("create(): already have object");
@@ -138,7 +146,8 @@ namespace indigo
             return *_ptr();
         }
 
-        template <typename A, typename B, typename C> T& create(A& a, B* b, C& c)
+        template <typename A, typename B, typename C>
+        T& create(A& a, B* b, C& c)
         {
             if (_initialized)
                 throw Error("create(): already have object");

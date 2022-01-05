@@ -19,7 +19,6 @@
 #ifndef __mango_matchers__
 #define __mango_matchers__
 
-#include <memory>
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/cmf_loader.h"
@@ -28,6 +27,7 @@
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_tautomer.h"
 #include "molecule/query_molecule.h"
+#include <memory>
 
 using namespace indigo;
 

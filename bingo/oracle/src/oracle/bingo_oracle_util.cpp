@@ -26,13 +26,13 @@
 #include "oracle/ora_logger.h"
 #include "oracle/ora_wrap.h"
 
-#include <memory>
 #include "base_cpp/profiling.h"
 #include "base_cpp/string_pool.h"
 #include "gzip/gzip_output.h"
 #include "gzip/gzip_scanner.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
+#include <memory>
 
 ORAEXT void oraLogPrint(OCIExtProcContext* ctx, char* str){ORABLOCK_BEGIN{OracleEnv env(ctx, logger);
 

@@ -1,7 +1,8 @@
-import sys, os
 import errno
+import os
+import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 from rendering import *
 
@@ -16,23 +17,25 @@ if not os.path.exists(joinPathPy("out", __file__)):
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
-    
+
 indigo.setOption("treat-x-as-pseudoatom", "true")
 indigo.setOption("render-background-color", "255, 255, 255")
 indigo.setOption("render-coloring", "true")
 indigo.setOption("ignore-stereochemistry-errors", True)
 
 filename = "halide.mol"
-file = joinPathPy("molecules/" + filename, __file__ )
+file = joinPathPy("molecules/" + filename, __file__)
 mol = indigo.loadQueryMoleculeFromFile(file)
 
 indigo.setOption("render-output-format", "svg")
 renderer.renderToFile(mol, joinPathPy(out_dir + filename + "_q.svg", __file__))
-print(checkImageSimilarity('%s' % (filename + '_q.svg')))
+print(checkImageSimilarity("%s" % (filename + "_q.svg")))
 
 indigo.setOption("render-output-format", "png")
-renderer.renderToFile(mol, joinPathPy(out_dir + '/' + filename + "_q.png", __file__))
-print(checkImageSimilarity('%s' % (filename + '_q.png')))
+renderer.renderToFile(
+    mol, joinPathPy(out_dir + "/" + filename + "_q.png", __file__)
+)
+print(checkImageSimilarity("%s" % (filename + "_q.png")))
 
 print("   OK")
 

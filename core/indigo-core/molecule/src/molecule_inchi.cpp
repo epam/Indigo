@@ -72,7 +72,8 @@ void MoleculeInChI::outputInChI(Molecule& mol)
 }
 
 // Function that call print function in specified layer for component
-template <typename Layer> class MoleculeInChI::_ComponentLayerPrintFunction : public _PrintLayerFuncBase
+template <typename Layer>
+class MoleculeInChI::_ComponentLayerPrintFunction : public _PrintLayerFuncBase
 {
 public:
     _ComponentLayerPrintFunction(Layer MoleculeInChICompoment::*layer, void (Layer::*print)(Array<char>&)) : _layer(layer), _print(print)

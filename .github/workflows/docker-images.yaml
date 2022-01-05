@@ -28,6 +28,27 @@ jobs:
           tags: epmlsop/buildpack-centos7:latest
       - name: Push buildpack-centos7
         run: docker push epmlsop/buildpack-centos7:latest
+  docker-buildpack-arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Build buildpack-arm64
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: .ci/docker/buildpack-arm64/Dockerfile
+          tags: epmlsop/buildpack-arm64:latest
+      - name: Push buildpack-arm64
+        run: docker push epmlsop/buildpack-arm64:latest
   docker-indigo-tester:
     runs-on: ubuntu-latest
     steps:

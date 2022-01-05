@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#from app import app, is_indigo_db
+# from app import app, is_indigo_db
 
 import json
 import os
+import re
 import unittest
 from time import sleep
-import re
+
 import requests
+
 
 # @unittest.skip("Skip libraries test case")
 class ImagoTestCase(unittest.TestCase):
-    #Image files
+    # Image files
     test_images = [
-        ('imago_test_1.bmp', 'image/bmp'),
-        ('imago_test_1.dib', 'image/bmp'),
-        ('imago_test_1.jpg', 'image/jpeg'),
-        ('imago_test_1.pbm', 'image/x-portable-bitmap'),
-        ('imago_test_1.png', 'image/png'),
-        ('imago_test_1.tiff', 'image/tiff')
+        ("imago_test_1.bmp", "image/bmp"),
+        ("imago_test_1.dib", "image/bmp"),
+        ("imago_test_1.jpg", "image/jpeg"),
+        ("imago_test_1.pbm", "image/x-portable-bitmap"),
+        ("imago_test_1.png", "image/png"),
+        ("imago_test_1.tiff", "image/tiff"),
     ]
 
     def setUp(self):
@@ -26,29 +28,37 @@ class ImagoTestCase(unittest.TestCase):
         Setting up host location for test
         :return:
         """
-        service_url = 'http://front/v2'
-        if 'INDIGO_SERVICE_URL' in os.environ and len(os.environ['INDIGO_SERVICE_URL']) > 0:
-            service_url = os.environ['INDIGO_SERVICE_URL']
+        service_url = "http://front/v2"
+        if (
+            "INDIGO_SERVICE_URL" in os.environ
+            and len(os.environ["INDIGO_SERVICE_URL"]) > 0
+        ):
+            service_url = os.environ["INDIGO_SERVICE_URL"]
 
-        self.url_prefix = '{}'.format(service_url)
+        self.url_prefix = "{}".format(service_url)
 
     def tearDown(self):
         pass
 
     @staticmethod
     def get_headers(d):
-        '''
+        """
         Setting headers for POST requests
         :param d: dictionary, which will be transformed into JSON for request
         :return: headers and data for POST requests
-        '''
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        """
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
         data = json.dumps(d)
-        headers['Content-Length'] = len(data)
+        headers["Content-Length"] = len(data)
         return headers, data
 
-    def do_upload(self, file_path, content_type, version=None, settings=None, action=None):
-        '''
+    def do_upload(
+        self, file_path, content_type, version=None, settings=None, action=None
+    ):
+        """
         Upload file to library
         :param file_path: path to image file
         :param content_type: type of image to pass in request headers
@@ -56,39 +66,55 @@ class ImagoTestCase(unittest.TestCase):
         :param settings: settings for Imago passed as a JSON. Default meaning eqauls to None
         :param action: determines logic of POST request in imago api
         :return: Return processed image in dictionary with mol file as a string
-        '''
+        """
         params = {}
         if version:
-            params['version'] = version
+            params["version"] = version
         if settings:
-            params['settings'] = settings
+            params["settings"] = settings
         if action:
-            params['action'] = action
-        with open(file_path, 'rb') as f:
-            result = requests.post(self.url_prefix + '/imago/uploads',  headers={"Content-Type": content_type}, params=params, data=f)
+            params["action"] = action
+        with open(file_path, "rb") as f:
+            result = requests.post(
+                self.url_prefix + "/imago/uploads",
+                headers={"Content-Type": content_type},
+                params=params,
+                data=f,
+            )
         self.assertEqual(200, result.status_code)
         data = json.loads(result.text)
-        upload_id = data['upload_id']
+        upload_id = data["upload_id"]
         # Test LibraryUploadStatus
-        state = 'PENDING'
-        while state != 'SUCCESS':
-            result = requests.get(self.url_prefix + '/imago/uploads/{0}'.format(upload_id))
+        state = "PENDING"
+        while state != "SUCCESS":
+            result = requests.get(
+                self.url_prefix + "/imago/uploads/{0}".format(upload_id)
+            )
             data = json.loads(result.text)
-            state = data['state']
+            state = data["state"]
             sleep(1)
         return data
 
-
     def imago_upload(self, filename, mime_type):
-        '''
+        """
         Pass images to do_upload and assert results from requests
         :param filename: name of image
         :param mime_type: type of image in request
         :return:
-        '''
-        data = self.do_upload(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data','imago_upload', filename), mime_type)
-        self.assertEqual('SUCCESS', data['state'])
-        self.assertTrue(''' 27 27  0  0  0  0  0  0  0  0999 V2000
+        """
+        data = self.do_upload(
+            os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                "..",
+                "data",
+                "imago_upload",
+                filename,
+            ),
+            mime_type,
+        )
+        self.assertEqual("SUCCESS", data["state"])
+        self.assertTrue(
+            """ 27 27  0  0  0  0  0  0  0  0999 V2000
     3.5130   -0.8924    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
     8.3631   -1.3539    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
     2.5062   -1.7179    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
@@ -144,90 +170,148 @@ class ImagoTestCase(unittest.TestCase):
  20 27  1  0  0  0  0
  23 27  1  0  0  0  0
 M  END
-''', '\n'.join(str(data['metadata']['mol_str']).splitlines()[3:]))
+""",
+            "\n".join(str(data["metadata"]["mol_str"]).splitlines()[3:]),
+        )
 
     def test_imago_upload(self):
-        '''
+        """
         Pass images for Imago for testing
         :return:
-        '''
+        """
         for file_mime in self.test_images:
             self.imago_upload(file_mime[0], file_mime[1])
 
     def test_versions(self):
-        '''
+        """
         Check if available versions of Imago can process image
         :return:
         Assert is mol files returned by different versions
-        '''
+        """
         filename, mime_type = self.test_images[5]
-        request = requests.get(self.url_prefix + '/info')
-        versions = json.loads(request.text)['imago_versions']
+        request = requests.get(self.url_prefix + "/info")
+        versions = json.loads(request.text)["imago_versions"]
         for version in versions:
-            data = self.do_upload(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'imago_upload', filename),mime_type, version=version)
-            self.assertEqual('SUCCESS', data['state'])
-            self.assertTrue('mol_str' in data['metadata'])
+            data = self.do_upload(
+                os.path.join(
+                    os.path.dirname(os.path.realpath(__file__)),
+                    "..",
+                    "data",
+                    "imago_upload",
+                    filename,
+                ),
+                mime_type,
+                version=version,
+            )
+            self.assertEqual("SUCCESS", data["state"])
+            self.assertTrue("mol_str" in data["metadata"])
 
     def test_settings(self):
-        '''
+        """
         Test POST request with configuration parameters for IMAGO in URI
         :return:
         Assert if imago processed image with passed configuration
-        '''
+        """
         filename, mime_type = self.test_images[5]
-        txt = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'test_config_imago.inc')
+        txt = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "..",
+            "data",
+            "test_config_imago.inc",
+        )
         settings = {}
-        with open(txt, 'r') as f:
+        with open(txt, "r") as f:
             for line in f.readlines():
-                param, mean = re.search('(.*) = (.*);', line).group(1, 2)
+                param, mean = re.search("(.*) = (.*);", line).group(1, 2)
                 settings[param] = mean
         data = self.do_upload(
-            os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'imago_upload', filename),
-            mime_type, settings=json.dumps(settings))
-        self.assertEqual('SUCCESS', data['state'])
-        self.assertTrue('mol_str' in data['metadata'])
+            os.path.join(
+                os.path.dirname(os.path.realpath(__file__)),
+                "..",
+                "data",
+                "imago_upload",
+                filename,
+            ),
+            mime_type,
+            settings=json.dumps(settings),
+        )
+        self.assertEqual("SUCCESS", data["state"])
+        self.assertTrue("mol_str" in data["metadata"])
 
     def test_expire_wait_request(self):
-        '''
+        """
         Test expiration of second POST request by sending 5 second expire time limit
         :return:
         Assert if error message 410 were returned
-        '''
+        """
         filename, mime_type = self.test_images[5]
-        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'imago_upload', filename)
-        with open(path, 'rb') as f:
-            result = requests.post(self.url_prefix + '/imago/uploads', headers={"Content-Type": mime_type}, params={'action': 'wait', 'expires': 5}, data=f)
+        path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "..",
+            "data",
+            "imago_upload",
+            filename,
+        )
+        with open(path, "rb") as f:
+            result = requests.post(
+                self.url_prefix + "/imago/uploads",
+                headers={"Content-Type": mime_type},
+                params={"action": "wait", "expires": 5},
+                data=f,
+            )
         sleep(6)
         data = json.loads(result.text)
-        upload_id = data['upload_id']
-        result = requests.post(self.url_prefix + '/imago/uploads/{0}'.format(upload_id), params={
-            'action': 'run'})
+        upload_id = data["upload_id"]
+        result = requests.post(
+            self.url_prefix + "/imago/uploads/{0}".format(upload_id),
+            params={"action": "run"},
+        )
         self.assertEqual(410, result.status_code)
         data = json.loads(result.text)
-        self.assertEqual(data['error'], 'Image are not available because of time limit')
-
+        self.assertEqual(
+            data["error"], "Image are not available because of time limit"
+        )
 
     def test_wait_request(self):
-        '''
+        """
         Test for second post request with default Imago settings
         :return:
         Assert if image was processed by Imago
-        '''
+        """
         filename, mime_type = self.test_images[5]
-        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'imago_upload', filename)
-        txt = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'test_config_imago.inc')
+        path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "..",
+            "data",
+            "imago_upload",
+            filename,
+        )
+        txt = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            "..",
+            "data",
+            "test_config_imago.inc",
+        )
         settings = {}
 
-        with open(txt, 'r') as f:
+        with open(txt, "r") as f:
             for line in f.readlines():
-                param, mean = re.search('(.*) = (.*);', line).group(1, 2)
+                param, mean = re.search("(.*) = (.*);", line).group(1, 2)
                 settings[param] = mean
-        with open(path, 'rb') as f:
-            result = requests.post(self.url_prefix + '/imago/uploads', headers={"Content-Type": mime_type}, params={'action': 'wait'}, data=f)
+        with open(path, "rb") as f:
+            result = requests.post(
+                self.url_prefix + "/imago/uploads",
+                headers={"Content-Type": mime_type},
+                params={"action": "wait"},
+                data=f,
+            )
         self.assertEqual(200, result.status_code)
         data = json.loads(result.text)
-        upload_id = data['upload_id']
-        result = requests.post(self.url_prefix + '/imago/uploads/{0}'.format(upload_id), params={
-                   'action':'run'}, data={'settings':json.dumps(settings)})
+        upload_id = data["upload_id"]
+        result = requests.post(
+            self.url_prefix + "/imago/uploads/{0}".format(upload_id),
+            params={"action": "run"},
+            data={"settings": json.dumps(settings)},
+        )
         data = json.loads(result.text)
-        self.assertTrue('mol_str' in data)
+        self.assertTrue("mol_str" in data)

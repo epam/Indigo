@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class BatchTest {
@@ -25,9 +25,9 @@ public class BatchTest {
     public static void setUpDataStore() {
         elasticsearchContainer = new ElasticsearchContainer(
                 DockerImageName
-                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
-                        .withTag(ElasticsearchVersion.VERSION)
-        );
+                        .parse(ElasticsearchVersion.DOCKER_IMAGE_NAME)
+                        .withTag(ElasticsearchVersion.VERSION))
+                .withEnv("xpack.security.enabled", "false");
         elasticsearchContainer.start();
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
@@ -43,7 +43,7 @@ public class BatchTest {
     @Test
     public void batchTest() {
         String sdfFile = "src/test/resources/rand_queries_small.sdf";
-        Iterable<IndigoRecordMolecule>  indigoRecords = Helpers.iterateSdf(sdfFile);
+        Iterable<IndigoRecordMolecule> indigoRecords = Helpers.iterateSdf(sdfFile);
         List<List<IndigoRecordMolecule>> acc = new ArrayList<>();
         for (List<IndigoRecordMolecule> indigoRecordList : repository.splitToBatches(indigoRecords, 20)) {
             acc.add(indigoRecordList);

@@ -17,11 +17,11 @@
  ***************************************************************************/
 
 #include "bingo_context.h"
-#include "ringo_matchers.h"
 #include "layout/reaction_layout.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_automapper.h"
 #include "reaction/rxnfile_saver.h"
+#include "ringo_matchers.h"
 
 IMPL_ERROR(RingoAAM, "ringo AAM");
 

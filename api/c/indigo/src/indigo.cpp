@@ -25,7 +25,9 @@
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
 #include "molecule/molecule_fingerprint.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_saver.h"
+#include "reaction/reaction_json_saver.h"
 #include "reaction/rxnfile_saver.h"
 
 #include "indigo_abbreviations.h"
@@ -58,6 +60,7 @@ void Indigo::init()
     ignore_no_chiral_flag = false;
     treat_stereo_as = 0;
     treat_x_as_pseudoatom = false;
+    aromatize_skip_superatoms = false;
     skip_3d_chirality = false;
     deconvolution_aromatization = true;
     deco_save_ap_bond_orders = false;
@@ -82,6 +85,8 @@ void Indigo::init()
     molfile_saving_skip_date = false;
 
     molfile_saving_add_stereo_desc = false;
+
+    json_saving_add_stereo_desc = false;
 
     molfile_saving_add_implicit_h = true;
 
@@ -147,6 +152,16 @@ void Indigo::initMolfileSaver(MolfileSaver& saver)
     saver.add_stereo_desc = molfile_saving_add_stereo_desc;
     saver.add_implicit_h = molfile_saving_add_implicit_h;
     saver.chiral_flag = molfile_saving_chiral_flag;
+}
+
+void Indigo::initMoleculeJsonSaver(MoleculeJsonSaver& saver)
+{
+    saver._add_stereo_desc = json_saving_add_stereo_desc;
+}
+
+void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver)
+{
+    saver._add_stereo_desc = json_saving_add_stereo_desc;
 }
 
 void Indigo::initRxnfileSaver(RxnfileSaver& saver)
@@ -371,10 +386,10 @@ int Indigo::countObjects() const
 
 void Indigo::TmpData::clear()
 {
-        string.clear();
-        xyz[0] = 0.0;
-        xyz[1] = 0.0;
-        xyz[2] = 0.0;
+    string.clear();
+    xyz[0] = 0.0;
+    xyz[1] = 0.0;
+    xyz[2] = 0.0;
 };
 
 Indigo::TmpData& Indigo::getThreadTmpData()

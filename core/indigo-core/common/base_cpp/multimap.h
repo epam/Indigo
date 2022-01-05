@@ -26,7 +26,8 @@ namespace indigo
 
     DECL_EXCEPTION(MultiMapError);
 
-    template <typename K, typename V> class MultiMap : public NonCopyable
+    template <typename K, typename V>
+    class MultiMap : public NonCopyable
     {
     public:
         DECL_TPL_ERROR(MultiMapError);
@@ -62,7 +63,8 @@ namespace indigo
     protected:
         RedBlackSet<V>& _provide_set(const K& k);
 
-        template <typename L, typename R> void _copy(MultiMap<L, R>& target, bool invert) const
+        template <typename L, typename R>
+        void _copy(MultiMap<L, R>& target, bool invert) const
         {
             for (auto i = _map.begin(); i != _map.end(); i = _map.next(i))
             {
@@ -100,12 +102,14 @@ namespace indigo
 
 using namespace indigo;
 
-template <typename K, typename V> bool MultiMap<K, V>::find(const K& k, const V& v) const
+template <typename K, typename V>
+bool MultiMap<K, V>::find(const K& k, const V& v) const
 {
     return get(k).find(v);
 }
 
-template <typename K, typename V> const RedBlackSet<V>& MultiMap<K, V>::get(const K& k) const
+template <typename K, typename V>
+const RedBlackSet<V>& MultiMap<K, V>::get(const K& k) const
 {
     int* i = _map.at2(k);
     if (i)
@@ -115,12 +119,14 @@ template <typename K, typename V> const RedBlackSet<V>& MultiMap<K, V>::get(cons
     return _nil;
 }
 
-template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const V& v)
+template <typename K, typename V>
+void MultiMap<K, V>::insert(const K& k, const V& v)
 {
     _provide_set(k).insert(v);
 }
 
-template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const Array<V>& vs)
+template <typename K, typename V>
+void MultiMap<K, V>::insert(const K& k, const Array<V>& vs)
 {
     RedBlackSet<V>& set = _provide_set(k);
     for (auto i = 0; i < vs.size(); i++)
@@ -129,7 +135,8 @@ template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const 
     }
 }
 
-template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const RedBlackSet<V>& vs)
+template <typename K, typename V>
+void MultiMap<K, V>::insert(const K& k, const RedBlackSet<V>& vs)
 {
     RedBlackSet<V>& set = _provide_set(k);
     for (auto i = vs.begin(); i != vs.end(); i = vs.next(i))
@@ -138,7 +145,8 @@ template <typename K, typename V> void MultiMap<K, V>::insert(const K& k, const 
     }
 }
 
-template <typename K, typename V> bool MultiMap<K, V>::remove(const K& k)
+template <typename K, typename V>
+bool MultiMap<K, V>::remove(const K& k)
 {
     int* i = _map.at2(k);
     if (!i)
@@ -152,7 +160,8 @@ template <typename K, typename V> bool MultiMap<K, V>::remove(const K& k)
     return true;
 }
 
-template <typename K, typename V> bool MultiMap<K, V>::remove(const K& k, const V& v)
+template <typename K, typename V>
+bool MultiMap<K, V>::remove(const K& k, const V& v)
 {
     int* i = _map.at2(k);
     if (!i)
@@ -171,39 +180,46 @@ template <typename K, typename V> bool MultiMap<K, V>::remove(const K& k, const 
     return true;
 }
 
-template <typename K, typename V> void MultiMap<K, V>::copy(MultiMap<K, V>& target) const
+template <typename K, typename V>
+void MultiMap<K, V>::copy(MultiMap<K, V>& target) const
 {
     _copy(target, false);
 }
 
-template <typename K, typename V> void MultiMap<K, V>::invert(MultiMap<V, K>& target) const
+template <typename K, typename V>
+void MultiMap<K, V>::invert(MultiMap<V, K>& target) const
 {
     _copy(target, true);
 }
 
-template <typename K, typename V> void MultiMap<K, V>::clear()
+template <typename K, typename V>
+void MultiMap<K, V>::clear()
 {
     _map.clear();
     _keys.clear();
     _sets.clear();
 }
 
-template <typename K, typename V> const RedBlackSet<K>& MultiMap<K, V>::keys() const
+template <typename K, typename V>
+const RedBlackSet<K>& MultiMap<K, V>::keys() const
 {
     return _keys;
 }
 
-template <typename K, typename V> int MultiMap<K, V>::size() const
+template <typename K, typename V>
+int MultiMap<K, V>::size() const
 {
     return _map.size();
 }
 
-template <typename K, typename V> const RedBlackSet<V>& MultiMap<K, V>::operator[](const K& k) const
+template <typename K, typename V>
+const RedBlackSet<V>& MultiMap<K, V>::operator[](const K& k) const
 {
     return get(k);
 }
 
-template <typename K, typename V> RedBlackSet<V>& MultiMap<K, V>::_provide_set(const K& k)
+template <typename K, typename V>
+RedBlackSet<V>& MultiMap<K, V>::_provide_set(const K& k)
 {
     int* i = _map.at2(k);
     if (i)

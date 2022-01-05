@@ -8,7 +8,7 @@ namespace com.epam.indigo
     public unsafe class IndigoInchiLib
     {
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern sbyte* indigoInchiVersion();
+        public static extern byte* indigoInchiVersion();
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoInchiResetOptions();
@@ -17,19 +17,19 @@ namespace com.epam.indigo
         public static extern int indigoInchiLoadMolecule(String inchi_string);
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern sbyte* indigoInchiGetInchi(int molecule);
+        public static extern byte* indigoInchiGetInchi(int molecule);
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern sbyte* indigoInchiGetInchiKey(String inchi_string);
+        public static extern byte* indigoInchiGetInchiKey(String inchi_string);
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern sbyte* indigoInchiGetWarning();
+        public static extern byte* indigoInchiGetWarning();
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern sbyte* indigoInchiGetLog();
+        public static extern byte* indigoInchiGetLog();
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern sbyte* indigoInchiGetAuxInfo();
+        public static extern byte* indigoInchiGetAuxInfo();
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoInchiInit();

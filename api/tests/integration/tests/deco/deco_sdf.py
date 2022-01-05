@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 
@@ -50,29 +50,75 @@ def testScaffold(filename, mode, print_molfile):
         if print_molfile:
             prepareStructure(mol)
             print("decomposed molecule: " + mol.molfile())
-        print("mapped scaffold: " + item.decomposedMoleculeScaffold().canonicalSmiles())
+        print(
+            "mapped scaffold: "
+            + item.decomposedMoleculeScaffold().canonicalSmiles()
+        )
         for rg in mol.iterateRGroups():
             print("  RGROUP #%d" % ((rg.index())))
             if rg.iterateRGroupFragments().hasNext():
                 frag = rg.iterateRGroupFragments().next()
-                print("  fragment #%s: %s" % (str(frag.index()), frag.canonicalSmiles()))
+                print(
+                    "  fragment #%s: %s"
+                    % (str(frag.index()), frag.canonicalSmiles())
+                )
             else:
                 print("NO FRAGMENT")
     for item in indigo.iterateSDFile(filename):
         if not indigo.substructureMatcher(item).match(full_scaf):
-            print("ERROR: full scaffold not found in the input structure " + item.index())
+            print(
+                "ERROR: full scaffold not found in the input structure "
+                + item.index()
+            )
         for scaf in all_scaffolds.iterateArray():
             if not indigo.substructureMatcher(item).match(scaf):
-                print("ERROR: scaffold " + scaf.index() + " not found in the input structure " + item.index())
+                print(
+                    "ERROR: scaffold "
+                    + scaf.index()
+                    + " not found in the input structure "
+                    + item.index()
+                )
 
 
 try:
-    testScaffold(joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), "exact 5", False)
+    testScaffold(
+        joinPathPy(
+            "../../../../../data/molecules/basic/thiazolidines.sdf", __file__
+        ),
+        "exact 5",
+        False,
+    )
 except IndigoException as e:
-    print('caught ' + getIndigoExceptionText(e))
+    print("caught " + getIndigoExceptionText(e))
 
-testScaffold(joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), "exact 10000", False)
-testScaffold(joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), "approx", False)
-testScaffold(joinPathPy("../../../../../data/molecules/basic/thiazolidines.sdf", __file__), "approx 3", False)
-testScaffold(joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), "exact", True)
-testScaffold(joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__), "approx", False)
+testScaffold(
+    joinPathPy(
+        "../../../../../data/molecules/basic/thiazolidines.sdf", __file__
+    ),
+    "exact 10000",
+    False,
+)
+testScaffold(
+    joinPathPy(
+        "../../../../../data/molecules/basic/thiazolidines.sdf", __file__
+    ),
+    "approx",
+    False,
+)
+testScaffold(
+    joinPathPy(
+        "../../../../../data/molecules/basic/thiazolidines.sdf", __file__
+    ),
+    "approx 3",
+    False,
+)
+testScaffold(
+    joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__),
+    "exact",
+    True,
+)
+testScaffold(
+    joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__),
+    "approx",
+    False,
+)

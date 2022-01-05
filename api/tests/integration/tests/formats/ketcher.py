@@ -1,7 +1,11 @@
 import os
 import sys
 
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
 from env_indigo import *
 
 
@@ -31,7 +35,9 @@ def test_simple_load_save_load(indigo):
 
 
 def test_simple_cis_trans_load(indigo):
-    m1 = indigo.loadMoleculeFromFile(joinPathPy("molecules/cis_trans.mol", __file__))
+    m1 = indigo.loadMoleculeFromFile(
+        joinPathPy("molecules/cis_trans.mol", __file__)
+    )
     js = m1.json()
     m2 = indigo.loadMolecule(js)
     exact_check(indigo, m2, m2)
@@ -39,7 +45,11 @@ def test_simple_cis_trans_load(indigo):
 
 def test_complex_load_save_load(indigo):
     """Check load-save-load for some files"""
-    paths = ("molecules/ketcher.mol", "molecules/all2000.mol", "molecules/enhanced_stereo1.mol", "molecules/enhanced_stereo2.mol", "molecules/enhanced_stereo3.mol")
+    paths = (
+        "molecules/enhanced_stereo1.mol",
+        "molecules/enhanced_stereo2.mol",
+        "molecules/enhanced_stereo3.mol",
+    )
     for path in paths:
         print(path)
         m1 = indigo.loadMoleculeFromFile(joinPathPy(path, __file__))
@@ -50,10 +60,15 @@ def test_complex_load_save_load(indigo):
 
 
 def test_reactions_load_save_load(indigo):
-    paths = ("reactions/cdxml/AmideFormation.ket", "reactions/cdxml/Claisen.ket",
-             "reactions/cdxml/AmideFormation.rxn", "reactions/cdxml/Claisen.rxn",
-             "reactions/cdxml/CN_Bond-S-GRP.rxn", "reactions/cdxml/CN_Bond.rxn",
-             "reactions/cdxml/CN_Bond_map.rxn")
+    paths = (
+        "reactions/cdxml/AmideFormation.ket",
+        "reactions/cdxml/Claisen.ket",
+        "reactions/cdxml/AmideFormation.rxn",
+        "reactions/cdxml/Claisen.rxn",
+        "reactions/cdxml/CN_Bond-S-GRP.rxn",
+        "reactions/cdxml/CN_Bond.rxn",
+        "reactions/cdxml/CN_Bond_map.rxn",
+    )
     for path in paths:
         m1 = indigo.loadReactionFromFile(joinPathPy(path, __file__))
         js = m1.json()
@@ -62,7 +77,7 @@ def test_reactions_load_save_load(indigo):
         assert indigo.exactMatch(m1, m2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     indigo = Indigo()
     indigo.setOption("molfile-saving-skip-date", "1")
     # test_simple_load_save_load(indigo)

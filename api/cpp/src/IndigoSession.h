@@ -28,6 +28,7 @@ namespace indigo_cpp
     class IndigoWriteBuffer;
     class IndigoSDFileIterator;
     class IndigoSession;
+    class IndigoSubstructureMatcher;
     using IndigoSessionPtr = std::shared_ptr<IndigoSession>;
 
     class IndigoSession : public std::enable_shared_from_this<IndigoSession>
@@ -58,8 +59,8 @@ namespace indigo_cpp
         IndigoMolecule loadMolecule(const std::string& data);
         IndigoQueryMolecule loadQueryMolecule(const std::string& data);
         IndigoWriteBuffer writeBuffer();
-
         IndigoSDFileIterator iterateSDFile(const std::string& path);
+        IndigoSubstructureMatcher substructureMatcher(const IndigoMolecule& molecule, const std::string& mode = "");
 
     private:
         IndigoSession();

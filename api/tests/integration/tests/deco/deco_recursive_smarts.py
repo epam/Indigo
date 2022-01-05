@@ -1,23 +1,29 @@
 import os
 import sys
-sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '..', '..', "common")))
+
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
 from env_indigo import *
 
 indigo = Indigo()
-structures = [ "CN(c1ccccc1)C=O", "CN(c1ccc(O)cc1)C=OP" ]
+structures = ["CN(c1ccccc1)C=O", "CN(c1ccc(O)cc1)C=OP"]
 #
 # Prepare a molecule for printing out
 #
 def prepareStructure(mol):
-   for atom in mol.iterateAtoms():
-      atom.setXYZ(0, 0, 0)
-   for rg in mol.iterateRGroups():
-      if rg.iterateRGroupFragments().hasNext():
-         rg_next = rg.iterateRGroupFragments().next()
-         for atom in rg_next.iterateAtoms():
-            atom.setXYZ(0, 0, 0)
+    for atom in mol.iterateAtoms():
+        atom.setXYZ(0, 0, 0)
+    for rg in mol.iterateRGroups():
+        if rg.iterateRGroupFragments().hasNext():
+            rg_next = rg.iterateRGroupFragments().next()
+            for atom in rg_next.iterateAtoms():
+                atom.setXYZ(0, 0, 0)
 
-def testDecoRecursiveSmarts ():
+
+def testDecoRecursiveSmarts():
     mols = []
     for smiles in structures:
         mol = indigo.loadMolecule(smiles)
@@ -38,8 +44,9 @@ def testDecoRecursiveSmarts ():
             if rg.iterateRGroupFragments().hasNext():
                 rg_next = rg.iterateRGroupFragments().next()
                 print(rg_next.molfile())
-            else:     
+            else:
                 print("NO FRAGMENT")
-  
+
+
 indigo.setOption("molfile-saving-skip-date", True)
 testDecoRecursiveSmarts()

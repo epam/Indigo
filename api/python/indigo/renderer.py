@@ -19,7 +19,7 @@ import os
 import platform
 from ctypes import CDLL, POINTER, c_char_p, c_int
 
-from indigo import IndigoException, DECODE_ENCODING
+from indigo import DECODE_ENCODING, IndigoException
 
 
 class IndigoRenderer(object):
@@ -74,6 +74,14 @@ class IndigoRenderer(object):
             self._initialized = False
 
     def renderToBuffer(self, obj):
+        """Renders object to buffer
+
+        Args:
+            obj (IndigoObject): object to render
+
+        Returns:
+            buffer with byte array
+        """
         self.indigo._setSessionId()
         wb = self.indigo.writeBuffer()
         try:
@@ -83,15 +91,40 @@ class IndigoRenderer(object):
             wb.dispose()
 
     def renderToString(self, obj):
+        """Renders object to string
+
+        Args:
+            obj (IndigoObject): object to render
+
+        Returns:
+            str: string with rendered data
+        """
         return self.renderToBuffer(obj).tobytes().decode(DECODE_ENCODING)
 
     def renderToFile(self, obj, filename):
+        """Renders to file
+
+        Args:
+            obj (IndigoObject): object to render
+            filename (str): full file path
+        """
         self.indigo._setSessionId()
         self.indigo._checkResult(
             self._lib.indigoRenderToFile(obj.id, filename.encode("ascii"))
         )
 
     def renderGridToFile(self, objects, refatoms, ncolumns, filename):
+        """Renders grid to file
+
+        Args:
+            objects (IndigoObject): array of objects
+            refatoms (list): array or reference atoms
+            ncolumns (int): number of columns
+            filename (str): full file path
+
+        Raises:
+            IndigoException: if any error while rendering
+        """
         self.indigo._setSessionId()
         arr = None
         if refatoms:
@@ -109,6 +142,19 @@ class IndigoRenderer(object):
         )
 
     def renderGridToBuffer(self, objects, refatoms, ncolumns):
+        """Renders grid to buffer
+
+        Args:
+            objects (IndigoObject): array of objects
+            refatoms (list): array or reference atoms
+            ncolumns (int): number of columns
+
+        Raises:
+            IndigoException: if any error while rendering
+
+        Returns:
+            list: buffer byte array
+        """
         self.indigo._setSessionId()
         arr = None
         if refatoms:

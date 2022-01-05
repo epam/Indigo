@@ -1,5 +1,4 @@
 from indigo.renderer import IndigoRenderer
-
 from tests import TestIndigoBase
 
 
@@ -9,8 +8,8 @@ class TestIndigoRenderer(TestIndigoBase):
         self.indigo_renderer = IndigoRenderer(self.indigo)
 
     def test_render_svg(self) -> None:
-        self.indigo.setOption('render-output-format', 'svg')
-        m = self.indigo.loadMolecule('C1=CC=CC=C1')
+        self.indigo.setOption("render-output-format", "svg")
+        m = self.indigo.loadMolecule("C1=CC=CC=C1")
         svg = self.indigo_renderer.renderToString(m)
         self.assertTrue(svg)
         self.assertIn("<svg", svg)

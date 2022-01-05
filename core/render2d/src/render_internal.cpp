@@ -21,6 +21,7 @@
 #include "base_cpp/queue.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/query_reaction.h"
@@ -328,6 +329,8 @@ void MoleculeRenderInternal::render()
     _renderAtomIds();
 
     _renderEmptyRFragment();
+
+    _renderMeta();
 }
 
 BondEnd& MoleculeRenderInternal::_be(int beid)
@@ -2003,6 +2006,63 @@ void MoleculeRenderInternal::_renderBonds()
 {
     for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
         _drawBond(i);
+}
+
+void MoleculeRenderInternal::_renderMeta()
+{
+    const auto& md = _mol->metaData();
+    for (int i = 0; i < md.size(); ++i)
+    {
+        const auto& simple = *md[i];
+        switch (simple._class_id)
+        {
+        case KETSimpleObject::cid: {
+            const KETSimpleObject& ko = static_cast<const KETSimpleObject&>(simple);
+            _renderSimpleObject(ko);
+        }
+        break;
+        case KETTextObject::cid: {
+            const KETTextObject& ko = static_cast<const KETTextObject&>(simple);
+        }
+        break;
+        }
+    }
+}
+
+void MoleculeRenderInternal::_renderSimpleObject(const KETSimpleObject& simple)
+{
+    _cw.setLineWidth(_settings.bondLineWidth);
+
+    auto lb = simple._rect.leftBottom();
+    auto rt = simple._rect.rightTop();
+
+    switch (simple._mode)
+    {
+    case KETSimpleObject::EKETEllipse:
+        _cw.drawEllipse(lb, rt);
+        break;
+
+    case KETSimpleObject::EKETRectangle: {
+        Array<Vec2f> pts;
+        pts.push() = lb;
+        pts.push() = simple._rect.leftTop();
+        pts.push() = rt;
+        pts.push() = simple._rect.rightBottom();
+        pts.push() = lb;
+        _cw.drawPoly(pts);
+    }
+    break;
+
+    case KETSimpleObject::EKETLine: {
+        Array<Vec2f> pts;
+        auto& vec1 = pts.push();
+        auto& vec2 = pts.push();
+        vec1 = lb;
+        vec2 = rt;
+        _cw.drawPoly(pts);
+    }
+    break;
+    }
 }
 
 void MoleculeRenderInternal::_renderSGroups()
@@ -3906,7 +3966,7 @@ void MoleculeRenderInternal::_bondCoordination(BondDescr& bd, const BondEnd& be1
 
     double arrow_length = lw * 5;
     double shorten = len - arrow_length;
-    Vec2f reduced =  (be2.p - be1.p) * ( 1 - shorten / len );
+    Vec2f reduced = (be2.p - be1.p) * (1 - shorten / len);
     Vec2f slope_right(-reduced.y * 0.25, reduced.x * 0.25);
     _cw.drawLine(be2.p, (be2.p - reduced) + slope_right);
     Vec2f slope_left(reduced.y * 0.25, -reduced.x * 0.25);

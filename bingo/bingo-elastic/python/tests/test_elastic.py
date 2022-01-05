@@ -1,16 +1,11 @@
 import time
 from pathlib import Path
-from typing import List
 
 import pytest
-from indigo import Indigo, IndigoObject
+from indigo import Indigo  # type: ignore
 
 from bingo_elastic.elastic import ElasticRepository
-from bingo_elastic.model.helpers import (
-    iterate_file,
-    load_reaction,
-    load_molecule,
-)
+from bingo_elastic.model.helpers import iterate_file
 from bingo_elastic.model.record import IndigoRecordMolecule, as_iob
 from bingo_elastic.queries import (
     EuclidSimilarityMatch,
@@ -18,7 +13,6 @@ from bingo_elastic.queries import (
     TanimotoSimilarityMatch,
     TverskySimilarityMatch,
     WildcardQuery,
-    ExactMatch,
 )
 
 
@@ -121,7 +115,7 @@ def test_range_search(
     for i, item in enumerate(
         iterate_file(Path(resource_loader("molecules/rand_queries_small.sdf")))
     ):
-        item.ind_number = i
+        item.ind_number = i  # type: ignore
         elastic_repository_molecule.index_record(item)
     result = elastic_repository_molecule.filter(ind_number=RangeQuery(1, 10))
     i = 0
@@ -167,7 +161,7 @@ def test_custom_fields(
         PUBCHEM_IUPAC_INCHIKEY="RDHQFKQIGNGIED-UHFFFAOYSA-N"
     )
     for item in result:
-        assert item.PUBCHEM_IUPAC_INCHIKEY == "RDHQFKQIGNGIED-UHFFFAOYSA-N"
+        assert item.PUBCHEM_IUPAC_INCHIKEY == "RDHQFKQIGNGIED-UHFFFAOYSA-N"  # type: ignore
 
 
 def test_search_empty_fingerprint(

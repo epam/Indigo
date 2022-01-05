@@ -194,9 +194,8 @@ CEXPORT int indigoSaveMolfile(int molecule, int output);
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename);
 CEXPORT const char* indigoMolfile(int molecule);
 
-
-CEXPORT int indigoSaveJsonToFile( int item, const char* filename );
-CEXPORT int indigoSaveJson( int item, int output );
+CEXPORT int indigoSaveJsonToFile(int item, const char* filename);
+CEXPORT int indigoSaveJson(int item, int output);
 
 // accepts molecules and reactions (but not query ones)
 CEXPORT int indigoSaveCml(int object, int output);
@@ -448,6 +447,7 @@ CEXPORT int indigoIterateGenericSGroups(int molecule);
 CEXPORT int indigoIterateRepeatingUnits(int molecule);
 CEXPORT int indigoIterateMultipleGroups(int molecule);
 
+CEXPORT int indigoIterateTGroups(int molecule);
 CEXPORT int indigoIterateSGroups(int molecule);
 
 CEXPORT int indigoGetSuperatom(int molecule, int index);
@@ -515,9 +515,9 @@ CEXPORT int indigoAddTemplate(int molecule, int templates, const char* tname);
 CEXPORT int indigoRemoveTemplate(int molecule, const char* tname);
 CEXPORT int indigoFindTemplate(int molecule, const char* tname);
 
-CEXPORT const char* indigoGetSTroupClass(int tgroup);
-CEXPORT const char* indigoGetSTroupName(int tgroup);
-CEXPORT const char* indigoGetSTroupAlias(int tgroup);
+CEXPORT const char* indigoGetTGroupClass(int tgroup);
+CEXPORT const char* indigoGetTGroupName(int tgroup);
+CEXPORT const char* indigoGetTGroupAlias(int tgroup);
 
 CEXPORT int indigoTransformSCSRtoCTAB(int item);
 CEXPORT int indigoTransformCTABtoSCSR(int molecule, int templates);

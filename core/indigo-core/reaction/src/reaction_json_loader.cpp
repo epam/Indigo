@@ -92,9 +92,14 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
         ARROW
     };
 
-    typedef std::tuple<float, ReactionFramentType, std::unique_ptr<BaseMolecule>> ReactionComponent;
+    using ReactionComponent = std::tuple<float, ReactionFramentType, std::unique_ptr<BaseMolecule>>;
 
     MoleculeJsonLoader loader(_molecule, _rgroups);
+    loader.stereochemistry_options = stereochemistry_options;
+    loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+
     _prxn = dynamic_cast<Reaction*>(&rxn);
     _pqrxn = dynamic_cast<QueryReaction*>(&rxn);
 
@@ -128,9 +133,9 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     for (int index = 0; index < count; ++index)
     {
         if (_pmol->isQueryMolecule())
-            components.emplace_back(0, ReactionFramentType::MOLECULE, new QueryMolecule);
+            components.emplace_back(0, ReactionFramentType::MOLECULE, std::make_unique<QueryMolecule>());
         else
-            components.emplace_back(0, ReactionFramentType::MOLECULE, new Molecule);
+            components.emplace_back(0, ReactionFramentType::MOLECULE, std::make_unique<Molecule>());
         Filter filter(_pmol->getDecomposition().ptr(), Filter::EQ, index);
         ReactionComponent& rc = components.back();
         BaseMolecule& mol = *(std::get<MOLECULE_IDX>(rc));

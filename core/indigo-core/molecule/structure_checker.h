@@ -123,17 +123,16 @@ namespace indigo
         CheckResult checkReaction(const BaseReaction& reaction, const std::string& check_types = "");
         CheckResult checkReaction(const BaseReaction& reaction, const std::vector<CheckTypeCode>& check_types = std::vector<CheckTypeCode>());
 
-
         static CheckTypeCode getCheckType(const std::string& type);
         static std::string getCheckType(StructureChecker::CheckTypeCode code);
         static std::string getCheckMessage(StructureChecker::CheckMessageCode code);
-        static CheckTypeCode getCheckTypeByMsgCode( StructureChecker::CheckMessageCode code );
+        static CheckTypeCode getCheckTypeByMsgCode(StructureChecker::CheckMessageCode code);
 
         DECL_ERROR;
 
     private:
         StructureChecker(const StructureChecker&); // no implicit copy
-    };                                               // namespace indigo
+    };
 
 } // namespace indigo
 

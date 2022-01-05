@@ -1,6 +1,6 @@
 from typing import Callable, Dict, List, Optional, Tuple
 
-from indigo import Indigo
+from indigo import Indigo  # type: ignore
 
 from bingo_elastic.model.record import IndigoRecord
 

@@ -24,7 +24,8 @@
 namespace indigo
 {
 
-    template <typename T> class ObjList
+    template <typename T>
+    class ObjList
     {
     public:
         typedef typename List<T>::Elem Elem;
@@ -51,7 +52,8 @@ namespace indigo
             return idx;
         }
 
-        template <typename A> int add(A& a)
+        template <typename A>
+        int add(A& a)
         {
             int idx = _list.add();
 
@@ -69,7 +71,8 @@ namespace indigo
             return idx;
         }
 
-        template <typename A> int insertAfter(int existing, A& a)
+        template <typename A>
+        int insertAfter(int existing, A& a)
         {
             int idx = _list.insertAfter(existing);
 
@@ -87,7 +90,8 @@ namespace indigo
             return idx;
         }
 
-        template <typename A> int insertBefore(int existing, A& a)
+        template <typename A>
+        int insertBefore(int existing, A& a)
         {
             int idx = _list.insertBefore(existing);
 

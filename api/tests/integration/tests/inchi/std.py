@@ -1,13 +1,19 @@
 import sys
 
-sys.path.append('../../common')
+sys.path.append("../../common")
 from env_indigo import *
 
 indigo = Indigo()
 indigo_inchi = IndigoInchi(indigo)
 
-molit = indigo.iterateSDFile(joinPathPy("../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__))
-inchiit = open(joinPathPy("molecules/zinc-slice.sdf.inchi", __file__)).readlines()
+molit = indigo.iterateSDFile(
+    joinPathPy(
+        "../../../../../data/molecules/basic/zinc-slice.sdf.gz", __file__
+    )
+)
+inchiit = open(
+    joinPathPy("molecules/zinc-slice.sdf.inchi", __file__)
+).readlines()
 
 idx = 0
 for m, inchi_std in zip(molit, inchiit):

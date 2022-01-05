@@ -219,7 +219,6 @@ void MoleculeCdxLoader::_updateConnectionPoint(int point_id, int atom_id)
         {
             for (int j = 0; j < _nodes[i].connections.size(); j++)
             {
-
                 if (_nodes[i].connections[j].point_id == point_id)
                 {
                     _nodes[i].connections[j].atom_id = atom_id;
@@ -372,7 +371,6 @@ void MoleculeCdxLoader::_readNode(UINT32 node_id)
                 break;
             case kCDXProp_Atom_Isotope:
                 node.isotope = _scanner->readBinaryWord();
-                ;
                 break;
             case kCDXProp_Atom_Radical:
                 node.radical = _getRadical();

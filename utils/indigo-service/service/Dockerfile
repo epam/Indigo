@@ -33,7 +33,7 @@ RUN pip3 install --no-cache-dir -r /opt/requirements.txt
 
 # Install Indigo
 COPY ./lib/*indigo*linux*.whl /opt/
-RUN python3 -m pip install /opt/*indigo*linux*.whl
+RUN python3 -m pip install /opt/*indigo*manylinux1_x86_64*.whl
 
 # # Install Indigo Uploader
 # COPY ./lib/indigo-uploader-*.zip /opt/
