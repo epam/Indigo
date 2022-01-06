@@ -31,10 +31,18 @@
 
 #define ORAEXT CEXPORT
 
-using namespace indigo;
+namespace indigo
+{
 
-extern OracleLogger logger;
-extern const char* log_filename;
+    extern OracleLogger logger;
+    extern const char* log_filename;
+
+    int bingoPopRowidsToArray(OracleEnv& env, List<OraRowidText>& matched, int maxrows, OCIArray* array);
+    int bingoGetExactRightPart(OracleEnv& env, OCINumber* p_strt, OCINumber* p_stop, int flags);
+    void bingoBuildQueryID(OracleEnv& env, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop, int flags, const char* params,
+                           Array<char>& id);
+
+
 
 #define ORABLOCK_BEGIN                                                                                                                                         \
     logger.initIfClosed(log_filename);                                                                                                                         \
@@ -106,9 +114,6 @@ extern const char* log_filename;
         throw Exception("%s. Last rowid was %s", e.message(), rid_text);                                                                                       \
     }
 
-int bingoPopRowidsToArray(OracleEnv& env, List<OraRowidText>& matched, int maxrows, OCIArray* array);
-int bingoGetExactRightPart(OracleEnv& env, OCINumber* p_strt, OCINumber* p_stop, int flags);
-void bingoBuildQueryID(OracleEnv& env, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop, int flags, const char* params,
-                       Array<char>& id);
+} // namespace indigo
 
 #endif

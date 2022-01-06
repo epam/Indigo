@@ -30,6 +30,8 @@
 #include "oracle/ora_wrap.h"
 #include <memory>
 
+using namespace indigo;
+
 BingoOracleContext::BingoOracleContext(OracleEnv& env, int id_) : BingoContext(id_), storage(env, id_), _config_changed(false)
 {
     ArrayOutput output(_id);

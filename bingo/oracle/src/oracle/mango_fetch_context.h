@@ -25,50 +25,53 @@
 #include "oracle/mango_shadow_fetch.h"
 #include <memory>
 
-using namespace indigo;
-
-class MangoShadowFetch;
-
-class MangoFetchContext
+namespace indigo
 {
-public:
-    MangoFetchContext(int id, MangoOracleContext& context, const Array<char>& query_id);
 
-    std::unique_ptr<MangoFastIndex> fast_index;
-    std::unique_ptr<MangoShadowFetch> shadow_fetch;
+    class MangoShadowFetch;
 
-    BingoFetchEngine* fetch_engine;
-
-    MangoSubstructure substructure;
-    MangoSimilarity similarity;
-    MangoExact exact;
-    MangoTautomer tautomer;
-    MangoGross gross;
-    MangoMass mass;
-
-    int id;
-    int context_id;
-    bool fresh; // 'true' after selectivity calculation and before index start
-
-    static MangoFetchContext& create(MangoOracleContext& context, const Array<char>& query_id);
-    static MangoFetchContext& get(int id);
-    static MangoFetchContext* findFresh(int context_id, const Array<char>& query_id);
-    static void remove(int id);
-    static void removeByContextID(int id);
-
-    inline MangoOracleContext& context()
+    class MangoFetchContext
     {
-        return _context;
-    }
+    public:
+        MangoFetchContext(int id, MangoOracleContext& context, const Array<char>& query_id);
 
-    DECL_ERROR;
+        std::unique_ptr<MangoFastIndex> fast_index;
+        std::unique_ptr<MangoShadowFetch> shadow_fetch;
 
-protected:
-    Array<char> _query_id;
-    MangoOracleContext& _context;
+        BingoFetchEngine* fetch_engine;
 
-    TL_DECL(PtrArray<MangoFetchContext>, _instances);
-    static std::mutex _instances_lock;
-};
+        MangoSubstructure substructure;
+        MangoSimilarity similarity;
+        MangoExact exact;
+        MangoTautomer tautomer;
+        MangoGross gross;
+        MangoMass mass;
+
+        int id;
+        int context_id;
+        bool fresh; // 'true' after selectivity calculation and before index start
+
+        static MangoFetchContext& create(MangoOracleContext& context, const Array<char>& query_id);
+        static MangoFetchContext& get(int id);
+        static MangoFetchContext* findFresh(int context_id, const Array<char>& query_id);
+        static void remove(int id);
+        static void removeByContextID(int id);
+
+        inline MangoOracleContext& context()
+        {
+            return _context;
+        }
+
+        DECL_ERROR;
+
+    protected:
+        Array<char> _query_id;
+        MangoOracleContext& _context;
+
+        TL_DECL(PtrArray<MangoFetchContext>, _instances);
+        static std::mutex _instances_lock;
+    };
+
+} // namespace indigo
 
 #endif

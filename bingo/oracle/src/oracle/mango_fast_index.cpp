@@ -36,6 +36,8 @@
 #include "oracle/mango_shadow_table.h"
 #include "oracle/rowid_loader.h"
 
+using namespace indigo;
+
 IMPL_ERROR(MangoFastIndex, "mango fast fetch");
 
 MangoFastIndex::MangoFastIndex(MangoFetchContext& context) : _context(context)

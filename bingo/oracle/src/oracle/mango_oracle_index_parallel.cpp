@@ -4,6 +4,8 @@
 #include "oracle/mango_oracle_index_parallel.h"
 #include "oracle/ora_wrap.h"
 
+using namespace indigo;
+
 //
 // MangoRegisterDispatcher
 //

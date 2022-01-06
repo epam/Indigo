@@ -41,7 +41,9 @@
 #include "oracle/rowid_saver.h"
 #include <memory>
 
-bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index, Array<char>& data,
+using namespace indigo;
+
+bool mangoPrepareMoleculeLocal(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index, Array<char>& data,
                           std::mutex* lock_for_exclusive_access, std::string& failure_message)
 {
     profTimerStart(tall, "moleculeIndex.prepare");
@@ -100,7 +102,7 @@ bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& 
     return true;
 }
 
-void mangoRegisterMolecule(OracleEnv& env, const char* rowid, MangoOracleContext& context, const MangoIndex& index, BingoFingerprints& fingerprints,
+void mangoRegisterMoleculeLocal(OracleEnv& env, const char* rowid, MangoOracleContext& context, const MangoIndex& index, BingoFingerprints& fingerprints,
                            const Array<char>& prepared_data, bool append)
 {
     profTimerStart(tall, "moleculeIndex.register");
@@ -126,9 +128,9 @@ bool mangoPrepareAndRegisterMolecule(OracleEnv& env, const char* rowid, const Ar
     QS_DEF(Array<char>, prepared_data);
     std::string failure_message;
 
-    if (mangoPrepareMolecule(env, rowid, molfile_buf, context, index, prepared_data, NULL, failure_message))
+    if (mangoPrepareMoleculeLocal(env, rowid, molfile_buf, context, index, prepared_data, NULL, failure_message))
     {
-        mangoRegisterMolecule(env, rowid, context, index, fingerprints, prepared_data, append);
+        mangoRegisterMoleculeLocal(env, rowid, context, index, fingerprints, prepared_data, append);
 
         return true;
     }
@@ -137,6 +139,7 @@ bool mangoPrepareAndRegisterMolecule(OracleEnv& env, const char* rowid, const Ar
         context.context().warnings.add(env, rowid, failure_message.c_str());
         return false;
     }
+    return false;
 }
 
 void mangoRegisterTable(OracleEnv& env, MangoOracleContext& context, const char* source_table, const char* source_column, const char* target_datatype)

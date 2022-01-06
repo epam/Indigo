@@ -24,32 +24,30 @@
 #include "bingo_fingerprints.h"
 #include "oracle/ringo_shadow_table.h"
 
-using namespace indigo;
-
 namespace indigo
 {
     class OracleEnv;
-}
 
-class BingoOracleContext;
+    class BingoOracleContext;
 
-class RingoOracleContext : public RingoContext
-{
-public:
-    explicit RingoOracleContext(BingoContext& context);
-    ~RingoOracleContext() override;
+    class RingoOracleContext : public RingoContext
+    {
+    public:
+        explicit RingoOracleContext(BingoContext& context);
+        ~RingoOracleContext() override;
 
-    BingoOracleContext& context();
+        BingoOracleContext& context();
 
-    RingoShadowTable shadow_table;
-    BingoFingerprints fingerprints;
+        RingoShadowTable shadow_table;
+        BingoFingerprints fingerprints;
 
-    static RingoOracleContext& get(OracleEnv& env, int id, bool lock);
-};
+        static RingoOracleContext& get(OracleEnv& env, int id, bool lock);
+    };
 
-extern const char* bad_reaction_warning;
-extern const char* bad_reaction_warning_rowid;
-;
+    extern const char* bad_reaction_warning;
+    extern const char* bad_reaction_warning_rowid;
+
+} // namespace indigo
 
 #define TRY_READ_TARGET_RXN                                                                                                                                    \
     try                                                                                                                                                        \
