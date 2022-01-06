@@ -3019,11 +3019,11 @@ void MolfileLoader::_fillSGroupsParentIndices()
         if (set.size() == 1)
         {
             // TODO: check fix
-            auto parent_idx = set.key(set.begin());
+            auto parent_idx = *set.begin();
             SGroup& parent_sgroup = sgroups.getSGroup(parent_idx);
             if (&sgroup != &parent_sgroup)
             {
-                sgroup.parent_idx = set.key(set.begin());
+                sgroup.parent_idx = parent_idx;
             }
             else
             {

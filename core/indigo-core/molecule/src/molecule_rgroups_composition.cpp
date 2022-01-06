@@ -148,17 +148,15 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
         }
     }
 
-    const RedBlackSet<int>& rgroups = rgroup2fragment.keys();
-    for (auto i = rgroups.begin(); i != rgroups.end(); i = rgroups.next(i))
+    const std::unordered_set<int>& rgroups = rgroup2fragment.keys();
+    for (int r : rgroups)
     {
-        auto r = rgroups.key(i);
         RGroup& rgroup = _rgroups.push();
         RGroup& source = m._parent._rgroups.getRGroup(r);
 
-        const RedBlackSet<int>& fs_r = rgroup2fragment[r];
-        for (auto j = fs_r.begin(); j != fs_r.end(); j = fs_r.next(j))
+        const std::unordered_set<int>& fs_r = rgroup2fragment[r];
+        for (int f : fs_r)
         {
-            auto f = fs_r.key(j);
             for (auto k = 0; k < fragment2count.at({r, f}); k++)
             {
                 int fr_idx = rgroup.fragments.add(new Molecule());

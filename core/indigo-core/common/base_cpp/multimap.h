@@ -19,8 +19,6 @@
 #ifndef __multimap_h__
 #define __multimap_h__
 
-#include "base_cpp/red_black.h"
-
 namespace indigo
 {
 
@@ -39,10 +37,10 @@ namespace indigo
         {
         }
 
-        const RedBlackSet<K>& keys() const;
+        const std::unordered_set<K>& keys() const;
 
-        const RedBlackSet<V>& get(const K& k) const;
-        const RedBlackSet<V>& operator[](const K& k) const;
+        const std::unordered_set<V>& get(const K& k) const;
+        const std::unordered_set<V>& operator[](const K& k) const;
 
         int size() const;
 
@@ -50,7 +48,7 @@ namespace indigo
 
         void insert(const K& k, const V& v);
         void insert(const K& k, const Array<V>& vs);
-        void insert(const K& k, const RedBlackSet<V>& vs);
+        void insert(const K& k, const std::unordered_set<V>& vs);
 
         bool remove(const K& k);
         bool remove(const K& k, const V& v);
@@ -61,18 +59,18 @@ namespace indigo
         void clear();
 
     protected:
-        RedBlackSet<V>& _provide_set(const K& k);
+        std::unordered_set<V>& _provide_set(const K& k);
 
         template <typename L, typename R>
         void _copy(MultiMap<L, R>& target, bool invert) const
         {
-            for (auto i = _map.begin(); i != _map.end(); i = _map.next(i))
+            for (auto& m : _map)
             {
-                const RedBlackSet<V>& set = *_sets[_map.value(i)];
-                for (auto j = set.begin(); j != set.end(); j = set.next(j))
+                const std::unordered_set<V>& set = *_sets[m.second];
+                for (auto& s : set)
                 {
-                    K& k = _map.key(i);
-                    V& v = set.key(j);
+                    K& k = m.first;
+                    V& v = s;
                     if (invert)
                     {
                         target.insert(v, k);
@@ -85,10 +83,10 @@ namespace indigo
             }
         }
 
-        RedBlackMap<K, int> _map;
-        RedBlackSet<K> _keys;
-        PtrArray<RedBlackSet<V>> _sets;
-        const RedBlackSet<V> _nil;
+        std::unordered_map<K, int> _map;
+        std::unordered_set<K> _keys;
+        PtrArray<std::unordered_set<V>> _sets;
+        const std::unordered_set<V> _nil;
     };
 
 } // namespace indigo
@@ -105,16 +103,16 @@ using namespace indigo;
 template <typename K, typename V>
 bool MultiMap<K, V>::find(const K& k, const V& v) const
 {
-    return get(k).find(v);
+    const std::unordered_set<V>& set = get(k);
+    return (set.find(v) != set.end());
 }
 
 template <typename K, typename V>
-const RedBlackSet<V>& MultiMap<K, V>::get(const K& k) const
+const std::unordered_set<V>& MultiMap<K, V>::get(const K& k) const
 {
-    int* i = _map.at2(k);
-    if (i)
+    if (_map.find(k) != _map.end())
     {
-        return *_sets[*i];
+        return *_sets[_map.at(k)];
     }
     return _nil;
 }
@@ -128,7 +126,7 @@ void MultiMap<K, V>::insert(const K& k, const V& v)
 template <typename K, typename V>
 void MultiMap<K, V>::insert(const K& k, const Array<V>& vs)
 {
-    RedBlackSet<V>& set = _provide_set(k);
+    std::unordered_set<V>& set = _provide_set(k);
     for (auto i = 0; i < vs.size(); i++)
     {
         set.insert(vs[i]);
@@ -136,10 +134,10 @@ void MultiMap<K, V>::insert(const K& k, const Array<V>& vs)
 }
 
 template <typename K, typename V>
-void MultiMap<K, V>::insert(const K& k, const RedBlackSet<V>& vs)
+void MultiMap<K, V>::insert(const K& k, const std::unordered_set<V>& vs)
 {
-    RedBlackSet<V>& set = _provide_set(k);
-    for (auto i = vs.begin(); i != vs.end(); i = vs.next(i))
+    std::unordered_set<V>& set = _provide_set(k);
+    for (const auto& v : vs)
     {
         set.insert(vs.key(i));
     }
@@ -148,14 +146,13 @@ void MultiMap<K, V>::insert(const K& k, const RedBlackSet<V>& vs)
 template <typename K, typename V>
 bool MultiMap<K, V>::remove(const K& k)
 {
-    int* i = _map.at2(k);
-    if (!i)
+    if (_map.find(k) == _map.end())
     {
         return false;
     }
-    _sets.remove(*i);
-    _keys.remove(k);
-    _map.remove(k);
+    _sets.remove(_map.at(k));
+    _keys.erase(k);
+    _map.erase(k);
     CHECK_KEYS;
     return true;
 }
@@ -163,18 +160,17 @@ bool MultiMap<K, V>::remove(const K& k)
 template <typename K, typename V>
 bool MultiMap<K, V>::remove(const K& k, const V& v)
 {
-    int* i = _map.at2(k);
-    if (!i)
+    if (_map.find(k) == _map.end())
     {
         return false;
     }
-    RedBlackSet<V>& set = *_sets[*i];
-    set.remove(v);
+    std::unordered_set<V>& set = *_sets[_map.at(k)];
+    set.erase(v);
     if (set.size() < 1)
     {
-        _sets.remove(*i);
-        _keys.remove(k);
-        _map.remove(k);
+        _sets.remove(_map.at(k));
+        _keys.erase(k);
+        _map.erase(k);
     }
     CHECK_KEYS;
     return true;
@@ -201,7 +197,7 @@ void MultiMap<K, V>::clear()
 }
 
 template <typename K, typename V>
-const RedBlackSet<K>& MultiMap<K, V>::keys() const
+const std::unordered_set<K>& MultiMap<K, V>::keys() const
 {
     return _keys;
 }
@@ -213,24 +209,23 @@ int MultiMap<K, V>::size() const
 }
 
 template <typename K, typename V>
-const RedBlackSet<V>& MultiMap<K, V>::operator[](const K& k) const
+const std::unordered_set<V>& MultiMap<K, V>::operator[](const K& k) const
 {
     return get(k);
 }
 
 template <typename K, typename V>
-RedBlackSet<V>& MultiMap<K, V>::_provide_set(const K& k)
+std::unordered_set<V>& MultiMap<K, V>::_provide_set(const K& k)
 {
-    int* i = _map.at2(k);
-    if (i)
+    if (_map.find(k) != _map.end())
     {
-        return *_sets[*i];
+        return *_sets[_map.at(k)];
     }
 
     _keys.insert(k);
-    _map.insert(k, _sets.size());
+    _map.insert({k, _sets.size()});
     CHECK_KEYS;
-    return _sets.add(new RedBlackSet<V>());
+    return _sets.add(new std::unordered_set<V>());
 }
 
 #endif

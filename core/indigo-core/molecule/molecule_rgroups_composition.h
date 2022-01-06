@@ -240,13 +240,13 @@ namespace indigo
 
         inline Fragment _fragment_coordinates(int rsite, int fragment) const
         {
-            const RedBlackSet<int>& rs = _rsite2rgroup[_rsite2vertex.at(rsite)];
+            const std::unordered_set<int>& rs = _rsite2rgroup[_rsite2vertex.at(rsite)];
 
             int r = -1;
             int f = fragment;
-            for (int i = rs.begin(); i != rs.end(); i = rs.next(i))
+            for (int i : rs)
             {
-                r = rs.key(i);
+                r = i;
                 int size = _rgroup2size[r];
                 if (f >= size)
                 {
