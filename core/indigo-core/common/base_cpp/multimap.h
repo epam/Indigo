@@ -139,7 +139,7 @@ void MultiMap<K, V>::insert(const K& k, const std::unordered_set<V>& vs)
     std::unordered_set<V>& set = _provide_set(k);
     for (const auto& v : vs)
     {
-        set.insert(vs.key(i));
+        set.insert(v);
     }
 }
 
