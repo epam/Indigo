@@ -44,11 +44,11 @@ namespace indigo
         static MangoOracleContext& get(OracleEnv& env, int id, bool lock);
     };
 
-    extern const char* bad_molecule_warning;
-    extern const char* bad_molecule_warning_rowid;
 
 } // namespace indigo
 
+extern const char* bad_molecule_warning;
+extern const char* bad_molecule_warning_rowid;
 #define TRY_READ_TARGET_MOL                                                                                                                                    \
     try                                                                                                                                                        \
     {

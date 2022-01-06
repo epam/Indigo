@@ -105,11 +105,11 @@ namespace indigo
     private:
         BingoContext(const BingoContext&); // no implicit copy
     };
-
-    void bingoGetTauCondition(const char* list_ptr, int& aromaticity, Array<int>& label_list);
-
-    void bingoGetName(Scanner& scanner, Array<char>& result);
-
 } // namespace indigo
+void bingoGetTauCondition(const char* list_ptr, int& aromaticity, indigo::Array<int>& label_list);
+
+void bingoGetName(indigo::Scanner& scanner, indigo::Array<char>& result);
+
+
 
 #endif
