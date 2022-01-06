@@ -82,7 +82,7 @@ public:
     void setUpConfiguration(BingoPgConfig& bingo_config);
 
     int getNthreads();
-    bingo_core::BingoCore bingoCore;
+    indigo::bingo_core::BingoCore bingoCore;
 
 private:
     BingoPgBuildEngine(const BingoPgBuildEngine&); // no implicit copy
@@ -94,9 +94,9 @@ protected:
 
     // qword _bingoSession;
     
-    std::unique_ptr<BingoContext> _bingoContext;
-    std::unique_ptr<MangoContext> _mangoContext;
-    std::unique_ptr<RingoContext> _ringoContext;
+    std::unique_ptr<indigo::BingoContext> _bingoContext;
+    std::unique_ptr<indigo::MangoContext> _mangoContext;
+    std::unique_ptr<indigo::RingoContext> _ringoContext;
     BingoPgIndex* _bufferIndexPtr;
 
     indigo::ObjArray<StructCache>* _structCaches;

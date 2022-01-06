@@ -31,6 +31,8 @@
 #include "molecule/molecule_tautomer_matcher.h"
 #include "molecule/molfile_saver.h"
 
+using namespace indigo;
+
 IMPL_ERROR(MangoTautomer, "tautomer matcher");
 
 MangoTautomer::MangoTautomer(BingoContext& context) : _context(context)

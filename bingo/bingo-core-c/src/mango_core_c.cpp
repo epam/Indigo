@@ -34,6 +34,7 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_standardize_options.h"
 
+using namespace indigo;
 using namespace indigo::bingo_core;
 
 int BingoCore::mangoIndexProcessSingleRecord(){

@@ -17,7 +17,7 @@ namespace indigo
 class BingoPgConfig
 {
 public:
-    BingoPgConfig(bingo_core::BingoCore&);
+    BingoPgConfig(indigo::bingo_core::BingoCore&);
     ~BingoPgConfig()
     {
     }
@@ -29,7 +29,7 @@ public:
 
     void serialize(indigo::Array<char>& config_data);
     void deserialize(void* data, int data_len);
-    bingo_core::BingoCore& bingoCore;
+    indigo::bingo_core::BingoCore& bingoCore;
 
     DECL_ERROR;
 

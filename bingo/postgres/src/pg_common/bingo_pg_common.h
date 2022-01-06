@@ -340,7 +340,7 @@ public:
     public:
         BingoSessionHandler(unsigned int func_id);
         virtual ~BingoSessionHandler();
-        bingo_core::BingoCore bingoCore;
+        indigo::bingo_core::BingoCore bingoCore;
 
         const char* getFunctionName() const
         {
@@ -358,9 +358,9 @@ public:
         // qword _sessionId;
         indigo::Array<char> _functionName;
         
-        std::unique_ptr<BingoContext> _bingoContext;
-        std::unique_ptr<MangoContext> _mangoContext;
-        std::unique_ptr<RingoContext> _ringoContext;
+        std::unique_ptr<indigo::BingoContext> _bingoContext;
+        std::unique_ptr<indigo::MangoContext> _mangoContext;
+        std::unique_ptr<indigo::RingoContext> _ringoContext;
     };
 
     DECL_ERROR;

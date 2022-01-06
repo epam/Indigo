@@ -23,38 +23,41 @@
 #include "mango_index.h"
 #include "mango_matchers.h"
 
-using namespace indigo;
-
-class MangoContext
+namespace indigo
 {
-public:
-    explicit MangoContext(BingoContext& context);
-    virtual ~MangoContext();
 
-    MangoSubstructure substructure;
-    MangoSimilarity similarity;
-    MangoExact exact;
-    MangoTautomer tautomer;
-    MangoGross gross;
+    class MangoContext
+    {
+    public:
+        explicit MangoContext(BingoContext& context);
+        virtual ~MangoContext();
 
-    static int begin();
-    static int end();
-    static int next(int k);
+        MangoSubstructure substructure;
+        MangoSimilarity similarity;
+        MangoExact exact;
+        MangoTautomer tautomer;
+        MangoGross gross;
 
-    DECL_ERROR;
+        static int begin();
+        static int end();
+        static int next(int k);
 
-    static void remove(int id);
+        DECL_ERROR;
 
-    static MangoContext* get(int id);
-    static MangoContext* existing(int id);
+        static void remove(int id);
 
-protected:
-    static MangoContext* _get(int id, BingoContext& context);
+        static MangoContext* get(int id);
+        static MangoContext* existing(int id);
 
-    TL_DECL(PtrArray<MangoContext>, _instances);
-    static std::mutex _instances_lock;
+    protected:
+        static MangoContext* _get(int id, BingoContext& context);
 
-    BingoContext& _context;
-};
+        TL_DECL(PtrArray<MangoContext>, _instances);
+        static std::mutex _instances_lock;
+
+        BingoContext& _context;
+    };
+
+} // namespace indigo
 
 #endif

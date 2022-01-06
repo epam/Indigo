@@ -26,6 +26,7 @@
 #include "molecule/cmf_saver.h"
 #include "reaction/crf_saver.h"
 
+using namespace indigo;
 using namespace indigo::bingo_core;
 
 void BingoCore::bingoSetIndexRecordData(int id, const char* data, int data_size){

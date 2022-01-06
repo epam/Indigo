@@ -32,6 +32,7 @@
 #include "reaction/rxnfile_loader.h"
 #include "reaction/rxnfile_saver.h"
 
+using namespace indigo;
 using namespace indigo::bingo_core;
 
 int BingoCore::ringoIndexProcessSingleRecord() {

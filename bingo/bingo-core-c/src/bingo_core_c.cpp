@@ -22,6 +22,7 @@
 #include "base_cpp/profiling.h"
 #include "gzip/gzip_scanner.h"
 
+using namespace indigo;
 using namespace indigo::bingo_core;
 
 BingoCore::BingoCore(): self(*this)

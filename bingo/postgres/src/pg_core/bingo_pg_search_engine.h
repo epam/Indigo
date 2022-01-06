@@ -143,7 +143,7 @@ public:
     void setItemPointer(PG_OBJECT result_ptr);
 
     void loadDictionary(BingoPgIndex&);
-    bingo_core::BingoCore bingoCore;
+    indigo::bingo_core::BingoCore bingoCore;
     //   const char* getDictionary(int& size);
 
 private:
@@ -169,9 +169,9 @@ protected:
     BingoPgExternalBitset _sectionBitset;
     std::unique_ptr<BingoPgFpData> _queryFpData;
     std::unique_ptr<BingoPgCursor> _searchCursor;
-    std::unique_ptr<BingoContext> _bingoContext;
-    std::unique_ptr<MangoContext> _mangoContext;
-    std::unique_ptr<RingoContext> _ringoContext;
+    std::unique_ptr<indigo::BingoContext> _bingoContext;
+    std::unique_ptr<indigo::MangoContext> _mangoContext;
+    std::unique_ptr<indigo::RingoContext> _ringoContext;
 };
 
 #endif /* BINGO_PG_SEARCH_ENGINE_H */
