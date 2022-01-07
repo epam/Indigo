@@ -1,4 +1,5 @@
 #include "bingo_pg_fix_pre.h"
+#include "gzip/gzip_scanner.h"
 
 extern "C"
 {
@@ -18,9 +19,7 @@ extern "C"
 #include "bingo_pg_fix_post.h"
 
 #include "bingo_postgres.h"
-
 #include "base_cpp/scanner.h"
-#include "gzip/gzip_scanner.h"
 #include "bingo_core_c.h"
 
 #include "bingo_pg_buffer.h"

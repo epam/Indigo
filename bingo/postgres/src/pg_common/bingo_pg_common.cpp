@@ -1,5 +1,5 @@
 #include "bingo_pg_fix_pre.h"
-
+#include "gzip/gzip_scanner.h"
 #include <cmath>
 
 extern "C"
@@ -20,7 +20,6 @@ extern "C"
 
 #include "bingo_pg_fix_post.h"
 
-#include "gzip/gzip_scanner.h"
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"

@@ -1,5 +1,5 @@
 #include "bingo_pg_fix_pre.h"
-
+#include "gzip/gzip_scanner.h"
 extern "C"
 {
 #include "postgres.h"
@@ -9,7 +9,6 @@ extern "C"
 
 #include "bingo_pg_fix_post.h"
 
-#include "gzip/gzip_scanner.h"
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 
