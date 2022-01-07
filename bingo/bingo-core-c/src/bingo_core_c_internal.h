@@ -29,7 +29,6 @@
 #include "core/mango_matchers.h"
 
 #include "base_cpp/scanner.h"
-#include "gzip/gzip_scanner.h"
 #include "molecule/cmf_saver.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_auto_loader.h"
@@ -47,6 +46,8 @@
 
 namespace indigo
 {
+    class GZipScanner;
+
     namespace bingo_core
     {
 

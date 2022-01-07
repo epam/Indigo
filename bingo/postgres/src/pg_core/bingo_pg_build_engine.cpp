@@ -9,6 +9,7 @@ extern "C"
 
 #include "bingo_pg_fix_post.h"
 
+#include "gzip/gzip_scanner.h"
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 

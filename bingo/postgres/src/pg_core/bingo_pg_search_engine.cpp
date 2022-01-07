@@ -13,6 +13,7 @@ extern "C"
 
 #include "bingo_pg_search_engine.h"
 
+#include "gzip/gzip_scanner.h"
 #include "base_c/bitarray.h"
 #include "base_cpp/array.h"
 #include "base_cpp/profiling.h"

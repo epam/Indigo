@@ -20,6 +20,7 @@ extern "C"
 #include "bingo_postgres.h"
 
 #include "base_cpp/scanner.h"
+#include "gzip/gzip_scanner.h"
 #include "bingo_core_c.h"
 
 #include "bingo_pg_buffer.h"
