@@ -10,9 +10,7 @@ extern "C"
 #include "utils/typcache.h"
 }
 
-#ifdef qsort
-#undef qsort
-#endif
+#include "bingo_pg_fix_post.h"
 
 #include "mango_pg_search_engine.h"
 
