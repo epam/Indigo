@@ -14,7 +14,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+# For test purposes
 FROM python:3.9-slim-buster as indigo_service_dev
 
 RUN mkdir -p /opt/indigo
@@ -38,13 +39,18 @@ RUN apt-get update && \
 # Install if exists
 RUN if ls ./*manylinux1_x86_64*.whl 1> /dev/null 2>&1; then pip3 install ./*manylinux1_x86_64*.whl; fi
 
-RUN pip3 install -r requirements_dev.txt && \
+RUN pip3 install -r requirements.txt -r requirements_dev.txt && \
     pylint -sn --rcfile=pylintrc indigo_service tests && \
     mypy indigo_service && \
     pip3 install -e . && \
     pytest
 
+# For final build
 FROM python:3.9-slim-buster
+
+RUN apt-get update && \
+    apt-get upgrade && \
+    apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
 
 RUN mkdir -p /opt/indigo
 WORKDIR /opt/indigo

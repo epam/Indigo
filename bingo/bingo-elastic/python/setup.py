@@ -21,7 +21,7 @@ Operating System :: MacOS
 
 setup(
     name="bingo_elastic",
-    version="1.6.1",
+    version="1.7.0-beta",
     description="Cartridge that provides fast, scalable, and efficient storage and searching solution for chemical information using Elasticsearch",
     author="Ruslan Khyurri",
     author_email="ruslan_khyurri@epam.com",
@@ -37,6 +37,6 @@ setup(
     packages=[
         "bingo_elastic",
     ],
-    install_requires=["epam.indigo==1.6.1", "elasticsearch==7.16.2"],
+    install_requires=["epam.indigo==1.7.0-beta", "elasticsearch==7.16.2"],
     classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
 )

@@ -385,84 +385,103 @@ private:
     PG_OBJECT _ptr;
 };
 
-// class CancelException {
-// public:
-//    explicit CancelException(){}
-//    virtual ~CancelException(){}
-//    CancelException(const CancelException&){}
-// private:
-// };
 
-#define BINGO_PG_TRY                                                                                                                                           \
-    {                                                                                                                                                          \
-        bool pg_error_raised = false;                                                                                                                          \
-        QS_DEF(Array<char>, pg_message);                                                                                                                       \
-        PG_TRY();
+//class CancelException {
+//public:
+//   explicit CancelException(){}
+//   virtual ~CancelException(){}
+//   CancelException(const CancelException&){}
+//private:
+//};
 
-#define BINGO_PG_HANDLE(handle_statement)                                                                                                                      \
-    PG_CATCH();                                                                                                                                                \
-    {                                                                                                                                                          \
-        ErrorData* err = CopyErrorData();                                                                                                                      \
-        pg_message.readString(err->message, true);                                                                                                             \
-        FreeErrorData(err);                                                                                                                                    \
-        FlushErrorState();                                                                                                                                     \
-        pg_error_raised = true;                                                                                                                                \
-    }                                                                                                                                                          \
-    PG_END_TRY();                                                                                                                                              \
-    if (pg_error_raised)                                                                                                                                       \
-    {                                                                                                                                                          \
-        const char* message = pg_message.ptr();                                                                                                                \
-        handle_statement;                                                                                                                                      \
-    }                                                                                                                                                          \
-    }
 
-#define PG_BINGO_BEGIN                                                                                                                                         \
-    {                                                                                                                                                          \
-        int pg_err_mess = 0;                                                                                                                                   \
-        bool pg_raise_error = false;                                                                                                                           \
-        try
+#define BINGO_PG_TRY {\
+   bool pg_error_raised = false; \
+   QS_DEF(Array<char>, pg_message); \
+   PG_TRY();
 
-#define PG_BINGO_END                                                                                                                                           \
-    catch (indigo::Exception & e)                                                                                                                              \
-    {                                                                                                                                                          \
-        pg_raise_error = true;                                                                                                                                 \
-        errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
-        pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
-    }                                                                                                                                                          \
-    catch (...)                                                                                                                                                \
-    {                                                                                                                                                          \
-        pg_raise_error = true;                                                                                                                                 \
-        errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
-        pg_err_mess = errmsg("bingo unknown error");                                                                                                           \
-    }                                                                                                                                                          \
-    if (pg_raise_error)                                                                                                                                        \
-    {                                                                                                                                                          \
-        errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess));                                                                                             \
-    }                                                                                                                                                          \
-    }
+#define BINGO_PG_HANDLE(handle_statement) \
+   PG_CATCH(); { \
+      ErrorData *err = CopyErrorData(); \
+      pg_message.readString(err->message, true); \
+      FreeErrorData(err); \
+      FlushErrorState(); \
+      pg_error_raised = true; \
+   } PG_END_TRY(); \
+   if(pg_error_raised) { \
+      const char* message = pg_message.ptr(); \
+      handle_statement;\
+   }}
 
-#define PG_BINGO_HANDLE(statement)                                                                                                                             \
-    catch (indigo::Exception & e)                                                                                                                              \
-    {                                                                                                                                                          \
-        pg_raise_error = true;                                                                                                                                 \
-        errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
-        pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
-    }                                                                                                                                                          \
-    catch (...)                                                                                                                                                \
-    {                                                                                                                                                          \
-        pg_raise_error = true;                                                                                                                                 \
-        errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
-        pg_err_mess = errmsg("bingo unknown error");                                                                                                           \
-    }                                                                                                                                                          \
-    if (pg_raise_error)                                                                                                                                        \
-    {                                                                                                                                                          \
-        statement;                                                                                                                                             \
-        errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess));                                                                                             \
-    }                                                                                                                                                          \
-    }
 
-class DLLEXPORT BingoPgError : public indigo::Exception
-{
+#define PG_BINGO_BEGIN { \
+   int pg_err_mess = 0; \
+   bool pg_raise_error = false; \
+   try
+
+#if PG_VERSION_NUM / 100 > 1200
+    #define PG_BINGO_END \
+       catch (indigo::Exception& e) { \
+          pg_raise_error = true; \
+          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
+          pg_err_mess = errmsg("error: %s", e.message()); \
+       } catch (...) { \
+          pg_raise_error = true; \
+          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
+          pg_err_mess = errmsg("bingo unknown error"); \
+       } \
+       if (pg_raise_error) { \
+          errfinish(__FILE__, __LINE__, PG_FUNCNAME_MACRO); \
+       }}
+#else
+    #define PG_BINGO_END \
+        catch (indigo::Exception& e) { \
+            pg_raise_error = true; \
+            errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
+            pg_err_mess = errmsg("error: %s", e.message()); \
+        } catch (...) { \
+            pg_raise_error = true; \
+            errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
+            pg_err_mess = errmsg("bingo unknown error"); \
+        } \
+        if (pg_raise_error) { \
+            errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
+        }}
+#endif
+
+#if PG_VERSION_NUM / 100 > 1200
+    #define PG_BINGO_HANDLE(statement) \
+       catch (indigo::Exception& e) { \
+          pg_raise_error = true; \
+          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
+          pg_err_mess = errmsg("error: %s", e.message()); \
+       } catch (...) { \
+          pg_raise_error = true; \
+          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
+          pg_err_mess = errmsg("bingo unknown error"); \
+       } \
+       if (pg_raise_error) { \
+          statement; \
+        errfinish(__FILE__, __LINE__, PG_FUNCNAME_MACRO); \
+       }}
+#else
+    #define PG_BINGO_HANDLE(statement) \
+       catch (indigo::Exception& e) { \
+          pg_raise_error = true; \
+          errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
+          pg_err_mess = errmsg("error: %s", e.message()); \
+       } catch (...) { \
+          pg_raise_error = true; \
+          errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
+          pg_err_mess = errmsg("bingo unknown error"); \
+       } \
+       if (pg_raise_error) { \
+          statement; \
+          errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
+       }}
+#endif
+
+class DLLEXPORT BingoPgError : public indigo::Exception {
 public:
     explicit BingoPgError(const char* format, ...) : indigo::Exception("bingo-postgres: ")
     {
