@@ -29,7 +29,6 @@
 #include "core/mango_matchers.h"
 
 #include "base_cpp/scanner.h"
-#include "gzip/gzip_scanner.h"
 #include "molecule/cmf_saver.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_auto_loader.h"
@@ -47,6 +46,8 @@
 
 namespace indigo
 {
+    class GZipScanner;
+
     namespace bingo_core
     {
 
@@ -57,7 +58,87 @@ namespace indigo
             void reset();
 
             static BingoCore& getInstance();
+            int mangoSetupMatch(const char* search_type, const char* query, const char* options);
+            int mangoMassD(const char* target_buf, int target_buf_len, const char* type, double* out);
+            int mangoMatchTarget(const char* target, int target_buf_len);
+            int mangoMatchTargetBinary(const char* target_bin, int target_bin_len, const char* target_xyz, int target_xyz_len);
+            int mangoNeedCoords();
+            int mangoIndexProcessSingleRecord();
+            int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* cmf_buf_len, const char** xyz_buf, int* xyz_buf_len, const char** gross_str,
+                                           const char** counter_elements_str, const char** fingerprint_buf, int* fingerprint_buf_len,
+                                           const char** fingerprint_sim_str, float* mass,
+                                           int* sim_fp_bits_count);
+            int mangoGetHash(bool for_index, int index, int* count, dword* hash);
+            void mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len);
+            byte mangoExactNeedComponentMatching();
+            const char* mangoTauGetQueryGross();
+            const char* mangoGrossGetConditions();
+            void mangoSimilarityGetBitMinMaxBoundsArray(int count, int* target_ones, int** min_bound_ptr, int** max_bound_ptr);
+            void mangoSimilaritySetMinMaxBounds(float min_bound, float max_bound);
+            const char* mangoGross(const char* target_buf, int target_buf_len);
+            void mangoSimilarityGetScore(float* score);
+            void mangoMass(const char* target_buf, int target_buf_len, const char* type, float* out);
+            int mangoGetAtomCount(const char* target_buf, int target_buf_len);
+            int mangoGetBondCount(const char* target_buf, int target_buf_len);
+            void mangoLoadTargetBinaryXyz(const char* target_xyz, int target_xyz_len);
+            void mangoSetHightlightingMode(int enable);
+            const char* mangoGetHightlightedMolecule();
+            const char* mangoSMILES(const char* target_buf, int target_buf_len, int canonical);
+            const char* mangoMolfile(const char* molecule, int molecule_len);
+            const char* mangoCML(const char* molecule, int molecule_len);
+            const char* mangoGetCountedElementName(int index);
+            const char* mangoCheckMolecule(const char* molecule, int molecule_len);
+            const char* mangoICM(const char* molecule, int molecule_len, bool save_xyz, int* out_len);
+            const char* mangoFingerprint(const char* molecule, int molecule_len, const char* options, int* out_len);
+            const char* mangoInChI(const char* molecule, int molecule_len, const char* options, int* out_len);
+            const char* mangoInChIKey(const char* inchi);
+            const char* mangoStandardize(const char* molecule, int molecule_len, const char* options);
+            int ringoIndexProcessSingleRecord();
+            int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* crf_buf_len, const char** fingerprint_buf, int* fingerprint_buf_len);
+            int ringoGetHash(bool for_index, dword* hash);
+            int ringoMatchTargetBinary(const char* target_bin, int target_bin_len);
+            int ringoSetupMatch(const char* search_type, const char* query, const char* options);
+            void ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len);
+            int ringoMatchTarget(const char* target, int target_buf_len);
+            const char* ringoAAM(const char* reaction, int reaction_len, const char* mode);
+            const char* ringoRSMILES(const char* target_buf, int target_buf_len);
+            const char* ringoRxnfile(const char* reaction, int reaction_len);
+            const char* ringoRCML(const char* reaction, int reaction_len);
+            const char* ringoCheckReaction(const char* reaction, int reaction_len);
+            void ringoSetHightlightingMode(int enable);
+            const char* ringoGetHightlightedReaction();
+            const char* ringoICR(const char* reaction, int reaction_len, bool save_xyz, int* out_len);
+            const char* ringoFingerprint(const char* reaction, int reaction_len, const char* options, int* out_len);
+            void bingoSDFImportOpen(const char* file_name);
+            void bingoSDFImportClose();
+            int bingoSDFImportEOF();
+            const char* bingoSDFImportGetNext();
+            const char* bingoImportGetPropertyValue(int idx);
+            void bingoRDFImportOpen(const char* file_name);
+            void bingoRDFImportClose();
+            int bingoRDFImportEOF();
+            const char* bingoRDFImportGetNext();
+            void bingoSMILESImportClose();
+            void bingoSMILESImportOpen(const char* file_name);
+            int bingoSMILESImportEOF();
+            const char* bingoSMILESImportGetNext();
+            const char* bingoSMILESImportGetId();
+            void bingoSetConfigInt(const char* name, int value);
+            void bingoSetConfigBin(const char* name, const char* value, int len);
+            void bingoGetConfigBin(const char* name, const char** value, int* len);
+            void bingoGetConfigInt(const char* name, int* value);
+            int bingoAddTautomerRule(int n, const char* beg, const char* end);
+            void bingoSetIndexRecordData(int id, const char* data, int data_size);
+            int bingoTautomerRulesReady(int n, const char* beg, const char* end);
+            int bingoIndexBegin();
+            int bingoIndexEnd();
+            int bingoImportParseFieldList(const char* fields_str);
+            void bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
+                              void (*process_error_cb)(int id, void* context), void* context);
+            const char* bingoGetNameCore(const char* target_buf, int target_buf_len);
+            const char* bingoImportGetColumnName(int idx);
             int getTimeout();
+            BingoCore& self;
 
             Array<char> error;
             Array<char> warning;
@@ -110,6 +191,7 @@ namespace indigo
 
             byte* test_ptr;
         };
+        
 
 #define BINGO_BEGIN                                                                                                                                            \
     {                                                                                                                                                          \

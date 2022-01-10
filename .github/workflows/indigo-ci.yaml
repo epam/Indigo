@@ -995,6 +995,7 @@ jobs:
           case ${{ matrix.postgres_major_version }} in 12) pg_version=12.8;; "11") pg_version=11.13;; 10) pg_version=10.18;; 9.6) pg_version=9.6.23;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
+          mv pgsql/include/zlib.h pgsql/include/zlib.h.bck
       - name: Build bingo-postgres
         run: |
           mkdir build

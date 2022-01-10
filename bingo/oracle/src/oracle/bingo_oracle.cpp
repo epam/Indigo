@@ -21,6 +21,8 @@
 #include "oracle/ora_logger.h"
 #include "oracle/ora_wrap.h"
 
+using namespace indigo;
+
 OracleLogger logger;
 
 const char* log_filename = "bingo.log";

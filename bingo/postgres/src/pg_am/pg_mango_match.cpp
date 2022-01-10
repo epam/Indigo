@@ -50,7 +50,13 @@ public:
     _MangoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid), _type(type)
     {
         BingoPgCommon::getSearchTypeString(_type, _typeStr, true);
+        if (_typeStr.size() == 0) {
+            _typeStr.readString("", true);
+        }
         setFunctionName(_typeStr.ptr());
+        _errorStr.readString("Error while bingo", true);
+        _errorStr.appendString(_typeStr.ptr(), true);
+        _errorStr.appendString(" loading molecule", true);
     }
 
     ~_MangoContextHandler() override
@@ -71,10 +77,9 @@ public:
         /*
          * Set up match parameters
          */
-        int res = mangoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
-
-        if (res < 0)
-            throw BingoPgError("Error while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetError());
+        try {
+            bingoCore.mangoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
+        } CORE_CATCH_ERROR(_errorStr.ptr())
 
         int target_size;
         const char* target_data = target_text.getText(target_size);
@@ -83,7 +88,7 @@ public:
         if (_type == BingoPgCommon::MOL_GROSS)
         {
             buffer_warn.readString(_typeStr.ptr(), true);
-            const char* mol_name = bingoGetNameCore(target_data, target_size);
+            const char* mol_name = bingoCore.bingoGetNameCore(target_data, target_size);
             if (mol_name != 0 && strlen(mol_name) > 0)
             {
                 buffer_warn.appendString(" molecule with name='", true);
@@ -92,20 +97,19 @@ public:
             }
 
             setFunctionName(buffer_warn.ptr());
-            target_data = mangoGross(target_data, target_size);
-            if (target_data == 0)
-            {
-                CORE_HANDLE_WARNING(0, 1, "bingo.gross", bingoGetError());
-                return -1;
-            }
+            try {
+                target_data = bingoCore.mangoGross(target_data, target_size);
+            } CORE_CATCH_WARNING_RETURN("bingo.gross", return -1)
         }
+        int res;
 
-        res = mangoMatchTarget(target_data, target_size);
-
+        try {
+            res = bingoCore.mangoMatchTarget(target_data, target_size);
+        } CORE_CATCH_ERROR("Unexpected error during match")
         if (res < 0)
         {
-            buffer_warn.readString(bingoGetWarning(), true);
-            const char* mol_name = bingoGetNameCore(target_data, target_size);
+            buffer_warn.readString(bingoCore.warning.ptr(), true);
+            const char* mol_name = bingoCore.bingoGetNameCore(target_data, target_size);
             if (mol_name != 0 && strlen(mol_name) > 0)
                 elog(WARNING, "warning while bingo%s loading molecule with name ='%s': %s", _typeStr.ptr(), mol_name, buffer_warn.ptr());
             else
@@ -119,6 +123,7 @@ private:
     _MangoContextHandler(const _MangoContextHandler&); // no implicit copy
     int _type;
     indigo::Array<char> _typeStr;
+    indigo::Array<char> _errorStr;
 };
 
 Datum _sub_internal(PG_FUNCTION_ARGS)
@@ -189,7 +194,7 @@ Datum getsimilarity(PG_FUNCTION_ARGS)
             PG_RETURN_NULL();
 
         if (result > 0)
-            mangoSimilarityGetScore(&res);
+            bingo_context.bingoCore.mangoSimilarityGetScore(&res);
     }
     PG_BINGO_END
     PG_RETURN_FLOAT4(res);
@@ -244,7 +249,7 @@ Datum _sim_internal(PG_FUNCTION_ARGS)
             PG_RETURN_NULL();
 
         if (result > 0)
-            mangoSimilarityGetScore(&mol_sim);
+            bingo_context.bingoCore.mangoSimilarityGetScore(&mol_sim);
 
         res_bool = (mol_sim <= max_bound) && (mol_sim >= min_bound);
     }
@@ -270,11 +275,12 @@ Datum _match_mass_less(PG_FUNCTION_ARGS)
 
         float mol_mass = 0;
 
-        int buf_len, bingo_res;
+        int buf_len;
         const char* buf = mol_text.getText(buf_len);
 
-        bingo_res = mangoMass(buf, buf_len, 0, &mol_mass);
-        CORE_HANDLE_ERROR(bingo_res, 1, "mass matcher: error while calculating mass", bingoGetError());
+        try {
+            bingo_handler.bingoCore.mangoMass(buf, buf_len, 0, &mol_mass);
+        } CORE_CATCH_ERROR("mass matcher: error while calculating mass")
 
         result = mol_mass < usr_mass;
     }
@@ -301,11 +307,12 @@ Datum _match_mass_great(PG_FUNCTION_ARGS)
 
         float mol_mass = 0;
 
-        int buf_len, bingo_res;
+        int buf_len;
         const char* buf = mol_text.getText(buf_len);
 
-        bingo_res = mangoMass(buf, buf_len, 0, &mol_mass);
-        CORE_HANDLE_ERROR(bingo_res, 1, "mass matcher: error while calculating mass", bingoGetError());
+        try {
+            bingo_handler.bingoCore.mangoMass(buf, buf_len, 0, &mol_mass);
+        } CORE_CATCH_ERROR("mass matcher: error while calculating mass")
 
         result = mol_mass > usr_mass;
     }
