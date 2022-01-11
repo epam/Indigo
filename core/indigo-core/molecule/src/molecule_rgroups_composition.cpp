@@ -148,13 +148,13 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
         }
     }
 
-    const std::unordered_set<int>& rgroups = rgroup2fragment.keys();
+    const std::set<int>& rgroups = rgroup2fragment.keys();
     for (int r : rgroups)
     {
         RGroup& rgroup = _rgroups.push();
         RGroup& source = m._parent._rgroups.getRGroup(r);
 
-        const std::unordered_set<int>& fs_r = rgroup2fragment[r];
+        const std::set<int>& fs_r = rgroup2fragment[r];
         for (int f : fs_r)
         {
             for (auto k = 0; k < fragment2count.at({r, f}); k++)

@@ -37,10 +37,10 @@ namespace indigo
         {
         }
 
-        const std::unordered_set<K>& keys() const;
+        const std::set<K>& keys() const;
 
-        const std::unordered_set<V>& get(const K& k) const;
-        const std::unordered_set<V>& operator[](const K& k) const;
+        const std::set<V>& get(const K& k) const;
+        const std::set<V>& operator[](const K& k) const;
 
         int size() const;
 
@@ -48,7 +48,7 @@ namespace indigo
 
         void insert(const K& k, const V& v);
         void insert(const K& k, const Array<V>& vs);
-        void insert(const K& k, const std::unordered_set<V>& vs);
+        void insert(const K& k, const std::set<V>& vs);
 
         bool remove(const K& k);
         bool remove(const K& k, const V& v);
@@ -59,14 +59,14 @@ namespace indigo
         void clear();
 
     protected:
-        std::unordered_set<V>& _provide_set(const K& k);
+        std::set<V>& _provide_set(const K& k);
 
         template <typename L, typename R>
         void _copy(MultiMap<L, R>& target, bool invert) const
         {
             for (auto& m : _map)
             {
-                const std::unordered_set<V>& set = *_sets[m.second];
+                const std::set<V>& set = *_sets[m.second];
                 for (auto& s : set)
                 {
                     K& k = m.first;
@@ -83,10 +83,10 @@ namespace indigo
             }
         }
 
-        std::unordered_map<K, int> _map;
-        std::unordered_set<K> _keys;
-        PtrArray<std::unordered_set<V>> _sets;
-        const std::unordered_set<V> _nil;
+        std::map<K, int> _map;
+        std::set<K> _keys;
+        PtrArray<std::set<V>> _sets;
+        const std::set<V> _nil;
     };
 
 } // namespace indigo
@@ -103,12 +103,12 @@ using namespace indigo;
 template <typename K, typename V>
 bool MultiMap<K, V>::find(const K& k, const V& v) const
 {
-    const std::unordered_set<V>& set = get(k);
+    const std::set<V>& set = get(k);
     return (set.find(v) != set.end());
 }
 
 template <typename K, typename V>
-const std::unordered_set<V>& MultiMap<K, V>::get(const K& k) const
+const std::set<V>& MultiMap<K, V>::get(const K& k) const
 {
     if (_map.find(k) != _map.end())
     {
@@ -126,7 +126,7 @@ void MultiMap<K, V>::insert(const K& k, const V& v)
 template <typename K, typename V>
 void MultiMap<K, V>::insert(const K& k, const Array<V>& vs)
 {
-    std::unordered_set<V>& set = _provide_set(k);
+    std::set<V>& set = _provide_set(k);
     for (auto i = 0; i < vs.size(); i++)
     {
         set.insert(vs[i]);
@@ -134,9 +134,9 @@ void MultiMap<K, V>::insert(const K& k, const Array<V>& vs)
 }
 
 template <typename K, typename V>
-void MultiMap<K, V>::insert(const K& k, const std::unordered_set<V>& vs)
+void MultiMap<K, V>::insert(const K& k, const std::set<V>& vs)
 {
-    std::unordered_set<V>& set = _provide_set(k);
+    std::set<V>& set = _provide_set(k);
     for (const auto& v : vs)
     {
         set.insert(v);
@@ -164,7 +164,7 @@ bool MultiMap<K, V>::remove(const K& k, const V& v)
     {
         return false;
     }
-    std::unordered_set<V>& set = *_sets[_map.at(k)];
+    std::set<V>& set = *_sets[_map.at(k)];
     set.erase(v);
     if (set.size() < 1)
     {
@@ -197,7 +197,7 @@ void MultiMap<K, V>::clear()
 }
 
 template <typename K, typename V>
-const std::unordered_set<K>& MultiMap<K, V>::keys() const
+const std::set<K>& MultiMap<K, V>::keys() const
 {
     return _keys;
 }
@@ -209,13 +209,13 @@ int MultiMap<K, V>::size() const
 }
 
 template <typename K, typename V>
-const std::unordered_set<V>& MultiMap<K, V>::operator[](const K& k) const
+const std::set<V>& MultiMap<K, V>::operator[](const K& k) const
 {
     return get(k);
 }
 
 template <typename K, typename V>
-std::unordered_set<V>& MultiMap<K, V>::_provide_set(const K& k)
+std::set<V>& MultiMap<K, V>::_provide_set(const K& k)
 {
     if (_map.find(k) != _map.end())
     {
@@ -225,7 +225,7 @@ std::unordered_set<V>& MultiMap<K, V>::_provide_set(const K& k)
     _keys.insert(k);
     _map.insert({k, _sets.size()});
     CHECK_KEYS;
-    return _sets.add(new std::unordered_set<V>());
+    return _sets.add(new std::set<V>());
 }
 
 #endif

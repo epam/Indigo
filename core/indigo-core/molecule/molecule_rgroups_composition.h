@@ -240,7 +240,7 @@ namespace indigo
 
         inline Fragment _fragment_coordinates(int rsite, int fragment) const
         {
-            const std::unordered_set<int>& rs = _rsite2rgroup[_rsite2vertex.at(rsite)];
+            const std::set<int>& rs = _rsite2rgroup[_rsite2vertex.at(rsite)];
 
             int r = -1;
             int f = fragment;
