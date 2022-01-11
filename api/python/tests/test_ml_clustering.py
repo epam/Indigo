@@ -1,5 +1,6 @@
 import pytest
 from sklearn.cluster import KMeans
+
 from indigo.ml.clustering import clustering
 
 
