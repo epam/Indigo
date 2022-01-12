@@ -194,6 +194,8 @@ jobs:
         with:
           name: indigo-libs-macos-aarch64
           path: dist/
+      - name: Install Python test dependencies
+        run: python3 -m pip install -r api/python/requirements_dev.txt
       - name: Build wrappers
         run: |
           mkdir build
