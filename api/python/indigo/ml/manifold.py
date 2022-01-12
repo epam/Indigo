@@ -1,11 +1,11 @@
-from typing import Type
+from typing import Type, Union
 
-import umap
+import umap  # type: ignore
 from sklearn.base import BaseEstimator  # type: ignore
 
 
 def reduce_dim(
-    descriptors: list[list[int, float]],
+    descriptors: list[list[Union[int, float]]],
     method: Type[BaseEstimator] = umap.UMAP,
     **kwargs
 ) -> list[list[float]]:
