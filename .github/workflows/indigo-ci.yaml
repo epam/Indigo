@@ -28,6 +28,7 @@ jobs:
         run: git fetch --tags -f
       - name: Check
         run: |
+          python3 -m pip install -r api/python/requirements_dev.txt
           .ci/static_analysis_check.sh
 
   build_indigo_libs_x86_64:
@@ -194,6 +195,8 @@ jobs:
         with:
           name: indigo-libs-macos-aarch64
           path: dist/
+      - name: Install Python test dependencies
+        run: python3 -m pip install -r api/python/requirements_dev.txt
       - name: Build wrappers
         run: |
           mkdir build
@@ -725,10 +728,11 @@ jobs:
         run: |
           cd build
           ctest --verbose
+      - name: Install Python test dependencies
+        run: python3 -m pip install -r api/python/requirements_dev.txt
       - name: Prepare integration tests
         run: |
           cd build
-          # python -m pip install wheel
           cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests
