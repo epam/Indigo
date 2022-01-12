@@ -728,16 +728,16 @@ jobs:
         run: |
           cd build
           ctest --verbose
-      - name: Install Python test dependencies
-        run: python3 -m pip install -r api/python/requirements_dev.txt
-      - name: Prepare integration tests
-        run: |
-          cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
-          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
-      - name: Run integration tests
-        run: |
-          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
+#      - name: Install Python test dependencies
+#        run: python3 -m pip install -r api/python/requirements_dev.txt
+#      - name: Prepare integration tests
+#        run: |
+#          cd build
+#          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
+#          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
+#      - name: Run integration tests
+#        run: |
+#          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
