@@ -738,13 +738,13 @@ jobs:
 #      - name: Run integration tests
 #        run: |
 #          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
-      - name: Publish Test Report
-        if: always()
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "windows-mingw_python_test_report"
+#      - name: Publish Test Report
+#        if: always()
+#        uses: mikepenz/action-junit-report@v1
+#        with:
+#          report_paths: 'junit_report.xml'
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          check_name: "windows-mingw_python_test_report"
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
