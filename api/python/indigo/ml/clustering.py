@@ -20,5 +20,5 @@ def clustering(
         ordered list of cluster labels.
     """
     cl = method(**kwargs)
-    cl.fit(assay_values)
-    return [label for label in cl.labels_]
+    labels = cl.fit_predict(assay_values)
+    return labels.tolist()
