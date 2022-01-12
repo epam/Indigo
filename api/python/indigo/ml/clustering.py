@@ -1,7 +1,7 @@
 from typing import Type, Union
 
-from sklearn.base import ClusterMixin
-from sklearn.cluster import SpectralClustering
+from sklearn.base import ClusterMixin  # type: ignore
+from sklearn.cluster import SpectralClustering  # type: ignore
 
 
 def clustering(

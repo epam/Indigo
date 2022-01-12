@@ -1,5 +1,5 @@
 import pytest
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans  # type: ignore
 
 from indigo.ml.clustering import clustering
 
