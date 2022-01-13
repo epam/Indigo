@@ -18,8 +18,9 @@
 
 #ifndef _CYCLE_BASIS_H_
 #define _CYCLE_BASIS_H_
+
 #include "base_cpp/obj_array.h"
-#include "base_cpp/red_black.h"
+#include <unordered_set>
 
 namespace indigo
 {
@@ -55,7 +56,7 @@ namespace indigo
 
         ObjArray<Array<int>> _cycles;
 
-        RedBlackSet<int> _cycleVertices;
+        std::unordered_set<int> _cycleVertices;
     };
 
 } // namespace indigo
