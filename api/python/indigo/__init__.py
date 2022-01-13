@@ -37,7 +37,7 @@ from ctypes import (
     sizeof,
 )
 
-from indigo.salts import SALTS
+from api.python.indigo.salts import SALTS
 
 DECODE_ENCODING = "utf-8"
 ENCODE_ENCODING = "utf-8"
