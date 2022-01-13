@@ -33,6 +33,8 @@
 #include "base_cpp/profiling.h"
 #include "base_cpp/ptr_pool.h"
 
+using namespace indigo;
+
 IMPL_ERROR(MangoSubstructure, "substructure");
 
 MangoSubstructure::MangoSubstructure(BingoContext& context) : _context(context)

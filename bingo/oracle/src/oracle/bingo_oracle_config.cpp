@@ -26,6 +26,8 @@
 // Oracle wrappers for bingo config
 //
 
+using namespace indigo;
+
 ORAEXT void oraConfigResetAll(OCIExtProcContext* ctx, int context_id){ORABLOCK_BEGIN{OracleEnv env(ctx, logger);
 
 BingoOracleContext& context = BingoOracleContext::get(env, context_id, false, 0);

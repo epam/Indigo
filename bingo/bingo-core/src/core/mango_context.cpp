@@ -19,6 +19,8 @@
 #include "mango_context.h"
 #include "bingo_context.h"
 
+using namespace indigo;
+
 TL_DEF(MangoContext, PtrArray<MangoContext>, _instances);
 
 std::mutex MangoContext::_instances_lock;

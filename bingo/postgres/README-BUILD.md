@@ -1,45 +1,24 @@
 ## Prerequisites 
 
-You should specify the PostgreSQL directory by setting the special environment variables: BINGO_PG_DIR, BINGO_PG_VERSION. 
+Download, compile and install PostgreSQL 
 
 ```
-	export BINGO_PG_DIR=`<path-to-postgres>`
-	export BINGO_PG_VERSION=`<version>`
-```
-For example
-```
-	export BINGO_PG_DIR=/var/lib/postgresql
-	export BINGO_PG_VERSION=12
+wget -P pg https://ftp.postgresql.org/pub/source/v12.6/postgresql-12.6.tar.gz
+tar -xzvf postgresql-12.6.tar.gz
+cd postgresql-12.6
+./configure --without-readline --enable-nls
+make
+make install
 ```
 
 ## Build
 
-Run python installation script
+Run cmake build script
 
 ```
-python build_scripts/bingo-release.py --preset=linux64 --dbms=postgres
+mkdir build
+cd build
+cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO_SQLSERVER=Off -DBUILD_BINGO_ORACLE=OFF -DBUILD_BINGO_ELASTIC=OFF -DBUILD_INDIGO_UTILS=OFF -DPostgreSQL_ROOT=/usr/local/pgsql
+cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
 ```
-
-## Build Debug:
-  
-
-  On Linux (minimum required gcc version 4.7)
-
-
-	cd <path-to-indigo>/build_scripts/bingo-postgres
-	cmake .
-	make
-
-  On Windows, (Microsoft Visual Studio 2013 is required)
-
-	set BINGO_PG_DIR=<path-to-postgres>
-	set BINGO_PG_VERSION=12
-	cd <path-to-indigo>/build_scripts/bingo-postgres
-	cmake-gui .
-	<change the compiler>
-	<press configure>
-	<run the solution file by visual studio>
-
-
-
 

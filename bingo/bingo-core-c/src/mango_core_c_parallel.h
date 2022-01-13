@@ -33,7 +33,7 @@ namespace indigo
         {
         public:
             void clear() override;
-            BingoIndex& getIndex(int index) override;
+            indigo::BingoIndex& getIndex(int index) override;
 
             ReusableObjArray<MangoIndex> per_molecule_index;
         };

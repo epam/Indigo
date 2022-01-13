@@ -25,50 +25,49 @@
 #include "oracle/ringo_shadow_fetch.h"
 #include <memory>
 
-using namespace indigo;
-
-namespace ingido
+namespace indigo
 {
     class RingoShadowFetch;
-}
 
-class RingoFetchContext
-{
-public:
-    RingoFetchContext(int id, RingoOracleContext& context, const Array<char>& query_id);
-
-    std::unique_ptr<RingoFastIndex> fast_index;
-    std::unique_ptr<RingoShadowFetch> shadow_fetch;
-
-    BingoFetchEngine* fetch_engine;
-
-    RingoSubstructure substructure;
-    RingoExact exact;
-
-    int id;
-    int context_id;
-    bool fresh; // 'true' after selectivity calculation and before index start
-
-    static RingoFetchContext& create(RingoOracleContext& context, const Array<char>& query_id);
-    static RingoFetchContext& get(int id);
-    static RingoFetchContext* findFresh(int context_id, const Array<char>& query_id);
-
-    static void remove(int id);
-    static void removeByContextID(int id);
-
-    inline RingoOracleContext& context()
+    class RingoFetchContext
     {
-        return _context;
-    }
+    public:
+        RingoFetchContext(int id, RingoOracleContext& context, const Array<char>& query_id);
 
-    DECL_ERROR;
+        std::unique_ptr<RingoFastIndex> fast_index;
+        std::unique_ptr<RingoShadowFetch> shadow_fetch;
 
-protected:
-    Array<char> _query_id;
-    RingoOracleContext& _context;
+        BingoFetchEngine* fetch_engine;
 
-    TL_DECL(PtrArray<RingoFetchContext>, _instances);
-    static std::mutex _instances_lock;
-};
+        RingoSubstructure substructure;
+        RingoExact exact;
+
+        int id;
+        int context_id;
+        bool fresh; // 'true' after selectivity calculation and before index start
+
+        static RingoFetchContext& create(RingoOracleContext& context, const Array<char>& query_id);
+        static RingoFetchContext& get(int id);
+        static RingoFetchContext* findFresh(int context_id, const Array<char>& query_id);
+
+        static void remove(int id);
+        static void removeByContextID(int id);
+
+        inline RingoOracleContext& context()
+        {
+            return _context;
+        }
+
+        DECL_ERROR;
+
+    protected:
+        Array<char> _query_id;
+        RingoOracleContext& _context;
+
+        TL_DECL(PtrArray<RingoFetchContext>, _instances);
+        static std::mutex _instances_lock;
+    };
+
+} // namespace indigo
 
 #endif

@@ -31,6 +31,8 @@
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_substructure_matcher.h"
 
+using namespace indigo;
+
 MangoExact::MangoExact(BingoContext& context) : _context(context)
 {
     _flags = 0;

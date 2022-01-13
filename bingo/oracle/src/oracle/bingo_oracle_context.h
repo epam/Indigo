@@ -24,78 +24,77 @@
 #include "oracle/bingo_storage.h"
 #include "oracle/warnings_table.h"
 
-using namespace indigo;
-
-namespace ingido
+namespace indigo
 {
     class BingoContext;
     class OracleEnv;
     class SharedMemory;
-} // namespace ingido
 
-class BingoOracleContext : public BingoContext
-{
-public:
-    explicit BingoOracleContext(OracleEnv& env, int id);
-    ~BingoOracleContext() override;
+    class BingoOracleContext : public BingoContext
+    {
+    public:
+        explicit BingoOracleContext(OracleEnv& env, int id);
+        ~BingoOracleContext() override;
 
-    BingoStorage storage;
-    WarningsTable warnings;
+        BingoStorage storage;
+        WarningsTable warnings;
 
-    int sim_screening_pass_mark;
-    int sub_screening_pass_mark;
-    int sub_screening_max_bits;
+        int sim_screening_pass_mark;
+        int sub_screening_pass_mark;
+        int sub_screening_max_bits;
 
-    static BingoOracleContext& get(OracleEnv& env, int id, bool lock, bool* config_reloaded);
+        static BingoOracleContext& get(OracleEnv& env, int id, bool lock, bool* config_reloaded);
 
-    bool configGetInt(OracleEnv& env, const char* name, int& value);
-    void configSetInt(OracleEnv& env, const char* name, int value);
-    bool configGetIntDef(OracleEnv& env, const char* name, int& value, int default_value);
-    bool configGetFloat(OracleEnv& env, const char* name, float& value);
-    void configSetFloat(OracleEnv& env, const char* name, float value);
-    bool configGetString(OracleEnv& env, const char* name, Array<char>& value);
-    void configSetString(OracleEnv& env, const char* name, const char* value);
-    bool configGetBlob(OracleEnv& env, const char* name, Array<char>& value);
-    void configSetBlob(OracleEnv& env, const char* name, const Array<char>& value);
-    bool configGetClob(OracleEnv& env, const char* name, Array<char>& value);
-    void configSetClob(OracleEnv& env, const char* name, const Array<char>& value);
+        bool configGetInt(OracleEnv& env, const char* name, int& value);
+        void configSetInt(OracleEnv& env, const char* name, int value);
+        bool configGetIntDef(OracleEnv& env, const char* name, int& value, int default_value);
+        bool configGetFloat(OracleEnv& env, const char* name, float& value);
+        void configSetFloat(OracleEnv& env, const char* name, float value);
+        bool configGetString(OracleEnv& env, const char* name, Array<char>& value);
+        void configSetString(OracleEnv& env, const char* name, const char* value);
+        bool configGetBlob(OracleEnv& env, const char* name, Array<char>& value);
+        void configSetBlob(OracleEnv& env, const char* name, const Array<char>& value);
+        bool configGetClob(OracleEnv& env, const char* name, Array<char>& value);
+        void configSetClob(OracleEnv& env, const char* name, const Array<char>& value);
 
-    void configResetAll(OracleEnv& env);
-    void configReset(OracleEnv& env, const char* name);
+        void configResetAll(OracleEnv& env);
+        void configReset(OracleEnv& env, const char* name);
 
-    void tautomerLoadRules(OracleEnv& env);
-    void fingerprintLoadParameters(OracleEnv& env);
+        void tautomerLoadRules(OracleEnv& env);
+        void fingerprintLoadParameters(OracleEnv& env);
 
-    void saveCmfDict(OracleEnv& env);
-    void saveRidDict(OracleEnv& env);
+        void saveCmfDict(OracleEnv& env);
+        void saveRidDict(OracleEnv& env);
 
-    void longOpInit(OracleEnv& env, int total, const char* operation, const char* target, const char* units);
-    void longOpUpdate(OracleEnv& env, int sofar);
+        void longOpInit(OracleEnv& env, int total, const char* operation, const char* target, const char* units);
+        void longOpUpdate(OracleEnv& env, int sofar);
 
-    void parseParameters(OracleEnv& env, const char* str);
+        void parseParameters(OracleEnv& env, const char* str);
 
-    void atomicMassLoad(OracleEnv& env);
-    void atomicMassSave(OracleEnv& env);
+        void atomicMassLoad(OracleEnv& env);
+        void atomicMassSave(OracleEnv& env);
 
-    void setLogTableWithColumns(OracleEnv& env, const char* tableWithColumns);
+        void setLogTableWithColumns(OracleEnv& env, const char* tableWithColumns);
 
-    void lock(OracleEnv& env);
-    void unlock(OracleEnv& env);
+        void lock(OracleEnv& env);
+        void unlock(OracleEnv& env);
 
-protected:
-    bool _config_changed;
+    protected:
+        bool _config_changed;
 
-    int _longop_slno;
-    int _longop_rindex;
-    Array<char> _longop_operation;
-    Array<char> _longop_units;
-    Array<char> _longop_target; // actually, it is the source table
-    int _longop_total;
+        int _longop_slno;
+        int _longop_rindex;
+        Array<char> _longop_operation;
+        Array<char> _longop_units;
+        Array<char> _longop_target; // actually, it is the source table
+        int _longop_total;
 
-    Array<char> _id;
-    SharedMemory* _shmem;
+        Array<char> _id;
+        SharedMemory* _shmem;
 
-    void _loadConfigParameters(OracleEnv& env);
-};
+        void _loadConfigParameters(OracleEnv& env);
+    };
+
+} // namespace indigo
 
 #endif

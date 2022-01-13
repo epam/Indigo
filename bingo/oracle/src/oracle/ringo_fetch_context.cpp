@@ -21,6 +21,8 @@
 #include "core/ringo_matchers.h"
 #include "oracle/bingo_oracle_context.h"
 
+using namespace indigo;
+
 TL_DEF(RingoFetchContext, PtrArray<RingoFetchContext>, _instances);
 std::mutex RingoFetchContext::_instances_lock;
 

@@ -22,51 +22,54 @@
 #include "bingo_fetch_engine.h"
 #include "bingo_fingerprints.h"
 
-using namespace indigo;
-
-class RingoFetchContext;
-
-class RingoFastIndex : public BingoFetchEngine
+namespace indigo
 {
-public:
-    explicit RingoFastIndex(RingoFetchContext& context);
-    ~RingoFastIndex() override;
 
-    void prepareSubstructure(OracleEnv& env);
+    class RingoFetchContext;
 
-    void fetch(OracleEnv& env, int maxrows) override;
-    bool end() override;
-    float calcSelectivity(OracleEnv& env, int total_count) override;
-    int getIOCost(OracleEnv& env, float selectivity) override;
-
-    bool getLastRowid(OraRowidText& id) override;
-
-    int getTotalCount(OracleEnv& env);
-
-    DECL_ERROR;
-
-protected:
-    enum
+    class RingoFastIndex : public BingoFetchEngine
     {
-        _SUBSTRUCTURE = 1
+    public:
+        explicit RingoFastIndex(RingoFetchContext& context);
+        ~RingoFastIndex() override;
+
+        void prepareSubstructure(OracleEnv& env);
+
+        void fetch(OracleEnv& env, int maxrows) override;
+        bool end() override;
+        float calcSelectivity(OracleEnv& env, int total_count) override;
+        int getIOCost(OracleEnv& env, float selectivity) override;
+
+        bool getLastRowid(OraRowidText& id) override;
+
+        int getTotalCount(OracleEnv& env);
+
+        DECL_ERROR;
+
+    protected:
+        enum
+        {
+            _SUBSTRUCTURE = 1
+        };
+
+        RingoFetchContext& _context;
+
+        int _fetch_type;
+        int _cur_idx;
+        int _matched;
+        int _unmatched;
+
+        int _last_id;
+
+        BingoFingerprints::Screening _screening;
+
+        void _match(OracleEnv& env, int idx);
+        void _decompressRowid(const Array<char>& stored, OraRowidText& rid);
+
+    private:
+        RingoFastIndex(const RingoFastIndex&); // noimplicitcopy
     };
 
-    RingoFetchContext& _context;
-
-    int _fetch_type;
-    int _cur_idx;
-    int _matched;
-    int _unmatched;
-
-    int _last_id;
-
-    BingoFingerprints::Screening _screening;
-
-    void _match(OracleEnv& env, int idx);
-    void _decompressRowid(const Array<char>& stored, OraRowidText& rid);
-
-private:
-    RingoFastIndex(const RingoFastIndex&); // noimplicitcopy
-};
+} // namespace indigo
 
 #endif

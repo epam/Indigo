@@ -25,6 +25,8 @@
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_gross_formula.h"
 
+using namespace indigo;
+
 IMPL_ERROR(MangoGross, "gross formula");
 
 MangoGross::MangoGross(BingoContext& context) : _context(context)

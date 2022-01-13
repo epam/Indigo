@@ -23,34 +23,37 @@
 #include "oracle/bingo_fetch_engine.h"
 #include "oracle/ora_wrap.h"
 
-using namespace indigo;
-
-class RingoIndex;
-
-class RingoShadowTable
+namespace indigo
 {
-public:
-    explicit RingoShadowTable(int context_id);
 
-    void drop(OracleEnv& env);
-    void truncate(OracleEnv& env);
-    void create(OracleEnv& env);
-    void addReaction(OracleEnv& env, RingoIndex& index, const char* rowid, int blockno, int offset);
-    bool getReactionLocation(OracleEnv& env, const char* rowid, int& blockno, int& offset);
-    void deleteReaction(OracleEnv& env, const char* rowid);
+    class RingoIndex;
 
-    void analyze(OracleEnv& env);
-    int countOracleBlocks(OracleEnv& env);
+    class RingoShadowTable
+    {
+    public:
+        explicit RingoShadowTable(int context_id);
 
-    const char* getName();
+        void drop(OracleEnv& env);
+        void truncate(OracleEnv& env);
+        void create(OracleEnv& env);
+        void addReaction(OracleEnv& env, RingoIndex& index, const char* rowid, int blockno, int offset);
+        bool getReactionLocation(OracleEnv& env, const char* rowid, int& blockno, int& offset);
+        void deleteReaction(OracleEnv& env, const char* rowid);
 
-    DECL_ERROR;
+        void analyze(OracleEnv& env);
+        int countOracleBlocks(OracleEnv& env);
 
-protected:
-    Array<char> _table_name;
+        const char* getName();
 
-private:
-    RingoShadowTable(RingoShadowTable&); // no implicit copy
-};
+        DECL_ERROR;
+
+    protected:
+        Array<char> _table_name;
+
+    private:
+        RingoShadowTable(RingoShadowTable&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif
