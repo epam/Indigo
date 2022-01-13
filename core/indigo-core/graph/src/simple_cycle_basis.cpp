@@ -429,11 +429,11 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
 
 int AuxiliaryGraph::auxVertex0(int vertex)
 {
-    if (!_vertexMap0.find(vertex))
+    if (_vertexMap0.find(vertex) == _vertexMap0.end())
     {
         int newVertex0 = addVertex();
-        _vertexMap0.insert(vertex, newVertex0);
-        _auxVertexMap.insert(newVertex0, vertex);
+        _vertexMap0.insert({vertex, newVertex0});
+        _auxVertexMap.insert({newVertex0, vertex});
         return newVertex0;
     }
     return _vertexMap0.at(vertex);
@@ -441,11 +441,11 @@ int AuxiliaryGraph::auxVertex0(int vertex)
 
 int AuxiliaryGraph::auxVertex1(int vertex)
 {
-    if (!_vertexMap1.find(vertex))
+    if (_vertexMap1.find(vertex) == _vertexMap1.end())
     {
         int newVertex1 = addVertex();
-        _vertexMap1.insert(vertex, newVertex1);
-        _auxVertexMap.insert(newVertex1, vertex);
+        _vertexMap1.insert({vertex, newVertex1});
+        _auxVertexMap.insert({newVertex1, vertex});
         return newVertex1;
     }
     return _vertexMap1.at(vertex);
@@ -472,7 +472,7 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
             if (ex_aux_edge == -1)
             {
                 int auxEdge = addEdge(vertex1u, vertex2u);
-                _auxEdgeMap.insert(auxEdge, edge);
+                _auxEdgeMap.insert({auxEdge, edge});
             }
 
             vertex1u = auxVertex1(vertex1);
@@ -482,7 +482,7 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
             if (ex_aux_edge == -1)
             {
                 int auxEdge = addEdge(vertex1u, vertex2u);
-                _auxEdgeMap.insert(auxEdge, edge);
+                _auxEdgeMap.insert({auxEdge, edge});
             }
         }
         else
@@ -493,7 +493,7 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
             if (ex_aux_edge == -1)
             {
                 int auxEdge = addEdge(vertex1u, vertex2u);
-                _auxEdgeMap.insert(auxEdge, edge);
+                _auxEdgeMap.insert({auxEdge, edge});
             }
 
             vertex1u = auxVertex1(vertex1);
@@ -502,7 +502,7 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
             if (ex_aux_edge == -1)
             {
                 int auxEdge = addEdge(vertex1u, vertex2u);
-                _auxEdgeMap.insert(auxEdge, edge);
+                _auxEdgeMap.insert({auxEdge, edge});
             }
         }
     }
@@ -512,5 +512,5 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
 
 int AuxiliaryGraph::edge(int auxEdge)
 {
-    return _auxEdgeMap.value(auxEdge);
+    return _auxEdgeMap.at(auxEdge);
 }

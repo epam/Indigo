@@ -23,6 +23,7 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
+#include <unordered_map>
 
 namespace indigo
 {
@@ -72,13 +73,13 @@ namespace indigo
     {
 
         // graph to aux. graph
-        RedBlackMap<int, int> _vertexMap0;
-        RedBlackMap<int, int> _vertexMap1;
+        std::unordered_map<int, int> _vertexMap0;
+        std::unordered_map<int, int> _vertexMap1;
 
-        RedBlackMap<int, int> _auxVertexMap;
+        std::unordered_map<int, int> _auxVertexMap;
 
         // aux. edge to edge
-        RedBlackMap<int, int> _auxEdgeMap;
+        std::unordered_map<int, int> _auxEdgeMap;
 
         const Graph& _graph;
         Array<bool>& _u;
