@@ -23,6 +23,7 @@
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_enumerator_state.h"
+#include <unordered_map>
 
 namespace indigo
 {
@@ -79,7 +80,7 @@ namespace indigo
         ReactionEnumeratorState::ReactionMonomers _reaction_monomers;
         CP_DECL;
         TL_CP_DECL(Array<int>, _product_aam_array);
-        TL_CP_DECL(RedBlackStringMap<int>, _smiles_array);
+        TL_CP_DECL(ReactionEnumeratorState::Mapping, _smiles_array);
         TL_CP_DECL(ObjArray<Array<int>>, _tubes_monomers);
 
         void _buildTubesGrid(void);

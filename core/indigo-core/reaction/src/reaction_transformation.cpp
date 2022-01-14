@@ -50,7 +50,7 @@ bool ReactionTransformation::transform(Molecule& molecule, QueryReaction& reacti
     cur_full_product.clear();
     cur_full_product.clone(_merged_reaction.getQueryMolecule(product_idx), NULL, NULL);
     Array<int>& cur_cur_monomer_aam_array = _merged_reaction.getAAMArray(product_idx);
-    QS_DEF(RedBlackStringMap<int>, cur_smiles_array);
+    QS_DEF(ReactionEnumeratorState::Mapping, cur_smiles_array);
     cur_smiles_array.clear();
     QS_DEF(ReactionEnumeratorState::ReactionMonomers, cur_reaction_monomers);
     cur_reaction_monomers.clear();

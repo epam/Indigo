@@ -20,7 +20,6 @@
 #define __reaction_enumerator_state__
 
 #include "base_cpp/obj.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule.h"
@@ -42,6 +41,8 @@ namespace indigo
     class ReactionEnumeratorState
     {
     public:
+        typedef std::unordered_map<std::string, int> Mapping;
+
         DECL_ERROR;
 
         class ReactionMonomers
@@ -85,7 +86,7 @@ namespace indigo
         int max_reuse_count;
 
         ReactionEnumeratorState(ReactionEnumeratorContext& context, QueryReaction& cur_reaction, QueryMolecule& cur_full_product,
-                                Array<int>& cur_product_aam_array, RedBlackStringMap<int>& cur_smiles_array, ReactionMonomers& cur_reaction_monomers,
+                                Array<int>& cur_product_aam_array, Mapping& cur_smiles_array, ReactionMonomers& cur_reaction_monomers,
                                 int& cur_product_coint, ObjArray<Array<int>>& cur_tubes_monomers);
 
         ReactionEnumeratorState(ReactionEnumeratorState& cur_rpe_state);
@@ -107,7 +108,7 @@ namespace indigo
 
         ObjArray<Array<int>>& _tubes_monomers;
         Array<int>& _product_aam_array;
-        RedBlackStringMap<int>& _smiles_array;
+        Mapping& _smiles_array;
         ReactionMonomers& _reaction_monomers;
 
         CP_DECL;
