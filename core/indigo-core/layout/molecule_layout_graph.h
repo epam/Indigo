@@ -271,7 +271,7 @@ namespace indigo
         struct EnumContext
         {
             const MoleculeLayoutGraph* graph;
-            RedBlackSet<int>* edges;
+            std::unordered_set<int>* edges;
             int iterationNumber;
             int maxIterationNumber;
         };
