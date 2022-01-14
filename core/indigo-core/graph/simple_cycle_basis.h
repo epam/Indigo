@@ -21,7 +21,6 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
-#include "base_cpp/red_black.h"
 #include "graph/graph.h"
 #include <unordered_map>
 
@@ -57,10 +56,10 @@ namespace indigo
 
         void _prepareSubgraph(Graph& subgraph);
 
-        RedBlackMap<int, int> vertices_spanning_tree;
+        std::unordered_map<int, int> vertices_spanning_tree;
 
-        RedBlackMap<int, int> spanning_tree_vertices;
-        RedBlackMap<int, int> _edgeIndexMap;
+        std::unordered_map<int, int> spanning_tree_vertices;
+        std::unordered_map<int, int> _edgeIndexMap;
 
         const Graph& _graph;
 
@@ -83,10 +82,10 @@ namespace indigo
 
         const Graph& _graph;
         Array<bool>& _u;
-        RedBlackMap<int, int>& _edgeIndexMap;
+        std::unordered_map<int, int>& _edgeIndexMap;
 
     public:
-        AuxiliaryGraph(const Graph& graph, Array<bool>& u, RedBlackMap<int, int>& edgeIndexMap) : _graph(graph), _u(u), _edgeIndexMap(edgeIndexMap)
+        AuxiliaryGraph(const Graph& graph, Array<bool>& u, std::unordered_map<int, int>& edgeIndexMap) : _graph(graph), _u(u), _edgeIndexMap(edgeIndexMap)
         {
         }
 

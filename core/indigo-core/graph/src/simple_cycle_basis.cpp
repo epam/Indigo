@@ -18,7 +18,6 @@
 
 #include "graph/simple_cycle_basis.h"
 #include "base_cpp/list.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "graph/aux_path_finder.h"
 #include "graph/graph.h"
@@ -71,8 +70,8 @@ void SimpleCycleBasis::create()
 
     int new_vertex = spanning_tree.addVertex();
 
-    vertices_spanning_tree.insert(current_vertex, new_vertex);
-    spanning_tree_vertices.insert(new_vertex, current_vertex);
+    vertices_spanning_tree.insert({current_vertex, new_vertex});
+    spanning_tree_vertices.insert({new_vertex, current_vertex});
 
     vertex_queue.push(current_vertex);
 
@@ -101,15 +100,15 @@ void SimpleCycleBasis::create()
 
                 int next_vertex = subgraph.getEdge(edge).findOtherEnd(current_vertex);
 
-                if (!vertices_spanning_tree.find(next_vertex))
+                if (vertices_spanning_tree.find(next_vertex) == vertices_spanning_tree.end())
                 {
                     // tree edge
 
                     tree_edges.push(edge);
 
                     int new_vertex = spanning_tree.addVertex();
-                    vertices_spanning_tree.insert(next_vertex, new_vertex);
-                    spanning_tree_vertices.insert(new_vertex, next_vertex);
+                    vertices_spanning_tree.insert({next_vertex, new_vertex});
+                    spanning_tree_vertices.insert({new_vertex, next_vertex});
 
                     // create a new (directed) Edge object (as explained above)
                     spanning_tree.addEdge(vertices_spanning_tree.at(current_vertex), vertices_spanning_tree.at(next_vertex));
@@ -369,7 +368,7 @@ void SimpleCycleBasis::_createEdgeIndexMap()
     _edgeIndexMap.clear();
     for (int i = 0; i < _edgeList.size(); ++i)
     {
-        _edgeIndexMap.insert(_edgeList[i], i);
+        _edgeIndexMap.insert({_edgeList[i], i});
     }
 }
 
