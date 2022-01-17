@@ -20,33 +20,37 @@ def molecule_image(smiles: str) -> str:
     mol = indigo.loadMolecule(smiles)
     mol.aromatize()
     svg = renderer.renderToString(mol)
-    return "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+    return (
+        "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+    )
 
 
-def static_avp_avr_graphs(preds, actual, r2: str, title: str = ''):
+def static_avp_avr_graphs(preds, actual, r2: str, title: str = ""):
     """Static prediction/actual and prediction/residual"""
     title = title
-    x, y = pd.Series(actual, name="Actual"), pd.Series(preds, name="Prediction")
+    x, y = pd.Series(actual, name="Actual"), pd.Series(
+        preds, name="Prediction"
+    )
     z = pd.Series(preds, name="Residual")
     fig, ax = plt.subplots(1, 2, figsize=(15, 5))
     sns.regplot(x=x, y=y, ax=ax[0])
     sns.residplot(x=x, y=z, ax=ax[1])
-    ax[0].set_title(f'{title} Actual vs Predicted, r2={r2:.3f}')
-    ax[1].set_title(f'Residual plot for {title}, r2={r2:.3f}')
+    ax[0].set_title(f"{title} Actual vs Predicted, r2={r2:.3f}")
+    ax[1].set_title(f"Residual plot for {title}, r2={r2:.3f}")
 
 
 def avp_plot(
-        actual: List[float], 
-        predicted: List[float], 
-        ids: List[str], 
-        smiles_list: List[str], 
-        r2: float, 
-        title: str = ''
-    ) -> None:
-    df = pd.DataFrame({'x': actual, 'y': predicted})
+    actual: List[float],
+    predicted: List[float],
+    ids: List[str],
+    smiles_list: List[str],
+    r2: float,
+    title: str = "",
+) -> None:
+    df = pd.DataFrame({"x": actual, "y": predicted})
     df["id"] = ids
     df["image"] = [molecule_image(smiles) for smiles in smiles_list]
-    df['residual'] = actual - predicted
+    df["residual"] = actual - predicted
     plot_height = 400
     plot_width = int(plot_height * 1.4)
     plot_figure = figure(
@@ -59,7 +63,7 @@ def avp_plot(
     )
     plot_figure.add_tools(
         HoverTool(
-        tooltips="""
+            tooltips="""
             <div>
             <div>
             <img src='@image' style='float: left; margin: 5px 5px 5px 5px'/>
@@ -90,11 +94,18 @@ def avp_plot(
     show(plot_figure)
 
 
-def avr_plot(actual: List[float], predicted: List[float], ids: List[str], smiles_list: List[str], r2: float, title='') -> None:
-    df = pd.DataFrame({'x': actual, 'y': actual - predicted})
+def avr_plot(
+    actual: List[float],
+    predicted: List[float],
+    ids: List[str],
+    smiles_list: List[str],
+    r2: float,
+    title="",
+) -> None:
+    df = pd.DataFrame({"x": actual, "y": actual - predicted})
     df["id"] = ids
     df["image"] = [molecule_image(smiles) for smiles in smiles_list]
-    df['residual'] = actual - predicted
+    df["residual"] = actual - predicted
     plot_height = 400
     plot_width = int(plot_height * 1.4)
     plot_figure = figure(
@@ -107,7 +118,7 @@ def avr_plot(actual: List[float], predicted: List[float], ids: List[str], smiles
     )
     plot_figure.add_tools(
         HoverTool(
-        tooltips="""
+            tooltips="""
             <div>
             <div>
             <img src='@image' style='float: left; margin: 5px 5px 5px 5px'/>

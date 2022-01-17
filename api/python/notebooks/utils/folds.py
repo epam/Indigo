@@ -3,7 +3,7 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import KFold
 
 
-def oof(reg, bundle, folds=5, seed=42, assay=''):
+def oof(reg, bundle, folds=5, seed=42, assay=""):
     """Calculate out-of-fold errors of a given model.
 
     Args:
