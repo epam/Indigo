@@ -32,7 +32,7 @@ IMPL_TIMEOUT_EXCEPTION(EmbeddingEnumerator, "embedding enumerator");
 CP_DEF(EmbeddingEnumerator);
 
 EmbeddingEnumerator::EmbeddingEnumerator(Graph& supergraph)
-    : CP_INIT, TL_CP_GET(_core_1), TL_CP_GET(_core_2), TL_CP_GET(_term2), TL_CP_GET(_unterm2), TL_CP_GET(_s_pool), TL_CP_GET(_g1_fast), TL_CP_GET(_g2_fast),
+    : CP_INIT, TL_CP_GET(_core_1), TL_CP_GET(_core_2), TL_CP_GET(_term2), TL_CP_GET(_unterm2), TL_CP_GET(_g1_fast), TL_CP_GET(_g2_fast),
       TL_CP_GET(_query_match_state), TL_CP_GET(_enumerators)
 {
     _g2 = &supergraph;
@@ -278,7 +278,7 @@ bool EmbeddingEnumerator::processNext()
     return false;
 }
 
-EmbeddingEnumerator::_Enumerator::_Enumerator(EmbeddingEnumerator& context) : _context(context), _mapped_orbit_ids(context._s_pool)
+EmbeddingEnumerator::_Enumerator::_Enumerator(EmbeddingEnumerator& context) : _context(context)
 {
     _t1_len = 0;
     _t2_len = 0;
@@ -294,7 +294,7 @@ EmbeddingEnumerator::_Enumerator::_Enumerator(EmbeddingEnumerator& context) : _c
 }
 
 EmbeddingEnumerator::_Enumerator::_Enumerator(const EmbeddingEnumerator::_Enumerator& other)
-    : _context(other._context), _mapped_orbit_ids(other._context._s_pool)
+    : _context(other._context)
 {
     _core_len = other._core_len;
     _t1_len = other._t1_len;
@@ -480,7 +480,8 @@ bool EmbeddingEnumerator::_Enumerator::_checkPair(int node1, int node2)
         {
             int pair_id = (node1 << 16) + eq_class;
 
-            if (_mapped_orbit_ids.find_or_insert(pair_id))
+            auto& inserted = _mapped_orbit_ids.insert(pair_id);
+            if (!inserted.second)
             {
                 if (needRemove && _context.cb_vertex_remove != 0)
                     _context.cb_vertex_remove(*_context._g1, node1, _context.userdata);
