@@ -89,13 +89,6 @@ void BingoPgSearch::_initScanSearch()
 
     BingoPgWrapper rel_wr;
     const char* rel_name = rel_wr.getRelName(index->rd_id);
-
-    /*
-     * Read configuration from index tuple
-     */
-    BingoPgConfig bingo_config;
-    _bufferIndex.readConfigParameters(bingo_config);
-
     /*
      * Set up search engine
      */
@@ -104,11 +97,24 @@ void BingoPgSearch::_initScanSearch()
     int index_type = _bufferIndex.getIndexType();
 
     if (index_type == BINGO_INDEX_TYPE_MOLECULE)
-        _fpEngine = std::make_unique<MangoPgSearchEngine>(bingo_config, rel_name);
+        _fpEngine = std::make_unique<MangoPgSearchEngine>(rel_name);
     else if (index_type == BINGO_INDEX_TYPE_REACTION)
-        _fpEngine = std::make_unique<RingoPgSearchEngine>(bingo_config, rel_name);
+        _fpEngine = std::make_unique<RingoPgSearchEngine>(rel_name);
     else
         throw Error("unknown index type %d", index_type);
+    /*
+     * Read configuration from index tuple
+     */
+    auto& bingo_core = _fpEngine->bingoCore;
+
+    BingoPgConfig bingo_config(bingo_core);
+    _bufferIndex.readConfigParameters(bingo_config);
+    /*
+     * Set up bingo configuration
+     */
+    bingo_config.setUpBingoConfiguration();
+    bingo_core.bingoTautomerRulesReady(0, 0, 0);
+    bingo_core.bingoIndexBegin();
 
     /*
      * Process query structure with parameters

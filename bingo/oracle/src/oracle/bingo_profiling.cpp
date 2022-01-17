@@ -24,6 +24,8 @@
 #include "base_cpp/profiling.h"
 #include "base_cpp/tlscont.h"
 
+using namespace indigo;
+
 void bingoProfilingPrintStatistics(bool print_all)
 {
     // Print profiling statistics

@@ -31,6 +31,8 @@
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/mango_fetch_context.h"
 
+using namespace indigo;
+
 IMPL_ERROR(MangoShadowFetch, "mango shadow fetch");
 
 MangoShadowFetch::MangoShadowFetch(MangoFetchContext& context) : _context(context)

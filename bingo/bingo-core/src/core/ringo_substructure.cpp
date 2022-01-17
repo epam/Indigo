@@ -32,6 +32,8 @@
 #include "reaction/rxnfile_saver.h"
 #include "ringo_matchers.h"
 
+using namespace indigo;
+
 IMPL_ERROR(RingoSubstructure, "reaction substructure");
 
 RingoSubstructure::RingoSubstructure(BingoContext& context) : _context(context)

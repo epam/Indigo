@@ -123,4 +123,5 @@ setup(
     },
     download_url="https://pypi.org/project/epam.indigo",
     test_suite="tests",
+    extras_require={"ml": ["scikit-learn"]},
 )

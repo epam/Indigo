@@ -37,6 +37,8 @@
 #include "reaction/rxnfile_loader.h"
 #include <memory>
 
+using namespace indigo;
+
 bool _ringoRegisterReaction(OracleEnv& env, const char* rowid, const Array<char>& reaction_buf, RingoOracleContext& context, RingoIndex& index,
                             BingoFingerprints& fingerprints)
 {

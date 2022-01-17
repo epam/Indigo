@@ -25,60 +25,63 @@
 #include "oracle/bingo_fingerprints.h"
 #include "oracle/ora_wrap.h"
 
-using namespace indigo;
-
-class MangoFetchContext;
-
-class MangoFastIndex : public BingoFetchEngine
+namespace indigo
 {
-public:
-    MangoFastIndex(MangoFetchContext& context);
-    ~MangoFastIndex() override;
 
-    void prepareSubstructure(OracleEnv& env);
-    void prepareSimilarity(OracleEnv& env);
-    void prepareTautomerSubstructure(OracleEnv& env);
+    class MangoFetchContext;
 
-    void fetch(OracleEnv& env, int maxrows) override;
-    bool end() override;
-    float calcSelectivity(OracleEnv& env, int total_count) override;
-    int getIOCost(OracleEnv& env, float selectivity) override;
-
-    bool getLastRowid(OraRowidText& id) override;
-
-    DECL_ERROR;
-
-protected:
-    enum
+    class MangoFastIndex : public BingoFetchEngine
     {
-        _SUBSTRUCTURE = 1,
-        _SIMILARITY = 2,
-        _TAUTOMER_SUBSTRUCTURE = 3
+    public:
+        MangoFastIndex(MangoFetchContext& context);
+        ~MangoFastIndex() override;
+
+        void prepareSubstructure(OracleEnv& env);
+        void prepareSimilarity(OracleEnv& env);
+        void prepareTautomerSubstructure(OracleEnv& env);
+
+        void fetch(OracleEnv& env, int maxrows) override;
+        bool end() override;
+        float calcSelectivity(OracleEnv& env, int total_count) override;
+        int getIOCost(OracleEnv& env, float selectivity) override;
+
+        bool getLastRowid(OraRowidText& id) override;
+
+        DECL_ERROR;
+
+    protected:
+        enum
+        {
+            _SUBSTRUCTURE = 1,
+            _SIMILARITY = 2,
+            _TAUTOMER_SUBSTRUCTURE = 3
+        };
+
+        MangoFetchContext& _context;
+
+        int _fetch_type;
+
+        int _cur_idx;
+        int _matched;
+        int _unmatched;
+
+        int _last_id;
+
+        BingoFingerprints::Screening _screening;
+
+        bool _loadCoords(OracleEnv& env, const char* rowid, Array<char>& coords);
+        void _match(OracleEnv& env, int idx);
+        int _countOnes(int idx);
+
+        void _decompressRowid(const Array<char>& stored, OraRowidText& rid);
+
+        void _fetchSubstructure(OracleEnv& env, int maxrows);
+        void _fetchSimilarity(OracleEnv& env, int maxrows);
+
+    private:
+        MangoFastIndex(const MangoFastIndex&); // noimplicitcopy
     };
 
-    MangoFetchContext& _context;
-
-    int _fetch_type;
-
-    int _cur_idx;
-    int _matched;
-    int _unmatched;
-
-    int _last_id;
-
-    BingoFingerprints::Screening _screening;
-
-    bool _loadCoords(OracleEnv& env, const char* rowid, Array<char>& coords);
-    void _match(OracleEnv& env, int idx);
-    int _countOnes(int idx);
-
-    void _decompressRowid(const Array<char>& stored, OraRowidText& rid);
-
-    void _fetchSubstructure(OracleEnv& env, int maxrows);
-    void _fetchSimilarity(OracleEnv& env, int maxrows);
-
-private:
-    MangoFastIndex(const MangoFastIndex&); // noimplicitcopy
-};
+} // namespace indigo
 
 #endif

@@ -24,6 +24,8 @@
 #include "oracle/ora_wrap.h"
 #include <memory>
 
+using namespace indigo;
+
 IMPL_ERROR(BingoStorage, "storage");
 
 BingoStorage::BingoStorage(OracleEnv& env, int context_id)

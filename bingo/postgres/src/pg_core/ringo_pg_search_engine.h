@@ -14,7 +14,6 @@
 
 class BingoPgText;
 class BingoPgIndex;
-class BingoPgConfig;
 
 class RingoPgFpData : public BingoPgFpData
 {
@@ -47,7 +46,7 @@ private:
 class RingoPgSearchEngine : public BingoPgSearchEngine
 {
 public:
-    RingoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name);
+    RingoPgSearchEngine(const char* rel_name);
     ~RingoPgSearchEngine() override;
 
     bool matchTarget(int section_idx, int structure_idx) override;

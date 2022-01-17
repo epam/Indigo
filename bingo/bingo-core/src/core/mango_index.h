@@ -24,66 +24,64 @@
 #include "bingo_index.h"
 #include "mango_matchers.h"
 
-using namespace indigo;
-
 namespace indigo
 {
     class Scanner;
-}
+    class BingoContext;
 
-class BingoContext;
+    class MangoIndex : public BingoIndex
+    {
+    public:
+        void prepare(Scanner& molfile, Output& output, std::mutex* lock_for_exclusive_access);
 
-class MangoIndex : public BingoIndex
-{
-public:
-    void prepare(Scanner& molfile, Output& output, std::mutex* lock_for_exclusive_access);
+        const Array<char>& getCmf() const;
+        const Array<char>& getXyz() const;
 
-    const Array<char>& getCmf() const;
-    const Array<char>& getXyz() const;
+        const MangoExact::Hash& getHash() const;
 
-    const MangoExact::Hash& getHash() const;
+        const char* getGrossString() const;
+        const char* getCountedElementsString() const;
+        const Array<int>& getCountedElements() const;
 
-    const char* getGrossString() const;
-    const char* getCountedElementsString() const;
-    const Array<int>& getCountedElements() const;
+        const byte* getFingerprint() const;
 
-    const byte* getFingerprint() const;
+        const char* getFingerprint_Sim_Str() const;
 
-    const char* getFingerprint_Sim_Str() const;
+        float getMolecularMass() const;
 
-    float getMolecularMass() const;
+        int getFpSimilarityBitsCount() const;
 
-    int getFpSimilarityBitsCount() const;
+        static const int counted_elements[6];
 
-    static const int counted_elements[6];
+        void clear();
 
-    void clear();
+    private:
+        // CMF-packed aromatized molecule and coordinates
+        Array<char> _cmf;
+        Array<char> _xyz;
 
-private:
-    // CMF-packed aromatized molecule and coordinates
-    Array<char> _cmf;
-    Array<char> _xyz;
+        // hash for exact match
+        MangoExact::Hash _hash;
 
-    // hash for exact match
-    MangoExact::Hash _hash;
+        // gross formula
+        Array<int> _gross;
+        Array<char> _gross_str;
 
-    // gross formula
-    Array<int> _gross;
-    Array<char> _gross_str;
+        Array<byte> _fp;
+        Array<char> _fp_sim_str;
 
-    Array<byte> _fp;
-    Array<char> _fp_sim_str;
+        // comma-separated list of selected counters
+        // (for non-exact gross formula search)
+        Array<char> _counted_elems_str;
+        Array<int> _counted_elem_counters;
 
-    // comma-separated list of selected counters
-    // (for non-exact gross formula search)
-    Array<char> _counted_elems_str;
-    Array<int> _counted_elem_counters;
+        // Molecular mass
+        float _molecular_mass;
 
-    // Molecular mass
-    float _molecular_mass;
+        // Number of one bits in similarity fingerprint
+        int _fp_sim_bits_count;
+    };
 
-    // Number of one bits in similarity fingerprint
-    int _fp_sim_bits_count;
-};
+} // namespace indigo
 
 #endif

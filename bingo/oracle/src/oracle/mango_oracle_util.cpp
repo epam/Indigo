@@ -43,6 +43,8 @@
 #include "base_cpp/cancellation_handler.h"
 #include "molecule/inchi_wrapper.h"
 
+using namespace indigo;
+
 static void _mangoUpdateMolecule(Molecule& target, const char* options, BingoOracleContext& context)
 {
     if (strlen(options) > 0)

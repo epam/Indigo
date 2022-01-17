@@ -23,6 +23,8 @@
 #include "reaction/rxnfile_saver.h"
 #include "ringo_matchers.h"
 
+using namespace indigo;
+
 IMPL_ERROR(RingoAAM, "ringo AAM");
 
 RingoAAM::RingoAAM(BingoContext& context) : _context(context)

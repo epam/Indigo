@@ -20,6 +20,8 @@
 
 #include "base_cpp/scanner.h"
 
+using namespace indigo;
+
 void WarningsTable::reset()
 {
     _table_name.clear();

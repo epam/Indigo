@@ -1,4 +1,5 @@
 #include "bingo_pg_fix_pre.h"
+#include "gzip/gzip_scanner.h"
 
 extern "C"
 {
@@ -59,12 +60,17 @@ void BingoPgFpData::setXyz(const char* xyz_buf, int xyz_len)
 BingoPgSearchEngine::BingoPgSearchEngine()
     : _fetchFound(false), _currentSection(-1), _currentIdx(-1), _blockBegin(0), _blockEnd(0), _bufferIndexPtr(0), _sectionBitset(BINGO_MOLS_PER_SECTION)
 {
-    _bingoSession = bingoAllocateSessionID();
+    _bingoContext = std::make_unique<BingoContext>(0);
+    _mangoContext = std::make_unique<MangoContext>(*_bingoContext.get());
+    _ringoContext = std::make_unique<RingoContext>(*_bingoContext.get());
+
+    bingoCore.bingo_context = _bingoContext.get();
+    bingoCore.mango_context = _mangoContext.get();
+    bingoCore.ringo_context = _ringoContext.get();
 }
 
 BingoPgSearchEngine::~BingoPgSearchEngine()
 {
-    bingoReleaseSessionID(_bingoSession);
 }
 
 void BingoPgSearchEngine::setItemPointer(PG_OBJECT result_ptr)
@@ -76,18 +82,8 @@ void BingoPgSearchEngine::loadDictionary(BingoPgIndex& bingo_index)
 {
     QS_DEF(Array<char>, dict);
     bingo_index.readDictionary(dict);
-    bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
+    bingoCore.bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
 }
-
-// const char* BingoPgSearchEngine::getDictionary(int& size) {
-//   _setBingoContext();
-//
-//   const char* dict_buf;
-//
-//   bingoGetConfigBin("cmf-dict", &dict_buf, &size);
-//
-//   return dict_buf;
-//}
 
 bool BingoPgSearchEngine::matchTarget(ItemPointerData& item_data)
 {
@@ -106,7 +102,7 @@ void BingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT)
 
 bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr)
 {
-    profTimerStart(t0, "bingo_pg.search_cursor");
+    // profTimerStart(t0, "bingo_pg.search_cursor");
     ItemPointerData cmf_item;
     /*
      * Iterate through the cursor
@@ -132,14 +128,13 @@ bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr)
         return true;
     }
 
-    _searchCursor.reset(nullptr);
     return false;
 }
 
 bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr)
 {
 
-    profTimerStart(t0, "bingo_pg.search_sub");
+    // profTimerStart(t0, "bingo_pg.search_sub");
     BingoPgFpData& query_data = *_queryFpData;
     BingoPgIndex& bingo_index = *_bufferIndexPtr;
     /*
@@ -158,7 +153,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr)
             ++_currentSection;
         }
     }
-    profTimerStart(t1, "bingo_pg.search_fp");
+    // profTimerStart(t1, "bingo_pg.search_fp");
 
     if (_currentSection < 0)
         _currentSection = _blockBegin;
@@ -199,7 +194,7 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr)
              */
             if (_fetchForNext())
             {
-                profTimerStop(t1);
+                // profTimerStop(t1);
                 setItemPointer(result_ptr);
                 /*
                  * Set fetch found to return on the next steps
@@ -220,8 +215,6 @@ using namespace indigo;
 
 void BingoPgSearchEngine::_setBingoContext()
 {
-    bingoSetSessionID(_bingoSession);
-    bingoSetContext(0);
 }
 
 bool BingoPgSearchEngine::_fetchForNext()

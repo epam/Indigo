@@ -23,41 +23,40 @@
 #include "ringo_index.h"
 #include "ringo_matchers.h"
 
-using namespace indigo;
-
-namespace ingido
+namespace indigo
 {
     class BingoContext;
-}
 
-class RingoContext
-{
-public:
-    explicit RingoContext(BingoContext& context);
-    virtual ~RingoContext();
+    class RingoContext
+    {
+    public:
+        explicit RingoContext(BingoContext& context);
+        virtual ~RingoContext();
 
-    RingoSubstructure substructure;
-    RingoExact exact;
-    RingoAAM ringoAAM;
+        RingoSubstructure substructure;
+        RingoExact exact;
+        RingoAAM ringoAAM;
 
-    DECL_ERROR;
+        DECL_ERROR;
 
-    static int begin();
-    static int end();
-    static int next(int k);
+        static int begin();
+        static int end();
+        static int next(int k);
 
-    static void remove(int id);
+        static void remove(int id);
 
-    static RingoContext* existing(int id);
-    static RingoContext* get(int id);
+        static RingoContext* existing(int id);
+        static RingoContext* get(int id);
 
-protected:
-    static RingoContext* _get(int id, BingoContext& context);
+    protected:
+        static RingoContext* _get(int id, BingoContext& context);
 
-    TL_DECL(PtrArray<RingoContext>, _instances);
-    static std::mutex _instances_lock;
+        TL_DECL(PtrArray<RingoContext>, _instances);
+        static std::mutex _instances_lock;
 
-    BingoContext& _context;
-};
+        BingoContext& _context;
+    };
+
+} // namespace indigo
 
 #endif
