@@ -60,8 +60,8 @@ class Perceptron(nn.Module):
 
     def forward(self, input):
         x = input
-        for l in self.layers[:-1]:
-            x = self.dropout(self.act(l(x)))
+        for layer in self.layers[:-1]:
+            x = self.dropout(self.act(layer(x)))
         x = self.layers[-1](x)
         return x
 
