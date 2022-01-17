@@ -10,7 +10,6 @@ from bokeh.plotting import figure, show
 from indigo import Indigo
 from indigo.renderer import IndigoRenderer
 
-
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 indigo.setOption("render-output-format", "svg")
