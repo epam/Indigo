@@ -26,6 +26,8 @@
 #include "oracle/ringo_fetch_context.h"
 #include "oracle/ringo_oracle.h"
 
+using namespace indigo;
+
 static void _ringoIndexStart(OracleEnv& env, RingoFetchContext& context, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop,
                              const char* params)
 {

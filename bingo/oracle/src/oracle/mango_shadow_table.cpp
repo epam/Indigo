@@ -22,6 +22,8 @@
 #include "core/mango_index.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 IMPL_ERROR(MangoShadowTable, "shadow table");
 
 MangoShadowTable::MangoShadowTable(int context_id)

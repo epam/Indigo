@@ -26,35 +26,34 @@
 #include "base_cpp/obj.h"
 #include "oracle/rowid_symbol_codes.h"
 
-using namespace indigo;
-
 namespace indigo
 {
     class Output;
-}
 
-class RowIDSaver
-{
+    class RowIDSaver
+    {
 
-public:
-    DECL_ERROR;
+    public:
+        DECL_ERROR;
 
-    RowIDSaver(LzwDict& NewDict, Output& NewOut);
+        RowIDSaver(LzwDict& NewDict, Output& NewOut);
 
-    void saveRowID(const char* RowID);
+        void saveRowID(const char* RowID);
 
-private:
-    void _encodeSymbol(char Symbol);
+    private:
+        void _encodeSymbol(char Symbol);
 
-    void _encode(int NextSymbol);
+        void _encode(int NextSymbol);
 
-    Obj<LzwEncoder> _encoder_obj;
+        Obj<LzwEncoder> _encoder_obj;
 
-    LzwEncoder* _encoder;
+        LzwEncoder* _encoder;
 
-    // no implicit copy
-    RowIDSaver(const RowIDSaver&);
-};
+        // no implicit copy
+        RowIDSaver(const RowIDSaver&);
+    };
+
+} // namespace indigo
 
 #endif /* __rowid_saver_h__ */
 

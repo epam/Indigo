@@ -1,5 +1,7 @@
 #include "bingo_error.h"
 
+using namespace indigo;
+
 BingoError::BingoError(const char* format, ...) : Exception("bingo: ")
 {
     va_list args;

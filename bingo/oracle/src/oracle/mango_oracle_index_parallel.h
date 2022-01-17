@@ -8,72 +8,77 @@
 #include <string>
 #include <vector>
 
-using namespace indigo;
-
-//
-// Classes for parallelized index creation
-//
-
-class MangoRegisterDispatcher : public BingoOracleDispatcher
+namespace indigo
 {
-public:
-    MangoRegisterDispatcher(MangoOracleContext& context, OracleEnv& env, const char* rowid);
 
-protected:
-    OsCommand* _allocateCommand() override;
-    OsCommandResult* _allocateResult() override;
+    //
+    // Classes for parallelized index creation
+    //
 
-    bool _setupCommand(OsCommand& command) override;
-    void _addCurrentRecordToCommand(BingoOracleCommand& command) override;
-    void _handleResult(OsCommandResult& result) override;
+    class MangoRegisterDispatcher : public BingoOracleDispatcher
+    {
+    public:
+        MangoRegisterDispatcher(MangoOracleContext& context, OracleEnv& env, const char* rowid);
 
-    MangoOracleContext& _context;
-    OracleEnv& _env;
-    const char* _rowid;
-    int _molecules_prepared, _molecules_saved;
-    std::mutex _lock_for_exclusive_access;
-};
+    protected:
+        OsCommand* _allocateCommand() override;
+        OsCommandResult* _allocateResult() override;
 
-class MangoRegisterCommand : public BingoOracleCommand
-{
-public:
-    MangoRegisterCommand(OracleEnv& env, MangoOracleContext& context, std::mutex& lock_for_exclusive_access, int* molecules_prepared_counter);
+        bool _setupCommand(OsCommand& command) override;
+        void _addCurrentRecordToCommand(BingoOracleCommand& command) override;
+        void _handleResult(OsCommandResult& result) override;
 
-    void execute(OsCommandResult& result) override;
+        MangoOracleContext& _context;
+        OracleEnv& _env;
+        const char* _rowid;
+        int _molecules_prepared, _molecules_saved;
+        std::mutex _lock_for_exclusive_access;
+    };
 
-    void clear() override;
+    class MangoRegisterCommand : public BingoOracleCommand
+    {
+    public:
+        MangoRegisterCommand(OracleEnv& env, MangoOracleContext& context, std::mutex& lock_for_exclusive_access, int* molecules_prepared_counter);
 
-    ChunkStorage rowids;
+        void execute(OsCommandResult& result) override;
 
-private:
-    MangoOracleContext& _context;
-    OracleEnv& _env;
-    std::mutex& _lock_for_exclusive_access;
-    int* _molecules_prepared_counter;
-};
+        void clear() override;
 
-struct MangoRegisterFailure
-{
-    std::string rowid, message;
-};
+        ChunkStorage rowids;
 
-class MangoRegisterResult : public OsCommandResult
-{
-public:
-    int valid_molecules;
+    private:
+        MangoOracleContext& _context;
+        OracleEnv& _env;
+        std::mutex& _lock_for_exclusive_access;
+        int* _molecules_prepared_counter;
+    };
 
-    void clear() override;
+    struct MangoRegisterFailure
+    {
+        std::string rowid, message;
+    };
 
-    ObjArray<MangoIndex> per_molecule_index;
-    std::vector<MangoRegisterFailure> warnings;
-    ChunkStorage per_molecule_data;
-    ChunkStorage rowids;
-};
+    class MangoRegisterResult : public OsCommandResult
+    {
+    public:
+        int valid_molecules;
 
-bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index, Array<char>& data,
+        void clear() override;
+
+        ObjArray<MangoIndex> per_molecule_index;
+        std::vector<MangoRegisterFailure> warnings;
+        ChunkStorage per_molecule_data;
+        ChunkStorage rowids;
+    };
+
+
+
+} // namespace indigo
+
+bool mangoPrepareMolecule(indigo::OracleEnv& env, const char* rowid, const indigo::Array<char>& molfile_buf, indigo::MangoOracleContext& context,
+                          indigo::MangoIndex& index, indigo::Array<char>& data,
                           std::mutex* lock_for_exclusive_access, std::string& failure_message);
 
-void mangoRegisterMolecule(OracleEnv& env, const char* rowid, MangoOracleContext& context, const MangoIndex& index, BingoFingerprints& fingerprints,
-                           const Array<char>& prepared_data, bool append);
-
+void mangoRegisterMolecule(indigo::OracleEnv& env, const char* rowid, indigo::MangoOracleContext& context, const indigo::MangoIndex& index,
+                           indigo::BingoFingerprints& fingerprints, const indigo::Array<char>& prepared_data, bool append);
 #endif // __mango_oracle_index_parallel_h__

@@ -31,6 +31,8 @@
 #include "oracle/rowid_loader.h"
 #include "reaction/rxnfile_loader.h"
 
+using namespace indigo;
+
 IMPL_ERROR(RingoFastIndex, "ringo fast fetch");
 
 RingoFastIndex::RingoFastIndex(RingoFetchContext& context) : _context(context)

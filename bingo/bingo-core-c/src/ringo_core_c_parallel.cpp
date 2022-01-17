@@ -21,6 +21,7 @@
 
 #include <string.h>
 
+using namespace indigo;
 using namespace indigo::bingo_core;
 
 //
@@ -32,7 +33,7 @@ void RingoIndexingCommandResult::clear()
     per_reaction_index.clear();
 }
 
-BingoIndex& RingoIndexingCommandResult::getIndex(int index)
+indigo::BingoIndex& RingoIndexingCommandResult::getIndex(int index)
 {
     per_reaction_index.resize(index + 1);
     return per_reaction_index[index];
