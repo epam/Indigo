@@ -1,6 +1,6 @@
 import numpy as np
-from sklearn.model_selection import KFold, train_test_split
 from sklearn.metrics import r2_score
+from sklearn.model_selection import KFold
 
 
 def oof(reg, bundle, folds=5, seed=42, assay=''):
@@ -37,7 +37,6 @@ def oof(reg, bundle, folds=5, seed=42, assay=''):
         oof_score = r2_score(y_train[test_idx], oof_pred)
         train_score = r2_score(y_tr, train_pred)
         test_score = r2_score(y_test, test_pred)
-        
         train_errors.append(train_score)
         oof_errors.append(oof_score)
         errors.append(test_score)
@@ -45,5 +44,4 @@ def oof(reg, bundle, folds=5, seed=42, assay=''):
     print("MEAN TRAIN: ", np.mean(train_errors))
     print("MEAN VALIDATION: ", np.mean(oof_errors))
     print("MEAN TEST", np.mean(errors))
-    
     return errors, test_pred

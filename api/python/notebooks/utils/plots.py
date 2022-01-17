@@ -1,13 +1,14 @@
 import base64
-import pandas as pd
+from typing import List
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-from indigo import Indigo
-from typing import List
-from indigo.renderer import IndigoRenderer
+from bokeh.models import ColumnDataSource, HoverTool, Legend
 from bokeh.plotting import figure, show
-from bokeh.models import HoverTool, Legend, ColumnDataSource
-from typing import List
+
+from indigo import Indigo
+from indigo.renderer import IndigoRenderer
 
 
 indigo = Indigo()
@@ -28,14 +29,21 @@ def static_avp_avr_graphs(preds, actual, r2: str, title: str = ''):
     title = title
     x, y = pd.Series(actual, name="Actual"), pd.Series(preds, name="Prediction")
     z = pd.Series(preds, name="Residual")
-    fig, ax = plt.subplots(1,2, figsize = (15,5))
-    sns.regplot(x=x, y=y, ax = ax[0])
-    sns.residplot(x=x, y=z, ax = ax[1])
+    fig, ax = plt.subplots(1, 2, figsize=(15, 5))
+    sns.regplot(x=x, y=y, ax=ax[0])
+    sns.residplot(x=x, y=z, ax=ax[1])
     ax[0].set_title(f'{title} Actual vs Predicted, r2={r2:.3f}')
     ax[1].set_title(f'Residual plot for {title}, r2={r2:.3f}')
 
 
-def avp_plot(actual: List[float], predicted: List[float], ids: List[str], smiles_list: List[str], r2: float, title='') -> None:
+def avp_plot(
+        actual: List[float], 
+        predicted: List[float], 
+        ids: List[str], 
+        smiles_list: List[str], 
+        r2: float, 
+        title: str = ''
+    ) -> None:
     df = pd.DataFrame({'x': actual, 'y': predicted})
     df["id"] = ids
     df["image"] = [molecule_image(smiles) for smiles in smiles_list]

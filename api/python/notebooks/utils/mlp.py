@@ -18,7 +18,7 @@ class FingerprintDataset(Dataset):
     def __getitem__(self, index):
         if torch.is_tensor(index):
             index = index.tolist()
-        
+
         out = self.targets[index]
         fp = self.inputs[index]
         return fp, out
@@ -28,16 +28,17 @@ class Perceptron(nn.Module):
     """
         Simple MLP PyTorch model with a Scikit-Learn like fit/predict interface
     """
-    def __init__(self,
-                input_size,
-                output_size=1,
-                hidden_size=128,
-                p_dropout=0.05,
-                n_layers=1,
-                n_epochs=100,
-                batch_size=32, 
-                lr=1e-2,
-                verbose=False
+    def __init__(
+        self,
+        input_size,
+        output_size=1,
+        hidden_size=128,
+        p_dropout=0.05,
+        n_layers=1,
+        n_epochs=100,
+        batch_size=32,
+        lr=1e-2,
+        verbose=False
     ):
         super(Perceptron, self).__init__()
         self.layers = nn.ModuleList(
@@ -60,10 +61,10 @@ class Perceptron(nn.Module):
         return x
 
     def fit(self, X, y):
-        for l in self.layers:
+        for layer in self.layers:
             if self.verbose:
-                print('resetting ', l)
-            l.reset_parameters()
+                print('resetting ', layer)
+            layer.reset_parameters()
         self.train()
         dataset = FingerprintDataset(X, y)
         loader = DataLoader(dataset, batch_size=self.batch_size)
@@ -86,7 +87,6 @@ class Perceptron(nn.Module):
                     print("MSE Loss: {:.4f}".format(error.item()), end =' ')
                     print("lr: {:.4f}".format(optimizer.param_groups[0]['lr']))
 
-                
     def predict(self, X):
         X = torch.as_tensor(X)
         self.eval()
