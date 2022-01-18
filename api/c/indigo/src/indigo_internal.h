@@ -32,6 +32,7 @@
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/io_base.h"
+#include "base_cpp/properties_map.h"
 
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_gross_formula.h"
@@ -59,7 +60,6 @@ namespace indigo
     class RdfLoader;
     class MolfileSaver;
     class RxnfileSaver;
-    class PropertiesMap;
     class MoleculeJsonSaver;
     class ReactionJsonSaver;
 
@@ -195,12 +195,12 @@ public:
 
     virtual void remove();
 
-    //   virtual RedBlackStringObjMap< Array<char> > * getProperties();
-    //   void copyProperties (RedBlackStringObjMap< Array<char> > &other);
+    //   virtual PropertiesMap::Mapping* getProperties();
+    //   void copyProperties (PropertiesMap::Mapping&other);
     virtual PropertiesMap& getProperties();
     virtual MonomersProperties& getMonomersProperties();
     virtual void copyProperties(PropertiesMap&);
-    virtual void copyProperties(RedBlackStringObjMap<Array<char>>& other);
+    virtual void copyProperties(PropertiesMap::Mapping& other);
 
 private:
     IndigoObject(const IndigoObject&);

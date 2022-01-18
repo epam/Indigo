@@ -22,12 +22,12 @@ using namespace indigo;
 
 IMPL_ERROR(PropertiesMap, "properties map");
 
-void PropertiesMap::copy(RedBlackStringObjMap<Array<char>>& other)
+void PropertiesMap::copy(Mapping& other)
 {
     clear();
-    for (int i = other.begin(); i != other.end(); i = other.next(i))
+    for (const auto& pair : other)
     {
-        insert(other.key(i), other.value(i).ptr());
+        insert(pair.first.c_str(), pair.second.ptr());
     }
 }
 void PropertiesMap::copy(PropertiesMap& other)
@@ -40,20 +40,14 @@ void PropertiesMap::copy(PropertiesMap& other)
 }
 void PropertiesMap::insert(const char* key, const char* value)
 {
-    if (_properties.find(key))
-    {
-        auto& val = _properties.at(key);
-        if (value != 0)
-            val.readString(value, true);
-    }
-    else
+    if (_properties.find(key) == _properties.end())
     {
         auto& name = _propertyNames.push();
         name.readString(key, true);
-        int k = _properties.insert(key);
-        if (value != 0)
-            _properties.value(k).readString(value, true);
+        _properties[key];
     }
+    if (value != 0)
+        _properties.at(key).readString(value, true);
 }
 Array<char>& PropertiesMap::insert(const char* key)
 {
@@ -91,7 +85,7 @@ void PropertiesMap::clear()
 
 bool PropertiesMap::contains(const char* key) const
 {
-    return _properties.find(key);
+    return _properties.find(key) != _properties.end();
 }
 
 const char* PropertiesMap::at(const char* key) const
@@ -101,9 +95,9 @@ const char* PropertiesMap::at(const char* key) const
 
 void PropertiesMap::remove(const char* key)
 {
-    if (_properties.find(key))
+    if (contains(key))
     {
-        _properties.remove(key);
+        _properties.erase(key);
         int to_remove = -1;
         for (auto i = 0; i < _propertyNames.size(); i++)
         {

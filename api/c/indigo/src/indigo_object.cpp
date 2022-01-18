@@ -209,7 +209,7 @@ QueryMolecule& IndigoObject::getQueryMolecule()
 //   for (i = other.begin(); i != other.end(); i = other.next(i))
 //      props->value(props->insert(other.key(i))).copy(other.value(i));
 //}
-void IndigoObject::copyProperties(RedBlackStringObjMap<Array<char>>& other)
+void IndigoObject::copyProperties(PropertiesMap::Mapping& other)
 {
     auto& props = getProperties();
     props.copy(other);
