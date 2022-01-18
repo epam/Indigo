@@ -20,9 +20,7 @@
 #define __base_molecule__
 
 #include "base_cpp/obj_array.h"
-#include "base_cpp/red_black.h"
 #include "graph/graph.h"
-#include "math/algebra.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_cis_trans.h"
@@ -102,7 +100,7 @@ namespace indigo
     class DLLEXPORT BaseMolecule : public Graph
     {
     public:
-        typedef RedBlackMap<int, int> Mapping;
+        typedef std::unordered_map<int, int> Mapping;
 
         BaseMolecule();
         ~BaseMolecule() override;
@@ -454,7 +452,7 @@ namespace indigo
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
-        RedBlackMap<int, Vec3f> _stereo_flag_positions;
+        std::unordered_map<int, Vec3f> _stereo_flag_positions;
 
         ObjArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;

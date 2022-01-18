@@ -857,7 +857,7 @@ void MoleculeRenderInternal::_cloneAndFillMappings()
     _bondMappingInv.clear();
     for (int i = clone->edgeBegin(); i < clone->edgeEnd(); i = clone->edgeNext(i))
     {
-        _bondMappingInv.insert(i, BaseMolecule::findMappedEdge(*clone, *_mol, i, _atomMappingInv.ptr()));
+        _bondMappingInv.insert({i, BaseMolecule::findMappedEdge(*clone, *_mol, i, _atomMappingInv.ptr())});
     }
     _mol = clone;
     _own_mol = true;
@@ -930,9 +930,9 @@ void MoleculeRenderInternal::_prepareSGroups()
                                     bid = amol.addBond(said, naid, amol.getBondOrder(nbid));
                                     amol.setEdgeTopology(bid, amol.getBondTopology(nbid));
                                 }
-                                if (_bondMappingInv.find(bid))
-                                    _bondMappingInv.remove(bid);
-                                _bondMappingInv.insert(bid, _bondMappingInv.at(nbid));
+                                if (_bondMappingInv.find(bid) != _bondMappingInv.end())
+                                    _bondMappingInv.erase(bid);
+                                _bondMappingInv.insert({bid, _bondMappingInv.at(nbid)});
                             }
                         }
                     }

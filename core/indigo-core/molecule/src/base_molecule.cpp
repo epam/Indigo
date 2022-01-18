@@ -1227,10 +1227,9 @@ void BaseMolecule::collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping&
         int from = group.atoms[j];
         int to = group.atoms[k];
 
-        int* to_ = mapAtom.at2(from);
-        if (to_ == 0)
-            mapAtom.insert(from, to);
-        else if (*to_ != to)
+        if (mapAtom.find(from) == mapAtom.end())
+            mapAtom.insert({from, to});
+        else if (mapAtom.at(from) != to)
             throw Error("Invalid mapping in MultipleGroup::collapse");
 
         if (k != j)
@@ -1240,15 +1239,17 @@ void BaseMolecule::collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping&
     for (int j = bm.edgeBegin(); j < bm.edgeEnd(); j = bm.edgeNext(j))
     {
         const Edge& edge = bm.getEdge(j);
-        bool in1 = mapAtom.find(edge.beg), in2 = mapAtom.find(edge.end), p1 = in1 && mapAtom.at(edge.beg) == edge.beg,
+        bool in1 = mapAtom.find(edge.beg) != mapAtom.end();
+        bool in2 = mapAtom.find(edge.end) != mapAtom.end();
+        bool p1 = in1 && mapAtom.at(edge.beg) == edge.beg,
              p2 = in2 && mapAtom.at(edge.end) == edge.end;
         if ((in1 && !p1 && !in2) || (!in1 && !p2 && in2))
         {
             int beg = in1 ? mapAtom.at(edge.beg) : edge.beg;
             int end = in2 ? mapAtom.at(edge.end) : edge.end;
             int bid = copyBaseBond(bm, beg, end, j);
-            if (!mapBondInv.find(bid))
-                mapBondInv.insert(bid, j);
+            if (mapBondInv.find(bid) == mapBondInv.end())
+                mapBondInv.insert({bid, j});
         }
     }
 
@@ -4133,7 +4134,7 @@ void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
 {
     try
     {
-        _stereo_flag_positions.insert(frag_index, pos);
+        _stereo_flag_positions.insert({frag_index, pos});
     }
     catch (Exception& ex)
     {
@@ -4142,10 +4143,9 @@ void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
 
 bool BaseMolecule::getStereoFlagPosition(int frag_index, Vec3f& pos)
 {
-    auto pval = _stereo_flag_positions.at2(frag_index);
-    if (pval)
+    if (_stereo_flag_positions.find(frag_index) != _stereo_flag_positions.end())
     {
-        pos = *pval;
+        pos = _stereo_flag_positions.at(frag_index);
         return true;
     }
     return false;
