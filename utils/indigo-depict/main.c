@@ -898,6 +898,7 @@ int main(int argc, char* argv[])
                 indigoSaveJsonToFile(obj, p.outfile);
             else
                 indigoSaveCmlToFile(obj, p.outfile);
+            printf("smarts: %s", indigoSmarts(obj));
         }
         else
         {

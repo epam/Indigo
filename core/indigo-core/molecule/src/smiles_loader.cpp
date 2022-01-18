@@ -719,13 +719,62 @@ void SmilesLoader::_readOtherStuff()
         }
         else if (c == 'r')
         {
-            // All stereocenters are relative instead of abs
-            MoleculeStereocenters& s = _bmol->stereocenters;
-            for (int i = s.begin(); i != s.end(); i = s.next(i))
+            if (_scanner.lookNext() == 'b')
             {
-                int atom = s.getAtomIndex(i);
-                if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS)
-                    s.setType(atom, MoleculeStereocenters::ATOM_AND, 1);
+                if (_qmol == 0)
+                    throw Error("'rb' is allowed only within queries");
+                _scanner.skip(1);
+                if (_scanner.readChar() != ':')
+                    throw Error("colon expected after 'rb' identifier");
+                while (isdigit(_scanner.lookNext()))
+                {
+                    // remove 'x' or 'r' configured ATOM_RING_BONDS
+                    int atom_idx = _scanner.readUnsigned();
+                    QueryMolecule::Atom& atom = _qmol->getAtom(atom_idx);
+                    if (atom.hasConstraint(QueryMolecule::ATOM_RING_BONDS))
+                        atom.removeConstraints(QueryMolecule::ATOM_RING_BONDS);
+
+                    if (_scanner.readChar() != ':')
+                        throw Error("colon expected after 'rb:n'");
+                    if (_scanner.lookNext() == '*')
+                    {
+                        _scanner.skip(1);
+                        int rbonds = 0;
+                        const Vertex& vertex = _qmol->getVertex(atom_idx);
+                        for (int k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                            if (_qmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
+                                rbonds++;
+
+                        _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
+                                                                            new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
+                    }
+                    else
+                    {
+                        int rbcount = _scanner.readUnsigned();
+                        if (rbcount)
+                        {
+                            _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(
+                                                           _qmol->releaseAtom(atom_idx),
+                                                           new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbcount, (rbcount < 4 ? rbcount : 100))));
+                        }
+                        else
+                            _qmol->resetAtom(
+                                atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
+                    }
+                    if (_scanner.lookNext() == ',')
+                        _scanner.skip(1);
+                }
+            }
+            else
+            {
+                // All stereocenters are relative instead of abs
+                MoleculeStereocenters& s = _bmol->stereocenters;
+                for (int i = s.begin(); i != s.end(); i = s.next(i))
+                {
+                    int atom = s.getAtomIndex(i);
+                    if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS)
+                        s.setType(atom, MoleculeStereocenters::ATOM_AND, 1);
+                }
             }
         }
         else if ((c == 'R') && (_scanner.lookNext() == 'G'))
@@ -910,6 +959,69 @@ void SmilesLoader::_readOtherStuff()
                         }
                     }
                 }
+            }
+        }
+        else if (c == 'u')
+        {
+            if (_qmol == 0)
+                throw Error("'u' is allowed only within queries");
+            if (_scanner.readChar() != ':')
+                throw Error("colon expected after 'u' identifier");
+            while (isdigit(_scanner.lookNext()))
+            {
+                int atom_idx = _scanner.readUnsigned();
+                _qmol->resetAtom(atom_idx,
+                                 QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+                if (_scanner.lookNext() == ',')
+                    _scanner.skip(1);
+            }
+        }
+        else if (c == 's')
+        {
+            if (_qmol == 0)
+                throw Error("'s' is allowed only within queries");
+            if (_scanner.readChar() != ':')
+                throw Error("colon expected after 's' identifier");
+            while (isdigit(_scanner.lookNext()))
+            {
+                int atom_idx = _scanner.readUnsigned();
+                if (_scanner.readChar() != ':')
+                    throw Error("colon expected after 's:n'");
+                int subs = -2;
+                if (_scanner.lookNext() == '*')
+                {
+                    _scanner.skip(1);
+                }
+                else
+                {
+                    subs = _scanner.readUnsigned();
+                    if (!subs)
+                        subs = -1;
+                }
+
+                QueryMolecule::Atom& atom = _qmol->getAtom(atom_idx);
+                // remove what was set with 'D'
+                if (atom.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS))
+                    atom.removeConstraints(QueryMolecule::ATOM_SUBSTITUENTS);
+
+                switch (subs)
+                {
+                case -1:
+                    _qmol->resetAtom(atom_idx,
+                                     QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, 0)));
+                    break;
+                case -2:
+                    _qmol->resetAtom(atom_idx,
+                                     QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN,
+                                                                                                                    _qmol->getVertex(atom_idx).degree())));
+                    break;
+                default:
+                    _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS,
+                                                                                                                              subs, (subs < 6 ? subs : 100))));
+                    break;
+                }
+                if (_scanner.lookNext() == ',')
+                    _scanner.skip(1);
             }
         }
     }

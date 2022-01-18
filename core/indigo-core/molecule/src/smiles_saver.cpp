@@ -621,6 +621,9 @@ void SmilesSaver::_saveMolecule()
         _writePseudoAtoms();
         _writeHighlighting();
         _writeRGroups();
+        _writeRingBonds();
+        _writeUnsaturated();
+        _writeSubstitutionCounts();
 
         if (_comma)
             _output.writeChar('|');
@@ -954,6 +957,41 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
             _output.printf("H");
         break;
     }
+
+    case QueryMolecule::ATOM_RING_BONDS_AS_DRAWN: {
+        _output.printf("x:%d", atom->value_min);
+        break;
+    }
+
+    case QueryMolecule::ATOM_RING_BONDS: {
+        if (atom->value_min == 1 && atom->value_max == 100)
+            _output.printf("x");
+        else
+        {
+            _output.printf("x%d", atom->value_min);
+        }
+        break;
+    }
+
+    case QueryMolecule::ATOM_UNSATURATION: {
+        _output.printf("$([*,#1]=,#,:[*,#1])");
+        break;
+    }
+
+    case QueryMolecule::ATOM_SMALLEST_RING_SIZE: {
+        break;
+    }
+
+    case QueryMolecule::ATOM_SUBSTITUENTS: {
+        _output.printf("D%d", atom->value_min);
+        break;
+    }
+
+    case QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN: {
+        _output.printf("D%d", atom->value_min);
+        break;
+    }
+
     default:;
     }
 
@@ -1691,6 +1729,85 @@ void SmilesSaver::_writeHighlighting()
             }
 
             _output.printf("%d", i);
+        }
+    }
+}
+
+void SmilesSaver::_writeUnsaturated()
+{
+    bool is_first = true;
+    for (auto i : _bmol->vertices())
+    {
+        int unsat = 0;
+        if (_qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
+        {
+            if (is_first)
+            {
+                _startExtension();
+                _output.writeString("u:");
+                is_first = false;
+            }
+            else
+                _output.writeString(",");
+            _output.printf("%d", i);
+        }
+    }
+}
+
+void SmilesSaver::_writeSubstitutionCounts()
+{
+    bool is_first = true;
+    for (auto i : _bmol->vertices())
+    {
+        int subst = 0;
+        if (MoleculeSavers::getSubstitutionCountFlagValue(*_qmol, i, subst))
+        {
+            if (is_first)
+            {
+                _startExtension();
+                _output.writeString("s:");
+                is_first = false;
+            }
+            else
+                _output.writeString(",");
+            switch (subst)
+            {
+            case -2:
+                _output.printf("%d:*", i);
+                break;
+            case -1:
+                _output.printf("%d:0", i);
+                break;
+            default:
+                _output.printf("%d:%d", i, subst);
+                break;
+            }
+        }
+    }
+}
+
+void SmilesSaver::_writeRingBonds()
+{
+    bool is_first = true;
+    for (auto i : _bmol->vertices())
+    {
+        int rbc = 0;
+        if (MoleculeSavers::getRingBondCountFlagValue(_bmol->asQueryMolecule(), i, rbc))
+        {
+            if (is_first)
+            {
+                _startExtension();
+                _output.writeString("rb:");
+                is_first = false;
+            }
+            else
+                _output.writeString(",");
+            if (rbc > 0)
+                _output.printf("%d:%d", i, rbc);
+            else if (rbc == -2)
+                _output.printf("%d:*", i);
+            else if (rbc == -1)
+                _output.printf("%d:0", i);
         }
     }
 }
