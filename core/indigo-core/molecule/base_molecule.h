@@ -100,7 +100,7 @@ namespace indigo
     class DLLEXPORT BaseMolecule : public Graph
     {
     public:
-        typedef std::unordered_map<int, int> Mapping;
+        typedef std::map<int, int> Mapping;
 
         BaseMolecule();
         ~BaseMolecule() override;
@@ -452,7 +452,7 @@ namespace indigo
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
-        std::unordered_map<int, Vec3f> _stereo_flag_positions;
+        std::map<int, Vec3f> _stereo_flag_positions;
 
         ObjArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
