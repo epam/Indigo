@@ -1736,20 +1736,23 @@ void SmilesSaver::_writeHighlighting()
 void SmilesSaver::_writeUnsaturated()
 {
     bool is_first = true;
-    for (auto i : _bmol->vertices())
+    if (_qmol)
     {
-        int unsat = 0;
-        if (_qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
+        for (auto i : _bmol->vertices())
         {
-            if (is_first)
+            int unsat = 0;
+            if (_qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
             {
-                _startExtension();
-                _output.writeString("u:");
-                is_first = false;
+                if (is_first)
+                {
+                    _startExtension();
+                    _output.writeString("u:");
+                    is_first = false;
+                }
+                else
+                    _output.writeString(",");
+                _output.printf("%d", i);
             }
-            else
-                _output.writeString(",");
-            _output.printf("%d", i);
         }
     }
 }
@@ -1757,30 +1760,33 @@ void SmilesSaver::_writeUnsaturated()
 void SmilesSaver::_writeSubstitutionCounts()
 {
     bool is_first = true;
-    for (auto i : _bmol->vertices())
+    if (_qmol)
     {
-        int subst = 0;
-        if (MoleculeSavers::getSubstitutionCountFlagValue(*_qmol, i, subst))
+        for (auto i : _bmol->vertices())
         {
-            if (is_first)
+            int subst = 0;
+            if (MoleculeSavers::getSubstitutionCountFlagValue(*_qmol, i, subst))
             {
-                _startExtension();
-                _output.writeString("s:");
-                is_first = false;
-            }
-            else
-                _output.writeString(",");
-            switch (subst)
-            {
-            case -2:
-                _output.printf("%d:*", i);
-                break;
-            case -1:
-                _output.printf("%d:0", i);
-                break;
-            default:
-                _output.printf("%d:%d", i, subst);
-                break;
+                if (is_first)
+                {
+                    _startExtension();
+                    _output.writeString("s:");
+                    is_first = false;
+                }
+                else
+                    _output.writeString(",");
+                switch (subst)
+                {
+                case -2:
+                    _output.printf("%d:*", i);
+                    break;
+                case -1:
+                    _output.printf("%d:0", i);
+                    break;
+                default:
+                    _output.printf("%d:%d", i, subst);
+                    break;
+                }
             }
         }
     }
@@ -1789,25 +1795,28 @@ void SmilesSaver::_writeSubstitutionCounts()
 void SmilesSaver::_writeRingBonds()
 {
     bool is_first = true;
-    for (auto i : _bmol->vertices())
+    if (_qmol)
     {
-        int rbc = 0;
-        if (MoleculeSavers::getRingBondCountFlagValue(_bmol->asQueryMolecule(), i, rbc))
+        for (auto i : _qmol->vertices())
         {
-            if (is_first)
+            int rbc = 0;
+            if (MoleculeSavers::getRingBondCountFlagValue(_qmol->asQueryMolecule(), i, rbc))
             {
-                _startExtension();
-                _output.writeString("rb:");
-                is_first = false;
+                if (is_first)
+                {
+                    _startExtension();
+                    _output.writeString("rb:");
+                    is_first = false;
+                }
+                else
+                    _output.writeString(",");
+                if (rbc > 0)
+                    _output.printf("%d:%d", i, rbc);
+                else if (rbc == -2)
+                    _output.printf("%d:*", i);
+                else if (rbc == -1)
+                    _output.printf("%d:0", i);
             }
-            else
-                _output.writeString(",");
-            if (rbc > 0)
-                _output.printf("%d:%d", i, rbc);
-            else if (rbc == -2)
-                _output.printf("%d:*", i);
-            else if (rbc == -1)
-                _output.printf("%d:0", i);
         }
     }
 }
