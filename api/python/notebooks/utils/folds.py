@@ -1,6 +1,6 @@
 import numpy as np
-from sklearn.metrics import r2_score
-from sklearn.model_selection import KFold
+from sklearn.metrics import r2_score  # type: ignore
+from sklearn.model_selection import KFold  # type: ignore
 
 
 def oof(reg, bundle, folds=5, seed=42, assay=""):

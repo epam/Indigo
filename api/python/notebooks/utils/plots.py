@@ -1,11 +1,11 @@
 import base64
 from typing import List
 
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
-from bokeh.models import ColumnDataSource, HoverTool, Legend
-from bokeh.plotting import figure, show
+import matplotlib.pyplot as plt  # type: ignore
+import pandas as pd  # type: ignore
+import seaborn as sns  # type: ignore
+from bokeh.models import ColumnDataSource, HoverTool, Legend  # type: ignore
+from bokeh.plotting import figure, show  # type: ignore
 
 from indigo import Indigo
 from indigo.renderer import IndigoRenderer
@@ -47,10 +47,11 @@ def avp_plot(
     r2: float,
     title: str = "",
 ) -> None:
+    residual = [act - pred for act, pred in zip(actual, predicted)]
     df = pd.DataFrame({"x": actual, "y": predicted})
     df["id"] = ids
     df["image"] = [molecule_image(smiles) for smiles in smiles_list]
-    df["residual"] = actual - predicted
+    df["residual"] = residual
     plot_height = 400
     plot_width = int(plot_height * 1.4)
     plot_figure = figure(
@@ -102,10 +103,11 @@ def avr_plot(
     r2: float,
     title="",
 ) -> None:
-    df = pd.DataFrame({"x": actual, "y": actual - predicted})
+    residual = [act - pred for act, pred in zip(actual, predicted)]
+    df = pd.DataFrame({"x": actual, "y": residual})
     df["id"] = ids
     df["image"] = [molecule_image(smiles) for smiles in smiles_list]
-    df["residual"] = actual - predicted
+    df["residual"] = residual
     plot_height = 400
     plot_width = int(plot_height * 1.4)
     plot_figure = figure(

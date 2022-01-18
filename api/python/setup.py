@@ -123,4 +123,15 @@ setup(
     },
     download_url="https://pypi.org/project/epam.indigo",
     test_suite="tests",
+    extra={
+        "notebooks": [
+            "scikit-learn",
+            "torch",
+            "matplotlib",
+            "pandas",
+            "seaborn",
+            "pandas",
+            "bokeh",
+        ]
+    },
 )

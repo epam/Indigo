@@ -28,6 +28,7 @@ jobs:
         run: git fetch --tags -f
       - name: Check
         run: |
+          python3 -m pip install -r api/python/requirements_dev.txt
           .ci/static_analysis_check.sh
 
   build_indigo_libs_x86_64:
@@ -194,6 +195,8 @@ jobs:
         with:
           name: indigo-libs-macos-aarch64
           path: dist/
+      - name: Install Python test dependencies
+        run: python3 -m pip install -r api/python/requirements_dev.txt
       - name: Build wrappers
         run: |
           mkdir build
@@ -636,29 +639,28 @@ jobs:
         with:
           name: indigo-python
           path: dist/
-      - name: Install poetry
-        run: pip install poetry
       - name: Install latest indigo version
-        run: poetry run pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl
+        run: pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl
         working-directory: bingo/bingo-elastic/python
-      - name: Install dependencies
-        run: poetry install
-        working-directory: bingo/bingo-elastic/python
-      - name: Run pylint
-        run: poetry run pylint bingo_elastic
+      - name: Install dev dependencies
+        run: pip install -r requirements_dev.txt
         working-directory: bingo/bingo-elastic/python
       - name: Setup elasticsearch
         run: docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.16.2
       - name: Wait elastic is ready
         run: sleep 30s
-      - name: Run tests
-        run: poetry run pytest tests
-        working-directory: bingo/bingo-elastic/python
       - name: Build wheel
         working-directory: bingo/bingo-elastic/python
         run: |
-          poetry build
+          pip install .
+          python setup.py bdist_wheel
           cp dist/*.whl ${GITHUB_WORKSPACE}/dist/
+      - name: Run pylint
+        run: pylint bingo_elastic
+        working-directory: bingo/bingo-elastic/python
+      - name: Run tests
+        run: pytest tests
+        working-directory: bingo/bingo-elastic/python
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -726,22 +728,23 @@ jobs:
         run: |
           cd build
           ctest --verbose
-      - name: Prepare integration tests
-        run: |
-          cd build
-          # python -m pip install wheel
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
-          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
-      - name: Run integration tests
-        run: |
-          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
-      - name: Publish Test Report
-        if: always()
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "windows-mingw_python_test_report"
+#      - name: Install Python test dependencies
+#        run: python3 -m pip install -r api/python/requirements_dev.txt
+#      - name: Prepare integration tests
+#        run: |
+#          cd build
+#          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
+#          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
+#      - name: Run integration tests
+#        run: |
+#          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
+#      - name: Publish Test Report
+#        if: always()
+#        uses: mikepenz/action-junit-report@v1
+#        with:
+#          report_paths: 'junit_report.xml'
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          check_name: "windows-mingw_python_test_report"
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -996,6 +999,7 @@ jobs:
           case ${{ matrix.postgres_major_version }} in 12) pg_version=12.8;; "11") pg_version=11.13;; 10) pg_version=10.18;; 9.6) pg_version=9.6.23;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
+          mv pgsql/include/zlib.h pgsql/include/zlib.h.bck
       - name: Build bingo-postgres
         run: |
           mkdir build
@@ -1189,7 +1193,7 @@ jobs:
           export tag=${{ github.ref }}
           export clean_tag=${tag/refs\/tags\/indigo-/}
           docker tag epmlsop/indigo-service:enhanced-latest epmlsop/indigo-service:enhanced-${clean_tag}
-          docker push epmlsop/indigo-service:${clean_tag}
+          docker push epmlsop/indigo-service:enhanced-${clean_tag}
           docker push epmlsop/indigo-service:enhanced-latest
       - name: Publish master
         if: github.ref == 'refs/heads/master'
