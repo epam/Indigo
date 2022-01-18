@@ -24,6 +24,8 @@
 #include "graph/shortest_path_finder.h"
 #include "graph/spanning_tree.h"
 
+#include <set>
+
 using namespace indigo;
 
 SimpleCycleBasis::SimpleCycleBasis(const Graph& graph) : _graph(graph), _isMinimized(false)
@@ -59,7 +61,7 @@ void SimpleCycleBasis::create()
 
     Graph spanning_tree;
 
-    QS_DEF(std::unordered_set<int>, visited_edges);
+    QS_DEF(std::set<int>, visited_edges);
     visited_edges.clear();
 
     // FIFO for the BFS
@@ -381,9 +383,9 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
 {
     QS_DEF(Array<int>, path_vertices);
     path_vertices.clear();
-    QS_DEF(std::unordered_set<int>, selected_edges);
+    QS_DEF(std::set<int>, selected_edges);
     selected_edges.clear();
-    QS_DEF(std::unordered_set<int>, remaining_edges);
+    QS_DEF(std::set<int>, remaining_edges);
     remaining_edges.clear();
     for (int i = subgraph.edgeBegin(); i < subgraph.edgeEnd(); i = subgraph.edgeNext(i))
     {
