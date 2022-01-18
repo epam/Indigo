@@ -28,6 +28,7 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph_fast_access.h"
+#include <set>
 
 namespace indigo
 {
@@ -163,7 +164,7 @@ namespace indigo
             EmbeddingEnumerator& _context;
 
             bool _use_equivalence;
-            std::unordered_set<int> _mapped_orbit_ids;
+            std::set<int> _mapped_orbit_ids;
             int _term2_begin;
             int _unterm2_begin;
 
