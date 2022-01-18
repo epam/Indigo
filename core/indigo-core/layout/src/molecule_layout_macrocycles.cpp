@@ -1158,8 +1158,9 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
         for (int i = 0; i < ind; i++)
             if (vertexNumber[i] != 0)
             {
-                rotateAngle[i] =
-                    rot_result[vertexNumber[i] + 1] > rot_result[vertexNumber[i]] ? 1 : rot_result[vertexNumber[i] + 1] == rot_result[vertexNumber[i]] ? 0 : -1;
+                rotateAngle[i] = rot_result[vertexNumber[i] + 1] > rot_result[vertexNumber[i]]    ? 1
+                                 : rot_result[vertexNumber[i] + 1] == rot_result[vertexNumber[i]] ? 0
+                                                                                                  : -1;
             }
         if (vertexNumber[0] == 0)
         {

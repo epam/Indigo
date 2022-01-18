@@ -80,7 +80,7 @@ class IndigoRenderer(object):
             obj (IndigoObject): object to render
 
         Returns:
-            list: buffer with byte array
+            buffer with byte array
         """
         self.indigo._setSessionId()
         wb = self.indigo.writeBuffer()

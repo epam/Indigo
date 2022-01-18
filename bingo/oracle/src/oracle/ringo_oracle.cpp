@@ -26,6 +26,8 @@
 const char* bad_reaction_warning = "WARNING: bad reaction: %s\n";
 const char* bad_reaction_warning_rowid = "WARNING: bad reaction %s: %s\n";
 
+using namespace indigo;
+
 RingoOracleContext::RingoOracleContext(BingoContext& context) : RingoContext(context), shadow_table(context.id), fingerprints(context.id)
 {
 }

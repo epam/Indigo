@@ -28,6 +28,8 @@
 #include "reaction/reaction_exact_matcher.h"
 #include "ringo_matchers.h"
 
+using namespace indigo;
+
 IMPL_ERROR(RingoExact, "Ringo exact");
 
 RingoExact::RingoExact(BingoContext& context) : _context(context)

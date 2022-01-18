@@ -27,6 +27,8 @@
 
 // const char * bingo_version_string = "1.7-beta3";
 
+using namespace indigo;
+
 TL_DEF(BingoContext, PtrArray<BingoContext>, _instances);
 
 std::mutex BingoContext::_instances_lock;

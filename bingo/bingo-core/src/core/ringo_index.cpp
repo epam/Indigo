@@ -29,6 +29,8 @@
 #include "reaction/reaction_fingerprint.h"
 #include "ringo_matchers.h"
 
+using namespace indigo;
+
 void RingoIndex::prepare(Scanner& rxnfile, Output& output, std::mutex* lock_for_exclusive_access)
 {
     QS_DEF(Reaction, reaction);

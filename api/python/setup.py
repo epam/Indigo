@@ -7,7 +7,7 @@ import sys
 from setuptools import setup  # type: ignore
 
 CLASSIFIERS = """\
-Development Status :: 4 - Beta
+Development Status :: 5 - Production/Stable
 Intended Audience :: Science/Research
 Intended Audience :: Developers
 License :: OSI Approved :: Apache Software License
@@ -95,7 +95,7 @@ if os.path.exists("indigo_chem.egg-info"):
 
 setup(
     name="epam.indigo",
-    version="1.6.1",
+    version="1.7.0-beta",
     description="Indigo universal cheminformatics toolkit",
     author="EPAM Systems Life Science Department",
     author_email="lifescience.opensource@epam.com",
@@ -123,7 +123,8 @@ setup(
     },
     download_url="https://pypi.org/project/epam.indigo",
     test_suite="tests",
-    extra={
+    extras_require={
+        "ml": ["scikit-learn"],
         "notebooks": [
             "scikit-learn",
             "torch",
@@ -132,6 +133,6 @@ setup(
             "seaborn",
             "pandas",
             "bokeh",
-        ]
+        ],
     },
 )

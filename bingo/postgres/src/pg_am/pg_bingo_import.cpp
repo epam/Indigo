@@ -239,11 +239,11 @@ public:
          */
         if (_parseColumns)
         {
-            int column_count = bingoImportParseFieldList(other_columns_text.getString());
+            int column_count = bingoCore.bingoImportParseFieldList(other_columns_text.getString());
             for (int col_idx = 0; col_idx < column_count; ++col_idx)
             {
                 ImportColumn& idCol = _importColumns.push();
-                idCol.columnName.readString(bingoImportGetColumnName(col_idx), true);
+                idCol.columnName.readString(bingoCore.bingoImportGetColumnName(col_idx), true);
                 column_names.printf(", %s", idCol.columnName.ptr());
             }
         }
@@ -423,7 +423,7 @@ public:
             /*
              * Return back session id and error handler
              */
-            refresh();
+            // refresh();
         }
     }
 
@@ -446,44 +446,46 @@ public:
     {
         _parseColumns = true;
         setFunctionName("importSDF");
-        bingo_res = bingoSDFImportOpen(fname);
-        CORE_HANDLE_ERROR(bingo_res, 1, "importSDF", bingoGetError());
+        try {
+            bingoCore.bingoSDFImportOpen(fname);
+        } CORE_CATCH_ERROR("importSDF")
     }
     ~BingoImportSdfHandler() override
     {
-        bingo_res = bingoSDFImportClose();
-        CORE_HANDLE_WARNING(bingo_res, 0, "importSDF close", bingoGetError());
+        try {
+            bingoCore.bingoSDFImportClose();
+        } CORE_CATCH_WARNING("importSDF close")
     }
 
     bool hasNext() override
     {
-        bingo_res = bingoSDFImportEOF();
-        CORE_HANDLE_ERROR(bingo_res, 0, "importSDF", bingoGetError());
+        try {
+            bingo_res = bingoCore.bingoSDFImportEOF();
+        } CORE_CATCH_ERROR("importSDF")
         return !bingo_res;
     }
 
     void getNextData() override
     {
-
-        const char* data = 0;
         _importData.clear();
 
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
-            if (col_idx == 0)
-                data = bingoSDFImportGetNext();
-            else
-                data = bingoImportGetPropertyValue(col_idx - 1);
-
-            if (data == 0)
-            {
+            const char* data = 0;
+            try {
+                if (col_idx == 0)
+                    data = bingoCore.bingoSDFImportGetNext();
+                else
+                    data = bingoCore.bingoImportGetPropertyValue(col_idx - 1);
+            } CORE_CATCH_WARNING("importSDF")
+            // if (data == 0)
+            // {
                 /*
                  * Handle incorrect format errors
                  */
-                if (strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
-                    throw BingoPgError(bingoGetError());
-                CORE_HANDLE_WARNING(0, 1, "importSDF", bingoGetError());
-            }
+                // if (strstr(, "data size exceeded the acceptable size") != 0)
+                //     throw BingoPgError();
+            // }
 
             _addData(data, col_idx);
         }
@@ -528,44 +530,48 @@ public:
     {
         _parseColumns = true;
         setFunctionName("importRDF");
-        bingo_res = bingoRDFImportOpen(fname);
-        CORE_HANDLE_ERROR(bingo_res, 1, "importRDF", bingoGetError());
+        try {
+            bingoCore.bingoRDFImportOpen(fname);
+        } CORE_CATCH_ERROR("importRDF")
     }
     ~BingoImportRdfHandler() override
     {
-        bingo_res = bingoRDFImportClose();
-        CORE_HANDLE_WARNING(bingo_res, 0, "importRDF close", bingoGetError());
+        try {
+            bingoCore.bingoRDFImportClose();
+        } CORE_CATCH_WARNING("importRDF close")
     }
 
     bool hasNext() override
     {
-        bingo_res = bingoRDFImportEOF();
-        CORE_HANDLE_ERROR(bingo_res, 0, "importRDF", bingoGetError());
+        try {
+            bingo_res = bingoCore.bingoRDFImportEOF();
+        } CORE_CATCH_ERROR("importRDF")
 
         return !bingo_res;
     }
 
     void getNextData() override
     {
-        const char* data = 0;
         _importData.clear();
 
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
-            if (col_idx == 0)
-                data = bingoRDFImportGetNext();
-            else
-                data = bingoImportGetPropertyValue(col_idx - 1);
+            const char* data = 0;
+            try {
+                if (col_idx == 0)
+                    data = bingoCore.bingoRDFImportGetNext();
+                else
+                    data = bingoCore.bingoImportGetPropertyValue(col_idx - 1);
+            } CORE_CATCH_WARNING("importRDF")
 
-            if (data == 0)
-            {
+            // if (data == 0)
+            // {
                 /*
                  * Handle incorrect format errors
                  */
-                if (strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
-                    throw BingoPgError(bingoGetError());
-                CORE_HANDLE_WARNING(0, 1, "importRDF", bingoGetError());
-            }
+                // if (strstr(, "data size exceeded the acceptable size") != 0)
+                //     throw BingoPgError();
+            // }
             _addData(data, col_idx);
         }
     }
@@ -610,41 +616,44 @@ public:
     {
         _parseColumns = false;
         setFunctionName("importSMILES");
-        bingo_res = bingoSMILESImportOpen(fname);
-        CORE_HANDLE_ERROR(bingo_res, 1, "importSmiles", bingoGetError());
+        try {
+            bingoCore.bingoSMILESImportOpen(fname);
+        } CORE_CATCH_ERROR("importSmiles")
     }
     ~BingoImportSmilesHandler() override
     {
-        bingo_res = bingoSMILESImportClose();
-        CORE_HANDLE_WARNING(bingo_res, 0, "importSmiles close", bingoGetError());
+        try {
+            bingoCore.bingoSMILESImportClose();
+        } CORE_CATCH_WARNING("importSmiles close")
     }
 
     bool hasNext() override
     {
-        bingo_res = bingoSMILESImportEOF();
-        CORE_HANDLE_ERROR(bingo_res, 0, "importSmiles", bingoGetError());
+        try {
+            bingo_res = bingoCore.bingoSMILESImportEOF();
+        } CORE_CATCH_ERROR("importSmiles")
         return !bingo_res;
     }
 
     void getNextData() override
     {
 
-        const char* data = 0;
         _importData.clear();
 
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
+            const char* data = 0;
             if (col_idx == 0)
             {
-                data = bingoSMILESImportGetNext();
-                if (data == 0)
-                    CORE_HANDLE_WARNING(0, 1, "importSMILES", bingoGetError());
+                try {
+                    data = bingoCore.bingoSMILESImportGetNext();
+                } CORE_CATCH_WARNING("importSMILES")
             }
             else
             {
-                data = bingoSMILESImportGetId();
-                if (data == 0)
-                    CORE_HANDLE_WARNING(0, 1, "importSMILES", "can not get smiles id");
+                try {
+                    data = bingoCore.bingoSMILESImportGetId();
+                } CORE_CATCH_WARNING("importSMILES")
             }
 
             _addData(data, col_idx);

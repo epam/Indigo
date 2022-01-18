@@ -25,6 +25,8 @@
 const char* bad_molecule_warning = "WARNING: bad molecule: %s\n";
 const char* bad_molecule_warning_rowid = "WARNING: bad molecule %s: %s\n";
 
+using namespace indigo;
+
 MangoOracleContext::MangoOracleContext(BingoContext& context) : MangoContext(context), shadow_table(context.id), fingerprints(context.id)
 {
 }

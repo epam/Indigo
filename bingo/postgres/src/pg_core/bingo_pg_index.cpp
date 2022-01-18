@@ -345,15 +345,15 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx)
             return *_currentSection;
         }
     }
-    profTimerStart(t0, "bingo_pg.read_section");
+    // profTimerStart(t0, "bingo_pg.read_section");
     /*
      * Read the section using offset mapping
      */
     _currentSectionIdx = section_idx;
 
-    profTimerStart(t1, "bingo_pg.get_offset");
+    // profTimerStart(t1, "bingo_pg.get_offset");
     int offset = _getSectionOffset(section_idx);
-    profTimerStop(t1);
+    // profTimerStop(t1);
     _currentSection = std::make_unique<BingoPgSection>(*this, _strategy, offset);
 
     return *_currentSection;
@@ -457,7 +457,7 @@ void BingoPgIndex::readTidItem(ItemPointerData& cmf_item, PG_OBJECT result_ptr)
 
 void BingoPgIndex::readTidItem(int section_idx, int mol_idx, PG_OBJECT result_ptr)
 {
-    profTimerStart(t0, "bingo_pg.read_tid");
+    // profTimerStart(t0, "bingo_pg.read_tid");
     /*
      * Prepare info for reading
      */
@@ -478,7 +478,7 @@ void BingoPgIndex::readTidItem(int section_idx, int mol_idx, PG_OBJECT result_pt
 
 void BingoPgIndex::andWithBitset(int section_idx, int fp_idx, BingoPgExternalBitset& ext_bitset)
 {
-    profTimerStart(t0, "bingo_pg.read_fp_and_with");
+    // profTimerStart(t0, "bingo_pg.read_fp_and_with");
     /*
      * Prepare info for reading
      */
@@ -534,7 +534,7 @@ bool BingoPgIndex::isStructureRemoved(ItemPointerData& cmf_item)
 
 void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>& cmf_buf)
 {
-    profTimerStart(t0, "bingo_pg.read_cmf");
+    // profTimerStart(t0, "bingo_pg.read_cmf");
     /*
      * Prepare info for reading
      */

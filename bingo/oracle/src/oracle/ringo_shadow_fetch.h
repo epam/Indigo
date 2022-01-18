@@ -22,52 +22,55 @@
 #include "oracle/bingo_fetch_engine.h"
 #include <memory>
 
-using namespace indigo;
-
-class RingoFetchContext;
-
-class RingoShadowFetch : public BingoFetchEngine
+namespace indigo
 {
-public:
-    RingoShadowFetch(RingoFetchContext& context);
-    ~RingoShadowFetch() override;
 
-    float calcSelectivity(OracleEnv& env, int total_count) override;
-    void fetch(OracleEnv& env, int maxrows) override;
-    bool end() override;
-    int getIOCost(OracleEnv& env, float selectivity) override;
-    virtual int getTotalCount(OracleEnv& env);
+    class RingoFetchContext;
 
-    bool getLastRowid(OraRowidText& id) override;
-
-    int countOracleBlocks(OracleEnv& env);
-
-    void prepareNonSubstructure(OracleEnv& env);
-    void prepareExact(OracleEnv& env, int right_part);
-
-    DECL_ERROR;
-
-protected:
-    enum
+    class RingoShadowFetch : public BingoFetchEngine
     {
-        _NON_SUBSTRUCTURE = 1,
-        _EXACT = 2
+    public:
+        RingoShadowFetch(RingoFetchContext& context);
+        ~RingoShadowFetch() override;
+
+        float calcSelectivity(OracleEnv& env, int total_count) override;
+        void fetch(OracleEnv& env, int maxrows) override;
+        bool end() override;
+        int getIOCost(OracleEnv& env, float selectivity) override;
+        virtual int getTotalCount(OracleEnv& env);
+
+        bool getLastRowid(OraRowidText& id) override;
+
+        int countOracleBlocks(OracleEnv& env);
+
+        void prepareNonSubstructure(OracleEnv& env);
+        void prepareExact(OracleEnv& env, int right_part);
+
+        DECL_ERROR;
+
+    protected:
+        enum
+        {
+            _NON_SUBSTRUCTURE = 1,
+            _EXACT = 2
+        };
+
+        RingoFetchContext& _context;
+
+        Array<char> _table_name;
+        int _total_count;
+        Array<char> _counting_select;
+        int _processed_rows;
+        bool _end;
+        std::unique_ptr<OracleEnv> _env;
+        std::unique_ptr<OracleStatement> _statement;
+        std::unique_ptr<OracleLOB> _lob_crf;
+        bool _executed;
+        int _fetch_type;
+        OraRowidText _rowid;
+        int _right_part;
     };
 
-    RingoFetchContext& _context;
-
-    Array<char> _table_name;
-    int _total_count;
-    Array<char> _counting_select;
-    int _processed_rows;
-    bool _end;
-    std::unique_ptr<OracleEnv> _env;
-    std::unique_ptr<OracleStatement> _statement;
-    std::unique_ptr<OracleLOB> _lob_crf;
-    bool _executed;
-    int _fetch_type;
-    OraRowidText _rowid;
-    int _right_part;
-};
+} // namespace indigo
 
 #endif

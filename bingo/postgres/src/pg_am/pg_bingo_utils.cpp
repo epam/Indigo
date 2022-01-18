@@ -1,4 +1,5 @@
 #include "bingo_pg_fix_pre.h"
+#include "gzip/gzip_scanner.h"
 
 extern "C"
 {
@@ -18,7 +19,6 @@ extern "C"
 #include "bingo_pg_fix_post.h"
 
 #include "bingo_postgres.h"
-
 #include "base_cpp/scanner.h"
 #include "bingo_core_c.h"
 
@@ -306,7 +306,15 @@ Datum _precache_database(PG_FUNCTION_ARGS)
         /*
          * Read config and offset blocks as meta
          */
-        BingoPgConfig bingo_config;
+        auto bingoContext = std::make_unique<BingoContext>(0);
+        auto mangoContext = std::make_unique<MangoContext>(*bingoContext.get());
+        auto ringoContext = std::make_unique<RingoContext>(*bingoContext.get());
+        bingo_core::BingoCore bingoCore;
+
+        bingoCore.bingo_context = bingoContext.get();
+        bingoCore.mango_context = mangoContext.get();
+        bingoCore.ringo_context = ringoContext.get();
+        BingoPgConfig bingo_config(bingoCore);
         bingo_index.readConfigParameters(bingo_config);
         index_metapages_size += BINGO_METABLOCKS_NUM * BingoPgBufferCacheBin::BUFFER_SIZE;
 
@@ -522,7 +530,7 @@ void bingo_desc(StringInfo buf, uint8 xl_info, char* rec)
 Datum getversion(PG_FUNCTION_ARGS)
 {
     BingoPgText result_text;
-    result_text.initFromString(bingoGetVersion());
+    result_text.initFromString(BINGO_VERSION);
 
     PG_RETURN_TEXT_P(result_text.release());
 }
@@ -598,16 +606,13 @@ Datum getname(PG_FUNCTION_ARGS)
         int buf_size;
         const char* target_buf = mol_text.getText(buf_size);
 
-        const char* bingo_result = bingoGetNameCore(target_buf, buf_size);
-        if (bingo_result == 0)
-        {
-            CORE_HANDLE_WARNING(0, 1, "bingo.getname", bingoGetError());
-            PG_RETURN_NULL();
-        }
+        try {
+            const char* bingo_result = bingo_handler.bingoCore.bingoGetNameCore(target_buf, buf_size);
 
-        BingoPgText result_text;
-        result_text.initFromString(bingo_result);
-        result = result_text.release();
+            BingoPgText result_text;
+            result_text.initFromString(bingo_result);
+            result = result_text.release();
+        } CORE_CATCH_WARNING_RETURN("bingo.getname", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -699,22 +704,6 @@ static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum o
 
     return data_key;
 }
-
-// class BingoExportSdfHandler : public BingoPgCommon::BingoSessionHandler {
-// public:
-//   BingoExportSdfHandler(unsigned int func_id, const char* fname):BingoSessionHandler(func_id, true) {
-//      setFunctionName("exportSDF");
-//      bingoSDFExportOpen(fname);
-////      SPI_connect();
-//   }
-//   virtual ~BingoImportSdfHandler() {
-////      SPI_finish();
-//      bingoSDFExportClose();
-//   }
-//
-// private:
-//   BingoExportSdfHandler(const BingoExportSdfHandler&); //no implicit copy
-//};
 
 Datum exportsdf(PG_FUNCTION_ARGS)
 {

@@ -22,18 +22,21 @@
 #include "oracle/ora_wrap.h"
 #include <string>
 
-using namespace indigo;
-
-class WarningsTable
+namespace indigo
 {
-public:
-    void reset();
-    void setTableNameAndColumns(OracleEnv& env, const char* table_name_with_columns);
 
-    void add(OracleEnv& env, const char* rowid, const char* message);
+    class WarningsTable
+    {
+    public:
+        void reset();
+        void setTableNameAndColumns(OracleEnv& env, const char* table_name_with_columns);
 
-private:
-    Array<char> _table_name, _rowid_column, _message_column;
-};
+        void add(OracleEnv& env, const char* rowid, const char* message);
+
+    private:
+        Array<char> _table_name, _rowid_column, _message_column;
+    };
+
+} // namespace indigo
 
 #endif

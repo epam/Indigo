@@ -9,12 +9,15 @@ namespace indigo
 {
     class Scanner;
     class Output;
+    namespace bingo_core {
+        class BingoCore;
+    }
 } // namespace indigo
 
 class BingoPgConfig
 {
 public:
-    BingoPgConfig();
+    BingoPgConfig(indigo::bingo_core::BingoCore&);
     ~BingoPgConfig()
     {
     }
@@ -26,6 +29,7 @@ public:
 
     void serialize(indigo::Array<char>& config_data);
     void deserialize(void* data, int data_len);
+    indigo::bingo_core::BingoCore& bingoCore;
 
     DECL_ERROR;
 

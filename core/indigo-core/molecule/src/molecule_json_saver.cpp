@@ -261,7 +261,7 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, rapidjson::Writer<rap
         if (sa.contracted == 0)
         {
             writer.Key("expanded");
-            writer.Bool( true );
+            writer.Bool(true);
         }
     }
     break;
@@ -701,7 +701,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                 if (alias_it != aliases.end())
                 {
                     writer.Key("alias");
-                    writer.String( alias_it->second.c_str() );
+                    writer.String(alias_it->second.c_str());
                 }
             }
             if (BaseMolecule::hasCoord(mol))

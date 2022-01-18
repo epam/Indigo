@@ -56,8 +56,8 @@ if(WITH_CAIRO_GLESV2)
     set(CAIRO_HAS_GLESV2_SURFACE 1)
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-features.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-features.h)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-features.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-features.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/cairo-features.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-features.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/config.h)
 
 file(GLOB ${PROJECT_NAME}_SOURCES
         src/*.c
@@ -172,6 +172,7 @@ endif()
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES} ${${PROJECT_NAME}_SOURCES_WIN32})
 target_include_directories(${PROJECT_NAME} SYSTEM
         PUBLIC src
+        PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/src
         PRIVATE boilerplate
 )
 target_link_libraries(${PROJECT_NAME}

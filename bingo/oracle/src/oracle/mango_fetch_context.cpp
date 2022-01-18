@@ -22,6 +22,8 @@
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/mango_shadow_fetch.h"
 
+using namespace indigo;
+
 TL_DEF(MangoFetchContext, PtrArray<MangoFetchContext>, _instances);
 std::mutex MangoFetchContext::_instances_lock;
 
