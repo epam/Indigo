@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 project(indigo LANGUAGES C CXX)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/indigo_version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/indigo_version.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/indigo_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/indigo_version.h)
 
 file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
@@ -11,7 +11,8 @@ file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
 add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})
 target_include_directories(${PROJECT_NAME}-object
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+        PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/src)
 target_link_libraries(${PROJECT_NAME}-object
         PUBLIC indigo-core)
 
