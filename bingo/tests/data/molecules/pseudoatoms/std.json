@@ -1,0 +1,365 @@
+[
+    {
+        "query_id": 2,
+        "query_type": "exact()",
+        "expected": [
+            19
+        ]
+    },
+    {
+        "query_id": 3,
+        "query_type": "exact()",
+        "expected": [
+            15
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "exact()",
+        "expected": "molfile loader: only a query can have stereo care box"
+    },
+    {
+        "query_id": 5,
+        "query_type": "exact()",
+        "expected": [
+            21
+        ]
+    },
+    {
+        "query_id": 7,
+        "query_type": "exact()",
+        "expected": [
+            17
+        ]
+    },
+    {
+        "query_id": 8,
+        "query_type": "exact()",
+        "expected": "molfile loader: 'any' atoms are allowed only for queries"
+    },
+    {
+        "query_id": 9,
+        "query_type": "exact()",
+        "expected": "molfile loader: atom lists are allowed only for queries"
+    },
+    {
+        "query_id": 10,
+        "query_type": "exact()",
+        "expected": "molfile loader: 'Q' label is allowed only for queries"
+    },
+    {
+        "query_id": 12,
+        "query_type": "exact()",
+        "expected": [
+            16
+        ]
+    },
+    {
+        "query_id": 13,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #0 makes no sense"
+    },
+    {
+        "query_id": 14,
+        "query_type": "exact()",
+        "expected": [
+            14
+        ]
+    },
+    {
+        "query_id": 16,
+        "query_type": "exact()",
+        "expected": [
+            20
+        ]
+    },
+    {
+        "query_id": 18,
+        "query_type": "exact()",
+        "expected": [
+            18
+        ]
+    },
+    {
+        "query_id": 1,
+        "query_type": "exact(STE)",
+        "expected": [
+            4,
+            19
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "exact(STE)",
+        "expected": [
+            4,
+            19
+        ]
+    },
+    {
+        "query_id": 3,
+        "query_type": "exact(STE)",
+        "expected": [
+            15
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "exact(STE)",
+        "expected": "molfile loader: only a query can have stereo care box"
+    },
+    {
+        "query_id": 5,
+        "query_type": "exact(STE)",
+        "expected": [
+            21
+        ]
+    },
+    {
+        "query_id": 7,
+        "query_type": "exact(STE)",
+        "expected": [
+            17
+        ]
+    },
+    {
+        "query_id": 8,
+        "query_type": "exact(STE)",
+        "expected": "molfile loader: 'any' atoms are allowed only for queries"
+    },
+    {
+        "query_id": 9,
+        "query_type": "exact(STE)",
+        "expected": "molfile loader: atom lists are allowed only for queries"
+    },
+    {
+        "query_id": 10,
+        "query_type": "exact(STE)",
+        "expected": "molfile loader: 'Q' label is allowed only for queries"
+    },
+    {
+        "query_id": 12,
+        "query_type": "exact(STE)",
+        "expected": [
+            16
+        ]
+    },
+    {
+        "query_id": 13,
+        "query_type": "exact(STE)",
+        "expected": "molfile loader: direction of bond #0 makes no sense"
+    },
+    {
+        "query_id": 14,
+        "query_type": "exact(STE)",
+        "expected": [
+            14
+        ]
+    },
+    {
+        "query_id": 16,
+        "query_type": "exact(STE)",
+        "expected": [
+            20
+        ]
+    },
+    {
+        "query_id": 18,
+        "query_type": "exact(STE)",
+        "expected": [
+            18
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": [
+            4,
+            17,
+            18,
+            19
+        ]
+    },
+    {
+        "query_id": 3,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": [
+            14,
+            15
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": "molfile loader: only a query can have stereo care box"
+    },
+    {
+        "query_id": 5,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": [
+            20,
+            21
+        ]
+    },
+    {
+        "query_id": 7,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": [
+            4,
+            17,
+            18,
+            19
+        ]
+    },
+    {
+        "query_id": 8,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": "molfile loader: 'any' atoms are allowed only for queries"
+    },
+    {
+        "query_id": 9,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": "molfile loader: atom lists are allowed only for queries"
+    },
+    {
+        "query_id": 10,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": "molfile loader: 'Q' label is allowed only for queries"
+    },
+    {
+        "query_id": 12,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": [
+            16
+        ]
+    },
+    {
+        "query_id": 13,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": "molfile loader: direction of bond #0 makes no sense"
+    },
+    {
+        "query_id": 14,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": [
+            14,
+            15
+        ]
+    },
+    {
+        "query_id": 16,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": [
+            20,
+            21
+        ]
+    },
+    {
+        "query_id": 18,
+        "query_type": "similarity(tanimoto, 0.7, 1)",
+        "expected": [
+            4,
+            17,
+            18,
+            19
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "substructure()",
+        "expected": [
+            19
+        ]
+    },
+    {
+        "query_id": 3,
+        "query_type": "substructure()",
+        "expected": [
+            15
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "substructure()",
+        "expected": [
+            21
+        ]
+    },
+    {
+        "query_id": 5,
+        "query_type": "substructure()",
+        "expected": [
+            20,
+            21
+        ]
+    },
+    {
+        "query_id": 7,
+        "query_type": "substructure()",
+        "expected": [
+            17
+        ]
+    },
+    {
+        "query_id": 8,
+        "query_type": "substructure()",
+        "expected": [
+            7
+        ]
+    },
+    {
+        "query_id": 9,
+        "query_type": "substructure()",
+        "expected": [
+            7
+        ]
+    },
+    {
+        "query_id": 10,
+        "query_type": "substructure()",
+        "expected": [
+            7
+        ]
+    },
+    {
+        "query_id": 11,
+        "query_type": "substructure()",
+        "expected": [
+            19
+        ]
+    },
+    {
+        "query_id": 12,
+        "query_type": "substructure()",
+        "expected": [
+            16
+        ]
+    },
+    {
+        "query_id": 13,
+        "query_type": "substructure()",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+    },
+    {
+        "query_id": 14,
+        "query_type": "substructure()",
+        "expected": [
+            14
+        ]
+    },
+    {
+        "query_id": 16,
+        "query_type": "substructure()",
+        "expected": [
+            20,
+            21
+        ]
+    },
+    {
+        "query_id": 18,
+        "query_type": "substructure()",
+        "expected": [
+            18
+        ]
+    }
+]

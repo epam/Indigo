@@ -1,0 +1,50 @@
+[
+    {
+        "query_id": 1,
+        "query_type": "exact()",
+        "expected": [
+            1,
+            2
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "exact()",
+        "expected": [
+            1,
+            2
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "exact()",
+        "expected": [
+            1,
+            2
+        ]
+    },
+    {
+        "query_id": 1,
+        "query_type": "substructure()",
+        "expected": [
+            1,
+            2
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "substructure()",
+        "expected": [
+            1,
+            2
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "substructure()",
+        "expected": [
+            1,
+            2
+        ]
+    }
+]

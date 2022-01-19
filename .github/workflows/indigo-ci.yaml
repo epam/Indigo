@@ -28,7 +28,6 @@ jobs:
         run: git fetch --tags -f
       - name: Check
         run: |
-          python3 -m pip install -r api/python/requirements_dev.txt
           .ci/static_analysis_check.sh
 
   build_indigo_libs_x86_64:
@@ -195,8 +194,6 @@ jobs:
         with:
           name: indigo-libs-macos-aarch64
           path: dist/
-      - name: Install Python test dependencies
-        run: python3 -m pip install -r api/python/requirements_dev.txt
       - name: Build wrappers
         run: |
           mkdir build
@@ -728,23 +725,22 @@ jobs:
         run: |
           cd build
           ctest --verbose
-#      - name: Install Python test dependencies
-#        run: python3 -m pip install -r api/python/requirements_dev.txt
-#      - name: Prepare integration tests
-#        run: |
-#          cd build
-#          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
-#          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
-#      - name: Run integration tests
-#        run: |
-#          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
-#      - name: Publish Test Report
-#        if: always()
-#        uses: mikepenz/action-junit-report@v1
-#        with:
-#          report_paths: 'junit_report.xml'
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          check_name: "windows-mingw_python_test_report"
+      - name: Prepare integration tests
+        run: |
+          cd build
+          # python -m pip install wheel
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
+          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
+      - name: Run integration tests
+        run: |
+          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "windows-mingw_python_test_report"
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -916,7 +912,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 9.6, 10, 11, 12 ]
+        postgres_major_version: [ 10, 11, 12 ]
     runs-on: ubuntu-latest
     container: epmlsop/buildpack-centos7:latest
     steps:
@@ -925,6 +921,10 @@ jobs:
         with:
           lfs: false
           fetch-depth: 500
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
       - name: Git fetch tags
         run: git fetch --tags -f
       - name: Install postgres server headers
@@ -941,6 +941,16 @@ jobs:
           cd build
           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
+      - name: Build Docker image
+        run: |
+          docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg PG_VERSION=${{ matrix.postgres_major_version }} .
+          docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
+      - name: Install dev dependencies
+        run: pip install -r bingo/tests/requirements.txt
+      - name: Run Bingo tests
+        run: |
+          pytest --db postgres
+        working-directory: bingo/tests
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -951,7 +961,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "9.6", "10", "11", "12" ]
+        postgres_major_version: [ "10", "11", "12" ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -984,7 +994,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 9.6, 10, 11, 12 ]
+        postgres_major_version: [ 10, 11, 12 ]
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -999,7 +1009,6 @@ jobs:
           case ${{ matrix.postgres_major_version }} in 12) pg_version=12.8;; "11") pg_version=11.13;; 10) pg_version=10.18;; 9.6) pg_version=9.6.23;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
-          mv pgsql/include/zlib.h pgsql/include/zlib.h.bck
       - name: Build bingo-postgres
         run: |
           mkdir build

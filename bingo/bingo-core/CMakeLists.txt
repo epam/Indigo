@@ -12,4 +12,4 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC indigo-core)
 target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
-        PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/src)
+        PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/src/core)

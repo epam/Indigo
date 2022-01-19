@@ -1,0 +1,33 @@
+[
+    {
+        "query_id": 3,
+        "query_type": "similarity(euclid-sub, 0.95, 1)",
+        "expected": [
+            1183,
+            1184,
+            1651,
+            1657
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "similarity(euclid-sub, 0.95, 1)",
+        "expected": [
+            1928
+        ]
+    },
+    {
+        "query_id": 5,
+        "query_type": "similarity(euclid-sub, 0.95, 1)",
+        "expected": [
+            1150
+        ]
+    },
+    {
+        "query_id": 6,
+        "query_type": "similarity(euclid-sub, 0.95, 1)",
+        "expected": [
+            526
+        ]
+    }
+]

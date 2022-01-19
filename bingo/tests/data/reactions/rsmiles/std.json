@@ -1,0 +1,1652 @@
+[
+    {
+        "query_id": 1,
+        "query_type": "rsmiles",
+        "expected": "C1=CC=CC=C1C(O)=O>>C1=CC=CC=C1N"
+    },
+    {
+        "query_id": 2,
+        "query_type": "rsmiles",
+        "expected": "C1=CC=CC=C1C(O)=O>>C1=CC=CC=C1N"
+    },
+    {
+        "query_id": 3,
+        "query_type": "rsmiles",
+        "expected": "[OH:1][OH:2]>>[OH:1][OH:2]"
+    },
+    {
+        "query_id": 4,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][O:2][OH:3]>>[OH:3][O:2][CH3:1]"
+    },
+    {
+        "query_id": 5,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH:2](Br)[CH3:3]>>[CH3:1][CH:2]([H])[CH3:3]"
+    },
+    {
+        "query_id": 6,
+        "query_type": "rsmiles",
+        "expected": ">>C1CC2CC21"
+    },
+    {
+        "query_id": 7,
+        "query_type": "rsmiles",
+        "expected": "N(=O)O>>N#N"
+    },
+    {
+        "query_id": 8,
+        "query_type": "rsmiles",
+        "expected": "[CH:2]1=[CH:1][NH:3][CH:5]=[CH:4]1>>[C:5]1([NH:3][CH:1]=[CH:2][CH:4]=1)C(=O)O"
+    },
+    {
+        "query_id": 9,
+        "query_type": "rsmiles",
+        "expected": "[C@@]12(CC[C@]([H])(CC1=O)C2(C)C)CS(=O)(=O)/N=C/C1C=CC=CC=1.C(Cl)(=O)COC(=O)C>>C1(=CC=CC=C1)C[C@@H](O)C(=O)OCC"
+    },
+    {
+        "query_id": 10,
+        "query_type": "rsmiles",
+        "expected": "C(O)(C)C=C>>C(=O)(C)CC"
+    },
+    {
+        "query_id": 11,
+        "query_type": "rsmiles",
+        "expected": ">>[192AtH]"
+    },
+    {
+        "query_id": 12,
+        "query_type": "rsmiles",
+        "expected": "[C@@H:1]([CH3:4])([CH2:3][NH2:6])[CH2:2][CH3:5]>>[C@@H:3]([NH2:6])(C(=O)O)[C@@H:1]([CH3:4])[CH2:2][CH3:5].[C@H:3]([NH2:6])(C(=O)O)[C@@H:1]([CH3:4])[CH2:2][CH3:5]"
+    },
+    {
+        "query_id": 13,
+        "query_type": "rsmiles",
+        "expected": "[C@@H:1]([CH3:4])([CH2:3][NH2:6])[C:2]([3H:8])([3H:7])[C:5]([3H:11])([3H:10])[3H:9]>>[C@@H:3]([NH2:6])(C(=O)O)[C@@H:1]([CH3:4])[C:2]([3H:8])([3H:7])[C:5]([3H:11])([3H:10])[3H:9].[C@H:3]([NH2:6])(C(=O)O)[C@@H:1]([CH3:4])[C:2]([3H:8])([3H:7])[C:5]([3H:11])([3H:10])[3H:9]"
+    },
+    {
+        "query_id": 14,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:4][CH3:7])=[CH:3][CH:6]=[CH:8][CH:5]=[CH:2]1>>[C:1]1([O:4][CH3:7])=[CH:3][CH:6]=[C:8]([211At])[CH:5]=[CH:2]1"
+    },
+    {
+        "query_id": 15,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[CH:4][C:10](=[CH:14][CH:8]=[C:3]1[O:9][CH2:15][CH2:20][N:26]([CH3:32])[CH3:31])/[C:16](/[C:22]1=[CH:30][CH:37]=[CH:40][CH:36]=[CH:29]1)=[C:21](/[CH2:28][CH3:35])\\[C:27]1=[CH:34][CH:39]=[CH:41][CH:38]=[CH:33]1)[Sn](CCCC)(CCCC)CCCC>>C(/C1=CC=CC=C1)(=C(/CC)\\C1=CC=CC=C1)\\C1=CC=C(OCCN(C)C)C([222At])=C1"
+    },
+    {
+        "query_id": 16,
+        "query_type": "rsmiles",
+        "expected": "C1(=CC(=CC=C1OCCN(C)C)/C(/C1=CC=CC=C1)=C(/CC)\\C1=CC=CC=C1)[Sn](CCCC)(CCCC)CCCC>>C(/C1=CC=CC=C1)(=C(/CC)\\C1=CC=CC=C1)\\C1=CC=C(OCCN(C)C)C([192At])=C1"
+    },
+    {
+        "query_id": 17,
+        "query_type": "rsmiles",
+        "expected": "[32PH3]>>[32PH3]"
+    },
+    {
+        "query_id": 18,
+        "query_type": "rsmiles",
+        "expected": "[29P-](S)(S)(OCC)OCC>>[29P](S)(OCC)(OCC)SCS[32P](=S)(OCC)OCC |^1:9|"
+    },
+    {
+        "query_id": 19,
+        "query_type": "rsmiles",
+        "expected": "[3H]>>[3H].[3H]"
+    },
+    {
+        "query_id": 20,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[CH:4][CH:7]=[CH:9][CH:6]=[CH:3]1)/[CH:2]=[CH:5]/[C:8](=[O:11])[CH3:10]>>[C:1]1(=[CH:4][CH:7]=[CH:9][CH:6]=[CH:3]1)/[CH:2]=[CH:5]/[C@@H:8]([OH:11])[CH3:10]"
+    },
+    {
+        "query_id": 21,
+        "query_type": "rsmiles",
+        "expected": "C1(=CC=CC=C1)/C=C/C(=O)C>>C1(=CC=CC=C1)/C=C/[C@@H](O)C"
+    },
+    {
+        "query_id": 22,
+        "query_type": "rsmiles",
+        "expected": "N1(CCCC1COC)C(=O)C(C)([N+]#[C-])CC1=CC=CC=C1>>C1(=CC=CC=C1)CC(N)(C)C(=O)O"
+    },
+    {
+        "query_id": 23,
+        "query_type": "rsmiles",
+        "expected": "N1(CCC[C@H]1COC)[C:3](=[O:8])[C@@:7]([CH3:13])([N+:12]#[C-])[CH2:11][C:15]1=[CH:18][CH:20]=[CH:21][CH:19]=[CH:17]1>>[C:15]1(=[CH:18][CH:20]=[CH:21][CH:19]=[CH:17]1)[CH2:11][C@@:7]([NH2:12])([CH3:13])[C:3](=[O:8])O"
+    },
+    {
+        "query_id": 24,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[CH:5]/[CH:4]=[CH:3]\\[CH3:2]>>[CH2:2]=[CH:3]/[CH:4]=[CH:5]\\[O:1][H]"
+    },
+    {
+        "query_id": 25,
+        "query_type": "rsmiles",
+        "expected": "[C:1]([NH:5][C@@H:12]([CH2:20][CH2:25][OH:27])/[CH:19]=[CH:24]/[C:26](=[O:29])[O:28][CH3:30])([C:4]1[CH:11]=[CH:18][CH:23]=[CH:17][CH:10]=1)([C:3]1[CH:9]=[CH:16][CH:22]=[CH:15][CH:8]=1)[C:2]1[CH:7]=[CH:14][CH:21]=[CH:13][CH:6]=1>>[C:1]([NH:5][C@H:12]1[CH2:20][CH2:25][O:27][C@H:19]1[CH2:24][C:26](=[O:29])[O:28][CH3:30])([C:3]1=[CH:9][CH:16]=[CH:22][CH:15]=[CH:8]1)([C:2]1=[CH:7][CH:14]=[CH:21][CH:13]=[CH:6]1)[C:4]1=[CH:11][CH:18]=[CH:23][CH:17]=[CH:10]1.[C:1]([NH:5][C@H:12]1[CH2:20][CH2:25][O:27][C@@H:19]1[CH2:24][C:26](=[O:29])[O:28][CH3:30])([C:4]1[CH:11]=[CH:18][CH:23]=[CH:17][CH:10]=1)([C:3]1[CH:9]=[CH:16][CH:22]=[CH:15][CH:8]=1)[C:2]1[CH:7]=[CH:14][CH:21]=[CH:13][CH:6]=1"
+    },
+    {
+        "query_id": 26,
+        "query_type": "rsmiles",
+        "expected": "CCCC.CC(C)=C>>CC(CCC)=C"
+    },
+    {
+        "query_id": 27,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]#[CH:2].[CH2:3]=[CH2:4]>>[CH:1]#[CH:2].[CH2:3]=[CH2:4] |f:0.1,2.3|"
+    },
+    {
+        "query_id": 28,
+        "query_type": "rsmiles",
+        "expected": "S(CCO)CCO>>"
+    },
+    {
+        "query_id": 29,
+        "query_type": "rsmiles",
+        "expected": "C12CC(=O)CCCC=1C=C(C(OC)=C2O)OC>>"
+    },
+    {
+        "query_id": 30,
+        "query_type": "rsmiles",
+        "expected": "C(/F)(\\OCC)=C(\\F)/C(F)(F)F>>"
+    },
+    {
+        "query_id": 31,
+        "query_type": "rsmiles",
+        "expected": "C1(C)(C)N(C)C(C(=[N+]=[N-])C1=O)=O>>"
+    },
+    {
+        "query_id": 32,
+        "query_type": "rsmiles",
+        "expected": "[C:1](=[S:4]=[N:8][S:15](=[O:21])(=[O:20])[C:19]1=[CH:25][CH:27]=[C:28]([CH3:29])[CH:26]=[CH:24]1)([S:3][C:7]1=[CH:14][CH:18]=[CH:23][CH:17]=[CH:13]1)[C:2]1=[C:6]([CH3:12])[CH:11]=[C:16]([CH3:22])[CH:9]=[C:5]1[CH3:10]>>[C:1](=[S:4]=[N:8][S:15](=[O:21])(=[O:20])[C:19]1=[CH:25][CH:27]=[C:28]([CH3:29])[CH:26]=[CH:24]1)([S:3][C:7]1=[CH:14][CH:18]=[CH:23][CH:17]=[CH:13]1)[C:2]1=[C:6]([CH3:12])[CH:11]=[C:16]([CH3:22])[CH:9]=[C:5]1[CH3:10]"
+    },
+    {
+        "query_id": 33,
+        "query_type": "rsmiles",
+        "expected": "C(=S=NS(=O)(=O)C1=CC=C(C)C=C1)(SC1=CC=CC=C1)C1=C(C)C=C(C)C=C1C>>"
+    },
+    {
+        "query_id": 34,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][OH:2]>>[CH3:1][O:2]C(=O)C"
+    },
+    {
+        "query_id": 35,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][O:2][H]>>[CH3:1][O:2]C(=O)C"
+    },
+    {
+        "query_id": 36,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][O:2][H]>>[CH3:1][O:2]C(=O)C"
+    },
+    {
+        "query_id": 37,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH2:2][H]>>[CH3:1][CH2:2]Cl"
+    },
+    {
+        "query_id": 38,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH3:2]>>[CH3:1][CH2:2]Cl"
+    },
+    {
+        "query_id": 39,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2]([H])([H])[H]>>[CH3:1][CH2:2]Cl"
+    },
+    {
+        "query_id": 40,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH:2]([H])[H]>>[CH3:1][CH2:2]Cl"
+    },
+    {
+        "query_id": 41,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH3:2]>>[CH3:1][CH2:2]O"
+    },
+    {
+        "query_id": 42,
+        "query_type": "rsmiles",
+        "expected": "C1(C=CC=C(SC)C=1NC)C1=CCCCC1>>C1(C=CC=C(SC)C=1NC)C1=CCCCC1=O"
+    },
+    {
+        "query_id": 43,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1]/[CH:2]=[CH:3]\\[CH3:4]>>[CH3:1][CH:2]([H])[CH:3]([H])[CH3:4]"
+    },
+    {
+        "query_id": 44,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1]/[CH:2]=[CH:3]\\[CH3:4]>>[H][CH:2]([CH:3]([CH3:4])[H])[CH3:1]"
+    },
+    {
+        "query_id": 45,
+        "query_type": "rsmiles",
+        "expected": "Nc:c>>[N+](#N)c:c"
+    },
+    {
+        "query_id": 46,
+        "query_type": "rsmiles",
+        "expected": "Nc:c>>[N+](#N)c:c"
+    },
+    {
+        "query_id": 47,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1]/[CH:2]=[C:3](\\[H:5])/[CH3:4]>>[CH2:1]=[CH:2][C@:3]([C@@H](C)O[H])([CH3:4])[H:5] |&1:7,8|"
+    },
+    {
+        "query_id": 48,
+        "query_type": "rsmiles",
+        "expected": "[C@H:1]1([NH:4][C:9](=[O:13])[CH3:12])[C@@H:3](O)[O:7][C@H:10]([CH2:14][OH:15])[C@@H:5]([OH:11])[C@@H:2]1[OH:6].[C:16](Cl)(=[O:18])[CH3:17]>>[C@@H:2]1([O:6][C:16](=[O:18])[CH3:17])[C@@H:1]([NH:4][C:9](=[O:13])[CH3:12])[C@@H:3]([O:7][C@H:10]([CH2:14][O:15][C:16](=[O:18])[CH3:17])[C@H:5]1[O:11][C:16](=[O:18])[CH3:17])Cl"
+    },
+    {
+        "query_id": 49,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]12[CH2:4][CH:9]=[CH:6][CH:2]1[CH:5]1[CH2:7][CH:3]2[CH:8]=[CH:10]1>>[CH:3]12[CH2:8][CH:6]3[CH2:9][CH:4]([CH2:10][CH:5]([CH2:2]3)[CH2:7]1)[CH2:1]2"
+    },
+    {
+        "query_id": 50,
+        "query_type": "rsmiles",
+        "expected": "[C:1](=O)(O)[CH2:2][NH2:5].[C:6](=[O:9])(C)O[C:6](=[O:9])C>>[C:1](/C)(\\[CH2:2][NH3+:5])=N/N[C:6](=[O:9])N.[Cl-] |f:2.3|"
+    },
+    {
+        "query_id": 51,
+        "query_type": "rsmiles",
+        "expected": "[C:1]([CH3:5])([CH3:4])([O:2][CH3:6])[O:2][CH3:6].[CH2:8]([CH2:10][OH:12])[CH2:9][CH3:11]>>[O:12]([CH2:10][CH2:8][CH2:9][CH3:11])[C:1]([CH3:5])([CH3:4])[O:12][CH2:10][CH2:8][CH2:9][CH3:11].[CH3:6][OH:2]"
+    },
+    {
+        "query_id": 52,
+        "query_type": "rsmiles",
+        "expected": "[C@:1]12([H])[CH2:4][CH2:10][C@:11]3([CH3:17])[C@H:16]([CH2:18][CH2:12][C@@:5]3([H])[C@:2]1([H])[CH2:6][CH:13]=[C:7]1[CH2:14][C@@H:19]([CH2:15][CH2:8][C@:3]21[CH3:9])O)[C:20](=[O:23])O.[C:27](=[O:30])([CH3:29])O[C:31](=[O:33])[CH3:32]>>[C@:11]12([CH3:17])[CH2:10][CH2:4][C@:1]3([H])[C@@:3]4([CH3:9])[CH2:8][CH2:15][C@@H:19](O[C:31](=[O:33])[CH3:32])[CH2:14][C:7]4=[CH:13][CH2:6][C@@:2]3([H])[C@:5]1([H])[CH2:12][CH2:18][C@@H:16]2[C:20](=[O:23])O[C:27](=[O:30])[CH3:29]"
+    },
+    {
+        "query_id": 53,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([CH2:3][OH:6])[CH:2]([OH:5])[CH3:4]>>[CH2:1]([CH2:3][OH:6])[C@@H:2]([OH:5])[CH3:4]"
+    },
+    {
+        "query_id": 54,
+        "query_type": "rsmiles",
+        "expected": ">>[CH2:1]([CH2:3][OH:6])[C@@H:2]([OH:5])[CH3:4]"
+    },
+    {
+        "query_id": 55,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([CH2:3][OH:6])[CH:2]([OH:5])[CH3:4]>>"
+    },
+    {
+        "query_id": 56,
+        "query_type": "rsmiles",
+        "expected": "[C:7](=[O:10])(OC)[CH2:8][CH3:11]>>[C:7](=[O:10])([CH2:8][CH3:11])O[CH2:3][CH2:1][C@H:2]([OH:5])[CH3:4]"
+    },
+    {
+        "query_id": 57,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([CH2:3][OH:6])[CH:2]([OH:5])[CH3:4]>>[CH2:1]([CH2:3][OH:6])[C@@H:2]([OH:5])[CH3:4]"
+    },
+    {
+        "query_id": 58,
+        "query_type": "rsmiles",
+        "expected": "[C:7](=[O:10])(OC)[CH2:8][CH3:11]>>[C:7](=[O:10])([CH2:8][CH3:11])O[CH2:3][CH2:1][C@H:2]([OH:5])[CH3:4]"
+    },
+    {
+        "query_id": 59,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([CH2:3][OH:6])[CH:2]([OH:5])[CH3:4].[C:7](=[O:10])(OC)[CH2:8][CH3:11]>>[C:7](=[O:10])([CH2:8][CH3:11])O[CH2:3][CH2:1][C@H:2]([OH:5])[CH3:4].[CH2:1]([CH2:3][OH:6])[C@@H:2]([OH:5])[CH3:4]"
+    },
+    {
+        "query_id": 60,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([CH2:3][OH:6])[CH:2]([OH:5])[CH3:4].[C:7](=[O:10])(OC)[CH2:8][CH3:11]>>[C:7](=[O:10])([CH2:8][CH3:11])O[CH2:3][CH2:1][C@H:2]([OH:5])[CH3:4].[CH2:1]([CH2:3][OH:6])[C@@H:2]([OH:5])[CH3:4]"
+    },
+    {
+        "query_id": 61,
+        "query_type": "rsmiles",
+        "expected": ">>[C:7](=[O:10])([CH2:8][CH3:11])O[CH2:3][CH2:1][C@H:2]([OH:5])[CH3:4]"
+    },
+    {
+        "query_id": 62,
+        "query_type": "rsmiles",
+        "expected": "[Si:1]([CH3:5])([CH3:4])([CH3:3])[N:2]([P:7]=[N:11][Si:12]([CH3:15])([CH3:14])[CH3:13])[Si:6]([CH3:10])([CH3:9])[CH3:8].[C:16]([CH3:19])([CH3:18])=[N+]=[N-]>>[N:2]([Si:6]([CH3:10])([CH3:9])[CH3:8])([Si:1]([CH3:5])([CH3:4])[CH3:3])[P:7](=[C:16]([CH3:19])[CH3:18])=[N:11][Si:12]([CH3:15])([CH3:14])[CH3:13]"
+    },
+    {
+        "query_id": 63,
+        "query_type": "rsmiles",
+        "expected": "[C:8]([CH3:11])([CH3:10])([CH3:9])[CH:7]=[P:1](=[N:2][C:3]([CH3:6])([CH3:5])[CH3:4])[N:12]([CH:14]([CH3:18])[CH3:17])[CH:13]([CH3:16])[CH3:15]>>[P:1]1([N:12]([CH:14]([CH3:18])[CH3:17])[CH:13]([CH3:16])[CH3:15])[N:2]([CH:7]1[C:8]([CH3:11])([CH3:10])[CH3:9])[C:3]([CH3:6])([CH3:5])[CH3:4]"
+    },
+    {
+        "query_id": 64,
+        "query_type": "rsmiles",
+        "expected": "C1CCCCC1>>C1CCCCC1"
+    },
+    {
+        "query_id": 65,
+        "query_type": "rsmiles",
+        "expected": "C1C=CC=CC=1>>C1C=CC=CC=1"
+    },
+    {
+        "query_id": 66,
+        "query_type": "rsmiles",
+        "expected": "C1CCCC1>>C1CCCC1"
+    },
+    {
+        "query_id": 67,
+        "query_type": "rsmiles",
+        "expected": "C1CCC(C)C1>>C1CCC(C)C1"
+    },
+    {
+        "query_id": 68,
+        "query_type": "rsmiles",
+        "expected": "C1CCC2CCCCC2C1>>C1CCC2CCCCC2C1"
+    },
+    {
+        "query_id": 69,
+        "query_type": "rsmiles",
+        "expected": "C1CCC2=CCCCC2C1>>C1CCC2=CCCCC2C1"
+    },
+    {
+        "query_id": 70,
+        "query_type": "rsmiles",
+        "expected": "[C@:1]12([CH3:5])[CH2:4][CH2:10][C@:11]3([H])[C@@:15]4([CH3:19])[CH2:18][CH2:21][C@@H:22]([O:23]C(=O)C)[CH2:20][C:17]4=[CH:16][CH2:12][C@@:6]3([H])[C@:2]1([H])[CH2:7][CH2:8][C@@H:3]2[C:9](=[O:14])C.Br[O-].[Na+]>>[C@:11]12([H])[CH2:10][CH2:4][C@:1]3([CH3:5])[C@H:3]([CH2:8][CH2:7][C@@:2]3([H])[C@:6]1([H])[CH2:12][CH:16]=[C:17]1[CH2:20][C@@H:22]([CH2:21][CH2:18][C@:15]21[CH3:19])[OH:23])[C:9](=[O:14])O |f:1.2|"
+    },
+    {
+        "query_id": 71,
+        "query_type": "rsmiles",
+        "expected": "[C@:1]12([H])[CH2:4][CH2:10][C@:11]3([CH3:17])[C@H:16]([CH2:18][CH2:12][C@@:5]3([H])[C@:2]1([H])[CH2:6][CH:13]=[C:7]1[CH2:14][C@@H:19]([CH2:15][CH2:8][C@:3]21[CH3:9])O)[C:20](=[O:23])O.[C:27](=[O:30])([CH3:29])O[C:31](=[O:33])[CH3:32]>>[C@:11]12([CH3:17])[CH2:10][CH2:4][C@:1]3([H])[C@@:3]4([CH3:9])[CH2:8][CH2:15][C@@H:19](O[C:31](=[O:33])[CH3:32])[CH2:14][C:7]4=[CH:13][CH2:6][C@@:2]3([H])[C@:5]1([H])[CH2:12][CH2:18][C@@H:16]2[C:20](=[O:23])O[C:27](=[O:30])[CH3:29]"
+    },
+    {
+        "query_id": 72,
+        "query_type": "rsmiles",
+        "expected": "[C@:1]12([CH3:5])[CH2:4][CH2:10][C@:11]3([H])[C@@:15]4([CH3:20])[CH2:19][CH2:24][C@@H:25]([O:26][C:27](=[O:29])[CH3:28])[CH2:23][C:18]4=[CH:16][CH2:12][C@@:6]3([H])[C@:2]1([H])[CH2:7][CH2:9][C@@H:3]2[C:8](=[O:14])O[C:17](=[O:22])[CH3:21].O>>[C@:1]12([CH3:5])[CH2:4][CH2:10][C@:11]3([H])[C@@:15]4([CH3:20])[CH2:19][CH2:24][C@@H:25]([O:26][C:27](=[O:29])[CH3:28])[CH2:23][C:18]4=[CH:16][CH2:12][C@@:6]3([H])[C@:2]1([H])[CH2:7][CH2:9][C@@H:3]2[C:8](=[O:14])O.[C:17](=[O:22])(O)[CH3:21]"
+    },
+    {
+        "query_id": 73,
+        "query_type": "rsmiles",
+        "expected": "[C@:1]12([CH3:5])[CH2:4][CH2:10][C@:11]3([H])[C@@:15]4([CH3:19])[CH2:18][CH2:21][C@@H:22]([O:23][C:24](=[O:26])[CH3:25])[CH2:20][C:17]4=[CH:16][CH2:12][C@@:6]3([H])[C@:2]1([H])[CH2:7][CH2:8][C@@H:3]2[C:9](=[O:14])C>>[C@:1]12([CH3:5])[CH2:4][CH2:10][C@:11]3([H])[C@@:15]4([CH3:19])[CH2:18][CH2:21][C@@H:22]([O:23][C:24](=[O:26])[CH3:25])[CH2:20][C:17]4=[CH:16][CH2:12][C@@:6]3([H])[C@:2]1([H])[CH2:7][CH2:8][C@@H:3]2[C:9](=[O:14])O"
+    },
+    {
+        "query_id": 74,
+        "query_type": "rsmiles",
+        "expected": "[C@H:1]1([NH:4][C:9](=[O:13])[CH3:12])[C@@H:3](O)[O:7][C@H:10]([CH2:14][OH:15])[C@@H:5]([OH:11])[C@@H:2]1[OH:6].[C:16](Cl)(=[O:18])[CH3:17]>>[C@@H:2]1([O:6][C:16](=[O:18])[CH3:17])[C@@H:1]([NH:4][C:9](=[O:13])[CH3:12])[C@@H:3]([O:7][C@H:10]([CH2:14][O:15][C:16](=[O:18])[CH3:17])[C@H:5]1[O:11][C:16](=[O:18])[CH3:17])Cl"
+    },
+    {
+        "query_id": 75,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([C:3]#[N:5])[C:2]#[N:4].[N:6]([O-:8])=O.[Na+]>>[C:1](=[N:6]/[OH:8])(/[C:2]#[N:4])\\[C:3]#[N:5] |f:1.2|"
+    },
+    {
+        "query_id": 76,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]1[CH2:3][CH:5]=[CH:6][CH2:4][CH2:2]1.[C:7]1(=[CH:10][CH:14]=[CH:16][CH:13]=[CH:9]1)[C:8](=[O:12])[O:11][O:15][C:17]([CH3:20])([CH3:19])[CH3:18]>>[C:7]1(=[CH:10][CH:14]=[CH:16][CH:13]=[CH:9]1)[C:8](=[O:12])[O:11][CH:3]1[CH:5]=[CH:6][CH2:4][CH2:2][CH2:1]1.[C:17]([OH:15])([CH3:20])([CH3:19])[CH3:18].[C:7]1([C:8](=[O:12])[OH:11])=[CH:10][CH:14]=[CH:16][CH:13]=[CH:9]1"
+    },
+    {
+        "query_id": 77,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]1[NH:3][CH2:5][CH2:6][NH:4][CH2:2]1.[C:7]1([CH2:10]Cl)=[CH:9][CH:12]=[CH:14][CH:11]=[CH:8]1>>[C:7]1(=[CH:9][CH:12]=[CH:14][CH:11]=[CH:8]1)[CH2:10][N:3]1[CH2:5][CH2:6][NH:4][CH2:2][CH2:1]1"
+    },
+    {
+        "query_id": 78,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]12N=N[CH:5]([CH2:6][CH2:3]1)[CH2:2]2>>[CH:1]12[CH2:3][CH2:6][CH:5]1[CH2:2]2"
+    },
+    {
+        "query_id": 79,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[CH:8][CH:11]=[CH:6][C:2]=1[S:5]([N:7]=[N:3]2)(=[O:10])=[O:9].[CH2:12]1[CH:14]=[CH:16][CH:15]=[CH:13]1>>[N:3]12[CH:13]3[CH:15]=[CH:16][CH:14]([CH2:12]3)[N:7]1[S:5]([C:2]1[CH:6]=[CH:11][CH:8]=[CH:4][C:1]2=1)(=[O:10])=[O:9]"
+    },
+    {
+        "query_id": 80,
+        "query_type": "rsmiles",
+        "expected": "[CH:1](C(Cl)(Cl)Cl)([C:3]1=[CH:8][CH:15]=[CH:17][CH:14]=[CH:7]1)[C:2]1=[CH:6][CH:13]=[C:16]([Br:18])[CH:12]=[CH:5]1>>[C:2]1(=[CH:6][CH:13]=[C:16]([Br:18])[CH:12]=[CH:5]1)[CH2:1][C:3]1=[CH:8][CH:15]=[CH:17][CH:14]=[CH:7]1"
+    },
+    {
+        "query_id": 81,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(/[CH:4]=[CH:7]/[CH:9]=[O:10])=[CH:3][CH:6]=[CH:8][CH:5]=[CH:2]1>>[C:1]1(/[CH:4]=[CH:7]/[CH2:9][OH:10])=[CH:3][CH:6]=[CH:8][CH:5]=[CH:2]1"
+    },
+    {
+        "query_id": 82,
+        "query_type": "rsmiles",
+        "expected": "[Si:1]([CH3:5])([CH3:4])([C:2]#[N:6])[C:2]#[N:6].[C:8](=[O:11])([CH3:10])[CH2:9][C:12](=[O:14])[CH3:13]>>[C:8]1([CH3:10])([C:2]#[N:6])[CH:9]=[C:12]([O:14][Si:1]([CH3:5])([CH3:4])[O:11]1)[CH3:13]"
+    },
+    {
+        "query_id": 83,
+        "query_type": "rsmiles",
+        "expected": "[C@@:1]12([CH2:5][OH:10])[CH2:4][O:9][CH2:12][N:7]([CH3:13])[C@:2]1([H])[C@@H:6]1[C@@H:8]([O:14][C:15]([CH3:17])([CH3:16])[O:11]1)[O:3]2>>[C:1]1([CH2:4]O)([CH2:5][OH:10])[O:3][C@H:8]2[C@H:6]([O:11][C:15]([O:14]2)([CH3:17])[CH3:16])[C@H:2]1[N:7]([CH3:13])[CH:12]=[O:9]"
+    },
+    {
+        "query_id": 84,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([CH2:3][CH2:5][CH:7]=[O:9])[CH2:2][CH2:4][CH2:6][CH3:8]>>[CH2:1]([CH2:3][CH2:5][CH2:7][OH:9])[CH2:2][CH2:4][CH2:6][CH3:8]"
+    },
+    {
+        "query_id": 85,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:4][CH3:7])=[CH:3][CH:6]=[CH:8][CH:5]=[CH:2]1>>[C:1]1([O:4][CH3:7])=[CH:3][CH2:6][CH:8]=[CH:5][CH2:2]1"
+    },
+    {
+        "query_id": 86,
+        "query_type": "rsmiles",
+        "expected": "C(=S)=S>>C1(OC)=CCC=CC1"
+    },
+    {
+        "query_id": 87,
+        "query_type": "rsmiles",
+        "expected": "[CH:1](/[CH:3]=[O:5])=[CH:2]\\[CH3:4]>>[CH2:1]([CH:3]=[O:5])[CH2:2][CH3:4]"
+    },
+    {
+        "query_id": 88,
+        "query_type": "rsmiles",
+        "expected": "[S:1](Cl)(=[O:3])[CH3:2].[O:5]([CH2:7][CH3:11])[Si:6](C)(C)[CH3:8]>>[O:5]([CH2:7][CH3:11])[S:1](=[O:3])[CH3:2].[SiH2:6](Cl)[CH3:8]"
+    },
+    {
+        "query_id": 89,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([C:3][CH2:5][CH2:7][C:9][CH2:11][OH2+5:13])[CH:2][CH2:4][C-2:6][CH4-2:8][CH2:10][CH3:12]>>[BH4]([OH+:13][CH2:11][CH2:9][CH2:7][CH2:5][CH2:3][CH2:1][CH2:2][CH2:4][CH2:6][CH2:8][CH2:10][CH3:12])([O:13][CH2:11][CH2:9][CH2:7][CH2:5][CH2:3][CH2:1][CH2:2][CH-:4][CH2:6][CH:8][CH2:10][C+3:12])[O:13][CH2:11][CH2:9][CH2:7][CH2:5][CH2:3][CH2:1][CH2:2][CH2:4][CH2:6][CH2:8][CH2:10][13CH3] |^4:1,^3:4,^1:7,37|"
+    },
+    {
+        "query_id": 90,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([CH2:3][CH2:5][CH2:7][CH2:9][CH2:11][OH:13])[CH2:2][CH2:4][CH2:6][CH2:8][CH2:10][CH3:12]>>B([O:13][CH2:11][CH2:9][CH2:7][CH2:5][CH2:3][CH2:1][CH2:2][CH2:4][CH2:6][CH2:8][CH2:10][CH3:12])([O:13][CH2:11][CH2:9][CH2:7][CH2:5][CH2:3][CH2:1][CH2:2][CH2:4][CH2:6][CH2:8][CH2:10][CH3:12])[O:13][CH2:11][CH2:9][CH2:7][CH2:5][CH2:3][CH2:1][CH2:2][CH2:4][CH2:6][CH2:8][CH2:10][CH3:12]"
+    },
+    {
+        "query_id": 91,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([OH:4])=[CH:3][CH:6]=[CH:7][CH:5]=[CH:2]1>>B([O:4][C:1]1=[CH:3][CH:6]=[CH:7][CH:5]=[CH:2]1)([O:4][C:1]1=[CH:3][CH:6]=[CH:7][CH:5]=[CH:2]1)[O:4][C:1]1=[CH:3][CH:6]=[CH:7][CH:5]=[CH:2]1"
+    },
+    {
+        "query_id": 92,
+        "query_type": "rsmiles",
+        "expected": "[Si:1]([CH3:5])([C:4]([CH3:12])([CH3:11])[CH3:10])([C:3]([CH3:9])([CH3:8])[CH3:7])OCl(=O)(=O)=O.[CH:16]1(O)[CH2:18][CH2:21][CH2:22][CH2:20][CH2:17]1>>[Si:1]([CH3:5])([C:4]([CH3:12])([CH3:11])[CH3:10])([C:3]([CH3:9])([CH3:8])[CH3:7])O[CH:16]1[CH2:18][CH2:21][CH2:22][CH2:20][CH2:17]1"
+    },
+    {
+        "query_id": 93,
+        "query_type": "rsmiles",
+        "expected": "O(CC)S(=O)C.[SiH2](Cl)C>>S(Cl)(=O)C.O(CC)[Si](C)(C)C"
+    },
+    {
+        "query_id": 94,
+        "query_type": "rsmiles",
+        "expected": "CC#CC>>C/C=C/C.C/C=C\\C |f:1.2|"
+    },
+    {
+        "query_id": 95,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2]#[C:3][CH3:4]>>[CH3:1]/[CH:2]=[CH:3]/[CH3:4].[CH3:1]/[CH:2]=[CH:3]\\[CH3:4] |f:1.2|"
+    },
+    {
+        "query_id": 96,
+        "query_type": "rsmiles",
+        "expected": "C(CCCCl)OC(C)=O>>OC(C)=O"
+    },
+    {
+        "query_id": 97,
+        "query_type": "rsmiles",
+        "expected": "C(CCCCl)[O:4][C:1]([CH3:2])=[O:3]>>[OH:4][C:1]([CH3:2])=[O:3]"
+    },
+    {
+        "query_id": 98,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]12[CH2:4][CH:9]=[CH:6][CH:2]1[CH:5]1[CH2:7][CH:3]2[CH:8]=[CH:10]1.>>[CH:3]12[CH2:8][CH:6]3[CH2:9][CH:4]([CH2:10][CH:5]([CH2:2]3)[CH2:7]1)[CH2:1]2"
+    },
+    {
+        "query_id": 99,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]12[CH2:4][CH:9]=[CH:6][CH:2]1[CH:5]1[CH2:7][CH:3]2[CH:8]=[CH:10]1>>[CH:3]12[CH2:8][CH:6]3[CH2:9][CH:4]([CH2:10][CH:5]([CH2:2]3)[CH2:7]1)[CH2:1]2."
+    },
+    {
+        "query_id": 100,
+        "query_type": "rsmiles",
+        "expected": "[K]>>[K] |^1:0,1|"
+    },
+    {
+        "query_id": 101,
+        "query_type": "rsmiles",
+        "expected": "C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;*;;;;;*;$|"
+    },
+    {
+        "query_id": 102,
+        "query_type": "rsmiles",
+        "expected": "[C:2]1(=[O:1])[CH2:3][CH2:4][NH:5]1>>*[C:2]{-}([CH2:3][CH2:4][NH:5]{+n}*)=[O:1] |$;;;;;*;;;;;*;$|"
+    },
+    {
+        "query_id": 103,
+        "query_type": "rsmiles",
+        "expected": "C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;*;;;;;*;$|"
+    },
+    {
+        "query_id": 104,
+        "query_type": "rsmiles",
+        "expected": "C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;*;;;;;*;$|"
+    },
+    {
+        "query_id": 105,
+        "query_type": "rsmiles",
+        "expected": "OC(CCN([H])[H])=O>>*C{-}(CCN{+n}*)=O |$;;;;;;;;*;;;;;*;$|"
+    },
+    {
+        "query_id": 106,
+        "query_type": "rsmiles",
+        "expected": "O[C:2]([CH2:3][CH2:4][N:5]([H])[H])=[O:1]>>*[C:2]{-}([CH2:3][CH2:4][NH:5]{+n}*)=[O:1] |$;;;;;;;;*;;;;;*;$|"
+    },
+    {
+        "query_id": 107,
+        "query_type": "rsmiles",
+        "expected": "O[CH:2]=[O:1]>>N[CH:2]=[O:1]"
+    },
+    {
+        "query_id": 108,
+        "query_type": "rsmiles",
+        "expected": "OC=O>>NC=O"
+    },
+    {
+        "query_id": 109,
+        "query_type": "rsmiles",
+        "expected": "C=C.C(=C)OC(C)=O>>CCC(CCCC(OC(=O)C)CCCC(C)OC(=O)C)OC(=O)C"
+    },
+    {
+        "query_id": 110,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]=[CH2:2].[CH:4](=[CH2:3])[O:5][C:6]([CH3:8])=[O:7]>>[CH3:1][CH2:2][CH:4]([CH2:3][CH2:1][CH2:2][CH:4]([O:5][C:6](=[O:7])[CH3:8])[CH2:3][CH2:1][CH2:2][CH:4]([CH3:3])[O:5][C:6](=[O:7])[CH3:8])[O:5][C:6](=[O:7])[CH3:8]"
+    },
+    {
+        "query_id": 111,
+        "query_type": "rsmiles",
+        "expected": "[CH:7]1=[CH:6][C:5]([C:8]([OH:10])=[O:9])=[CH:4][CH:3]=[C:2]1[OH:1].[C:11]1(=[CH:16][CH:15]=[CH:14][C:13]([C:17](=[O:18])[OH:19])=[CH:12]1)O>>[CH:7]1=[CH:6][C:5]([C:8]([O:10][C:11]2=[CH:12][C:13]([C:17]([OH:19])=[O:18])=[CH:14][CH:15]=[CH:16]2)=[O:9])=[CH:4][CH:3]=[C:2]1[OH:1]"
+    },
+    {
+        "query_id": 112,
+        "query_type": "rsmiles",
+        "expected": "C1=CC(C(O)=O)=CC=C1O.C1(=CC=CC(C(=O)O)=C1)O>>C1=CC(C(OC2=CC(C(O)=O)=CC=C2)=O)=CC=C1O"
+    },
+    {
+        "query_id": 113,
+        "query_type": "rsmiles",
+        "expected": "C1=CC(C(O)=O)=CC=C1O.C1(=CC=CC(C(=O)O)=C1)O>>C1=CC(C(OC2C=CC(C(O)=O)=CC=2)=O)=CC=C1O"
+    },
+    {
+        "query_id": 114,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2]([CH3:3])([H])[H]>>[CH3:1][C:2](=O)[CH3:3]"
+    },
+    {
+        "query_id": 115,
+        "query_type": "rsmiles",
+        "expected": "C(=O)C=C.Cl>>C(=O)CCCl"
+    },
+    {
+        "query_id": 116,
+        "query_type": "rsmiles",
+        "expected": ">>C1CC2CC21"
+    },
+    {
+        "query_id": 117,
+        "query_type": "rsmiles",
+        "expected": "C1=CC=C(N(=O)O)C=C1>>N#N"
+    },
+    {
+        "query_id": 118,
+        "query_type": "rsmiles",
+        "expected": "N(=O)O>>N#N"
+    },
+    {
+        "query_id": 119,
+        "query_type": "rsmiles",
+        "expected": "C1(C=O)C=CC=CC=1OC.C1(C)(C)CC(C=C(C)C1)=O>>C1(=CC(CC(C)(C)C1)=O)/C=C/C1C=CC=CC=1OC"
+    },
+    {
+        "query_id": 120,
+        "query_type": "rsmiles",
+        "expected": "C1C(OP=O)=CC=CC=1>>C1C=CC=CC=1"
+    },
+    {
+        "query_id": 121,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1=[CH:2][CH:3]=[CH:4][CH:5]=[C:6]1OP=O>>[CH:1]1[CH:6]=[CH:5][CH:4]=[CH:3][CH:2]=1"
+    },
+    {
+        "query_id": 122,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1=[CH:2][CH:3]=[CH:4][CH:5]=[C:6]1OP=O>>[CH:1]1[CH:6]=[CH:5][CH:4]=[CH:3][CH:2]=1"
+    },
+    {
+        "query_id": 123,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2](O)([OH:4])[CH3:3]>>[CH3:1][C:2](=[O:4])[CH3:3]"
+    },
+    {
+        "query_id": 124,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2](=O)[CH3:4]>>[CH3:1][CH2:2][CH3:4]"
+    },
+    {
+        "query_id": 125,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH2:2][CH3:3]>>[CH3:1][C:2](=O)[CH3:3]"
+    },
+    {
+        "query_id": 126,
+        "query_type": "rsmiles",
+        "expected": "[H][C:2]([CH3:5])([CH3:4])[H]>>[CH3:4][C:2](=O)[CH3:5]"
+    },
+    {
+        "query_id": 127,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2](=O)[CH3:4]>>[H][C:2]([CH3:4])([CH3:1])[H]"
+    },
+    {
+        "query_id": 128,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][S:2](=O)[CH3:4]>>[CH3:1][S:2][CH3:4]"
+    },
+    {
+        "query_id": 129,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][S:2](=O)[CH3:4]>>[CH3:1][S:2][CH3:4]"
+    },
+    {
+        "query_id": 130,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][S:2][CH3:3]>>[CH3:1][S:2](=O)[CH3:3]"
+    },
+    {
+        "query_id": 131,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][S:2][CH3:3]>>[CH3:1][S:2](=O)[CH3:3]"
+    },
+    {
+        "query_id": 132,
+        "query_type": "rsmiles",
+        "expected": ">>C12NCCC1=CC=CC=2"
+    },
+    {
+        "query_id": 133,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH:2]1SCS[CH:3]1[CH3:4]>>[CH3:1][CH2:2][CH2:3][CH3:4]"
+    },
+    {
+        "query_id": 134,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH:2]1SCS[CH:3]1[CH3:4]>>[CH3:1][CH2:2][CH2:3][CH3:4]"
+    },
+    {
+        "query_id": 135,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH2:2][CH2:3][CH3:4]>>[CH3:1][CH:2]1SCS[CH:3]1[CH3:4]"
+    },
+    {
+        "query_id": 136,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH2:2][CH2:3][CH3:4]>>[CH3:1][CH:2]1SCS[CH:3]1[CH3:4]"
+    },
+    {
+        "query_id": 137,
+        "query_type": "rsmiles",
+        "expected": "C/[CH:2]=C/C=[CH2:3].[CH2:1]=CC>>C[CH:2]1C=C[CH2:3]C(C)[CH2:1]1 |f:0.1|"
+    },
+    {
+        "query_id": 138,
+        "query_type": "rsmiles",
+        "expected": "C[CH:1](C)C(=O)O>>C[CH:1]C"
+    },
+    {
+        "query_id": 139,
+        "query_type": "rsmiles",
+        "expected": "C[CH:1]C>>C[CH:1](C)C(=O)O"
+    },
+    {
+        "query_id": 140,
+        "query_type": "rsmiles",
+        "expected": "[H][CH:1](C)C>>C[CH:1](C)C(=O)O"
+    },
+    {
+        "query_id": 141,
+        "query_type": "rsmiles",
+        "expected": "C[CH:1](C)C(=O)O>>C[CH:1]([H])C"
+    },
+    {
+        "query_id": 142,
+        "query_type": "rsmiles",
+        "expected": "[C:1]([CH3:5])([CH3:4])=[S+]C>>[C:1](=C)([CH3:5])[CH3:4]"
+    },
+    {
+        "query_id": 143,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2]([H])=[O:3]>>[CH3:1][C:2](=[O:3])O"
+    },
+    {
+        "query_id": 144,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2]([H])=[O:3]>>[CH3:1][C:2](=[O:3])O"
+    },
+    {
+        "query_id": 145,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2](=[O:4])[CH3:3]>>C[CH2:3][C:2](=[O:4])[CH3:1]"
+    },
+    {
+        "query_id": 146,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2](=[O:4])[CH3:3]>>C[CH2:3][C:2](=[O:4])[CH3:1]"
+    },
+    {
+        "query_id": 147,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH:2]([OH:4])[CH3:3]>>[CH3:1][CH:2]([OH:4])[CH3:3]"
+    },
+    {
+        "query_id": 148,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH:2]([OH:4])[CH3:3]>>[CH3:1][CH:2]([OH:4])[CH3:3]"
+    },
+    {
+        "query_id": 149,
+        "query_type": "rsmiles",
+        "expected": "[P+:1](Cl)([C:4]1=[CH:11][CH:17]=[CH:20][CH:16]=[CH:10]1)([C:3]1=[CH:9][CH:15]=[CH:19][CH:14]=[CH:8]1)[C:2]1=[CH:7][CH:13]=[CH:18][CH:12]=[CH:6]1.[Sb-:21]([Cl:27])([Cl:26])([Cl:25])([Cl:24])([Cl:23])[Cl:22]>>[P:1](=N[N+]#N)([C:4]1=[CH:11][CH:17]=[CH:20][CH:16]=[CH:10]1)([C:3]1=[CH:9][CH:15]=[CH:19][CH:14]=[CH:8]1)[C:2]1=[CH:7][CH:13]=[CH:18][CH:12]=[CH:6]1.[Sb-:21]([Cl:27])([Cl:26])([Cl:25])([Cl:24])([Cl:23])[Cl:22] |f:0.1,2.3|"
+    },
+    {
+        "query_id": 150,
+        "query_type": "rsmiles",
+        "expected": "[C@H](C(=O)O)(NC(=O)OC(C)(C)C)CC1=CC=CC=C1.[Co+3](C)(C)(C)(C)(C)OC(=O)[C@@H](N)CC(C)C.[B-](F)(F)(F)F.[B-](F)(F)(F)F.[B-](F)(F)(F)F>>[C@@H](CC(C)C)(NC(=O)[C@@H](N)CC1=CC=CC=C1)C(=O)O[Co+3](C)(C)(C)(C)C.C(F)(F)(F)C([O-])=O.C(F)(F)(F)C([O-])=O.C(F)(F)(F)C([O-])=O |f:1.2.3.4,5.6.7.8|"
+    },
+    {
+        "query_id": 151,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[C:2]([CH3:4])[CH3:3]>>[OH:1][CH:2]([CH3:4])[CH3:3]"
+    },
+    {
+        "query_id": 152,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[C:2]([CH3:4])[CH3:3]>>[OH:1][CH:2]([CH3:4])[CH3:3]"
+    },
+    {
+        "query_id": 153,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[C:2]([CH3:4])[CH3:3]>>[OH:1][CH:2]([CH3:4])[CH3:3]"
+    },
+    {
+        "query_id": 154,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[C:2]([CH3:4])[CH3:3]>>[OH:1][CH:2]([CH3:4])[CH3:3]"
+    },
+    {
+        "query_id": 155,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1([CH2:5][CH2:10][CH2:15][CH2:9][CH2:4]1)O>>[CH:1]1=[CH:4][CH2:9][CH2:15][CH2:10][CH2:5]1"
+    },
+    {
+        "query_id": 156,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]1[CH2:5][CH2:4][CH2:3][CH2:2]1>>[CH2:1]1[CH2:5][CH2:4]C[CH2:3][CH2:2]1"
+    },
+    {
+        "query_id": 157,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[CH:8][CH:11]=[CH:6][C:2]=1[C:5]([CH3:10])=[C:9]([C:7](=[O:12])[O:3]2)[C:13]#[N:14]>>[C:2]12[CH:6]=[CH:11][CH:8]=[CH:4][C:1]=1[O:3][C:7](=[O:12])[C:9]1=[C:13](S[CH:10]=[C:5]21)[NH2:14]"
+    },
+    {
+        "query_id": 158,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[CH:8][CH:11]=[CH:6][C:2]=1[C:5]([CH3:10])=[C:9]([C:7](=[O:12])[NH:3]2)[C:13]#[N:14]>>[C:2]12[CH:6]=[CH:11][CH:8]=[CH:4][C:1]=1[NH:3][C:7](=[O:12])[C:9]1=[C:13](S[CH:10]=[C:5]21)[NH2:14]"
+    },
+    {
+        "query_id": 159,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[CH:9][CH:13]=[CH:8][C:3]=1[O:7][C:10](=[O:14])[C:5]1=[C:11](S[CH:6]=[C:2]21)[NH2:15].[C:16](=[O:19])([O:18][CH2:21][CH3:23])/[CH:17]=[CH:20]/[C:22](=[O:25])[O:24][CH2:26][CH3:27]>>[C:2]12[CH:6]=[C:17]([C:20]([C:22](=[O:25])[O:24][CH2:26][CH3:27])=[C:11]([NH2:15])[C:5]=1[C:10](=[O:14])[O:7][C:3]1[CH:8]=[CH:13][CH:9]=[CH:4][C:1]2=1)[C:16](=[O:19])[O:18][CH2:21][CH3:23]"
+    },
+    {
+        "query_id": 160,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[O:4][C:9]([C:13]([C:17]#[N:18])=[C:7]([CH3:14])[C:3]=1[CH:8]=[CH:10][C:5]1[CH:11]=[CH:16][CH:12]=[CH:6][C:2]2=1)=[O:15]>>[C:3]12[CH:8]=[CH:10][C:5]3[CH:11]=[CH:16][CH:12]=[CH:6][C:2]=3[C:1]=1[O:4][C:9]([C:13]1=[C:17](S[CH:14]=[C:7]21)[NH2:18])=[O:15]"
+    },
+    {
+        "query_id": 161,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[CH:9][CH:13]=[CH:8][C:3]=1[O:7][C:10](=[O:14])[C:5]1=[C:11](S[CH:6]=[C:2]21)[NH2:15].[C:16](=[O:19])([O:18][CH3:21])[C:17]#[C:20][C:22](=[O:24])[O:23][CH3:25]>>[C:2]12[CH:6]=[C:17]([C:20]([C:22](=[O:24])[O:23][CH3:25])=[C:11]([NH2:15])[C:5]=1[C:10](=[O:14])[O:7][C:3]1[CH:8]=[CH:13][CH:9]=[CH:4][C:1]2=1)[C:16](=[O:19])[O:18][CH3:21]"
+    },
+    {
+        "query_id": 162,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[CH:9][CH:13]=[CH:8][C:3]=1[O:7][C:10](=[O:14])[C:5]1=[C:11]([S:12][CH:6]=[C:2]21)[NH2:15].[C:16](=[O:19])([C:18]#[CH:21])[O:17][CH2:20][CH3:22]>>[C:2]12[CH:5]=[CH:21][C:18](=[C:11]([NH2:15])[S:12][C:6]=1[C:10]([O:7][C:3]1[CH:8]=[CH:13][CH:9]=[CH:4][C:1]2=1)=[O:14])[C:16](=[O:19])[O:17][CH2:20][CH3:22]"
+    },
+    {
+        "query_id": 163,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[CH:9][CH:13]=[CH:8][C:3]=1[NH:7][C:10](=[O:14])[C:5]1=[C:11]([S:12][CH:6]=[C:2]21)[NH2:15].[C:16](=[O:19])([O:18][CH3:21])[C:17]#[C:20][C:22](=[O:24])[O:23][CH3:25]>>[C:2]12[CH:5]=[C:17]([C:16](=[O:19])[O:18][CH3:21])[C:20](=[C:11]([NH2:15])[S:12][C:6]=1[C:10]([NH:7][C:3]1[CH:8]=[CH:13][CH:9]=[CH:4][C:1]2=1)=[O:14])[C:22](=[O:24])[O:23][CH3:25]"
+    },
+    {
+        "query_id": 164,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12=[C:4]([CH3:10])[S:9][C:6]([NH2:13])=[C:2]1[C:5](=[O:12])[N:11]([N:7]=[C:3]2[C:8](=[O:15])OC)[C:16]1=[CH:19][CH:21]=[CH:22][CH:20]=[CH:18]1.[C:23](=[O:26])([O:25][CH2:28][CH3:30])/[CH:24]=[CH:27]/[C:29](=[O:32])[O:31][CH2:33][CH3:34]>>[C:1]12[C:3]3[C:8]([S:9][C@:4]1([CH3:10])[CH:27]([C:29](=[O:32])[O:31][CH2:33][CH3:34])[C:24](=[C:6]([NH2:13])[C:2]=2[C:5](=[O:12])[N:11]([N:7]=3)[C:16]1[CH:18]=[CH:20][CH:22]=[CH:21][CH:19]=1)[C:23](=[O:26])[O:25][CH2:28][CH3:30])=[O:15] |&1:38,w:40|"
+    },
+    {
+        "query_id": 165,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[CH:2][CH:3]=[CH2:4]>>[O:1]=[CH:2][CH2:3][CH:4]([H])[H]"
+    },
+    {
+        "query_id": 166,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[CH:2][CH:3]=[CH2:4]>>[O:1]=[CH:2][CH2:3][CH:4]([H])[H]"
+    },
+    {
+        "query_id": 167,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[CH:2][CH:3]=[CH2:4]>>[O:1]=[CH:2][CH2:3][CH:4]([H])[H]"
+    },
+    {
+        "query_id": 168,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]12[CH2:4][CH2:10][C:11]3=[CH:17][C:21](=[CH:18][CH:12]=[C:5]3[C:2]1([CH3:7])[CH2:6][CH2:13][C:8](OCOC)=[C:3]2[C:9](=[O:16])[O:15][CH3:20])[CH:23]([CH3:26])[CH3:25]>>[C@@:1]12([H])[CH2:4][CH2:10][C:11]3=[CH:17][C:21](=[CH:18][CH:12]=[C:5]3[C:2]1([CH3:7])[CH2:6][CH2:13][CH2:8][C@:3]2(C)[C:9](=[O:16])[O:15][CH3:20])[CH:23]([CH3:26])[CH3:25] |&1:26,41|"
+    },
+    {
+        "query_id": 169,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[CH:4][C:8]([N:7]([CH2:11][C:15]2[CH:18]=[CH:20][CH:21]=[CH:19][CH:17]=2)S1)=[O:12])[C:2](=[O:6])[C:5]1[CH:10]=[CH:14][CH:16]=[CH:13][CH:9]=1>>[C:5]1([CH:10]=[CH:14][CH:16]=[CH:13][CH:9]=1)[C:2](=[O:6])[CH2:1][CH2:4][C:8](=[O:12])[NH:7][CH2:11][C:15]1[CH:18]=[CH:20][CH:21]=[CH:19][CH:17]=1"
+    },
+    {
+        "query_id": 170,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([C:4](=[O:10])[O:9]/[C:7](=[CH:13]\\Br)/[C:3]=1Br)[CH:2]([CH2:6][CH2:12][CH3:16])OC(=O)C>>[C:1](=[CH:2]/[CH2:6][CH2:12][CH3:16])(\\[C:4](=[O:10])O)/[CH2:3][C:7](=[O:9])[CH3:13]"
+    },
+    {
+        "query_id": 171,
+        "query_type": "rsmiles",
+        "expected": "[Si](F)(F)(CC)[C:2]1[CH:7]=[CH:10][C:11]([CH3:12])=[CH:9][CH:6]=1.[O+:13]#[C-:14].[C:15]1(=[CH:18][CH:22]=[C:23](I)[CH:21]=[CH:17]1)[C:16](=[O:20])[CH3:19]>>[C:14](=[O:13])([C:2]1[CH:6]=[CH:9][C:11]([CH3:12])=[CH:10][CH:7]=1)[C:23]1=[CH:22][CH:18]=[C:15]([C:16](=[O:20])[CH3:19])[CH:17]=[CH:21]1"
+    },
+    {
+        "query_id": 172,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1([C:4]2=CC=CC=C2)[CH:3]2[CH2:6][CH:2]1[CH2:5]2>>[CH:1]1([C:4](=O)O)[CH:3]2[CH2:6][CH:2]1[CH2:5]2"
+    },
+    {
+        "query_id": 173,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2](=O)[NH2:4]>>[CH3:1][C:2](=S)[NH2:4]"
+    },
+    {
+        "query_id": 174,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([C:3]#[N:6])[C:2](=O)[NH2:4]>>[CH2:1]([C:3]#[N:6])[C:2](=S)[NH2:4]"
+    },
+    {
+        "query_id": 175,
+        "query_type": "rsmiles",
+        "expected": "[NH2:1][CH2:2]C[C:4](O)=[O:5]>>[NH:1]1[C:4](=[O:5])C[CH2:2]1"
+    },
+    {
+        "query_id": 176,
+        "query_type": "rsmiles",
+        "expected": "[O-:1][N+:2]([cH:4]:[c:5])=[O:3].[cH:6]([N+:8]([O-])=O):[c:7]>>[O-:1][N+:2]([cH:4]:[c:5])=[O:3].[cH:6]([N:8]([H])[H]):[c:7] |f:0.1,2.3|"
+    },
+    {
+        "query_id": 177,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[CH:2][CH:3]=[CH2:4].[CH2:5]=[CH2:6]>>[O:1]=[CH:2][CH:3]=[CH2:4].[CH2:5]([H])[CH2:6][H] |f:0.1,2.3|"
+    },
+    {
+        "query_id": 178,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH3:2].[O:3]=[CH:4][CH:5]=[CH2:6]>>[O:3]=[CH:4][CH:5]=[CH2:6].[CH2:1]([H])[CH2:2][H] |f:0.1,2.3|"
+    },
+    {
+        "query_id": 179,
+        "query_type": "rsmiles",
+        "expected": "[N:1]1([CH:4]=[CH:8][C:10](=[O:12])[CH:7]=[CH:3]1)[C:2](=[O:6])[O:5][CH2:9][CH3:11]>>[N:1]1([CH:4]=[CH:8][C:10](=[O:12])[CH2:7][CH2:3]1)[C:2](=[O:6])[O:5][CH2:9][CH3:11]"
+    },
+    {
+        "query_id": 180,
+        "query_type": "rsmiles",
+        "expected": "[CH:1](/[C:3]([O-:6])=[O:5])=[CH:2]\\[CH:4]=[CH:7]\\[CH3:8].[Na+]>>[CH:1](/[C:3](=[O:5])[OH:6])=[CH:2]\\[CH2:4][CH2:7][CH3:8] |f:0.1|"
+    },
+    {
+        "query_id": 181,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH2:4][CH2:8][C:11]([CH3:13])=[CH:6][C:2]=1[C:5](=[O:10])[CH:9]=[C:7]([CH3:12])[O:3]2>>[C:1]12[CH2:4][CH2:8][CH:11]([CH3:13])[CH2:6][C:2]=1[C:5](=[O:10])[CH:9]=[C:7]([CH3:12])[O:3]2"
+    },
+    {
+        "query_id": 182,
+        "query_type": "rsmiles",
+        "expected": "N[C:2](=[O:4])[CH3:3].[N:5]#[CH:6]>>[H][C:2]([H])([O:4][H])[CH3:3].[N:5]#[CH:6] |f:0.1,2.3|"
+    },
+    {
+        "query_id": 183,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:11]=[CH:12][CH:13]=[CH:14][C:6]1=[CH:5][C:4]1=[C:3]([CH:10]=[CH:9][CH:8]=[CH:7]1)[CH:2]=2.[CH:15]#[CH:16]>>[C:1]12[CH:11]=[CH:12][CH:13]=[CH:14][C:6]=1[CH:5]1[CH:15]=[CH:16][CH:2]2[C:3]2[CH:10]=[CH:9][CH:8]=[CH:7][C:4]=21"
+    },
+    {
+        "query_id": 184,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:11]=[CH:12][CH:13]=[CH:14][C:6]1=[CH:5][C:4]1=[C:3]([CH:10]=[CH:9][CH:8]=[CH:7]1)[CH:2]=2.[CH:15]#[CH:16]>>[C:1]12[CH:11]=[CH:12][CH:13]=[CH:14][C:6]=1[CH:5]1[CH:15]=[CH:16][CH:2]2[C:3]2[CH:10]=[CH:9][CH:8]=[CH:7][C:4]=21"
+    },
+    {
+        "query_id": 185,
+        "query_type": "rsmiles",
+        "expected": ">>[C:1]12[CH:11]=[CH:12][CH:13]=[CH:14][C:6]=1[CH:5]1[CH:15]=[CH:16][CH:2]2[C:3]2[CH:10]=[CH:9][CH:8]=[CH:7][C:4]=21"
+    },
+    {
+        "query_id": 186,
+        "query_type": "rsmiles",
+        "expected": ">>C12C=CC=CC=1C1C=CC2C2C=CC=CC=21"
+    },
+    {
+        "query_id": 187,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:11]=[CH:12][CH:13]=[CH:14][C:6]1=[CH:5][C:4]1=[C:3]([CH:10]=[CH:9][CH:8]=[CH:7]1)[CH:2]=2.[CH:15]#[CH:16]>>"
+    },
+    {
+        "query_id": 188,
+        "query_type": "rsmiles",
+        "expected": "C12C=CC=CC1=CC1=C(C=CC=C1)C=2.C#C>>"
+    },
+    {
+        "query_id": 189,
+        "query_type": "rsmiles",
+        "expected": "C12C=CC=CC1=CC1=C(C=CC=C1)C=2.C#C>>C12C=CC=CC=1C1C=CC2C2C=CC=CC=21"
+    },
+    {
+        "query_id": 190,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[O:7])[CH2:6][CH2:5][CH2:4][CH2:3][CH2:2]1.[CH2:8]=[CH:9][C:10](=[O:12])[CH3:11]>>[C:1]1(=[O:7])[CH2:2][CH2:3][CH2:4][CH2:5][CH:6]1[CH2:8][CH2:9][C:10](=[O:12])[CH3:11]"
+    },
+    {
+        "query_id": 191,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2]([H])=[O:3].[CH2:5]([CH3:9])[C:6](=[O:7])[CH3:8]>>[CH3:1][C:2]([H])([CH:5]([CH3:9])[C:6](=[O:7])[CH3:8])[OH:3]"
+    },
+    {
+        "query_id": 192,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([CH3:5])[C:2](=[O:3])[CH3:4].[CH3:6][C:7]([H])=[O:8]>>[CH3:6][C:7]([H])([CH:1]([CH3:5])[C:2](=[O:3])[CH3:4])[OH:8]"
+    },
+    {
+        "query_id": 193,
+        "query_type": "rsmiles",
+        "expected": "C(C)C(=O)C.CC([H])=O>>CC([H])(C(C)C(=O)C)O"
+    },
+    {
+        "query_id": 194,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([SH:4])=[CH:3][CH:6]=[CH:7][CH:5]=[CH:2]1>>[C:1]1(=[CH:3][CH:6]=[CH:7][CH:5]=[CH:2]1)[S:4][S:4][C:1]1=[CH:3][CH:6]=[CH:7][CH:5]=[CH:2]1"
+    },
+    {
+        "query_id": 195,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(Cl)=[CH:3][CH:6]=[CH:7][CH:5]=[CH:2]1>>[C:1]1(O)=[CH:3][CH:6]=[CH:7][CH:5]=[CH:2]1"
+    },
+    {
+        "query_id": 196,
+        "query_type": "rsmiles",
+        "expected": "C(F)(F)(F)[C:1](=[O:3])C(F)(F)F.[CH2:2]([CH:5]=O)[C:4](=O)C>>[C:1]([OH:3])(C(F)(F)F)(C(F)(F)F)[CH:2]([CH:5]=O)[C:4](=O)C"
+    },
+    {
+        "query_id": 197,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([CH:4]=[CH:8][C:9](Br)=[CH:7][CH:3]=1)[C:2](=[O:6])[CH3:5].C([O:13][CH:15]=[CH2:17])CCC>>[C:1]1(=[CH:3][CH:7]=[C:9]([C:15](=[O:13])[CH3:17])[CH:8]=[CH:4]1)[C:2](=[O:6])[CH3:5]"
+    },
+    {
+        "query_id": 198,
+        "query_type": "rsmiles",
+        "expected": "[Sn](CCCC)(CCCC)(CCCC)[C:2](=[CH2:7])OCC.[C:19]1(=[CH:21][CH:23]=[C:24](Br)[CH:22]=[CH:20]1)[C:26](=[O:29])[CH3:28]>>[C:19]1(=[CH:21][CH:23]=[C:24]([C:2](=O)[CH3:7])[CH:22]=[CH:20]1)[C:26](=[O:29])[CH3:28]"
+    },
+    {
+        "query_id": 199,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([H])=[CH:6][CH:5]=[CH:4][CH:3]=[CH:2]1>>[C:1]1(Cl)=[CH:6][CH:5]=[CH:4][CH:3]=[CH:2]1"
+    },
+    {
+        "query_id": 200,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1[CH:3]=[CH:5][CH:6]=[CH:4][CH:2]=1>>[C:4]1(Cl)[CH:6]=[CH:5][CH:3]=[CH:1][CH:2]=1"
+    },
+    {
+        "query_id": 201,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1=[CH:3][CH:5]=[CH:6][CH:4]=[CH:2]1>>[C:4]1(Cl)=[CH:6][CH:5]=[CH:3][CH:1]=[CH:2]1"
+    },
+    {
+        "query_id": 202,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([C:7](=O)[OH:8])=[CH:6][C:5]([CH3:10])=[CH:4][CH:3]=[CH:2]1>>[C:1]1([CH2:7][OH:8])=[CH:6][C:5]([CH3:10])=[CH:4][CH:3]=[CH:2]1"
+    },
+    {
+        "query_id": 203,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([C:4](=O)[OH:9])=[C:3]([CH3:8])[C:7](=[C:11]([CH3:14])[C:5]([CH3:12])=[C:2]1[CH3:6])[CH3:13]>>[C:1]1([CH2:4][OH:9])=[C:3]([CH3:8])[C:7](=[C:11]([CH3:14])[C:5]([CH3:12])=[C:2]1[CH3:6])[CH3:13]"
+    },
+    {
+        "query_id": 204,
+        "query_type": "rsmiles",
+        "expected": "[cH:1]1[cH:3][cH:5][cH:6][cH:4][cH:2]1>>[c:1]1(Cl)[cH:3][cH:5][cH:6][cH:4][cH:2]1"
+    },
+    {
+        "query_id": 205,
+        "query_type": "rsmiles",
+        "expected": "[cH:1](Cl):[c:2]>>[cH:1](F):[c:2]"
+    },
+    {
+        "query_id": 206,
+        "query_type": "rsmiles",
+        "expected": "[c:1](:[c:4])(Cl):[c:2]>>[c:1](:[c:4])(F):[c:2]"
+    },
+    {
+        "query_id": 207,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([CH:6]=[CH:5][C:4](Cl)=[CH:3][CH:2]=1)[C:7](=[O:8])[CH3:9]>>[C:1]1([CH:6]=[CH:5][C:4](C(=O)C)=[CH:3][CH:2]=1)[C:7](=[O:8])[CH3:9]"
+    },
+    {
+        "query_id": 208,
+        "query_type": "rsmiles",
+        "expected": "C1=CC=CC=[C:2]1[C:7]([CH3:10])([CH3:9])[CH3:8]>>O[C:2](=O)[C:7]([CH3:10])([CH3:9])[CH3:8]"
+    },
+    {
+        "query_id": 209,
+        "query_type": "rsmiles",
+        "expected": ">>C1=CCC=C1"
+    },
+    {
+        "query_id": 210,
+        "query_type": "rsmiles",
+        "expected": "[NH2:1][CH2:2][CH2:3][C:4](=[O:5])O>>[NH:1]1[CH2:2][CH2:3][C:4]1=[O:5]"
+    },
+    {
+        "query_id": 211,
+        "query_type": "rsmiles",
+        "expected": "[O-:1][N+:2](=[O:3])[CH2:4][CH3:5].[CH2:6]([CH3:7])[N+:8]([O-])=O>>[O-:1][N+:2]([CH2:4][CH3:5])=[O:3].[CH2:6]([N:8]([H])[H])[CH3:7] |f:0.1,2.3|"
+    },
+    {
+        "query_id": 212,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[C:2]([CH3:4])[CH3:3].[CH3:5][C:6](=[O:7])[CH3:8]>>[O:1]=[C:2]([CH3:4])[CH3:3].[CH3:5][C:6]([H])([CH3:8])[O:7][H] |f:0.1,2.3|"
+    },
+    {
+        "query_id": 213,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1=[CH:2][CH:3]=[CH:4][C:5]([NH2:9])=[C:6]1[CH:7]=[O:8]>>[CH:1]1=[CH:2][CH:3]=[CH:4][C:5]2[N:9]=S(O[C:7](=[O:8])[C:6]=21)C"
+    },
+    {
+        "query_id": 214,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1=[CH:2][CH:3]=[CH:4][C:5]([NH2:9])=[C:6]1[CH:7]=[O:8]>>[CH:1]1=[CH:2][CH:3]=[CH:4][C:5]2[N:9]=N(O[C:7](=[O:8])[C:6]=21)C"
+    },
+    {
+        "query_id": 215,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1]/[C:4](/[CH:5]=[O:6])=[C:3](/[NH2:7])\\[CH3:2]>>[CH3:1][C:4]1[C:5](=[O:6])OS(C)=[N:7][C:3]=1[CH3:2]"
+    },
+    {
+        "query_id": 216,
+        "query_type": "rsmiles",
+        "expected": "C[C:2]([H])=[O:3].[CH2:5]([CH3:9])[C:6](=[O:7])[CH3:8]>>[CH3:8][C@@H:6]([OH:7])[C@H:5]([CH3:9])[C:2](=[O:3])C |&1:10,12|"
+    },
+    {
+        "query_id": 217,
+        "query_type": "rsmiles",
+        "expected": "C[C:2]([H])=[O:3].[CH2:5]([CH3:9])[C:6](=[O:7])[CH3:8]>>[CH3:8][C@@H:6]([OH:7])[C@H:5]([CH3:9])[C:2](=[O:3])C"
+    },
+    {
+        "query_id": 218,
+        "query_type": "rsmiles",
+        "expected": "C[C:2]([H])=[O:3].[CH2:5]([CH3:9])[C:6](=[O:7])[CH3:8]>>[CH3:8][C@@H:6]([OH:7])[C@H:5]([CH3:9])[C:2](=[O:3])C"
+    },
+    {
+        "query_id": 219,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[CH:6][CH:5]=[CH:4][CH:3]=[CH:2]1)[C:7](=[O:8])[C:9](=[O:11])[OH:10]>>[C:1]1([C@@:7]([H])([C:9](=[O:11])[OH:10])[O:8][H])=[CH:2][CH:3]=[CH:4][CH:5]=[CH:6]1"
+    },
+    {
+        "query_id": 220,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1(Cl)[CH2:3][CH2:6][CH2:7][CH2:5][CH2:2]1>>[CH:1]1(O)[CH2:3][CH2:6][CH2:7][CH2:5][CH2:2]1"
+    },
+    {
+        "query_id": 221,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1([N+:4]([O-])=O)[CH2:3][CH2:6][CH2:7][CH2:5][CH2:2]1>>[CH:1]1([N:4]([H])[H])[CH2:3][CH2:6][CH2:7][CH2:5][CH2:2]1"
+    },
+    {
+        "query_id": 222,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1=[CH:6][C:5](=[CH:4][CH:3]=[C:2]1[C:7]([Br:9])=[O:8])Br>>[CH:1]1[C:2]([C:7]([Br:9])=[O:8])=[CH:3][CH:4]=[C:5]([CH:6]=1)C(=O)C"
+    },
+    {
+        "query_id": 223,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([H])=[C:6]([H])[CH:5]=[CH:4][CH:3]=[CH:2]1>>[C:1]1(Cl)[CH:2]=[CH:3][CH:4]=[CH:5][C:6]=1F"
+    },
+    {
+        "query_id": 224,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([C:7](=O)[OH:8])[CH:2]=[CH:3][CH:4]=[C:5]([CH3:10])[CH:6]=1>>[C:1]1([CH2:7][OH:8])[CH:2]=[CH:3][CH:4]=[C:5]([CH3:10])[CH:6]=1"
+    },
+    {
+        "query_id": 225,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12=[CH:3][CH:5]=[C:6]([CH:4]=[CH:2]1)[CH2:7]2>>[C:2]1(Cl)=[CH:4][C:6]2=[CH:5][CH:3]=[C:1]1[CH2:7]2"
+    },
+    {
+        "query_id": 226,
+        "query_type": "rsmiles",
+        "expected": "C1=CC=CC=[C:2]1[C:7]([F:10])([F:9])[F:8]>>O[C:2](=O)[C:7]([F:10])([F:9])[F:8]"
+    },
+    {
+        "query_id": 227,
+        "query_type": "rsmiles",
+        "expected": "C1=CC=C2CC2=[C:2]1[C:7]([Cl:8])([F:10])[F:9]>>O[C:2](=O)[C:7]([Cl:8])([F:10])[F:9]"
+    },
+    {
+        "query_id": 228,
+        "query_type": "rsmiles",
+        "expected": "C1=CC=CC=[C:2]1[C:7]([Cl:8])([H])[F:9]>>O[C:2](=O)[C:7]([Cl:8])([H])[F:9]"
+    },
+    {
+        "query_id": 229,
+        "query_type": "rsmiles",
+        "expected": "C1(C)CCCC[CH:2]1[C:7]([CH3:10])([CH3:9])[CH3:8]>>O[C:2](=O)[C:7]([CH3:10])([CH3:9])[CH3:8]"
+    },
+    {
+        "query_id": 230,
+        "query_type": "rsmiles",
+        "expected": "[CH:1](Cl)=[CH2:2]>>[CH:1](F)=[CH2:2]"
+    },
+    {
+        "query_id": 231,
+        "query_type": "rsmiles",
+        "expected": "[C:1](Cl)(=[CH2:2])[CH3:4]>>[C:1](F)(=[CH2:2])[CH3:4]"
+    },
+    {
+        "query_id": 232,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(Cl)=[CH:3][C:6]#[C:7][CH:5]=[C:2]1[F:8]>>[C:1]1(O)=[CH:3][C:6]#[C:7][CH:5]=[C:2]1[F:8]"
+    },
+    {
+        "query_id": 233,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12([CH2:9][C:2]1([F:7])[CH2:8][CH2:6][CH2:5][CH2:3]2)Cl>>[C:1]12(O)[CH2:3][CH2:5][CH2:6][CH2:8][C:2]1([CH2:9]2)[F:7]"
+    },
+    {
+        "query_id": 234,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(Cl)([CH2:9][CH:2]1[F:7])[CH:3]1[CH2:8][CH2:6][CH2:5]1>>[C:1]1(O)([CH2:9][CH:2]1[F:7])[CH:3]1[CH2:8][CH2:6][CH2:5]1"
+    },
+    {
+        "query_id": 235,
+        "query_type": "rsmiles",
+        "expected": "[C:1](Cl)(=[CH2:3])[C:2]([F:6])=[CH2:5]>>[C:1](O)(=[CH2:3])[C:2]([F:6])=[CH2:5]"
+    },
+    {
+        "query_id": 236,
+        "query_type": "rsmiles",
+        "expected": "[N:1]12(Cl)([CH2:3][CH2:6][CH2:7][CH2:5][CH2:2]1)[CH2:9][CH2:8]2>>[N:1]12(O)([CH2:3][CH2:6][CH2:7][CH2:5][CH2:2]1)[CH2:9][CH2:8]2"
+    },
+    {
+        "query_id": 237,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[CH:6][CH:5]=[CH:4][CH:3]=[CH:2]1)[C:7](=[O:8])[C:9](=[O:11])O>>[C:1]1([C@@:7]([H])([CH2:9][O:11][H])[O:8][H])=[CH:2][CH:3]=[CH:4][CH:5]=[CH:6]1"
+    },
+    {
+        "query_id": 238,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[CH:2][CH:3]=[CH:4][H]>>[O:1]=[CH:2][CH2:3][CH:4]([H])[H]"
+    },
+    {
+        "query_id": 239,
+        "query_type": "rsmiles",
+        "expected": "[N:1]1(C)[CH:4]=[CH:5][CH:3]=[CH:2]1>>[N:1]1([H])[CH:4]=[CH:5][CH:3]=[CH:2]1"
+    },
+    {
+        "query_id": 240,
+        "query_type": "rsmiles",
+        "expected": "[N:1]1(C)[CH:2]=[CH:3][C:5]2[CH:10]=[CH:9][CH:8]=[CH:7][C:4]=21>>[N:1]1([H])[C:4]2[CH:7]=[CH:8][CH:9]=[CH:10][C:5]=2[CH:3]=[CH:2]1"
+    },
+    {
+        "query_id": 241,
+        "query_type": "rsmiles",
+        "expected": ">>"
+    },
+    {
+        "query_id": 242,
+        "query_type": "rsmiles",
+        "expected": ">>"
+    },
+    {
+        "query_id": 243,
+        "query_type": "rsmiles",
+        "expected": "[O:1]=[CH:2][CH3:3].[O:4]=[C:5]([CH3:7])[CH3:6]>>[O:4]=[C:5]([CH3:7])[CH2:6][C:2]([H])([CH3:3])[OH:1]"
+    },
+    {
+        "query_id": 244,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1[CH:3]=[CH:5][CH:6]=[CH:4][C:2]=1Cl>>[C:2]1(O)[CH:4]=[CH:6][CH:5]=[CH:3][CH:1]=1"
+    },
+    {
+        "query_id": 245,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[CH:4][CH:8]=[CH:10][C:5]([CH2:9][N:13]([CH2:17][CH2:21][C:27]2[N:35]=[CH:41][CH:43]=[CH:40][CH:34]=2)[CH2:16][CH2:20][C:26]2=[N:33][CH:39]=[CH:42][CH:38]=[CH:32]2)=[C:2]1Cl)[CH2:3][N:7]([CH2:12][CH2:15][C:19]1=[N:25][CH:31]=[CH:37][CH:30]=[CH:24]1)[CH2:11][CH2:14][C:18]1[N:23]=[CH:29][CH:36]=[CH:28][CH:22]=1.[P-:44]([F:50])([F:49])([F:48])([F:47])([F:46])[F:45].C(#N)C.C(#N)C.C(#N)C.C(#N)C.[Cu+]>>[C:2]1(O[Cu+])=[C:5]([CH:10]=[CH:8][CH:4]=[C:1]1[CH2:3][N:7]([CH2:12][CH2:15][C:19]1[N:25]=[CH:31][CH:37]=[CH:30][CH:24]=1)[CH2:11][CH2:14][C:18]1=[N:23][CH:29]=[CH:36][CH:28]=[CH:22]1)[CH2:9][N:13]([CH2:17][CH2:21][C:27]1=[N:35][CH:41]=[CH:43][CH:40]=[CH:34]1)[CH2:16][CH2:20][C:26]1[N:33]=[CH:39][CH:42]=[CH:38][CH:32]=1.[P-:44]([F:50])([F:49])([F:48])([F:47])([F:46])[F:45].[P-:44]([F:50])([F:49])([F:48])([F:47])([F:46])[F:45].O[Cu+] |f:1.2.3.4.5.6,7.8.9.10|"
+    },
+    {
+        "query_id": 246,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1[CH:3]=[CH:5][CH:6]=[CH:4][C:2]=1Cl.OC(=O)[O:11][CH3:12]>>[C:2]1([O:11][CH3:12])[CH:4]=[CH:6][CH:5]=[CH:3][CH:1]=1"
+    },
+    {
+        "query_id": 247,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2](=[O:3])[O:4]C>>[CH3:1][C:2](=[O:3])[OH:4].CO"
+    },
+    {
+        "query_id": 248,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]=[CH2:2]>>[CH3:1][CH3:2]"
+    },
+    {
+        "query_id": 249,
+        "query_type": "rsmiles",
+        "expected": "[CH:1](/[CH3:3])=[CH:2]/[CH3:4]>>[CH2:1]([CH3:3])[CH2:2][CH3:4]"
+    },
+    {
+        "query_id": 250,
+        "query_type": "rsmiles",
+        "expected": "[P+:1]([CH2:5]/[CH:11]=[C:17](\\[CH3:22])/[CH3:21])([CH2:4][CH2:10][CH2:16][P+:20]([CH2:25]/[CH:30]=[C:35](/[CH3:39])\\[CH3:38])([C:24]1[CH:29]=[CH:34][CH:37]=[CH:33][CH:28]=1)[C:23]1[CH:27]=[CH:32][CH:36]=[CH:31][CH:26]=1)([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1>>[P+:20]1([CH2:16][CH2:10][CH2:4][P+:1]2([CH2:5][CH2:11][C:17]([CH3:22])([CH3:21])[C:6]3[CH:12]=[CH:18][CH:13]=[CH:7][C:2]2=3)[C:3]2[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=2)([CH2:25][CH2:30][C:35]([CH3:39])([CH3:38])[C:26]2[CH:31]=[CH:36][CH:32]=[CH:27][C:23]1=2)[C:24]1[CH:29]=[CH:34][CH:37]=[CH:33][CH:28]=1"
+    },
+    {
+        "query_id": 251,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[CH:8][CH:9]=[CH:6][C:2]=1[NH:5][C:7]([C:10](=[O:12])O)=[CH:3]2.[C:13]12[CH:16]=[CH:20][CH:21]=[CH:18][C:14]=1[NH:17][C:19]([C:22](=[O:24])O)=[CH:15]2>>[N:17]12[C:10](=[O:12])[CH:7]3[N:5]([C:2]4=[C:1]([CH:4]=[CH:8][CH:9]=[CH:6]4)[CH2:3]3)[C:22](=[O:24])[CH:19]1[CH2:15][C:13]1[CH:16]=[CH:20][CH:21]=[CH:18][C:14]2=1"
+    },
+    {
+        "query_id": 252,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]=[CH2:2].[CH:3](=[CH2:6])[CH:4]=[CH2:5]>>[CH2:1]1[CH2:5][CH:4]=[CH:3][CH2:6][CH2:2]1"
+    },
+    {
+        "query_id": 253,
+        "query_type": "rsmiles",
+        "expected": "[N:1]1([CH:4]=[CH:8][CH:11]=[CH:10][CH:7]=[CH:3]1)[C:2](=[O:6])[O:5][CH2:9][CH3:12].[C:13]1([C:16]2[CH:22]=[CH:30][CH:36]=[CH:29][CH:21]=2)=[C:15]([C:20](=[O:28])[O:27][CH3:35])[C:19]([C:17]([C:23](=[O:32])[O:31][CH3:37])=[C:14]1[C:18]1[CH:25]=[CH:34][CH:38]=[CH:33][CH:24]=1)=[O:26].[N:39]1([CH:42]=[CH:46][CH:49]=[CH:48][CH:45]=[CH:41]1)[C:40](=[O:44])[O:43][CH2:47][CH3:50]>>[C@@:15]12([C:20](=[O:28])[O:27][CH3:35])[C:19](=[O:26])[C@@:17]([C@:4]3([H])[CH:8]=[CH:11][CH:10]=[CH:7][C@:3]1([H])[N:1]3[C:2](=[O:6])[O:5][CH2:9][CH3:12])([C:14]([C:18]1[CH:25]=[CH:34][CH:38]=[CH:33][CH:24]=1)=[C:13]2[C:16]1[CH:22]=[CH:30][CH:36]=[CH:29][CH:21]=1)[C:23](=[O:32])[O:31][CH3:37].[C@:14]12([C:18]3[CH:25]=[CH:34][CH:38]=[CH:33][CH:24]=3)[C@@:42]3([H])[CH:46]=[CH:49][C@:48]([H])([CH:45]=[CH:41][N:39]3[C:40](=[O:44])[O:43][CH2:47][CH3:50])[C@@:17]1([C:23](=[O:32])[O:31][CH3:37])[C:19]([C:15]([C:20](=[O:28])[O:27][CH3:35])=[C:13]2[C:16]1[CH:22]=[CH:30][CH:36]=[CH:29][CH:21]=1)=[O:26] |&1:50,57,58,64,90,97,101,111|"
+    },
+    {
+        "query_id": 254,
+        "query_type": "rsmiles",
+        "expected": "[CH:1](=[O:3])[CH:2]=[N+]=[N-]>>[CH:1](=[O:3])[CH2:2]O"
+    },
+    {
+        "query_id": 255,
+        "query_type": "rsmiles",
+        "expected": "C1OC1>>"
+    },
+    {
+        "query_id": 256,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH:2](Br)[CH3:3]>>[CH3:1][CH:2][CH3:3]"
+    },
+    {
+        "query_id": 257,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH:2](Br)[CH3:3]>>[H][CH:2]([CH3:3])[CH3:1]"
+    },
+    {
+        "query_id": 258,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH2:2][CH:3](O)[CH3:4]>>[CH3:1][CH2:2][CH:3]=[CH2:4]"
+    },
+    {
+        "query_id": 259,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][CH2:2][CH:3](O)[CH3:4]>>[CH3:1][CH2:2][CH:3]=[CH2:4]"
+    },
+    {
+        "query_id": 260,
+        "query_type": "rsmiles",
+        "expected": ">>C(=O)(O)C"
+    },
+    {
+        "query_id": 261,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([NH2:4])[CH:3]=[CH:7][CH:8]=[CH:5][C:2]=1O.[C:9]12[CH:12]=[CH:17][CH:18]=[CH:14][C:10]=1[N:13]=[N:15][N:11]2[CH2:16][C:19](=[O:21])O>>[C:9]12[CH:12]=[CH:17][CH:18]=[CH:14][C:10]=1[N:13]=[N:15][N:11]2[CH2:16][C:19]1[O:21][C:2]2=[C:1]([CH:3]=[CH:7][CH:8]=[CH:5]2)[N:4]=1"
+    },
+    {
+        "query_id": 262,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([C:3](=[O:7])[CH3:6])[C:2](=[O:5])[O:4][CH2:8][CH3:9].[SiH:10]([Cl:13])([CH3:12])[CH3:11]>>[CH2:1]([C:2](=[O:5])[O:4][CH2:8][CH3:9])[C@@H:3]([CH3:6])[O:7][Si:10]([Cl:13])([CH3:12])[CH3:11]"
+    },
+    {
+        "query_id": 263,
+        "query_type": "rsmiles",
+        "expected": "C(O)(C)C=C>>C(=O)(C)CC"
+    },
+    {
+        "query_id": 264,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]12[CH2:4][CH:9]=[CH:6][CH:2]1[CH:5]1[CH2:7][CH:3]2[CH:8]=[CH:10]1>>[CH:3]12[CH2:8][CH:6]3[CH2:9][CH:4]([CH2:10][CH:5]([CH2:2]3)[CH2:7]1)[CH2:1]2"
+    },
+    {
+        "query_id": 265,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[CH:8][CH:10]=[CH:6][C:2]=1[CH:5]=[CH:9][C:7](O)=[CH:3]2.BrBr.[P:14]([C:17]1=[CH:23][CH:29]=[CH:32][CH:28]=[CH:22]1)([C:16]1=[CH:21][CH:27]=[CH:31][CH:26]=[CH:20]1)[C:15]1=[CH:19][CH:25]=[CH:30][CH:24]=[CH:18]1>>[C:1]12[CH:4]=[CH:8][CH:10]=[CH:6][C:2]=1[CH:5]=[CH:9][C:7](Br)=[CH:3]2.[P:14](=O)([C:17]1=[CH:23][CH:29]=[CH:32][CH:28]=[CH:22]1)([C:16]1=[CH:21][CH:27]=[CH:31][CH:26]=[CH:20]1)[C:15]1=[CH:19][CH:25]=[CH:30][CH:24]=[CH:18]1"
+    },
+    {
+        "query_id": 266,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([CH3:4])=[CH:3][C:6](=[CH:7][C:5]([CH3:8])=[CH:2]1)[CH3:9].C(Cl)(Cl)[O:11][CH3:14]>>[C:3]1([CH:14]=[O:11])=[C:6]([CH3:9])[CH:7]=[C:5]([CH3:8])[CH:2]=[C:1]1[CH3:4].[CH3:14][OH:11]"
+    },
+    {
+        "query_id": 267,
+        "query_type": "rsmiles",
+        "expected": "[Si:1]([CH2:5][CH3:9])([CH2:4][CH3:8])([CH2:3][CH3:7])[O:2][CH2:6][CH:10]=[CH2:11].[CH2:12]([CH3:14])[CH2:13]I>>[Si:1]([CH2:3][CH3:7])([CH2:4][CH3:8])([CH2:5][CH3:9])[O:2][CH2:6][CH2:10][CH2:11][CH2:13][CH2:12][CH3:14].[Si:1]([CH2:3][CH3:7])([CH2:5][CH3:9])([CH2:4][CH3:8])[O:2][CH:6]([CH:10]=[CH2:11])[CH2:13][CH2:12][CH3:14]"
+    },
+    {
+        "query_id": 268,
+        "query_type": "rsmiles",
+        "expected": "[Si:1]([CH:5]([CH3:12])[CH3:11])([CH:4]([CH3:10])[CH3:9])([CH:3]([CH3:8])[CH3:7])[O:2][CH2:6][CH:13]=[CH2:14].[C:15]([CH3:19])([CH3:18])([CH3:17])[CH:16]=[O:20]>>[Si:1]([CH:5]([CH3:11])[CH3:12])([CH:4]([CH3:9])[CH3:10])([CH:3]([CH3:7])[CH3:8])[O:2]/[CH:6]=[CH:13]/[CH2:14][CH:16]([OH:20])[C:15]([CH3:19])([CH3:17])[CH3:18].[Si:1]([CH:5]([CH3:11])[CH3:12])([CH:4]([CH3:9])[CH3:10])([CH:3]([CH3:7])[CH3:8])[O:2][CH:6]([CH:13]=[CH2:14])[CH:16]([OH:20])[C:15]([CH3:19])([CH3:17])[CH3:18]"
+    },
+    {
+        "query_id": 269,
+        "query_type": "rsmiles",
+        "expected": "[P:1](=[O:5])(/[N:4]=[CH:10]/[C:15]1=[CH:19][CH:21]=[CH:22][CH:20]=[CH:18]1)([C:3]1=[CH:9][CH:14]=[CH:17][CH:13]=[CH:8]1)[C:2]1[CH:7]=[CH:12][CH:16]=[CH:11][CH:6]=1.[Zn](CC)[CH2:24][CH3:26]>>[P:1](=[O:5])([NH:4][C@@H:10]([CH2:24][CH3:26])[C:15]1=[CH:19][CH:21]=[CH:22][CH:20]=[CH:18]1)([C:3]1=[CH:9][CH:14]=[CH:17][CH:13]=[CH:8]1)[C:2]1[CH:7]=[CH:12][CH:16]=[CH:11][CH:6]=1"
+    },
+    {
+        "query_id": 270,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[N:4]=[CH:9][N:5]([CH3:10])[C:2]=1[N:6]=[CH:13][N:7]([NH2:12])[C:3]2=[NH2+:8].[Cl-]>>[C:1]12[N:4]=[CH:9][N:5]([CH3:10])[C:2]=1[N:6]=[CH:13][N:8]=[C:3]2[NH:7][NH2:12].[C:1]1([N:4]=[CH:9][N:5]([CH3:10])C=1[NH2:6])[C:3]1=NN=[CH:13][N:7]1[NH2:12] |f:0.1|"
+    },
+    {
+        "query_id": 271,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[N:4]=[CH:19][N:11]([NH2:15])[C:8](=[NH2+:12])[C:3]=1[N:7]=[CH:6][N:2]2[CH2:5][C:10]1=[CH:14][CH:17]=[CH:18][CH:16]=[CH:13]1.[Cl-]>>[C:1]12[N:4]=[CH:19][N:12]=[C:8]([NH:11][NH2:15])[C:3]=1[N:7]=[CH:6][N:2]2[CH2:5][C:10]1=[CH:14][CH:17]=[CH:18][CH:16]=[CH:13]1.[C:3]1([N:7]=[CH:6][N:2]([CH2:5][C:10]2=[CH:14][CH:17]=[CH:18][CH:16]=[CH:13]2)[C:1]=1[NH2:4])[C:8]1=NN=[CH:19][N:11]1[NH2:15] |f:0.1|"
+    },
+    {
+        "query_id": 272,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[N:4]=[CH:9][N:5]([CH3:10])[C:2]=1[N:6]=[CH:11][N:7]([CH3:12])[C:3]2=[NH2+:13].[I-]>>[C:1]12[N:4]=[CH:9][N:5]([CH3:10])[C:2]=1[N:6]=[CH:11][N:13]=[C:3]2NN.[C:1]1([N:4]=[CH:9][N:5]([CH3:10])[C:2]=1[NH2:6])[C:3]1=NN=[CH:11]N1N.[C:1]12[N:4]=[CH:9][N:5]([CH3:10])[C:2]=1[N:6]=[CH:11][N:13]=[C:3]2[NH:7][CH3:12] |f:0.1|"
+    },
+    {
+        "query_id": 273,
+        "query_type": "rsmiles",
+        "expected": "[C@@:1]12([H])[CH2:4][CH2:10][C@H:5]([O:11][C:15](=[O:19])[CH3:18])[C@@:2]1([CH3:7])[CH2:6][CH2:12][C@:8]1([H])[CH:13]=[CH:16][CH2:20][C@@H:23]([CH2:21][C:17](=O)[CH2:14][CH2:9][C@@:3]21[H])[O:24][C:25](=[O:27])[CH3:26].[NH:31]([OH:33])[CH3:32]>>[C@:13]12([H])[C@H:16]3[CH2:20][CH:23]=[CH:21][C@:17]1([CH2:14][CH2:9][C@@:3]1([H])[C@:1]4([H])[CH2:4][CH2:10][C@H:5]([O:11][C:15](=[O:19])[CH3:18])[C@:2]4([CH2:6][CH2:12][C@:8]21[H])[CH3:7])[N:31]([O:33]3)[CH3:32].[C@@:17]123[CH2:14][CH2:9][C@@:3]4([H])[C@:1]5([H])[CH2:4][CH2:10][C@H:5]([O:11][C:15](=[O:19])[CH3:18])[C@:2]5([CH2:6][CH2:12][C@:8]4([H])[C@@:13]1([H])[C@:16]([H])([O:33][N:31]2[CH3:32])[CH2:20][C@H:23]([O:24][C:25](=[O:27])[CH3:26])C3)[CH3:7].[C@@:1]12([H])[CH2:4][CH2:10][C@H:5]([O:11][C:15](=[O:19])[CH3:18])[C@@:2]1([CH3:7])[CH2:6][CH2:12][C@:8]1([H])[C:13]3=[C:16]([OH:33])[CH:20]=[CH:23][CH:21]=[C:17]3[CH2:14][CH2:9][C@@:3]21[H]"
+    },
+    {
+        "query_id": 274,
+        "query_type": "rsmiles",
+        "expected": "[C@:1]1(OC)([C:4](=[O:9])[O:8][CH3:14])[CH2:3][C@@H:7]([C@@H:11]([NH:15][C:18](=[O:22])[CH3:21])[C@:6]([H])([C@H:12]([OH:35])[C@H:16]([OH:36])[CH2:19][OH:37])[O:2]1)O.[C:25](=[O:28])([CH3:27])OC(=O)C.[C:32]([O-:38])(=[O:34])[CH3:33].[Na+]>>[C@@:6]1([H])([O:2][C:1](=[CH:3][C@@H:7]([O:38][C:32](=[O:34])[CH3:33])[C@H:11]1[NH:15][C:18](=[O:22])[CH3:21])[C:4](=[O:9])[O:8][CH3:14])[C@H:12]([O:35][C:25](=[O:28])[CH3:27])[C@H:16]([O:36][C:25](=[O:28])[CH3:27])[CH2:19][O:37][C:25](=[O:28])[CH3:27] |f:2.3|"
+    },
+    {
+        "query_id": 275,
+        "query_type": "rsmiles",
+        "expected": "[C:11]1(/[N:12]=[C:13](/Cl)\\[Cl:14])=[C:10]([F:5])[C:8](=[C:6]([F:1])[C:7]([F:2])=[C:9]1[F:4])[F:3].[C:18](=[S:19])([F:17])[F:16]>>[C:11]1([N:12]=[C:13]([Cl:14])[S:19][C:18](F)([F:16])[F:17])[C:9]([F:4])=[C:7]([C:6]([F:1])=[C:8]([F:3])[C:10]=1[F:5])[F:2].[C:11]1(=[C:10]([F:5])[C:8](=[C:6]([F:1])[C:7]([F:2])=[C:9]1[F:4])[F:3])/[N:12]=[C:13](/[S:19][C:18](F)([F:16])[F:17])\\[S:19][C:18](F)([F:16])[F:17].[C:11]1([C:10]([F:5])=[C:8]([C:6]([F:1])=[C:7]([F:2])[C:9]=1[F:4])[F:3])[N:12]([C:18](F)([F:16])[F:17])[C:13](F)=[N:12][C:11]1[C:10]([F:5])=[C:8]([C:6]([F:1])=[C:7]([F:2])[C:9]=1[F:4])[F:3]"
+    },
+    {
+        "query_id": 276,
+        "query_type": "rsmiles",
+        "expected": "[CH:8](/[CH2:7][CH:9]([CH3:3])[CH3:2])=[N:10]\\[CH2:6][CH2:5][CH2:4][CH3:1]>>[C:7](/[CH:9]([CH3:2])[CH3:3])(=[CH:8]/[CH2:7][CH:9]([CH3:2])[CH3:3])\\[CH:8]=[N:10]\\[CH2:6][CH2:5][CH2:4][CH3:1].[C:7](/[CH:9]([CH3:2])[CH3:3])(=[CH:8]\\[CH2:7][CH:9]([CH3:2])[CH3:3])\\[CH:8]=[N:10]\\[CH2:6][CH2:5][CH2:4][CH3:1]"
+    },
+    {
+        "query_id": 277,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[CH:4][S:9][C:5]2[CH:10]=[CH:15][CH:11]=[CH:6][C:2]1=2)[C:3]([C:8](=[O:14])[OH:13])=[CH:7][C:12]1=[CH:17][CH:19]=[CH:20][CH:18]=[CH:16]1>>[C:1]12[C:3]([C:8](=[O:14])[OH:13])=[CH:7][C:12]3[CH:16]=[CH:18][CH:20]=[CH:19][C:17]=3[C:4]=1[S:9][C:5]1[CH:10]=[CH:15][CH:11]=[CH:6][C:2]2=1.[C:1]12[CH:4]=[C:17]3[C:12]([CH:16]=[CH:18][CH:20]=[CH:19]3)=[CH:7][C:3]=1[C:8]([S:9][C:5]1[CH:10]=[CH:15][CH:11]=[CH:6][C:2]2=1)=[O:14].[C:1]12[CH:4]=[C:17]3[C:12]([CH:16]=[CH:18][CH:20]=[CH:19]3)=[CH:7][C:3]=1[C:8]([O:13][C:5]1[CH:10]=[CH:15][CH:11]=[CH:6][C:2]2=1)=[O:14]"
+    },
+    {
+        "query_id": 278,
+        "query_type": "rsmiles",
+        "expected": "[C:1]12[CH:4]=[C:9]([CH:12]=[CH:8][C:3]=1[S:7][CH:6]=[C:2]2[C:5]([C:11](=[O:16])[OH:15])=[CH:10][C:14]1[CH:18]=[CH:20][C:21]([O:22][CH3:23])=[CH:19][CH:17]=1)[CH3:13]>>[C:2]12[C:5]([C:11](=[O:16])[OH:15])=[CH:10][C:14]3[CH:18]=[CH:20][C:21]([O:22][CH3:23])=[CH:19][C:17]=3[C:6]=1[S:7][C:3]1[CH:8]=[CH:12][C:9]([CH3:13])=[CH:4][C:1]2=1.[C:2]12[CH:6]=[C:17]3[C:14]([CH:18]=[CH:20][C:21]([O:22][CH3:23])=[CH:19]3)=[CH:10][C:5]=1[C:11]([S:7][C:3]1[CH:8]=[CH:12][C:9]([CH3:13])=[CH:4][C:1]2=1)=[O:16].[C:2]12[CH:6]=[C:17]3[C:14]([CH:18]=[CH:20][C:21]([O:22][CH3:23])=[CH:19]3)=[CH:10][C:5]=1[C:11]([O:15][C:3]1[CH:8]=[CH:12][C:9]([CH3:13])=[CH:4][C:1]2=1)=[O:16]"
+    },
+    {
+        "query_id": 279,
+        "query_type": "rsmiles",
+        "expected": "[C:11]1([CH:8]=[CH:4][CH:2]=[CH:3][CH:7]=1)[Se:12][CH2:10][C:9](=[O:5])[O:6][CH3:1].[CH:17]1([CH:14]=[CH2:13])[CH2:16][CH2:15]1.[O+]#[C-]>>[C:11]1([CH:8]=[CH:4][CH:2]=[CH:3][CH:7]=1)[Se:12][C:10](=O)[CH2:9][CH2:13][CH:14]=[CH:17][CH2:16][CH2:15][C:9](=[O:5])[O:6][CH3:1]"
+    },
+    {
+        "query_id": 280,
+        "query_type": "rsmiles",
+        "expected": "[N:1]12[CH2:4][CH2:9][C:10]3[CH:15]=[CH:22][CH:16]=[CH:11][C:5]=3[CH:2]1[CH2:6][C:12]([C:7]1[C:13](=[O:26])[CH2:18][C:14]([CH3:21])([CH3:20])[CH2:8][C:3]2=1)=[O:17].[C:23](=O)([CH3:25])OC(=O)C>>[N:1]12[CH2:4][CH2:9][C:10]3[CH:15]=[CH:22][CH:16]=[CH:11][C:5]=3[C:2]1=[CH:6][C:12]([C:7]1[C:13](=[O:26])[CH2:18][C:14]([CH3:21])([CH3:20])[CH2:8][C:3]2=1)=[O:17].[N:1]12[CH2:4][CH2:9][C:10]3[CH:15]=[CH:22][CH:16]=[CH:11][C:5]=3[C:2]1=[CH:6][C:12]([C:7]1[CH:13]=[CH:18][C:14]([CH3:21])([CH3:20])[CH2:8][C:3]2=1)=[O:17].[N:1]12[CH2:4][CH2:9][C:10]3[CH:15]=[CH:22][CH:16]=[CH:11][C:5]=3[C:2]1=[C:6]([CH:23]=[CH2:25])[C:12]([C:7]1[C:13](=[O:26])[CH2:18][C:14]([CH3:21])([CH3:20])[CH2:8][C:3]2=1)=[O:17]"
+    },
+    {
+        "query_id": 281,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]12[CH2:4][C:9]([C:10]3[C:16](=[O:30])[CH2:20][C:17]([CH3:23])([CH3:22])[CH2:11][C:5]=3[N:2]1[CH2:6][CH2:12][C:7]1[CH:13]=[C:18]([C:14]([O:19][CH3:25])=[CH:8][C:3]2=1)[O:24][CH3:26])=[O:15].[C:27](=O)([CH3:29])OC(=O)C>>[C:1]12=[CH:4][C:9]([C:10]3[C:16](=[O:30])[CH2:20][C:17]([CH3:22])([CH3:23])[CH2:11][C:5]=3[N:2]1[CH2:6][CH2:12][C:7]1[CH:13]=[C:18]([C:14]([O:19][CH3:25])=[CH:8][C:3]2=1)[O:24][CH3:26])=[O:15].[N:2]12[CH2:6][CH2:12][C:7]3[CH:13]=[C:18]([C:14]([O:19][CH3:25])=[CH:8][C:3]=3[C:1]1=[CH:4][C:9]([C:10]1[CH:16]=[CH:20][C:17]([CH3:22])([CH3:23])[CH2:11][C:5]2=1)=[O:15])[O:24][CH3:26].[C:1]12=[C:4]([CH:27]=[CH2:29])[C:9]([C:10]3[C:16](=[O:30])[CH2:20][C:17]([CH3:22])([CH3:23])[CH2:11][C:5]=3[N:2]1[CH2:6][CH2:12][C:7]1[CH:13]=[C:18]([C:14]([O:19][CH3:25])=[CH:8][C:3]2=1)[O:24][CH3:26])=[O:15]"
+    },
+    {
+        "query_id": 282,
+        "query_type": "rsmiles",
+        "expected": "[C@:1]1([H])([CH2:4][C:9]([CH2:11][C@@:5]2([H])[O:10][C:12]([CH3:19])([CH3:18])[O:6][C@:2]12[H])=[O:17])[C@H:3]([C@@:8]([OH:16])([CH3:15])[CH:14]([Cl:24])[Cl:23])[NH:7][S:13](=[O:22])(=[O:21])[CH2:20][CH2:25][Si:26]([CH3:29])([CH3:28])[CH3:27].[C:31](Cl)(=[O:33])[O:32][CH3:35]>>[C@@:3]1([H])([C@@:8]([CH3:15])([CH:14]([Cl:23])[Cl:24])[O:16][C:31](=[O:33])[N:7]1[S:13](=[O:21])(=[O:22])[CH2:20][CH2:25][Si:26]([CH3:29])([CH3:27])[CH3:28])[C@@:1]1([H])[CH:4]=[C:9]([CH2:11][C@@:5]2([H])[O:10][C:12]([CH3:18])([CH3:19])[O:6][C@:2]12[H])[O:17][C:31](=[O:33])[O:32][CH3:35]"
+    },
+    {
+        "query_id": 283,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([C:4](=[O:9])[O:8][CH3:12])=[C:3]([CH3:7])[O:17][C:10](=O)[C:5]([C:11](=[O:15])[O:14][CH3:16])=[CH:2]1>>[C:10]12=[CH:7][C:3](=[C:1]([C:4](=[O:9])[O:8][CH3:12])[CH:2]=[C:5]1[C:3]([CH3:7])=[C:1]([CH:2]=[C:5]2[C:11](=[O:15])[O:14][CH3:16])[C:4](=[O:9])[O:8][CH3:12])[OH:17]"
+    },
+    {
+        "query_id": 284,
+        "query_type": "rsmiles",
+        "expected": "[CH:16](OC)(OC)[O:2][CH3:5].[CH2:8]([C:10](=[O:14])[O:3][CH3:6])[C:9](=[O:12])[O:11][CH3:15]>>[C:8](=[CH:16]/[O:2][CH3:5])(/[C:9](=[O:12])[O:11][CH3:15])\\[C:10](=[O:14])[O:3][CH3:6].[C:10]12[O:14][C:10]([C:8]([C:9](=[O:12])[O:11][CH3:15])=[CH:16][C:16]=1[C:10]([OH:14])=[C:8]([CH:16]=[C:8]2[C:9](=[O:12])[O:11][CH3:15])[C:9](=[O:12])[O:11][CH3:15])=[O:14]"
+    },
+    {
+        "query_id": 285,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1([O:10][CH2:3]1)[C:2]1=[CH:6][CH:8]=[CH:9][CH:7]=[CH:5]1.[Cu]([CH3:11])(C)([Li])([Li])C#N>>[C:2]1(=[CH:6][CH:8]=[CH:9][CH:7]=[CH:5]1)[CH:1]([OH:10])[CH2:3][CH3:11].[C:2]1(=[CH:6][CH:8]=[CH:9][CH:7]=[CH:5]1)[CH:1]([CH3:11])[CH2:3][OH:10]"
+    },
+    {
+        "query_id": 286,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([F:38])([O:4][C:10]2[C:15]([F:20])=[C:19]([C:21]([F:24])=[C:17]([F:22])[C:14]=2[F:18])[F:23])[C:3]([F:9])=[C:8]([C:11](=O)[C:6]([F:12])=[C:2]1[F:7])[F:13].[C:25]1([NH:28][NH2:33])[C:27]([F:32])=[C:31]([C:34]([F:37])=[C:29]([F:35])[C:26]=1[F:30])[F:36]>>[C:1]1([C:3]([F:9])=[C:8]([C:11]([N:33]=[N:28][C:25]2[C:27]([F:32])=[C:31]([C:34]([F:37])=[C:29]([F:35])[C:26]=2[F:30])[F:36])=[C:6]([F:12])[C:2]=1[F:7])[F:13])[O:4][C:10]1=[C:14]([F:18])[C:17](=[C:21]([F:24])[C:19]([F:23])=[C:15]1[F:20])[F:22].[C:25]1([N:28]=[N:33][C:11]2=[C:8]([F:13])[C:3](=[C:1]([F:38])[C:2]([F:7])=[C:6]2[F:12])[F:9])=[C:26]([F:30])[C:29](=[C:34]([F:37])[C:31]([F:36])=[C:27]1[F:32])[F:35]"
+    },
+    {
+        "query_id": 287,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([F:33])([O:4][C:10]2[C:15]([F:20])=[C:19]([C:21]([F:24])=[C:17]([F:22])[C:14]=2[F:18])[F:23])[C:3]([F:9])=[C:8]([C:11](=O)[C:6]([F:12])=[C:2]1[F:7])[F:13].[C:25]1([NH:28][NH2:31])=[CH:27][CH:30]=[CH:32][CH:29]=[CH:26]1>>[C:1]1(=[C:3]([F:9])[C:8](=[C:11]([N:31]=[N:28][C:25]2[CH:26]=[CH:29][CH:32]=[CH:30][CH:27]=2)[C:6]([F:12])=[C:2]1[F:7])[F:13])[O:4][C:10]1[C:15]([F:20])=[C:19]([C:21]([F:24])=[C:17]([F:22])[C:14]=1[F:18])[F:23].[C:11]1([N:31]=[N:28][C:25]2[CH:26]=[CH:29][CH:32]=[CH:30][CH:27]=2)[C:8]([F:13])=[C:3]([C:1]([F:33])=[C:2]([F:7])[C:6]=1[F:12])[F:9]"
+    },
+    {
+        "query_id": 288,
+        "query_type": "rsmiles",
+        "expected": "[C@:1]1([H])([C:4]#[C:8][CH3:13])[CH2:3][O:7]C(C)(C)[N:2]1[C:6](=[O:12])OC(C)(C)C.C(C)(C)(C)OC(=O)OC(=O)[O:19][C:18]([CH3:22])([CH3:21])[CH3:20]>>[C@H:1]([C:3](=O)[OH:7])([C:4]#[C:8][CH3:13])[NH:2][C:6](=[O:12])[O:19][C:18]([CH3:22])([CH3:21])[CH3:20].[NH:2]([C:1](=O)[C:4]#[C:8][CH3:13])[C:6](=[O:12])[O:19][C:18]([CH3:22])([CH3:21])[CH3:20]"
+    },
+    {
+        "query_id": 289,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([Si](C)(C)C)([O:21][CH2:3]1)[CH:2](OS(=O)(=O)C)[C:6]1([CH2:13][CH2:15][CH2:19][CH3:20])[O:22][CH2:11]1>>[C:6]1([CH2:13][CH2:15][CH2:19][CH3:20])=[CH:11][O:22][C:1]([CH2:3]F)=[CH:2]1.[C:6]1([CH2:13][CH2:15][CH2:19][CH3:20])=[CH:11][O:22][C:1]([CH2:3][OH:21])=[CH:2]1"
+    },
+    {
+        "query_id": 290,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:48][CH2:4]1)([C@@:3]1([H])[CH2:9][CH2:17][C@@:14]2([H])[C@:24]3([H])[CH2:27][CH:29]=[C:30]4[CH2:33][C@H:35]([CH2:34][CH2:31][C@:28]4([CH3:32])[C@@:26]3([H])[CH2:25][CH2:15][C@:8]12[CH3:16])[O:36][Si](C)(C)C(C)(C)C)[CH:2](OS(=O)(=O)C)[C:6]1([Si](C)(C)C)[O:49][CH2:10]1>>[C@:8]12([CH3:16])[CH2:15][CH2:25][C@:26]3([H])[C@@:28]4([CH3:32])[CH2:31][CH2:34][C@H:35]([OH:36])[CH2:33][C:30]4=[CH:29][CH2:27][C@@:24]3([H])[C@:14]1([H])[CH2:17][CH2:9][C@:3]2([H])[C:1]1=[CH:4][O:48][C:6]([CH2:10]F)=[CH:2]1.[C@:8]12([CH3:16])[CH2:15][CH2:25][C@:26]3([H])[C@@:28]4([CH3:32])[CH2:31][CH2:34][C@H:35]([OH:36])[CH2:33][C:30]4=[CH:29][CH2:27][C@@:24]3([H])[C@:14]1([H])[CH2:17][CH2:9][C@:3]2([H])[C:1]1=[CH:4][O:48][C:6]([CH2:10][OH:49])=[CH:2]1 |w:0,34,40,a:3,7,9,15,18,20,24,47,51,53,57,63,65,69,78,82,84,88,94,96,100|"
+    },
+    {
+        "query_id": 291,
+        "query_type": "rsmiles",
+        "expected": "[C@H:1]1([CH2:4][C:9](=[O:13])[O:12][CH3:14])[C:3](=[O:8])[CH2:7][C@@:10]2([H])[CH:11]=[CH:6][C@:2]1([H])[O:29]2.S(=O)(=O)(C(F)(F)F)O[Si:22]([CH3:28])([CH3:27])[CH3:26]>>[CH:10]1([O:29][Si:22]([CH3:28])([CH3:27])[CH3:26])[CH2:11][CH2:6][CH:2]=[C:1]([CH2:4][C:9](=[O:13])[O:12][CH3:14])[C:3](=[O:8])[CH2:7]1.[C@@H:2]1([CH2:6][CH2:11][CH:10]=[CH:7][C:3](=[O:8])[C@@H:1]1[CH2:4][C:9](=[O:13])[O:12][CH3:14])[O:29][Si:22]([CH3:28])([CH3:27])[CH3:26].[C@@:3]12([CH:7]=[CH:10][CH2:11][CH2:6][C@H:2]([O:29][Si:22]([CH3:28])([CH3:27])[CH3:26])[C@@:1]1([H])[C@@H:4]2[C:9](=[O:13])[O:12][CH3:14])[O:8][Si:22]([CH3:28])([CH3:27])[CH3:26] |&1:0,9,13,46,53,64,69,75,77|"
+    },
+    {
+        "query_id": 292,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:4][Si:8]([CH3:14])([CH3:13])[C:12]([CH3:21])([CH3:20])[CH3:19])=[CH:3][C:7](=[CH:9][CH:5]=[C:2]1[O:6][Si:10]([CH3:17])([CH3:16])[C:15]([CH3:24])([CH3:23])[CH3:22])[CH2:11][N:18]([C:26](=[O:29])[C:28]([F:33])([F:32])[F:31])[CH2:25][CH2:27][C:30]1[CH:35]=[CH:37][C:38]([OH:39])=[CH:36][CH:34]=1>>[C:30]12([CH:34]=[CH:36][C:38](=[O:39])[CH:37]=[CH:35]1)[CH2:27][CH2:25][N:18]([CH2:11][C:7]1[CH:3]=[C:1]([C:2]([O:6][Si:10]([CH3:16])([CH3:17])[C:15]([CH3:24])([CH3:22])[CH3:23])=[CH:5][C:9]2=1)[O:4][Si:8]([CH3:13])([CH3:14])[C:12]([CH3:21])([CH3:19])[CH3:20])[C:26](=[O:29])[C:28]([F:33])([F:31])[F:32].[C:9]12[CH:5]=[C:2]([C:1]([O:4][Si:8]([CH3:13])([CH3:14])[C:12]([CH3:21])([CH3:19])[CH3:20])=[CH:3][C:7]=1[CH2:11][N:18]([C:26](=[O:29])[C:28]([F:33])([F:31])[F:32])[CH2:25][CH2:27][C:30]1[CH:34]=[CH:36][C:38]([OH:39])=[CH:37][C:35]2=1)[O:6][Si:10]([CH3:16])([CH3:17])[C:15]([CH3:24])([CH3:22])[CH3:23]"
+    },
+    {
+        "query_id": 293,
+        "query_type": "rsmiles",
+        "expected": "[C:12]1([N+:11]([O-:4])=[O:5])=[CH:7][C:9](=[C:8]([F:1])[CH:6]=[C:10]1[F:3])[F:2].[C:23]([CH3:15])([CH3:14])([CH3:13])[O:25][C:24](=[O:17])[N:26]1[CH2:21][CH2:19][CH:22]([OH:16])[CH2:18][CH2:20]1>>[C:8]1([CH:6]=[C:10]([C:12]([N+:11]([O-:4])=[O:5])=[CH:7][C:9]=1[F:2])[F:3])[O:16][CH:22]1[CH2:19][CH2:21][N:26]([C:24](=[O:17])[O:25][C:23]([CH3:15])([CH3:13])[CH3:14])[CH2:20][CH2:18]1.[C:10]1(=[CH:6][C:8](=[C:9]([F:2])[CH:7]=[C:12]1[N+:11]([O-:4])=[O:5])[F:1])[O:16][CH:22]1[CH2:19][CH2:21][N:26]([C:24](=[O:17])[O:25][C:23]([CH3:15])([CH3:13])[CH3:14])[CH2:20][CH2:18]1"
+    },
+    {
+        "query_id": 294,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[O:4])[CH:3]=[CH:6][C:7](=[O:8])[CH:5]=[CH:2]1>>[C:2]12[C:1](=[O:4])[C:3](=[CH:6][C:7](=[O:8])[C:5]=1N([C:7]1[CH:5]=[CH:2][C:1]([OH:4])=[CH:3][C:6]2=1)CC)NCC"
+    },
+    {
+        "query_id": 295,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:5][O:11][C:16](O)([CH3:20])[CH:10]([C:17](=O)[CH3:22])[CH2:4]1)([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[NH:24]([NH2:26])[CH3:25]>>[C:1]([OH:5])([CH2:4][C:10]1[C:17]([CH3:22])=[N:26][N:24]([CH3:25])[C:16]=1[CH3:20])([C:3]1=[CH:8][CH:14]=[CH:19][CH:15]=[CH:9]1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:1]([O:5][OH:11])([CH2:4][C:10]1[C:17]([CH3:22])=[N:26][N:24]([CH3:25])[C:16]=1[CH3:20])([C:3]1=[CH:8][CH:14]=[CH:19][CH:15]=[CH:9]1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:2]1([CH:6]=[CH:12][CH:18]=[CH:13][CH:7]=1)[C:1](=[O:5])[C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1"
+    },
+    {
+        "query_id": 296,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:5][O:11][C:16](O)([CH3:20])[CH:10]([C:17](=O)[CH3:22])[CH2:4]1)([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:24]1([NH:27][NH2:30])=[CH:26][CH:29]=[CH:31][CH:28]=[CH:25]1>>[C:1]([OH:5])([CH2:4][C:10]1[C:17]([CH3:22])=[N:30][N:27]([C:24]2=[CH:26][CH:29]=[CH:31][CH:28]=[CH:25]2)[C:16]=1[CH3:20])([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:1]([O:5][OH:11])([CH2:4][C:10]1[C:17]([CH3:22])=[N:30][N:27]([C:24]2=[CH:26][CH:29]=[CH:31][CH:28]=[CH:25]2)[C:16]=1[CH3:20])([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:2]1([CH:6]=[CH:12][CH:18]=[CH:13][CH:7]=1)[C:1](=[O:5])[C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1"
+    },
+    {
+        "query_id": 297,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:5][O:11][C:16](O)([CH3:20])[CH:10]([C:17](=O)[CH3:22])[CH2:4]1)([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[CH2:24]([NH:26][NH2:28])[CH2:25][OH:27]>>[C:1]([OH:5])([CH2:4][C:10]1[C:17]([CH3:22])=[N:28][N:26]([CH2:24][CH2:25][OH:27])[C:16]=1[CH3:20])([C:3]1=[CH:8][CH:14]=[CH:19][CH:15]=[CH:9]1)[C:2]1=[CH:6][CH:12]=[CH:18][CH:13]=[CH:7]1.[C:1]([O:5][OH:11])([CH2:4][C:10]1[C:17]([CH3:22])=[N:28][N:26]([CH2:24][CH2:25][OH:27])[C:16]=1[CH3:20])([C:3]1=[CH:8][CH:14]=[CH:19][CH:15]=[CH:9]1)[C:2]1=[CH:6][CH:12]=[CH:18][CH:13]=[CH:7]1.[C:2]1([CH:6]=[CH:12][CH:18]=[CH:13][CH:7]=1)[C:1](=[O:5])[C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1"
+    },
+    {
+        "query_id": 298,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:5][O:11][C:16](O)([CH3:20])[CH:10]([C:17](=O)[CH3:22])[CH2:4]1)([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:24]1([NH:27][NH2:30])[CH:26]=[CH:29][C:31]([Cl:32])=[CH:28][CH:25]=1>>[C:1]([OH:5])([CH2:4][C:10]1[C:17]([CH3:22])=[N:30][N:27]([C:24]2[CH:26]=[CH:29][C:31]([Cl:32])=[CH:28][CH:25]=2)[C:16]=1[CH3:20])([C:3]1=[CH:8][CH:14]=[CH:19][CH:15]=[CH:9]1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:1]([O:5][OH:11])([CH2:4][C:10]1[C:17]([CH3:22])=[N:30][N:27]([C:24]2[CH:26]=[CH:29][C:31]([Cl:32])=[CH:28][CH:25]=2)[C:16]=1[CH3:20])([C:3]1=[CH:8][CH:14]=[CH:19][CH:15]=[CH:9]1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:2]1([CH:6]=[CH:12][CH:18]=[CH:13][CH:7]=1)[C:1](=[O:5])[C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1"
+    },
+    {
+        "query_id": 299,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:5][O:27][C:16](O)([CH3:20])[CH:10]([C:17](=O)[CH3:22])[CH2:4]1)([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[NH:24]([NH2:26])[CH3:25]>>[C:1]([O:5][OH:27])([CH2:4][C:10]1[C:16]([CH3:20])=[N:26][N:24]([CH3:25])[C:17]=1[CH3:22])([C:3]1=[CH:9][CH:15]=[CH:19][CH:14]=[CH:8]1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:2]1([CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1)[C:1](=[O:5])[C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1"
+    },
+    {
+        "query_id": 300,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:5][O:32][C:16](O)([CH3:20])[CH:10]([C:17](=O)[CH3:22])[CH2:4]1)([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:24]1([NH:27][NH2:30])=[CH:26][CH:29]=[CH:31][CH:28]=[CH:25]1>>[C:1]([O:5][OH:32])([CH2:4][C:10]1[C:16]([CH3:20])=[N:30][N:27]([C:24]2=[CH:26][CH:29]=[CH:31][CH:28]=[CH:25]2)[C:17]=1[CH3:22])([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:2]1([CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1)[C:1](=[O:5])[C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1"
+    },
+    {
+        "query_id": 301,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:5][O:29][C:16](O)([CH3:20])[CH:10]([C:17](=O)[CH3:22])[CH2:4]1)([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[CH2:24]([NH:26][NH2:28])[CH2:25][OH:27]>>[C:1]([O:5][OH:29])([CH2:4][C:10]1[C:16]([CH3:20])=[N:28][N:26]([CH2:24][CH2:25][OH:27])[C:17]=1[CH3:22])([C:3]1=[CH:9][CH:15]=[CH:19][CH:14]=[CH:8]1)[C:2]1=[CH:7][CH:13]=[CH:18][CH:12]=[CH:6]1.[C:2]1([CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1)[C:1](=[O:5])[C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1"
+    },
+    {
+        "query_id": 302,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:5][O:33][C:16](O)([CH3:20])[CH:10]([C:17](=O)[CH3:22])[CH2:4]1)([C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:24]1([NH:27][NH2:30])[CH:26]=[CH:29][C:31]([Cl:32])=[CH:28][CH:25]=1>>[C:1]([O:5][OH:33])([CH2:4][C:10]1[C:16]([CH3:20])=[N:30][N:27]([C:24]2[CH:26]=[CH:29][C:31]([Cl:32])=[CH:28][CH:25]=2)[C:17]=1[CH3:22])([C:3]1=[CH:9][CH:15]=[CH:19][CH:14]=[CH:8]1)[C:2]1[CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1.[C:2]1([CH:7]=[CH:13][CH:18]=[CH:12][CH:6]=1)[C:1](=[O:5])[C:3]1[CH:9]=[CH:15][CH:19]=[CH:14][CH:8]=1"
+    },
+    {
+        "query_id": 303,
+        "query_type": "rsmiles",
+        "expected": "[C@:14]1([H])([CH2:6][CH2:2][CH2:1][CH2:4][NH:7][C:12]1=[O:5])[NH:11][C:10](=[O:3])/[CH:8]=[CH:13]/[CH:15](Br)[CH3:9].[N+](CCCC)(CCCC)(CCCC)CCCC.[N:41]([Fe-:42])=[O:37].[O+:34]#[C-:38].[O+:35]#[C-:39].[O+]#[C-]>>[C@:14]1([H])([CH2:6][CH2:2][CH2:1][CH2:4][NH:7][C:12]1=[O:5])[NH:11][C:10](=[O:3])[CH:8][CH:13][CH:15][CH3:9].[N:41]([Fe:42])=[O:37].[O+:35]#[C-:39].[O+:34]#[C-:38] |f:1.2.3.4.5,6.7.8.9,a:0,43,w:14,^1:55,56,57|"
+    },
+    {
+        "query_id": 304,
+        "query_type": "rsmiles",
+        "expected": "[C:17](=[CH:13]/[N+:16]([O-:9])=[O:10])(\\[C:15]1=[N:12][CH:6]=[CH:4][CH:5]=[CH:11]1)/[C:14]1=[CH:8][CH:3]=[CH:1][CH:2]=[CH:7]1>>[C@@H:17]([CH2:13][N+:16]([O-:9])=[O:10])([C:15]1=[N:12][CH:6]=[CH:4][CH:5]=[CH:11]1)[C:14]1[CH:8]=[CH:3][CH:1]=[CH:2][CH:7]=1.[C:14]1(=[CH:8][CH:3]=[CH:1][CH:2]=[CH:7]1)[C:17](=O)[C:15]1=[N:12][CH:6]=[CH:4][CH:5]=[CH:11]1.[C:14]1(=[CH:8][CH:3]=[CH:1][CH:2]=[CH:7]1)[C:17](=[CH2:13])[C:15]1=[N:12][CH:6]=[CH:4][CH:5]=[CH:11]1"
+    },
+    {
+        "query_id": 305,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[C:4]([S:9](=[O:16])[CH3:15])[CH:8]=[N:10][C:5]2[CH:11]=[CH:17][CH:12]=[CH:6][C:2]1=2)[S:3][C:7]1[CH:14]=[N:20][C:21]2[CH:24]=[CH:26][CH:25]=[CH:22][C:18]=2[C:13]=1[O:19][CH3:27]>>[C:1]1([S:3][C:7]2=[CH:14][NH:20][C:21]3[CH:24]=[CH:26][C:25]([N+]([O-])=O)=[CH:22][C:18]=3[C:13]2=[O:19])=[C:4]([S:9](=[O:16])[CH3:15])[CH:8]=[N:10][C:5]2[CH:11]=[CH:17][CH:12]=[CH:6][C:2]1=2.[C:1]1([S:3][C:7]2=[CH:14][NH:20][C:21]3[C:24]([N+]([O-])=O)=[CH:26][CH:25]=[CH:22][C:18]=3[C:13]2=[O:19])=[C:4]([S:9](=[O:16])[CH3:15])[CH:8]=[N:10][C:5]2[CH:11]=[CH:17][CH:12]=[CH:6][C:2]1=2.[C:1]1(=[C:4]([S:9](=[O:16])[CH3:15])[CH:8]=[N:10][C:5]2[CH:11]=[CH:17][CH:12]=[CH:6][C:2]1=2)[S:3][C:7]1[CH:14]=[N:20][C:21]2[CH:24]=[CH:26][C:25]([N+]([O-])=O)=[CH:22][C:18]=2[C:13]=1[O:19][CH3:27].[C:1]1(=[C:4]([S:9](=[O:16])[CH3:15])[CH:8]=[N:10][C:5]2[CH:11]=[CH:17][CH:12]=[CH:6][C:2]1=2)[S:3][C:7]1[CH:14]=[N:20][C:21]2[C:24]([N+]([O-])=O)=[CH:26][CH:25]=[CH:22][C:18]=2[C:13]=1[O:19][CH3:27]"
+    },
+    {
+        "query_id": 306,
+        "query_type": "rsmiles",
+        "expected": "[C@:1]12([H])[C@H:4]([CH3:10])[O:9][C:8](=[O:14])[C@@:3]1([H])[CH2:7][C@@:11]1([H])[CH2:15][CH2:18][CH2:16][CH2:12][C@:5]1([H])[C@@:2]2([H])/[CH:6]=[CH:13]/[C@@:17]1([H])[CH2:20][CH2:23][CH2:24][C@H:21]([CH3:25])[N:19]1[C:22](=O)OC(C)(C)C.C=O>>[C@:1]12([H])[C@H:4]([CH3:10])[O:9][C:8](=[O:14])[C@@:3]1([H])[CH2:7][C@@:11]1([H])[CH2:15][CH2:18][CH2:16][CH2:12][C@:5]1([H])[C@@:2]2([H])/[CH:6]=[CH:13]/[C@@:17]1([H])[CH2:20][CH2:23][CH2:24][C@H:21]([CH3:25])[N:19]1[CH3:22]"
+    },
+    {
+        "query_id": 307,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]([CH2:3][NH2:5])[CH2:2][CH3:4].[C:6]([CH3:10])([CH3:9])([CH3:8])[O:7][C:11](=[O:13])[NH:12][C@@H:14]1[CH2:16][O:18][C:19](=[O:20])[CH:17]=[CH:15]1>>[C@H:15]([NH:5][CH2:3][CH2:1][CH2:2][CH3:4])([CH2:17][C:19](=[O:20])[NH:5][CH2:3][CH2:1][CH2:2][CH3:4])[C@@H:14]([CH2:16][OH:18])[NH:12][C:11](=[O:13])[O:7][C:6]([CH3:10])([CH3:9])[CH3:8]"
+    },
+    {
+        "query_id": 308,
+        "query_type": "rsmiles",
+        "expected": "[CH:7]1[C:2]([CH3:1])=[CH:3][C:4](Cl)=[CH:5][CH:6]=1>>[CH:7]1[C:2]([CH3:1])=[CH:3][C:4](O)=[CH:5][CH:6]=1"
+    },
+    {
+        "query_id": 309,
+        "query_type": "rsmiles",
+        "expected": "[CH:7]1[C:2]([CH3:1])=[CH:3][C:4](Cl)=[CH:5][CH:6]=1>>[CH:7]1[C:2]([CH3:1])=[CH:3][C:4](O)=[CH:5][CH:6]=1"
+    },
+    {
+        "query_id": 310,
+        "query_type": "rsmiles",
+        "expected": "[CH3:1][C:2]#[C:3][CH3:4]>>[CH3:1]/[CH:2]=[CH:3]/[CH3:4]"
+    },
+    {
+        "query_id": 311,
+        "query_type": "rsmiles",
+        "expected": "C1(C(=O)C)=CC=CC=C1>>C1([C@H](O)C)=CC=CC=C1 |&1:10|"
+    },
+    {
+        "query_id": 312,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([C:7](=[O:9])[CH3:8])=[CH:6][CH:5]=[CH:4][CH:3]=[CH:2]1>>[C:1]1([C@H:7]([OH:9])[CH3:8])=[CH:6][CH:5]=[CH:4][CH:3]=[CH:2]1 |&1:10|"
+    },
+    {
+        "query_id": 313,
+        "query_type": "rsmiles",
+        "expected": "[NH2:1][C:2]1=[CH:4][CH:6]=[CH:7][CH:5]=[CH:3]1.O(C=O)[CH2:10][CH3:12]>>[NH:1]([CH2:10][CH3:12])[C:2]1=[CH:4][CH:6]=[CH:7][CH:5]=[CH:3]1"
+    },
+    {
+        "query_id": 314,
+        "query_type": "rsmiles",
+        "expected": "[CH:1]1([OH:4])[CH2:3][CH2:6][CH2:7][CH2:5][CH2:2]1>>[C:1]1(=[O:4])[CH2:3][CH2:6][CH2:7][CH2:5][CH2:2]1"
+    },
+    {
+        "query_id": 315,
+        "query_type": "rsmiles",
+        "expected": ">>C(=O)(CCC)CCCCCCCC"
+    },
+    {
+        "query_id": 316,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[CH:4][CH:8]=[C:9]([Cl:10])[CH:7]=[CH:3]1)[C:2](=[Se:6])[NH2:5]>>[C:2]1(=[N:5][Se:6][C:2]([C:1]2=[CH:4][CH:8]=[C:9]([Cl:10])[CH:7]=[CH:3]2)=[N:5]1)[C:1]1=[CH:4][CH:8]=[C:9]([Cl:10])[CH:7]=[CH:3]1"
+    },
+    {
+        "query_id": 317,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1([O:4][CH3:7])=[CH:3][CH:6]=[C:8](Br)[CH:5]=[CH:2]1>>[C:1]1([O:4][CH3:7])=[CH:3][CH:6]=[C:8]([Mg]Br)[CH:5]=[CH:2]1"
+    },
+    {
+        "query_id": 318,
+        "query_type": "rsmiles",
+        "expected": "[CH2:1]1[CH2:3][CH:5]=[CH:6][CH2:4][CH2:2]1>>[C@H:5]1(O)[CH2:3][CH2:1][CH2:2][CH2:4][C@@H:6]1O |&1:6,12|"
+    },
+    {
+        "query_id": 319,
+        "query_type": "rsmiles",
+        "expected": "CC(C)([H])[H]>>CC(C)=O"
+    },
+    {
+        "query_id": 320,
+        "query_type": "rsmiles",
+        "expected": "CC(O)(O)C>>CC(=O)C"
+    },
+    {
+        "query_id": 321,
+        "query_type": "rsmiles",
+        "expected": "C(=O)C=C.Cl>>C(=O)CCCl"
+    },
+    {
+        "query_id": 322,
+        "query_type": "rsmiles",
+        "expected": ">>C1CC2CC21"
+    },
+    {
+        "query_id": 323,
+        "query_type": "rsmiles",
+        "expected": "C1=CC=C(N(=O)O)C=C1>>N#N"
+    },
+    {
+        "query_id": 324,
+        "query_type": "rsmiles",
+        "expected": "N(=O)O>>N#N"
+    },
+    {
+        "query_id": 325,
+        "query_type": "rsmiles",
+        "expected": "C1(C=O)C=CC=CC=1OC.C1(C)(C)CC(C=C(C)C1)=O>>C1(=CC(CC(C)(C)C1)=O)/C=C/C1C=CC=CC=1OC"
+    },
+    {
+        "query_id": 326,
+        "query_type": "rsmiles",
+        "expected": "C(C1=CC=CC=C1)(C)=O>>C(C1=CC=CC=C1)(C)O"
+    },
+    {
+        "query_id": 327,
+        "query_type": "rsmiles",
+        "expected": "[C:1](=[O:3])([CH3:2])[C:8]1=[CH:9][CH:4]=[CH:5][CH:6]=[CH:7]1>>[CH:1]([OH:3])([CH3:2])[C:8]1=[CH:9][CH:4]=[CH:5][CH:6]=[CH:7]1"
+    },
+    {
+        "query_id": 328,
+        "query_type": "rsmiles",
+        "expected": "[C:1]1(=[CH:4][CH:8]=[CH:10][CH:7]=[CH:3]1)[C:2](=[O:6])/[CH:5]=[C:9](\\[CH3:12])/[S:11][CH2:13][CH3:14]>>[C:1]1(=[CH:4][CH:8]=[CH:10][CH:7]=[CH:3]1)[CH:2]([OH:6])/[CH:5]=[C:9](\\[CH3:12])/[S:11][CH2:13][CH3:14]"
+    },
+    {
+        "query_id": 329,
+        "query_type": "rsmiles",
+        "expected": "C1(=CC=C(C)C=C1)S(=O)(=O)NCC(=O)O>>C1=C(S(NCC(OC)=O)(=O)=O)C=CC(C)=C1"
+    },
+    {
+        "query_id": 330,
+        "query_type": "rsmiles",
+        "expected": "C1C=C([C@@H](C)C(O)=O)C=CC=1.C[C@H](N)CC>>C([C@H](C)C1=CC=CC=C1)(N[C@H](CC)C)=O |&1:3,17,a:12,26|"
+    }
+]
