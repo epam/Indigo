@@ -49,13 +49,15 @@ Datum aam(PG_FUNCTION_ARGS)
 
         int buf_size;
         const char* react_buf = react_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.ringoAAM(react_buf, buf_size, aam_mode.getString());
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("aam", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("aam", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -80,13 +82,15 @@ Datum rxnfile(PG_FUNCTION_ARGS)
         BingoPgText react_text(react_datum);
         int buf_size;
         const char* react_buf = react_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.ringoRxnfile(react_buf, buf_size);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("rxnfile", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("rxnfile", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -110,13 +114,15 @@ Datum rcml(PG_FUNCTION_ARGS)
         BingoPgText react_text(react_datum);
         int buf_size;
         const char* react_buf = react_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.ringoRCML(react_buf, buf_size);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("rcml", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("rcml", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -140,15 +146,18 @@ Datum checkreaction(PG_FUNCTION_ARGS)
         BingoPgText react_text(react_datum);
         int buf_size;
         const char* react_buf = react_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.ringoCheckReaction(react_buf, buf_size);
-            if (bingo_result == 0) {
+            if (bingo_result == 0)
+            {
                 PG_RETURN_NULL();
             }
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("checkreaction", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("checkreaction", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -172,13 +181,15 @@ Datum rsmiles(PG_FUNCTION_ARGS)
         BingoPgText react_text(react_datum);
         int buf_size;
         const char* react_buf = react_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.ringoRSMILES(react_buf, buf_size);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("rsmiles", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("rsmiles", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -207,14 +218,16 @@ Datum rfingerprint(PG_FUNCTION_ARGS)
         const char* r_buf = r_text.getText(buf_size);
 
         int res_buf;
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.ringoFingerprint(r_buf, buf_size, react_options.getString(), &res_buf);
 
             BingoPgText result_data;
             result_data.initFromBuffer(bingo_result, res_buf);
 
             result = result_data.release();
-        } CORE_CATCH_REJECT_WARNING("rfingerprint", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("rfingerprint", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -242,14 +255,16 @@ Datum compactreaction(PG_FUNCTION_ARGS)
         const char* r_buf = r_text.getText(buf_size);
 
         int res_buf;
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.ringoICR(r_buf, buf_size, options_xyz, &res_buf);
 
             BingoPgText result_data;
             result_data.initFromBuffer(bingo_result, res_buf);
 
             result = result_data.release();
-        } CORE_CATCH_REJECT_WARNING("compactreaction", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("compactreaction", PG_RETURN_NULL())
     }
     PG_BINGO_END
 

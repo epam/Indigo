@@ -25,7 +25,7 @@
 using namespace indigo;
 using namespace indigo::bingo_core;
 
-BingoCore::BingoCore(): self(*this)
+BingoCore::BingoCore() : self(*this)
 {
     bingo_context = 0;
     mango_context = 0;
@@ -545,7 +545,6 @@ void BingoCore::bingoRDFImportOpen(const char* file_name)
     self.rdf_loader.create(self.file_scanner.ref());
 }
 
-
 CEXPORT int bingoRDFImportOpen(const char* file_name)
 {
     BINGO_BEGIN
@@ -555,7 +554,8 @@ CEXPORT int bingoRDFImportOpen(const char* file_name)
     BINGO_END(1, -1);
 }
 
-void BingoCore::bingoRDFImportClose() {
+void BingoCore::bingoRDFImportClose()
+{
     self.rdf_loader.free();
     self.file_scanner.free();
 }
@@ -569,7 +569,8 @@ CEXPORT int bingoRDFImportClose()
     BINGO_END(0, -1);
 }
 
-int BingoCore::bingoRDFImportEOF() {
+int BingoCore::bingoRDFImportEOF()
+{
     return self.rdf_loader->isEOF() ? 1 : 0;
 }
 
@@ -582,7 +583,8 @@ CEXPORT int bingoRDFImportEOF()
     BINGO_END(0, -1);
 }
 
-const char* BingoCore::bingoRDFImportGetNext() {
+const char* BingoCore::bingoRDFImportGetNext()
+{
     self.rdf_loader->readNext();
     self.rdf_loader->data.push(0);
     return self.rdf_loader->data.ptr();
@@ -715,7 +717,8 @@ CEXPORT void bingoProfIncCounter(const char* name, int dv)
     inst->addCounter(name_index, dv);
 }
 
-const char* BingoCore::bingoGetNameCore(const char* target_buf, int target_buf_len) {
+const char* BingoCore::bingoGetNameCore(const char* target_buf, int target_buf_len)
+{
     QS_DEF(Array<char>, source);
     QS_DEF(Array<char>, name);
 
@@ -892,8 +895,8 @@ const char* BingoCore::bingoSMILESImportGetId()
     if (self.smiles_scanner == 0)
         throw BingoError("SMILES import wasn't initialized");
     /*
-        * Extract id name by skipping | symbols
-        */
+     * Extract id name by skipping | symbols
+     */
     BufferScanner strscan(self.buffer.ptr());
 
     strscan.skipSpace();

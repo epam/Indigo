@@ -1,14 +1,14 @@
-from typing import Type, Union
+from typing import List, Type, Union
 
 import umap  # type: ignore
 from sklearn.base import BaseEstimator  # type: ignore
 
 
 def reduce_dim(
-    descriptors: list[list[Union[int, float]]],
+    descriptors: List[List[Union[int, float]]],
     method: Type[BaseEstimator] = umap.UMAP,
     **kwargs
-) -> list[list[float]]:
+) -> List[List[float]]:
     """Dimensional reduction procedure for given set of molecules.
 
     Args:

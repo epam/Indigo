@@ -15,8 +15,8 @@ extern "C"
 #include "bingo_core_c.h"
 #include "bingo_pg_build_engine.h"
 
-#include "bingo_pg_index.h"
 #include "bingo_pg_config.h"
+#include "bingo_pg_index.h"
 
 using namespace indigo;
 
@@ -35,7 +35,8 @@ BingoPgBuildEngine::~BingoPgBuildEngine()
 {
 }
 
-void BingoPgBuildEngine::setUpConfiguration(BingoPgConfig& bingo_config) {
+void BingoPgBuildEngine::setUpConfiguration(BingoPgConfig& bingo_config)
+{
     /*
      * Set up bingo configuration
      */
