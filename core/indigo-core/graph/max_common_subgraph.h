@@ -23,7 +23,6 @@
 #include "base_cpp/d_bitset.h"
 #include "base_cpp/obj_list.h"
 #include "base_cpp/output.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/graph.h"

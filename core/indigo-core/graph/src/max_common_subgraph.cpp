@@ -16,10 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "graph/max_common_subgraph.h"
 #include "base_cpp/array.h"
 #include "base_cpp/cancellation_handler.h"
-#include "time.h"
+#include "graph/max_common_subgraph.h"
+
 #include <algorithm>
 
 using namespace indigo;
@@ -359,23 +359,24 @@ bool MaxCommonSubgraph::ReCreation::_hasCommonSymbol(int e11, int e12, int e21, 
 void MaxCommonSubgraph::ReCreation::_createList(const Dbitset& proj_bitset, Graph& graph, Array<int>& v_list, Array<int>& e_list) const
 {
     int e_num, v_num1, v_num2;
-    RedBlackSet<int> rb_set;
+    std::unordered_set<int> set;
 
     v_list.clear();
     e_list.clear();
-    rb_set.clear();
+    set.clear();
 
     for (int x = proj_bitset.nextSetBit(0); x >= 0; x = proj_bitset.nextSetBit(x + 1))
     {
         e_num = x;
         v_num1 = graph.getEdge(e_num).beg;
         v_num2 = graph.getEdge(e_num).end;
-        rb_set.find_or_insert(v_num1);
-        rb_set.find_or_insert(v_num2);
+        set.insert(v_num1);
+        set.insert(v_num2);
         e_list.push(e_num);
     }
-    for (int i = rb_set.begin(); i < rb_set.end(); i = rb_set.next(i))
-        v_list.push(rb_set.key(i));
+
+    for (int i : set)
+        v_list.push(i);
 }
 
 void MaxCommonSubgraph::ReCreation::setCorrespondence(const Dbitset& bits, Array<int>& map) const
