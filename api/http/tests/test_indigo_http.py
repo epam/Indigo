@@ -9,7 +9,7 @@ from typing import Any, BinaryIO, Dict, List, Optional
 import PyPDF2
 import pytest
 from fastapi.testclient import TestClient
-from PIL import Image  # type: ignore
+from PIL import Image
 from requests import Response
 
 from indigo_service import jsonapi
