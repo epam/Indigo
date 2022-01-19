@@ -79,7 +79,6 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
 
     elog(DEBUG1, "bingo: index build: start create index '%s'", rel_name);
 
-    
     /*
      * Safety check
      */
@@ -148,7 +147,6 @@ void BingoPgBuild::_prepareUpdating()
     bingo_config.setUpBingoConfiguration();
     bingo_core.bingoTautomerRulesReady(0, 0, 0);
     bingo_core.bingoIndexBegin();
-
 
     /*
      * Prepare for an update

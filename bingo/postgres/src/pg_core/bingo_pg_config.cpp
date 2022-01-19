@@ -26,7 +26,7 @@ using namespace indigo;
 
 IMPL_ERROR(BingoPgConfig, "bingo postgres config");
 
-BingoPgConfig::BingoPgConfig(bingo_core::BingoCore& bingoCore): bingoCore(bingoCore)
+BingoPgConfig::BingoPgConfig(bingo_core::BingoCore& bingoCore) : bingoCore(bingoCore)
 {
     _stringParams.insert("SIMILARITY_TYPE");
 }

@@ -9,7 +9,8 @@ namespace indigo
 {
     class Scanner;
     class Output;
-    namespace bingo_core {
+    namespace bingo_core
+    {
         class BingoCore;
     }
 } // namespace indigo

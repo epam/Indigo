@@ -44,7 +44,6 @@ namespace indigo
         static MangoOracleContext& get(OracleEnv& env, int id, bool lock);
     };
 
-
 } // namespace indigo
 
 extern const char* bad_molecule_warning;

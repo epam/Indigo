@@ -57,13 +57,15 @@ Datum smiles(PG_FUNCTION_ARGS)
         BingoPgText mol_text(mol_datum);
         int buf_size;
         const char* mol_buf = mol_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoSMILES(mol_buf, buf_size, 0);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("smiles", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("smiles", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -87,13 +89,15 @@ Datum cansmiles(PG_FUNCTION_ARGS)
         BingoPgText mol_text(mol_datum);
         int buf_size;
         const char* mol_buf = mol_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoSMILES(mol_buf, buf_size, 1);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("cansmiles", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("cansmiles", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -117,13 +121,15 @@ Datum molfile(PG_FUNCTION_ARGS)
         BingoPgText mol_text(mol_datum);
         int buf_size;
         const char* mol_buf = mol_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoMolfile(mol_buf, buf_size);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("molfile", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("molfile", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -146,13 +152,15 @@ Datum cml(PG_FUNCTION_ARGS)
         BingoPgText mol_text(mol_datum);
         int buf_size;
         const char* mol_buf = mol_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoCML(mol_buf, buf_size);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("cml", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("cml", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -175,16 +183,19 @@ Datum checkmolecule(PG_FUNCTION_ARGS)
         BingoPgText mol_text(mol_datum);
         int buf_size;
         const char* mol_buf = mol_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoCheckMolecule(mol_buf, buf_size);
-            if (bingo_result == 0) {
+            if (bingo_result == 0)
+            {
                 PG_RETURN_NULL();
             }
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("checkmolecule", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("checkmolecule", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -207,13 +218,15 @@ Datum gross(PG_FUNCTION_ARGS)
         BingoPgText mol_text(mol_datum);
         int buf_size;
         const char* mol_buf = mol_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoGross(mol_buf, buf_size);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("gross", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("gross", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -240,9 +253,11 @@ Datum getweight(PG_FUNCTION_ARGS)
 
         int buf_len;
         const char* buf = mol_text.getText(buf_len);
-        try {
+        try
+        {
             bingoCore.mangoMassD(buf, buf_len, mol_options.getString(), &result);
-        } CORE_CATCH_REJECT_WARNING("getweight", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("getweight", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -263,9 +278,11 @@ Datum getmass(PG_FUNCTION_ARGS)
         BingoPgText mol_text(mol_datum);
         int buf_len;
         const char* buf = mol_text.getText(buf_len);
-        try {
+        try
+        {
             bingoCore.mangoMassD(buf, buf_len, 0, &result);
-        } CORE_CATCH_REJECT_WARNING("getmass", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("getmass", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -291,15 +308,16 @@ Datum fingerprint(PG_FUNCTION_ARGS)
         const char* mol_buf = mol_text.getText(buf_size);
 
         int res_buf;
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoFingerprint(mol_buf, buf_size, mol_options.getString(), &res_buf);
 
             BingoPgText result_data;
             result_data.initFromBuffer(bingo_result, res_buf);
 
             result = result_data.release();
-        } CORE_CATCH_REJECT_WARNING("fingerprint", PG_RETURN_NULL())
-        
+        }
+        CORE_CATCH_REJECT_WARNING("fingerprint", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -327,14 +345,16 @@ Datum compactmolecule(PG_FUNCTION_ARGS)
         const char* mol_buf = mol_text.getText(buf_size);
 
         int res_buf;
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoICM(mol_buf, buf_size, options_xyz, &res_buf);
 
             BingoPgText result_data;
             result_data.initFromBuffer(bingo_result, res_buf);
 
             result = result_data.release();
-        } CORE_CATCH_REJECT_WARNING("compactmolecule", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("compactmolecule", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -363,13 +383,15 @@ Datum inchi(PG_FUNCTION_ARGS)
         const char* mol_buf = mol_text.getText(buf_size);
 
         int res_buf;
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoInChI(mol_buf, buf_size, mol_options.getString(), &res_buf);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("inchi", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("inchi", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -391,13 +413,15 @@ Datum inchikey(PG_FUNCTION_ARGS)
 
         BingoPgText mol_text(mol_datum);
         const char* mol_buf = mol_text.getString();
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoInChIKey(mol_buf);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("inchikey", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("inchikey", PG_RETURN_NULL())
     }
     PG_BINGO_END
 
@@ -424,13 +448,15 @@ Datum standardize(PG_FUNCTION_ARGS)
 
         int buf_size;
         const char* mol_buf = mol_text.getText(buf_size);
-        try {
+        try
+        {
             const char* bingo_result = bingoCore.mangoStandardize(mol_buf, buf_size, st_options.getString());
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_REJECT_WARNING("standardize", PG_RETURN_NULL())
+        }
+        CORE_CATCH_REJECT_WARNING("standardize", PG_RETURN_NULL())
     }
     PG_BINGO_END
 

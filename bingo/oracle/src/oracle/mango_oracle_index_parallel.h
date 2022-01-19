@@ -71,13 +71,10 @@ namespace indigo
         ChunkStorage rowids;
     };
 
-
-
 } // namespace indigo
 
 bool mangoPrepareMolecule(indigo::OracleEnv& env, const char* rowid, const indigo::Array<char>& molfile_buf, indigo::MangoOracleContext& context,
-                          indigo::MangoIndex& index, indigo::Array<char>& data,
-                          std::mutex* lock_for_exclusive_access, std::string& failure_message);
+                          indigo::MangoIndex& index, indigo::Array<char>& data, std::mutex* lock_for_exclusive_access, std::string& failure_message);
 
 void mangoRegisterMolecule(indigo::OracleEnv& env, const char* rowid, indigo::MangoOracleContext& context, const indigo::MangoIndex& index,
                            indigo::BingoFingerprints& fingerprints, const indigo::Array<char>& prepared_data, bool append);

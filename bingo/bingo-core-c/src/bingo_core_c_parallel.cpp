@@ -29,24 +29,32 @@
 using namespace indigo;
 using namespace indigo::bingo_core;
 
-void BingoCore::bingoSetIndexRecordData(int id, const char* data, int data_size){
+void BingoCore::bingoSetIndexRecordData(int id, const char* data, int data_size)
+{
     self.index_record_data->copy(data, data_size);
     self.index_record_data_id = id;
 }
 
-CEXPORT int bingoSetIndexRecordData(int id, const char* data, int data_size){
-    BINGO_BEGIN{
+CEXPORT int bingoSetIndexRecordData(int id, const char* data, int data_size)
+{
+    BINGO_BEGIN
+    {
         self.bingoSetIndexRecordData(id, data, data_size);
     }
     BINGO_END(0, -1)
 }
 
 void BingoCore::bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
-                              void (*process_error_cb)(int id, void* context), void* context){
-    if (self.parallel_indexing_dispatcher.get() == 0) {
-        if (is_reaction) {
+                                  void (*process_error_cb)(int id, void* context), void* context)
+{
+    if (self.parallel_indexing_dispatcher.get() == 0)
+    {
+        if (is_reaction)
+        {
             self.parallel_indexing_dispatcher = std::make_unique<RingoIndexingDispatcher>(self);
-        } else {
+        }
+        else
+        {
             self.parallel_indexing_dispatcher = std::make_unique<MangoIndexingDispatcher>(self);
         }
     }
@@ -62,12 +70,10 @@ void BingoCore::bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(vo
 
 // Method for index molecules
 CEXPORT int bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
-                              void (*process_error_cb)(int id, void* context), void* context){
-    BINGO_BEGIN{
-        self.bingoIndexProcess(is_reaction, get_next_record_cb, process_result_cb,
-                              process_error_cb, context);
-    }
-    BINGO_END(0, -1)
+                              void (*process_error_cb)(int id, void* context),
+                              void* context){BINGO_BEGIN{self.bingoIndexProcess(is_reaction, get_next_record_cb, process_result_cb, process_error_cb, context);
+}
+BINGO_END(0, -1)
 }
 
 //
