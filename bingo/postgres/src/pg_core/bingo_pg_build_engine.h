@@ -93,7 +93,7 @@ protected:
     static void _processErrorCb(int id, void* context);
 
     // qword _bingoSession;
-    
+
     std::unique_ptr<indigo::BingoContext> _bingoContext;
     std::unique_ptr<indigo::MangoContext> _mangoContext;
     std::unique_ptr<indigo::RingoContext> _ringoContext;

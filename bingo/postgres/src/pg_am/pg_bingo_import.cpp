@@ -446,22 +446,28 @@ public:
     {
         _parseColumns = true;
         setFunctionName("importSDF");
-        try {
+        try
+        {
             bingoCore.bingoSDFImportOpen(fname);
-        } CORE_CATCH_ERROR("importSDF")
+        }
+        CORE_CATCH_ERROR("importSDF")
     }
     ~BingoImportSdfHandler() override
     {
-        try {
+        try
+        {
             bingoCore.bingoSDFImportClose();
-        } CORE_CATCH_WARNING("importSDF close")
+        }
+        CORE_CATCH_WARNING("importSDF close")
     }
 
     bool hasNext() override
     {
-        try {
+        try
+        {
             bingo_res = bingoCore.bingoSDFImportEOF();
-        } CORE_CATCH_ERROR("importSDF")
+        }
+        CORE_CATCH_ERROR("importSDF")
         return !bingo_res;
     }
 
@@ -472,19 +478,21 @@ public:
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
             const char* data = 0;
-            try {
+            try
+            {
                 if (col_idx == 0)
                     data = bingoCore.bingoSDFImportGetNext();
                 else
                     data = bingoCore.bingoImportGetPropertyValue(col_idx - 1);
-            } CORE_CATCH_WARNING("importSDF")
+            }
+            CORE_CATCH_WARNING("importSDF")
             // if (data == 0)
             // {
-                /*
-                 * Handle incorrect format errors
-                 */
-                // if (strstr(, "data size exceeded the acceptable size") != 0)
-                //     throw BingoPgError();
+            /*
+             * Handle incorrect format errors
+             */
+            // if (strstr(, "data size exceeded the acceptable size") != 0)
+            //     throw BingoPgError();
             // }
 
             _addData(data, col_idx);
@@ -530,22 +538,28 @@ public:
     {
         _parseColumns = true;
         setFunctionName("importRDF");
-        try {
+        try
+        {
             bingoCore.bingoRDFImportOpen(fname);
-        } CORE_CATCH_ERROR("importRDF")
+        }
+        CORE_CATCH_ERROR("importRDF")
     }
     ~BingoImportRdfHandler() override
     {
-        try {
+        try
+        {
             bingoCore.bingoRDFImportClose();
-        } CORE_CATCH_WARNING("importRDF close")
+        }
+        CORE_CATCH_WARNING("importRDF close")
     }
 
     bool hasNext() override
     {
-        try {
+        try
+        {
             bingo_res = bingoCore.bingoRDFImportEOF();
-        } CORE_CATCH_ERROR("importRDF")
+        }
+        CORE_CATCH_ERROR("importRDF")
 
         return !bingo_res;
     }
@@ -557,20 +571,22 @@ public:
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
             const char* data = 0;
-            try {
+            try
+            {
                 if (col_idx == 0)
                     data = bingoCore.bingoRDFImportGetNext();
                 else
                     data = bingoCore.bingoImportGetPropertyValue(col_idx - 1);
-            } CORE_CATCH_WARNING("importRDF")
+            }
+            CORE_CATCH_WARNING("importRDF")
 
             // if (data == 0)
             // {
-                /*
-                 * Handle incorrect format errors
-                 */
-                // if (strstr(, "data size exceeded the acceptable size") != 0)
-                //     throw BingoPgError();
+            /*
+             * Handle incorrect format errors
+             */
+            // if (strstr(, "data size exceeded the acceptable size") != 0)
+            //     throw BingoPgError();
             // }
             _addData(data, col_idx);
         }
@@ -616,22 +632,28 @@ public:
     {
         _parseColumns = false;
         setFunctionName("importSMILES");
-        try {
+        try
+        {
             bingoCore.bingoSMILESImportOpen(fname);
-        } CORE_CATCH_ERROR("importSmiles")
+        }
+        CORE_CATCH_ERROR("importSmiles")
     }
     ~BingoImportSmilesHandler() override
     {
-        try {
+        try
+        {
             bingoCore.bingoSMILESImportClose();
-        } CORE_CATCH_WARNING("importSmiles close")
+        }
+        CORE_CATCH_WARNING("importSmiles close")
     }
 
     bool hasNext() override
     {
-        try {
+        try
+        {
             bingo_res = bingoCore.bingoSMILESImportEOF();
-        } CORE_CATCH_ERROR("importSmiles")
+        }
+        CORE_CATCH_ERROR("importSmiles")
         return !bingo_res;
     }
 
@@ -645,15 +667,19 @@ public:
             const char* data = 0;
             if (col_idx == 0)
             {
-                try {
+                try
+                {
                     data = bingoCore.bingoSMILESImportGetNext();
-                } CORE_CATCH_WARNING("importSMILES")
+                }
+                CORE_CATCH_WARNING("importSMILES")
             }
             else
             {
-                try {
+                try
+                {
                     data = bingoCore.bingoSMILESImportGetId();
-                } CORE_CATCH_WARNING("importSMILES")
+                }
+                CORE_CATCH_WARNING("importSMILES")
             }
 
             _addData(data, col_idx);

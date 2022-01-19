@@ -36,7 +36,8 @@ public:
     _RingoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid), _type(type)
     {
         BingoPgCommon::getSearchTypeString(_type, _typeStr, false);
-        if (_typeStr.size() == 0) {
+        if (_typeStr.size() == 0)
+        {
             _typeStr.readString("", true);
         }
         setFunctionName(_typeStr.ptr());
@@ -63,16 +64,20 @@ public:
         /*
          * Set up match parameters
          */
-        try {
+        try
+        {
             bingoCore.ringoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
-        } CORE_CATCH_ERROR(_errorStr.ptr())
+        }
+        CORE_CATCH_ERROR(_errorStr.ptr())
 
         int target_size;
         const char* target_data = target_text.getText(target_size);
         int res;
-        try {
+        try
+        {
             res = bingoCore.ringoMatchTarget(target_data, target_size);
-        } CORE_CATCH_ERROR("Unexpected error during match")
+        }
+        CORE_CATCH_ERROR("Unexpected error during match")
 
         if (res < 0)
         {

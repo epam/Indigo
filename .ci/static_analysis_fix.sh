@@ -7,10 +7,10 @@
 #cmake .. -DUSE_CLANG_TIDY=ON
 #cd ..
 #clang-tidy --version
-#find . -not -path "./third_party/*" -a \( -iname "*.h" -o -iname "*.hpp" -o -iname "*.cpp" -o -iname "*.c" \) -exec clang-tidy --fix --fix-errors -p build-clang-tidy --header-filter="*third-party*" {} \;
+#find . -not -path "./third_party/*" -a \( -iname "*.h" -o -iname "*.hpp" -o -iname "*.cpp" -o -iname "*.c" \) -exec clang-tidy --fix --fix-errors -p build-clang-tidy --header-filter="*third-party*" {} +
 
 clang-format --version
-find . -not -path "./third_party/*" -a -not -path "./*build*/*" -a \( -iname "*.h" -o -iname "*.hpp" -o -iname "*.cpp" -o -iname "*.c" \) -exec clang-format -i {} \;
+find . -not -path "./third_party/*" -a -not -path "./*build*/*" -a \( -iname "*.h" -o -iname "*.hpp" -o -iname "*.cpp" -o -iname "*.c" \) -exec clang-format -i {} +
 
 # Python
 

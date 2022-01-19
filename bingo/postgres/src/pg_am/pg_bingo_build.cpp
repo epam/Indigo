@@ -143,9 +143,9 @@ Datum bingo_handler(PG_FUNCTION_ARGS)
 #endif
 
 #if PG_VERSION_NUM / 100 > 1200
-    static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state);
+static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state);
 #else
-    static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state);
+static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state);
 #endif
 
 //#include <signal.h>
@@ -263,15 +263,15 @@ static void bingoIndexCallbackImpl(Relation index, PG_OBJECT item_ptr, Datum* va
 }
 
 #if PG_VERSION_NUM / 100 > 1200
-    static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
-    {
-        bingoIndexCallbackImpl(index, item_ptr, values, isnull, tupleIsAlive, state);
-    }
+static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
+{
+    bingoIndexCallbackImpl(index, item_ptr, values, isnull, tupleIsAlive, state);
+}
 #else
-    static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
-    {
-        bingoIndexCallbackImpl(index, &htup->t_self, values, isnull, tupleIsAlive, state);
-    }
+static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
+{
+    bingoIndexCallbackImpl(index, &htup->t_self, values, isnull, tupleIsAlive, state);
+}
 #endif
 
 #if PG_VERSION_NUM / 100 >= 906

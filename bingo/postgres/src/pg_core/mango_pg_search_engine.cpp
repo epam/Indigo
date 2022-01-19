@@ -85,20 +85,25 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
     if (_searchType == BingoPgCommon::MOL_SUB || _searchType == BingoPgCommon::MOL_EXACT || _searchType == BingoPgCommon::MOL_SMARTS)
     {
         _bufferIndexPtr->readCmfItem(section_idx, structure_idx, mol_buf);
-        try {
+        try
+        {
             bingo_res = bingoCore.mangoNeedCoords();
-        } CORE_CATCH_ERROR("molecule search engine: error while getting coordinates flag")
+        }
+        CORE_CATCH_ERROR("molecule search engine: error while getting coordinates flag")
 
         if (bingo_res > 0)
         {
             _bufferIndexPtr->readXyzItem(section_idx, structure_idx, xyz_buf);
         }
 
-        try {
+        try
+        {
             bingo_res = bingoCore.mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
-        } CORE_CATCH_ERROR_TID("molecule search engine: error while matching binary target", section_idx, structure_idx)
+        }
+        CORE_CATCH_ERROR_TID("molecule search engine: error while matching binary target", section_idx, structure_idx)
 
-        CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoCore.warning.ptr());
+        CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx,
+                                bingoCore.warning.ptr());
 
         result = (bingo_res > 0);
     }
@@ -110,9 +115,11 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
         int gross_len;
         gross_text.getText(gross_len);
 
-        try {
+        try
+        {
             bingo_res = bingoCore.mangoMatchTarget(gross_text.getString(), gross_len);
-        } CORE_CATCH_ERROR("molecule search engine: error while matching gross target")
+        }
+        CORE_CATCH_ERROR("molecule search engine: error while matching gross target")
 
         CORE_RETURN_WARNING(bingo_res, 0, "molecule search engine: error while matching gross target", bingoCore.warning.ptr());
 
@@ -208,9 +215,11 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
 
     what_clause.printf("sh.b_id");
 
-    try {
+    try
+    {
         bingoCore.mangoGetHash(false, -1, &hash_elements_count, &hash);
-    } CORE_CATCH_ERROR("molecule search engine: error while getting hash")
+    }
+    CORE_CATCH_ERROR("molecule search engine: error while getting hash")
 
     if (hash_elements_count > MAX_HASH_ELEMENTS)
         hash_elements_count = MAX_HASH_ELEMENTS;
@@ -239,9 +248,11 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
          */
         for (int i = 0; i < hash_elements_count; i++)
         {
-            try {
+            try
+            {
                 bingoCore.mangoGetHash(false, i, &count, &hash);
-            } CORE_CATCH_ERROR("molecule search engine: error while getting hash");
+            }
+            CORE_CATCH_ERROR("molecule search engine: error while getting hash");
 
             where_clause.printf("t%d.ex_hash = %d AND ", i, hash);
         }
@@ -250,9 +261,11 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
          * components count mast must target components count
          */
         Array<char> rel;
-        try {
+        try
+        {
             bingo_res = bingoCore.mangoExactNeedComponentMatching();
-        } CORE_CATCH_ERROR("molecule search engine: error while getting need matching")
+        }
+        CORE_CATCH_ERROR("molecule search engine: error while getting need matching")
 
         if (bingo_res > 0)
             rel.readString(">=", true);
@@ -263,16 +276,20 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
         {
             if (i != 0)
                 where_clause.printf("AND ");
-            try {
+            try
+            {
                 bingoCore.mangoGetHash(false, i, &count, &hash);
-            } CORE_CATCH_ERROR("molecule search engine: error while getting hash")
+            }
+            CORE_CATCH_ERROR("molecule search engine: error while getting hash")
 
             where_clause.printf("t%d.f_count %s %d ", i, rel.ptr(), count);
         }
     }
-    try {
+    try
+    {
         bingo_res = bingoCore.mangoExactNeedComponentMatching();
-    } CORE_CATCH_ERROR("molecule search engine: error while getting need matching")
+    }
+    CORE_CATCH_ERROR("molecule search engine: error while getting need matching")
     if (bingo_res == 0)
     {
         if (where_was_added)
@@ -284,9 +301,11 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
         int query_fragments_count = 0;
         for (int i = 0; i < hash_elements_count; i++)
         {
-            try {
+            try
+            {
                 bingoCore.mangoGetHash(false, i, &count, &hash);
-            } CORE_CATCH_ERROR("molecule search engine: error while getting hash")
+            }
+            CORE_CATCH_ERROR("molecule search engine: error while getting hash")
             query_fragments_count += count;
         }
         where_clause.printf("sh.fragments = %d", query_fragments_count);
@@ -305,11 +324,13 @@ void MangoPgSearchEngine::_prepareExactTauStrings(indigo::Array<char>& what_clau
 
     what_clause.printf("b_id");
     from_clause.printf("%s", _shadowRelName.ptr());
-    try {
+    try
+    {
         const char* query_gross = bingoCore.mangoTauGetQueryGross();
 
         where_clause.printf("gross='%s' OR gross LIKE '%s H%%'", query_gross, query_gross);
-    } CORE_CATCH_ERROR("molecule search engine: error while constructing gross string")
+    }
+    CORE_CATCH_ERROR("molecule search engine: error while constructing gross string")
 
     what_clause_str.push(0);
     from_clause_str.push(0);
@@ -339,19 +360,23 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
      * Get block parameters and split search options
      */
     _getBlockParameters(search_options);
-    
+
     /*
      * Set up matching parameters
      */
-    try {
+    try
+    {
         bingoCore.mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    } CORE_CATCH_ERROR("molecule search engine: can not set sub search context");
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not set sub search context");
 
     const char* fingerprint_buf;
     int fp_len;
-    try {
+    try
+    {
         bingoCore.mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-    } CORE_CATCH_ERROR("molecule search engine: can not get sub query fingerprint");
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not get sub query fingerprint");
 
     int size_bits = fp_len * 8;
     data.setFingerPrints(fingerprint_buf, size_bits);
@@ -383,9 +408,11 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
      * Set up matching parameters
      */
     //   elog(WARNING, "processing query: %s", search_query.ptr());
-    try {
+    try
+    {
         bingoCore.mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    } CORE_CATCH_ERROR("molecule search engine: can not set exact search context")
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not set exact search context")
 
     if (strcasestr(search_options.ptr(), "TAU") != 0)
     {
@@ -429,14 +456,18 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    try {
+    try
+    {
         bingoCore.mangoSetupMatch(search_type.ptr(), gross_query.ptr(), 0);
-    } CORE_CATCH_ERROR("molecule search engine: can not set gross search context")
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not set gross search context")
 
-    try {
+    try
+    {
         const char* gross_conditions = bingoCore.mangoGrossGetConditions();
         _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions);
-    } CORE_CATCH_ERROR("molecule search engine: can not get gross conditions")
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not get gross conditions")
 }
 
 void MangoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)
@@ -511,23 +542,29 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    try {
+    try
+    {
         bingoCore.mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    } CORE_CATCH_ERROR("molecule search engine: can not set sim search context")
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not set sim search context")
 
     if (min_bound > max_bound)
         throw Error("min bound %f can not be greater then max bound %f", min_bound, max_bound);
 
-    try {
+    try
+    {
         bingoCore.mangoSimilaritySetMinMaxBounds(min_bound, max_bound);
-    } CORE_CATCH_ERROR("molecule search engine: can not get similarity min max bounds")
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not get similarity min max bounds")
 
     const char* fingerprint_buf;
     int fp_len;
 
-    try {
+    try
+    {
         bingoCore.mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-    } CORE_CATCH_ERROR("molecule search engine: can not get query fingerprint")
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not get query fingerprint")
 
     int size_bits = fp_len * 8;
     data.setFingerPrints(fingerprint_buf, size_bits);
@@ -695,9 +732,11 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
              * Prepare min max bounds
              */
             // profTimerStart(t3, "mango_pg.get_min_max");
-            try {
+            try
+            {
                 bingoCore.mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
-            } CORE_CATCH_ERROR("molecule search engine: error while getting similarity bounds array")
+            }
+            CORE_CATCH_ERROR("molecule search engine: error while getting similarity bounds array")
             // profTimerStop(t3);
             /*
              * Prepare common bits array
