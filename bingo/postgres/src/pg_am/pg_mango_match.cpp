@@ -50,7 +50,8 @@ public:
     _MangoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid), _type(type)
     {
         BingoPgCommon::getSearchTypeString(_type, _typeStr, true);
-        if (_typeStr.size() == 0) {
+        if (_typeStr.size() == 0)
+        {
             _typeStr.readString("", true);
         }
         setFunctionName(_typeStr.ptr());
@@ -77,9 +78,11 @@ public:
         /*
          * Set up match parameters
          */
-        try {
+        try
+        {
             bingoCore.mangoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
-        } CORE_CATCH_ERROR(_errorStr.ptr())
+        }
+        CORE_CATCH_ERROR(_errorStr.ptr())
 
         int target_size;
         const char* target_data = target_text.getText(target_size);
@@ -97,15 +100,19 @@ public:
             }
 
             setFunctionName(buffer_warn.ptr());
-            try {
+            try
+            {
                 target_data = bingoCore.mangoGross(target_data, target_size);
-            } CORE_CATCH_WARNING_RETURN("bingo.gross", return -1)
+            }
+            CORE_CATCH_WARNING_RETURN("bingo.gross", return -1)
         }
         int res;
 
-        try {
+        try
+        {
             res = bingoCore.mangoMatchTarget(target_data, target_size);
-        } CORE_CATCH_ERROR("Unexpected error during match")
+        }
+        CORE_CATCH_ERROR("Unexpected error during match")
         if (res < 0)
         {
             buffer_warn.readString(bingoCore.warning.ptr(), true);
@@ -278,9 +285,11 @@ Datum _match_mass_less(PG_FUNCTION_ARGS)
         int buf_len;
         const char* buf = mol_text.getText(buf_len);
 
-        try {
+        try
+        {
             bingo_handler.bingoCore.mangoMass(buf, buf_len, 0, &mol_mass);
-        } CORE_CATCH_ERROR("mass matcher: error while calculating mass")
+        }
+        CORE_CATCH_ERROR("mass matcher: error while calculating mass")
 
         result = mol_mass < usr_mass;
     }
@@ -310,9 +319,11 @@ Datum _match_mass_great(PG_FUNCTION_ARGS)
         int buf_len;
         const char* buf = mol_text.getText(buf_len);
 
-        try {
+        try
+        {
             bingo_handler.bingoCore.mangoMass(buf, buf_len, 0, &mol_mass);
-        } CORE_CATCH_ERROR("mass matcher: error while calculating mass")
+        }
+        CORE_CATCH_ERROR("mass matcher: error while calculating mass")
 
         result = mol_mass > usr_mass;
     }

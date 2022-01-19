@@ -33,5 +33,4 @@
 #undef IGNORE
 #endif
 
-
 #endif //__bingo_pg_fix_post_h__

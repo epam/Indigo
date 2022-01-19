@@ -55,20 +55,23 @@ bool MangoPgBuildEngine::processStructure(StructCache& struct_cache)
 
     int struct_size;
     const char* struct_ptr = struct_text.getText(struct_size);
-    
-    try {
-        /*
-        * Set target data
-        */
-        bingoCore.bingoSetIndexRecordData(0, struct_ptr, struct_size);
-    
-        /*
-        * Process target
-        */
-        bingo_res = bingoCore.mangoIndexProcessSingleRecord();
-    } CORE_CATCH_ERROR_TID_NO_INDEX ("molecule build engine: error while processing records", block_number, offset_number)
 
-    CORE_HANDLE_WARNING_TID_NO_INDEX(bingo_res, 1, "molecule build engine: error while processing record", block_number, offset_number, bingoCore.warning.ptr());
+    try
+    {
+        /*
+         * Set target data
+         */
+        bingoCore.bingoSetIndexRecordData(0, struct_ptr, struct_size);
+
+        /*
+         * Process target
+         */
+        bingo_res = bingoCore.mangoIndexProcessSingleRecord();
+    }
+    CORE_CATCH_ERROR_TID_NO_INDEX("molecule build engine: error while processing records", block_number, offset_number)
+
+    CORE_HANDLE_WARNING_TID_NO_INDEX(bingo_res, 1, "molecule build engine: error while processing record", block_number, offset_number,
+                                     bingoCore.warning.ptr());
     if (bingo_res < 1)
         return false;
 
@@ -92,12 +95,14 @@ void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
     _currentCache = 0;
     _structCaches = &struct_caches;
     _fpSize = getFpSize();
-    try {
+    try
+    {
         /*
-        * Process target
-        */
+         * Process target
+         */
         bingoCore.bingoIndexProcess(false, _getNextRecordCb, _processResultCb, _processErrorCb, this);
-    } CORE_CATCH_ERROR("molecule build engine: error while processing records");
+    }
+    CORE_CATCH_ERROR("molecule build engine: error while processing records");
     /*
      * If error on structure, try to parse ids
       Disable parse id due to error message unclear
@@ -129,7 +134,6 @@ void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
     //         }
     //     }
     // }
-    
 }
 
 void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
@@ -266,13 +270,15 @@ bool MangoPgBuildEngine::_readPreparedInfo(int* id, MangoPgFpData& data, int fp_
     const char* fp_sim_str;
     float mass;
     int sim_fp_bits_count;
-    try {
+    try
+    {
         /*
-        * Get prepared data
-        */
+         * Get prepared data
+         */
         bingoCore.mangoIndexReadPreparedMolecule(id, &cmf_buf, &cmf_len, &xyz_buf, &xyz_len, &gross_str, &counter_elements_str, &fp_buf, &fp_len, &fp_sim_str,
-                                               &mass, &sim_fp_bits_count);
-    } CORE_CATCH_WARNING_RETURN("molecule build engine: error while prepare record", return false)
+                                                 &mass, &sim_fp_bits_count);
+    }
+    CORE_CATCH_WARNING_RETURN("molecule build engine: error while prepare record", return false)
 
     /*
      * Set gross formula
@@ -284,17 +290,21 @@ bool MangoPgBuildEngine::_readPreparedInfo(int* id, MangoPgFpData& data, int fp_
      */
     dword ex_hash;
     int ex_hash_count;
-    try {
+    try
+    {
         bingoCore.mangoGetHash(1, -1, &ex_hash_count, &ex_hash);
-    } CORE_CATCH_WARNING_RETURN("molecule build engine: error while calculating hash for a record", return false)
+    }
+    CORE_CATCH_WARNING_RETURN("molecule build engine: error while calculating hash for a record", return false)
 
     int target_fragments = 0;
     for (int comp_idx = 0; comp_idx < ex_hash_count; ++comp_idx)
     {
         int comp_count;
-        try {
+        try
+        {
             bingoCore.mangoGetHash(1, comp_idx, &comp_count, &ex_hash);
-        } CORE_CATCH_WARNING_RETURN("molecule build engine: error while calculating hash for a record", return false)
+        }
+        CORE_CATCH_WARNING_RETURN("molecule build engine: error while calculating hash for a record", return false)
 
         data.insertHash(ex_hash, comp_count);
         target_fragments += comp_count;

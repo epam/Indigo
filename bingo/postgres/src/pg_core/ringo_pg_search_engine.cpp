@@ -49,9 +49,11 @@ bool RingoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
     react_buf.clear();
 
     _bufferIndexPtr->readCmfItem(section_idx, structure_idx, react_buf);
-    try {
+    try
+    {
         bingo_res = bingoCore.ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes());
-    } CORE_CATCH_ERROR_TID("reaction search engine: error while matching target", section_idx, structure_idx)
+    }
+    CORE_CATCH_ERROR_TID("reaction search engine: error while matching target", section_idx, structure_idx)
 
     CORE_RETURN_WARNING_TID(bingo_res, 0, "reaction search engine: error while matching target", section_idx, structure_idx, bingoCore.warning.ptr());
 
@@ -127,9 +129,11 @@ void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
     from_clause.printf("%s", _shadowRelName.ptr());
 
     dword ex_hash;
-    try {
+    try
+    {
         bingoCore.ringoGetHash(0, &ex_hash);
-    } CORE_CATCH_ERROR("reaction search engine: error while getting hash")
+    }
+    CORE_CATCH_ERROR("reaction search engine: error while getting hash")
 
     where_clause.printf("ex_hash=%d", ex_hash);
 
@@ -165,16 +169,20 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    try {
+    try
+    {
         bingoCore.ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    } CORE_CATCH_ERROR("reaction search engine: can not set rsub search context")
+    }
+    CORE_CATCH_ERROR("reaction search engine: can not set rsub search context")
 
     const char* fingerprint_buf;
     int fp_len;
 
-    try {
+    try
+    {
         bingoCore.ringoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-    } CORE_CATCH_ERROR("reaction search engine: can not get query fingerprint")
+    }
+    CORE_CATCH_ERROR("reaction search engine: can not get query fingerprint")
 
     int size_bits = fp_len * 8;
     data.setFingerPrints(fingerprint_buf, size_bits);
@@ -205,9 +213,11 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    try {
+    try
+    {
         bingoCore.ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    } CORE_CATCH_ERROR("reaction search engine: can not set rexact search context")
+    }
+    CORE_CATCH_ERROR("reaction search engine: can not set rexact search context")
 
     _prepareExactQueryStrings(what_clause, from_clause, where_clause);
 
