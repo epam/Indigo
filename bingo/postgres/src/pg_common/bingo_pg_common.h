@@ -8,11 +8,10 @@
 #endif
 
 #include "base_c/bitarray.h"
-#include "bingo_core_c_internal.h"
-#include <memory>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
+#include "bingo_core_c_internal.h"
 #include "bingo_postgres.h"
 #include <math.h>
 #include <memory>
@@ -56,11 +55,11 @@ public:
     //   static char* getTextData(PG_OBJECT text_datum, int& size);
 
     // static void setDefaultOptions(bingo_core::BingoCore& bingoCore);
-//   static dword getFunctionOid(const char* name, indigo::Array<dword>& types);
-//   static dword getFunctionOid1(const char* name, dword type1);
+    //   static dword getFunctionOid(const char* name, indigo::Array<dword>& types);
+    //   static dword getFunctionOid1(const char* name, dword type1);
 
-//   static dword callFunction(dword oid, indigo::Array<dword>& args);
-//   static dword callFunction1(dword oid, dword arg1);
+    //   static dword callFunction(dword oid, indigo::Array<dword>& args);
+    //   static dword callFunction1(dword oid, dword arg1);
 
     //   static dword callFunction(dword oid, indigo::Array<dword>& args);
     //   static dword callFunction1(dword oid, dword arg1);
@@ -354,10 +353,10 @@ public:
 
         // void refresh();
     private:
-        BingoSessionHandler(const BingoSessionHandler&); //no implicit copy
+        BingoSessionHandler(const BingoSessionHandler&); // no implicit copy
         // qword _sessionId;
         indigo::Array<char> _functionName;
-        
+
         std::unique_ptr<indigo::BingoContext> _bingoContext;
         std::unique_ptr<indigo::MangoContext> _mangoContext;
         std::unique_ptr<indigo::RingoContext> _ringoContext;
@@ -391,103 +390,127 @@ private:
     PG_OBJECT _ptr;
 };
 
+// class CancelException {
+// public:
+//    explicit CancelException(){}
+//    virtual ~CancelException(){}
+//    CancelException(const CancelException&){}
+// private:
+// };
 
-//class CancelException {
-//public:
-//   explicit CancelException(){}
-//   virtual ~CancelException(){}
-//   CancelException(const CancelException&){}
-//private:
-//};
+#define BINGO_PG_TRY                                                                                                                                           \
+    {                                                                                                                                                          \
+        bool pg_error_raised = false;                                                                                                                          \
+        QS_DEF(Array<char>, pg_message);                                                                                                                       \
+        PG_TRY();
 
+#define BINGO_PG_HANDLE(handle_statement)                                                                                                                      \
+    PG_CATCH();                                                                                                                                                \
+    {                                                                                                                                                          \
+        ErrorData* err = CopyErrorData();                                                                                                                      \
+        pg_message.readString(err->message, true);                                                                                                             \
+        FreeErrorData(err);                                                                                                                                    \
+        FlushErrorState();                                                                                                                                     \
+        pg_error_raised = true;                                                                                                                                \
+    }                                                                                                                                                          \
+    PG_END_TRY();                                                                                                                                              \
+    if (pg_error_raised)                                                                                                                                       \
+    {                                                                                                                                                          \
+        const char* message = pg_message.ptr();                                                                                                                \
+        handle_statement;                                                                                                                                      \
+    }                                                                                                                                                          \
+    }
 
-#define BINGO_PG_TRY {\
-   bool pg_error_raised = false; \
-   QS_DEF(Array<char>, pg_message); \
-   PG_TRY();
-
-#define BINGO_PG_HANDLE(handle_statement) \
-   PG_CATCH(); { \
-      ErrorData *err = CopyErrorData(); \
-      pg_message.readString(err->message, true); \
-      FreeErrorData(err); \
-      FlushErrorState(); \
-      pg_error_raised = true; \
-   } PG_END_TRY(); \
-   if(pg_error_raised) { \
-      const char* message = pg_message.ptr(); \
-      handle_statement;\
-   }}
-
-
-#define PG_BINGO_BEGIN { \
-   int pg_err_mess = 0; \
-   bool pg_raise_error = false; \
-   try
+#define PG_BINGO_BEGIN                                                                                                                                         \
+    {                                                                                                                                                          \
+        int pg_err_mess = 0;                                                                                                                                   \
+        bool pg_raise_error = false;                                                                                                                           \
+        try
 
 #if PG_VERSION_NUM / 100 > 1200
-    #define PG_BINGO_END \
-       catch (indigo::Exception& e) { \
-          pg_raise_error = true; \
-          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
-          pg_err_mess = errmsg("error: %s", e.message()); \
-       } catch (...) { \
-          pg_raise_error = true; \
-          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
-          pg_err_mess = errmsg("bingo unknown error"); \
-       } \
-       if (pg_raise_error) { \
-          errfinish(__FILE__, __LINE__, PG_FUNCNAME_MACRO); \
-       }}
+#define PG_BINGO_END                                                                                                                                           \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN);                                                                                                 \
+        pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN);                                                                                                 \
+        pg_err_mess = errmsg("bingo unknown error");                                                                                                           \
+    }                                                                                                                                                          \
+    if (pg_raise_error)                                                                                                                                        \
+    {                                                                                                                                                          \
+        errfinish(__FILE__, __LINE__, PG_FUNCNAME_MACRO);                                                                                                      \
+    }                                                                                                                                                          \
+    }
 #else
-    #define PG_BINGO_END \
-        catch (indigo::Exception& e) { \
-            pg_raise_error = true; \
-            errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-            pg_err_mess = errmsg("error: %s", e.message()); \
-        } catch (...) { \
-            pg_raise_error = true; \
-            errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-            pg_err_mess = errmsg("bingo unknown error"); \
-        } \
-        if (pg_raise_error) { \
-            errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
-        }}
+#define PG_BINGO_END                                                                                                                                           \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
+        pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
+        pg_err_mess = errmsg("bingo unknown error");                                                                                                           \
+    }                                                                                                                                                          \
+    if (pg_raise_error)                                                                                                                                        \
+    {                                                                                                                                                          \
+        errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess));                                                                                             \
+    }                                                                                                                                                          \
+    }
 #endif
 
 #if PG_VERSION_NUM / 100 > 1200
-    #define PG_BINGO_HANDLE(statement) \
-       catch (indigo::Exception& e) { \
-          pg_raise_error = true; \
-          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
-          pg_err_mess = errmsg("error: %s", e.message()); \
-       } catch (...) { \
-          pg_raise_error = true; \
-          errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN); \
-          pg_err_mess = errmsg("bingo unknown error"); \
-       } \
-       if (pg_raise_error) { \
-          statement; \
-        errfinish(__FILE__, __LINE__, PG_FUNCNAME_MACRO); \
-       }}
+#define PG_BINGO_HANDLE(statement)                                                                                                                             \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN);                                                                                                 \
+        pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(errcode(ERRCODE_INTERNAL_ERROR), TEXTDOMAIN);                                                                                                 \
+        pg_err_mess = errmsg("bingo unknown error");                                                                                                           \
+    }                                                                                                                                                          \
+    if (pg_raise_error)                                                                                                                                        \
+    {                                                                                                                                                          \
+        statement;                                                                                                                                             \
+        errfinish(__FILE__, __LINE__, PG_FUNCNAME_MACRO);                                                                                                      \
+    }                                                                                                                                                          \
+    }
 #else
-    #define PG_BINGO_HANDLE(statement) \
-       catch (indigo::Exception& e) { \
-          pg_raise_error = true; \
-          errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-          pg_err_mess = errmsg("error: %s", e.message()); \
-       } catch (...) { \
-          pg_raise_error = true; \
-          errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN); \
-          pg_err_mess = errmsg("bingo unknown error"); \
-       } \
-       if (pg_raise_error) { \
-          statement; \
-          errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess)); \
-       }}
+#define PG_BINGO_HANDLE(statement)                                                                                                                             \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
+        pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
+        pg_err_mess = errmsg("bingo unknown error");                                                                                                           \
+    }                                                                                                                                                          \
+    if (pg_raise_error)                                                                                                                                        \
+    {                                                                                                                                                          \
+        statement;                                                                                                                                             \
+        errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess));                                                                                             \
+    }                                                                                                                                                          \
+    }
 #endif
 
-class DLLEXPORT BingoPgError : public indigo::Exception {
+class DLLEXPORT BingoPgError : public indigo::Exception
+{
 public:
     explicit BingoPgError(const char* format, ...) : indigo::Exception("bingo-postgres: ")
     {
@@ -499,117 +522,146 @@ public:
     }
 };
 
-#define CORE_CATCH_ERROR(suffix)\
-   catch (indigo::Exception& e) { \
-      throw BingoPgError("%s: %s", suffix, e.message());\
-   } catch (...) { \
-      throw BingoPgError("%s: bingo unknown error", suffix);\
-   }
+#define CORE_CATCH_ERROR(suffix)                                                                                                                               \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        throw BingoPgError("%s: %s", suffix, e.message());                                                                                                     \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        throw BingoPgError("%s: bingo unknown error", suffix);                                                                                                 \
+    }
 
-#define CORE_CATCH_ERROR_TID_NO_INDEX(suffix, block, offset)\
-   catch (indigo::Exception& e) { \
-      throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, e.message());\
-   } catch (...) { \
-      throw BingoPgError("%s with ctid='(%d,%d)'::tid: bingo unknown error", suffix, block, offset);\
-   }
+#define CORE_CATCH_ERROR_TID_NO_INDEX(suffix, block, offset)                                                                                                   \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, e.message());                                                             \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        throw BingoPgError("%s with ctid='(%d,%d)'::tid: bingo unknown error", suffix, block, offset);                                                         \
+    }
 
-#define CORE_CATCH_ERROR_TID(suffix, section_idx, structure_idx)\
-   catch (indigo::Exception& e) { \
-      ItemPointerData target_item;\
-      _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);\
-      int block_number = ItemPointerGetBlockNumber(&target_item);\
-      int offset_number = ItemPointerGetOffsetNumber(&target_item);\
-      throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block_number, offset_number, e.message());\
-   } catch (...) { \
-      ItemPointerData target_item;\
-      _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);\
-      int block_number = ItemPointerGetBlockNumber(&target_item);\
-      int offset_number = ItemPointerGetOffsetNumber(&target_item);\
-      throw BingoPgError("%s with ctid='(%d,%d)'::tid: bingo unknown error", suffix, block_number, offset_number);\
-   }
+#define CORE_CATCH_ERROR_TID(suffix, section_idx, structure_idx)                                                                                               \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        ItemPointerData target_item;                                                                                                                           \
+        _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);                                                                                \
+        int block_number = ItemPointerGetBlockNumber(&target_item);                                                                                            \
+        int offset_number = ItemPointerGetOffsetNumber(&target_item);                                                                                          \
+        throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block_number, offset_number, e.message());                                               \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        ItemPointerData target_item;                                                                                                                           \
+        _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);                                                                                \
+        int block_number = ItemPointerGetBlockNumber(&target_item);                                                                                            \
+        int offset_number = ItemPointerGetOffsetNumber(&target_item);                                                                                          \
+        throw BingoPgError("%s with ctid='(%d,%d)'::tid: bingo unknown error", suffix, block_number, offset_number);                                           \
+    }
 
-#define CORE_CATCH_WARNING_RETURN(suffix, return_value)\
-   catch (indigo::Exception& e) { \
-      elog(WARNING, "%s: %s", suffix, e.message());\
-      return_value; \
-   } catch (...) { \
-      elog(WARNING, "%s: bingo unknown error", suffix);\
-      return_value; \
-   }
+#define CORE_CATCH_WARNING_RETURN(suffix, return_value)                                                                                                        \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        elog(WARNING, "%s: %s", suffix, e.message());                                                                                                          \
+        return_value;                                                                                                                                          \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        elog(WARNING, "%s: bingo unknown error", suffix);                                                                                                      \
+        return_value;                                                                                                                                          \
+    }
 
-#define CORE_CATCH_WARNING(suffix)\
-   catch (indigo::Exception& e) { \
-      elog(WARNING, "%s: %s", suffix, e.message());\
-   } catch (...) { \
-      elog(WARNING, "%s: bingo unknown error", suffix);\
-   }
+#define CORE_CATCH_WARNING(suffix)                                                                                                                             \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        elog(WARNING, "%s: %s", suffix, e.message());                                                                                                          \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        elog(WARNING, "%s: bingo unknown error", suffix);                                                                                                      \
+    }
 
-#define CORE_CATCH_REJECT_WARNING(suffix, return_exp) \
-   catch (indigo::Exception& e) { \
-      int val = 0; \
-      bingoCore.bingoGetConfigInt("reject_invalid_structures", &val); \
-      if (val > 0) { \
-         throw BingoPgError("%s: %s", suffix, e.message()); \
-      } else { \
-          elog(WARNING, "%s: %s", suffix, e.message());\
-          return_exp; \
-      } \
-   } catch (...) { \
-      int val = 0; \
-      bingoCore.bingoGetConfigInt("reject_invalid_structures", &val); \
-      if (val > 0) { \
-         throw BingoPgError("%s: bingo unknown error", suffix); \
-      } else { \
-          elog(WARNING, "%s: bingo unknown error", suffix);\
-          return_exp; \
-      } \
-   }
+#define CORE_CATCH_REJECT_WARNING(suffix, return_exp)                                                                                                          \
+    catch (indigo::Exception & e)                                                                                                                              \
+    {                                                                                                                                                          \
+        int val = 0;                                                                                                                                           \
+        bingoCore.bingoGetConfigInt("reject_invalid_structures", &val);                                                                                        \
+        if (val > 0)                                                                                                                                           \
+        {                                                                                                                                                      \
+            throw BingoPgError("%s: %s", suffix, e.message());                                                                                                 \
+        }                                                                                                                                                      \
+        else                                                                                                                                                   \
+        {                                                                                                                                                      \
+            elog(WARNING, "%s: %s", suffix, e.message());                                                                                                      \
+            return_exp;                                                                                                                                        \
+        }                                                                                                                                                      \
+    }                                                                                                                                                          \
+    catch (...)                                                                                                                                                \
+    {                                                                                                                                                          \
+        int val = 0;                                                                                                                                           \
+        bingoCore.bingoGetConfigInt("reject_invalid_structures", &val);                                                                                        \
+        if (val > 0)                                                                                                                                           \
+        {                                                                                                                                                      \
+            throw BingoPgError("%s: bingo unknown error", suffix);                                                                                             \
+        }                                                                                                                                                      \
+        else                                                                                                                                                   \
+        {                                                                                                                                                      \
+            elog(WARNING, "%s: bingo unknown error", suffix);                                                                                                  \
+            return_exp;                                                                                                                                        \
+        }                                                                                                                                                      \
+    }
 
-#define CORE_HANDLE_ERROR(res, success_res, suffix, message)\
-   if (res < success_res) {\
-      throw BingoPgError("%s: %s", suffix, message);\
-   }
+#define CORE_HANDLE_ERROR(res, success_res, suffix, message)                                                                                                   \
+    if (res < success_res)                                                                                                                                     \
+    {                                                                                                                                                          \
+        throw BingoPgError("%s: %s", suffix, message);                                                                                                         \
+    }
 
-#define CORE_HANDLE_ERROR_TID_NO_INDEX(res, success_res, suffix, block, offset, message)\
-   if (res < success_res) {\
-      throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, message);\
-   }
+#define CORE_HANDLE_ERROR_TID_NO_INDEX(res, success_res, suffix, block, offset, message)                                                                       \
+    if (res < success_res)                                                                                                                                     \
+    {                                                                                                                                                          \
+        throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, message);                                                                 \
+    }
 
-#define CORE_HANDLE_ERROR_TID(res, success_res, suffix, section_idx, structure_idx, message)\
-   if (res < success_res) {\
-      ItemPointerData target_item;\
-      _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);\
-      int block_number = ItemPointerGetBlockNumber(&target_item);\
-      int offset_number = ItemPointerGetOffsetNumber(&target_item);\
-      throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block_number, offset_number, message);\
-   }
+#define CORE_HANDLE_ERROR_TID(res, success_res, suffix, section_idx, structure_idx, message)                                                                   \
+    if (res < success_res)                                                                                                                                     \
+    {                                                                                                                                                          \
+        ItemPointerData target_item;                                                                                                                           \
+        _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);                                                                                \
+        int block_number = ItemPointerGetBlockNumber(&target_item);                                                                                            \
+        int offset_number = ItemPointerGetOffsetNumber(&target_item);                                                                                          \
+        throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block_number, offset_number, message);                                                   \
+    }
 
+#define CORE_HANDLE_WARNING(res, success_res, suffix, message)                                                                                                 \
+    if (res < success_res)                                                                                                                                     \
+    {                                                                                                                                                          \
+        elog(WARNING, "%s: %s", suffix, message);                                                                                                              \
+    }
 
-#define CORE_HANDLE_WARNING(res, success_res, suffix, message)\
-   if (res < success_res) {\
-      elog(WARNING, "%s: %s", suffix, message);\
-   }
+#define CORE_HANDLE_WARNING_TID_NO_INDEX(res, success_res, suffix, block, offset, message)                                                                     \
+    if (res < success_res)                                                                                                                                     \
+    {                                                                                                                                                          \
+        elog(WARNING, "%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, message);                                                                      \
+    }
 
-#define CORE_HANDLE_WARNING_TID_NO_INDEX(res, success_res, suffix, block, offset, message)\
-   if (res < success_res) {\
-      elog(WARNING, "%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, message);\
-   }
+#define CORE_RETURN_WARNING(res, success_res, suffix, message)                                                                                                 \
+    if (res < success_res)                                                                                                                                     \
+    {                                                                                                                                                          \
+        elog(WARNING, "%s: %s", suffix, message);                                                                                                              \
+        return false;                                                                                                                                          \
+    }
 
-#define CORE_RETURN_WARNING(res, success_res, suffix, message)\
-   if (res < success_res) {\
-      elog(WARNING, "%s: %s", suffix, message);\
-      return false;\
-   }
+#define CORE_RETURN_WARNING_TID(res, success_res, suffix, section_idx, structure_idx, message)                                                                 \
+    if (res < success_res)                                                                                                                                     \
+    {                                                                                                                                                          \
+        ItemPointerData target_item;                                                                                                                           \
+        _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);                                                                                \
+        int block_number = ItemPointerGetBlockNumber(&target_item);                                                                                            \
+        int offset_number = ItemPointerGetOffsetNumber(&target_item);                                                                                          \
+        elog(WARNING, "%s with ctid='(%d,%d)'::tid: %s", suffix, block_number, offset_number, message);                                                        \
+        return false;                                                                                                                                          \
+    }
 
-#define CORE_RETURN_WARNING_TID(res, success_res, suffix, section_idx, structure_idx, message)\
-   if (res < success_res) {\
-      ItemPointerData target_item;\
-      _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);\
-      int block_number = ItemPointerGetBlockNumber(&target_item);\
-      int offset_number = ItemPointerGetOffsetNumber(&target_item);\
-      elog(WARNING, "%s with ctid='(%d,%d)'::tid: %s", suffix, block_number, offset_number, message);\
-      return false;\
-   }
-
-
-#endif	/* BINGO_PG_COMMON_H */
+#endif /* BINGO_PG_COMMON_H */

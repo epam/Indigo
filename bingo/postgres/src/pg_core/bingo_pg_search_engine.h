@@ -8,12 +8,12 @@
 #include "base_cpp/array.h"
 #include <memory>
 
+#include "bingo_core_c_internal.h"
 #include "bingo_pg_buffer_cache.h"
 #include "bingo_pg_cursor.h"
 #include "bingo_pg_ext_bitset.h"
 #include "bingo_postgres.h"
 #include "pg_bingo_context.h"
-#include "bingo_core_c_internal.h"
 
 class BingoPgText;
 class BingoPgIndex;

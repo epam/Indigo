@@ -110,6 +110,4 @@ void bingoGetTauCondition(const char* list_ptr, int& aromaticity, indigo::Array<
 
 void bingoGetName(indigo::Scanner& scanner, indigo::Array<char>& result);
 
-
-
 #endif

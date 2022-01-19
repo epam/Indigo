@@ -1,14 +1,14 @@
-from typing import Type, Union
+from typing import List, Type, Union
 
 from sklearn.base import ClusterMixin  # type: ignore
 from sklearn.cluster import SpectralClustering  # type: ignore
 
 
 def clustering(
-    assay_values: list[list[Union[int, float]]],
+    assay_values: List[List[Union[int, float]]],
     method: Type[ClusterMixin] = SpectralClustering,
     **kwargs,
-) -> list[int]:
+) -> List[int]:
     """Clustering procedure for given list of assay values.
 
     Args:
