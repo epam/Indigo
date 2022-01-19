@@ -18,9 +18,9 @@ extern "C"
 
 #include "bingo_pg_fix_post.h"
 
-#include "bingo_postgres.h"
 #include "base_cpp/scanner.h"
 #include "bingo_core_c.h"
+#include "bingo_postgres.h"
 
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_common.h"
@@ -606,13 +606,15 @@ Datum getname(PG_FUNCTION_ARGS)
         int buf_size;
         const char* target_buf = mol_text.getText(buf_size);
 
-        try {
+        try
+        {
             const char* bingo_result = bingo_handler.bingoCore.bingoGetNameCore(target_buf, buf_size);
 
             BingoPgText result_text;
             result_text.initFromString(bingo_result);
             result = result_text.release();
-        } CORE_CATCH_WARNING_RETURN("bingo.getname", PG_RETURN_NULL())
+        }
+        CORE_CATCH_WARNING_RETURN("bingo.getname", PG_RETURN_NULL())
     }
     PG_BINGO_END
 

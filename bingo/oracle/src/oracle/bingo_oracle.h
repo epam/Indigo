@@ -39,7 +39,6 @@ int bingoGetExactRightPart(indigo::OracleEnv& env, OCINumber* p_strt, OCINumber*
 void bingoBuildQueryID(indigo::OracleEnv& env, const char* oper, const indigo::Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop, int flags,
                        const char* params, indigo::Array<char>& id);
 
-
 #define ORABLOCK_BEGIN                                                                                                                                         \
     logger.initIfClosed(log_filename);                                                                                                                         \
     try                                                                                                                                                        \
@@ -109,7 +108,5 @@ void bingoBuildQueryID(indigo::OracleEnv& env, const char* oper, const indigo::A
             rid_text = rid.ptr();                                                                                                                              \
         throw Exception("%s. Last rowid was %s", e.message(), rid_text);                                                                                       \
     }
-
-
 
 #endif
