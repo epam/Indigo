@@ -359,7 +359,7 @@ bool MaxCommonSubgraph::ReCreation::_hasCommonSymbol(int e11, int e12, int e21, 
 void MaxCommonSubgraph::ReCreation::_createList(const Dbitset& proj_bitset, Graph& graph, Array<int>& v_list, Array<int>& e_list) const
 {
     int e_num, v_num1, v_num2;
-    std::unordered_set<int> set;
+    std::set<int> set;
 
     v_list.clear();
     e_list.clear();
