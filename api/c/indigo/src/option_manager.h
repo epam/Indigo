@@ -16,11 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __otion_manager_h__
-#define __otion_manager_h__
+#ifndef __option_manager_h__
+#define __option_manager_h__
 
 #include "base_cpp/os_sync_wrapper.h"
-#include "base_cpp/red_black.h"
 
 #include <sstream>
 
@@ -31,24 +30,24 @@ using namespace indigo;
 #define DEF_HANDLER(suffix, ftype, type, map)                                                                                                                  \
     void setOptionHandler##suffix(const char* name, ftype func)                                                                                                \
     {                                                                                                                                                          \
-        if (typeMap.find(name))                                                                                                                                \
+        if (typeMap.find(name) != typeMap.end())                                                                                                                                \
             throw Error("Option \"%s\" already defined", name);                                                                                                \
-        typeMap.insert(name, type);                                                                                                                            \
-        map.insert(name, func);                                                                                                                                \
+        typeMap.insert({name, type});                                                                                                                            \
+        map.insert({name, func});                                                                                                                                \
     }
 
 #define DEF_SET_GET_OPT_HANDLERS(suffix, fSetType, fGetType, type, mapSet, mapGet)                                                                             \
     void setOptionHandler##suffix(const char* name, fSetType setFunc, fGetType getFunc)                                                                        \
     {                                                                                                                                                          \
-        if (typeMap.find(name))                                                                                                                                \
+        if (typeMap.find(name) != typeMap.end())                                                                                                                                \
             throw Error("Option \"%s\" already defined", name);                                                                                                \
-        typeMap.insert(name, type);                                                                                                                            \
-        mapSet.insert(name, setFunc);                                                                                                                          \
-        mapGet.insert(name, getFunc);                                                                                                                          \
+        typeMap.insert({name, type});                                                                                                                            \
+        mapSet.insert({name, setFunc});                                                                                                                          \
+        mapGet.insert({name, getFunc});                                                                                                                          \
     }
 
 #define CHECK_OPT_DEFINED(name)                                                                                                                                \
-    if (!typeMap.find(name))                                                                                                                                   \
+    if (typeMap.find(name) == typeMap.end())                                                                                                                                   \
     throw Error("Property \"%s\" not defined", name)
 
 #define CHECK_OPT_TYPE(name, type)                                                                                                                             \
@@ -83,6 +82,17 @@ using namespace indigo;
         value.copy(option);                                                                                                                                    \
         value.push(0);                                                                                                                                         \
     }
+
+struct CaseInsensitiveStringComparator
+{
+    bool operator()(const std::string& s1, const std::string& s2) const
+    {
+        return (strcasecmp(s1.c_str(), s2.c_str()) == 0);
+    }
+};
+
+template<typename T>
+using OptionManagerMap = std::unordered_map<std::string, T, std::hash<std::string>, CaseInsensitiveStringComparator>;
 
 class DLLEXPORT IndigoOptionManager
 {
@@ -154,23 +164,23 @@ protected:
     int _parseColor(const char* str, float& r, float& g, float& b);
     int _parseSize(const char* str, int& w, int& h);
 
-    RedBlackStringMap<OPTION_TYPE, false> typeMap;
+    OptionManagerMap<OPTION_TYPE> typeMap;
 
-    RedBlackStringMap<optf_string_t, false> stringSetters;
-    RedBlackStringMap<optf_int_t, false> intSetters;
-    RedBlackStringMap<optf_bool_t, false> boolSetters;
-    RedBlackStringMap<optf_float_t, false> floatSetters;
-    RedBlackStringMap<optf_color_t, false> colorSetters;
-    RedBlackStringMap<optf_xy_t, false> xySetters;
+    OptionManagerMap<optf_string_t> stringSetters;
+    OptionManagerMap<optf_int_t> intSetters;
+    OptionManagerMap<optf_bool_t> boolSetters;
+    OptionManagerMap<optf_float_t> floatSetters;
+    OptionManagerMap<optf_color_t> colorSetters;
+    OptionManagerMap<optf_xy_t> xySetters;
 
-    RedBlackStringMap<optf_void_t, false> voidFunctions;
+    OptionManagerMap<optf_void_t> voidFunctions;
 
-    RedBlackStringMap<get_optf_string_t, false> stringGetters;
-    RedBlackStringMap<get_optf_int_t, false> intGetters;
-    RedBlackStringMap<get_optf_bool_t, false> boolGetters;
-    RedBlackStringMap<get_optf_float_t, false> floatGetters;
-    RedBlackStringMap<get_optf_color_t, false> colorGetters;
-    RedBlackStringMap<get_optf_xy_t, false> xyGetters;
+    OptionManagerMap<get_optf_string_t> stringGetters;
+    OptionManagerMap<get_optf_int_t> intGetters;
+    OptionManagerMap<get_optf_bool_t> boolGetters;
+    OptionManagerMap<get_optf_float_t> floatGetters;
+    OptionManagerMap<get_optf_color_t> colorGetters;
+    OptionManagerMap<get_optf_xy_t> xyGetters;
 
     template <typename T>
     void callOptionHandlerT(const char* name, T arg)
@@ -186,4 +196,4 @@ private:
     IndigoOptionManager(const IndigoOptionManager&);
 };
 
-#endif //__otion_manager_h__
+#endif //__option_manager_h__
