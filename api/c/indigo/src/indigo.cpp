@@ -120,14 +120,14 @@ Indigo::Indigo()
 void Indigo::removeAllObjects()
 {
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
-    for (auto i = objects_holder->objects.begin(); i != objects_holder->objects.end(); i = objects_holder->objects.next(i))
+    for (auto obj : objects_holder->objects)
     {
 #ifdef INDIGO_DEBUG
         std::stringstream ss;
         ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << objects_holder->objects.key(i) << ")";
         std::cout << ss.str() << std::endl;
 #endif
-        delete objects_holder->objects.value(i);
+        delete obj.second;
     }
     objects_holder->objects.clear();
 }
@@ -346,7 +346,7 @@ int Indigo::addObject(IndigoObject* obj)
     ss << "IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
     std::cout << ss.str() << std::endl;
 #endif
-    objects_holder->objects.insert(id, obj);
+    objects_holder->objects.insert({id, obj});
     return id;
 }
 
@@ -358,10 +358,11 @@ void Indigo::removeObject(int id)
     ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
     std::cout << ss.str() << std::endl;
 #endif
-    if (objects_holder->objects.at2(id) == 0)
-        return;
-    delete objects_holder->objects.at(id);
-    objects_holder->objects.remove(id);
+    if (objects_holder->objects.find(id) != objects_holder->objects.end())
+    {
+        delete objects_holder->objects.at(id);
+        objects_holder->objects.erase(id);
+    }
 }
 
 IndigoObject& Indigo::getObject(int handle)

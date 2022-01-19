@@ -25,6 +25,7 @@
 #endif
 
 #include <memory>
+#include <unordered_map>
 #include <utility>
 
 #include "indigo.h"
@@ -364,7 +365,7 @@ private:
 
     struct ObjectsHolder
     {
-        RedBlackMap<int, IndigoObject*> objects;
+        std::unordered_map<int, IndigoObject*> objects;
         int next_id = 1000; // FIXME:MK: Why does it matter?
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
