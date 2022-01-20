@@ -38,7 +38,7 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        typedef RedBlackMap<int, int> MapIntInt;
+        typedef std::unordered_map<int, int> MapIntInt;
 
         TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
         TL_CP_DECL(MapIntInt, _initial_to_actual);
