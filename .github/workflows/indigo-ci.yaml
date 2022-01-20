@@ -959,7 +959,7 @@ jobs:
         run: pip install -r bingo/tests/requirements.txt
       - name: Run Bingo tests
         run: |
-          pytest test_exact/ --tb=short --db postgres --junit-xml=junit_report.xml ; cat junit_report.xml
+          pytest test_exact/ --tb=line --db postgres --junit-xml=junit_report.xml ; cat junit_report.xml
         working-directory: bingo/tests
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
