@@ -946,14 +946,29 @@ jobs:
           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
       - name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          file: bingo/postgres/Dockerfile
+          build-args: PG_VERSION=${{ matrix.postgres_major_version }}
+          push: false
+          tags: epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
+      - name: Run Docker container
         run: |
-          docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg PG_VERSION=${{ matrix.postgres_major_version }} .
           docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Install dev dependencies
         run: pip install -r bingo/tests/requirements.txt
       - name: Run Bingo tests
         run: |
           pytest --db postgres
+#      - name: Build Docker image
+#        run: |
+#          docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg PG_VERSION=${{ matrix.postgres_major_version }} .
+#          docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
+#      - name: Install dev dependencies
+#        run: pip install -r bingo/tests/requirements.txt
+#      - name: Run Bingo tests
+#        run: |
+#          pytest --db postgres
         working-directory: bingo/tests
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
