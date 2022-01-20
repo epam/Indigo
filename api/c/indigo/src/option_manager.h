@@ -30,24 +30,24 @@ using namespace indigo;
 #define DEF_HANDLER(suffix, ftype, type, map)                                                                                                                  \
     void setOptionHandler##suffix(const char* name, ftype func)                                                                                                \
     {                                                                                                                                                          \
-        if (typeMap.find(name) != typeMap.end())                                                                                                                                \
+        if (typeMap.find(name) != typeMap.end())                                                                                                               \
             throw Error("Option \"%s\" already defined", name);                                                                                                \
-        typeMap.insert({name, type});                                                                                                                            \
-        map.insert({name, func});                                                                                                                                \
+        typeMap.insert({name, type});                                                                                                                          \
+        map.insert({name, func});                                                                                                                              \
     }
 
 #define DEF_SET_GET_OPT_HANDLERS(suffix, fSetType, fGetType, type, mapSet, mapGet)                                                                             \
     void setOptionHandler##suffix(const char* name, fSetType setFunc, fGetType getFunc)                                                                        \
     {                                                                                                                                                          \
-        if (typeMap.find(name) != typeMap.end())                                                                                                                                \
+        if (typeMap.find(name) != typeMap.end())                                                                                                               \
             throw Error("Option \"%s\" already defined", name);                                                                                                \
-        typeMap.insert({name, type});                                                                                                                            \
-        mapSet.insert({name, setFunc});                                                                                                                          \
-        mapGet.insert({name, getFunc});                                                                                                                          \
+        typeMap.insert({name, type});                                                                                                                          \
+        mapSet.insert({name, setFunc});                                                                                                                        \
+        mapGet.insert({name, getFunc});                                                                                                                        \
     }
 
 #define CHECK_OPT_DEFINED(name)                                                                                                                                \
-    if (typeMap.find(name) == typeMap.end())                                                                                                                                   \
+    if (typeMap.find(name) == typeMap.end())                                                                                                                   \
     throw Error("Property \"%s\" not defined", name)
 
 #define CHECK_OPT_TYPE(name, type)                                                                                                                             \

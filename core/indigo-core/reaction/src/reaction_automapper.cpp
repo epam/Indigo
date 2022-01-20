@@ -17,7 +17,6 @@
  ***************************************************************************/
 
 #include "reaction/reaction_automapper.h"
-#include "base_cpp/red_black.h"
 #include "graph/automorphism_search.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom.h"
@@ -214,13 +213,13 @@ void ReactionAutomapper::_initMappings(BaseReaction& reaction)
 
     if (_mode == AAM_REGEN_KEEP)
     {
-        RedBlackSet<int> used_maps;
+        std::unordered_set<int> used_maps;
         int max_value = 0;
         for (i = reaction.reactantBegin(); i < reaction.reactantEnd(); i = reaction.reactantNext(i))
         {
             for (j = 0; j < reaction.getAAMArray(i).size(); j++)
             {
-                used_maps.find_or_insert(reaction.getAAM(i, j));
+                used_maps.insert(reaction.getAAM(i, j));
                 if (reaction.getAAM(i, j) > max_value)
                     max_value = copy_reaction.getAAM(i, j);
             }
@@ -236,7 +235,7 @@ void ReactionAutomapper::_initMappings(BaseReaction& reaction)
                     while (new_size == used_maps.size())
                     {
                         ++current_map;
-                        used_maps.find_or_insert(current_map);
+                        used_maps.insert(current_map);
                     }
                     new_size = used_maps.size();
                     reaction.getAAMArray(i).at(j) = current_map;
