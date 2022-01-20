@@ -213,7 +213,7 @@ void ReactionAutomapper::_initMappings(BaseReaction& reaction)
 
     if (_mode == AAM_REGEN_KEEP)
     {
-        std::unordered_set<int> used_maps;
+        std::set<int> used_maps;
         int max_value = 0;
         for (i = reaction.reactantBegin(); i < reaction.reactantEnd(); i = reaction.reactantNext(i))
         {

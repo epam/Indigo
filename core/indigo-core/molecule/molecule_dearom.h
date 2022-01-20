@@ -162,7 +162,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _groupEdges);
         TL_CP_DECL(Array<int>, _groupHeteroAtoms);
         TL_CP_DECL(GROUP_DATA, _groupData);
-        TL_CP_DECL(RedBlackSet<int>, _inside_superatoms);
+        TL_CP_DECL(std::unordered_set<int>, _inside_superatoms);
     };
 
     // Molecule dearomatization class.
