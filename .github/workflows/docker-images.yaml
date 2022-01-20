@@ -70,3 +70,23 @@ jobs:
           tags: epmlsop/indigo-tester:latest
       - name: Push indigo-tester
         run: docker push epmlsop/indigo-tester:latest
+  docker-bingo-postgres:
+    strategy:
+      matrix:
+        postgres_major_version: [ 10, 11, 12 ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Build bingo-postgres
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: bingo/postgres/Dockerfile
+          tags: epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
+          build-args: PG_VERSION=${{ matrix.postgres_major_version }}
+      - name: Push indigo-tester
+        run: docker push epmlsop/indigo-tester:latest

@@ -945,13 +945,13 @@ jobs:
           cd build
           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
-      - name: Build Docker image
-        uses: docker/build-push-action@v2
-        with:
-          file: bingo/postgres/Dockerfile
-          build-args: PG_VERSION=${{ matrix.postgres_major_version }}
-          push: false
-          tags: epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
+#      - name: Build Docker image
+#        uses: docker/build-push-action@v2
+#        with:
+#          file: bingo/postgres/Dockerfile
+#          build-args: PG_VERSION=${{ matrix.postgres_major_version }}
+#          push: false
+#          tags: epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Run Docker container
         run: |
           docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
