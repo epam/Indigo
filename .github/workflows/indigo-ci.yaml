@@ -931,21 +931,19 @@ jobs:
           python-version: 3.7
       - name: Git fetch tags
         run: git fetch --tags -f
-      - name: Install postgres server headers
-        container: epmlsop/buildpack-centos7:latest
-        run: |
-          case ${{ matrix.postgres_major_version }} in 12) pg_version=12;; 11) pg_version=11;; 10) pg_version=10;; 9.6) pg_version=96;; esac;
-          yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils
-          curl -OL https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
-          rpm --import RPM-GPG-KEY-PGDG
-          yumdownloader -y postgresql${pg_version}-devel
-          rpm -i --nodeps postgresql${pg_version}*.rpm
-      - name: Build bingo-postgres
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
+      - name: Install postgres server headers and build bingo-postgres
+        uses: docker://buildpack-centos7:latest
+        with:
+          args: case ${{ matrix.postgres_major_version }} in 12) pg_version=12;; 11) pg_version=11;; 10) pg_version=10;; 9.6) pg_version=96;; esac; && \
+                yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils && \ 
+                curl -OL https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG && \
+                rpm --import RPM-GPG-KEY-PGDG && \
+                yumdownloader -y postgresql${pg_version}-devel && \
+                rpm -i --nodeps postgresql${pg_version}*.rpm &&
+                mkdir build && \
+                cd build && \ 
+                cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF && \
+                cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
       - name: Build Docker image
         run: |
           docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg PG_VERSION=${{ matrix.postgres_major_version }} .
