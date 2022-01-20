@@ -932,7 +932,7 @@ jobs:
       - name: Git fetch tags
         run: git fetch --tags -f
       - name: Install postgres server headers and build bingo-postgres
-        uses: docker://buildpack-centos7:latest
+        uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: case ${{ matrix.postgres_major_version }} in 12) pg_version=12;; 11) pg_version=11;; 10) pg_version=10;; 9.6) pg_version=96;; esac; && \
                 yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils && \ 
