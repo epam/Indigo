@@ -1,4 +1,4 @@
-ali_ring_het_5-0001-00
+
   -INDIGO-09291020202D
 
  16 16  0  0  0  0  0  0  0  0999 V2000
@@ -35,11 +35,9 @@ ali_ring_het_5-0001-00
  15 16  1  0  0  0  0
   1 16  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_5-0001-00
 
 $$$$
-ali_ring_het_5-0002-00
+
   -INDIGO-09291020202D
 
  15 16  0  0  0  0  0  0  0  0999 V2000
@@ -75,11 +73,9 @@ ali_ring_het_5-0002-00
  12 15  1  0  0  0  0
   1 15  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_5-0002-00
 
 $$$$
-ali_ring_het_5-0003-00
+
   -INDIGO-09291020202D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -102,11 +98,9 @@ ali_ring_het_5-0003-00
   7  8  2  0  0  0  0
   2  9  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_5-0003-00
 
 $$$$
-ali_ring_het_5-0004-00
+
   -INDIGO-09291020202D
 
  12 12  0  0  0  0  0  0  0  0999 V2000
@@ -136,11 +130,9 @@ ali_ring_het_5-0004-00
  10 12  1  0  0  0  0
 M  CHG  1   1   1
 M  END
-> <NAME>
-ali_ring_het_5-0004-00
 
 $$$$
-ali_ring_het_5-0005-00
+
   -INDIGO-09291020202D
 
  14 14  0  0  0  0  0  0  0  0999 V2000
@@ -174,11 +166,9 @@ ali_ring_het_5-0005-00
  12 14  2  0  0  0  0
 M  CHG  1   2   1
 M  END
-> <NAME>
-ali_ring_het_5-0005-00
 
 $$$$
-ali_ring_het_6-0001-00
+
   -INDIGO-09291020212D
 
  12 12  0  0  0  0  0  0  0  0999 V2000
@@ -207,11 +197,9 @@ ali_ring_het_6-0001-00
  10 11  2  0  0  0  0
  10 12  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_6-0001-00
 
 $$$$
-ali_ring_het_6-0002-00
+
   -INDIGO-09291020212D
 
  12 12  0  0  0  0  0  0  0  0999 V2000
@@ -240,11 +228,9 @@ ali_ring_het_6-0002-00
   7 12  1  0  0  0  0
   3 12  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_6-0002-00
 
 $$$$
-ali_ring_het_6-0003-00
+
   -INDIGO-09291020212D
 
  10 10  0  0  0  0  0  0  0  0999 V2000
@@ -269,11 +255,9 @@ ali_ring_het_6-0003-00
   4  9  1  0  0  0  0
   2 10  2  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_6-0003-00
 
 $$$$
-ali_ring_het_6-0004-00
+
   -INDIGO-09291020212D
 
  11 11  0  0  0  0  0  0  0  0999 V2000
@@ -300,11 +284,9 @@ ali_ring_het_6-0004-00
   9 10  1  0  0  0  0
   1 11  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_6-0004-00
 
 $$$$
-ali_ring_het_6-0005-00
+
   -INDIGO-09291020212D
 
  11 11  0  0  0  0  0  0  0  0999 V2000
@@ -332,11 +314,9 @@ ali_ring_het_6-0005-00
   9 11  1  0  0  0  0
 M  CHG  2   9   1  11  -1
 M  END
-> <NAME>
-ali_ring_het_6-0005-00
 
 $$$$
-ali_ring_het_7-0001-00
+
   -INDIGO-09291020212D
 
  27 30  0  0  0  0  0  0  0  0999 V2000
@@ -398,11 +378,9 @@ ali_ring_het_7-0001-00
  21 26  1  0  0  0  0
  24 27  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_7-0001-00
 
 $$$$
-ali_ring_het_7-0002-00
+
   -INDIGO-09291020212D
 
  18 18  0  0  0  0  0  0  0  0999 V2000
@@ -443,11 +421,9 @@ ali_ring_het_7-0002-00
   1 17  1  0  0  0  0
   1 18  2  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_7-0002-00
 
 $$$$
-ali_ring_het_7-0003-00
+
   -INDIGO-09291020212D
 
  16 16  0  0  0  0  0  0  0  0999 V2000
@@ -485,11 +461,9 @@ ali_ring_het_7-0003-00
   1 16  1  0  0  0  0
 M  CHG  1   1   1
 M  END
-> <NAME>
-ali_ring_het_7-0003-00
 
 $$$$
-ali_ring_het_7-0004-00
+
   -INDIGO-09291020212D
 
  11 11  0  0  0  0  0  0  0  0999 V2000
@@ -517,11 +491,9 @@ ali_ring_het_7-0004-00
   1 11  1  0  0  0  0
 M  CHG  2   1   1   4   1
 M  END
-> <NAME>
-ali_ring_het_7-0004-00
 
 $$$$
-ali_ring_het_7-0008-00
+
   -INDIGO-09291020212D
 
  13 13  0  0  0  0  0  0  0  0999 V2000
@@ -553,11 +525,9 @@ ali_ring_het_7-0008-00
  11 13  1  0  0  0  0
 M  CHG  4   5   1   7  -1  11   1  13  -1
 M  END
-> <NAME>
-ali_ring_het_7-0008-00
 
 $$$$
-ali_ring_het_8-0001-00
+
   -INDIGO-09291020212D
 
  16 16  0  0  0  0  0  0  0  0999 V2000
@@ -594,11 +564,9 @@ ali_ring_het_8-0001-00
   2 15  1  0  0  0  0
  15 16  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_8-0001-00
 
 $$$$
-ali_ring_het_8-0002-00
+
   -INDIGO-09291020212D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -621,11 +589,9 @@ ali_ring_het_8-0002-00
   8  9  1  0  0  0  0
   2  9  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_8-0002-00
 
 $$$$
-ali_ring_het_8-0003-00
+
   -INDIGO-09291020212D
 
  14 14  0  0  0  0  0  0  0  0999 V2000
@@ -658,11 +624,9 @@ ali_ring_het_8-0003-00
  11 13  1  0  0  0  0
  11 14  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_8-0003-00
 
 $$$$
-ali_ring_het_8-0004-00
+
   -INDIGO-09291020212D
 
  12 12  0  0  0  0  0  0  0  0999 V2000
@@ -691,11 +655,9 @@ ali_ring_het_8-0004-00
  11 12  1  0  0  0  0
   1 12  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_8-0004-00
 
 $$$$
-ali_ring_het_8-0005-00
+
   -INDIGO-09291020212D
 
  10 10  0  0  0  0  0  0  0  0999 V2000
@@ -720,11 +682,9 @@ ali_ring_het_8-0005-00
   1  9  2  0  0  0  0
   9 10  1  0  0  0  0
 M  END
-> <NAME>
-ali_ring_het_8-0005-00
 
 $$$$
-arom_fused-0001-00
+
   -INDIGO-09291020222D
 
  22 25  0  0  0  0  0  0  0  0999 V2000
@@ -776,11 +736,9 @@ arom_fused-0001-00
  19 17  2  0  0  0  0
  15 16  1  0  0  0  0
 M  END
-> <NAME>
-arom_fused-0001-00
 
 $$$$
-arom_fused-0002-00
+
   -INDIGO-09291020232D
 
  22 25  0  0  0  0  0  0  0  0999 V2000
@@ -832,11 +790,9 @@ arom_fused-0002-00
  17 19  2  0  0  0  0
  16 15  1  0  0  0  0
 M  END
-> <NAME>
-arom_fused-0002-00
 
 $$$$
-arom_fused-0003-00
+
   -INDIGO-09291020232D
 
  22 25  0  0  0  0  0  0  0  0999 V2000
@@ -888,11 +844,9 @@ arom_fused-0003-00
  16 11  2  0  0  0  0
  22 19  2  0  0  0  0
 M  END
-> <NAME>
-arom_fused-0003-00
 
 $$$$
-arom_fused-0004-00
+
   -INDIGO-09291020232D
 
  22 25  0  0  0  0  0  0  0  0999 V2000
@@ -944,11 +898,9 @@ arom_fused-0004-00
  11 16  2  0  0  0  0
  22 19  2  0  0  0  0
 M  END
-> <NAME>
-arom_fused-0004-00
 
 $$$$
-arom_fused-0005-00
+
   -INDIGO-09291020232D
 
   9 10  0  0  0  0  0  0  0  0999 V2000
@@ -972,11 +924,9 @@ arom_fused-0005-00
   8  9  2  0  0  0  0
   9  7  1  0  0  0  0
 M  END
-> <NAME>
-arom_fused-0005-00
 
 $$$$
-arom_het_5-0001-00
+
   -INDIGO-09291020212D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -1000,11 +950,9 @@ arom_het_5-0001-00
   4  9  1  0  0  0  0
 M  CHG  2   4   1   6  -1
 M  END
-> <NAME>
-arom_het_5-0001-00
 
 $$$$
-arom_het_5-0002-00
+
   -INDIGO-09291020212D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -1028,11 +976,9 @@ arom_het_5-0002-00
   4  9  1  0  0  0  0
 M  CHG  2   3  -1   4   1
 M  END
-> <NAME>
-arom_het_5-0002-00
 
 $$$$
-arom_het_5-0003-00
+
   -INDIGO-09291020212D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -1056,11 +1002,9 @@ arom_het_5-0003-00
   3  4  2  0  0  0  0
 M  CHG  2   4   1   5  -1
 M  END
-> <NAME>
-arom_het_5-0003-00
 
 $$$$
-arom_het_5-0004-00
+
   -INDIGO-09291020212D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -1084,11 +1028,9 @@ arom_het_5-0004-00
   4  9  1  0  0  0  0
 M  CHG  2   1   1   6  -1
 M  END
-> <NAME>
-arom_het_5-0004-00
 
 $$$$
-arom_het_5-0005-00
+
   -INDIGO-09291020212D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -1112,11 +1054,9 @@ arom_het_5-0005-00
   4  9  1  0  0  0  0
 M  CHG  2   1   1   3  -1
 M  END
-> <NAME>
-arom_het_5-0005-00
 
 $$$$
-arom_het_6-0001-00
+
   -INDIGO-09291020222D
 
  11 11  0  0  0  0  0  0  0  0999 V2000
@@ -1143,11 +1083,9 @@ arom_het_6-0001-00
   2 10  1  0  0  0  0
   4 11  1  0  0  0  0
 M  END
-> <NAME>
-arom_het_6-0001-00
 
 $$$$
-arom_het_6-0002-00
+
   -INDIGO-09291020222D
 
  11 11  0  0  0  0  0  0  0  0999 V2000
@@ -1174,11 +1112,9 @@ arom_het_6-0002-00
   2 10  1  0  0  0  0
   4 11  1  0  0  0  0
 M  END
-> <NAME>
-arom_het_6-0002-00
 
 $$$$
-arom_het_6-0003-00
+
   -INDIGO-09291020222D
 
  13 13  0  0  0  0  0  0  0  0999 V2000
@@ -1209,11 +1145,9 @@ arom_het_6-0003-00
  12  5  1  0  0  0  0
  13 12  1  0  0  0  0
 M  END
-> <NAME>
-arom_het_6-0003-00
 
 $$$$
-arom_het_6-0004-00
+
   -INDIGO-09291020222D
 
  18 18  0  0  0  0  0  0  0  0999 V2000
@@ -1254,11 +1188,9 @@ arom_het_6-0004-00
  17  8  1  0  0  0  0
  18  8  1  0  0  0  0
 M  END
-> <NAME>
-arom_het_6-0004-00
 
 $$$$
-arom_het_6-0005-00
+
   -INDIGO-09291020222D
 
   7  7  0  0  0  0  0  0  0  0999 V2000
@@ -1277,11 +1209,9 @@ arom_het_6-0005-00
   1  2  2  0  0  0  0
   6  7  1  0  0  0  0
 M  END
-> <NAME>
-arom_het_6-0005-00
 
 $$$$
-arom_het_7-0001-00
+
   -INDIGO-09291020222D
 
  20 20  0  0  0  0  0  0  0  0999 V2000
@@ -1326,11 +1256,9 @@ arom_het_7-0001-00
  16 19  1  0  0  0  0
  11 20  1  0  0  0  0
 M  END
-> <NAME>
-arom_het_7-0001-00
 
 $$$$
-arom_het_8-0001-00
+
   -INDIGO-09291020222D
 
   8  8  0  0  0  0  0  0  0  0999 V2000
@@ -1351,11 +1279,9 @@ arom_het_8-0001-00
   7  8  1  0  0  0  0
   1  8  1  0  0  0  0
 M  END
-> <NAME>
-arom_het_8-0001-00
 
 $$$$
-basic-0001-00
+
   -INDIGO-10011020442D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
@@ -1372,11 +1298,9 @@ basic-0001-00
   4  6  1  0  0  0  0
   5  6  2  0  0  0  0
 M  END
-> <NAME>
-basic-0001-00
 
 $$$$
-basic-0002-00
+
   -INDIGO-10011020442D
 
   8  8  0  0  0  0  0  0  0  0999 V2000
@@ -1397,11 +1321,9 @@ basic-0002-00
   7  1  2  0  0  0  0
   8  6  2  0  0  0  0
 M  END
-> <NAME>
-basic-0002-00
 
 $$$$
-basic-0003-00
+
   -INDIGO-10011020442D
 
   8  9  0  0  0  0  0  0  0  0999 V2000
@@ -1423,11 +1345,9 @@ basic-0003-00
   7  8  1  0  0  0  0
   4  5  1  0  0  0  0
 M  END
-> <NAME>
-basic-0003-00
 
 $$$$
-basic-0004-00
+
   -INDIGO-10011020442D
 
   2  1  0  0  0  0  0  0  0  0999 V2000
@@ -1435,11 +1355,9 @@ basic-0004-00
    -0.2250    0.0000    0.0000 Ag  0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
 M  END
-> <NAME>
-basic-0004-00
 
 $$$$
-basic-0005-00
+
   -INDIGO-10011020442D
 
   2  1  0  0  0  0  0  0  0  0999 V2000
@@ -1447,11 +1365,9 @@ basic-0005-00
     1.0042   -0.3417    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
 M  END
-> <NAME>
-basic-0005-00
 
 $$$$
-big_charges-0001-00
+
   -INDIGO-09291023252D
 
  13  9  0  0  0  0  0  0  0  0999 V2000
@@ -1479,11 +1395,9 @@ big_charges-0001-00
  10 12  1  0  0  0  0
 M  CHG  4   4  -1   8  -1  12  -1  13   3
 M  END
-> <NAME>
-big_charges-0001-00
 
 $$$$
-big_charges-0002-00
+
   -INDIGO-09291023252D
 
  32 33  0  0  0  0  0  0  0  0999 V2000
@@ -1554,11 +1468,9 @@ big_charges-0002-00
  22 23  1  0  0  0  0
 M  CHG  8  10  -1  11   3  13  -1  15  -1  16   3  18  -1  22  -1  24  -1
 M  END
-> <NAME>
-big_charges-0002-00
 
 $$$$
-big_charges-0004-00
+
   -INDIGO-09291023253D
 
  33 37  0  0  0  0  0  0  0  0999 V2000
@@ -1634,11 +1546,9 @@ big_charges-0004-00
  18 21  2  0  0  0  0
 M  CHG  3   5  -4   6   1   7   1
 M  END
-> <NAME>
-big_charges-0004-00
 
 $$$$
-big_charges-0005-00
+
   -INDIGO-09291023253D
 
  37 38  0  0  0  0  0  0  0  0999 V2000
@@ -1719,11 +1629,9 @@ big_charges-0005-00
  19 37  1  0  0  0  0
 M  CHG  3   1  -3   4   1   5   1
 M  END
-> <NAME>
-big_charges-0005-00
 
 $$$$
-big_charges-0006-00
+
   -INDIGO-09291023253D
 
   8 12  0  0  0  0  0  0  0  0999 V2000
@@ -1749,11 +1657,9 @@ big_charges-0006-00
   1  2  1  0  0  0  0
 M  CHG  3   2  -4   3   1   4   1
 M  END
-> <NAME>
-big_charges-0006-00
 
 $$$$
-cistrans-0001-00
+
   -INDIGO-10011020452D
 
   8  7  0  0  0  0  0  0  0  0999 V2000
@@ -1773,11 +1679,9 @@ cistrans-0001-00
   7  4  2  0  0  0  0
   8  7  1  0  0  0  0
 M  END
-> <NAME>
-cistrans-0001-00
 
 $$$$
-cistrans-0002-00
+
   -INDIGO-10011020452D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -1789,11 +1693,9 @@ cistrans-0002-00
   2  3  1  6  0  0  0
   1  4  1  6  0  0  0
 M  END
-> <NAME>
-cistrans-0002-00
 
 $$$$
-cistrans-0003-00
+
   -INDIGO-10011020452D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -1805,11 +1707,9 @@ cistrans-0003-00
   2  3  1  1  0  0  0
   1  4  1  6  0  0  0
 M  END
-> <NAME>
-cistrans-0003-00
 
 $$$$
-cistrans-0004-00
+
   -INDIGO-10011020452D
 
  10  9  0  0  0  0  0  0  0  0999 V2000
@@ -1833,11 +1733,9 @@ cistrans-0004-00
   3  9  1  0  0  0  0
   2 10  1  0  0  0  0
 M  END
-> <NAME>
-cistrans-0004-00
 
 $$$$
-cistrans-0005-00
+
   -INDIGO-10011020452D
 
   6  5  0  0  0  0  0  0  0  0999 V2000
@@ -1853,11 +1751,9 @@ cistrans-0005-00
   5  1  1  1  0  0  0
   5  6  1  6  0  0  0
 M  END
-> <NAME>
-cistrans-0005-00
 
 $$$$
-complex_stereo-0001-00
+
   -INDIGO-10011020452D
 
  87 92  0  0  0  0  0  0  0  0999 V2000
@@ -2041,11 +1937,9 @@ complex_stereo-0001-00
  13 87  1  0  0  0  0
   2 87  1  0  0  0  0
 M  END
-> <NAME>
-complex_stereo-0001-00
 
 $$$$
-complex_stereo-0002-00
+
   -INDIGO-10011020452D
 
  16 20  0  0  0  0  0  0  0  0999 V2000
@@ -2086,11 +1980,9 @@ complex_stereo-0002-00
   1  3  1  1  0  0  0
   3 16  1  0  0  0  0
 M  END
-> <NAME>
-complex_stereo-0002-00
 
 $$$$
-complex_stereo-0003-00
+
   -INDIGO-10011020452D
 
  12 12  0  0  0  0  0  0  0  0999 V2000
@@ -2119,11 +2011,9 @@ complex_stereo-0003-00
   7  9  1  0  0  0  0
   9 11  1  0  0  0  0
 M  END
-> <NAME>
-complex_stereo-0003-00
 
 $$$$
-complex_stereo-0004-00
+
   -INDIGO-10011020452D
 
  12 12  0  0  0  0  0  0  0  0999 V2000
@@ -2152,11 +2042,9 @@ complex_stereo-0004-00
   8 10  1  0  0  0  0
   9 11  1  0  0  0  0
 M  END
-> <NAME>
-complex_stereo-0004-00
 
 $$$$
-complex_stereo-0005-00
+
   -INDIGO-10011020452D
 
  13 13  0  0  0  0  0  0  0  0999 V2000
@@ -2187,11 +2075,9 @@ complex_stereo-0005-00
  11 13  1  0  0  0  0
  13  9  1  0  0  0  0
 M  END
-> <NAME>
-complex_stereo-0005-00
 
 $$$$
-cumulenes-0001-00
+
   -INDIGO-10011020452D
 
   6  5  0  0  0  0  0  0  0  0999 V2000
@@ -2207,11 +2093,9 @@ cumulenes-0001-00
   1  5  1  1  0  0  0
   4  6  1  6  0  0  0
 M  END
-> <NAME>
-cumulenes-0001-00
 
 $$$$
-cumulenes-0002-00
+
   -INDIGO-10011020452D
 
   5  4  0  0  0  0  0  0  0  0999 V2000
@@ -2225,11 +2109,9 @@ cumulenes-0002-00
   3  5  1  1  0  0  0
   1  2  2  0  0  0  0
 M  END
-> <NAME>
-cumulenes-0002-00
 
 $$$$
-cumulenes-0003-00
+
   -INDIGO-10011020452D
 
   7  6  0  0  0  0  0  0  0  0999 V2000
@@ -2247,11 +2129,9 @@ cumulenes-0003-00
   6  1  1  1  0  0  0
   6  7  1  6  0  0  0
 M  END
-> <NAME>
-cumulenes-0003-00
 
 $$$$
-cumulenes-0004-00
+
   -INDIGO-10011020452D
 
   7  6  0  0  0  0  0  0  0  0999 V2000
@@ -2269,11 +2149,9 @@ cumulenes-0004-00
   6  1  1  6  0  0  0
   6  7  1  1  0  0  0
 M  END
-> <NAME>
-cumulenes-0004-00
 
 $$$$
-cumulenes-0005-00
+
   -INDIGO-10011020452D
 
   8  7  0  0  0  0  0  0  0  0999 V2000
@@ -2293,11 +2171,9 @@ cumulenes-0005-00
   7  6  1  0  0  0  0
   8  6  1  0  0  0  0
 M  END
-> <NAME>
-cumulenes-0005-00
 
 $$$$
-dipoles-0001-00
+
   -INDIGO-10131020272D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -2310,11 +2186,9 @@ dipoles-0001-00
   3  4  3  0  0  0  0
 M  CHG  2   2  -1   3   1
 M  END
-> <NAME>
-dipoles-0001-00
 
 $$$$
-dipoles-0002-00
+
   -INDIGO-10131020272D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -2327,11 +2201,9 @@ dipoles-0002-00
   3  4  2  0  0  0  0
 M  CHG  2   3   1   4  -1
 M  END
-> <NAME>
-dipoles-0002-00
 
 $$$$
-dipoles-0003-00
+
   -INDIGO-10131020272D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -2344,11 +2216,9 @@ dipoles-0003-00
   3  4  2  0  0  0  0
 M  CHG  2   2  -1   4   1
 M  END
-> <NAME>
-dipoles-0003-00
 
 $$$$
-dipoles-0004-00
+
   -INDIGO-10131020272D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -2361,11 +2231,9 @@ dipoles-0004-00
   3  4  1  0  0  0  0
 M  CHG  2   3   1   4  -1
 M  END
-> <NAME>
-dipoles-0004-00
 
 $$$$
-dipoles-0005-00
+
   -INDIGO-10131020272D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -2378,11 +2246,9 @@ dipoles-0005-00
   3  4  2  0  0  0  0
 M  CHG  2   2  -1   3   1
 M  END
-> <NAME>
-dipoles-0005-00
 
 $$$$
-disconnected-0001-00
+
   -INDIGO-10011020462D
 
 119 95  0  0  0  0  0  0  0  0999 V2000
@@ -2601,11 +2467,9 @@ disconnected-0001-00
 116118  1  1  0  0  0
 116119  1  1  0  0  0
 M  END
-> <NAME>
-disconnected-0001-00
 
 $$$$
-disconnected-0002-00
+
   -INDIGO-10011020462D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -2617,11 +2481,9 @@ disconnected-0002-00
   1  3  1  6  0  0  0
   1  4  1  0  0  0  0
 M  END
-> <NAME>
-disconnected-0002-00
 
 $$$$
-disconnected-0003-00
+
   -INDIGO-10011020462D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -2633,11 +2495,9 @@ disconnected-0003-00
   1  3  1  6  0  0  0
   1  4  1  0  0  0  0
 M  END
-> <NAME>
-disconnected-0003-00
 
 $$$$
-disconnected-0004-00
+
   -INDIGO-10011020462D
 
   5  4  0  0  0  0  0  0  0  0999 V2000
@@ -2651,11 +2511,9 @@ disconnected-0004-00
   1  4  1  0  0  0  0
   1  5  1  6  0  0  0
 M  END
-> <NAME>
-disconnected-0004-00
 
 $$$$
-disconnected-0005-00
+
   -INDIGO-10011020462D
 
   5  4  0  0  0  0  0  0  0  0999 V2000
@@ -2669,11 +2527,9 @@ disconnected-0005-00
   1  4  1  0  0  0  0
   1  5  1  6  0  0  0
 M  END
-> <NAME>
-disconnected-0005-00
 
 $$$$
-disconnected_stereo-0001-00
+
   -INDIGO-10011020502D
 
  54 72  0  0  0  0  0  0  0  0999 V2000
@@ -2804,11 +2660,9 @@ disconnected_stereo-0001-00
  47 46  1  0  0  0  0
  45 48  1  0  0  0  0
 M  END
-> <NAME>
-disconnected_stereo-0001-00
 
 $$$$
-disconnected_stereo-0002-00
+
   -INDIGO-10011020502D
 
  62 76  0  0  0  0  0  0  0  0999 V2000
@@ -2951,11 +2805,9 @@ disconnected_stereo-0002-00
  51 53  1  0  0  0  0
  49 54  1  0  0  0  0
 M  END
-> <NAME>
-disconnected_stereo-0002-00
 
 $$$$
-disconnected_stereo-0003-00
+
   -INDIGO-10011020502D
 
 206192  0  0  0  0  0  0  0  0999 V2000
@@ -3364,11 +3216,9 @@ M  CHG  8 112   1 116  -1 121   1 125   1 129  -1 135   1 139  -1 151   1
 M  CHG  8 155  -1 160   1 164  -1 169   1 173  -1 179   1 183  -1 188   1
 M  CHG  3 192  -1 202   1 205  -1
 M  END
-> <NAME>
-disconnected_stereo-0003-00
 
 $$$$
-disconnected_stereo-0004-00
+
   -INDIGO-10011020502D
 
  21 18  0  0  0  0  0  0  0  0999 V2000
@@ -3412,11 +3262,9 @@ disconnected_stereo-0004-00
  20 18  1  0  0  0  0
  21 18  1  0  0  0  0
 M  END
-> <NAME>
-disconnected_stereo-0004-00
 
 $$$$
-disconnected_stereo-0005-00
+
   -INDIGO-10011020502D
 
  47 40  0  0  0  0  0  0  0  0999 V2000
@@ -3508,11 +3356,9 @@ disconnected_stereo-0005-00
  46 44  1  0  0  0  0
  47 43  1  0  0  0  0
 M  END
-> <NAME>
-disconnected_stereo-0005-00
 
 $$$$
-element_collections-0001-00
+
   -INDIGO-09291023262D
 
 106  0  0  0  0  0  0  0  0  0999 V2000
@@ -3623,12 +3469,10 @@ element_collections-0001-00
    10.2767  -13.9216    0.0000 Hg  0  0  0  0  0  0  0  0  0  0  0  0
    12.0292  -15.3375    0.0000 Au  0  0  0  0  0  0  0  0  0  0  0  0
 M  END
-> <NAME>
-element_collections-0001-00
 
 $$$$
 element_collections-0002-00-fixed
-  -INDIGO-10201021542D         
+  -INDIGO-10201021542D
 
 206100  0  0  1  0            999 V2000
    12.0333  -13.9208    0.0000 Ag  0  0  0  0  0  0  0  0  0  0  0  0
@@ -3939,8 +3783,6 @@ element_collections-0002-00-fixed
 205206  1  0  0  0  0
 M  END
 
-> <NAME>
-element_collections-0002-00
 
 $$$$
 element_collections-0003-00-fixed
@@ -4087,11 +3929,9 @@ element_collections-0003-00-fixed
  96 95  1  0  0  0  0
 M  END
 
-> <NAME>
-element_collections-0003-00
 
 $$$$
-element_collections-0004-00
+
   -INDIGO-09291023262D
 
 116115  0  0  0  0  0  0  0  0999 V2000
@@ -4327,11 +4167,9 @@ element_collections-0004-00
 114115  1  0  0  0  0
 116113  1  0  0  0  0
 M  END
-> <NAME>
-element_collections-0004-00
 
 $$$$
-element_collections-0005-00
+
   -INDIGO-09291023262D
 
 132119  0  0  0  0  0  0  0  0999 V2000
@@ -4601,61 +4439,49 @@ M  CHG  8 109  -1 110  -1 113  -1 114  -1 115  -1 116  -1 117  -1 118  -1
 M  CHG  8 119  -1 120  -1 123  -1 125  -1 126  -1 127  -1 128  -1 129  -1
 M  CHG  2 130  -1 131  -1
 M  END
-> <NAME>
-element_collections-0005-00
 
 $$$$
-elements-0001-00
+
   -INDIGO-09291023252D
 
   1  0  0  0  0  0  0  0  0  0999 V2000
    10.2967   -1.5283    0.0000 Ar  0  0  0  0  0  0  0  0  0  0  0  0
 M  END
-> <NAME>
-elements-0001-00
 
 $$$$
-elements-0002-00
+
   -INDIGO-09291023252D
 
   1  0  0  0  0  0  0  0  0  0999 V2000
    10.2383   -4.0633    0.0000 Xe  0  0  0  0  0  0  0  0  0  0  0  0
 M  END
-> <NAME>
-elements-0002-00
 
 $$$$
-elements-0003-00
+
   -INDIGO-09291023252D
 
   1  0  0  0  0  0  0  0  0  0999 V2000
     4.5375   -6.9250    0.0000 Mn  0  0  0  0  0  0  0  0  0  0  0  0
 M  END
-> <NAME>
-elements-0003-00
 
 $$$$
-elements-0004-00
+
   -INDIGO-09291023252D
 
   1  0  0  0  0  0  0  0  0  0999 V2000
    10.2617  -11.1158    0.0000 Zn  0  0  0  0  0  0  0  0  0  0  0  0
 M  END
-> <NAME>
-elements-0004-00
 
 $$$$
-elements-0005-00
+
   -INDIGO-09291023252D
 
   1  0  0  0  0  0  0  0  0  0999 V2000
    10.2625  -15.2667    0.0000 Cu  0  0  0  0  0  0  0  0  0  0  0  0
 M  END
-> <NAME>
-elements-0005-00
 
 $$$$
-explicit_h-0001-00
+
   -INDIGO-10011020512D
 
  14 16  0  0  0  0  0  0  0  0999 V2000
@@ -4690,11 +4516,9 @@ explicit_h-0001-00
   2  7  1  0  0  0  0
   5 14  1  0  0  0  0
 M  END
-> <NAME>
-explicit_h-0001-00
 
 $$$$
-explicit_h-0002-00
+
   -INDIGO-10011020512D
 
  20 22  0  0  0  0  0  0  0  0999 V2000
@@ -4741,11 +4565,9 @@ explicit_h-0002-00
   5 19  1  0  0  0  0
   5 20  1  0  0  0  0
 M  END
-> <NAME>
-explicit_h-0002-00
 
 $$$$
-explicit_h-0003-00
+
   -INDIGO-10011020512D
 
   8 10  0  0  0  0  0  0  0  0999 V2000
@@ -4768,11 +4590,9 @@ explicit_h-0003-00
   1  7  1  0  0  0  0
   2  7  1  0  0  0  0
 M  END
-> <NAME>
-explicit_h-0003-00
 
 $$$$
-explicit_h-0004-00
+
   -INDIGO-10011020512D
 
  14 16  0  0  0  0  0  0  0  0999 V2000
@@ -4807,11 +4627,9 @@ explicit_h-0004-00
   1 14  1  0  0  0  0
   7  8  2  0  0  0  0
 M  END
-> <NAME>
-explicit_h-0004-00
 
 $$$$
-explicit_h-0005-00
+
   -INDIGO-10011020512D
 
  20 22  0  0  0  0  0  0  0  0999 V2000
@@ -4858,11 +4676,9 @@ explicit_h-0005-00
   1 19  1  0  0  0  0
   2 20  1  0  0  0  0
 M  END
-> <NAME>
-explicit_h-0005-00
 
 $$$$
-invalid_stereo-0001-00
+
   -INDIGO-10011021152D
 
  27 26  0  0  0  0  0  0  0  0999 V2000
@@ -4922,11 +4738,9 @@ invalid_stereo-0001-00
 M  CHG  2  23  -1  25  -1
 M  ISO  7  11  13  12  12  14  13  17  13  18  13  23  35  25  14
 M  END
-> <NAME>
-invalid_stereo-0001-00
 
 $$$$
-invalid_stereo-0002-00
+
   -INDIGO-10011021152D
 
   7  6  0  0  0  0  0  0  0  0999 V2000
@@ -4944,11 +4758,9 @@ invalid_stereo-0002-00
   1  2  2  0  0  0  0
   5  7  1  0  0  0  0
 M  END
-> <NAME>
-invalid_stereo-0002-00
 
 $$$$
-invalid_stereo-0003-00
+
   -INDIGO-10011021152D
 
   7  6  0  0  0  0  0  0  0  0999 V2000
@@ -4967,11 +4779,9 @@ invalid_stereo-0003-00
   1  7  1  0  0  0  0
 M  CHG  2   3   1   7  -1
 M  END
-> <NAME>
-invalid_stereo-0003-00
 
 $$$$
-invalid_stereo-0004-00
+
   -INDIGO-10011021152D
 
  11 11  0  0  0  0  0  0  0  0999 V2000
@@ -4998,11 +4808,9 @@ invalid_stereo-0004-00
  10  4  1  1  0  0  0
  11  6  1  1  0  0  0
 M  END
-> <NAME>
-invalid_stereo-0004-00
 
 $$$$
-invalid_stereo-0005-00
+
   -INDIGO-10011021152D
 
   7  7  0  0  0  0  0  0  0  0999 V2000
@@ -5021,11 +4829,9 @@ invalid_stereo-0005-00
   6  7  1  1  0  0  0
   1  2  1  0  0  0  0
 M  END
-> <NAME>
-invalid_stereo-0005-00
 
 $$$$
-isotopes_h-0001-00
+
   -INDIGO-09291023262D
 
   7  7  0  0  0  0  0  0  0  0999 V2000
@@ -5044,11 +4850,9 @@ isotopes_h-0001-00
   5  6  2  0  0  0  0
   7  6  1  0  0  0  0
 M  END
-> <NAME>
-isotopes_h-0001-00
 
 $$$$
-isotopes_h-0002-00
+
   -INDIGO-09291023262D
 
   6  5  0  0  0  0  0  0  0  0999 V2000
@@ -5064,11 +4868,9 @@ isotopes_h-0002-00
   1  2  2  0  0  0  0
   3  6  1  0  0  0  0
 M  END
-> <NAME>
-isotopes_h-0002-00
 
 $$$$
-isotopes_h-0003-00
+
   -INDIGO-09291023262D
 
   5  4  0  0  0  0  0  0  0  0999 V2000
@@ -5082,11 +4884,9 @@ isotopes_h-0003-00
   4  3  1  0  0  0  0
   1  5  1  0  0  0  0
 M  END
-> <NAME>
-isotopes_h-0003-00
 
 $$$$
-isotopes_h-0004-00
+
   -INDIGO-09291023262D
 
  20 20  0  0  0  0  0  0  0  0999 V2000
@@ -5131,11 +4931,9 @@ isotopes_h-0004-00
   2  1  1  0  0  0  0
  10 20  1  0  0  0  0
 M  END
-> <NAME>
-isotopes_h-0004-00
 
 $$$$
-isotopes_h-0005-00
+
   -INDIGO-09291023262D
 
   5  4  0  0  0  0  0  0  0  0999 V2000
@@ -5149,11 +4947,9 @@ isotopes_h-0005-00
   2  4  1  0  0  0  0
   1  5  1  0  0  0  0
 M  END
-> <NAME>
-isotopes_h-0005-00
 
 $$$$
-isotopes_nonh-0001-00
+
   -INDIGO-10011020372D
 
   7  7  0  0  0  0  0  0  0  0999 V2000
@@ -5173,11 +4969,9 @@ isotopes_nonh-0001-00
   7  6  1  0  0  0  0
 M  ISO  2   3  13   6  13
 M  END
-> <NAME>
-isotopes_nonh-0001-00
 
 $$$$
-isotopes_nonh-0002-00
+
   -INDIGO-10011020372D
 
  18 18  0  0  0  0  0  0  0  0999 V2000
@@ -5219,11 +5013,9 @@ isotopes_nonh-0002-00
  18  8  1  0  0  0  0
 M  ISO  6  10  13  11  13  12  13  14  13  17  13  18  13
 M  END
-> <NAME>
-isotopes_nonh-0002-00
 
 $$$$
-isotopes_nonh-0003-00
+
   -INDIGO-10011020372D
 
  18 18  0  0  0  0  0  0  0  0999 V2000
@@ -5265,11 +5057,9 @@ isotopes_nonh-0003-00
  18  8  1  0  0  0  0
 M  ISO  6  10  13  11  13  12  13  14  13  17  13  18  13
 M  END
-> <NAME>
-isotopes_nonh-0003-00
 
 $$$$
-isotopes_nonh-0004-00
+
   -INDIGO-10011020372D
 
  20 20  0  0  0  0  0  0  0  0999 V2000
@@ -5315,11 +5105,9 @@ isotopes_nonh-0004-00
  10 20  1  0  0  0  0
 M  ISO  5  11  13  12  13  14  13  17  13  18  13
 M  END
-> <NAME>
-isotopes_nonh-0004-00
 
 $$$$
-isotopes_nonh-0005-00
+
   -INDIGO-10011020373D
 
  27 40  0  0  0  0  0  0  0  0999 V2000
@@ -5392,11 +5180,9 @@ isotopes_nonh-0005-00
  25 26  1  0  0  0  0
 M  ISO  2   1  14   7  13
 M  END
-> <NAME>
-isotopes_nonh-0005-00
 
 $$$$
-isotopes_stereo-0001-00
+
   -INDIGO-10011021162D
 
  14 14  0  0  0  0  0  0  0  0999 V2000
@@ -5431,11 +5217,9 @@ isotopes_stereo-0001-00
 M  ISO  8   1  11   2  12   3  13   4  12   6  12   7  17   8  17   9  12
 M  ISO  3  10  17  11  17  13   1
 M  END
-> <NAME>
-isotopes_stereo-0001-00
 
 $$$$
-isotopes_stereo-0002-00
+
   -INDIGO-10011021162D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -5459,11 +5243,9 @@ isotopes_stereo-0002-00
   7  9  1  0  0  0  0
 M  ISO  1   8  35
 M  END
-> <NAME>
-isotopes_stereo-0002-00
 
 $$$$
-isotopes_stereo-0003-00
+
   -INDIGO-10011021162D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -5487,11 +5269,9 @@ isotopes_stereo-0003-00
   7  9  1  0  0  0  0
 M  ISO  1   8  37
 M  END
-> <NAME>
-isotopes_stereo-0003-00
 
 $$$$
-isotopes_stereo-0004-00
+
   -INDIGO-10011021162D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -5515,11 +5295,9 @@ isotopes_stereo-0004-00
   7  9  1  0  0  0  0
 M  ISO  2   8  37   9  35
 M  END
-> <NAME>
-isotopes_stereo-0004-00
 
 $$$$
-isotopes_stereo-0005-00
+
   -INDIGO-10011021162D
 
  20 20  0  0  0  0  0  0  0  0999 V2000
@@ -5565,11 +5343,9 @@ isotopes_stereo-0005-00
  10 20  1  0  0  0  0
 M  ISO  1  12  12
 M  END
-> <NAME>
-isotopes_stereo-0005-00
 
 $$$$
-known_bugs-0001-00
+
   -INDIGO-09241017152D
 
  29 28  0  0  0  0  0  0  0  0999 V2000
@@ -5632,11 +5408,9 @@ known_bugs-0001-00
  28 29  1  0  0  0  0
 M  CHG  1  16   1
 M  END
-> <NAME>
-known_bugs-0001-00
 
 $$$$
-large-0001-00
+
   -INDIGO-10011021172D
 
 109123  0  0  0  0  0  0  0  0999 V2000
@@ -5874,11 +5648,9 @@ large-0001-00
 101108  1  0  0  0  0
 M  CHG  3   1  -1   3   1  33   1
 M  END
-> <NAME>
-large-0001-00
 
 $$$$
-large-0002-00
+
   -INDIGO-10011021172D
 
 109123  0  0  0  0  0  0  0  0999 V2000
@@ -6116,11 +5888,9 @@ large-0002-00
 103104  1  0  0  0  0
 M  CHG  3   1  -1   3   1   6   1
 M  END
-> <NAME>
-large-0002-00
 
 $$$$
-large-0004-00
+
   -INDIGO-10011021172D
 
  22 37  0  0  0  0  0  0  0  0999 V2000
@@ -6185,11 +5955,9 @@ large-0004-00
   9 22  1  6  0  0  0
 M  CHG  3   6  -2   7   1   8   1
 M  END
-> <NAME>
-large-0004-00
 
 $$$$
-large-0005-00
+
   -INDIGO-10011021172D
 
  40 44  0  0  0  0  0  0  0  0999 V2000
@@ -6279,11 +6047,9 @@ large-0005-00
  35 39  1  0  0  0  0
 M  CHG  2   4   1  26   1
 M  END
-> <NAME>
-large-0005-00
 
 $$$$
-large-0006-00
+
   -INDIGO-10011021172D
 
  40 44  0  0  0  0  0  0  0  0999 V2000
@@ -6373,11 +6139,9 @@ large-0006-00
  32 34  1  0  0  0  0
 M  CHG  2   6   1  26   1
 M  END
-> <NAME>
-large-0006-00
 
 $$$$
-molfile_only-0001-00
+
   -INDIGO-10011021292D
 
  40 43  0  0  0  0  0  0  0  0999 V2000
@@ -6468,11 +6232,9 @@ M  RAD  8   1   2   2   2   3   2   4   2   5   2   6   2  11   2  12   2
 M  RAD  8  14   2  15   2  16   2  17   2  18   2  19   2  20   2  21   2
 M  RAD  2  22   2  24   2
 M  END
-> <NAME>
-molfile_only-0001-00
 
 $$$$
-molfile_only-0002-00
+
   -INDIGO-10011021292D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -6485,11 +6247,9 @@ molfile_only-0002-00
   4  3  1  0  0  0  0
 M  RAD  1   4   2
 M  END
-> <NAME>
-molfile_only-0002-00
 
 $$$$
-molfile_only-0003-00
+
   -INDIGO-10011021292D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -6502,11 +6262,9 @@ molfile_only-0003-00
   2  1  1  0  0  0  0
 M  RAD  1   2   2
 M  END
-> <NAME>
-molfile_only-0003-00
 
 $$$$
-molfile_only-0004-00
+
   -INDIGO-10011021292D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -6519,11 +6277,9 @@ molfile_only-0004-00
   4  3  1  0  0  0  0
 M  RAD  1   1   2
 M  END
-> <NAME>
-molfile_only-0004-00
 
 $$$$
-molfile_only-0005-00
+
   -INDIGO-10011021292D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -6536,11 +6292,9 @@ molfile_only-0005-00
   4  3  1  0  0  0  0
 M  RAD  1   3   2
 M  END
-> <NAME>
-molfile_only-0005-00
 
 $$$$
-organometallics-0001-00
+
   -INDIGO-10011021192D
 
  60 69  0  0  0  0  0  0  0  0999 V2000
@@ -6676,11 +6430,9 @@ organometallics-0001-00
 M  CHG  4   2   1  11   1  24   1  25   1
 M  RAD  8   5   2   6   2   7   2   8   2  19   2  21   2  22   2  23   2
 M  END
-> <NAME>
-organometallics-0001-00
 
 $$$$
-organometallics-0003-00
+
   -INDIGO-10011021192D
 
  23 32  0  0  0  0  0  0  0  0999 V2000
@@ -6742,11 +6494,9 @@ organometallics-0003-00
 M  CHG  3   5  -1   6   2  11  -1
 M  RAD  1  11   2
 M  END
-> <NAME>
-organometallics-0003-00
 
 $$$$
-organometallics-0004-00
+
   -INDIGO-10011021192D
 
 114137  0  0  0  0  0  0  0  0999 V2000
@@ -7003,11 +6753,9 @@ organometallics-0004-00
 113114  3  0  0  0  0
 M  RAD  6   3   2   4   2  85   2  86   2 113   2 114   2
 M  END
-> <NAME>
-organometallics-0004-00
 
 $$$$
-organometallics-0005-00
+
   -INDIGO-10011021192D
 
  22 37  0  0  0  0  0  0  0  0999 V2000
@@ -7072,11 +6820,9 @@ organometallics-0005-00
   9 22  1  6  0  0  0
 M  CHG  3   6  -2   7   1   8   1
 M  END
-> <NAME>
-organometallics-0005-00
 
 $$$$
-resonance_chn-0001-00
+
   -INDIGO-10131021422D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -7089,11 +6835,9 @@ resonance_chn-0001-00
   4  2  1  0  0  0  0
 M  CHG  1   3  -1
 M  END
-> <NAME>
-resonance_chn-0001-00
 
 $$$$
-resonance_chn-0002-00
+
   -INDIGO-10131021422D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -7106,11 +6850,9 @@ resonance_chn-0002-00
   4  2  1  0  0  0  0
 M  CHG  1   1  -1
 M  END
-> <NAME>
-resonance_chn-0002-00
 
 $$$$
-resonance_chn-0003-00
+
   -INDIGO-10131021422D
 
   3  2  0  0  0  0  0  0  0  0999 V2000
@@ -7121,11 +6863,9 @@ resonance_chn-0003-00
   2  3  1  0  0  0  0
 M  CHG  1   3  -1
 M  END
-> <NAME>
-resonance_chn-0003-00
 
 $$$$
-resonance_chn-0004-00
+
   -INDIGO-10131021422D
 
   3  2  0  0  0  0  0  0  0  0999 V2000
@@ -7136,11 +6876,9 @@ resonance_chn-0004-00
   2  3  2  0  0  0  0
 M  CHG  1   1  -1
 M  END
-> <NAME>
-resonance_chn-0004-00
 
 $$$$
-resonance_chn-0005-00
+
   -INDIGO-10131021422D
 
  10  9  0  0  0  0  0  0  0  0999 V2000
@@ -7165,11 +6903,9 @@ resonance_chn-0005-00
  10  6  1  0  0  0  0
 M  CHG  2   5   1   7  -1
 M  END
-> <NAME>
-resonance_chn-0005-00
 
 $$$$
-resonance_rng-0001-00
+
   -INDIGO-10011021292D
 
  36 40  0  0  0  0  0  0  0  0999 V2000
@@ -7251,11 +6987,9 @@ resonance_rng-0001-00
  25 27  1  0  0  0  0
 M  CHG  1  32  -1
 M  END
-> <NAME>
-resonance_rng-0001-00
 
 $$$$
-resonance_rng-0002-00
+
   -INDIGO-10011021292D
 
  36 40  0  0  0  0  0  0  0  0999 V2000
@@ -7337,11 +7071,9 @@ resonance_rng-0002-00
  35 36  1  0  0  0  0
 M  CHG  3   2   1  15  -1  35  -1
 M  END
-> <NAME>
-resonance_rng-0002-00
 
 $$$$
-resonance_rng-0003-00
+
   -INDIGO-10011021292D
 
  36 40  0  0  0  0  0  0  0  0999 V2000
@@ -7423,11 +7155,9 @@ resonance_rng-0003-00
  17 21  2  0  0  0  0
 M  CHG  1  32  -1
 M  END
-> <NAME>
-resonance_rng-0003-00
 
 $$$$
-resonance_rng-0004-00
+
   -INDIGO-10011021292D
 
  36 40  0  0  0  0  0  0  0  0999 V2000
@@ -7509,11 +7239,9 @@ resonance_rng-0004-00
  35 36  1  0  0  0  0
 M  CHG  1   2   1
 M  END
-> <NAME>
-resonance_rng-0004-00
 
 $$$$
-resonance_rng-0005-00
+
   -INDIGO-10011021292D
 
  36 40  0  0  0  0  0  0  0  0999 V2000
@@ -7595,11 +7323,9 @@ resonance_rng-0005-00
  35 36  1  0  0  0  0
 M  CHG  3   2   1  14  -1  35  -1
 M  END
-> <NAME>
-resonance_rng-0005-00
 
 $$$$
-salts-0001-00
+
   -INDIGO-10011021332D
 
   9  7  0  0  0  0  0  0  0  0999 V2000
@@ -7621,11 +7347,9 @@ salts-0001-00
   5  9  1  0  0  0  0
 M  CHG  2   2   1   5  -1
 M  END
-> <NAME>
-salts-0001-00
 
 $$$$
-salts-0002-00
+
   -INDIGO-10011021332D
 
   5  4  0  0  0  0  0  0  0  0999 V2000
@@ -7639,11 +7363,9 @@ salts-0002-00
   3  4  1  0  0  0  0
   3  5  2  0  0  0  0
 M  END
-> <NAME>
-salts-0002-00
 
 $$$$
-salts-0003-00
+
   -INDIGO-10011021332D
 
   5  3  0  0  0  0  0  0  0  0999 V2000
@@ -7657,11 +7379,9 @@ salts-0003-00
   2  4  2  0  0  0  0
 M  CHG  2   1  -1   5   1
 M  END
-> <NAME>
-salts-0003-00
 
 $$$$
-salts-0004-00
+
   -INDIGO-10011021332D
 
   6  5  0  0  0  0  0  0  0  0999 V2000
@@ -7677,11 +7397,9 @@ salts-0004-00
   4  5  1  0  0  0  0
   4  6  1  0  0  0  0
 M  END
-> <NAME>
-salts-0004-00
 
 $$$$
-salts-0005-00
+
   -INDIGO-10011021332D
 
   6  4  0  0  0  0  0  0  0  0999 V2000
@@ -7697,11 +7415,9 @@ salts-0005-00
   3  5  1  0  0  0  0
 M  CHG  2   1  -1   6   1
 M  END
-> <NAME>
-salts-0005-00
 
 $$$$
-spatial-0001-00
+
   -INDIGO-10011021333D
 
  29 36  0  0  0  0  0  0  0  0999 V2000
@@ -7772,11 +7488,9 @@ spatial-0001-00
  21 26  2  0  0  0  0
 M  CHG  2  12   1  13   1
 M  END
-> <NAME>
-spatial-0001-00
 
 $$$$
-spatial-0002-00
+
   -INDIGO-10011021333D
 
  33 46  0  0  0  0  0  0  0  0999 V2000
@@ -7860,11 +7574,9 @@ spatial-0002-00
  26 33  1  0  0  0  0
  30 31  1  0  0  0  0
 M  END
-> <NAME>
-spatial-0002-00
 
 $$$$
-spatial-0003-00
+
   -INDIGO-10011021333D
 
  73 86  0  0  0  0  0  0  0  0999 V2000
@@ -8028,11 +7740,9 @@ spatial-0003-00
  35 40  1  0  0  0  0
  36 49  1  0  0  0  0
 M  END
-> <NAME>
-spatial-0003-00
 
 $$$$
-spatial-0004-00
+
   -INDIGO-10011021333D
 
  91104  0  0  0  0  0  0  0  0999 V2000
@@ -8232,11 +7942,9 @@ spatial-0004-00
  55 86  1  0  0  0  0
  55 87  1  0  0  0  0
 M  END
-> <NAME>
-spatial-0004-00
 
 $$$$
-spatial-0005-00
+
   -INDIGO-10011021333D
 
  21 34  0  0  0  0  0  0  0  0999 V2000
@@ -8296,11 +8004,9 @@ spatial-0005-00
  17 20  1  0  0  0  0
  18 21  1  0  0  0  0
 M  END
-> <NAME>
-spatial-0005-00
 
 $$$$
-symmetric-0001-00
+
   -INDIGO-09241017192D
 
   8 12  0  0  0  0  0  0  0  0999 V2000
@@ -8325,11 +8031,9 @@ symmetric-0001-00
   3  4  1  0  0  0  0
   8  5  1  0  0  0  0
 M  END
-> <NAME>
-symmetric-0001-00
 
 $$$$
-symmetric-0002-00
+
   -INDIGO-09241017192D
 
  11 20  0  0  0  0  0  0  0  0999 V2000
@@ -8366,11 +8070,9 @@ symmetric-0002-00
  10 11  1  0  0  0  0
 M  CHG  3   2   2   4  -1   8  -1
 M  END
-> <NAME>
-symmetric-0002-00
 
 $$$$
-symmetric-0004-00
+
   -INDIGO-09241017192D
 
  21 30  0  0  0  0  0  0  0  0999 V2000
@@ -8427,11 +8129,9 @@ symmetric-0004-00
   3 21  1  0  0  0  0
 M  CHG  3   2   2   4  -1   8  -1
 M  END
-> <NAME>
-symmetric-0004-00
 
 $$$$
-symmetric-0006-00
+
   -INDIGO-09241017192D
 
  21 30  0  0  0  0  0  0  0  0999 V2000
@@ -8488,11 +8188,9 @@ symmetric-0006-00
  21  1  1  0  0  0  0
 M  CHG  8   1  -1   3  -1   5  -1   6  -1   7  -1   9  -1  10  -1  11  -1
 M  END
-> <NAME>
-symmetric-0006-00
 
 $$$$
-symmetric-0007-00
+
   -INDIGO-09241017192D
 
  11 20  0  0  0  0  0  0  0  0999 V2000
@@ -8528,11 +8226,9 @@ symmetric-0007-00
   9 10  1  0  0  0  0
  10 11  1  0  0  0  0
 M  END
-> <NAME>
-symmetric-0007-00
 
 $$$$
-tau_charge-0001-00
+
   -INDIGO-09241017202D
 
  10  9  0  0  0  0  0  0  0  0999 V2000
@@ -8557,11 +8253,9 @@ tau_charge-0001-00
   1  4  1  0  0  0  0
 M  CHG  1   1   1
 M  END
-> <NAME>
-tau_charge-0001-00
 
 $$$$
-tau_charge-0002-00
+
   -INDIGO-09241017202D
 
  10  9  0  0  0  0  0  0  0  0999 V2000
@@ -8586,11 +8280,9 @@ tau_charge-0002-00
   1  4  1  0  0  0  0
 M  CHG  1   8   1
 M  END
-> <NAME>
-tau_charge-0002-00
 
 $$$$
-tau_charge-0003-00
+
   -INDIGO-09241017202D
 
  10  9  0  0  0  0  0  0  0  0999 V2000
@@ -8615,11 +8307,9 @@ tau_charge-0003-00
   1  4  1  0  0  0  0
 M  CHG  1   8   1
 M  END
-> <NAME>
-tau_charge-0003-00
 
 $$$$
-tau_ring-0001-00
+
   -INDIGO-09241017232D
 
  14 14  0  0  0  0  0  0  0  0999 V2000
@@ -8652,11 +8342,9 @@ tau_ring-0001-00
   3  9  1  0  0  0  0
   5 10  1  0  0  0  0
 M  END
-> <NAME>
-tau_ring-0001-00
 
 $$$$
-tau_ring-0002-00
+
   -INDIGO-09241017232D
 
  14 14  0  0  0  0  0  0  0  0999 V2000
@@ -8689,11 +8377,9 @@ tau_ring-0002-00
   1  4  1  0  0  0  0
   3  5  2  0  0  0  0
 M  END
-> <NAME>
-tau_ring-0002-00
 
 $$$$
-tau_ring-0003-00
+
   -INDIGO-09241017232D
 
  11 11  0  0  0  0  0  0  0  0999 V2000
@@ -8720,11 +8406,9 @@ tau_ring-0003-00
   2 10  1  0  0  0  0
   4 11  1  0  0  0  0
 M  END
-> <NAME>
-tau_ring-0003-00
 
 $$$$
-tau_simple-0001-00
+
   -INDIGO-09241017252D
 
   3  2  0  0  0  0  0  0  0  0999 V2000
@@ -8734,11 +8418,9 @@ tau_simple-0001-00
   1  2  2  0  0  0  0
   2  3  1  0  0  0  0
 M  END
-> <NAME>
-tau_simple-0001-00
 
 $$$$
-tau_simple-0002-00
+
   -INDIGO-09241017252D
 
   3  2  0  0  0  0  0  0  0  0999 V2000
@@ -8748,11 +8430,9 @@ tau_simple-0002-00
   1  2  1  0  0  0  0
   2  3  2  0  0  0  0
 M  END
-> <NAME>
-tau_simple-0002-00
 
 $$$$
-tau_simple-0003-00
+
   -INDIGO-10131020082D
 
  13 12  0  0  0  0  0  0  0  0999 V2000
@@ -8782,11 +8462,9 @@ tau_simple-0003-00
   1  2  1  0  0  0  0
   9 13  2  0  0  0  0
 M  END
-> <NAME>
-tau_simple-0003-00
 
 $$$$
-tau_simple-0004-00
+
   -INDIGO-10131020082D
 
  13 12  0  0  0  0  0  0  0  0999 V2000
@@ -8816,11 +8494,9 @@ tau_simple-0004-00
   1  2  1  0  0  0  0
   9 13  1  0  0  0  0
 M  END
-> <NAME>
-tau_simple-0004-00
 
 $$$$
-tau_simple-0005-00
+
   -INDIGO-10131020082D
 
  13 12  0  0  0  0  0  0  0  0999 V2000
@@ -8850,11 +8526,9 @@ tau_simple-0005-00
   1  2  1  0  0  0  0
   9 13  2  0  0  0  0
 M  END
-> <NAME>
-tau_simple-0005-00
 
 $$$$
-tetrahedral-0001-00
+
   -INDIGO-10011021342D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -8866,11 +8540,9 @@ tetrahedral-0001-00
   1  3  1  0  0  0  0
   1  4  1  0  0  0  0
 M  END
-> <NAME>
-tetrahedral-0001-00
 
 $$$$
-tetrahedral-0002-00
+
   -INDIGO-10011021342D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -8882,11 +8554,9 @@ tetrahedral-0002-00
   1  3  1  0  0  0  0
   1  4  1  0  0  0  0
 M  END
-> <NAME>
-tetrahedral-0002-00
 
 $$$$
-tetrahedral-0003-00
+
   -INDIGO-10011021342D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -8898,11 +8568,9 @@ tetrahedral-0003-00
   1  3  1  0  0  0  0
   1  4  1  0  0  0  0
 M  END
-> <NAME>
-tetrahedral-0003-00
 
 $$$$
-tetrahedral-0004-00
+
   -INDIGO-10011021342D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -8914,11 +8582,9 @@ tetrahedral-0004-00
   1  3  1  0  0  0  0
   1  4  1  0  0  0  0
 M  END
-> <NAME>
-tetrahedral-0004-00
 
 $$$$
-tetrahedral-0005-00
+
   -INDIGO-10011021342D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -8930,11 +8596,9 @@ tetrahedral-0005-00
   1  3  1  6  0  0  0
   1  4  1  0  0  0  0
 M  END
-> <NAME>
-tetrahedral-0005-00
 
 $$$$
-tricky_stereo-0001-00
+
   -INDIGO-10011021372D
 
  14 16  0  0  0  0  0  0  0  0999 V2000
@@ -8969,11 +8633,9 @@ tricky_stereo-0001-00
   3  6  1  0  0  0  0
   4  7  1  1  0  0  0
 M  END
-> <NAME>
-tricky_stereo-0001-00
 
 $$$$
-tricky_stereo-0002-00
+
   -INDIGO-10011021372D
 
  14 16  0  0  0  0  0  0  0  0999 V2000
@@ -9008,11 +8670,9 @@ tricky_stereo-0002-00
   1  2  1  0  0  0  0
   3  6  1  0  0  0  0
 M  END
-> <NAME>
-tricky_stereo-0002-00
 
 $$$$
-tricky_stereo-0003-00
+
   -INDIGO-10011021372D
 
  14 16  0  0  0  0  0  0  0  0999 V2000
@@ -9047,11 +8707,9 @@ tricky_stereo-0003-00
   5 14  1  1  0  0  0
  14  4  1  1  0  0  0
 M  END
-> <NAME>
-tricky_stereo-0003-00
 
 $$$$
-tricky_stereo-0004-00
+
   -INDIGO-10011021372D
 
  14 16  0  0  0  0  0  0  0  0999 V2000
@@ -9086,11 +8744,9 @@ tricky_stereo-0004-00
   3  6  1  0  0  0  0
   4  7  1  1  0  0  0
 M  END
-> <NAME>
-tricky_stereo-0004-00
 
 $$$$
-tricky_stereo-0005-00
+
   -INDIGO-10011021372D
 
  14 16  0  0  0  0  0  0  0  0999 V2000
@@ -9125,11 +8781,9 @@ tricky_stereo-0005-00
   5 14  1  1  0  0  0
  14  4  1  1  0  0  0
 M  END
-> <NAME>
-tricky_stereo-0005-00
 
 $$$$
-valence-0001-00
+
   -INDIGO-10011021382D
 
   4  3  0  0  0  0  0  0  0  0999 V2000
@@ -9141,11 +8795,9 @@ valence-0001-00
   3  1  2  0  0  0  0
   4  2  1  0  0  0  0
 M  END
-> <NAME>
-valence-0001-00
 
 $$$$
-valence-0002-00
+
   -INDIGO-10011021382D
 
  11  9  0  0  0  0  0  0  0  0999 V2000
@@ -9171,11 +8823,9 @@ valence-0002-00
  10  7  1  0  0  0  0
 M  CHG  2   8  -1  11   1
 M  END
-> <NAME>
-valence-0002-00
 
 $$$$
-valence-0003-00
+
   -INDIGO-10011021382D
 
  12 13  0  0  0  0  0  0  0  0999 V2000
@@ -9207,11 +8857,9 @@ valence-0003-00
 M  CHG  2   7   1  10  -1
 M  RAD  1   5   2
 M  END
-> <NAME>
-valence-0003-00
 
 $$$$
-valence-0004-00
+
   -INDIGO-10011021382D
 
  11 12  0  0  0  0  0  0  0  0999 V2000
@@ -9240,11 +8888,9 @@ valence-0004-00
  11  4  1  0  0  0  0
 M  RAD  2   9   2  11   2
 M  END
-> <NAME>
-valence-0004-00
 
 $$$$
-valence-0005-00
+
   -INDIGO-10011021382D
 
   9  9  0  0  0  0  0  0  0  0999 V2000
@@ -9267,7 +8913,5 @@ valence-0005-00
   3  8  1  0  0  0  0
   4  9  1  0  0  0  0
 M  END
-> <NAME>
-valence-0005-00
 
 $$$$
