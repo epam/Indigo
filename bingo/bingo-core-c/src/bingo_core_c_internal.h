@@ -65,9 +65,8 @@ namespace indigo
             int mangoNeedCoords();
             int mangoIndexProcessSingleRecord();
             int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* cmf_buf_len, const char** xyz_buf, int* xyz_buf_len, const char** gross_str,
-                                           const char** counter_elements_str, const char** fingerprint_buf, int* fingerprint_buf_len,
-                                           const char** fingerprint_sim_str, float* mass,
-                                           int* sim_fp_bits_count);
+                                               const char** counter_elements_str, const char** fingerprint_buf, int* fingerprint_buf_len,
+                                               const char** fingerprint_sim_str, float* mass, int* sim_fp_bits_count);
             int mangoGetHash(bool for_index, int index, int* count, dword* hash);
             void mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len);
             byte mangoExactNeedComponentMatching();
@@ -134,7 +133,7 @@ namespace indigo
             int bingoIndexEnd();
             int bingoImportParseFieldList(const char* fields_str);
             void bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
-                              void (*process_error_cb)(int id, void* context), void* context);
+                                   void (*process_error_cb)(int id, void* context), void* context);
             const char* bingoGetNameCore(const char* target_buf, int target_buf_len);
             const char* bingoImportGetColumnName(int idx);
             int getTimeout();
@@ -191,7 +190,6 @@ namespace indigo
 
             byte* test_ptr;
         };
-        
 
 #define BINGO_BEGIN                                                                                                                                            \
     {                                                                                                                                                          \
