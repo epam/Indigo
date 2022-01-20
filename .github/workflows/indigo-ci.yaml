@@ -2,6 +2,7 @@ name: Indigo CI
 
 env:
   OS_NAME_MAPPING_JSON: '{"ubuntu": "linux", "windows": "windows", "macos": "macos"}'
+  PG_VERSION_JSON: '{"10": "10.19", "11": "11.14", "12": "12.9", "13": "13.5", "14": "14.1"}'
 
 on:
   push:
@@ -936,12 +937,11 @@ jobs:
         with:
           args: >
             /bin/sh -c "
-            case ${{ matrix.postgres_major_version }} in 12) pg_version=12;; 11) pg_version=11;; 10) pg_version=10;; 9.6) pg_version=96;; esac; &&
             yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
             curl -OL https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG &&
             rpm --import RPM-GPG-KEY-PGDG &&
-            yumdownloader -y postgresql${pg_version}-devel &&
-            rpm -i --nodeps postgresql${pg_version}*.rpm &&
+            yumdownloader -y postgresql${{ fromJSON(env.PG_VERSION_JSON)[matrix.postgres_major_version] }}-devel &&
+            rpm -i --nodeps postgresql${{ fromJSON(env.PG_VERSION_JSON)[matrix.postgres_major_version] }}*.rpm &&
             mkdir build &&
             cd build &&
             cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF &&
