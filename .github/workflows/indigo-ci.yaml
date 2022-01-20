@@ -957,13 +957,20 @@ jobs:
         run: pip install -r bingo/tests/requirements.txt
       - name: Run Bingo tests
         run: |
-          pytest --db postgres
+          pytest --db postgres --junit-xml=junit_report.xml
         working-directory: bingo/tests
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
           path: dist/bingo-postgres*.tgz
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'bingo/tests/junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "bingo_postgres_${{ matrix.postgres_major_version }}_test_report"
 
 #  build_bingo_postgres_windows_msvc_x86_64:
 #    strategy:
