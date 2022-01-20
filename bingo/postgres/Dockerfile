@@ -1,9 +1,10 @@
-ARG PG_VERSION=14
+ARG PG_VERSION
 
 FROM postgres:${PG_VERSION}
 
 ARG PG_VERSION
 
+RUN echo PG_VERSION=${PG_VERSION}
 COPY ./dist/bingo-postgres${PG_VERSION}-linux-*.tgz /opt/
 
 RUN cd /opt/ && tar -xzf bingo-postgres${PG_VERSION}*.tgz && \
