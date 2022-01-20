@@ -536,7 +536,7 @@ void SmilesSaver::_saveMolecule()
             else if (_qmol != 0)
                 _writeSmartsAtom(v_idx, &_qmol->getAtom(v_idx), _atoms[v_idx].chirality, 0, false);
             else
-                throw Error("SMARTS format availble for query only");
+                throw Error("SMARTS format availble for query only!");
 
             QS_DEF(Array<int>, closing);
 
