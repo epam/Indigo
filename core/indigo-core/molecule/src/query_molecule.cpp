@@ -2122,7 +2122,8 @@ void QueryMolecule::getQueryAtomLabel(int qa, Array<char>& result)
 {
     static const std::unordered_map<int, std::string> query_atom_labels = {{QUERY_ATOM_A, "A"},   {QUERY_ATOM_Q, "Q"},   {QUERY_ATOM_X, "X"},
                                                                            {QUERY_ATOM_AH, "AH"}, {QUERY_ATOM_XH, "XH"}, {QUERY_ATOM_QH, "QH"},
-                                                                           {QUERY_ATOM_MH, "MH"}};
+                                                                           {QUERY_ATOM_MH, "MH"}, {QUERY_ATOM_M, "M"}};
+
     auto it = query_atom_labels.find(qa);
     if (it != query_atom_labels.end())
         result.readString(it->second.c_str(), true);
