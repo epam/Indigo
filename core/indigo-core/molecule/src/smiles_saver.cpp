@@ -950,11 +950,10 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     case QueryMolecule::ATOM_TOTAL_H: {
         int hydro = atom->value_min;
-
-        if (hydro > 1)
-            _output.printf("H%d", hydro);
-        else if (hydro == 1)
+        if (hydro == 1)
             _output.printf("H");
+        else 
+            _output.printf("H%d", hydro);
         break;
     }
 
@@ -992,7 +991,10 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
 
-    default:;
+    default: {
+        throw Error("incompatible cis-trans configuration");
+        break;
+    }
     }
 
     if (depth == 0)

@@ -28,6 +28,7 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/smiles_saver.h"
+#include "molecule/molfile_loader.h"
 #include "reaction/canonical_rsmiles_saver.h"
 #include "reaction/reaction_cdxml_saver.h"
 #include "reaction/reaction_cml_saver.h"
@@ -198,11 +199,23 @@ void IndigoSmilesSaver::generateSmarts(IndigoObject& obj, Array<char>& out_buffe
 
         SmilesSaver saver(output);
         saver.smarts_mode = true;
-
         if (mol.isQueryMolecule())
+        {
             saver.saveQueryMolecule(mol.asQueryMolecule());
+        }
         else
-            saver.saveMolecule(mol.asMolecule());
+        {
+            Array<char> mol_out_buffer;
+            ArrayOutput mol_output(mol_out_buffer);
+            MolfileSaver saver_tmp(mol_output);
+            saver_tmp.saveMolecule(mol.asMolecule());
+            mol_out_buffer.push(0);
+            BufferScanner sc(mol_out_buffer);
+            MolfileLoader loader_tmp(sc);
+            QueryMolecule qmol;
+            loader_tmp.loadQueryMolecule(qmol);
+            saver.saveQueryMolecule(qmol);
+        }
     }
     else if (IndigoBaseReaction::is(obj))
     {
