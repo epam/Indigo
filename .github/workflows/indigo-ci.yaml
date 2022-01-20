@@ -917,7 +917,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 10, 11, 12, 13, 14 ]
+#        postgres_major_version: [ 10, 11, 12, 13, 14 ]
+        postgres_major_version: [ 12, 13 ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -936,11 +937,13 @@ jobs:
         with:
           args: >
             /bin/sh -c "
+            set -eux &&
             yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
             curl -OL https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG &&
             rpm --import RPM-GPG-KEY-PGDG &&
             yumdownloader -y postgresql${{ matrix.postgres_major_version }}-devel &&
             rpm -i --nodeps postgresql${{ matrix.postgres_major_version }}*.rpm &&
+            ls -alh /usr &&
             mkdir build &&
             cd build &&
             cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF &&
@@ -956,7 +959,7 @@ jobs:
         run: pip install -r bingo/tests/requirements.txt
       - name: Run Bingo tests
         run: |
-          pytest test_exact/ --db postgres --junit-xml=junit_report.xml ; cat junit_report.xml
+          pytest test_exact/ --tb=short --db postgres --junit-xml=junit_report.xml ; cat junit_report.xml
         working-directory: bingo/tests
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
