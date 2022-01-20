@@ -6,7 +6,9 @@ ARG GIT_VERSION=227
 RUN yum install -y epel-release centos-release-scl
 RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
 RUN yum update -y
-RUN yum install -y cmake3 devtoolset-${DEVTOOLSET_VERSION}-gcc-c++ freetype-devel fontconfig-devel make rh-git${GIT_VERSION}
+RUN yum install -y cmake3 devtoolset-${DEVTOOLSET_VERSION}-gcc-c++ freetype-devel fontconfig-devel make rh-git${GIT_VERSION} yum-utils && \
+    yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo && \
+    yum install -y docker-ce docker-ce-cli containerd.io
 RUN ln -fs /usr/bin/cmake3 /usr/local/bin/cmake && \
     ln -fs /usr/bin/cpack3 /usr/local/bin/cpack && \
 	ln -fs /usr/bin/ctest3 /usr/local/bin/ctest
