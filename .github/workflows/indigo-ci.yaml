@@ -949,6 +949,9 @@ jobs:
             "
       - name: Build Docker image
         run: |
+          ls -alh
+          pwd
+          ls -alh dist
           docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg PG_VERSION=${{ matrix.postgres_major_version }} .
           docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Install dev dependencies
