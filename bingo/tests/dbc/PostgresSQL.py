@@ -1,3 +1,5 @@
+from psycopg2 import InternalError
+
 from indigo import IndigoObject
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm.session import sessionmaker
@@ -29,20 +31,25 @@ class Postgres(SQLAdapter):
     def query_row(self, query: str, entity: IndigoObject,
                   table_name='', options=''):
         """Execute SQL query and return single row"""
-        rows = self._execute_query(query, entity, table_name, options)
-        if rows:
-            return rows[0][0]
-        return rows
+        try:
+            rows = self._execute_query(query, entity, table_name, options)
+            if rows:
+                return rows[0][0]
+            return rows
+        except Exception as e:
+            return e
 
     def query_rows(self, query: str, entity: IndigoObject,
                    table_name='', options=''):
         """Execute SQL query and return a list of rows"""
-        rows = self._execute_query(query, entity, table_name, options)
+        try:
+            rows = self._execute_query(query, entity, table_name, options)
+            if type(rows) is list:
+                rows = [row[0] for row in rows]
 
-        if type(rows) is list:
-            rows = [row[0] for row in rows]
-
-        return rows
+            return rows
+        except Exception as e:
+            return e
 
     def checkmolecule(self, molecule):
         query_sql = "SELECT {bingo_schema}.checkmolecule(" \

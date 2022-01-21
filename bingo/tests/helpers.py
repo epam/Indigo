@@ -136,8 +136,8 @@ def assert_calculate_query(result: Union[Exception, int, str, float],
                            expected: Union[int, str]):
     """Assertion for testing cansmiles, checkmolecule, cml, compactmolecule,
        fingerprint, gross, inchi, mass and molfile"""
-    if type(result) is Exception:
-        assert str(result) == expected
+    if isinstance(result, Exception):
+        assert expected in str(result)
     elif type(result) is float:
         assert round(result, 1) == round(expected, 1)
     elif 'TemporaryFile' in str(type(result)):
@@ -153,8 +153,8 @@ def assert_match_query(result: Union[Exception, List[int]],
                        expected: Union[List[int], str]):
     """Assertion for testing exact, tautomers, substructure, similarity,
        sgroups, markush, resonance, pseudoatoms, bigtable and smarts"""
-    if type(result) is Exception:
-        assert str(result) == expected
+    if isinstance(result, Exception):
+        assert expected in str(result)
     else:
         assert type(expected) == list
         targets = []

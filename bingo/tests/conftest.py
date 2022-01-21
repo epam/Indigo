@@ -14,7 +14,11 @@ from .dbc.PostgresSQL import Postgres
 
 @pytest.fixture(scope='class')
 def indigo():
-    return Indigo()
+    # TODO: uncomment this:
+    indigo = Indigo()
+    # indigo.setOption("ignore-stereochemistry-errors", True)
+    # indigo.setOption("ignore-bad-valence", True)
+    return indigo
 
 
 @pytest.fixture(scope='class')

@@ -1,6 +1,6 @@
 # Indigo tests #
 
-Directory with tests: `indigo-tests/bingo/tests/`
+Directory with tests: `bingo/tests/`
 
 Tests with bingo-nosql:
  * bigtable
@@ -23,7 +23,8 @@ Tests with bingo-elastic:
  * similarity
  * substructure
 
-All tests have PostgreSQL support
+All tests have PostgreSQL support.
+System requirements and installation procedure for bingo-postgres are available [here](/bingo/postgres/README.md).
 
 ## Tests structure ##
 * tests/
@@ -33,7 +34,7 @@ All tests have PostgreSQL support
   - helpers.py - Set of useful functions
   - logger.py 
   - db_config.ini - DB connection parameters  
-  - req.txt - Requirement modules
+  - requirements.txt - Requirement modules
   - bingo-tests.log - Logs (appears after running tests)
   - conftest.py - Contains pytest fixtures: indigo instance, DB connection
   - ...
@@ -79,7 +80,7 @@ class TestFunction:
 
 ## Install requirements ##
 ```shell
-pip install -r indigo-tests/bingo/tests/requirements.txt
+pip install -r bingo/tests/requirements.txt
 ``` 
 
 
@@ -89,9 +90,24 @@ pip install -r indigo-tests/bingo/tests/requirements.txt
 docker run -p 9200:9200 --env "discovery.type=single-node" --env "indices.query.bool.max_clause_count=4096" --env "opendistro_security.disabled=true" amazon/opendistro-for-elasticsearch:latest
 ```
 
+
 ## Running tests ##
 ```shell
-cd indigo-tests/bingo/tests
+cd bingo/tests
 pytest .
 ```
 
+
+## Build an image and run docker container with bingo-postgres ##
+
+```shell
+docker build --tag epmlsop/bingo-postgres:latest -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION={postgres_version} . 
+docker run -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:latest
+```
+
+
+## Running tests for bingo-postgres ##
+```shell
+cd bingo/tests
+pytest --db postgres
+```
