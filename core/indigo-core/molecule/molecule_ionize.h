@@ -55,8 +55,8 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        static void estimate_pKa(Molecule& mol, const IonizeOptions& options, std::vector<int>& acid_sites, std::vector<int>& basic_sites,
-                                 std::vector<float>& acid_pkas, std::vector<float>& basic_pkas);
+        static void estimate_pKa(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites, Array<float>& acid_pkas,
+                                 Array<float>& basic_pkas);
         static void getAtomLocalFingerprint(Molecule& mol, int idx, Array<char>& fp, int level);
         static void getAtomLocalKey(Molecule& mol, int idx, Array<char>& fp);
         static bool getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<int>& fp);
@@ -71,11 +71,11 @@ namespace indigo
 
         static void _loadSimplePkaModel();
         static void _loadAdvancedPkaModel();
-        static void _estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, std::vector<int>& acid_sites, std::vector<int>& basic_sites,
-                                         std::vector<float>& acid_pkas, std::vector<float>& basic_pkas);
+        static void _estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites, Array<float>& acid_pkas,
+                                         Array<float>& basic_pkas);
 
-        static void _estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, std::vector<int>& acid_sites, std::vector<int>& basic_sites,
-                                           std::vector<float>& acid_pkas, std::vector<float>& basic_pkas);
+        static void _estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+                                           Array<float>& acid_pkas, Array<float>& basic_pkas);
 
         static int _asc_cmp_cb(int& v1, int& v2, void* context);
         static void _checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Array<int>& order);
@@ -87,8 +87,8 @@ namespace indigo
         Array<float> b_pkas;
         bool simple_model_ready = false;
 
-        std::unordered_map<std::string, std::vector<float>> adv_a_pkas;
-        std::unordered_map<std::string, std::vector<float>> adv_b_pkas;
+        std::unordered_map<std::string, Array<float>> adv_a_pkas;
+        std::unordered_map<std::string, Array<float>> adv_b_pkas;
         int level;
         Array<float> max_deviations;
         bool advanced_model_ready = false;
@@ -105,8 +105,8 @@ namespace indigo
         CP_DECL;
 
     protected:
-        static void _setCharges(Molecule& mol, float ph, float ph_toll, const IonizeOptions& options, std::vector<int>& acid_sites,
-                                std::vector<int>& basic_sites, std::vector<float>& acid_pkas, std::vector<float>& basic_pkas);
+        static void _setCharges(Molecule& mol, float ph, float ph_toll, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+                                Array<float>& acid_pkas, Array<float>& basic_pkas);
     };
 
 } // namespace indigo
