@@ -1546,6 +1546,8 @@ void SmilesLoader::_loadParsedMolecule()
 
             _mol->setAtomCharge(idx, _atoms[i].charge);
             _mol->setAtomIsotope(idx, _atoms[i].isotope);
+            _mol->setAtomRadical(idx, 0);
+            _mol->setExplicitValence(idx, 0);
         }
 
         for (i = 0; i < _bonds.size(); i++)
