@@ -20,7 +20,6 @@
 #define __molecule_ionize_h__
 
 #include "base_cpp/obj_array.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "base_molecule.h"
 
@@ -88,8 +87,8 @@ namespace indigo
         Array<float> b_pkas;
         bool simple_model_ready = false;
 
-        RedBlackStringObjMap<Array<float>> adv_a_pkas;
-        RedBlackStringObjMap<Array<float>> adv_b_pkas;
+        std::unordered_map<std::string, Array<float>> adv_a_pkas;
+        std::unordered_map<std::string, Array<float>> adv_b_pkas;
         int level;
         Array<float> max_deviations;
         bool advanced_model_ready = false;

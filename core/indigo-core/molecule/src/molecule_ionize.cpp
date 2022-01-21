@@ -67,10 +67,10 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
     //   QS_DEF(Array<int>, order);
     //   QS_DEF(Molecule, can_mol);
     QS_DEF(Array<char>, fp);
-    RedBlackStringObjMap<Array<float>> acid_pkas;
-    RedBlackStringObjMap<Array<float>> basic_pkas;
-    RedBlackStringObjMap<Array<int>> acid_pka_cids;
-    RedBlackStringObjMap<Array<int>> basic_pka_cids;
+    std::unordered_map<std::string, Array<float>> acid_pkas;
+    std::unordered_map<std::string, Array<float>> basic_pkas;
+    std::unordered_map<std::string, Array<int>> acid_pka_cids;
+    std::unordered_map<std::string, Array<int>> basic_pka_cids;
     AromaticityOptions opts;
 
     const char* a_pka_sites_id = "ACID PKA SITES";
@@ -156,10 +156,10 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                         if (fp.size() == 0)
                             continue;
 
-                        if (!acid_pkas.find(fp.ptr()))
+                        if (acid_pkas.find(fp.ptr()) == acid_pkas.end())
                         {
-                            acid_pkas.insert(fp.ptr());
-                            acid_pka_cids.insert(fp.ptr());
+                            acid_pkas.insert({fp.ptr(), Array<float>()});
+                            acid_pka_cids.insert({fp.ptr(), Array<int>()});
                             a_count++;
                         }
                         acid_pkas.at(fp.ptr()).push(val);
@@ -207,10 +207,10 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                         if (fp.size() == 0)
                             continue;
 
-                        if (!basic_pkas.find(fp.ptr()))
+                        if (basic_pkas.find(fp.ptr()) == basic_pkas.end())
                         {
-                            basic_pkas.insert(fp.ptr());
-                            basic_pka_cids.insert(fp.ptr());
+                            basic_pkas.insert({fp.ptr(), Array<float>()});
+                            basic_pka_cids.insert({fp.ptr(), Array<int>()});
                             b_count++;
                         }
                         basic_pkas.at(fp.ptr()).push(val);
@@ -223,10 +223,10 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
         bool model_ready = true;
         float max_deviation = 0.f;
 
-        for (int i = 0; i < acid_pkas.size(); i++)
+        for (auto& acid_pkap : acid_pkas)
         {
-            const char* fp = acid_pkas.key(i);
-            Array<float>& pkas = acid_pkas.value(i);
+            const char* fp = acid_pkap.first.c_str();
+            Array<float>& pkas = acid_pkap.second;
             float pka_sum = 0.f;
             float pka_dev = 0.f;
             float pka_min = 100.f;
@@ -249,9 +249,9 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (pka_dev > max_deviation)
                 max_deviation = pka_dev;
 
-            if (_model.adv_a_pkas.find(fp))
-                _model.adv_a_pkas.remove(fp);
-            _model.adv_a_pkas.insert(fp);
+            if (_model.adv_a_pkas.find(fp) != _model.adv_a_pkas.end())
+                _model.adv_a_pkas.erase(fp);
+            _model.adv_a_pkas.insert({fp, Array<float>()});
             _model.adv_a_pkas.at(fp).push(pka_sum / pkas.size());
             _model.adv_a_pkas.at(fp).push(pka_dev);
 
@@ -259,10 +259,10 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                 model_ready = false;
         }
 
-        for (int i = 0; i < basic_pkas.size(); i++)
+        for (auto& basic_pkap : basic_pkas)
         {
-            const char* fp = basic_pkas.key(i);
-            Array<float>& pkas = basic_pkas.value(i);
+            const char* fp = basic_pkap.first.c_str();
+            Array<float>& pkas = basic_pkap.second;
             float pka_sum = 0.f;
             float pka_dev = 0.f;
             float pka_min = 100.f;
@@ -285,9 +285,9 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (pka_dev > max_deviation)
                 max_deviation = pka_dev;
 
-            if (_model.adv_b_pkas.find(fp))
-                _model.adv_b_pkas.remove(fp);
-            _model.adv_b_pkas.insert(fp);
+            if (_model.adv_b_pkas.find(fp) != _model.adv_b_pkas.end())
+                _model.adv_b_pkas.erase(fp);
+            _model.adv_b_pkas.insert({fp, Array<float>()});
             _model.adv_b_pkas.at(fp).push(pka_sum / pkas.size());
             _model.adv_b_pkas.at(fp).push(pka_dev);
 
@@ -816,15 +816,15 @@ namespace // data of internal purpose
         {"7300021320000|64000204210006400020421000|73000213110007300021320000820002220100064000204210008200022201000", 9.69f, 0.00f},
         {"82-10023110000|6400020421000|640002042100082-100231100008200022201000", 3.20f, 0.00f}};
 
-    void LoadPkaDefToModel(RedBlackStringObjMap<Array<float>>& adv_model, const AdvancedPkaDef* from, const AdvancedPkaDef* const end)
+    void LoadPkaDefToModel(std::unordered_map<std::string, Array<float>>& adv_model, const AdvancedPkaDef* from, const AdvancedPkaDef* const end)
     {
         adv_model.clear();
         for (; from < end; ++from)
         {
-            if (adv_model.find(from->a_fp))
-                adv_model.remove(from->a_fp);
+            if (adv_model.find(from->a_fp) != adv_model.end())
+                adv_model.erase(from->a_fp);
 
-            adv_model.insert(from->a_fp);
+            adv_model.insert({from->a_fp, Array<float>()});
             adv_model.at(from->a_fp).push(from->pka);
             adv_model.at(from->a_fp).push(from->deviation);
         }
@@ -1229,7 +1229,7 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
     getAtomLocalFingerprint(mol, idx, fp, level);
     //   printf("Acid site: atom index = %d, fp = %s\n",  idx, fp.ptr());
 
-    if (_model.adv_a_pkas.find(fp.ptr()))
+    if (_model.adv_a_pkas.find(fp.ptr()) != _model.adv_a_pkas.end())
     {
         pka = _model.adv_a_pkas.at(fp.ptr())[0];
         //      printf("Acid site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level, pka,
@@ -1255,7 +1255,7 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
 
             //         printf("Try FP = %s level = %d\n", fp.ptr(), level_pos.size() - i);
 
-            if (_model.adv_a_pkas.find(fp.ptr()))
+            if (_model.adv_a_pkas.find(fp.ptr()) != _model.adv_a_pkas.end())
             {
                 pka = _model.adv_a_pkas.at(fp.ptr())[0];
                 //            printf("Acid site found: fp = %s level = %d pka = %4.2f, dev = %4.2f\n", fp.ptr(), level_pos.size() - i, pka,
@@ -1283,7 +1283,7 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
     getAtomLocalFingerprint(mol, idx, fp, level);
     //   printf("Basic site: atom index = %d, fp = %s\n",  idx, fp.ptr());
 
-    if (_model.adv_b_pkas.find(fp.ptr()))
+    if (_model.adv_b_pkas.find(fp.ptr()) != _model.adv_b_pkas.end())
     {
         pka = (_model.adv_b_pkas.at(fp.ptr())[0]);
         //      printf("Basic site found: fp = %s  pka = %4.2f, dev = %4.2f\n",  fp.ptr(), pka,
@@ -1306,7 +1306,7 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
                 break;
             int next_layer = level_pos[level_pos.size() - i - 1];
             fp.remove(next_layer, fp.size() - next_layer - 1);
-            if (_model.adv_b_pkas.find(fp.ptr()))
+            if (_model.adv_b_pkas.find(fp.ptr()) != _model.adv_b_pkas.end())
             {
                 pka = _model.adv_b_pkas.at(fp.ptr())[0];
                 //            printf("Basic site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level_pos.size() - i, pka,
