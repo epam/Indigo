@@ -30,9 +30,8 @@ IMPL_ERROR(MoleculeCdxLoader, "molecule CDX loader");
 CP_DEF(MoleculeCdxLoader);
 
 MoleculeCdxLoader::MoleculeCdxLoader(Scanner& scanner)
-    : COORD_COEF(1.0f / 1857710.0f), CP_INIT, TL_CP_GET(properties), TL_CP_GET(_nodes), TL_CP_GET(_bonds), TL_CP_GET(_stereo_care_atoms),
-      TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions),
-      TL_CP_GET(_ignore_cistrans)
+    : COORD_COEF(1.0f / 1857710.0f), CP_INIT, TL_CP_GET(_nodes), TL_CP_GET(_bonds), TL_CP_GET(_stereo_care_atoms), TL_CP_GET(_stereo_care_bonds),
+      TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions), TL_CP_GET(_ignore_cistrans)
 {
     _scanner = &scanner;
     ignore_bad_valence = false;
@@ -130,7 +129,7 @@ void MoleculeCdxLoader::_loadMolecule()
     }
 
     int idx;
-    RedBlackMap<int, int> _atom_mapping;
+    std::unordered_map<int, int> _atom_mapping;
 
     for (int i = 0; i < _nodes.size(); i++)
     {
@@ -143,58 +142,60 @@ void MoleculeCdxLoader::_loadMolecule()
             //         _mol->setExplicitValence(idx, _nodes[i].valence);
             _bmol->setAtomXyz(idx, (float)_nodes[i].x * COORD_COEF, (float)_nodes[i].y * COORD_COEF, (float)_nodes[i].z * COORD_COEF);
             _nodes[i].index = idx;
-            _atom_mapping.insert(_nodes[i].id, i);
+            _atom_mapping.insert({_nodes[i].id, i});
         }
         else if (_nodes[i].type == kCDXNodeType_ExternalConnectionPoint)
         {
-            _atom_mapping.insert(_nodes[i].id, i);
+            _atom_mapping.insert({_nodes[i].id, i});
         }
         else
         {
-            _atom_mapping.insert(_nodes[i].id, i);
+            _atom_mapping.insert({_nodes[i].id, i});
         }
     }
 
     for (int i = 0; i < _bonds.size(); i++)
     {
-        if ((_nodes[_atom_mapping.at(_bonds[i].beg)].type == kCDXNodeType_Element) && (_nodes[_atom_mapping.at(_bonds[i].end)].type == kCDXNodeType_Element))
+        int i_beg = _atom_mapping.at(_bonds[i].beg);
+        int i_end = _atom_mapping.at(_bonds[i].end);
+        if ((_nodes[i_beg].type == kCDXNodeType_Element) && (_nodes[i_end].type == kCDXNodeType_Element))
         {
             if (_bonds[i].swap_bond)
                 _bonds[i].index =
-                    _mol->addBond_Silent(_nodes[_atom_mapping.at(_bonds[i].end)].index, _nodes[_atom_mapping.at(_bonds[i].beg)].index, _bonds[i].type);
+                    _mol->addBond_Silent(_nodes[i_end].index, _nodes[i_beg].index, _bonds[i].type);
             else
                 _bonds[i].index =
-                    _mol->addBond_Silent(_nodes[_atom_mapping.at(_bonds[i].beg)].index, _nodes[_atom_mapping.at(_bonds[i].end)].index, _bonds[i].type);
+                    _mol->addBond_Silent(_nodes[i_beg].index, _nodes[i_end].index, _bonds[i].type);
 
             if (_bonds[i].dir > 0)
                 _bmol->setBondDirection(_bonds[i].index, _bonds[i].dir);
         }
-        else if (_nodes[_atom_mapping.at(_bonds[i].beg)].type == kCDXNodeType_ExternalConnectionPoint)
+        else if (_nodes[i_beg].type == kCDXNodeType_ExternalConnectionPoint)
         {
             _updateConnectionPoint(_bonds[i].beg, _bonds[i].end);
         }
-        else if (_nodes[_atom_mapping.at(_bonds[i].end)].type == kCDXNodeType_ExternalConnectionPoint)
+        else if (_nodes[i_end].type == kCDXNodeType_ExternalConnectionPoint)
         {
             _updateConnectionPoint(_bonds[i].end, _bonds[i].beg);
         }
-        else if (_nodes[_atom_mapping.at(_bonds[i].beg)].type == kCDXNodeType_Fragment)
+        else if (_nodes[i_beg].type == kCDXNodeType_Fragment)
         {
             int beg = 0;
             int end = 0;
 
-            for (int j = 0; j < _nodes[_atom_mapping.at(_bonds[i].beg)].connections.size(); j++)
+            for (int j = 0; j < _nodes[i_beg].connections.size(); j++)
             {
-                if (_nodes[_atom_mapping.at(_bonds[i].beg)].connections[j].bond_id == _bonds[i].id)
+                if (_nodes[i_beg].connections[j].bond_id == _bonds[i].id)
                 {
-                    beg = _nodes[_atom_mapping.at(_bonds[i].beg)].connections[j].atom_id;
+                    beg = _nodes[i_beg].connections[j].atom_id;
                     break;
                 }
             }
-            for (int j = 0; j < _nodes[_atom_mapping.at(_bonds[i].end)].connections.size(); j++)
+            for (int j = 0; j < _nodes[i_end].connections.size(); j++)
             {
-                if (_nodes[_atom_mapping.at(_bonds[i].end)].connections[j].bond_id == _bonds[i].id)
+                if (_nodes[i_end].connections[j].bond_id == _bonds[i].id)
                 {
-                    end = _nodes[_atom_mapping.at(_bonds[i].end)].connections[j].atom_id;
+                    end = _nodes[i_end].connections[j].atom_id;
                     break;
                 }
             }

@@ -55,7 +55,6 @@ namespace indigo
         const float COORD_COEF;
 
         CP_DECL;
-        TL_CP_DECL(RedBlackStringObjMap<Array<char>>, properties);
 
     protected:
         struct _ExtConnection

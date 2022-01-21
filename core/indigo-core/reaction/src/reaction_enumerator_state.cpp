@@ -119,8 +119,8 @@ IMPL_ERROR(ReactionEnumeratorState, "Reaction product enumerator state");
 CP_DEF(ReactionEnumeratorState);
 
 ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext& context, QueryReaction& cur_reaction, QueryMolecule& cur_full_product,
-                                                 Array<int>& cur_product_aam_array, Mapping& cur_smiles_array,
-                                                 ReactionMonomers& cur_reaction_monomers, int& cur_product_count, ObjArray<Array<int>>& cur_tubes_monomers)
+                                                 Array<int>& cur_product_aam_array, Mapping& cur_smiles_array, ReactionMonomers& cur_reaction_monomers,
+                                                 int& cur_product_count, ObjArray<Array<int>>& cur_tubes_monomers)
     : _reaction(cur_reaction), _product_count(cur_product_count), _tubes_monomers(cur_tubes_monomers), _product_aam_array(cur_product_aam_array),
       _smiles_array(cur_smiles_array), _reaction_monomers(cur_reaction_monomers), _context(context), CP_INIT, TL_CP_GET(_fragments_aam_array),
       TL_CP_GET(_full_product), TL_CP_GET(_product_monomers), TL_CP_GET(_mapping), TL_CP_GET(_fragments), TL_CP_GET(_is_needless_atom),

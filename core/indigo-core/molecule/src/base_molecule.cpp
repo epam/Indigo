@@ -1241,8 +1241,8 @@ void BaseMolecule::collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping&
         const Edge& edge = bm.getEdge(j);
         bool in1 = mapAtom.find(edge.beg) != mapAtom.end();
         bool in2 = mapAtom.find(edge.end) != mapAtom.end();
-        bool p1 = in1 && mapAtom.at(edge.beg) == edge.beg,
-             p2 = in2 && mapAtom.at(edge.end) == edge.end;
+        bool p1 = in1 && mapAtom.at(edge.beg) == edge.beg;
+        bool p2 = in2 && mapAtom.at(edge.end) == edge.end;
         if ((in1 && !p1 && !in2) || (!in1 && !p2 && in2))
         {
             int beg = in1 ? mapAtom.at(edge.beg) : edge.beg;

@@ -91,7 +91,7 @@ struct CaseInsensitiveStringComparator
     }
 };
 
-template<typename T>
+template <typename T>
 using OptionManagerMap = std::unordered_map<std::string, T, std::hash<std::string>, CaseInsensitiveStringComparator>;
 
 class DLLEXPORT IndigoOptionManager
