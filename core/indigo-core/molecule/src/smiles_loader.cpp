@@ -1786,13 +1786,15 @@ void SmilesLoader::_setRadicalsAndHCounts()
         // if the number of attached hydrogens conforms to the lowest normal
         // valence consistent with explicit bonds. We assume that there are
         // no radicals in that case.
-        if (!_atoms[i].brackets || organic_subset.find(_atoms[i].label) != organic_subset.end())
+        // if (!_atoms[i].brackets || organic_subset.find(_atoms[i].label) != organic_subset.end())
             // We set zero radicals explicitly to properly detect errors like FClF
             // (while F[Cl]F is correct)
-            _mol->setAtomRadical(idx, 0);
+        _mol->setAtomRadical(idx, 0);
 
         if (_atoms[i].hydrogens >= 0)
             _mol->setImplicitH(idx, _atoms[i].hydrogens);
+        else if (_atoms[i].brackets)    // no hydrogens in brackets?
+            _mol->setImplicitH(idx, 0); // no implicit hydrogens on atom then
         else if (_atoms[i].aromatic && _mol->getAtomAromaticity(i) == ATOM_AROMATIC)
         {
             // Additional check for _mol->getAtomAromaticity(i) is required because
