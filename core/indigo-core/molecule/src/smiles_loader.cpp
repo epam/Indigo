@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include <cctype>
-
+#include <unordered_set>
 #include <memory>
 
 #include "base_cpp/scanner.h"
@@ -1774,7 +1774,6 @@ void SmilesLoader::_markAromaticBonds()
 
 void SmilesLoader::_setRadicalsAndHCounts()
 {
-    static const std::unordered_set<int> organic_subset = { ELEM_B, ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I };
     int i;
 
     for (i = 0; i < _atoms.size(); i++)
@@ -1786,14 +1785,14 @@ void SmilesLoader::_setRadicalsAndHCounts()
         // if the number of attached hydrogens conforms to the lowest normal
         // valence consistent with explicit bonds. We assume that there are
         // no radicals in that case.
-        // if (!_atoms[i].brackets || organic_subset.find(_atoms[i].label) != organic_subset.end())
+        // if (!_atoms[i].brackets )
             // We set zero radicals explicitly to properly detect errors like FClF
             // (while F[Cl]F is correct)
         _mol->setAtomRadical(idx, 0);
 
         if (_atoms[i].hydrogens >= 0)
             _mol->setImplicitH(idx, _atoms[i].hydrogens);
-        else if (_atoms[i].brackets)    // no hydrogens in brackets?
+        else if (_atoms[i].brackets && !_atoms[i].organic) // no hydrogens in brackets?
             _mol->setImplicitH(idx, 0); // no implicit hydrogens on atom then
         else if (_atoms[i].aromatic && _mol->getAtomAromaticity(i) == ATOM_AROMATIC)
         {
@@ -2902,6 +2901,9 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         if (!isotope_set)
             first_in_brackets = false;
     }
+
+    static const std::unordered_set<int> organic_subset = {ELEM_B, ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I };
+    atom.organic = organic_subset.find(atom.label) != organic_subset.end();
 }
 
 int SmilesLoader::_parseCurly(Array<char>& curly, int& repetitions)

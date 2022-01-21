@@ -99,6 +99,7 @@ namespace indigo
             int aam;
             bool ignorable_aam;
             bool brackets;
+            bool organic;
 
             bool star_atom;
 
