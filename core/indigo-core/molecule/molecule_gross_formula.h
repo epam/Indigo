@@ -20,12 +20,11 @@
 #define __molecule_gross_formula__
 
 #include <memory>
-#include <set>
+#include <unordered_map>
 
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/output.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/scanner.h"
 #include "molecule/molecule_gross_formula_options.h"
 
@@ -43,7 +42,7 @@ namespace indigo
     {
     public:
         Array<char> multiplier;
-        RedBlackMap<int, int> isotopes;
+        std::unordered_map<int, int> isotopes;
     };
 
     // Represents array of superunits gross formulas.
@@ -74,7 +73,7 @@ namespace indigo
         };
 
         static void _toString(const Array<int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites);
-        static void _toString(const RedBlackMap<int, int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites);
+        static void _toString(const std::unordered_map<int, int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites);
         static int _cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context);
         static int _cmp_hill(_ElemCounter& ec1, _ElemCounter& ec2, void* context);
         static int _cmp_hill_no_carbon(_ElemCounter& ec1, _ElemCounter& ec2, void* context);
