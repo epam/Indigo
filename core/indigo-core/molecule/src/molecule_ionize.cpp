@@ -43,8 +43,8 @@ MoleculePkaModel::MoleculePkaModel()
     //   _loadAdvancedPkaModel();
 }
 
-void MoleculePkaModel::estimate_pKa(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites, Array<float>& acid_pkas,
-                                    Array<float>& basic_pkas)
+void MoleculePkaModel::estimate_pKa(Molecule& mol, const IonizeOptions& options, std::vector<int>& acid_sites, std::vector<int>& basic_sites,
+                                    std::vector<float>& acid_pkas, std::vector<float>& basic_pkas)
 {
     if (options.model == IonizeOptions::PKA_MODEL_SIMPLE)
     {
@@ -67,10 +67,10 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
     //   QS_DEF(Array<int>, order);
     //   QS_DEF(Molecule, can_mol);
     QS_DEF(Array<char>, fp);
-    std::unordered_map<std::string, Array<float>> acid_pkas;
-    std::unordered_map<std::string, Array<float>> basic_pkas;
-    std::unordered_map<std::string, Array<int>> acid_pka_cids;
-    std::unordered_map<std::string, Array<int>> basic_pka_cids;
+    std::unordered_map<std::string, std::vector<float>> acid_pkas;
+    std::unordered_map<std::string, std::vector<float>> basic_pkas;
+    std::unordered_map<std::string, std::vector<int>> acid_pka_cids;
+    std::unordered_map<std::string, std::vector<int>> basic_pka_cids;
     AromaticityOptions opts;
 
     const char* a_pka_sites_id = "ACID PKA SITES";
@@ -158,12 +158,12 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
 
                         if (acid_pkas.find(fp.ptr()) == acid_pkas.end())
                         {
-                            acid_pkas.insert({fp.ptr(), Array<float>()});
-                            acid_pka_cids.insert({fp.ptr(), Array<int>()});
+                            acid_pkas.insert({fp.ptr(), std::vector<float>()});
+                            acid_pka_cids.insert({fp.ptr(), std::vector<int>()});
                             a_count++;
                         }
-                        acid_pkas.at(fp.ptr()).push(val);
-                        acid_pka_cids.at(fp.ptr()).push(cid);
+                        acid_pkas.at(fp.ptr()).push_back(val);
+                        acid_pka_cids.at(fp.ptr()).push_back(cid);
                     }
                 }
             }
@@ -209,12 +209,12 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
 
                         if (basic_pkas.find(fp.ptr()) == basic_pkas.end())
                         {
-                            basic_pkas.insert({fp.ptr(), Array<float>()});
-                            basic_pka_cids.insert({fp.ptr(), Array<int>()});
+                            basic_pkas.insert({fp.ptr(), std::vector<float>()});
+                            basic_pka_cids.insert({fp.ptr(), std::vector<int>()});
                             b_count++;
                         }
-                        basic_pkas.at(fp.ptr()).push(val);
-                        basic_pka_cids.at(fp.ptr()).push(cid);
+                        basic_pkas.at(fp.ptr()).push_back(val);
+                        basic_pka_cids.at(fp.ptr()).push_back(cid);
                     }
                 }
             }
@@ -226,7 +226,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
         for (auto& acid_pkap : acid_pkas)
         {
             const char* fp = acid_pkap.first.c_str();
-            Array<float>& pkas = acid_pkap.second;
+            std::vector<float>& pkas = acid_pkap.second;
             float pka_sum = 0.f;
             float pka_dev = 0.f;
             float pka_min = 100.f;
@@ -251,9 +251,9 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
 
             if (_model.adv_a_pkas.find(fp) != _model.adv_a_pkas.end())
                 _model.adv_a_pkas.erase(fp);
-            _model.adv_a_pkas.insert({fp, Array<float>()});
-            _model.adv_a_pkas.at(fp).push(pka_sum / pkas.size());
-            _model.adv_a_pkas.at(fp).push(pka_dev);
+            _model.adv_a_pkas.insert({fp, std::vector<float>()});
+            _model.adv_a_pkas.at(fp).push_back(pka_sum / pkas.size());
+            _model.adv_a_pkas.at(fp).push_back(pka_dev);
 
             if (pka_dev > threshold)
                 model_ready = false;
@@ -262,7 +262,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
         for (auto& basic_pkap : basic_pkas)
         {
             const char* fp = basic_pkap.first.c_str();
-            Array<float>& pkas = basic_pkap.second;
+            std::vector<float>& pkas = basic_pkap.second;
             float pka_sum = 0.f;
             float pka_dev = 0.f;
             float pka_min = 100.f;
@@ -287,9 +287,9 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
 
             if (_model.adv_b_pkas.find(fp) != _model.adv_b_pkas.end())
                 _model.adv_b_pkas.erase(fp);
-            _model.adv_b_pkas.insert({fp, Array<float>()});
-            _model.adv_b_pkas.at(fp).push(pka_sum / pkas.size());
-            _model.adv_b_pkas.at(fp).push(pka_dev);
+            _model.adv_b_pkas.insert({fp, std::vector<float>()});
+            _model.adv_b_pkas.at(fp).push_back(pka_sum / pkas.size());
+            _model.adv_b_pkas.at(fp).push_back(pka_dev);
 
             if (pka_dev > threshold)
                 model_ready = false;
@@ -816,7 +816,7 @@ namespace // data of internal purpose
         {"7300021320000|64000204210006400020421000|73000213110007300021320000820002220100064000204210008200022201000", 9.69f, 0.00f},
         {"82-10023110000|6400020421000|640002042100082-100231100008200022201000", 3.20f, 0.00f}};
 
-    void LoadPkaDefToModel(std::unordered_map<std::string, Array<float>>& adv_model, const AdvancedPkaDef* from, const AdvancedPkaDef* const end)
+    void LoadPkaDefToModel(std::unordered_map<std::string, std::vector<float>>& adv_model, const AdvancedPkaDef* from, const AdvancedPkaDef* const end)
     {
         adv_model.clear();
         for (; from < end; ++from)
@@ -824,9 +824,9 @@ namespace // data of internal purpose
             if (adv_model.find(from->a_fp) != adv_model.end())
                 adv_model.erase(from->a_fp);
 
-            adv_model.insert({from->a_fp, Array<float>()});
-            adv_model.at(from->a_fp).push(from->pka);
-            adv_model.at(from->a_fp).push(from->deviation);
+            adv_model.insert({from->a_fp, std::vector<float>()});
+            adv_model.at(from->a_fp).push_back(from->pka);
+            adv_model.at(from->a_fp).push_back(from->deviation);
         }
     }
 } // namespace
@@ -838,8 +838,8 @@ void MoleculePkaModel::_loadAdvancedPkaModel()
     _model.advanced_model_ready = true;
 }
 
-void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
-                                            Array<float>& acid_pkas, Array<float>& basic_pkas)
+void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, std::vector<int>& acid_sites, std::vector<int>& basic_sites,
+                                            std::vector<float>& acid_pkas, std::vector<float>& basic_pkas)
 {
     //   QS_DEF(Array<int>, can_order);
     //   QS_DEF(Molecule, can_mol);
@@ -873,8 +873,8 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
             {
                 if (mapping[j] > -1)
                 {
-                    acid_sites.push(mapping[j]);
-                    acid_pkas.push(_model.a_pkas[i]);
+                    acid_sites.push_back(mapping[j]);
+                    acid_pkas.push_back(_model.a_pkas[i]);
                     ignore_atoms.push(mapping[j]);
                 }
             }
@@ -897,8 +897,8 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
             {
                 if (mapping[j] > -1)
                 {
-                    basic_sites.push(mapping[j]);
-                    basic_pkas.push(_model.b_pkas[i]);
+                    basic_sites.push_back(mapping[j]);
+                    basic_pkas.push_back(_model.b_pkas[i]);
                     ignore_atoms.push(mapping[j]);
                 }
             }
@@ -906,8 +906,8 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
     }
 }
 
-void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
-                                              Array<float>& acid_pkas, Array<float>& basic_pkas)
+void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, std::vector<int>& acid_sites, std::vector<int>& basic_sites,
+                                              std::vector<float>& acid_pkas, std::vector<float>& basic_pkas)
 {
     //   QS_DEF(Array<int>, can_order);
     //   QS_DEF(Molecule, can_mol);
@@ -926,16 +926,16 @@ void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions
         if (a_hcnt > 0)
         {
             float a_pka = getAcidPkaValue(mol, i, level, min_level);
-            acid_sites.push(i);
-            acid_pkas.push(a_pka);
+            acid_sites.push_back(i);
+            acid_pkas.push_back(a_pka);
             //         printf("Acid site: atom index = %d, pKa = %f\n",  can_order[i], a_pka);
         }
 
         if (a_lone > 0)
         {
             float b_pka = getBasicPkaValue(mol, i, level, min_level);
-            basic_sites.push(i);
-            basic_pkas.push(b_pka);
+            basic_sites.push_back(i);
+            basic_pkas.push_back(b_pka);
             //         printf("Basic site: atom index = %d, pKa = %f\n",  can_order[i], b_pka);
         }
     }
@@ -1328,10 +1328,10 @@ MoleculeIonizer::MoleculeIonizer() : CP_INIT
 
 bool MoleculeIonizer::ionize(Molecule& mol, float ph, float ph_toll, const IonizeOptions& options)
 {
-    QS_DEF(Array<int>, acid_sites);
-    QS_DEF(Array<int>, basic_sites);
-    QS_DEF(Array<float>, acid_pkas);
-    QS_DEF(Array<float>, basic_pkas);
+    QS_DEF(std::vector<int>, acid_sites);
+    QS_DEF(std::vector<int>, basic_sites);
+    QS_DEF(std::vector<float>, acid_pkas);
+    QS_DEF(std::vector<float>, basic_pkas);
 
     acid_sites.clear();
     basic_sites.clear();
@@ -1346,8 +1346,8 @@ bool MoleculeIonizer::ionize(Molecule& mol, float ph, float ph_toll, const Ioniz
     return true;
 }
 
-void MoleculeIonizer::_setCharges(Molecule& mol, float pH, float pH_toll, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
-                                  Array<float>& acid_pkas, Array<float>& basic_pkas)
+void MoleculeIonizer::_setCharges(Molecule& mol, float pH, float pH_toll, const IonizeOptions& options, std::vector<int>& acid_sites,
+                                  std::vector<int>& basic_sites, std::vector<float>& acid_pkas, std::vector<float>& basic_pkas)
 {
     for (auto i = 0; i < acid_sites.size(); i++)
     {
