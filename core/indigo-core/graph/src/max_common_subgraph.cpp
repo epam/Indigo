@@ -16,9 +16,9 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "graph/max_common_subgraph.h"
 #include "base_cpp/array.h"
 #include "base_cpp/cancellation_handler.h"
-#include "graph/max_common_subgraph.h"
 
 #include <algorithm>
 

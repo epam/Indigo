@@ -161,11 +161,9 @@ void MoleculeCdxLoader::_loadMolecule()
         if ((_nodes[i_beg].type == kCDXNodeType_Element) && (_nodes[i_end].type == kCDXNodeType_Element))
         {
             if (_bonds[i].swap_bond)
-                _bonds[i].index =
-                    _mol->addBond_Silent(_nodes[i_end].index, _nodes[i_beg].index, _bonds[i].type);
+                _bonds[i].index = _mol->addBond_Silent(_nodes[i_end].index, _nodes[i_beg].index, _bonds[i].type);
             else
-                _bonds[i].index =
-                    _mol->addBond_Silent(_nodes[i_beg].index, _nodes[i_end].index, _bonds[i].type);
+                _bonds[i].index = _mol->addBond_Silent(_nodes[i_beg].index, _nodes[i_end].index, _bonds[i].type);
 
             if (_bonds[i].dir > 0)
                 _bmol->setBondDirection(_bonds[i].index, _bonds[i].dir);

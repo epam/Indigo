@@ -86,8 +86,8 @@ namespace indigo
         int max_reuse_count;
 
         ReactionEnumeratorState(ReactionEnumeratorContext& context, QueryReaction& cur_reaction, QueryMolecule& cur_full_product,
-                                Array<int>& cur_product_aam_array, Mapping& cur_smiles_array, ReactionMonomers& cur_reaction_monomers,
-                                int& cur_product_count, ObjArray<Array<int>>& cur_tubes_monomers);
+                                Array<int>& cur_product_aam_array, Mapping& cur_smiles_array, ReactionMonomers& cur_reaction_monomers, int& cur_product_count,
+                                ObjArray<Array<int>>& cur_tubes_monomers);
 
         ReactionEnumeratorState(ReactionEnumeratorState& cur_rpe_state);
 

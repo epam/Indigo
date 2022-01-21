@@ -177,8 +177,8 @@ bool ReactionSubstructureMatcher::_checkAAM()
     if (!use_daylight_aam_mode)
         return BaseReactionSubstructureMatcher::_checkAAM();
 
-    QS_DEF(ObjArray<RedBlackSet<int>>, classes_mapping_left);
-    QS_DEF(ObjArray<RedBlackSet<int>>, classes_mapping_right);
+    QS_DEF(ObjArray<std::unordered_set<int>>, classes_mapping_left);
+    QS_DEF(ObjArray<std::unordered_set<int>>, classes_mapping_right);
     int i;
 
     classes_mapping_left.clear();
@@ -191,7 +191,7 @@ bool ReactionSubstructureMatcher::_checkAAM()
         int qmol_idx = _matchers[i]->_current_molecule_1;
         int tmol_idx = _matchers[i]->_current_molecule_2;
         BaseMolecule& qmol = _query->getBaseMolecule(qmol_idx);
-        ObjArray<RedBlackSet<int>>* cm;
+        ObjArray<std::unordered_set<int>>* cm;
         int j;
 
         if (_query->getSideType(qmol_idx) == BaseReaction::REACTANT)
@@ -220,7 +220,7 @@ bool ReactionSubstructureMatcher::_checkAAM()
                 return false;
 
             cm->expand(qaam + 1);
-            cm->at(qaam).find_or_insert(taam);
+            cm->at(qaam).insert(taam);
         }
     }
 
@@ -235,13 +235,12 @@ bool ReactionSubstructureMatcher::_checkAAM()
             // "When a query class is not found on both sides of the query, it is ignored"
             break;
 
-        RedBlackSet<int>& right = classes_mapping_right[i];
-        RedBlackSet<int>& left = classes_mapping_left[i];
+        std::unordered_set<int>& right = classes_mapping_right[i];
+        std::unordered_set<int>& left = classes_mapping_left[i];
 
-        for (int j = right.begin(); j != right.end(); j = right.next(j))
+        for (int aam_class : right)
         {
-            int aam_class = right.key(j);
-            if (!left.find(aam_class))
+            if (left.find(aam_class) == left.end())
                 return false;
         }
     }

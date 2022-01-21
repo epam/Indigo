@@ -293,8 +293,7 @@ EmbeddingEnumerator::_Enumerator::_Enumerator(EmbeddingEnumerator& context) : _c
     _current_node1_idx = 0;
 }
 
-EmbeddingEnumerator::_Enumerator::_Enumerator(const EmbeddingEnumerator::_Enumerator& other)
-    : _context(other._context)
+EmbeddingEnumerator::_Enumerator::_Enumerator(const EmbeddingEnumerator::_Enumerator& other) : _context(other._context)
 {
     _core_len = other._core_len;
     _t1_len = other._t1_len;
