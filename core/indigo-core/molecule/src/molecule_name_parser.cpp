@@ -1473,7 +1473,7 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base,
         }
     }
 
-    if (base->cycle)
+    if (base->cycle && root.nodes.size())
     {
         SmilesNode& first = root.nodes.front();
         first.str += "1";
@@ -1504,49 +1504,52 @@ void MoleculeNameParser::SmilesBuilder::_calcHydrogens(const Element& element, i
     int connections = indigo::Element::getMaximumConnectivity(number, 0, 0, false);
     int valence = indigo::Element::calcValenceMinusHyd(number, 0, 0, connections);
 
-    SmilesNode& sn = root.nodes.at(pos - 1);
-
-    string buffer;
-    if (!organicElement)
+    if ((pos - 1) < root.nodes.size())
     {
-        int hydrogens = 0;
+        SmilesNode& sn = root.nodes.at(pos - 1);
 
-        if (root.nodes.size() == 1)
+        string buffer;
+        if (!organicElement)
         {
-            hydrogens = valence;
-        }
-        else
-        {
-            if (pos > 1)
+            int hydrogens = 0;
+
+            if (root.nodes.size() == 1)
             {
-                const SmilesNode& prev = root.nodes.at(pos - 2);
-
-                int prevBond = prev.bondType;
-                hydrogens = valence - prevBond - sn.bondType;
+                hydrogens = valence;
             }
             else
             {
-                hydrogens = valence - sn.bondType;
-            }
-        }
+                if (pos > 1)
+                {
+                    const SmilesNode& prev = root.nodes.at(pos - 2);
 
-        if (hydrogens > 0)
-        {
-            char buff[3];
-            ::sprintf(buff, "%d", hydrogens);
-            buffer += "[" + element.second + "H" + buff + "]";
+                    int prevBond = prev.bondType;
+                    hydrogens = valence - prevBond - sn.bondType;
+                }
+                else
+                {
+                    hydrogens = valence - sn.bondType;
+                }
+            }
+
+            if (hydrogens > 0)
+            {
+                char buff[3];
+                ::sprintf(buff, "%d", hydrogens);
+                buffer += "[" + element.second + "H" + buff + "]";
+            }
+            else
+            {
+                buffer += "[" + element.second + "]";
+            }
         }
         else
         {
-            buffer += "[" + element.second + "]";
+            buffer = _organicElements[number];
         }
-    }
-    else
-    {
-        buffer = _organicElements[number];
-    }
 
-    sn.str = buffer;
+        sn.str = buffer;
+    }
 }
 
 /*
