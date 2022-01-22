@@ -1473,13 +1473,18 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base,
         }
     }
 
-    if (base->cycle && root.nodes.size())
+    if (base->cycle)
     {
-        SmilesNode& first = root.nodes.front();
-        first.str += "1";
+        if (root.nodes.size())
+        {
+            SmilesNode& first = root.nodes.front();
+            first.str += "1";
 
-        SmilesNode& last = root.nodes.back();
-        last.str += "1";
+            SmilesNode& last = root.nodes.back();
+            last.str += "1";
+        }
+        else
+            throw Exception("Error at _processBaseNode. Bad structure name.");
     }
 
     if (base->bondType != BOND_SINGLE)
@@ -1550,6 +1555,8 @@ void MoleculeNameParser::SmilesBuilder::_calcHydrogens(const Element& element, i
 
         sn.str = buffer;
     }
+    else
+        throw Exception("Error at calcHydrogen. Bad structure name.");
 }
 
 /*
