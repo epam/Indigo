@@ -991,8 +991,13 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
 
+    case QueryMolecule::ATOM_PSEUDO: {
+        _output.printf("*", atom->alias.ptr());
+        break;
+    }
+
     default: {
-        throw Error("incompatible cis-trans configuration");
+        throw Error("Unknown atom attribute");
         break;
     }
     }
