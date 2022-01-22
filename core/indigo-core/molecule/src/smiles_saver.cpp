@@ -952,7 +952,7 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         int hydro = atom->value_min;
         if (hydro == 1)
             _output.printf("H");
-        else 
+        else
             _output.printf("H%d", hydro);
         break;
     }
