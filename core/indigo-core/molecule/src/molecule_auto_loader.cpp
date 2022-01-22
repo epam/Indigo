@@ -460,9 +460,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         }
         catch (Exception& e)
         {
-            if (err_buf.size())
-                err_buf.appendString("\n", true);
-            err_buf.appendString(e.message(), true);
         }
 
         if (err_buf.size() > 0)
