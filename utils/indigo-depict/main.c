@@ -386,6 +386,7 @@ int parseParams(Params* p, int argc, char* argv[])
     indigoSetOptionBool("treat-x-as-pseudoatom", 1);
     indigoSetOptionBool("render-coloring", 1);
     indigoSetOptionBool("render-highlight-color-enabled", 1);
+    indigoSetOption("render-superatom-mode", "expand");
 
     for (; i < argc; i++)
     {
