@@ -12,8 +12,8 @@ indigo = Indigo()
 
 
 def testSmarts(m):
-        print(m.smarts())
-        print(m.smiles())
+    print(m.smarts())
+    print(m.smiles())
 
 
 molstr = """
