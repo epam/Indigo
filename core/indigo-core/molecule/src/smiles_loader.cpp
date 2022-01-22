@@ -1784,10 +1784,10 @@ void SmilesLoader::_setRadicalsAndHCounts()
         // if the number of attached hydrogens conforms to the lowest normal
         // valence consistent with explicit bonds. We assume that there are
         // no radicals in that case.
-        // if (!_atoms[i].brackets )
-        // We set zero radicals explicitly to properly detect errors like FClF
-        // (while F[Cl]F is correct)
-        _mol->setAtomRadical(idx, 0);
+        if (!_atoms[i].brackets)
+            // We set zero radicals explicitly to properly detect errors like FClF
+            // (while F[Cl]F is correct)
+            _mol->setAtomRadical(idx, 0);
 
         if (_atoms[i].hydrogens >= 0)
             _mol->setImplicitH(idx, _atoms[i].hydrogens);
