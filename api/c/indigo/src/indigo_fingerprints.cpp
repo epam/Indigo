@@ -267,7 +267,7 @@ static float _indigoSimilarity(Array<byte>& arr1, Array<byte>& arr2, const char*
     return _indigoSimilarity2(arr1.ptr(), arr2.ptr(), size, metrics);
 }
 
-static void _collectAtomFeatures(BaseMolecule& m, RedBlackStringMap<int>& counters, bool with_degrees)
+static void _collectAtomFeatures(BaseMolecule& m, std::unordered_map<std::string, int>& counters, bool with_degrees)
 {
     QS_DEF(Array<char>, symbol);
     for (int i = m.vertexBegin(); i != m.vertexEnd(); i = m.vertexNext(i))
@@ -288,15 +288,14 @@ static void _collectAtomFeatures(BaseMolecule& m, RedBlackStringMap<int>& counte
         char key[100];
         snprintf(key, NELEM(key), "e:%s i:%d c:%d r:%d d:%d", symbol.ptr(), iso, charge, radical, degree);
 
-        int* ptr = counters.at2(key);
-        if (ptr)
-            (*ptr)++;
+        if (counters.find(key) != counters.end())
+            counters.at(key)++;
         else
-            counters.insert(key, 1);
+            counters.insert({key, 1});
     }
 }
 
-static void _collectBondFeatures(BaseMolecule& m, RedBlackStringMap<int>& counters, bool with_degrees)
+static void _collectBondFeatures(BaseMolecule& m, std::unordered_map<std::string, int>& counters, bool with_degrees)
 {
     QS_DEF(Array<char>, symbol);
     for (int i = m.edgeBegin(); i != m.edgeEnd(); i = m.edgeNext(i))
@@ -330,32 +329,30 @@ static void _collectBondFeatures(BaseMolecule& m, RedBlackStringMap<int>& counte
         char key[100];
         snprintf(key, NELEM(key), "o:%d s:%s d:%d %d", m.getBondOrder(i), stereo, std::min(d1, d2), std::max(d1, d2));
 
-        int* ptr = counters.at2(key);
-        if (ptr)
-            (*ptr)++;
+        if (counters.find(key) != counters.end())
+            counters.at(key)++;
         else
-            counters.insert(key, 1);
+            counters.insert({key, 1});
     }
 }
 
-static void _getCountersDifference(RedBlackStringMap<int>& c1, RedBlackStringMap<int>& c2, int& common, int& diff1, int& diff2)
+static void _getCountersDifference(std::unordered_map<std::string, int>& c1, std::unordered_map<std::string, int>& c2, int& common, int& diff1, int& diff2)
 {
     common = 0;
     diff1 = 0;
     diff2 = 0;
 
     int* diff[2] = {&diff1, &diff2};
-    RedBlackStringMap<int>* cnt[2] = {&c1, &c2};
+    std::unordered_map<std::string, int>* cnt[2] = {&c1, &c2};
     for (int i = 0; i < 2; i++)
     {
-        RedBlackStringMap<int>&a = *cnt[i], &b = *cnt[1 - i];
+        std::unordered_map<std::string, int>& a = *cnt[i];
+        std::unordered_map<std::string, int>& b = *cnt[1 - i];
 
-        for (int node = a.begin(); node != a.end(); node = a.next(node))
+        for (auto node : a)
         {
-            const char* key = a.key(node);
-            int val1 = a.value(node);
-            int* val2_ptr = b.at2(key);
-            int val2 = val2_ptr ? *val2_ptr : 0;
+            int val1 = node.second;
+            int val2 = b.find(node.first) != b.end() ? b.at(node.first) : 0;
 
             int c = std::min(val1, val2);
             common += c;
@@ -369,10 +366,10 @@ static void _getCountersDifference(RedBlackStringMap<int>& c1, RedBlackStringMap
 
 static float _indigoSimilarityNormalizedEdit(BaseMolecule& mol1, BaseMolecule& mol2)
 {
-    QS_DEF(RedBlackStringMap<int>, c1);
-    QS_DEF(RedBlackStringMap<int>, c2);
-    QS_DEF(RedBlackStringMap<int>, c1b);
-    QS_DEF(RedBlackStringMap<int>, c2b);
+    std::unordered_map<std::string, int> c1;
+    std::unordered_map<std::string, int> c2;
+    std::unordered_map<std::string, int> c1b;
+    std::unordered_map<std::string, int> c2b;
 
     for (int iter = 0; iter < 2; iter++)
     {
