@@ -44,7 +44,7 @@ private:
     };
 
 public:
-    typedef std::unordered_map<std::string, Array<int>> MatchRGroupsMap;
+    typedef std::map<std::string, Array<int>> MatchRGroupsMap;
 
     IndigoDeconvolution();
     ~IndigoDeconvolution() override
@@ -109,7 +109,7 @@ public:
         bool _foundOrder(ObjArray<Array<int>>& rsite_orders, Array<int>& swap_order);
         void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx);
         void _refineAutoMaps(ObjList<Array<int>>& auto_maps, Graph& sub, Graph& super, Array<int>& scaf_map);
-        void _addAllRsites(QueryMolecule&, IndigoDecompositionMatch&, std::unordered_map<int, int>&);
+        void _addAllRsites(QueryMolecule&, IndigoDecompositionMatch&, std::map<int, int>&);
 
         static bool _cbAutoCheckAutomorphism(Graph& graph, const Array<int>& mapping, const void* context);
         ObjList<Array<int>> _autoMaps;
@@ -133,8 +133,7 @@ private:
     static void _addBond(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
     static void _removeAtom(Graph& subgraph, int sub_idx, void* userdata);
     void _makeInvertMap(Array<int>& map, Array<int>& invmap);
-    int _createRgMap(IndigoDecompositionMatch& deco_match, int aut_idx, MatchRGroupsMap& match_rgroups, Array<int>* rg_map_buf,
-                     bool change_scaffold);
+    int _createRgMap(IndigoDecompositionMatch& deco_match, int aut_idx, MatchRGroupsMap& match_rgroups, Array<int>* rg_map_buf, bool change_scaffold);
     int _getRgScore(Array<int>& rg_map) const;
 
     QueryMolecule _scaffold;

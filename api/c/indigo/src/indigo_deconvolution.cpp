@@ -369,8 +369,8 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
     QS_DEF(Array<int>, inv_scaf_map);
     QS_DEF(Array<int>, rg_mapping);
     QS_DEF(Array<int>, rgidx_map);
-    std::unordered_map<int, int> att_ord_map;
-    std::unordered_map<int, int> att_bond_map;
+    std::map<int, int> att_ord_map;
+    std::map<int, int> att_bond_map;
     int att_order, att_idx;
 
     Array<int>& visited_atoms = deco_match.visitedAtoms;
@@ -874,7 +874,7 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match
     /*
      * A set to keep attachment orders
      */
-    QS_DEF(std::unordered_set<int>, str_keys);
+    QS_DEF(std::set<int>, str_keys);
     /*
      * A string to keep attachemnt orders strings
      */
@@ -1094,8 +1094,7 @@ void IndigoDeconvolution::_makeInvertMap(Array<int>& map, Array<int>& invmap)
 }
 
 int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int aut_idx, IndigoDeconvolution::MatchRGroupsMap& match_rgroups_in,
-                                      Array<int>* rg_map,
-                                      bool change_scaffold)
+                                      Array<int>* rg_map, bool change_scaffold)
 {
     /*
      * Copy match RGroups map each time
@@ -1112,7 +1111,7 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
     /*
      * A set to keep attachment orders
      */
-    QS_DEF(std::unordered_set<int>, str_keys);
+    QS_DEF(std::set<int>, str_keys);
     /*
      * A string to keep attachemnt orders strings
      */
@@ -1252,7 +1251,7 @@ bool IndigoDeconvolution::DecompositionEnumerator::shouldContinue(int* map, int 
     if (contexts.size() == 0)
         return false;
 
-    std::unordered_set<int> map_set;
+    std::set<int> map_set;
     for (int i = 0; i < size; ++i)
     {
         if (map[i] >= 0)
@@ -1296,8 +1295,8 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
      */
     QueryMolecule r_molecule;
     ObjArray<Array<int>> rsite_orders;
-    std::unordered_map<int, int> r_sites;
-    QS_DEF(std::unordered_set<int>, processed_r);
+    std::map<int, int> r_sites;
+    QS_DEF(std::set<int>, processed_r);
     QS_DEF(Array<int>, swap_order);
     Array<int>& direct_order = rsite_orders.push();
 
@@ -1517,7 +1516,7 @@ void IndigoDeconvolution::DecompositionEnumerator::_refineAutoMaps(ObjList<Array
 }
 
 void IndigoDeconvolution::DecompositionEnumerator::_addAllRsites(QueryMolecule& r_molecule, IndigoDecompositionMatch& deco_match,
-                                                                 std::unordered_map<int, int>& r_sites)
+                                                                 std::map<int, int>& r_sites)
 {
 
     r_sites.clear();
