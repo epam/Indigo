@@ -20,7 +20,6 @@
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/obj_list.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "graph/automorphism_search.h"
 #include "indigo_array.h"
@@ -870,7 +869,7 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match
     /*
      * Search for existing rgroups
      */
-    QS_DEF(IndigoDeconvolution::InternalMap, match_rgroups);
+    QS_DEF(IndigoDeconvolution::MatchRGroupsMap, match_rgroups);
     match_rgroups.clear();
     /*
      * A set to keep attachment orders
@@ -1094,13 +1093,14 @@ void IndigoDeconvolution::_makeInvertMap(Array<int>& map, Array<int>& invmap)
     }
 }
 
-int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int aut_idx, IndigoDeconvolution::InternalMap& match_rgroups_in, Array<int>* rg_map,
+int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int aut_idx, IndigoDeconvolution::MatchRGroupsMap& match_rgroups_in,
+                                      Array<int>* rg_map,
                                       bool change_scaffold)
 {
     /*
      * Copy match RGroups map each time
      */
-    QS_DEF(IndigoDeconvolution::InternalMap, match_rgroups);
+    QS_DEF(IndigoDeconvolution::MatchRGroupsMap, match_rgroups);
     match_rgroups.clear();
     for (auto& kvp : match_rgroups_in)
     {
@@ -1267,7 +1267,7 @@ bool IndigoDeconvolution::DecompositionEnumerator::shouldContinue(int* map, int 
         int i = 0;
         for (; i < scaf_atoms.size(); ++i)
         {
-            if (map_set.find(scaf_atoms[i]) != map_set.end())
+            if (map_set.find(scaf_atoms[i]) == map_set.end())
                 break;
         }
         if (i == scaf_atoms.size())

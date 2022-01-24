@@ -57,7 +57,7 @@ void IndigoRenderer::init()
 }
 
 #define CHECKRGB(r, g, b)                                                                                                                                      \
-    if (std::min({r, g, b}) < 0 || std::min({r, g, b}) > 1.0 + 1e-6)                                                                                                   \
+    if (std::min({r, g, b}) < 0 || std::min({r, g, b}) > 1.0 + 1e-6)                                                                                           \
     throw IndigoError("Some of the color components are out of range [0..1]")
 
 IndigoRenderer::IndigoRenderer()
