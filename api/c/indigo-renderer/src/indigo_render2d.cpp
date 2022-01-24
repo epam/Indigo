@@ -56,14 +56,9 @@ void IndigoRenderer::init()
     renderParams.clear();
 }
 
-#define __min3(a, b, c) (std::min(a, std::min(b, c)))
-#define __max3(a, b, c) (std::max(a, std::max(b, c)))
-
 #define CHECKRGB(r, g, b)                                                                                                                                      \
-    if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6)                                                                                                   \
+    if (std::min({r, g, b}) < 0 || std::min({r, g, b}) > 1.0 + 1e-6)                                                                                                   \
     throw IndigoError("Some of the color components are out of range [0..1]")
-
-typedef RedBlackStringMap<int, false> StringIntMap;
 
 IndigoRenderer::IndigoRenderer()
 {
