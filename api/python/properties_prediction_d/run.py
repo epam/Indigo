@@ -1,5 +1,5 @@
 import torch
-from config import NUM_EPOCH, MPNN_params, LEARNING_RATE
+from config import LEARNING_RATE, NUM_EPOCH, MPNN_params
 from datasets import MolDataset, load_data
 from eval import evaluate
 from models import MPNNRegressor
