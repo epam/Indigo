@@ -1,5 +1,5 @@
-import torch
-from sklearn.metrics import mean_absolute_error, r2_score
+import torch  # type: ignore
+from sklearn.metrics import mean_absolute_error, r2_score  # type: ignore
 
 
 def evaluate(model, loader):

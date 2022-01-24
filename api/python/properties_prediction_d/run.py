@@ -1,9 +1,9 @@
-import torch
+import torch  # type: ignore
 from config import LEARNING_RATE, NUM_EPOCH, MPNN_params
 from datasets import MolDataset, load_data
 from eval import evaluate
 from models import MPNNRegressor
-from tqdm import trange
+from tqdm import trange  # type: ignore
 
 dataset = MolDataset()
 train_loader, val_loader, test_loader = load_data(dataset)

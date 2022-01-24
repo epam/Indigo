@@ -1,10 +1,10 @@
 import config
-import pandas as pd
-from dgl.data import DGLDataset
-from dgl.data.utils import split_dataset
-from dgl.dataloading import GraphDataLoader
+import pandas as pd  # type: ignore
+from dgl.data import DGLDataset  # type: ignore
+from dgl.data.utils import split_dataset  # type: ignore
+from dgl.dataloading import GraphDataLoader  # type: ignore
 from mol_to_graph import smiles_to_graph
-from torch import FloatTensor
+from torch import FloatTensor  # type: ignore
 
 
 class MolDataset(DGLDataset):

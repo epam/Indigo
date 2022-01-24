@@ -1,8 +1,8 @@
-import dgl
-import torch
-import torch.nn.functional as F
+import dgl  # type: ignore
+import torch  # type: ignore
+import torch.nn.functional as F  # type: ignore
 
-from indigo import Indigo
+from indigo import Indigo  # type: ignore
 
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
