@@ -432,13 +432,13 @@ private:
     catch (indigo::Exception & e)                                                                                                                              \
     {                                                                                                                                                          \
         pg_raise_error = true;                                                                                                                                 \
-        errstart(ERROR, TEXTDOMAIN);                                                                                                 \
+        errstart(ERROR, TEXTDOMAIN);                                                                                                                           \
         pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
     }                                                                                                                                                          \
     catch (...)                                                                                                                                                \
     {                                                                                                                                                          \
         pg_raise_error = true;                                                                                                                                 \
-        errstart(ERROR, TEXTDOMAIN);                                                                                                 \
+        errstart(ERROR, TEXTDOMAIN);                                                                                                                           \
         pg_err_mess = errmsg("bingo unknown error");                                                                                                           \
     }                                                                                                                                                          \
     if (pg_raise_error)                                                                                                                                        \
@@ -472,13 +472,13 @@ private:
     catch (indigo::Exception & e)                                                                                                                              \
     {                                                                                                                                                          \
         pg_raise_error = true;                                                                                                                                 \
-        errstart(ERROR, TEXTDOMAIN);                                                                                                 \
+        errstart(ERROR, TEXTDOMAIN);                                                                                                                           \
         pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
     }                                                                                                                                                          \
     catch (...)                                                                                                                                                \
     {                                                                                                                                                          \
         pg_raise_error = true;                                                                                                                                 \
-        errstart(ERROR, TEXTDOMAIN);                                                                                                 \
+        errstart(ERROR, TEXTDOMAIN);                                                                                                                           \
         pg_err_mess = errmsg("bingo unknown error");                                                                                                           \
     }                                                                                                                                                          \
     if (pg_raise_error)                                                                                                                                        \
