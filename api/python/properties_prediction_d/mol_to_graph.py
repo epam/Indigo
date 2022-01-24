@@ -2,7 +2,7 @@ import dgl
 import torch
 import torch.nn.functional as F
 
-from indigo import *
+from indigo import Indigo
 
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
