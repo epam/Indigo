@@ -80,7 +80,7 @@ IMPL_ERROR(RenderParamInterface, "render param interface");
 
 bool RenderParamInterface::needsLayoutSub(BaseMolecule& mol)
 {
-    QS_DEF(RedBlackSet<int>, atomsToIgnore);
+    QS_DEF(std::unordered_set<int>, atomsToIgnore);
     atomsToIgnore.clear();
     for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
@@ -90,19 +90,19 @@ bool RenderParamInterface::needsLayoutSub(BaseMolecule& mol)
             const Array<int>& atoms = sg.atoms;
             const Array<int>& patoms = ((MultipleGroup&)sg).parent_atoms;
             for (int j = 0; j < atoms.size(); ++j)
-                atomsToIgnore.find_or_insert(atoms[j]);
+                atomsToIgnore.insert(atoms[j]);
             for (int j = 0; j < patoms.size(); ++j)
-                if (atomsToIgnore.find(patoms[j]))
-                    atomsToIgnore.remove(patoms[j]);
+                if (atomsToIgnore.find(patoms[j]) != atomsToIgnore.end())
+                    atomsToIgnore.erase(patoms[j]);
         }
     }
     for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
     {
-        if (atomsToIgnore.find(i))
+        if (atomsToIgnore.find(i) != atomsToIgnore.end())
             continue;
         for (int j = mol.vertexNext(i); j < mol.vertexEnd(); j = mol.vertexNext(j))
         {
-            if (atomsToIgnore.find(j))
+            if (atomsToIgnore.find(j) != atomsToIgnore.end())
                 continue;
             const Vec3f& v = mol.getAtomXyz(i);
             const Vec3f& w = mol.getAtomXyz(j);

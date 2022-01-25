@@ -895,7 +895,7 @@ void MoleculeRenderInternal::_prepareSGroups()
                     said = amol.addAtom(ELEM_PSEUDO);
                     amol.setPseudoAtom(said, group.subscript.ptr());
                 }
-                QS_DEF(RedBlackSet<int>, groupAtoms);
+                QS_DEF(std::unordered_set<int>, groupAtoms);
                 groupAtoms.clear();
                 for (int j = 0; j < group.atoms.size(); ++j)
                 {
@@ -911,7 +911,7 @@ void MoleculeRenderInternal::_prepareSGroups()
                     for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
                     {
                         int naid = v.neiVertex(j);
-                        if (!groupAtoms.find(naid))
+                        if (groupAtoms.find(naid) == groupAtoms.end())
                         {
                             pos.add(mol.getAtomXyz(aid));
                             posCounted = true;
@@ -1208,7 +1208,7 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
 
 void MoleculeRenderInternal::_findRings()
 {
-    QS_DEF(RedBlackSet<int>, mask);
+    QS_DEF(std::unordered_set<int>, mask);
     for (int i = 0; i < _data.bondends.size(); ++i)
     {
         BondEnd& be = _be(i);
@@ -1227,7 +1227,7 @@ void MoleculeRenderInternal::_findRings()
             if (c > _data.bondends.size() || j < 0 || _be(j).lRing != -1)
                 break;
             int aid = _be(j).aid;
-            if (mask.find(aid))
+            if (mask.find(aid) != mask.end())
             {
                 while (ring.bondEnds.size() > 1 && _be(ring.bondEnds.top()).aid != aid)
                 {
@@ -1486,15 +1486,19 @@ bool MoleculeRenderInternal::_hasQueryModifiers(int aid)
 void MoleculeRenderInternal::_findNearbyAtoms()
 {
     float maxDistance = _settings.neighboringAtomDistanceTresholdA * 2;
-    RedBlackObjMap<int, RedBlackObjMap<int, Array<int>>> buckets;
+    std::unordered_map<int, std::unordered_map<int, Array<int>>> buckets;
 
     for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
     {
         const Vec2f& v = _ad(i).pos;
         int xBucket = (int)(v.x / maxDistance);
         int yBucket = (int)(v.y / maxDistance);
-        RedBlackObjMap<int, Array<int>>& bucketRow = buckets.findOrInsert(yBucket);
-        Array<int>& bucket = bucketRow.findOrInsert(xBucket);
+        if (buckets.find(yBucket) == buckets.end())
+            buckets[yBucket];
+        std::unordered_map<int, Array<int>>& bucketRow = buckets.at(yBucket);
+        if (bucketRow.find(xBucket) == bucketRow.end())
+            bucketRow[xBucket];
+        Array<int>& bucket = bucketRow.at(xBucket);
         bucket.push(i);
     }
 
@@ -1509,10 +1513,10 @@ void MoleculeRenderInternal::_findNearbyAtoms()
             {
                 int x = xBucket + j - 1;
                 int y = yBucket + k - 1;
-                if (!buckets.find(y))
+                if (buckets.find(y) == buckets.end())
                     continue;
-                RedBlackObjMap<int, Array<int>>& bucketRow = buckets.at(y);
-                if (!bucketRow.find(x))
+                std::unordered_map<int, Array<int>>& bucketRow = buckets.at(y);
+                if (bucketRow.find(x) == bucketRow.end())
                     continue;
                 const Array<int>& bucket = bucketRow.at(x);
                 for (int r = 0; r < bucket.size(); ++r)
