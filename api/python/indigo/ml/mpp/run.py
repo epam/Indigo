@@ -1,9 +1,9 @@
 import click
 import config as config
 import torch  # type: ignore
-from mpp.datasets import MolDataset, load_data
-from mpp.eval import evaluate
-from mpp.models import MPNNRegressor
+from datasets import MolDataset, load_data
+from eval import evaluate
+from models import MPNNRegressor
 from tqdm import trange  # type: ignore
 
 
