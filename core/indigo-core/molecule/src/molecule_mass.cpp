@@ -29,7 +29,7 @@ IMPL_ERROR(MoleculeMass, "mass");
 
 MoleculeMass::MoleculeMass()
 {
-    relative_atomic_mass_map = NULL;
+    relative_atomic_mass_map = nullptr;
 }
 
 double MoleculeMass::molecularWeight(Molecule& mol)
@@ -70,19 +70,13 @@ double MoleculeMass::molecularWeight(Molecule& mol)
 
         if (isotope == 0)
         {
-            double* value = 0;
-            if (relative_atomic_mass_map != NULL)
+            if (relative_atomic_mass_map != nullptr && relative_atomic_mass_map->find(number) != relative_atomic_mass_map->end())
             {
-                value = relative_atomic_mass_map->at2(number);
-            }
-
-            if (value == 0)
-            {
-                elements_count[number]++;
+                molmass += relative_atomic_mass_map->at(number);
             }
             else
             {
-                molmass += *value;
+                elements_count[number]++;
             }
         }
         else
@@ -364,15 +358,9 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str)
         }
         else
         {
-            double* value = 0;
-            if (relative_atomic_mass_map != NULL)
+            if (relative_atomic_mass_map != nullptr && relative_atomic_mass_map->find(number) != relative_atomic_mass_map->end())
             {
-                value = relative_atomic_mass_map->at2(number);
-            }
-
-            if (value)
-            {
-                relativeMass[number] += *value;
+                relativeMass[number] += relative_atomic_mass_map->at(number);
             }
             else
             {
