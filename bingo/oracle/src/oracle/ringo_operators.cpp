@@ -35,6 +35,8 @@
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_loader.h"
 
+using namespace indigo;
+
 static OCINumber* _ringoSub(OracleEnv& env, RingoOracleContext& context, const Array<char>& query_buf, const Array<char>& target_buf, const char* params)
 {
     context.substructure.loadQuery(query_buf);

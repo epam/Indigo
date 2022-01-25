@@ -31,6 +31,8 @@
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_mass.h"
 
+using namespace indigo;
+
 const int MangoIndex::counted_elements[6] = {ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_H};
 
 void MangoIndex::prepare(Scanner& molfile, Output& output, std::mutex* lock_for_exclusive_access)

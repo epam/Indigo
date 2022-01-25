@@ -23,31 +23,30 @@
 #include "lzw/lzw_decoder.h"
 #include "lzw/lzw_dictionary.h"
 
-using namespace indigo;
-
 namespace indigo
 {
     class Molecule;
     class Scanner;
+
+    class RowIDLoader
+    {
+    public:
+        DECL_ERROR;
+
+        RowIDLoader(LzwDict& NewDict, Scanner& NewIn);
+
+        void loadRowID(Array<char>& RowId);
+
+    private:
+        int _getNextCode(void);
+
+        LzwDecoder _decoder;
+
+        // no implicit copy
+        RowIDLoader(const RowIDLoader&);
+    };
+
 } // namespace indigo
-
-class RowIDLoader
-{
-public:
-    DECL_ERROR;
-
-    RowIDLoader(LzwDict& NewDict, Scanner& NewIn);
-
-    void loadRowID(Array<char>& RowId);
-
-private:
-    int _getNextCode(void);
-
-    LzwDecoder _decoder;
-
-    // no implicit copy
-    RowIDLoader(const RowIDLoader&);
-};
 
 #endif /* __rowid_loader_h__ */
 

@@ -24,32 +24,30 @@
 #include "oracle/bingo_fingerprints.h"
 #include "oracle/mango_shadow_table.h"
 
-using namespace indigo;
-
 namespace indigo
 {
     class OracleEnv;
-}
 
-class BingoOracleContext;
+    class BingoOracleContext;
 
-class MangoOracleContext : public MangoContext
-{
-public:
-    explicit MangoOracleContext(BingoContext& context);
-    ~MangoOracleContext() override;
+    class MangoOracleContext : public MangoContext
+    {
+    public:
+        explicit MangoOracleContext(BingoContext& context);
+        ~MangoOracleContext() override;
 
-    BingoOracleContext& context();
+        BingoOracleContext& context();
 
-    MangoShadowTable shadow_table;
-    BingoFingerprints fingerprints;
+        MangoShadowTable shadow_table;
+        BingoFingerprints fingerprints;
 
-    static MangoOracleContext& get(OracleEnv& env, int id, bool lock);
-};
+        static MangoOracleContext& get(OracleEnv& env, int id, bool lock);
+    };
+
+} // namespace indigo
 
 extern const char* bad_molecule_warning;
 extern const char* bad_molecule_warning_rowid;
-
 #define TRY_READ_TARGET_MOL                                                                                                                                    \
     try                                                                                                                                                        \
     {

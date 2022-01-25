@@ -41,6 +41,8 @@
 #include "oracle/rowid_saver.h"
 #include <memory>
 
+using namespace indigo;
+
 bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index, Array<char>& data,
                           std::mutex* lock_for_exclusive_access, std::string& failure_message)
 {
@@ -137,6 +139,7 @@ bool mangoPrepareAndRegisterMolecule(OracleEnv& env, const char* rowid, const Ar
         context.context().warnings.add(env, rowid, failure_message.c_str());
         return false;
     }
+    return false;
 }
 
 void mangoRegisterTable(OracleEnv& env, MangoOracleContext& context, const char* source_table, const char* source_column, const char* target_datatype)

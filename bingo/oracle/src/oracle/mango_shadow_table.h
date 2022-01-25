@@ -25,67 +25,70 @@
 #include "oracle/bingo_fetch_engine.h"
 #include "oracle/ora_wrap.h"
 
-using namespace indigo;
-
-class MangoIndex;
-
-class MangoShadowTable
+namespace indigo
 {
-public:
-    MangoShadowTable(int context_id);
-    virtual ~MangoShadowTable();
 
-    bool getXyz(OracleEnv& env, const char* rowid, Array<char>& xyz);
+    class MangoIndex;
 
-    void drop(OracleEnv& env);
-    void truncate(OracleEnv& env);
-    void create(OracleEnv& env);
-    void createIndices(OracleEnv& env);
-    void addMolecule(OracleEnv& env, const MangoIndex& index, const char* rowid, int blockno, int offset, bool append);
-    bool getMoleculeLocation(OracleEnv& env, const char* rowid, int& blockno, int& offset);
-    void deleteMolecule(OracleEnv& env, const char* rowid);
-    void addMolecule(OracleEnv& env, const char* rowid, int blockno, int offset, const char* data_cmf, int len_cmf, const char* data_xyz, int len_xyz,
-                     const MangoExact::Hash& hash, const char* gross, const Array<int>& counters, float molecular_mass, const char* fp_ord, bool append);
-    void flush(OracleEnv& env);
+    class MangoShadowTable
+    {
+    public:
+        MangoShadowTable(int context_id);
+        virtual ~MangoShadowTable();
 
-    void analyze(OracleEnv& env);
+        bool getXyz(OracleEnv& env, const char* rowid, Array<char>& xyz);
 
-    const char* getName();
-    const char* getComponentsName();
+        void drop(OracleEnv& env);
+        void truncate(OracleEnv& env);
+        void create(OracleEnv& env);
+        void createIndices(OracleEnv& env);
+        void addMolecule(OracleEnv& env, const MangoIndex& index, const char* rowid, int blockno, int offset, bool append);
+        bool getMoleculeLocation(OracleEnv& env, const char* rowid, int& blockno, int& offset);
+        void deleteMolecule(OracleEnv& env, const char* rowid);
+        void addMolecule(OracleEnv& env, const char* rowid, int blockno, int offset, const char* data_cmf, int len_cmf, const char* data_xyz, int len_xyz,
+                         const MangoExact::Hash& hash, const char* gross, const Array<int>& counters, float molecular_mass, const char* fp_ord, bool append);
+        void flush(OracleEnv& env);
 
-    DECL_ERROR;
+        void analyze(OracleEnv& env);
 
-protected:
-    Array<char> _table_name, _components_table_name;
+        const char* getName();
+        const char* getComponentsName();
 
-    void _flushMain(OracleEnv& env);
-    void _flushComponents(OracleEnv& env);
+        DECL_ERROR;
 
-    Obj<OracleStatement> _main_table_statement;
-    Obj<OracleStatement> _components_table_statement;
+    protected:
+        Array<char> _table_name, _components_table_name;
 
-    int _main_table_statement_count;
-    int _components_table_statement_count;
+        void _flushMain(OracleEnv& env);
+        void _flushComponents(OracleEnv& env);
 
-    Array<char[19]> _pending_rid;
-    Array<int> _pending_blockno;
-    Array<int> _pending_offset;
-    Array<char[512]> _pending_gross;
-    ObjArray<OracleRaw> _pending_cmf;
-    ObjArray<OracleRaw> _pending_xyz;
-    Array<float> _pending_mass;
-    Array<int> _pending_fragcount;
-    ObjArray<Array<int>> _pending_counters;
+        Obj<OracleStatement> _main_table_statement;
+        Obj<OracleStatement> _components_table_statement;
 
-    Array<char[19]> _pending_comp_rid;
-    Array<char[9]> _pending_comp_hash;
-    Array<int> _pending_comp_count;
+        int _main_table_statement_count;
+        int _components_table_statement_count;
 
-    bool _commit_main;
-    bool _commit_comp;
+        Array<char[19]> _pending_rid;
+        Array<int> _pending_blockno;
+        Array<int> _pending_offset;
+        Array<char[512]> _pending_gross;
+        ObjArray<OracleRaw> _pending_cmf;
+        ObjArray<OracleRaw> _pending_xyz;
+        Array<float> _pending_mass;
+        Array<int> _pending_fragcount;
+        ObjArray<Array<int>> _pending_counters;
 
-private:
-    MangoShadowTable(MangoShadowTable&); // no implicit copy
-};
+        Array<char[19]> _pending_comp_rid;
+        Array<char[9]> _pending_comp_hash;
+        Array<int> _pending_comp_count;
+
+        bool _commit_main;
+        bool _commit_comp;
+
+    private:
+        MangoShadowTable(MangoShadowTable&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif

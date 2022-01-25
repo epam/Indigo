@@ -19,7 +19,6 @@
 
 class BingoPgText;
 class BingoPgIndex;
-class BingoPgConfig;
 
 class MangoPgFpData : public BingoPgFpData
 {
@@ -83,7 +82,7 @@ public:
     {
         MAX_HASH_ELEMENTS = 5
     };
-    MangoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name);
+    MangoPgSearchEngine(const char* rel_name);
     ~MangoPgSearchEngine() override;
 
     bool matchTarget(int section_idx, int structure_idx) override;
@@ -118,8 +117,6 @@ private:
     void _prepareSimSearch(PG_OBJECT scan_desc);
     void _getScanQueries(uintptr_t arg_datum, indigo::Array<char>& str1, indigo::Array<char>& str2);
     void _getScanQueries(uintptr_t arg_datum, float& min_bound, float& max_bound, indigo::Array<char>& str1, indigo::Array<char>& str2);
-
-    static void _errorHandler(const char* message, void* context);
 
     indigo::Array<char> _relName;
     indigo::Array<char> _shadowRelName;

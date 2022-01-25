@@ -36,6 +36,8 @@
 #include "reaction/rxnfile_saver.h"
 #include "ringo_oracle.h"
 
+using namespace indigo;
+
 static OCIString* _ringoRSMILES(OracleEnv& env, const Array<char>& target_buf, BingoOracleContext& context)
 {
     QS_DEF(Reaction, target);

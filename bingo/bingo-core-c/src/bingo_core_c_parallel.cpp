@@ -26,41 +26,54 @@
 #include "molecule/cmf_saver.h"
 #include "reaction/crf_saver.h"
 
+using namespace indigo;
 using namespace indigo::bingo_core;
+
+void BingoCore::bingoSetIndexRecordData(int id, const char* data, int data_size)
+{
+    self.index_record_data->copy(data, data_size);
+    self.index_record_data_id = id;
+}
 
 CEXPORT int bingoSetIndexRecordData(int id, const char* data, int data_size)
 {
     BINGO_BEGIN
     {
-        self.index_record_data->copy(data, data_size);
-        self.index_record_data_id = id;
+        self.bingoSetIndexRecordData(id, data, data_size);
     }
-    BINGO_END(0, -1);
+    BINGO_END(0, -1)
+}
+
+void BingoCore::bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
+                                  void (*process_error_cb)(int id, void* context), void* context)
+{
+    if (self.parallel_indexing_dispatcher.get() == 0)
+    {
+        if (is_reaction)
+        {
+            self.parallel_indexing_dispatcher = std::make_unique<RingoIndexingDispatcher>(self);
+        }
+        else
+        {
+            self.parallel_indexing_dispatcher = std::make_unique<MangoIndexingDispatcher>(self);
+        }
+    }
+
+    self.parallel_indexing_dispatcher->context = context;
+    self.parallel_indexing_dispatcher->get_next_record_cb = get_next_record_cb;
+    self.parallel_indexing_dispatcher->process_result_cb = process_result_cb;
+    self.parallel_indexing_dispatcher->process_error_cb = process_error_cb;
+    self.parallel_indexing_dispatcher->_finished = false;
+    self.parallel_indexing_dispatcher->run(self.bingo_context->nthreads);
+    //      self.parallel_indexing_dispatcher.reset(0);
 }
 
 // Method for index molecules
 CEXPORT int bingoIndexProcess(bool is_reaction, int (*get_next_record_cb)(void* context), void (*process_result_cb)(void* context),
-                              void (*process_error_cb)(int id, void* context), void* context)
-{
-    BINGO_BEGIN
-    {
-        if (self.parallel_indexing_dispatcher.get() == 0)
-        {
-            if (is_reaction)
-                self.parallel_indexing_dispatcher = std::make_unique<RingoIndexingDispatcher>(self);
-            else
-                self.parallel_indexing_dispatcher = std::make_unique<MangoIndexingDispatcher>(self);
-        }
-
-        self.parallel_indexing_dispatcher->context = context;
-        self.parallel_indexing_dispatcher->get_next_record_cb = get_next_record_cb;
-        self.parallel_indexing_dispatcher->process_result_cb = process_result_cb;
-        self.parallel_indexing_dispatcher->process_error_cb = process_error_cb;
-        self.parallel_indexing_dispatcher->_finished = false;
-        self.parallel_indexing_dispatcher->run(self.bingo_context->nthreads);
-        //      self.parallel_indexing_dispatcher.reset(0);
-    }
-    BINGO_END(0, -1);
+                              void (*process_error_cb)(int id, void* context),
+                              void* context){BINGO_BEGIN{self.bingoIndexProcess(is_reaction, get_next_record_cb, process_result_cb, process_error_cb, context);
+}
+BINGO_END(0, -1)
 }
 
 //

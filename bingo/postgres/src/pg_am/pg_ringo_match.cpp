@@ -36,7 +36,14 @@ public:
     _RingoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid), _type(type)
     {
         BingoPgCommon::getSearchTypeString(_type, _typeStr, false);
+        if (_typeStr.size() == 0)
+        {
+            _typeStr.readString("", true);
+        }
         setFunctionName(_typeStr.ptr());
+        _errorStr.readString("Error while bingo", true);
+        _errorStr.appendString(_typeStr.ptr(), true);
+        _errorStr.appendString(" loading a reaction", true);
     }
 
     ~_RingoContextHandler() override
@@ -57,20 +64,26 @@ public:
         /*
          * Set up match parameters
          */
-        int res = ringoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
-        if (res < 0)
-            throw BingoPgError("Error while bingo%s loading a reaction: %s", _typeStr.ptr(), bingoGetError());
+        try
+        {
+            bingoCore.ringoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
+        }
+        CORE_CATCH_ERROR(_errorStr.ptr())
 
         int target_size;
         const char* target_data = target_text.getText(target_size);
-
-        res = ringoMatchTarget(target_data, target_size);
+        int res;
+        try
+        {
+            res = bingoCore.ringoMatchTarget(target_data, target_size);
+        }
+        CORE_CATCH_ERROR("Unexpected error during match")
 
         if (res < 0)
         {
             QS_DEF(Array<char>, buffer_warn);
-            buffer_warn.readString(bingoGetWarning(), true);
-            const char* react_name = bingoGetNameCore(target_data, target_size);
+            buffer_warn.readString(bingoCore.warning.ptr(), true);
+            const char* react_name = bingoCore.bingoGetNameCore(target_data, target_size);
             if (react_name != 0 && strlen(react_name) > 0)
                 elog(WARNING, "warning while bingo%s loading a reaction with name='%s': %s", _typeStr.ptr(), react_name, buffer_warn.ptr());
             else
@@ -84,6 +97,7 @@ private:
     _RingoContextHandler(const _RingoContextHandler&); // no implicit copy
     int _type;
     indigo::Array<char> _typeStr;
+    indigo::Array<char> _errorStr;
 };
 
 Datum _rsub_internal(PG_FUNCTION_ARGS)

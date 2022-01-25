@@ -28,6 +28,8 @@
 #include "oracle/bingo_fingerprints.h"
 #include "oracle/ora_wrap.h"
 
+using namespace indigo;
+
 IMPL_ERROR(BingoFingerprints, "screening");
 
 CP_DEF(BingoFingerprints);

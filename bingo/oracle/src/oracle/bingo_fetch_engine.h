@@ -23,27 +23,30 @@
 #include "base_cpp/tlscont.h"
 #include "oracle/ora_wrap.h"
 
-using namespace indigo;
-
-class BingoFetchEngine
+namespace indigo
 {
-public:
-    explicit BingoFetchEngine();
 
-    virtual ~BingoFetchEngine()
+    class BingoFetchEngine
     {
-    }
+    public:
+        explicit BingoFetchEngine();
 
-    virtual float calcSelectivity(OracleEnv& env, int total_count) = 0;
-    virtual void fetch(OracleEnv& env, int maxrows) = 0;
-    virtual bool end() = 0;
-    virtual int getIOCost(OracleEnv& env, float selectivity) = 0;
+        virtual ~BingoFetchEngine()
+        {
+        }
 
-    // In case of exceptions this rowid corresponds to the structure that was tried to be matched last time
-    virtual bool getLastRowid(OraRowidText& id) = 0;
+        virtual float calcSelectivity(OracleEnv& env, int total_count) = 0;
+        virtual void fetch(OracleEnv& env, int maxrows) = 0;
+        virtual bool end() = 0;
+        virtual int getIOCost(OracleEnv& env, float selectivity) = 0;
 
-    CP_DECL;
-    TL_CP_DECL(List<OraRowidText>, matched);
-};
+        // In case of exceptions this rowid corresponds to the structure that was tried to be matched last time
+        virtual bool getLastRowid(OraRowidText& id) = 0;
+
+        CP_DECL;
+        TL_CP_DECL(List<OraRowidText>, matched);
+    };
+
+} // namespace indigo
 
 #endif

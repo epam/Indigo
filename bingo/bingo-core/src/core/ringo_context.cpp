@@ -19,6 +19,8 @@
 #include "ringo_context.h"
 #include "bingo_context.h"
 
+using namespace indigo;
+
 TL_DEF(RingoContext, PtrArray<RingoContext>, _instances);
 
 std::mutex RingoContext::_instances_lock;

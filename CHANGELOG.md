@@ -1,3 +1,11 @@
+# Indigo 1.7.0
+Released in bright future
+
+## Features
+## Improvements
+## Bugfixes
+
+
 # Indigo 1.6.1
 Released 2021-12-28
 

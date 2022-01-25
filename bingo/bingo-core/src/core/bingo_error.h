@@ -21,12 +21,15 @@
 
 #include "base_cpp/exception.h"
 
-using namespace indigo;
-
-class BingoError : public Exception
+namespace indigo
 {
-public:
-    explicit BingoError(const char* format, ...);
-};
+
+    class BingoError : public Exception
+    {
+    public:
+        explicit BingoError(const char* format, ...);
+    };
+
+} // namespace indigo
 
 #endif

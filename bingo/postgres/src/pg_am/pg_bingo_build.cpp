@@ -52,7 +52,10 @@ extern "C"
     CEXPORT IndexBuildResult* bingo_build(Relation, Relation, struct IndexInfo*);
     CEXPORT void bingo_buildempty(Relation);
 
-#if PG_VERSION_NUM / 100 >= 1200
+#if PG_VERSION_NUM / 100 >= 1400
+    CEXPORT bool bingo_insert(Relation, Datum*, bool*, ItemPointer, Relation, IndexUniqueCheck, bool indexUnchanged, struct IndexInfo*);
+    CEXPORT void bingo_costestimate120(struct PlannerInfo*, struct IndexPath*, double, Cost*, Cost*, Selectivity*, double*, double*);
+#elif PG_VERSION_NUM / 100 >= 1200
     CEXPORT bool bingo_insert(Relation, Datum*, bool*, ItemPointer, Relation, IndexUniqueCheck, struct IndexInfo*);
     CEXPORT void bingo_costestimate120(struct PlannerInfo*, struct IndexPath*, double, Cost*, Cost*, Selectivity*, double*, double*);
 #elif PG_VERSION_NUM / 100 >= 1000
@@ -139,7 +142,11 @@ Datum bingo_handler(PG_FUNCTION_ARGS)
 }
 #endif
 
+#if PG_VERSION_NUM / 100 > 1200
+static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state);
+#else
 static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state);
+#endif
 
 //#include <signal.h>
 // void error_handler(int i) {
@@ -232,7 +239,7 @@ Datum bingo_build(PG_FUNCTION_ARGS)
 /*
  * Bingo build callback. Accepts heap relation.
  */
-static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
+static void bingoIndexCallbackImpl(Relation index, PG_OBJECT item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
 {
     /*
      * Skip inserting null tuples
@@ -250,10 +257,22 @@ static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bo
      */
     PG_BINGO_BEGIN
     {
-        build_engine.insertStructure(&htup->t_self, values[0]);
+        build_engine.insertStructure(item_ptr, values[0]);
     }
     PG_BINGO_END
 }
+
+#if PG_VERSION_NUM / 100 > 1200
+static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
+{
+    bingoIndexCallbackImpl(index, item_ptr, values, isnull, tupleIsAlive, state);
+}
+#else
+static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
+{
+    bingoIndexCallbackImpl(index, &htup->t_self, values, isnull, tupleIsAlive, state);
+}
+#endif
 
 #if PG_VERSION_NUM / 100 >= 906
 CEXPORT void bingo_buildempty(Relation index)

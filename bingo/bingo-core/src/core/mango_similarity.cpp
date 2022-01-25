@@ -26,6 +26,8 @@
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_fingerprint.h"
 
+using namespace indigo;
+
 IMPL_ERROR(MangoSimilarity, "mango similarity");
 
 MangoSimilarity::MangoSimilarity(BingoContext& context) : _context(context)

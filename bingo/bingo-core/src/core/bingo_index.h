@@ -27,34 +27,38 @@
 
 #include "bingo_error.h"
 
-using namespace indigo;
-
-class BingoContext;
-
-class BingoIndex
+namespace indigo
 {
-public:
-    BingoIndex()
+
+    class BingoContext;
+
+    class BingoIndex
     {
-        _context = 0;
-        skip_calculate_fp = false;
-    }
-    virtual ~BingoIndex()
-    {
-    }
-    void init(BingoContext& context)
-    {
-        _context = &context;
+    public:
+        BingoIndex()
+        {
+            _context = 0;
+            skip_calculate_fp = false;
+        }
+        virtual ~BingoIndex()
+        {
+        }
+        void init(BingoContext& context)
+        {
+            _context = &context;
+        };
+
+        virtual void prepare(Scanner& scanner, Output& output, std::mutex* lock_for_exclusive_access) = 0;
+
+        bool skip_calculate_fp;
+
+    protected:
+        BingoContext* _context;
+
+    private:
+        BingoIndex(const BingoIndex&); // no implicit copy
     };
 
-    virtual void prepare(Scanner& scanner, Output& output, std::mutex* lock_for_exclusive_access) = 0;
+} // namespace indigo
 
-    bool skip_calculate_fp;
-
-protected:
-    BingoContext* _context;
-
-private:
-    BingoIndex(const BingoIndex&); // no implicit copy
-};
 #endif

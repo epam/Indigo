@@ -28,6 +28,8 @@
 #include "oracle/ringo_oracle.h"
 #include "reaction/rxnfile_loader.h"
 
+using namespace indigo;
+
 IMPL_ERROR(RingoShadowFetch, "ringo shadow fetch");
 
 RingoShadowFetch::RingoShadowFetch(RingoFetchContext& context) : _context(context)

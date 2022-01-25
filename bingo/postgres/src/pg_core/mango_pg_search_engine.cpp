@@ -10,9 +10,7 @@ extern "C"
 #include "utils/typcache.h"
 }
 
-#ifdef qsort
-#undef qsort
-#endif
+#include "bingo_pg_fix_post.h"
 
 #include "mango_pg_search_engine.h"
 
@@ -53,16 +51,8 @@ void MangoPgFpData::setGrossStr(const char* gross_str, const char* counter_str)
 
 IMPL_ERROR(MangoPgSearchEngine, "molecule search engine");
 
-MangoPgSearchEngine::MangoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name) : BingoPgSearchEngine(), _searchType(-1)
+MangoPgSearchEngine::MangoPgSearchEngine(const char* rel_name) : BingoPgSearchEngine(), _searchType(-1)
 {
-    _setBingoContext();
-    /*
-     * Set up bingo configuration
-     */
-    bingo_config.setUpBingoConfiguration();
-    bingoTautomerRulesReady(0, 0, 0);
-    bingoIndexBegin();
-
     _relName.readString(rel_name, true);
     _shadowRelName.readString(rel_name, true);
     _shadowRelName.appendString("_shadow", true);
@@ -72,14 +62,13 @@ MangoPgSearchEngine::MangoPgSearchEngine(BingoPgConfig& bingo_config, const char
 
 MangoPgSearchEngine::~MangoPgSearchEngine()
 {
-    _setBingoContext();
-    bingoIndexEnd();
+    bingoCore.bingoIndexEnd();
 }
 
 bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
 {
 
-    profTimerStart(t0, "mango_pg.match_target");
+    // profTimerStart(t0, "mango_pg.match_target");
 
     if (_searchType == BingoPgCommon::MOL_SIM || _searchType == BingoPgCommon::MOL_MASS)
     {
@@ -96,18 +85,25 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
     if (_searchType == BingoPgCommon::MOL_SUB || _searchType == BingoPgCommon::MOL_EXACT || _searchType == BingoPgCommon::MOL_SMARTS)
     {
         _bufferIndexPtr->readCmfItem(section_idx, structure_idx, mol_buf);
-        bingo_res = mangoNeedCoords();
-        CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while getting coordinates flag", bingoGetError());
+        try
+        {
+            bingo_res = bingoCore.mangoNeedCoords();
+        }
+        CORE_CATCH_ERROR("molecule search engine: error while getting coordinates flag")
 
         if (bingo_res > 0)
         {
             _bufferIndexPtr->readXyzItem(section_idx, structure_idx, xyz_buf);
         }
 
-        //      CORE_HANDLE_WARNING_TID(0, 1, "matching binary target", section_idx, structure_idx, " ");
-        bingo_res = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
-        CORE_HANDLE_ERROR_TID(bingo_res, -1, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetError());
-        CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetWarning());
+        try
+        {
+            bingo_res = bingoCore.mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
+        }
+        CORE_CATCH_ERROR_TID("molecule search engine: error while matching binary target", section_idx, structure_idx)
+
+        CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx,
+                                bingoCore.warning.ptr());
 
         result = (bingo_res > 0);
     }
@@ -119,9 +115,13 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
         int gross_len;
         gross_text.getText(gross_len);
 
-        bingo_res = mangoMatchTarget(gross_text.getString(), gross_len);
-        CORE_HANDLE_ERROR(bingo_res, -1, "molecule search engine: error while matching gross target", bingoGetError());
-        CORE_RETURN_WARNING(bingo_res, 0, "molecule search engine: error while matching gross target", bingoGetWarning());
+        try
+        {
+            bingo_res = bingoCore.mangoMatchTarget(gross_text.getString(), gross_len);
+        }
+        CORE_CATCH_ERROR("molecule search engine: error while matching gross target")
+
+        CORE_RETURN_WARNING(bingo_res, 0, "molecule search engine: error while matching gross target", bingoCore.warning.ptr());
 
         result = (bingo_res > 0);
     }
@@ -135,7 +135,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
 void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT scan_desc_ptr)
 {
 
-    profTimerStart(t0, "mango_pg.prepare_query_search");
+    // profTimerStart(t0, "mango_pg.prepare_query_search");
 
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
 
@@ -154,8 +154,6 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
         _searchType = BingoPgCommon::MOL_MASS;
 
     _queryFpData = std::make_unique<MangoPgFpData>();
-
-    _setBingoContext();
 
     BingoPgSearchEngine::prepareQuerySearch(bingo_idx, scan_desc);
 
@@ -189,7 +187,6 @@ bool MangoPgSearchEngine::searchNext(PG_OBJECT result_ptr)
 {
 
     bool result = false;
-    _setBingoContext();
     if (_searchType == BingoPgCommon::MOL_EXACT || _searchType == BingoPgCommon::MOL_GROSS || _searchType == BingoPgCommon::MOL_MASS)
     {
         result = _searchNextCursor(result_ptr);
@@ -206,11 +203,6 @@ bool MangoPgSearchEngine::searchNext(PG_OBJECT result_ptr)
     return result;
 }
 
-void MangoPgSearchEngine::_errorHandler(const char* message, void*)
-{
-    throw Error("Error while searching a molecule: %s", message);
-}
-
 void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_clause_str, indigo::Array<char>& from_clause_str,
                                                     indigo::Array<char>& where_clause_str)
 {
@@ -223,8 +215,11 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
 
     what_clause.printf("sh.b_id");
 
-    bingo_res = mangoGetHash(false, -1, &hash_elements_count, &hash);
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting hash", bingoGetError());
+    try
+    {
+        bingoCore.mangoGetHash(false, -1, &hash_elements_count, &hash);
+    }
+    CORE_CATCH_ERROR("molecule search engine: error while getting hash")
 
     if (hash_elements_count > MAX_HASH_ELEMENTS)
         hash_elements_count = MAX_HASH_ELEMENTS;
@@ -253,8 +248,11 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
          */
         for (int i = 0; i < hash_elements_count; i++)
         {
-            bingo_res = mangoGetHash(false, i, &count, &hash);
-            CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting hash", bingoGetError());
+            try
+            {
+                bingoCore.mangoGetHash(false, i, &count, &hash);
+            }
+            CORE_CATCH_ERROR("molecule search engine: error while getting hash");
 
             where_clause.printf("t%d.ex_hash = %d AND ", i, hash);
         }
@@ -263,8 +261,11 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
          * components count mast must target components count
          */
         Array<char> rel;
-        bingo_res = mangoExactNeedComponentMatching();
-        CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while getting need matching", bingoGetError());
+        try
+        {
+            bingo_res = bingoCore.mangoExactNeedComponentMatching();
+        }
+        CORE_CATCH_ERROR("molecule search engine: error while getting need matching")
 
         if (bingo_res > 0)
             rel.readString(">=", true);
@@ -275,14 +276,20 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
         {
             if (i != 0)
                 where_clause.printf("AND ");
-            bingo_res = mangoGetHash(false, i, &count, &hash);
-            CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting hash", bingoGetError());
+            try
+            {
+                bingoCore.mangoGetHash(false, i, &count, &hash);
+            }
+            CORE_CATCH_ERROR("molecule search engine: error while getting hash")
 
             where_clause.printf("t%d.f_count %s %d ", i, rel.ptr(), count);
         }
     }
-    bingo_res = mangoExactNeedComponentMatching();
-    CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while getting need matching", bingoGetError());
+    try
+    {
+        bingo_res = bingoCore.mangoExactNeedComponentMatching();
+    }
+    CORE_CATCH_ERROR("molecule search engine: error while getting need matching")
     if (bingo_res == 0)
     {
         if (where_was_added)
@@ -294,8 +301,11 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
         int query_fragments_count = 0;
         for (int i = 0; i < hash_elements_count; i++)
         {
-            bingo_res = mangoGetHash(false, i, &count, &hash);
-            CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting hash", bingoGetError());
+            try
+            {
+                bingoCore.mangoGetHash(false, i, &count, &hash);
+            }
+            CORE_CATCH_ERROR("molecule search engine: error while getting hash")
             query_fragments_count += count;
         }
         where_clause.printf("sh.fragments = %d", query_fragments_count);
@@ -314,12 +324,13 @@ void MangoPgSearchEngine::_prepareExactTauStrings(indigo::Array<char>& what_clau
 
     what_clause.printf("b_id");
     from_clause.printf("%s", _shadowRelName.ptr());
+    try
+    {
+        const char* query_gross = bingoCore.mangoTauGetQueryGross();
 
-    const char* query_gross = mangoTauGetQueryGross();
-    if (query_gross == 0)
-        CORE_HANDLE_ERROR(0, 1, "molecule search engine: error while constructing gross string", bingoGetError());
-
-    where_clause.printf("gross='%s' OR gross LIKE '%s H%%'", query_gross, query_gross);
+        where_clause.printf("gross='%s' OR gross LIKE '%s H%%'", query_gross, query_gross);
+    }
+    CORE_CATCH_ERROR("molecule search engine: error while constructing gross string")
 
     what_clause_str.push(0);
     from_clause_str.push(0);
@@ -340,7 +351,6 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
                            scan_desc->numberOfKeys);
     }
 
-    int bingo_res;
     BingoPgFpData& data = *_queryFpData;
 
     BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
@@ -354,14 +364,19 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sub search context", bingoGetError());
+    try
+    {
+        bingoCore.mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not set sub search context");
 
     const char* fingerprint_buf;
     int fp_len;
-
-    bingo_res = mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get sub query fingerprint", bingoGetError());
+    try
+    {
+        bingoCore.mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not get sub query fingerprint");
 
     int size_bits = fp_len * 8;
     data.setFingerPrints(fingerprint_buf, size_bits);
@@ -376,7 +391,6 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
     QS_DEF(Array<char>, search_type);
     Array<char> search_query;
     Array<char> search_options;
-    int bingo_res;
 
     if (scan_desc->numberOfKeys != 1)
     {
@@ -385,7 +399,7 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
                            scan_desc->numberOfKeys);
     }
 
-    profTimerStart(t0, "mango_pg.prepare_exact_search");
+    // profTimerStart(t0, "mango_pg.prepare_exact_search");
 
     BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
     _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
@@ -394,8 +408,11 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
      * Set up matching parameters
      */
     //   elog(WARNING, "processing query: %s", search_query.ptr());
-    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set exact search context", bingoGetError());
+    try
+    {
+        bingoCore.mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not set exact search context")
 
     if (strcasestr(search_options.ptr(), "TAU") != 0)
     {
@@ -405,10 +422,9 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
     {
         _prepareExactQueryStrings(what_clause, from_clause, where_clause);
     }
-    _searchCursor.reset(nullptr);
-    profTimerStart(t4, "mango_pg.exact_search_cursor");
+    // profTimerStart(t4, "mango_pg.exact_search_cursor");
     _searchCursor = std::make_unique<BingoPgCursor>("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
-    profTimerStop(t4);
+    // profTimerStop(t4);
     //   if(nanoHowManySeconds(profTimerGetTime(t4) )> 1)
     //      elog(WARNING, "select %s from %s where %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
 }
@@ -421,7 +437,6 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
     QS_DEF(Array<char>, search_type);
     Array<char> search_sigh;
     Array<char> search_mol;
-    int bingo_res;
 
     if (scan_desc->numberOfKeys != 1)
     {
@@ -441,13 +456,18 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = mangoSetupMatch(search_type.ptr(), gross_query.ptr(), 0);
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set gross search context", bingoGetError());
+    try
+    {
+        bingoCore.mangoSetupMatch(search_type.ptr(), gross_query.ptr(), 0);
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not set gross search context")
 
-    const char* gross_conditions = mangoGrossGetConditions();
-    if (gross_conditions == 0)
-        CORE_HANDLE_ERROR(0, 1, "molecule search engine: can not get gross conditions", bingoGetError());
-    _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions);
+    try
+    {
+        const char* gross_conditions = bingoCore.mangoGrossGetConditions();
+        _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions);
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not get gross conditions")
 }
 
 void MangoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)
@@ -502,7 +522,6 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr)
     QS_DEF(Array<char>, search_type);
     Array<char> search_query;
     Array<char> search_options;
-    int bingo_res;
     float min_bound = 0, max_bound = 1;
     BingoPgFpData& data = *_queryFpData;
 
@@ -523,20 +542,29 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sim search context", bingoGetError());
+    try
+    {
+        bingoCore.mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not set sim search context")
 
     if (min_bound > max_bound)
         throw Error("min bound %f can not be greater then max bound %f", min_bound, max_bound);
 
-    bingo_res = mangoSimilaritySetMinMaxBounds(min_bound, max_bound);
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get similarity min max bounds", bingoGetError());
+    try
+    {
+        bingoCore.mangoSimilaritySetMinMaxBounds(min_bound, max_bound);
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not get similarity min max bounds")
 
     const char* fingerprint_buf;
     int fp_len;
 
-    bingo_res = mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
-    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not get query fingerprint", bingoGetError());
+    try
+    {
+        bingoCore.mangoGetQueryFingerprint(&fingerprint_buf, &fp_len);
+    }
+    CORE_CATCH_ERROR("molecule search engine: can not get query fingerprint")
 
     int size_bits = fp_len * 8;
     data.setFingerPrints(fingerprint_buf, size_bits);
@@ -648,7 +676,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, float& min_bound,
 bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
 {
 
-    profTimerStart(t0, "mango_pg.search_sim");
+    // profTimerStart(t0, "mango_pg.search_sim");
     /*
      * If there are mathces found on the previous steps
      */
@@ -697,18 +725,19 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
             /*
              * Read structures bits count
              */
-            //         profTimerStart(t5, "mango_pg.get_section_bits");
+            // profTimerStart(t5, "mango_pg.get_section_bits");
             bingo_index.getSectionBitsCount(_currentSection, bits_count);
-            //         profTimerStop(t5);
+            // profTimerStop(t5);
             /*
              * Prepare min max bounds
              */
-            //         profTimerStart(t3, "mango_pg.get_min_max");
-            bingo_res = mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
-            //         profTimerStop(t3);
-
-            CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: error while getting similarity bounds array", bingoGetError());
-
+            // profTimerStart(t3, "mango_pg.get_min_max");
+            try
+            {
+                bingoCore.mangoSimilarityGetBitMinMaxBoundsArray(bits_count.size(), bits_count.ptr(), &min_bounds, &max_bounds);
+            }
+            CORE_CATCH_ERROR("molecule search engine: error while getting similarity bounds array")
+            // profTimerStop(t3);
             /*
              * Prepare common bits array
              */
@@ -725,19 +754,19 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
                 /*
                  * Copy passed structures on each iteration step
                  */
-                //            profTimerStart(t7, "mango_pg.copy");
+                // profTimerStart(t7, "mango_pg.copy");
                 screening_bitset.copy(_sectionBitset);
-                //            profTimerStop(t7);
+                // profTimerStop(t7);
 
                 /*
                  * Get commons in fingerprint buffer
                  */
 
-                //            profTimerStart(t2, "mango_pg.andwith");
+                // profTimerStart(t2, "mango_pg.andwith");
                 bingo_index.andWithBitset(_currentSection, fp_block, screening_bitset);
-                //            profTimerStop(t2);
+                // profTimerStop(t2);
 
-                //            profTimerStart(t4, "mango_pg.new_common_ones");
+                // profTimerStart(t4, "mango_pg.new_common_ones");
                 int screen_idx = screening_bitset.begin();
                 for (; screen_idx != screening_bitset.end() && possible_str_count > 0; screen_idx = screening_bitset.next(screen_idx))
                 {
@@ -755,14 +784,14 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
                         --possible_str_count;
                     }
                 }
-                //            profTimerStop(t4);
+                // profTimerStop(t4);
                 ++iteration_idx;
             }
 
             /*
              * Screen the last time for all the possible structures
              */
-            //         profTimerStart(t6, "mango_pg.lst_screen");
+            // profTimerStart(t6, "mango_pg.lst_screen");
             int screen_idx = _sectionBitset.begin();
             for (; screen_idx != _sectionBitset.end() && possible_str_count > 0; screen_idx = _sectionBitset.next(screen_idx))
             {
@@ -776,7 +805,7 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
                     --possible_str_count;
                 }
             }
-            //         profTimerStop(t6);
+            // profTimerStop(t6);
         }
         /*
          * Return false on empty fingerprint
@@ -794,7 +823,7 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr)
              */
             if (_fetchForNext())
             {
-                profTimerStop(t0);
+                // profTimerStop(t0);
                 setItemPointer(result_ptr);
                 /*
                  * Set fetch found to return on the next steps
