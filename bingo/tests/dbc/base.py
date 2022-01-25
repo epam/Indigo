@@ -204,7 +204,7 @@ class SQLAdapter(DBAdapter):
         rows = None
 
         try:
-            result = self._connect.execute(query)
+            result = self._connect.execute(text(query))
             if not result.closed:
                 rows = result.fetchall()
         except (DatabaseError, InternalError, psycopg2.InternalError,

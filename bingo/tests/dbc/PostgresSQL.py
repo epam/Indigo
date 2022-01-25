@@ -111,7 +111,7 @@ class Postgres(SQLAdapter):
         return self.query_rows(query_sql, molecule, table_name, options)
 
     def smarts(self, molecule, target_function, options=''):
-        query_sql = MATCHING_SEARCH_QUERY.replace('{function}', 'smarts')
+        query_sql = MATCHING_SEARCH_QUERY.replace('{function}', 'sub')
         table_name = TARGET_TABLES_MAP.get(target_function)
         return self.query_rows(query_sql, molecule, table_name, options)
 

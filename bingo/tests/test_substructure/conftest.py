@@ -41,6 +41,6 @@ def init_db(indigo):
 
     db_bingo.delete_base()
 
-    db_bingo_elastic.drop()
+    # db_bingo_elastic.drop()
 
     logger.info(f"===== Finish of testing {FUNCTION} =====")

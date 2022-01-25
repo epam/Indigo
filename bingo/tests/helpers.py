@@ -137,6 +137,8 @@ def assert_calculate_query(result: Union[Exception, int, str, float],
     """Assertion for testing cansmiles, checkmolecule, cml, compactmolecule,
        fingerprint, gross, inchi, mass and molfile"""
     if isinstance(result, Exception):
+        import traceback
+        traceback.print_exception(result)
         assert expected in str(result)
     elif type(result) is float:
         assert round(result, 1) == round(expected, 1)
@@ -157,9 +159,8 @@ def assert_match_query(result: Union[Exception, List[int]],
         assert expected in str(result)
     else:
         assert type(expected) == list
-        targets = []
-        for target in result:
-            targets.append(target)
-            assert target in expected
 
-        assert sorted(targets) == sorted(result)
+        try:
+            assert set(result) == set(expected)
+        except AssertionError as e:
+            raise e
