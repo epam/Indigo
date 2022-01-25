@@ -26,6 +26,7 @@
 
 namespace indigo
 {
+    class BingoIndex;
     namespace bingo_core
     {
 

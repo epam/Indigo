@@ -21,6 +21,8 @@
 #include "core/ringo_index.h"
 #include "molecule/elements.h"
 
+using namespace indigo;
+
 IMPL_ERROR(RingoShadowTable, "ringo shadow table");
 
 RingoShadowTable::RingoShadowTable(int context_id)

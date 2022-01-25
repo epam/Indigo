@@ -25,26 +25,30 @@
 
 #include "bingo_index.h"
 
-using namespace indigo;
-
-class BingoContext;
-
-class RingoIndex : public BingoIndex
+namespace indigo
 {
-public:
-    void prepare(Scanner& rxnfile, Output& fi_output, std::mutex* lock_for_exclusive_access) override;
 
-    const byte* getFingerprint();
-    const Array<char>& getCrf();
-    dword getHash();
-    const char* getHashStr();
+    class BingoContext;
 
-    void clear();
+    class RingoIndex : public BingoIndex
+    {
+    public:
+        void prepare(Scanner& rxnfile, Output& fi_output, std::mutex* lock_for_exclusive_access) override;
 
-private:
-    Array<byte> _fp;
-    Array<char> _crf;
-    dword _hash;
-    Array<char> _hash_str;
-};
+        const byte* getFingerprint();
+        const Array<char>& getCrf();
+        dword getHash();
+        const char* getHashStr();
+
+        void clear();
+
+    private:
+        Array<byte> _fp;
+        Array<char> _crf;
+        dword _hash;
+        Array<char> _hash_str;
+    };
+
+} // namespace indigo
+
 #endif

@@ -390,6 +390,10 @@ bytea* bingo_reloptions(Datum reloptions, bool validate)
         {"sim_screening_pass_mark", RELOPT_TYPE_INT, offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, sim_screening_pass_mark)},
         {"nthreads", RELOPT_TYPE_INT, offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, nthreads)}};
 
+#if PG_VERSION_NUM / 100 > 1200
+    relopt_kind kind = static_cast<relopt_kind>(RELOPT_KIND_BINGO);
+    rdopts = build_reloptions(reloptions, validate, kind, sizeof(BingoStdRdOptions), tab, lengthof(tab));
+#else
     options = bingoParseRelOptions(reloptions, validate, RELOPT_KIND_BINGO, &numoptions);
 
     /* if none set, we're done */
@@ -397,10 +401,10 @@ bytea* bingo_reloptions(Datum reloptions, bool validate)
         return NULL;
 
     rdopts = allocateReloptStruct(sizeof(BingoStdRdOptions), options, numoptions);
-
     fillRelOptions(rdopts, sizeof(BingoStdRdOptions), options, numoptions, validate, tab, lengthof(tab));
 
     pfree(options);
+#endif
 
     return (bytea*)rdopts;
 }

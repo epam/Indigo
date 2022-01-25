@@ -589,7 +589,7 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
 
 void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
 {
-    inchi_Input input{nullptr, nullptr, nullptr, 0, 0 };
+    inchi_Input input{nullptr, nullptr, nullptr, 0, 0};
     QS_DEF(Array<inchi_Atom>, atoms);
     QS_DEF(Array<inchi_Stereo0D>, stereo);
 

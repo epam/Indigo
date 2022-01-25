@@ -1,0 +1,4 @@
+pylint
+pytest
+wheel
+elasticsearch==7.16.2

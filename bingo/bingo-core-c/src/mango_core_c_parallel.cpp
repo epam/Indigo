@@ -21,6 +21,7 @@
 
 #include <string.h>
 
+using namespace indigo;
 using namespace indigo::bingo_core;
 
 //
@@ -33,7 +34,7 @@ void MangoIndexingCommandResult::clear()
     per_molecule_index.clear();
 }
 
-BingoIndex& MangoIndexingCommandResult::getIndex(int index)
+indigo::BingoIndex& MangoIndexingCommandResult::getIndex(int index)
 {
     per_molecule_index.resize(index + 1);
     return per_molecule_index[index];

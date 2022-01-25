@@ -34,6 +34,8 @@
 #include "molecule/sdf_loader.h"
 #include <memory>
 
+using namespace indigo;
+
 ORAEXT void oraLogPrint(OCIExtProcContext* ctx, char* str){ORABLOCK_BEGIN{OracleEnv env(ctx, logger);
 
 env.dbgPrintf("%s\n", str);

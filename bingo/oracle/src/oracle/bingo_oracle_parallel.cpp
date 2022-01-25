@@ -21,6 +21,8 @@
 #include "base_cpp/tlscont.h"
 #include "oracle/ora_wrap.h"
 
+using namespace indigo;
+
 //
 // BingoOracleCommand
 //

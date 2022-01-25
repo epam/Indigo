@@ -29,6 +29,8 @@
 #include "oracle/ora_logger.h"
 #include "oracle/ora_wrap.h"
 
+using namespace indigo;
+
 static void _mangoIndexStart(OracleEnv& env, MangoFetchContext& context, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop,
                              int flags, const char* params)
 {

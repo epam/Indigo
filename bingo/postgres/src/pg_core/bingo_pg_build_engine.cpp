@@ -1,5 +1,5 @@
 #include "bingo_pg_fix_pre.h"
-
+#include "gzip/gzip_scanner.h"
 extern "C"
 {
 #include "postgres.h"
@@ -15,42 +15,52 @@ extern "C"
 #include "bingo_core_c.h"
 #include "bingo_pg_build_engine.h"
 
+#include "bingo_pg_config.h"
 #include "bingo_pg_index.h"
 
 using namespace indigo;
 
 BingoPgBuildEngine::BingoPgBuildEngine() : _bufferIndexPtr(0)
 {
-    _bingoSession = bingoAllocateSessionID();
+    _bingoContext = std::make_unique<BingoContext>(0);
+    _mangoContext = std::make_unique<MangoContext>(*_bingoContext.get());
+    _ringoContext = std::make_unique<RingoContext>(*_bingoContext.get());
+
+    bingoCore.bingo_context = _bingoContext.get();
+    bingoCore.mango_context = _mangoContext.get();
+    bingoCore.ringo_context = _ringoContext.get();
 }
 
 BingoPgBuildEngine::~BingoPgBuildEngine()
 {
-    bingoReleaseSessionID(_bingoSession);
 }
 
-void BingoPgBuildEngine::_setBingoContext()
+void BingoPgBuildEngine::setUpConfiguration(BingoPgConfig& bingo_config)
 {
-    bingoSetSessionID(_bingoSession);
-    bingoSetContext(0);
+    /*
+     * Set up bingo configuration
+     */
+    bingo_config.setUpBingoConfiguration();
+    bingoCore.bingoTautomerRulesReady(0, 0, 0);
+    bingoCore.bingoIndexBegin();
 }
 
 void BingoPgBuildEngine::loadDictionary(BingoPgIndex& bingo_index)
 {
-    _setBingoContext();
+    // _setBingoContext();
 
     QS_DEF(Array<char>, dict);
     bingo_index.readDictionary(dict);
-    bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
+    bingoCore.bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
 }
 
 const char* BingoPgBuildEngine::getDictionary(int& size)
 {
-    _setBingoContext();
+    // _setBingoContext();
 
     const char* dict_buf;
 
-    bingoGetConfigBin("cmf-dict", &dict_buf, &size);
+    bingoCore.bingoGetConfigBin("cmf-dict", &dict_buf, &size);
 
     return dict_buf;
 }
@@ -62,9 +72,9 @@ int BingoPgBuildEngine::getNthreads()
 
     if (!nThreads.hasValue())
     {
-        _setBingoContext();
+        // _setBingoContext();
         int result;
-        bingoGetConfigInt("nthreads", &result);
+        bingoCore.bingoGetConfigInt("nthreads", &result);
         nThreads.set(result);
     }
 
@@ -88,7 +98,7 @@ int BingoPgBuildEngine::_getNextRecordCb(void* context)
     /*
      * Set target data. There is no need to handle errors
      */
-    bingoSetIndexRecordData(cache_idx, struct_ptr, struct_size);
+    engine->bingoCore.bingoSetIndexRecordData(cache_idx, struct_ptr, struct_size);
     ++cache_idx;
     return 1;
 }
@@ -100,5 +110,5 @@ void BingoPgBuildEngine::_processErrorCb(int id, void* context)
     ItemPointer item_ptr = &(struct_caches[id].ptr);
     int block_number = ItemPointerGetBlockNumber(item_ptr);
     int offset_number = ItemPointerGetOffsetNumber(item_ptr);
-    elog(WARNING, "build engine: error while processing record with ctid='(%d,%d)'::tid: %s", block_number, offset_number, bingoGetWarning());
+    elog(WARNING, "build engine: error while processing record with ctid='(%d,%d)'::tid: %s", block_number, offset_number, engine->bingoCore.warning.ptr());
 }
