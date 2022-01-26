@@ -473,7 +473,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
 
         if (smarts != 0 && strlen(smarts) > 0)
         {
-            fmcache->expand(super_idx + 1);
+            fmcache->resize(super_idx + 1);
             auto& map = fmcache->at(super_idx);
             if (map.find(smarts) != map.end())
                 return map.at(smarts) != 0;
@@ -492,7 +492,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
 
         if (smarts != 0 && strlen(smarts) > 0)
         {
-            fmcache->expand(super_idx + 1);
+            fmcache->resize(super_idx + 1);
             auto& map = fmcache->at(super_idx);
             map.insert({smarts, result ? 1 : 0});
         }

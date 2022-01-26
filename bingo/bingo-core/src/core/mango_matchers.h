@@ -85,7 +85,7 @@ namespace indigo
         MoleculeAtomNeighbourhoodCounters _nei_target_counters;
         MoleculeAtomNeighbourhoodCounters _nei_query_counters;
 
-        ObjArray<std::map<std::string, int>> _fmcache;
+        std::vector<std::map<std::string, int>> _fmcache;
 
         // cmf loader for delayed xyz loading
         Obj<CmfLoader> cmf_loader;
