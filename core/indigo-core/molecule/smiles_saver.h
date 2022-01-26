@@ -114,6 +114,10 @@ namespace indigo
         void _writePseudoAtoms();
         void _writeHighlighting();
         void _writeRGroups();
+        void _writeRingBonds();
+        void _writeUnsaturated();
+        void _writeSubstitutionCounts();
+
         bool _shouldWriteAromaticBond(int bond_idx);
         void _startExtension();
 

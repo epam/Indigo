@@ -74,6 +74,7 @@ Name: 1,2-dimethylcyclohexane
 	SMILES: CC1CCCCC1C
 Name: 1,1-dimethylcyclohexane 
 	SMILES: CC1(C)CCCCC1
+ERROR: name 7-oxabicyclo[2.2.1]heptane; error Error at _processBaseNode. Bad structure name.
 DONE
 
 TEST: loadMolecule
