@@ -214,8 +214,8 @@ public:
                 T key;
                 for (auto& kv : data)
                 {
-                    key = const_cast<T>(kv.first);
-                    handleNumber(kv.key, scanner, output);
+                    key = kv.first;
+                    handleNumber(key, scanner, output);
                     kv.second.serialize(scanner, output);
                 }
             }
