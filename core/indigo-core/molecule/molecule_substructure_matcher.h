@@ -52,7 +52,7 @@ namespace indigo
             CONFORMATION = 2
         };
 
-        typedef ObjArray<RedBlackStringMap<int>> FragmentMatchCache;
+        typedef ObjArray<std::unordered_map<std::string, int>> FragmentMatchCache;
 
         MoleculeSubstructureMatcher(BaseMolecule& target);
         ~MoleculeSubstructureMatcher();
