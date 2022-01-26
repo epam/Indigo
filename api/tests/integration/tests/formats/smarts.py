@@ -12,11 +12,8 @@ indigo = Indigo()
 
 
 def testSmarts(m):
-    try:
-        print(m.smarts())
-    except IndigoException as e:
-        print(getIndigoExceptionText(e))
-        print(m.smiles())
+    print(m.smarts())
+    print(m.smiles())
 
 
 molstr = """
