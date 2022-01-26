@@ -204,8 +204,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
     mol.reaction_atom_exact_change.clear_resize(atoms.size());
     mol.reaction_atom_exact_change.zerofill();
 
-    int atom_idx;
-    for (auto atom_idx : atoms)
+    for (int atom_idx : atoms)
     {
         auto& atom = _nodes[atom_idx];
         if (_pmol)

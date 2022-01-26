@@ -78,7 +78,7 @@ public:
     /*
      * This class allows to avoid save-load sequence errors
      * You can save or load structures by calling one method
-     * Numbers, arrays, double arrays etc are can be handled by this helper
+     * Numbers, arrays, double arrays etc can be handled by this helper
      */
     class DataProcessing
     {
@@ -116,7 +116,7 @@ public:
         }
 
         template <typename T>
-        static void handleRedBlackString(indigo::RedBlackStringMap<T>& data, indigo::Scanner* scanner, indigo::Output* output)
+        static void handleStringMap(std::unordered_map<std::string, T>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             indigo::Array<char> key_tmp;
             int size = data.size();
@@ -143,7 +143,7 @@ public:
             }
         }
         template <typename T, typename R>
-        static void handleRedBlackArr(indigo::RedBlackObjMap<T, indigo::Array<R>>& data, indigo::Scanner* scanner, indigo::Output* output)
+        static void handleTypeArrayMap(std::unordered_map<T, indigo::Array<R>>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             int size = data.size();
             handleNumber(size, scanner, output);
@@ -154,20 +154,21 @@ public:
                 for (int i = 0; i < size; ++i)
                 {
                     handleNumber(key, scanner, output);
-                    handleArray(data.insert(key), scanner, output);
+                    data[key];
+                    handleArray(data.at(key), scanner, output);
                 }
             }
             if (output)
             {
-                for (int i = data.begin(); i != data.end(); i = data.next(i))
+                for (auto& kv : data)
                 {
-                    handleNumber(data.key(i), scanner, output);
-                    handleArray(data.value(i), scanner, output);
+                    handleNumber(kv.first, scanner, output);
+                    handleArray(kv.second, scanner, output);
                 }
             }
         }
         template <typename T>
-        static void handleRedBlackStringArr(indigo::RedBlackStringObjMap<indigo::Array<T>>& data, indigo::Scanner* scanner, indigo::Output* output)
+        static void handleStringArrayMap(std::unordered_map<std::string, indigo::Array<T>>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             indigo::Array<char> key_tmp;
             int size = data.size();
@@ -178,22 +179,22 @@ public:
                 for (int i = 0; i < size; ++i)
                 {
                     handleArray(key_tmp, scanner, output);
-                    int key_idx = data.insert(key_tmp.ptr());
-                    handleArray(data.value(key_idx), scanner, output);
+                    data[key_tmp.ptr()];
+                    handleArray(data.at(key_tmp.ptr()), scanner, output);
                 }
             }
             if (output)
             {
-                for (int i = data.begin(); i != data.end(); i = data.next(i))
+                for (auto& kv : data)
                 {
-                    key_tmp.readString(data.key(i), true);
+                    key_tmp.readString(kv.first.c_str(), true);
                     handleArray(key_tmp, scanner, output);
-                    handleArray(data.value(i), scanner, output);
+                    handleArray(kv.second, scanner, output);
                 }
             }
         }
         template <typename T, typename R>
-        static void handleRedBlackObject(indigo::RedBlackObjMap<T, R>& data, indigo::Scanner* scanner, indigo::Output* output)
+        static void handleTypeObjMap(std::unordered_map<T, R>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             int size = data.size();
             handleNumber(size, scanner, output);
@@ -204,15 +205,18 @@ public:
                 for (int i = 0; i < size; ++i)
                 {
                     handleNumber(key, scanner, output);
-                    data.insert(key).serialize(scanner, output);
+                    data[key];
+                    data.at(key).serialize(scanner, output);
                 }
             }
             if (output)
             {
-                for (int i = data.begin(); i != data.end(); i = data.next(i))
+                T key;
+                for (auto& kv : data)
                 {
-                    handleNumber(data.key(i), scanner, output);
-                    data.value(i).serialize(scanner, output);
+                    key = const_cast<T>(kv.first);
+                    handleNumber(kv.key, scanner, output);
+                    kv.second.serialize(scanner, output);
                 }
             }
         }

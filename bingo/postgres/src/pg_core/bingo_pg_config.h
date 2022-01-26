@@ -2,7 +2,6 @@
 #define _BINGO_PG_CONFIG_H__
 
 #include "base_cpp/exception.h"
-#include "base_cpp/red_black.h"
 #include "bingo_postgres.h"
 
 namespace indigo
@@ -38,13 +37,14 @@ private:
     BingoPgConfig(const BingoPgConfig&); // no implicit copy
 
     void _readTable(uintptr_t id, bool tau);
-    int _getNumericValue(int c_idx);
+    int _getNumericValue(indigo::Array<char>& config_data);
 
     void _replaceInsertTauParameter(uintptr_t rule_datum, uintptr_t beg_datum, uintptr_t end_datum);
     void _toString(int value, indigo::Array<char>&);
+    void _optionToString(int option_value, const std::string& option_name);
 
-    indigo::RedBlackStringObjMap<indigo::Array<char>> _rawConfig;
-    indigo::RedBlackStringObjMap<indigo::Array<char>> _stringParams;
+    std::unordered_map<std::string, indigo::Array<char>> _rawConfig;
+    std::unordered_map<std::string, indigo::Array<char>> _stringParams;
 
     class TauParameter
     {
@@ -56,7 +56,7 @@ private:
         void serialize(indigo::Scanner*, indigo::Output*);
     };
 
-    indigo::RedBlackObjMap<int, TauParameter> _tauParameters;
+    std::unordered_map<int, TauParameter> _tauParameters;
 };
 
 #endif /* BINGO_PG_CONFIG_H */

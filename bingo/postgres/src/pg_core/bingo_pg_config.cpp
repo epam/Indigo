@@ -70,92 +70,23 @@ void BingoPgConfig::updateByIndexConfig(PG_OBJECT index_ptr)
     BingoIndexOptions& options = opt->index_parameters;
 
     // TODO use isset instead of -1 not set for variables
-    int name_key;
-    if (options.treat_x_as_pseudoatom >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("treat_x_as_pseudoatom");
-        _toString(options.treat_x_as_pseudoatom, _rawConfig.value(name_key));
-    }
-    if (options.ignore_closing_bond_direction_mismatch >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("ignore_closing_bond_direction_mismatch");
-        _toString(options.ignore_closing_bond_direction_mismatch, _rawConfig.value(name_key));
-    }
-    if (options.ignore_stereocenter_errors >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("ignore_stereocenter_errors");
-        _toString(options.ignore_stereocenter_errors, _rawConfig.value(name_key));
-    }
-    if (options.stereochemistry_bidirectional_mode >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("stereochemistry_bidirectional_mode");
-        _toString(options.stereochemistry_bidirectional_mode, _rawConfig.value(name_key));
-    }
-    if (options.stereochemistry_detect_haworth_projection >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("stereochemistry_detect_haworth_projection");
-        _toString(options.stereochemistry_detect_haworth_projection, _rawConfig.value(name_key));
-    }
-    if (options.ignore_cistrans_errors >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("ignore_cistrans_errors");
-        _toString(options.ignore_cistrans_errors, _rawConfig.value(name_key));
-    }
-    if (options.allow_non_unique_dearomatization >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("allow_non_unique_dearomatization");
-        _toString(options.allow_non_unique_dearomatization, _rawConfig.value(name_key));
-    }
-    if (options.zero_unknown_aromatic_hydrogens >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("zero_unknown_aromatic_hydrogens");
-        _toString(options.zero_unknown_aromatic_hydrogens, _rawConfig.value(name_key));
-    }
-    if (options.reject_invalid_structures >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("reject_invalid_structures");
-        _toString(options.reject_invalid_structures, _rawConfig.value(name_key));
-    }
-    if (options.ignore_bad_valence >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("ignore_bad_valence");
-        _toString(options.ignore_bad_valence, _rawConfig.value(name_key));
-    }
-    if (options.fp_any_size >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("fp_any_size");
-        _toString(options.fp_any_size, _rawConfig.value(name_key));
-    }
-    if (options.fp_ord_size >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("fp_ord_size");
-        _toString(options.fp_ord_size, _rawConfig.value(name_key));
-    }
-    if (options.fp_sim_size >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("fp_sim_size");
-        _toString(options.fp_sim_size, _rawConfig.value(name_key));
-    }
-    if (options.fp_tau_size >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("fp_tau_size");
-        _toString(options.fp_tau_size, _rawConfig.value(name_key));
-    }
-    if (options.sim_screening_pass_mark >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("sim_screening_pass_mark");
-        _toString(options.sim_screening_pass_mark, _rawConfig.value(name_key));
-    }
-    if (options.sub_screening_max_bits >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("sub_screening_max_bits");
-        _toString(options.sub_screening_max_bits, _rawConfig.value(name_key));
-    }
-    if (options.nthreads >= 0)
-    {
-        name_key = _rawConfig.findOrInsert("nthreads");
-        _toString(options.nthreads, _rawConfig.value(name_key));
-    }
+    _optionToString(options.treat_x_as_pseudoatom, "treat_x_as_pseudoatom");
+    _optionToString(options.ignore_closing_bond_direction_mismatch, "ignore_closing_bond_direction_mismatch");
+    _optionToString(options.ignore_stereocenter_errors, "ignore_stereocenter_errors");
+    _optionToString(options.stereochemistry_bidirectional_mode, "stereochemistry_bidirectional_mode");
+    _optionToString(options.stereochemistry_detect_haworth_projection, "stereochemistry_detect_haworth_projection");
+    _optionToString(options.ignore_cistrans_errors, "ignore_cistrans_errors");
+    _optionToString(options.allow_non_unique_dearomatization, "allow_non_unique_dearomatization");
+    _optionToString(options.zero_unknown_aromatic_hydrogens, "zero_unknown_aromatic_hydrogens");
+    _optionToString(options.reject_invalid_structures, "reject_invalid_structures");
+    _optionToString(options.ignore_bad_valence, "ignore_bad_valence");
+    _optionToString(options.fp_any_size, "fp_any_size");
+    _optionToString(options.fp_ord_size, "fp_ord_size");
+    _optionToString(options.fp_sim_size, "fp_sim_size");
+    _optionToString(options.fp_tau_size, "fp_tau_size");
+    _optionToString(options.sim_screening_pass_mark, "sim_screening_pass_mark");
+    _optionToString(options.sub_screening_max_bits, "sub_screening_max_bits");
+    _optionToString(options.nthreads, "nthreads");
 }
 
 void BingoPgConfig::replaceInsertParameter(uintptr_t name_datum, uintptr_t value_datum)
@@ -166,9 +97,12 @@ void BingoPgConfig::replaceInsertParameter(uintptr_t name_datum, uintptr_t value
     BingoPgText pname_text(name_datum);
     BingoPgText value_text(value_datum);
 
-    int name_key = _rawConfig.findOrInsert(pname_text.getString());
+    if (_rawConfig.find(pname_text.getString()) == _rawConfig.end())
+    {
+        _rawConfig[pname_text.getString()];
+    }
 
-    _rawConfig.value(name_key).readString(value_text.getString(), true);
+    _rawConfig.at(pname_text.getString()).readString(value_text.getString(), true);
 }
 
 void BingoPgConfig::setUpBingoConfiguration()
@@ -179,43 +113,42 @@ void BingoPgConfig::setUpBingoConfiguration()
     /*
      * Iterate through all the configs
      */
-    for (int c_idx = _rawConfig.begin(); c_idx != _rawConfig.end(); c_idx = _rawConfig.next(c_idx))
+    for (auto& kv : _rawConfig)
     {
-        const char* key = _rawConfig.key(c_idx);
-        if (_stringParams.find(_rawConfig.key(c_idx)))
+        if (_stringParams.find(kv.first) != _stringParams.end())
         {
-            bingoCore.bingoSetConfigBin(_rawConfig.key(c_idx), _rawConfig.value(c_idx).ptr(), 0);
+            bingoCore.bingoSetConfigBin(kv.first.c_str(), kv.second.ptr(), 0);
         }
         else
         {
-            bingoCore.bingoSetConfigInt(_rawConfig.key(c_idx), _getNumericValue(c_idx));
+            bingoCore.bingoSetConfigInt(kv.first.c_str(), _getNumericValue(kv.second));
         }
     }
 
-    for (int c_idx = _tauParameters.begin(); c_idx != _tauParameters.end(); c_idx = _tauParameters.next(c_idx))
+    for (auto& kv : _tauParameters)
     {
-        TauParameter& param = _tauParameters.value(c_idx);
-        bingoCore.bingoAddTautomerRule(_tauParameters.key(c_idx), param.beg.ptr(), param.end.ptr());
+        TauParameter& param = kv.second;
+        bingoCore.bingoAddTautomerRule(kv.first, param.beg.ptr(), param.end.ptr());
     }
 }
 
 void BingoPgConfig::serialize(indigo::Array<char>& config_data)
 {
     ArrayOutput data_out(config_data);
-    BingoPgCommon::DataProcessing::handleRedBlackStringArr(_rawConfig, 0, &data_out);
-    BingoPgCommon::DataProcessing::handleRedBlackObject(_tauParameters, 0, &data_out);
+    BingoPgCommon::DataProcessing::handleStringArrayMap(_rawConfig, 0, &data_out);
+    BingoPgCommon::DataProcessing::handleTypeObjMap(_tauParameters, 0, &data_out);
 }
 
 void BingoPgConfig::deserialize(void* data, int data_len)
 {
     BufferScanner data_in((char*)data, data_len);
-    BingoPgCommon::DataProcessing::handleRedBlackStringArr(_rawConfig, &data_in, 0);
-    BingoPgCommon::DataProcessing::handleRedBlackObject(_tauParameters, &data_in, 0);
+    BingoPgCommon::DataProcessing::handleStringArrayMap(_rawConfig, &data_in, 0);
+    BingoPgCommon::DataProcessing::handleTypeObjMap(_tauParameters, &data_in, 0);
 }
 
-int BingoPgConfig::_getNumericValue(int c_idx)
+int BingoPgConfig::_getNumericValue(indigo::Array<char>& config_data)
 {
-    BufferScanner scanner(_rawConfig.value(c_idx));
+    BufferScanner scanner(config_data);
     return scanner.readInt();
 }
 
@@ -228,7 +161,11 @@ void BingoPgConfig::_replaceInsertTauParameter(uintptr_t rule_datum, uintptr_t b
     BingoPgText beg_text(beg_datum);
     BingoPgText end_text(end_datum);
 
-    TauParameter& param = _tauParameters.findOrInsert(rule_idx);
+    if (_tauParameters.find(rule_idx) == _tauParameters.end())
+    {
+        _tauParameters[rule_idx];
+    }
+    TauParameter& param = _tauParameters.at(rule_idx);
 
     param.beg.readString(beg_text.getString(), true);
     param.end.readString(end_text.getString(), true);
@@ -238,6 +175,18 @@ void BingoPgConfig::_toString(int value, Array<char>& a)
 {
     ArrayOutput ao(a);
     ao.printf("%d", value);
+}
+
+void BingoPgConfig::_optionToString(int option_value, const std::string& option_name)
+{
+    if (option_value >= 0)
+    {
+        if (_rawConfig.find(option_name) == _rawConfig.end())
+        {
+            _rawConfig[option_name];
+        }
+        _toString(option_value, _rawConfig.at(option_name));
+    }
 }
 
 void BingoPgConfig::TauParameter::serialize(Scanner* scanner, Output* output)
