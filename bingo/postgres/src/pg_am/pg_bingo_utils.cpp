@@ -682,8 +682,7 @@ static void checkExportEmpty(Datum text_datum, BingoPgText& text)
         text.init(text_datum);
 }
 
-static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_column_datum, Array<char>& query_str,
-                                  FieldsMap& field_list)
+static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_column_datum, Array<char>& query_str, FieldsMap& field_list)
 {
     BingoPgText tablename_text;
     BingoPgText column_text;

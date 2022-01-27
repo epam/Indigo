@@ -282,7 +282,7 @@ namespace indigo
         Array<int> _limits;
         Array<int> _rgroup2size;
         MultiMap<int, int> _rsite2rgroup;
-        RedBlackMap<int, int> _rsite2vertex;
+        std::unordered_map<int, int> _rsite2vertex;
 
         mutable std::unique_ptr<Attachments> _ats;
 
