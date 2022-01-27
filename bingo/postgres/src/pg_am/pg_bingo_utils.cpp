@@ -65,6 +65,16 @@ extern "C"
 
 using namespace indigo;
 
+struct CaseInsensitiveStringComparator
+{
+    bool operator()(const std::string& s1, const std::string& s2) const
+    {
+        return (strcasecmp(s1.c_str(), s2.c_str()) == 0);
+    }
+};
+
+using FieldsMap = std::unordered_map<std::string, int, std::hash<std::string>, CaseInsensitiveStringComparator>;
+
 Datum getindexstructurescount(PG_FUNCTION_ARGS)
 {
     Oid relOid = PG_GETARG_OID(0);
@@ -624,7 +634,7 @@ Datum getname(PG_FUNCTION_ARGS)
     PG_RETURN_TEXT_P(result);
 }
 
-static void _parseQueryFieldList(const char* fields_str, RedBlackStringMap<int, false>& field_list)
+static void _parseQueryFieldList(const char* fields_str, FieldsMap& field_list)
 {
     BufferScanner scanner(fields_str);
 
@@ -638,11 +648,11 @@ static void _parseQueryFieldList(const char* fields_str, RedBlackStringMap<int, 
         scanner.readWord(buf_word, " ,");
         scanner.skipSpace();
 
-        if (field_list.find(buf_word.ptr()))
+        if (field_list.find(buf_word.ptr()) != field_list.end())
             throw BingoPgError("parseQueryFieldList(): key %s is already presented in the query list", buf_word.ptr());
 
         ++column_idx;
-        field_list.insert(buf_word.ptr(), column_idx);
+        field_list.insert({buf_word.ptr(), column_idx});
 
         if (scanner.isEOF())
             break;
@@ -673,7 +683,7 @@ static void checkExportEmpty(Datum text_datum, BingoPgText& text)
 }
 
 static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_column_datum, Array<char>& query_str,
-                                  RedBlackStringMap<int, false>& field_list)
+                                  FieldsMap& field_list)
 {
     BingoPgText tablename_text;
     BingoPgText column_text;
@@ -685,8 +695,7 @@ static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum o
 
     field_list.clear();
 
-    field_list.insert(column_text.getString(), 0);
-    int data_key = field_list.begin();
+    field_list.insert({column_text.getString(), 0});
 
     ArrayOutput query_out(query_str);
     query_out.printf("SELECT %s", column_text.getString());
@@ -703,8 +712,6 @@ static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum o
 
     query_out.printf(" FROM %s", tablename_text.getString());
     query_out.writeChar(0);
-
-    return data_key;
 }
 
 Datum exportsdf(PG_FUNCTION_ARGS)
@@ -717,13 +724,13 @@ Datum exportsdf(PG_FUNCTION_ARGS)
     PG_BINGO_BEGIN
     {
         QS_DEF(Array<char>, query_str);
-        RedBlackStringMap<int, false> field_list;
+        FieldsMap field_list;
 
         BingoPgText fname_text;
         checkExportNull(file_name_datum, "file name", fname_text);
         FileOutput file_output(fname_text.getString());
 
-        int data_key = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
+        _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
 
         BingoPgCursor table_cursor(query_str.ptr());
         BingoPgText buf_text;
@@ -733,13 +740,13 @@ Datum exportsdf(PG_FUNCTION_ARGS)
             table_cursor.getText(1, buf_text);
             file_output.writeStringCR(buf_text.getString());
 
-            for (int k = field_list.begin(); k != field_list.end(); k = field_list.next(k))
+            for (auto& kv : field_list)
             {
-                if (data_key == k)
+                if (kv.second == 0)
                     continue;
 
-                int col_idx = field_list.value(k);
-                const char* col_name = field_list.key(k);
+                const char* col_name = kv.first.c_str();
+                int col_idx = kv.second;
                 table_cursor.getText(col_idx, buf_text);
                 file_output.printf(">  <%s>\n", col_name);
                 file_output.printf("%s\n\n", buf_text.getString());
@@ -762,13 +769,13 @@ Datum exportrdf(PG_FUNCTION_ARGS)
     PG_BINGO_BEGIN
     {
         QS_DEF(Array<char>, query_str);
-        RedBlackStringMap<int, false> field_list;
+        FieldsMap field_list;
 
         BingoPgText fname_text;
         checkExportNull(file_name_datum, "file name", fname_text);
         FileOutput file_output(fname_text.getString());
 
-        int data_key = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
+        _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
 
         BingoPgCursor table_cursor(query_str.ptr());
         BingoPgText buf_text;
@@ -783,13 +790,13 @@ Datum exportrdf(PG_FUNCTION_ARGS)
             file_output.printf("$MFMT $MIREG %d\n", str_idx);
             file_output.writeStringCR(buf_text.getString());
 
-            for (int k = field_list.begin(); k != field_list.end(); k = field_list.next(k))
+            for (auto& kv : field_list)
             {
-                if (data_key == k)
+                if (kv.second == 0)
                     continue;
 
-                int col_idx = field_list.value(k);
-                const char* col_name = field_list.key(k);
+                const char* col_name = kv.first.c_str();
+                int col_idx = kv.second;
                 table_cursor.getText(col_idx, buf_text);
                 file_output.printf("$DTYPE %s\n", col_name);
                 file_output.printf("$DATUM %s\n", buf_text.getString());
