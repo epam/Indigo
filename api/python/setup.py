@@ -134,7 +134,7 @@ setup(
             "pandas",
             "bokeh",
             "lightgbm",
-            "optuna"
+            "optuna",
         ],
     },
 )
