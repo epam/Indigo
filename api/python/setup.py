@@ -133,6 +133,8 @@ setup(
             "seaborn",
             "pandas",
             "bokeh",
+            "lightgbm",
+            "optuna"
         ],
     },
 )
