@@ -6,3 +6,4 @@ matplotlib==3.5.1
 pytest==6.2.5
 scikit-learn==1.0.1
 umap-learn==0.5.2
+optuna==2.10.0
