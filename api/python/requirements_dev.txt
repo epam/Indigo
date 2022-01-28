@@ -7,3 +7,4 @@ pytest==6.2.5
 scikit-learn==1.0.1
 umap-learn==0.5.2
 lightgbm==3.3.2
+optuna==2.10.0

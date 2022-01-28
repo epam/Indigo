@@ -1,4 +1,6 @@
-from typing import List, Type, Union, Tuple
+from statistics import mean
+from math import sqrt
+from typing import List, Type, Union
 
 from sklearn.base import ClusterMixin  # type: ignore
 from sklearn.cluster import SpectralClustering, KMeans  # type: ignore
@@ -24,30 +26,35 @@ def clustering(
     return labels.tolist()
 
 
-def kmeans_clustering(
-    assay_values: List[List[Union[int, float]]], **kwargs
-) -> Tuple[List[int], List[List[float]]]:
-    """Clustering procedure with KMeans method.
-
-    Args:
-        assay_values: Ordered list of lists of assay values.
-    Kwargs:
-        params for KMeans clustering method.
-    Returns:
-        tuple with list of cluster labels and list of cluster centers
-        coordinates.
-    """
-    cl = KMeans(**kwargs)
-    labels = cl.fit_predict(assay_values)
-    return labels.tolist(), cl.cluster_centers_.tolist()
+def kmeans_cluster_center(
+    coordinates: List[List[Union[int, float]]], n_clusters=1
+) -> List[float]:
+    cl = KMeans(n_clusters)
+    cl.fit_predict(coordinates)
+    return cl.cluster_centers_.reshape(-1).tolist()
 
 
-def average_distance():
-    pass
+def calculate_distance(p1: List[float], p2: List[float]):
+    return sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
 
-def split_coords_by_clusters(coordinates, clusters, n_clusters):
-    sorted_coords = [[] for _ in range(n_clusters)]
+def average_distances(
+    cluster_centers: List[List[float]], coordinates: List[List[List[float]]]
+) -> List[float]:
+    mean_distances = []
+    for i, cluster_coords in enumerate(coordinates):
+        distances = [
+            calculate_distance(coords, cluster_centers[i])
+            for coords in cluster_coords
+        ]
+        mean_distances.append(mean(distances))
+    return mean_distances
+
+
+def split_coords_by_clusters(
+    coordinates: List[List[float]], clusters: List[int], n_clusters: int
+):
+    clustered_coords = [[] for _ in range(n_clusters)]
     for i, cluster in enumerate(clusters):
-        sorted_coords[cluster].append(coordinates[i])
-    return sorted_coords
+        clustered_coords[cluster].append(coordinates[i])
+    return clustered_coords
