@@ -5,6 +5,7 @@ from os.path import abspath, join
 from typing import Dict, List
 
 import psycopg2
+from psycopg2.sql import SQL
 import sqlalchemy as sa
 from indigo import IndigoException, IndigoObject
 from indigo.bingo import BingoException
@@ -197,14 +198,15 @@ class SQLAdapter(DBAdapter):
         query = query.format(
             test_schema=self.test_schema,
             bingo_schema=self.bingo_schema,
-            query_entity=entity.rawData(),
             table_name=table_name,
             options=options
         )
         rows = None
 
         try:
-            result = self._connect.execute(text(query))
+            result = self._connect.execute(
+                query, {'query_entity': entity.rawData()}
+            )
             if not result.closed:
                 rows = result.fetchall()
         except (DatabaseError, InternalError, psycopg2.InternalError,

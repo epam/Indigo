@@ -9,7 +9,7 @@ from ..logger import logger
 from .base import SQLAdapter
 
 MATCHING_SEARCH_QUERY = "SELECT id, 1 from {test_schema}.{table_name} " \
-                        "WHERE data @ ('{query_entity}', '{options}') :: " \
+                        "WHERE data @ (%(query_entity)s, '{options}') :: " \
                         "{bingo_schema}.{function} ORDER BY ID ASC"
 
 
@@ -27,6 +27,7 @@ class Postgres(SQLAdapter):
         self._session = session()
         self._session.dialect = self._engine.dialect
         self._connect = self._engine.connect()
+        self._cursor = self._connect.connection.cursor()
 
     def query_row(self, query: str, entity: IndigoObject,
                   table_name='', options=''):
@@ -49,51 +50,52 @@ class Postgres(SQLAdapter):
 
             return rows
         except Exception as e:
+            pass
             return e
 
     def checkmolecule(self, molecule):
         query_sql = "SELECT {bingo_schema}.checkmolecule(" \
-                    "'{query_entity}')"
+                    "%(query_entity)s)"
         return self.query_row(query_sql, molecule)
 
     def cml(self, molecule):
-        query_sql = "SELECT {bingo_schema}.cml('{query_entity}')"
+        query_sql = "SELECT {bingo_schema}.cml(%(query_entity)s)"
         return self.query_row(query_sql, molecule)
 
     def compactmolecule(self, molecule):
         query_sql = "SELECT md5({bingo_schema}.compactmolecule(" \
-                    "'{query_entity}', '{options}'))"
+                    "%(query_entity)s, '{options}'))"
         return self.query_row(query_sql, molecule, options='0')
 
     def fingerprint(self, molecule, options):
         query_sql = "SELECT md5({bingo_schema}.fingerprint(" \
-                    "'{query_entity}', '{options}'))"
+                    "%(query_entity)s, '{options}'))"
         return self.query_row(query_sql, molecule, options=options)
 
     def gross(self, molecule):
-        query_sql = "SELECT {bingo_schema}.gross('{query_entity}')"
+        query_sql = "SELECT {bingo_schema}.gross(%(query_entity)s)"
         return self.query_row(query_sql, molecule)
 
     def inchi(self, molecule, options='', inchikey=False):
         query_sql = "SELECT {bingo_schema}.inchi(" \
-                    "'{query_entity}', '{options}')"
+                    "%(query_entity)s, '{options}')"
         if inchikey:
             query_sql = "SELECT {bingo_schema}.inchikey({bingo_schema}." \
-                        "inchi('{query_entity}', ' '))"
+                        "inchi(%(query_entity)s, ' '))"
         return self.query_row(query_sql, molecule, options=options)
 
     def mass(self, molecule, options):
         query_sql = "SELECT {bingo_schema}.getWeight(" \
-                    "'{query_entity}', '{options}')"
+                    "%(query_entity)s, '{options}')"
         return self.query_row(query_sql, molecule, options=options)
 
     def similarity(self, molecule, target_function, options):
         table_name = TARGET_TABLES_MAP.get(target_function)
         sim_type, min_sim, max_sim = options.split(', ')
         query_sql = "SELECT id, {bingo_schema}.getsimilarity(data, " \
-                    "'{query_entity}', '{sim_type}') FROM " \
+                    "%(query_entity)s, '{sim_type}') FROM " \
                     "{test_schema}.{table_name} WHERE data @ ({min_sim}, " \
-                    "{max_sim}, '{query_entity}', '{sim_type}') :: " \
+                    "{max_sim}, %(query_entity)s, '{sim_type}') :: " \
                     "{bingo_schema}.sim ORDER BY id ASC"
         query_sql = query_sql.replace('{sim_type}', sim_type)
         query_sql = query_sql.replace('{min_sim}', min_sim)
@@ -116,29 +118,29 @@ class Postgres(SQLAdapter):
         return self.query_rows(query_sql, molecule, table_name, options)
 
     def aam(self, reaction, options):
-        query_sql = "SELECT {bingo_schema}.aam('{query_entity}', '{options}')"
+        query_sql = "SELECT {bingo_schema}.aam(%(query_entity)s, '{options}')"
         return self.query_row(query_sql, reaction, options=options)
 
     def checkreaction(self, reaction, options=''):
-        query_sql = "SELECT {bingo_schema}.checkreaction('{query_entity}')"
+        query_sql = "SELECT {bingo_schema}.checkreaction(%(query_entity)s)"
         return self.query_row(query_sql, reaction, options=options)
 
     def compactreaction(self, reaction, options='0'):
         query_sql = "SELECT md5({bingo_schema}.compactreaction(" \
-                    "'{query_entity}', False))"
+                    "%(query_entity)s, False))"
         return self.query_row(query_sql, reaction, options=options)
 
     def rcml(self, reaction, options=''):
-        query_sql = "SELECT {bingo_schema}.rcml('{query_entity}')"
+        query_sql = "SELECT {bingo_schema}.rcml(%(query_entity)s)"
         return self.query_row(query_sql, reaction, options=options)
 
     def rfingerprint(self, reaction, options=''):
-        query_sql = "SELECT md5({bingo_schema}.rfingerprint('{" \
-                    "query_entity}', '{options}'))"
+        query_sql = "SELECT md5({bingo_schema}.rfingerprint(" \
+                    "%(query_entity)s, '{options}'))"
         return self.query_row(query_sql, reaction, options=options)
 
     def rsmiles(self, reaction, options=''):
-        query_sql = "SELECT {bingo_schema}.rsmiles('{query_entity}')"
+        query_sql = "SELECT {bingo_schema}.rsmiles(%(query_entity)s)"
         return self.query_row(query_sql, reaction, options=options)
 
     def rexact(self, reaction, target_function, options=''):

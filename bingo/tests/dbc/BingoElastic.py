@@ -1,6 +1,6 @@
-# from bingo_elastic.elastic import ElasticRepository
-# from bingo_elastic.model.record import IndigoRecord
-# from bingo_elastic.queries import SimilarityMatch
+from bingo_elastic.elastic import ElasticRepository
+from bingo_elastic.model.record import IndigoRecord
+from bingo_elastic.queries import SimilarityMatch
 from indigo import IndigoException, IndigoObject
 
 from ..constants import DB_BINGO_ELASTIC
