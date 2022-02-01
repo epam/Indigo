@@ -54,7 +54,7 @@ def average_distances(
 def split_coords_by_clusters(
     coordinates: List[List[float]], clusters: List[int], n_clusters: int
 ) -> List[List[List[float]]]:
-    clustered_coords = [[] for _ in range(n_clusters)]
+    clustered_coords: List[List] = [[] for _ in range(n_clusters)]
     for i, cluster in enumerate(clusters):
         clustered_coords[cluster].append(coordinates[i])
     return clustered_coords
