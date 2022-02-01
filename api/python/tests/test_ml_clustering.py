@@ -2,10 +2,10 @@ import pytest
 from sklearn.cluster import KMeans  # type: ignore
 
 from indigo.ml.clustering import (
-    clustering,
-    split_coords_by_clusters,
     average_distances,
-    calculate_distance, kmeans_cluster_center,
+    clustering,
+    kmeans_cluster_center,
+    split_coords_by_clusters,
 )
 
 
