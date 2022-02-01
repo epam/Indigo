@@ -1,9 +1,9 @@
-from statistics import mean
 from math import sqrt
+from statistics import mean
 from typing import List, Type, Union
 
 from sklearn.base import ClusterMixin  # type: ignore
-from sklearn.cluster import SpectralClustering, KMeans  # type: ignore
+from sklearn.cluster import KMeans, SpectralClustering  # type: ignore
 
 
 def clustering(
