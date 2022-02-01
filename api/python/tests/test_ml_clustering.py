@@ -1,5 +1,4 @@
 import pytest
-from sklearn.cluster import KMeans  # type: ignore
 
 from indigo.ml.clustering import (
     average_distances,
