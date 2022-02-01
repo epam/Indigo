@@ -27,7 +27,7 @@ def clustering(
 
 
 def kmeans_cluster_center(
-    coordinates: List[List[Union[int, float]]], n_clusters=1
+    coordinates: List[List[Union[int, float]]], n_clusters: int = 1
 ) -> List[float]:
     cl = KMeans(n_clusters)
     cl.fit_predict(coordinates)
@@ -53,7 +53,7 @@ def average_distances(
 
 def split_coords_by_clusters(
     coordinates: List[List[float]], clusters: List[int], n_clusters: int
-):
+) -> List[List[List[float]]]:
     clustered_coords = [[] for _ in range(n_clusters)]
     for i, cluster in enumerate(clusters):
         clustered_coords[cluster].append(coordinates[i])
