@@ -11,9 +11,45 @@ indigo.setOption("ignore-bad-valence", True)
 
 def featurize_atoms(mol):
     feats = []
+    degrees = []
+    isotopes = []
+    charges = []
+    valences = []
+    radicals = []
+    masses = []
+    implicit_hydrogens = []
+    in_aromatic_ring = False
+    stereocenter_types = []
+    pka_values = []
     for atom in mol.iterateAtoms():
         feats.append(atom.atomicNumber())
-    return {"atomic": F.one_hot(torch.tensor(feats), 60)}
+        degrees.append(atom.degree())
+        isotopes.append(atom.isotope())
+        charges.append(atom.charge())
+        valences.append(atom.valence())
+        radicals.append(atom.radicalElectrons())
+        in_aromatic_ring = any(nei.bond().bondOrder() == 4 for nei in atom.iterateNeighbors())
+        
+        #masses.append(atom.monoisotopicMass())
+        implicit_hydrogens.append(atom.countImplicitHydrogens())
+        stereocenter_types.append(atom.stereocenterType())
+        #pka_values.append(mol.get)
+        
+
+
+    feature_dict = {
+        "atomic": feats,
+        "degrees": degrees,
+        "isotopes": isotopes,
+        "charges": charges,
+        "valences": valences,
+        "radicals": radicals,
+        "implicit_hydrogens": implicit_hydrogens,
+        "in_aromatic_rings": in_aromatic_ring,
+        "stereocenter_types": stereocenter_types
+    }
+
+    return feature_dict
 
 
 def featurize_edges(mol):
