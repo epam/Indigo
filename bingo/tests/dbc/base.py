@@ -5,7 +5,6 @@ from os.path import abspath, join
 from typing import Dict, List
 
 import psycopg2
-from psycopg2.sql import SQL
 import sqlalchemy as sa
 from indigo import IndigoException, IndigoObject
 from indigo.bingo import BingoException
@@ -193,7 +192,7 @@ class SQLAdapter(DBAdapter):
                        table_name: str, options: str):
         """
         Execute query and return list of rows.
-        In case of Excepton return new Exception with clean error message
+        In case of Exception return new Exception with clean error message
         """
         query = query.format(
             test_schema=self.test_schema,

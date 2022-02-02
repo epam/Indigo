@@ -1,5 +1,3 @@
-from psycopg2 import InternalError
-
 from indigo import IndigoObject
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm.session import sessionmaker
@@ -27,7 +25,6 @@ class Postgres(SQLAdapter):
         self._session = session()
         self._session.dialect = self._engine.dialect
         self._connect = self._engine.connect()
-        self._cursor = self._connect.connection.cursor()
 
     def query_row(self, query: str, entity: IndigoObject,
                   table_name='', options=''):
@@ -50,7 +47,6 @@ class Postgres(SQLAdapter):
 
             return rows
         except Exception as e:
-            pass
             return e
 
     def checkmolecule(self, molecule):

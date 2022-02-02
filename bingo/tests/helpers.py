@@ -1,10 +1,13 @@
 import json
+import re
 import tempfile
+import xml.etree.ElementTree as elTree
+
 from os import listdir, path, remove
 from typing import List, Union
 
+
 import indigo as Indigo
-from xmldiff import main
 
 from .constants import (
     CREATE_INDICES_FOR,
@@ -142,11 +145,17 @@ def assert_calculate_query(result: Union[Exception, int, str, float],
         assert expected in str(result)
     elif type(result) is float:
         assert round(result, 1) == round(expected, 1)
-    elif 'TemporaryFile' in str(type(result)):
-        diff = main.diff_files(result.name, expected.name)
-        remove(result.name)
-        remove(expected.name)
-        assert diff == []
+    elif result and result.startswith("<?xml"):
+        result = elTree.fromstring(result.lower())
+        expected = re.sub(r"(\w+-\d{4}-\d{2})", "", expected)
+        expected = elTree.fromstring(expected.lower())
+        res_values = []
+        exp_values = []
+        for res_elt in result.iter():
+            res_values.append(res_elt.attrib)
+        for exp_elt in expected.iter():
+            exp_values.append(exp_elt.attrib)
+        assert res_values == exp_values
     else:
         assert result == expected
 
@@ -159,8 +168,9 @@ def assert_match_query(result: Union[Exception, List[int]],
         assert expected in str(result)
     else:
         assert type(expected) == list
+        targets = []
+        for target in result:
+            targets.append(target)
+            assert target in expected
 
-        try:
-            assert set(result) == set(expected)
-        except AssertionError as e:
-            raise e
+        assert sorted(targets) == sorted(result)
