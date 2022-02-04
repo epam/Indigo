@@ -287,8 +287,9 @@ class ExactMatch(CompilableQuery):
             return record
 
         if indigo.exactMatch(record.as_indigo_object(indigo),
-                    self._target.as_indigo_object(indigo).canonicalSmiles()
-
+            indigo.loadMolecule(
+                self._target.as_indigo_object(indigo).canonicalSmiles()
+            )
         ):
             return record
         return None
