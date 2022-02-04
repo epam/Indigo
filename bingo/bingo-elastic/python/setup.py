@@ -1,5 +1,4 @@
 from setuptools import setup  # type: ignore
-from setuptools import find_packages
 
 CLASSIFIERS = """\
 Development Status :: 5 - Production/Stable
