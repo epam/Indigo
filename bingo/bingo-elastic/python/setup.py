@@ -1,4 +1,5 @@
 from setuptools import setup  # type: ignore
+from setuptools import find_packages
 
 CLASSIFIERS = """\
 Development Status :: 5 - Production/Stable
@@ -36,6 +37,7 @@ setup(
     python_requires=">=3.7",
     packages=[
         "bingo_elastic",
+        "bingo_elastic.model",
     ],
     install_requires=["epam.indigo==1.7.0-beta", "elasticsearch==7.16.2"],
     classifiers=[_f for _f in CLASSIFIERS.split("\n") if _f],
