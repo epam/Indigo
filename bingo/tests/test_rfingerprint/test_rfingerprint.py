@@ -1,14 +1,10 @@
 import pytest
 
-from ..constants import DB_POSTGRES
 from ..helpers import assert_calculate_query, query_cases
 
-# db_list = [DB_POSTGRES]
 
-
-@pytest.mark.usefixtures('init_db')
+# @pytest.mark.usefixtures('init_db')
 class TestRfingerprint:
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('rfingerprint', 'rfingerprint(full)'))
     def test_rfingerprint_full(self, db, entities, query_id, expected):
@@ -16,7 +12,6 @@ class TestRfingerprint:
         result = db.rfingerprint(reaction, 'full')
         assert_calculate_query(result, expected)
 
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('rfingerprint', 'rfingerprint(sim)'))
     def test_rfingerprint_sim(self, db, entities, query_id, expected):
@@ -24,7 +19,6 @@ class TestRfingerprint:
         result = db.rfingerprint(reaction, 'sim')
         assert_calculate_query(result, expected)
 
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('rfingerprint', 'rfingerprint(sub)'))
     def test_rfingerprint_sub(self, db, entities, query_id, expected):
@@ -32,7 +26,6 @@ class TestRfingerprint:
         result = db.rfingerprint(reaction, 'sub')
         assert_calculate_query(result, expected)
 
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('rfingerprint',
                                          'rfingerprint(sub-res)'))
@@ -41,7 +34,6 @@ class TestRfingerprint:
         result = db.rfingerprint(reaction, 'sub-res')
         assert_calculate_query(result, expected)
 
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('rfingerprint', 'rfingerprint('
                                                          'sub-tau)'))

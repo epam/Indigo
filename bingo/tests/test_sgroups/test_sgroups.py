@@ -1,14 +1,10 @@
 import pytest
 
-from ..constants import DB_BINGO, DB_POSTGRES
 from ..helpers import assert_match_query, query_cases
 
-# db_list = [DB_POSTGRES, DB_BINGO]
 
-
-@pytest.mark.usefixtures('init_db')
+# @pytest.mark.usefixtures('init_db')
 class TestSgroups:
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('sgroups', 'exact()'))
     def test_sgroups_exact(self, db, entities, query_id, expected):
@@ -16,7 +12,6 @@ class TestSgroups:
         result = db.exact(molecule, 'sgroups')
         assert_match_query(result, expected)
 
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('sgroups', 'substructure()'))
     def test_sgroups_substructure(self, db, entities, query_id, expected):

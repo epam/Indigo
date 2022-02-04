@@ -95,3 +95,32 @@ DB_BINGO = 'bingo-nosql'
 DB_BINGO_ELASTIC = 'bingo-elastic'
 DB_ORACLE = 'oracle'
 DB_MSSQL = 'mssql'
+
+DATA_TYPES = {
+    'aam': 'reactions',
+    'bigtable': 'molecules',
+    'checkmolecule': 'molecules',
+    'checkreaction': 'reactions',
+    'cml': 'molecules',
+    'compactmolecule': 'reactions',
+    'compactreaction': 'reactions',
+    'exact': 'molecules',
+    'fingerprint': 'molecules',
+    'gross': 'molecules',
+    'inchi': 'molecules',
+    'markush': 'molecules',
+    'mass': 'molecules',
+    'pseudoatoms': 'molecules',
+    'rcml': 'reactions',
+    'resonance': 'molecules',
+    'rexact': 'reactions',
+    'rfingerprint': 'reactions',
+    'rsmarts': 'reactions',
+    'rsmiles': 'reactions',
+    'rsub': 'reactions',
+    'sgroups': 'molecules',
+    'similarity': 'molecules',
+    'smarts': 'molecules',
+    'substructure': 'molecules',
+    'tautomers': 'molecules',
+}

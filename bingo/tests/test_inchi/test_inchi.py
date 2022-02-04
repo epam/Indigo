@@ -1,14 +1,10 @@
 import pytest
 
-from ..constants import DB_POSTGRES
 from ..helpers import assert_calculate_query, query_cases
 
-# db_list = [DB_POSTGRES]
 
-
-@pytest.mark.usefixtures('init_db')
+# @pytest.mark.usefixtures('init_db')
 class TestInchi:
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('inchi', 'inchi()'))
     def test_inchi(self, db, entities, query_id, expected):
@@ -16,7 +12,6 @@ class TestInchi:
         result = db.inchi(molecule)
         assert_calculate_query(result, expected)
 
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize(
         'query_id, expected',
         query_cases('inchi', 'inchi(/DoNotAddH -SUU -SLUUD)')
@@ -26,7 +21,6 @@ class TestInchi:
         result = db.inchi(molecule, '/DoNotAddH -SUU -SLUUD')
         assert_calculate_query(result, expected)
 
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize(
         'query_id, expected',
         query_cases('inchi', 'inchi(/VeryWrongOption -AnotherOne)')
@@ -36,7 +30,6 @@ class TestInchi:
         result = db.inchi(molecule, '/VeryWrongOption -AnotherOne')
         assert_calculate_query(result, expected)
 
-    # @pytest.mark.parametrize('db', db_list, indirect=True)
     @pytest.mark.parametrize('query_id, expected', query_cases('inchi',
                                                                'inchikey()'))
     def test_inchikey(self, db, entities, query_id, expected):
