@@ -286,7 +286,7 @@ class ExactMatch(CompilableQuery):
         if not isinstance(record, IndigoRecordMolecule):
             return record
 
-        if indigo.substructureMatcher(record.as_indigo_object(indigo)).match(
+        if indigo.exactMatch(record.as_indigo_object(indigo),
             indigo.loadQueryMolecule(
                 self._target.as_indigo_object(indigo).canonicalSmiles()
             )
