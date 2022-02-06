@@ -33,6 +33,8 @@ namespace indigo
     class ReactionAutoLoader;
     class SmilesLoader;
     class RSmilesLoader;
+    class MolfileSaver;
+    class RxnfileSaver;
 
     class BingoContext
     {
@@ -69,6 +71,8 @@ namespace indigo
         Nullable<bool> allow_non_unique_dearomatization;
         Nullable<bool> zero_unknown_aromatic_hydrogens;
         Nullable<bool> ignore_bad_valence;
+        Nullable<bool> ct_format_save_date;
+        int ct_format_mode;
 
         // Throw exception when invalid structure is being added to the index
         Nullable<bool> reject_invalid_structures;
@@ -83,6 +87,10 @@ namespace indigo
         void setLoaderSettings(ReactionAutoLoader& loader);
         void setLoaderSettings(SmilesLoader& loader);
         void setLoaderSettings(RSmilesLoader& loader);
+
+        void setSaverSettings(MolfileSaver& saver);
+        void setSaverSettings(RxnfileSaver& saver);
+
         StereocentersOptions getStereocentersOptions();
 
         static void remove(int id);
