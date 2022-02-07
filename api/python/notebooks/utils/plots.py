@@ -7,8 +7,8 @@ import seaborn as sns  # type: ignore
 from bokeh.models import ColumnDataSource, HoverTool, Legend  # type: ignore
 from bokeh.plotting import figure, show  # type: ignore
 
-from indigo import Indigo
-from indigo.renderer import IndigoRenderer
+from indigo import Indigo  # type: ignore
+from indigo.renderer import IndigoRenderer  # type: ignore
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
@@ -21,7 +21,7 @@ def molecule_image(smiles: str) -> str:
     mol.aromatize()
     svg = renderer.renderToString(mol)
     return (
-        "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+            "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
     )
 
 
@@ -40,12 +40,12 @@ def static_avp_avr_graphs(preds, actual, r2: str, title: str = ""):
 
 
 def avp_plot(
-    actual: List[float],
-    predicted: List[float],
-    ids: List[str],
-    smiles_list: List[str],
-    r2: float,
-    title: str = "",
+        actual: List[float],
+        predicted: List[float],
+        ids: List[str],
+        smiles_list: List[str],
+        r2: float,
+        title: str = "",
 ) -> None:
     residual = [act - pred for act, pred in zip(actual, predicted)]
     df = pd.DataFrame({"x": actual, "y": predicted})
@@ -96,12 +96,12 @@ def avp_plot(
 
 
 def avr_plot(
-    actual: List[float],
-    predicted: List[float],
-    ids: List[str],
-    smiles_list: List[str],
-    r2: float,
-    title="",
+        actual: List[float],
+        predicted: List[float],
+        ids: List[str],
+        smiles_list: List[str],
+        r2: float,
+        title="",
 ) -> None:
     residual = [act - pred for act, pred in zip(actual, predicted)]
     df = pd.DataFrame({"x": actual, "y": residual})
