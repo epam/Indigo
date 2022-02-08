@@ -60,6 +60,7 @@ def db(request, indigo):
     yield db
 
     logger.info("Dropping DB...")
+    db.close_connect()
     if db_str == DB_POSTGRES:
         for table in pg_tables:
             logger.info(f'Dropping Postgres table {table}')
