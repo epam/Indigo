@@ -29,31 +29,13 @@ static void setStrValue(const char* source, char* dest, int len)
 static void indigoSetMolfileSavingMode(const char* mode)
 {
     Indigo& self = indigoGetInstance();
-    if (strcasecmp(mode, "2000") == 0)
-        self.molfile_saving_mode = MolfileSaver::MODE_2000;
-    else if (strcasecmp(mode, "3000") == 0)
-        self.molfile_saving_mode = MolfileSaver::MODE_3000;
-    else if (strcasecmp(mode, "auto") == 0)
-        self.molfile_saving_mode = MolfileSaver::MODE_AUTO;
-    else
-        throw IndigoError("unknown value: %s", mode);
+    self.molfile_saving_mode = MolfileSaver::parseFormatMode(mode);
 }
 
 static void indigoGetMolfileSavingMode(Array<char>& value)
 {
     Indigo& self = indigoGetInstance();
-    switch (self.molfile_saving_mode)
-    {
-    case MolfileSaver::MODE_2000:
-        value.readString("2000", true);
-        break;
-    case MolfileSaver::MODE_3000:
-        value.readString("3000", true);
-        break;
-    case MolfileSaver::MODE_AUTO:
-        value.readString("auto", true);
-        break;
-    }
+    MolfileSaver::saveFormatMode(self.molfile_saving_mode, value);
 }
 
 static void indigoSetFilenameEncoding(const char* encoding)

@@ -312,6 +312,7 @@ const char* BingoCore::ringoRxnfile(const char* reaction, int reaction_len)
     ArrayOutput out(self.buffer);
 
     RxnfileSaver saver(out);
+    self.bingo_context->setSaverSettings(saver);
 
     saver.saveReaction(target);
     out.writeByte(0);
