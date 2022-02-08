@@ -172,11 +172,11 @@ def assert_match_query(result: Union[Exception, List[int]],
        sgroups, markush, resonance, pseudoatoms, bigtable and smarts"""
     if isinstance(result, Exception):
         assert expected in str(result)
-    else:
-        assert type(expected) == list
-        targets = []
-        for target in result:
-            targets.append(target)
-            assert target in expected
+    elif type(expected) == list:
+        assert sorted(result) == sorted(expected)
+        # targets = []
+        # for target in result:
+        #     targets.append(target)
+        #     assert target in expected
 
-        assert sorted(targets) == sorted(result)
+        # assert sorted(targets) == sorted(result)

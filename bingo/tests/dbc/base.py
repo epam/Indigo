@@ -226,7 +226,7 @@ class SQLAdapter(DBAdapter):
         connect = self._connect
         t = connect.begin()
         try:
-            result = connect.execute(query)
+            result = connect.execute(text(query))
             if not result.closed:
                 try:
                     rows = result.fetchall()
