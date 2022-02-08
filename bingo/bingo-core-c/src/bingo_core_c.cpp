@@ -21,6 +21,7 @@
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/profiling.h"
 #include "gzip/gzip_scanner.h"
+#include "molecule/molfile_saver.h"
 
 using namespace indigo;
 using namespace indigo::bingo_core;
@@ -169,6 +170,8 @@ void BingoCore::bingoSetConfigInt(const char* name, int value)
         self.bingo_context->reject_invalid_structures = (value != 0);
     else if (strcasecmp(name, "ignore-bad-valence") == 0 || strcasecmp(name, "ignore_bad_valence") == 0)
         self.bingo_context->ignore_bad_valence = (value != 0);
+    else if (strcasecmp(name, "ct_format_save_date") == 0 || strcasecmp(name, "ct-format-save-date") == 0)
+        self.bingo_context->ct_format_save_date = (value != 0);
     else
     {
         bool set = true;
@@ -244,6 +247,8 @@ void BingoCore::bingoGetConfigInt(const char* name, int* value)
         *value = (int)self.bingo_context->reject_invalid_structures;
     else if (strcasecmp(name, "ignore-bad-valence") == 0 || strcasecmp(name, "ignore_bad_valence") == 0)
         *value = (int)self.bingo_context->ignore_bad_valence;
+    else if (strcasecmp(name, "ct_format_save_date") == 0 || strcasecmp(name, "ct-format-save-date") == 0)
+        *value = (int)self.bingo_context->ct_format_save_date;
     else
         throw BingoError("unknown parameter name: %s", name);
 }
@@ -266,6 +271,13 @@ void BingoCore::bingoGetConfigBin(const char* name, const char** value, int* len
     {
         ArrayOutput output(self.buffer);
         self.bingo_context->cmf_dict.save(output);
+        *value = self.buffer.ptr();
+        *len = self.buffer.size();
+    }
+    else if (strcasecmp(name, "CT_FORMAT_MODE") == 0 || strcasecmp(name, "CT-FORMAT-MODE") == 0)
+    {
+        ArrayOutput output(self.buffer);
+        MolfileSaver::saveFormatMode(self.bingo_context->ct_format_mode, self.buffer);
         *value = self.buffer.ptr();
         *len = self.buffer.size();
     }
@@ -295,6 +307,10 @@ void BingoCore::bingoSetConfigBin(const char* name, const char* value, int len)
     else if (strcasecmp(name, "SIMILARITY_TYPE") == 0 || strcasecmp(name, "SIMILARITY-TYPE") == 0)
     {
         self.bingo_context->fp_parameters.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(value);
+    }
+    else if (strcasecmp(name, "CT_FORMAT_MODE") == 0 || strcasecmp(name, "CT-FORMAT-MODE") == 0)
+    {
+        self.bingo_context->ct_format_mode = MolfileSaver::parseFormatMode(value);
     }
     else
         throw BingoError("unknown parameter name: %s", name);

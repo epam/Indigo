@@ -238,6 +238,36 @@ void MolfileSaver::saveQueryCtab3000(QueryMolecule& mol)
     _writeCtab(_output, mol, true);
 }
 
+int MolfileSaver::parseFormatMode(const char* mode)
+{
+    if (strcasecmp(mode, "2000") == 0)
+        return MolfileSaver::MODE_2000;
+    else if (strcasecmp(mode, "3000") == 0)
+        return MolfileSaver::MODE_3000;
+    else if (strcasecmp(mode, "auto") == 0)
+        return MolfileSaver::MODE_AUTO;
+    else
+        throw Error("unknown format mode: %s, supported values: 2000, 3000, auto", mode);
+}
+
+void MolfileSaver::saveFormatMode(int mode, Array<char>& output)
+{
+    switch (mode)
+    {
+    case MolfileSaver::MODE_2000:
+        output.readString("2000", true);
+        break;
+    case MolfileSaver::MODE_3000:
+        output.readString("3000", true);
+        break;
+    case MolfileSaver::MODE_AUTO:
+        output.readString("auto", true);
+        break;
+    default:
+        throw Error("unknown format mode: %d", mode);
+    }
+}
+
 void MolfileSaver::_writeHeader(BaseMolecule& mol, Output& output, bool zcoord)
 {
     struct tm lt;

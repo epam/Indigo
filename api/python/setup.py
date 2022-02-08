@@ -124,7 +124,7 @@ setup(
     download_url="https://pypi.org/project/epam.indigo",
     test_suite="tests",
     extras_require={
-        "ml": ["scikit-learn"],
+        "ml": ["scikit-learn", "torch", "pandas", "dgl", "tqdm", "click"],
         "notebooks": [
             "scikit-learn",
             "torch",
@@ -133,6 +133,8 @@ setup(
             "seaborn",
             "pandas",
             "bokeh",
+            "lightgbm",
+            "optuna",
         ],
     },
 )
