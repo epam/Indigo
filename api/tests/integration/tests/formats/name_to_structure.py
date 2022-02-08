@@ -130,6 +130,7 @@ def testCyclic():
         "1,3-dimethylcyclohexane",
         "1,2-dimethylcyclohexane",
         "1,1-dimethylcyclohexane",
+        "7-oxabicyclo[2.2.1]heptane",
     ]
     namesToSmiles(names)
     print("DONE\n")
