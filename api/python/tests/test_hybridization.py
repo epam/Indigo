@@ -24,7 +24,24 @@ from indigo.ml.hybridization import get_hybridization
                 "unhybridized",
                 "unhybridized",
             ],
-        )
+        ),
+        ("[C-]#[O+]", ["sp", "sp"]),  # carbon monoxide
+        ("O=C=O", ["sp2", "sp", "sp2"]),  # carbon dioxide
+        ("C#N", ["sp", "sp", "unhybridized"]),  # hydrogen cyanide
+        (
+            "O=C(N)C",  # acetamide
+            [
+                "sp2",
+                "sp2",
+                "sp2",
+                "sp3",
+                "unhybridized",
+                "unhybridized",
+                "unhybridized",
+                "unhybridized",
+                "unhybridized",
+            ],
+        ),
     ],
 )
 def test_get_hybridization(molecule_smiles, expecting):
