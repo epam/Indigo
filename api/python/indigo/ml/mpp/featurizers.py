@@ -1,10 +1,6 @@
-import dgl  # type: ignore
 import torch  # type: ignore
-import torch.nn.functional as F  # type: ignore
 
-from indigo import Indigo  # type: ignore
-from indigo import *
-
+from indigo import Indigo, IndigoObject  # type: ignore
 
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
@@ -118,33 +114,46 @@ def atom_in_ring(mol: IndigoObject) -> dict:
     """
     in_aromatic_ring = []
     for atom in mol.iterateAtoms():
-        in_aromatic_ring.append(any([nei.bond().bondOrder() == 4 for nei in atom.iterateNeighbors()]))
+        in_aromatic_ring.append(
+            any(
+                [
+                    nei.bond().bondOrder() == 4
+                    for nei in atom.iterateNeighbors()
+                ]
+            )
+        )
 
-    return {"in_aromatic_ring": torch.tensor(in_aromatic_ring, dtype=torch.int64).unsqueeze(1)}
+    return {
+        "in_aromatic_ring": torch.tensor(
+            in_aromatic_ring, dtype=torch.int64
+        ).unsqueeze(1)
+    }
 
 
 def stereocenter_types(mol: IndigoObject) -> dict:
     """Get stereocenter type for each atom (except implicit hydrogens) in a molecule.
-    
-    Possible values of stereocenter types are Indigo.ABS. Indigo.OR, Indigo.AND, Indigo.EITHER 
+
+    Possible values of stereocenter types are Indigo.ABS. Indigo.OR, Indigo.AND, Indigo.EITHER
     or zero if stereotype is unknown.
-    
+
     Args:
         IndigoObject: molecule object
 
     Returns:
         dict: key - feature name, value - torch.tensor of stereocenter types for each atom
-        
+
     """
     stereocenter_types = []
     for atom in mol.iterateAtoms():
-        stereocenter_types.append(atom.stereocenterType())  
+        stereocenter_types.append(atom.stereocenterType())
 
-    return {"stereocenter_types": torch.tensor(stereocenter_types).unsqueeze(1)}
+    return {
+        "stereocenter_types": torch.tensor(stereocenter_types).unsqueeze(1)
+    }
 
 
 def implicit_hydrogens(mol: IndigoObject) -> dict:
-    """Get number of implicit hydrogens for each atom in a molecule 
+    """Get number of implicit hydrogens for each atom in a molecule
 
     Args:
         IndigoObject: molecule object
@@ -156,7 +165,9 @@ def implicit_hydrogens(mol: IndigoObject) -> dict:
     for atom in mol.iterateAtoms():
         implicit_hydrogens.append(atom.countImplicitHydrogens())
 
-    return {"implicit_hydrogens": torch.tensor(implicit_hydrogens).unsqueeze(1)}
+    return {
+        "implicit_hydrogens": torch.tensor(implicit_hydrogens).unsqueeze(1)
+    }
 
 
 def bond_order(mol: IndigoObject) -> dict:
@@ -173,7 +184,7 @@ def bond_order(mol: IndigoObject) -> dict:
     orders = []
     for bond in mol.iterateBonds():
         orders.append(bond.bondOrder())
-    
+
     return {"orders": torch.tensor(orders * 2).unsqueeze(1).float()}
 
 
@@ -209,7 +220,7 @@ def aromatic_bonds(mol: IndigoObject) -> dict:
     for bond in mol.iterateBonds():
         is_aromatic.append(bond.bondOrder() == 4)
 
-    return {"is_aromatic": torch.tensor(topologies * 2).unsqueeze(1).float()}
+    return {"is_aromatic": torch.tensor(is_aromatic * 2).unsqueeze(1).float()}
 
 
 def bond_stereo(mol: IndigoObject) -> dict:
