@@ -1,6 +1,6 @@
 import torch  # type: ignore
 
-from indigo.ml.mpp.featurizers import (
+from indigo.ml.mpp.featurizers import (  # type: ignore
     aromatic_bonds,
     atom_in_ring,
     atomic_charges,
