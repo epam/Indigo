@@ -1,7 +1,6 @@
 import pytest
 
 from indigo import Indigo
-
 from indigo.ml.hybridization import get_hybridization
 
 
@@ -42,6 +41,28 @@ from indigo.ml.hybridization import get_hybridization
                 "unhybridized",
             ],
         ),
+        (
+            "OS(=O)(=O)O",  # sulfuric acid
+            [
+                "sp3",
+                "sp3",
+                "sp2",
+                "sp2",
+                "sp3",
+                "unhybridized",
+                "unhybridized",
+            ],
+        ),
+        ("N(=O)O", ["sp2", "sp2", "sp3", "unhybridized"]),  # nitrous acid
+        (
+            "O=[Xe](=O)(=O)=O",  # xenon tetroxide
+            ["sp2", "sp3", "sp2", "sp2", "sp2"],
+        ),
+        (
+            "FS(F)(F)(F)(F)F",  # sulfur hexafluoride
+            ["sp3", "sp3d2", "sp3", "sp3", "sp3", "sp3", "sp3"],
+        ),
+        ("FBr(F)F", ["sp3", "sp3d", "sp3", "sp3"]),  # bromine trifluoride
     ],
 )
 def test_get_hybridization(molecule_smiles, expecting):

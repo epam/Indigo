@@ -1,15 +1,5 @@
 import math
 
-from indigo import Indigo  # type: ignore
-
-indigo = Indigo()
-
-mol = indigo.loadMolecule("N.N.N.N.N.N.[Cl-].[Cl-].[Co+2]")
-
-mol.unfoldHydrogens()
-mol.aromatize()
-
-
 OUTER_ELECTRONS = {
     "H": 1,
     "He": 2,
@@ -33,39 +23,68 @@ OUTER_ELECTRONS = {
     "Ca": 2,
     "Sc": 3,
     "Ti": 4,
-    "V": 5,
+    "V": 5,  # 4s2 3d3 (!)
     "Cr": 6,  # 4s1 3d5 (!)
     "Mn": 7,  # 4s2 3d5
     "Fe": 8,  # 4s2 3d6
     "Co": 9,
     "Ni": 10,
-    "Cu": 11,
-    "Zn": 12,
-    "Ga": 13,
-    "Ge": 14,
-    "As": 15,
+    "Cu": 1,
+    "Zn": 2,
+    "Ga": 3,
+    "Ge": 4,
+    "As": 5,
+    "Se": 6,
+    "Br": 7,
+    "Kr": 8,
+    "Rb": 1,
+    "Sr": 2,
+    "Y": 3,  # 5s2 4d1
+    "Zr": 4,  # 5s2 4d2
+    "Nb": 5,  # 5s1 4d4 (!!!)
+    "Mo": 6,  # 5s1 4d5
+    "Tc": 7,  # 5s2 4d5
+    "Ru": 8,  # 5s1 4d7 (what??)
+    "Rh": 9,  # 5s1 4d8
+    "Pd": 10,  # 4d10 (!!!)
+    "Ag": 1,
+    "Cd": 2,
+    "In": 3,
+    "Sn": 4,
+    "Sb": 5,
+    "Te": 6,
+    "I": 7,
+    "Xe": 8,
+    "Cs": 1,
+    "Ba": 2,
+    "La": 3,  # 6s2 5d1
+    "Ce": 4,  # 6s2 4f2 (!!!) Atomic num = 58, lantanoids
 }
 
-N_ORBS_HYBRIDIZATION = {1: "unhybridized", 2: "sp", 3: "sp2", 4: "sp3"}
+N_ORBS_HYBRIDIZATION = {
+    1: "unhybridized",
+    2: "sp",
+    3: "sp2",
+    4: "sp3",
+    5: "sp3d",
+    6: "sp3d2",
+}
 
 
 def num_bonds(atom):
     bonds = 0
     for nei in atom.iterateNeighbors():
-        # print(nei.symbol(), nei.bond().bondOrder())
         bonds += nei.bond().bondOrder()
-    # print(f"Atom {atom.symbol()} has {bonds} bonds")
     return bonds
 
 
-def has_lone_pair(atom):
-    return OUTER_ELECTRONS[atom.symbol()] - atom.degree() >= 2
+def has_lone_pair(atom, n_bonds):
+    return OUTER_ELECTRONS[atom.symbol()] - n_bonds >= 2
 
 
 def lone_pairs(atom, n_bonds):
     outer_electrons = OUTER_ELECTRONS[atom.symbol()]
-    pairs = math.floor((outer_electrons - atom.degree()) / 2)
-    print(pairs)
+    pairs = math.floor((outer_electrons - n_bonds) / 2)
     return pairs
 
 
@@ -99,8 +118,8 @@ def oxygen_hybridization(oxygen):
     return "sp3"
 
 
-def nitrogen_hybridization(nitrogen):
-    n_orbs = nitrogen.degree() + has_lone_pair(nitrogen)
+def nitrogen_hybridization(nitrogen, n_bonds):
+    n_orbs = nitrogen.degree() + has_lone_pair(nitrogen, n_bonds)
     minus_induction = False
     for nei in nitrogen.iterateNeighbors():
         if nei.symbol() == "C" and match_minus_induction(nei):
@@ -112,7 +131,7 @@ def nitrogen_hybridization(nitrogen):
 
 def complex_hybridization(atom, neighbors):
     if neighbors == 4:
-        if atom.symbol() in ["Pt", "Ni", "Cu", "Au", "Pd"]:  # else?
+        if atom.symbol() in ["Pt", "Ni", "Cu", "Au", "Pd"]:
             return "sp2d"
         return "sp3"
     if neighbors == 5:
@@ -134,12 +153,15 @@ def get_hybridization(atom):
     # don't bother with the actinides and beyond
     elif atom.atomicNumber() >= 89:
         return "unhybridized"  # or "s"?
+    if atom.atomicNumber() == 1:
+        return "unhybridized"  # or "s"?
 
     n_bonds = num_bonds(atom)
 
-    if n_bonds <= 1:
+    if n_bonds == 0:
         return "unhybridized"  # or "s"?
-    if n_bonds >= 8:  # aromatic
+
+    if atom.symbol() == "C" and n_bonds >= 8:  # aromatic
         return "sp2"
 
     if atom.atomicNumber() == 6:
@@ -147,29 +169,14 @@ def get_hybridization(atom):
     if atom.atomicNumber() == 8:
         return oxygen_hybridization(atom)
     if atom.atomicNumber() == 7:
-        return nitrogen_hybridization(atom)
+        return nitrogen_hybridization(atom, n_bonds)
 
     if atom.degree() >= 4:
-        complex_hybridization(atom, atom.degree())
+        return complex_hybridization(atom, atom.degree())
 
-    # number of hybridized orbitals for central atom = (number of outer shell
-    # electrons plus number of monovalent neighbors minus cation charge plus
-    # anion charge) / 2
-    # H = (O + M - C + A) / 2
+    # number of hybridized orbitals = number of neighbours + number of lone
+    # electron pairs
+    # H = N + L
 
-    # a simpler formula:
-    # H = O + L
-    # number of neighbours + number of lobe electron pairs
-
-    n_orbs = atom.degree() + lone_pairs
+    n_orbs = atom.degree() + lone_pairs(atom, n_bonds)
     return N_ORBS_HYBRIDIZATION[n_orbs]
-
-
-# hybridizations = []
-# for atom in mol.iterateAtoms():
-#     print(f"\nAtom {atom.index()} {atom.symbol()}: {atom.degree()} neighbors")
-#     hybridization = get_hybridization(atom)
-#     print(f"Atom {atom.symbol()} has {hybridization} hybridization")
-#     hybridizations.append(hybridization)
-#
-# print(hybridizations)
