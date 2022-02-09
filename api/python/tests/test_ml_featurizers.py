@@ -1,4 +1,4 @@
-import torch
+import torch  # type: ignore
 
 from indigo.ml.mpp.featurizers import (
     aromatic_bonds,
