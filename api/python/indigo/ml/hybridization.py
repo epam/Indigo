@@ -1,4 +1,7 @@
 import math
+from typing import Optional
+
+import indigo
 
 OUTER_ELECTRONS = {
     "H": 1,
@@ -71,24 +74,24 @@ N_ORBS_HYBRIDIZATION = {
 }
 
 
-def num_bonds(atom):
+def num_bonds(atom: indigo.IndigoObject) -> int:
     bonds = 0
     for nei in atom.iterateNeighbors():
         bonds += nei.bond().bondOrder()
     return bonds
 
 
-def has_lone_pair(atom, n_bonds):
+def has_lone_pair(atom: indigo.IndigoObject, n_bonds: int) -> bool:
     return OUTER_ELECTRONS[atom.symbol()] - n_bonds >= 2
 
 
-def lone_pairs(atom, n_bonds):
+def lone_pairs(atom: indigo.IndigoObject, n_bonds: int) -> int:
     outer_electrons = OUTER_ELECTRONS[atom.symbol()]
     pairs = math.floor((outer_electrons - n_bonds) / 2)
     return pairs
 
 
-def cardon_hybridization(carbon):
+def cardon_hybridization(carbon: indigo.IndigoObject) -> Optional[str]:
     neighbors = carbon.degree()
     if neighbors == 4:
         return "sp3"
@@ -99,14 +102,14 @@ def cardon_hybridization(carbon):
     return None
 
 
-def match_minus_induction(atom):
+def match_minus_induction(atom: indigo.IndigoObject) -> bool:
     for nei in atom.iterateNeighbors():
         if nei.bond().bondOrder() in [2, 4]:
             return True
     return False
 
 
-def oxygen_hybridization(oxygen):
+def oxygen_hybridization(oxygen: indigo.IndigoObject) -> str:
     for nei in oxygen.iterateNeighbors():
         if nei.bond().bondOrder() == 2:
             return "sp2"
@@ -118,7 +121,9 @@ def oxygen_hybridization(oxygen):
     return "sp3"
 
 
-def nitrogen_hybridization(nitrogen, n_bonds):
+def nitrogen_hybridization(
+    nitrogen: indigo.IndigoObject, n_bonds: int
+) -> Optional[str]:
     n_orbs = nitrogen.degree() + has_lone_pair(nitrogen, n_bonds)
     minus_induction = False
     for nei in nitrogen.iterateNeighbors():
@@ -126,10 +131,14 @@ def nitrogen_hybridization(nitrogen, n_bonds):
             minus_induction = True
     if n_orbs == 4 and minus_induction:
         return N_ORBS_HYBRIDIZATION[n_orbs - 1]
-    return N_ORBS_HYBRIDIZATION[n_orbs]
+    if n_orbs <= 4:
+        return N_ORBS_HYBRIDIZATION[n_orbs]
+    return None
 
 
-def complex_hybridization(atom, neighbors):
+def complex_hybridization(
+    atom: indigo.IndigoObject, neighbors: int
+) -> Optional[str]:
     if neighbors == 4:
         if atom.symbol() in ["Pt", "Ni", "Cu", "Au", "Pd"]:
             return "sp2d"
@@ -145,14 +154,14 @@ def complex_hybridization(atom, neighbors):
     return None
 
 
-def get_hybridization(atom):
+def get_hybridization(atom: indigo.IndigoObject) -> Optional[str]:
     # if the atomic number is undefined or ambiguous
     if atom.atomicNumber() == 0:
         return None
 
-    # don't bother with the actinides and beyond
-    elif atom.atomicNumber() >= 89:
-        return "unhybridized"  # or "s"?
+    # don't bother with the lantanoids and beyond
+    elif atom.atomicNumber() >= 57:
+        return None
     if atom.atomicNumber() == 1:
         return "unhybridized"  # or "s"?
 
@@ -179,4 +188,6 @@ def get_hybridization(atom):
     # H = N + L
 
     n_orbs = atom.degree() + lone_pairs(atom, n_bonds)
-    return N_ORBS_HYBRIDIZATION[n_orbs]
+    if n_orbs in N_ORBS_HYBRIDIZATION:
+        return N_ORBS_HYBRIDIZATION[n_orbs]
+    return None
