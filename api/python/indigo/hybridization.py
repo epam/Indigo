@@ -163,7 +163,8 @@ def complex_hybridization(
 def in_aromatic_ring(atom):
     for nei in atom.iterateNeighbors():
         if nei.bond().topology() == 10:
-            return
+            return True
+    return False
 
 
 def get_hybridization(atom: "IndigoObject") -> Optional[str]:

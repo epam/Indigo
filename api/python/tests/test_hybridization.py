@@ -20,7 +20,7 @@ from indigo.hybridization import get_hybridization
         ),
         (
             "OC1=CC=CC=C1",  # phenol
-            ["sp2", "sp2", "sp2", "sp2", "sp2", "sp2", "sp2"]
+            ["sp2", "sp2", "sp2", "sp2", "sp2", "sp2", "sp2"],
         ),
         ("[C-]#[O+]", ["sp", "sp"]),  # carbon monoxide
         ("O=C=O", ["sp2", "sp", "sp2"]),  # carbon dioxide
@@ -55,10 +55,8 @@ from indigo.hybridization import get_hybridization
         ),
         ("FBr(F)F", ["sp3", "sp3d", "sp3", "sp3"]),  # bromine trifluoride
         ("[Be](Cl)Cl", ["sp", "sp3", "sp3"]),
-        (
-            "C1=CNC=C1",
-            ["sp2", "sp2", "sp2", "sp2", "sp2"]
-        ),
+        ("C1=CNC=C1", ["sp2", "sp2", "sp2", "sp2", "sp2"]),
+        ("C1=CC=CS1", ["sp2", "sp2", "sp2", "sp2", "sp2"]),  # thiophene
     ],
 )
 def test_get_hybridization(molecule_smiles, expecting):
