@@ -169,8 +169,9 @@ def in_aromatic_ring(atom):
 def get_hybridization(atom: "IndigoObject") -> Optional[str]:
     """Returns hybridization string for an atom from a molecule.
 
-    Works only with atoms with atomic numbers from 1 to 57. Don't bother with
-    the lantanoids and beyond. If atom
+    Works only with atoms with atomic numbers from 1 to 56. Don't bother with
+    the lantanoids and beyond. If atomic number is undefined or ambiguous or >
+    56 raises IndigoException.
 
     Args:
         atom: an indigo.IndigoObject for the atom.
