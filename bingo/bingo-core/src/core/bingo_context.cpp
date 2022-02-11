@@ -21,9 +21,11 @@
 #include "bingo_error.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_auto_loader.h"
+#include "molecule/molfile_saver.h"
 #include "molecule/smiles_loader.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rsmiles_loader.h"
+#include "reaction/rxnfile_saver.h"
 
 // const char * bingo_version_string = "1.7-beta3";
 
@@ -49,6 +51,7 @@ BingoContext::BingoContext(int id_)
     zero_unknown_aromatic_hydrogens.setName("zero-unknown-aromatic-hydrogens");
     reject_invalid_structures.setName("reject-invalid-structures");
     ignore_bad_valence.setName("ignore-bad-valence");
+    ct_format_save_date.setName("ct_format_save_date");
 }
 
 void BingoContext::reset()
@@ -72,6 +75,8 @@ void BingoContext::reset()
     zero_unknown_aromatic_hydrogens.reset();
     reject_invalid_structures.reset();
     ignore_bad_valence.reset();
+    ct_format_save_date.reset();
+    ct_format_mode = 0;
 }
 
 BingoContext::~BingoContext()
@@ -253,4 +258,16 @@ void BingoContext::setLoaderSettings(RSmilesLoader& loader)
     loader.stereochemistry_options = getStereocentersOptions();
     loader.ignore_cistrans_errors = ignore_cistrans_errors;
     loader.ignore_bad_valence = ignore_bad_valence;
+}
+
+void BingoContext::setSaverSettings(MolfileSaver& saver)
+{
+    saver.mode = ct_format_mode;
+    saver.skip_date = !ct_format_save_date;
+}
+
+void BingoContext::setSaverSettings(RxnfileSaver& saver)
+{
+    saver.molfile_saving_mode = ct_format_mode;
+    saver.skip_date = !ct_format_save_date;
 }

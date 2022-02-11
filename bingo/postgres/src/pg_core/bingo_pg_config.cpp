@@ -29,6 +29,7 @@ IMPL_ERROR(BingoPgConfig, "bingo postgres config");
 BingoPgConfig::BingoPgConfig(bingo_core::BingoCore& bingoCore) : bingoCore(bingoCore)
 {
     _stringParams.insert("SIMILARITY_TYPE");
+    _stringParams.insert("CT_FORMAT_MODE");
 }
 
 void BingoPgConfig::readDefaultConfig(const char* schema_name)

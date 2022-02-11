@@ -7,8 +7,8 @@ import seaborn as sns  # type: ignore
 from bokeh.models import ColumnDataSource, HoverTool, Legend  # type: ignore
 from bokeh.plotting import figure, show  # type: ignore
 
-from indigo import Indigo
-from indigo.renderer import IndigoRenderer
+from indigo import Indigo  # type: ignore
+from indigo.renderer import IndigoRenderer  # type: ignore
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
