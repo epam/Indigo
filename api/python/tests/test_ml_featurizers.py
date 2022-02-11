@@ -9,6 +9,9 @@ from indigo.ml.mpp.featurizers import (  # type: ignore
     atomic_number,
     atomic_radicals,
     atomic_valences,
+    acid_pka_values,
+    basic_pka_values,
+    atomic_masses,
     bond_order,
     bond_stereo,
     implicit_hydrogens,
@@ -199,6 +202,105 @@ class TestIndigoFeaturizers(TestIndigoBase):
                     [2, 2, 2, 1, 1, 2, 0, 0]
                 ).unsqueeze(1)
             },
+        )
+
+        self.assertTensorEqual(
+            acid_pka_values(m1),
+            {
+                "acid_pka_values": torch.tensor(
+                    [100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+                ).unsqueeze(1)
+            }
+        )
+        self.assertTensorEqual(
+            acid_pka_values(m2),
+            {
+                "acid_pka_values": torch.tensor(
+                    [100.0, 100.0]
+                ).unsqueeze(1)
+            }
+        )
+        self.assertTensorEqual(
+            acid_pka_values(m3),
+            {
+                "acid_pka_values": torch.tensor(
+                    [100.0, 100.0]
+                ).unsqueeze(1)
+            }
+        )
+        self.assertTensorEqual(
+            acid_pka_values(m4),
+            {
+                "acid_pka_values": torch.tensor(
+                    [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+                ).unsqueeze(1)
+            }
+        )
+
+        self.assertTensorEqual(
+            basic_pka_values(m1),
+            {
+                "basic_pka_values": torch.tensor(
+                    [-100.0, -100.0, -100.0, -100.0, -100.0, -100.0]
+                ).unsqueeze(1)
+            }
+        )
+        self.assertTensorEqual(
+            basic_pka_values(m2),
+            {
+                "basic_pka_values": torch.tensor(
+                    [-100.0, -100.0]
+                ).unsqueeze(1)
+            }
+        )
+        self.assertTensorEqual(
+            basic_pka_values(m3),
+            {
+                "basic_pka_values": torch.tensor(
+                    [-100.0, -100.0]
+                ).unsqueeze(1)
+            }
+        )
+        self.assertTensorEqual(
+            basic_pka_values(m4),
+            {
+                "basic_pka_values": torch.tensor(
+                    [-100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0, -100.0]
+                ).unsqueeze(1)
+            }
+        )
+
+        self.assertTensorEqual(
+            atomic_masses(m1),
+            {
+                "atomic_masses": torch.tensor(
+                    [12.0107, 12.0107, 12.0107, 12.0107, 12.0107, 12.0107]
+                ).unsqueeze(1)
+            }
+        )
+        self.assertTensorEqual(
+            atomic_masses(m2),
+            {
+                "atomic_masses": torch.tensor(
+                    [2.0141, 1.0079]
+                ).unsqueeze(1)
+            }
+        )
+        self.assertTensorEqual(
+            atomic_masses(m3),
+            {
+                "atomic_masses": torch.tensor(
+                    [12.0107, 12.0107]
+                ).unsqueeze(1)
+            }
+        )
+        self.assertTensorEqual(
+            atomic_masses(m4),
+            {
+                "atomic_masses": torch.tensor(
+                    [12.0107, 12.0107, 12.0107, 12.0107, 12.0107, 12.0107, 35.4530, 79.9040]
+                ).unsqueeze(1)
+            }
         )
 
 

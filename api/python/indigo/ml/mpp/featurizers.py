@@ -170,6 +170,68 @@ def implicit_hydrogens(mol: IndigoObject) -> dict:
     }
 
 
+def basic_pka_values(mol: IndigoObject, level=5, min_level=2) -> dict:
+    """Get basic pka value for each atom in a molecule
+
+    Args:
+        IndigoObject: molecule object
+        level: sets maximum level of advanced pKa model is used for pKa estimation
+        min_level: sets minimal level of advanced pKa model is used for pKa estimation
+
+    Returns:
+        dict: key - feature name, value - torch.tensor of basic pka values
+    """
+    basic_pka_values = []
+    for atom in mol.iterateAtoms():
+        basic_pka_values.append(
+            mol.getBasicPkaValue(atom, level=level, min_level=min_level)
+        )
+
+    return {"basic_pka_values": torch.tensor(basic_pka_values).unsqueeze(1)}
+
+
+def acid_pka_values(mol: IndigoObject, level=5, min_level=2) -> dict:
+    """Get acid pka value for each atom in a molecule
+
+    Args:
+        IndigoObject: molecule object
+        level: sets maximum level of advanced pKa model is used for pKa estimation
+        min_level: sets minimal level of advanced pKa model is used for pKa estimation
+
+    Returns:
+        dict: key - feature name, value - torch.tensor of acid pka values
+    """
+    acid_pka_values = []
+    for atom in mol.iterateAtoms():
+        acid_pka_values.append(
+            mol.getAcidPkaValue(atom, level=level, min_level=min_level)
+        )
+
+    return {"acid_pka_values": torch.tensor(acid_pka_values).unsqueeze(1)}
+
+
+def atomic_masses(mol: IndigoObject) -> dict:
+    """Get acid pka value for each atom in a molecule
+
+    Args:
+        IndigoObject: molecule object
+
+    Returns:
+        dict: key - feature name, value - torch.tensor of acid pka values
+    """
+
+    atomic_masses = []
+    indigo = Indigo()
+
+    for atom in mol.iterateAtoms():
+        # hack way of obtaining atomic mass, should be reimplement afterwards
+        smiles = fr"[{atom.isotope()}{atom.symbol()}]"
+        atom_molecule = indigo.loadMolecule(smiles)
+        atomic_masses.append(round(atom_molecule.molecularWeight(), 4))
+
+    return {"atomic_masses": torch.tensor(atomic_masses).unsqueeze(1)}
+
+
 def bond_order(mol: IndigoObject) -> dict:
     """Get the bond order for each bond in a molecule.
 
