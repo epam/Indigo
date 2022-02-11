@@ -1,3 +1,5 @@
+from typing import Optional
+
 import torch  # type: ignore
 
 from indigo import Indigo, IndigoObject  # type: ignore
@@ -190,7 +192,9 @@ def basic_pka_values(mol: IndigoObject, level=5, min_level=2) -> dict:
     return {"basic_pka_values": torch.tensor(basic_pka_values).unsqueeze(1)}
 
 
-def acid_pka_values(mol: IndigoObject, level=5, min_level=2) -> dict:
+def acid_pka_values(
+    mol: IndigoObject, level: Optional[int] = 5, min_level: Optional[int] = 2
+) -> dict:
     """Get acid pka value for each atom in a molecule
 
     Args:
