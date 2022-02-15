@@ -665,7 +665,7 @@ const char* BingoCore::mangoMolfile(const char* molecule, int molecule_len)
     ArrayOutput out(self.buffer);
 
     MolfileSaver saver(out);
-
+    self.bingo_context->setSaverSettings(saver);
     saver.saveMolecule(target);
     out.writeByte(0);
     return self.buffer.ptr();
