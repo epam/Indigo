@@ -42,12 +42,12 @@ def load_data(dataset: pd.DataFrame):
         dataset, frac_list=None, shuffle=False, random_state=None
     )
     train_loader = GraphDataLoader(
-        dataset=train_set, shuffle=True, drop_last=False
+        dataset=train_set, shuffle=True, drop_last=False, batch_size=4
     )
     val_loader = GraphDataLoader(
-        dataset=val_set, shuffle=True, drop_last=False
+        dataset=val_set, shuffle=True, drop_last=False, batch_size=1
     )
     test_loader = GraphDataLoader(
-        dataset=test_set, shuffle=True, drop_last=False
+        dataset=test_set, shuffle=True, drop_last=False, batch_size=1
     )
     return train_loader, val_loader, test_loader
