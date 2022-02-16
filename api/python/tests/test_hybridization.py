@@ -10,52 +10,52 @@ from indigo.hybridization import get_hybridization
         (
             "c1ccccc1",  # benzene
             [
-                "sp2",
-                "sp2",
-                "sp2",
-                "sp2",
-                "sp2",
-                "sp2",
+                "SP2",
+                "SP2",
+                "SP2",
+                "SP2",
+                "SP2",
+                "SP2",
             ],
         ),
         (
             "OC1=CC=CC=C1",  # phenol
-            ["sp2", "sp2", "sp2", "sp2", "sp2", "sp2", "sp2"],
+            ["SP2", "SP2", "SP2", "SP2", "SP2", "SP2", "SP2"],
         ),
-        ("[C-]#[O+]", ["sp", "sp"]),  # carbon monoxide
-        ("O=C=O", ["sp2", "sp", "sp2"]),  # carbon dioxide
-        ("C#N", ["sp", "sp"]),  # hydrogen cyanide
+        ("[C-]#[O+]", ["SP", "SP"]),  # carbon monoxide
+        ("O=C=O", ["SP2", "SP", "SP2"]),  # carbon dioxide
+        ("C#N", ["SP", "SP"]),  # hydrogen cyanide
         (
             "O=C(N)C",  # acetamide
             [
-                "sp2",
-                "sp2",
-                "sp",
-                "sp3",
+                "SP2",
+                "SP2",
+                "SP",
+                "SP3",
             ],
         ),
         (
             "OS(=O)(=O)O",  # sulfuric acid
             [
-                "sp3",
-                "sp3",
-                "sp2",
-                "sp2",
-                "sp3",
+                "SP3",
+                "SP3",
+                "SP2",
+                "SP2",
+                "SP3",
             ],
         ),
-        ("N(=O)O", ["sp2", "sp2", "sp3"]),  # nitrous acid
+        ("N(=O)O", ["SP2", "SP2", "SP3"]),  # nitrous acid
         (
             "O=[Xe](=O)(=O)=O",  # xenon tetroxide
-            ["sp2", "sp3", "sp2", "sp2", "sp2"],
+            ["SP2", "SP3", "SP2", "SP2", "SP2"],
         ),
         (
             "FS(F)(F)(F)(F)F",  # sulfur hexafluoride
-            ["sp3", "sp3d2", "sp3", "sp3", "sp3", "sp3", "sp3"],
+            ["SP3", "SP3D2", "SP3", "SP3", "SP3", "SP3", "SP3"],
         ),
-        ("FBr(F)F", ["sp3", "sp3d", "sp3", "sp3"]),  # bromine trifluoride
-        ("[Be](Cl)Cl", ["sp", "sp3", "sp3"]),
-        ("C1=CC=CS1", ["sp2", "sp2", "sp2", "sp2", "sp2"]),  # thiophene
+        ("FBr(F)F", ["SP3", "SP3D", "SP3", "SP3"]),  # bromine trifluoride
+        ("[Be](Cl)Cl", ["SP", "SP3", "SP3"]),
+        ("C1=CC=CS1", ["SP2", "SP2", "SP2", "SP2", "SP2"]),  # thiophene
     ],
 )
 def test_get_hybridization(molecule_smiles, expecting):

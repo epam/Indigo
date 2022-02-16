@@ -1,4 +1,5 @@
 import math
+from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
 from indigo.exceptions import IndigoException
@@ -67,16 +68,27 @@ OUTER_ELECTRONS = {
     "Ce": 4,  # 6s2 4f2 (!!!) Atomic num = 58, lantanoids
 }
 
-N_ORBS_HYBRIDIZATION = {
-    1: "unhybridized",
-    2: "sp",
-    3: "sp2",
-    4: "sp3",
-    5: "sp3d",
-    6: "sp3d2",
-    7: "sp3d3",
-    8: "sp3d4",
-}
+# N_ORBS_HYBRIDIZATION = {
+#     1: "s",
+#     2: "sp",
+#     3: "sp2",
+#     4: "sp3",
+#     5: "sp3d",
+#     6: "sp3d2",
+#     7: "sp3d3",
+#     8: "sp3d4",
+# }
+
+
+class EnumHybridizations(Enum):
+    S = 1
+    SP = 2
+    SP2 = 3
+    SP3 = 4
+    SP3D = 5
+    SP3D2 = 6
+    SP3D3 = 7
+    SP3D4 = 8
 
 
 def num_bonds(atom: "IndigoObject") -> int:
@@ -97,15 +109,15 @@ def lone_pairs(atom: "IndigoObject", n_bonds: int) -> int:
     return pairs
 
 
-def cardon_hybridization(carbon: "IndigoObject") -> Optional[str]:
+def carbon_hybridization(carbon: "IndigoObject") -> Optional[str]:
     neighbors = carbon.degree() + carbon.countImplicitHydrogens()
     if neighbors == 4:
-        return "sp3"
+        return "SP3"
     if neighbors == 3:
-        return "sp2"
+        return "SP2"
     if neighbors <= 2:
-        return "sp"
-    return None
+        return "SP"
+    raise IndigoException("Couldn't calculate C hybridization properly")
 
 
 def match_minus_induction(atom: "IndigoObject") -> bool:
@@ -118,13 +130,13 @@ def match_minus_induction(atom: "IndigoObject") -> bool:
 def oxygen_hybridization(oxygen: "IndigoObject") -> str:
     for nei in oxygen.iterateNeighbors():
         if nei.bond().bondOrder() == 2:
-            return "sp2"
+            return "SP2"
         if nei.bond().bondOrder() == 3:
             # for CO, but some sources do not recognize "sp" for oxygen
-            return "sp"
+            return "SP"
         if nei.symbol() == "C" and match_minus_induction(nei):
-            return "sp2"
-    return "sp3"
+            return "SP2"
+    return "SP3"
 
 
 def nitrogen_hybridization(
@@ -136,10 +148,10 @@ def nitrogen_hybridization(
         if nei.symbol() == "C" and match_minus_induction(nei):
             minus_induction = True
     if n_orbs == 4 and minus_induction:
-        return N_ORBS_HYBRIDIZATION[n_orbs - 1]
+        return EnumHybridizations(n_orbs - 1).name
     if n_orbs <= 4:
-        return N_ORBS_HYBRIDIZATION[n_orbs]
-    return None
+        return EnumHybridizations(n_orbs).name
+    raise IndigoException("Couldn't calculate N hybridization properly")
 
 
 def complex_hybridization(
@@ -148,19 +160,20 @@ def complex_hybridization(
     if neighbors == 4:
         if atom.symbol() in ["Pt", "Ni", "Cu", "Au", "Pd"]:
             return "sp2d"
-        return "sp3"
+        return "SP3"
     if neighbors == 5:
-        return "sp3d"
+        return "SP3D"
     if neighbors == 6:
-        return "sp3d2"
+        return "SP3D2"
     if neighbors == 7:
-        return "sp3d3"
+        return "SP3D3"
     if neighbors == 8:
-        return "sp3d4"
-    return None
+        return "SP3D4"
+    raise IndigoException(f"Couldn't calculate {atom.symbol()} hybridization "
+                          f"properly")
 
 
-def in_aromatic_ring(atom):
+def in_aromatic_ring(atom: "IndigoObject") -> bool:
     for nei in atom.iterateNeighbors():
         if nei.bond().topology() == 10:
             return True
@@ -187,23 +200,24 @@ def get_hybridization(atom: "IndigoObject") -> Optional[str]:
     # don't bother with the lantanoids and beyond
     elif atom.atomicNumber() >= 57:
         raise IndigoException(
-            "Hybridization is not calculated for atomic number >= 57"
+            "Hybridization calculation is not implemented for atomic numbers "
+            ">= 57 "
         )
     if atom.atomicNumber() == 1:
-        return "s"
+        return "S"
 
     n_bonds = num_bonds(atom)
 
     if n_bonds == 0:
-        return "s"
+        return "S"
 
     if atom.symbol() in ["C", "N", "O", "P", "S", "B"] and in_aromatic_ring(
         atom
     ):
-        return "sp2"
+        return "SP2"
 
     if atom.atomicNumber() == 6:
-        return cardon_hybridization(atom)
+        return carbon_hybridization(atom)
     if atom.atomicNumber() == 8:
         return oxygen_hybridization(atom)
     if atom.atomicNumber() == 7:
@@ -217,6 +231,4 @@ def get_hybridization(atom: "IndigoObject") -> Optional[str]:
     # H = N + L
 
     n_orbs = atom.degree() + lone_pairs(atom, n_bonds)
-    if n_orbs in N_ORBS_HYBRIDIZATION:
-        return N_ORBS_HYBRIDIZATION[n_orbs]
-    raise IndigoException("Couldn't calculate hybridization properly")
+    return EnumHybridizations(n_orbs).name
