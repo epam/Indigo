@@ -7,7 +7,7 @@ import csv
 from collections import Counter, defaultdict
 from typing import Dict, List
 
-from smarts_table import TABLE
+from smarts_table import TABLE # type: ignore
 
 from indigo import Indigo, IndigoObject  # type: ignore
 
@@ -103,7 +103,7 @@ def get_matches(mol: IndigoObject, types_smarts: List[str]) -> Dict[str, int]:
     Returns:
         dict: counted matches of atom types
     """
-    types_counter = Counter()
+    types_counter: Dict[str, int] = Counter()
     matcher = indigo.substructureMatcher(mol)
     atoms = set()
     d = get_smarts_dict(types_smarts)
