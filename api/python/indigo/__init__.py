@@ -37,7 +37,7 @@ from ctypes import (
     sizeof,
 )
 
-from logP import get_logp, get_mr # type: ignore
+from logP import get_logp, get_mr  # type: ignore
 
 from indigo.salts import SALTS
 

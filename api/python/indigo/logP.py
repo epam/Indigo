@@ -7,7 +7,7 @@ import csv
 from collections import Counter, defaultdict
 from typing import Dict, List
 
-from smarts_table import TABLE # type: ignore
+from smarts_table import TABLE  # type: ignore
 
 from indigo import Indigo, IndigoObject  # type: ignore
 
