@@ -33,7 +33,7 @@ COPY setup.py *manylinux1_x86_64*.whl ./
 
 # Required for indigo-renderer
 RUN apt-get update && \
-    apt-get upgrade && \
+    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
 
 # Install if exists
@@ -49,7 +49,7 @@ RUN pip3 install -r requirements.txt -r requirements_dev.txt && \
 FROM python:3.9-slim-buster
 
 RUN apt-get update && \
-    apt-get upgrade && \
+    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
 
 RUN mkdir -p /opt/indigo
