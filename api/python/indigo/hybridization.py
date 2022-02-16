@@ -78,6 +78,7 @@ class HybridizationType(Enum):
     SP3D2 = 6
     SP3D3 = 7
     SP3D4 = 8
+    SP2D = 9
 
 
 def num_bonds(atom: "IndigoObject") -> int:
