@@ -1,7 +1,7 @@
 import pytest
 
 from indigo import Indigo
-from indigo.hybridization import get_hybridization, EnumHybridizations
+from indigo.hybridization import get_hybridization, HybridizationType
 
 
 @pytest.mark.parametrize(
@@ -10,116 +10,116 @@ from indigo.hybridization import get_hybridization, EnumHybridizations
         (
             "c1ccccc1",  # benzene
             [
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
             ],
         ),
         (
             "OC1=CC=CC=C1",  # phenol
             [
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
             ],
         ),
         (
             "[C-]#[O+]",
-            [EnumHybridizations.SP, EnumHybridizations.SP],
+            [HybridizationType.SP, HybridizationType.SP],
         ),  # carbon monoxide
         (
             "O=C=O",
             [
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP,
-                EnumHybridizations.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP,
+                HybridizationType.SP2,
             ],
         ),  # carbon dioxide
         (
             "C#N",
-            [EnumHybridizations.SP, EnumHybridizations.SP],
+            [HybridizationType.SP, HybridizationType.SP],
         ),  # hydrogen cyanide
         (
             "O=C(N)C",  # acetamide
             [
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP,
-                EnumHybridizations.SP3,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP,
+                HybridizationType.SP3,
             ],
         ),
         (
             "OS(=O)(=O)O",  # sulfuric acid
             [
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP3,
+                HybridizationType.SP3,
+                HybridizationType.SP3,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP3,
             ],
         ),
         (
             "N(=O)O",
             [
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP3,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP3,
             ],
         ),  # nitrous acid
         (
             "O=[Xe](=O)(=O)=O",  # xenon tetroxide
             [
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP3,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
             ],
         ),
         (
             "FS(F)(F)(F)(F)F",  # sulfur hexafluoride
             [
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP3D2,
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP3,
+                HybridizationType.SP3,
+                HybridizationType.SP3D2,
+                HybridizationType.SP3,
+                HybridizationType.SP3,
+                HybridizationType.SP3,
+                HybridizationType.SP3,
+                HybridizationType.SP3,
             ],
         ),
         (
             "FBr(F)F",
             [
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP3D,
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP3,
+                HybridizationType.SP3,
+                HybridizationType.SP3D,
+                HybridizationType.SP3,
+                HybridizationType.SP3,
             ],
         ),  # bromine trifluoride
         (
             "[Be](Cl)Cl",
             [
-                EnumHybridizations.SP,
-                EnumHybridizations.SP3,
-                EnumHybridizations.SP3,
+                HybridizationType.SP,
+                HybridizationType.SP3,
+                HybridizationType.SP3,
             ],
         ),
         (
             "C1=CC=CS1",
             [
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
-                EnumHybridizations.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
+                HybridizationType.SP2,
             ],
         ),  # thiophene
     ],

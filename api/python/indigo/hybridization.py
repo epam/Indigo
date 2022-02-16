@@ -69,7 +69,7 @@ OUTER_ELECTRONS = {
 }
 
 
-class EnumHybridizations(Enum):
+class HybridizationType(Enum):
     S = 1
     SP = 2
     SP2 = 3
@@ -98,14 +98,14 @@ def lone_pairs(atom: "IndigoObject", n_bonds: int) -> int:
     return pairs
 
 
-def carbon_hybridization(carbon: "IndigoObject") -> EnumHybridizations:
+def carbon_hybridization(carbon: "IndigoObject") -> HybridizationType:
     neighbors = carbon.degree() + carbon.countImplicitHydrogens()
     if neighbors == 4:
-        return EnumHybridizations.SP3
+        return HybridizationType.SP3
     if neighbors == 3:
-        return EnumHybridizations.SP2
+        return HybridizationType.SP2
     if neighbors <= 2:
-        return EnumHybridizations.SP
+        return HybridizationType.SP
     raise IndigoException("Couldn't calculate C hybridization properly")
 
 
@@ -116,48 +116,48 @@ def match_minus_induction(atom: "IndigoObject") -> bool:
     return False
 
 
-def oxygen_hybridization(oxygen: "IndigoObject") -> EnumHybridizations:
+def oxygen_hybridization(oxygen: "IndigoObject") -> HybridizationType:
     for nei in oxygen.iterateNeighbors():
         if nei.bond().bondOrder() == 2:
-            return EnumHybridizations.SP2
+            return HybridizationType.SP2
         if nei.bond().bondOrder() == 3:
             # for CO, but some sources do not recognize "sp" for oxygen
-            return EnumHybridizations.SP
+            return HybridizationType.SP
         if nei.symbol() == "C" and match_minus_induction(nei):
-            return EnumHybridizations.SP2
-    return EnumHybridizations.SP3
+            return HybridizationType.SP2
+    return HybridizationType.SP3
 
 
 def nitrogen_hybridization(
     nitrogen: "IndigoObject", n_bonds: int
-) -> EnumHybridizations:
+) -> HybridizationType:
     n_orbs = nitrogen.degree() + has_lone_pair(nitrogen, n_bonds)
     minus_induction = False
     for nei in nitrogen.iterateNeighbors():
         if nei.symbol() == "C" and match_minus_induction(nei):
             minus_induction = True
     if n_orbs == 4 and minus_induction:
-        return EnumHybridizations(n_orbs - 1)
+        return HybridizationType(n_orbs - 1)
     if n_orbs <= 4:
-        return EnumHybridizations(n_orbs)
+        return HybridizationType(n_orbs)
     raise IndigoException("Couldn't calculate N hybridization properly")
 
 
 def complex_hybridization(
     atom: "IndigoObject", neighbors: int
-) -> EnumHybridizations:
+) -> HybridizationType:
     if neighbors == 4:
         if atom.symbol() in ["Pt", "Ni", "Cu", "Au", "Pd"]:
-            return EnumHybridizations.SP2D
-        return EnumHybridizations.SP3
+            return HybridizationType.SP2D
+        return HybridizationType.SP3
     if neighbors == 5:
-        return EnumHybridizations.SP3D
+        return HybridizationType.SP3D
     if neighbors == 6:
-        return EnumHybridizations.SP3D2
+        return HybridizationType.SP3D2
     if neighbors == 7:
-        return EnumHybridizations.SP3D3
+        return HybridizationType.SP3D3
     if neighbors == 8:
-        return EnumHybridizations.SP3D4
+        return HybridizationType.SP3D4
     raise IndigoException(
         f"Couldn't calculate {atom.symbol()} hybridization properly"
     )
@@ -170,8 +170,8 @@ def in_aromatic_ring(atom: "IndigoObject") -> bool:
     return False
 
 
-def get_hybridization(atom: "IndigoObject") -> EnumHybridizations:
-    """Returns EnumHybridizations type for an atom from a molecule.
+def get_hybridization(atom: "IndigoObject") -> HybridizationType:
+    """Returns HybridizationType for an atom from a molecule.
 
     Works only with atoms with atomic numbers from 1 to 56. Don't bother with
     the lantanoids and beyond. If atomic number is undefined or ambiguous or >
@@ -180,8 +180,8 @@ def get_hybridization(atom: "IndigoObject") -> EnumHybridizations:
     Args:
         atom: an indigo.IndigoObject for the atom.
     Returns:
-        EnumHybridizations: atom hybridization. Could be EnumHybridizations.S
-        for unhybridized atom and EnumHybridizations.SP, EnumHybridizations.SP2,
+        HybridizationType: atom hybridization. Could be HybridizationType.S
+        for unhybridized atom and HybridizationType.SP, HybridizationType.SP2,
         etc. for hybridized.
     """
     # if the atomic number is undefined or ambiguous
@@ -195,17 +195,17 @@ def get_hybridization(atom: "IndigoObject") -> EnumHybridizations:
             ">= 57 "
         )
     if atom.atomicNumber() == 1:
-        return EnumHybridizations.S
+        return HybridizationType.S
 
     n_bonds = num_bonds(atom)
 
     if n_bonds == 0:
-        return EnumHybridizations.S
+        return HybridizationType.S
 
     if atom.symbol() in ["C", "N", "O", "P", "S", "B"] and in_aromatic_ring(
         atom
     ):
-        return EnumHybridizations.SP2
+        return HybridizationType.SP2
 
     if atom.atomicNumber() == 6:
         return carbon_hybridization(atom)
@@ -222,4 +222,4 @@ def get_hybridization(atom: "IndigoObject") -> EnumHybridizations:
     # H = N + L
 
     n_orbs = atom.degree() + lone_pairs(atom, n_bonds)
-    return EnumHybridizations(n_orbs)
+    return HybridizationType(n_orbs)
