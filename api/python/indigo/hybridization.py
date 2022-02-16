@@ -171,7 +171,7 @@ def in_aromatic_ring(atom: "IndigoObject") -> bool:
 
 
 def get_hybridization(atom: "IndigoObject") -> EnumHybridizations:
-    """Returns hybridization string for an atom from a molecule.
+    """Returns EnumHybridizations type for an atom from a molecule.
 
     Works only with atoms with atomic numbers from 1 to 56. Don't bother with
     the lantanoids and beyond. If atomic number is undefined or ambiguous or >
@@ -180,8 +180,9 @@ def get_hybridization(atom: "IndigoObject") -> EnumHybridizations:
     Args:
         atom: an indigo.IndigoObject for the atom.
     Returns:
-        str: atom hybridization. Could be "s" for unhybridized atom and "sp",
-        "sp2", "sp3", "sp3d", "sp3d2", "sp3d3", "sp3d4" for hybridized.
+        EnumHybridizations: atom hybridization. Could be EnumHybridizations.S
+        for unhybridized atom and EnumHybridizations.SP, EnumHybridizations.SP2,
+        etc. for hybridized.
     """
     # if the atomic number is undefined or ambiguous
     if atom.atomicNumber() == 0:
