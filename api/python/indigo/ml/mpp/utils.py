@@ -1,10 +1,10 @@
 import indigo.ml.mpp.config as config  # type: ignore
-from indigo.ml.mpp.models import (  # type: ignore
+from indigo.ml.mpp.models.attentivefp import (  # type: ignore
     AttentiveFPRegressor,
-    GATRegressor,
-    GCNRegressor,
-    MPNNRegressor,
 )
+from indigo.ml.mpp.models.gat import GATRegressor  # type: ignore
+from indigo.ml.mpp.models.gcn import GCNRegressor  # type: ignore
+from indigo.ml.mpp.models.mpnn import MPNNRegressor  # type: ignore
 
 
 def load_model(model_type: str):

@@ -20,10 +20,6 @@ from indigo.ml.mpp.utils import load_model  # type: ignore
 @click.argument("model_type", type=str)
 def main(filename: str, smiles: str, target: str, model_type: str):
     """Simple property prediction"""
-
-    print(filename)
-    print(smiles)
-    print(target)
     config.file_name = filename
     config.smiles = smiles
     config.target = target
