@@ -38,7 +38,7 @@ from ctypes import (
 )
 
 from indigo.exceptions import IndigoException
-from indigo.hybridization import get_hybridization
+from indigo.hybridization import get_hybridization, EnumHybridizations
 from indigo.salts import SALTS
 
 DECODE_ENCODING = "utf-8"
@@ -1066,12 +1066,20 @@ class IndigoObject(object):
         return value.value
 
     def getHybridization(self):
+        """Atom method returns EnumHybridizations hybridization type
+
+        Returns:
+            EnumHybridizations: atom hybridization
+        """
+        return get_hybridization(self)
+
+    def getHybridizationStr(self):
         """Atom method returns hybridization string
 
         Returns:
             str: atom hybridization
         """
-        return get_hybridization(self)
+        return get_hybridization(self).name
 
     def getExplicitValence(self):
         """Atom method returns the explicit valence
