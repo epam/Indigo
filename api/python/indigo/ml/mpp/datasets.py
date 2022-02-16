@@ -1,10 +1,11 @@
-import config
 import pandas as pd  # type: ignore
 from dgl.data import DGLDataset  # type: ignore
 from dgl.data.utils import split_dataset  # type: ignore
 from dgl.dataloading import GraphDataLoader  # type: ignore
-from preprocess import mol_to_graph
 from torch import FloatTensor  # type: ignore
+
+import indigo.ml.mpp.config as config  # type: ignore
+from indigo.ml.mpp.preprocess import mol_to_graph  # type: ignore
 
 
 class MolDataset(DGLDataset):

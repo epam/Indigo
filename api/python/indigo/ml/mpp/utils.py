@@ -1,5 +1,5 @@
-import config as config
-from models import (
+import indigo.ml.mpp.config as config  # type: ignore
+from indigo.ml.mpp.models import (  # type: ignore
     AttentiveFPRegressor,
     GATRegressor,
     GCNRegressor,

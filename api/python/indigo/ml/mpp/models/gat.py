@@ -1,12 +1,13 @@
 import torch.nn as nn
 import torch.nn.functional as F
 from dgl.nn.pytorch import GATConv  # type: ignore
-from models.blocks import (  # type: ignore
+
+from indigo.ml.mpp.models.blocks import (  # type: ignore
     EdgeGraphConv,
     InputInitializer,
     WeightedSumAndMax,
 )
-from models.regressor import BaseGNNRegressor  # type: ignore
+from indigo.ml.mpp.models.regressor import BaseGNNRegressor  # type: ignore
 
 
 class GNN(nn.Module):

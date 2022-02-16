@@ -4,7 +4,8 @@ import torch  # type: ignore
 import torch.nn as nn  # type: ignore
 import torch.nn.functional as F  # type: ignore
 from dgl.nn.pytorch import edge_softmax  # type: ignore
-from models.regressor import BaseGNNRegressor  # type: ignore
+
+from indigo.ml.mpp.models.regressor import BaseGNNRegressor  # type: ignore
 
 
 class GlobalPool(nn.Module):

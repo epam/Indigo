@@ -1,15 +1,16 @@
 import click
-import config as config
 import torch  # type: ignore
 from datasets import MolDataset, load_data
-from eval import evaluate
 from torch.optim.lr_scheduler import (
     ChainedScheduler,
     ConstantLR,
     ExponentialLR,
 )
 from tqdm import trange  # type: ignore
-from utils import load_model  # type: ignore
+
+import indigo.ml.mpp.config as config  # type: ignore
+from indigo.ml.mpp.eval import evaluate  # type: ignore
+from indigo.ml.mpp.utils import load_model  # type: ignore
 
 
 @click.command()
@@ -20,6 +21,9 @@ from utils import load_model  # type: ignore
 def main(filename: str, smiles: str, target: str, model_type: str):
     """Simple property prediction"""
 
+    print(filename)
+    print(smiles)
+    print(target)
     config.file_name = filename
     config.smiles = smiles
     config.target = target

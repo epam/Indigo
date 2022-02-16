@@ -1,7 +1,8 @@
 import torch.nn as nn  # type: ignore
 import torch.nn.functional as F  # type: ignore
 from dgl.nn.pytorch import NNConv, Set2Set  # type: ignore
-from models.regressor import BaseGNNRegressor  # type: ignore
+
+from indigo.ml.mpp.models.regressor import BaseGNNRegressor  # type: ignore
 
 
 class MPNNGNN(nn.Module):
