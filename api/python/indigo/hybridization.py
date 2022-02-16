@@ -66,6 +66,23 @@ OUTER_ELECTRONS = {
     "Ba": 2,
     "La": 3,  # 6s2 5d1
     "Ce": 4,  # 6s2 4f2 (!!!) Atomic num = 58, lantanoids
+    "Hf": 4,
+    "Ta": 5,
+    "W": 6,
+    "Re": 7,
+    "Os": 8,
+    "Ir": 9,
+    "Pt": 10,
+    "Au": 11,
+    "Hg": 2,
+    "Tl": 3,
+    "Pb": 4,
+    "Bi": 5,
+    "Po": 6,
+    "At": 7,
+    "Rn": 8,
+    "Fr": 1,
+    "Ra": 2,
 }
 
 
@@ -189,11 +206,11 @@ def get_hybridization(atom: "IndigoObject") -> HybridizationType:
     if atom.atomicNumber() == 0:
         raise IndigoException("Atomic number is undefined or ambiguous")
 
-    # don't bother with the lantanoids and beyond
-    elif atom.atomicNumber() >= 57:
+    # don't bother with the lanthanides, actinides and beyond
+    if 57 <= atom.atomicNumber() <= 71 or atom.atomicNumber() >= 89:
         raise IndigoException(
-            "Hybridization calculation is not implemented for atomic numbers "
-            ">= 57 "
+            "Hybridization calculation is not implemented for lanthanides, "
+            "actinides and beyond."
         )
     if atom.atomicNumber() == 1:
         return HybridizationType.S
