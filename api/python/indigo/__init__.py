@@ -38,7 +38,7 @@ from ctypes import (
 )
 
 from indigo.exceptions import IndigoException
-from indigo.hybridization import get_hybridization, HybridizationType
+from indigo.hybridization import HybridizationType, get_hybridization
 from indigo.salts import SALTS
 
 DECODE_ENCODING = "utf-8"
