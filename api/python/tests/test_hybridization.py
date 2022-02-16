@@ -1,7 +1,7 @@
 import pytest
 
 from indigo import Indigo
-from indigo.hybridization import get_hybridization, HybridizationType
+from indigo.hybridization import HybridizationType, get_hybridization
 
 
 @pytest.mark.parametrize(
