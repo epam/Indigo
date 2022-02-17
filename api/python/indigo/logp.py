@@ -7,7 +7,6 @@ import csv
 from collections import Counter, defaultdict
 from typing import Dict, Optional
 
-from indigo import IndigoObject  # type: ignore
 
 atom_types_table = """C1	[CH4]	0.1441	2.503
 C1	[CH3]C	0.1441	2.503
@@ -172,8 +171,8 @@ def calculate_logp(types_counter: Dict[str, int], table: TypeTable) -> float:
 
 
 def get_matches(
-    m: IndigoObject, table: TypeTable
-) -> Optional[Dict[str, int], None]:
+    m: "IndigoObject", table: TypeTable
+) -> Optional[Dict[str, int]]:
     """Uses substructure matcher object to find matches
 
     Args:
@@ -200,7 +199,7 @@ def get_matches(
     return types_counter
 
 
-def get_logp(mol: IndigoObject, table: TypeTable = TABLE) -> float:
+def get_logp(mol: "IndigoObject", table: TypeTable = TABLE) -> float:
     """Returns logP value for a given molecule
 
     Args:
@@ -217,7 +216,7 @@ def get_logp(mol: IndigoObject, table: TypeTable = TABLE) -> float:
     return calculate_logp(types, table)
 
 
-def get_mr(mol: IndigoObject, table: TypeTable = TABLE) -> float:
+def get_mr(mol: "IndigoObject", table: TypeTable = TABLE) -> float:
     """Returns molar refractivity value for a given molecule
 
     Args:
