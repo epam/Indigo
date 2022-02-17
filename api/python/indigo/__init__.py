@@ -37,7 +37,7 @@ from ctypes import (
     sizeof,
 )
 
-from logP import get_logp, get_mr  # type: ignore
+from logp import get_logp, get_mr  # type: ignore
 
 from indigo.salts import SALTS
 
@@ -2543,21 +2543,21 @@ class IndigoObject(object):
             ),
         )
 
-    def logP(self, csv_file=None) -> float:
+    def logP(self) -> float:
         """Molecule method returns calculated logP value
 
         Returns:
             float: calculated logP value of the molecule
         """
-        return get_logp(self, csv_file=None)
+        return get_logp(self)
 
-    def MR(self, csv_file=None) -> float:
+    def molarRefractivity(self) -> float:
         """Molecule method returns calculated molar refractivity
 
         Returns:
             float: calculated value of molar refractivity
         """
-        return get_mr(self, csv_file=None)
+        return get_mr(self)
 
     def bondOrder(self):
         """Bond method returns bond order
