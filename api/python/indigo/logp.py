@@ -5,7 +5,10 @@
 
 import csv
 from collections import Counter, defaultdict
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional
+
+if TYPE_CHECKING:
+    from indigo import IndigoObject
 
 atom_types_table = """C1	[CH4]	0.1441	2.503
 C1	[CH3]C	0.1441	2.503
