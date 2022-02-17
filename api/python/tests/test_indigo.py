@@ -10,6 +10,24 @@ class TestIndigo(TestIndigoBase):
         m.aromatize()
         self.assertEqual("c1ccccc1", m.smiles())
 
+    def test_logp_value(self) -> None:
+        m1 = self.indigo.loadMolecule("c1ccccc1")
+        m2 = self.indigo.loadMolecule("CU")
+        m3 = self.indigo.loadMolecule("CSc1ccc2Sc3ccccc3N(CCC4CCCCN4C)c2c1")
+        m4 = self.indigo.loadMolecule("Nc1ccccc1")
+        self.assertEqual(m1.logP(), 1.69)
+        self.assertEqual(m2.logP(), 0.0)
+        self.assertEqual(m3.logP(), 5.89)
+        self.assertEqual(m4.logP(), 1.27)
+
+    def test_mr_value(self) -> None:
+        m1 = self.indigo.loadMolecule("c1ccccc1")
+        m2 = self.indigo.loadMolecule("CU")
+        m3 = self.indigo.loadMolecule("Clc1ccccc1")
+        self.assertEqual(m1.molarRefractivity(), 26.44)
+        self.assertEqual(m2.molarRefractivity(), 0.0)
+        self.assertEqual(m3.molarRefractivity(), 31.45)
+
     def test_check_single_ion(self) -> None:
         m1 = self.indigo.loadMolecule("[Na+].C")
         m2 = self.indigo.loadMolecule("[Rb+].C")
