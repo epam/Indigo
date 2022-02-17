@@ -36,14 +36,14 @@ const Element& Element::_instance()
     return instance;
 }
 
-Element::Element() noexcept
+Element::Element()
 {
     _initAllPeriodic();
     _initAllIsotopes();
     _initAromatic();
 }
 
-void Element::_initPeriodic(int element, const char* name, int period, int group) noexcept
+void Element::_initPeriodic(int element, const char* name, int period, int group)
 {
     ElementParameters& parameters = _element_parameters.at(element);
 
@@ -70,7 +70,7 @@ int Element::radicalOrbitals(int radical)
     return 0;
 }
 
-void Element::_initAllPeriodic() noexcept
+void Element::_initAllPeriodic()
 {
 #define INIT(elem, period, group) _initPeriodic(ELEM_##elem, #elem, period, group)
 
@@ -995,20 +995,20 @@ int Element::read(Scanner& scanner)
     return fromString(str);
 }
 
-void Element::_setStandardAtomicWeightIndex(int element, int index) noexcept
+void Element::_setStandardAtomicWeightIndex(int element, int index)
 {
     ElementParameters& p = _element_parameters.at(element);
     p.natural_isotope_index = index;
 }
 
-void Element::_addElementIsotope(int element, int isotope, double mass, double isotopic_composition) noexcept
+void Element::_addElementIsotope(int element, int isotope, double mass, double isotopic_composition)
 {
     auto key = IsotopeKey{element, isotope};
     auto value = IsotopeValue{mass, isotopic_composition};
     _isotope_parameters_map[key] = value;
 }
 
-void Element::_initAllIsotopes() noexcept
+void Element::_initAllIsotopes()
 {
 #define ADD _addElementIsotope
 #define SET _setStandardAtomicWeightIndex
@@ -1063,7 +1063,7 @@ double Element::getRelativeIsotopicMass(int element, int isotope)
     return _instance()._getRelativeIsotopicMass(element, isotope);
 }
 
-void Element::_initDefaultIsotopes() noexcept
+void Element::_initDefaultIsotopes()
 {
     std::vector<IsotopeKey> def_isotope_index;
     def_isotope_index.resize(_element_parameters.size());
@@ -1206,7 +1206,7 @@ bool Element::canBeAromatic(int element)
     return _instance()._element_parameters.at(element).can_be_aromatic;
 }
 
-void Element::_initAromatic() noexcept
+void Element::_initAromatic()
 {
     int i;
 
@@ -1222,13 +1222,13 @@ void Element::_initAromatic() noexcept
         _element_parameters.at(i).can_be_aromatic = true;
 }
 
-double Element::_getStandardAtomicWeight(int element) const noexcept
+double Element::_getStandardAtomicWeight(int element) const
 {
     const ElementParameters& p = _element_parameters.at(element);
     return _getRelativeIsotopicMass(element, p.natural_isotope_index);
 }
 
-double Element::_getRelativeIsotopicMass(int element, int isotope) const noexcept
+double Element::_getRelativeIsotopicMass(int element, int isotope) const
 {
     const auto key = IsotopeKey{element, isotope};
     if (_isotope_parameters_map.count(key))
