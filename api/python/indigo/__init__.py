@@ -37,8 +37,9 @@ from ctypes import (
     sizeof,
 )
 
-from logp import get_logp, get_mr  # type: ignore
-
+from indigo.exceptions import IndigoException
+from indigo.hybridization import get_hybridization
+from indigo.logp import get_logp, get_mr
 from indigo.salts import SALTS
 
 DECODE_ENCODING = "utf-8"
