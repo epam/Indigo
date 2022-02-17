@@ -7,7 +7,6 @@ import csv
 from collections import Counter, defaultdict
 from typing import Dict, Optional
 
-
 atom_types_table = """C1	[CH4]	0.1441	2.503
 C1	[CH3]C	0.1441	2.503
 C1	[CH2](C)C	0.1441	2.503
