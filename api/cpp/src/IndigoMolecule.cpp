@@ -31,3 +31,8 @@ IndigoMolecule::IndigoMolecule(const int id, IndigoSessionPtr session) : IndigoB
 IndigoMolecule::IndigoMolecule(const IndigoMolecule& other) : IndigoBaseMolecule(other)
 {
 }
+
+double IndigoMolecule::molecularWeight() const
+{
+    return session()->_checkResultFloat(indigoMolecularWeight(id()));
+}

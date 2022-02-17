@@ -33,6 +33,8 @@ namespace indigo_cpp
         IndigoMolecule(const IndigoMolecule&);
         IndigoMolecule& operator=(const IndigoMolecule&) = default;
         ~IndigoMolecule() final = default;
+
+        double molecularWeight() const;
     };
 
     using IndigoMoleculeSPtr = std::shared_ptr<IndigoMolecule>;
