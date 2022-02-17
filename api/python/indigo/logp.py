@@ -229,7 +229,7 @@ def get_mr(mol: "IndigoObject", table: TypeTable = TABLE) -> float:
     """
     m = mol.clone()
     m.unfoldHydrogens()
-    types = get_matches(mol, table)
+    types = get_matches(m, table)
     if not types:
         return 0.0
     return calculate_mr(types, table)

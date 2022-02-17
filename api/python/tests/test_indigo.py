@@ -20,7 +20,7 @@ class TestIndigo(TestIndigoBase):
         self.assertEqual(m3.logP(), 5.89)
         self.assertEqual(m4.logP(), 1.27)
 
-    def test_logp_mr(self) -> None:
+    def test_mr_value(self) -> None:
         m1 = self.indigo.loadMolecule("c1ccccc1")
         m2 = self.indigo.loadMolecule("CU")
         m3 = self.indigo.loadMolecule("Clc1ccccc1")
