@@ -78,7 +78,8 @@ SideIter SideAuto::end()
     return SideIter(_owner, _owner.end(), _side);
 }
 
-BaseReaction::BaseReaction() : reactants(*this, REACTANT), catalysts(*this, CATALYST), products(*this, PRODUCT)
+BaseReaction::BaseReaction()
+    : reactants(*this, REACTANT), catalysts(*this, CATALYST), products(*this, PRODUCT), intermediates(*this, INTERMEDIATE), undefined(*this, UNDEFINED)
 {
     clear();
 }
@@ -92,6 +93,8 @@ void BaseReaction::clear()
     _reactantCount = 0;
     _productCount = 0;
     _catalystCount = 0;
+    _intermediateCount = 0;
+    _undefinedCount = 0;
     _allMolecules.clear();
     _types.clear();
     name.clear();
@@ -148,15 +151,36 @@ int BaseReaction::addCatalyst()
     return _addBaseMolecule(CATALYST);
 }
 
+int BaseReaction::addIntermediate()
+{
+    return _addBaseMolecule(INTERMEDIATE);
+}
+
+int BaseReaction::addUndefined()
+{
+    return _addBaseMolecule(UNDEFINED);
+}
+
 void BaseReaction::_addedBaseMolecule(int idx, int side, BaseMolecule& mol)
 {
-    if (side == REACTANT)
+    switch (side)
+    {
+    case REACTANT:
         _reactantCount++;
-    else if (side == PRODUCT)
+        break;
+    case PRODUCT:
         _productCount++;
-    else // CATALYST
+        break;
+    case INTERMEDIATE:
+        _intermediateCount++;
+        break;
+    case UNDEFINED:
+        _undefinedCount++;
+        break;
+    case CATALYST:
         _catalystCount++;
-
+        break;
+    }
     _types.expand(idx + 1);
     _types[idx] = side;
 }
@@ -256,6 +280,24 @@ int BaseReaction::addCatalystCopy(BaseMolecule& mol, Array<int>* mapping, Array<
 
     _allMolecules[idx]->clone(mol, mapping, inv_mapping);
     _addedBaseMolecule(idx, CATALYST, *_allMolecules[idx]);
+    return idx;
+}
+
+int BaseReaction::addIntermediateCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
+{
+    int idx = _allMolecules.add(mol.neu());
+
+    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
+    _addedBaseMolecule(idx, INTERMEDIATE, *_allMolecules[idx]);
+    return idx;
+}
+
+int BaseReaction::addUndefinedCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
+{
+    int idx = _allMolecules.add(mol.neu());
+
+    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
+    _addedBaseMolecule(idx, UNDEFINED, *_allMolecules[idx]);
     return idx;
 }
 

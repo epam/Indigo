@@ -71,7 +71,9 @@ namespace indigo
         {
             REACTANT = 1,
             PRODUCT = 2,
-            CATALYST = 4
+            INTERMEDIATE = 4,
+            UNDEFINED = 8,
+            CATALYST = 16
         };
 
         BaseReaction();
@@ -86,6 +88,35 @@ namespace indigo
         int count();
 
         void remove(int i);
+
+        int intermediateBegin()
+        {
+            return _nextElement(INTERMEDIATE, -1);
+        }
+        int intermediateNext(int index)
+        {
+            return _nextElement(INTERMEDIATE, index);
+        }
+
+        int intermediateEnd()
+        {
+            return _allMolecules.end();
+        }
+
+        int undefinedBegin()
+        {
+            return _nextElement(UNDEFINED, -1);
+        }
+
+        int undefinedNext(int index)
+        {
+            return _nextElement(UNDEFINED, index);
+        }
+
+        int undefinedEnd()
+        {
+            return _allMolecules.end();
+        }
 
         int reactantBegin()
         {
@@ -162,6 +193,8 @@ namespace indigo
         SideAuto reactants;
         SideAuto catalysts;
         SideAuto products;
+        SideAuto intermediates;
+        SideAuto undefined;
 
         virtual void clear();
 
@@ -193,10 +226,14 @@ namespace indigo
         int addReactant();
         int addProduct();
         int addCatalyst();
+        int addIntermediate();
+        int addUndefined();
 
         int addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
         int addProductCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
         int addCatalystCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
+        int addIntermediateCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
+        int addUndefinedCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
 
         int findAtomByAAM(int mol_idx, int aam);
         int findAamNumber(BaseMolecule* mol, int atom_number);
@@ -227,6 +264,8 @@ namespace indigo
         int _reactantCount;
         int _productCount;
         int _catalystCount;
+        int _intermediateCount;
+        int _undefinedCount;
 
         int _nextElement(int type, int index);
 
