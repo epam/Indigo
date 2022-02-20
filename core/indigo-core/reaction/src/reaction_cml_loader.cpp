@@ -17,13 +17,16 @@
  ***************************************************************************/
 
 #include "reaction/reaction_cml_loader.h"
+
+#include <tinyxml2.h>
+
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/cml_loader.h"
 #include "reaction/reaction.h"
-#include "tinyxml.h"
 
 using namespace indigo;
+using namespace tinyxml2;
 
 IMPL_ERROR(ReactionCmlLoader, "reaction CML loader");
 
@@ -44,23 +47,23 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
     _scanner.readAll(buf);
     buf.push(0);
 
-    TiXmlDocument xml;
+    XMLDocument xml;
 
     xml.Parse(buf.ptr());
 
     if (xml.Error())
-        throw Error("XML parsing error: %s", xml.ErrorDesc());
+        throw Error("XML parsing error: %s", xml.ErrorStr());
 
-    TiXmlHandle hxml(&xml);
-    TiXmlElement* elem;
-    TiXmlHandle hroot(0);
+    XMLHandle hxml(&xml);
+    XMLElement* elem;
+    XMLHandle hroot(0);
 
-    elem = hxml.FirstChild("reaction").Element();
+    elem = hxml.FirstChildElement("reaction").ToElement();
     if (elem == 0)
-        elem = hxml.FirstChild("cml").FirstChild("reaction").Element();
+        elem = hxml.FirstChildElement("cml").FirstChildElement("reaction").ToElement();
     if (elem == 0)
         throw Error("no <reaction>?");
-    hroot = TiXmlHandle(elem);
+    hroot = XMLHandle(elem);
 
     const char* title = elem->Attribute("title");
 
@@ -69,12 +72,12 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
 
     QS_DEF(Molecule, mol);
 
-    elem = hroot.FirstChild("reactantList").FirstChild().Element();
+    elem = hroot.FirstChildElement("reactantList").FirstChild().ToElement();
     for (; elem; elem = elem->NextSiblingElement())
     {
         if (strcasecmp(elem->Value(), "molecule") != 0)
             continue;
-        TiXmlHandle handle(elem);
+        XMLHandle handle(elem);
         CmlLoader loader(handle);
         loader.stereochemistry_options = stereochemistry_options;
         loader.ignore_bad_valence = ignore_bad_valence;
@@ -82,12 +85,12 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
         rxn.addReactantCopy(mol, 0, 0);
     }
 
-    elem = hroot.FirstChild("productList").FirstChild().Element();
+    elem = hroot.FirstChildElement("productList").FirstChild().ToElement();
     for (; elem; elem = elem->NextSiblingElement())
     {
         if (strcasecmp(elem->Value(), "molecule") != 0)
             continue;
-        TiXmlHandle handle(elem);
+        XMLHandle handle(elem);
         CmlLoader loader(handle);
         loader.stereochemistry_options = stereochemistry_options;
         loader.ignore_bad_valence = ignore_bad_valence;
@@ -95,12 +98,12 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
         rxn.addProductCopy(mol, 0, 0);
     }
 
-    elem = hroot.FirstChild("spectatorList").FirstChild().Element();
+    elem = hroot.FirstChildElement("spectatorList").FirstChild().ToElement();
     for (; elem; elem = elem->NextSiblingElement())
     {
         if (strcasecmp(elem->Value(), "molecule") != 0)
             continue;
-        TiXmlHandle handle(elem);
+        XMLHandle handle(elem);
         CmlLoader loader(handle);
         loader.stereochemistry_options = stereochemistry_options;
         loader.ignore_bad_valence = ignore_bad_valence;

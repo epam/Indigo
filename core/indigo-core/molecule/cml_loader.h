@@ -30,9 +30,12 @@
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
 
-class TiXmlHandle;
-class TiXmlElement;
-class TiXmlNode;
+namespace tinyxml2
+{
+    class XMLHandle;
+    class XMLElement;
+    class XMLNode;
+}
 
 namespace indigo
 {
@@ -46,7 +49,7 @@ namespace indigo
         DECL_ERROR;
 
         CmlLoader(Scanner& scanner);
-        CmlLoader(TiXmlHandle& handle);
+        CmlLoader(tinyxml2::XMLHandle& handle);
 
         void loadMolecule(Molecule& mol);
         void loadQueryMolecule(QueryMolecule& mol);
@@ -56,14 +59,14 @@ namespace indigo
 
     protected:
         Scanner* _scanner;
-        TiXmlHandle* _handle;
-        TiXmlNode* _molecule;
+        tinyxml2::XMLHandle* _handle;
+        tinyxml2::XMLNode* _molecule;
 
         void _loadMolecule();
-        void _loadMoleculeElement(TiXmlHandle& handle);
-        void _loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::string, int>& atoms_id, int parent);
-        void _loadRgroupElement(TiXmlHandle& handle);
-        bool _findMolecule(TiXmlNode* node);
+        void _loadMoleculeElement(tinyxml2::XMLHandle& handle);
+        void _loadSGroupElement(tinyxml2::XMLElement* elem, std::unordered_map<std::string, int>& atoms_id, int parent);
+        void _loadRgroupElement(tinyxml2::XMLHandle& handle);
+        bool _findMolecule(tinyxml2::XMLNode* node);
         void _parseRlogicRange(const char* str, Array<int>& ranges);
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
 

@@ -18,15 +18,17 @@
 
 #include "molecule/cml_saver.h"
 
+#include <tinyxml2.h>
+
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
-#include "tinyxml.h"
 
 using namespace indigo;
+using namespace tinyxml2;
 
 IMPL_ERROR(CmlSaver, "CML saver");
 
@@ -48,16 +50,16 @@ void CmlSaver::saveQueryMolecule(QueryMolecule& mol)
 void CmlSaver::_saveMolecule(BaseMolecule& mol, bool query)
 {
     LocaleGuard locale_guard;
-    std::unique_ptr<TiXmlDocument> doc = std::make_unique<TiXmlDocument>();
+    std::unique_ptr<XMLDocument> doc = std::make_unique<XMLDocument>();
     _doc = doc->GetDocument();
     _root = 0;
-    TiXmlElement* elem = 0;
+    XMLElement* elem = 0;
 
     if (!skip_cml_tag)
     {
-        TiXmlDeclaration* decl = new TiXmlDeclaration("1.0", "", "");
+        auto* decl = _doc->NewDeclaration();
         _doc->LinkEndChild(decl);
-        _root = new TiXmlElement("cml");
+        _root = _doc->NewElement("cml");
         _doc->LinkEndChild(_root);
         elem = _root;
     }
@@ -66,13 +68,13 @@ void CmlSaver::_saveMolecule(BaseMolecule& mol, bool query)
 
     _addRgroups(elem, mol, query);
 
-    TiXmlPrinter printer;
+    XMLPrinter printer;
     _doc->Accept(&printer);
     _output.printf("%s", printer.CStr());
     doc.reset(nullptr);
 }
 
-void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool query)
+void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool query)
 {
     int i;
 
@@ -82,7 +84,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
     if (query)
         qmol = (QueryMolecule*)(&mol);
 
-    TiXmlElement* molecule = new TiXmlElement("molecule");
+    XMLElement* molecule = _doc->NewElement("molecule");
     if (elem == 0)
         _doc->LinkEndChild(molecule);
     else
@@ -100,7 +102,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
     if (_mol->vertexCount() > 0)
     {
-        TiXmlElement* atomarray = new TiXmlElement("atomArray");
+        XMLElement* atomarray = _doc->NewElement("atomArray");
         molecule->LinkEndChild(atomarray);
 
         for (i = _mol->vertexBegin(); i != _mol->vertexEnd(); i = _mol->vertexNext(i))
@@ -138,7 +140,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
             {
                 throw Error("internal error: atom element was not set");
             }
-            TiXmlElement* atom = new TiXmlElement("atom");
+            XMLElement* atom = _doc->NewElement("atom");
             atomarray->LinkEndChild(atom);
 
             QS_DEF(Array<char>, buf);
@@ -353,20 +355,20 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
                 if (have_z)
                 {
-                    atom->SetDoubleAttribute("x3", pos.x);
-                    atom->SetDoubleAttribute("y3", pos.y);
-                    atom->SetDoubleAttribute("z3", pos.z);
+                    atom->SetAttribute("x3", pos.x);
+                    atom->SetAttribute("y3", pos.y);
+                    atom->SetAttribute("z3", pos.z);
                 }
                 else
                 {
-                    atom->SetDoubleAttribute("x2", pos.x);
-                    atom->SetDoubleAttribute("y2", pos.y);
+                    atom->SetAttribute("x2", pos.x);
+                    atom->SetAttribute("y2", pos.y);
                 }
             }
 
             if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
             {
-                TiXmlElement* atomparity = new TiXmlElement("atomParity");
+                XMLElement* atomparity = _doc->NewElement("atomParity");
                 atom->LinkEndChild(atomparity);
 
                 QS_DEF(Array<char>, buf);
@@ -379,7 +381,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                 buf.push(0);
                 atomparity->SetAttribute("atomRefs4", buf.ptr());
 
-                atomparity->LinkEndChild(new TiXmlText("1"));
+                atomparity->LinkEndChild(_doc->NewText("1"));
             }
 
             if (_mol->reaction_atom_mapping[i] > 0)
@@ -423,7 +425,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
                 if (val > 0)
                 {
-                    TiXmlElement* atom = new TiXmlElement("atom");
+                    XMLElement* atom = _doc->NewElement("atom");
                     atomarray->LinkEndChild(atom);
 
                     QS_DEF(Array<char>, buf);
@@ -439,14 +441,14 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
     if (_mol->edgeCount() > 0)
     {
-        TiXmlElement* bondarray = new TiXmlElement("bondArray");
+        XMLElement* bondarray = _doc->NewElement("bondArray");
         molecule->LinkEndChild(bondarray);
 
         for (i = _mol->edgeBegin(); i != _mol->edgeEnd(); i = _mol->edgeNext(i))
         {
             const Edge& edge = _mol->getEdge(i);
 
-            TiXmlElement* bond = new TiXmlElement("bond");
+            XMLElement* bond = _doc->NewElement("bond");
             bondarray->LinkEndChild(bond);
 
             QS_DEF(Array<char>, buf);
@@ -493,13 +495,13 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
             if (dir == BOND_UP || dir == BOND_DOWN)
             {
-                TiXmlElement* bondstereo = new TiXmlElement("bondStereo");
+                XMLElement* bondstereo = _doc->NewElement("bondStereo");
                 bond->LinkEndChild(bondstereo);
-                bondstereo->LinkEndChild(new TiXmlText((dir == BOND_UP) ? "W" : "H"));
+                bondstereo->LinkEndChild(_doc->NewText((dir == BOND_UP) ? "W" : "H"));
             }
             else if (parity != 0)
             {
-                TiXmlElement* bondstereo = new TiXmlElement("bondStereo");
+                XMLElement* bondstereo = _doc->NewElement("bondStereo");
                 bond->LinkEndChild(bondstereo);
 
                 QS_DEF(Array<char>, buf);
@@ -509,11 +511,11 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                 out.printf("a%d a%d a%d a%d", subst[0], edge.beg, edge.end, subst[2]);
                 buf.push(0);
                 bondstereo->SetAttribute("atomRefs4", buf.ptr());
-                bondstereo->LinkEndChild(new TiXmlText((parity == MoleculeCisTrans::CIS) ? "C" : "T"));
+                bondstereo->LinkEndChild(_doc->NewText((parity == MoleculeCisTrans::CIS) ? "C" : "T"));
             }
             else if (_mol->cis_trans.isIgnored(i))
             {
-                TiXmlElement* bondstereo = new TiXmlElement("bondStereo");
+                XMLElement* bondstereo = _doc->NewElement("bondStereo");
                 bond->LinkEndChild(bondstereo);
                 bondstereo->SetAttribute("convention", "MDL");
                 bondstereo->SetAttribute("conventionValue", "3");
@@ -545,9 +547,9 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
     }
 }
 
-void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGroup& sgroup)
+void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup& sgroup)
 {
-    TiXmlElement* sg = new TiXmlElement("molecule");
+    XMLElement* sg = _doc->NewElement("molecule");
     molecule->LinkEndChild(sg);
 
     QS_DEF(Array<char>, buf);
@@ -572,7 +574,7 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
 
     if (sgroup.brackets.size() > 0)
     {
-        TiXmlElement* brks = new TiXmlElement("MBracket");
+        XMLElement* brks = _doc->NewElement("MBracket");
         sg->LinkEndChild(brks);
 
         if (sgroup.brk_style == 0)
@@ -582,15 +584,15 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
 
         for (int i = 0; i < sgroup.brackets.size(); i++)
         {
-            TiXmlElement* pnt0 = new TiXmlElement("MPoint");
+            XMLElement* pnt0 = _doc->NewElement("MPoint");
             brks->LinkEndChild(pnt0);
-            pnt0->SetDoubleAttribute("x", sgroup.brackets[i][0].x);
-            pnt0->SetDoubleAttribute("y", sgroup.brackets[i][0].y);
+            pnt0->SetAttribute("x", sgroup.brackets[i][0].x);
+            pnt0->SetAttribute("y", sgroup.brackets[i][0].y);
 
-            TiXmlElement* pnt1 = new TiXmlElement("MPoint");
+            XMLElement* pnt1 = _doc->NewElement("MPoint");
             brks->LinkEndChild(pnt1);
-            pnt1->SetDoubleAttribute("x", sgroup.brackets[i][1].x);
-            pnt1->SetDoubleAttribute("y", sgroup.brackets[i][1].y);
+            pnt1->SetAttribute("x", sgroup.brackets[i][1].x);
+            pnt1->SetAttribute("y", sgroup.brackets[i][1].y);
         }
     }
 
@@ -621,8 +623,8 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
             sg->SetAttribute("queryOp", queryoper);
         }
 
-        sg->SetDoubleAttribute("x", dsg.display_pos.x);
-        sg->SetDoubleAttribute("y", dsg.display_pos.y);
+        sg->SetAttribute("x", dsg.display_pos.x);
+        sg->SetAttribute("y", dsg.display_pos.y);
 
         if (!dsg.detached)
         {
@@ -769,7 +771,7 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
     }
 }
 
-void CmlSaver::_addRgroups(TiXmlElement* elem, BaseMolecule& mol, bool query)
+void CmlSaver::_addRgroups(XMLElement* elem, BaseMolecule& mol, bool query)
 {
     if (mol.rgroups.getRGroupCount() > 0)
     {
@@ -783,7 +785,7 @@ void CmlSaver::_addRgroups(TiXmlElement* elem, BaseMolecule& mol, bool query)
             if (rgroup.fragments.size() == 0)
                 continue;
 
-            TiXmlElement* rg = new TiXmlElement("Rgroup");
+            XMLElement* rg = _doc->NewElement("Rgroup");
             if (elem == 0)
                 _doc->LinkEndChild(rg);
             else
@@ -810,7 +812,7 @@ void CmlSaver::_addRgroups(TiXmlElement* elem, BaseMolecule& mol, bool query)
     }
 }
 
-void CmlSaver::_addRgroupElement(TiXmlElement* elem, RGroup& rgroup, bool query)
+void CmlSaver::_addRgroupElement(XMLElement* elem, RGroup& rgroup, bool query)
 {
     PtrPool<BaseMolecule>& frags = rgroup.fragments;
 
