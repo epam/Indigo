@@ -148,7 +148,6 @@ void MoleculeCdxmlSaver::addFontTable(const char* font)
         buf.push(0);
         XMLUnknown* f = _doc->NewUnknown(buf.ptr());
         _fonttable->LinkEndChild(f);
-
     }
 }
 
@@ -186,7 +185,6 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
 
         XMLUnknown* c = _doc->NewUnknown(buf.ptr());
         _colortable->LinkEndChild(c);
-
     }
 }
 void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
