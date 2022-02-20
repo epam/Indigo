@@ -187,6 +187,7 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
         _colortable->LinkEndChild(c);
     }
 }
+
 void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
 {
     XMLElement* color = _doc->NewElement("color");
@@ -230,7 +231,7 @@ void MoleculeCdxmlSaver::addDefaultColorTable()
     Array<char> color;
     ArrayOutput color_out(color);
 
-    color_out.printf("<color r=\"0.5\" g=\"0.5\" b=\"0.5\"/>");
+    color_out.printf(R"(<color r="0.5" g="0.5" b="0.5"/>)");
     color.push(0);
 
     addColorTable(color.ptr());

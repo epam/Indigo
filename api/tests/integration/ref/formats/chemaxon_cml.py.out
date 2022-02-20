@@ -436,20 +436,20 @@ M  SAL   1  8  25  26  27  28  29  30  31  32
 M  SAL   1  8  33  34  35  36  37  38  39  40
 M  SAL   1  8  41  42  43  44  45  46  47  48
 M  SAL   1  5  49  50  51  52  53
-M  SDT   1 MDLBG_FRAGMENT_STEREO
-M  SDD   1     5.7154   -9.1453    DAU   ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   1     5.7154   -9.1453    DAU   ALL  1       1  
 M  SED   1 abs
 M  SAL   3  1  47
-M  SDT   3 MDLBG_STEREO_KEY
-M  SDD   3     6.4976   -7.0485    DAU   ALL  1       1
+M  SDT   3 MDLBG_STEREO_KEY                                                     
+M  SDD   3     6.4976   -7.0485    DAU   ALL  1       1  
 M  SED   3 SP-4
 M  SAL   4  2   6  15
-M  SDT   4 MDLBG_STEREO_KEY
-M  SDD   4     4.6120   -5.3769    DAU   ALL  1       1
+M  SDT   4 MDLBG_STEREO_KEY                                                     
+M  SDD   4     4.6120   -5.3769    DAU   ALL  1       1  
 M  SED   4 STG
 M  SAL   2  8  54  55  56  57  58  59  60  61
-M  SDT   2 MDLBG_FRAGMENT_COEFFICIENT
-M  SDD   2   -10.8027   -8.5700    DAU   ALL  1       1
+M  SDT   2 MDLBG_FRAGMENT_COEFFICIENT                                           
+M  SDD   2   -10.8027   -8.5700    DAU   ALL  1       1  
 M  SED   2 2
 M  END
 
@@ -834,16 +834,16 @@ M  SAL   1  8  57  58  59  60  61  62  63  64
 M  SAL   1  8  65  66  67  68  69  70  71  72
 M  SAL   1  8  73  74  75  76  77  78  79  80
 M  SAL   1  1  81
-M  SDT   1 MDLBG_FRAGMENT_STEREO
-M  SDD   1   -28.8111   -4.2858    DAU   ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   1   -28.8111   -4.2858    DAU   ALL  1       1  
 M  SED   1 abs
 M  SAL   2  2  58  59
-M  SDT   2 MDLBG_STEREO_KEY
-M  SDD   2   -27.4209   -4.3131    DAU   ALL  1       1
+M  SDT   2 MDLBG_STEREO_KEY                                                     
+M  SDD   2   -27.4209   -4.3131    DAU   ALL  1       1  
 M  SED   2 STG
 M  SAL   3  1   5
-M  SDT   3 MDLBG_STEREO_KEY
-M  SDD   3   -25.6517   -4.2209    DAU   ALL  1       1
+M  SDT   3 MDLBG_STEREO_KEY                                                     
+M  SDD   3   -25.6517   -4.2209    DAU   ALL  1       1  
 M  SED   3 T-4
 M  END
 
@@ -1241,8 +1241,8 @@ M  SLB  1   1   1
 M  SAL   1  8  43  44  45  46  47  48  49  50
 M  SAL   1  8  51  52  53  54  55  56  57  58
 M  SAL   1  1  59
-M  SDT   1 MDLBG_FRAGMENT_COEFFICIENT
-M  SDD   1   -28.7304   -0.6308    DAU   ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_COEFFICIENT                                           
+M  SDD   1   -28.7304   -0.6308    DAU   ALL  1       1  
 M  SED   1 4
 M  END
 
@@ -1461,8 +1461,8 @@ chemaxon_test.cml
 M  STY  1   1 DAT
 M  SLB  1   1   1
 M  SAL   1  1   1
-M  SDT   1 123
-M  SDD   1    -2.9869    4.9648    DAU   ALL  1       1
+M  SDT   1 123                                                                  
+M  SDD   1    -2.9869    4.9648    DAU   ALL  1       1  
 M  SED   1 qwerty
 M  END
 
@@ -1516,13 +1516,13 @@ M  SPL  1   2   1
 M  SLB  2   1   1   2   2
 M  SAL   1  8   1   2   3   4   5   6   7   8
 M  SAL   1  1   9
-M  SDT   1 MDLBG_FRAGMENT_STEREO
-M  SDD   1    -7.1318   -5.5044    DAU   ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   1    -7.1318   -5.5044    DAU   ALL  1       1  
 M  SED   1 steric
 M  SAL   2  8   1   2   3   4   5   6   7   8
 M  SAL   2  1   9
-M  SDT   2 MDLBG_FRAGMENT_STEREO
-M  SDD   2    -7.6318   -4.2128    DAU   ALL  1       1
+M  SDT   2 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   2    -7.6318   -4.2128    DAU   ALL  1       1  
 M  SED   2 racemate
 M  END
 
@@ -1579,12 +1579,12 @@ M  STY  2   1 DAT   2 DAT
 M  SPL  1   2   1
 M  SLB  2   1   1   2   2
 M  SAL   1  5   1   2   3   4   5
-M  SDT   1 MDLBG_FRAGMENT_STEREO
-M  SDD   1    15.7400   -8.0200    DAU   ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   1    15.7400   -8.0200    DAU   ALL  1       1  
 M  SED   1 abs
 M  SAL   2  1   1
-M  SDT   2 MDLBG_STEREO_KEY
-M  SDD   2    13.3001   -7.4685    DAU   ALL  1       1
+M  SDT   2 MDLBG_STEREO_KEY                                                     
+M  SDD   2    13.3001   -7.4685    DAU   ALL  1       1  
 M  SED   2 SP-4
 M  END
 
@@ -1628,12 +1628,12 @@ M  CHG  3   1   2   3  -1   5  -1
 M  STY  2   1 DAT   2 DAT
 M  SLB  2   1   1   2   2
 M  SAL   1  5   1   2   3   4   5
-M  SDT   1 MDLBG_FRAGMENT_STEREO
-M  SDD   1    15.7400   -8.0200    DAU   ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   1    15.7400   -8.0200    DAU   ALL  1       1  
 M  SED   1 abs
 M  SAL   2  1   1
-M  SDT   2 MDLBG_STEREO_KEY
-M  SDD   2    13.3001   -7.4685    DAU   ALL  1       1
+M  SDT   2 MDLBG_STEREO_KEY                                                     
+M  SDD   2    13.3001   -7.4685    DAU   ALL  1       1  
 M  SED   2 SP-4
 M  END
 
@@ -2322,20 +2322,20 @@ M  SLB  4   1   1   2   2   3   3   4   4
 M  SAL   1  8   1   2   3   4   5   6   7   8
 M  SAL   1  8   9  10  11  12  13  14  15  16
 M  SAL   1  4  17  18  19  20
-M  SDT   1 MDLBG_FRAGMENT_STEREO
-M  SDD   1     8.0675    2.1489    DAU   ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   1     8.0675    2.1489    DAU   ALL  1       1  
 M  SED   1 abs
 M  SAL   2  3   2   3   4
-M  SDT   2 MDLBG_STEREO_KEY
-M  SDD   2    -3.9739    4.0983    DAU   ALL  1       1
+M  SDT   2 MDLBG_STEREO_KEY                                                     
+M  SDD   2    -3.9739    4.0983    DAU   ALL  1       1  
 M  SED   2 cis
 M  SAL   3  1  17
-M  SDT   3 MDLBG_STEREO_KEY
-M  SDD   3     0.0271   -1.9798    DAU   ALL  1       1
+M  SDT   3 MDLBG_STEREO_KEY                                                     
+M  SDD   3     0.0271   -1.9798    DAU   ALL  1       1  
 M  SED   3 SP-4-PI
 M  SAL   4  1   7
-M  SDT   4 MDLBG_STEREO_KEY
-M  SDD   4     0.0271    3.3550    DAU   ALL  1       1
+M  SDT   4 MDLBG_STEREO_KEY                                                     
+M  SDD   4     0.0271    3.3550    DAU   ALL  1       1  
 M  SED   4 RS
 M  END
 
@@ -2453,8 +2453,8 @@ M  SLB  1   1   1
 M  SAL   1  8   1   2   3   4   5   6   7   8
 M  SAL   1  8   9  10  11  12  13  14  15  16
 M  SAL   1  6  17  18  19  20  21  22
-M  SDT   1 MDLBG_FRAGMENT_STEREO
-M  SDD   1    20.2418  -18.9153    DAU   ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   1    20.2418  -18.9153    DAU   ALL  1       1  
 M  SED   1 rel
 M  END
 
@@ -2585,8 +2585,8 @@ sg-attached.xml
 M  STY  1   1 DAT
 M  SLB  1   1   1
 M  SAL   1  1   1
-M  SDT   1 MDLBG_FRAGMENT_STEREO
-M  SDD   1     9.8022    0.2653    AR    ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   1     9.8022    0.2653    AR    ALL  1       1  
 M  SED   1 rel
 M  END
 
@@ -3326,44 +3326,44 @@ M  SAL   1  8  89  90  91  92  93  94  95  96
 M  SAL   1  8  97  98  99 100 101 102 103 104
 M  SAL   1  8 105 106 107 108 109 110 111 112
 M  SAL   1  7 113 114 115 116 117 118 119
-M  SDT   1 MDLBG_FRAGMENT_STEREO
-M  SDD   1    20.5316    0.3565    DAU   ALL  1       1
+M  SDT   1 MDLBG_FRAGMENT_STEREO                                                
+M  SDD   1    20.5316    0.3565    DAU   ALL  1       1  
 M  SED   1 abs
 M  SAL   2  1  15
-M  SDT   2 MDLBG_STEREO_KEY
-M  SDD   2    15.9134   -1.2336    DAU   ALL  1       1
+M  SDT   2 MDLBG_STEREO_KEY                                                     
+M  SDD   2    15.9134   -1.2336    DAU   ALL  1       1  
 M  SED   2 T-4
 M  SAL   3  1  28
-M  SDT   3 MDLBG_STEREO_KEY
-M  SDD   3    15.6489   -1.0995    DAU   ALL  1       1
+M  SDT   3 MDLBG_STEREO_KEY                                                     
+M  SDD   3    15.6489   -1.0995    DAU   ALL  1       1  
 M  SED   3 T-4
 M  SAL   4  1  67
-M  SDT   4 MDLBG_STEREO_KEY
-M  SDD   4    14.8143    0.2281    DAU   ALL  1       1
+M  SDT   4 MDLBG_STEREO_KEY                                                     
+M  SDD   4    14.8143    0.2281    DAU   ALL  1       1  
 M  SED   4 T-4
 M  SAL   5  1  14
-M  SDT   5 MDLBG_STEREO_KEY
-M  SDD   5    14.5604    0.9169    DAU   ALL  1       1
+M  SDT   5 MDLBG_STEREO_KEY                                                     
+M  SDD   5    14.5604    0.9169    DAU   ALL  1       1  
 M  SED   5 T-4
 M  SAL   6  1 106
-M  SDT   6 MDLBG_STEREO_KEY
-M  SDD   6     9.4474    1.4029    DAU   ALL  1       1
+M  SDT   6 MDLBG_STEREO_KEY                                                     
+M  SDD   6     9.4474    1.4029    DAU   ALL  1       1  
 M  SED   6 T-4
 M  SAL   7  1   7
-M  SDT   7 MDLBG_STEREO_KEY
-M  SDD   7    10.4088    0.9225    DAU   ALL  1       1
+M  SDT   7 MDLBG_STEREO_KEY                                                     
+M  SDD   7    10.4088    0.9225    DAU   ALL  1       1  
 M  SED   7 T-4
 M  SAL   8  1   8
-M  SDT   8 MDLBG_STEREO_KEY
-M  SDD   8    12.3858    2.2827    DAU   ALL  1       1
+M  SDT   8 MDLBG_STEREO_KEY                                                     
+M  SDD   8    12.3858    2.2827    DAU   ALL  1       1  
 M  SED   8 T-4
 M  SAL   9  1  80
-M  SDT   9 MDLBG_STEREO_KEY
-M  SDD   9    11.4250    2.7753    DAU   ALL  1       1
+M  SDT   9 MDLBG_STEREO_KEY                                                     
+M  SDD   9    11.4250    2.7753    DAU   ALL  1       1  
 M  SED   9 T-4
 M  SAL  10  1  93
-M  SDT  10 MDLBG_STEREO_KEY
-M  SDD  10    10.3366    1.6589    DAU   ALL  1       1
+M  SDT  10 MDLBG_STEREO_KEY                                                     
+M  SDD  10    10.3366    1.6589    DAU   ALL  1       1  
 M  SED  10 T-4
 M  END
 

@@ -2918,7 +2918,7 @@ void XMLPrinter::PushUnknown( const char* value )
 {
     PrepareForNewNode( _compactMode );
 
-    Write( "<!" );
+    Write( "<" );
     Write( value );
     Putc( '>' );
 }
