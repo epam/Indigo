@@ -86,13 +86,13 @@ void CrfSaver::_writeReactionMolecule(Reaction& reaction, int i)
 
 void CrfSaver::_writeMolecule(Molecule& molecule)
 {
-    Obj<CmfSaver> saver;
+    std::unique_ptr<CmfSaver> saver;
     int i;
 
     if (_encoder.get() != 0)
-        saver.create(_encoder.ref());
+        saver = std::make_unique<CmfSaver>(_encoder.ref());
     else
-        saver.create(_output);
+        saver = std::make_unique<CmfSaver>(_output);
 
     QS_DEF(Array<int>, atom_flags);
     QS_DEF(Array<int>, bond_flags);

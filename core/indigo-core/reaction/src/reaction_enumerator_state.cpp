@@ -627,9 +627,8 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator(Molecule& monomer)
         ee_monomer.buildCisTrans(cis_trans_excluded.ptr());
     }
 
-    QS_DEF(Obj<AromaticityMatcher>, am);
-    am.free();
-    am.create(ee_reactant, ee_monomer, _context.arom_options);
+    QS_DEF(std::shared_ptr<AromaticityMatcher>, am);
+    am = std::make_shared<AromaticityMatcher>(ee_reactant, ee_monomer, _context.arom_options);
     _am = am.get();
 
     ee_monomer.unfoldHydrogens(NULL, _calcMaxHCnt(ee_reactant), true);
