@@ -600,18 +600,21 @@ void MoleculeFingerprintBuilder::_handleSubgraph(Graph& graph, const Array<int>&
 
 void MoleculeFingerprintBuilder::_makeFingerprint(BaseMolecule& mol)
 {
-    auto mol_for_enumeration = std::make_shared<Molecule>(mol);
+    std::shared_ptr<TautomerSuperStructure> tau_super_structure;
+    BaseMolecule* mol_for_enumeration = &mol;
 
     if (!query && _parameters.tau_qwords > 0 && !skip_tau)
     {
-        _tau_super_structure = std::make_shared<TautomerSuperStructure>(mol.asMolecule());
-        mol_for_enumeration = _tau_super_structure;
+        tau_super_structure = std::make_shared<TautomerSuperStructure>(mol.asMolecule());
+
+        _tau_super_structure = tau_super_structure.get();
+        mol_for_enumeration = tau_super_structure.get();
     }
     else
         _tau_super_structure = 0;
 
     if (!skip_ord || !skip_any_atoms || !skip_any_atoms_bonds || !skip_any_bonds || !skip_tau || !skip_sim)
-        _makeFingerprint_calcOrdSim(*mol_for_enumeration.get());
+        _makeFingerprint_calcOrdSim(*mol_for_enumeration);
 
     if (!skip_ext && _parameters.ext)
         _calcExtraBits(mol);

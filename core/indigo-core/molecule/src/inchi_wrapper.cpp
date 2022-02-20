@@ -602,11 +602,11 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
             break;
         }
 
-    auto target = std::make_shared<Molecule>(mol);
+    Molecule* target = &mol;
 
     if (has_aromatic)
     {
-        auto dearom = std::make_shared<Molecule>();
+        auto dearom = std::make_unique<Molecule>();
         dearom->clone(mol, 0, 0);
         try
         {
@@ -623,9 +623,9 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         catch (DearomatizationException&)
         {
         }
-        target = dearom;
+        target = dearom.get();
     }
-    generateInchiInput(*target.get(), input, atoms, stereo);
+    generateInchiInput(*target, input, atoms, stereo);
 
     InchiMemObject<inchi_Output> inchi_output_obj(FreeINCHI);
     inchi_Output& output = inchi_output_obj.ref();
