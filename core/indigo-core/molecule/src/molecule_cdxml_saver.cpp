@@ -58,7 +58,7 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
     _root = _doc->NewElement("CDXML");
 
     _doc->LinkEndChild(_doc->NewDeclaration());
-    XMLUnknown* doctype = _doc->NewUnknown("!DOCTYPE CDXML SYSTEM \"http://www.cambridgesoft.com/xml/cdxml.dtd\" ");
+    XMLUnknown* doctype = _doc->NewUnknown(R"(!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd")");
     _doc->LinkEndChild(doctype);
 
     QS_DEF(Array<char>, buf);
