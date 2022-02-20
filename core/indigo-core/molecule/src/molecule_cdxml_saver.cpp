@@ -141,15 +141,14 @@ void MoleculeCdxmlSaver::addFontTable(const char* font)
         _fonttable = _doc->NewElement("fonttable");
         _root->LinkEndChild(_fonttable);
 
-        XMLUnknown* f = _doc->NewUnknown(nullptr);
-        _fonttable->LinkEndChild(f);
-
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
         buf.readString(&font[1], false);
         buf.remove(buf.size() - 1);
         buf.push(0);
-        f->SetValue(buf.ptr());
+        XMLUnknown* f = _doc->NewUnknown(buf.ptr());
+        _fonttable->LinkEndChild(f);
+
     }
 }
 
@@ -179,15 +178,15 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
         addColorToTable(-1, 0, 0, 1);
         addColorToTable(-1, 1, 0, 1);
 
-        XMLUnknown* c = _doc->NewUnknown(nullptr);
-        _colortable->LinkEndChild(c);
-
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
         buf.readString(&color[1], false);
         buf.remove(buf.size() - 1);
         buf.push(0);
-        c->SetValue(buf.ptr());
+
+        XMLUnknown* c = _doc->NewUnknown(buf.ptr());
+        _colortable->LinkEndChild(c);
+
     }
 }
 void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
@@ -837,14 +836,14 @@ void MoleculeCdxmlSaver::addCustomText(const Vec2f& pos, const char* alignment, 
     buf.push(0);
     t->SetAttribute("LineHeight", buf.ptr());
 
-    XMLUnknown* s = _doc->NewUnknown(nullptr);
     buf.readString(text, false);
     if (buf.size() > 1)
     {
         buf.remove(buf.size() - 1);
         buf.remove(0);
         buf.push(0);
-        s->SetValue(buf.ptr());
+
+        XMLUnknown* s = _doc->NewUnknown(buf.ptr());
         t->LinkEndChild(s);
     }
 }
