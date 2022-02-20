@@ -127,7 +127,7 @@ namespace indigo
 
         TL_CP_DECL(Array<int>, _original_hydrogens);
 
-        AromaticityMatcher* _am;
+        std::shared_ptr<AromaticityMatcher> _am;
         EmbeddingEnumerator* _ee;
         int _tube_idx;
         int _deep_level;

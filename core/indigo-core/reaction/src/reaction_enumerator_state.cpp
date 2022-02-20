@@ -148,7 +148,6 @@ ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext& cont
     _product_forbidden_atoms.clear();
 
     _product_monomers.clear();
-    _am = NULL;
     _ee = NULL;
 
     is_multistep_reaction = false;
@@ -627,10 +626,9 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator(Molecule& monomer)
         ee_monomer.buildCisTrans(cis_trans_excluded.ptr());
     }
 
-    QS_DEF(Obj<AromaticityMatcher>, am);
-    am.free();
-    am.create(ee_reactant, ee_monomer, _context.arom_options);
-    _am = am.get();
+    QS_DEF(std::shared_ptr<AromaticityMatcher>, am);
+    am = std::make_shared<AromaticityMatcher>(ee_reactant, ee_monomer, _context.arom_options);
+    _am = am;
 
     ee_monomer.unfoldHydrogens(NULL, _calcMaxHCnt(ee_reactant), true);
 
@@ -760,7 +758,7 @@ bool ReactionEnumeratorState::_matchEdgeCallback(Graph& subgraph, Graph& supergr
     if (rpe_state->_bonds_mapping_super[other_idx] >= 0)
         return false;
 
-    bool res = MoleculeSubstructureMatcher::matchQueryBond(&qb_sub, supermolecule, self_idx, other_idx, rpe_state->_am, 0xFFFFFFFFUL);
+    bool res = MoleculeSubstructureMatcher::matchQueryBond(&qb_sub, supermolecule, self_idx, other_idx, rpe_state->_am.get(), 0xFFFFFFFFUL);
 
     return res;
 }

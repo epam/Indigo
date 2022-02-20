@@ -94,13 +94,11 @@ void CrfLoader::_loadReactionMolecule(Reaction& reaction, int index, bool have_a
 
 void CrfLoader::_loadMolecule(Molecule& molecule)
 {
-    Obj<CmfLoader> loader;
+    auto loader = std::make_unique<CmfLoader>(_scanner);
     int i;
 
     if (_decoder.get() != 0)
-        loader.create(_decoder.ref());
-    else
-        loader.create(_scanner);
+        loader = std::make_unique<CmfLoader>(_decoder.ref());
 
     QS_DEF(Array<int>, atom_flags);
     QS_DEF(Array<int>, bond_flags);
