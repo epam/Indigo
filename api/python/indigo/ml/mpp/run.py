@@ -18,7 +18,7 @@ from indigo.ml.mpp.utils import load_model  # type: ignore
 @click.argument("filename", type=click.Path(exists=True))
 @click.argument("smiles", type=str)
 @click.argument("target", type=str)
-@clicl.option("--model_type", default = "MPNN", type = str)
+@click.option("--model_type", default = "MPNN", type = str)
 @click.option("--node_featurizers", "-n_f", default=(), multiple=True)
 @click.option("--edge_featurizers", "-e_f", default=(), multiple=True)
 @click.option("--mol_data_features", "-md_f", default=(), multiple=True)
