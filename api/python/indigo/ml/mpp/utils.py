@@ -33,3 +33,9 @@ def load_params(file_name: str) -> FeaturizeParams:
     with open(file_name, "r") as f:
         data = yaml.safe_load(f)
         return FeaturizeParams(**data)
+
+
+def split_params(featurizers: str) -> tuple:
+    if featurizers:
+        return tuple(featurizers.split(","))
+    return tuple()
