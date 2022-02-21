@@ -1,10 +1,11 @@
-import config
 import pandas as pd  # type: ignore
 from dgl.data import DGLDataset  # type: ignore
 from dgl.data.utils import split_dataset  # type: ignore
 from dgl.dataloading import GraphDataLoader  # type: ignore
-from preprocess import mol_to_graph
 from torch import FloatTensor  # type: ignore
+
+import indigo.ml.mpp.config as config  # type: ignore
+from indigo.ml.mpp.preprocess import mol_to_graph  # type: ignore
 
 
 class MolDataset(DGLDataset):
@@ -42,12 +43,12 @@ def load_data(dataset: pd.DataFrame):
         dataset, frac_list=None, shuffle=False, random_state=None
     )
     train_loader = GraphDataLoader(
-        dataset=train_set, shuffle=True, drop_last=False
+        dataset=train_set, shuffle=True, drop_last=False, batch_size=4
     )
     val_loader = GraphDataLoader(
-        dataset=val_set, shuffle=True, drop_last=False
+        dataset=val_set, shuffle=True, drop_last=False, batch_size=1
     )
     test_loader = GraphDataLoader(
-        dataset=test_set, shuffle=True, drop_last=False
+        dataset=test_set, shuffle=True, drop_last=False, batch_size=1
     )
     return train_loader, val_loader, test_loader

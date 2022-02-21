@@ -220,20 +220,20 @@ namespace indigo
         static const Element& _instance();
 
     private:
-        Element() noexcept;
+        Element();
         ~Element() = default;
 
-        void _initAllPeriodic() noexcept;
-        void _initPeriodic(int element, const char* name, int period, int group) noexcept;
+        void _initAllPeriodic();
+        void _initPeriodic(int element, const char* name, int period, int group);
 
-        void _setStandardAtomicWeightIndex(int element, int index) noexcept;
-        void _addElementIsotope(int element, int isotope, double mass, double isotopic_composition) noexcept;
-        void _initAllIsotopes() noexcept;
-        void _initDefaultIsotopes() noexcept;
-        void _initAromatic() noexcept;
+        void _setStandardAtomicWeightIndex(int element, int index);
+        void _addElementIsotope(int element, int isotope, double mass, double isotopic_composition);
+        void _initAllIsotopes();
+        void _initDefaultIsotopes();
+        void _initAromatic();
 
-        double _getStandardAtomicWeight(int element) const noexcept;
-        double _getRelativeIsotopicMass(int element, int isotope) const noexcept;
+        double _getStandardAtomicWeight(int element) const;
+        double _getRelativeIsotopicMass(int element, int isotope) const;
 
         // Per-element physical parameters
         struct ElementParameters
