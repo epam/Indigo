@@ -1,3 +1,4 @@
+from enum import Enum
 from os.path import abspath
 
 TEST_CASES_DATA = {
@@ -96,31 +97,37 @@ DB_BINGO_ELASTIC = 'bingo-elastic'
 DB_ORACLE = 'oracle'
 DB_MSSQL = 'mssql'
 
+
+class EntitiesType(Enum):
+    MOLECULES = 'molecules'
+    REACTIONS = 'reactions'
+
+
 DATA_TYPES = {
-    'aam': 'reactions',
-    'bigtable': 'molecules',
-    'checkmolecule': 'molecules',
-    'checkreaction': 'reactions',
-    'cml': 'molecules',
-    'compactmolecule': 'reactions',
-    'compactreaction': 'reactions',
-    'exact': 'molecules',
-    'fingerprint': 'molecules',
-    'gross': 'molecules',
-    'inchi': 'molecules',
-    'markush': 'molecules',
-    'mass': 'molecules',
-    'pseudoatoms': 'molecules',
-    'rcml': 'reactions',
-    'resonance': 'molecules',
-    'rexact': 'reactions',
-    'rfingerprint': 'reactions',
-    'rsmarts': 'reactions',
-    'rsmiles': 'reactions',
-    'rsub': 'reactions',
-    'sgroups': 'molecules',
-    'similarity': 'molecules',
-    'smarts': 'molecules',
-    'substructure': 'molecules',
-    'tautomers': 'molecules',
+    'aam': EntitiesType.REACTIONS,
+    'bigtable': EntitiesType.MOLECULES,
+    'checkmolecule': EntitiesType.MOLECULES,
+    'checkreaction': EntitiesType.REACTIONS,
+    'cml': EntitiesType.MOLECULES,
+    'compactmolecule': EntitiesType.REACTIONS,
+    'compactreaction': EntitiesType.REACTIONS,
+    'exact': EntitiesType.MOLECULES,
+    'fingerprint': EntitiesType.MOLECULES,
+    'gross': EntitiesType.MOLECULES,
+    'inchi': EntitiesType.MOLECULES,
+    'markush': EntitiesType.MOLECULES,
+    'mass': EntitiesType.MOLECULES,
+    'pseudoatoms': EntitiesType.MOLECULES,
+    'rcml': EntitiesType.REACTIONS,
+    'resonance': EntitiesType.MOLECULES,
+    'rexact': EntitiesType.REACTIONS,
+    'rfingerprint': EntitiesType.REACTIONS,
+    'rsmarts': EntitiesType.REACTIONS,
+    'rsmiles': EntitiesType.REACTIONS,
+    'rsub': EntitiesType.REACTIONS,
+    'sgroups': EntitiesType.MOLECULES,
+    'similarity': EntitiesType.MOLECULES,
+    'smarts': EntitiesType.MOLECULES,
+    'substructure': EntitiesType.MOLECULES,
+    'tautomers': EntitiesType.MOLECULES,
 }

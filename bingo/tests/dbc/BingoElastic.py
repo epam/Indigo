@@ -1,9 +1,9 @@
 from bingo_elastic.elastic import ElasticRepository
-from bingo_elastic.model.record import IndigoRecord
+from bingo_elastic.model.record import IndigoRecord, IndigoRecordReaction, IndigoRecordMolecule
 from bingo_elastic.queries import SimilarityMatch
 from indigo import IndigoException, IndigoObject
 
-from ..constants import DB_BINGO_ELASTIC
+from ..constants import EntitiesType, DB_BINGO_ELASTIC
 from ..helpers import indigo_iterator
 from ..logger import logger
 from .base import NoSQLAdapter, catch_indigo_exception
@@ -15,11 +15,11 @@ class BingoElastic(NoSQLAdapter):
     port = None
     repo = None
 
-    def __init__(self, indigo):
+    def __init__(self, indigo, index_name):
         NoSQLAdapter.__init__(self)
         self.indigo = indigo
         logger.info(f"Connecting to {self.dbms} repository")
-        self.repo = ElasticRepository(host=self.host, port=self.port)
+        self.repo = ElasticRepository(host=self.host, port=self.port, index_name=index_name)
 
     def _set_db_config(self):
         self.host = self.config[self.dbms]['host']
@@ -27,18 +27,30 @@ class BingoElastic(NoSQLAdapter):
 
     def import_data(self, data_path: str, database_type: str):
         logger.info(f"Importing data to {self.dbms} from {data_path}")
-        index = 1
+        index = 1670
+        records = []
         for compound in indigo_iterator(self.indigo, data_path):
+            logger.info(f"===== {index} =====")
             try:
-                record = IndigoRecord(indigo_object=compound,
-                                      skip_errors=True, index=index)
-                self.repo.index_record(record)
+                if database_type == EntitiesType.MOLECULES:
+                    record = IndigoRecordMolecule(indigo_object=compound,
+                                                  skip_errors=True, index=index)
+                else:
+                    record = IndigoRecordReaction(indigo_object=compound,
+                                                  skip_errors=True, index=index)
+                records.append(record)
+                # self.repo.index_record(record)
+                records.append(record)
             except IndigoException as e:
                 logger.error(f"Error during import {database_type} from "
                              f"{data_path} (id = {index}) "
                              f"'{compound.rawData()[:20]}...': {e}")
             finally:
                 index += 1
+        logger.info(f"===== Start of index_records(records) =====")
+        self.repo.index_records(records)
+        logger.info(f"===== End of index_records(records) =====")
+        logger.info(f"===== End of importing data to {self.dbms} from {data_path} =====")
 
     @catch_indigo_exception(catch_error=True)
     def exact(self, molecule: IndigoObject, target_function: str, options=''):

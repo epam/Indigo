@@ -1,5 +1,4 @@
 import json
-import re
 import tempfile
 import xml.etree.ElementTree as elTree
 
@@ -92,6 +91,7 @@ def get_query_entities(indigo: Indigo, function: str):
     Return dict with mapping: query_id - entity (molecule or reaction).
     Molecules are coming from data/{mol_function}/queries/.
     """
+
     result = {}
     entities_files = QUERIES_DATA[function]
 
@@ -152,9 +152,9 @@ def assert_calculate_query(result: Union[Exception, int, str, float],
         remove(expected.name)
         assert diff == []
     elif isinstance(result, str) and result.startswith("<?xml"):
-        result = elTree.fromstring(result.lower())
-        expected = re.sub(r"(\w+-\d{4}-\d{2})", "", expected)
-        expected = elTree.fromstring(expected.lower())
+        # diff = main.diff_texts(bytes(result, "utf-8"), bytes(expected, "utf-8"))
+        result = elTree.fromstring(result)
+        expected = elTree.fromstring(expected)
         res_values = []
         exp_values = []
         for res_elt in result.iter():
@@ -173,10 +173,4 @@ def assert_match_query(result: Union[Exception, List[int]],
     if isinstance(result, Exception):
         assert expected in str(result)
     elif type(expected) == list:
-        assert sorted(result) == sorted(expected)
-        # targets = []
-        # for target in result:
-        #     targets.append(target)
-        #     assert target in expected
-
-        # assert sorted(targets) == sorted(result)
+        assert set(result) == set(expected)

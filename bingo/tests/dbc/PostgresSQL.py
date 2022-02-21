@@ -1,3 +1,6 @@
+from sqlalchemy import text
+from sqlalchemy.exc import ResourceClosedError
+
 from indigo import IndigoObject
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm.session import sessionmaker
@@ -9,6 +12,9 @@ from .base import SQLAdapter
 MATCHING_SEARCH_QUERY = "SELECT id, 1 from {test_schema}.{table_name} " \
                         "WHERE data @ (%(query_entity)s, '{options}') :: " \
                         "{bingo_schema}.{function} ORDER BY ID ASC"
+
+SETUP_QUERY = "UPDATE bingo.bingo_config SET cvalue='0' WHERE cname='CT_FORMAT_SAVE_DATE'"
+# SETUP_QUERY = "UPDATE bingo.bingo_config SET cvalue='1' WHERE cname='IGNORE_BAD_VALENCE'"
 
 
 class Postgres(SQLAdapter):
@@ -25,6 +31,7 @@ class Postgres(SQLAdapter):
         self._session = session()
         self._session.dialect = self._engine.dialect
         self._connect = self._engine.connect()
+        self._connect.execute(SETUP_QUERY)
 
     def query_row(self, query: str, entity: IndigoObject,
                   table_name='', options=''):
