@@ -1,5 +1,6 @@
-from typing import Collection
 from dataclasses import dataclass
+from typing import Collection
+
 
 @dataclass(frozen=True)
 class FeaturizeParams:

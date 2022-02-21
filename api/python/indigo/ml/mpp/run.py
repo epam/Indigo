@@ -10,7 +10,7 @@ from tqdm import trange  # type: ignore
 
 import indigo.ml.mpp.config as config  # type: ignore
 from indigo.ml.mpp.eval import evaluate  # type: ignore
-from indigo.ml.mpp.feat_params import FeaturizeParams # type: ignore
+from indigo.ml.mpp.feat_params import FeaturizeParams  # type: ignore
 from indigo.ml.mpp.utils import load_model  # type: ignore
 
 
@@ -18,7 +18,7 @@ from indigo.ml.mpp.utils import load_model  # type: ignore
 @click.argument("filename", type=click.Path(exists=True))
 @click.argument("smiles", type=str)
 @click.argument("target", type=str)
-@click.option("--model_type", default = "MPNN", type = str)
+@click.option("--model_type", default="MPNN", type=str)
 @click.option("--node_featurizers", "-n_f", default=(), multiple=True)
 @click.option("--edge_featurizers", "-e_f", default=(), multiple=True)
 @click.option("--mol_data_features", "-md_f", default=(), multiple=True)

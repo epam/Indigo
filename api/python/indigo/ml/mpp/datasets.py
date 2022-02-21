@@ -5,7 +5,7 @@ from dgl.dataloading import GraphDataLoader  # type: ignore
 from torch import FloatTensor  # type: ignore
 
 import indigo.ml.mpp.config as config  # type: ignore
-from indigo.ml.mpp.feat_params import FeaturizeParams # type: ignore
+from indigo.ml.mpp.feat_params import FeaturizeParams  # type: ignore
 from indigo.ml.mpp.preprocess import mol_to_graph  # type: ignore
 
 
