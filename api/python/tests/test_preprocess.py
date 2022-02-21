@@ -1,7 +1,7 @@
 import torch
 
-from indigo.ml.mpp.feat_params import FeaturizeParams
-from indigo.ml.mpp.preprocess import (
+from indigo.ml.mpp.feat_params import FeaturizeParams  # type: ignore
+from indigo.ml.mpp.preprocess import (  # type: ignore
     create_graph,
     featurize,
     featurize_mol,

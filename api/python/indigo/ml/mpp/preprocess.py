@@ -1,14 +1,14 @@
 from typing import Collection, Dict, Optional
 
-import dgl
+import dgl  # type: ignore
 import torch
 import torch.nn.functional as F  # type: ignore
-from dgl.heterograph import DGLHeteroGraph
+from dgl.heterograph import DGLHeteroGraph  # type: ignore
 
-import indigo.ml.mpp.featurizers as featurizers
+import indigo.ml.mpp.featurizers as featurizers  # type: ignore
 from indigo import Indigo  # type: ignore
 from indigo import IndigoObject
-from indigo.ml.mpp.feat_params import FeaturizeParams
+from indigo.ml.mpp.feat_params import FeaturizeParams  # type: ignore
 
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
@@ -37,7 +37,7 @@ def featurize_mol(
         for fun in mol_func_features:
             feats.append(getattr(mol, fun)())
     if mol_data_features is not None:
-        feats = feats + mol_data_features
+        feats = feats + list(mol_data_features)
     return {
         "mol": torch.tensor(
             [feats for _ in mol.iterateAtoms()], dtype=torch.float
