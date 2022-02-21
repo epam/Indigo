@@ -1,14 +1,14 @@
-from typing import Collection, Dict, List, Optional
+from typing import Collection, Dict, Optional
 
 import dgl
-import featurizers
 import torch
 import torch.nn.functional as F  # type: ignore
 from dgl.heterograph import DGLHeteroGraph
-from feat_params import FeaturizeParams
 
+import indigo.ml.mpp.featurizers as featurizers
 from indigo import Indigo  # type: ignore
 from indigo import IndigoObject
+from indigo.ml.mpp.feat_params import FeaturizeParams
 
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
@@ -17,7 +17,7 @@ indigo.setOption("ignore-bad-valence", True)
 
 def featurize_mol(
     mol: IndigoObject,
-    mol_data_features: Optional[List[float]] = None,
+    mol_data_features: Optional[Collection[float]] = None,
     mol_func_features: Optional[Collection[str]] = None,
 ) -> Dict:
     """Get whole molecule features.
@@ -38,7 +38,11 @@ def featurize_mol(
             feats.append(getattr(mol, fun)())
     if mol_data_features is not None:
         feats = feats + mol_data_features
-    return {"mol": torch.tensor([feats for _ in mol.iterateAtoms()])}
+    return {
+        "mol": torch.tensor(
+            [feats for _ in mol.iterateAtoms()], dtype=torch.float
+        )
+    }
 
 
 def featurize_atoms(mol: IndigoObject) -> Dict:
@@ -125,6 +129,15 @@ def mol_to_graph(
     returns: graph with featurazed nodes/edges
     """
     mol = indigo.loadMolecule(smiles)
+    g = create_graph(mol)
+    return featurize(mol, g, params, mol_d_feat)
+
+
+def create_graph(mol):
+    """Create molecule as graph.
+
+    Creates molecule in form of graph, without any features.
+    """
     num_atoms = mol.countAtoms()
     # Create graph object
     g = dgl.graph(([], []), idtype=torch.int32)
@@ -140,5 +153,4 @@ def mol_to_graph(
         dst_list.extend([v, u])
 
     g.add_edges(torch.IntTensor(src_list), torch.IntTensor(dst_list))
-
-    return featurize(mol, g, params, mol_d_feat)
+    return g
