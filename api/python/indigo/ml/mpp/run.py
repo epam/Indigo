@@ -11,7 +11,7 @@ from tqdm import trange  # type: ignore
 import indigo.ml.mpp.config as config  # type: ignore
 from indigo.ml.mpp.eval import evaluate  # type: ignore
 from indigo.ml.mpp.feat_params import FeaturizeParams  # type: ignore
-from indigo.ml.mpp.utils import load_model  # type: ignore
+from indigo.ml.mpp.utils import load_model, load_params  # type: ignore
 
 
 @click.command()
@@ -19,6 +19,7 @@ from indigo.ml.mpp.utils import load_model  # type: ignore
 @click.argument("smiles", type=str)
 @click.argument("target", type=str)
 @click.option("--model_type", default="MPNN", type=str)
+@click.option("--params_cfg", "-p", type=click.Path(exists=True))
 @click.option("--node_featurizers", "-n_f", default=(), multiple=True)
 @click.option("--edge_featurizers", "-e_f", default=(), multiple=True)
 @click.option("--mol_data_features", "-md_f", default=(), multiple=True)
@@ -28,6 +29,7 @@ def main(
     smiles: str,
     target: str,
     model_type: str,
+    params_cfg: str,
     node_featurizers: str,
     edge_featurizers: str,
     mol_data_features: str,
@@ -45,12 +47,15 @@ def main(
     config.file_name = filename
     config.smiles = smiles
     config.target = target
-    params = FeaturizeParams(
-        node_featurizers=node_featurizers,
-        edge_featurizers=edge_featurizers,
-        mol_data_features=mol_data_features,
-        mol_func_features=mol_func_features,
-    )
+    if params_cfg:
+        params = load_params(params_cfg)
+    else:
+        params = FeaturizeParams(
+            node_featurizers=node_featurizers,
+            edge_featurizers=edge_featurizers,
+            mol_data_features=mol_data_features,
+            mol_func_features=mol_func_features,
+        )
     dataset = MolDataset(params)
     train_loader, val_loader, test_loader = load_data(dataset)
     model_constructor, model_params = load_model(model_type)

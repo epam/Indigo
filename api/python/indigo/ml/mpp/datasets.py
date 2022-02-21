@@ -52,7 +52,7 @@ class MolDataset(DGLDataset):
             self.labels.append(value)
 
 
-def load_data(dataset: pd.DataFrame):
+def load_data(dataset: MolDataset):
     """Split dataset to train, test and validation"""
     train_set, val_set, test_set = split_dataset(
         dataset, frac_list=None, shuffle=False, random_state=None
