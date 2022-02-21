@@ -24,14 +24,14 @@ from indigo.ml.mpp.utils import load_model  # type: ignore
 @click.option("--mol_data_features", "-md_f", default=(), multiple=True)
 @click.option("--mol_func_features", "-mf_f", default=(), multiple=True)
 def main(
-    filename: str,
-    smiles: str,
-    target: str,
-    model_type: str,
-    node_featurizers: str,
-    edge_featurizers: str,
-    mol_data_features: str,
-    mol_func_features: str,
+        filename: str,
+        smiles: str,
+        target: str,
+        model_type: str,
+        node_featurizers: str,
+        edge_featurizers: str,
+        mol_data_features: str,
+        mol_func_features: str,
 ):
     """Simple property prediction
 
@@ -53,8 +53,8 @@ def main(
     )
     dataset = MolDataset(params)
     train_loader, val_loader, test_loader = load_data(dataset)
-    model_constructor, prms = load_model(model_type)
-    model = model_constructor(dataset.dim_nfeats, dataset.dim_efeats, **prms)
+    model_constructor, model_params = load_model(model_type)
+    model = model_constructor(dataset.dim_nfeats, dataset.dim_efeats, **model_params)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
     scheduler1 = ConstantLR(optimizer, factor=0.1, total_iters=10)
     scheduler2 = ExponentialLR(optimizer, gamma=0.9)
@@ -64,7 +64,6 @@ def main(
     for epoch in trange(config.NUM_EPOCH):
         losses = list()
         for batched_graph, labels in train_loader:
-
             optimizer.zero_grad()
             node_feats = batched_graph.ndata["n_features"].float()
             edge_feats = batched_graph.edata["e_features"].float()

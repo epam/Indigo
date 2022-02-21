@@ -10,7 +10,7 @@ from indigo.ml.mpp.preprocess import mol_to_graph  # type: ignore
 
 
 class MolDataset(DGLDataset):
-    """Create dataset object from csv file"""
+    """Create dataset object from csv file.p"""
 
     def __init__(self, params: FeaturizeParams = None):
         if not params:
@@ -19,7 +19,7 @@ class MolDataset(DGLDataset):
         super().__init__(name="mols")
 
     def process(self):
-        "Process graph data and set attributes to dataset"
+        """Process graph data and set attributes to dataset."""
         self.build_graphs()
         self.gclasses = len(self.labels)
         self.dim_nfeats = len(self.graphs[0].ndata["n_features"][0])

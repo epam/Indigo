@@ -1,4 +1,4 @@
-from typing import Callable, Collection, Dict, List, Optional
+from typing import Collection, Dict, List, Optional
 
 import dgl
 import featurizers
