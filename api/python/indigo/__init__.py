@@ -39,6 +39,7 @@ from ctypes import (
 
 from indigo.exceptions import IndigoException
 from indigo.hybridization import get_hybridization
+from indigo.logp import get_logp, get_mr
 from indigo.salts import SALTS
 
 DECODE_ENCODING = "utf-8"
@@ -2545,6 +2546,22 @@ class IndigoObject(object):
                 Indigo._lib.indigoIterateBonds(self.id)
             ),
         )
+
+    def logP(self) -> float:
+        """Molecule method returns calculated logP value
+
+        Returns:
+            float: calculated logP value of the molecule
+        """
+        return get_logp(self)
+
+    def molarRefractivity(self) -> float:
+        """Molecule method returns calculated molar refractivity
+
+        Returns:
+            float: calculated value of molar refractivity
+        """
+        return get_mr(self)
 
     def bondOrder(self):
         """Bond method returns bond order

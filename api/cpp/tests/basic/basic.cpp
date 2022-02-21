@@ -99,12 +99,12 @@ TEST(Basic, MolecularWeight)
     }
 }
 
-TEST(Basic, DISABLED_IterateSDFilePharmapendium)
+TEST(Basic, IterateSDFilePharmapendium)
 {
     auto session = IndigoSession::create();
     auto counter = 0;
     std::vector<IndigoMoleculeSPtr> molecules;
-    molecules.reserve(245);
+    molecules.reserve(3128);
     for (const auto& molecule : session->iterateSDFile(dataPath("molecules/basic/pharmapendium.sdf.gz")))
     {
         try
