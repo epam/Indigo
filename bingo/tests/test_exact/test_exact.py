@@ -3,7 +3,6 @@ import pytest
 from ..helpers import assert_match_query, query_cases
 
 
-# @pytest.mark.usefixtures('init_db')
 class TestExact:
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('exact', 'exact()'))

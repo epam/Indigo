@@ -3,7 +3,6 @@ import pytest
 from ..helpers import assert_calculate_query, query_cases
 
 
-# @pytest.mark.usefixtures('init_db')
 class TestMass:
     @pytest.mark.parametrize('query_id, expected',
                              query_cases('mass', 'mass(molecular-weight)'))

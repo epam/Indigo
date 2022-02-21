@@ -3,7 +3,6 @@ import pytest
 from ..helpers import assert_calculate_query, query_cases
 
 
-# @pytest.mark.usefixtures('init_db')
 class TestRsmiles:
     @pytest.mark.parametrize('query_id, expected', query_cases('rsmiles'))
     def test_molecular_weight(self, db, entities, query_id, expected):

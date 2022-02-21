@@ -3,7 +3,6 @@ import pytest
 from ..helpers import assert_match_query, query_cases
 
 
-# @pytest.mark.usefixtures('init_db')
 class TestMarkush:
     @pytest.mark.parametrize('query_id, expected', query_cases('markush'))
     def test_markush(self, db, entities, query_id, expected):

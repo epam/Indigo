@@ -3,7 +3,6 @@ import pytest
 from ..helpers import assert_calculate_query, query_cases
 
 
-# @pytest.mark.usefixtures('init_db')
 class TestCml:
     @pytest.mark.parametrize('query_id, expected', query_cases('cml'))
     def test_cml(self, db, entities, query_id, expected):

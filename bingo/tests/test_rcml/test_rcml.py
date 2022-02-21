@@ -4,7 +4,6 @@ from ..helpers import assert_calculate_query, create_temp_file, query_cases
 from ..logger import logger
 
 
-# @pytest.mark.usefixtures('init_db')
 class TestRcml:
     @pytest.mark.parametrize('query_id, expected', query_cases('rcml'))
     def test_rcml(self, db, entities, query_id, expected):
