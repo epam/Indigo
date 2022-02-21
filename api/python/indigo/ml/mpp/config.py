@@ -1,12 +1,10 @@
 """Config file"""
 
-
 # Dataset
 
 file_name = ""
 target = ""
 smiles = ""
-
 # Training parametrs
 
 NUM_EPOCH = 20
