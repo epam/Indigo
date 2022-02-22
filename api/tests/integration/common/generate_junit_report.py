@@ -1,6 +1,5 @@
-import sys
 from itertools import groupby
-from xml.etree.ElementTree import Element, tostring, ElementTree
+from xml.etree.ElementTree import Element, ElementTree
 
 
 def indent(elem, level=0):
@@ -21,7 +20,9 @@ def indent(elem, level=0):
 
 def create_test_case(group_name, name, time, status, msg):
     test_case = Element(
-        "testcase", name=name, attrib={"time": "{:.3f}".format(time), "classname": group_name}
+        "testcase",
+        name=name,
+        attrib={"time": "{:.3f}".format(time), "classname": group_name},
     )
     if status != "[PASSED]":
         if status in ("[TODO]", "[NEW]"):
@@ -89,4 +90,4 @@ def generate_junit_report(test_results, report_filename):
     indent(xml_report)
 
     et = ElementTree(xml_report)
-    et.write(report_filename, xml_declaration=True, encoding='UTF-8')
+    et.write(report_filename, xml_declaration=True, encoding="UTF-8")
