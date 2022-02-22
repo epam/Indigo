@@ -33,7 +33,6 @@ namespace indigo_cpp
         IndigoReaction(const IndigoReaction&);
         IndigoReaction& operator=(const IndigoReaction&) = default;
         ~IndigoReaction() final = default;
-
     };
 
     using IndigoReactionPtr = std::shared_ptr<IndigoReaction>;

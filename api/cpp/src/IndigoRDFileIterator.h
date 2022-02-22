@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "IndigoReaction.h"
 #include "IndigoObject.h"
+#include "IndigoReaction.h"
 
 namespace indigo_cpp
 {

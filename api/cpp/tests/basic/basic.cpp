@@ -84,7 +84,6 @@ TEST(Basic, MolecularWeight)
     }
 }
 
-
 TEST(Basic, LoadMoleculeFromFile)
 {
     auto session = IndigoSession::create();
