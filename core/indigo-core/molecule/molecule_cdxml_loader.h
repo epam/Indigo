@@ -38,10 +38,13 @@ typedef int INT32;
 typedef unsigned int UINT32;
 #include "molecule/CDXConstants.h"
 
-class TiXmlHandle;
-class TiXmlElement;
-class TiXmlNode;
-class TiXmlAttribute;
+namespace tinyxml2
+{
+    class XMLHandle;
+    class XMLElement;
+    class XMLNode;
+    class XMLAttribute;
+}
 
 namespace indigo
 {
@@ -165,24 +168,24 @@ namespace indigo
 
     protected:
         Scanner* _scanner;
-        const TiXmlNode* _fragment;
-        void _parseCDXMLAttributes(TiXmlAttribute* pAttr);
-        void _parseNode(CdxmlNode& node, TiXmlElement* pElem);
+        const tinyxml2::XMLNode* _fragment;
+        void _parseCDXMLAttributes(const tinyxml2::XMLAttribute* pAttr);
+        void _parseNode(CdxmlNode& node, tinyxml2::XMLElement* pElem);
         void _addNode(CdxmlNode& node);
 
-        void _parseBond(CdxmlBond& bond, TiXmlAttribute* pAttr);
+        void _parseBond(CdxmlBond& bond, const tinyxml2::XMLAttribute* pAttr);
         void _addBond(CdxmlBond& node);
 
-        void _parseBracket(CdxmlBracket& bracket, TiXmlAttribute* pAttr);
+        void _parseBracket(CdxmlBracket& bracket, const tinyxml2::XMLAttribute* pAttr);
 
-        void _applyDispatcher(TiXmlAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher);
+        void _applyDispatcher(const tinyxml2::XMLAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher);
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
-        void _parseCDXMLPage(TiXmlElement* pElem);
-        void _parseCDXMLFragment(TiXmlElement* pElem);
-        void _parseFragmentAttributes(TiXmlAttribute* pAttr);
+        void _parseCDXMLPage(tinyxml2::XMLElement* pElem);
+        void _parseCDXMLFragment(tinyxml2::XMLElement* pElem);
+        void _parseFragmentAttributes(const tinyxml2::XMLAttribute* pAttr);
 
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
         void _updateConnection(const CdxmlNode& node, int atom_idx);

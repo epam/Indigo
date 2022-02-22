@@ -17,13 +17,16 @@
  ***************************************************************************/
 
 #include "molecule/molecule_cdxml_loader.h"
+
+#include <tinyxml2.h>
+
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
-#include "tinyxml.h"
 
 using namespace indigo;
+using namespace tinyxml2;
 
 static float readFloat(const char* point_str)
 {
@@ -63,11 +66,11 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol)
         QS_DEF(Array<char>, buf);
         _scanner->readAll(buf);
         buf.push(0);
-        TiXmlDocument xml;
+        XMLDocument xml;
         xml.Parse(buf.ptr());
 
         if (xml.Error())
-            throw Error("XML parsing error: %s", xml.ErrorDesc());
+            throw Error("XML parsing error: %s", xml.ErrorStr());
 
         _parseCDXMLAttributes(xml.RootElement()->FirstAttribute());
         _parseCDXMLPage(xml.RootElement());
@@ -102,7 +105,7 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol)
     }
 }
 
-void MoleculeCdxmlLoader::_parseCDXMLAttributes(TiXmlAttribute* pAttr)
+void MoleculeCdxmlLoader::_parseCDXMLAttributes(const XMLAttribute* pAttr)
 {
     auto cdxml_bbox_lambda = [this](std::string& data) {
         std::vector<std::string> coords = split(data, ' ');
@@ -122,7 +125,7 @@ void MoleculeCdxmlLoader::_parseCDXMLAttributes(TiXmlAttribute* pAttr)
     _applyDispatcher(pAttr, cdxml_dispatcher);
 }
 
-void MoleculeCdxmlLoader::_parseCDXMLPage(TiXmlElement* pElem)
+void MoleculeCdxmlLoader::_parseCDXMLPage(XMLElement* pElem)
 {
     auto pPageElem = pElem->FirstChildElement();
     for (pPageElem; pPageElem; pPageElem = pPageElem->NextSiblingElement())
@@ -134,9 +137,9 @@ void MoleculeCdxmlLoader::_parseCDXMLPage(TiXmlElement* pElem)
     }
 }
 
-void MoleculeCdxmlLoader::_parseCDXMLFragment(TiXmlElement* pElem)
+void MoleculeCdxmlLoader::_parseCDXMLFragment(XMLElement* pElem)
 {
-    auto node_lambda = [this](TiXmlElement* pElem) {
+    auto node_lambda = [this](XMLElement* pElem) {
         CdxmlNode node;
         this->_parseNode(node, pElem);
         _addNode(node);
@@ -144,26 +147,26 @@ void MoleculeCdxmlLoader::_parseCDXMLFragment(TiXmlElement* pElem)
             this->_parseCDXMLFragment(pElem->FirstChildElement());
     };
 
-    auto bond_lambda = [this](TiXmlElement* pElem) {
+    auto bond_lambda = [this](XMLElement* pElem) {
         CdxmlBond bond;
         this->_parseBond(bond, pElem->FirstAttribute());
         this->_addBond(bond);
     };
 
-    auto fragment_lambda = [this](TiXmlElement* pElem) {
+    auto fragment_lambda = [this](XMLElement* pElem) {
         this->_parseFragmentAttributes(pElem->FirstAttribute());
         this->_parseCDXMLFragment(pElem->FirstChildElement());
     };
 
-    auto group_lambda = [this](TiXmlElement* pElem) { this->_parseCDXMLFragment(pElem->FirstChildElement()); };
+    auto group_lambda = [this](XMLElement* pElem) { this->_parseCDXMLFragment(pElem->FirstChildElement()); };
 
-    auto bracketed_lambda = [this](TiXmlElement* pElem) {
+    auto bracketed_lambda = [this](XMLElement* pElem) {
         CdxmlBracket bracket;
         this->_parseBracket(bracket, pElem->FirstAttribute());
         this->_brackets.push_back(bracket);
     };
 
-    std::unordered_map<std::string, std::function<void(TiXmlElement * pElem)>> cdxml_dispatcher = {
+    std::unordered_map<std::string, std::function<void(XMLElement * pElem)>> cdxml_dispatcher = {
         {"n", node_lambda}, {"b", bond_lambda}, {"fragment", fragment_lambda}, {"group", group_lambda}, {"bracketedgroup", bracketed_lambda}};
 
     for (pElem; pElem; pElem = pElem->NextSiblingElement())
@@ -425,7 +428,7 @@ void MoleculeCdxmlLoader::_handleSGroup(SGroup& sgroup, const std::unordered_set
     }
 }
 
-void MoleculeCdxmlLoader::_parseFragmentAttributes(TiXmlAttribute* pAttr)
+void MoleculeCdxmlLoader::_parseFragmentAttributes(const XMLAttribute* pAttr)
 {
     for (pAttr; pAttr; pAttr = pAttr->Next())
     {
@@ -455,7 +458,7 @@ void MoleculeCdxmlLoader::_parseFragmentAttributes(TiXmlAttribute* pAttr)
     }
 }
 
-void MoleculeCdxmlLoader::_applyDispatcher(TiXmlAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher)
+void MoleculeCdxmlLoader::_applyDispatcher(const XMLAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher)
 {
     for (pAttr; pAttr; pAttr = pAttr->Next())
     {
@@ -468,7 +471,7 @@ void MoleculeCdxmlLoader::_applyDispatcher(TiXmlAttribute* pAttr, const std::uno
     }
 }
 
-void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, TiXmlElement* pElem)
+void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, XMLElement* pElem)
 {
     // Atom parsing lambdas definition
     auto id_lambda = [&node](std::string& data) { node.id = data; };
@@ -568,7 +571,7 @@ void MoleculeCdxmlLoader::_addBond(CdxmlBond& bond)
     _id_to_bond_index.emplace(bond.id, _bonds.size() - 1);
 }
 
-void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, TiXmlAttribute* pAttr)
+void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, const XMLAttribute* pAttr)
 {
     auto id_lambda = [&bond](std::string& data) { bond.id = data; };
     auto bond_begin_lambda = [&bond](std::string& data) { bond.be.first = data; };
@@ -602,7 +605,7 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, TiXmlAttribute* pAttr)
     _applyDispatcher(pAttr, bond_dispatcher);
 }
 
-void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, TiXmlAttribute* pAttr)
+void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, const XMLAttribute* pAttr)
 {
     auto bracketed_ids_lambda = [&bracket](std::string& data) {
         std::vector<std::string> vec_str = split(data, ' ');
