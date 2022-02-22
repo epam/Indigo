@@ -86,6 +86,7 @@ void RingoAAM::getResult(Array<char>& buf)
         layout.make();
         _reaction.markStereocenterBonds();
     }
+    _context.setSaverSettings(rcs);
 
     rcs.saveReaction(_reaction);
 }
