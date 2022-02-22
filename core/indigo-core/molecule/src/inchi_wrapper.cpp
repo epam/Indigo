@@ -602,7 +602,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
             break;
         }
 
-    Molecule* target = &mol;
+    std::unique_ptr<Molecule> target(&mol);
 
     if (has_aromatic)
     {
@@ -623,7 +623,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         catch (DearomatizationException&)
         {
         }
-        target = dearom.get();
+        target = std::move(dearom);
     }
     generateInchiInput(*target, input, atoms, stereo);
 

@@ -179,7 +179,7 @@ namespace indigo
         const MoleculeFingerprintParameters& _parameters;
 
         // these parameters are indirectly passed to the callbacks
-        TautomerSuperStructure* _tau_super_structure;
+        std::shared_ptr<TautomerSuperStructure> _tau_super_structure;
         bool _is_cycle;
 
         struct HashBits
