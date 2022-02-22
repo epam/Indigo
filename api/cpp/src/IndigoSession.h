@@ -57,6 +57,8 @@ namespace indigo_cpp
         static IndigoSessionPtr create();
 
         IndigoMolecule loadMolecule(const std::string& data);
+        IndigoMolecule loadMoleculeFromFile(const std::string& path);
+        
         IndigoQueryMolecule loadQueryMolecule(const std::string& data);
         IndigoWriteBuffer writeBuffer();
         IndigoSDFileIterator iterateSDFile(const std::string& path);

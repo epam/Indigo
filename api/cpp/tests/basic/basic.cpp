@@ -119,3 +119,9 @@ TEST(Basic, IterateSDFilePharmapendium)
     EXPECT_EQ(counter, 3128);
     EXPECT_EQ(molecules.size(), 3128);
 }
+
+TEST(Basic, LoadMoleculeFromFile)
+{
+    auto session = IndigoSession::create();
+    ASSERT_NO_THROW(const auto& m = session->loadMoleculeFromFile(dataPath("molecules/affine/2-bromobenzenethiol-rot.mol")));
+}
