@@ -1,6 +1,6 @@
 import sys
 from itertools import groupby
-from xml.etree.ElementTree import Element, tostring
+from xml.etree.ElementTree import Element, tostring, ElementTree
 
 
 def indent(elem, level=0):
@@ -21,7 +21,7 @@ def indent(elem, level=0):
 
 def create_test_case(group_name, name, time, status, msg):
     test_case = Element(
-        "testcase", name=name, attrib={"time": time, "classname": group_name}
+        "testcase", name=name, attrib={"time": "{:.3f}".format(time), "classname": group_name}
     )
     if status != "[PASSED]":
         if status in ("[TODO]", "[NEW]"):
@@ -65,12 +65,12 @@ def generate_junit_report(test_results, report_filename):
                 create_test_case(
                     group_root,
                     filename.replace(".py", ""),
-                    str(tspend),
+                    tspend,
                     status,
                     msg,
                 )
             )
-        test_suite.attrib["time"] = str(group_time)
+        test_suite.attrib["time"] = "{:.3f}".format(group_time)
         test_suite.attrib["tests"] = str(group_tests)
         test_suite.attrib["errors"] = str(group_errors)
         test_suite.attrib["failures"] = str(group_failures)
@@ -81,16 +81,12 @@ def generate_junit_report(test_results, report_filename):
         total_errors += group_errors
         total_failures += group_failures
 
-    xml_report.attrib["time"] = str(total_time)
+    xml_report.attrib["time"] = "{:.3f}".format(total_time)
     xml_report.attrib["tests"] = str(total_tests)
     xml_report.attrib["errors"] = str(total_errors)
     xml_report.attrib["failures"] = str(total_failures)
 
     indent(xml_report)
-    report_output = tostring(
-        xml_report, encoding="utf-8" if sys.version_info[0] < 3 else "unicode"
-    )
-    f = open(report_filename, "wt")
-    f.write("<?xml version='1.0' encoding='UTF-8'?>\n")
-    f.write(report_output)
-    f.close()
+
+    et = ElementTree(xml_report)
+    et.write(report_filename, xml_declaration=True, encoding='UTF-8')
