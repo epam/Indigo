@@ -48,6 +48,8 @@ namespace indigo_cpp
 
         std::string rawData() const;
 
+        std::string name() const;
+
     protected:
         IndigoChemicalStructure(int id, IndigoSessionPtr session);
         IndigoChemicalStructure(IndigoChemicalStructure&&) = default;
