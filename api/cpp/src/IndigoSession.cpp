@@ -23,6 +23,7 @@
 #include "IndigoException.h"
 #include "IndigoMolecule.h"
 #include "IndigoQueryMolecule.h"
+#include "IndigoRDFileIterator.h"
 #include "IndigoSDFileIterator.h"
 #include "IndigoSubstructureMatcher.h"
 #include "IndigoWriteBuffer.h"
@@ -137,6 +138,12 @@ IndigoMolecule IndigoSession::loadMolecule(const std::string& data)
     return {_checkResult(indigoLoadMoleculeFromString(data.c_str())), shared_from_this()};
 }
 
+IndigoMolecule IndigoSession::loadMoleculeFromFile(const std::string& path)
+{
+    setSessionId();
+    return {_checkResult(indigoLoadMoleculeFromFile(path.c_str())), shared_from_this()};
+}
+
 IndigoQueryMolecule IndigoSession::loadQueryMolecule(const std::string& data)
 {
     setSessionId();
@@ -153,6 +160,12 @@ IndigoSDFileIterator IndigoSession::iterateSDFile(const std::string& path)
 {
     setSessionId();
     return {_checkResult(indigoIterateSDFile(path.c_str())), shared_from_this()};
+}
+
+IndigoRDFileIterator IndigoSession::iterateRDFile(const std::string& path)
+{
+    setSessionId();
+    return {_checkResult(indigoIterateRDFile(path.c_str())), shared_from_this()};
 }
 
 IndigoSessionPtr IndigoSession::create()
