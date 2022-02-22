@@ -1,4 +1,4 @@
-import yaml
+import yaml  # type: ignore
 
 import indigo.ml.mpp.config as config  # type: ignore
 from indigo.ml.mpp.feat_params import FeaturizeParams  # type: ignore
