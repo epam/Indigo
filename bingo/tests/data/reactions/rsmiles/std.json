@@ -92,7 +92,7 @@
     {
         "query_id": 19,
         "query_type": "rsmiles",
-        "expected": "[3H]>>[3H].[3H]"
+        "expected": "[3HH]>>[3HH].[3HH]"
     },
     {
         "query_id": 20,
