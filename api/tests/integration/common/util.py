@@ -72,7 +72,10 @@ def getPlatform():
                 )
         else:
             if os.name == "nt":
-                system_name = "win"
+                if "GCC" in platform.python_compiler():
+                    system_name = "mingw"
+                else:
+                    system_name = "win"
             elif os.name == "posix":
                 if platform.mac_ver()[0]:
                     system_name = "mac"

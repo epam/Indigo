@@ -55,21 +55,6 @@ TEST(Basic, LoadQueryMolecule)
     const auto& m_1 = session->loadQueryMolecule("* |$Q_e$|");
 }
 
-TEST(Basic, IterateSDFile)
-{
-    auto session = IndigoSession::create();
-    auto counter = 0;
-    std::vector<IndigoMoleculeSPtr> molecules;
-    molecules.reserve(245);
-    for (const auto& molecule : session->iterateSDFile(dataPath("molecules/basic/Compound_0000001_0000250.sdf.gz")))
-    {
-        ++counter;
-        molecules.emplace_back(molecule);
-    }
-    EXPECT_EQ(counter, 245);
-    EXPECT_EQ(molecules.size(), 245);
-}
-
 TEST(Basic, MolecularWeight)
 {
     auto session = IndigoSession::create();
@@ -99,23 +84,8 @@ TEST(Basic, MolecularWeight)
     }
 }
 
-TEST(Basic, IterateSDFilePharmapendium)
+TEST(Basic, LoadMoleculeFromFile)
 {
     auto session = IndigoSession::create();
-    auto counter = 0;
-    std::vector<IndigoMoleculeSPtr> molecules;
-    molecules.reserve(3128);
-    for (const auto& molecule : session->iterateSDFile(dataPath("molecules/basic/pharmapendium.sdf.gz")))
-    {
-        try
-        {
-            ++counter;
-            molecules.emplace_back(molecule);
-        }
-        catch (const IndigoException&)
-        {
-        }
-    }
-    EXPECT_EQ(counter, 3128);
-    EXPECT_EQ(molecules.size(), 3128);
+    ASSERT_NO_THROW(const auto& m = session->loadMoleculeFromFile(dataPath("molecules/affine/2-bromobenzenethiol-rot.mol")));
 }

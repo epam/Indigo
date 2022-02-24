@@ -10,7 +10,7 @@ project(indigo-all LANGUAGES NONE)
 
 # Common options
 option(ENABLE_TESTS "Enable CTest tests" ON)
-option(BUILD_STANDALONE "Build without any system dependencies except for libc, otherwise require tinyxml, zlib, rapidjson, and cairo for renderer" ON)
+option(BUILD_STANDALONE "Build without any system dependencies except for libc, otherwise require tinyxml2, zlib, rapidjson, and cairo for renderer" ON)
 option(USE_CLANG_TIDY "Use clang-tidy for static analysis" OFF)
 
 # Indigo API options

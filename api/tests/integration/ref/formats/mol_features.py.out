@@ -12782,42 +12782,42 @@ M  V30 END SGROUP
 M  V30 END CTAB
 M  END
 
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <cml>
     <molecule title="">
         <atomArray>
-            <atom id="a0" elementType="C" mrvValence="7" hydrogenCount="4" x2="-0.8662" y2="1.5003" />
-            <atom id="a1" elementType="C" x2="-1.7324" y2="1.0003" />
-            <atom id="a2" elementType="C" formalCharge="-40" spinMultiplicity="3" radical="divalent3" x2="-1.7324" y2="0.0001" />
-            <atom id="a3" elementType="C" x2="-0.8662" y2="-0.5001" />
-            <atom id="a4" elementType="C" x2="0" y2="0" />
-            <atom id="a5" elementType="C" x2="0.0001" y2="1.0002" />
-            <atom id="a6" elementType="C" mrvAlias="Psd" x2="-2.5982" y2="1.5002" />
-            <atom id="a7" elementType="C" mrvAlias="Pol" x2="0.8659" y2="1.5001" />
-            <atom id="a8" elementType="N" x2="-0.8663" y2="-1.4999" />
-            <atom id="a9" elementType="C" x2="0.5876" y2="-0.8089" />
-            <atom id="a10" elementType="C" x2="0.9943" y2="-0.1045" />
-            <atom id="a11" elementType="C" x2="-0.2079" y2="-0.9779" />
-            <atom id="a12" elementType="C" x2="0.7431" y2="0.669" />
+            <atom id="a0" elementType="C" mrvValence="7" hydrogenCount="4" x2="-0.8662" y2="1.5003"/>
+            <atom id="a1" elementType="C" x2="-1.7324" y2="1.0003"/>
+            <atom id="a2" elementType="C" formalCharge="-40" spinMultiplicity="3" radical="divalent3" x2="-1.7324" y2="0.0001"/>
+            <atom id="a3" elementType="C" x2="-0.8662" y2="-0.5001"/>
+            <atom id="a4" elementType="C" x2="0" y2="0"/>
+            <atom id="a5" elementType="C" x2="0.0001" y2="1.0002"/>
+            <atom id="a6" elementType="C" mrvAlias="Psd" x2="-2.5982" y2="1.5002"/>
+            <atom id="a7" elementType="C" mrvAlias="Pol" x2="0.8659" y2="1.5001"/>
+            <atom id="a8" elementType="N" x2="-0.8663" y2="-1.4999"/>
+            <atom id="a9" elementType="C" x2="0.5876" y2="-0.8089"/>
+            <atom id="a10" elementType="C" x2="0.9943" y2="-0.1045"/>
+            <atom id="a11" elementType="C" x2="-0.2079" y2="-0.9779"/>
+            <atom id="a12" elementType="C" x2="0.7431" y2="0.669"/>
         </atomArray>
         <bondArray>
-            <bond atomRefs2="a0 a1" order="1" />
+            <bond atomRefs2="a0 a1" order="1"/>
             <bond atomRefs2="a0 a5" order="2">
                 <bondStereo atomRefs4="a1 a0 a5 a4">C</bondStereo>
             </bond>
             <bond atomRefs2="a1 a2" order="2">
                 <bondStereo atomRefs4="a0 a1 a2 a3">C</bondStereo>
             </bond>
-            <bond atomRefs2="a2 a3" order="1" />
-            <bond atomRefs2="a3 a4" order="2" />
-            <bond atomRefs2="a4 a5" order="1" />
-            <bond atomRefs2="a1 a6" order="1" />
-            <bond atomRefs2="a5 a7" order="1" />
-            <bond atomRefs2="a3 a8" order="1" />
-            <bond atomRefs2="a4 a9" order="1" />
-            <bond atomRefs2="a4 a10" order="1" />
-            <bond atomRefs2="a4 a11" order="1" />
-            <bond atomRefs2="a4 a12" order="1" />
+            <bond atomRefs2="a2 a3" order="1"/>
+            <bond atomRefs2="a3 a4" order="2"/>
+            <bond atomRefs2="a4 a5" order="1"/>
+            <bond atomRefs2="a1 a6" order="1"/>
+            <bond atomRefs2="a5 a7" order="1"/>
+            <bond atomRefs2="a3 a8" order="1"/>
+            <bond atomRefs2="a4 a9" order="1"/>
+            <bond atomRefs2="a4 a10" order="1"/>
+            <bond atomRefs2="a4 a11" order="1"/>
+            <bond atomRefs2="a4 a12" order="1"/>
         </bondArray>
     </molecule>
 </cml>

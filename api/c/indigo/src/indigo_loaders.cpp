@@ -225,9 +225,12 @@ const char* IndigoRdfReaction::getName()
     BufferScanner scanner(_data);
     auto& tmp = self.getThreadTmpData();
     scanner.readLine(tmp.string, true);
-    if (strcmp(tmp.string.ptr(), "$RXN") != 0)
+    if (strcmp(tmp.string.ptr(), "$RXN") != 0 && strcmp(tmp.string.ptr(), "$RXN V3000") != 0)
+    {
         throw IndigoError("IndigoRdfReaction::getName(): unexpected first line in the files with reactions."
-                          "'%s' has been found but '$RXN' has been expected.");
+                          "'%s' has been found but '$RXN' or '$RXN V3000' has been expected.",
+                          tmp.string.ptr());
+    }
     // Read next line with the name
     scanner.readLine(tmp.string, true);
     return tmp.string.ptr();

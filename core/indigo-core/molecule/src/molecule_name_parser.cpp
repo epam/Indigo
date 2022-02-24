@@ -18,8 +18,11 @@
 
 #include "molecule/molecule_name_parser.h"
 
+#include <tinyxml2.h>
+
 using namespace std;
 using namespace indigo;
+using namespace tinyxml2;
 
 IMPL_ERROR(MoleculeNameParser, "indigo::MoleculeNameParser");
 IMPL_ERROR(MoleculeNameParser::DictionaryManager, "MoleculeNameParser::DictionaryManager");
@@ -43,7 +46,7 @@ MoleculeNameParser::DictionaryManager::DictionaryManager()
 
 void MoleculeNameParser::DictionaryManager::_readSkeletalAtomsTable()
 {
-    TiXmlDocument doc;
+    XMLDocument doc;
 
     doc.Parse(skeletal_table);
     if (doc.Error())
@@ -51,9 +54,9 @@ void MoleculeNameParser::DictionaryManager::_readSkeletalAtomsTable()
         throw Error("Cannot parse table %s", skeletal_table);
     }
 
-    TiXmlHandle hdoc(&doc);
-    TiXmlHandle tokenTables = hdoc.FirstChild("tokenTables");
-    TiXmlElement* tokenTable = tokenTables.FirstChild("tokenTable").ToElement();
+    XMLHandle hdoc(&doc);
+    XMLHandle tokenTables = hdoc.FirstChildElement("tokenTables");
+    XMLElement* tokenTable = tokenTables.FirstChildElement("tokenTable").ToElement();
     for (; tokenTable; tokenTable = tokenTable->NextSiblingElement())
     {
         const char* name = tokenTable->Attribute("name");
@@ -65,7 +68,7 @@ void MoleculeNameParser::DictionaryManager::_readSkeletalAtomsTable()
 
         TokenType tt = _tokenTypeFromString(type);
 
-        TiXmlElement* e = tokenTable->FirstChild("token")->ToElement();
+        XMLElement* e = tokenTable->FirstChildElement("token");
         for (; e; e = e->NextSiblingElement())
         {
             const char* lexeme = e->GetText();
@@ -91,7 +94,7 @@ void MoleculeNameParser::DictionaryManager::_readSkeletalAtomsTable()
 
 void MoleculeNameParser::DictionaryManager::_readBasicElementsTable()
 {
-    TiXmlDocument doc;
+    XMLDocument doc;
 
     doc.Parse(basic_elements_table);
     if (doc.Error())
@@ -99,9 +102,9 @@ void MoleculeNameParser::DictionaryManager::_readBasicElementsTable()
         throw Error("Cannot parse table %s", basic_elements_table);
     }
 
-    TiXmlHandle hdoc(&doc);
-    TiXmlHandle tokenTables = hdoc.FirstChild("tokenTables");
-    TiXmlElement* tokenTable = tokenTables.FirstChild("tokenTable").ToElement();
+    XMLHandle hdoc(&doc);
+    XMLHandle tokenTables = hdoc.FirstChildElement("tokenTables");
+    XMLElement* tokenTable = tokenTables.FirstChildElement("tokenTable").ToElement();
     for (; tokenTable; tokenTable = tokenTable->NextSiblingElement())
     {
         const char* name = tokenTable->Attribute("name");
@@ -113,7 +116,7 @@ void MoleculeNameParser::DictionaryManager::_readBasicElementsTable()
 
         TokenType tt = _tokenTypeFromString(type);
 
-        TiXmlElement* e = tokenTable->FirstChild("token")->ToElement();
+        XMLElement* e = tokenTable->FirstChildElement("token");
         for (; e; e = e->NextSiblingElement())
         {
             const char* lexeme = e->GetText();
@@ -151,7 +154,7 @@ void MoleculeNameParser::DictionaryManager::_readBasicElementsTable()
 
 void MoleculeNameParser::DictionaryManager::_readTokenTypeStrings()
 {
-    TiXmlDocument doc;
+    XMLDocument doc;
 
     doc.Parse(token_types_table);
     if (doc.Error())
@@ -159,9 +162,9 @@ void MoleculeNameParser::DictionaryManager::_readTokenTypeStrings()
         throw Error("Cannot parse the token types table");
     }
 
-    TiXmlHandle hdoc(&doc);
-    TiXmlHandle tokenTypes = hdoc.FirstChild("tokenTypes");
-    TiXmlElement* e = tokenTypes.FirstChild("tokenType").ToElement();
+    XMLHandle hdoc(&doc);
+    XMLHandle tokenTypes = hdoc.FirstChildElement("tokenTypes");
+    XMLElement* e = tokenTypes.FirstChildElement("tokenType").ToElement();
     for (; e; e = e->NextSiblingElement())
     {
         _tokenTypeStrings.push_back(e->GetText());
@@ -170,7 +173,7 @@ void MoleculeNameParser::DictionaryManager::_readTokenTypeStrings()
 
 void MoleculeNameParser::DictionaryManager::_readTable(const char* table, bool useTrie /* = false*/)
 {
-    TiXmlDocument doc;
+    XMLDocument doc;
 
     doc.Parse(table);
     if (doc.Error())
@@ -178,9 +181,9 @@ void MoleculeNameParser::DictionaryManager::_readTable(const char* table, bool u
         throw Error("Cannot parse table %s", table);
     }
 
-    TiXmlHandle hdoc(&doc);
-    TiXmlHandle tokenTables = hdoc.FirstChild("tokenTables");
-    TiXmlElement* tokenTable = tokenTables.FirstChild("tokenTable").ToElement();
+    XMLHandle hdoc(&doc);
+    XMLHandle tokenTables = hdoc.FirstChildElement("tokenTables");
+    XMLElement* tokenTable = tokenTables.FirstChildElement("tokenTable").ToElement();
     for (; tokenTable; tokenTable = tokenTable->NextSiblingElement())
     {
         const char* name = tokenTable->Attribute("name");
@@ -193,7 +196,7 @@ void MoleculeNameParser::DictionaryManager::_readTable(const char* table, bool u
         const bool isSeparator = (::strcmp(name, "separator") == 0);
         TokenType tt = _tokenTypeFromString(type);
 
-        TiXmlElement* e = tokenTable->FirstChild("token")->ToElement();
+        XMLElement* e = tokenTable->FirstChildElement("token");
         for (; e; e = e->NextSiblingElement())
         {
             const char* lexeme = e->GetText();

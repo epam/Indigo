@@ -18,14 +18,16 @@
 
 #include "molecule/molecule_cdxml_saver.h"
 
+#include <tinyxml2.h>
+
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
-#include "tinyxml.h"
 
 using namespace indigo;
+using namespace tinyxml2;
 
 IMPL_ERROR(MoleculeCdxmlSaver, "molecule CDXML saver");
 
@@ -52,12 +54,11 @@ float MoleculeCdxmlSaver::textLineHeight() const
 
 void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
 {
-    _doc = std::make_unique<TiXmlDocument>();
-    std::unique_ptr<TiXmlElement> root = std::make_unique<TiXmlElement>("CDXML");
+    _doc = std::make_unique<XMLDocument>();
+    _root = _doc->NewElement("CDXML");
 
-    _doc->LinkEndChild(new TiXmlDeclaration("1.0", "UTF-8", ""));
-    TiXmlUnknown* doctype = new TiXmlUnknown();
-    doctype->SetValue("!DOCTYPE CDXML SYSTEM \"http://www.cambridgesoft.com/xml/cdxml.dtd\" ");
+    _doc->LinkEndChild(_doc->NewDeclaration());
+    XMLUnknown* doctype = _doc->NewUnknown(R"(!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd")");
     _doc->LinkEndChild(doctype);
 
     QS_DEF(Array<char>, buf);
@@ -65,12 +66,11 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
     out.printf("%f", _bond_length);
     buf.push(0);
 
-    root->SetAttribute("BondLength", buf.ptr());
-    root->SetAttribute("LabelFont", "3");
-    root->SetAttribute("CaptionFont", "4");
+    _root->SetAttribute("BondLength", buf.ptr());
+    _root->SetAttribute("LabelFont", "3");
+    _root->SetAttribute("CaptionFont", "4");
 
-    _root = root.get();
-    _doc->LinkEndChild(root.release());
+    _doc->LinkEndChild(_root);
 
     if (bounds != NULL)
     {
@@ -128,7 +128,7 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
 
 void MoleculeCdxmlSaver::beginPage(Bounds* bounds)
 {
-    _page = new TiXmlElement("page");
+    _page = _doc->NewElement("page");
     _root->LinkEndChild(_page);
     _page->SetAttribute("HeightPages", _pages_height);
     _page->SetAttribute("WidthPages", 1);
@@ -138,24 +138,22 @@ void MoleculeCdxmlSaver::addFontTable(const char* font)
 {
     if (font != NULL && strlen(font) > 0)
     {
-        _fonttable = new TiXmlElement("fonttable");
+        _fonttable = _doc->NewElement("fonttable");
         _root->LinkEndChild(_fonttable);
-
-        TiXmlUnknown* f = new TiXmlUnknown();
-        _fonttable->LinkEndChild(f);
 
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
         buf.readString(&font[1], false);
         buf.remove(buf.size() - 1);
         buf.push(0);
-        f->SetValue(buf.ptr());
+        XMLUnknown* f = _doc->NewUnknown(buf.ptr());
+        _fonttable->LinkEndChild(f);
     }
 }
 
 void MoleculeCdxmlSaver::addFontToTable(int id, const char* charset, const char* name)
 {
-    TiXmlElement* font = new TiXmlElement("font");
+    XMLElement* font = _doc->NewElement("font");
     _fonttable->LinkEndChild(font);
     if (id > 0)
         font->SetAttribute("id", id);
@@ -167,7 +165,7 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
 {
     if (color != NULL && strlen(color) > 0)
     {
-        _colortable = new TiXmlElement("colortable");
+        _colortable = _doc->NewElement("colortable");
         _root->LinkEndChild(_colortable);
 
         addColorToTable(-1, 1, 1, 1);
@@ -179,20 +177,20 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
         addColorToTable(-1, 0, 0, 1);
         addColorToTable(-1, 1, 0, 1);
 
-        TiXmlUnknown* c = new TiXmlUnknown();
-        _colortable->LinkEndChild(c);
-
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
         buf.readString(&color[1], false);
         buf.remove(buf.size() - 1);
         buf.push(0);
-        c->SetValue(buf.ptr());
+
+        XMLUnknown* c = _doc->NewUnknown(buf.ptr());
+        _colortable->LinkEndChild(c);
     }
 }
+
 void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
 {
-    TiXmlElement* color = new TiXmlElement("color");
+    XMLElement* color = _doc->NewElement("color");
     _colortable->LinkEndChild(color);
     if (id > 0)
         color->SetAttribute("id", id);
@@ -233,7 +231,7 @@ void MoleculeCdxmlSaver::addDefaultColorTable()
     Array<char> color;
     ArrayOutput color_out(color);
 
-    color_out.printf("<color r=\"0.5\" g=\"0.5\" b=\"0.5\"/>");
+    color_out.printf(R"(<color r="0.5" g="0.5" b="0.5"/>)");
     color.push(0);
 
     addColorTable(color.ptr());
@@ -245,8 +243,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
 
     LocaleGuard locale_guard;
 
-    TiXmlElement* parent = _current;
-    TiXmlElement* fragment = new TiXmlElement("fragment");
+    XMLElement* parent = _current;
+    XMLElement* fragment = _doc->NewElement("fragment");
     _current->LinkEndChild(fragment);
     _current = fragment;
     int nid;
@@ -267,7 +265,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
             int radical = 0;
             int hcount = -1;
 
-            TiXmlElement* node = new TiXmlElement("n");
+            XMLElement* node = _doc->NewElement("n");
             fragment->LinkEndChild(node);
 
             if (ids.size() > i)
@@ -426,7 +424,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
 
             if (mol.getVertex(i).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)
             {
-                TiXmlElement* t = new TiXmlElement("t");
+                XMLElement* t = _doc->NewElement("t");
                 node->LinkEndChild(t);
 
                 QS_DEF(Array<char>, buf);
@@ -436,18 +434,18 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 t->SetAttribute("p", buf.ptr());
                 t->SetAttribute("Justification", "Center");
 
-                TiXmlElement* s = new TiXmlElement("s");
+                XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 3);
                 s->SetAttribute("size", 10);
                 s->SetAttribute("face", 96);
 
-                TiXmlText* txt = new TiXmlText("CH4");
+                XMLText* txt = _doc->NewText("CH4");
                 s->LinkEndChild(txt);
             }
             else if (mol.isRSite(i))
             {
-                TiXmlElement* t = new TiXmlElement("t");
+                XMLElement* t = _doc->NewElement("t");
                 node->LinkEndChild(t);
 
                 QS_DEF(Array<char>, buf);
@@ -457,7 +455,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 t->SetAttribute("p", buf.ptr());
                 t->SetAttribute("LabelJustification", "Left");
 
-                TiXmlElement* s = new TiXmlElement("s");
+                XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 3);
                 s->SetAttribute("size", 10);
@@ -479,12 +477,12 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 }*/
                 buf.push(0);
 
-                TiXmlText* txt = new TiXmlText(buf.ptr());
+                XMLText* txt = _doc->NewText(buf.ptr());
                 s->LinkEndChild(txt);
             }
             else if (mol.isPseudoAtom(i))
             {
-                TiXmlElement* t = new TiXmlElement("t");
+                XMLElement* t = _doc->NewElement("t");
                 node->LinkEndChild(t);
 
                 QS_DEF(Array<char>, buf);
@@ -494,7 +492,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 t->SetAttribute("p", buf.ptr());
                 t->SetAttribute("LabelJustification", "Left");
 
-                TiXmlElement* s = new TiXmlElement("s");
+                XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 3);
                 s->SetAttribute("size", 10);
@@ -515,12 +513,12 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                     }
                 }*/
                 buf.push(0);
-                TiXmlText* txt = new TiXmlText(buf.ptr());
+                XMLText* txt = _doc->NewText(buf.ptr());
                 s->LinkEndChild(txt);
             }
             else if (atom_number > 0 && atom_number != ELEM_C)
             {
-                TiXmlElement* t = new TiXmlElement("t");
+                XMLElement* t = _doc->NewElement("t");
                 node->LinkEndChild(t);
 
                 QS_DEF(Array<char>, buf);
@@ -530,7 +528,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 t->SetAttribute("p", buf.ptr());
                 t->SetAttribute("LabelJustification", "Left");
 
-                TiXmlElement* s = new TiXmlElement("s");
+                XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 3);
                 s->SetAttribute("size", 10);
@@ -545,11 +543,11 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 }
 
                 buf.push(0);
-                TiXmlText* txt = new TiXmlText(buf.ptr());
+                XMLText* txt = _doc->NewText(buf.ptr());
                 s->LinkEndChild(txt);
                 if (hcount > 1)
                 {
-                    TiXmlElement* s = new TiXmlElement("s");
+                    XMLElement* s = _doc->NewElement("s");
                     t->LinkEndChild(s);
                     s->SetAttribute("font", 3);
                     s->SetAttribute("size", 10);
@@ -558,13 +556,13 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                     out.clear();
                     out.printf("%d", hcount);
                     buf.push(0);
-                    TiXmlText* txt = new TiXmlText(buf.ptr());
+                    XMLText* txt = _doc->NewText(buf.ptr());
                     s->LinkEndChild(txt);
                 }
             }
             else if (atom_number < 0 && mol.isQueryMolecule())
             {
-                TiXmlElement* t = new TiXmlElement("t");
+                XMLElement* t = _doc->NewElement("t");
                 node->LinkEndChild(t);
 
                 QS_DEF(Array<char>, buf);
@@ -574,7 +572,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 t->SetAttribute("p", buf.ptr());
                 t->SetAttribute("LabelJustification", "Left");
 
-                TiXmlElement* s = new TiXmlElement("s");
+                XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 3);
                 s->SetAttribute("size", 10);
@@ -606,7 +604,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                         mol.getAtomSymbol(i, buf);
                 }
 
-                TiXmlText* txt = new TiXmlText(buf.ptr());
+                XMLText* txt = _doc->NewText(buf.ptr());
                 s->LinkEndChild(txt);
             }
         }
@@ -618,7 +616,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         {
             const Edge& edge = mol.getEdge(i);
 
-            TiXmlElement* bond = new TiXmlElement("b");
+            XMLElement* bond = _doc->NewElement("b");
             fragment->LinkEndChild(bond);
 
             if (ids.size() > 0)
@@ -686,7 +684,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         Vec2f chiral_pos(max_coord.x, max_coord.y);
         Vec2f bbox(scale * chiral_pos.x, -scale * chiral_pos.y);
 
-        TiXmlElement* graphic = new TiXmlElement("graphic");
+        XMLElement* graphic = _doc->NewElement("graphic");
         fragment->LinkEndChild(graphic);
 
         QS_DEF(Array<char>, buf);
@@ -718,7 +716,7 @@ void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text, const char*
         return;
     buf.clear();
 
-    TiXmlElement* t = new TiXmlElement("t");
+    XMLElement* t = _doc->NewElement("t");
     _current->LinkEndChild(t);
 
     ArrayOutput out(buf);
@@ -728,12 +726,12 @@ void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text, const char*
     t->SetAttribute("Justification", alignment);
     t->SetAttribute("InterpretChemically", "no");
 
-    TiXmlElement* s = new TiXmlElement("s");
+    XMLElement* s = _doc->NewElement("s");
     t->LinkEndChild(s);
     s->SetAttribute("font", 3);
     s->SetAttribute("size", 10);
     s->SetAttribute("face", 96);
-    TiXmlText* txt = new TiXmlText(text);
+    XMLText* txt = _doc->NewText(text);
     s->LinkEndChild(txt);
 }
 
@@ -745,7 +743,7 @@ void MoleculeCdxmlSaver::addTitle(const Vec2f& pos, const char* text)
         return;
     buf.clear();
 
-    TiXmlElement* t = new TiXmlElement("t");
+    XMLElement* t = _doc->NewElement("t");
     _current->LinkEndChild(t);
 
     ArrayOutput out(buf);
@@ -755,18 +753,18 @@ void MoleculeCdxmlSaver::addTitle(const Vec2f& pos, const char* text)
     t->SetAttribute("Justification", "Center");
     t->SetAttribute("InterpretChemically", "no");
 
-    TiXmlElement* s = new TiXmlElement("s");
+    XMLElement* s = _doc->NewElement("s");
     t->LinkEndChild(s);
     s->SetAttribute("font", 4);
     s->SetAttribute("size", 18);
     s->SetAttribute("face", 1);
-    TiXmlText* txt = new TiXmlText(text);
+    XMLText* txt = _doc->NewText(text);
     s->LinkEndChild(txt);
 }
 
 void MoleculeCdxmlSaver::addGraphic(int id, const Vec2f& p1, const Vec2f& p2, PropertiesMap& attrs)
 {
-    TiXmlElement* g = new TiXmlElement("graphic");
+    XMLElement* g = _doc->NewElement("graphic");
     _current->LinkEndChild(g);
 
     if (id > 0)
@@ -787,7 +785,7 @@ void MoleculeCdxmlSaver::addGraphic(int id, const Vec2f& p1, const Vec2f& p2, Pr
 
 void MoleculeCdxmlSaver::addCustomElement(int id, Array<char>& name, PropertiesMap& attrs)
 {
-    TiXmlElement* e = new TiXmlElement(name.ptr());
+    XMLElement* e = _doc->NewElement(name.ptr());
     _current->LinkEndChild(e);
 
     if (id > 0)
@@ -801,7 +799,7 @@ void MoleculeCdxmlSaver::addCustomElement(int id, Array<char>& name, PropertiesM
 
 void MoleculeCdxmlSaver::startCurrentElement(int id, Array<char>& name, PropertiesMap& attrs)
 {
-    TiXmlElement* e = new TiXmlElement(name.ptr());
+    XMLElement* e = _doc->NewElement(name.ptr());
     _current->LinkEndChild(e);
     _current = e;
 
@@ -816,13 +814,13 @@ void MoleculeCdxmlSaver::startCurrentElement(int id, Array<char>& name, Properti
 
 void MoleculeCdxmlSaver::endCurrentElement()
 {
-    TiXmlNode* node = _current->Parent();
-    _current = (TiXmlElement*)node;
+    XMLNode* node = _current->Parent();
+    _current = (XMLElement*)node;
 }
 
 void MoleculeCdxmlSaver::addCustomText(const Vec2f& pos, const char* alignment, float line_height, const char* text)
 {
-    TiXmlElement* t = new TiXmlElement("t");
+    XMLElement* t = _doc->NewElement("t");
     _current->LinkEndChild(t);
 
     QS_DEF(Array<char>, buf);
@@ -837,14 +835,14 @@ void MoleculeCdxmlSaver::addCustomText(const Vec2f& pos, const char* alignment, 
     buf.push(0);
     t->SetAttribute("LineHeight", buf.ptr());
 
-    TiXmlUnknown* s = new TiXmlUnknown();
     buf.readString(text, false);
     if (buf.size() > 1)
     {
         buf.remove(buf.size() - 1);
         buf.remove(0);
         buf.push(0);
-        s->SetValue(buf.ptr());
+
+        XMLUnknown* s = _doc->NewUnknown(buf.ptr());
         t->LinkEndChild(s);
     }
 }
@@ -856,7 +854,7 @@ void MoleculeCdxmlSaver::endPage()
 
 void MoleculeCdxmlSaver::endDocument()
 {
-    TiXmlPrinter printer;
+    XMLPrinter printer;
     _doc->Accept(&printer);
     _output.printf("%s", printer.CStr());
     _doc.reset(nullptr);

@@ -24,8 +24,11 @@
 #include "base_cpp/properties_map.h"
 #include "math/algebra.h"
 
-class TiXmlElement;
-class TiXmlDocument;
+namespace tinyxml2
+{
+    class XMLElement;
+    class XMLDocument;
+}
 
 namespace indigo
 {
@@ -85,13 +88,13 @@ namespace indigo
         int _pages_height;
         float _max_page_height;
 
-        TiXmlElement* _root;
-        TiXmlElement* _page;
-        TiXmlElement* _current;
-        TiXmlElement* _fonttable;
-        TiXmlElement* _colortable;
+        tinyxml2::XMLElement* _root;
+        tinyxml2::XMLElement* _page;
+        tinyxml2::XMLElement* _current;
+        tinyxml2::XMLElement* _fonttable;
+        tinyxml2::XMLElement* _colortable;
 
-        std::unique_ptr<TiXmlDocument> _doc;
+        std::unique_ptr<tinyxml2::XMLDocument> _doc;
 
     private:
         MoleculeCdxmlSaver(const MoleculeCdxmlSaver&); // no implicit copy

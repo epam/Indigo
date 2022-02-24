@@ -28,18 +28,18 @@ endif()
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC z
-            PUBLIC tinyxml
+            PUBLIC tinyxml2
             PUBLIC rapidjson
             PUBLIC inchi)
 else()
     find_package(InChI REQUIRED)
-    find_package(TinyXML REQUIRED)
+    find_package(TinyXML2 REQUIRED)
     find_package(ZLIB REQUIRED)
     find_package(RapidJSON REQUIRED)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC InChI::InChI
             PUBLIC RapidJSON::RapidJSON
-            PUBLIC TinyXML::TinyXML
+            PUBLIC TinyXML2::TinyXML2
             PUBLIC ZLIB::ZLIB)
 endif()
 target_include_directories(${PROJECT_NAME}

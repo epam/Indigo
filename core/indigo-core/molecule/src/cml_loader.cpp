@@ -18,13 +18,15 @@
 
 #include "molecule/cml_loader.h"
 
+#include <tinyxml2.h>
+
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
-#include "tinyxml.h"
 
 using namespace indigo;
+using namespace tinyxml2;
 
 static float readFloat(const char* point_str)
 {
@@ -45,7 +47,7 @@ CmlLoader::CmlLoader(Scanner& scanner)
     _handle = 0;
 }
 
-CmlLoader::CmlLoader(TiXmlHandle& handle)
+CmlLoader::CmlLoader(XMLHandle& handle)
 {
     _handle = &handle;
     _scanner = 0;
@@ -78,27 +80,27 @@ void CmlLoader::_loadMolecule()
         QS_DEF(Array<char>, buf);
         _scanner->readAll(buf);
         buf.push(0);
-        TiXmlDocument xml;
+        XMLDocument xml;
 
         xml.Parse(buf.ptr());
 
         if (xml.Error())
-            throw Error("XML parsing error: %s", xml.ErrorDesc());
+            throw Error("XML parsing error: %s", xml.ErrorStr());
 
-        TiXmlHandle hxml(&xml);
-        TiXmlNode* node;
+        XMLHandle hxml(&xml);
+        XMLNode* node;
 
         if (_findMolecule(hxml.ToNode()))
         {
             node = _molecule;
-            TiXmlHandle molecule = _molecule;
+            XMLHandle molecule(_molecule);
             _loadMoleculeElement(molecule);
 
             for (node = node->NextSibling(); node != 0; node = node->NextSibling())
             {
                 if (strncmp(node->Value(), "Rgroup", 6) == 0)
                 {
-                    TiXmlHandle rgroup = node;
+                    XMLHandle rgroup(node);
                     _loadRgroupElement(rgroup);
                 }
             }
@@ -108,9 +110,9 @@ void CmlLoader::_loadMolecule()
         _loadMoleculeElement(*_handle);
 }
 
-bool CmlLoader::_findMolecule(TiXmlNode* elem)
+bool CmlLoader::_findMolecule(XMLNode* elem)
 {
-    TiXmlNode* node;
+    XMLNode* node;
     for (node = elem->FirstChild(); node != 0; node = node->NextSibling())
     {
         if (strncmp(node->Value(), "molecule", 8) == 0)
@@ -151,7 +153,7 @@ static void splitStringIntoProperties(const char* s, std::vector<Atom>& atoms, s
     }
 }
 
-void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
+void CmlLoader::_loadMoleculeElement(XMLHandle& handle)
 {
     std::unordered_map<std::string, int> atoms_id;
     std::unordered_map<std::string, size_t> atoms_id_int;
@@ -171,7 +173,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
     total_h_count.clear();
     query_h_count.clear();
 
-    const char* title = handle.Element()->Attribute("title");
+    const char* title = handle.ToElement()->Attribute("title");
 
     if (title != 0)
         _bmol->name.readString(title, true);
@@ -183,47 +185,47 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
     // Read elements into an atoms array first and the parse them
     //
 
-    TiXmlHandle atom_array = handle.FirstChild("atomArray");
+    XMLHandle atom_array = handle.FirstChildElement("atomArray");
     // Read atoms as xml attributes
     // <atomArray
     //       atomID="a1 a2 a3 ... "
     //       elementType="O C O ..."
     //       hydrogenCount="1 0 0 ..."
     // />
-    splitStringIntoProperties(atom_array.Element()->Attribute("atomID"), atoms, &Atom::id);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("atomID"), atoms, &Atom::id);
 
     // Fill id if any were found
     size_t atom_index;
     for (atom_index = 0; atom_index < atoms.size(); atom_index++)
         atoms_id_int.emplace(atoms[atom_index].id, atom_index);
 
-    splitStringIntoProperties(atom_array.Element()->Attribute("elementType"), atoms, &Atom::element_type);
-    splitStringIntoProperties(atom_array.Element()->Attribute("mrvPseudo"), atoms, &Atom::label);
-    splitStringIntoProperties(atom_array.Element()->Attribute("hydrogenCount"), atoms, &Atom::hydrogen_count);
-    splitStringIntoProperties(atom_array.Element()->Attribute("isotope"), atoms, &Atom::isotope);
-    splitStringIntoProperties(atom_array.Element()->Attribute("isotopeNumber"), atoms, &Atom::isotope);
-    splitStringIntoProperties(atom_array.Element()->Attribute("formalCharge"), atoms, &Atom::formal_charge);
-    splitStringIntoProperties(atom_array.Element()->Attribute("spinMultiplicity"), atoms, &Atom::spin_multiplicity);
-    splitStringIntoProperties(atom_array.Element()->Attribute("radical"), atoms, &Atom::radical);
-    splitStringIntoProperties(atom_array.Element()->Attribute("mrvValence"), atoms, &Atom::valence);
-    splitStringIntoProperties(atom_array.Element()->Attribute("rgroupRef"), atoms, &Atom::rgroupref);
-    splitStringIntoProperties(atom_array.Element()->Attribute("attachmentPoint"), atoms, &Atom::attpoint);
-    splitStringIntoProperties(atom_array.Element()->Attribute("attachmentOrder"), atoms, &Atom::attorder);
-    splitStringIntoProperties(atom_array.Element()->Attribute("mrvQueryProps"), atoms, &Atom::query_props);
-    splitStringIntoProperties(atom_array.Element()->Attribute("mrvAlias"), atoms, &Atom::alias);
-    splitStringIntoProperties(atom_array.Element()->Attribute("mrvMap"), atoms, &Atom::atom_mapping);
-    splitStringIntoProperties(atom_array.Element()->Attribute("reactionStereo"), atoms, &Atom::atom_inversion);
-    splitStringIntoProperties(atom_array.Element()->Attribute("exactChage"), atoms, &Atom::atom_exact_change);
-    splitStringIntoProperties(atom_array.Element()->Attribute("x2"), atoms, &Atom::x);
-    splitStringIntoProperties(atom_array.Element()->Attribute("y2"), atoms, &Atom::y);
-    splitStringIntoProperties(atom_array.Element()->Attribute("x3"), atoms, &Atom::x);
-    splitStringIntoProperties(atom_array.Element()->Attribute("y3"), atoms, &Atom::y);
-    splitStringIntoProperties(atom_array.Element()->Attribute("z3"), atoms, &Atom::z);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("elementType"), atoms, &Atom::element_type);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("mrvPseudo"), atoms, &Atom::label);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("hydrogenCount"), atoms, &Atom::hydrogen_count);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("isotope"), atoms, &Atom::isotope);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("isotopeNumber"), atoms, &Atom::isotope);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("formalCharge"), atoms, &Atom::formal_charge);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("spinMultiplicity"), atoms, &Atom::spin_multiplicity);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("radical"), atoms, &Atom::radical);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("mrvValence"), atoms, &Atom::valence);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("rgroupRef"), atoms, &Atom::rgroupref);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("attachmentPoint"), atoms, &Atom::attpoint);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("attachmentOrder"), atoms, &Atom::attorder);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("mrvQueryProps"), atoms, &Atom::query_props);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("mrvAlias"), atoms, &Atom::alias);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("mrvMap"), atoms, &Atom::atom_mapping);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("reactionStereo"), atoms, &Atom::atom_inversion);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("exactChage"), atoms, &Atom::atom_exact_change);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("x2"), atoms, &Atom::x);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("y2"), atoms, &Atom::y);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("x3"), atoms, &Atom::x);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("y3"), atoms, &Atom::y);
+    splitStringIntoProperties(atom_array.ToElement()->Attribute("z3"), atoms, &Atom::z);
 
     // Read atoms as nested xml elements
     //   <atomArray>
     //     <atom id="a1" elementType="H" />
-    for (TiXmlElement* elem = atom_array.FirstChild().Element(); elem; elem = elem->NextSiblingElement())
+    for (XMLElement* elem = atom_array.FirstChild().ToElement(); elem; elem = elem->NextSiblingElement())
     {
         if (strncmp(elem->Value(), "atom", 4) != 0)
             continue;
@@ -850,7 +852,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
     // Bonds
     bool have_cistrans_notation = false;
 
-    for (TiXmlElement* elem = handle.FirstChild("bondArray").FirstChild().Element(); elem; elem = elem->NextSiblingElement())
+    for (XMLElement* elem = handle.FirstChildElement("bondArray").FirstChild().ToElement(); elem; elem = elem->NextSiblingElement())
     {
         if (strncmp(elem->Value(), "bond", 4) != 0)
             continue;
@@ -940,7 +942,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
 
         int dir = 0;
 
-        TiXmlElement* bs_elem = elem->FirstChildElement("bondStereo");
+        XMLElement* bs_elem = elem->FirstChildElement("bondStereo");
 
         if (bs_elem != 0)
         {
@@ -1036,7 +1038,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
     }
 
     // Tetrahedral stereocenters
-    for (TiXmlElement* elem = handle.FirstChild("atomArray").FirstChild().Element(); elem; elem = elem->NextSiblingElement())
+    for (XMLElement* elem = handle.FirstChildElement("atomArray").FirstChild().ToElement(); elem; elem = elem->NextSiblingElement())
     {
         const char* id = elem->Attribute("id");
 
@@ -1045,7 +1047,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
 
         int idx = getAtomIdx(id);
 
-        TiXmlElement* ap_elem = elem->FirstChildElement("atomParity");
+        XMLElement* ap_elem = elem->FirstChildElement("atomParity");
 
         if (ap_elem == 0)
             continue;
@@ -1103,12 +1105,12 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
     {
         int bond_idx = -1;
 
-        for (TiXmlElement* elem = handle.FirstChild("bondArray").FirstChild().Element(); elem; elem = elem->NextSiblingElement())
+        for (XMLElement* elem = handle.FirstChildElement("bondArray").FirstChild().ToElement(); elem; elem = elem->NextSiblingElement())
         {
             if (strncmp(elem->Value(), "bond", 4) != 0)
                 continue;
             bond_idx++;
-            TiXmlElement* bs_elem = elem->FirstChildElement("bondStereo");
+            XMLElement* bs_elem = elem->FirstChildElement("bondStereo");
 
             if (bs_elem == 0)
                 continue;
@@ -1212,7 +1214,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
 
     // Sgroups
 
-    for (TiXmlElement* elem = handle.FirstChild().Element(); elem; elem = elem->NextSiblingElement())
+    for (XMLElement* elem = handle.FirstChild().ToElement(); elem; elem = elem->NextSiblingElement())
     {
         if (strncmp(elem->Value(), "molecule", 8) != 0)
             continue;
@@ -1220,7 +1222,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
     }
 }
 
-void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::string, int>& atoms_id, int sg_parent)
+void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::string, int>& atoms_id, int sg_parent)
 {
     auto getAtomIdx = [&](const char* id) {
         auto it = atoms_id.find(id);
@@ -1292,7 +1294,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 }
             }
 
-            TiXmlElement* brackets = elem->FirstChildElement("MBracket");
+            XMLElement* brackets = elem->FirstChildElement("MBracket");
 
             if (brackets != 0)
             {
@@ -1311,7 +1313,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
 
                 int point_idx = 0;
                 Vec2f* pbrackets;
-                TiXmlElement* pPoint;
+                XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1419,14 +1421,14 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (query_type != 0)
                 dsg->querycode.readString(query_type, true);
 
-            TiXmlNode* pChild;
+            XMLNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
             {
                 if (strncmp(pChild->Value(), "molecule", 8) != 0)
                     continue;
-                TiXmlHandle next_mol = pChild;
-                if (next_mol.Element() != 0)
-                    _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
+                XMLHandle next_mol(pChild);
+                if (next_mol.ToElement() != 0)
+                    _loadSGroupElement(next_mol.ToElement(), atoms_id, idx + 1);
             }
         }
         else if (gen != 0)
@@ -1448,7 +1450,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 }
             }
 
-            TiXmlElement* brackets = elem->FirstChildElement("MBracket");
+            XMLElement* brackets = elem->FirstChildElement("MBracket");
 
             if (brackets != 0)
             {
@@ -1467,7 +1469,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
 
                 int point_idx = 0;
                 Vec2f* pbrackets;
-                TiXmlElement* pPoint;
+                XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1497,14 +1499,14 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 }
             }
 
-            TiXmlNode* pChild;
+            XMLNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
             {
                 if (strncmp(pChild->Value(), "molecule", 8) != 0)
                     continue;
-                TiXmlHandle next_mol = pChild;
-                if (next_mol.Element() != 0)
-                    _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
+                XMLHandle next_mol(pChild);
+                if (next_mol.ToElement() != 0)
+                    _loadSGroupElement(next_mol.ToElement(), atoms_id, idx + 1);
             }
         }
         else if (sru != 0)
@@ -1526,7 +1528,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 }
             }
 
-            TiXmlElement* brackets = elem->FirstChildElement("MBracket");
+            XMLElement* brackets = elem->FirstChildElement("MBracket");
 
             if (brackets != 0)
             {
@@ -1545,7 +1547,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
 
                 int point_idx = 0;
                 Vec2f* pbrackets;
-                TiXmlElement* pPoint;
+                XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1592,14 +1594,14 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 }
             }
 
-            TiXmlNode* pChild;
+            XMLNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
             {
                 if (strncmp(pChild->Value(), "molecule", 8) != 0)
                     continue;
-                TiXmlHandle next_mol = pChild;
-                if (next_mol.Element() != 0)
-                    _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
+                XMLHandle next_mol(pChild);
+                if (next_mol.ToElement() != 0)
+                    _loadSGroupElement(next_mol.ToElement(), atoms_id, idx + 1);
             }
         }
         else if (mul != 0)
@@ -1635,7 +1637,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 }
             }
 
-            TiXmlElement* brackets = elem->FirstChildElement("MBracket");
+            XMLElement* brackets = elem->FirstChildElement("MBracket");
 
             if (brackets != 0)
             {
@@ -1654,7 +1656,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
 
                 int point_idx = 0;
                 Vec2f* pbrackets;
-                TiXmlElement* pPoint;
+                XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1691,14 +1693,14 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 mul->multiplier = strscan.readInt1();
             }
 
-            TiXmlNode* pChild;
+            XMLNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
             {
                 if (strncmp(pChild->Value(), "molecule", 8) != 0)
                     continue;
-                TiXmlHandle next_mol = pChild;
-                if (next_mol.Element() != 0)
-                    _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
+                XMLHandle next_mol(pChild);
+                if (next_mol.ToElement() != 0)
+                    _loadSGroupElement(next_mol.ToElement(), atoms_id, idx + 1);
             }
         }
         else if (sup != 0)
@@ -1720,7 +1722,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 }
             }
 
-            TiXmlElement* brackets = elem->FirstChildElement("MBracket");
+            XMLElement* brackets = elem->FirstChildElement("MBracket");
 
             if (brackets != 0)
             {
@@ -1739,7 +1741,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
 
                 int point_idx = 0;
                 Vec2f* pbrackets;
-                TiXmlElement* pPoint;
+                XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1762,11 +1764,11 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 }
             }
             /*
-                     TiXmlElement *atpoints = elem->FirstChildElement("AttachmentPointArray");
+                     XMLElement *atpoints = elem->FirstChildElement("AttachmentPointArray");
 
                      if (atpoints != 0)
                      {
-                        TiXmlElement * aPoint;
+                        XMLElement * aPoint;
                         for (aPoint = atpoints->FirstChildElement();
                              aPoint;
                              aPoint = aPoint->NextSiblingElement())
@@ -1803,24 +1805,24 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (title != 0)
                 sup->subscript.readString(title, true);
 
-            TiXmlNode* pChild;
+            XMLNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
             {
                 if (strncmp(pChild->Value(), "molecule", 8) != 0)
                     continue;
-                TiXmlHandle next_mol = pChild;
-                if (next_mol.Element() != 0)
-                    _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
+                XMLHandle next_mol(pChild);
+                if (next_mol.ToElement() != 0)
+                    _loadSGroupElement(next_mol.ToElement(), atoms_id, idx + 1);
             }
         }
     }
 }
 
-void CmlLoader::_loadRgroupElement(TiXmlHandle& handle)
+void CmlLoader::_loadRgroupElement(XMLHandle& handle)
 {
     MoleculeRGroups* rgroups = &_bmol->rgroups;
 
-    TiXmlElement* elem = handle.Element();
+    XMLElement* elem = handle.ToElement();
     if (elem != 0)
     {
         int rg_idx;
@@ -1853,13 +1855,13 @@ void CmlLoader::_loadRgroupElement(TiXmlHandle& handle)
             }
         }
 
-        TiXmlNode* pChild;
+        XMLNode* pChild;
         for (pChild = handle.FirstChild().ToNode(); pChild != 0; pChild = pChild->NextSibling())
         {
             if (strncmp(pChild->Value(), "molecule", 8) != 0)
                 continue;
-            TiXmlHandle molecule = pChild;
-            if (molecule.Element() != 0)
+            XMLHandle molecule(pChild);
+            if (molecule.ToElement() != 0)
             {
                 std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
 
