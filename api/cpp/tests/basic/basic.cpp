@@ -70,12 +70,41 @@ TEST(Basic, IterateSDFile)
     EXPECT_EQ(molecules.size(), 245);
 }
 
-TEST(Basic, DISABLED_IterateSDFilePharmapendium)
+TEST(Basic, MolecularWeight)
+{
+    auto session = IndigoSession::create();
+    {
+        const auto plainAtom = session->loadMolecule("[C]");
+        ASSERT_FLOAT_EQ(plainAtom.molecularWeight(), 12.0107);
+    }
+    {
+        const auto correctIsotope = session->loadMolecule("[13C]");
+        ASSERT_FLOAT_EQ(correctIsotope.molecularWeight(), 13.003355);
+    }
+    {
+        const auto incorrectIsotope = session->loadMolecule("[60C]");
+        ASSERT_THROW(
+            {
+                try
+                {
+                    incorrectIsotope.molecularWeight();
+                }
+                catch (const IndigoException& e)
+                {
+                    ASSERT_STREQ(e.what(), "element: getRelativeIsotopicMass: isotope (C, 60) not found");
+                    throw;
+                }
+            },
+            IndigoException);
+    }
+}
+
+TEST(Basic, IterateSDFilePharmapendium)
 {
     auto session = IndigoSession::create();
     auto counter = 0;
     std::vector<IndigoMoleculeSPtr> molecules;
-    molecules.reserve(245);
+    molecules.reserve(3128);
     for (const auto& molecule : session->iterateSDFile(dataPath("molecules/basic/pharmapendium.sdf.gz")))
     {
         try

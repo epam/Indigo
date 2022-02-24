@@ -2,6 +2,8 @@ import torch.nn as nn  # type: ignore
 import torch.nn.functional as F  # type: ignore
 from dgl.nn.pytorch import NNConv, Set2Set  # type: ignore
 
+from indigo.ml.mpp.models.regressor import BaseGNNRegressor  # type: ignore
+
 
 class MPNNGNN(nn.Module):
     """MPNN model"""
@@ -47,24 +49,7 @@ class MPNNGNN(nn.Module):
         return node_feats
 
 
-class MLPRegressor(nn.Module):
-    """Multi-layer Perceptron regressor"""
-
-    def __init__(self, in_feats, hidden_feats, n_tasks, dropout=0.0):
-        super(MLPRegressor, self).__init__()
-
-        self.predict = nn.Sequential(
-            nn.Dropout(dropout),
-            nn.Linear(in_feats, hidden_feats),
-            nn.ReLU(),
-            nn.Linear(hidden_feats, n_tasks),
-        )
-
-    def forward(self, h):
-        return self.predict(h)
-
-
-class MPNNRegressor(nn.Module):
+class MPNNRegressor(BaseGNNRegressor):
     """Regression model"""
 
     def __init__(
@@ -80,7 +65,12 @@ class MPNNRegressor(nn.Module):
         regressor_hidden_feats=128,
         dropout=0.0,
     ):
-        super(MPNNRegressor, self).__init__()
+        super(MPNNRegressor, self).__init__(
+            readout_feats=2 * node_hidden_dim,
+            n_tasks=n_tasks,
+            regressor_hidden_feats=regressor_hidden_feats,
+            dropout=dropout,
+        )
         self.gnn = MPNNGNN(
             in_node_feats,
             in_edge_feats,
@@ -91,16 +81,3 @@ class MPNNRegressor(nn.Module):
         self.readout = Set2Set(
             node_hidden_dim, num_step_set2set, num_layer_set2set
         )
-        readout_feats = 2 * node_hidden_dim
-        self.regressor = MLPRegressor(
-            readout_feats, regressor_hidden_feats, n_tasks, dropout
-        )
-
-    def forward(self, bg, node_feats, edge_feats):
-        # Update node representations
-        feats = self.gnn(bg, node_feats, edge_feats)
-
-        # Compute molecule features from atom features
-        h_g = self.readout(bg, feats)
-
-        return self.regressor(h_g)

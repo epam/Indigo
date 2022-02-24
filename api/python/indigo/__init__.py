@@ -37,23 +37,13 @@ from ctypes import (
     sizeof,
 )
 
+from indigo.exceptions import IndigoException
+from indigo.hybridization import get_hybridization
+from indigo.logp import get_logp, get_mr
 from indigo.salts import SALTS
 
 DECODE_ENCODING = "utf-8"
 ENCODE_ENCODING = "utf-8"
-
-
-class IndigoException(Exception):
-    """Docstring for class IndigoException."""
-
-    def __init__(self, value):
-        if sys.version_info > (3, 0) and not isinstance(value, str):
-            self.value = value.decode(DECODE_ENCODING)
-        else:
-            self.value = value
-
-    def __str__(self):
-        return self.value
 
 
 class IndigoObject(object):
@@ -1075,6 +1065,22 @@ class IndigoObject(object):
         if res == 0:
             return None
         return value.value
+
+    def getHybridization(self):
+        """Atom method returns HybridizationType
+
+        Returns:
+            HybridizationType: atom hybridization
+        """
+        return get_hybridization(self)
+
+    def getHybridizationStr(self):
+        """Atom method returns hybridization type string
+
+        Returns:
+            str: atom hybridization
+        """
+        return get_hybridization(self).name
 
     def getExplicitValence(self):
         """Atom method returns the explicit valence
@@ -2540,6 +2546,22 @@ class IndigoObject(object):
                 Indigo._lib.indigoIterateBonds(self.id)
             ),
         )
+
+    def logP(self) -> float:
+        """Molecule method returns calculated logP value
+
+        Returns:
+            float: calculated logP value of the molecule
+        """
+        return get_logp(self)
+
+    def molarRefractivity(self) -> float:
+        """Molecule method returns calculated molar refractivity
+
+        Returns:
+            float: calculated value of molar refractivity
+        """
+        return get_mr(self)
 
     def bondOrder(self):
         """Bond method returns bond order
