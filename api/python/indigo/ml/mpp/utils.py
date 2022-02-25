@@ -1,4 +1,7 @@
+import yaml  # type: ignore
+
 import indigo.ml.mpp.config as config  # type: ignore
+from indigo.ml.mpp.feat_params import FeaturizeParams  # type: ignore
 from indigo.ml.mpp.models.attentivefp import (  # type: ignore
     AttentiveFPRegressor,
 )
@@ -24,3 +27,15 @@ def load_model(model_type: str):
         raise ValueError("Unknown model type")
 
     return model_class, params
+
+
+def load_params(file_name: str) -> FeaturizeParams:
+    with open(file_name, "r") as f:
+        data = yaml.safe_load(f)
+        return FeaturizeParams(**data)
+
+
+def split_params(featurizers: str) -> tuple:
+    if featurizers:
+        return tuple(featurizers.split(","))
+    return tuple()

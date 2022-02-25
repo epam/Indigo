@@ -9,3 +9,4 @@ umap-learn==0.5.2
 lightgbm==3.3.2
 optuna==2.10.0
 dgl==0.6.1
+PyYAML==6.0
