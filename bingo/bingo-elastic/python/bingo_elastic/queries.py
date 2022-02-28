@@ -288,7 +288,7 @@ class ExactMatch(CompilableQuery):
 
         if indigo.exactMatch(
             record.as_indigo_object(indigo),
-            self._target.as_indigo_object(indigo)
+            self._target.as_indigo_object(indigo),
         ):
             return record
         return None

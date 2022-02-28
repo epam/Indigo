@@ -90,9 +90,7 @@ class ElasticRepository:
 
         self.el_client = Elasticsearch(**arguments)  # type: ignore
 
-    def __prepare(
-        self, records: list
-    ) -> Generator[Dict, None, None]:
+    def __prepare(self, records: list) -> Generator[Dict, None, None]:
         for record in records:
             if get_index_name(record).value != self.index_name:
                 raise ValueError(
