@@ -5,6 +5,13 @@ from ..helpers import assert_calculate_query, query_cases
 
 class TestFingerprint:
     @pytest.mark.parametrize('query_id, expected',
+                             query_cases('fingerprint', 'fingerprint(full)'))
+    def test_fingerprint_full(self, db, entities, query_id, expected):
+        molecule = entities.get(query_id)
+        result = db.fingerprint(molecule, 'full')
+        assert_calculate_query(result, expected)
+
+    @pytest.mark.parametrize('query_id, expected',
                              query_cases('fingerprint', 'fingerprint(sim)'))
     def test_fingerprint_sim(self, db, entities, query_id, expected):
         molecule = entities.get(query_id)
@@ -30,11 +37,4 @@ class TestFingerprint:
     def test_fingerprint_sub_tau(self, db, entities, query_id, expected):
         molecule = entities.get(query_id)
         result = db.fingerprint(molecule, 'sub-tau')
-        assert_calculate_query(result, expected)
-
-    @pytest.mark.parametrize('query_id, expected',
-                             query_cases('fingerprint', 'fingerprint(full)'))
-    def test_fingerprint_full(self, db, entities, query_id, expected):
-        molecule = entities.get(query_id)
-        result = db.fingerprint(molecule, 'full')
         assert_calculate_query(result, expected)

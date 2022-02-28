@@ -8,4 +8,6 @@ class TestSmarts:
     def test_smarts(self, db, entities, query_id, expected):
         molecule = entities.get(query_id)
         result = db.smarts(molecule, 'smarts')
+        print("RESULT", result)
+        print("EXPECTED", expected)
         assert_calculate_query(result, expected)

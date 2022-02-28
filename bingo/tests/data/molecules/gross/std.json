@@ -2937,7 +2937,7 @@
     {
         "query_id": 588,
         "query_type": "gross",
-        "expected": "H3"
+        "expected": "H4"
     },
     {
         "query_id": 589,
@@ -3257,12 +3257,12 @@
     {
         "query_id": 652,
         "query_type": "gross",
-        "expected": "C4 O9 Na5 S Cl4 H11"
+        "expected": "C4 O9 Na5 S Cl4 H12"
     },
     {
         "query_id": 653,
         "query_type": "gross",
-        "expected": "C4 H12"
+        "expected": "C4 H13"
     },
     {
         "query_id": 654,
@@ -3967,7 +3967,7 @@
     {
         "query_id": 794,
         "query_type": "gross",
-        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H68"
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H71"
     },
     {
         "query_id": 795,
@@ -4122,7 +4122,7 @@
     {
         "query_id": 825,
         "query_type": "gross",
-        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H39"
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H42"
     },
     {
         "query_id": 826,
@@ -4212,7 +4212,7 @@
     {
         "query_id": 843,
         "query_type": "gross",
-        "expected": "H"
+        "expected": "H2"
     },
     {
         "query_id": 844,

@@ -16,7 +16,7 @@ on:
   repository_dispatch:
 
 jobs:
-static_analysis:
+  static_analysis:
     runs-on: ubuntu-latest
     container: epmlsop/indigo-tester:latest
     steps:
