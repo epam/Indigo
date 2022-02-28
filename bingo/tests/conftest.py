@@ -1,6 +1,6 @@
 import pytest
 
-from bingo_elastic.elastic import IndexName
+# from bingo_elastic.elastic import IndexName
 from indigo import Indigo
 
 from .constants import (
@@ -12,7 +12,7 @@ from .constants import (
     DB_POSTGRES,
     EntitiesType
 )
-from .dbc.BingoElastic import BingoElastic
+# from .dbc.BingoElastic import BingoElastic
 from .dbc.BingoNoSQL import BingoNoSQL
 from .dbc.PostgresSQL import Postgres
 from .helpers import get_bingo_meta, get_query_entities
@@ -50,13 +50,13 @@ def db(request, indigo):
         db = BingoNoSQL(indigo)
         db.connect()
         db.import_data(meta["import_no_sql"], data_type)
-    elif db_str == DB_BINGO_ELASTIC:
-        if data_type == EntitiesType.MOLECULES:
-            index_name = IndexName.BINGO_MOLECULE
-        else:
-            index_name = IndexName.BINGO_REACTION
-        db = BingoElastic(indigo, index_name)
-        db.import_data(meta["import_no_sql"], data_type)
+    # elif db_str == DB_BINGO_ELASTIC:
+    #     if data_type == EntitiesType.MOLECULES:
+    #         index_name = IndexName.BINGO_MOLECULE
+    #     else:
+    #         index_name = IndexName.BINGO_REACTION
+    #     db = BingoElastic(indigo, index_name)
+    #     db.import_data(meta["import_no_sql"], data_type)
     elif db_str == DB_ORACLE:
         pass
     elif db_str == DB_MSSQL:
@@ -72,8 +72,8 @@ def db(request, indigo):
             table.drop(db.engine)
     elif db_str == DB_BINGO:
         db.delete_base()
-    elif db_str == DB_BINGO_ELASTIC:
-        db.drop()
+    # elif db_str == DB_BINGO_ELASTIC:
+    #     db.drop()
     logger.info(f"===== Finish of testing {function} =====")
 
 
