@@ -91,7 +91,7 @@ class ElasticRepository:
         self.el_client = Elasticsearch(**arguments)  # type: ignore
 
     def __prepare(
-            self, records: Generator[IndigoRecord, None, None]
+        self, records: Generator[IndigoRecord, None, None]
     ) -> Generator[Dict, None, None]:
         for record in records:
             if get_index_name(record).value != self.index_name:
