@@ -1489,11 +1489,12 @@ jobs:
         run: |
           pwd &&
           ls -alh &&
-          docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
+          docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" -v /home:/home epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Install dev dependencies
         run: pip install -r bingo/tests/requirements.txt
       - name: Run Bingo tests
         run: |
+#          export PYTHON_PATH=/home/runner/work/Indigo/Indigo/bingo/bingo-elastic/python
           pytest --tb=no --db postgres --junit-xml=junit_report.xml ; cat junit_report.xml
         working-directory: bingo/tests
       - name: Upload artifacts
