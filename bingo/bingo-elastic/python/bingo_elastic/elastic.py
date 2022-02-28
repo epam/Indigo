@@ -90,7 +90,9 @@ class ElasticRepository:
 
         self.el_client = Elasticsearch(**arguments)  # type: ignore
 
-    def __prepare(self, records: list) -> Generator[Dict, None, None]:
+    def __prepare(
+            self, records: Generator[IndigoRecord, None, None]
+    ) -> Generator[Dict, None, None]:
         for record in records:
             if get_index_name(record).value != self.index_name:
                 raise ValueError(
@@ -99,13 +101,13 @@ class ElasticRepository:
                 )
             yield record.as_dict()
 
-    # def index_record(self, record: IndigoRecord):
-    #     def gen():
-    #         yield record
-    #
-    #     return self.index_records(gen(), chunk_size=1)
+    def index_record(self, record: IndigoRecord):
+        def gen():
+            yield record
 
-    def index_records(self, records: list, chunk_size: int = 500):
+        return self.index_records(gen(), chunk_size=1)
+
+    def index_records(self, records: Generator, chunk_size: int = 500):
         self.create_index()
         # pylint: disable=unused-variable
         for is_ok, action in streaming_bulk(

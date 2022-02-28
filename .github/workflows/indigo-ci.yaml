@@ -1487,7 +1487,7 @@ jobs:
           docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION=${{ matrix.postgres_major_version }} .
       - name: Start Docker container
         run: |
-          docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
+          docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" -v /Indigo:/Indigo epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Install dev dependencies
         run: pip install -r bingo/tests/requirements.txt
       - name: Run Bingo tests
