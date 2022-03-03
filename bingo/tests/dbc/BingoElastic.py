@@ -27,10 +27,8 @@ class BingoElastic(NoSQLAdapter):
 
     def import_data(self, data_path: str, database_type: str):
         logger.info(f"Importing data to {self.dbms} from {data_path}")
-        index = 1670
-        records = []
+        index = 1
         for compound in indigo_iterator(self.indigo, data_path):
-            logger.info(f"===== {index} =====")
             try:
                 if database_type == EntitiesType.MOLECULES:
                     record = IndigoRecordMolecule(indigo_object=compound,
@@ -38,19 +36,13 @@ class BingoElastic(NoSQLAdapter):
                 else:
                     record = IndigoRecordReaction(indigo_object=compound,
                                                   skip_errors=True, index=index)
-                records.append(record)
-                # self.repo.index_record(record)
-                records.append(record)
+                self.repo.index_record(record)
             except IndigoException as e:
                 logger.error(f"Error during import {database_type} from "
                              f"{data_path} (id = {index}) "
                              f"'{compound.rawData()[:20]}...': {e}")
             finally:
                 index += 1
-        logger.info(f"===== Start of index_records(records) =====")
-        self.repo.index_records(records)
-        logger.info(f"===== End of index_records(records) =====")
-        logger.info(f"===== End of importing data to {self.dbms} from {data_path} =====")
 
     @catch_indigo_exception(catch_error=True)
     def exact(self, molecule: IndigoObject, target_function: str, options=''):
