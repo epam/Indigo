@@ -1,3 +1,4 @@
+elasticsearch==7.10.1
 epam.indigo==1.6.1
 psycopg2-binary==2.9.3
 pytest==6.2.5
