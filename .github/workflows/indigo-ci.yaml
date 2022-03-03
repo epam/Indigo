@@ -1493,7 +1493,7 @@ jobs:
           pip install -r bingo/tests/requirements.txt
       - name: Run Bingo tests
         run: |
-          export PYTHON_PATH=bingo/bingo-elastic/python
+          export PYTHONPATH=${{ github.workspace }}/bingo/bingo-elastic/python
           pytest --tb=no --db postgres --junit-xml=junit_report.xml ; cat junit_report.xml
         working-directory: bingo/tests
       - name: Upload artifacts
