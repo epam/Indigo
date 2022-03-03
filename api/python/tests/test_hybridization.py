@@ -127,6 +127,7 @@ from indigo.hybridization import HybridizationType, get_hybridization
 def test_get_hybridization(molecule_smiles, expecting):
     indigo = Indigo()
     mol = indigo.loadMolecule(molecule_smiles)
+    mol.aromatize()
 
     hybridizations = []
     for atom in mol.iterateAtoms():

@@ -16,7 +16,8 @@ OMEPRAZOLE = "CC1=CN=C(C(=C1OC)C)CS(=O)C2=NC3=C(N2)C=C(C=C3)OC"
 CAMPHOR = "CC1(C)C2CCC1(C)C(=O)C2"
 MORPHINE = "CN1CCC23C4C1CC5=C2C(=C(C=C5)O)OC3C(C=C4)O"
 CORONEN = "c1cc2ccc3ccc4ccc5ccc6ccc1c7c2c3c4c5c67"
-LANOSTEROL = "C[C@H](CCC=C(C)C)[C@H]1CC[C@]2(C)C1CCC3=C2CC[C@H]4C(C)(C)[C@@H](O)CC[C@]34C"  # (!!!)
+LANOSTEROL = "C[C@H](CCC=C(C)C)[C@H]1CC[C@]2(C)C1CCC3=C2CC[C@H]4C(C)(C)[C@@H](O)CC[C@]34C"
+BICYCLOBUTANE = "C1C2C1C2"
 
 
 @pytest.mark.parametrize(
@@ -76,7 +77,12 @@ def test_sp3_carbon_ratio(molecule_smiles, expecting):
 
 @pytest.mark.parametrize(
     "molecule_smiles, expecting",
-    [(THIOPHENE, 0), (NITROGLYCERINUM, 0), (CAMPHOR, 3), (LANOSTEROL, 2)],
+    [
+        (THIOPHENE, 0),
+        (NITROGLYCERINUM, 0),
+        (CAMPHOR, 3),
+        (LANOSTEROL, 4),
+    ],  # TODO: check if one double bond in LANOSTEROL makes cycles not aliphatic
 )
 def test_n_aliphatic_cycles(molecule_smiles, expecting):
     indigo = Indigo()

@@ -9,25 +9,8 @@ and oxygen–hydrogen bonds)
 Note that all numbers are multiples of five, which is the origin of the rule's
 name.
 """
-from typing import Collection
-
 from indigo import IndigoObject
-from indigo.hybridization import HybridizationType
-
-ALIPHATIC_CYCLES = tuple("C1" + "C" * n + "C1" for n in range(1, 12))
-ALIPHATIC_HETEROCYCLES = tuple(
-    ["C1N" + "C" * n + "C1" for n in range(5)]
-    + ["C1O" + "C" * n + "C1" for n in range(5)]
-    + ["C1S" + "C" * n + "C1" for n in range(5)]
-)
-AROMATIC_CYCLES = (
-    "C1C=C1",
-    "C1=CC=C1",
-    "C1C=CC=C1",
-    "C1=CC=CC=C1",
-    "C1C=CC=CC=C1",
-    "C1=CC=CC=CC=C1",
-)
+from indigo.hybridization import HybridizationType, in_aromatic_ring
 
 
 def n_hydrogen_donors(molecule: IndigoObject) -> int:
@@ -81,28 +64,82 @@ def sp3_carbon_ratio(molecule: IndigoObject) -> float:
     return round(sp3_carbons / carbons, 3)
 
 
-def count_matches(molecule: IndigoObject, cycles: Collection) -> int:
-    matcher = molecule.dispatcher.substructureMatcher(molecule)
-    matches = 0
-    for cycle in cycles:
-        query = molecule.dispatcher.loadQueryMolecule(cycle)
-        matches += matcher.countMatches(query)
-        print(cycle, matches)
-    return matches
+def atom_indices_in_rings(molecule: IndigoObject) -> list[set[int]]:
+    """Return list with sets of atom indices in every ring.
+
+    Sometimes iterateRings return the number of rings greater than it actually
+    is (e.g. bicyclobutane). To solve this superrings list is used. If the ring
+    contains the whole another ring (all it's atoms) it is detected as a
+    superring and will be skipped.
+    """
+    rings_indices = []
+    for ring in molecule.iterateRings(
+        min_atoms=3, max_atoms=molecule.countAtoms()
+    ):  # default value? 6?
+        rings_indices.append(set(atom.index() for atom in ring.iterateAtoms()))
+    rings_indices.sort()
+
+    superrings = []
+    for i, ring in enumerate(rings_indices):
+        for r in rings_indices[i + 1 :]:
+            if r in superrings:
+                continue
+            if r.issuperset(ring):
+                superrings.append(r)
+    return [ring for ring in rings_indices if ring not in superrings]
 
 
 def n_aliphatic_cycles(molecule: IndigoObject) -> int:
-    """Match and count aliphatic cycles in molecule.
+    """Count aliphatic (not aromatic) cycles in molecule.
 
-    Match all aliphatic cycles from cyclopropane to cyclotridecane (C3-C13)"""
-    return count_matches(molecule, ALIPHATIC_CYCLES)
+    Molecule should be aromatized.
+    """
+    aliphatic_cycles = 0
+    rings_with_indices = atom_indices_in_rings(molecule)
+    for ring in rings_with_indices:
+        atoms = [molecule.getAtom(atom_idx) for atom_idx in ring]
+        print([not in_aromatic_ring(atom) for atom in atoms])
+        if all([not in_aromatic_ring(atom) for atom in atoms]) and all(
+            [atom.symbol() == "C" for atom in atoms]
+        ):
+            aliphatic_cycles += 1
+    return aliphatic_cycles
 
 
 def n_aliphatic_heterocycles(molecule: IndigoObject) -> int:
-    """Match and count aliphatic heterocycles in molecule"""
-    return count_matches(molecule, ALIPHATIC_HETEROCYCLES)
+    """Count aliphatic heterocycles in molecule.
+
+    Molecule should be aromatized.
+    """
+    aliphatic_heterocycles = 0
+    rings_with_indices = atom_indices_in_rings(molecule)
+    for ring in rings_with_indices:
+        atoms = [molecule.getAtom(atom_idx) for atom_idx in ring]
+        atom_symbols = [atom.symbol() for atom in atoms]
+        print([not in_aromatic_ring(atom) for atom in atoms])
+        if all([not in_aromatic_ring(atom) for atom in atoms]) and any(
+            [
+                "S" in atom_symbols,
+                "O" in atom_symbols,
+                "N" in atom_symbols,
+                "P" in atom_symbols,
+                "B" in atom_symbols,
+            ]
+        ):
+            aliphatic_heterocycles += 1
+    return aliphatic_heterocycles
 
 
 def n_aromatic_cycles(molecule: IndigoObject) -> int:
-    """Match and count aromatic cycles in molecule"""
-    return count_matches(molecule, AROMATIC_CYCLES)
+    """Count aromatic cycles in molecule.
+
+    Molecule should be aromatized.
+    """
+    aromatic_cycles = 0
+    rings_with_indices = atom_indices_in_rings(molecule)
+    for ring in rings_with_indices:
+        atoms = [molecule.getAtom(atom_idx) for atom_idx in ring]
+        print([in_aromatic_ring(atom) for atom in atoms])
+        if all([in_aromatic_ring(atom) for atom in atoms]):
+            aromatic_cycles += 1
+    return aromatic_cycles
