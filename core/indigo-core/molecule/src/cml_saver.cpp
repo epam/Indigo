@@ -361,6 +361,8 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 }
                 else
                 {
+                    if (pos.x == 0) pos.x = 0;
+                    if (pos.y == 0) pos.y = 0;
                     atom->SetAttribute("x2", pos.x);
                     atom->SetAttribute("y2", pos.y);
                 }

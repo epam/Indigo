@@ -153,16 +153,6 @@ def assert_calculate_query(result: Union[Exception, int, str, float],
         assert diff == []
     elif isinstance(result, str) and result.startswith("<?xml"):
         diff = main.diff_texts(bytes(result, "utf-8"), bytes(expected, "utf-8"))
-        print("DIFF", diff)
-        # result = elTree.fromstring(result)
-        # expected = elTree.fromstring(expected)
-        # res_values = []
-        # exp_values = []
-        # for res_elt in result.iter():
-        #     res_values.append(res_elt.attrib)
-        # for exp_elt in expected.iter():
-        #     exp_values.append(exp_elt.attrib)
-        # assert res_values == exp_values
         assert diff == []
     else:
         assert result == expected
