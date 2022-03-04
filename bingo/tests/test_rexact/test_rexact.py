@@ -9,10 +9,6 @@
 #     def test_rexact(self, db, entities, query_id, expected):
 #         reaction = entities.get(query_id)
 #         result = db.rexact(reaction, 'rexact')
-#         print("RESULT", result)
-#         print("EXPECTED", expected)
-#         print("DIFF_RES", set(result) - set(expected))
-#         print("DIFF_EXP", set(expected) - set(result))
 #         assert_match_query(result, expected)
 #
 #     @pytest.mark.parametrize('query_id, expected',
@@ -20,10 +16,6 @@
 #     def test_rexact_aam(self, db, entities, query_id, expected):
 #         reaction = entities.get(query_id)
 #         result = db.rexact(reaction, 'rexact', 'AAM')
-#         print("RESULT", result)
-#         print("EXPECTED", expected)
-#         print("DIFF_RES", set(result) - set(expected))
-#         print("DIFF_EXP", set(expected) - set(result))
 #         assert_match_query(result, expected)
 #
 #     @pytest.mark.parametrize('query_id, expected',
@@ -31,10 +23,6 @@
 #     def test_rexact_all(self, db, entities, query_id, expected):
 #         reaction = entities.get(query_id)
 #         result = db.rexact(reaction, 'rexact', 'ALL')
-#         print("RESULT", result)
-#         print("EXPECTED", expected)
-#         print("DIFF_RES", set(result) - set(expected))
-#         print("DIFF_EXP", set(expected) - set(result))
 #         assert_match_query(result, expected)
 #
 #     @pytest.mark.parametrize('query_id, expected',
@@ -42,10 +30,6 @@
 #     def test_rexact_none(self, db, entities, query_id, expected):
 #         reaction = entities.get(query_id)
 #         result = db.rexact(reaction, 'rexact', 'NONE')
-#         print("RESULT", result)
-#         print("EXPECTED", expected)
-#         print("DIFF_RES", set(result) - set(expected))
-#         print("DIFF_EXP", set(expected) - set(result))
 #         assert_match_query(result, expected)
 #
 #     @pytest.mark.parametrize('query_id, expected',
@@ -53,8 +37,4 @@
 #     def test_rexact_ste_mas(self, db, entities, query_id, expected):
 #         reaction = entities.get(query_id)
 #         result = db.rexact(reaction, 'rexact', 'STE MAS')
-#         print("RESULT", result)
-#         print("EXPECTED", expected)
-#         print("DIFF_RES", set(result) - set(expected))
-#         print("DIFF_EXP", set(expected) - set(result))
 #         assert_match_query(result, expected)

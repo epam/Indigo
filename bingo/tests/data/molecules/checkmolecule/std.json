@@ -8347,12 +8347,12 @@
     {
         "query_id": 1670,
         "query_type": "checkmolecule",
-        "expected": "element: bad valence on C having 12 drawn bonds, charge 0, and 0 radical electrons"
+        "expected": null
     },
     {
         "query_id": 1671,
         "query_type": "checkmolecule",
-        "expected": null
+        "expected": "molfile loader: direction of bond #22 makes no sense"
     },
     {
         "query_id": 1672,
@@ -8362,12 +8362,12 @@
     {
         "query_id": 1673,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #22 makes no sense"
+        "expected": "molfile loader: direction of bond #177 makes no sense"
     },
     {
         "query_id": 1674,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #177 makes no sense"
+        "expected": null
     },
     {
         "query_id": 1675,
@@ -9722,27 +9722,27 @@
     {
         "query_id": 1945,
         "query_type": "checkmolecule",
-        "expected": null
+        "expected": "molfile loader: direction of bond #4 makes no sense"
     },
     {
         "query_id": 1946,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #4 makes no sense"
+        "expected": "molfile loader: direction of bond #5 makes no sense"
     },
     {
         "query_id": 1947,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #5 makes no sense"
+        "expected": "molfile loader: direction of bond #7 makes no sense"
     },
     {
         "query_id": 1948,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #7 makes no sense"
+        "expected": "molfile loader: direction of bond #4 makes no sense"
     },
     {
         "query_id": 1949,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #4 makes no sense"
+        "expected": "molfile loader: direction of bond #7 makes no sense"
     },
     {
         "query_id": 1950,
@@ -9762,7 +9762,7 @@
     {
         "query_id": 1953,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #7 makes no sense"
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
     },
     {
         "query_id": 1954,
@@ -9772,12 +9772,12 @@
     {
         "query_id": 1955,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+        "expected": "molfile loader: direction of bond #6 makes no sense"
     },
     {
         "query_id": 1956,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #6 makes no sense"
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
     },
     {
         "query_id": 1957,
@@ -9787,57 +9787,57 @@
     {
         "query_id": 1958,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+        "expected": "molfile loader: direction of bond #11 makes no sense"
     },
     {
         "query_id": 1959,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #11 makes no sense"
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 8"
     },
     {
         "query_id": 1960,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 8"
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 6"
     },
     {
         "query_id": 1961,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 6"
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 3"
     },
     {
         "query_id": 1962,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 3"
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 19"
     },
     {
         "query_id": 1963,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 19"
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 3"
     },
     {
         "query_id": 1964,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 3"
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 19"
     },
     {
         "query_id": 1965,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 19"
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 3"
     },
     {
         "query_id": 1966,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 3"
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 19"
     },
     {
         "query_id": 1967,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 19"
+        "expected": "molfile loader: direction of bond #10 makes no sense"
     },
     {
         "query_id": 1968,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #10 makes no sense"
+        "expected": null
     },
     {
         "query_id": 1969,
@@ -9887,7 +9887,7 @@
     {
         "query_id": 1978,
         "query_type": "checkmolecule",
-        "expected": null
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 1"
     },
     {
         "query_id": 1979,
@@ -9917,12 +9917,12 @@
     {
         "query_id": 1984,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 1"
+        "expected": "molfile loader: direction of bond #1 makes no sense"
     },
     {
         "query_id": 1985,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #1 makes no sense"
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 1"
     },
     {
         "query_id": 1986,
@@ -9932,42 +9932,42 @@
     {
         "query_id": 1987,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 1"
+        "expected": "molfile loader: direction of bond #2 makes no sense"
     },
     {
         "query_id": 1988,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #2 makes no sense"
+        "expected": "molfile loader: direction of bond #29 makes no sense"
     },
     {
         "query_id": 1989,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #29 makes no sense"
+        "expected": "molfile loader: direction of bond #2 makes no sense"
     },
     {
         "query_id": 1990,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #2 makes no sense"
+        "expected": "molfile loader: direction of bond #29 makes no sense"
     },
     {
         "query_id": 1991,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #29 makes no sense"
+        "expected": null
     },
     {
         "query_id": 1992,
         "query_type": "checkmolecule",
-        "expected": null
+        "expected": "stereocenters: stereo types of non-opposite bonds match near atom 26"
     },
     {
         "query_id": 1993,
         "query_type": "checkmolecule",
-        "expected": "stereocenters: stereo types of non-opposite bonds match near atom 26"
+        "expected": null
     },
     {
         "query_id": 1994,
         "query_type": "checkmolecule",
-        "expected": null
+        "expected": "molfile loader: direction of bond #3 makes no sense"
     },
     {
         "query_id": 1995,
@@ -10022,7 +10022,7 @@
     {
         "query_id": 2005,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #3 makes no sense"
+        "expected": null
     },
     {
         "query_id": 2006,
@@ -10091,11 +10091,6 @@
     },
     {
         "query_id": 2019,
-        "query_type": "checkmolecule",
-        "expected": null
-    },
-    {
-        "query_id": 2020,
         "query_type": "checkmolecule",
         "expected": null
     }

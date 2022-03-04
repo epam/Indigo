@@ -1,6 +1,7 @@
 # import pytest
 #
-# from ..helpers import assert_calculate_query, query_cases
+# from ..helpers import assert_calculate_query, query_cases, assert_match_query
+# from ..logger import logger
 #
 #
 # class TestSmarts:
@@ -8,6 +9,4 @@
 #     def test_smarts(self, db, entities, query_id, expected):
 #         molecule = entities.get(query_id)
 #         result = db.smarts(molecule, 'smarts')
-#         print("RESULT", result)
-#         print("EXPECTED", expected)
-#         assert_calculate_query(result, expected)
+#         assert_match_query(result, expected)

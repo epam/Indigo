@@ -8347,12 +8347,12 @@
     {
         "query_id": 1670,
         "query_type": "gross",
-        "expected": null
+        "expected": "C60"
     },
     {
         "query_id": 1671,
         "query_type": "gross",
-        "expected": "C60"
+        "expected": null
     },
     {
         "query_id": 1672,
@@ -8367,52 +8367,52 @@
     {
         "query_id": 1674,
         "query_type": "gross",
-        "expected": null
+        "expected": "C56 H28"
     },
     {
         "query_id": 1675,
         "query_type": "gross",
-        "expected": "C56 H28"
+        "expected": "C72 Si6 H60"
     },
     {
         "query_id": 1676,
         "query_type": "gross",
-        "expected": "C72 Si6 H60"
+        "expected": "C25 N2 Rh3 H23"
     },
     {
         "query_id": 1677,
         "query_type": "gross",
-        "expected": "C25 N2 Rh3 H23"
+        "expected": "C36 N4 O8 Sn H36"
     },
     {
         "query_id": 1678,
         "query_type": "gross",
-        "expected": "C36 N4 O8 Sn H36"
+        "expected": "C18 O12 S12 Cl Br H18"
     },
     {
         "query_id": 1679,
         "query_type": "gross",
-        "expected": "C18 O12 S12 Cl Br H18"
+        "expected": "C17 O12 S12 Cl Br I H15"
     },
     {
         "query_id": 1680,
         "query_type": "gross",
-        "expected": "C17 O12 S12 Cl Br I H15"
+        "expected": "C18 O12 S12 Cl Br H18"
     },
     {
         "query_id": 1681,
         "query_type": "gross",
-        "expected": "C18 O12 S12 Cl Br H18"
+        "expected": "C20 O12 S12 H24"
     },
     {
         "query_id": 1682,
         "query_type": "gross",
-        "expected": "C20 O12 S12 H24"
+        "expected": "C19 O12 S12 Cl H21"
     },
     {
         "query_id": 1683,
         "query_type": "gross",
-        "expected": "C19 O12 S12 Cl H21"
+        "expected": "C6 N3 O H14"
     },
     {
         "query_id": 1684,
@@ -8427,7 +8427,7 @@
     {
         "query_id": 1686,
         "query_type": "gross",
-        "expected": "C6 N3 O H14"
+        "expected": "C12 O2 H16"
     },
     {
         "query_id": 1687,
@@ -8437,7 +8437,7 @@
     {
         "query_id": 1688,
         "query_type": "gross",
-        "expected": "C12 O2 H16"
+        "expected": "C6 N5 O3 H5"
     },
     {
         "query_id": 1689,
@@ -8602,7 +8602,7 @@
     {
         "query_id": 1721,
         "query_type": "gross",
-        "expected": "C6 N5 O3 H5"
+        "expected": "N O S H"
     },
     {
         "query_id": 1722,
@@ -8612,7 +8612,7 @@
     {
         "query_id": 1723,
         "query_type": "gross",
-        "expected": "N O S H"
+        "expected": "C5 N8 H12"
     },
     {
         "query_id": 1724,
@@ -8717,7 +8717,7 @@
     {
         "query_id": 1744,
         "query_type": "gross",
-        "expected": "C5 N8 H12"
+        "expected": "C2 F I H4"
     },
     {
         "query_id": 1745,
@@ -8777,7 +8777,7 @@
     {
         "query_id": 1756,
         "query_type": "gross",
-        "expected": "C2 F I H4"
+        "expected": "C4 O6 H6"
     },
     {
         "query_id": 1757,
@@ -8787,12 +8787,12 @@
     {
         "query_id": 1758,
         "query_type": "gross",
-        "expected": "C4 O6 H6"
+        "expected": "C4 O2 H10"
     },
     {
         "query_id": 1759,
         "query_type": "gross",
-        "expected": "C4 O2 H10"
+        "expected": "C6 O Cl Br H10"
     },
     {
         "query_id": 1760,
@@ -8802,17 +8802,17 @@
     {
         "query_id": 1761,
         "query_type": "gross",
-        "expected": "C6 O Cl Br H10"
+        "expected": "C6 H12"
     },
     {
         "query_id": 1762,
         "query_type": "gross",
-        "expected": "C6 H12"
+        "expected": "C13 H20"
     },
     {
         "query_id": 1763,
         "query_type": "gross",
-        "expected": "C13 H20"
+        "expected": "C2 F Cl I H3"
     },
     {
         "query_id": 1764,
@@ -8857,17 +8857,17 @@
     {
         "query_id": 1772,
         "query_type": "gross",
-        "expected": "C2 F Cl I H3"
+        "expected": "C F Cl2 I"
     },
     {
         "query_id": 1773,
         "query_type": "gross",
-        "expected": "C F Cl2 I"
+        "expected": "C2 F Cl I H3"
     },
     {
         "query_id": 1774,
         "query_type": "gross",
-        "expected": "C2 F Cl I H3"
+        "expected": "C8 H18"
     },
     {
         "query_id": 1775,
@@ -8877,67 +8877,67 @@
     {
         "query_id": 1776,
         "query_type": "gross",
-        "expected": "C8 H18"
+        "expected": "C10 H16"
     },
     {
         "query_id": 1777,
         "query_type": "gross",
-        "expected": "C10 H16"
+        "expected": "C3 N O2 H7"
     },
     {
         "query_id": 1778,
         "query_type": "gross",
-        "expected": "C3 N O2 H7"
+        "expected": "C9 N O2 H11"
     },
     {
         "query_id": 1779,
         "query_type": "gross",
-        "expected": "C9 N O2 H11"
+        "expected": "C3 N O3 H7"
     },
     {
         "query_id": 1780,
         "query_type": "gross",
-        "expected": "C3 N O3 H7"
+        "expected": "C5 N O2 H11"
     },
     {
         "query_id": 1781,
         "query_type": "gross",
-        "expected": "C5 N O2 H11"
+        "expected": "C4 N O4 H7"
     },
     {
         "query_id": 1782,
         "query_type": "gross",
-        "expected": "C4 N O4 H7"
+        "expected": "C5 N O4 H9"
     },
     {
         "query_id": 1783,
         "query_type": "gross",
-        "expected": "C5 N O4 H9"
+        "expected": "C5 N3 O2 H8"
     },
     {
         "query_id": 1784,
         "query_type": "gross",
-        "expected": "C5 N3 O2 H8"
+        "expected": "C3 N O2 S H7"
     },
     {
         "query_id": 1785,
         "query_type": "gross",
-        "expected": "C3 N O2 S H7"
+        "expected": "C6 N2 O2 H15"
     },
     {
         "query_id": 1786,
         "query_type": "gross",
-        "expected": "C6 N2 O2 H15"
+        "expected": "C9 N O3 H11"
     },
     {
         "query_id": 1787,
         "query_type": "gross",
-        "expected": "C9 N O3 H11"
+        "expected": "C6 N4 O2 H15"
     },
     {
         "query_id": 1788,
         "query_type": "gross",
-        "expected": "C6 N4 O2 H15"
+        "expected": "C6 N O2 H13"
     },
     {
         "query_id": 1789,
@@ -8947,112 +8947,112 @@
     {
         "query_id": 1790,
         "query_type": "gross",
-        "expected": "C6 N O2 H13"
+        "expected": "C10 N2 O2 H10"
     },
     {
         "query_id": 1791,
         "query_type": "gross",
-        "expected": "C10 N2 O2 H10"
+        "expected": "C5 N O2 H9"
     },
     {
         "query_id": 1792,
         "query_type": "gross",
-        "expected": "C5 N O2 H9"
+        "expected": "C5 N O2 S H11"
     },
     {
         "query_id": 1793,
         "query_type": "gross",
-        "expected": "C5 N O2 S H11"
+        "expected": "C4 N O3 H9"
     },
     {
         "query_id": 1794,
         "query_type": "gross",
-        "expected": "C4 N O3 H9"
+        "expected": "C4 N2 O3 H8"
     },
     {
         "query_id": 1795,
         "query_type": "gross",
-        "expected": "C4 N2 O3 H8"
+        "expected": "C5 N2 O3 H10"
     },
     {
         "query_id": 1796,
         "query_type": "gross",
-        "expected": "C5 N2 O3 H10"
+        "expected": "C6 N O2 H9"
     },
     {
         "query_id": 1797,
         "query_type": "gross",
-        "expected": "C6 N O2 H9"
+        "expected": "C2 F2 Cl2 H2"
     },
     {
         "query_id": 1798,
         "query_type": "gross",
-        "expected": "C2 F2 Cl2 H2"
+        "expected": "C9 N2 H18"
     },
     {
         "query_id": 1799,
         "query_type": "gross",
-        "expected": "C9 N2 H18"
+        "expected": "C6 O6 H12"
     },
     {
         "query_id": 1800,
         "query_type": "gross",
-        "expected": "C6 O6 H12"
+        "expected": "C4 O4 H8"
     },
     {
         "query_id": 1801,
         "query_type": "gross",
-        "expected": "C4 O4 H8"
+        "expected": "C8 N4 H20"
     },
     {
         "query_id": 1802,
         "query_type": "gross",
-        "expected": "C8 N4 H20"
+        "expected": "C37 N O13 H67"
     },
     {
         "query_id": 1803,
         "query_type": "gross",
-        "expected": "C37 N O13 H67"
+        "expected": "C5 H12"
     },
     {
         "query_id": 1804,
         "query_type": "gross",
-        "expected": "C5 H12"
+        "expected": "C8 O6 H14"
     },
     {
         "query_id": 1805,
         "query_type": "gross",
-        "expected": "C8 O6 H14"
+        "expected": "C2 Cl Br H4"
     },
     {
         "query_id": 1806,
         "query_type": "gross",
-        "expected": "C2 Cl Br H4"
+        "expected": "C Cl Br I H"
     },
     {
         "query_id": 1807,
         "query_type": "gross",
-        "expected": "C Cl Br I H"
+        "expected": "C4 Cl Br H8"
     },
     {
         "query_id": 1808,
         "query_type": "gross",
-        "expected": "C4 Cl Br H8"
+        "expected": "C4 N O4 H7"
     },
     {
         "query_id": 1809,
         "query_type": "gross",
-        "expected": "C4 N O4 H7"
+        "expected": "C10 O H20"
     },
     {
         "query_id": 1810,
         "query_type": "gross",
-        "expected": "C10 O H20"
+        "expected": "C8 N H17"
     },
     {
         "query_id": 1811,
         "query_type": "gross",
-        "expected": "C8 N H17"
+        "expected": "C3 O S H8"
     },
     {
         "query_id": 1812,
@@ -9062,12 +9062,12 @@
     {
         "query_id": 1813,
         "query_type": "gross",
-        "expected": "C3 O S H8"
+        "expected": "C7 N O H17"
     },
     {
         "query_id": 1814,
         "query_type": "gross",
-        "expected": "C7 N O H17"
+        "expected": "C7 O P H17"
     },
     {
         "query_id": 1815,
@@ -9077,7 +9077,7 @@
     {
         "query_id": 1816,
         "query_type": "gross",
-        "expected": "C7 O P H17"
+        "expected": "C3 S2 H8"
     },
     {
         "query_id": 1817,
@@ -9087,7 +9087,7 @@
     {
         "query_id": 1818,
         "query_type": "gross",
-        "expected": "C3 S2 H8"
+        "expected": "C7 P S H17"
     },
     {
         "query_id": 1819,
@@ -9097,7 +9097,7 @@
     {
         "query_id": 1820,
         "query_type": "gross",
-        "expected": "C7 P S H17"
+        "expected": "C7 P Se H17"
     },
     {
         "query_id": 1821,
@@ -9107,67 +9107,67 @@
     {
         "query_id": 1822,
         "query_type": "gross",
-        "expected": "C7 P Se H17"
+        "expected": "C7 N S H17"
     },
     {
         "query_id": 1823,
         "query_type": "gross",
-        "expected": "C7 N S H17"
+        "expected": "C7 N Se H17"
     },
     {
         "query_id": 1824,
         "query_type": "gross",
-        "expected": "C7 N Se H17"
+        "expected": "C7 N H15"
     },
     {
         "query_id": 1825,
         "query_type": "gross",
-        "expected": "C7 N H15"
+        "expected": "C2 O2 S H5"
     },
     {
         "query_id": 1826,
         "query_type": "gross",
-        "expected": "C2 O2 S H5"
+        "expected": "C2 O S2 H5"
     },
     {
         "query_id": 1827,
         "query_type": "gross",
-        "expected": "C2 O S2 H5"
+        "expected": "C2 N O S H8"
     },
     {
         "query_id": 1828,
         "query_type": "gross",
-        "expected": "C2 N O S H8"
+        "expected": "C3 N O S H8"
     },
     {
         "query_id": 1829,
         "query_type": "gross",
-        "expected": "C3 N O S H8"
+        "expected": "C2 O S2 H5"
     },
     {
         "query_id": 1830,
         "query_type": "gross",
-        "expected": "C2 O S2 H5"
+        "expected": "C2 O2 S H5"
     },
     {
         "query_id": 1831,
         "query_type": "gross",
-        "expected": "C2 O2 S H5"
+        "expected": "C3 N O2 H7"
     },
     {
         "query_id": 1832,
         "query_type": "gross",
-        "expected": "C3 N O2 H7"
+        "expected": "C4 N O2 H9"
     },
     {
         "query_id": 1833,
         "query_type": "gross",
-        "expected": "C4 N O2 H9"
+        "expected": "C N O S Se H5"
     },
     {
         "query_id": 1834,
         "query_type": "gross",
-        "expected": "C N O S Se H5"
+        "expected": "C5 O H10"
     },
     {
         "query_id": 1835,
@@ -9182,7 +9182,7 @@
     {
         "query_id": 1837,
         "query_type": "gross",
-        "expected": "C5 O H10"
+        "expected": "C6 H12"
     },
     {
         "query_id": 1838,
@@ -9192,12 +9192,12 @@
     {
         "query_id": 1839,
         "query_type": "gross",
-        "expected": "C6 H12"
+        "expected": "C24 O3 Si Sn H52"
     },
     {
         "query_id": 1840,
         "query_type": "gross",
-        "expected": "C24 O3 Si Sn H52"
+        "expected": "C10 O5 H20"
     },
     {
         "query_id": 1841,
@@ -9227,7 +9227,7 @@
     {
         "query_id": 1846,
         "query_type": "gross",
-        "expected": "C10 O5 H20"
+        "expected": "C20 N4 H16"
     },
     {
         "query_id": 1847,
@@ -9237,22 +9237,22 @@
     {
         "query_id": 1848,
         "query_type": "gross",
-        "expected": "C20 N4 H16"
+        "expected": "C6 N H11"
     },
     {
         "query_id": 1849,
         "query_type": "gross",
-        "expected": "C6 N H11"
+        "expected": "C7 H16"
     },
     {
         "query_id": 1850,
         "query_type": "gross",
-        "expected": "C7 H16"
+        "expected": "C33 O7 H56"
     },
     {
         "query_id": 1851,
         "query_type": "gross",
-        "expected": "C33 O7 H56"
+        "expected": "C4 O2 S2 H6"
     },
     {
         "query_id": 1852,
@@ -9292,22 +9292,22 @@
     {
         "query_id": 1859,
         "query_type": "gross",
-        "expected": "C4 O2 S2 H6"
+        "expected": "C5 N O4 H9"
     },
     {
         "query_id": 1860,
         "query_type": "gross",
-        "expected": "C5 N O4 H9"
+        "expected": "C2 O Cl H5"
     },
     {
         "query_id": 1861,
         "query_type": "gross",
-        "expected": "C2 O Cl H5"
+        "expected": "C O S Cl H3"
     },
     {
         "query_id": 1862,
         "query_type": "gross",
-        "expected": "C O S Cl H3"
+        "expected": "C7 O5 H16"
     },
     {
         "query_id": 1863,
@@ -9327,7 +9327,7 @@
     {
         "query_id": 1866,
         "query_type": "gross",
-        "expected": "C7 O5 H16"
+        "expected": "C7 O7 H16"
     },
     {
         "query_id": 1867,
@@ -9347,7 +9347,7 @@
     {
         "query_id": 1870,
         "query_type": "gross",
-        "expected": "C7 O7 H16"
+        "expected": "C7 O5 H16"
     },
     {
         "query_id": 1871,
@@ -9357,27 +9357,27 @@
     {
         "query_id": 1872,
         "query_type": "gross",
-        "expected": "C7 O5 H16"
+        "expected": "C6 N O2 H9"
     },
     {
         "query_id": 1873,
         "query_type": "gross",
-        "expected": "C6 N O2 H9"
+        "expected": "C2 N S Cl H6"
     },
     {
         "query_id": 1874,
         "query_type": "gross",
-        "expected": "C2 N S Cl H6"
+        "expected": "C14 N4 H28"
     },
     {
         "query_id": 1875,
         "query_type": "gross",
-        "expected": "C14 N4 H28"
+        "expected": "C2 Cl Br H4"
     },
     {
         "query_id": 1876,
         "query_type": "gross",
-        "expected": "C2 Cl Br H4"
+        "expected": "C6 Cl2 H12"
     },
     {
         "query_id": 1877,
@@ -9392,12 +9392,12 @@
     {
         "query_id": 1879,
         "query_type": "gross",
-        "expected": "C6 Cl2 H12"
+        "expected": "C6 N Cl Br H11"
     },
     {
         "query_id": 1880,
         "query_type": "gross",
-        "expected": "C6 N Cl Br H11"
+        "expected": "C5 N2 H10"
     },
     {
         "query_id": 1881,
@@ -9407,62 +9407,62 @@
     {
         "query_id": 1882,
         "query_type": "gross",
-        "expected": "C5 N2 H10"
+        "expected": "C5 N H9"
     },
     {
         "query_id": 1883,
         "query_type": "gross",
-        "expected": "C5 N H9"
+        "expected": "C9 H14"
     },
     {
         "query_id": 1884,
         "query_type": "gross",
-        "expected": "C9 H14"
+        "expected": "C7 H12"
     },
     {
         "query_id": 1885,
         "query_type": "gross",
-        "expected": "C7 H12"
+        "expected": "C6 N H11"
     },
     {
         "query_id": 1886,
         "query_type": "gross",
-        "expected": "C6 N H11"
+        "expected": "C7 H12"
     },
     {
         "query_id": 1887,
         "query_type": "gross",
-        "expected": "C7 H12"
+        "expected": "C12 N7 H27"
     },
     {
         "query_id": 1888,
         "query_type": "gross",
-        "expected": "C12 N7 H27"
+        "expected": "C12 N3 La3 H27"
     },
     {
         "query_id": 1889,
         "query_type": "gross",
-        "expected": "C12 N3 La3 H27"
+        "expected": "C12 N3 S H27"
     },
     {
         "query_id": 1890,
         "query_type": "gross",
-        "expected": "C12 N3 S H27"
+        "expected": "C13 N6 H28"
     },
     {
         "query_id": 1891,
         "query_type": "gross",
-        "expected": "C13 N6 H28"
+        "expected": "C16 N3 H31"
     },
     {
         "query_id": 1892,
         "query_type": "gross",
-        "expected": "C16 N3 H31"
+        "expected": "C9 N2 H18"
     },
     {
         "query_id": 1893,
         "query_type": "gross",
-        "expected": "C9 N2 H18"
+        "expected": "C6 N2 H14"
     },
     {
         "query_id": 1894,
@@ -9472,7 +9472,7 @@
     {
         "query_id": 1895,
         "query_type": "gross",
-        "expected": "C6 N2 H14"
+        "expected": "C15 N3 H27"
     },
     {
         "query_id": 1896,
@@ -9482,17 +9482,17 @@
     {
         "query_id": 1897,
         "query_type": "gross",
-        "expected": "C15 N3 H27"
+        "expected": "C18 P4 Sn H42"
     },
     {
         "query_id": 1898,
         "query_type": "gross",
-        "expected": "C18 P4 Sn H42"
+        "expected": "C11 H20"
     },
     {
         "query_id": 1899,
         "query_type": "gross",
-        "expected": "C11 H20"
+        "expected": "C18 H38"
     },
     {
         "query_id": 1900,
@@ -9512,7 +9512,7 @@
     {
         "query_id": 1903,
         "query_type": "gross",
-        "expected": "C18 H38"
+        "expected": "C10 H20"
     },
     {
         "query_id": 1904,
@@ -9522,7 +9522,7 @@
     {
         "query_id": 1905,
         "query_type": "gross",
-        "expected": "C10 H20"
+        "expected": "C13 H24"
     },
     {
         "query_id": 1906,
@@ -9532,7 +9532,7 @@
     {
         "query_id": 1907,
         "query_type": "gross",
-        "expected": "C13 H24"
+        "expected": "C19 H32"
     },
     {
         "query_id": 1908,
@@ -9542,12 +9542,12 @@
     {
         "query_id": 1909,
         "query_type": "gross",
-        "expected": "C19 H32"
+        "expected": "C2 F Cl Br H3"
     },
     {
         "query_id": 1910,
         "query_type": "gross",
-        "expected": "C2 F Cl Br H3"
+        "expected": "C16 H24"
     },
     {
         "query_id": 1911,
@@ -9562,7 +9562,7 @@
     {
         "query_id": 1913,
         "query_type": "gross",
-        "expected": "C16 H24"
+        "expected": "C2 F Cl Br H3"
     },
     {
         "query_id": 1914,
@@ -9582,12 +9582,12 @@
     {
         "query_id": 1917,
         "query_type": "gross",
-        "expected": "C2 F Cl Br H3"
+        "expected": "C12 H24"
     },
     {
         "query_id": 1918,
         "query_type": "gross",
-        "expected": "C12 H24"
+        "expected": "C7 N2 Cl2 H10"
     },
     {
         "query_id": 1919,
@@ -9607,7 +9607,7 @@
     {
         "query_id": 1922,
         "query_type": "gross",
-        "expected": "C7 N2 Cl2 H10"
+        "expected": "C6 O5 H6"
     },
     {
         "query_id": 1923,
@@ -9617,12 +9617,12 @@
     {
         "query_id": 1924,
         "query_type": "gross",
-        "expected": "C6 O5 H6"
+        "expected": "C10 H16"
     },
     {
         "query_id": 1925,
         "query_type": "gross",
-        "expected": "C10 H16"
+        "expected": "C4 Cl2 H8"
     },
     {
         "query_id": 1926,
@@ -9632,17 +9632,17 @@
     {
         "query_id": 1927,
         "query_type": "gross",
-        "expected": "C4 Cl2 H8"
+        "expected": "C28 O4 Cl2 H42"
     },
     {
         "query_id": 1928,
         "query_type": "gross",
-        "expected": "C28 O4 Cl2 H42"
+        "expected": "C7 H14"
     },
     {
         "query_id": 1929,
         "query_type": "gross",
-        "expected": "C7 H14"
+        "expected": "C6 H12"
     },
     {
         "query_id": 1930,
@@ -9682,12 +9682,12 @@
     {
         "query_id": 1937,
         "query_type": "gross",
-        "expected": "C6 H12"
+        "expected": "C12 O6 H18"
     },
     {
         "query_id": 1938,
         "query_type": "gross",
-        "expected": "C12 O6 H18"
+        "expected": "C17 O P H21"
     },
     {
         "query_id": 1939,
@@ -9697,12 +9697,12 @@
     {
         "query_id": 1940,
         "query_type": "gross",
-        "expected": "C17 O P H21"
+        "expected": "C12 O6 H18"
     },
     {
         "query_id": 1941,
         "query_type": "gross",
-        "expected": "C12 O6 H18"
+        "expected": "C5 Cl2 H10"
     },
     {
         "query_id": 1942,
@@ -9712,17 +9712,17 @@
     {
         "query_id": 1943,
         "query_type": "gross",
-        "expected": "C5 Cl2 H10"
+        "expected": "C18 N O6 H25"
     },
     {
         "query_id": 1944,
         "query_type": "gross",
-        "expected": "C18 N O6 H25"
+        "expected": "C3 N O S H9"
     },
     {
         "query_id": 1945,
         "query_type": "gross",
-        "expected": "C3 N O S H9"
+        "expected": null
     },
     {
         "query_id": 1946,
@@ -9837,7 +9837,7 @@
     {
         "query_id": 1968,
         "query_type": "gross",
-        "expected": null
+        "expected": "C12 H12"
     },
     {
         "query_id": 1969,
@@ -9847,7 +9847,7 @@
     {
         "query_id": 1970,
         "query_type": "gross",
-        "expected": "C12 H12"
+        "expected": "C23 Br2 H30"
     },
     {
         "query_id": 1971,
@@ -9857,7 +9857,7 @@
     {
         "query_id": 1972,
         "query_type": "gross",
-        "expected": "C23 Br2 H30"
+        "expected": "C27 Br2 H38"
     },
     {
         "query_id": 1973,
@@ -9877,7 +9877,7 @@
     {
         "query_id": 1976,
         "query_type": "gross",
-        "expected": "C27 Br2 H38"
+        "expected": "C31 Br2 H46"
     },
     {
         "query_id": 1977,
@@ -9887,7 +9887,7 @@
     {
         "query_id": 1978,
         "query_type": "gross",
-        "expected": "C31 Br2 H46"
+        "expected": null
     },
     {
         "query_id": 1979,
@@ -9952,22 +9952,22 @@
     {
         "query_id": 1991,
         "query_type": "gross",
-        "expected": null
+        "expected": "C14 N4 P H31"
     },
     {
         "query_id": 1992,
         "query_type": "gross",
-        "expected": "C14 N4 P H31"
+        "expected": null
     },
     {
         "query_id": 1993,
         "query_type": "gross",
-        "expected": null
+        "expected": "C27 H36"
     },
     {
         "query_id": 1994,
         "query_type": "gross",
-        "expected": "C27 H36"
+        "expected": null
     },
     {
         "query_id": 1995,
@@ -10022,57 +10022,57 @@
     {
         "query_id": 2005,
         "query_type": "gross",
-        "expected": null
+        "expected": "C10 N O H11"
     },
     {
         "query_id": 2006,
         "query_type": "gross",
-        "expected": "C10 N O H11"
+        "expected": "C6 N3 O2 H4"
     },
     {
         "query_id": 2007,
         "query_type": "gross",
-        "expected": "C6 N3 O2 H4"
+        "expected": "C3 N3 H9"
     },
     {
         "query_id": 2008,
         "query_type": "gross",
-        "expected": "C3 N3 H9"
+        "expected": "C2 N2 O H6"
     },
     {
         "query_id": 2009,
         "query_type": "gross",
-        "expected": "C2 N2 O H6"
+        "expected": "C5 N Cl2 H9"
     },
     {
         "query_id": 2010,
         "query_type": "gross",
-        "expected": "C5 N Cl2 H9"
+        "expected": "C3 N O Cl H6"
     },
     {
         "query_id": 2011,
         "query_type": "gross",
-        "expected": "C3 N O Cl H6"
+        "expected": "C9 N3 O3 H11"
     },
     {
         "query_id": 2012,
         "query_type": "gross",
-        "expected": "C9 N3 O3 H11"
+        "expected": "C H3"
     },
     {
         "query_id": 2013,
         "query_type": "gross",
-        "expected": "C H3"
+        "expected": "C18 Zr H54"
     },
     {
         "query_id": 2014,
         "query_type": "gross",
-        "expected": "C18 Zr H54"
+        "expected": "C2 N2 H7"
     },
     {
         "query_id": 2015,
         "query_type": "gross",
-        "expected": "C2 N2 H7"
+        "expected": "N H7"
     },
     {
         "query_id": 2016,
@@ -10082,20 +10082,15 @@
     {
         "query_id": 2017,
         "query_type": "gross",
-        "expected": "N H7"
+        "expected": "C6 N O7 K H10"
     },
     {
         "query_id": 2018,
         "query_type": "gross",
-        "expected": "C6 N O7 K H10"
-    },
-    {
-        "query_id": 2019,
-        "query_type": "gross",
         "expected": "C2 N2 H6"
     },
     {
-        "query_id": 2020,
+        "query_id": 2019,
         "query_type": "gross",
         "expected": "Co H"
     }

@@ -20,7 +20,7 @@ class TestInchi:
         result = db.inchi(molecule, '/DoNotAddH -SUU -SLUUD')
         assert_calculate_query(result, expected)
 
-# InChI doesn't recognise any wrong options.
+# ===== InChI doesn't recognise any wrong options =====.
 
     # @pytest.mark.parametrize(
     #     'query_id, expected',

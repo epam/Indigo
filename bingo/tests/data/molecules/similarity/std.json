@@ -13,7 +13,7 @@
         "query_id": 4,
         "query_type": "similarity(euclid-sub, 0.95, 1)",
         "expected": [
-            1928
+            1927
         ]
     },
     {
