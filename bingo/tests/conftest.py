@@ -1,5 +1,4 @@
 import pytest
-
 from bingo_elastic.elastic import IndexName
 from indigo import Indigo
 
@@ -10,7 +9,7 @@ from .constants import (
     DB_MSSQL,
     DB_ORACLE,
     DB_POSTGRES,
-    EntitiesType
+    EntitiesType,
 )
 from .dbc.BingoElastic import BingoElastic
 from .dbc.BingoNoSQL import BingoNoSQL
@@ -19,14 +18,14 @@ from .helpers import get_bingo_meta, get_query_entities
 from .logger import logger
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def indigo():
     # TODO: uncomment this:
     indigo = Indigo()
     return indigo
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def entities(request, indigo):
     function = request.node.name.replace("Test", "").lower()
     entities = get_query_entities(indigo, function)
@@ -34,7 +33,7 @@ def entities(request, indigo):
     del entities
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def db(request, indigo):
     db_str = request.config.getoption("--db")
     function = request.node.name.replace("Test", "").lower()

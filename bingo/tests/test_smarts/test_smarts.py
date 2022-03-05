@@ -1,7 +1,6 @@
 # import pytest
 #
 # from ..helpers import assert_calculate_query, query_cases, assert_match_query
-# from ..logger import logger
 #
 #
 # class TestSmarts:

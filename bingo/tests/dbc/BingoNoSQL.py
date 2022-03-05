@@ -27,8 +27,9 @@ class BingoNoSQL(NoSQLAdapter):
 
     def import_data(self, data_path: str, database_type: str):
         logger.info(f"Creating {self.dbms} database")
-        self.bingo = Bingo.createDatabaseFile(self.indigo, self.db_path,
-                                              database_type)
+        self.bingo = Bingo.createDatabaseFile(
+            self.indigo, self.db_path, database_type
+        )
 
         logger.info(f"Importing data to {self.dbms} from {data_path}")
         index = 1
@@ -36,26 +37,28 @@ class BingoNoSQL(NoSQLAdapter):
             try:
                 self.bingo.insert(mol, index)
             except BingoException as e:
-                logger.error(f"Error during import {database_type} from "
-                             f"{data_path} (id = {index}) "
-                             f"'{mol.rawData()[:20]}...': {e}")
+                logger.error(
+                    f"Error during import {database_type} from "
+                    f"{data_path} (id = {index}) "
+                    f"'{mol.rawData()[:20]}...': {e}"
+                )
             finally:
                 index += 1
         self.close_connect()
 
     def delete_base(self):
-        logger.info(f'Dropping {self.dbms} database')
+        logger.info(f"Dropping {self.dbms} database")
         for db_file in listdir(join(self.db_dir, self.db_name)):
             remove(join(self.db_dir, self.db_name, db_file))
         rmdir(join(self.db_dir, self.db_name))
 
     @catch_indigo_exception()
     def mass(self, molecule: IndigoObject, weight_type: str):
-        if weight_type == 'molecular-weight':
+        if weight_type == "molecular-weight":
             return molecule.molecularWeight()
-        if weight_type == 'most-abundant-mass':
+        if weight_type == "most-abundant-mass":
             return molecule.mostAbundantMass()
-        if weight_type == 'monoisotopic-mass':
+        if weight_type == "monoisotopic-mass":
             return molecule.monoisotopicMass()
 
     @catch_indigo_exception()
@@ -63,7 +66,7 @@ class BingoNoSQL(NoSQLAdapter):
         return molecule.grossFormula()
 
     @catch_indigo_exception(catch_error=True)
-    def exact(self, molecule, target_function=None, options=''):
+    def exact(self, molecule, target_function=None, options=""):
         result = []
         exact_matcher = self.bingo.searchExact(molecule, options)
         while exact_matcher.next():
@@ -73,7 +76,7 @@ class BingoNoSQL(NoSQLAdapter):
         return result
 
     @catch_indigo_exception(catch_error=True)
-    def substructure(self, molecule, target_function=None, options=''):
+    def substructure(self, molecule, target_function=None, options=""):
         result = []
         query = self.indigo.loadQueryMolecule(molecule.rawData())
         sub_matcher = self.bingo.searchSub(query, options)
@@ -84,11 +87,13 @@ class BingoNoSQL(NoSQLAdapter):
         return result
 
     @catch_indigo_exception(catch_error=True)
-    def similarity(self, molecule, target_function=None, options=''):
+    def similarity(self, molecule, target_function=None, options=""):
         result = []
-        sim_type, min_sim, max_sim = options.split(', ')
+        sim_type, min_sim, max_sim = options.split(", ")
         min_sim, max_sim = float(min_sim), float(max_sim)
-        sim_matcher = self.bingo.searchSim(molecule, min_sim, max_sim, sim_type)
+        sim_matcher = self.bingo.searchSim(
+            molecule, min_sim, max_sim, sim_type
+        )
         while sim_matcher.next():
             id = sim_matcher.getCurrentId()
             result.append(id)
@@ -96,15 +101,15 @@ class BingoNoSQL(NoSQLAdapter):
         return result
 
     @catch_indigo_exception(catch_error=True)
-    def smarts(self, molecule, target_function=None, options=''):
+    def smarts(self, molecule, target_function=None, options=""):
         return self.substructure(molecule, target_function, options)
 
     @catch_indigo_exception(catch_error=True)
-    def rsmarts(self, reaction, target_function=None, options=''):
+    def rsmarts(self, reaction, target_function=None, options=""):
         return self.substructure(reaction, target_function, options)
 
     @catch_indigo_exception(catch_error=True)
-    def rexact(self, reaction, target_function=None, options=''):
+    def rexact(self, reaction, target_function=None, options=""):
         result = []
         exact_matcher = self.bingo.searchExact(reaction, options)
         while exact_matcher.next():
@@ -114,7 +119,7 @@ class BingoNoSQL(NoSQLAdapter):
         return result
 
     @catch_indigo_exception(catch_error=True)
-    def rsubstructure(self, reaction, target_function=None, options=''):
+    def rsubstructure(self, reaction, target_function=None, options=""):
         result = []
         query = self.indigo.loadQueryReaction(reaction.rawData())
         sub_matcher = self.bingo.searchSub(query, options)

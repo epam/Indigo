@@ -1,7 +1,6 @@
 # import pytest
 #
 # from ..helpers import assert_match_query, query_cases
-# from ..logger import logger
 #
 #
 # class TestRsub:
