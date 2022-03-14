@@ -643,7 +643,7 @@ jobs:
         run: pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl
         working-directory: bingo/bingo-elastic/python
       - name: Install dev dependencies
-        run: pip install -r requirements_dev.txt
+        run: pip install ".[dev]"
         working-directory: bingo/bingo-elastic/python
       - name: Setup elasticsearch
         run: docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.16.2
@@ -652,7 +652,7 @@ jobs:
       - name: Build wheel
         working-directory: bingo/bingo-elastic/python
         run: |
-          pip install .
+          pip install ".[async]"
           python setup.py bdist_wheel
           cp dist/*.whl ${GITHUB_WORKSPACE}/dist/
       - name: Run pylint

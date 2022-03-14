@@ -5,7 +5,11 @@ from typing import Callable
 import pytest
 from indigo import Indigo  # type: ignore
 
-from bingo_elastic.elastic import ElasticRepository, IndexName
+from bingo_elastic.elastic import (
+    AsyncElasticRepository,
+    ElasticRepository,
+    IndexName,
+)
 from bingo_elastic.model.helpers import iterate_file, load_reaction
 from bingo_elastic.model.record import IndigoRecordMolecule
 
@@ -43,6 +47,26 @@ def elastic_repository_reaction() -> ElasticRepository:
     )
 
 
+@pytest.fixture
+def a_elastic_repository_molecule() -> Callable[[], AsyncElasticRepository]:
+    def wraped():
+        return AsyncElasticRepository(
+            IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200
+        )
+
+    return wraped
+
+
+@pytest.fixture
+def a_elastic_repository_reaction() -> Callable[[], AsyncElasticRepository]:
+    def wraped():
+        return AsyncElasticRepository(
+            IndexName.BINGO_REACTION, host="127.0.0.1", port=9200
+        )
+
+    return wraped
+
+
 @pytest.fixture(autouse=True)
 def clear_index(
     elastic_repository_molecule: ElasticRepository,
@@ -54,8 +78,7 @@ def clear_index(
 
 @pytest.fixture
 def loaded_sdf(
-    elastic_repository_molecule: ElasticRepository,
-    resource_loader,
+    elastic_repository_molecule: ElasticRepository, resource_loader
 ) -> IndigoRecordMolecule:
     resource = resource_loader("molecules/rand_queries_small.sdf")
     sdf = iterate_file(Path(resource))
