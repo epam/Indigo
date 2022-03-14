@@ -6,3 +6,5 @@ disable=
     R0903, # too-few-public-methods
     E1136, # unsubscriptable-object
     R0801, # duplicate-code
+    W0621, # redefined-outer-name
+    W0613, # unused-argument

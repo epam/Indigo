@@ -58,12 +58,9 @@ def test_create_reaction(
         resource_loader("reactions/rheadb/58029.rxn")
     )
     indigo_reaction = IndigoRecordReaction(indigo_object=reaction)
-    test_smiles = set(
-        [
-            reactant.canonicalSmiles()
-            for reactant in reaction.iterateReactants()
-        ]
-    )
+    test_smiles = {
+        reactant.canonicalSmiles() for reactant in reaction.iterateReactants()
+    }
     count_reactants = reaction.countReactants()
     count_products = reaction.countProducts()
     assert isinstance(indigo_reaction, IndigoRecordReaction)

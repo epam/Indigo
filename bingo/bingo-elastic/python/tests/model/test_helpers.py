@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import bingo_elastic.model.helpers as helpers
+from bingo_elastic.model import helpers
 from bingo_elastic.model.record import (
     IndigoRecordMolecule,
     IndigoRecordReaction,
