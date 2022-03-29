@@ -363,7 +363,9 @@ def save_moldata(md, output_format=None, options={}):
     elif output_format == "chemical/x-inchi":
         return md.struct.dispatcher.inchi.getInchi(md.struct)
     elif output_format == "chemical/x-inchi-key":
-        return md.struct.dispatcher.inchi.getInchiKey(md.struct.dispatcher.inchi.getInchi(md.struct))
+        return md.struct.dispatcher.inchi.getInchiKey(
+            md.struct.dispatcher.inchi.getInchi(md.struct)
+        )
     elif output_format == "chemical/x-inchi-aux":
         res = md.struct.dispatcher.inchi.getInchi(md.struct)
         aux = md.struct.dispatcher.inchi.getAuxInfo()
