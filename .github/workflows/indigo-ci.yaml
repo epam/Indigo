@@ -916,7 +916,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 9.6, 10, 11, 12 ]
+        postgres_major_version: [ 10, 11, 12 ]
     runs-on: ubuntu-latest
     container: epmlsop/buildpack-centos7:latest
     steps:
@@ -929,7 +929,7 @@ jobs:
         run: git fetch --tags -f
       - name: Install postgres server headers
         run: |
-          case ${{ matrix.postgres_major_version }} in 12) pg_version=12;; 11) pg_version=11;; 10) pg_version=10;; 9.6) pg_version=96;; esac;
+          case ${{ matrix.postgres_major_version }} in 12) pg_version=12;; 11) pg_version=11;; 10) pg_version=10;;  9.6) pg_version=96;; esac;
           yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils
           curl -OL https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
           rpm --import RPM-GPG-KEY-PGDG
