@@ -401,6 +401,13 @@ M  END
             options.delete();
         });
 
+        test("convert", "inchi-key", () => {
+            let options = new indigo.MapStringString();
+            const inchi = indigo.convert(mol_smiles, "inchi-key", options);
+            assert.equal(inchi, "UHOVQNZJYSORNB-UHFFFAOYSA-N");
+            options.delete();
+        });
+
         test("convert", "inchi-aux", () => {
             let options = new indigo.MapStringString();
             const inchi_aux = indigo.convert(mol_smiles, "inchi-aux", options);

@@ -143,6 +143,11 @@ namespace indigo
             {
                 return _checkResultString(indigoInchiGetInchi(id()));
             }
+            else if (outputFormat == "inchi-key" || outputFormat == "chemical/x-inchi-key")
+            {
+                std::string inchi_str = _checkResultString(indigoInchiGetInchi(id()));
+                return _checkResultString(indigoInchiGetInchiKey(inchi_str.c_str()));
+            }
             else if (outputFormat == "inchi-aux" || outputFormat == "chemical/x-inchi-aux")
             {
                 std::stringstream ss;
