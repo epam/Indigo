@@ -18,6 +18,7 @@
 
 #include "molecule/cml_saver.h"
 
+#include <cfloat>
 #include <tinyxml2.h>
 
 #include "base_cpp/locale_guard.h"
@@ -355,12 +356,22 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
 
                 if (have_z)
                 {
+                    if (fabsf(pos.x) < FLT_MIN)
+                        pos.x = 0.f;
+                    if (fabsf(pos.y) < FLT_MIN)
+                        pos.y = 0.f;
+                    if (fabsf(pos.z) < FLT_MIN)
+                        pos.z = 0.f;
                     atom->SetAttribute("x3", pos.x);
                     atom->SetAttribute("y3", pos.y);
                     atom->SetAttribute("z3", pos.z);
                 }
                 else
                 {
+                    if (fabsf(pos.x) < FLT_MIN)
+                        pos.x = 0.f;
+                    if (fabsf(pos.y) < FLT_MIN)
+                        pos.y = 0.f;
                     atom->SetAttribute("x2", pos.x);
                     atom->SetAttribute("y2", pos.y);
                 }
