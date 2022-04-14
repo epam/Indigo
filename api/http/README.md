@@ -29,7 +29,7 @@ It's a common way to version `indigo_service` API in your environment.
 4. Validate molecules: `stereo3D`, `ambiguousH`, `badValence`, `chirality`, `query`,
    `rGroups`, `stereo`, `valence`
 5. Molecule descriptors: `countAlleneCenters`, `countAtoms`, `countAttachmentPoints`, `countBonds`,
-   `countCatalysts`, `countComponents`, `countDataSGroups`, `countGeneridcSGrpoups`, `countHeavyAtoms`,
+   `countCatalysts`, `countComponents`, `countDataSGroups`, `countGenericSGroups`, `countHeavyAtoms`,
    `countHydrogens`, `countImplicitHydrogens`, `countMolecules`, `countMultipleGroups`, `countProducts`,
    `countPseudoatoms`, `countRGroups`, `countRSites`, `countReactants`, `countRepeatingUnits`, `countSSSR`,
    `countStereocenters`, `countSuperatoms`, `isChiral`, `isHighlighted`, `molecularWeight`, `monoisotopicMass`,
