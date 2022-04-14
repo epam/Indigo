@@ -494,7 +494,7 @@ class Descriptors(str, Enum):
     COUNT_CATALYSTS = "countCatalysts"
     COUNT_COMPONENTS = "countComponents"
     COUNT_DATA_S_GROUPS = "countDataSGroups"
-    COUNT_GENERIC_S_GROUPS = "countGeneridcSGrpoups"
+    COUNT_GENERIC_S_GROUPS = "countGenericSGroups"
     COUNT_HEAVY_ATOMS = "countHeavyAtoms"
     COUNT_HYDROGENS = "countHydrogens"
     COUNT_IMPLICIT_HYDROGENS = "countImplicitHydrogens"
