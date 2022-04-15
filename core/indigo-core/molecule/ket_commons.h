@@ -36,17 +36,17 @@ namespace indigo
         return string_hash(s, count);
     }
 
-    class KETSimpleObject : public GraphMetaObject
+    class KETSimpleObject : public MetaObject
     {
     public:
         static const std::uint32_t cid = "KET simple object"_hash;
-        KETSimpleObject(int mode, const Rect2f& rect) : GraphMetaObject(cid)
+        KETSimpleObject(int mode, const Rect2f& rect) : MetaObject(cid)
         {
             _mode = mode;
             _rect = rect;
         };
 
-        GraphMetaObject* clone() const override
+        MetaObject* clone() const override
         {
             return new KETSimpleObject(_mode, _rect);
         }
@@ -61,18 +61,18 @@ namespace indigo
         Rect2f _rect;
     };
 
-    class KETTextObject : public GraphMetaObject
+    class KETTextObject : public MetaObject
     {
     public:
         static const std::uint32_t cid = "KET text object"_hash;
 
-        KETTextObject(const Vec3f& pos, const std::string& content) : GraphMetaObject(cid)
+        KETTextObject(const Vec3f& pos, const std::string& content) : MetaObject(cid)
         {
             _pos = pos;
             _content = content;
         }
 
-        GraphMetaObject* clone() const override
+        MetaObject* clone() const override
         {
             return new KETTextObject(_pos, _content);
         }

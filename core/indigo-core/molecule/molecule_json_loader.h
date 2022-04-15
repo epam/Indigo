@@ -41,6 +41,7 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
     class SGroup;
+    class MetaObjectsInterface;
 
     /*
      * Loader for JSON format
@@ -71,6 +72,7 @@ namespace indigo
                              //  = ATOM_AND ('rac')
                              //  = ATOM_ANY ('any')
 
+        static void loadSimpleObjects(rapidjson::Value& simple_objects, MetaObjectsInterface& meta_interface);
     protected:
         struct EnhancedStereoCenter
         {

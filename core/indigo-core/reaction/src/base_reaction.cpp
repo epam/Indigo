@@ -375,3 +375,20 @@ int BaseReaction::findMolecule(BaseMolecule* mol)
 
     return -1;
 }
+
+void BaseReaction::addMetaObject(MetaObject* pobj)
+{
+    int index = _meta_data.size();
+    _meta_data.expand(index + 1);
+    _meta_data.set(index, pobj);
+}
+
+void BaseReaction::resetMetaData()
+{
+    _meta_data.clear();
+}
+
+const PtrArray<MetaObject>& BaseReaction::metaData() const
+{
+    return _meta_data;
+}

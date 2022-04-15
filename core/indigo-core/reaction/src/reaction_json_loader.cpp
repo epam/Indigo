@@ -32,7 +32,7 @@ using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
-ReactionJsonLoader::ReactionJsonLoader(Document& ket) : _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType)
+ReactionJsonLoader::ReactionJsonLoader(Document& ket) : _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _simple_objects(kArrayType)
 {
     ignore_bad_valence = false;
     Value& root = ket["root"];
@@ -64,6 +64,11 @@ ReactionJsonLoader::ReactionJsonLoader(Document& ket) : _rgroups(kArrayType), _m
                 _arrows.PushBack(rnode, ket.GetAllocator());
             else if (node_type == "plus")
                 _pluses.PushBack(rnode, ket.GetAllocator());
+            if (node_type.compare("simpleObject") == 0 || node_type.compare("text") == 0)
+            {
+                if (nodes[i].HasMember("data")) 
+                    _simple_objects.PushBack(nodes[i]["data"], ket.GetAllocator());
+            }
             else
                 throw Error("Unknown reaction node: %s", node_type.c_str());
         }
@@ -125,6 +130,8 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 
     if (_arrows.Size() == 0)
         throw Error("No arrow in the reaction");
+
+    MoleculeJsonLoader::loadSimpleObjects(_simple_objects, rxn);
 
     int count = _pmol->countComponents();
 

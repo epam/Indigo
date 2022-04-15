@@ -622,6 +622,14 @@ void BaseMolecule::makeEdgeSubmolecule(BaseMolecule& mol, const Array<int>& vert
     mergeWithSubmolecule(mol, vertices, &edges, v_mapping, skip_flags);
 }
 
+void BaseMolecule::cloneMetaData(MetaObjectsInterface& other)
+{
+    resetMetaData();
+    const auto& meta = other.metaData();
+    for (int i = 0; i < meta.size(); i++)
+        addMetaObject(meta[i]->clone());
+}
+
 void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* inv_mapping, int skip_flags)
 {
     QS_DEF(Array<int>, tmp_mapping);
@@ -635,7 +643,7 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
         mapping->push(i);
 
     makeSubmolecule(other, *mapping, inv_mapping, skip_flags);
-
+    cloneMetaData(other);
     name.copy(other.name);
 }
 
@@ -664,10 +672,27 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
         edge_mapping[i] = i;
 
     _cloneGraph_KeepIndices(other);
-
+    cloneMetaData(other);
     _mergeWithSubmolecule_Sub(other, vertices, 0, mapping, edge_mapping, skip_flags);
 
     name.copy(other.name);
+}
+
+void BaseMolecule::addMetaObject(MetaObject* pobj)
+{
+    int index = _meta_data.size();
+    _meta_data.expand(index + 1);
+    _meta_data.set(index, pobj);
+}
+
+void BaseMolecule::resetMetaData()
+{
+    _meta_data.clear();
+}
+
+const PtrArray<MetaObject>& BaseMolecule::metaData() const
+{
+    return _meta_data;
 }
 
 void BaseMolecule::mergeWithMolecule(BaseMolecule& other, Array<int>* mapping, int skip_flags)

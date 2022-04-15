@@ -34,6 +34,7 @@ namespace indigo
     class Reaction;
     class QueryReaction;
     class QueryMolecule;
+
     class ReactionJsonLoader
     {
     public:
@@ -55,6 +56,7 @@ namespace indigo
         rapidjson::Value _rgroups;
         rapidjson::Value _pluses;
         rapidjson::Value _arrows;
+        rapidjson::Value _simple_objects;
 
     private:
         ReactionJsonLoader(const ReactionJsonLoader&); // no implicit copy
