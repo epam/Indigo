@@ -140,6 +140,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
         }
     }
 
+    merged->cloneMetaData(rxn);
     StringBuffer s;
     Writer<StringBuffer> writer(s);
     json_saver.saveMolecule(*merged, writer);
