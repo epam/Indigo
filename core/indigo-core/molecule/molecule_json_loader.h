@@ -73,6 +73,7 @@ namespace indigo
                              //  = ATOM_ANY ('any')
 
         static void loadSimpleObjects(rapidjson::Value& simple_objects, MetaObjectsInterface& meta_interface);
+
     protected:
         struct EnhancedStereoCenter
         {
