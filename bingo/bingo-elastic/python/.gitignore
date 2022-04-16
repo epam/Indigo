@@ -5,3 +5,4 @@ dbdir
 tests/.pytest_cache
 .DS_Store
 .idea
+bingo_elastic.egg-info/

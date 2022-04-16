@@ -5,10 +5,9 @@ if (NOT Python3_FOUND)
 else ()
     file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR} NATIVE_CURRENT_SOURCE_DIR)
     add_custom_target(bingo-elastic-python
-            COMMAND ${Python3_EXECUTABLE} -m pip install --user -r requirements_dev.txt
-            COMMAND ${Python3_EXECUTABLE} -m pip install --user "${NATIVE_DIST_DIRECTORY}/epam.indigo-*.whl"
+            COMMAND ${Python3_EXECUTABLE} -m pip install --force-reinstall --user "${NATIVE_DIST_DIRECTORY}/epam.indigo-*.whl"
             COMMAND ${Python3_EXECUTABLE} -m pylint bingo_elastic
-            COMMAND ${Python3_EXECUTABLE} -m pip install .
+            COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel
             COMMAND ${COPY_COMMAND} ${NATIVE_CURRENT_SOURCE_DIR}${SEP}dist${SEP}*.whl ${NATIVE_DIST_DIRECTORY}${SEP}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/)
     if (BUILD_INDIGO)
