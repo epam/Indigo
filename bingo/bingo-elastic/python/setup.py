@@ -35,7 +35,7 @@ setup(
     download_url="https://pypi.org/project/bingo_elastic",
     python_requires=">=3.7",
     packages=["bingo_elastic", "bingo_elastic.model"],
-    install_requires=["epam.indigo==1.7.0-beta", "elasticsearch==7.16.2"],
+    install_requires=["epam.indigo==1.6.1", "elasticsearch==7.16.2"],
     extras_require={
         "async": ["elasticsearch[async]==7.16.2"],
         "dev": [

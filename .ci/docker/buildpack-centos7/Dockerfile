@@ -1,6 +1,6 @@
 FROM centos:7
 
-ARG DEVTOOLSET_VERSION=10
+ARG DEVTOOLSET_VERSION=11
 ARG GIT_VERSION=227
 
 RUN yum install -y epel-release centos-release-scl
