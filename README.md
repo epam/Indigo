@@ -3,7 +3,7 @@
 
 # EPAM Indigo projects #
 
-Copyright (c) 2009-2021 EPAM Systems, Inc.
+Copyright (c) 2009-2022 EPAM Systems, Inc.
 
 Licensed under the [Apache License version 2.0](LICENSE)
 

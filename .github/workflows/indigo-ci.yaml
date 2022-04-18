@@ -780,16 +780,6 @@ jobs:
         with:
           name: indigo-ketcher
           path: dist/indigo-ketcher*.tgz
-      - name: Push to NPM Beta
-        if: github.ref == 'refs/heads/master'
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
-        run: |
-            echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
-            echo email=${NPM_EMAIL} >> ~/.npmrc
-            echo always-auth=true >> ~/.npmrc
-            npm publish --tag beta ./dist/indigo-ketcher-*.tgz
 
   build_indigo_utils_x86_64:
     strategy:
