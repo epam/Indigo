@@ -2,9 +2,8 @@ if(WIN32)
     set(CMAKE_SYSTEM_VERSION 6.1)
 endif()
 
-cmake_minimum_required(VERSION 3.9)
-
 project(indigo-all LANGUAGES NONE)
+cmake_minimum_required(VERSION 3.9)
 
 # Options
 
@@ -12,6 +11,7 @@ project(indigo-all LANGUAGES NONE)
 option(ENABLE_TESTS "Enable CTest tests" ON)
 option(BUILD_STANDALONE "Build without any system dependencies except for libc, otherwise require tinyxml2, zlib, rapidjson, and cairo for renderer" ON)
 option(USE_CLANG_TIDY "Use clang-tidy for static analysis" OFF)
+option(WITH_STATIC "Build Indigo static library as well as shared" OFF)
 
 # Indigo API options
 option(BUILD_INDIGO "Build indigo shared library" ON)

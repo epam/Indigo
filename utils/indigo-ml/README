@@ -1,0 +1,28 @@
+TODO: Create a script to organize files in following order:
+
+indigo_chem/
+  bingo/
+    __init__.py
+  indigo/
+    lib/
+        Win/..
+        Linux/..
+        Mac/..
+    __init__.py
+    inchi.py
+    bingo.py
+    renderer.py
+  indigo_inchi/
+    __init__.py
+  indigo_renderer/
+    __init__.py
+
+After that run setup.py for each supported platforms:
+
+python setup.py bdist_wheel --plat-name=win32
+python setup.py bdist_wheel --plat-name=win_amd64
+python setup.py bdist_wheel --plat-name=macosx_10_7
+python setup.py bdist_wheel --plat-name=manylinux1_i686
+python setup.py bdist_wheel --plat-name=manylinux1_x86_64
+
+And then upload them to PyPI
