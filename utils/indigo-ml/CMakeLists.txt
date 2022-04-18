@@ -1,7 +1,7 @@
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
 if(NOT Python3_FOUND)
-    message(WARNING "Python executable not found, indigo-python could not be built")
+        message(WARNING "Python executable not found, indigo-python could not be built")
 else()
     file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR} NATIVE_CURRENT_SOURCE_DIR)
     add_custom_target(indigo-python
