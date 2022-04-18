@@ -1,3 +1,4 @@
+# pylint: disable=W1517
 import math
 from abc import ABCMeta, abstractmethod
 from functools import lru_cache
