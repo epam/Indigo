@@ -922,7 +922,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
             one_rnode.PushBack(rnode, data.GetAllocator());
             auto empty_val = Value(kArrayType);
             MoleculeJsonLoader loader(one_rnode, empty_val);
+            loader.stereochemistry_options = stereochemistry_options;
             loader.loadMolecule(*fragment.get());
+
             rgroup.fragments.add(fragment.release());
         }
     }
