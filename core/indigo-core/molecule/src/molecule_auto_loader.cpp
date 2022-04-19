@@ -321,11 +321,13 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
 
                     if (data.Parse(buf.ptr()).HasParseError())
                         throw Error("Error at parsing JSON: %s", buf.ptr());
+
                     if (data.HasMember("root"))
                     {
                         Value& root = data["root"];
                         Value& nodes = root["nodes"];
                         // rewind to first molecule node
+                        int arrows_counter = 0;
                         for (int i = 0; i < nodes.Size(); ++i)
                         {
                             if (nodes[i].HasMember("$ref"))
@@ -356,12 +358,14 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                                 }
                                 else if (node_type.compare("arrow") == 0)
                                 {
-                                    throw Error("Arrow nodes supported only for reactions");
+                                    arrows_counter++;
                                 }
                             }
                             else
                                 throw Error("Unsupported node for molecule");
                         }
+                        if (arrows_counter == 1)
+                            throw Error("Arrow nodes supported only for reactions");
                     }
                     else
                         throw Error("Ketcher's JSON has no root node");
