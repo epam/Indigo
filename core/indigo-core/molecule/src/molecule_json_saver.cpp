@@ -704,16 +704,15 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                     writer.String(alias_it->second.c_str());
                 }
             }
-            if (BaseMolecule::hasCoord(mol))
-            {
-                const Vec3f& coord = mol.getAtomXyz(i);
-                writer.Key("location");
-                writer.StartArray();
-                writer.Double(coord.x);
-                writer.Double(coord.y);
-                writer.Double(coord.z);
-                writer.EndArray();
-            }
+
+            const Vec3f& coord = mol.getAtomXyz(i);
+            writer.Key("location");
+            writer.StartArray();
+            writer.Double(coord.x);
+            writer.Double(coord.y);
+            writer.Double(coord.z);
+            writer.EndArray();
+
             int charge = mol.getAtomCharge(i);
             int evalence = mol.getExplicitValence(i);
             int mapping = mol.reaction_atom_mapping[i];
