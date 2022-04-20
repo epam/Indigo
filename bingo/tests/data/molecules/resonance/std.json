@@ -1,0 +1,480 @@
+[
+    {
+        "query_id": 1,
+        "query_type": "substructure(RES)",
+        "expected": [
+            1,
+            2,
+            195,
+            198,
+            199
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "substructure(RES)",
+        "expected": [
+            3,
+            4
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "substructure(RES)",
+        "expected": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+        ]
+    },
+    {
+        "query_id": 8,
+        "query_type": "substructure(RES)",
+        "expected": [
+            22
+        ]
+    },
+    {
+        "query_id": 9,
+        "query_type": "substructure(RES)",
+        "expected": [
+            25
+        ]
+    },
+    {
+        "query_id": 10,
+        "query_type": "substructure(RES)",
+        "expected": [
+            28
+        ]
+    },
+    {
+        "query_id": 11,
+        "query_type": "substructure(RES)",
+        "expected": [
+            31
+        ]
+    },
+    {
+        "query_id": 12,
+        "query_type": "substructure(RES)",
+        "expected": [
+            34
+        ]
+    },
+    {
+        "query_id": 14,
+        "query_type": "substructure(RES)",
+        "expected": [
+            40
+        ]
+    },
+    {
+        "query_id": 15,
+        "query_type": "substructure(RES)",
+        "expected": [
+            43
+        ]
+    },
+    {
+        "query_id": 16,
+        "query_type": "substructure(RES)",
+        "expected": [
+            46
+        ]
+    },
+    {
+        "query_id": 17,
+        "query_type": "substructure(RES)",
+        "expected": [
+            49
+        ]
+    },
+    {
+        "query_id": 18,
+        "query_type": "substructure(RES)",
+        "expected": [
+            52
+        ]
+    },
+    {
+        "query_id": 19,
+        "query_type": "substructure(RES)",
+        "expected": [
+            55
+        ]
+    },
+    {
+        "query_id": 20,
+        "query_type": "substructure(RES)",
+        "expected": [
+            58
+        ]
+    },
+    {
+        "query_id": 21,
+        "query_type": "substructure(RES)",
+        "expected": [
+            61
+        ]
+    },
+    {
+        "query_id": 23,
+        "query_type": "substructure(RES)",
+        "expected": [
+            67
+        ]
+    },
+    {
+        "query_id": 24,
+        "query_type": "substructure(RES)",
+        "expected": [
+            70
+        ]
+    },
+    {
+        "query_id": 25,
+        "query_type": "substructure(RES)",
+        "expected": [
+            73
+        ]
+    },
+    {
+        "query_id": 26,
+        "query_type": "substructure(RES)",
+        "expected": [
+            76,
+            127,
+            132
+        ]
+    },
+    {
+        "query_id": 27,
+        "query_type": "substructure(RES)",
+        "expected": [
+            79
+        ]
+    },
+    {
+        "query_id": 28,
+        "query_type": "substructure(RES)",
+        "expected": [
+            82,
+            140
+        ]
+    },
+    {
+        "query_id": 29,
+        "query_type": "substructure(RES)",
+        "expected": [
+            85
+        ]
+    },
+    {
+        "query_id": 30,
+        "query_type": "substructure(RES)",
+        "expected": [
+            88
+        ]
+    },
+    {
+        "query_id": 31,
+        "query_type": "substructure(RES)",
+        "expected": [
+            91
+        ]
+    },
+    {
+        "query_id": 32,
+        "query_type": "substructure(RES)",
+        "expected": [
+            94
+        ]
+    },
+    {
+        "query_id": 33,
+        "query_type": "substructure(RES)",
+        "expected": [
+            97
+        ]
+    },
+    {
+        "query_id": 34,
+        "query_type": "substructure(RES)",
+        "expected": [
+            100
+        ]
+    },
+    {
+        "query_id": 35,
+        "query_type": "substructure(RES)",
+        "expected": [
+            103
+        ]
+    },
+    {
+        "query_id": 36,
+        "query_type": "substructure(RES)",
+        "expected": [
+            106
+        ]
+    },
+    {
+        "query_id": 37,
+        "query_type": "substructure(RES)",
+        "expected": [
+            109,
+            151,
+            154
+        ]
+    },
+    {
+        "query_id": 38,
+        "query_type": "substructure(RES)",
+        "expected": [
+            112,
+            152
+        ]
+    },
+    {
+        "query_id": 39,
+        "query_type": "substructure(RES)",
+        "expected": [
+            115
+        ]
+    },
+    {
+        "query_id": 40,
+        "query_type": "substructure(RES)",
+        "expected": [
+            118
+        ]
+    },
+    {
+        "query_id": 41,
+        "query_type": "substructure(RES)",
+        "expected": [
+            121
+        ]
+    },
+    {
+        "query_id": 42,
+        "query_type": "substructure(RES)",
+        "expected": [
+            124,
+            165,
+            166,
+            179,
+            181,
+            182
+        ]
+    },
+    {
+        "query_id": 43,
+        "query_type": "substructure(RES)",
+        "expected": [
+            127
+        ]
+    },
+    {
+        "query_id": 46,
+        "query_type": "substructure(RES)",
+        "expected": [
+            129,
+            136
+        ]
+    },
+    {
+        "query_id": 48,
+        "query_type": "substructure(RES)",
+        "expected": [
+            142
+        ]
+    },
+    {
+        "query_id": 58,
+        "query_type": "substructure(RES)",
+        "expected": [
+            172
+        ]
+    },
+    {
+        "query_id": 62,
+        "query_type": "substructure(RES)",
+        "expected": [
+            183,
+            184
+        ]
+    },
+    {
+        "query_id": 63,
+        "query_type": "substructure(RES)",
+        "expected": "molfile loader: direction of bond #0 makes no sense"
+    },
+    {
+        "query_id": 64,
+        "query_type": "substructure(RES)",
+        "expected": [
+            1,
+            2,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            13,
+            14,
+            64,
+            75,
+            76,
+            77,
+            79,
+            90,
+            91,
+            126,
+            127,
+            131,
+            132,
+            190,
+            191,
+            192,
+            193,
+            194,
+            195,
+            198,
+            199,
+            204,
+            206,
+            207,
+            217,
+            218,
+            219,
+            220,
+            221,
+            227,
+            229,
+            230,
+            231,
+            232,
+            236,
+            239,
+            240
+        ]
+    },
+    {
+        "query_id": 66,
+        "query_type": "substructure(RES)",
+        "expected": [
+            196
+        ]
+    },
+    {
+        "query_id": 67,
+        "query_type": "substructure(RES)",
+        "expected": [
+            195,
+            198,
+            199
+        ]
+    },
+    {
+        "query_id": 68,
+        "query_type": "substructure(RES)",
+        "expected": [
+            202
+        ]
+    },
+    {
+        "query_id": 69,
+        "query_type": "substructure(RES)",
+        "expected": [
+            205
+        ]
+    },
+    {
+        "query_id": 70,
+        "query_type": "substructure(RES)",
+        "expected": [
+            208,
+            209
+        ]
+    },
+    {
+        "query_id": 71,
+        "query_type": "substructure(RES)",
+        "expected": [
+            211
+        ]
+    },
+    {
+        "query_id": 72,
+        "query_type": "substructure(RES)",
+        "expected": [
+            214,
+            215,
+            216
+        ]
+    },
+    {
+        "query_id": 73,
+        "query_type": "substructure(RES)",
+        "expected": [
+            217,
+            218
+        ]
+    },
+    {
+        "query_id": 74,
+        "query_type": "substructure(RES)",
+        "expected": [
+            220
+        ]
+    },
+    {
+        "query_id": 75,
+        "query_type": "substructure(RES)",
+        "expected": [
+            223
+        ]
+    },
+    {
+        "query_id": 76,
+        "query_type": "substructure(RES)",
+        "expected": [
+            226
+        ]
+    },
+    {
+        "query_id": 77,
+        "query_type": "substructure(RES)",
+        "expected": [
+            229
+        ]
+    },
+    {
+        "query_id": 78,
+        "query_type": "substructure(RES)",
+        "expected": [
+            232
+        ]
+    },
+    {
+        "query_id": 79,
+        "query_type": "substructure(RES)",
+        "expected": [
+            235
+        ]
+    },
+    {
+        "query_id": 80,
+        "query_type": "substructure(RES)",
+        "expected": [
+            205,
+            238
+        ]
+    }
+]

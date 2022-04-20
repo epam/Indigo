@@ -31,7 +31,14 @@ def extract_compounds(
 ) -> List[IndigoObject]:
     result = []
     for compound, compound_type in pairs:
-        if compound_type == jsonapi.CompoundFormat.AUTO:
+        if compound_type in {
+            jsonapi.CompoundFormat.AUTO,
+            jsonapi.CompoundFormat.SMILES,
+            jsonapi.CompoundFormat.MOLFILE,
+            jsonapi.CompoundFormat.CML,
+            jsonapi.CompoundFormat.INCHI,
+            jsonapi.CompoundFormat.KET,
+        }:
             indigo_object = indigo().loadMolecule(compound)
         elif compound_type == jsonapi.CompoundFormat.SMARTS:
             indigo_object = indigo().loadSmarts(compound)
@@ -134,4 +141,4 @@ def validate(compound: IndigoObject, validation: jsonapi.Validations) -> str:
 def get_descriptor(
     compound: IndigoObject, descriptor: jsonapi.Descriptors
 ) -> str:
-    return str(getattr(compound, descriptor.NAME)())
+    return str(getattr(compound, descriptor.value)())

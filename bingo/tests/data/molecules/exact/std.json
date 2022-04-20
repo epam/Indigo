@@ -1,0 +1,5637 @@
+[
+    {
+        "query_id": 1,
+        "query_type": "exact()",
+        "expected": [
+            1
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "exact()",
+        "expected": [
+            2
+        ]
+    },
+    {
+        "query_id": 3,
+        "query_type": "exact()",
+        "expected": [
+            3
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "exact()",
+        "expected": [
+            4
+        ]
+    },
+    {
+        "query_id": 5,
+        "query_type": "exact()",
+        "expected": [
+            5
+        ]
+    },
+    {
+        "query_id": 6,
+        "query_type": "exact()",
+        "expected": [
+            33
+        ]
+    },
+    {
+        "query_id": 7,
+        "query_type": "exact()",
+        "expected": [
+            34
+        ]
+    },
+    {
+        "query_id": 8,
+        "query_type": "exact()",
+        "expected": [
+            35
+        ]
+    },
+    {
+        "query_id": 9,
+        "query_type": "exact()",
+        "expected": [
+            36
+        ]
+    },
+    {
+        "query_id": 10,
+        "query_type": "exact()",
+        "expected": [
+            37
+        ]
+    },
+    {
+        "query_id": 11,
+        "query_type": "exact()",
+        "expected": [
+            72
+        ]
+    },
+    {
+        "query_id": 12,
+        "query_type": "exact()",
+        "expected": [
+            73
+        ]
+    },
+    {
+        "query_id": 13,
+        "query_type": "exact()",
+        "expected": [
+            74
+        ]
+    },
+    {
+        "query_id": 14,
+        "query_type": "exact()",
+        "expected": [
+            75
+        ]
+    },
+    {
+        "query_id": 15,
+        "query_type": "exact()",
+        "expected": [
+            78
+        ]
+    },
+    {
+        "query_id": 16,
+        "query_type": "exact()",
+        "expected": [
+            97
+        ]
+    },
+    {
+        "query_id": 17,
+        "query_type": "exact()",
+        "expected": [
+            98
+        ]
+    },
+    {
+        "query_id": 18,
+        "query_type": "exact()",
+        "expected": [
+            99
+        ]
+    },
+    {
+        "query_id": 19,
+        "query_type": "exact()",
+        "expected": [
+            100
+        ]
+    },
+    {
+        "query_id": 20,
+        "query_type": "exact()",
+        "expected": [
+            101
+        ]
+    },
+    {
+        "query_id": 21,
+        "query_type": "exact()",
+        "expected": [
+            122,
+            121
+        ]
+    },
+    {
+        "query_id": 22,
+        "query_type": "exact()",
+        "expected": [
+            122,
+            121
+        ]
+    },
+    {
+        "query_id": 23,
+        "query_type": "exact()",
+        "expected": [
+            124,
+            123
+        ]
+    },
+    {
+        "query_id": 24,
+        "query_type": "exact()",
+        "expected": [
+            124,
+            123
+        ]
+    },
+    {
+        "query_id": 25,
+        "query_type": "exact()",
+        "expected": [
+            130,
+            125
+        ]
+    },
+    {
+        "query_id": 26,
+        "query_type": "exact()",
+        "expected": [
+            1549,
+            179
+        ]
+    },
+    {
+        "query_id": 27,
+        "query_type": "exact()",
+        "expected": [
+            1552,
+            180
+        ]
+    },
+    {
+        "query_id": 28,
+        "query_type": "exact()",
+        "expected": [
+            1551,
+            181
+        ]
+    },
+    {
+        "query_id": 29,
+        "query_type": "exact()",
+        "expected": [
+            1550,
+            182
+        ]
+    },
+    {
+        "query_id": 30,
+        "query_type": "exact()",
+        "expected": [
+            183
+        ]
+    },
+    {
+        "query_id": 31,
+        "query_type": "exact()",
+        "expected": [
+            263
+        ]
+    },
+    {
+        "query_id": 32,
+        "query_type": "exact()",
+        "expected": [
+            264
+        ]
+    },
+    {
+        "query_id": 33,
+        "query_type": "exact()",
+        "expected": [
+            265
+        ]
+    },
+    {
+        "query_id": 34,
+        "query_type": "exact()",
+        "expected": [
+            266
+        ]
+    },
+    {
+        "query_id": 35,
+        "query_type": "exact()",
+        "expected": [
+            267
+        ]
+    },
+    {
+        "query_id": 36,
+        "query_type": "exact()",
+        "expected": [
+            297
+        ]
+    },
+    {
+        "query_id": 37,
+        "query_type": "exact()",
+        "expected": [
+            298
+        ]
+    },
+    {
+        "query_id": 38,
+        "query_type": "exact()",
+        "expected": [
+            299
+        ]
+    },
+    {
+        "query_id": 39,
+        "query_type": "exact()",
+        "expected": [
+            300,
+            1539
+        ]
+    },
+    {
+        "query_id": 40,
+        "query_type": "exact()",
+        "expected": [
+            301
+        ]
+    },
+    {
+        "query_id": 41,
+        "query_type": "exact()",
+        "expected": [
+            302
+        ]
+    },
+    {
+        "query_id": 42,
+        "query_type": "exact()",
+        "expected": [
+            303,
+            945
+        ]
+    },
+    {
+        "query_id": 43,
+        "query_type": "exact()",
+        "expected": [
+            319
+        ]
+    },
+    {
+        "query_id": 44,
+        "query_type": "exact()",
+        "expected": "element: bad valence on B having 4 drawn bonds, charge 3, and 0 radical electrons"
+    },
+    {
+        "query_id": 45,
+        "query_type": "exact()",
+        "expected": [
+            322
+        ]
+    },
+    {
+        "query_id": 46,
+        "query_type": "exact()",
+        "expected": [
+            323
+        ]
+    },
+    {
+        "query_id": 47,
+        "query_type": "exact()",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 2"
+    },
+    {
+        "query_id": 48,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 49,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 50,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 51,
+        "query_type": "exact()",
+        "expected": [
+            376
+        ]
+    },
+    {
+        "query_id": 52,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #0 makes no sense"
+    },
+    {
+        "query_id": 53,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #30 makes no sense"
+    },
+    {
+        "query_id": 54,
+        "query_type": "exact()",
+        "expected": [
+            392
+        ]
+    },
+    {
+        "query_id": 55,
+        "query_type": "exact()",
+        "expected": [
+            393,
+            394
+        ]
+    },
+    {
+        "query_id": 56,
+        "query_type": "exact()",
+        "expected": [
+            393,
+            394
+        ]
+    },
+    {
+        "query_id": 57,
+        "query_type": "exact()",
+        "expected": [
+            395,
+            397,
+            396,
+            398
+        ]
+    },
+    {
+        "query_id": 58,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #3 makes no sense"
+    },
+    {
+        "query_id": 59,
+        "query_type": "exact()",
+        "expected": [
+            430
+        ]
+    },
+    {
+        "query_id": 60,
+        "query_type": "exact()",
+        "expected": [
+            431
+        ]
+    },
+    {
+        "query_id": 61,
+        "query_type": "exact()",
+        "expected": [
+            432
+        ]
+    },
+    {
+        "query_id": 62,
+        "query_type": "exact()",
+        "expected": [
+            433
+        ]
+    },
+    {
+        "query_id": 63,
+        "query_type": "exact()",
+        "expected": [
+            439
+        ]
+    },
+    {
+        "query_id": 64,
+        "query_type": "exact()",
+        "expected": [
+            440
+        ]
+    },
+    {
+        "query_id": 65,
+        "query_type": "exact()",
+        "expected": [
+            441
+        ]
+    },
+    {
+        "query_id": 66,
+        "query_type": "exact()",
+        "expected": [
+            442
+        ]
+    },
+    {
+        "query_id": 67,
+        "query_type": "exact()",
+        "expected": [
+            443
+        ]
+    },
+    {
+        "query_id": 68,
+        "query_type": "exact()",
+        "expected": "stereocenters: stereo types of non-opposite bonds match near atom 30"
+    },
+    {
+        "query_id": 69,
+        "query_type": "exact()",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 0"
+    },
+    {
+        "query_id": 70,
+        "query_type": "exact()",
+        "expected": "stereocenters: directions of opposite stereo bonds do not match near atom 0"
+    },
+    {
+        "query_id": 71,
+        "query_type": "exact()",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+    },
+    {
+        "query_id": 72,
+        "query_type": "exact()",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+    },
+    {
+        "query_id": 73,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #2 makes no sense"
+    },
+    {
+        "query_id": 74,
+        "query_type": "exact()",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 1"
+    },
+    {
+        "query_id": 75,
+        "query_type": "exact()",
+        "expected": "stereocenters: 2 hydrogens near stereocenter 8"
+    },
+    {
+        "query_id": 76,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 77,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 81,
+        "query_type": "exact()",
+        "expected": "element: bad valence on H having 3 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 82,
+        "query_type": "exact()",
+        "expected": "element: bad valence on H having 2 drawn bonds, charge -1, and 0 radical electrons"
+    },
+    {
+        "query_id": 83,
+        "query_type": "exact()",
+        "expected": [
+            832
+        ]
+    },
+    {
+        "query_id": 84,
+        "query_type": "exact()",
+        "expected": [
+            833
+        ]
+    },
+    {
+        "query_id": 85,
+        "query_type": "exact()",
+        "expected": [
+            834
+        ]
+    },
+    {
+        "query_id": 86,
+        "query_type": "exact()",
+        "expected": [
+            835
+        ]
+    },
+    {
+        "query_id": 87,
+        "query_type": "exact()",
+        "expected": [
+            836
+        ]
+    },
+    {
+        "query_id": 88,
+        "query_type": "exact()",
+        "expected": [
+            936,
+            938
+        ]
+    },
+    {
+        "query_id": 89,
+        "query_type": "exact()",
+        "expected": [
+            315,
+            937,
+            939,
+            940
+        ]
+    },
+    {
+        "query_id": 90,
+        "query_type": "exact()",
+        "expected": [
+            315,
+            937,
+            939,
+            940
+        ]
+    },
+    {
+        "query_id": 91,
+        "query_type": "exact()",
+        "expected": [
+            938,
+            936
+        ]
+    },
+    {
+        "query_id": 92,
+        "query_type": "exact()",
+        "expected": [
+            937,
+            940,
+            315,
+            939
+        ]
+    },
+    {
+        "query_id": 93,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #19 makes no sense"
+    },
+    {
+        "query_id": 94,
+        "query_type": "exact()",
+        "expected": [
+            957
+        ]
+    },
+    {
+        "query_id": 95,
+        "query_type": "exact()",
+        "expected": "stereocenters: 2 hydrogens near stereocenter 1"
+    },
+    {
+        "query_id": 96,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 97,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 98,
+        "query_type": "exact()",
+        "expected": [
+            1025
+        ]
+    },
+    {
+        "query_id": 99,
+        "query_type": "exact()",
+        "expected": [
+            1026
+        ]
+    },
+    {
+        "query_id": 100,
+        "query_type": "exact()",
+        "expected": [
+            1027
+        ]
+    },
+    {
+        "query_id": 101,
+        "query_type": "exact()",
+        "expected": [
+            1028
+        ]
+    },
+    {
+        "query_id": 102,
+        "query_type": "exact()",
+        "expected": [
+            1029
+        ]
+    },
+    {
+        "query_id": 103,
+        "query_type": "exact()",
+        "expected": [
+            1055
+        ]
+    },
+    {
+        "query_id": 104,
+        "query_type": "exact()",
+        "expected": [
+            1056,
+            1057
+        ]
+    },
+    {
+        "query_id": 105,
+        "query_type": "exact()",
+        "expected": [
+            1056,
+            1057
+        ]
+    },
+    {
+        "query_id": 106,
+        "query_type": "exact()",
+        "expected": [
+            1058
+        ]
+    },
+    {
+        "query_id": 107,
+        "query_type": "exact()",
+        "expected": [
+            1062,
+            1059
+        ]
+    },
+    {
+        "query_id": 108,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 109,
+        "query_type": "exact()",
+        "expected": [
+            1090
+        ]
+    },
+    {
+        "query_id": 110,
+        "query_type": "exact()",
+        "expected": [
+            1091
+        ]
+    },
+    {
+        "query_id": 111,
+        "query_type": "exact()",
+        "expected": [
+            1092
+        ]
+    },
+    {
+        "query_id": 112,
+        "query_type": "exact()",
+        "expected": [
+            1094,
+            1093,
+            1095
+        ]
+    },
+    {
+        "query_id": 113,
+        "query_type": "exact()",
+        "expected": [
+            1131
+        ]
+    },
+    {
+        "query_id": 114,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #18 makes no sense"
+    },
+    {
+        "query_id": 115,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #2 makes no sense"
+    },
+    {
+        "query_id": 116,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 117,
+        "query_type": "exact()",
+        "expected": [
+            1136
+        ]
+    },
+    {
+        "query_id": 118,
+        "query_type": "exact()",
+        "expected": [
+            1137
+        ]
+    },
+    {
+        "query_id": 119,
+        "query_type": "exact()",
+        "expected": [
+            1233
+        ]
+    },
+    {
+        "query_id": 120,
+        "query_type": "exact()",
+        "expected": [
+            1234
+        ]
+    },
+    {
+        "query_id": 121,
+        "query_type": "exact()",
+        "expected": [
+            1235,
+            1237
+        ]
+    },
+    {
+        "query_id": 122,
+        "query_type": "exact()",
+        "expected": [
+            1236
+        ]
+    },
+    {
+        "query_id": 123,
+        "query_type": "exact()",
+        "expected": [
+            1237,
+            1235
+        ]
+    },
+    {
+        "query_id": 124,
+        "query_type": "exact()",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge 0, and 1 radical electrons"
+    },
+    {
+        "query_id": 125,
+        "query_type": "exact()",
+        "expected": "element: bad valence on C having 4 drawn bonds, charge -1, and 1 radical electrons"
+    },
+    {
+        "query_id": 126,
+        "query_type": "exact()",
+        "expected": "element: bad valence on C having 6 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 127,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 128,
+        "query_type": "exact()",
+        "expected": [
+            1313
+        ]
+    },
+    {
+        "query_id": 129,
+        "query_type": "exact()",
+        "expected": [
+            1314
+        ]
+    },
+    {
+        "query_id": 130,
+        "query_type": "exact()",
+        "expected": [
+            1315
+        ]
+    },
+    {
+        "query_id": 131,
+        "query_type": "exact()",
+        "expected": [
+            1316
+        ]
+    },
+    {
+        "query_id": 132,
+        "query_type": "exact()",
+        "expected": [
+            1317
+        ]
+    },
+    {
+        "query_id": 133,
+        "query_type": "exact()",
+        "expected": [
+            1506
+        ]
+    },
+    {
+        "query_id": 134,
+        "query_type": "exact()",
+        "expected": [
+            1507
+        ]
+    },
+    {
+        "query_id": 135,
+        "query_type": "exact()",
+        "expected": [
+            1508
+        ]
+    },
+    {
+        "query_id": 136,
+        "query_type": "exact()",
+        "expected": [
+            1509
+        ]
+    },
+    {
+        "query_id": 137,
+        "query_type": "exact()",
+        "expected": [
+            1510
+        ]
+    },
+    {
+        "query_id": 138,
+        "query_type": "exact()",
+        "expected": [
+            1553
+        ]
+    },
+    {
+        "query_id": 139,
+        "query_type": "exact()",
+        "expected": [
+            1554
+        ]
+    },
+    {
+        "query_id": 140,
+        "query_type": "exact()",
+        "expected": [
+            1555
+        ]
+    },
+    {
+        "query_id": 141,
+        "query_type": "exact()",
+        "expected": [
+            1556
+        ]
+    },
+    {
+        "query_id": 142,
+        "query_type": "exact()",
+        "expected": [
+            1557
+        ]
+    },
+    {
+        "query_id": 143,
+        "query_type": "exact()",
+        "expected": [
+            1605
+        ]
+    },
+    {
+        "query_id": 144,
+        "query_type": "exact()",
+        "expected": [
+            1607,
+            1606
+        ]
+    },
+    {
+        "query_id": 145,
+        "query_type": "exact()",
+        "expected": [
+            1607,
+            1606
+        ]
+    },
+    {
+        "query_id": 146,
+        "query_type": "exact()",
+        "expected": [
+            1628,
+            1608
+        ]
+    },
+    {
+        "query_id": 147,
+        "query_type": "exact()",
+        "expected": [
+            1609
+        ]
+    },
+    {
+        "query_id": 148,
+        "query_type": "exact()",
+        "expected": [
+            1638
+        ]
+    },
+    {
+        "query_id": 149,
+        "query_type": "exact()",
+        "expected": [
+            1639
+        ]
+    },
+    {
+        "query_id": 150,
+        "query_type": "exact()",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 151,
+        "query_type": "exact()",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge -1, and 0 radical electrons"
+    },
+    {
+        "query_id": 152,
+        "query_type": "exact()",
+        "expected": [
+            1644
+        ]
+    },
+    {
+        "query_id": 153,
+        "query_type": "exact()",
+        "expected": [
+            1683
+        ]
+    },
+    {
+        "query_id": 154,
+        "query_type": "exact()",
+        "expected": [
+            1684
+        ]
+    },
+    {
+        "query_id": 155,
+        "query_type": "exact()",
+        "expected": [
+            1685
+        ]
+    },
+    {
+        "query_id": 156,
+        "query_type": "exact()",
+        "expected": [
+            1686,
+            1687
+        ]
+    },
+    {
+        "query_id": 157,
+        "query_type": "exact()",
+        "expected": [
+            1686,
+            1687
+        ]
+    },
+    {
+        "query_id": 158,
+        "query_type": "exact()",
+        "expected": [
+            263
+        ]
+    },
+    {
+        "query_id": 159,
+        "query_type": "exact()",
+        "expected": [
+            1721
+        ]
+    },
+    {
+        "query_id": 160,
+        "query_type": "exact()",
+        "expected": [
+            1722
+        ]
+    },
+    {
+        "query_id": 161,
+        "query_type": "exact()",
+        "expected": [
+            1724,
+            1737,
+            1723,
+            1736
+        ]
+    },
+    {
+        "query_id": 162,
+        "query_type": "exact()",
+        "expected": [
+            1724,
+            1737,
+            1723,
+            1736
+        ]
+    },
+    {
+        "query_id": 163,
+        "query_type": "exact()",
+        "expected": [
+            1726,
+            1739,
+            1725,
+            1738
+        ]
+    },
+    {
+        "query_id": 164,
+        "query_type": "exact()",
+        "expected": [
+            1745,
+            1747,
+            1749,
+            1751,
+            1753,
+            1755,
+            1744,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754
+        ]
+    },
+    {
+        "query_id": 165,
+        "query_type": "exact()",
+        "expected": [
+            1745,
+            1747,
+            1749,
+            1751,
+            1753,
+            1755,
+            1744,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754
+        ]
+    },
+    {
+        "query_id": 166,
+        "query_type": "exact()",
+        "expected": [
+            1745,
+            1747,
+            1749,
+            1751,
+            1753,
+            1755,
+            1744,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754
+        ]
+    },
+    {
+        "query_id": 167,
+        "query_type": "exact()",
+        "expected": [
+            1745,
+            1747,
+            1749,
+            1744,
+            1746,
+            1748,
+            1750,
+            1751,
+            1752,
+            1753,
+            1754,
+            1755
+        ]
+    },
+    {
+        "query_id": 168,
+        "query_type": "exact()",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 0"
+    },
+    {
+        "query_id": 169,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #4 makes no sense"
+    },
+    {
+        "query_id": 170,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 171,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 172,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #4 makes no sense"
+    },
+    {
+        "query_id": 173,
+        "query_type": "exact()",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 174,
+        "query_type": "exact()",
+        "expected": [
+            1388
+        ]
+    },
+    {
+        "query_id": 175,
+        "query_type": "exact()",
+        "expected": [
+            1576
+        ]
+    },
+    {
+        "query_id": 176,
+        "query_type": "exact()",
+        "expected": [
+            2005
+        ]
+    },
+    {
+        "query_id": 177,
+        "query_type": "exact()",
+        "expected": [
+            2006
+        ]
+    },
+    {
+        "query_id": 178,
+        "query_type": "exact()",
+        "expected": [
+            184
+        ]
+    },
+    {
+        "query_id": 1,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            2
+        ]
+    },
+    {
+        "query_id": 3,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            3
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            4
+        ]
+    },
+    {
+        "query_id": 5,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            5
+        ]
+    },
+    {
+        "query_id": 6,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            33
+        ]
+    },
+    {
+        "query_id": 7,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            34
+        ]
+    },
+    {
+        "query_id": 8,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            35
+        ]
+    },
+    {
+        "query_id": 9,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            36
+        ]
+    },
+    {
+        "query_id": 10,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            37
+        ]
+    },
+    {
+        "query_id": 11,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            72
+        ]
+    },
+    {
+        "query_id": 12,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            73
+        ]
+    },
+    {
+        "query_id": 13,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            74
+        ]
+    },
+    {
+        "query_id": 14,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            75
+        ]
+    },
+    {
+        "query_id": 15,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            78
+        ]
+    },
+    {
+        "query_id": 16,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            97
+        ]
+    },
+    {
+        "query_id": 17,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            98
+        ]
+    },
+    {
+        "query_id": 18,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            99
+        ]
+    },
+    {
+        "query_id": 19,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            100
+        ]
+    },
+    {
+        "query_id": 20,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            101
+        ]
+    },
+    {
+        "query_id": 21,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            121,
+            122
+        ]
+    },
+    {
+        "query_id": 22,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            121,
+            122
+        ]
+    },
+    {
+        "query_id": 23,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            123,
+            124
+        ]
+    },
+    {
+        "query_id": 24,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            123,
+            124
+        ]
+    },
+    {
+        "query_id": 25,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            125,
+            130
+        ]
+    },
+    {
+        "query_id": 26,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            179,
+            498,
+            1549
+        ]
+    },
+    {
+        "query_id": 27,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            180,
+            1552,
+            498
+        ]
+    },
+    {
+        "query_id": 28,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            498,
+            181,
+            1551
+        ]
+    },
+    {
+        "query_id": 29,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            182,
+            1550,
+            498
+        ]
+    },
+    {
+        "query_id": 30,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            498,
+            183
+        ]
+    },
+    {
+        "query_id": 31,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            536,
+            263
+        ]
+    },
+    {
+        "query_id": 32,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            536,
+            264
+        ]
+    },
+    {
+        "query_id": 33,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            265
+        ]
+    },
+    {
+        "query_id": 34,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            266,
+            1056,
+            1058,
+            1028,
+            1057
+        ]
+    },
+    {
+        "query_id": 35,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            606,
+            267
+        ]
+    },
+    {
+        "query_id": 36,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            297
+        ]
+    },
+    {
+        "query_id": 37,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            298
+        ]
+    },
+    {
+        "query_id": 38,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            656,
+            1055,
+            299,
+            1025
+        ]
+    },
+    {
+        "query_id": 39,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1539,
+            300
+        ]
+    },
+    {
+        "query_id": 40,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            301
+        ]
+    },
+    {
+        "query_id": 41,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            302,
+            1063,
+            590
+        ]
+    },
+    {
+        "query_id": 42,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            945,
+            303,
+            795
+        ]
+    },
+    {
+        "query_id": 43,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            319
+        ]
+    },
+    {
+        "query_id": 44,
+        "query_type": "exact(ELE STE)",
+        "expected": "element: bad valence on B having 4 drawn bonds, charge 3, and 0 radical electrons"
+    },
+    {
+        "query_id": 45,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            322
+        ]
+    },
+    {
+        "query_id": 46,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            323
+        ]
+    },
+    {
+        "query_id": 47,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 2"
+    },
+    {
+        "query_id": 48,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 49,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 50,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 51,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            376
+        ]
+    },
+    {
+        "query_id": 52,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #0 makes no sense"
+    },
+    {
+        "query_id": 53,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #30 makes no sense"
+    },
+    {
+        "query_id": 54,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            392,
+            722,
+            721
+        ]
+    },
+    {
+        "query_id": 55,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            393,
+            394
+        ]
+    },
+    {
+        "query_id": 56,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            393,
+            394
+        ]
+    },
+    {
+        "query_id": 57,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            398,
+            395,
+            397,
+            396
+        ]
+    },
+    {
+        "query_id": 58,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #3 makes no sense"
+    },
+    {
+        "query_id": 59,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            430
+        ]
+    },
+    {
+        "query_id": 60,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            431
+        ]
+    },
+    {
+        "query_id": 61,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            432
+        ]
+    },
+    {
+        "query_id": 62,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            433
+        ]
+    },
+    {
+        "query_id": 63,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            439
+        ]
+    },
+    {
+        "query_id": 64,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            440,
+            603
+        ]
+    },
+    {
+        "query_id": 65,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            441
+        ]
+    },
+    {
+        "query_id": 66,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            442
+        ]
+    },
+    {
+        "query_id": 67,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            443
+        ]
+    },
+    {
+        "query_id": 68,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: stereo types of non-opposite bonds match near atom 30"
+    },
+    {
+        "query_id": 69,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 0"
+    },
+    {
+        "query_id": 70,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: directions of opposite stereo bonds do not match near atom 0"
+    },
+    {
+        "query_id": 71,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+    },
+    {
+        "query_id": 72,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+    },
+    {
+        "query_id": 73,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #2 makes no sense"
+    },
+    {
+        "query_id": 74,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 1"
+    },
+    {
+        "query_id": 75,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: 2 hydrogens near stereocenter 8"
+    },
+    {
+        "query_id": 76,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 77,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 78,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            794
+        ]
+    },
+    {
+        "query_id": 79,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            795
+        ]
+    },
+    {
+        "query_id": 80,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            796
+        ]
+    },
+    {
+        "query_id": 81,
+        "query_type": "exact(ELE STE)",
+        "expected": "element: bad valence on H having 3 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 82,
+        "query_type": "exact(ELE STE)",
+        "expected": "element: bad valence on H having 2 drawn bonds, charge -1, and 0 radical electrons"
+    },
+    {
+        "query_id": 83,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            832,
+            794,
+            795,
+            796,
+            810,
+            812,
+            819,
+            822,
+            825
+        ]
+    },
+    {
+        "query_id": 84,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            833,
+            794,
+            795,
+            796,
+            810,
+            812,
+            819,
+            822,
+            825
+        ]
+    },
+    {
+        "query_id": 85,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            834,
+            794
+        ]
+    },
+    {
+        "query_id": 86,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            835,
+            794
+        ]
+    },
+    {
+        "query_id": 87,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            836,
+            794
+        ]
+    },
+    {
+        "query_id": 88,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            936,
+            938
+        ]
+    },
+    {
+        "query_id": 89,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            937,
+            939,
+            940,
+            315
+        ]
+    },
+    {
+        "query_id": 90,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            315,
+            937,
+            939,
+            940
+        ]
+    },
+    {
+        "query_id": 91,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            936,
+            938
+        ]
+    },
+    {
+        "query_id": 92,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            315,
+            937,
+            939,
+            940
+        ]
+    },
+    {
+        "query_id": 93,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #19 makes no sense"
+    },
+    {
+        "query_id": 94,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            957
+        ]
+    },
+    {
+        "query_id": 95,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: 2 hydrogens near stereocenter 1"
+    },
+    {
+        "query_id": 96,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 97,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 98,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            299,
+            656,
+            1025,
+            1055
+        ]
+    },
+    {
+        "query_id": 99,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            509,
+            1026
+        ]
+    },
+    {
+        "query_id": 100,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1027
+        ]
+    },
+    {
+        "query_id": 101,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1028,
+            1057,
+            266,
+            1056,
+            1058
+        ]
+    },
+    {
+        "query_id": 102,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1029
+        ]
+    },
+    {
+        "query_id": 103,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            656,
+            1055,
+            299,
+            1025
+        ]
+    },
+    {
+        "query_id": 104,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1028,
+            1057,
+            266,
+            1056,
+            1058
+        ]
+    },
+    {
+        "query_id": 105,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            266,
+            1056,
+            1058,
+            1028,
+            1057
+        ]
+    },
+    {
+        "query_id": 106,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1028,
+            1057,
+            266,
+            1056,
+            1058
+        ]
+    },
+    {
+        "query_id": 107,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1059,
+            1061,
+            1621,
+            1624,
+            1629,
+            1060,
+            1062,
+            1623,
+            1625
+        ]
+    },
+    {
+        "query_id": 108,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 109,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1090,
+            1092,
+            1091
+        ]
+    },
+    {
+        "query_id": 110,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1091,
+            1090,
+            1092
+        ]
+    },
+    {
+        "query_id": 111,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1090,
+            1092,
+            1091
+        ]
+    },
+    {
+        "query_id": 112,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1094,
+            1093,
+            1095
+        ]
+    },
+    {
+        "query_id": 113,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1131
+        ]
+    },
+    {
+        "query_id": 114,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #18 makes no sense"
+    },
+    {
+        "query_id": 115,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #2 makes no sense"
+    },
+    {
+        "query_id": 116,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 117,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            586,
+            1136
+        ]
+    },
+    {
+        "query_id": 118,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1137,
+            586
+        ]
+    },
+    {
+        "query_id": 119,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1233
+        ]
+    },
+    {
+        "query_id": 120,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            510,
+            1234
+        ]
+    },
+    {
+        "query_id": 121,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            510,
+            1237,
+            1235
+        ]
+    },
+    {
+        "query_id": 122,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1236,
+            510
+        ]
+    },
+    {
+        "query_id": 123,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1235,
+            510,
+            1237
+        ]
+    },
+    {
+        "query_id": 124,
+        "query_type": "exact(ELE STE)",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge 0, and 1 radical electrons"
+    },
+    {
+        "query_id": 125,
+        "query_type": "exact(ELE STE)",
+        "expected": "element: bad valence on C having 4 drawn bonds, charge -1, and 1 radical electrons"
+    },
+    {
+        "query_id": 126,
+        "query_type": "exact(ELE STE)",
+        "expected": "element: bad valence on C having 6 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 127,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 128,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1313
+        ]
+    },
+    {
+        "query_id": 129,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1314
+        ]
+    },
+    {
+        "query_id": 130,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1315
+        ]
+    },
+    {
+        "query_id": 131,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1316
+        ]
+    },
+    {
+        "query_id": 132,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1317
+        ]
+    },
+    {
+        "query_id": 133,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            566,
+            1506
+        ]
+    },
+    {
+        "query_id": 134,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            566,
+            1507
+        ]
+    },
+    {
+        "query_id": 135,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            566,
+            1508
+        ]
+    },
+    {
+        "query_id": 136,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1509,
+            566
+        ]
+    },
+    {
+        "query_id": 137,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1510,
+            566
+        ]
+    },
+    {
+        "query_id": 138,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1553
+        ]
+    },
+    {
+        "query_id": 139,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1554
+        ]
+    },
+    {
+        "query_id": 140,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1555
+        ]
+    },
+    {
+        "query_id": 141,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1556
+        ]
+    },
+    {
+        "query_id": 142,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1557
+        ]
+    },
+    {
+        "query_id": 143,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1605
+        ]
+    },
+    {
+        "query_id": 144,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1607,
+            1606
+        ]
+    },
+    {
+        "query_id": 145,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1607,
+            1606
+        ]
+    },
+    {
+        "query_id": 146,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1608,
+            1628
+        ]
+    },
+    {
+        "query_id": 147,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1609
+        ]
+    },
+    {
+        "query_id": 148,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1638
+        ]
+    },
+    {
+        "query_id": 149,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1229,
+            1639
+        ]
+    },
+    {
+        "query_id": 150,
+        "query_type": "exact(ELE STE)",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 151,
+        "query_type": "exact(ELE STE)",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge -1, and 0 radical electrons"
+    },
+    {
+        "query_id": 152,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1191,
+            1199,
+            1644
+        ]
+    },
+    {
+        "query_id": 153,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            506,
+            1683
+        ]
+    },
+    {
+        "query_id": 154,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            506,
+            1684
+        ]
+    },
+    {
+        "query_id": 155,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            506,
+            1685
+        ]
+    },
+    {
+        "query_id": 156,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            536,
+            1686,
+            1687
+        ]
+    },
+    {
+        "query_id": 157,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            536,
+            1686,
+            1687
+        ]
+    },
+    {
+        "query_id": 158,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            263,
+            536
+        ]
+    },
+    {
+        "query_id": 159,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1721
+        ]
+    },
+    {
+        "query_id": 160,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1722
+        ]
+    },
+    {
+        "query_id": 161,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1723,
+            1736,
+            1724,
+            1737
+        ]
+    },
+    {
+        "query_id": 162,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1723,
+            1736,
+            1724,
+            1737
+        ]
+    },
+    {
+        "query_id": 163,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1725,
+            1738,
+            1726,
+            1739
+        ]
+    },
+    {
+        "query_id": 164,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1747,
+            1749,
+            1751,
+            1753,
+            1755,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754,
+            1744,
+            1745
+        ]
+    },
+    {
+        "query_id": 165,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1745,
+            1747,
+            1749,
+            1751,
+            1753,
+            1755,
+            1744,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754
+        ]
+    },
+    {
+        "query_id": 166,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1745,
+            1747,
+            1749,
+            1751,
+            1753,
+            1755,
+            1744,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754
+        ]
+    },
+    {
+        "query_id": 167,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1745,
+            1747,
+            1749,
+            1751,
+            1753,
+            1755,
+            1744,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754
+        ]
+    },
+    {
+        "query_id": 168,
+        "query_type": "exact(ELE STE)",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 0"
+    },
+    {
+        "query_id": 169,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #4 makes no sense"
+    },
+    {
+        "query_id": 170,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 171,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 172,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #4 makes no sense"
+    },
+    {
+        "query_id": 173,
+        "query_type": "exact(ELE STE)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 174,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1388,
+            517
+        ]
+    },
+    {
+        "query_id": 175,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            1576
+        ]
+    },
+    {
+        "query_id": 176,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            2005
+        ]
+    },
+    {
+        "query_id": 177,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            2006
+        ]
+    },
+    {
+        "query_id": 178,
+        "query_type": "exact(ELE STE)",
+        "expected": [
+            184,
+            498
+        ]
+    },
+    {
+        "query_id": 1,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            2
+        ]
+    },
+    {
+        "query_id": 3,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            3
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            4
+        ]
+    },
+    {
+        "query_id": 5,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            5
+        ]
+    },
+    {
+        "query_id": 6,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            33
+        ]
+    },
+    {
+        "query_id": 7,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            34
+        ]
+    },
+    {
+        "query_id": 8,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            35
+        ]
+    },
+    {
+        "query_id": 9,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            36
+        ]
+    },
+    {
+        "query_id": 10,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            37
+        ]
+    },
+    {
+        "query_id": 11,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            72
+        ]
+    },
+    {
+        "query_id": 12,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            73
+        ]
+    },
+    {
+        "query_id": 13,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            74
+        ]
+    },
+    {
+        "query_id": 14,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            75
+        ]
+    },
+    {
+        "query_id": 15,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            78
+        ]
+    },
+    {
+        "query_id": 16,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            97
+        ]
+    },
+    {
+        "query_id": 17,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            98,
+            102
+        ]
+    },
+    {
+        "query_id": 18,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            99
+        ]
+    },
+    {
+        "query_id": 19,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            100
+        ]
+    },
+    {
+        "query_id": 20,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            101
+        ]
+    },
+    {
+        "query_id": 21,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            121
+        ]
+    },
+    {
+        "query_id": 22,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            122
+        ]
+    },
+    {
+        "query_id": 23,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            123
+        ]
+    },
+    {
+        "query_id": 24,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            124
+        ]
+    },
+    {
+        "query_id": 25,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            125,
+            130
+        ]
+    },
+    {
+        "query_id": 26,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184
+        ]
+    },
+    {
+        "query_id": 27,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184
+        ]
+    },
+    {
+        "query_id": 28,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184
+        ]
+    },
+    {
+        "query_id": 29,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184
+        ]
+    },
+    {
+        "query_id": 30,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184
+        ]
+    },
+    {
+        "query_id": 31,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            263,
+            264
+        ]
+    },
+    {
+        "query_id": 32,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            263,
+            264
+        ]
+    },
+    {
+        "query_id": 33,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            265
+        ]
+    },
+    {
+        "query_id": 34,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            266
+        ]
+    },
+    {
+        "query_id": 35,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            267
+        ]
+    },
+    {
+        "query_id": 36,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            297
+        ]
+    },
+    {
+        "query_id": 37,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            298
+        ]
+    },
+    {
+        "query_id": 38,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            299,
+            1261
+        ]
+    },
+    {
+        "query_id": 39,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            300,
+            1537,
+            1538,
+            1539,
+            1540
+        ]
+    },
+    {
+        "query_id": 40,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            301
+        ]
+    },
+    {
+        "query_id": 41,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            302
+        ]
+    },
+    {
+        "query_id": 42,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            303,
+            945
+        ]
+    },
+    {
+        "query_id": 43,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            319
+        ]
+    },
+    {
+        "query_id": 44,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "element: bad valence on B having 4 drawn bonds, charge 3, and 0 radical electrons"
+    },
+    {
+        "query_id": 45,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            322
+        ]
+    },
+    {
+        "query_id": 46,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            323
+        ]
+    },
+    {
+        "query_id": 47,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 2"
+    },
+    {
+        "query_id": 48,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 49,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 50,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 51,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            376
+        ]
+    },
+    {
+        "query_id": 52,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #0 makes no sense"
+    },
+    {
+        "query_id": 53,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #30 makes no sense"
+    },
+    {
+        "query_id": 54,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            392
+        ]
+    },
+    {
+        "query_id": 55,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            393
+        ]
+    },
+    {
+        "query_id": 56,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            394
+        ]
+    },
+    {
+        "query_id": 57,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            395,
+            397
+        ]
+    },
+    {
+        "query_id": 58,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #3 makes no sense"
+    },
+    {
+        "query_id": 59,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            430,
+            437
+        ]
+    },
+    {
+        "query_id": 60,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            431
+        ]
+    },
+    {
+        "query_id": 61,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            432
+        ]
+    },
+    {
+        "query_id": 62,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            433
+        ]
+    },
+    {
+        "query_id": 63,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            439,
+            440,
+            441
+        ]
+    },
+    {
+        "query_id": 64,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            439,
+            440,
+            441
+        ]
+    },
+    {
+        "query_id": 65,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            439,
+            440,
+            441
+        ]
+    },
+    {
+        "query_id": 66,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            442,
+            443,
+            444
+        ]
+    },
+    {
+        "query_id": 67,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            442,
+            443,
+            444
+        ]
+    },
+    {
+        "query_id": 68,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: stereo types of non-opposite bonds match near atom 30"
+    },
+    {
+        "query_id": 69,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 0"
+    },
+    {
+        "query_id": 70,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: directions of opposite stereo bonds do not match near atom 0"
+    },
+    {
+        "query_id": 71,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+    },
+    {
+        "query_id": 72,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+    },
+    {
+        "query_id": 73,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #2 makes no sense"
+    },
+    {
+        "query_id": 74,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 1"
+    },
+    {
+        "query_id": 75,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: 2 hydrogens near stereocenter 8"
+    },
+    {
+        "query_id": 76,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 77,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 81,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "element: bad valence on H having 3 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 82,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "element: bad valence on H having 2 drawn bonds, charge -1, and 0 radical electrons"
+    },
+    {
+        "query_id": 83,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            832
+        ]
+    },
+    {
+        "query_id": 84,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            833
+        ]
+    },
+    {
+        "query_id": 85,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            834
+        ]
+    },
+    {
+        "query_id": 86,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            835
+        ]
+    },
+    {
+        "query_id": 87,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            836
+        ]
+    },
+    {
+        "query_id": 88,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            936,
+            937,
+            938,
+            939
+        ]
+    },
+    {
+        "query_id": 89,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            939,
+            936,
+            937,
+            938
+        ]
+    },
+    {
+        "query_id": 90,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            315,
+            936,
+            937,
+            938,
+            939,
+            940
+        ]
+    },
+    {
+        "query_id": 91,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            936,
+            937,
+            938,
+            939
+        ]
+    },
+    {
+        "query_id": 92,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            936,
+            937,
+            938,
+            939
+        ]
+    },
+    {
+        "query_id": 93,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #19 makes no sense"
+    },
+    {
+        "query_id": 94,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            957
+        ]
+    },
+    {
+        "query_id": 95,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: 2 hydrogens near stereocenter 1"
+    },
+    {
+        "query_id": 96,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 97,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 98,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1025
+        ]
+    },
+    {
+        "query_id": 99,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1026
+        ]
+    },
+    {
+        "query_id": 100,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1027
+        ]
+    },
+    {
+        "query_id": 101,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1028,
+            1097
+        ]
+    },
+    {
+        "query_id": 102,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1029
+        ]
+    },
+    {
+        "query_id": 103,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1055
+        ]
+    },
+    {
+        "query_id": 104,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1056,
+            1057
+        ]
+    },
+    {
+        "query_id": 105,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1056,
+            1057
+        ]
+    },
+    {
+        "query_id": 106,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1058
+        ]
+    },
+    {
+        "query_id": 107,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1059,
+            1062
+        ]
+    },
+    {
+        "query_id": 108,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 109,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1090
+        ]
+    },
+    {
+        "query_id": 110,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1091
+        ]
+    },
+    {
+        "query_id": 111,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1092
+        ]
+    },
+    {
+        "query_id": 112,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1093
+        ]
+    },
+    {
+        "query_id": 113,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1131
+        ]
+    },
+    {
+        "query_id": 114,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #18 makes no sense"
+    },
+    {
+        "query_id": 115,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #2 makes no sense"
+    },
+    {
+        "query_id": 116,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 117,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1136,
+            1137
+        ]
+    },
+    {
+        "query_id": 118,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1136,
+            1137
+        ]
+    },
+    {
+        "query_id": 119,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1233
+        ]
+    },
+    {
+        "query_id": 120,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1234,
+            1235
+        ]
+    },
+    {
+        "query_id": 121,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1234,
+            1235
+        ]
+    },
+    {
+        "query_id": 122,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1236,
+            1237
+        ]
+    },
+    {
+        "query_id": 123,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1236,
+            1237
+        ]
+    },
+    {
+        "query_id": 124,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge 0, and 1 radical electrons"
+    },
+    {
+        "query_id": 125,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "element: bad valence on C having 4 drawn bonds, charge -1, and 1 radical electrons"
+    },
+    {
+        "query_id": 126,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "element: bad valence on C having 6 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 127,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 128,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1313,
+            1314
+        ]
+    },
+    {
+        "query_id": 129,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1313,
+            1314
+        ]
+    },
+    {
+        "query_id": 130,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1315,
+            1316
+        ]
+    },
+    {
+        "query_id": 131,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1315,
+            1316
+        ]
+    },
+    {
+        "query_id": 132,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1317,
+            1318,
+            1319,
+            1320,
+            1321,
+            1322
+        ]
+    },
+    {
+        "query_id": 133,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1506,
+            1507,
+            1508,
+            1509,
+            1510,
+            1511
+        ]
+    },
+    {
+        "query_id": 134,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1510,
+            1511,
+            1506,
+            1507,
+            1508,
+            1509
+        ]
+    },
+    {
+        "query_id": 135,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1506,
+            1507,
+            1508,
+            1509,
+            1510,
+            1511
+        ]
+    },
+    {
+        "query_id": 136,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1506,
+            1507,
+            1508,
+            1509,
+            1510,
+            1511
+        ]
+    },
+    {
+        "query_id": 137,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1506,
+            1507,
+            1508,
+            1509,
+            1510,
+            1511
+        ]
+    },
+    {
+        "query_id": 138,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1553
+        ]
+    },
+    {
+        "query_id": 139,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1554
+        ]
+    },
+    {
+        "query_id": 140,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1555
+        ]
+    },
+    {
+        "query_id": 141,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1556
+        ]
+    },
+    {
+        "query_id": 142,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1557
+        ]
+    },
+    {
+        "query_id": 143,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1605
+        ]
+    },
+    {
+        "query_id": 144,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1606,
+            1607
+        ]
+    },
+    {
+        "query_id": 145,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1606,
+            1607
+        ]
+    },
+    {
+        "query_id": 146,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1608,
+            1628
+        ]
+    },
+    {
+        "query_id": 147,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1609
+        ]
+    },
+    {
+        "query_id": 148,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1638
+        ]
+    },
+    {
+        "query_id": 149,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1639,
+            1640,
+            1644
+        ]
+    },
+    {
+        "query_id": 150,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 151,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge -1, and 0 radical electrons"
+    },
+    {
+        "query_id": 152,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1639,
+            1640,
+            1644
+        ]
+    },
+    {
+        "query_id": 153,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1683
+        ]
+    },
+    {
+        "query_id": 154,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1684
+        ]
+    },
+    {
+        "query_id": 155,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1685
+        ]
+    },
+    {
+        "query_id": 156,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1686,
+            1687
+        ]
+    },
+    {
+        "query_id": 157,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1686,
+            1687
+        ]
+    },
+    {
+        "query_id": 158,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            263,
+            264
+        ]
+    },
+    {
+        "query_id": 159,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1721,
+            1722
+        ]
+    },
+    {
+        "query_id": 160,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1721,
+            1722
+        ]
+    },
+    {
+        "query_id": 161,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1723,
+            1724,
+            1725,
+            1726,
+            1727,
+            1728,
+            1729,
+            1730,
+            1731,
+            1732,
+            1733,
+            1734,
+            1735,
+            1736,
+            1737,
+            1738,
+            1739,
+            1740,
+            1741,
+            1742,
+            1743
+        ]
+    },
+    {
+        "query_id": 162,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1724,
+            1725,
+            1726,
+            1727,
+            1723,
+            1728,
+            1729,
+            1730,
+            1731,
+            1732,
+            1733,
+            1734,
+            1735,
+            1736,
+            1737,
+            1738,
+            1739,
+            1740,
+            1741,
+            1742,
+            1743
+        ]
+    },
+    {
+        "query_id": 163,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1730,
+            1731,
+            1732,
+            1733,
+            1734,
+            1735,
+            1736,
+            1737,
+            1738,
+            1739,
+            1740,
+            1741,
+            1742,
+            1743,
+            1723,
+            1724,
+            1725,
+            1726,
+            1727,
+            1728,
+            1729
+        ]
+    },
+    {
+        "query_id": 164,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1744,
+            1748,
+            1749,
+            1751,
+            1755
+        ]
+    },
+    {
+        "query_id": 165,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1745
+        ]
+    },
+    {
+        "query_id": 166,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1746
+        ]
+    },
+    {
+        "query_id": 167,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1747
+        ]
+    },
+    {
+        "query_id": 168,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 0"
+    },
+    {
+        "query_id": 169,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #4 makes no sense"
+    },
+    {
+        "query_id": 170,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 171,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 172,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #4 makes no sense"
+    },
+    {
+        "query_id": 173,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 174,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1387,
+            1388
+        ]
+    },
+    {
+        "query_id": 175,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            1576
+        ]
+    },
+    {
+        "query_id": 176,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            2005
+        ]
+    },
+    {
+        "query_id": 177,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            2006
+        ]
+    },
+    {
+        "query_id": 178,
+        "query_type": "exact(MAS FRA 0.1)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184
+        ]
+    },
+    {
+        "query_id": 1,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1
+        ]
+    },
+    {
+        "query_id": 2,
+        "query_type": "exact(NONE)",
+        "expected": [
+            2
+        ]
+    },
+    {
+        "query_id": 3,
+        "query_type": "exact(NONE)",
+        "expected": [
+            3
+        ]
+    },
+    {
+        "query_id": 4,
+        "query_type": "exact(NONE)",
+        "expected": [
+            4
+        ]
+    },
+    {
+        "query_id": 5,
+        "query_type": "exact(NONE)",
+        "expected": [
+            5
+        ]
+    },
+    {
+        "query_id": 6,
+        "query_type": "exact(NONE)",
+        "expected": [
+            33
+        ]
+    },
+    {
+        "query_id": 7,
+        "query_type": "exact(NONE)",
+        "expected": [
+            34
+        ]
+    },
+    {
+        "query_id": 8,
+        "query_type": "exact(NONE)",
+        "expected": [
+            35
+        ]
+    },
+    {
+        "query_id": 9,
+        "query_type": "exact(NONE)",
+        "expected": [
+            36
+        ]
+    },
+    {
+        "query_id": 10,
+        "query_type": "exact(NONE)",
+        "expected": [
+            37
+        ]
+    },
+    {
+        "query_id": 11,
+        "query_type": "exact(NONE)",
+        "expected": [
+            72
+        ]
+    },
+    {
+        "query_id": 12,
+        "query_type": "exact(NONE)",
+        "expected": [
+            73
+        ]
+    },
+    {
+        "query_id": 13,
+        "query_type": "exact(NONE)",
+        "expected": [
+            74
+        ]
+    },
+    {
+        "query_id": 14,
+        "query_type": "exact(NONE)",
+        "expected": [
+            75
+        ]
+    },
+    {
+        "query_id": 15,
+        "query_type": "exact(NONE)",
+        "expected": [
+            78
+        ]
+    },
+    {
+        "query_id": 16,
+        "query_type": "exact(NONE)",
+        "expected": [
+            97
+        ]
+    },
+    {
+        "query_id": 17,
+        "query_type": "exact(NONE)",
+        "expected": [
+            98,
+            102
+        ]
+    },
+    {
+        "query_id": 18,
+        "query_type": "exact(NONE)",
+        "expected": [
+            99
+        ]
+    },
+    {
+        "query_id": 19,
+        "query_type": "exact(NONE)",
+        "expected": [
+            100
+        ]
+    },
+    {
+        "query_id": 20,
+        "query_type": "exact(NONE)",
+        "expected": [
+            101
+        ]
+    },
+    {
+        "query_id": 21,
+        "query_type": "exact(NONE)",
+        "expected": [
+            121,
+            122
+        ]
+    },
+    {
+        "query_id": 22,
+        "query_type": "exact(NONE)",
+        "expected": [
+            121,
+            122
+        ]
+    },
+    {
+        "query_id": 23,
+        "query_type": "exact(NONE)",
+        "expected": [
+            123,
+            124
+        ]
+    },
+    {
+        "query_id": 24,
+        "query_type": "exact(NONE)",
+        "expected": [
+            123,
+            124
+        ]
+    },
+    {
+        "query_id": 25,
+        "query_type": "exact(NONE)",
+        "expected": [
+            125,
+            130
+        ]
+    },
+    {
+        "query_id": 26,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1549,
+            181,
+            182,
+            183,
+            184,
+            498,
+            1550,
+            1551,
+            1552,
+            179,
+            180
+        ]
+    },
+    {
+        "query_id": 27,
+        "query_type": "exact(NONE)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184,
+            498,
+            1549,
+            1550,
+            1551,
+            1552
+        ]
+    },
+    {
+        "query_id": 28,
+        "query_type": "exact(NONE)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184,
+            498,
+            1549,
+            1550,
+            1551,
+            1552
+        ]
+    },
+    {
+        "query_id": 29,
+        "query_type": "exact(NONE)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184,
+            498,
+            1549,
+            1550,
+            1551,
+            1552
+        ]
+    },
+    {
+        "query_id": 30,
+        "query_type": "exact(NONE)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184,
+            498,
+            1549,
+            1550,
+            1551,
+            1552
+        ]
+    },
+    {
+        "query_id": 31,
+        "query_type": "exact(NONE)",
+        "expected": [
+            263,
+            264,
+            536
+        ]
+    },
+    {
+        "query_id": 32,
+        "query_type": "exact(NONE)",
+        "expected": [
+            263,
+            536,
+            264
+        ]
+    },
+    {
+        "query_id": 33,
+        "query_type": "exact(NONE)",
+        "expected": [
+            265
+        ]
+    },
+    {
+        "query_id": 34,
+        "query_type": "exact(NONE)",
+        "expected": [
+            266,
+            1056,
+            1058,
+            1094,
+            1096,
+            1129,
+            1028,
+            1057,
+            1093,
+            1095,
+            1097
+        ]
+    },
+    {
+        "query_id": 35,
+        "query_type": "exact(NONE)",
+        "expected": [
+            606,
+            267
+        ]
+    },
+    {
+        "query_id": 36,
+        "query_type": "exact(NONE)",
+        "expected": [
+            297
+        ]
+    },
+    {
+        "query_id": 37,
+        "query_type": "exact(NONE)",
+        "expected": [
+            298
+        ]
+    },
+    {
+        "query_id": 38,
+        "query_type": "exact(NONE)",
+        "expected": [
+            656,
+            1055,
+            299,
+            1025,
+            1261
+        ]
+    },
+    {
+        "query_id": 39,
+        "query_type": "exact(NONE)",
+        "expected": [
+            300,
+            1538,
+            1540,
+            1537,
+            1539
+        ]
+    },
+    {
+        "query_id": 40,
+        "query_type": "exact(NONE)",
+        "expected": [
+            941,
+            301,
+            943
+        ]
+    },
+    {
+        "query_id": 41,
+        "query_type": "exact(NONE)",
+        "expected": [
+            302,
+            1063,
+            590
+        ]
+    },
+    {
+        "query_id": 42,
+        "query_type": "exact(NONE)",
+        "expected": [
+            590,
+            1101,
+            303,
+            945,
+            1106,
+            795
+        ]
+    },
+    {
+        "query_id": 43,
+        "query_type": "exact(NONE)",
+        "expected": [
+            319
+        ]
+    },
+    {
+        "query_id": 44,
+        "query_type": "exact(NONE)",
+        "expected": "element: bad valence on B having 4 drawn bonds, charge 3, and 0 radical electrons"
+    },
+    {
+        "query_id": 45,
+        "query_type": "exact(NONE)",
+        "expected": [
+            322
+        ]
+    },
+    {
+        "query_id": 46,
+        "query_type": "exact(NONE)",
+        "expected": [
+            323
+        ]
+    },
+    {
+        "query_id": 47,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 2"
+    },
+    {
+        "query_id": 48,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 49,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 50,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #1 makes no sense"
+    },
+    {
+        "query_id": 51,
+        "query_type": "exact(NONE)",
+        "expected": [
+            376
+        ]
+    },
+    {
+        "query_id": 52,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #0 makes no sense"
+    },
+    {
+        "query_id": 53,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #30 makes no sense"
+    },
+    {
+        "query_id": 54,
+        "query_type": "exact(NONE)",
+        "expected": [
+            720,
+            722,
+            392,
+            721
+        ]
+    },
+    {
+        "query_id": 55,
+        "query_type": "exact(NONE)",
+        "expected": [
+            739,
+            393,
+            394
+        ]
+    },
+    {
+        "query_id": 56,
+        "query_type": "exact(NONE)",
+        "expected": [
+            394,
+            393,
+            739
+        ]
+    },
+    {
+        "query_id": 57,
+        "query_type": "exact(NONE)",
+        "expected": [
+            395,
+            397,
+            739,
+            396,
+            398
+        ]
+    },
+    {
+        "query_id": 58,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #3 makes no sense"
+    },
+    {
+        "query_id": 59,
+        "query_type": "exact(NONE)",
+        "expected": [
+            430,
+            765,
+            437
+        ]
+    },
+    {
+        "query_id": 60,
+        "query_type": "exact(NONE)",
+        "expected": [
+            435,
+            431
+        ]
+    },
+    {
+        "query_id": 61,
+        "query_type": "exact(NONE)",
+        "expected": [
+            432
+        ]
+    },
+    {
+        "query_id": 62,
+        "query_type": "exact(NONE)",
+        "expected": [
+            433
+        ]
+    },
+    {
+        "query_id": 63,
+        "query_type": "exact(NONE)",
+        "expected": [
+            440,
+            534,
+            439,
+            441,
+            603
+        ]
+    },
+    {
+        "query_id": 64,
+        "query_type": "exact(NONE)",
+        "expected": [
+            439,
+            441,
+            603,
+            440,
+            534
+        ]
+    },
+    {
+        "query_id": 65,
+        "query_type": "exact(NONE)",
+        "expected": [
+            440,
+            534,
+            439,
+            441,
+            603
+        ]
+    },
+    {
+        "query_id": 66,
+        "query_type": "exact(NONE)",
+        "expected": [
+            442,
+            444,
+            626,
+            443,
+            516
+        ]
+    },
+    {
+        "query_id": 67,
+        "query_type": "exact(NONE)",
+        "expected": [
+            443,
+            516,
+            442,
+            444,
+            626
+        ]
+    },
+    {
+        "query_id": 68,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: stereo types of non-opposite bonds match near atom 30"
+    },
+    {
+        "query_id": 69,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 0"
+    },
+    {
+        "query_id": 70,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: directions of opposite stereo bonds do not match near atom 0"
+    },
+    {
+        "query_id": 71,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+    },
+    {
+        "query_id": 72,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: stereo types of the opposite bonds mismatch near atom 0"
+    },
+    {
+        "query_id": 73,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #2 makes no sense"
+    },
+    {
+        "query_id": 74,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 1"
+    },
+    {
+        "query_id": 75,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: 2 hydrogens near stereocenter 8"
+    },
+    {
+        "query_id": 76,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 77,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 78,
+        "query_type": "exact(NONE)",
+        "expected": [
+            794,
+            822,
+            828,
+            830,
+            819,
+            825,
+            829,
+            831
+        ]
+    },
+    {
+        "query_id": 79,
+        "query_type": "exact(NONE)",
+        "expected": [
+            795
+        ]
+    },
+    {
+        "query_id": 80,
+        "query_type": "exact(NONE)",
+        "expected": [
+            796
+        ]
+    },
+    {
+        "query_id": 81,
+        "query_type": "exact(NONE)",
+        "expected": "element: bad valence on H having 3 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 82,
+        "query_type": "exact(NONE)",
+        "expected": "element: bad valence on H having 2 drawn bonds, charge -1, and 0 radical electrons"
+    },
+    {
+        "query_id": 83,
+        "query_type": "exact(NONE)",
+        "expected": [
+            832,
+            794,
+            812,
+            822,
+            828,
+            830,
+            810,
+            819,
+            825,
+            829,
+            831,
+            795,
+            796
+        ]
+    },
+    {
+        "query_id": 84,
+        "query_type": "exact(NONE)",
+        "expected": [
+            833,
+            828,
+            830,
+            794,
+            812,
+            822,
+            810,
+            819,
+            825,
+            829,
+            831,
+            795,
+            796
+        ]
+    },
+    {
+        "query_id": 85,
+        "query_type": "exact(NONE)",
+        "expected": [
+            834,
+            1215,
+            794,
+            812,
+            822,
+            828,
+            830,
+            810,
+            819,
+            825,
+            829,
+            831
+        ]
+    },
+    {
+        "query_id": 86,
+        "query_type": "exact(NONE)",
+        "expected": [
+            835,
+            1560,
+            794,
+            812,
+            822,
+            828,
+            830,
+            810,
+            819,
+            825,
+            829,
+            831
+        ]
+    },
+    {
+        "query_id": 87,
+        "query_type": "exact(NONE)",
+        "expected": [
+            836,
+            1216,
+            1560,
+            794,
+            812,
+            822,
+            828,
+            830,
+            810,
+            819,
+            825,
+            829,
+            831
+        ]
+    },
+    {
+        "query_id": 88,
+        "query_type": "exact(NONE)",
+        "expected": [
+            315,
+            936,
+            937,
+            938,
+            939,
+            940
+        ]
+    },
+    {
+        "query_id": 89,
+        "query_type": "exact(NONE)",
+        "expected": [
+            315,
+            936,
+            937,
+            938,
+            939,
+            940
+        ]
+    },
+    {
+        "query_id": 90,
+        "query_type": "exact(NONE)",
+        "expected": [
+            315,
+            936,
+            937,
+            938,
+            939,
+            940
+        ]
+    },
+    {
+        "query_id": 91,
+        "query_type": "exact(NONE)",
+        "expected": [
+            315,
+            937,
+            939,
+            936,
+            938,
+            940
+        ]
+    },
+    {
+        "query_id": 92,
+        "query_type": "exact(NONE)",
+        "expected": [
+            315,
+            937,
+            939,
+            936,
+            938,
+            940
+        ]
+    },
+    {
+        "query_id": 93,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #19 makes no sense"
+    },
+    {
+        "query_id": 94,
+        "query_type": "exact(NONE)",
+        "expected": [
+            706,
+            1238,
+            1240,
+            1849,
+            542,
+            957,
+            1239,
+            1241,
+            1928
+        ]
+    },
+    {
+        "query_id": 95,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: 2 hydrogens near stereocenter 1"
+    },
+    {
+        "query_id": 96,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #9 makes no sense"
+    },
+    {
+        "query_id": 97,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 98,
+        "query_type": "exact(NONE)",
+        "expected": [
+            656,
+            1055,
+            299,
+            1025,
+            1261
+        ]
+    },
+    {
+        "query_id": 99,
+        "query_type": "exact(NONE)",
+        "expected": [
+            509,
+            1026
+        ]
+    },
+    {
+        "query_id": 100,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1027
+        ]
+    },
+    {
+        "query_id": 101,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1028,
+            1057,
+            1093,
+            1095,
+            1097,
+            266,
+            1056,
+            1058,
+            1094,
+            1096,
+            1129
+        ]
+    },
+    {
+        "query_id": 102,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1029
+        ]
+    },
+    {
+        "query_id": 103,
+        "query_type": "exact(NONE)",
+        "expected": [
+            656,
+            1055,
+            299,
+            1025,
+            1261
+        ]
+    },
+    {
+        "query_id": 104,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1096,
+            1129,
+            1097,
+            266,
+            1056,
+            1058,
+            1094,
+            1028,
+            1057,
+            1093,
+            1095
+        ]
+    },
+    {
+        "query_id": 105,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1028,
+            1057,
+            1093,
+            1095,
+            1097,
+            266,
+            1056,
+            1058,
+            1094,
+            1096,
+            1129
+        ]
+    },
+    {
+        "query_id": 106,
+        "query_type": "exact(NONE)",
+        "expected": [
+            266,
+            1056,
+            1058,
+            1094,
+            1096,
+            1129,
+            1028,
+            1057,
+            1093,
+            1095,
+            1097
+        ]
+    },
+    {
+        "query_id": 107,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1060,
+            1062,
+            1621,
+            1622,
+            1623,
+            1624,
+            1625,
+            1629,
+            1059,
+            1061
+        ]
+    },
+    {
+        "query_id": 108,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 109,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1090,
+            1091,
+            1092
+        ]
+    },
+    {
+        "query_id": 110,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1090,
+            1091,
+            1092
+        ]
+    },
+    {
+        "query_id": 111,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1090,
+            1091,
+            1092
+        ]
+    },
+    {
+        "query_id": 112,
+        "query_type": "exact(NONE)",
+        "expected": [
+            266,
+            1028,
+            1056,
+            1057,
+            1058,
+            1093,
+            1095,
+            1097,
+            1094,
+            1096,
+            1129
+        ]
+    },
+    {
+        "query_id": 113,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1131
+        ]
+    },
+    {
+        "query_id": 114,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #18 makes no sense"
+    },
+    {
+        "query_id": 115,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #2 makes no sense"
+    },
+    {
+        "query_id": 116,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 117,
+        "query_type": "exact(NONE)",
+        "expected": [
+            586,
+            1137,
+            1136
+        ]
+    },
+    {
+        "query_id": 118,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1136,
+            586,
+            1137
+        ]
+    },
+    {
+        "query_id": 119,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1233
+        ]
+    },
+    {
+        "query_id": 120,
+        "query_type": "exact(NONE)",
+        "expected": [
+            510,
+            653,
+            1073,
+            1234,
+            1236,
+            496,
+            567,
+            1035,
+            1074,
+            1235,
+            1237
+        ]
+    },
+    {
+        "query_id": 121,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1237,
+            1236,
+            496,
+            567,
+            1035,
+            1074,
+            1235,
+            510,
+            653,
+            1073,
+            1234
+        ]
+    },
+    {
+        "query_id": 122,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1035,
+            1074,
+            1235,
+            1237,
+            510,
+            653,
+            1073,
+            1234,
+            1236,
+            496,
+            567
+        ]
+    },
+    {
+        "query_id": 123,
+        "query_type": "exact(NONE)",
+        "expected": [
+            510,
+            653,
+            1073,
+            1234,
+            1236,
+            496,
+            567,
+            1035,
+            1074,
+            1235,
+            1237
+        ]
+    },
+    {
+        "query_id": 124,
+        "query_type": "exact(NONE)",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge 0, and 1 radical electrons"
+    },
+    {
+        "query_id": 125,
+        "query_type": "exact(NONE)",
+        "expected": "element: bad valence on C having 4 drawn bonds, charge -1, and 1 radical electrons"
+    },
+    {
+        "query_id": 126,
+        "query_type": "exact(NONE)",
+        "expected": "element: bad valence on C having 6 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 127,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 128,
+        "query_type": "exact(NONE)",
+        "expected": [
+            568,
+            1314,
+            1313
+        ]
+    },
+    {
+        "query_id": 129,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1313,
+            568,
+            1314
+        ]
+    },
+    {
+        "query_id": 130,
+        "query_type": "exact(NONE)",
+        "expected": [
+            534,
+            1315,
+            1205,
+            1316
+        ]
+    },
+    {
+        "query_id": 131,
+        "query_type": "exact(NONE)",
+        "expected": [
+            534,
+            1315,
+            1205,
+            1316
+        ]
+    },
+    {
+        "query_id": 132,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1317,
+            1319,
+            1321,
+            1318,
+            1320,
+            1322
+        ]
+    },
+    {
+        "query_id": 133,
+        "query_type": "exact(NONE)",
+        "expected": [
+            566,
+            1507,
+            1506,
+            1508,
+            1509,
+            1510,
+            1511
+        ]
+    },
+    {
+        "query_id": 134,
+        "query_type": "exact(NONE)",
+        "expected": [
+            566,
+            1506,
+            1507,
+            1508,
+            1509,
+            1510,
+            1511
+        ]
+    },
+    {
+        "query_id": 135,
+        "query_type": "exact(NONE)",
+        "expected": [
+            566,
+            1506,
+            1507,
+            1508,
+            1509,
+            1510,
+            1511
+        ]
+    },
+    {
+        "query_id": 136,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1506,
+            1507,
+            1508,
+            1509,
+            1510,
+            1511,
+            566
+        ]
+    },
+    {
+        "query_id": 137,
+        "query_type": "exact(NONE)",
+        "expected": [
+            566,
+            1506,
+            1507,
+            1508,
+            1509,
+            1510,
+            1511
+        ]
+    },
+    {
+        "query_id": 138,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1553
+        ]
+    },
+    {
+        "query_id": 139,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1554
+        ]
+    },
+    {
+        "query_id": 140,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1555
+        ]
+    },
+    {
+        "query_id": 141,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1556
+        ]
+    },
+    {
+        "query_id": 142,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1557
+        ]
+    },
+    {
+        "query_id": 143,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1605
+        ]
+    },
+    {
+        "query_id": 144,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1606,
+            1607
+        ]
+    },
+    {
+        "query_id": 145,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1606,
+            1607
+        ]
+    },
+    {
+        "query_id": 146,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1608,
+            1628
+        ]
+    },
+    {
+        "query_id": 147,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1609
+        ]
+    },
+    {
+        "query_id": 148,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1638
+        ]
+    },
+    {
+        "query_id": 149,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1191,
+            1193,
+            1199,
+            1229,
+            1639,
+            1640,
+            1644
+        ]
+    },
+    {
+        "query_id": 150,
+        "query_type": "exact(NONE)",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons"
+    },
+    {
+        "query_id": 151,
+        "query_type": "exact(NONE)",
+        "expected": "element: bad valence on C having 5 drawn bonds, charge -1, and 0 radical electrons"
+    },
+    {
+        "query_id": 152,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1191,
+            1193,
+            1199,
+            1229,
+            1639,
+            1640,
+            1644
+        ]
+    },
+    {
+        "query_id": 153,
+        "query_type": "exact(NONE)",
+        "expected": [
+            506,
+            1683,
+            1684,
+            1685
+        ]
+    },
+    {
+        "query_id": 154,
+        "query_type": "exact(NONE)",
+        "expected": [
+            506,
+            1683,
+            1684,
+            1685
+        ]
+    },
+    {
+        "query_id": 155,
+        "query_type": "exact(NONE)",
+        "expected": [
+            506,
+            1683,
+            1684,
+            1685
+        ]
+    },
+    {
+        "query_id": 156,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1686,
+            536,
+            1687
+        ]
+    },
+    {
+        "query_id": 157,
+        "query_type": "exact(NONE)",
+        "expected": [
+            536,
+            1687,
+            1686
+        ]
+    },
+    {
+        "query_id": 158,
+        "query_type": "exact(NONE)",
+        "expected": [
+            264,
+            263,
+            536
+        ]
+    },
+    {
+        "query_id": 159,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1721,
+            1722
+        ]
+    },
+    {
+        "query_id": 160,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1721,
+            1722
+        ]
+    },
+    {
+        "query_id": 161,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1723,
+            1725,
+            1727,
+            1729,
+            1731,
+            1733,
+            1735,
+            1737,
+            1739,
+            1741,
+            1743,
+            1724,
+            1726,
+            1728,
+            1730,
+            1732,
+            1734,
+            1736,
+            1738,
+            1740,
+            1742
+        ]
+    },
+    {
+        "query_id": 162,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1724,
+            1726,
+            1728,
+            1730,
+            1732,
+            1734,
+            1736,
+            1738,
+            1740,
+            1742,
+            1743,
+            1723,
+            1725,
+            1727,
+            1729,
+            1731,
+            1733,
+            1735,
+            1737,
+            1739,
+            1741
+        ]
+    },
+    {
+        "query_id": 163,
+        "query_type": "exact(NONE)",
+        "expected": [
+            1724,
+            1726,
+            1728,
+            1730,
+            1732,
+            1734,
+            1736,
+            1738,
+            1740,
+            1742,
+            1723,
+            1725,
+            1727,
+            1729,
+            1731,
+            1733,
+            1735,
+            1737,
+            1739,
+            1741,
+            1743
+        ]
+    },
+    {
+        "query_id": 164,
+        "query_type": "exact(NONE)",
+        "expected": [
+            487,
+            1744,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754,
+            488,
+            1745,
+            1747,
+            1749,
+            1751,
+            1753,
+            1755
+        ]
+    },
+    {
+        "query_id": 165,
+        "query_type": "exact(NONE)",
+        "expected": [
+            487,
+            1744,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754,
+            488,
+            1745,
+            1747,
+            1749,
+            1751,
+            1753,
+            1755
+        ]
+    },
+    {
+        "query_id": 166,
+        "query_type": "exact(NONE)",
+        "expected": [
+            488,
+            1745,
+            1747,
+            1749,
+            1751,
+            1753,
+            1755,
+            1744,
+            1746,
+            1748,
+            1750,
+            1752,
+            1754,
+            487
+        ]
+    },
+    {
+        "query_id": 167,
+        "query_type": "exact(NONE)",
+        "expected": [
+            487,
+            488,
+            1744,
+            1745,
+            1746,
+            1747,
+            1748,
+            1749,
+            1750,
+            1751,
+            1752,
+            1753,
+            1754,
+            1755
+        ]
+    },
+    {
+        "query_id": 168,
+        "query_type": "exact(NONE)",
+        "expected": "stereocenters: one bond up, one bond down -- indefinite case near atom 0"
+    },
+    {
+        "query_id": 169,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #4 makes no sense"
+    },
+    {
+        "query_id": 170,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #5 makes no sense"
+    },
+    {
+        "query_id": 171,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 172,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #4 makes no sense"
+    },
+    {
+        "query_id": 173,
+        "query_type": "exact(NONE)",
+        "expected": "molfile loader: direction of bond #7 makes no sense"
+    },
+    {
+        "query_id": 174,
+        "query_type": "exact(NONE)",
+        "expected": [
+            517,
+            1387,
+            1388
+        ]
+    },
+    {
+        "query_id": 175,
+        "query_type": "exact(NONE)",
+        "expected": [
+            792,
+            1570,
+            1572,
+            1574,
+            1576
+        ]
+    },
+    {
+        "query_id": 176,
+        "query_type": "exact(NONE)",
+        "expected": [
+            2005
+        ]
+    },
+    {
+        "query_id": 177,
+        "query_type": "exact(NONE)",
+        "expected": [
+            2006
+        ]
+    },
+    {
+        "query_id": 178,
+        "query_type": "exact(NONE)",
+        "expected": [
+            179,
+            180,
+            181,
+            182,
+            183,
+            184,
+            498,
+            1549,
+            1550,
+            1551,
+            1552
+        ]
+    }
+]

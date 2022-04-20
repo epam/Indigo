@@ -29,8 +29,6 @@
 #include <string>
 #include <vector>
 
-#include <tinyxml.h>
-
 #include "molecule/alkanes.inc"
 #include "molecule/basic_elements.inc"
 #include "molecule/elements.h"

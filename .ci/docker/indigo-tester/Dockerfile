@@ -2,10 +2,10 @@ FROM debian:stable-slim
 
 ARG JDK_VERSION_MAJOR=8u292
 ARG JDK_VERSION_MINOR=b10
-ARG MAVEN_VERSION=3.8.4
+ARG MAVEN_VERSION=3.8.5
 ARG JYTHON_VERSION=2.7.2
 ARG DOTNET_VERSION=3.1
-ARG IRONPYTHON_VERSION=2.7.11
+ARG IRONPYTHON_VERSION=2.7.12
 
 RUN set -eux && \
     apt update && \
@@ -68,9 +68,12 @@ RUN set -eux && \
 
 COPY /api/http/requirements.txt ./api_requirements.txt
 COPY /api/http/requirements_dev.txt ./api_requirements_dev.txt
-COPY /bingo/bingo-elastic/python/requirements_dev.txt ./bingo_requirements_dev.txt
 
-RUN python3 -m pip install -r api_requirements.txt -r api_requirements_dev.txt -r bingo_requirements_dev.txt
+RUN python3 -m pip install -r api_requirements.txt -r api_requirements_dev.txt && \
+    rm ./api_requirements.txt ./api_requirements_dev.txt
+
+COPY /bingo/bingo-elastic/python/ ./bingo-elastic
+RUN cd ./bingo-elastic && python3 -m pip install -e . && cd .. && rm -rf ./bingo-elastic
 
 ENV JAVA_HOME=/opt/jdk
 ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython

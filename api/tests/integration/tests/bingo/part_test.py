@@ -1,73 +1,62 @@
+import os
 import sys
 import threading
 
 sys.path.append("../../common")
-from env_indigo import *
+from env_indigo import (
+    Bingo,
+    BingoException,
+    Indigo,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 
-def outPrint(str, pid, output):
-    # output = None
-    if output == None:
-        print(str)
+def outPrint(s, pid, output):
+    if output is None:
+        print(s)
     else:
         old_out = output[pid]
-        output[pid] = "{0}\n{1}".format(old_out, str)
+        output[pid] = "{0}\n{1}".format(old_out, s)
 
 
-def insertSmi(db, pid, input_smi, output=None):
+def insertSmi(db, input_smi):
     index = 0
     wrongStructures = 0
-    # outPrint('Inserting molecules from:{1}'.format(pid, input_smi), pid, output)
 
     smi_path = joinPathPy(os.path.join("molecules", input_smi), __file__)
     for mol in indigo.iterateSmilesFile(smi_path):
         try:
             db.insert(mol)
-        except (BingoException, e):
-            # outPrint('Structure {0} excluded: {1}'.format(index, getIndigoExceptionText(e)), pid, output)
+        except BingoException:
             wrongStructures += 1
         index += 1
 
         if index % 1000 == 0:
             print("Structures inserted: {0}".format(index))
 
-    # outPrint('Finished indexing {1} structures. {2} wrong structures excluded'.format(pid, index, wrongStructures), pid, output)
 
-
-def makeSearchSim(db, pid, query, min, max, options, output=None):
-    # outPrint('\n\nSimSearch with metric {0}'.format(options.encode('ascii')), pid, output)
-
-    search = db.searchSim(query, min, max, options)
+def makeSearchSim(db, pid, query, min_sim, max_sim, options, output=None):
+    search = db.searchSim(query, min_sim, max_sim, options)
     cnt = 0
     while search.next():
-        # outPrint('Mol #{0} with sim value {1}'.format(search.getCurrentId(), search.getCurrentSimilarityValue()), pid, output)
         cnt = cnt + 1
-    # f1=open('sim_out.txt', 'a+')
-    # f1.write('PID {0}) Total count in db #{1} {2}\n'.format(pid, db, cnt))
     outPrint("PID {0}) Total count {1}".format(pid, cnt), pid, output)
 
 
 def makeSearchSub(db, pid, query, options, output=None):
-    # outPrint('\n\nSubSearch:'.format(db), pid, output)
     search = db.searchSub(query, options)
     cnt = 0
     while search.next():
-        # outPrint('Mol #{0}'.format(search.getCurrentId()), pid, output)
         cnt = cnt + 1
-    # f1=open('sub_out.txt', 'a+')
-    # f1.write('PID {0}) Total count in db #{1} {2}\n'.format(pid, db, cnt))
     outPrint("PID {0}) Total count {1}".format(pid, cnt), pid, output)
 
 
 def makeSearchExact(db, pid, query, options, output=None):
-    # outPrint('ExactSearch:'.format(db), pid, output)
     search = db.searchExact(query, options)
     cnt = 0
     while search.next():
-        # outPrint('Mol #{0}'.format(search.getCurrentId()), pid, output)
         cnt = cnt + 1
-    # f1=open('./exact_out.txt', 'a+')
-    # f1.write('PID {0}) Total count in db #{1} {2}\n'.format(pid, db, cnt))
     outPrint("PID {0}) Total count {1}".format(pid, cnt), pid, output)
 
 
@@ -76,12 +65,12 @@ def partCreate():
         indigo, joinPathPy("mol_part_db", __file__), "molecule", "mt_size:2000"
     )
 
-    insertSmi(bingo, 0, "sample_100000.smi")
+    insertSmi(bingo, "sample_100000.smi")
 
     bingo.close()
 
 
-def partTest(size, type="sub"):
+def partTest(size, searchType="sub"):
     bingo = Bingo.loadDatabaseFile(
         indigo, joinPathPy("mol_part_db", __file__), ""
     )
@@ -93,11 +82,11 @@ def partTest(size, type="sub"):
         try:
             print("\nQuery #{0}".format(index + 1))
 
-            outputs = ["" for i in range(size + 1)]
+            outputs = ["" for _ in range(size + 1)]
 
             threads = []
 
-            if type == "sub":
+            if searchType == "sub":
                 qmol = indigo.loadQueryMolecule(m.rawData())
                 threads.append(
                     threading.Thread(
@@ -118,7 +107,7 @@ def partTest(size, type="sub"):
                             ),
                         )
                     )
-            elif type == "exact":
+            elif searchType == "exact":
                 qmol = indigo.loadMolecule(m.rawData())
                 threads.append(
                     threading.Thread(
@@ -173,7 +162,11 @@ def partTest(size, type="sub"):
                 print(out)
 
         except BingoException as e:
-            print("Query {0} fail: {1}".format(getIndigoExceptionText(e)))
+            print(
+                "Query {0} fail: {1}".format(
+                    m.rawData(), getIndigoExceptionText(e)
+                )
+            )
         index += 1
 
     bingo.close()

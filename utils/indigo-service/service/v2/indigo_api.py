@@ -362,6 +362,10 @@ def save_moldata(md, output_format=None, options={}):
         return md.struct.cml()
     elif output_format == "chemical/x-inchi":
         return md.struct.dispatcher.inchi.getInchi(md.struct)
+    elif output_format == "chemical/x-inchi-key":
+        return md.struct.dispatcher.inchi.getInchiKey(
+            md.struct.dispatcher.inchi.getInchi(md.struct)
+        )
     elif output_format == "chemical/x-inchi-aux":
         res = md.struct.dispatcher.inchi.getInchi(md.struct)
         aux = md.struct.dispatcher.inchi.getAuxInfo()
@@ -726,6 +730,7 @@ def convert():
                 - chemical/x-chemaxon-cxsmiles
                 - chemical/x-cml
                 - chemical/x-inchi
+                - chemical/x-inchi-key
                 - chemical/x-iupac
                 - chemical/x-daylight-smarts
                 - chemical/x-inchi-aux

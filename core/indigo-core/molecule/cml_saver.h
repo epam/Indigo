@@ -21,8 +21,11 @@
 
 #include "molecule/base_molecule.h"
 
-class TiXmlDocument;
-class TiXmlElement;
+namespace tinyxml2
+{
+    class XMLDocument;
+    class XMLElement;
+}
 
 namespace indigo
 {
@@ -45,10 +48,10 @@ namespace indigo
 
     protected:
         void _saveMolecule(BaseMolecule& mol, bool query);
-        void _addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool query);
-        void _addSgroupElement(TiXmlElement* elem, BaseMolecule& mol, SGroup& sgroup);
-        void _addRgroups(TiXmlElement* elem, BaseMolecule& mol, bool query);
-        void _addRgroupElement(TiXmlElement* elem, RGroup& rgroup, bool query);
+        void _addMoleculeElement(tinyxml2::XMLElement* elem, BaseMolecule& mol, bool query);
+        void _addSgroupElement(tinyxml2::XMLElement* elem, BaseMolecule& mol, SGroup& sgroup);
+        void _addRgroups(tinyxml2::XMLElement* elem, BaseMolecule& mol, bool query);
+        void _addRgroupElement(tinyxml2::XMLElement* elem, RGroup& rgroup, bool query);
 
         bool _getRingBondCountFlagValue(QueryMolecule& qmol, int idx, int& value);
         bool _getSubstitutionCountFlagValue(QueryMolecule& qmol, int idx, int& value);
@@ -56,8 +59,8 @@ namespace indigo
 
         Output& _output;
 
-        TiXmlDocument* _doc;
-        TiXmlElement* _root;
+        tinyxml2::XMLDocument* _doc;
+        tinyxml2::XMLElement* _root;
 
     private:
         CmlSaver(const CmlSaver&); // no implicit copy

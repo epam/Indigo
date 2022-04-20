@@ -643,7 +643,7 @@ jobs:
         run: pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl
         working-directory: bingo/bingo-elastic/python
       - name: Install dev dependencies
-        run: pip install -r requirements_dev.txt
+        run: pip install ".[dev]"
         working-directory: bingo/bingo-elastic/python
       - name: Setup elasticsearch
         run: docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.16.2
@@ -652,7 +652,7 @@ jobs:
       - name: Build wheel
         working-directory: bingo/bingo-elastic/python
         run: |
-          pip install .
+          pip install ".[async]"
           python setup.py bdist_wheel
           cp dist/*.whl ${GITHUB_WORKSPACE}/dist/
       - name: Run pylint
@@ -780,16 +780,6 @@ jobs:
         with:
           name: indigo-ketcher
           path: dist/indigo-ketcher*.tgz
-      - name: Push to NPM Beta
-        if: github.ref == 'refs/heads/master'
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
-        run: |
-            echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
-            echo email=${NPM_EMAIL} >> ~/.npmrc
-            echo always-auth=true >> ~/.npmrc
-            npm publish --tag beta ./dist/indigo-ketcher-*.tgz
 
   build_indigo_utils_x86_64:
     strategy:
@@ -916,42 +906,69 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 9.6, 10, 11, 12 ]
+        postgres_major_version: [ 10, 11, 12]
     runs-on: ubuntu-latest
-    container: epmlsop/buildpack-centos7:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           lfs: false
           fetch-depth: 500
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
       - name: Git fetch tags
         run: git fetch --tags -f
-      - name: Install postgres server headers
+      - name: Install postgres server headers and build bingo-postgres
+        uses: docker://epmlsop/buildpack-centos7:latest
+        with:
+          args: >
+            /bin/sh -c "
+            set -eux &&
+            yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
+            curl -OL https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG &&
+            rpm --import RPM-GPG-KEY-PGDG &&
+            yumdownloader -y postgresql${{ matrix.postgres_major_version }}-devel &&
+            rpm -i --nodeps postgresql${{ matrix.postgres_major_version }}*.rpm &&
+            ls -alh /usr &&
+            mkdir build &&
+            cd build &&
+            cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_PREFIX_PATH=/usr/pgsql-${{ matrix.postgres_major_version }} &&
+            cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
+            "
+      - name: Build Docker image
         run: |
-          case ${{ matrix.postgres_major_version }} in 12) pg_version=12;; 11) pg_version=11;; 10) pg_version=10;; 9.6) pg_version=96;; esac;
-          yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils
-          curl -OL https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG
-          rpm --import RPM-GPG-KEY-PGDG
-          yumdownloader -y postgresql${pg_version}-devel
-          rpm -i --nodeps postgresql${pg_version}*.rpm
-      - name: Build bingo-postgres
+          docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION=${{ matrix.postgres_major_version }} .
+      - name: Start Docker container
         run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
+          docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" -v /home:/home epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
+      - name: Install dev dependencies
+        run: |
+          pip install -r bingo/tests/requirements.txt
+      - name: Run Bingo tests
+        run: |
+          export PYTHONPATH=${{ github.workspace }}/bingo/bingo-elastic/python
+          pytest --tb=no --db postgres --junit-xml=junit_report.xml ; cat junit_report.xml
+        working-directory: bingo/tests
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
           path: dist/bingo-postgres*.tgz
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'bingo/tests/junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "bingo_postgres_${{ matrix.postgres_major_version }}_test_report"
 
   build_bingo_postgres_windows_msvc_x86_64:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "9.6", "10", "11", "12" ]
+        postgres_major_version: [ "10", "11", "12" ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -984,7 +1001,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 9.6, 10, 11, 12 ]
+        postgres_major_version: [ 10, 11, 12 ]
     runs-on: macos-latest
     steps:
       - name: Checkout

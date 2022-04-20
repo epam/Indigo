@@ -84,3 +84,9 @@ std::string IndigoChemicalStructure::rawData() const
     session()->setSessionId();
     return session()->_checkResultString(indigoRawData(id()));
 }
+
+std::string IndigoChemicalStructure::name() const
+{
+    session()->setSessionId();
+    return session()->_checkResultString(indigoName(id()));
+}

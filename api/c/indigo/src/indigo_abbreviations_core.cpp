@@ -19,18 +19,20 @@
 #include "indigo_abbreviations.h"
 #include "indigo_internal.h"
 
-#include "tinyxml.h"
+#include <tinyxml2.h>
 
 #include "resources/abbreviations.inc"
+
+using namespace tinyxml2;
 
 namespace indigo
 {
     namespace abbreviations
     {
 
-        static void readXmlIntoArray(TiXmlElement* root, const char* node_name, std::vector<std::string>& dest)
+        static void readXmlIntoArray(XMLElement* root, const char* node_name, std::vector<std::string>& dest)
         {
-            TiXmlNode* child = root->FirstChild(node_name);
+            XMLNode* child = root->FirstChildElement(node_name);
             for (; child; child = child->NextSiblingElement(node_name))
                 dest.push_back(child->FirstChild()->ToText()->Value());
         }
@@ -51,14 +53,14 @@ namespace indigo
 
         void IndigoAbbreviations::loadDefault()
         {
-            TiXmlDocument xml;
+            XMLDocument xml;
             xml.Parse(default_abbreviations_xml);
             if (xml.Error())
-                throw IndigoError("XML parsing error: %s", xml.ErrorDesc());
-            TiXmlHandle hxml(&xml);
-            TiXmlHandle handle = hxml.FirstChild("abbreviations");
+                throw IndigoError("XML parsing error: %s", xml.ErrorStr());
+            XMLHandle hxml(&xml);
+            XMLHandle handle = hxml.FirstChildElement("abbreviations");
 
-            TiXmlElement* elem = handle.FirstChild("item").ToElement();
+            XMLElement* elem = handle.FirstChildElement("item").ToElement();
             for (; elem; elem = elem->NextSiblingElement())
             {
                 Abbreviation& abbr = abbreviations.add(new Abbreviation);
