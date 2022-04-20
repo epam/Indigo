@@ -1,4 +1,4 @@
-from python.tests import TestIndigoBase
+from tests import TestIndigoBase
 
 
 class TestIndigo(TestIndigoBase):
