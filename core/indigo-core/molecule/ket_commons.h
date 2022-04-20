@@ -120,9 +120,7 @@ namespace indigo
             EUnbalancedEquilibriumFilleHalfTriangle
         };
 
-        KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end) : MetaObject(cid), _arrow_type(arrow_type), _begin(begin), _end( end )
-        {
-        };
+        KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end) : MetaObject(cid), _arrow_type(arrow_type), _begin(begin), _end(end){};
 
         MetaObject* clone() const override
         {
@@ -138,7 +136,7 @@ namespace indigo
     {
     public:
         static const std::uint32_t cid = "KET reaction plus"_hash;
-        KETReactionPlus( const Vec2f& pos ) : MetaObject(cid), _pos(pos){};
+        KETReactionPlus(const Vec2f& pos) : MetaObject(cid), _pos(pos){};
 
         MetaObject* clone() const override
         {
@@ -154,7 +152,7 @@ namespace indigo
         Vec2f _pos;
     };
 
-        struct MolSumm
+    struct MolSumm
     {
         MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED){};
         MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED){};

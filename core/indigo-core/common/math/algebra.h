@@ -311,9 +311,9 @@ namespace indigo
         inline bool ray_intersects_rect(const Vec2f& begin, const Vec2f& end)
         {
             Vec2f v = end - begin;
-            Vec2f vr(v.y, -v.x); //perpendicular vector
+            Vec2f vr(v.y, -v.x); // perpendicular vector
             auto lb = _leftBottom - begin;
-            auto lt = leftTop() - begin; 
+            auto lt = leftTop() - begin;
             auto rt = _rightTop - begin;
             auto rb = rightBottom() - begin;
             // same_sign means no intersection
@@ -321,13 +321,12 @@ namespace indigo
                              std::signbit(Vec2f::dot(vr, lt)) == std::signbit(Vec2f::dot(vr, rt)) &&
                              std::signbit(Vec2f::dot(vr, rt)) == std::signbit(Vec2f::dot(vr, rb));
 
-            return !same_sign && Vec2f::dot(v, lb) > 0 && Vec2f::dot(v, lt) > 0 &&
-                   Vec2f::dot(v, rt) > 0 && Vec2f::dot(v, rb) > 0;
+            return !same_sign && Vec2f::dot(v, lb) > 0 && Vec2f::dot(v, lt) > 0 && Vec2f::dot(v, rt) > 0 && Vec2f::dot(v, rb) > 0;
         }
 
-        #define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
+#define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
 
-        inline double pt_distance( const Vec2f& pt )
+        inline double pt_distance(const Vec2f& pt)
         {
             if (pt.x <= left())
             {

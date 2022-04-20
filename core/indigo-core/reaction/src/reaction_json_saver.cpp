@@ -64,7 +64,7 @@ ReactionJsonSaver::~ReactionJsonSaver()
 void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
 
-   for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+    for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
     merged.cloneMetaData(rxn);
@@ -117,8 +117,8 @@ void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule
             plus.AddMember("type", "plus", ket.GetAllocator());
             Value location(kArrayType);
             location.PushBack(Value().SetDouble(rp._pos.x), ket.GetAllocator());
-            location.PushBack(Value().SetDouble(-rp._pos.y), ket.GetAllocator());  // TODO: remove -
-            location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());         // TODO: remove -
+            location.PushBack(Value().SetDouble(-rp._pos.y), ket.GetAllocator()); // TODO: remove -
+            location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());        // TODO: remove -
             plus.AddMember("location", location, ket.GetAllocator());
             nodes.PushBack(plus, ket.GetAllocator());
         }
@@ -129,7 +129,6 @@ void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule
     writer.Reset(s);
     ket.Accept(writer);
     _output.printf("%s", s.GetString());
-
 }
 
 void ReactionJsonSaver::saveSingleReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)

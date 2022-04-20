@@ -280,7 +280,6 @@ namespace indigo
         void clone(BaseReaction& other, Array<int>* mol_mapping = nullptr, ObjArray<Array<int>>* mappings = nullptr,
                    ObjArray<Array<int>>* inv_mappings = nullptr);
 
-
         // metadata methods
         void addMetaObject(MetaObject* pobj) override; // moves ownership
         void resetMetaData() override;

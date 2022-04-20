@@ -67,7 +67,6 @@ namespace indigo
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy
-
     };
 
 } // namespace indigo

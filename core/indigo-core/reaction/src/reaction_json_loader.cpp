@@ -58,7 +58,8 @@ void ReactionJsonLoader::getMoleculeBoundingBox(BaseMolecule& mol, Rect2f& bbox)
     bbox = Rect2f(a, b);
 }
 
-ReactionJsonLoader::ReactionJsonLoader(Document& ket) : _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _simple_objects(kArrayType)
+ReactionJsonLoader::ReactionJsonLoader(Document& ket)
+    : _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _simple_objects(kArrayType)
 {
     ignore_bad_valence = false;
     Value& root = ket["root"];
@@ -97,8 +98,6 @@ ReactionJsonLoader::ReactionJsonLoader(Document& ket) : _rgroups(kArrayType), _m
             }
             else
                 throw Error("Unknown reaction node: %s", node_type.c_str());
-
- 
         }
         else
             throw Error("Unknows JSON node");

@@ -649,7 +649,6 @@ void BaseMolecule::cloneMetaData(MetaObjectsInterface& other)
         addMetaObject(meta[i]->clone());
 }
 
-
 void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
 {
     QS_DEF(Array<int>, mapping);
