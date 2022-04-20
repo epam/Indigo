@@ -61,22 +61,82 @@ ReactionJsonSaver::~ReactionJsonSaver()
 {
 }
 
-void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
+void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
+{
+
+   for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+        merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
+
+    merged.cloneMetaData(rxn);
+
+    StringBuffer s;
+    Writer<StringBuffer> writer(s);
+    json_saver.saveMolecule(merged, writer);
+
+    Document ket;
+    ket.Parse(s.GetString());
+    if (!(ket.HasMember("root") && ket["root"].HasMember("nodes")))
+        throw Error("reaction_json_saver: MoleculeJsonSaver::saveMolecule failed");
+
+    auto& nodes = ket["root"]["nodes"];
+    auto& md = rxn.metaData();
+    for (int meta_index = 0; meta_index < md.size(); ++meta_index)
+    {
+        auto pobj = md[meta_index];
+        switch (pobj->_class_id)
+        {
+        case KETReactionArrow::cid: {
+            KETReactionArrow& ar = (KETReactionArrow&)(*pobj);
+            Value arrow(kObjectType);
+            arrow.AddMember("type", "arrow", ket.GetAllocator());
+            Value data(kObjectType);
+            Value pos_array(kArrayType);
+            Value pos1(kObjectType);
+            Value pos2(kObjectType);
+            pos1.AddMember("x", Value().SetDouble(ar._begin.x), ket.GetAllocator());
+            pos1.AddMember("y", Value().SetDouble(-ar._begin.y), ket.GetAllocator());
+            pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
+            pos2.AddMember("x", Value().SetDouble(ar._begin.x), ket.GetAllocator());
+            pos2.AddMember("y", Value().SetDouble(-ar._begin.y), ket.GetAllocator());
+            pos2.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
+            pos_array.PushBack(pos2, ket.GetAllocator());
+            pos_array.PushBack(pos1, ket.GetAllocator());
+            std::string arrow_mode = "open-angle";
+            auto at_it = _arrow_type2string.find(ar._arrow_type);
+            if (at_it != _arrow_type2string.end())
+                arrow_mode = at_it->second;
+            data.AddMember("mode", StringRef(arrow_mode.c_str()), ket.GetAllocator());
+            data.AddMember("pos", pos_array, ket.GetAllocator());
+            arrow.AddMember("data", data, ket.GetAllocator());
+            nodes.PushBack(arrow, ket.GetAllocator());
+        }
+        break;
+        case KETReactionPlus::cid: {
+            KETReactionPlus& rp = (KETReactionPlus&)(*pobj);
+            Value plus(kObjectType);
+            plus.AddMember("type", "plus", ket.GetAllocator());
+            Value location(kArrayType);
+            location.PushBack(Value().SetDouble(rp._pos.x), ket.GetAllocator());
+            location.PushBack(Value().SetDouble(-rp._pos.y), ket.GetAllocator());  // TODO: remove -
+            location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());         // TODO: remove -
+            plus.AddMember("location", location, ket.GetAllocator());
+            nodes.PushBack(plus, ket.GetAllocator());
+        }
+        break;
+        }
+    }
+    s.Clear();
+    writer.Reset(s);
+    ket.Accept(writer);
+    _output.printf("%s", s.GetString());
+
+}
+
+void ReactionJsonSaver::saveSingleReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
     std::vector<Vec2f> pluses;
-    Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0);
 
-    MoleculeJsonSaver json_saver(_output);
-    json_saver._add_stereo_desc = _add_stereo_desc;
-    std::unique_ptr<BaseMolecule> merged;
-    if (rxn.isQueryReaction())
-    {
-        merged = std::make_unique<QueryMolecule>();
-    }
-    else
-    {
-        merged = std::make_unique<Molecule>();
-    }
+    Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0);
 
     if (rxn.reactantsCount() > 0)
     {
@@ -85,7 +145,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
         {
             Vec2f min1, max1;
             _getBounds(rxn.getBaseMolecule(i), min1, max1, 1.0);
-            merged->mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
+            merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
             if (i == rxn.reactantBegin())
             {
@@ -117,7 +177,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
         {
             Vec2f min1, max1;
             _getBounds(rxn.getBaseMolecule(i), min1, max1, 1.0);
-            merged->mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
+            merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
             if (i == rxn.productBegin())
             {
@@ -140,28 +200,32 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
         }
     }
 
+    // dump molecules
+    merged.cloneMetaData(rxn);
     StringBuffer s;
     Writer<StringBuffer> writer(s);
-    json_saver.saveMolecule(*merged, writer);
+    json_saver.saveMolecule(merged, writer);
+
     Document ket;
     ket.Parse(s.GetString());
     if (!(ket.HasMember("root") && ket["root"].HasMember("nodes")))
         throw Error("reaction_json_saver: MoleculeJsonSaver::saveMolecule failed");
 
     auto& nodes = ket["root"]["nodes"];
+
     for (const auto& plus_offset : pluses)
     {
         Value plus(kObjectType);
         plus.AddMember("type", "plus", ket.GetAllocator());
         Value location(kArrayType);
         location.PushBack(Value().SetDouble(plus_offset.x), ket.GetAllocator());
-        location.PushBack(Value().SetDouble(plus_offset.y), ket.GetAllocator());
+        location.PushBack(Value().SetDouble(-plus_offset.y), ket.GetAllocator()); // TODO: remove -
         location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());
         plus.AddMember("location", location, ket.GetAllocator());
         nodes.PushBack(plus, ket.GetAllocator());
     }
 
-    // add arrow
+    // calculate arrow
     Vec2f p1(0, 0);
     Vec2f p2(0, 0);
     if (rxn.reactantsCount() || rxn.productsCount())
@@ -204,30 +268,55 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
                 p1.y = (pmin.y + pmax.y) / 2;
             }
         }
+
+        Value arrow(kObjectType);
+        arrow.AddMember("type", "arrow", ket.GetAllocator());
+        Value data(kObjectType);
+        Value pos_array(kArrayType);
+        Value pos1(kObjectType);
+        Value pos2(kObjectType);
+        pos1.AddMember("x", Value().SetDouble(p1.x), ket.GetAllocator());
+        pos1.AddMember("y", Value().SetDouble(-p1.y), ket.GetAllocator());
+        pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
+        pos2.AddMember("x", Value().SetDouble(p2.x), ket.GetAllocator());
+        pos2.AddMember("y", Value().SetDouble(-p2.y), ket.GetAllocator());
+        pos2.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
+        pos_array.PushBack(pos2, ket.GetAllocator());
+        pos_array.PushBack(pos1, ket.GetAllocator());
+        data.AddMember("mode", "open-angle", ket.GetAllocator());
+        data.AddMember("pos", pos_array, ket.GetAllocator());
+        arrow.AddMember("data", data, ket.GetAllocator());
+        nodes.PushBack(arrow, ket.GetAllocator());
+        s.Clear();
+        writer.Reset(s);
+        ket.Accept(writer);
+
+        _output.printf("%s", s.GetString());
     }
     else
         throw Error("Empty reaction");
+}
 
-    Value arrow(kObjectType);
-    arrow.AddMember("type", "arrow", ket.GetAllocator());
-    Value data(kObjectType);
-    Value pos_array(kArrayType);
-    Value pos1(kObjectType);
-    Value pos2(kObjectType);
-    pos1.AddMember("x", Value().SetDouble(p1.x), ket.GetAllocator());
-    pos1.AddMember("y", Value().SetDouble(p1.y), ket.GetAllocator());
-    pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
-    pos2.AddMember("x", Value().SetDouble(p2.x), ket.GetAllocator());
-    pos2.AddMember("y", Value().SetDouble(p2.y), ket.GetAllocator());
-    pos2.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
-    pos_array.PushBack(pos2, ket.GetAllocator());
-    pos_array.PushBack(pos1, ket.GetAllocator());
-    data.AddMember("mode", "open-angle", ket.GetAllocator());
-    data.AddMember("pos", pos_array, ket.GetAllocator());
-    arrow.AddMember("data", data, ket.GetAllocator());
-    nodes.PushBack(arrow, ket.GetAllocator());
-    s.Clear();
-    writer.Reset(s);
-    ket.Accept(writer);
-    _output.printf("%s", s.GetString());
+void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
+{
+    MoleculeJsonSaver json_saver(_output);
+    json_saver._add_stereo_desc = _add_stereo_desc;
+    std::unique_ptr<BaseMolecule> merged;
+    if (rxn.isQueryReaction())
+    {
+        merged = std::make_unique<QueryMolecule>();
+    }
+    else
+    {
+        merged = std::make_unique<Molecule>();
+    }
+
+    if (rxn.metaData().size())
+    {
+        saveReactionWithMetadata(rxn, *merged, json_saver);
+    }
+    else
+    {
+        saveSingleReaction(rxn, *merged, json_saver);
+    }
 }

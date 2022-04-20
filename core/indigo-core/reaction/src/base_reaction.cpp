@@ -41,6 +41,12 @@ SideIter& SideIter::operator++()
     case BaseReaction::CATALYST:
         _idx = _owner.catalystNext(_idx);
         break;
+    case BaseReaction::INTERMEDIATE:
+        _idx = _owner.intermediateNext(_idx);
+        break;
+    case BaseReaction::UNDEFINED:
+        _idx = _owner.undefinedNext(_idx);
+        break;
     default:
         throw Error("Invalid BaseReaction side iterator type");
     }
@@ -64,6 +70,12 @@ SideIter SideAuto::begin()
         idx = _owner.productBegin();
         break;
     case BaseReaction::CATALYST:
+        idx = _owner.catalystBegin();
+        break;
+    case BaseReaction::INTERMEDIATE:
+        idx = _owner.catalystBegin();
+        break;
+    case BaseReaction::UNDEFINED:
         idx = _owner.catalystBegin();
         break;
     default:
@@ -339,6 +351,12 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
         case CATALYST:
             index = addCatalystCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
+        case INTERMEDIATE:
+            index = addIntermediateCopy(rmol, &mappings->at(i), &inv_mapping);
+            break;
+        case UNDEFINED:
+            index = addUndefinedCopy(rmol, &mappings->at(i), &inv_mapping);
+            break;
         }
 
         if (inv_mappings != 0)
@@ -378,20 +396,30 @@ bool BaseReaction::isQueryReaction()
 void BaseReaction::remove(int i)
 {
     int side = _types[i];
-
-    if (side == REACTANT)
+    switch (side)
+    {
+    case REACTANT:
         _reactantCount--;
-    else if (side == PRODUCT)
+        break;
+    case PRODUCT:
         _productCount--;
-    else // CATALYST
+        break;
+    case INTERMEDIATE:
+        _intermediateCount--;
+        break;
+    case UNDEFINED:
+        _undefinedCount--;
+        break;
+    case CATALYST:
         _catalystCount--;
-
+        break;
+    }
     _allMolecules.remove(i);
 }
 
 int BaseReaction::begin()
 {
-    return _nextElement(REACTANT | PRODUCT | CATALYST, -1);
+    return _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, -1);
 }
 
 int BaseReaction::end()
@@ -401,7 +429,7 @@ int BaseReaction::end()
 
 int BaseReaction::next(int index)
 {
-    return _nextElement(REACTANT | PRODUCT | CATALYST, index);
+    return _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, index);
 }
 
 int BaseReaction::count()
@@ -416,4 +444,21 @@ int BaseReaction::findMolecule(BaseMolecule* mol)
             return i;
 
     return -1;
+}
+
+void BaseReaction::addMetaObject(MetaObject* pobj)
+{
+    int index = _meta_data.size();
+    _meta_data.expand(index + 1);
+    _meta_data.set(index, pobj);
+}
+
+void BaseReaction::resetMetaData()
+{
+    _meta_data.clear();
+}
+
+const PtrArray<MetaObject>& BaseReaction::metaData() const
+{
+    return _meta_data;
 }

@@ -43,6 +43,7 @@ namespace indigo
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
         bool _add_stereo_desc;
+        static void saveSimpleObjects(const PtrArray<MetaObject>& meta_objects, rapidjson::Writer<rapidjson::StringBuffer>& writer);
 
     protected:
         void saveAtoms(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
@@ -66,6 +67,7 @@ namespace indigo
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy
+
     };
 
 } // namespace indigo

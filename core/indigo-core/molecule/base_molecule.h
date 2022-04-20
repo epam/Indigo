@@ -99,7 +99,18 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
 
-    class DLLEXPORT BaseMolecule : public Graph
+    class MetaObjectsInterface
+    {
+    public:
+        virtual void addMetaObject(MetaObject* pobj) = 0; // moves ownership
+        virtual void resetMetaData() = 0;
+        virtual const PtrArray<MetaObject>& metaData() const = 0;
+        virtual ~MetaObjectsInterface()
+        {
+        }
+    };
+
+    class DLLEXPORT BaseMolecule : public Graph, public MetaObjectsInterface
     {
     public:
         typedef RedBlackMap<int, int> Mapping;
@@ -286,6 +297,8 @@ namespace indigo
 
         void clone(BaseMolecule& other, Array<int>* mapping = nullptr, Array<int>* inv_mapping = nullptr, int skip_flags = 0);
 
+        void cloneMetaData(MetaObjectsInterface& other);
+
         // This is a bad hack for those who are too lazy to handle the mappings.
         // NEVER USE IT.
         void clone_KeepIndices(BaseMolecule& other, int skip_flags = 0);
@@ -405,6 +418,11 @@ namespace indigo
         void removeBondsAlleneStereo(const Array<int>& indices);
         void buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_bonds_out);
 
+        // metadata methods
+        void addMetaObject(MetaObject* pobj) override; // moves ownership
+        void resetMetaData() override;
+        const PtrArray<MetaObject>& metaData() const override;
+
         DECL_ERROR;
 
     protected:
@@ -466,6 +484,7 @@ namespace indigo
         // When molecule gets edited then edit revision is increased.
         // If edit revision is the same then molecule wasn't edited
         int _edit_revision;
+        PtrArray<MetaObject> _meta_data;
     };
 
 } // namespace indigo
