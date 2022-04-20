@@ -404,7 +404,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
 
                 rc_connection.first.summ_block_idx = ReactionComponent::CONNECTED; // mark as connected
                 rc_connection.second.summ_block_idx = ReactionComponent::CONNECTED;
-                auto& last_it = std::prev(_component_summ_blocks_list.end());
+                auto last_it = std::prev(_component_summ_blocks_list.end());
                 rc_connection.first.summ_block_it = last_it; // bind to summ blocks list
                 rc_connection.second.summ_block_it = last_it;
             }

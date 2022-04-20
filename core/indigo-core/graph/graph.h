@@ -133,7 +133,7 @@ namespace indigo
         MetaObject(int class_id) : _class_id(class_id)
         {
         }
-        int _class_id;
+        uint32_t _class_id;
         virtual MetaObject* clone() const = 0;
     };
 
