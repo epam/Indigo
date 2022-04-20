@@ -69,9 +69,7 @@ class TestIndigo(TestIndigoBase):
         self.assertTrue(
             m2.checkSalt(), f"{m2.smiles()} contains phosphoric acid."
         )
-        self.assertTrue(
-            m3.checkSalt(), f"{m3.smiles()} contains ammonia."
-        )
+        self.assertTrue(m3.checkSalt(), f"{m3.smiles()} contains ammonia.")
         self.assertTrue(
             m4.checkSalt(), f"{m4.smiles()} contains chloric acid."
         )
@@ -106,15 +104,9 @@ class TestIndigo(TestIndigoBase):
         self.assertTrue(
             m3.checkSalt(), f"{m3.smiles()} contains hydrogenselenite ion."
         )
-        self.assertTrue(
-            m4.checkSalt(), f"{m4.smiles()} contains nitrate ion."
-        )
-        self.assertTrue(
-            m5.checkSalt(), f"{m5.smiles()} contains nitrite ion."
-        )
-        self.assertTrue(
-            m6.checkSalt(), f"{m6.smiles()} contains iodite ion."
-        )
+        self.assertTrue(m4.checkSalt(), f"{m4.smiles()} contains nitrate ion.")
+        self.assertTrue(m5.checkSalt(), f"{m5.smiles()} contains nitrite ion.")
+        self.assertTrue(m6.checkSalt(), f"{m6.smiles()} contains iodite ion.")
         self.assertTrue(
             m7.checkSalt(), f"{m7.smiles()} contains hypochlorite ion."
         )
@@ -127,12 +119,11 @@ class TestIndigo(TestIndigoBase):
         m1 = self.indigo.loadMolecule("[Na+].[Cl-].C")
         m2 = self.indigo.loadMolecule("[O-]S(=O)(=O)[O-].[K+].[K+].C")
         self.assertTrue(
-            m1.checkSalt(),
-            f"{m1.smiles()} contains sodium and chloride ions."
+            m1.checkSalt(), f"{m1.smiles()} contains sodium and chloride ions."
         )
         self.assertTrue(
             m2.checkSalt(),
-            f"{m2.smiles()} contains potassium and sulfate ions."
+            f"{m2.smiles()} contains potassium and sulfate ions.",
         )
 
     def test_check_no_ions(self) -> None:
@@ -203,11 +194,11 @@ class TestIndigo(TestIndigoBase):
         )
         self.assertEqual(
             m4.stripSalt().smiles(),
-            "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1"
+            "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1",
         )
         self.assertEqual(
             m5.stripSalt().smiles(),
-            "C(O)C(O)C(O)C(O)C(O)C(O)=O.C(O)C(O)C(O)C(O)C(O)C(O)=O.[Fe]"
+            "C(O)C(O)C(O)C(O)C(O)C(O)=O.C(O)C(O)C(O)C(O)C(O)C(O)=O.[Fe]",
         )
         self.assertEqual(m6.stripSalt().smiles(), "")
 
