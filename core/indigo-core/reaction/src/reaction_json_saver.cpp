@@ -94,18 +94,19 @@ void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule
             Value pos1(kObjectType);
             Value pos2(kObjectType);
             pos1.AddMember("x", Value().SetDouble(ar._begin.x), ket.GetAllocator());
-            pos1.AddMember("y", Value().SetDouble(-ar._begin.y), ket.GetAllocator());
+            pos1.AddMember("y", Value().SetDouble(ar._begin.y), ket.GetAllocator());
             pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
             pos2.AddMember("x", Value().SetDouble(ar._begin.x), ket.GetAllocator());
-            pos2.AddMember("y", Value().SetDouble(-ar._begin.y), ket.GetAllocator());
+            pos2.AddMember("y", Value().SetDouble(ar._begin.y), ket.GetAllocator());
             pos2.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
             pos_array.PushBack(pos2, ket.GetAllocator());
             pos_array.PushBack(pos1, ket.GetAllocator());
-            std::string arrow_mode = "open-angle";
+            Value arrow_mode(kStringType);
+            arrow_mode.SetString("open-angle", ket.GetAllocator());
             auto at_it = _arrow_type2string.find(ar._arrow_type);
             if (at_it != _arrow_type2string.end())
-                arrow_mode = at_it->second;
-            data.AddMember("mode", StringRef(arrow_mode.c_str()), ket.GetAllocator());
+                arrow_mode.SetString(at_it->second.c_str(), ket.GetAllocator());
+            data.AddMember("mode", arrow_mode, ket.GetAllocator());
             data.AddMember("pos", pos_array, ket.GetAllocator());
             arrow.AddMember("data", data, ket.GetAllocator());
             nodes.PushBack(arrow, ket.GetAllocator());
@@ -117,8 +118,8 @@ void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule
             plus.AddMember("type", "plus", ket.GetAllocator());
             Value location(kArrayType);
             location.PushBack(Value().SetDouble(rp._pos.x), ket.GetAllocator());
-            location.PushBack(Value().SetDouble(-rp._pos.y), ket.GetAllocator()); // TODO: remove -
-            location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());        // TODO: remove -
+            location.PushBack(Value().SetDouble(rp._pos.y), ket.GetAllocator()); 
+            location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());
             plus.AddMember("location", location, ket.GetAllocator());
             nodes.PushBack(plus, ket.GetAllocator());
         }

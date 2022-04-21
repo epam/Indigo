@@ -64,8 +64,14 @@ namespace indigo
         int _side;
     };
 
-    struct ReactionBlock
+    class ReactionBlock : public NonCopyable
     {
+    public:
+        void copy(const ReactionBlock& other)
+        {
+            indexes.copy(other.indexes);
+            arrows_to.copy(other.arrows_to);
+        }
         Array<int> indexes;
         Array<int> arrows_to;
         int role;
@@ -214,7 +220,9 @@ namespace indigo
 
         ReactionBlock& addReactionBlock()
         {
-            return _reactionBlocks.push();
+            auto& rb = _reactionBlocks.push();
+            rb.copy(ReactionBlock());
+            return rb;
         }
 
         void clearReactionBlocks()
@@ -296,7 +304,7 @@ namespace indigo
 
         PtrPool<BaseMolecule> _allMolecules;
 
-        Array<ReactionBlock> _reactionBlocks; // for multistep reactions only
+        ObjArray<ReactionBlock> _reactionBlocks; // for multistep reactions only
 
         Array<int> _types;
 

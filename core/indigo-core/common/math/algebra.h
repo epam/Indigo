@@ -321,7 +321,7 @@ namespace indigo
                              std::signbit(Vec2f::dot(vr, lt)) == std::signbit(Vec2f::dot(vr, rt)) &&
                              std::signbit(Vec2f::dot(vr, rt)) == std::signbit(Vec2f::dot(vr, rb));
 
-            return !same_sign && Vec2f::dot(v, lb) > 0 && Vec2f::dot(v, lt) > 0 && Vec2f::dot(v, rt) > 0 && Vec2f::dot(v, rb) > 0;
+            return !same_sign && Vec2f::cross(lb, vr) > 0 && Vec2f::cross(lt, vr) > 0 && Vec2f::cross(rt, vr) > 0 && Vec2f::cross(rb, vr) > 0;
         }
 
 #define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))

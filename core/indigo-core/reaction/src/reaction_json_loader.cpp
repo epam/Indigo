@@ -345,6 +345,8 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
         Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
 
+        rxn.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
+
         arr_begin.y = -arr_begin.y; // TODO: remove this string
         arr_end.y = -arr_end.y;     // TODO: remove this string
 
@@ -464,6 +466,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
             break;
         if (rc.summ_block_idx == ReactionComponent::NOT_CONNECTED)
         {
+            rc.summ_block_idx = _component_summ_blocks.size();
             _component_summ_blocks.push_back(_reaction_components[i].bbox);
             _component_summ_blocks.back().indexes.push_back(i);
         }
@@ -475,8 +478,8 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const rapidjson::Value& arrow = _arrows[i];
         const rapidjson::Value& arrow_begin = arrow["data"]["pos"][0];
         const rapidjson::Value& arrow_end = arrow["data"]["pos"][1];
-        Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
-        Vec2f arr_end(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
+        Vec2f arr_begin(arrow_begin["x"].GetFloat(), -arrow_begin["y"].GetFloat());
+        Vec2f arr_end(arrow_end["x"].GetFloat(), -arrow_end["y"].GetFloat());
         float min_dist_prod = -1, min_dist_reac = -1, idx_cs_min_prod = -1, idx_cs_min_reac = -1;
         for (int index_cs = 0; index_cs < _component_summ_blocks.size(); ++index_cs)
         {
@@ -489,9 +492,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
                     min_dist_prod = dist;
                     idx_cs_min_prod = index_cs;
                 }
-            }
-
-            if (csb.bbox.ray_intersects_rect(arr_end, arr_begin))
+            } else if (csb.bbox.ray_intersects_rect(arr_end, arr_begin))
             {
                 float dist = csb.bbox.pt_distance(arr_begin);
                 if (min_dist_reac < 0 || dist < min_dist_reac)
