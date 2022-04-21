@@ -492,7 +492,8 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
                     min_dist_prod = dist;
                     idx_cs_min_prod = index_cs;
                 }
-            } else if (csb.bbox.ray_intersects_rect(arr_end, arr_begin))
+            }
+            else if (csb.bbox.ray_intersects_rect(arr_end, arr_begin))
             {
                 float dist = csb.bbox.pt_distance(arr_begin);
                 if (min_dist_reac < 0 || dist < min_dist_reac)
