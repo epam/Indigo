@@ -59,7 +59,7 @@ void ReactionJsonLoader::getMoleculeBoundingBox(BaseMolecule& mol, Rect2f& bbox)
 }
 
 ReactionJsonLoader::ReactionJsonLoader(Document& ket)
-    : _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _simple_objects(kArrayType)
+    : _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _simple_objects(kArrayType), _prxn(nullptr), _pqrxn(nullptr)
 {
     ignore_bad_valence = false;
     Value& root = ket["root"];
@@ -608,4 +608,5 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
             break;
         }
     }
+    rxn.addProductCopy(*merged_molecule, 0, 0);
 }

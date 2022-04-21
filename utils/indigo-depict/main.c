@@ -925,7 +925,7 @@ int main(int argc, char* argv[])
             indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);
-            else if (p.outfile_ext == OEXT_RXN)
+            else if (p.out_ext == OEXT_RXN)
                 indigoSaveRxnfileToFile(obj, p.outfile);
             else
                 indigoSaveJsonToFile(obj, p.outfile);
