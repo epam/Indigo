@@ -118,7 +118,7 @@ void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule
             plus.AddMember("type", "plus", ket.GetAllocator());
             Value location(kArrayType);
             location.PushBack(Value().SetDouble(rp._pos.x), ket.GetAllocator());
-            location.PushBack(Value().SetDouble(rp._pos.y), ket.GetAllocator()); 
+            location.PushBack(Value().SetDouble(rp._pos.y), ket.GetAllocator());
             location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());
             plus.AddMember("location", location, ket.GetAllocator());
             nodes.PushBack(plus, ket.GetAllocator());
