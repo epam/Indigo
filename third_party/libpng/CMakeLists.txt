@@ -9,4 +9,8 @@ target_include_directories(${PROJECT_NAME} SYSTEM
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME} z)
 
+if (CMAKE_SYSTEM_PROCESSOR_LOWER STREQUAL aarch64)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE -DPNG_ARM_NEON_OPT=0)
+endif()
+
 message(STATUS "Using local version of ${PROJECT_NAME}")
