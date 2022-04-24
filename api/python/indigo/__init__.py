@@ -1275,8 +1275,8 @@ class IndigoObject(object):
                            inorganic components from the molecule itself.
 
         Returns:
-            IndigoObject or None: new molecule without inorganic components
-                                  if inplace=False, None otherwise.
+            IndigoObject: new molecule without inorganic components
+                          if inplace=False, initial molecule otherwise.
         """
         self.dispatcher._setSessionId()
         salts_atoms = []
@@ -1299,7 +1299,7 @@ class IndigoObject(object):
             return saltless_fragment
         else:
             self.removeAtoms(salts_atoms)
-            return None
+            return self
 
     def countHydrogens(self):
         """Atom or Molecule method returns the number of hydrogens

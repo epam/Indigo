@@ -28,93 +28,115 @@ class TestIndigo(TestIndigoBase):
         self.assertEqual(m2.molarRefractivity(), 0.0)
         self.assertEqual(m3.molarRefractivity(), 31.45)
 
-    def test_check_single_ion(self) -> None:
+    def test_check_salt_monovalent_monoatomic_cation(self) -> None:
         m1 = self.indigo.loadMolecule("[Na+].C")
         m2 = self.indigo.loadMolecule("[Rb+].C")
-        m3 = self.indigo.loadMolecule("[Ca+2].C")
-        m4 = self.indigo.loadMolecule("[Zn+2].C")
-        m5 = self.indigo.loadMolecule("[Al+3].C")
-        m6 = self.indigo.loadMolecule("[Cr+3].C")
-        m7 = self.indigo.loadMolecule("[Ru+4].C")
-        m8 = self.indigo.loadMolecule("[Sn+4].C")
-        m9 = self.indigo.loadMolecule("[Cl-].C")
-        m10 = self.indigo.loadMolecule("[F-].C")
-        m11 = self.indigo.loadMolecule("[S-2].C")
-        m12 = self.indigo.loadMolecule("[Se-2].C")
         self.assertTrue(m1.checkSalt(), f"{m1.smiles()} contains Na+.")
         self.assertTrue(m2.checkSalt(), f"{m2.smiles()} contains Rb+.")
-        self.assertTrue(m3.checkSalt(), f"{m3.smiles()} contains Ca2+.")
-        self.assertTrue(m4.checkSalt(), f"{m4.smiles()} contains Zn2+.")
-        self.assertTrue(m5.checkSalt(), f"{m5.smiles()} contains Al3+.")
-        self.assertTrue(m6.checkSalt(), f"{m6.smiles()} contains Cr3+.")
-        self.assertTrue(m7.checkSalt(), f"{m7.smiles()} contains Ru4+.")
-        self.assertTrue(m8.checkSalt(), f"{m8.smiles()} contains Sn4+.")
-        self.assertTrue(m9.checkSalt(), f"{m9.smiles()} contains Cl-.")
-        self.assertTrue(m10.checkSalt(), f"{m10.smiles()} contains F-.")
-        self.assertTrue(m11.checkSalt(), f"{m11.smiles()} contains S2-.")
-        self.assertTrue(m12.checkSalt(), f"{m12.smiles()} contains Se2-.")
 
-    def test_check_simple_molecular_salt(self) -> None:
+    def test_check_salt_divalent_monoatomic_cation(self) -> None:
+        m1 = self.indigo.loadMolecule("[Ca+2].C")
+        m2 = self.indigo.loadMolecule("[Zn+2].C")
+        self.assertTrue(m1.checkSalt(), f"{m1.smiles()} contains Ca2+.")
+        self.assertTrue(m2.checkSalt(), f"{m2.smiles()} contains Zn2+.")
+
+    def test_check_salt_trivalent_monoatomic_cation(self) -> None:
+        m1 = self.indigo.loadMolecule("[Al+3].C")
+        m2 = self.indigo.loadMolecule("[Cr+3].C")
+        self.assertTrue(m1.checkSalt(), f"{m1.smiles()} contains Al3+.")
+        self.assertTrue(m2.checkSalt(), f"{m2.smiles()} contains Cr3+.")
+
+    def test_check_salt_tetravalent_monoatomic_cation(self) -> None:
+        m1 = self.indigo.loadMolecule("[Ru+4].C")
+        m2 = self.indigo.loadMolecule("[Sn+4].C")
+        self.assertTrue(m1.checkSalt(), f"{m1.smiles()} contains Ru4+.")
+        self.assertTrue(m2.checkSalt(), f"{m2.smiles()} contains Sn4+.")
+
+    def test_check_salt_monovalent_monoatomic_anion(self) -> None:
+        m1 = self.indigo.loadMolecule("[Cl-].C")
+        m2 = self.indigo.loadMolecule("[F-].C")
+        self.assertTrue(m1.checkSalt(), f"{m1.smiles()} contains Cl-.")
+        self.assertTrue(m2.checkSalt(), f"{m2.smiles()} contains F-.")
+
+    def test_check_salt_divalent_monoatomic_anion(self) -> None:
+        m1 = self.indigo.loadMolecule("[S-2].C")
+        m2 = self.indigo.loadMolecule("[Se-2].C")
+        self.assertTrue(m1.checkSalt(), f"{m1.smiles()} contains S2-.")
+        self.assertTrue(m2.checkSalt(), f"{m2.smiles()} contains Se2-.")
+
+    def test_check_salt_molecular_primary_salt(self) -> None:
+        m1 = self.indigo.loadMolecule("S=[Fe].C")
+        m2 = self.indigo.loadMolecule("Cl[Ag]")
+        self.assertTrue(
+            m1.checkSalt(), f"{m1.smiles()} contains ferrous sulfide."
+        )
+        self.assertTrue(
+            m2.checkSalt(), f"{m2.smiles()} contains silver chloride."
+        )
+
+    def test_check_salt_molecular_secondary_salt(self) -> None:
+        m1 = self.indigo.loadMolecule("S=[Sn]=S.C")
+        m2 = self.indigo.loadMolecule("O=[Mn]=O.C")
+        self.assertTrue(m1.checkSalt(), f"{m1.smiles()} contains tin sulfide.")
+        self.assertTrue(
+            m2.checkSalt(), f"{m2.smiles()} contains manganese dioxide."
+        )
+
+    def test_check_salt_molecular_tertiary_salt(self) -> None:
+        m1 = self.indigo.loadMolecule("Cl[Fe](Cl)Cl.C")
+        m2 = self.indigo.loadMolecule("OCl(=O)=O.C")
+        self.assertTrue(
+            m1.checkSalt(), f"{m1.smiles()} contains ferric chloride."
+        )
+        self.assertTrue(
+            m2.checkSalt(), f"{m2.smiles()} contains chloric acid."
+        )
+
+    def test_check_salt_molecular_quaternary_salt(self) -> None:
         m1 = self.indigo.loadMolecule("OS(=O)(=O)O.C")
         m2 = self.indigo.loadMolecule("OP(=O)(O)O.C")
-        m3 = self.indigo.loadMolecule("N.C")
-        m4 = self.indigo.loadMolecule("OCl(=O)=O.C")
-        m5 = self.indigo.loadMolecule("O=[Si]=O.C")
-        m6 = self.indigo.loadMolecule("O=[Mn]=O.C")
-        m7 = self.indigo.loadMolecule("S=[Fe].C")
-        m8 = self.indigo.loadMolecule("Cl[Ag]")
         self.assertTrue(
             m1.checkSalt(), f"{m1.smiles()} contains sulfuric acid."
         )
         self.assertTrue(
             m2.checkSalt(), f"{m2.smiles()} contains phosphoric acid."
         )
-        self.assertTrue(m3.checkSalt(), f"{m3.smiles()} contains ammonia.")
+
+    def test_check_salt_complex_primary_ion(self) -> None:
+        m1 = self.indigo.loadMolecule("[OH-].C")
+        m2 = self.indigo.loadMolecule("[O-]Cl.C")
         self.assertTrue(
-            m4.checkSalt(), f"{m4.smiles()} contains chloric acid."
+            m1.checkSalt(), f"{m1.smiles()} contains hypochlorite ion."
         )
         self.assertTrue(
-            m5.checkSalt(), f"{m5.smiles()} contains silicon dioxide."
-        )
-        self.assertTrue(
-            m6.checkSalt(), f"{m6.smiles()} contains manganese dioxide."
-        )
-        self.assertTrue(
-            m7.checkSalt(), f"{m7.smiles()} contains ferrous sulfide."
-        )
-        self.assertTrue(
-            m8.checkSalt(), f"{m8.smiles()} contains silver chloride."
+            m2.checkSalt(), f"{m2.smiles()} contains hydroxide ion."
         )
 
-    def test_check_complex_ion(self) -> None:
+    def test_check_salt_complex_secondary_ion(self) -> None:
+        m1 = self.indigo.loadMolecule("[O-]I=O.C")
+        m2 = self.indigo.loadMolecule("[O-]N(=O).C")
+        self.assertTrue(m1.checkSalt(), f"{m1.smiles()} contains nitrite ion.")
+        self.assertTrue(m2.checkSalt(), f"{m2.smiles()} contains iodite ion.")
+
+    def test_check_salt_complex_tertiary_ion(self) -> None:
+        m1 = self.indigo.loadMolecule("[N+](=O)([O-])[O-].C")
+        m2 = self.indigo.loadMolecule("O[Se](=O)[O-].C")
+        self.assertTrue(
+            m1.checkSalt(), f"{m1.smiles()} contains hydrogenselenite ion."
+        )
+        self.assertTrue(m2.checkSalt(), f"{m2.smiles()} contains nitrate ion.")
+
+    def test_check_salt_complex_quaternary_ion(self) -> None:
         m1 = self.indigo.loadMolecule("OP(=O)(O)[O-].C")
         m2 = self.indigo.loadMolecule("OS(=O)(=O)[O-].C")
-        m3 = self.indigo.loadMolecule("O[Se](=O)[O-].C")
-        m4 = self.indigo.loadMolecule("[N+](=O)([O-])[O-].C")
-        m5 = self.indigo.loadMolecule("[O-]N(=O).C")
-        m6 = self.indigo.loadMolecule("[O-]I=O.C")
-        m7 = self.indigo.loadMolecule("[O-]Cl.C")
-        m8 = self.indigo.loadMolecule("[OH-].C")
         self.assertTrue(
             m1.checkSalt(), f"{m1.smiles()} contains dihydrogenphosphate ion."
         )
         self.assertTrue(
             m2.checkSalt(), f"{m2.smiles()} contains dihydrogensulfate ion."
         )
-        self.assertTrue(
-            m3.checkSalt(), f"{m3.smiles()} contains hydrogenselenite ion."
-        )
-        self.assertTrue(m4.checkSalt(), f"{m4.smiles()} contains nitrate ion.")
-        self.assertTrue(m5.checkSalt(), f"{m5.smiles()} contains nitrite ion.")
-        self.assertTrue(m6.checkSalt(), f"{m6.smiles()} contains iodite ion.")
-        self.assertTrue(
-            m7.checkSalt(), f"{m7.smiles()} contains hypochlorite ion."
-        )
-        self.assertTrue(
-            m8.checkSalt(), f"{m8.smiles()} contains hydroxide ion."
-        )
 
-    def test_check_multiple_ions(self) -> None:
+    def test_check_salt_multiple_ions(self) -> None:
         # TODO: update for counting matches
         m1 = self.indigo.loadMolecule("[Na+].[Cl-].C")
         m2 = self.indigo.loadMolecule("[O-]S(=O)(=O)[O-].[K+].[K+].C")
@@ -126,7 +148,7 @@ class TestIndigo(TestIndigoBase):
             f"{m2.smiles()} contains potassium and sulfate ions.",
         )
 
-    def test_check_no_ions(self) -> None:
+    def test_check_salt_no_ions(self) -> None:
         m1 = self.indigo.loadMolecule("c1ccccc1")
         m2 = self.indigo.loadMolecule("C1=CC=C2C=CC=CC2=C1")
         self.assertFalse(
@@ -136,7 +158,7 @@ class TestIndigo(TestIndigoBase):
             m2.checkSalt(), f"{m2.smiles()} doesn`t contain any salts."
         )
 
-    def test_check_bonded_metal_atom(self) -> None:
+    def test_check_salt_bonded_metal_atom(self) -> None:
         m1 = self.indigo.loadMolecule("CC[Pb](CC)(CC)CC")
         m2 = self.indigo.loadMolecule("C[Al](C)C")
         self.assertFalse(
@@ -146,7 +168,7 @@ class TestIndigo(TestIndigoBase):
             m2.checkSalt(), f"{m2.smiles()} doesn`t contain any salts."
         )
 
-    def test_check_bonded_acid_group(self) -> None:
+    def test_check_salt_bonded_acid_group(self) -> None:
         m1 = self.indigo.loadMolecule("C1=CC=C(C=C1)[N+](=O)[O-]")
         m2 = self.indigo.loadMolecule("C(C(=O)O)S(=O)(=O)O")
         self.assertFalse(
@@ -156,53 +178,69 @@ class TestIndigo(TestIndigoBase):
             m2.checkSalt(), f"{m2.smiles()} doesn`t contain any salts."
         )
 
-    def test_salt_stripping(self) -> None:
-        # No disconnected components
-        m1 = self.indigo.loadMolecule("CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1")
-
-        # Single counterion
-        m2 = self.indigo.loadMolecule("CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.[Cl-]")
-
-        # Many inorganic ions and water molecules
-        m3 = self.indigo.loadMolecule(
-            "CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.O.O.O.O.O.O.O.O.O.O.[Cl-].[Cl-]"
+    def test_strip_salt_no_salts(self) -> None:
+        m = self.indigo.loadMolecule("CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1")
+        self.assertEqual(
+            m.stripSalt().smiles(),
+            "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1",
+            (
+                f"{m.smiles()} doesn't contain disconnected inorganic"
+                " components."
+            ),
         )
 
-        # Two organic molecules with single counterion
-        m4 = self.indigo.loadMolecule(
+    def test_strip_salt_single_salt(self) -> None:
+        m = self.indigo.loadMolecule("CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.[Cl-]")
+        self.assertEqual(
+            m.stripSalt().smiles(),
+            "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1",
+            f"{m.smiles()} contains [Cl-] anion.",
+        )
+
+    def test_strip_salt_many_salts(self) -> None:
+        m = self.indigo.loadMolecule(
+            "CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.O.O.O.O.O.O.O.O.O.O.[Cl-].[Cl-]"
+        )
+        self.assertEqual(
+            m.stripSalt().smiles(),
+            "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1",
+            f"{m.smiles()} contains water molecules and [Cl-] anions.",
+        )
+
+    def test_strip_salt_two_organics(self) -> None:
+        m = self.indigo.loadMolecule(
             "CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1."
             "CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1."
             "[O-]S(=O)(=O)[O-]"
         )
+        self.assertEqual(
+            m.stripSalt().smiles(),
+            "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1",
+            f"{m.smiles()} contains [O-]S(=O)(=O)[O-] anion.",
+        )
 
-        # Complex organic salt
-        m5 = self.indigo.loadMolecule(
+    def test_strip_salt_complex_salt(self) -> None:
+        m = self.indigo.loadMolecule(
             "C(C(C(C(C(C(=O)O)O)O)O)O)O.C(C(C(C(C(C(=O)O)O)O)O)O)O.[Fe]"
         )
-
-        # No organic components
-        m6 = self.indigo.loadMolecule("[NH4+].[O-]P(=O)([O-])[O-].[Fe+2]")
-
         self.assertEqual(
-            m1.stripSalt().smiles(), "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1"
-        )
-        self.assertEqual(
-            m2.stripSalt().smiles(), "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1"
-        )
-        self.assertEqual(
-            m3.stripSalt().smiles(), "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1"
-        )
-        self.assertEqual(
-            m4.stripSalt().smiles(),
-            "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1",
-        )
-        self.assertEqual(
-            m5.stripSalt().smiles(),
+            m.stripSalt().smiles(),
             "C(O)C(O)C(O)C(O)C(O)C(O)=O.C(O)C(O)C(O)C(O)C(O)C(O)=O.[Fe]",
+            f"{m.smiles()} doesn't contain disconnected inorganic components.",
         )
-        self.assertEqual(m6.stripSalt().smiles(), "")
 
-    def test_salt_stripping_options(self) -> None:
+    def test_strip_salt_only_salts(self) -> None:
+        m = self.indigo.loadMolecule("[NH4+].[O-]P(=O)([O-])[O-].[Fe+2]")
+        self.assertEqual(
+            m.stripSalt().smiles(),
+            "",
+            (
+                f"{m.smiles()} contains [NH4+], [O-]P(=O)([O-])[O-] and [Fe+2]"
+                " ions and no organic components."
+            ),
+        )
+
+    def test_strip_salt_options(self) -> None:
         m = self.indigo.loadMolecule("CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.[Cl-]")
         m_strip = m.stripSalt()
         m.stripSalt(inplace=True)
