@@ -2041,7 +2041,7 @@ void MoleculeRenderInternal::_renderSimpleObject(const KETSimpleObject& simple)
     lb.y = _max.y - lb.y;
     rt.y = _max.y - rt.y;
     lb *= _scale;
-    rt *= _scale; 
+    rt *= _scale;
 
     switch (simple._mode)
     {

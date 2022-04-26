@@ -135,8 +135,7 @@ namespace indigo
         }
         uint32_t _class_id;
         virtual MetaObject* clone() const = 0;
-        virtual ~MetaObject()
-        {};
+        virtual ~MetaObject(){};
     };
 
     class DLLEXPORT Graph : public NonCopyable
