@@ -58,6 +58,32 @@ void RenderItemFragment::init()
             _max.max(v2);
         }
     }
+
+    const auto& md = mol->metaData();
+    for (int i = 0; i < md.size(); ++i)
+    {
+        const auto& simple = *md[i];
+        Rect2f bbox;
+        switch (simple._class_id)
+        {
+        case KETSimpleObject::cid: {
+            auto& obj = (KETSimpleObject&)simple;
+            bbox = obj._rect;
+            _min.min(bbox.leftBottom());
+            _max.max(bbox.rightTop());
+        }
+        break;
+        case KETTextObject::cid:
+            break;
+        case KETReactionArrow::cid:
+            break;
+        case KETReactionPlus::cid:
+            break;
+        default:
+            throw Error("Undefined KET type");
+            break;
+        }
+    }
 }
 
 void RenderItemFragment::estimateSize()

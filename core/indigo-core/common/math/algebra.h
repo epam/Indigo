@@ -29,6 +29,7 @@
 
 #define DEG2RAD(x) ((x)*M_PI / 180)
 #define RAD2DEG(x) ((x)*180 / M_PI)
+#define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
 
 namespace indigo
 {
@@ -303,12 +304,12 @@ namespace indigo
             _rightTop = other._rightTop;
         }
 
-        inline bool pt_in_rect(const Vec2f& pt) const
+        inline bool pointInRect(const Vec2f& pt) const
         {
             return _leftBottom.x < pt.x && _leftBottom.y < pt.y && _rightTop.x > pt.x && _rightTop.y > pt.y;
         }
 
-        inline bool ray_intersects_rect(const Vec2f& begin, const Vec2f& end)
+        inline bool rayIntersectsRect(const Vec2f& begin, const Vec2f& end)
         {
             Vec2f v = end - begin;
             Vec2f vr(v.y, -v.x); // perpendicular vector
@@ -324,9 +325,7 @@ namespace indigo
             return !same_sign && Vec2f::cross(lb, vr) > 0 && Vec2f::cross(lt, vr) > 0 && Vec2f::cross(rt, vr) > 0 && Vec2f::cross(rb, vr) > 0;
         }
 
-#define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
-
-        inline double pt_distance(const Vec2f& pt)
+        inline double pointDistance(const Vec2f& pt)
         {
             if (pt.x <= left())
             {

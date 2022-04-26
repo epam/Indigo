@@ -188,7 +188,7 @@ bool ReactionJsonLoader::findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_I
     for (const auto& kvp : intersection_top_bottom)
     {
         auto& tb_box = _reaction_components[kvp.second].bbox;
-        if (tb_box.pt_in_rect(plus_pos))
+        if (tb_box.pointInRect(plus_pos))
             continue;
         rights_row.emplace_back(tb_box.right(), kvp.second);
         lefts_row.emplace_back(tb_box.left(), kvp.second);
@@ -198,7 +198,7 @@ bool ReactionJsonLoader::findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_I
     for (const auto& kvp : intersection_left_right)
     {
         auto& lr_box = _reaction_components[kvp.second].bbox;
-        if (lr_box.pt_in_rect(plus_pos))
+        if (lr_box.pointInRect(plus_pos))
             continue;
         tops_col.emplace_back(lr_box.top(), kvp.second);
         bottoms_col.emplace_back(lr_box.bottom(), kvp.second);
@@ -484,18 +484,18 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         for (int index_cs = 0; index_cs < _component_summ_blocks.size(); ++index_cs)
         {
             auto& csb = _component_summ_blocks[index_cs];
-            if (csb.bbox.ray_intersects_rect(arr_begin, arr_end))
+            if (csb.bbox.rayIntersectsRect(arr_begin, arr_end))
             {
-                float dist = csb.bbox.pt_distance(arr_end);
+                float dist = csb.bbox.pointDistance(arr_end);
                 if (min_dist_prod < 0 || dist < min_dist_prod)
                 {
                     min_dist_prod = dist;
                     idx_cs_min_prod = index_cs;
                 }
             }
-            else if (csb.bbox.ray_intersects_rect(arr_end, arr_begin))
+            else if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))
             {
-                float dist = csb.bbox.pt_distance(arr_begin);
+                float dist = csb.bbox.pointDistance(arr_begin);
                 if (min_dist_reac < 0 || dist < min_dist_reac)
                 {
                     min_dist_reac = dist;

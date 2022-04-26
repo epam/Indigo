@@ -2010,6 +2010,7 @@ void MoleculeRenderInternal::_renderBonds()
 
 void MoleculeRenderInternal::_renderMeta()
 {
+    _cw.setSingleSource(CWC_BASE);
     const auto& md = _mol->metaData();
     for (int i = 0; i < md.size(); ++i)
     {
@@ -2035,6 +2036,12 @@ void MoleculeRenderInternal::_renderSimpleObject(const KETSimpleObject& simple)
 
     auto lb = simple._rect.leftBottom();
     auto rt = simple._rect.rightTop();
+    lb.x -= _min.x;
+    rt.x -= _min.x;
+    lb.y = _max.y - lb.y;
+    rt.y = _max.y - rt.y;
+    lb *= _scale;
+    rt *= _scale; 
 
     switch (simple._mode)
     {
