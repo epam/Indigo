@@ -1275,8 +1275,10 @@ class IndigoObject(object):
                            inorganic components from the molecule itself.
 
         Returns:
-            IndigoObject: new molecule without inorganic components
-                          if inplace=False, initial molecule otherwise.
+            IndigoObject: if inplace=False - new molecule without inorganic
+                          components,
+                          if inplace=True - initial molecule without inorganic
+                          components.
         """
         self.dispatcher._setSessionId()
         salts_atoms = []
