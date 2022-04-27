@@ -441,6 +441,10 @@ void RenderContext::drawEllipse(const Vec2f& v1, const Vec2f& v2)
     cairo_translate(_cr, -v1.x - width / 2.0, -v1.y - height / 2.0);
     cairo_arc(_cr, v1.x + width / 2.0, v1.y + height / 2.0, width / 2.0, 0, 2 * M_PI);
     cairo_set_matrix(_cr, &save_matrix);
+    checkPathNonEmpty();
+    bbIncludePath(true);
+    cairo_stroke(_cr);
+    cairoCheckStatus();
 }
 
 void RenderContext::drawItemBackground(const RenderItem& item)

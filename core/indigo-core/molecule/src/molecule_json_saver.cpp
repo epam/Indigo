@@ -1007,12 +1007,14 @@ void MoleculeJsonSaver::saveSimpleObjects(const PtrArray<MetaObject>& meta_objec
             writer.Key("pos");
             writer.StartArray();
 
+            auto& coords = simple_obj->_coordinates;
+
             // point1
             writer.StartObject();
             writer.Key("x");
-            writer.Double(simple_obj->_rect.left());
+            writer.Double(coords.first.x);
             writer.Key("y");
-            writer.Double(simple_obj->_rect.bottom());
+            writer.Double(coords.first.y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1020,9 +1022,9 @@ void MoleculeJsonSaver::saveSimpleObjects(const PtrArray<MetaObject>& meta_objec
             // point2
             writer.StartObject();
             writer.Key("x");
-            writer.Double(simple_obj->_rect.right());
+            writer.Double(coords.second.x);
             writer.Key("y");
-            writer.Double(simple_obj->_rect.top());
+            writer.Double(coords.second.y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();

@@ -1034,7 +1034,7 @@ void MoleculeJsonLoader::loadSimpleObjects(rapidjson::Value& simple_objects, Met
                     else
                         throw("Bad pos array size %d. Most be equal to 2.", pos.Size());
                 }
-                meta_interface.addMetaObject(new KETSimpleObject(mode, Rect2f(p1, p2)));
+                meta_interface.addMetaObject(new KETSimpleObject(mode, std::make_pair(p1, p2)));
             }
             else if (simple_object.HasMember("content") && simple_object.HasMember("position"))
             {

@@ -2034,28 +2034,28 @@ void MoleculeRenderInternal::_renderSimpleObject(const KETSimpleObject& simple)
 {
     _cw.setLineWidth(_settings.bondLineWidth);
 
-    auto lb = simple._rect.leftBottom();
-    auto rt = simple._rect.rightTop();
-    lb.x -= _min.x;
-    rt.x -= _min.x;
-    lb.y = _max.y - lb.y;
-    rt.y = _max.y - rt.y;
-    lb *= _scale;
-    rt *= _scale;
+    auto v1 = simple._coordinates.first;
+    auto v2 = simple._coordinates.second;
+    v1.x -= _min.x;
+    v2.x -= _min.x;
+    v1 *= _scale;
+    v2 *= _scale;
+    std::tie(v1.y, v2.y) = std::make_pair(_max.y - v1.y, _max.y - v2.y);
+    Rect2f rc(v1, v2);
 
     switch (simple._mode)
     {
     case KETSimpleObject::EKETEllipse:
-        _cw.drawEllipse(lb, rt);
+        _cw.drawEllipse(v1, v2);
         break;
 
     case KETSimpleObject::EKETRectangle: {
         Array<Vec2f> pts;
-        pts.push() = lb;
-        pts.push() = simple._rect.leftTop();
-        pts.push() = rt;
-        pts.push() = simple._rect.rightBottom();
-        pts.push() = lb;
+        pts.push() = rc.leftTop();
+        pts.push() = rc.rightTop();
+        pts.push() = rc.rightBottom();
+        pts.push() = rc.leftBottom();
+        pts.push() = rc.leftTop();
         _cw.drawPoly(pts);
     }
     break;
@@ -2064,8 +2064,8 @@ void MoleculeRenderInternal::_renderSimpleObject(const KETSimpleObject& simple)
         Array<Vec2f> pts;
         auto& vec1 = pts.push();
         auto& vec2 = pts.push();
-        vec1 = lb;
-        vec2 = rt;
+        vec1 = v1;
+        vec2 = v2;
         _cw.drawPoly(pts);
     }
     break;

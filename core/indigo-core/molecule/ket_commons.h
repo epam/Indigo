@@ -41,15 +41,15 @@ namespace indigo
     {
     public:
         static const std::uint32_t cid = "KET simple object"_hash;
-        KETSimpleObject(int mode, const Rect2f& rect) : MetaObject(cid)
+        KETSimpleObject(int mode, const std::pair<Vec2f, Vec2f>& coords) : MetaObject(cid)
         {
             _mode = mode;
-            _rect = rect;
+            _coordinates = coords;
         };
 
         MetaObject* clone() const override
         {
-            return new KETSimpleObject(_mode, _rect);
+            return new KETSimpleObject(_mode, _coordinates);
         }
 
         enum
@@ -59,7 +59,7 @@ namespace indigo
             EKETLine
         };
         int _mode;
-        Rect2f _rect;
+        std::pair<Vec2f, Vec2f> _coordinates;
     };
 
     class KETTextObject : public MetaObject

@@ -43,6 +43,7 @@ void RenderItemFragment::init()
 {
     _min.set(0, 0);
     _max.set(0, 0);
+
     for (int i = mol->vertexBegin(); i < mol->vertexEnd(); i = mol->vertexNext(i))
     {
         const Vec3f& v = mol->getAtomXyz(i);
@@ -59,6 +60,7 @@ void RenderItemFragment::init()
         }
     }
 
+    bool minmax_set = mol->vertexCount();
     const auto& md = mol->metaData();
     for (int i = 0; i < md.size(); ++i)
     {
@@ -68,9 +70,17 @@ void RenderItemFragment::init()
         {
         case KETSimpleObject::cid: {
             auto& obj = (KETSimpleObject&)simple;
-            bbox = obj._rect;
-            _min.min(bbox.leftBottom());
-            _max.max(bbox.rightTop());
+            bbox = Rect2f(obj._coordinates.first, obj._coordinates.second);
+            if (minmax_set)
+            {
+                _min.min(bbox.leftBottom());
+                _max.max(bbox.rightTop());
+            }
+            else
+            {
+                _min.copy(bbox.leftBottom());
+                _max.copy(bbox.rightTop());
+            }
         }
         break;
         case KETTextObject::cid:
