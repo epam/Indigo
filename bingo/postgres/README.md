@@ -9,14 +9,13 @@ System Requirements
 
 ### Database Servers ###
 
-  * PostreSQL 12.3
-  * PostreSQL 11.8
-  * PostreSQL 10.14
-  * PostreSQL 9.6
+  * PostreSQL 12.8
+  * PostreSQL 11.13
+  * PostreSQL 10.18
 
 ### Tested Configurations ###
 
- Bingo has been successfully tested for 9.0-12.3 PostgreSQL versions
+ Bingo has been successfully tested for 10-12 PostgreSQL versions mentioned above.
 
 
 Installation Prerequisities
