@@ -330,7 +330,7 @@ void MoleculeRenderInternal::render()
 
     _renderEmptyRFragment();
 
-    _renderMeta();
+    // _renderMeta();
 }
 
 BondEnd& MoleculeRenderInternal::_be(int beid)

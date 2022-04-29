@@ -105,6 +105,14 @@ namespace indigo
         virtual void addMetaObject(MetaObject* pobj) = 0; // moves ownership
         virtual void resetMetaData() = 0;
         virtual const PtrArray<MetaObject>& metaData() const = 0;
+        void cloneMetaData(MetaObjectsInterface& other)
+        {
+            resetMetaData();
+            const auto& meta = other.metaData();
+            for (int i = 0; i < meta.size(); i++)
+                addMetaObject(meta[i]->clone());
+        }
+
         virtual ~MetaObjectsInterface()
         {
         }
@@ -296,8 +304,6 @@ namespace indigo
         void makeEdgeSubmolecule(BaseMolecule& mol, const Array<int>& vertices, const Array<int>& edges, Array<int>* v_mapping, int skip_flags = 0);
 
         void clone(BaseMolecule& other, Array<int>* mapping = nullptr, Array<int>* inv_mapping = nullptr, int skip_flags = 0);
-
-        void cloneMetaData(MetaObjectsInterface& other);
 
         // This is a bad hack for those who are too lazy to handle the mappings.
         // NEVER USE IT.

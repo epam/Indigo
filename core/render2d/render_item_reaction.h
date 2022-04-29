@@ -46,7 +46,7 @@ namespace indigo
     private:
         int _addFragment(int id);
         int _addPlus();
-        int _reactantLine, _catalystLineUpper, _catalystLineLower, _productLine, _arrow;
+        int _reactantLine, _catalystLineUpper, _catalystLineLower, _productLine, _arrow, _meta;
         bool _splitCatalysts;
         float _arrowWidth;
     };

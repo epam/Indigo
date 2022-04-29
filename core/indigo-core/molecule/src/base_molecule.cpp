@@ -641,14 +641,6 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     name.copy(other.name);
 }
 
-void BaseMolecule::cloneMetaData(MetaObjectsInterface& other)
-{
-    resetMetaData();
-    const auto& meta = other.metaData();
-    for (int i = 0; i < meta.size(); i++)
-        addMetaObject(meta[i]->clone());
-}
-
 void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
 {
     QS_DEF(Array<int>, mapping);

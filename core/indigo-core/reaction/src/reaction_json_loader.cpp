@@ -319,7 +319,6 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const rapidjson::Value& plus_location = plus["location"];
         Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
         rxn.addMetaObject(new KETReactionPlus(plus_pos));
-        plus_pos.y = -plus_pos.y; // TODO: remove this string
 
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
         _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, std::unique_ptr<BaseMolecule>(nullptr));
@@ -347,9 +346,6 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
 
         rxn.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
 
-        arr_begin.y = -arr_begin.y; // TODO: remove this string
-        arr_end.y = -arr_end.y;     // TODO: remove this string
-
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
         _reaction_components.emplace_back(arrow_type, bbox, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(arr_begin);
@@ -372,7 +368,6 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const rapidjson::Value& plus = _pluses[i];
         const rapidjson::Value& plus_location = plus["location"];
         Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
-        plus_pos.y = -plus_pos.y;            // TODO: remove this string later
         std::pair<int, int> plus_connection; // (component1_index, component2_index)
 
         if (findPlusNeighbours(plus_pos, mol_tops, mol_bottoms, mol_lefts, mol_rights, plus_connection))
@@ -478,8 +473,8 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const rapidjson::Value& arrow = _arrows[i];
         const rapidjson::Value& arrow_begin = arrow["data"]["pos"][0];
         const rapidjson::Value& arrow_end = arrow["data"]["pos"][1];
-        Vec2f arr_begin(arrow_begin["x"].GetFloat(), -arrow_begin["y"].GetFloat());
-        Vec2f arr_end(arrow_end["x"].GetFloat(), -arrow_end["y"].GetFloat());
+        Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
+        Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
         float min_dist_prod = -1, min_dist_reac = -1, idx_cs_min_prod = -1, idx_cs_min_reac = -1;
         for (int index_cs = 0; index_cs < _component_summ_blocks.size(); ++index_cs)
         {

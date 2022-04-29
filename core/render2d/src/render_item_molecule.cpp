@@ -29,7 +29,7 @@ using namespace indigo;
 
 IMPL_ERROR(RenderItemMolecule, "RenderItemMolecule");
 
-RenderItemMolecule::RenderItemMolecule(RenderItemFactory& factory) : RenderItemContainer(factory), mol(NULL), refAtom(-1), _core(-1)
+RenderItemMolecule::RenderItemMolecule(RenderItemFactory& factory) : RenderItemContainer(factory), mol(NULL), refAtom(-1), _core(-1), _meta(-1)
 {
 }
 
@@ -49,6 +49,7 @@ void RenderItemMolecule::init()
     int lineCore = _factory.addItemHLine();
     _factory.getItemHLine(lineCore).init();
     _factory.getItemHLine(lineCore).items.push(_core);
+
     items.push(lineCore);
 
     {
@@ -93,6 +94,16 @@ void RenderItemMolecule::init()
             }
         }
     }
+
+    // add meta
+    if (mol->metaData().size())
+    {
+        _meta = _factory.addItemAuxiliary();
+        _factory.getItemAuxiliary(_meta).type = RenderItemAuxiliary::AUX_META;
+        _factory.getItemAuxiliary(_meta).meta = mol;
+        _factory.getItemAuxiliary(_meta).init();
+        items.push(_meta);
+    }
 }
 
 int RenderItemMolecule::_getRIfThenCount()
@@ -114,24 +125,73 @@ void RenderItemMolecule::estimateSize()
     float vSpace = _settings.layoutMarginVertical;
     for (int i = 0; i < items.size(); ++i)
     {
-        RenderItemHLine& line = _factory.getItemHLine(items[i]);
-        size.x = std::max(size.x, line.size.x);
-        if (i > 0)
-            size.y += vSpace;
-        size.y += line.size.y;
+        if (_factory.isItemHLine(items[i]))
+        {
+            RenderItemHLine& line = _factory.getItemHLine(items[i]);
+            size.x = std::max(size.x, line.size.x);
+            if (i > 0)
+                size.y += vSpace;
+            size.y += line.size.y;
+        }
     }
     if (_core >= 0)
         refAtomPos.copy(_factory.getItemFragment(_core).refAtomPos);
+
+    if (_meta >= 0)
+    {
+        Vec2f diff(0,0);
+        RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
+        if (_core >= 0)
+        {
+            auto& frag = _factory.getItemFragment(_core);
+            diff.x = frag.min().x - meta._min.x;
+            diff.y = meta._max.y - frag.max().y;
+
+            meta.origin = diff;
+            if (diff.x > 0)
+            {
+                origin.x -= diff.x;
+                meta.size.x += diff.x;
+            }
+            else
+            {
+                meta.size.x -= diff.x;
+            }
+            if (diff.y < 0)
+            {
+                meta.size.y -= diff.y;
+            }
+            else
+            {
+                origin.y -= diff.y;
+                meta.size.y += diff.y;
+            }
+        }
+        size.x = std::max(size.x, meta.size.x );
+        size.y = std::max(size.y, meta.size.y );
+    }
 }
 
 void RenderItemMolecule::render(bool idle)
 {
     _rc.translate(-origin.x, -origin.y);
+    if (_meta >= 0)
+    {
+        RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
+        _rc.storeTransform();
+        meta.render(idle);
+        _rc.restoreTransform();
+        _rc.removeStoredTransform();
+    }
+
     float vSpace = _settings.layoutMarginVertical;
     for (int i = 0; i < items.size(); ++i)
     {
-        RenderItemHLine& line = _factory.getItemHLine(items[i]);
-        line.render(idle);
-        _rc.translate(0, line.size.y + vSpace);
+        if (_factory.isItemHLine(items[i]))
+        {
+            RenderItemHLine& line = _factory.getItemHLine(items[i]);
+            line.render(idle);
+            _rc.translate(0, line.size.y + vSpace);
+        }
     }
 }
