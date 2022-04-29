@@ -4301,3 +4301,27 @@ const PtrArray<MetaObject>& BaseMolecule::metaData() const
 {
     return _meta_data;
 }
+
+void BaseMolecule::getBoundingBox(Rect2f& bbox) const
+{
+    Vec2f a, b;
+    for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)
+    {
+        auto& vec = _xyz[atom_idx];
+        if (!atom_idx)
+        {
+            a.x = vec.x;
+            a.y = vec.y;
+            b = a;
+        }
+        else
+        {
+            // calculate bounding box
+            a.x = std::min(a.x, vec.x);
+            a.y = std::min(a.y, vec.y);
+            b.x = std::max(b.x, vec.x);
+            b.y = std::max(b.y, vec.y);
+        }
+    }
+    bbox = Rect2f(a, b);
+}

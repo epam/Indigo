@@ -34,30 +34,6 @@ using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
-void ReactionJsonLoader::getMoleculeBoundingBox(BaseMolecule& mol, Rect2f& bbox)
-{
-    Vec2f a, b;
-    for (int atom_idx = 0; atom_idx < mol.vertexCount(); ++atom_idx)
-    {
-        auto vec = mol.getAtomXyz(atom_idx);
-        if (!atom_idx)
-        {
-            a.x = vec.x;
-            a.y = vec.y;
-            b = a;
-        }
-        else
-        {
-            // calculate bounding box
-            a.x = std::min(a.x, vec.x);
-            a.y = std::min(a.y, vec.y);
-            b.x = std::max(b.x, vec.x);
-            b.y = std::max(b.y, vec.y);
-        }
-    }
-    bbox = Rect2f(a, b);
-}
-
 ReactionJsonLoader::ReactionJsonLoader(Document& ket)
     : _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _simple_objects(kArrayType), _prxn(nullptr), _pqrxn(nullptr)
 {
@@ -305,7 +281,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         BaseMolecule& mol = *component;
         mol.makeSubmolecule(*_pmol, filter, 0, 0);
         Rect2f bbox;
-        getMoleculeBoundingBox(mol, bbox);
+        mol.getBoundingBox(bbox);
         mol_tops.emplace_back(bbox.top(), i);
         mol_bottoms.emplace_back(bbox.bottom(), i);
         mol_lefts.emplace_back(bbox.left(), i);
@@ -564,7 +540,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
         mol.makeSubmolecule(*_pmol, filter, 0, 0);
 
         Rect2f bbox;
-        getMoleculeBoundingBox(mol, bbox);
+        mol.getBoundingBox(bbox);
 
         std::get<LEFT_BOUND_IDX>(rc) = bbox.left();
     }

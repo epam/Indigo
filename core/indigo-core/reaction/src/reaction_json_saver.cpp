@@ -276,10 +276,10 @@ void ReactionJsonSaver::saveSingleReaction(BaseReaction& rxn, BaseMolecule& merg
         Value pos1(kObjectType);
         Value pos2(kObjectType);
         pos1.AddMember("x", Value().SetDouble(p1.x), ket.GetAllocator());
-        pos1.AddMember("y", Value().SetDouble(-p1.y), ket.GetAllocator());
+        pos1.AddMember("y", Value().SetDouble(p1.y), ket.GetAllocator());
         pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
         pos2.AddMember("x", Value().SetDouble(p2.x), ket.GetAllocator());
-        pos2.AddMember("y", Value().SetDouble(-p2.y), ket.GetAllocator());
+        pos2.AddMember("y", Value().SetDouble(p2.y), ket.GetAllocator());
         pos2.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
         pos_array.PushBack(pos2, ket.GetAllocator());
         pos_array.PushBack(pos1, ket.GetAllocator());

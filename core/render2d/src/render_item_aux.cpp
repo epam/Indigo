@@ -291,7 +291,6 @@ void RenderItemAuxiliary::init()
             case KETReactionPlus::cid:
                 break;
             default:
-                throw Error("Undefined KET type");
                 break;
             }
             if (i)

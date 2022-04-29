@@ -80,7 +80,6 @@ namespace indigo
         void parseOneArrowReaction(BaseReaction& rxn);
         void parseMultipleArrowReaction(BaseReaction& rxn);
         void constructMultipleArrowReaction(BaseReaction& rxn);
-        void getMoleculeBoundingBox(BaseMolecule& mol, Rect2f& bbox);
         bool findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms, const FLOAT_INT_PAIRS& mol_lefts,
                                 const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection);
 

@@ -429,6 +429,9 @@ namespace indigo
         void resetMetaData() override;
         const PtrArray<MetaObject>& metaData() const override;
 
+        // calc bounding box
+        void getBoundingBox(Rect2f& bbox) const;
+
         DECL_ERROR;
 
     protected:
