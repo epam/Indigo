@@ -168,12 +168,12 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             const auto& simple = *md[i];
             switch (simple._class_id)
             {
-            case KETSimpleObject::cid: {
+            case KETSimpleObject::CID: {
                 const KETSimpleObject& ko = static_cast<const KETSimpleObject&>(simple);
                 _renderSimpleObject(ko);
             }
             break;
-            case KETTextObject::cid: {
+            case KETTextObject::CID: {
                 const KETTextObject& ko = static_cast<const KETTextObject&>(simple);
             }
             break;
@@ -278,17 +278,17 @@ void RenderItemAuxiliary::init()
             Rect2f bbox;
             switch (simple._class_id)
             {
-            case KETSimpleObject::cid: {
+            case KETSimpleObject::CID: {
                 auto& obj = (KETSimpleObject&)simple;
                 coords = obj._coordinates;
                 bbox = Rect2f(coords.first, coords.second);
             }
             break;
-            case KETTextObject::cid:
+            case KETTextObject::CID:
                 break;
-            case KETReactionArrow::cid:
+            case KETReactionArrow::CID:
                 break;
-            case KETReactionPlus::cid:
+            case KETReactionPlus::CID:
                 break;
             default:
                 break;

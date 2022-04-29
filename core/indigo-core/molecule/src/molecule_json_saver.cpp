@@ -984,7 +984,7 @@ void MoleculeJsonSaver::saveSimpleObjects(const PtrArray<MetaObject>& meta_objec
         auto pobj = meta_objects[meta_index];
         switch (pobj->_class_id)
         {
-        case KETSimpleObject::cid: {
+        case KETSimpleObject::CID: {
             auto simple_obj = (KETSimpleObject*)pobj;
             writer.StartObject();
             writer.Key("type");
@@ -1037,7 +1037,7 @@ void MoleculeJsonSaver::saveSimpleObjects(const PtrArray<MetaObject>& meta_objec
             writer.EndObject();
             break;
         }
-        case KETTextObject::cid: {
+        case KETTextObject::CID: {
             auto simple_obj = (KETTextObject*)pobj;
             writer.StartObject();
             writer.Key("type");

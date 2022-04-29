@@ -85,7 +85,7 @@ void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule
         auto pobj = md[meta_index];
         switch (pobj->_class_id)
         {
-        case KETReactionArrow::cid: {
+        case KETReactionArrow::CID: {
             KETReactionArrow& ar = (KETReactionArrow&)(*pobj);
             Value arrow(kObjectType);
             arrow.AddMember("type", "arrow", ket.GetAllocator());
@@ -112,7 +112,7 @@ void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule
             nodes.PushBack(arrow, ket.GetAllocator());
         }
         break;
-        case KETReactionPlus::cid: {
+        case KETReactionPlus::CID: {
             KETReactionPlus& rp = (KETReactionPlus&)(*pobj);
             Value plus(kObjectType);
             plus.AddMember("type", "plus", ket.GetAllocator());

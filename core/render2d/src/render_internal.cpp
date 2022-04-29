@@ -2017,12 +2017,12 @@ void MoleculeRenderInternal::_renderMeta()
         const auto& simple = *md[i];
         switch (simple._class_id)
         {
-        case KETSimpleObject::cid: {
+        case KETSimpleObject::CID: {
             const KETSimpleObject& ko = static_cast<const KETSimpleObject&>(simple);
             _renderSimpleObject(ko);
         }
         break;
-        case KETTextObject::cid: {
+        case KETTextObject::CID: {
             const KETTextObject& ko = static_cast<const KETTextObject&>(simple);
         }
         break;

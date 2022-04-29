@@ -40,8 +40,8 @@ namespace indigo
     class KETSimpleObject : public MetaObject
     {
     public:
-        static const std::uint32_t cid = "KET simple object"_hash;
-        KETSimpleObject(int mode, const std::pair<Vec2f, Vec2f>& coords) : MetaObject(cid)
+        static const std::uint32_t CID = "KET simple object"_hash;
+        KETSimpleObject(int mode, const std::pair<Vec2f, Vec2f>& coords) : MetaObject(CID)
         {
             _mode = mode;
             _coordinates = coords;
@@ -65,9 +65,9 @@ namespace indigo
     class KETTextObject : public MetaObject
     {
     public:
-        static const std::uint32_t cid = "KET text object"_hash;
+        static const std::uint32_t CID = "KET text object"_hash;
 
-        KETTextObject(const Vec3f& pos, const std::string& content) : MetaObject(cid)
+        KETTextObject(const Vec3f& pos, const std::string& content) : MetaObject(CID)
         {
             _pos = pos;
             _content = content;
@@ -103,7 +103,7 @@ namespace indigo
     class KETReactionArrow : public MetaObject
     {
     public:
-        static const std::uint32_t cid = "KET reaction arrow"_hash;
+        static const std::uint32_t CID = "KET reaction arrow"_hash;
         enum
         {
             EOpenAngle,
@@ -120,7 +120,7 @@ namespace indigo
             EUnbalancedEquilibriumFilleHalfTriangle
         };
 
-        KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end) : MetaObject(cid), _arrow_type(arrow_type), _begin(begin), _end(end){};
+        KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end) : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end){};
 
         MetaObject* clone() const override
         {
@@ -135,8 +135,8 @@ namespace indigo
     class KETReactionPlus : public MetaObject
     {
     public:
-        static const std::uint32_t cid = "KET reaction plus"_hash;
-        KETReactionPlus(const Vec2f& pos) : MetaObject(cid), _pos(pos){};
+        static const std::uint32_t CID = "KET reaction plus"_hash;
+        KETReactionPlus(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
 
         MetaObject* clone() const override
         {
