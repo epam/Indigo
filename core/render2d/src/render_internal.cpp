@@ -329,8 +329,6 @@ void MoleculeRenderInternal::render()
     _renderAtomIds();
 
     _renderEmptyRFragment();
-
-    // _renderMeta();
 }
 
 BondEnd& MoleculeRenderInternal::_be(int beid)
@@ -2006,70 +2004,6 @@ void MoleculeRenderInternal::_renderBonds()
 {
     for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
         _drawBond(i);
-}
-
-void MoleculeRenderInternal::_renderMeta()
-{
-    _cw.setSingleSource(CWC_BASE);
-    const auto& md = _mol->metaData();
-    for (int i = 0; i < md.size(); ++i)
-    {
-        const auto& simple = *md[i];
-        switch (simple._class_id)
-        {
-        case KETSimpleObject::CID: {
-            const KETSimpleObject& ko = static_cast<const KETSimpleObject&>(simple);
-            _renderSimpleObject(ko);
-        }
-        break;
-        case KETTextObject::CID: {
-            const KETTextObject& ko = static_cast<const KETTextObject&>(simple);
-        }
-        break;
-        }
-    }
-}
-
-void MoleculeRenderInternal::_renderSimpleObject(const KETSimpleObject& simple)
-{
-    _cw.setLineWidth(_settings.bondLineWidth);
-
-    auto v1 = simple._coordinates.first;
-    auto v2 = simple._coordinates.second;
-    v1.x -= _min.x;
-    v2.x -= _min.x;
-    v1 *= _scale;
-    v2 *= _scale;
-    std::tie(v1.y, v2.y) = std::make_pair(_max.y - v1.y, _max.y - v2.y);
-    Rect2f rc(v1, v2);
-
-    switch (simple._mode)
-    {
-    case KETSimpleObject::EKETEllipse:
-        _cw.drawEllipse(v1, v2);
-        break;
-
-    case KETSimpleObject::EKETRectangle: {
-        Array<Vec2f> pts;
-        pts.push() = rc.leftTop();
-        pts.push() = rc.rightTop();
-        pts.push() = rc.rightBottom();
-        pts.push() = rc.leftBottom();
-        pts.push() = rc.leftTop();
-        _cw.drawPoly(pts);
-    }
-    break;
-
-    case KETSimpleObject::EKETLine: {
-        Array<Vec2f> pts;
-        auto& vec1 = pts.push();
-        auto& vec2 = pts.push();
-        vec1 = v1;
-        vec2 = v2;
-        _cw.drawPoly(pts);
-    }
-    break;
-    }
 }
 
 void MoleculeRenderInternal::_renderSGroups()
