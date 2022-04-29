@@ -164,9 +164,13 @@ void RenderItemReaction::estimateSize()
         }
         size.x += _arrowWidth + 2 * hSpace;
     }
+
     if (_meta >= 0)
     {
         RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
+
+        // TODO: align metadata & reaction
+
         size.x = std::max(size.x, meta.size.x);
         size.y = std::max(size.y, meta.size.y);
     }

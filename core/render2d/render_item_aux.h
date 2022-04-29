@@ -19,8 +19,8 @@
 #ifndef __render_item_aux_h__
 #define __render_item_aux_h__
 
-#include "render_item.h"
 #include "molecule/ket_commons.h"
+#include "render_item.h"
 
 namespace indigo
 {

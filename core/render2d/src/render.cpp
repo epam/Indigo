@@ -52,7 +52,7 @@ float Render::_getObjScale(int item)
     {
         avgBondLength = _factory.getItem(item).getTotalBondLength() / bondCount;
     }
-    else if ( atomCount )
+    else if (atomCount)
     {
         avgBondLength = _factory.getItem(item).getTotalClosestAtomDistance() / atomCount;
     }

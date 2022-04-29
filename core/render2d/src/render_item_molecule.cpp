@@ -152,19 +152,27 @@ void RenderItemMolecule::estimateSize()
             {
                 origin.x -= diff.x;
                 meta.size.x += diff.x;
+                if (size.x > meta.size.x)
+                    size.x += diff.x;
             }
             else
             {
                 meta.size.x -= diff.x;
+                if (size.x > meta.size.x)
+                    size.x -= diff.x;
             }
             if (diff.y < 0)
             {
                 meta.size.y -= diff.y;
+                if (size.y > meta.size.x)
+                    size.y -= diff.y;
             }
             else
             {
                 origin.y -= diff.y;
                 meta.size.y += diff.y;
+                if (size.y > meta.size.x)
+                    size.y += diff.y;
             }
         }
         size.x = std::max(size.x, meta.size.x);
