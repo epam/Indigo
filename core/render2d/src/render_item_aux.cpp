@@ -268,7 +268,7 @@ void RenderItemAuxiliary::render(bool idle)
 
 void RenderItemAuxiliary::init()
 {
-    if (type == AUX_META && meta )
+    if (type == AUX_META && meta)
     {
         const auto& md = meta->metaData();
         for (int i = 0; i < md.size(); ++i)

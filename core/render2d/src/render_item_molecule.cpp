@@ -139,7 +139,7 @@ void RenderItemMolecule::estimateSize()
 
     if (_meta >= 0)
     {
-        Vec2f diff(0,0);
+        Vec2f diff(0, 0);
         RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
         if (_core >= 0)
         {
@@ -167,8 +167,8 @@ void RenderItemMolecule::estimateSize()
                 meta.size.y += diff.y;
             }
         }
-        size.x = std::max(size.x, meta.size.x );
-        size.y = std::max(size.y, meta.size.y );
+        size.x = std::max(size.x, meta.size.x);
+        size.y = std::max(size.y, meta.size.y);
     }
 }
 
