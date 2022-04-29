@@ -887,7 +887,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         }
     }
 
-    saveSimpleObjects(bmol.metaData(), writer);
+    saveSimpleObjects(writer, bmol);
 
     int n_rgroups = mol->rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; ++i)
@@ -977,8 +977,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
     _output.printf("%s", result.str().c_str());
 }
 
-void MoleculeJsonSaver::saveSimpleObjects(const PtrArray<MetaObject>& meta_objects, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void MoleculeJsonSaver::saveSimpleObjects(rapidjson::Writer<rapidjson::StringBuffer>& writer, MetaObjectsInterface& meta_interface)
 {
+    const auto& meta_objects = meta_interface.metaData();
     for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
     {
         auto pobj = meta_objects[meta_index];
