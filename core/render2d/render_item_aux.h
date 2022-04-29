@@ -19,6 +19,7 @@
 #ifndef __render_item_aux_h__
 #define __render_item_aux_h__
 
+#include "molecule/ket_commons.h"
 #include "render_item.h"
 
 namespace indigo
@@ -34,12 +35,15 @@ namespace indigo
             AUX_RXN_PLUS,
             AUX_RXN_ARROW,
             AUX_RGROUP_LABEL,
-            AUX_RGROUP_IFTHEN
+            AUX_RGROUP_IFTHEN,
+            AUX_META
         };
 
         RenderItemAuxiliary(RenderItemFactory& factory);
         ~RenderItemAuxiliary() override;
         DECL_ERROR;
+
+        void init() override;
 
         void estimateSize() override
         {
@@ -47,10 +51,9 @@ namespace indigo
         }
         void setObjScale(float scale) override
         {
+            scaleFactor = scale;
         }
-        void init() override
-        {
-        }
+
         void render(bool idle) override;
         float getTotalBondLength() override
         {
@@ -72,16 +75,21 @@ namespace indigo
         AUX_TYPE type;
         Array<char> text;
         BaseMolecule* mol;
+        MetaObjectsInterface* meta;
         int rLabelIdx;
         float arrowLength;
+        float scaleFactor;
+        Vec2f _min, _max;
 
     private:
         void _drawRGroupLabel(bool idle);
         void _drawRIfThen(bool idle);
         void _drawText(bool idle);
+        void _drawMeta(bool idle);
         void _drawPlus();
         void _drawArrow();
         void _renderIdle();
+        void _renderSimpleObject(const KETSimpleObject& simple);
     };
 
 } // namespace indigo

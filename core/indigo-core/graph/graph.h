@@ -125,17 +125,18 @@ namespace indigo
         }
     };
 
-    class GraphMetaObject
+    class CycleBasis;
+
+    class MetaObject
     {
     public:
-        GraphMetaObject(int class_id) : _class_id(class_id)
+        explicit MetaObject(uint32_t class_id) : _class_id(class_id)
         {
         }
-        int _class_id;
-        virtual GraphMetaObject* clone() const = 0;
+        uint32_t _class_id;
+        virtual MetaObject* clone() const = 0;
+        virtual ~MetaObject(){};
     };
-
-    class CycleBasis;
 
     class DLLEXPORT Graph : public NonCopyable
     {
@@ -191,9 +192,6 @@ namespace indigo
 
         int addVertex();
         int addEdge(int beg, int end);
-        void addMetaObject(GraphMetaObject* pobj); // moves ownership
-        void resetMetaData();
-        const PtrArray<GraphMetaObject>& metaData() const;
 
         int findEdgeIndex(int beg, int end) const;
         bool haveEdge(int beg, int end) const;
@@ -267,8 +265,6 @@ namespace indigo
         Array<int> _component_ecount;
         bool _components_valid;
         int _components_count;
-
-        PtrArray<GraphMetaObject> _meta_data;
 
         void _calculateTopology();
         void _calculateSSSR();

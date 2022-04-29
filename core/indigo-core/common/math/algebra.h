@@ -29,6 +29,7 @@
 
 #define DEG2RAD(x) ((x)*M_PI / 180)
 #define RAD2DEG(x) ((x)*180 / M_PI)
+#define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
 
 namespace indigo
 {
@@ -301,6 +302,52 @@ namespace indigo
         {
             _leftBottom = other._leftBottom;
             _rightTop = other._rightTop;
+        }
+
+        inline bool pointInRect(const Vec2f& pt) const
+        {
+            return _leftBottom.x < pt.x && _leftBottom.y < pt.y && _rightTop.x > pt.x && _rightTop.y > pt.y;
+        }
+
+        inline bool rayIntersectsRect(const Vec2f& begin, const Vec2f& end)
+        {
+            Vec2f v = end - begin;
+            Vec2f vr(v.y, -v.x); // perpendicular vector
+            auto lb = _leftBottom - begin;
+            auto lt = leftTop() - begin;
+            auto rt = _rightTop - begin;
+            auto rb = rightBottom() - begin;
+            // same_sign means no intersection
+            bool same_sign = std::signbit(Vec2f::dot(vr, lb)) == std::signbit(Vec2f::dot(vr, lt)) &&
+                             std::signbit(Vec2f::dot(vr, lt)) == std::signbit(Vec2f::dot(vr, rt)) &&
+                             std::signbit(Vec2f::dot(vr, rt)) == std::signbit(Vec2f::dot(vr, rb));
+
+            return !same_sign && Vec2f::cross(lb, vr) > 0 && Vec2f::cross(lt, vr) > 0 && Vec2f::cross(rt, vr) > 0 && Vec2f::cross(rb, vr) > 0;
+        }
+
+        inline double pointDistance(const Vec2f& pt)
+        {
+            if (pt.x <= left())
+            {
+                if (pt.y <= bottom())
+                    return HYPOT(left() - pt.x, bottom() - pt.y);
+                if (top() <= pt.y)
+                    return HYPOT(left() - pt.x, pt.y - top());
+                return left() - pt.x;
+            }
+            if (pt.x >= right())
+            {
+                if (pt.y <= bottom())
+                    return HYPOT(pt.x - right(), bottom() - pt.y);
+                if (top() <= pt.y)
+                    return HYPOT(pt.x - right(), pt.y - top());
+                return pt.x - right();
+            }
+            if (pt.y <= bottom())
+                return bottom() - pt.y;
+            if (top() <= pt.y)
+                return pt.y - top();
+            return 0.0; // if pt is inside the box
         }
 
         inline float left() const

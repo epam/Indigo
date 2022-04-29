@@ -23,6 +23,7 @@
 
 #include "common/math/algebra.h"
 #include "graph/graph.h"
+#include "reaction/base_reaction.h"
 
 namespace indigo
 {
@@ -36,19 +37,19 @@ namespace indigo
         return string_hash(s, count);
     }
 
-    class KETSimpleObject : public GraphMetaObject
+    class KETSimpleObject : public MetaObject
     {
     public:
-        static const std::uint32_t cid = "KET simple object"_hash;
-        KETSimpleObject(int mode, const Rect2f& rect) : GraphMetaObject(cid)
+        static const std::uint32_t CID = "KET simple object"_hash;
+        KETSimpleObject(int mode, const std::pair<Vec2f, Vec2f>& coords) : MetaObject(CID)
         {
             _mode = mode;
-            _rect = rect;
+            _coordinates = coords;
         };
 
-        GraphMetaObject* clone() const override
+        MetaObject* clone() const override
         {
-            return new KETSimpleObject(_mode, _rect);
+            return new KETSimpleObject(_mode, _coordinates);
         }
 
         enum
@@ -58,21 +59,21 @@ namespace indigo
             EKETLine
         };
         int _mode;
-        Rect2f _rect;
+        std::pair<Vec2f, Vec2f> _coordinates;
     };
 
-    class KETTextObject : public GraphMetaObject
+    class KETTextObject : public MetaObject
     {
     public:
-        static const std::uint32_t cid = "KET text object"_hash;
+        static const std::uint32_t CID = "KET text object"_hash;
 
-        KETTextObject(const Vec3f& pos, const std::string& content) : GraphMetaObject(cid)
+        KETTextObject(const Vec3f& pos, const std::string& content) : MetaObject(CID)
         {
             _pos = pos;
             _content = content;
         }
 
-        GraphMetaObject* clone() const override
+        MetaObject* clone() const override
         {
             return new KETTextObject(_pos, _content);
         }
@@ -98,5 +99,106 @@ namespace indigo
         std::list<KETTextLine> _block;
         Vec3f _pos;
     };
+
+    class KETReactionArrow : public MetaObject
+    {
+    public:
+        static const std::uint32_t CID = "KET reaction arrow"_hash;
+        enum
+        {
+            EOpenAngle,
+            EFilledTriangle,
+            EFilledBow,
+            EDashedOpenAngle,
+            EFailed,
+            EBothEndsFilledTriangle,
+            EEquilibriumFilledHalfBow,
+            EEquilibriumFilledTriangle,
+            EEquilibriumOpenAngle,
+            EUnbalancedEquilibriumFilledHalfBow,
+            EUnbalancedEquilibriumLargeFilledHalfBow,
+            EUnbalancedEquilibriumFilleHalfTriangle
+        };
+
+        KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end) : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end){};
+
+        MetaObject* clone() const override
+        {
+            return new KETReactionArrow(_arrow_type, _begin, _end);
+        }
+
+        int _arrow_type;
+        Vec2f _begin;
+        Vec2f _end;
+    };
+
+    class KETReactionPlus : public MetaObject
+    {
+    public:
+        static const std::uint32_t CID = "KET reaction plus"_hash;
+        KETReactionPlus(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
+
+        MetaObject* clone() const override
+        {
+            return new KETReactionPlus(_pos);
+        }
+
+        enum
+        {
+            EKETEllipse,
+            EKETRectangle,
+            EKETLine
+        };
+        Vec2f _pos;
+    };
+
+    struct MolSumm
+    {
+        MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED){};
+        MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED){};
+
+        Rect2f bbox;
+        std::vector<int> indexes;
+        int role;
+        std::vector<int> arrows_to;
+    };
+
+    struct ReactionComponent
+    {
+        enum
+        {
+            MOLECULE = 0,
+            PLUS,
+            ARROW_BASIC,
+            ARROW_FILLED_TRIANGLE,
+            ARROW_FILLED_BOW,
+            ARROW_DASHED,
+            ARROW_FAILED,
+            ARROW_BOTH_ENDS_FILLED_TRIANGLE,
+            ARROW_EQUILIBRIUM_FILLED_HALF_BOW,
+            ARROW_EQUILIBRIUM_FILLED_TRIANGLE,
+            ARROW_EQUILIBRIUM_OPEN_ANGLE,
+            ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_BOW,
+            ARROW_UNBALANCED_EQUILIBRIUM_LARGE_FILLED_HALF_BOW,
+            ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_TRIANGLE
+        };
+
+        enum
+        {
+            NOT_CONNECTED = -2,
+            CONNECTED = -1
+        };
+
+        ReactionComponent(int ctype, const Rect2f& box, std::unique_ptr<BaseMolecule> mol)
+            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED){};
+
+        int component_type;
+        Rect2f bbox;
+        std::unique_ptr<BaseMolecule> molecule;
+        std::list<MolSumm>::iterator summ_block_it;
+        int summ_block_idx;
+        std::vector<Vec2f> coordinates;
+    };
+
 }
 #endif

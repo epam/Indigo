@@ -41,6 +41,12 @@ SideIter& SideIter::operator++()
     case BaseReaction::CATALYST:
         _idx = _owner.catalystNext(_idx);
         break;
+    case BaseReaction::INTERMEDIATE:
+        _idx = _owner.intermediateNext(_idx);
+        break;
+    case BaseReaction::UNDEFINED:
+        _idx = _owner.undefinedNext(_idx);
+        break;
     default:
         throw Error("Invalid BaseReaction side iterator type");
     }
@@ -66,6 +72,12 @@ SideIter SideAuto::begin()
     case BaseReaction::CATALYST:
         idx = _owner.catalystBegin();
         break;
+    case BaseReaction::INTERMEDIATE:
+        idx = _owner.catalystBegin();
+        break;
+    case BaseReaction::UNDEFINED:
+        idx = _owner.catalystBegin();
+        break;
     default:
         throw SideIter::Error("Invalid BaseReaction side iterator type");
     }
@@ -78,7 +90,8 @@ SideIter SideAuto::end()
     return SideIter(_owner, _owner.end(), _side);
 }
 
-BaseReaction::BaseReaction() : reactants(*this, REACTANT), catalysts(*this, CATALYST), products(*this, PRODUCT)
+BaseReaction::BaseReaction()
+    : reactants(*this, REACTANT), catalysts(*this, CATALYST), products(*this, PRODUCT), intermediates(*this, INTERMEDIATE), undefined(*this, UNDEFINED)
 {
     clear();
 }
@@ -92,6 +105,8 @@ void BaseReaction::clear()
     _reactantCount = 0;
     _productCount = 0;
     _catalystCount = 0;
+    _intermediateCount = 0;
+    _undefinedCount = 0;
     _allMolecules.clear();
     _types.clear();
     name.clear();
@@ -148,15 +163,36 @@ int BaseReaction::addCatalyst()
     return _addBaseMolecule(CATALYST);
 }
 
+int BaseReaction::addIntermediate()
+{
+    return _addBaseMolecule(INTERMEDIATE);
+}
+
+int BaseReaction::addUndefined()
+{
+    return _addBaseMolecule(UNDEFINED);
+}
+
 void BaseReaction::_addedBaseMolecule(int idx, int side, BaseMolecule& mol)
 {
-    if (side == REACTANT)
+    switch (side)
+    {
+    case REACTANT:
         _reactantCount++;
-    else if (side == PRODUCT)
+        break;
+    case PRODUCT:
         _productCount++;
-    else // CATALYST
+        break;
+    case INTERMEDIATE:
+        _intermediateCount++;
+        break;
+    case UNDEFINED:
+        _undefinedCount++;
+        break;
+    case CATALYST:
         _catalystCount++;
-
+        break;
+    }
     _types.expand(idx + 1);
     _types[idx] = side;
 }
@@ -259,6 +295,24 @@ int BaseReaction::addCatalystCopy(BaseMolecule& mol, Array<int>* mapping, Array<
     return idx;
 }
 
+int BaseReaction::addIntermediateCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
+{
+    int idx = _allMolecules.add(mol.neu());
+
+    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
+    _addedBaseMolecule(idx, INTERMEDIATE, *_allMolecules[idx]);
+    return idx;
+}
+
+int BaseReaction::addUndefinedCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
+{
+    int idx = _allMolecules.add(mol.neu());
+
+    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
+    _addedBaseMolecule(idx, UNDEFINED, *_allMolecules[idx]);
+    return idx;
+}
+
 void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<Array<int>>* mappings, ObjArray<Array<int>>* inv_mappings)
 {
     clear();
@@ -297,6 +351,12 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
         case CATALYST:
             index = addCatalystCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
+        case INTERMEDIATE:
+            index = addIntermediateCopy(rmol, &mappings->at(i), &inv_mapping);
+            break;
+        case UNDEFINED:
+            index = addUndefinedCopy(rmol, &mappings->at(i), &inv_mapping);
+            break;
         }
 
         if (inv_mappings != 0)
@@ -312,6 +372,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
     }
 
     name.copy(other.name);
+    cloneMetaData(other);
 }
 
 void BaseReaction::_clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings)
@@ -336,20 +397,30 @@ bool BaseReaction::isQueryReaction()
 void BaseReaction::remove(int i)
 {
     int side = _types[i];
-
-    if (side == REACTANT)
+    switch (side)
+    {
+    case REACTANT:
         _reactantCount--;
-    else if (side == PRODUCT)
+        break;
+    case PRODUCT:
         _productCount--;
-    else // CATALYST
+        break;
+    case INTERMEDIATE:
+        _intermediateCount--;
+        break;
+    case UNDEFINED:
+        _undefinedCount--;
+        break;
+    case CATALYST:
         _catalystCount--;
-
+        break;
+    }
     _allMolecules.remove(i);
 }
 
 int BaseReaction::begin()
 {
-    return _nextElement(REACTANT | PRODUCT | CATALYST, -1);
+    return _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, -1);
 }
 
 int BaseReaction::end()
@@ -359,7 +430,7 @@ int BaseReaction::end()
 
 int BaseReaction::next(int index)
 {
-    return _nextElement(REACTANT | PRODUCT | CATALYST, index);
+    return _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, index);
 }
 
 int BaseReaction::count()
@@ -374,4 +445,21 @@ int BaseReaction::findMolecule(BaseMolecule* mol)
             return i;
 
     return -1;
+}
+
+void BaseReaction::addMetaObject(MetaObject* pobj)
+{
+    int index = _meta_data.size();
+    _meta_data.expand(index + 1);
+    _meta_data.set(index, pobj);
+}
+
+void BaseReaction::resetMetaData()
+{
+    _meta_data.clear();
+}
+
+const PtrArray<MetaObject>& BaseReaction::metaData() const
+{
+    return _meta_data;
 }

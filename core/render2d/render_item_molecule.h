@@ -45,7 +45,9 @@ namespace indigo
         Vec2f refAtomPos;
 
     private:
+        int _meta;
         int _core;
+        int _mol;
         int _getRIfThenCount();
     };
 

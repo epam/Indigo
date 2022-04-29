@@ -43,6 +43,7 @@ void RenderItemFragment::init()
 {
     _min.set(0, 0);
     _max.set(0, 0);
+
     for (int i = mol->vertexBegin(); i < mol->vertexEnd(); i = mol->vertexNext(i))
     {
         const Vec3f& v = mol->getAtomXyz(i);

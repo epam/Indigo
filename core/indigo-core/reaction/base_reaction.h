@@ -64,18 +64,38 @@ namespace indigo
         int _side;
     };
 
-    class DLLEXPORT BaseReaction : public NonCopyable
+    class ReactionBlock : public NonCopyable
+    {
+    public:
+        void copy(const ReactionBlock& other)
+        {
+            indexes.copy(other.indexes);
+            arrows_to.copy(other.arrows_to);
+        }
+        Array<int> indexes;
+        Array<int> arrows_to;
+        int role;
+    };
+
+    class DLLEXPORT BaseReaction : public NonCopyable, public MetaObjectsInterface
     {
     public:
         enum
         {
             REACTANT = 1,
             PRODUCT = 2,
-            CATALYST = 4
+            INTERMEDIATE = 4,
+            UNDEFINED = 8,
+            CATALYST = 16
         };
 
         BaseReaction();
         virtual ~BaseReaction();
+
+        bool isMultistep()
+        {
+            return _reactionBlocks.size();
+        }
 
         // 'neu' means 'new' in German
         virtual BaseReaction* neu() = 0;
@@ -86,6 +106,35 @@ namespace indigo
         int count();
 
         void remove(int i);
+
+        int intermediateBegin()
+        {
+            return _nextElement(INTERMEDIATE, -1);
+        }
+        int intermediateNext(int index)
+        {
+            return _nextElement(INTERMEDIATE, index);
+        }
+
+        int intermediateEnd()
+        {
+            return _allMolecules.end();
+        }
+
+        int undefinedBegin()
+        {
+            return _nextElement(UNDEFINED, -1);
+        }
+
+        int undefinedNext(int index)
+        {
+            return _nextElement(UNDEFINED, index);
+        }
+
+        int undefinedEnd()
+        {
+            return _allMolecules.end();
+        }
 
         int reactantBegin()
         {
@@ -159,9 +208,33 @@ namespace indigo
             return _catalystCount;
         }
 
+        int reactionBlocksCount() const
+        {
+            return _reactionBlocks.size();
+        }
+
+        ReactionBlock& reactionBlock(int index)
+        {
+            return _reactionBlocks[index];
+        }
+
+        ReactionBlock& addReactionBlock()
+        {
+            auto& rb = _reactionBlocks.push();
+            rb.copy(ReactionBlock());
+            return rb;
+        }
+
+        void clearReactionBlocks()
+        {
+            _reactionBlocks.clear();
+        }
+
         SideAuto reactants;
         SideAuto catalysts;
         SideAuto products;
+        SideAuto intermediates;
+        SideAuto undefined;
 
         virtual void clear();
 
@@ -193,10 +266,14 @@ namespace indigo
         int addReactant();
         int addProduct();
         int addCatalyst();
+        int addIntermediate();
+        int addUndefined();
 
         int addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
         int addProductCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
         int addCatalystCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
+        int addIntermediateCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
+        int addUndefinedCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
 
         int findAtomByAAM(int mol_idx, int aam);
         int findAamNumber(BaseMolecule* mol, int atom_number);
@@ -211,6 +288,11 @@ namespace indigo
         void clone(BaseReaction& other, Array<int>* mol_mapping = nullptr, ObjArray<Array<int>>* mappings = nullptr,
                    ObjArray<Array<int>>* inv_mappings = nullptr);
 
+        // metadata methods
+        void addMetaObject(MetaObject* pobj) override; // moves ownership
+        void resetMetaData() override;
+        const PtrArray<MetaObject>& metaData() const override;
+
         Array<char> name;
 
         DECL_ERROR;
@@ -222,15 +304,20 @@ namespace indigo
 
         PtrPool<BaseMolecule> _allMolecules;
 
+        ObjArray<ReactionBlock> _reactionBlocks; // for multistep reactions only
+
         Array<int> _types;
 
         int _reactantCount;
         int _productCount;
         int _catalystCount;
+        int _intermediateCount;
+        int _undefinedCount;
 
         int _nextElement(int type, int index);
 
         virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
+        PtrArray<MetaObject> _meta_data;
     };
 
 } // namespace indigo

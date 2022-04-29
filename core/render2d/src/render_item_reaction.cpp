@@ -31,7 +31,7 @@ IMPL_ERROR(RenderItemReaction, "RenderItemReaction");
 
 RenderItemReaction::RenderItemReaction(RenderItemFactory& factory)
     : RenderItemContainer(factory), rxn(NULL), hSpace(_settings.layoutMarginHorizontal), catalystOffset(_settings.layoutMarginVertical / 2), _reactantLine(-1),
-      _catalystLineUpper(-1), _catalystLineLower(-1), _productLine(-1), _arrow(-1), _splitCatalysts(false)
+      _catalystLineUpper(-1), _catalystLineLower(-1), _productLine(-1), _arrow(-1), _meta(-1), _splitCatalysts(false)
 {
 }
 
@@ -40,7 +40,7 @@ void RenderItemReaction::init()
     if (rxn == NULL)
         throw Error("reaction not set");
 
-    if (rxn->begin() >= rxn->end()) // no reactants or products
+    if (rxn->begin() >= rxn->end() && rxn->metaData().size() == 0) // no reactants or products
         return;
 
     _splitCatalysts = _opt.agentsBelowArrow;
@@ -85,10 +85,21 @@ void RenderItemReaction::init()
         _factory.getItemHLine(_productLine).items.push(_addFragment(i));
     }
 
+    // add single arrow
     _arrow = _factory.addItemAuxiliary();
     _factory.getItemAuxiliary(_arrow).type = RenderItemAuxiliary::AUX_RXN_ARROW;
     _factory.getItemAuxiliary(_arrow).init();
     items.push(_arrow);
+
+    // add meta
+    if (rxn->metaData().size())
+    {
+        _meta = _factory.addItemAuxiliary();
+        _factory.getItemAuxiliary(_meta).type = RenderItemAuxiliary::AUX_META;
+        _factory.getItemAuxiliary(_meta).meta = rxn;
+        _factory.getItemAuxiliary(_meta).init();
+        items.push(_meta);
+    }
 }
 
 int RenderItemReaction::_addPlus()
@@ -153,6 +164,16 @@ void RenderItemReaction::estimateSize()
         }
         size.x += _arrowWidth + 2 * hSpace;
     }
+
+    if (_meta >= 0)
+    {
+        RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
+
+        // TODO: align metadata & reaction
+
+        size.x = std::max(size.x, meta.size.x);
+        size.y = std::max(size.y, meta.size.y);
+    }
 }
 
 void RenderItemReaction::render(bool idle)
@@ -160,6 +181,11 @@ void RenderItemReaction::render(bool idle)
     _rc.translate(-origin.x, -origin.y);
     _rc.storeTransform();
     {
+        if (_meta >= 0)
+        {
+            RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
+            meta.render(idle);
+        }
         if (_reactantLine >= 0)
         {
             RenderItemBase& reactants = _factory.getItem(_reactantLine);

@@ -28,7 +28,8 @@ using namespace indigo;
 
 IMPL_ERROR(RenderItemAuxiliary, "RenderItemAuxiliary");
 
-RenderItemAuxiliary::RenderItemAuxiliary(RenderItemFactory& factory) : RenderItemBase(factory), arrowLength(_settings.arrowLength)
+RenderItemAuxiliary::RenderItemAuxiliary(RenderItemFactory& factory)
+    : RenderItemBase(factory), arrowLength(_settings.arrowLength), scaleFactor(1.0), mol(nullptr), meta(nullptr)
 {
 }
 
@@ -156,6 +157,73 @@ void RenderItemAuxiliary::_drawArrow()
     _rc.drawArrow(Vec2f(0, 0), Vec2f(arrowLength, 0), _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
 }
 
+void RenderItemAuxiliary::_drawMeta(bool idle)
+{
+    if (meta)
+    {
+        _rc.setSingleSource(CWC_BASE);
+        const auto& md = meta->metaData();
+        for (int i = 0; i < md.size(); ++i)
+        {
+            const auto& simple = *md[i];
+            switch (simple._class_id)
+            {
+            case KETSimpleObject::CID: {
+                const KETSimpleObject& ko = static_cast<const KETSimpleObject&>(simple);
+                _renderSimpleObject(ko);
+            }
+            break;
+            case KETTextObject::CID: {
+                const KETTextObject& ko = static_cast<const KETTextObject&>(simple);
+            }
+            break;
+            }
+        }
+    }
+}
+
+void RenderItemAuxiliary::_renderSimpleObject(const KETSimpleObject& simple)
+{
+    _rc.setLineWidth(_settings.bondLineWidth);
+
+    auto v1 = simple._coordinates.first;
+    auto v2 = simple._coordinates.second;
+    v1.x -= _min.x;
+    v2.x -= _min.x;
+    v1 *= scaleFactor;
+    v2 *= scaleFactor;
+    std::tie(v1.y, v2.y) = std::make_pair(_max.y - v1.y, _max.y - v2.y);
+    Rect2f rc(v1, v2);
+
+    switch (simple._mode)
+    {
+    case KETSimpleObject::EKETEllipse:
+        _rc.drawEllipse(v1, v2);
+        break;
+
+    case KETSimpleObject::EKETRectangle: {
+        Array<Vec2f> pts;
+        pts.push() = rc.leftTop();
+        pts.push() = rc.rightTop();
+        pts.push() = rc.rightBottom();
+        pts.push() = rc.leftBottom();
+        pts.push() = rc.leftTop();
+        _rc.drawPoly(pts);
+    }
+    break;
+
+    case KETSimpleObject::EKETLine: {
+        Array<Vec2f> pts;
+        auto& vec1 = pts.push();
+        auto& vec2 = pts.push();
+        vec1 = v1;
+        vec2 = v2;
+        _rc.drawPoly(pts);
+    }
+    break;
+    }
+}
+
 void RenderItemAuxiliary::_renderIdle()
 {
     _rc.initNullContext();
@@ -190,7 +258,51 @@ void RenderItemAuxiliary::render(bool idle)
     case AUX_RGROUP_IFTHEN:
         _drawRIfThen(idle);
         return;
+    case AUX_META:
+        _drawMeta(idle);
+        return;
     default:
         throw Error("Item type not set or invalid");
+    }
+}
+
+void RenderItemAuxiliary::init()
+{
+    if (type == AUX_META && meta)
+    {
+        const auto& md = meta->metaData();
+        for (int i = 0; i < md.size(); ++i)
+        {
+            const auto& simple = *md[i];
+            std::pair<Vec2f, Vec2f> coords;
+            Rect2f bbox;
+            switch (simple._class_id)
+            {
+            case KETSimpleObject::CID: {
+                auto& obj = (KETSimpleObject&)simple;
+                coords = obj._coordinates;
+                bbox = Rect2f(coords.first, coords.second);
+            }
+            break;
+            case KETTextObject::CID:
+                break;
+            case KETReactionArrow::CID:
+                break;
+            case KETReactionPlus::CID:
+                break;
+            default:
+                break;
+            }
+            if (i)
+            {
+                _min.min(bbox.leftBottom());
+                _max.max(bbox.rightTop());
+            }
+            else
+            {
+                _min.copy(bbox.leftBottom());
+                _max.copy(bbox.rightTop());
+            }
+        }
     }
 }

@@ -922,6 +922,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
             one_rnode.PushBack(rnode, data.GetAllocator());
             auto empty_val = Value(kArrayType);
             MoleculeJsonLoader loader(one_rnode, empty_val);
+            loader.stereochemistry_options = stereochemistry_options;
             loader.loadMolecule(*fragment.get());
             rgroup.fragments.add(fragment.release());
         }
@@ -991,11 +992,16 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
     MoleculeLayout ml(mol, false);
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();
-    if (_simple_objects.IsArray())
+    loadSimpleObjects(_simple_objects, mol);
+}
+
+void MoleculeJsonLoader::loadSimpleObjects(rapidjson::Value& simple_objects, MetaObjectsInterface& meta_interface)
+{
+    if (simple_objects.IsArray())
     {
-        for (int obj_idx = 0; obj_idx < _simple_objects.Size(); ++obj_idx)
+        for (int obj_idx = 0; obj_idx < simple_objects.Size(); ++obj_idx)
         {
-            auto& simple_object = _simple_objects[obj_idx];
+            auto& simple_object = simple_objects[obj_idx];
             if (simple_object.HasMember("mode")) // ellipse or rectangle or line
             {
                 int mode = 0;
@@ -1028,7 +1034,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
                     else
                         throw("Bad pos array size %d. Most be equal to 2.", pos.Size());
                 }
-                mol.addMetaObject(new KETSimpleObject(mode, Rect2f(p1, p2)));
+                meta_interface.addMetaObject(new KETSimpleObject(mode, std::make_pair(p1, p2)));
             }
             else if (simple_object.HasMember("content") && simple_object.HasMember("position"))
             {
@@ -1037,7 +1043,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
                 text_origin.x = simple_object["position"]["x"].GetFloat();
                 text_origin.y = simple_object["position"]["y"].GetFloat();
                 text_origin.z = simple_object["position"]["z"].GetFloat();
-                mol.addMetaObject(new KETTextObject(text_origin, content));
+                meta_interface.addMetaObject(new KETTextObject(text_origin, content));
             }
         }
     }
