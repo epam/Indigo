@@ -1266,6 +1266,43 @@ class IndigoObject(object):
                     return True
         return False
 
+    def stripSalt(self, inplace=False):
+        """Molecule method strips all inorganic components.
+
+        Args:
+            inplace(bool): if False - returns the copy of the molecule,
+                           without inorganic components, if True - strips
+                           inorganic components from the molecule itself.
+
+        Returns:
+            IndigoObject: if inplace=False - new molecule without inorganic
+                          components,
+                          if inplace=True - initial molecule without inorganic
+                          components.
+        """
+        self.dispatcher._setSessionId()
+        salts_atoms = []
+        idx = 0
+        for target_fragment in self.iterateComponents():
+            target_fragment = target_fragment.clone()
+            n_atoms = target_fragment.countAtoms()
+
+            for salt in SALTS:
+                query_salt = self.dispatcher.loadQueryMolecule(salt)
+                matcher = self.dispatcher.substructureMatcher(target_fragment)
+                if matcher.match(query_salt):
+                    salt_position = [i for i in range(idx, idx + n_atoms)]
+                    salts_atoms.extend(salt_position)
+            idx += n_atoms
+
+        if not inplace:
+            saltless_fragment = self.clone()
+            saltless_fragment.removeAtoms(salts_atoms)
+            return saltless_fragment
+        else:
+            self.removeAtoms(salts_atoms)
+            return self
+
     def countHydrogens(self):
         """Atom or Molecule method returns the number of hydrogens
 
