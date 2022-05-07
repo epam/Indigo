@@ -40,7 +40,10 @@ void RenderItemReaction::init()
     if (rxn == NULL)
         throw Error("reaction not set");
 
-    if (rxn->begin() >= rxn->end() && rxn->metaData().size() == 0) // no reactants or products
+    if (rxn->metaData().size())
+        return initMeta();
+
+    if (rxn->begin() >= rxn->end()) // no reactants or products
         return;
 
     _splitCatalysts = _opt.agentsBelowArrow;
@@ -90,15 +93,28 @@ void RenderItemReaction::init()
     _factory.getItemAuxiliary(_arrow).type = RenderItemAuxiliary::AUX_RXN_ARROW;
     _factory.getItemAuxiliary(_arrow).init();
     items.push(_arrow);
+}
 
+void RenderItemReaction::initMeta()
+{
     // add meta
-    if (rxn->metaData().size())
+    _meta = _factory.addItemAuxiliary();
+    /*
+    auto& aux = _factory.getItemAuxiliary(_meta);
+    aux.type = RenderItemAuxiliary::AUX_META;
+    aux.meta = rxn;
+    aux.init();
+    min = aux.min;
+    max = aux.max;
+    items.push(_meta);*/
+
+    for (int i = rxn->begin(); i < rxn->end(); i = rxn->next(i))
     {
-        _meta = _factory.addItemAuxiliary();
-        _factory.getItemAuxiliary(_meta).type = RenderItemAuxiliary::AUX_META;
-        _factory.getItemAuxiliary(_meta).meta = rxn;
-        _factory.getItemAuxiliary(_meta).init();
-        items.push(_meta);
+        auto mol = _addFragment(i);
+        items.push(mol);
+        auto& frag = _factory.getItemFragment(mol);
+        frag.min.set(0, 0);
+        frag.max.set(0, 0);
     }
 }
 
@@ -126,12 +142,15 @@ int RenderItemReaction::_addFragment(int i)
 
 void RenderItemReaction::estimateSize()
 {
-    RenderItemContainer::estimateSize();
     size.set(0, 0);
     origin.set(0, 0);
-
     size.x = 0;
     size.y = 0;
+
+    if (_meta >= 0)
+        return estimateSizeMeta();
+
+    RenderItemContainer::estimateSize();
 
     if (_reactantLine >= 0)
     {
@@ -164,15 +183,35 @@ void RenderItemReaction::estimateSize()
         }
         size.x += _arrowWidth + 2 * hSpace;
     }
+}
 
-    if (_meta >= 0)
+void RenderItemReaction::estimateSizeMeta()
+{
+    RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
+    size.x = std::max(size.x, meta.size.x);
+    size.y = std::max(size.y, meta.size.y);
+    Vec2f bbmin, bbmax;
+    for (int i = 0; i < items.size(); ++i)
     {
-        RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
-
-        // TODO: align metadata & reaction
-
-        size.x = std::max(size.x, meta.size.x);
-        size.y = std::max(size.y, meta.size.y);
+        RenderItemBase& item = _factory.getItem(items[i]);
+        item.estimateSize();
+        if (i)
+        {
+            bbmin.x = std::min( bbmin.x, item.origin.x );
+            bbmin.y = std::min( bbmin.y, item.origin.y );
+            auto bmin = origin;
+            bmin.add(item.size);
+            bbmax.x = std::max( bbmax.x, item.origin.x + item.size.x);
+            bbmax.y = std::max( bbmax.y, item.origin.y + item.size.y);
+        }
+        else
+        {
+            bbmin = item.origin;
+            bbmax = bbmin;
+            bbmax.add(item.size);
+        }
+        size.x = std::max(size.x, item.size.x + item.origin.x );
+        size.y = std::max(size.y, item.size.y + item.origin.y );
     }
 }
 
@@ -182,72 +221,83 @@ void RenderItemReaction::render(bool idle)
     _rc.storeTransform();
     {
         if (_meta >= 0)
+            renderMeta(idle);
+        else
         {
-            RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
-            meta.render(idle);
-        }
-        if (_reactantLine >= 0)
-        {
-            RenderItemBase& reactants = _factory.getItem(_reactantLine);
-            _rc.storeTransform();
+            if (_reactantLine >= 0)
             {
-                _rc.translate(0, 0.5f * (size.y - reactants.size.y));
-                reactants.render(idle);
-            }
-            _rc.restoreTransform();
-            _rc.removeStoredTransform();
-            _rc.translate(reactants.size.x, 0);
-        }
-        if (_arrow >= 0)
-        {
-            RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
-            _rc.translate(hSpace, 0);
-            if (_catalystLineUpper >= 0)
-            {
-                RenderItemBase& catalysts = _factory.getItem(_catalystLineUpper);
+                RenderItemBase& reactants = _factory.getItem(_reactantLine);
                 _rc.storeTransform();
                 {
-                    _rc.translate(0.5f * (_arrowWidth - catalysts.size.x), 0.5f * (size.y - arrow.size.y) - catalysts.size.y - catalystOffset);
-                    catalysts.render(idle);
+                    _rc.translate(0, 0.5f * (size.y - reactants.size.y));
+                    reactants.render(idle);
+                }
+                _rc.restoreTransform();
+                _rc.removeStoredTransform();
+                _rc.translate(reactants.size.x, 0);
+            }
+            if (_arrow >= 0)
+            {
+                RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
+                _rc.translate(hSpace, 0);
+                if (_catalystLineUpper >= 0)
+                {
+                    RenderItemBase& catalysts = _factory.getItem(_catalystLineUpper);
+                    _rc.storeTransform();
+                    {
+                        _rc.translate(0.5f * (_arrowWidth - catalysts.size.x), 0.5f * (size.y - arrow.size.y) - catalysts.size.y - catalystOffset);
+                        catalysts.render(idle);
+                    }
+                    _rc.restoreTransform();
+                    _rc.removeStoredTransform();
+                }
+                if (_catalystLineLower >= 0)
+                {
+                    RenderItemBase& catalysts = _factory.getItem(_catalystLineLower);
+                    _rc.storeTransform();
+                    {
+                        _rc.translate(0.5f * (_arrowWidth - catalysts.size.x), 0.5f * (size.y + arrow.size.y) /*+ catalysts.size.y*/ + catalystOffset);
+                        catalysts.render(idle);
+                    }
+                    _rc.restoreTransform();
+                    _rc.removeStoredTransform();
+                }
+                _rc.storeTransform();
+                {
+                    _rc.translate(0, 0.5f * (size.y - arrow.size.y));
+                    arrow.arrowLength = _arrowWidth;
+                    arrow.render(idle);
+                }
+                _rc.restoreTransform();
+                _rc.removeStoredTransform();
+                _rc.translate(_arrowWidth + hSpace, 0);
+            }
+
+            if (_productLine >= 0)
+            {
+                RenderItemBase& products = _factory.getItem(_productLine);
+
+                _rc.storeTransform();
+                {
+                    _rc.translate(0, 0.5f * (size.y - products.size.y));
+                    products.render(idle);
                 }
                 _rc.restoreTransform();
                 _rc.removeStoredTransform();
             }
-            if (_catalystLineLower >= 0)
-            {
-                RenderItemBase& catalysts = _factory.getItem(_catalystLineLower);
-                _rc.storeTransform();
-                {
-                    _rc.translate(0.5f * (_arrowWidth - catalysts.size.x), 0.5f * (size.y + arrow.size.y) /*+ catalysts.size.y*/ + catalystOffset);
-                    catalysts.render(idle);
-                }
-                _rc.restoreTransform();
-                _rc.removeStoredTransform();
-            }
-            _rc.storeTransform();
-            {
-                _rc.translate(0, 0.5f * (size.y - arrow.size.y));
-                arrow.arrowLength = _arrowWidth;
-                arrow.render(idle);
-            }
-            _rc.restoreTransform();
-            _rc.removeStoredTransform();
-            _rc.translate(_arrowWidth + hSpace, 0);
-        }
-
-        if (_productLine >= 0)
-        {
-            RenderItemBase& products = _factory.getItem(_productLine);
-
-            _rc.storeTransform();
-            {
-                _rc.translate(0, 0.5f * (size.y - products.size.y));
-                products.render(idle);
-            }
-            _rc.restoreTransform();
-            _rc.removeStoredTransform();
         }
     }
     _rc.restoreTransform();
     _rc.removeStoredTransform();
+}
+
+void RenderItemReaction::renderMeta(bool idle)
+{
+    for (int i = 0; i < items.size(); ++i)
+    {
+        _rc.restoreTransform();
+        RenderItemBase& item = _factory.getItem(items[i]);
+        _rc.translate( item.origin.x, item.origin.y );
+        item.render(idle);
+    }
 }

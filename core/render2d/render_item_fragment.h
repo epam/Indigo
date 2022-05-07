@@ -46,16 +46,6 @@ namespace indigo
         int getBondCount() override;
         int getAtomCount() override;
 
-        const Vec2f& min()
-        {
-            return _min;
-        }
-
-        const Vec2f& max()
-        {
-            return _max;
-        }
-
         BaseMolecule* mol;
         bool isRFragment;
         Array<int>* aam;
@@ -67,7 +57,6 @@ namespace indigo
 
     private:
         float _scaleFactor;
-        Vec2f _min, _max;
 
         void _renderIdle();
     };

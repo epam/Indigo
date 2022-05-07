@@ -188,11 +188,11 @@ void RenderItemAuxiliary::_renderSimpleObject(const KETSimpleObject& simple)
 
     auto v1 = simple._coordinates.first;
     auto v2 = simple._coordinates.second;
-    v1.x -= _min.x;
-    v2.x -= _min.x;
+    v1.x -= min.x;
+    v2.x -= min.x;
     v1 *= scaleFactor;
     v2 *= scaleFactor;
-    std::tie(v1.y, v2.y) = std::make_pair(_max.y - v1.y, _max.y - v2.y);
+    std::tie(v1.y, v2.y) = std::make_pair(max.y - v1.y, max.y - v2.y);
     Rect2f rc(v1, v2);
 
     switch (simple._mode)
@@ -295,13 +295,13 @@ void RenderItemAuxiliary::init()
             }
             if (i)
             {
-                _min.min(bbox.leftBottom());
-                _max.max(bbox.rightTop());
+                min.min(bbox.leftBottom());
+                max.max(bbox.rightTop());
             }
             else
             {
-                _min.copy(bbox.leftBottom());
-                _max.copy(bbox.rightTop());
+                min.copy(bbox.leftBottom());
+                max.copy(bbox.rightTop());
             }
         }
     }

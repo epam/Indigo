@@ -49,6 +49,8 @@ namespace indigo
         Vec2f size;
         Vec2f origin;
         float referenceY;
+        Vec2f min;
+        Vec2f max;
 
     protected:
         RenderItemFactory& _factory;

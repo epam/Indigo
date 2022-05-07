@@ -41,24 +41,12 @@ RenderItemFragment::~RenderItemFragment()
 
 void RenderItemFragment::init()
 {
-    _min.set(0, 0);
-    _max.set(0, 0);
-
-    for (int i = mol->vertexBegin(); i < mol->vertexEnd(); i = mol->vertexNext(i))
-    {
-        const Vec3f& v = mol->getAtomXyz(i);
-        Vec2f v2(v.x, v.y);
-        if (i == mol->vertexBegin())
-        {
-            _min.copy(v2);
-            _max.copy(v2);
-        }
-        else
-        {
-            _min.min(v2);
-            _max.max(v2);
-        }
-    }
+    min.set(0, 0);
+    max.set(0, 0);
+    Rect2f bbox;
+    mol->getBoundingBox(bbox);
+    min.copy(bbox.leftBottom());
+    max.copy(bbox.rightTop());
 }
 
 void RenderItemFragment::estimateSize()
@@ -68,7 +56,7 @@ void RenderItemFragment::estimateSize()
     {
         const Vec3f& v = mol->getAtomXyz(refAtom);
         Vec2f v2(v.x, v.y);
-        refAtomPos.set(v2.x - _min.x, _max.y - v2.y);
+        refAtomPos.set(v2.x - min.x, max.y - v2.y);
         refAtomPos.scale(_scaleFactor);
         refAtomPos.sub(origin);
     }
@@ -93,7 +81,7 @@ void RenderItemFragment::render(bool idle)
     MoleculeRenderInternal rnd(_opt, _settings, _rc, idle);
     rnd.setMolecule(mol);
     rnd.setIsRFragment(isRFragment);
-    rnd.setScaleFactor(_scaleFactor, _min, _max);
+    rnd.setScaleFactor(_scaleFactor, min, max);
     rnd.setReactionComponentProperties(aam, reactingCenters, inversionArray);
     rnd.setQueryReactionComponentProperties(exactChangeArray);
     rnd.render();

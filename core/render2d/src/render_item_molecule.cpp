@@ -139,13 +139,13 @@ void RenderItemMolecule::estimateSize()
 
     if (_meta >= 0)
     {
-        Vec2f diff(0, 0);
         RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
         if (_core >= 0)
         {
+            Vec2f diff(0, 0);
             auto& frag = _factory.getItemFragment(_core);
-            diff.x = frag.min().x - meta._min.x;
-            diff.y = meta._max.y - frag.max().y;
+            diff.x = frag.min.x - meta.min.x;
+            diff.y = meta.max.y - frag.max.y;
 
             meta.origin = diff;
             if (diff.x > 0)
@@ -175,6 +175,7 @@ void RenderItemMolecule::estimateSize()
                     size.y += diff.y;
             }
         }
+
         size.x = std::max(size.x, meta.size.x);
         size.y = std::max(size.y, meta.size.y);
     }

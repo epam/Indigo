@@ -79,7 +79,6 @@ namespace indigo
         int rLabelIdx;
         float arrowLength;
         float scaleFactor;
-        Vec2f _min, _max;
 
     private:
         void _drawRGroupLabel(bool idle);
