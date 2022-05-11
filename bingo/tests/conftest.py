@@ -1,5 +1,4 @@
 import pytest
-from bingo_elastic.elastic import IndexName
 from indigo import Indigo
 
 from .constants import (
@@ -11,7 +10,6 @@ from .constants import (
     DB_POSTGRES,
     EntitiesType,
 )
-from .dbc.BingoElastic import BingoElastic
 from .dbc.BingoNoSQL import BingoNoSQL
 from .dbc.PostgresSQL import Postgres
 from .helpers import get_bingo_meta, get_query_entities
@@ -50,6 +48,9 @@ def db(request, indigo):
         db.connect()
         db.import_data(meta["import_no_sql"], data_type)
     elif db_str == DB_BINGO_ELASTIC:
+        from bingo_elastic.elastic import IndexName
+        from .dbc.BingoElastic import BingoElastic
+
         if data_type == EntitiesType.MOLECULES:
             index_name = IndexName.BINGO_MOLECULE
         else:
