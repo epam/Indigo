@@ -115,7 +115,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 
     MoleculeJsonLoader::loadSimpleObjects(_simple_objects, rxn);
 
-	for (int i = 0; i < _pluses.Size(); ++i)
+    for (int i = 0; i < _pluses.Size(); ++i)
     {
         const rapidjson::Value& plus = _pluses[i];
         const rapidjson::Value& plus_location = plus["location"];
@@ -138,7 +138,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
         Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
 
         rxn.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
-	}
+    }
 
     if (_arrows.Size() > 1)
         parseMultipleArrowReaction(rxn);

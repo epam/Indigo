@@ -177,14 +177,13 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                 const KETTextObject& ko = static_cast<const KETTextObject&>(mobj);
             }
             break;
-            case KETReactionPlus::CID:
-			{
+            case KETReactionPlus::CID: {
                 const KETReactionPlus& rp = static_cast<const KETReactionPlus&>(mobj);
                 _rc.setSingleSource(CWC_BASE);
                 auto plus_pos = rp._pos;
                 scale(plus_pos);
                 _rc.drawPlus(plus_pos, _settings.metaLineWidth, _settings.plusSize);
-			}
+            }
             break;
             case KETReactionArrow::CID: {
                 const KETReactionArrow& ar = static_cast<const KETReactionArrow&>(mobj);
@@ -193,10 +192,9 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                 scale(beg);
                 scale(end);
                 _rc.setSingleSource(CWC_BASE);
-                _rc.drawArrow( beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+                _rc.drawArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
             }
             break;
-
             }
         }
     }

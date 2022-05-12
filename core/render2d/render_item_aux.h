@@ -54,7 +54,7 @@ namespace indigo
             scaleFactor = scale;
         }
 
-		void scale(Vec2f& vec)
+        void scale(Vec2f& vec)
         {
             vec.x -= min.x;
             vec *= scaleFactor;

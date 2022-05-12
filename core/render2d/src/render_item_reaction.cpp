@@ -99,7 +99,7 @@ void RenderItemReaction::initMeta()
 {
     // add meta
     _meta = _factory.addItemAuxiliary();
-    
+
     auto& aux = _factory.getItemAuxiliary(_meta);
     aux.type = RenderItemAuxiliary::AUX_META;
     aux.meta = rxn;
@@ -195,12 +195,12 @@ void RenderItemReaction::estimateSizeMeta()
         item.estimateSize();
         if (i)
         {
-            bbmin.x = std::min( bbmin.x, item.origin.x );
-            bbmin.y = std::min( bbmin.y, item.origin.y );
+            bbmin.x = std::min(bbmin.x, item.origin.x);
+            bbmin.y = std::min(bbmin.y, item.origin.y);
             auto bmin = origin;
             bmin.add(item.size);
-            bbmax.x = std::max( bbmax.x, item.origin.x + item.size.x);
-            bbmax.y = std::max( bbmax.y, item.origin.y + item.size.y);
+            bbmax.x = std::max(bbmax.x, item.origin.x + item.size.x);
+            bbmax.y = std::max(bbmax.y, item.origin.y + item.size.y);
         }
         else
         {
@@ -297,7 +297,7 @@ void RenderItemReaction::renderMeta(bool idle)
     {
         _rc.restoreTransform();
         RenderItemBase& item = _factory.getItem(items[i]);
-        _rc.translate( item.origin.x, item.origin.y );
+        _rc.translate(item.origin.x, item.origin.y);
         item.render(idle);
     }
 }
