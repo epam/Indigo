@@ -970,7 +970,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "10", "11", "12", "13" ]
+        postgres_major_version: [ "10", "11", "12", "13", "14" ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -982,7 +982,7 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { "13" { "13.6" } "12" { "12.10" } "11" { "11.15" } "10" { "10.20" } }
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { "14" { "14.2" } "13" { "13.6" } "12" { "12.10" } "11" { "11.15" } "10" { "10.20" } }
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
