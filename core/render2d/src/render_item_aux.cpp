@@ -165,18 +165,38 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
         const auto& md = meta->metaData();
         for (int i = 0; i < md.size(); ++i)
         {
-            const auto& simple = *md[i];
-            switch (simple._class_id)
+            const auto& mobj = *md[i];
+            switch (mobj._class_id)
             {
             case KETSimpleObject::CID: {
-                const KETSimpleObject& ko = static_cast<const KETSimpleObject&>(simple);
+                const KETSimpleObject& ko = static_cast<const KETSimpleObject&>(mobj);
                 _renderSimpleObject(ko);
             }
             break;
             case KETTextObject::CID: {
-                const KETTextObject& ko = static_cast<const KETTextObject&>(simple);
+                const KETTextObject& ko = static_cast<const KETTextObject&>(mobj);
             }
             break;
+            case KETReactionPlus::CID:
+			{
+                const KETReactionPlus& rp = static_cast<const KETReactionPlus&>(mobj);
+                _rc.setSingleSource(CWC_BASE);
+                auto plus_pos = rp._pos;
+                scale(plus_pos);
+                _rc.drawPlus(plus_pos, _settings.metaLineWidth, _settings.plusSize);
+			}
+            break;
+            case KETReactionArrow::CID: {
+                const KETReactionArrow& ar = static_cast<const KETReactionArrow&>(mobj);
+                auto beg = ar._begin;
+                auto end = ar._end;
+                scale(beg);
+                scale(end);
+                _rc.setSingleSource(CWC_BASE);
+                _rc.drawArrow( beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+            }
+            break;
+
             }
         }
     }
@@ -188,11 +208,8 @@ void RenderItemAuxiliary::_renderSimpleObject(const KETSimpleObject& simple)
 
     auto v1 = simple._coordinates.first;
     auto v2 = simple._coordinates.second;
-    v1.x -= min.x;
-    v2.x -= min.x;
-    v1 *= scaleFactor;
-    v2 *= scaleFactor;
-    std::tie(v1.y, v2.y) = std::make_pair(max.y - v1.y, max.y - v2.y);
+    scale(v1);
+    scale(v2);
     Rect2f rc(v1, v2);
 
     switch (simple._mode)
@@ -268,6 +285,7 @@ void RenderItemAuxiliary::render(bool idle)
 
 void RenderItemAuxiliary::init()
 {
+    /* no init required
     if (type == AUX_META && meta)
     {
         const auto& md = meta->metaData();
@@ -293,16 +311,6 @@ void RenderItemAuxiliary::init()
             default:
                 break;
             }
-            if (i)
-            {
-                min.min(bbox.leftBottom());
-                max.max(bbox.rightTop());
-            }
-            else
-            {
-                min.copy(bbox.leftBottom());
-                max.copy(bbox.rightTop());
-            }
         }
-    }
+    }*/
 }

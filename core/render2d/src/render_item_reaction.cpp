@@ -99,14 +99,14 @@ void RenderItemReaction::initMeta()
 {
     // add meta
     _meta = _factory.addItemAuxiliary();
-    /*
+    
     auto& aux = _factory.getItemAuxiliary(_meta);
     aux.type = RenderItemAuxiliary::AUX_META;
     aux.meta = rxn;
     aux.init();
     min = aux.min;
     max = aux.max;
-    items.push(_meta);*/
+    items.push(_meta);
 
     for (int i = rxn->begin(); i < rxn->end(); i = rxn->next(i))
     {
@@ -188,8 +188,6 @@ void RenderItemReaction::estimateSize()
 void RenderItemReaction::estimateSizeMeta()
 {
     RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
-    size.x = std::max(size.x, meta.size.x);
-    size.y = std::max(size.y, meta.size.y);
     Vec2f bbmin, bbmax;
     for (int i = 0; i < items.size(); ++i)
     {
@@ -210,9 +208,11 @@ void RenderItemReaction::estimateSizeMeta()
             bbmax = bbmin;
             bbmax.add(item.size);
         }
-        size.x = std::max(size.x, item.size.x + item.origin.x );
-        size.y = std::max(size.y, item.size.y + item.origin.y );
     }
+    size.x = std::max(size.x, bbmax.x - bbmin.x);
+    size.y = std::max(size.y, bbmax.y - bbmin.y);
+    origin.x = bbmin.x;
+    origin.y = bbmin.y;
 }
 
 void RenderItemReaction::render(bool idle)
