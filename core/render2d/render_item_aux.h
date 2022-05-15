@@ -54,6 +54,13 @@ namespace indigo
             scaleFactor = scale;
         }
 
+        void scale(Vec2f& vec)
+        {
+            vec.x -= min.x;
+            vec *= scaleFactor;
+            vec.y = max.y - vec.y;
+        }
+
         void render(bool idle) override;
         float getTotalBondLength() override
         {
@@ -79,7 +86,6 @@ namespace indigo
         int rLabelIdx;
         float arrowLength;
         float scaleFactor;
-        Vec2f _min, _max;
 
     private:
         void _drawRGroupLabel(bool idle);

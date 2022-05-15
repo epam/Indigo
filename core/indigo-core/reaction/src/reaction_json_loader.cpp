@@ -115,6 +115,31 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 
     MoleculeJsonLoader::loadSimpleObjects(_simple_objects, rxn);
 
+    for (int i = 0; i < _pluses.Size(); ++i)
+    {
+        const rapidjson::Value& plus = _pluses[i];
+        const rapidjson::Value& plus_location = plus["location"];
+        Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
+        rxn.addMetaObject(new KETReactionPlus(plus_pos));
+    }
+
+    for (int i = 0; i < _arrows.Size(); ++i)
+    {
+        const rapidjson::Value& arrow = _arrows[i];
+        const rapidjson::Value& arrow_begin = arrow["data"]["pos"][0];
+        const rapidjson::Value& arrow_end = arrow["data"]["pos"][1];
+        std::string mode = arrow["data"]["mode"].GetString();
+        int arrow_type = ReactionComponent::ARROW_BASIC;
+        auto arrow_type_it = _arrow_string2type.find(mode);
+        if (arrow_type_it != _arrow_string2type.end())
+            arrow_type = arrow_type_it->second;
+
+        Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
+        Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
+
+        rxn.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
+    }
+
     if (_arrows.Size() > 1)
         parseMultipleArrowReaction(rxn);
     else
@@ -294,7 +319,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const rapidjson::Value& plus = _pluses[i];
         const rapidjson::Value& plus_location = plus["location"];
         Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
-        rxn.addMetaObject(new KETReactionPlus(plus_pos));
+        // rxn.addMetaObject(new KETReactionPlus(plus_pos));
 
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
         _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, std::unique_ptr<BaseMolecule>(nullptr));
@@ -320,7 +345,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
         Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
 
-        rxn.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
+        // rxn.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
 
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
         _reaction_components.emplace_back(arrow_type, bbox, std::unique_ptr<BaseMolecule>(nullptr));
