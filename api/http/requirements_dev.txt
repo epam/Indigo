@@ -9,7 +9,7 @@ Pillow==9.0.1
 pluggy==1.0.0
 py==1.10.0
 pyparsing==2.4.7
-PyPDF2==1.26.0
+PyPDF2==1.27.5
 pyproject-flake8==0.0.1a2
 pytest==6.2.5
 requests==2.26.0
