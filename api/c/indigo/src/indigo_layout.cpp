@@ -98,19 +98,24 @@ CEXPORT int indigoLayout(int object)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
-            ReactionLayout rl(rxn, self.smart_layout);
-            rl.max_iterations = self.layout_max_iterations;
-            rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
-            rl.bond_length = 1.6f;
-            rl.horizontal_interval_factor = self.layout_horintervalfactor;
+            if (rxn.isMultistep())
+                throw IndigoError("Multistep layout is not implemented yet.");
+            else
+            {
+                ReactionLayout rl(rxn, self.smart_layout);
+                rl.max_iterations = self.layout_max_iterations;
+                rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
+                rl.bond_length = 1.6f;
+                rl.horizontal_interval_factor = self.layout_horintervalfactor;
 
-            rl.make();
-            try
-            {
-                rxn.markStereocenterBonds();
-            }
-            catch (Exception e)
-            {
+                rl.make();
+                try
+                {
+                    rxn.markStereocenterBonds();
+                }
+                catch (Exception e)
+                {
+                }
             }
         }
         else
