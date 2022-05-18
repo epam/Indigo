@@ -40,7 +40,7 @@ namespace indigo
 
         void saveReaction(BaseReaction& rxn);
         void saveSingleReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver);
-        void saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver);
+        void saveMultistepReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver);
 
         bool _add_stereo_desc;
         DECL_ERROR;

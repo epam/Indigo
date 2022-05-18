@@ -61,7 +61,7 @@ ReactionJsonSaver::~ReactionJsonSaver()
 {
 }
 
-void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
+void ReactionJsonSaver::saveMultistepReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
     for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
@@ -312,7 +312,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     if (rxn.isMultistep())
     {
-        saveReactionWithMetadata(rxn, *merged, json_saver);
+        saveMultistepReaction(rxn, *merged, json_saver);
     }
     else
     {
