@@ -61,9 +61,8 @@ ReactionJsonSaver::~ReactionJsonSaver()
 {
 }
 
-void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
+void ReactionJsonSaver::saveMultistepReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
-
     for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
@@ -93,8 +92,8 @@ void ReactionJsonSaver::saveReactionWithMetadata(BaseReaction& rxn, BaseMolecule
             Value pos_array(kArrayType);
             Value pos1(kObjectType);
             Value pos2(kObjectType);
-            pos1.AddMember("x", Value().SetDouble(ar._begin.x), ket.GetAllocator());
-            pos1.AddMember("y", Value().SetDouble(ar._begin.y), ket.GetAllocator());
+            pos1.AddMember("x", Value().SetDouble(ar._end.x), ket.GetAllocator());
+            pos1.AddMember("y", Value().SetDouble(ar._end.y), ket.GetAllocator());
             pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
             pos2.AddMember("x", Value().SetDouble(ar._begin.x), ket.GetAllocator());
             pos2.AddMember("y", Value().SetDouble(ar._begin.y), ket.GetAllocator());
@@ -219,7 +218,7 @@ void ReactionJsonSaver::saveSingleReaction(BaseReaction& rxn, BaseMolecule& merg
         plus.AddMember("type", "plus", ket.GetAllocator());
         Value location(kArrayType);
         location.PushBack(Value().SetDouble(plus_offset.x), ket.GetAllocator());
-        location.PushBack(Value().SetDouble(-plus_offset.y), ket.GetAllocator()); // TODO: remove -
+        location.PushBack(Value().SetDouble(plus_offset.y), ket.GetAllocator());
         location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());
         plus.AddMember("location", location, ket.GetAllocator());
         nodes.PushBack(plus, ket.GetAllocator());
@@ -311,9 +310,9 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
         merged = std::make_unique<Molecule>();
     }
 
-    if (rxn.metaData().size())
+    if (rxn.isMultistep())
     {
-        saveReactionWithMetadata(rxn, *merged, json_saver);
+        saveMultistepReaction(rxn, *merged, json_saver);
     }
     else
     {

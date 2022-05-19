@@ -892,6 +892,10 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
     int n_rgroups = mol->rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; ++i)
     {
+        RGroup& rgroup = mol->rgroups.getRGroup(i);
+        if (rgroup.fragments.size() == 0)
+            continue;
+
         buf.clear();
         out.printf("rg%d", i);
         buf.push(0);
