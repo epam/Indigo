@@ -149,12 +149,12 @@ namespace indigo
             MangoContext* mango_context;
             RingoContext* ringo_context;
 
-            Obj<StringPool> import_properties;
-            Obj<StringPool> import_columns;
+            std::unique_ptr<StringPool> import_properties;
+            std::unique_ptr<StringPool> import_columns;
 
-            Obj<FileScanner> file_scanner;
-            Obj<SdfLoader> sdf_loader;
-            Obj<RdfLoader> rdf_loader;
+            std::unique_ptr<FileScanner> file_scanner;
+            std::unique_ptr<SdfLoader> sdf_loader;
+            std::unique_ptr<RdfLoader> rdf_loader;
 
             std::unique_ptr<GZipScanner> gz_scanner;
             Scanner* smiles_scanner;
@@ -164,11 +164,11 @@ namespace indigo
             MangoIndex* mango_index;
             RingoIndex* ringo_index;
 
-            Obj<Array<char>> index_record_data;
+            std::unique_ptr<Array<char>> index_record_data;
             int index_record_data_id;
 
-            Obj<MangoIndex> single_mango_index;
-            Obj<RingoIndex> single_ringo_index;
+            std::unique_ptr<MangoIndex> single_mango_index;
+            std::unique_ptr<RingoIndex> single_ringo_index;
 
             std::unique_ptr<IndexingDispatcher> parallel_indexing_dispatcher;
 

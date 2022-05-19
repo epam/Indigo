@@ -33,8 +33,8 @@ CmfLoader::CmfLoader(LzwDict& dict, Scanner& scanner)
       TL_CP_GET(inv_bond_mapping_to_restore), TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order)
 {
     _init();
-    _decoder_obj.create(dict, scanner);
-    _lzw_scanner.create(_decoder_obj.ref());
+    _decoder_obj = std::make_unique<LzwDecoder>(dict, scanner);
+    _lzw_scanner = std::make_unique<LzwScanner>(*_decoder_obj);
     _scanner = _lzw_scanner.get();
 }
 
@@ -51,7 +51,7 @@ CmfLoader::CmfLoader(LzwDecoder& decoder)
       TL_CP_GET(inv_bond_mapping_to_restore), TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order)
 {
     _init();
-    _lzw_scanner.create(decoder);
+    _lzw_scanner = std::make_unique<LzwScanner>(decoder);
     _scanner = _lzw_scanner.get();
 }
 

@@ -61,10 +61,9 @@ void MoleculeTautomerSubstructureMatcher::setQuery(QueryMolecule& query)
 
     ignored.zerofill();
 
-    if (_ee.get() != 0)
-        _ee.free();
+    _ee.reset();
 
-    _ee.create(_tautomerEnumerator.layeredMolecules);
+    _ee = std::make_unique<EmbeddingEnumerator>(_tautomerEnumerator.layeredMolecules);
     _ee->cb_match_vertex = _matchAtomsHyper;
     _ee->cb_match_edge = _matchBondsSubHyper;
     _ee->cb_edge_add = _edgeAddHyper;
@@ -76,7 +75,7 @@ void MoleculeTautomerSubstructureMatcher::setQuery(QueryMolecule& query)
 
     _ee->setSubgraph(*_query);
 
-    _embeddings_storage.free();
+    _embeddings_storage.reset();
     _masks.clear();
 }
 
@@ -219,7 +218,7 @@ bool MoleculeTautomerSubstructureMatcher::findNext()
 
 void MoleculeTautomerSubstructureMatcher::_createEmbeddingsStorage()
 {
-    _embeddings_storage.create();
+    _embeddings_storage = std::make_unique<GraphEmbeddingsStorage>();
     _embeddings_storage->unique_by_edges = find_unique_by_edges;
     _embeddings_storage->save_edges = save_for_iteration;
     _embeddings_storage->save_mapping = save_for_iteration;
@@ -272,7 +271,7 @@ const int* MoleculeTautomerSubstructureMatcher::getTargetMapping()
 
 const GraphEmbeddingsStorage& MoleculeTautomerSubstructureMatcher::getEmbeddingsStorage() const
 {
-    return _embeddings_storage.ref();
+    return *_embeddings_storage;
 }
 
 const Dbitset& MoleculeTautomerSubstructureMatcher::getMask(int ind) const

@@ -199,18 +199,18 @@ namespace indigo
 
         const MoleculeAtomNeighbourhoodCounters *_query_nei_counters, *_target_nei_counters;
 
-        Obj<EmbeddingEnumerator> _ee;
+        std::unique_ptr<EmbeddingEnumerator> _ee;
 
         std::unique_ptr<MarkushContext> _markush;
 
         // Because storage can be big it is not stored into TL_CP_***
         // It can be stored as TL_CP_*** if memory allocations will
         // be critical
-        Obj<GraphEmbeddingsStorage> _embeddings_storage;
+        std::unique_ptr<GraphEmbeddingsStorage> _embeddings_storage;
 
-        Obj<Molecule3dConstraintsChecker> _3d_constraints_checker;
-        Obj<AromaticityMatcher> _am;
-        Obj<MoleculePiSystemsMatcher> _pi_systems_matcher;
+        std::unique_ptr<Molecule3dConstraintsChecker> _3d_constraints_checker;
+        std::unique_ptr<AromaticityMatcher> _am;
+        std::unique_ptr<MoleculePiSystemsMatcher> _pi_systems_matcher;
 
         bool _h_unfold; // implicit target hydrogens unfolded
 

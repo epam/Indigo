@@ -308,14 +308,14 @@ int BaseReactionSubstructureMatcher::_Matcher::_nextPair()
                 if (_current_molecule_2 == _context._target.sideEnd())
                     return _NO_WAY;
 
-                _enumerator.free();
+                _enumerator.reset();
 
                 BaseMolecule& mol_1 = _context._query->getBaseMolecule(_current_molecule_1);
                 Molecule& mol_2 = _context._target.getMolecule(_current_molecule_2);
 
                 if (!_initEnumerator(mol_1, mol_2))
                 {
-                    _enumerator.free();
+                    _enumerator.reset();
                     continue;
                 }
                 break;
@@ -442,7 +442,7 @@ int BaseReactionSubstructureMatcher::_Matcher::nextPair()
 bool BaseReactionSubstructureMatcher::_Matcher::_initEnumerator(BaseMolecule& mol_1, Molecule& mol_2)
 {
     // init embedding enumerator context
-    _enumerator.create(mol_2);
+    _enumerator = std::make_unique<EmbeddingEnumerator>(mol_2);
 
     _enumerator->cb_match_edge = _matchBonds;
     _enumerator->cb_match_vertex = _matchAtoms;
@@ -460,7 +460,7 @@ bool BaseReactionSubstructureMatcher::_Matcher::_initEnumerator(BaseMolecule& mo
 
     if (_context.prepare_ee != 0)
     {
-        if (!_context.prepare_ee(_enumerator.ref(), mol_1, mol_2, _context.context))
+        if (!_context.prepare_ee(*_enumerator, mol_1, mol_2, _context.context))
             return false;
     }
 

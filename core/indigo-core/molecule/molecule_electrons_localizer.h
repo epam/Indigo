@@ -145,7 +145,7 @@ namespace indigo
         int _getAtomCharge(int atom) const;
         void _getAtomConnAndLonepairs(int atom, int& added_conn, int& lonepairs) const;
 
-        Obj<GraphConstrainedBMatchingFinder> _finder;
+        std::unique_ptr<GraphConstrainedBMatchingFinder> _finder;
         Molecule& _skeleton;
 
         // Localization parameters

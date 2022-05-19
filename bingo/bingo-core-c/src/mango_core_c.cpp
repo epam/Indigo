@@ -39,7 +39,7 @@ using namespace indigo::bingo_core;
 
 int BingoCore::mangoIndexProcessSingleRecord()
 {
-    BufferScanner scanner(self.index_record_data.ref());
+    BufferScanner scanner(*self.index_record_data);
 
     NullOutput output;
 
@@ -47,9 +47,9 @@ int BingoCore::mangoIndexProcessSingleRecord()
     {
         try
         {
-            if (self.single_mango_index.get() == NULL)
+            if (!self.single_mango_index)
             {
-                self.single_mango_index.create();
+                self.single_mango_index = std::make_unique<MangoIndex>();
                 self.single_mango_index->init(*self.bingo_context);
                 self.single_mango_index->skip_calculate_fp = self.skip_calculate_fp;
             }
@@ -465,10 +465,10 @@ int BingoCore::mangoMatchTargetBinary(const char* target_bin, int target_bin_len
     {
         BufferScanner scanner(target_bin, target_bin_len);
         BufferScanner* xyz_scanner = 0;
-        Obj<BufferScanner> xyz_scanner_obj;
+        std::unique_ptr<BufferScanner> xyz_scanner_obj;
         if (target_xyz_len != 0)
         {
-            xyz_scanner_obj.create(target_xyz, target_xyz_len);
+            xyz_scanner_obj = std::make_unique<BufferScanner>(target_xyz, target_xyz_len);
             xyz_scanner = xyz_scanner_obj.get();
         }
 

@@ -602,10 +602,10 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         }
 
     Molecule* target = &mol;
-    Obj<Molecule> dearom;
+    std::unique_ptr<Molecule> dearom;
     if (has_aromatic)
     {
-        dearom.create();
+        dearom = std::make_unique<Molecule>();
         dearom->clone(mol, 0, 0);
         try
         {

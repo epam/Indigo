@@ -80,8 +80,8 @@ namespace indigo
         BaseMolecule& _query;
         BaseMolecule& _target;
         EmbeddingEnumerator _ee;
-        Obj<GraphDecomposer> _query_decomposer;
-        Obj<GraphDecomposer> _target_decomposer;
+        std::unique_ptr<GraphDecomposer> _query_decomposer;
+        std::unique_ptr<GraphDecomposer> _target_decomposer;
 
         struct _MatchToken
         {

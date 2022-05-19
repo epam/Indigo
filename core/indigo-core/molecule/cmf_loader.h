@@ -142,9 +142,9 @@ namespace indigo
 
         Scanner* _scanner;
 
-        Obj<LzwDecoder> _decoder_obj;
+        std::unique_ptr<LzwDecoder> _decoder_obj;
         LzwDecoder* _ext_decoder;
-        Obj<LzwScanner> _lzw_scanner;
+        std::unique_ptr<LzwScanner> _lzw_scanner;
 
         TL_CP_DECL(Array<_AtomDesc>, _atoms);
         TL_CP_DECL(Array<_BondDesc>, _bonds);

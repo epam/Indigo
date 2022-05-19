@@ -73,8 +73,8 @@ namespace indigo
 
             void* data;
 
-            Obj<OracleStatement> statement;
-            Obj<OracleLOB> bits_lob;
+            std::unique_ptr<OracleStatement> statement;
+            std::unique_ptr<OracleLOB> bits_lob;
             Block* block;
             int query_bit_idx;
         };

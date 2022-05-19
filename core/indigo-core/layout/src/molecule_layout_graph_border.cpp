@@ -121,7 +121,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f& p) const
             continue;
         }
 
-        if (_outline.get() == 0)
+        if (!_outline)
         {
             for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             {
@@ -162,7 +162,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f& p) const
     // Calculate
     count = 0;
 
-    if (_outline.get() == 0)
+    if (!_outline)
     {
         for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
         {

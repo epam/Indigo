@@ -103,9 +103,9 @@ namespace indigo
         TL_CP_DECL(Array<int>, _atom_sequence);
 
         Output* _output;
-        Obj<LzwEncoder> _encoder_obj;
+        std::unique_ptr<LzwEncoder> _encoder_obj;
         LzwEncoder* _ext_encoder;
-        Obj<LzwOutput> _encoder_output_obj;
+        std::unique_ptr<LzwOutput> _encoder_output_obj;
 
         Molecule* _mol;
 

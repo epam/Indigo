@@ -62,8 +62,8 @@ namespace indigo
         void _flushMain(OracleEnv& env);
         void _flushComponents(OracleEnv& env);
 
-        Obj<OracleStatement> _main_table_statement;
-        Obj<OracleStatement> _components_table_statement;
+        std::unique_ptr<OracleStatement> _main_table_statement;
+        std::unique_ptr<OracleStatement> _components_table_statement;
 
         int _main_table_statement_count;
         int _components_table_statement_count;

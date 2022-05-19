@@ -33,7 +33,7 @@ RowIDSaver::RowIDSaver(LzwDict& NewDict, Output& NewOut)
     if (!NewDict.isInitialized())
         NewDict.init(ROW_ID_ALPHABET_SIZE, ROW_ID_BIT_CODE_SIZE);
 
-    _encoder_obj.create(NewDict, NewOut);
+    _encoder_obj = std::make_unique<LzwEncoder>(NewDict, NewOut);
     _encoder = _encoder_obj.get();
 };
 

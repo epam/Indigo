@@ -39,8 +39,8 @@ CmfSaver::CmfSaver(LzwDict& dict, Output& output) : CP_INIT, TL_CP_GET(_atom_seq
     if (!dict.isInitialized())
         dict.init(CMF_ALPHABET_SIZE, CMF_BIT_CODE_SIZE);
 
-    _encoder_obj.create(dict, output);
-    _encoder_output_obj.create(_encoder_obj.ref());
+    _encoder_obj = std::make_unique<LzwEncoder>(dict, output);
+    _encoder_output_obj = std::make_unique<LzwOutput>(*_encoder_obj);
     _output = _encoder_output_obj.get();
 }
 
@@ -48,7 +48,7 @@ CmfSaver::CmfSaver(LzwEncoder& encoder) : CP_INIT, TL_CP_GET(_atom_sequence)
 {
     _init();
     _ext_encoder = &encoder;
-    _encoder_output_obj.create(encoder);
+    _encoder_output_obj = std::make_unique<LzwOutput>(encoder);
     _output = _encoder_output_obj.get();
 }
 

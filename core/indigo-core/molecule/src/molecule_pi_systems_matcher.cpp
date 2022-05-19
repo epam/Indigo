@@ -64,7 +64,7 @@ int MoleculePiSystemsMatcher::_initMarks(void)
     Filter filter(_atom_pi_system_idx.ptr(), Filter::NEQ, _NOT_IN_PI_SYSTEM);
 
     // Decompose 'pi_systems' into connected components
-    _decomposer.create(_target);
+    _decomposer = std::make_unique<GraphDecomposer>(_target);
     int n_comp = _decomposer->decompose(&filter);
 
     // Copy pi-system indices
@@ -300,7 +300,7 @@ void MoleculePiSystemsMatcher::_extractPiSystem(int pi_system_index)
     }
 
     pi_system.localizations.clear();
-    pi_system.localizer.create(pi_system.pi_system);
+    pi_system.localizer = std::make_unique<MoleculeElectronsLocalizer>(pi_system.pi_system);
     _findPiSystemLocalization(pi_system_index);
 }
 
@@ -622,7 +622,7 @@ void MoleculePiSystemsMatcher::copyLocalization(Molecule& target)
 void MoleculePiSystemsMatcher::_Pi_System::clear()
 {
     initialized = false;
-    localizer.free();
+    localizer.reset();
     pi_system.clear();
     inv_mapping.clear();
     mapping.clear();

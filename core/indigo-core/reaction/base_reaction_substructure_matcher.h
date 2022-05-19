@@ -136,7 +136,7 @@ namespace indigo
             BaseReactionSubstructureMatcher& _context;
             std::unique_ptr<AromaticityMatcher> _am;
 
-            Obj<EmbeddingEnumerator> _enumerator;
+            std::unique_ptr<EmbeddingEnumerator> _enumerator;
             int _mode;
             int _selected_molecule_1;
             int _selected_molecule_2;

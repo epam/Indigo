@@ -182,7 +182,7 @@ namespace indigo
         int _n_fixed;
 
         // Outline of the graph (from pattern)
-        Obj<Array<Vec2f>> _outline;
+        std::unique_ptr<Array<Vec2f>> _outline;
 
         BaseMolecule* _molecule;
         const int* _molecule_edge_mapping;

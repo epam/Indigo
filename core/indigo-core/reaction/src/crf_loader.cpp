@@ -35,7 +35,7 @@ void CrfLoader::_init()
 CrfLoader::CrfLoader(LzwDict& dict, Scanner& scanner) : _scanner(scanner)
 {
     _dict = &dict;
-    _decoder.create(dict, scanner);
+    _decoder = std::make_unique<LzwDecoder>(dict, scanner);
     _init();
 }
 
@@ -94,13 +94,13 @@ void CrfLoader::_loadReactionMolecule(Reaction& reaction, int index, bool have_a
 
 void CrfLoader::_loadMolecule(Molecule& molecule)
 {
-    Obj<CmfLoader> loader;
+    std::unique_ptr<CmfLoader> loader;
     int i;
 
-    if (_decoder.get() != 0)
-        loader.create(_decoder.ref());
+    if (_decoder)
+        loader = std::make_unique<CmfLoader>(*_decoder);
     else
-        loader.create(_scanner);
+        loader = std::make_unique<CmfLoader>(_scanner);
 
     QS_DEF(Array<int>, atom_flags);
     QS_DEF(Array<int>, bond_flags);
@@ -155,7 +155,7 @@ void CrfLoader::_loadMolecule(Molecule& molecule)
         {
             int value;
 
-            if (_decoder.get() != 0)
+            if (_decoder)
                 value = _decoder->get();
             else
                 value = _scanner.readByte();

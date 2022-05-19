@@ -61,7 +61,7 @@ MoleculeFingerprintBuilder::MoleculeFingerprintBuilder(BaseMolecule& mol, const 
 
 void MoleculeFingerprintBuilder::_initHashCalculations(BaseMolecule& mol, const Filter& vfilter)
 {
-    subgraph_hash.create(mol);
+    subgraph_hash = std::make_unique<SubgraphHash>(mol);
 
     _atom_codes.clear_resize(mol.vertexEnd());
     _atom_codes_empty.clear_resize(mol.vertexEnd());
@@ -600,18 +600,18 @@ void MoleculeFingerprintBuilder::_handleSubgraph(Graph& graph, const Array<int>&
 
 void MoleculeFingerprintBuilder::_makeFingerprint(BaseMolecule& mol)
 {
-    Obj<TautomerSuperStructure> tau_super_structure;
+    std::unique_ptr<TautomerSuperStructure> tau_super_structure;
     BaseMolecule* mol_for_enumeration = &mol;
 
     if (!query && _parameters.tau_qwords > 0 && !skip_tau)
     {
-        tau_super_structure.create(mol.asMolecule());
+        tau_super_structure = std::make_unique<TautomerSuperStructure>(mol.asMolecule());
 
         _tau_super_structure = tau_super_structure.get();
         mol_for_enumeration = tau_super_structure.get();
     }
     else
-        _tau_super_structure = 0;
+        _tau_super_structure = nullptr;
 
     if (!skip_ord || !skip_any_atoms || !skip_any_atoms_bonds || !skip_any_bonds || !skip_tau || !skip_sim)
         _makeFingerprint_calcOrdSim(*mol_for_enumeration);

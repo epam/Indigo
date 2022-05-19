@@ -145,7 +145,7 @@ void MoleculeExactSubstructureMatcher::_collectConnectedComponentsInfo()
     target_vertices_filter.init(_ee.getSupergraphMapping(), Filter::NEQ, EmbeddingEnumerator::IGNORE);
 
     // Target decomposition
-    _target_decomposer.create(_target);
+    _target_decomposer = std::make_unique<GraphDecomposer>(_target);
     _target_decomposer->decompose(&target_vertices_filter);
 
     // Query vertices filter initialization
@@ -153,7 +153,7 @@ void MoleculeExactSubstructureMatcher::_collectConnectedComponentsInfo()
     query_vertices_filter.init(_ee.getSubgraphMapping(), Filter::NEQ, EmbeddingEnumerator::IGNORE);
 
     // Query decomposition
-    _query_decomposer.create(_query);
+    _query_decomposer = std::make_unique<GraphDecomposer>(_query);
     _query_decomposer->decompose(&query_vertices_filter);
 }
 
@@ -167,8 +167,8 @@ bool MoleculeExactSubstructureMatcher::_matchAtoms(Graph& subgraph, Graph& super
 
     if (flags & MoleculeExactMatcher::CONDITION_FRAGMENTS)
     {
-        const GraphDecomposer& target_decomposer = self->_target_decomposer.ref();
-        const GraphDecomposer& query_decomposer = self->_query_decomposer.ref();
+        const GraphDecomposer& target_decomposer = *self->_target_decomposer;
+        const GraphDecomposer& query_decomposer = *self->_query_decomposer;
 
         int super_component = target_decomposer.getComponent(super_idx);
         int sub_component = query_decomposer.getComponent(sub_idx);

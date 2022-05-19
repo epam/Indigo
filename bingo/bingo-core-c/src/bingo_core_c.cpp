@@ -388,10 +388,10 @@ int BingoCore::bingoImportParseFieldList(const char* fields_str)
     QS_DEF(Array<char>, column);
     BufferScanner scanner(fields_str);
 
-    self.import_properties.free();
-    self.import_columns.free();
-    self.import_properties.create();
-    self.import_columns.create();
+    self.import_properties.reset();
+    self.import_columns.reset();
+    self.import_properties = std::make_unique<StringPool>();
+    self.import_columns = std::make_unique<StringPool>();
 
     scanner.skipSpace();
 
@@ -402,8 +402,8 @@ int BingoCore::bingoImportParseFieldList(const char* fields_str)
         scanner.readWord(column, " ,");
         scanner.skipSpace();
 
-        self.import_properties.ref().add(prop.ptr());
-        self.import_columns.ref().add(column.ptr());
+        self.import_properties->add(prop.ptr());
+        self.import_columns->add(column.ptr());
 
         if (scanner.isEOF())
             break;
@@ -412,7 +412,7 @@ int BingoCore::bingoImportParseFieldList(const char* fields_str)
             throw BingoError("importParseFieldList(): comma expected");
         scanner.skipSpace();
     }
-    return self.import_properties.ref().size();
+    return self.import_properties->size();
 }
 
 CEXPORT int bingoImportParseFieldList(const char* fields_str)
@@ -426,9 +426,9 @@ CEXPORT int bingoImportParseFieldList(const char* fields_str)
 
 const char* BingoCore::bingoImportGetColumnName(int idx)
 {
-    if (self.import_columns.get() == 0)
+    if (!self.import_columns)
         throw BingoError("bingo import list has not been parsed yet");
-    return self.import_columns.ref().at(idx);
+    return self.import_columns->at(idx);
 }
 
 CEXPORT const char* bingoImportGetColumnName(int idx)
@@ -444,23 +444,23 @@ CEXPORT const char* bingoImportGetPropertyName(int idx)
 {
     BINGO_BEGIN
     {
-        if (self.import_properties.get() == 0)
+        if (!self.import_properties)
             throw BingoError("bingo import list has not been parsed yet");
-        return self.import_properties.ref().at(idx);
+        return self.import_properties->at(idx);
     }
     BINGO_END("", "");
 }
 
 const char* BingoCore::bingoImportGetPropertyValue(int idx)
 {
-    if (self.import_properties.get() == 0)
+    if (!self.import_properties)
         throw BingoError("bingo import list has not been parsed yet");
-    const char* property_name = self.import_properties.ref().at(idx);
-    if (self.sdf_loader.get())
+    const char* property_name = self.import_properties->at(idx);
+    if (self.sdf_loader)
     {
         return self.sdf_loader->properties.at(property_name);
     }
-    else if (self.rdf_loader.get())
+    else if (self.rdf_loader)
     {
         return self.rdf_loader->properties.at(property_name);
     }
@@ -486,8 +486,8 @@ CEXPORT const char* bingoImportGetPropertyValue(int idx)
 void BingoCore::bingoSDFImportOpen(const char* file_name)
 {
     self.bingoSDFImportClose();
-    self.file_scanner.create(file_name);
-    self.sdf_loader.create(self.file_scanner.ref());
+    self.file_scanner = std::make_unique<FileScanner>(file_name);
+    self.sdf_loader = std::make_unique<SdfLoader>(*self.file_scanner);
 }
 
 CEXPORT int bingoSDFImportOpen(const char* file_name)
@@ -501,8 +501,8 @@ CEXPORT int bingoSDFImportOpen(const char* file_name)
 
 void BingoCore::bingoSDFImportClose()
 {
-    self.sdf_loader.free();
-    self.file_scanner.free();
+    self.sdf_loader.reset();
+    self.file_scanner.reset();
 }
 
 CEXPORT int bingoSDFImportClose()
@@ -557,8 +557,8 @@ CEXPORT const char* bingoSDFImportGetProperty(const char* param_name)
 void BingoCore::bingoRDFImportOpen(const char* file_name)
 {
     self.bingoRDFImportClose();
-    self.file_scanner.create(file_name);
-    self.rdf_loader.create(self.file_scanner.ref());
+    self.file_scanner = std::make_unique<FileScanner>(file_name);
+    self.rdf_loader = std::make_unique<RdfLoader>(*self.file_scanner);
 }
 
 CEXPORT int bingoRDFImportOpen(const char* file_name)
@@ -572,8 +572,8 @@ CEXPORT int bingoRDFImportOpen(const char* file_name)
 
 void BingoCore::bingoRDFImportClose()
 {
-    self.rdf_loader.free();
-    self.file_scanner.free();
+    self.rdf_loader.reset();
+    self.file_scanner.reset();
 }
 
 CEXPORT int bingoRDFImportClose()
@@ -772,15 +772,13 @@ static void _bingoIndexEnd(BingoCore& self)
         self.parallel_indexing_dispatcher.reset(nullptr);
     }
 
-    if (self.single_mango_index.get())
-        self.single_mango_index.free();
-    if (self.single_ringo_index.get())
-        self.single_ringo_index.free();
+    self.single_mango_index.reset();
+    self.single_ringo_index.reset();
 
     self.mango_index = 0;
     self.ringo_index = 0;
     self.index_record_data_id = -1;
-    self.index_record_data.free();
+    self.index_record_data.reset();
 }
 
 int BingoCore::bingoIndexEnd()
@@ -805,7 +803,7 @@ int BingoCore::bingoIndexBegin()
 
     _bingoIndexEnd(self);
 
-    self.index_record_data.create();
+    self.index_record_data = std::make_unique<Array<char>>();
     return 1;
 }
 
@@ -830,8 +828,8 @@ CEXPORT int bingoIndexSetSkipFP(bool skip)
 
 void BingoCore::bingoSMILESImportOpen(const char* file_name)
 {
-    self.file_scanner.free();
-    self.file_scanner.create(file_name);
+    self.file_scanner.reset();
+    self.file_scanner = std::make_unique<FileScanner>(file_name);
 
     // detect if input is gzipped
     byte magic[2];
@@ -840,7 +838,7 @@ void BingoCore::bingoSMILESImportOpen(const char* file_name)
     self.file_scanner->seek(pos, SEEK_SET);
     if (magic[0] == 0x1f && magic[1] == 0x8b)
     {
-        self.gz_scanner = std::make_unique<GZipScanner>(self.file_scanner.ref());
+        self.gz_scanner = std::make_unique<GZipScanner>(*self.file_scanner);
         self.smiles_scanner = self.gz_scanner.get();
     }
     else
@@ -858,8 +856,8 @@ CEXPORT int bingoSMILESImportOpen(const char* file_name)
 
 void BingoCore::bingoSMILESImportClose()
 {
-    self.gz_scanner.reset(nullptr);
-    self.file_scanner.free();
+    self.gz_scanner.reset();
+    self.file_scanner.reset();
     self.smiles_scanner = 0;
 }
 

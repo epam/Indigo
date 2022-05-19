@@ -112,7 +112,7 @@ bool IndexingDispatcher::_setupCommand(OsCommand& cmd)
             _finished = true;
             break;
         }
-        command.records.add(_core.index_record_data.ref());
+        command.records.add(*_core.index_record_data);
         command.ids.push(_core.index_record_data_id);
     }
     return command.ids.size() != 0;

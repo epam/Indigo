@@ -58,9 +58,9 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
 
     int i;
 
-    if (_main_table_statement.get() == 0)
+    if (!_main_table_statement)
     {
-        _main_table_statement.create(env);
+        _main_table_statement = std::make_unique<OracleStatement>(env);
         _main_table_statement_count = 0;
 
         /*
@@ -118,9 +118,9 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
     if (_components_table_statement_count >= 8192)
         _flushComponents(env);
 
-    if (_components_table_statement.get() == 0)
+    if (!_components_table_statement)
     {
-        _components_table_statement.create(env);
+        _components_table_statement = std::make_unique<OracleStatement>(env);
         _components_table_statement->append("INSERT %s INTO %s VALUES (:rid, :hash, :count)", append ? "/*+ APPEND_VALUES */" : "",
                                             _components_table_name.ptr());
         _components_table_statement_count = 0;
@@ -148,7 +148,7 @@ void MangoShadowTable::flush(OracleEnv& env)
 void MangoShadowTable::_flushMain(OracleEnv& env)
 {
     // Flusing data to the main table
-    if (_main_table_statement.get() != 0)
+    if (_main_table_statement)
     {
         if (_main_table_statement_count != 0)
         {
@@ -230,7 +230,7 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
             }
             profTimerStop(tmain);
 
-            _main_table_statement.free();
+            _main_table_statement.reset();
             _pending_rid.clear();
             _pending_blockno.clear();
             _pending_offset.clear();
@@ -249,7 +249,7 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
 void MangoShadowTable::_flushComponents(OracleEnv& env)
 {
     // Flusing components table
-    if (_components_table_statement.get() != 0)
+    if (_components_table_statement)
     {
         if (_components_table_statement_count != 0)
         {
@@ -269,7 +269,7 @@ void MangoShadowTable::_flushComponents(OracleEnv& env)
             _pending_comp_hash.clear();
             profTimerStop(tcomp);
         }
-        _components_table_statement.free();
+        _components_table_statement.reset();
         _components_table_statement_count = 0;
     }
 }

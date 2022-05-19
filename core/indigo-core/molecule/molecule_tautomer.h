@@ -107,8 +107,8 @@ namespace indigo
         TL_CP_DECL(Array<int>, n1);
         TL_CP_DECL(Array<int>, n2);
 
-        Obj<Dearomatizer> dearomatizer;
-        Obj<DearomatizationMatcher> dearomatizationMatcher;
+        std::unique_ptr<Dearomatizer> dearomatizer;
+        std::unique_ptr<DearomatizationMatcher> dearomatizationMatcher;
     };
 
     class TautomerMatcher

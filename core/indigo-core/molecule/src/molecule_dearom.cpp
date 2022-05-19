@@ -820,7 +820,7 @@ int DearomatizationsGroups::_getFixedConnectivitySpecific(int elem, int charge, 
 void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_external_conn)
 {
     int non_aromatic_conn = 0;
-    if (atom_external_conn != 0)
+    if (atom_external_conn != nullptr)
         non_aromatic_conn = atom_external_conn[v_idx];
 
     const Vertex& vertex = _molecule.getVertex(v_idx);
@@ -855,7 +855,7 @@ void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_ex
     {
         Molecule& m = _molecule.asMolecule();
         // Check if number of hydrogens are fixed
-        if (atom_external_conn == 0)
+        if (atom_external_conn == nullptr)
         {
             int impl_h = m.getImplicitH_NoThrow(v_idx, -1);
             if (impl_h != -1)
@@ -876,7 +876,7 @@ void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_ex
     if (!_molecule.isQueryMolecule())
     {
         Molecule& m = _molecule.asMolecule();
-        if (atom_external_conn == 0)
+        if (atom_external_conn == nullptr)
         {
             if (m.isNitrogenV5(v_idx))
                 max_connectivity = 5;

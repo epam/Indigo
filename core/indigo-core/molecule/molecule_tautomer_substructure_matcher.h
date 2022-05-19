@@ -76,12 +76,12 @@ namespace indigo
         QueryMolecule* _query;
         TautomerEnumerator _tautomerEnumerator;
 
-        Obj<EmbeddingEnumerator> _ee;
+        std::unique_ptr<EmbeddingEnumerator> _ee;
 
         // Because storage can be big it is not stored into TL_CP_***
         // It can be stored as TL_CP_*** if memory allocations will
         // be critical
-        Obj<GraphEmbeddingsStorage> _embeddings_storage;
+        std::unique_ptr<GraphEmbeddingsStorage> _embeddings_storage;
         ObjArray<Dbitset> _masks;
 
         CP_DECL;

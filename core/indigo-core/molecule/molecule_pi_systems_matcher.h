@@ -84,7 +84,7 @@ namespace indigo
         };
 
         Molecule& _target;
-        Obj<GraphDecomposer> _decomposer;
+        std::unique_ptr<GraphDecomposer> _decomposer;
 
         CP_DECL;
         TL_CP_DECL(Array<int>, _atom_pi_system_idx);
@@ -93,7 +93,7 @@ namespace indigo
         {
             Molecule pi_system;
             Array<int> inv_mapping, mapping;
-            Obj<MoleculeElectronsLocalizer> localizer;
+            std::unique_ptr<MoleculeElectronsLocalizer> localizer;
 
             struct Localizations
             {

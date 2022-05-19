@@ -88,7 +88,7 @@ namespace indigo
         ObjArray<RedBlackStringMap<int>> _fmcache;
 
         // cmf loader for delayed xyz loading
-        Obj<CmfLoader> cmf_loader;
+        std::unique_ptr<CmfLoader> cmf_loader;
 
         bool _query_has_stereocare_bonds;
         bool _query_has_stereocenters;

@@ -252,10 +252,9 @@ void MoleculeSubstructureMatcher::setQuery(QueryMolecule& query)
     else
         _h_unfold = false;
 
-    if (_ee.get() != 0)
-        _ee.free();
+    _ee.reset();
 
-    _ee.create(_target);
+    _ee = std::make_unique<EmbeddingEnumerator>(_target);
     _ee->cb_match_vertex = _matchAtoms;
     _ee->cb_match_edge = _matchBonds;
     _ee->cb_vertex_remove = _removeAtom;
@@ -270,7 +269,7 @@ void MoleculeSubstructureMatcher::setQuery(QueryMolecule& query)
             _ee->ignoreSubgraphVertex(i);
     }
 
-    _embeddings_storage.free();
+    _embeddings_storage.reset();
 }
 
 QueryMolecule& MoleculeSubstructureMatcher::getQuery()
@@ -313,16 +312,16 @@ bool MoleculeSubstructureMatcher::find()
     _used_target_h.zerofill();
 
     if (use_aromaticity_matcher && AromaticityMatcher::isNecessary(*_query))
-        _am.create(*_query, _target, arom_options);
+        _am = std::make_unique<AromaticityMatcher>(*_query, _target, arom_options);
     else
-        _am.free();
+        _am.reset();
 
     if (use_pi_systems_matcher && !_target.isQueryMolecule())
-        _pi_systems_matcher.create(_target.asMolecule());
+        _pi_systems_matcher = std::make_unique<MoleculePiSystemsMatcher>(_target.asMolecule());
     else
-        _pi_systems_matcher.free();
+        _pi_systems_matcher.reset();
 
-    _3d_constraints_checker.recreate(_query->spatial_constraints);
+    _3d_constraints_checker.reset(new Molecule3dConstraintsChecker(_query->spatial_constraints));
     _createEmbeddingsStorage();
 
     int result = _ee->process();
@@ -334,7 +333,7 @@ bool MoleculeSubstructureMatcher::find()
         return result == 0;
     else
     {
-        if (_embeddings_storage.get() == 0)
+        if (!_embeddings_storage)
             return false;
         return !_embeddings_storage->isEmpty();
     }
@@ -342,7 +341,7 @@ bool MoleculeSubstructureMatcher::find()
 
 void MoleculeSubstructureMatcher::_createEmbeddingsStorage()
 {
-    _embeddings_storage.create();
+    _embeddings_storage = std::make_unique<GraphEmbeddingsStorage>();
     _embeddings_storage->unique_by_edges = find_unique_by_edges;
     _embeddings_storage->save_edges = save_for_iteration;
     _embeddings_storage->save_mapping = save_for_iteration;
@@ -575,7 +574,7 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph& subgraph, Graph& supergraph
     dword match_atoms_flags = 0xFFFFFFFF;
     // If target atom belongs to a pi-system then its charge
     // should be checked after embedding
-    if (self->_pi_systems_matcher.get())
+    if (self->_pi_systems_matcher)
     {
         if (self->_pi_systems_matcher->isAtomInPiSystem(super_idx))
             match_atoms_flags &= ~(MATCH_ATOM_CHARGE | MATCH_ATOM_VALENCE);
@@ -641,7 +640,7 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph& subgraph, Graph& supergraph
 
     if (self->_query_nei_counters != 0 && self->_target_nei_counters != 0)
     {
-        bool use_bond_types = (self->_pi_systems_matcher.get() == 0);
+        bool use_bond_types = static_cast<bool>(self->_pi_systems_matcher);
         bool ret = self->_query_nei_counters->testSubstructure(*self->_target_nei_counters, sub_idx, super_idx, use_bond_types);
         if (!ret)
             return false;
@@ -680,7 +679,7 @@ bool MoleculeSubstructureMatcher::_matchBonds(Graph& subgraph, Graph& supergraph
     dword flags = 0xFFFFFFFF;
     // If target bond belongs to a pi-system then it
     // should be checked after embedding
-    if (self->_pi_systems_matcher.get())
+    if (self->_pi_systems_matcher)
     {
         if (self->_pi_systems_matcher->isBondInPiSystem(super_idx))
             flags &= ~MATCH_BOND_TYPE;
@@ -754,14 +753,14 @@ int MoleculeSubstructureMatcher::_embedding_common(int* core_sub, int* core_supe
         return 1;
 
     // Check possible aromatic configuration
-    if (_am.get() != 0)
+    if (_am)
     {
         if (!_am->match(core_sub, core_super))
             return 1;
     }
 
     // Check possible pi-systems configurations
-    if (_pi_systems_matcher.get() != 0)
+    if (_pi_systems_matcher)
     {
         if (!_pi_systems_matcher->checkEmbedding(query, core_sub))
             return 1;
@@ -1093,7 +1092,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
             }
         }
 
-        if (_am.get() != 0)
+        if (_am)
             _am->validateQuery();
     }
 
@@ -1171,7 +1170,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
         while (n_sites-- > 0)
             context.sites.pop();
 
-        if (_am.get() != 0)
+        if (_am)
             _am->validateQuery();
     }
 
@@ -1386,7 +1385,7 @@ bool MoleculeSubstructureMatcher::_isSingleBond(Graph& graph, int edge_idx)
 
 const GraphEmbeddingsStorage& MoleculeSubstructureMatcher::getEmbeddingsStorage() const
 {
-    return _embeddings_storage.ref();
+    return *_embeddings_storage;
 }
 
 bool MoleculeSubstructureMatcher::needCoords(int match_3d, QueryMolecule& query)

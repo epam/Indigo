@@ -196,7 +196,7 @@ namespace indigo
 
         void _addOrdHashBits(dword hash, int bits_per_fragment);
 
-        Obj<SubgraphHash> subgraph_hash;
+        std::unique_ptr<SubgraphHash> subgraph_hash;
 
         CP_DECL;
         TL_CP_DECL(Array<byte>, _total_fingerprint);

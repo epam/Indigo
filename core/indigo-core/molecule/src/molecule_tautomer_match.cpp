@@ -47,10 +47,10 @@ TautomerSearchContext::TautomerSearchContext(BaseMolecule& g1_, BaseMolecule& g2
     else
         max_chains = 0;
 
-    dearomatizer.create(g2.asMolecule(), (int*)0, arom_options);
+    dearomatizer = std::make_unique<Dearomatizer>(g2.asMolecule(), nullptr, arom_options);
     dearomatizer->enumerateDearomatizations(dearomatizations);
 
-    dearomatizationMatcher.create(dearomatizations, g2.asMolecule(), (int*)0);
+    dearomatizationMatcher = std::make_unique<DearomatizationMatcher>(dearomatizations, g2.asMolecule(), nullptr);
 }
 
 TautomerSearchContext::~TautomerSearchContext()

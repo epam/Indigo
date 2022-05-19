@@ -37,7 +37,7 @@ using namespace indigo::bingo_core;
 
 int BingoCore::ringoIndexProcessSingleRecord()
 {
-    BufferScanner scanner(self.index_record_data.ref());
+    BufferScanner scanner(*self.index_record_data);
 
     NullOutput output;
 
@@ -45,9 +45,9 @@ int BingoCore::ringoIndexProcessSingleRecord()
     {
         try
         {
-            if (self.single_ringo_index.get() == NULL)
+            if (!self.single_ringo_index)
             {
-                self.single_ringo_index.create();
+                self.single_ringo_index = std::make_unique<RingoIndex>();
                 self.single_ringo_index->init(*self.bingo_context);
                 self.single_ringo_index->skip_calculate_fp = self.skip_calculate_fp;
             }

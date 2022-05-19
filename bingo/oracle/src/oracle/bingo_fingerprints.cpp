@@ -275,12 +275,12 @@ bool BingoFingerprints::screenPart_Init(OracleEnv& env, Screening& screening)
 
         screening.block = &_all_blocks[screening.part];
 
-        screening.statement.create(env);
-        screening.bits_lob.create(env);
+        screening.statement = std::make_unique<OracleStatement>(env);
+        screening.bits_lob = std::make_unique<OracleLOB>(env);
         screening.statement->append("SELECT bits FROM %s WHERE part = :part", _table_name.ptr());
         screening.statement->prepare();
         screening.statement->bindIntByName(":part", &screening.part);
-        screening.statement->defineBlobByPos(1, screening.bits_lob.ref());
+        screening.statement->defineBlobByPos(1, *screening.bits_lob);
         screening.statement->execute();
     }
     else
@@ -410,8 +410,8 @@ void BingoFingerprints::screenPart_End(OracleEnv& env, Screening& screening)
 {
     int i;
 
-    screening.bits_lob.free();
-    screening.statement.free();
+    screening.bits_lob.reset();
+    screening.statement.reset();
 
     profTimerStart(tsort, "fingerprints.end");
     for (i = 0; i < screening.passed_pre.size(); i++)
@@ -462,12 +462,12 @@ bool BingoFingerprints::countOnes_Init(OracleEnv& env, Screening& screening)
         if (screening.part >= _all_blocks.size())
             return false;
 
-        screening.statement.create(env);
-        screening.bits_lob.create(env);
+        screening.statement = std::make_unique<OracleStatement>(env);
+        screening.bits_lob = std::make_unique<OracleLOB>(env);
         screening.statement->append("SELECT bits FROM %s WHERE part = :part", _table_name.ptr());
         screening.statement->prepare();
         screening.statement->bindIntByName(":part", &screening.part);
-        screening.statement->defineBlobByPos(1, screening.bits_lob.ref());
+        screening.statement->defineBlobByPos(1, *screening.bits_lob);
         screening.statement->execute();
 
         screening.block = &_all_blocks[screening.part];
@@ -514,8 +514,8 @@ bool BingoFingerprints::countOnes_Next(OracleEnv& env, Screening& screening)
 
 void BingoFingerprints::countOnes_End(OracleEnv& env, Screening& screening)
 {
-    screening.bits_lob.free();
-    screening.statement.free();
+    screening.bits_lob.reset();
+    screening.statement.reset();
     screening.part++;
 }
 

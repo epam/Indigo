@@ -56,7 +56,7 @@ namespace indigo
 
         Scanner& _scanner;
 
-        Obj<LzwDecoder> _decoder;
+        std::unique_ptr<LzwDecoder> _decoder;
         LzwDict* _dict;
 
         Array<int>* _bond_rc_flags;

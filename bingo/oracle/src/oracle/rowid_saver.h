@@ -44,7 +44,7 @@ namespace indigo
 
         void _encode(int NextSymbol);
 
-        Obj<LzwEncoder> _encoder_obj;
+        std::unique_ptr<LzwEncoder> _encoder_obj;
 
         LzwEncoder* _encoder;
 
