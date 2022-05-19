@@ -970,7 +970,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "10", "11", "12", "13" ]
+        postgres_major_version: [ "10", "11", "12", "13", "14" ]
     runs-on: windows-latest
     steps:
       - name: Checkout
