@@ -23,7 +23,6 @@
 #include "lzw/lzw_dictionary.h"
 #include "lzw/lzw_encoder.h"
 
-#include "base_cpp/obj.h"
 #include "oracle/rowid_symbol_codes.h"
 
 namespace indigo

@@ -20,7 +20,6 @@
 #define __molecule_tautomer_h__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph_decomposer.h"
 #include "molecule/base_molecule.h"

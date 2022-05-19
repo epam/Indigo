@@ -19,7 +19,6 @@
 #ifndef __crf_loader__
 #define __crf_loader__
 
-#include "base_cpp/obj.h"
 #include "crf_saver.h"
 #include "lzw/lzw_decoder.h"
 

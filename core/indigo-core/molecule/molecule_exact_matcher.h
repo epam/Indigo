@@ -19,7 +19,6 @@
 #ifndef __molecule_exact_matcher__
 #define __molecule_exact_matcher__
 
-#include "base_cpp/obj.h"
 #include "base_cpp/scanner.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/filter.h"

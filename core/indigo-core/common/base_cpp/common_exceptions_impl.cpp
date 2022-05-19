@@ -20,7 +20,6 @@
 #include "base_cpp/cyclic_array.h"
 #include "base_cpp/d_bitset.h"
 #include "base_cpp/nullable.h"
-#include "base_cpp/obj.h"
 #include "base_cpp/pool.h"
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/ptr_pool.h"

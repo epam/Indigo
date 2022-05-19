@@ -19,7 +19,6 @@
 #ifndef __cmf_saver_h__
 #define __cmf_saver_h__
 
-#include "base_cpp/obj.h"
 #include "lzw/lzw_encoder.h"
 #include "math/algebra.h"
 #include "molecule/base_molecule.h"

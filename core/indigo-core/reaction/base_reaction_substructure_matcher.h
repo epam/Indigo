@@ -19,7 +19,6 @@
 #ifndef __base_reaction__substructure_matcher__
 #define __base_reaction__substructure_matcher__
 
-#include "base_cpp/obj.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "graph/embedding_enumerator.h"

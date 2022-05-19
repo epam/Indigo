@@ -18,7 +18,6 @@
 
 #include "molecule/molecule_arom_match.h"
 
-#include "base_cpp/obj.h"
 #include "graph/filter.h"
 #include "graph/spanning_tree.h"
 #include "molecule/molecule_dearom.h"

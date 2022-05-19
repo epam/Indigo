@@ -21,7 +21,6 @@
 
 #include "molecule/inchi_wrapper.h"
 
-#include "base_cpp/obj.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_dearom.h"

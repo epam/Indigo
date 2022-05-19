@@ -19,7 +19,6 @@
 #ifndef __crf_saver__
 #define __crf_saver__
 
-#include "base_cpp/obj.h"
 #include "lzw/lzw_encoder.h"
 
 #ifdef _WIN32

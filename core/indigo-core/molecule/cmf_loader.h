@@ -20,7 +20,6 @@
 #define __cmf_loader_h__
 
 #include "base_cpp/bitinworker.h"
-#include "base_cpp/obj.h"
 #include "lzw/lzw_decoder.h"
 #include "lzw/lzw_dictionary.h"
 #include "molecule/cmf_saver.h"

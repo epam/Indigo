@@ -20,7 +20,6 @@
 #define __molecule_cdx_loader__
 
 #include "base_cpp/exception.h"
-#include "base_cpp/obj.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 

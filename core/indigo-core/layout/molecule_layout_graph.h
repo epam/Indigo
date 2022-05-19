@@ -20,7 +20,6 @@
 #define __molecule_layout_graph_h__
 
 #include "base_cpp/cancellation_handler.h"
-#include "base_cpp/obj.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "graph/filter.h"

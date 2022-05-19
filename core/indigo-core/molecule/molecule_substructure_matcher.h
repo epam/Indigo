@@ -19,7 +19,6 @@
 #ifndef __molecule_substructure_matcher__
 #define __molecule_substructure_matcher__
 
-#include "base_cpp/obj.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/embeddings_storage.h"
 #include "molecule/molecule.h"

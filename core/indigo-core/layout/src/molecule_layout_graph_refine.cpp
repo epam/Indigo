@@ -16,7 +16,6 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_cpp/obj.h"
 #include "base_cpp/red_black.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/graph_subchain_enumerator.h"

@@ -23,7 +23,6 @@
 #include <unordered_map>
 
 #include "base_cpp/cancellation_handler.h"
-#include "base_cpp/obj.h"
 #include "base_cpp/tlscont.h"
 #include "graph/subgraph_hash.h"
 #include "molecule/base_molecule.h"

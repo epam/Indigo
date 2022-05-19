@@ -19,7 +19,6 @@
 #ifndef _RDF_LOADER_H__
 #define _RDF_LOADER_H__
 
-#include "base_cpp/obj.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/tlscont.h"
 
