@@ -982,7 +982,7 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { "13" { "13.6" } "12" { "12.10" } "11" { "11.15" } "10" { "10.20" } }
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { "14" { "14.3" } "13" { "13.7" } "12" { "12.11" } "11" { "11.16" } "10" { "10.21" } }
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
@@ -1015,7 +1015,7 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          case ${{ matrix.postgres_major_version }} in 14) pg_version=14.2;; 13) pg_version=13.6;; 12) pg_version=12.10;; 11) pg_version=11.15;; 10) pg_version=10.20;; esac;
+          case ${{ matrix.postgres_major_version }} in 14) pg_version=14.3;; 13) pg_version=13.7;; 12) pg_version=12.11;; 11) pg_version=11.16;; 10) pg_version=10.21;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
           mv pgsql/include/zlib.h pgsql/include/zlib.h.bck

@@ -31,6 +31,10 @@ option(BUILD_BINGO "Build all existing Bingo cartridges" ON)
 option(BUILD_BINGO_POSTGRES "Build Bingo Postgres cartridge" ON)
 option(BUILD_BINGO_SQLSERVER "Build Bingo MS SqlServer cartridge" ON)
 option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge" ON)
+# If no Postgres server found in system, use this version to build Bingo.
+if (NOT PostgreSQL_ADDITIONAL_VERSIONS)
+    set(PostgreSQL_ADDITIONAL_VERSIONS 14.3)
+endif()
 
 # Bingo-Elastic options
 option(BUILD_BINGO_ELASTIC "Build Bingo Elastic cartridges for Java and Python" ON)

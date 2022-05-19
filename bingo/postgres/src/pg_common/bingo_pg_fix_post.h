@@ -33,4 +33,8 @@
 #undef IGNORE
 #endif
 
+#ifdef stat
+#undef stat
+#endif
+
 #endif //__bingo_pg_fix_post_h__
