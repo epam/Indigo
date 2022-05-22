@@ -1,5 +1,4 @@
 import pytest
-from bingo_elastic.elastic import IndexName
 from indigo import Indigo
 
 from .constants import (
@@ -11,9 +10,6 @@ from .constants import (
     DB_POSTGRES,
     EntitiesType,
 )
-from .dbc.BingoElastic import BingoElastic
-from .dbc.BingoNoSQL import BingoNoSQL
-from .dbc.PostgresSQL import Postgres
 from .helpers import get_bingo_meta, get_query_entities
 from .logger import logger
 
@@ -41,15 +37,19 @@ def db(request, indigo):
     logger.info(f"===== Start of testing {function} =====")
     meta = get_bingo_meta(function, data_type.value)
     if db_str == DB_POSTGRES:
+        from .dbc.PostgresSQL import Postgres
         db = Postgres()
         pg_tables = db.create_data_tables(meta["tables"])
         db.import_data(import_meta=meta["import"])
         db.create_indices(meta["indices"])
     elif db_str == DB_BINGO:
+        from .dbc.BingoNoSQL import BingoNoSQL
         db = BingoNoSQL(indigo)
         db.connect()
         db.import_data(meta["import_no_sql"], data_type)
     elif db_str == DB_BINGO_ELASTIC:
+        from bingo_elastic.elastic import IndexName
+        from .dbc.BingoElastic import BingoElastic
         if data_type == EntitiesType.MOLECULES:
             index_name = IndexName.BINGO_MOLECULE
         else:
@@ -60,19 +60,22 @@ def db(request, indigo):
         pass
     elif db_str == DB_MSSQL:
         pass
+    else:
+        raise RuntimeError('db is not defined. Use --db to configure test database')
 
     yield db
 
     logger.info("Dropping DB...")
+    # if db_str == DB_POSTGRES:
+    #     pass
+    #     for table in pg_tables:
+    #         logger.info(f"Dropping Postgres table {table}")
+    #         table.drop(db.engine)
+    # elif db_str == DB_BINGO:
+    #     db.delete_base()
+    # elif db_str == DB_BINGO_ELASTIC:
+    #     db.drop()
     db.close_connect()
-    if db_str == DB_POSTGRES:
-        for table in pg_tables:
-            logger.info(f"Dropping Postgres table {table}")
-            table.drop(db.engine)
-    elif db_str == DB_BINGO:
-        db.delete_base()
-    elif db_str == DB_BINGO_ELASTIC:
-        db.drop()
     logger.info(f"===== Finish of testing {function} =====")
 
 

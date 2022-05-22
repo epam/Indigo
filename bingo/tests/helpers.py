@@ -153,11 +153,11 @@ def assert_calculate_query(
 
 
 def assert_match_query(
-    result: Union[Exception, List[int]], expected: Union[List[int], str]
+    result: Union[Exception, List[int]], expected: Union[List[int], str], info=''
 ):
     """Assertion for testing exact, tautomers, substructure, similarity,
     sgroups, markush, resonance, pseudoatoms, bigtable and smarts"""
     if isinstance(result, Exception):
-        assert expected in str(result)
+        assert expected in str(result), info
     elif type(expected) == list:
-        assert set(result) == set(expected)
+        assert set(result) == set(expected), info

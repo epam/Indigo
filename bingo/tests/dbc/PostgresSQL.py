@@ -168,7 +168,13 @@ class Postgres(SQLAdapter):
     def rexact(self, reaction, target_function, options=""):
         query_sql = MATCHING_SEARCH_QUERY.replace("{function}", "rexact")
         table_name = TARGET_TABLES_MAP.get(target_function)
-        return self.query_rows(query_sql, reaction, table_name, options)
+        info = query_sql.format(
+            test_schema=self.test_schema,
+            bingo_schema=self.bingo_schema,
+            table_name=table_name,
+            options=options,
+        )
+        return self.query_rows(query_sql, reaction, table_name, options), info
 
     def rsmarts(self, reaction, target_function, options=""):
         query_sql = MATCHING_SEARCH_QUERY.replace("{function}", "rsmarts")
