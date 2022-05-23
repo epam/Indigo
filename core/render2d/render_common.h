@@ -160,6 +160,10 @@ namespace indigo
         void clear();
         Array<char> text;
         FONT_SIZE fontsize;
+        double size;
+        bool bold;
+        bool italic;
+        int script_type;
     };
 
     struct GraphItem : public RenderItem

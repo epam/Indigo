@@ -91,6 +91,7 @@ namespace indigo
         void _drawRGroupLabel(bool idle);
         void _drawRIfThen(bool idle);
         void _drawText(bool idle);
+
         void _drawMeta(bool idle);
         void _drawPlus();
         void _drawArrow();

@@ -19,8 +19,10 @@
 #ifndef __ket_commons_h__
 #define __ket_commons_h__
 
+#include <rapidjson/document.h>
 #include <string>
-
+#include <exception>
+#include <unordered_map>
 #include "common/math/algebra.h"
 #include "graph/graph.h"
 #include "reaction/base_reaction.h"
@@ -62,38 +64,87 @@ namespace indigo
         std::pair<Vec2f, Vec2f> _coordinates;
     };
 
+	const std::unordered_map<std::string, int> KTextStylesMap{{"BOLD", 0}, {"ITALIC", 1}, {"SUPERSCRIPT", 2}, {"SUBSCRIPT", 3}};
+
     class KETTextObject : public MetaObject
     {
     public:
+
+        struct KETTextStyle
+        {
+            int offset;
+            int size;
+            enum
+            {
+				EBold = 0,
+				EItalic = 1,
+				ESuperScript = 2,
+				ESubScript = 3,
+				EFontSize = 4
+            };
+            int style; // everything >= 4 is a font size
+        };
+
+        struct KETTextLine
+        {
+            std::string text;
+            std::list<KETTextStyle> inline_styles;
+        };
+
         static const std::uint32_t CID = "KET text object"_hash;
 
         KETTextObject(const Vec3f& pos, const std::string& content) : MetaObject(CID)
         {
+            using namespace rapidjson;
             _pos = pos;
             _content = content;
+            Document data;
+            data.Parse(content.c_str());
+            if (data.HasMember("blocks"))
+            {
+                Value& blocks = data["blocks"];
+                for (int i = 0; i < blocks.Size(); ++i)
+                {
+                    KETTextLine text_line;
+                    if (blocks[i].HasMember("text"))
+                    {
+                        text_line.text = blocks[i]["text"].GetString();
+						if (blocks[i].HasMember("inlineStyleRanges"))
+						{
+                            Value& style_ranges = blocks[i]["inlineStyleRanges"];
+							for (int j = 0; j < style_ranges.Size(); ++j)
+							{
+                                KETTextStyle ts;
+                                ts.offset = style_ranges[j]["offset"].GetInt();
+                                ts.size = style_ranges[j]["length"].GetInt();
+                                std::string style = style_ranges[j]["style"].GetString();
+                                auto it = KTextStylesMap.find(style);
+								if (it != KTextStylesMap.end())
+								{
+                                    ts.style = it->second;
+								}
+								else
+								{
+                                    const std::string KCustomFontSize = "CUSTOM_FONT_SIZE_";
+                                    const std::string KCustomFontUnits = "px";
+									if (style.find(KCustomFontSize) == 0)
+									{
+                                        ts.style = std::stoi(style.substr(KCustomFontSize.size(), style.size() - KCustomFontSize.size() - KCustomFontUnits.size()));
+									}
+								}
+                                text_line.inline_styles.push_back(ts);
+							}
+						}
+					}
+                    _block.push_back(text_line);
+				}
+			}
         }
 
         MetaObject* clone() const override
         {
             return new KETTextObject(_pos, _content);
         }
-
-        struct KETTextStyle
-        {
-            int _offset;
-            int _size;
-            bool _italic;
-            bool _bold;
-            bool _subscript;
-            bool _superscript;
-            int _font_size;
-        };
-
-        struct KETTextLine
-        {
-            std::string _text;
-            std::list<KETTextStyle> _inline_styles;
-        };
 
         std::string _content;
         std::list<KETTextLine> _block;

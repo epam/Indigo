@@ -14,9 +14,12 @@ target_link_libraries(${PROJECT_NAME} PUBLIC object_threadsafe)
 
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
+            PUBLIC rapidjson
             PUBLIC cairo)
 else ()
     find_package(Cairo REQUIRED)
+    find_package(RapidJSON REQUIRED)
     target_link_libraries(${PROJECT_NAME}
+            PUBLIC RapidJSON::RapidJSON
             PUBLIC Cairo::Cairo)
 endif ()

@@ -75,7 +75,6 @@ namespace indigo
         void fillCircle(const Vec2f& center, const float r);
         void drawArc(const Vec2f& center, const float r, const float a0, const float a1);
         void drawPoly(const Array<Vec2f>& v);
-        void setFontSize(double fontSize);
         void setTextItemSize(TextItem& ti);
         void setTextItemSize(TextItem& ti, const Vec2f& c);
         void setGraphItemSizeDot(GraphItem& gi);
@@ -130,9 +129,11 @@ namespace indigo
         void fontsInit();
         void fontsDispose();
         double fontGetSize(FONT_SIZE size);
-        void fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold);
-        void fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry);
-        void fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold, bool idle);
+        void fontsSetFont(const TextItem& ti);
+
+        void fontsGetTextExtents(cairo_t* cr, const char* text, float& dx, float& dy, float& rx, float& ry);
+        void fontsGetTextExtents(const char* text, float& dx, float& dy, float& rx, float& ry);
+        void fontsDrawText(const TextItem& ti, const Vec3f& color, bool idle);
 
         void bbIncludePoint(const Vec2f& v);
         void bbIncludePoint(double x, double y);

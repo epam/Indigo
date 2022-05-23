@@ -175,6 +175,12 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             break;
             case KETTextObject::CID: {
                 const KETTextObject& ko = static_cast<const KETTextObject&>(mobj);
+                TextItem ti;
+                Vec3f color;
+                _rc.getColorVec(color, CWC_BASE);
+                ti.bbp.set(ko._pos.x, ko._pos.y);
+                ti.fontsize = FONT_SIZE_COMMENT;
+                _rc.fontsDrawText(ti, color, idle);
             }
             break;
             case KETReactionPlus::CID: {

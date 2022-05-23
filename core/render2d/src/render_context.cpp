@@ -507,8 +507,8 @@ void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, boo
 
 void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, bool bold, bool idle)
 {
-    fontsSetFont(_cr, ti.fontsize, bold);
-    fontsDrawText(ti, color, bold, idle);
+    fontsSetFont(ti);
+    fontsDrawText(ti, color, idle);
 }
 
 void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
@@ -715,18 +715,12 @@ void RenderContext::arc(cairo_t* cr, double xc, double yc, double radius, double
 #endif
 }
 
-void RenderContext::setFontSize(double fontSize)
-{
-    cairo_set_font_size(_cr, fontSize);
-    cairoCheckStatus();
-}
-
 void RenderContext::setTextItemSize(TextItem& ti)
 {
-    bool bold = ti.highlighted && opt.highlightThicknessEnable;
-
-    fontsSetFont(_cr, ti.fontsize, bold);
-    fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
+    if (ti.highlighted && opt.highlightThicknessEnable)
+        ti.bold = true;
+    fontsSetFont(ti);
+    fontsGetTextExtents(_cr, ti.text.ptr(), ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
 }
 
 void RenderContext::setTextItemSize(TextItem& ti, const Vec2f& c)
