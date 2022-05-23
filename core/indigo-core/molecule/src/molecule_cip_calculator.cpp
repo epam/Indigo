@@ -56,7 +56,11 @@ void MoleculeCIPCalculator::_addCIPStereoDescriptors(BaseMolecule& mol)
 {
     QS_DEF(Array<CIPDesc>, atom_cip_desc);
     QS_DEF(Array<CIPDesc>, bond_cip_desc);
-    QS_DEF(Molecule, unfolded_h_mol);
+    std::unique_ptr<BaseMolecule> unfolded_h_mol;
+    if (mol.isQueryMolecule())
+        unfolded_h_mol = std::make_unique<QueryMolecule>();
+    else
+        unfolded_h_mol = std::make_unique<Molecule>();
     QS_DEF(Array<int>, markers);
     QS_DEF(Array<int>, stereo_passed);
 
@@ -66,15 +70,16 @@ void MoleculeCIPCalculator::_addCIPStereoDescriptors(BaseMolecule& mol)
 
     int atom_idx, type, group, pyramid[4];
 
-    unfolded_h_mol.clear();
+    unfolded_h_mol->clear();
     markers.clear();
-    unfolded_h_mol.clone_KeepIndices(mol);
-    unfolded_h_mol.unfoldHydrogens(&markers, -1, true);
+    unfolded_h_mol->clone_KeepIndices(mol);
+    if (!unfolded_h_mol->isQueryMolecule()) // queries are already unfolded
+        unfolded_h_mol->asMolecule().unfoldHydrogens(&markers, -1, true);
 
-    atom_cip_desc.clear_resize(unfolded_h_mol.vertexEnd());
+    atom_cip_desc.clear_resize(unfolded_h_mol->vertexEnd());
     atom_cip_desc.zerofill();
 
-    bond_cip_desc.clear_resize(unfolded_h_mol.edgeEnd());
+    bond_cip_desc.clear_resize(unfolded_h_mol->edgeEnd());
     bond_cip_desc.zerofill();
 
     stereo_passed.clear();
@@ -84,7 +89,7 @@ void MoleculeCIPCalculator::_addCIPStereoDescriptors(BaseMolecule& mol)
     {
         bool digraph_cip_used = false;
 
-        _calcRSStereoDescriptor(mol, unfolded_h_mol, i, atom_cip_desc, stereo_passed, false, equiv_ligands, digraph_cip_used);
+        _calcRSStereoDescriptor(mol, *unfolded_h_mol, i, atom_cip_desc, stereo_passed, false, equiv_ligands, digraph_cip_used);
         /*
            printf("Stereo descriptors for stereo center %d (1 cycle): \n", i);
            for (int k = 0; k < atom_cip_desc.size(); k++)
@@ -106,7 +111,7 @@ void MoleculeCIPCalculator::_addCIPStereoDescriptors(BaseMolecule& mol)
             {
                 mol.stereocenters.get(stereo_passed[i], atom_idx, type, group, pyramid);
                 if (atom_cip_desc[atom_idx] == CIPDesc::UNKNOWN)
-                    _calcRSStereoDescriptor(mol, unfolded_h_mol, stereo_passed[i], atom_cip_desc, stereo_passed, true, equiv_ligands, digraph_cip_used);
+                    _calcRSStereoDescriptor(mol, *unfolded_h_mol, stereo_passed[i], atom_cip_desc, stereo_passed, true, equiv_ligands, digraph_cip_used);
                 /*
                    printf("Stereo descriptors for stereo center %d (2 cycle): \n", i);
                    for (int k = 0; k < atom_cip_desc.size(); k++)
@@ -145,7 +150,7 @@ void MoleculeCIPCalculator::_addCIPStereoDescriptors(BaseMolecule& mol)
                     mol.stereocenters.get(stereo_passed[i], atom_idx, type, group, pyramid);
                     if (!as.invalidStereocenter(atom_idx) && atom_cip_desc[atom_idx] == CIPDesc::UNKNOWN)
                     {
-                        _calcRSStereoDescriptor(mol, unfolded_h_mol, stereo_passed[i], atom_cip_desc, stereo_passed, true, equiv_ligands, digraph_cip_used);
+                        _calcRSStereoDescriptor(mol, *unfolded_h_mol, stereo_passed[i], atom_cip_desc, stereo_passed, true, equiv_ligands, digraph_cip_used);
                         /*
                            printf("Stereo descriptors for stereo center %d (3 cycle): \n", i);
                            for (int k = 0; k < atom_cip_desc.size(); k++)
@@ -163,7 +168,7 @@ void MoleculeCIPCalculator::_addCIPStereoDescriptors(BaseMolecule& mol)
 
     for (auto i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
     {
-        _calcEZStereoDescriptor(mol, unfolded_h_mol, i, bond_cip_desc);
+        _calcEZStereoDescriptor(mol, *unfolded_h_mol, i, bond_cip_desc);
     }
 
     _addCIPSgroups(mol, atom_cip_desc, bond_cip_desc);
