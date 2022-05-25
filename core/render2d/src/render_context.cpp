@@ -721,7 +721,7 @@ void RenderContext::setTextItemSize(TextItem& ti)
 {
     TextItem ti_mod = ti;
     ti_mod.bold = ti.highlighted && opt.highlightThicknessEnable;
-    fontsSetFont( ti );
+    fontsSetFont(ti);
     fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
 }
 
