@@ -19,10 +19,10 @@
 #ifndef __molecule_json_loader__
 #define __molecule_json_loader__
 
+#include <list>
 #include <rapidjson/document.h>
 #include <unordered_set>
 #include <vector>
-#include <list>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
