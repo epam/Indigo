@@ -19,6 +19,7 @@
 #ifndef __reaction_json_loader__
 #define __reaction_json_loader__
 
+#include <list>
 #include <rapidjson/document.h>
 
 #include "base_cpp/exception.h"

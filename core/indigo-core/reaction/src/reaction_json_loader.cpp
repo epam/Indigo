@@ -57,7 +57,7 @@ ReactionJsonLoader::ReactionJsonLoader(Document& ket)
                 if (node_name.size() > 2)
                 {
                     std::string rg = "rg";
-                    int rg_num = std::atoi(node_name.substr( rg.size()).c_str());
+                    int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
                     _rgroups.emplace_back(rg_num, node);
                 }
             }
