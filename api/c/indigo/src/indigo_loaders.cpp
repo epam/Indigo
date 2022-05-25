@@ -38,7 +38,7 @@
 
 #include <limits>
 
-IndigoJSONMolecule::IndigoJSONMolecule(rapidjson::Value& node, rapidjson::Value& rgroups, int index)
+IndigoJSONMolecule::IndigoJSONMolecule(rapidjson::Value& node, std::list<std::pair<int, std::reference_wrapper<Value>>>& rgroups, int index)
     : IndigoObject(JSON_MOLECULE), _node(node), _rgroups(rgroups), _loaded(false)
 {
 }

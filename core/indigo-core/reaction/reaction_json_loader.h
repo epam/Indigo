@@ -46,6 +46,7 @@ namespace indigo
     class QueryMolecule;
     class MoleculeJsonLoader;
 
+    using namespace rapidjson;
     class ReactionJsonLoader
     {
     public:
@@ -54,7 +55,7 @@ namespace indigo
         typedef std::pair<float, int> FLOAT_INT_PAIR;
         typedef std::vector<FLOAT_INT_PAIR> FLOAT_INT_PAIRS;
 
-        ReactionJsonLoader(rapidjson::Document& ket);
+        ReactionJsonLoader(Document& ket);
         ~ReactionJsonLoader();
 
         void loadReaction(BaseReaction& rxn);
@@ -69,11 +70,11 @@ namespace indigo
         const Vec2f ARROW_BBOX_SHIFT = {0.0, 0.9};
 
     protected:
-        rapidjson::Value _molecule;
-        rapidjson::Value _rgroups;
-        rapidjson::Value _pluses;
-        rapidjson::Value _arrows;
-        rapidjson::Value _simple_objects;
+        Value _molecule;
+        std::list<std::pair<int, std::reference_wrapper<Value>>> _rgroups;
+        Value _pluses;
+        Value _arrows;
+        Value _simple_objects;
 
     private:
         ReactionJsonLoader(const ReactionJsonLoader&); // no implicit copy

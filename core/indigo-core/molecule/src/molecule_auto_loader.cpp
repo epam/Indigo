@@ -315,7 +315,8 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     _scanner->readAll(buf);
                     buf.push(0);
                     Document data;
-                    Value rgroups(kArrayType);
+                    std::list<std::pair<int, std::reference_wrapper<Value>>> rgroups;
+
                     Value mol_nodes(kArrayType);
                     Value simple_objects(kArrayType);
 
@@ -330,16 +331,18 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                         {
                             if (nodes[i].HasMember("$ref"))
                             {
-                                const char* node_name = nodes[i]["$ref"].GetString();
-                                Value& node = data[node_name];
+                                std::string node_name = nodes[i]["$ref"].GetString();
+                                Value& node = data[node_name.c_str()];
                                 std::string node_type = node["type"].GetString();
                                 if (node_type.compare("molecule") == 0)
                                 {
                                     mol_nodes.PushBack(node, data.GetAllocator());
                                 }
-                                else if (node_type.compare("rgroup") == 0)
+                                else if (node_type.compare("rgroup") == 0 && node_name.size() > 2)
                                 {
-                                    rgroups.PushBack(node, data.GetAllocator());
+                                    std::string rg = "rg";
+                                    int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
+                                    rgroups.emplace_back(rg_num, node);
                                 }
                                 else
                                     throw Error("Unknows node type: %s", node_type.c_str());
@@ -365,7 +368,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     }
                     else
                         throw Error("Ketcher's JSON has no root node");
-                    if (mol_nodes.Size() || rgroups.Size() || simple_objects.Size())
+                    if (mol_nodes.Size() || rgroups.size() || simple_objects.Size())
                     {
                         MoleculeJsonLoader loader(mol_nodes, rgroups, simple_objects);
                         loader.stereochemistry_options = stereochemistry_options;

@@ -18,12 +18,12 @@ using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups, rapidjson::Value& simple_objects)
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, std::list<std::pair<int, std::reference_wrapper<Value>>>& rgroups, rapidjson::Value& simple_objects)
     : _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(simple_objects), _pmol(0), _pqmol(0), _empty_array(kArrayType)
 {
 }
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups)
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, std::list<std::pair<int, std::reference_wrapper<Value>>>& rgroups)
     : _empty_array(kArrayType), _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty_array), _pmol(0), _pqmol(0)
 {
 }
@@ -910,22 +910,19 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
     }
 
     MoleculeRGroups& rgroups = mol.rgroups;
-    if (_rgroups.Size())
+    Document data;
+    for (auto& rgrp : _rgroups)
     {
-        Document data;
-        for (int rsite_idx = 0; rsite_idx < _rgroups.Size(); ++rsite_idx)
-        {
-            RGroup& rgroup = rgroups.getRGroup(rsite_idx + 1);
-            std::unique_ptr<BaseMolecule> fragment(mol.neu());
-            Value one_rnode(kArrayType);
-            Value& rnode = _rgroups[rsite_idx];
-            one_rnode.PushBack(rnode, data.GetAllocator());
-            auto empty_val = Value(kArrayType);
-            MoleculeJsonLoader loader(one_rnode, empty_val);
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.loadMolecule(*fragment.get());
-            rgroup.fragments.add(fragment.release());
-        }
+        RGroup& rgroup = rgroups.getRGroup(rgrp.first);
+        std::unique_ptr<BaseMolecule> fragment(mol.neu());
+        Value one_rnode(kArrayType);
+        Value& rnode = rgrp.second;
+        one_rnode.PushBack(rnode, data.GetAllocator());
+        std::list<std::pair<int, std::reference_wrapper<Value>>> empty_val;
+        MoleculeJsonLoader loader(one_rnode, empty_val);
+        loader.stereochemistry_options = stereochemistry_options;
+        loader.loadMolecule(*fragment.get());
+        rgroup.fragments.add(fragment.release());
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());
