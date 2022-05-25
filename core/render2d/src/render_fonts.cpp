@@ -102,12 +102,14 @@ double RenderContext::fontGetSize(FONT_SIZE size)
     return _settings.fzz[size];
 }
 
-void RenderContext::fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold)
+void RenderContext::fontsSetFont(const TextItem& ti)
 {
     std::lock_guard<std::mutex> _lock(_cairo_mutex);
-    cairo_select_font_face(cr, _fontfamily.ptr(), CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_select_font_face(_cr, _fontfamily.ptr(), ti.italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL,
+                            -ti.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
+
     cairoCheckStatus();
-    cairo_set_font_size(cr, fontGetSize(size));
+    cairo_set_font_size(_cr, ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
     cairoCheckStatus();
 }
 
@@ -124,7 +126,7 @@ void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int size,
     ry = (float)-te.y_bearing;
 }
 
-void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold, bool idle)
+void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color,bool idle)
 {
     /*
      * cairo treats all surfaces as bounded and drops glyphs from a rendering

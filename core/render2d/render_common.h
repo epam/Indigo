@@ -139,6 +139,8 @@ namespace indigo
         };
 
         RenderItem();
+        RenderItem(const RenderItem& ri);
+
         void clear();
 
         TYPE ritype;
@@ -153,13 +155,28 @@ namespace indigo
 
     struct TextItem : public RenderItem
     {
-        TextItem()
+        TextItem() : size(0.0), bold(false), italic(false), script_type(0)
         {
             clear();
         }
+
+        TextItem(const TextItem& ti)
+        {
+            text.copy( ti.text );
+            fontsize = ti.fontsize;
+            size = ti.size;
+            bold = ti.bold;
+            italic = ti.italic;
+            script_type = ti.script_type;
+        }
+
         void clear();
         Array<char> text;
         FONT_SIZE fontsize;
+        double size;
+        bool bold;
+        bool italic;
+        int script_type;
     };
 
     struct GraphItem : public RenderItem

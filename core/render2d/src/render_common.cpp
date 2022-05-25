@@ -58,6 +58,19 @@ RenderItem::RenderItem()
 {
     clear();
 }
+
+RenderItem::RenderItem(const RenderItem& ri)
+{
+    ritype = ri.ritype;
+    bbp.copy( ri.bbp );
+    bbsz.copy( ri.bbsz );
+    relpos.copy( ri.relpos );
+    color = ri.color;
+    highlighted = ri.highlighted;
+    noBondOffset = ri.noBondOffset;
+}
+
+
 void RenderItem::clear()
 {
     ritype = RIT_NULL;
