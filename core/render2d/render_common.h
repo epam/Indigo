@@ -162,7 +162,7 @@ namespace indigo
 
         TextItem(const TextItem& ti)
         {
-            text.copy( ti.text );
+            text.copy(ti.text);
             fontsize = ti.fontsize;
             size = ti.size;
             bold = ti.bold;
