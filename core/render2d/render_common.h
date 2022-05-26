@@ -160,7 +160,7 @@ namespace indigo
             clear();
         }
 
-        TextItem(const TextItem& ti)
+        TextItem(const TextItem& ti) : RenderItem(ti)
         {
             text.copy(ti.text);
             fontsize = ti.fontsize;

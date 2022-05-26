@@ -501,7 +501,7 @@ void RenderContext::drawTextItemText(const TextItem& ti, bool idle)
 
 void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, bool idle)
 {
-    TextItem ti_mod = ti;
+    TextItem ti_mod( ti );
     ti_mod.bold = ti.highlighted && opt.highlightThicknessEnable;
     fontsSetFont(ti_mod);
     fontsDrawText(ti_mod, color, idle);
