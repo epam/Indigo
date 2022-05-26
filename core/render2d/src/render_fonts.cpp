@@ -109,7 +109,7 @@ void RenderContext::fontsSetFont(const TextItem& ti)
                            -ti.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
 
     cairoCheckStatus();
-    cairo_set_font_size(_cr, ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
+    cairo_set_font_size(_cr, fontGetSize(ti.fontsize));
     cairoCheckStatus();
 }
 
