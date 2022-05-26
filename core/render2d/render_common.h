@@ -155,7 +155,7 @@ namespace indigo
 
     struct TextItem : public RenderItem
     {
-        TextItem() : size(0.0), bold(false), italic(false), script_type(0)
+        TextItem() : size(-0.0), bold(false), italic(false), script_type(0)
         {
             clear();
         }
