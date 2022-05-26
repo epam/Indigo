@@ -85,6 +85,10 @@ void TextItem::clear()
 {
     RenderItem::clear();
     text.clear();
+    size = -0.0;
+    bold = false;
+    italic = false;
+    script_type = 0;
 }
 
 void GraphItem::clear()
