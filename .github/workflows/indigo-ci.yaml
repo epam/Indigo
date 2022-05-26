@@ -769,7 +769,7 @@ jobs:
           cd api/wasm/indigo-ketcher
           ver=$(git describe --abbrev=0 --tags --match "indigo-*")
           ver=$(echo $ver | sed 's/indigo-//g')
-          npm version ${ver}
+          npm version ${ver} --allow-same-version
       - name: Build, Test, Pack
         run: |
           mkdir build
