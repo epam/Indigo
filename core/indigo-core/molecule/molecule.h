@@ -171,6 +171,8 @@ namespace indigo
 
         bool isPossibleFischerProjection(const char* options);
 
+        double tpsa();
+
     protected:
         struct _Atom
         {

@@ -47,3 +47,24 @@ TEST_F(IndigoCoreMoleculeTest, mass)
     const auto m = mm.monoisotopicMass(molecule);
     ASSERT_NEAR(80.9163, m, 0.01);
 }
+
+TEST_F(IndigoCoreMoleculeTest, tpsa)
+{
+    Molecule molecule;
+    loadMolecule("C", molecule);
+    ASSERT_NEAR(0, molecule.tpsa(), 0.01);
+    loadMolecule("O=C([O-])c1ccccc1O", molecule);
+    EXPECT_NEAR(60.36, molecule.tpsa(), 0.1);
+    loadMolecule("CC(=O)Oc1cccc1C(=O)[O-]", molecule);
+    EXPECT_NEAR(66.43, molecule.tpsa(), 0.1);
+    loadMolecule("OCC(O)C(O)C(O)C(O)CO", molecule);
+    EXPECT_NEAR(121.37, molecule.tpsa(), 0.1);
+    loadMolecule("OCC(O)C(O)C(O)C(O)CO", molecule);
+    EXPECT_NEAR(121.37, molecule.tpsa(), 0.1);
+    loadMolecule("C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", molecule);
+    EXPECT_NEAR(72.9, molecule.tpsa(), 0.1);
+    loadMolecule("C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O", molecule);
+    EXPECT_NEAR(149.16, molecule.tpsa(), 0.1);
+    loadMolecule("CN1C=NC2=C1C(=O)N(C(=O)N2C)C", molecule);
+    ASSERT_NEAR(56.22, molecule.tpsa(), 0.1);
+}

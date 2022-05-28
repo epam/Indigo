@@ -24,6 +24,7 @@
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_dearom.h"
 #include "molecule/molecule_standardize.h"
+#include "molecule/tpsa.h"
 
 using namespace indigo;
 
@@ -1788,4 +1789,9 @@ bool Molecule::isPossibleFischerProjection(const char* options)
         }
     }
     return false;
+}
+
+double Molecule::tpsa()
+{
+    return TPSA::calculate(*this);
 }
