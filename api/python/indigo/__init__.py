@@ -3194,10 +3194,10 @@ class IndigoObject(object):
         )
 
     def monoisotopicMass(self):
-        """Molecule method returns the most monoisotopic mass
+        """Molecule method returns the monoisotopic mass
 
         Returns:
-            float: most monoisotopic mass
+            float: monoisotopic mass
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultFloat(
@@ -3213,6 +3213,17 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
             Indigo._lib.indigoMassComposition(self.id)
+        )
+
+    def tpsa(self):
+        """Molecule method returns the TPSA value
+    
+        Returns:
+            float: TPSA value
+        """
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultFloat(
+            Indigo._lib.indigoTPSA(self.id)
         )
 
     def canonicalSmiles(self):
@@ -5012,6 +5023,8 @@ class Indigo(object):
         Indigo._lib.indigoMonoisotopicMass.argtypes = [c_int]
         Indigo._lib.indigoMassComposition.restype = c_char_p
         Indigo._lib.indigoMassComposition.argtypes = [c_int]
+        Indigo._lib.indigoTPSA.restype = c_double
+        Indigo._lib.indigoTPSA.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmiles.restype = c_char_p
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmarts.restype = c_char_p

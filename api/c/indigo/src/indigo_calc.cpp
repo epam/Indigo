@@ -128,3 +128,18 @@ CEXPORT const char* indigoMassComposition(int molecule)
     }
     INDIGO_END(0);
 }
+
+CEXPORT double indigoTPSA(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            return mol.tpsa();
+        }
+        throw IndigoError("incorrect object type for TPSA calculation: %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
