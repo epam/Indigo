@@ -34,53 +34,28 @@ using namespace rapidjson;
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
 ReactionJsonLoader::ReactionJsonLoader(Document& ket)
-    : _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _simple_objects(kArrayType), _prxn(nullptr), _pqrxn(nullptr)
+    : _loader(ket), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _prxn(nullptr), _pqrxn(nullptr)
 {
     ignore_bad_valence = false;
+
+    _loader.stereochemistry_options = stereochemistry_options;
+    _loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    _loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
-    // rewind to first molecule node
     for (int i = 0; i < nodes.Size(); ++i)
     {
         Value& rnode = nodes[i];
-        if (rnode.HasMember("$ref"))
-        {
-            std::string node_name = rnode["$ref"].GetString();
-            Value& node = ket[node_name.c_str()];
-            std::string node_type = node["type"].GetString();
-            if (node_type == "molecule")
-            {
-                _molecule.PushBack(node, ket.GetAllocator());
-            }
-            else if (node_type == "rgroup")
-            {
-                if (node_name.size() > 2)
-                {
-                    std::string rg = "rg";
-                    int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
-                    _rgroups.emplace_back(rg_num, node);
-                }
-            }
-            else
-                throw Error("Unknows JSON node: %s", node_type.c_str());
-        }
-        else if (rnode.HasMember("type"))
+        if (rnode.HasMember("type"))
         {
             std::string node_type = rnode["type"].GetString();
             if (node_type == "arrow")
                 _arrows.PushBack(rnode, ket.GetAllocator());
             else if (node_type == "plus")
                 _pluses.PushBack(rnode, ket.GetAllocator());
-            else if (node_type.compare("simpleObject") == 0 || node_type.compare("text") == 0)
-            {
-                if (nodes[i].HasMember("data"))
-                    _simple_objects.PushBack(nodes[i]["data"], ket.GetAllocator());
-            }
-            else
-                throw Error("Unknown reaction node: %s", node_type.c_str());
         }
-        else
-            throw Error("Unknows JSON node");
     }
 }
 
@@ -90,12 +65,6 @@ ReactionJsonLoader::~ReactionJsonLoader()
 
 void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 {
-    MoleculeJsonLoader loader(_molecule, _rgroups);
-    loader.stereochemistry_options = stereochemistry_options;
-    loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-
     if (rxn.isQueryReaction())
         _pqrxn = &rxn.asQueryReaction();
     else
@@ -107,17 +76,18 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     if (_prxn)
     {
         _pmol = &_mol;
-        loader.loadMolecule(_mol);
+        _loader.loadMolecule(_mol);
     }
     else if (_pqrxn)
     {
-        loader.loadMolecule(_qmol);
+        _loader.loadMolecule(_qmol);
         _pmol = &_qmol;
     }
     else
         throw Error("unknown reaction type: %s", typeid(rxn).name());
 
-    MoleculeJsonLoader::loadSimpleObjects(_simple_objects, rxn);
+    rxn.cloneMetaData(_mol);
+    _mol.resetMetaData();
 
     for (int i = 0; i < _pluses.Size(); ++i)
     {

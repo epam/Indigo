@@ -55,8 +55,9 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        explicit MoleculeJsonLoader(rapidjson::Value& molecule, RGroupDescriptionList& rgroups, rapidjson::Value& simple_objects);
-        explicit MoleculeJsonLoader(rapidjson::Value& molecule, RGroupDescriptionList& rgroups);
+        explicit MoleculeJsonLoader(rapidjson::Document& ket);
+        explicit MoleculeJsonLoader(rapidjson::Value& mol_nodes);
+
         void loadMolecule(BaseMolecule& mol);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
@@ -101,10 +102,11 @@ namespace indigo
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
     private:
-        rapidjson::Value _empty_array;
         rapidjson::Value& _mol_nodes;
-        RGroupDescriptionList& _rgroups;
-        rapidjson::Value& _simple_objects;
+        rapidjson::Value _simple_objects;
+        rapidjson::Value _mol_array;
+
+        RGroupDescriptionList _rgroups;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;

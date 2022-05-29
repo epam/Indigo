@@ -105,7 +105,7 @@ namespace indigo
         virtual void addMetaObject(MetaObject* pobj) = 0; // moves ownership
         virtual void resetMetaData() = 0;
         virtual const PtrArray<MetaObject>& metaData() const = 0;
-        void cloneMetaData(MetaObjectsInterface& other)
+        void cloneMetaData(const MetaObjectsInterface& other)
         {
             resetMetaData();
             const auto& meta = other.metaData();

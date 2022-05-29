@@ -27,6 +27,7 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
+#include "molecule/molecule_json_loader.h"
 
 class IndigoRdfData : public IndigoObject
 {
@@ -141,7 +142,7 @@ class RGroupDescriptionList;
 class IndigoJSONMolecule : public IndigoObject
 {
 public:
-    IndigoJSONMolecule(rapidjson::Value& node, RGroupDescriptionList& rgroups, int index);
+    IndigoJSONMolecule( rapidjson::Document& ket );
     ~IndigoJSONMolecule() override;
     Molecule& getMolecule() override;
     BaseMolecule& getBaseMolecule() override;
@@ -150,8 +151,7 @@ public:
 
 protected:
     Molecule _mol;
-    rapidjson::Value& _node;
-    RGroupDescriptionList& _rgroups;
+    MoleculeJsonLoader _loader;
     bool _loaded;
 };
 

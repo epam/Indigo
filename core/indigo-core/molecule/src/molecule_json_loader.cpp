@@ -18,13 +18,50 @@ using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(rapidjson::Value& mol_nodes, RGroupDescriptionList& rgroups, rapidjson::Value& simple_objects)
-    : _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(simple_objects), _pmol(0), _pqmol(0), _empty_array(kArrayType)
+MoleculeJsonLoader::MoleculeJsonLoader(Document& ket) 
+	: _mol_array(kArrayType), _mol_nodes(_mol_array), _simple_objects(kArrayType), _pmol(0), _pqmol(0)
 {
+    Value& root = ket["root"];
+    Value& nodes = root["nodes"];
+    // rewind to first molecule node
+    for (int i = 0; i < nodes.Size(); ++i)
+    {
+        if (nodes[i].HasMember("$ref"))
+        {
+            std::string node_name = nodes[i]["$ref"].GetString();
+            Value& node = ket[node_name.c_str()];
+            std::string node_type = node["type"].GetString();
+            if (node_type.compare("molecule") == 0)
+            {
+                _mol_nodes.PushBack(node, ket.GetAllocator());
+            }
+            else if (node_type.compare("rgroup") == 0 && node_name.size() > 2)
+            {
+                std::string rg = "rg";
+                int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
+                _rgroups.emplace_back(rg_num, node);
+            }
+            else
+                throw Error("Unknows node type: %s", node_type.c_str());
+        }
+        else if (nodes[i].HasMember("type"))
+        {
+            std::string node_type = nodes[i]["type"].GetString();
+            if (node_type.compare("simpleObject") == 0 || node_type.compare("text") == 0)
+            {
+                if (nodes[i].HasMember("data"))
+                {
+                    _simple_objects.PushBack(nodes[i]["data"], ket.GetAllocator());
+                }
+            }
+        }
+        else
+            throw Error("Unsupported node for molecule");
+    }
 }
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, RGroupDescriptionList& rgroups)
-    : _empty_array(kArrayType), _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty_array), _pmol(0), _pqmol(0)
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes) 
+	: _mol_nodes(mol_nodes), _simple_objects(kArrayType),_pmol(0), _pqmol(0)
 {
 }
 
@@ -918,8 +955,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         Value one_rnode(kArrayType);
         Value& rnode = rgrp.second;
         one_rnode.PushBack(rnode, data.GetAllocator());
-        RGroupDescriptionList empty_val;
-        MoleculeJsonLoader loader(one_rnode, empty_val);
+        MoleculeJsonLoader loader(one_rnode);
         loader.stereochemistry_options = stereochemistry_options;
         loader.loadMolecule(*fragment.get());
         rgroup.fragments.add(fragment.release());
