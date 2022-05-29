@@ -816,6 +816,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoMassComposition(self));
     }
 
+    public double tpsa() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultDouble(this, lib.indigoTPSA(self));
+    }
+
     public String canonicalSmiles() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoCanonicalSmiles(self));

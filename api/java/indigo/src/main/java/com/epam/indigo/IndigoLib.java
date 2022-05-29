@@ -597,6 +597,8 @@ public interface IndigoLib extends Library {
 
     Pointer indigoMassComposition(int molecule);
 
+    double indigoTPSA(int molecule);
+
     Pointer indigoCanonicalSmiles(int molecule);
 
     Pointer indigoLayeredCode(int molecule);

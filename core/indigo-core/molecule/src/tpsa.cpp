@@ -40,8 +40,15 @@ namespace indigo
                isIn3MemberedRing == other.isIn3MemberedRing;
     }
 
-    double TPSA::calculate(Molecule& molecule)
+    double TPSA::calculate(Molecule& rawMolecule)
     {
+        Molecule molecule;
+        molecule.clone(rawMolecule);
+        if (!molecule.isAromatized())
+        {
+            molecule.aromatize(AromaticityOptions());
+        }
+
         double tpsa = 0.0;
         const auto& atomContributions = getAtomContributions();
         for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
@@ -114,7 +121,8 @@ namespace indigo
 
             if (atomContributions.count(key) > 0)
             {
-                tpsa += atomContributions.at(key);
+                const auto contrib = atomContributions.at(key);
+                tpsa += contrib;
             }
         }
 
