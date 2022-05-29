@@ -3215,7 +3215,7 @@ class IndigoObject(object):
             Indigo._lib.indigoMassComposition(self.id)
         )
 
-    def tpsa(self, includeSP = False):
+    def tpsa(self, includeSP=False):
         """Molecule method returns the TPSA value
 
         Returns:
