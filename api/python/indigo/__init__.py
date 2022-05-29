@@ -3218,6 +3218,10 @@ class IndigoObject(object):
     def tpsa(self, includeSP=False):
         """Molecule method returns the TPSA value
 
+        Args:
+            includeSP (bool): include S and P atoms to TPSA calculation,
+                              false by default
+
         Returns:
             float: TPSA value
         """

@@ -44,7 +44,7 @@ TEST_F(IndigoCoreMoleculeTest, tpsa)
 {
     Molecule molecule;
     loadMolecule("C", molecule);
-    ASSERT_NEAR(0, TPSA::calculate(molecule), 0.01);
+    EXPECT_NEAR(0, TPSA::calculate(molecule), 0.01);
     loadMolecule("O=C([O-])c1ccccc1O", molecule);
     EXPECT_NEAR(60.36, TPSA::calculate(molecule), 0.1);
     loadMolecule("CC(=O)Oc1cccc1C(=O)[O-]", molecule);
