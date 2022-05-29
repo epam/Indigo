@@ -779,7 +779,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-ketcher
+          name: indigo-wasm
           path: dist/indigo-ketcher*.tgz
 
   build_indigo_utils_x86_64:
