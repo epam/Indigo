@@ -12,7 +12,7 @@ indigo = Indigo()
 patterns = []
 for line in open(joinPathPy("molecules/tpsa.tab", __file__)).readlines()[1:]:
     parts = line.split("\t")
-    patterns.append([float(parts[0]), indigo.loadSmarts(parts[1]), parts[1]])
+    patterns.append([float(parts[0]), indigo.loadSmarts(parts[1])])
 
 
 def calcTPSA(smiles):
@@ -20,10 +20,8 @@ def calcTPSA(smiles):
     matcher = indigo.substructureMatcher(mol)
     tpsa = 0
     for pattern in patterns:
-        matches = matcher.countMatches(pattern[1])
-        if matches:
-            tpsa += pattern[0] * matches
-            print(pattern[0], matches, pattern[2])
+        tpsa += pattern[0] * matcher.countMatches(pattern[1])
+    print("{0:0.2f}".format(tpsa))
 
 
 calcTPSA("CN2C(=O)N(C)C(=O)C1=C2N=CN1C")
