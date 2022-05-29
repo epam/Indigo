@@ -78,7 +78,7 @@ namespace indigo
         bool findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms, const FLOAT_INT_PAIRS& mol_lefts,
                                 const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection);
 
-		rapidjson::Value _molecule;
+        rapidjson::Value _molecule;
         rapidjson::Value _pluses;
         rapidjson::Value _arrows;
         MoleculeJsonLoader _loader;

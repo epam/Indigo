@@ -39,8 +39,7 @@
 
 using namespace rapidjson;
 
-IndigoJSONMolecule::IndigoJSONMolecule(Document& ket)
-    : IndigoObject(JSON_MOLECULE), _loader(ket), _loaded(false)
+IndigoJSONMolecule::IndigoJSONMolecule(Document& ket) : IndigoObject(JSON_MOLECULE), _loader(ket), _loaded(false)
 {
 }
 

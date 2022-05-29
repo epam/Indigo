@@ -18,8 +18,7 @@ using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(Document& ket) 
-	: _mol_array(kArrayType), _mol_nodes(_mol_array), _simple_objects(kArrayType), _pmol(0), _pqmol(0)
+MoleculeJsonLoader::MoleculeJsonLoader(Document& ket) : _mol_array(kArrayType), _mol_nodes(_mol_array), _simple_objects(kArrayType), _pmol(0), _pqmol(0)
 {
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
@@ -60,8 +59,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     }
 }
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes) 
-	: _mol_nodes(mol_nodes), _simple_objects(kArrayType),_pmol(0), _pqmol(0)
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes) : _mol_nodes(mol_nodes), _simple_objects(kArrayType), _pmol(0), _pqmol(0)
 {
 }
 
