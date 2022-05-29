@@ -36,3 +36,23 @@ double IndigoMolecule::molecularWeight() const
 {
     return session()->_checkResultFloat(indigoMolecularWeight(id()));
 }
+
+double IndigoMolecule::tpsa(const bool includeSP) const
+{
+    return session()->_checkResultFloat(indigoTPSA(id(), static_cast<int>(includeSP)));
+}
+
+int IndigoMolecule::numRotatableBonds() const
+{
+    return session()->_checkResult(indigoNumRotatableBonds(id()));
+}
+
+int IndigoMolecule::numHydrogenBondAcceptors() const
+{
+    return session()->_checkResult(indigoNumHydrogenBondAcceptors(id()));
+}
+
+int IndigoMolecule::numHydrogenBondDonors() const
+{
+    return session()->_checkResult(indigoNumHydrogenBondDonors(id()));
+}

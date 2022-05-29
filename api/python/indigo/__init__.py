@@ -3230,6 +3230,39 @@ class IndigoObject(object):
             Indigo._lib.indigoTPSA(self.id, includeSP)
         )
 
+    def numRotatableBonds(self):
+        """Molecule method returns the number of rotatable bonds
+
+        Returns:
+            int: number of rotatable bonds
+        """
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(
+            Indigo._lib.indigoNumRotatableBonds(self.id)
+        )
+
+    def numHydrogenBondAcceptors(self):
+        """Molecule method returns the number of hydrogen bond acceptors
+
+        Returns:
+            float: number of hydrogen bond acceptors
+        """
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(
+            Indigo._lib.indigoNumHydrogenBondAcceptors(self.id)
+        )
+
+    def numHydrogenBondDonors(self):
+        """Molecule method returns the number of hydrogen bond donors
+
+        Returns:
+            float: number of hydrogen bond donors
+        """
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(
+            Indigo._lib.indigoNumHydrogenBondDonors(self.id)
+        )
+
     def canonicalSmiles(self):
         """Molecule or reaction method returns canonical smiles
 
@@ -5029,6 +5062,12 @@ class Indigo(object):
         Indigo._lib.indigoMassComposition.argtypes = [c_int]
         Indigo._lib.indigoTPSA.restype = c_double
         Indigo._lib.indigoTPSA.argtypes = [c_int, c_int]
+        Indigo._lib.indigoNumRotatableBonds.restype = c_int
+        Indigo._lib.indigoNumRotatableBonds.argtypes = [c_int]
+        Indigo._lib.indigoNumHydrogenBondAcceptors.restype = c_int
+        Indigo._lib.indigoNumHydrogenBondAcceptors.argtypes = [c_int]
+        Indigo._lib.indigoNumHydrogenBondDonors.restype = c_int
+        Indigo._lib.indigoNumHydrogenBondDonors.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmiles.restype = c_char_p
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmarts.restype = c_char_p

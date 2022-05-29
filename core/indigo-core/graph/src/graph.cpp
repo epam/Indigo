@@ -860,3 +860,14 @@ void Graph::_calculateSSSRAddEdgesAndVertices(const Array<int>& cycle, List<int>
         prev_end = edge.end;
     }
 }
+
+bool Graph::isTerminalVertex(int v_idx) const
+{
+    return getVertex(v_idx).degree() == 1;
+}
+
+bool Graph::isTerminalEdge(int e_idx) const
+{
+    const auto& edge = getEdge(e_idx);
+    return isTerminalVertex(edge.beg) || isTerminalVertex(edge.end);
+}

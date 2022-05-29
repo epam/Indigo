@@ -264,11 +264,14 @@ def checkBitmapSimilarity(filename, ref_filename):
 
     channels = ["red", "green", "blue", "alpha"]
     for i, result in enumerate(results):
-        if result > (HASH_SIZE ** 2) * 0.1:
-            return "%s rendering status: Problem: PNG similarity is %s for %s channel" % (
-                filename,
-                round(1 - (result / float(HASH_SIZE ** 2)), 2),
-                channels[i],
+        if result > (HASH_SIZE**2) * 0.1:
+            return (
+                "%s rendering status: Problem: PNG similarity is %s for %s channel"
+                % (
+                    filename,
+                    round(1 - (result / float(HASH_SIZE**2)), 2),
+                    channels[i],
+                )
             )
 
     return "%s rendering status: OK" % filename
