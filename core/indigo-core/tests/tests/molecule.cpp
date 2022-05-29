@@ -59,8 +59,6 @@ TEST_F(IndigoCoreMoleculeTest, tpsa)
     EXPECT_NEAR(66.43, molecule.tpsa(), 0.1);
     loadMolecule("OCC(O)C(O)C(O)C(O)CO", molecule);
     EXPECT_NEAR(121.37, molecule.tpsa(), 0.1);
-    loadMolecule("OCC(O)C(O)C(O)C(O)CO", molecule);
-    EXPECT_NEAR(121.37, molecule.tpsa(), 0.1);
     loadMolecule("C1CC1N2C=C(C(=O)C3=CC(=C(C=C32)N4CCNCC4)F)C(=O)O", molecule);
     EXPECT_NEAR(72.9, molecule.tpsa(), 0.1);
     loadMolecule("C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O", molecule);
