@@ -15,15 +15,15 @@ Released 2022-05-26
 * ZLib updated to 1.2.12
 * LibPNG updated to 1.6.37
 * TinyXML updated to TinyXML2 9.0.0
-* Bingo PostgreSQL support to Postgres 13 and 144 added, thanks @SPKorhonen,
+* Bingo PostgreSQL support to Postgres 13 and 14 added, thanks @SPKorhonen;
   dropped support for Postgres 9.6
 
 ## Bugfixes
 * Bingo Elastic: fixed exact search (#644)
-* Core: ketcher format loader: options handling fixed (#588)
+* Core: Ketcher format loader: options handling fixed (#588)
 * API: Fixed `name()` calling for RXNV3000 format (#678)
 * Numerous fixes for Ketcher data format (#689, #711, #733, #734)
-* API web service: fixed descriptors calcuation
+* API web service: fixed descriptors calculation
 
 
 # Indigo 1.6.1
