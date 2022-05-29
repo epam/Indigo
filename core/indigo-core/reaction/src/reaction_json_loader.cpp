@@ -29,6 +29,7 @@
 #include "reaction/reaction_json_loader.h"
 
 using namespace indigo;
+using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
