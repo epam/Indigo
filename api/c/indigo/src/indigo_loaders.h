@@ -136,12 +136,12 @@ protected:
     std::unique_ptr<Scanner> _own_scanner;
 };
 
-using namespace rapidjson;
+class RGroupDescriptionList;
 
 class IndigoJSONMolecule : public IndigoObject
 {
 public:
-    IndigoJSONMolecule(rapidjson::Value& node, std::list<std::pair<int, std::reference_wrapper<Value>>>& rgroups, int index);
+    IndigoJSONMolecule(rapidjson::Value& node, RGroupDescriptionList& rgroups, int index);
     ~IndigoJSONMolecule() override;
     Molecule& getMolecule() override;
     BaseMolecule& getBaseMolecule() override;
@@ -151,7 +151,7 @@ public:
 protected:
     Molecule _mol;
     rapidjson::Value& _node;
-    std::list<std::pair<int, std::reference_wrapper<Value>>>& _rgroups;
+    RGroupDescriptionList& _rgroups;
     bool _loaded;
 };
 

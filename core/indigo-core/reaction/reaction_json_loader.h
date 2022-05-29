@@ -25,6 +25,7 @@
 #include "base_cpp/exception.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
 
@@ -72,7 +73,7 @@ namespace indigo
 
     protected:
         Value _molecule;
-        std::list<std::pair<int, std::reference_wrapper<Value>>> _rgroups;
+        RGroupDescriptionList _rgroups;
         Value _pluses;
         Value _arrows;
         Value _simple_objects;

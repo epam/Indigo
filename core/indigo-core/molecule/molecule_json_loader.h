@@ -34,26 +34,29 @@
 #pragma warning(disable : 4251)
 #endif
 
+class RGroupDescriptionList : public std::list<std::pair<int, std::reference_wrapper<rapidjson::Value>>>
+{
+};
+
 namespace indigo
 {
-
     class Scanner;
     class BaseMolecule;
     class Molecule;
     class QueryMolecule;
     class SGroup;
     class MetaObjectsInterface;
-    using namespace rapidjson;
 
     /*
      * Loader for JSON format
      */
+
     class DLLEXPORT MoleculeJsonLoader : public NonCopyable
     {
     public:
         DECL_ERROR;
-        explicit MoleculeJsonLoader(Value& molecule, std::list<std::pair<int, std::reference_wrapper<Value>>>& rgroups, Value& simple_objects);
-        explicit MoleculeJsonLoader(Value& molecule, std::list<std::pair<int, std::reference_wrapper<Value>>>& rgroups);
+        explicit MoleculeJsonLoader(rapidjson::Value& molecule, RGroupDescriptionList& rgroups, rapidjson::Value& simple_objects);
+        explicit MoleculeJsonLoader(rapidjson::Value& molecule, RGroupDescriptionList& rgroups);
         void loadMolecule(BaseMolecule& mol);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
@@ -98,10 +101,10 @@ namespace indigo
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
     private:
-        Value _empty_array;
-        Value& _mol_nodes;
-        std::list<std::pair<int, std::reference_wrapper<Value>>>& _rgroups;
-        Value& _simple_objects;
+        rapidjson::Value _empty_array;
+        rapidjson::Value& _mol_nodes;
+        RGroupDescriptionList& _rgroups;
+        rapidjson::Value& _simple_objects;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;

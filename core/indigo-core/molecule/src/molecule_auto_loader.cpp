@@ -315,7 +315,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     _scanner->readAll(buf);
                     buf.push(0);
                     Document data;
-                    std::list<std::pair<int, std::reference_wrapper<Value>>> rgroups;
+                    RGroupDescriptionList rgroups;
 
                     Value mol_nodes(kArrayType);
                     Value simple_objects(kArrayType);

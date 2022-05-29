@@ -18,12 +18,12 @@ using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, std::list<std::pair<int, std::reference_wrapper<Value>>>& rgroups, rapidjson::Value& simple_objects)
+MoleculeJsonLoader::MoleculeJsonLoader(rapidjson::Value& mol_nodes, RGroupDescriptionList& rgroups, rapidjson::Value& simple_objects)
     : _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(simple_objects), _pmol(0), _pqmol(0), _empty_array(kArrayType)
 {
 }
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, std::list<std::pair<int, std::reference_wrapper<Value>>>& rgroups)
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, RGroupDescriptionList& rgroups)
     : _empty_array(kArrayType), _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty_array), _pmol(0), _pqmol(0)
 {
 }
@@ -918,7 +918,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         Value one_rnode(kArrayType);
         Value& rnode = rgrp.second;
         one_rnode.PushBack(rnode, data.GetAllocator());
-        std::list<std::pair<int, std::reference_wrapper<Value>>> empty_val;
+        RGroupDescriptionList empty_val;
         MoleculeJsonLoader loader(one_rnode, empty_val);
         loader.stereochemistry_options = stereochemistry_options;
         loader.loadMolecule(*fragment.get());

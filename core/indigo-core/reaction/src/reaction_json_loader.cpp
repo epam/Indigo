@@ -24,7 +24,6 @@
 #include <tuple>
 #include <vector>
 
-#include "molecule/molecule_json_loader.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_json_loader.h"
