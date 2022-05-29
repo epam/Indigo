@@ -19,10 +19,10 @@
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
+#include <molecule/lipinski.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/smiles_loader.h>
 #include <molecule/tpsa.h>
-#include <molecule/lipinski.h>
 
 #include "common.h"
 
