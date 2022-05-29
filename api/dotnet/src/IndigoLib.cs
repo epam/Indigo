@@ -811,7 +811,7 @@ namespace com.epam.indigo
         public static extern byte* indigoMassComposition(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern double indigoTPSA(int molecule);
+        public static extern double indigoTPSA(int molecule, bool includeSP);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoCanonicalSmiles(int molecule);

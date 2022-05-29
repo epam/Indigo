@@ -3215,15 +3215,15 @@ class IndigoObject(object):
             Indigo._lib.indigoMassComposition(self.id)
         )
 
-    def tpsa(self):
+    def tpsa(self, includeSP = False):
         """Molecule method returns the TPSA value
-    
+
         Returns:
             float: TPSA value
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultFloat(
-            Indigo._lib.indigoTPSA(self.id)
+            Indigo._lib.indigoTPSA(self.id, includeSP)
         )
 
     def canonicalSmiles(self):
@@ -5024,7 +5024,7 @@ class Indigo(object):
         Indigo._lib.indigoMassComposition.restype = c_char_p
         Indigo._lib.indigoMassComposition.argtypes = [c_int]
         Indigo._lib.indigoTPSA.restype = c_double
-        Indigo._lib.indigoTPSA.argtypes = [c_int]
+        Indigo._lib.indigoTPSA.argtypes = [c_int, c_int]
         Indigo._lib.indigoCanonicalSmiles.restype = c_char_p
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmarts.restype = c_char_p

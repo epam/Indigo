@@ -27,7 +27,7 @@ namespace indigo
     class TPSA
     {
     public:
-        static double calculate(Molecule& molecule);
+        static double calculate(Molecule& molecule, bool includeSP = false);
 
     private:
         struct Key
@@ -45,9 +45,9 @@ namespace indigo
             bool isIn3MemberedRing = false;
 
             bool operator<(const Key& b) const noexcept;
-            bool operator==(const Key& b) const noexcept;
         };
 
-        static const std::map<TPSA::Key, double>& getAtomContributions();
+        static const std::map<TPSA::Key, double>& getAtomContributionsNO();
+        static const std::map<TPSA::Key, double>& getAtomContributionsNOSP();
     };
 }

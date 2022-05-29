@@ -1,9 +1,11 @@
-#include "base_cpp/output.h"
+#include <base_cpp/output.h>
+#include <molecule/molecule_gross_formula.h>
+#include <molecule/molecule_mass.h>
+#include <molecule/tpsa.h>
+#include <reaction/reaction_gross_formula.h>
+
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
-#include "molecule/molecule_gross_formula.h"
-#include "molecule/molecule_mass.h"
-#include "reaction/reaction_gross_formula.h"
 
 IndigoMoleculeGross::IndigoMoleculeGross() : IndigoObject(GROSS_MOLECULE)
 {
@@ -129,7 +131,7 @@ CEXPORT const char* indigoMassComposition(int molecule)
     INDIGO_END(0);
 }
 
-CEXPORT double indigoTPSA(int molecule)
+CEXPORT double indigoTPSA(const int molecule, const int includeSP)
 {
     INDIGO_BEGIN
     {
@@ -137,7 +139,7 @@ CEXPORT double indigoTPSA(int molecule)
         if (IndigoMolecule::is(obj))
         {
             auto& mol = obj.getMolecule();
-            return mol.tpsa();
+            return TPSA::calculate(mol, static_cast<bool>(includeSP));
         }
         throw IndigoError("incorrect object type for TPSA calculation: %s", obj.debugInfo());
     }

@@ -32,15 +32,7 @@ namespace indigo
                                             other.nSingleBonds, other.nDoubleBonds, other.nTripleBonds, other.nAromaticBonds, other.isIn3MemberedRing);
     }
 
-    bool TPSA::Key::operator==(const TPSA::Key& other) const noexcept
-    {
-        return atomNumber == other.atomNumber && nH == other.nH && charge == other.charge && maxBondOrder == other.maxBondOrder &&
-               bondOrderSum == other.bondOrderSum && nNeighbors == other.nNeighbors && nSingleBonds == other.nSingleBonds &&
-               nDoubleBonds == other.nDoubleBonds && nTripleBonds == other.nTripleBonds && nAromaticBonds == other.nAromaticBonds &&
-               isIn3MemberedRing == other.isIn3MemberedRing;
-    }
-
-    double TPSA::calculate(Molecule& rawMolecule)
+    double TPSA::calculate(Molecule& rawMolecule, const bool includeSP)
     {
         Molecule molecule;
         molecule.clone(rawMolecule);
@@ -50,7 +42,7 @@ namespace indigo
         }
 
         double tpsa = 0.0;
-        const auto& atomContributions = getAtomContributions();
+        const auto& atomContributions = includeSP ? getAtomContributionsNOSP() : getAtomContributionsNO();
         for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
         {
             TPSA::Key key{};
@@ -114,10 +106,6 @@ namespace indigo
             {
                 key.maxBondOrder = 10;
             }
-            else
-            {
-                key.maxBondOrder = 0;
-            }
 
             if (atomContributions.count(key) > 0)
             {
@@ -129,7 +117,29 @@ namespace indigo
         return tpsa;
     }
 
-    const map<TPSA::Key, double>& TPSA::getAtomContributions()
+    const map<TPSA::Key, double>& TPSA::getAtomContributionsNO()
+    {
+        static map<TPSA::Key, double> atomContributions{
+            {{ELEM_N, 0, 0, 10, 30, 3, 3, 0, 0, 0, false}, 3.24},  {{ELEM_N, 0, 0, 20, 30, 2, 1, 1, 0, 0, false}, 12.36},
+            {{ELEM_N, 0, 0, 30, 30, 1, 0, 0, 1, 0, false}, 23.79}, {{ELEM_N, 0, 0, 20, 50, 3, 1, 2, 0, 0, false}, 11.68},
+            {{ELEM_N, 0, 0, 30, 50, 2, 0, 1, 1, 0, false}, 13.6},  {{ELEM_N, 0, 0, 10, 30, 3, 3, 0, 0, 0, true}, 3.01},
+            {{ELEM_N, 1, 0, 10, 30, 3, 3, 0, 0, 0, false}, 12.03}, {{ELEM_N, 1, 0, 10, 30, 3, 3, 0, 0, 0, true}, 21.94},
+            {{ELEM_N, 1, 0, 20, 30, 2, 1, 1, 0, 0, false}, 23.85}, {{ELEM_N, 2, 0, 10, 30, 3, 3, 0, 0, 0, false}, 26.02},
+            {{ELEM_N, 0, 1, 10, 40, 4, 4, 0, 0, 0, false}, 0.0},   {{ELEM_N, 0, 1, 20, 40, 3, 2, 1, 0, 0, false}, 3.01},
+            {{ELEM_N, 0, 1, 30, 40, 2, 1, 0, 1, 0, false}, 4.36},  {{ELEM_N, 1, 1, 10, 40, 4, 4, 0, 0, 0, false}, 4.44},
+            {{ELEM_N, 1, 1, 20, 40, 3, 2, 1, 0, 0, false}, 13.97}, {{ELEM_N, 2, 1, 10, 40, 4, 4, 0, 0, 0, false}, 16.61},
+            {{ELEM_N, 2, 1, 20, 40, 3, 2, 1, 0, 0, false}, 25.59}, {{ELEM_N, 3, 1, 10, 40, 4, 4, 0, 0, 0, false}, 27.64},
+            {{ELEM_N, 0, 0, 15, 30, 2, 0, 0, 0, 2, false}, 12.89}, {{ELEM_N, 0, 0, 15, 45, 3, 0, 0, 0, 3, false}, 4.41},
+            {{ELEM_N, 0, 0, 15, 40, 3, 1, 0, 0, 2, false}, 4.93},  {{ELEM_N, 0, 0, 20, 50, 3, 0, 1, 0, 2, false}, 8.39},
+            {{ELEM_N, 1, 0, 15, 40, 3, 1, 0, 0, 2, false}, 15.79}, {{ELEM_N, 0, 1, 15, 45, 3, 0, 0, 0, 3, false}, 4.1},
+            {{ELEM_N, 0, 1, 15, 40, 3, 1, 0, 0, 2, false}, 3.88},  {{ELEM_N, 1, 1, 15, 40, 3, 1, 0, 0, 2, false}, 14.14},
+            {{ELEM_O, 0, 0, 10, 20, 2, 2, 0, 0, 0, false}, 9.23},  {{ELEM_O, 0, 0, 10, 20, 2, 2, 0, 0, 0, true}, 12.53},
+            {{ELEM_O, 0, 0, 20, 20, 1, 0, 1, 0, 0, false}, 17.07}, {{ELEM_O, 0, -1, 10, 10, 1, 1, 0, 0, 0, false}, 23.06},
+            {{ELEM_O, 1, 0, 10, 20, 2, 2, 0, 0, 0, false}, 20.23}, {{ELEM_O, 0, 0, 15, 30, 2, 0, 0, 0, 2, false}, 13.14}};
+        return atomContributions;
+    }
+
+    const map<TPSA::Key, double>& TPSA::getAtomContributionsNOSP()
     {
         static map<TPSA::Key, double> atomContributions{
             {{ELEM_N, 0, 0, 10, 30, 3, 3, 0, 0, 0, false}, 3.24},  {{ELEM_N, 0, 0, 20, 30, 2, 1, 1, 0, 0, false}, 12.36},
