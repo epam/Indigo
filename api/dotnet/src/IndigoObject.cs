@@ -1391,6 +1391,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoMassComposition(self));
         }
 
+        public double tpsa(bool includeSP = false)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoTPSA(self, includeSP));
+        }
+
         public string canonicalSmiles()
         {
             dispatcher.setSessionID();

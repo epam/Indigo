@@ -665,12 +665,10 @@ CEXPORT int indigoIterateEdgeSubmolecules(int molecule, int min_bonds, int max_b
 CEXPORT int indigoCountHeavyAtoms(int molecule);
 CEXPORT int indigoGrossFormula(int molecule);
 CEXPORT double indigoMolecularWeight(int molecule);
-
 CEXPORT double indigoMostAbundantMass(int molecule);
-
 CEXPORT double indigoMonoisotopicMass(int molecule);
-
 CEXPORT const char* indigoMassComposition(int molecule);
+CEXPORT double indigoTPSA(int molecule, int includeSP);
 
 CEXPORT const char* indigoCanonicalSmiles(int molecule);
 CEXPORT const char* indigoLayeredCode(int molecule);

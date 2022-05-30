@@ -752,7 +752,7 @@ jobs:
           name: indigo-libs-windows-mingw-x86_64
           path: dist
 
-  build_indigo_wasm_ketcher:
+  build_indigo_ketcher:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -779,7 +779,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-wasm
+          name: indigo-ketcher
           path: dist/indigo-ketcher*.tgz
 
   build_indigo_utils_x86_64:
