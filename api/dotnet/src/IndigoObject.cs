@@ -1397,6 +1397,24 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoTPSA(self, includeSP));
         }
 
+        public int numRotatableBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoNumRotatableBonds(self));
+        }
+
+        public int numHydrogenBondAcceptors()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoNumHydrogenBondAcceptors(self));
+        }
+
+        public int numHydrogenBondDonors()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoNumHydrogenBondDonors(self));
+        }
+
         public string canonicalSmiles()
         {
             dispatcher.setSessionID();

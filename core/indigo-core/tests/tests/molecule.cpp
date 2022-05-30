@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
+#include <molecule/lipinski.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/smiles_loader.h>
 #include <molecule/tpsa.h>
@@ -73,4 +74,49 @@ TEST_F(IndigoCoreMoleculeTest, tpsa)
     loadMolecule("C(=O)(O)P(=O)(O)O", molecule);
     EXPECT_NEAR(94.8, TPSA::calculate(molecule), 0.1);
     EXPECT_NEAR(104.6, TPSA::calculate(molecule, true), 0.1);
+}
+
+TEST_F(IndigoCoreMoleculeTest, numRotatableBonds)
+{
+    Molecule molecule;
+    loadMolecule("C", molecule);
+    EXPECT_EQ(0, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("CC", molecule);
+    EXPECT_EQ(0, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("CCC", molecule);
+    EXPECT_EQ(0, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("CCCC", molecule);
+    EXPECT_EQ(1, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("O=C([O-])c1ccccc1O", molecule);
+    EXPECT_EQ(1, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O", molecule);
+    EXPECT_EQ(6, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("COP(=O)(OC)OC(=CCl)C1=CC(=C(C=C1Cl)Cl)Cl", molecule);
+    EXPECT_EQ(5, Lipinski::getNumRotatableBonds(molecule));
+}
+
+TEST_F(IndigoCoreMoleculeTest, numHydrogenBondAcceptors)
+{
+    Molecule molecule;
+    loadMolecule("C", molecule);
+    EXPECT_EQ(0, Lipinski::getNumHydrogenBondAcceptors(molecule));
+    loadMolecule("O=C([O-])c1ccccc1O", molecule);
+    EXPECT_EQ(3, Lipinski::getNumHydrogenBondAcceptors(molecule));
+    loadMolecule("C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O", molecule);
+    EXPECT_EQ(9, Lipinski::getNumHydrogenBondAcceptors(molecule));
+    loadMolecule("COP(=O)(OC)OC(=CCl)C1=CC(=C(C=C1Cl)Cl)Cl", molecule);
+    EXPECT_EQ(4, Lipinski::getNumHydrogenBondAcceptors(molecule));
+}
+
+TEST_F(IndigoCoreMoleculeTest, numHydrogenBondDonors)
+{
+    Molecule molecule;
+    loadMolecule("C", molecule);
+    EXPECT_EQ(0, Lipinski::getNumHydrogenBondDonors(molecule));
+    loadMolecule("O=C([O-])c1ccccc1O", molecule);
+    EXPECT_EQ(1, Lipinski::getNumHydrogenBondDonors(molecule));
+    loadMolecule("C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O", molecule);
+    EXPECT_EQ(3, Lipinski::getNumHydrogenBondDonors(molecule));
+    loadMolecule("COP(=O)(OC)OC(=CCl)C1=CC(=C(C=C1Cl)Cl)Cl", molecule);
+    EXPECT_EQ(0, Lipinski::getNumHydrogenBondDonors(molecule));
 }

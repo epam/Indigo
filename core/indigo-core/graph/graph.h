@@ -243,6 +243,9 @@ namespace indigo
         int countComponentEdges(int comp_idx);
         const Array<int>& getDecomposition();
 
+        bool isTerminalVertex(int v_idx) const;
+        bool isTerminalEdge(int e_idx) const;
+
     protected:
         void _mergeWithSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>* edges, Array<int>* mapping, Array<int>* edge_mapping);
 

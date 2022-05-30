@@ -599,6 +599,12 @@ public interface IndigoLib extends Library {
 
     double indigoTPSA(int molecule, boolean includeSP);
 
+    int indigoNumRotatableBonds(int molecule);
+
+    int indigoNumHydrogenBondAcceptors(int molecule);
+
+    int indigoNumHydrogenBondDonors(int molecule);
+
     Pointer indigoCanonicalSmiles(int molecule);
 
     Pointer indigoLayeredCode(int molecule);
