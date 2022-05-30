@@ -47,4 +47,3 @@ if __name__ == "__main__":
     mol = mfile.read()
     detect(indigo, mol)
     mfile.close()
-
