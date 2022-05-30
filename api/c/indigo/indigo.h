@@ -672,6 +672,8 @@ CEXPORT double indigoTPSA(int molecule, int includeSP);
 CEXPORT int indigoNumRotatableBonds(int molecule);
 CEXPORT int indigoNumHydrogenBondAcceptors(int molecule);
 CEXPORT int indigoNumHydrogenBondDonors(int molecule);
+CEXPORT double indigoCLogP(int molecule);
+CEXPORT double indigoCMolarRefractivity(int molecule);
 
 CEXPORT const char* indigoCanonicalSmiles(int molecule);
 CEXPORT const char* indigoLayeredCode(int molecule);

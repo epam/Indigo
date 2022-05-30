@@ -18,30 +18,14 @@
 
 #pragma once
 
-#include <memory>
-
-#include "IndigoBaseMolecule.h"
-
-namespace indigo_cpp
+namespace indigo
 {
-    class IndigoMolecule final : public IndigoBaseMolecule
+    class Molecule;
+
+    class Crippen
     {
     public:
-        IndigoMolecule(int id, IndigoSessionPtr session);
-        IndigoMolecule(IndigoMolecule&&) = default;
-        IndigoMolecule& operator=(IndigoMolecule&&) = default;
-        IndigoMolecule(const IndigoMolecule&);
-        IndigoMolecule& operator=(const IndigoMolecule&) = default;
-        ~IndigoMolecule() final = default;
-
-        double molecularWeight() const;
-        double tpsa(bool includeSP = false) const;
-        int numRotatableBonds() const;
-        int numHydrogenBondAcceptors() const;
-        int numHydrogenBondDonors() const;
-        double cLogP() const;
-        double cMolarRefractivity() const;
+        static double logP(Molecule& molecule);
+        static double molarRefractivity(Molecule& molecule);
     };
-
-    using IndigoMoleculeSPtr = std::shared_ptr<IndigoMolecule>;
 }

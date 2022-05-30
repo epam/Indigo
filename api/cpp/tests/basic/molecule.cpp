@@ -107,3 +107,29 @@ TEST(Molecule, numHydrogenBondDonors)
         EXPECT_EQ(3, molecule.numHydrogenBondDonors());
     }
 }
+
+TEST(Molecule, cLogP)
+{
+    const auto& session = IndigoSession::create();
+    {
+        const auto& molecule = session->loadMolecule(CAFFEINE);
+        EXPECT_NEAR(0.062, molecule.cLogP(), 1e-2);
+    }
+    {
+        const auto& molecule = session->loadMolecule(SULFASALAZINE);
+        EXPECT_NEAR(3.7, molecule.cLogP(), 1e-2);
+    }
+}
+
+TEST(Molecule, cMolarRefractivity)
+{
+    const auto& session = IndigoSession::create();
+    {
+        const auto& molecule = session->loadMolecule(CAFFEINE);
+        EXPECT_NEAR(49.1, molecule.cMolarRefractivity(), 1e-2);
+    }
+    {
+        const auto& molecule = session->loadMolecule(SULFASALAZINE);
+        EXPECT_NEAR(100.73, molecule.cMolarRefractivity(), 1e-2);
+    }
+}

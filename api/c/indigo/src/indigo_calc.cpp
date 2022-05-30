@@ -7,6 +7,7 @@
 
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include "molecule/crippen.h"
 
 IndigoMoleculeGross::IndigoMoleculeGross() : IndigoObject(GROSS_MOLECULE)
 {
@@ -188,6 +189,36 @@ CEXPORT int indigoNumHydrogenBondDonors(const int molecule)
             return Lipinski::getNumHydrogenBondDonors(mol);
         }
         throw IndigoError("incorrect object type for calculation number of hydrogen bond donors: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT double indigoCLogP(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            return Crippen::logP(mol);
+        }
+        throw IndigoError("incorrect object type for cLogP calculation: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT double indigoCMolarRefractivity(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            return Crippen::molarRefractivity(mol);
+        }
+        throw IndigoError("incorrect object type for cLogP calculation: %s, should be molecule", obj.debugInfo());
     }
     INDIGO_END(-1);
 }

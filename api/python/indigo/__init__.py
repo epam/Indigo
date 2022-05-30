@@ -39,7 +39,6 @@ from ctypes import (
 
 from indigo.exceptions import IndigoException
 from indigo.hybridization import get_hybridization
-from indigo.logp import get_logp, get_mr
 from indigo.salts import SALTS
 
 DECODE_ENCODING = "utf-8"
@@ -2584,21 +2583,27 @@ class IndigoObject(object):
             ),
         )
 
-    def logP(self) -> float:
-        """Molecule method returns calculated logP value
+    def cLogP(self):
+        """Molecule method returns calculated Crippen logP value
 
         Returns:
             float: calculated logP value of the molecule
         """
-        return get_logp(self)
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultFloat(
+            Indigo._lib.indigoCLogP(self.id)
+        )
 
-    def molarRefractivity(self) -> float:
-        """Molecule method returns calculated molar refractivity
+    def cMolarRefractivity(self):
+        """Molecule method returns calculated Crippen molar refractivity
 
         Returns:
             float: calculated value of molar refractivity
         """
-        return get_mr(self)
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultFloat(
+            Indigo._lib.indigoCMolarRefractivity(self.id)
+        )
 
     def bondOrder(self):
         """Bond method returns bond order
@@ -5068,6 +5073,10 @@ class Indigo(object):
         Indigo._lib.indigoNumHydrogenBondAcceptors.argtypes = [c_int]
         Indigo._lib.indigoNumHydrogenBondDonors.restype = c_int
         Indigo._lib.indigoNumHydrogenBondDonors.argtypes = [c_int]
+        Indigo._lib.indigoCLogP.restype = c_double
+        Indigo._lib.indigoCLogP.argtypes = [c_int]
+        Indigo._lib.indigoCMolarRefractivity.restype = c_double
+        Indigo._lib.indigoCMolarRefractivity.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmiles.restype = c_char_p
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmarts.restype = c_char_p

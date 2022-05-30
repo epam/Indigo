@@ -1,0 +1,37 @@
+import sys
+
+sys.path.append("../../common")
+from env_indigo import *
+
+
+def check_float(method, smiles, expected, delta=1e-2):
+    global indigo
+    m = indigo.loadMolecule(smiles)
+    actual = getattr(m, method)()
+    if abs(actual - expected) > delta:
+        print(m, method, actual, "!=", expected)
+
+
+def test_clogp():
+    check_float("cLogP", "c1ccccc1", 1.68)
+    check_float("cLogP", "C[U]", 0.5838)
+    check_float("cLogP", "CSc1ccc2Sc3ccccc3N(CCC4CCCCN4C)c2c1", 5.8856)
+    check_float("cLogP", "Nc1ccccc1", 1.2688)
+    check_float("cLogP", "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", 0.06)
+    check_float(
+        "cLogP",
+        "C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O",
+        3.7,
+    )
+
+
+def test_cmr():
+    check_float("cMolarRefractivity", "c1ccccc1", 26.442)
+    check_float("cMolarRefractivity", "C[U]", 5.86)
+    check_float("cMolarRefractivity", "Clc1ccccc1", 31.45)
+
+
+if __name__ == "__main__":
+    indigo = Indigo()
+    test_clogp()
+    test_cmr()

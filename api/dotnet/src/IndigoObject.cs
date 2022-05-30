@@ -1415,6 +1415,18 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoNumHydrogenBondDonors(self));
         }
 
+        public double cLogP()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCLogP(self));
+        }
+
+        public double cMolarRefractivity()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCMolarRefractivity(self));
+        }
+
         public string canonicalSmiles()
         {
             dispatcher.setSessionID();
