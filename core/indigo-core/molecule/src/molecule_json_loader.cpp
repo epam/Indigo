@@ -18,7 +18,8 @@ using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(Document& ket) : _mol_array(kArrayType), _mol_nodes(_mol_array), _simple_objects(kArrayType), _pmol(0), _pqmol(0)
+MoleculeJsonLoader::MoleculeJsonLoader(Document& ket, bool ignore_reaction)
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _simple_objects(kArrayType), _pmol(0), _pqmol(0)
 {
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
@@ -52,6 +53,10 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket) : _mol_array(kArrayType), 
                 {
                     _simple_objects.PushBack(nodes[i]["data"], ket.GetAllocator());
                 }
+            }
+            else if (node_type.compare("arrow") == 0 && !ignore_reaction)
+            {
+                throw Error("Arrow nodes supported only for reactions");
             }
         }
         else

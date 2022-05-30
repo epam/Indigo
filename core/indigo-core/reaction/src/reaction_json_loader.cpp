@@ -34,7 +34,7 @@ using namespace rapidjson;
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
 ReactionJsonLoader::ReactionJsonLoader(Document& ket)
-    : _loader(ket), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _prxn(nullptr), _pqrxn(nullptr)
+    : _loader(ket, true), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _prxn(nullptr), _pqrxn(nullptr)
 {
     ignore_bad_valence = false;
 
@@ -293,8 +293,6 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const rapidjson::Value& plus = _pluses[i];
         const rapidjson::Value& plus_location = plus["location"];
         Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
-        // rxn.addMetaObject(new KETReactionPlus(plus_pos));
-
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
         _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(plus_pos);
@@ -318,9 +316,6 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
 
         Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
         Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
-
-        // rxn.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
-
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
         _reaction_components.emplace_back(arrow_type, bbox, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(arr_begin);

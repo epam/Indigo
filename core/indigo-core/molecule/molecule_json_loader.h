@@ -55,7 +55,7 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        explicit MoleculeJsonLoader(rapidjson::Document& ket);
+        explicit MoleculeJsonLoader(rapidjson::Document& ket, bool ignore_reaction = false);
         explicit MoleculeJsonLoader(rapidjson::Value& mol_nodes);
 
         void loadMolecule(BaseMolecule& mol);
