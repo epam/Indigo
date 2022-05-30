@@ -19,7 +19,7 @@ using namespace std;
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket, bool ignore_reaction)
-    : _mol_array(kArrayType), _mol_nodes(_mol_array), _simple_objects(kArrayType), _pmol(0), _pqmol(0)
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _simple_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
 {
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
@@ -64,7 +64,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket, bool ignore_reaction)
     }
 }
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes) : _mol_nodes(mol_nodes), _simple_objects(kArrayType), _pmol(0), _pqmol(0)
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
+    : _mol_nodes(mol_nodes), _simple_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
 {
 }
 
@@ -358,30 +359,33 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
 
         if (a.HasMember("ringBondCount"))
         {
-            if (!_pqmol && !ignore_noncritical_query_features)
-                throw Error("ring bond count is allowed only for queries");
-            int rbcount = a["ringBondCount"].GetInt();
-            if (rbcount == -1) // no ring bonds
-                _pqmol->resetAtom(atom_idx,
-                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
-            else if (rbcount == -2) // as drawn
+            if (_pqmol)
             {
-                int k, rbonds = 0;
-                const Vertex& vertex = _pqmol->getVertex(atom_idx);
+                int rbcount = a["ringBondCount"].GetInt();
+                if (rbcount == -1) // no ring bonds
+                    _pqmol->resetAtom(atom_idx,
+                                      QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
+                else if (rbcount == -2) // as drawn
+                {
+                    int k, rbonds = 0;
+                    const Vertex& vertex = _pqmol->getVertex(atom_idx);
 
-                for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
-                    if (_pqmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
-                        rbonds++;
+                    for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                        if (_pqmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
+                            rbonds++;
 
-                _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
-                                                                     new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
-            }
-            else if (rbcount > 1)
-                _pqmol->resetAtom(atom_idx,
-                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                    _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                                                                         new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
+                }
+                else if (rbcount > 1)
+                    _pqmol->resetAtom(
+                        atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
                                                            new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbcount, (rbcount < 4 ? rbcount : 100))));
-            else
-                throw Error("ring bond count = %d makes no sense", rbcount);
+                else
+                    throw Error("ring bond count = %d makes no sense", rbcount);
+            }
+            else if (!ignore_noncritical_query_features)
+                throw Error("ring bond count is allowed only for queries");
         }
 
         if (a.HasMember("substitutionCount"))
@@ -424,13 +428,13 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
 
         if (a.HasMember("unsaturatedAtom"))
         {
-            if (!_pqmol)
+            if (_pqmol)
             {
-                if (!ignore_noncritical_query_features)
-                    throw Error("unsaturation flag is allowed only for queries");
+                if (a["unsaturatedAtom"].GetBool())
+                    _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
             }
-            if (a["unsaturatedAtom"].GetBool())
-                _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+            else if (!ignore_noncritical_query_features)
+                throw Error("unsaturation flag is allowed only for queries");
         }
 
         if (a.HasMember("exactChangeFlag"))

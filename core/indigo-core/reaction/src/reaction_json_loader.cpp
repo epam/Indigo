@@ -34,7 +34,8 @@ using namespace rapidjson;
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
 ReactionJsonLoader::ReactionJsonLoader(Document& ket)
-    : _loader(ket, true), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _prxn(nullptr), _pqrxn(nullptr)
+    : _loader(ket, true), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _prxn(nullptr), _pqrxn(nullptr),
+      ignore_noncritical_query_features(false)
 {
     ignore_bad_valence = false;
 
