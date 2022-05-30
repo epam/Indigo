@@ -164,6 +164,6 @@ TEST_F(IndigoCoreMoleculeTest, cMolarRefractivity)
     }
     {
         loadMolecule(SULFASALAZINE, molecule);
-        EXPECT_NEAR(100.95, Crippen::molarRefractivity(molecule), 0.01);
+        EXPECT_NEAR(100.73, Crippen::molarRefractivity(molecule), 0.01);
     }
 }
