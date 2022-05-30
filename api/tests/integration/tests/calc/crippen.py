@@ -18,7 +18,11 @@ def test_clogp():
     check_float("cLogP", "CSc1ccc2Sc3ccccc3N(CCC4CCCCN4C)c2c1", 5.8856)
     check_float("cLogP", "Nc1ccccc1", 1.2688)
     check_float("cLogP", "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", 0.06)
-    check_float("cLogP", "C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O", 3.7)
+    check_float(
+        "cLogP",
+        "C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O",
+        3.7,
+    )
 
 
 def test_cmr():
@@ -27,7 +31,7 @@ def test_cmr():
     check_float("cMolarRefractivity", "Clc1ccccc1", 31.45)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     indigo = Indigo()
     test_clogp()
     test_cmr()
