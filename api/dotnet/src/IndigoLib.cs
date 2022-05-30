@@ -823,6 +823,12 @@ namespace com.epam.indigo
         public static extern int indigoNumHydrogenBondDonors(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern double indigoCLogP(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern double indigoCMolarRefractivity(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoCanonicalSmiles(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

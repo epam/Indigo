@@ -19,6 +19,7 @@
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
+#include <molecule/crippen.h>
 #include <molecule/lipinski.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/smiles_loader.h>
@@ -119,4 +120,50 @@ TEST_F(IndigoCoreMoleculeTest, numHydrogenBondDonors)
     EXPECT_EQ(3, Lipinski::getNumHydrogenBondDonors(molecule));
     loadMolecule("COP(=O)(OC)OC(=CCl)C1=CC(=C(C=C1Cl)Cl)Cl", molecule);
     EXPECT_EQ(0, Lipinski::getNumHydrogenBondDonors(molecule));
+}
+
+TEST_F(IndigoCoreMoleculeTest, cLogP)
+{
+    Molecule molecule;
+    {
+        loadMolecule(METHANE, molecule);
+        EXPECT_NEAR(0.6361, Crippen::logP(molecule), 0.01);
+    }
+    {
+        loadMolecule("C[U]", molecule);
+        EXPECT_NEAR(0.5838, Crippen::logP(molecule), 0.01);
+    }
+    {
+        loadMolecule(BENZENE, molecule);
+        EXPECT_NEAR(1.6865, Crippen::logP(molecule), 0.01);
+    }
+    {
+        loadMolecule(CAFFEINE, molecule);
+        EXPECT_NEAR(0.06, Crippen::logP(molecule), 0.01);
+    }
+    {
+        loadMolecule(SULFASALAZINE, molecule);
+        EXPECT_NEAR(3.7, Crippen::logP(molecule), 0.01);
+    }
+}
+
+TEST_F(IndigoCoreMoleculeTest, cMolarRefractivity)
+{
+    Molecule molecule;
+    {
+        loadMolecule(METHANE, molecule);
+        EXPECT_NEAR(6.731, Crippen::molarRefractivity(molecule), 0.01);
+    }
+    {
+        loadMolecule(BENZENE, molecule);
+        EXPECT_NEAR(26.442, Crippen::molarRefractivity(molecule), 0.01);
+    }
+    {
+        loadMolecule(CAFFEINE, molecule);
+        EXPECT_NEAR(49.1, Crippen::molarRefractivity(molecule), 0.01);
+    }
+    {
+        loadMolecule(SULFASALAZINE, molecule);
+        EXPECT_NEAR(100.95, Crippen::molarRefractivity(molecule), 0.01);
+    }
 }
