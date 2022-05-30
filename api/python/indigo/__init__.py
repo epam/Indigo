@@ -2583,7 +2583,7 @@ class IndigoObject(object):
             ),
         )
 
-    def cLogP(self) -> float:
+    def cLogP(self):
         """Molecule method returns calculated Crippen logP value
 
         Returns:
@@ -2594,7 +2594,7 @@ class IndigoObject(object):
             Indigo._lib.indigoCLogP(self.id)
         )
 
-    def cMolarRefractivity(self) -> float:
+    def cMolarRefractivity(self):
         """Molecule method returns calculated Crippen molar refractivity
 
         Returns:
