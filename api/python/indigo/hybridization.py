@@ -171,7 +171,8 @@ def in_aromatic_ring(atom: "IndigoObject") -> bool:
     return False
 
 
-def get_hybridization(atom: "IndigoObject") -> HybridizationType:
+def \
+        get_hybridization(atom: "IndigoObject") -> HybridizationType:
     """Returns HybridizationType for an atom from a molecule.
 
     Works only with atoms with atomic numbers from 1 to 56. Don't bother with
