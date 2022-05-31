@@ -501,14 +501,10 @@ void RenderContext::drawTextItemText(const TextItem& ti, bool idle)
 
 void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, bool idle)
 {
-    bool bold = ti.highlighted && opt.highlightThicknessEnable;
-    drawTextItemText(ti, color, bold, idle);
-}
-
-void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, bool bold, bool idle)
-{
-    fontsSetFont(_cr, ti.fontsize, bold);
-    fontsDrawText(ti, color, bold, idle);
+    TextItem ti_mod(ti);
+    ti_mod.bold = ti.highlighted && opt.highlightThicknessEnable;
+    fontsSetFont(ti_mod);
+    fontsDrawText(ti_mod, color, idle);
 }
 
 void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
@@ -723,9 +719,8 @@ void RenderContext::setFontSize(double fontSize)
 
 void RenderContext::setTextItemSize(TextItem& ti)
 {
-    bool bold = ti.highlighted && opt.highlightThicknessEnable;
-
-    fontsSetFont(_cr, ti.fontsize, bold);
+    ti.bold = ti.highlighted && opt.highlightThicknessEnable;
+    fontsSetFont(ti);
     fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
 }
 

@@ -305,7 +305,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         _scanner->skipSpace();
         if (_scanner->lookNext() == '{')
         {
-            if (_scanner->findWord("root") && _scanner->findWord("nodes")) // is it really reliable detection?
+            if (_scanner->findWord("root") && _scanner->findWord("nodes"))
             {
                 using namespace rapidjson;
                 _scanner->seek(pos, SEEK_SET);
@@ -315,59 +315,12 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     _scanner->readAll(buf);
                     buf.push(0);
                     Document data;
-                    Value rgroups(kArrayType);
-                    Value mol_nodes(kArrayType);
-                    Value simple_objects(kArrayType);
 
                     if (data.Parse(buf.ptr()).HasParseError())
                         throw Error("Error at parsing JSON: %s", buf.ptr());
                     if (data.HasMember("root"))
                     {
-                        Value& root = data["root"];
-                        Value& nodes = root["nodes"];
-                        // rewind to first molecule node
-                        for (int i = 0; i < nodes.Size(); ++i)
-                        {
-                            if (nodes[i].HasMember("$ref"))
-                            {
-                                const char* node_name = nodes[i]["$ref"].GetString();
-                                Value& node = data[node_name];
-                                std::string node_type = node["type"].GetString();
-                                if (node_type.compare("molecule") == 0)
-                                {
-                                    mol_nodes.PushBack(node, data.GetAllocator());
-                                }
-                                else if (node_type.compare("rgroup") == 0)
-                                {
-                                    rgroups.PushBack(node, data.GetAllocator());
-                                }
-                                else
-                                    throw Error("Unknows node type: %s", node_type.c_str());
-                            }
-                            else if (nodes[i].HasMember("type"))
-                            {
-                                std::string node_type = nodes[i]["type"].GetString();
-                                if (node_type.compare("simpleObject") == 0 || node_type.compare("text") == 0)
-                                {
-                                    if (nodes[i].HasMember("data"))
-                                    {
-                                        simple_objects.PushBack(nodes[i]["data"], data.GetAllocator());
-                                    }
-                                }
-                                else if (node_type.compare("arrow") == 0)
-                                {
-                                    throw Error("Arrow nodes supported only for reactions");
-                                }
-                            }
-                            else
-                                throw Error("Unsupported node for molecule");
-                        }
-                    }
-                    else
-                        throw Error("Ketcher's JSON has no root node");
-                    if (mol_nodes.Size() || rgroups.Size() || simple_objects.Size())
-                    {
-                        MoleculeJsonLoader loader(mol_nodes, rgroups, simple_objects);
+                        MoleculeJsonLoader loader(data);
                         loader.stereochemistry_options = stereochemistry_options;
                         loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
                         loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
@@ -376,6 +329,8 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                         loader.treat_stereo_as = treat_stereo_as;
                         loader.loadMolecule(mol);
                     }
+                    else
+                        throw Error("Ketcher's JSON has no root node");
                     return;
                 }
                 //              catch (...)

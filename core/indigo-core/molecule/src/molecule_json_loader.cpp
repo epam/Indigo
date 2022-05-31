@@ -18,13 +18,54 @@ using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups, rapidjson::Value& simple_objects)
-    : _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(simple_objects), _pmol(0), _pqmol(0), _empty_array(kArrayType)
+MoleculeJsonLoader::MoleculeJsonLoader(Document& ket, bool ignore_reaction)
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _simple_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
 {
+    Value& root = ket["root"];
+    Value& nodes = root["nodes"];
+    // rewind to first molecule node
+    for (int i = 0; i < nodes.Size(); ++i)
+    {
+        if (nodes[i].HasMember("$ref"))
+        {
+            std::string node_name = nodes[i]["$ref"].GetString();
+            Value& node = ket[node_name.c_str()];
+            std::string node_type = node["type"].GetString();
+            if (node_type.compare("molecule") == 0)
+            {
+                _mol_nodes.PushBack(node, ket.GetAllocator());
+            }
+            else if (node_type.compare("rgroup") == 0 && node_name.size() > 2)
+            {
+                std::string rg = "rg";
+                int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
+                _rgroups.emplace_back(rg_num, node);
+            }
+            else
+                throw Error("Unknows node type: %s", node_type.c_str());
+        }
+        else if (nodes[i].HasMember("type"))
+        {
+            std::string node_type = nodes[i]["type"].GetString();
+            if (node_type.compare("simpleObject") == 0 || node_type.compare("text") == 0)
+            {
+                if (nodes[i].HasMember("data"))
+                {
+                    _simple_objects.PushBack(nodes[i]["data"], ket.GetAllocator());
+                }
+            }
+            else if (node_type.compare("arrow") == 0 && !ignore_reaction)
+            {
+                throw Error("Arrow nodes supported only for reactions");
+            }
+        }
+        else
+            throw Error("Unsupported node for molecule");
+    }
 }
 
-MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups)
-    : _empty_array(kArrayType), _mol_nodes(mol_nodes), _rgroups(rgroups), _simple_objects(_empty_array), _pmol(0), _pqmol(0)
+MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
+    : _mol_nodes(mol_nodes), _simple_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
 {
 }
 
@@ -318,30 +359,33 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
 
         if (a.HasMember("ringBondCount"))
         {
-            if (!_pqmol && !ignore_noncritical_query_features)
-                throw Error("ring bond count is allowed only for queries");
-            int rbcount = a["ringBondCount"].GetInt();
-            if (rbcount == -1) // no ring bonds
-                _pqmol->resetAtom(atom_idx,
-                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
-            else if (rbcount == -2) // as drawn
+            if (_pqmol)
             {
-                int k, rbonds = 0;
-                const Vertex& vertex = _pqmol->getVertex(atom_idx);
+                int rbcount = a["ringBondCount"].GetInt();
+                if (rbcount == -1) // no ring bonds
+                    _pqmol->resetAtom(atom_idx,
+                                      QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
+                else if (rbcount == -2) // as drawn
+                {
+                    int k, rbonds = 0;
+                    const Vertex& vertex = _pqmol->getVertex(atom_idx);
 
-                for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
-                    if (_pqmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
-                        rbonds++;
+                    for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                        if (_pqmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
+                            rbonds++;
 
-                _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
-                                                                     new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
-            }
-            else if (rbcount > 1)
-                _pqmol->resetAtom(atom_idx,
-                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                    _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                                                                         new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
+                }
+                else if (rbcount > 1)
+                    _pqmol->resetAtom(
+                        atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
                                                            new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbcount, (rbcount < 4 ? rbcount : 100))));
-            else
-                throw Error("ring bond count = %d makes no sense", rbcount);
+                else
+                    throw Error("ring bond count = %d makes no sense", rbcount);
+            }
+            else if (!ignore_noncritical_query_features)
+                throw Error("ring bond count is allowed only for queries");
         }
 
         if (a.HasMember("substitutionCount"))
@@ -384,13 +428,13 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
 
         if (a.HasMember("unsaturatedAtom"))
         {
-            if (!_pqmol)
+            if (_pqmol)
             {
-                if (!ignore_noncritical_query_features)
-                    throw Error("unsaturation flag is allowed only for queries");
+                if (a["unsaturatedAtom"].GetBool())
+                    _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
             }
-            if (a["unsaturatedAtom"].GetBool())
-                _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+            else if (!ignore_noncritical_query_features)
+                throw Error("unsaturation flag is allowed only for queries");
         }
 
         if (a.HasMember("exactChangeFlag"))
@@ -910,22 +954,18 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
     }
 
     MoleculeRGroups& rgroups = mol.rgroups;
-    if (_rgroups.Size())
+    Document data;
+    for (auto& rgrp : _rgroups)
     {
-        Document data;
-        for (int rsite_idx = 0; rsite_idx < _rgroups.Size(); ++rsite_idx)
-        {
-            RGroup& rgroup = rgroups.getRGroup(rsite_idx + 1);
-            std::unique_ptr<BaseMolecule> fragment(mol.neu());
-            Value one_rnode(kArrayType);
-            Value& rnode = _rgroups[rsite_idx];
-            one_rnode.PushBack(rnode, data.GetAllocator());
-            auto empty_val = Value(kArrayType);
-            MoleculeJsonLoader loader(one_rnode, empty_val);
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.loadMolecule(*fragment.get());
-            rgroup.fragments.add(fragment.release());
-        }
+        RGroup& rgroup = rgroups.getRGroup(rgrp.first);
+        std::unique_ptr<BaseMolecule> fragment(mol.neu());
+        Value one_rnode(kArrayType);
+        Value& rnode = rgrp.second;
+        one_rnode.PushBack(rnode, data.GetAllocator());
+        MoleculeJsonLoader loader(one_rnode);
+        loader.stereochemistry_options = stereochemistry_options;
+        loader.loadMolecule(*fragment.get());
+        rgroup.fragments.add(fragment.release());
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());

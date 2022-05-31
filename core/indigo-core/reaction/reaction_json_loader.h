@@ -19,11 +19,13 @@
 #ifndef __reaction_json_loader__
 #define __reaction_json_loader__
 
+#include <list>
 #include <rapidjson/document.h>
 
 #include "base_cpp/exception.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
 
@@ -68,13 +70,6 @@ namespace indigo
         const Vec2f PLUS_BBOX_SHIFT = {0.9, 0.9};
         const Vec2f ARROW_BBOX_SHIFT = {0.0, 0.9};
 
-    protected:
-        rapidjson::Value _molecule;
-        rapidjson::Value _rgroups;
-        rapidjson::Value _pluses;
-        rapidjson::Value _arrows;
-        rapidjson::Value _simple_objects;
-
     private:
         ReactionJsonLoader(const ReactionJsonLoader&); // no implicit copy
         void parseOneArrowReaction(BaseReaction& rxn);
@@ -82,6 +77,11 @@ namespace indigo
         void constructMultipleArrowReaction(BaseReaction& rxn);
         bool findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms, const FLOAT_INT_PAIRS& mol_lefts,
                                 const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection);
+
+        rapidjson::Value _molecule;
+        rapidjson::Value _pluses;
+        rapidjson::Value _arrows;
+        MoleculeJsonLoader _loader;
 
         Reaction* _prxn;
         QueryReaction* _pqrxn;

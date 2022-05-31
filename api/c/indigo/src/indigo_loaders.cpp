@@ -23,7 +23,6 @@
 #include "indigo_reaction.h"
 #include "molecule/cml_loader.h"
 #include "molecule/molecule_cdx_loader.h"
-#include "molecule/molecule_json_loader.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/multiple_cdx_loader.h"
 #include "molecule/multiple_cml_loader.h"
@@ -38,8 +37,9 @@
 
 #include <limits>
 
-IndigoJSONMolecule::IndigoJSONMolecule(rapidjson::Value& node, rapidjson::Value& rgroups, int index)
-    : IndigoObject(JSON_MOLECULE), _node(node), _rgroups(rgroups), _loaded(false)
+using namespace rapidjson;
+
+IndigoJSONMolecule::IndigoJSONMolecule(Document& ket) : IndigoObject(JSON_MOLECULE), _loader(ket), _loaded(false)
 {
 }
 
@@ -47,8 +47,7 @@ Molecule& IndigoJSONMolecule::getMolecule()
 {
     if (!_loaded)
     {
-        MoleculeJsonLoader loader(_node, _rgroups);
-        loader.loadMolecule(_mol);
+        _loader.loadMolecule(_mol);
         _loaded = true;
     }
     return _mol;

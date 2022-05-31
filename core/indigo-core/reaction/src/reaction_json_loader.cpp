@@ -24,7 +24,6 @@
 #include <tuple>
 #include <vector>
 
-#include "molecule/molecule_json_loader.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_json_loader.h"
@@ -35,48 +34,29 @@ using namespace rapidjson;
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
 ReactionJsonLoader::ReactionJsonLoader(Document& ket)
-    : _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _simple_objects(kArrayType), _prxn(nullptr), _pqrxn(nullptr)
+    : _loader(ket, true), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _prxn(nullptr), _pqrxn(nullptr),
+      ignore_noncritical_query_features(false)
 {
     ignore_bad_valence = false;
+
+    _loader.stereochemistry_options = stereochemistry_options;
+    _loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    _loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
-    // rewind to first molecule node
     for (int i = 0; i < nodes.Size(); ++i)
     {
         Value& rnode = nodes[i];
-        if (rnode.HasMember("$ref"))
-        {
-            const char* node_name = rnode["$ref"].GetString();
-            Value& node = ket[node_name];
-            std::string node_type = node["type"].GetString();
-            if (node_type == "molecule")
-            {
-                _molecule.PushBack(node, ket.GetAllocator());
-            }
-            else if (node_type == "rgroup")
-            {
-                _rgroups.PushBack(node, ket.GetAllocator());
-            }
-            else
-                throw Error("Unknows JSON node: %s", node_type.c_str());
-        }
-        else if (rnode.HasMember("type"))
+        if (rnode.HasMember("type"))
         {
             std::string node_type = rnode["type"].GetString();
             if (node_type == "arrow")
                 _arrows.PushBack(rnode, ket.GetAllocator());
             else if (node_type == "plus")
                 _pluses.PushBack(rnode, ket.GetAllocator());
-            else if (node_type.compare("simpleObject") == 0 || node_type.compare("text") == 0)
-            {
-                if (nodes[i].HasMember("data"))
-                    _simple_objects.PushBack(nodes[i]["data"], ket.GetAllocator());
-            }
-            else
-                throw Error("Unknown reaction node: %s", node_type.c_str());
         }
-        else
-            throw Error("Unknows JSON node");
     }
 }
 
@@ -86,12 +66,6 @@ ReactionJsonLoader::~ReactionJsonLoader()
 
 void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 {
-    MoleculeJsonLoader loader(_molecule, _rgroups);
-    loader.stereochemistry_options = stereochemistry_options;
-    loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-
     if (rxn.isQueryReaction())
         _pqrxn = &rxn.asQueryReaction();
     else
@@ -103,17 +77,18 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     if (_prxn)
     {
         _pmol = &_mol;
-        loader.loadMolecule(_mol);
+        _loader.loadMolecule(_mol);
     }
     else if (_pqrxn)
     {
-        loader.loadMolecule(_qmol);
+        _loader.loadMolecule(_qmol);
         _pmol = &_qmol;
     }
     else
         throw Error("unknown reaction type: %s", typeid(rxn).name());
 
-    MoleculeJsonLoader::loadSimpleObjects(_simple_objects, rxn);
+    rxn.cloneMetaData(_mol);
+    _mol.resetMetaData();
 
     for (int i = 0; i < _pluses.Size(); ++i)
     {
@@ -319,8 +294,6 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const rapidjson::Value& plus = _pluses[i];
         const rapidjson::Value& plus_location = plus["location"];
         Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
-        // rxn.addMetaObject(new KETReactionPlus(plus_pos));
-
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
         _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(plus_pos);
@@ -344,9 +317,6 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
 
         Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
         Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
-
-        // rxn.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
-
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
         _reaction_components.emplace_back(arrow_type, bbox, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(arr_begin);

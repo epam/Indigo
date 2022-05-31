@@ -130,9 +130,9 @@ namespace indigo
         void fontsInit();
         void fontsDispose();
         double fontGetSize(FONT_SIZE size);
-        void fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold);
+        void fontsSetFont(const TextItem& ti);
         void fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry);
-        void fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold, bool idle);
+        void fontsDrawText(const TextItem& ti, const Vec3f& color, bool idle);
 
         void bbIncludePoint(const Vec2f& v);
         void bbIncludePoint(double x, double y);

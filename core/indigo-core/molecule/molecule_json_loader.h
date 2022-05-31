@@ -19,6 +19,7 @@
 #ifndef __molecule_json_loader__
 #define __molecule_json_loader__
 
+#include <list>
 #include <rapidjson/document.h>
 #include <unordered_set>
 #include <vector>
@@ -35,7 +36,6 @@
 
 namespace indigo
 {
-
     class Scanner;
     class BaseMolecule;
     class Molecule;
@@ -49,10 +49,13 @@ namespace indigo
 
     class DLLEXPORT MoleculeJsonLoader : public NonCopyable
     {
+        using RGroupDescriptionList = std::list<std::pair<int, std::reference_wrapper<rapidjson::Value>>>;
+
     public:
         DECL_ERROR;
-        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups, rapidjson::Value& simple_objects);
-        explicit MoleculeJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups);
+        explicit MoleculeJsonLoader(rapidjson::Document& ket, bool ignore_reaction = false);
+        explicit MoleculeJsonLoader(rapidjson::Value& mol_nodes);
+
         void loadMolecule(BaseMolecule& mol);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
@@ -97,10 +100,11 @@ namespace indigo
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
     private:
-        rapidjson::Value _empty_array;
         rapidjson::Value& _mol_nodes;
-        rapidjson::Value& _rgroups;
-        rapidjson::Value& _simple_objects;
+        rapidjson::Value _simple_objects;
+        rapidjson::Value _mol_array;
+
+        RGroupDescriptionList _rgroups;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
