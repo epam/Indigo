@@ -38,7 +38,7 @@ void RenderItemMolecule::init()
     if (mol == NULL)
         throw Error("molecule not set");
 
-    if (mol->vertexCount() == 0 && mol->metaData().size() == 0)
+    if (mol->vertexCount() == 0 && mol->metaData().size() == 0 && mol->rgroups.getRGroupCount() == 0)
         return;
 
     _core = _factory.addItemFragment();
