@@ -137,8 +137,6 @@ protected:
     std::unique_ptr<Scanner> _own_scanner;
 };
 
-class RGroupDescriptionList;
-
 class IndigoJSONMolecule : public IndigoObject
 {
 public:

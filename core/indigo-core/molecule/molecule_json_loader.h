@@ -34,10 +34,6 @@
 #pragma warning(disable : 4251)
 #endif
 
-class RGroupDescriptionList : public std::list<std::pair<int, std::reference_wrapper<rapidjson::Value>>>
-{
-};
-
 namespace indigo
 {
     class Scanner;
@@ -46,6 +42,8 @@ namespace indigo
     class QueryMolecule;
     class SGroup;
     class MetaObjectsInterface;
+
+	using RGroupDescriptionList = std::list<std::pair<int, std::reference_wrapper<rapidjson::Value>>>;
 
     /*
      * Loader for JSON format
