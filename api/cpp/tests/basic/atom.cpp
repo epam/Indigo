@@ -16,34 +16,21 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "IndigoBaseMolecule.h"
-#include "IndigoSession.h"
+#include <gtest/gtest.h>
 
-#include <indigo.h>
+#include <IndigoAtom.h>
+#include <IndigoMolecule.h>
+
+#include "common.h"
 
 using namespace indigo_cpp;
 
-IndigoBaseMolecule::IndigoBaseMolecule(const int id, IndigoSessionPtr session) : IndigoChemicalStructure(id, std::move(session))
+TEST(Atom, getHybridization)
 {
-}
-
-IndigoBaseMolecule::IndigoBaseMolecule(const IndigoBaseMolecule& other) : IndigoChemicalStructure(other)
-{
-}
-
-std::string IndigoBaseMolecule::molfile() const
-{
-    session()->setSessionId();
-    return session()->_checkResultString(indigoMolfile(id()));
-}
-
-std::string IndigoBaseMolecule::ctfile() const
-{
-    return molfile();
-}
-
-IndigoAtom IndigoBaseMolecule::getAtom(int atomIndex) const
-{
-    session()->setSessionId();
-    return IndigoAtom(session()->_checkResult(indigoGetAtom(id(), atomIndex)), session());
+    const auto& session = IndigoSession::create();
+    {
+        const auto& molecule = session->loadMolecule(METHANE);
+        const auto& atom = molecule.getAtom(0);
+        EXPECT_EQ(Hybridization::SP3, atom.getHybridization());
+    }
 }

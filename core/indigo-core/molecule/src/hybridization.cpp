@@ -59,7 +59,8 @@ namespace
         const auto& atom = molecule.getVertex(atomIndex);
         for (auto neiIndex = atom.neiBegin(); neiIndex != atom.neiEnd(); neiIndex = atom.neiNext(neiIndex))
         {
-            if (molecule.getBondOrder(atom.neiEdge(neiIndex)) == BOND_DOUBLE)
+            const auto bondOrder = molecule.getBondOrder(atom.neiEdge(neiIndex));
+            if (bondOrder == BOND_DOUBLE || bondOrder == BOND_AROMATIC)
             {
                 return true;
             }
@@ -74,7 +75,7 @@ namespace
 
     int lonePairs(Molecule& molecule, int atomIndex, int totalBondsOrder)
     {
-        const auto numOuterElectrons = Element::getNumOuterElectrons(molecule.getAtomNumber(atomIndex)); 
+        const auto numOuterElectrons = Element::getNumOuterElectrons(molecule.getAtomNumber(atomIndex));
         return (numOuterElectrons - totalBondsOrder) / 2;
     }
 
@@ -110,7 +111,7 @@ namespace
         {
             const auto bondOrder = molecule.getBondOrder(atom.neiEdge(neiIndex));
             const auto neiVertexIndex = atom.neiVertex(neiIndex);
-            
+
             if (bondOrder == BOND_DOUBLE)
             {
                 return Hybridization::SP2;
@@ -153,6 +154,24 @@ namespace
             throw HybridizationCalculator::Error("Could not calculate %s hybridization properly", Element::toString(atomNumber));
         }
     }
+
+    bool isAtomInAromaticRing(Molecule& rawMolecule, const int atomIndex)
+    {
+        Molecule molecule;
+        molecule.clone(rawMolecule);
+        if (!molecule.isAromatized())
+        {
+            molecule.aromatize({});
+        }
+        return molecule.getAtomAromaticity(atomIndex) == ATOM_AROMATIC;
+        //        const auto& atom = molecule.getVertex(atomIndex);
+        //        int order = 0;
+        //        for (auto neiIndex = atom.neiBegin(); neiIndex != atom.neiEnd(); neiIndex = atom.neiNext(neiIndex))
+        //        {
+        //            if (molecule.getBondTopology(atom.neiEdge(neiIndex)) == TOPOLOGY_RING
+        //        }
+        return false;
+    }
 }
 
 namespace indigo
@@ -183,7 +202,7 @@ namespace indigo
         }
 
         if ((atomNumber == ELEM_C || atomNumber == ELEM_N || atomNumber == ELEM_O || atomNumber == ELEM_P || atomNumber == ELEM_S || atomNumber == ELEM_B) &&
-            molecule.getAtomAromaticity(atomIndex) == ATOM_AROMATIC)
+            isAtomInAromaticRing(molecule, atomIndex))
         {
             return Hybridization::SP2;
         }

@@ -397,6 +397,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoValence(self));
     }
 
+    public Hybridization getHybridization() {
+        dispatcher.setSessionID();
+        return Hybridization.fromNum(Indigo.checkResult(this, lib.indigoGetHybridization(self)));
+    }
+
+    public String getHybridizationStr() {
+        return getHybridization().getStrVal();
+    }
+
     public int checkValence() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoCheckValence(self));

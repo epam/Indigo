@@ -36,12 +36,12 @@ namespace indigo
         SP3D4 = 8,
         SP2D = 9
     };
-    
+
     class HybridizationCalculator
     {
     public:
         DECL_ERROR;
-        
+
         static Hybridization calculate(Molecule& molecule, int atomIndex);
     };
 }

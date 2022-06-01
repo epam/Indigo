@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include "IndigoAtom.h"
 #include "IndigoChemicalStructure.h"
 
 namespace indigo_cpp
@@ -35,5 +36,7 @@ namespace indigo_cpp
     public:
         std::string molfile() const;
         std::string ctfile() const override;
+
+        IndigoAtom getAtom(int atomIndex) const;
     };
 }

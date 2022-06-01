@@ -65,6 +65,8 @@ public class Indigo {
     public static final int SG_TYPE_FOR = 13;
     public static final int SG_TYPE_ANY = 14;
 
+
+
     // JNA does not allow throwing exception from callbacks, thus we can not
     // use the error handler and we have to check the error codes. Below are
     // four functions to ease checking them.

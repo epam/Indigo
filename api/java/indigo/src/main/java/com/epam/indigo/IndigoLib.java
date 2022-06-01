@@ -278,6 +278,8 @@ public interface IndigoLib extends Library {
 
     int indigoValence(int atom);
 
+    int indigoGetHybridization(int atom);
+
     int indigoCheckValence(int atom);
 
     int indigoCheckQuery(int item);
