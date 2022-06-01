@@ -112,7 +112,7 @@ def carbon_hybridization(carbon: "IndigoObject") -> HybridizationType:
 
 def match_minus_induction(atom: "IndigoObject") -> bool:
     for nei in atom.iterateNeighbors():
-        if nei.bond().bondOrder() == 2:
+        if nei.bond().bondOrder() in [2, 4]:
             return True
     return False
 
@@ -165,8 +165,9 @@ def complex_hybridization(
 
 
 def in_aromatic_ring(atom: "IndigoObject") -> bool:
+    """Check if atom is in aromatic ring. Molecule should be aromatized."""
     for nei in atom.iterateNeighbors():
-        if nei.bond().topology() == 10:
+        if nei.bond().bondOrder() == 4:
             return True
     return False
 
