@@ -1426,16 +1426,16 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoNumHydrogenBondDonors(self));
         }
 
-        public double cLogP()
+        public double logP()
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoCLogP(self));
+            return dispatcher.checkResult(IndigoLib.indigoLogP(self));
         }
 
-        public double cMolarRefractivity()
+        public double molarRefractivity()
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoCMolarRefractivity(self));
+            return dispatcher.checkResult(IndigoLib.indigoMolarRefractivity(self));
         }
 
         public string canonicalSmiles()

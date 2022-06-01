@@ -607,9 +607,9 @@ public interface IndigoLib extends Library {
 
     int indigoNumHydrogenBondDonors(int molecule);
 
-    double indigoCLogP(int molecule);
+    double indigoLogP(int molecule);
 
-    double indigoCMolarRefractivity(int molecule);
+    double indigoMolarRefractivity(int molecule);
 
     Pointer indigoCanonicalSmiles(int molecule);
 
