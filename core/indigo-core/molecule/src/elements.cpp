@@ -1237,3 +1237,75 @@ double Element::_getRelativeIsotopicMass(int element, int isotope) const
     }
     throw Error("getRelativeIsotopicMass: isotope (%s, %d) not found", toString(element), isotope);
 }
+
+int Element::getNumOuterElectrons(int element)
+{
+    // clang-format off
+    constexpr std::array<int, 59> outerElements{
+        0, // Pseudo-element
+        1, // H
+        2, // H3
+        1, // Li
+        2, // Be
+        3, // B
+        4, // C
+        5, // N
+        6, // O
+        7, // F
+        8, // Ne
+        1, // Na
+        2, // Mg
+        3, // Al
+        4, // Si
+        5, // P
+        6, // S
+        7, // Cl
+        8, // Ar
+        1, // K
+        2, // Ca
+        3, // Sc
+        4, // Ti
+        5, // V
+        6, // Cr
+        7, // Mn
+        8, // Fe
+        9, // Co
+        10, // Ni
+        1,  // Cu
+        2, // Zn
+        3, // Ga
+        4, // Ge
+        5, // As
+        6, // Se
+        7, // Br
+        8, // Kr
+        1, // Rb
+        2, // Sr
+        3, // Y
+        4, // Zr
+        5, // Nb
+        6, // Mo
+        7, // Tc
+        8, // Ru
+        9, // Rh
+        10, // Pd
+        1,  // Ag,
+        2, // Cd
+        3, // In
+        4, // Sn
+        5, // Sb
+        6, // Te
+        7, // I
+        8, // Xe
+        1, // Cs
+        2, // Ba
+        3, // La
+        4 // Ce
+    };
+    // clang-format on
+    if (element > outerElements.size())
+    {
+        throw Error("outerElements are currently filled only for elements up to lantanoids");
+    }
+    return outerElements[element];
+}

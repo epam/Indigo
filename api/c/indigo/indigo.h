@@ -404,6 +404,17 @@ CEXPORT int indigoAtomicNumber(int atom);
 CEXPORT int indigoIsotope(int atom);
 // Not applicable to query molecules.
 CEXPORT int indigoValence(int atom);
+// Return atom hybridization
+// S = 1,
+// SP = 2,
+// SP2 = 3,
+// SP3 = 4,
+// SP3D = 5,
+// SP3D2 = 6,
+// SP3D3 = 7,
+// SP3D4 = 8,
+// SP2D = 9
+CEXPORT int indigoGetHybridization(int atom);
 // Returns zero if valence of the atom is wrong
 CEXPORT int indigoCheckValence(int atom);
 

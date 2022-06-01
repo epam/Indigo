@@ -36,13 +36,25 @@ from ctypes import (
     pointer,
     sizeof,
 )
+from enum import Enum
 
 from indigo.exceptions import IndigoException
-from indigo.hybridization import get_hybridization
 from indigo.salts import SALTS
 
 DECODE_ENCODING = "utf-8"
 ENCODE_ENCODING = "utf-8"
+
+
+class Hybridization(Enum):
+    S = 1
+    SP = 2
+    SP2 = 3
+    SP3 = 4
+    SP3D = 5
+    SP3D2 = 6
+    SP3D3 = 7
+    SP3D4 = 8
+    SP2D = 9
 
 
 class IndigoObject(object):
@@ -1069,9 +1081,14 @@ class IndigoObject(object):
         """Atom method returns HybridizationType
 
         Returns:
-            HybridizationType: atom hybridization
+            Hybridization: atom hybridization
         """
-        return get_hybridization(self)
+        self.dispatcher._setSessionId()
+        return Hybridization(
+            self.dispatcher._checkResult(
+                Indigo._lib.indigoGetHybridization(self.id)
+            )
+        )
 
     def getHybridizationStr(self):
         """Atom method returns hybridization type string
@@ -1079,7 +1096,7 @@ class IndigoObject(object):
         Returns:
             str: atom hybridization
         """
-        return get_hybridization(self).name
+        return self.getHybridization().name
 
     def getExplicitValence(self):
         """Atom method returns the explicit valence
@@ -4739,6 +4756,8 @@ class Indigo(object):
         Indigo._lib.indigoIsotope.argtypes = [c_int]
         Indigo._lib.indigoValence.restype = c_int
         Indigo._lib.indigoValence.argtypes = [c_int]
+        Indigo._lib.indigoGetHybridization.restype = c_int
+        Indigo._lib.indigoGetHybridization.argtypes = [c_int]
         Indigo._lib.indigoCheckValence.restype = c_int
         Indigo._lib.indigoCheckValence.argtypes = [c_int]
         Indigo._lib.indigoCheckQuery.restype = c_int

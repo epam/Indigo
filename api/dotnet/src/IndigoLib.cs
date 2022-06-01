@@ -378,6 +378,9 @@ namespace com.epam.indigo
         public static extern int indigoValence(int atom);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetHybridization(int atom);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoCheckValence(int atom);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

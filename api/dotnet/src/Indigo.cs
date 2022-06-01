@@ -17,6 +17,19 @@ namespace com.epam.indigo
         ORDER_CHANGED = 8
     }
 
+    public enum Hybridization
+    {
+        S = 1,
+        SP = 2,
+        SP2 = 3,
+        SP3 = 4,
+        SP3D = 5,
+        SP3D2 = 6,
+        SP3D3 = 7,
+        SP3D4 = 8,
+        SP2D = 9
+    }
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public unsafe class Indigo : IDisposable
     {

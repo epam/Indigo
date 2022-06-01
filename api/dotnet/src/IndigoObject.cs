@@ -480,6 +480,17 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoValence(self));
         }
 
+        public Hybridization getHybridization()
+        {
+            dispatcher.setSessionID();
+            return (Hybridization)dispatcher.checkResult(IndigoLib.indigoGetHybridization(self));
+        }
+
+        public string getHybridizationStr()
+        {
+            return getHybridization().ToString();
+        }
+
         public int checkValence()
         {
             dispatcher.setSessionID();

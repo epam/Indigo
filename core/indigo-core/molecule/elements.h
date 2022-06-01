@@ -213,6 +213,8 @@ namespace indigo
 
         static bool canBeAromatic(int element);
 
+        static int getNumOuterElectrons(int element);
+
         Element(const Element&) = delete;
         Element(Element&&) = delete;
         Element& operator=(const Element&) = delete;
