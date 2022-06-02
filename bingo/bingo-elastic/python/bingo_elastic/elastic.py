@@ -361,7 +361,7 @@ def compile_query(
     }
     if similarity and substructure:
         raise AttributeError(
-            "similarity and substructure search " "is not supported"
+            "similarity and substructure search is not supported"
         )
 
     if similarity:
