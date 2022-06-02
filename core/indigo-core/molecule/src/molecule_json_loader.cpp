@@ -318,6 +318,8 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 elem = Element::fromString2(label.c_str());
                 if (elem == -1)
                 {
+                    if (!_pqmol && QueryMolecule::getAtomType(label.c_str()) != _ATOM_PSEUDO)
+                        throw Error("'%s' label is allowed only for queries", label.c_str());
                     elem = ELEM_PSEUDO;
                     if (isotope != 0)
                     {
