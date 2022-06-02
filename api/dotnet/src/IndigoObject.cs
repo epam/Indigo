@@ -480,6 +480,17 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoValence(self));
         }
 
+        public Hybridization getHybridization()
+        {
+            dispatcher.setSessionID();
+            return (Hybridization)dispatcher.checkResult(IndigoLib.indigoGetHybridization(self));
+        }
+
+        public string getHybridizationStr()
+        {
+            return getHybridization().ToString();
+        }
+
         public int checkValence()
         {
             dispatcher.setSessionID();
@@ -1395,6 +1406,36 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoTPSA(self, includeSP));
+        }
+
+        public int numRotatableBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoNumRotatableBonds(self));
+        }
+
+        public int numHydrogenBondAcceptors()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoNumHydrogenBondAcceptors(self));
+        }
+
+        public int numHydrogenBondDonors()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoNumHydrogenBondDonors(self));
+        }
+
+        public double logP()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoLogP(self));
+        }
+
+        public double molarRefractivity()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoMolarRefractivity(self));
         }
 
         public string canonicalSmiles()

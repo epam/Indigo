@@ -25,6 +25,7 @@
 #include "indigo_mapping.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
+#include "molecule/hybridization.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_fingerprint.h"
@@ -1267,6 +1268,17 @@ CEXPORT int indigoValence(int atom)
     {
         IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
         return ia.mol.asMolecule().getAtomValence(ia.idx);
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetHybridization(int atom)
+{
+    INDIGO_BEGIN
+    {
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
+        auto& molecule = ia.mol.asMolecule();
+        return static_cast<int>(HybridizationCalculator::calculate(molecule, ia.idx));
     }
     INDIGO_END(-1);
 }

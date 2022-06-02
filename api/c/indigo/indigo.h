@@ -404,6 +404,17 @@ CEXPORT int indigoAtomicNumber(int atom);
 CEXPORT int indigoIsotope(int atom);
 // Not applicable to query molecules.
 CEXPORT int indigoValence(int atom);
+// Return atom hybridization
+// S = 1,
+// SP = 2,
+// SP2 = 3,
+// SP3 = 4,
+// SP3D = 5,
+// SP3D2 = 6,
+// SP3D3 = 7,
+// SP3D4 = 8,
+// SP2D = 9
+CEXPORT int indigoGetHybridization(int atom);
 // Returns zero if valence of the atom is wrong
 CEXPORT int indigoCheckValence(int atom);
 
@@ -669,6 +680,11 @@ CEXPORT double indigoMostAbundantMass(int molecule);
 CEXPORT double indigoMonoisotopicMass(int molecule);
 CEXPORT const char* indigoMassComposition(int molecule);
 CEXPORT double indigoTPSA(int molecule, int includeSP);
+CEXPORT int indigoNumRotatableBonds(int molecule);
+CEXPORT int indigoNumHydrogenBondAcceptors(int molecule);
+CEXPORT int indigoNumHydrogenBondDonors(int molecule);
+CEXPORT double indigoLogP(int molecule);
+CEXPORT double indigoMolarRefractivity(int molecule);
 
 CEXPORT const char* indigoCanonicalSmiles(int molecule);
 CEXPORT const char* indigoLayeredCode(int molecule);

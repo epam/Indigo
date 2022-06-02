@@ -397,6 +397,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoValence(self));
     }
 
+    public Hybridization getHybridization() {
+        dispatcher.setSessionID();
+        return Hybridization.fromNum(Indigo.checkResult(this, lib.indigoGetHybridization(self)));
+    }
+
+    public String getHybridizationStr() {
+        return getHybridization().getStrVal();
+    }
+
     public int checkValence() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoCheckValence(self));
@@ -823,6 +832,31 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public double tpsa(boolean includeSP) {
         dispatcher.setSessionID();
         return Indigo.checkResultDouble(this, lib.indigoTPSA(self, includeSP));
+    }
+
+    public int numRotatableBonds() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoNumRotatableBonds(self));
+    }
+
+    public int numHydrogenBondAcceptors() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoNumHydrogenBondAcceptors(self));
+    }
+
+    public int numHydrogenBondDonors() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoNumHydrogenBondDonors(self));
+    }
+
+    public double logP() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultDouble(this, lib.indigoLogP(self));
+    }
+
+    public double molarRefractivity() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultDouble(this, lib.indigoMolarRefractivity(self));
     }
 
     public String canonicalSmiles() {

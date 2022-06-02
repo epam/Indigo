@@ -16,34 +16,19 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "IndigoBaseMolecule.h"
-#include "IndigoSession.h"
+#include "IndigoAtom.h"
 
 #include <indigo.h>
 
-using namespace indigo_cpp;
-
-IndigoBaseMolecule::IndigoBaseMolecule(const int id, IndigoSessionPtr session) : IndigoChemicalStructure(id, std::move(session))
+namespace indigo_cpp
 {
-}
+    IndigoAtom::IndigoAtom(int id, IndigoSessionPtr session) : IndigoObject(id, std::move(session))
+    {
+    }
 
-IndigoBaseMolecule::IndigoBaseMolecule(const IndigoBaseMolecule& other) : IndigoChemicalStructure(other)
-{
-}
-
-std::string IndigoBaseMolecule::molfile() const
-{
-    session()->setSessionId();
-    return session()->_checkResultString(indigoMolfile(id()));
-}
-
-std::string IndigoBaseMolecule::ctfile() const
-{
-    return molfile();
-}
-
-IndigoAtom IndigoBaseMolecule::getAtom(int atomIndex) const
-{
-    session()->setSessionId();
-    return IndigoAtom(session()->_checkResult(indigoGetAtom(id(), atomIndex)), session());
+    Hybridization IndigoAtom::getHybridization() const
+    {
+        session()->setSessionId();
+        return Hybridization(session()->_checkResult(indigoGetHybridization(id())));
+    }
 }

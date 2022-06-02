@@ -1,4 +1,5 @@
 #include <base_cpp/output.h>
+#include <molecule/lipinski.h>
 #include <molecule/molecule_gross_formula.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/tpsa.h>
@@ -6,6 +7,7 @@
 
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include "molecule/crippen.h"
 
 IndigoMoleculeGross::IndigoMoleculeGross() : IndigoObject(GROSS_MOLECULE)
 {
@@ -141,7 +143,82 @@ CEXPORT double indigoTPSA(const int molecule, const int includeSP)
             auto& mol = obj.getMolecule();
             return TPSA::calculate(mol, static_cast<bool>(includeSP));
         }
-        throw IndigoError("incorrect object type for TPSA calculation: %s", obj.debugInfo());
+        throw IndigoError("incorrect object type for TPSA calculation: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoNumRotatableBonds(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            return Lipinski::getNumRotatableBonds(mol);
+        }
+        throw IndigoError("incorrect object type for calculation number of rotatable bonds: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoNumHydrogenBondAcceptors(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            return Lipinski::getNumHydrogenBondAcceptors(mol);
+        }
+        throw IndigoError("incorrect object type for calculation number of hydrogen bond acceptors: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoNumHydrogenBondDonors(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            return Lipinski::getNumHydrogenBondDonors(mol);
+        }
+        throw IndigoError("incorrect object type for calculation number of hydrogen bond donors: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT double indigoLogP(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            return Crippen::logP(mol);
+        }
+        throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT double indigoMolarRefractivity(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            return Crippen::molarRefractivity(mol);
+        }
+        throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
     }
     INDIGO_END(-1);
 }

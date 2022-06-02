@@ -35,6 +35,12 @@ namespace indigo_cpp
         ~IndigoMolecule() final = default;
 
         double molecularWeight() const;
+        double tpsa(bool includeSP = false) const;
+        int numRotatableBonds() const;
+        int numHydrogenBondAcceptors() const;
+        int numHydrogenBondDonors() const;
+        double logP() const;
+        double molarRefractivity() const;
     };
 
     using IndigoMoleculeSPtr = std::shared_ptr<IndigoMolecule>;

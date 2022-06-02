@@ -378,6 +378,9 @@ namespace com.epam.indigo
         public static extern int indigoValence(int atom);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetHybridization(int atom);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoCheckValence(int atom);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
@@ -812,6 +815,21 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern double indigoTPSA(int molecule, bool includeSP);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoNumRotatableBonds(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoNumHydrogenBondAcceptors(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoNumHydrogenBondDonors(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern double indigoLogP(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern double indigoMolarRefractivity(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoCanonicalSmiles(int molecule);

@@ -34,5 +34,42 @@ IndigoMolecule::IndigoMolecule(const IndigoMolecule& other) : IndigoBaseMolecule
 
 double IndigoMolecule::molecularWeight() const
 {
+    session()->setSessionId();
     return session()->_checkResultFloat(indigoMolecularWeight(id()));
+}
+
+double IndigoMolecule::tpsa(const bool includeSP) const
+{
+    session()->setSessionId();
+    return session()->_checkResultFloat(indigoTPSA(id(), static_cast<int>(includeSP)));
+}
+
+int IndigoMolecule::numRotatableBonds() const
+{
+    session()->setSessionId();
+    return session()->_checkResult(indigoNumRotatableBonds(id()));
+}
+
+int IndigoMolecule::numHydrogenBondAcceptors() const
+{
+    session()->setSessionId();
+    return session()->_checkResult(indigoNumHydrogenBondAcceptors(id()));
+}
+
+int IndigoMolecule::numHydrogenBondDonors() const
+{
+    session()->setSessionId();
+    return session()->_checkResult(indigoNumHydrogenBondDonors(id()));
+}
+
+double IndigoMolecule::logP() const
+{
+    session()->setSessionId();
+    return session()->_checkResultFloat(indigoLogP(id()));
+}
+
+double IndigoMolecule::molarRefractivity() const
+{
+    session()->setSessionId();
+    return session()->_checkResultFloat(indigoMolarRefractivity(id()));
 }

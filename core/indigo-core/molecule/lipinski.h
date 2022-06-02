@@ -16,34 +16,17 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "IndigoBaseMolecule.h"
-#include "IndigoSession.h"
+#pragma once
 
-#include <indigo.h>
-
-using namespace indigo_cpp;
-
-IndigoBaseMolecule::IndigoBaseMolecule(const int id, IndigoSessionPtr session) : IndigoChemicalStructure(id, std::move(session))
+namespace indigo
 {
-}
+    class Molecule;
 
-IndigoBaseMolecule::IndigoBaseMolecule(const IndigoBaseMolecule& other) : IndigoChemicalStructure(other)
-{
-}
-
-std::string IndigoBaseMolecule::molfile() const
-{
-    session()->setSessionId();
-    return session()->_checkResultString(indigoMolfile(id()));
-}
-
-std::string IndigoBaseMolecule::ctfile() const
-{
-    return molfile();
-}
-
-IndigoAtom IndigoBaseMolecule::getAtom(int atomIndex) const
-{
-    session()->setSessionId();
-    return IndigoAtom(session()->_checkResult(indigoGetAtom(id(), atomIndex)), session());
+    class Lipinski
+    {
+    public:
+        static int getNumRotatableBonds(Molecule& molecule);
+        static int getNumHydrogenBondAcceptors(Molecule& molecule);
+        static int getNumHydrogenBondDonors(Molecule& molecule);
+    };
 }

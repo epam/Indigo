@@ -19,12 +19,17 @@
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
+#include <molecule/crippen.h>
+#include <molecule/hybridization.h>
+#include <molecule/lipinski.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/smiles_loader.h>
 #include <molecule/tpsa.h>
 
 #include "common.h"
+#include "molecule/elements.h"
 
+using namespace std;
 using namespace indigo;
 
 class IndigoCoreMoleculeTest : public IndigoCoreTest
@@ -73,4 +78,222 @@ TEST_F(IndigoCoreMoleculeTest, tpsa)
     loadMolecule("C(=O)(O)P(=O)(O)O", molecule);
     EXPECT_NEAR(94.8, TPSA::calculate(molecule), 0.1);
     EXPECT_NEAR(104.6, TPSA::calculate(molecule, true), 0.1);
+}
+
+TEST_F(IndigoCoreMoleculeTest, numRotatableBonds)
+{
+    Molecule molecule;
+    loadMolecule("C", molecule);
+    EXPECT_EQ(0, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("CC", molecule);
+    EXPECT_EQ(0, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("CCC", molecule);
+    EXPECT_EQ(0, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("CCCC", molecule);
+    EXPECT_EQ(1, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("O=C([O-])c1ccccc1O", molecule);
+    EXPECT_EQ(1, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O", molecule);
+    EXPECT_EQ(6, Lipinski::getNumRotatableBonds(molecule));
+    loadMolecule("COP(=O)(OC)OC(=CCl)C1=CC(=C(C=C1Cl)Cl)Cl", molecule);
+    EXPECT_EQ(5, Lipinski::getNumRotatableBonds(molecule));
+}
+
+TEST_F(IndigoCoreMoleculeTest, numHydrogenBondAcceptors)
+{
+    Molecule molecule;
+    loadMolecule("C", molecule);
+    EXPECT_EQ(0, Lipinski::getNumHydrogenBondAcceptors(molecule));
+    loadMolecule("O=C([O-])c1ccccc1O", molecule);
+    EXPECT_EQ(3, Lipinski::getNumHydrogenBondAcceptors(molecule));
+    loadMolecule("C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O", molecule);
+    EXPECT_EQ(9, Lipinski::getNumHydrogenBondAcceptors(molecule));
+    loadMolecule("COP(=O)(OC)OC(=CCl)C1=CC(=C(C=C1Cl)Cl)Cl", molecule);
+    EXPECT_EQ(4, Lipinski::getNumHydrogenBondAcceptors(molecule));
+}
+
+TEST_F(IndigoCoreMoleculeTest, numHydrogenBondDonors)
+{
+    Molecule molecule;
+    loadMolecule("C", molecule);
+    EXPECT_EQ(0, Lipinski::getNumHydrogenBondDonors(molecule));
+    loadMolecule("O=C([O-])c1ccccc1O", molecule);
+    EXPECT_EQ(1, Lipinski::getNumHydrogenBondDonors(molecule));
+    loadMolecule("C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O", molecule);
+    EXPECT_EQ(3, Lipinski::getNumHydrogenBondDonors(molecule));
+    loadMolecule("COP(=O)(OC)OC(=CCl)C1=CC(=C(C=C1Cl)Cl)Cl", molecule);
+    EXPECT_EQ(0, Lipinski::getNumHydrogenBondDonors(molecule));
+}
+
+TEST_F(IndigoCoreMoleculeTest, logP)
+{
+    Molecule molecule;
+    {
+        loadMolecule(METHANE, molecule);
+        EXPECT_NEAR(0.6361, Crippen::logP(molecule), 0.01);
+    }
+    {
+        loadMolecule("C[U]", molecule);
+        EXPECT_NEAR(0.5838, Crippen::logP(molecule), 0.01);
+    }
+    {
+        loadMolecule(BENZENE, molecule);
+        EXPECT_NEAR(1.6865, Crippen::logP(molecule), 0.01);
+    }
+    {
+        loadMolecule(CAFFEINE, molecule);
+        EXPECT_NEAR(0.06, Crippen::logP(molecule), 0.01);
+    }
+    {
+        loadMolecule(SULFASALAZINE, molecule);
+        EXPECT_NEAR(3.7, Crippen::logP(molecule), 0.01);
+    }
+}
+
+TEST_F(IndigoCoreMoleculeTest, molarRefractivity)
+{
+    Molecule molecule;
+    {
+        loadMolecule(METHANE, molecule);
+        EXPECT_NEAR(6.731, Crippen::molarRefractivity(molecule), 0.01);
+    }
+    {
+        loadMolecule(BENZENE, molecule);
+        EXPECT_NEAR(26.442, Crippen::molarRefractivity(molecule), 0.01);
+    }
+    {
+        loadMolecule(CAFFEINE, molecule);
+        EXPECT_NEAR(49.1, Crippen::molarRefractivity(molecule), 0.01);
+    }
+    {
+        loadMolecule(SULFASALAZINE, molecule);
+        EXPECT_NEAR(100.73, Crippen::molarRefractivity(molecule), 0.01);
+    }
+}
+
+TEST_F(IndigoCoreMoleculeTest, hybridization)
+{
+    Molecule molecule;
+    {
+        loadMolecule(METHANE, molecule);
+        EXPECT_EQ(Hybridization::SP3, HybridizationCalculator::calculate(molecule, 0));
+    }
+    {
+        loadMolecule(BENZENE_AROMATIC, molecule);
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(Hybridization::SP2, HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("OC1=CC=CC=C1", molecule); // Phenol
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(Hybridization::SP2, HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("[C-]#[O+]", molecule); // Carbon monoxide
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(Hybridization::SP, HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("O=C=O", molecule); // Carbon monoxide
+        array<Hybridization, 3> expected{Hybridization::SP2, Hybridization::SP, Hybridization::SP2};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("C#N", molecule);
+        array<Hybridization, 2> expected{Hybridization::SP, Hybridization::SP};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("O=C(N)C", molecule);
+        array<Hybridization, 4> expected{Hybridization::SP2, Hybridization::SP2, Hybridization::SP, Hybridization::SP3};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("OS(=O)(=O)O", molecule);
+        array<Hybridization, 5> expected{Hybridization::SP3, Hybridization::SP3, Hybridization::SP2, Hybridization::SP2, Hybridization::SP3};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("N(=O)O", molecule);
+        array<Hybridization, 3> expected{Hybridization::SP2, Hybridization::SP2, Hybridization::SP3};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("N(=O)O", molecule);
+        array<Hybridization, 3> expected{Hybridization::SP2, Hybridization::SP2, Hybridization::SP3};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("O=[Xe](=O)(=O)=O", molecule);
+        array<Hybridization, 5> expected{Hybridization::SP2, Hybridization::SP3, Hybridization::SP2, Hybridization::SP2, Hybridization::SP2};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("FS(F)(F)(F)(F)F", molecule);
+        array<Hybridization, 7> expected{Hybridization::SP3, Hybridization::SP3D2, Hybridization::SP3, Hybridization::SP3,
+                                         Hybridization::SP3, Hybridization::SP3,   Hybridization::SP3};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("FS(F)(F)(F)(F)F", molecule);
+        array<Hybridization, 7> expected{Hybridization::SP3, Hybridization::SP3D2, Hybridization::SP3, Hybridization::SP3,
+                                         Hybridization::SP3, Hybridization::SP3,   Hybridization::SP3};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("FBr(F)F", molecule);
+        array<Hybridization, 4> expected{Hybridization::SP3, Hybridization::SP3D, Hybridization::SP3, Hybridization::SP3};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("[Be](Cl)Cl", molecule);
+        array<Hybridization, 3> expected{Hybridization::SP, Hybridization::SP3, Hybridization::SP3};
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(expected[i], HybridizationCalculator::calculate(molecule, i));
+        }
+    }
+    {
+        loadMolecule("C1=CC=CS1", molecule); // Thiophene
+        for (auto i = molecule.vertexBegin(); i < molecule.vertexEnd(); i = molecule.vertexNext(i))
+        {
+            EXPECT_EQ(Hybridization::SP2, HybridizationCalculator::calculate(molecule, i));
+        }
+    }
 }

@@ -278,6 +278,8 @@ public interface IndigoLib extends Library {
 
     int indigoValence(int atom);
 
+    int indigoGetHybridization(int atom);
+
     int indigoCheckValence(int atom);
 
     int indigoCheckQuery(int item);
@@ -598,6 +600,16 @@ public interface IndigoLib extends Library {
     Pointer indigoMassComposition(int molecule);
 
     double indigoTPSA(int molecule, boolean includeSP);
+
+    int indigoNumRotatableBonds(int molecule);
+
+    int indigoNumHydrogenBondAcceptors(int molecule);
+
+    int indigoNumHydrogenBondDonors(int molecule);
+
+    double indigoLogP(int molecule);
+
+    double indigoMolarRefractivity(int molecule);
 
     Pointer indigoCanonicalSmiles(int molecule);
 

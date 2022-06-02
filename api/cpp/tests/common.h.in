@@ -2,6 +2,11 @@
 
 #include <string>
 
+#define METHANE "C"
+#define BENZENE "C1=CC=CC=C1"
+#define CAFFEINE "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
+#define SULFASALAZINE "C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O"
+
 namespace indigo_cpp
 {
     std::string dataPath(const char* dataPathSuffix);
