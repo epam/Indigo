@@ -62,14 +62,14 @@ int IndigoMolecule::numHydrogenBondDonors() const
     return session()->_checkResult(indigoNumHydrogenBondDonors(id()));
 }
 
-double IndigoMolecule::cLogP() const
+double IndigoMolecule::logP() const
 {
     session()->setSessionId();
-    return session()->_checkResultFloat(indigoCLogP(id()));
+    return session()->_checkResultFloat(indigoLogP(id()));
 }
 
-double IndigoMolecule::cMolarRefractivity() const
+double IndigoMolecule::molarRefractivity() const
 {
     session()->setSessionId();
-    return session()->_checkResultFloat(indigoCMolarRefractivity(id()));
+    return session()->_checkResultFloat(indigoMolarRefractivity(id()));
 }

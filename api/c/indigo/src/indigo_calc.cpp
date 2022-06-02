@@ -193,7 +193,7 @@ CEXPORT int indigoNumHydrogenBondDonors(const int molecule)
     INDIGO_END(-1);
 }
 
-CEXPORT double indigoCLogP(const int molecule)
+CEXPORT double indigoLogP(const int molecule)
 {
     INDIGO_BEGIN
     {
@@ -203,12 +203,12 @@ CEXPORT double indigoCLogP(const int molecule)
             auto& mol = obj.getMolecule();
             return Crippen::logP(mol);
         }
-        throw IndigoError("incorrect object type for cLogP calculation: %s, should be molecule", obj.debugInfo());
+        throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
     }
     INDIGO_END(-1);
 }
 
-CEXPORT double indigoCMolarRefractivity(const int molecule)
+CEXPORT double indigoMolarRefractivity(const int molecule)
 {
     INDIGO_BEGIN
     {
@@ -218,7 +218,7 @@ CEXPORT double indigoCMolarRefractivity(const int molecule)
             auto& mol = obj.getMolecule();
             return Crippen::molarRefractivity(mol);
         }
-        throw IndigoError("incorrect object type for cLogP calculation: %s, should be molecule", obj.debugInfo());
+        throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
     }
     INDIGO_END(-1);
 }

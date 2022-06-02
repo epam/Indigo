@@ -2600,7 +2600,7 @@ class IndigoObject(object):
             ),
         )
 
-    def cLogP(self):
+    def logP(self):
         """Molecule method returns calculated Crippen logP value
 
         Returns:
@@ -2608,10 +2608,10 @@ class IndigoObject(object):
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultFloat(
-            Indigo._lib.indigoCLogP(self.id)
+            Indigo._lib.indigoLogP(self.id)
         )
 
-    def cMolarRefractivity(self):
+    def molarRefractivity(self):
         """Molecule method returns calculated Crippen molar refractivity
 
         Returns:
@@ -2619,7 +2619,7 @@ class IndigoObject(object):
         """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultFloat(
-            Indigo._lib.indigoCMolarRefractivity(self.id)
+            Indigo._lib.indigoMolarRefractivity(self.id)
         )
 
     def bondOrder(self):
@@ -5092,10 +5092,10 @@ class Indigo(object):
         Indigo._lib.indigoNumHydrogenBondAcceptors.argtypes = [c_int]
         Indigo._lib.indigoNumHydrogenBondDonors.restype = c_int
         Indigo._lib.indigoNumHydrogenBondDonors.argtypes = [c_int]
-        Indigo._lib.indigoCLogP.restype = c_double
-        Indigo._lib.indigoCLogP.argtypes = [c_int]
-        Indigo._lib.indigoCMolarRefractivity.restype = c_double
-        Indigo._lib.indigoCMolarRefractivity.argtypes = [c_int]
+        Indigo._lib.indigoLogP.restype = c_double
+        Indigo._lib.indigoLogP.argtypes = [c_int]
+        Indigo._lib.indigoMolarRefractivity.restype = c_double
+        Indigo._lib.indigoMolarRefractivity.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmiles.restype = c_char_p
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmarts.restype = c_char_p

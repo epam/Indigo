@@ -849,14 +849,14 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoNumHydrogenBondDonors(self));
     }
 
-    public double cLogP() {
+    public double logP() {
         dispatcher.setSessionID();
-        return Indigo.checkResultDouble(this, lib.indigoCLogP(self));
+        return Indigo.checkResultDouble(this, lib.indigoLogP(self));
     }
 
-    public double cMolarRefractivity() {
+    public double molarRefractivity() {
         dispatcher.setSessionID();
-        return Indigo.checkResultDouble(this, lib.indigoCMolarRefractivity(self));
+        return Indigo.checkResultDouble(this, lib.indigoMolarRefractivity(self));
     }
 
     public String canonicalSmiles() {

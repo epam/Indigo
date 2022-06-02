@@ -125,7 +125,7 @@ TEST_F(IndigoCoreMoleculeTest, numHydrogenBondDonors)
     EXPECT_EQ(0, Lipinski::getNumHydrogenBondDonors(molecule));
 }
 
-TEST_F(IndigoCoreMoleculeTest, cLogP)
+TEST_F(IndigoCoreMoleculeTest, logP)
 {
     Molecule molecule;
     {
@@ -150,7 +150,7 @@ TEST_F(IndigoCoreMoleculeTest, cLogP)
     }
 }
 
-TEST_F(IndigoCoreMoleculeTest, cMolarRefractivity)
+TEST_F(IndigoCoreMoleculeTest, molarRefractivity)
 {
     Molecule molecule;
     {
