@@ -394,7 +394,7 @@ bool QueryMolecule::possibleNitrogenV5(int idx)
     return true;
 }
 
-bool QueryMolecule::isPseudoAtom(int idx)
+bool QueryMolecule::isPseudoAtom(int idx) const
 {
     // This is dirty hack; however, it is legal here, as pseudo atoms
     // can not be present in deep query trees due to Molfile and SMILES
@@ -435,7 +435,7 @@ const char* QueryMolecule::getPseudoAtom(int idx)
     throw Error("getPseudoAtom() applied to something that is not a pseudo-atom");
 }
 
-bool QueryMolecule::isTemplateAtom(int idx)
+bool QueryMolecule::isTemplateAtom(int idx) const
 {
     // This is dirty hack; however, it is legal here, as template atoms
     // can not be present in deep query trees due to Molfile and SMILES
@@ -879,7 +879,7 @@ void QueryMolecule::_removeBonds(const Array<int>& indices)
     updateEditRevision();
 }
 
-bool QueryMolecule::Node::sureValue(int what_type, int& value_out)
+bool QueryMolecule::Node::sureValue(int what_type, int& value_out) const
 {
     int i;
 
@@ -946,7 +946,7 @@ bool QueryMolecule::Node::sureValue(int what_type, int& value_out)
     }
 }
 
-bool QueryMolecule::Node::sureValueInv(int what_type, int& value_out)
+bool QueryMolecule::Node::sureValueInv(int what_type, int& value_out) const
 {
     int i;
 
@@ -1263,7 +1263,7 @@ void QueryMolecule::Node::optimize()
     _optimize();
 }
 
-bool QueryMolecule::Atom::_sureValue(int what_type, int& value_out)
+bool QueryMolecule::Atom::_sureValue(int what_type, int& value_out) const
 {
     if (type == what_type && value_max == value_min)
     {
@@ -1336,7 +1336,7 @@ void QueryMolecule::Atom::_optimize()
     }
 }
 
-bool QueryMolecule::Bond::_sureValue(int what_type, int& value_out)
+bool QueryMolecule::Bond::_sureValue(int what_type, int& value_out) const
 {
     if (type == what_type)
     {
@@ -1801,7 +1801,7 @@ int QueryMolecule::_calcAtomConnectivity(int idx)
     return conn;
 }
 
-bool QueryMolecule::isRSite(int atom_idx)
+bool QueryMolecule::isRSite(int atom_idx) const
 {
     int bits;
 

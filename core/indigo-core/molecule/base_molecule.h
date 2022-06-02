@@ -156,10 +156,10 @@ namespace indigo
 
         int possibleAtomTotalH(int idx, int hcount);
 
-        virtual bool isPseudoAtom(int idx) = 0;
+        virtual bool isPseudoAtom(int idx) const = 0;
         virtual const char* getPseudoAtom(int idx) = 0;
 
-        virtual bool isTemplateAtom(int idx) = 0;
+        virtual bool isTemplateAtom(int idx) const = 0;
         virtual const char* getTemplateAtom(int idx) = 0;
         virtual const int getTemplateAtomSeqid(int idx) = 0;
         virtual const char* getTemplateAtomClass(int idx) = 0;
@@ -176,7 +176,7 @@ namespace indigo
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
 
-        virtual bool isRSite(int atom_idx) = 0;
+        virtual bool isRSite(int atom_idx) const = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;
         virtual void allowRGroupOnRSite(int atom_idx, int rg_idx) = 0;
 

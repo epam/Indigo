@@ -346,7 +346,7 @@ int LayeredMolecules::getAtomTotalH(int idx)
     throw Error("getAtomTotalH method has no sense for LayeredMolecules");
 }
 
-bool LayeredMolecules::isPseudoAtom(int idx)
+bool LayeredMolecules::isPseudoAtom(int idx) const
 {
     return _proto.isPseudoAtom(idx);
 }
@@ -356,7 +356,7 @@ const char* LayeredMolecules::getPseudoAtom(int idx)
     return _proto.getPseudoAtom(idx);
 }
 
-bool LayeredMolecules::isTemplateAtom(int idx)
+bool LayeredMolecules::isTemplateAtom(int idx) const
 {
     return _proto.isTemplateAtom(idx);
 }
@@ -381,7 +381,7 @@ const int LayeredMolecules::getTemplateAtomDisplayOption(int idx)
     return _proto.getTemplateAtomDisplayOption(idx);
 }
 
-bool LayeredMolecules::isRSite(int idx)
+bool LayeredMolecules::isRSite(int idx) const
 {
     return _proto.isRSite(idx);
 }

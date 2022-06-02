@@ -1400,7 +1400,7 @@ int Molecule::addBond_Silent(int beg, int end, int order)
     return idx;
 }
 
-bool Molecule::isPseudoAtom(int idx)
+bool Molecule::isPseudoAtom(int idx) const
 {
     return _atoms[idx].number == ELEM_PSEUDO;
 }
@@ -1420,7 +1420,7 @@ const char* Molecule::getPseudoAtom(int idx)
     return res;
 }
 
-bool Molecule::isTemplateAtom(int idx)
+bool Molecule::isTemplateAtom(int idx) const
 {
     return _atoms[idx].number == ELEM_TEMPLATE;
 }
@@ -1536,7 +1536,7 @@ int Molecule::getAtomTotalH(int idx)
     return h;
 }
 
-bool Molecule::isRSite(int atom_idx)
+bool Molecule::isRSite(int atom_idx) const
 {
     return _atoms[atom_idx].number == ELEM_RSITE;
 }

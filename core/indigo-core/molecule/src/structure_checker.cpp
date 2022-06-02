@@ -72,6 +72,36 @@ static void message(StructureChecker::CheckResult& result, StructureChecker::Che
 }
 
 /**************************************************/
+
+static void filter_rgroups_atoms(BaseMolecule& mol, StructureChecker::CheckResult& result, StructureChecker::CheckMessageCode msg,
+                                 const std::function<bool(const BaseMolecule&, int)>& filter, bool default_filter = true)
+{
+    std::vector<int> ids;
+    MoleculeRGroups& rgs = mol.rgroups;
+    for (int i = 1; i <= rgs.getRGroupCount(); ++i)
+    {
+        const RGroup& rg = rgs.getRGroup(i);
+        for (int j = 0; j < rg.fragments.size(); ++j)
+        {
+            const BaseMolecule& rbmol = *rg.fragments[j];
+            std::vector<int> sel_atoms;
+            for (int k = rbmol.vertexBegin(); k != rbmol.vertexEnd(); k = rbmol.vertexNext(k))
+            {
+                sel_atoms.push_back(k);
+            }
+
+            std::copy_if(sel_atoms.begin(), sel_atoms.end(), std::back_inserter(ids), [&rbmol, &filter, default_filter](int idx) {
+                return (!default_filter || (!rbmol.isPseudoAtom(idx) && !rbmol.isRSite(idx) && !rbmol.isTemplateAtom(idx))) && filter(rbmol, idx);
+            });
+        }
+    }
+
+    if (ids.size())
+    {
+        message(result, msg, ids);
+    }
+}
+
 static void filter_atoms(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, StructureChecker::CheckResult& result,
                          StructureChecker::CheckMessageCode msg, const std::function<bool(BaseMolecule&, int)>& filter, bool default_filter = true)
 {
@@ -136,6 +166,7 @@ static void check_load(BaseMolecule& mol, const std::unordered_set<int>& selecte
 }
 
 #define FILTER_ATOMS(MSG, FILTER) filter_atoms(mol, selected_atoms, result, MSG, FILTER, false);
+#define FILTER_RGROUPS_ATOMS(MSG, FILTER) filter_rgroups_atoms(mol, result, MSG, FILTER, false);
 #define FILTER_ATOMS_DEFAULT(MSG, FILTER) filter_atoms(mol, selected_atoms, result, MSG, FILTER);
 
 static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
@@ -181,7 +212,9 @@ static void check_pseudoatom(BaseMolecule& mol, const std::unordered_set<int>& s
                              StructureChecker::CheckResult& result)
 {
     FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_PSEUDOATOM, [](BaseMolecule& mol, int idx) { return mol.isPseudoAtom(idx); });
+    FILTER_RGROUPS_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_PSEUDOATOM, [](const BaseMolecule& frag, int idx) { return frag.isPseudoAtom(idx); });
 }
+
 static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                          StructureChecker::CheckResult& result)
 {

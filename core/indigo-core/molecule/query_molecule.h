@@ -126,8 +126,8 @@ namespace indigo
             // Remove all constraints of the given type
             void removeConstraints(int what_type);
 
-            bool sureValue(int what_type, int& value);
-            bool sureValueInv(int what_type, int& value);
+            bool sureValue(int what_type, int& value) const;
+            bool sureValueInv(int what_type, int& value) const;
             bool possibleValue(int what_type, int what_value);
             bool possibleValueInv(int what_type, int what_value);
             bool possibleValuePair(int what_type1, int what_value1, int what_type2, int what_value2);
@@ -153,7 +153,7 @@ namespace indigo
 
             Node* _findSureConstraint(int what_type, int& count);
 
-            virtual bool _sureValue(int what_type, int& value_out) = 0;
+            virtual bool _sureValue(int what_type, int& value_out) const = 0;
             virtual bool _sureValueBelongs(int what_type, const int* arr, int count) = 0;
 
             virtual void _optimize(){};
@@ -209,7 +209,7 @@ namespace indigo
 
             bool _possibleValue(int what_type, int what_value) override;
             bool _possibleValuePair(int what_type1, int what_value1, int what_type2, int what_value2) override;
-            bool _sureValue(int what_type, int& value_out) override;
+            bool _sureValue(int what_type, int& value_out) const override;
             bool _sureValueBelongs(int what_type, const int* arr, int count) override;
 
             void _optimize() override;
@@ -244,7 +244,7 @@ namespace indigo
 
             bool _possibleValue(int what_type, int what_value) override;
             bool _possibleValuePair(int what_type1, int what_value1, int what_type2, int what_value2) override;
-            bool _sureValue(int what_type, int& value_out) override;
+            bool _sureValue(int what_type, int& value_out) const override;
             bool _sureValueBelongs(int what_type, const int* arr, int count) override;
         };
 
@@ -273,16 +273,16 @@ namespace indigo
         int getAtomMinH(int idx) override;
         int getAtomTotalH(int idx) override;
 
-        bool isPseudoAtom(int idx) override;
+        bool isPseudoAtom(int idx) const override;
         const char* getPseudoAtom(int idx) override;
 
-        bool isTemplateAtom(int idx) override;
+        bool isTemplateAtom(int idx) const override;
         const char* getTemplateAtom(int idx) override;
         const int getTemplateAtomSeqid(int idx) override;
         const char* getTemplateAtomClass(int idx) override;
         const int getTemplateAtomDisplayOption(int idx) override;
 
-        bool isRSite(int atom_idx) override;
+        bool isRSite(int atom_idx) const override;
         dword getRSiteBits(int atom_idx) override;
         void allowRGroupOnRSite(int atom_idx, int rg_idx) override;
 

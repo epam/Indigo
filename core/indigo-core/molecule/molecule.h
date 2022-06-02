@@ -92,16 +92,16 @@ namespace indigo
         int getAtomMinH(int idx) override;
         int getAtomTotalH(int idx) override;
 
-        bool isPseudoAtom(int idx) override;
+        bool isPseudoAtom(int idx) const override;
         const char* getPseudoAtom(int idx) override;
 
-        bool isTemplateAtom(int idx) override;
+        bool isTemplateAtom(int idx) const override;
         const char* getTemplateAtom(int idx) override;
         const int getTemplateAtomSeqid(int idx) override;
         const char* getTemplateAtomClass(int idx) override;
         const int getTemplateAtomDisplayOption(int idx) override;
 
-        bool isRSite(int atom_idx) override;
+        bool isRSite(int atom_idx) const override;
         dword getRSiteBits(int atom_idx) override;
         void allowRGroupOnRSite(int atom_idx, int rg_idx) override;
         void setRSiteBits(int atom_idx, int bits);

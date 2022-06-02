@@ -887,7 +887,7 @@ int main(int argc, char* argv[])
             obj = indigoLoadQueryMolecule(reader);
         else
             obj = indigoLoadMolecule(reader);
-
+        const char* str = indigoJson(obj);
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
