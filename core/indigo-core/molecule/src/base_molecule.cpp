@@ -4380,3 +4380,14 @@ int MetaData::getMetaCount(std::uint32_t meta_type) const
     }
     return 0;
 }
+
+void MetaData::resetReactionData()
+{
+    _plus_indexes.clear();
+    _arrow_indexes.clear();
+    for (int i = _meta_data.size() - 1; i >= 0; i--)
+    {
+        if (_meta_data[i]->_class_id == KETReactionArrow::CID || _meta_data[i]->_class_id == KETReactionPlus::CID)
+            _meta_data.remove(i);
+    }
+}

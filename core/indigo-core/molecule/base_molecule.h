@@ -118,6 +118,8 @@ namespace indigo
             _simple_object_indexes.clear();
         }
 
+        void resetReactionData();
+
         const PtrArray<MetaObject>& metaData() const
         {
             return _meta_data;

@@ -493,13 +493,15 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
 
     auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, 0);
 
-    float arrow_x = arrow._end.x;
+    float arrow_x = arrow._begin.x;
     components.emplace_back(arrow_x, ReactionFragmentType::ARROW, nullptr);
     for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
     {
-        auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, 0);
+        auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
         components.emplace_back(plus._pos.x, ReactionFragmentType::PLUS, nullptr);
     }
+
+    rxn.meta().resetReactionData();
 
     std::sort(components.begin(), components.end(),
               [](const ReactionComponent& a, const ReactionComponent& b) -> bool { return std::get<LEFT_BOUND_IDX>(a) < std::get<LEFT_BOUND_IDX>(b); });
