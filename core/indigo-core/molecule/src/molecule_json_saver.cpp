@@ -1016,7 +1016,7 @@ void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>&
             auto at_it = _arrow_type2string.find(ar._arrow_type);
             if (at_it != _arrow_type2string.end())
                 arrow_mode = at_it->second.c_str();
-            writer.String( arrow_mode.c_str() );
+            writer.String(arrow_mode.c_str());
 
             // arrow coordinates
             writer.Key("pos");
@@ -1039,9 +1039,9 @@ void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>&
             writer.Double(0);
             writer.EndObject();
 
-            writer.EndArray();   // arrow coordinates
-            writer.EndObject();  // end data
-            writer.EndObject();  // end node
+            writer.EndArray();  // arrow coordinates
+            writer.EndObject(); // end data
+            writer.EndObject(); // end node
         }
         break;
         case KETReactionPlus::CID: {
