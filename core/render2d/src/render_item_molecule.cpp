@@ -38,7 +38,7 @@ void RenderItemMolecule::init()
     if (mol == NULL)
         throw Error("molecule not set");
 
-    if (mol->vertexCount() == 0 && mol->metaData().size() == 0 && mol->rgroups.getRGroupCount() == 0)
+    if (mol->vertexCount() == 0 && mol->meta().metaData().size() == 0 && mol->rgroups.getRGroupCount() == 0)
         return;
 
     _core = _factory.addItemFragment();
@@ -96,11 +96,11 @@ void RenderItemMolecule::init()
     }
 
     // add meta
-    if (mol->metaData().size())
+    if (mol->meta().metaData().size())
     {
         _meta = _factory.addItemAuxiliary();
         _factory.getItemAuxiliary(_meta).type = RenderItemAuxiliary::AUX_META;
-        _factory.getItemAuxiliary(_meta).meta = mol;
+        _factory.getItemAuxiliary(_meta).meta = &mol->meta();
         _factory.getItemAuxiliary(_meta).init();
         items.push(_meta);
     }

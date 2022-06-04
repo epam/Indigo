@@ -40,7 +40,7 @@ void RenderItemReaction::init()
     if (rxn == NULL)
         throw Error("reaction not set");
 
-    if (rxn->metaData().size())
+    if (rxn->meta().metaData().size())
         return initMeta();
 
     if (rxn->begin() >= rxn->end()) // no reactants or products
@@ -102,7 +102,7 @@ void RenderItemReaction::initMeta()
 
     auto& aux = _factory.getItemAuxiliary(_meta);
     aux.type = RenderItemAuxiliary::AUX_META;
-    aux.meta = rxn;
+    aux.meta = &rxn->meta();
     aux.init();
     min = aux.min;
     max = aux.max;

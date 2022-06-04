@@ -887,7 +887,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         }
     }
 
-    saveSimpleObjects(writer, bmol);
+    saveMetaData(writer, bmol.meta());
 
     int n_rgroups = mol->rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; ++i)
@@ -981,14 +981,83 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
     _output.printf("%s", result.str().c_str());
 }
 
-void MoleculeJsonSaver::saveSimpleObjects(rapidjson::Writer<rapidjson::StringBuffer>& writer, MetaObjectsInterface& meta_interface)
+void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>& writer, MetaData& meta)
 {
-    const auto& meta_objects = meta_interface.metaData();
+    static const std::unordered_map<int, std::string> _arrow_type2string = {
+        {ReactionComponent::ARROW_BASIC, "open-angle"},
+        {ReactionComponent::ARROW_FILLED_TRIANGLE, "filled-triangle"},
+        {ReactionComponent::ARROW_FILLED_BOW, "filled-bow"},
+        {ReactionComponent::ARROW_DASHED, "dashed-open-angle"},
+        {ReactionComponent::ARROW_FAILED, "failed"},
+        {ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE, "both-ends-filled-triangle"},
+        {ReactionComponent::ARROW_EQUILIBRIUM_FILLED_HALF_BOW, "equilibrium-filled-half-bow"},
+        {ReactionComponent::ARROW_EQUILIBRIUM_FILLED_TRIANGLE, "equilibrium-filled-triangle"},
+        {ReactionComponent::ARROW_EQUILIBRIUM_OPEN_ANGLE, "equilibrium-open-angle"},
+        {ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_BOW, "unbalanced-equilibrium-filled-half-bow"},
+        {ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_LARGE_FILLED_HALF_BOW, "unbalanced-equilibrium-large-filled-half-bow"},
+        {ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE, "unbalanced-equilibrium-filled-half-triangle"}};
+
+    const auto& meta_objects = meta.metaData();
     for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
     {
         auto pobj = meta_objects[meta_index];
         switch (pobj->_class_id)
         {
+        case KETReactionArrow::CID: {
+            KETReactionArrow& ar = (KETReactionArrow&)(*pobj);
+            writer.StartObject();
+            writer.Key("type");
+            writer.String("arrow");
+            writer.Key("data");
+            writer.StartObject();
+            // arrow mode
+            writer.Key("mode");
+            std::string arrow_mode = "open-angle";
+            auto at_it = _arrow_type2string.find(ar._arrow_type);
+            if (at_it != _arrow_type2string.end())
+                arrow_mode = at_it->second.c_str();
+            writer.String( arrow_mode.c_str() );
+
+            // arrow coordinates
+            writer.Key("pos");
+            writer.StartArray();
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar._end.x);
+            writer.Key("y");
+            writer.Double(ar._end.y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar._begin.x);
+            writer.Key("y");
+            writer.Double(ar._begin.y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+
+            writer.EndArray();   // arrow coordinates
+            writer.EndObject();  // end data
+            writer.EndObject();  // end node
+        }
+        break;
+        case KETReactionPlus::CID: {
+            KETReactionPlus& rp = (KETReactionPlus&)(*pobj);
+            writer.StartObject();
+            writer.Key("type");
+            writer.String("plus");
+            writer.Key("location");
+            writer.StartArray();
+            writer.Double(rp._pos.x);
+            writer.Double(rp._pos.y);
+            writer.Double(0);
+            writer.EndArray();
+            writer.EndObject();
+        }
+        break;
         case KETSimpleObject::CID: {
             auto simple_obj = (KETSimpleObject*)pobj;
             writer.StartObject();

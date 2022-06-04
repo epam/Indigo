@@ -17,13 +17,13 @@
  ***************************************************************************/
 
 #include "molecule/base_molecule.h"
-
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "graph/dfs_walk.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
@@ -44,6 +44,11 @@ BaseMolecule::BaseMolecule()
 
 BaseMolecule::~BaseMolecule()
 {
+}
+
+MetaData& BaseMolecule::meta()
+{
+    return _meta;
 }
 
 Molecule& BaseMolecule::asMolecule()
@@ -636,7 +641,7 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
 
     makeSubmolecule(other, *mapping, inv_mapping, skip_flags);
 
-    cloneMetaData(other);
+    _meta.cloneMetaData(other._meta);
 
     name.copy(other.name);
 }
@@ -667,7 +672,7 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
 
     _cloneGraph_KeepIndices(other);
 
-    cloneMetaData(other);
+    _meta.cloneMetaData(other._meta);
 
     _mergeWithSubmolecule_Sub(other, vertices, 0, mapping, edge_mapping, skip_flags);
 
@@ -4285,23 +4290,6 @@ void BaseMolecule::buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_
     allene_stereo.buildFromBonds(*this, ignore_errors, sensible_bonds_out);
 }
 
-void BaseMolecule::addMetaObject(MetaObject* pobj)
-{
-    int index = _meta_data.size();
-    _meta_data.expand(index + 1);
-    _meta_data.set(index, pobj);
-}
-
-void BaseMolecule::resetMetaData()
-{
-    _meta_data.clear();
-}
-
-const PtrArray<MetaObject>& BaseMolecule::metaData() const
-{
-    return _meta_data;
-}
-
 void BaseMolecule::getBoundingBox(Rect2f& bbox) const
 {
     Vec2f a, b;
@@ -4324,4 +4312,71 @@ void BaseMolecule::getBoundingBox(Rect2f& bbox) const
         }
     }
     bbox = Rect2f(a, b);
+}
+
+void MetaData::addMetaObject(MetaObject* pobj)
+{
+    int index = _meta_data.size();
+    _meta_data.expand(index + 1);
+    _meta_data.set(index, pobj);
+
+    switch (pobj->_class_id)
+    {
+    case KETSimpleObject::CID:
+        _simple_object_indexes.push() = index;
+        break;
+    case KETReactionPlus::CID:
+        _plus_indexes.push() = index;
+        break;
+    case KETReactionArrow::CID:
+        _arrow_indexes.push() = index;
+        break;
+    default:
+        break;
+    }
+}
+
+void MetaData::cloneMetaData(const MetaData& other)
+{
+    resetMetaData();
+    const auto& meta = other.metaData();
+    for (int i = 0; i < meta.size(); i++)
+        addMetaObject(meta[i]->clone());
+}
+
+const MetaObject& MetaData::getMetaObject(std::uint32_t meta_type, int index) const
+{
+    switch (meta_type)
+    {
+    case KETSimpleObject::CID:
+        return *_meta_data[_simple_object_indexes[index]];
+        break;
+    case KETReactionPlus::CID:
+        return *_meta_data[_plus_indexes[index]];
+        break;
+    case KETReactionArrow::CID:
+        return *_meta_data[_arrow_indexes[index]];
+        break;
+    default:
+        break;
+    }
+}
+
+int MetaData::getMetaCount(std::uint32_t meta_type) const
+{
+    switch (meta_type)
+    {
+    case KETSimpleObject::CID:
+        return _simple_object_indexes.size();
+        break;
+    case KETReactionPlus::CID:
+        return _plus_indexes.size();
+        break;
+    case KETReactionArrow::CID:
+        return _arrow_indexes.size();
+        break;
+    default:
+        break;
+    }
+    return 0;
 }

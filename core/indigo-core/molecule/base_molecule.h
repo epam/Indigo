@@ -99,33 +99,48 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
 
-    class MetaObjectsInterface
+    class DLLEXPORT MetaData
     {
     public:
-        virtual void addMetaObject(MetaObject* pobj) = 0; // moves ownership
-        virtual void resetMetaData() = 0;
-        virtual const PtrArray<MetaObject>& metaData() const = 0;
-        void cloneMetaData(const MetaObjectsInterface& other)
+        void cloneMetaData(const MetaData& other);
+
+        virtual ~MetaData()
         {
-            resetMetaData();
-            const auto& meta = other.metaData();
-            for (int i = 0; i < meta.size(); i++)
-                addMetaObject(meta[i]->clone());
         }
 
-        virtual ~MetaObjectsInterface()
+        void addMetaObject(MetaObject* pobj);
+
+        void resetMetaData()
         {
+            _meta_data.clear();
+            _plus_indexes.clear();
+            _arrow_indexes.clear();
+            _simple_object_indexes.clear();
         }
+
+        const PtrArray<MetaObject>& metaData() const
+        {
+            return _meta_data;
+        }
+
+        int getMetaCount(std::uint32_t meta_type) const;
+        const MetaObject& getMetaObject(std::uint32_t meta_type, int index) const;
+
+    protected:
+        PtrArray<MetaObject> _meta_data;
+        Array<int> _plus_indexes;
+        Array<int> _arrow_indexes;
+        Array<int> _simple_object_indexes;
     };
 
-    class DLLEXPORT BaseMolecule : public Graph, public MetaObjectsInterface
+    class DLLEXPORT BaseMolecule : public Graph
     {
     public:
         typedef RedBlackMap<int, int> Mapping;
 
         BaseMolecule();
         ~BaseMolecule() override;
-
+        MetaData& meta();
         // Casting methods. Invalid casting throws exceptions.
         virtual Molecule& asMolecule();
         virtual QueryMolecule& asQueryMolecule();
@@ -424,11 +439,6 @@ namespace indigo
         void removeBondsAlleneStereo(const Array<int>& indices);
         void buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_bonds_out);
 
-        // metadata methods
-        void addMetaObject(MetaObject* pobj) override; // moves ownership
-        void resetMetaData() override;
-        const PtrArray<MetaObject>& metaData() const override;
-
         // calc bounding box
         void getBoundingBox(Rect2f& bbox) const;
 
@@ -493,7 +503,8 @@ namespace indigo
         // When molecule gets edited then edit revision is increased.
         // If edit revision is the same then molecule wasn't edited
         int _edit_revision;
-        PtrArray<MetaObject> _meta_data;
+
+        MetaData _meta;
     };
 
 } // namespace indigo

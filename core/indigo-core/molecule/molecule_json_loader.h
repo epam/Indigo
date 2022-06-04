@@ -38,6 +38,7 @@ namespace indigo
 {
     class Scanner;
     class BaseMolecule;
+    class MetaData;
     class Molecule;
     class QueryMolecule;
     class SGroup;
@@ -53,10 +54,10 @@ namespace indigo
 
     public:
         DECL_ERROR;
-        explicit MoleculeJsonLoader(rapidjson::Document& ket, bool ignore_reaction = false);
+        explicit MoleculeJsonLoader(rapidjson::Document& ket);
         explicit MoleculeJsonLoader(rapidjson::Value& mol_nodes);
 
-        void loadMolecule(BaseMolecule& mol);
+        void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
@@ -75,7 +76,7 @@ namespace indigo
                              //  = ATOM_AND ('rac')
                              //  = ATOM_ANY ('any')
 
-        static void loadSimpleObjects(rapidjson::Value& simple_objects, MetaObjectsInterface& meta_interface);
+        static void loadMetaObjects(rapidjson::Value& meta_objects, MetaData& meta);
 
     protected:
         struct EnhancedStereoCenter
@@ -101,9 +102,8 @@ namespace indigo
 
     private:
         rapidjson::Value& _mol_nodes;
-        rapidjson::Value _simple_objects;
+        rapidjson::Value _meta_objects;
         rapidjson::Value _mol_array;
-
         RGroupDescriptionList _rgroups;
         Molecule* _pmol;
         QueryMolecule* _pqmol;

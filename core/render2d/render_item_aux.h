@@ -82,7 +82,7 @@ namespace indigo
         AUX_TYPE type;
         Array<char> text;
         BaseMolecule* mol;
-        MetaObjectsInterface* meta;
+        MetaData* meta;
         int rLabelIdx;
         float arrowLength;
         float scaleFactor;

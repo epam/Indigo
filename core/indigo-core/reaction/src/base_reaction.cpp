@@ -372,7 +372,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
     }
 
     name.copy(other.name);
-    cloneMetaData(other);
+    _meta.cloneMetaData(other._meta);
 }
 
 void BaseReaction::_clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings)
@@ -447,19 +447,7 @@ int BaseReaction::findMolecule(BaseMolecule* mol)
     return -1;
 }
 
-void BaseReaction::addMetaObject(MetaObject* pobj)
+MetaData& BaseReaction::meta()
 {
-    int index = _meta_data.size();
-    _meta_data.expand(index + 1);
-    _meta_data.set(index, pobj);
-}
-
-void BaseReaction::resetMetaData()
-{
-    _meta_data.clear();
-}
-
-const PtrArray<MetaObject>& BaseReaction::metaData() const
-{
-    return _meta_data;
+    return _meta;
 }
