@@ -70,7 +70,6 @@ def test_reactions_load_save_load(indigo):
         "reactions/cdxml/CN_Bond_map.rxn",
     )
     for path in paths:
-        print(path)
         m1 = indigo.loadReactionFromFile(joinPathPy(path, __file__))
         js = m1.json()
         m2 = indigo.loadReaction(js)
