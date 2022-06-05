@@ -109,7 +109,7 @@ void RenderContext::fontsSetFont(const TextItem& ti)
                            ti.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
 
     cairoCheckStatus();
-    cairo_set_font_size(_cr, fontGetSize(ti.fontsize));
+    cairo_set_font_size(_cr, ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
     cairoCheckStatus();
 }
 
@@ -156,7 +156,7 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool i
     cairo_matrix_t m;
     cairo_get_matrix(_cr, &m);
     float scale = (float)m.xx;
-    double v = scale * fontGetSize(ti.fontsize);
+    double v = scale * ( ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
     if (opt.mode != MODE_PDF && opt.mode != MODE_SVG && v < 1.5)
     {
         cairo_rectangle(_cr, ti.bbp.x + ti.bbsz.x / 4, ti.bbp.y + ti.bbsz.y / 4, ti.bbsz.x / 2, ti.bbsz.y / 2);
