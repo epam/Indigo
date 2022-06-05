@@ -46,7 +46,7 @@ BaseMolecule::~BaseMolecule()
 {
 }
 
-MetaData& BaseMolecule::meta()
+MetaDataStorage& BaseMolecule::meta()
 {
     return _meta;
 }
@@ -4314,7 +4314,7 @@ void BaseMolecule::getBoundingBox(Rect2f& bbox) const
     bbox = Rect2f(a, b);
 }
 
-void MetaData::addMetaObject(MetaObject* pobj)
+void MetaDataStorage::addMetaObject(MetaObject* pobj)
 {
     int index = _meta_data.size();
     _meta_data.expand(index + 1);
@@ -4336,7 +4336,7 @@ void MetaData::addMetaObject(MetaObject* pobj)
     }
 }
 
-void MetaData::cloneMetaData(const MetaData& other)
+void MetaDataStorage::cloneMetaData(const MetaDataStorage& other)
 {
     resetMetaData();
     const auto& meta = other.metaData();
@@ -4344,7 +4344,7 @@ void MetaData::cloneMetaData(const MetaData& other)
         addMetaObject(meta[i]->clone());
 }
 
-const MetaObject& MetaData::getMetaObject(std::uint32_t meta_type, int index) const
+const MetaObject& MetaDataStorage::getMetaObject(std::uint32_t meta_type, int index) const
 {
     switch (meta_type)
     {
@@ -4362,7 +4362,7 @@ const MetaObject& MetaData::getMetaObject(std::uint32_t meta_type, int index) co
     }
 }
 
-int MetaData::getMetaCount(std::uint32_t meta_type) const
+int MetaDataStorage::getMetaCount(std::uint32_t meta_type) const
 {
     switch (meta_type)
     {
@@ -4381,7 +4381,7 @@ int MetaData::getMetaCount(std::uint32_t meta_type) const
     return 0;
 }
 
-void MetaData::resetReactionData()
+void MetaDataStorage::resetReactionData()
 {
     _plus_indexes.clear();
     _arrow_indexes.clear();

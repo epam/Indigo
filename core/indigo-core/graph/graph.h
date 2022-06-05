@@ -127,17 +127,6 @@ namespace indigo
 
     class CycleBasis;
 
-    class MetaObject
-    {
-    public:
-        explicit MetaObject(uint32_t class_id) : _class_id(class_id)
-        {
-        }
-        uint32_t _class_id;
-        virtual MetaObject* clone() const = 0;
-        virtual ~MetaObject(){};
-    };
-
     class DLLEXPORT Graph : public NonCopyable
     {
     public:

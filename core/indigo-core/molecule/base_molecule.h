@@ -32,6 +32,7 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
+#include "molecule/metadata_storage.h"
 #include <set>
 
 #ifdef _WIN32
@@ -98,42 +99,7 @@ namespace indigo
 
     class Molecule;
     class QueryMolecule;
-
-    class DLLEXPORT MetaData
-    {
-    public:
-        void cloneMetaData(const MetaData& other);
-
-        virtual ~MetaData()
-        {
-        }
-
-        void addMetaObject(MetaObject* pobj);
-
-        void resetMetaData()
-        {
-            _meta_data.clear();
-            _plus_indexes.clear();
-            _arrow_indexes.clear();
-            _simple_object_indexes.clear();
-        }
-
-        void resetReactionData();
-
-        const PtrArray<MetaObject>& metaData() const
-        {
-            return _meta_data;
-        }
-
-        int getMetaCount(std::uint32_t meta_type) const;
-        const MetaObject& getMetaObject(std::uint32_t meta_type, int index) const;
-
-    protected:
-        PtrArray<MetaObject> _meta_data;
-        Array<int> _plus_indexes;
-        Array<int> _arrow_indexes;
-        Array<int> _simple_object_indexes;
-    };
+    class MetaDataStorage;
 
     class DLLEXPORT BaseMolecule : public Graph
     {
@@ -142,7 +108,7 @@ namespace indigo
 
         BaseMolecule();
         ~BaseMolecule() override;
-        MetaData& meta();
+        MetaDataStorage& meta();
         // Casting methods. Invalid casting throws exceptions.
         virtual Molecule& asMolecule();
         virtual QueryMolecule& asQueryMolecule();
@@ -506,7 +472,7 @@ namespace indigo
         // If edit revision is the same then molecule wasn't edited
         int _edit_revision;
 
-        MetaData _meta;
+        MetaDataStorage _meta;
     };
 
 } // namespace indigo

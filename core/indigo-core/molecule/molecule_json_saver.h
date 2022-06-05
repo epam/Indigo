@@ -43,7 +43,7 @@ namespace indigo
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
         bool _add_stereo_desc;
-        static void saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>& writer, MetaData& meta);
+        static void saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>& writer, MetaDataStorage& meta);
 
     protected:
         void saveAtoms(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer);

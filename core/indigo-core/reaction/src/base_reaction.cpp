@@ -447,7 +447,7 @@ int BaseReaction::findMolecule(BaseMolecule* mol)
     return -1;
 }
 
-MetaData& BaseReaction::meta()
+MetaDataStorage& BaseReaction::meta()
 {
     return _meta;
 }

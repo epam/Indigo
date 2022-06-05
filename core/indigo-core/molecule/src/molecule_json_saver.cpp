@@ -981,7 +981,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
     _output.printf("%s", result.str().c_str());
 }
 
-void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>& writer, MetaData& meta)
+void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>& writer, MetaDataStorage& meta)
 {
     static const std::unordered_map<int, std::string> _arrow_type2string = {
         {ReactionComponent::ARROW_BASIC, "open-angle"},

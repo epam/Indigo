@@ -1021,11 +1021,11 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     ml.updateSGroups();
     loadMetaObjects(_meta_objects, mol.meta());
     int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
-    if (arrows_count && !load_arrows)
+    if (arrows_count && !load_arrows )
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
 }
 
-void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaData& meta_interface)
+void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta_interface)
 {
     static const std::unordered_map<std::string, int> arrow_string2type = {
         {"open-angle", ReactionComponent::ARROW_BASIC},

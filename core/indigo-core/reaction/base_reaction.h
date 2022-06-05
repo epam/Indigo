@@ -92,7 +92,7 @@ namespace indigo
         BaseReaction();
         virtual ~BaseReaction();
 
-        MetaData& meta();
+        MetaDataStorage& meta();
 
         bool isMultistep()
         {
@@ -313,7 +313,7 @@ namespace indigo
 
         int _nextElement(int type, int index);
 
-        MetaData _meta;
+        MetaDataStorage _meta;
 
         virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
     };

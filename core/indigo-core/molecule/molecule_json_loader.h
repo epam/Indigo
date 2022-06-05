@@ -38,7 +38,7 @@ namespace indigo
 {
     class Scanner;
     class BaseMolecule;
-    class MetaData;
+    class MetaDataStorage;
     class Molecule;
     class QueryMolecule;
     class SGroup;
@@ -76,7 +76,7 @@ namespace indigo
                              //  = ATOM_AND ('rac')
                              //  = ATOM_ANY ('any')
 
-        static void loadMetaObjects(rapidjson::Value& meta_objects, MetaData& meta);
+        static void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
 
     protected:
         struct EnhancedStereoCenter
@@ -102,9 +102,10 @@ namespace indigo
 
     private:
         rapidjson::Value& _mol_nodes;
+        RGroupDescriptionList _rgroups;
+
         rapidjson::Value _meta_objects;
         rapidjson::Value _mol_array;
-        RGroupDescriptionList _rgroups;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
