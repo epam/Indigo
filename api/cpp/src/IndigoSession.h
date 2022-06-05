@@ -27,7 +27,8 @@ namespace indigo_cpp
     class IndigoReaction;
     class IndigoQueryMolecule;
     class IndigoWriteBuffer;
-    template <typename T> class IndigoIterator;
+    template <typename T>
+    class IndigoIterator;
     class IndigoSession;
     class IndigoSubstructureMatcher;
     using IndigoSessionPtr = std::shared_ptr<IndigoSession>;

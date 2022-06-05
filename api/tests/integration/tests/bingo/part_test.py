@@ -6,9 +6,9 @@ from env_indigo import (
     Bingo,
     BingoException,
     Indigo,
+    dataPath,
     getIndigoExceptionText,
     joinPathPy,
-    dataPath,
 )
 
 

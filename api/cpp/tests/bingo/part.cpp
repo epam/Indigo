@@ -78,8 +78,7 @@ namespace
     }
 
     void moleculeSearch(const SearchType& type, const BingoNoSQL<IndigoMolecule, IndigoQueryMolecule>& bingo, const int parts, vector<thread>& threads,
-                        atomic<int>& fullSearchCounter, atomic<int>& partSearchCounter, int& index,
-                        const shared_ptr<IndigoMolecule>& rdfMolecule)
+                        atomic<int>& fullSearchCounter, atomic<int>& partSearchCounter, int& index, const shared_ptr<IndigoMolecule>& rdfMolecule)
     {
         function<void(const BingoMolecule&, const IndigoMolecule&, const string&, atomic<int>&)> searchFunction;
         if (type == SearchType::EXACT)
