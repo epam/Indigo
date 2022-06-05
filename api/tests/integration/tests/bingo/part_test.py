@@ -1,4 +1,3 @@
-import os
 import sys
 import threading
 
@@ -9,6 +8,7 @@ from env_indigo import (
     Indigo,
     getIndigoExceptionText,
     joinPathPy,
+    dataPath,
 )
 
 
@@ -20,11 +20,10 @@ def outPrint(s, pid, output):
         output[pid] = "{0}\n{1}".format(old_out, s)
 
 
-def insertSmi(db, input_smi):
+def insertSmi(db, smi_path):
     index = 0
     wrongStructures = 0
 
-    smi_path = joinPathPy(os.path.join("molecules", input_smi), __file__)
     for mol in indigo.iterateSmilesFile(smi_path):
         try:
             db.insert(mol)
@@ -65,7 +64,7 @@ def partCreate():
         indigo, joinPathPy("mol_part_db", __file__), "molecule", "mt_size:2000"
     )
 
-    insertSmi(bingo, "sample_100000.smi")
+    insertSmi(bingo, dataPath("molecules/basic/sample_100000.smi"))
 
     bingo.close()
 
@@ -77,7 +76,7 @@ def partTest(size, searchType="sub"):
     index = 0
 
     for m in indigo.iterateSDFile(
-        joinPathPy("molecules/rand_queries_small.sdf", __file__)
+        dataPath("molecules/basic/rand_queries_small.sdf")
     ):
         try:
             print("\nQuery #{0}".format(index + 1))

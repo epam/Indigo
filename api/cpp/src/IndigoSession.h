@@ -24,10 +24,10 @@
 namespace indigo_cpp
 {
     class IndigoMolecule;
+    class IndigoReaction;
     class IndigoQueryMolecule;
     class IndigoWriteBuffer;
-    class IndigoRDFileIterator;
-    class IndigoSDFileIterator;
+    template <typename T> class IndigoIterator;
     class IndigoSession;
     class IndigoSubstructureMatcher;
     using IndigoSessionPtr = std::shared_ptr<IndigoSession>;
@@ -62,8 +62,9 @@ namespace indigo_cpp
 
         IndigoQueryMolecule loadQueryMolecule(const std::string& data);
         IndigoWriteBuffer writeBuffer();
-        IndigoRDFileIterator iterateRDFile(const std::string& path);
-        IndigoSDFileIterator iterateSDFile(const std::string& path);
+        IndigoIterator<IndigoReaction> iterateRDFile(const std::string& path);
+        IndigoIterator<IndigoMolecule> iterateSDFile(const std::string& path);
+        IndigoIterator<IndigoMolecule> iterateSmilesFile(const std::string& path);
         IndigoSubstructureMatcher substructureMatcher(const IndigoMolecule& molecule, const std::string& mode = "");
 
     private:

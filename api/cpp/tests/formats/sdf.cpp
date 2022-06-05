@@ -18,9 +18,9 @@
 
 #include <gtest/gtest.h>
 
+#include <IndigoIterator.h>
 #include <IndigoMolecule.h>
 #include <IndigoQueryMolecule.h>
-#include <IndigoSDFileIterator.h>
 #include <IndigoSession.h>
 
 #include "common.h"
