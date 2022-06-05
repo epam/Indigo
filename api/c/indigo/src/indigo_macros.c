@@ -24,7 +24,7 @@
         int source = indigoReadString(string);                                                                                                                 \
         int result;                                                                                                                                            \
                                                                                                                                                                \
-        if (source <= 0)                                                                                                                                       \
+        if (source < 0)                                                                                                                                       \
             return -1;                                                                                                                                         \
                                                                                                                                                                \
         result = name(source);                                                                                                                                 \
@@ -38,7 +38,7 @@
         int source = indigoReadFile(filename);                                                                                                                 \
         int result;                                                                                                                                            \
                                                                                                                                                                \
-        if (source <= 0)                                                                                                                                       \
+        if (source < 0)                                                                                                                                       \
             return -1;                                                                                                                                         \
                                                                                                                                                                \
         result = name(source);                                                                                                                                 \
@@ -52,7 +52,7 @@
         int source = indigoReadBuffer(buf, size);                                                                                                              \
         int result;                                                                                                                                            \
                                                                                                                                                                \
-        if (source <= 0)                                                                                                                                       \
+        if (source < 0)                                                                                                                                       \
             return -1;                                                                                                                                         \
                                                                                                                                                                \
         result = name(source);                                                                                                                                 \
