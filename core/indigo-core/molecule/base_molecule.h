@@ -23,6 +23,7 @@
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
 #include "math/algebra.h"
+#include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_cis_trans.h"
@@ -32,7 +33,6 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
-#include "molecule/metadata_storage.h"
 #include <set>
 
 #ifdef _WIN32
