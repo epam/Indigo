@@ -24,7 +24,7 @@
         int source = indigoReadString(string);                                                                                                                 \
         int result;                                                                                                                                            \
                                                                                                                                                                \
-        if (source < 0)                                                                                                                                        \
+        if (source <= 0)                                                                                                                                       \
             return -1;                                                                                                                                         \
                                                                                                                                                                \
         result = name(source);                                                                                                                                 \

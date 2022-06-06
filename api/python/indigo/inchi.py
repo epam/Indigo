@@ -89,7 +89,7 @@ class IndigoInchi(object):
         res = self.indigo._checkResult(
             self._lib.indigoInchiLoadMolecule(inchi.encode("ascii"))
         )
-        if res < 0:
+        if res == 0:
             return None
         return self.indigo.IndigoObject(self.indigo, res)
 

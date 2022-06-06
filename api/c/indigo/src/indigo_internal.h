@@ -362,7 +362,7 @@ private:
     struct ObjectsHolder
     {
         std::unordered_map<int, IndigoObject*> objects;
-        int next_id = 0;
+        int next_id = 1;
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
 
