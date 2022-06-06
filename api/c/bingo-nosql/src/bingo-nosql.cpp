@@ -83,7 +83,7 @@ namespace
 
     private:
         std::unordered_map<long long, sf::safe_shared_hide_obj<std::unique_ptr<T>>> map;
-        long long next_id = 0;
+        long long next_id = 1;
     };
 
     struct SearchesData
