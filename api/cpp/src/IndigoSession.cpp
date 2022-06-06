@@ -21,10 +21,10 @@
 #include <indigo.h>
 
 #include "IndigoException.h"
+#include "IndigoIterator.h"
 #include "IndigoMolecule.h"
 #include "IndigoQueryMolecule.h"
-#include "IndigoRDFileIterator.h"
-#include "IndigoSDFileIterator.h"
+#include "IndigoReaction.h"
 #include "IndigoSubstructureMatcher.h"
 #include "IndigoWriteBuffer.h"
 
@@ -156,13 +156,19 @@ IndigoWriteBuffer IndigoSession::writeBuffer()
     return {_checkResult(indigoWriteBuffer()), shared_from_this()};
 }
 
-IndigoSDFileIterator IndigoSession::iterateSDFile(const std::string& path)
+IndigoIterator<IndigoMolecule> IndigoSession::iterateSDFile(const std::string& path)
 {
     setSessionId();
     return {_checkResult(indigoIterateSDFile(path.c_str())), shared_from_this()};
 }
 
-IndigoRDFileIterator IndigoSession::iterateRDFile(const std::string& path)
+IndigoIterator<IndigoMolecule> IndigoSession::iterateSmilesFile(const std::string& path)
+{
+    setSessionId();
+    return {_checkResult(indigoIterateSmilesFile(path.c_str())), shared_from_this()};
+}
+
+IndigoIterator<IndigoReaction> IndigoSession::iterateRDFile(const std::string& path)
 {
     setSessionId();
     return {_checkResult(indigoIterateRDFile(path.c_str())), shared_from_this()};

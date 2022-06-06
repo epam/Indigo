@@ -18,7 +18,7 @@
 
 #include <gtest/gtest.h>
 
-#include <IndigoRDFileIterator.h>
+#include <IndigoIterator.h>
 #include <IndigoReaction.h>
 #include <IndigoSession.h>
 

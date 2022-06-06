@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 
 #include <BingoNoSQL.h>
-#include <IndigoSDFileIterator.h>
+#include <IndigoIterator.h>
 #include <IndigoSession.h>
 
 #include "common.h"

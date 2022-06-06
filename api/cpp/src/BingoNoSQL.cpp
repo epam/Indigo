@@ -21,7 +21,7 @@
 #include <bingo-nosql.h>
 
 #include "IndigoException.h"
-#include "IndigoSDFileIterator.h"
+#include "IndigoIterator.h"
 
 using namespace indigo_cpp;
 
@@ -95,7 +95,7 @@ int BingoNoSQL<target_t, query_t>::insertRecord(const target_t& entity)
 }
 
 template <typename target_t, typename query_t>
-int BingoNoSQL<target_t, query_t>::insertIterator(const IndigoSDFileIterator& iterator)
+int BingoNoSQL<target_t, query_t>::insertIterator(const IndigoIterator<target_t>& iterator)
 {
     session->setSessionId();
     return session->_checkResult(bingoInsertIteratorObj(id, iterator.id()));
@@ -124,10 +124,25 @@ BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSim(const tar
 }
 
 template <typename target_t, typename query_t>
+BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchSim(const target_t& query, const double min, const double max,
+                                                                       const std::string& options) const
+{
+    session->setSessionId();
+    return {session->_checkResult(bingoSearchSim(id, query.id(), min, max, options.c_str())), session};
+}
+
+template <typename target_t, typename query_t>
 std::string BingoNoSQL<target_t, query_t>::getStatistics(bool for_session) const
 {
     session->setSessionId();
     return session->_checkResultString(bingoProfilingGetStatistics(static_cast<int>(for_session)));
+}
+
+template <typename target_t, typename query_t>
+BingoResultIterator<target_t> BingoNoSQL<target_t, query_t>::searchExact(const target_t& query, const std::string& options) const
+{
+    session->setSessionId();
+    return {session->_checkResult(bingoSearchExact(id, query.id(), options.c_str())), session};
 }
 
 template class indigo_cpp::BingoNoSQL<IndigoMolecule, IndigoQueryMolecule>;
