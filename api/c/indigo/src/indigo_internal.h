@@ -195,12 +195,9 @@ public:
 
     virtual void remove();
 
-    //   virtual RedBlackStringObjMap< Array<char> > * getProperties();
-    //   void copyProperties (RedBlackStringObjMap< Array<char> > &other);
     virtual PropertiesMap& getProperties();
     virtual MonomersProperties& getMonomersProperties();
     virtual void copyProperties(PropertiesMap&);
-    virtual void copyProperties(RedBlackStringObjMap<Array<char>>& other);
 
 private:
     IndigoObject(const IndigoObject&);
@@ -364,8 +361,8 @@ private:
 
     struct ObjectsHolder
     {
-        RedBlackMap<int, IndigoObject*> objects;
-        int next_id = 1000; // FIXME:MK: Why does it matter?
+        std::unordered_map<int, IndigoObject*> objects;
+        int next_id = 1;
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
 
@@ -401,6 +398,11 @@ protected:
     catch (Exception & ex)                                                                                                                                     \
     {                                                                                                                                                          \
         Indigo::handleError(ex.message());                                                                                                                     \
+        return fail;                                                                                                                                           \
+    }                                                                                                                                                          \
+    catch (const std::exception& ex)                                                                                                                           \
+    {                                                                                                                                                          \
+        Indigo::handleError(ex.what());                                                                                                                        \
         return fail;                                                                                                                                           \
     }                                                                                                                                                          \
     return fail;                                                                                                                                               \
