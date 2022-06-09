@@ -72,8 +72,8 @@ def db(request, indigo):
             table.drop(db.engine)
     elif db_str == DB_BINGO:
         db.delete_base()
-    elif db_str == DB_BINGO_ELASTIC:
-        db.drop()
+    # elif db_str == DB_BINGO_ELASTIC:
+    #     db.drop()
     logger.info(f"===== Finish of testing {function} =====")
 
 

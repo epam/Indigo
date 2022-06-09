@@ -5,13 +5,13 @@ from bingo_elastic.model.record import (
     IndigoRecordReaction,
 )
 from bingo_elastic.queries import SimilarityMatch
-from indigo import IndigoException, IndigoObject
+from indigo import IndigoException, IndigoObject, Indigo
 
 from ..constants import DB_BINGO_ELASTIC, EntitiesType
 from ..helpers import indigo_iterator
 from ..logger import logger
 from .base import NoSQLAdapter, catch_indigo_exception
-
+i = Indigo()
 
 class BingoElastic(NoSQLAdapter):
     dbms = DB_BINGO_ELASTIC
@@ -58,15 +58,15 @@ class BingoElastic(NoSQLAdapter):
     def exact(self, molecule: IndigoObject, target_function: str, options=""):
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
-        records = self.repo.filter(exact=indigo_record, limit=500)
+        records = self.repo.filter(exact=indigo_record, limit=500, options=options)
 
         return self._process_records(records)
 
     @catch_indigo_exception(catch_error=True)
     def substructure(self, molecule, target_function, options=""):
-        compound = self.indigo.loadMolecule(molecule.rawData())
+        compound = self.indigo.loadQueryMolecule("C")
         indigo_record = IndigoRecord(indigo_object=compound)
-        records = self.repo.filter(substructure=indigo_record, limit=500)
+        records = self.repo.filter(substructure=indigo_record, limit=500, q_mol=compound)
 
         return self._process_records(records)
 

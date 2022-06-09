@@ -73,13 +73,18 @@ class SubstructureQuery(CompilableQuery):
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo
+        self, record: IndigoRecord, indigo: Indigo, options: str, q_mol
     ) -> Optional[IndigoRecord]:
-        if indigo.substructureMatcher(record.as_indigo_object(indigo)).match(
-            indigo.loadQueryMolecule(
-                self._value.as_indigo_object(indigo).canonicalSmiles()
-            )
-        ):
+        print("STEP = 10 - postprocess")
+        mol = record.as_indigo_object(indigo)
+        mol.aromatize()
+        # query_mol = self._value.indigo_object.value(indigo)
+        q_mol.aromatize()
+        print("MOLECULE", mol, type(mol))
+        print("Q_MOLECULE", q_mol, type(q_mol))
+        if indigo.substructureMatcher(mol).match(q_mol):
+            print("STEP = 10 - MATCH")
+            # print(f"{mol.canonicalSmiles()} match {q_mol.canonicalSmiles()}")
             return record
         return None
 
@@ -93,16 +98,16 @@ class SubstructureQuery(CompilableQuery):
         # This code same as ExactMatch.
         # ExactMatch will use search by hash in next releases
         bool_head = head_by_path(
-            query, ("query", "script_score", "query", "bool")
+            query, ("query", "bool")
         )
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()
-        script_score_head = head_by_path(query, ("query", "script_score"))
-        script_score_head["script"] = {
-            "source": "_score / doc['sub_fingerprint_len'].value"
-        }
-        query["min_score"] = 1
+        # script_score_head = head_by_path(query, ("query", "script_score"))
+        # script_score_head["script"] = {
+        #     "source": "_score / doc['sub_fingerprint_len'].value"
+        # }
+        query["min_score"] = self._value.sub_fingerprint_len
         assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
 
@@ -279,17 +284,28 @@ class ExactMatch(CompilableQuery):
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo
+        self, record: IndigoRecord, indigo: Indigo, options: str
     ) -> Optional[IndigoRecord]:
+        print("STEP = XX - exactmatch.postprocess")
+        print("OPTIONS", options)
+        print("MOL_1", record.as_indigo_object(indigo))
+        print("MOL_2", self._target.as_indigo_object(indigo))
 
         # postprocess only on molecule search
         if not isinstance(record, IndigoRecordMolecule):
             return record
 
-        if indigo.exactMatch(
-            record.as_indigo_object(indigo),
-            self._target.as_indigo_object(indigo),
-        ):
+        mol_1 = record.as_indigo_object(indigo)
+        mol_2 = self._target.as_indigo_object(indigo)
+        mol_1.aromatize()
+        mol_2.aromatize()
+        print("MOL_1", mol_1.smiles())
+        print("MOL_2", mol_2.smiles())
+        print(mol_1.name(), mol_2.name())
+        print(f"indigo.exactMatch({mol_1}, {mol_2}, {options})")
+
+        if indigo.exactMatch(mol_1, mol_2, options):
+            print("MATCH", f"{mol_1.smiles()} matches {mol_2.smiles()}")
             return record
         return None
 
@@ -297,16 +313,16 @@ class ExactMatch(CompilableQuery):
         self, query, postprocess_actions: PostprocessType = None
     ) -> None:
         bool_head = head_by_path(
-            query, ("query", "script_score", "query", "bool")
+            query, ("query", "bool")
         )
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()
-        script_score_head = head_by_path(query, ("query", "script_score"))
-        script_score_head["script"] = {
-            "source": "_score / doc['sub_fingerprint_len'].value"
-        }
-        query["min_score"] = 1
+        # script_score_head = head_by_path(query, ("query", "script_score"))
+        # script_score_head["script"] = {
+        #     "source": "_score / doc['sub_fingerprint_len'].value"
+        # }
+        query["min_score"] = self._target.sub_fingerprint_len
         assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
 

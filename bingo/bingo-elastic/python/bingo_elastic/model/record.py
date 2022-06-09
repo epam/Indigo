@@ -60,7 +60,8 @@ class WithIndigoObject:
                 instance, "cmf", " ".join(map(str, list(value.serialize())))
             )
         except IndigoException as err_:
-            check_error(instance, err_)
+            pass
+            # check_error(instance, err_)
 
 
 class IndigoRecord:
@@ -74,6 +75,7 @@ class IndigoRecord:
 
     cmf: Optional[str] = None
     name: Optional[str] = None
+    rawData: Optional[str] = None
     sim_fingerprint: Optional[List[str]] = None
     sub_fingerprint: Optional[List[str]] = None
     indigo_object = WithIndigoObject()
@@ -122,6 +124,10 @@ class IndigoRecord:
     def as_indigo_object(self, session: Indigo):
         assert self.cmf
         return session.deserialize(list(map(int, self.cmf.split(" "))))
+
+    # def as_indigo_query_object(self, session: Indigo):
+    #     assert self.rawData
+    #     return session.loadQueryMolecule(self.rawData)
 
 
 class IndigoRecordMolecule(IndigoRecord):

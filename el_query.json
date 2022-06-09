@@ -1,0 +1,194 @@
+# SUB_QUERY
+{
+  "size": 500,
+  "_source": {
+    "includes": ["*"],
+    "excludes": ["sim_fingerprint", "sim_fingerprint_len", "sub_fingerprint_len", "sub_fingerprint"]
+  },
+  "query": {
+    "script_score": {
+      "query": {
+        "bool": {
+          "must": [
+            {"term": {"sub_fingerprint": {"value": 69}}},
+            {"term": {"sub_fingerprint": {"value": 206}}},
+            {"term": {"sub_fingerprint": {"value": 209}}},
+            {"term": {"sub_fingerprint": {"value": 311}}},
+            {"term": {"sub_fingerprint": {"value": 323}}},
+            {"term": {"sub_fingerprint": {"value": 352}}},
+            {"term": {"sub_fingerprint": {"value": 428}}},
+            {"term": {"sub_fingerprint": {"value": 455}}},
+            {"term": {"sub_fingerprint": {"value": 566}}},
+            {"term": {"sub_fingerprint": {"value": 593}}},
+            {"term": {"sub_fingerprint": {"value": 597}}},
+            {"term": {"sub_fingerprint": {"value": 609}}},
+            {"term": {"sub_fingerprint": {"value": 713}}},
+            {"term": {"sub_fingerprint": {"value": 718}}},
+            {"term": {"sub_fingerprint": {"value": 844}}},
+            {"term": {"sub_fingerprint": {"value": 916}}},
+            {"term": {"sub_fingerprint": {"value": 922}}},
+            {"term": {"sub_fingerprint": {"value": 931}}},
+            {"term": {"sub_fingerprint": {"value": 984}}},
+            {"term": {"sub_fingerprint": {"value": 1027}}},
+            {"term": {"sub_fingerprint": {"value": 1047}}},
+            {"term": {"sub_fingerprint": {"value": 1187}}},
+            {"term": {"sub_fingerprint": {"value": 1222}}},
+            {"term": {"sub_fingerprint": {"value": 1251}}},
+            {"term": {"sub_fingerprint": {"value": 1262}}},
+            {"term": {"sub_fingerprint": {"value": 1272}}},
+            {"term": {"sub_fingerprint": {"value": 1296}}},
+            {"term": {"sub_fingerprint": {"value": 1437}}},
+            {"term": {"sub_fingerprint": {"value": 1493}}},
+            {"term": {"sub_fingerprint": {"value": 1497}}},
+            {"term": {"sub_fingerprint": {"value": 1577}}},
+            {"term": {"sub_fingerprint": {"value": 1588}}},
+            {"term": {"sub_fingerprint": {"value": 1619}}}
+          ]
+        }
+      },
+      "script": {"source": "_score / doc['sub_fingerprint_len'].value"}
+    }
+  },
+  "min_score": 1
+}
+
+# SIM_QUERY
+{
+  "size": 500,
+  "_source": {
+    "includes": ["*"],
+    "excludes": ["sim_fingerprint", "sim_fingerprint_len", "sub_fingerprint_len", "sub_fingerprint"]
+  },
+  "query": {
+    "script_score": {
+      "query": {
+        "bool": {
+          "should": [
+            {"term": {"sim_fingerprint": {"value": 1646}}},
+            {"term": {"sim_fingerprint": {"value": 1661}}},
+            {"term": {"sim_fingerprint": {"value": 1697}}},
+            {"term": {"sim_fingerprint": {"value": 1700}}},
+            {"term": {"sim_fingerprint": {"value": 1712}}},
+            {"term": {"sim_fingerprint": {"value": 1715}}},
+            {"term": {"sim_fingerprint": {"value": 1719}}},
+            {"term": {"sim_fingerprint": {"value": 1735}}},
+            {"term": {"sim_fingerprint": {"value": 1748}}},
+            {"term": {"sim_fingerprint": {"value": 1756}}},
+            {"term": {"sim_fingerprint": {"value": 1757}}},
+            {"term": {"sim_fingerprint": {"value": 1760}}},
+            {"term": {"sim_fingerprint": {"value": 1761}}},
+            {"term": {"sim_fingerprint": {"value": 1762}}},
+            {"term": {"sim_fingerprint": {"value": 1771}}},
+            {"term": {"sim_fingerprint": {"value": 1787}}},
+            {"term": {"sim_fingerprint": {"value": 1788}}},
+            {"term": {"sim_fingerprint": {"value": 1790}}},
+            {"term": {"sim_fingerprint": {"value": 1792}}},
+            {"term": {"sim_fingerprint": {"value": 1801}}},
+            {"term": {"sim_fingerprint": {"value": 1815}}},
+            {"term": {"sim_fingerprint": {"value": 1816}}},
+            {"term": {"sim_fingerprint": {"value": 1818}}},
+            {"term": {"sim_fingerprint": {"value": 1820}}},
+            {"term": {"sim_fingerprint": {"value": 1841}}},
+            {"term": {"sim_fingerprint": {"value": 1843}}},
+            {"term": {"sim_fingerprint": {"value": 1846}}},
+            {"term": {"sim_fingerprint": {"value": 1857}}},
+            {"term": {"sim_fingerprint": {"value": 1864}}},
+            {"term": {"sim_fingerprint": {"value": 1874}}},
+            {"term": {"sim_fingerprint": {"value": 1900}}},
+            {"term": {"sim_fingerprint": {"value": 1902}}},
+            {"term": {"sim_fingerprint": {"value": 1908}}},
+            {"term": {"sim_fingerprint": {"value": 1909}}},
+            {"term": {"sim_fingerprint": {"value": 1911}}},
+            {"term": {"sim_fingerprint": {"value": 1914}}},
+            {"term": {"sim_fingerprint": {"value": 1917}}},
+            {"term": {"sim_fingerprint": {"value": 1926}}},
+            {"term": {"sim_fingerprint": {"value": 1932}}},
+            {"term": {"sim_fingerprint": {"value": 1955}}},
+            {"term": {"sim_fingerprint": {"value": 1983}}},
+            {"term": {"sim_fingerprint": {"value": 1994}}},
+            {"term": {"sim_fingerprint": {"value": 1996}}},
+            {"term": {"sim_fingerprint": {"value": 2001}}},
+            {"term": {"sim_fingerprint": {"value": 2018}}},
+            {"term": {"sim_fingerprint": {"value": 2053}}},
+            {"term": {"sim_fingerprint": {"value": 2055}}},
+            {"term": {"sim_fingerprint": {"value": 2078}}},
+            {"term": {"sim_fingerprint": {"value": 2081}}},
+            {"term": {"sim_fingerprint": {"value": 2082}}},
+            {"term": {"sim_fingerprint": {"value": 2098}}},
+            {"term": {"sim_fingerprint": {"value": 2102}}},
+            {"term": {"sim_fingerprint": {"value": 2106}}},
+            {"term": {"sim_fingerprint": {"value": 2110}}},
+            {"term": {"sim_fingerprint": {"value": 2111}}},
+            {"term": {"sim_fingerprint": {"value": 2114}}},
+            {"term": {"sim_fingerprint": {"value": 2117}}},
+            {"term": {"sim_fingerprint": {"value": 2123}}},
+            {"term": {"sim_fingerprint": {"value": 2131}}},
+            {"term": {"sim_fingerprint": {"value": 2134}}}
+          ],
+          "minimum_should_match": "48%"
+        }
+      },
+      "script": {
+        "source": "_score / (params.a + doc['sim_fingerprint_len'].value - _score)",
+        "params": {"a": 60}
+      }
+    }
+  },
+  "min_score": 0.95
+}
+
+# EXACT_QUERY
+{
+  "size": 500,
+  "_source": {
+    "includes": ["*"],
+    "excludes": ["sim_fingerprint", "sim_fingerprint_len", "sub_fingerprint_len", "sub_fingerprint"]
+  },
+  "query": {
+    "script_score": {
+      "query": {
+        "bool": {
+          "must": [
+            {"term": {"sub_fingerprint": {"value": 0}}},
+            {"term": {"sub_fingerprint": {"value": 3}}},
+            {"term": {"sub_fingerprint": {"value": 4}}},
+            {"term": {"sub_fingerprint": {"value": 27}}},
+            {"term": {"sub_fingerprint": {"value": 28}}},
+            {"term": {"sub_fingerprint": {"value": 33}}},
+            {"term": {"sub_fingerprint": {"value": 36}}},
+            {"term": {"sub_fingerprint": {"value": 37}}},
+            {"term": {"sub_fingerprint": {"value": 38}}},
+            {"term": {"sub_fingerprint": {"value": 39}}},
+            {"term": {"sub_fingerprint": {"value": 41}}},
+            {"term": {"sub_fingerprint": {"value": 42}}},
+            {"term": {"sub_fingerprint": {"value": 44}}},
+            {"term": {"sub_fingerprint": {"value": 45}}},
+            {"term": {"sub_fingerprint": {"value": 46}}},
+            {"term": {"sub_fingerprint": {"value": 47}}},
+            {"term": {"sub_fingerprint": {"value": 50}}},
+            {"term": {"sub_fingerprint": {"value": 56}}},
+            {"term": {"sub_fingerprint": {"value": 57}}},
+            {"term": {"sub_fingerprint": {"value": 58}}},
+            {"term": {"sub_fingerprint": {"value": 59}}},
+            {"term": {"sub_fingerprint": {"value": 61}}},
+            {"term": {"sub_fingerprint": {"value": 64}}},
+            {"term": {"sub_fingerprint": {"value": 65}}},
+            {"term": {"sub_fingerprint": {"value": 67}}},
+            {"term": {"sub_fingerprint": {"value": 70}}},
+            {"term": {"sub_fingerprint": {"value": 73}}},
+            {"term": {"sub_fingerprint": {"value": 76}}},
+            {"term": {"sub_fingerprint": {"value": 82}}},
+            {"term": {"sub_fingerprint": {"value": 3722}}},
+            {"term": {"sub_fingerprint": {"value": 3726}}},
+            {"term": {"sub_fingerprint": {"value": 3729}}},
+            {"term": {"sub_fingerprint": {"value": 3733}}}
+          ]
+        }
+      },
+      "script": {"source": "_score / doc['sub_fingerprint_len'].value"}
+    }
+  },
+  "min_score": 1
+}
+
+    {'size': 10, '_source': {'includes': ['*'], 'excludes': ['sim_fingerprint', 'sim_fingerprint_len', 'sub_fingerprint_len', 'sub_fingerprint']}, 'query': {'script_score': {'query': {'bool': {'must': [{'term': {'sub_fingerprint': {'value': 10}}}, {'term': {'sub_fingerprint': {'value': 119}}}, {'term': {'sub_fingerprint': {'value': 147}}}, {'term': {'sub_fingerprint': {'value': 150}}}, {'term': {'sub_fingerprint': {'value': 198}}}, {'term': {'sub_fingerprint': {'value': 209}}}, {'term': {'sub_fingerprint': {'value': 307}}}, {'term': {'sub_fingerprint': {'value': 310}}}, {'term': {'sub_fingerprint': {'value': 311}}}, {'term': {'sub_fingerprint': {'value': 323}}}, {'term': {'sub_fingerprint': {'value': 428}}}, {'term': {'sub_fingerprint': {'value': 456}}}, {'term': {'sub_fingerprint': {'value': 516}}}, {'term': {'sub_fingerprint': {'value': 558}}}, {'term': {'sub_fingerprint': {'value': 593}}}, {'term': {'sub_fingerprint': {'value': 597}}}, {'term': {'sub_fingerprint': {'value': 893}}}, {'term': {'sub_fingerprint': {'value': 894}}}, {'term': {'sub_fingerprint': {'value': 931}}}, {'term': {'sub_fingerprint': {'value': 959}}}, {'term': {'sub_fingerprint': {'value': 974}}}, {'term': {'sub_fingerprint': {'value': 998}}}, {'term': {'sub_fingerprint': {'value': 1117}}}, {'term': {'sub_fingerprint': {'value': 1158}}}, {'term': {'sub_fingerprint': {'value': 1175}}}, {'term': {'sub_fingerprint': {'value': 1181}}}, {'term': {'sub_fingerprint': {'value': 1212}}}, {'term': {'sub_fingerprint': {'value': 1232}}}, {'term': {'sub_fingerprint': {'value': 1298}}}, {'term': {'sub_fingerprint': {'value': 1320}}}, {'term': {'sub_fingerprint': {'value': 1358}}}, {'term': {'sub_fingerprint': {'value': 1367}}}, {'term': {'sub_fingerprint': {'value': 1428}}}, {'term': {'sub_fingerprint': {'value': 1452}}}, {'term': {'sub_fingerprint': {'value': 1457}}}, {'term': {'sub_fingerprint': {'value': 1493}}}, {'term': {'sub_fingerprint': {'value': 1521}}}, {'term': {'sub_fingerprint': {'value': 1577}}}, {'term': {'sub_fingerprint': {'value': 1619}}}, {'term': {'sub_fingerprint': {'value': 2784}}}, {'term': {'sub_fingerprint': {'value': 2786}}}, {'term': {'sub_fingerprint': {'value': 2788}}}, {'term': {'sub_fingerprint': {'value': 2792}}}, {'term': {'sub_fingerprint': {'value': 2795}}}, {'term': {'sub_fingerprint': {'value': 2817}}}, {'term': {'sub_fingerprint': {'value': 2827}}}, {'term': {'sub_fingerprint': {'value': 2839}}}, {'term': {'sub_fingerprint': {'value': 2849}}}, {'term': {'sub_fingerprint': {'value': 2859}}}, {'term': {'sub_fingerprint': {'value': 2864}}}, {'term': {'sub_fingerprint': {'value': 2884}}}, {'term': {'sub_fingerprint': {'value': 2889}}}, {'term': {'sub_fingerprint': {'value': 2894}}}, {'term': {'sub_fingerprint': {'value': 2896}}}, {'term': {'sub_fingerprint': {'value': 2900}}}, {'term': {'sub_fingerprint': {'value': 2907}}}, {'term': {'sub_fingerprint': {'value': 2919}}}, {'term': {'sub_fingerprint': {'value': 2924}}}, {'term': {'sub_fingerprint': {'value': 2940}}}, {'term': {'sub_fingerprint': {'value': 2954}}}, {'term': {'sub_fingerprint': {'value': 2961}}}, {'term': {'sub_fingerprint': {'value': 3008}}}, {'term': {'sub_fingerprint': {'value': 3009}}}, {'term': {'sub_fingerprint': {'value': 3014}}}, {'term': {'sub_fingerprint': {'value': 3023}}}, {'term': {'sub_fingerprint': {'value': 3029}}}, {'term': {'sub_fingerprint': {'value': 3062}}}, {'term': {'sub_fingerprint': {'value': 3065}}}, {'term': {'sub_fingerprint': {'value': 3096}}}, {'term': {'sub_fingerprint': {'value': 3119}}}, {'term': {'sub_fingerprint': {'value': 3127}}}, {'term': {'sub_fingerprint': {'value': 3151}}}, {'term': {'sub_fingerprint': {'value': 3161}}}, {'term': {'sub_fingerprint': {'value': 3175}}}, {'term': {'sub_fingerprint': {'value': 3183}}}, {'term': {'sub_fingerprint': {'value': 3184}}}, {'term': {'sub_fingerprint': {'value': 3200}}}, {'term': {'sub_fingerprint': {'value': 3229}}}, {'term': {'sub_fingerprint': {'value': 3271}}}, {'term': {'sub_fingerprint': {'value': 3297}}}, {'term': {'sub_fingerprint': {'value': 3320}}}, {'term': {'sub_fingerprint': {'value': 3348}}}, {'term': {'sub_fingerprint': {'value': 3350}}}, {'term': {'sub_fingerprint': {'value': 3357}}}, {'term': {'sub_fingerprint': {'value': 3376}}}, {'term': {'sub_fingerprint': {'value': 3390}}}, {'term': {'sub_fingerprint': {'value': 3394}}}, {'term': {'sub_fingerprint': {'value': 3399}}}, {'term': {'sub_fingerprint': {'value': 3420}}}, {'term': {'sub_fingerprint': {'value': 3433}}}, {'term': {'sub_fingerprint': {'value': 3436}}}, {'term': {'sub_fingerprint': {'value': 3440}}}, {'term': {'sub_fingerprint': {'value': 3464}}}, {'term': {'sub_fingerprint': {'value': 3488}}}, {'term': {'sub_fingerprint': {'value': 3497}}}, {'term': {'sub_fingerprint': {'value': 3500}}}, {'term': {'sub_fingerprint': {'value': 3513}}}, {'term': {'sub_fingerprint': {'value': 3514}}}, {'term': {'sub_fingerprint': {'value': 3525}}}, {'term': {'sub_fingerprint': {'value': 3526}}}, {'term': {'sub_fingerprint': {'value': 3537}}}, {'term': {'sub_fingerprint': {'value': 3548}}}, {'term': {'sub_fingerprint': {'value': 3550}}}, {'term': {'sub_fingerprint': {'value': 3552}}}, {'term': {'sub_fingerprint': {'value': 3555}}}, {'term': {'sub_fingerprint': {'value': 3561}}}, {'term': {'sub_fingerprint': {'value': 3572}}}, {'term': {'sub_fingerprint': {'value': 3578}}}, {'term': {'sub_fingerprint': {'value': 3580}}}, {'term': {'sub_fingerprint': {'value': 3584}}}, {'term': {'sub_fingerprint': {'value': 3601}}}, {'term': {'sub_fingerprint': {'value': 3632}}}, {'term': {'sub_fingerprint': {'value': 3636}}}, {'term': {'sub_fingerprint': {'value': 3649}}}, {'term': {'sub_fingerprint': {'value': 3661}}}, {'term': {'sub_fingerprint': {'value': 3670}}}, {'term': {'sub_fingerprint': {'value': 3680}}}, {'term': {'sub_fingerprint': {'value': 3701}}}, {'term': {'sub_fingerprint': {'value': 3717}}}]}}, 'script': {'source': "_score / doc['sub_fingerprint_len'].value"}}}, 'min_score': 1}

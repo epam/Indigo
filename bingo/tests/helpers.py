@@ -99,6 +99,16 @@ def get_query_entities(indigo: Indigo, function: str):
     index = 1
     for entities_file in entities_files:
         for mol in indigo_iterator(indigo, entities_file):
+            # print("INDEX", index)
+            try:
+                sm = mol.canonicalSmiles()
+                n = mol.name()
+                # print("MOL", n, sm)
+                fps = mol.fingerprint("sub").oneBitsList().split()
+                # print("MOL_FP", fps)
+                # print("LEN_FP", len(fps))
+            except Indigo.IndigoException:
+                pass
             result[index] = mol
             index += 1
 
