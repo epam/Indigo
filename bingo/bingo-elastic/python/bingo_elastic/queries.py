@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
-from indigo import Indigo  # type: ignore
+from indigo import Indigo, IndigoObject  # type: ignore
 
 from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 from bingo_elastic.utils import PostprocessType, head_by_path
@@ -73,16 +73,20 @@ class SubstructureQuery(CompilableQuery):
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo, options: str, q_mol
+        self, record: IndigoRecord, indigo: Indigo, options: str, q_mol: IndigoObject
     ) -> Optional[IndigoRecord]:
         print("STEP = 10 - postprocess")
         mol = record.as_indigo_object(indigo)
         mol.aromatize()
         # query_mol = self._value.indigo_object.value(indigo)
         q_mol.aromatize()
-        print("MOLECULE", mol, type(mol))
-        print("Q_MOLECULE", q_mol, type(q_mol))
-        if indigo.substructureMatcher(mol).match(q_mol):
+        print("MOLECULE", mol, type(mol), mol.dbgInternalType())
+        print("Q_MOLECULE", q_mol, type(q_mol), q_mol.dbgInternalType())
+        matcher = indigo.substructureMatcher(mol)
+        print("MATCHER", matcher, type(matcher), matcher.dbgInternalType())
+        match = matcher.match(q_mol)
+        print("MATCH", match, type(matcher), match.dbgInternalType())
+        if match:
             print("STEP = 10 - MATCH")
             # print(f"{mol.canonicalSmiles()} match {q_mol.canonicalSmiles()}")
             return record
