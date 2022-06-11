@@ -108,7 +108,10 @@ namespace indigo
 
         BaseMolecule();
         ~BaseMolecule() override;
-        MetaDataStorage& meta();
+        MetaDataStorage& meta()
+        {
+            return _meta;
+        }
         // Casting methods. Invalid casting throws exceptions.
         virtual Molecule& asMolecule();
         virtual QueryMolecule& asQueryMolecule();

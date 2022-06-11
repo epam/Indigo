@@ -66,7 +66,7 @@ void ReactionJsonSaver::saveMultistepReaction(BaseReaction& rxn, BaseMolecule& m
     for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
-    merged.meta().cloneMetaData(rxn.meta());
+    merged.meta().clone(rxn.meta());
 
     StringBuffer s;
     Writer<StringBuffer> writer(s);
@@ -143,7 +143,7 @@ void ReactionJsonSaver::saveSingleReaction(BaseReaction& rxn, BaseMolecule& merg
     }
 
     // dump molecules
-    merged.meta().cloneMetaData(rxn.meta());
+    merged.meta().clone(rxn.meta());
     StringBuffer s;
     Writer<StringBuffer> writer(s);
     json_saver.saveMolecule(merged, writer);

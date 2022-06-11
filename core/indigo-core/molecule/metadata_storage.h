@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-#ifndef __meta_data_storage__
-#define __meta_data_storage__
+#ifndef __metadata_storage__
+#define __metadata_storage__
+
 #include "base_cpp/ptr_array.h"
 
 namespace indigo
@@ -35,7 +36,8 @@ namespace indigo
     class MetaDataStorage
     {
     public:
-        void cloneMetaData(const MetaDataStorage& other);
+        DECL_ERROR;
+        void clone(const MetaDataStorage& other);
 
         virtual ~MetaDataStorage()
         {

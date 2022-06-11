@@ -68,7 +68,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     else
         throw Error("unknown reaction type: %s", typeid(rxn).name());
 
-    rxn.meta().cloneMetaData(_pmol->meta());
+    rxn.meta().clone(_pmol->meta());
     _pmol->meta().resetMetaData();
 
     int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
@@ -500,8 +500,6 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
         auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
         components.emplace_back(plus._pos.x, ReactionFragmentType::PLUS, nullptr);
     }
-
-    rxn.meta().resetReactionData();
 
     std::sort(components.begin(), components.end(),
               [](const ReactionComponent& a, const ReactionComponent& b) -> bool { return std::get<LEFT_BOUND_IDX>(a) < std::get<LEFT_BOUND_IDX>(b); });

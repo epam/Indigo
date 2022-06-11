@@ -40,66 +40,69 @@ void RenderItemReaction::init()
     if (rxn == NULL)
         throw Error("reaction not set");
 
-    if (rxn->meta().metaData().size())
-        return initMeta();
-
     if (rxn->begin() >= rxn->end()) // no reactants or products
         return;
 
-    _splitCatalysts = _opt.agentsBelowArrow;
-    _reactantLine = _factory.addItemHLine();
-    _factory.getItemHLine(_reactantLine).init();
-    items.push(_reactantLine);
-    for (int i = rxn->reactantBegin(); i < rxn->reactantEnd(); i = rxn->reactantNext(i))
+    if (rxn->meta().metaData().size())
     {
-        if (i > rxn->reactantBegin())
-            _factory.getItemHLine(_reactantLine).items.push(_addPlus());
-        _factory.getItemHLine(_reactantLine).items.push(_addFragment(i));
+        initWithMeta();
     }
-
-    if (rxn->catalystCount() > 0)
+    else
     {
-        _catalystLineUpper = _factory.addItemHLine();
-        _factory.getItemHLine(_catalystLineUpper).init();
-        items.push(_catalystLineUpper);
-        if (_splitCatalysts)
+        _splitCatalysts = _opt.agentsBelowArrow;
+        _reactantLine = _factory.addItemHLine();
+        _factory.getItemHLine(_reactantLine).init();
+        items.push(_reactantLine);
+        for (int i = rxn->reactantBegin(); i < rxn->reactantEnd(); i = rxn->reactantNext(i))
         {
-            _catalystLineLower = _factory.addItemHLine();
-            _factory.getItemHLine(_catalystLineLower).init();
-            items.push(_catalystLineLower);
+            if (i > rxn->reactantBegin())
+                _factory.getItemHLine(_reactantLine).items.push(_addPlus());
+            _factory.getItemHLine(_reactantLine).items.push(_addFragment(i));
         }
-        int halfTheNumberOfCatalysts = (rxn->catalystCount() + 1) / 2;
-        for (int i = rxn->catalystBegin(), j = 0; i < rxn->catalystEnd(); i = rxn->catalystNext(i), ++j)
+
+        if (rxn->catalystCount() > 0)
         {
-            if (!_splitCatalysts || j < halfTheNumberOfCatalysts)
-                _factory.getItemHLine(_catalystLineUpper).items.push(_addFragment(i));
-            else
-                _factory.getItemHLine(_catalystLineLower).items.push(_addFragment(i));
+            _catalystLineUpper = _factory.addItemHLine();
+            _factory.getItemHLine(_catalystLineUpper).init();
+            items.push(_catalystLineUpper);
+            if (_splitCatalysts)
+            {
+                _catalystLineLower = _factory.addItemHLine();
+                _factory.getItemHLine(_catalystLineLower).init();
+                items.push(_catalystLineLower);
+            }
+            int halfTheNumberOfCatalysts = (rxn->catalystCount() + 1) / 2;
+            for (int i = rxn->catalystBegin(), j = 0; i < rxn->catalystEnd(); i = rxn->catalystNext(i), ++j)
+            {
+                if (!_splitCatalysts || j < halfTheNumberOfCatalysts)
+                    _factory.getItemHLine(_catalystLineUpper).items.push(_addFragment(i));
+                else
+                    _factory.getItemHLine(_catalystLineLower).items.push(_addFragment(i));
+            }
         }
-    }
 
-    _productLine = _factory.addItemHLine();
-    _factory.getItemHLine(_productLine).init();
-    items.push(_productLine);
-    for (int i = rxn->productBegin(); i < rxn->productEnd(); i = rxn->productNext(i))
-    {
-        if (i > rxn->productBegin())
-            _factory.getItemHLine(_productLine).items.push(_addPlus());
-        _factory.getItemHLine(_productLine).items.push(_addFragment(i));
-    }
+        _productLine = _factory.addItemHLine();
+        _factory.getItemHLine(_productLine).init();
+        items.push(_productLine);
+        for (int i = rxn->productBegin(); i < rxn->productEnd(); i = rxn->productNext(i))
+        {
+            if (i > rxn->productBegin())
+                _factory.getItemHLine(_productLine).items.push(_addPlus());
+            _factory.getItemHLine(_productLine).items.push(_addFragment(i));
+        }
 
-    // add single arrow
-    _arrow = _factory.addItemAuxiliary();
-    _factory.getItemAuxiliary(_arrow).type = RenderItemAuxiliary::AUX_RXN_ARROW;
-    _factory.getItemAuxiliary(_arrow).init();
-    items.push(_arrow);
+        // add single arrow
+        _arrow = _factory.addItemAuxiliary();
+        _factory.getItemAuxiliary(_arrow).type = RenderItemAuxiliary::AUX_RXN_ARROW;
+        _factory.getItemAuxiliary(_arrow).init();
+        items.push(_arrow);
+    }
 }
 
-void RenderItemReaction::initMeta()
+void RenderItemReaction::initWithMeta()
 {
     // add meta
     _meta = _factory.addItemAuxiliary();
-
     auto& aux = _factory.getItemAuxiliary(_meta);
     aux.type = RenderItemAuxiliary::AUX_META;
     aux.meta = &rxn->meta();
@@ -113,8 +116,6 @@ void RenderItemReaction::initMeta()
         auto mol = _addFragment(i);
         items.push(mol);
         auto& frag = _factory.getItemFragment(mol);
-        frag.min.set(0, 0);
-        frag.max.set(0, 0);
     }
 }
 
@@ -148,46 +149,48 @@ void RenderItemReaction::estimateSize()
     size.y = 0;
 
     if (_meta >= 0)
-        return estimateSizeMeta();
-
-    RenderItemContainer::estimateSize();
-
-    if (_reactantLine >= 0)
     {
-        RenderItemBase& reactants = _factory.getItem(_reactantLine);
-        size.x += reactants.size.x;
-        size.y = std::max(size.y, reactants.size.y);
+        estimateSizeWithMeta();
     }
-    if (_productLine >= 0)
+    else
     {
-        RenderItemBase& products = _factory.getItem(_productLine);
-        size.x += products.size.x;
-        size.y = std::max(size.y, products.size.y);
-    }
-    if (_arrow >= 0)
-    {
-        RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
-        _arrowWidth = arrow.size.x;
-        size.y = std::max(size.y, arrow.size.y);
-        if (_catalystLineUpper >= 0)
+        RenderItemContainer::estimateSize();
+        if (_reactantLine >= 0)
         {
-            RenderItemBase& catalysts = _factory.getItem(_catalystLineUpper);
-            _arrowWidth = std::max(_arrowWidth, catalysts.size.x);
-            size.y = std::max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
+            RenderItemBase& reactants = _factory.getItem(_reactantLine);
+            size.x += reactants.size.x;
+            size.y = std::max(size.y, reactants.size.y);
         }
-        if (_catalystLineLower >= 0)
+        if (_productLine >= 0)
         {
-            RenderItemBase& catalysts = _factory.getItem(_catalystLineLower);
-            _arrowWidth = std::max(_arrowWidth, catalysts.size.x);
-            size.y = std::max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
+            RenderItemBase& products = _factory.getItem(_productLine);
+            size.x += products.size.x;
+            size.y = std::max(size.y, products.size.y);
         }
-        size.x += _arrowWidth + 2 * hSpace;
+        if (_arrow >= 0)
+        {
+            RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
+            _arrowWidth = arrow.size.x;
+            size.y = std::max(size.y, arrow.size.y);
+            if (_catalystLineUpper >= 0)
+            {
+                RenderItemBase& catalysts = _factory.getItem(_catalystLineUpper);
+                _arrowWidth = std::max(_arrowWidth, catalysts.size.x);
+                size.y = std::max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
+            }
+            if (_catalystLineLower >= 0)
+            {
+                RenderItemBase& catalysts = _factory.getItem(_catalystLineLower);
+                _arrowWidth = std::max(_arrowWidth, catalysts.size.x);
+                size.y = std::max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
+            }
+            size.x += _arrowWidth + 2 * hSpace;
+        }
     }
 }
 
-void RenderItemReaction::estimateSizeMeta()
+void RenderItemReaction::estimateSizeWithMeta()
 {
-    RenderItemAuxiliary& meta = _factory.getItemAuxiliary(_meta);
     Vec2f bbmin, bbmax;
     for (int i = 0; i < items.size(); ++i)
     {
@@ -221,7 +224,7 @@ void RenderItemReaction::render(bool idle)
     _rc.storeTransform();
     {
         if (_meta >= 0)
-            renderMeta(idle);
+            renderWithMeta(idle);
         else
         {
             if (_reactantLine >= 0)
@@ -291,7 +294,7 @@ void RenderItemReaction::render(bool idle)
     _rc.removeStoredTransform();
 }
 
-void RenderItemReaction::renderMeta(bool idle)
+void RenderItemReaction::renderWithMeta(bool idle)
 {
     for (int i = 0; i < items.size(); ++i)
     {

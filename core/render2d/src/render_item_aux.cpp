@@ -29,7 +29,8 @@ using namespace indigo;
 IMPL_ERROR(RenderItemAuxiliary, "RenderItemAuxiliary");
 
 RenderItemAuxiliary::RenderItemAuxiliary(RenderItemFactory& factory)
-    : RenderItemBase(factory), arrowLength(_settings.arrowLength), scaleFactor(1.0), mol(nullptr), meta(nullptr)
+    : RenderItemBase(factory), arrowLength(_settings.arrowLength), scaleFactor(1.0), offset(0, 0), mol(nullptr), meta(nullptr), rLabelIdx(0),
+      type(AUX_NOT_INITIALIZED), hasOffset(false)
 {
 }
 
@@ -73,9 +74,18 @@ void RenderItemAuxiliary::_drawRGroupLabel(bool idle)
     _rc.setTextItemSize(tiR);
     referenceY = tiR.bbsz.y / 2;
     tiR.bbp.set(0, 0);
+    if (hasOffset)
+    {
+        tiR.bbp.copy(offset);
+        scale(tiR.bbp);
+        tiR.bbp.x -= (tiR.bbsz.x + _settings.layoutMarginHorizontal);
+        tiR.bbp.y -= referenceY;
+    }
+
     _rc.drawTextItemText(tiR, idle);
 
     float ypos = tiR.bbp.y + tiR.bbsz.y + _settings.unit;
+    float xpos = tiR.bbp.x;
 
     if (rg.occurrence.size() > 0)
     {
@@ -102,7 +112,7 @@ void RenderItemAuxiliary::_drawRGroupLabel(bool idle)
         output.writeByte(0);
 
         _rc.setTextItemSize(tiOccurrence);
-        tiOccurrence.bbp.set(0, ypos);
+        tiOccurrence.bbp.set(xpos, ypos);
         _rc.drawTextItemText(tiOccurrence, idle);
 
         ypos += tiOccurrence.bbsz.y + _settings.unit;
@@ -116,7 +126,7 @@ void RenderItemAuxiliary::_drawRGroupLabel(bool idle)
         bprintf(tiRestH.text, "RestH");
 
         _rc.setTextItemSize(tiRestH);
-        tiRestH.bbp.set(0, ypos);
+        tiRestH.bbp.set(xpos, ypos);
         _rc.drawTextItemText(tiRestH, idle);
     }
 }
@@ -139,7 +149,6 @@ void RenderItemAuxiliary::_drawRIfThen(bool idle)
             _rc.setTextItemSize(tiIfThen);
             tiIfThen.bbp.set(0, ypos);
             _rc.drawTextItemText(tiIfThen, idle);
-
             ypos += tiIfThen.bbsz.y + _settings.rGroupIfThenInterval;
         }
     }
@@ -283,32 +292,4 @@ void RenderItemAuxiliary::render(bool idle)
 
 void RenderItemAuxiliary::init()
 {
-    /* no init required
-    if (type == AUX_META && meta)
-    {
-        const auto& md = meta->metaData();
-        for (int i = 0; i < md.size(); ++i)
-        {
-            const auto& simple = *md[i];
-            std::pair<Vec2f, Vec2f> coords;
-            Rect2f bbox;
-            switch (simple._class_id)
-            {
-            case KETSimpleObject::CID: {
-                auto& obj = (KETSimpleObject&)simple;
-                coords = obj._coordinates;
-                bbox = Rect2f(coords.first, coords.second);
-            }
-            break;
-            case KETTextObject::CID:
-                break;
-            case KETReactionArrow::CID:
-                break;
-            case KETReactionPlus::CID:
-                break;
-            default:
-                break;
-            }
-        }
-    }*/
 }
