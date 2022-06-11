@@ -156,7 +156,7 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool i
     cairo_matrix_t m;
     cairo_get_matrix(_cr, &m);
     float scale = (float)m.xx;
-    double v = scale * ( ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
+    double v = scale * (ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
     if (opt.mode != MODE_PDF && opt.mode != MODE_SVG && v < 1.5)
     {
         cairo_rectangle(_cr, ti.bbp.x + ti.bbsz.x / 4, ti.bbp.y + ti.bbsz.y / 4, ti.bbsz.x / 2, ti.bbsz.y / 2);
