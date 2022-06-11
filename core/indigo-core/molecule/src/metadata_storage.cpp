@@ -1,6 +1,6 @@
 #include "molecule/metadata_storage.h"
-#include "molecule/ket_commons.h"
 #include "base_c/defs.h"
+#include "molecule/ket_commons.h"
 
 using namespace indigo;
 
