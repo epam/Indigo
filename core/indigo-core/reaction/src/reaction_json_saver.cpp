@@ -61,7 +61,7 @@ ReactionJsonSaver::~ReactionJsonSaver()
 {
 }
 
-void ReactionJsonSaver::saveMultistepReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
+void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
     for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
@@ -74,7 +74,7 @@ void ReactionJsonSaver::saveMultistepReaction(BaseReaction& rxn, BaseMolecule& m
     _output.printf("%s", s.GetString());
 }
 
-void ReactionJsonSaver::saveSingleReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
+void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
     std::vector<Vec2f> pluses;
 
@@ -143,7 +143,6 @@ void ReactionJsonSaver::saveSingleReaction(BaseReaction& rxn, BaseMolecule& merg
     }
 
     // dump molecules
-    merged.meta().clone(rxn.meta());
     StringBuffer s;
     Writer<StringBuffer> writer(s);
     json_saver.saveMolecule(merged, writer);
@@ -253,12 +252,15 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
         merged = std::make_unique<Molecule>();
     }
 
-    if (rxn.isMultistep())
+    int arrows_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
+    int simple_count = rxn.meta().getMetaCount(KETSimpleObject::CID);
+    if (arrows_count > 1 || simple_count)
     {
-        saveMultistepReaction(rxn, *merged, json_saver);
+        // if more than one arrow or metadata
+        saveReactionWithMetaData(rxn, *merged, json_saver);
     }
     else
     {
-        saveSingleReaction(rxn, *merged, json_saver);
+        saveReaction(rxn, *merged, json_saver);
     }
 }

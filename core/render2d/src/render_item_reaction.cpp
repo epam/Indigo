@@ -43,7 +43,9 @@ void RenderItemReaction::init()
     if (rxn->begin() >= rxn->end()) // no reactants or products
         return;
 
-    if (rxn->meta().metaData().size())
+    int arrows_count = rxn->meta().getMetaCount(KETReactionArrow::CID);
+    int simple_count = rxn->meta().getMetaCount(KETSimpleObject::CID);
+    if (arrows_count > 1 || simple_count)
     {
         initWithMeta();
     }
@@ -116,6 +118,8 @@ void RenderItemReaction::initWithMeta()
         auto mol = _addFragment(i);
         items.push(mol);
         auto& frag = _factory.getItemFragment(mol);
+        frag.min.set(0, 0);
+        frag.max.set(0, 0);
     }
 }
 

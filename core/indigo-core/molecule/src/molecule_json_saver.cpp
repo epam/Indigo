@@ -1023,18 +1023,18 @@ void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>&
             writer.StartArray();
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar._end.x);
+            writer.Double(ar._begin.x);
             writer.Key("y");
-            writer.Double(ar._end.y);
+            writer.Double(ar._begin.y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
 
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar._begin.x);
+            writer.Double(ar._end.x);
             writer.Key("y");
-            writer.Double(ar._begin.y);
+            writer.Double(ar._end.y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
