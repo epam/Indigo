@@ -30,6 +30,19 @@
 
 namespace indigo
 {
+    const double KETDefaultFontSize = 13;
+    const double KETFontScaleFactor = 58;
+
+    struct hashFunction
+    {
+        size_t operator()(const std::pair<int, bool>& x) const
+        {
+            return x.first ^ x.second;
+        }
+    };
+
+    using FONT_STYLE_SET = std::unordered_set<std::pair<int, bool>, hashFunction>;
+
     constexpr std::uint32_t string_hash(char const* s, std::size_t count)
     {
         return ((count ? string_hash(s, count - 1) : 2166136261u) ^ s[count]) * 16777619u;
@@ -70,25 +83,19 @@ namespace indigo
     class KETTextObject : public MetaObject
     {
     public:
-        struct KETTextStyle
+        enum
         {
-            int offset;
-            int size;
-            enum
-            {
-                EBold = 0,
-                EItalic = 1,
-                ESuperScript = 2,
-                ESubScript = 3,
-                EFontSize = 4
-            };
-            int style; // everything >= 4 is a font size
+            EBold = 0,
+            EItalic = 1,
+            ESuperScript = 2,
+            ESubScript = 3,
+            EFontSize = 4
         };
 
         struct KETTextLine
         {
             std::string text;
-            std::list<KETTextStyle> inline_styles;
+            std::map<int, FONT_STYLE_SET> styles;
         };
 
         static const std::uint32_t CID = "KET text object"_hash;
@@ -109,19 +116,22 @@ namespace indigo
                     if (blocks[i].HasMember("text"))
                     {
                         text_line.text = blocks[i]["text"].GetString();
+                        text_line.styles.emplace(0, std::initializer_list<std::pair<int, bool>>{});
+                        text_line.styles.emplace(text_line.text.size(), std::initializer_list<std::pair<int, bool>>{});
                         if (blocks[i].HasMember("inlineStyleRanges"))
                         {
                             Value& style_ranges = blocks[i]["inlineStyleRanges"];
                             for (int j = 0; j < style_ranges.Size(); ++j)
                             {
-                                KETTextStyle ts;
-                                ts.offset = style_ranges[j]["offset"].GetInt();
-                                ts.size = style_ranges[j]["length"].GetInt();
+                                int style_begin = style_ranges[j]["offset"].GetInt();
+                                int style_end = style_begin + style_ranges[j]["length"].GetInt();
+                                int style_code = -1;
+
                                 std::string style = style_ranges[j]["style"].GetString();
                                 auto it = KTextStylesMap.find(style);
                                 if (it != KTextStylesMap.end())
                                 {
-                                    ts.style = it->second;
+                                    style_code = it->second;
                                 }
                                 else
                                 {
@@ -129,11 +139,26 @@ namespace indigo
                                     const std::string KCustomFontUnits = "px";
                                     if (style.find(KCustomFontSize) == 0)
                                     {
-                                        ts.style =
+                                        style_code =
                                             std::stoi(style.substr(KCustomFontSize.size(), style.size() - KCustomFontSize.size() - KCustomFontUnits.size()));
                                     }
                                 }
-                                text_line.inline_styles.push_back(ts);
+                                auto it_begin = text_line.styles.find(style_begin);
+                                auto it_end = text_line.styles.find(style_end);
+
+                                if (it_begin == text_line.styles.end())
+                                    text_line.styles.emplace(style_begin, std::initializer_list<std::pair<int, bool>>{{style_code, true}});
+                                else
+                                {
+                                    it_begin->second.emplace(style_code, true);
+                                }
+
+                                if (it_end == text_line.styles.end())
+                                    text_line.styles.emplace(style_end, std::initializer_list<std::pair<int, bool>>{{style_code, false}});
+                                else
+                                {
+                                    it_end->second.emplace(style_code, false);
+                                }
                             }
                         }
                     }
