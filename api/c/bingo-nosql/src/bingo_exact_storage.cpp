@@ -38,8 +38,9 @@ void ExactStorage::findCandidates(dword query_hash, Array<int>& candidates, int 
 
     if (part_id != -1 && part_count != -1)
     {
-        first_hash = (part_id - 1) * last_hash / part_count;
-        last_hash = part_id * last_hash / part_count;
+        const dword part_multiplier = last_hash / part_count;
+        first_hash = (part_id - 1) * part_multiplier;
+        last_hash = part_id * part_multiplier;
     }
 
     if (query_hash < first_hash || query_hash > last_hash)

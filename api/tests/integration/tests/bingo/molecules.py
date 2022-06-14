@@ -97,7 +97,7 @@ print(
 )
 
 for mol in indigo.iterateSDFile(
-    joinPathPy("molecules/rand_queries_small.sdf", __file__)
+    dataPath("molecules/basic/rand_queries_small.sdf")
 ):
     qmol = indigo.loadQueryMolecule(mol.rawData())
     searchSub(bingo, qmol)

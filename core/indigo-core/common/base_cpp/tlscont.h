@@ -70,7 +70,7 @@ namespace indigo
         struct SIDDataHolder
         {
             std::stack<qword> vacantSIDs;
-            qword lastNewSID;
+            qword lastNewSID = 1;
         };
 
         sf::safe_hide_obj<SIDDataHolder> _sidDataHolder;

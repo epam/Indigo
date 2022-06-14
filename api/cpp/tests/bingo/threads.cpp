@@ -18,13 +18,11 @@
 
 #include <gtest/gtest.h>
 
-#include <array>
 #include <random>
 #include <thread>
 
 #include <BingoNoSQL.h>
-#include <IndigoException.h>
-#include <IndigoSDFileIterator.h>
+#include <IndigoIterator.h>
 #include <IndigoSession.h>
 
 #include "common.h"
@@ -45,9 +43,9 @@ namespace
 
     void testInsert(BingoMolecule& bingo, const char* path)
     {
-        for (const auto& m : bingo.session->iterateSDFile(dataPath(path)))
+        for (const auto& molecule : bingo.session->iterateSDFile(dataPath(path)))
         {
-            bingo.insertRecord(*m);
+            bingo.insertRecord(*molecule);
         }
     }
 

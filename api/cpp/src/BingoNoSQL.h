@@ -49,12 +49,14 @@ namespace indigo_cpp
         void close();
 
         int insertRecord(const target_t& entity);
-        int insertIterator(const IndigoSDFileIterator& iterator);
+        int insertIterator(const IndigoIterator<target_t>& iterator);
         void deleteRecord(int recordId);
 
         BingoResultIterator<target_t> searchSub(const query_t& query, const std::string& options = "") const;
+        BingoResultIterator<target_t> searchExact(const target_t& query, const std::string& options = "") const;
         BingoResultIterator<target_t> searchSim(const target_t& query, double min, double max = 1.0,
                                                 IndigoSimilarityMetric metric = IndigoSimilarityMetric::TANIMOTO) const;
+        BingoResultIterator<target_t> searchSim(const target_t& query, const double min, const double max, const std::string& options = "") const;
 
         IndigoSessionPtr session;
 
