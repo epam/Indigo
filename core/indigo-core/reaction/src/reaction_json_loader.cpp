@@ -34,8 +34,7 @@ using namespace rapidjson;
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
 ReactionJsonLoader::ReactionJsonLoader(Document& ket)
-    : _loader(ket, true), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType), _prxn(nullptr), _pqrxn(nullptr),
-      ignore_noncritical_query_features(false)
+    : _loader(ket), _molecule(kArrayType), _prxn(nullptr), _pqrxn(nullptr), ignore_noncritical_query_features(false)
 {
     ignore_bad_valence = false;
 
@@ -43,21 +42,6 @@ ReactionJsonLoader::ReactionJsonLoader(Document& ket)
     _loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
     _loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
     _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-
-    Value& root = ket["root"];
-    Value& nodes = root["nodes"];
-    for (int i = 0; i < nodes.Size(); ++i)
-    {
-        Value& rnode = nodes[i];
-        if (rnode.HasMember("type"))
-        {
-            std::string node_type = rnode["type"].GetString();
-            if (node_type == "arrow")
-                _arrows.PushBack(rnode, ket.GetAllocator());
-            else if (node_type == "plus")
-                _pluses.PushBack(rnode, ket.GetAllocator());
-        }
-    }
 }
 
 ReactionJsonLoader::~ReactionJsonLoader()
@@ -71,51 +55,27 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     else
         _prxn = &rxn.asReaction();
 
-    if (_arrows.Size() == 0)
-        throw Error("No arrow in the reaction");
-
     if (_prxn)
     {
         _pmol = &_mol;
-        _loader.loadMolecule(_mol);
+        _loader.loadMolecule(_mol, true);
     }
     else if (_pqrxn)
     {
-        _loader.loadMolecule(_qmol);
+        _loader.loadMolecule(_qmol, true);
         _pmol = &_qmol;
     }
     else
         throw Error("unknown reaction type: %s", typeid(rxn).name());
 
-    rxn.cloneMetaData(_mol);
-    _mol.resetMetaData();
+    rxn.meta().clone(_pmol->meta());
+    _pmol->meta().resetMetaData();
 
-    for (int i = 0; i < _pluses.Size(); ++i)
-    {
-        const rapidjson::Value& plus = _pluses[i];
-        const rapidjson::Value& plus_location = plus["location"];
-        Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
-        rxn.addMetaObject(new KETReactionPlus(plus_pos));
-    }
+    int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
+    if (arrow_count == 0)
+        throw Error("No arrow in the reaction");
 
-    for (int i = 0; i < _arrows.Size(); ++i)
-    {
-        const rapidjson::Value& arrow = _arrows[i];
-        const rapidjson::Value& arrow_begin = arrow["data"]["pos"][0];
-        const rapidjson::Value& arrow_end = arrow["data"]["pos"][1];
-        std::string mode = arrow["data"]["mode"].GetString();
-        int arrow_type = ReactionComponent::ARROW_BASIC;
-        auto arrow_type_it = _arrow_string2type.find(mode);
-        if (arrow_type_it != _arrow_string2type.end())
-            arrow_type = arrow_type_it->second;
-
-        Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
-        Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
-
-        rxn.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
-    }
-
-    if (_arrows.Size() > 1)
+    if (arrow_count > 1)
         parseMultipleArrowReaction(rxn);
     else
         parseOneArrowReaction(rxn);
@@ -289,11 +249,10 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, std::move(component));
     }
 
-    for (int i = 0; i < _pluses.Size(); ++i)
+    for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
     {
-        const rapidjson::Value& plus = _pluses[i];
-        const rapidjson::Value& plus_location = plus["location"];
-        Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
+        auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
+        const Vec2f& plus_pos = plus._pos;
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
         _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(plus_pos);
@@ -304,19 +263,12 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         mol_rights.emplace_back(bbox.right(), index);
     }
 
-    for (int i = 0; i < _arrows.Size(); ++i)
+    for (int i = 0; i < rxn.meta().getMetaCount(KETReactionArrow::CID); ++i)
     {
-        const rapidjson::Value& arrow = _arrows[i];
-        const rapidjson::Value& arrow_begin = arrow["data"]["pos"][0];
-        const rapidjson::Value& arrow_end = arrow["data"]["pos"][1];
-        std::string mode = arrow["data"]["mode"].GetString();
-        int arrow_type = ReactionComponent::ARROW_BASIC;
-        auto arrow_type_it = _arrow_string2type.find(mode);
-        if (arrow_type_it != _arrow_string2type.end())
-            arrow_type = arrow_type_it->second;
-
-        Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
-        Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
+        auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, i);
+        int arrow_type = arrow._arrow_type;
+        const Vec2f& arr_begin = arrow._begin;
+        const Vec2f& arr_end = arrow._end;
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
         _reaction_components.emplace_back(arrow_type, bbox, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(arr_begin);
@@ -334,11 +286,10 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     std::sort(mol_lefts.begin(), mol_lefts.end(), pair_comp_des);
     std::sort(mol_rights.begin(), mol_rights.end(), pair_comp_asc);
 
-    for (int i = 0; i < _pluses.Size(); ++i)
+    for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
     {
-        const rapidjson::Value& plus = _pluses[i];
-        const rapidjson::Value& plus_location = plus["location"];
-        Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
+        auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
+        const Vec2f& plus_pos = plus._pos;
         std::pair<int, int> plus_connection; // (component1_index, component2_index)
 
         if (findPlusNeighbours(plus_pos, mol_tops, mol_bottoms, mol_lefts, mol_rights, plus_connection))
@@ -439,13 +390,12 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     }
 
     // handle arrows
-    for (int i = 0; i < _arrows.Size(); ++i)
+    for (int i = 0; i < rxn.meta().getMetaCount(KETReactionArrow::CID); ++i)
     {
-        const rapidjson::Value& arrow = _arrows[i];
-        const rapidjson::Value& arrow_begin = arrow["data"]["pos"][0];
-        const rapidjson::Value& arrow_end = arrow["data"]["pos"][1];
-        Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
-        Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
+        auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, i);
+        int arrow_type = arrow._arrow_type;
+        const Vec2f& arr_begin = arrow._begin;
+        const Vec2f& arr_end = arrow._end;
         float min_dist_prod = -1, min_dist_reac = -1, idx_cs_min_prod = -1, idx_cs_min_reac = -1;
         for (int index_cs = 0; index_cs < _component_summ_blocks.size(); ++index_cs)
         {
@@ -472,7 +422,8 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
 
         if (min_dist_prod > 0 && min_dist_reac > 0) // if both ends present
         {
-            _reaction_components[count + _pluses.Size() + i].summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
+            _reaction_components[count + rxn.meta().getMetaCount(KETReactionPlus::CID) + i].summ_block_idx =
+                ReactionComponent::CONNECTED; // mark arrow as connected
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
             if (csb_min_prod.role == BaseReaction::UNDEFINED)
                 csb_min_prod.role = BaseReaction::PRODUCT;
@@ -540,14 +491,14 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
         std::get<LEFT_BOUND_IDX>(rc) = bbox.left();
     }
 
-    const rapidjson::Value& arrow_pos = _arrows[0]["data"]["pos"][0];
-    float arrow_x = arrow_pos["x"].GetFloat();
+    auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, 0);
+
+    float arrow_x = arrow._begin.x;
     components.emplace_back(arrow_x, ReactionFragmentType::ARROW, nullptr);
-    for (int i = 0; i < _pluses.Size(); ++i)
+    for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
     {
-        const rapidjson::Value& plus = _pluses[i];
-        const rapidjson::Value& plus_location = plus["location"];
-        components.emplace_back(plus_location[0].GetFloat(), ReactionFragmentType::PLUS, nullptr);
+        auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
+        components.emplace_back(plus._pos.x, ReactionFragmentType::PLUS, nullptr);
     }
 
     std::sort(components.begin(), components.end(),

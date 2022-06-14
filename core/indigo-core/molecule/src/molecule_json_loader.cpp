@@ -18,8 +18,8 @@ using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(Document& ket, bool ignore_reaction)
-    : _mol_array(kArrayType), _mol_nodes(_mol_array), _simple_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
+MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
 {
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
@@ -46,18 +46,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket, bool ignore_reaction)
         }
         else if (nodes[i].HasMember("type"))
         {
-            std::string node_type = nodes[i]["type"].GetString();
-            if (node_type.compare("simpleObject") == 0 || node_type.compare("text") == 0)
-            {
-                if (nodes[i].HasMember("data"))
-                {
-                    _simple_objects.PushBack(nodes[i]["data"], ket.GetAllocator());
-                }
-            }
-            else if (node_type.compare("arrow") == 0 && !ignore_reaction)
-            {
-                throw Error("Arrow nodes supported only for reactions");
-            }
+            _meta_objects.PushBack(nodes[i], ket.GetAllocator());
         }
         else
             throw Error("Unsupported node for molecule");
@@ -65,7 +54,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket, bool ignore_reaction)
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
-    : _mol_nodes(mol_nodes), _simple_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
+    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
 {
 }
 
@@ -318,6 +307,8 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 elem = Element::fromString2(label.c_str());
                 if (elem == -1)
                 {
+                    if (!_pqmol && QueryMolecule::getAtomType(label.c_str()) != _ATOM_PSEUDO)
+                        throw Error("'%s' label is allowed only for queries", label.c_str());
                     elem = ELEM_PSEUDO;
                     if (isotope != 0)
                     {
@@ -883,7 +874,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     }
 }
 
-void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
+void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
     for (int node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
@@ -904,10 +895,6 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         std::string type = mol_node["type"].GetString();
         if (type.compare("molecule") == 0 || type.compare("rgroup") == 0)
         {
-            /* int chiral = 0;
-            if (mol_node.HasMember("chiral"))
-                chiral = mol_node["chiral"].GetInt();
-            pmol->setChiralFlag(chiral); */
             // parse atoms
             auto& atoms = mol_node["atoms"];
             parseAtoms(atoms, *pmol, stereo_centers);
@@ -1032,58 +1019,103 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
     MoleculeLayout ml(mol, false);
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();
-    loadSimpleObjects(_simple_objects, mol);
+    loadMetaObjects(_meta_objects, mol.meta());
+    int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
+    if (arrows_count && !load_arrows)
+        throw Error("Not a molecule. Found %d arrows.", arrows_count);
 }
 
-void MoleculeJsonLoader::loadSimpleObjects(rapidjson::Value& simple_objects, MetaObjectsInterface& meta_interface)
+void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta_interface)
 {
-    if (simple_objects.IsArray())
+    static const std::unordered_map<std::string, int> arrow_string2type = {
+        {"open-angle", ReactionComponent::ARROW_BASIC},
+        {"filled-triangle", ReactionComponent::ARROW_FILLED_TRIANGLE},
+        {"filled-bow", ReactionComponent::ARROW_FILLED_BOW},
+        {"dashed-open-angle", ReactionComponent::ARROW_DASHED},
+        {"failed", ReactionComponent::ARROW_FAILED},
+        {"both-ends-filled-triangle", ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE},
+        {"equilibrium-filled-half-bow", ReactionComponent::ARROW_EQUILIBRIUM_FILLED_HALF_BOW},
+        {"equilibrium-filled-triangle", ReactionComponent::ARROW_EQUILIBRIUM_FILLED_TRIANGLE},
+        {"equilibrium-open-angle", ReactionComponent::ARROW_EQUILIBRIUM_OPEN_ANGLE},
+        {"unbalanced-equilibrium-filled-half-bow", ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_BOW},
+        {"unbalanced-equilibrium-large-filled-half-bow", ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_LARGE_FILLED_HALF_BOW},
+        {"unbalanced-equilibrium-filled-half-triangle", ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE}};
+
+    if (meta_objects.IsArray())
     {
-        for (int obj_idx = 0; obj_idx < simple_objects.Size(); ++obj_idx)
+        for (int obj_idx = 0; obj_idx < meta_objects.Size(); ++obj_idx)
         {
-            auto& simple_object = simple_objects[obj_idx];
-            if (simple_object.HasMember("mode")) // ellipse or rectangle or line
+            std::string node_type = meta_objects[obj_idx]["type"].GetString();
+            auto& mobj = meta_objects[obj_idx];
+            if (node_type == "simpleObject" || node_type == "text")
             {
-                int mode = 0;
-                Vec2f p1, p2;
-                std::string obj_mode = simple_object["mode"].GetString();
-                if (obj_mode.compare("ellipse") == 0)
+                if (mobj.HasMember("data"))
                 {
-                    mode = KETSimpleObject::EKETEllipse;
-                }
-                else if (obj_mode.compare("rectangle") == 0)
-                {
-                    mode = KETSimpleObject::EKETRectangle;
-                }
-                else if (obj_mode.compare("line") == 0)
-                {
-                    mode = KETSimpleObject::EKETLine;
-                }
-                else
-                    throw Error("Unknown simple object mode:%s", obj_mode.c_str());
-                if (simple_object.HasMember("pos"))
-                {
-                    auto pos = simple_object["pos"].GetArray();
-                    if (pos.Size() == 2)
+                    auto& sobj = mobj["data"];
+                    if (sobj.HasMember("mode")) // ellipse or rectangle or line
                     {
-                        p1.x = pos[0]["x"].GetFloat();
-                        p1.y = pos[0]["y"].GetFloat();
-                        p2.x = pos[1]["x"].GetFloat();
-                        p2.y = pos[1]["y"].GetFloat();
+                        int mode = 0;
+                        Vec2f p1, p2;
+                        std::string obj_mode = sobj["mode"].GetString();
+                        if (obj_mode.compare("ellipse") == 0)
+                        {
+                            mode = KETSimpleObject::EKETEllipse;
+                        }
+                        else if (obj_mode.compare("rectangle") == 0)
+                        {
+                            mode = KETSimpleObject::EKETRectangle;
+                        }
+                        else if (obj_mode.compare("line") == 0)
+                        {
+                            mode = KETSimpleObject::EKETLine;
+                        }
+                        else
+                            throw Error("Unknown simple object mode:%s", obj_mode.c_str());
+                        if (sobj.HasMember("pos"))
+                        {
+                            auto pos = sobj["pos"].GetArray();
+                            if (pos.Size() == 2)
+                            {
+                                p1.x = pos[0]["x"].GetFloat();
+                                p1.y = pos[0]["y"].GetFloat();
+                                p2.x = pos[1]["x"].GetFloat();
+                                p2.y = pos[1]["y"].GetFloat();
+                            }
+                            else
+                                throw("Bad pos array size %d. Most be equal to 2.", pos.Size());
+                        }
+                        meta_interface.addMetaObject(new KETSimpleObject(mode, std::make_pair(p1, p2)));
                     }
-                    else
-                        throw("Bad pos array size %d. Most be equal to 2.", pos.Size());
+                    else if (sobj.HasMember("content") && sobj.HasMember("position"))
+                    {
+                        std::string content = sobj["content"].GetString();
+                        Vec3f text_origin;
+                        text_origin.x = sobj["position"]["x"].GetFloat();
+                        text_origin.y = sobj["position"]["y"].GetFloat();
+                        text_origin.z = sobj["position"]["z"].GetFloat();
+                        meta_interface.addMetaObject(new KETTextObject(text_origin, content));
+                    }
                 }
-                meta_interface.addMetaObject(new KETSimpleObject(mode, std::make_pair(p1, p2)));
             }
-            else if (simple_object.HasMember("content") && simple_object.HasMember("position"))
+            else if (node_type == "arrow")
             {
-                std::string content = simple_object["content"].GetString();
-                Vec3f text_origin;
-                text_origin.x = simple_object["position"]["x"].GetFloat();
-                text_origin.y = simple_object["position"]["y"].GetFloat();
-                text_origin.z = simple_object["position"]["z"].GetFloat();
-                meta_interface.addMetaObject(new KETTextObject(text_origin, content));
+                const rapidjson::Value& arrow_begin = mobj["data"]["pos"][0];
+                const rapidjson::Value& arrow_end = mobj["data"]["pos"][1];
+                std::string mode = mobj["data"]["mode"].GetString();
+                int arrow_type = ReactionComponent::ARROW_BASIC;
+                auto arrow_type_it = arrow_string2type.find(mode);
+                if (arrow_type_it != arrow_string2type.end())
+                    arrow_type = arrow_type_it->second;
+
+                Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
+                Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
+                meta_interface.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
+            }
+            else if (node_type == "plus")
+            {
+                const rapidjson::Value& plus_location = mobj["location"];
+                Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
+                meta_interface.addMetaObject(new KETReactionPlus(plus_pos));
             }
         }
     }

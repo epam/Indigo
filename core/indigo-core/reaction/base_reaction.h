@@ -77,7 +77,7 @@ namespace indigo
         int role;
     };
 
-    class DLLEXPORT BaseReaction : public NonCopyable, public MetaObjectsInterface
+    class DLLEXPORT BaseReaction : public NonCopyable
     {
     public:
         enum
@@ -91,6 +91,8 @@ namespace indigo
 
         BaseReaction();
         virtual ~BaseReaction();
+
+        MetaDataStorage& meta();
 
         bool isMultistep()
         {
@@ -288,11 +290,6 @@ namespace indigo
         void clone(BaseReaction& other, Array<int>* mol_mapping = nullptr, ObjArray<Array<int>>* mappings = nullptr,
                    ObjArray<Array<int>>* inv_mappings = nullptr);
 
-        // metadata methods
-        void addMetaObject(MetaObject* pobj) override; // moves ownership
-        void resetMetaData() override;
-        const PtrArray<MetaObject>& metaData() const override;
-
         Array<char> name;
 
         DECL_ERROR;
@@ -316,8 +313,9 @@ namespace indigo
 
         int _nextElement(int type, int index);
 
+        MetaDataStorage _meta;
+
         virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
-        PtrArray<MetaObject> _meta_data;
     };
 
 } // namespace indigo

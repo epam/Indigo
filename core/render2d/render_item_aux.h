@@ -30,6 +30,7 @@ namespace indigo
     public:
         enum AUX_TYPE
         {
+            AUX_NOT_INITIALIZED = -1,
             AUX_COMMENT = 0,
             AUX_TITLE,
             AUX_RXN_PLUS,
@@ -82,10 +83,12 @@ namespace indigo
         AUX_TYPE type;
         Array<char> text;
         BaseMolecule* mol;
-        MetaObjectsInterface* meta;
+        MetaDataStorage* meta;
         int rLabelIdx;
         float arrowLength;
         float scaleFactor;
+        Vec2f offset;
+        bool hasOffset;
 
     private:
         void _drawRGroupLabel(bool idle);

@@ -23,6 +23,7 @@
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
 #include "math/algebra.h"
+#include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_cis_trans.h"
@@ -98,34 +99,19 @@ namespace indigo
 
     class Molecule;
     class QueryMolecule;
+    class MetaDataStorage;
 
-    class MetaObjectsInterface
-    {
-    public:
-        virtual void addMetaObject(MetaObject* pobj) = 0; // moves ownership
-        virtual void resetMetaData() = 0;
-        virtual const PtrArray<MetaObject>& metaData() const = 0;
-        void cloneMetaData(const MetaObjectsInterface& other)
-        {
-            resetMetaData();
-            const auto& meta = other.metaData();
-            for (int i = 0; i < meta.size(); i++)
-                addMetaObject(meta[i]->clone());
-        }
-
-        virtual ~MetaObjectsInterface()
-        {
-        }
-    };
-
-    class DLLEXPORT BaseMolecule : public Graph, public MetaObjectsInterface
+    class DLLEXPORT BaseMolecule : public Graph
     {
     public:
         typedef RedBlackMap<int, int> Mapping;
 
         BaseMolecule();
         ~BaseMolecule() override;
-
+        MetaDataStorage& meta()
+        {
+            return _meta;
+        }
         // Casting methods. Invalid casting throws exceptions.
         virtual Molecule& asMolecule();
         virtual QueryMolecule& asQueryMolecule();
@@ -424,11 +410,6 @@ namespace indigo
         void removeBondsAlleneStereo(const Array<int>& indices);
         void buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_bonds_out);
 
-        // metadata methods
-        void addMetaObject(MetaObject* pobj) override; // moves ownership
-        void resetMetaData() override;
-        const PtrArray<MetaObject>& metaData() const override;
-
         // calc bounding box
         void getBoundingBox(Rect2f& bbox) const;
 
@@ -493,7 +474,8 @@ namespace indigo
         // When molecule gets edited then edit revision is increased.
         // If edit revision is the same then molecule wasn't edited
         int _edit_revision;
-        PtrArray<MetaObject> _meta_data;
+
+        MetaDataStorage _meta;
     };
 
 } // namespace indigo

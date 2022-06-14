@@ -39,6 +39,9 @@ namespace indigo
         void init() override;
         void estimateSize() override;
         void render(bool idle) override;
+        void estimateSizeWithMeta();
+        void initWithMetaData();
+        void renderWithMeta(bool idle);
 
         BaseMolecule* mol;
         int refAtom;

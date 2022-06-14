@@ -61,77 +61,20 @@ ReactionJsonSaver::~ReactionJsonSaver()
 {
 }
 
-void ReactionJsonSaver::saveMultistepReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
+void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
     for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
-    merged.cloneMetaData(rxn);
+    merged.meta().clone(rxn.meta());
 
     StringBuffer s;
     Writer<StringBuffer> writer(s);
     json_saver.saveMolecule(merged, writer);
-
-    Document ket;
-    ket.Parse(s.GetString());
-    if (!(ket.HasMember("root") && ket["root"].HasMember("nodes")))
-        throw Error("reaction_json_saver: MoleculeJsonSaver::saveMolecule failed");
-
-    auto& nodes = ket["root"]["nodes"];
-    auto& md = rxn.metaData();
-    for (int meta_index = 0; meta_index < md.size(); ++meta_index)
-    {
-        auto pobj = md[meta_index];
-        switch (pobj->_class_id)
-        {
-        case KETReactionArrow::CID: {
-            KETReactionArrow& ar = (KETReactionArrow&)(*pobj);
-            Value arrow(kObjectType);
-            arrow.AddMember("type", "arrow", ket.GetAllocator());
-            Value data(kObjectType);
-            Value pos_array(kArrayType);
-            Value pos1(kObjectType);
-            Value pos2(kObjectType);
-            pos1.AddMember("x", Value().SetDouble(ar._end.x), ket.GetAllocator());
-            pos1.AddMember("y", Value().SetDouble(ar._end.y), ket.GetAllocator());
-            pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
-            pos2.AddMember("x", Value().SetDouble(ar._begin.x), ket.GetAllocator());
-            pos2.AddMember("y", Value().SetDouble(ar._begin.y), ket.GetAllocator());
-            pos2.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
-            pos_array.PushBack(pos2, ket.GetAllocator());
-            pos_array.PushBack(pos1, ket.GetAllocator());
-            Value arrow_mode(kStringType);
-            arrow_mode.SetString("open-angle", ket.GetAllocator());
-            auto at_it = _arrow_type2string.find(ar._arrow_type);
-            if (at_it != _arrow_type2string.end())
-                arrow_mode.SetString(at_it->second.c_str(), ket.GetAllocator());
-            data.AddMember("mode", arrow_mode, ket.GetAllocator());
-            data.AddMember("pos", pos_array, ket.GetAllocator());
-            arrow.AddMember("data", data, ket.GetAllocator());
-            nodes.PushBack(arrow, ket.GetAllocator());
-        }
-        break;
-        case KETReactionPlus::CID: {
-            KETReactionPlus& rp = (KETReactionPlus&)(*pobj);
-            Value plus(kObjectType);
-            plus.AddMember("type", "plus", ket.GetAllocator());
-            Value location(kArrayType);
-            location.PushBack(Value().SetDouble(rp._pos.x), ket.GetAllocator());
-            location.PushBack(Value().SetDouble(rp._pos.y), ket.GetAllocator());
-            location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());
-            plus.AddMember("location", location, ket.GetAllocator());
-            nodes.PushBack(plus, ket.GetAllocator());
-        }
-        break;
-        }
-    }
-    s.Clear();
-    writer.Reset(s);
-    ket.Accept(writer);
     _output.printf("%s", s.GetString());
 }
 
-void ReactionJsonSaver::saveSingleReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
+void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
     std::vector<Vec2f> pluses;
 
@@ -200,7 +143,6 @@ void ReactionJsonSaver::saveSingleReaction(BaseReaction& rxn, BaseMolecule& merg
     }
 
     // dump molecules
-    merged.cloneMetaData(rxn);
     StringBuffer s;
     Writer<StringBuffer> writer(s);
     json_saver.saveMolecule(merged, writer);
@@ -310,12 +252,15 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
         merged = std::make_unique<Molecule>();
     }
 
-    if (rxn.isMultistep())
+    int arrows_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
+    int simple_count = rxn.meta().getMetaCount(KETSimpleObject::CID);
+    if (arrows_count > 1 || simple_count)
     {
-        saveMultistepReaction(rxn, *merged, json_saver);
+        // if more than one arrow or metadata
+        saveReactionWithMetaData(rxn, *merged, json_saver);
     }
     else
     {
-        saveSingleReaction(rxn, *merged, json_saver);
+        saveReaction(rxn, *merged, json_saver);
     }
 }

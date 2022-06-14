@@ -40,9 +40,9 @@ namespace indigo
         void estimateSize() override;
         void render(bool idle) override;
 
-        void initMeta();
-        void estimateSizeMeta();
-        void renderMeta(bool idle);
+        void initWithMeta();
+        void estimateSizeWithMeta();
+        void renderWithMeta(bool idle);
 
         BaseReaction* rxn;
         float hSpace, catalystOffset;
