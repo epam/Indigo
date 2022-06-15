@@ -181,7 +181,7 @@ void RenderItemAuxiliary::_drawArrow()
 
 void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style_set)
 {
-    for (auto& text_style : style_set)
+    for (const auto& text_style : style_set)
     {
         switch (text_style.first)
         {
@@ -234,8 +234,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     double text_offset_x = 0;
                     FONT_STYLE_SET current_styles;
                     TextItem ti;
-                    ti.size = KETDefaultFontSize; // default size
-                    ti.size /= KETFontScaleFactor;
+                    ti.size = KETDefaultFontSize / KETFontScaleFactor; // default size
                     ti.ritype = RenderItem::RIT_TITLE;
                     for (auto& kvp : text_item.styles)
                     {
@@ -378,8 +377,7 @@ void RenderItemAuxiliary::_getLineExtents(const KETTextObject::KETTextLine& tl, 
     FONT_STYLE_SET current_styles;
     sz.set(0, 0);
     TextItem ti;
-    ti.size = KETDefaultFontSize; // default size
-    ti.size /= KETFontScaleFactor;
+    ti.size = KETDefaultFontSize / KETFontScaleFactor; // default size
     ti.ritype = RenderItem::RIT_TITLE;
 
     for (auto& kvp : tl.styles)

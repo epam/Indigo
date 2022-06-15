@@ -302,13 +302,16 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
     // check json format
     long long pos = _scanner->tell();
     {
-        unsigned char bom[3];
-        _scanner->readCharsFix(3, (char*)bom);
         bool hasbom = false;
-        if (bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF)
-            hasbom = true;
-        else
-            _scanner->seek(pos, SEEK_SET);
+        if (_scanner->length() >= 3)
+        {
+            unsigned char bom[3];
+            _scanner->readCharsFix(3, (char*)bom);
+            if (bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF)
+                hasbom = true;
+            else
+                _scanner->seek(pos, SEEK_SET);
+        }
 
         if (_scanner->lookNext() == '{')
         {

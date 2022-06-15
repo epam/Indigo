@@ -143,8 +143,8 @@ namespace indigo
                                             std::stoi(style.substr(KCustomFontSize.size(), style.size() - KCustomFontSize.size() - KCustomFontUnits.size()));
                                     }
                                 }
-                                auto it_begin = text_line.styles.find(style_begin);
-                                auto it_end = text_line.styles.find(style_end);
+                                const auto it_begin = text_line.styles.find(style_begin);
+                                const auto it_end = text_line.styles.find(style_end);
 
                                 if (it_begin == text_line.styles.end())
                                     text_line.styles.emplace(style_begin, std::initializer_list<std::pair<int, bool>>{{style_code, true}});
