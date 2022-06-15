@@ -38,6 +38,20 @@ RenderItemAuxiliary::~RenderItemAuxiliary()
 {
 }
 
+void RenderItemAuxiliary::_drawTextCentered(TextItem& ti, const Vec2f& sz, bool idle)
+{
+    _rc.setTextItemSize(ti);
+    if (sz.y > ti.bbsz.y)
+        ti.bbp.y += (sz.y - ti.bbsz.y) / 2;
+    _rc.drawTextItemText(ti, idle);
+}
+
+void RenderItemAuxiliary::_drawText(TextItem& ti, bool idle)
+{
+    _rc.setTextItemSize(ti);
+    _rc.drawTextItemText(ti, idle);
+}
+
 void RenderItemAuxiliary::_drawText(bool idle)
 {
     TextItem ti;
@@ -124,7 +138,6 @@ void RenderItemAuxiliary::_drawRGroupLabel(bool idle)
         tiRestH.fontsize = FONT_SIZE_RGROUP_LOGIC_INDEX;
         tiRestH.color = CWC_BASE;
         bprintf(tiRestH.text, "RestH");
-
         _rc.setTextItemSize(tiRestH);
         tiRestH.bbp.set(xpos, ypos);
         _rc.drawTextItemText(tiRestH, idle);
@@ -166,6 +179,32 @@ void RenderItemAuxiliary::_drawArrow()
     _rc.drawArrow(Vec2f(0, 0), Vec2f(arrowLength, 0), _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
 }
 
+void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style_set)
+{
+    for (const auto& text_style : style_set)
+    {
+        switch (text_style.first)
+        {
+        case KETTextObject::EBold:
+            ti.bold = text_style.second;
+            break;
+        case KETTextObject::EItalic:
+            ti.italic = text_style.second;
+            break;
+        case KETTextObject::ESuperScript:
+            ti.script_type = text_style.second ? 1 : 0;
+            break;
+        case KETTextObject::ESubScript:
+            ti.script_type = text_style.second ? 2 : 0;
+            break;
+        default:
+            ti.size = text_style.second ? text_style.first : KETDefaultFontSize;
+            ti.size /= KETFontScaleFactor;
+            break;
+        }
+    }
+}
+
 void RenderItemAuxiliary::_drawMeta(bool idle)
 {
     if (meta)
@@ -184,6 +223,43 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             break;
             case KETTextObject::CID: {
                 const KETTextObject& ko = static_cast<const KETTextObject&>(mobj);
+                double text_offset_y = 0;
+                for (auto& text_item : ko._block)
+                {
+                    Vec2f text_item_size;
+                    _getLineExtents(text_item, text_item_size);
+
+                    int first_index = -1;
+                    int second_index = -1;
+                    double text_offset_x = 0;
+                    FONT_STYLE_SET current_styles;
+                    TextItem ti;
+                    ti.size = KETDefaultFontSize / KETFontScaleFactor; // default size
+                    ti.ritype = RenderItem::RIT_TITLE;
+                    for (auto& kvp : text_item.styles)
+                    {
+                        if (first_index == -1)
+                        {
+                            first_index = kvp.first;
+                            current_styles = kvp.second;
+                            continue;
+                        }
+                        second_index = kvp.first;
+                        auto sub_text = text_item.text.substr(first_index, second_index - first_index);
+                        ti.text.readString(sub_text.c_str(), true);
+                        fillKETStyle(ti, current_styles);
+                        ti.bbp.set(ko._pos.x, ko._pos.y);
+                        scale(ti.bbp);
+                        ti.bbp.x += text_offset_x;
+                        ti.bbp.y += text_offset_y;
+                        _drawTextCentered(ti, text_item_size, idle);
+                        text_offset_x += ti.bbsz.x;
+                        current_styles = kvp.second;
+                        first_index = second_index;
+                    }
+                    text_offset_y += text_item_size.y + _settings.boundExtent;
+                    text_offset_x = 0;
+                }
             }
             break;
             case KETReactionPlus::CID: {
@@ -292,4 +368,35 @@ void RenderItemAuxiliary::render(bool idle)
 
 void RenderItemAuxiliary::init()
 {
+}
+
+void RenderItemAuxiliary::_getLineExtents(const KETTextObject::KETTextLine& tl, Vec2f& sz)
+{
+    int first_index = -1;
+    int second_index = -1;
+    FONT_STYLE_SET current_styles;
+    sz.set(0, 0);
+    TextItem ti;
+    ti.size = KETDefaultFontSize / KETFontScaleFactor; // default size
+    ti.ritype = RenderItem::RIT_TITLE;
+
+    for (auto& kvp : tl.styles)
+    {
+        if (first_index == -1)
+        {
+            first_index = kvp.first;
+            current_styles = kvp.second;
+            continue;
+        }
+        second_index = kvp.first;
+        auto sub_text = tl.text.substr(first_index, second_index - first_index);
+        ti.text.appendString(sub_text.c_str(), true);
+        fillKETStyle(ti, current_styles);
+        ti.bbp.set(0, 0);
+        _rc.setTextItemSize(ti);
+        sz.y = std::max(sz.y, ti.bbsz.y);
+        sz.x += ti.bbsz.x;
+        current_styles = kvp.second;
+        first_index = second_index;
+    }
 }

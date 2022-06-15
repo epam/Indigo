@@ -300,42 +300,50 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
     }
 
     // check json format
+    long long pos = _scanner->tell();
     {
-        long long pos = _scanner->tell();
-        _scanner->skipSpace();
+        bool hasbom = false;
+        if (_scanner->length() >= 3)
+        {
+            unsigned char bom[3];
+            _scanner->readCharsFix(3, (char*)bom);
+            if (bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF)
+                hasbom = true;
+            else
+                _scanner->seek(pos, SEEK_SET);
+        }
+
         if (_scanner->lookNext() == '{')
         {
             if (_scanner->findWord("root") && _scanner->findWord("nodes"))
             {
                 using namespace rapidjson;
                 _scanner->seek(pos, SEEK_SET);
-                //                try
                 {
                     Array<char> buf;
                     _scanner->readAll(buf);
                     buf.push(0);
+                    unsigned char* ptr = (unsigned char*)buf.ptr();
+                    // skip utf8 BOM
+                    if (hasbom)
+                        ptr += 3;
                     Document data;
-
-                    if (data.Parse(buf.ptr()).HasParseError())
-                        throw Error("Error at parsing JSON: %s", buf.ptr());
-                    if (data.HasMember("root"))
+                    if (!data.Parse((char*)ptr).HasParseError())
                     {
-                        MoleculeJsonLoader loader(data);
-                        loader.stereochemistry_options = stereochemistry_options;
-                        loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-                        loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-                        loader.skip_3d_chirality = skip_3d_chirality;
-                        loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-                        loader.treat_stereo_as = treat_stereo_as;
-                        loader.loadMolecule(mol);
+                        if (data.HasMember("root"))
+                        {
+                            MoleculeJsonLoader loader(data);
+                            loader.stereochemistry_options = stereochemistry_options;
+                            loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+                            loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+                            loader.skip_3d_chirality = skip_3d_chirality;
+                            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+                            loader.treat_stereo_as = treat_stereo_as;
+                            loader.loadMolecule(mol);
+                            return;
+                        }
                     }
-                    else
-                        throw Error("Ketcher's JSON has no root node");
-                    return;
                 }
-                //              catch (...)
-                //              {
-                //              }
             }
         }
         _scanner->seek(pos, SEEK_SET);

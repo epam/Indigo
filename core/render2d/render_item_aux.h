@@ -50,6 +50,7 @@ namespace indigo
         {
             _renderIdle();
         }
+
         void setObjScale(float scale) override
         {
             scaleFactor = scale;
@@ -61,6 +62,8 @@ namespace indigo
             vec *= scaleFactor;
             vec.y = max.y - vec.y;
         }
+
+        void fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style_set);
 
         void render(bool idle) override;
         float getTotalBondLength() override
@@ -94,11 +97,15 @@ namespace indigo
         void _drawRGroupLabel(bool idle);
         void _drawRIfThen(bool idle);
         void _drawText(bool idle);
+        void _drawText(TextItem& ti, bool idle);
+        void _drawTextCentered(TextItem& ti, const Vec2f& sz, bool idle);
+
         void _drawMeta(bool idle);
         void _drawPlus();
         void _drawArrow();
         void _renderIdle();
         void _renderSimpleObject(const KETSimpleObject& simple);
+        void _getLineExtents(const KETTextObject::KETTextLine& tl, Vec2f& sz);
     };
 
 } // namespace indigo
