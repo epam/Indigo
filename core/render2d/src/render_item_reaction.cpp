@@ -44,7 +44,7 @@ void RenderItemReaction::init()
         return;
 
     int arrows_count = rxn->meta().getMetaCount(KETReactionArrow::CID);
-    int simple_count = rxn->meta().getMetaCount(KETSimpleObject::CID);
+    int simple_count = rxn->meta().getMetaCount(KETSimpleObject::CID) + rxn->meta().getMetaCount(KETTextObject::CID);
     if (arrows_count > 1 || simple_count)
     {
         initWithMeta();

@@ -432,22 +432,20 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
     }
 
     // check for CDX format
-    /*
-       {
-          if (_scanner->findWord("VjCD0100"))
-          {
-             MoleculeCdxLoader loader(*_scanner);
-             loader.stereochemistry_options = stereochemistry_options;
-             if (query)
+    {
+        if (_scanner->findWord("VjCD0100"))
+        {
+            MoleculeCdxLoader loader(*_scanner);
+            loader.stereochemistry_options = stereochemistry_options;
+            if (query)
                 throw Error("CDX queries not supported yet");
-             loader.loadMolecule(mol.asMolecule());
+            loader.loadMolecule(mol.asMolecule());
 
-             properties.copy(loader.properties);
+            properties.copy(loader.properties);
 
-             return;
-          }
-       }
-    */
+            return;
+        }
+    }
     // default is Molfile format
 
     {

@@ -14,6 +14,9 @@ void MetaDataStorage::addMetaObject(MetaObject* pobj)
 
     switch (pobj->_class_id)
     {
+    case KETTextObject::CID:
+        _text_object_indexes.push() = index;
+        break;
     case KETSimpleObject::CID:
         _simple_object_indexes.push() = index;
         break;
@@ -40,6 +43,9 @@ const MetaObject& MetaDataStorage::getMetaObject(std::uint32_t meta_type, int in
 {
     switch (meta_type)
     {
+    case KETTextObject::CID:
+        return *_meta_data[_text_object_indexes[index]];
+        break;
     case KETSimpleObject::CID:
         return *_meta_data[_simple_object_indexes[index]];
         break;
@@ -59,6 +65,9 @@ int MetaDataStorage::getMetaCount(std::uint32_t meta_type) const
 {
     switch (meta_type)
     {
+    case KETTextObject::CID:
+        return _text_object_indexes.size();
+        break;
     case KETSimpleObject::CID:
         return _simple_object_indexes.size();
         break;
