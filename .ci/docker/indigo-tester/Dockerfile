@@ -1,8 +1,8 @@
 FROM debian:stable-slim
 
-ARG JDK_VERSION_MAJOR=8u292
-ARG JDK_VERSION_MINOR=b10
-ARG MAVEN_VERSION=3.8.5
+ARG JDK_VERSION_MAJOR=8u332
+ARG JDK_VERSION_MINOR=b09
+ARG MAVEN_VERSION=3.8.6
 ARG JYTHON_VERSION=2.7.2
 ARG DOTNET_VERSION=3.1
 ARG IRONPYTHON_VERSION=2.7.12
@@ -27,7 +27,7 @@ RUN set -eux && \
      npm && \
     apt install -y gnupg && \
     # Java JDK
-    curl -OL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR}/OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
+    curl -OL https://github.com/adoptium/temurin8-binaries/releases/download/jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR}/OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
     tar -xzf OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
     mv jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR} /opt/jdk && \
     rm OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
