@@ -1,3 +1,5 @@
+import time
+
 from bingo_elastic.elastic import ElasticRepository
 from bingo_elastic.model.record import (
     IndigoRecord,
@@ -5,12 +7,14 @@ from bingo_elastic.model.record import (
     IndigoRecordReaction,
 )
 from bingo_elastic.queries import SimilarityMatch
-from indigo import IndigoException, IndigoObject
+from indigo import IndigoException, IndigoObject, Indigo
 
 from ..constants import DB_BINGO_ELASTIC, EntitiesType
 from ..helpers import indigo_iterator
 from ..logger import logger
 from .base import NoSQLAdapter, catch_indigo_exception
+
+i = Indigo()
 
 
 class BingoElastic(NoSQLAdapter):
@@ -53,21 +57,26 @@ class BingoElastic(NoSQLAdapter):
                 )
             finally:
                 index += 1
+        time.sleep(1)
 
     @catch_indigo_exception(catch_error=True)
     def exact(self, molecule: IndigoObject, target_function: str, options=""):
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
-        records = self.repo.filter(exact=indigo_record, limit=500)
+        records = self.repo.filter(
+            exact=indigo_record, limit=5000, options=options
+        )
 
         return self._process_records(records)
 
     @catch_indigo_exception(catch_error=True)
     def substructure(self, molecule, target_function, options=""):
-        compound = self.indigo.loadMolecule(molecule.rawData())
-        indigo_record = IndigoRecord(indigo_object=compound)
-        records = self.repo.filter(substructure=indigo_record, limit=500)
-
+        q_mol = self.indigo.loadQueryMolecule(molecule.rawData())
+        q_mol.aromatize()
+        indigo_record = IndigoRecord(indigo_object=q_mol)
+        records = self.repo.filter(
+            substructure=indigo_record, limit=5000, q_mol=q_mol
+        )
         return self._process_records(records)
 
     @catch_indigo_exception(catch_error=True)
@@ -79,7 +88,7 @@ class BingoElastic(NoSQLAdapter):
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
         alg = SimilarityMatch(indigo_record, min_sim)
-        records = self.repo.filter(similarity=alg, limit=500)
+        records = self.repo.filter(similarity=alg, limit=5000)
 
         return self._process_records(records)
 

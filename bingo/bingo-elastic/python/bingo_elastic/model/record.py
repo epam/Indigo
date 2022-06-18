@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import traceback
 from typing import Callable, Dict, List, Optional
 from uuid import uuid4
 
@@ -17,7 +18,8 @@ def check_error(instance: IndigoRecord, error: BaseException) -> None:
     if instance.error_handler:
         instance.error_handler(instance, error)
     else:
-        raise error
+        pass
+        # raise error
 
 
 class WithElasticResponse:
@@ -29,6 +31,11 @@ class WithElasticResponse:
 
 class WithIndigoObject:
     def __set__(self, instance: IndigoRecord, value: IndigoObject) -> None:
+        try:
+            value.aromatize()
+        except IndigoException as err_:
+            check_error(instance, err_)
+
         fingerprints = (
             "sim",
             "sub",
@@ -37,28 +44,29 @@ class WithIndigoObject:
             try:
                 setattr(instance, f"{f_print}_fingerprint", [])
                 setattr(instance, f"{f_print}_fingerprint_len", 0)
-                fp_ = [
-                    int(feature)
-                    for feature in value.fingerprint(f_print)
-                    .oneBitsList()
-                    .split(" ")
-                ]
-                setattr(instance, f"{f_print}_fingerprint", fp_)
-                setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
+
+                fp_list = value.fingerprint(f_print).oneBitsList()
+                if fp_list:
+                    fp_ = [
+                        int(feature)
+                        for feature in fp_list.split(" ")
+                    ]
+                    setattr(instance, f"{f_print}_fingerprint", fp_)
+                    setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
             except ValueError as err_:
                 check_error(instance, err_)
             except IndigoException as err_:
                 check_error(instance, err_)
 
         try:
-            setattr(instance, "name", value.name())
-        except IndigoException:
-            pass
+            cmf = " ".join(map(str, list(value.serialize())))
+            setattr(instance, "cmf", cmf)
+        except IndigoException as err_:
+            setattr(instance, "cmf", "")
+            check_error(instance, err_)
 
         try:
-            setattr(
-                instance, "cmf", " ".join(map(str, list(value.serialize())))
-            )
+            setattr(instance, "name", value.name())
         except IndigoException as err_:
             check_error(instance, err_)
 
@@ -74,6 +82,7 @@ class IndigoRecord:
 
     cmf: Optional[str] = None
     name: Optional[str] = None
+    rawData: Optional[str] = None
     sim_fingerprint: Optional[List[str]] = None
     sub_fingerprint: Optional[List[str]] = None
     indigo_object = WithIndigoObject()
@@ -120,7 +129,7 @@ class IndigoRecord:
         }
 
     def as_indigo_object(self, session: Indigo):
-        assert self.cmf
+        assert self.cmf != ""
         return session.deserialize(list(map(int, self.cmf.split(" "))))
 
 

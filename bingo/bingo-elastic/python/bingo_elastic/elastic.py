@@ -22,7 +22,7 @@ try:
 except ImportError:
     pass
 
-from indigo import Indigo  # type: ignore
+from indigo import Indigo, IndigoObject  # type: ignore
 
 from bingo_elastic.model.record import (
     IndigoRecord,
@@ -104,7 +104,7 @@ index_body = {
             "sim_fingerprint_len": {"type": "integer"},
             "sub_fingerprint": {"type": "keyword", "similarity": "boolean"},
             "sub_fingerprint_len": {"type": "integer"},
-            "cmf": {"type": "binary"},
+            "cmf": {"type": "keyword"},
         }
     }
 }
@@ -124,7 +124,9 @@ def check_index_exception(err_: RequestError) -> None:
 
 def create_index(index_name: str, el_client: Elasticsearch) -> None:
     try:
-        el_client.indices.create(index=index_name, body=index_body)
+        el_client.indices.create(
+            index=index_name, body=index_body, ignore=400
+        )
     except RequestError as err_:
         check_index_exception(err_)
 
@@ -133,7 +135,9 @@ async def a_create_index(
     index_name: str, el_client: "AsyncElasticsearch"
 ) -> None:
     try:
-        await el_client.indices.create(index=index_name, body=index_body)
+        await el_client.indices.create(
+            index=index_name, body=index_body, ignore=400
+        )
     except RequestError as err_:
         check_index_exception(err_)
 
@@ -151,13 +155,13 @@ def prepare(
 
 
 def response_to_records(
-    res, index_name, postprocess_actions
+    res, index_name, postprocess_actions, q_mol, options=""
 ) -> Generator[IndigoRecord, None, None]:
-    indigo_session = Indigo()
+    # print("RESULTS", res.get("hits", {}).get("hits", []))
     for el_response in res.get("hits", {}).get("hits", []):
         record = get_record_by_index(el_response, index_name)
         for action_fn in postprocess_actions:
-            record = action_fn(record, indigo_session)  # type: ignore
+            record = action_fn(record, q_mol.dispatcher, q_mol, options)  # type: ignore
             if not record:
                 continue
         yield record
@@ -221,7 +225,7 @@ class AsyncElasticRepository:
         similarity: Union[BaseMatch] = None,
         exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
-        limit=10,
+        limit=5000,
         **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
 
@@ -316,13 +320,14 @@ class ElasticRepository:
         similarity: Union[BaseMatch] = None,
         exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
-        limit=10,
+        q_mol: IndigoObject = None,
+        limit=5000,
+        options="",
         **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
 
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
-
         query = compile_query(
             similarity=similarity,
             exact=exact,
@@ -331,9 +336,10 @@ class ElasticRepository:
             postprocess_actions=postprocess_actions,
             **kwargs,
         )
+        print("QUERY", query)
         res = self.el_client.search(index=self.index_name, body=query)
         yield from response_to_records(
-            res, self.index_name, postprocess_actions
+            res, self.index_name, postprocess_actions, q_mol, options
         )
 
 
@@ -342,11 +348,10 @@ def compile_query(
     similarity: BaseMatch = None,
     exact: IndigoRecord = None,
     substructure: IndigoRecord = None,
-    limit: int = 10,
+    limit: int = 5000,
     postprocess_actions: PostprocessType = None,
     **kwargs,
 ) -> Dict:
-
     query = {
         "size": limit,
         "_source": {
@@ -356,12 +361,13 @@ def compile_query(
                 "sim_fingerprint_len",
                 "sub_fingerprint_len",
                 "sub_fingerprint",
+                # "cmf"
             ],
         },
     }
     if similarity and substructure:
         raise AttributeError(
-            "similarity and substructure search is not supported"
+            "similarity and substructure search " "is not supported"
         )
 
     if similarity:
