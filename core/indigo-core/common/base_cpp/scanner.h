@@ -124,10 +124,10 @@ namespace indigo
     class DLLEXPORT BufferScanner : public Scanner
     {
     public:
-        explicit BufferScanner(const char* buffer, int buffer_size);
-        explicit BufferScanner(const byte* buffer, int buffer_size);
-        explicit BufferScanner(const char* str);
-        explicit BufferScanner(const Array<char>& arr);
+        explicit BufferScanner(const char* buffer, int buffer_size, bool is_base64 = false);
+        explicit BufferScanner(const byte* buffer, int buffer_size, bool is_base64 = false);
+        explicit BufferScanner(const char* str, bool is_base64 = false);
+        explicit BufferScanner(const Array<char>& arr, bool is_base64 = false);
         ~BufferScanner() override;
 
         bool isEOF() override;
@@ -140,12 +140,14 @@ namespace indigo
         byte readByte() override;
 
         const void* curptr();
+        static void base64Decode(const std::string& in, std::string& out);
 
     private:
         const char* _buffer;
         int _size;
         int _offset;
-
+        bool _is_base64;
+        Array<char> _base64_buffer;
         void _init(const char* buffer, int length);
 
         // no implicit copy

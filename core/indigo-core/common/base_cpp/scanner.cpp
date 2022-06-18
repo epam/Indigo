@@ -692,30 +692,40 @@ void BufferScanner::_init(const char* buffer, int size)
 {
     if (size < -1 || (size > 0 && buffer == 0))
         throw Error("incorrect parameters in BufferScanner constructor");
-
-    _buffer = buffer;
-    _size = size;
+    if (_is_base64)
+    {
+        std::string decoded;
+        base64Decode(std::string(buffer, size), decoded);
+        _base64_buffer.copy(decoded.c_str(), decoded.size());
+        _buffer = _base64_buffer.ptr();
+        _size = _base64_buffer.size();
+    }
+    else
+    {
+        _buffer = buffer;
+        _size = size;
+    }
     _offset = 0;
 }
 
-BufferScanner::BufferScanner(const char* buffer, int buffer_size)
+BufferScanner::BufferScanner(const char* buffer, int buffer_size, bool is_base64) : _is_base64(is_base64)
 {
     _init(buffer, buffer_size);
 }
 
-BufferScanner::BufferScanner(const byte* buffer, int buffer_size)
+BufferScanner::BufferScanner(const byte* buffer, int buffer_size, bool is_base64) : _is_base64(is_base64)
 {
     _init((const char*)buffer, buffer_size);
 }
 
-BufferScanner::BufferScanner(const char* str)
+BufferScanner::BufferScanner(const char* str, bool is_base64) : _is_base64(is_base64)
 {
     if (str == 0)
         throw Error("null input");
     _init(str, (int)strlen(str));
 }
 
-BufferScanner::BufferScanner(const Array<char>& arr)
+BufferScanner::BufferScanner(const Array<char>& arr, bool is_base64) : _is_base64(is_base64)
 {
     _init(arr.ptr(), arr.size());
 }
@@ -794,6 +804,27 @@ byte BufferScanner::readByte()
         throw Error("readByte(): end of buffer");
 
     return _buffer[_offset++];
+}
+
+void BufferScanner::base64Decode(const std::string& in, std::string& out)
+{
+    std::vector<int> T(256, -1);
+    for (int i = 0; i < 64; i++)
+        T["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i;
+
+    int val = 0, valb = -8;
+    for (uint8_t c : in)
+    {
+        if (T[c] == -1)
+            break;
+        val = (val << 6) + T[c];
+        valb += 6;
+        if (valb >= 0)
+        {
+            out.push_back(char((val >> valb) & 0xFF));
+            valb -= 8;
+        }
+    }
 }
 
 void Scanner::_prefixFunction(Array<char>& str, Array<int>& prefix)
