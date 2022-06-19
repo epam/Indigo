@@ -534,7 +534,7 @@ void SmilesSaver::_saveMolecule()
             if (!smarts_mode)
                 _writeAtom(v_idx, _atoms[v_idx].aromatic, _atoms[v_idx].lowercase, _atoms[v_idx].chirality);
             else if (_qmol != 0)
-                _writeSmartsAtom(v_idx, &_qmol->getAtom(v_idx), _atoms[v_idx].chirality, 0, false);
+                _writeSmartsAtom(v_idx, &_qmol->getAtom(v_idx), _atoms[v_idx].chirality, 0, false, false);
             else
                 throw Error("SMARTS format availble for query only!");
 
@@ -860,7 +860,7 @@ void SmilesSaver::_writeCharge(int charge) const
         _output.printf("-");
 }
 
-void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chirality, int depth, bool has_or_parent) const
+void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chirality, int depth, bool has_or_parent, bool has_not_parent) const
 {
     int i;
 
@@ -871,7 +871,7 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
     {
     case QueryMolecule::OP_NOT: {
         _output.writeChar('!');
-        _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[0], chirality, depth + 1, has_or_parent);
+        _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[0], chirality, depth + 1, has_or_parent, true);
         break;
     }
     case QueryMolecule::OP_AND: {
@@ -879,7 +879,7 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         {
             if (i > 0)
                 _output.writeChar(has_or_parent ? '&' : ';');
-            _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, has_or_parent);
+            _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, has_or_parent, has_not_parent);
         }
         break;
     }
@@ -887,8 +887,8 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         for (i = 0; i < atom->children.size(); i++)
         {
             if (i > 0)
-                _output.printf(",");
-            _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, true);
+                _output.printf(has_not_parent ? "!" : ",");
+            _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, true, has_not_parent);
         }
         break;
     }
