@@ -414,6 +414,17 @@ M  END
             assert.equal(inchi_aux, "InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H\nAuxInfo=1/0/N:1,2,6,3,5,4/E:(1,2,3,4,5,6)/rA:6CCCCCC/rB:d1;s2;d3;s4;s1d5;/rC:;;;;;;");
             options.delete();
         });
+
+        test("convert", "cdx_to_ket", () => {
+            let options = new indigo.MapStringString();
+            var fs = require('fs');
+            const cdx_data = fs.readFileSync("test64.cdx");
+            const ket = indigo.convert(cdx_data, "ket", options);
+            const ket_data = indigo.convert(fs.readFileSync("test64.ket"),"ket", options);
+            assert.equal(ket, ket_data);
+            options.delete();
+        });
+
     }
 
     // Dearomatize

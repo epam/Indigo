@@ -140,7 +140,6 @@ namespace indigo
         byte readByte() override;
 
         const void* curptr();
-        static void base64Decode(const std::string& in, std::string& out);
 
     private:
         const char* _buffer;

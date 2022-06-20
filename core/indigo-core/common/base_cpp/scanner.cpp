@@ -28,6 +28,7 @@
 #include "base_cpp/tlscont.h"
 #include "reusable_obj_array.h"
 
+#include <../cppcodec/cppcodec/base64_default_rfc4648.hpp>
 #include <limits>
 
 using namespace indigo;
@@ -694,9 +695,8 @@ void BufferScanner::_init(const char* buffer, int size)
         throw Error("incorrect parameters in BufferScanner constructor");
     if (_is_base64)
     {
-        std::string decoded;
-        base64Decode(std::string(buffer, size), decoded);
-        _base64_buffer.copy(decoded.c_str(), decoded.size());
+        auto decoded = base64::decode(buffer, size);
+        _base64_buffer.copy((char*)decoded.data(), decoded.size());
         _buffer = _base64_buffer.ptr();
         _size = _base64_buffer.size();
     }
@@ -804,27 +804,6 @@ byte BufferScanner::readByte()
         throw Error("readByte(): end of buffer");
 
     return _buffer[_offset++];
-}
-
-void BufferScanner::base64Decode(const std::string& in, std::string& out)
-{
-    std::vector<int> T(256, -1);
-    for (int i = 0; i < 64; i++)
-        T["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i;
-
-    int val = 0, valb = -8;
-    for (uint8_t c : in)
-    {
-        if (T[c] == -1)
-            break;
-        val = (val << 6) + T[c];
-        valb += 6;
-        if (valb >= 0)
-        {
-            out.push_back(char((val >> valb) & 0xFF));
-            valb -= 8;
-        }
-    }
 }
 
 void Scanner::_prefixFunction(Array<char>& str, Array<int>& prefix)
