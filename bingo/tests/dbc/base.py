@@ -258,6 +258,9 @@ class SQLAdapter(DBAdapter):
         created_tables = []
         sa_meta = sa.MetaData()
         self.engine.execute(
+            text(f"DROP SCHEMA IF EXISTS {self.test_schema} CASCADE")
+        )
+        self.engine.execute(
             text(f"CREATE SCHEMA IF NOT EXISTS {self.test_schema}")
         )
         for table in tables:

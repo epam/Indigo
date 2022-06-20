@@ -7,5 +7,6 @@ class TestSmarts:
     @pytest.mark.parametrize('query_id, expected', query_cases('smarts'))
     def test_smarts(self, db, entities, query_id, expected):
         molecule = entities.get(query_id)
-        result = db.smarts(molecule, 'smarts')
-        assert_match_query(result, expected)
+        result, info = db.smarts(molecule, 'smarts')
+        info = info.replace('%(query_entity)s', "'{}'".format(molecule.rawData()))
+        assert_match_query(result, expected, info)

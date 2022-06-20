@@ -95,6 +95,7 @@ docker run -p 9200:9200 --env "discovery.type=single-node" --env "indices.query.
 ```shell
 cd bingo/tests
 pytest .
+pytest . --db=postgres -k test_rexact
 ```
 
 
@@ -102,7 +103,8 @@ pytest .
 
 ```shell
 docker build --tag epmlsop/bingo-postgres:latest -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION={postgres_version} . 
-docker run -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:latest
+
+docker run --rm -d -p 5432:5432 -v $(pwd)/bingo/tests:$(pwd)/bingo/tests -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:latest
 ```
 
 
