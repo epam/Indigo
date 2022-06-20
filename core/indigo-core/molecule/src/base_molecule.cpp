@@ -244,7 +244,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     int i;
 
     // XYZ
-    _xyz.resize(vertexEnd());
+    _xyz.expandFill(vertexEnd(), Vec3f(0, 0, 0));
     if (!(skip_flags & SKIP_XYZ))
     {
         if (vertexCount() == 0)

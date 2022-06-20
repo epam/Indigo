@@ -188,18 +188,37 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
 {
     properties.clear();
 
+    auto local_scanner = _scanner; // local scanner only for binary format
+    // chack for base64
+    uint8_t base64_id[] = "base64::";
+    std::unique_ptr<BufferScanner> base64_scanner;
+    if (local_scanner->length() >= (sizeof(base64_id) - 1))
+    {
+        byte id[sizeof(base64_id) - 1];
+        long long pos = local_scanner->tell();
+        local_scanner->readCharsFix(sizeof(base64_id) - 1, (char*)id);
+        if (std::equal(std::begin(id), std::end(id), std::begin(base64_id)))
+        {
+            Array<char> base64_data;
+            local_scanner->readAll(base64_data);
+            base64_scanner = std::make_unique<BufferScanner>(base64_data, true);
+            local_scanner = base64_scanner.get();
+        }
+        local_scanner->seek(pos, SEEK_SET);
+    }
+
     // check for GZip format
-    if (_scanner->length() >= 2LL)
+    if (local_scanner->length() >= 2LL)
     {
         byte id[2];
-        long long pos = _scanner->tell();
+        long long pos = local_scanner->tell();
 
-        _scanner->readCharsFix(2, (char*)id);
-        _scanner->seek(pos, SEEK_SET);
+        local_scanner->readCharsFix(2, (char*)id);
+        local_scanner->seek(pos, SEEK_SET);
 
         if (id[0] == 0x1f && id[1] == 0x8b)
         {
-            GZipScanner gzscanner(*_scanner);
+            GZipScanner gzscanner(*local_scanner);
             QS_DEF(Array<char>, buf);
 
             gzscanner.readAll(buf);
@@ -216,6 +235,22 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                 loader2.loadQueryMolecule((QueryMolecule&)mol);
             else
                 loader2.loadMolecule((Molecule&)mol);
+
+            return;
+        }
+    }
+
+    // check for CDX format
+    {
+        if (local_scanner->findWord("VjCD0100"))
+        {
+            MoleculeCdxLoader loader(*local_scanner);
+            loader.stereochemistry_options = stereochemistry_options;
+            if (query)
+                throw Error("CDX queries not supported yet");
+            loader.loadMolecule(mol.asMolecule());
+
+            properties.copy(loader.properties);
 
             return;
         }
@@ -431,21 +466,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         }
     }
 
-    // check for CDX format
-    {
-        if (_scanner->findWord("VjCD0100"))
-        {
-            MoleculeCdxLoader loader(*_scanner);
-            loader.stereochemistry_options = stereochemistry_options;
-            if (query)
-                throw Error("CDX queries not supported yet");
-            loader.loadMolecule(mol.asMolecule());
-
-            properties.copy(loader.properties);
-
-            return;
-        }
-    }
     // default is Molfile format
 
     {

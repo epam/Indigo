@@ -151,6 +151,14 @@ void AtomDesc::clear()
     pseudo.clear();
     memset(implHPosWeights, 0, sizeof(implHPosWeights));
     upperSin = lowerSin = rightSin = leftSin = 0;
+    pos.set(0, 0);
+    boundBoxMin.set(0, 0);
+    boundBoxMax.set(0, 0);
+    type = 0;
+    label = queryLabel = 0;
+    leftMargin = rightMargin = 0;
+    ypos = 0;
+    height = 0;
 }
 
 Sgroup::Sgroup()
@@ -181,6 +189,10 @@ void BondEnd::clear()
     rnei = lnei = -1;
     offset = 0;
     width = 0;
+    aid = 0;
+    bid = 0;
+    rnei = lnei = -1;
+    dir = lnorm = p = {0, 0};
 }
 
 IMPL_ERROR(BondDescr, "molrender bond description");
@@ -192,6 +204,7 @@ BondDescr::BondDescr()
 
 void BondDescr::clear()
 {
+    be2 = be1 = -1;
     type = -1;
     queryType = -1;
     inRing = false;
@@ -206,6 +219,10 @@ void BondDescr::clear()
     tiTopology = -1;
     topology = 0;
     reactingCenter = RC_UNMARKED;
+    lineOnTheRight = false;
+    isShort = false;
+    length = 0;
+    norm = dir = vb = ve = center = {0, 0};
 }
 
 int BondDescr::getBondEnd(int aid) const
@@ -242,6 +259,9 @@ void MoleculeRenderData::clear()
     atoms.clear();
     bonds.clear();
     bondends.clear();
+    brackets.clear();
+    rSiteAttachmentIndices.clear();
+    attachmentPoints.clear();
     graphitems.clear();
     rings.clear();
     textitems.clear();

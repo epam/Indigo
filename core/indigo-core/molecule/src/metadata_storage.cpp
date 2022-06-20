@@ -39,7 +39,7 @@ void MetaDataStorage::clone(const MetaDataStorage& other)
         addMetaObject(meta[i]->clone());
 }
 
-const MetaObject& MetaDataStorage::getMetaObject(std::uint32_t meta_type, int index) const
+const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
 {
     switch (meta_type)
     {
@@ -61,7 +61,7 @@ const MetaObject& MetaDataStorage::getMetaObject(std::uint32_t meta_type, int in
     }
 }
 
-int MetaDataStorage::getMetaCount(std::uint32_t meta_type) const
+int MetaDataStorage::getMetaCount(uint32_t meta_type) const
 {
     switch (meta_type)
     {

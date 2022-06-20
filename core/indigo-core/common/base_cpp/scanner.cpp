@@ -28,6 +28,7 @@
 #include "base_cpp/tlscont.h"
 #include "reusable_obj_array.h"
 
+#include <../cppcodec/cppcodec/base64_default_rfc4648.hpp>
 #include <limits>
 
 using namespace indigo;
@@ -692,30 +693,39 @@ void BufferScanner::_init(const char* buffer, int size)
 {
     if (size < -1 || (size > 0 && buffer == 0))
         throw Error("incorrect parameters in BufferScanner constructor");
-
-    _buffer = buffer;
-    _size = size;
+    if (_is_base64)
+    {
+        auto decoded = base64::decode(buffer, size);
+        _base64_buffer.copy((char*)decoded.data(), decoded.size());
+        _buffer = _base64_buffer.ptr();
+        _size = _base64_buffer.size();
+    }
+    else
+    {
+        _buffer = buffer;
+        _size = size;
+    }
     _offset = 0;
 }
 
-BufferScanner::BufferScanner(const char* buffer, int buffer_size)
+BufferScanner::BufferScanner(const char* buffer, int buffer_size, bool is_base64) : _is_base64(is_base64)
 {
     _init(buffer, buffer_size);
 }
 
-BufferScanner::BufferScanner(const byte* buffer, int buffer_size)
+BufferScanner::BufferScanner(const byte* buffer, int buffer_size, bool is_base64) : _is_base64(is_base64)
 {
     _init((const char*)buffer, buffer_size);
 }
 
-BufferScanner::BufferScanner(const char* str)
+BufferScanner::BufferScanner(const char* str, bool is_base64) : _is_base64(is_base64)
 {
     if (str == 0)
         throw Error("null input");
     _init(str, (int)strlen(str));
 }
 
-BufferScanner::BufferScanner(const Array<char>& arr)
+BufferScanner::BufferScanner(const Array<char>& arr, bool is_base64) : _is_base64(is_base64)
 {
     _init(arr.ptr(), arr.size());
 }
