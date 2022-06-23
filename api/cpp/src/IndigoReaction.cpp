@@ -32,7 +32,7 @@ IndigoReaction::IndigoReaction(const IndigoReaction& other) : IndigoBaseReaction
 {
 }
 
-long IndigoReaction::hash() const
+int64_t IndigoReaction::hash() const
 {
     session()->setSessionId();
     return session()->_checkResult(indigoHash(id()));

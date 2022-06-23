@@ -35,7 +35,7 @@ namespace indigo_cpp
         IndigoReaction& operator=(const IndigoReaction&) = default;
         ~IndigoReaction() final = default;
 
-        long hash() const final;
+        int64_t hash() const final;
     };
 
     using IndigoReactionPtr = std::shared_ptr<IndigoReaction>;

@@ -31,7 +31,7 @@ from ctypes import (
     c_double,
     c_float,
     c_int,
-    c_long,
+    c_int64,
     c_ulonglong,
     c_void_p,
     pointer,
@@ -5110,7 +5110,7 @@ class Indigo(object):
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmarts.restype = c_char_p
         Indigo._lib.indigoCanonicalSmarts.argtypes = [c_int]
-        Indigo._lib.indigoHash.restype = c_long
+        Indigo._lib.indigoHash.restype = c_int64
         Indigo._lib.indigoHash.argtypes = [c_int]
         Indigo._lib.indigoLayeredCode.restype = c_char_p
         Indigo._lib.indigoLayeredCode.argtypes = [c_int]

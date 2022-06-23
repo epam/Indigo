@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -46,7 +47,7 @@ namespace indigo_cpp
         void setSessionId() const;
 
         int _checkResult(int result) const;
-        long _checkResult(long result) const;
+        int64_t _checkResult(int64_t result) const;
         double _checkResultFloat(double result) const;
         std::string _checkResultString(const char* result) const;
 

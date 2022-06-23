@@ -18,11 +18,13 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace indigo_cpp
 {
     class IndigoHashable
     {
     public:
-        virtual long hash() const = 0;
+        virtual int64_t hash() const = 0;
     };
 }

@@ -42,7 +42,7 @@ namespace indigo_cpp
         int numHydrogenBondDonors() const;
         double logP() const;
         double molarRefractivity() const;
-        long hash() const final;
+        int64_t hash() const final;
     };
 
     using IndigoMoleculeSPtr = std::shared_ptr<IndigoMolecule>;

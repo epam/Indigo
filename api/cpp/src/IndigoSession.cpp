@@ -82,7 +82,7 @@ int IndigoSession::_checkResult(int result) const
     return result;
 }
 
-long IndigoSession::_checkResult(long result) const
+int64_t IndigoSession::_checkResult(int64_t result) const
 {
     if (result < 0)
     {
