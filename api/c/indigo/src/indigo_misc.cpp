@@ -401,20 +401,20 @@ CEXPORT const char* indigoCanonicalSmiles(int item)
     INDIGO_END(0);
 }
 
-CEXPORT long indigoHash(int item)
+CEXPORT int64_t indigoHash(int item)
 {
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(item);
         if (IndigoMolecule::is(obj))
         {
-            Molecule& mol = obj.getBaseMolecule().asMolecule();
-            return static_cast<long>(MoleculeHash::calculate(mol));
+            Molecule& mol = obj.getMolecule();
+            return static_cast<int64_t>(MoleculeHash::calculate(mol));
         }
         else if (IndigoReaction::is(obj))
         {
-            Reaction& rxn = obj.getReaction().asReaction();
-            return static_cast<long>(ReactionHash::calculate(rxn));
+            Reaction& rxn = obj.getReaction();
+            return static_cast<int64_t>(ReactionHash::calculate(rxn));
         }
         else
             throw IndigoError("object %s is neither a molecule nor a reaction", obj.debugInfo());
