@@ -18,33 +18,29 @@
 
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
-#include "indigo_array.h"
-#include "indigo_internal.h"
-#include "indigo_io.h"
-#include "indigo_loaders.h"
-#include "indigo_mapping.h"
-#include "indigo_molecule.h"
-#include "indigo_properties.h"
-#include "indigo_reaction.h"
-#include "indigo_savers.h"
-#include "indigo_structure_checker.h"
 #include "molecule/elements.h"
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_automorphism_search.h"
-#include "molecule/molecule_dearom.h"
+#include "molecule/molecule_hash.h"
 #include "molecule/molecule_ionize.h"
-#include "molecule/molecule_standardize.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
-
-#include "molecule/molecule_json_loader.h"
-#include "molecule/molecule_json_saver.h"
-#include "reaction/reaction_json_loader.h"
+#include "reaction/reaction_hash.h"
 #include "reaction/reaction_json_saver.h"
+
+#include "indigo_array.h"
+#include "indigo_internal.h"
+#include "indigo_loaders.h"
+#include "indigo_molecule.h"
+#include "indigo_properties.h"
+#include "indigo_reaction.h"
+#include "indigo_savers.h"
+#include "indigo_structure_checker.h"
 
 CEXPORT int indigoAromatize(int object)
 {
@@ -403,6 +399,27 @@ CEXPORT const char* indigoCanonicalSmiles(int item)
         return tmp.string.ptr();
     }
     INDIGO_END(0);
+}
+
+CEXPORT long indigoHash(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        if (IndigoMolecule::is(obj))
+        {
+            Molecule& mol = obj.getBaseMolecule().asMolecule();
+            return static_cast<long>(MoleculeHash::calculate(mol));
+        }
+        else if (IndigoReaction::is(obj))
+        {
+            Reaction& rxn = obj.getReaction().asReaction();
+            return static_cast<long>(ReactionHash::calculate(rxn));
+        }
+        else
+            throw IndigoError("object %s is neither a molecule nor a reaction", obj.debugInfo());
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT const char* indigoSmarts(int item)

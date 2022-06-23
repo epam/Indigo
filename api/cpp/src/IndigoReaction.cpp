@@ -31,3 +31,9 @@ IndigoReaction::IndigoReaction(const int id, IndigoSessionPtr session) : IndigoB
 IndigoReaction::IndigoReaction(const IndigoReaction& other) : IndigoBaseReaction(other)
 {
 }
+
+long IndigoReaction::hash() const
+{
+    session()->setSessionId();
+    return session()->_checkResult(indigoHash(id()));
+}

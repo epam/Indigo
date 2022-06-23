@@ -46,6 +46,7 @@ namespace indigo_cpp
         void setSessionId() const;
 
         int _checkResult(int result) const;
+        long _checkResult(long result) const;
         double _checkResultFloat(double result) const;
         std::string _checkResultString(const char* result) const;
 
@@ -60,6 +61,8 @@ namespace indigo_cpp
 
         IndigoMolecule loadMolecule(const std::string& data);
         IndigoMolecule loadMoleculeFromFile(const std::string& path);
+
+        IndigoReaction loadReaction(const std::string& data);
 
         IndigoQueryMolecule loadQueryMolecule(const std::string& data);
         IndigoWriteBuffer writeBuffer();

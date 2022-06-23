@@ -835,6 +835,9 @@ namespace com.epam.indigo
         public static extern byte* indigoCanonicalSmiles(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern long indigoHash(int item);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoLayeredCode(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

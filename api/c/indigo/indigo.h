@@ -689,6 +689,8 @@ CEXPORT double indigoMolarRefractivity(int molecule);
 CEXPORT const char* indigoCanonicalSmiles(int molecule);
 CEXPORT const char* indigoLayeredCode(int molecule);
 
+CEXPORT long indigoHash(int chemicalObject);
+
 CEXPORT const int* indigoSymmetryClasses(int molecule, int* count_out);
 
 CEXPORT int indigoHasCoord(int molecule);

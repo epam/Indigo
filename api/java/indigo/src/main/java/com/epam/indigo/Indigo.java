@@ -106,6 +106,11 @@ public class Indigo {
         return result;
     }
 
+    public static long checkResultLong(Object obj, long result) {
+        if (result < 0) throw new IndigoException(obj, lib.indigoGetLastError());
+        return result;
+    }
+
     public static int checkResult(Object obj, Object obj2, int result) {
         if (result < 0)
             throw new IndigoException(new Object[] {obj, obj2}, lib.indigoGetLastError());

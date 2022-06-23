@@ -82,6 +82,16 @@ int IndigoSession::_checkResult(int result) const
     return result;
 }
 
+long IndigoSession::_checkResult(long result) const
+{
+    if (result < 0)
+    {
+        setSessionId();
+        throw(IndigoException(indigoGetLastError()));
+    }
+    return result;
+}
+
 double IndigoSession::_checkResultFloat(double result) const
 {
     if (result < -0.5)
@@ -183,4 +193,10 @@ IndigoSubstructureMatcher IndigoSession::substructureMatcher(const IndigoMolecul
 {
     setSessionId();
     return {_checkResult(indigoSubstructureMatcher(molecule.id(), mode.c_str())), shared_from_this()};
+}
+
+IndigoReaction IndigoSession::loadReaction(const std::string& data)
+{
+        setSessionId();
+        return {_checkResult(indigoLoadReactionFromString(data.c_str())), shared_from_this()};
 }

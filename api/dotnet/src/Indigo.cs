@@ -196,6 +196,16 @@ namespace com.epam.indigo
             return result;
         }
 
+        public long checkResult(long result)
+        {
+            if (result < 0)
+            {
+                throw new IndigoException(bytePtrToStringUtf8(IndigoLib.indigoGetLastError()));
+            }
+
+            return result;
+        }
+
         public string checkResult(byte* result)
         {
             if (result == null)
