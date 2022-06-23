@@ -1459,6 +1459,12 @@ namespace com.epam.indigo
             return res;
         }
 
+        public long hash()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoHash(self));
+        }
+
         public string layeredCode()
         {
             dispatcher.setSessionID();

@@ -21,10 +21,11 @@
 #include <memory>
 
 #include "IndigoBaseReaction.h"
+#include "IndigoHashable.h"
 
 namespace indigo_cpp
 {
-    class IndigoReaction final : public IndigoBaseReaction
+    class IndigoReaction final : public IndigoBaseReaction, public IndigoHashable
     {
     public:
         IndigoReaction(int id, IndigoSessionPtr session);
@@ -33,6 +34,8 @@ namespace indigo_cpp
         IndigoReaction(const IndigoReaction&);
         IndigoReaction& operator=(const IndigoReaction&) = default;
         ~IndigoReaction() final = default;
+
+        int64_t hash() const final;
     };
 
     using IndigoReactionPtr = std::shared_ptr<IndigoReaction>;

@@ -4,3 +4,5 @@ CC[C+5]CCCCC
 **** Load and Save as Molecule ****
 [#6]-[#6]-[#6;+5]-[#6]-[#6]-[#6]-[#6]-[#6]
 CC[C+5]CCCCC
+**** Load and Save as Query with not list ****
+[#6]-[#6]-[!#5!#6!#7]-[#6]-[#6]-[#6]-[#6]-[#6]-[#6]

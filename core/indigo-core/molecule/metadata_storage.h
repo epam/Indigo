@@ -60,8 +60,8 @@ namespace indigo
             return _meta_data;
         }
 
-        int getMetaCount(std::uint32_t meta_type) const;
-        const MetaObject& getMetaObject(std::uint32_t meta_type, int index) const;
+        int getMetaCount(uint32_t meta_type) const;
+        const MetaObject& getMetaObject(uint32_t meta_type, int index) const;
 
     protected:
         PtrArray<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr
