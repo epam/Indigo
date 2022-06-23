@@ -3315,9 +3315,7 @@ class IndigoObject(object):
             int: hash
         """
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(
-            Indigo._lib.indigoHash(self.id)
-        )
+        return self.dispatcher._checkResult(Indigo._lib.indigoHash(self.id))
 
     def layeredCode(self):
         """Molecule method returns layered code
