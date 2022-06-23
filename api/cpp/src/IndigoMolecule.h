@@ -21,10 +21,11 @@
 #include <memory>
 
 #include "IndigoBaseMolecule.h"
+#include "IndigoHashable.h"
 
 namespace indigo_cpp
 {
-    class IndigoMolecule final : public IndigoBaseMolecule
+    class IndigoMolecule final : public IndigoBaseMolecule, public IndigoHashable
     {
     public:
         IndigoMolecule(int id, IndigoSessionPtr session);
@@ -41,6 +42,7 @@ namespace indigo_cpp
         int numHydrogenBondDonors() const;
         double logP() const;
         double molarRefractivity() const;
+        int64_t hash() const final;
     };
 
     using IndigoMoleculeSPtr = std::shared_ptr<IndigoMolecule>;

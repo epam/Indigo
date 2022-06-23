@@ -19,6 +19,8 @@
 #ifndef __indigo__
 #define __indigo__
 
+#include <stdint.h>
+
 #if defined(_WIN32) && !defined(__MINGW32__)
 #define qword unsigned __int64
 #else
@@ -688,6 +690,8 @@ CEXPORT double indigoMolarRefractivity(int molecule);
 
 CEXPORT const char* indigoCanonicalSmiles(int molecule);
 CEXPORT const char* indigoLayeredCode(int molecule);
+
+CEXPORT int64_t indigoHash(int chemicalObject);
 
 CEXPORT const int* indigoSymmetryClasses(int molecule, int* count_out);
 

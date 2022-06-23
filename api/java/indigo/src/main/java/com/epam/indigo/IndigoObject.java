@@ -869,6 +869,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoLayeredCode(self));
     }
 
+    public long hash() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultLong(this, lib.indigoHash(self));
+    }
+
     public boolean hasCoord() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoHasCoord(self)) == 1;

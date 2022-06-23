@@ -73,3 +73,9 @@ double IndigoMolecule::molarRefractivity() const
     session()->setSessionId();
     return session()->_checkResultFloat(indigoMolarRefractivity(id()));
 }
+
+int64_t IndigoMolecule::hash() const
+{
+    session()->setSessionId();
+    return session()->_checkResult(indigoHash(id()));
+}

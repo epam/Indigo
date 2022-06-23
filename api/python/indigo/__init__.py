@@ -31,6 +31,7 @@ from ctypes import (
     c_double,
     c_float,
     c_int,
+    c_int64,
     c_ulonglong,
     c_void_p,
     pointer,
@@ -3307,6 +3308,15 @@ class IndigoObject(object):
             Indigo._lib.indigoCanonicalSmarts(self.id)
         )
 
+    def hash(self):
+        """Molecule or Reaction method returns hash code
+
+        Returns:
+            int: hash
+        """
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoHash(self.id))
+
     def layeredCode(self):
         """Molecule method returns layered code
 
@@ -5100,6 +5110,8 @@ class Indigo(object):
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmarts.restype = c_char_p
         Indigo._lib.indigoCanonicalSmarts.argtypes = [c_int]
+        Indigo._lib.indigoHash.restype = c_int64
+        Indigo._lib.indigoHash.argtypes = [c_int]
         Indigo._lib.indigoLayeredCode.restype = c_char_p
         Indigo._lib.indigoLayeredCode.argtypes = [c_int]
         Indigo._lib.indigoSymmetryClasses.restype = POINTER(c_int)

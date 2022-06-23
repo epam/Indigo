@@ -613,6 +613,8 @@ public interface IndigoLib extends Library {
 
     Pointer indigoCanonicalSmiles(int molecule);
 
+    long indigoHash(int item);
+
     Pointer indigoLayeredCode(int molecule);
 
     Pointer indigoSymmetryClasses(int molecule, IntByReference count);
