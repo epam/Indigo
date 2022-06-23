@@ -62,5 +62,5 @@ dword ExactStorage::calculateMolHash(Molecule& mol)
 
 dword ExactStorage::calculateRxnHash(Reaction& rxn)
 {
-   return ReactionHash::calculate(rxn);
+    return ReactionHash::calculate(rxn);
 }

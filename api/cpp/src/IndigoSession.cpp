@@ -197,6 +197,6 @@ IndigoSubstructureMatcher IndigoSession::substructureMatcher(const IndigoMolecul
 
 IndigoReaction IndigoSession::loadReaction(const std::string& data)
 {
-        setSessionId();
-        return {_checkResult(indigoLoadReactionFromString(data.c_str())), shared_from_this()};
+    setSessionId();
+    return {_checkResult(indigoLoadReactionFromString(data.c_str())), shared_from_this()};
 }
