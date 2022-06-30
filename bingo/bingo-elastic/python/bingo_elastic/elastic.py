@@ -105,6 +105,7 @@ index_body = {
             "sub_fingerprint": {"type": "keyword", "similarity": "boolean"},
             "sub_fingerprint_len": {"type": "integer"},
             "cmf": {"type": "keyword"},
+            "hash": {"type": "keyword", "similarity": "boolean"},
         }
     }
 }
@@ -155,13 +156,21 @@ def prepare(
 
 
 def response_to_records(
-    res, index_name, postprocess_actions, q_mol, options=""
+    res, index_name, postprocess_actions, q_mol=None, options=""
 ) -> Generator[IndigoRecord, None, None]:
+    indigo_session = Indigo()
+    print(
+        "ELASTIC", "hits_num=", res.get("hits", {}).get("total", {}).get("value", 0), ", "
+        "hits=", [hit["_source"]["name"] for hit in res.get("hits", {}).get("hits", [])]
+    )
     # print("RESULTS", res.get("hits", {}).get("hits", []))
     for el_response in res.get("hits", {}).get("hits", []):
         record = get_record_by_index(el_response, index_name)
         for action_fn in postprocess_actions:
-            record = action_fn(record, q_mol.dispatcher, q_mol, options)  # type: ignore
+            if not q_mol:
+                record = action_fn(record, indigo_session,  q_mol, options)  # type: ignore
+            else:
+                record = action_fn(record, q_mol.dispatcher,  q_mol, options)  # type: ignore
             if not record:
                 continue
         yield record
@@ -321,6 +330,7 @@ class ElasticRepository:
         exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
         q_mol: IndigoObject = None,
+        indigo_session: Indigo = None,
         limit=5000,
         options="",
         **kwargs,

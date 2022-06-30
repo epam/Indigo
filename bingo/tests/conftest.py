@@ -1,6 +1,5 @@
 import pytest
 from indigo import Indigo
-
 from .constants import (
     DATA_TYPES,
     DB_BINGO,
@@ -56,6 +55,7 @@ def db(request, indigo):
         else:
             index_name = IndexName.BINGO_REACTION
         db = BingoElastic(indigo, index_name)
+        db.drop()
         db.import_data(meta["import_no_sql"], data_type)
     elif db_str == DB_ORACLE:
         pass
@@ -72,8 +72,8 @@ def db(request, indigo):
             table.drop(db.engine)
     elif db_str == DB_BINGO:
         db.delete_base()
-    elif db_str == DB_BINGO_ELASTIC:
-        db.drop()
+    # elif db_str == DB_BINGO_ELASTIC:
+    #     db.drop()
     logger.info(f"===== Finish of testing {function} =====")
 
 

@@ -9,16 +9,16 @@ from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 from bingo_elastic.utils import PostprocessType, head_by_path
 
 
-def clauses(fingerprint, fingerprint_name) -> List[Dict]:
+def clauses(field_value, field_name) -> List[Dict]:
     return [
         {
             "term": {
-                fingerprint_name: {
+                field_name: {
                     "value": clause,
                 }
             }
         }
-        for clause in fingerprint
+        for clause in field_value
     ]
 
 
@@ -79,10 +79,9 @@ class SubstructureQuery(CompilableQuery):
             mol = record.as_indigo_object(indigo)
         except AssertionError:
             return None
-        if mol.checkBadValence():
-            return None
+
         matcher = indigo.substructureMatcher(mol, options)
-        # match = matcher.match(q_mol)
+
         if matcher.match(q_mol):
             return record
         return None
@@ -221,6 +220,7 @@ class TanimotoSimilarityMatch(BaseMatch):
 class EuclidSimilarityMatch(BaseMatch):
     @property
     def script(self) -> Dict:
+        print("SIM_FP", self._target.sim_fingerprint)
         assert self._target.sim_fingerprint
         return {
             "source": "_score / params.a",
@@ -228,6 +228,7 @@ class EuclidSimilarityMatch(BaseMatch):
         }
 
     def min_should_match(self, length: int):
+        print("SIM_FP", self._target.sim_fingerprint)
         assert self._target.sim_fingerprint
         min_match = (
             math.floor(self._threshold * len(self._target.sim_fingerprint))
@@ -276,33 +277,24 @@ class ExactMatch(CompilableQuery):
 
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
-        return clauses(self._target.sub_fingerprint, "sub_fingerprint")
+        # return clauses(self._target.sub_fingerprint, "sub_fingerprint")
+        return clauses(self._target.hash, "hash")
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo, options: str
+        self, record: IndigoRecord, indigo: Indigo, q_mol: str, options: str
     ) -> Optional[IndigoRecord]:
-        print("STEP = XX - exactmatch.postprocess")
-        print("OPTIONS", options)
-        print("MOL_1", record.as_indigo_object(indigo))
-        print("MOL_2", self._target.as_indigo_object(indigo))
-
         # postprocess only on molecule search
         if not isinstance(record, IndigoRecordMolecule):
             return record
 
-        mol_1 = record.as_indigo_object(indigo)
-        mol_2 = self._target.as_indigo_object(indigo)
-        mol_1.aromatize()
-        mol_2.aromatize()
-        print("MOL_1", mol_1.smiles())
-        print("MOL_2", mol_2.smiles())
-        print(mol_1.name(), mol_2.name())
-        print(f"indigo.exactMatch({mol_1}, {mol_2}, {options})")
+        query = record.as_indigo_object(indigo)
+        target = self._target.as_indigo_object(indigo)
 
-        if indigo.exactMatch(mol_1, mol_2, options):
-            print("MATCH", f"{mol_1.smiles()} matches {mol_2.smiles()}")
+        if indigo.exactMatch(target, query, options):
+            print("=======", f"{record.name} matches {self._target.name}")
             return record
+
         return None
 
     def compile(
@@ -314,17 +306,12 @@ class ExactMatch(CompilableQuery):
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()
-        # script_score_head = head_by_path(query, ("query", "script_score"))
-        # script_score_head["script"] = {
-        #     "source": "_score / doc['sub_fingerprint_len'].value"
-        # }
-        query["min_score"] = self._target.sub_fingerprint_len
         assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
 
 
 # Alias to default similarity match
-SimilarityMatch = TanimotoSimilarityMatch
+SimilarityMatch = EuclidSimilarityMatch
 
 
 def query_factory(key: str, value: Any) -> CompilableQuery:
