@@ -4,6 +4,7 @@ disable=
     C0116, # missing-function-docstring
     C0115, # missing-class-docstring
     R0903, # too-few-public-methods
+    R0913, # too-many-arguments
     E1136, # unsubscriptable-object
     R0801, # duplicate-code
     W0621, # redefined-outer-name

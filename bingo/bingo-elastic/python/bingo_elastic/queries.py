@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
-from indigo import Indigo, IndigoObject  # type: ignore
+from indigo import Indigo  # type: ignore
 
 from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 from bingo_elastic.utils import PostprocessType, head_by_path
@@ -91,9 +91,7 @@ class SubstructureQuery(CompilableQuery):
     ) -> None:
         # This code same as ExactMatch.
         # ExactMatch will use search by hash in next releases
-        bool_head = head_by_path(
-            query, ("query", "bool")
-        )
+        bool_head = head_by_path(query, ("query", "bool"))
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()
@@ -272,7 +270,6 @@ class ExactMatch(CompilableQuery):
 
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
-        # return clauses(self._target.sub_fingerprint, "sub_fingerprint")
         return clauses(self._target.hash, "hash")
 
     # pylint: disable=inconsistent-return-statements
@@ -293,9 +290,7 @@ class ExactMatch(CompilableQuery):
     def compile(
         self, query, postprocess_actions: PostprocessType = None
     ) -> None:
-        bool_head = head_by_path(
-            query, ("query", "bool")
-        )
+        bool_head = head_by_path(query, ("query", "bool"))
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()

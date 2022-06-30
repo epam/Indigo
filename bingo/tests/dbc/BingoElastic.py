@@ -39,7 +39,7 @@ class BingoElastic(NoSQLAdapter):
         for compound in indigo_iterator(self.indigo, data_path):
             try:
                 if compound.checkBadValence():
-                    continue
+                    raise IndigoException(compound.checkBadValence())
                 if database_type == EntitiesType.MOLECULES:
                     record = IndigoRecordMolecule(
                         indigo_object=compound, skip_errors=True, index=index
@@ -60,30 +60,37 @@ class BingoElastic(NoSQLAdapter):
         time.sleep(1)
 
     @catch_indigo_exception(catch_error=True)
-    def exact(self, molecule: IndigoObject, target_function: str, options=""):
+    def exact(
+        self, molecule: IndigoObject, target_function: str, options: str = ""
+    ):
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
         records = self.repo.filter(
-            exact=indigo_record, indigo_session=self.indigo,
-            limit=5000, options=options
-
+            exact=indigo_record,
+            indigo_session=self.indigo,
+            limit=5000,
+            options=options,
         )
 
         return self._process_records(records)
 
     @catch_indigo_exception(catch_error=True)
-    def substructure(self, molecule, target_function, options=""):
+    def substructure(
+        self, molecule: IndigoObject, target_function: str, options: str = ""
+    ):
         query_mol = self.indigo.loadQueryMolecule(molecule.rawData())
-        # indigo_record = IndigoRecord(indigo_object=query_mol)
+        query_mol.aromatize()
         records = self.repo.filter(
-            substructure=query_mol, indigo_session=query_mol.dispatcher,
-            limit=5000, options=options
+            substructure=query_mol,
+            indigo_session=query_mol.dispatcher,
+            limit=5000,
+            options=options,
         )
         return self._process_records(records)
 
     @catch_indigo_exception(catch_error=True)
     def similarity(
-        self, molecule: IndigoObject, target_function: str, options
+        self, molecule: IndigoObject, target_function: str, options: str
     ):
         sim_type, min_sim, max_sim = options.split(", ")
         min_sim, max_sim = float(min_sim), float(max_sim)

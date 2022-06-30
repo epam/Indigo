@@ -22,7 +22,7 @@ try:
 except ImportError:
     pass
 
-from indigo import Indigo, IndigoObject  # type: ignore
+from indigo import Indigo  # type: ignore
 
 from bingo_elastic.model.record import (
     IndigoRecord,
@@ -125,9 +125,7 @@ def check_index_exception(err_: RequestError) -> None:
 
 def create_index(index_name: str, el_client: Elasticsearch) -> None:
     try:
-        el_client.indices.create(
-            index=index_name, body=index_body, ignore=400
-        )
+        el_client.indices.create(index=index_name, body=index_body, ignore=400)
     except RequestError as err_:
         check_index_exception(err_)
 
@@ -320,10 +318,9 @@ class ElasticRepository:
         similarity: Union[BaseMatch] = None,
         exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
-        # q_mol: IndigoObject = None,
         indigo_session: Indigo = None,
         limit: int = 5000,
-        options="",
+        options: str = "",
         **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
 
@@ -337,7 +334,6 @@ class ElasticRepository:
             postprocess_actions=postprocess_actions,
             **kwargs,
         )
-        print("QUERY", query)
         res = self.el_client.search(index=self.index_name, body=query)
         yield from response_to_records(
             res, self.index_name, postprocess_actions, indigo_session, options
@@ -362,7 +358,6 @@ def compile_query(
                 "sim_fingerprint_len",
                 "sub_fingerprint_len",
                 "sub_fingerprint",
-                # "cmf"
             ],
         },
     }

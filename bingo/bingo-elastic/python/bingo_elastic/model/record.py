@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import traceback
 from typing import Callable, Dict, List, Optional
 from uuid import uuid4
 
@@ -46,10 +45,7 @@ class WithIndigoObject:
 
                 fp_list = value.fingerprint(f_print).oneBitsList()
                 if fp_list:
-                    fp_ = [
-                        int(feature)
-                        for feature in fp_list.split(" ")
-                    ]
+                    fp_ = [int(feature) for feature in fp_list.split(" ")]
                     setattr(instance, f"{f_print}_fingerprint", fp_)
                     setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
             except ValueError as err_:
