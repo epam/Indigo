@@ -64,45 +64,42 @@ class KeywordQuery(CompilableQuery):
 
 class SubstructureQuery(CompilableQuery):
     def __init__(self, key: str, value: IndigoRecord) -> None:
-        if not isinstance(value, IndigoRecord):
-            raise AttributeError(
-                "Argument for substructure search must be IndigoRecord"
-            )
         self._key = key
         self._value = value
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo, q_mol: IndigoObject, options: str
+        self, record: IndigoRecord, indigo: Indigo, options: str
     ) -> Optional[IndigoRecord]:
-        try:
-            mol = record.as_indigo_object(indigo)
-        except AssertionError:
+        if not record.cmf:
             return None
 
+        mol = record.as_indigo_object(indigo)
         matcher = indigo.substructureMatcher(mol, options)
 
-        if matcher.match(q_mol):
+        if matcher.match(self._value):
             return record
         return None
 
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
-        return clauses(self._value.sub_fingerprint, "sub_fingerprint")
+        fp_list = self._value.fingerprint("sub").oneBitsList().split()
+        return clauses(fp_list, "sub_fingerprint")
 
     def compile(
         self, query: Dict, postprocess_actions: PostprocessType = None
     ) -> None:
         # This code same as ExactMatch.
         # ExactMatch will use search by hash in next releases
-        query["min_score"] = 1
         bool_head = head_by_path(
             query, ("query", "bool")
         )
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()
-        query["min_score"] = self._value.sub_fingerprint_len
+        query["min_score"] = len(
+            self._value.fingerprint("sub").oneBitsList().split()
+        )
         assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
 
@@ -220,7 +217,6 @@ class TanimotoSimilarityMatch(BaseMatch):
 class EuclidSimilarityMatch(BaseMatch):
     @property
     def script(self) -> Dict:
-        print("SIM_FP", self._target.sim_fingerprint)
         assert self._target.sim_fingerprint
         return {
             "source": "_score / params.a",
@@ -228,7 +224,6 @@ class EuclidSimilarityMatch(BaseMatch):
         }
 
     def min_should_match(self, length: int):
-        print("SIM_FP", self._target.sim_fingerprint)
         assert self._target.sim_fingerprint
         min_match = (
             math.floor(self._threshold * len(self._target.sim_fingerprint))
@@ -282,7 +277,7 @@ class ExactMatch(CompilableQuery):
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo, q_mol: str, options: str
+        self, record: IndigoRecord, indigo: Indigo, options: str
     ) -> Optional[IndigoRecord]:
         # postprocess only on molecule search
         if not isinstance(record, IndigoRecordMolecule):
@@ -292,9 +287,7 @@ class ExactMatch(CompilableQuery):
         target = self._target.as_indigo_object(indigo)
 
         if indigo.exactMatch(target, query, options):
-            print("=======", f"{record.name} matches {self._target.name}")
             return record
-
         return None
 
     def compile(

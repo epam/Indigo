@@ -7,16 +7,12 @@ from bingo_elastic.model.record import (
     IndigoRecordReaction,
 )
 from bingo_elastic.queries import SimilarityMatch
-from indigo import IndigoException, IndigoObject, Indigo
-from indigo.inchi import IndigoInchi
+from indigo import IndigoException, IndigoObject
 
 from ..constants import DB_BINGO_ELASTIC, EntitiesType
 from ..helpers import indigo_iterator
 from ..logger import logger
 from .base import NoSQLAdapter, catch_indigo_exception
-
-i = Indigo()
-ii = IndigoInchi(i)
 
 
 class BingoElastic(NoSQLAdapter):
@@ -68,18 +64,20 @@ class BingoElastic(NoSQLAdapter):
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
         records = self.repo.filter(
-            exact=indigo_record, limit=5000, options=options,
-            indigo_session=self.indigo
+            exact=indigo_record, indigo_session=self.indigo,
+            limit=5000, options=options
+
         )
 
         return self._process_records(records)
 
     @catch_indigo_exception(catch_error=True)
     def substructure(self, molecule, target_function, options=""):
-        q_mol = self.indigo.loadQueryMolecule(molecule.rawData())
-        indigo_record = IndigoRecord(indigo_object=q_mol)
+        query_mol = self.indigo.loadQueryMolecule(molecule.rawData())
+        # indigo_record = IndigoRecord(indigo_object=query_mol)
         records = self.repo.filter(
-            substructure=indigo_record, limit=5000, q_mol=q_mol
+            substructure=query_mol, indigo_session=query_mol.dispatcher,
+            limit=5000, options=options
         )
         return self._process_records(records)
 

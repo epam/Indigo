@@ -40,46 +40,46 @@ class WithIndigoObject:
         )
 
         for f_print in fingerprints:
-            # try:
-            setattr(instance, f"{f_print}_fingerprint", [])
-            setattr(instance, f"{f_print}_fingerprint_len", 0)
+            try:
+                setattr(instance, f"{f_print}_fingerprint", [])
+                setattr(instance, f"{f_print}_fingerprint_len", 0)
 
-            fp_list = value.fingerprint(f_print).oneBitsList()
-            if fp_list:
-                fp_ = [
-                    int(feature)
-                    for feature in fp_list.split(" ")
-                ]
-                setattr(instance, f"{f_print}_fingerprint", fp_)
-                setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
-            # except ValueError as err_:
-            #     check_error(instance, err_)
-            # except IndigoException as err_:
-            #     check_error(instance, err_)
+                fp_list = value.fingerprint(f_print).oneBitsList()
+                if fp_list:
+                    fp_ = [
+                        int(feature)
+                        for feature in fp_list.split(" ")
+                    ]
+                    setattr(instance, f"{f_print}_fingerprint", fp_)
+                    setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
+            except ValueError as err_:
+                check_error(instance, err_)
+            except IndigoException as err_:
+                check_error(instance, err_)
 
-        # try:
-        cmf = " ".join(map(str, list(value.serialize())))
-        setattr(instance, "cmf", cmf)
-        # except IndigoException as err_:
-        #     setattr(instance, "cmf", "")
-        #     check_error(instance, err_)
+        try:
+            cmf = " ".join(map(str, list(value.serialize())))
+            setattr(instance, "cmf", cmf)
+        except IndigoException as err_:
+            setattr(instance, "cmf", "")
+            check_error(instance, err_)
 
-        # try:
-        setattr(instance, "name", value.name())
-        # except IndigoException as err_:
-        #     setattr(instance, "name", "")
-        #     check_error(instance, err_)
+        try:
+            setattr(instance, "name", value.name())
+        except IndigoException as err_:
+            setattr(instance, "name", "")
+            check_error(instance, err_)
 
-        # try:
-        hash_ = [
-            component.clone().hash()
-            for component in value.iterateComponents()
-        ]
-        if hash_:
-            setattr(instance, "hash", sorted(set(hash_)))
-        # except IndigoException as err_:
-        #     setattr(instance, "hash", [])
-        #     check_error(instance, err_)
+        try:
+            hash_ = [
+                component.clone().hash()
+                for component in value.iterateComponents()
+            ]
+            if hash_:
+                setattr(instance, "hash", sorted(set(hash_)))
+        except IndigoException as err_:
+            setattr(instance, "hash", [])
+            check_error(instance, err_)
 
 
 class IndigoRecord:

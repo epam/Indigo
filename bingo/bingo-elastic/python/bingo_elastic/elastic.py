@@ -156,21 +156,12 @@ def prepare(
 
 
 def response_to_records(
-    res, index_name, postprocess_actions, q_mol=None, options=""
+    res, index_name, postprocess_actions, indigo_session=None, options=""
 ) -> Generator[IndigoRecord, None, None]:
-    indigo_session = Indigo()
-    print(
-        "ELASTIC", "hits_num=", res.get("hits", {}).get("total", {}).get("value", 0), ", "
-        "hits=", [hit["_source"]["name"] for hit in res.get("hits", {}).get("hits", [])]
-    )
-    # print("RESULTS", res.get("hits", {}).get("hits", []))
     for el_response in res.get("hits", {}).get("hits", []):
         record = get_record_by_index(el_response, index_name)
         for action_fn in postprocess_actions:
-            if not q_mol:
-                record = action_fn(record, indigo_session,  q_mol, options)  # type: ignore
-            else:
-                record = action_fn(record, q_mol.dispatcher,  q_mol, options)  # type: ignore
+            record = action_fn(record, indigo_session, options)  # type: ignore
             if not record:
                 continue
         yield record
@@ -234,7 +225,7 @@ class AsyncElasticRepository:
         similarity: Union[BaseMatch] = None,
         exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
-        limit=5000,
+        limit: int = 5000,
         **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
 
@@ -329,9 +320,9 @@ class ElasticRepository:
         similarity: Union[BaseMatch] = None,
         exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
-        q_mol: IndigoObject = None,
+        # q_mol: IndigoObject = None,
         indigo_session: Indigo = None,
-        limit=5000,
+        limit: int = 5000,
         options="",
         **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
@@ -349,7 +340,7 @@ class ElasticRepository:
         print("QUERY", query)
         res = self.el_client.search(index=self.index_name, body=query)
         yield from response_to_records(
-            res, self.index_name, postprocess_actions, q_mol, options
+            res, self.index_name, postprocess_actions, indigo_session, options
         )
 
 
