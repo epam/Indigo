@@ -22,7 +22,7 @@ try:
 except ImportError:
     pass
 
-from indigo import Indigo  # type: ignore
+from indigo import Indigo, IndigoObject  # type: ignore
 
 from bingo_elastic.model.record import (
     IndigoRecord,
@@ -317,12 +317,13 @@ class ElasticRepository:
         self,
         similarity: Union[BaseMatch] = None,
         exact: IndigoRecord = None,
-        substructure: IndigoRecord = None,
+        substructure: IndigoObject = None,
         indigo_session: Indigo = None,
         limit: int = 5000,
         options: str = "",
         **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
+        # pylint: disable=too-many-arguments
 
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
@@ -344,7 +345,7 @@ class ElasticRepository:
 def compile_query(
     similarity: BaseMatch = None,
     exact: IndigoRecord = None,
-    substructure: IndigoRecord = None,
+    substructure: IndigoObject = None,
     limit: int = 5000,
     postprocess_actions: PostprocessType = None,
     **kwargs,
@@ -363,7 +364,7 @@ def compile_query(
     }
     if similarity and substructure:
         raise AttributeError(
-            "similarity and substructure search " "is not supported"
+            "similarity and substructure search is not supported"
         )
 
     if similarity:

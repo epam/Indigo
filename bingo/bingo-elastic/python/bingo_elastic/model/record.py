@@ -4,7 +4,6 @@ from typing import Callable, Dict, List, Optional
 from uuid import uuid4
 
 from indigo import Indigo, IndigoException, IndigoObject  # type: ignore
-from indigo.inchi import IndigoInchi
 
 
 # pylint: disable=unused-argument
@@ -93,7 +92,6 @@ class IndigoRecord:
     sim_fingerprint: Optional[List[str]] = None
     sub_fingerprint: Optional[List[str]] = None
     indigo_object = WithIndigoObject()
-    indigo_inchi: IndigoInchi = None
     elastic_response = WithElasticResponse()
     record_id: Optional[str] = None
     error_handler: Optional[Callable[[object, BaseException], None]] = None
@@ -138,7 +136,7 @@ class IndigoRecord:
 
     def as_indigo_object(self, session: Indigo):
         assert self.cmf != ""
-        return session.deserialize(list(map(int, self.cmf.split(" "))))
+        return session.deserialize(list(map(int, self.cmf.split(" "))))  # type: ignore
 
 
 class IndigoRecordMolecule(IndigoRecord):

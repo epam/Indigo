@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
-from indigo import Indigo  # type: ignore
+from indigo import Indigo, IndigoObject  # type: ignore
 
 from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 from bingo_elastic.utils import PostprocessType, head_by_path
@@ -63,7 +63,7 @@ class KeywordQuery(CompilableQuery):
 
 
 class SubstructureQuery(CompilableQuery):
-    def __init__(self, key: str, value: IndigoRecord) -> None:
+    def __init__(self, key: str, value: IndigoObject) -> None:
         self._key = key
         self._value = value
 
