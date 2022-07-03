@@ -37,7 +37,7 @@ namespace indigo
     {
     public:
         ReactionFingerprintBuilder(BaseReaction& reaction, const MoleculeFingerprintParameters& parameters,
-                                   std::unique_ptr<CancellationHandler>&& cancellationHandler = nullptr);
+                                   std::shared_ptr<CancellationHandler>  cancellationHandler = nullptr);
 
         bool query;
         bool skip_ord;
@@ -51,7 +51,7 @@ namespace indigo
 
         void parseFingerprintType(const char* type, bool query);
 
-        std::unique_ptr<CancellationHandler> cancellation;
+        std::shared_ptr<CancellationHandler> cancellation;
 
         DECL_ERROR;
 

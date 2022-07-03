@@ -32,7 +32,7 @@ namespace indigo
     public:
         CancellationHandler() = default;
         CancellationHandler(CancellationHandler&&) = delete;
-        CancellationHandler(const CancellationHandler&) = delete;
+        CancellationHandler(const CancellationHandler&) = default;
         CancellationHandler& operator=(CancellationHandler&&) = delete;
         CancellationHandler& operator=(const CancellationHandler&) = delete;
         virtual ~CancellationHandler()
@@ -52,7 +52,7 @@ namespace indigo
         TimeoutCancellationHandler() = delete;
         explicit TimeoutCancellationHandler(int mseconds);
         TimeoutCancellationHandler(TimeoutCancellationHandler&&) = delete;
-        TimeoutCancellationHandler(const TimeoutCancellationHandler&) = delete;
+        TimeoutCancellationHandler(const TimeoutCancellationHandler&) = default;
         TimeoutCancellationHandler& operator=(TimeoutCancellationHandler&&) = delete;
         TimeoutCancellationHandler& operator=(const TimeoutCancellationHandler&) = delete;
         ~TimeoutCancellationHandler() final

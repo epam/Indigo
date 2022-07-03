@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <utility>
+
 #include "reaction/reaction_fingerprint.h"
 #include "base_c/bitarray.h"
 #include "molecule/molecule_fingerprint.h"
@@ -28,7 +30,7 @@ IMPL_ERROR(ReactionFingerprintBuilder, "fingerprint builder");
 CP_DEF(ReactionFingerprintBuilder);
 
 ReactionFingerprintBuilder::ReactionFingerprintBuilder(BaseReaction& reaction, const MoleculeFingerprintParameters& parameters,
-                                                       std::unique_ptr<CancellationHandler>&& cancellationHandler)
+                                                       std::shared_ptr<CancellationHandler>  cancellationHandler)
     : cancellation(std::move(cancellationHandler)), _reaction(reaction), _parameters(parameters), CP_INIT, TL_CP_GET(_fingerprint)
 {
     query = false;
@@ -46,7 +48,7 @@ void ReactionFingerprintBuilder::process()
 
     for (i = _reaction.reactantBegin(); i < _reaction.reactantEnd(); i = _reaction.reactantNext(i))
     {
-        MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters);
+        MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters, cancellation);
 
         builder.query = query;
         builder.skip_tau = true;
@@ -62,7 +64,7 @@ void ReactionFingerprintBuilder::process()
     }
     for (i = _reaction.productBegin(); i < _reaction.productEnd(); i = _reaction.productNext(i))
     {
-        MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters);
+        MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters, cancellation);
 
         builder.query = query;
         builder.skip_tau = true;

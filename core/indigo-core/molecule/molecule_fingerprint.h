@@ -110,7 +110,7 @@ namespace indigo
     {
     public:
         MoleculeFingerprintBuilder(BaseMolecule& mol, const MoleculeFingerprintParameters& parameters,
-                                   std::unique_ptr<CancellationHandler>&& cancellation = nullptr);
+                                   std::shared_ptr<CancellationHandler>  cancellation = nullptr);
         ~MoleculeFingerprintBuilder();
 
         bool query;
@@ -143,7 +143,7 @@ namespace indigo
         static const char* printSimilarityType(SimilarityType type);
         static int getSimilarityTypeOrder(SimilarityType type);
 
-        std::unique_ptr<CancellationHandler> cancellation;
+        std::shared_ptr<CancellationHandler> cancellation;
 
         DECL_ERROR;
 
