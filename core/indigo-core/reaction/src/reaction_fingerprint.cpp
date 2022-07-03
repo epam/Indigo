@@ -29,9 +29,8 @@ IMPL_ERROR(ReactionFingerprintBuilder, "fingerprint builder");
 
 CP_DEF(ReactionFingerprintBuilder);
 
-ReactionFingerprintBuilder::ReactionFingerprintBuilder(BaseReaction& reaction, const MoleculeFingerprintParameters& parameters,
-                                                       std::shared_ptr<CancellationHandler>  cancellationHandler)
-    : cancellation(std::move(cancellationHandler)), _reaction(reaction), _parameters(parameters), CP_INIT, TL_CP_GET(_fingerprint)
+ReactionFingerprintBuilder::ReactionFingerprintBuilder(BaseReaction& reaction, const MoleculeFingerprintParameters& parameters)
+    : _reaction(reaction), _parameters(parameters), CP_INIT, TL_CP_GET(_fingerprint)
 {
     query = false;
     skip_sim = false;
@@ -48,7 +47,7 @@ void ReactionFingerprintBuilder::process()
 
     for (i = _reaction.reactantBegin(); i < _reaction.reactantEnd(); i = _reaction.reactantNext(i))
     {
-        MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters, cancellation);
+        MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters);
 
         builder.query = query;
         builder.skip_tau = true;
@@ -64,7 +63,7 @@ void ReactionFingerprintBuilder::process()
     }
     for (i = _reaction.productBegin(); i < _reaction.productEnd(); i = _reaction.productNext(i))
     {
-        MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters, cancellation);
+        MoleculeFingerprintBuilder builder(_reaction.getBaseMolecule(i), _parameters);
 
         builder.query = query;
         builder.skip_tau = true;

@@ -109,8 +109,7 @@ namespace indigo
     class DLLEXPORT MoleculeFingerprintBuilder
     {
     public:
-        MoleculeFingerprintBuilder(BaseMolecule& mol, const MoleculeFingerprintParameters& parameters,
-                                   std::shared_ptr<CancellationHandler>  cancellation = nullptr);
+        MoleculeFingerprintBuilder(BaseMolecule& mol, const MoleculeFingerprintParameters& parameters);
         ~MoleculeFingerprintBuilder();
 
         bool query;

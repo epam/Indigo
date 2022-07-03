@@ -43,7 +43,7 @@ namespace indigo
         virtual bool isCancelled() = 0;
         virtual const char* cancelledRequestMessage() = 0;
 
-        static std::unique_ptr<CancellationHandler>& cancellation_handler();
+        static std::shared_ptr<CancellationHandler>& cancellation_handler();
     };
 
     class DLLEXPORT TimeoutCancellationHandler final : public CancellationHandler
@@ -72,16 +72,16 @@ namespace indigo
     };
 
     // Global thread-local cancellation handler
-    DLLEXPORT CancellationHandler* getCancellationHandler();
+    DLLEXPORT std::shared_ptr<CancellationHandler>& getCancellationHandler();
 
-    // Returns previous cancellation handler. TAKES Ownership!!!
-    DLLEXPORT std::unique_ptr<CancellationHandler> resetCancellationHandler(CancellationHandler* handler);
+    // Returns previous cancellation handler. 
+    DLLEXPORT std::shared_ptr<CancellationHandler> resetCancellationHandler(std::shared_ptr<CancellationHandler> handler);
 
     class AutoCancellationHandler
     {
     public:
         AutoCancellationHandler() = delete;
-        explicit AutoCancellationHandler(CancellationHandler*);
+        explicit AutoCancellationHandler(std::shared_ptr<CancellationHandler>);
         AutoCancellationHandler(AutoCancellationHandler&&) = delete;
         AutoCancellationHandler(const AutoCancellationHandler&) = delete;
         AutoCancellationHandler& operator=(AutoCancellationHandler&&) = delete;

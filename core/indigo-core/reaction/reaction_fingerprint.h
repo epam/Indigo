@@ -36,8 +36,7 @@ namespace indigo
     class DLLEXPORT ReactionFingerprintBuilder
     {
     public:
-        ReactionFingerprintBuilder(BaseReaction& reaction, const MoleculeFingerprintParameters& parameters,
-                                   std::shared_ptr<CancellationHandler>  cancellationHandler = nullptr);
+        ReactionFingerprintBuilder(BaseReaction& reaction, const MoleculeFingerprintParameters& parameters);
 
         bool query;
         bool skip_ord;
@@ -50,8 +49,6 @@ namespace indigo
         byte* getSim();
 
         void parseFingerprintType(const char* type, bool query);
-
-        std::shared_ptr<CancellationHandler> cancellation;
 
         DECL_ERROR;
 
