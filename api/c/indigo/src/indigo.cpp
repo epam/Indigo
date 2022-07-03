@@ -135,7 +135,7 @@ void Indigo::updateCancellationHandler()
 {
     if (cancellation_timeout > 0)
     {
-        resetCancellationHandler(new TimeoutCancellationHandler(cancellation_timeout));
+        resetCancellationHandler(std::make_shared<TimeoutCancellationHandler>(cancellation_timeout));
     }
     else
     {
