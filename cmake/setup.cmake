@@ -45,8 +45,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Compile flags
 if (UNIX OR MINGW)
-    string(APPEND CMAKE_C_FLAGS " -rdynamic -fvisibility=hidden $ENV{CFLAGS}")
-    string(APPEND CMAKE_CXX_FLAGS " -rdynamic -fvisibility=hidden -fvisibility-inlines-hidden $ENV{CXXFLAGS}")
+    # TODO: REMOVE -g before merging!
+    string(APPEND CMAKE_C_FLAGS " -g -rdynamic -fvisibility=hidden $ENV{CFLAGS}")
+    string(APPEND CMAKE_CXX_FLAGS " -g -rdynamic -fvisibility=hidden -fvisibility-inlines-hidden $ENV{CXXFLAGS}")
 
     if(BUILD_STANDALONE AND NOT EMSCRIPTEN)
         if (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
