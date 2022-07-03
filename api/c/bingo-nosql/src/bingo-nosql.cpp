@@ -182,9 +182,10 @@ static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_ob
         {
             throw BingoException("bingoInsertRecordObj: Only molecule objects can be added to molecule index");
         }
-        // FIXME: MK: for some reason we need to aromatize input molecule. If we first clone and aromatize cloned, it won't work
-        indigo_obj.getMolecule().aromatize(self.arom_options);
-        IndexMolecule ind_mol(indigo_obj.getMolecule(), self.arom_options);
+        Molecule cloned;
+        cloned.clone(indigo_obj.getMolecule());
+        cloned.aromatize(self.arom_options);
+        IndexMolecule ind_mol(cloned, self.arom_options);
         profTimerStop(t1);
 
         const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
@@ -204,8 +205,10 @@ static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_ob
             throw BingoException("bingoInsertRecordObj: Only reaction objects can be added to reaction index");
         }
 
-        indigo_obj.getReaction().aromatize(self.arom_options);
-        IndexReaction ind_rxn(indigo_obj.getReaction(), self.arom_options);
+        Reaction cloned;
+        cloned.clone(indigo_obj.getReaction());
+        cloned.aromatize(self.arom_options);
+        IndexReaction ind_rxn(cloned, self.arom_options);
 
         const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         const auto obj_data = [&]() {
@@ -514,7 +517,7 @@ CEXPORT int bingoGetRecordObj(int db, int id)
             Molecule& mol = molptr->mol;
             CmfLoader cmf_loader(buf_scn);
             cmf_loader.loadMolecule(mol);
-            indigo_obj_id = self.addObject(molptr.release());
+            indigo_obj_id = self.addObject(std::move(molptr));
         }
         else if (bingo_index->getType() == IndexType::REACTION)
         {
@@ -524,7 +527,7 @@ CEXPORT int bingoGetRecordObj(int db, int id)
             CrfLoader crf_loader(buf_scn);
             crf_loader.loadReaction(rxn);
 
-            indigo_obj_id = self.addObject(rxnptr.release());
+            indigo_obj_id = self.addObject(std::move(rxnptr));
         }
         else
         {
