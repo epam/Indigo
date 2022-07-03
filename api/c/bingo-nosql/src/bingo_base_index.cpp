@@ -446,28 +446,27 @@ void BaseIndex::_saveProperties(const MoleculeFingerprintParameters& fp_params, 
 
 ObjectIndexData BaseIndex::prepareIndexData(IndexObject& obj) const
 {
-    std::cout << 83 << '\n';
     ObjectIndexData obj_data;
     {
         profTimerStart(t, "prepare_cf");
         obj.buildCfString(obj_data.cf_str);
     }
-    std::cout << 84 << '\n';
+
     {
         profTimerStart(t, "prepare_formula");
         obj.buildGrossString(obj_data.gross_str);
     }
-    std::cout << 85 << '\n';
+
     {
-//        profTimerStart(t, "prepare_fp");
+        profTimerStart(t, "prepare_fp");
         obj.buildFingerprint(_fp_params, &obj_data.sub_fp, &obj_data.sim_fp);
     }
-    std::cout << 86 << '\n';
+
     {
-//        profTimerStart(t, "prepare_hash");
+        profTimerStart(t, "prepare_hash");
         obj.buildHash(obj_data.hash);
     }
-    std::cout << 87 << '\n';
+
     return obj_data;
 }
 

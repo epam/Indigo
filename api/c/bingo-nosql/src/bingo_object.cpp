@@ -112,23 +112,17 @@ IndexMolecule::IndexMolecule(/* const */ Molecule& mol, const AromaticityOptions
     // _mol.aromatize(arom_options);
 }
 
-#include <iostream>
-
 bool IndexMolecule::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
 {
-    std::cout << 851 << '\n';
     MoleculeFingerprintBuilder fp_builder(_mol, fp_params);
-    std::cout << 852 << '\n';
-//    fp_builder.cancellation = &canc_handler;
 
     fp_builder.process();
-    std::cout << 853 << '\n';
+
     if (sub_fp)
         sub_fp->copy(fp_builder.get(), fp_params.fingerprintSize());
-    std::cout << 854 << '\n';
     if (sim_fp)
         sim_fp->copy(fp_builder.getSim(), fp_params.fingerprintSizeSim());
-    std::cout << 855 << '\n';
+
     return true;
 }
 
