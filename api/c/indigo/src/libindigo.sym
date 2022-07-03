@@ -1,0 +1,8 @@
+{
+    global:
+        extern "C" {
+            *indigo*;
+            *Indigo*;
+        };
+    local: *;
+};
