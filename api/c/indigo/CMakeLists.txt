@@ -23,7 +23,7 @@ if (NOT EMSCRIPTEN)
     )
 
     if(UNIX AND NOT APPLE)
-         target_link_options(${PROJECT_NAME} PRIVATE -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/libindigo.sym)
+         target_link_options(${PROJECT_NAME} PRIVATE -Wl,--dynamic-list-cpp-typeinfo -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/libindigo.sym)
     endif()
 
     if (MINGW)

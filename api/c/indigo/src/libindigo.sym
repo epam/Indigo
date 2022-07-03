@@ -1,8 +1,16 @@
 {
     global:
-        extern "C" {
-            *indigo*;
-            *Indigo*;
-        };
-    local: *;
+        *indigo*;
+        *Indigo*;
+        bitAnd;
+        bitCommonOnes;
+        bitDifferentOnes;
+        bitGetBit;
+        bitGetOnesCount;
+        bitSetBit;
+        bitTestOnes;
+        osDirCreate;
+        osDirExists;
+    local:
+        *;
 };
