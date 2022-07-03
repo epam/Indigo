@@ -164,10 +164,7 @@ IndexReaction::IndexReaction(/* const */ Reaction& rxn, const AromaticityOptions
 
 bool IndexReaction::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
 {
-    ReactionFingerprintBuilder fp_builder(_rxn, fp_params);
-    TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
-
-    fp_builder.cancellation = &canc_handler;
+    ReactionFingerprintBuilder fp_builder(_rxn, fp_params, std::make_unique<TimeoutCancellationHandler>(_fp_calc_timeout));
 
     fp_builder.process();
 
