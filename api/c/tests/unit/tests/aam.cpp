@@ -17,23 +17,21 @@
  ***************************************************************************/
 
 #include <fstream>
+#include <vector>
 
 #include <gtest/gtest.h>
-
-#include <base_cpp/exception.h>
-#include <base_cpp/scanner.h>
-#include <molecule/molecule.h>
 
 #include <indigo.h>
 
 #include "common.h"
 
 using namespace indigo;
+using namespace std;
 
 class IndigoApiAamTest : public IndigoApiTest
 {
 protected:
-    int numUniqueMap(Array<int>& map)
+    int numUniqueMap(vector<int>& map)
     {
         std::set<int> unique;
         for (int i = 0; i < map.size(); ++i)
@@ -72,7 +70,7 @@ TEST_F(IndigoApiAamTest, test_aam_rings)
 
         //      indigoRenderToFile(rxn, "test_aam.png");
 
-        Array<int> map;
+        vector<int> map;
         int re = indigoIterateReactants(rxn);
 
         while (indigoHasNext(re))
@@ -82,15 +80,15 @@ TEST_F(IndigoApiAamTest, test_aam_rings)
             while (indigoHasNext(mr))
             {
                 int m = indigoNext(mr);
-                map.push(indigoGetAtomMappingNumber(rxn, m));
+                map.push_back(indigoGetAtomMappingNumber(rxn, m));
             }
         }
 
         ASSERT_EQ(24, numUniqueMap(map));
     }
-    catch (Exception& e)
+    catch (std::exception& e)
     {
-        ASSERT_STREQ("", e.message());
+        ASSERT_STREQ("", e.what());
     }
 }
 
@@ -104,7 +102,7 @@ TEST_F(IndigoApiAamTest, test_aam_alter)
 
         //      indigoRenderToFile(rxn, "test_aam.png");
 
-        Array<int> map;
+        vector<int> map;
         int re = indigoIterateReactants(rxn);
 
         while (indigoHasNext(re))
@@ -114,15 +112,15 @@ TEST_F(IndigoApiAamTest, test_aam_alter)
             while (indigoHasNext(mr))
             {
                 int m = indigoNext(mr);
-                map.push(indigoGetAtomMappingNumber(rxn, m));
+                map.push_back(indigoGetAtomMappingNumber(rxn, m));
             }
         }
 
         ASSERT_EQ(11, numUniqueMap(map));
     }
-    catch (Exception& e)
+    catch (std::exception& e)
     {
-        ASSERT_STREQ("", e.message());
+        ASSERT_STREQ("", e.what());
     }
 }
 
@@ -136,7 +134,7 @@ TEST_F(IndigoApiAamTest, test_aam_keep_radicals)
 
         //      indigoRenderToFile(rxn, "test_aam.png");
 
-        Array<int> map;
+        vector<int> map;
         int re = indigoIterateReactants(rxn);
 
         while (indigoHasNext(re))
@@ -146,15 +144,15 @@ TEST_F(IndigoApiAamTest, test_aam_keep_radicals)
             while (indigoHasNext(mr))
             {
                 int m = indigoNext(mr);
-                map.push(indigoGetAtomMappingNumber(rxn, m));
+                map.push_back(indigoGetAtomMappingNumber(rxn, m));
             }
         }
 
         ASSERT_EQ(14, numUniqueMap(map));
     }
-    catch (Exception& e)
+    catch (std::exception& e)
     {
-        ASSERT_STREQ("", e.message());
+        ASSERT_STREQ("", e.what());
     }
 }
 
@@ -168,7 +166,7 @@ TEST_F(IndigoApiAamTest, test_aam_395_1)
 
         // indigoRenderToFile(rxn, "test_aam.png");
 
-        Array<int> map;
+        vector<int> map;
         int re = indigoIterateReactants(rxn);
 
         while (indigoHasNext(re))
@@ -178,14 +176,14 @@ TEST_F(IndigoApiAamTest, test_aam_395_1)
             while (indigoHasNext(mr))
             {
                 int m = indigoNext(mr);
-                map.push(indigoGetAtomMappingNumber(rxn, m));
+                map.push_back(indigoGetAtomMappingNumber(rxn, m));
             }
         }
 
         ASSERT_EQ(11, numUniqueMap(map));
     }
-    catch (Exception& e)
+    catch (std::exception& e)
     {
-        ASSERT_STREQ("", e.message());
+        ASSERT_STREQ("", e.what());
     }
 }

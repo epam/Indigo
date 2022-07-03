@@ -23,8 +23,6 @@
 #include <bingo-nosql.h>
 #include <indigo.h>
 
-#include <base_cpp/exception.h>
-
 #include "common.h"
 
 using namespace indigo;
@@ -79,7 +77,7 @@ TEST_F(BingoNosqlTest, multiple_instances_same_name)
                 db_ids.emplace_back(bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", ""));
             }
         },
-        Exception);
+        std::exception);
     for (const auto& db_id : db_ids)
     {
         bingoCloseDatabase(db_id);
