@@ -23,8 +23,6 @@
 
 #include "base_c/defs.h"
 
-#include <iostream>
-
 namespace indigo
 {
     class DLLEXPORT CancellationHandler
@@ -35,10 +33,7 @@ namespace indigo
         CancellationHandler(const CancellationHandler&) = default;
         CancellationHandler& operator=(CancellationHandler&&) = delete;
         CancellationHandler& operator=(const CancellationHandler&) = delete;
-        virtual ~CancellationHandler()
-        {
-            std::cout << "~CancellationHandler()" << std::endl;
-        };
+        virtual ~CancellationHandler() = default;
 
         virtual bool isCancelled() = 0;
         virtual const char* cancelledRequestMessage() = 0;
@@ -55,11 +50,7 @@ namespace indigo
         TimeoutCancellationHandler(const TimeoutCancellationHandler&) = default;
         TimeoutCancellationHandler& operator=(TimeoutCancellationHandler&&) = delete;
         TimeoutCancellationHandler& operator=(const TimeoutCancellationHandler&) = delete;
-        ~TimeoutCancellationHandler() final
-        {
-            std::cout << "~TimeoutCancellationHandler()" << std::endl;
-        };
-
+        ~TimeoutCancellationHandler() final = default;
         bool isCancelled() final;
         const char* cancelledRequestMessage() final;
 

@@ -154,12 +154,8 @@ void MoleculeFingerprintBuilder::_initHashCalculations(BaseMolecule& mol, const 
     }
 }
 
-#include <iostream>
-#include <utility>
-
 MoleculeFingerprintBuilder::~MoleculeFingerprintBuilder()
 {
-    std::cout << "~MoleculeFingerprintBuilder()" << std::endl;
 }
 
 void MoleculeFingerprintBuilder::process()
@@ -239,8 +235,6 @@ SimilarityType MoleculeFingerprintBuilder::parseSimilarityType(const char* type)
         return SimilarityType::ECFP6;
     else if (strcasecmp(type, "ECFP8") == 0)
         return SimilarityType::ECFP8;
-    else if (strcasecmp(type, "FCFP2") == 0)
-        return SimilarityType::FCFP2;
     else
         throw Exception("Unknown similarity type '%s'", type);
 

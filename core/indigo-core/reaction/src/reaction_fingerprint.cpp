@@ -16,8 +16,6 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <utility>
-
 #include "reaction/reaction_fingerprint.h"
 #include "base_c/bitarray.h"
 #include "molecule/molecule_fingerprint.h"
