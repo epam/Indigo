@@ -41,6 +41,7 @@ TEST_F(BingoNosqlTest, test_enumerate_id)
     EXPECT_FALSE(bingoNext(e_empty));
     EXPECT_ANY_THROW(bingoGetCurrentId(e_empty));
     bingoEndSearch(e_empty);
+    indigoSetOptionInt("timeout", 1000);
 
     // Main scenario: 3 elements in enumerator
     bingoInsertRecordObj(db, obj);
