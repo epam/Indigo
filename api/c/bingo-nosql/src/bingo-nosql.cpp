@@ -552,7 +552,8 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
 {
     BINGO_BEGIN_DB(db)
     {
-        IndigoObject& obj = *(self.getObject(query_obj).clone());
+        auto obj_ptr = std::unique_ptr<IndigoObject>(self.getObject(query_obj).clone());
+        IndigoObject& obj = *obj_ptr;
 
         if (IndigoQueryMolecule::is(obj))
         {
@@ -602,7 +603,8 @@ CEXPORT int bingoSearchExact(int db, int query_obj, const char* options)
 {
     BINGO_BEGIN_DB(db)
     {
-        IndigoObject& obj = *(self.getObject(query_obj).clone());
+        auto obj_ptr = std::unique_ptr<IndigoObject>(self.getObject(query_obj).clone());
+        IndigoObject& obj = *obj_ptr;
 
         if (IndigoMolecule::is(obj))
         {
@@ -674,7 +676,8 @@ CEXPORT int bingoSearchSim(int db, int query_obj, float min, float max, const ch
 {
     BINGO_BEGIN_DB(db)
     {
-        IndigoObject& obj = *(self.getObject(query_obj).clone());
+        auto obj_ptr = std::unique_ptr<IndigoObject>(self.getObject(query_obj).clone());
+        IndigoObject& obj = *obj_ptr;
 
         if (IndigoMolecule::is(obj))
         {
@@ -724,7 +727,8 @@ CEXPORT int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max,
 {
     BINGO_BEGIN_DB(db)
     {
-        IndigoObject& obj = *(self.getObject(query_obj).clone());
+        auto obj_ptr = std::unique_ptr<IndigoObject>(self.getObject(query_obj).clone());
+        IndigoObject& obj = *obj_ptr;
         IndigoObject& ext_fp = self.getObject(fp);
 
         if (IndigoMolecule::is(obj))
@@ -775,7 +779,8 @@ CEXPORT int bingoSearchSimTopN(int db, int query_obj, int limit, float min, cons
 {
     BINGO_BEGIN_DB(db)
     {
-        IndigoObject& obj = *(self.getObject(query_obj).clone());
+        auto obj_ptr = std::unique_ptr<IndigoObject>(self.getObject(query_obj).clone());
+        IndigoObject& obj = *obj_ptr;
 
         if (IndigoMolecule::is(obj))
         {
@@ -825,7 +830,8 @@ CEXPORT int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float 
 {
     BINGO_BEGIN_DB(db)
     {
-        IndigoObject& obj = *(self.getObject(query_obj).clone());
+        auto obj_ptr = std::unique_ptr<IndigoObject>(self.getObject(query_obj).clone());
+        IndigoObject& obj = *obj_ptr;
         IndigoObject& ext_fp = self.getObject(fp);
 
         if (IndigoMolecule::is(obj))
