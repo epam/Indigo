@@ -204,3 +204,16 @@ TEST_F(IndigoSimilarityTest, similarity_sim_ECFP8_mode)
     EXPECT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
     EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
 }
+
+TEST_F(IndigoSimilarityTest, similarity_sim_FCFP2_mode)
+{
+    const char* type = "sim";
+    indigoSetOption("similarity-type", "fcfp2");
+    int f1 = indigoFingerprint(m1, type);
+    int f2 = indigoFingerprint(m2, type);
+    int f3 = indigoFingerprint(m3, type);
+    
+    EXPECT_LT(0.06, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_GT(0.99, indigoSimilarity(f1, f2, "tanimoto"));
+    EXPECT_EQ(1.00, indigoSimilarity(f2, f3, "tanimoto"));
+}

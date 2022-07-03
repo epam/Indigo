@@ -109,7 +109,8 @@ namespace indigo
     class DLLEXPORT MoleculeFingerprintBuilder
     {
     public:
-        MoleculeFingerprintBuilder(BaseMolecule& mol, const MoleculeFingerprintParameters& parameters);
+        MoleculeFingerprintBuilder(BaseMolecule& mol, const MoleculeFingerprintParameters& parameters,
+                                   std::unique_ptr<CancellationHandler>&& cancellation = nullptr);
         ~MoleculeFingerprintBuilder();
 
         bool query;
@@ -142,7 +143,7 @@ namespace indigo
         static const char* printSimilarityType(SimilarityType type);
         static int getSimilarityTypeOrder(SimilarityType type);
 
-        CancellationHandler* cancellation;
+        std::unique_ptr<CancellationHandler> cancellation;
 
         DECL_ERROR;
 

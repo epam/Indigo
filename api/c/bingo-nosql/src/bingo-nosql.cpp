@@ -168,12 +168,17 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
 static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_obj, int obj_id)
 {
     profTimerStart(t, "_insertObjectToDatabase");
+    
+    std::cout << 6 << '\n';
+    
     const IndexType index_type = [db]() {
         const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
         auto bingo_index = sf::slock_safe_ptr(bingo_indexes->at(db));
         return (**bingo_index).getType();
     }();
 
+    std::cout << 7 << '\n';
+    
     if (index_type == IndexType::MOLECULE)
     {
         profTimerStart(t1, "_preadd");
@@ -187,16 +192,20 @@ static int _insertObjectToDatabase(int db, Indigo& self, IndigoObject& indigo_ob
         cloned.aromatize(self.arom_options);
         IndexMolecule ind_mol(cloned, self.arom_options);
         profTimerStop(t1);
-
+        std::cout << 8 << '\n';
         const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
+        std::cout << 81 << '\n';
         const auto obj_data = [&]() {
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
+            std::cout << 82 << '\n';
             return (*bingo_index_ptr)->prepareIndexData(ind_mol);
         }();
+        std::cout << 9 << '\n';
         {
             auto bingo_index_ptr = sf::xlock_safe_ptr(bingo_indexes->at(db));
             return (*bingo_index_ptr)->add(obj_id, obj_data);
         }
+        std::cout << 10 << '\n';
     }
     else if (index_type == IndexType::REACTION)
     {
@@ -390,26 +399,36 @@ CEXPORT int bingoCloseDatabase(int db)
     BINGO_END(-1);
 }
 
+#include <iostream>
+
 CEXPORT int bingoInsertRecordObj(int db, int obj)
 {
     BINGO_BEGIN_DB(db)
     {
+        std::cout << 1 << '\n';
         IndigoObject& indigo_obj = self.getObject(obj);
+        std::cout << 2 << '\n';
 
         long obj_id = -1;
         auto& properties = indigo_obj.getProperties();
 
+        std::cout << 3 << '\n';
+        
         const char* key_name = [db]() {
             const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
             const auto bingo_index_ptr = sf::slock_safe_ptr(bingo_indexes->at(db));
             return (*bingo_index_ptr)->getIdPropertyName();
         }();
 
+        std::cout << 4 << '\n';
+        
         if (key_name != nullptr && properties.contains(key_name))
         {
             obj_id = strtol(properties.at(key_name), NULL, 10);
         }
 
+        std::cout << 5 << '\n';
+        
         return _insertObjectToDatabase(db, self, indigo_obj, obj_id);
     }
     BINGO_END(-1);

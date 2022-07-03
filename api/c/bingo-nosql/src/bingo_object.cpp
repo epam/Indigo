@@ -30,11 +30,8 @@ BaseMoleculeQuery::BaseMoleculeQuery(BaseMolecule& mol, bool needs_query_fingerp
 
 bool BaseMoleculeQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
 {
-    MoleculeFingerprintBuilder fp_builder(_base_mol, fp_params);
-    TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
-
+    MoleculeFingerprintBuilder fp_builder(_base_mol, fp_params, std::make_unique<TimeoutCancellationHandler>(_fp_calc_timeout));
     fp_builder.query = _needs_query_fingerprint;
-    fp_builder.cancellation = &canc_handler;
 
     fp_builder.process();
 
@@ -82,10 +79,7 @@ BaseReactionQuery::BaseReactionQuery(BaseReaction& rxn) : _base_rxn(rxn)
 
 bool BaseReactionQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
 {
-    ReactionFingerprintBuilder fp_builder(_base_rxn, fp_params);
-    TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
-
-    fp_builder.cancellation = &canc_handler;
+    ReactionFingerprintBuilder fp_builder(_base_rxn, fp_params, std::make_unique<TimeoutCancellationHandler>(_fp_calc_timeout));
 
     fp_builder.process();
 
@@ -118,20 +112,23 @@ IndexMolecule::IndexMolecule(/* const */ Molecule& mol, const AromaticityOptions
     // _mol.aromatize(arom_options);
 }
 
+#include <iostream>
+
 bool IndexMolecule::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) // const
 {
-    MoleculeFingerprintBuilder fp_builder(_mol, fp_params);
-    TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
-
-    fp_builder.cancellation = &canc_handler;
+    std::cout << 851 << '\n';
+    MoleculeFingerprintBuilder fp_builder(_mol, fp_params, std::make_unique<TimeoutCancellationHandler>(_fp_calc_timeout));
+    std::cout << 852 << '\n';
+//    fp_builder.cancellation = &canc_handler;
 
     fp_builder.process();
-
+    std::cout << 853 << '\n';
     if (sub_fp)
         sub_fp->copy(fp_builder.get(), fp_params.fingerprintSize());
+    std::cout << 854 << '\n';
     if (sim_fp)
         sim_fp->copy(fp_builder.getSim(), fp_params.fingerprintSizeSim());
-
+    std::cout << 855 << '\n';
     return true;
 }
 
