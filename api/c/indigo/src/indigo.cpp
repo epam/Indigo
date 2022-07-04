@@ -345,7 +345,7 @@ int Indigo::addObject(IndigoObject* obj)
     ss << "IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
     std::cout << ss.str() << std::endl;
 #endif
-    objects_holder->objects.emplace(id, obj);
+    objects_holder->objects.emplace(id, std::unique_ptr<IndigoObject>(obj));
     return id;
 }
 

@@ -144,7 +144,6 @@ TEST(Bingo, CreateCloseLoad)
     }
 }
 
-
 TEST(Bingo, Aromatization)
 {
     auto session = IndigoSession::create();

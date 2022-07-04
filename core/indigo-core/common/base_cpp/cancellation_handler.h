@@ -65,7 +65,7 @@ namespace indigo
     // Global thread-local cancellation handler
     DLLEXPORT std::shared_ptr<CancellationHandler>& getCancellationHandler();
 
-    // Returns previous cancellation handler. 
+    // Returns previous cancellation handler.
     DLLEXPORT std::shared_ptr<CancellationHandler> resetCancellationHandler(std::shared_ptr<CancellationHandler> handler);
 
     class AutoCancellationHandler
