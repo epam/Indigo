@@ -7,6 +7,7 @@ from env_indigo import *
 
 
 def searchSim(bingo, q, minSim, maxSim, metric=None):
+    q.aromatize()
     print(
         "** searchSim({0}, {1}, {2}, {3}) **".format(
             q.smiles(), minSim, maxSim, metric
@@ -28,6 +29,7 @@ def searchSim(bingo, q, minSim, maxSim, metric=None):
 
 
 def searchSub(bingo, q, options=""):
+    q.aromatize()
     print("** searchSub({0}, {1}) **".format(q.smiles(), repr(options)))
     result = bingo.searchSub(q, options)
     rm = result.getIndigoObject()
@@ -45,6 +47,7 @@ def searchSub(bingo, q, options=""):
 
 
 def searchExact(bingo, q, options=""):
+    q.aromatize()
     print("** searchExact({0}, {1}) **".format(q.smiles(), repr(options)))
     result = bingo.searchExact(q, options)
     rm = result.getIndigoObject()
