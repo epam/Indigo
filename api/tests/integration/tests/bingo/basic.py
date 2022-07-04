@@ -5,7 +5,6 @@ from env_indigo import *
 
 
 def searchSub(bingo, q, options=""):
-    q.aromatize()
     print("** searchSub({0}) **".format(q.smiles()))
     result = bingo.searchSub(q, options)
     while result.next():
@@ -13,7 +12,6 @@ def searchSub(bingo, q, options=""):
 
 
 def searchExact(bingo, q, options=""):
-    q.aromatize()
     print("** searchExact({0}) **".format(q.smiles()))
     result = bingo.searchExact(q, options)
     while result.next():
@@ -21,7 +19,6 @@ def searchExact(bingo, q, options=""):
 
 
 def searchSim(bingo, q, minSim, maxSim, metric=None):
-    q.aromatize()
     print("** searchSim({0}) **".format(q.smiles()))
     result = bingo.searchSim(q, minSim, maxSim, metric)
     print(

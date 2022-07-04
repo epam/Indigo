@@ -48,7 +48,7 @@ if (UNIX OR MINGW)
     # TODO: REMOVE -g before merging!
     string(APPEND CMAKE_C_FLAGS " -g -fvisibility=hidden $ENV{CFLAGS}")
     string(APPEND CMAKE_CXX_FLAGS " -g -fvisibility=hidden -fvisibility-inlines-hidden $ENV{CXXFLAGS}")
-    if (NOT MINGW)
+    if (NOT MINGW AND NOT APPLE)
         string(APPEND CMAKE_C_FLAGS " -rdynamic")
         string(APPEND CMAKE_CXX_FLAGS " -rdynamic")
     endif()
