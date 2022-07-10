@@ -105,7 +105,6 @@ namespace indigo
             using namespace rapidjson;
             _pos = pos;
             _content = content;
-            //typedef GenericDocument<UTF8<>> WDocument;
             Document data;
             data.Parse(content.c_str());
             if (data.HasMember("blocks"))
