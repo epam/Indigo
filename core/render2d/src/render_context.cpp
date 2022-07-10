@@ -502,7 +502,9 @@ void RenderContext::drawTextItemText(const TextItem& ti, bool idle)
 void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, bool idle)
 {
     TextItem ti_mod(ti);
-    ti_mod.bold = ti.highlighted && opt.highlightThicknessEnable;
+    if (!ti_mod.bold)
+        ti_mod.bold = ti.highlighted && opt.highlightThicknessEnable;
+    ti_mod.bbp.y += ti.script_type == 0 ? 0 : (ti.script_type == 1 ? -ti_mod.relpos.y / 2 : ti_mod.relpos.y / 2);
     fontsSetFont(ti_mod);
     fontsDrawText(ti_mod, color, idle);
 }
@@ -717,9 +719,17 @@ void RenderContext::setFontSize(double fontSize)
     cairoCheckStatus();
 }
 
+double RenderContext::getFontExtentHeight()
+{
+    cairo_font_extents_t fe;
+    cairo_font_extents(_cr, &fe);
+    return fe.height;
+}
+
 void RenderContext::setTextItemSize(TextItem& ti)
 {
-    ti.bold = ti.highlighted && opt.highlightThicknessEnable;
+    if (!ti.bold)
+        ti.bold = ti.highlighted && opt.highlightThicknessEnable;
     fontsSetFont(ti);
     fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
 }
@@ -727,9 +737,6 @@ void RenderContext::setTextItemSize(TextItem& ti)
 void RenderContext::setTextItemSize(TextItem& ti, const Vec2f& c)
 {
     setTextItemSize(ti);
-
-    cairo_font_extents_t fe;
-    cairo_font_extents(_cr, &fe);
     ti.bbp.x = c.x - ti.bbsz.x / 2;
     ti.bbp.y = c.y - ti.bbsz.y / 2;
 }

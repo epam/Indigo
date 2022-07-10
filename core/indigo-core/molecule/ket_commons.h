@@ -31,17 +31,17 @@
 namespace indigo
 {
     const double KETDefaultFontSize = 13;
-    const double KETFontScaleFactor = 58;
+    const double KETFontScaleFactor = 47;
 
-    struct hashFunction
+    struct compareFunction
     {
-        size_t operator()(const std::pair<int, bool>& x) const
+        bool operator()(const std::pair<int, bool>& a, const std::pair<int, bool>& b) const
         {
-            return x.first ^ x.second;
+            return a.second == b.second ? a.first < b.first : a.second < b.second;
         }
     };
 
-    using FONT_STYLE_SET = std::unordered_set<std::pair<int, bool>, hashFunction>;
+    using FONT_STYLE_SET = std::set<std::pair<int, bool>, compareFunction>;
 
     constexpr std::uint32_t string_hash(char const* s, std::size_t count)
     {
@@ -105,6 +105,7 @@ namespace indigo
             using namespace rapidjson;
             _pos = pos;
             _content = content;
+            //typedef GenericDocument<UTF8<>> WDocument;
             Document data;
             data.Parse(content.c_str());
             if (data.HasMember("blocks"))

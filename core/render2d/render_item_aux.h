@@ -98,14 +98,12 @@ namespace indigo
         void _drawRIfThen(bool idle);
         void _drawText(bool idle);
         void _drawText(TextItem& ti, bool idle);
-        void _drawTextCentered(TextItem& ti, const Vec2f& sz, bool idle);
-
         void _drawMeta(bool idle);
         void _drawPlus();
         void _drawArrow();
         void _renderIdle();
         void _renderSimpleObject(const KETSimpleObject& simple);
-        void _getLineExtents(const KETTextObject::KETTextLine& tl, Vec2f& sz);
+        float _getMaxHeight(const KETTextObject::KETTextLine& tl);
     };
 
 } // namespace indigo
