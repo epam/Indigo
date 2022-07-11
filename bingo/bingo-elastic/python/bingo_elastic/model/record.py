@@ -5,6 +5,11 @@ from uuid import uuid4
 
 from indigo import Indigo, IndigoException, IndigoObject  # type: ignore
 
+MOL_TYPES = [
+    "#02: <molecule>", "#03: <query reaction>", "#12: <RDFMolecule>"
+]
+REAC_TYPES = ["#04: <reaction>", "#05: <query reaction>"]
+
 
 # pylint: disable=unused-argument
 def skip_errors(instance: IndigoRecord, err: BaseException) -> None:
@@ -17,8 +22,7 @@ def check_error(instance: IndigoRecord, error: BaseException) -> None:
     if instance.error_handler:
         instance.error_handler(instance, error)
     else:
-        pass
-        # raise error
+        raise error
 
 
 class WithElasticResponse:
@@ -66,14 +70,16 @@ class WithIndigoObject:
             check_error(instance, err_)
 
         try:
-            hash_ = [
-                component.clone().hash()
-                for component in value.iterateComponents()
-            ]
-            if hash_:
+            internal_type = value.dbgInternalType()
+            if internal_type in MOL_TYPES:
+                hash_ = [
+                    component.clone().hash()
+                    for component in value.iterateComponents()
+                ]
                 setattr(instance, "hash", sorted(set(hash_)))
+            elif internal_type in REAC_TYPES:
+                setattr(instance, "hash", value.hash())
         except IndigoException as err_:
-            setattr(instance, "hash", [])
             check_error(instance, err_)
 
 

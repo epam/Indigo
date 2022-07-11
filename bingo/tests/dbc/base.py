@@ -104,7 +104,8 @@ class DBAdapter:
 
     @abstractmethod
     def similarity(
-        self, molecule: IndigoObject, target_function: str, options
+        self, molecule: IndigoObject, target_function: str, sim_type: str,
+        options=""
     ):
         pass
 

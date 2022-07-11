@@ -104,8 +104,8 @@ index_body = {
             "sim_fingerprint_len": {"type": "integer"},
             "sub_fingerprint": {"type": "keyword", "similarity": "boolean"},
             "sub_fingerprint_len": {"type": "integer"},
-            "cmf": {"type": "keyword"},
-            "hash": {"type": "keyword", "similarity": "boolean"},
+            "cmf": {"type": "binary"},
+            "hash": {"type": "unsigned_long"}
         }
     }
 }
@@ -125,7 +125,7 @@ def check_index_exception(err_: RequestError) -> None:
 
 def create_index(index_name: str, el_client: Elasticsearch) -> None:
     try:
-        el_client.indices.create(index=index_name, body=index_body, ignore=400)
+        el_client.indices.create(index=index_name, body=index_body)
     except RequestError as err_:
         check_index_exception(err_)
 
@@ -134,9 +134,7 @@ async def a_create_index(
     index_name: str, el_client: "AsyncElasticsearch"
 ) -> None:
     try:
-        await el_client.indices.create(
-            index=index_name, body=index_body, ignore=400
-        )
+        await el_client.indices.create(index=index_name, body=index_body)
     except RequestError as err_:
         check_index_exception(err_)
 
@@ -154,7 +152,11 @@ def prepare(
 
 
 def response_to_records(
-    res, index_name, postprocess_actions, indigo_session=None, options=""
+    res: dict,
+    index_name: str,
+    postprocess_actions: PostprocessType = None,
+    indigo_session: Indigo = None,
+    options: str = ""
 ) -> Generator[IndigoRecord, None, None]:
     for el_response in res.get("hits", {}).get("hits", []):
         record = get_record_by_index(el_response, index_name)
@@ -223,7 +225,7 @@ class AsyncElasticRepository:
         similarity: Union[BaseMatch] = None,
         exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
-        limit: int = 5000,
+        limit: int = 10,
         **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
 
@@ -318,12 +320,9 @@ class ElasticRepository:
         similarity: Union[BaseMatch] = None,
         exact: IndigoRecord = None,
         substructure: IndigoObject = None,
-        indigo_session: Indigo = None,
-        limit: int = 5000,
-        options: str = "",
+        limit: int = 10,
         **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
-        # pylint: disable=too-many-arguments
 
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
@@ -335,9 +334,11 @@ class ElasticRepository:
             postprocess_actions=postprocess_actions,
             **kwargs,
         )
+        print("QUERY", query)
         res = self.el_client.search(index=self.index_name, body=query)
         yield from response_to_records(
-            res, self.index_name, postprocess_actions, indigo_session, options
+            res, self.index_name, postprocess_actions,
+            kwargs.get("indigo_session"), kwargs.get("options")
         )
 
 
@@ -346,7 +347,7 @@ def compile_query(
     similarity: BaseMatch = None,
     exact: IndigoRecord = None,
     substructure: IndigoObject = None,
-    limit: int = 5000,
+    limit: int = 10,
     postprocess_actions: PostprocessType = None,
     **kwargs,
 ) -> Dict:
@@ -377,6 +378,8 @@ def compile_query(
         )
 
     for key, value in kwargs.items():
-        query_factory(key, value).compile(query)
+        filtered_keys = {"indigo_session", "options"}
+        if key not in filtered_keys:
+            query_factory(key, value).compile(query)
 
     return query

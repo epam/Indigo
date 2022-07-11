@@ -90,13 +90,16 @@ class BingoElastic(NoSQLAdapter):
 
     @catch_indigo_exception(catch_error=True)
     def similarity(
-        self, molecule: IndigoObject, target_function: str, options: str
+        self, molecule: IndigoObject, target_function: str, sim_type, options: str
     ):
-        sim_type, min_sim, max_sim = options.split(", ")
+        min_sim, max_sim = options.split(", ")
         min_sim, max_sim = float(min_sim), float(max_sim)
+        sim_type = sim_type.replace("-sub", "")
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
-        alg = SimilarityMatch(indigo_record, min_sim)
+        print("SIMIL", dir(SimilarityMatch))
+        alg = getattr(SimilarityMatch, sim_type)(indigo_record, min_sim)
+        print("ALG", alg)
         records = self.repo.filter(similarity=alg, limit=5000)
 
         return self._process_records(records)

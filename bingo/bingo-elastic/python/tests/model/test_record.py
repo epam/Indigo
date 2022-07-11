@@ -14,6 +14,10 @@ from bingo_elastic.queries import SimilarityMatch
 
 def test_empty_create(indigo_fixture):
     mol = indigo_fixture.createMolecule()
+    print(mol)
+    print("HASH", mol.hash())
+    print("SUB", mol.fingerprint("sub").oneBitsList())
+    print("SIM", mol.fingerprint("sim").oneBitsList())
     with pytest.raises(Exception):
         IndigoRecordMolecule(indigo_object=mol)
 
@@ -28,10 +32,12 @@ def test_empty_create(indigo_fixture):
 
 def test_create(indigo_fixture):
     mol = indigo_fixture.loadMolecule("N1(CC)C2=C(C(=NC=N2)N)N=C1")
+    mol.aromatize()
     indigo_record = IndigoRecordMolecule(indigo_object=mol)
-    assert len(indigo_record.sim_fingerprint) == 70
-    assert len(indigo_record.sub_fingerprint) == 644
-    assert len(indigo_record.cmf) == 140
+    print(indigo_record.cmf)
+    assert len(indigo_record.sim_fingerprint) == 56
+    assert len(indigo_record.sub_fingerprint) == 615
+    assert len(indigo_record.cmf.split()) == 48
 
 
 def test_create_without_fingerprint(indigo_fixture):

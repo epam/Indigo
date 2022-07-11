@@ -89,8 +89,7 @@ class SubstructureQuery(CompilableQuery):
     def compile(
         self, query: Dict, postprocess_actions: PostprocessType = None
     ) -> None:
-        # This code same as ExactMatch.
-        # ExactMatch will use search by hash in next releases
+        print("COMPILE_QUERY", query)
         bool_head = head_by_path(query, ("query", "bool"))
         if not bool_head.get("must"):
             bool_head["must"] = []
@@ -280,6 +279,9 @@ class ExactMatch(CompilableQuery):
         if not isinstance(record, IndigoRecordMolecule):
             return record
 
+        if not record.cmf:
+            return None
+
         query = record.as_indigo_object(indigo)
         target = self._target.as_indigo_object(indigo)
 
@@ -299,7 +301,25 @@ class ExactMatch(CompilableQuery):
 
 
 # Alias to default similarity match
-SimilarityMatch = EuclidSimilarityMatch
+# SimilarityMatch = TanimotoSimilarityMatch
+class SimilarityMatch:
+    def euclid(self):
+        return EuclidSimilarityMatch
+
+    def tanimoto(self):
+        return TanimotoSimilarityMatch
+
+    def tversky(self):
+        return TverskySimilarityMatch
+
+    def __getattr__(self, key):
+        if key == "euclid":
+            return self.euclid()
+        elif key == "tanimoto":
+            return self.tanimoto()
+        elif key == "tversky":
+            return self.tversky()
+        raise AttributeError(key)
 
 
 def query_factory(key: str, value: Any) -> CompilableQuery:
