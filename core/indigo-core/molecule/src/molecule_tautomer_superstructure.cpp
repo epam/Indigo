@@ -109,7 +109,7 @@ void TautomerSuperStructure::clear()
         throw Exception("clear(): not supported");
 }
 
-int TautomerSuperStructure::getBondOrder(int idx)
+int TautomerSuperStructure::getBondOrder(int idx) const
 {
     if (!_inside_ctor && _isBondAttachedArray[idx])
         return -1;

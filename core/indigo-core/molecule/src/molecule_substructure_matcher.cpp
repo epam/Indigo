@@ -459,6 +459,9 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
     case QueryMolecule::ATOM_RING_BONDS:
     case QueryMolecule::ATOM_RING_BONDS_AS_DRAWN:
         return query->valueWithinRange(target.getAtomRingBondsCount(super_idx));
+    case QueryMolecule::ATOM_PI_BONDED: {
+        return query->valueWithinRange(static_cast<int>(target.asMolecule().isPiBonded(super_idx)));
+    }
     case QueryMolecule::ATOM_UNSATURATION:
         return !target.isSaturatedAtom(super_idx);
     case QueryMolecule::ATOM_FRAGMENT: {

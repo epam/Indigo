@@ -1228,7 +1228,7 @@ bool Molecule::isSaturatedAtom(int idx)
     return true;
 }
 
-int Molecule::getBondOrder(int idx)
+int Molecule::getBondOrder(int idx) const
 {
     return _bond_orders[idx];
 }
@@ -1785,6 +1785,20 @@ bool Molecule::isPossibleFischerProjection(const char* options)
             {
                 return true;
             }
+        }
+    }
+    return false;
+}
+
+bool Molecule::isPiBonded(const int atom_index) const
+{
+    const Vertex& vertex = getVertex(atom_index);
+    for (auto i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+    {
+        const int order = getBondOrder(vertex.neiEdge(i));
+        if (order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
+        {
+            return true;
         }
     }
     return false;

@@ -79,7 +79,7 @@ namespace indigo
         int getAtomCharge(int idx) override;
         int getAtomIsotope(int idx) override;
         int getAtomRadical(int idx) override;
-        int getBondOrder(int idx) override;
+        int getBondOrder(int idx) const override;
         int getBondTopology(int idx) override;
         int getAtomAromaticity(int idx) override;
         int getExplicitValence(int idx) override;
@@ -160,6 +160,7 @@ namespace indigo
         // Check
         bool isNitrogenV5(int atom_index);
         bool isNitrogenV5ForConnectivity(int atom_index, int conn);
+        bool isPiBonded(int atom_index) const;
 
         void invalidateAtom(int index, int mask) override;
 

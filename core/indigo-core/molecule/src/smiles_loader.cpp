@@ -2644,13 +2644,136 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         else if (next == '#')
         {
             scanner.skip(1);
-            element = scanner.readUnsigned();
+            if (scanner.lookNext() == 'G')
+            {
+                scanner.skip(1);
+                auto group = scanner.readUnsigned();
+                std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
+                x_atom->type = QueryMolecule::OP_OR;
+                switch (group)
+                {
+                case 1: {
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Li));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Na));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_K));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Rb));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cs));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Fr));
+                    break;
+                }
+                case 2: {
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Be));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Mg));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ca));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Sr));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ba));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ra));
+                    break;
+                }
+                case 3: {
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_B));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Al));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ga));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_In));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ti));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Nh));
+                    break;
+                }
+                case 4: {
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Si));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ge));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Sn));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Pb));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Fl));
+                    break;
+                }
+                case 5: {
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_P));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_As));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Sb));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Bi));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Mc));
+                    break;
+                }
+                case 6: {
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_O));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_S));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Se));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Te));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Pa));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Lv));
+                    break;
+                }
+                case 7: {
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ts));
+                    break;
+                }
+                case 8: {
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_He));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ne));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ar));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Kr));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Xe));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ra));
+                    x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Og));
+                    break;
+                }
+                default:
+                    throw Error("Unknown group %d", group);
+                }
+                if (neg)
+                {
+                    x_atom.reset(QueryMolecule::Atom::nicht(x_atom.release()));
+                }
+                qatom.reset(x_atom.release());
+            }
+            else if (scanner.lookNext() == 'X')
+            {
+                scanner.skip(1);
+                std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
+                x_atom->type = QueryMolecule::OP_AND;
+                x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+                x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
+                if (neg)
+                {
+                    x_atom.reset(QueryMolecule::Atom::nicht(x_atom.release()));
+                }
+                qatom.reset(x_atom.release());
+            }
+            else if (scanner.lookNext() == 'N')
+            {
+                scanner.skip(1);
+                std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
+                x_atom->type = QueryMolecule::OP_OR;
+                x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_O));
+                x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N));
+                x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
+                x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
+                x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br));
+                if (neg)
+                {
+                    x_atom.reset(QueryMolecule::Atom::nicht(x_atom.release()));
+                }
+                qatom.reset(x_atom.release());
+            }
+            else
+            {
+                element = scanner.readUnsigned();
+            }
         }
         // Now we check that we have here an element from the periodic table.
         // We assume that this must be an alphabetic character and also
         // something not from the alphabetic SMARTS 'atomic primitives'
         // (see http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html).
-        else if (isalpha(next) && strchr("hrvxast", next) == NULL)
+        else if (isalpha(next) && strchr("hrvxastiq", next) == NULL)
         {
             scanner.skip(1);
 
@@ -2832,7 +2955,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
 
             subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_TOTAL_BOND_ORDER, val);
         }
-        else if (next == 'x')
+        else if (next == 'x' || next == 'q')
         {
             scanner.skip(1);
             if (qatom.get() == 0)
@@ -2854,6 +2977,11 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 scanner.skip(1);
             }
             atom.aam = scanner.readUnsigned();
+        }
+        else if (next == 'i')
+        {
+            scanner.skip(1);
+            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PI_BONDED, 1);
         }
         else
             throw Error("invalid character within atom description: '%c'", next);
