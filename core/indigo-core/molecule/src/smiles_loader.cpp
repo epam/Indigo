@@ -2953,7 +2953,14 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             if (isdigit(scanner.lookNext()))
                 val = scanner.readUnsigned();
 
-            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_TOTAL_BOND_ORDER, val);
+            if (moe_smarts)
+            {
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SUBSTITUENTS, val);
+            }
+            else
+            {
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_TOTAL_BOND_ORDER, val);
+            }
         }
         else if (next == 'x' || next == 'q')
         {
