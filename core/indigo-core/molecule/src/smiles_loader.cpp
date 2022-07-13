@@ -2773,7 +2773,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         // We assume that this must be an alphabetic character and also
         // something not from the alphabetic SMARTS 'atomic primitives'
         // (see http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html).
-        else if (isalpha(next) && strchr("hrvxastiq", next) == NULL)
+        else if (isalpha(next) && strchr("hrvxastiqw", next) == NULL)
         {
             scanner.skip(1);
 
@@ -2953,14 +2953,20 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             if (isdigit(scanner.lookNext()))
                 val = scanner.readUnsigned();
 
-            if (moe_smarts)
-            {
-                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SUBSTITUENTS, val);
-            }
-            else
-            {
-                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_TOTAL_BOND_ORDER, val);
-            }
+            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_TOTAL_BOND_ORDER, val);
+        }
+        else if (next == 'w')
+        {
+            scanner.skip(1);
+            if (qatom.get() == 0)
+                throw Error("'v' specifier is allowed only for query molecules");
+
+            int val = 1;
+
+            if (isdigit(scanner.lookNext()))
+                val = scanner.readUnsigned();
+
+            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SUBSTITUENTS, val);
         }
         else if (next == 'x' || next == 'q')
         {
