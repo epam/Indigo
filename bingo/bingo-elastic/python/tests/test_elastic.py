@@ -119,7 +119,9 @@ async def test_a_exact_match(
     loaded_sdf: IndigoRecordMolecule,
 ):
     async with a_elastic_repository_molecule() as rep:
-        result = rep.filter(query_subject=loaded_sdf)
+        result = rep.filter(
+            query_subject=loaded_sdf, indigo_session=indigo_fixture
+        )
         async for mol in result:
             assert (
                 loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
