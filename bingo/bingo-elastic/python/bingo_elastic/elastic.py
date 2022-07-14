@@ -105,7 +105,8 @@ index_body = {
             "sub_fingerprint": {"type": "keyword", "similarity": "boolean"},
             "sub_fingerprint_len": {"type": "integer"},
             "cmf": {"type": "binary"},
-            "hash": {"type": "unsigned_long"}
+            "hash": {"type": "unsigned_long"},
+            "has_error": {"type": "integer"},
         }
     }
 }
@@ -156,11 +157,11 @@ def response_to_records(
     index_name: str,
     postprocess_actions: PostprocessType = None,
     indigo_session: Indigo = None,
-    options: str = ""
+    options: str = "",
 ) -> Generator[IndigoRecord, None, None]:
     for el_response in res.get("hits", {}).get("hits", []):
         record = get_record_by_index(el_response, index_name)
-        for action_fn in postprocess_actions:
+        for action_fn in postprocess_actions:  # type: ignore
             record = action_fn(record, indigo_session, options)  # type: ignore
             if not record:
                 continue
@@ -222,10 +223,10 @@ class AsyncElasticRepository:
 
     async def filter(
         self,
-        similarity: Union[BaseMatch] = None,
-        exact: IndigoRecord = None,
-        substructure: IndigoRecord = None,
+        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+        indigo_session: Indigo = None,
         limit: int = 10,
+        options: str = "",
         **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
 
@@ -233,16 +234,14 @@ class AsyncElasticRepository:
         postprocess_actions: PostprocessType = []
 
         query = compile_query(
-            similarity=similarity,
-            exact=exact,
-            substructure=substructure,
+            query_subject=query_subject,
             limit=limit,
             postprocess_actions=postprocess_actions,
             **kwargs,
         )
         res = await self.el_client.search(index=self.index_name, body=query)
         for record in response_to_records(
-            res, self.index_name, postprocess_actions
+            res, self.index_name, postprocess_actions, indigo_session, options
         ):
             yield record
 
@@ -317,36 +316,29 @@ class ElasticRepository:
 
     def filter(
         self,
-        similarity: Union[BaseMatch] = None,
-        exact: IndigoRecord = None,
-        substructure: IndigoObject = None,
+        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+        indigo_session: Indigo = None,
         limit: int = 10,
+        options: str = "",
         **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
 
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
         query = compile_query(
-            similarity=similarity,
-            exact=exact,
-            substructure=substructure,
+            query_subject=query_subject,
             limit=limit,
             postprocess_actions=postprocess_actions,
             **kwargs,
         )
-        print("QUERY", query)
         res = self.el_client.search(index=self.index_name, body=query)
         yield from response_to_records(
-            res, self.index_name, postprocess_actions,
-            kwargs.get("indigo_session"), kwargs.get("options")
+            res, self.index_name, postprocess_actions, indigo_session, options
         )
 
 
-# pylint: disable=too-many-arguments
 def compile_query(
-    similarity: BaseMatch = None,
-    exact: IndigoRecord = None,
-    substructure: IndigoObject = None,
+    query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
     limit: int = 10,
     postprocess_actions: PostprocessType = None,
     **kwargs,
@@ -363,23 +355,19 @@ def compile_query(
             ],
         },
     }
-    if similarity and substructure:
-        raise AttributeError(
-            "similarity and substructure search is not supported"
-        )
 
-    if similarity:
-        similarity.compile(query, postprocess_actions)
-    elif exact:
-        query_factory("exact", exact).compile(query, postprocess_actions)
-    elif substructure:
-        query_factory("substructure", substructure).compile(
+    if isinstance(query_subject, BaseMatch):
+        query_subject.compile(query, postprocess_actions)
+    elif isinstance(query_subject, IndigoRecord):
+        query_factory("exact", query_subject).compile(
+            query, postprocess_actions
+        )
+    elif isinstance(query_subject, IndigoObject):
+        query_factory("substructure", query_subject).compile(
             query, postprocess_actions
         )
 
     for key, value in kwargs.items():
-        filtered_keys = {"indigo_session", "options"}
-        if key not in filtered_keys:
-            query_factory(key, value).compile(query)
+        query_factory(key, value).compile(query)
 
     return query

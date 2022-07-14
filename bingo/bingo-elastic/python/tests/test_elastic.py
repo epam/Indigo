@@ -11,7 +11,11 @@ from bingo_elastic.elastic import (
     IndexName,
 )
 from bingo_elastic.model.helpers import iterate_file
-from bingo_elastic.model.record import IndigoRecordMolecule, IndigoRecordReaction, as_iob
+from bingo_elastic.model.record import (
+    IndigoRecordMolecule,
+    IndigoRecordReaction,
+    as_iob,
+)
 from bingo_elastic.queries import (
     EuclidSimilarityMatch,
     RangeQuery,
@@ -64,7 +68,7 @@ def test_similarity_matches(
         EuclidSimilarityMatch(loaded_sdf, 0.9),
         TverskySimilarityMatch(loaded_sdf, 0.9, 0.5, 0.5),
     ]:
-        result = elastic_repository_molecule.filter(similarity=sim_alg)
+        result = elastic_repository_molecule.filter(query_subject=sim_alg)
         assert (
             loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
             == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -100,7 +104,7 @@ def test_exact_match(
     loaded_sdf: IndigoRecordMolecule,
 ):
     result = elastic_repository_molecule.filter(
-        exact=loaded_sdf, indigo_session=indigo_fixture
+        query_subject=loaded_sdf, indigo_session=indigo_fixture
     )
     print("HASH", loaded_sdf.as_dict())
     assert (
@@ -212,7 +216,7 @@ def test_substructure_search(
         loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
     )
     result = elastic_repository_molecule.filter(
-        substructure=query_mol, indigo_session=indigo_fixture
+        query_subject=query_mol, indigo_session=indigo_fixture
     )
     for item in result:
         assert (
@@ -379,11 +383,11 @@ def test_search_empty_fingerprint(
         elastic_repository_molecule.index_record(rec)
     time.sleep(5)
     result = elastic_repository_molecule.filter(
-        exact=IndigoRecordMolecule(
+        query_subject=IndigoRecordMolecule(
             indigo_object=indigo_fixture.loadMolecule("[H][H]"),
             skip_errors=True,
         ),
-        indigo_session=indigo_fixture
+        indigo_session=indigo_fixture,
     )
 
     assert (
@@ -436,7 +440,7 @@ def test_similarity_matches_reactions(
     reaction_rec = IndigoRecordReaction(indigo_object=reaction)
 
     for found_reaction in elastic_repository_reaction.filter(
-        similarity=TanimotoSimilarityMatch(reaction_rec, 0.99)
+        query_subject=TanimotoSimilarityMatch(reaction_rec, 0.99)
     ):
         assert (
             as_iob(found_reaction, indigo_fixture).countReactants()
@@ -444,7 +448,7 @@ def test_similarity_matches_reactions(
         )
 
     for found_reaction in elastic_repository_reaction.filter(
-        similarity=EuclidSimilarityMatch(reaction_rec, 0.99)
+        query_subject=EuclidSimilarityMatch(reaction_rec, 0.99)
     ):
         assert (
             as_iob(found_reaction, indigo_fixture).countReactants()
@@ -452,22 +456,20 @@ def test_similarity_matches_reactions(
         )
 
     for found_reaction in elastic_repository_reaction.filter(
-        similarity=TverskySimilarityMatch(reaction_rec, 0.99)
+        query_subject=TverskySimilarityMatch(reaction_rec, 0.99)
     ):
         assert (
             as_iob(found_reaction, indigo_fixture).countReactants()
             == reaction.countReactants()
         )
 
-    # for found_reaction in elastic_repository_reaction.filter(
-    #     exact=reaction_rec, indigo_session=indigo_fixture
-    # ):
-    #     print(as_iob(found_reaction, indigo_fixture).smiles())
-    #     found_reaction = as_iob(found_reaction, indigo_fixture)
-    #     assert (
-    #         found_reaction.countReactants()
-    #         == reaction.countReactants()
-    #     )
+    for found_reaction in elastic_repository_reaction.filter(
+        query_subject=reaction_rec, indigo_session=indigo_fixture
+    ):
+        assert (
+            as_iob(found_reaction, indigo_fixture).countReactants()
+            == reaction.countReactants()
+        )
 
 
 @pytest.mark.asyncio

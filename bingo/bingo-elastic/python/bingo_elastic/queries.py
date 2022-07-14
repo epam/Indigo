@@ -89,11 +89,11 @@ class SubstructureQuery(CompilableQuery):
     def compile(
         self, query: Dict, postprocess_actions: PostprocessType = None
     ) -> None:
-        print("COMPILE_QUERY", query)
         bool_head = head_by_path(query, ("query", "bool"))
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()
+        bool_head["filter"] = [{"term": {"has_error": {"value": 0}}}]
         query["min_score"] = len(
             self._value.fingerprint("sub").oneBitsList().split()
         )
@@ -166,6 +166,7 @@ class BaseMatch(metaclass=ABCMeta):
         if not bool_head.get("should"):
             bool_head["should"] = []
         bool_head["should"] += self.clauses()
+        bool_head["filter"] = [{"term": {"has_error": {"value": 0}}}]
         bool_head["minimum_should_match"] = self.min_should_match(
             len(self.clauses())
         )
@@ -296,30 +297,15 @@ class ExactMatch(CompilableQuery):
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()
+        bool_head["filter"] = [{"term": {"has_error": {"value": 0}}}]
         assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
 
 
-# Alias to default similarity match
-# SimilarityMatch = TanimotoSimilarityMatch
 class SimilarityMatch:
-    def euclid(self):
-        return EuclidSimilarityMatch
-
-    def tanimoto(self):
-        return TanimotoSimilarityMatch
-
-    def tversky(self):
-        return TverskySimilarityMatch
-
-    def __getattr__(self, key):
-        if key == "euclid":
-            return self.euclid()
-        elif key == "tanimoto":
-            return self.tanimoto()
-        elif key == "tversky":
-            return self.tversky()
-        raise AttributeError(key)
+    euclid = EuclidSimilarityMatch
+    tanimoto = TanimotoSimilarityMatch
+    tversky = TverskySimilarityMatch
 
 
 def query_factory(key: str, value: Any) -> CompilableQuery:

@@ -38,8 +38,6 @@ class BingoElastic(NoSQLAdapter):
         index = 1
         for compound in indigo_iterator(self.indigo, data_path):
             try:
-                if compound.checkBadValence():
-                    raise IndigoException(compound.checkBadValence())
                 if database_type == EntitiesType.MOLECULES:
                     record = IndigoRecordMolecule(
                         indigo_object=compound, skip_errors=True, index=index
@@ -66,7 +64,7 @@ class BingoElastic(NoSQLAdapter):
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
         records = self.repo.filter(
-            exact=indigo_record,
+            query_subject=indigo_record,
             indigo_session=self.indigo,
             limit=5000,
             options=options,
@@ -81,7 +79,7 @@ class BingoElastic(NoSQLAdapter):
         query_mol = self.indigo.loadQueryMolecule(molecule.rawData())
         query_mol.aromatize()
         records = self.repo.filter(
-            substructure=query_mol,
+            query_subject=query_mol,
             indigo_session=query_mol.dispatcher,
             limit=5000,
             options=options,
@@ -94,13 +92,12 @@ class BingoElastic(NoSQLAdapter):
     ):
         min_sim, max_sim = options.split(", ")
         min_sim, max_sim = float(min_sim), float(max_sim)
-        sim_type = sim_type.replace("-sub", "")
+        if sim_type.startswith("euclid"):
+            sim_type = "euclid"
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
-        print("SIMIL", dir(SimilarityMatch))
         alg = getattr(SimilarityMatch, sim_type)(indigo_record, min_sim)
-        print("ALG", alg)
-        records = self.repo.filter(similarity=alg, limit=5000)
+        records = self.repo.filter(query_subject=alg, limit=5000)
 
         return self._process_records(records)
 
