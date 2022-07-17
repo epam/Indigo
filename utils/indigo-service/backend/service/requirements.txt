@@ -1,0 +1,12 @@
+celery
+epam.indigo
+flasgger
+Flask
+Flask-HTTPAuth
+flask-restful
+gunicorn
+marshmallow
+pyparsing
+psycopg2-binary
+redis
+SQLAlchemy

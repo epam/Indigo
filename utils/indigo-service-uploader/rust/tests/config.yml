@@ -1,9 +1,0 @@
-database:
-  url: localhost
-  db: indigoservice
-  user: indigoservice
-  pass: p@ssw0rd
-  schema: indigoservice
-table:
-  structure_column: m
-  properties_column: p
