@@ -35,6 +35,10 @@ app.view = function(page) {
 			m('iframe', {
 				src: '/ketcher/?api_path=/v2',
 				onload: function() {
+			        console.log("this.contentWindow")
+				    console.log(this.contentWindow);
+				    console.log("this.contentWindow.ketcher")
+                    console.log(this.contentWindow.ketcher);
 					app.ketcher = this.contentWindow.ketcher;
 					// setTimeout(function () {
 					// 	app.ketcher.setMolecule('CCCC');

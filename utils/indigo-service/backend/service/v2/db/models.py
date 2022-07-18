@@ -10,6 +10,7 @@ from .database import Base
 
 class LibraryMeta(Base):
     __tablename__ = "library_metadata"
+    __table_args__ = {"schema": "indigoservice"}
     library_id = Column(String(36), primary_key=True)
     user_data = Column(JSONB)
     service_data = Column(JSONB)
@@ -29,6 +30,7 @@ class LibraryMeta(Base):
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = {"schema": "indigoservice"}
     user_id = Column(Integer, primary_key=True)
     username = Column(String(50))
     email = Column(String(100), unique=True)

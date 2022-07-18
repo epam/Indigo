@@ -317,21 +317,28 @@ def load_moldata(
         md.is_query = False
     else:
         try:
-            md.struct = indigo.loadMolecule(molstr)
-            md.is_query = False
+            if not query:
+                md.struct = indigo.loadMolecule(molstr)
+                md.is_query = False
+            else:
+                md.struct = indigo.loadQueryMolecule(molstr)
+                md.is_query = True
         except IndigoException:
             try:
                 md.struct = indigo.loadQueryMolecule(molstr)
                 md.is_query = True
             except IndigoException:
+                md.is_rxn = True
                 try:
-                    md.struct = indigo.loadReaction(molstr)
-                    md.is_rxn = True
-                    md.is_query = False
+                    if not query:
+                        md.struct = indigo.loadReaction(molstr)
+                        md.is_query = False
+                    else:
+                        md.struct = indigo.loadQueryReaction(molstr)
+                        md.is_query = True
                 except IndigoException:
                     try:
                         md.struct = indigo.loadQueryReaction(molstr)
-                        md.is_rxn = True
                         md.is_query = True
                     except IndigoException:
                         raise HttpException(
@@ -474,7 +481,7 @@ def check_exceptions(f):
                 )
         except IndigoException as e:
             indigo_api_logger.error("IndigoException: {0}".format(e.value))
-            indigo_api_logger.debug(traceback.format_exc())
+            indigo_api_logger.error(traceback.format_exc())
             if json_output:
                 return (
                     jsonify({"error": "IndigoException: {0}".format(e.value)}),

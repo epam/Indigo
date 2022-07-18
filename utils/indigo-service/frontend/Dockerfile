@@ -1,8 +1,8 @@
-FROM node:12-slim as client-builder
-WORKDIR /client
+FROM node:12-slim as ui-builder
 RUN apt update && \
     apt upgrade -y
-COPY ./client /client
+COPY ./ui /ui
+WORKDIR /ui
 RUN npm install
 RUN npm run gulp archive
 RUN ls
@@ -16,18 +16,22 @@ RUN apt update && \
     apt install -y --no-install-recommends \
       unzip
 
-# Install client
-COPY --from=client-builder /client/indigo-service-client*.zip /opt/
+# Install UI
+COPY --from=ui-builder /ui/indigo-service-ui*.zip /opt/
 RUN cd /opt && \
-    unzip indigo-service-client-*.zip && \
+    unzip indigo-service-ui-*.zip && \
     mkdir -p /var/www/ && \
-    mv indigo-service-client*/ /var/www/client/
+    mv indigo-service-ui*/ /var/www/ui/
 
 # Install Ketcher
-ADD https://github.com/epam/ketcher/releases/download/v2.5.1/ketcher-remote-2.5.1.zip /opt/ketcher-remote-2.5.1.zip
+#ADD https://github.com/epam/ketcher/releases/download/v2.5.1/ketcher-remote-2.5.1.zip /opt/ketcher-remote-2.5.1.zip
+ADD https://github.com/epam/ketcher/releases/download/v2.1.0/ketcher-2.1.0.zip /opt/ketcher-2.1.0.zip
 RUN cd /opt && \
     unzip ketcher*.zip && \
-    mv remote/ /srv/ketcher/
+    # mv remote/ /srv/ketcher/ && \
+    mv ketcher/ /srv/ketcher/ && \
+    ls /srv/ketcher && \
+    cp /srv/ketcher/ketcher.html /srv/ketcher/index.html
 
 COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
 

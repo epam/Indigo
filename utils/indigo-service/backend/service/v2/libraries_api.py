@@ -64,7 +64,7 @@ def _prepare_row(row):
         result_props[p["a"]] = p["b"]
     record = {
         "id": row[0],
-        "structure": zlib.decompress(row[1], 16 + zlib.MAX_WBITS),
+        "structure": row[1],
         "properties": result_props,
         "library_id": row[3],
     }
@@ -126,7 +126,9 @@ class Searcher(flask_restful.Resource):
                        "error": "Invalid input JSON: {0}".format(request.data)
                    }, 400
         try:
-            search_params = SearcherSchema(strict=True).load(input_dict).data
+            print(input_dict)
+            search_params = SearcherSchema().load(input_dict)
+            print(search_params)
             for library_id in search_params["library_ids"]:
                 if not LibraryMeta.query.filter(
                         LibraryMeta.library_id == library_id
@@ -137,7 +139,7 @@ class Searcher(flask_restful.Resource):
             results = []
             for row in cursor:
                 item = _prepare_row(row)
-                item["structure"] = item["structure"].decode()
+                item["structure"] = item["structure"]
                 results.append(item)
             libraries_api_logger.info(
                 "[RESPONSE] POST /search found {0} items".format(len(results))
@@ -246,7 +248,7 @@ class LibraryList(flask_restful.Resource):
                    }, 400
         try:
 
-            data = LibrarySchema(strict=True).load(input_dict).data
+            data = LibrarySchema().load(input_dict)
             library_id = libraries_api.adapter.library_create(
                 data["name"], data["user_data"]
             )
@@ -399,10 +401,19 @@ class LibraryUpload(flask_restful.Resource):
         data = []
         molecule: indigo.IndigoObject
         for molecule in libraries_api.indigo.iterateSDFile(path):
-            props = {}
+            props = []
             for prop in molecule.iterateProperties():
                 prop_name = prop.name()
-                props[prop_name] = molecule.getProperty(prop_name)
+                prop_value = molecule.getProperty(prop_name)
+                prop = {}
+                prop["x"] = prop_name.lower()
+                try:
+                    prop["y"] = json.loads(prop_value)
+                except Exception:
+                    prop["y"] = prop_value
+                prop["a"] = prop_name
+                prop["b"] = prop_value
+                props.append(prop)
             data.append((molecule.rawData(), Json(props)))
             struct_count += 1
         libraries_api.adapter.insert_sdf(library_id, data)
@@ -542,7 +553,7 @@ class UsersList(flask_restful.Resource):
                        "error": "Invalid input JSON: {0}".format(request.data)
                    }, 400
         try:
-            input_dict = UserSchema(strict=True).load(input_dict).data
+            input_dict = UserSchema().load(input_dict)
             if Usermodel.query.filter(
                     Usermodel.email == input_dict["email"]
             ).first():

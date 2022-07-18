@@ -163,7 +163,7 @@ class IndigoAutomapSchema(IndigoRequestSchema):
 
 
 class SearcherSchema(Schema):
-    search_type = fields.Str(
+    type = fields.Str(
         load_from="type",
         required=True,
         validate=OneOf(["sub", "exact", "sim", "molFormula"]),
@@ -179,8 +179,9 @@ class SearcherSchema(Schema):
     options = fields.Str(missing="")
 
     @post_load
-    def strip_text_query(self, data):
+    def strip_text_query(self, data, **kwargs):
         data["query_text"] = data["query_text"].strip()
+        return data
 
     @validates_schema
     def query_exists(self, data, **kwargs):
@@ -188,23 +189,23 @@ class SearcherSchema(Schema):
             raise ValidationError("Empty queries.")
 
     @validates_schema
-    def search_type_exists(self, data, **kwargs):
-        if "search_type" not in data:
+    def type_exists(self, data, **kwargs):
+        if "type" not in data:
             raise ValidationError(
                 "No search type selected, must be one of: 'sub', 'exact, sim', 'molFormula'"
             )
-        if data["search_type"] not in ("sub", "exact", "sim", "molFormula"):
+        if data["type"] not in ("sub", "exact", "sim", "molFormula"):
             raise ValidationError(
                 "Wrong search type {0}, must be one of 'sub', 'exact, sim', 'molFormula'".format(
-                    data["search_type"]
+                    data["type"]
                 )
             )
 
     @validates_schema
     def sim_min_max(self, data, **kwargs):
         if (
-            data.get("search_type")
-            and "sim" in data.get("search_type")
+            data.get("type")
+            and "sim" in data.get("type")
             and data.get("min_sim") > data.get("max_sim")
         ):
             raise ValidationError("Similarity min can not be greater than max")
@@ -212,8 +213,8 @@ class SearcherSchema(Schema):
     @validates_schema
     def sim_min_range(self, data, **kwargs):
         if (
-            data.get("search_type")
-            and "sim" in data.get("search_type")
+            data.get("type")
+            and "sim" in data.get("type")
             and (data.get("min_sim") < 0 or data.get("min_sim") >= 1)
         ):
             raise ValidationError(
@@ -224,13 +225,13 @@ class SearcherSchema(Schema):
     def sim_max_range(self, data, **kwargs):
         print(
             data,
-            data.get("search_type"),
+            data.get("type"),
             data.get("max_sim"),
             data.get("min_sim"),
         )
         if (
-            data.get("search_type")
-            and "sim" in data.get("search_type")
+            data.get("type")
+            and "sim" in data.get("type")
             and (data.get("max_sim") <= 0 or data.get("max_sim") > 1)
         ):
             raise ValidationError(

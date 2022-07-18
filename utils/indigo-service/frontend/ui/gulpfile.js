@@ -1,5 +1,5 @@
 var gulp = require('gulp-v3');
-var gutil = require('gulp-util');
+var log = require('fancy-log');
 var plugins = require('gulp-load-plugins')();
 
 var browserify = require('browserify');
@@ -30,7 +30,7 @@ gulp.task('script', [], function() {
 		// Don't transform, see: http://git.io/vcJlV
 		.pipe(source('index.js')).pipe(buffer())
 		.pipe(plugins.sourcemaps.init({ loadMaps: true }))
-		.pipe(plugins.uglify())
+		// .pipe(plugins.uglify())
 		.pipe(plugins.sourcemaps.write('./'))
 		.pipe(gulp.dest('dist'));
 });
@@ -70,7 +70,7 @@ gulp.task('codemirror', function () {
 		.require('codemirror').bundle()
 		.pipe(source('codemirror.js')).pipe(buffer())
 		.pipe(plugins.sourcemaps.init({ loadMaps: true }))
-		.pipe(plugins.uglify())
+		// .pipe(plugins.uglify())
 		.pipe(plugins.sourcemaps.write('./'))
 		.pipe(gulp.dest('dist'));
 });
@@ -86,7 +86,8 @@ gulp.task('clean', function () {
 });
 
 gulp.task('archive', ['assets', 'code'], function (cb) {
-	return gulp.src(['dist/**', '!**/*.map'])
+	// return gulp.src(['dist/**', '!**/*.map'])
+	return gulp.src(['dist/**'])
 		.pipe(plugins.rename({ dirname: pkg.name }))
 		.pipe(plugins.zip(pkg.name + '-' + pkg.version + '.zip'))
 		.pipe(gulp.dest('.'));
@@ -128,7 +129,7 @@ function scriptBundle(src, watchUpdate) {
 		.transform('exposify', { expose: {'mithril': 'm' }})
 		.transform('browserify-replace', { replace: [
 			{ from: '__VERSION__', to: pkg.version },
-			{ from: '§', to: options['api-path'] }
+			{ from: '__API_PATH__', to: options['api-path'] }
 		]});
 
 	build.on('bundle', function() {
@@ -154,11 +155,11 @@ function scriptBundle(src, watchUpdate) {
 
 	var rebuild = function () {
 		return watchUpdate(build.bundle().on('error', function (err) {
-			gutil.log(err.message);
+			log(err.message);
 		}));
 	};
 	build.plugin(watchify);
-	build.on('log', gutil.log.bind(null, 'Script update:'));
+	build.on('log', log.bind(null, 'Script update:'));
 	build.on('update', rebuild);
 	return rebuild();
 }

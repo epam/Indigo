@@ -31,7 +31,7 @@ class BingoPostgresAdapter(object):
         return self._connection
 
     def _get_structure_sql(self, structure, params):
-        stype = params["search_type"]
+        stype = params["type"]
         if stype != "sim":
             if stype.lower() == "molformula":
                 stype = "gross"
@@ -301,17 +301,13 @@ class BingoPostgresAdapter(object):
         try:
             index_name = self.get_index_name(table_name)
             cursor = self.connection.cursor()
-            cursor.execute("drop index if exists {0}".format(index_name))
             cursor.execute(
-                "drop index if exists {0}".format("id_" + index_name)
-            )
-            cursor.execute(
-                "create index {0} on {1} using bingo_idx (m bingo.bmolecule) with (IGNORE_STEREOCENTER_ERRORS=1,IGNORE_CISTRANS_ERRORS=1,FP_TAU_SIZE=0)".format(
+                "create index if not exists {0} on {1} using bingo_idx (m bingo.molecule) with (IGNORE_STEREOCENTER_ERRORS=1,IGNORE_CISTRANS_ERRORS=1,FP_TAU_SIZE=0)".format(
                     index_name, table_name
                 )
             )
             cursor.execute(
-                "create index {0} on {1} (s)".format(
+                "create index if not exists {0} on {1} (s)".format(
                     "id_" + index_name, table_name
                 )
             )

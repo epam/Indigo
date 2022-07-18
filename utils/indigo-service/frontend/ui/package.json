@@ -1,7 +1,7 @@
 {
-  "name": "indigo-service-client",
+  "name": "indigo-service-ui",
   "version": "1.7.4",
-  "description": "Client for indigo-service",
+  "description": "UI for Indigo REST service",
   "repository": "https://github.com/epam/Indigo",
   "keywords": [
     "indigo",
@@ -24,7 +24,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.5.1",
-    "gulp-util": "^3.0.7",
+    "fancy-log": "^2.0.0",
     "gulp-zip": "^3.2.0",
     "http-proxy": "^1.13.2",
     "minimist": "^1.2.0",
@@ -38,7 +38,7 @@
     "bootstrap": "^3.3.6",
     "codemirror": "^5.9.0",
     "mithril": "^0.2.0",
-    "murmurhash": "0.0.2",
+    "murmurhash": "^0.0.2",
     "object.assign": "^4.0.3",
     "query-string": "^3.0.0"
   },

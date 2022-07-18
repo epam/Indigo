@@ -153,6 +153,11 @@ var selectView = function(attrs, prop) {
 function submit(ketcher, event) {
 	var molfile = ketcher.getMolfile(),
 	    isEmpty = molfile.split('\n').length <= 6;
+//     var molfile = "";
+//     ketcher.getMolfile().then(m => { 
+//         molfile = m; 
+//     });
+//     var isEmpty = molfile.split('\n').length <= 6;
 	query = JSON.parse(JSON.stringify(request)); // poor man's clone
 	query.query_structure = !isEmpty ? molfile : undefined;
 	result('search');
