@@ -68,7 +68,7 @@ def test_load_reaction(indigo_fixture, resource_loader) -> None:
     assert isinstance(reaction, IndigoRecordReaction)
 
 
-def test_load_molucule(indigo_fixture, resource_loader) -> None:
+def test_load_molecule(indigo_fixture, resource_loader) -> None:
     molecule = helpers.load_molecule(
         resource_loader("molecules/composition1.mol"), indigo_fixture
     )

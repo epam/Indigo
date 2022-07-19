@@ -105,9 +105,9 @@ class Postgres(SQLAdapter):
         )
         return self.query_row(query_sql, molecule, options=options)
 
-    def similarity(self, molecule, target_function, options):
+    def similarity(self, molecule, target_function, sim_type, options=""):
         table_name = TARGET_TABLES_MAP.get(target_function)
-        sim_type, min_sim, max_sim = options.split(", ")
+        min_sim, max_sim = options.split(", ")
         query_sql = (
             "SELECT id, {bingo_schema}.getsimilarity(data, "
             "%(query_entity)s, '{sim_type}') FROM "

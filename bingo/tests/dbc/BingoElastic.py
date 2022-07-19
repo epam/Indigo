@@ -1,3 +1,5 @@
+import time
+
 from bingo_elastic.elastic import ElasticRepository
 from bingo_elastic.model.record import (
     IndigoRecord,
@@ -53,33 +55,49 @@ class BingoElastic(NoSQLAdapter):
                 )
             finally:
                 index += 1
+        time.sleep(1)
 
     @catch_indigo_exception(catch_error=True)
-    def exact(self, molecule: IndigoObject, target_function: str, options=""):
+    def exact(
+        self, molecule: IndigoObject, target_function: str, options: str = ""
+    ):
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
-        records = self.repo.filter(exact=indigo_record, limit=500)
+        records = self.repo.filter(
+            query_subject=indigo_record,
+            indigo_session=self.indigo,
+            limit=5000,
+            options=options,
+        )
 
         return self._process_records(records)
 
     @catch_indigo_exception(catch_error=True)
-    def substructure(self, molecule, target_function, options=""):
-        compound = self.indigo.loadMolecule(molecule.rawData())
-        indigo_record = IndigoRecord(indigo_object=compound)
-        records = self.repo.filter(substructure=indigo_record, limit=500)
-
+    def substructure(
+        self, molecule: IndigoObject, target_function: str, options: str = ""
+    ):
+        query_mol = self.indigo.loadQueryMolecule(molecule.rawData())
+        query_mol.aromatize()
+        records = self.repo.filter(
+            query_subject=query_mol,
+            indigo_session=query_mol.dispatcher,
+            limit=5000,
+            options=options,
+        )
         return self._process_records(records)
 
     @catch_indigo_exception(catch_error=True)
     def similarity(
-        self, molecule: IndigoObject, target_function: str, options
+        self, molecule: IndigoObject, target_function: str, sim_type, options: str
     ):
-        sim_type, min_sim, max_sim = options.split(", ")
+        min_sim, max_sim = options.split(", ")
         min_sim, max_sim = float(min_sim), float(max_sim)
+        if sim_type.startswith("euclid"):
+            sim_type = "euclid"
         compound = self.indigo.loadMolecule(molecule.rawData())
         indigo_record = IndigoRecord(indigo_object=compound)
-        alg = SimilarityMatch(indigo_record, min_sim)
-        records = self.repo.filter(similarity=alg, limit=500)
+        alg = getattr(SimilarityMatch, sim_type)(indigo_record, min_sim)
+        records = self.repo.filter(query_subject=alg, limit=5000)
 
         return self._process_records(records)
 
