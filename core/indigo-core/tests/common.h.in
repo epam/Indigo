@@ -18,6 +18,8 @@ namespace indigo
     {
     protected:
         static void loadMolecule(const char* buf, Molecule& molecule);
+        static void loadQueryMolecule(const char* buf, QueryMolecule& queryMolecule);
+        bool substructureMatch(const char* targetString, const char* queryString);
         static std::string dataPath(const char* dataPathSuffix);
     };
 }

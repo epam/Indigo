@@ -396,7 +396,7 @@ void LayeredMolecules::allowRGroupOnRSite(int atom_idx, int rg_idx)
     throw Error("allowRGroupOnRSite method is not implemented in LayeredMolecules class");
 }
 
-int LayeredMolecules::getBondOrder(int idx)
+int LayeredMolecules::getBondOrder(int idx) const
 {
     throw Error("getBondOrder method has no sense for LayeredMolecules");
 }

@@ -268,7 +268,7 @@ namespace indigo
 
         void clear() override;
 
-        int getBondOrder(int idx) override;
+        int getBondOrder(int idx) const override;
         int getBondTopology(int idx) override;
         bool possibleBondOrder(int idx, int order) override;
 

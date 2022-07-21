@@ -611,6 +611,8 @@ public interface IndigoLib extends Library {
 
     double indigoMolarRefractivity(int molecule);
 
+    double indigoPka(int molecule);
+
     Pointer indigoCanonicalSmiles(int molecule);
 
     long indigoHash(int item);
