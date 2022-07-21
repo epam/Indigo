@@ -28,7 +28,7 @@ class TestPseudoatoms:
         self, db, entities, query_id, expected
     ):
         molecule = entities.get(query_id)
-        result = db.similarity(molecule, "pseudoatoms", "tanimoto, 0.7, 1")
+        result = db.similarity(molecule, "pseudoatoms", "tanimoto", "0.7, 1", )
         assert_match_query(result, expected)
 
     @pytest.mark.parametrize(
