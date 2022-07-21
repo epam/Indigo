@@ -3025,7 +3025,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                     subatom.reset(QueryMolecule::Atom::und(subatom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, aromatic)));
             }
         }
-
+        
         if (subatom.get() != 0)
         {
             if (neg)
@@ -3033,7 +3033,14 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 subatom.reset(QueryMolecule::Atom::nicht(subatom.release()));
                 neg = false;
             }
-            qatom.reset(QueryMolecule::Atom::und(qatom.release(), subatom.release()));
+            if (qatom != nullptr)
+            {
+                qatom.reset(QueryMolecule::Atom::und(qatom.release(), subatom.release()));
+            }
+            else
+            {
+                qatom = std::move(subatom);
+            }
         }
 
         // we check for isotope_set here to treat [2H] as deuterium atom,
