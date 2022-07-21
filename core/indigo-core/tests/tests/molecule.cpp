@@ -305,8 +305,4 @@ TEST_F(IndigoCoreMoleculeTest, pKa)
         loadMolecule("Oc1cc(cc([N+](C)(C)C)c1)C", molecule);
         EXPECT_NEAR(6.5, Crippen::pKa(molecule), 0.01);
     }
-    {
-        loadMolecule("Oc1cc(cc([N+](C)(C)C)c1)C", molecule);
-        EXPECT_NEAR(9.53, Crippen::pKa(molecule), 0.01);
-    }
 }
