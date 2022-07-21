@@ -1,6 +1,5 @@
 import pytest
 from indigo import Indigo
-
 from .constants import (
     DATA_TYPES,
     DB_BINGO,

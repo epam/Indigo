@@ -3,22 +3,22 @@ from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
-from indigo import Indigo  # type: ignore
+from indigo import Indigo, IndigoObject  # type: ignore
 
 from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 from bingo_elastic.utils import PostprocessType, head_by_path
 
 
-def clauses(fingerprint, fingerprint_name) -> List[Dict]:
+def clauses(field_value, field_name) -> List[Dict]:
     return [
         {
             "term": {
-                fingerprint_name: {
+                field_name: {
                     "value": clause,
                 }
             }
         }
-        for clause in fingerprint
+        for clause in field_value
     ]
 
 
@@ -63,46 +63,40 @@ class KeywordQuery(CompilableQuery):
 
 
 class SubstructureQuery(CompilableQuery):
-    def __init__(self, key: str, value: IndigoRecord) -> None:
-        if not isinstance(value, IndigoRecord):
-            raise AttributeError(
-                "Argument for substructure search must be IndigoRecord"
-            )
+    def __init__(self, key: str, value: IndigoObject) -> None:
         self._key = key
         self._value = value
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo
+        self, record: IndigoRecord, indigo: Indigo, options: str
     ) -> Optional[IndigoRecord]:
-        if indigo.substructureMatcher(record.as_indigo_object(indigo)).match(
-            indigo.loadQueryMolecule(
-                self._value.as_indigo_object(indigo).canonicalSmiles()
-            )
-        ):
+        if not record.cmf:
+            return None
+
+        mol = record.as_indigo_object(indigo)
+        matcher = indigo.substructureMatcher(mol, options)
+
+        if matcher.match(self._value):
             return record
         return None
 
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
-        return clauses(self._value.sub_fingerprint, "sub_fingerprint")
+        fp_list = self._value.fingerprint("sub").oneBitsList().split()
+        return clauses(fp_list, "sub_fingerprint")
 
     def compile(
         self, query: Dict, postprocess_actions: PostprocessType = None
     ) -> None:
-        # This code same as ExactMatch.
-        # ExactMatch will use search by hash in next releases
-        bool_head = head_by_path(
-            query, ("query", "script_score", "query", "bool")
-        )
+        bool_head = head_by_path(query, ("query", "bool"))
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()
-        script_score_head = head_by_path(query, ("query", "script_score"))
-        script_score_head["script"] = {
-            "source": "_score / doc['sub_fingerprint_len'].value"
-        }
-        query["min_score"] = 1
+        bool_head["filter"] = [{"term": {"has_error": {"value": 0}}}]
+        query["min_score"] = len(
+            self._value.fingerprint("sub").oneBitsList().split()
+        )
         assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
 
@@ -172,6 +166,7 @@ class BaseMatch(metaclass=ABCMeta):
         if not bool_head.get("should"):
             bool_head["should"] = []
         bool_head["should"] += self.clauses()
+        bool_head["filter"] = [{"term": {"has_error": {"value": 0}}}]
         bool_head["minimum_should_match"] = self.min_should_match(
             len(self.clauses())
         )
@@ -275,44 +270,42 @@ class ExactMatch(CompilableQuery):
 
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
-        return clauses(self._target.sub_fingerprint, "sub_fingerprint")
+        return clauses(self._target.hash, "hash")
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo
+        self, record: IndigoRecord, indigo: Indigo, options: str
     ) -> Optional[IndigoRecord]:
-
         # postprocess only on molecule search
         if not isinstance(record, IndigoRecordMolecule):
             return record
 
-        if indigo.exactMatch(
-            record.as_indigo_object(indigo),
-            self._target.as_indigo_object(indigo),
-        ):
+        if not record.cmf:
+            return None
+
+        query = record.as_indigo_object(indigo)
+        target = self._target.as_indigo_object(indigo)
+
+        if indigo.exactMatch(target, query, options):
             return record
         return None
 
     def compile(
         self, query, postprocess_actions: PostprocessType = None
     ) -> None:
-        bool_head = head_by_path(
-            query, ("query", "script_score", "query", "bool")
-        )
+        bool_head = head_by_path(query, ("query", "bool"))
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses()
-        script_score_head = head_by_path(query, ("query", "script_score"))
-        script_score_head["script"] = {
-            "source": "_score / doc['sub_fingerprint_len'].value"
-        }
-        query["min_score"] = 1
+        bool_head["filter"] = [{"term": {"has_error": {"value": 0}}}]
         assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
 
 
-# Alias to default similarity match
-SimilarityMatch = TanimotoSimilarityMatch
+class SimilarityMatch:
+    euclid = EuclidSimilarityMatch
+    tanimoto = TanimotoSimilarityMatch
+    tversky = TverskySimilarityMatch
 
 
 def query_factory(key: str, value: Any) -> CompilableQuery:

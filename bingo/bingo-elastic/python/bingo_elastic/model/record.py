@@ -5,6 +5,9 @@ from uuid import uuid4
 
 from indigo import Indigo, IndigoException, IndigoObject  # type: ignore
 
+MOL_TYPES = ["#02: <molecule>", "#03: <query reaction>", "#12: <RDFMolecule>"]
+REAC_TYPES = ["#04: <reaction>", "#05: <query reaction>"]
+
 
 # pylint: disable=unused-argument
 def skip_errors(instance: IndigoRecord, err: BaseException) -> None:
@@ -29,36 +32,60 @@ class WithElasticResponse:
 
 class WithIndigoObject:
     def __set__(self, instance: IndigoRecord, value: IndigoObject) -> None:
+        value_dup = value.clone()
+        value_dup.aromatize()
+
         fingerprints = (
             "sim",
             "sub",
         )
+
         for f_print in fingerprints:
             try:
                 setattr(instance, f"{f_print}_fingerprint", [])
                 setattr(instance, f"{f_print}_fingerprint_len", 0)
-                fp_ = [
-                    int(feature)
-                    for feature in value.fingerprint(f_print)
-                    .oneBitsList()
-                    .split(" ")
-                ]
-                setattr(instance, f"{f_print}_fingerprint", fp_)
-                setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
+
+                fp_list = value_dup.fingerprint(f_print).oneBitsList()
+                if fp_list:
+                    fp_ = [int(feature) for feature in fp_list.split(" ")]
+                    setattr(instance, f"{f_print}_fingerprint", fp_)
+                    setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
             except ValueError as err_:
                 check_error(instance, err_)
             except IndigoException as err_:
                 check_error(instance, err_)
 
         try:
-            setattr(instance, "name", value.name())
-        except IndigoException:
-            pass
+            cmf = " ".join(map(str, list(value_dup.serialize())))
+            setattr(instance, "cmf", cmf)
+        except IndigoException as err_:
+            setattr(instance, "cmf", "")
+            check_error(instance, err_)
 
         try:
-            setattr(
-                instance, "cmf", " ".join(map(str, list(value.serialize())))
-            )
+            setattr(instance, "name", value_dup.name())
+        except IndigoException as err_:
+            setattr(instance, "name", "")
+            check_error(instance, err_)
+
+        try:
+            internal_type = value_dup.dbgInternalType()
+            if internal_type in MOL_TYPES:
+                hash_ = [
+                    component.clone().hash()
+                    for component in value_dup.iterateComponents()
+                ]
+                setattr(instance, "hash", sorted(set(hash_)))
+            elif internal_type in REAC_TYPES:
+                setattr(instance, "hash", [value_dup.hash()])
+        except IndigoException as err_:
+            check_error(instance, err_)
+
+        try:
+            if value_dup.checkBadValence():
+                setattr(instance, "has_error", 1)
+            else:
+                setattr(instance, "has_error", 0)
         except IndigoException as err_:
             check_error(instance, err_)
 
@@ -74,6 +101,7 @@ class IndigoRecord:
 
     cmf: Optional[str] = None
     name: Optional[str] = None
+    rawData: Optional[str] = None
     sim_fingerprint: Optional[List[str]] = None
     sub_fingerprint: Optional[List[str]] = None
     indigo_object = WithIndigoObject()
@@ -120,8 +148,9 @@ class IndigoRecord:
         }
 
     def as_indigo_object(self, session: Indigo):
-        assert self.cmf
-        return session.deserialize(list(map(int, self.cmf.split(" "))))
+        if self.cmf:
+            return session.deserialize(list(map(int, self.cmf.split(" "))))  # type: ignore
+        raise ValueError("Unexpected cmf value")
 
 
 class IndigoRecordMolecule(IndigoRecord):
