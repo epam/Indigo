@@ -45,7 +45,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Compile flags
 if (UNIX OR MINGW)
-    string(APPEND CMAKE_C_FLAGS "  -fvisibility=hidden $ENV{CFLAGS}")
+    string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden $ENV{CFLAGS}")
     string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden $ENV{CXXFLAGS}")
 
     if(BUILD_STANDALONE AND NOT EMSCRIPTEN)
