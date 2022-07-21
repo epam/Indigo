@@ -165,7 +165,7 @@ namespace indigo
         bool _hasEdgeWithRank(int from, int to, int target_edge_rank);
 
         static int _cmp_vertices(int idx1, int idx2, void* context);
-        class CancellationHandler* _cancellation_handler;
+        std::shared_ptr<CancellationHandler> _cancellation_handler;
     };
 
 } // namespace indigo

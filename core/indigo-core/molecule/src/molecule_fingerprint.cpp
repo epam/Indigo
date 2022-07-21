@@ -37,9 +37,9 @@ IMPL_ERROR(MoleculeFingerprintBuilder, "fingerprint builder");
 CP_DEF(MoleculeFingerprintBuilder);
 
 MoleculeFingerprintBuilder::MoleculeFingerprintBuilder(BaseMolecule& mol, const MoleculeFingerprintParameters& parameters)
-    : cancellation(0), _mol(mol), _parameters(parameters), CP_INIT, TL_CP_GET(_total_fingerprint), TL_CP_GET(_atom_codes), TL_CP_GET(_bond_codes),
-      TL_CP_GET(_atom_codes_empty), TL_CP_GET(_bond_codes_empty), TL_CP_GET(_atom_hydrogens), TL_CP_GET(_atom_charges), TL_CP_GET(_vertex_connectivity),
-      TL_CP_GET(_fragment_vertex_degree), TL_CP_GET(_bond_orders), TL_CP_GET(_ord_hashes)
+    : cancellation(getCancellationHandler()), _mol(mol), _parameters(parameters), CP_INIT, TL_CP_GET(_total_fingerprint), TL_CP_GET(_atom_codes),
+      TL_CP_GET(_bond_codes), TL_CP_GET(_atom_codes_empty), TL_CP_GET(_bond_codes_empty), TL_CP_GET(_atom_hydrogens), TL_CP_GET(_atom_charges),
+      TL_CP_GET(_vertex_connectivity), TL_CP_GET(_fragment_vertex_degree), TL_CP_GET(_bond_orders), TL_CP_GET(_ord_hashes)
 {
     _total_fingerprint.resize(_parameters.fingerprintSize());
     cb_fragment = 0;

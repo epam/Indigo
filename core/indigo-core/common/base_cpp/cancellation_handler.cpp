@@ -23,9 +23,9 @@
 
 using namespace indigo;
 
-std::unique_ptr<CancellationHandler>& CancellationHandler::cancellation_handler()
+std::shared_ptr<CancellationHandler>& CancellationHandler::cancellation_handler()
 {
-    thread_local std::unique_ptr<CancellationHandler> _cancellation_handler;
+    thread_local std::shared_ptr<CancellationHandler> _cancellation_handler;
     return _cancellation_handler;
 }
 
@@ -59,19 +59,18 @@ void TimeoutCancellationHandler::reset(int mseconds)
     _currentTime = nanoClock();
 }
 
-CancellationHandler* indigo::getCancellationHandler()
+std::shared_ptr<CancellationHandler>& indigo::getCancellationHandler()
 {
-    return CancellationHandler::cancellation_handler().get();
+    return CancellationHandler::cancellation_handler();
 }
 
-std::unique_ptr<CancellationHandler> indigo::resetCancellationHandler(CancellationHandler* handler)
+std::shared_ptr<CancellationHandler> indigo::resetCancellationHandler(std::shared_ptr<CancellationHandler> prev)
 {
-    std::unique_ptr<CancellationHandler> prev(handler);
     CancellationHandler::cancellation_handler().swap(prev);
     return prev;
 }
 
-AutoCancellationHandler::AutoCancellationHandler(CancellationHandler* hand)
+AutoCancellationHandler::AutoCancellationHandler(std::shared_ptr<CancellationHandler> hand)
 {
     resetCancellationHandler(hand);
 }

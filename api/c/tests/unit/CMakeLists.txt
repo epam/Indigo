@@ -8,7 +8,7 @@ if (ENABLE_TESTS)
 
     file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp)
     add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES} common.cpp main.cpp)
-    target_link_libraries(${PROJECT_NAME} indigo bingo-nosql indigo-renderer indigo-inchi indigo-core gtest)
+    target_link_libraries(${PROJECT_NAME} indigo-core indigo bingo-nosql indigo-renderer indigo-inchi gtest)
     target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
         PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
