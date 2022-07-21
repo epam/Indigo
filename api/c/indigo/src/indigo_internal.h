@@ -262,6 +262,7 @@ public:
     int countObjects() const;
 
     int addObject(IndigoObject* obj);
+    int addObject(std::unique_ptr<IndigoObject>&& obj);
 
     void removeObject(int id);
 
@@ -361,7 +362,7 @@ private:
 
     struct ObjectsHolder
     {
-        std::unordered_map<int, IndigoObject*> objects;
+        std::unordered_map<int, std::unique_ptr<IndigoObject>> objects;
         int next_id = 1;
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;

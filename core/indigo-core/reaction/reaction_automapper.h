@@ -114,7 +114,7 @@ namespace indigo
 
         DECL_ERROR;
 
-        CancellationHandler* cancellation;
+        std::shared_ptr<CancellationHandler> cancellation;
 
     private:
         // parameter for dimerization and dissociation
@@ -258,13 +258,13 @@ namespace indigo
     class AAMCancellationWrapper
     {
     public:
-        AAMCancellationWrapper(CancellationHandler*);
+        AAMCancellationWrapper(std::shared_ptr<CancellationHandler>);
         ~AAMCancellationWrapper();
         void reset();
 
     private:
         AAMCancellationWrapper(const AAMCancellationWrapper&);
-        std::unique_ptr<CancellationHandler> _prev;
+        std::shared_ptr<CancellationHandler> _prev;
         bool _contains;
     };
 

@@ -143,3 +143,26 @@ TEST(Bingo, CreateCloseLoad)
         EXPECT_EQ(counter, 2);
     }
 }
+
+TEST(Bingo, Aromatization)
+{
+    auto session = IndigoSession::create();
+    {
+        auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
+        for (const auto& item : {"C1=CC=CC=C1", "C1=CN=CC=C1"})
+        {
+            bingo.insertRecord(session->loadMolecule(item));
+        }
+        bingo.close();
+    }
+    {
+        auto bingo = BingoMolecule::loadDatabaseFile(session, "test.db");
+        const auto m = session->loadQueryMolecule("c1ccccc1");
+        auto counter = 0;
+        for (const auto& result : bingo.searchSub(m))
+        {
+            ++counter;
+        };
+        EXPECT_EQ(counter, 1);
+    }
+}

@@ -30,7 +30,7 @@ namespace indigo
     public:
         CancellationHandler() = default;
         CancellationHandler(CancellationHandler&&) = delete;
-        CancellationHandler(const CancellationHandler&) = delete;
+        CancellationHandler(const CancellationHandler&) = default;
         CancellationHandler& operator=(CancellationHandler&&) = delete;
         CancellationHandler& operator=(const CancellationHandler&) = delete;
         virtual ~CancellationHandler() = default;
@@ -38,22 +38,21 @@ namespace indigo
         virtual bool isCancelled() = 0;
         virtual const char* cancelledRequestMessage() = 0;
 
-        static std::unique_ptr<CancellationHandler>& cancellation_handler();
+        static std::shared_ptr<CancellationHandler>& cancellation_handler();
     };
 
-    class DLLEXPORT TimeoutCancellationHandler : public CancellationHandler
+    class DLLEXPORT TimeoutCancellationHandler final : public CancellationHandler
     {
     public:
         TimeoutCancellationHandler() = delete;
         explicit TimeoutCancellationHandler(int mseconds);
         TimeoutCancellationHandler(TimeoutCancellationHandler&&) = delete;
-        TimeoutCancellationHandler(const TimeoutCancellationHandler&) = delete;
+        TimeoutCancellationHandler(const TimeoutCancellationHandler&) = default;
         TimeoutCancellationHandler& operator=(TimeoutCancellationHandler&&) = delete;
         TimeoutCancellationHandler& operator=(const TimeoutCancellationHandler&) = delete;
-        ~TimeoutCancellationHandler() override = default;
-
-        bool isCancelled() override;
-        const char* cancelledRequestMessage() override;
+        ~TimeoutCancellationHandler() final = default;
+        bool isCancelled() final;
+        const char* cancelledRequestMessage() final;
 
         void reset(int mseconds);
 
@@ -64,16 +63,16 @@ namespace indigo
     };
 
     // Global thread-local cancellation handler
-    DLLEXPORT CancellationHandler* getCancellationHandler();
+    DLLEXPORT std::shared_ptr<CancellationHandler>& getCancellationHandler();
 
-    // Returns previous cancellation handler. TAKES Ownership!!!
-    DLLEXPORT std::unique_ptr<CancellationHandler> resetCancellationHandler(CancellationHandler* handler);
+    // Returns previous cancellation handler.
+    DLLEXPORT std::shared_ptr<CancellationHandler> resetCancellationHandler(std::shared_ptr<CancellationHandler> handler);
 
     class AutoCancellationHandler
     {
     public:
         AutoCancellationHandler() = delete;
-        explicit AutoCancellationHandler(CancellationHandler*);
+        explicit AutoCancellationHandler(std::shared_ptr<CancellationHandler>);
         AutoCancellationHandler(AutoCancellationHandler&&) = delete;
         AutoCancellationHandler(const AutoCancellationHandler&) = delete;
         AutoCancellationHandler& operator=(AutoCancellationHandler&&) = delete;

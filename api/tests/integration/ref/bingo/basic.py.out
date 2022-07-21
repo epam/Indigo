@@ -59,7 +59,7 @@ BingoException: BingoIndex: determineType(): Database format is not compatible w
 *** Using closed database ***
 BingoException: bingo: Incorrect database instance
 *** Simple exact search ****
-** searchExact(ICCCCOC(c1ccc([N+](=O)[O-])c([N+](=O)[O-])c1)=O) **
+** searchExact(ICCCCOC(C1C=CC([N+](=O)[O-])=C([N+](=O)[O-])C=1)=O) **
 0
 ** searchExact(CCCC) **
 1

@@ -258,7 +258,7 @@ namespace indigo
             int (*cbEmbedding)(const int* sub_vert_map, const int* sub_edge_map, const void* info, void* userdata);
             void* userdata;
 
-            CancellationHandler* cancellation_handler;
+            std::shared_ptr<CancellationHandler> cancellation_handler;
 
         protected:
             // list of ReGraph nodes each node keeping track of its  neighbours
@@ -559,7 +559,7 @@ namespace indigo
             // sets maximum iteration number limit
             void setIterationNumber(int max);
 
-            CancellationHandler* cancellation_handler;
+            std::shared_ptr<CancellationHandler> cancellation_handler;
 
         private:
             // returns number of unmatched edges
