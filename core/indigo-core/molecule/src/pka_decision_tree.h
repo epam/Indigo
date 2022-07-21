@@ -1,5 +1,6 @@
 namespace indigo
 {
+    // clang-format off
     constexpr std::array<const char*, 1527> pkaDecisionTree = {
         "1,0,1,0,,100,5.9145126,17.32",
         "2,1,1,1107,[#G6H]C(=O),1,3.6849957,5.9569998",
@@ -1529,4 +1530,5 @@ namespace indigo
         "1526,1477,0,1017,A=A,1,5.8699999,0.19999981",
         "1527,1477,0,1017,A=A,0,5.6599998,0.11999"
     };
+    // clang-format on
 }
