@@ -35,8 +35,6 @@ namespace indigo
     {
     public:
         static std::vector<std::vector<std::string>> readCSV(std::istream&);
-
-    private:
         static std::vector<std::string> readCSVRow(const std::string&);
     };
 }

@@ -377,11 +377,9 @@ namespace
         PKACalculator()
         {
             unordered_map<size_t, shared_ptr<PKANode>> nodes;
-
-            auto stream = istringstream(pkaDecisionTree);
-            const auto csv = CSVReader::readCSV(stream);
-            for (const auto& line : csv)
+            for (const auto& rawLine : pkaDecisionTree)
             {
+                const auto& line = CSVReader::readCSVRow(rawLine);
                 const size_t id = stoull(line[0]);
                 const size_t parentId = stoull(line[1]);
                 const bool isLeaf = !static_cast<bool>(stoi(line[2]));
