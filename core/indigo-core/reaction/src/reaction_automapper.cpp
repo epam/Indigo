@@ -2331,15 +2331,14 @@ int RSubstructureMcs::_getTransposedBondIndex(BaseMolecule& mol, int bond) const
     return result;
 }
 
-AAMCancellationWrapper::AAMCancellationWrapper(std::shared_ptr<CancellationHandler> canc) : _contains(false)
+AAMCancellationWrapper::AAMCancellationWrapper(CancellationHandler* canc) : _contains(false)
 {
     _prev = resetCancellationHandler(canc);
     _contains = true;
 }
-
 void AAMCancellationWrapper::reset()
 {
-    resetCancellationHandler(_prev);
+    resetCancellationHandler(_prev.release());
     _contains = false;
 }
 AAMCancellationWrapper::~AAMCancellationWrapper()

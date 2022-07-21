@@ -45,9 +45,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Compile flags
 if (UNIX OR MINGW)
-    # TODO: REMOVE -g before merging!
-    string(APPEND CMAKE_C_FLAGS " -g -fvisibility=hidden $ENV{CFLAGS}")
-    string(APPEND CMAKE_CXX_FLAGS " -g -fvisibility=hidden -fvisibility-inlines-hidden $ENV{CXXFLAGS}")
+    string(APPEND CMAKE_C_FLAGS "  -fvisibility=hidden $ENV{CFLAGS}")
+    string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden $ENV{CXXFLAGS}")
     if (NOT MINGW AND NOT APPLE)
         string(APPEND CMAKE_C_FLAGS " -rdynamic")
         string(APPEND CMAKE_CXX_FLAGS " -rdynamic")

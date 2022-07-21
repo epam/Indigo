@@ -50,6 +50,8 @@ namespace indigo
 
         void parseFingerprintType(const char* type, bool query);
 
+        CancellationHandler* cancellation;
+
         DECL_ERROR;
 
     protected:

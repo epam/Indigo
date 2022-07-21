@@ -18,11 +18,9 @@
 
 #include <gtest/gtest.h>
 
-#include <indigo.h>
+#include <indigo_internal.h>
 
 #include "common.h"
-
-using namespace indigo;
 
 class IndigoSimilarityTest : public IndigoApiTest
 {
@@ -67,7 +65,20 @@ TEST_F(IndigoSimilarityTest, generate_fingerprints)
 
         for (auto& mode : similarity_type_names)
         {
-            indigoSetOption("similarity-type", mode);
+            indigoGetInstance().fp_params.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(mode);
+            ASSERT_NE(-1, indigoFingerprint(mol, "sim"));
+        }
+    }
+}
+
+TEST_F(IndigoSimilarityTest, generate_fingerprints_sim_modes)
+{
+    for (int mol : {m1, m2, m4})
+    {
+        for (auto simType :
+             {SimilarityType::SIM, SimilarityType::CHEM, SimilarityType::ECFP2, SimilarityType::ECFP4, SimilarityType::ECFP6, SimilarityType::ECFP8})
+        {
+            indigoGetInstance().fp_params.similarity_type = simType;
             ASSERT_NE(-1, indigoFingerprint(mol, "sim"));
         }
     }
@@ -143,7 +154,8 @@ TEST_F(IndigoSimilarityTest, similarity_normalized_edit)
 TEST_F(IndigoSimilarityTest, similarity_sim_chem_mode)
 {
     const char* type = "sim";
-    indigoSetOption("similarity-type", "chem");
+    SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("CHEM");
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
@@ -156,7 +168,8 @@ TEST_F(IndigoSimilarityTest, similarity_sim_chem_mode)
 TEST_F(IndigoSimilarityTest, similarity_sim_ECFP2_mode)
 {
     const char* type = "sim";
-    indigoSetOption("similarity-type", "ecfp2");
+    SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("ECFP2");
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
@@ -169,7 +182,8 @@ TEST_F(IndigoSimilarityTest, similarity_sim_ECFP2_mode)
 TEST_F(IndigoSimilarityTest, similarity_sim_ECFP4_mode)
 {
     const char* type = "sim";
-    indigoSetOption("similarity-type", "ecfp4");
+    SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("ECFP4");
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
@@ -182,7 +196,8 @@ TEST_F(IndigoSimilarityTest, similarity_sim_ECFP4_mode)
 TEST_F(IndigoSimilarityTest, similarity_sim_ECFP6_mode)
 {
     const char* type = "sim";
-    indigoSetOption("similarity-type", "ecfp6");
+    SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("ECFP6");
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);
@@ -195,7 +210,8 @@ TEST_F(IndigoSimilarityTest, similarity_sim_ECFP6_mode)
 TEST_F(IndigoSimilarityTest, similarity_sim_ECFP8_mode)
 {
     const char* type = "sim";
-    indigoSetOption("similarity-type", "ecfp8");
+    SimilarityType similarityType = MoleculeFingerprintBuilder::parseSimilarityType("ECFP8");
+    indigoGetInstance().fp_params.similarity_type = similarityType;
     int f1 = indigoFingerprint(m1, type);
     int f2 = indigoFingerprint(m2, type);
     int f3 = indigoFingerprint(m3, type);

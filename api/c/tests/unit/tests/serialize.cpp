@@ -18,6 +18,8 @@
 
 #include <gtest/gtest.h>
 
+#include <molecule/molecule_mass.h>
+
 #include <indigo.h>
 
 #include "common.h"
@@ -41,10 +43,10 @@ TEST_F(IndigoSerializeTest, isotopes_basic)
             indigoSetIsotope(atom, isotope);
             indigoSerialize(m, &buffer, &size);
         }
-        catch (const std::exception& e)
+        catch (const Exception& e)
         {
             ASSERT_EQ(isotope, 168);
-            ASSERT_STREQ("CMF saver: unexpected C isotope: 168", e.what());
+            ASSERT_STREQ("CMF saver: unexpected C isotope: 168", e.message());
             break;
         }
     }

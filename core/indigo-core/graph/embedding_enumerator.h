@@ -192,7 +192,7 @@ namespace indigo
         TL_CP_DECL(ObjArray<_Enumerator>, _enumerators);
 
         int _cancellation_check_number;
-        std::shared_ptr<CancellationHandler> _cancellation_handler;
+        CancellationHandler* _cancellation_handler;
     };
 
 } // namespace indigo

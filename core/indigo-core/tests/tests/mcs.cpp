@@ -146,7 +146,7 @@ TEST_F(IndigoCoreMcsTest, finish_on_timeout)
 
     try
     {
-        resetCancellationHandler(std::make_shared<TimeoutCancellationHandler>(500));
+        resetCancellationHandler(new TimeoutCancellationHandler(500));
         mcs.findExactMCS();
         ASSERT_TRUE(false);
     }

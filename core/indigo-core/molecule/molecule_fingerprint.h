@@ -142,7 +142,7 @@ namespace indigo
         static const char* printSimilarityType(SimilarityType type);
         static int getSimilarityTypeOrder(SimilarityType type);
 
-        std::shared_ptr<CancellationHandler> cancellation;
+        CancellationHandler* cancellation;
 
         DECL_ERROR;
 

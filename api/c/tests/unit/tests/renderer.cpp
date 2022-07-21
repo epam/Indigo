@@ -20,6 +20,8 @@
 
 #include <gtest/gtest.h>
 
+#include <base_cpp/exception.h>
+
 #include <indigo-renderer.h>
 #include <indigo.h>
 
@@ -63,9 +65,9 @@ protected:
             indigoFree(buf);
             indigoFree(m);
         }
-        catch (std::exception& e)
+        catch (Exception& e)
         {
-            ASSERT_STREQ("", e.what());
+            ASSERT_STREQ("", e.message());
         }
 
         indigoRendererDispose();
@@ -90,9 +92,9 @@ TEST_F(IndigoApiRendererTest, layout_rings)
         indigoSetOption("render-superatom-mode", "collapse");
         indigoRenderToFile(m, "ring.png");
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 }
 
@@ -113,9 +115,9 @@ TEST_F(IndigoApiRendererTest, layout_crown)
         indigoSetOption("render-superatom-mode", "collapse");
         indigoRenderToFile(m, "crown.png");
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 }
 

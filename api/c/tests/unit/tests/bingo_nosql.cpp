@@ -23,6 +23,8 @@
 #include <bingo-nosql.h>
 #include <indigo.h>
 
+#include <base_cpp/exception.h>
+
 #include "common.h"
 
 using namespace indigo;
@@ -41,7 +43,6 @@ TEST_F(BingoNosqlTest, test_enumerate_id)
     EXPECT_FALSE(bingoNext(e_empty));
     EXPECT_ANY_THROW(bingoGetCurrentId(e_empty));
     bingoEndSearch(e_empty);
-    indigoSetOptionInt("timeout", 1000);
 
     // Main scenario: 3 elements in enumerator
     bingoInsertRecordObj(db, obj);
@@ -78,7 +79,7 @@ TEST_F(BingoNosqlTest, multiple_instances_same_name)
                 db_ids.emplace_back(bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", ""));
             }
         },
-        std::exception);
+        Exception);
     for (const auto& db_id : db_ids)
     {
         bingoCloseDatabase(db_id);

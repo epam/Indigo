@@ -72,12 +72,12 @@ static OCIString* _mangoSMILES(OracleEnv& env, const Array<char>& target_buf, co
     profTimerStop(tload);
 
     _mangoUpdateMolecule(target, options, context);
-    std::shared_ptr<CancellationHandler> handler(nullptr);
+    std::unique_ptr<CancellationHandler> handler(nullptr);
     if (context.timeout > 0)
     {
-        handler = std::make_shared<TimeoutCancellationHandler>(context.timeout);
+        handler = std::make_unique<TimeoutCancellationHandler>(context.timeout);
     }
-    AutoCancellationHandler auto_handler(handler);
+    AutoCancellationHandler auto_handler(handler.release());
 
     if (canonical)
         MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);

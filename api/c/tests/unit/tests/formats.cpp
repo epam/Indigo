@@ -18,6 +18,8 @@
 
 #include <gtest/gtest.h>
 
+#include <molecule/molecule_mass.h>
+
 #include <indigo.h>
 
 #include "common.h"
@@ -71,9 +73,9 @@ TEST_F(IndigoApiFormatsTest, molecule)
         EXPECT_EQ(7, indigoCountAtoms(obj));
         EXPECT_EQ(7, indigoCountBonds(obj));
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 }
 
@@ -104,9 +106,9 @@ TEST_F(IndigoApiFormatsTest, reaction)
         //        EXPECT_EQ(1, indigoCountReactants(obj));
         //        EXPECT_EQ(1, indigoCountProducts(obj));
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 }
 
@@ -131,9 +133,9 @@ TEST_F(IndigoApiFormatsTest, smarts)
         EXPECT_EQ(7, indigoCountBonds(obj));
         //        EXPECT_STREQ(expectedQuery.c_str(), indigoSmarts(obj));
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 }
 
@@ -158,9 +160,9 @@ TEST_F(IndigoApiFormatsTest, query)
         EXPECT_EQ(11, indigoCountAtoms(obj));
         EXPECT_EQ(12, indigoCountBonds(obj));
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 }
 
@@ -196,9 +198,9 @@ TEST_F(IndigoApiFormatsTest, fromBuffer)
         obj = indigoLoadStructureFromBuffer(react, sizeof(react), "query");
         EXPECT_EQ(2, indigoCountMolecules(obj));
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 }
 
@@ -218,9 +220,9 @@ TEST_F(IndigoApiFormatsTest, fromFile)
         EXPECT_EQ(1, indigoCountReactants(obj));
         EXPECT_EQ(1, indigoCountProducts(obj));
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 }
 
@@ -233,9 +235,9 @@ TEST_F(IndigoApiFormatsTest, fromGzFile)
         EXPECT_EQ(6, indigoCountAtoms(obj));
         EXPECT_EQ(6, indigoCountBonds(obj));
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 
     try
@@ -244,9 +246,9 @@ TEST_F(IndigoApiFormatsTest, fromGzFile)
         EXPECT_EQ(31, indigoCountAtoms(obj));
         EXPECT_EQ(30, indigoCountBonds(obj));
     }
-    catch (std::exception& e)
+    catch (Exception& e)
     {
-        ASSERT_STREQ("", e.what());
+        ASSERT_STREQ("", e.message());
     }
 }
 
@@ -257,5 +259,5 @@ TEST_F(IndigoApiFormatsTest, noFile)
             int obj = -1;
             obj = indigoLoadStructureFromFile("/wrong/path/to/non/existent/file", "");
         },
-        std::exception);
+        Exception);
 }

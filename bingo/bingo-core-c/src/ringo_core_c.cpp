@@ -181,7 +181,7 @@ int BingoCore::ringoMatchTarget(const char* target, int target_buf_len)
     if (self.ringo_search_type == BingoCore::_UNDEF)
         throw BingoError("Undefined search type");
     int timeout = self.getTimeout();
-    AutoCancellationHandler handler(std::make_shared<TimeoutCancellationHandler>(timeout));
+    AutoCancellationHandler handler(new TimeoutCancellationHandler(timeout));
 
     TRY_READ_TARGET_RXN
     {
@@ -226,7 +226,7 @@ int BingoCore::ringoMatchTargetBinary(const char* target_bin, int target_bin_len
     if (self.ringo_search_type == BingoCore::_UNDEF)
         throw BingoError("Undefined search type");
     int timeout = self.getTimeout();
-    AutoCancellationHandler handler(std::make_shared<TimeoutCancellationHandler>(timeout));
+    AutoCancellationHandler handler(new TimeoutCancellationHandler(timeout));
 
     TRY_READ_TARGET_RXN
     {

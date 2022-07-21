@@ -134,7 +134,7 @@ namespace indigo
         bool _target_stereocenter_parity_inv, _target_bond_parity_inv;
         int _fixed_atom;
 
-        std::shared_ptr<CancellationHandler> _cancellation_handler;
+        CancellationHandler* _cancellation_handler;
     };
 
 } // namespace indigo

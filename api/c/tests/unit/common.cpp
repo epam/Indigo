@@ -1,5 +1,7 @@
 #include "common.h"
 
+#include <base_cpp/exception.h>
+
 #include <indigo.h>
 
 using namespace indigo;
@@ -28,5 +30,5 @@ std::string IndigoApiTest::dataPath(const char* dataPathSuffix)
 
 void IndigoApiTest::errorHandler(const char* message, void*) // NOLINT
 {
-    throw std::runtime_error(message);
+    throw Exception(message);
 }
