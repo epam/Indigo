@@ -18,15 +18,25 @@
 
 #pragma once
 
+#include <istream>
+#include <string>
+#include <vector>
+
 namespace indigo
 {
-    class Molecule;
+    enum class CSVState
+    {
+        UnquotedField,
+        QuotedField,
+        QuotedQuote
+    };
 
-    class Crippen
+    class CSVReader
     {
     public:
-        static double logP(Molecule& molecule);
-        static double molarRefractivity(Molecule& molecule);
-        static double pKa(Molecule& molecule);
+        static std::vector<std::vector<std::string>> readCSV(std::istream&);
+
+    private:
+        static std::vector<std::string> readCSVRow(const std::string&);
     };
 }

@@ -60,7 +60,7 @@ def pka_tree(matcher: IndigoObject, node: dict[str, Any]) -> Optional[tuple[floa
     child = decision_tree.get(node.get("yes_child_id"))
     if child:
         if bool(__debug__):
-            print("\t",child["smarts"], end=' ')
+            print("\t", child["smarts"], end=' ')
         query = indigo.loadSmarts(child["smarts"])
         if matcher.match(query):
             if bool(__debug__):
@@ -84,43 +84,12 @@ def calc_pka(smiles: str) -> tuple[float, float]:
     matcher = indigo.substructureMatcher(mol)
     return pka_tree(matcher, decision_tree[1])[0]
 
-print(abs(calc_pka("Oc1cc(cc([N+](C)(C)C)c1)C") - 8.56) < 1e-1)
-print(abs(calc_pka("[NH2+]1CC1c1ccc(cc1)C") - 7.73) < 1e-1)
-print(abs(calc_pka("BrNC(=O)C(Cl)Cl") - 4.15) < 1e-1) 
 
-if not bool(__debug__):
-    with open(dataPath("molecules/pka/pka_answers.csv")) as f:
-        y_true = []
-        y_preds = []
-        y_preds_crippen = []
-        y_preds_cx = []
-        y_preds_sparc = []
-        y_preds_acd = []
-        y_preds_adme_boxes = []
-        for line in csv.DictReader(f):
-            try:
-                smiles = line["SMILES"]
-                expected_pka = float(line["pKa_accepted"])
-                actual_pka = calc_pka(line["SMILES"])
-                y_true.append(expected_pka)
-                y_preds.append(actual_pka)
-                y_preds_crippen.append(float(line["SMARTS pKa"] or '0.0'))
-                y_preds_cx.append(float(line["MARVIN"] or '0.0'))
-                y_preds_sparc.append(float(line["SPARC"] or '0.0'))
-                y_preds_acd.append(float(line["ACD"] or '0.0'))
-                y_preds_adme_boxes.append(float(line["ADME Boxes"] or '0.0'))
-                if abs(y_preds_crippen[-1] - actual_pka) >= 1.0:
-                    print(smiles, actual_pka, y_preds_crippen[-1])
-            except IndigoException as e:
-                print(line)
-                print(e)
-        print('epam', r2_score(y_true, y_preds))
-        print('crippen', r2_score(y_true, y_preds_crippen))
-        print('marvin', r2_score(y_true, y_preds_cx))
-        print('sparc', r2_score(y_true, y_preds_sparc))
-        print('acd', r2_score(y_true, y_preds_acd))
-        print('adme_boxes', r2_score(y_true, y_preds_adme_boxes))
-    
+if bool(__debug__):
+    calc_pka("Oc1cc(cc([N+](C)(C)C)c1)C")
+    calc_pka("[NH2+]1CC1c1ccc(cc1)C")
+    calc_pka("BrNC(=O)C(Cl)Cl")
+else:
     with open(dataPath("molecules/pka/pka_answers.csv")) as f:
         y_true = []
         y_preds = []
@@ -154,28 +123,28 @@ if not bool(__debug__):
         print('adme_boxes', r2_score(y_true, y_preds_adme_boxes))
 
     with open(dataPath("molecules/pka/pKaInWater.csv")) as f:
-            with open(dataPath("molecules/pka/pkaInWater_acidic.csv"), 'wt') as foa:
-                with open(dataPath("molecules/pka/pkaInWater_basic.csv"), 'wt') as fob:
-                    foa.write("Smiles,pka\n")
-                    fob.write("Smiles,pka\n")
-                    y_true_acidic = []
-                    y_preds_acidic = []
-                    y_true_basic = []
-                    y_preds_basic = []
-                    for line in csv.DictReader(f):
-                        try:
-                            smiles = line["Smiles"]
-                            expected_pka = float(line["pKa"])
-                            actual_pka = calc_pka(smiles)
-                            if not line["basicOrAcidic"] == "acidic":
-                                fob.write(f"{smiles},{expected_pka}\n")
-                                y_true_acidic.append(expected_pka)
-                                y_preds_acidic.append(actual_pka)
-                            else:
-                                foa.write(f"{smiles},{expected_pka}\n")
-                                y_true_basic.append(expected_pka)
-                                y_preds_basic.append(actual_pka)
-                        except IndigoException as e:
-                            print(e)
-                    print("acidic", r2_score(y_true_acidic, y_preds_acidic))
-                    print("basic", r2_score(y_true_basic, y_preds_basic))
+        with open(dataPath("molecules/pka/pkaInWater_acidic.csv"), 'wt') as foa:
+            with open(dataPath("molecules/pka/pkaInWater_basic.csv"), 'wt') as fob:
+                foa.write("Smiles,pka\n")
+                fob.write("Smiles,pka\n")
+                y_true_acidic = []
+                y_preds_acidic = []
+                y_true_basic = []
+                y_preds_basic = []
+                for line in csv.DictReader(f):
+                    try:
+                        smiles = line["Smiles"]
+                        expected_pka = float(line["pKa"])
+                        actual_pka = calc_pka(smiles)
+                        if not line["basicOrAcidic"] == "acidic":
+                            fob.write(f"{smiles},{expected_pka}\n")
+                            y_true_acidic.append(expected_pka)
+                            y_preds_acidic.append(actual_pka)
+                        else:
+                            foa.write(f"{smiles},{expected_pka}\n")
+                            y_true_basic.append(expected_pka)
+                            y_preds_basic.append(actual_pka)
+                    except IndigoException as e:
+                        print(e)
+                print("acidic", r2_score(y_true_acidic, y_preds_acidic))
+                print("basic", r2_score(y_true_basic, y_preds_basic))

@@ -18,10 +18,15 @@
 
 #include "molecule/crippen.h"
 
+#include <iostream>
+
+#include "base_cpp/csv_reader.h"
 #include "base_cpp/scanner.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/smiles_loader.h"
+#include "pka_decision_tree.h"
 
 using namespace std;
 
@@ -198,9 +203,9 @@ namespace
         return contributions;
     }
 
-    QueryMolecule& loadSmarts(const std::string& smarts)
+    QueryMolecule& loadSmarts(const string& smarts)
     {
-        thread_local unordered_map<std::string, QueryMolecule> smartsHolder;
+        thread_local unordered_map<string, QueryMolecule> smartsHolder;
         if (smartsHolder.count(smarts) == 0)
         {
             BufferScanner scanner(smarts.c_str());
@@ -256,9 +261,9 @@ namespace
             {"N7", 1.839},
             {"N8", 2.819},
             {"N9", 1.725},
-            {"N10", std::nanf("")},
+            {"N10", nanf("")},
             {"N11", 2.202},
-            {"N12", std::nanf("")},
+            {"N12", nanf("")},
             {"N13", 0.2604},
             {"N14", 3.359},
             {"N", 2.134},
@@ -273,23 +278,23 @@ namespace
             {"O9", 0.0},
             {"O10", 0.2215},
             {"O11", 0.389},
-            {"O12", std::nanf("")},
+            {"O12", nanf("")},
             {"O", 0.6865},
-            {"F2", std::nanf("")},
+            {"F2", nanf("")},
             {"F", 5.853},
-            {"Cl2", std::nanf("")},
+            {"Cl2", nanf("")},
             {"Cl", 5.853},
-            {"Br2", std::nanf("")},
+            {"Br2", nanf("")},
             {"Br", 8.927},
-            {"I2", std::nanf("")},
+            {"I2", nanf("")},
             {"I", 14.02},
             {"P", 6.92},
             {"S1", 7.591},
             {"S2", 7.365},
             {"S3", 6.691},
             {"Me1", 5.754},
-            {"Me2", std::nanf("")},
-            {"Hal", std::nanf("")}
+            {"Me2", nanf("")},
+            {"Hal", nanf("")}
         };
         // clang-format on
         return contributions;
@@ -351,6 +356,89 @@ namespace
 
         return result;
     }
+
+    struct PKANode
+    {
+        size_t id;
+        bool isLeaf;
+        double pkaValue;
+        shared_ptr<PKANode> yes = nullptr;
+        shared_ptr<PKANode> no = nullptr;
+        QueryMolecule smarts;
+        string smartsString;
+
+        PKANode(const size_t id, const bool isLeaf, const double pkaValue, const string& smartsString)
+            : id(id), isLeaf(isLeaf), pkaValue(pkaValue), smartsString(smartsString)
+        {
+        }
+    };
+
+    struct PKACalculator
+    {
+    public:
+        PKACalculator()
+        {
+            unordered_map<size_t, shared_ptr<PKANode>> nodes;
+
+            auto stream = istringstream(pkaDecisionTree);
+            const auto csv = CSVReader::readCSV(stream);
+            for (const auto& line : csv)
+            {
+                const size_t id = stoull(line[0]);
+                const size_t parentId = stoull(line[1]);
+                const bool isLeaf = !static_cast<bool>(stoi(line[2]));
+                const string& smarts = line[4];
+                const bool yes = static_cast<bool>(stoi(line[5]));
+                const double pkaValue = stod(line[6]);
+
+                auto node = make_shared<PKANode>(id, isLeaf, pkaValue, smarts);
+                MoleculeAutoLoader loader(smarts.c_str());
+                loader.loadQueryMolecule(node->smarts);
+
+                nodes[id] = node;
+                if (parentId > 0)
+                {
+                    if (yes)
+                    {
+                        nodes.at(parentId)->yes = node;
+                    }
+                    else
+                    {
+                        nodes.at(parentId)->no = node;
+                    }
+                }
+            }
+            root = nodes.at(1);
+        }
+
+        double calculate(Molecule& target) const
+        {
+            MoleculeSubstructureMatcher matcher(target);
+            return traverse(matcher, root);
+        }
+
+    private:
+        shared_ptr<PKANode> root = nullptr;
+
+        double traverse(MoleculeSubstructureMatcher& matcher, const shared_ptr<PKANode>& node) const
+        {
+            if (node->isLeaf)
+            {
+                cout << "terminal " << node->pkaValue << '\n';
+                return node->pkaValue;
+            }
+            matcher.setQuery(node->yes->smarts);
+            if (matcher.find())
+            {
+                cout << node->yes->smartsString << " matched\n";
+                return traverse(matcher, node->yes);
+            }
+            cout << node->yes->smartsString << " non_matched\n";
+            return traverse(matcher, node->no);
+        }
+    };
+
+    const PKACalculator pkaCalculator;
 }
 
 namespace indigo
@@ -377,5 +465,13 @@ namespace indigo
             mr += contributions.at(match.first) * match.second;
         }
         return mr;
+    }
+
+    double Crippen::pKa(Molecule& molecule)
+    {
+        Molecule copy;
+        copy.clone(molecule);
+        copy.aromatize(AromaticityOptions());
+        return pkaCalculator.calculate(molecule);
     }
 }
