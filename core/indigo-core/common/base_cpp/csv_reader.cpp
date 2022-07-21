@@ -1,6 +1,3 @@
-//
-// Created by Mikhail Kviatkovskii on 21.07.2022.
-//
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
  *
