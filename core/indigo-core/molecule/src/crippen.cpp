@@ -18,8 +18,6 @@
 
 #include "molecule/crippen.h"
 
-#include <iostream>
-
 #include "base_cpp/csv_reader.h"
 #include "base_cpp/scanner.h"
 #include "molecule/molecule.h"
@@ -424,16 +422,13 @@ namespace
         {
             if (node->isLeaf)
             {
-                cout << "terminal " << node->pkaValue << '\n';
                 return node->pkaValue;
             }
             matcher.setQuery(node->yes->smarts);
             if (matcher.find())
             {
-                cout << node->yes->smartsString << " matched\n";
                 return traverse(matcher, node->yes);
             }
-            cout << node->yes->smartsString << " non_matched\n";
             return traverse(matcher, node->no);
         }
     };
