@@ -12,7 +12,7 @@ target_include_directories(${PROJECT_NAME}-object
 
 if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
-    target_link_libraries(${PROJECT_NAME} PRIVATE indigo)
+    target_link_libraries(${PROJECT_NAME} PRIVATE indigo indigo-core)
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
