@@ -443,6 +443,7 @@ namespace
 
 namespace indigo
 {
+    // https://doi.org/10.1021/ci990307l
     double Crippen::logP(Molecule& molecule)
     {
         const auto& matches = calculateMatches(molecule);
@@ -455,6 +456,7 @@ namespace indigo
         return logP;
     }
 
+    // https://doi.org/10.1021/ci990307l
     double Crippen::molarRefractivity(Molecule& molecule)
     {
         const auto& matches = calculateMatches(molecule);
@@ -467,6 +469,7 @@ namespace indigo
         return mr;
     }
 
+    // https://doi.org/10.1021/ci8001815
     double Crippen::pKa(Molecule& molecule)
     {
         Molecule copy;
