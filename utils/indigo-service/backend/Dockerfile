@@ -45,7 +45,7 @@ RUN if [ -f /opt/*indigo*manylinux1_x86_64*.whl ]; then python3 -m pip install -
 #      for imago_zip in $(cat /srv/service_version); do case "$imago_zip" in *imago*) 7z x $imago_zip; mv imago-console*/ /srv/imago/$(basename $imago_zip .7z)/ ;; esac; done
 # RUN chmod -R a+rx /srv/imago
 
-COPY ./lib/favicon.ico /srv/api/ui/
+# COPY ./lib/favicon.ico /srv/api/ui/
 COPY ./service/v2/ /srv/api/v2/
 COPY ./service/*.py /srv/api/
 

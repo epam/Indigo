@@ -93,9 +93,7 @@ function api(base) {
 		sdfExport: apiCall('GET', 'libraries/search/:search_id.sdf'),
 		render: apiCall('POST', 'indigo/render', {
 			deserialize: function(data) { return data; }
-		}),
-		imagoUpload: apiCall('POST', 'imago/uploads'),
-		imagoUploadStatus: apiCall('GET', 'imago/uploads/:upload')
+		})
 	};
 }
 

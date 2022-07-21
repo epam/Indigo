@@ -58,7 +58,7 @@ gulp.task('style', function () {
 gulp.task('mithril', function () {
 	var basename = 'mithril',
 		path = require.resolve(basename);
-	return gulp.src(path.replace('.js', '.min.js'))
+	return gulp.src(path)
 		.pipe(plugins.rename({ basename: basename }))
 		.pipe(gulp.dest('dist'));
 });

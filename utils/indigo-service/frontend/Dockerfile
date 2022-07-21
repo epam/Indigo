@@ -5,7 +5,6 @@ COPY ./ui /ui
 WORKDIR /ui
 RUN npm install
 RUN npm run gulp archive
-RUN ls
 
 FROM nginx:latest
 
