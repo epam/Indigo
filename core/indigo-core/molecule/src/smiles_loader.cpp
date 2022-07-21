@@ -3025,7 +3025,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                     subatom.reset(QueryMolecule::Atom::und(subatom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, aromatic)));
             }
         }
-        
+
         if (subatom.get() != 0)
         {
             if (neg)
