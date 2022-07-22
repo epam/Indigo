@@ -9,19 +9,25 @@ It has the following interface:
 ./.ci/version.sh <MAJOR.MINOR.PATCH> [<SUFFIX>] [<REVISION>]
 ```
 
-For release version it's called like:
+Release version:
 
 ```bash
 ./.ci/version.sh 1.8.0
 ```
 
-For development version it's called like:
+Development version with automatic revision number retrieval:
 
 ```bash
 ./.ci/version.sh 1.8.0 dev
 ```
 
-For rc version it's called like
+Development version without revision:
+
+```bash
+./.ci/version.sh 1.8.0 dev ""
+```
+
+Release candidate version with defined revision:
 
 ```bash
 ./.ci/version.sh 1.8.0 rc 1
@@ -36,7 +42,9 @@ Script does the following:
 3. Updates `.ci/version.txt` and all package files with new version.
 
 ## `version.txt`
-`version.txt` store current version and has 5 lines:
+
+`version.txt` stores current version and has 5 lines:
+
 1. Version in MAJOR.MINOR.PATCH format
 2. Optional suffix or empty line
 3. Optional revision or empty line

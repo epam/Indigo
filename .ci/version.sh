@@ -1,11 +1,16 @@
 #!/bin/bash
 set -eux
 
+if [ "${1:-}" == "" ]; then
+  echo "Usage: ${0} MAJOR.MINOR.PATCH [suffix] [<revision_number>]"
+  exit 1
+fi 
+
 root=$(realpath $(dirname ${0})/..)
 
 if [ $(git branch --show-current) -ne "master" ]; then
   echo "Version update should be done only on master!"
-  exit 1
+  exit 2
 fi 
 
 
@@ -18,7 +23,7 @@ old_hash_sum=$(sed -n 5p ${root}/.ci/version.txt)
 check_hash_sum=$(echo "${old_base_version}${old_suffix}${old_revision}${old_java_snapshot}" | sha256sum | awk '{print $1}')
 if [ "${check_hash_sum}" != "${old_hash_sum}" ]; then
   echo ".ci/version.txt hash sum check failed! Probably file was manually edited. Cannot continue."
-  exit 1
+  exit 3
 fi
 
 if [ "${old_suffix}" != "" ]; then
@@ -38,15 +43,15 @@ fi
 
 if ! [[ ${1} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "First argument (version) should be in MAJOR.MINOR.PATCH format!"
-  exit 2
+  exit 4
 fi
 if [[ "${2:-}" != "" ]] && ! [[ ${2} =~ ^[a-z]+$ ]]; then
   echo "Second argument (suffix) should be in [a-z]+ format!"
-  exit 2
+  exit 5
 fi
 if [[ "${3:-}" != "" ]] && ! [[ ${3:-} =~ ^[0-9]+$ ]]; then
  echo "Third argument (revision) should be in [0-9]+ format!"
- exit 2
+ exit 6
 fi
  
 new_base_version=${1}
