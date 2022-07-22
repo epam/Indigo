@@ -222,3 +222,18 @@ CEXPORT double indigoMolarRefractivity(const int molecule)
     }
     INDIGO_END(-1);
 }
+
+CEXPORT double indigoPka(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            return Crippen::pKa(mol);
+        }
+        throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}

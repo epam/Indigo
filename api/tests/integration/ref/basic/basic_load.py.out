@@ -1803,4 +1803,4 @@ M  END
 molfile loader: unsupported property of CTAB3000 (in BOND block): UNKNOWN_KEY
 molfile loader: unsupported property of CTAB3000: UNKNOWN_KEY
 ****** Name is skeletal prefix ********
-molecule auto loader: SMILES loader: unrecognized lowercase symbol: i
+molecule auto loader: SMILES loader: unrecognized lowercase symbol: l

@@ -96,6 +96,7 @@ namespace indigo
             ATOM_TEMPLATE,
             ATOM_TEMPLATE_SEQID,
             ATOM_TEMPLATE_CLASS,
+            ATOM_PI_BONDED,
 
             BOND_ORDER,
             BOND_TOPOLOGY,
@@ -126,8 +127,8 @@ namespace indigo
             // Remove all constraints of the given type
             void removeConstraints(int what_type);
 
-            bool sureValue(int what_type, int& value);
-            bool sureValueInv(int what_type, int& value);
+            bool sureValue(int what_type, int& value) const;
+            bool sureValueInv(int what_type, int& value) const;
             bool possibleValue(int what_type, int what_value);
             bool possibleValueInv(int what_type, int what_value);
             bool possibleValuePair(int what_type1, int what_value1, int what_type2, int what_value2);
@@ -153,7 +154,7 @@ namespace indigo
 
             Node* _findSureConstraint(int what_type, int& count);
 
-            virtual bool _sureValue(int what_type, int& value_out) = 0;
+            virtual bool _sureValue(int what_type, int& value_out) const = 0;
             virtual bool _sureValueBelongs(int what_type, const int* arr, int count) = 0;
 
             virtual void _optimize(){};
@@ -209,7 +210,7 @@ namespace indigo
 
             bool _possibleValue(int what_type, int what_value) override;
             bool _possibleValuePair(int what_type1, int what_value1, int what_type2, int what_value2) override;
-            bool _sureValue(int what_type, int& value_out) override;
+            bool _sureValue(int what_type, int& value_out) const override;
             bool _sureValueBelongs(int what_type, const int* arr, int count) override;
 
             void _optimize() override;
@@ -244,7 +245,7 @@ namespace indigo
 
             bool _possibleValue(int what_type, int what_value) override;
             bool _possibleValuePair(int what_type1, int what_value1, int what_type2, int what_value2) override;
-            bool _sureValue(int what_type, int& value_out) override;
+            bool _sureValue(int what_type, int& value_out) const override;
             bool _sureValueBelongs(int what_type, const int* arr, int count) override;
         };
 
@@ -288,7 +289,7 @@ namespace indigo
 
         bool isSaturatedAtom(int idx) override;
 
-        int getBondOrder(int idx) override;
+        int getBondOrder(int idx) const override;
         int getBondTopology(int idx) override;
         bool atomNumberBelongs(int idx, const int* numbers, int count) override;
         bool possibleAtomNumber(int idx, int number) override;

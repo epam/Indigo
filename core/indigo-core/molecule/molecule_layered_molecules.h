@@ -107,7 +107,7 @@ namespace indigo
         dword getRSiteBits(int atom_idx) override;
         void allowRGroupOnRSite(int atom_idx, int rg_idx) override;
 
-        int getBondOrder(int idx) override;
+        int getBondOrder(int idx) const override;
         int getBondTopology(int idx) override;
 
         bool atomNumberBelongs(int idx, const int* numbers, int count) override;

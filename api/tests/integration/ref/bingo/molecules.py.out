@@ -24759,9 +24759,9 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 ** searchExact(C(C)(C)=[Sb][C]C |^3:4|, '') **
 	1 C(=[Sb][C]C)(C)C |^3:2| C(=[Sb][C]C)(C)C |^3:2|
 	1685 C(=[Sb][C]C)(C)C C(=[Sb][C]C)(C)C
-** searchExact(c1(Nc2ccc3[n]c[s]c3c2)[n]2cc(ccc2[n]c1C1CC1)Br, '') **
+** searchExact(C1(NC2=CC=C3N=CSC3=C2)N2C=C(C=CC2=NC=1C1CC1)Br, '') **
 	2 c1(c(C2CC2)[n]c2[n]1cc(Br)cc2)Nc1cc2c([n]c[s]2)cc1 c1(c(C2CC2)[n]c2[n]1cc(Br)cc2)Nc1cc2c([n]c[s]2)cc1
-** searchExact([P@](C(C)(C)C)(c1ccccc1)c1ccccc1OC, '') **
+** searchExact([P@](C(C)(C)C)(C1C=CC=CC=1)C1=CC=CC=C1OC, '') **
 	3 [P@@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C [P@@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C
 	36 [P@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C [P@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C
 ** searchExact([S-](C)(N)(C)(=O)=O, '') **
@@ -24776,7 +24776,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 ** searchExact(CN([N])C |^3:2|, '') **
 	8 CN(C)[N] |^3:3| CN(C)[N] |^3:3|
 	1249 CN(C)[N] |^4:3| CN(C)[N] |^4:3|
-** searchExact([n]1([n]cc2ccccc2[b]1O)S(=O)(=O)c1[s][n]cc1, '') **
+** searchExact(N1(N=CC2=CC=CC=C2B1O)S(=O)(=O)C1SN=CC=1, '') **
 	9 [n]1(S(c2cc[n][s]2)(=O)=O)[b](O)c2c(cccc2)c[n]1 [n]1(S(c2cc[n][s]2)(=O)=O)[b](O)c2c(cccc2)c[n]1
 ** searchExact([C@]([H])(C)(I)F |&1:0,r|, '') **
 	10 [C@](F)(I)(C)[H] |&1:0,r| [C@](F)(I)(C)[H] |&1:0,r|
@@ -24803,7 +24803,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 ** searchExact([Sb-](C)[Te][C+]=C, '') **
 	12 [Sb-]([Te][C+]=C)C [Sb-]([Te][C+]=C)C
 	282 [Sb-]([Te][C+]=C)C [Sb-]([Te][C+]=C)C
-** searchExact(c1(ccc(C)cc1)/C(/Cl)=C/C=[N+]1/CCCC/1, '') **
+** searchExact(C1(=CC=C(C)C=C1)/C(/Cl)=C/C=[N+]1/CCCC/1, '') **
 	13 c1(/C(=C/C=[N+]2\CCCC\2)/Cl)ccc(C)cc1 c1(/C(=C/C=[N+]2\CCCC\2)/Cl)ccc(C)cc1
 ** searchExact(OC[C@@H](O)[C@@H](O)C=O |&1:2,4,r|, '') **
 	14 OC[C@H]([C@H](C=O)O)O |&1:2,3,r| OC[C@H]([C@H](C=O)O)O |&1:2,3,r|
@@ -24819,7 +24819,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 ** searchExact(C[C+](O[C-](C)C)C, '') **
 	22 C[C+](C)O[C-](C)C C[C+](C)O[C-](C)C
 	893 CC(C)=[O+][C-](C)C CC(C)=[O+][C-](C)C
-** searchExact([b]1(OC)o[b](OC)o[b](OC)o1, '') **
+** searchExact(B1(OC)OB(OC)OB(OC)O1, '') **
 	23 [b]1(o[b](OC)o[b](OC)o1)OC [b]1(o[b](OC)o[b](OC)o1)OC
 ** searchExact(N/C(/N)=N/N=C(\C)/C=N/NC(=N)N, '') **
 	24 N/C(=N/N=C(/C=N/NC(N)=N)\C)/N N/C(=N/N=C(/C=N/NC(N)=N)\C)/N
@@ -24898,7 +24898,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	1758 c1(c(O)[n]c2C(=NC(Nc2[n]1)=N)O)O c1(c(O)[n]c2C(=NC(Nc2[n]1)=N)O)O
 	1964 C1(C(=O)NC2C(=NC(NC=2N=1)=N)O)O C1(C(=O)NC2C(=NC(NC=2N=1)=N)O)O
 	1979 C1(C(=O)NC2C(N=C(NC=2N=1)N)=O)O C1(C(=O)NC2C(N=C(NC=2N=1)N)=O)O
-** searchExact(c12c3c4c5c6c7c8c9c%10c%11c%12c9c9c%13c%14c%12c%12c%15c%11c%11c%16c%10c7c7c%16c%10c%16c%11c%15c%11c%15c%12c%14c%12c%14c%13c%13c9c8c6c6c%13c8c%14c9c%12c%15c%12c%11c%16c(c%10c3c75)c1c%12c9c2c8c46, '') **
+** searchExact(C12=C3C4C5=C6C7C8=C9C%10C%11C%12C9=C9C%13=C%14C=%12C%12=C%15C=%11C%11=C%16C=%10C=7C7C%16=C%10C%16=C%11C%15=C%11C%15=C%12C%14=C%12C%14=C%13C%13C9=C8C6=C6C=%13C8=C%14C9C%12=C%15C%12C%11=C%16C(C%10=C3C=75)=C1C=%12C=9C2=C8C=46, '') **
 	31 c12c3c4c5c6c7c4c4c8c3c3c9c%10c%11c(c13)c1c3c%12c(c%13c6c6c%14c%15c%16c%17c6c7c6c%17c7c%17c(c8c9c8c%17c9c%17c(c8%10)c8c%10c%18c(c1c8%11)c%12c(c%13%14)c%18c%15c(c%17%10)c%16c79)c64)c5c23 c12c3c4c5c6c7c4c4c8c3c3c9c%10c%11c(c13)c1c3c%12c(c%13c6c6c%14c%15c%16c%17c6c7c6c%17c7c%17c(c8c9c8c%17c9c%17c(c8%10)c8c%10c%18c(c1c8%11)c%12c(c%13%14)c%18c%15c(c%17%10)c%16c79)c64)c5c23
 ** searchExact([C@](Cl)(F)(I)C |&1:0,r|, '') **
 	33 [C@](C)(I)(F)Cl |&1:0,r| [C@](C)(I)(F)Cl |&1:0,r|
@@ -24913,9 +24913,9 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	1972 F[C@](I)(Cl)C |&1:1,r| F[C@](I)(Cl)C |&1:1,r|
 ** searchExact(OC(C)[C@H](C)O |&1:3,r|, '') **
 	34 OC([C@@H](O)C)C |&1:2,r| OC([C@@H](O)C)C |&1:2,r|
-** searchExact(c1([P@]2CCC[P@](c3c(C)cc(C)cc3C)C[N@@](Cc3ccccc3)C[P@](c3c(C)cc(C)cc3C)CCC[P@@](c3c(C)cc(C)cc3C)C[N@](Cc3ccccc3)C2)c(C)cc(C)cc1C, '') **
+** searchExact(C1([P@]2CCC[P@](C3=C(C)C=C(C)C=C3C)C[N@@](CC3=CC=CC=C3)C[P@](C3=C(C)C=C(C)C=C3C)CCC[P@@](C3=C(C)C=C(C)C=C3C)C[N@](CC3=CC=CC=C3)C2)=C(C)C=C(C)C=C1C, '') **
 	35 c1(c(C)cc(C)cc1C)[P@@]1C[N@@](Cc2ccccc2)C[P@](c2c(C)cc(C)cc2C)CCC[P@@](c2c(C)cc(C)cc2C)C[N@](Cc2ccccc2)C[P@@](c2c(C)cc(C)cc2C)CCC1 c1(c(C)cc(C)cc1C)[P@@]1C[N@@](Cc2ccccc2)C[P@](c2c(C)cc(C)cc2C)CCC[P@@](c2c(C)cc(C)cc2C)C[N@](Cc2ccccc2)C[P@@](c2c(C)cc(C)cc2C)CCC1
-** searchExact([P@@](C(C)(C)C)(c1ccccc1)c1ccccc1OC, '') **
+** searchExact([P@@](C(C)(C)C)(C1C=CC=CC=1)C1=CC=CC=C1OC, '') **
 	3 [P@@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C [P@@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C
 	36 [P@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C [P@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C
 ** searchExact(C1(=O)NC2=C(NC1=O)C(=O)NC(N)=N2, '') **
@@ -24959,7 +24959,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	39 C=[N+]([N-]C)C C=[N+]([N-]C)C
 ** searchExact(S=P[Si]C.S=P[Si]C.S=[S+][Si-](C)C.[S-]S[Si+](C)C.[P-]=[Si+]C.[S-]S[Si+]=C.[Te]=[Sb][C]C.[Te]=[Sb][C]C.[Te+](=C)[Sb-]C.[Te+](C)(C)[Sb-]C.[Sb-](C)[Te][C+](C)C.[Sb-](C)[Te][C+]=C |^3:6,31|, '') **
 	40 S=P[Si]C.S=P[Si]C.S=[S+][Si-](C)C.[S-]S[Si+](C)C.[P-]=[Si+]C.[S-]S[Si+]=C.[Te]=[Sb][C]C.[Te]=[Sb][C]C.[Te+]([Sb-]C)=C.[Te+]([Sb-]C)(C)C.[Sb-]([Te][C+](C)C)C.[Sb-]([Te][C+]=C)C |^3:6,31| S=P[Si]C.S=P[Si]C.S=[S+][Si-](C)C.[S-]S[Si+](C)C.[P-]=[Si+]C.[S-]S[Si+]=C.[Te]=[Sb][C]C.[Te]=[Sb][C]C.[Te+]([Sb-]C)=C.[Te+]([Sb-]C)(C)C.[Sb-]([Te][C+](C)C)C.[Sb-]([Te][C+]=C)C |^3:6,31|
-** searchExact(C12C3[Fe]456789%101([C-]([C-]4C5=3)C6=2)[c-]1c7c8c9c%101.[P-](F)(F)(F)(F)(F)F |^1:2|, '') **
+** searchExact(C12C3[Fe]456789%101([C-]([C-]4C5=3)C6=2)[C-]1C7=C8C9=C%101.[P-](F)(F)(F)(F)(F)F |^1:2|, '') **
 	41 C12=C3[Fe]456789%101(c1[c-]4c5c6c71)C(=C28)[C-]9[C-]%103.[P-](F)(F)(F)(F)(F)F |^1:2| C12=C3[Fe]456789%101(c1[c-]4c5c6c71)C(=C28)[C-]9[C-]%103.[P-](F)(F)(F)(F)(F)F |^1:2|
 ** searchExact([N-]1[NH+]=C/C(=C2\C=[NH+][N-]O\2)/O1, '') **
 	42 [N-]1O/C(=C2\O[N-][NH+]=C\2)/C=[NH+]1 [N-]1O/C(=C2\O[N-][NH+]=C\2)/C=[NH+]1
@@ -24968,7 +24968,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 ** searchExact([Sb-](C)[Te][C+](C)C, '') **
 	43 [Sb-]([Te][C+](C)C)C [Sb-]([Te][C+](C)C)C
 	391 [Sb-]([Te][C+](C)C)C [Sb-]([Te][C+](C)C)C
-** searchExact([nH]1[n]c([C@](Cl)(C)[H])cc1[C@@](Cl)(C)[H] |&1:3,9,r|, '') **
+** searchExact(N1N=C([C@](Cl)(C)[H])C=C1[C@@](Cl)(C)[H] |&1:3,9,r|, '') **
 	44 [nH]1c([C@]([H])(C)Cl)cc([C@@]([H])(C)Cl)[n]1 |&1:2,8,r| [nH]1c([C@]([H])(C)Cl)cc([C@@]([H])(C)Cl)[n]1 |&1:2,8,r|
 	61 [nH]1c([C@@](C)(Cl)[H])cc([C@]([H])(C)Cl)[n]1 |&1:2,8,r| [nH]1c([C@@](C)(Cl)[H])cc([C@]([H])(C)Cl)[n]1 |&1:2,8,r|
 	1423 [nH]1c([C@@]([H])(C)Cl)cc([C@@]([H])(C)Cl)[n]1 |&1:2,8,r| [nH]1c([C@@]([H])(C)Cl)cc([C@@]([H])(C)Cl)[n]1 |&1:2,8,r|
@@ -24983,7 +24983,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	1826 C1(C=CC(=O)C=C1)=O C1(C=CC(=O)C=C1)=O
 ** searchExact(OC(C)[C@H](C)O.O[C@@H](C)[C@H](C)O |&1:3,7,9,r|, '') **
 	47 OC([C@@H](O)C)C.O[C@H]([C@@H](O)C)C |&1:2,7,8,r| OC([C@@H](O)C)C.O[C@H]([C@@H](O)C)C |&1:2,7,8,r|
-** searchExact(c1([n]o[n]c1N1CCCCC1)-[n+]1[n]c2[n]o[n]c2[nH]1, '') **
+** searchExact(C1(=NON=C1N1CCCCC1)[N+]1=NC2=NON=C2N1, '') **
 	48 c1(-[n+]2[nH]c3c([n]o[n]3)[n]2)c(N2CCCCC2)[n]o[n]1 c1(-[n+]2[nH]c3c([n]o[n]3)[n]2)c(N2CCCCC2)[n]o[n]1
 	1435 c1(-[n]2[nH]c3[n][o+][n]c3[n]2)c(N2CCCCC2)[n]o[n]1 c1(-[n]2[nH]c3[n][o+][n]c3[n]2)c(N2CCCCC2)[n]o[n]1
 ** searchExact(CN=[N+]=[N-].C/[N+](/C)=C/N=[N+]=[N-], '') **
@@ -25007,9 +25007,9 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	1584 [Na]OC([C@@]([H])(CCC(O)=O)N)=O |&1:3,r| [Na]OC([C@@]([H])(CCC(O)=O)N)=O |&1:3,r|
 ** searchExact(CCCCCCCCCCC.CCCCCCCCCCCO.[C]=[C].[Ag](Cl)[Ag]Cl.[Ag](Cl)[Ag].[Ag](F)[Ag]F.[Ag][Ag].[Ag][Ag]F.[Ag]Cl.[Ag]F.S(F)(F)(F)(F)(F)F.S(F)F.CCCCCCCCCCCC, '') **
 	57 CCCCCCCCCCC.CCCCCCCCCCCO.[C]=[C].[Ag]([Ag]Cl)Cl.[Ag]([Ag])Cl.[Ag]([Ag]F)F.[Ag][Ag].[Ag][Ag]F.[Ag]Cl.[Ag]F.S(F)(F)(F)(F)(F)F.S(F)F.CCCCCCCCCCCC CCCCCCCCCCC.CCCCCCCCCCCO.[C]=[C].[Ag]([Ag]Cl)Cl.[Ag]([Ag])Cl.[Ag]([Ag]F)F.[Ag][Ag].[Ag][Ag]F.[Ag]Cl.[Ag]F.S(F)(F)(F)(F)(F)F.S(F)F.CCCCCCCCCCCC
-** searchExact(c1([n]c2c(cccc2)[n]c1[N-]S(=O)(=O)c1ccc(C)cc1)-[n+]1ccc(-c2c([n][nH]c2O)O)cc1O.c1(cc[n](c(O)c1)=C1N=C2C(C=CC=C2)=N/C/1=N\S(=O)(=O)c1ccc(C)cc1)-c1c(O)[n][nH]c1O, '') **
+** searchExact(C1(=NC2=C(C=CC=C2)N=C1[N-]S(=O)(=O)C1C=CC(C)=CC=1)[N+]1C=CC(C2C(=NNC=2O)O)=CC=1O.C1(C=CN(=C(O)C=1)=C1N=C2C(C=CC=C2)=N/C/1=N\S(=O)(=O)C1C=CC(C)=CC=1)C1C(O)=NNC=1O, '') **
 	58 c1(-[n+]2c(O)cc(-c3c(O)[nH][n]c3O)cc2)c([N-]S(c2ccc(C)cc2)(=O)=O)[n]c2ccccc2[n]1.c1(-c2c(O)[nH][n]c2O)cc(O)[n](=C2/C(=N/S(c3ccc(C)cc3)(=O)=O)/N=C3C=CC=CC3=N2)cc1 c1(-[n+]2c(O)cc(-c3c(O)[nH][n]c3O)cc2)c([N-]S(c2ccc(C)cc2)(=O)=O)[n]c2ccccc2[n]1.c1(-c2c(O)[nH][n]c2O)cc(O)[n](=C2/C(=N/S(c3ccc(C)cc3)(=O)=O)/N=C3C=CC=CC3=N2)cc1
-** searchExact([nH]1[n]c([C@@](Cl)(C)[H])cc1[C@]([H])(Cl)C |&1:3,9,r|, '') **
+** searchExact(N1N=C([C@@](Cl)(C)[H])C=C1[C@]([H])(Cl)C |&1:3,9,r|, '') **
 	44 [nH]1c([C@]([H])(C)Cl)cc([C@@]([H])(C)Cl)[n]1 |&1:2,8,r| [nH]1c([C@]([H])(C)Cl)cc([C@@]([H])(C)Cl)[n]1 |&1:2,8,r|
 	61 [nH]1c([C@@](C)(Cl)[H])cc([C@]([H])(C)Cl)[n]1 |&1:2,8,r| [nH]1c([C@@](C)(Cl)[H])cc([C@]([H])(C)Cl)[n]1 |&1:2,8,r|
 	1423 [nH]1c([C@@]([H])(C)Cl)cc([C@@]([H])(C)Cl)[n]1 |&1:2,8,r| [nH]1c([C@@]([H])(C)Cl)cc([C@@]([H])(C)Cl)[n]1 |&1:2,8,r|
@@ -25017,7 +25017,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 ** searchExact(C12C3(Br)C4SOC5C6(C)C7OSC8C(Cl)(C(OS5)SO4)C(OS1)SOC(SO2)C(C)(C1OSC3OSC6OS1)C(SO8)OS7, '') **
 	63 C12OSC3C4(C5OSC6OSC(OS5)C(C(SO3)OS1)(C1SOC3SOC(SO1)C6(C1OSC4OSC(OS1)C23Br)C)Cl)C C12OSC3C4(C5OSC6OSC(OS5)C(C(SO3)OS1)(C1SOC3SOC(SO1)C6(C1OSC4OSC(OS1)C23Br)C)Cl)C
 	1616 C12SOC3SOC(C4(C5OSC6OSC(OS5)C3(C3SOC5SOC(SO3)C6(C)C3SOC(SOC4SO3)C15Cl)Br)C)SO2 C12SOC3SOC(C4(C5OSC6OSC(OS5)C3(C3SOC5SOC(SO3)C6(C)C3SOC(SOC4SO3)C15Cl)Br)C)SO2
-** searchExact([c]1[c-][c][c][c]1.[c]1[c-][c][c][c]1.[Fe+2], '') **
+** searchExact([C]1[C-][C]=[C][C]=1.[C]1[C-][C]=[C][C]=1.[Fe+2], '') **
 	64 c1ccc[c-]1.c1ccc[c-]1.[Fe+2] c1ccc[c-]1.c1ccc[c-]1.[Fe+2]
 	189 c1ccc[cH-]1.c1ccc[cH-]1.[Fe+2] c1ccc[cH-]1.c1ccc[cH-]1.[Fe+2]
 	222 [CH]1[CH][CH][CH][CH]1.[CH]1[CH][CH][CH][CH]1.[Fe] |^1:0,1,2,3,4,5,6,7,8,9| [CH]1[CH][CH][CH][CH]1.[CH]1[CH][CH][CH][CH]1.[Fe] |^1:0,1,2,3,4,5,6,7,8,9|
@@ -25036,12 +25036,12 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	70 [SnH2] [SnH2]
 ** searchExact([Te]1(Cl)(Cl)(Cl)OCCO1 |^1:0|, '') **
 	71 [Te]1(OCCO1)(Cl)(Cl)Cl |^1:0| [Te]1(OCCO1)(Cl)(Cl)Cl |^1:0|
-** searchExact(c1(NC(=O)OCC)ccc(S(=[O+][Mg][O+]=S(=O)(OC)c2ccc(NC(=O)OCC)cc2)(OC)=O)cc1.c1(O)c(ccc(N)c1)C(O)=O.Cl.Nc1ccc(C(OCCN(CC)CC)=O)cc1, '') **
+** searchExact(C1(NC(=O)OCC)=CC=C(S(=[O+][Mg][O+]=S(=O)(OC)C2C=CC(NC(=O)OCC)=CC=2)(OC)=O)C=C1.C1(O)=C(C=CC(N)=C1)C(O)=O.Cl.NC1=CC=C(C(OCCN(CC)CC)=O)C=C1, '') **
 	72 c1(ccc(S(=O)(OC)=[O+][Mg][O+]=S(c2ccc(NC(OCC)=O)cc2)(OC)=O)cc1)NC(OCC)=O.c1(cc(N)ccc1C(=O)O)O.Cl.Nc1ccc(C(=O)OCCN(CC)CC)cc1 c1(ccc(S(=O)(OC)=[O+][Mg][O+]=S(c2ccc(NC(OCC)=O)cc2)(OC)=O)cc1)NC(OCC)=O.c1(cc(N)ccc1C(=O)O)O.Cl.Nc1ccc(C(=O)OCCN(CC)CC)cc1
-** searchExact(c12[n]([H])[n][n]c1cccc2, '') **
+** searchExact(C12N([H])N=NC1=CC=CC=2, '') **
 	75 c12ccccc1[n][n][n]2[H] c12ccccc1[n][n][n]2[H]
 	884 c12ccccc1nn[n]2[H] c12ccccc1nn[n]2[H]
-** searchExact([N-]1[NH+]=C[C-](c2o[n][nH+]c2)O1, '') **
+** searchExact([N-]1[NH+]=C[C-](C2ON=[NH+]C=2)O1, '') **
 	42 [N-]1O/C(=C2\O[N-][NH+]=C\2)/C=[NH+]1 [N-]1O/C(=C2\O[N-][NH+]=C\2)/C=[NH+]1
 	76 [N-]1O[C-](c2c[nH+][n]o2)C=[NH+]1 [N-]1O[C-](c2c[nH+][n]o2)C=[NH+]1
 	933 [CH-]1N[N-]O/C/1=C1\C=[NH+]N=[O+]\1 [CH-]1N[N-]O/C/1=C1\C=[NH+]N=[O+]\1
@@ -25056,7 +25056,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	79 OC(=O)CC(C(=O)O)C[N+](C)(C)C.[O-]C(=O)CC(C(=O)O)C[N+](C)(C)C.OC(=O)CC(C(=O)[O-])C[N+](C)(C)C.[H+].[H+] OC(=O)CC(C(=O)O)C[N+](C)(C)C.[O-]C(=O)CC(C(=O)O)C[N+](C)(C)C.OC(=O)CC(C(=O)[O-])C[N+](C)(C)C.[H+].[H+]
 ** searchExact([H][N+](CC([O-])=O)([H])[H], '') **
 	80 [H][N+]([H])([H])CC(=O)[O-] [H][N+]([H])([H])CC(=O)[O-]
-** searchExact(CN1CCC(N2N=C(Cc3ccc(Cl)cc3)c3c(cccc3)C2=O)CCC1, '') **
+** searchExact(CN1CCC(N2N=C(CC3C=CC(Cl)=CC=3)C3C(=CC=CC=3)C2=O)CCC1, '') **
 	81 CN1CCCC(N2C(=O)c3ccccc3C(Cc3ccc(Cl)cc3)=N2)CC1 CN1CCCC(N2C(=O)c3ccccc3C(Cc3ccc(Cl)cc3)=N2)CC1
 ** searchExact(C12C3(C)C4SOC5C6(C)C7OSC8C(Cl)(C(OS5)SO4)C(OS1)SOC(C(C)(C1OSC3OSC6OS1)C(SO8)OS7)SO2, '') **
 	82 C12OSC3C4(C5OSC6OSC(OS5)C(C(SO3)OS1)(C1SOC3SOC(SO1)C6(C1OSC4OSC(OS1)C23C)C)Cl)C C12OSC3C4(C5OSC6OSC(OS5)C(C(SO3)OS1)(C1SOC3SOC(SO1)C6(C1OSC4OSC(OS1)C23C)C)Cl)C
@@ -25074,7 +25074,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	87 C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])(C(N(C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H] C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])(C(N(C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N(C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])C(C(C(N([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H])([H])[H]
 ** searchExact([Co-4]123([O+]=C([C-](C([H])([H])N(C([H])([H])[H])C([H])([H])[H])C(C([H])([H])[H])=[O+]1)C([H])([H])[H])([N+](C([H])([H])C([H])([H])Cl)(C([H])([H])C([H])([H])Cl)C([H])([H])C([H])([H])[N@@]2[H])[O+]=C(C([H])([H])[H])[C-](C([H])([H])N(C([H])([H])[H])C([H])([H])[H])C(C([H])([H])[H])=[O+]3.O=Cl([O-])(=O)=O.[H+].[H+], '') **
 	88 [Co-4]123([O+]=C(C([H])([H])[H])[C-](C(N(C([H])([H])[H])C([H])([H])[H])([H])[H])C(C([H])([H])[H])=[O+]1)([N@@]([H])C([H])([H])C([H])([H])[N+]2(C(C(Cl)([H])[H])([H])[H])C(C(Cl)([H])[H])([H])[H])[O+]=C(C([H])([H])[H])[C-](C(N(C([H])([H])[H])C([H])([H])[H])([H])[H])C(C([H])([H])[H])=[O+]3.O=Cl(=O)(=O)[O-].[H+].[H+] [Co-4]123([O+]=C(C([H])([H])[H])[C-](C(N(C([H])([H])[H])C([H])([H])[H])([H])[H])C(C([H])([H])[H])=[O+]1)([N@@]([H])C([H])([H])C([H])([H])[N+]2(C(C(Cl)([H])[H])([H])[H])C(C(Cl)([H])[H])([H])[H])[O+]=C(C([H])([H])[H])[C-](C(N(C([H])([H])[H])C([H])([H])[H])([H])[H])C(C([H])([H])[H])=[O+]3.O=Cl(=O)(=O)[O-].[H+].[H+]
-** searchExact(Fc1ccc(C2C(=O)C(c3ccc(F)cc3)=C(c3ccccc3)C=2c2ccccc2)cc1, '') **
+** searchExact(FC1C=CC(C2C(=O)C(C3C=CC(F)=CC=3)=C(C3C=CC=CC=3)C=2C2C=CC=CC=2)=CC=1, '') **
 	89 Fc1ccc(C2=C(c3ccccc3)C(c3ccccc3)=C(c3ccc(F)cc3)C2=O)cc1 Fc1ccc(C2=C(c3ccccc3)C(c3ccccc3)=C(c3ccc(F)cc3)C2=O)cc1
 	1884 [O-]C1=C(c2ccc(F)cc2)/C(=C2\[CH+]C=CC=C\2)/C(c2ccccc2)=C1c1ccc(F)cc1 [O-]C1=C(c2ccc(F)cc2)/C(=C2\[CH+]C=CC=C\2)/C(c2ccccc2)=C1c1ccc(F)cc1
 ** searchExact([Ni], '') **
@@ -25131,14 +25131,14 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	109 [Li]O [Li]O
 ** searchExact([Cr+5].[S-]CC(=O)O.[NH-]CC[NH-].[NH-]CC[NH-], '') **
 	110 [Cr+5].[S-]CC(O)=O.[NH-]CC[NH-].[NH-]CC[NH-] [Cr+5].[S-]CC(O)=O.[NH-]CC[NH-].[NH-]CC[NH-]
-** searchExact([nH]1[n]ccc1.[nH]1[n]ccc1.[nH]1cc[n][n]1.[nH]1[n]c[n]c1.[nH]1c2ccccc2c[n]1.[nH]1c2[n]cccc2c[n]1.[nH]1cc[n][n]1.[nH]1c[n][n][n]1.[n]1c[n][nH][n]1.c1c[n]c2NC=Cc1c2.[n]1[n][n][nH][n]1.N1N=NNN1, '') **
+** searchExact(N1N=CC=C1.N1N=CC=C1.N1C=CN=N1.N1N=CN=C1.N1C2C=CC=CC=2C=N1.N1C2N=CC=CC=2C=N1.N1C=CN=N1.N1C=NN=N1.N1C=NNN=1.C1C=NC2NC=CC=1C=2.N1N=NNN=1.N1N=NNN1, '') **
 	111 [nH]1ccc[n]1.[nH]1ccc[n]1.[nH]1[n][n]cc1.[nH]1c[n]c[n]1.[nH]1[n]cc2c1cccc2.[nH]1[n]cc2c1[n]ccc2.[nH]1[n][n]cc1.[nH]1[n][n][n]c1.[n]1[n][nH][n]c1.c1c2cc(NC=C2)[n]c1.[n]1[n][nH][n][n]1.N1NNN=N1 [nH]1ccc[n]1.[nH]1ccc[n]1.[nH]1[n][n]cc1.[nH]1c[n]c[n]1.[nH]1[n]cc2c1cccc2.[nH]1[n]cc2c1[n]ccc2.[nH]1[n][n]cc1.[nH]1[n][n][n]c1.[n]1[n][nH][n]c1.c1c2cc(NC=C2)[n]c1.[n]1[n][nH][n][n]1.N1NNN=N1
 ** searchExact([C@H]12OC3[C@H]([C@@H](OS(O)(=O)=O)C(OC4[C@H]([C@@H](OS(O)(=O)=O)C(O[C@H]5[C@H]([C@@H](OS(O)(=O)=O)[C@H](O[C@H]6[C@@H](C(OS(O)(=O)=O)[C@@H](O[C@H]7O[C@H](COS(O)(=O)=O)[C@@H](OC8[C@H]([C@@H](OS(O)(=O)=O)C(O[C@H](C([C@@H]1OS(O)(=O)=O)OS(O)(=O)=O)O[C@H]2COS(O)(=O)=O)[C@H](COS(O)(=O)=O)O8)OS(O)(=O)=O)[C@@H](OS(O)(=O)=O)[C@H]7OS(O)(=O)=O)[C@@H](COS(O)(=O)=O)O6)OS(O)(=O)=O)C(COS(O)(=O)=O)O5)OS(O)(=O)=O)C(COS(O)(=O)=O)O4)OS(O)(=O)=O)[C@H](COS(O)(=O)=O)O3)OS(O)(=O)=O, '') **
 	112 [C@@H]12[C@H](COS(=O)(=O)O)O[C@@H](C(OS(=O)(=O)O)[C@@H]1OS(=O)(=O)O)OC1[C@@H](OC([C@@H](OS(=O)(=O)O)[C@H]1OS(=O)(=O)O)O[C@H]1[C@H]([C@@H](OS(=O)(=O)O)[C@H](O[C@@H]1COS(=O)(=O)O)O[C@H]1[C@H](O[C@H]([C@H](OS(=O)(=O)O)C1OS(=O)(=O)O)O[C@@H]1C(O[C@H]([C@@H](OS(=O)(=O)O)[C@H]1OS(=O)(=O)O)OC1C(OC([C@@H](OS(=O)(=O)O)[C@H]1OS(=O)(=O)O)OC1[C@@H](OC([C@@H](OS(=O)(=O)O)[C@H]1OS(=O)(=O)O)O2)COS(=O)(=O)O)COS(=O)(=O)O)COS(=O)(=O)O)COS(=O)(=O)O)OS(=O)(=O)O)COS(=O)(=O)O [C@@H]12[C@H](COS(=O)(=O)O)O[C@@H](C(OS(=O)(=O)O)[C@@H]1OS(=O)(=O)O)OC1[C@@H](OC([C@@H](OS(=O)(=O)O)[C@H]1OS(=O)(=O)O)O[C@H]1[C@H]([C@@H](OS(=O)(=O)O)[C@H](O[C@@H]1COS(=O)(=O)O)O[C@H]1[C@H](O[C@H]([C@H](OS(=O)(=O)O)C1OS(=O)(=O)O)O[C@@H]1C(O[C@H]([C@@H](OS(=O)(=O)O)[C@H]1OS(=O)(=O)O)OC1C(OC([C@@H](OS(=O)(=O)O)[C@H]1OS(=O)(=O)O)OC1[C@@H](OC([C@@H](OS(=O)(=O)O)[C@H]1OS(=O)(=O)O)O2)COS(=O)(=O)O)COS(=O)(=O)O)COS(=O)(=O)O)COS(=O)(=O)O)OS(=O)(=O)O)COS(=O)(=O)O
 ** searchExact(C(C)[C@]1(CC(C)(CC)C1)C |&1:2,w:4,r|, '') **
 	113 C([C@]1(C)CC(CC)(C)C1)C |&1:1,w:4,r| C([C@]1(C)CC(CC)(C)C1)C |&1:1,w:4,r|
 	1032 C(C)[C@@]1(C[C@@](CC)(C)C1)C |&1:2,4,r| C(C)[C@@]1(C[C@@](CC)(C)C1)C |&1:2,4,r|
-** searchExact(P1(O)(OCCCN=1)N/C(/S)=N/c1ccc(F)cc1.P1(=O)(OCCCN1)N/C(/S)=N/c1ccc(F)cc1.P1(O)(OCCCN1)=N/C(/S)=N/c1ccc(F)cc1, '') **
+** searchExact(P1(O)(OCCCN=1)N/C(/S)=N/C1C=CC(F)=CC=1.P1(=O)(OCCCN1)N/C(/S)=N/C1C=CC(F)=CC=1.P1(O)(OCCCN1)=N/C(/S)=N/C1C=CC(F)=CC=1, '') **
 	115 P1(N/C(=N/c2ccc(F)cc2)/S)(=NCCCO1)O.P1(N/C(=N/c2ccc(F)cc2)/S)(NCCCO1)=O.P1(=N/C(=N/c2ccc(F)cc2)/S)(NCCCO1)O P1(N/C(=N/c2ccc(F)cc2)/S)(=NCCCO1)O.P1(N/C(=N/c2ccc(F)cc2)/S)(NCCCO1)=O.P1(=N/C(=N/c2ccc(F)cc2)/S)(NCCCO1)O
 ** searchExact(C1(=O)O[Ca]OC(=O)C=C1, '') **
 	116 C1(C=CC(=O)O[Ca]O1)=O C1(C=CC(=O)O[Ca]O1)=O

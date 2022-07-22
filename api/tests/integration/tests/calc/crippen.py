@@ -31,6 +31,12 @@ def test_mr():
     check_float("molarRefractivity", "Clc1ccccc1", 31.45)
 
 
+def test_pka():
+    check_float("pKa", "Cc1cc(O)cc(c1)[N+](C)(C)C", 8.1999998)
+    check_float("pKa", "Cc1ccc(cc1)C1C[NH2+]1", 9.53)
+    check_float("pKa", "O=C(NBr)C(Cl)Cl", 4.1549997)
+
+
 if __name__ == "__main__":
     indigo = Indigo()
     test_logp()

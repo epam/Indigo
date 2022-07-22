@@ -189,8 +189,8 @@ namespace indigo
 
         virtual bool isSaturatedAtom(int idx) = 0;
 
-        virtual int getBondOrder(int idx) = 0;    // > 0 -- BOND_***, -1 -- not sure
-        virtual int getBondTopology(int idx) = 0; // > 0 -- TOPOLOGY_***, -1 -- not sure
+        virtual int getBondOrder(int idx) const = 0; // > 0 -- BOND_***, -1 -- not sure
+        virtual int getBondTopology(int idx) = 0;    // > 0 -- TOPOLOGY_***, -1 -- not sure
 
         // true if the atom number belongs to the given list, false otherwise
         virtual bool atomNumberBelongs(int idx, const int* numbers, int count) = 0;

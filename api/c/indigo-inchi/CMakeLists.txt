@@ -15,6 +15,11 @@ if (NOT EMSCRIPTEN)
     target_link_libraries(${PROJECT_NAME} PRIVATE indigo indigo-core)
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
+
+    if(UNIX AND NOT APPLE)
+        target_link_options(${PROJECT_NAME} PRIVATE -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/libindigo-inchi.sym)
+    endif()
+
     if(MINGW)
         target_link_options(${PROJECT_NAME}
                 PRIVATE -Wl,--allow-multiple-definition

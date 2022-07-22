@@ -687,6 +687,7 @@ CEXPORT int indigoNumHydrogenBondAcceptors(int molecule);
 CEXPORT int indigoNumHydrogenBondDonors(int molecule);
 CEXPORT double indigoLogP(int molecule);
 CEXPORT double indigoMolarRefractivity(int molecule);
+CEXPORT double indigoPka(int molecule);
 
 CEXPORT const char* indigoCanonicalSmiles(int molecule);
 CEXPORT const char* indigoLayeredCode(int molecule);

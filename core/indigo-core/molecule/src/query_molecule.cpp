@@ -105,7 +105,7 @@ int QueryMolecule::getAtomAromaticity(int idx)
     return -1;
 }
 
-int QueryMolecule::getBondOrder(int idx)
+int QueryMolecule::getBondOrder(int idx) const
 {
     int res;
 
@@ -518,7 +518,7 @@ QueryMolecule::Atom::Atom(int type_, int value) : Node(type_)
     if (type_ == ATOM_NUMBER || type_ == ATOM_CHARGE || type_ == ATOM_ISOTOPE || type_ == ATOM_RADICAL || type_ == ATOM_AROMATICITY || type_ == ATOM_VALENCE ||
         type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN || type_ == ATOM_SUBSTITUENTS || type_ == ATOM_SUBSTITUENTS_AS_DRAWN ||
         type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY || type_ == ATOM_TOTAL_BOND_ORDER || type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS ||
-        type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING || type == ATOM_TEMPLATE_SEQID)
+        type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING || type == ATOM_TEMPLATE_SEQID || type == ATOM_PI_BONDED)
 
         value_min = value_max = value;
     else
@@ -879,7 +879,7 @@ void QueryMolecule::_removeBonds(const Array<int>& indices)
     updateEditRevision();
 }
 
-bool QueryMolecule::Node::sureValue(int what_type, int& value_out)
+bool QueryMolecule::Node::sureValue(int what_type, int& value_out) const
 {
     int i;
 
@@ -946,7 +946,7 @@ bool QueryMolecule::Node::sureValue(int what_type, int& value_out)
     }
 }
 
-bool QueryMolecule::Node::sureValueInv(int what_type, int& value_out)
+bool QueryMolecule::Node::sureValueInv(int what_type, int& value_out) const
 {
     int i;
 
@@ -1263,7 +1263,7 @@ void QueryMolecule::Node::optimize()
     _optimize();
 }
 
-bool QueryMolecule::Atom::_sureValue(int what_type, int& value_out)
+bool QueryMolecule::Atom::_sureValue(int what_type, int& value_out) const
 {
     if (type == what_type && value_max == value_min)
     {
@@ -1336,7 +1336,7 @@ void QueryMolecule::Atom::_optimize()
     }
 }
 
-bool QueryMolecule::Bond::_sureValue(int what_type, int& value_out)
+bool QueryMolecule::Bond::_sureValue(int what_type, int& value_out) const
 {
     if (type == what_type)
     {
@@ -1371,7 +1371,8 @@ bool QueryMolecule::Bond::_possibleValuePair(int what_type1, int what_value1, in
 
 bool QueryMolecule::Atom::valueWithinRange(int value)
 {
-    return value >= value_min && value <= value_max;
+    bool result = value >= value_min && value <= value_max;
+    return result;
 }
 
 QueryMolecule::Atom* QueryMolecule::Atom::child(int idx)

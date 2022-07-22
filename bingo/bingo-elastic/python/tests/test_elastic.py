@@ -11,7 +11,11 @@ from bingo_elastic.elastic import (
     IndexName,
 )
 from bingo_elastic.model.helpers import iterate_file
-from bingo_elastic.model.record import IndigoRecordMolecule, as_iob
+from bingo_elastic.model.record import (
+    IndigoRecordMolecule,
+    IndigoRecordReaction,
+    as_iob,
+)
 from bingo_elastic.queries import (
     EuclidSimilarityMatch,
     RangeQuery,
@@ -64,7 +68,7 @@ def test_similarity_matches(
         EuclidSimilarityMatch(loaded_sdf, 0.9),
         TverskySimilarityMatch(loaded_sdf, 0.9, 0.5, 0.5),
     ]:
-        result = elastic_repository_molecule.filter(similarity=sim_alg)
+        result = elastic_repository_molecule.filter(query_subject=sim_alg)
         assert (
             loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
             == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -83,7 +87,7 @@ async def test_a_similarity_matches(
         TverskySimilarityMatch(loaded_sdf, 0.9, 0.5, 0.5),
     ]:
         async with a_elastic_repository_molecule() as rep:
-            result = rep.filter(similarity=sim_alg)
+            result = rep.filter(query_subject=sim_alg)
             async for mol in result:
                 assert (
                     loaded_sdf.as_indigo_object(
@@ -99,7 +103,9 @@ def test_exact_match(
     indigo_fixture: Indigo,
     loaded_sdf: IndigoRecordMolecule,
 ):
-    result = elastic_repository_molecule.filter(exact=loaded_sdf)
+    result = elastic_repository_molecule.filter(
+        query_subject=loaded_sdf, indigo_session=indigo_fixture
+    )
     assert (
         loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
         == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -113,7 +119,9 @@ async def test_a_exact_match(
     loaded_sdf: IndigoRecordMolecule,
 ):
     async with a_elastic_repository_molecule() as rep:
-        result = rep.filter(exact=loaded_sdf)
+        result = rep.filter(
+            query_subject=loaded_sdf, indigo_session=indigo_fixture
+        )
         async for mol in result:
             assert (
                 loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -154,7 +162,7 @@ async def test_filter_by_name(
 
     # Sync test
     result = elastic_repository_molecule.filter(
-        similarity=TanimotoSimilarityMatch(
+        query_subject=TanimotoSimilarityMatch(
             IndigoRecordMolecule(indigo_object=mol), 0.1
         )
     )
@@ -168,7 +176,7 @@ async def test_filter_by_name(
     async with a_elastic_repository_molecule() as rep:
         i = 0
         async for _ in rep.filter(
-            similarity=TanimotoSimilarityMatch(
+            query_subject=TanimotoSimilarityMatch(
                 IndigoRecordMolecule(indigo_object=mol), 0.1
             )
         ):
@@ -180,7 +188,7 @@ async def test_filter_by_name(
     # Sync test
 
     result = elastic_repository_molecule.filter(
-        similarity=TanimotoSimilarityMatch(
+        query_subject=TanimotoSimilarityMatch(
             IndigoRecordMolecule(indigo_object=mol), 0.1
         ),
         name="Composition1",
@@ -192,7 +200,7 @@ async def test_filter_by_name(
     # Async test
     async with a_elastic_repository_molecule() as rep:
         async for item in rep.filter(
-            similarity=TanimotoSimilarityMatch(
+            query_subject=TanimotoSimilarityMatch(
                 IndigoRecordMolecule(indigo_object=mol), 0.1
             ),
             name="Composition1",
@@ -205,7 +213,12 @@ def test_substructure_search(
     indigo_fixture: Indigo,
     loaded_sdf: IndigoRecordMolecule,
 ):
-    result = elastic_repository_molecule.filter(substructure=loaded_sdf)
+    query_mol = indigo_fixture.loadQueryMolecule(
+        loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
+    )
+    result = elastic_repository_molecule.filter(
+        query_subject=query_mol, indigo_session=indigo_fixture
+    )
     for item in result:
         assert (
             item.as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -220,7 +233,12 @@ async def test_a_substructure_search(
     loaded_sdf: IndigoRecordMolecule,
 ):
     async with a_elastic_repository_molecule() as rep:
-        result = rep.filter(substructure=loaded_sdf)
+        query_mol = indigo_fixture.loadQueryMolecule(
+            loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
+        )
+        result = rep.filter(
+            query_subject=query_mol, indigo_session=indigo_fixture
+        )
         async for item in result:
             assert (
                 item.as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -366,10 +384,11 @@ def test_search_empty_fingerprint(
         elastic_repository_molecule.index_record(rec)
     time.sleep(5)
     result = elastic_repository_molecule.filter(
-        exact=IndigoRecordMolecule(
+        query_subject=IndigoRecordMolecule(
             indigo_object=indigo_fixture.loadMolecule("[H][H]"),
             skip_errors=True,
-        )
+        ),
+        indigo_session=indigo_fixture,
     )
 
     assert (
@@ -396,7 +415,7 @@ async def test_a_search_empty_fingerprint(
 
     async with a_elastic_repository_molecule() as rep:
         result = rep.filter(
-            exact=IndigoRecordMolecule(
+            query_subject=IndigoRecordMolecule(
                 indigo_object=indigo_fixture.loadMolecule("[H][H]"),
                 skip_errors=True,
             )
@@ -409,7 +428,7 @@ async def test_a_search_empty_fingerprint(
             )
 
 
-def test_similaririty_matches_reactions(
+def test_similarity_matches_reactions(
     elastic_repository_reaction: ElasticRepository,
     loaded_rxns,
     resource_loader,
@@ -419,11 +438,10 @@ def test_similaririty_matches_reactions(
     reaction = indigo_fixture.loadReactionFromFile(
         resource_loader("reactions/rheadb/50353.rxn")
     )
-
-    reaction_rec = IndigoRecordMolecule(indigo_object=reaction)
+    reaction_rec = IndigoRecordReaction(indigo_object=reaction)
 
     for found_reaction in elastic_repository_reaction.filter(
-        similarity=TanimotoSimilarityMatch(reaction_rec, 0.99)
+        query_subject=TanimotoSimilarityMatch(reaction_rec, 0.99)
     ):
         assert (
             as_iob(found_reaction, indigo_fixture).countReactants()
@@ -431,7 +449,7 @@ def test_similaririty_matches_reactions(
         )
 
     for found_reaction in elastic_repository_reaction.filter(
-        similarity=EuclidSimilarityMatch(reaction_rec, 0.99)
+        query_subject=EuclidSimilarityMatch(reaction_rec, 0.99)
     ):
         assert (
             as_iob(found_reaction, indigo_fixture).countReactants()
@@ -439,7 +457,7 @@ def test_similaririty_matches_reactions(
         )
 
     for found_reaction in elastic_repository_reaction.filter(
-        similarity=TverskySimilarityMatch(reaction_rec, 0.99)
+        query_subject=TverskySimilarityMatch(reaction_rec, 0.99)
     ):
         assert (
             as_iob(found_reaction, indigo_fixture).countReactants()
@@ -447,7 +465,7 @@ def test_similaririty_matches_reactions(
         )
 
     for found_reaction in elastic_repository_reaction.filter(
-        exact=reaction_rec
+        query_subject=reaction_rec, indigo_session=indigo_fixture
     ):
         assert (
             as_iob(found_reaction, indigo_fixture).countReactants()
@@ -471,7 +489,7 @@ async def test_a_similaririty_matches_reactions(
 
     async with a_elastic_repository_reaction() as rep:
         async for found_reaction in rep.filter(
-            similarity=TanimotoSimilarityMatch(reaction_rec, 0.99)
+            query_subject=TanimotoSimilarityMatch(reaction_rec, 0.99)
         ):
             assert (
                 as_iob(found_reaction, indigo_fixture).countReactants()
@@ -479,7 +497,7 @@ async def test_a_similaririty_matches_reactions(
             )
 
         async for found_reaction in rep.filter(
-            similarity=EuclidSimilarityMatch(reaction_rec, 0.99)
+            query_subject=EuclidSimilarityMatch(reaction_rec, 0.99)
         ):
             assert (
                 as_iob(found_reaction, indigo_fixture).countReactants()
@@ -487,14 +505,14 @@ async def test_a_similaririty_matches_reactions(
             )
 
         async for found_reaction in rep.filter(
-            similarity=TverskySimilarityMatch(reaction_rec, 0.99)
+            query_subject=TverskySimilarityMatch(reaction_rec, 0.99)
         ):
             assert (
                 as_iob(found_reaction, indigo_fixture).countReactants()
                 == reaction.countReactants()
             )
 
-        async for found_reaction in rep.filter(exact=reaction_rec):
+        async for found_reaction in rep.filter(query_subject=reaction_rec):
             assert (
                 as_iob(found_reaction, indigo_fixture).countReactants()
                 == reaction.countReactants()

@@ -2623,6 +2623,17 @@ class IndigoObject(object):
             Indigo._lib.indigoMolarRefractivity(self.id)
         )
 
+    def pKa(self):
+        """Molecule method returns calculated Lee-Crippen SMARTS pKa value
+
+        Returns:
+            float: calculated pKa value of the molecule
+        """
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultFloat(
+            Indigo._lib.indigoPka(self.id)
+        )
+
     def bondOrder(self):
         """Bond method returns bond order
 
@@ -5106,6 +5117,8 @@ class Indigo(object):
         Indigo._lib.indigoLogP.argtypes = [c_int]
         Indigo._lib.indigoMolarRefractivity.restype = c_double
         Indigo._lib.indigoMolarRefractivity.argtypes = [c_int]
+        Indigo._lib.indigoPka.restype = c_double
+        Indigo._lib.indigoPka.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmiles.restype = c_char_p
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmarts.restype = c_char_p

@@ -1,0 +1,16 @@
+{
+    global:
+        *indigo*;
+        *Indigo*;
+        bitAnd;
+        bitCommonOnes;
+        bitDifferentOnes;
+        bitGetBit;
+        bitGetOnesCount;
+        bitSetBit;
+        bitTestOnes;
+        osDirCreate;
+        osDirExists;
+    local:
+        *;
+};

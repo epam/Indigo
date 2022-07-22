@@ -1438,6 +1438,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoMolarRefractivity(self));
         }
 
+        public double pKa()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoPka(self));
+        }
+
         public string canonicalSmiles()
         {
             dispatcher.setSessionID();
