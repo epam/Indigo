@@ -8,18 +8,17 @@ from flasgger import Swagger
 from flask import Flask
 from werkzeug.serving import run_simple
 
+from v2.common_api import common_api
 from v2.db.database import db_session
 from v2.imago_api import imago_api
-from v2.common_api import common_api
-
-from v2.libraries_api import libraries_api
 from v2.indigo_api import indigo_api
+from v2.libraries_api import libraries_api
 
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
-app.register_blueprint(libraries_api, url_prefix='/v2/libraries')
+app.register_blueprint(libraries_api, url_prefix="/v2/libraries")
 app.register_blueprint(indigo_api, url_prefix="/v2/indigo")
-app.register_blueprint(imago_api, url_prefix='/v2/imago')
+app.register_blueprint(imago_api, url_prefix="/v2/imago")
 app.register_blueprint(common_api, url_prefix="/v2")
 
 swagger = Swagger(app)

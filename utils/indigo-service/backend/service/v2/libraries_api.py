@@ -5,7 +5,6 @@ import os
 import re
 import traceback
 import types
-import zlib
 from time import time
 
 import flask_restful
@@ -17,8 +16,8 @@ from indigo import Indigo, IndigoException
 from indigo.inchi import IndigoInchi
 from indigo.renderer import IndigoRenderer
 from marshmallow.exceptions import ValidationError
-from pyparsing import ParseException
 from psycopg2.extras import Json
+from pyparsing import ParseException
 
 import config
 
@@ -123,15 +122,15 @@ class Searcher(flask_restful.Resource):
             input_dict = json.loads(request.data.decode("utf-8"))
         except ValueError:
             return {
-                       "error": "Invalid input JSON: {0}".format(request.data)
-                   }, 400
+                "error": "Invalid input JSON: {0}".format(request.data)
+            }, 400
         try:
             print(input_dict)
             search_params = SearcherSchema().load(input_dict)
             print(search_params)
             for library_id in search_params["library_ids"]:
                 if not LibraryMeta.query.filter(
-                        LibraryMeta.library_id == library_id
+                    LibraryMeta.library_id == library_id
                 ).first():
                     return {"error": "Library does not exist"}, 404
             task = search_total.apply_async((search_params,))
@@ -244,8 +243,8 @@ class LibraryList(flask_restful.Resource):
             input_dict = json.loads(request.data.decode("utf-8"))
         except ValueError:
             return {
-                       "error": "Invalid input JSON: {0}".format(request.data)
-                   }, 400
+                "error": "Invalid input JSON: {0}".format(request.data)
+            }, 400
         try:
 
             data = LibrarySchema().load(input_dict)
@@ -288,7 +287,7 @@ class Library(flask_restful.Resource):
         if not library_id:
             return {"error": "Libary ID should be specified"}, 400
         if not LibraryMeta.query.filter(
-                LibraryMeta.library_id == library_id
+            LibraryMeta.library_id == library_id
         ).first():
             return {"error": "Library does not exist"}, 404
         try:
@@ -306,15 +305,15 @@ class Library(flask_restful.Resource):
             "[REQUEST] PUT /libraries/{} {}".format(library_id, request.data)
         )
         if not LibraryMeta.query.filter(
-                LibraryMeta.library_id == library_id
+            LibraryMeta.library_id == library_id
         ).first():
             return {"error": "Library does not exist"}, 404
         try:
             data = json.loads(request.data.decode("utf-8"))
         except ValueError:
             return {
-                       "error": "Invalid input JSON: {0}".format(request.data)
-                   }, 400
+                "error": "Invalid input JSON: {0}".format(request.data)
+            }, 400
         if "name" in data and not data["name"]:
             return {"error": {"name": "Library name cannot be empty."}}, 400
         try:
@@ -339,7 +338,7 @@ class Library(flask_restful.Resource):
             "[REQUEST] DELETE /libraries/{0}".format(library_id)
         )
         if not LibraryMeta.query.filter(
-                LibraryMeta.library_id == library_id
+            LibraryMeta.library_id == library_id
         ).first():
             return {"error": "Library does not exist"}, 404
         try:
@@ -472,12 +471,12 @@ class LibraryUpload(flask_restful.Resource):
         )
         if mime_type not in allowed_types:
             return {
-                       "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
-                           mime_type, ", ".join(allowed_types)
-                       )
-                   }, 415
+                "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
+                    mime_type, ", ".join(allowed_types)
+                )
+            }, 415
         if not LibraryMeta.query.filter(
-                LibraryMeta.library_id == library_id
+            LibraryMeta.library_id == library_id
         ).first():
             return {"error": "Library does not exist"}, 404
         try:
@@ -509,7 +508,7 @@ class LibraryUploadStatus(flask_restful.Resource):
             result_dict = {"state": task.state}
             if task.info:
                 if (type(task) is list and "error" in task.info[0]) or (
-                        type(task) is dict and "error" in task.info
+                    type(task) is dict and "error" in task.info
                 ):
                     libraries_api_logger.error(
                         "[RESPONSE-400] {0}".format(result_dict)
@@ -550,22 +549,22 @@ class UsersList(flask_restful.Resource):
             input_dict = json.loads(request.data.decode("utf-8"))
         except ValueError:
             return {
-                       "error": "Invalid input JSON: {0}".format(request.data)
-                   }, 400
+                "error": "Invalid input JSON: {0}".format(request.data)
+            }, 400
         try:
             input_dict = UserSchema().load(input_dict)
             if Usermodel.query.filter(
-                    Usermodel.email == input_dict["email"]
+                Usermodel.email == input_dict["email"]
             ).first():
                 return {
-                           "error": {
-                               "email": [
-                                   'Email "{}" is already used.'.format(
-                                       input_dict["email"]
-                                   )
-                               ]
-                           }
-                       }, 409
+                    "error": {
+                        "email": [
+                            'Email "{}" is already used.'.format(
+                                input_dict["email"]
+                            )
+                        ]
+                    }
+                }, 409
             u = self.user_create(input_dict)
             libraries_api_logger.info(
                 "New user created, id={}".format(u.user_id)

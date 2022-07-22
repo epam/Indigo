@@ -134,16 +134,16 @@ class BingoPostgresAdapter(object):
                 [
                     x
                     for x in [
-                    "user_data = '{}'".format(json.dumps(userdata))
-                    if userdata
-                    else None,
-                    "index_data = '{}'".format(json.dumps(index_data))
-                    if index_data
-                    else None,
-                    "service_data = '{}'".format(json.dumps(service_data))
-                    if service_data
-                    else None,
-                ]
+                        "user_data = '{}'".format(json.dumps(userdata))
+                        if userdata
+                        else None,
+                        "index_data = '{}'".format(json.dumps(index_data))
+                        if index_data
+                        else None,
+                        "service_data = '{}'".format(json.dumps(service_data))
+                        if service_data
+                        else None,
+                    ]
                     if x is not None
                 ]
             )
@@ -291,7 +291,7 @@ class BingoPostgresAdapter(object):
             insert_query = "insert into {0}(m, p) values %s".format(
                 self.get_table_name_for_id(library_id)
             )
-            psycopg2.extras.execute_values (
+            psycopg2.extras.execute_values(
                 cursor, insert_query, data, template=None, page_size=1000
             )
         finally:

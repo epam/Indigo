@@ -23,7 +23,9 @@ def version():
     """
     versions = {}
 
-    versions['bingo_version'] = db_session.execute("SELECT Bingo.GetVersion();").fetchone()[0]
+    versions["bingo_version"] = db_session.execute(
+        "SELECT Bingo.GetVersion();"
+    ).fetchone()[0]
 
     indigo = indigo_init()
     versions["indigo_version"] = indigo.version()
