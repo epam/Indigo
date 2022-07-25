@@ -166,6 +166,74 @@ void RenderItemAuxiliary::_drawPlus()
     _rc.drawPlus(Vec2f(_settings.plusSize / 2, 0), _settings.metaLineWidth, _settings.plusSize);
 }
 
+void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
+{
+    _rc.setSingleSource(CWC_BASE);
+    auto beg = ar._begin;
+    auto end = ar._end;
+    scale(beg);
+    scale(end);
+    switch (ar._arrow_type)
+    {
+    case KETReactionArrow::EOpenAngle:
+        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
+
+    case KETReactionArrow::EFilledBow:
+        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, true);
+        break;
+
+    case KETReactionArrow::EFailed:
+        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, true, true);
+        break;
+
+    case KETReactionArrow::EDashedOpenAngle:
+        _rc.drawDashedArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
+
+    case KETReactionArrow::EBothEndsFilledTriangle:
+        _rc.drawBothEndsArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
+
+        /*
+        case KETReactionArrow::EEquilibriumFilledHalfBow:
+            break;
+
+        case KETReactionArrow::EEquilibriumFilledTriangle:
+            break;
+
+        case KETReactionArrow::EEquilibriumOpenAngle:
+            break;
+
+        case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
+            break;
+
+        case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
+            break;
+
+        case KETReactionArrow::EUnbalancedEquilibriumFilleHalfTriangle:
+            break; */
+
+    case KETReactionArrow::EEllipticalArcFilledBow:
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        break;
+
+    case KETReactionArrow::EEllipticalArcFilledTriangle:
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        break;
+
+    case KETReactionArrow::EEllipticalArcOpenAngle:
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        break;
+    case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+        break;
+
+    default:
+        _rc.drawArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
+    }
+}
+
 void RenderItemAuxiliary::_drawArrow()
 {
     _rc.setSingleSource(CWC_BASE);
@@ -251,7 +319,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         ti.bbp.y = text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y;
                         _rc.drawTextItemText(ti, Vec3f(0, 0, 0), idle);
 
-                        text_offset_x += ti.bbsz.x;
+                        text_offset_x += ti.bbsz.x + _settings.boundExtent;
                         current_styles = kvp.second;
                         first_index = second_index;
                     }
@@ -270,12 +338,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             break;
             case KETReactionArrow::CID: {
                 const KETReactionArrow& ar = static_cast<const KETReactionArrow&>(mobj);
-                auto beg = ar._begin;
-                auto end = ar._end;
-                scale(beg);
-                scale(end);
-                _rc.setSingleSource(CWC_BASE);
-                _rc.drawArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+                _drawArrow(ar);
             }
             break;
             }

@@ -101,6 +101,7 @@ namespace indigo
         void _drawMeta(bool idle);
         void _drawPlus();
         void _drawArrow();
+        void _drawArrow(const KETReactionArrow& ar);
         void _renderIdle();
         void _renderSimpleObject(const KETSimpleObject& simple);
         float _getMaxHeight(const KETTextObject::KETTextLine& tl);
