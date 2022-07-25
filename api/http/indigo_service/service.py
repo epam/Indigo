@@ -16,13 +16,18 @@
 # limitations under the License.
 #
 
+import logging
+import tempfile
+from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
-from indigo import IndigoObject
+from indigo import IndigoException, IndigoObject
 from indigo.inchi import IndigoInchi
 
 from indigo_service import jsonapi
 from indigo_service.indigo_tools import indigo
+
+logger = logging.getLogger(__name__)
 
 
 def extract_compounds(
@@ -142,3 +147,15 @@ def get_descriptor(
     compound: IndigoObject, descriptor: jsonapi.Descriptors
 ) -> str:
     return str(getattr(compound, descriptor.value)())
+
+
+def build_pka_model(sdf: str, max_level: int, threshold: float) -> None:
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        model_file = Path(tmp_dir) / "model.sdf"
+        with open(model_file, mode="w", encoding="utf-8") as sdf_file:
+            sdf_file.write(sdf)
+        try:
+            indigo().buildPkaModel(max_level, threshold, str(model_file))
+        except IndigoException as err:
+            logger.exception(err)
+            raise IndigoException("Unable to build pka model") from err

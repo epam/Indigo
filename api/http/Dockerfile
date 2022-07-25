@@ -34,12 +34,13 @@ COPY setup.py *manylinux1_x86_64*.whl ./
 # Required for indigo-renderer
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
+    apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev gcc
 
 # Install if exists
 RUN if ls ./*manylinux1_x86_64*.whl 1> /dev/null 2>&1; then pip3 install ./*manylinux1_x86_64*.whl; fi
 
-RUN pip3 install -r requirements.txt -r requirements_dev.txt && \
+RUN pip install --upgrade pip &&\
+    pip3 install -r requirements.txt -r requirements_dev.txt && \
     pylint -sn --rcfile=pylintrc indigo_service tests && \
     mypy indigo_service && \
     pip3 install -e . && \
@@ -50,7 +51,7 @@ FROM python:3.9-slim-buster
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
+    apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev gcc
 
 RUN mkdir -p /opt/indigo
 WORKDIR /opt/indigo
@@ -62,6 +63,6 @@ COPY setup.py ./
 RUN apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install .
+RUN pip install --upgrade pip && pip3 install .
 # OVERRIDE ON ORCHESTRATION LEVEL
 CMD indigo_service

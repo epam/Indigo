@@ -515,8 +515,6 @@ class Descriptors(str, Enum):
     MONOISOTOPIC_MASS = "monoisotopicMass"
     MOST_ABUNDANT_MASS = "mostAbundantMass"
     NAME = "name"
-    GET_ACID_PKA_VALUE = "acidPkaValue"
-    GET_BASIC_PKA_VALUE = "basicPkaValue"
     GROSS_FORMULA = "grossFormula"
 
 
@@ -563,8 +561,6 @@ class DescriptorResultModel(BaseModel):
     monoisotopicMass: Optional[str]
     mostAbundantMass: Optional[str]
     name: Optional[str]
-    getAcidPkaValue: Optional[str]
-    getBasicPkaValue: Optional[str]
     grossFormula: Optional[str]
 
 
@@ -583,6 +579,62 @@ def make_descriptor_response(
 SourceTargetsRequest = Union[
     CommonBitsRequest, SimilaritiesRequest, MatchRequest
 ]
+
+
+# PKA models
+
+
+class PKAType(str, Enum):
+    ACID = "acid"
+    BASIC = "basic"
+
+
+class PKAModel(str, Enum):
+    SIMPLE = "simple"
+    ADVANCED = "advanced"
+
+
+class PKAModelBuild(BaseModel):
+    sdf: str
+    max_level: int
+    threshold: float
+
+
+class PKARequestModel(BaseModel):
+    compound: CompoundObject
+    pka_model_build: Optional[PKAModelBuild]
+    pka_model: PKAModel
+    pka_type: PKAType = PKAType.ACID
+    pka_model_level: int = 0
+    pka_model_min_level: int = 0
+
+
+class PKARequestModelType(BaseModel):
+    __root__ = "pka"
+
+
+class AtomToValueMapping(BaseModel):
+    index: int
+    symbol: str
+    value: float
+
+
+class AtomToValueContainer(BaseModel):
+    mappings: list[AtomToValueMapping] = []
+
+
+class PKAResultModelType(BaseModel):
+    __root__ = "pkaResult"
+
+
+PKARequest = Request[PKARequestModelType, PKARequestModel]
+PKAResponse = Response[PKAResultModelType, AtomToValueContainer]
+
+
+def make_pka_response(mappings: AtomToValueContainer) -> PKAResponse:
+    return PKAResponse(
+        **{"data": {"type": "pkaResult", "attributes": mappings}}
+    )
 
 
 # Render
@@ -618,8 +670,7 @@ RenderResponse = Response[RenderResultModelType, RenderResultModel]
 
 
 def make_render_response(
-    raw_image: bytes,
-    output_format: str,
+    raw_image: bytes, output_format: str
 ) -> RenderResponse:
     if output_format == "image/svg+xml":
         str_image = raw_image.decode("utf-8")

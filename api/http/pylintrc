@@ -1,6 +1,9 @@
 [FORMAT]
 max-line-length = 79
 
+[REPORTS]
+output-format=parseable
+
 [MESSAGE CONTROL]
 disable = missing-module-docstring,
           missing-class-docstring,
