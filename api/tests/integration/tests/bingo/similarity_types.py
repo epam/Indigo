@@ -9,7 +9,7 @@ sys.path.append(
 from env_indigo import *
 
 
-def searchSim(bingo, q, minSim, maxSim, metric=None):
+def searchSim(bingo, q, minSim, maxSim, metric="tanimoto"):
     print("\n **** \n")
     result = bingo.searchSim(q, minSim, maxSim, metric)
     while result.next():

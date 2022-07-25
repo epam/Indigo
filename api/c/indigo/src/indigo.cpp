@@ -33,6 +33,7 @@
 #include "indigo_abbreviations.h"
 
 //#define INDIGO_DEBUG
+//#define INDIGO_OBJECT_DEBUG
 
 #ifdef INDIGO_DEBUG
 #include <iostream>
@@ -120,11 +121,11 @@ Indigo::Indigo()
 void Indigo::removeAllObjects()
 {
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
-#ifdef INDIGO_DEBUG
+#ifdef INDIGO_OBJECT_DEBUG
     for (const auto& item : objects_holder->objects)
     {
         std::stringstream ss;
-        ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << objects_holder->objects.key(i) << ")";
+        ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << item.first << ")";
         std::cout << ss.str() << std::endl;
     }
 #endif
@@ -340,7 +341,7 @@ int Indigo::addObject(IndigoObject* obj)
 {
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
     int id = objects_holder->next_id++;
-#ifdef INDIGO_DEBUG
+#ifdef INDIGO_OBJECT_DEBUG
     std::stringstream ss;
     ss << "IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
     std::cout << ss.str() << std::endl;
@@ -353,7 +354,7 @@ int Indigo::addObject(std::unique_ptr<IndigoObject>&& obj)
 {
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
     int id = objects_holder->next_id++;
-#ifdef INDIGO_DEBUG
+#ifdef INDIGO_OBJECT_DEBUG
     std::stringstream ss;
     ss << "IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
     std::cout << ss.str() << std::endl;
@@ -365,7 +366,7 @@ int Indigo::addObject(std::unique_ptr<IndigoObject>&& obj)
 void Indigo::removeObject(int id)
 {
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
-#ifdef INDIGO_DEBUG
+#ifdef INDIGO_OBJECT_DEBUG
     std::stringstream ss;
     ss << "~IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
     std::cout << ss.str() << std::endl;

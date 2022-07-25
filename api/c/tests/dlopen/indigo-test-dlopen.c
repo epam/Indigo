@@ -192,7 +192,7 @@ int main(int argc, char** argv)
 
         session = indigoAllocSessionId();
         indigoSetSessionId(session);
-        indigoRendererInit();
+        indigoRendererInit(session);
         printf("Indigo session: %llu\n", session);
         indigoSetOption("render-output-format", "png");
         m = indigoLoadMoleculeFromString("C");

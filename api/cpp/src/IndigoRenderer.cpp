@@ -40,7 +40,7 @@ IndigoRenderer::IndigoRenderer(IndigoSessionPtr session) : session(std::move(ses
     std::cout << ss.str();
 #endif
     this->session->setSessionId();
-    indigoRendererInit();
+    indigoRendererInit(this->session->getSessionId());
 }
 
 IndigoRenderer::~IndigoRenderer()

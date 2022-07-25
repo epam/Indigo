@@ -114,7 +114,7 @@ def qmol_to_mol(m, selected):
                     bond.index(),
                 ]
             )
-    return m.dispatcher.loadMolecule(m.clone().molfile())
+    return m._session.loadMolecule(m.clone().molfile())
 
 
 class ImplicitHCalcExpection(IndigoException):
@@ -361,14 +361,14 @@ def save_moldata(md, output_format=None, options={}):
     elif output_format == "chemical/x-cml":
         return md.struct.cml()
     elif output_format == "chemical/x-inchi":
-        return md.struct.dispatcher.inchi.getInchi(md.struct)
+        return md.struct._session.inchi.getInchi(md.struct)
     elif output_format == "chemical/x-inchi-key":
-        return md.struct.dispatcher.inchi.getInchiKey(
-            md.struct.dispatcher.inchi.getInchi(md.struct)
+        return md.struct._session.inchi.getInchiKey(
+            md.struct._session.inchi.getInchi(md.struct)
         )
     elif output_format == "chemical/x-inchi-aux":
-        res = md.struct.dispatcher.inchi.getInchi(md.struct)
-        aux = md.struct.dispatcher.inchi.getAuxInfo()
+        res = md.struct._session.inchi.getInchi(md.struct)
+        aux = md.struct._session.inchi.getAuxInfo()
         return "{}\n{}".format(res, aux)
     raise HttpException("Format %s is not supported" % output_format, 400)
 
@@ -1079,8 +1079,8 @@ def calculate_cip():
     md = load_moldata(
         data["struct"], mime_type=data["input_format"], options=data["options"]
     )
-    md.struct.dispatcher.setOption("json-saving-add-stereo-desc", True)
-    md.struct.dispatcher.setOption("molfile-saving-add-stereo-desc", True)
+    md.struct._session.setOption("json-saving-add-stereo-desc", True)
+    md.struct._session.setOption("molfile-saving-add-stereo-desc", True)
     return get_response(
         md, data["output_format"], data["json_output"], data["options"]
     )
@@ -1374,12 +1374,12 @@ def render():
             mdq = load_moldata(
                 data["query"],
                 mime_type=data["input_format"],
-                indigo=md.struct.dispatcher,
+                indigo=md.struct._session,
                 query=True,
             )
             try:
                 md.struct = highlight(
-                    md.struct.dispatcher, md.struct, mdq.struct
+                    md.struct._session, md.struct, mdq.struct
                 )
             except RuntimeError:
                 pass
@@ -1408,11 +1408,11 @@ def render():
                 md = load_moldata(input_dict["struct"])
                 mdq = load_moldata(
                     input_dict["query"],
-                    indigo=md.struct.dispatcher,
+                    indigo=md.struct._session,
                     query=True,
                 )
                 md.struct = highlight(
-                    md.struct.dispatcher, md.struct, mdq.struct
+                    md.struct._session, md.struct, mdq.struct
                 )
             data = IndigoRendererSchema().load(input_dict)
         except Exception as e:
@@ -1420,7 +1420,7 @@ def render():
                 "Invalid GET query {}".format(str(e)), 400
             )
 
-    indigo = md.struct.dispatcher
+    indigo = md.struct._session
     indigo.setOption("render-coloring", True)
     indigo.setOption("render-image-width", data["width"])
     indigo.setOption("render-image-height", data["height"])

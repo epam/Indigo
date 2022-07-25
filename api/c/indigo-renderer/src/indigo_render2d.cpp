@@ -16,9 +16,14 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_cpp/output.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/scanner.h"
+#include "molecule/molecule.h"
+#include "molecule/query_molecule.h"
+#include "reaction/query_reaction.h"
+#include "reaction/reaction.h"
+#include "render_cdxml.h"
+
 #include "indigo-renderer.h"
 #include "indigo_array.h"
 #include "indigo_internal.h"
@@ -26,12 +31,7 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 #include "indigo_renderer_internal.h"
-#include "molecule/molecule.h"
-#include "molecule/query_molecule.h"
 #include "option_manager.h"
-#include "reaction/query_reaction.h"
-#include "reaction/reaction.h"
-#include "render_cdxml.h"
 
 //#define INDIGO_DEBUG
 
@@ -442,32 +442,32 @@ void indigoRenderGetCdxmlPropertiesKeyAlignment(Array<char>& value)
         value.readString("right", true);
 }
 
-CEXPORT int indigoRendererInit()
+CEXPORT int indigoRendererInit(qword id)
 {
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
-    ss << "IndigoRenderer(" << TL_GET_SESSION_ID() << ")";
+    ss << "IndigoRenderer(" << id << ")";
     std::cout << ss.str() << std::endl;
 #endif
     INDIGO_BEGIN_STATIC
     {
-        auto& context = indigo_renderer_self.createOrGetLocalCopy();
+        auto& context = indigo_renderer_self.createOrGetLocalCopy(id);
         context.init();
         return 0;
     }
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoRendererDispose()
+CEXPORT int indigoRendererDispose(const qword id)
 {
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
-    ss << "~IndigoRenderer(" << TL_GET_SESSION_ID() << ")";
+    ss << "~IndigoRenderer(" << id << ")";
     std::cout << ss.str() << std::endl;
 #endif
     INDIGO_BEGIN_STATIC
     {
-        indigo_renderer_self.removeLocalCopy(TL_GET_SESSION_ID());
+        indigo_renderer_self.removeLocalCopy(id);
         return 0;
     }
     INDIGO_END(-1);

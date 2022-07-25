@@ -80,7 +80,7 @@ class BingoElastic(NoSQLAdapter):
         query_mol.aromatize()
         records = self.repo.filter(
             query_subject=query_mol,
-            indigo_session=query_mol.dispatcher,
+            indigo_session=query_mol._session,
             limit=5000,
             options=options,
         )

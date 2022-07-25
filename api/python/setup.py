@@ -29,10 +29,13 @@ Operating System :: POSIX :: Linux
 Operating System :: MacOS
 """
 
-LONG_DESCRIPTION = "Indigo is a universal molecular toolkit that can be used for molecular fingerprinting, substructure search, and molecular visualization.\
-Also capable of performing a molecular similarity search, it is 100% open source and provides enhanced stereochemistry support for end users, \
-as well as a documented API for developers."
-
+LONG_DESCRIPTION = (
+    "Indigo is a universal molecular toolkit that can be used for molecular "
+    "fingerprinting, substructure search, and molecular visualization. "
+    "Also capable of performing a molecular similarity search, it is 100% "
+    "open source and provides enhanced stereochemistry support for end "
+    "users, as well as a documented API for developers."
+)
 INDIGO_LIBS = None
 PLATFORM_NAME = None
 
@@ -75,7 +78,9 @@ if sys.argv[1] == "bdist_wheel":
 
     if not INDIGO_LIBS:
         raise ValueError(
-            "Wrong --plat-name value! Should be one of: macosx_11_0_arm64, macosx_10_7_intel, manylinux1_x86_64, manylinux2014_aarch64, manylinux1_i686, win_amd64, win32"
+            "Wrong --plat-name value! Should be one of: macosx_11_0_arm64, "
+            "macosx_10_7_intel, manylinux1_x86_64, manylinux2014_aarch64, "
+            "manylinux1_i686, win_amd64, win32"
         )
 
     if not glob.glob(os.path.join(indigo_python_directory, INDIGO_LIBS)):
@@ -118,7 +123,9 @@ setup(
     long_description_content_type="text/plain",
     project_urls={
         "Bug Tracker": "https://github.com/epam/indigo/issues",
-        "Documentation": "https://lifescience.opensource.epam.com/indigo/api/index.html",
+        "Documentation": (
+            "https://lifescience.opensource.epam.com/indigo/api/index.html"
+        ),
         "Source Code": "https://github.com/epam/indigo/",
     },
     download_url="https://pypi.org/project/epam.indigo",

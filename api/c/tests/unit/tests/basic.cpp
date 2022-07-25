@@ -201,7 +201,7 @@ TEST_F(IndigoApiBasicTest, test_getter_function)
     ASSERT_STREQ(chFloat, "20.5");
 
     float r, g, b;
-    indigoRendererInit();
+    indigoRendererInit(session);
     indigoSetOptionColor("render-background-color", 50, 100, 150);
     indigoGetOptionColor("render-background-color", &r, &g, &b);
     ASSERT_EQ(r, 50);

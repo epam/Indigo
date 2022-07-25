@@ -18,7 +18,7 @@ namespace com.epam.indigo
             _indigo = indigo;
              _indigo.setSessionID();
              // Preloads native library to register renderer options
-            _indigo.checkResult(IndigoRendererLib.indigoRendererInit());
+            _indigo.checkResult(IndigoRendererLib.indigoRendererInit(_indigo.getSID()));
             initialized = true;
         }
 

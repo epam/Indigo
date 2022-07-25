@@ -38,21 +38,11 @@ qword _SIDManager::getSessionId() const
 
 qword _SIDManager::allocSessionId()
 {
-    auto sidDataHolder = sf::xlock_safe_ptr(_sidDataHolder);
-    auto& vacantSIDs = sidDataHolder->vacantSIDs;
-    if (!vacantSIDs.empty())
-    {
-        auto id = vacantSIDs.top();
-        vacantSIDs.pop();
-        return id;
-    }
-    return sidDataHolder->lastNewSID++;
+   return ++lastNewSID;
 }
 
-void _SIDManager::releaseSessionId(qword id)
+void _SIDManager::releaseSessionId([[maybe_unused]] qword id)
 {
-    auto sidDataHolder = sf::xlock_safe_ptr(_sidDataHolder);
-    sidDataHolder->vacantSIDs.push(id);
 }
 
 qword& _SIDManager::_sessionId()
