@@ -3,4 +3,4 @@ from .indigo.indigo import Indigo  # noqa
 from .indigo.indigo_exception import IndigoException  # noqa
 from .indigo.indigo_object import IndigoObject  # noqa
 
-__version__ = "1.7.4"
+__version__ = "1.8.0.dev0"
