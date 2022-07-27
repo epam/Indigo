@@ -60,9 +60,7 @@ def test_create_reaction(
     elastic_repository_reaction.index_record(indigo_reaction)
     sleep(1)
     for found_react in elastic_repository_reaction.filter(
-        query_subject=getattr(SimilarityMatch, "tanimoto")(
-            indigo_reaction, 0.9
-        )
+        query_subject=SimilarityMatch(indigo_reaction, 0.9)
     ):
         found_react_obj = as_iob(found_react, indigo_fixture)
         assert count_products == found_react_obj.countProducts()

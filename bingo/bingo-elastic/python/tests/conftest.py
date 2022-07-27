@@ -3,8 +3,9 @@ from pathlib import Path
 from typing import Callable
 
 import pytest
-from indigo import Indigo  # type: ignore
+from indigo import Indigo
 
+from bingo_elastic import indigo_tools  # type: ignore
 from bingo_elastic.elastic import (
     AsyncElasticRepository,
     ElasticRepository,
@@ -30,7 +31,7 @@ def resource_loader() -> Callable[[str], str]:
 
 @pytest.fixture
 def indigo_fixture() -> Indigo:
-    return Indigo()
+    return indigo_tools.indigo()
 
 
 @pytest.fixture

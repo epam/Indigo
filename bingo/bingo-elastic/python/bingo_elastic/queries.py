@@ -3,8 +3,9 @@ from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
 
-from indigo import Indigo, IndigoObject  # type: ignore
+from indigo import Indigo, IndigoObject
 
+from bingo_elastic import indigo_tools  # type: ignore
 from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 from bingo_elastic.utils import PostprocessType, head_by_path
 
@@ -69,13 +70,13 @@ class SubstructureQuery(CompilableQuery):
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo, options: str
+        self, record: IndigoRecord, options: str
     ) -> Optional[IndigoRecord]:
         if not record.cmf:
             return None
 
-        mol = record.as_indigo_object(indigo)
-        matcher = indigo.substructureMatcher(mol, options)
+        mol = record.as_indigo_object(indigo_tools.indigo())
+        matcher = indigo_tools.indigo().substructureMatcher(mol, options)
 
         if matcher.match(self._value):
             return record
@@ -97,8 +98,8 @@ class SubstructureQuery(CompilableQuery):
         query["min_score"] = len(
             self._value.fingerprint("sub").oneBitsList().split()
         )
-        assert postprocess_actions is not None
-        postprocess_actions.append(getattr(self, "postprocess"))
+        if postprocess_actions is not None:
+            postprocess_actions.append(getattr(self, "postprocess"))
 
 
 class RangeQuery(CompilableQuery):
@@ -274,7 +275,7 @@ class ExactMatch(CompilableQuery):
 
     # pylint: disable=inconsistent-return-statements
     def postprocess(
-        self, record: IndigoRecord, indigo: Indigo, options: str
+        self, record: IndigoRecord, options: str
     ) -> Optional[IndigoRecord]:
         # postprocess only on molecule search
         if not isinstance(record, IndigoRecordMolecule):
@@ -283,10 +284,10 @@ class ExactMatch(CompilableQuery):
         if not record.cmf:
             return None
 
-        query = record.as_indigo_object(indigo)
-        target = self._target.as_indigo_object(indigo)
+        query = record.as_indigo_object(indigo_tools.indigo())
+        target = self._target.as_indigo_object(indigo_tools.indigo())
 
-        if indigo.exactMatch(target, query, options):
+        if indigo_tools.indigo().exactMatch(target, query, options):
             return record
         return None
 
@@ -302,10 +303,8 @@ class ExactMatch(CompilableQuery):
         postprocess_actions.append(getattr(self, "postprocess"))
 
 
-class SimilarityMatch:
-    euclid = EuclidSimilarityMatch
-    tanimoto = TanimotoSimilarityMatch
-    tversky = TverskySimilarityMatch
+# Alias to default similarity match
+SimilarityMatch = TanimotoSimilarityMatch
 
 
 def query_factory(key: str, value: Any) -> CompilableQuery:

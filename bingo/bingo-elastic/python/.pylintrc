@@ -9,3 +9,6 @@ disable=
     W0621, # redefined-outer-name
     W0613, # unused-argument
     W1517, # cache-max-size-none
+    wrong-import-order,
+    unused-import,
+    too-many-branches

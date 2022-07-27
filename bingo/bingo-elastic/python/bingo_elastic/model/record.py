@@ -38,6 +38,7 @@ class WithIndigoObject:
         fingerprints = (
             "sim",
             "sub",
+            "sub-tau",
         )
 
         for f_print in fingerprints:

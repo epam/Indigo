@@ -5,6 +5,7 @@ from typing import Callable
 import pytest
 from indigo import Indigo  # type: ignore
 
+from bingo_elastic import indigo_tools
 from bingo_elastic.elastic import (
     AsyncElasticRepository,
     ElasticRepository,
@@ -103,9 +104,7 @@ def test_exact_match(
     indigo_fixture: Indigo,
     loaded_sdf: IndigoRecordMolecule,
 ):
-    result = elastic_repository_molecule.filter(
-        query_subject=loaded_sdf, indigo_session=indigo_fixture
-    )
+    result = elastic_repository_molecule.filter(query_subject=loaded_sdf)
     assert (
         loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
         == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -119,9 +118,7 @@ async def test_a_exact_match(
     loaded_sdf: IndigoRecordMolecule,
 ):
     async with a_elastic_repository_molecule() as rep:
-        result = rep.filter(
-            query_subject=loaded_sdf, indigo_session=indigo_fixture
-        )
+        result = rep.filter(query_subject=loaded_sdf)
         async for mol in result:
             assert (
                 loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -216,9 +213,7 @@ def test_substructure_search(
     query_mol = indigo_fixture.loadQueryMolecule(
         loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
     )
-    result = elastic_repository_molecule.filter(
-        query_subject=query_mol, indigo_session=indigo_fixture
-    )
+    result = elastic_repository_molecule.filter(query_subject=query_mol)
     for item in result:
         assert (
             item.as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -236,9 +231,7 @@ async def test_a_substructure_search(
         query_mol = indigo_fixture.loadQueryMolecule(
             loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
         )
-        result = rep.filter(
-            query_subject=query_mol, indigo_session=indigo_fixture
-        )
+        result = rep.filter(query_subject=query_mol)
         async for item in result:
             assert (
                 item.as_indigo_object(indigo_fixture).canonicalSmiles()
@@ -388,7 +381,6 @@ def test_search_empty_fingerprint(
             indigo_object=indigo_fixture.loadMolecule("[H][H]"),
             skip_errors=True,
         ),
-        indigo_session=indigo_fixture,
     )
 
     assert (
@@ -432,7 +424,7 @@ def test_similarity_matches_reactions(
     elastic_repository_reaction: ElasticRepository,
     loaded_rxns,
     resource_loader,
-    indigo_fixture,
+    indigo_fixture: Indigo,
 ) -> None:
 
     reaction = indigo_fixture.loadReactionFromFile(
@@ -465,7 +457,7 @@ def test_similarity_matches_reactions(
         )
 
     for found_reaction in elastic_repository_reaction.filter(
-        query_subject=reaction_rec, indigo_session=indigo_fixture
+        query_subject=reaction_rec
     ):
         assert (
             as_iob(found_reaction, indigo_fixture).countReactants()

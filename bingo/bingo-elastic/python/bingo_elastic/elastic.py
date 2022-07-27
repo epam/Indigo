@@ -104,6 +104,11 @@ index_body = {
             "sim_fingerprint_len": {"type": "integer"},
             "sub_fingerprint": {"type": "keyword", "similarity": "boolean"},
             "sub_fingerprint_len": {"type": "integer"},
+            "sub_fingerpring_tau": {
+                "type": "keyword",
+                "similarity": "boolean",
+            },
+            "sub_fingerprint_tau_len": {"type": "integer"},
             "cmf": {"type": "binary"},
             "hash": {"type": "unsigned_long"},
             "has_error": {"type": "integer"},
@@ -156,13 +161,12 @@ def response_to_records(
     res: dict,
     index_name: str,
     postprocess_actions: PostprocessType = None,
-    indigo_session: Indigo = None,
     options: str = "",
 ) -> Generator[IndigoRecord, None, None]:
     for el_response in res.get("hits", {}).get("hits", []):
         record = get_record_by_index(el_response, index_name)
         for action_fn in postprocess_actions:  # type: ignore
-            record = action_fn(record, indigo_session, options)  # type: ignore
+            record = action_fn(record, options)  # type: ignore
             if not record:
                 continue
         yield record
@@ -224,7 +228,6 @@ class AsyncElasticRepository:
     async def filter(
         self,
         query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-        indigo_session: Indigo = None,
         limit: int = 10,
         options: str = "",
         **kwargs,
@@ -241,7 +244,7 @@ class AsyncElasticRepository:
         )
         res = await self.el_client.search(index=self.index_name, body=query)
         for record in response_to_records(
-            res, self.index_name, postprocess_actions, indigo_session, options
+            res, self.index_name, postprocess_actions, options
         ):
             yield record
 
@@ -317,7 +320,6 @@ class ElasticRepository:
     def filter(
         self,
         query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-        indigo_session: Indigo = None,
         limit: int = 10,
         options: str = "",
         **kwargs,
@@ -333,7 +335,7 @@ class ElasticRepository:
         )
         res = self.el_client.search(index=self.index_name, body=query)
         yield from response_to_records(
-            res, self.index_name, postprocess_actions, indigo_session, options
+            res, self.index_name, postprocess_actions, options
         )
 
 
