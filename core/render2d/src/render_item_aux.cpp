@@ -225,7 +225,9 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
     case KETReactionArrow::EEllipticalArcOpenAngle:
         _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
         break;
+
     case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
         break;
 
     default:

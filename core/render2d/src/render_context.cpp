@@ -984,6 +984,34 @@ void RenderContext::drawTriangleArrowHeader(const Vec2f& v, const Vec2f& dir, co
     lineTo(v);
 }
 
+void RenderContext::drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize)
+{
+    Vec2f n(dir), p(v), d(dir);
+    n.rotate(1, 0);
+    p.addScaled(n, width / 2);
+    Vec2f header(p);
+    moveTo(p);
+    d.negate();
+    auto arr_wc = headwidth / 2 + width/2;
+    auto arr_hyp = std::hypot(arr_wc, headsize);
+    auto cs = headsize / arr_hyp;
+    auto si = arr_wc / arr_hyp;
+    auto arr_h = (arr_wc * headsize) / arr_hyp;
+    auto inner_w = arr_wc * (arr_h - width) / arr_h;
+    auto inner_h = inner_w * headsize / arr_wc;
+    auto inner_hyp = std::hypot(inner_w, inner_h);
+
+    d.rotate(si, cs);
+    p.addScaled(d, arr_hyp );
+    lineTo(p);
+    p.addScaled(n, width/cs);
+    lineTo(p);
+    d.negate();
+    p.addScaled(d, inner_hyp);
+    lineTo(p);
+    lineTo(header);
+}
+
 void RenderContext::drawArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize, bool is_bow)
 {
     Vec2f n(dir), p(v),d(dir);
@@ -1029,7 +1057,7 @@ void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const 
     d.normalize();
     n_orig.copy(d);
     n_orig.rotate(-h_sign, 0);
-    pb.addScaled(n_orig, width); // margin for headsize
+    pb.addScaled(n_orig, width * 2); // margin for headsize
     d.diff(pb, pa);
     d.normalize();
     Vec2f n(d);
@@ -1050,9 +1078,11 @@ void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const 
     case KETReactionArrow::EEllipticalArcOpenAngle:
         drawArrowHeader(p2, n_orig, width, headwidth, headsize);
         break;
+    case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+        drawHalfArrowHeader(p2, n_orig, width, headwidth, headsize);
+        break;
     }
     cairo_fill(_cr);
-
     pb.addScaled(d, width / 2); // go forward to outer ellipse
     d.negate(); // backward
     pa.addScaled(d, width / 2); // back to outer ellipse
