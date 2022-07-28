@@ -992,7 +992,7 @@ void RenderContext::drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const 
     Vec2f header(p);
     moveTo(p);
     d.negate();
-    auto arr_wc = headwidth / 2 + width/2;
+    auto arr_wc = headwidth / 2 + width / 2;
     auto arr_hyp = std::hypot(arr_wc, headsize);
     auto cs = headsize / arr_hyp;
     auto si = arr_wc / arr_hyp;
@@ -1002,9 +1002,9 @@ void RenderContext::drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const 
     auto inner_hyp = std::hypot(inner_w, inner_h);
 
     d.rotate(si, cs);
-    p.addScaled(d, arr_hyp );
+    p.addScaled(d, arr_hyp);
     lineTo(p);
-    p.addScaled(n, width/cs);
+    p.addScaled(n, width / cs);
     lineTo(p);
     d.negate();
     p.addScaled(d, inner_hyp);
@@ -1014,7 +1014,7 @@ void RenderContext::drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const 
 
 void RenderContext::drawArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize, bool is_bow)
 {
-    Vec2f n(dir), p(v),d(dir);
+    Vec2f n(dir), p(v), d(dir);
     n.rotate(1, 0);
     d.negate();
     auto arr_wc = headwidth / 2;
@@ -1066,7 +1066,7 @@ void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const 
     float len = d.length();
 
     n_orig.negate();
-    switch(arrow_type)
+    switch (arrow_type)
     {
     case KETReactionArrow::EEllipticalArcFilledBow:
         drawArrowHeader(p2, n_orig, width, headwidth, headsize, true);
@@ -1084,7 +1084,7 @@ void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const 
     }
     cairo_fill(_cr);
     pb.addScaled(d, width / 2); // go forward to outer ellipse
-    d.negate(); // backward
+    d.negate();                 // backward
     pa.addScaled(d, width / 2); // back to outer ellipse
     drawHalfEllipse(pa, pb, height);
     moveTo(pb);

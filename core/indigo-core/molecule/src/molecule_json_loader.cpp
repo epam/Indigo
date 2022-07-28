@@ -1043,8 +1043,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
         {"elliptical-arc-arrow-filled-bow", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_BOW},
         {"elliptical-arc-arrow-filled-triangle", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_TRIANGLE},
         {"elliptical-arc-arrow-open-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_ANGLE},
-        {"elliptical-arc-arrow-open-half-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE}
-    };
+        {"elliptical-arc-arrow-open-half-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE}};
 
     if (meta_objects.IsArray())
     {
@@ -1119,8 +1118,9 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                 {
                     auto height = mobj_data["height"].GetFloat();
                     meta_interface.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end, height));
-                } else
-                meta_interface.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
+                }
+                else
+                    meta_interface.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
             }
             else if (node_type == "plus")
             {
