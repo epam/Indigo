@@ -32,6 +32,12 @@ namespace indigo
     class RenderContext
     {
     public:
+        enum
+        {
+            EOpenArrow,
+            EBowArray,
+            ETriangleArrow
+        };
         DECL_ERROR;
 
         void checkPathNonEmpty() const;
@@ -100,14 +106,22 @@ namespace indigo
         void drawPlus(const Vec2f& pos, const float linewidth, const float size);
         void drawEquality(const Vec2f& pos, const float linewidth, const float size, const float interval);
         void drawArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
-        void drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow = false,
-                             const bool is_failed = false);
+        void drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow,
+                             const bool is_failed);
+
+        void drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow);
+        void drawEquillibriumFilledTriangle(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
+        void drawEquillibriumHalf(const Vec2f& p1, const Vec2f& p2, const float width, float headwidth, const float headsize, const int arrow_type = EOpenArrow,
+                                  const bool is_large = false, const bool is_unbalanced = false);
+        void drawBar(const Vec2f& p1, const Vec2f& p2, const float width, const float margin = 0);
+
         void drawDashedArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
         void drawBothEndsArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
         void drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const float height,
                                  int arrow_type);
         void drawArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize, bool is_bow = false);
-        void drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize);
+        void drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize,
+                                 const int arrow_type = EOpenArrow);
 
         void drawTriangleArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize);
 

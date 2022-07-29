@@ -176,11 +176,11 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
     switch (ar._arrow_type)
     {
     case KETReactionArrow::EOpenAngle:
-        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, false, false);
         break;
 
     case KETReactionArrow::EFilledBow:
-        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, true);
+        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, true, false);
         break;
 
     case KETReactionArrow::EFailed:
@@ -195,24 +195,34 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
         _rc.drawBothEndsArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
         break;
 
-        /*
-        case KETReactionArrow::EEquilibriumFilledHalfBow:
-            break;
+    case KETReactionArrow::EEquilibriumFilledHalfBow:
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::EBowArray);
+        break;
 
-        case KETReactionArrow::EEquilibriumFilledTriangle:
-            break;
+    case KETReactionArrow::EEquilibriumFilledTriangle:
+        _rc.drawEquillibriumFilledTriangle(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
 
-        case KETReactionArrow::EEquilibriumOpenAngle:
-            break;
+    case KETReactionArrow::EEquilibriumOpenAngle:
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
 
-        case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
-            break;
+    case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::EBowArray, true, true);
+        break;
 
-        case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
-            break;
+    case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::EBowArray, false, true);
+        break;
 
-        case KETReactionArrow::EUnbalancedEquilibriumFilleHalfTriangle:
-            break; */
+    case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::EOpenArrow, false, true);
+        break;
+
+    case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::ETriangleArrow, false,
+                                 true);
+        break;
 
     case KETReactionArrow::EEllipticalArcFilledBow:
         _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
