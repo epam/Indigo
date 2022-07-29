@@ -1,9 +1,0 @@
-env:
-  build: ./
-  dockerfile: ./Dockerfile
-  volumes:
-    - ./:/code
-  ports:
-    - "3000:3000"
-  command: 
-    bash -c "useradd -m -s /bin/bash $USER || true && /bin/su -s /bin/bash -c 'npm dedupe && npm install && gulp serve' $USER"

@@ -1,67 +1,36 @@
-version: "2.1"
+version: "3.4"
+
 services:
   db:
     build:
-      context: ./
-      dockerfile: ./db/Dockerfile
-    networks:
-      default:
-        aliases:
-          - indigo_db
+      context: ./db/
+      dockerfile: ./Dockerfile
+    env_file: ./env/db.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_pgdata:/var/lib/postgresql/data
+    restart: always
 
-  service:
+  backend:
     build:
-      context: ./
-      dockerfile: ./service/Dockerfile
-    environment:
-      - PYTHONPATH=${INDIGO_SERVICE_PYTHONPATH:-/srv/indigo-python}
-    volumes_from:
-      - indigo_builder
-    networks:
-      default:
-        aliases:
-          - indigo_service
+      context: ./backend/
+      dockerfile: ./Dockerfile
+    env_file: ./env/db.env
+    depends_on:
+      - db
     restart: always
     command: supervisord -n
 
-  front:
+  frontend:
     build:
-      context: ./
-      dockerfile: ./nginx/Dockerfile
-    links:
-      - service
+      context: ./frontend/
+      dockerfile: ./Dockerfile
+    depends_on:
+      - backend
     ports:
-      - "${INDIGO_SERVICE_PORT:-8080}:80"
+      - "80:80"
     restart: always
 
-  indigo_builder:
-    build:
-      context: indigo-builder
-      args:
-        - ARTIFACTORY_API_KEY
-    volumes:
-      - /var/src
-
-  test:
-    build:
-      context: ./
-      dockerfile: ./service/test/Dockerfile
-    environment:
-      - INDIGO_SERVICE_URL
-      - IGNORE_PATTERN
-    command: python3 -u /srv/api/test/tests.py
-
-#  debug:
-#    build:
-#      context: ./
-#      dockerfile: ./service/Dockerfile
-#    environment:
-#      - PYTHONPATH=${INDIGO_SERVICE_PYTHONPATH:-/srv/indigo-python}
-#      - INDIGO_UWSGI_RUN_PARAMETERS=--plugin python3 --py-autoreload=1
-#    volumes:
-#      - ./service/:/srv/api/
-#    networks:
-#      default:
-#        aliases:
-#          - indigo_service
-#    command: supervisord -n
+volumes:
+  db_pgdata:
