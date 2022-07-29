@@ -1,0 +1,89 @@
+@import 'theme';
+@import (inline) "codemirror/lib/codemirror.css";
+@import (inline) "codemirror/addon/hint/show-hint.css";
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+main {
+    width: 1100px;
+    margin: 0 auto;
+    position: relative;
+};
+
+iframe {
+    display: none;
+}
+
+nav {
+    &:extend(.navbar all, .navbar-inverse all);
+    h1 {
+        &:extend(.navbar-brand all,
+                 .navbar-inverse .navbar-brand all);
+        margin: 0 15px 0;
+    }
+    ul {
+        &:extend(.nav all, .navbar-nav all,
+                 .navbar-inverse .navbar-nav all);
+    }
+}
+
+select {
+    &:extend(select all, .form-control all);
+}
+
+input {
+    &[type=text], &[type=search], &[type=number] {
+        &:extend(.form-control all);
+    }
+    &[type=submit] {
+        &:extend(button all, .btn-primary all);
+    }
+    &[type=reset] {
+        &:extend(button all, .btn-warning all);
+    }
+}
+
+textarea {
+    &:extend(.form-control all);
+}
+
+button {
+    &:extend(.btn all, .btn-default all);
+}
+
+table.libs {
+    &:extend(.table all, .table-striped all, .table-hover all);
+    th {
+        text-align: left;
+    }
+    .count, .action {
+        text-align: right;
+    }
+    .empty {
+        td {
+            //background: white;
+            font-weight: normal;
+            font-style: italic;
+            vertical-align: middle;
+            text-align: center;
+            height: 100px;
+        }
+    }
+}
+
+.search {
+    @import 'search';
+	@import 'propedit';
+}
+
+.libs {
+    @import 'libs';
+}
+
+.output {
+    @import 'output';
+}
+

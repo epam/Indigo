@@ -1154,7 +1154,7 @@ jobs:
           name: indigo-python
           path: utils/indigo-service/lib/
       - name: Build
-        run: docker build -f ./utils/indigo-service/service/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service
+        run: docker build -f ./utils/indigo-service/backend/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service/backend
 # TODO: add tests
 #      - name: Test
 #        run: |

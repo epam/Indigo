@@ -1,7 +1,0 @@
-release:
-  build: ./
-  dockerfile: ./Dockerfile
-  volumes:
-    - ./:/code
-  command:
-    bash -c "useradd -m -s /bin/bash $USER || true && /bin/su -s /bin/bash -c 'cargo build --release' $USER"

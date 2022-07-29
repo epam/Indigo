@@ -31,17 +31,17 @@
 namespace indigo
 {
     const double KETDefaultFontSize = 13;
-    const double KETFontScaleFactor = 58;
+    const double KETFontScaleFactor = 47;
 
-    struct hashFunction
+    struct compareFunction
     {
-        size_t operator()(const std::pair<int, bool>& x) const
+        bool operator()(const std::pair<int, bool>& a, const std::pair<int, bool>& b) const
         {
-            return x.first ^ x.second;
+            return a.second == b.second ? a.first < b.first : a.second < b.second;
         }
     };
 
-    using FONT_STYLE_SET = std::unordered_set<std::pair<int, bool>, hashFunction>;
+    using FONT_STYLE_SET = std::set<std::pair<int, bool>, compareFunction>;
 
     constexpr std::uint32_t string_hash(char const* s, std::size_t count)
     {
@@ -183,7 +183,7 @@ namespace indigo
         static const std::uint32_t CID = "KET reaction arrow"_hash;
         enum
         {
-            EOpenAngle,
+            EOpenAngle = 2,
             EFilledTriangle,
             EFilledBow,
             EDashedOpenAngle,
@@ -194,17 +194,23 @@ namespace indigo
             EEquilibriumOpenAngle,
             EUnbalancedEquilibriumFilledHalfBow,
             EUnbalancedEquilibriumLargeFilledHalfBow,
-            EUnbalancedEquilibriumFilleHalfTriangle
+            EUnbalancedEquilibriumFilleHalfTriangle,
+            EEllipticalArcFilledBow,
+            EEllipticalArcFilledTriangle,
+            EEllipticalArcOpenAngle,
+            EEllipticalArcOpenHalfAngle,
         };
 
-        KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end) : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end){};
+        KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end, float height = 0)
+            : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end), _height(height){};
 
         MetaObject* clone() const override
         {
-            return new KETReactionArrow(_arrow_type, _begin, _end);
+            return new KETReactionArrow(_arrow_type, _begin, _end, _height);
         }
 
         int _arrow_type;
+        float _height;
         Vec2f _begin;
         Vec2f _end;
     };
@@ -257,7 +263,11 @@ namespace indigo
             ARROW_EQUILIBRIUM_OPEN_ANGLE,
             ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_BOW,
             ARROW_UNBALANCED_EQUILIBRIUM_LARGE_FILLED_HALF_BOW,
-            ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_TRIANGLE
+            ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_TRIANGLE,
+            ARROW_ELLIPTICAL_ARC_FILLED_BOW,
+            ARROW_ELLIPTICAL_ARC_FILLED_TRIANGLE,
+            ARROW_ELLIPTICAL_ARC_OPEN_ANGLE,
+            ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE
         };
 
         enum

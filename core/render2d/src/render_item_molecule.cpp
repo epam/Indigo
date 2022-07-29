@@ -103,64 +103,66 @@ void RenderItemMolecule::init()
     if (mol->vertexCount() == 0 && mol->meta().metaData().size() == 0 && mol->rgroups.getRGroupCount() == 0)
         return;
 
-    _core = _factory.addItemFragment();
-    auto& core = _factory.getItemFragment(_core);
-    core.mol = mol;
-    core.refAtom = refAtom;
-
-    if (mol->meta().metaData().size())
-        initWithMetaData();
-    else
+    if (mol->vertexCount())
     {
-        core.init();
-        int lineCore = _factory.addItemHLine();
-        _factory.getItemHLine(lineCore).init();
-        _factory.getItemHLine(lineCore).items.push(_core);
-        items.push(lineCore);
-
+        _core = _factory.addItemFragment();
+        auto& core = _factory.getItemFragment(_core);
+        core.mol = mol;
+        core.refAtom = refAtom;
+        if (!mol->meta().metaData().size())
         {
-            if (_getRIfThenCount() > 0)
+            core.init();
+            int lineCore = _factory.addItemHLine();
+            _factory.getItemHLine(lineCore).init();
+            _factory.getItemHLine(lineCore).items.push(_core);
+            items.push(lineCore);
+
             {
-                int _ifThen = _factory.addItemAuxiliary();
-                _factory.getItemAuxiliary(_ifThen).type = RenderItemAuxiliary::AUX_RGROUP_IFTHEN;
-                _factory.getItemAuxiliary(_ifThen).mol = mol;
-                int lineIfThen = _factory.addItemHLine();
-                _factory.getItemHLine(lineIfThen).init();
-                _factory.getItemHLine(lineIfThen).items.push(_ifThen);
-                _factory.getItemAuxiliary(_ifThen).init();
-                items.push(lineIfThen);
-            }
-            MoleculeRGroups& rGroups = mol->rgroups;
-            for (int i = 1; i <= rGroups.getRGroupCount(); ++i)
-            {
-                RGroup& rg = rGroups.getRGroup(i);
-                if (rg.fragments.size() == 0)
-                    continue;
-
-                int lineRFrag = _factory.addItemHLine();
-                _factory.getItemHLine(lineRFrag).init();
-                items.push(lineRFrag);
-
-                int label = _factory.addItemAuxiliary();
-                _factory.getItemAuxiliary(label).type = RenderItemAuxiliary::AUX_RGROUP_LABEL;
-                _factory.getItemAuxiliary(label).mol = mol;
-                _factory.getItemAuxiliary(label).rLabelIdx = i;
-                _factory.getItemHLine(lineRFrag).items.push(label);
-                _factory.getItemAuxiliary(label).init();
-
-                PtrPool<BaseMolecule>& frags = rg.fragments;
-
-                for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
+                if (_getRIfThenCount() > 0)
                 {
-                    int id = _factory.addItemFragment();
-                    _factory.getItemFragment(id).mol = frags[j];
-                    _factory.getItemFragment(id).isRFragment = true;
-                    _factory.getItemFragment(id).init();
-                    _factory.getItemHLine(lineRFrag).items.push(id);
+                    int _ifThen = _factory.addItemAuxiliary();
+                    _factory.getItemAuxiliary(_ifThen).type = RenderItemAuxiliary::AUX_RGROUP_IFTHEN;
+                    _factory.getItemAuxiliary(_ifThen).mol = mol;
+                    int lineIfThen = _factory.addItemHLine();
+                    _factory.getItemHLine(lineIfThen).init();
+                    _factory.getItemHLine(lineIfThen).items.push(_ifThen);
+                    _factory.getItemAuxiliary(_ifThen).init();
+                    items.push(lineIfThen);
+                }
+                MoleculeRGroups& rGroups = mol->rgroups;
+                for (int i = 1; i <= rGroups.getRGroupCount(); ++i)
+                {
+                    RGroup& rg = rGroups.getRGroup(i);
+                    if (rg.fragments.size() == 0)
+                        continue;
+
+                    int lineRFrag = _factory.addItemHLine();
+                    _factory.getItemHLine(lineRFrag).init();
+                    items.push(lineRFrag);
+
+                    int label = _factory.addItemAuxiliary();
+                    _factory.getItemAuxiliary(label).type = RenderItemAuxiliary::AUX_RGROUP_LABEL;
+                    _factory.getItemAuxiliary(label).mol = mol;
+                    _factory.getItemAuxiliary(label).rLabelIdx = i;
+                    _factory.getItemHLine(lineRFrag).items.push(label);
+                    _factory.getItemAuxiliary(label).init();
+
+                    PtrPool<BaseMolecule>& frags = rg.fragments;
+
+                    for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
+                    {
+                        int id = _factory.addItemFragment();
+                        _factory.getItemFragment(id).mol = frags[j];
+                        _factory.getItemFragment(id).isRFragment = true;
+                        _factory.getItemFragment(id).init();
+                        _factory.getItemHLine(lineRFrag).items.push(id);
+                    }
                 }
             }
+            return;
         }
     }
+    initWithMetaData();
 }
 
 int RenderItemMolecule::_getRIfThenCount()

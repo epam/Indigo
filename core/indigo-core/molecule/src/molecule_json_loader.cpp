@@ -1039,7 +1039,11 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
         {"equilibrium-open-angle", ReactionComponent::ARROW_EQUILIBRIUM_OPEN_ANGLE},
         {"unbalanced-equilibrium-filled-half-bow", ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_BOW},
         {"unbalanced-equilibrium-large-filled-half-bow", ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_LARGE_FILLED_HALF_BOW},
-        {"unbalanced-equilibrium-filled-half-triangle", ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE}};
+        {"unbalanced-equilibrium-filled-half-triangle", ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE},
+        {"elliptical-arc-arrow-filled-bow", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_BOW},
+        {"elliptical-arc-arrow-filled-triangle", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_TRIANGLE},
+        {"elliptical-arc-arrow-open-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_ANGLE},
+        {"elliptical-arc-arrow-open-half-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE}};
 
     if (meta_objects.IsArray())
     {
@@ -1099,9 +1103,10 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
             }
             else if (node_type == "arrow")
             {
-                const rapidjson::Value& arrow_begin = mobj["data"]["pos"][0];
-                const rapidjson::Value& arrow_end = mobj["data"]["pos"][1];
-                std::string mode = mobj["data"]["mode"].GetString();
+                auto& mobj_data = mobj["data"];
+                const rapidjson::Value& arrow_begin = mobj_data["pos"][0];
+                const rapidjson::Value& arrow_end = mobj_data["pos"][1];
+                std::string mode = mobj_data["mode"].GetString();
                 int arrow_type = ReactionComponent::ARROW_BASIC;
                 auto arrow_type_it = arrow_string2type.find(mode);
                 if (arrow_type_it != arrow_string2type.end())
@@ -1109,7 +1114,13 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
 
                 Vec2f arr_begin(arrow_begin["x"].GetFloat(), arrow_begin["y"].GetFloat());
                 Vec2f arr_end(arrow_end["x"].GetFloat(), arrow_end["y"].GetFloat());
-                meta_interface.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
+                if (mobj_data.HasMember("height"))
+                {
+                    auto height = mobj_data["height"].GetFloat();
+                    meta_interface.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end, height));
+                }
+                else
+                    meta_interface.addMetaObject(new KETReactionArrow(arrow_type, arr_begin, arr_end));
             }
             else if (node_type == "plus")
             {

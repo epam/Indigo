@@ -17,7 +17,7 @@ find . -not -path "./third_party/*" -a -not -path "./*build*/*" -a \( -iname "*.
 isort --version
 black --version
 pflake8 --version
-for folder in api/http api/python bingo/bingo-elastic/python api/tests/integration utils/indigo-service/service
+for folder in api/http api/python bingo/bingo-elastic/python api/tests/integration utils/indigo-service/backend/service
 do
   cd ${folder}
   isort .

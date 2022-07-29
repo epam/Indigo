@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>
-<comment>postgres database parameters</comment>
-<entry key="user">indigoservice</entry>
-<entry key="password">p@ssw0rd</entry>
-<entry key="db_url">jdbc:postgresql://indigo_db/indigoservice</entry>
-<entry key="schema_name">indigoservice</entry>
-</properties>
