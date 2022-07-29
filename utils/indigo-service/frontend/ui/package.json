@@ -37,7 +37,7 @@
     "array.prototype.findindex": "^1.0.0",
     "bootstrap": "^3.3.6",
     "codemirror": "^5.9.0",
-    "mithril": "^2.2.2",
+    "mithril": "^0.2.8",
     "murmurhash": "^0.0.2",
     "object.assign": "^4.0.3",
     "query-string": "^3.0.0"

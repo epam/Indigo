@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -36,7 +36,7 @@ COPY ./conf/uwsgi.auto.conf /etc/supervisor/conf.d/
 
 # Install Indigo
 COPY ./lib/*indigo*linux*.whl /opt/
-RUN if [ -f /opt/*indigo*manylinux1_x86_64*.whl ]; then python3 -m pip install --upgrade /opt/*indigo*manylinux1_x86_64*.whl; fi
+RUN if [ -f /opt/*indigo*manylinux1_x86_64*.whl ]; then python3 -m pip install --upgrade /opt/*indigo*manylinux1_x86_64*.whl; rm /opt/*.whl; fi
 
 # Install Imago
 # COPY ./lib/imago-console-*.7z /opt/
