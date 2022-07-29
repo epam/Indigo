@@ -35,7 +35,7 @@ COPY ./conf/uwsgi.ini /etc/uwsgi.ini
 COPY ./conf/uwsgi.auto.conf /etc/supervisor/conf.d/
 
 # Install Indigo
-COPY ./lib/*indigo*linux*.whl /opt/
+COPY ./lib/* /opt/
 RUN if [ -f /opt/*indigo*manylinux1_x86_64*.whl ]; then python3 -m pip install --upgrade /opt/*indigo*manylinux1_x86_64*.whl; rm /opt/*.whl; fi
 
 # Install Imago
