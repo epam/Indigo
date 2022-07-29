@@ -69,7 +69,8 @@ RUN set -eux && \
 COPY /api/http/requirements.txt ./api_requirements.txt
 COPY /api/http/requirements_dev.txt ./api_requirements_dev.txt
 
-RUN python3 -m pip install -r api_requirements.txt -r api_requirements_dev.txt && \
+RUN cat api_requirements.txt | python3 -m pip install || true && \
+    cat api_requirements_dev.txt | python3 -m pip install || true && \
     rm ./api_requirements.txt ./api_requirements_dev.txt
 
 COPY /bingo/bingo-elastic/python/ ./bingo-elastic
