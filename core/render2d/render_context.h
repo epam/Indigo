@@ -57,6 +57,8 @@ namespace indigo
         void removeStoredTransform();
         void drawRectangle(const Vec2f& v1, const Vec2f& sz);
         void drawEllipse(const Vec2f& v1, const Vec2f& v2);
+        void drawHalfEllipse(const Vec2f& v1, const Vec2f& v2, const float height, const bool is_negative = false);
+
         void drawItemBackground(const RenderItem& item);
         void drawTextItemText(const TextItem& ti, bool idle);
         void drawTextItemText(const TextItem& ti, const Vec3f& color, bool idle);
@@ -75,6 +77,7 @@ namespace indigo
         void fillCircle(const Vec2f& center, const float r);
         void drawArc(const Vec2f& center, const float r, const float a0, const float a1);
         void drawPoly(const Array<Vec2f>& v);
+        double getFontExtentHeight();
         void setFontSize(double fontSize);
         void setTextItemSize(TextItem& ti);
         void setTextItemSize(TextItem& ti, const Vec2f& c);
@@ -97,6 +100,17 @@ namespace indigo
         void drawPlus(const Vec2f& pos, const float linewidth, const float size);
         void drawEquality(const Vec2f& pos, const float linewidth, const float size, const float interval);
         void drawArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
+        void drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow = false,
+                             const bool is_failed = false);
+        void drawDashedArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
+        void drawBothEndsArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
+        void drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const float height,
+                                 int arrow_type);
+        void drawArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize, bool is_bow = false);
+        void drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize);
+
+        void drawTriangleArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize);
+
         float highlightedBondLineWidth() const;
         float currentLineWidth() const;
         void setHighlight();

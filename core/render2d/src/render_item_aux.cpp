@@ -23,6 +23,7 @@
 #include "molecule/query_molecule.h"
 #include "render_context.h"
 #include "render_internal.h"
+#include <codecvt>
 
 using namespace indigo;
 
@@ -36,14 +37,6 @@ RenderItemAuxiliary::RenderItemAuxiliary(RenderItemFactory& factory)
 
 RenderItemAuxiliary::~RenderItemAuxiliary()
 {
-}
-
-void RenderItemAuxiliary::_drawTextCentered(TextItem& ti, const Vec2f& sz, bool idle)
-{
-    _rc.setTextItemSize(ti);
-    if (sz.y > ti.bbsz.y)
-        ti.bbp.y += (sz.y - ti.bbsz.y) / 2;
-    _rc.drawTextItemText(ti, idle);
 }
 
 void RenderItemAuxiliary::_drawText(TextItem& ti, bool idle)
@@ -173,6 +166,76 @@ void RenderItemAuxiliary::_drawPlus()
     _rc.drawPlus(Vec2f(_settings.plusSize / 2, 0), _settings.metaLineWidth, _settings.plusSize);
 }
 
+void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
+{
+    _rc.setSingleSource(CWC_BASE);
+    auto beg = ar._begin;
+    auto end = ar._end;
+    scale(beg);
+    scale(end);
+    switch (ar._arrow_type)
+    {
+    case KETReactionArrow::EOpenAngle:
+        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
+
+    case KETReactionArrow::EFilledBow:
+        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, true);
+        break;
+
+    case KETReactionArrow::EFailed:
+        _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, true, true);
+        break;
+
+    case KETReactionArrow::EDashedOpenAngle:
+        _rc.drawDashedArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
+
+    case KETReactionArrow::EBothEndsFilledTriangle:
+        _rc.drawBothEndsArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
+
+        /*
+        case KETReactionArrow::EEquilibriumFilledHalfBow:
+            break;
+
+        case KETReactionArrow::EEquilibriumFilledTriangle:
+            break;
+
+        case KETReactionArrow::EEquilibriumOpenAngle:
+            break;
+
+        case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
+            break;
+
+        case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
+            break;
+
+        case KETReactionArrow::EUnbalancedEquilibriumFilleHalfTriangle:
+            break; */
+
+    case KETReactionArrow::EEllipticalArcFilledBow:
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        break;
+
+    case KETReactionArrow::EEllipticalArcFilledTriangle:
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        break;
+
+    case KETReactionArrow::EEllipticalArcOpenAngle:
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        break;
+
+    case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        break;
+
+    default:
+        _rc.drawArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
+    }
+}
+
 void RenderItemAuxiliary::_drawArrow()
 {
     _rc.setSingleSource(CWC_BASE);
@@ -226,9 +289,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                 double text_offset_y = 0;
                 for (auto& text_item : ko._block)
                 {
-                    Vec2f text_item_size;
-                    _getLineExtents(text_item, text_item_size);
-
+                    float text_max_height = _getMaxHeight(text_item);
                     int first_index = -1;
                     int second_index = -1;
                     double text_offset_x = 0;
@@ -236,6 +297,8 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     TextItem ti;
                     ti.size = KETDefaultFontSize / KETFontScaleFactor; // default size
                     ti.ritype = RenderItem::RIT_TITLE;
+                    Vec2f text_origin(ko._pos.x, ko._pos.y);
+                    scale(text_origin);
                     for (auto& kvp : text_item.styles)
                     {
                         if (first_index == -1)
@@ -245,19 +308,24 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             continue;
                         }
                         second_index = kvp.first;
-                        auto sub_text = text_item.text.substr(first_index, second_index - first_index);
+
+                        std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
+                        std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
+
+                        auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
+
                         ti.text.readString(sub_text.c_str(), true);
                         fillKETStyle(ti, current_styles);
-                        ti.bbp.set(ko._pos.x, ko._pos.y);
-                        scale(ti.bbp);
-                        ti.bbp.x += text_offset_x;
-                        ti.bbp.y += text_offset_y;
-                        _drawTextCentered(ti, text_item_size, idle);
-                        text_offset_x += ti.bbsz.x;
+                        _rc.setTextItemSize(ti);
+                        ti.bbp.x = text_origin.x - ti.relpos.x + text_offset_x;
+                        ti.bbp.y = text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y;
+                        _rc.drawTextItemText(ti, Vec3f(0, 0, 0), idle);
+
+                        text_offset_x += ti.bbsz.x + _settings.boundExtent;
                         current_styles = kvp.second;
                         first_index = second_index;
                     }
-                    text_offset_y += text_item_size.y + _settings.boundExtent;
+                    text_offset_y += text_max_height + _settings.boundExtent;
                     text_offset_x = 0;
                 }
             }
@@ -272,12 +340,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             break;
             case KETReactionArrow::CID: {
                 const KETReactionArrow& ar = static_cast<const KETReactionArrow&>(mobj);
-                auto beg = ar._begin;
-                auto end = ar._end;
-                scale(beg);
-                scale(end);
-                _rc.setSingleSource(CWC_BASE);
-                _rc.drawArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+                _drawArrow(ar);
             }
             break;
             }
@@ -370,16 +433,15 @@ void RenderItemAuxiliary::init()
 {
 }
 
-void RenderItemAuxiliary::_getLineExtents(const KETTextObject::KETTextLine& tl, Vec2f& sz)
+float RenderItemAuxiliary::_getMaxHeight(const KETTextObject::KETTextLine& tl)
 {
     int first_index = -1;
     int second_index = -1;
     FONT_STYLE_SET current_styles;
-    sz.set(0, 0);
+    float sz = 0;
     TextItem ti;
     ti.size = KETDefaultFontSize / KETFontScaleFactor; // default size
     ti.ritype = RenderItem::RIT_TITLE;
-
     for (auto& kvp : tl.styles)
     {
         if (first_index == -1)
@@ -390,13 +452,12 @@ void RenderItemAuxiliary::_getLineExtents(const KETTextObject::KETTextLine& tl, 
         }
         second_index = kvp.first;
         auto sub_text = tl.text.substr(first_index, second_index - first_index);
-        ti.text.appendString(sub_text.c_str(), true);
+        ti.text.readString(sub_text.c_str(), true);
         fillKETStyle(ti, current_styles);
-        ti.bbp.set(0, 0);
         _rc.setTextItemSize(ti);
-        sz.y = std::max(sz.y, ti.bbsz.y);
-        sz.x += ti.bbsz.x;
+        sz = std::max(sz, (float)ti.bbsz.y);
         current_styles = kvp.second;
         first_index = second_index;
     }
+    return sz;
 }

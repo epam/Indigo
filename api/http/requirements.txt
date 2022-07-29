@@ -1,7 +1,7 @@
 anyio==3.3.4
 asgiref==3.4.1
 click==8.0.3
-epam.indigo==1.7.4
+epam.indigo==1.8.0.dev0
 fastapi==0.70.0
 h11==0.12.0
 idna==3.3

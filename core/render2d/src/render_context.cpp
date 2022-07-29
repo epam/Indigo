@@ -18,6 +18,7 @@
 
 #include "render_context.h"
 #include "base_cpp/output.h"
+#include "molecule/ket_commons.h"
 
 #include <limits.h>
 
@@ -502,7 +503,9 @@ void RenderContext::drawTextItemText(const TextItem& ti, bool idle)
 void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, bool idle)
 {
     TextItem ti_mod(ti);
-    ti_mod.bold = ti.highlighted && opt.highlightThicknessEnable;
+    if (!ti_mod.bold)
+        ti_mod.bold = ti.highlighted && opt.highlightThicknessEnable;
+    ti_mod.bbp.y += ti.script_type == 0 ? 0 : (ti.script_type == 1 ? -ti_mod.relpos.y / 2 : ti_mod.relpos.y / 2);
     fontsSetFont(ti_mod);
     fontsDrawText(ti_mod, color, idle);
 }
@@ -717,9 +720,17 @@ void RenderContext::setFontSize(double fontSize)
     cairoCheckStatus();
 }
 
+double RenderContext::getFontExtentHeight()
+{
+    cairo_font_extents_t fe;
+    cairo_font_extents(_cr, &fe);
+    return fe.height;
+}
+
 void RenderContext::setTextItemSize(TextItem& ti)
 {
-    ti.bold = ti.highlighted && opt.highlightThicknessEnable;
+    if (!ti.bold)
+        ti.bold = ti.highlighted && opt.highlightThicknessEnable;
     fontsSetFont(ti);
     fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
 }
@@ -727,9 +738,6 @@ void RenderContext::setTextItemSize(TextItem& ti)
 void RenderContext::setTextItemSize(TextItem& ti, const Vec2f& c)
 {
     setTextItemSize(ti);
-
-    cairo_font_extents_t fe;
-    cairo_font_extents(_cr, &fe);
     ti.bbp.x = c.x - ti.bbsz.x / 2;
     ti.bbp.y = c.y - ti.bbsz.y / 2;
 }
@@ -936,6 +944,337 @@ void RenderContext::drawPlus(const Vec2f& pos, const float linewidth, const floa
     cairoCheckStatus();
 }
 
+void RenderContext::drawHalfEllipse(const Vec2f& v1, const Vec2f& v2, const float height, const bool is_negative)
+{
+    float h = abs(height);
+    double angle1 = height > 0 ? -M_PI : 0;
+    double angle2 = height > 0 ? 0 : M_PI;
+    Vec2f d;
+    d.diff(v2, v1);
+    float width = d.length();
+    cairo_matrix_t save_matrix;
+    cairo_get_matrix(_cr, &save_matrix);
+    cairo_translate(_cr, (v1.x + v2.x) / 2.0, (v1.y + v2.y) / 2.0);
+    cairo_rotate(_cr, atan2(d.y, d.x));
+    cairo_scale(_cr, 1, 2 * h / width);
+    cairo_translate(_cr, -(v1.x + v2.x) / 2.0, -(v1.y + v2.y) / 2.0);
+    if (is_negative)
+        cairo_arc_negative(_cr, (v1.x + v2.x) / 2.0, (v1.y + v2.y) / 2.0, width / 2.0, angle1, angle2);
+    else
+        cairo_arc(_cr, (v1.x + v2.x) / 2.0, (v1.y + v2.y) / 2.0, width / 2.0, angle1, angle2);
+    cairo_set_matrix(_cr, &save_matrix);
+}
+
+void RenderContext::drawTriangleArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize)
+{
+    Vec2f n(dir), p(v), d(dir);
+    n.rotate(1, 0);
+    d.negate();
+    auto arr_wc = headwidth / 2;
+    auto arr_hyp = std::hypot(arr_wc, headsize);
+    auto cs = headsize / arr_hyp;
+    auto si = arr_wc / arr_hyp;
+    Vec2f back_vector(d);
+    back_vector.rotate(si, cs);
+    moveTo(p);
+    p.addScaled(back_vector, arr_hyp);
+    lineTo(p);
+    p.addScaled(n, headwidth);
+    lineTo(p);
+    lineTo(v);
+}
+
+void RenderContext::drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize)
+{
+    Vec2f n(dir), p(v), d(dir);
+    n.rotate(1, 0);
+    p.addScaled(n, width / 2);
+    Vec2f header(p);
+    moveTo(p);
+    d.negate();
+    auto arr_wc = headwidth / 2 + width / 2;
+    auto arr_hyp = std::hypot(arr_wc, headsize);
+    auto cs = headsize / arr_hyp;
+    auto si = arr_wc / arr_hyp;
+    auto arr_h = (arr_wc * headsize) / arr_hyp;
+    auto inner_w = arr_wc * (arr_h - width) / arr_h;
+    auto inner_h = inner_w * headsize / arr_wc;
+    auto inner_hyp = std::hypot(inner_w, inner_h);
+
+    d.rotate(si, cs);
+    p.addScaled(d, arr_hyp);
+    lineTo(p);
+    p.addScaled(n, width / cs);
+    lineTo(p);
+    d.negate();
+    p.addScaled(d, inner_hyp);
+    lineTo(p);
+    lineTo(header);
+}
+
+void RenderContext::drawArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize, bool is_bow)
+{
+    Vec2f n(dir), p(v), d(dir);
+    n.rotate(1, 0);
+    d.negate();
+    auto arr_wc = headwidth / 2;
+    auto arr_hyp = std::hypot(arr_wc, headsize);
+    auto arr_h = (arr_wc * headsize) / arr_hyp;
+    auto inner_w = arr_wc * (arr_h - width) / arr_h;
+    auto inner_h = inner_w * headsize / arr_wc;
+    auto inner_hyp = std::hypot(inner_w, inner_h);
+    auto cs = headsize / arr_hyp;
+    auto si = arr_wc / arr_hyp;
+    Vec2f back_vector(d);
+    back_vector.rotate(si, cs);
+    moveTo(p);
+    p.addScaled(back_vector, arr_hyp);
+    lineTo(p);
+    p.addScaled(n, arr_wc - inner_w);
+    if (!is_bow)
+        lineTo(p);
+    back_vector.negate();
+    p.addScaled(back_vector, inner_hyp);
+    lineTo(p);
+    back_vector.set(d.x, d.y);
+    back_vector.rotate(-si, cs);
+    p.addScaled(back_vector, inner_hyp);
+    if (!is_bow)
+        lineTo(p);
+    p.addScaled(n, arr_wc - inner_w);
+    lineTo(p);
+    back_vector.negate();
+    p.addScaled(back_vector, arr_hyp);
+    lineTo(p);
+}
+
+void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const float height,
+                                        int arrow_type)
+{
+    float h_sign = height > 0 ? 1 : -1;
+    Vec2f d, n_orig, pa(p1), pb(p2);
+    d.diff(p2, p1);
+    d.normalize();
+    n_orig.copy(d);
+    n_orig.rotate(-h_sign, 0);
+    pb.addScaled(n_orig, width * 2); // margin for headsize
+    d.diff(pb, pa);
+    d.normalize();
+    Vec2f n(d);
+    n.rotate(-h_sign, 0);
+
+    float len = d.length();
+
+    n_orig.negate();
+    switch (arrow_type)
+    {
+    case KETReactionArrow::EEllipticalArcFilledBow:
+        drawArrowHeader(p2, n_orig, width, headwidth, headsize, true);
+        break;
+
+    case KETReactionArrow::EEllipticalArcFilledTriangle:
+        drawTriangleArrowHeader(p2, n_orig, width, headwidth, headsize);
+        break;
+    case KETReactionArrow::EEllipticalArcOpenAngle:
+        drawArrowHeader(p2, n_orig, width, headwidth, headsize);
+        break;
+    case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+        drawHalfArrowHeader(p2, n_orig, width, headwidth, headsize);
+        break;
+    }
+    cairo_fill(_cr);
+    pb.addScaled(d, width / 2); // go forward to outer ellipse
+    d.negate();                 // backward
+    pa.addScaled(d, width / 2); // back to outer ellipse
+    drawHalfEllipse(pa, pb, height);
+    moveTo(pb);
+    d.negate();
+    pa.addScaled(d, width);
+    d.negate();
+    pb.addScaled(d, width);
+    lineTo(pb);
+    drawHalfEllipse(pb, pa, height - width * h_sign, true);
+    checkPathNonEmpty();
+    bbIncludePath(false);
+    cairo_fill(_cr);
+    cairoCheckStatus();
+}
+
+void RenderContext::drawBothEndsArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
+{
+    Vec2f d, n, p(p1);
+    d.diff(p2, p1);
+    float len = d.length();
+    d.normalize();
+    n.copy(d);
+    n.rotate(1, 0);
+    auto arr_wc = headwidth / 2;
+    auto arr_hyp = std::hypot(arr_wc, headsize);
+    auto cs = headsize / arr_hyp;
+    auto si = arr_wc / arr_hyp;
+    moveTo(p);
+    Vec2f arrow_side1(d), arrow_side2(d);
+    arrow_side1.rotate(-si, cs);
+    arrow_side2.rotate(si, cs);
+    p.addScaled(arrow_side1, arr_hyp);
+    lineTo(p);
+    p.addScaled(n, arr_wc - width / 2);
+    lineTo(p);
+    p.addScaled(d, len - headsize * 2);
+    lineTo(p);
+    n.negate();
+    p.addScaled(n, arr_wc - width / 2);
+    lineTo(p);
+    p.addScaled(arrow_side2, arr_hyp);
+    lineTo(p);
+    arrow_side1.negate();
+    p.addScaled(arrow_side1, arr_hyp);
+    lineTo(p);
+    p.addScaled(n, arr_wc - width / 2);
+    lineTo(p);
+    d.negate();
+    p.addScaled(d, len - headsize * 2);
+    lineTo(p);
+    n.negate();
+    p.addScaled(n, arr_wc - width / 2);
+    lineTo(p);
+    arrow_side2.negate();
+    p.addScaled(arrow_side2, arr_hyp);
+    lineTo(p);
+    checkPathNonEmpty();
+    bbIncludePath(false);
+    cairo_fill(_cr);
+    cairoCheckStatus();
+}
+
+void RenderContext::drawDashedArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
+{
+    Vec2f d, n, p(p1);
+    d.diff(p2, p1);
+    float len = d.length();
+    d.normalize();
+    n.copy(d);
+    n.rotate(1, 0);
+    double brick_size = 0.3;
+    double filled_part = brick_size * 0.7;
+    int whole_bricks = floor(len / brick_size);
+    double brick_part = len - whole_bricks * brick_size;
+    if (brick_part > filled_part)
+        brick_part = filled_part;
+    bool is_last = false;
+    for (int i = 0; i <= whole_bricks; ++i)
+    {
+        if (i == whole_bricks)
+        {
+            if (brick_part < width)
+                break;
+            brick_part -= width;
+            is_last = true;
+        }
+        moveTo(p);
+        p.addScaled(n, width / 2);
+        lineTo(p);
+        p.addScaled(d, is_last ? brick_part : filled_part);
+        lineTo(p);
+        n.negate();
+        p.addScaled(n, width);
+        lineTo(p);
+        d.negate();
+        p.addScaled(d, is_last ? brick_part : filled_part);
+        lineTo(p);
+        n.negate();
+        d.negate();
+        p.addScaled(n, width / 2);
+        lineTo(p);
+        p.addScaled(d, brick_size);
+    }
+    drawArrowHeader(p2, d, width, headwidth, headsize, false);
+    checkPathNonEmpty();
+    bbIncludePath(false);
+    cairo_fill(_cr);
+    cairoCheckStatus();
+}
+
+void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow,
+                                    const bool is_failed)
+{
+    Vec2f d, n, p(p1);
+    d.diff(p2, p1);
+    float len = d.length();
+    d.normalize();
+    n.copy(d);
+    n.rotate(1, 0);
+    p.addScaled(n, width / 2);
+    moveTo(p);
+    auto arr_wc = headwidth / 2;
+    auto arr_hyp = std::hypot(arr_wc, headsize);
+    auto arr_h = (arr_wc * headsize) / arr_hyp;
+    auto inner_w = arr_wc * (arr_h - width) / arr_h - width / 2;
+    auto inner_h = inner_w * headsize / arr_wc;
+    p.addScaled(d, len - headsize + inner_h);
+    lineTo(p);
+    Vec2f back_vector(-d.x, -d.y);
+    auto cs = headsize / arr_hyp;
+    auto si = arr_wc / arr_hyp;
+    back_vector.rotate(-si, cs);
+    p.addScaled(back_vector, inner_h / cs);
+    if (!is_bow)
+        lineTo(p);
+    p.addScaled(n, arr_wc - inner_w - width / 2);
+    lineTo(p);
+    back_vector.negate();
+    p.addScaled(back_vector, arr_hyp);
+    lineTo(p);
+    back_vector.set(-d.x, -d.y);
+    back_vector.rotate(si, cs);
+    p.addScaled(back_vector, arr_hyp);
+    lineTo(p);
+    p.addScaled(n, arr_wc - inner_w - width / 2);
+    if (!is_bow)
+        lineTo(p);
+    back_vector.negate();
+    p.addScaled(back_vector, inner_h / cs);
+    lineTo(p);
+    back_vector.set(-d.x, -d.y);
+    p.addScaled(back_vector, len - headsize + inner_h);
+    lineTo(p);
+    p.addScaled(n, width);
+    lineTo(p);
+    if (is_failed)
+    {
+        cairo_fill(_cr);
+        for (int arr_ind = 0; arr_ind < 2; ++arr_ind)
+        {
+            p.set(p1.x, p1.y);
+            p.addScaled(d, len / 2); // set to middle
+            Vec2f d45(d);
+            d45.rotate((arr_ind ? 1 : -1) * sqrt(2) / 2, sqrt(2) / 2); // rotate 45 degrees clockwise
+            auto len_cross = len / 10;
+            p.addScaled(d45, len_cross / 2);
+            Vec2f n90(d45);
+            n90.rotate(1, 0);
+            p.addScaled(n90, width / 2);
+            moveTo(p);
+            n90.rotate(1, 0);
+            p.addScaled(n90, len_cross);
+            lineTo(p);
+            n90.rotate(1, 0);
+            p.addScaled(n90, width);
+            lineTo(p);
+            n90.rotate(1, 0);
+            p.addScaled(n90, len_cross);
+            lineTo(p);
+            n90.rotate(1, 0);
+            p.addScaled(n90, width);
+            lineTo(p);
+        }
+    }
+    checkPathNonEmpty();
+    bbIncludePath(false);
+    cairo_fill(_cr);
+    cairoCheckStatus();
+}
+
 void RenderContext::drawArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
 {
     Vec2f d, n, p(p1);
@@ -944,7 +1283,6 @@ void RenderContext::drawArrow(const Vec2f& p1, const Vec2f& p2, const float widt
     d.normalize();
     n.copy(d);
     n.rotate(1, 0);
-
     p.addScaled(n, width / 2);
     moveTo(p);
     p.addScaled(d, len - headsize);
