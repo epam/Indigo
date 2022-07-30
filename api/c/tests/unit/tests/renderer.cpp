@@ -40,7 +40,7 @@ protected:
 
     void TearDown() final
     {
-        indigoRendererDispose();
+        indigoRendererDispose(session);
         IndigoApiTest::TearDown();
     }
 
@@ -70,7 +70,7 @@ protected:
             ASSERT_STREQ("", e.message());
         }
 
-        indigoRendererDispose();
+        indigoRendererDispose(_session);
         indigoReleaseSessionId(_session);
     }
 };

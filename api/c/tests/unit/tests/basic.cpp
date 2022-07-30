@@ -218,7 +218,7 @@ TEST_F(IndigoApiBasicTest, test_getter_function)
     const char* chXY = indigoGetOption("render-image-size");
     ASSERT_STREQ(chXY, "[250, 400]");
 
-    indigoRendererDispose();
+    indigoRendererDispose(session);
 }
 
 TEST_F(IndigoApiBasicTest, test_exact_match)

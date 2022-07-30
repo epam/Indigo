@@ -1,4 +1,3 @@
-import distutils.dir_util
 import glob
 import os
 import shutil
@@ -15,7 +14,6 @@ Programming Language :: C
 Programming Language :: C++
 Programming Language :: Python
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.5
 Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
@@ -94,9 +92,9 @@ else:
     INDIGO_LIBS = "lib/**/*"
 
 if os.path.exists("build"):
-    distutils.dir_util.remove_tree("build")
-if os.path.exists("indigo_chem.egg-info"):
-    distutils.dir_util.remove_tree("indigo_chem.egg-info")
+    shutil.rmtree("build")
+if os.path.exists("epam.indigo.egg-info"):
+    shutil.rmtree("epam.indigo.egg-info")
 
 setup(
     name="epam.indigo",
@@ -130,4 +128,5 @@ setup(
     },
     download_url="https://pypi.org/project/epam.indigo",
     test_suite="tests",
+    python_requires='>=3.6.0'
 )

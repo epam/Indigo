@@ -204,12 +204,12 @@ namespace indigo
         IndigoSession() : id(indigoAllocSessionId())
         {
             indigoSetSessionId(id);
-            _checkResult(indigoInchiInit());
+            _checkResult(indigoInchiInit(id));
         }
 
         ~IndigoSession()
         {
-            indigoInchiDispose();
+            indigoInchiDispose(id);
             indigoReleaseSessionId(id);
         }
 
@@ -217,19 +217,27 @@ namespace indigo
         IndigoSession& operator=(const IndigoSession&) = delete;
         IndigoSession(IndigoSession&&) = delete;
         IndigoSession& operator=(IndigoSession&&) = delete;
+
+        qword getSessionId() const;
+        {
+            return id;
+        }
     };
 
     class IndigoRendererSession
     {
+    private:
+        const qword _sessionId;
+
     public:
-        IndigoRendererSession()
+        explicit IndigoRendererSession(const qword sessionId) : _sessionId(sessionId)
         {
-            indigoRendererInit();
+            indigoRendererInit(_sessionId);
         }
 
         ~IndigoRendererSession()
         {
-            indigoRendererDispose();
+            indigoRendererDispose(_sessionId);
         }
 
         IndigoRendererSession(const IndigoRendererSession&) = delete;
@@ -657,7 +665,7 @@ namespace indigo
     std::string render(const std::string& data, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;
-        const IndigoRendererSession indigoRendererSession;
+        const IndigoRendererSession indigoRendererSession(session.getSessionId());
 
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
