@@ -1,7 +1,7 @@
 FROM debian:stable-slim
 
-ARG JDK_VERSION_MAJOR=8u332
-ARG JDK_VERSION_MINOR=b09
+ARG JDK_VERSION_MAJOR=8u342
+ARG JDK_VERSION_MINOR=b07
 ARG MAVEN_VERSION=3.8.6
 ARG JYTHON_VERSION=2.7.2
 ARG DOTNET_VERSION=3.1
@@ -22,6 +22,8 @@ RUN set -eux && \
      curl \
      unzip \
      libc6-dev \
+     libfontconfig-dev \
+     libfreetype-dev \
      libgdiplus \
      libx11-dev \
      npm && \
@@ -66,11 +68,18 @@ RUN set -eux && \
     python3 -m pip install --upgrade setuptools wheel twine && \
     apt autoremove -y
 
+COPY ./ /indigo
+RUN cd /indigo && \
+    mkdir build &&  \
+    cd build && \
+    cmake .. && \
+    cmake --build . --target indigo-python --config Release -- -j $(nproc) && \
+    python3 -m pip install ../dist/*.whl
+
 COPY /api/http/requirements.txt ./api_requirements.txt
 COPY /api/http/requirements_dev.txt ./api_requirements_dev.txt
 
-RUN cat api_requirements.txt | python3 -m pip install || true && \
-    cat api_requirements_dev.txt | python3 -m pip install || true && \
+RUN python3 -m pip install -r api_requirements.txt -r api_requirements_dev.txt && \
     rm ./api_requirements.txt ./api_requirements_dev.txt
 
 COPY /bingo/bingo-elastic/python/ ./bingo-elastic
