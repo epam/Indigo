@@ -31,12 +31,12 @@ protected:
     void SetUp() final
     {
         IndigoApiTest::SetUp();
-        indigoInchiInit();
+        indigoInchiInit(session);
     }
 
     void TearDown() final
     {
-        indigoInchiDispose();
+        indigoInchiDispose(session);
         IndigoApiTest::TearDown();
     }
 };
