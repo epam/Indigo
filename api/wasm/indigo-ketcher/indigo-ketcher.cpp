@@ -218,7 +218,7 @@ namespace indigo
         IndigoSession(IndigoSession&&) = delete;
         IndigoSession& operator=(IndigoSession&&) = delete;
 
-        qword getSessionId() const;
+        qword getSessionId() const
         {
             return id;
         }
