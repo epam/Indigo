@@ -128,5 +128,5 @@ setup(
     },
     download_url="https://pypi.org/project/epam.indigo",
     test_suite="tests",
-    python_requires='>=3.6.0'
+    python_requires=">=3.6.0",
 )
