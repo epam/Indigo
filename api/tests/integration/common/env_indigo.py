@@ -142,8 +142,8 @@ else:
     from indigo import Indigo, IndigoException, IndigoObject  # noqa
     from indigo.bingo import Bingo, BingoException, BingoObject  # noqa
     from indigo.inchi import IndigoInchi  # noqa
-    from indigo.renderer import IndigoRenderer  # noqa
     from indigo.indigo.indigo_lib import IndigoLib  # noqa
+    from indigo.renderer import IndigoRenderer  # noqa
 
     dll_full_path = lambda: IndigoLib.lib._name
 

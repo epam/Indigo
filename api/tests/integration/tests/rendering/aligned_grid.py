@@ -35,9 +35,7 @@ for structure in indigo.iterateSDFile(
         for atom in query.iterateAtoms():
             xyz.extend(match.mapAtom(atom).xyz())
     else:
-        atoms = [
-            match.mapAtom(atom).index() for atom in query.iterateAtoms()
-        ]
+        atoms = [match.mapAtom(atom).index() for atom in query.iterateAtoms()]
         x = structure.alignAtoms(atoms, xyz)
         print("%.6f" % x)
 
