@@ -24,9 +24,9 @@ namespace com.epam.indigo
         public static extern int indigoRenderReset();
 
         [DllImport("indigo-renderer"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoRendererInit();
+        public static extern int indigoRendererInit(long sessionId);
 
         [DllImport("indigo-renderer"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoRendererDispose();
+        public static extern int indigoRendererDispose(long sessionId);
     }
 }

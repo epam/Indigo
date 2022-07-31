@@ -32,7 +32,7 @@ namespace com.epam.indigo
             if (initialized)
             {
                 _indigo.setSessionID();
-                _indigo.checkResult(IndigoRendererLib.indigoRendererDispose());
+                _indigo.checkResult(IndigoRendererLib.indigoRendererDispose(_indigo.getSID()));
                 initialized = false;
             }
         }

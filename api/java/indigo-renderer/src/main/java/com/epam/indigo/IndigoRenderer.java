@@ -28,7 +28,7 @@ public class IndigoRenderer {
         loadLibrary(indigo.getUserSpecifiedPath());
         this.indigo = indigo;
         this.indigo.setSessionID();
-        Indigo.checkResult(this, lib.indigoRendererInit());
+        Indigo.checkResult(this, lib.indigoRendererInit(this.indigo.getSid()));
         initialized = true;
     }
 
@@ -37,7 +37,7 @@ public class IndigoRenderer {
         if (initialized)
         {
             indigo.setSessionID();
-            Indigo.checkResult(this, lib.indigoRendererDispose());
+            Indigo.checkResult(this, lib.indigoRendererDispose(indigo.getSid()));
             super.finalize();
             initialized = false;
         }

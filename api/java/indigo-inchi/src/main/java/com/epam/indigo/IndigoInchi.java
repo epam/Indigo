@@ -30,7 +30,7 @@ public class IndigoInchi {
         loadLibrary(indigo.getUserSpecifiedPath());
         this.indigo = indigo;
         this.indigo.setSessionID();
-        Indigo.checkResult(this, lib.indigoInchiInit());
+        Indigo.checkResult(this, lib.indigoInchiInit(this.indigo.getSid()));
         initialized = true;
     }
 
@@ -39,7 +39,7 @@ public class IndigoInchi {
         if (initialized)
         {
             indigo.setSessionID();
-            Indigo.checkResult(this, lib.indigoInchiDispose());
+            Indigo.checkResult(this, lib.indigoInchiDispose(indigo.getSid()));
             super.finalize();
             initialized = false;
         }
