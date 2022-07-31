@@ -62,8 +62,7 @@ REXPORT void r_indigoSetSessionId(SEXP id)
 
 REXPORT void r_indigoReleaseSessionId(SEXP id)
 {
-    indigoRendererDispose(INTEGER(id)[0])
-    indigoReleaseSessionId(INTEGER(id)[0]);
+    indigoRendererDispose(INTEGER(id)[0]) indigoReleaseSessionId(INTEGER(id)[0]);
 }
 
 REXPORT void r_indigoFree(SEXP obj_id)
