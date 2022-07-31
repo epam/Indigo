@@ -622,7 +622,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 3.7, 3.8, 3.9 ]
+        python-version: [ 3.7, 3.8, 3.9, 3.10 ]
     needs: build_indigo_wrappers
     steps:
       - uses: actions/checkout@v2
