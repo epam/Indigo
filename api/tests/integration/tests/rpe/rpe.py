@@ -18,6 +18,7 @@ def getProduct(reaction):
 def loadSdf(sdf_path):
     sdfiterator = indigo.iterateSDFile(sdf_path)
     result = [m.clone() for m in sdfiterator]
+    sdfiterator.dispose()
     return result
 
 

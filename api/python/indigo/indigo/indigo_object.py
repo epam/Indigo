@@ -41,9 +41,7 @@ class IndigoObject:
         self._lib().indigoClose(self.id)
 
     def __del__(self):
-        if self.id >= 0 and self.session.getSessionId() >= 0:
-            self._lib().indigoFree(self.id)
-            self.id = -1
+        self.dispose()
 
     def __str__(self):
         internal_type = self.dbgInternalType()
@@ -71,6 +69,11 @@ class IndigoObject:
 
     def _lib(self) -> CDLL:
         return self.session._lib()  # noqa
+
+    def dispose(self) -> None:
+        if self.id >= 0 and self.session.getSessionId() >= 0:
+            self._lib().indigoFree(self.id)
+            self.id = -1
 
     def next(self):
         """Generic iterator method
