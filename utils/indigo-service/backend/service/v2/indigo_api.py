@@ -10,11 +10,11 @@ import traceback
 from functools import wraps
 from threading import local
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request  # type: ignore
 from indigo import Indigo, IndigoException  # type: ignore
 from indigo.inchi import IndigoInchi  # type: ignore
 from indigo.renderer import IndigoRenderer  # type: ignore
-from marshmallow.exceptions import ValidationError
+from marshmallow.exceptions import ValidationError  # type: ignore
 
 from .common import config
 from .common.util import highlight

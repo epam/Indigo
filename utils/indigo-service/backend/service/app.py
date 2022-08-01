@@ -5,8 +5,8 @@ import sys
 from argparse import ArgumentParser
 
 from flasgger import Swagger  # type: ignore
-from flask import Flask
-from werkzeug.serving import run_simple
+from flask import Flask  # type: ignore
+from werkzeug.serving import run_simple  # type: ignore
 
 from v2.common_api import common_api
 from v2.db.database import db_session

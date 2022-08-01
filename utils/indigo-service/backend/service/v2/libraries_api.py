@@ -10,12 +10,12 @@ from time import time
 import flask_restful  # type: ignore
 import indigo  # type: ignore
 import redis  # type: ignore
-from flask import Blueprint, Response, request
+from flask import Blueprint, Response, request  # type: ignore
 from flask_httpauth import HTTPBasicAuth  # type: ignore
 from indigo import Indigo, IndigoException  # type: ignore
 from indigo.inchi import IndigoInchi  # type: ignore
 from indigo.renderer import IndigoRenderer  # type: ignore
-from marshmallow.exceptions import ValidationError
+from marshmallow.exceptions import ValidationError  # type: ignore
 from psycopg2.extras import Json  # type: ignore
 from pyparsing import ParseException  # type: ignore
 

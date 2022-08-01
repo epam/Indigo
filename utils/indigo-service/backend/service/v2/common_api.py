@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify  # type: ignore
 
 # import re
 from v2.db.database import db_session
