@@ -6,9 +6,9 @@ if [ "${1:-}" == "" ]; then
   exit 1
 fi 
 
-root=$(realpath $(dirname ${0})/..)
+root=$(realpath "$(dirname ${0})/..")
 
-if [ $(git branch --show-current) -ne "master" ]; then
+if [ "$(git branch --show-current)" != "master" ]; then
   echo "Version update should be done only on master!"
   exit 2
 fi 
@@ -60,7 +60,7 @@ new_java_snapshot=""
 if [ "${new_suffix}" != "" ]; then
   
   if [ "${3-unset}" == "unset" ]; then
-    new_revision=${3:-$(git rev-list $(git describe --tags --match indigo-* --abbrev=0)..HEAD | wc -l)}
+    new_revision=${3:-$(git rev-list "$(git describe --tags --match indigo-* --abbrev=0)"..HEAD | wc -l)}
     new_java_snapshot="-SNAPSHOT"
   else
     new_revision="${3}"

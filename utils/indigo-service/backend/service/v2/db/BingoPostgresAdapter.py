@@ -2,8 +2,8 @@ import hashlib
 import json
 import logging
 
-import psycopg2
-import psycopg2.extras
+import psycopg2  # type: ignore
+import psycopg2.extras  # type: ignore
 
 from ..bingo_ql.query import QueryBuilder
 from ..common.util import merge_dicts

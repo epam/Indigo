@@ -1,9 +1,12 @@
 from time import time
 from uuid import uuid4
 
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.dialects.postgresql import JSONB
-from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy import Column, Integer, String  # type: ignore
+from sqlalchemy.dialects.postgresql import JSONB  # type: ignore
+from werkzeug.security import (  # type: ignore
+    check_password_hash,
+    generate_password_hash,
+)
 
 from .database import Base
 
