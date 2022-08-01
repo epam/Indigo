@@ -32,7 +32,7 @@ namespace indigo
     class RenderContext
     {
     public:
-        enum
+        enum class ArrowType
         {
             EOpenArrow,
             EBowArray,
@@ -111,8 +111,8 @@ namespace indigo
 
         void drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow);
         void drawEquillibriumFilledTriangle(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
-        void drawEquillibriumHalf(const Vec2f& p1, const Vec2f& p2, const float width, float headwidth, const float headsize, const int arrow_type = EOpenArrow,
-                                  const bool is_large = false, const bool is_unbalanced = false);
+        void drawEquillibriumHalf(const Vec2f& p1, const Vec2f& p2, const float width, float headwidth, const float headsize,
+                                  const ArrowType arrow_type = ArrowType::EOpenArrow, const bool is_large = false, const bool is_unbalanced = false);
         void drawBar(const Vec2f& p1, const Vec2f& p2, const float width, const float margin = 0);
 
         void drawDashedArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize);
@@ -121,7 +121,7 @@ namespace indigo
                                  int arrow_type);
         void drawArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize, bool is_bow = false);
         void drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize,
-                                 const int arrow_type = EOpenArrow);
+                                 const ArrowType arrow_type = ArrowType::EOpenArrow);
 
         void drawTriangleArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize);
 

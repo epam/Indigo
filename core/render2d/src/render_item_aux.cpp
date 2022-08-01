@@ -196,7 +196,7 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
         break;
 
     case KETReactionArrow::EEquilibriumFilledHalfBow:
-        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::EBowArray);
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::ArrowType::EBowArray);
         break;
 
     case KETReactionArrow::EEquilibriumFilledTriangle:
@@ -208,20 +208,23 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
         break;
 
     case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
-        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::EBowArray, true, true);
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::ArrowType::EBowArray,
+                                 true, true);
         break;
 
     case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
-        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::EBowArray, false, true);
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::ArrowType::EBowArray,
+                                 false, true);
         break;
 
     case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
-        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::EOpenArrow, false, true);
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::ArrowType::EOpenArrow,
+                                 false, true);
         break;
 
     case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
-        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::ETriangleArrow, false,
-                                 true);
+        _rc.drawEquillibriumHalf(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, RenderContext::ArrowType::ETriangleArrow,
+                                 false, true);
         break;
 
     case KETReactionArrow::EEllipticalArcFilledBow:
