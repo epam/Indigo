@@ -1296,7 +1296,7 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
      */
     QueryMolecule r_molecule;
     ObjArray<Array<int>> rsite_orders;
-    RedBlackMap<int, int> r_sites;
+    std::map<int, int> r_sites;
     QS_DEF(RedBlackSet<int>, processed_r);
     QS_DEF(Array<int>, swap_order);
     Array<int>& direct_order = rsite_orders.push();
@@ -1334,9 +1334,9 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
     /*
      * Add direct order automap
      */
-    for (int rs_idx = r_sites.begin(); rs_idx != r_sites.end(); rs_idx = r_sites.next(rs_idx))
+    for (const auto& pair : r_sites)
     {
-        direct_order.push(r_sites.key(rs_idx));
+        direct_order.push(pair.first);
     }
     for (int auto_idx = _autoMaps.begin(); auto_idx != _autoMaps.end(); auto_idx = _autoMaps.next(auto_idx))
     {
@@ -1345,10 +1345,10 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
          * Check for correctness and condition
          */
         swap_order.clear();
-        for (int rs_idx = r_sites.begin(); rs_idx != r_sites.end(); rs_idx = r_sites.next(rs_idx))
+        for (const auto& pair : r_sites)
         {
-            int rs_key = r_sites.key(rs_idx);
-            if (!r_sites.find(auto_map[rs_key]))
+            auto rs_key = pair.first;
+            if (r_sites.find(auto_map[rs_key]) == r_sites.end())
                 throw IndigoDeconvolution::Error("internal error: incorrect automorphism for a scaffold");
             /*
              * Create swap order
@@ -1364,14 +1364,14 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
              * Swap RGroup indexes
              */
             processed_r.clear();
-            for (int rs_idx = r_sites.begin(); rs_idx != r_sites.end(); rs_idx = r_sites.next(rs_idx))
+            for (const auto& pair : r_sites)
             {
-                int rs_key = r_sites.key(rs_idx);
+                auto rs_key = pair.first;
                 if (!processed_r.find(rs_key) && auto_map[rs_key] != rs_key)
                 {
                     processed_r.find_or_insert(rs_key);
                     processed_r.find_or_insert(auto_map[rs_key]);
-                    _swapIndexes(nu_match, r_sites.value(rs_idx), r_sites.at(auto_map[rs_key]));
+                    _swapIndexes(nu_match, pair.second, r_sites.at(auto_map[rs_key]));
                 }
             }
         }
@@ -1518,7 +1518,7 @@ void IndigoDeconvolution::DecompositionEnumerator::_refineAutoMaps(ObjList<Array
 }
 
 void IndigoDeconvolution::DecompositionEnumerator::_addAllRsites(QueryMolecule& r_molecule, IndigoDecompositionMatch& deco_match,
-                                                                 RedBlackMap<int, int>& r_sites)
+                                                                 std::map<int, int>& r_sites)
 {
 
     r_sites.clear();
@@ -1536,7 +1536,7 @@ void IndigoDeconvolution::DecompositionEnumerator::_addAllRsites(QueryMolecule& 
         if (att_orders.size() > 0)
         {
             new_atom_idx = r_molecule.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
-            r_sites.insert(new_atom_idx, rg_idx);
+            r_sites.insert(std::pair<int, int>{new_atom_idx, rg_idx});
         }
 
         /*
