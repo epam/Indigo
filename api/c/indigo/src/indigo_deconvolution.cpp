@@ -1517,8 +1517,7 @@ void IndigoDeconvolution::DecompositionEnumerator::_refineAutoMaps(ObjList<Array
     }
 }
 
-void IndigoDeconvolution::DecompositionEnumerator::_addAllRsites(QueryMolecule& r_molecule, IndigoDecompositionMatch& deco_match,
-                                                                 std::map<int, int>& r_sites)
+void IndigoDeconvolution::DecompositionEnumerator::_addAllRsites(QueryMolecule& r_molecule, IndigoDecompositionMatch& deco_match, std::map<int, int>& r_sites)
 {
 
     r_sites.clear();
