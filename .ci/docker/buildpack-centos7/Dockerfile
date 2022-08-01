@@ -16,7 +16,7 @@ ENV MANPATH=/opt/rh/rh-git${GIT_VERSION}/root/usr/share/man:/opt/rh/devtoolset-$
     PATH=/opt/rh/rh-git${GIT_VERSION}/root/usr/bin:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     PKG_CONFIG_PATH=/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib64/pkgconfig \
     LD_LIBRARY_PATH=/opt/rh/httpd24/root/usr/lib64:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib64:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib64/dyninst:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib/dyninst:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib64:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib
-RUN python3 -m pip install cmake
+RUN PIP_ONLY_BINARY="cmake" python3 -m pip install cmake
 
 RUN cmake --version && \
     gcc --version && \
