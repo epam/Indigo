@@ -1,10 +1,15 @@
 import errno
+import os
 import sys
 from difflib import unified_diff
 from threading import Thread
 
-sys.path.append("../../common")
-from env_indigo import *
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
+from env_indigo import *  # noqa
 
 ext = "svg"
 thread_count = 100

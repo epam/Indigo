@@ -1,15 +1,13 @@
-import psycopg2
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+import psycopg2  # type: ignore
+from sqlalchemy import create_engine  # type: ignore
+from sqlalchemy.ext.declarative import declarative_base  # type: ignore
+from sqlalchemy.orm import scoped_session, sessionmaker  # type: ignore
 
-import config
-
-pg_conf = config.__dict__.get("BINGO_POSTGRES")
+from ..common.config import BINGO_POSTGRES
 
 
-def connect(self):
-    return psycopg2.connect(**pg_conf)
+def connect():
+    return psycopg2.connect(**BINGO_POSTGRES)
 
 
 engine = create_engine("postgresql://", creator=connect, convert_unicode=True)

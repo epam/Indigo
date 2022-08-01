@@ -11,13 +11,12 @@ from functools import wraps
 from threading import local
 
 from flask import Blueprint, jsonify, request
-from indigo import Indigo, IndigoException
-from indigo.inchi import IndigoInchi
-from indigo.renderer import IndigoRenderer
+from indigo import Indigo, IndigoException  # type: ignore
+from indigo.inchi import IndigoInchi  # type: ignore
+from indigo.renderer import IndigoRenderer  # type: ignore
 from marshmallow.exceptions import ValidationError
 
-import config
-
+from .common import config
 from .common.util import highlight
 from .validation import (
     IndigoAutomapSchema,
@@ -30,7 +29,7 @@ from .validation import (
 tls = local()
 
 indigo_api = Blueprint("indigo_api", __name__)
-indigo_api.indigo_defaults = {
+indigo_api.indigo_defaults = {  # type: ignore
     "ignore-stereochemistry-errors": "true",
     "smart-layout": "true",
     "gross-formula-add-rsites": "true",

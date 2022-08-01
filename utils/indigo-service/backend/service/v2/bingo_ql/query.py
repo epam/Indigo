@@ -1,4 +1,4 @@
-import pyparsing as pp
+import pyparsing as pp  # type: ignore
 
 
 class QueryBuilder:

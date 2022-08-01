@@ -1,6 +1,6 @@
-from celery import Celery
+from celery import Celery  # type: ignore
 
-import config
+from .common import config
 
 celery = Celery(
     __name__,

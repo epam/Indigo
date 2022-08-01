@@ -78,9 +78,15 @@ RUN cd /indigo && \
 
 COPY /api/http/requirements.txt ./api_requirements.txt
 COPY /api/http/requirements_dev.txt ./api_requirements_dev.txt
+COPY /utils/indigo-service/backend/service/requirements.txt ./service_requirements.txt
+COPY /utils/indigo-service/backend/service/requirements.dev.txt ./service_requirements_dev.txt
 
-RUN python3 -m pip install -r api_requirements.txt -r api_requirements_dev.txt && \
-    rm ./api_requirements.txt ./api_requirements_dev.txt
+RUN python3 -m pip install  \
+      -r api_requirements.txt  \
+      -r api_requirements_dev.txt  \
+      -r service_requirements.txt  \
+      -r service_requirements_dev.txt && \
+    rm ./api_requirements.txt ./api_requirements_dev.txt ./service_requirements.txt ./service_requirements_dev.txt
 
 COPY /bingo/bingo-elastic/python/ ./bingo-elastic
 RUN cd ./bingo-elastic && python3 -m pip install -e . && cd .. && rm -rf ./bingo-elastic

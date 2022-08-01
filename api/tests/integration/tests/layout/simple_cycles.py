@@ -3,10 +3,14 @@ import math
 import os
 import sys
 
-eps = 0.01
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
+from env_indigo import *  # noqa
 
-sys.path.append("../../common")
-from env_indigo import *
+eps = 0.01
 
 if not os.path.exists(joinPathPy("out", __file__)):
     try:

@@ -1,13 +1,18 @@
 import errno
 import math
+import os
 import sys
 from math import *
 
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
+)
+from env_indigo import *  # noqa
+
 MIN_DIST = 0.1
 eps = 0.01
-
-sys.path.append("../../common")
-from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("treat-x-as-pseudoatom", "1")

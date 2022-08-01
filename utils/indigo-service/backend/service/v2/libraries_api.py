@@ -7,21 +7,20 @@ import traceback
 import types
 from time import time
 
-import flask_restful
-import indigo
-import redis
+import flask_restful  # type: ignore
+import indigo  # type: ignore
+import redis  # type: ignore
 from flask import Blueprint, Response, request
-from flask_httpauth import HTTPBasicAuth
-from indigo import Indigo, IndigoException
-from indigo.inchi import IndigoInchi
-from indigo.renderer import IndigoRenderer
+from flask_httpauth import HTTPBasicAuth  # type: ignore
+from indigo import Indigo, IndigoException  # type: ignore
+from indigo.inchi import IndigoInchi  # type: ignore
+from indigo.renderer import IndigoRenderer  # type: ignore
 from marshmallow.exceptions import ValidationError
-from psycopg2.extras import Json
-from pyparsing import ParseException
-
-import config
+from psycopg2.extras import Json  # type: ignore
+from pyparsing import ParseException  # type: ignore
 
 from .celery_app import celery
+from .common import config
 from .common.util import api_route, item_to_sdf_chunk, merge_dicts
 from .db.BingoPostgresAdapter import BingoPostgresAdapter
 from .db.database import db_session
@@ -33,19 +32,19 @@ libraries_api = Blueprint("libraries_api", __name__)
 
 if not os.path.exists(config.__dict__["UPLOAD_FOLDER"]):
     os.makedirs(config.__dict__["UPLOAD_FOLDER"])
-libraries_api.indigo = Indigo()
-libraries_api.renderer = IndigoRenderer(libraries_api.indigo)
-libraries_api.indigo_inchi = IndigoInchi(libraries_api.indigo)
-libraries_api.config = config.__dict__
-libraries_api.adapter = BingoPostgresAdapter(
-    libraries_api.config, libraries_api.indigo, libraries_api.indigo_inchi
+libraries_api.indigo = Indigo()  # type: ignore
+libraries_api.renderer = IndigoRenderer(libraries_api.indigo)  # type: ignore
+libraries_api.indigo_inchi = IndigoInchi(libraries_api.indigo)  # type: ignore
+libraries_api.config = config.__dict__  # type: ignore
+libraries_api.adapter = BingoPostgresAdapter(  # type: ignore
+    libraries_api.config, libraries_api.indigo, libraries_api.indigo_inchi  # type: ignore
 )
-libraries_api.redis = redis.StrictRedis(host="localhost", port=6379, db=0)
+libraries_api.redis = redis.StrictRedis(host="localhost", port=6379, db=0)  # type: ignore
 libraries_api_app = flask_restful.Api(libraries_api)
 libraries_api_logger = logging.getLogger("libraries")
 # libraries_api_logger.addHandler(logging.FileHandler('/srv/api/app.log'))
 auth = HTTPBasicAuth()
-libraries_api_app.route = types.MethodType(api_route, libraries_api_app)
+libraries_api_app.route = types.MethodType(api_route, libraries_api_app)  # type: ignore
 
 
 @auth.verify_password

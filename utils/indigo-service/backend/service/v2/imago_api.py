@@ -6,29 +6,29 @@ import subprocess
 import traceback
 import types
 from time import time
+from typing import List
 
-import flask_restful
-from flask import Blueprint, request
-from indigo import Indigo
-from indigo.inchi import IndigoInchi
-from indigo.renderer import IndigoRenderer
-
-import config
+import flask_restful  # type: ignore
+from flask import Blueprint, request  # type: ignore
+from indigo import Indigo  # type: ignore
+from indigo.inchi import IndigoInchi  # type: ignore
+from indigo.renderer import IndigoRenderer  # type: ignore
 
 from .celery_app import celery
+from .common import config
 from .common.util import api_route
 
 imago_api = Blueprint("imago", __name__)
 imago_api_logger = logging.getLogger("imago")
-imago_api.config = config.__dict__
-imago_api.indigo = Indigo()
-imago_api.renderer = IndigoRenderer(imago_api.indigo)
-imago_api.indigo_inchi = IndigoInchi(imago_api.indigo)
+imago_api.config = config.__dict__  # type: ignore
+imago_api.indigo = Indigo()  # type: ignore
+imago_api.renderer = IndigoRenderer(imago_api.indigo)  # type: ignore
+imago_api.indigo_inchi = IndigoInchi(imago_api.indigo)  # type: ignore
 imago_api_app = flask_restful.Api(imago_api)
 imago_api_app.route = types.MethodType(api_route, imago_api_app)
-allowed_types = imago_api.config["ALLOWED_TYPES"]
+allowed_types = imago_api.config["ALLOWED_TYPES"]  # type: ignore
 
-versions = []
+versions: List[str] = []
 # with open('/srv/service_version', 'r') as ver:
 #     for line in ver.readlines():
 #         if line.startswith("imago-console-"):

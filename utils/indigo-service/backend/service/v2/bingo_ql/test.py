@@ -1,6 +1,6 @@
 import unittest
 
-from query import QueryBuilder
+from .query import QueryBuilder
 
 
 class TestBingoQL(unittest.TestCase):

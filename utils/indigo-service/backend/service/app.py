@@ -4,7 +4,7 @@ import logging
 import sys
 from argparse import ArgumentParser
 
-from flasgger import Swagger
+from flasgger import Swagger  # type: ignore
 from flask import Flask
 from werkzeug.serving import run_simple
 
