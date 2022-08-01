@@ -201,7 +201,7 @@ TEST_F(IndigoApiBasicTest, test_getter_function)
     ASSERT_STREQ(chFloat, "20.5");
 
     float r, g, b;
-    indigoRendererInit();
+    indigoRendererInit(session);
     indigoSetOptionColor("render-background-color", 50, 100, 150);
     indigoGetOptionColor("render-background-color", &r, &g, &b);
     ASSERT_EQ(r, 50);
@@ -218,7 +218,7 @@ TEST_F(IndigoApiBasicTest, test_getter_function)
     const char* chXY = indigoGetOption("render-image-size");
     ASSERT_STREQ(chXY, "[250, 400]");
 
-    indigoRendererDispose();
+    indigoRendererDispose(session);
 }
 
 TEST_F(IndigoApiBasicTest, test_exact_match)

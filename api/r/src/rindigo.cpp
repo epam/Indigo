@@ -51,6 +51,7 @@ REXPORT SEXP r_indigoAllocSessionId()
     SEXP result = PROTECT(allocVector(INTSXP, 1));
     INTEGER(result)[0] = indigoAllocSessionId();
     UNPROTECT(1);
+    indigoRendererInit(INTEGER(result)[0]);
     return result;
 }
 
@@ -61,7 +62,7 @@ REXPORT void r_indigoSetSessionId(SEXP id)
 
 REXPORT void r_indigoReleaseSessionId(SEXP id)
 {
-    indigoReleaseSessionId(INTEGER(id)[0]);
+    indigoRendererDispose(INTEGER(id)[0]) indigoReleaseSessionId(INTEGER(id)[0]);
 }
 
 REXPORT void r_indigoFree(SEXP obj_id)

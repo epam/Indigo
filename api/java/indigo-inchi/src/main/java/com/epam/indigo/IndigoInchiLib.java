@@ -24,9 +24,9 @@ import com.sun.jna.Pointer;
 public interface IndigoInchiLib extends Library {
     Pointer indigoInchiVersion();
 
-    int indigoInchiInit();
+    int indigoInchiInit(long sessionId);
 
-    int indigoInchiDispose();
+    int indigoInchiDispose(long sessionId);
 
     int indigoInchiResetOptions();
 

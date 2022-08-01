@@ -1,11 +1,11 @@
 FROM debian:stable-slim
 
-ARG JDK_VERSION_MAJOR=8u332
-ARG JDK_VERSION_MINOR=b09
+ARG JDK_VERSION_MAJOR=8u342
+ARG JDK_VERSION_MINOR=b07
 ARG MAVEN_VERSION=3.8.6
 ARG JYTHON_VERSION=2.7.2
-ARG DOTNET_VERSION=3.1
-ARG IRONPYTHON_VERSION=2.7.12
+ARG DOTNET_VERSION=6.0
+ARG IRONPYTHON_VERSION=3.4.0-beta1
 
 RUN set -eux && \
     apt update && \
@@ -22,6 +22,8 @@ RUN set -eux && \
      curl \
      unzip \
      libc6-dev \
+     libfontconfig-dev \
+     libfreetype-dev \
      libgdiplus \
      libx11-dev \
      npm && \
@@ -53,18 +55,26 @@ RUN set -eux && \
     apt install -y powershell dotnet-sdk-${DOTNET_VERSION} && \
     ln -fs /usr/bin/pwsh /usr/bin/powershell && \
     # IronPython
-    curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-${IRONPYTHON_VERSION}/IronPython.${IRONPYTHON_VERSION}.zip && \
+    curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v${IRONPYTHON_VERSION}/IronPython.${IRONPYTHON_VERSION}.zip && \
     mkdir ironpython && \
     unzip IronPython.${IRONPYTHON_VERSION}.zip -d ./ironpython || true && \
     mv ironpython /opt/ && \
-    printf '#!/bin/sh\nBASEDIR=$(dirname $(readlink $0))\nABS_PATH=$(cd "${BASEDIR}"; pwd)\ndotnet ${ABS_PATH}/ipy.dll $@' > /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
-    chmod +x /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh && \
-    ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh /opt/ironpython/ipy && \
+    printf '#!/bin/sh\nBASEDIR=$(dirname $(readlink $0))\nABS_PATH=$(cd "${BASEDIR}"; pwd)\ndotnet ${ABS_PATH}/ipy.dll $@' > /opt/ironpython/net${DOTNET_VERSION}/ipy.sh -i && \
+    chmod +x /opt/ironpython/net${DOTNET_VERSION}/ipy.sh && \
+    ln -fs /opt/ironpython/net${DOTNET_VERSION}/ipy.sh /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 packages
     python3 -m pip install --upgrade pip && \
     python3 -m pip install --upgrade setuptools wheel twine && \
     apt autoremove -y
+
+COPY ./ /indigo
+RUN cd /indigo && \
+    mkdir build &&  \
+    cd build && \
+    cmake .. && \
+    cmake --build . --target indigo-python --config Release -- -j $(nproc) && \
+    python3 -m pip install ../dist/*.whl
 
 COPY /api/http/requirements.txt ./api_requirements.txt
 COPY /api/http/requirements_dev.txt ./api_requirements_dev.txt

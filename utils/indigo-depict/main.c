@@ -838,7 +838,7 @@ int main(int argc, char* argv[])
         USAGE();
 
     const qword session = indigoAllocSessionId();
-    indigoRendererInit();
+    indigoRendererInit(session);
 
     indigoSetErrorHandler(onError, 0);
 
@@ -1090,7 +1090,7 @@ int main(int argc, char* argv[])
     indigoFree(reader);
     indigoFree(obj);
 
-    indigoRendererDispose();
+    indigoRendererDispose(session);
     indigoReleaseSessionId(session);
 
     return 0;

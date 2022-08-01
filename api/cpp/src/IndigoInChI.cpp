@@ -39,7 +39,7 @@ IndigoInChI::IndigoInChI(IndigoSessionPtr session) : session(std::move(session))
     std::cout << ss.str();
 #endif
     this->session->setSessionId();
-    indigoInchiInit();
+    indigoInchiInit(this->session->getSessionId());
 }
 
 IndigoInChI::~IndigoInChI()
@@ -50,7 +50,7 @@ IndigoInChI::~IndigoInChI()
     std::cout << ss.str();
 #endif
     session->setSessionId();
-    indigoInchiDispose();
+    indigoInchiDispose(session->getSessionId());
 }
 
 std::string IndigoInChI::getInChI(const IndigoChemicalStructure& data) const

@@ -17,7 +17,7 @@ namespace com.epam.indigo
             _indigo = indigo;
             _indigo.setSessionID();
              // Preloads native library to register options
-            _indigo.checkResult(IndigoInchiLib.indigoInchiInit());
+            _indigo.checkResult(IndigoInchiLib.indigoInchiInit(_indigo.getSID()));
             initialized = true;
         }
 
@@ -31,7 +31,7 @@ namespace com.epam.indigo
             if (initialized)
             {
                 _indigo.setSessionID();
-                _indigo.checkResult(IndigoInchiLib.indigoInchiDispose());
+                _indigo.checkResult(IndigoInchiLib.indigoInchiDispose(_indigo.getSID()));
                 initialized = false;
             }
         }

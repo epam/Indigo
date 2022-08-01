@@ -67,13 +67,7 @@ namespace indigo
         // Thread local key for storing current session ID
         static qword& _sessionId();
 
-        struct SIDDataHolder
-        {
-            std::stack<qword> vacantSIDs;
-            qword lastNewSID = 1;
-        };
-
-        sf::safe_hide_obj<SIDDataHolder> _sidDataHolder;
+        std::atomic<qword> lastNewSID;
     };
 
 // Macros for managing session IDs for current thread

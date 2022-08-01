@@ -35,12 +35,12 @@ protected:
     void SetUp() final
     {
         IndigoApiTest::SetUp();
-        indigoRendererInit();
+        indigoRendererInit(session);
     }
 
     void TearDown() final
     {
-        indigoRendererDispose();
+        indigoRendererDispose(session);
         IndigoApiTest::TearDown();
     }
 
@@ -48,7 +48,7 @@ protected:
     {
         qword _session = indigoAllocSessionId();
         indigoSetSessionId(_session);
-        indigoRendererInit();
+        indigoRendererInit(_session);
         indigoSetErrorHandler(errorHandler, nullptr);
 
         indigoSetOption("render-coloring", "true");
@@ -70,7 +70,7 @@ protected:
             ASSERT_STREQ("", e.message());
         }
 
-        indigoRendererDispose();
+        indigoRendererDispose(_session);
         indigoReleaseSessionId(_session);
     }
 };

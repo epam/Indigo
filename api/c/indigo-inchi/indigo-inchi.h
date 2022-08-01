@@ -23,8 +23,8 @@
 
 CEXPORT const char* indigoInchiVersion();
 
-CEXPORT int indigoInchiInit();
-CEXPORT int indigoInchiDispose();
+CEXPORT int indigoInchiInit(qword id);
+CEXPORT int indigoInchiDispose(qword id);
 
 CEXPORT int indigoInchiResetOptions();
 

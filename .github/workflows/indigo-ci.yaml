@@ -515,12 +515,12 @@ jobs:
           mkdir IronPython
           mkdir tmp
           cd IronPython
-          curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.11/IronPython.2.7.11.zip
+          curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.12/IronPython.2.7.12.zip
       - name: Prepare UNIX
         if: ${{ matrix.os != 'windows' }}
         run: |
           cd IronPython
-          unzip IronPython.2.7.11.zip
+          unzip IronPython.2.7.12.zip
           cd ../tmp
           unzip ../dist/Indigo.Net.*.nupkg
           chmod -R a+rw .
@@ -536,7 +536,7 @@ jobs:
         if: ${{ matrix.os == 'windows' }}
         run: |
           cd IronPython
-          Expand-Archive IronPython.2.7.11.zip .
+          Expand-Archive IronPython.2.7.12.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test Linux
@@ -595,12 +595,12 @@ jobs:
           mkdir IronPython
           mkdir tmp
           cd IronPython
-          curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.11/IronPython.2.7.11.zip
+          curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.12/IronPython.2.7.12.zip
       - name: Prepare Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
           cd IronPython
-          Expand-Archive IronPython.2.7.11.zip .
+          Expand-Archive IronPython.2.7.12.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test Windows
@@ -622,7 +622,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 3.7, 3.8, 3.9 ]
+        python-version: [ '3.7', '3.10' ]
     needs: build_indigo_wrappers
     steps:
       - uses: actions/checkout@v2

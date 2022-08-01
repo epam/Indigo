@@ -74,7 +74,7 @@ IndigoInchiContext& indigoInchiGetInstance()
 // C interface functions
 //
 
-CEXPORT int indigoInchiInit()
+CEXPORT int indigoInchiInit(qword id)
 {
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
@@ -83,13 +83,13 @@ CEXPORT int indigoInchiInit()
 #endif
     INDIGO_BEGIN_STATIC
     {
-        IndigoInchiContext& inchi_context = inchi_wrapper_self.createOrGetLocalCopy();
+        IndigoInchiContext& inchi_context = inchi_wrapper_self.createOrGetLocalCopy(id);
         return 0;
     }
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoInchiDispose()
+CEXPORT int indigoInchiDispose(qword id)
 {
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
@@ -98,7 +98,7 @@ CEXPORT int indigoInchiDispose()
 #endif
     INDIGO_BEGIN_STATIC
     {
-        inchi_wrapper_self.removeLocalCopy();
+        inchi_wrapper_self.removeLocalCopy(id);
         return 0;
     }
     INDIGO_END(-1);

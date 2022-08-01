@@ -40,7 +40,7 @@ IndigoRenderer::IndigoRenderer(IndigoSessionPtr session) : session(std::move(ses
     std::cout << ss.str();
 #endif
     this->session->setSessionId();
-    indigoRendererInit();
+    indigoRendererInit(this->session->getSessionId());
 }
 
 IndigoRenderer::~IndigoRenderer()
@@ -51,7 +51,7 @@ IndigoRenderer::~IndigoRenderer()
     std::cout << ss.str();
 #endif
     session->setSessionId();
-    indigoRendererDispose();
+    indigoRendererDispose(session->getSessionId());
 }
 
 std::string IndigoRenderer::svg(const IndigoChemicalStructure& data) const

@@ -21,8 +21,8 @@
 
 #include "indigo.h"
 
-CEXPORT int indigoRendererInit();
-CEXPORT int indigoRendererDispose();
+CEXPORT int indigoRendererInit(qword id);
+CEXPORT int indigoRendererDispose(qword id);
 
 /* Rendering */
 

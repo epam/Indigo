@@ -1,4 +1,3 @@
-import distutils.dir_util
 import glob
 import os
 import shutil
@@ -15,7 +14,6 @@ Programming Language :: C
 Programming Language :: C++
 Programming Language :: Python
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.5
 Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
@@ -29,10 +27,13 @@ Operating System :: POSIX :: Linux
 Operating System :: MacOS
 """
 
-LONG_DESCRIPTION = "Indigo is a universal molecular toolkit that can be used for molecular fingerprinting, substructure search, and molecular visualization.\
-Also capable of performing a molecular similarity search, it is 100% open source and provides enhanced stereochemistry support for end users, \
-as well as a documented API for developers."
-
+LONG_DESCRIPTION = (
+    "Indigo is a universal molecular toolkit that can be used for molecular "
+    "fingerprinting, substructure search, and molecular visualization. "
+    "Also capable of performing a molecular similarity search, it is 100% "
+    "open source and provides enhanced stereochemistry support for end "
+    "users, as well as a documented API for developers."
+)
 INDIGO_LIBS = None
 PLATFORM_NAME = None
 
@@ -75,7 +76,9 @@ if sys.argv[1] == "bdist_wheel":
 
     if not INDIGO_LIBS:
         raise ValueError(
-            "Wrong --plat-name value! Should be one of: macosx_11_0_arm64, macosx_10_7_intel, manylinux1_x86_64, manylinux2014_aarch64, manylinux1_i686, win_amd64, win32"
+            "Wrong --plat-name value! Should be one of: macosx_11_0_arm64, "
+            "macosx_10_7_intel, manylinux1_x86_64, manylinux2014_aarch64, "
+            "manylinux1_i686, win_amd64, win32"
         )
 
     if not glob.glob(os.path.join(indigo_python_directory, INDIGO_LIBS)):
@@ -89,9 +92,9 @@ else:
     INDIGO_LIBS = "lib/**/*"
 
 if os.path.exists("build"):
-    distutils.dir_util.remove_tree("build")
-if os.path.exists("indigo_chem.egg-info"):
-    distutils.dir_util.remove_tree("indigo_chem.egg-info")
+    shutil.rmtree("build")
+if os.path.exists("epam.indigo.egg-info"):
+    shutil.rmtree("epam.indigo.egg-info")
 
 setup(
     name="epam.indigo",
@@ -103,6 +106,11 @@ setup(
     maintainer_email="Mikhail_Kviatkovskii@epam.com",
     packages=[
         "indigo",
+        "indigo._common",
+        "indigo.bingo",
+        "indigo.inchi",
+        "indigo.indigo",
+        "indigo.renderer",
     ],
     license="Apache-2.0",
     url="https://lifescience.opensource.epam.com/indigo/index.html",
@@ -118,9 +126,12 @@ setup(
     long_description_content_type="text/plain",
     project_urls={
         "Bug Tracker": "https://github.com/epam/indigo/issues",
-        "Documentation": "https://lifescience.opensource.epam.com/indigo/api/index.html",
+        "Documentation": (
+            "https://lifescience.opensource.epam.com/indigo/api/index.html"
+        ),
         "Source Code": "https://github.com/epam/indigo/",
     },
     download_url="https://pypi.org/project/epam.indigo",
     test_suite="tests",
+    python_requires=">=3.6.0",
 )

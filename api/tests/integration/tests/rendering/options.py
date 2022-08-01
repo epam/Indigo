@@ -29,3 +29,4 @@ print(indigo.getOption("render-image-size"))
 
 if isIronPython():
     renderer.Dispose()
+    indigo.Dispose()

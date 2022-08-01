@@ -71,10 +71,10 @@ int main(int argc, char** argv)
     INT_RET_STR_STR_STR bingoCreateDatabaseFile;
     INT_RET_INT bingoCloseDatabase;
     STR_RET_VOID bingoVersion;
-    INT_RET_VOID indigoInchiInit;
-    INT_RET_VOID indigoInchiDispose;
-    INT_RET_VOID indigoRendererInit;
-    INT_RET_VOID indigoRendererDispose;
+    INT_RET_INT indigoInchiInit;
+    INT_RET_INT indigoInchiDispose;
+    INT_RET_INT indigoRendererInit;
+    INT_RET_INT indigoRendererDispose;
 
     int indigoTest = 0;
     int indigoInChITest = 0;
@@ -159,16 +159,16 @@ int main(int argc, char** argv)
         printf("IndigoInChI address: %p\n", indigoInChIHandle);
         indigoLoadMoleculeFromString = (INT_RET_STR)DLSYM(indigoHandle, "indigoLoadMoleculeFromString");
         indigoInchiGetInchi = (STR_RET_INT)DLSYM(indigoInChIHandle, "indigoInchiGetInchi");
-        indigoInchiInit = (INT_RET_VOID)DLSYM(indigoInChIHandle, "indigoInchiInit");
-        indigoInchiDispose = (INT_RET_VOID)DLSYM(indigoInChIHandle, "indigoInchiDispose");
+        indigoInchiInit = (INT_RET_INT)DLSYM(indigoInChIHandle, "indigoInchiInit");
+        indigoInchiDispose = (INT_RET_INT)DLSYM(indigoInChIHandle, "indigoInchiDispose");
 
         session = indigoAllocSessionId();
         indigoSetSessionId(session);
-        indigoInchiInit();
+        indigoInchiInit(session);
         printf("Indigo session: %llu\n", session);
         m = indigoLoadMoleculeFromString("C");
         printf("indigoInChI InChI: %s\n", indigoInchiGetInchi(m));
-        indigoInchiDispose();
+        indigoInchiDispose(session);
         indigoReleaseSessionId(session);
     }
     if (indigoRendererTest)
@@ -187,19 +187,19 @@ int main(int argc, char** argv)
         indigoWriteBuffer = (INT_RET)DLSYM(indigoHandle, "indigoWriteBuffer");
         indigoSetOption = (INT_RET_STR_STR)DLSYM(indigoHandle, "indigoSetOption");
         indigoRender = (INT_RET_INT_INT)DLSYM(indigoRendererHandle, "indigoRender");
-        indigoRendererInit = (INT_RET_VOID)DLSYM(indigoRendererHandle, "indigoRendererInit");
-        indigoRendererDispose = (INT_RET_VOID)DLSYM(indigoRendererHandle, "indigoRendererDispose");
+        indigoRendererInit = (INT_RET_INT)DLSYM(indigoRendererHandle, "indigoRendererInit");
+        indigoRendererDispose = (INT_RET_INT)DLSYM(indigoRendererHandle, "indigoRendererDispose");
 
         session = indigoAllocSessionId();
         indigoSetSessionId(session);
-        indigoRendererInit();
+        indigoRendererInit(session);
         printf("Indigo session: %llu\n", session);
         indigoSetOption("render-output-format", "png");
         m = indigoLoadMoleculeFromString("C");
         buf = indigoWriteBuffer();
         res = indigoRender(m, buf);
         printf("indigoRender result: %d\n", res);
-        indigoRendererDispose();
+        indigoRendererDispose(session);
         indigoReleaseSessionId(session);
     }
     if (bingoTest)

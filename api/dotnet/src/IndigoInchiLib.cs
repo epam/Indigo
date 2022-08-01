@@ -32,9 +32,9 @@ namespace com.epam.indigo
         public static extern byte* indigoInchiGetAuxInfo();
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoInchiInit();
+        public static extern int indigoInchiInit(long sessionId);
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoInchiDispose();
+        public static extern int indigoInchiDispose(long sessionId);
     }
 }

@@ -22,9 +22,9 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
 public interface IndigoRendererLib extends Library {
-    int indigoRendererInit();
+    int indigoRendererInit(long sessionId);
 
-    int indigoRendererDispose();
+    int indigoRendererDispose(long sessionId);
 
     int indigoRenderWriteHDC(Pointer hdc, int printingHdc);
 

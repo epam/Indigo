@@ -165,10 +165,7 @@ class TestIndigo(TestIndigoBase):
         self.assertEqual(
             m.stripSalt().smiles(),
             "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1",
-            (
-                f"{m.smiles()} doesn't contain disconnected inorganic"
-                " components."
-            ),
+            f"{m.smiles()} doesn't contain disconnected inorganic components.",
         )
 
     def test_strip_salt_single_salt(self) -> None:
@@ -216,10 +213,8 @@ class TestIndigo(TestIndigoBase):
         self.assertEqual(
             m.stripSalt().smiles(),
             "",
-            (
-                f"{m.smiles()} contains [NH4+], [O-]P(=O)([O-])[O-] and [Fe+2]"
-                " ions and no organic components."
-            ),
+            f"{m.smiles()} contains [NH4+], [O-]P(=O)([O-])[O-] and [Fe+2]"
+            " ions and no organic components.",
         )
 
     def test_strip_salt_options(self) -> None:
