@@ -497,7 +497,7 @@ void BingoOracleContext::atomicMassLoad(OracleEnv& env)
         if (relative_atomic_mass_map.find(elem) != relative_atomic_mass_map.end())
             throw Error("element '%s' duplication in atomic mass list", element_str.ptr());
 
-        relative_atomic_mass_map.insert(std::pair<int, double> {elem, mass});
+        relative_atomic_mass_map.insert(std::pair<int, double>{elem, mass});
         buffer += pos;
 
         while (*buffer == ' ')
@@ -510,7 +510,7 @@ void BingoOracleContext::atomicMassLoad(OracleEnv& env)
     if (relative_atomic_mass_map.size() != 0)
     {
         env.dbgPrintfTS("Relative atomic mass read: ");
-        for (const auto& pair :relative_atomic_mass_map)
+        for (const auto& pair : relative_atomic_mass_map)
         {
             int elem = pair.first;
             float mass = pair.second;

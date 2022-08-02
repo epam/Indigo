@@ -21,8 +21,8 @@
 #include "base_cpp/red_black.h"
 #include "molecule/molecule_mass_options.h"
 
-#include <set>
 #include <map>
+#include <set>
 
 namespace indigo
 {
