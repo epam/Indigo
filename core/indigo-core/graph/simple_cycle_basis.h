@@ -19,6 +19,8 @@
 #ifndef _SIMPLE_CYCLE_BASIS_H
 #define _SIMPLE_CYCLE_BASIS_H
 
+#include <map>
+
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/red_black.h"
@@ -56,10 +58,10 @@ namespace indigo
 
         void _prepareSubgraph(Graph& subgraph);
 
-        RedBlackMap<int, int> vertices_spanning_tree;
+        std::map<int, int> vertices_spanning_tree;
 
-        RedBlackMap<int, int> spanning_tree_vertices;
-        RedBlackMap<int, int> _edgeIndexMap;
+        std::map<int, int> spanning_tree_vertices;
+        std::map<int, int> _edgeIndexMap;
 
         const Graph& _graph;
 
@@ -72,20 +74,22 @@ namespace indigo
     {
 
         // graph to aux. graph
-        RedBlackMap<int, int> _vertexMap0;
-        RedBlackMap<int, int> _vertexMap1;
+        std::map<int, int> _vertexMap0;
+        std::map<int, int> _vertexMap1;
 
-        RedBlackMap<int, int> _auxVertexMap;
+        std::map<int, int> _auxVertexMap;
 
         // aux. edge to edge
-        RedBlackMap<int, int> _auxEdgeMap;
+        std::map<int, int> _auxEdgeMap;
 
         const Graph& _graph;
         Array<bool>& _u;
-        RedBlackMap<int, int>& _edgeIndexMap;
+        std::map<int, int>& _edgeIndexMap;
+
+        int _findOrCreateVertex(std::map<int, int>& vertexMap, int vertex);
 
     public:
-        AuxiliaryGraph(const Graph& graph, Array<bool>& u, RedBlackMap<int, int>& edgeIndexMap) : _graph(graph), _u(u), _edgeIndexMap(edgeIndexMap)
+        AuxiliaryGraph(const Graph& graph, Array<bool>& u, std::map<int, int>& edgeIndexMap) : _graph(graph), _u(u), _edgeIndexMap(edgeIndexMap)
         {
         }
 
