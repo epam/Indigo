@@ -19,6 +19,8 @@
 #ifndef __embeddings_storage__
 #define __embeddings_storage__
 
+#include <map>
+
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
@@ -68,7 +70,7 @@ namespace indigo
             int next; // Index to the next
         };
         Array<_EmbeddingData> _embedding_data;
-        RedBlackMap<dword, int> _map_hash_to_id;
+        std::map<dword, int> _map_hash_to_id;
 
         static dword _calcSetHash(const Array<int>& set, int offset, int size);
         bool _compareEmbedding(int id, int id2);
