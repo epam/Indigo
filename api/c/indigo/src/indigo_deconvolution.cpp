@@ -370,8 +370,8 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
     QS_DEF(Array<int>, inv_scaf_map);
     QS_DEF(Array<int>, rg_mapping);
     QS_DEF(Array<int>, rgidx_map);
-    RedBlackMap<int, int> att_ord_map;
-    RedBlackMap<int, int> att_bond_map;
+    std::map<int, int> att_ord_map;
+    std::map<int, int> att_bond_map;
     int att_order, att_idx;
 
     Array<int>& visited_atoms = deco_match.visitedAtoms;
@@ -426,10 +426,11 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
             /*
              * Fulfil attachment order map
              */
-            if (!att_ord_map.find(att_order))
+            auto att_order_it = att_ord_map.find(att_order);
+            if (att_order_it == att_ord_map.end())
             {
                 ++att_val;
-                att_ord_map.insert(att_order, att_val);
+                att_order_it = att_ord_map.emplace(att_order, att_val).first;
             }
             /*
              * Add a bond with the same order
@@ -445,7 +446,7 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
              * Set Rsite attachment order one lower since old api was not changed
              */
             if (!save_ap_bond_orders)
-                r_molecule.setRSiteAttachmentOrder(new_atom_idx, inv_scaf_map[att_order], att_ord_map.at(att_order) - 1);
+                r_molecule.setRSiteAttachmentOrder(new_atom_idx, inv_scaf_map[att_order], att_order_it->second - 1);
         }
         MoleculeRGroups& mol_rgroups = r_molecule.rgroups;
 
@@ -500,13 +501,14 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
                     /*
                      * Add AP saved on the previous iteration or add as a new for the following AP
                      */
-                    if (att_bond_map.find(edge_idx))
+                    const auto edge_idx_it = att_bond_map.find(edge_idx);
+                    if (edge_idx_it != att_bond_map.end())
                     {
-                        fragment.addBond(ap_atom_idx, att_bond_map.at(edge_idx), mol_set.getBondOrder(edge_idx));
+                        fragment.addBond(ap_atom_idx, edge_idx_it->second, mol_set.getBondOrder(edge_idx));
                     }
                     else
                     {
-                        att_bond_map.insert(edge_idx, ap_atom_idx);
+                        att_bond_map.emplace(edge_idx, ap_atom_idx);
                     }
                 }
                 else
@@ -1535,7 +1537,7 @@ void IndigoDeconvolution::DecompositionEnumerator::_addAllRsites(QueryMolecule& 
         if (att_orders.size() > 0)
         {
             new_atom_idx = r_molecule.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
-            r_sites.insert(std::pair<int, int>{new_atom_idx, rg_idx});
+            r_sites.emplace(new_atom_idx, rg_idx);
         }
 
         /*
