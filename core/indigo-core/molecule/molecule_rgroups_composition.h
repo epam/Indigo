@@ -234,7 +234,7 @@ namespace indigo
 
             bool operator<(const Fragment& other) const
             {
-                return rgroup < other.rgroup || fragment < other.fragment;
+                return std::pair<int, int>{rgroup, fragment} < std::pair<int, int> {other.rgroup, other.fragment};
             }
         };
 

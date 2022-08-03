@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <map>
+
 #include "base_cpp/array.h"
 #include "molecule/base_molecule.h"
 
@@ -131,20 +133,20 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
     Array<int> fs;
     m._at.dump(fs);
     MultiMap<int, int> rgroup2fragment;
-    RedBlackMap<Fragment, int> fragment2count;
+    std::map<Fragment, int> fragment2count;
     for (auto i = 0; i < fs.size(); i++)
     {
         auto x = m._parent._fragment_coordinates(i, fs[i]);
         if (rgroup2fragment.find(x.rgroup, x.fragment))
         {
             int count = fragment2count.at(x);
-            fragment2count.remove(x);
-            fragment2count.insert(x, count + 1);
+            fragment2count.erase(x);
+            fragment2count.emplace(x, count + 1);
         }
         else
         {
             rgroup2fragment.insert(x.rgroup, x.fragment);
-            fragment2count.insert(x, 1);
+            fragment2count.emplace(x, 1);
         }
     }
 
