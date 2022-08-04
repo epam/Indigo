@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <map>
+
 #include "molecule/molecule_cdx_loader.h"
 
 #include "base_cpp/scanner.h"
@@ -130,7 +132,7 @@ void MoleculeCdxLoader::_loadMolecule()
     }
 
     int idx;
-    RedBlackMap<int, int> _atom_mapping;
+    std::map<int, int> _atom_mapping;
 
     for (int i = 0; i < _nodes.size(); i++)
     {
@@ -143,15 +145,15 @@ void MoleculeCdxLoader::_loadMolecule()
             //         _mol->setExplicitValence(idx, _nodes[i].valence);
             _bmol->setAtomXyz(idx, (float)_nodes[i].x * COORD_COEF, (float)_nodes[i].y * COORD_COEF, (float)_nodes[i].z * COORD_COEF);
             _nodes[i].index = idx;
-            _atom_mapping.insert(_nodes[i].id, i);
+            _atom_mapping.emplace(_nodes[i].id, i);
         }
         else if (_nodes[i].type == kCDXNodeType_ExternalConnectionPoint)
         {
-            _atom_mapping.insert(_nodes[i].id, i);
+            _atom_mapping.emplace(_nodes[i].id, i);
         }
         else
         {
-            _atom_mapping.insert(_nodes[i].id, i);
+            _atom_mapping.emplace(_nodes[i].id, i);
         }
     }
 
