@@ -19,8 +19,9 @@
 #ifndef __molecule_3d_constraints__
 #define __molecule_3d_constraints__
 
+#include <map>
+
 #include "base_cpp/ptr_array.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "math/algebra.h"
 
@@ -382,9 +383,9 @@ namespace indigo
         typedef Molecule3dConstraints MC;
 
         // can't have comma-containing type names in macro declarations below
-        typedef RedBlackMap<int, Vec3f> MapV;
-        typedef RedBlackMap<int, Line3f> MapL;
-        typedef RedBlackMap<int, Plane3f> MapP;
+        typedef std::map<int, Vec3f> MapV;
+        typedef std::map<int, Line3f> MapL;
+        typedef std::map<int, Plane3f> MapP;
 
         CP_DECL;
         TL_CP_DECL(MapV, _cache_v);
