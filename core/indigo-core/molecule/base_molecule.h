@@ -33,6 +33,7 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
+#include <map>
 #include <set>
 
 #ifdef _WIN32
@@ -104,7 +105,7 @@ namespace indigo
     class DLLEXPORT BaseMolecule : public Graph
     {
     public:
-        typedef RedBlackMap<int, int> Mapping;
+        typedef std::map<int, int> Mapping;
 
         BaseMolecule();
         ~BaseMolecule() override;
@@ -462,7 +463,7 @@ namespace indigo
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
-        RedBlackMap<int, Vec3f> _stereo_flag_positions;
+        std::map<int, Vec3f> _stereo_flag_positions;
 
         ObjArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
