@@ -120,11 +120,11 @@ void MoleculeGrossFormula::collect(BaseMolecule& molecule, Array<int>& gross_out
     auto& unit = gross[0];
     int number = 0;
 
-    for (int i = unit.isotopes.begin(); i < unit.isotopes.end(); i = unit.isotopes.next(i))
+    for (auto it = unit.isotopes.begin(); it != unit.isotopes.end(); it++)
     {
-        number = unit.isotopes.key(i) & 0xFF;
+        number = it->first & 0xFF;
         if (number < ELEM_RSITE + 1)
-            gross_out[number] += unit.isotopes.value(i);
+            gross_out[number] += it->second;
     }
 }
 
@@ -204,8 +204,11 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
             else
                 continue;
 
-            if ((val = unit.isotopes.at2(key)) == 0)
-                unit.isotopes.insert(key, 1);
+            auto it = unit.isotopes.find(key);
+            val = it != unit.isotopes.end() ? &(it->second) : nullptr;
+
+            if (!val)
+                unit.isotopes.emplace(key, 1);
             else
                 *val += 1;
 
@@ -216,8 +219,11 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
                 if (implicit_h >= 0)
                 {
                     key = ELEM_H;
-                    if ((val = unit.isotopes.at2(key)) == 0)
-                        unit.isotopes.insert(key, implicit_h);
+                    auto it = unit.isotopes.find(key);
+                    val = it != unit.isotopes.end() ? &(it->second) : nullptr;
+
+                    if (!val)
+                        unit.isotopes.emplace(key, implicit_h);
                     else
                         *val += implicit_h;
                 }
@@ -252,10 +258,9 @@ void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, b
     if (gross.size() == 0)
         return;
 
-    int* val;
-
     // First base molecule
-    if ((val = gross[0].isotopes.at2(ELEM_C)) == 0)
+    auto it = gross[0].isotopes.find(ELEM_C);
+    if (it == gross[0].isotopes.end())
         _toString(gross[0].isotopes, output, _cmp_hill_no_carbon, add_rsites);
     else
         _toString(gross[0].isotopes, output, _cmp_hill, add_rsites);
@@ -264,7 +269,8 @@ void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, b
     for (int i = 1; i < gross.size(); i++)
     {
         output.writeChar('(');
-        if ((val = gross[i].isotopes.at2(ELEM_C)) == 0)
+        auto it = gross[0].isotopes.find(ELEM_C);
+        if (it == gross[0].isotopes.end())
             _toString(gross[i].isotopes, output, _cmp_hill_no_carbon, add_rsites);
         else
             _toString(gross[i].isotopes, output, _cmp_hill, add_rsites);
@@ -314,8 +320,7 @@ void MoleculeGrossFormula::_toString(const Array<int>& gross, ArrayOutput& outpu
     }
 }
 
-void MoleculeGrossFormula::_toString(const RedBlackMap<int, int>& isotopes, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*),
-                                     bool add_rsites)
+void MoleculeGrossFormula::_toString(const std::map<int, int>& isotopes, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites)
 {
     QS_DEF(Array<_ElemCounter>, counters);
 
@@ -323,19 +328,19 @@ void MoleculeGrossFormula::_toString(const RedBlackMap<int, int>& isotopes, Arra
     int number;
     int isotope;
 
-    for (i = isotopes.begin(); i < isotopes.end(); i = isotopes.next(i))
+    for (auto it = isotopes.begin(); it != isotopes.end(); it++)
     {
-        if (isotopes.key(i) == ELEM_RSITE)
+        if (it->first == ELEM_RSITE)
             continue;
 
         _ElemCounter& ec = counters.push();
 
-        number = isotopes.key(i) & 0xFF;
-        isotope = isotopes.key(i) >> 8;
+        number = it->first & 0xFF;
+        isotope = it->first >> 8;
 
         ec.elem = number;
         ec.isotope = isotope;
-        ec.counter = isotopes.value(i);
+        ec.counter = it->second;
     }
 
     counters.qsort(cmp, 0);
@@ -371,8 +376,10 @@ void MoleculeGrossFormula::_toString(const RedBlackMap<int, int>& isotopes, Arra
         first_written = true;
     }
 
-    int* val;
-    if (add_rsites && (val = isotopes.at2(ELEM_RSITE)) != 0)
+    auto it = isotopes.find(ELEM_RSITE);
+    const int* val = it != isotopes.end() ? &(it->second) : nullptr;
+
+    if (add_rsites && val)
     {
         output.writeString(" R#");
         if (*val > 1)
@@ -384,7 +391,7 @@ void MoleculeGrossFormula::_toString(const RedBlackMap<int, int>& isotopes, Arra
 
 int MoleculeGrossFormula::_isotopeCount(BaseMolecule& mol)
 {
-    RedBlackMap<int, int> isotopes;
+    std::map<int, int> isotopes;
 
     int isotope;
     int number;
@@ -407,10 +414,11 @@ int MoleculeGrossFormula::_isotopeCount(BaseMolecule& mol)
         else
             continue;
 
-        int* val;
+        auto it = isotopes.find(key);
+        int* val = it != isotopes.end() ? &(it->second) : nullptr;
 
-        if ((val = isotopes.at2(key)) == 0)
-            isotopes.insert(key, 1);
+        if (!val)
+            isotopes.emplace(key, 1);
         else
             *val += 1;
     }
