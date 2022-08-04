@@ -44,11 +44,10 @@ namespace indigo
         {
         }
 
-        Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
+        Array(Array&& other) noexcept
+            : Array()
         {
-            other._array = nullptr;
-            other._length = 0;
-            other._reserved = 0;
+            swap(*this, other);
         }
 
         ~Array()
@@ -60,6 +59,21 @@ namespace indigo
                 _length = 0;
                 _reserved = 0;
             }
+        }
+
+        Array& operator=(Array&& other) noexcept
+        {
+            swap(*this, other);
+            return *this;
+        }
+
+        void swap(Array& first, Array& second) noexcept
+        {
+            using std::swap;
+
+            swap(first._reserved, second._reserved);
+            swap(first._length, second._length);
+            swap(first._array, second._array);
         }
 
         void clear()
