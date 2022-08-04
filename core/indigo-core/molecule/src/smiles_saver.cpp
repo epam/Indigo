@@ -328,13 +328,10 @@ void SmilesSaver::_saveMolecule()
 
     MoleculeAlleneStereo& allene_stereo = _bmol->allene_stereo;
 
-    for (i = allene_stereo.begin(); i != allene_stereo.end(); i = allene_stereo.next(i))
-    {
-        int atom_idx, left, right, parity, subst[4], subst_map[4] = {-1, -1, -1, -1};
+    allene_stereo.forEach([this](int atom_idx, int left, int right, const int subst[4], int parity) {
+        int subst_map[4] = {-1, -1, -1, -1};
 
-        allene_stereo.get(i, atom_idx, left, right, subst, parity);
-
-        for (j = 0; j < 4; j++)
+        for (int j = 0; j < 4; j++)
             if (subst[j] >= 0)
                 subst_map[j] = _written_atoms_inv[subst[j]];
 
@@ -365,7 +362,7 @@ void SmilesSaver::_saveMolecule()
         }
 
         _atoms[atom_idx].chirality = 3 - parity;
-    }
+    });
 
     if (canonize_chiralities)
     {
