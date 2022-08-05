@@ -77,7 +77,7 @@ namespace indigo
         int role;
     };
 
-    class DLLEXPORT BaseReaction : public NonCopyable
+    class DLLEXPORT BaseReaction
     {
     public:
         enum

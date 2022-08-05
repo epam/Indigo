@@ -197,7 +197,7 @@ namespace indigo
         /*
         A dictionary for managing various global symbol tables
         */
-        class DictionaryManager : public NonCopyable
+        class DictionaryManager
         {
         public:
             DictionaryManager();

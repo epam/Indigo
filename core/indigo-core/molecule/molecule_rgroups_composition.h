@@ -28,7 +28,7 @@
 namespace indigo
 {
 
-    class MoleculeRGroupsComposition : NonCopyable
+    class MoleculeRGroupsComposition
     {
     public:
         explicit MoleculeRGroupsComposition(BaseMolecule& mol);

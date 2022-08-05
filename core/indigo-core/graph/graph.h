@@ -127,7 +127,7 @@ namespace indigo
 
     class CycleBasis;
 
-    class DLLEXPORT Graph : public NonCopyable
+    class DLLEXPORT Graph
     {
     public:
         DECL_ERROR;

@@ -45,7 +45,7 @@ namespace indigo
      Currently, doesn't provide a delete/remove operation
      */
     template <typename T>
-    class Trie : public NonCopyable
+    class Trie
     {
 
         T _data;           // A dataset associated with a given word

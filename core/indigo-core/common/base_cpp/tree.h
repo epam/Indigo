@@ -25,7 +25,7 @@
 namespace indigo
 {
 
-    class Tree : public NonCopyable
+    class Tree
     {
     public:
         explicit Tree(int label)

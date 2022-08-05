@@ -28,7 +28,7 @@ namespace indigo
 {
     class BaseMolecule;
 
-    class DLLEXPORT MoleculeCleaner2d : public NonCopyable
+    class DLLEXPORT MoleculeCleaner2d
     {
 
     public:

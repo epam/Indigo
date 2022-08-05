@@ -27,7 +27,7 @@ namespace indigo
     DECL_EXCEPTION(MultiMapError);
 
     template <typename K, typename V>
-    class MultiMap : public NonCopyable
+    class MultiMap
     {
     public:
         DECL_TPL_ERROR(MultiMapError);

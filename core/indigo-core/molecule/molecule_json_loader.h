@@ -48,7 +48,7 @@ namespace indigo
      * Loader for JSON format
      */
 
-    class DLLEXPORT MoleculeJsonLoader : public NonCopyable
+    class DLLEXPORT MoleculeJsonLoader
     {
         using RGroupDescriptionList = std::list<std::pair<int, std::reference_wrapper<rapidjson::Value>>>;
 
