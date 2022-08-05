@@ -584,7 +584,7 @@ ReactionSubMatcher::ReactionSubMatcher(/*const */ BaseIndex& index)
     _mapping.clear();
 }
 
-const ObjArray<Array<int>>& ReactionSubMatcher::currentMapping()
+const std::vector<Array<int>>& ReactionSubMatcher::currentMapping() const
 {
     return _mapping;
 }

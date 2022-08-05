@@ -1,6 +1,8 @@
 #ifndef __bingo_matcher__
 #define __bingo_matcher__
 
+#include <vector>
+
 #include "bingo_base_index.h"
 #include "bingo_object.h"
 
@@ -283,10 +285,10 @@ namespace bingo
     public:
         ReactionSubMatcher(/*const */ BaseIndex& index);
 
-        const ObjArray<Array<int>>& currentMapping();
+        const std::vector<Array<int>>& currentMapping() const;
 
     private:
-        ObjArray<Array<int>> _mapping;
+        std::vector<Array<int>> _mapping;
 
         bool _tryCurrent() /*const*/ override;
 
