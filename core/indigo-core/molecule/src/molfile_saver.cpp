@@ -1068,14 +1068,14 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         qmol = (QueryMolecule*)(&mol);
 
     int i;
-    Array<std::array<int,2>> radicals;
+    Array<std::array<int, 2>> radicals;
     QS_DEF(Array<int>, charges);
     QS_DEF(Array<int>, isotopes);
     QS_DEF(Array<int>, pseudoatoms);
     QS_DEF(Array<int>, atom_lists);
     QS_DEF(Array<int>, unsaturated);
-    Array<std::array<int,2>> substitution_count;
-    Array<std::array<int,2>> ring_bonds;
+    Array<std::array<int, 2>> substitution_count;
+    Array<std::array<int, 2>> ring_bonds;
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());

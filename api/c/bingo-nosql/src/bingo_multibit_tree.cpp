@@ -137,7 +137,7 @@ void MultibitTree::_build()
 
     QS_DEF(Array<bool>, is_mb);
     is_mb.clear_resize(_fp_size * 8);
-    is_mb.zerofill();
+    is_mb.fill(false);
 
     _tree_ptr = _buildNode(indices, is_mb, 0);
 }

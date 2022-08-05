@@ -69,7 +69,7 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles(int size)
     _edge_stereo.zerofill();
 
     _vertex_drawn.clear_resize(size);
-    _vertex_drawn.zerofill();
+    _vertex_drawn.fill(false);
 
     _positions.clear_resize(size);
 
@@ -1269,8 +1269,8 @@ float MoleculeLayoutMacrocycles::depictionCircle()
     QS_DEF(Array<bool>, only_up);
     up.clear_resize(length + 1);
     only_up.clear_resize(length + 1);
-    up.zerofill();
-    only_up.zerofill();
+    up.fill(false);
+    only_up.fill(false);
 
     for (int i = 0; i < length; i++)
         if (_edge_stereo[i] == MoleculeCisTrans::CIS && _edge_stereo[(i + length - 1) % length] == MoleculeCisTrans::CIS)

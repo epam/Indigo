@@ -570,7 +570,7 @@ void CisTransStereochemistryLayer::print(Array<char>& result)
     ArrayOutput output(result);
 
     Molecule& mol = _getMolecule();
-    Array<std::array<int,2>> dbl;
+    Array<std::array<int, 2>> dbl;
 
     dbl.clear_resize(mol.vertexEnd());
     dbl.fffill();
@@ -627,8 +627,8 @@ int CisTransStereochemistryLayer::compareMappings(const MoleculeInChIUtils::Mapp
     // Compare cis-trans for double bonds (>X=Y<) and cumulene (>W=X=Y=Z<).
     // TODO: handle cumulene
 
-    Array<std::array<int,2>> dbl1;
-    Array<std::array<int,2>> dbl2;
+    Array<std::array<int, 2>> dbl1;
+    Array<std::array<int, 2>> dbl2;
 
     dbl1.clear_resize(m1.mapping.size());
     dbl1.zerofill();
@@ -767,8 +767,8 @@ int TetrahedralStereochemistryLayer::compareMappings(const MoleculeInChIUtils::M
 {
     Molecule& mol = _getMolecule();
 
-    Array<std::array<int,2>> dbl1;
-    Array<std::array<int,2>> dbl2;
+    Array<std::array<int, 2>> dbl1;
+    Array<std::array<int, 2>> dbl2;
 
     dbl1.clear_resize(m1.mapping.size());
     dbl1.zerofill();

@@ -176,7 +176,7 @@ void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int compon
         return;
     QS_DEF(Array<bool>, touch_to_current_component);
     touch_to_current_component.clear_resize(cycle.vertexCount());
-    touch_to_current_component.zerofill();
+    touch_to_current_component.fill(false);
     for (int i = 0; i < cycle.vertexCount(); i++)
     {
         const Vertex& vert = getVertex(cycle.getVertex(i));
@@ -235,7 +235,7 @@ void MoleculeLayoutGraphSmart::_search_path(int start, int finish, Array<int>& p
 {
     QS_DEF(Array<bool>, visited);
     visited.clear_resize(vertexEnd());
-    visited.zerofill();
+    visited.fill(false);
     visited[start] = true;
 
     QS_DEF(Array<int>, vertices_list);
@@ -702,7 +702,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
     QS_DEF(Array<bool>, _is_layout_component_incoming);
     _is_layout_component_incoming.clear_resize(_layout_component_count);
-    _is_layout_component_incoming.zerofill();
+    _is_layout_component_incoming.fill(false);
     for (int i = 0; i < size; i++)
         _is_layout_component_incoming[_layout_component_number[cycle.getEdge(i)]] = true;
 
@@ -904,7 +904,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
     QS_DEF(Array<bool>, need_to_insert);
     need_to_insert.clear_resize(size);
-    need_to_insert.zerofill();
+    need_to_insert.fill(false);
 
     for (int i = 0; i < size; i++)
         need_to_insert[i] = _layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN;
@@ -926,10 +926,10 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
             QS_DEF(Array<bool>, takenVertex);
             takenVertex.clear_resize(vertexCount());
-            takenVertex.zerofill();
+            takenVertex.fill(false);
             takenVertex[cycle.getVertex(index)] = true;
 
-            _is_component_touch.zerofill();
+            _is_component_touch.fill(false);
 
             for (int i = 0; i < insideVertex.size(); i++)
                 for (int j = getVertex(insideVertex[i]).neiBegin(); j != getVertex(insideVertex[i]).neiEnd(); j = getVertex(insideVertex[i]).neiNext(j))
@@ -1409,7 +1409,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
 
     QS_DEF(Array<bool>, layout_comp_touch);
     layout_comp_touch.clear_resize(_layout_component_count);
-    layout_comp_touch.zerofill();
+    layout_comp_touch.fill(false);
 
     for (int i = 0; i < cycle_size; i++)
     {
@@ -1437,7 +1437,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
         {
 
             // search of vertices touch to i-th layout component
-            touch_to_current_component.zerofill();
+            touch_to_current_component.fill(false);
             for (int j = 0; j < cycle_size; j++)
             {
                 const Vertex& vert = getVertex(cycle.getVertex(j));
