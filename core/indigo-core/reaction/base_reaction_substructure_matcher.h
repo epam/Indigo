@@ -24,6 +24,7 @@
 #include "base_cpp/tlscont.h"
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule_arom_match.h"
+#include <map>
 #include <memory>
 
 #ifdef _WIN32
@@ -41,7 +42,7 @@ namespace indigo
     class BaseMolecule;
     class Molecule;
 
-    typedef RedBlackMap<int, int> RedBlackIntMap;
+    typedef std::map<int, int> StdIntMap;
 
     class DLLEXPORT BaseReactionSubstructureMatcher
     {
@@ -82,7 +83,7 @@ namespace indigo
         void* context;
 
     protected:
-        void _initMap(BaseReaction& reaction, int side, RedBlackMap<int, int>& aam_map);
+        void _initMap(BaseReaction& reaction, int side, std::map<int, int>& aam_map);
         virtual bool _checkAAM();
         void _highlight();
         bool _match_stereo;
@@ -148,11 +149,11 @@ namespace indigo
 
         CP_DECL;
         TL_CP_DECL(PtrArray<_Matcher>, _matchers);
-        TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_1);
-        TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_2);
+        TL_CP_DECL(StdIntMap, _aam_to_second_side_1);
+        TL_CP_DECL(StdIntMap, _aam_to_second_side_2);
         TL_CP_DECL(Array<int>, _molecule_core_1);
         TL_CP_DECL(Array<int>, _molecule_core_2);
-        TL_CP_DECL(RedBlackIntMap, _aam_core_first_side);
+        TL_CP_DECL(StdIntMap, _aam_core_first_side);
 
         int _first_side;
         int _second_side;
