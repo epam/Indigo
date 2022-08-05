@@ -196,22 +196,8 @@ namespace indigo
             {
                 int length = _length;
                 resize(length + count);
-
                 memcpy(_array + length, other, count * sizeof(T));
             }
-        }
-
-        int memcmp(const Array<T>& other) const
-        {
-            if (_length < other._length)
-                return -1;
-            if (_length > other._length)
-                return -1;
-
-            if (_length == 0)
-                return 0;
-
-            return ::memcmp(_array, other._array, _length * sizeof(T));
         }
 
         void remove(int idx, int span = 1)
@@ -232,20 +218,6 @@ namespace indigo
                 _array[idx] = _array[_length - 1];
 
             _length--;
-        }
-
-        int find(const T& value) const
-        {
-            return find(0, _length, value);
-        }
-
-        int find(int from, int to, const T& value) const
-        {
-            for (int i = from; i < to; i++)
-                if (_array[i] == value)
-                    return i;
-
-            return -1;
         }
 
         int count(const T& value) const
