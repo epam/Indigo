@@ -21,7 +21,6 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
-#include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/ptr_array.h"

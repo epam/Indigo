@@ -25,7 +25,6 @@
 #endif
 
 #include "base_cpp/auto_iter.h"
-#include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "molecule/base_molecule.h"
@@ -64,7 +63,7 @@ namespace indigo
         int _side;
     };
 
-    class ReactionBlock : public NonCopyable
+    class ReactionBlock
     {
     public:
         void copy(const ReactionBlock& other)

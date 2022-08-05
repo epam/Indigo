@@ -39,7 +39,6 @@
 #include "molecule/token_types.inc"
 #include "molecule/trivial.inc"
 
-#include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
@@ -228,7 +227,7 @@ namespace indigo
         A product of parsing process
         Keeps dictionaries of lexemes and tokens
         */
-        class Parse : public NonCopyable
+        class Parse
         {
         public:
             inline explicit Parse(const std::string& in, const MoleculeNameParser& mnp) : input(in), mnp(mnp){};
@@ -288,7 +287,7 @@ namespace indigo
         respective order before base node. Later, depth-first traversal is used
         to create Molecule objects
         */
-        class FragmentNode : NonCopyable
+        class FragmentNode
         {
         public:
             FragmentNode() = default;
@@ -451,7 +450,7 @@ namespace indigo
         Can have multiple roots as a whitespace ' ' in the input denotes separate
         structures that must be handled separately
         */
-        class FragmentBuildTree : public NonCopyable
+        class FragmentBuildTree
         {
         public:
             FragmentBuildTree();
@@ -469,7 +468,7 @@ namespace indigo
         Constructs a build tree from a Parse object
         Builds all trees in one pass, consequently reading the lexemes stream
         */
-        class TreeBuilder : public NonCopyable
+        class TreeBuilder
         {
         public:
             inline TreeBuilder(const Parse& input) : _parse{&input}
@@ -550,7 +549,7 @@ namespace indigo
         typedef std::map<int, std::string> Elements;
 
         struct SmilesRoot;
-        struct SmilesNode : public NonCopyable
+        struct SmilesNode
         {
             std::vector<SmilesRoot> roots;
             SmilesRoot* parent = nullptr;
@@ -586,7 +585,7 @@ namespace indigo
             }
         };
 
-        struct SmilesRoot : public NonCopyable
+        struct SmilesRoot
         {
             std::vector<SmilesNode> nodes;
             SmilesNode* parent = nullptr;
@@ -617,7 +616,7 @@ namespace indigo
         Builds a resulting structure from a build tree
         Uses depth-first traversal
         */
-        class SmilesBuilder : public NonCopyable
+        class SmilesBuilder
         {
         public:
             SmilesBuilder(const Parse& input) : _treeBuilder{input}

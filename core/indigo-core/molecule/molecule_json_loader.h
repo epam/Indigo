@@ -26,7 +26,6 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/non_copyable.h"
 #include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32

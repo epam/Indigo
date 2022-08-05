@@ -19,7 +19,6 @@
 #ifndef __tree_h__
 #define __tree_h__
 
-#include "non_copyable.h"
 #include "obj_array.h"
 
 namespace indigo

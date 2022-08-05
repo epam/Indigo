@@ -23,8 +23,6 @@
 #include <set>
 #include <string>
 
-#include "non_copyable.h"
-
 namespace indigo
 {
 
