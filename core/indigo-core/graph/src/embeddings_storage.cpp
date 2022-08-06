@@ -104,7 +104,7 @@ bool GraphEmbeddingsStorage::addEmbedding(const Graph& super, const Graph& sub, 
                 _all_vertices.resize(data.vertex_begin);
                 _all_edges.resize(data.edge_begin);
                 _all_mappings.resize(data.sub_mapping_begin);
-                _embedding_data.pop();
+                _embedding_data.pop_back();
                 return false;
             }
             if (_embedding_data[cur].next == -1)

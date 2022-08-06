@@ -404,7 +404,7 @@ void RenderContext::restoreTransform()
 
 void RenderContext::removeStoredTransform()
 {
-    transforms.pop();
+    transforms.pop_back();
 }
 
 void RenderContext::resetTransform()

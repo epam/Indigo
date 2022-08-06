@@ -303,7 +303,7 @@ void AutomorphismSearch::process(Graph& graph)
         {
             retval = _firstNode(call.level, call.numcells);
             if (retval >= 0)
-                _call_stack.pop();
+                _call_stack.pop_back();
         }
         else if (call.place == _FIRST_LOOP)
         {
@@ -320,7 +320,7 @@ void AutomorphismSearch::process(Graph& graph)
 
                 if (retval < call.level)
                 {
-                    _call_stack.pop();
+                    _call_stack.pop_back();
                     continue; // break the _FIRST_LOOP and keep the retval;
                 }
 
@@ -346,7 +346,7 @@ void AutomorphismSearch::process(Graph& graph)
             {
                 // return from _FIRST_LOOP
                 retval = call.level - 1;
-                _call_stack.pop();
+                _call_stack.pop_back();
                 continue;
             }
 
@@ -373,7 +373,7 @@ void AutomorphismSearch::process(Graph& graph)
 
             if (retval >= 0)
                 // _FIRST_LOOP did not happen; pass the return value to the caller
-                _call_stack.pop();
+                _call_stack.pop_back();
         }
         else if (call.place == _FIRST_TO_OTHER || call.place == _OTHER_TO_OTHER)
         {
@@ -381,7 +381,7 @@ void AutomorphismSearch::process(Graph& graph)
 
             if (retval >= 0)
                 // _OTHER_LOOP did not happen; pass the return value to the caller
-                _call_stack.pop();
+                _call_stack.pop_back();
         }
         else if (call.place == _OTHER_LOOP)
         {
@@ -396,7 +396,7 @@ void AutomorphismSearch::process(Graph& graph)
 
                 if (retval < call.level)
                 {
-                    _call_stack.pop();
+                    _call_stack.pop_back();
                     continue; // break the _OTHER_LOOP and keep the retval;
                 }
 
@@ -419,7 +419,7 @@ void AutomorphismSearch::process(Graph& graph)
             {
                 // return from _OTHER_LOOP
                 retval = call.level - 1;
-                _call_stack.pop();
+                _call_stack.pop_back();
                 continue;
             }
 
@@ -468,7 +468,7 @@ int AutomorphismSearch::_firstNode(int level, int numcells)
     int tc = _targetcell(level, _tcells[level]);
     int tv1 = _tcells[level][0];
 
-    _call_stack.pop();
+    _call_stack.pop_back();
 
     // use the elements of the target cell to produce the children
     _Call& call = _call_stack.push();
@@ -503,7 +503,7 @@ int AutomorphismSearch::_otherNode(int level, int numcells)
 
     int tv1 = _tcells[level][0];
 
-    _call_stack.pop();
+    _call_stack.pop_back();
 
     // use the elements of the target cell to produce the children
     _Call& call = _call_stack.push();

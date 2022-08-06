@@ -46,7 +46,11 @@ bool LzwDecoder::isEOF(void)
 int LzwDecoder::get(void)
 {
     if (_symbolsBuf.size())
-        return _symbolsBuf.pop();
+    {
+        int res = _symbolsBuf.top();
+        _symbolsBuf.pop_back();
+        return res;
+    }
 
     int NextCode;
 

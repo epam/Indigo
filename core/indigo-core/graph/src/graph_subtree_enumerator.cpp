@@ -114,7 +114,7 @@ void GraphSubtreeEnumerator::_reverseSearch(int front_idx, int cur_maximal_crite
         if (front_size < new_front_size)
         {
             _front[front_idx] = _front.top();
-            _front.pop();
+            _front.pop_back();
             new_front_size--;
         }
 

@@ -135,7 +135,7 @@ void SpanningTree::_build()
             }
         }
         else
-            _stack.pop();
+            _stack.pop_back();
     }
 }
 

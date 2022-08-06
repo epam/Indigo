@@ -198,11 +198,11 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w)
         {
             _components[cur_comp]->at(_edges_stack.top().beg) = 1;
             _components[cur_comp]->at(_edges_stack.top().end) = 1;
-            _edges_stack.pop();
+            _edges_stack.pop_back();
         }
 
         _components[cur_comp]->at(v) = 1;
         _components[cur_comp]->at(w) = 1;
-        _edges_stack.pop();
+        _edges_stack.pop_back();
     }
 }

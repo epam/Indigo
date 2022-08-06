@@ -168,7 +168,7 @@ namespace indigo
         void pop()
         {
             _array.top().~T();
-            _array.pop();
+            _array.pop_back();
         }
 
         template <typename T1, typename T2>

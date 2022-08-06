@@ -261,12 +261,12 @@ namespace indigo
             return _array[_length - 1];
         }
 
-        T& pop()
+        void pop_back()
         {
             if (_length <= 0)
                 throw Error("stack underflow");
-
-            return _array[--_length];
+            --_length;
+            memset(_array + _length, 0, sizeof(T));
         }
 
         T& top()
@@ -1734,6 +1734,351 @@ namespace indigo
             void* _context;
             int (*_cmp)(T1, T2, void*);
         };
+    };
+
+    template <>
+    class Array<byte>
+    {
+    public:
+        DECL_TPL_ERROR(ArrayError);
+
+        explicit Array() : _reserved(0), _length(0), _array(nullptr)
+        {
+        }
+
+        Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
+        {
+            other._array = nullptr;
+            other._length = 0;
+            other._reserved = 0;
+        }
+
+        ~Array()
+        {
+            if (_array != nullptr)
+            {
+                std::free(static_cast<void*>(_array));
+                _array = nullptr;
+                _length = 0;
+                _reserved = 0;
+            }
+        }
+
+        void clear()
+        {
+            _length = 0;
+        }
+
+        void reserve(int to_reserve)
+        {
+            if (to_reserve < 0)
+                throw Error("to_reserve = %d", to_reserve);
+
+            if (to_reserve > _reserved)
+            {
+                if (_length < 1)
+                {
+                    if (_array != nullptr)
+                    {
+                        std::free(static_cast<void*>(_array));
+                        _array = nullptr;
+                        _length = 0;
+                        _reserved = 0;
+                    }
+                }
+
+                byte* oldptr = _array;
+
+                _array = static_cast<byte*>(std::realloc(static_cast<void*>(_array), sizeof(byte) * to_reserve));
+                if (_array == nullptr)
+                {
+                    _array = oldptr;
+                    throw std::bad_alloc();
+                }
+                _reserved = to_reserve;
+            }
+        }
+
+        void zerofill()
+        {
+            if (_length > 0)
+                memset(_array, 0, _length * sizeof(byte));
+        }
+
+        void fffill()
+        {
+            if (_length > 0)
+                memset(_array, 0xFF, _length * sizeof(byte));
+        }
+
+        void fill(const byte& value)
+        {
+            for (int i = 0; i < size(); i++)
+                _array[i] = value;
+        }
+
+        const byte* ptr() const
+        {
+            return _array;
+        }
+
+        byte* ptr()
+        {
+            return _array;
+        }
+
+        const byte& operator[](int index) const
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return _array[index];
+        }
+
+        byte& operator[](int index)
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return _array[index];
+        }
+
+        const byte& at(int index) const
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return (*this)[index];
+        }
+
+        byte& at(int index)
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return (*this)[index];
+        }
+
+        int size() const
+        {
+            return _length;
+        }
+
+        int sizeInBytes() const
+        {
+            return _length * sizeof(byte);
+        }
+
+        void copy(const Array<byte>& other)
+        {
+            copy(other._array, other._length);
+        }
+
+        void copy(const byte* other, int count)
+        {
+            if (count > 0)
+            {
+                clear_resize(count);
+                memcpy(_array, other, count * sizeof(byte));
+            }
+            else
+            {
+                _length = 0;
+            }
+        }
+
+        void concat(const Array<byte>& other)
+        {
+            concat(other._array, other.size());
+        }
+
+        void concat(const byte* other, int count)
+        {
+            if (count > 0)
+            {
+                int length = _length;
+                resize(length + count);
+                memcpy(_array + length, other, count * sizeof(byte));
+            }
+        }
+
+        void remove(int idx, int span = 1)
+        {
+            if (idx < 0 || idx - _length - span + 1 >= 0)
+                throw Error("remove(): invalid index %d with span %d (size=%d)", idx, span, _length);
+
+            memmove(_array + idx, _array + idx + span, sizeof(byte) * (_length - idx - span));
+            _length -= span;
+        }
+
+        void remove_replace(int idx)
+        {
+            if (idx < 0 || idx >= _length)
+                throw Error("remove_replace(): invalid index %d (size=%d)", idx, _length);
+
+            if (idx < _length - 1)
+                _array[idx] = _array[_length - 1];
+
+            _length--;
+        }
+
+        int count(const byte& value) const
+        {
+            return count(0, _length, value);
+        }
+
+        int count(int from, int to, const byte& value) const
+        {
+            int cnt = 0;
+            for (int i = from; i < to; i++)
+                if (_array[i] == value)
+                    cnt++;
+
+            return cnt;
+        }
+
+        void swap(int idx1, int idx2)
+        {
+            if (idx1 < 0 || idx1 >= _length)
+                throw Error("swap(): invalid index %d (size=%d)", idx1, _length);
+
+            if (idx2 < 0 || idx2 >= _length)
+                throw Error("swap(): invalid index %d (size=%d)", idx2, _length);
+
+            if (idx1 == idx2)
+                return;
+
+            std::swap(_array[idx1], _array[idx2]);
+        }
+
+        void push(byte elem)
+        {
+            resize(_length + 1);
+            _array[_length - 1] = elem;
+        }
+
+        byte& push()
+        {
+            resize(_length + 1);
+            return _array[_length - 1];
+        }
+
+        void pop_back()
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+            --_length;
+            memset(_array + _length, 0, sizeof(byte));
+        }
+
+        byte& top()
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1];
+        }
+
+        const byte& top() const
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1];
+        }
+
+        byte& top(int offset)
+        {
+            if (_length - offset <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1 - offset];
+        }
+
+        const byte& top(int offset) const
+        {
+            if (_length - offset <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1 - offset];
+        }
+
+        void resize(int newsize)
+        {
+            if (newsize > _reserved)
+                reserve((newsize + 1) * 2);
+            _length = newsize;
+        }
+
+        void expand(int newsize)
+        {
+            if (_length < newsize)
+                resize(newsize);
+        }
+
+        void expandFill(int newsize, const byte& value)
+        {
+            while (_length < newsize)
+                push(value);
+        }
+
+        void clear_resize(int newsize)
+        {
+            if (_reserved < newsize)
+            {
+                _length = 0;
+                reserve((newsize + 1) * 2);
+            }
+            _length = newsize;
+        }
+
+        void swap(Array<byte>& other)
+        {
+            std::swap(_array, other._array);
+            std::swap(_reserved, other._reserved);
+            std::swap(_length, other._length);
+        }
+
+        byte* begin()
+        {
+            return _array;
+        }
+
+        byte* end()
+        {
+            return _array + _length;
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor>
+        void insertionSort(int start, int end, CmpFunctor cmp)
+        {
+            int i, j;
+            char tmp[sizeof(T)]; // can't use T directly because it may have destructor
+
+            for (i = start + 1; i <= end; i++)
+            {
+                j = i;
+                while (j > start && cmp(_array[j - 1], _array[j]) > 0)
+                {
+                    T* a1 = _array + j - 1;
+                    T* a2 = a1 + 1;
+                    memcpy(&tmp, a1, sizeof(T));
+                    memcpy(a1, a2, sizeof(T));
+                    memcpy(a2, &tmp, sizeof(T));
+                    j--;
+                }
+            }
+        }
+
+    protected:
+        byte* _array;
+
+        int _reserved;
+        int _length;
+
+    private:
+        void* _context;
     };
 } // namespace indigo
 

@@ -52,9 +52,11 @@ namespace indigo
             return *obj;
         }
 
-        T* pop(void)
+        void pop_back(void)
         {
-            return _ptrarray.pop();
+            // assume the pointer is passed somewhere.
+            _ptrarray.top() = nullptr;
+            _ptrarray.pop_back();
         }
 
         T* top(void)
@@ -106,13 +108,13 @@ namespace indigo
 
         void removeLast()
         {
-            delete _ptrarray.pop();
+            delete _ptrarray.top();
+            _ptrarray.pop_back();
         }
 
         void remove(int idx)
         {
-            delete _ptrarray[idx];
-
+             delete _ptrarray[idx];
             _ptrarray.remove(idx);
         }
 
