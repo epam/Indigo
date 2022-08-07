@@ -16,13 +16,12 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <tinyxml2.h>
 #include "molecule/cml_loader.h"
-
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
-#include <tinyxml2.h>
 
 using namespace indigo;
 using namespace tinyxml2;

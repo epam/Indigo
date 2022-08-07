@@ -255,6 +255,7 @@ namespace indigo
             _array[_length - 1] = elem;
         }
 
+
         T& push()
         {
             resize(_length + 1);
@@ -266,6 +267,12 @@ namespace indigo
             resize(_length + 1);
             _array[_length - 1] = elem;
             return _array[_length - 1];
+        }
+
+        void inplace_back()
+        {
+            resize(_length + 1);
+            new (&_array[_length - 1]) T();
         }
 
         void pop_back()

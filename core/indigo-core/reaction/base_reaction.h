@@ -66,7 +66,10 @@ namespace indigo
     class ReactionBlock
     {
     public:
-        void copy(const ReactionBlock& other)
+        ReactionBlock() : role(-1)
+        {
+        }
+        ReactionBlock(const ReactionBlock& other)
         {
             indexes.copy(other.indexes);
             arrows_to.copy(other.arrows_to);
@@ -222,7 +225,6 @@ namespace indigo
         ReactionBlock& addReactionBlock()
         {
             auto& rb = _reactionBlocks.push();
-            rb.copy(ReactionBlock());
             return rb;
         }
 

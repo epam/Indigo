@@ -65,10 +65,7 @@ namespace indigo
 
         T& push()
         {
-            void* addr = &_array.push();
-
-            new (addr) T();
-
+            _array.inplace_back();
             return _array.top();
         }
 
