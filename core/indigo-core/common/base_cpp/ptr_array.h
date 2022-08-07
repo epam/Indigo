@@ -114,7 +114,7 @@ namespace indigo
 
         void remove(int idx)
         {
-             delete _ptrarray[idx];
+            delete _ptrarray[idx];
             _ptrarray.remove(idx);
         }
 
