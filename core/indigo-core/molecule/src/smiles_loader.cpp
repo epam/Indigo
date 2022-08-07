@@ -2024,12 +2024,11 @@ void SmilesLoader::_handlePolymerRepetition(int i)
         std::swap(start_bond, end_bond);
     }
 
-    Vec2f* p = sgroup->brackets.push();
-    p[0].set(0, 0);
-    p[1].set(0, 0);
-    p = sgroup->brackets.push();
-    p[0].set(0, 0);
-    p[1].set(0, 0);
+    std::array<Vec2f, 2> v;
+    v[0].set(0, 0);
+    v[1].set(0, 0);
+    sgroup->brackets.emplace_back(v);
+    sgroup->brackets.emplace_back(v);
 
     if (_polymer_repetitions[i] > 1)
     {

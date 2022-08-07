@@ -918,10 +918,8 @@ void AutomorphismSearch::_refineBySortingNeighbourhood(int level, int& numcells)
                 for (split2 = split1; _ptn[split2] > level; split2++)
                     ;
 
-                int(&split_cell)[2] = _work_active_cells.push();
-                split_cell[0] = split1;
-                split_cell[1] = split2;
-
+                std::array<int, 2> split_cell{split1, split2};
+                _work_active_cells.emplace_back(split_cell);
                 _active[i] = 0;
             }
         }
@@ -932,7 +930,7 @@ void AutomorphismSearch::_refineBySortingNeighbourhood(int level, int& numcells)
         // Refine all cells by collected active cells
         for (int i = 0; i < _work_active_cells.size(); i++)
         {
-            int(&split_cell)[2] = _work_active_cells[i];
+            intpair& split_cell = _work_active_cells[i];
 
             int split1 = split_cell[0], split2 = split_cell[1];
 

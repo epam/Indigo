@@ -23,6 +23,7 @@
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph.h"
+#include <array>
 
 namespace indigo
 {
@@ -30,6 +31,7 @@ namespace indigo
     class AutomorphismSearch
     {
     public:
+        using intpair = std::array<int, 2>;
         explicit AutomorphismSearch();
         virtual ~AutomorphismSearch();
 
@@ -131,7 +133,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _canonlab);
         TL_CP_DECL(Array<int>, _orbits);
         TL_CP_DECL(Array<int>, _fixedpts);
-        TL_CP_DECL(Array<int[2]>, _work_active_cells);
+        TL_CP_DECL(Array<intpair>, _work_active_cells);
         TL_CP_DECL(Array<int>, _edge_ranks_in_refine);
 
         int _n;

@@ -987,7 +987,7 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, int idx, Output& outp
     }
     for (i = 0; i < sgroup.brackets.size(); i++)
     {
-        Vec2f* brackets = sgroup.brackets[i];
+        auto& brackets = sgroup.brackets[i];
         output.printf(" BRKXYZ=(9 %f %f %f %f %f %f %f %f %f)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
     }
     if (sgroup.brackets.size() > 0 && sgroup.brk_style > 0)
@@ -1068,14 +1068,15 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         qmol = (QueryMolecule*)(&mol);
 
     int i;
-    Array<std::array<int, 2>> radicals;
+    using intpair = std::array<int, 2>;
+    QS_DEF(Array<intpair>, radicals);
     QS_DEF(Array<int>, charges);
     QS_DEF(Array<int>, isotopes);
     QS_DEF(Array<int>, pseudoatoms);
     QS_DEF(Array<int>, atom_lists);
     QS_DEF(Array<int>, unsaturated);
-    Array<std::array<int, 2>> substitution_count;
-    Array<std::array<int, 2>> ring_bonds;
+    QS_DEF(Array<intpair>, substitution_count);
+    QS_DEF(Array<intpair>, ring_bonds);
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());

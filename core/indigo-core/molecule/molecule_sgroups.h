@@ -23,6 +23,7 @@
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/ptr_pool.h"
 #include "math/algebra.h"
+#include <array>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -111,8 +112,8 @@ namespace indigo
         Array<int> atoms; // represented with SAL in Molfile format
         Array<int> bonds; // represented with SBL in Molfile format
 
-        int brk_style;            // represented with SBT in Molfile format
-        Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
+        int brk_style;                        // represented with SBT in Molfile format
+        Array<std::array<Vec2f, 2>> brackets; // represented with SDI in Molfile format
 
         static const char* typeToString(int sg_type);
         static int getType(const char* sg_type);

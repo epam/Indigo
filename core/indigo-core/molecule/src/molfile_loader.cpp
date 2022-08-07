@@ -1082,8 +1082,7 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (n == 4) // should always be 4
                         {
-                            Vec2f* brackets = sgroup->brackets.push();
-
+                            std::array<Vec2f, 2> brackets;
                             _scanner.skipSpace();
                             brackets[0].x = _scanner.readFloat();
                             _scanner.skipSpace();
@@ -1092,6 +1091,7 @@ void MolfileLoader::_readCtab2000()
                             brackets[1].x = _scanner.readFloat();
                             _scanner.skipSpace();
                             brackets[1].y = _scanner.readFloat();
+                            sgroup->brackets.emplace_back(brackets);
                         }
                     }
                     else
@@ -3419,9 +3419,8 @@ void MolfileLoader::_readSGroup3000(const char* str)
             scanner.skipSpace();
             scanner.readFloat();
             scanner.skipSpace();
-            Vec2f* brackets = sgroup->brackets.push();
-            brackets[0].set(x1, y1);
-            brackets[1].set(x2, y2);
+            std::array<Vec2f, 2> brackets{Vec2f(x1, y1), Vec2f(x2, y2)};
+            sgroup->brackets.emplace_back(brackets);
             scanner.skip(1); // )
         }
         else if (strcmp(entity.ptr(), "CONNECT") == 0)

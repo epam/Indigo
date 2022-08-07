@@ -261,6 +261,13 @@ namespace indigo
             return _array[_length - 1];
         }
 
+        T& emplace_back(T& elem)
+        {
+            resize(_length + 1);
+            _array[_length - 1] = elem;
+            return _array[_length - 1];
+        }
+
         void pop_back()
         {
             if (_length <= 0)

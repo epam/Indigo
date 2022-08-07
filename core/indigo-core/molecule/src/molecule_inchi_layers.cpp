@@ -28,6 +28,7 @@
 
 using namespace indigo;
 using namespace indigo::MoleculeInChILayers;
+using intpair = std::array<int, 2>;
 
 IMPL_ERROR(AbstractLayer, "InChI layer");
 
@@ -570,7 +571,7 @@ void CisTransStereochemistryLayer::print(Array<char>& result)
     ArrayOutput output(result);
 
     Molecule& mol = _getMolecule();
-    Array<std::array<int, 2>> dbl;
+    QS_DEF(Array<intpair>, dbl);
 
     dbl.clear_resize(mol.vertexEnd());
     dbl.fffill();
@@ -627,8 +628,8 @@ int CisTransStereochemistryLayer::compareMappings(const MoleculeInChIUtils::Mapp
     // Compare cis-trans for double bonds (>X=Y<) and cumulene (>W=X=Y=Z<).
     // TODO: handle cumulene
 
-    Array<std::array<int, 2>> dbl1;
-    Array<std::array<int, 2>> dbl2;
+    QS_DEF(Array<intpair>, dbl1);
+    QS_DEF(Array<intpair>, dbl2);
 
     dbl1.clear_resize(m1.mapping.size());
     dbl1.zerofill();
@@ -767,8 +768,8 @@ int TetrahedralStereochemistryLayer::compareMappings(const MoleculeInChIUtils::M
 {
     Molecule& mol = _getMolecule();
 
-    Array<std::array<int, 2>> dbl1;
-    Array<std::array<int, 2>> dbl2;
+    QS_DEF(Array<intpair>, dbl1);
+    QS_DEF(Array<intpair>, dbl2);
 
     dbl1.clear_resize(m1.mapping.size());
     dbl1.zerofill();
