@@ -2056,28 +2056,6 @@ namespace indigo
             return _array + _length;
         }
 
-        // CMP_FUNCTOR has two arguments and returns sign of comparation
-        template <typename CmpFunctor>
-        void insertionSort(int start, int end, CmpFunctor cmp)
-        {
-            int i, j;
-            char tmp[sizeof(T)]; // can't use T directly because it may have destructor
-
-            for (i = start + 1; i <= end; i++)
-            {
-                j = i;
-                while (j > start && cmp(_array[j - 1], _array[j]) > 0)
-                {
-                    T* a1 = _array + j - 1;
-                    T* a2 = a1 + 1;
-                    memcpy(&tmp, a1, sizeof(T));
-                    memcpy(a1, a2, sizeof(T));
-                    memcpy(a2, &tmp, sizeof(T));
-                    j--;
-                }
-            }
-        }
-
     protected:
         byte* _array;
 
