@@ -984,7 +984,8 @@ void RenderContext::drawTriangleArrowHeader(const Vec2f& v, const Vec2f& dir, co
     lineTo(v);
 }
 
-void RenderContext::drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize)
+void RenderContext::drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize,
+                                        const ArrowType arrow_type)
 {
     Vec2f n(dir), p(v), d(dir);
     n.rotate(1, 0);
@@ -1000,14 +1001,21 @@ void RenderContext::drawHalfArrowHeader(const Vec2f& v, const Vec2f& dir, const 
     auto inner_w = arr_wc * (arr_h - width) / arr_h;
     auto inner_h = inner_w * headsize / arr_wc;
     auto inner_hyp = std::hypot(inner_w, inner_h);
-
     d.rotate(si, cs);
     p.addScaled(d, arr_hyp);
     lineTo(p);
-    p.addScaled(n, width / cs);
-    lineTo(p);
-    d.negate();
-    p.addScaled(d, inner_hyp);
+    if (arrow_type == ArrowType::ETriangleArrow)
+    {
+        p.addScaled(n, arr_wc);
+    }
+    else
+    {
+        p.addScaled(n, width / cs);
+        if (arrow_type == ArrowType::EOpenArrow)
+            lineTo(p);
+        d.negate();
+        p.addScaled(d, inner_hyp);
+    }
     lineTo(p);
     lineTo(header);
 }
@@ -1195,8 +1203,86 @@ void RenderContext::drawDashedArrow(const Vec2f& p1, const Vec2f& p2, const floa
     cairoCheckStatus();
 }
 
-void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow,
-                                    const bool is_failed)
+void RenderContext::drawBar(const Vec2f& p1, const Vec2f& p2, const float width, const float margin)
+{
+    Vec2f d, n, p(p1);
+    d.diff(p2, p1);
+    float len = d.length() - margin;
+    d.normalize();
+    n.copy(d);
+    n.rotate(1, 0);
+    moveTo(p);
+    p.addScaled(n, width / 2);
+    lineTo(p);
+    p.addScaled(d, len);
+    lineTo(p);
+    n.negate();
+    p.addScaled(n, width);
+    lineTo(p);
+    d.negate();
+    p.addScaled(d, len);
+    lineTo(p);
+    n.negate();
+    d.negate();
+    p.addScaled(n, width / 2);
+    lineTo(p);
+}
+
+void RenderContext::drawEquillibriumHalf(const Vec2f& p1, const Vec2f& p2, const float width, float headwidth, const float headsize, const ArrowType arrow_type,
+                                         const bool is_large, const bool is_unbalanced)
+{
+    float margin = arrow_type == ArrowType::ETriangleArrow ? headsize : width * 1.5;
+    float width_scale = is_large ? 1.5 : 1;
+    Vec2f d, n, pa(p1);
+    d.diff(p2, p1);
+    float len = d.length();
+    d.normalize();
+    n.copy(d);
+    n.rotate(-1, 0);
+    pa.addScaled(n, headwidth / 2);
+    Vec2f pb(pa);
+    pb.addScaled(d, len);
+    drawHalfArrowHeader(pb, d, width, headwidth * width_scale, headsize, arrow_type);
+    drawBar(pa, pb, width, margin);
+    n.negate();
+    pa.addScaled(n, headwidth);
+    pb.addScaled(n, headwidth);
+    if (is_unbalanced)
+        pa.addScaled(d, headsize * 2);
+    d.negate();
+    if (is_unbalanced)
+        pb.addScaled(d, headsize * 2);
+    drawHalfArrowHeader(pa, d, width, headwidth * width_scale, headsize, arrow_type);
+    drawBar(pb, pa, width, margin);
+    checkPathNonEmpty();
+    bbIncludePath(false);
+    cairo_fill(_cr);
+    cairoCheckStatus();
+}
+
+void RenderContext::drawEquillibriumFilledTriangle(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
+{
+    Vec2f d, n, pa(p1);
+    d.diff(p2, p1);
+    float len = d.length();
+    d.normalize();
+    n.copy(d);
+    n.rotate(-1, 0);
+    pa.addScaled(n, headwidth / 2);
+    Vec2f pb(pa);
+    pb.addScaled(d, len);
+    drawCustomArrow(pa, pb, width, headwidth, headsize, false);
+    n.negate();
+    pa.addScaled(n, headwidth);
+    pb.addScaled(n, headwidth);
+    drawCustomArrow(pb, pa, width, headwidth, headsize, false);
+    checkPathNonEmpty();
+    bbIncludePath(false);
+    cairo_fill(_cr);
+    cairoCheckStatus();
+}
+
+void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow)
 {
     Vec2f d, n, p(p1);
     d.diff(p2, p1);
@@ -1240,6 +1326,16 @@ void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const floa
     lineTo(p);
     p.addScaled(n, width);
     lineTo(p);
+}
+
+void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow,
+                                    const bool is_failed)
+{
+    Vec2f d, n, p(p1);
+    d.diff(p2, p1);
+    float len = d.length();
+    d.normalize();
+    drawCustomArrow(p1, p2, width, headwidth, headsize, is_bow);
     if (is_failed)
     {
         cairo_fill(_cr);

@@ -985,8 +985,6 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     mol.buildFromBondsStereocenters(stereochemistry_options, sensible_bond_directions.data());
     mol.buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, sensible_bond_directions.data());
 
-    // int num_atoms = mol.vertices();
-    // printf("%d", num_atoms);
     if (!mol.getChiralFlag())
         for (int i : mol.vertices())
         {
@@ -1003,7 +1001,6 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
     for (const auto& sc : _stereo_centers)
     {
-        // const int undefined_pyramid[] = {-1, -1, -1, -1};
         if (mol.stereocenters.getType(sc._atom_idx) == 0)
         {
             if (!stereochemistry_options.ignore_errors)
@@ -1039,7 +1036,8 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
         {"equilibrium-open-angle", ReactionComponent::ARROW_EQUILIBRIUM_OPEN_ANGLE},
         {"unbalanced-equilibrium-filled-half-bow", ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_BOW},
         {"unbalanced-equilibrium-large-filled-half-bow", ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_LARGE_FILLED_HALF_BOW},
-        {"unbalanced-equilibrium-filled-half-triangle", ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE},
+        {"unbalanced-equilibrium-open-half-angle", ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_OPEN_HALF_ANGLE},
+        {"unbalanced-equilibrium-filled-half-triangle", ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_TRIANGLE},
         {"elliptical-arc-arrow-filled-bow", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_BOW},
         {"elliptical-arc-arrow-filled-triangle", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_TRIANGLE},
         {"elliptical-arc-arrow-open-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_ANGLE},

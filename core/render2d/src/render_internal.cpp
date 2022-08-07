@@ -696,6 +696,13 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             parent = bound;
         }
 
+        if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
+        {
+            Sgroup& sg = _data.sgroups.push();
+            _loadBracketsAuto(sgroup, sg);
+            parent = ILLEGAL_RECT();
+        }
+
         if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
         {
             const MultipleGroup& group = (MultipleGroup&)sgroup;
@@ -706,7 +713,6 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             index.fontsize = FONT_SIZE_ATTR;
             bprintf(index.text, "%d", group.multiplier);
             _positionIndex(sg, tiIndex, true);
-
             parent = ILLEGAL_RECT();
         }
 
@@ -790,7 +796,7 @@ void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg)
     Array<Vec2f[2]> brackets;
     _placeBrackets(sg, group.atoms, brackets);
 
-    const bool isBracketsCoordinates = group.brackets.size() != 0 || Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) > EPSILON;
+    const bool isBracketsCoordinates = group.brackets.size() != 0 && Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) > EPSILON;
     if (isBracketsCoordinates)
     {
         Array<Vec2f[2]> temp;
