@@ -48,7 +48,7 @@ namespace indigo
 
         int add(T* obj)
         {
-            return _ptrpool.add(obj);
+            return _ptrpool.add_item(obj);
         }
 
         void remove(int idx)

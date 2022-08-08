@@ -255,7 +255,6 @@ namespace indigo
             _array[_length - 1] = elem;
         }
 
-
         T& push()
         {
             resize(_length + 1);
@@ -267,6 +266,19 @@ namespace indigo
             resize(_length + 1);
             _array[_length - 1] = elem;
             return _array[_length - 1];
+        }
+
+        template <class... Args>
+        T& emplace(Args&&... args);
+
+        template <class... Args>
+        T& replace(int idx, Args&&... args);
+
+        template <typename A, typename B>
+        void replace(int index, A& a, B& b)
+        {
+            _array[index].~T();
+            new (&_array[index]) T(a, b);
         }
 
         void inplace_back()
@@ -513,6 +525,24 @@ namespace indigo
             int (*_cmp)(T1, T2, void*);
         };
     };
+
+    template <typename T>
+    template <class... Args>
+    T& Array<T>::emplace(Args&&... args)
+    {
+        resize(_length + 1);
+        new ((void*)&_array[_length - 1]) T(args...);
+        return _array[_length - 1];
+    }
+
+    template <typename T>
+    template <class... Args>
+    T& Array<T>::replace(int idx, Args&&... args)
+    {
+        _array[idx].~T();
+        new (&_array[idx]) T(args...);
+        return _array[_length - 1];
+    }
 
     template <>
     class Array<bool>
@@ -1509,6 +1539,11 @@ namespace indigo
         {
             resize(_length + 1);
             return _array[_length - 1];
+        }
+
+        int& emplace()
+        {
+            return push();
         }
 
         int& pop()

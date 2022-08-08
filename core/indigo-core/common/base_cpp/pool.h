@@ -61,13 +61,15 @@ namespace indigo
             return idx;
         }
 
-        int add(const T& item)
+        int add_item(const T& item)
         {
             int idx = add();
-
             _array[idx] = item;
             return idx;
         }
+
+        template <class... Args>
+        int emplace(Args&&... args);
 
         void remove(int idx)
         {
@@ -163,6 +165,27 @@ namespace indigo
     private:
         Pool(const Pool<T>&); // no implicit copy
     };
+
+    template <typename T>
+    template <class... Args>
+    int Pool<T>::emplace(Args&&... args)
+    {
+        if (_first == -1)
+        {
+            _array.emplace(std::forward<Args>(args)...);
+            _next.push(-2);
+            _size++;
+            return _array.size() - 1;
+        }
+        int idx = _first;
+        _first = _next[_first];
+        if (_first == -2)
+            throw Error("internal error: index %d is used in add()", idx);
+        _next[idx] = -2;
+        _size++;
+        _array.replace(idx, std::forward<Args>(args)...);
+        return idx;
+    }
 
 } // namespace indigo
 
