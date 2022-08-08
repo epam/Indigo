@@ -16,9 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <tinyxml2.h>
-#include "molecule/cml_loader.h"
+#include "tinyxml2.h"
+
 #include "base_cpp/scanner.h"
+#include "molecule/cml_loader.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
