@@ -539,7 +539,6 @@ namespace indigo
     template <class... Args>
     T& Array<T>::replace(int idx, Args&&... args)
     {
-        _array[idx].~T();
         new (&_array[idx]) T(args...);
         return _array[_length - 1];
     }
