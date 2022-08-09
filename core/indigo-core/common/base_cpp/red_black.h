@@ -640,7 +640,7 @@ namespace indigo
 
         int _insert(Key key, int parent, int sign)
         {
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key = key;
@@ -752,7 +752,7 @@ namespace indigo
 
         void _insert(Key key, Value value, int parent, int sign)
         {
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key = key;
@@ -849,7 +849,7 @@ namespace indigo
         void _insert(const char* key, Value value, int parent, int sign)
         {
             int string_idx = _pool.add(key);
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key_idx = string_idx;
@@ -998,7 +998,7 @@ namespace indigo
 
         Value* _insert(Key key, int parent, int sign)
         {
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key = key;
@@ -1182,7 +1182,7 @@ namespace indigo
         int _insert(const char* key, int parent, int sign)
         {
             int string_idx = _pool.add(key);
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key_idx = string_idx;

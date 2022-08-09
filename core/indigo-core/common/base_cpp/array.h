@@ -261,7 +261,7 @@ namespace indigo
             return _array[_length - 1];
         }
 
-        T& emplace_back(T& elem)
+        T& emplace_back(const T& elem)
         {
             resize(_length + 1);
             _array[_length - 1] = elem;
@@ -1536,6 +1536,12 @@ namespace indigo
         int& emplace()
         {
             return push();
+        }
+
+        int& replace( int idx )
+        {
+            _array[idx] = 0;
+            return _array[idx];
         }
 
         int& pop()

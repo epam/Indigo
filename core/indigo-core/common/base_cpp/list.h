@@ -54,7 +54,7 @@ namespace indigo
         {
             if (_size == 0)
             {
-                _head = _pool->add();
+                _head = _pool->emplace();
                 _tail = _head;
 
                 Elem& elem = _pool->at(_head);
@@ -64,7 +64,7 @@ namespace indigo
             }
             else
             {
-                int idx = _pool->add();
+                int idx = _pool->emplace();
                 Elem& elem = _pool->at(idx);
 
                 _pool->at(_tail).next = idx;
@@ -89,7 +89,7 @@ namespace indigo
         {
             _pool->at(existing); // will throw if the element does not exist
 
-            int idx = _pool->add();
+            int idx = _pool->emplace();
             Elem& ex = _pool->at(existing);
             Elem& elem = _pool->at(idx);
 
@@ -111,7 +111,7 @@ namespace indigo
         {
             _pool->at(existing); // will throw if the element does not exist
 
-            int idx = _pool->add();
+            int idx = _pool->emplace();
             Elem& ex = _pool->at(existing);
             Elem& elem = _pool->at(idx);
 

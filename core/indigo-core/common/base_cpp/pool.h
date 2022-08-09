@@ -37,11 +37,11 @@ namespace indigo
         {
         }
 
-        int add()
+        int add_item(const T& item)
         {
             if (_first == -1)
             {
-                _array.push();
+                _array.emplace_back( item );
                 _next.push(-2);
                 _size++;
 
@@ -57,13 +57,6 @@ namespace indigo
 
             _next[idx] = -2;
             _size++;
-
-            return idx;
-        }
-
-        int add_item(const T& item)
-        {
-            int idx = add();
             _array[idx] = item;
             return idx;
         }
