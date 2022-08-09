@@ -274,7 +274,6 @@ namespace indigo
         template <class... Args>
         T& replace(int idx, Args&&... args);
 
-
         void inplace_back()
         {
             resize(_length + 1);
