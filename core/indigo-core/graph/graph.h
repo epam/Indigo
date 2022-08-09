@@ -122,6 +122,14 @@ namespace indigo
                 return beg;
             return -1;
         }
+
+        Edge() : beg(-1), end(-1)
+        {
+        }
+
+        Edge(int begin, int end) : beg(begin), end( end )
+        {
+        }
     };
 
     class CycleBasis;

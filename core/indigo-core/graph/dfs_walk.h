@@ -33,6 +33,9 @@ namespace indigo
     public:
         struct SeqElem
         {
+            SeqElem(int index, int pv, int pe) : idx(index), parent_vertex(pv), parent_edge(pe)
+            {
+            }
             int idx;           // index of vertex in _graph
             int parent_vertex; // parent vertex in DFS tree
             int parent_edge;   // edge to parent vertex
