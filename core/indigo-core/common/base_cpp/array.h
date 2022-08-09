@@ -1538,7 +1538,7 @@ namespace indigo
             return push();
         }
 
-        int& replace( int idx )
+        int& replace(int idx)
         {
             _array[idx] = 0;
             return _array[idx];
