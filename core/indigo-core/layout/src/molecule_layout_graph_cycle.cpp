@@ -26,7 +26,6 @@ MoleculeLayoutGraph::Cycle::Cycle() : CP_INIT, TL_CP_GET(_vertices), TL_CP_GET(_
 {
     _vertices.clear();
     _edges.clear();
-    _attached_weight.clear();
     _max_idx = 0;
     _morgan_code_calculated = false;
 }
@@ -57,7 +56,6 @@ void MoleculeLayoutGraph::Cycle::copy(const List<int>& edges, const MoleculeLayo
 
     _vertices.clear();
     _edges.clear();
-    _attached_weight.clear();
 
     if (edge1.beg == edge2.beg || edge1.beg == edge2.end)
         _vertices.push(edge1.end);

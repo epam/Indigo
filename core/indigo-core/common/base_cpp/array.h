@@ -274,12 +274,6 @@ namespace indigo
         template <class... Args>
         T& replace(int idx, Args&&... args);
 
-        template <typename A, typename B>
-        void replace(int index, A& a, B& b)
-        {
-            _array[index].~T();
-            new (&_array[index]) T(a, b);
-        }
 
         void inplace_back()
         {
