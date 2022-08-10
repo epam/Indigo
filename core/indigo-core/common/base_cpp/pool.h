@@ -41,7 +41,7 @@ namespace indigo
         {
             if (_first == -1)
             {
-                _array.emplace_back(item);
+                _array.push_back(item);
                 _next.push(-2);
                 _size++;
 

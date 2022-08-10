@@ -765,8 +765,8 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         std::array<Vec2f, 2> v;
         v[0].set(0, 0);
         v[1].set(0, 0);
-        sgroup.brackets.emplace_back(v);
-        sgroup.brackets.emplace_back(v);
+        sgroup.brackets.push_back(v);
+        sgroup.brackets.push_back(v);
         // add specific parameters
         switch (sg_type)
         {

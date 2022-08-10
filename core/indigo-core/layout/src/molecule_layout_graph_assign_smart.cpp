@@ -1365,8 +1365,8 @@ void MoleculeLayoutGraphSmart::_update_touching_segments(Array<local_pair_ii>& p
 
                 if (interseced)
                 {
-                    pairs.push(local_pair_ii(i, j));
-                    pairs.push(local_pair_ii(j, i));
+                    pairs.emplace(i, j);
+                    pairs.emplace(j, i);
                 }
             }
 }

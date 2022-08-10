@@ -1091,7 +1091,7 @@ void MolfileLoader::_readCtab2000()
                             brackets[1].x = _scanner.readFloat();
                             _scanner.skipSpace();
                             brackets[1].y = _scanner.readFloat();
-                            sgroup->brackets.emplace_back(brackets);
+                            sgroup->brackets.push_back(brackets);
                         }
                     }
                     else
@@ -3420,7 +3420,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
             scanner.readFloat();
             scanner.skipSpace();
             std::array<Vec2f, 2> brackets{Vec2f(x1, y1), Vec2f(x2, y2)};
-            sgroup->brackets.emplace_back(brackets);
+            sgroup->brackets.push_back(brackets);
             scanner.skip(1); // )
         }
         else if (strcmp(entity.ptr(), "CONNECT") == 0)

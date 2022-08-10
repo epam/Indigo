@@ -183,14 +183,14 @@ void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f, 2>>& brackets, BaseM
             b2.addScaled(n, -factor * bondLength);
 
             std::array<Vec2f, 2> bracket1{b1, b2};
-            brackets.emplace_back(bracket1);
+            brackets.push_back(bracket1);
             b1.copy(c);
             b1.addScaled(d, min.x - 0.3f * bondLength);
             b2.copy(b1);
             b1.addScaled(n, -factor * bondLength);
             b2.addScaled(n, factor * bondLength);
             std::array<Vec2f, 2> bracket2{b1, b2};
-            brackets.emplace_back(bracket2);
+            brackets.push_back(bracket2);
             return;
         }
     }
@@ -219,7 +219,7 @@ void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f, 2>>& brackets, BaseM
         b2.addScaled(n, -factor * bondLength);
 
         std::array<Vec2f, 2> bracket{b1, b2};
-        brackets.emplace_back(bracket);
+        brackets.push_back(bracket);
     }
 }
 
@@ -269,15 +269,14 @@ void _placeSGroupBracketsCrossBondSingle(Array<std::array<Vec2f, 2>>& brackets, 
     b1.addScaled(n, factor * bondLength);
     b2.addScaled(n, -factor * bondLength);
     std::array<Vec2f, 2> bracket1{b1, b2};
-    brackets.emplace_back(bracket1);
+    brackets.push_back(bracket1);
 
     b1.lineCombin(p2dIn, d, min.x - 0.3f * bondLength);
     b2.copy(b1);
     b1.addScaled(n, -factor * bondLength);
     b2.addScaled(n, factor * bondLength);
-    // brackets.emplace_back(b1,b2); change later
     std::array<Vec2f, 2> bracket2{b1, b2};
-    brackets.emplace_back(bracket2);
+    brackets.push_back(bracket2);
 }
 
 void _placeSGroupBracketsHorizontal(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const Array<int>& atoms, float bondLength)
@@ -308,10 +307,10 @@ void _placeSGroupBracketsHorizontal(Array<std::array<Vec2f, 2>>& brackets, BaseM
 
     // brackets.emplace_back(min.x, min.y,min.x, max.y,max.x, max.y,max.x, min.y); change later
     std::array<Vec2f, 2> left{Vec2f(min.x, min.y), Vec2f(min.x, max.y)};
-    brackets.emplace_back(left);
+    brackets.push_back(left);
 
     std::array<Vec2f, 2> right{Vec2f(max.x, max.y), Vec2f(max.x, min.y)};
-    brackets.emplace_back(right);
+    brackets.push_back(right);
 }
 
 void MoleculeLayout::_updateDataSGroups()

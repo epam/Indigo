@@ -796,9 +796,7 @@ bool MoleculeCIPCalculator::_checkLigandsEquivalence(Array<int>& ligands, Array<
 
             if (_cip_rules_cmp(ligands[k], ligands[l], &context) == 0)
             {
-                auto& equiv_pair = equiv_ligands.push();
-                equiv_pair[0] = ligands[k];
-                equiv_pair[1] = ligands[l];
+                equiv_ligands.push_back({ligands[k], ligands[l]});
                 neq++;
             }
             else if (context.use_rule_5)

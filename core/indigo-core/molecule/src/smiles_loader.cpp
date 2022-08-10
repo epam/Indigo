@@ -2027,8 +2027,8 @@ void SmilesLoader::_handlePolymerRepetition(int i)
     std::array<Vec2f, 2> v;
     v[0].set(0, 0);
     v[1].set(0, 0);
-    sgroup->brackets.emplace_back(v);
-    sgroup->brackets.emplace_back(v);
+    sgroup->brackets.push_back(v);
+    sgroup->brackets.push_back(v);
 
     if (_polymer_repetitions[i] > 1)
     {

@@ -251,7 +251,7 @@ void OsCommandDispatcher::_onMsgHandleResult()
                 throw Exception("cmdDispatcher::_OnMsgHandleResult: internal error #2");
 
             OsSemaphore* sem = (OsSemaphore*)param;
-            _syspendedThreads.push(sem);
+            _syspendedThreads.push_back(sem);
 
             return;
         }

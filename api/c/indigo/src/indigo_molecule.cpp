@@ -3310,10 +3310,10 @@ CEXPORT int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y
         std::array<Vec2f, 2> brackets;
         brackets[0].set(x1, y1);
         brackets[1].set(x2, y2);
-        psg->brackets.emplace_back(brackets);
+        psg->brackets.push_back(brackets);
         brackets[0].set(x3, y3);
         brackets[1].set(x4, y4);
-        psg->brackets.emplace_back(brackets);
+        psg->brackets.push_back(brackets);
         return 1;
     }
     INDIGO_END(-1);

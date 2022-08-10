@@ -1224,7 +1224,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             std::array<int, 2> r;
             r[0] = i;
             r[1] = radical;
-            radicals.push(r);
+            radicals.push_back(r);
         }
 
         if (qmol != 0)
@@ -1238,7 +1238,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 std::array<int, 2> r;
                 r[0] = i;
                 r[1] = rbc;
-                ring_bonds.push(r);
+                ring_bonds.push_back(r);
             }
             int subst;
             if (MoleculeSavers::getSubstitutionCountFlagValue(*qmol, i, subst))
@@ -1246,7 +1246,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 std::array<int, 2> s;
                 s[0] = i;
                 s[1] = subst;
-                substitution_count.push(s);
+                substitution_count.push_back(s);
             }
         }
 

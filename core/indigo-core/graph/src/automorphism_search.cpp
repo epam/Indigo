@@ -919,7 +919,7 @@ void AutomorphismSearch::_refineBySortingNeighbourhood(int level, int& numcells)
                     ;
 
                 std::array<int, 2> split_cell{split1, split2};
-                _work_active_cells.emplace_back(split_cell);
+                _work_active_cells.push_back(split_cell);
                 _active[i] = 0;
             }
         }

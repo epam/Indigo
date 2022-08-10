@@ -318,8 +318,8 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
         std::array<Vec2f, 2> v;
         v[0].set(0, 0);
         v[1].set(0, 0);
-        sgroup.brackets.emplace_back(v);
-        sgroup.brackets.emplace_back(v);
+        sgroup.brackets.push_back(v);
+        sgroup.brackets.push_back(v);
         // sgroup.brk_style
         switch (bracket.usage)
         {

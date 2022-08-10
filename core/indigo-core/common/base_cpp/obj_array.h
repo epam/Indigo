@@ -72,10 +72,7 @@ namespace indigo
         template <typename A>
         T& push(A& a)
         {
-            void* addr = &_array.push();
-
-            new (addr) T(a);
-
+            _array.emplace(a);
             return _array.top();
         }
 

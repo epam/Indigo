@@ -777,8 +777,8 @@ void MoleculeRenderInternal::_convertCoordinate(const Array<std::array<Vec2f, 2>
 {
     auto& left = original.at(0);
     auto& right = original.at(1);
-    auto& adjLeft = converted.push();
-    auto& adjRight = converted.push();
+    auto& adjLeft = converted.emplace();
+    auto& adjRight = converted.emplace();
 
     _objCoordTransform(adjLeft[0], left[0]);
     _objCoordTransform(adjLeft[1], left[1]);
@@ -841,8 +841,8 @@ void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms,
     max.add(Vec2f(extent, extent));
     std::array<Vec2f, 2> left{Vec2f(min.x, max.y), Vec2f(min.x, min.y)};
     std::array<Vec2f, 2> right{Vec2f(max.x, min.y), Vec2f(max.x, max.y)};
-    brackets.emplace_back(left);
-    brackets.emplace_back(right);
+    brackets.push_back(left);
+    brackets.push_back(right);
 }
 
 void MoleculeRenderInternal::_cloneAndFillMappings()
@@ -1307,7 +1307,7 @@ void MoleculeRenderInternal::_findRings()
 
         Array<Vec2f> pp;
         for (int j = 0; j < ring.bondEnds.size(); ++j)
-            pp.push().copy(_ad(_be(ring.bondEnds[j]).aid).pos);
+            pp.emplace().copy(_ad(_be(ring.bondEnds[j]).aid).pos);
 
         for (int j = 0; j < ring.bondEnds.size(); ++j)
             ring.center.add(pp[j]);
@@ -3450,18 +3450,18 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             // if no adjacent bonds present
             if (rGroupAttachmentIndices.size() == 1)
-                attachmentDirection.push().set(0, -1);
+                attachmentDirection.emplace().set(0, -1);
             else if (rGroupAttachmentIndices.size() == 2)
             {
-                attachmentDirection.push().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
-                attachmentDirection.push().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
+                attachmentDirection.emplace().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
+                attachmentDirection.emplace().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
             }
             else
             {
                 for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
                 {
                     float a = j * 2 * (float)M_PI / rGroupAttachmentIndices.size();
-                    attachmentDirection.push().set(cos(a), sin(a));
+                    attachmentDirection.emplace().set(cos(a), sin(a));
                 }
             }
         }

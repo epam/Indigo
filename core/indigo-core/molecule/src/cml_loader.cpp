@@ -1320,7 +1320,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = &dsg->brackets.emplace_back(bracket)[0];
+                        pbrackets = &dsg->brackets.push_back(bracket)[0];
 
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");
@@ -1477,7 +1477,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = &gen->brackets.emplace_back(bracket)[0];
+                        pbrackets = &gen->brackets.push_back(bracket)[0];
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1556,7 +1556,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = &sru->brackets.emplace_back(bracket)[0];
+                        pbrackets = &sru->brackets.push_back(bracket)[0];
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1666,7 +1666,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = &mul->brackets.emplace_back(bracket)[0];
+                        pbrackets = &mul->brackets.push_back(bracket)[0];
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1752,7 +1752,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = &sup->brackets.emplace_back(bracket)[0];
+                        pbrackets = &sup->brackets.push_back(bracket)[0];
 
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");
