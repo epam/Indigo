@@ -287,7 +287,7 @@ void AutomorphismSearch::process(Graph& graph)
         for (i = 0; i < _n; ++i)
             _orbits[i] = i;
 
-        _Call& call = _call_stack.push();
+        _Call& call = _call_stack.emplace_back();
         call.level = 1;
         call.numcells = numcells;
         call.place = _INITIAL;
@@ -356,7 +356,7 @@ void AutomorphismSearch::process(Graph& graph)
             _cosetindex = tv;
             _fixedpts[tv] = 1;
 
-            _Call& newcall = _call_stack.push();
+            _Call& newcall = _call_stack.emplace_back();
             newcall.level = call.level + 1;
             newcall.numcells = call.numcells + 1;
             if (tv == call.tv1)
@@ -430,7 +430,7 @@ void AutomorphismSearch::process(Graph& graph)
             _breakout(call.level + 1, call.tc, tv);
             _fixedpts[tv] = 1;
 
-            _Call& newcall = _call_stack.push();
+            _Call& newcall = _call_stack.emplace_back();
             newcall.level = call.level + 1;
             newcall.numcells = call.numcells + 1;
             newcall.place = _OTHER_TO_OTHER;
@@ -471,7 +471,7 @@ int AutomorphismSearch::_firstNode(int level, int numcells)
     _call_stack.pop_back();
 
     // use the elements of the target cell to produce the children
-    _Call& call = _call_stack.push();
+    _Call& call = _call_stack.emplace_back();
     call.level = level;
     call.k = 0;
     call.tc = tc;
@@ -506,7 +506,7 @@ int AutomorphismSearch::_otherNode(int level, int numcells)
     _call_stack.pop_back();
 
     // use the elements of the target cell to produce the children
-    _Call& call = _call_stack.push();
+    _Call& call = _call_stack.emplace_back();
     call.level = level;
     call.k = 0;
     call.tc = tc;

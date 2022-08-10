@@ -502,7 +502,7 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
 
         const Edge& edge = mol.getEdge(e);
 
-        inchi_Stereo0D& st = stereo.push();
+        inchi_Stereo0D& st = stereo.emplace_back();
 
         // Write it as
         // #0 - #1 = #2 - #3
@@ -538,7 +538,7 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
             if (pyramid[i] != -1)
                 pyramid[i] = mapping[pyramid[i]];
 
-        inchi_Stereo0D& st = stereo.push();
+        inchi_Stereo0D& st = stereo.emplace_back();
 
         /*
            4 neighbors

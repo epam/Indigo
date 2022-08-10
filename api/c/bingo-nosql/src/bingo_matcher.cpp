@@ -1053,9 +1053,7 @@ void TopNSimMatcher::_findTopN()
             while (BaseSimilarityMatcher::next())
             {
                 cnt++;
-                res = &_current_results.push();
-                res->id = _current_id;
-                res->sim_value = _current_sim_value;
+                res = &_current_results.emplace_back(_current_id, _current_sim_value);
                 cur_cell = currentCell();
                 if ((cnt > hits_limit * 2) && ((max_cell - cur_cell) > cells_count / 2))
                 {
@@ -1109,9 +1107,7 @@ void TopNSimMatcher::_findTopN()
             while (BaseSimilarityMatcher::next())
             {
                 cnt++;
-                res = &_current_results.push();
-                res->id = _current_id;
-                res->sim_value = _current_sim_value;
+                res = &_current_results.emplace_back(_current_id, _current_sim_value);
 
                 if (cnt > hits_limit * 2)
                 {
@@ -1186,9 +1182,7 @@ void TopNSimMatcher::_findTopN()
                 while (BaseSimilarityMatcher::next())
                 {
                     cnt++;
-                    res = &_current_results.push();
-                    res->id = _current_id;
-                    res->sim_value = _current_sim_value;
+                    res = &_current_results.emplace_back(_current_id, _current_sim_value);
                     cur_cell = currentCell();
                     if ((cnt > hits_limit * 2) && (max_cell - cur_cell) > cells_count / 2)
                     {

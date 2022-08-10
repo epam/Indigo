@@ -366,21 +366,19 @@ void RenderItemAuxiliary::_renderSimpleObject(const KETSimpleObject& simple)
 
     case KETSimpleObject::EKETRectangle: {
         Array<Vec2f> pts;
-        pts.push() = rc.leftTop();
-        pts.push() = rc.rightTop();
-        pts.push() = rc.rightBottom();
-        pts.push() = rc.leftBottom();
-        pts.push() = rc.leftTop();
+        pts.push_back(rc.leftTop());
+        pts.push_back(rc.rightTop());
+        pts.push_back(rc.rightBottom());
+        pts.push_back(rc.leftBottom());
+        pts.push_back(rc.leftTop());
         _rc.drawPoly(pts);
     }
     break;
 
     case KETSimpleObject::EKETLine: {
         Array<Vec2f> pts;
-        auto& vec1 = pts.push();
-        auto& vec2 = pts.push();
-        vec1 = v1;
-        vec2 = v2;
+        pts.push_back(v1);
+        pts.push_back(v2);
         _rc.drawPoly(pts);
     }
     break;

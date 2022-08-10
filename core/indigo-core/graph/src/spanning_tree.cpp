@@ -72,7 +72,7 @@ SpanningTree::SpanningTree(Graph& graph, const Filter* vertex_filter, const Filt
         if (start == _tree.vertexEnd())
             break;
 
-        StackElem& elem = _stack.push();
+        StackElem& elem = _stack.emplace_back();
         elem.vertex = &_graph.getVertex(_mapping[start]);
         elem.nei_idx = elem.vertex->neiBegin();
         elem.vertex_idx = start;
@@ -114,7 +114,7 @@ void SpanningTree::_build()
 
                 _edge_mapping[idx] = elem.vertex->neiEdge(i);
 
-                StackElem& newelem = _stack.push();
+                StackElem& newelem = _stack.emplace_back();
 
                 _depth_counters[w] = ++_current_depth;
                 newelem.parent_idx = v;

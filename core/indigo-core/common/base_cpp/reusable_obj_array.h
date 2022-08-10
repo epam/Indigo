@@ -87,8 +87,7 @@ namespace indigo
             T* addr;
             if (_count == _array.size())
             {
-                addr = &_array.push();
-                new (addr) T();
+                addr = &_array.emplace_back();
             }
             else
             {

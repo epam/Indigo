@@ -104,7 +104,7 @@ void GraphSubtreeEnumerator::_reverseSearch(int front_idx, int cur_maximal_crite
             if (_v_processed[nei_v] == 1)
                 continue;
 
-            VertexEdgeParent& added = _front.push();
+            VertexEdgeParent& added = _front.emplace_back();
             added.v = nei_v;
             added.e = vertex.neiEdge(i);
             added.parent = v;

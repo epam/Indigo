@@ -389,7 +389,7 @@ void RenderContext::scale(float s)
 
 void RenderContext::storeTransform()
 {
-    cairo_matrix_t& t = transforms.push();
+    cairo_matrix_t& t = transforms.emplace_back();
     cairo_get_matrix(_cr, &t);
     cairoCheckStatus();
 }

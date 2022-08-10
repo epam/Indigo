@@ -255,12 +255,6 @@ namespace indigo
             _array[_length - 1] = elem;
         }
 
-        T& push()
-        {
-            resize(_length + 1);
-            return _array[_length - 1];
-        }
-
         T& push_back(const T& elem)
         {
             resize(_length + 1);

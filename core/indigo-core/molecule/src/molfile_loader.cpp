@@ -1298,7 +1298,7 @@ void MolfileLoader::_readCtab2000()
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SUP)
                 {
                     Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    Superatom::_BondConnection& bond = sup.bond_connections.push();
+                    Superatom::_BondConnection& bond = sup.bond_connections.emplace_back();
                     _scanner.skip(1);
                     bond.bond_idx = _scanner.readIntFix(3) - 1;
                     _scanner.skipSpace();
@@ -3544,7 +3544,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 if (n != 4)
                     throw Error("CSTATE number is %d (must be 4)", n);
                 scanner.skipSpace();
-                Superatom::_BondConnection& bond = sup->bond_connections.push();
+                Superatom::_BondConnection& bond = sup->bond_connections.emplace_back();
                 int idx = scanner.readInt() - 1;
                 bond.bond_idx = idx;
                 scanner.skipSpace();

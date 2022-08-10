@@ -74,7 +74,7 @@ void RSmilesSaver::_writeMolecule(int i)
 
     for (j = 0; j < atoms.size(); j++)
     {
-        _Idx& idx = _written_atoms.push();
+        _Idx& idx = _written_atoms.emplace_back();
 
         idx.mol = i;
         idx.idx = atoms[j];
@@ -84,7 +84,7 @@ void RSmilesSaver::_writeMolecule(int i)
 
     for (j = 0; j < bonds.size(); j++)
     {
-        _Idx& idx = _written_bonds.push();
+        _Idx& idx = _written_bonds.emplace_back();
 
         idx.mol = i;
         idx.idx = bonds[j];

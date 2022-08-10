@@ -1072,12 +1072,12 @@ void SmilesLoader::_parseMolecule()
                     number = next - '0';
 
                 while (_cycles.size() <= number)
-                    _cycles.push().clear();
+                    _cycles.emplace_back().clear();
 
                 // closing some previously numbered atom, like the last '1' in c1ccccc1
                 if (_cycles[number].beg >= 0)
                 {
-                    bond = &_bonds.push();
+                    bond = &_bonds.emplace_back();
                     bond->dir = 0;
                     bond->topology = 0;
                     bond->beg = _atom_stack.top();
@@ -1189,7 +1189,7 @@ void SmilesLoader::_parseMolecule()
 
         if (!first_atom)
         {
-            bond = &_bonds.push();
+            bond = &_bonds.emplace_back();
             bond->beg = _atom_stack.top();
             bond->end = -1;
             bond->type = -1;
@@ -1334,7 +1334,7 @@ void SmilesLoader::_parseMolecule()
                     else
                     {
                         while (_cycles.size() <= number)
-                            _cycles.push().clear();
+                            _cycles.emplace_back().clear();
                         _cycles[number].pending_bond = _bonds.size() - 1;
                         _cycles[number].pending_bond_str = _pending_bonds_pool.add(bond_str);
                         _cycles[number].beg = -1; // have it already in the bond
@@ -1846,7 +1846,7 @@ void SmilesLoader::_addExplicitHForStereo()
         if ((_atoms[i].chirality > 0) && (_bmol->getVertex(i).degree() == 2) && (_atoms[i].hydrogens == 1))
         {
             _AtomDesc& atom = _atoms.push(_neipool);
-            _BondDesc* bond = &_bonds.push();
+            _BondDesc* bond = &_bonds.emplace_back();
 
             atom.label = ELEM_H;
             int exp_h_idx = _mol->addAtom(atom.label);
@@ -1885,7 +1885,7 @@ void SmilesLoader::_addLigandsForStereo()
             for (int j = 0; j < num_ligands; j++)
             {
                 _AtomDesc& atom = _atoms.push(_neipool);
-                _BondDesc* bond = &_bonds.push();
+                _BondDesc* bond = &_bonds.emplace_back();
                 std::unique_ptr<QueryMolecule::Atom> qatom;
 
                 if (add_explicit_h)
@@ -1914,7 +1914,7 @@ void SmilesLoader::_addLigandsForStereo()
             if (_atoms[i].hydrogens == 1)
             {
                 _AtomDesc& atom = _atoms.push(_neipool);
-                _BondDesc* bond = &_bonds.push();
+                _BondDesc* bond = &_bonds.emplace_back();
 
                 std::unique_ptr<QueryMolecule::Atom> qatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, ELEM_H);
                 std::unique_ptr<QueryMolecule::Bond> qbond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, BOND_SINGLE);

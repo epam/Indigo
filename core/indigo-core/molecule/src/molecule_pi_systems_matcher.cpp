@@ -407,7 +407,7 @@ void MoleculePiSystemsMatcher::_findPiSystemLocalization(int pi_system_index)
         }
 
         // Add localization
-        _Pi_System::Localizations& loc = pi_system.localizations.push();
+        _Pi_System::Localizations& loc = pi_system.localizations.emplace_back();
         loc.double_bonds = double_bonds;
         loc.primary_lp = zero_lp;
         loc.seconary_lp = other_lp;

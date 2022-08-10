@@ -447,7 +447,7 @@ void MoleculeAutomorphismSearch::_getSortedNei(Graph& g, int v_idx, Array<EdgeIn
             continue;
 
         int j = sorted_nei.size() - 1;
-        sorted_nei.push();
+        sorted_nei.emplace_back();
 
         while (j >= 0)
         {

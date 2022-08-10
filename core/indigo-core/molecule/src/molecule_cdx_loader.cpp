@@ -310,7 +310,7 @@ void MoleculeCdxLoader::_readNode(UINT32 node_id)
 
     int level = 1;
 
-    _NodeDesc& node = _nodes.push();
+    _NodeDesc& node = _nodes.emplace_back();
     memset(&node, 0, sizeof(_NodeDesc));
     node.id = node_id;
     node.type = kCDXNodeType_Element;
@@ -461,7 +461,7 @@ void MoleculeCdxLoader::_getBondOrdering(int size, Array<_ExtConnection>& connec
 
     for (int i = 0; i < nbonds; i++)
     {
-        _ExtConnection& conn = connections.push();
+        _ExtConnection& conn = connections.emplace_back();
         conn.bond_id = _scanner->readBinaryDword();
         conn.point_id = 0;
         conn.atom_id = 0;
@@ -492,7 +492,7 @@ void MoleculeCdxLoader::_readBond(UINT32 bond_id)
 
     int level = 1;
 
-    _BondDesc& bond = _bonds.push();
+    _BondDesc& bond = _bonds.emplace_back();
     memset(&bond, 0, sizeof(_BondDesc));
     bond.id = bond_id;
     bond.type = BOND_SINGLE;

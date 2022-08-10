@@ -47,7 +47,7 @@ bool GraphEmbeddingsStorage::addEmbedding(const Graph& super, const Graph& sub, 
 {
     // Add new item to the storage
     // If it isn't unque then remove it
-    _EmbeddingData& data = _embedding_data.push();
+    _EmbeddingData& data = _embedding_data.emplace_back();
     int added_index = _embedding_data.size() - 1;
     data.vertex_begin = _all_vertices.size();
     data.edge_begin = _all_edges.size();

@@ -208,8 +208,7 @@ void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int compon
         while (!touch_to_current_component[finish])
             finish = (finish + 1) % cycle.vertexCount();
 
-        interval_list.push();
-        interval_list.top().init(start, finish);
+        interval_list.emplace_back(start, finish);
 
         start = finish;
         while (_layout_component_number[cycle.getEdge(start)] == component_number)

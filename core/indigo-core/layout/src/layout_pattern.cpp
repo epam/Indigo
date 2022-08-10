@@ -55,7 +55,7 @@ int PatternLayout::addBond(int atom_beg, int atom_end, int type)
 
 int PatternLayout::addOutlinePoint(float x, float y)
 {
-    Vec2f& p = _outline.push();
+    Vec2f& p = _outline.emplace_back();
 
     p.set(x, y);
 
