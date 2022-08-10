@@ -269,16 +269,10 @@ namespace indigo
         }
 
         template <class... Args>
-        T& emplace(Args&&... args);
+        T& emplace_back(Args&&... args);
 
         template <class... Args>
         T& replace(int idx, Args&&... args);
-
-        void inplace_back()
-        {
-            resize(_length + 1);
-            new (&_array[_length - 1]) T();
-        }
 
         void pop_back()
         {
@@ -521,7 +515,7 @@ namespace indigo
 
     template <typename T>
     template <class... Args>
-    T& Array<T>::emplace(Args&&... args)
+    T& Array<T>::emplace_back(Args&&... args)
     {
         resize(_length + 1);
         new ((void*)&_array[_length - 1]) T(args...);
@@ -1533,7 +1527,7 @@ namespace indigo
             return _array[_length - 1];
         }
 
-        int& emplace()
+        int& emplace_back()
         {
             return push();
         }

@@ -65,14 +65,14 @@ namespace indigo
 
         T& push()
         {
-            _array.inplace_back();
+            _array.emplace_back();
             return _array.top();
         }
 
         template <typename A>
         T& push(A& a)
         {
-            _array.emplace(a);
+            _array.emplace_back(a);
             return _array.top();
         }
 

@@ -95,7 +95,7 @@ void DfsWalk::walk()
         int v_idx = v_stack.pop();
         int parent_vertex = _vertices[v_idx].parent_vertex;
 
-        SeqElem& seq_elem = _v_seq.emplace(v_idx, parent_vertex, _vertices[v_idx].parent_edge);
+        SeqElem& seq_elem = _v_seq.emplace_back(v_idx, parent_vertex, _vertices[v_idx].parent_edge);
 
         _vertices[v_idx].dfs_state = 2;
 
@@ -113,7 +113,7 @@ void DfsWalk::walk()
             if (_root_vertices[nei_v] == 1 && _vertices[nei_v].dfs_state == 0)
                 continue;
 
-            VertexEdge& ve = nei.emplace(nei_v, vertex.neiEdge(i));
+            VertexEdge& ve = nei.emplace_back(nei_v, vertex.neiEdge(i));
         }
 
         if (vertex_ranks != 0)
@@ -137,11 +137,11 @@ void DfsWalk::walk()
             if (_vertices[nei_idx].dfs_state == 2)
             {
                 _edges[edge_idx].closing_cycle = 1;
-                Edge& e = _closures.emplace(v_idx, nei_idx);
+                Edge& e = _closures.emplace_back(v_idx, nei_idx);
 
                 _vertices[nei_idx].openings++;
                 _vertices[v_idx].branches++;
-                SeqElem& seq_elem = _v_seq.emplace(nei_idx, v_idx, edge_idx);
+                SeqElem& seq_elem = _v_seq.emplace_back(nei_idx, v_idx, edge_idx);
             }
             else
             {

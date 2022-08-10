@@ -165,7 +165,7 @@ namespace indigo
     {
         if (_first == -1)
         {
-            _array.emplace(std::forward<Args>(args)...);
+            _array.emplace_back(std::forward<Args>(args)...);
             _next.push(-2);
             _size++;
             return _array.size() - 1;

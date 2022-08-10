@@ -777,8 +777,8 @@ void MoleculeRenderInternal::_convertCoordinate(const Array<std::array<Vec2f, 2>
 {
     auto& left = original.at(0);
     auto& right = original.at(1);
-    auto& adjLeft = converted.emplace();
-    auto& adjRight = converted.emplace();
+    auto& adjLeft = converted.emplace_back();
+    auto& adjRight = converted.emplace_back();
 
     _objCoordTransform(adjLeft[0], left[0]);
     _objCoordTransform(adjLeft[1], left[1]);
@@ -1307,7 +1307,7 @@ void MoleculeRenderInternal::_findRings()
 
         Array<Vec2f> pp;
         for (int j = 0; j < ring.bondEnds.size(); ++j)
-            pp.emplace().copy(_ad(_be(ring.bondEnds[j]).aid).pos);
+            pp.emplace_back().copy(_ad(_be(ring.bondEnds[j]).aid).pos);
 
         for (int j = 0; j < ring.bondEnds.size(); ++j)
             ring.center.add(pp[j]);
@@ -3450,18 +3450,18 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             // if no adjacent bonds present
             if (rGroupAttachmentIndices.size() == 1)
-                attachmentDirection.emplace().set(0, -1);
+                attachmentDirection.emplace_back().set(0, -1);
             else if (rGroupAttachmentIndices.size() == 2)
             {
-                attachmentDirection.emplace().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
-                attachmentDirection.emplace().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
+                attachmentDirection.emplace_back().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
+                attachmentDirection.emplace_back().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
             }
             else
             {
                 for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
                 {
                     float a = j * 2 * (float)M_PI / rGroupAttachmentIndices.size();
-                    attachmentDirection.emplace().set(cos(a), sin(a));
+                    attachmentDirection.emplace_back().set(cos(a), sin(a));
                 }
             }
         }

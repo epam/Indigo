@@ -117,7 +117,7 @@ bool LzwDict::addElem(const int NewPrefix, const byte NewChar, int HashIndex)
             }
         }
 
-        _storage.emplace(NewPrefix, NewChar);
+        _storage.emplace_back(NewPrefix, NewChar);
 
         _freePtr++;
 

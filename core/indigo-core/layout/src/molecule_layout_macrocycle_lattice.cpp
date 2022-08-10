@@ -133,7 +133,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout()
                 for (int y = lat.getFirstValidY(x); lat.isIncreaseForValidY(y); lat.switchNextY(y))
                 {
                     if (lat.getCell(x, y) < SHORT_INFINITY)
-                        points.emplace(rot, p, x, y);
+                        points.emplace_back(rot, p, x, y);
                 }
             }
         }
@@ -1344,7 +1344,7 @@ void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>
                 float distSqr = (cl.point[i] - all_points[j]).lengthSqr();
                 if (eps2 < distSqr && distSqr < good_distance)
                 {
-                    pairs.emplace(i, all_numbers[j]);
+                    pairs.emplace_back(i, all_numbers[j]);
                 }
             }
         }

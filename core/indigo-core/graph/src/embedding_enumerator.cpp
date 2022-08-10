@@ -182,12 +182,12 @@ void EmbeddingEnumerator::processStart()
             }
         }
 
-        _query_match_state.emplace(node1, parent, _t1_len_pre);
+        _query_match_state.emplace_back(node1, parent, _t1_len_pre);
 
         _fixNode1(node1, FIX_MARK);
     }
     // Push last element to indicate the end of query atoms queue
-    _query_match_state.emplace(-1, -1, -1);
+    _query_match_state.emplace_back(-1, -1, -1);
 
     // Restore core_1
     _core_1.copy(core1_pre);
