@@ -22,7 +22,7 @@ using namespace indigo;
 
 IMPL_ERROR(PropertiesMap, "properties map");
 
-void PropertiesMap::copy(RedBlackStringObjMap<Array<char>>& other)
+void PropertiesMap::copy(const RedBlackStringObjMap<Array<char>>& other)
 {
     clear();
     for (int i = other.begin(); i != other.end(); i = other.next(i))
@@ -40,45 +40,34 @@ void PropertiesMap::copy(PropertiesMap& other)
 }
 void PropertiesMap::insert(const char* key, const char* value)
 {
-    if (_properties.find(key))
+    const auto it = _properties.find(key);
+    if (it != _properties.end())
     {
-        auto& val = _properties.at(key);
         if (value != 0)
-            val.readString(value, true);
+            _properties.at(key) = value;
     }
     else
     {
-        auto& name = _propertyNames.push();
-        name.readString(key, true);
-        int k = _properties.insert(key);
-        if (value != 0)
-            _properties.value(k).readString(value, true);
+        auto newIt = _properties.emplace(key, value).first;
+        _propertiesOrdered.push_back(std::move(newIt));
     }
 }
-Array<char>& PropertiesMap::insert(const char* key)
+std::string& PropertiesMap::insert(const char* key)
 {
-    insert(key, 0);
+    insert(key, "");
     return valueBuf(key);
 }
-const char* PropertiesMap::key(int i)
+const char* PropertiesMap::key(int i) const
 {
-    return _propertyNames.at(i).ptr();
+    return _propertiesOrdered.at(i)->first.c_str();
 }
 
-const char* PropertiesMap::value(int i)
+const char* PropertiesMap::value(int i) const
 {
-    auto& buf = valueBuf(_propertyNames.at(i).ptr());
-    if (buf.size() > 0)
-    {
-        return buf.ptr();
-    }
-    else
-    {
-        return "";
-    }
+    return _propertiesOrdered.at(i)->second.c_str();
 }
 
-Array<char>& PropertiesMap::valueBuf(const char* key)
+std::string& PropertiesMap::valueBuf(const char* key)
 {
     return _properties.at(key);
 }
@@ -86,36 +75,29 @@ Array<char>& PropertiesMap::valueBuf(const char* key)
 void PropertiesMap::clear()
 {
     _properties.clear();
-    _propertyNames.clear();
+    _propertiesOrdered.clear();
 }
 
 bool PropertiesMap::contains(const char* key) const
 {
-    return _properties.find(key);
+    return _properties.find(key) != _properties.end();
 }
 
 const char* PropertiesMap::at(const char* key) const
 {
-    return _properties.at(key).ptr();
+    return _properties.at(key).c_str();
 }
 
 void PropertiesMap::remove(const char* key)
 {
-    if (_properties.find(key))
+    const auto it = _properties.find(key);
+    if (it != _properties.end())
     {
-        _properties.remove(key);
-        int to_remove = -1;
-        for (auto i = 0; i < _propertyNames.size(); i++)
+        _properties.erase(it);
+        const auto orderedIt = std::find(_propertiesOrdered.begin(), _propertiesOrdered.end(), it);
+        if (orderedIt != _propertiesOrdered.end())
         {
-            if (strcmp(_propertyNames.at(i).ptr(), key) == 0)
-            {
-                to_remove = i;
-                break;
-            }
-        }
-        if (to_remove >= 0)
-        {
-            _propertyNames.remove(to_remove);
+            _propertiesOrdered.erase(orderedIt);
         }
         else
         {
@@ -150,5 +132,5 @@ int PropertiesMap::PrAuto::next(int k)
 }
 PropertiesMap::PrIter PropertiesMap::PrAuto::end()
 {
-    return PropertiesMap::PrIter(_owner, _owner._propertyNames.size());
+    return PropertiesMap::PrIter(_owner, _owner._propertiesOrdered.size());
 }
