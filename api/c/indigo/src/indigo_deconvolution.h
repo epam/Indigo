@@ -20,6 +20,7 @@
 #define __indigo_deconvolution__
 
 #include <map>
+#include <vector>
 
 #include "base_cpp/obj_list.h"
 #include "base_cpp/properties_map.h"
@@ -178,8 +179,8 @@ public:
     Array<int> scaffoldAtoms;
     Array<int> lastMapping;
     Array<int> lastInvMapping;
-    ObjArray<Array<int>> attachmentOrder;
-    ObjArray<Array<int>> attachmentIndex;
+    std::vector<Array<int>> attachmentOrder;
+    std::vector<Array<int>> attachmentIndex;
     ObjList<Array<int>> scafAutoMaps;
 
     int getRgroupNumber() const

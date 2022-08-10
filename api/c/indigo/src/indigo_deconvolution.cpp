@@ -217,8 +217,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph& graph1, Graph& graph2, int* ma
      * Order - atom number for scaffold
      * Index - atom number for Rgroup
      */
-    ObjArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
-    ObjArray<Array<int>>& attachment_index = deco_match.attachmentIndex;
+    std::vector<Array<int>>& attachment_order = deco_match.attachmentOrder;
+    std::vector<Array<int>>& attachment_index = deco_match.attachmentIndex;
 
     visited_atoms.clear_resize(graph2.vertexEnd());
     visited_atoms.zerofill();
@@ -226,8 +226,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph& graph1, Graph& graph2, int* ma
     attachment_index.clear();
     attachment_order.clear();
 
-    attachment_index.push();
-    attachment_order.push();
+    attachment_index.emplace_back();
+    attachment_order.emplace_back();
     /*
      * Calculate scaffold atoms and Rgroup atoms
      */
@@ -294,8 +294,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph& graph1, Graph& graph2, int* ma
             }
 
             ++n_rgroups;
-            attachment_index.push();
-            attachment_order.push();
+            attachment_index.emplace_back();
+            attachment_order.emplace_back();
         }
 
         visited_atoms[start_idx] = 1;
@@ -338,8 +338,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph& graph1, Graph& graph2, int* ma
                 attachment_index[n_rgroups].push(edge.end);
                 attachment_order[n_rgroups].push(edge.beg);
 
-                attachment_index.push();
-                attachment_order.push();
+                attachment_index.emplace_back();
+                attachment_order.emplace_back();
 
                 ++n_rgroups;
             }
@@ -376,8 +376,8 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
 
     Array<int>& visited_atoms = deco_match.visitedAtoms;
 
-    ObjArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
-    ObjArray<Array<int>>& attachment_index = deco_match.attachmentIndex;
+    std::vector<Array<int>>& attachment_order = deco_match.attachmentOrder;
+    std::vector<Array<int>>& attachment_index = deco_match.attachmentIndex;
 
     int n_rgroups = deco_match.getRgroupNumber();
     /*
@@ -657,11 +657,13 @@ void IndigoDecompositionMatch::copy(IndigoDecompositionMatch& other)
     attachmentIndex.clear();
     for (int i = 0; i < other.attachmentOrder.size(); ++i)
     {
-        attachmentOrder.push().copy(other.attachmentOrder[i]);
+        attachmentOrder.emplace_back();
+        attachmentOrder.back().copy(other.attachmentOrder[i]);
     }
     for (int i = 0; i < other.attachmentIndex.size(); ++i)
     {
-        attachmentIndex.push().copy(other.attachmentIndex[i]);
+        attachmentIndex.emplace_back();
+        attachmentIndex.back().copy(other.attachmentIndex[i]);
     }
 
     mol_out.clone_KeepIndices(other.mol_out, 0);
@@ -1123,7 +1125,7 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
     int max_rg_idx = match_rgroups.at("max_rg_idx").at(0);
 
     int n_rgroups = deco_match.getRgroupNumber();
-    ObjArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
+    std::vector<Array<int>>& attachment_order = deco_match.attachmentOrder;
     Array<int>& map = deco_match.lastInvMapping;
     int result_num = 0;
 
@@ -1408,8 +1410,8 @@ bool IndigoDeconvolution::DecompositionEnumerator::_foundOrder(ObjArray<Array<in
 void IndigoDeconvolution::DecompositionEnumerator::_swapIndexes(IndigoDecompositionMatch& match, int old_idx, int new_idx)
 {
     QS_DEF(Array<int>, tmp_buf);
-    ObjArray<Array<int>>& attachment_order = match.attachmentOrder;
-    ObjArray<Array<int>>& attachment_index = match.attachmentIndex;
+    std::vector<Array<int>>& attachment_order = match.attachmentOrder;
+    std::vector<Array<int>>& attachment_index = match.attachmentIndex;
 
     tmp_buf.copy(attachment_order[old_idx]);
     attachment_order[old_idx].copy(attachment_order[new_idx]);
