@@ -127,7 +127,7 @@ namespace indigo
         {
         }
 
-        Edge(int begin, int end) : beg(begin), end( end )
+        Edge(int begin, int end) : beg(begin), end(end)
         {
         }
     };
