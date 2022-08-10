@@ -27,7 +27,6 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/red_black.h"
 
-
 namespace indigo
 {
 

@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <algorithm>
+
 #include "base_cpp/properties_map.h"
 
 using namespace indigo;
