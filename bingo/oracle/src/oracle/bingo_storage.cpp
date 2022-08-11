@@ -115,7 +115,7 @@ void BingoStorage::validateForInsert(OracleEnv& env)
             continue;
         }
 
-        _Block& block = _blocks.push();
+        _Block& block = _blocks.emplace_back();
 
         block.size = length;
     } while (statement.fetch());
@@ -244,7 +244,7 @@ void BingoStorage::validate(OracleEnv& env)
                 _index.copy((_Addr*)_shmem_array[0]->ptr(), length / sizeof(_Addr));
         }
 
-        _Block& block = _blocks.push();
+        _Block& block = _blocks.emplace_back();
 
         block.size = length;
     } while (statement.fetch());
@@ -305,7 +305,7 @@ void BingoStorage::_insertLOB(OracleEnv& env, int no)
 
     if (no > 0)
     {
-        _Block& block = _blocks.push();
+        _Block& block = _blocks.emplace_back();
 
         block.size = 0;
     }
