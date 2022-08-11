@@ -86,11 +86,11 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
         _main_table_statement->append(")");
     }
 
-    _pending_rid.push();
+    _pending_rid.emplace_back();
     strncpy(_pending_rid.top(), rowid, 19);
     _pending_blockno.push(blockno);
     _pending_offset.push(offset);
-    _pending_gross.push();
+    _pending_gross.emplace_back();
     strncpy(_pending_gross.top(), gross, 512);
     _pending_mass.push(molecular_mass);
 
@@ -130,9 +130,9 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
 
     for (int i = 0; i < hash.size(); i++)
     {
-        _pending_comp_hash.push();
+        _pending_comp_hash.emplace_back();
         snprintf(_pending_comp_hash.top(), 9, "%08X", hash[i].hash);
-        _pending_comp_rid.push();
+        _pending_comp_rid.emplace_back();
         strncpy(_pending_comp_rid.top(), rowid, 19);
         _pending_comp_count.push(hash[i].count);
         _components_table_statement_count++;
