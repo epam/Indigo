@@ -54,7 +54,6 @@ namespace indigo
         static int cmp(TGroup& tg1, TGroup& tg2, void* context);
 
         std::unique_ptr<BaseMolecule> fragment;
-
     };
 
     class DLLEXPORT MoleculeTGroups
