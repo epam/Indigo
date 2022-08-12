@@ -64,6 +64,9 @@ namespace indigo
     class DLLEXPORT Vertex
     {
     public:
+        Vertex()
+        {
+        }
         Vertex(Pool<List<VertexEdge>::Elem>& pool) : neighbors_list(pool)
         {
         }
@@ -104,9 +107,6 @@ namespace indigo
         {
             return neighbors_list.size();
         }
-
-    private:
-        Vertex(const Vertex&); // no implicit copy
     };
 
     struct Edge

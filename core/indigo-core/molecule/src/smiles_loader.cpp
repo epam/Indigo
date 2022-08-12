@@ -3120,6 +3120,10 @@ void SmilesLoader::_readRGroupOccurrenceRanges(const char* str, Array<int>& rang
     ranges.push((beg << 16) | end);
 }
 
+SmilesLoader::_AtomDesc::_AtomDesc()
+{
+}
+
 SmilesLoader::_AtomDesc::_AtomDesc(Pool<List<int>::Elem>& neipool) : neighbors(neipool)
 {
     label = 0;

@@ -34,6 +34,10 @@ namespace indigo
 
     struct PatternAtom
     {
+        PatternAtom() : pos(0,0)
+        {
+        }
+
         explicit PatternAtom(Vec2f pos_) : pos(pos_)
         {
         }
@@ -42,6 +46,10 @@ namespace indigo
 
     struct PatternBond
     {
+        PatternBond() : type(0), parity(0)
+        {
+        }
+
         explicit PatternBond(int type_) : type(type_), parity(0)
         {
         }

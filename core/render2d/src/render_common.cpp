@@ -239,6 +239,12 @@ Ring::Ring()
     clear();
 }
 
+Ring::Ring(const Ring& r) : dblBondCount(r.dblBondCount), aromatic(r.aromatic), center(r.center), radius(r.radius)
+{
+    bondEnds.copy(r.bondEnds);
+    angles.copy(r.angles);
+}
+
 void Ring::clear()
 {
     bondEnds.clear();

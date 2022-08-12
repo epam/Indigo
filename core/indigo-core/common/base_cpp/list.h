@@ -220,9 +220,6 @@ namespace indigo
         int _head;
         int _tail;
         bool _own_pool;
-
-    private:
-        List(const List<T>&); // no implicit copy
     };
 
 } // namespace indigo

@@ -26,14 +26,28 @@ namespace indigo
 
     class Tree
     {
+
     public:
         explicit Tree(int label)
         {
             this->label = label;
         }
 
+        explicit Tree(const Tree& other)
+        {
+            label = other.label;
+            _children.copy(other._children);
+        }
+
         Tree() : Tree(-1)
         {
+        }
+
+        Tree& operator=(const Tree& other)
+        {
+            label = other.label;
+            _children.copy(other._children);
+            return *this;
         }
 
         void insert(int label, int parent)

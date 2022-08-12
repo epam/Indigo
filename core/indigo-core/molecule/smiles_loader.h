@@ -81,6 +81,7 @@ namespace indigo
         class DLLEXPORT _AtomDesc
         {
         public:
+            _AtomDesc();
             _AtomDesc(Pool<List<int>::Elem>& neipool);
             ~_AtomDesc();
 

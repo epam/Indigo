@@ -109,6 +109,9 @@ namespace indigo
     private:
         struct Item
         {
+            Item() : id(-1)
+            {
+            }
             Item(int id_) : id(id_)
             {
             }

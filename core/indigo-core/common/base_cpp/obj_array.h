@@ -167,6 +167,11 @@ namespace indigo
             return _array.ptr();
         }
 
+        void copy(const ObjArray<T>& other)
+        {
+            _array.copy(other._array);
+        }
+
     protected:
         Array<T> _array;
 

@@ -272,11 +272,7 @@ namespace indigo
         int inversion;
         float implHPosWeights[4];
         float upperSin, lowerSin, rightSin, leftSin;
-
         float leftMargin, rightMargin, ypos, height;
-
-    private:
-        AtomDesc(const AtomDesc& ad);
     };
 
     struct Sgroup
@@ -319,9 +315,6 @@ namespace indigo
         bool prolong;
         int lRing;
         float width;
-
-    private:
-        BondEnd(const BondEnd& be);
     };
 
     struct BondDescr : public Edge
@@ -354,25 +347,19 @@ namespace indigo
         int tiTopology;
         int topology;
         int reactingCenter;
-
-    private:
-        BondDescr(const BondDescr& bd);
     };
 
     struct Ring
     {
         Ring();
+        Ring(const Ring& r);
         void clear();
-
         Array<int> bondEnds;
         Array<float> angles;
         int dblBondCount;
         bool aromatic;
         Vec2f center;
         float radius;
-
-    private:
-        Ring(const Ring& r);
     };
 
     struct MoleculeRenderData
