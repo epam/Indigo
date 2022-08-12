@@ -34,7 +34,7 @@ namespace indigo
 
     struct PatternAtom
     {
-        PatternAtom() : pos(0,0)
+        PatternAtom() : pos(0, 0)
         {
         }
 
