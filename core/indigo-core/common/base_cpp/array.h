@@ -169,35 +169,14 @@ namespace indigo
 
         void copy(const Array<T>& other)
         {
-            copy(other._array, other._length);
-        }
-
-        void copy(const T* other, int count)
-        {
-            if (count > 0)
-            {
-                clear_resize(count);
-                memcpy(_array, other, count * sizeof(T));
-            }
-            else
-            {
-                _length = 0;
-            }
+            clear_resize(0);
+            concat(other);
         }
 
         void concat(const Array<T>& other)
         {
-            concat(other._array, other.size());
-        }
-
-        void concat(const T* other, int count)
-        {
-            if (count > 0)
-            {
-                int length = _length;
-                resize(length + count);
-                memcpy(_array + length, other, count * sizeof(T));
-            }
+            for (int i = 0; i < other.size(); ++i)
+                push_back(other[i]);
         }
 
         void remove(int idx, int span = 1)
@@ -249,16 +228,15 @@ namespace indigo
             std::swap(_array[idx1], _array[idx2]);
         }
 
-        void push(T elem)
+        void push(const T& elem)
         {
-            resize(_length + 1);
-            _array[_length - 1] = elem;
+            push_back(elem);
         }
 
         T& push_back(const T& elem)
         {
             resize(_length + 1);
-            _array[_length - 1] = elem;
+            new ((void*)&_array[_length - 1]) T(elem);
             return _array[_length - 1];
         }
 
@@ -324,7 +302,7 @@ namespace indigo
         void expandFill(int newsize, const T& value)
         {
             while (_length < newsize)
-                push(value);
+                push_back(value);
         }
 
         void clear_resize(int newsize)
