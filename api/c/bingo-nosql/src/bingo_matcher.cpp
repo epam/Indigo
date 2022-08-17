@@ -1240,7 +1240,7 @@ void TopNSimMatcher::_findTopN()
         for (i = 0; i < _current_results.size(); i++)
         {
             _result_ids.push(_current_results[i].id);
-            _result_sims.push(_current_results[i].sim_value);
+            _result_sims.push_back(_current_results[i].sim_value);
 
             if (i == (hits_limit - 1))
                 break;
@@ -1262,7 +1262,7 @@ void TopNSimMatcher::_initModelDistribution(Array<float>& model_thrs, Array<int>
 {
     for (int i = 0; i < 9; i++)
     {
-        model_thrs.push(_2FLOAT(1.0 - 0.1 * (i + 1)));
+        model_thrs.push_back(_2FLOAT(1.0 - 0.1 * (i + 1)));
         model_nhits_per_block.push(5 * 2 ^ (i));
     }
 }

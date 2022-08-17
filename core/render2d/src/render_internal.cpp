@@ -1005,7 +1005,7 @@ float getFreeAngle(const ObjArray<Vec2f>& pp)
     {
         Vec2f d;
         d.diff(pp[(j + 1) % len], pp[j]);
-        angle.push(atan2f(d.y, d.x));
+        angle.push_back(atan2f(d.y, d.x));
     }
     angle.qsort(dblcmp, NULL);
     int j0 = -1;
@@ -1293,7 +1293,7 @@ void MoleculeRenderInternal::_findRings()
                 v.rotateL(be.lang / 2);
                 v.scale(cycleLineOffset);
                 v.add(_ad(be.aid).pos);
-                vv.push(v);
+                vv.push_back(v);
             }
             _cw.setSingleSource(CWC_BLUE);
             _cw.setLineWidth(_settings.unit);
@@ -1331,7 +1331,7 @@ void MoleculeRenderInternal::_findRings()
             float l = fabs(Vec2f::dot(df, be.lnorm));
             if (r < 0 || l < r)
                 r = l;
-            ring.angles.push(atan2(df.y, df.x));
+            ring.angles.push_back(atan2(df.y, df.x));
         }
         ring.radius = r;
 
@@ -3421,7 +3421,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
             for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
             {
                 float a = _getBondEnd(aid, i).lang;
-                angles.push(a);
+                angles.push_back(a);
                 split.push(1);
             }
         }
@@ -3488,7 +3488,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 Vec2f d;
                 d.copy(_getBondEnd(aid, n).dir);
                 d.rotateL(angles[i0] * (--split[i0]));
-                attachmentDirection.push(d);
+                attachmentDirection.push_back(d);
             }
         }
         // create the attachment point items

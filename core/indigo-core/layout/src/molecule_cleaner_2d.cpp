@@ -628,7 +628,7 @@ bool MoleculeCleaner2d::_isBasePoint(int i)
 void MoleculeCleaner2d::_addCoef(int ver, int index, Vec2f value)
 {
     while (coef[ver].size() <= index)
-        coef[ver].push(ZERO);
+        coef[ver].push_back(ZERO);
     coef[ver][index] += value;
 }
 
@@ -933,7 +933,7 @@ float MoleculeCleaner2d::_energy()
                     int v = vert.neiVertex(n1);
                     Vec2f vec = pos[v] - pos[i];
                     float alpha = atan2(vec.y, vec.x);
-                    angles.push(alpha);
+                    angles.push_back(alpha);
                 }
 
                 for (int a = 0; a < angles.size(); a++)
@@ -941,7 +941,7 @@ float MoleculeCleaner2d::_energy()
                         if (angles[b + 1] < angles[b])
                             std::swap(angles[b], angles[b + 1]);
 
-                angles.push(_2FLOAT(angles[0] + 2. * M_PI));
+                angles.push_back(_2FLOAT(angles[0] + 2. * M_PI));
                 if (vert.degree() > 2)
                 {
                     float target_angle = _2FLOAT(2. * M_PI / angles.size());

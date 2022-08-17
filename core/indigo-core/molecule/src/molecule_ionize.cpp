@@ -135,7 +135,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                 while (!scan_apka.isEOF())
                 {
                     float val = scan_apka.readFloat();
-                    a_pka.push(val);
+                    a_pka.push_back(val);
                 }
 
                 if (a_sites.size() > 1)
@@ -162,7 +162,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                             acid_pka_cids.insert(fp.ptr());
                             a_count++;
                         }
-                        acid_pkas.at(fp.ptr()).push(val);
+                        acid_pkas.at(fp.ptr()).push_back(val);
                         acid_pka_cids.at(fp.ptr()).push(cid);
                     }
                 }
@@ -186,7 +186,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                 while (!scan_bpka.isEOF())
                 {
                     float val = scan_bpka.readFloat();
-                    b_pka.push(val);
+                    b_pka.push_back(val);
                 }
 
                 if (b_sites.size() > 1)
@@ -213,7 +213,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                             basic_pka_cids.insert(fp.ptr());
                             b_count++;
                         }
-                        basic_pkas.at(fp.ptr()).push(val);
+                        basic_pkas.at(fp.ptr()).push_back(val);
                         basic_pka_cids.at(fp.ptr()).push(cid);
                     }
                 }
@@ -252,8 +252,8 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (_model.adv_a_pkas.find(fp))
                 _model.adv_a_pkas.remove(fp);
             _model.adv_a_pkas.insert(fp);
-            _model.adv_a_pkas.at(fp).push(pka_sum / pkas.size());
-            _model.adv_a_pkas.at(fp).push(pka_dev);
+            _model.adv_a_pkas.at(fp).push_back(pka_sum / pkas.size());
+            _model.adv_a_pkas.at(fp).push_back(pka_dev);
 
             if (pka_dev > threshold)
                 model_ready = false;
@@ -288,8 +288,8 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (_model.adv_b_pkas.find(fp))
                 _model.adv_b_pkas.remove(fp);
             _model.adv_b_pkas.insert(fp);
-            _model.adv_b_pkas.at(fp).push(pka_sum / pkas.size());
-            _model.adv_b_pkas.at(fp).push(pka_dev);
+            _model.adv_b_pkas.at(fp).push_back(pka_sum / pkas.size());
+            _model.adv_b_pkas.at(fp).push_back(pka_dev);
 
             if (pka_dev > threshold)
                 model_ready = false;
@@ -309,7 +309,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             else
             {
                 level++;
-                _model.max_deviations.push(max_deviation);
+                _model.max_deviations.push_back(max_deviation);
             }
         }
     }
@@ -407,7 +407,7 @@ void MoleculePkaModel::_loadSimplePkaModel()
         SmilesLoader loader(scanner);
         QueryMolecule& acid = _model.acids.push();
         loader.loadSMARTS(acid);
-        _model.a_pkas.push(simple_pka_model[i].pka);
+        _model.a_pkas.push_back(simple_pka_model[i].pka);
     }
 
     for (auto i = 0; i < NELEM(simple_pka_model); i++)
@@ -416,7 +416,7 @@ void MoleculePkaModel::_loadSimplePkaModel()
         SmilesLoader loader(scanner);
         QueryMolecule& basic = _model.basics.push();
         loader.loadSMARTS(basic);
-        _model.b_pkas.push(simple_pka_model[i].pka);
+        _model.b_pkas.push_back(simple_pka_model[i].pka);
     }
 
     _model.simple_model_ready = true;
@@ -825,8 +825,8 @@ namespace // data of internal purpose
                 adv_model.remove(from->a_fp);
 
             adv_model.insert(from->a_fp);
-            adv_model.at(from->a_fp).push(from->pka);
-            adv_model.at(from->a_fp).push(from->deviation);
+            adv_model.at(from->a_fp).push_back(from->pka);
+            adv_model.at(from->a_fp).push_back(from->deviation);
         }
     }
 } // namespace
@@ -874,7 +874,7 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
                 if (mapping[j] > -1)
                 {
                     acid_sites.push(mapping[j]);
-                    acid_pkas.push(_model.a_pkas[i]);
+                    acid_pkas.push_back(_model.a_pkas[i]);
                     ignore_atoms.push(mapping[j]);
                 }
             }
@@ -898,7 +898,7 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
                 if (mapping[j] > -1)
                 {
                     basic_sites.push(mapping[j]);
-                    basic_pkas.push(_model.b_pkas[i]);
+                    basic_pkas.push_back(_model.b_pkas[i]);
                     ignore_atoms.push(mapping[j]);
                 }
             }
@@ -927,7 +927,7 @@ void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions
         {
             float a_pka = getAcidPkaValue(mol, i, level, min_level);
             acid_sites.push(i);
-            acid_pkas.push(a_pka);
+            acid_pkas.push_back(a_pka);
             //         printf("Acid site: atom index = %d, pKa = %f\n",  can_order[i], a_pka);
         }
 
@@ -935,7 +935,7 @@ void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions
         {
             float b_pka = getBasicPkaValue(mol, i, level, min_level);
             basic_sites.push(i);
-            basic_pkas.push(b_pka);
+            basic_pkas.push_back(b_pka);
             //         printf("Basic site: atom index = %d, pKa = %f\n",  can_order[i], b_pka);
         }
     }

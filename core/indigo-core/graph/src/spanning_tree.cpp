@@ -131,7 +131,7 @@ void SpanningTree::_build()
                 edge.ext_beg_idx = _mapping[v];
                 edge.ext_end_idx = _mapping[w];
                 edge.ext_edge_idx = elem.vertex->neiEdge(i);
-                _edges_list.push(edge);
+                _edges_list.push_back(edge);
             }
         }
         else

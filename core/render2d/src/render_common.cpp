@@ -340,17 +340,17 @@ void RenderSettings::init(float sf, float lwf)
     for (int i = 0; i < NELEM(dashDot); ++i)
     {
         double val = dashDot[i] * dashUnit;
-        bondDashSingleOrAromatic.push(val);
-        bondDashDoubleOrAromatic.push(val);
+        bondDashSingleOrAromatic.push_back(val);
+        bondDashDoubleOrAromatic.push_back(val);
     }
     for (int i = 0; i < NELEM(dash); ++i)
     {
         double val = dash[i] * dashUnit;
-        bondDashAny.push(val);
-        bondDashAromatic.push(val);
+        bondDashAny.push_back(val);
+        bondDashAromatic.push_back(val);
     }
 
-    bondDashHydro.push(dashUnit);
+    bondDashHydro.push_back(dashUnit);
 
     layoutMarginHorizontal = 0.4f;
     layoutMarginVertical = 0.6f;

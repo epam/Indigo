@@ -687,19 +687,19 @@ namespace indigo
 
             if (on_right && !on_left)
             {
-                options.push(Options(RIGHT, RIGHT));
-                options.push(Options(LEFT, LEFT));
+                options.push_back(Options(RIGHT, RIGHT));
+                options.push_back(Options(LEFT, LEFT));
             }
             else
             {
                 if (on_right)
-                    options.push(Options(RIGHT, RIGHT));
+                    options.push_back(Options(RIGHT, RIGHT));
                 if (on_left)
                 {
-                    options.push(Options(LEFT, LEFT));
-                    options.push(Options(LEFT, RIGHT));
-                    options.push(Options(RIGHT, RIGHT));
-                    options.push(Options(LEFT, LEFT, 2));
+                    options.push_back(Options(LEFT, LEFT));
+                    options.push_back(Options(LEFT, RIGHT));
+                    options.push_back(Options(RIGHT, RIGHT));
+                    options.push_back(Options(LEFT, LEFT, 2));
                 }
             }
 
@@ -709,7 +709,7 @@ namespace indigo
             {
                 Options opt = options[i];
                 opt.ignore_case = true;
-                options.push(opt);
+                options.push_back(opt);
             }
 
             bool found = false;

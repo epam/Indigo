@@ -38,7 +38,7 @@ void MoleculeMorganFingerprintBuilder::calculateDescriptorsECFP(int fp_depth, Ar
 
     for (auto& feature : features)
     {
-        res.push(feature.hash);
+        res.push_back(feature.hash);
     }
 }
 
@@ -51,7 +51,7 @@ void MoleculeMorganFingerprintBuilder::calculateDescriptorsFCFP(int fp_depth, Ar
 
     for (auto& feature : features)
     {
-        res.push(feature.hash);
+        res.push_back(feature.hash);
     }
 }
 

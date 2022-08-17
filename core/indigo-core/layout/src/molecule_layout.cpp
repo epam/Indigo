@@ -398,7 +398,7 @@ Metalayout::LayoutItem& MoleculeLayout::_pushMol(Metalayout::LayoutLine& line, B
     item.type = 0;
     item.fragment = true;
     item.id = _map.size();
-    _map.push(&mol);
+    _map.push_back(&mol);
     Metalayout::getBoundRect(item.min, item.max, mol);
     item.scaledSize.diff(item.max, item.min);
     return item;

@@ -2051,8 +2051,8 @@ CEXPORT float indigoAlignAtoms(int molecule, int natoms, int* atom_ids, float* d
 
         for (i = 0; i < natoms; i++)
         {
-            points.push(mol.getAtomXyz(atom_ids[i]));
-            goals.push(Vec3f(desired_xyz[i * 3], desired_xyz[i * 3 + 1], desired_xyz[i * 3 + 2]));
+            points.push_back(mol.getAtomXyz(atom_ids[i]));
+            goals.push_back(Vec3f(desired_xyz[i * 3], desired_xyz[i * 3 + 1], desired_xyz[i * 3 + 2]));
         }
 
         if (points.size() < 1)

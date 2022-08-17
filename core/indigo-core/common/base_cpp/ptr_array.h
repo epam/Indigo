@@ -48,7 +48,7 @@ namespace indigo
 
         T& add(T* obj)
         {
-            _ptrarray.push(obj);
+            _ptrarray.push_back(obj);
             return *obj;
         }
 
@@ -67,7 +67,7 @@ namespace indigo
         void expand(int newsize)
         {
             while (_ptrarray.size() < newsize)
-                _ptrarray.push(0);
+                _ptrarray.push_back(nullptr);
         }
 
         void clear(void)

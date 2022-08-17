@@ -413,7 +413,7 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
     {
         edges.push(i);
         p0.diff(getPos(vert.neiVertex(i)), getPos(v));
-        angles.push(p0.tiltAngle2());
+        angles.push_back(p0.tiltAngle2());
     }
 
     // Sort
@@ -673,7 +673,7 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
     {
         edges.push(i);
         p0.diff(getPos(vert.neiVertex(i)), getPos(v));
-        angles.push(p0.tiltAngle2());
+        angles.push_back(p0.tiltAngle2());
     }
 
     // Sort

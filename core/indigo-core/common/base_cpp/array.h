@@ -19,6 +19,7 @@
 #ifndef __array_h__
 #define __array_h__
 
+#include <vector>
 #include <cctype>
 #include <cstdarg>
 #include <cstdio>
@@ -223,14 +224,9 @@ namespace indigo
                 throw Error("swap(): invalid index %d (size=%d)", idx2, _length);
 
             if (idx1 == idx2)
-                return;
+                return;g
 
             std::swap(_array[idx1], _array[idx2]);
-        }
-
-        void push(const T& elem)
-        {
-            push_back(elem);
         }
 
         T& push_back(const T& elem)

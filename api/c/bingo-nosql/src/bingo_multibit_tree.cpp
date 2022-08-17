@@ -160,7 +160,7 @@ void MultibitTree::_findLinear(_MultibitNode* node, const byte* query, int query
         if (coef < min_coef)
             continue;
 
-        sim_indices.push(SimResult(indices[fp_indices[i]], (float)coef));
+        sim_indices.push_back(SimResult(indices[fp_indices[i]], (float)coef));
     }
 }
 
@@ -207,9 +207,9 @@ void MultibitTree::_findSimilarInNode(MMFPtr<_MultibitNode> node_ptr, const byte
         _findSimilarInNode(node->right, query, query_bit_number, sim_coef, min_coef, right_indices, right_m01, right_m10);
 
     for (int i = 0; i < left_indices.size(); i++)
-        sim_indices.push(left_indices[i]);
+        sim_indices.push_back(left_indices[i]);
     for (int i = 0; i < right_indices.size(); i++)
-        sim_indices.push(right_indices[i]);
+        sim_indices.push_back(right_indices[i]);
 }
 
 MultibitTree::MultibitTree(int fp_size) : _fp_size(fp_size)
