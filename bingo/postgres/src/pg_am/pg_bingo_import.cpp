@@ -353,7 +353,7 @@ public:
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
             q_nulls.push(0);
-            q_oids.push(_importColumns[col_idx].type);
+            q_oids.push_back(_importColumns[col_idx].type);
 
             if (col_idx != 0)
                 query_string.printf(", ");
@@ -397,7 +397,7 @@ public:
             q_values.clear();
             for (int q_idx = 0; q_idx < _importData.size(); ++q_idx)
             {
-                q_values.push(_importData[q_idx]->getDatum());
+                q_values.push_back(_importData[q_idx]->getDatum());
                 if (q_values[q_idx] == 0)
                 {
                     q_nulls[q_idx] = 'n';

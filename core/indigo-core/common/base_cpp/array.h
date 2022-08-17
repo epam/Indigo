@@ -855,6 +855,17 @@ namespace indigo
         {
         }
 
+        Array(const Array& other)
+        {
+            copy(other);
+        }
+
+        Array& operator=(const Array& other)
+        {
+            copy(other);
+            return *this;
+        }
+
         Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
         {
             other._array = nullptr;
@@ -1238,13 +1249,8 @@ namespace indigo
 
     protected:
         char* _array;
-
         int _reserved;
         int _length;
-
-    private:
-        Array(const Array&);                            // no implicit copy
-        Array<int>& operator=(const Array<int>& right); // no copy constructor
     };
 
     template <>
