@@ -224,7 +224,7 @@ namespace indigo
                 throw Error("swap(): invalid index %d (size=%d)", idx2, _length);
 
             if (idx1 == idx2)
-                return;g
+                return;
 
             std::swap(_array[idx1], _array[idx2]);
         }
