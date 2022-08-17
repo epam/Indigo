@@ -174,6 +174,13 @@ namespace indigo
             concat(other);
         }
 
+        void copy(const T* other, int count)
+        {
+            clear_resize(0);
+            for (int i = 0; i < count; ++i)
+                push_back(other[i]);
+        }
+
         void concat(const Array<T>& other)
         {
             for (int i = 0; i < other.size(); ++i)
