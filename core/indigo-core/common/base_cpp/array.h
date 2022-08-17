@@ -19,7 +19,6 @@
 #ifndef __array_h__
 #define __array_h__
 
-#include <vector>
 #include <cctype>
 #include <cstdarg>
 #include <cstdio>
@@ -27,6 +26,7 @@
 #include <cstring>
 #include <new>
 #include <utility>
+#include <vector>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"

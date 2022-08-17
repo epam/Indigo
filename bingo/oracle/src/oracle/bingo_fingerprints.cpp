@@ -110,7 +110,7 @@ void BingoFingerprints::addFingerprint(OracleEnv& env, const byte* fp)
         }
         ptr += 8 * _chunk_qwords;
     }
-    _pending_block.mapping.push(_pending_block.mapping.size());
+    _pending_block.mapping.push_back(_pending_block.mapping.size());
     _pending_block.used++;
 }
 
