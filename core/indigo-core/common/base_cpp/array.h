@@ -170,13 +170,13 @@ namespace indigo
 
         void copy(const Array<T>& other)
         {
-            clear_resize(0);
+            _length = 0;
             concat(other);
         }
 
         void copy(const T* other, int count)
         {
-            clear_resize(0);
+            _length = 0;
             for (int i = 0; i < count; ++i)
                 push_back(other[i]);
         }
@@ -194,32 +194,6 @@ namespace indigo
 
             memmove(_array + idx, _array + idx + span, sizeof(T) * (_length - idx - span));
             _length -= span;
-        }
-
-        void remove_replace(int idx)
-        {
-            if (idx < 0 || idx >= _length)
-                throw Error("remove_replace(): invalid index %d (size=%d)", idx, _length);
-
-            if (idx < _length - 1)
-                _array[idx] = _array[_length - 1];
-
-            _length--;
-        }
-
-        int count(const T& value) const
-        {
-            return count(0, _length, value);
-        }
-
-        int count(int from, int to, const T& value) const
-        {
-            int cnt = 0;
-            for (int i = from; i < to; i++)
-                if (_array[i] == value)
-                    cnt++;
-
-            return cnt;
         }
 
         void swap(int idx1, int idx2)
@@ -315,7 +289,7 @@ namespace indigo
                 _length = 0;
                 reserve((newsize + 1) * 2);
             }
-            _length = newsize;
+            resize(newsize);
         }
 
         void swap(Array<T>& other)
@@ -2079,6 +2053,1336 @@ namespace indigo
 
     private:
         void* _context;
+    };
+
+    template <>
+    class Array<double>
+    {
+    public:
+        DECL_TPL_ERROR(ArrayError);
+
+        explicit Array() : _reserved(0), _length(0), _array(nullptr)
+        {
+        }
+
+        Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
+        {
+            other._array = nullptr;
+            other._length = 0;
+            other._reserved = 0;
+        }
+
+        ~Array()
+        {
+            if (_array != nullptr)
+            {
+                std::free(static_cast<void*>(_array));
+                _array = nullptr;
+                _length = 0;
+                _reserved = 0;
+            }
+        }
+
+        void clear()
+        {
+            _length = 0;
+        }
+
+        void reserve(int to_reserve)
+        {
+            if (to_reserve < 0)
+                throw Error("to_reserve = %d", to_reserve);
+
+            if (to_reserve > _reserved)
+            {
+                if (_length < 1)
+                {
+                    if (_array != nullptr)
+                    {
+                        std::free(static_cast<void*>(_array));
+                        _array = nullptr;
+                        _length = 0;
+                        _reserved = 0;
+                    }
+                }
+
+                double* oldptr = _array;
+
+                _array = static_cast<double*>(std::realloc(static_cast<void*>(_array), sizeof(double) * to_reserve));
+                if (_array == nullptr)
+                {
+                    _array = oldptr;
+                    throw std::bad_alloc();
+                }
+                _reserved = to_reserve;
+            }
+        }
+
+        void zerofill()
+        {
+            if (_length > 0)
+                memset(_array, 0, _length * sizeof(double));
+        }
+
+        void fffill()
+        {
+            if (_length > 0)
+                memset(_array, 0xFF, _length * sizeof(double));
+        }
+
+        void fill(const double& value)
+        {
+            for (int i = 0; i < size(); i++)
+                _array[i] = value;
+        }
+
+        const double* ptr() const
+        {
+            return _array;
+        }
+
+        double* ptr()
+        {
+            return _array;
+        }
+
+        const double& operator[](int index) const
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return _array[index];
+        }
+
+        double& operator[](int index)
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return _array[index];
+        }
+
+        const double& at(int index) const
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return (*this)[index];
+        }
+
+        double& at(int index)
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return (*this)[index];
+        }
+
+        int size() const
+        {
+            return _length;
+        }
+
+        int sizeInBytes() const
+        {
+            return _length * sizeof(double);
+        }
+
+        void copy(const Array<double>& other)
+        {
+            clear_resize(0);
+            concat(other);
+        }
+
+        void copy(const double* other, int count)
+        {
+            clear_resize(0);
+            for (int i = 0; i < count; ++i)
+                push_back(other[i]);
+        }
+
+        void concat(const Array<double>& other)
+        {
+            for (int i = 0; i < other.size(); ++i)
+                push_back(other[i]);
+        }
+
+        void remove(int idx, int span = 1)
+        {
+            if (idx < 0 || idx - _length - span + 1 >= 0)
+                throw Error("remove(): invalid index %d with span %d (size=%d)", idx, span, _length);
+
+            memmove(_array + idx, _array + idx + span, sizeof(double) * (_length - idx - span));
+            _length -= span;
+        }
+
+        void remove_replace(int idx)
+        {
+            if (idx < 0 || idx >= _length)
+                throw Error("remove_replace(): invalid index %d (size=%d)", idx, _length);
+
+            if (idx < _length - 1)
+                _array[idx] = _array[_length - 1];
+
+            _length--;
+        }
+
+        int count(const double& value) const
+        {
+            return count(0, _length, value);
+        }
+
+        int count(int from, int to, const double& value) const
+        {
+            int cnt = 0;
+            for (int i = from; i < to; i++)
+                if (_array[i] == value)
+                    cnt++;
+
+            return cnt;
+        }
+
+        void swap(int idx1, int idx2)
+        {
+            if (idx1 < 0 || idx1 >= _length)
+                throw Error("swap(): invalid index %d (size=%d)", idx1, _length);
+
+            if (idx2 < 0 || idx2 >= _length)
+                throw Error("swap(): invalid index %d (size=%d)", idx2, _length);
+
+            if (idx1 == idx2)
+                return;
+
+            std::swap(_array[idx1], _array[idx2]);
+        }
+
+        double& push_back(const double& elem)
+        {
+            resize(_length + 1);
+            new ((void*)&_array[_length - 1]) double(elem);
+            return _array[_length - 1];
+        }
+
+        void pop_back()
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+            --_length;
+            memset(_array + _length, 0, sizeof(double));
+        }
+
+        double& top()
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+            return _array[_length - 1];
+        }
+
+        const double& top() const
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1];
+        }
+
+        double& top(int offset)
+        {
+            if (_length - offset <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1 - offset];
+        }
+
+        const double& top(int offset) const
+        {
+            if (_length - offset <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1 - offset];
+        }
+
+        void resize(int newsize)
+        {
+            if (newsize > _reserved)
+                reserve((newsize + 1) * 2);
+            _length = newsize;
+        }
+
+        void expand(int newsize)
+        {
+            if (_length < newsize)
+                resize(newsize);
+        }
+
+        void expandFill(int newsize, const double& value)
+        {
+            while (_length < newsize)
+                push_back(value);
+        }
+
+        void clear_resize(int newsize)
+        {
+            if (_reserved < newsize)
+            {
+                _length = 0;
+                reserve((newsize + 1) * 2);
+            }
+            _length = newsize;
+        }
+
+        void swap(Array<double>& other)
+        {
+            std::swap(_array, other._array);
+            std::swap(_reserved, other._reserved);
+            std::swap(_length, other._length);
+        }
+
+        double* begin()
+        {
+            return _array;
+        }
+
+        double* end()
+        {
+            return _array + _length;
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor>
+        void insertionSort(int start, int end, CmpFunctor cmp)
+        {
+            int i, j;
+            char tmp[sizeof(T)]; // can't use T directly because it may have destructor
+
+            for (i = start + 1; i <= end; i++)
+            {
+                j = i;
+                while (j > start && cmp(_array[j - 1], _array[j]) > 0)
+                {
+                    T* a1 = _array + j - 1;
+                    T* a2 = a1 + 1;
+                    memcpy(&tmp, a1, sizeof(T));
+                    memcpy(a1, a2, sizeof(T));
+                    memcpy(a2, &tmp, sizeof(T));
+                    j--;
+                }
+            }
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor>
+        void qsort(int start, int end, CmpFunctor cmp)
+        {
+            // Sort elements from start to end
+            if (start >= end)
+                return;
+            if (end - start < 10)
+                insertionSort(start, end, cmp);
+
+            struct
+            {
+                double *lo, *hi;
+            } stack[32], *sp;
+
+            char tmp[sizeof(double)]; // can't use T directly because it may have destructor
+
+            sp = stack;
+
+            // push our initial values onto the stack
+            sp->lo = _array + start;
+            sp->hi = _array + end + 1;
+            sp++;
+
+            while (sp > stack)
+            {
+                // pop lo and hi off the stack
+                sp--;
+                double *high = sp->hi, *low = sp->lo;
+                double* hi = high - 1;
+                double* lo = low;
+                double* pivot = low;
+
+                while (1)
+                {
+                    while (lo < high && lo != pivot && cmp(*lo, *pivot) < 0)
+                        lo++;
+
+                    while (hi > low && (hi == pivot || cmp(*hi, *pivot) >= 0))
+                        hi--;
+
+                    if (lo < hi)
+                    {
+                        memcpy(&tmp, lo, sizeof(double));
+                        memcpy(lo, hi, sizeof(double));
+                        memcpy(hi, &tmp, sizeof(double));
+
+                        if (lo == pivot)
+                            pivot = hi;
+                        else if (hi == pivot)
+                            pivot = lo;
+
+                        hi--;
+                    }
+                    else
+                    {
+                        hi++;
+
+                        if (hi == high)
+                            // done with this segment
+                            break;
+
+                        // push the larger segment onto the stack and continue
+                        // sorting the smaller segment.
+                        if ((hi - low) > (high - hi))
+                        {
+                            sp->lo = low;
+                            sp->hi = hi;
+                            sp++;
+
+                            hi = high;
+                            low = lo;
+                        }
+                        else
+                        {
+                            sp->hi = high;
+                            sp->lo = hi;
+                            sp++;
+
+                            high = hi;
+                            lo = low;
+                        }
+
+                        pivot = lo;
+                        hi--;
+                    }
+                }
+            }
+        }
+
+        template <typename T1, typename T2>
+        void qsort(int start, int end, int (*cmp)(T1, T2, void*), void* context)
+        {
+            this->qsort(start, end, _CmpFunctorCaller<T1, T2>(cmp, context));
+        }
+
+        template <typename T1, typename T2>
+        void qsort(int (*cmp)(T1, T2, void*), void* context)
+        {
+            this->qsort(0, _length - 1, cmp, context);
+        }
+
+    protected:
+        double* _array;
+
+        int _reserved;
+        int _length;
+
+    private:
+        Array(const Array&);                            // no implicit copy
+        Array<int>& operator=(const Array<int>& right); // no copy constructor
+
+        template <typename T1, typename T2>
+        class _CmpFunctorCaller
+        {
+        public:
+            _CmpFunctorCaller(int (*cmp)(T1, T2, void*), void* context) : _context(context), _cmp(cmp)
+            {
+            }
+
+            int operator()(T1 arg1, T2 arg2) const
+            {
+                return _cmp(arg1, arg2, _context);
+            }
+
+        private:
+            void* _context;
+            int (*_cmp)(T1, T2, void*);
+        };
+    };
+
+    template <>
+    class Array<float>
+    {
+    public:
+        DECL_TPL_ERROR(ArrayError);
+
+        explicit Array() : _reserved(0), _length(0), _array(nullptr)
+        {
+        }
+
+        Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
+        {
+            other._array = nullptr;
+            other._length = 0;
+            other._reserved = 0;
+        }
+
+        ~Array()
+        {
+            if (_array != nullptr)
+            {
+                std::free(static_cast<void*>(_array));
+                _array = nullptr;
+                _length = 0;
+                _reserved = 0;
+            }
+        }
+
+        void clear()
+        {
+            _length = 0;
+        }
+
+        void reserve(int to_reserve)
+        {
+            if (to_reserve < 0)
+                throw Error("to_reserve = %d", to_reserve);
+
+            if (to_reserve > _reserved)
+            {
+                if (_length < 1)
+                {
+                    if (_array != nullptr)
+                    {
+                        std::free(static_cast<void*>(_array));
+                        _array = nullptr;
+                        _length = 0;
+                        _reserved = 0;
+                    }
+                }
+
+                float* oldptr = _array;
+
+                _array = static_cast<float*>(std::realloc(static_cast<void*>(_array), sizeof(float) * to_reserve));
+                if (_array == nullptr)
+                {
+                    _array = oldptr;
+                    throw std::bad_alloc();
+                }
+                _reserved = to_reserve;
+            }
+        }
+
+        void zerofill()
+        {
+            if (_length > 0)
+                memset(_array, 0, _length * sizeof(float));
+        }
+
+        void fffill()
+        {
+            if (_length > 0)
+                memset(_array, 0xFF, _length * sizeof(float));
+        }
+
+        void fill(const float& value)
+        {
+            for (int i = 0; i < size(); i++)
+                _array[i] = value;
+        }
+
+        const float* ptr() const
+        {
+            return _array;
+        }
+
+        float* ptr()
+        {
+            return _array;
+        }
+
+        const float& operator[](int index) const
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return _array[index];
+        }
+
+        float& operator[](int index)
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return _array[index];
+        }
+
+        const float& at(int index) const
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return (*this)[index];
+        }
+
+        float& at(int index)
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return (*this)[index];
+        }
+
+        int size() const
+        {
+            return _length;
+        }
+
+        int sizeInBytes() const
+        {
+            return _length * sizeof(float);
+        }
+
+        void copy(const Array<float>& other)
+        {
+            clear_resize(0);
+            concat(other);
+        }
+
+        void copy(const float* other, int count)
+        {
+            clear_resize(0);
+            for (int i = 0; i < count; ++i)
+                push_back(other[i]);
+        }
+
+        void concat(const Array<float>& other)
+        {
+            for (int i = 0; i < other.size(); ++i)
+                push_back(other[i]);
+        }
+
+        void remove(int idx, int span = 1)
+        {
+            if (idx < 0 || idx - _length - span + 1 >= 0)
+                throw Error("remove(): invalid index %d with span %d (size=%d)", idx, span, _length);
+
+            memmove(_array + idx, _array + idx + span, sizeof(float) * (_length - idx - span));
+            _length -= span;
+        }
+
+        void remove_replace(int idx)
+        {
+            if (idx < 0 || idx >= _length)
+                throw Error("remove_replace(): invalid index %d (size=%d)", idx, _length);
+
+            if (idx < _length - 1)
+                _array[idx] = _array[_length - 1];
+
+            _length--;
+        }
+
+        int count(const float& value) const
+        {
+            return count(0, _length, value);
+        }
+
+        int count(int from, int to, const float& value) const
+        {
+            int cnt = 0;
+            for (int i = from; i < to; i++)
+                if (_array[i] == value)
+                    cnt++;
+
+            return cnt;
+        }
+
+        void swap(int idx1, int idx2)
+        {
+            if (idx1 < 0 || idx1 >= _length)
+                throw Error("swap(): invalid index %d (size=%d)", idx1, _length);
+
+            if (idx2 < 0 || idx2 >= _length)
+                throw Error("swap(): invalid index %d (size=%d)", idx2, _length);
+
+            if (idx1 == idx2)
+                return;
+
+            std::swap(_array[idx1], _array[idx2]);
+        }
+
+        float& push_back(const float& elem)
+        {
+            resize(_length + 1);
+            new ((void*)&_array[_length - 1]) float(elem);
+            return _array[_length - 1];
+        }
+
+        void pop_back()
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+            --_length;
+            memset(_array + _length, 0, sizeof(float));
+        }
+
+        float& top()
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+            return _array[_length - 1];
+        }
+
+        const float& top() const
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1];
+        }
+
+        float& top(int offset)
+        {
+            if (_length - offset <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1 - offset];
+        }
+
+        const float& top(int offset) const
+        {
+            if (_length - offset <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1 - offset];
+        }
+
+        void resize(int newsize)
+        {
+            if (newsize > _reserved)
+                reserve((newsize + 1) * 2);
+            _length = newsize;
+        }
+
+        void expand(int newsize)
+        {
+            if (_length < newsize)
+                resize(newsize);
+        }
+
+        void expandFill(int newsize, const float& value)
+        {
+            while (_length < newsize)
+                push_back(value);
+        }
+
+        void clear_resize(int newsize)
+        {
+            if (_reserved < newsize)
+            {
+                _length = 0;
+                reserve((newsize + 1) * 2);
+            }
+            _length = newsize;
+        }
+
+        void swap(Array<float>& other)
+        {
+            std::swap(_array, other._array);
+            std::swap(_reserved, other._reserved);
+            std::swap(_length, other._length);
+        }
+
+        float* begin()
+        {
+            return _array;
+        }
+
+        float* end()
+        {
+            return _array + _length;
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor>
+        void insertionSort(int start, int end, CmpFunctor cmp)
+        {
+            int i, j;
+            char tmp[sizeof(float)]; // can't use T directly because it may have destructor
+
+            for (i = start + 1; i <= end; i++)
+            {
+                j = i;
+                while (j > start && cmp(_array[j - 1], _array[j]) > 0)
+                {
+                    float* a1 = _array + j - 1;
+                    float* a2 = a1 + 1;
+                    memcpy(&tmp, a1, sizeof(float));
+                    memcpy(a1, a2, sizeof(float));
+                    memcpy(a2, &tmp, sizeof(float));
+                    j--;
+                }
+            }
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor>
+        void qsort(int start, int end, CmpFunctor cmp)
+        {
+            // Sort elements from start to end
+            if (start >= end)
+                return;
+            if (end - start < 10)
+                insertionSort(start, end, cmp);
+
+            struct
+            {
+                float *lo, *hi;
+            } stack[32], *sp;
+
+            char tmp[sizeof(float)]; // can't use T directly because it may have destructor
+
+            sp = stack;
+
+            // push our initial values onto the stack
+            sp->lo = _array + start;
+            sp->hi = _array + end + 1;
+            sp++;
+
+            while (sp > stack)
+            {
+                // pop lo and hi off the stack
+                sp--;
+                float *high = sp->hi, *low = sp->lo;
+                float* hi = high - 1;
+                float* lo = low;
+                float* pivot = low;
+
+                while (1)
+                {
+                    while (lo < high && lo != pivot && cmp(*lo, *pivot) < 0)
+                        lo++;
+
+                    while (hi > low && (hi == pivot || cmp(*hi, *pivot) >= 0))
+                        hi--;
+
+                    if (lo < hi)
+                    {
+                        memcpy(&tmp, lo, sizeof(float));
+                        memcpy(lo, hi, sizeof(float));
+                        memcpy(hi, &tmp, sizeof(float));
+
+                        if (lo == pivot)
+                            pivot = hi;
+                        else if (hi == pivot)
+                            pivot = lo;
+
+                        hi--;
+                    }
+                    else
+                    {
+                        hi++;
+
+                        if (hi == high)
+                            // done with this segment
+                            break;
+
+                        // push the larger segment onto the stack and continue
+                        // sorting the smaller segment.
+                        if ((hi - low) > (high - hi))
+                        {
+                            sp->lo = low;
+                            sp->hi = hi;
+                            sp++;
+
+                            hi = high;
+                            low = lo;
+                        }
+                        else
+                        {
+                            sp->hi = high;
+                            sp->lo = hi;
+                            sp++;
+
+                            high = hi;
+                            lo = low;
+                        }
+
+                        pivot = lo;
+                        hi--;
+                    }
+                }
+            }
+        }
+
+        template <typename T1, typename T2>
+        void qsort(int start, int end, int (*cmp)(T1, T2, void*), void* context)
+        {
+            this->qsort(start, end, _CmpFunctorCaller<T1, T2>(cmp, context));
+        }
+
+        template <typename T1, typename T2>
+        void qsort(int (*cmp)(T1, T2, void*), void* context)
+        {
+            this->qsort(0, _length - 1, cmp, context);
+        }
+
+    protected:
+        float* _array;
+
+        int _reserved;
+        int _length;
+
+        template <typename T1, typename T2>
+        class _CmpFunctorCaller
+        {
+        public:
+            _CmpFunctorCaller(int (*cmp)(T1, T2, void*), void* context) : _context(context), _cmp(cmp)
+            {
+            }
+
+            int operator()(T1 arg1, T2 arg2) const
+            {
+                return _cmp(arg1, arg2, _context);
+            }
+
+        private:
+            void* _context;
+            int (*_cmp)(T1, T2, void*);
+        };
+    };
+
+    template <>
+    class Array<qword>
+    {
+    public:
+        DECL_TPL_ERROR(ArrayError);
+
+        explicit Array() : _reserved(0), _length(0), _array(nullptr)
+        {
+        }
+
+        Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
+        {
+            other._array = nullptr;
+            other._length = 0;
+            other._reserved = 0;
+        }
+
+        ~Array()
+        {
+            if (_array != nullptr)
+            {
+                std::free(static_cast<void*>(_array));
+                _array = nullptr;
+                _length = 0;
+                _reserved = 0;
+            }
+        }
+
+        void clear()
+        {
+            _length = 0;
+        }
+
+        void reserve(int to_reserve)
+        {
+            if (to_reserve < 0)
+                throw Error("to_reserve = %d", to_reserve);
+
+            if (to_reserve > _reserved)
+            {
+                if (_length < 1)
+                {
+                    if (_array != nullptr)
+                    {
+                        std::free(static_cast<void*>(_array));
+                        _array = nullptr;
+                        _length = 0;
+                        _reserved = 0;
+                    }
+                }
+
+                qword* oldptr = _array;
+
+                _array = static_cast<qword*>(std::realloc(static_cast<void*>(_array), sizeof(qword) * to_reserve));
+                if (_array == nullptr)
+                {
+                    _array = oldptr;
+                    throw std::bad_alloc();
+                }
+                _reserved = to_reserve;
+            }
+        }
+
+        void zerofill()
+        {
+            if (_length > 0)
+                memset(_array, 0, _length * sizeof(qword));
+        }
+
+        void fffill()
+        {
+            if (_length > 0)
+                memset(_array, 0xFF, _length * sizeof(qword));
+        }
+
+        void fill(const qword& value)
+        {
+            for (int i = 0; i < size(); i++)
+                _array[i] = value;
+        }
+
+        const qword* ptr() const
+        {
+            return _array;
+        }
+
+        qword* ptr()
+        {
+            return _array;
+        }
+
+        const qword& operator[](int index) const
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return _array[index];
+        }
+
+        qword& operator[](int index)
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return _array[index];
+        }
+
+        const qword& at(int index) const
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return (*this)[index];
+        }
+
+        qword& at(int index)
+        {
+            if (index < 0 || _length - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _length);
+
+            return (*this)[index];
+        }
+
+        int size() const
+        {
+            return _length;
+        }
+
+        int sizeInBytes() const
+        {
+            return _length * sizeof(qword);
+        }
+
+        void copy(const Array<qword>& other)
+        {
+            clear_resize(0);
+            concat(other);
+        }
+
+        void copy(const qword* other, int count)
+        {
+            clear_resize(0);
+            for (int i = 0; i < count; ++i)
+                push_back(other[i]);
+        }
+
+        void concat(const Array<qword>& other)
+        {
+            for (int i = 0; i < other.size(); ++i)
+                push_back(other[i]);
+        }
+
+        void remove(int idx, int span = 1)
+        {
+            if (idx < 0 || idx - _length - span + 1 >= 0)
+                throw Error("remove(): invalid index %d with span %d (size=%d)", idx, span, _length);
+
+            memmove(_array + idx, _array + idx + span, sizeof(qword) * (_length - idx - span));
+            _length -= span;
+        }
+
+        void remove_replace(int idx)
+        {
+            if (idx < 0 || idx >= _length)
+                throw Error("remove_replace(): invalid index %d (size=%d)", idx, _length);
+
+            if (idx < _length - 1)
+                _array[idx] = _array[_length - 1];
+
+            _length--;
+        }
+
+        int count(const qword& value) const
+        {
+            return count(0, _length, value);
+        }
+
+        int count(int from, int to, const qword& value) const
+        {
+            int cnt = 0;
+            for (int i = from; i < to; i++)
+                if (_array[i] == value)
+                    cnt++;
+
+            return cnt;
+        }
+
+        void swap(int idx1, int idx2)
+        {
+            if (idx1 < 0 || idx1 >= _length)
+                throw Error("swap(): invalid index %d (size=%d)", idx1, _length);
+
+            if (idx2 < 0 || idx2 >= _length)
+                throw Error("swap(): invalid index %d (size=%d)", idx2, _length);
+
+            if (idx1 == idx2)
+                return;
+
+            std::swap(_array[idx1], _array[idx2]);
+        }
+
+        qword& push_back(const qword& elem)
+        {
+            resize(_length + 1);
+            new ((void*)&_array[_length - 1]) qword(elem);
+            return _array[_length - 1];
+        }
+
+        void pop_back()
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+            --_length;
+            memset(_array + _length, 0, sizeof(qword));
+        }
+
+        qword& top()
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+            return _array[_length - 1];
+        }
+
+        const qword& top() const
+        {
+            if (_length <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1];
+        }
+
+        qword& top(int offset)
+        {
+            if (_length - offset <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1 - offset];
+        }
+
+        const qword& top(int offset) const
+        {
+            if (_length - offset <= 0)
+                throw Error("stack underflow");
+
+            return _array[_length - 1 - offset];
+        }
+
+        void resize(int newsize)
+        {
+            if (newsize > _reserved)
+                reserve((newsize + 1) * 2);
+            _length = newsize;
+        }
+
+        void expand(int newsize)
+        {
+            if (_length < newsize)
+                resize(newsize);
+        }
+
+        void expandFill(int newsize, const qword& value)
+        {
+            while (_length < newsize)
+                push_back(value);
+        }
+
+        void clear_resize(int newsize)
+        {
+            if (_reserved < newsize)
+            {
+                _length = 0;
+                reserve((newsize + 1) * 2);
+            }
+            _length = newsize;
+        }
+
+        void swap(Array<qword>& other)
+        {
+            std::swap(_array, other._array);
+            std::swap(_reserved, other._reserved);
+            std::swap(_length, other._length);
+        }
+
+        qword* begin()
+        {
+            return _array;
+        }
+
+        qword* end()
+        {
+            return _array + _length;
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor>
+        void insertionSort(int start, int end, CmpFunctor cmp)
+        {
+            int i, j;
+            char tmp[sizeof(qword)]; // can't use T directly because it may have destructor
+
+            for (i = start + 1; i <= end; i++)
+            {
+                j = i;
+                while (j > start && cmp(_array[j - 1], _array[j]) > 0)
+                {
+                    qword* a1 = _array + j - 1;
+                    qword* a2 = a1 + 1;
+                    memcpy(&tmp, a1, sizeof(qword));
+                    memcpy(a1, a2, sizeof(qword));
+                    memcpy(a2, &tmp, sizeof(qword));
+                    j--;
+                }
+            }
+        }
+
+        // CMP_FUNCTOR has two arguments and returns sign of comparation
+        template <typename CmpFunctor>
+        void qsort(int start, int end, CmpFunctor cmp)
+        {
+            // Sort elements from start to end
+            if (start >= end)
+                return;
+            if (end - start < 10)
+                insertionSort(start, end, cmp);
+
+            struct
+            {
+                qword *lo, *hi;
+            } stack[32], *sp;
+
+            char tmp[sizeof(qword)]; // can't use T directly because it may have destructor
+
+            sp = stack;
+
+            // push our initial values onto the stack
+            sp->lo = _array + start;
+            sp->hi = _array + end + 1;
+            sp++;
+
+            while (sp > stack)
+            {
+                // pop lo and hi off the stack
+                sp--;
+                qword *high = sp->hi, *low = sp->lo;
+                qword* hi = high - 1;
+                qword* lo = low;
+                qword* pivot = low;
+
+                while (1)
+                {
+                    while (lo < high && lo != pivot && cmp(*lo, *pivot) < 0)
+                        lo++;
+
+                    while (hi > low && (hi == pivot || cmp(*hi, *pivot) >= 0))
+                        hi--;
+
+                    if (lo < hi)
+                    {
+                        memcpy(&tmp, lo, sizeof(qword));
+                        memcpy(lo, hi, sizeof(qword));
+                        memcpy(hi, &tmp, sizeof(qword));
+
+                        if (lo == pivot)
+                            pivot = hi;
+                        else if (hi == pivot)
+                            pivot = lo;
+
+                        hi--;
+                    }
+                    else
+                    {
+                        hi++;
+
+                        if (hi == high)
+                            // done with this segment
+                            break;
+
+                        // push the larger segment onto the stack and continue
+                        // sorting the smaller segment.
+                        if ((hi - low) > (high - hi))
+                        {
+                            sp->lo = low;
+                            sp->hi = hi;
+                            sp++;
+
+                            hi = high;
+                            low = lo;
+                        }
+                        else
+                        {
+                            sp->hi = high;
+                            sp->lo = hi;
+                            sp++;
+
+                            high = hi;
+                            lo = low;
+                        }
+
+                        pivot = lo;
+                        hi--;
+                    }
+                }
+            }
+        }
+
+        template <typename T1, typename T2>
+        void qsort(int start, int end, int (*cmp)(T1, T2, void*), void* context)
+        {
+            this->qsort(start, end, _CmpFunctorCaller<T1, T2>(cmp, context));
+        }
+
+        template <typename T1, typename T2>
+        void qsort(int (*cmp)(T1, T2, void*), void* context)
+        {
+            this->qsort(0, _length - 1, cmp, context);
+        }
+
+    protected:
+        qword* _array;
+
+        int _reserved;
+        int _length;
+
+        template <typename T1, typename T2>
+        class _CmpFunctorCaller
+        {
+        public:
+            _CmpFunctorCaller(int (*cmp)(T1, T2, void*), void* context) : _context(context), _cmp(cmp)
+            {
+            }
+
+            int operator()(T1 arg1, T2 arg2) const
+            {
+                return _cmp(arg1, arg2, _context);
+            }
+
+        private:
+            void* _context;
+            int (*_cmp)(T1, T2, void*);
+        };
     };
 } // namespace indigo
 
