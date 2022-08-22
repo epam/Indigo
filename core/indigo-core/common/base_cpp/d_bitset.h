@@ -72,12 +72,12 @@ namespace indigo
 
         Array<qword> _words;
 
-        Dbitset(const Dbitset&);            // no implicit copy
-        Dbitset& operator=(const Dbitset&); // no implicit assign
     public:
         Dbitset();
         // creates a bit set whose initial size
         explicit Dbitset(int nbits);
+        Dbitset(const Dbitset& other);
+
         ~Dbitset();
 
         // sets the bit at the specified index to the complement of its current value

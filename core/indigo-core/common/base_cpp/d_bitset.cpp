@@ -123,6 +123,11 @@ Dbitset::Dbitset()
     _initWords(BITS_PER_WORD);
 }
 
+Dbitset::Dbitset(const Dbitset& other)
+{
+    copy(other);
+}
+
 Dbitset::Dbitset(int nbits)
 {
     _initWords(nbits);

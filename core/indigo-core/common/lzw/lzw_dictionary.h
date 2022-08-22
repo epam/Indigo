@@ -98,6 +98,10 @@ namespace indigo
             _DictElement(int NewPrefix, byte NewChar) : Prefix(NewPrefix), AppendChar(NewChar)
             {
             }
+
+            _DictElement() : Prefix(0), AppendChar(0)
+            {
+            }
         };
 
         int _hashingShift,                                              /* Hashing function shift */

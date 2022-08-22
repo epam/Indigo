@@ -819,7 +819,6 @@ namespace indigo
 
         int _reserved;
         int _length;
-
     };
 
     template <>
@@ -1718,7 +1717,6 @@ namespace indigo
         int _length;
 
     private:
-
         template <typename T1, typename T2>
         class _CmpFunctorCaller
         {

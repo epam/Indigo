@@ -171,6 +171,8 @@ class DLLEXPORT IndigoDecompositionMatch : public IndigoObject
 {
 public:
     IndigoDecompositionMatch();
+    IndigoDecompositionMatch(const IndigoDecompositionMatch& other);
+
     Array<int> visitedAtoms;
     Array<int> scaffoldBonds;
     Array<int> scaffoldAtoms;
@@ -196,10 +198,6 @@ public:
     Molecule mol_scaffold;
 
     IndigoDeconvolution* deco;
-
-private:
-    IndigoDecompositionMatch(const IndigoDecompositionMatch&); // no implicit copy
-
     bool _completeScaffold;
 };
 

@@ -551,7 +551,7 @@ namespace indigo
         int _size;
 
     private:
-        RedBlackTree(const RedBlackTree&); // no implicit copy
+        RedBlackTree(const RedBlackTree&);
     };
 
     template <typename Key>
@@ -574,6 +574,13 @@ namespace indigo
 
         RedBlackSet(Pool<Node>& pool) : Parent(pool)
         {
+        }
+
+        RedBlackSet(const RedBlackSet& other)
+        {
+            clear();
+            for (int i = other.begin(); i < other.end(); i = other.next(i))
+                insert(other.key(i));
         }
 
         ~RedBlackSet() override
@@ -649,14 +656,19 @@ namespace indigo
 
             return node_idx;
         }
-
-    private:
-        RedBlackSet(const RedBlackSet&); // no implicit copy
     };
 
     template <typename Key, typename Value>
     struct RedBlackMapNode : public RedBlackNodeBase
     {
+        RedBlackMapNode(const RedBlackMapNode& other) : RedBlackNodeBase(other)
+        {
+            key = other.key;
+            value = other.value;
+        }
+        RedBlackMapNode()
+        {
+        }
         Key key;
         Value value;
     };
@@ -779,6 +791,22 @@ namespace indigo
 
     public:
         typedef RedBlackStringMapNode<Value> Node;
+
+        RedBlackStringMap()
+        {
+        }
+
+        RedBlackStringMap(const RedBlackStringMap& other)
+        {
+            copy(other);
+        }
+
+        void copy(const RedBlackStringMap& other)
+        {
+            clear();
+            for (int i = other.begin(); i != other.end(); i = other.next(i))
+                this->insert(other.key(i), other.value(i));
+        }
 
         void clear() override
         {
@@ -1046,6 +1074,11 @@ namespace indigo
         {
         }
 
+        RedBlackStringObjMap(const RedBlackStringObjMap& other)
+        {
+            copy(other);
+        }
+
         ~RedBlackStringObjMap() override
         {
             this->clear();
@@ -1212,9 +1245,6 @@ namespace indigo
         }
 
         StringPool _pool;
-
-    private:
-        RedBlackStringObjMap(const RedBlackStringObjMap&); // no implicit copy
     };
 
 } // namespace indigo

@@ -33,6 +33,15 @@ namespace indigo
             int prev;
             int next;
             T item;
+            Elem(const Elem& other)
+            {
+                prev = other.prev;
+                next = other.next;
+                item = other.item;
+            }
+            Elem()
+            {
+            }
         };
 
         explicit List() : _pool(new Pool<Elem>), _size(0), _head(-1), _tail(-1), _own_pool(true)
