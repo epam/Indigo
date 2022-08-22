@@ -45,6 +45,11 @@ namespace indigo
         {
         }
 
+        Array(const Array& other)
+        {
+            copy(other);
+        }
+
         Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
         {
             other._array = nullptr;
@@ -439,10 +444,6 @@ namespace indigo
         int _reserved;
         int _length;
 
-    private:
-        Array(const Array&);                            // no implicit copy
-        Array<int>& operator=(const Array<int>& right); // no copy constructor
-
         template <typename T1, typename T2>
         class _CmpFunctorCaller
         {
@@ -487,6 +488,11 @@ namespace indigo
 
         explicit Array() : _reserved(0), _length(0), _array(nullptr)
         {
+        }
+
+        Array(const Array& other)
+        {
+            copy(other);
         }
 
         Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
@@ -814,9 +820,6 @@ namespace indigo
         int _reserved;
         int _length;
 
-    private:
-        Array(const Array&);                            // no implicit copy
-        Array<int>& operator=(const Array<int>& right); // no copy constructor
     };
 
     template <>
@@ -1235,6 +1238,11 @@ namespace indigo
 
         explicit Array() : _reserved(0), _length(0), _array(nullptr)
         {
+        }
+
+        Array(const Array& other)
+        {
+            copy(other);
         }
 
         Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
@@ -1710,8 +1718,6 @@ namespace indigo
         int _length;
 
     private:
-        Array(const Array&);                            // no implicit copy
-        Array<int>& operator=(const Array<int>& right); // no copy constructor
 
         template <typename T1, typename T2>
         class _CmpFunctorCaller
