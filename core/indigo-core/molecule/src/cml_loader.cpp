@@ -16,11 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/cml_loader.h"
-
 #include <tinyxml2.h>
 
 #include "base_cpp/scanner.h"
+#include "molecule/cml_loader.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
@@ -1312,6 +1311,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                 }
 
                 int point_idx = 0;
+                std::array<Vec2f, 2> bracket;
                 Vec2f* pbrackets;
                 XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
@@ -1320,7 +1320,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = dsg->brackets.push();
+                        pbrackets = &dsg->brackets.push_back(bracket)[0];
 
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");
@@ -1469,6 +1469,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
                 int point_idx = 0;
                 Vec2f* pbrackets;
+                std::array<Vec2f, 2> bracket;
                 XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
@@ -1476,7 +1477,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = gen->brackets.push();
+                        pbrackets = &gen->brackets.push_back(bracket)[0];
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1547,6 +1548,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
                 int point_idx = 0;
                 Vec2f* pbrackets;
+                std::array<Vec2f, 2> bracket;
                 XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
@@ -1554,7 +1556,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = sru->brackets.push();
+                        pbrackets = &sru->brackets.push_back(bracket)[0];
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1656,6 +1658,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
                 int point_idx = 0;
                 Vec2f* pbrackets;
+                std::array<Vec2f, 2> bracket;
                 XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
@@ -1663,7 +1666,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = mul->brackets.push();
+                        pbrackets = &mul->brackets.push_back(bracket)[0];
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1741,6 +1744,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
                 int point_idx = 0;
                 Vec2f* pbrackets;
+                std::array<Vec2f, 2> bracket;
                 XMLElement* pPoint;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
@@ -1748,7 +1752,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = sup->brackets.push();
+                        pbrackets = &sup->brackets.push_back(bracket)[0];
 
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");

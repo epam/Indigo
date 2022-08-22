@@ -33,9 +33,12 @@ namespace indigo
 
     class BaseMolecule;
 
-    struct RGroup
+    struct DLLEXPORT RGroup
     {
         explicit RGroup();
+        explicit RGroup(const RGroup& other);
+        RGroup& operator=(const RGroup& other);
+
         ~RGroup();
         void clear();
 
@@ -47,9 +50,6 @@ namespace indigo
         int if_then;
         int rest_h;
         Array<int> occurrence;
-
-    protected:
-        explicit RGroup(RGroup& other);
     };
 
     class DLLEXPORT MoleculeRGroups

@@ -122,7 +122,7 @@ int Graph::addEdge(int beg, int end)
     if (findEdgeIndex(beg, end) != -1)
         throw Error("already have edge between vertices %d and %d", beg, end);
 
-    int edge_idx = _edges.add();
+    int edge_idx = _edges.emplace();
 
     Vertex& vbeg = _vertices->at(beg);
     Vertex& vend = _vertices->at(end);
@@ -800,7 +800,7 @@ void Graph::_cloneGraph_KeepIndices(const Graph& other)
         throw Error("_clone_KeepIndices: internal");
 
     for (i = 0; i <= max_edge_idx; i++)
-        if (_edges.add() != i)
+        if (_edges.emplace() != i)
             throw Error("_clone_KeepIndices: unexpected edge index");
 
     i_prev = -1;

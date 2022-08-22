@@ -83,7 +83,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_dec
 void MoleculeCleaner2d::_initBasePointValid()
 {
     is_valid_base.clear_resize(vertex_size);
-    is_valid_base.zerofill();
+    is_valid_base.fill(false);
     for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
         is_valid_base[v] = is_art_point[v] || _mol.getVertex(v).degree() == 1;
 }
@@ -109,12 +109,12 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         {
             in.push();
             in.top().clear_resize(vertex_size);
-            in.top().zerofill();
+            in.top().fill(false);
         }
 
         Filter filter;
         _is_trivial.clear_resize(component_count);
-        _is_trivial.zerofill();
+        _is_trivial.fill(false);
 
         for (int i = 0; i < component_count; i++)
         {
@@ -137,7 +137,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         {
             in.push();
             in.top().clear_resize(vertex_size);
-            in.top().zerofill();
+            in.top().fill(false);
         }
 
         _is_trivial.clear_resize(component_count);
@@ -175,12 +175,12 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         QS_DEF(Array<bool>, has_vertex);
         QS_DEF(Array<bool>, block_vertex);
         has_component.clear_resize(component_count);
-        has_component.zerofill();
+        has_component.fill(false);
         component_list.clear();
         has_vertex.clear_resize(vertex_size);
-        has_vertex.zerofill();
+        has_vertex.fill(false);
         block_vertex.clear_resize(vertex_size);
-        block_vertex.zerofill();
+        block_vertex.fill(false);
 
         QS_DEF(Array<int>, local_component_list);
 
@@ -361,7 +361,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
         unite_with[i] = i;
 
     _is_straightline_vertex.clear_resize(vertex_size);
-    _is_straightline_vertex.zerofill();
+    _is_straightline_vertex.fill(false);
 
     QS_DEF(ObjArray<Array<int>>, unite_to);
     unite_to.clear();
@@ -450,7 +450,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
 
     QS_DEF(Array<bool>, valid);
     valid.clear_resize(component_count);
-    valid.zerofill();
+    valid.fill(false);
 
     for (int i = 0; i < component_count; i++)
         valid[unite_with[i]] = true;
@@ -520,7 +520,7 @@ void MoleculeCleaner2d::_initGeometry()
 void MoleculeCleaner2d::_initArtPoints()
 {
     is_art_point.clear_resize(vertex_size);
-    is_art_point.zerofill();
+    is_art_point.fill(false);
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
     {
         int cnt = 0;
@@ -540,7 +540,7 @@ void MoleculeCleaner2d::_initAdjMatrix()
     {
         adj_matrix.push();
         adj_matrix.top().clear_resize(vertex_size);
-        adj_matrix.top().zerofill();
+        adj_matrix.top().fill(false);
     }
     for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e))
     {
@@ -599,7 +599,7 @@ void MoleculeCleaner2d::_initCommonBiconnectedComp()
         decomposer.getComponent(i, filter);
         b_in.push();
         b_in[i].clear_resize(vertex_size);
-        b_in[i].zerofill();
+        b_in[i].fill(false);
         for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
         {
             b_in[i][j] = filter.valid(j);
@@ -628,7 +628,7 @@ bool MoleculeCleaner2d::_isBasePoint(int i)
 void MoleculeCleaner2d::_addCoef(int ver, int index, Vec2f value)
 {
     while (coef[ver].size() <= index)
-        coef[ver].push(ZERO);
+        coef[ver].push_back(ZERO);
     coef[ver][index] += value;
 }
 
@@ -933,7 +933,7 @@ float MoleculeCleaner2d::_energy()
                     int v = vert.neiVertex(n1);
                     Vec2f vec = pos[v] - pos[i];
                     float alpha = atan2(vec.y, vec.x);
-                    angles.push(alpha);
+                    angles.push_back(alpha);
                 }
 
                 for (int a = 0; a < angles.size(); a++)
@@ -941,7 +941,7 @@ float MoleculeCleaner2d::_energy()
                         if (angles[b + 1] < angles[b])
                             std::swap(angles[b], angles[b + 1]);
 
-                angles.push(_2FLOAT(angles[0] + 2. * M_PI));
+                angles.push_back(_2FLOAT(angles[0] + 2. * M_PI));
                 if (vert.degree() > 2)
                 {
                     float target_angle = _2FLOAT(2. * M_PI / angles.size());

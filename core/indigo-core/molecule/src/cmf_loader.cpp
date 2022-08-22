@@ -258,7 +258,7 @@ bool CmfLoader::_readAtom(int& code, _AtomDesc& atom, int atom_idx)
         if (!_getNextCode(aidx))
             throw Error("expected attachment index");
 
-        _AttachmentDesc& att = _attachments.push();
+        _AttachmentDesc& att = _attachments.emplace_back();
         att.atom = atom_idx;
         att.index = aidx;
 
@@ -496,7 +496,7 @@ void CmfLoader::loadMolecule(Molecule& mol)
 
         if (!first_atom)
         {
-            bond = &_bonds.push();
+            bond = &_bonds.emplace_back();
             bond->beg = atom_stack.top();
         }
 
@@ -521,7 +521,7 @@ void CmfLoader::loadMolecule(Molecule& mol)
             }
         }
 
-        _AtomDesc& atom = _atoms.push();
+        _AtomDesc& atom = _atoms.emplace_back();
 
         if (!first_atom)
             atom_stack.pop();

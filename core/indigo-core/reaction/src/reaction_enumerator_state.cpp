@@ -109,7 +109,8 @@ void ReactionEnumeratorState::ReactionMonomers::removeMonomer(int idx)
     }
 
     _reactant_indexes.pop();
-    delete (_monomers.pop());
+    delete (_monomers.top());
+    _monomers.pop_back();
     _deep_levels.pop();
     _tube_indexes.pop();
 }

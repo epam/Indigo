@@ -133,10 +133,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout()
                 for (int y = lat.getFirstValidY(x); lat.isIncreaseForValidY(y); lat.switchNextY(y))
                 {
                     if (lat.getCell(x, y) < SHORT_INFINITY)
-                    {
-                        answer_point point(rot, p, x, y);
-                        points.push(point);
-                    }
+                        points.emplace_back(rot, p, x, y);
                 }
             }
         }
@@ -1332,8 +1329,8 @@ void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>
         int t;
         for (t = cl.external_vertex_number[j], s = 0; t < cl.external_vertex_number[(j + 1) % len]; t++, s += 1.0f / cl.edge_length[j])
         {
-            all_points.push(cl.point[j] * (1 - s) + cl.point[j] * s);
-            all_numbers.push(j + s);
+            all_points.push_back(cl.point[j] * (1 - s) + cl.point[j] * s);
+            all_numbers.push_back(j + s);
         }
     }
 
@@ -1347,7 +1344,7 @@ void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>
                 float distSqr = (cl.point[i] - all_points[j]).lengthSqr();
                 if (eps2 < distSqr && distSqr < good_distance)
                 {
-                    pairs.push(local_pair_id(i, all_numbers[j]));
+                    pairs.emplace_back(i, all_numbers[j]);
                 }
             }
         }

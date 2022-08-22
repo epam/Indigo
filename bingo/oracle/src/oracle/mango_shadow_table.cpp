@@ -86,13 +86,13 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
         _main_table_statement->append(")");
     }
 
-    _pending_rid.push();
+    _pending_rid.emplace_back();
     strncpy(_pending_rid.top(), rowid, 19);
     _pending_blockno.push(blockno);
     _pending_offset.push(offset);
-    _pending_gross.push();
+    _pending_gross.emplace_back();
     strncpy(_pending_gross.top(), gross, 512);
-    _pending_mass.push(molecular_mass);
+    _pending_mass.push_back(molecular_mass);
 
     _pending_cmf.push(env);
     _pending_cmf.top().assignBytes(data_cmf, len_cmf);
@@ -130,9 +130,9 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
 
     for (int i = 0; i < hash.size(); i++)
     {
-        _pending_comp_hash.push();
+        _pending_comp_hash.emplace_back();
         snprintf(_pending_comp_hash.top(), 9, "%08X", hash[i].hash);
-        _pending_comp_rid.push();
+        _pending_comp_rid.emplace_back();
         strncpy(_pending_comp_rid.top(), rowid, 19);
         _pending_comp_count.push(hash[i].count);
         _components_table_statement_count++;
@@ -205,10 +205,10 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
                 if (_pending_xyz[i].get() != 0)
                 {
                     memcpy(xyz.ptr() + i * (maxallocsize_xyz + 4), _pending_xyz[i].get(), _pending_xyz[i].getAllocSize() + 4);
-                    xyz_ind.push(0); // OCI_IND_NOTNULL
+                    xyz_ind.push_back(0); // OCI_IND_NOTNULL
                 }
                 else
-                    xyz_ind.push(-1); // OCI_IND_NULL
+                    xyz_ind.push_back(-1); // OCI_IND_NULL
             }
 
             _main_table_statement->bindRawPtrByName(":cmf", (OCIRaw*)cmf.ptr(), maxallocsize_cmf, 0);

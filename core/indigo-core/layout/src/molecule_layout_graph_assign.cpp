@@ -559,7 +559,7 @@ void MoleculeLayoutGraph::_buildOutline(void)
         else if (_outline->size() > 0)
             break;
 
-        _outline->push(pos_i);
+        _outline->push_back(pos_i);
 
         max_angle = 0.f;
 
@@ -620,7 +620,7 @@ void MoleculeLayoutGraph::_buildOutline(void)
             if (min_dist < 10000.f)
             {
                 if (min_dist > EPSILON)
-                    _outline->push(v);
+                    _outline->push_back(v);
 
                 const Edge& edge = getEdge(int_edge);
                 const Vec2f& cur_v3 = getPos(edge.beg);

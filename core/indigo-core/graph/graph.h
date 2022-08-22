@@ -21,7 +21,6 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
-#include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/ptr_array.h"
@@ -65,6 +64,9 @@ namespace indigo
     class DLLEXPORT Vertex
     {
     public:
+        Vertex()
+        {
+        }
         Vertex(Pool<List<VertexEdge>::Elem>& pool) : neighbors_list(pool)
         {
         }
@@ -105,9 +107,6 @@ namespace indigo
         {
             return neighbors_list.size();
         }
-
-    private:
-        Vertex(const Vertex&); // no implicit copy
     };
 
     struct Edge
@@ -123,11 +122,19 @@ namespace indigo
                 return beg;
             return -1;
         }
+
+        Edge() : beg(-1), end(-1)
+        {
+        }
+
+        Edge(int begin, int end) : beg(begin), end(end)
+        {
+        }
     };
 
     class CycleBasis;
 
-    class DLLEXPORT Graph : public NonCopyable
+    class DLLEXPORT Graph
     {
     public:
         DECL_ERROR;

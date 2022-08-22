@@ -1053,9 +1053,7 @@ void TopNSimMatcher::_findTopN()
             while (BaseSimilarityMatcher::next())
             {
                 cnt++;
-                res = &_current_results.push();
-                res->id = _current_id;
-                res->sim_value = _current_sim_value;
+                res = &_current_results.emplace_back(_current_id, _current_sim_value);
                 cur_cell = currentCell();
                 if ((cnt > hits_limit * 2) && ((max_cell - cur_cell) > cells_count / 2))
                 {
@@ -1109,9 +1107,7 @@ void TopNSimMatcher::_findTopN()
             while (BaseSimilarityMatcher::next())
             {
                 cnt++;
-                res = &_current_results.push();
-                res->id = _current_id;
-                res->sim_value = _current_sim_value;
+                res = &_current_results.emplace_back(_current_id, _current_sim_value);
 
                 if (cnt > hits_limit * 2)
                 {
@@ -1186,9 +1182,7 @@ void TopNSimMatcher::_findTopN()
                 while (BaseSimilarityMatcher::next())
                 {
                     cnt++;
-                    res = &_current_results.push();
-                    res->id = _current_id;
-                    res->sim_value = _current_sim_value;
+                    res = &_current_results.emplace_back(_current_id, _current_sim_value);
                     cur_cell = currentCell();
                     if ((cnt > hits_limit * 2) && (max_cell - cur_cell) > cells_count / 2)
                     {
@@ -1246,7 +1240,7 @@ void TopNSimMatcher::_findTopN()
         for (i = 0; i < _current_results.size(); i++)
         {
             _result_ids.push(_current_results[i].id);
-            _result_sims.push(_current_results[i].sim_value);
+            _result_sims.push_back(_current_results[i].sim_value);
 
             if (i == (hits_limit - 1))
                 break;
@@ -1268,7 +1262,7 @@ void TopNSimMatcher::_initModelDistribution(Array<float>& model_thrs, Array<int>
 {
     for (int i = 0; i < 9; i++)
     {
-        model_thrs.push(_2FLOAT(1.0 - 0.1 * (i + 1)));
+        model_thrs.push_back(_2FLOAT(1.0 - 0.1 * (i + 1)));
         model_nhits_per_block.push(5 * 2 ^ (i));
     }
 }

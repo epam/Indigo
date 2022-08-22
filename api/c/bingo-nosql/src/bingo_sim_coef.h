@@ -10,6 +10,10 @@ namespace bingo
         int id;
         float sim_value;
 
+        SimResult() : id(0), sim_value(0)
+        {
+        }
+
         SimResult(int new_id, float new_sim_value) : id(new_id), sim_value(new_sim_value)
         {
         }

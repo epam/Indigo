@@ -48,13 +48,15 @@ namespace indigo
 
         T& add(T* obj)
         {
-            _ptrarray.push(obj);
+            _ptrarray.push_back(obj);
             return *obj;
         }
 
-        T* pop(void)
+        void pop_back(void)
         {
-            return _ptrarray.pop();
+            // assume the pointer is passed somewhere.
+            _ptrarray.top() = nullptr;
+            _ptrarray.pop_back();
         }
 
         T* top(void)
@@ -65,7 +67,7 @@ namespace indigo
         void expand(int newsize)
         {
             while (_ptrarray.size() < newsize)
-                _ptrarray.push(0);
+                _ptrarray.push_back(nullptr);
         }
 
         void clear(void)
@@ -106,13 +108,13 @@ namespace indigo
 
         void removeLast()
         {
-            delete _ptrarray.pop();
+            delete _ptrarray.top();
+            _ptrarray.pop_back();
         }
 
         void remove(int idx)
         {
             delete _ptrarray[idx];
-
             _ptrarray.remove(idx);
         }
 

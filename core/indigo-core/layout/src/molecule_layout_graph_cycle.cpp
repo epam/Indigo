@@ -26,7 +26,6 @@ MoleculeLayoutGraph::Cycle::Cycle() : CP_INIT, TL_CP_GET(_vertices), TL_CP_GET(_
 {
     _vertices.clear();
     _edges.clear();
-    _attached_weight.clear();
     _max_idx = 0;
     _morgan_code_calculated = false;
 }

@@ -175,7 +175,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                     {
                         if (supersa.bond_connections[j].bond_idx > -1 && edge_mapping[supersa.bond_connections[j].bond_idx] > -1)
                         {
-                            Superatom::_BondConnection& bond = sa.bond_connections.push();
+                            Superatom::_BondConnection& bond = sa.bond_connections.emplace_back();
                             bond.bond_dir = supersa.bond_connections[j].bond_dir;
                             bond.bond_idx = edge_mapping[supersa.bond_connections[j].bond_idx];
                         }

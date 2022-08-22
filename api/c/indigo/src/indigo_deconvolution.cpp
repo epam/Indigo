@@ -1037,6 +1037,11 @@ IndigoDecompositionMatch::IndigoDecompositionMatch() : IndigoObject(DECOMPOSITIO
 {
 }
 
+IndigoDecompositionMatch::IndigoDecompositionMatch(const IndigoDecompositionMatch& other) : IndigoObject(DECOMPOSITION_MATCH), deco(0), _completeScaffold(false)
+{
+    copy(const_cast<IndigoDecompositionMatch&>(other));
+}
+
 bool IndigoDeconvolution::_matchAtoms(Graph& g1, Graph& g2, const int*, int sub_idx, int super_idx, void* userdata)
 {
     if (userdata == 0)

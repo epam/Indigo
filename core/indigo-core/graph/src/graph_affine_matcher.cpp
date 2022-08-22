@@ -53,9 +53,9 @@ bool GraphAffineMatcher::match(float rms_threshold)
             if (_mapping[fixed_vertices->at(i)] < 0)
                 continue;
             cb_get_xyz(_subgraph, fixed_vertices->at(i), pos);
-            points.push(pos);
+            points.push_back(pos);
             cb_get_xyz(_supergraph, _mapping[fixed_vertices->at(i)], pos);
-            goals.push(pos);
+            goals.push_back(pos);
         }
     }
     else
@@ -64,9 +64,9 @@ bool GraphAffineMatcher::match(float rms_threshold)
             if (_mapping[i] < 0)
                 continue;
             cb_get_xyz(_subgraph, i, pos);
-            points.push(pos);
+            points.push_back(pos);
             cb_get_xyz(_supergraph, _mapping[i], pos);
-            goals.push(pos);
+            goals.push_back(pos);
         }
 
     if (points.size() < 1)

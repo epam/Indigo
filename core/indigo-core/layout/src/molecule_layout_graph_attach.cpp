@@ -849,7 +849,7 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
             v1.y += 0.001f;
             p0.diff(v1, v2);
         }
-        angles.push(p0.tiltAngle2());
+        angles.push_back(p0.tiltAngle2());
     }
 
     // sort

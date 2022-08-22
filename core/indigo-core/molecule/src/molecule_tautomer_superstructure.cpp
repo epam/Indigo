@@ -90,7 +90,7 @@ TautomerSuperStructure::TautomerSuperStructure(Molecule& mol)
         }
 
     _isBondAttachedArray.resize(edgeEnd());
-    _isBondAttachedArray.zerofill();
+    _isBondAttachedArray.fill(false);
     for (int i = 0; i < attachedBonds.size(); i++)
         _isBondAttachedArray[attachedBonds[i]] = true;
 

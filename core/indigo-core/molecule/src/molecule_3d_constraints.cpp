@@ -701,7 +701,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
         for (int i = 0; i < constr.point_ids.size(); i++)
         {
             _cache(constr.point_ids[i]);
-            points.push(_cache_v.at(constr.point_ids[i]));
+            points.push_back(_cache_v.at(constr.point_ids[i]));
         }
 
         Line3f res;
@@ -723,7 +723,7 @@ void Molecule3dConstraintsChecker::_cache(int idx)
         for (int i = 0; i < constr.point_ids.size(); i++)
         {
             _cache(constr.point_ids[i]);
-            points.push(_cache_v.at(constr.point_ids[i]));
+            points.push_back(_cache_v.at(constr.point_ids[i]));
         }
 
         Plane3f res;

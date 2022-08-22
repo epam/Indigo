@@ -32,6 +32,11 @@ namespace indigo
         {
         }
 
+        ObjArray(const ObjArray& other)
+        {
+            copy(other);
+        }
+
         ~ObjArray()
         {
             while (size() > 0)
@@ -65,50 +70,35 @@ namespace indigo
 
         T& push()
         {
-            void* addr = &_array.push();
-
-            new (addr) T();
-
+            _array.emplace_back();
             return _array.top();
         }
 
         template <typename A>
         T& push(A& a)
         {
-            void* addr = &_array.push();
-
-            new (addr) T(a);
-
+            _array.emplace_back(a);
             return _array.top();
         }
 
         template <typename A, typename B>
         T& push(A& a, B* b)
         {
-            void* addr = &_array.push();
-
-            new (addr) T(a, b);
-
+            void* addr = &_array.emplace_back(a, b);
             return _array.top();
         }
 
         template <typename A, typename B, typename C>
         T& push(A& a, B& b, C& c)
         {
-            void* addr = &_array.push();
-
-            new (addr) T(a, b, c);
-
+            void* addr = &_array.emplace_back(a, b, c);
             return _array.top();
         }
 
         template <typename A, typename B, typename C>
         T& push(A* a, B b, C c)
         {
-            void* addr = &_array.push();
-
-            new (addr) T(a, b, c);
-
+            void* addr = &_array.emplace_back(a, b, c);
             return _array.top();
         }
 
@@ -168,7 +158,7 @@ namespace indigo
         void pop()
         {
             _array.top().~T();
-            _array.pop();
+            _array.pop_back();
         }
 
         template <typename T1, typename T2>
@@ -182,11 +172,13 @@ namespace indigo
             return _array.ptr();
         }
 
+        void copy(const ObjArray<T>& other)
+        {
+            _array.copy(other._array);
+        }
+
     protected:
         Array<T> _array;
-
-    private:
-        ObjArray(const ObjArray&); // no implicit copy
     };
 
 } // namespace indigo

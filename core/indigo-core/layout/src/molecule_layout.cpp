@@ -117,7 +117,7 @@ void _collectCrossBonds(Array<int>& crossBonds, Array<bool>& crossBondOut, BaseM
     }
 }
 
-void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, const Array<int>& crossBonds,
+void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const Array<int>& atoms, const Array<int>& crossBonds,
                                     const Array<bool>& crossBondOut, float bondLength)
 {
     brackets.clear();
@@ -181,18 +181,16 @@ void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol
             float factor = 0.5;
             b1.addScaled(n, factor * bondLength);
             b2.addScaled(n, -factor * bondLength);
-            Vec2f* const& bracket1 = brackets.push();
-            bracket1[0].copy(b1);
-            bracket1[1].copy(b2);
 
+            std::array<Vec2f, 2> bracket1{b1, b2};
+            brackets.push_back(bracket1);
             b1.copy(c);
             b1.addScaled(d, min.x - 0.3f * bondLength);
             b2.copy(b1);
             b1.addScaled(n, -factor * bondLength);
             b2.addScaled(n, factor * bondLength);
-            Vec2f* const& bracket2 = brackets.push();
-            bracket2[0].copy(b1);
-            bracket2[1].copy(b2);
+            std::array<Vec2f, 2> bracket2{b1, b2};
+            brackets.push_back(bracket2);
             return;
         }
     }
@@ -219,13 +217,13 @@ void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol
         float factor = 0.5;
         b1.addScaled(n, factor * bondLength);
         b2.addScaled(n, -factor * bondLength);
-        Vec2f* const& bracket = brackets.push();
-        bracket[0].copy(b1);
-        bracket[1].copy(b2);
+
+        std::array<Vec2f, 2> bracket{b1, b2};
+        brackets.push_back(bracket);
     }
 }
 
-void _placeSGroupBracketsCrossBondSingle(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, int bid, bool out, float bondLength)
+void _placeSGroupBracketsCrossBondSingle(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const Array<int>& atoms, int bid, bool out, float bondLength)
 {
     brackets.clear();
     const Edge& edge = mol.getEdge(bid);
@@ -270,20 +268,18 @@ void _placeSGroupBracketsCrossBondSingle(Array<Vec2f[2]>& brackets, BaseMolecule
     float factor = 0.5;
     b1.addScaled(n, factor * bondLength);
     b2.addScaled(n, -factor * bondLength);
-    Vec2f* const& bracket1 = brackets.push();
-    bracket1[0].copy(b1);
-    bracket1[1].copy(b2);
+    std::array<Vec2f, 2> bracket1{b1, b2};
+    brackets.push_back(bracket1);
 
     b1.lineCombin(p2dIn, d, min.x - 0.3f * bondLength);
     b2.copy(b1);
     b1.addScaled(n, -factor * bondLength);
     b2.addScaled(n, factor * bondLength);
-    Vec2f* const& bracket2 = brackets.push();
-    bracket2[0].copy(b1);
-    bracket2[1].copy(b2);
+    std::array<Vec2f, 2> bracket2{b1, b2};
+    brackets.push_back(bracket2);
 }
 
-void _placeSGroupBracketsHorizontal(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, float bondLength)
+void _placeSGroupBracketsHorizontal(Array<std::array<Vec2f, 2>>& brackets, BaseMolecule& mol, const Array<int>& atoms, float bondLength)
 {
     brackets.clear();
     Vec2f min, max, a, b;
@@ -309,12 +305,12 @@ void _placeSGroupBracketsHorizontal(Array<Vec2f[2]>& brackets, BaseMolecule& mol
     min.sub(Vec2f(extent, extent));
     max.add(Vec2f(extent, extent));
 
-    Vec2f* const& left = brackets.push();
-    left[0].set(min.x, min.y);
-    left[1].set(min.x, max.y);
-    Vec2f* const& right = brackets.push();
-    right[0].set(max.x, max.y);
-    right[1].set(max.x, min.y);
+    // brackets.emplace_back(min.x, min.y,min.x, max.y,max.x, max.y,max.x, min.y); change later
+    std::array<Vec2f, 2> left{Vec2f(min.x, min.y), Vec2f(min.x, max.y)};
+    brackets.push_back(left);
+
+    std::array<Vec2f, 2> right{Vec2f(max.x, max.y), Vec2f(max.x, min.y)};
+    brackets.push_back(right);
 }
 
 void MoleculeLayout::_updateDataSGroups()
@@ -402,7 +398,7 @@ Metalayout::LayoutItem& MoleculeLayout::_pushMol(Metalayout::LayoutLine& line, B
     item.type = 0;
     item.fragment = true;
     item.id = _map.size();
-    _map.push(&mol);
+    _map.push_back(&mol);
     Metalayout::getBoundRect(item.min, item.max, mol);
     item.scaledSize.diff(item.max, item.min);
     return item;

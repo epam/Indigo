@@ -28,14 +28,14 @@
 namespace indigo
 {
 
-    class MoleculeRGroupsComposition : NonCopyable
+    class MoleculeRGroupsComposition
     {
     public:
         explicit MoleculeRGroupsComposition(BaseMolecule& mol);
         ~MoleculeRGroupsComposition(){};
 
         // State of search abstracted from chemistry details
-        class AttachmentIter : NonCopyable
+        class AttachmentIter
         {
         public:
             // Default constructor is used to indicate final state
@@ -73,7 +73,7 @@ namespace indigo
         };
 
         // Collection of search states
-        class Attachments : NonCopyable
+        class Attachments
         {
         public:
             Attachments(int size, const Array<int>& limits) : _limits(limits), _end(), _size(size)

@@ -26,6 +26,17 @@ RGroup::RGroup() : if_then(0), rest_h(0)
 {
 }
 
+RGroup::RGroup(const RGroup& other)
+{
+    copy(const_cast<RGroup&>(other));
+}
+
+RGroup& RGroup::operator=(const RGroup& other)
+{
+    copy(const_cast<RGroup&>(other));
+    return *this;
+}
+
 RGroup::~RGroup()
 {
 }

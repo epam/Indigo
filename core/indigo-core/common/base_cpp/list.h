@@ -33,6 +33,15 @@ namespace indigo
             int prev;
             int next;
             T item;
+            Elem(const Elem& other)
+            {
+                prev = other.prev;
+                next = other.next;
+                item = other.item;
+            }
+            Elem()
+            {
+            }
         };
 
         explicit List() : _pool(new Pool<Elem>), _size(0), _head(-1), _tail(-1), _own_pool(true)
@@ -54,7 +63,7 @@ namespace indigo
         {
             if (_size == 0)
             {
-                _head = _pool->add();
+                _head = _pool->emplace();
                 _tail = _head;
 
                 Elem& elem = _pool->at(_head);
@@ -64,7 +73,7 @@ namespace indigo
             }
             else
             {
-                int idx = _pool->add();
+                int idx = _pool->emplace();
                 Elem& elem = _pool->at(idx);
 
                 _pool->at(_tail).next = idx;
@@ -89,7 +98,7 @@ namespace indigo
         {
             _pool->at(existing); // will throw if the element does not exist
 
-            int idx = _pool->add();
+            int idx = _pool->emplace();
             Elem& ex = _pool->at(existing);
             Elem& elem = _pool->at(idx);
 
@@ -111,7 +120,7 @@ namespace indigo
         {
             _pool->at(existing); // will throw if the element does not exist
 
-            int idx = _pool->add();
+            int idx = _pool->emplace();
             Elem& ex = _pool->at(existing);
             Elem& elem = _pool->at(idx);
 
@@ -220,9 +229,6 @@ namespace indigo
         int _head;
         int _tail;
         bool _own_pool;
-
-    private:
-        List(const List<T>&); // no implicit copy
     };
 
 } // namespace indigo

@@ -583,7 +583,10 @@ QueryMolecule::Node* QueryMolecule::Node::_und(QueryMolecule::Node* node1, Query
         if (node2->type == QueryMolecule::OP_AND)
         {
             while (node2->children.size() != 0)
-                node1->children.add(node2->children.pop());
+            {
+                node1->children.add(node2->children.top());
+                node2->children.pop_back();
+            }
         }
         else
             node1->children.add(node2);
@@ -624,7 +627,10 @@ QueryMolecule::Node* QueryMolecule::Node::_oder(QueryMolecule::Node* node1, Quer
         if (node2->type == QueryMolecule::OP_OR)
         {
             while (node2->children.size() != 0)
-                node1->children.add(node2->children.pop());
+            {
+                node1->children.add(node2->children.top());
+                node2->children.pop_back();
+            }
         }
         else
             node1->children.add(node2);
@@ -650,7 +656,7 @@ QueryMolecule::Node* QueryMolecule::Node::_nicht(QueryMolecule::Node* node)
 {
     if (node->type == QueryMolecule::OP_NOT)
     {
-        Node* res = (Node*)node->children.pop();
+        Node* res = node->children.top();
         delete node;
         return res;
     }

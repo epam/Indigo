@@ -551,7 +551,7 @@ namespace indigo
         int _size;
 
     private:
-        RedBlackTree(const RedBlackTree&); // no implicit copy
+        RedBlackTree(const RedBlackTree&);
     };
 
     template <typename Key>
@@ -574,6 +574,13 @@ namespace indigo
 
         RedBlackSet(Pool<Node>& pool) : Parent(pool)
         {
+        }
+
+        RedBlackSet(const RedBlackSet& other)
+        {
+            Parent::clear();
+            for (int i = other.begin(); i < other.end(); i = other.next(i))
+                insert(other.key(i));
         }
 
         ~RedBlackSet() override
@@ -640,7 +647,7 @@ namespace indigo
 
         int _insert(Key key, int parent, int sign)
         {
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key = key;
@@ -649,14 +656,19 @@ namespace indigo
 
             return node_idx;
         }
-
-    private:
-        RedBlackSet(const RedBlackSet&); // no implicit copy
     };
 
     template <typename Key, typename Value>
     struct RedBlackMapNode : public RedBlackNodeBase
     {
+        RedBlackMapNode(const RedBlackMapNode& other) : RedBlackNodeBase(other)
+        {
+            key = other.key;
+            value = other.value;
+        }
+        RedBlackMapNode()
+        {
+        }
         Key key;
         Value value;
     };
@@ -752,7 +764,7 @@ namespace indigo
 
         void _insert(Key key, Value value, int parent, int sign)
         {
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key = key;
@@ -779,6 +791,22 @@ namespace indigo
 
     public:
         typedef RedBlackStringMapNode<Value> Node;
+
+        RedBlackStringMap()
+        {
+        }
+
+        RedBlackStringMap(const RedBlackStringMap& other)
+        {
+            copy(other);
+        }
+
+        void copy(const RedBlackStringMap& other)
+        {
+            clear();
+            for (int i = other.begin(); i != other.end(); i = other.next(i))
+                this->insert(other.key(i), other.value(i));
+        }
 
         void clear() override
         {
@@ -849,7 +877,7 @@ namespace indigo
         void _insert(const char* key, Value value, int parent, int sign)
         {
             int string_idx = _pool.add(key);
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key_idx = string_idx;
@@ -998,7 +1026,7 @@ namespace indigo
 
         Value* _insert(Key key, int parent, int sign)
         {
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key = key;
@@ -1044,6 +1072,11 @@ namespace indigo
     public:
         RedBlackStringObjMap()
         {
+        }
+
+        RedBlackStringObjMap(const RedBlackStringObjMap& other)
+        {
+            copy(other);
         }
 
         ~RedBlackStringObjMap() override
@@ -1182,7 +1215,7 @@ namespace indigo
         int _insert(const char* key, int parent, int sign)
         {
             int string_idx = _pool.add(key);
-            int node_idx = this->_nodes->add();
+            int node_idx = this->_nodes->emplace();
             Node& node = this->_nodes->at(node_idx);
 
             node.key_idx = string_idx;
@@ -1212,9 +1245,6 @@ namespace indigo
         }
 
         StringPool _pool;
-
-    private:
-        RedBlackStringObjMap(const RedBlackStringObjMap&); // no implicit copy
     };
 
 } // namespace indigo

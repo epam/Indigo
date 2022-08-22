@@ -357,7 +357,7 @@ bool MoleculeCisTrans::exists() const
 void MoleculeCisTrans::registerBond(int idx)
 {
     while (_bonds.size() <= idx)
-        _bonds.push().clear();
+        _bonds.emplace_back().clear();
     _bonds[idx].clear();
 }
 
@@ -547,7 +547,7 @@ bool MoleculeCisTrans::isIgnored(int bond_idx) const
 void MoleculeCisTrans::ignore(int bond_idx)
 {
     while (bond_idx >= _bonds.size())
-        _bonds.push().clear();
+        _bonds.emplace_back().clear();
     _bonds[bond_idx].parity = 0;
     _bonds[bond_idx].ignored = 1;
 }
@@ -555,7 +555,7 @@ void MoleculeCisTrans::ignore(int bond_idx)
 void MoleculeCisTrans::setParity(int bond_idx, int parity)
 {
     while (_bonds.size() <= bond_idx)
-        _bonds.push().clear();
+        _bonds.emplace_back().clear();
     _bonds[bond_idx].parity = parity;
 }
 
@@ -736,7 +736,7 @@ void MoleculeCisTrans::buildOnSubmolecule(BaseMolecule& baseMolecule, BaseMolecu
 
     while (_bonds.size() < baseMolecule.edgeEnd())
     {
-        _Bond& bond = _bonds.push();
+        _Bond& bond = _bonds.emplace_back();
 
         memset(&bond, 0, sizeof(_Bond));
     }

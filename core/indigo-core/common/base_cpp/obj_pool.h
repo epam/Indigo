@@ -37,40 +37,8 @@ namespace indigo
             clear();
         }
 
-        int add()
-        {
-            int idx = _pool.add();
-
-            void* addr = &_pool[idx];
-
-            new (addr) T();
-
-            return idx;
-        }
-
-        template <typename A>
-        int add(A& a)
-        {
-            int idx = _pool.add();
-
-            void* addr = &_pool[idx];
-
-            new (addr) T(a);
-
-            return idx;
-        }
-
-        template <typename A, typename B>
-        int add(A& a, B& b)
-        {
-            int idx = _pool.add();
-
-            void* addr = &_pool[idx];
-
-            new (addr) T(a, b);
-
-            return idx;
-        }
+        template <class... Args>
+        int add(Args&&... args);
 
         void remove(int idx)
         {
@@ -139,6 +107,12 @@ namespace indigo
         ObjPool(const ObjPool<T>&); // no implicit copy
     };
 
+    template <typename T>
+    template <class... Args>
+    int ObjPool<T>::add(Args&&... args)
+    {
+        return _pool.emplace(std::forward<Args>(args)...);
+    }
 } // namespace indigo
 
 #endif

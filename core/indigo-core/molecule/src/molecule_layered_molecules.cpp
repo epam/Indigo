@@ -62,7 +62,7 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule) : _layersAromatized(0
         bool stub;
         node = _trie.add(node, _proto.getBondOrder(i), stub);
     }
-    _hashs.push(node);
+    _hashs.push_back(node);
 }
 
 LayeredMolecules::~LayeredMolecules()
@@ -188,7 +188,7 @@ bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset& mask, const Arra
                 _mobilePositionsOccupied[i].set(newTautomerIndex);
         }
 
-        _hashs.push(node);
+        _hashs.push_back(node);
         ++layers;
         maskCopy.reset(prototypeIndex);
         _mobilePositionsOccupied[forward ? beg : end].reset(newTautomerIndex);

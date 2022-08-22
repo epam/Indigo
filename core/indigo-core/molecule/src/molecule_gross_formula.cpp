@@ -281,8 +281,7 @@ void MoleculeGrossFormula::_toString(const Array<int>& gross, ArrayOutput& outpu
 
     for (i = 1; i < ELEM_MAX; i++)
     {
-        _ElemCounter& ec = counters.push();
-
+        _ElemCounter& ec = counters.emplace_back();
         ec.elem = i;
         ec.counter = gross[i];
     }
@@ -328,7 +327,7 @@ void MoleculeGrossFormula::_toString(const RedBlackMap<int, int>& isotopes, Arra
         if (isotopes.key(i) == ELEM_RSITE)
             continue;
 
-        _ElemCounter& ec = counters.push();
+        _ElemCounter& ec = counters.emplace_back();
 
         number = isotopes.key(i) & 0xFF;
         isotope = isotopes.key(i) >> 8;

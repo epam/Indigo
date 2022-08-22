@@ -20,7 +20,6 @@
 #define __molecule_cleaner_2d__
 
 #include "base_cpp/array.h"
-#include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
 #include "common/math/algebra.h"
 
@@ -28,7 +27,7 @@ namespace indigo
 {
     class BaseMolecule;
 
-    class DLLEXPORT MoleculeCleaner2d : public NonCopyable
+    class DLLEXPORT MoleculeCleaner2d
     {
 
     public:

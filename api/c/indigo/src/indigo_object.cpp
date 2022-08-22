@@ -25,7 +25,7 @@
 #include "reaction/reaction.h"
 
 using IndigoObjectTypesMap = std::map<int, const char* const>;
-class IndigoObjectTypes : public IndigoObjectTypesMap, public NonCopyable
+class IndigoObjectTypes : public IndigoObjectTypesMap
 {
 public:
     IndigoObjectTypes();

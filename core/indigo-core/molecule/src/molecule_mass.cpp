@@ -395,7 +395,7 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str)
 
         for (i = ELEM_MIN; i < ELEM_MAX; i++)
         {
-            _ElemCounter& ec = counters.push();
+            _ElemCounter& ec = counters.emplace_back();
 
             ec.elem = i;
             ec.weight = (relativeMass[i] / totalWeight) * 100;

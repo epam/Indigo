@@ -218,7 +218,7 @@ void AromatizerBase::addAromaticCycle(int id, const int* cycle, int cycle_len)
         if (_unsureCyclesCount == _unsure_cycles.size())
         {
             empty_idx = _unsure_cycles.size();
-            _unsure_cycles.push();
+            _unsure_cycles.emplace_back();
         }
         else
         {
@@ -782,7 +782,7 @@ void QueryMoleculeAromatizer::_handleAromaticCycle(const int* cycle, int cycle_l
     if (!_collecting)
         return;
     // Add cycle to storage
-    _aromatic_cycles.push();
+    _aromatic_cycles.emplace_back();
     CycleDef& def = _aromatic_cycles[_aromatic_cycles.size() - 1];
     def.id = _aromatic_cycles.size() - 1;
     def.is_empty = false;

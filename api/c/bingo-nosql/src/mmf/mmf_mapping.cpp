@@ -36,7 +36,7 @@ void MMFMapping::getAll(size_t id1, Array<size_t>& id2_array)
         for (i = 0; i < it->count; i++)
         {
             if (it->buf[i].first == id1)
-                id2_array.push(it->buf[i].second);
+                id2_array.push_back(it->buf[i].second);
         }
     }
 }

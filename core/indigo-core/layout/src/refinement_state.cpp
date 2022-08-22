@@ -247,7 +247,7 @@ float RefinementState::calc_best_angle()
     QS_DEF(Array<bool>, take);
     convex_hull.resize(_graph.vertexEnd() + 1);
     take.resize(_graph.vertexEnd());
-    take.zerofill();
+    take.fill(false);
 
     int index = 0;
 

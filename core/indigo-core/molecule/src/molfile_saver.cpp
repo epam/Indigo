@@ -987,7 +987,7 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, int idx, Output& outp
     }
     for (i = 0; i < sgroup.brackets.size(); i++)
     {
-        Vec2f* brackets = sgroup.brackets[i];
+        auto& brackets = sgroup.brackets[i];
         output.printf(" BRKXYZ=(9 %f %f %f %f %f %f %f %f %f)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
     }
     if (sgroup.brackets.size() > 0 && sgroup.brk_style > 0)
@@ -1068,14 +1068,15 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         qmol = (QueryMolecule*)(&mol);
 
     int i;
-    QS_DEF(Array<int[2]>, radicals);
+    using intpair = std::array<int, 2>;
+    QS_DEF(Array<intpair>, radicals);
     QS_DEF(Array<int>, charges);
     QS_DEF(Array<int>, isotopes);
     QS_DEF(Array<int>, pseudoatoms);
     QS_DEF(Array<int>, atom_lists);
     QS_DEF(Array<int>, unsaturated);
-    QS_DEF(Array<int[2]>, substitution_count);
-    QS_DEF(Array<int[2]>, ring_bonds);
+    QS_DEF(Array<intpair>, substitution_count);
+    QS_DEF(Array<intpair>, ring_bonds);
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
@@ -1220,9 +1221,10 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
         if (radical != 0)
         {
-            int* r = radicals.push();
+            std::array<int, 2> r;
             r[0] = i;
             r[1] = radical;
+            radicals.push_back(r);
         }
 
         if (qmol != 0)
@@ -1233,16 +1235,18 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             int rbc;
             if (MoleculeSavers::getRingBondCountFlagValue(*qmol, i, rbc))
             {
-                int* r = ring_bonds.push();
+                std::array<int, 2> r;
                 r[0] = i;
                 r[1] = rbc;
+                ring_bonds.push_back(r);
             }
             int subst;
             if (MoleculeSavers::getSubstitutionCountFlagValue(*qmol, i, subst))
             {
-                int* s = substitution_count.push();
+                std::array<int, 2> s;
                 s[0] = i;
                 s[1] = subst;
+                substitution_count.push_back(s);
             }
         }
 

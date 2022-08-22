@@ -720,7 +720,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
         {
             const Superatom& group = (Superatom&)sgroup;
             Sgroup& sg = _data.sgroups.push();
-            QS_DEF(Array<Vec2f[2]>, brackets);
+            using vecpair = std::array<Vec2f, 2>;
+            QS_DEF(Array<vecpair>, brackets);
             _placeBrackets(sg, group.atoms, brackets);
             _loadBrackets(sg, brackets);
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
@@ -749,7 +750,7 @@ void MoleculeRenderInternal::_initSGroups()
     _initSGroups(sgroups, Rect2f(_min, _max));
 }
 
-void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& coord)
+void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<std::array<Vec2f, 2>>& coord)
 {
     for (int j = 0; j < coord.size(); ++j)
     {
@@ -778,12 +779,12 @@ void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& co
     }
 }
 
-void MoleculeRenderInternal::_convertCoordinate(const Array<Vec2f[2]>& original, Array<Vec2f[2]>& converted)
+void MoleculeRenderInternal::_convertCoordinate(const Array<std::array<Vec2f, 2>>& original, Array<std::array<Vec2f, 2>>& converted)
 {
     auto& left = original.at(0);
     auto& right = original.at(1);
-    auto& adjLeft = converted.push();
-    auto& adjRight = converted.push();
+    auto& adjLeft = converted.emplace_back();
+    auto& adjRight = converted.emplace_back();
 
     _objCoordTransform(adjLeft[0], left[0]);
     _objCoordTransform(adjLeft[1], left[1]);
@@ -793,13 +794,13 @@ void MoleculeRenderInternal::_convertCoordinate(const Array<Vec2f[2]>& original,
 
 void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg)
 {
-    Array<Vec2f[2]> brackets;
+    Array<std::array<Vec2f, 2>> brackets;
     _placeBrackets(sg, group.atoms, brackets);
 
     const bool isBracketsCoordinates = group.brackets.size() != 0 && Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) > EPSILON;
     if (isBracketsCoordinates)
     {
-        Array<Vec2f[2]> temp;
+        Array<std::array<Vec2f, 2>> temp;
         _convertCoordinate(group.brackets, temp);
         _loadBrackets(sg, temp);
         return;
@@ -821,11 +822,8 @@ void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
     index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
 }
 
-void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms, Array<Vec2f[2]>& brackets)
+void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms, Array<std::array<Vec2f, 2>>& brackets)
 {
-    auto left = brackets.push();
-    auto right = brackets.push();
-
     Vec2f min, max, a, b;
     for (int i = 0; i < atoms.size(); ++i)
     {
@@ -847,10 +845,10 @@ void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms,
     float extent = _settings.unit * 3;
     min.sub(Vec2f(extent, extent));
     max.add(Vec2f(extent, extent));
-    left[0].set(min.x, max.y);
-    left[1].set(min.x, min.y);
-    right[0].set(max.x, min.y);
-    right[1].set(max.x, max.y);
+    std::array<Vec2f, 2> left{Vec2f(min.x, max.y), Vec2f(min.x, min.y)};
+    std::array<Vec2f, 2> right{Vec2f(max.x, min.y), Vec2f(max.x, max.y)};
+    brackets.push_back(left);
+    brackets.push_back(right);
 }
 
 void MoleculeRenderInternal::_cloneAndFillMappings()
@@ -1013,7 +1011,7 @@ float getFreeAngle(const ObjArray<Vec2f>& pp)
     {
         Vec2f d;
         d.diff(pp[(j + 1) % len], pp[j]);
-        angle.push(atan2f(d.y, d.x));
+        angle.push_back(atan2f(d.y, d.x));
     }
     angle.qsort(dblcmp, NULL);
     int j0 = -1;
@@ -1301,7 +1299,7 @@ void MoleculeRenderInternal::_findRings()
                 v.rotateL(be.lang / 2);
                 v.scale(cycleLineOffset);
                 v.add(_ad(be.aid).pos);
-                vv.push(v);
+                vv.push_back(v);
             }
             _cw.setSingleSource(CWC_BLUE);
             _cw.setLineWidth(_settings.unit);
@@ -1315,7 +1313,7 @@ void MoleculeRenderInternal::_findRings()
 
         Array<Vec2f> pp;
         for (int j = 0; j < ring.bondEnds.size(); ++j)
-            pp.push().copy(_ad(_be(ring.bondEnds[j]).aid).pos);
+            pp.emplace_back().copy(_ad(_be(ring.bondEnds[j]).aid).pos);
 
         for (int j = 0; j < ring.bondEnds.size(); ++j)
             ring.center.add(pp[j]);
@@ -1339,7 +1337,7 @@ void MoleculeRenderInternal::_findRings()
             float l = fabs(Vec2f::dot(df, be.lnorm));
             if (r < 0 || l < r)
                 r = l;
-            ring.angles.push(atan2(df.y, df.x));
+            ring.angles.push_back(atan2(df.y, df.x));
         }
         ring.radius = r;
 
@@ -3429,7 +3427,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
             for (int i = v.neiBegin(); i < v.neiEnd(); i = v.neiNext(i))
             {
                 float a = _getBondEnd(aid, i).lang;
-                angles.push(a);
+                angles.push_back(a);
                 split.push(1);
             }
         }
@@ -3458,18 +3456,18 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             // if no adjacent bonds present
             if (rGroupAttachmentIndices.size() == 1)
-                attachmentDirection.push().set(0, -1);
+                attachmentDirection.emplace_back().set(0, -1);
             else if (rGroupAttachmentIndices.size() == 2)
             {
-                attachmentDirection.push().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
-                attachmentDirection.push().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
+                attachmentDirection.emplace_back().set(cos((float)M_PI / 6), -sin((float)M_PI / 6));
+                attachmentDirection.emplace_back().set(cos(5 * (float)M_PI / 6), -sin(5 * (float)M_PI / 6));
             }
             else
             {
                 for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
                 {
                     float a = j * 2 * (float)M_PI / rGroupAttachmentIndices.size();
-                    attachmentDirection.push().set(cos(a), sin(a));
+                    attachmentDirection.emplace_back().set(cos(a), sin(a));
                 }
             }
         }
@@ -3496,7 +3494,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 Vec2f d;
                 d.copy(_getBondEnd(aid, n).dir);
                 d.rotateL(angles[i0] * (--split[i0]));
-                attachmentDirection.push(d);
+                attachmentDirection.push_back(d);
             }
         }
         // create the attachment point items

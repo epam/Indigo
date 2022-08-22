@@ -45,16 +45,15 @@ namespace indigo
         int tgroup_id;
 
         TGroup();
+        TGroup(const TGroup& other);
+
         ~TGroup();
 
-        void copy(TGroup& other);
+        void copy(const TGroup& other);
         void clear();
         static int cmp(TGroup& tg1, TGroup& tg2, void* context);
 
         std::unique_ptr<BaseMolecule> fragment;
-
-    private:
-        TGroup(const TGroup&);
     };
 
     class DLLEXPORT MoleculeTGroups

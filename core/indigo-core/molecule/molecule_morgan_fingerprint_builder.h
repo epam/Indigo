@@ -29,7 +29,7 @@
 namespace indigo
 {
 
-    class DLLEXPORT MoleculeMorganFingerprintBuilder : public NonCopyable
+    class DLLEXPORT MoleculeMorganFingerprintBuilder
     {
     public:
         explicit MoleculeMorganFingerprintBuilder(BaseMolecule& mol);

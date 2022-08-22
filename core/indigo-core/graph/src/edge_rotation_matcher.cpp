@@ -69,12 +69,12 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
             if (_mapping[edge.beg] < 0 || _mapping[edge.end] < 0)
                 continue;
 
-            edge_queue.push();
+            edge_queue.emplace_back();
             edge_queue.top().idx = i;
             edge_queue.top().beg = edge.beg;
             edge_queue.top().end = edge.end;
 
-            edge_queue.push();
+            edge_queue.emplace_back();
             edge_queue.top().idx = i;
             edge_queue.top().beg = edge.end;
             edge_queue.top().end = edge.beg;
@@ -142,8 +142,8 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
         if (_mapping[i] < 0)
             continue;
 
-        Vec3f& pos_sub = xyz_sub.push();
-        Vec3f& pos_super = xyz_super.push();
+        Vec3f& pos_sub = xyz_sub.emplace_back();
+        Vec3f& pos_super = xyz_super.emplace_back();
 
         cb_get_xyz(_subgraph, i, pos_sub);
         cb_get_xyz(_supergraph, _mapping[i], pos_super);
@@ -188,7 +188,7 @@ bool EdgeRotationMatcher::match(float rms_threshold, float eps)
             states[nei_edge_idx] = 1;
 
             // push the neighbor edge to the queue
-            edge_queue.push();
+            edge_queue.emplace_back();
             edge_queue.top().idx = nei_edge_idx;
             edge_queue.top().beg = edge_end;
             edge_queue.top().end = other_end;

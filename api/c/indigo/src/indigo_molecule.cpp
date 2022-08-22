@@ -2051,8 +2051,8 @@ CEXPORT float indigoAlignAtoms(int molecule, int natoms, int* atom_ids, float* d
 
         for (i = 0; i < natoms; i++)
         {
-            points.push(mol.getAtomXyz(atom_ids[i]));
-            goals.push(Vec3f(desired_xyz[i * 3], desired_xyz[i * 3 + 1], desired_xyz[i * 3 + 2]));
+            points.push_back(mol.getAtomXyz(atom_ids[i]));
+            goals.push_back(Vec3f(desired_xyz[i * 3], desired_xyz[i * 3 + 1], desired_xyz[i * 3 + 2]));
         }
 
         if (points.size() < 1)
@@ -3307,13 +3307,13 @@ CEXPORT int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y
 
         psg->brk_style = brk_style;
         psg->brackets.clear();
-        Vec2f* brackets = psg->brackets.push();
+        std::array<Vec2f, 2> brackets;
         brackets[0].set(x1, y1);
         brackets[1].set(x2, y2);
-        brackets = psg->brackets.push();
+        psg->brackets.push_back(brackets);
         brackets[0].set(x3, y3);
         brackets[1].set(x4, y4);
-
+        psg->brackets.push_back(brackets);
         return 1;
     }
     INDIGO_END(-1);

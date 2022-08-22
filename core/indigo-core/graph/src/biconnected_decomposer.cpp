@@ -152,7 +152,7 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v)
             new_edge.beg = v;
             new_edge.end = w;
 
-            _edges_stack.push(new_edge);
+            _edges_stack.push_back(new_edge);
             dfs_stack.push(w);
 
             _cur_order++;
@@ -163,7 +163,7 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v)
         {
             new_edge.beg = v;
             new_edge.end = w;
-            _edges_stack.push(new_edge);
+            _edges_stack.push_back(new_edge);
 
             if (_lowest_order[v] > _dfs_order[w])
                 _lowest_order[v] = _dfs_order[w];
@@ -198,11 +198,11 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w)
         {
             _components[cur_comp]->at(_edges_stack.top().beg) = 1;
             _components[cur_comp]->at(_edges_stack.top().end) = 1;
-            _edges_stack.pop();
+            _edges_stack.pop_back();
         }
 
         _components[cur_comp]->at(v) = 1;
         _components[cur_comp]->at(w) = 1;
-        _edges_stack.pop();
+        _edges_stack.pop_back();
     }
 }
