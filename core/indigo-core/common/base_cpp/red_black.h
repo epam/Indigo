@@ -578,7 +578,7 @@ namespace indigo
 
         RedBlackSet(const RedBlackSet& other)
         {
-            clear();
+            Parent::clear();
             for (int i = other.begin(); i < other.end(); i = other.next(i))
                 insert(other.key(i));
         }

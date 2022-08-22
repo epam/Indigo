@@ -24,7 +24,7 @@ IMPL_ERROR(PropertiesMap, "properties map");
 
 PropertiesMap::PropertiesMap(const PropertiesMap& other)
 {
-    copy(const_cast<PropertiesMap&> (other));
+    copy(const_cast<PropertiesMap&>(other));
 }
 
 void PropertiesMap::copy(RedBlackStringObjMap<Array<char>>& other)
