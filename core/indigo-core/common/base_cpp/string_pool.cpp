@@ -28,8 +28,14 @@ StringPool::StringPool()
 {
 }
 
-StringPool::~StringPool()
+StringPool::StringPool(const StringPool& other)
 {
+    _pool.clear();
+    _storage.clear();
+    for (int i = other.begin(); i != other.end(); i = other.next(i))
+    {
+        add(other.at(i));
+    }
 }
 
 int StringPool::_add(const char* str, int size)

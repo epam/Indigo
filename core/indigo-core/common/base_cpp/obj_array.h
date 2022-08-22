@@ -32,6 +32,11 @@ namespace indigo
         {
         }
 
+        ObjArray(const ObjArray& other)
+        {
+            copy(other);
+        }
+
         ~ObjArray()
         {
             while (size() > 0)
@@ -174,9 +179,6 @@ namespace indigo
 
     protected:
         Array<T> _array;
-
-    private:
-        ObjArray(const ObjArray&); // no implicit copy
     };
 
 } // namespace indigo

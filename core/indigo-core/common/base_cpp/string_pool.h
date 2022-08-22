@@ -36,7 +36,7 @@ namespace indigo
         DECL_ERROR;
 
         StringPool();
-        ~StringPool();
+        StringPool(const StringPool& other);
 
         int add(const char* str);
         int add(Array<char>& str);
@@ -97,9 +97,6 @@ namespace indigo
 
         Pool<int> _pool;
         PtrArray<Array<char>> _storage;
-
-    private:
-        StringPool(const StringPool&); // no implicit copy
     };
 
 } // namespace indigo
