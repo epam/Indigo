@@ -205,7 +205,7 @@ CEXPORT double indigoLogP(const int molecule)
         }
         throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
     }
-    INDIGO_END(-1);
+    INDIGO_END(-1000.0);
 }
 
 CEXPORT double indigoMolarRefractivity(const int molecule)
@@ -218,9 +218,9 @@ CEXPORT double indigoMolarRefractivity(const int molecule)
             auto& mol = obj.getMolecule();
             return Crippen::molarRefractivity(mol);
         }
-        throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
+        throw IndigoError("incorrect object type for MR calculation: %s, should be molecule", obj.debugInfo());
     }
-    INDIGO_END(-1);
+    INDIGO_END(-1000.0);
 }
 
 CEXPORT double indigoPka(const int molecule)
@@ -235,5 +235,5 @@ CEXPORT double indigoPka(const int molecule)
         }
         throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
     }
-    INDIGO_END(-1);
+    INDIGO_END(-1000.0);
 }

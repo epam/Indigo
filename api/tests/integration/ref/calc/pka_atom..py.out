@@ -62,6 +62,7 @@ Tyrosine
 Valine
               4.8
               10.5
+Advanced 5 2
 Alanine
 Basic site on atom 0  has pKa value = 9.87
 Acid site on atom 4  has pKa value = 2.34
@@ -124,6 +125,7 @@ Acid site on atom 4  has pKa value = 2.14
 Valine
 Basic site on atom 0  has pKa value = 9.74
 Acid site on atom 4  has pKa value = 2.29
+Custom Advanced 10 2
 NCCc1ccc(O)cc1,10.52,9.74
 Cc1c(Cl)ccc(O)c1,9.32
 CC(Cc1ccc(O)cc1)(C)C,8.53
@@ -1267,6 +1269,7 @@ c1ccc2c(N)ccnc2c1,4.14,9.17
 Nc2ccc1ncccc1c2,4.16,5.09
 n(c(c(ccc1)cc2)c1)c2N,7.34
 c1c(N)c2cccnc2c(O)c1,4.14,9.81,4.88
+Custom Advanced 5 2
 N[C@@H](C)C(O)=O |&1:1,r|
 ======= Basic site on atom 0  has pKa value = 9.87
 ======= Acid site on atom 4  has pKa value = 2.34

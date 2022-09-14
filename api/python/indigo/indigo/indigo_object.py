@@ -558,43 +558,31 @@ class IndigoObject:
             self._lib().indigoIonize(self.id, ph, ph_toll)
         )
 
-    def getAcidPkaValue(self, atom: "IndigoObject", level, min_level):
-        """Molecule method calculates acid pKa value
-
-        Args:
-            atom (int): input atom index
-            level (int): pka level
-            min_level (int): pka min level
+    def getAcidPkaValue(self) -> float:
+        """Molecule or Atom method calculates acid pKa value
 
         Returns:
             float: pka result
         """
 
-        result = IndigoLib.checkResultPtr(
+        return IndigoLib.checkResultFloat(
             self._lib().indigoGetAcidPkaValue(
-                self.id, atom.id, level, min_level
+                self.id
             )
         )
-        return result[0]
 
-    def getBasicPkaValue(self, atom, level, min_level):
-        """Molecule method calculates basic pKa value
-
-        Args:
-            atom (IndigoObject): input atom index
-            level (int): pka level
-            min_level (int): pka min level
+    def getBasicPkaValue(self) -> float:
+        """Molecule or Atom method calculates basic pKa value
 
         Returns:
             float: pka result
         """
 
-        result = IndigoLib.checkResultPtr(
+        return IndigoLib.checkResultFloat(
             self._lib().indigoGetBasicPkaValue(
-                self.id, atom.id, level, min_level
+                self.id
             )
         )
-        return result[0]
 
     def automap(self, mode=""):
         """Automatic reaction atom-to-atom mapping
@@ -624,7 +612,7 @@ class IndigoObject:
         )
 
     def atomMappingNumber(self, reaction_atom):
-        """Reaction atom method returns assigned mapping
+        """Reaction atom method returnsGetAtom assigned mapping
 
         Args:
             reaction_atom (IndigoObject): reaction molecule atom
@@ -2452,7 +2440,7 @@ class IndigoObject:
             self._lib().indigoMolarRefractivity(self.id)
         )
 
-    def pKa(self):
+    def crippenPka(self):
         """Molecule method returns calculated Lee-Crippen SMARTS pKa value
 
         Returns:

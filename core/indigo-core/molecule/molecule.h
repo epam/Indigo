@@ -108,8 +108,8 @@ namespace indigo
 
         bool bondStereoCare(int idx) override;
 
-        bool aromatize(const AromaticityOptions& options) override;
-        bool dearomatize(const AromaticityOptions& options) override;
+        bool aromatize(const AromaticityOptions& options = AromaticityOptions()) override;
+        bool dearomatize(const AromaticityOptions& options = AromaticityOptions()) override;
 
         int getImplicitH(int idx);
         int getImplicitH_NoThrow(int idx, int fallback);

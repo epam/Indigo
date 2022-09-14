@@ -298,18 +298,12 @@ class IndigoLib:
         IndigoLib.lib.indigoIonize.argtypes = [c_int, c_float, c_float]
         IndigoLib.lib.indigoBuildPkaModel.restype = c_int
         IndigoLib.lib.indigoBuildPkaModel.argtypes = [c_int, c_float, c_char_p]
-        IndigoLib.lib.indigoGetAcidPkaValue.restype = POINTER(c_float)
+        IndigoLib.lib.indigoGetAcidPkaValue.restype = c_float
         IndigoLib.lib.indigoGetAcidPkaValue.argtypes = [
             c_int,
-            c_int,
-            c_int,
-            c_int,
         ]
-        IndigoLib.lib.indigoGetBasicPkaValue.restype = POINTER(c_float)
+        IndigoLib.lib.indigoGetBasicPkaValue.restype = c_float
         IndigoLib.lib.indigoGetBasicPkaValue.argtypes = [
-            c_int,
-            c_int,
-            c_int,
             c_int,
         ]
         IndigoLib.lib.indigoAutomap.restype = c_int
@@ -999,7 +993,7 @@ class IndigoLib:
     def checkResultFloat(
         result: float, exception_class: Type[Exception] = IndigoException
     ):
-        if result < -0.5:
+        if result < -500.0:
             assert IndigoLib.lib
             raise exception_class(IndigoLib.lib.indigoGetLastError())
         return result

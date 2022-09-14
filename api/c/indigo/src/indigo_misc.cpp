@@ -1107,50 +1107,60 @@ CEXPORT int indigoBuildPkaModel(int max_level, float threshold, const char* file
     INDIGO_END(-1);
 }
 
-CEXPORT float* indigoGetAcidPkaValue(int object, int atom, int level, int min_level)
+CEXPORT float indigoGetAcidPkaValue(int object)
 {
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(object);
 
-        if (obj.type == IndigoObject::MOLECULE)
+        if (obj.type == IndigoObject::ATOM)
         {
-            IndigoMolecule& m_obj = (IndigoMolecule&)obj;
-            Molecule& mol = m_obj.getMolecule();
-            IndigoAtom& site = IndigoAtom::cast(self.getObject(atom));
-            auto& tmp = self.getThreadTmpData();
-            float pka = MoleculePkaModel::getAcidPkaValue(mol, site.getIndex(), level, min_level);
-            tmp.xyz[0] = pka;
-            return tmp.xyz;
+            IndigoAtom& site = IndigoAtom::cast(self.getObject(object));
+            if (!MoleculePkaModel::isAdvancedModelLoaded())
+            {
+                MoleculePkaModel::loadAdvancedPkaModel();
+            }
+            return MoleculePkaModel::getAcidPkaValue(site.mol.asMolecule(), site.getIndex(), self.ionize_options.level, self.ionize_options.min_level);
+        }
+        else if (obj.type == IndigoObject::MOLECULE)
+        {
+            return MoleculePkaModel::getMoleculeAcidPkaValue(obj.getMolecule(), self.ionize_options);
         }
         else
-            throw IndigoError("indigoGetAcidPkaValue: expected molecule, got %s", obj.debugInfo());
+        {
+            throw IndigoError("indigoGetAcidPkaValue: expected molecule or atom, got %s", obj.debugInfo());
+        }
         return 0;
     }
-    INDIGO_END(0);
+    INDIGO_END(-1000.0);
 }
 
-CEXPORT float* indigoGetBasicPkaValue(int object, int atom, int level, int min_level)
+CEXPORT float indigoGetBasicPkaValue(int object)
 {
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(object);
 
-        if (obj.type == IndigoObject::MOLECULE)
+        if (obj.type == IndigoObject::ATOM)
         {
-            IndigoMolecule& m_obj = (IndigoMolecule&)obj;
-            Molecule& mol = m_obj.getMolecule();
-            IndigoAtom& site = IndigoAtom::cast(self.getObject(atom));
-            auto& tmp = self.getThreadTmpData();
-            float pka = MoleculePkaModel::getBasicPkaValue(mol, site.getIndex(), level, min_level);
-            tmp.xyz[0] = pka;
-            return tmp.xyz;
+            IndigoAtom& site = IndigoAtom::cast(self.getObject(object));
+            if (!MoleculePkaModel::isAdvancedModelLoaded())
+            {
+                MoleculePkaModel::loadAdvancedPkaModel();
+            }
+            return MoleculePkaModel::getBasicPkaValue(site.mol.asMolecule(), site.getIndex(), self.ionize_options.level, self.ionize_options.min_level);
+        }
+        else if (obj.type == IndigoObject::MOLECULE)
+        {
+            return MoleculePkaModel::getMoleculeBasicPkaValue(obj.getMolecule(), self.ionize_options);
         }
         else
+        {
             throw IndigoError("indigoGetBasicPkaValue: expected molecule, got %s", obj.debugInfo());
+        }
         return 0;
     }
-    INDIGO_END(0);
+    INDIGO_END(-1000.0);
 }
 
 CEXPORT int indigoIsPossibleFischerProjection(int object, const char* options)

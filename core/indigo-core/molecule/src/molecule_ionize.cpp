@@ -49,13 +49,17 @@ void MoleculePkaModel::estimate_pKa(Molecule& mol, const IonizeOptions& options,
     if (options.model == IonizeOptions::PKA_MODEL_SIMPLE)
     {
         if (!_model.simple_model_ready)
-            _loadSimplePkaModel();
+        {
+            loadSimplePkaModel();
+        }
         _estimate_pKa_Simple(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
     }
     else if (options.model == IonizeOptions::PKA_MODEL_ADVANCED)
     {
         if (!_model.advanced_model_ready)
-            _loadAdvancedPkaModel();
+        {
+            loadAdvancedPkaModel();
+        }
         _estimate_pKa_Advanced(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
     }
     else
@@ -100,123 +104,130 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
         int mol_count = 0;
         while (!loader.isEOF())
         {
-            mol_count++;
-            loader.readNext();
-            BufferScanner scanner(loader.data);
-            MolfileLoader mol_loader(scanner);
-            mol_loader.stereochemistry_options.ignore_errors = true;
-            mol_loader.loadMolecule(mol);
-
-            int cid = 0;
-            if (loader.properties.contains(compound_cid))
+            try
             {
-                BufferScanner scan_cid(loader.properties.at(compound_cid));
-                cid = scan_cid.readInt();
-            }
-
-            //         mol.aromatize(opts);
-            //         _checkCanonicalOrder(mol, can_mol, order);
-            _removeExtraHydrogens(mol);
-
-            if (loader.properties.contains(a_pka_sites_id))
-            {
-                const char* aids = loader.properties.at(a_pka_sites_id);
-                const char* apkas = loader.properties.at(a_pka_values_id);
-
-                BufferScanner scan_aids(aids);
-                Array<int> a_sites;
-                while (!scan_aids.isEOF())
+                mol_count++;
+                loader.readNext();
+                BufferScanner scanner(loader.data);
+                MolfileLoader mol_loader(scanner);
+                mol_loader.stereochemistry_options.ignore_errors = true;
+                mol_loader.ignore_bad_valence = true;
+                mol_loader.loadMolecule(mol);
+                int cid = 0;
+                if (loader.properties.contains(compound_cid))
                 {
-                    int idx = scan_aids.readInt1() - 1;
-                    a_sites.push(idx);
-                }
-                BufferScanner scan_apka(apkas);
-                Array<float> a_pka;
-                while (!scan_apka.isEOF())
-                {
-                    float val = scan_apka.readFloat();
-                    a_pka.push(val);
+                    BufferScanner scan_cid(loader.properties.at(compound_cid));
+                    cid = scan_cid.readInt();
                 }
 
-                if (a_sites.size() > 1)
+                //         mol.aromatize(opts);
+                //         _checkCanonicalOrder(mol, can_mol, order);
+                _removeExtraHydrogens(mol);
+
+                if (loader.properties.contains(a_pka_sites_id))
                 {
-                    //               printf("Warning: multiple acid sites detected. Skip this compound (%d)\n", cid);
-                }
-                else
-                {
-                    for (int i = 0; i < a_sites.size(); i++)
+                    const char* aids = loader.properties.at(a_pka_sites_id);
+                    const char* apkas = loader.properties.at(a_pka_values_id);
+
+                    BufferScanner scan_aids(aids);
+                    Array<int> a_sites;
+                    while (!scan_aids.isEOF())
                     {
-                        fp.clear();
-                        //                  int idx = order.find(a_sites[i]);
-                        int idx = a_sites[i];
-                        float val = a_pka[i];
+                        int idx = scan_aids.readInt1() - 1;
+                        a_sites.push(idx);
+                    }
+                    BufferScanner scan_apka(apkas);
+                    Array<float> a_pka;
+                    while (!scan_apka.isEOF())
+                    {
+                        float val = scan_apka.readFloat();
+                        a_pka.push(val);
+                    }
 
-                        getAtomLocalFingerprint(mol, idx, fp, level);
-
-                        if (fp.size() == 0)
-                            continue;
-
-                        if (!acid_pkas.find(fp.ptr()))
+                    if (a_sites.size() > 1)
+                    {
+                        //               printf("Warning: multiple acid sites detected. Skip this compound (%d)\n", cid);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < a_sites.size(); i++)
                         {
-                            acid_pkas.insert(fp.ptr());
-                            acid_pka_cids.insert(fp.ptr());
-                            a_count++;
+                            fp.clear();
+                            //                  int idx = order.find(a_sites[i]);
+                            int idx = a_sites[i];
+                            float val = a_pka[i];
+
+                            getAtomLocalFingerprint(mol, idx, fp, level);
+
+                            if (fp.size() == 0)
+                                continue;
+
+                            if (!acid_pkas.find(fp.ptr()))
+                            {
+                                acid_pkas.insert(fp.ptr());
+                                acid_pka_cids.insert(fp.ptr());
+                                a_count++;
+                            }
+                            acid_pkas.at(fp.ptr()).push(val);
+                            acid_pka_cids.at(fp.ptr()).push(cid);
                         }
-                        acid_pkas.at(fp.ptr()).push(val);
-                        acid_pka_cids.at(fp.ptr()).push(cid);
+                    }
+                }
+
+                if (loader.properties.contains(b_pka_sites_id))
+                {
+
+                    const char* bids = loader.properties.at(b_pka_sites_id);
+                    const char* bpkas = loader.properties.at(b_pka_values_id);
+
+                    BufferScanner scan_bids(bids);
+                    Array<int> b_sites;
+                    while (!scan_bids.isEOF())
+                    {
+                        int idx = scan_bids.readInt1() - 1;
+                        b_sites.push(idx);
+                    }
+                    BufferScanner scan_bpka(bpkas);
+                    Array<float> b_pka;
+                    while (!scan_bpka.isEOF())
+                    {
+                        float val = scan_bpka.readFloat();
+                        b_pka.push(val);
+                    }
+
+                    if (b_sites.size() > 1)
+                    {
+                        //               printf("Warning: multiple protonation sites detected. Skip this compound (%d)\n", cid);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < b_sites.size(); i++)
+                        {
+                            fp.clear();
+                            //                  int idx = order.find(b_sites[i]);
+                            int idx = b_sites[i];
+                            float val = b_pka[i];
+
+                            getAtomLocalFingerprint(mol, idx, fp, level);
+
+                            if (fp.size() == 0)
+                                continue;
+
+                            if (!basic_pkas.find(fp.ptr()))
+                            {
+                                basic_pkas.insert(fp.ptr());
+                                basic_pka_cids.insert(fp.ptr());
+                                b_count++;
+                            }
+                            basic_pkas.at(fp.ptr()).push(val);
+                            basic_pka_cids.at(fp.ptr()).push(cid);
+                        }
                     }
                 }
             }
-
-            if (loader.properties.contains(b_pka_sites_id))
+            catch (std::exception& e)
             {
-
-                const char* bids = loader.properties.at(b_pka_sites_id);
-                const char* bpkas = loader.properties.at(b_pka_values_id);
-
-                BufferScanner scan_bids(bids);
-                Array<int> b_sites;
-                while (!scan_bids.isEOF())
-                {
-                    int idx = scan_bids.readInt1() - 1;
-                    b_sites.push(idx);
-                }
-                BufferScanner scan_bpka(bpkas);
-                Array<float> b_pka;
-                while (!scan_bpka.isEOF())
-                {
-                    float val = scan_bpka.readFloat();
-                    b_pka.push(val);
-                }
-
-                if (b_sites.size() > 1)
-                {
-                    //               printf("Warning: multiple protonation sites detected. Skip this compound (%d)\n", cid);
-                }
-                else
-                {
-                    for (int i = 0; i < b_sites.size(); i++)
-                    {
-                        fp.clear();
-                        //                  int idx = order.find(b_sites[i]);
-                        int idx = b_sites[i];
-                        float val = b_pka[i];
-
-                        getAtomLocalFingerprint(mol, idx, fp, level);
-
-                        if (fp.size() == 0)
-                            continue;
-
-                        if (!basic_pkas.find(fp.ptr()))
-                        {
-                            basic_pkas.insert(fp.ptr());
-                            basic_pka_cids.insert(fp.ptr());
-                            b_count++;
-                        }
-                        basic_pkas.at(fp.ptr()).push(val);
-                        basic_pka_cids.at(fp.ptr()).push(cid);
-                    }
-                }
+                continue;
             }
         }
 
@@ -252,6 +263,8 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (_model.adv_a_pkas.find(fp))
                 _model.adv_a_pkas.remove(fp);
             _model.adv_a_pkas.insert(fp);
+            auto pka = pka_sum / pkas.size();
+            printf("%d %s %f %f\n", level, fp, pka, pka_dev);
             _model.adv_a_pkas.at(fp).push(pka_sum / pkas.size());
             _model.adv_a_pkas.at(fp).push(pka_dev);
 
@@ -277,7 +290,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                     pka_max = val;
             }
 
-            if ((pka_max - pka_sum / pkas.size()) > (pka_sum / pkas.size() - pka_min))
+            if ((pka_max - pka_sum / static_cast<float>(pkas.size())) > (pka_sum / pkas.size() - pka_min))
                 pka_dev = pka_max - pka_sum / pkas.size();
             else
                 pka_dev = pka_sum / pkas.size() - pka_min;
@@ -288,6 +301,8 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (_model.adv_b_pkas.find(fp))
                 _model.adv_b_pkas.remove(fp);
             _model.adv_b_pkas.insert(fp);
+            //            auto pka = pka_sum / pkas.size();
+            //            printf("%d %s %f %f\n", level, fp, pka, pka_dev);
             _model.adv_b_pkas.at(fp).push(pka_sum / pkas.size());
             _model.adv_b_pkas.at(fp).push(pka_dev);
 
@@ -394,7 +409,7 @@ namespace // data of internal purpose
     };
 } // namespace
 
-void MoleculePkaModel::_loadSimplePkaModel()
+void MoleculePkaModel::loadSimplePkaModel()
 {
     _model.acids.clear();
     _model.basics.clear();
@@ -831,7 +846,7 @@ namespace // data of internal purpose
     }
 } // namespace
 
-void MoleculePkaModel::_loadAdvancedPkaModel()
+void MoleculePkaModel::loadAdvancedPkaModel()
 {
     LoadPkaDefToModel(_model.adv_a_pkas, advanced_pka_model_acid, advanced_pka_model_acid + NELEM(advanced_pka_model_acid));
     LoadPkaDefToModel(_model.adv_b_pkas, advanced_pka_model_basic, advanced_pka_model_basic + NELEM(advanced_pka_model_basic));
@@ -914,6 +929,11 @@ void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions
     AromaticityOptions opts;
     int level = options.level;
     int min_level = options.min_level;
+
+    if (mol.isAromatized())
+    {
+        mol.dearomatize(opts);
+    }
 
     //   _checkCanonicalOrder(mol, can_mol, can_order);
 
@@ -1006,6 +1026,7 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, Array<cha
         int cur_level = 0;
         // Mark new layer after root atom
         fp.appendString("|", true);
+
         bfs_queue.push(idx);
 
         while (!bfs_queue.isEmpty())
@@ -1042,6 +1063,7 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, Array<cha
             }
 
             //         for (auto i : v.neighbors())
+            bool first = true;
             for (auto i = 0; i < neibs_atoms.size(); i++)
             {
                 if (included_atoms.find(neibs_atoms[i]) == -1)
@@ -1203,7 +1225,7 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
             a_aromatic_cnt++;
         else if (order == BOND_TRIPLE)
             a_triple_cnt++;
-        else if (order == BOND_ZERO)
+        else if (order == BOND_ZERO || _BOND_COORDINATION)
             a_coord_cnt++;
     }
 
@@ -1220,7 +1242,7 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
     QS_DEF(Array<int>, level_pos);
     fp.clear();
     level_pos.clear();
-    float pka = 100.f;
+    float pka = NAN;
 
     int a_num = mol.getAtomNumber(idx);
     if (a_num == ELEM_H)
@@ -1232,8 +1254,8 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
     if (_model.adv_a_pkas.find(fp.ptr()))
     {
         pka = _model.adv_a_pkas.at(fp.ptr())[0];
-        //      printf("Acid site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level, pka,
-        //             _model.adv_a_pkas.at(fp.ptr())[1]);
+        //              printf("Acid site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level, pka,
+        //                     _model.adv_a_pkas.at(fp.ptr())[1]);
     }
     else
     {
@@ -1258,8 +1280,8 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
             if (_model.adv_a_pkas.find(fp.ptr()))
             {
                 pka = _model.adv_a_pkas.at(fp.ptr())[0];
-                //            printf("Acid site found: fp = %s level = %d pka = %4.2f, dev = %4.2f\n", fp.ptr(), level_pos.size() - i, pka,
-                //                   _model.adv_a_pkas.at(fp.ptr())[1]);
+                //                            printf("Acid site found: fp = %s level = %d pka = %4.2f, dev = %4.2f\n", fp.ptr(), level_pos.size() - i, pka,
+                //                                   _model.adv_a_pkas.at(fp.ptr())[1]);
                 break;
             }
         }
@@ -1274,7 +1296,7 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
     QS_DEF(Array<int>, level_pos);
     fp.clear();
     level_pos.clear();
-    float pka = -100.f;
+    float pka = NAN;
 
     int a_num = mol.getAtomNumber(idx);
     if (a_num == ELEM_H)
@@ -1286,8 +1308,8 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
     if (_model.adv_b_pkas.find(fp.ptr()))
     {
         pka = (_model.adv_b_pkas.at(fp.ptr())[0]);
-        //      printf("Basic site found: fp = %s  pka = %4.2f, dev = %4.2f\n",  fp.ptr(), pka,
-        //              _model.adv_b_pkas.at(fp.ptr())[1]);
+        //              printf("Basic site found: fp = %s  pka = %4.2f, dev = %4.2f\n",  fp.ptr(), pka,
+        //                      _model.adv_b_pkas.at(fp.ptr())[1]);
     }
     else
     {
@@ -1309,14 +1331,62 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
             if (_model.adv_b_pkas.find(fp.ptr()))
             {
                 pka = _model.adv_b_pkas.at(fp.ptr())[0];
-                //            printf("Basic site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level_pos.size() - i, pka,
-                //                   _model.adv_b_pkas.at(fp.ptr())[1]);
+                //                            printf("Basic site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level_pos.size() - i, pka,
+                //                                   _model.adv_b_pkas.at(fp.ptr())[1]);
                 break;
             }
         }
     }
 
     return pka;
+}
+
+float MoleculePkaModel::getMoleculeAcidPkaValue(Molecule& mol, IonizeOptions& ionizeOptions)
+{
+    QS_DEF(Array<int>, acid_sites);
+    QS_DEF(Array<int>, basic_sites);
+    QS_DEF(Array<float>, acid_pkas);
+    QS_DEF(Array<float>, basic_pkas);
+
+    acid_sites.clear();
+    basic_sites.clear();
+    acid_pkas.clear();
+    basic_pkas.clear();
+
+    MoleculePkaModel::estimate_pKa(mol, ionizeOptions, acid_sites, basic_sites, acid_pkas, basic_pkas);
+
+    float acidPka = 100.0;
+
+    for (const auto currentPka : acid_pkas)
+    {
+        acidPka = std::min(acidPka, currentPka);
+    }
+
+    return (acidPka < 100.0) ? acidPka : static_cast<float>(NAN);
+}
+
+float MoleculePkaModel::getMoleculeBasicPkaValue(Molecule& mol, IonizeOptions& ionizeOptions)
+{
+    QS_DEF(Array<int>, acid_sites);
+    QS_DEF(Array<int>, basic_sites);
+    QS_DEF(Array<float>, acid_pkas);
+    QS_DEF(Array<float>, basic_pkas);
+
+    acid_sites.clear();
+    basic_sites.clear();
+    acid_pkas.clear();
+    basic_pkas.clear();
+
+    MoleculePkaModel::estimate_pKa(mol, ionizeOptions, acid_sites, basic_sites, acid_pkas, basic_pkas);
+
+    float basicPka = -100.0;
+
+    for (const auto currentPka : basic_pkas)
+    {
+        basicPka = std::max(basicPka, currentPka);
+    }
+
+    return (basicPka > -100.0) ? basicPka : static_cast<float>(NAN);
 }
 
 IMPL_ERROR(MoleculeIonizer, "Molecule Ionizer");
@@ -1366,4 +1436,14 @@ void MoleculeIonizer::_setCharges(Molecule& mol, float pH, float pH_toll, const 
             //         printf("Basic site: atom index = %d, pKa = %f\n",  basic_sites[i], basic_pkas[i]);
         }
     }
+}
+
+bool MoleculePkaModel::isSimpleModelLoaded()
+{
+    return _model.simple_model_ready;
+}
+
+bool MoleculePkaModel::isAdvancedModelLoaded()
+{
+    return _model.advanced_model_ready;
 }

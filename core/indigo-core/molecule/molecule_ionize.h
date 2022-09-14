@@ -47,7 +47,7 @@ namespace indigo
         int level = 0;
         int min_level = 0;
 
-        IonizeOptions(PkaModel model = PKA_MODEL_SIMPLE) : model(model)
+        IonizeOptions(PkaModel model = PKA_MODEL_SIMPLE, int level = 0, int min_level = 0) : model(model)
         {
         }
     };
@@ -63,15 +63,22 @@ namespace indigo
         static bool getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<int>& fp);
         static int buildPkaModel(int level, float threshold, const char* filename);
 
+        static float getMoleculeAcidPkaValue(Molecule& mol, IonizeOptions& ionizeOptions);
+        static float getMoleculeBasicPkaValue(Molecule& mol, IonizeOptions& ionizeOptions);
+
         static float getAcidPkaValue(Molecule& mol, int idx, int level, int min_level);
         static float getBasicPkaValue(Molecule& mol, int idx, int level, int min_level);
+
+        static bool isSimpleModelLoaded();
+        static bool isAdvancedModelLoaded();
+
+        static void loadSimplePkaModel();
+        static void loadAdvancedPkaModel();
 
     private:
         MoleculePkaModel();
         static MoleculePkaModel _model;
 
-        static void _loadSimplePkaModel();
-        static void _loadAdvancedPkaModel();
         static void _estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites, Array<float>& acid_pkas,
                                          Array<float>& basic_pkas);
 

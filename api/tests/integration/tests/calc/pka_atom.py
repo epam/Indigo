@@ -187,21 +187,18 @@ level = indigo.buildPkaModel(
 )
 # level = indigo.buildPkaModel(10, 0.5, joinPathPy('test.sdf', __file__))
 
+print("Advanced 5 2")
 indigo.setOption("pKa-model", "advanced")
 indigo.setOption("pKa-model-level", 5)
 indigo.setOption("pKa-model-min-level", 2)
-
 for root, dirnames, filenames in os.walk(joinPathPy("molecules/AA", __file__)):
     filenames.sort()
     for filename in filenames:
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
-        #        print(mol.molfile())
         print("%s" % filename[:-4])
-
-        #        mol.aromatize()
         for atom in mol.iterateAtoms():
-            a_pka = mol.getAcidPkaValue(atom, 5, 2)
-            b_pka = mol.getBasicPkaValue(atom, 5, 2)
+            a_pka = atom.getAcidPkaValue()
+            b_pka = atom.getBasicPkaValue()
             if a_pka < 100.0:
                 print(
                     "Acid site on atom %d " % atom.index()
@@ -235,6 +232,9 @@ level = indigo.buildPkaModel(
     10, 0.5, joinPathPy("molecules/adv_pka_model.sdf", __file__)
 )
 
+print("Custom Advanced 10 2")
+indigo.setOption("pKa-model-level", 10)
+indigo.setOption("pKa-model-min-level", 2)
 for item in indigo.iterateSmilesFile(
     joinPathPy("molecules/test_set.smi", __file__)
 ):
@@ -244,8 +244,8 @@ for item in indigo.iterateSmilesFile(
     pka_found = False
     pkas_list = []
     for atom in mol.iterateAtoms():
-        a_pka = mol.getAcidPkaValue(atom, 10, 2)
-        b_pka = mol.getBasicPkaValue(atom, 10, 2)
+        a_pka = atom.getAcidPkaValue()
+        b_pka = atom.getBasicPkaValue()
         if a_pka < 100.0:
             pkas_list.append(a_pka)
             pka_found = True
@@ -260,6 +260,9 @@ for item in indigo.iterateSmilesFile(
             pka_str = pka_str + ",%4.2f" % pka
         print("%s" % item.rawData() + "%s" % pka_str)
 
+print("Custom Advanced 5 2")
+indigo.setOption("pKa-model-level", 5)
+indigo.setOption("pKa-model-min-level", 2)
 for item in indigo.iterateSDFile(
     joinPathPy("molecules/adv_pka_model.sdf", __file__)
 ):
@@ -267,8 +270,8 @@ for item in indigo.iterateSDFile(
     mol = indigo.loadMolecule(item.rawData())
     mol.foldHydrogens()
     for atom in mol.iterateAtoms():
-        a_pka = mol.getAcidPkaValue(atom, 5, 2)
-        b_pka = mol.getBasicPkaValue(atom, 5, 2)
+        a_pka = atom.getAcidPkaValue()
+        b_pka = atom.getBasicPkaValue()
         if a_pka < 100.0:
             print(
                 "======= Acid site on atom %d " % atom.index()
