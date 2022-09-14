@@ -109,12 +109,12 @@ public:
         DecompositionEnumerator(const DecompositionEnumerator&); // no implicit copy
         bool _foundOrder(ObjArray<Array<int>>& rsite_orders, Array<int>& swap_order);
         void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx);
-        void _refineAutoMaps(ObjList<Array<int>>& auto_maps, Graph& sub, Graph& super, Array<int>& scaf_map);
+        void _refineAutoMaps(std::vector<Array<int>>& auto_maps, Graph& sub, Graph& super, Array<int>& scaf_map);
         void _addAllRsites(QueryMolecule&, IndigoDecompositionMatch&, std::map<int, int>&);
 
         static bool _cbAutoCheckAutomorphism(Graph& graph, const Array<int>& mapping, const void* context);
-        ObjList<Array<int>> _autoMaps;
-        ObjList<Array<int>> _scafAutoMaps;
+        std::vector<Array<int>> _autoMaps;
+        std::vector<Array<int>> _scafAutoMaps;
     };
 
     void addCompleteRGroup(IndigoDecompositionMatch& emb_context, bool change_scaffold, Array<int>* rg_map);
@@ -181,7 +181,7 @@ public:
     Array<int> lastInvMapping;
     std::vector<Array<int>> attachmentOrder;
     std::vector<Array<int>> attachmentIndex;
-    ObjList<Array<int>> scafAutoMaps;
+    std::vector<Array<int>> scafAutoMaps;
 
     int getRgroupNumber() const
     {
@@ -191,7 +191,7 @@ public:
     void renumber(Array<int>& map, Array<int>& inv_map);
     void copy(IndigoDecompositionMatch& other);
     void removeRsitesFromMaps(Graph& query_graph);
-    void copyScafAutoMaps(ObjList<Array<int>>& autoMaps);
+    void copyScafAutoMaps(const std::vector<Array<int>>& autoMaps);
     void completeScaffold();
 
     Molecule mol_out;
