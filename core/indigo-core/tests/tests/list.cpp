@@ -16,8 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <vector>
 #include <gtest/gtest.h>
+#include <vector>
 
 #include "base_cpp/list.h"
 

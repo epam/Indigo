@@ -43,8 +43,7 @@ namespace indigo
         {
         }
 
-        List(List<T>&& src) noexcept
-            : _pool(src._pool), _size(src._size), _head(src._head), _tail(src._tail), _own_pool(src._own_pool)
+        List(List<T>&& src) noexcept : _pool(src._pool), _size(src._size), _head(src._head), _tail(src._tail), _own_pool(src._own_pool)
         {
             src._size = 0;
             src._head = -1;
