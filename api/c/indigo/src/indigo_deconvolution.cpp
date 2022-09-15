@@ -16,9 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
- #include <algorithm>
+#include <algorithm>
 
-#include "indigo_deconvolution.h"
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/obj_list.h"
@@ -26,6 +25,7 @@
 #include "base_cpp/tlscont.h"
 #include "graph/automorphism_search.h"
 #include "indigo_array.h"
+#include "indigo_deconvolution.h"
 #include "indigo_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/max_common_submolecule.h"
@@ -695,7 +695,7 @@ void IndigoDecompositionMatch::removeRsitesFromMaps(Graph& query_graph)
 void IndigoDecompositionMatch::copyScafAutoMaps(const std::vector<Array<int>>& autoMaps)
 {
     scafAutoMaps.clear();
-    for (const auto& src: autoMaps)
+    for (const auto& src : autoMaps)
     {
         scafAutoMaps.emplace_back();
         scafAutoMaps.back().copy(src);
@@ -1344,7 +1344,7 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
     {
         direct_order.push(pair.first);
     }
-    for (const Array<int>& auto_map: _autoMaps)
+    for (const Array<int>& auto_map : _autoMaps)
     {
         /*
          * Check for correctness and condition
@@ -1522,7 +1522,7 @@ void IndigoDeconvolution::DecompositionEnumerator::_refineAutoMaps(std::vector<A
     auto_maps.clear();
 
     int start = 0;
-    for (int idx: indices_to_remove)
+    for (int idx : indices_to_remove)
     {
         const auto startIt = tmp_maps.begin() + start;
         const auto endIt = tmp_maps.begin() + idx;
