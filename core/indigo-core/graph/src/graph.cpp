@@ -54,23 +54,14 @@ int Vertex::findNeiEdge(int idx) const
 IMPL_ERROR(Graph, "graph");
 
 Graph::Graph()
+    : _neighbors_pool{std::make_unique<Pool<List<VertexEdge>::Elem>>()},
+      _vertices{std::make_unique<ObjPool<Vertex>>()},
+      _edges{std::make_unique<Pool<Edge>>()},
+      _topology_valid{false},
+      _sssr_pool{},
+      _sssr_valid{false},
+      _components_valid{false}, _components_count{0}
 {
-    _vertices = new ObjPool<Vertex>();
-    _neighbors_pool = new Pool<List<VertexEdge>::Elem>();
-    _sssr_pool = 0;
-    _components_valid = false;
-}
-
-Graph::~Graph()
-{
-    delete _vertices;
-    delete _neighbors_pool;
-    if (_sssr_pool != 0)
-    {
-        _sssr_vertices.clear();
-        _sssr_edges.clear();
-        delete _sssr_pool;
-    }
 }
 
 int Graph::addVertex()
@@ -96,7 +87,7 @@ bool Graph::haveEdge(int beg, int end) const
 
 bool Graph::hasEdge(int idx) const
 {
-    return _edges.hasElement(idx);
+    return _edges->hasElement(idx);
 }
 
 bool Graph::hasVertex(int idx) const
@@ -122,7 +113,7 @@ int Graph::addEdge(int beg, int end)
     if (findEdgeIndex(beg, end) != -1)
         throw Error("already have edge between vertices %d and %d", beg, end);
 
-    int edge_idx = _edges.add();
+    int edge_idx = _edges->add();
 
     Vertex& vbeg = _vertices->at(beg);
     Vertex& vend = _vertices->at(end);
@@ -138,8 +129,9 @@ int Graph::addEdge(int beg, int end)
     ve1.e = edge_idx;
     ve2.e = edge_idx;
 
-    _edges[edge_idx].beg = beg;
-    _edges[edge_idx].end = end;
+    Edge& edge = _edges->at(edge_idx);
+    edge.beg = beg;
+    edge.end = end;
 
     _topology_valid = false;
     _sssr_valid = false;
@@ -150,18 +142,18 @@ int Graph::addEdge(int beg, int end)
 
 void Graph::swapEdgeEnds(int edge_idx)
 {
-
-    std::swap(_edges[edge_idx].beg, _edges[edge_idx].end);
+    Edge& edge = _edges->at(edge_idx);
+    std::swap(edge.beg, edge.end);
 }
 
 void Graph::removeEdge(int idx)
 {
-    Edge edge = _edges[idx];
+    Edge& edge = _edges->at(idx);
 
     Vertex& beg = _vertices->at(edge.beg);
     Vertex& end = _vertices->at(edge.end);
 
-    _edges.remove(idx);
+    _edges->remove(idx);
 
     beg.neighbors_list.remove(beg.findNeiEdge(idx));
     end.neighbors_list.remove(end.findNeiEdge(idx));
@@ -176,7 +168,7 @@ void Graph::removeAllEdges()
     for (int i = _vertices->begin(); i != _vertices->end(); i = _vertices->next(i))
         _vertices->at(i).neighbors_list.clear();
 
-    _edges.clear();
+    _edges->clear();
     _topology_valid = false;
     _sssr_valid = false;
     _components_valid = false;
@@ -212,7 +204,7 @@ const Vertex& Graph::getVertex(int idx) const
 
 const Edge& Graph::getEdge(int idx) const
 {
-    return _edges[idx];
+    return _edges->at(idx);
 }
 
 bool Graph::isConnected(Graph& graph)
@@ -299,7 +291,7 @@ EdgesAuto Graph::edges()
 void Graph::clear()
 {
     _vertices->clear();
-    _edges.clear();
+    _edges->clear();
     _topology_valid = false;
     _sssr_valid = false;
     _components_valid = false;
@@ -567,9 +559,9 @@ void Graph::_calculateTopology()
     SpanningTree spt(*this, 0);
     int i;
 
-    _topology.clear_resize(_edges.end());
+    _topology.clear_resize(_edges->end());
 
-    for (i = _edges.begin(); i != _edges.end(); i = _edges.next(i))
+    for (i = _edges->begin(); i != _edges->end(); i = _edges->next(i))
         _topology[i] = TOPOLOGY_CHAIN;
 
     spt.markAllEdgesInCycles(_topology.ptr(), TOPOLOGY_RING);
@@ -621,8 +613,8 @@ void Graph::_calculateSSSRInit()
     _e_smallest_ring_size.fffill();
     _v_sssr_count.zerofill();
 
-    if (_sssr_pool == 0)
-        _sssr_pool = new Pool<List<int>::Elem>();
+    if (!_sssr_pool)
+        _sssr_pool = std::make_unique<Pool<List<int>::Elem>>();
 
     _sssr_vertices.clear();
     _sssr_edges.clear();
@@ -636,8 +628,10 @@ void Graph::_calculateSSSRByCycleBasis(CycleBasis& basis)
     {
         const Array<int>& cycle = basis.getCycle(i);
 
-        List<int>& vertices = _sssr_vertices.push(*_sssr_pool);
-        List<int>& edges = _sssr_edges.push(*_sssr_pool);
+        _sssr_vertices.emplace_back(*_sssr_pool);
+        _sssr_edges.emplace_back(*_sssr_pool);
+        List<int>& vertices = _sssr_vertices.back();
+        List<int>& edges = _sssr_edges.back();
 
         _calculateSSSRAddEdgesAndVertices(cycle, edges, vertices);
 
@@ -800,7 +794,7 @@ void Graph::_cloneGraph_KeepIndices(const Graph& other)
         throw Error("_clone_KeepIndices: internal");
 
     for (i = 0; i <= max_edge_idx; i++)
-        if (_edges.add() != i)
+        if (_edges->add() != i)
             throw Error("_clone_KeepIndices: unexpected edge index");
 
     i_prev = -1;
@@ -808,13 +802,15 @@ void Graph::_cloneGraph_KeepIndices(const Graph& other)
     for (i = other.edgeBegin(); i != other.edgeEnd(); i = other.edgeNext(i))
     {
         for (j = i_prev + 1; j < i; j++)
-            _edges.remove(j);
+            _edges->remove(j);
 
-        _edges[i].beg = other._edges[i].beg;
-        _edges[i].end = other._edges[i].end;
+        Edge& edge = _edges->at(i);
+        Edge& other_edge = other._edges->at(i);
+        edge.beg = other_edge.beg;
+        edge.end = other_edge.end;
 
-        Vertex& vbeg = _vertices->at(_edges[i].beg);
-        Vertex& vend = _vertices->at(_edges[i].end);
+        Vertex& vbeg = _vertices->at(edge.beg);
+        Vertex& vend = _vertices->at(edge.end);
 
         int ve1_idx = vbeg.neighbors_list.add();
         int ve2_idx = vend.neighbors_list.add();
@@ -822,8 +818,8 @@ void Graph::_cloneGraph_KeepIndices(const Graph& other)
         VertexEdge& ve1 = vbeg.neighbors_list[ve1_idx];
         VertexEdge& ve2 = vend.neighbors_list[ve2_idx];
 
-        ve1.v = _edges[i].end;
-        ve2.v = _edges[i].beg;
+        ve1.v = edge.end;
+        ve2.v = edge.beg;
         ve1.e = i;
         ve2.e = i;
 

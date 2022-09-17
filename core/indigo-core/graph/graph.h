@@ -28,6 +28,8 @@
 #include "graph/filter.h"
 #include "graph/graph_iterators.h"
 #include <list>
+#include <memory>
+#include <vector>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -133,7 +135,11 @@ namespace indigo
         DECL_ERROR;
 
         explicit Graph();
-        virtual ~Graph();
+        Graph(Graph&&) noexcept = default;
+
+        virtual ~Graph() = default;
+
+        Graph& operator=(Graph&&) noexcept = default;
 
         VerticesAuto vertices();
 
@@ -164,19 +170,19 @@ namespace indigo
 
         int edgeBegin() const
         {
-            return _edges.begin();
+            return _edges->begin();
         }
         int edgeEnd() const
         {
-            return _edges.end();
+            return _edges->end();
         }
         int edgeNext(int i) const
         {
-            return _edges.next(i);
+            return _edges->next(i);
         }
         int edgeCount() const
         {
-            return _edges.size();
+            return _edges->size();
         }
 
         int addVertex();
@@ -238,18 +244,18 @@ namespace indigo
     protected:
         void _mergeWithSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>* edges, Array<int>* mapping, Array<int>* edge_mapping);
 
-        Pool<List<VertexEdge>::Elem>* _neighbors_pool;
-        ObjPool<Vertex>* _vertices;
-        Pool<Edge> _edges;
+        std::unique_ptr<Pool<List<VertexEdge>::Elem>> _neighbors_pool;
+        std::unique_ptr<ObjPool<Vertex>> _vertices;
+        std::unique_ptr<Pool<Edge>> _edges;
 
         Array<int> _topology; // for each edge: TOPOLOGY_RING, TOPOLOGY_CHAIN, or -1 (not calculated)
         bool _topology_valid;
 
         Array<int> _v_smallest_ring_size, _e_smallest_ring_size;
         Array<int> _v_sssr_count;
-        Pool<List<int>::Elem>* _sssr_pool;
-        ObjArray<List<int>> _sssr_vertices;
-        ObjArray<List<int>> _sssr_edges;
+        std::unique_ptr<Pool<List<int>::Elem>> _sssr_pool;
+        std::vector<List<int>> _sssr_vertices;
+        std::vector<List<int>> _sssr_edges;
         bool _sssr_valid;
 
         Array<int> _component_numbers;
