@@ -54,13 +54,8 @@ int Vertex::findNeiEdge(int idx) const
 IMPL_ERROR(Graph, "graph");
 
 Graph::Graph()
-    : _neighbors_pool{std::make_unique<Pool<List<VertexEdge>::Elem>>()},
-      _vertices{std::make_unique<ObjPool<Vertex>>()},
-      _edges{std::make_unique<Pool<Edge>>()},
-      _topology_valid{false},
-      _sssr_pool{},
-      _sssr_valid{false},
-      _components_valid{false}, _components_count{0}
+    : _neighbors_pool{std::make_unique<Pool<List<VertexEdge>::Elem>>()}, _vertices{std::make_unique<ObjPool<Vertex>>()}, _edges{std::make_unique<Pool<Edge>>()},
+      _topology_valid{false}, _sssr_pool{}, _sssr_valid{false}, _components_valid{false}, _components_count{0}
 {
 }
 
