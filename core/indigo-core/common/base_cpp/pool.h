@@ -21,6 +21,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
+#include "base_cpp/non_copyable.h"
 
 namespace indigo
 {
@@ -28,7 +29,7 @@ namespace indigo
     DECL_EXCEPTION(PoolError);
 
     template <typename T>
-    class Pool
+    class Pool : public NonCopyable
     {
     public:
         DECL_TPL_ERROR(PoolError);
@@ -36,6 +37,9 @@ namespace indigo
         Pool() : _size(0), _first(-1)
         {
         }
+
+        Pool(Pool&&) = delete; // explicitly disable move operations
+        Pool& operator=(Pool&&) = delete;
 
         int add()
         {
@@ -159,9 +163,6 @@ namespace indigo
         int _size; // number of _array items used
 
         int _first; // index of the first unused element (-1 if all are used)
-
-    private:
-        Pool(const Pool<T>&); // no implicit copy
     };
 
 } // namespace indigo
