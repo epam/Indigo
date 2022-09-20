@@ -52,6 +52,8 @@ namespace indigo
         }
     };
 
+    using FeatureSet = std::array<int, 9>;
+
     class MoleculePkaModel
     {
     public:
@@ -60,8 +62,9 @@ namespace indigo
                                  Array<float>& basic_pkas);
         static void getAtomLocalFingerprint(Molecule& mol, int idx, Array<char>& fp, int level);
         static void getAtomLocalKey(Molecule& mol, int idx, Array<char>& fp);
-        static bool getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<int>& fp);
+        static FeatureSet getAtomLocalFeatureSet(BaseMolecule& mol, int idx);
         static int buildPkaModel(int level, float threshold, const char* filename);
+        static int buildNewPkaModel(int level, float threshold, const char* filename);
 
         static float getMoleculeAcidPkaValue(Molecule& mol, IonizeOptions& ionizeOptions);
         static float getMoleculeBasicPkaValue(Molecule& mol, IonizeOptions& ionizeOptions);
@@ -117,6 +120,107 @@ namespace indigo
                                 Array<float>& acid_pkas, Array<float>& basic_pkas);
     };
 
+    template <typename T>
+    T xorshift(const T& n, int i)
+    {
+        return n ^ (n >> i);
+    }
+
+    uint32_t _hash(const uint32_t& v)
+    {
+        uint32_t p = 0x55555555ul; // pattern of alternating 0 and 1
+        uint32_t c = 3423571495ul; // random uneven integer constant;
+        return c * xorshift(p * xorshift(v, 16), 16);
+    }
+
+    // if c++20 rotl is not available:
+    template <typename T, typename S>
+    typename std::enable_if<std::is_unsigned<T>::value, T>::type constexpr rotl(const T n, const S i)
+    {
+        const T m = (std::numeric_limits<T>::digits - 1);
+        const T c = i & m;
+        return (n << c) | (n >> ((T(0) - c) & m)); // this is usually recognized by the compiler to mean rotation, also c++20 now gives us rotl directly
+    }
+
+    using hash_t = std::string;
+
+    hash_t feature_set_hash(const FeatureSet& vec)
+    {
+        //        std::size_t ret = 0;
+        //        for (const auto& i : vec)
+        //        {
+        //            ret = rotl(ret, 11) ^ _hash(i);
+        //        }
+        //        return ret;
+
+        std::stringstream ss;
+        for (const auto& item : vec)
+        {
+            ss << item;
+        }
+        return ss.str();
+    }
+
+    hash_t feature_set_vec_hash(std::vector<FeatureSet> vec)
+    {
+        std::sort(vec.begin(), vec.end());
+
+        std::vector<hash_t> hashes_vec;
+        hashes_vec.reserve(vec.size());
+        for (const auto& features_set : vec)
+        {
+            hashes_vec.emplace_back(feature_set_hash(features_set));
+        }
+        //        std::size_t ret = 0;
+        //        for (const auto& i : hashes_vec)
+        //        {
+        //            ret = rotl(ret, 11) ^ _hash(i);
+        //        }
+        //        return ret;
+        std::stringstream ss;
+        for (const auto& item : hashes_vec)
+        {
+            ss << item;
+            ss << "_";
+        }
+        ss.seekp(-1, ss.cur);
+        return ss.str();
+    }
+
+    struct PkaAtomModel
+    {
+        std::list<hash_t> levelHashes;
+        float pka;
+        PkaAtomModel(Molecule& m, int idx, int level, float pka);
+    };
+
+    struct PkaModelNode
+    {
+        hash_t hash;
+        std::vector<float> pkas;
+        bool isRoot = false;
+        std::map<hash_t, std::unique_ptr<PkaModelNode>> children;
+
+        PkaModelNode(hash_t hash, float pka, bool isRoot = false);
+
+        float pka() const;
+
+        void add(PkaAtomModel pkaAtomModel);
+    };
+
+    struct PkaModel
+    {
+        PkaModelNode acidRoot{"", NAN, true};
+        PkaModelNode basicRoot{"", NAN, true};
+
+        void addFileToModel(int level, const char* filename);
+
+        float estimateAcid(Molecule& m, int index, int minLevel, int maxLevel);
+        float estimateBasic(Molecule& m, int index, int minLevel, int maxLevel);
+
+        float estimateAcid(Molecule& m, int minLevel, int maxLevel);
+        float estimateBasic(Molecule& m, int minLevel, int maxLevel);
+    };
 } // namespace indigo
 
 #ifdef _WIN32

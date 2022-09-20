@@ -72,3 +72,19 @@ TEST_F(IndigoCorePkaTest, buildPkaModel)
     Array<char> fp;
     MoleculePkaModel::buildPkaModel(20, 0.0, dataPath("molecules/pka/pka_in_water.sdf").c_str());
 }
+
+
+TEST_F(IndigoCorePkaTest, buildNewPkaModel)
+{
+    PkaModel model;
+    model.addFileToModel(20, dataPath("molecules/pka/adv_pka_model.sdf").c_str());
+    model.addFileToModel(20, dataPath("molecules/pka/pka_in_water.sdf").c_str());
+    model.addFileToModel(20, dataPath("molecules/pka/PkaModel.sdf").c_str());
+
+    Molecule molecule;
+    loadMolecule("Oc(cccc1)c1Br", molecule);
+    for (int level = 0; level < 20; level++)
+    {
+        std::cout << level << ' ' << model.estimateAcid(molecule, level, 20) << ' ' << model.estimateBasic(molecule, level, 20) << '\n';
+    }
+}

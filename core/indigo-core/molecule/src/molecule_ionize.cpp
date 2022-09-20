@@ -16,7 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/molecule_ionize.h"
+#include <unordered_map>
+
 #include "base_cpp/output.h"
 #include "base_cpp/queue.h"
 #include "base_cpp/scanner.h"
@@ -24,9 +25,9 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_automorphism_search.h"
+#include "molecule/molecule_ionize.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molfile_loader.h"
-#include "molecule/molfile_saver.h"
 #include "molecule/query_molecule.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/smiles_loader.h"
@@ -1139,9 +1140,12 @@ void MoleculePkaModel::_checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Ar
 
 void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, Array<char>& fp)
 {
-    QS_DEF(Array<int>, feature_set);
-    if (!getAtomLocalFeatureSet(mol, idx, feature_set))
+    const auto feature_set = getAtomLocalFeatureSet(mol, idx);
+    if (feature_set[0] == 1)
+    {
+        // Ignore hydrogens
         return;
+    }
 
     QS_DEF(Array<char>, key);
     key.clear();
@@ -1171,7 +1175,7 @@ void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, Array<char>& fp)
  *  11. triple bond count
  *  12. zero bond count
  * */
-bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<int>& fp)
+FeatureSet MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx)
 {
     if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx))
     {
@@ -1181,10 +1185,6 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
     }
 
     int a_num = mol.getAtomNumber(idx);
-    // Just bypass the hyfrogen atom
-    if (a_num == ELEM_H)
-        return false;
-
     int a_val = mol.getAtomValence(idx);
     int a_chg = mol.getAtomCharge(idx);
     int a_rad = mol.getAtomRadical(idx);
@@ -1194,6 +1194,7 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
 
     int a_lone = 0;
     int group = Element::group(mol.getAtomNumber(idx));
+    int a_h = mol.getAtomTotalH(idx);
 
     try
     {
@@ -1229,11 +1230,8 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
             a_coord_cnt++;
     }
 
-    int feature_set[] = {a_num, a_val, a_chg, a_rad, a_iso, a_arom, a_lone, a_conn, a_single_cnt, a_double_cnt, a_aromatic_cnt, a_triple_cnt, a_coord_cnt};
-
-    fp.copy(feature_set, sizeof(feature_set) / sizeof(*feature_set));
-
-    return true;
+//    return {a_num, a_val, a_chg, a_rad, a_iso, a_arom, a_lone, a_conn, a_single_cnt, a_double_cnt, a_aromatic_cnt, a_triple_cnt, a_coord_cnt};
+    return {a_num, a_chg, a_rad, a_lone, a_h, a_single_cnt, a_double_cnt, a_aromatic_cnt, a_triple_cnt};
 }
 
 float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int min_level)
@@ -1446,4 +1444,195 @@ bool MoleculePkaModel::isSimpleModelLoaded()
 bool MoleculePkaModel::isAdvancedModelLoaded()
 {
     return _model.advanced_model_ready;
+}
+
+PkaAtomModel::PkaAtomModel(Molecule& m, int idx, int level, float pka) : pka(pka)
+{
+    std::unordered_set<int> usedIndexes;
+    levelHashes.push_back("");
+    levelHashes.push_back(feature_set_hash(MoleculePkaModel::getAtomLocalFeatureSet(m, idx)));
+    usedIndexes.emplace(idx);
+
+    std::unordered_set<int> previousLevelIndexes = {idx};
+    while (level > 0)
+    {
+        std::vector<FeatureSet> features;
+
+        std::unordered_set<int> currentLevelIndexes;
+        for (const auto prevIdx : previousLevelIndexes)
+        {
+            const auto& vertex = m.getVertex(prevIdx);
+            for (const auto& neighbor : vertex.neighbors())
+            {
+                auto neiId = vertex.neiVertex(neighbor);
+                if (usedIndexes.count(neiId) > 0)
+                {
+                    continue;
+                }
+                usedIndexes.emplace(neiId);
+                currentLevelIndexes.emplace(neiId);
+            }
+        }
+
+        if (!currentLevelIndexes.size())
+        {
+            return;
+        }
+
+        features.reserve(currentLevelIndexes.size());
+        for (const auto& currIdx : currentLevelIndexes)
+        {
+            features.push_back(MoleculePkaModel::getAtomLocalFeatureSet(m, currIdx));
+        }
+
+        previousLevelIndexes = currentLevelIndexes;
+        --level;
+        levelHashes.push_back(feature_set_vec_hash(features));
+    }
+}
+
+PkaModelNode::PkaModelNode(hash_t hash, float pka, bool isRoot) : hash(hash), pkas({pka}), isRoot(isRoot)
+{
+}
+
+float PkaModelNode::pka() const
+{
+    return std::accumulate(pkas.begin(), pkas.end(), 0.0) / pkas.size();
+}
+
+void PkaModelNode::add(PkaAtomModel pkaAtomModel)
+{
+    if (pkaAtomModel.levelHashes.empty())
+    {
+        return;
+    }
+
+    pkaAtomModel.levelHashes.pop_front();
+
+    if (!isRoot)
+    {
+        pkas.emplace_back(pkaAtomModel.pka);
+    }
+
+    if (pkaAtomModel.levelHashes.empty())
+    {
+        return;
+    }
+
+    if (children.count(pkaAtomModel.levelHashes.front()) == 0)
+    {
+        children[pkaAtomModel.levelHashes.front()] = std::make_unique<PkaModelNode>(pkaAtomModel.levelHashes.front(), pkaAtomModel.pka, false);
+    }
+    children.at(pkaAtomModel.levelHashes.front())->add(pkaAtomModel);
+}
+
+namespace
+{
+    void addMoleculeToModel(SdfLoader& loader, Molecule& mol, const char* pka_sites_id, const char* pka_values_id, const int modelLevel,
+                            PkaModelNode& root)
+    {
+        if (loader.properties.contains(pka_sites_id))
+        {
+            const char* aids = loader.properties.at(pka_sites_id);
+            const char* apkas = loader.properties.at(pka_values_id);
+
+            BufferScanner scan_aids(aids);
+            int idx;
+            float pka;
+            while (!scan_aids.isEOF())
+            {
+                idx = scan_aids.readInt1() - 1;
+                break;
+            }
+            BufferScanner scan_apka(apkas);
+            while (!scan_apka.isEOF())
+            {
+                pka = scan_apka.readFloat();
+                break;
+            }
+
+            auto atomModel = PkaAtomModel(mol, idx, modelLevel, pka);
+            root.add(atomModel);
+        }
+    }
+
+    float estimate(PkaAtomModel& atomModel, int minLevel, int maxLevel, PkaModelNode& node)
+    {
+        atomModel.levelHashes.pop_front();
+        float result = node.pka();
+        PkaModelNode* currentNode = nullptr;
+
+        if (atomModel.levelHashes.empty() || !node.children.count(atomModel.levelHashes.front()) || minLevel < 0 || maxLevel <= 0)
+        {
+            if (minLevel <= 0)
+            {
+                return result;
+            }
+            else
+            {
+                return NAN;
+            }
+        }
+        return estimate(atomModel, minLevel - 1, maxLevel - 1, *node.children.at(atomModel.levelHashes.front()));
+    }
+}
+
+void PkaModel::addFileToModel(const int level, const char* filename)
+{
+    FileScanner scanner(filename);
+    SdfLoader loader(scanner);
+    const char* a_pka_sites_id = "ACID PKA SITES";
+    const char* a_pka_values_id = "ACID PKA VALUES";
+    const char* b_pka_sites_id = "BASIC PKA SITES";
+    const char* b_pka_values_id = "BASIC PKA VALUES";
+
+    while (!loader.isEOF())
+    {
+        try
+        {
+            loader.readNext();
+            BufferScanner scanner(loader.data);
+            MolfileLoader mol_loader(scanner);
+            mol_loader.stereochemistry_options.ignore_errors = true;
+            mol_loader.ignore_bad_valence = true;
+            Molecule mol;
+            mol_loader.loadMolecule(mol);
+            mol.aromatize(AromaticityOptions());
+            addMoleculeToModel(loader, mol, a_pka_sites_id, a_pka_values_id, level, acidRoot);
+            addMoleculeToModel(loader, mol, b_pka_sites_id, b_pka_values_id, level, basicRoot);
+        }
+        catch (...)
+        {
+        }
+    }
+}
+
+float PkaModel::estimateAcid(Molecule& m, const int index, int minLevel, int maxLevel)
+{
+    PkaAtomModel atomModel(m, index, maxLevel, NAN);
+    return estimate(atomModel, minLevel, maxLevel, acidRoot);
+}
+
+
+float PkaModel::estimateAcid(Molecule& m, int minLevel, int maxLevel)
+{
+    float pka = 1e80;
+    for (int i = m.vertexBegin(); i != m.vertexEnd(); i = m.vertexNext(i))
+    {
+        PkaAtomModel atomModel(m, i, maxLevel, NAN);
+        pka = std::min(pka, estimate(atomModel, minLevel, maxLevel, acidRoot));
+    }
+    return pka;
+}
+
+
+float PkaModel::estimateBasic(Molecule& m, int minLevel, int maxLevel)
+{
+    float pka = -1e80;
+    for (int i = m.vertexBegin(); i != m.vertexEnd(); i = m.vertexNext(i))
+    {
+        PkaAtomModel atomModel(m, i, maxLevel, NAN);
+        pka = std::max(pka, estimate(atomModel, minLevel, maxLevel, basicRoot));
+    }
+    return pka;
 }

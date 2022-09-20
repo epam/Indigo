@@ -837,6 +837,8 @@ int Molecule::_getImplicitHForConnectivity(int idx, int conn, bool use_cache)
             }
             else if (atom.number == ELEM_O && atom.charge == 0)
                 impl_h = 0;
+            else if (atom.number == ELEM_N && atom.charge == 0 && degree == 2)
+                impl_h = 0;
             else if (atom.number == ELEM_N && atom.charge == 0 && degree == 3)
                 impl_h = 0;
             else if (atom.number == ELEM_N && atom.charge == 1 && degree == 3)
