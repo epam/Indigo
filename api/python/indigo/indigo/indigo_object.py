@@ -810,6 +810,15 @@ class IndigoObject:
 
         return IndigoLib.checkResult(self._lib().indigoCountRGroups(self.id))
 
+    def removeRGroups(self):
+        """Object method returns type
+
+        Returns:
+            str: object type string
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoRemoveRGroups(self.id))
+
     def isPseudoatom(self):
         """Atom method returns true if atom is pseudoatom
 
@@ -2708,6 +2717,15 @@ class IndigoObject:
             ),
         )
 
+    def getRSite(self) -> int:
+        """Molecule method gets r-site order
+
+        Returns:
+            int: r-site order
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoGetRSite(self.id))
+
     def setRSite(self, name):
         """Atom method sets r-site
 
@@ -2810,6 +2828,9 @@ class IndigoObject:
             self.session,
             IndigoLib.checkResult(self._lib().indigoMerge(self.id, what.id)),
         )
+
+    def mergeAtoms(self, a: int, b: int) -> None:
+        IndigoLib.checkResult(self._lib().indigoMergeAtoms(self.id, a, b))
 
     def highlight(self):
         """Atom or bond method to add highlighting

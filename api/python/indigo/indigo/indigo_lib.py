@@ -699,6 +699,8 @@ class IndigoLib:
         IndigoLib.lib.indigoResetAtom.argtypes = [c_int, c_char_p]
         IndigoLib.lib.indigoAddRSite.restype = c_int
         IndigoLib.lib.indigoAddRSite.argtypes = [c_int, c_char_p]
+        IndigoLib.lib.indigoGetRSite.restype = c_int
+        IndigoLib.lib.indigoGetRSite.argtypes = [c_int]
         IndigoLib.lib.indigoSetRSite.restype = c_int
         IndigoLib.lib.indigoSetRSite.argtypes = [c_int, c_char_p]
         IndigoLib.lib.indigoSetCharge.restype = c_int
@@ -713,6 +715,8 @@ class IndigoLib:
         IndigoLib.lib.indigoSetBondOrder.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoMerge.restype = c_int
         IndigoLib.lib.indigoMerge.argtypes = [c_int, c_int]
+        IndigoLib.lib.indigoMergeAtoms.restype = c_int
+        IndigoLib.lib.indigoMergeAtoms.argtypes = [c_int, c_int, c_int]
         IndigoLib.lib.indigoHighlight.restype = c_int
         IndigoLib.lib.indigoHighlight.argtypes = [c_int]
         IndigoLib.lib.indigoUnhighlight.restype = c_int
@@ -985,6 +989,8 @@ class IndigoLib:
         IndigoLib.lib.indigoNameToStructure.argtypes = [c_char_p, c_char_p]
         IndigoLib.lib.indigoResetOptions.restype = c_int
         IndigoLib.lib.indigoResetOptions.argtypes = []
+        IndigoLib.lib.indigoRemoveRGroups.restype = c_int
+        IndigoLib.lib.indigoRemoveRGroups.argtypes = [c_int]
 
     @staticmethod
     def checkResult(

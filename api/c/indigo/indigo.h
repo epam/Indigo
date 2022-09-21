@@ -360,6 +360,7 @@ CEXPORT int indigoIterateAlleneCenters(int molecule);
 CEXPORT int indigoIterateRGroups(int molecule);
 
 CEXPORT int indigoCountRGroups(int molecule);
+CEXPORT int indigoRemoveRGroups(int molecule);
 
 CEXPORT int indigoIsPseudoatom(int atom);
 CEXPORT int indigoIsRSite(int atom);
@@ -608,6 +609,7 @@ CEXPORT int indigoSetTemplateAtomClass(int atom, const char* name);
 // Accepts Rsite name "R" (or just ""), "R1", "R2" or list with names "R1 R3"
 CEXPORT int indigoAddRSite(int molecule, const char* name);
 CEXPORT int indigoSetRSite(int atom, const char* name);
+CEXPORT int indigoGetRSite(int atom);
 
 CEXPORT int indigoSetCharge(int atom, int charge);
 CEXPORT int indigoSetIsotope(int atom, int isotope);
@@ -630,6 +632,7 @@ CEXPORT int indigoAddBond(int source, int destination, int order);
 CEXPORT int indigoSetBondOrder(int bond, int order);
 
 CEXPORT int indigoMerge(int where_to, int what);
+CEXPORT int indigoMergeAtoms(int mol, int a, int b);
 
 /* Highlighting */
 

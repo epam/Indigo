@@ -1189,6 +1189,17 @@ CEXPORT int indigoCountRGroups(int molecule)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoRemoveRGroups(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+        mol.rgroups.clear();
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
 bool IndigoRGroupsIter::hasNext()
 {
     bool result = false;
@@ -3797,6 +3808,20 @@ CEXPORT int indigoMerge(int where, int what)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoMergeAtoms(int mol_id, int a, int b)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(mol_id);
+        auto& mol = obj.getMolecule();
+        auto new_atom_number = std::min(mol.getAtomNumber(a), mol.getAtomNumber(b));
+        auto new_idx = mol.mergeAtoms(a, b);
+        mol.resetAtom(new_idx, new_atom_number);
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoAddAtom(int molecule, const char* symbol)
 {
     INDIGO_BEGIN
@@ -3977,6 +4002,17 @@ CEXPORT int indigoSetRSite(int atom, const char* name)
         _indigoSetRSite(mol, ia.idx, name);
 
         return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetRSite(int atom)
+{
+    INDIGO_BEGIN
+    {
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
+        Molecule& mol = ia.mol.asMolecule();
+        return mol.getRSiteBits(ia.idx);
     }
     INDIGO_END(-1);
 }
