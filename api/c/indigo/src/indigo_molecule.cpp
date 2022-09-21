@@ -3174,8 +3174,8 @@ CEXPORT int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, cons
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        int ap_idx = sup.attachment_points.add();
-        Superatom::_AttachmentPoint& ap = sup.attachment_points.at(ap_idx);
+        int ap_idx = sup.getAttachmentPoints().add();
+        Superatom::_AttachmentPoint& ap = sup.getAttachmentPoints().at(ap_idx);
         ap.aidx = aidx;
         ap.lvidx = lvidx;
         ap.apid.readString(apid, true);
@@ -3189,7 +3189,7 @@ CEXPORT int indigoDeleteSGroupAttachmentPoint(int sgroup, int ap_idx)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        sup.attachment_points.remove(ap_idx);
+        sup.getAttachmentPoints().remove(ap_idx);
         return 1;
     }
     INDIGO_END(-1);

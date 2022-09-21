@@ -176,7 +176,7 @@ namespace indigo
         int getTemplateAtomAttachmentPoint(int atom_idx, int order);
         void getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid);
         int getTemplateAtomAttachmentPointsCount(int atom_idx);
-        int getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id);
+        int getTemplateAtomAttachmentPointById(int atom_idx, const Array<char>& att_id);
 
         void addAttachmentPoint(int order, int atom_index);
 

@@ -1360,8 +1360,8 @@ void MolfileLoader::_readCtab2000()
                     int n = _scanner.readIntFix(3);
                     while (n-- > 0)
                     {
-                        int idap = sup.attachment_points.add();
-                        Superatom::_AttachmentPoint& ap = sup.attachment_points.at(idap);
+                        int idap = sup.getAttachmentPoints().add();
+                        Superatom::_AttachmentPoint& ap = sup.getAttachmentPoints().at(idap);
                         _scanner.skip(1);
                         ap.aidx = _scanner.readIntFix(3) - 1;
                         _scanner.skip(1);
@@ -3573,8 +3573,8 @@ void MolfileLoader::_readSGroup3000(const char* str)
                     throw Error("SAP number is %d (must be 3)", n);
                 scanner.skipSpace();
                 int idx = scanner.readInt() - 1;
-                int idap = sup->attachment_points.add();
-                Superatom::_AttachmentPoint& ap = sup->attachment_points.at(idap);
+                int idap = sup->getAttachmentPoints().add();
+                Superatom::_AttachmentPoint& ap = sup->getAttachmentPoints().at(idap);
                 ap.aidx = idx;
                 scanner.skipSpace();
                 ap.lvidx = scanner.readInt() - 1;
