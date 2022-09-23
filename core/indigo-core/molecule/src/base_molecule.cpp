@@ -3190,9 +3190,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
         else
         {
             Superatom& sup_new = (Superatom&)sg;
-            if ((strcmp(su.subscript.ptr(), sup_new.subscript.ptr()) == 0)
-                && sup_new.hasAttachmentPoints()
-                && (su.getAttachmentPoints().size() == sup_new.getAttachmentPoints().size()))
+            if ((strcmp(su.subscript.ptr(), sup_new.subscript.ptr()) == 0) && sup_new.hasAttachmentPoints() &&
+                (su.getAttachmentPoints().size() == sup_new.getAttachmentPoints().size()))
             {
                 new_sg_idx = sgs[j];
             }

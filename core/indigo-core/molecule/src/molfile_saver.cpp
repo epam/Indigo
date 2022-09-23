@@ -1655,8 +1655,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                         int leave_idx = 0;
                         if (aps[j].lvidx > -1)
                             leave_idx = _atom_mapping[aps[j].lvidx];
-                        output.printf(" %3d %3d %c%c", _atom_mapping[aps[j].aidx], leave_idx, aps[j].apid[0],
-                                      aps[j].apid[1]);
+                        output.printf(" %3d %3d %c%c", _atom_mapping[aps[j].aidx], leave_idx, aps[j].apid[0], aps[j].apid[1]);
                         k++;
                         nrem--;
                         if ((k == 6) || (nrem == 0))

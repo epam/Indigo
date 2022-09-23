@@ -555,7 +555,7 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     {
         for (i = _sgroups->begin(); i != _sgroups->end(); i = _sgroups->next(i))
         {
-            SGroup& sg = *( _sgroups->at(i));
+            SGroup& sg = *(_sgroups->at(i));
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
