@@ -68,7 +68,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     else
         throw Error("unknown reaction type: %s", typeid(rxn).name());
 
-    rxn.meta().clone(_pmol->meta());
+    rxn.meta() = std::move(_pmol->meta());
     _pmol->meta().resetMetaData();
 
     int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);

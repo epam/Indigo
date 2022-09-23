@@ -1059,14 +1059,14 @@ void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>&
         }
         break;
         case KETSimpleObject::CID: {
-            auto simple_obj = (KETSimpleObject*)pobj;
+            KETSimpleObject& simple_obj = (KETSimpleObject&)(*pobj);
             writer.StartObject();
             writer.Key("type");
             writer.String("simpleObject");
             writer.Key("data");
             writer.StartObject();
             writer.Key("mode");
-            switch (simple_obj->_mode)
+            switch (simple_obj._mode)
             {
             case KETSimpleObject::EKETEllipse:
                 writer.String("ellipse");
@@ -1081,7 +1081,7 @@ void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>&
             writer.Key("pos");
             writer.StartArray();
 
-            auto& coords = simple_obj->_coordinates;
+            auto& coords = simple_obj._coordinates;
 
             // point1
             writer.StartObject();
@@ -1112,22 +1112,22 @@ void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>&
             break;
         }
         case KETTextObject::CID: {
-            auto simple_obj = (KETTextObject*)pobj;
+            KETTextObject& simple_obj = (KETTextObject&)(*pobj);
             writer.StartObject();
             writer.Key("type");
             writer.String("text");
             writer.Key("data");
             writer.StartObject();
             writer.Key("content");
-            writer.String(simple_obj->_content.c_str());
+            writer.String(simple_obj._content.c_str());
             writer.Key("position");
             writer.StartObject();
             writer.Key("x");
-            writer.Double(simple_obj->_pos.x);
+            writer.Double(simple_obj._pos.x);
             writer.Key("y");
-            writer.Double(simple_obj->_pos.y);
+            writer.Double(simple_obj._pos.y);
             writer.Key("z");
-            writer.Double(simple_obj->_pos.z);
+            writer.Double(simple_obj._pos.z);
             writer.EndObject(); // end position
             writer.EndObject(); // end data
             writer.EndObject(); // end node

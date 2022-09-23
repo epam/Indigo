@@ -9,34 +9,25 @@ IMPL_ERROR(MetaDataStorage, "metadata storage");
 void MetaDataStorage::addMetaObject(MetaObject* pobj)
 {
     int index = _meta_data.size();
-    _meta_data.expand(index + 1);
-    _meta_data.set(index, pobj);
+    _meta_data.emplace_back(pobj);
 
     switch (pobj->_class_id)
     {
     case KETTextObject::CID:
-        _text_object_indexes.push() = index;
+        _text_object_indexes.push_back(index);
         break;
     case KETSimpleObject::CID:
-        _simple_object_indexes.push() = index;
+        _simple_object_indexes.push_back(index);
         break;
     case KETReactionPlus::CID:
-        _plus_indexes.push() = index;
+        _plus_indexes.push_back(index);
         break;
     case KETReactionArrow::CID:
-        _arrow_indexes.push() = index;
+        _arrow_indexes.push_back(index);
         break;
     default:
         break;
     }
-}
-
-void MetaDataStorage::clone(const MetaDataStorage& other)
-{
-    resetMetaData();
-    const auto& meta = other.metaData();
-    for (int i = 0; i < meta.size(); i++)
-        addMetaObject(meta[i]->clone());
 }
 
 const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
@@ -87,9 +78,30 @@ void MetaDataStorage::resetReactionData()
 {
     _plus_indexes.clear();
     _arrow_indexes.clear();
+
+    std::vector<int> indexes_to_remove;
     for (int i = _meta_data.size() - 1; i >= 0; i--)
     {
         if (_meta_data[i]->_class_id == KETReactionArrow::CID || _meta_data[i]->_class_id == KETReactionPlus::CID)
-            _meta_data.remove(i);
+        {
+            indexes_to_remove.push_back(i);
+        }
+    }
+
+    for (int i : indexes_to_remove)
+    {
+        _meta_data.erase(_meta_data.begin() + i);
+
+        for (int& toi : _text_object_indexes)
+        {
+            if (toi > i)
+                --toi;
+        }
+
+        for (int& soi : _simple_object_indexes)
+        {
+            if (soi > i)
+                --soi;
+        }
     }
 }
