@@ -42,7 +42,8 @@ def run_server(port):
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    db_session.remove()
+    if db_session is not None:
+        db_session.remove()
 
 
 if __name__ == "__main__":

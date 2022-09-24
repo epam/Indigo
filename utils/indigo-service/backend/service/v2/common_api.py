@@ -22,10 +22,10 @@ def version():
         description: JSON with service, indigo, bingo and imago vesrions
     """
     versions = {}
-
-    versions["bingo_version"] = db_session.execute(
-        "SELECT Bingo.GetVersion();"
-    ).fetchone()[0]
+    if db_session is not None:
+        versions["bingo_version"] = db_session.execute(
+            "SELECT Bingo.GetVersion();"
+        ).fetchone()[0]
 
     indigo = indigo_init()
     versions["indigo_version"] = indigo.version()
