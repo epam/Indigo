@@ -25,6 +25,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_scaffold_detection.h"
+#include "molecule/molecule_stereocenter_iterator.h"
 
 using namespace indigo;
 
@@ -61,7 +62,7 @@ void MoleculeAutomorphismSearch::_getFirstApproximation(Molecule& mol)
     const MoleculeStereocenters& stereocenters = mol.stereocenters;
     for (int i = 0; i < _stereocenter_state.size(); i++)
         _stereocenter_state[i] = _NO_STEREO;
-    for (int i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
+    for (auto i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
     {
         int atom_index = stereocenters.getAtomIndex(i);
         _stereocenter_state[atom_index] = _UNDEF;
@@ -77,7 +78,7 @@ void MoleculeAutomorphismSearch::_getFirstApproximation(Molecule& mol)
     _cistrans_stereo_bond_parity.zerofill();
 
     _treat_undef_as = _INVALID;
-    _target_stereocenter = -1;
+    _target_stereocenter = {};
     _target_bond = -1;
 
     // Approximation orbits cannot be used on this step because
@@ -192,7 +193,7 @@ void MoleculeAutomorphismSearch::process(Molecule& mol)
 
     // Mark all other stereocenters and stereobonds as valid
     const MoleculeStereocenters& stereocenters = mol.stereocenters;
-    for (int i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
+    for (auto i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
     {
         int atom_index = stereocenters.getAtomIndex(i);
         if (_stereocenter_state[atom_index] == _UNDEF)
@@ -204,7 +205,7 @@ void MoleculeAutomorphismSearch::process(Molecule& mol)
 
     // Find final orbits and canonical ordering with found
     // valid and invalid stereocenters and bonds
-    _target_stereocenter = -1;
+    _target_stereocenter = {};
     _target_bond = -1;
     _fixed_atom = -1;
 
@@ -552,7 +553,7 @@ int MoleculeAutomorphismSearch::_compareMappedStereocenters(Molecule& mol, const
         return 0;
 
     int max_stereogroup = 0;
-    for (int s = stereocenters.begin(); s != stereocenters.end(); s = stereocenters.next(s))
+    for (auto s = stereocenters.begin(); s != stereocenters.end(); s = stereocenters.next(s))
     {
         int atom_idx = stereocenters.getAtomIndex(s);
         max_stereogroup = std::max(stereocenters.getGroup(atom_idx), max_stereogroup);
@@ -781,11 +782,11 @@ int MoleculeAutomorphismSearch::_validStereocenterByAtom(int atom_index, Array<i
     return _VALID;
 }
 
-int MoleculeAutomorphismSearch::_validStereocenter(int idx, Array<int>& orbits, int* parity)
+int MoleculeAutomorphismSearch::_validStereocenter(const StereocenterIterator& it, Array<int>& orbits, int* parity)
 {
     Molecule& mol = *(Molecule*)_given_graph;
 
-    int atom_index = mol.stereocenters.getAtomIndex(idx);
+    int atom_index = mol.stereocenters.getAtomIndex(it);
     return _validStereocenterByAtom(atom_index, orbits, parity);
 }
 
@@ -945,7 +946,7 @@ void MoleculeAutomorphismSearch::_markValidOrInvalidStereo(bool find_valid, Arra
     }
 
     const MoleculeStereocenters& stereocenters = mol.stereocenters;
-    for (int i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
+    for (auto i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
     {
         int validity = _validStereocenter(i, orbits);
         if (validity == _UNDEF)
@@ -979,8 +980,8 @@ void MoleculeAutomorphismSearch::_automorphismCallback(const int* automorphism, 
     MoleculeAutomorphismSearch& self = *(MoleculeAutomorphismSearch*)context;
     Molecule& mol = *(Molecule*)self._given_graph;
 
-    if (self._target_stereocenter != -1)
-        if (!_isStereocenterMappedRigid(mol, self._target_stereocenter, automorphism))
+    if (self._target_stereocenter)
+        if (!_isStereocenterMappedRigid(mol, *self._target_stereocenter, automorphism))
             self._target_stereocenter_parity_inv = true;
 
     if (self._target_bond != -1)
@@ -988,13 +989,13 @@ void MoleculeAutomorphismSearch::_automorphismCallback(const int* automorphism, 
             self._target_bond_parity_inv = true;
 }
 
-bool MoleculeAutomorphismSearch::_isStereocenterMappedRigid(Molecule& mol, int i, const int* mapping)
+bool MoleculeAutomorphismSearch::_isStereocenterMappedRigid(Molecule& mol, const StereocenterIterator& it, const int* mapping)
 {
     int idx, type, group;
     int pyramid[4];
     int j;
 
-    mol.stereocenters.get(i, idx, type, group, pyramid);
+    mol.stereocenters.get(it, idx, type, group, pyramid);
 
     if (mapping[idx] == -1)
         return true;
@@ -1072,7 +1073,7 @@ bool MoleculeAutomorphismSearch::_findInvalidStereo(Molecule& mol)
     invalid_stereo.clear();
     _target_bond = -1;
     MoleculeStereocenters& stereocenters = mol.stereocenters;
-    for (int i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
+    for (auto i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
     {
         int atom_index = stereocenters.getAtomIndex(i);
         if (ignored_vertices != 0 && ignored_vertices[atom_index])
@@ -1083,7 +1084,15 @@ bool MoleculeAutomorphismSearch::_findInvalidStereo(Molecule& mol)
 
         _stereocenter_state[atom_index] = _INVALID;
 
-        _target_stereocenter = i;
+        if (!_target_stereocenter)
+        {
+            _target_stereocenter = std::make_unique<StereocenterIterator>(std::move(i));
+        }
+        else
+        {
+            *_target_stereocenter = i;
+        }
+
         _fixed_atom = atom_index;
         _target_stereocenter_parity_inv = false;
 
@@ -1095,7 +1104,7 @@ bool MoleculeAutomorphismSearch::_findInvalidStereo(Molecule& mol)
         if (type == MoleculeStereocenters::ATOM_AND || type == MoleculeStereocenters::ATOM_OR)
         {
             // Mark whole group as absolute
-            for (int j = stereocenters.begin(); j != stereocenters.end(); j = stereocenters.next(j))
+            for (auto j = stereocenters.begin(); j != stereocenters.end(); j = stereocenters.next(j))
             {
                 int atom_index2 = stereocenters.getAtomIndex(j);
                 if (atom_index2 == atom_index)
@@ -1131,7 +1140,7 @@ bool MoleculeAutomorphismSearch::_findInvalidStereo(Molecule& mol)
         invalid_found = true;
     }
 
-    _target_stereocenter = -1;
+    _target_stereocenter = {};
 
     //
     // Step 2: find valid and invalid cis-trans bonds

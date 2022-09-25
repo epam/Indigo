@@ -20,6 +20,7 @@
 #include "indigo_reaction.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_exact_matcher.h"
+#include "molecule/molecule_stereocenter_iterator.h"
 #include "reaction/reaction.h"
 
 CEXPORT int indigoStereocenterType(int atom)
@@ -373,7 +374,7 @@ static int _resetSymmetric(Molecule& mol, bool cistrans, bool stereo)
     {
         QS_DEF(Array<int>, to_remove);
         to_remove.clear();
-        for (int i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
+        for (auto i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
         {
             int atom_index = mol.stereocenters.getAtomIndex(i);
             if (am.invalidStereocenter(atom_index))
@@ -530,7 +531,7 @@ static void _indigoValidateMoleculeChirality(Molecule& mol)
     QS_DEF(Molecule, mirror);
     mirror.clone(mol, 0, 0);
 
-    for (int s = mirror.stereocenters.begin(); s != mirror.stereocenters.end(); s = mirror.stereocenters.next(s))
+    for (auto s = mirror.stereocenters.begin(); s != mirror.stereocenters.end(); s = mirror.stereocenters.next(s))
     {
         int atom = mirror.stereocenters.getAtomIndex(s);
         if (mirror.stereocenters.getType(atom) == MoleculeStereocenters::ATOM_ABS)
@@ -544,7 +545,7 @@ static void _indigoValidateMoleculeChirality(Molecule& mol)
     if (!matcher.find())
         return;
 
-    for (int s = mol.stereocenters.begin(); s != mol.stereocenters.end(); s = mol.stereocenters.next(s))
+    for (auto s = mol.stereocenters.begin(); s != mol.stereocenters.end(); s = mol.stereocenters.next(s))
     {
         int atom = mol.stereocenters.getAtomIndex(s);
         if (mol.stereocenters.getType(atom) == MoleculeStereocenters::ATOM_ABS)

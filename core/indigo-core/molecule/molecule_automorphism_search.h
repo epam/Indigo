@@ -19,13 +19,17 @@
 #ifndef __molecule_automorphism_search__
 #define __molecule_automorphism_search__
 
+#include <memory>
+
 #include "graph/automorphism_search.h"
+#include "molecule/molecule_stereocenter_iterator.h"
 
 namespace indigo
 {
 
     class Molecule;
     class MoleculeStereocenters;
+    class StereocenterIteratorr;
     class CancellationHandler;
 
     class MoleculeAutomorphismSearch : public AutomorphismSearch
@@ -65,7 +69,7 @@ namespace indigo
         static bool _check_automorphism(Graph& graph, const Array<int>& mapping, const void* context);
 
         static bool _isCisTransBondMappedRigid(Molecule& mol, int i, const int* mapping);
-        static bool _isStereocenterMappedRigid(Molecule& mol, int i, const int* mapping);
+        static bool _isStereocenterMappedRigid(Molecule& mol, const StereocenterIterator& it, const int* mapping);
 
         static int _compare_mapped(Graph& graph, const Array<int>& mapping1, const Array<int>& mapping2, const void* context);
 
@@ -84,7 +88,7 @@ namespace indigo
         void _getFirstApproximation(Molecule& mol);
 
         int _validCisTransBond(int idx, const Array<int>& orbits);
-        int _validStereocenter(int idx, Array<int>& orbits, int* parity = 0);
+        int _validStereocenter(const StereocenterIterator& it, Array<int>& orbits, int* parity = 0);
         int _validStereocenterByAtom(int atom_idx, Array<int>& orbits, int* parity = 0);
 
         int _treat_undef_as;
@@ -130,7 +134,8 @@ namespace indigo
         TL_CP_DECL(Array<int>, _cistrans_bond_state);
 
         // Target stereocenters and cis-trans bond for checking permutation parity
-        int _target_stereocenter, _target_bond;
+        std::unique_ptr<StereocenterIterator> _target_stereocenter; // should be replaced with std::optional after switch to C++17
+        int _target_bond;
         bool _target_stereocenter_parity_inv, _target_bond_parity_inv;
         int _fixed_atom;
 
