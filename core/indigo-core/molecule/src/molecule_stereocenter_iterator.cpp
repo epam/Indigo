@@ -20,7 +20,7 @@
 
 using namespace indigo;
 
-StereocenterIterator::StereocenterIterator(MoleculeStereocenters::Container::const_iterator it) : _iterator {it}
+StereocenterIterator::StereocenterIterator(MoleculeStereocenters::Container::const_iterator it) : _iterator{it}
 {
 }
 

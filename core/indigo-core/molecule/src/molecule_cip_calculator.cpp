@@ -243,7 +243,8 @@ void MoleculeCIPCalculator::_addCIPSgroups(BaseMolecule& mol, Array<CIPDesc>& at
 }
 
 void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, const StereocenterIterator& it,
-    Array<CIPDesc>& atom_cip_desc, Array<StereocenterIterator>& stereo_passed, bool use_stereo, Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used)
+                                                    Array<CIPDesc>& atom_cip_desc, Array<StereocenterIterator>& stereo_passed, bool use_stereo,
+                                                    Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used)
 {
     Array<int> ligands;
     Array<int> used1;

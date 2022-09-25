@@ -726,7 +726,7 @@ void MoleculeStereocenters::getAbsAtoms(Array<int>& indices)
 {
     indices.clear();
 
-    for(const auto& pair: _stereocenters)
+    for (const auto& pair : _stereocenters)
     {
         if (pair.second.type == ATOM_ABS)
             indices.push(pair.first);
@@ -811,7 +811,7 @@ bool MoleculeStereocenters::haveAllAbs()
 {
     int i;
 
-    for(const auto& pair: _stereocenters)
+    for (const auto& pair : _stereocenters)
         if (pair.second.type != ATOM_ABS)
             return false;
 
@@ -1650,7 +1650,7 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
 
 void MoleculeStereocenters::markBonds(BaseMolecule& baseMolecule)
 {
-    for (const auto& pair: _stereocenters)
+    for (const auto& pair : _stereocenters)
         markBond(baseMolecule, pair.first);
 }
 
