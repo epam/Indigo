@@ -1341,92 +1341,95 @@ def render():
         "svg": "image/svg;base64",
         "pdf": "application/pdf;base64",
     }
+    # if request.method == "POST":
+    LOG_DATA(
+        "[REQUEST] /render",
+        request.headers["Content-Type"],
+        request.headers["Accept"],
+        request.data,
+    )
+    try:
+        if "application/json" in request.headers["Content-Type"]:
+            input_dict = json.loads(request.data.decode())
+        else:
+            input_dict = {
+                "struct": request.data,
+                "output_format": request.headers["Accept"],
+            }
+    except ValueError:
+        return get_error_response(
+            "Invalid input JSON: {0}".format(request.data), 400
+        )
 
-    if request.method == "POST":
-        LOG_DATA(
-            "[REQUEST] /render",
-            request.headers["Content-Type"],
-            request.headers["Accept"],
-            request.data,
+    data = IndigoRendererSchema().load(input_dict)
+    indigo = indigo_init(data['options'])
+    if data["struct"] and not data["query"]:
+        md = load_moldata(
+            data["struct"],
+            mime_type=data["input_format"],
+            options=data["options"],
+            indigo=indigo
+        )
+    elif data["query"] and not data["struct"]:
+        md = load_moldata(data["query"], options=data["options"], indigo=indigo)
+    else:
+        md = load_moldata(
+            data["struct"],
+            mime_type=data["input_format"],
+            options=data["options"],
+            indigo=indigo
+        )
+        mdq = load_moldata(
+            data["query"],
+            mime_type=data["input_format"],
+            query=True,
+            indigo=indigo
         )
         try:
-            if "application/json" in request.headers["Content-Type"]:
-                input_dict = json.loads(request.data.decode())
-            else:
-                input_dict = {
-                    "struct": request.data,
-                    "output_format": request.headers["Accept"],
-                }
-        except ValueError:
-            return get_error_response(
-                "Invalid input JSON: {0}".format(request.data), 400
+            md.struct = highlight(
+                indigo, md.struct, mdq.struct
             )
+        except RuntimeError:
+            pass
 
-        data = IndigoRendererSchema().load(input_dict)
-        if data["struct"] and not data["query"]:
-            md = load_moldata(
-                data["struct"],
-                mime_type=data["input_format"],
-                options=data["options"],
-            )
-        elif data["query"] and not data["struct"]:
-            md = load_moldata(data["query"], options=data["options"])
-        else:
-            md = load_moldata(
-                data["struct"],
-                mime_type=data["input_format"],
-                options=data["options"],
-            )
-            mdq = load_moldata(
-                data["query"],
-                mime_type=data["input_format"],
-                indigo=md.struct._session,
-                query=True,
-            )
-            try:
-                md.struct = highlight(
-                    md.struct._session, md.struct, mdq.struct
-                )
-            except RuntimeError:
-                pass
+    # elif request.method == "GET":
 
-    elif request.method == "GET":
+    #     LOG_DATA("[REQUEST] /render GET", request.args)
 
-        LOG_DATA("[REQUEST] /render GET", request.args)
+    #     try:
+    #         input_dict = {
+    #             "struct": request.args["struct"]
+    #             if "struct" in request.args
+    #             else None,
+    #             "output_format": request.args["output_format"]
+    #             if "output_format" in request.args
+    #             else "image/svg+xml",
+    #             "query": request.args["query"]
+    #             if "query" in request.args
+    #             else None,
+    #         }
+    #         if input_dict["struct"] and not input_dict["query"]:
+    #             md = load_moldata(input_dict["struct"])
+    #         elif input_dict["query"] and not input_dict["struct"]:
+    #             mdq = load_moldata(input_dict["query"])
+    #         else:
+    #             md = load_moldata(input_dict["struct"])
+    #             mdq = load_moldata(
+    #                 input_dict["query"],
+    #                 indigo=md.struct._session,
+    #                 query=True,
+    #             )
+    #             md.struct = highlight(
+    #                 md.struct._session, md.struct, mdq.struct
+    #             )
+    #         data = IndigoRendererSchema().load(input_dict)
+    #     except Exception as e:
+    #         return get_error_response(
+    #             "Invalid GET query {}".format(str(e)), 400
+    #         )
 
-        try:
-            input_dict = {
-                "struct": request.args["struct"]
-                if "struct" in request.args
-                else None,
-                "output_format": request.args["output_format"]
-                if "output_format" in request.args
-                else "image/svg+xml",
-                "query": request.args["query"]
-                if "query" in request.args
-                else None,
-            }
-            if input_dict["struct"] and not input_dict["query"]:
-                md = load_moldata(input_dict["struct"])
-            elif input_dict["query"] and not input_dict["struct"]:
-                mdq = load_moldata(input_dict["query"])
-            else:
-                md = load_moldata(input_dict["struct"])
-                mdq = load_moldata(
-                    input_dict["query"],
-                    indigo=md.struct._session,
-                    query=True,
-                )
-                md.struct = highlight(
-                    md.struct._session, md.struct, mdq.struct
-                )
-            data = IndigoRendererSchema().load(input_dict)
-        except Exception as e:
-            return get_error_response(
-                "Invalid GET query {}".format(str(e)), 400
-            )
-
-    indigo = md.struct._session
+    # indigo = md.struct._session
+    # indigo = indigo_init(data["options"])
     indigo.setOption("render-coloring", True)
     indigo.setOption("render-image-width", data["width"])
     indigo.setOption("render-image-height", data["height"])
