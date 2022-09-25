@@ -289,8 +289,7 @@ void ReactionCdxmlSaver::_closeScheme(MoleculeCdxmlSaver& molsaver)
     molsaver.endCurrentElement();
 }
 
-void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::unordered_map<int, int>& mol_ids,
-                                  ObjArray<Array<int>>& nodes_ids,
+void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::unordered_map<int, int>& mol_ids, ObjArray<Array<int>>& nodes_ids,
                                   int arrow_id)
 {
     int id = -1;
@@ -367,8 +366,8 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     molsaver.addCustomElement(id, name, attrs);
 }
 
-void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, std::unordered_map<int, int>& mol_ids, std::unordered_map<int, int>& meta_ids, ObjArray<Array<int>>& nodes_ids,
-                                              int& arrow_id)
+void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, std::unordered_map<int, int>& mol_ids, std::unordered_map<int, int>& meta_ids,
+                                              ObjArray<Array<int>>& nodes_ids, int& arrow_id)
 {
 
     int id = 0;
@@ -389,7 +388,6 @@ void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, std::unordered_
             nodes_ids[i][j] = id;
         }
     }
-
 
     // generate ids for meta objects. 1 node and 1 extra object. text or graphics
     for (auto i = 0; i < rxn.meta().metaData().size(); ++i)

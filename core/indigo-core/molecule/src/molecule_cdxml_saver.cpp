@@ -721,7 +721,7 @@ void MoleculeCdxmlSaver::addMetaData(const MetaDataStorage& meta, int id)
     const auto& meta_objects = meta.metaData();
     for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
     {
-        std::string id_str = std::to_string(id++);
+        id++;
         PropertiesMap attrs;
         attrs.clear();
         auto pobj = meta_objects[meta_index];
@@ -733,7 +733,7 @@ void MoleculeCdxmlSaver::addMetaData(const MetaDataStorage& meta, int id)
             attrs.insert("ArrowheadType", "Solid");
             attrs.insert("HeadSize", "2250");
             attrs.insert("ArrowheadWidth", "563");
-            switch( ar._arrow_type )
+            switch (ar._arrow_type)
             {
             case KETReactionArrow::EOpenAngle:
                 attrs.insert("ArrowheadHead", "Full");
@@ -744,94 +744,86 @@ void MoleculeCdxmlSaver::addMetaData(const MetaDataStorage& meta, int id)
                 attrs.insert("ArrowheadCenterSize", "2250");
                 break;
 
-             case KETReactionArrow::EFilledBow:
+            case KETReactionArrow::EFilledBow:
                 attrs.insert("ArrowheadHead", "Full");
                 attrs.insert("ArrowheadCenterSize", "1125");
                 break;
 
-             case KETReactionArrow::EDashedOpenAngle:
-                 attrs.insert("ArrowheadHead", "Full");
-                 attrs.insert("ArrowheadCenterSize", "25");
-                 attrs.insert("LineType", "Dashed");
+            case KETReactionArrow::EDashedOpenAngle:
+                attrs.insert("ArrowheadHead", "Full");
+                attrs.insert("ArrowheadCenterSize", "25");
+                attrs.insert("LineType", "Dashed");
                 break;
 
-             case KETReactionArrow::EFailed:
-                 attrs.insert("ArrowheadHead", "Full");
-                 attrs.insert("ArrowheadCenterSize", "1125");
-                 attrs.insert("NoGo", "Cross");
-                 break;
-             
-             case KETReactionArrow::EBothEndsFilledTriangle:
-                 attrs.insert("ArrowheadCenterSize", "2250");
-                 attrs.insert("ArrowheadHead", "Full");
-                 attrs.insert("ArrowheadTail", "Full");
-                 break;
+            case KETReactionArrow::EFailed:
+                attrs.insert("ArrowheadHead", "Full");
+                attrs.insert("ArrowheadCenterSize", "1125");
+                attrs.insert("NoGo", "Cross");
+                break;
 
-             case KETReactionArrow::EEquilibriumFilledHalfBow:
-                 attrs.insert("ArrowheadHead", "HalfLeft");
-                 attrs.insert("ArrowheadTail", "HalfLeft");
-                 attrs.insert("ArrowheadCenterSize", "1125");
-                 attrs.insert("ArrowShaftSpacing", "300");
-                 break;
+            case KETReactionArrow::EBothEndsFilledTriangle:
+                attrs.insert("ArrowheadCenterSize", "2250");
+                attrs.insert("ArrowheadHead", "Full");
+                attrs.insert("ArrowheadTail", "Full");
+                break;
 
-             case KETReactionArrow::EEquilibriumFilledTriangle:
-                 attrs.insert("ArrowheadHead", "HalfLeft");
-                 attrs.insert("ArrowheadTail", "HalfLeft");
-                 attrs.insert("ArrowheadCenterSize", "2250");
-                 attrs.insert("ArrowShaftSpacing", "300");
-                 break;
+            case KETReactionArrow::EEquilibriumFilledHalfBow:
+                attrs.insert("ArrowheadHead", "HalfLeft");
+                attrs.insert("ArrowheadTail", "HalfLeft");
+                attrs.insert("ArrowheadCenterSize", "1125");
+                attrs.insert("ArrowShaftSpacing", "300");
+                break;
 
-             case KETReactionArrow::EEquilibriumOpenAngle:
-                 attrs.insert("ArrowheadHead", "HalfLeft");
-                 attrs.insert("ArrowheadTail", "HalfLeft");
-                 attrs.insert("ArrowheadCenterSize", "25");
-                 attrs.insert("ArrowShaftSpacing", "300");
-                 break;
+            case KETReactionArrow::EEquilibriumFilledTriangle:
+                attrs.insert("ArrowheadHead", "HalfLeft");
+                attrs.insert("ArrowheadTail", "HalfLeft");
+                attrs.insert("ArrowheadCenterSize", "2250");
+                attrs.insert("ArrowShaftSpacing", "300");
+                break;
 
-             case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
-                 break;
+            case KETReactionArrow::EEquilibriumOpenAngle:
+                attrs.insert("ArrowheadHead", "HalfLeft");
+                attrs.insert("ArrowheadTail", "HalfLeft");
+                attrs.insert("ArrowheadCenterSize", "25");
+                attrs.insert("ArrowShaftSpacing", "300");
+                break;
 
-             case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
-                 break;
+            case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
+                break;
 
-             case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
-                 break;
+            case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
+                break;
 
-             case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
-                 break;
+            case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
+                break;
 
-             case KETReactionArrow::EEllipticalArcFilledBow:
-                 break;
+            case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
+                break;
 
-             case KETReactionArrow::EEllipticalArcFilledTriangle:
-                 break;
+            case KETReactionArrow::EEllipticalArcFilledBow:
+                break;
 
-             case KETReactionArrow::EEllipticalArcOpenAngle:
-                 break;
+            case KETReactionArrow::EEllipticalArcFilledTriangle:
+                break;
 
-             case KETReactionArrow::EEllipticalArcOpenHalfAngle:
-                 break;
+            case KETReactionArrow::EEllipticalArcOpenAngle:
+                break;
 
-             default:
-                 break;
+            case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+                break;
+
+            default:
+                break;
             }
 
-            attrs.insert("id", id_str.c_str());
-            Vec3f ar_beg( ar._begin.x, -ar._begin.y, 0);
+            Vec3f ar_beg(ar._begin.x, -ar._begin.y, 0);
             Vec3f ar_end(ar._end.x, -ar._end.y, 0);
-            ar_beg.scale( _bond_length );
+            ar_beg.scale(_bond_length);
             ar_end.scale(_bond_length);
 
             attrs.insert("Head3D", std::to_string(ar_end.x) + " " + std::to_string(ar_end.y) + " " + std::to_string(ar_end.z));
             attrs.insert("Tail3D", std::to_string(ar_beg.x) + " " + std::to_string(ar_beg.y) + " " + std::to_string(ar_beg.z));
-
             addElement("arrow", id, ar._end, ar._begin, attrs);
-
-            /* attrs.insert("id", id_str.c_str());
-            attrs.insert("GraphicType", "Line");
-            attrs.insert("ArrowType", arrow_type.c_str());
-            attrs.insert("HeadSize", "1000");
-            addElement("graphic", id, ar._end, ar._begin, attrs);*/ 
         }
         break;
         case KETReactionPlus::CID: {
@@ -840,6 +832,19 @@ void MoleculeCdxmlSaver::addMetaData(const MetaDataStorage& meta, int id)
         break;
         case KETSimpleObject::CID: {
             auto simple_obj = (KETSimpleObject*)pobj;
+            switch (simple_obj->_mode)
+            {
+            case KETSimpleObject::EKETEllipse:
+                attrs.insert("GraphicType", "Oval");
+                break;
+            case KETSimpleObject::EKETRectangle:
+                attrs.insert("GraphicType", "Rectangle");
+                break;
+            case KETSimpleObject::EKETLine:
+                attrs.insert("GraphicType", "Line");
+                break;
+            }
+            addElement("graphic", id, simple_obj->_coordinates.first, simple_obj->_coordinates.second, attrs);
         }
         break;
         case KETTextObject::CID: {
@@ -945,7 +950,7 @@ void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text, const char*
     s->SetAttribute("face", 96);
     XMLText* txt = _doc->NewText(text);
     s->LinkEndChild(txt);
-}   
+}
 
 void MoleculeCdxmlSaver::addTitle(const Vec2f& pos, const char* text)
 {
