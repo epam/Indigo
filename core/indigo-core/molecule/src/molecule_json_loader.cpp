@@ -994,6 +994,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         }
 
     mol.buildCisTrans(ignore_cistrans.data());
+    mol.have_xyz = true;
     if (mol.stereocenters.size() == 0)
     {
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);

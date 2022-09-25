@@ -38,6 +38,12 @@ void PropertiesMap::copy(PropertiesMap& other)
         insert(other.key(p), other.value(p));
     }
 }
+
+void PropertiesMap::insert(const char* key, const std::string& value)
+{
+    insert(key, value.c_str());
+}
+
 void PropertiesMap::insert(const char* key, const char* value)
 {
     if (_properties.find(key))

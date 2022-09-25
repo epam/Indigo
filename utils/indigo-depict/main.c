@@ -283,7 +283,7 @@ void renderToFile(int obj, const char* outfile)
 typedef struct tagParams
 {
     const char* outfile;
-    char outfile_ext[4], infile_ext[7];
+    char outfile_ext[7], infile_ext[7];
     int width;
     int height;
     int bond;
@@ -379,11 +379,11 @@ int parseParams(Params* p, int argc, char* argv[])
 
     p->outfile = argv[i++];
 
-    if (strlen(p->outfile) < 5 || p->outfile[strlen(p->outfile) - 4] != '.')
+    const char* ptr_dot = strstr(p->outfile, ".");
+    if (!ptr_dot)
         USAGE();
 
-    p->outfile_ext[3] = 0;
-    strncpy(p->outfile_ext, p->outfile + strlen(p->outfile) - 3, 3);
+    strcpy(p->outfile_ext, ptr_dot + 1);
 
     indigoSetOptionBool("treat-x-as-pseudoatom", 1);
     indigoSetOptionBool("render-coloring", 1);
@@ -843,7 +843,7 @@ int main(int argc, char* argv[])
     indigoSetErrorHandler(onError, 0);
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
-    indigoSetOption("molfile-saving-mode", "3000");
+    indigoSetOption("molfile-saving-mode", "2000");
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;
@@ -865,6 +865,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_KER;
     else if (strcmp(p.outfile_ext, "smi") == 0)
         p.out_ext = OEXT_SMI;
+    else if (strcmp(p.outfile_ext, "cdxml") == 0)
+        p.out_ext = OEXT_CDXML;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
@@ -946,13 +948,18 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            indigoLayout(obj);
+            // indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_RXN)
                 indigoSaveRxnfileToFile(obj, p.outfile);
+            else if (p.out_ext == OEXT_CDXML)
+                indigoSaveCdxmlToFile(obj, p.outfile);
             else
+            {
                 indigoSaveJsonToFile(obj, p.outfile);
+                printf("smiles: %s\n", indigoSmiles(obj));
+            }
         }
         else
         {

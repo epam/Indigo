@@ -16,14 +16,14 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/molecule_cdxml_saver.h"
-
+#include <codecvt>
 #include <tinyxml2.h>
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_cdxml_saver.h"
 #include "molecule/query_molecule.h"
 
 using namespace indigo;
@@ -213,13 +213,13 @@ void MoleculeCdxmlSaver::addDefaultFontTable()
 
     name.readString("font", true);
     id = 3;
-    attrs.insert("charset", "iso-8859-1");
+    attrs.insert("charset", "utf-8");
     attrs.insert("name", "Arial");
     addCustomElement(id, name, attrs);
 
     attrs.clear();
     id = 4;
-    attrs.insert("charset", "iso-8859-1");
+    attrs.insert("charset", "utf-8");
     attrs.insert("name", "Times New Roman");
     addCustomElement(id, name, attrs);
 
@@ -667,7 +667,6 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 }
                 if (parity == MoleculeCisTrans::TRANS)
                 {
-
                     std::swap(s3, s4);
                 }
                 QS_DEF(Array<char>, buf);
@@ -703,6 +702,219 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
     _current = parent;
 }
 
+void MoleculeCdxmlSaver::addMetaData(const MetaDataStorage& meta, int id)
+{
+    union {
+        struct
+        {
+            unsigned int is_bold : 1;
+            unsigned int is_italic : 1;
+            unsigned int is_underline : 1;
+            unsigned int is_outline : 1;
+            unsigned int is_shadow : 1;
+            unsigned int is_subscript : 1;
+            unsigned int is_superscript : 1;
+        };
+        unsigned int face;
+    } font_face;
+
+    const auto& meta_objects = meta.metaData();
+    for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
+    {
+        std::string id_str = std::to_string(id++);
+        PropertiesMap attrs;
+        attrs.clear();
+        auto pobj = meta_objects[meta_index];
+        switch (pobj->_class_id)
+        {
+        case KETReactionArrow::CID: {
+            KETReactionArrow& ar = (KETReactionArrow&)(*pobj);
+            attrs.insert("FillType", "None");
+            attrs.insert("ArrowheadType", "Solid");
+            attrs.insert("HeadSize", "2250");
+            attrs.insert("ArrowheadWidth", "563");
+            switch( ar._arrow_type )
+            {
+            case KETReactionArrow::EOpenAngle:
+                attrs.insert("ArrowheadHead", "Full");
+                attrs.insert("ArrowheadCenterSize", "25");
+                break;
+            case KETReactionArrow::EFilledTriangle:
+                attrs.insert("ArrowheadHead", "Full");
+                attrs.insert("ArrowheadCenterSize", "2250");
+                break;
+
+             case KETReactionArrow::EFilledBow:
+                attrs.insert("ArrowheadHead", "Full");
+                attrs.insert("ArrowheadCenterSize", "1125");
+                break;
+
+             case KETReactionArrow::EDashedOpenAngle:
+                 attrs.insert("ArrowheadHead", "Full");
+                 attrs.insert("ArrowheadCenterSize", "25");
+                 attrs.insert("LineType", "Dashed");
+                break;
+
+             case KETReactionArrow::EFailed:
+                 attrs.insert("ArrowheadHead", "Full");
+                 attrs.insert("ArrowheadCenterSize", "1125");
+                 attrs.insert("NoGo", "Cross");
+                 break;
+             
+             case KETReactionArrow::EBothEndsFilledTriangle:
+                 attrs.insert("ArrowheadCenterSize", "2250");
+                 attrs.insert("ArrowheadHead", "Full");
+                 attrs.insert("ArrowheadTail", "Full");
+                 break;
+
+             case KETReactionArrow::EEquilibriumFilledHalfBow:
+                 attrs.insert("ArrowheadHead", "HalfLeft");
+                 attrs.insert("ArrowheadTail", "HalfLeft");
+                 attrs.insert("ArrowheadCenterSize", "1125");
+                 attrs.insert("ArrowShaftSpacing", "300");
+                 break;
+
+             case KETReactionArrow::EEquilibriumFilledTriangle:
+                 attrs.insert("ArrowheadHead", "HalfLeft");
+                 attrs.insert("ArrowheadTail", "HalfLeft");
+                 attrs.insert("ArrowheadCenterSize", "2250");
+                 attrs.insert("ArrowShaftSpacing", "300");
+                 break;
+
+             case KETReactionArrow::EEquilibriumOpenAngle:
+                 attrs.insert("ArrowheadHead", "HalfLeft");
+                 attrs.insert("ArrowheadTail", "HalfLeft");
+                 attrs.insert("ArrowheadCenterSize", "25");
+                 attrs.insert("ArrowShaftSpacing", "300");
+                 break;
+
+             case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
+                 break;
+
+             case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
+                 break;
+
+             case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
+                 break;
+
+             case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
+                 break;
+
+             case KETReactionArrow::EEllipticalArcFilledBow:
+                 break;
+
+             case KETReactionArrow::EEllipticalArcFilledTriangle:
+                 break;
+
+             case KETReactionArrow::EEllipticalArcOpenAngle:
+                 break;
+
+             case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+                 break;
+
+             default:
+                 break;
+            }
+
+            attrs.insert("id", id_str.c_str());
+            Vec3f ar_beg( ar._begin.x, -ar._begin.y, 0);
+            Vec3f ar_end(ar._end.x, -ar._end.y, 0);
+            ar_beg.scale( _bond_length );
+            ar_end.scale(_bond_length);
+
+            attrs.insert("Head3D", std::to_string(ar_end.x) + " " + std::to_string(ar_end.y) + " " + std::to_string(ar_end.z));
+            attrs.insert("Tail3D", std::to_string(ar_beg.x) + " " + std::to_string(ar_beg.y) + " " + std::to_string(ar_beg.z));
+
+            addElement("arrow", id, ar._end, ar._begin, attrs);
+
+            /* attrs.insert("id", id_str.c_str());
+            attrs.insert("GraphicType", "Line");
+            attrs.insert("ArrowType", arrow_type.c_str());
+            attrs.insert("HeadSize", "1000");
+            addElement("graphic", id, ar._end, ar._begin, attrs);*/ 
+        }
+        break;
+        case KETReactionPlus::CID: {
+            KETReactionPlus& rp = (KETReactionPlus&)(*pobj);
+        }
+        break;
+        case KETSimpleObject::CID: {
+            auto simple_obj = (KETSimpleObject*)pobj;
+        }
+        break;
+        case KETTextObject::CID: {
+            const KETTextObject& ko = static_cast<const KETTextObject&>(*pobj);
+            double text_offset_y = 0;
+            int font_size = 13;
+            font_face.face = 0;
+            for (auto& text_item : ko._block)
+            {
+                int first_index = -1;
+                int second_index = -1;
+                double text_offset_x = 0;
+                FONT_STYLE_SET current_styles;
+                Vec2f text_origin(ko._pos.x, ko._pos.y);
+                std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
+                XMLElement* t = _doc->NewElement("t");
+                _current->LinkEndChild(t);
+                t->SetAttribute("p", pos_str.c_str());
+                t->SetAttribute("Justification", "Left");
+                t->SetAttribute("InterpretChemically", "no");
+                for (auto& kvp : text_item.styles)
+                {
+                    if (first_index == -1)
+                    {
+                        first_index = kvp.first;
+                        current_styles = kvp.second;
+                        continue;
+                    }
+                    second_index = kvp.first;
+
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
+
+                    auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
+                    for (const auto& text_style : current_styles)
+                    {
+                        switch (text_style.first)
+                        {
+                        case KETTextObject::EPlain:
+                            break;
+                        case KETTextObject::EBold:
+                            font_face.is_bold = text_style.second;
+                            break;
+                        case KETTextObject::EItalic:
+                            font_face.is_italic = text_style.second;
+                            break;
+                        case KETTextObject::ESuperScript:
+                            font_face.is_superscript = text_style.second;
+                            break;
+                        case KETTextObject::ESubScript:
+                            font_face.is_subscript = text_style.second;
+                            break;
+                        default:
+                            font_size = text_style.second ? text_style.first : 13;
+                            break;
+                        }
+                    }
+
+                    XMLElement* s = _doc->NewElement("s");
+                    t->LinkEndChild(s);
+                    s->SetAttribute("font", 4);
+                    s->SetAttribute("size", font_size);
+                    s->SetAttribute("face", font_face.face);
+                    XMLText* txt = _doc->NewText(sub_text.c_str());
+                    s->LinkEndChild(txt);
+                    current_styles = kvp.second;
+                    first_index = second_index;
+                }
+            }
+        }
+        break;
+        }
+    }
+}
+
 void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text)
 {
     addText(pos, text, "Center");
@@ -733,7 +945,7 @@ void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text, const char*
     s->SetAttribute("face", 96);
     XMLText* txt = _doc->NewText(text);
     s->LinkEndChild(txt);
-}
+}   
 
 void MoleculeCdxmlSaver::addTitle(const Vec2f& pos, const char* text)
 {
@@ -762,9 +974,9 @@ void MoleculeCdxmlSaver::addTitle(const Vec2f& pos, const char* text)
     s->LinkEndChild(txt);
 }
 
-void MoleculeCdxmlSaver::addGraphic(int id, const Vec2f& p1, const Vec2f& p2, PropertiesMap& attrs)
+void MoleculeCdxmlSaver::addElement(const char* element, int id, const Vec2f& p1, const Vec2f& p2, PropertiesMap& attrs)
 {
-    XMLElement* g = _doc->NewElement("graphic");
+    XMLElement* g = _doc->NewElement(element);
     _current->LinkEndChild(g);
 
     if (id > 0)

@@ -53,8 +53,6 @@ namespace indigo
         return string_hash(s, count);
     }
 
-    const std::unordered_map<std::string, int> KTextStylesMap{{"BOLD", 0}, {"ITALIC", 1}, {"SUPERSCRIPT", 2}, {"SUBSCRIPT", 3}};
-
     class KETSimpleObject : public MetaObject
     {
     public:
@@ -85,12 +83,15 @@ namespace indigo
     public:
         enum
         {
-            EBold = 0,
-            EItalic = 1,
-            ESuperScript = 2,
-            ESubScript = 3,
-            EFontSize = 4
+            EPlain = 0,
+            EBold = 1,
+            EItalic = 2,
+            ESuperScript = 3,
+            ESubScript = 4,
+            EFontSize = 5
         };
+
+        const std::unordered_map<std::string, int> KTextStylesMap{{"BOLD", EBold}, {"ITALIC", EItalic}, {"SUPERSCRIPT", ESuperScript}, {"SUBSCRIPT", ESubScript}};
 
         struct KETTextLine
         {

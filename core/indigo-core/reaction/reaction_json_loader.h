@@ -37,7 +37,7 @@ namespace indigo
         lb.x = std::min(bb1.left(), bb2.left());
         rt.x = std::max(bb1.right(), bb2.right());
         lb.y = std::min(bb1.bottom(), bb2.bottom());
-        lb.y = std::max(bb1.top(), bb2.top());
+        rt.y = std::max(bb1.top(), bb2.top());
         bb1 = Rect2f(lb, rt);
     }
 
