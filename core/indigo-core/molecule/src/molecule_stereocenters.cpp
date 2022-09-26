@@ -864,7 +864,8 @@ bool MoleculeStereocenters::checkSub(BaseMolecule& query, BaseMolecule& target, 
 {
     std::set<int> flags;
 
-    for (auto it_i = query.stereocenters._stereocenters.begin(); it_i != query.stereocenters._stereocenters.end(); ++it_i)
+    auto& container = query.stereocenters._stereocenters;
+    for (auto it_i = container.begin(); it_i != container.end(); ++it_i)
     {
         int iq = it_i->first;
         if (flags.find(iq) != flags.end())
