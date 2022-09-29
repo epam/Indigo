@@ -19,6 +19,11 @@
 #ifndef __molecule_ionize_h__
 #define __molecule_ionize_h__
 
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base_cpp/obj_array.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
@@ -82,16 +87,16 @@ namespace indigo
         static void _checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Array<int>& order);
         static void _removeExtraHydrogens(Molecule& mol);
 
-        ObjArray<QueryMolecule> acids;
-        ObjArray<QueryMolecule> basics;
-        Array<float> a_pkas;
-        Array<float> b_pkas;
+        std::vector<std::unique_ptr<QueryMolecule>> acids; // consider replacement to std::vector<QueryMolecule> after QueryMolecule will become movable
+        std::vector<std::unique_ptr<QueryMolecule>> basics;
+        std::vector<float> a_pkas;
+        std::vector<float> b_pkas;
         bool simple_model_ready = false;
 
-        RedBlackStringObjMap<Array<float>> adv_a_pkas;
-        RedBlackStringObjMap<Array<float>> adv_b_pkas;
+        std::map<std::string, std::vector<float>, std::less<>> adv_a_pkas;
+        std::map<std::string, std::vector<float>, std::less<>> adv_b_pkas;
         int level;
-        Array<float> max_deviations;
+        std::vector<float> max_deviations;
         bool advanced_model_ready = false;
     };
 
