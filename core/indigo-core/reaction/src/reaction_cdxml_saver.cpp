@@ -16,11 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "reaction/reaction_cdxml_saver.h"
+#include <string>
+
 #include "base_cpp/output.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule_cdxml_saver.h"
 #include "reaction/reaction.h"
+#include "reaction/reaction_cdxml_saver.h"
 
 using namespace indigo;
 
@@ -327,6 +329,22 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
         buf.push(0);
         attrs.insert("ReactionStepProducts", buf.ptr());
     }
+
+    std::string below_arrow, above_arrow;
+    for (auto i = rxn.catalystBegin(); i < rxn.catalystEnd(); i = rxn.catalystNext(i))
+    {
+        if (mol_ids[i] > 0)
+        {
+            if (above_arrow.size())
+                above_arrow += " ";
+            above_arrow += std::to_string(mol_ids[i]);
+        }
+    }
+    if (above_arrow.size())
+        attrs.insert("ReactionStepObjectsAboveArrow", above_arrow.c_str());
+
+    if (below_arrow.size())
+        attrs.insert("ReactionStepObjectsAboveArrow", above_arrow.c_str());
 
     buf.clear();
     buf_out.printf("%d", arrow_id);

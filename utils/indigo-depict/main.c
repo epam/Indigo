@@ -922,6 +922,10 @@ int main(int argc, char* argv[])
                     return -1;
                 }
             }
+            else if (p.out_ext == OEXT_CDXML)
+            {
+                indigoSaveCdxmlToFile(obj, p.outfile);
+            }
             else
                 indigoSaveCmlToFile(obj, p.outfile);
         }
