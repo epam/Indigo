@@ -361,7 +361,37 @@ M  END
     def test_aromatize_selected_2(self):
         headers, data = self.get_headers(
             {
-                "struct": "\n  Ketcher 10071619282D 1   1.00000     0.00000     0\n\n 13 13  0     0  0            999 V2000\n    0.0000    0.8660    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9996    0.8661    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4996    1.7321    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.4996    1.7322    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.9997    0.8661    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.4997    0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4997    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8651    2.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.9990    1.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.9990    0.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8650    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7311    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7311    1.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0     0  0\n  2  3  4  0     0  0\n  3  4  4  0     0  0\n  4  5  4  0     0  0\n  5  6  4  0     0  0\n  6  7  4  0     0  0\n  7  2  4  0     0  0\n  8  9  2  0     0  0\n  9 10  1  0     0  0\n 10 11  2  0     0  0\n 11 12  1  0     0  0\n 12 13  2  0     0  0\n 13  8  1  0     0  0\nM  END\n",
+                "struct": "\n\
+  Ketcher 10071619282D 1   1.00000     0.00000     0\n\
+\n\
+ 13 13  0     0  0            999 V2000\n\
+    0.0000    0.8660    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    0.9996    0.8661    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    1.4996    1.7321    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    2.4996    1.7322    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    2.9997    0.8661    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    2.4997    0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    1.4997    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    5.8651    2.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    4.9990    1.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    4.9990    0.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    5.8650    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    6.7311    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+    6.7311    1.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n\
+  1  2  1  0     0  0\n\
+  2  3  4  0     0  0\n\
+  3  4  4  0     0  0\n\
+  4  5  4  0     0  0\n\
+  5  6  4  0     0  0\n\
+  6  7  4  0     0  0\n\
+  7  2  4  0     0  0\n\
+  8  9  2  0     0  0\n\
+  9 10  1  0     0  0\n\
+ 10 11  2  0     0  0\n\
+ 11 12  1  0     0  0\n\
+ 12 13  2  0     0  0\n\
+ 13  8  1  0     0  0\n\
+M  END\n",
                 "selected": [7, 8, 9, 10, 11, 12],
                 "output_format": "chemical/x-daylight-smiles",
                 "options": {
@@ -621,7 +651,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles.']}"
             "[#9,#17,#35,#53,#7&A&+,$([OH]-*=[!#6]),+;!#1]",
         ]
         results = []
-        results_get = []
+        # results_get = []
         for mol in smarts:
             params = {
                 "struct": mol,
@@ -701,7 +731,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles.']}"
             "C1C=CC=CC=CC=CC=CC=1",
         ]
         results = []
-        results_get = []
+        # results_get = []
         for name in names:
             params = {
                 "struct": name,
@@ -2021,8 +2051,6 @@ M  END
             },
             result_data,
         )
-        # TODO: Uncomment when Ketcher supports JSON format
-        # self.assertEqual({'query': {'reactants': {'0': 'Query'}, 'products': {'1': 'Query'}}, 'valence': {'reactants': {'0': 'Structure contains query features, so valency could not be checked'}, 'products': {'1': 'Structure contains query features, so valency could not be checked'}}}, result_data)
 
     def test_check_atoms(self):
         headers, data = self.get_headers(

@@ -93,9 +93,7 @@ class MolData:
 
 def is_rxn(molstr):
     return (
-        ">>" in molstr
-        or molstr.startswith("$RXN")
-        or "<reactantList>" in molstr
+        ">>" in molstr or molstr.startswith("$RXN") or "<reactantList>" in molstr
     )
 
 
@@ -105,8 +103,7 @@ def qmol_to_mol(m, selected, indigo):
             atom.resetAtom("C")
     for bond in m.iterateBonds():
         if not (
-            bond.source().index() in selected
-            or bond.destination().index() in selected
+            bond.source().index() in selected or bond.destination().index() in selected
         ):
             m.removeBonds(
                 [
@@ -438,11 +435,9 @@ def check_exceptions(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         json_output = (
-            "Accept" in request.headers
-            and request.headers["Accept"] == "application/json"
+            "Accept" in request.headers and request.headers["Accept"] == "application/json"
         ) or (
-            "Content-Type" in request.headers
-            and request.headers["Content-Type"] == "application/json"
+            "Content-Type" in request.headers and request.headers["Content-Type"] == "application/json"
         )
         try:
             return f(*args, **kwargs)
