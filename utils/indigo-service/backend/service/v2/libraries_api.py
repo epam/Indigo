@@ -30,8 +30,7 @@ from .validation import LibrarySchema, SearcherSchema, UserSchema
 
 libraries_api = Blueprint("libraries_api", __name__)
 
-if not os.path.exists(config.__dict__["UPLOAD_FOLDER"]):
-    os.makedirs(config.__dict__["UPLOAD_FOLDER"])
+os.makedirs(config.__dict__["UPLOAD_FOLDER"], exist_ok=True)
 libraries_api.indigo = Indigo()  # type: ignore
 libraries_api.renderer = IndigoRenderer(libraries_api.indigo)  # type: ignore
 libraries_api.indigo_inchi = IndigoInchi(libraries_api.indigo)  # type: ignore
