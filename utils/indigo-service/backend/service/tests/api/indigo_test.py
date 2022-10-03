@@ -1213,7 +1213,8 @@ M  END""",
         self.assertEqual(400, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual(
-            "Must be one of: discard, alter, clear, keep.", "".join(result_data["error"]["mode"])
+            "Must be one of: discard, alter, clear, keep.",
+            "".join(result_data["error"]["mode"]),
         )
 
     def test_automap_wrong_reaction(self):
@@ -1570,7 +1571,8 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = result.text
         self.assertEqual(
-            '{"valence":"Structure contains atoms with unusual valence: (0)"}', result_data
+            '{"valence":"Structure contains atoms with unusual valence: (0)"}',
+            result_data,
         )
 
     def test_check_overlap(self):
@@ -1651,7 +1653,8 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual(
-            "Structure contains stereocenters with undefined stereo configuration: (2,5)", result_data["stereo"]
+            "Structure contains stereocenters with undefined stereo configuration: (2,5)",
+            result_data["stereo"],
         )
         # cis
         headers, data = self.get_headers(
@@ -2088,11 +2091,7 @@ M  END
         self.assertLess(16, float(result_data["molecular-weight"]))
 
     def test_calculate(self):
-        headers, data = self.get_headers(
-            {
-                "struct": "C"
-            }
-        )
+        headers, data = self.get_headers({"struct": "C"})
         result = requests.post(
             self.url_prefix + "/calculate", headers=headers, data=data
         )
@@ -2855,9 +2854,7 @@ M  END
             self.url_prefix + "/check", headers=headers, data=data
         )
         result_data = json.loads(result.text)
-        self.assertEqual(
-            {}, result_data
-        )
+        self.assertEqual({}, result_data)
 
     def test_chiral(self):
         headers, data = self.get_headers(
@@ -2963,9 +2960,7 @@ M  END
             self.url_prefix + "/check", headers=headers, data=data
         )
         result_data = json.loads(result.text)
-        self.assertEqual(
-            "Structure contains chirality", result_data["chiral"]
-        )
+        self.assertEqual("Structure contains chirality", result_data["chiral"])
         headers, data = self.get_headers(
             {
                 "struct": """
@@ -2994,9 +2989,7 @@ M  END
             self.url_prefix + "/check", headers=headers, data=data
         )
         result_data = json.loads(result.text)
-        self.assertEqual(
-            {}, result_data
-        )
+        self.assertEqual({}, result_data)
 
 
 if __name__ == "__main__":

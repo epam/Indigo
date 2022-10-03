@@ -6,7 +6,7 @@ BINGO_POSTGRES = {
     "port": "5432",
     "database": "postgres",
     "user": "postgres",
-    "password": os.environ.get("POSTGRES_PASSWORD", "")
+    "password": os.environ.get("POSTGRES_PASSWORD", ""),
 }
 
 # Flask config

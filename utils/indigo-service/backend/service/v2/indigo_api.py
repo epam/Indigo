@@ -93,7 +93,9 @@ class MolData:
 
 def is_rxn(molstr):
     return (
-        ">>" in molstr or molstr.startswith("$RXN") or "<reactantList>" in molstr
+        ">>" in molstr
+        or molstr.startswith("$RXN")
+        or "<reactantList>" in molstr
     )
 
 
@@ -103,7 +105,8 @@ def qmol_to_mol(m, selected, indigo):
             atom.resetAtom("C")
     for bond in m.iterateBonds():
         if not (
-            bond.source().index() in selected or bond.destination().index() in selected
+            bond.source().index() in selected
+            or bond.destination().index() in selected
         ):
             m.removeBonds(
                 [
@@ -236,7 +239,9 @@ def reaction_calc(rxn, func_name, precision=None):
     )
 
 
-def selected_molecule_calc(m, selected, func_name, precision=None, indigo=None):
+def selected_molecule_calc(
+    m, selected, func_name, precision=None, indigo=None
+):
     if m.dbgInternalType() == "#03: <query molecule>":
         try:
             m = qmol_to_mol(m, selected, indigo)
@@ -257,7 +262,9 @@ def selected_molecule_calc(m, selected, func_name, precision=None, indigo=None):
     return "; ".join(results)
 
 
-def selected_reaction_calc(r, selected, func_name, precision=None, indigo=None):
+def selected_reaction_calc(
+    r, selected, func_name, precision=None, indigo=None
+):
     results = []
     total_atoms_count = sum([m.countAtoms() for m in r.iterateMolecules()])
     total_rgroups_count = sum([m.countRGroups() for m in r.iterateMolecules()])
@@ -366,9 +373,7 @@ def save_moldata(md, output_format=None, options={}, indigo=None):
     elif output_format == "chemical/x-inchi":
         return indigo.inchi.getInchi(md.struct)
     elif output_format == "chemical/x-inchi-key":
-        return indigo.inchi.getInchiKey(
-            indigo.inchi.getInchi(md.struct)
-        )
+        return indigo.inchi.getInchiKey(indigo.inchi.getInchi(md.struct))
     elif output_format == "chemical/x-inchi-aux":
         res = indigo.inchi.getInchi(md.struct)
         aux = indigo.inchi.getAuxInfo()
@@ -435,9 +440,11 @@ def check_exceptions(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         json_output = (
-            "Accept" in request.headers and request.headers["Accept"] == "application/json"
+            "Accept" in request.headers
+            and request.headers["Accept"] == "application/json"
         ) or (
-            "Content-Type" in request.headers and request.headers["Content-Type"] == "application/json"
+            "Content-Type" in request.headers
+            and request.headers["Content-Type"] == "application/json"
         )
         try:
             return f(*args, **kwargs)
@@ -616,12 +623,19 @@ def aromatize():
     indigo = indigo_init(data["options"])
 
     md = load_moldata(
-        data["struct"], mime_type=data["input_format"], options=data["options"], indigo=indigo
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        indigo=indigo,
     )
 
     md.struct.aromatize()
     return get_response(
-        md, data["output_format"], data["json_output"], data["options"], indigo=indigo
+        md,
+        data["output_format"],
+        data["json_output"],
+        data["options"],
+        indigo=indigo,
     )
 
 
@@ -688,7 +702,10 @@ def dearomatize():
     indigo = indigo_init(data["options"])
 
     md = load_moldata(
-        data["struct"], mime_type=data["input_format"], options=data["options"], indigo=indigo
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        indigo=indigo,
     )
 
     if md.is_query:
@@ -699,7 +716,11 @@ def dearomatize():
         )
     md.struct.dearomatize()
     return get_response(
-        md, data["output_format"], data["json_output"], data["options"], indigo=indigo
+        md,
+        data["output_format"],
+        data["json_output"],
+        data["options"],
+        indigo=indigo,
     )
 
 
@@ -772,7 +793,11 @@ def convert():
             indigo=indigo,
         )
         return get_response(
-            md, data["output_format"], data["json_output"], data["options"], indigo=indigo
+            md,
+            data["output_format"],
+            data["json_output"],
+            data["options"],
+            indigo=indigo,
         )
     elif request.method == "GET":
 
@@ -797,7 +822,7 @@ def convert():
             data["struct"],
             mime_type=data["input_format"],
             options=data["options"],
-            indigo=indigo
+            indigo=indigo,
         )
 
         if "json_output" in request.args:
@@ -806,7 +831,11 @@ def convert():
             data["json_output"] = False
 
         return get_response(
-            md, data["output_format"], data["json_output"], data["options"], indigo=indigo
+            md,
+            data["output_format"],
+            data["json_output"],
+            data["options"],
+            indigo=indigo,
         )
 
 
@@ -870,11 +899,18 @@ def layout():
     )
     indigo = indigo_init(data["options"])
     md = load_moldata(
-        data["struct"], mime_type=data["input_format"], options=data["options"], indigo=indigo
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        indigo=indigo,
     )
     md.struct.layout()
     return get_response(
-        md, data["output_format"], data["json_output"], data["options"], indigo=indigo
+        md,
+        data["output_format"],
+        data["json_output"],
+        data["options"],
+        indigo=indigo,
     )
 
 
@@ -956,7 +992,11 @@ def clean():
         )
         md.substruct.clean2d()
     return get_response(
-        md, data["output_format"], data["json_output"], data["options"], indigo=indigo
+        md,
+        data["output_format"],
+        data["json_output"],
+        data["options"],
+        indigo=indigo,
     )
 
 
@@ -1021,11 +1061,18 @@ def automap():
     )
     indigo = indigo_init(data["options"])
     md = load_moldata(
-        data["struct"], mime_type=data["input_format"], options=data["options"], indigo=indigo
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        indigo=indigo,
     )
     md.struct.automap(data["mode"])
     return get_response(
-        md, data["output_format"], data["json_output"], data["options"], indigo=indigo
+        md,
+        data["output_format"],
+        data["json_output"],
+        data["options"],
+        indigo=indigo,
     )
 
 
@@ -1090,12 +1137,19 @@ def calculate_cip():
     )
     indigo = indigo_init(data["options"])
     md = load_moldata(
-        data["struct"], mime_type=data["input_format"], options=data["options"], indigo=indigo
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        indigo=indigo,
     )
     indigo.setOption("json-saving-add-stereo-desc", True)
     indigo.setOption("molfile-saving-add-stereo-desc", True)
     return get_response(
-        md, data["output_format"], data["json_output"], data["options"], indigo=indigo
+        md,
+        data["output_format"],
+        data["json_output"],
+        data["options"],
+        indigo=indigo,
     )
 
 
@@ -1227,13 +1281,13 @@ def calculate():
         data["struct"],
         data["options"],
     )
-    indigo = indigo_init(data['options'])
+    indigo = indigo_init(data["options"])
     md = load_moldata(
         data["struct"],
         mime_type=data["input_format"],
         options=data["options"],
         selected=data["selected"],
-        indigo=indigo
+        indigo=indigo,
     )
     if data["selected"]:
         if md.is_rxn:
@@ -1258,7 +1312,7 @@ def calculate():
                     data["selected"],
                     func_name_dict[p],
                     precision=precision,
-                    indigo=indigo
+                    indigo=indigo,
                 )
             else:
                 result[p] = reaction_calc(
@@ -1271,7 +1325,7 @@ def calculate():
                     data["selected"],
                     func_name_dict[p],
                     precision=precision,
-                    indigo=indigo
+                    indigo=indigo,
                 )
             else:
                 result[p] = molecule_calc(
@@ -1373,33 +1427,33 @@ def render():
         )
 
     data = IndigoRendererSchema().load(input_dict)
-    indigo = indigo_init(data['options'])
+    indigo = indigo_init(data["options"])
     if data["struct"] and not data["query"]:
         md = load_moldata(
             data["struct"],
             mime_type=data["input_format"],
             options=data["options"],
-            indigo=indigo
+            indigo=indigo,
         )
     elif data["query"] and not data["struct"]:
-        md = load_moldata(data["query"], options=data["options"], indigo=indigo)
+        md = load_moldata(
+            data["query"], options=data["options"], indigo=indigo
+        )
     else:
         md = load_moldata(
             data["struct"],
             mime_type=data["input_format"],
             options=data["options"],
-            indigo=indigo
+            indigo=indigo,
         )
         mdq = load_moldata(
             data["query"],
             mime_type=data["input_format"],
             query=True,
-            indigo=indigo
+            indigo=indigo,
         )
         try:
-            md.struct = highlight(
-                indigo, md.struct, mdq.struct
-            )
+            md.struct = highlight(indigo, md.struct, mdq.struct)
         except RuntimeError:
             pass
 
