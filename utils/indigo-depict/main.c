@@ -247,6 +247,7 @@ enum
     OEXT_KER,
     OEXT_CDX,
     OEXT_CDXML,
+    OEXT_CDXMLR,
     OEXT_SMI,
     OEXT_OTHER
 };
@@ -337,7 +338,7 @@ int parseParams(Params* p, int argc, char* argv[])
         if (strcasecmp(p->infile_ext, "cdx") == 0 || strcasecmp(p->infile_ext, "mol") == 0 || strcasecmp(p->infile_ext, "ket") == 0 ||
             strcasecmp(p->infile_ext, "xml") == 0)
             p->mode = MODE_SINGLE_MOLECULE;
-        else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0)
+        else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0 || strcasecmp(p->infile_ext, "xmr") == 0)
             p->mode = MODE_SINGLE_REACTION;
         else if (strcasecmp(p->infile_ext, "smi") == 0)
         {
@@ -867,6 +868,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_SMI;
     else if (strcmp(p.outfile_ext, "cdxml") == 0)
         p.out_ext = OEXT_CDXML;
+    else if (strcmp(p.outfile_ext, "cdxmr") == 0)
+        p.out_ext = OEXT_CDXMLR;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
@@ -898,7 +901,7 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            indigoLayout(obj);
+            // indigoLayout(obj);
             if (p.out_ext == OEXT_MOL)
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)

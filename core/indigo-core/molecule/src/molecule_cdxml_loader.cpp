@@ -16,13 +16,12 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/molecule_cdxml_loader.h"
-
 #include <tinyxml2.h>
 
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_scaffold_detection.h"
 
 using namespace indigo;
@@ -46,9 +45,17 @@ MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner)
     _scanner = &scanner;
 }
 
-void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol)
+void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
 {
     mol.clear();
+    nodes.clear();
+    bonds.clear();
+    _id_to_atom_idx.clear();
+    _id_to_node_index.clear();
+    _id_to_bond_index.clear();
+    _fragment_nodes.clear();
+
+    brackets.clear();
     _pmol = NULL;
     _pqmol = NULL;
     if (mol.isQueryMolecule())
@@ -60,7 +67,11 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol)
         _pmol = &mol.asMolecule();
         _pmol->setIgnoreBadValenceFlag(ignore_bad_valence);
     }
+}
 
+void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol)
+{
+    _initMolecule(mol);
     if (_scanner != 0)
     {
         QS_DEF(Array<char>, buf);
@@ -72,79 +83,91 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol)
         if (xml.Error())
             throw Error("XML parsing error: %s", xml.ErrorStr());
 
-        _parseCDXMLAttributes(xml.RootElement()->FirstAttribute());
+        parseCDXMLAttributes(xml.RootElement()->FirstAttribute());
         _parseCDXMLPage(xml.RootElement());
 
-        if (!_nodes.size())
+        if (!nodes.size())
             throw Error("CDXML has no data");
 
-        std::vector<int> atoms;
-        for (auto& node : _nodes)
-        {
-            int node_idx = _id_to_node_index.at(node.id);
-            switch (node.type)
-            {
-            case kCDXNodeType_Element:
-            case kCDXNodeType_ElementList:
-                atoms.push_back(node_idx);
-                break;
-            case kCDXNodeType_ExternalConnectionPoint:
-                break;
-            case kCDXNodeType_Fragment:
-                _fragment_nodes.push_back(node_idx);
-                break;
-            default:
-                break;
-            }
-        }
-
-        _addAtomsAndBonds(mol, atoms, _bonds);
-
-        for (auto& brk : _brackets)
-            _addBracket(mol, brk);
+        _parseCollections(mol);
     }
 }
 
-void MoleculeCdxmlLoader::_parseCDXMLAttributes(const XMLAttribute* pAttr)
+void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
+{
+    std::vector<int> atoms;
+    for (auto& node : nodes)
+    {
+        int node_idx = _id_to_node_index.at(node.id);
+        switch (node.type)
+        {
+        case kCDXNodeType_Element:
+        case kCDXNodeType_ElementList:
+            atoms.push_back(node_idx);
+            break;
+        case kCDXNodeType_ExternalConnectionPoint:
+            break;
+        case kCDXNodeType_Fragment:
+            _fragment_nodes.push_back(node_idx);
+            break;
+        default:
+            break;
+        }
+    }
+
+    _addAtomsAndBonds(mol, atoms, bonds);
+
+    for (auto& brk : brackets)
+        _addBracket(mol, brk);
+}
+
+void MoleculeCdxmlLoader::loadMoleculeFromFragment(BaseMolecule& mol, tinyxml2::XMLElement* pElem)
+{
+    _initMolecule(mol);
+    _parseCDXMLElements(pElem, true);
+    _parseCollections(mol);
+}
+
+void MoleculeCdxmlLoader::parseCDXMLAttributes(const XMLAttribute* pAttr)
 {
     auto cdxml_bbox_lambda = [this](std::string& data) {
         std::vector<std::string> coords = split(data, ' ');
         if (coords.size() == 4)
         {
             this->_has_bounding_box = true;
-            this->_cdxml_bbox = Rect2f(Vec2f(std::stof(coords[0]), std::stof(coords[1])), Vec2f(std::stof(coords[2]), std::stof(coords[3])));
+            this->cdxml_bbox = Rect2f(Vec2f(std::stof(coords[0]), std::stof(coords[1])), Vec2f(std::stof(coords[2]), std::stof(coords[3])));
         }
         else
             throw Error("Not enought coordinates for atom position");
     };
 
-    auto& bond_length = _cdxml_bond_length;
+    auto& bond_length = cdxml_bond_length;
     auto cdxml_bond_length_lambda = [&bond_length](std::string& data) { bond_length = data; };
     std::unordered_map<std::string, std::function<void(std::string&)>> cdxml_dispatcher = {{"BoundingBox", cdxml_bbox_lambda},
                                                                                            {"BondLength", cdxml_bond_length_lambda}};
-    _applyDispatcher(pAttr, cdxml_dispatcher);
+    applyDispatcher(pAttr, cdxml_dispatcher);
 }
 
 void MoleculeCdxmlLoader::_parseCDXMLPage(XMLElement* pElem)
 {
-    auto pPageElem = pElem->FirstChildElement();
-    for (pPageElem; pPageElem; pPageElem = pPageElem->NextSiblingElement())
+    // auto pPageElem = pElem->FirstChildElement();
+    for (auto pPageElem = pElem->FirstChildElement(); pPageElem; pPageElem = pPageElem->NextSiblingElement())
     {
         if (std::string(pPageElem->Value()).compare("page") == 0)
         {
-            _parseCDXMLFragment(pPageElem->FirstChildElement());
+            _parseCDXMLElements(pPageElem->FirstChildElement());
         }
     }
 }
 
-void MoleculeCdxmlLoader::_parseCDXMLFragment(XMLElement* pElem)
+void MoleculeCdxmlLoader::_parseCDXMLElements(XMLElement* pElem, bool no_siblings)
 {
     auto node_lambda = [this](XMLElement* pElem) {
         CdxmlNode node;
         this->_parseNode(node, pElem);
         _addNode(node);
         if (node.type == kCDXNodeType_Fragment)
-            this->_parseCDXMLFragment(pElem->FirstChildElement());
+            this->_parseCDXMLElements(pElem->FirstChildElement());
     };
 
     auto bond_lambda = [this](XMLElement* pElem) {
@@ -155,15 +178,15 @@ void MoleculeCdxmlLoader::_parseCDXMLFragment(XMLElement* pElem)
 
     auto fragment_lambda = [this](XMLElement* pElem) {
         this->_parseFragmentAttributes(pElem->FirstAttribute());
-        this->_parseCDXMLFragment(pElem->FirstChildElement());
+        this->_parseCDXMLElements(pElem->FirstChildElement());
     };
 
-    auto group_lambda = [this](XMLElement* pElem) { this->_parseCDXMLFragment(pElem->FirstChildElement()); };
+    auto group_lambda = [this](XMLElement* pElem) { this->_parseCDXMLElements(pElem->FirstChildElement()); };
 
     auto bracketed_lambda = [this](XMLElement* pElem) {
         CdxmlBracket bracket;
         this->_parseBracket(bracket, pElem->FirstAttribute());
-        this->_brackets.push_back(bracket);
+        this->brackets.push_back(bracket);
     };
 
     std::unordered_map<std::string, std::function<void(XMLElement * pElem)>> cdxml_dispatcher = {
@@ -178,8 +201,10 @@ void MoleculeCdxmlLoader::_parseCDXMLFragment(XMLElement* pElem)
         }
         else
         {
-            // printf("Unhandled cdxml tag: %s\n", pElem->Value());
+            printf("Unhandled cdxml tag: %s\n", pElem->Value());
         }
+        if (no_siblings)
+            break;
     }
 }
 
@@ -187,7 +212,7 @@ void MoleculeCdxmlLoader::_updateConnection(const CdxmlNode& node, int atom_idx)
 {
     for (auto fidx : _fragment_nodes)
     {
-        auto& frag_node = _nodes[fidx];
+        auto& frag_node = nodes[fidx];
         auto fit = frag_node.node_id_to_connection_idx.find(node.id);
         if (fit != frag_node.node_id_to_connection_idx.end())
         {
@@ -210,7 +235,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
     int atom_idx;
     for (auto atom_idx : atoms)
     {
-        auto& atom = _nodes[atom_idx];
+        auto& atom = nodes[atom_idx];
         if (_pmol)
         {
             atom_idx = _pmol->addAtom(atom.element);
@@ -236,8 +261,8 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
         {
             auto bond_first_it = _id_to_atom_idx.find(bond.be.first);
             auto bond_second_it = _id_to_atom_idx.find(bond.be.second);
-            auto& fn = _nodes[_id_to_node_index.at(bond.be.first)];
-            auto& sn = _nodes[_id_to_node_index.at(bond.be.second)];
+            auto& fn = nodes[_id_to_node_index.at(bond.be.first)];
+            auto& sn = nodes[_id_to_node_index.at(bond.be.second)];
 
             if (bond_first_it != _id_to_atom_idx.end() && bond_second_it != _id_to_atom_idx.end())
             {
@@ -436,9 +461,9 @@ void MoleculeCdxmlLoader::_parseFragmentAttributes(const XMLAttribute* pAttr)
         {
             // it means that we are inside of NodeType=Fragment
             // let's check it
-            if (_nodes.size() && _nodes.back().type == kCDXNodeType_Fragment)
+            if (nodes.size() && nodes.back().type == kCDXNodeType_Fragment)
             {
-                auto& fn = _nodes.back();
+                auto& fn = nodes.back();
                 auto vec_str = split(pAttr->Value(), ' ');
                 if (fn.connections.size() == vec_str.size())
                 {
@@ -458,7 +483,7 @@ void MoleculeCdxmlLoader::_parseFragmentAttributes(const XMLAttribute* pAttr)
     }
 }
 
-void MoleculeCdxmlLoader::_applyDispatcher(const XMLAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher)
+void MoleculeCdxmlLoader::applyDispatcher(const XMLAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher)
 {
     for (pAttr; pAttr; pAttr = pAttr->Next())
     {
@@ -499,7 +524,7 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, XMLElement* pElem)
             node.pos.x = std::stof(coords[0]);
             node.pos.y = std::stof(coords[1]);
             if (this->_has_bounding_box)
-                node.pos.y = this->_cdxml_bbox.top() - node.pos.y;
+                node.pos.y = this->cdxml_bbox.top() - node.pos.y;
             if (coords.size() == 3)
                 node.pos.z = std::stof(coords[2]);
             else
@@ -556,19 +581,19 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, XMLElement* pElem)
                                                                                           {"ElementList", element_list_lambda},
                                                                                           {"BondOrdering", bond_ordering_lambda}};
 
-    _applyDispatcher(pElem->FirstAttribute(), node_dispatcher);
+    applyDispatcher(pElem->FirstAttribute(), node_dispatcher);
 }
 
 void MoleculeCdxmlLoader::_addNode(CdxmlNode& node)
 {
-    _nodes.push_back(node);
-    _id_to_node_index.emplace(node.id, _nodes.size() - 1);
+    nodes.push_back(node);
+    _id_to_node_index.emplace(node.id, nodes.size() - 1);
 }
 
 void MoleculeCdxmlLoader::_addBond(CdxmlBond& bond)
 {
-    _bonds.push_back(bond);
-    _id_to_bond_index.emplace(bond.id, _bonds.size() - 1);
+    bonds.push_back(bond);
+    _id_to_bond_index.emplace(bond.id, bonds.size() - 1);
 }
 
 void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, const XMLAttribute* pAttr)
@@ -602,7 +627,7 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, const XMLAttribute* pAttr)
     std::unordered_map<std::string, std::function<void(std::string&)>> bond_dispatcher = {
         {"id", id_lambda}, {"B", bond_begin_lambda}, {"E", bond_end_lambda}, {"Order", bond_order_lambda}, {"Display", bond_dir_lambda}};
 
-    _applyDispatcher(pAttr, bond_dispatcher);
+    applyDispatcher(pAttr, bond_dispatcher);
 }
 
 void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, const XMLAttribute* pAttr)
@@ -611,7 +636,6 @@ void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, const XMLAttribut
         std::vector<std::string> vec_str = split(data, ' ');
         bracket.bracketed_list.assign(vec_str.begin(), vec_str.end());
     };
-
     auto bracket_usage_lambda = [&bracket](std::string& data) {
         static const std::unordered_map<std::string, int> usage_map = {{"Unspecified", kCDXBracketUsage_Unspecified},
                                                                        {"Unused1", kCDXBracketUsage_Unused1},
@@ -652,7 +676,7 @@ void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, const XMLAttribut
                                                                                              {"PolymerRepeatPattern", repeat_pattern_lambda},
                                                                                              {"SRULabel", sru_label_lambda}};
 
-    _applyDispatcher(pAttr, bracket_dispatcher);
+    applyDispatcher(pAttr, bracket_dispatcher);
 }
 
 void MoleculeCdxmlLoader::_appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom)

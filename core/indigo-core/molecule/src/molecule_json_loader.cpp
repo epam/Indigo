@@ -931,7 +931,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         }
 
         Array<int> mapping;
-        mol.mergeWithMolecule(*pmol, &mapping, COPY_BOND_DIRECTIONS);
+        mol.mergeWithMolecule(*pmol, &mapping, 0);
 
         for (auto& sc : stereo_centers)
         {
