@@ -9,8 +9,6 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static com.epam.indigo.Indigo.LIBINDIGO_DYLIB;
-
 public class IndigoUtils {
 
     public static String getPathToBinary(Class<?> cls, String dllpath, String path, String filename)
@@ -121,13 +119,24 @@ public class IndigoUtils {
         } else throw new Error("Operating system not recognized, only Linux, macOS and Windows are supported");
 
         String os_arch = System.getProperty("os.arch");
-        if (os_arch.equals("amd64") || os_arch.equals("x86_64") || os_arch.equals("x64")) {
-            path += "x86_64";
-        } else if (os_arch.equals("x86") || os_arch.equals("i386")) {
-            path += "i386";
-        } else if (os_arch.equals("aarch64") || os_arch.equals("arm64") || os_arch.equals("arm64e")) {
-            path += "aarch64";
-        } else throw new Error(String.format("Machine architecture not supported: %s", os_arch));
+        switch (os_arch) {
+            case "amd64":
+            case "x86_64":
+            case "x64":
+                path += "x86_64";
+                break;
+            case "x86":
+            case "i386":
+                path += "i386";
+                break;
+            case "aarch64":
+            case "arm64":
+            case "arm64e":
+                path += "aarch64";
+                break;
+            default:
+                throw new Error(String.format("Machine architecture not supported: %s", os_arch));
+        }
 
         return path;
     }

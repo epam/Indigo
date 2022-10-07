@@ -82,8 +82,8 @@ public class Indigo {
     }
 
     private boolean session_released = false;
-    private String path;
-    private long sid;
+    private final String path;
+    private final long sid;
 
     public Indigo(String path) {
         this.path = path;

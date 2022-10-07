@@ -11,8 +11,8 @@ public enum Hybridization {
     SP3D4(8, "SP3D4"),
     SP2D(9, "SP2D");
 
-    private int numVal;
-    private String strVal;
+    private final int numVal;
+    private final String strVal;
 
     Hybridization(int numVal, String strVal) {
         this.numVal = numVal;

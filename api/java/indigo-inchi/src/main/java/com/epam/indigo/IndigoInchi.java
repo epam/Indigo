@@ -21,9 +21,7 @@ package com.epam.indigo;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class IndigoInchi {
     public IndigoInchi(Indigo indigo) {

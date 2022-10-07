@@ -1,10 +1,9 @@
 package com.epam.indigo;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Assertions;
 
 import java.nio.file.Path;
@@ -39,7 +38,7 @@ public class BingoTests {
             "Checking next(), iteration 1"
         );
         Assertions.assertDoesNotThrow(
-            ()->{ enumerator.getCurrentId(); },
+                (Executable) enumerator::getCurrentId,
             "Checking that getCurrentId() works at iteration 1"
         );
         i++;
@@ -48,7 +47,7 @@ public class BingoTests {
             "Checking next(), iteration 2"
         );
         Assertions.assertDoesNotThrow(
-            ()->{ enumerator.getCurrentId(); },
+                (Executable) enumerator::getCurrentId,
             "Checking that getCurrentId() works at iteration 2"
         );
         i++;
