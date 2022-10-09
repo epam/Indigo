@@ -1,7 +1,5 @@
 ## Bingo API for using with Elasticsearch 
 
-**IN DEVELOPMENT**
-
 This SDK is intended to:
 
 - Read molecules from SDF, Smiles, Mol, CML files, etc
@@ -11,9 +9,7 @@ This SDK is intended to:
 
 #### Supported Elasticsearch versions and distributions
 
-We are supporting 7.15.x Elasticsearch and most major distributions available (AWS, Elastic, OpenDistro, etc)
-
-*TBD test against other 7.x versions*
+We are supporting 7.15.x Elasticsearch and most major distributions available (AWS, Elastic, Opensearch, etc)
 
 ### Installation
 
@@ -41,15 +37,14 @@ it will work the same for other major dependency managers
 
 You could use any favourite Elasticsearch distribution:
 
-- [Open Distro Elasticsearch](https://opendistro.github.io/for-elasticsearch-docs/docs/install/)
 - [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html)
 - [OpenSearch](https://opensearch.org/docs/latest/opensearch/install/index/)
-- many many more available on premise and as cloud products & services
+- many more available on premise and as cloud products & services
 
 Something simple could be done as following:
 
 ```
-docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.15.1
 ```
 
 ### Usage 
