@@ -469,7 +469,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'adopt-hotspot'
-          java-version: '17'
+          java-version: '11'
           architecture: x86
       - name: Install Jython
         run: |
@@ -673,7 +673,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java-version: [ 1.8, 1.11, 17 ]
+        java-version: [ 1.8, 1.11]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
