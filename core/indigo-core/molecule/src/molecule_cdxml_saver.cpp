@@ -24,6 +24,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_saver.h"
+#include "molecule/molecule_cdxml_loader.h"
 #include "molecule/query_molecule.h"
 
 using namespace indigo;
@@ -33,7 +34,7 @@ IMPL_ERROR(MoleculeCdxmlSaver, "molecule CDXML saver");
 
 MoleculeCdxmlSaver::MoleculeCdxmlSaver(Output& output) : _output(output)
 {
-    _bond_length = BOND_LENGTH;
+    _bond_length = SCALE;
     _max_page_height = 64;
     _pages_height = 1;
 }
@@ -704,20 +705,6 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
 
 void MoleculeCdxmlSaver::addMetaData(const MetaDataStorage& meta, int id)
 {
-    union {
-        struct
-        {
-            unsigned int is_bold : 1;
-            unsigned int is_italic : 1;
-            unsigned int is_underline : 1;
-            unsigned int is_outline : 1;
-            unsigned int is_shadow : 1;
-            unsigned int is_subscript : 1;
-            unsigned int is_superscript : 1;
-        };
-        unsigned int face;
-    } font_face;
-
     const auto& meta_objects = meta.metaData();
     for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
     {
@@ -876,7 +863,7 @@ void MoleculeCdxmlSaver::addMetaData(const MetaDataStorage& meta, int id)
             const KETTextObject& ko = static_cast<const KETTextObject&>(*pobj);
             double text_offset_y = 0;
             int font_size = 13;
-            font_face.face = 0;
+            CDXMLFontStyle font_face(0);
             for (auto& text_item : ko._block)
             {
                 int first_index = -1;

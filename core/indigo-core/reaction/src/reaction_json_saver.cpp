@@ -87,7 +87,6 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
         {
             Vec2f min1, max1;
             _getBounds(rxn.getBaseMolecule(i), min1, max1, 1.0);
-            //COPY_BOND_DIRECTIONS
             merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
             if (i == rxn.reactantBegin())

@@ -32,6 +32,11 @@ namespace indigo
 {
     const double KETDefaultFontSize = 13;
     const double KETFontScaleFactor = 47;
+    const auto KETFontBoldStr = "BOLD";
+    const auto KETFontItalicStr = "ITALIC";
+    const auto KETFontSuperscriptStr = "SUPERSCRIPT";
+    const auto KETFontSubscriptStr = "SUBSCRIPT";
+    const auto KETFontCustomSizeStr = "CUSTOM_FONT_SIZE";
 
     struct compareFunction
     {
@@ -91,7 +96,8 @@ namespace indigo
             EFontSize = 5
         };
 
-        const std::unordered_map<std::string, int> KTextStylesMap{{"BOLD", EBold}, {"ITALIC", EItalic}, {"SUPERSCRIPT", ESuperScript}, {"SUBSCRIPT", ESubScript}};
+        const std::unordered_map<std::string, int> KTextStylesMap{
+            {KETFontBoldStr, EBold}, {KETFontItalicStr, EItalic}, {KETFontSuperscriptStr, ESuperScript}, {KETFontSubscriptStr, ESubScript}};
 
         struct KETTextLine
         {

@@ -92,8 +92,8 @@ void BaseMolecule::clear()
     use_scsr_name = false;
     expand_mod_templates = false;
     ignore_chem_templates = false;
-
     updateEditRevision();
+    _meta.resetMetaData();
 }
 
 bool BaseMolecule::hasCoord(BaseMolecule& mol)

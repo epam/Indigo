@@ -77,6 +77,23 @@ namespace indigo
         int val;
     };
 
+    union CDXMLFontStyle {
+        CDXMLFontStyle(unsigned int val) : face(val)
+        {
+        }
+        struct
+        {
+            unsigned int is_bold : 1;
+            unsigned int is_italic : 1;
+            unsigned int is_underline : 1;
+            unsigned int is_outline : 1;
+            unsigned int is_shadow : 1;
+            unsigned int is_subscript : 1;
+            unsigned int is_superscript : 1;
+        };
+        unsigned int face;
+    };
+
     struct _ExtConnection
     {
         int bond_id;
@@ -157,8 +174,12 @@ namespace indigo
 
         void loadMolecule(BaseMolecule& mol);
         void loadMoleculeFromFragment(BaseMolecule& mol, tinyxml2::XMLElement* pElem);
-        static void applyDispatcher(const tinyxml2::XMLAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher);
+
+        static void applyDispatcher(const tinyxml2::XMLAttribute* pAttr,
+                                    const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
         void parseCDXMLAttributes(const tinyxml2::XMLAttribute* pAttr);
+        void parseBBox(const std::string& data, Rect2f& bbox);
+        void parsePos(const std::string& data, Vec3f& bbox);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
@@ -168,6 +189,7 @@ namespace indigo
         std::vector<CdxmlNode> nodes;
         std::vector<CdxmlBond> bonds;
         std::vector<CdxmlBracket> brackets;
+        static const int SCALE = 30;
 
     protected:
         Scanner* _scanner;
@@ -182,6 +204,9 @@ namespace indigo
         void _addBond(CdxmlBond& node);
 
         void _parseBracket(CdxmlBracket& bracket, const tinyxml2::XMLAttribute* pAttr);
+        void _parseText(const tinyxml2::XMLElement* pElem);
+        void _parseGraphic(const tinyxml2::XMLElement* pElem);
+        void _parseArrow(const tinyxml2::XMLElement* pElem);
 
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
@@ -200,6 +225,13 @@ namespace indigo
         std::unordered_map<int, int> _id_to_node_index;
         std::unordered_map<int, int> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
+        std::vector<std::pair<Vec3f, std::string>> _text_objects;
+        std::vector<Vec2f> _pluses;
+        std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
+
+        std::unordered_set<int> _superced_ids;
+
+        float _bond_length;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy

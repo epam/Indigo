@@ -45,10 +45,7 @@ namespace indigo
         ~MoleculeCdxmlSaver();
 
         void saveMolecule(BaseMolecule& mol);
-        enum
-        {
-            BOND_LENGTH = 30
-        };
+        static const int SCALE = 30;
 
         struct Bounds
         {

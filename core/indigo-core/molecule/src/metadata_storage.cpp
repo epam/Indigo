@@ -6,7 +6,7 @@ using namespace indigo;
 
 IMPL_ERROR(MetaDataStorage, "metadata storage");
 
-void MetaDataStorage::addMetaObject(MetaObject* pobj)
+int MetaDataStorage::addMetaObject(MetaObject* pobj)
 {
     int index = _meta_data.size();
     _meta_data.expand(index + 1);
@@ -29,14 +29,20 @@ void MetaDataStorage::addMetaObject(MetaObject* pobj)
     default:
         break;
     }
+    return index;
+}
+
+void MetaDataStorage::append(const MetaDataStorage& other)
+{
+    const auto& meta = other.metaData();
+    for (int i = 0; i < meta.size(); i++)
+        addMetaObject(meta[i]->clone());
 }
 
 void MetaDataStorage::clone(const MetaDataStorage& other)
 {
     resetMetaData();
-    const auto& meta = other.metaData();
-    for (int i = 0; i < meta.size(); i++)
-        addMetaObject(meta[i]->clone());
+    append(other);
 }
 
 const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
