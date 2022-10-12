@@ -23,8 +23,8 @@
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
-#include "molecule/molecule_cdxml_saver.h"
 #include "molecule/molecule_cdxml_loader.h"
+#include "molecule/molecule_cdxml_saver.h"
 #include "molecule/query_molecule.h"
 
 using namespace indigo;

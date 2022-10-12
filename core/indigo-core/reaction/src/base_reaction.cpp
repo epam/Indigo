@@ -270,7 +270,7 @@ void BaseReaction::clearAAM()
 
 int BaseReaction::addSpecialCondition(int meta_idx, const Rect2f& bbox)
 {
-    _specialConditions.push( SpecialCondition(meta_idx, bbox) );
+    _specialConditions.push(SpecialCondition(meta_idx, bbox));
     return _specialConditions.size() - 1;
 }
 
@@ -281,7 +281,7 @@ void BaseReaction::clearSpecialConditions()
 
 const SpecialCondition& BaseReaction::specialCondition(int meta_idx) const
 {
-    return _specialConditions[ meta_idx ];
+    return _specialConditions[meta_idx];
 }
 
 int BaseReaction::addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)

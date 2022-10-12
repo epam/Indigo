@@ -20,8 +20,8 @@
 
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
-#include "molecule/molecule_cdxml_loader.h"
 #include "molecule/ket_commons.h"
+#include "molecule/molecule_cdxml_loader.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_cdxml_loader.h"
 
@@ -111,10 +111,10 @@ void ReactionCdxmlLoader::_parseStep(const XMLAttribute* pAttr)
     };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> cdxml_dispatcher = {{"ReactionStepReactants", reactants_lambda},
-                                                                                           {"ReactionStepProducts", products_lambda},
-                                                                                           {"ReactionStepArrows", arrows_lambda},
-                                                                                           {"ReactionStepObjectsAboveArrow", agents_lambda},
-                                                                                           {"ReactionStepObjectsBelowArrow", agents_lambda}};
+                                                                                                 {"ReactionStepProducts", products_lambda},
+                                                                                                 {"ReactionStepArrows", arrows_lambda},
+                                                                                                 {"ReactionStepObjectsAboveArrow", agents_lambda},
+                                                                                                 {"ReactionStepObjectsBelowArrow", agents_lambda}};
     MoleculeCdxmlLoader::applyDispatcher(pAttr, cdxml_dispatcher);
 }
 
@@ -197,7 +197,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 {
                     auto& text = (KETTextObject&)_pmol->meta().getMetaObject(KETTextObject::CID, i);
                     int idx = rxn.meta().addMetaObject(text.clone());
-                    rxn.addSpecialCondition(idx, Rect2f( Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)));
+                    rxn.addSpecialCondition(idx, Rect2f(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)));
                 }
                 _pmol->meta().resetMetaData();
             }
@@ -211,12 +211,12 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         if (elem_it != _cdxml_elements.end())
         {
             loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
-            rxn.meta().append( _pmol->meta());
+            rxn.meta().append(_pmol->meta());
             _cdxml_elements.erase(elem_it);
         }
     }
 
-    for( const auto& kvp : _cdxml_elements )
+    for (const auto& kvp : _cdxml_elements)
     {
         loader.loadMoleculeFromFragment(*_pmol, kvp.second);
         rxn.meta().append(_pmol->meta());
