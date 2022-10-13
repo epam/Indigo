@@ -139,6 +139,10 @@ namespace indigo
             {
                 return _checkResultString(indigoCml(id()));
             }
+            else if (outputFormat == "cdxml" || outputFormat == "chemical/x-cdxml")
+            {
+                return _checkResultString(indigoCdxml(id()));
+            }
             else if (outputFormat == "inchi" || outputFormat == "chemical/x-inchi")
             {
                 return _checkResultString(indigoInchiGetInchi(id()));

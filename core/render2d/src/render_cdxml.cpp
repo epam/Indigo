@@ -223,7 +223,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
                 // On average letters has width 6
                 float letter_width = params.rOpt.titleFontFactor / 1.5f;
 
-                float title_width = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
+                float title_width = longest_line * letter_width / MoleculeCdxmlSaver::SCALE;
                 title_widths[mol_idx] = title_width;
                 width = std::max(width, title_width);
             }
@@ -237,10 +237,10 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
                 float letter_width = context.propertyFontSize / 1.5f;
                 int longest_line = _getLongestLineXml(data.propertyName);
 
-                key_widths[mol_idx] = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
+                key_widths[mol_idx] = longest_line * letter_width / MoleculeCdxmlSaver::SCALE;
 
                 longest_line += _getLongestLineXml(data.propertyValue);
-                float prop_width = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
+                float prop_width = longest_line * letter_width / MoleculeCdxmlSaver::SCALE;
                 prop_widths[mol_idx] = prop_width;
 
                 width = std::max(width, prop_width);
@@ -287,7 +287,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
             if (title.size() > 0)
             {
                 int lines = title.count('\n') + 1;
-                float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::BOND_LENGTH;
+                float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::SCALE;
                 // float title_height = lines * saver.textLineHeight();
                 // p.all_size.y += title_height + saver.textLineHeight(); // Add blank line
                 float title_height = lines * letter_height;
@@ -303,7 +303,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
                 RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
                 int lines = data.propertyName.count('\n') + 1;
 
-                float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::BOND_LENGTH;
+                float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::SCALE;
                 float prop_height = lines * letter_height;
                 p.all_size.y += prop_height + letter_height; // Add blank line
             }

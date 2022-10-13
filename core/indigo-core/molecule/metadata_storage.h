@@ -38,12 +38,13 @@ namespace indigo
     public:
         DECL_ERROR;
         void clone(const MetaDataStorage& other);
+        void append(const MetaDataStorage& other);
 
         virtual ~MetaDataStorage()
         {
         }
 
-        void addMetaObject(MetaObject* pobj);
+        int addMetaObject(MetaObject* pobj);
 
         void resetMetaData()
         {

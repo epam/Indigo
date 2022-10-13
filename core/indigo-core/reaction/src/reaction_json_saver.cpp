@@ -78,7 +78,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
 {
     std::vector<Vec2f> pluses;
 
-    Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0);
+    Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0), cmin(0, 0), cmax(0, 0);
 
     if (rxn.reactantsCount() > 0)
     {
@@ -138,6 +138,26 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
                 _getBounds(rxn.getBaseMolecule(rxn.productNext(i)), min2, max2, 1.0);
                 pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
                 rcount++;
+            }
+        }
+    }
+
+    if (rxn.catalystCount() > 0)
+    {
+        for (int i = rxn.catalystBegin(); i != rxn.catalystEnd(); i = rxn.catalystNext(i))
+        {
+            Vec2f min1, max1;
+            _getBounds(rxn.getBaseMolecule(i), min1, max1, 1.0);
+            merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
+            if (i == rxn.catalystBegin())
+            {
+                cmin = min1;
+                cmax = max1;
+            }
+            else
+            {
+                cmin.min(min1);
+                cmax.max(max1);
             }
         }
     }
@@ -207,6 +227,14 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
             {
                 p1.x = (rmax.x + pmin.x) / 2 + 1.0f;
                 p1.y = (pmin.y + pmax.y) / 2;
+            }
+            if (rxn.catalystCount() && cmin.x != cmax.x)
+            {
+                if (cmin.x < p2.x)
+                    p2.x = cmin.x;
+
+                if (cmax.x > p1.x)
+                    p1.x = cmax.x;
             }
         }
 

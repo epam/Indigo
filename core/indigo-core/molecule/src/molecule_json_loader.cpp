@@ -931,7 +931,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         }
 
         Array<int> mapping;
-        mol.mergeWithMolecule(*pmol, &mapping, COPY_BOND_DIRECTIONS);
+        mol.mergeWithMolecule(*pmol, &mapping, 0);
 
         for (auto& sc : stereo_centers)
         {
@@ -994,6 +994,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         }
 
     mol.buildCisTrans(ignore_cistrans.data());
+    mol.have_xyz = true;
     if (mol.stereocenters.size() == 0)
     {
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);

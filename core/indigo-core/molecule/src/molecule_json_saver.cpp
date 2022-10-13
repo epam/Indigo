@@ -855,6 +855,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
 {
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
+
     MoleculeCIPCalculator mcc;
     mcc.updateCIPStereoDescriptors(*mol, _add_stereo_desc);
 
@@ -865,6 +866,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         ml.make();
     }
     BaseMolecule::collapse(*mol);
+
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     std::set<int> rgrp_full_list;

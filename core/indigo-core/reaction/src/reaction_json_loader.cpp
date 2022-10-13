@@ -449,7 +449,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
 {
     enum RecordIndexes
     {
-        LEFT_BOUND_IDX = 0,
+        BBOX_IDX = 0,
         FRAGMENT_TYPE_IDX,
         MOLECULE_IDX
     };
@@ -458,74 +458,92 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
     {
         MOLECULE,
         PLUS,
-        ARROW
+        ARROW,
+        TEXT
     };
 
-    using ReactionComponent = std::tuple<float, ReactionFragmentType, std::unique_ptr<BaseMolecule>>;
-
-    std::unique_ptr<BaseMolecule> merged_molecule;
-
-    if (rxn.isQueryReaction())
-        merged_molecule = std::make_unique<QueryMolecule>();
-    else
-        merged_molecule = std::make_unique<Molecule>();
-
-    int count = _pmol->countComponents();
+    using ReactionComponent = std::tuple<Rect2f, ReactionFragmentType, std::unique_ptr<BaseMolecule>>;
 
     std::vector<ReactionComponent> components;
 
-    for (int index = 0; index < count; ++index)
+    for (int index = 0; index < _pmol->countComponents(); ++index)
     {
+        std::unique_ptr<BaseMolecule> mol;
         if (_pmol->isQueryMolecule())
-            components.emplace_back(0, ReactionFragmentType::MOLECULE, std::make_unique<QueryMolecule>());
+            mol = std::make_unique<QueryMolecule>();
         else
-            components.emplace_back(0, ReactionFragmentType::MOLECULE, std::make_unique<Molecule>());
+            mol = std::make_unique<Molecule>();
+
         Filter filter(_pmol->getDecomposition().ptr(), Filter::EQ, index);
-        ReactionComponent& rc = components.back();
-        BaseMolecule& mol = *(std::get<MOLECULE_IDX>(rc));
-        mol.makeSubmolecule(*_pmol, filter, 0, 0);
 
+        mol->makeSubmolecule(*_pmol, filter, 0, 0);
         Rect2f bbox;
-        mol.getBoundingBox(bbox);
-
-        std::get<LEFT_BOUND_IDX>(rc) = bbox.left();
+        mol->getBoundingBox(bbox);
+        components.emplace_back(bbox, ReactionFragmentType::MOLECULE, std::move(mol));
     }
 
     auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, 0);
+    Vec2f arrow_vec(arrow._begin);
+    arrow_vec.sub(arrow._end);
 
-    float arrow_x = arrow._begin.x;
-    components.emplace_back(arrow_x, ReactionFragmentType::ARROW, nullptr);
-    for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
+    for (int i = 0; i < rxn.meta().getMetaCount(KETTextObject::CID); ++i)
     {
-        auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
-        components.emplace_back(plus._pos.x, ReactionFragmentType::PLUS, nullptr);
+        auto& text = (const KETReactionPlus&)rxn.meta().getMetaObject(KETTextObject::CID, i);
+        Rect2f bbox(text._pos, text._pos); // change to real text box later
+        components.emplace_back(bbox, ReactionFragmentType::TEXT, nullptr);
     }
 
-    std::sort(components.begin(), components.end(),
-              [](const ReactionComponent& a, const ReactionComponent& b) -> bool { return std::get<LEFT_BOUND_IDX>(a) < std::get<LEFT_BOUND_IDX>(b); });
-
-    bool is_arrow_passed = false;
-
+    int text_meta_idx = 0;
     for (const auto& comp : components)
     {
         switch (std::get<FRAGMENT_TYPE_IDX>(comp))
         {
-        case ReactionFragmentType::MOLECULE:
-            merged_molecule->mergeWithMolecule(*std::get<MOLECULE_IDX>(comp), 0, 0);
-            break;
-        case ReactionFragmentType::ARROW:
-            rxn.addReactantCopy(*merged_molecule, 0, 0);
-            is_arrow_passed = true;
-            merged_molecule->clear();
-            break;
-        case ReactionFragmentType::PLUS:
-            if (is_arrow_passed)
-                rxn.addProductCopy(*merged_molecule, 0, 0);
-            else
-                rxn.addReactantCopy(*merged_molecule, 0, 0);
-            merged_molecule->clear();
+        case ReactionFragmentType::MOLECULE: {
+            auto& cmol = *std::get<MOLECULE_IDX>(comp);
+            for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
+            {
+                Vec3f& v3 = cmol.getAtomXyz(idx);
+                Vec2f slope1(v3.x, v3.y);
+                Vec2f slope2(slope1);
+                slope1.sub(arrow._begin);
+                slope2.sub(arrow._end);
+                auto dt1 = Vec2f::dot(slope1, arrow_vec);
+                auto dt2 = Vec2f::dot(slope2, arrow_vec);
+                if (std::signbit(dt1) != std::signbit(dt2))
+                {
+                    rxn.addCatalystCopy(cmol, 0, 0);
+                    break;
+                }
+                else if (std::signbit(dt1) && std::signbit(dt2))
+                {
+                    rxn.addProductCopy(cmol, 0, 0);
+                    break;
+                }
+                else
+                {
+                    rxn.addReactantCopy(cmol, 0, 0);
+                    break;
+                }
+            }
+        }
+        case ReactionFragmentType::TEXT: {
+            const auto& bbox = std::get<BBOX_IDX>(comp);
+            Vec2f slope1(bbox.leftTop().x, bbox.leftTop().y);
+            Vec2f slope2(slope1);
+            slope1.sub(arrow._begin);
+            slope2.sub(arrow._end);
+            auto dt1 = Vec2f::dot(slope1, arrow_vec);
+            auto dt2 = Vec2f::dot(slope2, arrow_vec);
+            if (std::signbit(dt1) != std::signbit(dt2))
+            {
+                rxn.addSpecialCondition(text_meta_idx, bbox);
+                break;
+            }
+            text_meta_idx++;
+        }
+        break;
+        default:
             break;
         }
     }
-    rxn.addProductCopy(*merged_molecule, 0, 0);
 }

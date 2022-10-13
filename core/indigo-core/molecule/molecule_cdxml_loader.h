@@ -38,6 +38,8 @@ typedef int INT32;
 typedef unsigned int UINT32;
 #include "molecule/CDXConstants.h"
 
+const int KCDXMLChemicalFontStyle = 96;
+
 namespace tinyxml2
 {
     class XMLHandle;
@@ -75,6 +77,23 @@ namespace indigo
 
     private:
         int val;
+    };
+
+    union CDXMLFontStyle {
+        CDXMLFontStyle(unsigned int val) : face(val)
+        {
+        }
+        struct
+        {
+            unsigned int is_bold : 1;
+            unsigned int is_italic : 1;
+            unsigned int is_underline : 1;
+            unsigned int is_outline : 1;
+            unsigned int is_shadow : 1;
+            unsigned int is_subscript : 1;
+            unsigned int is_superscript : 1;
+        };
+        unsigned int face;
     };
 
     struct _ExtConnection
@@ -156,20 +175,30 @@ namespace indigo
         MoleculeCdxmlLoader(Scanner& scanner);
 
         void loadMolecule(BaseMolecule& mol);
+        void loadMoleculeFromFragment(BaseMolecule& mol, tinyxml2::XMLElement* pElem);
+
+        static void applyDispatcher(const tinyxml2::XMLAttribute* pAttr,
+                                    const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
+        void parseCDXMLAttributes(const tinyxml2::XMLAttribute* pAttr);
+        void parseBBox(const std::string& data, Rect2f& bbox);
+        void parsePos(const std::string& data, Vec3f& bbox);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
         bool _has_bounding_box;
-        Rect2f _cdxml_bbox;
-        AutoInt _cdxml_bond_length;
-        std::vector<CdxmlNode> _nodes;
-        std::vector<CdxmlBond> _bonds;
-        std::vector<CdxmlBracket> _brackets;
+        Rect2f cdxml_bbox;
+        AutoInt cdxml_bond_length;
+        std::vector<CdxmlNode> nodes;
+        std::vector<CdxmlBond> bonds;
+        std::vector<CdxmlBracket> brackets;
+        static const int SCALE = 30;
 
     protected:
         Scanner* _scanner;
         const tinyxml2::XMLNode* _fragment;
-        void _parseCDXMLAttributes(const tinyxml2::XMLAttribute* pAttr);
+        void _initMolecule(BaseMolecule& mol);
+        void _parseCollections(BaseMolecule& mol);
+
         void _parseNode(CdxmlNode& node, tinyxml2::XMLElement* pElem);
         void _addNode(CdxmlNode& node);
 
@@ -177,14 +206,16 @@ namespace indigo
         void _addBond(CdxmlBond& node);
 
         void _parseBracket(CdxmlBracket& bracket, const tinyxml2::XMLAttribute* pAttr);
+        void _parseText(const tinyxml2::XMLElement* pElem);
+        void _parseGraphic(const tinyxml2::XMLElement* pElem);
+        void _parseArrow(const tinyxml2::XMLElement* pElem);
 
-        void _applyDispatcher(const tinyxml2::XMLAttribute* pAttr, const std::unordered_map<std::string, std::function<void(std::string&)>>& dispatcher);
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
         void _parseCDXMLPage(tinyxml2::XMLElement* pElem);
-        void _parseCDXMLFragment(tinyxml2::XMLElement* pElem);
+        void _parseCDXMLElements(tinyxml2::XMLElement* pElem, bool no_siblings = false);
         void _parseFragmentAttributes(const tinyxml2::XMLAttribute* pAttr);
 
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
@@ -196,6 +227,13 @@ namespace indigo
         std::unordered_map<int, int> _id_to_node_index;
         std::unordered_map<int, int> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
+        std::vector<std::pair<Vec3f, std::string>> _text_objects;
+        std::vector<Vec2f> _pluses;
+        std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
+
+        std::unordered_set<int> _superced_ids;
+
+        float _bond_length;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy

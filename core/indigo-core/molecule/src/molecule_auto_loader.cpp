@@ -325,6 +325,8 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         _scanner->skipSpace();
         if (_scanner->lookNext() == '<' && _scanner->findWord("CDXML"))
         {
+            if (_scanner->findWord("<arrow"))
+                throw Error("CDXML: not a molecule. Arrows found.");
             _scanner->seek(pos, SEEK_SET);
             MoleculeCdxmlLoader loader(*_scanner);
             loader.stereochemistry_options = stereochemistry_options;

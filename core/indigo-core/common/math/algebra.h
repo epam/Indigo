@@ -417,6 +417,16 @@ namespace indigo
             return Vec2f(middleX(), middleY());
         }
 
+        inline float width() const
+        {
+            return _rightTop.x - _leftBottom.x;
+        }
+
+        inline float height() const
+        {
+            return _rightTop.y - _leftBottom.y;
+        }
+
     protected:
         Vec2f _leftBottom;
         Vec2f _rightTop;

@@ -92,8 +92,8 @@ void BaseMolecule::clear()
     use_scsr_name = false;
     expand_mod_templates = false;
     ignore_chem_templates = false;
-
     updateEditRevision();
+    _meta.resetMetaData();
 }
 
 bool BaseMolecule::hasCoord(BaseMolecule& mol)
@@ -267,6 +267,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     reaction_atom_inversion.expandFill(vertexEnd(), 0);
     reaction_atom_exact_change.expandFill(vertexEnd(), 0);
     reaction_bond_reacting_center.expandFill(edgeEnd(), 0);
+    _bond_directions.expandFill(edgeEnd(), -1);
 
     for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {
@@ -278,37 +279,13 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         reaction_atom_exact_change[mapping[i]] = mol.reaction_atom_exact_change[i];
     }
 
-    if (skip_flags & COPY_BOND_DIRECTIONS)
-    {
-        _bond_directions.expandFill(edgeEnd() + mol.edgeEnd(), 0);
-    }
-    else
-        _bond_directions.expandFill(mol.edgeEnd(), 0);
-
     for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
     {
-        const Edge& edge = mol.getEdge(j);
-
-        if ((mapping[edge.beg] > -1) && (mapping[edge.end] > -1))
-        {
-            int bond_idx = findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
-            if (bond_idx > -1)
-            {
-                reaction_bond_reacting_center[bond_idx] = mol.reaction_bond_reacting_center[j];
-            }
-        }
-    }
-
-    // trick for molecules with incorrect stereochemistry, of which we do permutations
-    if ((skip_flags & COPY_BOND_DIRECTIONS) || (vertexCount() == mol.vertexCount() && edgeCount() == mol.edgeCount()))
-    {
-        for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
-        {
-            const Edge& edge = mol.getEdge(j);
-
-            if (mol.getBondDirection(j) != 0)
-                _bond_directions[findEdgeIndex(mapping[edge.beg], mapping[edge.end])] = mol.getBondDirection(j);
-        }
+        int edge_idx = edge_mapping[j];
+        if (edge_idx < 0)
+            continue;
+        reaction_bond_reacting_center[edge_idx] = mol.reaction_bond_reacting_center[j];
+        _bond_directions[edge_idx] = mol.getBondDirection(j);
     }
 
     // RGroups
