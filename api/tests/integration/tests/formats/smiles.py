@@ -94,3 +94,7 @@ mols_smiles = [
 ]
 for sm in mols_smiles:
     print(indigo.loadMolecule(sm).smiles())
+    try:
+        print(indigo.loadMolecule(sm).canonicalSmiles())
+    except IndigoException as e:
+        print(getIndigoExceptionText(e))
