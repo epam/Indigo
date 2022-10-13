@@ -787,7 +787,7 @@ void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem)
             applyDispatcher(pStyleAttribute, style_dispatcher);
             std::vector<std::string> text_vec_styles;
             CDXMLFontStyle fs(font_face);
-            if (font_face == 96)
+            if (font_face == KCDXMLChemicalFontStyle)
             {
                 // special case
             }

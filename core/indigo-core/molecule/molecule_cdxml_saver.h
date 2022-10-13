@@ -46,7 +46,7 @@ namespace indigo
 
         void saveMolecule(BaseMolecule& mol);
         static const int SCALE = 30;
-
+        static const int MAX_PAGE_HEIGHT = 64;
         struct Bounds
         {
             Vec2f min, max;

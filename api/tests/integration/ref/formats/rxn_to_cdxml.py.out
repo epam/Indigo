@@ -7,8 +7,8 @@ molfile loader: atom lists are allowed only for queries
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -187,8 +187,8 @@ molfile loader: 'any' atoms are allowed only for queries
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -269,8 +269,8 @@ AmideFormation.ket
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -368,8 +368,8 @@ AmideFormation.ket
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -468,8 +468,8 @@ AmideFormation.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -570,8 +570,8 @@ AmideFormation.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -673,8 +673,8 @@ CN_Bond-S-GRP.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -738,8 +738,8 @@ CN_Bond-S-GRP.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -804,8 +804,8 @@ CN_Bond.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -873,8 +873,8 @@ CN_Bond.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -943,8 +943,8 @@ CN_Bond_map.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -1012,8 +1012,8 @@ CN_Bond_map.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -1082,8 +1082,8 @@ Claisen.ket
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -1161,8 +1161,8 @@ Claisen.ket
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -1241,8 +1241,8 @@ Claisen.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -1320,8 +1320,8 @@ Claisen.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -1400,8 +1400,8 @@ Markush6.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -1593,8 +1593,8 @@ Markush6.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -1789,8 +1789,8 @@ molfile loader: atom lists are allowed only for queries
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -1887,8 +1887,8 @@ amiderxn3.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -2019,8 +2019,8 @@ amiderxn3.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -2152,8 +2152,8 @@ only_products.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -2210,8 +2210,8 @@ only_products.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -2269,8 +2269,8 @@ only_reactants.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -2327,8 +2327,8 @@ only_reactants.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -2386,8 +2386,8 @@ v3000.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>
@@ -2543,8 +2543,8 @@ v3000.rxn
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
     <fonttable>
-        <font id="3" charset="utf-8" name="Arial"/>
-        <font id="4" charset="utf-8" name="Times New Roman"/>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
     </fonttable>
     <colortable>
         <color r="1" g="1" b="1"/>

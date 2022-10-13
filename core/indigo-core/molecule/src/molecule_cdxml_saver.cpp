@@ -35,7 +35,7 @@ IMPL_ERROR(MoleculeCdxmlSaver, "molecule CDXML saver");
 MoleculeCdxmlSaver::MoleculeCdxmlSaver(Output& output) : _output(output)
 {
     _bond_length = SCALE;
-    _max_page_height = 64;
+    _max_page_height = MAX_PAGE_HEIGHT;
     _pages_height = 1;
 }
 
@@ -202,7 +202,6 @@ void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
 
 void MoleculeCdxmlSaver::addDefaultFontTable()
 {
-    int id = -1;
     Array<char> name;
     PropertiesMap attrs;
 
@@ -210,16 +209,16 @@ void MoleculeCdxmlSaver::addDefaultFontTable()
     attrs.clear();
 
     name.readString("fonttable", true);
-    startCurrentElement(id, name, attrs);
+    startCurrentElement(-1, name, attrs);
 
     name.readString("font", true);
-    id = 3;
+    int id = 1;
     attrs.insert("charset", "utf-8");
     attrs.insert("name", "Arial");
     addCustomElement(id, name, attrs);
 
     attrs.clear();
-    id = 4;
+    id++;
     attrs.insert("charset", "utf-8");
     attrs.insert("name", "Times New Roman");
     addCustomElement(id, name, attrs);

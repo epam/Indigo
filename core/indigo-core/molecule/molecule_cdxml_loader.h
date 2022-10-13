@@ -38,6 +38,8 @@ typedef int INT32;
 typedef unsigned int UINT32;
 #include "molecule/CDXConstants.h"
 
+const int KCDXMLChemicalFontStyle = 96;
+
 namespace tinyxml2
 {
     class XMLHandle;
