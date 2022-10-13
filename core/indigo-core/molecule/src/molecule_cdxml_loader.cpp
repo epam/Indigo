@@ -227,7 +227,6 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(XMLElement* pElem, bool no_sibling
         }
         else
         {
-            printf("Unhandled cdxml tag: %s\n", pElem->Value());
         }
         if (no_siblings)
             break;
