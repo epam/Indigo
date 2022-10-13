@@ -830,7 +830,7 @@ void SmilesLoader::_readOtherStuff()
             {
                 RepeatingUnit& ru = (RepeatingUnit&)sgroup;
                 std::string subscript, connectivity;
-                while (_scanner.lookNext() != ':' )
+                while (_scanner.lookNext() != ':')
                     subscript += _scanner.readChar();
 
                 ru.subscript.readString(subscript.c_str(), true);
