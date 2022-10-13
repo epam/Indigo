@@ -37,7 +37,7 @@ CanonicalSmilesSaver::CanonicalSmilesSaver(Output& output) : SmilesSaver(output)
     ignore_hydrogens = true;
     canonize_chiralities = true;
     _initial_to_actual.clear();
-    _initial_to_actual.insert(0, 0);
+    _initial_to_actual.emplace(0, 0);
     _aam_counter = 0;
 }
 
@@ -121,14 +121,15 @@ void CanonicalSmilesSaver::saveMolecule(Molecule& mol_)
         int aam = mol.reaction_atom_mapping[order[i]];
         if (aam)
         {
-            if (!_initial_to_actual.find(aam))
+            const auto it = _initial_to_actual.find(aam);
+            if (it == _initial_to_actual.end())
             {
-                _initial_to_actual.insert(aam, ++_aam_counter);
+                _initial_to_actual.emplace(aam, ++_aam_counter);
                 _actual_atom_atom_mapping[order[i]] = _aam_counter;
             }
             else
             {
-                _actual_atom_atom_mapping[order[i]] = _initial_to_actual.at(aam);
+                _actual_atom_atom_mapping[order[i]] = it->second;
             }
         }
     }
