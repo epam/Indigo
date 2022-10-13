@@ -48,6 +48,7 @@ RUN if [ -f /opt/*indigo*manylinux1_x86_64*.whl ]; then python3 -m pip install -
 # COPY ./lib/favicon.ico /srv/api/ui/
 COPY ./service/v2/ /srv/api/v2/
 COPY ./service/*.py /srv/api/
+COPY ./service/v2/common/*.py /srv/api/
 
 # Clean
 RUN apt purge -y unzip git python3-pip python3-wheel && \
