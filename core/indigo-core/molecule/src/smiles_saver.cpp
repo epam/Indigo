@@ -621,6 +621,7 @@ void SmilesSaver::_saveMolecule()
         _writePseudoAtoms();
         _writeHighlighting();
         _writeRGroups();
+        _writeSGroups();
         _writeRingBonds();
         _writeUnsaturated();
         _writeSubstitutionCounts();
@@ -1828,6 +1829,55 @@ void SmilesSaver::_writeRingBonds()
     }
 }
 
+void SmilesSaver::_writeSGroupAtoms(const SGroup& sgroup)
+{
+    for (int i = 0; i < sgroup.atoms.size(); ++i)
+    {
+        if (i)
+            _output.printf(",");
+        _output.printf("%d", sgroup.atoms[i]);
+    }
+}
+
+void SmilesSaver::_writeSGroups()
+{
+    for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
+    {
+        _startExtension();
+        _output.writeString("Sg:");
+        SGroup& sg = _bmol->sgroups.getSGroup(i);
+        switch (sg.sgroup_type)
+        {
+        case SGroup::SG_TYPE_GEN:
+            _output.writeString("gen:");
+            _writeSGroupAtoms(sg);
+            _output.writeString(":");
+            break;
+        case SGroup::SG_TYPE_SRU: {
+            RepeatingUnit& ru = (RepeatingUnit&)sg;
+            _output.writeString("n:");
+            _writeSGroupAtoms(sg);
+            _output.printf(":%s:", ru.subscript.ptr());
+            switch (ru.connectivity)
+            {
+            case SGroup::HEAD_TO_TAIL:
+                _output.writeString("ht");
+                break;
+            case SGroup::HEAD_TO_HEAD:
+                _output.writeString("hh");
+                break;
+            default:
+                _output.writeString("eu");
+                break;
+            }
+        }
+        break;
+        default:
+            break;
+        }
+    }
+}
+
 void SmilesSaver::_writeRGroups()
 {
     if (_bmol->rgroups.getRGroupCount() > 0)
@@ -1991,6 +2041,9 @@ void SmilesSaver::_checkSRU()
     _polymer_indices.fffill();
 
     int i, j, k;
+
+    if (write_extra_info) // SRU will be handled better inside the extended block
+        return;
 
     // check overlapping (particularly nested) blocks
     for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))

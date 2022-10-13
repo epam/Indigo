@@ -114,6 +114,9 @@ namespace indigo
         void _writePseudoAtoms();
         void _writeHighlighting();
         void _writeRGroups();
+        void _writeSGroups();
+        void _writeSGroupAtoms(const SGroup& sgroup);
+
         void _writeRingBonds();
         void _writeUnsaturated();
         void _writeSubstitutionCounts();

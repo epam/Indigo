@@ -776,6 +776,76 @@ void SmilesLoader::_readOtherStuff()
                 }
             }
         }
+        else if ((c == 'S') && (_scanner.lookNext() == 'g'))
+        {
+            // SGroup block found
+            _scanner.skip(1);
+            if (_scanner.readChar() != ':')
+                throw Error("colon expected after 'Sg'");
+            char sg = _scanner.readChar();
+            int sg_type = -1;
+            if (sg == 'n')
+            {
+                if (_scanner.readChar() != ':')
+                    throw Error("colon expected after 'Sg:n'");
+                sg_type = SGroup::SG_TYPE_SRU;
+            }
+            else if (sg == 'g' && _scanner.lookNext() == 'e')
+            {
+                _scanner.skip(2);
+                if (_scanner.readChar() != ':')
+                    throw Error("colon expected after 'Sg'");
+                sg_type = SGroup::SG_TYPE_GEN;
+            }
+            else
+            {
+                throw Error("unexpected Sg type");
+            }
+
+            int idx = _bmol->sgroups.addSGroup(sg_type);
+            auto& sgroup = _bmol->sgroups.getSGroup(idx);
+
+            // add brackets
+            Vec2f* p = sgroup.brackets.push();
+            p[0].set(0, 0);
+            p[1].set(0, 0);
+            p = sgroup.brackets.push();
+            p[0].set(0, 0);
+            p[1].set(0, 0);
+
+            _scanner.lookNext();
+
+            while (isdigit(_scanner.lookNext()))
+            {
+                auto atom_idx = _scanner.readUnsigned();
+                sgroup.atoms.push(atom_idx);
+                if (_scanner.lookNext() == ',')
+                    _scanner.skip(1);
+            }
+
+            if (_scanner.readChar() != ':')
+                throw Error("colon expected after 'Sg'");
+
+            if (sg_type == SGroup::SG_TYPE_SRU)
+            {
+                RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+                std::string subscript, connectivity;
+                while (_scanner.lookNext() != ':' )
+                    subscript += _scanner.readChar();
+
+                ru.subscript.readString(subscript.c_str(), true);
+                _scanner.skip(1);
+
+                while (_scanner.lookNext() != '|')
+                    connectivity += _scanner.readChar();
+                if (connectivity == "ht")
+                    ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
+                else if (connectivity == "hh")
+                    ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
+                else if (connectivity == "eu")
+                    ru.connectivity = RepeatingUnit::EITHER;
+            }
+        }
         else if ((c == 'R') && (_scanner.lookNext() == 'G'))
         {
             // RGroup block found
