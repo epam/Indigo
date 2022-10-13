@@ -301,10 +301,10 @@ void MultipleCdxLoader::_getObject()
             {
                 auto& propVal = properties.insert(name.ptr());
                 if (value.size() > 0)
-                    propVal.readString(value.ptr(), true);
+                    propVal = value.ptr();
                 else if (_latest_text.size() > 0)
                 {
-                    propVal.readString(_latest_text.ptr(), true);
+                    propVal = _latest_text.ptr();
                     _latest_text.clear();
                 }
             }

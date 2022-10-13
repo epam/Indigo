@@ -552,7 +552,10 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
                     rp.mols.add(new Molecule());
                 Array<char>& title = rp.titles.push();
                 if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
-                    title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
+                {
+                    const auto& val = objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr());
+                    title.copy(val.c_str(), val.size() + 1);
+                }
 
                 if (rp.rOpt.mode == DINGO_MODE::MODE_CDXML)
                 {
@@ -589,7 +592,10 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
                     rp.rxns.add(new Reaction());
                 Array<char>& title = rp.titles.push();
                 if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
-                    title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
+                {
+                    const auto& val = objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr());
+                    title.copy(val.c_str(), val.size() + 1);
+                }
 
                 rp.rxns.top()->clone(objs[i]->getBaseReaction(), 0, 0, 0);
                 rp.rmode = RENDER_RXN;
