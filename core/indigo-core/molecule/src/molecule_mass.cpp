@@ -29,7 +29,7 @@ IMPL_ERROR(MoleculeMass, "mass");
 
 MoleculeMass::MoleculeMass()
 {
-    relative_atomic_mass_map = NULL;
+    relative_atomic_mass_map = nullptr;
 }
 
 double MoleculeMass::molecularWeight(Molecule& mol)
@@ -70,13 +70,9 @@ double MoleculeMass::molecularWeight(Molecule& mol)
 
         if (isotope == 0)
         {
-            double* value = 0;
-            if (relative_atomic_mass_map != NULL)
-            {
-                value = relative_atomic_mass_map->at2(number);
-            }
+            auto* value = _relativeAtomicMassByNumber(number);
 
-            if (value == 0)
+            if (value == nullptr)
             {
                 elements_count[number]++;
             }
@@ -364,12 +360,7 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str)
         }
         else
         {
-            double* value = 0;
-            if (relative_atomic_mass_map != NULL)
-            {
-                value = relative_atomic_mass_map->at2(number);
-            }
-
+            auto* value = _relativeAtomicMassByNumber(number);
             if (value)
             {
                 relativeMass[number] += *value;
@@ -419,4 +410,15 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str)
         }
     }
     output.writeChar(0);
+}
+
+const double* MoleculeMass::_relativeAtomicMassByNumber(int number) const
+{
+    if (!relative_atomic_mass_map)
+    {
+        return nullptr;
+    }
+
+    const auto it = relative_atomic_mass_map->find(number);
+    return it != relative_atomic_mass_map->end() ? &(it->second) : nullptr;
 }
