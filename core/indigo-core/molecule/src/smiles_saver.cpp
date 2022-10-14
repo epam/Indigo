@@ -2058,7 +2058,7 @@ void SmilesSaver::_checkSRU()
     // check overlapping (particularly nested) blocks
     for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
     {
-        auto& ru = (RepeatingUnit&) _bmol->sgroups.getSGroup(i);
+        auto& ru = (RepeatingUnit&)_bmol->sgroups.getSGroup(i);
 
         if (ru.sgroup_type == SGroup::SG_TYPE_SRU)
         {
