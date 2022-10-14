@@ -55,6 +55,7 @@ SmilesSaver::SmilesSaver(Output& output)
     rsite_indices_as_aam = true;
     _n_attachment_points = 0;
     _have_complicated_cistrans = false;
+    _simple_sru = false;
 }
 
 SmilesSaver::~SmilesSaver()
@@ -95,7 +96,15 @@ void SmilesSaver::_saveMolecule()
     }
 
     _checkRGroupsAndAttachmentPoints();
-    _checkSRU();
+    try
+    {
+        _checkSRU();
+    }
+    catch (Exception e)
+    {
+        _simple_sru = false;
+        _polymer_indices.fffill();
+    }
 
     _touched_cistransbonds = 0;
     _complicated_cistrans.clear_resize(_bmol->edgeEnd());
@@ -168,7 +177,7 @@ void SmilesSaver::_saveMolecule()
 
     walk.ignored_vertices = _ignored_vertices.ptr();
     walk.vertex_ranks = vertex_ranks;
-    if (_bmol->sgroups.isPolimer())
+    if (_bmol->sgroups.isPolimer() && _simple_sru)
         walk.vertex_classes = _polymer_indices.ptr();
 
     if (separate_rsites)
@@ -1841,11 +1850,15 @@ void SmilesSaver::_writeSGroupAtoms(const SGroup& sgroup)
 
 void SmilesSaver::_writeSGroups()
 {
+    if (_simple_sru) // already saved in simple mode
+        return;
     for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
     {
+        SGroup& sg = _bmol->sgroups.getSGroup(i);
+        if (!sg.atoms.size() || (sg.sgroup_type != SGroup::SG_TYPE_GEN && sg.sgroup_type != SGroup::SG_TYPE_SRU))
+            continue;
         _startExtension();
         _output.writeString("Sg:");
-        SGroup& sg = _bmol->sgroups.getSGroup(i);
         switch (sg.sgroup_type)
         {
         case SGroup::SG_TYPE_GEN:
@@ -2042,16 +2055,16 @@ void SmilesSaver::_checkSRU()
 
     int i, j, k;
 
-    if (write_extra_info) // SRU will be handled better inside the extended block
-        return;
-
     // check overlapping (particularly nested) blocks
     for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
     {
-        SGroup* sg = &_bmol->sgroups.getSGroup(i);
-        if (sg->sgroup_type == SGroup::SG_TYPE_SRU)
+        auto& ru = (RepeatingUnit&) _bmol->sgroups.getSGroup(i);
+
+        if (ru.sgroup_type == SGroup::SG_TYPE_SRU)
         {
-            Array<int>& atoms = sg->atoms;
+            if (ru.subscript.size())
+                throw Error("polymer labels not supported");
+            Array<int>& atoms = ru.atoms;
 
             for (j = 0; j < atoms.size(); j++)
             {
@@ -2063,6 +2076,7 @@ void SmilesSaver::_checkSRU()
                 if (_bmol->vertexComponent(atoms[j]) != _bmol->vertexComponent(atoms[0]))
                     throw Error("disconnected repeating units not supported");
             }
+            _simple_sru = true;
         }
     }
 

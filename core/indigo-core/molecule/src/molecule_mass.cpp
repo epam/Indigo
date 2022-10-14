@@ -25,7 +25,7 @@
 
 using namespace indigo;
 
-IMPL_ERROR(MoleculeMass, "mass");
+IMPL_ERROR(MoleculeMass, "calculation error");
 
 MoleculeMass::MoleculeMass()
 {

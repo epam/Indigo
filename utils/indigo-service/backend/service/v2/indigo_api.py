@@ -201,7 +201,7 @@ def do_calc(m, func_name, precision):
     try:
         value = getattr(m, func_name)()
     except IndigoException as e:
-        value = "error: {0}".format(e.value.split(": ")[-1])
+        value = "calculation error: {0}".format(e.value.split(": ")[-1])
     if type(value) == float:
         value = round(value, precision)
     return str(value)

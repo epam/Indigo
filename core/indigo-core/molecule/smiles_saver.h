@@ -181,7 +181,7 @@ namespace indigo
         int _written_components;
         int _touched_cistransbonds;
         bool _comma;
-
+        bool _simple_sru;
     private:
         SmilesSaver(const SmilesSaver&); // no implicit copy
     };
