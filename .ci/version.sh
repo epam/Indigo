@@ -8,10 +8,10 @@ fi
 
 root=$(realpath "$(dirname ${0})/..")
 
-if [ "$(git branch --show-current)" != "master" ]; then
-  echo "Version update should be done only on master!"
+if [[ $(git branch --show-current) != release* ]]; then
+  echo "Version update should be done only on release/* branches!"
   exit 2
-fi 
+fi
 
 
 old_base_version=$(sed -n 1p ${root}/.ci/version.txt)
@@ -110,4 +110,4 @@ sed -i "s/${old_version}/${new_version}/g" ${root}/api/r/DESCRIPTION
 
 # JS
 sed -i "s/${old_version}/${new_version}/g" ${root}/api/wasm/indigo-ketcher/package.json
-sed -i "s/${old_version}/${new_version}/g" ${root}/utils/indigo-service-client/package.json
+sed -i "s/${old_version}/${new_version}/g" ${root}/utils/indigo-service/frontend/ui/package.json

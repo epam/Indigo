@@ -1510,9 +1510,6 @@ def render():
         )
 
     result = indigo.renderer.renderToBuffer(md.struct)
-    result = (
-        result.tostring() if sys.version_info < (3, 2) else result.tobytes()
-    )
 
     if "base64" in content_type:
         result = base64.b64encode(result)

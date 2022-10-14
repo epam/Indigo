@@ -19,10 +19,6 @@ RUN apt install -y --no-install-recommends \
         uwsgi \
         uwsgi-plugin-python3
 
-# Install python dependencies using pip
-COPY ./service/requirements.txt /opt/
-RUN pip3 install --no-cache-dir -r /opt/requirements.txt
-
 # Setup celery
 COPY ./conf/celeryd.conf /etc/default/celeryd
 RUN useradd -ms /bin/bash celery || echo "User already exists."
@@ -49,6 +45,10 @@ RUN if [ -f /opt/*indigo*manylinux1_x86_64*.whl ]; then python3 -m pip install -
 COPY ./service/v2/ /srv/api/v2/
 COPY ./service/*.py /srv/api/
 COPY ./service/v2/common/*.py /srv/api/
+
+# Install python dependencies using pip
+COPY ./service/requirements.txt /opt/
+RUN pip3 install --no-cache-dir -r /opt/requirements.txt
 
 # Clean
 RUN apt purge -y unzip git python3-pip python3-wheel && \

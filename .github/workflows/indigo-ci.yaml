@@ -1152,7 +1152,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: indigo-python
-          path: utils/indigo-service/lib/
+          path: utils/indigo-service/backend/lib/
       - name: Build
         run: docker build -f ./utils/indigo-service/backend/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service/backend
 # TODO: add tests
