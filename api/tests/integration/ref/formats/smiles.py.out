@@ -38,3 +38,8 @@ C1=CC=CC2=C1N=C(N2)[*;C,N,O]
 SMILES saver: atom list can be used only with smarts_mode
 C1=CC=CC2=C1N=C(N2)[*;c,n,o]
 SMILES saver: undefined atom number
+*** S-Groups ***
+CCCC |Sg:gen:0,1,2:|
+CCCC |Sg:gen:0,1,2:|
+CCCC |Sg:n:0,1,2:3-6:eu|
+canonical SMILES saver: can not canonicalize a polymer

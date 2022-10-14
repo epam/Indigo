@@ -2181,12 +2181,12 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual(
-            "error: Cannot calculate mass for structure with repeating units",
+            "calculation error: Cannot calculate mass for structure with repeating units",
             result_data["molecular-weight"],
         )
         self.assertEqual("C4 H10(C H2)n(C2 H4)kk", result_data["gross"])
         self.assertEqual(
-            "error: Cannot calculate mass for structure with repeating units",
+            "calculation error: Cannot calculate mass for structure with repeating units",
             result_data["mass-composition"],
         )
 

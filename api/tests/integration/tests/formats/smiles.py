@@ -86,3 +86,15 @@ for idx, sm in enumerate(mols_qsmiles):
         print("  -> " + sm3)
     except IndigoException as e:
         print(getIndigoExceptionText(e))
+
+print("*** S-Groups ***")
+mols_smiles = [
+    "CCCC |Sg:gen:0,1,2:|",
+    "CCCC |Sg:n:0,1,2:3-6:eu|",
+]
+for sm in mols_smiles:
+    print(indigo.loadMolecule(sm).smiles())
+    try:
+        print(indigo.loadMolecule(sm).canonicalSmiles())
+    except IndigoException as e:
+        print(getIndigoExceptionText(e))
