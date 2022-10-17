@@ -42,6 +42,7 @@ void ReactionAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    dearomatize_on_load = false;
 }
 
 IMPL_ERROR(ReactionAutoLoader, "reaction auto loader");
