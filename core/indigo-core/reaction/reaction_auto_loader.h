@@ -20,8 +20,8 @@
 #define __reaction_auto_loader__
 
 #include "base_cpp/array.h"
-#include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_arom.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 namespace indigo
 {
@@ -41,6 +41,8 @@ namespace indigo
         ~ReactionAutoLoader();
 
         void loadReaction(BaseReaction& reaction);
+        // to keep C++ API compatible
+        void loadQueryReaction(QueryReaction& qreaction);
 
         bool treat_x_as_pseudoatom;
         bool ignore_closing_bond_direction_mismatch;

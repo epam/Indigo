@@ -73,6 +73,11 @@ ReactionAutoLoader::~ReactionAutoLoader()
         delete _scanner;
 }
 
+void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction)
+{
+    loadReaction(qreaction);
+}
+
 void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
 {
     _loadReaction(reaction);

@@ -23,8 +23,8 @@
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
-#include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_arom.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -56,6 +56,8 @@ namespace indigo
         ~MoleculeAutoLoader();
 
         void loadMolecule(BaseMolecule& mol);
+        // to keep C++ API compatible
+        void loadQueryMolecule(QueryMolecule& qmol);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;

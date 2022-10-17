@@ -78,6 +78,11 @@ MoleculeAutoLoader::~MoleculeAutoLoader()
         delete _scanner;
 }
 
+void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol)
+{
+    loadMolecule(qmol);
+}
+
 void MoleculeAutoLoader::loadMolecule(BaseMolecule& mol)
 {
     _loadMolecule(mol);
