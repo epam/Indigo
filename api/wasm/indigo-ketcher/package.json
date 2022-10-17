@@ -5,6 +5,7 @@
   "main": "indigo-ketcher.js",
   "files": [
     "indigo-ketcher.js",
+    "indigo-ketcher.wasm",
     "README.md",
     "LICENSE"
   ],
