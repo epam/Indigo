@@ -24,6 +24,7 @@
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/molecule_arom.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -38,6 +39,13 @@ namespace indigo
     class QueryMolecule;
     class BaseMolecule;
 
+    enum AutoAromatizeMode
+    {
+        NO_AUTO_AROMATIZE = 0,
+        AUTO_AROMATIZE,
+        AUTO_DEAROMATIZE
+    };
+
     class DLLEXPORT MoleculeAutoLoader
     {
     public:
@@ -47,8 +55,7 @@ namespace indigo
 
         ~MoleculeAutoLoader();
 
-        void loadMolecule(Molecule& mol);
-        void loadQueryMolecule(QueryMolecule& qmol);
+        void loadMolecule(BaseMolecule& mol);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
@@ -59,6 +66,8 @@ namespace indigo
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
         int treat_stereo_as;
+        int auto_aromatize_mode;
+        AromaticityOptions arom_options;
 
         // Loaded properties
         // CP_DECL;
@@ -76,7 +85,7 @@ namespace indigo
 
         void _init();
         bool _isSingleLine();
-        void _loadMolecule(BaseMolecule& mol, bool query);
+        void _loadMolecule(BaseMolecule& mol);
 
     private:
         MoleculeAutoLoader(const MoleculeAutoLoader&); // no implicit copy

@@ -28,6 +28,7 @@
 #include "reaction/reaction_json_loader.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
+
 #include <string>
 
 using namespace indigo;
@@ -72,18 +73,25 @@ ReactionAutoLoader::~ReactionAutoLoader()
         delete _scanner;
 }
 
-void ReactionAutoLoader::loadReaction(Reaction& reaction)
+void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
 {
-    _loadReaction(reaction, false);
+    _loadReaction(reaction);
+    switch(static_cast<AutoAromatizeMode>(auto_aromatize_mode))
+    {
+    case AUTO_AROMATIZE:
+        reaction.aromatize(arom_options);
+        break;
+    case AUTO_DEAROMATIZE:
+        reaction.dearomatize(arom_options);
+        break;
+    default:
+        break;
+    }
 }
 
-void ReactionAutoLoader::loadQueryReaction(QueryReaction& reaction)
+void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
 {
-    _loadReaction(reaction, true);
-}
-
-void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
-{
+    bool query = reaction.isQueryReaction();
     // check fir GZip format
     if (_scanner->length() >= 2)
     {
@@ -106,10 +114,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
             loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
             loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader2.ignore_bad_valence = ignore_bad_valence;
-            if (query)
-                loader2.loadQueryReaction((QueryReaction&)reaction);
-            else
-                loader2.loadReaction((Reaction&)reaction);
+            loader2.loadReaction(reaction);
             return;
         }
     }

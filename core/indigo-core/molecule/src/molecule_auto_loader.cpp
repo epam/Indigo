@@ -78,15 +78,22 @@ MoleculeAutoLoader::~MoleculeAutoLoader()
         delete _scanner;
 }
 
-void MoleculeAutoLoader::loadMolecule(Molecule& mol)
+void MoleculeAutoLoader::loadMolecule(BaseMolecule& mol)
 {
-    _loadMolecule(mol, false);
-    mol.setIgnoreBadValenceFlag(ignore_bad_valence);
-}
-
-void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol)
-{
-    _loadMolecule(qmol, true);
+    _loadMolecule(mol);
+    if (!mol.isQueryMolecule())
+        mol.asMolecule().setIgnoreBadValenceFlag(ignore_bad_valence);
+    switch (static_cast<AutoAromatizeMode>(auto_aromatize_mode))
+    {
+    case AUTO_AROMATIZE:
+        mol.aromatize(arom_options);
+        break;
+    case AUTO_DEAROMATIZE:
+        mol.dearomatize(arom_options);
+        break;
+    default:
+        break;
+    }
 }
 
 bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, Array<char>& outbuf)
@@ -184,8 +191,9 @@ void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, Array<char>& data
     dataBuf.push('\0');
 }
 
-void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
+void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
 {
+    bool query = mol.isQueryMolecule();
     properties.clear();
 
     auto local_scanner = _scanner; // local scanner only for binary format
@@ -230,12 +238,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
             loader2.skip_3d_chirality = skip_3d_chirality;
             loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader2.treat_stereo_as = treat_stereo_as;
-
-            if (query)
-                loader2.loadQueryMolecule((QueryMolecule&)mol);
-            else
-                loader2.loadMolecule((Molecule&)mol);
-
+            loader2.loadMolecule(mol);
             return;
         }
     }

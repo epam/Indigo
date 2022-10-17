@@ -67,6 +67,7 @@ void Indigo::init()
     deco_save_ap_bond_orders = false;
     deco_ignore_errors = true;
     molfile_saving_mode = 0;
+    auto_aromatize_mode = 0;
     molfile_saving_no_chiral = false;
     molfile_saving_chiral_flag = -1;
     filename_encoding = ENCODING_ASCII;

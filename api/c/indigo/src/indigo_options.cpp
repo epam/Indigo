@@ -259,6 +259,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("ignore-closing-bond-direction-mismatch", SETTER_GETTER_BOOL_OPTION(indigo.ignore_closing_bond_direction_mismatch));
     mgr->setOptionHandlerBool("ignore-bad-valence", SETTER_GETTER_BOOL_OPTION(indigo.ignore_bad_valence));
     mgr->setOptionHandlerBool("treat-x-as-pseudoatom", SETTER_GETTER_BOOL_OPTION(indigo.treat_x_as_pseudoatom));
+    mgr->setOptionHandlerInt("automatic-aromatize-mode", SETTER_GETTER_INT_OPTION(indigo.auto_aromatize_mode));
     mgr->setOptionHandlerBool("aromatize-skip-superatoms", SETTER_GETTER_BOOL_OPTION(indigo.aromatize_skip_superatoms));
     mgr->setOptionHandlerBool("skip-3d-chirality", SETTER_GETTER_BOOL_OPTION(indigo.skip_3d_chirality));
     mgr->setOptionHandlerBool("deconvolution-aromatization", SETTER_GETTER_BOOL_OPTION(indigo.deconvolution_aromatization));
