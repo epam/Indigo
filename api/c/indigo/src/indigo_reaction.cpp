@@ -364,7 +364,7 @@ CEXPORT int indigoLoadReaction(int source)
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
         loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
-        loader.auto_aromatize_mode = self.auto_aromatize_mode;
+        loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
@@ -385,7 +385,7 @@ CEXPORT int indigoLoadQueryReaction(int source)
 
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-        loader.auto_aromatize_mode = self.auto_aromatize_mode;
+        loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();

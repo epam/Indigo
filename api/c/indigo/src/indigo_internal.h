@@ -306,7 +306,7 @@ public:
     bool deco_ignore_errors;
 
     int molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
-    int auto_aromatize_mode;
+    bool dearomatize_on_load;
     bool molfile_saving_no_chiral;
     int molfile_saving_chiral_flag;
     bool molfile_saving_skip_date;

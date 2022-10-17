@@ -76,17 +76,8 @@ ReactionAutoLoader::~ReactionAutoLoader()
 void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
 {
     _loadReaction(reaction);
-    switch(static_cast<AutoAromatizeMode>(auto_aromatize_mode))
-    {
-    case AUTO_AROMATIZE:
-        reaction.aromatize(arom_options);
-        break;
-    case AUTO_DEAROMATIZE:
+    if (dearomatize_on_load)
         reaction.dearomatize(arom_options);
-        break;
-    default:
-        break;
-    }
 }
 
 void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)

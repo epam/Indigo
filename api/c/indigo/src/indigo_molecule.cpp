@@ -486,7 +486,7 @@ CEXPORT int indigoLoadMolecule(int source)
         loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
         loader.treat_stereo_as = self.treat_stereo_as;
         loader.ignore_bad_valence = self.ignore_bad_valence;
-        loader.auto_aromatize_mode = self.auto_aromatize_mode;
+        loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
@@ -510,7 +510,7 @@ CEXPORT int indigoLoadQueryMolecule(int source)
 
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-        loader.auto_aromatize_mode = self.auto_aromatize_mode;
+        loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();

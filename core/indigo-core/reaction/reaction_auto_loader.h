@@ -49,7 +49,7 @@ namespace indigo
         bool ignore_noncritical_query_features;
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
-        int auto_aromatize_mode;
+        bool dearomatize_on_load;
         AromaticityOptions arom_options;
 
         DECL_ERROR;
