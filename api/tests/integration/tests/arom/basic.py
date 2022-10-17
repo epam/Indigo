@@ -338,13 +338,13 @@ styr.aromatize()
 styr.layout()
 aromatized_styr = styr.molfile()
 styr = indigo.loadMolecule(aromatized_styr)
-#by default it should stay aromatized
+# by default it should stay aromatized
 print(styr.molfile())
 indigo.setOption("dearomatize-on-load", "true")
 styr = indigo.loadMolecule(aromatized_styr)
-#should be dearomatized
+# should be dearomatized
 print(styr.molfile())
 indigo.setOption("dearomatize-on-load", "false")
 styr = indigo.loadMolecule(aromatized_styr)
-#should be aromatized
+# should be aromatized
 print(styr.molfile())
