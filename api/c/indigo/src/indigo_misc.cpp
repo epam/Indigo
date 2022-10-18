@@ -381,7 +381,7 @@ CEXPORT const char* indigoSmiles(int item)
     {
         IndigoObject& obj = self.getObject(item);
         auto& tmp = self.getThreadTmpData();
-        IndigoSmilesSaver::generateSmiles(obj, tmp.string, self.smiles_saving_format );
+        IndigoSmilesSaver::generateSmiles(obj, tmp.string, self.smiles_saving_format);
         return tmp.string.ptr();
     }
     INDIGO_END(0);
