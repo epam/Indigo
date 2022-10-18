@@ -161,13 +161,14 @@ CEXPORT int indigoSdfAppend(int output, int molecule)
 // IndigoSmilesSaver
 //
 
-void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& out_buffer)
+void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& out_buffer, int smiles_format)
 {
     ArrayOutput output(out_buffer);
     if (IndigoBaseMolecule::is(obj))
     {
         BaseMolecule& mol = obj.getBaseMolecule();
         SmilesSaver saver(output);
+        saver.write_extra_info = (smiles_format == SmilesSaver::SMILES_CHEMAXON);
 
         if (mol.isQueryMolecule())
             saver.saveQueryMolecule(mol.asQueryMolecule());

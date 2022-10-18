@@ -46,7 +46,7 @@ SmilesSaver::SmilesSaver(Output& output)
     vertex_ranks = 0;
     ignore_hydrogens = false;
     canonize_chiralities = false;
-    write_extra_info = true;
+    write_extra_info = false;
     _mol = 0;
     smarts_mode = false;
     inside_rsmiles = false;
@@ -55,7 +55,6 @@ SmilesSaver::SmilesSaver(Output& output)
     rsite_indices_as_aam = true;
     _n_attachment_points = 0;
     _have_complicated_cistrans = false;
-    _simple_sru = false;
 }
 
 SmilesSaver::~SmilesSaver()
@@ -96,15 +95,7 @@ void SmilesSaver::_saveMolecule()
     }
 
     _checkRGroupsAndAttachmentPoints();
-    try
-    {
-        _checkSRU();
-    }
-    catch (Exception e)
-    {
-        _simple_sru = false;
-        _polymer_indices.fffill();
-    }
+    _checkSRU();
 
     _touched_cistransbonds = 0;
     _complicated_cistrans.clear_resize(_bmol->edgeEnd());
@@ -177,7 +168,7 @@ void SmilesSaver::_saveMolecule()
 
     walk.ignored_vertices = _ignored_vertices.ptr();
     walk.vertex_ranks = vertex_ranks;
-    if (_bmol->sgroups.isPolimer() && _simple_sru)
+    if (_bmol->sgroups.isPolimer() && !write_extra_info)
         walk.vertex_classes = _polymer_indices.ptr();
 
     if (separate_rsites)
@@ -1850,8 +1841,6 @@ void SmilesSaver::_writeSGroupAtoms(const SGroup& sgroup)
 
 void SmilesSaver::_writeSGroups()
 {
-    if (_simple_sru) // already saved in simple mode
-        return;
     for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
     {
         SGroup& sg = _bmol->sgroups.getSGroup(i);
@@ -1870,7 +1859,7 @@ void SmilesSaver::_writeSGroups()
             RepeatingUnit& ru = (RepeatingUnit&)sg;
             _output.writeString("n:");
             _writeSGroupAtoms(sg);
-            _output.printf(":%s:", ru.subscript.ptr());
+            _output.printf(":%s:", ru.subscript.ptr() ? ru.subscript.ptr() : "");
             switch (ru.connectivity)
             {
             case SGroup::HEAD_TO_TAIL:
@@ -2053,6 +2042,9 @@ void SmilesSaver::_checkSRU()
     _polymer_indices.clear_resize(_bmol->vertexEnd());
     _polymer_indices.fffill();
 
+    if (write_extra_info) // let's handle it in the extened block
+        return;
+
     int i, j, k;
 
     // check overlapping (particularly nested) blocks
@@ -2076,7 +2068,6 @@ void SmilesSaver::_checkSRU()
                 if (_bmol->vertexComponent(atoms[j]) != _bmol->vertexComponent(atoms[0]))
                     throw Error("disconnected repeating units not supported");
             }
-            _simple_sru = true;
         }
     }
 
@@ -2229,4 +2220,29 @@ void SmilesSaver::_writeRingCisTrans()
 const Array<int>& SmilesSaver::getSavedCisTransParities()
 {
     return _cis_trans_parity;
+}
+
+int SmilesSaver::parseFormatMode(const std::string& format)
+{
+    if (format == "daylight")
+        return SMILES_DAYLIGHT;
+    else if (format == "chemaxon")
+        return SMILES_CHEMAXON;
+    else
+        throw Error("unknown SMILES format: %s, supported values: chemaxon, daylight", format.c_str());
+}
+
+void SmilesSaver::saveFormatMode(int mode, std::string& output)
+{
+    switch (mode)
+    {
+    case SMILES_CHEMAXON:
+        output = "chemaxon";
+        break;
+    case SMILES_DAYLIGHT:
+        output = "daylight";
+        break;
+    default:
+        throw Error("unknown SMILES format mode: %d", mode);
+    }
 }

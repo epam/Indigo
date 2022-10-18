@@ -43,6 +43,11 @@ namespace indigo
     {
     public:
         DECL_ERROR;
+        enum
+        {
+            SMILES_CHEMAXON = 0,
+            SMILES_DAYLIGHT
+        };
 
         SmilesSaver(Output& output);
         ~SmilesSaver();
@@ -64,6 +69,8 @@ namespace indigo
 
         static void writePseudoAtom(const char* label, Output& out);
         void writeSpecialAtom(int aid, Output& out);
+        static int parseFormatMode(const std::string& format);
+        static void saveFormatMode(int mode, std::string& output);
 
         bool inside_rsmiles;
 
@@ -181,7 +188,6 @@ namespace indigo
         int _written_components;
         int _touched_cistransbonds;
         bool _comma;
-        bool _simple_sru;
 
     private:
         SmilesSaver(const SmilesSaver&); // no implicit copy

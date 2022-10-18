@@ -125,6 +125,12 @@ namespace indigo
                 {
                     return _checkResultString(indigoCanonicalSmiles(id()));
                 }
+
+                if (outputFormat == "chemical/x-chemaxon-cxsmiles")
+                    indigoSetOption("smiles-saving-format", "chemaxon");
+                else if (outputFormat == "chemical/x-daylight-smiles")
+                    indigoSetOption("smiles-saving-format", "daylight");
+
                 return _checkResultString(indigoSmiles(id()));
             }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
