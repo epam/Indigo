@@ -58,7 +58,7 @@ void RSmilesSaver::_writeMolecule(int i)
     SmilesSaver saver(_output);
 
     saver.write_extra_info = false;
-    saver.chemaxon = chemaxon;
+    saver.chemaxon = false;
     saver.separate_rsites = false;
     saver.rsite_indices_as_aam = false;
     saver.smarts_mode = smarts_mode;
