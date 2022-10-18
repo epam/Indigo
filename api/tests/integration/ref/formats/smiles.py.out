@@ -58,7 +58,7 @@ canonical SMILES saver: can not canonicalize a polymer
 daylight:
 CCCC
 daylight:
-SMILES saver: polymer labels not supported
+SMILES saver: repeating units must have exactly two outgoing bonds, has 1
 daylight:
 SMILES saver: repeating units must have exactly two outgoing bonds, has 1
 daylight:

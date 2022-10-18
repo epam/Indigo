@@ -34,6 +34,7 @@ CP_DEF(RSmilesSaver);
 RSmilesSaver::RSmilesSaver(Output& output) : _output(output), CP_INIT, TL_CP_GET(_written_atoms), TL_CP_GET(_written_bonds), TL_CP_GET(_ncomp)
 {
     smarts_mode = false;
+    chemaxon = true;
 }
 
 void RSmilesSaver::saveReaction(Reaction& reaction)
@@ -57,6 +58,7 @@ void RSmilesSaver::_writeMolecule(int i)
     SmilesSaver saver(_output);
 
     saver.write_extra_info = false;
+    saver.chemaxon = chemaxon;
     saver.separate_rsites = false;
     saver.rsite_indices_as_aam = false;
     saver.smarts_mode = smarts_mode;
@@ -96,7 +98,6 @@ void RSmilesSaver::_saveReaction()
     _written_atoms.clear();
     _written_bonds.clear();
     _ncomp.clear();
-    _comma = false;
 
     bool dot = false;
     for (auto i : _brxn->reactants)
@@ -135,14 +136,18 @@ void RSmilesSaver::_saveReaction()
         _writeMolecule(i);
     }
 
-    _writeFragmentsInfo();
-    _writeStereogroups();
-    _writeRadicals();
-    _writePseudoAtoms();
-    _writeHighlighting();
+    if (chemaxon)
+    {
+        _comma = false;
+        _writeFragmentsInfo();
+        _writeStereogroups();
+        _writeRadicals();
+        _writePseudoAtoms();
+        _writeHighlighting();
 
-    if (_comma)
-        _output.writeChar('|');
+        if (_comma)
+            _output.writeChar('|');
+    }
 }
 
 void RSmilesSaver::_writeFragmentsInfo()

@@ -299,22 +299,22 @@ C(CCCCl)[O:4][C:1]([CH3:2])=[O:3]>>[OH:4][C:1]([CH3:2])=[O:3]
 [K]>>[K] |^1:0,1|
 [K]>>[K] |^1:0,1|
 *** 100 ***
-C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;*;;;;;*;$|
+C1(=O)CCN1>>C(CN*)C(*)=O |$;;;;;;;;*;;*;$|
 canonical SMILES saver: can not canonicalize a polymer
 *** 101 ***
-[C:2]1(=[O:1])[CH2:3][CH2:4][NH:5]1>>*[C:2]{-}([CH2:3][CH2:4][NH:5]{+n}*)=[O:1] |$;;;;;*;;;;;*;$|
+[C:2]1(=[O:1])[CH2:3][CH2:4][NH:5]1>>[CH2:3]([CH2:4][NH:5]*)[C:2](*)=[O:1] |$;;;;;;;;*;;*;$|
 canonical SMILES saver: can not canonicalize a polymer
 *** 102 ***
-C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;*;;;;;*;$|
+C1(=O)CCN1>>C(CN*)C(*)=O |$;;;;;;;;*;;*;$|
 canonical SMILES saver: can not canonicalize a polymer
 *** 103 ***
-C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;*;;;;;*;$|
+C1(=O)CCN1>>C(CN*)C(*)=O |$;;;;;;;;*;;*;$|
 canonical SMILES saver: can not canonicalize a polymer
 *** 104 ***
-OC(CCN([H])[H])=O>>*C{-}(CCN{+n}*)=O |$;;;;;;;;*;;;;;*;$|
+OC(CCN([H])[H])=O>>*C(=O)CCN* |$;;;;;;;;*;;;;;;*$|
 canonical SMILES saver: can not canonicalize a polymer
 *** 105 ***
-O[C:2]([CH2:3][CH2:4][N:5]([H])[H])=[O:1]>>*[C:2]{-}([CH2:3][CH2:4][NH:5]{+n}*)=[O:1] |$;;;;;;;;*;;;;;*;$|
+O[C:2]([CH2:3][CH2:4][N:5]([H])[H])=[O:1]>>*[C:2](=[O:1])[CH2:3][CH2:4][NH:5]* |$;;;;;;;;*;;;;;;*$|
 canonical SMILES saver: can not canonicalize a polymer
 *** 106 ***
 O[CH:2]=[O:1]>>N[CH:2]=[O:1]

@@ -845,7 +845,6 @@ int main(int argc, char* argv[])
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
     indigoSetOption("molfile-saving-mode", "3000");
-    indigoSetOption("smiles-saving-format", "daylight");
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;

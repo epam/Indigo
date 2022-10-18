@@ -72469,9 +72469,9 @@ Item
   superatoms:0
 
 Testing molecule #2
-[C@@H](C(=O)O{-}[C@H](C{+n}(=O)O[C@H](C(=O)O)C)C)(C)O
+[C@@H](C(=O)O[C@@H](C)C(=O)O[C@H](C(=O)O)C)(C)O |Sg:n:2,12,13,14,15::ht|
 
-[C@H](O)(C)C(O{-}[C@H](C{+n}(=O)O[C@@H](C)C(O)=O)C)=O
+[C@H](O)(C)C(O[C@H](C(O[C@@H](C)C(O)=O)=O)C)=O |Sg:n:2,12,13,14,15::ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -72542,9 +72542,9 @@ Item
   sssr:0
   stereocenters:3
   superatoms:0
-[C@@H](C(=O)O{-}[C@H](C{+n}(=O)O[C@H](C(=O)O)C)C)(C)O
+[C@@H](C(=O)O[C@@H](C)C(=O)O[C@H](C(=O)O)C)(C)O |Sg:n:2,12,13,14,15::ht|
 
-[C@H](O)(C)C(O{-}[C@H](C{+n}(=O)O[C@@H](C)C(O)=O)C)=O
+[C@H](O)(C)C(O[C@H](C(O[C@@H](C)C(O)=O)=O)C)=O |Sg:n:2,12,13,14,15::ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -72913,9 +72913,9 @@ Item
   superatoms:0
 
 Testing molecule #5
-[C@@H](C(=O)O{-}[C@H](C{+n}(=O)O[C@H](C(=O)O)C)C)(C)O
+[C@@H](C(=O)O[C@@H](C)C(=O)O[C@H](C(=O)O)C)(C)O |Sg:n:2,12,13,14,15::ht|
 
-[C@H](O)(C)C(O{-}[C@H](C{+n}(=O)O[C@@H](C)C(O)=O)C)=O
+[C@H](O)(C)C(O[C@H](C(O[C@@H](C)C(O)=O)=O)C)=O |Sg:n:2,12,13,14,15::ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -72986,9 +72986,9 @@ Item
   sssr:0
   stereocenters:3
   superatoms:0
-[C@@H](C(=O)O{-}[C@H](C{+n}(=O)O[C@H](C(=O)O)C)C)(C)O
+[C@@H](C(=O)O[C@@H](C)C(=O)O[C@H](C(=O)O)C)(C)O |Sg:n:2,12,13,14,15::ht|
 
-[C@H](O)(C)C(O{-}[C@H](C{+n}(=O)O[C@@H](C)C(O)=O)C)=O
+[C@H](O)(C)C(O[C@H](C(O[C@@H](C)C(O)=O)=O)C)=O |Sg:n:2,12,13,14,15::ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 

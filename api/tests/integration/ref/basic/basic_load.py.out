@@ -234,8 +234,8 @@ Another line #2
 Another line #3
 Another line #4
 ****** CurlySMILES ********
-PC{-}{+n}N
-PC{-}O{+n}N
+PCN |Sg:n:1::ht|
+PCON |Sg:n:1,2::ht|
 ****** Finding invalid stereocenters ********
 Scaffold
   -INDIGO-01000000003D

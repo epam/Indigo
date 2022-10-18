@@ -47,6 +47,7 @@ SmilesSaver::SmilesSaver(Output& output)
     ignore_hydrogens = false;
     canonize_chiralities = false;
     write_extra_info = true;
+    chemaxon = true;
     _mol = 0;
     smarts_mode = false;
     inside_rsmiles = false;
@@ -168,7 +169,7 @@ void SmilesSaver::_saveMolecule()
 
     walk.ignored_vertices = _ignored_vertices.ptr();
     walk.vertex_ranks = vertex_ranks;
-    if (_bmol->sgroups.isPolimer() && !write_extra_info)
+    if (_bmol->sgroups.isPolimer())
         walk.vertex_classes = _polymer_indices.ptr();
 
     if (separate_rsites)
@@ -600,7 +601,7 @@ void SmilesSaver::_saveMolecule()
         }
     }
 
-    if (write_extra_info)
+    if (write_extra_info && chemaxon)
     {
         // Before we write the |...| block (ChemAxon's Extended SMILES),
         // we must clean up the mess we did with the attachment points
@@ -2042,7 +2043,7 @@ void SmilesSaver::_checkSRU()
     _polymer_indices.clear_resize(_bmol->vertexEnd());
     _polymer_indices.fffill();
 
-    if (write_extra_info) // let's handle it in the extened block
+    if (chemaxon) // let's handle it in the extened block
         return;
 
     int i, j, k;
@@ -2054,8 +2055,6 @@ void SmilesSaver::_checkSRU()
 
         if (ru.sgroup_type == SGroup::SG_TYPE_SRU)
         {
-            if (ru.subscript.size())
-                throw Error("polymer labels not supported");
             Array<int>& atoms = ru.atoms;
 
             for (j = 0; j < atoms.size(); j++)
@@ -2222,24 +2221,24 @@ const Array<int>& SmilesSaver::getSavedCisTransParities()
     return _cis_trans_parity;
 }
 
-int SmilesSaver::parseFormatMode(const std::string& format)
+SmilesSaver::SMILES_MODE SmilesSaver::parseFormatMode(const std::string& format)
 {
     if (format == "daylight")
-        return SMILES_DAYLIGHT;
+        return SMILES_MODE::SMILES_DAYLIGHT;
     else if (format == "chemaxon")
-        return SMILES_CHEMAXON;
+        return SMILES_MODE::SMILES_CHEMAXON;
     else
         throw Error("unknown SMILES format: %s, supported values: chemaxon, daylight", format.c_str());
 }
 
-void SmilesSaver::saveFormatMode(int mode, std::string& output)
+void SmilesSaver::saveFormatMode(SmilesSaver::SMILES_MODE mode, std::string& output)
 {
     switch (mode)
     {
-    case SMILES_CHEMAXON:
+    case SMILES_MODE::SMILES_CHEMAXON:
         output = "chemaxon";
         break;
-    case SMILES_DAYLIGHT:
+    case SMILES_MODE::SMILES_DAYLIGHT:
         output = "daylight";
         break;
     default:
