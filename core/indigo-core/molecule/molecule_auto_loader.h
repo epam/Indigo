@@ -39,13 +39,6 @@ namespace indigo
     class QueryMolecule;
     class BaseMolecule;
 
-    enum AutoAromatizeMode
-    {
-        NO_AUTO_AROMATIZE = 0,
-        AUTO_AROMATIZE,
-        AUTO_DEAROMATIZE
-    };
-
     class DLLEXPORT MoleculeAutoLoader
     {
     public:
