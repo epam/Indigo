@@ -39,7 +39,35 @@ SMILES saver: atom list can be used only with smarts_mode
 C1=CC=CC2=C1N=C(N2)[*;c,n,o]
 SMILES saver: undefined atom number
 *** S-Groups ***
+default smiles:
 CCCC |Sg:gen:0,1,2:|
+canonical smiles:
 CCCC |Sg:gen:0,1,2:|
+default smiles:
 CCCC |Sg:n:0,1,2:3-6:eu|
+canonical smiles:
 canonical SMILES saver: can not canonicalize a polymer
+default smiles:
+CCCC |Sg:n:0,1,2::ht|
+canonical smiles:
+canonical SMILES saver: can not canonicalize a polymer
+default smiles:
+CCCCC |Sg:n:1,2,3::hh|
+canonical smiles:
+canonical SMILES saver: can not canonicalize a polymer
+daylight:
+CCCC
+daylight:
+SMILES saver: polymer labels not supported
+daylight:
+SMILES saver: repeating units must have exactly two outgoing bonds, has 1
+daylight:
+CC{-}CC{+n}C
+chemaxon:
+CCCC |Sg:gen:0,1,2:|
+chemaxon:
+CCCC |Sg:n:0,1,2:3-6:eu|
+chemaxon:
+CCCC |Sg:n:0,1,2::ht|
+chemaxon:
+CCCCC |Sg:n:1,2,3::hh|

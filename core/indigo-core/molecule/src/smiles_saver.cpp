@@ -46,7 +46,7 @@ SmilesSaver::SmilesSaver(Output& output)
     vertex_ranks = 0;
     ignore_hydrogens = false;
     canonize_chiralities = false;
-    write_extra_info = false;
+    write_extra_info = true;
     _mol = 0;
     smarts_mode = false;
     inside_rsmiles = false;

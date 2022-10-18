@@ -92,7 +92,7 @@ mols_smiles = [
     "CCCC |Sg:gen:0,1,2:|",
     "CCCC |Sg:n:0,1,2:3-6:eu|",
     "CCCC |Sg:n:0,1,2::ht|",
-    "CCCCC |Sg:n:1,2,3::hh|"
+    "CCCCC |Sg:n:1,2,3::hh|",
 ]
 for sm in mols_smiles:
     print("default smiles:")
@@ -103,7 +103,7 @@ for sm in mols_smiles:
     except IndigoException as e:
         print(getIndigoExceptionText(e))
 
-indigo.setOption("smiles-saving-format","daylight")
+indigo.setOption("smiles-saving-format", "daylight")
 for sm in mols_smiles:
     print("daylight:")
     try:
@@ -111,7 +111,7 @@ for sm in mols_smiles:
     except IndigoException as e:
         print(getIndigoExceptionText(e))
 
-indigo.setOption("smiles-saving-format","chemaxon")
+indigo.setOption("smiles-saving-format", "chemaxon")
 for sm in mols_smiles:
-    print("chemaxon:");
+    print("chemaxon:")
     print(indigo.loadMolecule(sm).smiles())
