@@ -359,11 +359,13 @@ def save_moldata(md, output_format=None, options={}, indigo=None):
         if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()
         else:
+            indigo.setOption("smiles-saving-format", "daylight")
             return md.struct.smiles()
     elif output_format == "chemical/x-chemaxon-cxsmiles":
         if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()
         else:
+            indigo.setOption("smiles-saving-format", "chemaxon")
             return md.struct.smiles()
     elif output_format == "chemical/x-daylight-smarts":
         return md.struct.smarts()
