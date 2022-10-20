@@ -68,6 +68,7 @@ void Indigo::init()
     deco_ignore_errors = true;
     molfile_saving_mode = 0;
     dearomatize_on_load = false;
+    smiles_saving_format = SmilesSaver::SMILES_MODE::SMILES_CHEMAXON;
     molfile_saving_no_chiral = false;
     molfile_saving_chiral_flag = -1;
     filename_encoding = ENCODING_ASCII;

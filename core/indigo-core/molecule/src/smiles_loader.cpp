@@ -782,24 +782,33 @@ void SmilesLoader::_readOtherStuff()
             _scanner.skip(1);
             if (_scanner.readChar() != ':')
                 throw Error("colon expected after 'Sg'");
-            char sg = _scanner.readChar();
+            char sg = _scanner.lookNext();
             int sg_type = -1;
+            char pchar_sg_type[3];
+            std::string sg_type_str;
             if (sg == 'n')
             {
+                _scanner.skip(1);
                 if (_scanner.readChar() != ':')
                     throw Error("colon expected after 'Sg:n'");
                 sg_type = SGroup::SG_TYPE_SRU;
             }
-            else if (sg == 'g' && _scanner.lookNext() == 'e')
+            else if (sg == 'g')
             {
-                _scanner.skip(2);
-                if (_scanner.readChar() != ':')
-                    throw Error("colon expected after 'Sg'");
-                sg_type = SGroup::SG_TYPE_GEN;
+                _scanner.readCharsFix(sizeof(pchar_sg_type), pchar_sg_type);
+                sg_type_str = std::string(pchar_sg_type, sizeof(pchar_sg_type));
+                if (sg_type_str == "gen")
+                {
+                    if (_scanner.readChar() != ':')
+                        throw Error("colon expected after 'Sg:%s'", sg_type_str.c_str());
+                    sg_type = SGroup::SG_TYPE_GEN;
+                }
+                else
+                    throw Error("unexpected 'Sg' %s", sg_type_str.c_str());
             }
             else
             {
-                throw Error("unexpected Sg type");
+                throw Error("Unsupported Sg type");
             }
 
             int idx = _bmol->sgroups.addSGroup(sg_type);
@@ -833,7 +842,8 @@ void SmilesLoader::_readOtherStuff()
                 while (_scanner.lookNext() != ':')
                     subscript += _scanner.readChar();
 
-                ru.subscript.readString(subscript.c_str(), true);
+                if (subscript.size())
+                    ru.subscript.readString(subscript.c_str(), true);
                 _scanner.skip(1);
 
                 while (_scanner.lookNext() != '|')
