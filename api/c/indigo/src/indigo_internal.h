@@ -307,6 +307,7 @@ public:
     bool deco_ignore_errors;
 
     int molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
+    bool dearomatize_on_load;
     SmilesSaver::SMILES_MODE smiles_saving_format;
     bool molfile_saving_no_chiral;
     int molfile_saving_chiral_flag;
@@ -368,7 +369,6 @@ private:
         int next_id = 1;
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
-
     int _indigo_id;
 };
 

@@ -330,3 +330,21 @@ for rgroup in mol.iterateRGroups():
     print("  Rgroup #" + str(rgroup.index()))
     for frag in rgroup.iterateRGroupFragments():
         print(frag.canonicalSmiles())
+
+print("***** dearomatize-on-load option test  *****")
+indigo.setOption("molfile-saving-skip-date", "1")
+styr = indigo.loadMolecule("c1c(C=C)cccc1")
+styr.aromatize()
+styr.layout()
+aromatized_styr = styr.molfile()
+styr = indigo.loadMolecule(aromatized_styr)
+# by default it should stay aromatized
+print(styr.molfile())
+indigo.setOption("dearomatize-on-load", "true")
+styr = indigo.loadMolecule(aromatized_styr)
+# should be dearomatized
+print(styr.molfile())
+indigo.setOption("dearomatize-on-load", "false")
+styr = indigo.loadMolecule(aromatized_styr)
+# should be aromatized
+print(styr.molfile())

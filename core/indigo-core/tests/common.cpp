@@ -22,7 +22,7 @@ void IndigoCoreTest::loadQueryMolecule(const char* buf, QueryMolecule& queryMole
 {
     BufferScanner scanner(buf);
     MoleculeAutoLoader loader(scanner);
-    loader.loadQueryMolecule(queryMolecule);
+    loader.loadMolecule(queryMolecule);
 }
 
 bool IndigoCoreTest::substructureMatch(const char* targetString, const char* queryString)
