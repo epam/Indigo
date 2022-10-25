@@ -741,7 +741,6 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, const XMLAttribute* pAttr)
                                                                                       {"Wavy", {BOND_EITHER, false}}};
         try
         {
-            std::cout << data << std::endl;
             auto& dir = dir_map.at(data);
             bond.dir = dir.first;
             bond.swap_bond = dir.second;
