@@ -59,7 +59,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     _id_to_node_index.clear();
     _id_to_bond_index.clear();
     _fragment_nodes.clear();
-    _text_objects.clear();
+    text_objects.clear();
     _pluses.clear();
     brackets.clear();
     _pmol = NULL;
@@ -123,10 +123,12 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
 
     _addAtomsAndBonds(mol, atoms, bonds);
 
+    _processEnhancedStereo(mol);
+
     for (auto& brk : brackets)
         _addBracket(mol, brk);
 
-    for (const auto& to : _text_objects)
+    for (const auto& to : text_objects)
         mol.meta().addMetaObject(new KETTextObject(to.first, to.second));
 
     for (const auto& plus : _pluses)
@@ -138,6 +140,68 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         Vec2f v1(arr_info.first.x, arr_info.first.y);
         Vec2f v2(arr_info.second.x, arr_info.second.y);
         mol.meta().addMetaObject(new KETReactionArrow(arrow.second, v1, v2));
+    }
+}
+
+void MoleculeCdxmlLoader::_processEnhancedStereo(BaseMolecule& mol)
+{
+    std::vector<int> ignore_cistrans(mol.edgeCount());
+    std::vector<int> sensible_bond_directions(mol.edgeCount());
+    for (int i = 0; i < mol.edgeCount(); i++)
+        if (mol.getBondDirection(i) == BOND_EITHER)
+        {
+            if (MoleculeCisTrans::isGeomStereoBond(mol, i, 0, true))
+            {
+                ignore_cistrans[i] = 1;
+                sensible_bond_directions[i] = 1;
+            }
+            else
+            {
+                int k;
+                const Vertex& v = mol.getVertex(mol.getEdge(i).beg);
+
+                for (k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+                {
+                    if (MoleculeCisTrans::isGeomStereoBond(mol, v.neiEdge(k), 0, true))
+                    {
+                        ignore_cistrans[v.neiEdge(k)] = 1;
+                        sensible_bond_directions[i] = 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+    mol.buildFromBondsStereocenters(stereochemistry_options, sensible_bond_directions.data());
+    mol.buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, sensible_bond_directions.data());
+
+    if (!mol.getChiralFlag())
+        for (int i : mol.vertices())
+        {
+            int type = mol.stereocenters.getType(i);
+            if (type == MoleculeStereocenters::ATOM_ABS)
+                mol.stereocenters.setType(i, MoleculeStereocenters::ATOM_AND, 1);
+        }
+
+    mol.buildCisTrans(ignore_cistrans.data());
+    mol.have_xyz = true;
+    if (mol.stereocenters.size() == 0)
+    {
+        mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
+    }
+
+    for (const auto& sc : _stereo_centers)
+    {
+        if (mol.stereocenters.getType(sc.atom_idx) == 0)
+        {
+            if (!stereochemistry_options.ignore_errors)
+                throw Error("stereo type specified for atom #%d, but the bond "
+                            "directions does not say that it is a stereocenter",
+                            sc.atom_idx);
+            mol.addStereocentersIgnoreBad(sc.atom_idx, sc.type, sc.group, false); // add non-valid stereocenters
+        }
+        else
+            mol.stereocenters.setType(sc.atom_idx, sc.type, sc.group);
     }
 }
 
@@ -172,7 +236,7 @@ void MoleculeCdxmlLoader::_parseCDXMLPage(XMLElement* pElem)
 {
     for (auto pPageElem = pElem->FirstChildElement(); pPageElem; pPageElem = pPageElem->NextSiblingElement())
     {
-        if (std::string(pPageElem->Value()).compare("page") == 0)
+        if (std::string(pPageElem->Value()) == "page")
         {
             _parseCDXMLElements(pPageElem->FirstChildElement());
         }
@@ -208,7 +272,7 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(XMLElement* pElem, bool no_sibling
         this->brackets.push_back(bracket);
     };
 
-    auto text_lambda = [this](XMLElement* pElem) { this->_parseText(pElem); };
+    auto text_lambda = [this](XMLElement* pElem) { this->_parseText(pElem, this->text_objects); };
 
     auto graphic_lambda = [this](XMLElement* pElem) { this->_parseGraphic(pElem); };
 
@@ -272,6 +336,22 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             _pmol->setAtomRadical(atom_idx, atom.radical);
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
             // _pmol->setPseudoAtom(atom_idx, label.c_str());
+            switch (atom.enchanced_stereo)
+            {
+            case CdxmlNode::EnhancedStereoType::ABSOLUTE:
+                _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_ABS, 1);
+                break;
+            case CdxmlNode::EnhancedStereoType::AND:
+                if (atom.enhanced_stereo_group)
+                    _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_AND, atom.enhanced_stereo_group);
+                break;
+            case CdxmlNode::EnhancedStereoType::OR:
+                if (atom.enhanced_stereo_group)
+                    _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_OR, atom.enhanced_stereo_group);
+                break;
+            default:
+                break;
+            }
         }
         else
         {
@@ -576,20 +656,57 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, XMLElement* pElem)
         node.element_list.assign(elements.begin(), elements.end());
     };
 
-    std::unordered_map<std::string, std::function<void(const std::string&)>> node_dispatcher = {{"id", id_lambda},
-                                                                                                {"p", pos_lambda},
-                                                                                                {"xyz", pos_lambda},
-                                                                                                {"NumHydrogens", hydrogens_lambda},
-                                                                                                {"Charge", charge_lambda},
-                                                                                                {"Isotope", isotope_lambda},
-                                                                                                {"Radical", radical_lambda},
-                                                                                                {"AS", stereo_lambda},
-                                                                                                {"NodeType", node_type_lambda},
-                                                                                                {"Element", element_lambda},
-                                                                                                {"GenericNickname", label_lambda},
-                                                                                                {"ElementList", element_list_lambda},
-                                                                                                {"BondOrdering", bond_ordering_lambda}};
+    auto geometry_lambda = [&node](const std::string& data) {
+        static const std::unordered_map<std::string, int> geometry_map = {{"Unspecified", kCDXAtomGeometry_Unknown},
+                                                                          {"1", kCDXAtomGeometry_1Ligand},
+                                                                          {"Linear", kCDXAtomGeometry_Linear},
+                                                                          {"Bent", kCDXAtomGeometry_Bent},
+                                                                          {"TrigonalPlanar", kCDXAtomGeometry_TrigonalPlanar},
+                                                                          {"TrigonalPyramidal", kCDXAtomGeometry_TrigonalPyramidal},
+                                                                          {"SquarePlanar", kCDXAtomGeometry_SquarePlanar},
+                                                                          {"Tetrahedral", kCDXAtomGeometry_Tetrahedral},
+                                                                          {"TrigonalBipyramidal", kCDXAtomGeometry_TrigonalBipyramidal},
+                                                                          {"SquarePyramidal", kCDXAtomGeometry_SquarePyramidal},
+                                                                          {"5", kCDXAtomGeometry_5Ligand},
+                                                                          {"Octahedral", kCDXAtomGeometry_Octahedral},
+                                                                          {"6", kCDXAtomGeometry_6Ligand},
+                                                                          {"7", kCDXAtomGeometry_7Ligand},
+                                                                          {"8", kCDXAtomGeometry_8Ligand},
+                                                                          {"9", kCDXAtomGeometry_9Ligand},
+                                                                          {"10", kCDXAtomGeometry_10Ligand}};
+        node.geometry = geometry_map.at(data);
+    };
 
+    auto enhanced_stereo_type_lambda = [&node](const std::string& data) {
+        static const std::unordered_map<std::string, CdxmlNode::EnhancedStereoType> enhanced_stereo_map = {
+            {"Unspecified", CdxmlNode::EnhancedStereoType::UNSPECIFIED},
+            {"None", CdxmlNode::EnhancedStereoType::NONE},
+            {"Absolute", CdxmlNode::EnhancedStereoType::ABSOLUTE},
+            {"Or", CdxmlNode::EnhancedStereoType::OR},
+            {"And", CdxmlNode::EnhancedStereoType::AND}};
+        node.enchanced_stereo = enhanced_stereo_map.at(data);
+    };
+
+    auto enhanced_stereo_group_lambda = [&node](const std::string& data) { node.enhanced_stereo_group = data; };
+
+    std::unordered_map<std::string, std::function<void(const std::string&)>> node_dispatcher = {
+        {"id", id_lambda},
+        {"p", pos_lambda},
+        {"xyz", pos_lambda},
+        {"NumHydrogens", hydrogens_lambda},
+        {"Charge", charge_lambda},
+        {"Isotope", isotope_lambda},
+        {"Radical", radical_lambda},
+        {"AS", stereo_lambda},
+        {"NodeType", node_type_lambda},
+        {"Element", element_lambda},
+        {"GenericNickname", label_lambda},
+        {"ElementList", element_list_lambda},
+        {"BondOrdering", bond_ordering_lambda},
+        {"Geometry", geometry_lambda},
+        {"EnhancedStereoType", enhanced_stereo_type_lambda},
+        {"EnhancedStereoGroupNum", enhanced_stereo_group_lambda},
+    };
     applyDispatcher(pElem->FirstAttribute(), node_dispatcher);
 }
 
@@ -624,6 +741,7 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, const XMLAttribute* pAttr)
                                                                                       {"Wavy", {BOND_EITHER, false}}};
         try
         {
+            std::cout << data << std::endl;
             auto& dir = dir_map.at(data);
             bond.dir = dir.first;
             bond.swap_bond = dir.second;
@@ -740,7 +858,7 @@ void MoleculeCdxmlLoader::_parseArrow(const tinyxml2::XMLElement* pElem)
     _arrows.push_back(std::make_pair(std::make_pair(begin_pos, end_pos), 2));
 }
 
-void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem)
+void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem, std::vector<std::pair<Vec3f, std::string>>& text_parsed)
 {
     Vec3f text_pos;
     auto text_coordinates_lambda = [&text_pos, this](const std::string& data) { this->parsePos(data, text_pos); };
@@ -852,7 +970,7 @@ void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem)
 
     writer.EndObject();
     text_pos.y -= text_bbox.height() / 2;
-    _text_objects.emplace_back(text_pos, s.GetString());
+    text_parsed.emplace_back(text_pos, s.GetString());
 }
 
 void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, const XMLAttribute* pAttr)

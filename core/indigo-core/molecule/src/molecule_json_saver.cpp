@@ -853,6 +853,7 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
 
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& writer)
 {
+    std::cout << bmol.getBondDirection(4) << std::endl;
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
 
