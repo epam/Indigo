@@ -152,8 +152,8 @@ void MoleculeCdxmlLoader::_processEnhancedStereo(BaseMolecule& mol)
         {
             if (MoleculeCisTrans::isGeomStereoBond(mol, i, 0, true))
             {
-                ignore_cistrans[i] = 1;
-                sensible_bond_directions[i] = 1;
+                ignore_cistrans[i] = true;
+                sensible_bond_directions[i] = true;
             }
             else
             {
@@ -164,8 +164,8 @@ void MoleculeCdxmlLoader::_processEnhancedStereo(BaseMolecule& mol)
                 {
                     if (MoleculeCisTrans::isGeomStereoBond(mol, v.neiEdge(k), 0, true))
                     {
-                        ignore_cistrans[v.neiEdge(k)] = 1;
-                        sensible_bond_directions[i] = 1;
+                        ignore_cistrans[v.neiEdge(k)] = true;
+                        sensible_bond_directions[i] = true;
                         break;
                     }
                 }
