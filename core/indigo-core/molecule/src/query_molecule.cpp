@@ -284,6 +284,16 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
     case ATOM_TOTAL_H:
         out.printf("H%d", atom->value_min);
         return;
+    case ATOM_IMPLICIT_H:
+        if (atom->value_min == atom->value_max)
+        {
+            out.printf("h%d", atom->value_min);
+        }
+        else
+        {
+            out.printf("h");
+        }
+        return;
     case ATOM_CONNECTIVITY:
         out.printf("X%d", atom->value_min);
         return;
@@ -518,7 +528,8 @@ QueryMolecule::Atom::Atom(int type_, int value) : Node(type_)
     if (type_ == ATOM_NUMBER || type_ == ATOM_CHARGE || type_ == ATOM_ISOTOPE || type_ == ATOM_RADICAL || type_ == ATOM_AROMATICITY || type_ == ATOM_VALENCE ||
         type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN || type_ == ATOM_SUBSTITUENTS || type_ == ATOM_SUBSTITUENTS_AS_DRAWN ||
         type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY || type_ == ATOM_TOTAL_BOND_ORDER || type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS ||
-        type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING || type == ATOM_TEMPLATE_SEQID || type == ATOM_PI_BONDED)
+        type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING || type == ATOM_TEMPLATE_SEQID || type == ATOM_PI_BONDED ||
+        type == ATOM_IMPLICIT_H)
 
         value_min = value_max = value;
     else

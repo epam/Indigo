@@ -104,3 +104,13 @@ TEST_F(IndigoCoreSmartsTest, NotSharpG)
     EXPECT_TRUE(substructureMatch("C=C", "[!#G1]=[!#G1]"));
     EXPECT_FALSE(substructureMatch("C=C", "[!#G4]=[!#G4]"));
 }
+
+TEST_F(IndigoCoreSmartsTest, h)
+{
+    EXPECT_TRUE(substructureMatch("C", "[Ch]"));
+    EXPECT_TRUE(substructureMatch("C", "[Ch4]"));
+    EXPECT_FALSE(substructureMatch("C", "[Ch1]"));
+    EXPECT_FALSE(substructureMatch("C=C", "[Ch3]"));
+    EXPECT_FALSE(substructureMatch("C", "[*h5]"));
+    EXPECT_FALSE(substructureMatch("C([H])([H])([H])[H]", "[Ch]"));
+}
