@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) from 2009 to Present EPAMx Systems.
+ * Copyright (C) from 2009 to Present EPAM Systems.
  *
  * This file is part of Indigo toolkit.
  *

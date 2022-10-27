@@ -1,10 +1,10 @@
 #include "common.h"
-#include "base_cpp/output.h"
-#include "molecule/smiles_saver.h"
 
+#include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
 #include <molecule/molecule_auto_loader.h>
 #include <molecule/molecule_substructure_matcher.h>
+#include <molecule/smiles_saver.h>
 
 using namespace indigo;
 
