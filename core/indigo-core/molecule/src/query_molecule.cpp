@@ -285,13 +285,13 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         out.printf("H%d", atom->value_min);
         return;
     case ATOM_IMPLICIT_H:
-        if (atom->value_min == atom->value_max)
+        if (atom->value_min == 1 && atom->value_max == 100)
         {
-            out.printf("h%d", atom->value_min);
+            out.printf("h");
         }
         else
         {
-            out.printf("h");
+            out.printf("h%d", atom->value_min);
         }
         return;
     case ATOM_CONNECTIVITY:

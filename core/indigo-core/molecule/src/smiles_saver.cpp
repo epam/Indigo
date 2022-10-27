@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) from 2009 to Present EPAM Systems.
+ * Copyright (C) from 2009 to Present EPAMx Systems.
  *
  * This file is part of Indigo toolkit.
  *
@@ -970,6 +970,18 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         else
         {
             _output.printf("x%d", atom->value_min);
+        }
+        break;
+    }
+
+    case QueryMolecule::ATOM_IMPLICIT_H: {
+        if (atom->value_min == 1 && atom->value_max == 100)
+        {
+            _output.printf("h");
+        }
+        else
+        {
+            _output.printf("h%d", atom->value_min);
         }
         break;
     }

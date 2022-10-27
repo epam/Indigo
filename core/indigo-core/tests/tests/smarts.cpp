@@ -113,4 +113,7 @@ TEST_F(IndigoCoreSmartsTest, h)
     EXPECT_FALSE(substructureMatch("C=C", "[Ch3]"));
     EXPECT_FALSE(substructureMatch("C", "[*h5]"));
     EXPECT_FALSE(substructureMatch("C([H])([H])([H])[H]", "[Ch]"));
+
+    EXPECT_STREQ(smartsLoadSaveLoad("[#6;h]").c_str(), "[#6;h]");
+    EXPECT_STREQ(smartsLoadSaveLoad("[#6;h2]").c_str(), "[#6;h2]");
 }

@@ -1,4 +1,6 @@
 #include "common.h"
+#include "base_cpp/output.h"
+#include "molecule/smiles_saver.h"
 
 #include <base_cpp/scanner.h>
 #include <molecule/molecule_auto_loader.h>
@@ -34,6 +36,19 @@ bool IndigoCoreTest::substructureMatch(const char* targetString, const char* que
     MoleculeSubstructureMatcher matcher(target);
     matcher.setQuery(query);
     return matcher.find();
+}
+
+std::string IndigoCoreTest::smartsLoadSaveLoad(const std::string& queryString)
+{
+    QueryMolecule query;
+    loadQueryMolecule(queryString.c_str(), query);
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    SmilesSaver smilesSaver(output);
+    smilesSaver.smarts_mode = true;
+    smilesSaver.saveQueryMolecule(query);
+    std::string result(buffer.ptr());
+    return result;
 }
 
 std::string IndigoCoreTest::dataPath(const char* dataPathSuffix)
