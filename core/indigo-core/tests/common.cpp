@@ -47,6 +47,7 @@ std::string IndigoCoreTest::smartsLoadSaveLoad(const std::string& queryString)
     SmilesSaver smilesSaver(output);
     smilesSaver.smarts_mode = true;
     smilesSaver.saveQueryMolecule(query);
+    output.writeChar(0);
     std::string result(buffer.ptr());
     return result;
 }
