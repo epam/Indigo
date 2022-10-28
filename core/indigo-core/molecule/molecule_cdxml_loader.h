@@ -105,9 +105,19 @@ namespace indigo
 
     struct CdxmlNode
     {
-        CdxmlNode() : element(ELEM_C), type(kCDXNodeType_Element) // Carbon by default
+        enum class EnhancedStereoType
+        {
+            UNSPECIFIED,
+            NONE,
+            ABSOLUTE,
+            OR,
+            AND
+        };
+
+        CdxmlNode() : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED) // Carbon by default
         {
         }
+
         AutoInt id;
         std::string label;
         AutoInt element;
@@ -119,9 +129,10 @@ namespace indigo
         AutoInt valence;
         AutoInt hydrogens;
         AutoInt stereo;
-        AutoInt enchanced_stereo;
-        AutoInt stereo_group;
+        EnhancedStereoType enchanced_stereo;
+        AutoInt enhanced_stereo_group;
         AutoInt index;
+        AutoInt geometry;
         bool is_not_list;
         std::vector<AutoInt> element_list;
         std::unordered_map<int, int> bond_id_to_connection_idx;
@@ -170,6 +181,16 @@ namespace indigo
     class MoleculeCdxmlLoader
     {
     public:
+        struct EnhancedStereoCenter
+        {
+            EnhancedStereoCenter(int atom, int type_id, int group_num) : atom_idx(atom), type(type_id), group(group_num)
+            {
+            }
+            int atom_idx;
+            int type;
+            int group;
+        };
+
         DECL_ERROR;
 
         MoleculeCdxmlLoader(Scanner& scanner);
@@ -191,6 +212,8 @@ namespace indigo
         std::vector<CdxmlNode> nodes;
         std::vector<CdxmlBond> bonds;
         std::vector<CdxmlBracket> brackets;
+        std::vector<std::pair<Vec3f, std::string>> text_objects;
+
         static const int SCALE = 30;
 
     protected:
@@ -206,13 +229,14 @@ namespace indigo
         void _addBond(CdxmlBond& node);
 
         void _parseBracket(CdxmlBracket& bracket, const tinyxml2::XMLAttribute* pAttr);
-        void _parseText(const tinyxml2::XMLElement* pElem);
+        void _parseText(const tinyxml2::XMLElement* pElem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
         void _parseGraphic(const tinyxml2::XMLElement* pElem);
         void _parseArrow(const tinyxml2::XMLElement* pElem);
 
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
+        void _processEnhancedStereo(BaseMolecule& mol);
 
         void _parseCDXMLPage(tinyxml2::XMLElement* pElem);
         void _parseCDXMLElements(tinyxml2::XMLElement* pElem, bool no_siblings = false);
@@ -227,13 +251,13 @@ namespace indigo
         std::unordered_map<int, int> _id_to_node_index;
         std::unordered_map<int, int> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
-        std::vector<std::pair<Vec3f, std::string>> _text_objects;
         std::vector<Vec2f> _pluses;
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
 
         std::unordered_set<int> _superced_ids;
 
         float _bond_length;
+        std::vector<EnhancedStereoCenter> _stereo_centers;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy

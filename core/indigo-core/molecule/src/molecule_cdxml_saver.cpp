@@ -398,28 +398,46 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 buf.push(0);
                 node->SetAttribute("p", buf.ptr());
             }
-            else
+
+            int enh_stereo_type = mol.stereocenters.getType(i);
+            if (enh_stereo_type > MoleculeStereocenters::ATOM_ANY)
             {
-                if (mol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
+                int enh_stereo_grp = mol.stereocenters.getGroup(i);
+
+                node->SetAttribute("Geometry", "Tetrahedral");
+
+                const int* pyramid = mol.stereocenters.getPyramid(i);
+                // 0 means atom absence
+                QS_DEF(Array<char>, buf);
+                ArrayOutput out(buf);
+                if (ids.size() > 0)
                 {
-                    node->SetAttribute("Geometry", "Tetrahedral");
-
-                    const int* pyramid = mol.stereocenters.getPyramid(i);
-                    // 0 means atom absence
-                    QS_DEF(Array<char>, buf);
-                    ArrayOutput out(buf);
-                    if (ids.size() > 0)
-                    {
-                        out.printf("%d %d %d %d", ids[pyramid[0]], ids[pyramid[1]], ids[pyramid[2]], ids[pyramid[3]]);
-                    }
-                    else
-                    {
-                        out.printf("%d %d %d %d", pyramid[0] + 1, pyramid[1] + 1, pyramid[2] + 1, pyramid[3] + 1);
-                    }
-
-                    buf.push(0);
-                    node->SetAttribute("BondOrdering", buf.ptr());
+                    out.printf("%d %d %d %d", ids[pyramid[0]], ids[pyramid[1]], ids[pyramid[2]], ids[pyramid[3]]);
                 }
+                else
+                {
+                    out.printf("%d %d %d %d", pyramid[0] + 1, pyramid[1] + 1, pyramid[2] + 1, pyramid[3] + 1);
+                }
+
+                buf.push(0);
+                node->SetAttribute("BondOrdering", buf.ptr());
+                switch (enh_stereo_type)
+                {
+                case MoleculeStereocenters::ATOM_ABS:
+                    node->SetAttribute("EnhancedStereoType", "Absolute");
+                    break;
+                case MoleculeStereocenters::ATOM_OR:
+                    node->SetAttribute("EnhancedStereoType", "Or");
+                    break;
+                case MoleculeStereocenters::ATOM_AND:
+                    node->SetAttribute("EnhancedStereoType", "And");
+                    break;
+                default:
+                    throw Error("Unknows enhanced stereo type %d", enh_stereo_type);
+                    break;
+                }
+                if (enh_stereo_grp > 0)
+                    node->SetAttribute("EnhancedStereoGroupNum", enh_stereo_grp);
             }
 
             if (mol.getVertex(i).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)

@@ -1,4 +1,212 @@
 *** Mol to CDXML ***
+enhanced_stereo1.mol
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1"/>
+        <color r="0" g="0" b="0"/>
+        <color r="1" g="0" b="0"/>
+        <color r="1" g="1" b="0"/>
+        <color r="0" g="1" b="0"/>
+        <color r="0" g="1" b="1"/>
+        <color r="0" g="0" b="1"/>
+        <color r="1" g="0" b="1"/>
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment>
+            <n id="1" Element="8" NumHydrogens="1" p="30.000000 30.000000">
+                <t p="30.000000 30.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">OH</s>
+                </t>
+            </n>
+            <n id="2" Element="6" p="70.011002 53.099998"/>
+            <n id="3" Element="6" p="70.011002 99.299995" Geometry="Tetrahedral" BondOrdering="2 4 11 0" EnhancedStereoType="Absolute"/>
+            <n id="4" Element="6" p="110.021996 122.399994"/>
+            <n id="5" Element="6" p="110.021996 168.599991"/>
+            <n id="6" Element="6" p="150.029999 191.699997"/>
+            <n id="7" Element="6" p="150.029999 237.899994"/>
+            <n id="8" Element="6" p="110.021996 261.000000"/>
+            <n id="9" Element="6" p="70.011002 237.899994"/>
+            <n id="10" Element="6" p="70.011002 191.699997"/>
+            <n id="11" Element="7" NumHydrogens="1" p="30.000000 122.399994">
+                <t p="30.000000 122.399994" LabelJustification="Left">
+                    <s font="3" size="10" face="96">NH</s>
+                </t>
+            </n>
+            <n id="12" Element="53" NumHydrogens="0" p="30.000000 168.599991">
+                <t p="30.000000 168.599991" LabelJustification="Left">
+                    <s font="3" size="10" face="96">I</s>
+                </t>
+            </n>
+            <n id="13" Element="8" NumHydrogens="0" p="110.021996 30.000000">
+                <t p="110.021996 30.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <b B="1" E="2"/>
+            <b B="2" E="3"/>
+            <b B="2" E="13" Order="2"/>
+            <b B="3" E="4"/>
+            <b B="3" E="11" Display="WedgeBegin"/>
+            <b B="4" E="5"/>
+            <b B="5" E="6" Order="2"/>
+            <b B="5" E="10"/>
+            <b B="6" E="7"/>
+            <b B="7" E="8" Order="2"/>
+            <b B="8" E="9"/>
+            <b B="9" E="10" Order="2"/>
+            <b B="11" E="12"/>
+            <graphic BoundingBox="150.029999 30.000000 150.029999 30.000000" GraphicType="Symbol" SymbolType="Absolute" FrameType="None">
+                <t p="150.029999 30.000000" Justification="Center" InterpretChemically="no">
+                    <s font="3" size="10" face="96">Chiral</s>
+                </t>
+            </graphic>
+        </fragment>
+    </page>
+</CDXML>
+
+enhanced_stereo2.mol
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1"/>
+        <color r="0" g="0" b="0"/>
+        <color r="1" g="0" b="0"/>
+        <color r="1" g="1" b="0"/>
+        <color r="0" g="1" b="0"/>
+        <color r="0" g="1" b="1"/>
+        <color r="0" g="0" b="1"/>
+        <color r="1" g="0" b="1"/>
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment>
+            <n id="1" Element="8" NumHydrogens="1" p="30.000000 30.000000">
+                <t p="30.000000 30.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">OH</s>
+                </t>
+            </n>
+            <n id="2" Element="6" p="70.011002 53.099998"/>
+            <n id="3" Element="6" p="70.011002 99.299995" Geometry="Tetrahedral" BondOrdering="2 4 11 0" EnhancedStereoType="Or" EnhancedStereoGroupNum="1"/>
+            <n id="4" Element="6" p="110.021996 122.399994"/>
+            <n id="5" Element="6" p="110.021996 168.599991"/>
+            <n id="6" Element="6" p="150.029999 191.699997"/>
+            <n id="7" Element="6" p="150.029999 237.899994"/>
+            <n id="8" Element="6" p="110.021996 261.000000"/>
+            <n id="9" Element="6" p="70.011002 237.899994"/>
+            <n id="10" Element="6" p="70.011002 191.699997"/>
+            <n id="11" Element="7" NumHydrogens="1" p="30.000000 122.399994">
+                <t p="30.000000 122.399994" LabelJustification="Left">
+                    <s font="3" size="10" face="96">NH</s>
+                </t>
+            </n>
+            <n id="12" Element="53" NumHydrogens="0" p="30.000000 168.599991">
+                <t p="30.000000 168.599991" LabelJustification="Left">
+                    <s font="3" size="10" face="96">I</s>
+                </t>
+            </n>
+            <n id="13" Element="8" NumHydrogens="0" p="110.021996 30.000000">
+                <t p="110.021996 30.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <b B="1" E="2"/>
+            <b B="2" E="3"/>
+            <b B="2" E="13" Order="2"/>
+            <b B="3" E="4"/>
+            <b B="3" E="11" Display="WedgeBegin"/>
+            <b B="4" E="5"/>
+            <b B="5" E="6" Order="2"/>
+            <b B="5" E="10"/>
+            <b B="6" E="7"/>
+            <b B="7" E="8" Order="2"/>
+            <b B="8" E="9"/>
+            <b B="9" E="10" Order="2"/>
+            <b B="11" E="12"/>
+        </fragment>
+    </page>
+</CDXML>
+
+enhanced_stereo3.mol
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable>
+        <font id="1" charset="utf-8" name="Arial"/>
+        <font id="2" charset="utf-8" name="Times New Roman"/>
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1"/>
+        <color r="0" g="0" b="0"/>
+        <color r="1" g="0" b="0"/>
+        <color r="1" g="1" b="0"/>
+        <color r="0" g="1" b="0"/>
+        <color r="0" g="1" b="1"/>
+        <color r="0" g="0" b="1"/>
+        <color r="1" g="0" b="1"/>
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment>
+            <n id="1" Element="8" NumHydrogens="1" p="30.000000 30.000000">
+                <t p="30.000000 30.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">OH</s>
+                </t>
+            </n>
+            <n id="2" Element="6" p="70.011002 53.099998"/>
+            <n id="3" Element="6" p="70.011002 99.299995" Geometry="Tetrahedral" BondOrdering="2 4 11 0" EnhancedStereoType="Or" EnhancedStereoGroupNum="1"/>
+            <n id="4" Element="6" p="110.021996 122.399994" Geometry="Tetrahedral" BondOrdering="3 14 5 0" EnhancedStereoType="And" EnhancedStereoGroupNum="1"/>
+            <n id="5" Element="6" p="110.021996 168.599991"/>
+            <n id="6" Element="6" p="150.029999 191.699997"/>
+            <n id="7" Element="6" p="150.029999 237.899994"/>
+            <n id="8" Element="6" p="110.021996 261.000000"/>
+            <n id="9" Element="6" p="70.011002 237.899994"/>
+            <n id="10" Element="6" p="70.011002 191.699997"/>
+            <n id="11" Element="7" NumHydrogens="1" p="30.000000 122.399994">
+                <t p="30.000000 122.399994" LabelJustification="Left">
+                    <s font="3" size="10" face="96">NH</s>
+                </t>
+            </n>
+            <n id="12" Element="53" NumHydrogens="0" p="30.000000 168.599991">
+                <t p="30.000000 168.599991" LabelJustification="Left">
+                    <s font="3" size="10" face="96">I</s>
+                </t>
+            </n>
+            <n id="13" Element="8" NumHydrogens="0" p="110.021996 30.000000">
+                <t p="110.021996 30.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="14" Element="6" p="150.032990 99.299995"/>
+            <b B="1" E="2"/>
+            <b B="2" E="3"/>
+            <b B="2" E="13" Order="2"/>
+            <b B="3" E="4"/>
+            <b B="3" E="11" Display="WedgeBegin"/>
+            <b B="4" E="5"/>
+            <b B="5" E="6" Order="2"/>
+            <b B="5" E="10"/>
+            <b B="6" E="7"/>
+            <b B="7" E="8" Order="2"/>
+            <b B="8" E="9"/>
+            <b B="9" E="10" Order="2"/>
+            <b B="11" E="12"/>
+            <b B="4" E="14" Display="WedgeBegin"/>
+        </fragment>
+    </page>
+</CDXML>
+
 stereo_either-0020.mol
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
