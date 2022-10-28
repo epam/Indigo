@@ -2,9 +2,9 @@
 
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
+#include <molecule/canonical_smiles_saver.h>
 #include <molecule/molecule_auto_loader.h>
 #include <molecule/molecule_substructure_matcher.h>
-#include <molecule/canonical_smiles_saver.h>
 
 using namespace indigo;
 
