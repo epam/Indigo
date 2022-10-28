@@ -145,13 +145,23 @@ cnt1 = indigo.countReferences()
 # Usually these counters should be equal
 assert cnt0 >= cnt1
 
-print("****** Smart layout*****")
+print("****** Smart layout *****")
 indigo.resetOptions()
 mol = indigo.loadMolecule("C1OCCOCCOCCOCCOCCOCCOCCOCCOCCOC1")
 indigo.setOption("render-output-format", "png")
 indigo.setOption("smart-layout", "true")
 renderer.renderToFile(mol, joinPathPy("out/smart-layout-crown.png", __file__))
 print(checkImageSimilarity("smart-layout-crown.png"))
+
+print("****** Aliases *****")
+mol = indigo.loadMolecule("CN |$Carbon;Nitrogen$|")
+indigo.setOption("render-coloring", "true")
+indigo.setOption("render-coloring-aliases", "true")
+renderer.renderToFile(mol, joinPathPy("out/alias_colored.png", __file__))
+print(checkImageSimilarity("alias_colored.png"))
+indigo.setOption("render-coloring-aliases", "false")
+renderer.renderToFile(mol, joinPathPy("out/alias.png", __file__))
+print(checkImageSimilarity("alias.png"))
 
 if isIronPython():
     renderer.Dispose()

@@ -570,6 +570,7 @@ namespace indigo
         bool showAtomIds;
         bool showValences;
         bool atomColoring;
+        bool aliasesColoring;
         STEREO_STYLE stereoMode;
         bool showReactingCenterUnchanged;
         bool centerDoubleBondWhenStereoAdjacent;

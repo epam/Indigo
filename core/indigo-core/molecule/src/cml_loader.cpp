@@ -400,7 +400,6 @@ void CmlLoader::_loadMoleculeElement(XMLHandle& handle)
             if (_mol != 0)
             {
                 idx = _mol->addAtom(label);
-
                 if (label == ELEM_PSEUDO)
                 {
                     if (!a.label.empty())
@@ -803,14 +802,7 @@ void CmlLoader::_loadMoleculeElement(XMLHandle& handle)
             {
                 if (strncmp(a.alias.c_str(), "0", 1) != 0)
                 {
-                    int sg_idx = _bmol->sgroups.addSGroup(SGroup::SG_TYPE_DAT);
-                    DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(sg_idx);
-
-                    sgroup.atoms.push(idx);
-                    sgroup.name.readString("INDIGO_ALIAS", true);
-                    sgroup.data.readString(a.alias.c_str(), true);
-                    sgroup.display_pos.x = _bmol->getAtomXyz(idx).x;
-                    sgroup.display_pos.y = _bmol->getAtomXyz(idx).y;
+                    _bmol->aliases.findOrInsert(idx).readString(a.alias.c_str(), true);
                 }
             }
 

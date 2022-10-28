@@ -270,6 +270,7 @@ namespace indigo
         StringPool custom_collections;
 
         Array<char> name;
+        RedBlackObjMap<int, Array<char>> aliases;
 
         Array<int> reaction_atom_mapping;
         Array<int> reaction_atom_inversion;

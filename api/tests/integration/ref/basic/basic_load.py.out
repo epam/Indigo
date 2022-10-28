@@ -1697,7 +1697,7 @@ M  END
 
   2  1  0  0  0  0  0  0  0  0999 V2000
    -3.5063    6.2464    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.6813    6.2464    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.6813    6.2464    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
 A    2
 Alias
@@ -1709,18 +1709,14 @@ M  END
 
   0  0  0  0  0  0  0  0  0  0  0 V3000
 M  V30 BEGIN CTAB
-M  V30 COUNTS 2 1 1 0 0
+M  V30 COUNTS 2 1 0 0 0
 M  V30 BEGIN ATOM
 M  V30 1 C -3.5063 6.2464 0.0 0
-M  V30 2 C -2.6813 6.2464 0.0 0
+M  V30 2 N -2.6813 6.2464 0.0 0
 M  V30 END ATOM
 M  V30 BEGIN BOND
 M  V30 1 1 1 2
 M  V30 END BOND
-M  V30 BEGIN SGROUP
-M  V30 1 DAT 1 ATOMS=(1 2) FIELDNAME=INDIGO_ALIAS FIELDDISP="   -2.6813    6.-
-M  V30 2464    AA    ALL  1       1  " FIELDDATA="Alias"
-M  V30 END SGROUP
 M  V30 END CTAB
 M  END
 
@@ -1730,7 +1726,7 @@ M  END
     <molecule title="">
         <atomArray>
             <atom id="a0" elementType="C" x2="-3.5063" y2="6.2464"/>
-            <atom id="a1" elementType="C" mrvAlias="Alias" x2="-2.6813" y2="6.2464"/>
+            <atom id="a1" elementType="N" mrvAlias="Alias" x2="-2.6813" y2="6.2464"/>
         </atomArray>
         <bondArray>
             <bond atomRefs2="a0 a1" order="1"/>
@@ -1738,6 +1734,10 @@ M  END
     </molecule>
 </cml>
 
+****** Alias handling (SMILES) ********
+CN |$Alias;$|
+****** Alias handling (KET) ********
+True
 
   -INDIGO-01000000002D
 

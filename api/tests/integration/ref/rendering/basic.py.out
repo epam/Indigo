@@ -18,5 +18,8 @@ bond-length-options-1.png rendering status: OK
 bond-length-options-2.png rendering status: OK
 bond-length-options-3.png rendering status: OK
 ****** Reference count *****
-****** Smart layout*****
+****** Smart layout *****
 smart-layout-crown.png rendering status: OK
+****** Aliases *****
+alias_colored.png rendering status: OK
+alias.png rendering status: OK

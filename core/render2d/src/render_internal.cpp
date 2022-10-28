@@ -1680,11 +1680,19 @@ void MoleculeRenderInternal::_initAtomData()
         if (bm.isPseudoAtom(i))
         {
             ad.type = AtomDesc::TYPE_PSEUDO;
+            ad.color = CWC_BASE;
             ad.pseudo.readString(bm.getPseudoAtom(i), true);
+        }
+        if (bm.aliases.find(i))
+        {
+            ad.type = AtomDesc::TYPE_PSEUDO;
+            ad.pseudo.readString(bm.aliases.at(i).ptr(), true);
+            ad.color = _opt.aliasesColoring ? ad.color = _cw.getElementColor(atomNumber) : CWC_BASE;
         }
         else if (bm.isTemplateAtom(i))
         {
             ad.type = AtomDesc::TYPE_PSEUDO;
+            ad.color = CWC_BASE;
             ad.pseudo.readString(bm.getTemplateAtom(i), true);
         }
         else if (atomNumber < 0 || atomNumber == ELEM_RSITE)
@@ -1711,6 +1719,7 @@ void MoleculeRenderInternal::_initAtomData()
                 {
                     bm.getAtomDescription(i, ad.pseudo);
                     ad.type = AtomDesc::TYPE_PSEUDO;
+                    ad.color = CWC_BASE;
                     ad.pseudoAtomStringVerbose = true;
                 }
                 QUERY_MOL_END;
@@ -3053,7 +3062,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
 
     if (ad.type == AtomDesc::TYPE_PSEUDO)
     {
-        _preparePseudoAtom(aid, CWC_BASE, highlighted);
+        _preparePseudoAtom(aid, ad.color, highlighted);
 
         bool chargeSignAdded = false;
         for (auto i = 0; i < _data.graphitems.size(); i++)

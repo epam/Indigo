@@ -592,22 +592,6 @@ void MoleculeJsonSaver::saveSelection(BaseMolecule& mol, rapidjson::Writer<rapid
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& writer)
 {
-    // collect aliases
-    std::unordered_map<int, std::string> aliases;
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-        {
-            DataSGroup& dsg = (DataSGroup&)sgroup;
-            if ((dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && dsg.data.size() > 0)
-            {
-                aliases.emplace(dsg.atoms[0], dsg.data.ptr());
-                mol.sgroups.remove(i);
-            }
-        }
-    }
-
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     if (mol.vertexCount() > 0)
@@ -622,6 +606,13 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                 saveAttachmentPoint(mol, i, writer);
             QS_DEF(Array<int>, rg_list);
             int radical = 0;
+
+            if (mol.aliases.find(i))
+            {
+                writer.Key("alias");
+                writer.String(mol.aliases.at(i).ptr());
+            }
+
             if (mol.isRSite(i))
             {
                 mol.getAllowedRGroups(i, rg_list);
@@ -695,13 +686,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                 {
                     writer.Key("label");
                     writer.String(buf.ptr());
-                }
-
-                auto alias_it = aliases.find(i);
-                if (alias_it != aliases.end())
-                {
-                    writer.Key("alias");
-                    writer.String(alias_it->second.c_str());
                 }
             }
 

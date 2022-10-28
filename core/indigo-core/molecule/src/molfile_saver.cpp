@@ -1490,19 +1490,11 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         output.writeCR();
     }
 
-    for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    for (i = mol.aliases.begin(); i != mol.aliases.end(); i = mol.aliases.next(i))
     {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-        {
-            DataSGroup& dsg = (DataSGroup&)sgroup;
-            if ((dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && dsg.data.size() > 0)
-            {
-                output.printfCR("A  %3d", _atom_mapping[dsg.atoms[0]]);
-                output.writeString(dsg.data.ptr());
-                output.writeCR();
-            }
-        }
+        output.printfCR("A  %3d", mol.aliases.key(i) + 1);
+        output.writeString(mol.aliases.value(i).ptr());
+        output.writeCR();
     }
 
     QS_DEF(Array<int>, sgroup_ids);
@@ -1516,12 +1508,6 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
         SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-        {
-            DataSGroup& dsg = (DataSGroup&)sgroup;
-            if ((dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0))
-                continue;
-        }
         sgroup_ids.push(i);
     }
 
@@ -1593,14 +1579,6 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
             SGroup& sgroup = mol.sgroups.getSGroup(i);
-
-            if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-            {
-                DataSGroup& datasgroup = (DataSGroup&)sgroup;
-                if ((datasgroup.name.size() > 11) && (strncmp(datasgroup.name.ptr(), "INDIGO_ALIAS", 12) == 0))
-                    continue;
-            }
-
             for (j = 0; j < sgroup.atoms.size(); j += 8)
             {
                 int k;
@@ -1677,9 +1655,6 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& datasgroup = (DataSGroup&)sgroup;
-
-                if ((datasgroup.name.size() > 11) && (strncmp(datasgroup.name.ptr(), "INDIGO_ALIAS", 12) == 0))
-                    continue;
 
                 output.printf("M  SDT %3d ", datasgroup.original_group);
 

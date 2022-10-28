@@ -138,6 +138,12 @@ print(m.molfile())
 print("****** Alias handling (CML) ********")
 print(m.cml())
 
+print("****** Alias handling (SMILES) ********")
+print(m.canonicalSmiles())
+
+print("****** Alias handling (KET) ********")
+print("alias" in m.json())
+
 m = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/alias_marvin.cml", __file__)
 )
