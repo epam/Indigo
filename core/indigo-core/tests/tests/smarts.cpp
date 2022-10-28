@@ -140,7 +140,6 @@ TEST_F(IndigoCoreSmartsTest, aliases)
     EXPECT_TRUE(substructureMatch("* |$Pseudo$|", "* |$Pseudo$|"));
 }
 
-
 TEST_F(IndigoCoreSmartsTest, smiles)
 {
     EXPECT_STREQ(smilesLoadSaveLoad("C", false).c_str(), "C");
