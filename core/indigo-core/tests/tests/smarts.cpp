@@ -117,3 +117,10 @@ TEST_F(IndigoCoreSmartsTest, h)
     EXPECT_STREQ(smartsLoadSaveLoad("[#6;h]").c_str(), "[#6;h]");
     EXPECT_STREQ(smartsLoadSaveLoad("[#6;h2]").c_str(), "[#6;h2]");
 }
+
+TEST_F(IndigoCoreSmartsTest, connectivity)
+{
+    EXPECT_STREQ(smartsLoadSaveLoad("[#7;X3]").c_str(), "[#7;X3]");
+    EXPECT_STREQ(smartsLoadSaveLoad("[#7X3]").c_str(), "[#7;X3]");
+    EXPECT_STREQ(smartsLoadSaveLoad("[NX3]").c_str(), "[#7;X3]");
+}

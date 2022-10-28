@@ -1010,8 +1010,13 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
 
+    case QueryMolecule::ATOM_CONNECTIVITY: {
+        _output.printf("X%d", atom->value_min);
+        break;
+    }
+
     default: {
-        throw Error("Unknown atom attribute");
+        throw Error("Unknown atom attribute %d", atom->type);
         break;
     }
     }

@@ -4,7 +4,7 @@
 #include <base_cpp/scanner.h>
 #include <molecule/molecule_auto_loader.h>
 #include <molecule/molecule_substructure_matcher.h>
-#include <molecule/smiles_saver.h>
+#include <molecule/canonical_smiles_saver.h>
 
 using namespace indigo;
 
@@ -44,8 +44,9 @@ std::string IndigoCoreTest::smartsLoadSaveLoad(const std::string& queryString)
     loadQueryMolecule(queryString.c_str(), query);
     Array<char> buffer;
     ArrayOutput output(buffer);
-    SmilesSaver smilesSaver(output);
+    CanonicalSmilesSaver smilesSaver(output);
     smilesSaver.smarts_mode = true;
+    smilesSaver.ignore_hydrogens = false;
     smilesSaver.saveQueryMolecule(query);
     output.writeChar(0);
     std::string result(buffer.ptr());
