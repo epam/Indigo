@@ -1,4 +1,4 @@
-set(INDIGO_DEFAULT_VERSION "1.8.0-rc.2")
+set(INDIGO_DEFAULT_VERSION "1.8.0")
 set(INDIGO_MAX_REVISION 500)
 
 find_package(Git)
