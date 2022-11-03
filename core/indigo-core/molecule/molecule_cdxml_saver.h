@@ -45,6 +45,9 @@ namespace indigo
         ~MoleculeCdxmlSaver();
 
         void saveMolecule(BaseMolecule& mol);
+        void addNodesToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, float structure_scale, const Vec2f& offset, Array<int>& ids,
+                                Vec2f& min_coord, Vec2f& max_coord);
+
         static const int SCALE = 30;
         static const int MAX_PAGE_HEIGHT = 64;
         struct Bounds
