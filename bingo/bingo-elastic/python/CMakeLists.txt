@@ -1,4 +1,4 @@
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
+find_package(Python3 COMPONENTS Interpreter)
 
 if (NOT Python3_FOUND)
     message(WARNING "Python executable not found, bingo-elastic-python could not be built")
