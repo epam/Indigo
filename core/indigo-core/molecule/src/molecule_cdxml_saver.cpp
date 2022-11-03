@@ -258,6 +258,20 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
 
     if (mol.vertexCount() > 0)
     {
+        std::unordered_map<int, int> super_map;
+        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        {
+            SGroup& sgroup = mol.sgroups.getSGroup(i);
+            if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+            {
+                Superatom& sa = (Superatom&) sgroup;
+                for(int j = 0; j < sa.atoms.size(); ++j)
+                {
+                    super_map.emplace(sa.atoms[j], i);
+                }
+            }
+        }
+
         for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
         {
             int atom_number = mol.getAtomNumber(i);

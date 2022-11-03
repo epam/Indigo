@@ -138,6 +138,7 @@ namespace indigo
         std::unordered_map<int, int> bond_id_to_connection_idx;
         std::unordered_map<int, int> node_id_to_connection_idx;
         std::vector<_ExtConnection> connections;
+        std::vector<int> ext_connections;
     };
 
     struct CdxmlBond
@@ -155,14 +156,15 @@ namespace indigo
 
     struct CdxmlBracket
     {
-        CdxmlBracket() : repeat_pattern(RepeatingUnit::HEAD_TO_TAIL)
+        CdxmlBracket() : repeat_pattern(RepeatingUnit::HEAD_TO_TAIL), usage(kCDXBracketUsage_Generic), is_superatom(false)
         {
         }
         std::vector<AutoInt> bracketed_list;
         int usage;
         AutoInt repeat_count;
         int repeat_pattern;
-        std::string sru_label;
+        std::string label;
+        bool is_superatom;
     };
 
     inline std::vector<std::string> split(const std::string& str, char delim)
@@ -221,6 +223,7 @@ namespace indigo
         const tinyxml2::XMLNode* _fragment;
         void _initMolecule(BaseMolecule& mol);
         void _parseCollections(BaseMolecule& mol);
+        void _checkFragmentConnection(int node_id, int bond_id);
 
         void _parseNode(CdxmlNode& node, tinyxml2::XMLElement* pElem);
         void _addNode(CdxmlNode& node);
@@ -230,6 +233,8 @@ namespace indigo
 
         void _parseBracket(CdxmlBracket& bracket, const tinyxml2::XMLAttribute* pAttr);
         void _parseText(const tinyxml2::XMLElement* pElem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
+        void _parseLabel(const tinyxml2::XMLElement* pElem, std::string& label);
+
         void _parseGraphic(const tinyxml2::XMLElement* pElem);
         void _parseArrow(const tinyxml2::XMLElement* pElem);
 
@@ -239,7 +244,7 @@ namespace indigo
         void _processEnhancedStereo(BaseMolecule& mol);
 
         void _parseCDXMLPage(tinyxml2::XMLElement* pElem);
-        void _parseCDXMLElements(tinyxml2::XMLElement* pElem, bool no_siblings = false);
+        void _parseCDXMLElements(tinyxml2::XMLElement* pElem, bool no_siblings = false, bool inside_fragment_node = false);
         void _parseFragmentAttributes(const tinyxml2::XMLAttribute* pAttr);
 
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);

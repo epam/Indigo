@@ -32,6 +32,11 @@ using namespace indigo;
 using namespace tinyxml2;
 using namespace rapidjson;
 
+bool is_fragment(int node_type)
+{
+    return node_type == kCDXNodeType_Nickname || node_type == kCDXNodeType_Fragment;
+}
+
 static float readFloat(const char* point_str)
 {
     float res = 0;
@@ -99,6 +104,23 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol)
     }
 }
 
+void MoleculeCdxmlLoader::_checkFragmentConnection(int node_id, int bond_id)
+{
+    auto& fn = nodes[_id_to_node_index.at(node_id)];
+    if (fn.ext_connections.size())
+    {
+        if (is_fragment(fn.type) && fn.ext_connections.size() == 1)
+        {
+            fn.bond_id_to_connection_idx.emplace(bond_id, fn.connections.size());
+            int pid = fn.ext_connections.back();
+            fn.node_id_to_connection_idx.emplace(pid, fn.connections.size());
+            fn.connections.push_back(_ExtConnection{bond_id, pid, -1});
+        }
+        else
+            throw Error("Unsupported node connectivity for bond id: %d", bond_id);
+    }
+}
+
 void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
 {
     std::vector<int> atoms;
@@ -111,14 +133,26 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         case kCDXNodeType_ElementList:
             atoms.push_back(node_idx);
             break;
-        case kCDXNodeType_ExternalConnectionPoint:
-            break;
+        case kCDXNodeType_ExternalConnectionPoint: {
+
+            auto& fn = nodes[_fragment_nodes.back()];
+            if (fn.connections.size() == 0)
+                fn.ext_connections.push_back(node.id);
+        }
+        break;
+        case kCDXNodeType_Nickname:
         case kCDXNodeType_Fragment:
             _fragment_nodes.push_back(node_idx);
             break;
         default:
             break;
         }
+    }
+
+    for (const auto& bond : bonds)
+    {
+        _checkFragmentConnection(bond.be.first, bond.id);
+        _checkFragmentConnection(bond.be.second, bond.id);
     }
 
     _addAtomsAndBonds(mol, atoms, bonds);
@@ -243,14 +277,18 @@ void MoleculeCdxmlLoader::_parseCDXMLPage(XMLElement* pElem)
     }
 }
 
-void MoleculeCdxmlLoader::_parseCDXMLElements(XMLElement* pElem, bool no_siblings)
+void MoleculeCdxmlLoader::_parseCDXMLElements(XMLElement* pElem, bool no_siblings, bool inside_fragment_node)
 {
+    int fragment_start_idx = -1;
+
     auto node_lambda = [this](XMLElement* pElem) {
         CdxmlNode node;
         this->_parseNode(node, pElem);
         _addNode(node);
-        if (node.type == kCDXNodeType_Fragment)
-            this->_parseCDXMLElements(pElem->FirstChildElement());
+        if (is_fragment(node.type))
+        {
+            this->_parseCDXMLElements(pElem->FirstChildElement(), false, true);
+        }
     };
 
     auto bond_lambda = [this](XMLElement* pElem) {
@@ -259,7 +297,8 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(XMLElement* pElem, bool no_sibling
         this->_addBond(bond);
     };
 
-    auto fragment_lambda = [this](XMLElement* pElem) {
+    auto fragment_lambda = [this, &fragment_start_idx](XMLElement* pElem) {
+        fragment_start_idx = nodes.size();
         this->_parseFragmentAttributes(pElem->FirstAttribute());
         this->_parseCDXMLElements(pElem->FirstChildElement());
     };
@@ -272,7 +311,25 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(XMLElement* pElem, bool no_sibling
         this->brackets.push_back(bracket);
     };
 
-    auto text_lambda = [this](XMLElement* pElem) { this->_parseText(pElem, this->text_objects); };
+    auto text_lambda = [this, &fragment_start_idx, inside_fragment_node](XMLElement* pElem) {
+        if (fragment_start_idx >= 0 && inside_fragment_node)
+        {
+            CdxmlBracket bracket;
+            bracket.is_superatom = true;
+            for (int node_idx = fragment_start_idx; node_idx < this->nodes.size(); ++node_idx)
+            {
+                auto& node = this->nodes[node_idx];
+                if (node.type == kCDXNodeType_Element || node.type == kCDXNodeType_ElementList)
+                {
+                    bracket.bracketed_list.push_back(node.id);
+                }
+            }
+            this->_parseLabel(pElem, bracket.label);
+            this->brackets.push_back(bracket);
+        }
+        else
+            this->_parseText(pElem, this->text_objects);
+    };
 
     auto graphic_lambda = [this](XMLElement* pElem) { this->_parseGraphic(pElem); };
 
@@ -386,7 +443,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             {
                 _updateConnection(sn, bond_first_it->second);
             }
-            else if (fn.type == kCDXNodeType_Fragment && bond_second_it != _id_to_atom_idx.end())
+            else if (is_fragment(fn.type) && bond_second_it != _id_to_atom_idx.end())
             {
                 auto bit_beg = fn.bond_id_to_connection_idx.find(bond.id);
                 if (bit_beg != fn.bond_id_to_connection_idx.end())
@@ -401,7 +458,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                     }
                 }
             }
-            else if (sn.type == kCDXNodeType_Fragment && bond_first_it != _id_to_atom_idx.end())
+            else if (is_fragment(sn.type) && bond_first_it != _id_to_atom_idx.end())
             {
                 auto bit_beg = sn.bond_id_to_connection_idx.find(bond.id);
                 if (bit_beg != sn.bond_id_to_connection_idx.end())
@@ -428,7 +485,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
     auto it = implemeted_brackets.find(bracket.usage);
     if (it != implemeted_brackets.end())
     {
-        int grp_idx = mol.sgroups.addSGroup(it->second);
+        int grp_idx = mol.sgroups.addSGroup(bracket.is_superatom ? SGroup::SG_TYPE_SUP : it->second);
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
         std::unordered_set<int> sgroup_atoms;
         for (auto atom_id : bracket.bracketed_list)
@@ -452,27 +509,34 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
         p[0].set(0, 0);
         p[1].set(0, 0);
         // sgroup.brk_style
-        switch (bracket.usage)
+        if (bracket.is_superatom)
         {
-        case kCDXBracketUsage_SRU: {
-            RepeatingUnit& ru = (RepeatingUnit&)sgroup;
-            ru.connectivity = bracket.repeat_pattern;
-            ru.subscript.readString(bracket.sru_label.c_str(), true);
+            Superatom& sa = (Superatom&)sgroup;
+            sa.contracted = true;
+            sa.subscript.readString(bracket.label.c_str(), true);
         }
-        break;
-        case kCDXBracketUsage_MultipleGroup: {
-            MultipleGroup& mg = (MultipleGroup&)sgroup;
-            if (bracket.repeat_count)
+        else
+            switch (bracket.usage)
             {
-                mg.multiplier = bracket.repeat_count;
+            case kCDXBracketUsage_SRU: {
+                RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+                ru.connectivity = bracket.repeat_pattern;
+                ru.subscript.readString(bracket.label.c_str(), true);
             }
-        }
-        break;
-        case kCDXBracketUsage_Generic:
             break;
-        default:
+            case kCDXBracketUsage_MultipleGroup: {
+                MultipleGroup& mg = (MultipleGroup&)sgroup;
+                if (bracket.repeat_count)
+                {
+                    mg.multiplier = bracket.repeat_count;
+                }
+            }
             break;
-        }
+            case kCDXBracketUsage_Generic:
+                break;
+            default:
+                break;
+            }
         _handleSGroup(sgroup, sgroup_atoms, mol);
     }
 }
@@ -561,11 +625,11 @@ void MoleculeCdxmlLoader::_parseFragmentAttributes(const XMLAttribute* pAttr)
 {
     for (pAttr; pAttr; pAttr = pAttr->Next())
     {
-        if (std::string(pAttr->Name()) == "ConnectionOrder")
+        // it means that we are inside of NodeType=Fragment
+        // let's check it
+        if (nodes.size() && is_fragment(nodes.back().type))
         {
-            // it means that we are inside of NodeType=Fragment
-            // let's check it
-            if (nodes.size() && nodes.back().type == kCDXNodeType_Fragment)
+            if (std::string(pAttr->Name()) == "ConnectionOrder")
             {
                 auto& fn = nodes.back();
                 auto vec_str = split(pAttr->Value(), ' ');
@@ -581,8 +645,6 @@ void MoleculeCdxmlLoader::_parseFragmentAttributes(const XMLAttribute* pAttr)
                 else
                     throw Error("BondOrdering and ConnectionOrder sizes are not equal");
             }
-            else
-                throw Error("Unexpected ConnectionOrder");
         }
     }
 }
@@ -857,6 +919,19 @@ void MoleculeCdxmlLoader::_parseArrow(const tinyxml2::XMLElement* pElem)
     _arrows.push_back(std::make_pair(std::make_pair(begin_pos, end_pos), 2));
 }
 
+void MoleculeCdxmlLoader::_parseLabel(const tinyxml2::XMLElement* pElem, std::string& label)
+{
+    for (auto pTextStyle = pElem->FirstChildElement(); pTextStyle; pTextStyle = pTextStyle->NextSiblingElement())
+    {
+        std::string text_element = pTextStyle->Value();
+        if (text_element == "s")
+        {
+            label = pTextStyle->GetText();
+            return;
+        }
+    }
+}
+
 void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem, std::vector<std::pair<Vec3f, std::string>>& text_parsed)
 {
     Vec3f text_pos;
@@ -1010,7 +1085,7 @@ void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, const XMLAttribut
         bracket.repeat_pattern = rep_map.at(data);
     };
 
-    auto sru_label_lambda = [&bracket](const std::string& data) { bracket.sru_label = data; };
+    auto sru_label_lambda = [&bracket](const std::string& data) { bracket.label = data; };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> bracket_dispatcher = {{"BracketedObjectIDs", bracketed_ids_lambda},
                                                                                                    {"BracketUsage", bracket_usage_lambda},
