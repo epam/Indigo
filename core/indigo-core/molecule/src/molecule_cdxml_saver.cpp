@@ -37,6 +37,7 @@ MoleculeCdxmlSaver::MoleculeCdxmlSaver(Output& output) : _output(output)
     _bond_length = SCALE;
     _max_page_height = MAX_PAGE_HEIGHT;
     _pages_height = 1;
+    _id = 0;
 }
 
 MoleculeCdxmlSaver::~MoleculeCdxmlSaver()
@@ -135,6 +136,7 @@ void MoleculeCdxmlSaver::beginPage(Bounds* bounds)
     _page->SetAttribute("WidthPages", 1);
     _current = _page;
 }
+
 void MoleculeCdxmlSaver::addFontTable(const char* font)
 {
     if (font != NULL && strlen(font) > 0)
@@ -212,16 +214,14 @@ void MoleculeCdxmlSaver::addDefaultFontTable()
     startCurrentElement(-1, name, attrs);
 
     name.readString("font", true);
-    int id = 1;
     attrs.insert("charset", "utf-8");
     attrs.insert("name", "Arial");
-    addCustomElement(id, name, attrs);
+    addCustomElement(++_id, name, attrs);
 
     attrs.clear();
-    id++;
     attrs.insert("charset", "utf-8");
     attrs.insert("name", "Times New Roman");
-    addCustomElement(id, name, attrs);
+    addCustomElement(++_id, name, attrs);
 
     endCurrentElement();
 }
@@ -237,386 +237,565 @@ void MoleculeCdxmlSaver::addDefaultColorTable()
     addColorTable(color.ptr());
 }
 
-void MoleculeCdxmlSaver::addNodesToFragment(BaseMolecule& mol, XMLElement* fragment, float structure_scale, const Vec2f& offset, Array<int>& ids,
-                                            Vec2f& min_coord, Vec2f& max_coord)
+void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragment, int atom_idx, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord)
 {
-    bool have_hyz = mol.have_xyz;
-    int nid;
-    float scale = structure_scale * _bond_length;
+    Vec3f pos3 = mol.getAtomXyz(atom_idx);
+    Vec2f pos(pos3.x, pos3.y);
 
-    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+    pos.add(offset);
+    if (atom_idx == mol.vertexBegin())
+        min_coord = max_coord = pos;
+    else
     {
-        int atom_number = mol.getAtomNumber(i);
-        int charge = mol.getAtomCharge(i);
-        int radical = 0;
-        int hcount = -1;
+        min_coord.min(pos);
+        max_coord.max(pos);
+    }
 
-        XMLElement* node = _doc->NewElement("n");
-        fragment->LinkEndChild(node);
+    pos.scale(_scale);
 
-        if (ids.size() > i)
-            nid = ids[i];
-        else
-            nid = i + 1;
+    int atom_number = mol.getAtomNumber(atom_idx);
+    int charge = mol.getAtomCharge(atom_idx);
+    int radical = 0;
+    int hcount = -1;
 
-        if (mol.isRSite(i))
-        {
-            node->SetAttribute("id", nid);
-            node->SetAttribute("NodeType", "GenericNickname");
-            node->SetAttribute("GenericNickname", "A");
+    XMLElement* node = _doc->NewElement("n");
+    fragment->LinkEndChild(node);
 
-            if ((charge != 0) && (charge != CHARGE_UNKNOWN))
-                node->SetAttribute("Charge", charge);
-        }
-        else if (mol.isPseudoAtom(i))
-        {
-            node->SetAttribute("id", nid);
-            node->SetAttribute("NodeType", "GenericNickname");
-            node->SetAttribute("GenericNickname", mol.getPseudoAtom(i));
+    node->SetAttribute("id", _atoms_ids[atom_idx]);
 
-            if ((charge != 0) && (charge != CHARGE_UNKNOWN))
-                node->SetAttribute("Charge", charge);
-        }
-        else if (atom_number > 0)
-        {
-            node->SetAttribute("id", nid);
+    if (mol.isRSite(atom_idx))
+    {
+        node->SetAttribute("NodeType", "GenericNickname");
+        node->SetAttribute("GenericNickname", "A");
+
+        if ((charge != 0) && (charge != CHARGE_UNKNOWN))
+            node->SetAttribute("Charge", charge);
+    }
+    else if (mol.isPseudoAtom(atom_idx))
+    {
+        node->SetAttribute("NodeType", "GenericNickname");
+        node->SetAttribute("GenericNickname", mol.getPseudoAtom(atom_idx));
+
+        if ((charge != 0) && (charge != CHARGE_UNKNOWN))
+            node->SetAttribute("Charge", charge);
+    }
+    else if (atom_number > 0)
+    {
+        if (atom_number != ELEM_C)
             node->SetAttribute("Element", atom_number);
-            if ((charge != 0) && (charge != CHARGE_UNKNOWN))
-                node->SetAttribute("Charge", charge);
 
-            if (mol.getAtomIsotope(i) > 0)
-                node->SetAttribute("Isotope", mol.getAtomIsotope(i));
+        if ((charge != 0) && (charge != CHARGE_UNKNOWN))
+            node->SetAttribute("Charge", charge);
 
-            radical = mol.getAtomRadical_NoThrow(i, 0);
-            if (radical > 0)
-            {
-                const char* radical_str = NULL;
-                if (radical == RADICAL_DOUBLET)
-                    radical_str = "Doublet";
-                else if (radical == RADICAL_SINGLET)
-                    radical_str = "Singlet";
-                else if (radical == RADICAL_TRIPLET)
-                    radical_str = "Triplet";
-                else
-                    throw Error("Radical type %d is not supported", radical);
+        if (mol.getAtomIsotope(atom_idx) > 0)
+            node->SetAttribute("Isotope", mol.getAtomIsotope(atom_idx));
 
-                node->SetAttribute("Radical", radical_str);
-            }
-
-            if ((atom_number != ELEM_C) && (atom_number != ELEM_H))
-            {
-                try
-                {
-                    hcount = getHydrogenCount(mol, i, charge, radical);
-                }
-                catch (Exception&)
-                {
-                    hcount = -1;
-                }
-
-                if (hcount >= 0)
-                    node->SetAttribute("NumHydrogens", hcount);
-            }
-        }
-        else if (atom_number < 0)
+        radical = mol.getAtomRadical_NoThrow(atom_idx, 0);
+        if (radical > 0)
         {
-            QS_DEF(Array<int>, list);
-            int query_atom_type;
-            node->SetAttribute("id", nid);
-            if (mol.isQueryMolecule() && (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), i, list)) != -1)
-            {
-                if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
-                {
-                    node->SetAttribute("NodeType", "GenericNickname");
-                    node->SetAttribute("GenericNickname", "A");
-                }
-                else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
-                {
-                    node->SetAttribute("NodeType", "GenericNickname");
-                    node->SetAttribute("GenericNickname", "Q");
-                }
-                else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
-                {
-                    node->SetAttribute("NodeType", "GenericNickname");
-                    node->SetAttribute("GenericNickname", "X");
-                }
-                else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
-                {
-                    int k;
+            const char* radical_str = NULL;
+            if (radical == RADICAL_DOUBLET)
+                radical_str = "Doublet";
+            else if (radical == RADICAL_SINGLET)
+                radical_str = "Singlet";
+            else if (radical == RADICAL_TRIPLET)
+                radical_str = "Triplet";
+            else
+                throw Error("Radical type %d is not supported", radical);
 
-                    QS_DEF(Array<char>, buf);
-                    ArrayOutput out(buf);
-
-                    if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
-                        out.writeString("NOT ");
-
-                    for (k = 0; k < list.size(); k++)
-                    {
-                        out.printf("%d ", list[k]);
-                    }
-                    buf.pop();
-                    buf.push(0);
-
-                    node->SetAttribute("NodeType", "ElementList");
-                    node->SetAttribute("ElementList", buf.ptr());
-                }
-            }
+            node->SetAttribute("Radical", radical_str);
         }
 
-        Vec3f pos3 = mol.getAtomXyz(i);
-        Vec2f pos(pos3.x, pos3.y);
-
-        pos.add(offset);
-        if (i == mol.vertexBegin())
-            min_coord = max_coord = pos;
-        else
+        if ((atom_number != ELEM_C) && (atom_number != ELEM_H))
         {
-            min_coord.min(pos);
-            max_coord.max(pos);
+            try
+            {
+                hcount = getHydrogenCount(mol, atom_idx, charge, radical);
+            }
+            catch (Exception&)
+            {
+                hcount = -1;
+            }
+
+            if (hcount >= 0)
+                node->SetAttribute("NumHydrogens", hcount);
+        }
+    }
+    else if (atom_number < 0)
+    {
+        QS_DEF(Array<int>, list);
+        int query_atom_type;
+        if (mol.isQueryMolecule() && (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), atom_idx, list)) != -1)
+        {
+            if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
+            {
+                node->SetAttribute("NodeType", "GenericNickname");
+                node->SetAttribute("GenericNickname", "A");
+            }
+            else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
+            {
+                node->SetAttribute("NodeType", "GenericNickname");
+                node->SetAttribute("GenericNickname", "Q");
+            }
+            else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
+            {
+                node->SetAttribute("NodeType", "GenericNickname");
+                node->SetAttribute("GenericNickname", "X");
+            }
+            else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+            {
+                int k;
+
+                QS_DEF(Array<char>, buf);
+                ArrayOutput out(buf);
+
+                if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                    out.writeString("NOT ");
+
+                for (k = 0; k < list.size(); k++)
+                {
+                    out.printf("%d ", list[k]);
+                }
+                buf.pop();
+                buf.push(0);
+
+                node->SetAttribute("NodeType", "ElementList");
+                node->SetAttribute("ElementList", buf.ptr());
+            }
+        }
+    }
+
+    if (mol.have_xyz)
+    {
+        QS_DEF(Array<char>, buf);
+        ArrayOutput out(buf);
+        out.printf("%f %f", pos.x, -pos.y);
+        buf.push(0);
+        node->SetAttribute("p", buf.ptr());
+    }
+
+    int enh_stereo_type = mol.stereocenters.getType(atom_idx);
+    if (enh_stereo_type > MoleculeStereocenters::ATOM_ANY)
+    {
+        int enh_stereo_grp = mol.stereocenters.getGroup(atom_idx);
+
+        node->SetAttribute("Geometry", "Tetrahedral");
+
+        const int* pyramid = mol.stereocenters.getPyramid(atom_idx);
+        // 0 means atom absence
+        QS_DEF(Array<char>, buf);
+        ArrayOutput out(buf);
+        for (int i = 0; i < 4; ++i)
+        {
+            if (i)
+                out.printf(" ");
+            out.printf("%d", _atoms_ids[pyramid[i] < 0 ? 0 : pyramid[i]]);
         }
 
-        pos.scale(scale);
-        if (have_hyz)
+        buf.push(0);
+        node->SetAttribute("BondOrdering", buf.ptr());
+        switch (enh_stereo_type)
         {
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f", pos.x, -pos.y);
+        case MoleculeStereocenters::ATOM_ABS:
+            node->SetAttribute("EnhancedStereoType", "Absolute");
+            break;
+        case MoleculeStereocenters::ATOM_OR:
+            node->SetAttribute("EnhancedStereoType", "Or");
+            break;
+        case MoleculeStereocenters::ATOM_AND:
+            node->SetAttribute("EnhancedStereoType", "And");
+            break;
+        default:
+            throw Error("Unknows enhanced stereo type %d", enh_stereo_type);
+            break;
+        }
+        if (enh_stereo_grp > 0)
+            node->SetAttribute("EnhancedStereoGroupNum", enh_stereo_grp);
+    }
+
+    if (mol.getVertex(atom_idx).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)
+    {
+        XMLElement* t = _doc->NewElement("t");
+        node->LinkEndChild(t);
+
+        QS_DEF(Array<char>, buf);
+        ArrayOutput out(buf);
+        out.printf("%f %f", pos.x, -pos.y);
+        buf.push(0);
+        t->SetAttribute("p", buf.ptr());
+        t->SetAttribute("Justification", "Center");
+
+        XMLElement* s = _doc->NewElement("s");
+        t->LinkEndChild(s);
+        s->SetAttribute("font", 3);
+        s->SetAttribute("size", 10);
+        s->SetAttribute("face", 96);
+
+        XMLText* txt = _doc->NewText("CH4");
+        s->LinkEndChild(txt);
+    }
+    else if (mol.isRSite(atom_idx))
+    {
+        XMLElement* t = _doc->NewElement("t");
+        node->LinkEndChild(t);
+
+        QS_DEF(Array<char>, buf);
+        ArrayOutput out(buf);
+        out.printf("%f %f", pos.x, -pos.y);
+        buf.push(0);
+        t->SetAttribute("p", buf.ptr());
+        t->SetAttribute("LabelJustification", "Left");
+
+        XMLElement* s = _doc->NewElement("s");
+        t->LinkEndChild(s);
+        s->SetAttribute("font", 3);
+        s->SetAttribute("size", 10);
+        s->SetAttribute("face", 96);
+
+        out.clear();
+        //			out.printf("A");
+        mol.getAtomSymbol(atom_idx, buf);
+        /*
+         * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
+         */
+        /*if (charge != 0) {
+            if (charge > 0) {
+                out.printf("+%d", charge);
+            }
+            else {
+                out.printf("-%d", charge);
+            }
+        }*/
+        buf.push(0);
+
+        XMLText* txt = _doc->NewText(buf.ptr());
+        s->LinkEndChild(txt);
+    }
+    else if (mol.isPseudoAtom(atom_idx))
+    {
+        XMLElement* t = _doc->NewElement("t");
+        node->LinkEndChild(t);
+
+        QS_DEF(Array<char>, buf);
+        ArrayOutput out(buf);
+        out.printf("%f %f", pos.x, -pos.y);
+        buf.push(0);
+        t->SetAttribute("p", buf.ptr());
+        t->SetAttribute("LabelJustification", "Left");
+
+        XMLElement* s = _doc->NewElement("s");
+        t->LinkEndChild(s);
+        s->SetAttribute("font", 3);
+        s->SetAttribute("size", 10);
+        s->SetAttribute("face", 96);
+
+        out.clear();
+
+        out.printf("%s", mol.getPseudoAtom(atom_idx));
+        /*
+         * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
+         */
+        /*if (charge != 0) {
+            if (charge > 0) {
+                out.printf("+%d", charge);
+            }
+            else {
+                out.printf("-%d", charge);
+            }
+        }*/
+        buf.push(0);
+        XMLText* txt = _doc->NewText(buf.ptr());
+        s->LinkEndChild(txt);
+    }
+    else if (atom_number > 0 && atom_number != ELEM_C)
+    {
+        XMLElement* t = _doc->NewElement("t");
+        node->LinkEndChild(t);
+
+        QS_DEF(Array<char>, buf);
+        ArrayOutput out(buf);
+        out.printf("%f %f", pos.x, -pos.y);
+        buf.push(0);
+        t->SetAttribute("p", buf.ptr());
+        t->SetAttribute("LabelJustification", "Left");
+
+        XMLElement* s = _doc->NewElement("s");
+        t->LinkEndChild(s);
+        s->SetAttribute("font", 3);
+        s->SetAttribute("size", 10);
+        s->SetAttribute("face", 96);
+
+        out.clear();
+        mol.getAtomSymbol(atom_idx, buf);
+        if (hcount > 0)
+        {
+            buf.pop();
+            buf.push('H');
+        }
+
+        buf.push(0);
+        XMLText* txt = _doc->NewText(buf.ptr());
+        s->LinkEndChild(txt);
+        if (hcount > 1)
+        {
+            XMLElement* s = _doc->NewElement("s");
+            t->LinkEndChild(s);
+            s->SetAttribute("font", 3);
+            s->SetAttribute("size", 10);
+            s->SetAttribute("face", 32);
+
+            out.clear();
+            out.printf("%d", hcount);
             buf.push(0);
-            node->SetAttribute("p", buf.ptr());
+            XMLText* txt = _doc->NewText(buf.ptr());
+            s->LinkEndChild(txt);
         }
+    }
+    else if (atom_number < 0 && mol.isQueryMolecule())
+    {
+        XMLElement* t = _doc->NewElement("t");
+        node->LinkEndChild(t);
 
-        int enh_stereo_type = mol.stereocenters.getType(i);
-        if (enh_stereo_type > MoleculeStereocenters::ATOM_ANY)
+        QS_DEF(Array<char>, buf);
+        ArrayOutput out(buf);
+        out.printf("%f %f", pos.x, -pos.y);
+        buf.push(0);
+        t->SetAttribute("p", buf.ptr());
+        t->SetAttribute("LabelJustification", "Left");
+
+        XMLElement* s = _doc->NewElement("s");
+        t->LinkEndChild(s);
+        s->SetAttribute("font", 3);
+        s->SetAttribute("size", 10);
+        s->SetAttribute("face", 96);
+
+        QS_DEF(Array<int>, list);
+        int query_atom_type;
+
+        out.clear();
+
+        if (mol.isQueryMolecule() && (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), atom_idx, list)) != -1)
         {
-            int enh_stereo_grp = mol.stereocenters.getGroup(i);
-
-            node->SetAttribute("Geometry", "Tetrahedral");
-
-            const int* pyramid = mol.stereocenters.getPyramid(i);
-            // 0 means atom absence
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            if (ids.size() > 0)
+            if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
             {
-                out.printf("%d %d %d %d", ids[pyramid[0]], ids[pyramid[1]], ids[pyramid[2]], ids[pyramid[3]]);
+                int k;
+
+                if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                    out.writeString("NOT ");
+
+                for (k = 0; k < list.size(); k++)
+                {
+                    if (k > 0)
+                        out.writeChar(',');
+                    out.writeString(Element::toString(list[k]));
+                }
+                buf.push(0);
             }
             else
-            {
-                out.printf("%d %d %d %d", pyramid[0] + 1, pyramid[1] + 1, pyramid[2] + 1, pyramid[3] + 1);
-            }
-
-            buf.push(0);
-            node->SetAttribute("BondOrdering", buf.ptr());
-            switch (enh_stereo_type)
-            {
-            case MoleculeStereocenters::ATOM_ABS:
-                node->SetAttribute("EnhancedStereoType", "Absolute");
-                break;
-            case MoleculeStereocenters::ATOM_OR:
-                node->SetAttribute("EnhancedStereoType", "Or");
-                break;
-            case MoleculeStereocenters::ATOM_AND:
-                node->SetAttribute("EnhancedStereoType", "And");
-                break;
-            default:
-                throw Error("Unknows enhanced stereo type %d", enh_stereo_type);
-                break;
-            }
-            if (enh_stereo_grp > 0)
-                node->SetAttribute("EnhancedStereoGroupNum", enh_stereo_grp);
+                mol.getAtomSymbol(atom_idx, buf);
         }
 
-        if (mol.getVertex(i).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)
+        XMLText* txt = _doc->NewText(buf.ptr());
+        s->LinkEndChild(txt);
+    }
+}
+
+void MoleculeCdxmlSaver::_collectSuperatoms(BaseMolecule& mol)
+{
+    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+        SGroup& sgroup = mol.sgroups.getSGroup(i);
+        if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
         {
-            XMLElement* t = _doc->NewElement("t");
-            node->LinkEndChild(t);
-
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f", pos.x, -pos.y);
-            buf.push(0);
-            t->SetAttribute("p", buf.ptr());
-            t->SetAttribute("Justification", "Center");
-
-            XMLElement* s = _doc->NewElement("s");
-            t->LinkEndChild(s);
-            s->SetAttribute("font", 3);
-            s->SetAttribute("size", 10);
-            s->SetAttribute("face", 96);
-
-            XMLText* txt = _doc->NewText("CH4");
-            s->LinkEndChild(txt);
-        }
-        else if (mol.isRSite(i))
-        {
-            XMLElement* t = _doc->NewElement("t");
-            node->LinkEndChild(t);
-
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f", pos.x, -pos.y);
-            buf.push(0);
-            t->SetAttribute("p", buf.ptr());
-            t->SetAttribute("LabelJustification", "Left");
-
-            XMLElement* s = _doc->NewElement("s");
-            t->LinkEndChild(s);
-            s->SetAttribute("font", 3);
-            s->SetAttribute("size", 10);
-            s->SetAttribute("face", 96);
-
-            out.clear();
-            //			out.printf("A");
-            mol.getAtomSymbol(i, buf);
-            /*
-             * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
-             */
-            /*if (charge != 0) {
-                if (charge > 0) {
-                    out.printf("+%d", charge);
-                }
-                else {
-                    out.printf("-%d", charge);
-                }
-            }*/
-            buf.push(0);
-
-            XMLText* txt = _doc->NewText(buf.ptr());
-            s->LinkEndChild(txt);
-        }
-        else if (mol.isPseudoAtom(i))
-        {
-            XMLElement* t = _doc->NewElement("t");
-            node->LinkEndChild(t);
-
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f", pos.x, -pos.y);
-            buf.push(0);
-            t->SetAttribute("p", buf.ptr());
-            t->SetAttribute("LabelJustification", "Left");
-
-            XMLElement* s = _doc->NewElement("s");
-            t->LinkEndChild(s);
-            s->SetAttribute("font", 3);
-            s->SetAttribute("size", 10);
-            s->SetAttribute("face", 96);
-
-            out.clear();
-
-            out.printf("%s", mol.getPseudoAtom(i));
-            /*
-             * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
-             */
-            /*if (charge != 0) {
-                if (charge > 0) {
-                    out.printf("+%d", charge);
-                }
-                else {
-                    out.printf("-%d", charge);
-                }
-            }*/
-            buf.push(0);
-            XMLText* txt = _doc->NewText(buf.ptr());
-            s->LinkEndChild(txt);
-        }
-        else if (atom_number > 0 && atom_number != ELEM_C)
-        {
-            XMLElement* t = _doc->NewElement("t");
-            node->LinkEndChild(t);
-
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f", pos.x, -pos.y);
-            buf.push(0);
-            t->SetAttribute("p", buf.ptr());
-            t->SetAttribute("LabelJustification", "Left");
-
-            XMLElement* s = _doc->NewElement("s");
-            t->LinkEndChild(s);
-            s->SetAttribute("font", 3);
-            s->SetAttribute("size", 10);
-            s->SetAttribute("face", 96);
-
-            out.clear();
-            mol.getAtomSymbol(i, buf);
-            if (hcount > 0)
+            _super_atoms.emplace(i, std::vector<int>{});
+            auto& atoms_list = _super_atoms.at(i);
+            Superatom& sa = (Superatom&)sgroup;
+            for (int j = 0; j < sa.atoms.size(); ++j)
             {
-                buf.pop();
-                buf.push('H');
-            }
-
-            buf.push(0);
-            XMLText* txt = _doc->NewText(buf.ptr());
-            s->LinkEndChild(txt);
-            if (hcount > 1)
-            {
-                XMLElement* s = _doc->NewElement("s");
-                t->LinkEndChild(s);
-                s->SetAttribute("font", 3);
-                s->SetAttribute("size", 10);
-                s->SetAttribute("face", 32);
-
-                out.clear();
-                out.printf("%d", hcount);
-                buf.push(0);
-                XMLText* txt = _doc->NewText(buf.ptr());
-                s->LinkEndChild(txt);
+                _atoms_excluded.insert(sa.atoms[j]);
+                atoms_list.push_back(sa.atoms[j]);
             }
         }
-        else if (atom_number < 0 && mol.isQueryMolecule())
+    }
+
+    if (_atoms_excluded.size())
+        for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
         {
-            XMLElement* t = _doc->NewElement("t");
-            node->LinkEndChild(t);
+            auto& edge = mol.getEdge(i);
+            int v_count = 0;
+            if (_atoms_excluded.find(edge.beg) != _atoms_excluded.end())
+                v_count++;
+            if (_atoms_excluded.find(edge.end) != _atoms_excluded.end())
+                v_count++;
 
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f", pos.x, -pos.y);
-            buf.push(0);
-            t->SetAttribute("p", buf.ptr());
-            t->SetAttribute("LabelJustification", "Left");
+            if (v_count)
+                _bonds_excluded.insert(i);
 
-            XMLElement* s = _doc->NewElement("s");
-            t->LinkEndChild(s);
-            s->SetAttribute("font", 3);
-            s->SetAttribute("size", 10);
-            s->SetAttribute("face", 96);
+            if (v_count == 2)
+                _bonds_included.insert(i);
 
-            QS_DEF(Array<int>, list);
-            int query_atom_type;
+        }
+}
 
-            out.clear();
+void MoleculeCdxmlSaver::addBondToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, int bond_idx)
+{
+    const Edge& edge = mol.getEdge(bond_idx);
 
-            if (mol.isQueryMolecule() && (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), i, list)) != -1)
+    XMLElement* bond = _doc->NewElement("b");
+    fragment->LinkEndChild(bond);
+    bond->SetAttribute("id", _bonds_ids[bond_idx]);
+    bond->SetAttribute("B", _atoms_ids[edge.beg]);
+    bond->SetAttribute("E", _atoms_ids[edge.end]);
+
+    int order = mol.getBondOrder(bond_idx);
+
+    if (order == BOND_DOUBLE || order == BOND_TRIPLE)
+        bond->SetAttribute("Order", order);
+    else if (order == BOND_AROMATIC)
+    {
+        bond->SetAttribute("Order", "1.5");
+        bond->SetAttribute("Display", "Dash");
+        bond->SetAttribute("Display2", "Dash");
+    }
+    else
+        ; // Do not write single bond order
+
+    int dir = mol.getBondDirection(bond_idx);
+    int parity = mol.cis_trans.getParity(bond_idx);
+
+    if (mol.have_xyz && (dir == BOND_UP || dir == BOND_DOWN))
+    {
+        bond->SetAttribute("Display", (dir == BOND_UP) ? "WedgeBegin" : "WedgedHashBegin");
+    }
+    else if (!mol.have_xyz && parity != 0)
+    {
+        const int* subst = mol.cis_trans.getSubstituents(bond_idx);
+
+        int s1, s2, s3, s4;
+        s1 = _atoms_ids[subst[0]], s2 = _atoms_ids[subst[1]];
+        s3 = _atoms_ids[subst[2]], s4 = _atoms_ids[subst[3]];
+        if (parity == MoleculeCisTrans::TRANS)
+        {
+            std::swap(s3, s4);
+        }
+        QS_DEF(Array<char>, buf);
+        ArrayOutput out(buf);
+        out.printf("%d %d %d %d", s1, s2, s3, s4);
+        buf.push(0);
+        bond->SetAttribute("BondCircularOrdering", buf.ptr());
+    }
+}
+
+void MoleculeCdxmlSaver::addBondsToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment)
+{
+    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+    {
+        if (_bonds_excluded.find(i) == _bonds_excluded.end())
+            addBondToFragment(mol, fragment, i);
+    }
+}
+
+void MoleculeCdxmlSaver::addNodesToFragment(BaseMolecule& mol, XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord)
+{
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+    {
+        if (_atoms_excluded.find(i) == _atoms_excluded.end()) // skip atoms from superatoms
+            addNodeToFragment(mol, fragment, i, offset, min_coord, max_coord);
+    }
+}
+
+void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord)
+{
+    for (auto& kvp : _super_atoms)
+    {
+        std::vector<std::pair<int, int>> ext_connections;
+        std::vector<int> connection_order, bond_ordering;
+        std::unordered_set<int> int_connections;
+        XMLElement* node = _doc->NewElement("n");
+        fragment->LinkEndChild(node);
+        node->SetAttribute("id", ++_id);
+        int fragment_node_id = _id;
+        node->SetAttribute("NodeType", "Fragment");
+        XMLElement* super_fragment = _doc->NewElement("fragment");
+        super_fragment->SetAttribute("id", ++_id);
+        node->LinkEndChild(super_fragment);
+        for (auto atom_idx : kvp.second)
+        {
+            addNodeToFragment(mol, super_fragment, atom_idx, offset, min_coord, max_coord);
+            auto& vx = mol.getVertex(atom_idx);
+            for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
             {
-                if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                int nei_atom_idx = vx.neiVertex(nei_idx);
+                int nei_edge_idx = vx.neiEdge(nei_idx);
+                if (_atoms_excluded.find(nei_atom_idx) == _atoms_excluded.end())
                 {
-                    int k;
-
-                    if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
-                        out.writeString("NOT ");
-
-                    for (k = 0; k < list.size(); k++)
-                    {
-                        if (k > 0)
-                            out.writeChar(',');
-                        out.writeString(Element::toString(list[k]));
-                    }
-                    buf.push(0);
+                    // external neighbor found
+                    XMLElement* connection_node = _doc->NewElement("n");
+                    super_fragment->LinkEndChild(connection_node);
+                    connection_node->SetAttribute("id", ++_id);
+                    connection_node->SetAttribute("NodeType", "ExternalConnectionPoint");
+                    ext_connections.emplace_back(_id, _atoms_ids[atom_idx]);
+                    connection_order.push_back(_id);
+                    bond_ordering.push_back(++_id);
+                    _out_connections.emplace_back(_id, _atoms_ids[ nei_atom_idx ], fragment_node_id);
                 }
-                else
-                    mol.getAtomSymbol(i, buf);
-            }
 
-            XMLText* txt = _doc->NewText(buf.ptr());
-            s->LinkEndChild(txt);
+                if (_bonds_included.find(nei_edge_idx) != _bonds_included.end())
+                    int_connections.insert(nei_edge_idx);
+            }
         }
+
+        for (int edge_idx : int_connections)
+            addBondToFragment(mol, super_fragment, edge_idx);
+
+        for (const auto& ext_bond : ext_connections)
+        {
+            XMLElement* bond = _doc->NewElement("b");
+            super_fragment->LinkEndChild(bond);
+            bond->SetAttribute("id", ++_id);
+            bond->SetAttribute("B", ext_bond.first);
+            bond->SetAttribute("E", ext_bond.second);
+        }
+
+        if (connection_order.size() > 1)
+        {
+            std::string order;
+            for (int i = 0; i < connection_order.size(); ++i)
+            {
+                if (i)
+                    order += " ";
+                order += std::to_string(connection_order[i]);
+            }
+            super_fragment->SetAttribute("ConnectionOrder", order.c_str());
+        }
+
+        if (bond_ordering.size() > 1)
+        {
+            std::string order;
+            for (int i = 0; i < bond_ordering.size(); ++i)
+            {
+                if (i)
+                    order += " ";
+                order += std::to_string(bond_ordering[i]);
+            }
+            node->SetAttribute("BondOrdering", order.c_str());
+        }
+
+        auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
+        XMLElement* t = _doc->NewElement("t");
+        node->LinkEndChild(t);
+        t->SetAttribute("LabelJustification", "Left");
+        t->SetAttribute("LabelAlignment", "Above");
+        XMLElement* s = _doc->NewElement("s");
+        t->LinkEndChild(s);
+        XMLText* txt = _doc->NewText(sa.subscript.ptr());
+        s->LinkEndChild(txt);
     }
 }
 
 void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int id, Array<int>& ids)
 {
-    float scale = structure_scale * _bond_length;
+    _scale = structure_scale * _bond_length;
 
     LocaleGuard locale_guard;
 
@@ -626,99 +805,46 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
     _current = fragment;
 
     if (id > 0)
+    {
         fragment->SetAttribute("id", id);
+        _id = id;
+    }
+    else
+        fragment->SetAttribute("id", ++_id);
+
+    if (ids.size())
+    {
+        _atoms_ids.copy(ids);
+        if (_atoms_ids.top() > _id)
+            _id = _atoms_ids.top();
+    }
+    else
+        for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+            _atoms_ids.push(++_id);
+
+    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+        _bonds_ids.push(++_id);
 
     Vec2f min_coord, max_coord;
 
-    if (mol.vertexCount() > 0)
+    _collectSuperatoms(mol);
+    addFragmentNodes(mol, fragment, offset, min_coord, max_coord);
+    addNodesToFragment(mol, fragment, offset, min_coord, max_coord);
+    addBondsToFragment(mol, fragment);
+
+    for (const auto& out_bond : _out_connections)
     {
-        std::unordered_map<int, int> super_map;
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-        {
-            SGroup& sgroup = mol.sgroups.getSGroup(i);
-            if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
-            {
-                Superatom& sa = (Superatom&) sgroup;
-                for(int j = 0; j < sa.atoms.size(); ++j)
-                    super_map.emplace(sa.atoms[j], i);
-            }
-        }
-    }
-
-    addNodesToFragment(mol, fragment, structure_scale, offset, ids, min_coord, max_coord);
-
-    if (mol.edgeCount() > 0)
-    {
-        for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-        {
-            const Edge& edge = mol.getEdge(i);
-
-            XMLElement* bond = _doc->NewElement("b");
-            fragment->LinkEndChild(bond);
-
-            if (ids.size() > 0)
-            {
-                bond->SetAttribute("B", ids[edge.beg]);
-                bond->SetAttribute("E", ids[edge.end]);
-            }
-            else
-            {
-                bond->SetAttribute("B", edge.beg + 1);
-                bond->SetAttribute("E", edge.end + 1);
-            }
-
-            int order = mol.getBondOrder(i);
-
-            if (order == BOND_DOUBLE || order == BOND_TRIPLE)
-                bond->SetAttribute("Order", order);
-            else if (order == BOND_AROMATIC)
-            {
-                bond->SetAttribute("Order", "1.5");
-                bond->SetAttribute("Display", "Dash");
-                bond->SetAttribute("Display2", "Dash");
-            }
-            else
-                ; // Do not write single bond order
-
-            int dir = mol.getBondDirection(i);
-            int parity = mol.cis_trans.getParity(i);
-
-            if (mol.have_xyz && (dir == BOND_UP || dir == BOND_DOWN))
-            {
-                bond->SetAttribute("Display", (dir == BOND_UP) ? "WedgeBegin" : "WedgedHashBegin");
-            }
-            else if (!mol.have_xyz && parity != 0)
-            {
-                const int* subst = mol.cis_trans.getSubstituents(i);
-
-                int s1, s2, s3, s4;
-                if (ids.size() > 0)
-                {
-                    s1 = ids[subst[0]], s2 = ids[subst[1]];
-                    s3 = ids[subst[2]], s4 = ids[subst[3]];
-                }
-                else
-                {
-                    s1 = subst[0] + 1, s2 = subst[1] + 1;
-                    s3 = subst[2] + 1, s4 = subst[3] + 1;
-                }
-                if (parity == MoleculeCisTrans::TRANS)
-                {
-                    std::swap(s3, s4);
-                }
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
-                out.printf("%d %d %d %d", s1, s2, s3, s4);
-                buf.push(0);
-                bond->SetAttribute("BondCircularOrdering", buf.ptr());
-            }
-        }
+        XMLElement* bond = _doc->NewElement("b");
+        fragment->LinkEndChild(bond);
+        bond->SetAttribute("id", out_bond.id);
+        bond->SetAttribute("B", out_bond.beg);
+        bond->SetAttribute("E", out_bond.end);
     }
 
     if (mol.isChiral())
     {
         Vec2f chiral_pos(max_coord.x, max_coord.y);
-        Vec2f bbox(scale * chiral_pos.x, -scale * chiral_pos.y);
+        Vec2f bbox(_scale * chiral_pos.x, -_scale * chiral_pos.y);
 
         XMLElement* graphic = _doc->NewElement("graphic");
         fragment->LinkEndChild(graphic);
@@ -1167,9 +1293,10 @@ int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule& mol, int idx, int charge,
 
 void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
 {
-    Array<int> ids;
     Vec3f min_coord, max_coord;
-    ids.clear();
+    _atoms_ids.clear();
+    _bonds_ids.clear();
+    _id = 0;
 
     if (mol.have_xyz)
     {
@@ -1184,7 +1311,6 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
                 max_coord.max(pos);
             }
         }
-
         // Add margins
         max_coord.add(Vec3f(1, 1, 1));
         min_coord.sub(Vec3f(1, 1, 1));
@@ -1202,7 +1328,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
 
     Vec2f offset(-min_coord.x, -max_coord.y);
 
-    saveMoleculeFragment(mol, offset, 1, -1, ids);
+    saveMoleculeFragment(mol, offset, 1, -1, _atoms_ids);
     endPage();
     endDocument();
 }
