@@ -237,7 +237,8 @@ void MoleculeCdxmlSaver::addDefaultColorTable()
     addColorTable(color.ptr());
 }
 
-void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragment, int atom_idx, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord)
+void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragment, int atom_idx, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord,
+                                           Vec2f& node_pos)
 {
     Vec3f pos3 = mol.getAtomXyz(atom_idx);
     Vec2f pos(pos3.x, pos3.y);
@@ -252,6 +253,7 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
     }
 
     pos.scale(_scale);
+    node_pos.set(pos.x, -pos.y);
 
     int atom_number = mol.getAtomNumber(atom_idx);
     int charge = mol.getAtomCharge(atom_idx);
@@ -602,6 +604,9 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
 
 void MoleculeCdxmlSaver::_collectSuperatoms(BaseMolecule& mol)
 {
+    _atoms_excluded.clear();
+    _bonds_excluded.clear();
+    _bonds_included.clear();
     for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
         SGroup& sgroup = mol.sgroups.getSGroup(i);
@@ -631,9 +636,8 @@ void MoleculeCdxmlSaver::_collectSuperatoms(BaseMolecule& mol)
             if (v_count)
                 _bonds_excluded.insert(i);
 
-            if (v_count == 2)
+            if (v_count == 2) // 2 means that both bond's atoms belongs to superatom
                 _bonds_included.insert(i);
-
         }
 }
 
@@ -700,7 +704,7 @@ void MoleculeCdxmlSaver::addNodesToFragment(BaseMolecule& mol, XMLElement* fragm
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {
         if (_atoms_excluded.find(i) == _atoms_excluded.end()) // skip atoms from superatoms
-            addNodeToFragment(mol, fragment, i, offset, min_coord, max_coord);
+            addNodeToFragment(mol, fragment, i, offset, min_coord, max_coord, Vec2f());
     }
 }
 
@@ -719,9 +723,12 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         XMLElement* super_fragment = _doc->NewElement("fragment");
         super_fragment->SetAttribute("id", ++_id);
         node->LinkEndChild(super_fragment);
+        Vec2f node_pos(0, 0);
         for (auto atom_idx : kvp.second)
         {
-            addNodeToFragment(mol, super_fragment, atom_idx, offset, min_coord, max_coord);
+            Vec2f pos;
+            addNodeToFragment(mol, super_fragment, atom_idx, offset, min_coord, max_coord, pos);
+            node_pos.add(pos);
             auto& vx = mol.getVertex(atom_idx);
             for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
             {
@@ -737,13 +744,17 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
                     ext_connections.emplace_back(_id, _atoms_ids[atom_idx]);
                     connection_order.push_back(_id);
                     bond_ordering.push_back(++_id);
-                    _out_connections.emplace_back(_id, _atoms_ids[ nei_atom_idx ], fragment_node_id);
+                    _out_connections.emplace_back(_id, _atoms_ids[nei_atom_idx], fragment_node_id);
                 }
 
                 if (_bonds_included.find(nei_edge_idx) != _bonds_included.end())
                     int_connections.insert(nei_edge_idx);
             }
         }
+
+        node_pos.scale(1.0 / kvp.second.size());
+        std::string node_pos_str = std::to_string(node_pos.x) + " " + std::to_string(node_pos.y);
+        node->SetAttribute("p", node_pos_str.c_str());
 
         for (int edge_idx : int_connections)
             addBondToFragment(mol, super_fragment, edge_idx);
@@ -1296,6 +1307,8 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
     Vec3f min_coord, max_coord;
     _atoms_ids.clear();
     _bonds_ids.clear();
+    _super_atoms.clear();
+
     _id = 0;
 
     if (mol.have_xyz)

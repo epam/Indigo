@@ -55,7 +55,8 @@ namespace indigo
         ~MoleculeCdxmlSaver();
 
         void saveMolecule(BaseMolecule& mol);
-        void addNodeToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, int atom_idx, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord);
+        void addNodeToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, int atom_idx, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord,
+                               Vec2f& node_pos);
 
         void addBondToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, int bond_idx);
 
