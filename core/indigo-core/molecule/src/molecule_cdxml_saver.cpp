@@ -701,10 +701,11 @@ void MoleculeCdxmlSaver::addBondsToFragment(BaseMolecule& mol, tinyxml2::XMLElem
 
 void MoleculeCdxmlSaver::addNodesToFragment(BaseMolecule& mol, XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord)
 {
+    Vec2f dummy_pos;
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {
         if (_atoms_excluded.find(i) == _atoms_excluded.end()) // skip atoms from superatoms
-            addNodeToFragment(mol, fragment, i, offset, min_coord, max_coord, Vec2f());
+            addNodeToFragment(mol, fragment, i, offset, min_coord, max_coord, dummy_pos);
     }
 }
 
