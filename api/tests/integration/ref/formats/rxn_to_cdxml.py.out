@@ -707,8 +707,8 @@ CN_Bond-S-GRP.rxn
             <b id="10" B="5" E="7"/>
         </fragment>
         <fragment id="6">
-            <n id="12" NodeType="Fragment" p="249.370483 172.433990">
-                <fragment id="13">
+            <n id="12" NodeType="Fragment" p="249.370483 172.433990" BondOrdering="15 17">
+                <fragment id="13" ConnectionOrder="14 16">
                     <n id="7" Element="7" NumHydrogens="1" p="234.026993 181.292999">
                         <t p="234.026993 181.292999" LabelJustification="Left">
                             <s font="3" size="10" face="96">NH</s>
@@ -716,11 +716,17 @@ CN_Bond-S-GRP.rxn
                     </n>
                     <n id="14" NodeType="ExternalConnectionPoint"/>
                     <n id="8" p="264.713989 163.574997"/>
-                    <b id="6" B="7" E="8"/>
-                    <b id="16" B="14" E="7"/>
+                    <n id="16" NodeType="ExternalConnectionPoint"/>
+                    <b id="18" B="14" E="7"/>
+                    <b id="19" B="16" E="8"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
+                </t>
+            </n>
+            <n id="7" Element="7" NumHydrogens="1" p="234.026993 181.292999">
+                <t p="234.026993 181.292999" LabelJustification="Left">
+                    <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
             <n id="9" Element="1" p="234.026993 216.735001">
@@ -728,37 +734,51 @@ CN_Bond-S-GRP.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
+            <b id="10" B="7" E="9"/>
             <b id="10" B="5" E="7"/>
             <b id="15" B="9" E="12"/>
+            <b id="17" B="7" E="12"/>
         </fragment>
         <fragment id="10">
-            <n id="16" NodeType="Fragment" p="424.022034 182.889008">
-                <fragment id="17">
+            <n id="16" NodeType="Fragment" p="424.022034 182.889008" BondOrdering="19 21">
+                <fragment id="17" ConnectionOrder="18 20">
                     <n id="11" p="413.790009 212.423996"/>
+                    <n id="18" NodeType="ExternalConnectionPoint"/>
                     <n id="12" Element="7" NumHydrogens="1" p="413.790009 176.982010">
                         <t p="413.790009 176.982010" LabelJustification="Left">
                             <s font="3" size="10" face="96">NH</s>
                         </t>
                     </n>
                     <n id="13" p="444.486023 159.261002"/>
-                    <b id="6" B="11" E="12"/>
-                    <b id="10" B="12" E="13"/>
+                    <n id="20" NodeType="ExternalConnectionPoint"/>
+                    <b id="22" B="18" E="11"/>
+                    <b id="23" B="20" E="13"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
-            <n id="18" NodeType="Fragment" p="413.790009 212.423996">
-                <fragment id="19">
+            <n id="24" NodeType="Fragment" p="413.790009 212.423996">
+                <fragment id="25">
                     <n id="11" p="413.790009 212.423996"/>
-                    <b id="6" B="11" E="12"/>
+                    <n id="26" NodeType="ExternalConnectionPoint"/>
+                    <b id="28" B="26" E="11"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R1</s>
                 </t>
             </n>
+            <n id="12" Element="7" NumHydrogens="1" p="413.790009 176.982010">
+                <t p="413.790009 176.982010" LabelJustification="Left">
+                    <s font="3" size="10" face="96">NH</s>
+                </t>
+            </n>
             <b id="10" B="5" E="7"/>
             <b id="15" B="9" E="12"/>
+            <b id="17" B="7" E="12"/>
+            <b id="19" B="12" E="16"/>
+            <b id="21" B="12" E="16"/>
+            <b id="27" B="12" E="24"/>
         </fragment>
         <t p="198.396011 175.387482" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -809,8 +829,8 @@ CN_Bond-S-GRP.rxn
             <b id="10" B="5" E="7"/>
         </fragment>
         <fragment id="6">
-            <n id="12" NodeType="Fragment" p="249.370483 172.433990">
-                <fragment id="13">
+            <n id="12" NodeType="Fragment" p="249.370483 172.433990" BondOrdering="15 17">
+                <fragment id="13" ConnectionOrder="14 16">
                     <n id="7" Element="7" NumHydrogens="1" p="234.026993 181.292999">
                         <t p="234.026993 181.292999" LabelJustification="Left">
                             <s font="3" size="10" face="96">NH</s>
@@ -818,11 +838,17 @@ CN_Bond-S-GRP.rxn
                     </n>
                     <n id="14" NodeType="ExternalConnectionPoint"/>
                     <n id="8" p="264.713989 163.574997"/>
-                    <b id="6" B="7" E="8"/>
-                    <b id="16" B="14" E="7"/>
+                    <n id="16" NodeType="ExternalConnectionPoint"/>
+                    <b id="18" B="14" E="7"/>
+                    <b id="19" B="16" E="8"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
+                </t>
+            </n>
+            <n id="7" Element="7" NumHydrogens="1" p="234.026993 181.292999">
+                <t p="234.026993 181.292999" LabelJustification="Left">
+                    <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
             <n id="9" Element="1" p="234.026993 216.735001">
@@ -830,37 +856,51 @@ CN_Bond-S-GRP.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
+            <b id="10" B="7" E="9"/>
             <b id="10" B="5" E="7"/>
             <b id="15" B="9" E="12"/>
+            <b id="17" B="7" E="12"/>
         </fragment>
         <fragment id="10">
-            <n id="16" NodeType="Fragment" p="424.022034 182.889008">
-                <fragment id="17">
+            <n id="16" NodeType="Fragment" p="424.022034 182.889008" BondOrdering="19 21">
+                <fragment id="17" ConnectionOrder="18 20">
                     <n id="11" p="413.790009 212.423996"/>
+                    <n id="18" NodeType="ExternalConnectionPoint"/>
                     <n id="12" Element="7" NumHydrogens="1" p="413.790009 176.982010">
                         <t p="413.790009 176.982010" LabelJustification="Left">
                             <s font="3" size="10" face="96">NH</s>
                         </t>
                     </n>
                     <n id="13" p="444.486023 159.261002"/>
-                    <b id="6" B="11" E="12"/>
-                    <b id="10" B="12" E="13"/>
+                    <n id="20" NodeType="ExternalConnectionPoint"/>
+                    <b id="22" B="18" E="11"/>
+                    <b id="23" B="20" E="13"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
-            <n id="18" NodeType="Fragment" p="413.790009 212.423996">
-                <fragment id="19">
+            <n id="24" NodeType="Fragment" p="413.790009 212.423996">
+                <fragment id="25">
                     <n id="11" p="413.790009 212.423996"/>
-                    <b id="6" B="11" E="12"/>
+                    <n id="26" NodeType="ExternalConnectionPoint"/>
+                    <b id="28" B="26" E="11"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R1</s>
                 </t>
             </n>
+            <n id="12" Element="7" NumHydrogens="1" p="413.790009 176.982010">
+                <t p="413.790009 176.982010" LabelJustification="Left">
+                    <s font="3" size="10" face="96">NH</s>
+                </t>
+            </n>
             <b id="10" B="5" E="7"/>
             <b id="15" B="9" E="12"/>
+            <b id="17" B="7" E="12"/>
+            <b id="19" B="12" E="16"/>
+            <b id="21" B="12" E="16"/>
+            <b id="27" B="12" E="24"/>
         </fragment>
         <t p="198.396011 175.387482" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
