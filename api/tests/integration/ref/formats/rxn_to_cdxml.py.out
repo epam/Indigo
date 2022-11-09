@@ -689,7 +689,7 @@ CN_Bond-S-GRP.rxn
     </colortable>
     <page HeightPages="1" WidthPages="1">
         <fragment id="3">
-            <n id="7" NodeType="Fragment" p="162.764999 193.110001">
+            <n id="7" NodeType="Fragment">
                 <fragment id="8">
                     <n id="4" p="162.764999 193.110001"/>
                     <n id="9" NodeType="ExternalConnectionPoint"/>
@@ -707,7 +707,7 @@ CN_Bond-S-GRP.rxn
             <b id="10" B="5" E="7"/>
         </fragment>
         <fragment id="6">
-            <n id="12" NodeType="Fragment" p="249.370483 172.433990" BondOrdering="15 17">
+            <n id="12" NodeType="Fragment" BondOrdering="15 17">
                 <fragment id="13" ConnectionOrder="14 16">
                     <n id="7" Element="7" NumHydrogens="1" p="234.026993 181.292999">
                         <t p="234.026993 181.292999" LabelJustification="Left">
@@ -740,7 +740,7 @@ CN_Bond-S-GRP.rxn
             <b id="17" B="7" E="12"/>
         </fragment>
         <fragment id="10">
-            <n id="16" NodeType="Fragment" p="424.022034 182.889008" BondOrdering="19 21">
+            <n id="16" NodeType="Fragment" BondOrdering="19 21">
                 <fragment id="17" ConnectionOrder="18 20">
                     <n id="11" p="413.790009 212.423996"/>
                     <n id="18" NodeType="ExternalConnectionPoint"/>
@@ -758,7 +758,7 @@ CN_Bond-S-GRP.rxn
                     <s>R2</s>
                 </t>
             </n>
-            <n id="24" NodeType="Fragment" p="413.790009 212.423996">
+            <n id="24" NodeType="Fragment">
                 <fragment id="25">
                     <n id="11" p="413.790009 212.423996"/>
                     <n id="26" NodeType="ExternalConnectionPoint"/>
@@ -811,7 +811,7 @@ CN_Bond-S-GRP.rxn
     </colortable>
     <page HeightPages="1" WidthPages="1">
         <fragment id="3">
-            <n id="7" NodeType="Fragment" p="162.764999 193.110001">
+            <n id="7" NodeType="Fragment">
                 <fragment id="8">
                     <n id="4" p="162.764999 193.110001"/>
                     <n id="9" NodeType="ExternalConnectionPoint"/>
@@ -829,7 +829,7 @@ CN_Bond-S-GRP.rxn
             <b id="10" B="5" E="7"/>
         </fragment>
         <fragment id="6">
-            <n id="12" NodeType="Fragment" p="249.370483 172.433990" BondOrdering="15 17">
+            <n id="12" NodeType="Fragment" BondOrdering="15 17">
                 <fragment id="13" ConnectionOrder="14 16">
                     <n id="7" Element="7" NumHydrogens="1" p="234.026993 181.292999">
                         <t p="234.026993 181.292999" LabelJustification="Left">
@@ -862,7 +862,7 @@ CN_Bond-S-GRP.rxn
             <b id="17" B="7" E="12"/>
         </fragment>
         <fragment id="10">
-            <n id="16" NodeType="Fragment" p="424.022034 182.889008" BondOrdering="19 21">
+            <n id="16" NodeType="Fragment" BondOrdering="19 21">
                 <fragment id="17" ConnectionOrder="18 20">
                     <n id="11" p="413.790009 212.423996"/>
                     <n id="18" NodeType="ExternalConnectionPoint"/>
@@ -880,7 +880,7 @@ CN_Bond-S-GRP.rxn
                     <s>R2</s>
                 </t>
             </n>
-            <n id="24" NodeType="Fragment" p="413.790009 212.423996">
+            <n id="24" NodeType="Fragment">
                 <fragment id="25">
                     <n id="11" p="413.790009 212.423996"/>
                     <n id="26" NodeType="ExternalConnectionPoint"/>

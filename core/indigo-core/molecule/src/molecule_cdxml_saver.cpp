@@ -724,12 +724,10 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         XMLElement* super_fragment = _doc->NewElement("fragment");
         super_fragment->SetAttribute("id", ++_id);
         node->LinkEndChild(super_fragment);
-        Vec2f node_pos(0, 0);
         for (auto atom_idx : kvp.second)
         {
             Vec2f pos;
             addNodeToFragment(mol, super_fragment, atom_idx, offset, min_coord, max_coord, pos);
-            node_pos.add(pos);
             auto& vx = mol.getVertex(atom_idx);
             for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
             {
@@ -752,10 +750,6 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
                     int_connections.insert(nei_edge_idx);
             }
         }
-
-        node_pos.scale(1.0 / kvp.second.size());
-        std::string node_pos_str = std::to_string(node_pos.x) + " " + std::to_string(node_pos.y);
-        node->SetAttribute("p", node_pos_str.c_str());
 
         for (int edge_idx : int_connections)
             addBondToFragment(mol, super_fragment, edge_idx);
