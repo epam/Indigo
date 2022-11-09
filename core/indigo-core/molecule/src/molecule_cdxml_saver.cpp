@@ -211,7 +211,7 @@ void MoleculeCdxmlSaver::addDefaultFontTable()
     attrs.clear();
 
     name.readString("fonttable", true);
-    startCurrentElement(-1, name, attrs);
+    startCurrentElement(++_id, name, attrs);
 
     name.readString("font", true);
     attrs.insert("charset", "utf-8");
