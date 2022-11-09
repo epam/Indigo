@@ -154,6 +154,7 @@ renderer.renderToFile(mol, joinPathPy("out/smart-layout-crown.png", __file__))
 print(checkImageSimilarity("smart-layout-crown.png"))
 
 print("****** Aliases *****")
+# mol = indigo.loadSmarts("[N,C,O,P,S,U][N,C,O,P,S,U]")
 mol = indigo.loadMolecule("CN |$Carbon;Nitrogen$|")
 indigo.setOption("render-coloring", "true")
 indigo.setOption("render-coloring-aliases", "true")

@@ -4254,6 +4254,11 @@ void MoleculeRenderInternal::_precalcScale()
             carr.readString(bm.getTemplateAtom(i), true);
             output_length = carr.size();
         }
+        else if (bm.aliases.find(i))
+        {
+            carr.readString(bm.aliases.at(i).ptr(), true);
+            output_length = carr.size();
+        }
         else if (bm.isRSite(i))
         {
             output_length = 0;

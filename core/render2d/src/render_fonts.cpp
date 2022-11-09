@@ -105,9 +105,8 @@ double RenderContext::fontGetSize(FONT_SIZE size)
 void RenderContext::fontsSetFont(const TextItem& ti)
 {
     std::lock_guard<std::mutex> _lock(_cairo_mutex);
-    cairo_select_font_face(_cr, _fontfamily.ptr(), ti.italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL,
-                           ti.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
-
+    // TODO: add italic and bold fonts
+    cairo_set_font_face(_cr, _cairo_face);
     cairoCheckStatus();
     cairo_set_font_size(_cr, ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
     cairoCheckStatus();

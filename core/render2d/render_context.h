@@ -22,7 +22,7 @@
 #include <cairo-pdf.h>
 #include <cairo-svg.h>
 #include <cairo.h>
-#include <vector>
+#include <freetype/freetype.h>
 
 #include "render_common.h"
 
@@ -208,6 +208,9 @@ namespace indigo
         bool metafileFontsToCurves;
         cairo_t* _cr;
         cairo_surface_t* _surface;
+        cairo_font_face_t* _cairo_face;
+        FT_Library  library;
+        FT_Face     face;
         void* _meta_hdc;
 
     public:
