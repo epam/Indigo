@@ -1810,7 +1810,7 @@ molfile loader: atom lists are allowed only for queries
                     <s font="3" size="10" face="96">A</s>
                 </t>
             </n>
-            <n id="3" Element="6" p="6.750000 79.875000"/>
+            <n id="3" Element="6" p="6.750000 79.875000" Geometry="Tetrahedral" BondOrdering="2 5 6 4" EnhancedStereoType="And" EnhancedStereoGroupNum="1"/>
             <n id="4" Element="1" p="24.249001 62.250000">
                 <t p="24.249001 62.250000" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
@@ -1850,7 +1850,7 @@ molfile loader: atom lists are allowed only for queries
                     <s font="3" size="10" face="96">A</s>
                 </t>
             </n>
-            <n id="12" Element="6" p="280.125000 79.875000"/>
+            <n id="12" Element="6" p="280.125000 79.875000" Geometry="Tetrahedral" BondOrdering="11 15 14 13" EnhancedStereoType="And" EnhancedStereoGroupNum="1"/>
             <n id="13" Element="1" p="297.623993 62.250000">
                 <t p="297.623993 62.250000" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
