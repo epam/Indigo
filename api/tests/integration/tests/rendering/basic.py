@@ -145,44 +145,13 @@ cnt1 = indigo.countReferences()
 # Usually these counters should be equal
 assert cnt0 >= cnt1
 
-print("****** Smart layout *****")
+print("****** Smart layout*****")
 indigo.resetOptions()
 mol = indigo.loadMolecule("C1OCCOCCOCCOCCOCCOCCOCCOCCOCCOC1")
 indigo.setOption("render-output-format", "png")
 indigo.setOption("smart-layout", "true")
 renderer.renderToFile(mol, joinPathPy("out/smart-layout-crown.png", __file__))
 print(checkImageSimilarity("smart-layout-crown.png"))
-
-print("****** Aliases *****")
-# mol = indigo.loadSmarts("[N,C,O,P,S,U][N,C,O,P,S,U]")
-mol = indigo.loadMolecule("""
-  Ketcher 02051318482D 1   1.00000     0.00000     0
-
-  5  4  0     0  0            999 V2000
-   -4.1250   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.2590   -8.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.3929   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.5269   -8.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.6609   -8.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0     0  0
-  2  3  1  0     0  0
-  3  4  1  0     0  0
-  4  5  1  0     0  0
-M  STY  1   1 DAT
-M  SLB  1   1   1
-M  SAL   1  2   4   5
-M  SDT   1 single-name                    F                         
-M  SDD   1     1.6314   -1.1000    DR    ALL  1      1  
-M  SED   1 single-ve-бензол
-M  END
-""")
-indigo.setOption("render-coloring", "true")
-# indigo.setOption("render-coloring-aliases", "true")
-renderer.renderToFile(mol, joinPathPy("out/alias_colored.png", __file__))
-print(checkImageSimilarity("alias_colored.png"))
-# indigo.setOption("render-coloring-aliases", "false")
-renderer.renderToFile(mol, joinPathPy("out/alias.png", __file__))
-print(checkImageSimilarity("alias.png"))
 
 if isIronPython():
     renderer.Dispose()
