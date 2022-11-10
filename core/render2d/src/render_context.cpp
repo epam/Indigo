@@ -297,7 +297,7 @@ void RenderContext::init()
         {
             throw std::runtime_error("error loading font");
         }
-        _cairo_face = cairo_ft_font_face_create_for_ft_face(face, 0x0);
+        _cairo_face = cairo_ft_font_face_create_for_ft_face(face, 8);
         cairoCheckStatus();
         cairo_set_font_face(_cr, _cairo_face);
         cairoCheckStatus();
