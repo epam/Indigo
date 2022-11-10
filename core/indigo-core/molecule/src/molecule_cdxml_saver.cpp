@@ -801,6 +801,10 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
 
 void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int id, Array<int>& ids)
 {
+    _atoms_ids.clear();
+    _bonds_ids.clear();
+    _super_atoms.clear();
+
     _scale = structure_scale * _bond_length;
 
     LocaleGuard locale_guard;
@@ -1300,9 +1304,6 @@ int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule& mol, int idx, int charge,
 void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
 {
     Vec3f min_coord, max_coord;
-    _atoms_ids.clear();
-    _bonds_ids.clear();
-    _super_atoms.clear();
 
     _id = 0;
 

@@ -96,10 +96,10 @@ molfile loader: atom lists are allowed only for queries
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="17" B="18" E="19"/>
-            <b id="18" B="18" E="21"/>
-            <b id="19" B="18" E="20"/>
-            <b id="20" B="19" E="22"/>
+            <b id="23" B="18" E="19"/>
+            <b id="24" B="18" E="21"/>
+            <b id="25" B="18" E="20"/>
+            <b id="26" B="19" E="22"/>
         </fragment>
         <fragment id="23">
             <n id="24" p="180.876007 91.377007"/>
@@ -113,8 +113,8 @@ molfile loader: atom lists are allowed only for queries
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="17" B="24" E="25"/>
-            <b id="18" B="24" E="26"/>
+            <b id="27" B="24" E="25"/>
+            <b id="28" B="24" E="26"/>
         </fragment>
         <fragment id="27">
             <n id="28" p="299.832001 72.249001"/>
@@ -147,21 +147,21 @@ molfile loader: atom lists are allowed only for queries
             </n>
             <n id="40" p="364.074005 34.923000"/>
             <n id="41" p="406.962006 109.490997"/>
-            <b id="17" B="31" E="28"/>
-            <b id="18" B="32" E="33"/>
-            <b id="19" B="32" E="37"/>
-            <b id="20" B="33" E="34"/>
-            <b id="21" B="34" E="35"/>
-            <b id="22" B="35" E="36"/>
-            <b id="23" B="36" E="37"/>
-            <b id="24" B="29" E="30"/>
-            <b id="25" B="34" E="38" Order="2"/>
-            <b id="26" B="30" E="33" Order="2"/>
-            <b id="27" B="36" E="39" Order="2"/>
-            <b id="28" B="28" E="29" Order="2"/>
-            <b id="29" B="37" E="40"/>
-            <b id="23" B="32" E="31" Order="2"/>
-            <b id="24" B="35" E="41"/>
+            <b id="42" B="31" E="28"/>
+            <b id="43" B="32" E="33"/>
+            <b id="44" B="32" E="37"/>
+            <b id="45" B="33" E="34"/>
+            <b id="46" B="34" E="35"/>
+            <b id="47" B="35" E="36"/>
+            <b id="48" B="36" E="37"/>
+            <b id="49" B="29" E="30"/>
+            <b id="50" B="34" E="38" Order="2"/>
+            <b id="51" B="30" E="33" Order="2"/>
+            <b id="52" B="36" E="39" Order="2"/>
+            <b id="53" B="28" E="29" Order="2"/>
+            <b id="54" B="37" E="40"/>
+            <b id="55" B="32" E="31" Order="2"/>
+            <b id="56" B="35" E="41"/>
         </fragment>
         <t p="-1.309500 78.836998" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -250,11 +250,11 @@ molfile loader: 'any' atoms are allowed only for queries
                 </t>
             </n>
             <n id="14" p="176.750992 46.500000"/>
-            <b id="8" B="10" E="12"/>
-            <b id="9" B="10" E="11"/>
-            <b id="10" B="12" E="13" Order="2"/>
-            <b id="15" B="9" E="10"/>
-            <b id="16" B="12" E="14"/>
+            <b id="15" B="10" E="12"/>
+            <b id="16" B="10" E="11"/>
+            <b id="17" B="12" E="13" Order="2"/>
+            <b id="18" B="9" E="10"/>
+            <b id="19" B="12" E="14"/>
         </fragment>
         <graphic BoundingBox="97.500000 21.686998 24.750006 16.624500" id="1" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
         <scheme>
@@ -329,10 +329,10 @@ AmideFormation.ket
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="15" B="16" E="17"/>
-            <b id="16" B="16" E="19"/>
-            <b id="17" B="16" E="18"/>
-            <b id="18" B="17" E="20"/>
+            <b id="21" B="16" E="17"/>
+            <b id="22" B="16" E="19"/>
+            <b id="23" B="16" E="18"/>
+            <b id="24" B="17" E="20"/>
         </fragment>
         <fragment id="21">
             <n id="22" p="578.215332 72.000000"/>
@@ -348,10 +348,10 @@ AmideFormation.ket
                 </t>
             </n>
             <n id="26" p="702.922974 47.999996"/>
-            <b id="15" B="22" E="23"/>
-            <b id="16" B="23" E="25"/>
-            <b id="17" B="23" E="24" Order="2"/>
-            <b id="18" B="25" E="26"/>
+            <b id="27" B="22" E="23"/>
+            <b id="28" B="23" E="25"/>
+            <b id="29" B="23" E="24" Order="2"/>
+            <b id="30" B="25" E="26"/>
         </fragment>
         <t p="206.907669 36.000000" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -428,10 +428,10 @@ AmideFormation.ket
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="15" B="16" E="17"/>
-            <b id="16" B="16" E="19"/>
-            <b id="17" B="16" E="18"/>
-            <b id="18" B="17" E="20"/>
+            <b id="21" B="16" E="17"/>
+            <b id="22" B="16" E="19"/>
+            <b id="23" B="16" E="18"/>
+            <b id="24" B="17" E="20"/>
         </fragment>
         <fragment id="21">
             <n id="22" p="578.215332 72.000000"/>
@@ -447,10 +447,10 @@ AmideFormation.ket
                 </t>
             </n>
             <n id="26" p="702.922974 47.999996"/>
-            <b id="15" B="22" E="23"/>
-            <b id="16" B="23" E="25"/>
-            <b id="17" B="23" E="24" Order="2"/>
-            <b id="18" B="25" E="26"/>
+            <b id="27" B="22" E="23"/>
+            <b id="28" B="23" E="25"/>
+            <b id="29" B="23" E="24" Order="2"/>
+            <b id="30" B="25" E="26"/>
         </fragment>
         <t p="206.907669 36.000000" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -528,10 +528,10 @@ AmideFormation.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="9" B="10" E="11"/>
-            <b id="10" B="10" E="13"/>
-            <b id="11" B="10" E="12"/>
-            <b id="12" B="11" E="14"/>
+            <b id="15" B="10" E="11"/>
+            <b id="16" B="10" E="13"/>
+            <b id="17" B="10" E="12"/>
+            <b id="18" B="11" E="14"/>
         </fragment>
         <fragment id="15">
             <n id="16" p="257.625000 24.375000"/>
@@ -547,10 +547,10 @@ AmideFormation.rxn
                 </t>
             </n>
             <n id="20" p="321.876007 11.625000"/>
-            <b id="9" B="16" E="17"/>
-            <b id="10" B="17" E="19"/>
-            <b id="11" B="17" E="18" Order="2"/>
-            <b id="12" B="19" E="20"/>
+            <b id="21" B="16" E="17"/>
+            <b id="22" B="17" E="19"/>
+            <b id="23" B="17" E="18" Order="2"/>
+            <b id="24" B="19" E="20"/>
         </fragment>
         <t p="30.780001 23.812502" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -630,10 +630,10 @@ AmideFormation.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="9" B="10" E="11"/>
-            <b id="10" B="10" E="13"/>
-            <b id="11" B="10" E="12"/>
-            <b id="12" B="11" E="14"/>
+            <b id="15" B="10" E="11"/>
+            <b id="16" B="10" E="13"/>
+            <b id="17" B="10" E="12"/>
+            <b id="18" B="11" E="14"/>
         </fragment>
         <fragment id="15">
             <n id="16" p="257.625000 24.375000"/>
@@ -649,10 +649,10 @@ AmideFormation.rxn
                 </t>
             </n>
             <n id="20" p="321.876007 11.625000"/>
-            <b id="9" B="16" E="17"/>
-            <b id="10" B="17" E="19"/>
-            <b id="11" B="17" E="18" Order="2"/>
-            <b id="12" B="19" E="20"/>
+            <b id="21" B="16" E="17"/>
+            <b id="22" B="17" E="19"/>
+            <b id="23" B="17" E="18" Order="2"/>
+            <b id="24" B="19" E="20"/>
         </fragment>
         <t p="30.780001 23.812502" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -707,18 +707,11 @@ CN_Bond-S-GRP.rxn
             <b id="10" B="5" E="7"/>
         </fragment>
         <fragment id="6">
-            <n id="12" NodeType="Fragment" BondOrdering="15 17">
-                <fragment id="13" ConnectionOrder="14 16">
-                    <n id="7" Element="7" NumHydrogens="1" p="234.026993 181.292999">
-                        <t p="234.026993 181.292999" LabelJustification="Left">
-                            <s font="3" size="10" face="96">NH</s>
-                        </t>
-                    </n>
-                    <n id="14" NodeType="ExternalConnectionPoint"/>
+            <n id="12" NodeType="Fragment">
+                <fragment id="13">
                     <n id="8" p="264.713989 163.574997"/>
-                    <n id="16" NodeType="ExternalConnectionPoint"/>
-                    <b id="18" B="14" E="7"/>
-                    <b id="19" B="16" E="8"/>
+                    <n id="14" NodeType="ExternalConnectionPoint"/>
+                    <b id="16" B="14" E="8"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
@@ -734,35 +727,26 @@ CN_Bond-S-GRP.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="10" B="7" E="9"/>
+            <b id="11" B="7" E="9"/>
             <b id="10" B="5" E="7"/>
-            <b id="15" B="9" E="12"/>
-            <b id="17" B="7" E="12"/>
+            <b id="15" B="7" E="12"/>
         </fragment>
         <fragment id="10">
-            <n id="16" NodeType="Fragment" BondOrdering="19 21">
-                <fragment id="17" ConnectionOrder="18 20">
-                    <n id="11" p="413.790009 212.423996"/>
-                    <n id="18" NodeType="ExternalConnectionPoint"/>
-                    <n id="12" Element="7" NumHydrogens="1" p="413.790009 176.982010">
-                        <t p="413.790009 176.982010" LabelJustification="Left">
-                            <s font="3" size="10" face="96">NH</s>
-                        </t>
-                    </n>
+            <n id="16" NodeType="Fragment">
+                <fragment id="17">
                     <n id="13" p="444.486023 159.261002"/>
-                    <n id="20" NodeType="ExternalConnectionPoint"/>
-                    <b id="22" B="18" E="11"/>
-                    <b id="23" B="20" E="13"/>
+                    <n id="18" NodeType="ExternalConnectionPoint"/>
+                    <b id="20" B="18" E="13"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
-            <n id="24" NodeType="Fragment">
-                <fragment id="25">
+            <n id="21" NodeType="Fragment">
+                <fragment id="22">
                     <n id="11" p="413.790009 212.423996"/>
-                    <n id="26" NodeType="ExternalConnectionPoint"/>
-                    <b id="28" B="26" E="11"/>
+                    <n id="23" NodeType="ExternalConnectionPoint"/>
+                    <b id="25" B="23" E="11"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R1</s>
@@ -774,11 +758,9 @@ CN_Bond-S-GRP.rxn
                 </t>
             </n>
             <b id="10" B="5" E="7"/>
-            <b id="15" B="9" E="12"/>
-            <b id="17" B="7" E="12"/>
+            <b id="15" B="7" E="12"/>
             <b id="19" B="12" E="16"/>
-            <b id="21" B="12" E="16"/>
-            <b id="27" B="12" E="24"/>
+            <b id="24" B="12" E="21"/>
         </fragment>
         <t p="198.396011 175.387482" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -829,18 +811,11 @@ CN_Bond-S-GRP.rxn
             <b id="10" B="5" E="7"/>
         </fragment>
         <fragment id="6">
-            <n id="12" NodeType="Fragment" BondOrdering="15 17">
-                <fragment id="13" ConnectionOrder="14 16">
-                    <n id="7" Element="7" NumHydrogens="1" p="234.026993 181.292999">
-                        <t p="234.026993 181.292999" LabelJustification="Left">
-                            <s font="3" size="10" face="96">NH</s>
-                        </t>
-                    </n>
-                    <n id="14" NodeType="ExternalConnectionPoint"/>
+            <n id="12" NodeType="Fragment">
+                <fragment id="13">
                     <n id="8" p="264.713989 163.574997"/>
-                    <n id="16" NodeType="ExternalConnectionPoint"/>
-                    <b id="18" B="14" E="7"/>
-                    <b id="19" B="16" E="8"/>
+                    <n id="14" NodeType="ExternalConnectionPoint"/>
+                    <b id="16" B="14" E="8"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
@@ -856,35 +831,26 @@ CN_Bond-S-GRP.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="10" B="7" E="9"/>
+            <b id="11" B="7" E="9"/>
             <b id="10" B="5" E="7"/>
-            <b id="15" B="9" E="12"/>
-            <b id="17" B="7" E="12"/>
+            <b id="15" B="7" E="12"/>
         </fragment>
         <fragment id="10">
-            <n id="16" NodeType="Fragment" BondOrdering="19 21">
-                <fragment id="17" ConnectionOrder="18 20">
-                    <n id="11" p="413.790009 212.423996"/>
-                    <n id="18" NodeType="ExternalConnectionPoint"/>
-                    <n id="12" Element="7" NumHydrogens="1" p="413.790009 176.982010">
-                        <t p="413.790009 176.982010" LabelJustification="Left">
-                            <s font="3" size="10" face="96">NH</s>
-                        </t>
-                    </n>
+            <n id="16" NodeType="Fragment">
+                <fragment id="17">
                     <n id="13" p="444.486023 159.261002"/>
-                    <n id="20" NodeType="ExternalConnectionPoint"/>
-                    <b id="22" B="18" E="11"/>
-                    <b id="23" B="20" E="13"/>
+                    <n id="18" NodeType="ExternalConnectionPoint"/>
+                    <b id="20" B="18" E="13"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
-            <n id="24" NodeType="Fragment">
-                <fragment id="25">
+            <n id="21" NodeType="Fragment">
+                <fragment id="22">
                     <n id="11" p="413.790009 212.423996"/>
-                    <n id="26" NodeType="ExternalConnectionPoint"/>
-                    <b id="28" B="26" E="11"/>
+                    <n id="23" NodeType="ExternalConnectionPoint"/>
+                    <b id="25" B="23" E="11"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R1</s>
@@ -896,11 +862,9 @@ CN_Bond-S-GRP.rxn
                 </t>
             </n>
             <b id="10" B="5" E="7"/>
-            <b id="15" B="9" E="12"/>
-            <b id="17" B="7" E="12"/>
+            <b id="15" B="7" E="12"/>
             <b id="19" B="12" E="16"/>
-            <b id="21" B="12" E="16"/>
-            <b id="27" B="12" E="24"/>
+            <b id="24" B="12" E="21"/>
         </fragment>
         <t p="198.396011 175.387482" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -956,8 +920,8 @@ CN_Bond.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="8" E="9"/>
-            <b id="8" B="8" E="10"/>
+            <b id="11" B="8" E="9"/>
+            <b id="12" B="8" E="10"/>
         </fragment>
         <fragment id="11">
             <n id="12" p="495.938995 215.625000"/>
@@ -968,9 +932,9 @@ CN_Bond.rxn
                 </t>
             </n>
             <n id="15" p="557.318970 144.744003"/>
-            <b id="7" B="12" E="13" Order="2"/>
-            <b id="8" B="13" E="14"/>
-            <b id="11" B="14" E="15"/>
+            <b id="16" B="12" E="13" Order="2"/>
+            <b id="17" B="13" E="14"/>
+            <b id="18" B="14" E="15"/>
         </fragment>
         <t p="237.530991 174.982513" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -1025,8 +989,8 @@ CN_Bond.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="8" E="9"/>
-            <b id="8" B="8" E="10"/>
+            <b id="11" B="8" E="9"/>
+            <b id="12" B="8" E="10"/>
         </fragment>
         <fragment id="11">
             <n id="12" p="495.938995 215.625000"/>
@@ -1037,9 +1001,9 @@ CN_Bond.rxn
                 </t>
             </n>
             <n id="15" p="557.318970 144.744003"/>
-            <b id="7" B="12" E="13" Order="2"/>
-            <b id="8" B="13" E="14"/>
-            <b id="11" B="14" E="15"/>
+            <b id="16" B="12" E="13" Order="2"/>
+            <b id="17" B="13" E="14"/>
+            <b id="18" B="14" E="15"/>
         </fragment>
         <t p="237.530991 174.982513" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -1095,8 +1059,8 @@ CN_Bond_map.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="8" E="9"/>
-            <b id="8" B="8" E="10"/>
+            <b id="11" B="8" E="9"/>
+            <b id="12" B="8" E="10"/>
         </fragment>
         <fragment id="11">
             <n id="12" p="483.405029 510.924011"/>
@@ -1107,9 +1071,9 @@ CN_Bond_map.rxn
                 </t>
             </n>
             <n id="15" p="544.785034 440.042999"/>
-            <b id="7" B="12" E="13" Order="2"/>
-            <b id="8" B="13" E="14"/>
-            <b id="11" B="14" E="15"/>
+            <b id="16" B="12" E="13" Order="2"/>
+            <b id="17" B="13" E="14"/>
+            <b id="18" B="14" E="15"/>
         </fragment>
         <t p="286.520996 472.528503" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -1164,8 +1128,8 @@ CN_Bond_map.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="8" E="9"/>
-            <b id="8" B="8" E="10"/>
+            <b id="11" B="8" E="9"/>
+            <b id="12" B="8" E="10"/>
         </fragment>
         <fragment id="11">
             <n id="12" p="483.405029 510.924011"/>
@@ -1176,9 +1140,9 @@ CN_Bond_map.rxn
                 </t>
             </n>
             <n id="15" p="544.785034 440.042999"/>
-            <b id="7" B="12" E="13" Order="2"/>
-            <b id="8" B="13" E="14"/>
-            <b id="11" B="14" E="15"/>
+            <b id="16" B="12" E="13" Order="2"/>
+            <b id="17" B="13" E="14"/>
+            <b id="18" B="14" E="15"/>
         </fragment>
         <t p="286.520996 472.528503" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -1252,16 +1216,16 @@ Claisen.ket
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <b id="17" B="18" E="19"/>
-            <b id="18" B="23" E="24"/>
-            <b id="19" B="21" E="18"/>
-            <b id="20" B="24" E="25" Order="2"/>
-            <b id="21" B="25" E="21"/>
-            <b id="22" B="19" E="20" Order="2"/>
-            <b id="23" B="21" E="26" Order="2"/>
-            <b id="24" B="26" E="22"/>
-            <b id="25" B="22" E="23" Order="2"/>
-            <b id="26" B="26" E="27"/>
+            <b id="28" B="18" E="19"/>
+            <b id="29" B="23" E="24"/>
+            <b id="30" B="21" E="18"/>
+            <b id="31" B="24" E="25" Order="2"/>
+            <b id="32" B="25" E="21"/>
+            <b id="33" B="19" E="20" Order="2"/>
+            <b id="34" B="21" E="26" Order="2"/>
+            <b id="35" B="26" E="22"/>
+            <b id="36" B="22" E="23" Order="2"/>
+            <b id="37" B="26" E="27"/>
         </fragment>
         <arrow id="2" BoundingBox="352.165253 62.353844 311.065308 62.353851" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="352.165253 62.353844 0.000000" Tail3D="311.065308 62.353851 0.000000"/>
         <scheme>
@@ -1331,16 +1295,16 @@ Claisen.ket
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <b id="17" B="18" E="19"/>
-            <b id="18" B="23" E="24"/>
-            <b id="19" B="21" E="18"/>
-            <b id="20" B="24" E="25" Order="2"/>
-            <b id="21" B="25" E="21"/>
-            <b id="22" B="19" E="20" Order="2"/>
-            <b id="23" B="21" E="26" Order="2"/>
-            <b id="24" B="26" E="22"/>
-            <b id="25" B="22" E="23" Order="2"/>
-            <b id="26" B="26" E="27"/>
+            <b id="28" B="18" E="19"/>
+            <b id="29" B="23" E="24"/>
+            <b id="30" B="21" E="18"/>
+            <b id="31" B="24" E="25" Order="2"/>
+            <b id="32" B="25" E="21"/>
+            <b id="33" B="19" E="20" Order="2"/>
+            <b id="34" B="21" E="26" Order="2"/>
+            <b id="35" B="26" E="22"/>
+            <b id="36" B="22" E="23" Order="2"/>
+            <b id="37" B="26" E="27"/>
         </fragment>
         <arrow id="2" BoundingBox="352.165253 62.353844 311.065308 62.353851" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="352.165253 62.353844 0.000000" Tail3D="311.065308 62.353851 0.000000"/>
         <scheme>
@@ -1411,16 +1375,16 @@ Claisen.rxn
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <b id="14" B="15" E="16"/>
-            <b id="15" B="20" E="21"/>
-            <b id="16" B="18" E="15"/>
-            <b id="17" B="21" E="22" Order="2"/>
-            <b id="18" B="22" E="18"/>
-            <b id="19" B="16" E="17" Order="2"/>
-            <b id="20" B="18" E="23" Order="2"/>
-            <b id="21" B="23" E="19"/>
-            <b id="22" B="19" E="20" Order="2"/>
-            <b id="23" B="23" E="24"/>
+            <b id="25" B="15" E="16"/>
+            <b id="26" B="20" E="21"/>
+            <b id="27" B="18" E="15"/>
+            <b id="28" B="21" E="22" Order="2"/>
+            <b id="29" B="22" E="18"/>
+            <b id="30" B="16" E="17" Order="2"/>
+            <b id="31" B="18" E="23" Order="2"/>
+            <b id="32" B="23" E="19"/>
+            <b id="33" B="19" E="20" Order="2"/>
+            <b id="34" B="23" E="24"/>
         </fragment>
         <graphic BoundingBox="198.471771 208.850998 147.323257 209.539505" id="1" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
         <scheme>
@@ -1490,16 +1454,16 @@ Claisen.rxn
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <b id="14" B="15" E="16"/>
-            <b id="15" B="20" E="21"/>
-            <b id="16" B="18" E="15"/>
-            <b id="17" B="21" E="22" Order="2"/>
-            <b id="18" B="22" E="18"/>
-            <b id="19" B="16" E="17" Order="2"/>
-            <b id="20" B="18" E="23" Order="2"/>
-            <b id="21" B="23" E="19"/>
-            <b id="22" B="19" E="20" Order="2"/>
-            <b id="23" B="23" E="24"/>
+            <b id="25" B="15" E="16"/>
+            <b id="26" B="20" E="21"/>
+            <b id="27" B="18" E="15"/>
+            <b id="28" B="21" E="22" Order="2"/>
+            <b id="29" B="22" E="18"/>
+            <b id="30" B="16" E="17" Order="2"/>
+            <b id="31" B="18" E="23" Order="2"/>
+            <b id="32" B="23" E="19"/>
+            <b id="33" B="19" E="20" Order="2"/>
+            <b id="34" B="23" E="24"/>
         </fragment>
         <graphic BoundingBox="198.471771 208.850998 147.323257 209.539505" id="1" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
         <scheme>
@@ -1607,15 +1571,15 @@ Markush6.rxn
                     <s font="3" size="10" face="96">R2</s>
                 </t>
             </n>
-            <b id="17" B="18" E="21"/>
-            <b id="18" B="21" E="22" Order="2"/>
-            <b id="19" B="22" E="23"/>
-            <b id="20" B="23" E="24" Order="2"/>
-            <b id="21" B="24" E="25"/>
-            <b id="22" B="25" E="21"/>
-            <b id="23" B="18" E="20"/>
-            <b id="24" B="18" E="19"/>
-            <b id="25" B="26" E="27"/>
+            <b id="28" B="18" E="21"/>
+            <b id="29" B="21" E="22" Order="2"/>
+            <b id="30" B="22" E="23"/>
+            <b id="31" B="23" E="24" Order="2"/>
+            <b id="32" B="24" E="25"/>
+            <b id="33" B="25" E="21"/>
+            <b id="34" B="18" E="20"/>
+            <b id="35" B="18" E="19"/>
+            <b id="36" B="26" E="27"/>
         </fragment>
         <fragment id="28">
             <n id="29" p="212.331009 62.250000"/>
@@ -1671,26 +1635,26 @@ Markush6.rxn
                     <s font="3" size="10" face="96">R1</s>
                 </t>
             </n>
-            <b id="17" B="32" E="39"/>
-            <b id="18" B="34" E="29"/>
-            <b id="19" B="36" E="40"/>
-            <b id="20" B="31" E="32" Order="2"/>
-            <b id="21" B="36" E="41"/>
-            <b id="22" B="41" E="42" Order="2"/>
-            <b id="23" B="33" E="35"/>
-            <b id="24" B="30" E="31"/>
-            <b id="25" B="35" E="36"/>
-            <b id="26" B="32" E="33"/>
-            <b id="27" B="42" E="43"/>
-            <b id="28" B="43" E="44" Order="2"/>
-            <b id="28" B="44" E="45"/>
-            <b id="29" B="45" E="41"/>
-            <b id="30" B="35" E="37" Order="2"/>
-            <b id="31" B="29" E="30" Order="2"/>
-            <b id="32" B="46" E="47"/>
-            <b id="33" B="34" E="38"/>
-            <b id="34" B="33" E="34" Order="2"/>
-            <b id="35" B="48" E="49"/>
+            <b id="50" B="32" E="39"/>
+            <b id="51" B="34" E="29"/>
+            <b id="52" B="36" E="40"/>
+            <b id="53" B="31" E="32" Order="2"/>
+            <b id="54" B="36" E="41"/>
+            <b id="55" B="41" E="42" Order="2"/>
+            <b id="56" B="33" E="35"/>
+            <b id="57" B="30" E="31"/>
+            <b id="58" B="35" E="36"/>
+            <b id="59" B="32" E="33"/>
+            <b id="60" B="42" E="43"/>
+            <b id="61" B="43" E="44" Order="2"/>
+            <b id="62" B="44" E="45"/>
+            <b id="63" B="45" E="41"/>
+            <b id="64" B="35" E="37" Order="2"/>
+            <b id="65" B="29" E="30" Order="2"/>
+            <b id="66" B="46" E="47"/>
+            <b id="67" B="34" E="38"/>
+            <b id="68" B="33" E="34" Order="2"/>
+            <b id="69" B="48" E="49"/>
         </fragment>
         <t p="27.166500 66.070503" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -1800,15 +1764,15 @@ Markush6.rxn
                     <s font="3" size="10" face="96">R2</s>
                 </t>
             </n>
-            <b id="17" B="18" E="21"/>
-            <b id="18" B="21" E="22" Order="2"/>
-            <b id="19" B="22" E="23"/>
-            <b id="20" B="23" E="24" Order="2"/>
-            <b id="21" B="24" E="25"/>
-            <b id="22" B="25" E="21"/>
-            <b id="23" B="18" E="20"/>
-            <b id="24" B="18" E="19"/>
-            <b id="25" B="26" E="27"/>
+            <b id="28" B="18" E="21"/>
+            <b id="29" B="21" E="22" Order="2"/>
+            <b id="30" B="22" E="23"/>
+            <b id="31" B="23" E="24" Order="2"/>
+            <b id="32" B="24" E="25"/>
+            <b id="33" B="25" E="21"/>
+            <b id="34" B="18" E="20"/>
+            <b id="35" B="18" E="19"/>
+            <b id="36" B="26" E="27"/>
         </fragment>
         <fragment id="28">
             <n id="29" p="212.331009 62.250000"/>
@@ -1864,26 +1828,26 @@ Markush6.rxn
                     <s font="3" size="10" face="96">R1</s>
                 </t>
             </n>
-            <b id="17" B="32" E="39"/>
-            <b id="18" B="34" E="29"/>
-            <b id="19" B="36" E="40"/>
-            <b id="20" B="31" E="32" Order="2"/>
-            <b id="21" B="36" E="41"/>
-            <b id="22" B="41" E="42" Order="2"/>
-            <b id="23" B="33" E="35"/>
-            <b id="24" B="30" E="31"/>
-            <b id="25" B="35" E="36"/>
-            <b id="26" B="32" E="33"/>
-            <b id="27" B="42" E="43"/>
-            <b id="28" B="43" E="44" Order="2"/>
-            <b id="28" B="44" E="45"/>
-            <b id="29" B="45" E="41"/>
-            <b id="30" B="35" E="37" Order="2"/>
-            <b id="31" B="29" E="30" Order="2"/>
-            <b id="32" B="46" E="47"/>
-            <b id="33" B="34" E="38"/>
-            <b id="34" B="33" E="34" Order="2"/>
-            <b id="35" B="48" E="49"/>
+            <b id="50" B="32" E="39"/>
+            <b id="51" B="34" E="29"/>
+            <b id="52" B="36" E="40"/>
+            <b id="53" B="31" E="32" Order="2"/>
+            <b id="54" B="36" E="41"/>
+            <b id="55" B="41" E="42" Order="2"/>
+            <b id="56" B="33" E="35"/>
+            <b id="57" B="30" E="31"/>
+            <b id="58" B="35" E="36"/>
+            <b id="59" B="32" E="33"/>
+            <b id="60" B="42" E="43"/>
+            <b id="61" B="43" E="44" Order="2"/>
+            <b id="62" B="44" E="45"/>
+            <b id="63" B="45" E="41"/>
+            <b id="64" B="35" E="37" Order="2"/>
+            <b id="65" B="29" E="30" Order="2"/>
+            <b id="66" B="46" E="47"/>
+            <b id="67" B="34" E="38"/>
+            <b id="68" B="33" E="34" Order="2"/>
+            <b id="69" B="48" E="49"/>
         </fragment>
         <t p="27.166500 66.070503" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -1956,7 +1920,7 @@ molfile loader: atom lists are allowed only for queries
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="9" B="10" E="11"/>
+            <b id="12" B="10" E="11"/>
         </fragment>
         <fragment id="12">
             <n id="13" NodeType="GenericNickname" GenericNickname="A" p="258.750000 67.500000">
@@ -1980,10 +1944,10 @@ molfile loader: atom lists are allowed only for queries
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <b id="9" B="14" E="16"/>
-            <b id="10" B="14" E="15"/>
-            <b id="11" B="14" E="17" Display="WedgeBegin"/>
-            <b id="12" B="13" E="14"/>
+            <b id="18" B="14" E="16"/>
+            <b id="19" B="14" E="15"/>
+            <b id="20" B="14" E="17" Display="WedgeBegin"/>
+            <b id="21" B="13" E="14"/>
         </fragment>
         <t p="83.563499 82.999504" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -2049,7 +2013,7 @@ amiderxn3.rxn
                     <s font="3" size="10" face="96">R2</s>
                 </t>
             </n>
-            <b id="8" B="9" E="10"/>
+            <b id="11" B="9" E="10"/>
         </fragment>
         <fragment id="11">
             <n id="12" NodeType="GenericNickname" GenericNickname="A" p="197.613007 -22.500000">
@@ -2064,9 +2028,9 @@ amiderxn3.rxn
             </n>
             <n id="14" p="221.979004 -7.299000"/>
             <n id="15" p="250.458008 -20.712000"/>
-            <b id="8" B="13" E="14"/>
-            <b id="9" B="14" E="15"/>
-            <b id="10" B="12" E="14"/>
+            <b id="16" B="13" E="14"/>
+            <b id="17" B="14" E="15"/>
+            <b id="18" B="12" E="14"/>
         </fragment>
         <fragment id="16">
             <n id="17" NodeType="GenericNickname" GenericNickname="A" p="430.458008 22.545000">
@@ -2090,10 +2054,10 @@ amiderxn3.rxn
                     <s font="3" size="10" face="96">R2</s>
                 </t>
             </n>
-            <b id="8" B="17" E="18"/>
-            <b id="9" B="18" E="19" Order="2"/>
-            <b id="10" B="18" E="20"/>
-            <b id="11" B="20" E="21"/>
+            <b id="22" B="17" E="18"/>
+            <b id="23" B="18" E="19" Order="2"/>
+            <b id="24" B="18" E="20"/>
+            <b id="25" B="20" E="21"/>
         </fragment>
         <fragment id="22">
             <n id="23" NodeType="GenericNickname" GenericNickname="A" p="568.074036 -22.605000">
@@ -2108,9 +2072,9 @@ amiderxn3.rxn
             </n>
             <n id="25" p="592.554016 -7.332000"/>
             <n id="26" p="621.161987 -20.808001"/>
-            <b id="8" B="24" E="25"/>
-            <b id="9" B="25" E="26"/>
-            <b id="10" B="23" E="25"/>
+            <b id="27" B="24" E="25"/>
+            <b id="28" B="25" E="26"/>
+            <b id="29" B="23" E="25"/>
         </fragment>
         <t p="81.737999 -0.000000" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -2181,7 +2145,7 @@ amiderxn3.rxn
                     <s font="3" size="10" face="96">R2</s>
                 </t>
             </n>
-            <b id="8" B="9" E="10"/>
+            <b id="11" B="9" E="10"/>
         </fragment>
         <fragment id="11">
             <n id="12" NodeType="GenericNickname" GenericNickname="A" p="197.613007 -22.500000">
@@ -2196,9 +2160,9 @@ amiderxn3.rxn
             </n>
             <n id="14" p="221.979004 -7.299000"/>
             <n id="15" p="250.458008 -20.712000"/>
-            <b id="8" B="13" E="14"/>
-            <b id="9" B="14" E="15"/>
-            <b id="10" B="12" E="14"/>
+            <b id="16" B="13" E="14"/>
+            <b id="17" B="14" E="15"/>
+            <b id="18" B="12" E="14"/>
         </fragment>
         <fragment id="16">
             <n id="17" NodeType="GenericNickname" GenericNickname="A" p="430.458008 22.545000">
@@ -2222,10 +2186,10 @@ amiderxn3.rxn
                     <s font="3" size="10" face="96">R2</s>
                 </t>
             </n>
-            <b id="8" B="17" E="18"/>
-            <b id="9" B="18" E="19" Order="2"/>
-            <b id="10" B="18" E="20"/>
-            <b id="11" B="20" E="21"/>
+            <b id="22" B="17" E="18"/>
+            <b id="23" B="18" E="19" Order="2"/>
+            <b id="24" B="18" E="20"/>
+            <b id="25" B="20" E="21"/>
         </fragment>
         <fragment id="22">
             <n id="23" NodeType="GenericNickname" GenericNickname="A" p="568.074036 -22.605000">
@@ -2240,9 +2204,9 @@ amiderxn3.rxn
             </n>
             <n id="25" p="592.554016 -7.332000"/>
             <n id="26" p="621.161987 -20.808001"/>
-            <b id="8" B="24" E="25"/>
-            <b id="9" B="25" E="26"/>
-            <b id="10" B="23" E="25"/>
+            <b id="27" B="24" E="25"/>
+            <b id="28" B="25" E="26"/>
+            <b id="29" B="23" E="25"/>
         </fragment>
         <t p="81.737999 -0.000000" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -2302,12 +2266,12 @@ only_products.rxn
             <n id="14" p="532.334961 123.930000"/>
             <n id="15" p="553.770020 111.555000"/>
             <n id="16" p="553.770020 86.805000"/>
-            <b id="10" B="11" E="12"/>
-            <b id="11" B="11" E="16"/>
-            <b id="12" B="12" E="13"/>
-            <b id="13" B="13" E="14"/>
-            <b id="14" B="14" E="15"/>
-            <b id="15" B="15" E="16"/>
+            <b id="17" B="11" E="12"/>
+            <b id="18" B="11" E="16"/>
+            <b id="19" B="12" E="13"/>
+            <b id="20" B="13" E="14"/>
+            <b id="21" B="14" E="15"/>
+            <b id="22" B="15" E="16"/>
         </fragment>
         <t p="469.924500 98.504997" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -2360,12 +2324,12 @@ only_products.rxn
             <n id="14" p="532.334961 123.930000"/>
             <n id="15" p="553.770020 111.555000"/>
             <n id="16" p="553.770020 86.805000"/>
-            <b id="10" B="11" E="12"/>
-            <b id="11" B="11" E="16"/>
-            <b id="12" B="12" E="13"/>
-            <b id="13" B="13" E="14"/>
-            <b id="14" B="14" E="15"/>
-            <b id="15" B="15" E="16"/>
+            <b id="17" B="11" E="12"/>
+            <b id="18" B="11" E="16"/>
+            <b id="19" B="12" E="13"/>
+            <b id="20" B="13" E="14"/>
+            <b id="21" B="14" E="15"/>
+            <b id="22" B="15" E="16"/>
         </fragment>
         <t p="469.924500 98.504997" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -2419,12 +2383,12 @@ only_reactants.rxn
             <n id="14" p="249.636017 126.630005"/>
             <n id="15" p="271.070984 114.255005"/>
             <n id="16" p="271.070984 89.504997"/>
-            <b id="10" B="11" E="12"/>
-            <b id="11" B="11" E="16"/>
-            <b id="12" B="12" E="13"/>
-            <b id="13" B="13" E="14"/>
-            <b id="14" B="14" E="15"/>
-            <b id="15" B="15" E="16"/>
+            <b id="17" B="11" E="12"/>
+            <b id="18" B="11" E="16"/>
+            <b id="19" B="12" E="13"/>
+            <b id="20" B="13" E="14"/>
+            <b id="21" B="14" E="15"/>
+            <b id="22" B="15" E="16"/>
         </fragment>
         <t p="187.228500 101.205002" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -2477,12 +2441,12 @@ only_reactants.rxn
             <n id="14" p="249.636017 126.630005"/>
             <n id="15" p="271.070984 114.255005"/>
             <n id="16" p="271.070984 89.504997"/>
-            <b id="10" B="11" E="12"/>
-            <b id="11" B="11" E="16"/>
-            <b id="12" B="12" E="13"/>
-            <b id="13" B="13" E="14"/>
-            <b id="14" B="14" E="15"/>
-            <b id="15" B="15" E="16"/>
+            <b id="17" B="11" E="12"/>
+            <b id="18" B="11" E="16"/>
+            <b id="19" B="12" E="13"/>
+            <b id="20" B="13" E="14"/>
+            <b id="21" B="14" E="15"/>
+            <b id="22" B="15" E="16"/>
         </fragment>
         <t p="187.228500 101.205002" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -2538,8 +2502,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="8" E="9"/>
-            <b id="8" B="8" E="10"/>
+            <b id="11" B="8" E="9"/>
+            <b id="12" B="8" E="10"/>
         </fragment>
         <fragment id="11">
             <n id="12" Element="7" NumHydrogens="1" p="290.625000 177.188995">
@@ -2553,8 +2517,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="12" E="13"/>
-            <b id="8" B="12" E="14"/>
+            <b id="15" B="12" E="13"/>
+            <b id="16" B="12" E="14"/>
         </fragment>
         <fragment id="15">
             <n id="16" Element="7" NumHydrogens="1" p="290.625000 177.188995">
@@ -2568,8 +2532,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="16" E="17"/>
-            <b id="8" B="16" E="18"/>
+            <b id="19" B="16" E="17"/>
+            <b id="20" B="16" E="18"/>
         </fragment>
         <fragment id="19">
             <n id="20" Element="7" NumHydrogens="1" p="290.625000 177.188995">
@@ -2583,8 +2547,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="20" E="21"/>
-            <b id="8" B="20" E="22"/>
+            <b id="23" B="20" E="21"/>
+            <b id="24" B="20" E="22"/>
         </fragment>
         <fragment id="23">
             <n id="24" Element="7" NumHydrogens="1" p="290.625000 177.188995">
@@ -2598,8 +2562,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="24" E="25"/>
-            <b id="8" B="24" E="26"/>
+            <b id="27" B="24" E="25"/>
+            <b id="28" B="24" E="26"/>
         </fragment>
         <fragment id="27">
             <n id="28" p="495.938995 215.625000"/>
@@ -2610,9 +2574,9 @@ v3000.rxn
                 </t>
             </n>
             <n id="31" p="557.318970 144.744003"/>
-            <b id="7" B="28" E="29" Order="2"/>
-            <b id="8" B="29" E="30"/>
-            <b id="11" B="30" E="31"/>
+            <b id="32" B="28" E="29" Order="2"/>
+            <b id="33" B="29" E="30"/>
+            <b id="34" B="30" E="31"/>
         </fragment>
         <fragment id="32">
             <n id="33" p="495.938995 215.625000"/>
@@ -2623,9 +2587,9 @@ v3000.rxn
                 </t>
             </n>
             <n id="36" p="557.318970 144.744003"/>
-            <b id="7" B="33" E="34" Order="2"/>
-            <b id="8" B="34" E="35"/>
-            <b id="11" B="35" E="36"/>
+            <b id="37" B="33" E="34" Order="2"/>
+            <b id="38" B="34" E="35"/>
+            <b id="39" B="35" E="36"/>
         </fragment>
         <t p="237.530991 174.982513" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -2695,8 +2659,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="8" E="9"/>
-            <b id="8" B="8" E="10"/>
+            <b id="11" B="8" E="9"/>
+            <b id="12" B="8" E="10"/>
         </fragment>
         <fragment id="11">
             <n id="12" Element="7" NumHydrogens="1" p="290.625000 177.188995">
@@ -2710,8 +2674,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="12" E="13"/>
-            <b id="8" B="12" E="14"/>
+            <b id="15" B="12" E="13"/>
+            <b id="16" B="12" E="14"/>
         </fragment>
         <fragment id="15">
             <n id="16" Element="7" NumHydrogens="1" p="290.625000 177.188995">
@@ -2725,8 +2689,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="16" E="17"/>
-            <b id="8" B="16" E="18"/>
+            <b id="19" B="16" E="17"/>
+            <b id="20" B="16" E="18"/>
         </fragment>
         <fragment id="19">
             <n id="20" Element="7" NumHydrogens="1" p="290.625000 177.188995">
@@ -2740,8 +2704,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="20" E="21"/>
-            <b id="8" B="20" E="22"/>
+            <b id="23" B="20" E="21"/>
+            <b id="24" B="20" E="22"/>
         </fragment>
         <fragment id="23">
             <n id="24" Element="7" NumHydrogens="1" p="290.625000 177.188995">
@@ -2755,8 +2719,8 @@ v3000.rxn
                     <s font="3" size="10" face="96">H</s>
                 </t>
             </n>
-            <b id="7" B="24" E="25"/>
-            <b id="8" B="24" E="26"/>
+            <b id="27" B="24" E="25"/>
+            <b id="28" B="24" E="26"/>
         </fragment>
         <fragment id="27">
             <n id="28" p="495.938995 215.625000"/>
@@ -2767,9 +2731,9 @@ v3000.rxn
                 </t>
             </n>
             <n id="31" p="557.318970 144.744003"/>
-            <b id="7" B="28" E="29" Order="2"/>
-            <b id="8" B="29" E="30"/>
-            <b id="11" B="30" E="31"/>
+            <b id="32" B="28" E="29" Order="2"/>
+            <b id="33" B="29" E="30"/>
+            <b id="34" B="30" E="31"/>
         </fragment>
         <fragment id="32">
             <n id="33" p="495.938995 215.625000"/>
@@ -2780,9 +2744,9 @@ v3000.rxn
                 </t>
             </n>
             <n id="36" p="557.318970 144.744003"/>
-            <b id="7" B="33" E="34" Order="2"/>
-            <b id="8" B="34" E="35"/>
-            <b id="11" B="35" E="36"/>
+            <b id="37" B="33" E="34" Order="2"/>
+            <b id="38" B="34" E="35"/>
+            <b id="39" B="35" E="36"/>
         </fragment>
         <t p="237.530991 174.982513" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>

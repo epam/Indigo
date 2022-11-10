@@ -117,13 +117,13 @@ namespace indigo
 
     private:
         MoleculeCdxmlSaver(const MoleculeCdxmlSaver&); // no implicit copy
-        Array<int> _atoms_ids;
-        Array<int> _bonds_ids;
         std::unordered_set<int> _atoms_excluded;
         std::unordered_set<int> _bonds_excluded;
         std::unordered_set<int> _bonds_included;
         std::vector<OutConnection> _out_connections;
 
+        Array<int> _atoms_ids;
+        Array<int> _bonds_ids;
         std::unordered_map<int, std::vector<int>> _super_atoms;
 
         int _id;
