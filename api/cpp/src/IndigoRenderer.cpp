@@ -71,3 +71,10 @@ std::vector<char> IndigoRenderer::png(const IndigoChemicalStructure& data) const
     session->_checkResult(indigoRender(data.id(), buffer.id()));
     return buffer.toBuffer();
 }
+
+void IndigoRenderer::png(const IndigoChemicalStructure& data, const std::string& path) const
+{
+    session->setSessionId();
+    session->setOption("render-output-format", std::string("png"));
+    session->_checkResult(indigoRenderToFile(data.id(), path.c_str()));
+}

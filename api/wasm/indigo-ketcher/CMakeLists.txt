@@ -6,7 +6,7 @@ add_library(${PROJECT_NAME}-object OBJECT indigo-ketcher.cpp)
 target_link_libraries(${PROJECT_NAME}-object indigo-static indigo-inchi-static indigo-renderer-static cppcodec)
 
 set(EMCC_FLAGS
-        -Oz -flto --closure 1
+#        -Oz -flto --closure 1
         --bind
         -s INITIAL_MEMORY=32mb
         -s ALLOW_MEMORY_GROWTH=1
@@ -15,6 +15,7 @@ set(EMCC_FLAGS
         -s MODULARIZE=1
         -s FILESYSTEM=0
         -s ASSERTIONS=1
+        -s STANDALONE_WASM=0
         -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0
         --no-entry)
 if (CMAKE_BUILD_TYPE STREQUAL Debug)

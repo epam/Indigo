@@ -42,11 +42,5 @@ TEST(RenderingBasic, UTF8)
     auto session = IndigoSession::create();
     const auto& renderer = IndigoRenderer(session);
     const auto& m = session->loadMoleculeFromFile(dataPath("molecules/basic/sgroups_utf8.mol"));
-    const auto& result = renderer.png(m);
-    std::ofstream ff("sgroups_utf8.png", std::ofstream::out);
-    for (const auto c : result)
-    {
-        ff << c;
-    }
-    ff.close();
+    renderer.png(m, "sgroups_utf8.png");
 }

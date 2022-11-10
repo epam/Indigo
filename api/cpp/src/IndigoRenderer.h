@@ -38,6 +38,7 @@ namespace indigo_cpp
 
         std::string svg(const IndigoChemicalStructure& data) const;
         std::vector<char> png(const IndigoChemicalStructure& data) const;
+        void png(const IndigoChemicalStructure& data, const std::string& path) const;
 
     private:
         IndigoSessionPtr session;

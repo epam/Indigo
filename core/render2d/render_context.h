@@ -147,12 +147,12 @@ namespace indigo
         void cairoCheckStatus() const;
         void cairoCheckSurfaceStatus() const;
 
-#ifdef _WIN32
-        cairo_surface_t* createWin32Surface();
-        cairo_surface_t* createWin32PrintingSurfaceForHDC();
-        cairo_surface_t* createWin32PrintingSurfaceForMetafile(bool& isLarge);
-        void storeAndDestroyMetafile(bool discard);
-#endif
+//#ifdef _WIN32
+//        cairo_surface_t* createWin32Surface();
+//        cairo_surface_t* createWin32PrintingSurfaceForHDC();
+//        cairo_surface_t* createWin32PrintingSurfaceForMetafile(bool& isLarge);
+//        void storeAndDestroyMetafile(bool discard);
+//#endif
 
         void fontsClear();
         void fontsInit();
