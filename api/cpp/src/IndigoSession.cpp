@@ -136,6 +136,12 @@ void IndigoSession::setOption(const std::string& key, const bool value) const
     _checkResult(indigoSetOptionBool(key.c_str(), static_cast<int>(value)));
 }
 
+void IndigoSession::setOption(const std::string& key, const int r, const int g, const int b) const
+{
+    setSessionId();
+    _checkResult(indigoSetOptionColor(key.c_str(), r, g, b));
+}
+
 std::string IndigoSession::version() const
 {
     setSessionId();
