@@ -124,7 +124,7 @@ RenderContext::RenderContext(const RenderOptions& ropt, float sf, float lwf)
       _pattern(NULL)
 {
     _settings.init(sf, lwf);
-    bprintf(_fontfamily, "Arial");
+    bprintf(_fontfamily, "Open Sans");
     bbmin.x = bbmin.y = 1;
     bbmax.x = bbmax.y = -1;
     _defaultScale = 0.0f;

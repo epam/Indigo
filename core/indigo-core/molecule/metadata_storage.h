@@ -18,6 +18,8 @@
 #ifndef __metadata_storage__
 #define __metadata_storage__
 
+#include <cstdint>
+
 #include "base_cpp/ptr_array.h"
 
 namespace indigo
