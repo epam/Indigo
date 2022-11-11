@@ -124,7 +124,7 @@ namespace indigo
 
         Array<int> _atoms_ids;
         Array<int> _bonds_ids;
-        std::unordered_map<int, std::vector<int>> _super_atoms;
+        std::map<int, std::vector<int>> _super_atoms;
 
         int _id;
         float _scale;
