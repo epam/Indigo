@@ -24,6 +24,7 @@ for filename in files:
     print(filename)
     try:
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
+        print(filename)
         print(mol.cdxml())
     except IndigoException as e:
         print(getIndigoExceptionText(e))

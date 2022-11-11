@@ -39,12 +39,31 @@ namespace indigo
 
     class DLLEXPORT MoleculeCdxmlSaver
     {
+        struct OutConnection
+        {
+            OutConnection(int uid, int b, int e) : id(uid), beg(b), end(e)
+            {
+            }
+            int id;
+            int beg;
+            int end;
+        };
+
     public:
         explicit MoleculeCdxmlSaver(Output& output);
 
         ~MoleculeCdxmlSaver();
 
         void saveMolecule(BaseMolecule& mol);
+        void addNodeToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, int atom_idx, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord,
+                               Vec2f& node_pos);
+
+        void addBondToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, int bond_idx);
+
+        void addNodesToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord);
+        void addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord);
+        void addBondsToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment);
+
         static const int SCALE = 30;
         static const int MAX_PAGE_HEIGHT = 64;
         struct Bounds
@@ -58,7 +77,7 @@ namespace indigo
         void addFontToTable(int id, const char* charset, const char* name);
         void addColorTable(const char* color);
         void addColorToTable(int id, int r, int g, int b);
-        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int id, Array<int>& nodes_ids);
+        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int id, Array<int>& ids);
         void addMetaData(const MetaDataStorage& meta, int id);
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);
@@ -81,6 +100,7 @@ namespace indigo
         DECL_ERROR;
 
     protected:
+        void _collectSuperatoms(BaseMolecule& mol);
         Output& _output;
 
         float _bond_length;
@@ -97,6 +117,17 @@ namespace indigo
 
     private:
         MoleculeCdxmlSaver(const MoleculeCdxmlSaver&); // no implicit copy
+        std::unordered_set<int> _atoms_excluded;
+        std::unordered_set<int> _bonds_excluded;
+        std::unordered_set<int> _bonds_included;
+        std::vector<OutConnection> _out_connections;
+
+        Array<int> _atoms_ids;
+        Array<int> _bonds_ids;
+        std::map<int, std::vector<int>> _super_atoms;
+
+        int _id;
+        float _scale;
     };
 
 } // namespace indigo
