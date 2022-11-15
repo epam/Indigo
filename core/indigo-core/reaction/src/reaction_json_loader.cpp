@@ -248,7 +248,8 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
             Vec2f center(bbox.center());
             const auto hw = std::max(bbox.width() / 2, MIN_MOL_SIZE.x / 2);
             const auto hh = std::max(bbox.height() / 2, MIN_MOL_SIZE.y / 2);
-            bbox.copy(Rect2f(Vec2f(center.x - hw, center.y - hh), Vec2f(center.x + hw, center.y + hh)));
+            Rect2f new_bbox(Vec2f(center.x - hw, center.y - hh), Vec2f(center.x + hw, center.y + hh));
+            bbox.copy(new_bbox);
         }
 
         mol_tops.emplace_back(bbox.top(), i);
