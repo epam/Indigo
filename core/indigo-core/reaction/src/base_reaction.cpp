@@ -73,7 +73,7 @@ SideIter SideAuto::begin()
         idx = _owner.catalystBegin();
         break;
     case BaseReaction::INTERMEDIATE:
-        idx = _owner.catalystBegin();
+        idx = _owner.intermediateBegin();
         break;
     case BaseReaction::UNDEFINED:
         idx = _owner.catalystBegin();

@@ -126,6 +126,17 @@ void RSmilesSaver::_saveReaction()
     _output.writeString(">");
 
     dot = false;
+
+    for (auto i : _brxn->intermediates)
+    {
+        if (dot)
+            _output.writeChar('.');
+        else
+            dot = true;
+
+        _writeMolecule(i);
+    }
+
     for (auto i : _brxn->products)
     {
         if (dot)

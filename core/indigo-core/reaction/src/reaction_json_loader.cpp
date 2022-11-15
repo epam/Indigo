@@ -242,6 +242,16 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         mol.makeSubmolecule(*_pmol, filter, 0, 0);
         Rect2f bbox;
         mol.getBoundingBox(bbox);
+
+        if (bbox.width() < MIN_MOL_SIZE.x || bbox.height() < MIN_MOL_SIZE.y)
+        {
+            Vec2f center(bbox.center());
+            const auto hw = std::max(bbox.width() / 2, MIN_MOL_SIZE.x / 2);
+            const auto hh = std::max(bbox.height() / 2, MIN_MOL_SIZE.y / 2);
+            Rect2f new_bbox(Vec2f(center.x - hw, center.y - hh), Vec2f(center.x + hw, center.y + hh));
+            bbox.copy(new_bbox);
+        }
+
         mol_tops.emplace_back(bbox.top(), i);
         mol_bottoms.emplace_back(bbox.bottom(), i);
         mol_lefts.emplace_back(bbox.left(), i);
@@ -400,7 +410,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         for (int index_cs = 0; index_cs < _component_summ_blocks.size(); ++index_cs)
         {
             auto& csb = _component_summ_blocks[index_cs];
-            if (csb.bbox.rayIntersectsRect(arr_begin, arr_end))
+            if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))
             {
                 float dist = csb.bbox.pointDistance(arr_end);
                 if (min_dist_prod < 0 || dist < min_dist_prod)
@@ -409,7 +419,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
                     idx_cs_min_prod = index_cs;
                 }
             }
-            else if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))
+            else if (csb.bbox.rayIntersectsRect(arr_begin, arr_end))
             {
                 float dist = csb.bbox.pointDistance(arr_begin);
                 if (min_dist_reac < 0 || dist < min_dist_reac)
