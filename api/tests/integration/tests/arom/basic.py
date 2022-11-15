@@ -348,3 +348,7 @@ indigo.setOption("dearomatize-on-load", "false")
 styr = indigo.loadMolecule(aromatized_styr)
 # should be aromatized
 print(styr.molfile())
+# should not dearomatize queries
+indigo.setOption("dearomatize-on-load", "true")
+q = indigo.loadQueryMolecule("[#6]=,:[#6]")
+print(q.json())
