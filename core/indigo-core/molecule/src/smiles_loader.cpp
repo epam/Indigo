@@ -3008,9 +3008,21 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 throw Error("invalid character within atom description: '%c'", next);
         }
         else if (next == 'h')
-            // Why would anybody ever need 'implicit hydrogen'
-            // count rather than total hydrogen count?
-            throw Error("'h' specifier is not supported");
+        {
+            scanner.skip(1);
+
+            if (qatom.get() == 0)
+                throw Error("'h' specifier is allowed only for query molecules");
+
+            if (isdigit(scanner.lookNext()))
+            {
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_IMPLICIT_H, scanner.readUnsigned());
+            }
+            else
+            {
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_IMPLICIT_H, 1, 100);
+            }
+        }
         else if (next == 'r')
         {
             scanner.skip(1);

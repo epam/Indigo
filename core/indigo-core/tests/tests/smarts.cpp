@@ -104,3 +104,23 @@ TEST_F(IndigoCoreSmartsTest, NotSharpG)
     EXPECT_TRUE(substructureMatch("C=C", "[!#G1]=[!#G1]"));
     EXPECT_FALSE(substructureMatch("C=C", "[!#G4]=[!#G4]"));
 }
+
+TEST_F(IndigoCoreSmartsTest, h)
+{
+    EXPECT_TRUE(substructureMatch("C", "[Ch]"));
+    EXPECT_TRUE(substructureMatch("C", "[Ch4]"));
+    EXPECT_FALSE(substructureMatch("C", "[Ch1]"));
+    EXPECT_FALSE(substructureMatch("C=C", "[Ch3]"));
+    EXPECT_FALSE(substructureMatch("C", "[*h5]"));
+    EXPECT_FALSE(substructureMatch("C([H])([H])([H])[H]", "[Ch]"));
+
+    EXPECT_STREQ(smartsLoadSaveLoad("[#6;h]").c_str(), "[#6;h]");
+    EXPECT_STREQ(smartsLoadSaveLoad("[#6;h2]").c_str(), "[#6;h2]");
+}
+
+TEST_F(IndigoCoreSmartsTest, connectivity)
+{
+    EXPECT_STREQ(smartsLoadSaveLoad("[#7;X3]").c_str(), "[#7;X3]");
+    EXPECT_STREQ(smartsLoadSaveLoad("[#7X3]").c_str(), "[#7;X3]");
+    EXPECT_STREQ(smartsLoadSaveLoad("[NX3]").c_str(), "[#7;X3]");
+}

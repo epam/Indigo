@@ -537,7 +537,7 @@ void SmilesSaver::_saveMolecule()
             else if (_qmol != 0)
                 _writeSmartsAtom(v_idx, &_qmol->getAtom(v_idx), _atoms[v_idx].chirality, 0, false, false);
             else
-                throw Error("SMARTS format availble for query only!");
+                throw Error("SMARTS format available for query only!");
 
             QS_DEF(Array<int>, closing);
 
@@ -974,6 +974,18 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
 
+    case QueryMolecule::ATOM_IMPLICIT_H: {
+        if (atom->value_min == 1 && atom->value_max == 100)
+        {
+            _output.printf("h");
+        }
+        else
+        {
+            _output.printf("h%d", atom->value_min);
+        }
+        break;
+    }
+
     case QueryMolecule::ATOM_UNSATURATION: {
         _output.printf("$([*,#1]=,#,:[*,#1])");
         break;
@@ -998,8 +1010,13 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
 
+    case QueryMolecule::ATOM_CONNECTIVITY: {
+        _output.printf("X%d", atom->value_min);
+        break;
+    }
+
     default: {
-        throw Error("Unknown atom attribute");
+        throw Error("Unknown atom attribute %d", atom->type);
         break;
     }
     }

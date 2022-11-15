@@ -16,7 +16,11 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <fstream>
+
 #include <gtest/gtest.h>
+
+#include "common.h"
 
 #include <IndigoMolecule.h>
 #include <IndigoRenderer.h>
@@ -31,4 +35,18 @@ TEST(RenderingBasic, BasicSVG)
     const auto& m = session->loadMolecule("C");
     const auto& result = renderer.svg(m);
     ASSERT_TRUE(result.rfind("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 0) == 0);
+}
+
+TEST(RenderingBasic, UTF8)
+{
+    auto session = IndigoSession::create();
+    const auto& renderer = IndigoRenderer(session);
+    const auto& m = session->loadMoleculeFromFile(dataPath("molecules/basic/sgroups_utf8.mol"));
+    const auto& result = renderer.png(m);
+    std::ofstream ff("sgroups_utf8.png", std::ofstream::out);
+    for (const auto c : result)
+    {
+        ff << c;
+    }
+    ff.close();
 }

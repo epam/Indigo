@@ -83,7 +83,7 @@ namespace indigo
             ATOM_CONNECTIVITY,
             ATOM_TOTAL_BOND_ORDER,
             ATOM_TOTAL_H,
-            // ATOM_IMPLICIT_H,
+            ATOM_IMPLICIT_H,
             ATOM_SUBSTITUENTS,
             ATOM_SUBSTITUENTS_AS_DRAWN,
             ATOM_SSSR_RINGS,
