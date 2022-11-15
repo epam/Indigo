@@ -82,7 +82,7 @@ void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction)
 void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
 {
     _loadReaction(reaction);
-    if (dearomatize_on_load)
+    if (!reaction.isQueryReaction()  && dearomatize_on_load)
         reaction.dearomatize(arom_options);
 }
 
