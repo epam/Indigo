@@ -287,7 +287,16 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(XMLElement* pElem, bool no_sibling
         _addNode(node);
         if (is_fragment(node.type))
         {
+            int inner_idx_start = nodes.size();
             this->_parseCDXMLElements(pElem->FirstChildElement(), false, true);
+            int inner_idx_end = nodes.size();
+            CdxmlNode& fragment_node = nodes[inner_idx_start - 1];
+            for (int i = inner_idx_start; i < inner_idx_end; ++i)
+            {
+                auto it = std::upper_bound(fragment_node.inner_nodes.cbegin(), fragment_node.inner_nodes.cend(), fragment_node.id,
+                                           [](int a, int b) { return a > b; });
+                fragment_node.inner_nodes.insert(it, nodes[i].id);
+            }
         }
     };
 
@@ -446,31 +455,65 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             else if (is_fragment(fn.type) && bond_second_it != _id_to_atom_idx.end())
             {
                 auto bit_beg = fn.bond_id_to_connection_idx.find(bond.id);
-                if (bit_beg != fn.bond_id_to_connection_idx.end())
+                int a1 = -1;
+                int a2 = bond_second_it->second;
+
+                if (bit_beg == fn.bond_id_to_connection_idx.end())
                 {
-                    int a1 = fn.connections[bit_beg->second].atom_idx;
-                    int a2 = bond_second_it->second;
-                    if (a1 >= 0 && a2 >= 0)
+                    if (fn.inner_nodes.size())
                     {
-                        auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
-                        if (bond.dir > 0)
-                            _pmol->setBondDirection(bi, bond.dir);
+                        auto cp_id = fn.inner_nodes.back();
+                        auto it = _id_to_atom_idx.find(cp_id);
+                        if (it != _id_to_atom_idx.end())
+                        {
+                            a1 = it->second;
+                        }
+                        else
+                            throw Error("unable to cennect node %d", a1);
                     }
+                    else
+                        throw Error("orphaned node %d", a1);
+                }
+                else
+                {
+                    a1 = fn.connections[bit_beg->second].atom_idx;
+                }
+
+                if (a1 >= 0 && a2 >= 0)
+                {
+                    auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
+                    if (bond.dir > 0)
+                        _pmol->setBondDirection(bi, bond.dir);
                 }
             }
             else if (is_fragment(sn.type) && bond_first_it != _id_to_atom_idx.end())
             {
                 auto bit_beg = sn.bond_id_to_connection_idx.find(bond.id);
-                if (bit_beg != sn.bond_id_to_connection_idx.end())
+                int a1 = bond_first_it->second;
+                int a2 = -1;
+                if (bit_beg == sn.bond_id_to_connection_idx.end())
                 {
-                    int a1 = bond_first_it->second;
-                    int a2 = sn.connections[bit_beg->second].atom_idx;
-                    if (a1 >= 0 && a2 >= 0)
+                    if (sn.inner_nodes.size())
                     {
-                        auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
-                        if (bond.dir > 0)
-                            _pmol->setBondDirection(bi, bond.dir);
+                        auto cp_id = sn.inner_nodes.front();
+                        auto it = _id_to_atom_idx.find(cp_id);
+                        if (it != _id_to_atom_idx.end())
+                        {
+                            a2 = it->second;
+                        }
+                        else
+                            throw Error("unable to cennect node %d", a1);
                     }
+                    else
+                        throw Error("orphaned node %d", a1);
+                }
+                else
+                    a2 = sn.connections[bit_beg->second].atom_idx;
+                if (a1 >= 0 && a2 >= 0)
+                {
+                    auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
+                    if (bond.dir > 0)
+                        _pmol->setBondDirection(bi, bond.dir);
                 }
             }
         }

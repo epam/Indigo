@@ -88,9 +88,11 @@ void MoleculeAutoLoader::loadMolecule(BaseMolecule& mol)
 {
     _loadMolecule(mol);
     if (!mol.isQueryMolecule())
+    {
         mol.asMolecule().setIgnoreBadValenceFlag(ignore_bad_valence);
-    if (dearomatize_on_load)
-        mol.dearomatize(arom_options);
+        if (dearomatize_on_load)
+            mol.dearomatize(arom_options);
+    }
 }
 
 bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, Array<char>& outbuf)

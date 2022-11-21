@@ -139,6 +139,7 @@ namespace indigo
         std::unordered_map<int, int> node_id_to_connection_idx;
         std::vector<_ExtConnection> connections;
         std::vector<int> ext_connections;
+        std::vector<int> inner_nodes;
     };
 
     struct CdxmlBond

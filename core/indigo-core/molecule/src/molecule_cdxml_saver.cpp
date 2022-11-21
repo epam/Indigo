@@ -816,6 +816,10 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
     _atoms_ids.clear();
     _bonds_ids.clear();
     _super_atoms.clear();
+    _atoms_excluded.clear();
+    _bonds_excluded.clear();
+    _bonds_included.clear();
+    _out_connections.clear();
 
     _scale = structure_scale * _bond_length;
 

@@ -427,22 +427,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson
                     stereo = 6;
                     break;
                 default: {
-                    /*	int parity = mol.cis_trans.getParity(i);
-                        if (parity)
-                        {
-                            if (parity == MoleculeCisTrans::CIS)
-                                stereo = 7;
-                            if (parity == MoleculeCisTrans::TRANS)
-                                stereo = 8;
-                            const int* subst = mol.cis_trans.getSubstituents(i);
-                            writer.Key("subs");
-                            writer.StartArray();
-                            writer.Int(subst[0]);
-                            writer.Int(e1.beg);
-                            writer.Int(e1.end);
-                            writer.Int(subst[2]);
-                            writer.EndArray();
-                        }*/
+                    stereo = 0;
                 }
                 break;
                 }
