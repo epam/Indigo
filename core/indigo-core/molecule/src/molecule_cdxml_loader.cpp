@@ -1092,7 +1092,8 @@ void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem, std::vector<std::p
     writer.EndObject();
 
     writer.EndObject();
-    text_parsed.emplace_back(text_bbox.center(), s.GetString());
+
+    text_parsed.emplace_back(text_bbox.center().x, text_bbox.center().y, 0, s.GetString());
 }
 
 void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, const XMLAttribute* pAttr)
