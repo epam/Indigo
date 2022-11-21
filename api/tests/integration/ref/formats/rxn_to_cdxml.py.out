@@ -728,7 +728,6 @@ CN_Bond-S-GRP.rxn
                 </t>
             </n>
             <b id="23" B="8" E="10"/>
-            <b id="20" B="6" E="17"/>
             <b id="27" B="8" E="24"/>
         </fragment>
         <fragment id="11">
@@ -757,8 +756,6 @@ CN_Bond-S-GRP.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <b id="20" B="6" E="17"/>
-            <b id="27" B="8" E="24"/>
             <b id="34" B="13" E="31"/>
             <b id="39" B="13" E="36"/>
         </fragment>
@@ -832,7 +829,6 @@ CN_Bond-S-GRP.rxn
                 </t>
             </n>
             <b id="23" B="8" E="10"/>
-            <b id="20" B="6" E="17"/>
             <b id="27" B="8" E="24"/>
         </fragment>
         <fragment id="11">
@@ -861,8 +857,6 @@ CN_Bond-S-GRP.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <b id="20" B="6" E="17"/>
-            <b id="27" B="8" E="24"/>
             <b id="34" B="13" E="31"/>
             <b id="39" B="13" E="36"/>
         </fragment>
