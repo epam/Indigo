@@ -98,9 +98,8 @@ CEXPORT int indigoLayout(int object)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
-            if (rxn.isMultistep())
-                throw IndigoError("Multistep layout is not implemented yet.");
-            else
+            bool no_layout = rxn.catalystCount() || rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount();
+            if (!no_layout)
             {
                 ReactionLayout rl(rxn, self.smart_layout);
                 rl.max_iterations = self.layout_max_iterations;

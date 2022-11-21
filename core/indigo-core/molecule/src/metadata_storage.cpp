@@ -45,26 +45,36 @@ void MetaDataStorage::clone(const MetaDataStorage& other)
     append(other);
 }
 
-const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
+int MetaDataStorage::getMetaObjectIndex(uint32_t meta_type, int index) const
 {
     switch (meta_type)
     {
     case KETTextObject::CID:
-        return *_meta_data[_text_object_indexes[index]];
+        return _text_object_indexes[index];
         break;
     case KETSimpleObject::CID:
-        return *_meta_data[_simple_object_indexes[index]];
+        return _simple_object_indexes[index];
         break;
     case KETReactionPlus::CID:
-        return *_meta_data[_plus_indexes[index]];
+        return _plus_indexes[index];
         break;
     case KETReactionArrow::CID:
-        return *_meta_data[_arrow_indexes[index]];
+        return _arrow_indexes[index];
         break;
     default:
         throw Error("Unknown meta type");
         break;
     }
+}
+
+const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
+{
+    return *_meta_data[getMetaObjectIndex(meta_type, index)];
+}
+
+int MetaDataStorage::getNonChemicalMetaCount() const
+{
+    return getMetaCount(KETTextObject::CID) + getMetaCount(KETSimpleObject::CID);
 }
 
 int MetaDataStorage::getMetaCount(uint32_t meta_type) const

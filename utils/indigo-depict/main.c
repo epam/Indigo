@@ -960,7 +960,7 @@ int main(int argc, char* argv[])
                 indigoSaveCmlToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_RXN)
                 indigoSaveRxnfileToFile(obj, p.outfile);
-            else if (p.out_ext == OEXT_CDXML)
+            else if (p.out_ext == OEXT_CDXML || p.out_ext == OEXT_CDXMLR)
                 indigoSaveCdxmlToFile(obj, p.outfile);
             else
             {

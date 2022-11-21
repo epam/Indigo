@@ -411,7 +411,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         Pos& p = positions[mol_idx];
         Vec2f offset = p.offset;
         offset.scale(1 / p.scale);
-        saver.saveMoleculeFragment(mols[mol_idx]->asMolecule(), offset, p.scale, -1, ids);
+        saver.saveMoleculeFragment(mols[mol_idx]->asMolecule(), offset, p.scale);
 
         if (mol_idx < params.titles.size())
         {
