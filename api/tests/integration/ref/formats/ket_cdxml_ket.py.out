@@ -1,0 +1,92 @@
+*** KET to CDXML to KET ***
+agents.ket
+*** Try as Reaction ***
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable id="1">
+        <font id="2" charset="utf-8" name="Arial"/>
+        <font id="3" charset="utf-8" name="Times New Roman"/>
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1"/>
+        <color r="0" g="0" b="0"/>
+        <color r="1" g="0" b="0"/>
+        <color r="1" g="1" b="0"/>
+        <color r="0" g="1" b="0"/>
+        <color r="0" g="1" b="1"/>
+        <color r="0" g="0" b="1"/>
+        <color r="1" g="0" b="1"/>
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="4">
+            <n id="5" p="195.616318 159.751770"/>
+            <n id="6" p="195.616318 189.751587"/>
+            <n id="7" p="169.634674 204.751480"/>
+            <n id="8" p="143.656647 189.747955"/>
+            <n id="9" p="143.656647 159.748138"/>
+            <n id="10" p="169.634674 144.748230"/>
+            <n id="11" p="169.634674 114.748421"/>
+            <n id="12" Element="8" NumHydrogens="0" p="143.656647 99.748520">
+                <t p="143.656647 99.748520" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <n id="13" p="195.616318 99.748520"/>
+            <b id="34" B="5" E="6"/>
+            <b id="35" B="6" E="7" Order="2"/>
+            <b id="36" B="7" E="8"/>
+            <b id="37" B="8" E="9" Order="2"/>
+            <b id="38" B="9" E="10"/>
+            <b id="39" B="5" E="10" Order="2"/>
+            <b id="40" B="10" E="11"/>
+            <b id="41" B="11" E="12" Order="2"/>
+            <b id="42" B="11" E="13"/>
+        </fragment>
+        <fragment id="14">
+            <n id="15" p="517.843323 172.740784"/>
+            <n id="16" p="517.843323 202.740585"/>
+            <n id="17" p="491.861694 217.740479"/>
+            <n id="18" p="465.880066 202.740585"/>
+            <n id="19" p="465.880066 172.740784"/>
+            <n id="20" p="491.861694 157.740875"/>
+            <n id="21" p="491.861694 127.741074"/>
+            <n id="22" p="465.880066 112.741165"/>
+            <n id="23" p="439.902008 97.741257"/>
+            <n id="24" Element="8" NumHydrogens="1" p="480.879944 86.759514">
+                <t p="480.879944 86.759514" LabelJustification="Left">
+                    <s font="3" size="10" face="96">OH</s>
+                </t>
+            </n>
+            <n id="25" p="450.880127 138.722824"/>
+            <b id="43" B="15" E="16"/>
+            <b id="44" B="16" E="17" Order="2"/>
+            <b id="45" B="17" E="18"/>
+            <b id="46" B="18" E="19" Order="2"/>
+            <b id="47" B="19" E="20"/>
+            <b id="48" B="15" E="20" Order="2"/>
+            <b id="49" B="20" E="21"/>
+            <b id="50" B="21" E="22"/>
+            <b id="51" B="22" E="23"/>
+            <b id="52" B="22" E="24"/>
+            <b id="53" B="22" E="25"/>
+        </fragment>
+        <fragment id="26">
+            <n id="27" Element="17" NumHydrogens="1" p="314.250000 135.000000">
+                <t p="314.250000 135.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">ClH</s>
+                </t>
+            </n>
+        </fragment>
+        <arrow id="28" BoundingBox="384.000000 150.750000 255.000000 152.250000" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="384.000000 150.750000 0.000000" Tail3D="255.000000 152.250000 0.000000"/>
+        <t id="31" p="304.500000 167.250000" Justification="Left" InterpretChemically="no">
+            <s font="4" size="13" face="0">test</s>
+        </t>
+        <scheme>
+            <step ReactionStepReactants="4" ReactionStepProducts="14" ReactionStepObjectsAboveArrow="26" ReactionStepArrows="28"/>
+        </scheme>
+    </page>
+</CDXML>
+
+{"root":{"nodes":[{"$ref":"mol0"},{"$ref":"mol1"},{"$ref":"mol2"},{"type":"arrow","data":{"mode":"open-angle","pos":[{"x":8.5,"y":-5.074999809265137,"z":0.0},{"x":12.800000190734864,"y":-5.025000095367432,"z":0.0}]}},{"type":"text","data":{"content":"{\"blocks\":[{\"text\":\"test\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":4,\"style\":\"CUSTOM_FONT_SIZE_20px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}","position":{"x":10.149999618530274,"y":-5.574999809265137,"z":0.0}}},{"type":"arrow","data":{"mode":"open-angle","pos":[{"x":8.5,"y":-5.074999809265137,"z":0.0},{"x":12.800000190734864,"y":-5.025000095367432,"z":0.0}]}}]},"mol0":{"type":"molecule","atoms":[{"label":"C","location":[6.520544052124023,-5.325058937072754,0.0]},{"label":"C","location":[6.520544052124023,-6.325052738189697,0.0]},{"label":"C","location":[5.654489040374756,-6.82504940032959,0.0]},{"label":"C","location":[4.788554668426514,-6.324931621551514,0.0]},{"label":"C","location":[4.788554668426514,-5.32493782043457,0.0]},{"label":"C","location":[5.654489040374756,-4.824941158294678,0.0]},{"label":"C","location":[5.654489040374756,-3.8249473571777345,0.0]},{"label":"O","location":[4.788554668426514,-3.324950695037842,0.0]},{"label":"C","location":[6.520544052124023,-3.324950695037842,0.0]}],"bonds":[{"type":1,"atoms":[0,1]},{"type":2,"atoms":[1,2]},{"type":1,"atoms":[2,3]},{"type":2,"atoms":[3,4]},{"type":1,"atoms":[4,5]},{"type":2,"atoms":[0,5]},{"type":1,"atoms":[5,6]},{"type":2,"atoms":[6,7]},{"type":1,"atoms":[6,8]}]},"mol1":{"type":"molecule","atoms":[{"label":"C","location":[17.261444091796876,-5.758026123046875,0.0]},{"label":"C","location":[17.261444091796876,-6.75801944732666,0.0]},{"label":"C","location":[16.395389556884767,-7.258016109466553,0.0]},{"label":"C","location":[15.529335975646973,-6.75801944732666,0.0]},{"label":"C","location":[15.529335975646973,-5.758026123046875,0.0]},{"label":"C","location":[16.395389556884767,-5.258028984069824,0.0]},{"label":"C","location":[16.395389556884767,-4.258035659790039,0.0]},{"label":"C","location":[15.529335975646973,-3.7580387592315676,0.0]},{"label":"C","location":[14.663400650024414,-3.2580418586730959,0.0]},{"label":"O","location":[16.02933120727539,-2.8919837474823,0.0]},{"label":"C","location":[15.029337882995606,-4.624094009399414,0.0]}],"bonds":[{"type":1,"atoms":[0,1]},{"type":2,"atoms":[1,2]},{"type":1,"atoms":[2,3]},{"type":2,"atoms":[3,4]},{"type":1,"atoms":[4,5]},{"type":2,"atoms":[0,5]},{"type":1,"atoms":[5,6]},{"type":1,"atoms":[6,7]},{"type":1,"atoms":[7,8]},{"type":1,"atoms":[7,9]},{"type":1,"atoms":[7,10]}]},"mol2":{"type":"molecule","atoms":[{"label":"Cl","location":[10.475000381469727,-4.5,0.0]}],"bonds":[]}}
