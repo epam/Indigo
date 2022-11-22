@@ -66,6 +66,8 @@ namespace indigo
 
         static const int SCALE = 30;
         static const int MAX_PAGE_HEIGHT = 64;
+        const float PLUS_HALF_HEIGHT = 7.5/2;
+
         struct Bounds
         {
             Vec2f min, max;

@@ -1003,6 +1003,11 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     break;
     case KETReactionPlus::CID: {
         KETReactionPlus& rp = (KETReactionPlus&)(obj);
+        attrs.insert("GraphicType", "Symbol");
+        attrs.insert("SymbolType", "Plus");
+        Vec2f v1(rp._pos.x, rp._pos.y - PLUS_HALF_HEIGHT / _bond_length);
+        Vec2f v2(rp._pos.x, rp._pos.y + PLUS_HALF_HEIGHT / _bond_length);
+        addElement("graphic", id, v1, v2, attrs);
     }
     break;
     case KETSimpleObject::CID: {
@@ -1062,6 +1067,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
             std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
             XMLElement* t = _doc->NewElement("t");
             _current->LinkEndChild(t);
+            t->SetAttribute("id", id);
             t->SetAttribute("p", pos_str.c_str());
             t->SetAttribute("Justification", "Left");
             t->SetAttribute("InterpretChemically", "no");

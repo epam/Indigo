@@ -1093,7 +1093,10 @@ void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem, std::vector<std::p
 
     writer.EndObject();
 
-    Vec3f tpos(text_bbox.center().x, text_bbox.center().y, 0);
+    Vec3f tpos(text_pos);
+    if (text_bbox.width() > 0 && text_bbox.height() > 0)
+        tpos.set(text_bbox.center().x, text_bbox.center().y, 0);
+
     text_parsed.emplace_back(tpos, s.GetString());
 }
 

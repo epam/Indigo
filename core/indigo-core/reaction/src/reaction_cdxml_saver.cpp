@@ -100,8 +100,6 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1, mol_ids[i], _id, nodes_ids[i]);
 
-    _addPlusses(rxn, molsaver);
-
     if (rxn.meta().metaData().size()) // we have metadata
     {
         for (int i = 0; i < rxn.meta().metaData().size(); ++i)
@@ -111,6 +109,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     }
     else
     {
+        _addPlusses(rxn, molsaver);
         _addArrow(rxn, molsaver, arrow_id);
     }
 
