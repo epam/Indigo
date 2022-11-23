@@ -493,13 +493,11 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
     }
 
     auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, 0);
-    Vec2f arrow_vec(arrow._begin);
-    arrow_vec.sub(arrow._end);
 
     for (int i = 0; i < rxn.meta().getMetaCount(KETTextObject::CID); ++i)
     {
-        auto& text = (const KETReactionPlus&)rxn.meta().getMetaObject(KETTextObject::CID, i);
-        Rect2f bbox(text._pos, text._pos); // change to real text box later
+        auto& text = (const KETTextObject&)rxn.meta().getMetaObject(KETTextObject::CID, i);
+        Rect2f bbox(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)); // change to real text box later
         components.emplace_back(bbox, ReactionFragmentType::TEXT, nullptr);
     }
 
@@ -512,39 +510,31 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
             auto& cmol = *std::get<MOLECULE_IDX>(comp);
             for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
             {
-                Vec3f& v3 = cmol.getAtomXyz(idx);
-                Vec2f slope1(v3.x, v3.y);
-                Vec2f slope2(slope1);
-                slope1.sub(arrow._begin);
-                slope2.sub(arrow._end);
-                auto dt1 = Vec2f::dot(slope1, arrow_vec);
-                auto dt2 = Vec2f::dot(slope2, arrow_vec);
-                if (std::signbit(dt1) != std::signbit(dt2))
+                Vec3f& pt3d = cmol.getAtomXyz(idx);
+                Vec2f pt(pt3d.x, pt3d.y);
+                int side = getPointSide(pt, arrow._begin, arrow._end);
+                switch (side)
                 {
+                case KETReagentUpArea:
+                case KETReagentDownArea:
                     rxn.addCatalystCopy(cmol, 0, 0);
                     break;
-                }
-                else if (std::signbit(dt1) && std::signbit(dt2))
-                {
+                case KETProductArea:
                     rxn.addProductCopy(cmol, 0, 0);
                     break;
-                }
-                else
-                {
+                default:
                     rxn.addReactantCopy(cmol, 0, 0);
                     break;
                 }
+                break;
             }
         }
+        break;
         case ReactionFragmentType::TEXT: {
             const auto& bbox = std::get<BBOX_IDX>(comp);
-            Vec2f slope1(bbox.leftTop().x, bbox.leftTop().y);
-            Vec2f slope2(slope1);
-            slope1.sub(arrow._begin);
-            slope2.sub(arrow._end);
-            auto dt1 = Vec2f::dot(slope1, arrow_vec);
-            auto dt2 = Vec2f::dot(slope2, arrow_vec);
-            if (std::signbit(dt1) != std::signbit(dt2))
+            Vec2f pt(bbox.center());
+            int side = getPointSide(pt, arrow._begin, arrow._end);
+            if (side == KETReagentUpArea || side == KETReagentDownArea)
             {
                 rxn.addSpecialCondition(text_meta_idx, bbox);
                 break;

@@ -263,17 +263,7 @@ void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
         }
     }
 
-    Array<char> buf;
-    ArrayOutput buf_out(buf);
-    buf_out.printf("%d", arrow_id);
-    buf.push(0);
-
-    attrs.insert("id", buf.ptr());
-    attrs.insert("GraphicType", "Line");
-    attrs.insert("ArrowType", "FullHead");
-    attrs.insert("HeadSize", "1000");
-
-    molsaver.addElement("graphic", ++_id, p1, p2, attrs);
+    molsaver.addArrow(arrow_id, KETReactionArrow::EOpenAngle, p2, p1);
 }
 
 void ReactionCdxmlSaver::_addScheme(MoleculeCdxmlSaver& molsaver)
