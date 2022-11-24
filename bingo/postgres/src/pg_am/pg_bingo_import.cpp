@@ -9,7 +9,6 @@ extern "C"
 #include "catalog/pg_type.h"
 #include "executor/spi.h"
 #include "utils/builtins.h"
-#include "utils/int8.h"
 }
 
 #include "bingo_pg_fix_post.h"
@@ -140,7 +139,7 @@ public:
                 BINGO_PG_TRY
                 {
                     data.reset(new int64);
-                    scanint8(str, false, data.get());
+                    *data = pg_strtoint64(str);
                 }
                 BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int64: %s", message));
             }
@@ -182,7 +181,7 @@ public:
                 BINGO_PG_TRY
                 {
                     data.reset(new int32);
-                    *data = pg_atoi(str2.ptr(), sizeof(int32), 0);
+                    *data = pg_strtoint32(str2.ptr());
                 }
                 BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int32: %s", message));
             }

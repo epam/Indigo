@@ -12,6 +12,11 @@ if (NOT PostgreSQL_FOUND)
 else()
     project(bingo-postgres C CXX)
 
+    string(REPLACE "." ";" PostgreSQL_VERSION_LIST ${PostgreSQL_VERSION_STRING})
+    list(GET PostgreSQL_VERSION_LIST 0 PostgreSQL_VERSION_MAJOR)
+    list(GET PostgreSQL_VERSION_LIST 1 PostgreSQL_VERSION_MINOR)
+
+
     file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
             src/pg_am/*.cpp src/pg_am/*.c
             src/pg_common/*.cpp src/pg_common/*.c
@@ -21,6 +26,7 @@ else()
             PUBLIC bingo-core-c-static)
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${PostgreSQL_INCLUDE_DIRS}
+            PUBLIC /usr/include/postgresql/${PostgreSQL_VERSION_MAJOR}/server
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core)
 
@@ -49,9 +55,6 @@ else()
         string(REPLACE "-fvisibility=hidden" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     endif ()
 
-    string(REPLACE "." ";" PostgreSQL_VERSION_LIST ${PostgreSQL_VERSION_STRING})
-    list(GET PostgreSQL_VERSION_LIST 0 PostgreSQL_VERSION_MAJOR)
-    list(GET PostgreSQL_VERSION_LIST 1 PostgreSQL_VERSION_MINOR)
     if (PostgreSQL_VERSION_MAJOR GREATER 9)
         set(PostgreSQL_VERSION ${PostgreSQL_VERSION_MAJOR})
     else ()
