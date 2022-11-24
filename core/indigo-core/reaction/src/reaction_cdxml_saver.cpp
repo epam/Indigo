@@ -100,7 +100,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
         for (int i = 0; i < arrow_count; ++i)
         {
             int array_index = rxn.meta().getMetaObjectIndex(KETReactionArrow::CID, i);
-            arrow_ids.emplace_back(meta_ids[array_index], array_index);
+            arrow_ids.emplace_back(meta_ids[array_index], arrow_count > 1 ? array_index : -1);
         }
     }
     else
