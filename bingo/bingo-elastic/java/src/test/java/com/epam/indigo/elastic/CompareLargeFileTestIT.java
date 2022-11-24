@@ -6,7 +6,7 @@ import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.model.IndigoRecordMolecule;
 import com.epam.indigo.predicate.*;
-import org.elasticsearch.core.Tuple;
+import org.elasticsearch.common.collect.Tuple;
 import org.junit.jupiter.api.*;
 
 import java.util.*;

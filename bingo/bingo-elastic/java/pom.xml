@@ -53,24 +53,24 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.16.2</version>
+            <version>7.13.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.8.2</version>
+            <version>5.9.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>1.16.2</version>
+            <version>1.17.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.epam.indigo</groupId>
             <artifactId>bingo-nosql</artifactId>
-            <version>${project.version}</version>
+            <version>1.8.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
