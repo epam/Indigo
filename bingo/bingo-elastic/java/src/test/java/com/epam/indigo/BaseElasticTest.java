@@ -9,7 +9,6 @@ import com.epam.indigo.model.NamingConstants;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
