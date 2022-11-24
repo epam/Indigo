@@ -957,7 +957,10 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
-          path: dist/bingo-postgres*.tgz
+          path: dist/bingo-postgres*.
+      - name: Publish master
+        if: github.ref == 'refs/heads/master'
+        run: docker push epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
