@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 /***
  * Test for local usage for OpenSearch connectivity. Ignored for now
  */
-@Ignore
 public class BaseLocalOpensearchTest {
 
     @Test
+    @Ignore
     public void connectivityTest() {
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder
                 = new ElasticRepository.ElasticRepositoryBuilder<>();
