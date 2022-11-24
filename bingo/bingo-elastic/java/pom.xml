@@ -87,6 +87,9 @@
                 <version>2.22.2</version>
                 <configuration>
                     <forkCount>0</forkCount>
+                    <excludes>
+                        <exclude>com.epam.indigo.BaseLocalOpensearchTest</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
