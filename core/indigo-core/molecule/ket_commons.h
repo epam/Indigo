@@ -311,8 +311,8 @@ namespace indigo
             CONNECTED = -1
         };
 
-        ReactionComponent(int ctype, const Rect2f& box, std::unique_ptr<BaseMolecule> mol)
-            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED){};
+        ReactionComponent(int ctype, const Rect2f& box, int idx, std::unique_ptr<BaseMolecule> mol)
+            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx){};
 
         int component_type;
         Rect2f bbox;
@@ -320,6 +320,7 @@ namespace indigo
         std::list<MolSumm>::iterator summ_block_it;
         int summ_block_idx;
         std::vector<Vec2f> coordinates;
+        int index;
     };
 
 }

@@ -79,12 +79,13 @@ namespace indigo
     public:
         void copy(const ReactionBlock& other)
         {
-            indexes.copy(other.indexes);
-            arrows_to.copy(other.arrows_to);
+            reactants.copy(other.reactants);
+            products.copy(other.products);
+            arrow_index = other.arrow_index;
         }
-        Array<int> indexes;
-        Array<int> arrows_to;
-        int role;
+        Array<int> reactants;
+        Array<int> products;
+        int arrow_index;
     };
 
     class DLLEXPORT BaseReaction : public NonCopyable

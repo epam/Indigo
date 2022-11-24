@@ -206,16 +206,6 @@ void ReactionJsonLoader::constructMultipleArrowReaction(BaseReaction& rxn)
             }
         }
     }
-
-    for (auto& cb : _component_summ_blocks)
-    {
-        auto& rb = rxn.addReactionBlock();
-        rb.role = cb.role;
-        for (auto v : cb.indexes)
-            rb.indexes.push() = v;
-        for (auto v : cb.arrows_to)
-            rb.arrows_to.push() = v;
-    }
 }
 
 void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
@@ -256,7 +246,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         mol_bottoms.emplace_back(bbox.bottom(), i);
         mol_lefts.emplace_back(bbox.left(), i);
         mol_rights.emplace_back(bbox.right(), i);
-        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, std::move(component));
+        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, i, std::move(component));
     }
 
     for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
@@ -264,7 +254,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
         const Vec2f& plus_pos = plus._pos;
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
-        _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, std::unique_ptr<BaseMolecule>(nullptr));
+        _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(plus_pos);
         int index = _reaction_components.size() - 1;
         mol_tops.emplace_back(bbox.top(), index);
@@ -280,7 +270,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const Vec2f& arr_begin = arrow._begin;
         const Vec2f& arr_end = arrow._end;
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
-        _reaction_components.emplace_back(arrow_type, bbox, std::unique_ptr<BaseMolecule>(nullptr));
+        _reaction_components.emplace_back(arrow_type, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(arr_begin);
         _reaction_components.back().coordinates.push_back(arr_end);
         int index = _reaction_components.size() - 1;
@@ -406,7 +396,8 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         int arrow_type = arrow._arrow_type;
         const Vec2f& arr_begin = arrow._begin;
         const Vec2f& arr_end = arrow._end;
-        float min_dist_prod = -1, min_dist_reac = -1, idx_cs_min_prod = -1, idx_cs_min_reac = -1;
+        float min_dist_prod = -1, min_dist_reac = -1;
+        int idx_cs_min_prod = -1, idx_cs_min_reac = -1;
         for (int index_cs = 0; index_cs < _component_summ_blocks.size(); ++index_cs)
         {
             auto& csb = _component_summ_blocks[index_cs];
@@ -430,10 +421,13 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
             }
         }
 
+        auto& rb = rxn.addReactionBlock();
+        rb.arrow_index = i;
+
         if (min_dist_prod > 0 && min_dist_reac > 0) // if both ends present
         {
-            _reaction_components[count + rxn.meta().getMetaCount(KETReactionPlus::CID) + i].summ_block_idx =
-                ReactionComponent::CONNECTED; // mark arrow as connected
+            auto& rc_arrow = _reaction_components[count + rxn.meta().getMetaCount(KETReactionPlus::CID) + i];
+            rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
             if (csb_min_prod.role == BaseReaction::UNDEFINED)
                 csb_min_prod.role = BaseReaction::PRODUCT;
@@ -448,6 +442,10 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
 
             // idx_cs_min_reac -> idx_cs_min_prod
             csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
+            for (auto ri : csb_min_reac.indexes)
+                rb.reactants.push(_reaction_components[ri].index);
+            for (auto pi : csb_min_prod.indexes)
+                rb.products.push(_reaction_components[pi].index);
         }
     }
 
