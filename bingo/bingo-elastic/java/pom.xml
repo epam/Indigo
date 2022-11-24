@@ -64,13 +64,13 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>1.17.4</version>
+            <version>1.17.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.epam.indigo</groupId>
             <artifactId>bingo-nosql</artifactId>
-            <version>1.8.0</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
