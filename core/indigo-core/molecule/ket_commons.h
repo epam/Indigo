@@ -37,6 +37,10 @@ namespace indigo
     const auto KETFontSuperscriptStr = "SUPERSCRIPT";
     const auto KETFontSubscriptStr = "SUBSCRIPT";
     const auto KETFontCustomSizeStr = "CUSTOM_FONT_SIZE";
+    const uint8_t KETReactantArea = 0;
+    const uint8_t KETReagentUpArea = 1;
+    const uint8_t KETReagentDownArea = 2;
+    const uint8_t KETProductArea = 3;
 
     struct compareFunction
     {
@@ -56,6 +60,28 @@ namespace indigo
     constexpr std::uint32_t operator"" _hash(char const* s, std::size_t count)
     {
         return string_hash(s, count);
+    }
+
+    inline uint8_t getPointSide(const Vec2f& point, const Vec2f& beg, const Vec2f& end)
+    {
+        uint8_t bit_mask = 0;
+        Vec2f arrow_vec(beg);
+        arrow_vec.sub(end);
+
+        Vec2f slope1(point.x, point.y);
+        Vec2f slope2(slope1);
+        slope1.sub(beg);
+        slope2.sub(end);
+        auto dt1 = Vec2f::dot(slope1, arrow_vec);
+        auto dt2 = Vec2f::dot(slope2, arrow_vec);
+
+        if (std::signbit(dt1))
+            bit_mask |= KETReagentUpArea;
+
+        if (std::signbit(dt2))
+            bit_mask |= KETReagentDownArea;
+
+        return bit_mask;
     }
 
     class KETSimpleObject : public MetaObject
@@ -285,8 +311,8 @@ namespace indigo
             CONNECTED = -1
         };
 
-        ReactionComponent(int ctype, const Rect2f& box, std::unique_ptr<BaseMolecule> mol)
-            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED){};
+        ReactionComponent(int ctype, const Rect2f& box, int idx, std::unique_ptr<BaseMolecule> mol)
+            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx){};
 
         int component_type;
         Rect2f bbox;
@@ -294,6 +320,7 @@ namespace indigo
         std::list<MolSumm>::iterator summ_block_it;
         int summ_block_idx;
         std::vector<Vec2f> coordinates;
+        int index;
     };
 
 }

@@ -83,6 +83,7 @@ namespace indigo
         void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale);
 
         void addMetaObject(const MetaObject& obj, int id);
+        void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
 
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);

@@ -183,6 +183,20 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         }
     }
 
+    for (auto id : intermediates_ids)
+    {
+        auto elem_it = _cdxml_elements.find(id);
+        if (elem_it != _cdxml_elements.end())
+        {
+            loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
+            if (_pmol->vertexCount())
+                rxn.addIntermediateCopy(*_pmol, 0, 0);
+            else
+                throw Error("Empty product: %d", id);
+            _cdxml_elements.erase(elem_it);
+        }
+    }
+
     for (auto id : agents_ids)
     {
         auto elem_it = _cdxml_elements.find(id);
@@ -199,7 +213,6 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                     int idx = rxn.meta().addMetaObject(text.clone());
                     rxn.addSpecialCondition(idx, Rect2f(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)));
                 }
-                _pmol->meta().resetMetaData();
             }
             _cdxml_elements.erase(elem_it);
         }

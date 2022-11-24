@@ -3,6 +3,7 @@
 *** Try as Reaction ***
 molfile loader: atom lists are allowed only for queries
 *** Try as QueryReaction ***
+1-3-Quinazoline-2-4-dione.rxn
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
@@ -169,7 +170,7 @@ molfile loader: atom lists are allowed only for queries
         <t p="114.093002 87.751503" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="43" BoundingBox="270.068268 84.528000 210.606766 78.836998" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="43" BoundingBox="270.068268 84.528000 210.606766 78.836998" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="270.068268 84.528000 0.000000" Tail3D="210.606766 78.836998 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 18 24" ReactionStepProducts="28" ReactionStepArrows="43" ReactionStepAtomMap="5 29 6 30 7 31 8 34 9 33 10 32 11 38 12 35 14 39 19 36 20 42 25 41" ReactionStepAtomMapManual="5 29 6 30 7 31 8 34 9 33 10 32 11 38 12 35 14 39 19 36 20 42 25 41"/>
         </scheme>
@@ -183,6 +184,7 @@ AcetylateSecondaryAmine.rxn
 *** Try as Reaction ***
 molfile loader: 'any' atoms are allowed only for queries
 *** Try as QueryReaction ***
+AcetylateSecondaryAmine.rxn
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
@@ -256,7 +258,7 @@ molfile loader: 'any' atoms are allowed only for queries
             <b id="23" B="10" E="11"/>
             <b id="24" B="13" E="15"/>
         </fragment>
-        <graphic id="16" BoundingBox="97.500000 21.686998 24.750006 16.624500" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="16" BoundingBox="97.500000 21.686998 24.750006 16.624500" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="97.500000 21.686998 0.000000" Tail3D="24.750006 16.624500 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4" ReactionStepProducts="9" ReactionStepArrows="16" ReactionStepAtomMap="5 10 6 11 7 12" ReactionStepAtomMapManual="5 10 6 11 7 12"/>
         </scheme>
@@ -551,7 +553,7 @@ AmideFormation.rxn
         <t p="30.780001 23.812502" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="22" BoundingBox="224.060989 5.749500 156.932999 23.812502" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="22" BoundingBox="224.060989 5.749500 156.932999 23.812502" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="224.060989 5.749500 0.000000" Tail3D="156.932999 23.812502 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 10" ReactionStepProducts="16" ReactionStepArrows="22" ReactionStepAtomMap="5 17 6 18 8 19 11 20 12 21" ReactionStepAtomMapManual="5 17 6 18 8 19 11 20 12 21"/>
         </scheme>
@@ -653,7 +655,7 @@ AmideFormation.rxn
         <t p="30.780001 23.812502" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="22" BoundingBox="224.060989 5.749500 156.932999 23.812502" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="22" BoundingBox="224.060989 5.749500 156.932999 23.812502" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="224.060989 5.749500 0.000000" Tail3D="156.932999 23.812502 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 10" ReactionStepProducts="16" ReactionStepArrows="22" ReactionStepAtomMap="5 17 6 18 8 19 11 20 12 21" ReactionStepAtomMapManual="5 17 6 18 8 19 11 20 12 21"/>
         </scheme>
@@ -758,7 +760,7 @@ CN_Bond-S-GRP.rxn
         <t p="198.396011 175.387482" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="15" BoundingBox="376.520996 185.842499 301.983002 187.199997" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="15" BoundingBox="376.520996 185.842499 301.983002 187.199997" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="376.520996 185.842499 0.000000" Tail3D="301.983002 187.199997 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 7" ReactionStepProducts="11" ReactionStepArrows="15"/>
         </scheme>
@@ -859,7 +861,7 @@ CN_Bond-S-GRP.rxn
         <t p="198.396011 175.387482" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="15" BoundingBox="376.520996 185.842499 301.983002 187.199997" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="15" BoundingBox="376.520996 185.842499 301.983002 187.199997" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="376.520996 185.842499 0.000000" Tail3D="301.983002 187.199997 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 7" ReactionStepProducts="11" ReactionStepArrows="15"/>
         </scheme>
@@ -929,7 +931,7 @@ CN_Bond.rxn
         <t p="237.530991 174.982513" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="17" BoundingBox="452.282227 180.184509 364.968750 180.516006" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="17" BoundingBox="452.282227 180.184509 364.968750 180.516006" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="452.282227 180.184509 0.000000" Tail3D="364.968750 180.516006 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 8" ReactionStepProducts="12" ReactionStepArrows="17"/>
         </scheme>
@@ -998,7 +1000,7 @@ CN_Bond.rxn
         <t p="237.530991 174.982513" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="17" BoundingBox="452.282227 180.184509 364.968750 180.516006" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="17" BoundingBox="452.282227 180.184509 364.968750 180.516006" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="452.282227 180.184509 0.000000" Tail3D="364.968750 180.516006 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 8" ReactionStepProducts="12" ReactionStepArrows="17"/>
         </scheme>
@@ -1068,7 +1070,7 @@ CN_Bond_map.rxn
         <t p="286.520996 472.528503" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="17" BoundingBox="450.763519 475.483490 385.480530 475.481995" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="17" BoundingBox="450.763519 475.483490 385.480530 475.481995" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="450.763519 475.483490 0.000000" Tail3D="385.480530 475.481995 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 8" ReactionStepProducts="12" ReactionStepArrows="17" ReactionStepAtomMap="5 13 6 14 10 16" ReactionStepAtomMapManual="5 13 6 14 10 16"/>
         </scheme>
@@ -1137,7 +1139,7 @@ CN_Bond_map.rxn
         <t p="286.520996 472.528503" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="17" BoundingBox="450.763519 475.483490 385.480530 475.481995" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="17" BoundingBox="450.763519 475.483490 385.480530 475.481995" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="450.763519 475.483490 0.000000" Tail3D="385.480530 475.481995 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 8" ReactionStepProducts="12" ReactionStepArrows="17" ReactionStepAtomMap="5 13 6 14 10 16" ReactionStepAtomMapManual="5 13 6 14 10 16"/>
         </scheme>
@@ -1376,7 +1378,7 @@ Claisen.rxn
             <b id="45" B="20" E="21" Order="2"/>
             <b id="46" B="24" E="25"/>
         </fragment>
-        <graphic id="26" BoundingBox="198.471771 208.850998 147.323257 209.539505" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="26" BoundingBox="198.471771 208.850998 147.323257 209.539505" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="198.471771 208.850998 0.000000" Tail3D="147.323257 209.539505 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4" ReactionStepProducts="15" ReactionStepArrows="26" ReactionStepAtomMap="5 20 6 21 7 22 8 23 9 19 10 24 11 25 12 18 13 17 14 16" ReactionStepAtomMapManual="5 20 6 21 7 22 8 23 9 19 10 24 11 25 12 18 13 17 14 16"/>
         </scheme>
@@ -1455,7 +1457,7 @@ Claisen.rxn
             <b id="45" B="20" E="21" Order="2"/>
             <b id="46" B="24" E="25"/>
         </fragment>
-        <graphic id="26" BoundingBox="198.471771 208.850998 147.323257 209.539505" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="26" BoundingBox="198.471771 208.850998 147.323257 209.539505" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="198.471771 208.850998 0.000000" Tail3D="147.323257 209.539505 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4" ReactionStepProducts="15" ReactionStepArrows="26" ReactionStepAtomMap="5 20 6 21 7 22 8 23 9 19 10 24 11 25 12 18 13 17 14 16" ReactionStepAtomMapManual="5 20 6 21 7 22 8 23 9 19 10 24 11 25 12 18 13 17 14 16"/>
         </scheme>
@@ -1649,7 +1651,7 @@ Markush6.rxn
         <t p="27.166500 66.070503" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="51" BoundingBox="176.155502 60.477005 133.468491 67.529999" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="51" BoundingBox="176.155502 60.477005 133.468491 67.529999" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="176.155502 60.477005 0.000000" Tail3D="133.468491 67.529999 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 18" ReactionStepProducts="29" ReactionStepArrows="51"/>
         </scheme>
@@ -1842,7 +1844,7 @@ Markush6.rxn
         <t p="27.166500 66.070503" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="51" BoundingBox="176.155502 60.477005 133.468491 67.529999" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="51" BoundingBox="176.155502 60.477005 133.468491 67.529999" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="176.155502 60.477005 0.000000" Tail3D="133.468491 67.529999 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 18" ReactionStepProducts="29" ReactionStepArrows="51"/>
         </scheme>
@@ -1853,6 +1855,7 @@ SN2_XtoOR_Stereo.rxn
 *** Try as Reaction ***
 molfile loader: atom lists are allowed only for queries
 *** Try as QueryReaction ***
+SN2_XtoOR_Stereo.rxn
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
@@ -1942,7 +1945,7 @@ molfile loader: atom lists are allowed only for queries
         <t p="83.563499 82.999504" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="19" BoundingBox="234.794998 82.999504 186.884995 82.999504" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="19" BoundingBox="234.794998 82.999504 186.884995 82.999504" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="234.794998 82.999504 0.000000" Tail3D="186.884995 82.999504 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 10" ReactionStepProducts="13" ReactionStepArrows="19" ReactionStepAtomMap="5 14 6 15 8 17 11 18" ReactionStepAtomMapManual="5 14 6 15 8 17 11 18"/>
         </scheme>
@@ -2075,7 +2078,7 @@ amiderxn3.rxn
         <t p="538.074036 -0.000000" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="28" BoundingBox="385.458008 -0.000000 295.458008 -0.000000" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="28" BoundingBox="385.458008 -0.000000 295.458008 -0.000000" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="385.458008 -0.000000 0.000000" Tail3D="295.458008 -0.000000 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 9 12" ReactionStepProducts="17 23" ReactionStepArrows="28"/>
         </scheme>
@@ -2207,7 +2210,7 @@ amiderxn3.rxn
         <t p="538.074036 -0.000000" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="28" BoundingBox="385.458008 -0.000000 295.458008 -0.000000" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="28" BoundingBox="385.458008 -0.000000 295.458008 -0.000000" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="385.458008 -0.000000 0.000000" Tail3D="295.458008 -0.000000 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 9 12" ReactionStepProducts="17 23" ReactionStepArrows="28"/>
         </scheme>
@@ -2266,7 +2269,7 @@ only_products.rxn
         <t p="469.924500 98.504997" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="18" BoundingBox="356.082001 98.842499 326.082001 98.842499" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="18" BoundingBox="356.082001 98.842499 326.082001 98.842499" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="356.082001 98.842499 0.000000" Tail3D="326.082001 98.842499 0.000000"/>
         <scheme>
             <step ReactionStepProducts="4 11" ReactionStepArrows="18"/>
         </scheme>
@@ -2324,7 +2327,7 @@ only_products.rxn
         <t p="469.924500 98.504997" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="18" BoundingBox="356.082001 98.842499 326.082001 98.842499" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="18" BoundingBox="356.082001 98.842499 326.082001 98.842499" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="356.082001 98.842499 0.000000" Tail3D="326.082001 98.842499 0.000000"/>
         <scheme>
             <step ReactionStepProducts="4 11" ReactionStepArrows="18"/>
         </scheme>
@@ -2383,7 +2386,7 @@ only_reactants.rxn
         <t p="187.228500 101.205002" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="18" BoundingBox="331.070984 101.542503 301.070984 101.542503" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="18" BoundingBox="331.070984 101.542503 301.070984 101.542503" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="331.070984 101.542503 0.000000" Tail3D="301.070984 101.542503 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 11" ReactionStepArrows="18"/>
         </scheme>
@@ -2441,7 +2444,7 @@ only_reactants.rxn
         <t p="187.228500 101.205002" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="18" BoundingBox="331.070984 101.542503 301.070984 101.542503" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="18" BoundingBox="331.070984 101.542503 301.070984 101.542503" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="331.070984 101.542503 0.000000" Tail3D="301.070984 101.542503 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 11" ReactionStepArrows="18"/>
         </scheme>
@@ -2599,7 +2602,7 @@ v3000.rxn
         <t p="526.628967 180.184509" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="38" BoundingBox="452.282227 180.184509 364.968750 180.516006" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="38" BoundingBox="452.282227 180.184509 364.968750 180.516006" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="452.282227 180.184509 0.000000" Tail3D="364.968750 180.516006 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 8 12 16 20 24" ReactionStepProducts="28 33" ReactionStepArrows="38"/>
         </scheme>
@@ -2756,7 +2759,7 @@ v3000.rxn
         <t p="526.628967 180.184509" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
         </t>
-        <graphic id="38" BoundingBox="452.282227 180.184509 364.968750 180.516006" GraphicType="Line" ArrowType="FullHead" HeadSize="1000"/>
+        <arrow id="38" BoundingBox="452.282227 180.184509 364.968750 180.516006" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="452.282227 180.184509 0.000000" Tail3D="364.968750 180.516006 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4 8 12 16 20 24" ReactionStepProducts="28 33" ReactionStepArrows="38"/>
         </scheme>
