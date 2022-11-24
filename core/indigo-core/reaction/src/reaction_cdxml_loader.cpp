@@ -197,7 +197,6 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         }
     }
 
-
     for (auto id : agents_ids)
     {
         auto elem_it = _cdxml_elements.find(id);
