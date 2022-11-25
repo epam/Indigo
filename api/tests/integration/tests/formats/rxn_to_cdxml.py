@@ -30,4 +30,5 @@ for filename in files:
         print("*** Try as QueryReaction ***")
         rxn = indigo.loadQueryReactionFromFile(os.path.join(root, filename))
         indigo.setOption("layout-horintervalfactor", "1.4")
+        print(filename)
         print(rxn.cdxml())

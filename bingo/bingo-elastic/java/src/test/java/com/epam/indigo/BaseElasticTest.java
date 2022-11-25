@@ -9,6 +9,8 @@ import com.epam.indigo.model.NamingConstants;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.Collections;
+
 /**
  * This class provides elastic connection for any tests based on Elasticsearch
  */
@@ -35,7 +37,7 @@ public class BaseElasticTest {
             ElasticRepository.ElasticRepositoryBuilder<IndigoRecordReaction> builder
                     = new ElasticRepository.ElasticRepositoryBuilder<>();
             repositoryReaction = builder.withIndexName(NamingConstants.BINGO_REACTIONS)
-                    .withHostName(elasticsearchContainer.getHost())
+                    .withHostsNames(Collections.singletonList(elasticsearchContainer.getHost()))
                     .withPort(elasticsearchContainer.getFirstMappedPort())
                     .withScheme("http")
                     .withRefreshInterval("1s")
@@ -44,7 +46,7 @@ public class BaseElasticTest {
             ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder
                     = new ElasticRepository.ElasticRepositoryBuilder<>();
             repositoryMolecule = builder.withIndexName(NamingConstants.BINGO_MOLECULES)
-                    .withHostName(elasticsearchContainer.getHost())
+                    .withHostsNames(Collections.singletonList(elasticsearchContainer.getHost()))
                     .withPort(elasticsearchContainer.getFirstMappedPort())
                     .withScheme("http")
                     .withRefreshInterval("1s")

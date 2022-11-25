@@ -896,6 +896,106 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
     id = _id;
 }
 
+void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end)
+{
+    PropertiesMap attrs;
+    attrs.insert("FillType", "None");
+    attrs.insert("ArrowheadType", "Solid");
+    attrs.insert("HeadSize", "2250");
+    attrs.insert("ArrowheadWidth", "563");
+    switch (arrow_type)
+    {
+    case KETReactionArrow::EOpenAngle:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "25");
+        break;
+    case KETReactionArrow::EFilledTriangle:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "2250");
+        break;
+
+    case KETReactionArrow::EFilledBow:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "1125");
+        break;
+
+    case KETReactionArrow::EDashedOpenAngle:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "25");
+        attrs.insert("LineType", "Dashed");
+        break;
+
+    case KETReactionArrow::EFailed:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "1125");
+        attrs.insert("NoGo", "Cross");
+        break;
+
+    case KETReactionArrow::EBothEndsFilledTriangle:
+        attrs.insert("ArrowheadCenterSize", "2250");
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadTail", "Full");
+        break;
+
+    case KETReactionArrow::EEquilibriumFilledHalfBow:
+        attrs.insert("ArrowheadHead", "HalfLeft");
+        attrs.insert("ArrowheadTail", "HalfLeft");
+        attrs.insert("ArrowheadCenterSize", "1125");
+        attrs.insert("ArrowShaftSpacing", "300");
+        break;
+
+    case KETReactionArrow::EEquilibriumFilledTriangle:
+        attrs.insert("ArrowheadHead", "HalfLeft");
+        attrs.insert("ArrowheadTail", "HalfLeft");
+        attrs.insert("ArrowheadCenterSize", "2250");
+        attrs.insert("ArrowShaftSpacing", "300");
+        break;
+
+    case KETReactionArrow::EEquilibriumOpenAngle:
+        attrs.insert("ArrowheadHead", "HalfLeft");
+        attrs.insert("ArrowheadTail", "HalfLeft");
+        attrs.insert("ArrowheadCenterSize", "25");
+        attrs.insert("ArrowShaftSpacing", "300");
+        break;
+
+    case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
+        break;
+
+    case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
+        break;
+
+    case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
+        break;
+
+    case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
+        break;
+
+    case KETReactionArrow::EEllipticalArcFilledBow:
+        break;
+
+    case KETReactionArrow::EEllipticalArcFilledTriangle:
+        break;
+
+    case KETReactionArrow::EEllipticalArcOpenAngle:
+        break;
+
+    case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+        break;
+
+    default:
+        break;
+    }
+
+    Vec3f ar_beg(beg.x, -beg.y, 0);
+    Vec3f ar_end(end.x, -end.y, 0);
+    ar_beg.scale(_bond_length);
+    ar_end.scale(_bond_length);
+
+    attrs.insert("Head3D", std::to_string(ar_end.x) + " " + std::to_string(ar_end.y) + " " + std::to_string(ar_end.z));
+    attrs.insert("Tail3D", std::to_string(ar_beg.x) + " " + std::to_string(ar_beg.y) + " " + std::to_string(ar_beg.z));
+    addElement("arrow", id, end, beg, attrs);
+}
+
 void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
 {
     PropertiesMap attrs;
@@ -904,101 +1004,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     {
     case KETReactionArrow::CID: {
         KETReactionArrow& ar = (KETReactionArrow&)(obj);
-        attrs.insert("FillType", "None");
-        attrs.insert("ArrowheadType", "Solid");
-        attrs.insert("HeadSize", "2250");
-        attrs.insert("ArrowheadWidth", "563");
-        switch (ar._arrow_type)
-        {
-        case KETReactionArrow::EOpenAngle:
-            attrs.insert("ArrowheadHead", "Full");
-            attrs.insert("ArrowheadCenterSize", "25");
-            break;
-        case KETReactionArrow::EFilledTriangle:
-            attrs.insert("ArrowheadHead", "Full");
-            attrs.insert("ArrowheadCenterSize", "2250");
-            break;
-
-        case KETReactionArrow::EFilledBow:
-            attrs.insert("ArrowheadHead", "Full");
-            attrs.insert("ArrowheadCenterSize", "1125");
-            break;
-
-        case KETReactionArrow::EDashedOpenAngle:
-            attrs.insert("ArrowheadHead", "Full");
-            attrs.insert("ArrowheadCenterSize", "25");
-            attrs.insert("LineType", "Dashed");
-            break;
-
-        case KETReactionArrow::EFailed:
-            attrs.insert("ArrowheadHead", "Full");
-            attrs.insert("ArrowheadCenterSize", "1125");
-            attrs.insert("NoGo", "Cross");
-            break;
-
-        case KETReactionArrow::EBothEndsFilledTriangle:
-            attrs.insert("ArrowheadCenterSize", "2250");
-            attrs.insert("ArrowheadHead", "Full");
-            attrs.insert("ArrowheadTail", "Full");
-            break;
-
-        case KETReactionArrow::EEquilibriumFilledHalfBow:
-            attrs.insert("ArrowheadHead", "HalfLeft");
-            attrs.insert("ArrowheadTail", "HalfLeft");
-            attrs.insert("ArrowheadCenterSize", "1125");
-            attrs.insert("ArrowShaftSpacing", "300");
-            break;
-
-        case KETReactionArrow::EEquilibriumFilledTriangle:
-            attrs.insert("ArrowheadHead", "HalfLeft");
-            attrs.insert("ArrowheadTail", "HalfLeft");
-            attrs.insert("ArrowheadCenterSize", "2250");
-            attrs.insert("ArrowShaftSpacing", "300");
-            break;
-
-        case KETReactionArrow::EEquilibriumOpenAngle:
-            attrs.insert("ArrowheadHead", "HalfLeft");
-            attrs.insert("ArrowheadTail", "HalfLeft");
-            attrs.insert("ArrowheadCenterSize", "25");
-            attrs.insert("ArrowShaftSpacing", "300");
-            break;
-
-        case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
-            break;
-
-        case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
-            break;
-
-        case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
-            break;
-
-        case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
-            break;
-
-        case KETReactionArrow::EEllipticalArcFilledBow:
-            break;
-
-        case KETReactionArrow::EEllipticalArcFilledTriangle:
-            break;
-
-        case KETReactionArrow::EEllipticalArcOpenAngle:
-            break;
-
-        case KETReactionArrow::EEllipticalArcOpenHalfAngle:
-            break;
-
-        default:
-            break;
-        }
-
-        Vec3f ar_beg(ar._begin.x, -ar._begin.y, 0);
-        Vec3f ar_end(ar._end.x, -ar._end.y, 0);
-        ar_beg.scale(_bond_length);
-        ar_end.scale(_bond_length);
-
-        attrs.insert("Head3D", std::to_string(ar_end.x) + " " + std::to_string(ar_end.y) + " " + std::to_string(ar_end.z));
-        attrs.insert("Tail3D", std::to_string(ar_beg.x) + " " + std::to_string(ar_beg.y) + " " + std::to_string(ar_beg.z));
-        addElement("arrow", id, ar._end, ar._begin, attrs);
+        addArrow(id, ar._arrow_type, ar._begin, ar._end);
     }
     break;
     case KETReactionPlus::CID: {

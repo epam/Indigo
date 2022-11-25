@@ -15,6 +15,7 @@ print("*** KET to CDXML to KET ***")
 root = joinPathPy("reactions/", __file__)
 files = [
     "agents.ket",
+    "multi.ket",
 ]
 
 files.sort()

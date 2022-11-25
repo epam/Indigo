@@ -60,6 +60,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     mol.clear();
     nodes.clear();
     bonds.clear();
+    _arrows.clear();
     _id_to_atom_idx.clear();
     _id_to_node_index.clear();
     _id_to_bond_index.clear();
@@ -930,10 +931,7 @@ void MoleculeCdxmlLoader::_parseGraphic(const XMLElement* pElem)
     auto pAttr = pElem->FirstAttribute();
     applyDispatcher(pAttr, graphic_dispatcher);
 
-    if (graphic_type == "Line" && arrow_type == "FullHead")
-    {
-    }
-    else if (graphic_type == "Symbol" && symbol_type == "Plus")
+    if (graphic_type == "Symbol" && symbol_type == "Plus")
     {
         _pluses.emplace_back(graph_bbox.center());
     }
