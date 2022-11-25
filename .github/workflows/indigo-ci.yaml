@@ -908,7 +908,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 10, 11, 12, 13, 14 ]
+        postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -958,7 +958,12 @@ jobs:
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
           path: dist/bingo-postgres*.
-      - name: Publish master
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Publish Docker images
         if: github.ref == 'refs/heads/master'
         run: docker push epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Publish Test Report
@@ -973,7 +978,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "10", "11", "12", "13" ]
+        postgres_major_version: [ "11", "12", "13", "14", "15" ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -985,7 +990,7 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { "13" { "13.6" } "12" { "12.10" } "11" { "11.15" } "10" { "10.20" } }
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { "15" { "15.1" } "14" { "14.6" } "13" { "13.9" } "12" { "12.13" } "11" { "11.18" } }
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
@@ -1006,7 +1011,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 10, 11, 12, 13, 14 ]
+        postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -1018,7 +1023,7 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          case ${{ matrix.postgres_major_version }} in 14) pg_version=14.2;; 13) pg_version=13.6;; 12) pg_version=12.10;; 11) pg_version=11.15;; 10) pg_version=10.20;; esac;
+          case ${{ matrix.postgres_major_version }} in 15) pg_version=15.1;; 14) pg_version=14.6;; 13) pg_version=13.9;; 12) pg_version=12.13;; 11) pg_version=11.18;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
           mv pgsql/include/zlib.h pgsql/include/zlib.h.bck

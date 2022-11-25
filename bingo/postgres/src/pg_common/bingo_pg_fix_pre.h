@@ -2,7 +2,7 @@
 #define __bingo_pg_fix_pre_h__
 
 // Visual Studio 2013 has isnan and isinf functions defined in math.h.
-// PostgeSQL defines isnan and isind macroses, so we need to include math.h
+// PostgreSQL defines isnan and isind macroses, so we need to include math.h
 // before PostgreSQL includes
 //
 // See also:

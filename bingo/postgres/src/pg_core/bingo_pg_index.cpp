@@ -1,7 +1,5 @@
 #include "bingo_pg_fix_pre.h"
 
-#include <algorithm>
-
 extern "C"
 {
 #include "postgres.h"
@@ -12,11 +10,12 @@ extern "C"
 
 #include "bingo_pg_fix_post.h"
 
+#include <algorithm>
+
 #include "base_cpp/profiling.h"
 
 #include "bingo_core_c.h"
 #include "bingo_pg_build_engine.h"
-#include "bingo_pg_common.h"
 #include "bingo_pg_config.h"
 #include "bingo_pg_ext_bitset.h"
 #include "bingo_pg_index.h"
