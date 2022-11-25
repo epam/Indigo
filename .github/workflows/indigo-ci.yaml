@@ -958,7 +958,12 @@ jobs:
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
           path: dist/bingo-postgres*.
-      - name: Publish master
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Publish Docker images
         if: github.ref == 'refs/heads/master'
         run: docker push epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Publish Test Report
