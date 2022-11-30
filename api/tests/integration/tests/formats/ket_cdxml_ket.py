@@ -16,7 +16,7 @@ root = joinPathPy("reactions/", __file__)
 files = [
     "agents.ket",
     "multi.ket",
-    "mulit_overlap.ket",
+    "multi_overlap.ket",
 ]
 
 files.sort()
