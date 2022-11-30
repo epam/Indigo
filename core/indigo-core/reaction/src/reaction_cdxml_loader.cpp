@@ -225,6 +225,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         {
             loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
             rxn.meta().append(_pmol->meta());
+            if (_pmol->vertexCount())
+                rxn.addUndefinedCopy(*_pmol, 0, 0);
             _cdxml_elements.erase(elem_it);
         }
     }
@@ -232,6 +234,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     for (const auto& kvp : _cdxml_elements)
     {
         loader.loadMoleculeFromFragment(*_pmol, kvp.second);
+        if (_pmol->vertexCount())
+            rxn.addUndefinedCopy(*_pmol, 0, 0);
         rxn.meta().append(_pmol->meta());
     }
 }
