@@ -66,6 +66,8 @@ namespace indigo
 
         static const int SCALE = 30;
         static const int MAX_PAGE_HEIGHT = 64;
+        const float PLUS_HALF_HEIGHT = 7.5 / 2;
+
         struct Bounds
         {
             Vec2f min, max;
@@ -77,8 +79,12 @@ namespace indigo
         void addFontToTable(int id, const char* charset, const char* name);
         void addColorTable(const char* color);
         void addColorToTable(int id, int r, int g, int b);
-        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int id, Array<int>& ids);
-        void addMetaData(const MetaDataStorage& meta, int id);
+        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int frag_id, int& id, std::vector<int>& ids);
+        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale);
+
+        void addMetaObject(const MetaObject& obj, int id);
+        void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
+
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);
         void addCustomText(const Vec2f& pos, const char* alignment, float line_height, const char* text);
@@ -96,6 +102,7 @@ namespace indigo
 
         void addDefaultFontTable();
         void addDefaultColorTable();
+        int getId();
 
         DECL_ERROR;
 
@@ -122,8 +129,8 @@ namespace indigo
         std::unordered_set<int> _bonds_included;
         std::vector<OutConnection> _out_connections;
 
-        Array<int> _atoms_ids;
-        Array<int> _bonds_ids;
+        std::vector<int> _atoms_ids;
+        std::vector<int> _bonds_ids;
         std::map<int, std::vector<int>> _super_atoms;
 
         int _id;

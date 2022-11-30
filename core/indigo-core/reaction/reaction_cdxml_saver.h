@@ -53,10 +53,11 @@ namespace indigo
         void _addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, int arrow_id);
         void _addScheme(MoleculeCdxmlSaver& molsaver);
         void _closeScheme(MoleculeCdxmlSaver& molsaver);
-        void _addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::unordered_map<int, int>& mol_ids, ObjArray<Array<int>>& nodes_ids, int arrow_id);
-        void _generateCdxmlObjIds(BaseReaction& rxn, std::unordered_map<int, int>& mol_ids, std::unordered_map<int, int>& meta_ids,
-                                  ObjArray<Array<int>>& nodes_ids, int& arrow_id);
+        void _addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::vector<int>& mol_ids, std::vector<std::vector<int>>& nodes_ids,
+                      const std::pair<int, int>& arrow_id);
+        void _generateCdxmlObjIds(BaseReaction& rxn, std::vector<int>& mol_ids, std::vector<int>& meta_ids, std::vector<std::vector<int>>& nodes_ids);
         void _addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
+        int _id;
     };
 
 } // namespace indigo

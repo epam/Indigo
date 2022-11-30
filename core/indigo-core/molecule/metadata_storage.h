@@ -62,7 +62,10 @@ namespace indigo
         }
 
         int getMetaCount(uint32_t meta_type) const;
+        int getNonChemicalMetaCount() const;
+
         const MetaObject& getMetaObject(uint32_t meta_type, int index) const;
+        int getMetaObjectIndex(uint32_t meta_type, int index) const;
 
     protected:
         PtrArray<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr

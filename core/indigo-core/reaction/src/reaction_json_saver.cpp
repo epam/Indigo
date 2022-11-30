@@ -282,9 +282,9 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     int arrows_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = rxn.meta().getMetaCount(KETSimpleObject::CID) + rxn.meta().getMetaCount(KETTextObject::CID);
-    if (arrows_count > 1 || simple_count)
+    if (arrows_count || simple_count)
     {
-        // if more than one arrow or metadata
+        // if metadata presents
         saveReactionWithMetaData(rxn, *merged, json_saver);
     }
     else

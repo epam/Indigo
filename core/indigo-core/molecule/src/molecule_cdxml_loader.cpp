@@ -60,6 +60,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     mol.clear();
     nodes.clear();
     bonds.clear();
+    _arrows.clear();
     _id_to_atom_idx.clear();
     _id_to_node_index.clear();
     _id_to_bond_index.clear();
@@ -930,10 +931,7 @@ void MoleculeCdxmlLoader::_parseGraphic(const XMLElement* pElem)
     auto pAttr = pElem->FirstAttribute();
     applyDispatcher(pAttr, graphic_dispatcher);
 
-    if (graphic_type == "Line" && arrow_type == "FullHead")
-    {
-    }
-    else if (graphic_type == "Symbol" && symbol_type == "Plus")
+    if (graphic_type == "Symbol" && symbol_type == "Plus")
     {
         _pluses.emplace_back(graph_bbox.center());
     }
@@ -1016,6 +1014,13 @@ void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem, std::vector<std::p
         std::string text_element = pTextStyle->Value();
         if (text_element == "s")
         {
+            std::string label_plain = pTextStyle->GetText();
+            if (label_plain == "+")
+            {
+                _pluses.push_back(text_bbox.center());
+                return;
+            }
+
             font_face = 0;
             font_size = 0.0;
             auto pStyleAttribute = pTextStyle->FirstAttribute();
@@ -1040,7 +1045,6 @@ void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem, std::vector<std::p
             if (font_size > 0)
                 text_vec_styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)ceil(font_size)) + "px");
 
-            std::string label_plain = pTextStyle->GetText();
             std::remove_if(label_plain.begin(), label_plain.end(), [](char c) { return (c == '\r'); });
 
             auto labels = split(label_plain, '\n');
@@ -1086,8 +1090,12 @@ void MoleculeCdxmlLoader::_parseText(const XMLElement* pElem, std::vector<std::p
     writer.EndObject();
 
     writer.EndObject();
-    text_pos.y -= text_bbox.height() / 2;
-    text_parsed.emplace_back(text_pos, s.GetString());
+
+    Vec3f tpos(text_pos);
+    if (text_bbox.width() > 0 && text_bbox.height() > 0)
+        tpos.set(text_bbox.center().x, text_bbox.center().y, 0);
+
+    text_parsed.emplace_back(tpos, s.GetString());
 }
 
 void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, const XMLAttribute* pAttr)

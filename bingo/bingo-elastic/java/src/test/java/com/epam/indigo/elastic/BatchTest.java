@@ -11,6 +11,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +33,7 @@ public class BatchTest {
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
                 .withIndexName(NamingConstants.BINGO_MOLECULES)
-                .withHostName(elasticsearchContainer.getHost())
+                .withHostsNames(Collections.singletonList(elasticsearchContainer.getHost()))
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
                 .withReplicas(0)

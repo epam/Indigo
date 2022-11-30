@@ -32,6 +32,11 @@ using namespace tinyxml2;
 
 IMPL_ERROR(MoleculeCdxmlSaver, "molecule CDXML saver");
 
+int MoleculeCdxmlSaver::getId()
+{
+    return _id;
+}
+
 MoleculeCdxmlSaver::MoleculeCdxmlSaver(Output& output) : _output(output)
 {
     _bond_length = SCALE;
@@ -799,7 +804,14 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
     }
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int id, Array<int>& ids)
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale)
+{
+    std::vector<int> ids;
+    int id = 0;
+    saveMoleculeFragment(mol, offset, scale, -1, id, ids);
+}
+
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int frag_id, int& id, std::vector<int>& ids)
 {
     _atoms_ids.clear();
     _bonds_ids.clear();
@@ -818,9 +830,9 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
     _current->LinkEndChild(fragment);
     _current = fragment;
 
-    if (id > 0)
+    if (frag_id > 0)
     {
-        fragment->SetAttribute("id", id);
+        fragment->SetAttribute("id", frag_id);
         _id = id;
     }
     else
@@ -828,16 +840,16 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
 
     if (ids.size())
     {
-        _atoms_ids.copy(ids);
-        if (_atoms_ids.top() > _id)
-            _id = _atoms_ids.top();
+        _atoms_ids = ids;
+        if (_atoms_ids.back() > _id)
+            _id = _atoms_ids.back();
     }
     else
         for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-            _atoms_ids.push(++_id);
+            _atoms_ids.push_back(++_id);
 
     for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-        _bonds_ids.push(++_id);
+        _bonds_ids.push_back(++_id);
 
     Vec2f min_coord, max_coord;
 
@@ -876,235 +888,246 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         addText(chiral_pos, "Chiral");
         _current = fragment;
     }
+
+    for (int i = 0; i < mol.meta().metaData().size(); ++i)
+        addMetaObject(*mol.meta().metaData()[i], ++_id);
+
     _current = parent;
+    id = _id;
 }
 
-void MoleculeCdxmlSaver::addMetaData(const MetaDataStorage& meta, int id)
+void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end)
 {
-    const auto& meta_objects = meta.metaData();
-    for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
+    PropertiesMap attrs;
+    attrs.insert("FillType", "None");
+    attrs.insert("ArrowheadType", "Solid");
+    attrs.insert("HeadSize", "2250");
+    attrs.insert("ArrowheadWidth", "563");
+    switch (arrow_type)
     {
-        id++;
-        PropertiesMap attrs;
-        attrs.clear();
-        auto pobj = meta_objects[meta_index];
-        switch (pobj->_class_id)
+    case KETReactionArrow::EOpenAngle:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "25");
+        break;
+    case KETReactionArrow::EFilledTriangle:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "2250");
+        break;
+
+    case KETReactionArrow::EFilledBow:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "1125");
+        break;
+
+    case KETReactionArrow::EDashedOpenAngle:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "25");
+        attrs.insert("LineType", "Dashed");
+        break;
+
+    case KETReactionArrow::EFailed:
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadCenterSize", "1125");
+        attrs.insert("NoGo", "Cross");
+        break;
+
+    case KETReactionArrow::EBothEndsFilledTriangle:
+        attrs.insert("ArrowheadCenterSize", "2250");
+        attrs.insert("ArrowheadHead", "Full");
+        attrs.insert("ArrowheadTail", "Full");
+        break;
+
+    case KETReactionArrow::EEquilibriumFilledHalfBow:
+        attrs.insert("ArrowheadHead", "HalfLeft");
+        attrs.insert("ArrowheadTail", "HalfLeft");
+        attrs.insert("ArrowheadCenterSize", "1125");
+        attrs.insert("ArrowShaftSpacing", "300");
+        break;
+
+    case KETReactionArrow::EEquilibriumFilledTriangle:
+        attrs.insert("ArrowheadHead", "HalfLeft");
+        attrs.insert("ArrowheadTail", "HalfLeft");
+        attrs.insert("ArrowheadCenterSize", "2250");
+        attrs.insert("ArrowShaftSpacing", "300");
+        break;
+
+    case KETReactionArrow::EEquilibriumOpenAngle:
+        attrs.insert("ArrowheadHead", "HalfLeft");
+        attrs.insert("ArrowheadTail", "HalfLeft");
+        attrs.insert("ArrowheadCenterSize", "25");
+        attrs.insert("ArrowShaftSpacing", "300");
+        break;
+
+    case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
+        break;
+
+    case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
+        break;
+
+    case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
+        break;
+
+    case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
+        break;
+
+    case KETReactionArrow::EEllipticalArcFilledBow:
+        break;
+
+    case KETReactionArrow::EEllipticalArcFilledTriangle:
+        break;
+
+    case KETReactionArrow::EEllipticalArcOpenAngle:
+        break;
+
+    case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+        break;
+
+    default:
+        break;
+    }
+
+    Vec3f ar_beg(beg.x, -beg.y, 0);
+    Vec3f ar_end(end.x, -end.y, 0);
+    ar_beg.scale(_bond_length);
+    ar_end.scale(_bond_length);
+
+    attrs.insert("Head3D", std::to_string(ar_end.x) + " " + std::to_string(ar_end.y) + " " + std::to_string(ar_end.z));
+    attrs.insert("Tail3D", std::to_string(ar_beg.x) + " " + std::to_string(ar_beg.y) + " " + std::to_string(ar_beg.z));
+    addElement("arrow", id, end, beg, attrs);
+}
+
+void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
+{
+    PropertiesMap attrs;
+    attrs.clear();
+    switch (obj._class_id)
+    {
+    case KETReactionArrow::CID: {
+        KETReactionArrow& ar = (KETReactionArrow&)(obj);
+        addArrow(id, ar._arrow_type, ar._begin, ar._end);
+    }
+    break;
+    case KETReactionPlus::CID: {
+        KETReactionPlus& rp = (KETReactionPlus&)(obj);
+        attrs.insert("GraphicType", "Symbol");
+        attrs.insert("SymbolType", "Plus");
+        Vec2f v1(rp._pos.x, rp._pos.y - PLUS_HALF_HEIGHT / _bond_length);
+        Vec2f v2(rp._pos.x, rp._pos.y + PLUS_HALF_HEIGHT / _bond_length);
+        addElement("graphic", id, v1, v2, attrs);
+    }
+    break;
+    case KETSimpleObject::CID: {
+        KETSimpleObject& simple_obj = (KETSimpleObject&)obj;
+        Rect2f bbox(simple_obj._coordinates.first, simple_obj._coordinates.second);
+        switch (simple_obj._mode)
         {
-        case KETReactionArrow::CID: {
-            KETReactionArrow& ar = (KETReactionArrow&)(*pobj);
-            attrs.insert("FillType", "None");
-            attrs.insert("ArrowheadType", "Solid");
-            attrs.insert("HeadSize", "2250");
-            attrs.insert("ArrowheadWidth", "563");
-            switch (ar._arrow_type)
+        case KETSimpleObject::EKETEllipse: {
+            auto ecenter = bbox.center();
+            Vec2f maj_axis, min_axis;
+            if (bbox.width() > bbox.height())
             {
-            case KETReactionArrow::EOpenAngle:
-                attrs.insert("ArrowheadHead", "Full");
-                attrs.insert("ArrowheadCenterSize", "25");
-                break;
-            case KETReactionArrow::EFilledTriangle:
-                attrs.insert("ArrowheadHead", "Full");
-                attrs.insert("ArrowheadCenterSize", "2250");
-                break;
-
-            case KETReactionArrow::EFilledBow:
-                attrs.insert("ArrowheadHead", "Full");
-                attrs.insert("ArrowheadCenterSize", "1125");
-                break;
-
-            case KETReactionArrow::EDashedOpenAngle:
-                attrs.insert("ArrowheadHead", "Full");
-                attrs.insert("ArrowheadCenterSize", "25");
-                attrs.insert("LineType", "Dashed");
-                break;
-
-            case KETReactionArrow::EFailed:
-                attrs.insert("ArrowheadHead", "Full");
-                attrs.insert("ArrowheadCenterSize", "1125");
-                attrs.insert("NoGo", "Cross");
-                break;
-
-            case KETReactionArrow::EBothEndsFilledTriangle:
-                attrs.insert("ArrowheadCenterSize", "2250");
-                attrs.insert("ArrowheadHead", "Full");
-                attrs.insert("ArrowheadTail", "Full");
-                break;
-
-            case KETReactionArrow::EEquilibriumFilledHalfBow:
-                attrs.insert("ArrowheadHead", "HalfLeft");
-                attrs.insert("ArrowheadTail", "HalfLeft");
-                attrs.insert("ArrowheadCenterSize", "1125");
-                attrs.insert("ArrowShaftSpacing", "300");
-                break;
-
-            case KETReactionArrow::EEquilibriumFilledTriangle:
-                attrs.insert("ArrowheadHead", "HalfLeft");
-                attrs.insert("ArrowheadTail", "HalfLeft");
-                attrs.insert("ArrowheadCenterSize", "2250");
-                attrs.insert("ArrowShaftSpacing", "300");
-                break;
-
-            case KETReactionArrow::EEquilibriumOpenAngle:
-                attrs.insert("ArrowheadHead", "HalfLeft");
-                attrs.insert("ArrowheadTail", "HalfLeft");
-                attrs.insert("ArrowheadCenterSize", "25");
-                attrs.insert("ArrowShaftSpacing", "300");
-                break;
-
-            case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
-                break;
-
-            case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
-                break;
-
-            case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
-                break;
-
-            case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
-                break;
-
-            case KETReactionArrow::EEllipticalArcFilledBow:
-                break;
-
-            case KETReactionArrow::EEllipticalArcFilledTriangle:
-                break;
-
-            case KETReactionArrow::EEllipticalArcOpenAngle:
-                break;
-
-            case KETReactionArrow::EEllipticalArcOpenHalfAngle:
-                break;
-
-            default:
-                break;
+                maj_axis.copy(bbox.rightMiddle());
+                min_axis.copy(bbox.topMiddle());
             }
-
-            Vec3f ar_beg(ar._begin.x, -ar._begin.y, 0);
-            Vec3f ar_end(ar._end.x, -ar._end.y, 0);
-            ar_beg.scale(_bond_length);
-            ar_end.scale(_bond_length);
-
-            attrs.insert("Head3D", std::to_string(ar_end.x) + " " + std::to_string(ar_end.y) + " " + std::to_string(ar_end.z));
-            attrs.insert("Tail3D", std::to_string(ar_beg.x) + " " + std::to_string(ar_beg.y) + " " + std::to_string(ar_beg.z));
-            addElement("arrow", id, ar._end, ar._begin, attrs);
+            else
+            {
+                maj_axis.copy(bbox.topMiddle());
+                min_axis.copy(bbox.rightMiddle());
+            }
+            ecenter.scale(_bond_length);
+            min_axis.scale(_bond_length);
+            maj_axis.scale(_bond_length);
+            ecenter.y = -ecenter.y;
+            min_axis.y = -min_axis.y;
+            maj_axis.y = -maj_axis.y;
+            Rect2f bbox_new(ecenter, bbox.rightTop());
+            bbox.copy(bbox_new);
+            attrs.insert("Center3D", std::to_string(ecenter.x) + " " + std::to_string(ecenter.y));
+            attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y));
+            attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y));
+            attrs.insert("GraphicType", "Oval");
         }
         break;
-        case KETReactionPlus::CID: {
-            KETReactionPlus& rp = (KETReactionPlus&)(*pobj);
-        }
-        break;
-        case KETSimpleObject::CID: {
-            auto simple_obj = (KETSimpleObject*)pobj;
-            Rect2f bbox(simple_obj->_coordinates.first, simple_obj->_coordinates.second);
-            switch (simple_obj->_mode)
-            {
-            case KETSimpleObject::EKETEllipse: {
-                auto ecenter = bbox.center();
-                Vec2f maj_axis, min_axis;
-                if (bbox.width() > bbox.height())
-                {
-                    maj_axis.copy(bbox.rightMiddle());
-                    min_axis.copy(bbox.topMiddle());
-                }
-                else
-                {
-                    maj_axis.copy(bbox.topMiddle());
-                    min_axis.copy(bbox.rightMiddle());
-                }
-                ecenter.scale(_bond_length);
-                min_axis.scale(_bond_length);
-                maj_axis.scale(_bond_length);
-                ecenter.y = -ecenter.y;
-                min_axis.y = -min_axis.y;
-                maj_axis.y = -maj_axis.y;
-                Rect2f bbox_new(ecenter, bbox.rightTop());
-                bbox.copy(bbox_new);
-                attrs.insert("Center3D", std::to_string(ecenter.x) + " " + std::to_string(ecenter.y));
-                attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y));
-                attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y));
-                attrs.insert("GraphicType", "Oval");
-            }
+        case KETSimpleObject::EKETRectangle:
+            attrs.insert("GraphicType", "Rectangle");
             break;
-            case KETSimpleObject::EKETRectangle:
-                attrs.insert("GraphicType", "Rectangle");
-                break;
-            case KETSimpleObject::EKETLine:
-                attrs.insert("GraphicType", "Line");
-                break;
-            }
-            addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
+        case KETSimpleObject::EKETLine:
+            attrs.insert("GraphicType", "Line");
+            break;
         }
-        break;
-        case KETTextObject::CID: {
-            const KETTextObject& ko = static_cast<const KETTextObject&>(*pobj);
-            double text_offset_y = 0;
-            int font_size = 13;
-            CDXMLFontStyle font_face(0);
-            for (auto& text_item : ko._block)
+        addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
+    }
+    break;
+    case KETTextObject::CID: {
+        const KETTextObject& ko = static_cast<const KETTextObject&>(obj);
+        double text_offset_y = 0;
+        int font_size = 13;
+        CDXMLFontStyle font_face(0);
+        for (auto& text_item : ko._block)
+        {
+            int first_index = -1;
+            int second_index = -1;
+            double text_offset_x = 0;
+            FONT_STYLE_SET current_styles;
+            Vec2f text_origin(ko._pos.x, ko._pos.y);
+            std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
+            XMLElement* t = _doc->NewElement("t");
+            _current->LinkEndChild(t);
+            t->SetAttribute("id", id);
+            t->SetAttribute("p", pos_str.c_str());
+            t->SetAttribute("Justification", "Left");
+            t->SetAttribute("InterpretChemically", "no");
+            for (auto& kvp : text_item.styles)
             {
-                int first_index = -1;
-                int second_index = -1;
-                double text_offset_x = 0;
-                FONT_STYLE_SET current_styles;
-                Vec2f text_origin(ko._pos.x, ko._pos.y);
-                std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
-                XMLElement* t = _doc->NewElement("t");
-                _current->LinkEndChild(t);
-                t->SetAttribute("p", pos_str.c_str());
-                t->SetAttribute("Justification", "Left");
-                t->SetAttribute("InterpretChemically", "no");
-                for (auto& kvp : text_item.styles)
+                if (first_index == -1)
                 {
-                    if (first_index == -1)
-                    {
-                        first_index = kvp.first;
-                        current_styles = kvp.second;
-                        continue;
-                    }
-                    second_index = kvp.first;
-
-                    std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
-                    std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
-
-                    auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
-                    for (const auto& text_style : current_styles)
-                    {
-                        switch (text_style.first)
-                        {
-                        case KETTextObject::EPlain:
-                            break;
-                        case KETTextObject::EBold:
-                            font_face.is_bold = text_style.second;
-                            break;
-                        case KETTextObject::EItalic:
-                            font_face.is_italic = text_style.second;
-                            break;
-                        case KETTextObject::ESuperScript:
-                            font_face.is_superscript = text_style.second;
-                            break;
-                        case KETTextObject::ESubScript:
-                            font_face.is_subscript = text_style.second;
-                            break;
-                        default:
-                            font_size = text_style.second ? text_style.first : 13;
-                            break;
-                        }
-                    }
-
-                    XMLElement* s = _doc->NewElement("s");
-                    t->LinkEndChild(s);
-                    s->SetAttribute("font", 4);
-                    s->SetAttribute("size", font_size);
-                    s->SetAttribute("face", font_face.face);
-                    XMLText* txt = _doc->NewText(sub_text.c_str());
-                    s->LinkEndChild(txt);
+                    first_index = kvp.first;
                     current_styles = kvp.second;
-                    first_index = second_index;
+                    continue;
                 }
+                second_index = kvp.first;
+
+                std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
+                std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
+
+                auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
+                for (const auto& text_style : current_styles)
+                {
+                    switch (text_style.first)
+                    {
+                    case KETTextObject::EPlain:
+                        break;
+                    case KETTextObject::EBold:
+                        font_face.is_bold = text_style.second;
+                        break;
+                    case KETTextObject::EItalic:
+                        font_face.is_italic = text_style.second;
+                        break;
+                    case KETTextObject::ESuperScript:
+                        font_face.is_superscript = text_style.second;
+                        break;
+                    case KETTextObject::ESubScript:
+                        font_face.is_subscript = text_style.second;
+                        break;
+                    default:
+                        font_size = text_style.second ? text_style.first : 13;
+                        break;
+                    }
+                }
+
+                XMLElement* s = _doc->NewElement("s");
+                t->LinkEndChild(s);
+                s->SetAttribute("font", 4);
+                s->SetAttribute("size", font_size);
+                s->SetAttribute("face", font_face.face);
+                XMLText* txt = _doc->NewText(sub_text.c_str());
+                s->LinkEndChild(txt);
+                current_styles = kvp.second;
+                first_index = second_index;
             }
         }
-        break;
-        }
+    }
+    break;
     }
 }
 
@@ -1341,7 +1364,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
 
     Vec2f offset(-min_coord.x, -max_coord.y);
 
-    saveMoleculeFragment(mol, offset, 1, -1, _atoms_ids);
+    saveMoleculeFragment(mol, offset, 1);
     endPage();
     endDocument();
 }
