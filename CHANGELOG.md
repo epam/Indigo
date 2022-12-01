@@ -1,3 +1,71 @@
+# Indigo 1.8.2
+Released 2022-11-28
+
+## What's Changed
+* core: SMARTS support for implicit hydrogens specifier 'h' added by @mkviatkovskii
+* Feature/#861 cdxml enhanced stereochemistry by @even1024
+* Feature/#862 cdxml abbreviations by @even1024
+* Bugfix/#891 dearomatize query onload by @even1024
+* Bugfix/#870 and bugfix/#871 multistep to rxn-smiles by @even1024
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.8.0...indigo-1.8.2
+
+# Indigo 1.8.0
+Released 2022-10-14
+
+## What's Changed
+* ci: fix npm versioning according to semver by @mkviatkovskii in https://github.com/epam/Indigo/pull/741
+* Fixed mistypes by @SunFellow in https://github.com/epam/Indigo/pull/743
+* Rename `indigo-ketcher.zip` artifact to `indigo-wasm.zip` by @SunFellow in https://github.com/epam/Indigo/pull/744
+* api: added TPSA calculation by @mkviatkovskii in https://github.com/epam/Indigo/pull/745
+* api: added numRotatableBonds, numHydrogenBondAcceptors, numHydrogenBondDonors by @mkviatkovskii in https://github.com/epam/Indigo/pull/748
+* api: added logP and molarRefractivity, removed Python implementation by @mkviatkovskii in https://github.com/epam/Indigo/pull/750
+* Text cipfix by @even1024 in https://github.com/epam/Indigo/pull/739
+* api: added atom hybridization calculation by @mkviatkovskii in https://github.com/epam/Indigo/pull/751
+* api: renamed cLogP to logP by @mkviatkovskii in https://github.com/epam/Indigo/pull/752
+* api: bingo-nosql: fix partitioning in exact search by @mkviatkovskii in https://github.com/epam/Indigo/pull/754
+* api: c: another stage of abandoning self-written red-black tree collections by @mkviatkovskii in https://github.com/epam/Indigo/pull/756
+* api: cpp: replace multiple Indigo*Iterator classes to single template one; add Bingo.Part test by @mkviatkovskii in https://github.com/epam/Indigo/pull/757
+* metadata refactoring by @even1024 in https://github.com/epam/Indigo/pull/755
+* core: ket: text rendering support by @even1024 in https://github.com/epam/Indigo/pull/760
+* core: molecule auto loader: cdx enable; text for reaction fix (#706) by @even1024 in https://github.com/epam/Indigo/pull/763
+* core: base64 support for binary formats, uninitialized data and #764 fix by @even1024 in https://github.com/epam/Indigo/pull/766
+* #768: api: add hash() method for molecules and reactions, improve reaction hash to decrease number of collisions by @mkviatkovskii in https://github.com/epam/Indigo/pull/769
+* Bingo Elastic search by @AATDev21 in https://github.com/epam/Indigo/pull/772
+* #770: reduce list of exported symbols to avoid conflicts with other shared libraries by @mkviatkovskii in https://github.com/epam/Indigo/pull/793
+* #791: core: molecule: Lee-Crippen SMARTS pKa calculation method implemented by @mkviatkovskii in https://github.com/epam/Indigo/pull/792
+* #794: ci: add version changing script and update version to 1.8.0-dev by @mkviatkovskii in https://github.com/epam/Indigo/pull/795
+* core: render2d: text renderer fixes, UTF-8 support, subscript/superscript, all arrows styles, fix for #355 by @even1024 in https://github.com/epam/Indigo/pull/776
+* #777: utils: indigo-service: reorganize codebase, simplify docker compose, update ui by @mkviatkovskii in https://github.com/epam/Indigo/pull/796
+* #798: api: python: reorganize codebase by @mkviatkovskii in https://github.com/epam/Indigo/pull/799
+* #163: api: added test by @mkviatkovskii in https://github.com/epam/Indigo/pull/802
+* Issue #520: api: replace RedBlackMap in IndigoDeconvolution by @AStepaniuk in https://github.com/epam/Indigo/pull/803
+* #808: render2d: equilibrium arrows rendering supported by @even1024 in https://github.com/epam/Indigo/pull/801
+* Fix for Indigo-WASM build by @SPKorhonen in https://github.com/epam/Indigo/pull/828
+* Restore indigo service by @AlexanderSavelyev in https://github.com/epam/Indigo/pull/858
+* Issue #520: core: replace RedBlackMap and RedBlackSet implementation by @AStepaniuk in https://github.com/epam/Indigo/pull/804
+* Issue #520: core: replace RedBlackMap for GraphEmbeddingsStorage by @AStepaniuk in https://github.com/epam/Indigo/pull/805
+* Issue #520: core: replace RedBlackMap in SimpleCycleBasis by @AStepaniuk in https://github.com/epam/Indigo/pull/806
+* Issue #520: core: replace RedBlackMap for MangoPg by @AStepaniuk in https://github.com/epam/Indigo/pull/809
+* Issue #520: core: replace RedBlackMap in MoleculeRGroupsComposition class by @loimu in https://github.com/epam/Indigo/pull/810
+* Issue #520: core: replace RedBlackMap in CanonicalSmilesSaver by @AStepaniuk in https://github.com/epam/Indigo/pull/811
+* Issue #520: core: replace RedBlackMap in BaseMolecule class by @loimu in https://github.com/epam/Indigo/pull/812
+* Issue #520: core: replace RedBlackMap for Molecule3dConstraints by @AStepaniuk in https://github.com/epam/Indigo/pull/813
+* Issue #520: core: replace RedBlackMap in MoleculeGrossFormula class by @loimu in https://github.com/epam/Indigo/pull/814
+* Issue #520: core: replace RedBlackMap in MultipleCdxLoader class by @loimu in https://github.com/epam/Indigo/pull/816
+* Issue #520: core: replace RedBlackMap  in MolfileSaver class by @loimu in https://github.com/epam/Indigo/pull/819
+* Issue #520: core: replace RedBlackMap in BaseReactionSubstructureMatcher class by @loimu in https://github.com/epam/Indigo/pull/820
+* #843 Make core List moveable by @AStepaniuk in https://github.com/epam/Indigo/pull/844
+* Fix indigo-service for config not found message issue by @AlexanderSavelyev in https://github.com/epam/Indigo/pull/873
+* CDXML agents and reactions support. #832, #836, #837, #835, #834, #832, #830, #853 by @even1024 in https://github.com/epam/Indigo/pull/872
+* S-Groups support for extended SMILES (#874) by @even1024 in https://github.com/epam/Indigo/pull/875
+
+## New Contributors
+* @AStepaniuk made their first contribution in https://github.com/epam/Indigo/pull/803
+* @loimu made their first contribution in https://github.com/epam/Indigo/pull/810
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.7.0...indigo-1.8.0-rc.1
+
 # Indigo 1.7.0
 Released 2022-05-26
 
