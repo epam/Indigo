@@ -527,7 +527,7 @@ def test_limit_on_size(
 
 
 @pytest.mark.asyncio
-async def test_limit_on_size(
+async def test_a_limit_on_size(
     repo: AsyncRepositoryT,
 ):
     async with pytest.raises(ValueError):
