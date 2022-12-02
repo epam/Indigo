@@ -518,11 +518,13 @@ async def test_a_similaririty_matches_reactions(
                 == reaction.countReactants()
             )
 
+
 def test_limit_on_size(
     repo: ElasticRepository,
 ):
     with pytest.raises(ValueError):
         repo.filter(limit=2000)
+
 
 @pytest.mark.asyncio
 async def test_limit_on_size(
