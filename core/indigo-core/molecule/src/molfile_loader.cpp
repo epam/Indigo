@@ -3002,28 +3002,28 @@ void MolfileLoader::_fillSGroupsParentIndices()
 {
     MoleculeSGroups& sgroups = _bmol->sgroups;
 
-    MultiMap<int, int> indices;
+    std::multimap<int, int> indices;
     // original index can be arbitrary, sometimes key is used multiple times
 
     for (auto i = sgroups.begin(); i != sgroups.end(); i++)
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        indices.insert(sgroup.original_group, i);
+        indices.emplace(sgroup.original_group, i);
     }
 
     // TODO: replace parent_group with parent_idx
     for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        const auto& set = indices.get(sgroup.parent_group);
-        if (set.size() == 1)
+        if (indices.count(sgroup.parent_group) == 1)
         {
+            const auto it = indices.find(sgroup.parent_group);
             // TODO: check fix
-            auto parent_idx = set.key(set.begin());
+            auto parent_idx = it->second;
             SGroup& parent_sgroup = sgroups.getSGroup(parent_idx);
             if (&sgroup != &parent_sgroup)
             {
-                sgroup.parent_idx = set.key(set.begin());
+                sgroup.parent_idx = it->second;
             }
             else
             {
