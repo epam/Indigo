@@ -531,4 +531,5 @@ async def test_a_limit_on_size(
     repo: AsyncRepositoryT,
 ):
     with pytest.raises(ValueError):
-        await repo.filter(limit=2000)
+        async with repo() as rep:
+            rep.filter(limit=2000)
