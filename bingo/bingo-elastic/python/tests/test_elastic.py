@@ -523,7 +523,8 @@ def test_limit_on_size(
     elastic_repository_molecule: ElasticRepository,
 ):
     with pytest.raises(ValueError):
-        elastic_repository_molecule.filter(limit=2000)
+        result = elastic_repository_molecule.filter(limit=2000)
+        next(result)
 
 
 @pytest.mark.asyncio
@@ -532,4 +533,5 @@ async def test_a_limit_on_size(
 ):
     with pytest.raises(ValueError):
         async with a_elastic_repository_molecule() as rep:
-            rep.filter(limit=2000)
+            result = rep.filter(limit=2000)
+            next(result)
