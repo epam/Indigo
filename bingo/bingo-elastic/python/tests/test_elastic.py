@@ -520,16 +520,16 @@ async def test_a_similaririty_matches_reactions(
 
 
 def test_limit_on_size(
-    repo: ElasticRepository,
+    elastic_repository_molecule: ElasticRepository,
 ):
     with pytest.raises(ValueError):
-        repo.filter(limit=2000)
+        elastic_repository_molecule.filter(limit=2000)
 
 
 @pytest.mark.asyncio
 async def test_a_limit_on_size(
-    repo: AsyncRepositoryT,
+    a_elastic_repository_molecule: AsyncRepositoryT,
 ):
     with pytest.raises(ValueError):
-        async with repo() as rep:
+        async with a_elastic_repository_molecule() as rep:
             rep.filter(limit=2000)
