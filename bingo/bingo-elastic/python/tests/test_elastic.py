@@ -534,4 +534,5 @@ async def test_a_limit_on_size(
     with pytest.raises(ValueError):
         async with a_elastic_repository_molecule() as rep:
             result = rep.filter(limit=2000)
-            next(result)
+            async for mol in result:
+                mol.name
