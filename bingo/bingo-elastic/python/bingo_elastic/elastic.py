@@ -230,6 +230,8 @@ class AsyncElasticRepository:
         **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
 
+        if limit > 1000:
+            raise ValueError("limit should less or equal to 1000")
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
 
@@ -323,6 +325,8 @@ class ElasticRepository:
         **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
 
+        if limit > 1000:
+            raise ValueError("limit should less or equal to 1000")
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
         query = compile_query(

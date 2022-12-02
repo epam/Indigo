@@ -50,6 +50,8 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     @Override
     public Stream<T> limit(long maxSize) {
+        if (maxSize > 1000)
+            throw new IllegalArgumentException("Bingo Elastic max page size should be less than or equal to 1000");
         this.size = (int) maxSize;
         return this;
     }
