@@ -496,6 +496,18 @@ unsigned int Scanner::readPackedUInt()
     }
 }
 
+void Scanner::readAll(std::string& str)
+{
+    const long long size = length() - tell();
+    const int max_int = std::numeric_limits<int>::max();
+    if (size > max_int)
+    {
+        throw Error("Cannot read more than %d into memory", max_int);
+    }
+    str.resize( size );
+    read(str.size(), &str[0]);
+}
+
 void Scanner::readAll(Array<char>& arr)
 {
     const long long size = length() - tell();

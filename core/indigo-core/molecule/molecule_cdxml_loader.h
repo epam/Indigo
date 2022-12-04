@@ -22,6 +22,7 @@
 #include <functional>
 #include <sstream>
 #include <string>
+#include <tinyxml2.h>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -181,6 +182,151 @@ namespace indigo
         return strings;
     }
 
+    class CDXProperty
+    {
+    public:
+        DECL_ERROR;
+        CDXProperty(const void* data, int size = 0) : _data(data), _size(size)
+        {
+        }
+
+        const tinyxml2::XMLAttribute& attribute()
+        {
+            if (_size)
+                throw Error("Binary data");
+            if (!_data)
+                throw Error("Null property");
+            auto res = (tinyxml2::XMLAttribute*)_data;
+            return (tinyxml2::XMLAttribute&)*res;
+        }
+
+        CDXProperty next()
+        {
+            return _size ? CDXProperty(0, 0) : CDXProperty(attribute().Next());
+        }
+
+        std::string name()
+        {
+            return _size ? std::string() : std::string( attribute().Name() );
+        }
+
+        std::string value()
+        {
+            return _size ? std::string() : std::string(attribute().Value());
+        }
+
+        bool hasContent()
+        {
+            return _data;
+        }
+
+    protected:
+        const void* _data;
+        int _size;
+    };
+
+    class CDXElement
+    {
+    public:
+        DECL_ERROR;
+        CDXElement(const void* data, int size = 0) : _data(data), _size(size)
+        {
+        }
+
+        CDXProperty firstProperty()
+        {
+            return _size ? CDXProperty(0, 0) : CDXProperty(xml().FirstAttribute());
+        }
+
+        CDXElement firstChildElement()
+        {
+            return _size ? CDXElement(0, 0) : CDXElement(xml().FirstChildElement());
+        }
+
+        CDXElement nextSiblingElement()
+        {
+            return _size ? CDXElement(0, 0) : CDXElement(xml().NextSiblingElement());
+        }
+
+        const tinyxml2::XMLElement& xml()
+        {
+            if (_size)
+                throw Error("Binary data");
+            if (!_data)
+                throw Error("Null element");
+            auto res = (tinyxml2::XMLElement*)_data;
+            return (tinyxml2::XMLElement&)*res;
+        }
+
+        bool hasContent()
+        {
+            return _data;
+        }
+
+        std::string name()
+        {
+            return _size ? std::string() : std::string(xml().Name());
+        }
+
+        std::string value()
+        {
+            return _size ? std::string() : std::string(xml().Value());
+        }
+
+        std::string getText()
+        {
+            return _size ? std::string() : std::string(xml().GetText());
+        }
+
+    protected:
+        const void* _data;
+        int _size;
+    };
+
+    class CDXReader
+    {
+    public:
+        CDXReader(Scanner& scanner);
+        virtual CDXElement rootElement()
+        {
+            return CDXElement(_buffer.data(), _buffer.size());
+        }
+
+        virtual void process()
+        {
+        }
+
+    protected:
+        std::string _buffer;
+        Scanner& _scanner;
+    };
+
+    class CDXMLReader : public CDXReader
+    {
+    public:
+        DECL_ERROR;
+
+        CDXMLReader(Scanner& scanner) : CDXReader(scanner)
+        {
+        }
+
+        void process() override
+        {
+            _xml.Parse(_buffer.c_str());
+            if (_xml.Error())
+                throw Error("XML parsing error: %s", _xml.ErrorStr());
+
+        }
+
+        CDXElement rootElement() override
+        {
+            return CDXElement{_xml.RootElement()};
+        }
+
+    private:
+        tinyxml2::XMLDocument _xml;
+    };
+
     class MoleculeCdxmlLoader
     {
     public:
@@ -199,11 +345,11 @@ namespace indigo
         MoleculeCdxmlLoader(Scanner& scanner);
 
         void loadMolecule(BaseMolecule& mol);
-        void loadMoleculeFromFragment(BaseMolecule& mol, tinyxml2::XMLElement* pElem);
+        void loadMoleculeFromFragment(BaseMolecule& mol, CDXElement elem);
 
-        static void applyDispatcher(const tinyxml2::XMLAttribute* pAttr,
+        static void applyDispatcher(CDXProperty prop,
                                     const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
-        void parseCDXMLAttributes(const tinyxml2::XMLAttribute* pAttr);
+        void parseCDXMLAttributes(CDXProperty prop);
         void parseBBox(const std::string& data, Rect2f& bbox);
         void parsePos(const std::string& data, Vec3f& bbox);
 
@@ -226,27 +372,27 @@ namespace indigo
         void _parseCollections(BaseMolecule& mol);
         void _checkFragmentConnection(int node_id, int bond_id);
 
-        void _parseNode(CdxmlNode& node, tinyxml2::XMLElement* pElem);
+        void _parseNode(CdxmlNode& node, CDXElement elem);
         void _addNode(CdxmlNode& node);
 
-        void _parseBond(CdxmlBond& bond, const tinyxml2::XMLAttribute* pAttr);
+        void _parseBond(CdxmlBond& bond, CDXProperty prop);
         void _addBond(CdxmlBond& node);
 
-        void _parseBracket(CdxmlBracket& bracket, const tinyxml2::XMLAttribute* pAttr);
-        void _parseText(const tinyxml2::XMLElement* pElem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
-        void _parseLabel(const tinyxml2::XMLElement* pElem, std::string& label);
+        void _parseBracket(CdxmlBracket& bracket, CDXProperty prop);
+        void _parseText(CDXElement elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
+        void _parseLabel(CDXElement elem, std::string& label);
 
-        void _parseGraphic(const tinyxml2::XMLElement* pElem);
-        void _parseArrow(const tinyxml2::XMLElement* pElem);
+        void _parseGraphic(CDXElement elem);
+        void _parseArrow(CDXElement elem);
 
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
         void _processEnhancedStereo(BaseMolecule& mol);
 
-        void _parseCDXMLPage(tinyxml2::XMLElement* pElem);
-        void _parseCDXMLElements(tinyxml2::XMLElement* pElem, bool no_siblings = false, bool inside_fragment_node = false);
-        void _parseFragmentAttributes(const tinyxml2::XMLAttribute* pAttr);
+        void _parseCDXMLPage(CDXElement elem);
+        void _parseCDXMLElements(CDXElement elem, bool no_siblings = false, bool inside_fragment_node = false);
+        void _parseFragmentAttributes(CDXProperty prop);
 
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
         void _updateConnection(const CdxmlNode& node, int atom_idx);
@@ -261,6 +407,7 @@ namespace indigo
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
         float _bond_length;
         std::vector<EnhancedStereoCenter> _stereo_centers;
+        CDXMLReader _cdx_reader;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy
