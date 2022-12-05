@@ -16,8 +16,6 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <map>
-
 #include "base_cpp/array.h"
 #include "molecule/base_molecule.h"
 
@@ -44,7 +42,10 @@ MoleculeRGroupsComposition::MoleculeRGroupsComposition(BaseMolecule& mol)
 
         Array<int> rgroups;
         _mol.getAllowedRGroups(vertex, rgroups);
-        _rsite2rgroup.insert(vertex, rgroups);
+        for (const auto& rgroup : rgroups)
+        {
+            _rsite2rgroup.emplace(vertex, rgroup);
+        }
 
         int total = 0;
         for (int i = 0; i < rgroups.size(); i++)
