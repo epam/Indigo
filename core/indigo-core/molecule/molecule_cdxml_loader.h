@@ -238,6 +238,11 @@ namespace indigo
             return _size ? CDXProperty(0, 0) : CDXProperty(xml().FirstAttribute());
         }
 
+        CDXProperty findProperty( const std::string name )
+        {
+            return _size ? CDXProperty(0, 0) : CDXProperty(xml().FindAttribute(name.c_str()));
+        }
+
         CDXElement firstChildElement()
         {
             return _size ? CDXElement(0, 0) : CDXElement(xml().FirstChildElement());
@@ -294,6 +299,11 @@ namespace indigo
 
         virtual void process()
         {
+        }
+
+        Scanner& scanner()
+        {
+            return _scanner;
         }
 
     protected:
@@ -366,7 +376,6 @@ namespace indigo
         static const int SCALE = 30;
 
     protected:
-        Scanner* _scanner;
         const tinyxml2::XMLNode* _fragment;
         void _initMolecule(BaseMolecule& mol);
         void _parseCollections(BaseMolecule& mol);

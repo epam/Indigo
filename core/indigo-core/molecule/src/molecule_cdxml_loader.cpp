@@ -59,7 +59,6 @@ CDXReader::CDXReader(Scanner& scanner) : _scanner(scanner)
 
 MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner) : _cdx_reader(scanner)
 {
-    _scanner = &scanner;
 }
 
 void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
