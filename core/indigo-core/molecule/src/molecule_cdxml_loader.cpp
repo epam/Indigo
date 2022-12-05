@@ -57,7 +57,7 @@ CDXReader::CDXReader(Scanner& scanner) : _scanner(scanner)
     scanner.readAll(_buffer);
 }
 
-MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner) : _cdx_reader(scanner)
+MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner) : _scanner(scanner)
 {
 }
 
@@ -87,12 +87,13 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     }
 }
 
-void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol)
+void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool is_binary)
 {
     _initMolecule(mol);
-    _cdx_reader.process();
-    parseCDXMLAttributes(_cdx_reader.rootElement().firstProperty());
-    _parseCDXMLPage(_cdx_reader.rootElement());
+    std::unique_ptr<CDXReader> cdx_reader = is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
+    cdx_reader->process();
+    parseCDXMLAttributes(cdx_reader->rootElement().firstProperty());
+    _parseCDXMLPage(cdx_reader->rootElement());
 
     if (!nodes.size())
         throw Error("CDXML has no data");

@@ -354,7 +354,7 @@ namespace indigo
 
         MoleculeCdxmlLoader(Scanner& scanner);
 
-        void loadMolecule(BaseMolecule& mol);
+        void loadMolecule(BaseMolecule& mol, bool is_binary = false);
         void loadMoleculeFromFragment(BaseMolecule& mol, CDXElement elem);
 
         static void applyDispatcher(CDXProperty prop,
@@ -416,7 +416,7 @@ namespace indigo
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
         float _bond_length;
         std::vector<EnhancedStereoCenter> _stereo_centers;
-        CDXMLReader _cdx_reader;
+        Scanner& _scanner;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy

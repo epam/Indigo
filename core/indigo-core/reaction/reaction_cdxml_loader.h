@@ -40,7 +40,7 @@ namespace indigo
         ReactionCdxmlLoader(Scanner& scanner);
         ~ReactionCdxmlLoader();
 
-        void loadReaction(BaseReaction& rxn);
+        void loadReaction(BaseReaction& rxn, bool is_binary = false);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
@@ -60,7 +60,7 @@ namespace indigo
         QueryMolecule _qmol;
         BaseMolecule* _pmol;
         std::map<int, CDXElement> _cdxml_elements;
-        CDXMLReader _cdx_reader;
+        Scanner& _scanner;
     };
 
 }; // namespace indigo
