@@ -367,15 +367,15 @@ molecule 01: C1(C2CCCC2)=C(C2CCCC2)C=CC=C1 |RG:_R1={C1CCCC1},{C1CCCC1}|
 		fragment 1: C1CCCC1
 		fragment 2: C1CCCC1
 ===================================================
-molecule 02: C1(C2CCCCC2)=C(C2CCCC2)C=CC=C1 |RG:_R1={C1CCCCC1},{C1CCCC1}|
+molecule 02: C1(C2CCCCC2)=C(C2CCCC2)C=CC=C1 |RG:_R1={C1CCCC1},{C1CCCCC1}|
 	rgroup 1
-		fragment 1: C1CCCCC1
-		fragment 2: C1CCCC1
+		fragment 1: C1CCCC1
+		fragment 2: C1CCCCC1
 ===================================================
-molecule 03: C1(C2=CC=CC=C2)=C(C2CCCC2)C=CC=C1 |RG:_R1={C1=CC=CC=C1},{C1CCCC1}|
+molecule 03: C1(C2=CC=CC=C2)=C(C2CCCC2)C=CC=C1 |RG:_R1={C1CCCC1},{C1=CC=CC=C1}|
 	rgroup 1
-		fragment 1: C1=CC=CC=C1
-		fragment 2: C1CCCC1
+		fragment 1: C1CCCC1
+		fragment 2: C1=CC=CC=C1
 ===================================================
 molecule 04: C1(C2CCCC2)=C(C2CCCCC2)C=CC=C1 |RG:_R1={C1CCCC1},{C1CCCCC1}|
 	rgroup 1
@@ -387,10 +387,10 @@ molecule 05: C1(C2CCCCC2)=C(C2CCCCC2)C=CC=C1 |RG:_R1={C1CCCCC1},{C1CCCCC1}|
 		fragment 1: C1CCCCC1
 		fragment 2: C1CCCCC1
 ===================================================
-molecule 06: C1(C2=CC=CC=C2)=C(C2CCCCC2)C=CC=C1 |RG:_R1={C1=CC=CC=C1},{C1CCCCC1}|
+molecule 06: C1(C2=CC=CC=C2)=C(C2CCCCC2)C=CC=C1 |RG:_R1={C1CCCCC1},{C1=CC=CC=C1}|
 	rgroup 1
-		fragment 1: C1=CC=CC=C1
-		fragment 2: C1CCCCC1
+		fragment 1: C1CCCCC1
+		fragment 2: C1=CC=CC=C1
 ===================================================
 molecule 07: C1(C2CCCC2)=C(C2=CC=CC=C2)C=CC=C1 |RG:_R1={C1CCCC1},{C1=CC=CC=C1}|
 	rgroup 1

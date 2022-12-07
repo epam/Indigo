@@ -132,28 +132,35 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
 {
     Array<int> fs;
     m._at.dump(fs);
-    std::multimap<int, int> rgroup2fragment;
+    std::map<int, std::vector<int>> rgroup2fragment;
     std::map<Fragment, int> fragment2count;
     for (auto i = 0; i < fs.size(); i++)
     {
         auto x = m._parent._fragment_coordinates(i, fs[i]);
-        rgroup2fragment.emplace(x.rgroup, x.fragment);
+        const auto it = rgroup2fragment.find(x.rgroup);
+        if (it != rgroup2fragment.end())
+        {
+            it->second.push_back(x.fragment);
+        }
+        else
+        {
+            rgroup2fragment.emplace(x.rgroup, std::vector<int>{x.fragment});
+        }
         fragment2count.emplace(x, 1);
     }
 
-    for (auto it = rgroup2fragment.begin(); it != rgroup2fragment.end(); it = rgroup2fragment.upper_bound(it->first))
+    for (auto it = rgroup2fragment.begin(); it != rgroup2fragment.end(); it++)
     {
         RGroup& rgroup = _rgroups.push();
         RGroup& source = m._parent._rgroups.getRGroup(it->first);
 
-        const auto it_end = rgroup2fragment.upper_bound(it->first);
-        for (auto it_fs_r = rgroup2fragment.lower_bound(it->first); it_fs_r != it_end; it_fs_r++)
+        for (auto it_fs_r = it->second.begin(); it_fs_r != it->second.end(); it_fs_r++)
         {
-            for (auto k = 0; k < fragment2count.at({it->first, it_fs_r->second}); k++)
+            for (auto k = 0; k < fragment2count.at({it->first, *it_fs_r}); k++)
             {
                 int fr_idx = rgroup.fragments.add(new Molecule());
                 BaseMolecule* fragment = rgroup.fragments.at(fr_idx);
-                fragment->clone(*source.fragments[it_fs_r->second], nullptr, nullptr);
+                fragment->clone(*source.fragments[*it_fs_r], nullptr, nullptr);
                 fragment->removeAttachmentPoints();
             }
         }
