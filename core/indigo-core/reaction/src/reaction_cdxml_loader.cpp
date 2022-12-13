@@ -132,9 +132,10 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn, bool is_binary)
         {
             for (auto cdxml_elem = page_elem.firstChildElement(); cdxml_elem.hasContent(); cdxml_elem = cdxml_elem.nextSiblingElement())
             {
-                if ( cdxml_elem.value() == "scheme" )
+                if (cdxml_elem.value() == "scheme")
                 {
-                    for (auto scheme_element = cdxml_elem.firstChildElement(); scheme_element.hasContent(); scheme_element = scheme_element.nextSiblingElement())
+                    for (auto scheme_element = cdxml_elem.firstChildElement(); scheme_element.hasContent();
+                         scheme_element = scheme_element.nextSiblingElement())
                         if (scheme_element.value() == "step")
                             _parseStep(scheme_element.firstProperty());
                 }
