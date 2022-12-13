@@ -504,7 +504,7 @@ void Scanner::readAll(std::string& str)
     {
         throw Error("Cannot read more than %d into memory", max_int);
     }
-    str.resize( size );
+    str.resize(size);
     read(str.size(), &str[0]);
 }
 

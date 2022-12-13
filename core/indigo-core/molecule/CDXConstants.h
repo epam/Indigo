@@ -253,26 +253,26 @@ enum CDXDatumID
     kCDXProp_Bracket_RepeatCount,     // 0x0A28 The number of times a multiple-group BracketedGroup is repeated. (INT16)
     kCDXProp_Bracket_ComponentOrder,  // 0x0A29 The component order associated with a BracketedGroup. (INT16)
     kCDXProp_Bracket_SRULabel,        // 0x0A2A The label associated with a BracketedGroup that represents an SRU. (CDXString)
-    kCDXProp_Bracket_GraphicID,   // 0x0A2B The ID of a graphical object (bracket, brace, or parenthesis) associated with a Bracket Attachment. (CDXObjectID)
-    kCDXProp_Bracket_BondID,      // 0x0A2C The ID of a bond that crosses a Bracket Attachment. (CDXObjectID)
-    kCDXProp_Bracket_InnerAtomID, // 0x0A2D The ID of the node located within the Bracketed Group and attached to a bond that crosses a Bracket Attachment.
-                                  // (CDXObjectID)
-    kCDXProp_Curve_Points3D,      // 0x0A2E The B&eacute;zier curve's control point locations. (CDXCurvePoints3D)
-    kCDXProp_Arrowhead_Type,      // 0x0A2F
-    kCDXProp_Arrowhead_CenterSize, // 0x0A30
-    kCDXProp_Arrowhead_Width,      // 0x0A31
-    kCDXProp_ShadowSize,           // 0x0A32
-    kCDXProp_Arrow_ShaftSpacing,   // 0x0A33
+    kCDXProp_Bracket_GraphicID,      // 0x0A2B The ID of a graphical object (bracket, brace, or parenthesis) associated with a Bracket Attachment. (CDXObjectID)
+    kCDXProp_Bracket_BondID,         // 0x0A2C The ID of a bond that crosses a Bracket Attachment. (CDXObjectID)
+    kCDXProp_Bracket_InnerAtomID,    // 0x0A2D The ID of the node located within the Bracketed Group and attached to a bond that crosses a Bracket Attachment.
+                                     // (CDXObjectID)
+    kCDXProp_Curve_Points3D,         // 0x0A2E The B&eacute;zier curve's control point locations. (CDXCurvePoints3D)
+    kCDXProp_Arrowhead_Type,         // 0x0A2F
+    kCDXProp_Arrowhead_CenterSize,   // 0x0A30
+    kCDXProp_Arrowhead_Width,        // 0x0A31
+    kCDXProp_ShadowSize,             // 0x0A32
+    kCDXProp_Arrow_ShaftSpacing,     // 0x0A33
     kCDXProp_Arrow_EquilibriumRatio, // 0x0A34
     kCDXProp_Arrow_ArrowHead_Head,   // 0x0A35
-    kCDXProp_Arrow_ArrowHead_Tail, // 0x0A36
-    kCDXProp_Fill_Type, // 0x0A37
-    kCDXProp_Curve_Spacing, // 0x0A38
-    kCDXProp_Closed, // 0x0A39
-    kCDXProp_Arrow_Dipole, // 0x0A3A
-    kCDXProp_Arrow_NoGo, // 0x0A3B
-    kCDXProp_CornerRadius, // 0x0A3C
-    kCDXProp_Frame_Type, // 0x0A3D
+    kCDXProp_Arrow_ArrowHead_Tail,   // 0x0A36
+    kCDXProp_Fill_Type,              // 0x0A37
+    kCDXProp_Curve_Spacing,          // 0x0A38
+    kCDXProp_Closed,                 // 0x0A39
+    kCDXProp_Arrow_Dipole,           // 0x0A3A
+    kCDXProp_Arrow_NoGo,             // 0x0A3B
+    kCDXProp_CornerRadius,           // 0x0A3C
+    kCDXProp_Frame_Type,             // 0x0A3D
 
     // Embedded pictures.
     kCDXProp_Picture_Edition =
@@ -283,11 +283,11 @@ enum CDXDatumID
     kCDXProp_WindowsMetafile,      // 0x0A63 A Microsoft Windows Metafile object. (Unformatted)
     kCDXProp_OLEObject,            // 0x0A64 An OLE object. (Unformatted)
     kCDXProp_EnhancedMetafile,     // 0x0A65 A Microsoft Windows Enhanced Metafile object. (Unformatted)
-    kCDXProp_GIF, // 0x0A6E
-    kCDXProp_TIFF, // 0x0A6F,
-    kCDXProp_PNG, // 0x0A70
-    kCDXProp_JPEG, // 0x0A71
-    kCDXProp_BMP, // 0x0A72
+    kCDXProp_GIF,                  // 0x0A6E
+    kCDXProp_TIFF,                 // 0x0A6F,
+    kCDXProp_PNG,                  // 0x0A70
+    kCDXProp_JPEG,                 // 0x0A71
+    kCDXProp_BMP,                  // 0x0A72
     // Spectrum properties
     kCDXProp_Spectrum_XSpacing =
         0x0A80,              // 0x0A80 The spacing in logical units (ppm, Hz, wavenumbers) between points along the X-axis of an evenly-spaced grid. (FLOAT64)
@@ -333,8 +333,8 @@ enum CDXDatumID
     kCDXProp_PointIsDirected, // 0x0B88 For a point based on a normal, signifies whether it is in a specific direction relative to the reference point.
                               // (CDXBooleanImplied)
     kCDXProp_ChemicalPropertyType = 0x0BB0, // 0x0BB0
-    kCDXProp_ChemicalPropertyDisplayID, // 0x0BB1
-    kCDXProp_ChemicalPropertyIsActive,  // 0x0BB2
+    kCDXProp_ChemicalPropertyDisplayID,     // 0x0BB1
+    kCDXProp_ChemicalPropertyIsActive,      // 0x0BB2
     // Reaction properties
     kCDXProp_ReactionStep_Atom_Map =
         0x0C00,                      // 0x0C00 Represents pairs of mapped atom IDs; each pair is a reactant atom mapped to to a product atom. (CDXObjectIDArray)

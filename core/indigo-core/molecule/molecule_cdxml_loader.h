@@ -259,11 +259,11 @@ namespace indigo
 
             auto ptr16 = (uint16_t*)_data;
 
-            if (_style_prop >= 0 && _style_index >=0 )
+            if (_style_prop >= 0 && _style_index >= 0)
             {
-                if ( ptr16[3] )
+                if (ptr16[3])
                 {
-                    auto style_rop = ptr16[ 3 + (_style_index * 4) + _style_prop];
+                    auto style_rop = ptr16[3 + (_style_index * 4) + _style_prop];
                     return formatValue((uint8_t*)&style_rop, sizeof(style_rop), 0, ECDXType::CDXUINT16);
                 }
                 else

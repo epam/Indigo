@@ -18,7 +18,6 @@
 
 #include <regex>
 
-#include "molecule/molecule_auto_loader.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "gzip/gzip_scanner.h"
@@ -27,6 +26,7 @@
 #include "molecule/icm_saver.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_cdx_loader.h"
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_json_loader.h"
@@ -207,16 +207,16 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         long long pos = local_scanner->tell();
         local_scanner->readCharsFix(sizeof(base64_id) - 1, (char*)id);
         bool is_base64 = (std::equal(std::begin(id), std::end(id), std::begin(base64_id)));
-        if (!is_base64 )
+        if (!is_base64)
             local_scanner->seek(pos, SEEK_SET);
 
         std::string base64_str;
         local_scanner->readAll(base64_str);
         base64_str.erase(std::remove_if(base64_str.begin(), base64_str.end(), [](char c) { return c == '\n' || c == '\r'; }), base64_str.end());
         std::regex base64reg_exp("^[a-zA-Z0-9\+/]*={0,3}$");
-        if(validate_base64(base64_str))
+        if (validate_base64(base64_str))
         {
-            base64_data.copy( base64_str.data(), base64_str.size());
+            base64_data.copy(base64_str.data(), base64_str.size());
             base64_scanner = std::make_unique<BufferScanner>(base64_data, true);
             local_scanner = base64_scanner.get();
         }
