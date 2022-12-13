@@ -88,10 +88,12 @@ void MoleculeCdxLoader::_loadMolecule()
     while (!_scanner->isEOF())
     {
         tag = _scanner->readBinaryWord();
-
+        printf("tag=%x\n", tag);
         if (tag & kCDXTag_Object)
         {
             id = _scanner->readBinaryDword();
+            printf("id=%d\n", id);
+
             if (tag == kCDXObj_Fragment)
             {
                 _readFragment(id);
@@ -255,10 +257,13 @@ void MoleculeCdxLoader::_readFragment(UINT32 fragment_id)
     while (!_scanner->isEOF())
     {
         tag = _scanner->readBinaryWord();
+        printf("tag=%x\n", tag);
 
         if (tag & kCDXTag_Object)
         {
             id = _scanner->readBinaryDword();
+            printf("id=%d\n", id);
+
             if (tag == kCDXObj_Fragment)
             {
                 _readFragment(id);
@@ -324,10 +329,11 @@ void MoleculeCdxLoader::_readNode(UINT32 node_id)
     while (!_scanner->isEOF())
     {
         tag = _scanner->readBinaryWord();
-
+        printf("tag=%d\n", tag);
         if (tag & kCDXTag_Object)
         {
             id = _scanner->readBinaryDword();
+            printf("id=%d\n", id);
             if (tag == kCDXObj_Fragment)
             {
                 _readFragment(id);
@@ -502,6 +508,7 @@ void MoleculeCdxLoader::_readBond(UINT32 bond_id)
     while (!_scanner->isEOF())
     {
         tag = _scanner->readBinaryWord();
+        printf("tag=%x\n", tag);
 
         if (tag & kCDXTag_Object)
         {
@@ -622,10 +629,11 @@ void MoleculeCdxLoader::_skipObject()
     while (!_scanner->isEOF())
     {
         tag = _scanner->readBinaryWord();
-
+        printf("tag=%x\n", tag);
         if (tag & kCDXTag_Object)
         {
             id = _scanner->readBinaryDword();
+            printf("id=%d\n", id);
             _skipObject();
         }
         else if (tag == 0)

@@ -52,6 +52,29 @@ IMPL_ERROR(CDXMLReader, "CDXML reader");
 IMPL_ERROR(CDXElement, "CDXML element");
 IMPL_ERROR(CDXProperty, "CDXML property");
 
+CDXProperty CDXProperty::getNextProp()
+{
+    if (_first_id)
+        return CDXProperty(_data, _size, 0, _style_index, _style_prop);
+
+    auto ptr16 = (uint16_t*)_data;
+    if (*ptr16 == kCDXProp_Text && _style_index >= 0 && _style_prop >= 0)
+    {
+        if (ptr16[3] && ++ _style_prop < KStyleProperties.size())
+            return CDXProperty(_data, _size, 0, _style_index, _style_prop);
+        else
+            return CDXProperty();
+    }
+
+    ptr16 = (uint16_t*)CDXElement::skipProperty((uint8_t*)ptr16);
+    if (*ptr16 && *ptr16 < kCDXTag_Object)
+    {
+        auto sz = *(ptr16 + 1);
+        return CDXProperty(ptr16, sz + sizeof(uint16_t) * 2);
+    }
+    return CDXProperty();
+}
+
 CDXReader::CDXReader(Scanner& scanner) : _scanner(scanner)
 {
     scanner.readAll(_buffer);
@@ -131,7 +154,6 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
             atoms.push_back(node_idx);
             break;
         case kCDXNodeType_ExternalConnectionPoint: {
-
             auto& fn = nodes[_fragment_nodes.back()];
             if (fn.connections.size() == 0)
                 fn.ext_connections.push_back(node.id);
@@ -725,28 +747,9 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
 
     auto pos_lambda = [&node, this](const std::string& data) { this->parsePos(data, node.pos); };
 
-    auto stereo_lambda = [&node](const std::string& data) {
-        static const std::unordered_map<std::string, int> cip_map = {{"U", 0}, {"N", 1}, {"R", 2}, {"S", 3}, {"r", 4}, {"s", 5}, {"u", 6}};
-        node.stereo = cip_map.at(data);
-    };
+    auto stereo_lambda = [&node](const std::string& data) { node.stereo = KCIPStereochemistryCharToIndex.at(data.front()); };
 
-    auto node_type_lambda = [&node](const std::string& data) {
-        static const std::unordered_map<std::string, int> node_type_map = {{"Unspecified", kCDXNodeType_Unspecified},
-                                                                           {"Element", kCDXNodeType_Element},
-                                                                           {"ElementList", kCDXNodeType_ElementList},
-                                                                           {"ElementListNickname", kCDXNodeType_ElementListNickname},
-                                                                           {"Nickname", kCDXNodeType_Nickname},
-                                                                           {"Fragment", kCDXNodeType_Fragment},
-                                                                           {"Formula", kCDXNodeType_Formula},
-                                                                           {"GenericNickname", kCDXNodeType_GenericNickname},
-                                                                           {"AnonymousAlternativeGroup", kCDXNodeType_AnonymousAlternativeGroup},
-                                                                           {"NamedAlternativeGroup", kCDXNodeType_NamedAlternativeGroup},
-                                                                           {"MultiAttachment", kCDXNodeType_MultiAttachment},
-                                                                           {"VariableAttachment", kCDXNodeType_VariableAttachment},
-                                                                           {"ExternalConnectionPoint", kCDXNodeType_ExternalConnectionPoint},
-                                                                           {"LinkNode", kCDXNodeType_LinkNode}};
-        node.type = node_type_map.at(data);
-    };
+    auto node_type_lambda = [&node](const std::string& data) { node.type = KNodeTypeNameToInt.at(data); };
 
     auto element_list_lambda = [&node](const std::string& data) {
         std::vector<std::string> elements = split(data, ' ');
@@ -758,26 +761,7 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
         node.element_list.assign(elements.begin(), elements.end());
     };
 
-    auto geometry_lambda = [&node](const std::string& data) {
-        static const std::unordered_map<std::string, int> geometry_map = {{"Unspecified", kCDXAtomGeometry_Unknown},
-                                                                          {"1", kCDXAtomGeometry_1Ligand},
-                                                                          {"Linear", kCDXAtomGeometry_Linear},
-                                                                          {"Bent", kCDXAtomGeometry_Bent},
-                                                                          {"TrigonalPlanar", kCDXAtomGeometry_TrigonalPlanar},
-                                                                          {"TrigonalPyramidal", kCDXAtomGeometry_TrigonalPyramidal},
-                                                                          {"SquarePlanar", kCDXAtomGeometry_SquarePlanar},
-                                                                          {"Tetrahedral", kCDXAtomGeometry_Tetrahedral},
-                                                                          {"TrigonalBipyramidal", kCDXAtomGeometry_TrigonalBipyramidal},
-                                                                          {"SquarePyramidal", kCDXAtomGeometry_SquarePyramidal},
-                                                                          {"5", kCDXAtomGeometry_5Ligand},
-                                                                          {"Octahedral", kCDXAtomGeometry_Octahedral},
-                                                                          {"6", kCDXAtomGeometry_6Ligand},
-                                                                          {"7", kCDXAtomGeometry_7Ligand},
-                                                                          {"8", kCDXAtomGeometry_8Ligand},
-                                                                          {"9", kCDXAtomGeometry_9Ligand},
-                                                                          {"10", kCDXAtomGeometry_10Ligand}};
-        node.geometry = geometry_map.at(data);
-    };
+    auto geometry_lambda = [&node](const std::string& data) { node.geometry = KGeometryTypeNameToInt.at(data); };
 
     auto enhanced_stereo_type_lambda = [&node](const std::string& data) {
         static const std::unordered_map<std::string, CdxmlNode::EnhancedStereoType> enhanced_stereo_map = {
@@ -964,7 +948,7 @@ void MoleculeCdxmlLoader::_parseLabel(CDXElement elem, std::string& label)
         if (text_element == "s")
         {
             label = text_style.getText();
-            return;
+            break;
         }
     }
 }
@@ -1100,30 +1084,7 @@ void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, CDXProperty prop)
         std::vector<std::string> vec_str = split(data, ' ');
         bracket.bracketed_list.assign(vec_str.begin(), vec_str.end());
     };
-    auto bracket_usage_lambda = [&bracket](const std::string& data) {
-        static const std::unordered_map<std::string, int> usage_map = {{"Unspecified", kCDXBracketUsage_Unspecified},
-                                                                       {"Unused1", kCDXBracketUsage_Unused1},
-                                                                       {"Unused2", kCDXBracketUsage_Unused2},
-                                                                       {"SRU", kCDXBracketUsage_SRU},
-                                                                       {"Monomer", kCDXBracketUsage_Monomer},
-                                                                       {"Mer", kCDXBracketUsage_Mer},
-                                                                       {"Copolymer", kCDXBracketUsage_Copolymer},
-                                                                       {"CopolymerAlternating", kCDXBracketUsage_CopolymerAlternating},
-                                                                       {"CopolymerRandom", kCDXBracketUsage_CopolymerRandom},
-                                                                       {"CopolymerBlock", kCDXBracketUsage_CopolymerBlock},
-                                                                       {"Crosslink", kCDXBracketUsage_Crosslink},
-                                                                       {"Graft", kCDXBracketUsage_Graft},
-                                                                       {"Modification", kCDXBracketUsage_Modification},
-                                                                       {"Component", kCDXBracketUsage_Component},
-                                                                       {"MixtureUnordered", kCDXBracketUsage_MixtureUnordered},
-                                                                       {"MixtureOrdered", kCDXBracketUsage_MixtureOrdered},
-                                                                       {"MultipleGroup", kCDXBracketUsage_MultipleGroup},
-                                                                       {"Generic", kCDXBracketUsage_Generic},
-                                                                       {"Anypolymer", kCDXBracketUsage_Anypolymer}
-
-        };
-        bracket.usage = usage_map.at(data);
-    };
+    auto bracket_usage_lambda = [&bracket](const std::string& data) { bracket.usage = kBracketUsageNameToInt.at(data); };
 
     auto repeat_count_lambda = [&bracket](const std::string& data) { bracket.repeat_count = data; };
     auto repeat_pattern_lambda = [&bracket](const std::string& data) {

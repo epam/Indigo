@@ -707,7 +707,8 @@ void BufferScanner::_init(const char* buffer, int size)
         throw Error("incorrect parameters in BufferScanner constructor");
     if (_is_base64)
     {
-        auto decoded = base64::decode(buffer, size);
+        std::string encoded(buffer, size);
+        auto decoded = base64::decode(encoded.c_str(), encoded.size());
         _base64_buffer.copy((char*)decoded.data(), decoded.size());
         _buffer = _base64_buffer.ptr();
         _size = _base64_buffer.size();

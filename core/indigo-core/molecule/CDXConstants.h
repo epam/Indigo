@@ -64,7 +64,7 @@ enum CDXDatumID
     kCDXProp_IgnoreWarnings,     // 0x000F Signifies whether chemical warnings should be suppressed on this object. (CDXBooleanImplied)
     kCDXProp_ChemicalWarning,    // 0x0010 A warning concerning possible chemical problems with this object. (CDXString)
     kCDXProp_Visible,            // 0x0011 The object is visible if non-zero. (CDXBoolean)
-
+    kCDXProp_SupersededBy,       // 0x0012
     // Fonts.
     kCDXProp_FontTable = 0x0100, // 0x0100 A list of fonts used in the document. (CDXFontTable)
 
@@ -87,7 +87,9 @@ enum CDXDatumID
     kCDXProp_TopRight,    // 0x020A The location of the top-right corner of a quadrilateral object, possibly in a rotated or skewed frame. (CDXPoint2D)
     kCDXProp_BottomRight, // 0x020B The location of the bottom-right corner of a quadrilateral object, possibly in a rotated or skewed frame. (CDXPoint2D)
     kCDXProp_BottomLeft,  // 0x020C The location of the bottom-left corner of a quadrilateral object, possibly in a rotated or skewed frame. (CDXPoint2D)
-
+    kCDXProp_3DCenter,    // 0x020D
+    kCDXProp_3DMajorAxisEnd, // 0x020E
+    kCDXProp_3DMinorAxisEnd, // 0x020F
     // Colors.
     kCDXProp_ColorTable = 0x0300, // 0x0300 The color palette used throughout the document. (CDXColorTable)
     kCDXProp_ForegroundColor,     // 0x0301 The foreground color of an object represented as the two-based index into the object's color table. (UINT16)
@@ -138,7 +140,13 @@ enum CDXDatumID
     kCDXProp_Atom_LinkCountHigh,               // 0x043E High end of repeat count for link nodes. (INT16)
     kCDXProp_Atom_IsotopicAbundance,           // 0x043F Isotopic abundance of this atom's isotope. (INT8)
     kCDXProp_Atom_ExternalConnectionType,      // 0x0440 Type of external connection, for atoms of type kCDXNodeType_ExternalConnectionPoint. (INT8)
-
+    kCDXProp_Atom_GenericList,                 // 0x0441
+    kCDXProp_Atom_ShowTerminalCarbonLabels,    // 0x0442
+    kCDXProp_Atom_ShowNonTerminalCarbonLabels, // 0x0443
+    kCDXProp_Atom_HideImplicitHydrogens,       // 0x0444
+    kCDXProp_Atom_ShowEnhancedStereo,          // 0x0445
+    kCDXProp_Atom_EnhancedStereoType,          // 0x0446
+    kCDXProp_Atom_EnhancedStereoGroupNum,      // 0x0447
     // Molecule properties.
     kCDXProp_Mole_Racemic = 0x0500, // 0x0500 Indicates that the molecule is a racemic mixture. (CDXBoolean)
     kCDXProp_Mole_Absolute,         // 0x0501 Indicates that the molecule has known absolute configuration. (CDXBoolean)
@@ -218,7 +226,7 @@ enum CDXDatumID
     kCDXProp_FixInplaceExtent,      // 0x0824 Defines a size for OLE In-Place editing. (CDXPoint2D)
     kCDXProp_Side,                  // 0x0825 A specific side of an object (rectangle). (INT16)
     kCDXProp_FixInplaceGap,         // 0x0826 Defines a padding for OLE In-Place editing. (CDXPoint2D)
-
+    kCDXProp_CartridgeData,         // 0x0827
     // Window properties.
     kCDXProp_Window_IsZoomed = 0x0900, // 0x0900 Signifies whether the main viewing window is zoomed (maximized). (CDXBooleanImplied)
     kCDXProp_Window_Position,          // 0x0901 The top-left position of the main viewing window. (CDXPoint2D)
@@ -250,6 +258,21 @@ enum CDXDatumID
     kCDXProp_Bracket_InnerAtomID, // 0x0A2D The ID of the node located within the Bracketed Group and attached to a bond that crosses a Bracket Attachment.
                                   // (CDXObjectID)
     kCDXProp_Curve_Points3D,      // 0x0A2E The B&eacute;zier curve's control point locations. (CDXCurvePoints3D)
+    kCDXProp_Arrowhead_Type,      // 0x0A2F
+    kCDXProp_Arrowhead_CenterSize, // 0x0A30
+    kCDXProp_Arrowhead_Width,      // 0x0A31
+    kCDXProp_ShadowSize,           // 0x0A32
+    kCDXProp_Arrow_ShaftSpacing,   // 0x0A33
+    kCDXProp_Arrow_EquilibriumRatio, // 0x0A34
+    kCDXProp_Arrow_ArrowHead_Head,   // 0x0A35
+    kCDXProp_Arrow_ArrowHead_Tail, // 0x0A36
+    kCDXProp_Fill_Type, // 0x0A37
+    kCDXProp_Curve_Spacing, // 0x0A38
+    kCDXProp_Closed, // 0x0A39
+    kCDXProp_Arrow_Dipole, // 0x0A3A
+    kCDXProp_Arrow_NoGo, // 0x0A3B
+    kCDXProp_CornerRadius, // 0x0A3C
+    kCDXProp_Frame_Type, // 0x0A3D
 
     // Embedded pictures.
     kCDXProp_Picture_Edition =
@@ -260,7 +283,11 @@ enum CDXDatumID
     kCDXProp_WindowsMetafile,      // 0x0A63 A Microsoft Windows Metafile object. (Unformatted)
     kCDXProp_OLEObject,            // 0x0A64 An OLE object. (Unformatted)
     kCDXProp_EnhancedMetafile,     // 0x0A65 A Microsoft Windows Enhanced Metafile object. (Unformatted)
-
+    kCDXProp_GIF, // 0x0A6E
+    kCDXProp_TIFF, // 0x0A6F,
+    kCDXProp_PNG, // 0x0A70
+    kCDXProp_JPEG, // 0x0A71
+    kCDXProp_BMP, // 0x0A72
     // Spectrum properties
     kCDXProp_Spectrum_XSpacing =
         0x0A80,              // 0x0A80 The spacing in logical units (ppm, Hz, wavenumbers) between points along the X-axis of an evenly-spaced grid. (FLOAT64)
@@ -305,7 +332,9 @@ enum CDXDatumID
     kCDXProp_DihedralIsChiral,          // 0x0B87 Signifies whether a dihedral is signed or unsigned. (CDXBooleanImplied)
     kCDXProp_PointIsDirected, // 0x0B88 For a point based on a normal, signifies whether it is in a specific direction relative to the reference point.
                               // (CDXBooleanImplied)
-
+    kCDXProp_ChemicalPropertyType = 0x0BB0, // 0x0BB0
+    kCDXProp_ChemicalPropertyDisplayID, // 0x0BB1
+    kCDXProp_ChemicalPropertyIsActive,  // 0x0BB2
     // Reaction properties
     kCDXProp_ReactionStep_Atom_Map =
         0x0C00,                      // 0x0C00 Represents pairs of mapped atom IDs; each pair is a reactant atom mapped to to a product atom. (CDXObjectIDArray)
@@ -389,6 +418,8 @@ enum CDXDatumID
     kCDXObj_TLCPlate,                  // 0x8023
     kCDXObj_TLCLane,                   // 0x8024
     kCDXObj_TLCSpot,                   // 0x8025
+    kCDXObj_ChemicalProperty,          // 0x8026
+    kCDXObj_Arrow,                     // 0x8027
                                        // Add new objects here
     kCDXObj_UnknownObject = 0x8FFF
 };
