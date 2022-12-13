@@ -60,7 +60,7 @@ CDXProperty CDXProperty::getNextProp()
     auto ptr16 = (uint16_t*)_data;
     if (*ptr16 == kCDXProp_Text && _style_index >= 0 && _style_prop >= 0)
     {
-        if (ptr16[3] && ++ _style_prop < KStyleProperties.size())
+        if (ptr16[3] && ++_style_prop < KStyleProperties.size())
             return CDXProperty(_data, _size, 0, _style_index, _style_prop);
         else
             return CDXProperty();
