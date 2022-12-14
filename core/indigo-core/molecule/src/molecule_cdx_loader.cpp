@@ -327,7 +327,6 @@ void MoleculeCdxLoader::_readNode(UINT32 node_id)
         if (tag & kCDXTag_Object)
         {
             id = _scanner->readBinaryDword();
-            printf("id=%d\n", id);
             if (tag == kCDXObj_Fragment)
             {
                 _readFragment(id);
