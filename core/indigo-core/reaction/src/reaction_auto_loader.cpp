@@ -106,7 +106,6 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         std::string base64_str;
         local_scanner->readAll(base64_str);
         base64_str.erase(std::remove_if(base64_str.begin(), base64_str.end(), [](char c) { return c == '\n' || c == '\r'; }), base64_str.end());
-        std::regex base64reg_exp("^[a-zA-Z0-9\+/]*={0,3}$");
         if (validate_base64(base64_str))
         {
             base64_data.copy(base64_str.data(), base64_str.size());
@@ -114,6 +113,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
             local_scanner = base64_scanner.get();
         }
         local_scanner->seek(pos, SEEK_SET);
+        _scanner->seek(pos, SEEK_SET);
     }
 
     // check fir GZip format

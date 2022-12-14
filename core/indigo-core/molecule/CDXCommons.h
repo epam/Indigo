@@ -6,9 +6,21 @@
 #include <unordered_map>
 #include <utility>
 
+enum class EnhancedStereoType : int
+{
+    UNSPECIFIED,
+    NONE,
+    ABSOLUTE,
+    OR,
+    AND
+};
+
 const int KCDXMLChemicalFontStyle = 96;
+const int kCDXMLSizeMultiplier = 20;
+const int kCDXMLStyleSizeIndex = 2;
 
 #pragma pack(push, 1)
+
 struct CDXTextStyle
 {
     uint16_t offset;
@@ -17,6 +29,15 @@ struct CDXTextStyle
     uint16_t font_size;
     uint16_t font_color;
 };
+
+struct CDXTextStyleProperty
+{
+    uint16_t tag;
+    uint16_t size;
+    uint16_t style_count;
+    CDXTextStyle styles[];
+};
+
 #pragma pack(pop)
 
 enum class ECDXType
@@ -52,6 +73,18 @@ enum class ECDXType
     CDXCurvePoints3D,
     CDXvaries
 };
+
+const std::unordered_map<std::string, EnhancedStereoType> kCDXEnhancedStereoStrToID = {{"Unspecified", EnhancedStereoType::UNSPECIFIED},
+                                                                                       {"None", EnhancedStereoType::NONE},
+                                                                                       {"Absolute", EnhancedStereoType::ABSOLUTE},
+                                                                                       {"Or", EnhancedStereoType::OR},
+                                                                                       {"And", EnhancedStereoType::AND}};
+
+const std::unordered_map<EnhancedStereoType, std::string> kCDXEnhancedStereoIDToStr = {{EnhancedStereoType::UNSPECIFIED, "Unspecified"},
+                                                                                       {EnhancedStereoType::NONE, "None"},
+                                                                                       {EnhancedStereoType::ABSOLUTE, "Absolute"},
+                                                                                       {EnhancedStereoType::OR, "Or"},
+                                                                                       {EnhancedStereoType::AND, "And"}};
 
 const std::unordered_map<uint16_t, std::pair<std::string, ECDXType>> KCDXPropToName = {
     {kCDXProp_CreationUserName, {"CreationUserName", ECDXType::CDXString}},
@@ -460,6 +493,6 @@ const std::unordered_map<int, std::string> kBracketUsageIntToName = {{kCDXBracke
 
 const std::vector<char> KCIPStereochemistryIndexToChar = {'U', 'N', 'R', 'S', 'r', 's', 'u'};
 const std::unordered_map<char, uint8_t> KCIPStereochemistryCharToIndex = {{'U', 0}, {'N', 1}, {'R', 2}, {'S', 3}, {'r', 4}, {'s', 5}, {'u', 6}};
-const std::vector<std::string> KStyleProperties = {"fonst", "size", "color", "face"};
+const std::vector<std::string> KStyleProperties = {"font", "face", "size", "color"};
 
 #endif // _H_CDXCommons

@@ -60,7 +60,7 @@ CDXProperty CDXProperty::getNextProp()
     auto ptr16 = (uint16_t*)_data;
     if (*ptr16 == kCDXProp_Text && _style_index >= 0 && _style_prop >= 0)
     {
-        if (++_style_prop && ptr16[3] < KStyleProperties.size())
+        if (++_style_prop < KStyleProperties.size())
             return CDXProperty(_data, _size, 0, _style_index, _style_prop);
         else
             return CDXProperty();
@@ -423,14 +423,14 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             // _pmol->setPseudoAtom(atom_idx, label.c_str());
             switch (atom.enchanced_stereo)
             {
-            case CdxmlNode::EnhancedStereoType::ABSOLUTE:
+            case EnhancedStereoType::ABSOLUTE:
                 _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_ABS, 1);
                 break;
-            case CdxmlNode::EnhancedStereoType::AND:
+            case EnhancedStereoType::AND:
                 if (atom.enhanced_stereo_group)
                     _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_AND, atom.enhanced_stereo_group);
                 break;
-            case CdxmlNode::EnhancedStereoType::OR:
+            case EnhancedStereoType::OR:
                 if (atom.enhanced_stereo_group)
                     _stereo_centers.emplace_back(atom_idx, MoleculeStereocenters::ATOM_OR, atom.enhanced_stereo_group);
                 break;
@@ -764,13 +764,7 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
     auto geometry_lambda = [&node](const std::string& data) { node.geometry = KGeometryTypeNameToInt.at(data); };
 
     auto enhanced_stereo_type_lambda = [&node](const std::string& data) {
-        static const std::unordered_map<std::string, CdxmlNode::EnhancedStereoType> enhanced_stereo_map = {
-            {"Unspecified", CdxmlNode::EnhancedStereoType::UNSPECIFIED},
-            {"None", CdxmlNode::EnhancedStereoType::NONE},
-            {"Absolute", CdxmlNode::EnhancedStereoType::ABSOLUTE},
-            {"Or", CdxmlNode::EnhancedStereoType::OR},
-            {"And", CdxmlNode::EnhancedStereoType::AND}};
-        node.enchanced_stereo = enhanced_stereo_map.at(data);
+        node.enchanced_stereo = kCDXEnhancedStereoStrToID.at(data);
     };
 
     auto enhanced_stereo_group_lambda = [&node](const std::string& data) { node.enhanced_stereo_group = data; };
@@ -1044,10 +1038,9 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
                     writer.Int(label.size());
                     writer.Key("style");
                     writer.String(style_str.c_str());
+                    writer.EndObject();
                 }
-                writer.EndObject();
                 writer.EndArray();
-
                 writer.Key("entityRanges");
                 writer.StartArray();
                 writer.EndArray();
