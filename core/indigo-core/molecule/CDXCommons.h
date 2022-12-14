@@ -74,7 +74,7 @@ enum class ECDXType
     CDXvaries
 };
 
-const std::unordered_map<std::string, CDXBondDisplay> kCDXProp_Bond_DisplayStrToID = {{"Solid", kCDXBondDisplay_Solid},
+const std::unordered_map<std::string, int> kCDXProp_Bond_DisplayStrToID = {{"Solid", kCDXBondDisplay_Solid},
                                                                                       {"Dash", kCDXBondDisplay_Dash},
                                                                                       {"Hash", kCDXBondDisplay_Hash},
                                                                                       {"WedgedHashBegin", kCDXBondDisplay_WedgedHashBegin},
@@ -90,7 +90,7 @@ const std::unordered_map<std::string, CDXBondDisplay> kCDXProp_Bond_DisplayStrTo
                                                                                       {"Dot", kCDXBondDisplay_Dot},
                                                                                       {"DashDot", kCDXBondDisplay_DashDot}};
 
-const std::unordered_map<CDXBondDisplay, std::string> kCDXProp_Bond_DisplayIdToStr = {{kCDXBondDisplay_Solid, "Solid"},
+const std::unordered_map<int, std::string> kCDXProp_Bond_DisplayIdToStr = {{kCDXBondDisplay_Solid, "Solid"},
                                                                                       {kCDXBondDisplay_Dash, "Dash"},
                                                                                       {kCDXBondDisplay_Hash, "Hash"},
                                                                                       {kCDXBondDisplay_WedgedHashBegin, "WedgedHashBegin"},
