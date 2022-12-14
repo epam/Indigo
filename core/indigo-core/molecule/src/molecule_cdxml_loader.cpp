@@ -763,9 +763,7 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
 
     auto geometry_lambda = [&node](const std::string& data) { node.geometry = KGeometryTypeNameToInt.at(data); };
 
-    auto enhanced_stereo_type_lambda = [&node](const std::string& data) {
-        node.enchanced_stereo = kCDXEnhancedStereoStrToID.at(data);
-    };
+    auto enhanced_stereo_type_lambda = [&node](const std::string& data) { node.enchanced_stereo = kCDXEnhancedStereoStrToID.at(data); };
 
     auto enhanced_stereo_group_lambda = [&node](const std::string& data) { node.enhanced_stereo_group = data; };
 
