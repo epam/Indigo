@@ -96,6 +96,7 @@ namespace indigo
         bool haveAllAbs();
         bool haveAllAbsAny();
         bool haveAllAndAny();
+        bool haveEnhancedStereocenter();
 
         void registerUnfoldedHydrogen(int atom_idx, int added_hydrogen);
 
