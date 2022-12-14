@@ -357,12 +357,15 @@ namespace indigo
             return std::to_string(val);
         }
 
-        std::string parseCDXINT16(int16_t val, uint16_t tag)
+        std::string parseCDXINT16(int16_t val, int16_t tag)
         {
             switch (tag)
             {
             case kCDXProp_Node_Type: {
                 return KNodeTypeIntToName.at(val);
+            }
+            case kCDXProp_Bond_Display: {
+                return kCDXProp_Bond_DisplayIdToStr.at((CDXBondDisplay)val);
             }
             break;
             default:

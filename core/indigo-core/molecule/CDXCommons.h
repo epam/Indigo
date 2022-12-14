@@ -74,6 +74,38 @@ enum class ECDXType
     CDXvaries
 };
 
+const std::unordered_map<std::string, CDXBondDisplay> kCDXProp_Bond_DisplayStrToID = {{"Solid", kCDXBondDisplay_Solid},
+                                                                                      {"Dash", kCDXBondDisplay_Dash},
+                                                                                      {"Hash", kCDXBondDisplay_Hash},
+                                                                                      {"WedgedHashBegin", kCDXBondDisplay_WedgedHashBegin},
+                                                                                      {"WedgedHashEnd", kCDXBondDisplay_WedgedHashEnd},
+                                                                                      {"Bold", kCDXBondDisplay_Bold},
+                                                                                      {"WedgeBegin", kCDXBondDisplay_WedgeBegin},
+                                                                                      {"WedgeEnd", kCDXBondDisplay_WedgeEnd},
+                                                                                      {"Wavy", kCDXBondDisplay_Wavy},
+                                                                                      {"HollowWedgeBegin", kCDXBondDisplay_HollowWedgeBegin},
+                                                                                      {"HollowWedgeEnd", kCDXBondDisplay_HollowWedgeEnd},
+                                                                                      {"WavyWedgeBegin", kCDXBondDisplay_WavyWedgeBegin},
+                                                                                      {"WavyWedgeEnd", kCDXBondDisplay_WavyWedgeEnd},
+                                                                                      {"Dot", kCDXBondDisplay_Dot},
+                                                                                      {"DashDot", kCDXBondDisplay_DashDot}};
+
+const std::unordered_map<CDXBondDisplay, std::string> kCDXProp_Bond_DisplayIdToStr = {{kCDXBondDisplay_Solid, "Solid"},
+                                                                                      {kCDXBondDisplay_Dash, "Dash"},
+                                                                                      {kCDXBondDisplay_Hash, "Hash"},
+                                                                                      {kCDXBondDisplay_WedgedHashBegin, "WedgedHashBegin"},
+                                                                                      {kCDXBondDisplay_WedgedHashEnd, "WedgedHashEnd"},
+                                                                                      {kCDXBondDisplay_Bold, "Bold"},
+                                                                                      {kCDXBondDisplay_WedgeBegin, "WedgeBegin"},
+                                                                                      {kCDXBondDisplay_WedgeEnd, "WedgeEnd"},
+                                                                                      {kCDXBondDisplay_Wavy, "Wavy"},
+                                                                                      {kCDXBondDisplay_HollowWedgeBegin, "HollowWedgeBegin"},
+                                                                                      {kCDXBondDisplay_HollowWedgeEnd, "HollowWedgeEnd"},
+                                                                                      {kCDXBondDisplay_WavyWedgeBegin, "WavyWedgeBegin"},
+                                                                                      {kCDXBondDisplay_WavyWedgeEnd, "WavyWedgeEnd"},
+                                                                                      {kCDXBondDisplay_Dot, "Dot"},
+                                                                                      {kCDXBondDisplay_DashDot, "DashDot"}};
+
 const std::unordered_map<std::string, EnhancedStereoType> kCDXEnhancedStereoStrToID = {{"Unspecified", EnhancedStereoType::UNSPECIFIED},
                                                                                        {"None", EnhancedStereoType::NONE},
                                                                                        {"Absolute", EnhancedStereoType::ABSOLUTE},
