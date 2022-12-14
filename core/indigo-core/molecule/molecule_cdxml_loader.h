@@ -375,7 +375,7 @@ namespace indigo
             switch (tag)
             {
             case kCDXProp_Atom_EnhancedStereoType:
-                return kCDXEnhancedStereoIDToStr.at((EnhancedStereoType)val);
+                return kCDXEnhancedStereoIDToStr.at(val);
                 break;
             case kCDXProp_Atom_CIPStereochemistry: {
                 return std::string{KCIPStereochemistryIndexToChar[val]};

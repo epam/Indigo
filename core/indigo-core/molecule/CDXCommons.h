@@ -80,11 +80,11 @@ const std::unordered_map<std::string, EnhancedStereoType> kCDXEnhancedStereoStrT
                                                                                        {"Or", EnhancedStereoType::OR},
                                                                                        {"And", EnhancedStereoType::AND}};
 
-const std::unordered_map<EnhancedStereoType, std::string> kCDXEnhancedStereoIDToStr = {{EnhancedStereoType::UNSPECIFIED, "Unspecified"},
-                                                                                       {EnhancedStereoType::NONE, "None"},
-                                                                                       {EnhancedStereoType::ABSOLUTE, "Absolute"},
-                                                                                       {EnhancedStereoType::OR, "Or"},
-                                                                                       {EnhancedStereoType::AND, "And"}};
+const std::unordered_map<int, std::string> kCDXEnhancedStereoIDToStr = {{(int)EnhancedStereoType::UNSPECIFIED, "Unspecified"},
+                                                                        {(int)EnhancedStereoType::NONE, "None"},
+                                                                        {(int)EnhancedStereoType::ABSOLUTE, "Absolute"},
+                                                                        {(int)EnhancedStereoType::OR, "Or"},
+                                                                        {(int)EnhancedStereoType::AND, "And"}};
 
 const std::unordered_map<uint16_t, std::pair<std::string, ECDXType>> KCDXPropToName = {
     {kCDXProp_CreationUserName, {"CreationUserName", ECDXType::CDXString}},
