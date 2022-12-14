@@ -56,9 +56,10 @@ namespace indigo
 
     inline bool validate_base64(const std::string& str)
     {
+        if (str.size() & 3) // check for padding
+            return false;
         std::regex base64reg_exp("^[a-zA-Z0-9\\+/]*={0,3}$");
-        bool res = std::regex_match(str, base64reg_exp);
-        return res;
+        return std::regex_match(str, base64reg_exp);
     }
 
     class AutoInt
