@@ -1039,32 +1039,32 @@ jobs:
 #          name: bingo-postgres-${{ matrix.postgres_major_version }}-macos-x86_64
 #          path: dist/bingo-postgres*.tgz
 #
-  build_bingo_sqlserver_windows_msvc_x86_64:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: false
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_SQLSERVER=ON -DBUILD_BINGO_POSTGRES=OFF -DBUILD_BINGO_ORACLE=OFF  -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target package-bingo-sqlserver
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-sqlserver-${{ matrix.os }}-x86_64
-          path: dist/bingo-sqlserver*.zip
-
+#  build_bingo_sqlserver_windows_msvc_x86_64:
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os: [ windows ]
+#    runs-on: ${{ matrix.os }}-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          lfs: false
+#          fetch-depth: 500
+#      - name: Git fetch tags
+#        run: git fetch --tags -f
+#      - name: Build
+#        run: |
+#          mkdir build
+#          cd build
+#          cmake .. -DBUILD_BINGO_SQLSERVER=ON -DBUILD_BINGO_POSTGRES=OFF -DBUILD_BINGO_ORACLE=OFF  -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
+#          cmake --build . --config Release --target package-bingo-sqlserver
+#      - name: Upload artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: bingo-sqlserver-${{ matrix.os }}-x86_64
+#          path: dist/bingo-sqlserver*.zip
+#
   publish_indigo:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
