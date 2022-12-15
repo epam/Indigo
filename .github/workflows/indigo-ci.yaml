@@ -830,79 +830,79 @@ jobs:
           name: indigo-utils-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist/utils
 
-  build_bingo_oracle_linux_x86_64:
-    runs-on: ubuntu-latest
-    container: epmlsop/buildpack-centos7:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: false
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build bingo-oracle
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-oracle-linux-x86_64
-          path: dist/bingo-oracle*.tgz
-
-  build_bingo_oracle_windows_mingw_x86_64:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: false
-          fetch-depth: 500
-      - uses: msys2/setup-msys2@v2
-        with:
-          msystem: mingw64
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build bingo-oracle
-        run: |
-          mkdir build
-          cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-oracle-windows-mingw-x86_64
-          path: dist/bingo-oracle*.zip
-
-  build_bingo_oracle_windows_msvc_x86_64:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: false
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build bingo-oracle
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target package-bingo-oracle
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-oracle-windows-msvc-x86_64
-          path: dist/bingo-oracle*.zip
+#  build_bingo_oracle_linux_x86_64:
+#    runs-on: ubuntu-latest
+#    container: epmlsop/buildpack-centos7:latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          lfs: false
+#          fetch-depth: 500
+#      - name: Git fetch tags
+#        run: git fetch --tags -f
+#      - name: Build bingo-oracle
+#        run: |
+#          mkdir build
+#          cd build
+#          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
+#          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+#      - name: Upload artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: bingo-oracle-linux-x86_64
+#          path: dist/bingo-oracle*.tgz
+#
+#  build_bingo_oracle_windows_mingw_x86_64:
+#    runs-on: windows-latest
+#    defaults:
+#      run:
+#        shell: msys2 {0}
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          lfs: false
+#          fetch-depth: 500
+#      - uses: msys2/setup-msys2@v2
+#        with:
+#          msystem: mingw64
+#          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
+#      - name: Git fetch tags
+#        run: git fetch --tags -f
+#      - name: Build bingo-oracle
+#        run: |
+#          mkdir build
+#          cd build
+#          cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
+#          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+#      - name: Upload artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: bingo-oracle-windows-mingw-x86_64
+#          path: dist/bingo-oracle*.zip
+#
+#  build_bingo_oracle_windows_msvc_x86_64:
+#    runs-on: windows-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          lfs: false
+#          fetch-depth: 500
+#      - name: Git fetch tags
+#        run: git fetch --tags -f
+#      - name: Build bingo-oracle
+#        run: |
+#          mkdir build
+#          cd build
+#          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
+#          cmake --build . --config Release --target package-bingo-oracle
+#      - name: Upload artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: bingo-oracle-windows-msvc-x86_64
+#/          path: dist/bingo-oracle*.zip
 
 #  build_bingo_postgres_linux_x86_64:
 #    strategy:
