@@ -50,7 +50,7 @@ namespace indigo
         };
 
     public:
-        explicit MoleculeCdxmlSaver(Output& output);
+        explicit MoleculeCdxmlSaver(Output& output, bool is_binary = false);
 
         ~MoleculeCdxmlSaver();
 
@@ -135,6 +135,7 @@ namespace indigo
 
         int _id;
         float _scale;
+        bool _is_binary;
     };
 
 } // namespace indigo

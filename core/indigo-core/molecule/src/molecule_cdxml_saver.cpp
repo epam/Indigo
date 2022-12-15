@@ -37,7 +37,7 @@ int MoleculeCdxmlSaver::getId()
     return _id;
 }
 
-MoleculeCdxmlSaver::MoleculeCdxmlSaver(Output& output) : _output(output)
+MoleculeCdxmlSaver::MoleculeCdxmlSaver(Output& output, bool is_binary) : _output(output), _is_binary(is_binary)
 {
     _bond_length = SCALE;
     _max_page_height = MAX_PAGE_HEIGHT;
