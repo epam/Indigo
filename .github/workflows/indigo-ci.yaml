@@ -1134,15 +1134,15 @@ jobs:
 #          ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
 #          cd ${GITHUB_WORKSPACE}/bingo/bingo-elastic/java/
 #          ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
-#      - name: Publish indigo-ketcher to NPM
-#        env:
-#          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-#          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
-#        run: |
-#          echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
-#          echo email=${NPM_EMAIL} >> ~/.npmrc
-#          echo always-auth=true >> ~/.npmrc
-#          npm publish ./dist/indigo-ketcher-*.tgz
+      - name: Publish indigo-ketcher to NPM
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
+        run: |
+          echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
+          echo email=${NPM_EMAIL} >> ~/.npmrc
+          echo always-auth=true >> ~/.npmrc
+          npm publish ./dist/indigo-ketcher-*.tgz
 
   build_test_publish_indigo_service_old:
     timeout-minutes: 60
