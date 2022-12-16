@@ -177,7 +177,10 @@ def cpu_count():
         import java
 
         return java.lang.Runtime.getRuntime().availableProcessors()
-    elif sys.platform == "cli":
+    elif sys.platform == "cli" or (
+        "implementation" in dir(sys)
+        and sys.implementation.name == "ironpython"
+    ):
         import System.Environment
 
         return System.Environment.ProcessorCount
