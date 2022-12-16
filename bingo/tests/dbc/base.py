@@ -289,7 +289,7 @@ class SQLAdapter(DBAdapter):
             # work with remote server and cannot use local files
             query = "INSERT INTO {test_schema}.{table}(data) VALUES {items}"
             items_str = ",".join((
-                "('{}')".format(item.rawData())
+                "('{}')".format(item.rawData().replace("'", "''"))
                 for item in function(import_path)
             ))
             query = query.format(
