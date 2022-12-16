@@ -558,7 +558,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net45/ipy.exe api/tests/integration/test.py -t 1 -j junit_report.xml -platform ironwin
+        run: ./IronPython/net462/ipy.exe api/tests/integration/test.py -t 1 -j junit_report.xml -platform ironwin
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
