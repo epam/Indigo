@@ -515,12 +515,12 @@ jobs:
           mkdir IronPython
           mkdir tmp
           cd IronPython
-          curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.12/IronPython.2.7.12.zip
+          curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
       - name: Prepare UNIX
         if: ${{ matrix.os != 'windows' }}
         run: |
           cd IronPython
-          unzip IronPython.2.7.12.zip
+          unzip IronPython.3.4.0.zip
           cd ../tmp
           unzip ../dist/Indigo.Net.*.nupkg
           chmod -R a+rw .
@@ -536,7 +536,7 @@ jobs:
         if: ${{ matrix.os == 'windows' }}
         run: |
           cd IronPython
-          Expand-Archive IronPython.2.7.12.zip .
+          Expand-Archive IronPython.3.4.0.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test Linux
@@ -545,20 +545,20 @@ jobs:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
-          dotnet IronPython/net6.0/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -t 1 -j junit_report.xml
+          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Test macOS
         if: ${{ matrix.os == 'macos' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/net6.0/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -t 1 -j junit_report.xml -platform mac
+          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml -platform mac
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -t 1 -j junit_report.xml -platform ironwin
+        run: ./IronPython/net45/ipy.exe api/tests/integration/test.py -t 1 -j junit_report.xml -platform ironwin
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -595,12 +595,12 @@ jobs:
           mkdir IronPython
           mkdir tmp
           cd IronPython
-          curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.12/IronPython.2.7.12.zip
+          curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
       - name: Prepare Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
           cd IronPython
-          Expand-Archive IronPython.2.7.12.zip .
+          Expand-Archive IronPython.3.4.0.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test Windows
@@ -608,7 +608,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x86/native
-        run: ./IronPython/net45/ipy32.exe -X:ExceptionDetail api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml -platform ironwin
+        run: ./IronPython/net462/ipy32.exe api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml -platform ironwin
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
