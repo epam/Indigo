@@ -25,7 +25,6 @@
 #include "ket_commons.h"
 #include "math/algebra.h"
 
-
 namespace tinyxml2
 {
     class XMLElement;
