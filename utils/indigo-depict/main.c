@@ -870,6 +870,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_CDXML;
     else if (strcmp(p.outfile_ext, "cdxmr") == 0)
         p.out_ext = OEXT_CDXMLR;
+    else if (strcmp(p.outfile_ext, "cdx") == 0)
+        p.out_ext = OEXT_CDX;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
@@ -928,6 +930,10 @@ int main(int argc, char* argv[])
             else if (p.out_ext == OEXT_CDXML)
             {
                 indigoSaveCdxmlToFile(obj, p.outfile);
+            }
+            else if (p.out_ext == OEXT_CDX)
+            {
+                indigoSaveCdxToFile(obj, p.outfile);
             }
             else
                 indigoSaveCmlToFile(obj, p.outfile);

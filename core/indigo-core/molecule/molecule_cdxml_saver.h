@@ -28,6 +28,7 @@
 namespace tinyxml2
 {
     class XMLElement;
+    class XMLAttribute;
     class XMLDocument;
 }
 
@@ -50,7 +51,7 @@ namespace indigo
         };
 
     public:
-        explicit MoleculeCdxmlSaver(Output& output);
+        explicit MoleculeCdxmlSaver(Output& output, bool is_binary = false);
 
         ~MoleculeCdxmlSaver();
 
@@ -95,6 +96,9 @@ namespace indigo
         void endCurrentElement();
         void endPage();
         void endDocument();
+        void writeBinaryElement(tinyxml2::XMLElement* element);
+        bool writeBinaryAttributes(tinyxml2::XMLElement* pElement, int16_t tag);
+
         int getHydrogenCount(BaseMolecule& mol, int idx, int charge, int radical);
 
         float pageHeight() const;
@@ -135,6 +139,7 @@ namespace indigo
 
         int _id;
         float _scale;
+        bool _is_binary;
     };
 
 } // namespace indigo

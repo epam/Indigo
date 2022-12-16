@@ -206,7 +206,13 @@ CEXPORT const char* indigoCml(int object);
 
 // accepts molecules and reactions
 CEXPORT int indigoSaveCdxml(int object, int output);
+CEXPORT int indigoSaveCdx(int item, int output);
+
+CEXPORT const char* indigoCdxml(int item);
+
 CEXPORT int indigoSaveCdxmlToFile(int object, const char* filename);
+CEXPORT int indigoSaveCdxToFile(int item, const char* filename);
+
 CEXPORT const char* indigoCdxml(int object);
 
 // the output must be a file or a buffer, but not a string

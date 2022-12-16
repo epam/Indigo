@@ -202,6 +202,20 @@ CEXPORT int indigoSaveCdxmlToFile(int item, const char* filename)
     return res;
 }
 
+CEXPORT int indigoSaveCdxToFile(int item, const char* filename)
+{
+    int f = indigoWriteFile(filename);
+    int res;
+
+    if (f == -1)
+        return -1;
+
+    res = indigoSaveCdx(item, f);
+
+    indigoFree(f);
+    return res;
+}
+
 CEXPORT const char* indigoCdxml(int item)
 {
     int b = indigoWriteBuffer();
