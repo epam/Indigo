@@ -253,6 +253,7 @@ class SQLAdapter(DBAdapter):
             t.commit()
         except (DatabaseError, InternalError, psycopg2.InternalError) as e:
             t.rollback()
+            raise
         return rows, query
 
     def create_data_tables(self, tables: List[str]):
