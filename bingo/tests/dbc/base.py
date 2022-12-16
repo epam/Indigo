@@ -253,6 +253,7 @@ class SQLAdapter(DBAdapter):
             t.commit()
         except (DatabaseError, InternalError, psycopg2.InternalError) as e:
             t.rollback()
+            raise
         return rows, query
 
     def create_data_tables(self, tables: List[str]):
@@ -284,20 +285,19 @@ class SQLAdapter(DBAdapter):
             logger.debug(
                 f"Importing data to table {table} from src: {import_path}"
             )
-            import_path = import_path.replace("\\", "/")
-            dml_query = (
-                "SELECT {bingo}.{function}('{test_schema}.{table}', "
-                "'data', '{other_columns}', '{file}')"
-            )
-            dml_query = dml_query.format(
-                bingo=self.bingo_schema,
-                function=function,
+            # We have to avoid using bingo.import functions because we might
+            # work with remote server and cannot use local files
+            query = "INSERT INTO {test_schema}.{table}(data) VALUES {items}"
+            items_str = ",".join((
+                "('{}')".format(item.rawData().replace("'", "''"))
+                for item in function(import_path)
+            ))
+            query = query.format(
                 test_schema=self.test_schema,
                 table=table,
-                other_columns=other_columns,
-                file=import_path,
+                items=items_str
             )
-            self._execute_dml_query(dml_query)
+            self._execute_dml_query(query)
 
     def create_indices(self, tables: List[str]):
         """
