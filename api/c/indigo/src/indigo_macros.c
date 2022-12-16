@@ -173,7 +173,7 @@ CEXPORT int indigoSaveRxnfileToFile(int reaction, const char* filename)
 }
 
 CEXPORT const char* indigoRxnfile(int molecule)
-{
+{.
     int b = indigoWriteBuffer();
     const char* res;
 
