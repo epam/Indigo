@@ -66,7 +66,7 @@ void _getBounds(BaseMolecule& mol, Vec2f& min, Vec2f& max, float scale)
 
 IMPL_ERROR(ReactionCdxmlSaver, "reaction CDXML saver");
 
-ReactionCdxmlSaver::ReactionCdxmlSaver(Output& output) : _output(output), _id(0)
+ReactionCdxmlSaver::ReactionCdxmlSaver(Output& output, bool is_binary) : _output(output), _is_binary(is_binary), _id(0)
 {
 }
 
