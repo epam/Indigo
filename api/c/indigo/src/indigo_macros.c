@@ -216,7 +216,6 @@ CEXPORT int indigoSaveCdxToFile(int item, const char* filename)
     return res;
 }
 
-
 CEXPORT const char* indigoCdxml(int item)
 {
     int b = indigoWriteBuffer();
