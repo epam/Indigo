@@ -27,6 +27,8 @@
 #include "molecule/CDXCommons.h"
 
 #include <codecvt>
+#include <fstream>
+#include <streambuf>
 #include <tinyxml2.h>
 
 using namespace indigo;
@@ -46,7 +48,6 @@ void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type,
     }
     break;
     case ECDXType::CDXDate: {
-        printf("CDXDate not implementead");
     }
     break;
 
@@ -102,7 +103,6 @@ void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type,
     break;
 
     case ECDXType::CDXRepresentsProperty: {
-        printf("CDXObjectID not implementead");
     }
     break;
 
@@ -126,52 +126,42 @@ void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type,
     break;
 
     case ECDXType::CDXFontTable: {
-        printf("CDXFontTable not implementead");
     }
     break;
 
     case ECDXType::CDXColorTable: {
-        printf("CDXColorTable not implementead");
     }
     break;
 
     case ECDXType::CDXColorTableCDXINT16: {
-        printf("CDXColorTableCDXINT16 not implementead");
     }
     break;
 
     case ECDXType::CDXElementList: {
-        printf("CDXObjectID not implementead");
     }
     break;
 
     case ECDXType::CDXFormula: {
-        printf("CDXFormula not implementead");
     }
     break;
 
     case ECDXType::CDXObjectIDArray: {
-        printf("CDXObjectIDArray not implementead");
     }
     break;
 
     case ECDXType::CDXObjectIDArrayWithCounts: {
-        printf("CDXObjectIDArrayWithCounts not implementead");
     }
     break;
 
     case ECDXType::CDXGenericList: {
-        printf("CDXGenericList not implementead");
     }
     break;
 
     case ECDXType::CDXFLOAT64: {
-        printf("CDXFLOAT64 not implementead");
     }
     break;
 
     case ECDXType::CDXINT16ListWithCounts: {
-        printf("CDXINT16ListWithCounts not implementead");
     }
     break;
 
@@ -192,18 +182,14 @@ void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type,
     break;
 
     case ECDXType::CDXCurvePoints: {
-
-        printf("CDXCurvePoints not implementead");
     }
     break;
 
     case ECDXType::CDXCurvePoints3D: {
-        printf("CDXCurvePoints3D not implementead");
     }
     break;
 
     case ECDXType::CDXvaries: {
-        printf("CDXvaries not implementead");
     }
     break;
     }
@@ -1530,17 +1516,10 @@ void MoleculeCdxmlSaver::writeBinaryElement(tinyxml2::XMLElement* element)
     }
 }
 
-#include <fstream>
-#include <streambuf>
-
 void MoleculeCdxmlSaver::endDocument()
 {
     if (_is_binary)
     {
-        std::ifstream t("C:\\cdx\\benz.xml");
-        std::stringstream buffer;
-        buffer << t.rdbuf();
-        _doc->Parse(buffer.str().c_str());
         _output.writeString(kCDX_HeaderString);
         _output.writeBinaryInt(kCDXMagicNumber);
         _output.write(kCDXReserved, sizeof(kCDXReserved));
