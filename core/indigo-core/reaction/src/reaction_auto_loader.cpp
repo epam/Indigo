@@ -144,7 +144,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
     }
 
     {
-        if (local_scanner->findWord("VjCD0100"))
+        if (local_scanner->findWord(kCDX_HeaderString))
         {
             local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
             ReactionCdxmlLoader loader(*local_scanner);

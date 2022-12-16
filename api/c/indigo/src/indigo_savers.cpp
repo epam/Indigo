@@ -736,7 +736,7 @@ CEXPORT int indigoSaveCdxml(int item, int output)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSaveCdxm(int item, int output)
+CEXPORT int indigoSaveCdx(int item, int output)
 {
     INDIGO_BEGIN
     {

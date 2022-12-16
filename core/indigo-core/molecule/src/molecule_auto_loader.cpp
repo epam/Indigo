@@ -252,7 +252,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
     }
 
     {
-        if (local_scanner->findWord("VjCD0100"))
+        if (local_scanner->findWord(kCDX_HeaderString))
         {
             local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
             MoleculeCdxmlLoader loader(*local_scanner);

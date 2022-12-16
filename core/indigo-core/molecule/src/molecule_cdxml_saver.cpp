@@ -16,19 +16,144 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <codecvt>
-#include <tinyxml2.h>
-
+#include "molecule/molecule_cdxml_saver.h"
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_loader.h"
-#include "molecule/molecule_cdxml_saver.h"
 #include "molecule/query_molecule.h"
+
+#include "molecule/CDXCommons.h"
+
+#include <codecvt>
+#include <tinyxml2.h>
 
 using namespace indigo;
 using namespace tinyxml2;
+
+void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type, Output& out)
+{
+    out.writeBinaryUInt16(tag);
+    switch (cdx_type)
+    {
+    case ECDXType::CDXString: {
+        std::string val = pAttr->Value();
+        uint16_t styles = 0;
+        out.writeBinaryUInt16(val.size() + sizeof(styles));
+        out.writeBinaryUInt16(styles);
+        out.write((const void*)val.data(), val.size());
+    }
+    break;
+    case ECDXType::CDXDate:
+        break;
+
+    case ECDXType::CDXUINT8:
+    case ECDXType::CDXINT8: {
+        int8_t val = pAttr->IntValue();
+        out.writeBinaryUInt16(sizeof(val));
+        out.writeByte(val);
+    }
+    break;
+
+    case ECDXType::CDXINT16:
+    case ECDXType::CDXUINT16: {
+        int16_t val = pAttr->IntValue();
+        out.writeBinaryUInt16(sizeof(val));
+        out.writeBinaryUInt16(val);
+    }
+    break;
+
+    case ECDXType::CDXINT32:
+    case ECDXType::CDXUINT32: {
+        int32_t val = pAttr->IntValue();
+        out.writeBinaryUInt16(sizeof(val));
+        out.writeBinaryInt(val);
+    }
+    break;
+
+    case ECDXType::CDXPoint2D:
+    case ECDXType::CDXPoint3D:
+    case ECDXType::CDXRectangle: {
+        std::string values = pAttr->Value();
+        std::stringstream ss(values);
+        std::string val_str;
+        std::vector<std::string> vec_strs;
+        while (std::getline(ss, val_str, ' '))
+            vec_strs.push_back(val_str);
+
+        out.writeBinaryUInt16(sizeof(int32_t) * vec_strs.size());
+
+        for (const auto& v : vec_strs)
+        {
+            int32_t coord = ceil(std::stod(v) * (1 << 16));
+            out.writeBinaryInt(coord);
+        }
+    }
+    break;
+
+    case ECDXType::CDXCoordinate: {
+        int32_t coord = ceil(pAttr->DoubleValue() * (1 << 16));
+        out.writeBinaryUInt16(sizeof(coord));
+        out.writeBinaryInt(coord);
+    }
+    break;
+
+    case ECDXType::CDXRepresentsProperty:
+        break;
+
+    case ECDXType::CDXBooleanImplied:
+        break;
+
+    case ECDXType::CDXBoolean:
+        break;
+
+    case ECDXType::CDXObjectID:
+        break;
+
+    case ECDXType::CDXFontTable:
+        break;
+
+    case ECDXType::CDXColorTable:
+        break;
+
+    case ECDXType::CDXColorTableCDXINT16:
+        break;
+
+    case ECDXType::CDXElementList:
+        break;
+
+    case ECDXType::CDXFormula:
+        break;
+
+    case ECDXType::CDXObjectIDArray:
+        break;
+
+    case ECDXType::CDXObjectIDArrayWithCounts:
+        break;
+
+    case ECDXType::CDXGenericList:
+        break;
+
+    case ECDXType::CDXFLOAT64:
+        break;
+
+    case ECDXType::CDXINT16ListWithCounts:
+        break;
+
+    case ECDXType::CDXUnformatted:
+        break;
+
+    case ECDXType::CDXCurvePoints:
+        break;
+
+    case ECDXType::CDXCurvePoints3D:
+        break;
+
+    case ECDXType::CDXvaries:
+        break;
+    }
+}
 
 IMPL_ERROR(MoleculeCdxmlSaver, "molecule CDXML saver");
 
@@ -1280,13 +1405,99 @@ void MoleculeCdxmlSaver::endPage()
     _current = _root;
 }
 
+bool MoleculeCdxmlSaver::writeBinaryAttributes(tinyxml2::XMLElement* pElement, int16_t tag)
+{
+    switch (tag)
+    {
+    case kCDXProp_FontTable:
+        // write font_table, elem
+        return false;
+        break;
+    case kCDXProp_ColorTable:
+        return false;
+        break;
+    default:
+        break;
+    }
+
+    for (auto pAttr = pElement->FirstAttribute(); pAttr; pAttr = pAttr->Next())
+    {
+        if (pAttr->Name() == std::string("id"))
+            continue;
+        auto prop_it = KCDXNameToProp.find(pAttr->Name());
+
+        if (prop_it != KCDXNameToProp.end())
+        {
+            printf("property: %s tag: %x\n", prop_it->first.c_str(), prop_it->second.first);
+            writeBinaryValue(pAttr, prop_it->second.first, prop_it->second.second, _output);
+        }
+        else
+        {
+            printf("Undefined property: %s\n", pAttr->Name());
+        }
+    }
+    return true;
+}
+
+void MoleculeCdxmlSaver::writeBinaryElement(tinyxml2::XMLElement* element)
+{
+    std::string objname = element->Value();
+    int id = 0, tag = 0;
+    bool is_object = false;
+    if (objname != "CDXML")
+    {
+        auto it = KCDXNameToObjID.find(objname);
+        if (it != KCDXNameToObjID.end())
+        {
+            tag = it->second;
+            _output.writeBinaryUInt16(tag);
+        }
+        auto id_attribute = element->FindAttribute("id");
+        if (id_attribute)
+            id = id_attribute->IntValue();
+        _output.writeBinaryInt(id);
+        printf("obj name: %s tag=%x id=%d\n", objname.c_str(), tag, id);
+    }
+
+    auto prop_it = KCDXNameToProp.find(objname);
+    if (prop_it != KCDXNameToProp.end())
+    {
+        printf("irregular object-property: %s tag: %x\n", prop_it->first.c_str(), prop_it->second.first);
+    }
+    else if (tag)
+        throw Error("undefined object: %s", objname.c_str());
+
+    if (writeBinaryAttributes(element, tag)) // go deeper if required
+    {
+        for (auto elem = element->FirstChildElement(); elem; elem = elem->NextSiblingElement())
+            writeBinaryElement(elem);
+    }
+}
+
+#include <fstream>
+#include <streambuf>
+
 void MoleculeCdxmlSaver::endDocument()
 {
-    XMLPrinter printer;
-    _doc->Accept(&printer);
-    _output.printf("%s", printer.CStr());
+    if (_is_binary)
+    {
+        std::ifstream t("C:\\cdx\\benz.xml");
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        _doc->Parse(buffer.str().c_str());
+        _output.writeString(kCDX_HeaderString);
+        _output.writeBinaryInt(kCDXMagicNumber);
+        _output.write(kCDXReserved, sizeof(kCDXReserved));
+        auto cdxml = _doc->FirstChildElement();
+        writeBinaryElement(cdxml);
+    }
+    else
+    {
+        XMLPrinter printer;
+        _doc->Accept(&printer);
+        _output.printf("%s", printer.CStr());
+    }
     _doc.reset(nullptr);
-    //   _doc = 0;
 }
 
 int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule& mol, int idx, int charge, int radical)

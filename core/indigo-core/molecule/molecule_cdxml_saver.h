@@ -25,9 +25,11 @@
 #include "ket_commons.h"
 #include "math/algebra.h"
 
+
 namespace tinyxml2
 {
     class XMLElement;
+    class XMLAttribute;
     class XMLDocument;
 }
 
@@ -95,6 +97,9 @@ namespace indigo
         void endCurrentElement();
         void endPage();
         void endDocument();
+        void writeBinaryElement(tinyxml2::XMLElement* element);
+        bool writeBinaryAttributes(tinyxml2::XMLElement* pElement, int16_t tag);
+
         int getHydrogenCount(BaseMolecule& mol, int idx, int charge, int radical);
 
         float pageHeight() const;
