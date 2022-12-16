@@ -45,8 +45,10 @@ void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type,
         out.write((const void*)val.data(), val.size());
     }
     break;
-    case ECDXType::CDXDate:
-        break;
+    case ECDXType::CDXDate: {
+        printf("CDXDate not implementead");
+    }
+    break;
 
     case ECDXType::CDXUINT8:
     case ECDXType::CDXINT8: {
@@ -99,59 +101,111 @@ void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type,
     }
     break;
 
-    case ECDXType::CDXRepresentsProperty:
-        break;
+    case ECDXType::CDXRepresentsProperty: {
+        printf("CDXObjectID not implementead");
+    }
+    break;
 
-    case ECDXType::CDXBooleanImplied:
-        break;
+    case ECDXType::CDXBooleanImplied: {
+        // no need to write anything
+    }
+    break;
 
-    case ECDXType::CDXBoolean:
-        break;
+    case ECDXType::CDXBoolean: {
+        uint8_t val = std::string(pAttr->Value()) == "yes" ? 1 : 0;
+        out.writeBinaryUInt16(sizeof(val));
+        out.writeByte(val);
+    }
+    break;
 
-    case ECDXType::CDXObjectID:
-        break;
+    case ECDXType::CDXObjectID: {
+        uint32_t val = pAttr->IntValue();
+        out.writeBinaryUInt16(sizeof(val));
+        out.writeBinaryInt(val);
+    }
+    break;
 
-    case ECDXType::CDXFontTable:
-        break;
+    case ECDXType::CDXFontTable: {
+        printf("CDXFontTable not implementead");
+    }
+    break;
 
-    case ECDXType::CDXColorTable:
-        break;
+    case ECDXType::CDXColorTable: {
+        printf("CDXColorTable not implementead");
+    }
+    break;
 
-    case ECDXType::CDXColorTableCDXINT16:
-        break;
+    case ECDXType::CDXColorTableCDXINT16: {
+        printf("CDXColorTableCDXINT16 not implementead");
+    }
+    break;
 
-    case ECDXType::CDXElementList:
-        break;
+    case ECDXType::CDXElementList: {
+        printf("CDXObjectID not implementead");
+    }
+    break;
 
-    case ECDXType::CDXFormula:
-        break;
+    case ECDXType::CDXFormula: {
+        printf("CDXFormula not implementead");
+    }
+    break;
 
-    case ECDXType::CDXObjectIDArray:
-        break;
+    case ECDXType::CDXObjectIDArray: {
+        printf("CDXObjectIDArray not implementead");
+    }
+    break;
 
-    case ECDXType::CDXObjectIDArrayWithCounts:
-        break;
+    case ECDXType::CDXObjectIDArrayWithCounts: {
+        printf("CDXObjectIDArrayWithCounts not implementead");
+    }
+    break;
 
-    case ECDXType::CDXGenericList:
-        break;
+    case ECDXType::CDXGenericList: {
+        printf("CDXGenericList not implementead");
+    }
+    break;
 
-    case ECDXType::CDXFLOAT64:
-        break;
+    case ECDXType::CDXFLOAT64: {
+        printf("CDXFLOAT64 not implementead");
+    }
+    break;
 
-    case ECDXType::CDXINT16ListWithCounts:
-        break;
+    case ECDXType::CDXINT16ListWithCounts: {
+        printf("CDXINT16ListWithCounts not implementead");
+    }
+    break;
 
-    case ECDXType::CDXUnformatted:
-        break;
+    case ECDXType::CDXUnformatted: {
+        std::string values = pAttr->Value();
+        std::vector<uint8_t> bytes_vector;
+        std::stringstream converter;
+        for (int i = 0; i < values.size(); i += 2)
+        {
+            uint8_t val;
+            converter << std::hex << values.substr(i, 2);
+            converter >> val;
+            bytes_vector.push_back(val);
+        }
+        out.writeBinaryUInt16(bytes_vector.size());
+        out.write(bytes_vector.data(), bytes_vector.size());
+    }
+    break;
 
-    case ECDXType::CDXCurvePoints:
-        break;
+    case ECDXType::CDXCurvePoints: {
 
-    case ECDXType::CDXCurvePoints3D:
-        break;
+        printf("CDXCurvePoints not implementead");
+    }
+    break;
 
-    case ECDXType::CDXvaries:
-        break;
+    case ECDXType::CDXCurvePoints3D: {
+        printf("CDXCurvePoints3D not implementead");
+    }
+    break;
+
+    case ECDXType::CDXvaries: {
+        printf("CDXvaries not implementead");
+    }
+    break;
     }
 }
 
@@ -1458,13 +1512,15 @@ void MoleculeCdxmlSaver::writeBinaryElement(tinyxml2::XMLElement* element)
         _output.writeBinaryInt(id);
         printf("obj name: %s tag=%x id=%d\n", objname.c_str(), tag, id);
     }
+    else
+        tag = -1;
 
     auto prop_it = KCDXNameToProp.find(objname);
     if (prop_it != KCDXNameToProp.end())
     {
         printf("irregular object-property: %s tag: %x\n", prop_it->first.c_str(), prop_it->second.first);
     }
-    else if (tag)
+    else if (!tag)
         throw Error("undefined object: %s", objname.c_str());
 
     if (writeBinaryAttributes(element, tag)) // go deeper if required
