@@ -30,7 +30,7 @@ def searchSim(bingo, q, minSim, maxSim, metric, verify):
     rm = result.getIndigoObject()
     while result.next():
         sim = result.getCurrentSimilarityValue()
-        print("      %4d: %0.1f" % (result.getCurrentId(), sim))
+        print("      %4d" % (result.getCurrentId()))
 
         if verify:
             q.aromatize()

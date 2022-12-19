@@ -171,16 +171,8 @@ class Processor(object):
         buf = mol.serialize()
         buf2 = m2.serialize()
 
-        hex_ser1 = binascii.hexlify(
-            buf.tostring()
-            if isJython()
-            else buf
-        )
-        hex_ser2 = binascii.hexlify(
-            buf2.tostring()
-            if isJython()
-            else buf
-        )
+        hex_ser1 = binascii.hexlify(buf.tostring() if isJython() else buf)
+        hex_ser2 = binascii.hexlify(buf2.tostring() if isJython() else buf)
 
         hex_output.write(hex_ser1.decode("ascii") + "\n")
         hex_output.write(hex_ser2.decode("ascii") + "\n")
