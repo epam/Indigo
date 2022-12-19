@@ -374,10 +374,6 @@ namespace indigo
                 sz -= offset;
                 if (sz > 0)
                 {
-                    if (sz == sizeof(uint16_t))
-                        return std::string();
-                    if (sz < sizeof(uint16_t))
-                        throw Error("tag: %x has invalid data size: %d", tag, sz);
                     return std::string((char*)(ptr + offset), sz);
                 }
                 return std::string();
