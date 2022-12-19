@@ -187,7 +187,7 @@ set(LIBRARY_VERSION "${LIBRARY_SOVERSION}.${LIBTOOL_AGE}.${LIBTOOL_REVISION}")
 # External dependency library detection is automatic.  See the notes at the
 # top of this file, for how to force or disable dependencies completely.
 option(FT_DISABLE_ZLIB
-  "Disable use of system zlib and use internal zlib library instead." ON)
+  "Disable use of system zlib and use internal zlib library instead." OFF)
 cmake_dependent_option(FT_REQUIRE_ZLIB
   "Require system zlib instead of internal zlib library." OFF
   "NOT FT_DISABLE_ZLIB" OFF)
@@ -447,6 +447,9 @@ add_library(freetype
   ${BASE_SRCS}
 )
 
+target_link_libraries(freetype PUBLIC z)
+target_compile_definitions(freetype PRIVATE FT_CONFIG_OPTION_SYSTEM_ZLIB)
+
 set_target_properties(
   freetype PROPERTIES
     C_VISIBILITY_PRESET hidden)
@@ -613,23 +616,23 @@ if (NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
     VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
     COMPATIBILITY SameMajorVersion)
 
-  install(
-    TARGETS freetype
-      EXPORT freetype-targets
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-      FRAMEWORK DESTINATION Library/Frameworks
-      COMPONENT libraries)
-  install(
-    EXPORT freetype-targets
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/freetype
-      FILE freetype-config.cmake
-      COMPONENT headers)
-  install(
-    FILES ${PROJECT_BINARY_DIR}/freetype-config-version.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/freetype
-    COMPONENT headers)
+#  install(
+#    TARGETS freetype
+#      EXPORT freetype-targets
+#      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#      FRAMEWORK DESTINATION Library/Frameworks
+#      COMPONENT libraries)
+#  install(
+#    EXPORT freetype-targets
+#      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/freetype
+#      FILE freetype-config.cmake
+#      COMPONENT headers)
+#  install(
+#    FILES ${PROJECT_BINARY_DIR}/freetype-config-version.cmake
+#    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/freetype
+#    COMPONENT headers)
 endif ()
 
 
