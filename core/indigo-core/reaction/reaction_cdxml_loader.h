@@ -37,10 +37,10 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        ReactionCdxmlLoader(Scanner& scanner);
+        ReactionCdxmlLoader(Scanner& scanner, bool is_binar = false);
         ~ReactionCdxmlLoader();
 
-        void loadReaction(BaseReaction& rxn, bool is_binary = false);
+        void loadReaction(BaseReaction& rxn);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
@@ -61,6 +61,7 @@ namespace indigo
         BaseMolecule* _pmol;
         std::map<int, CDXElement> _cdxml_elements;
         Scanner& _scanner;
+        bool _is_binary;
     };
 
 }; // namespace indigo

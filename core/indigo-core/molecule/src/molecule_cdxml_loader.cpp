@@ -80,7 +80,7 @@ CDXReader::CDXReader(Scanner& scanner) : _scanner(scanner)
     scanner.readAll(_buffer);
 }
 
-MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner) : _scanner(scanner)
+MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner, bool is_binary) : _scanner(scanner), _is_binary(is_binary)
 {
 }
 
@@ -110,10 +110,10 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     }
 }
 
-void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool is_binary)
+void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
     _initMolecule(mol);
-    std::unique_ptr<CDXReader> cdx_reader = is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
+    std::unique_ptr<CDXReader> cdx_reader = _is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
     cdx_reader->process();
     parseCDXMLAttributes(cdx_reader->rootElement().firstProperty());
     _parseCDXMLPage(cdx_reader->rootElement());
@@ -122,6 +122,9 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool is_binary)
         throw Error("CDXML has no data");
 
     _parseCollections(mol);
+    int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
+    if (arrows_count && !load_arrows)
+        throw Error("Not a molecule. Found %d arrows.", arrows_count);
 }
 
 void MoleculeCdxmlLoader::_checkFragmentConnection(int node_id, int bond_id)
