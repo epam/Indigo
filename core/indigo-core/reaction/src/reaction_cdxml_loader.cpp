@@ -30,7 +30,7 @@ using namespace tinyxml2;
 
 IMPL_ERROR(ReactionCdxmlLoader, "reaction CDXML loader");
 
-ReactionCdxmlLoader::ReactionCdxmlLoader(Scanner& scanner) : _scanner(scanner)
+ReactionCdxmlLoader::ReactionCdxmlLoader(Scanner& scanner, bool is_binary) : _scanner(scanner), _is_binary(is_binary)
 {
     ignore_bad_valence = false;
 }
@@ -118,12 +118,12 @@ void ReactionCdxmlLoader::_parseStep(CDXProperty prop)
     MoleculeCdxmlLoader::applyDispatcher(prop, cdxml_dispatcher);
 }
 
-void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn, bool is_binary)
+void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
 {
     _initReaction(rxn);
-    std::unique_ptr<CDXReader> cdx_reader = is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
+    std::unique_ptr<CDXReader> cdx_reader = _is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
     cdx_reader->process();
-    MoleculeCdxmlLoader loader(_scanner);
+    MoleculeCdxmlLoader loader(_scanner, _is_binary);
     loader.parseCDXMLAttributes(cdx_reader->rootElement().firstProperty());
 
     for (auto page_elem = cdx_reader->rootElement().firstChildElement(); page_elem.hasContent(); page_elem = page_elem.nextSiblingElement())
