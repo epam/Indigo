@@ -85,13 +85,13 @@ const std::unordered_map<std::string, CDXArrowType> kCDXProp_Arrow_TypeStrToID =
                                                                                   {"Hollow", kCDXArrowType_Hollow},
                                                                                   {"RetroSynthetic", kCDXArrowType_RetroSynthetic}};
 
-const std::unordered_map<CDXArrowType, std::string> kCDXProp_Arrow_TypeIDToStr = {{kCDXArrowType_NoHead, "NoHead"},
-                                                                                  {kCDXArrowType_HalfHead, "HalfHead"},
-                                                                                  {kCDXArrowType_FullHead, "FullHead"},
-                                                                                  {kCDXArrowType_Resonance, "Resonance"},
-                                                                                  {kCDXArrowType_Equilibrium, "Equilibrium"},
-                                                                                  {kCDXArrowType_Hollow, "Hollow"},
-                                                                                  {kCDXArrowType_RetroSynthetic, "RetroSynthetic"}};
+const std::unordered_map<int, std::string> kCDXProp_Arrow_TypeIDToStr = {{kCDXArrowType_NoHead, "NoHead"},
+                                                                         {kCDXArrowType_HalfHead, "HalfHead"},
+                                                                         {kCDXArrowType_FullHead, "FullHead"},
+                                                                         {kCDXArrowType_Resonance, "Resonance"},
+                                                                         {kCDXArrowType_Equilibrium, "Equilibrium"},
+                                                                         {kCDXArrowType_Hollow, "Hollow"},
+                                                                         {kCDXArrowType_RetroSynthetic, "RetroSynthetic"}};
 
 const std::unordered_map<std::string, CDXSymbolType> kCDXPropSymbolTypeStrToID = {
     {"LonePair", kCDXSymbolType_LonePair},
@@ -109,7 +109,7 @@ const std::unordered_map<std::string, CDXSymbolType> kCDXPropSymbolTypeStrToID =
     {"Relative", kCDXSymbolType_Relative},
 };
 
-const std::unordered_map<CDXSymbolType, std::string> kCDXPropSymbolTypeIDToStr = {
+const std::unordered_map<int, std::string> kCDXPropSymbolTypeIDToStr = {
     {kCDXSymbolType_LonePair, "LonePair"},
     {kCDXSymbolType_Electron, "Electron"},
     {kCDXSymbolType_RadicalCation, "RadicalCation"},
@@ -129,7 +129,7 @@ const std::unordered_map<std::string, CDXGraphicType> kCDXPropGraphicTypeStrToID
     {"Undefined", kCDXGraphicType_Undefined}, {"Line", kCDXGraphicType_Line},       {"Arc", kCDXGraphicType_Arc},      {"Oval", kCDXGraphicType_Oval},
     {"Orbital", kCDXGraphicType_Orbital},     {"Bracket", kCDXGraphicType_Bracket}, {"Symbol", kCDXGraphicType_Symbol}};
 
-const std::unordered_map<CDXGraphicType, std::string> kCDXPropGraphicTypeIDToStr = {
+const std::unordered_map<int, std::string> kCDXPropGraphicTypeIDToStr = {
     {kCDXGraphicType_Undefined, "Undefined"}, {kCDXGraphicType_Line, "Line"},       {kCDXGraphicType_Arc, "Arc"},      {kCDXGraphicType_Oval, "Oval"},
     {kCDXGraphicType_Orbital, "Orbital"},     {kCDXGraphicType_Bracket, "Bracket"}, {kCDXGraphicType_Symbol, "Symbol"}};
 
