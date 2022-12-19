@@ -255,11 +255,9 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         if (local_scanner->findWord(kCDX_HeaderString))
         {
             local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
-            MoleculeCdxmlLoader loader(*local_scanner);
+            MoleculeCdxmlLoader loader(*local_scanner, true);
             loader.stereochemistry_options = stereochemistry_options;
-            if (query)
-                throw Error("CDX queries not supported yet");
-            loader.loadMolecule(mol, true);
+            loader.loadMolecule(mol);
             return;
         }
     }
@@ -333,8 +331,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         _scanner->skipSpace();
         if (_scanner->lookNext() == '<' && _scanner->findWord("CDXML"))
         {
-            if (_scanner->findWord("<arrow"))
-                throw Error("CDXML: not a molecule. Arrows found.");
             _scanner->seek(pos, SEEK_SET);
             MoleculeCdxmlLoader loader(*_scanner);
             loader.stereochemistry_options = stereochemistry_options;

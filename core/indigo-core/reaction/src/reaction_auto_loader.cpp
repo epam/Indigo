@@ -147,11 +147,11 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         if (local_scanner->findWord(kCDX_HeaderString))
         {
             local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
-            ReactionCdxmlLoader loader(*local_scanner);
+            ReactionCdxmlLoader loader(*local_scanner, true);
             loader.stereochemistry_options = stereochemistry_options;
             if (query)
                 throw Error("CDX queries not supported yet");
-            loader.loadReaction(reaction, true);
+            loader.loadReaction(reaction);
             return;
         }
     }
