@@ -227,7 +227,8 @@ enum CDXDatumID
     kCDXProp_FixInplaceExtent,      // 0x0824 Defines a size for OLE In-Place editing. (CDXPoint2D)
     kCDXProp_Side,                  // 0x0825 A specific side of an object (rectangle). (INT16)
     kCDXProp_FixInplaceGap,         // 0x0826 Defines a padding for OLE In-Place editing. (CDXPoint2D)
-    kCDXProp_CartridgeData,         // 0x0827 Transient data used by the CambridgeSoft Oracle Cartridge. Should not be read or written by anyone other than the cartridge. (Unformatted)
+    kCDXProp_CartridgeData,         // 0x0827 Transient data used by the CambridgeSoft Oracle Cartridge. Should not be read or written by anyone other than the
+                                    // cartridge. (Unformatted)
     kCDXProp_AminoAcidTermini,      // 0x0828 The default display style for amino-acid termini (INT8)
     kCDXProp_ShowSequenceTermini,   // 0x0829 Show sequence termini (CDXBooleanImplied)
     kCDXProp_ShowSequenceBonds,     // 0x082A Show sequence bonds (CDXBooleanImplied)
@@ -375,7 +376,7 @@ enum CDXDatumID
     kCDXProp_ChemicalPropertyFragmentLabel,       // 0xBCA
     kCDXProp_ChemicalPropertyTypeIUPACAtomNumber, // 0xBCB
 
-// Reaction properties
+    // Reaction properties
 
     kCDXProp_ReactionStep_Atom_Map =
         0x0C00,                      // 0x0C00 Represents pairs of mapped atom IDs; each pair is a reactant atom mapped to to a product atom. (CDXObjectIDArray)
