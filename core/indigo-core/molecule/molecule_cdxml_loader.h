@@ -191,18 +191,6 @@ namespace indigo
         CDXProperty(const void* data, int size = 0, int first_id = 0, int style_index = -1, int style_prop = -1)
             : _data(data), _size(size), _first_id(first_id), _style_index(style_index), _style_prop(style_prop)
         {
-            if (_data)
-            {
-                if (_size)
-                {
-                    auto ptag = (uint16_t*)_data;
-                    printf("property name: %s, tag:%x, value: %s\n", name().c_str(), (uint32_t)(*ptag), value().c_str());
-                }
-                else
-                {
-                    printf("property name: %s, value: %s\n", name().c_str(), value().c_str());
-                }
-            }
         }
 
         const tinyxml2::XMLAttribute& attribute()
@@ -305,7 +293,6 @@ namespace indigo
             std::string result;
             switch (cdx_type)
             {
-            case ECDXType::CDXPoint3D:
             case ECDXType::CDXPoint2D:
             case ECDXType::CDXRectangle: {
                 auto ptr32 = (int32_t*)ptr;
@@ -320,6 +307,21 @@ namespace indigo
                 result = ss.str();
             }
             break;
+
+            case ECDXType::CDXPoint3D: {
+                auto ptr32 = (int32_t*)ptr;
+                std::stringstream ss;
+                ss << std::setprecision(2) << std::fixed;
+                for (int i = 0; i < sz / sizeof(int32_t); ++i)
+                {
+                    if (i)
+                        ss << " ";
+                    ss << double(ptr32[i]) / (1 << 16);
+                }
+                result = ss.str();
+            }
+            break;
+
             case ECDXType::CDXCoordinate: {
                 auto ptr32 = (int32_t*)ptr;
                 std::stringstream ss;
@@ -368,16 +370,17 @@ namespace indigo
             case ECDXType::CDXString: {
                 // get raw string.
                 auto ptr16 = (uint16_t*)ptr;
-                if (*ptr16)
-                    throw Error("tag: %x has %d styles", tag, *ptr16);
-                else
+                int offset = (*ptr16) * sizeof(CDXTextStyle) + sizeof(uint16_t);
+                sz -= offset;
+                if ( sz > 0 )
                 {
                     if (sz == sizeof(uint16_t))
                         return std::string();
                     if (sz < sizeof(uint16_t))
                         throw Error("tag: %x has invalid data size: %d", tag, sz);
-                    return std::string((char*)(ptr + sizeof(uint16_t)), sz - sizeof(uint16_t));
+                    return std::string((char*)(ptr + offset), sz);
                 }
+                return std::string();
             }
             break;
 
@@ -527,10 +530,6 @@ namespace indigo
         CDXElement(const void* data, int size = 0, int style_index = -1) : _data(data), _size(size), _style_index(style_index)
         {
             auto ptag = (uint16_t*)data;
-
-            if (ptag)
-                printf("object: %s\n", name().c_str());
-
             if (ptag && size)
             {
                 if (*ptag < kCDXTag_Object) // root element starts from property
@@ -678,7 +677,7 @@ namespace indigo
             if (*ptr16 == kCDXProp_Text)
             {
                 auto tsp = (CDXTextStyleProperty*)(ptr16);
-                if (tsp->style_count > _style_index)
+                if (tsp->style_count > _style_index + 1)
                     return CDXElement(_data, _size, _style_index + 1);
                 else
                     return CDXElement();
@@ -723,7 +722,6 @@ namespace indigo
             auto it = KCDXObjToName.find(*ptag);
             if (it != KCDXObjToName.end())
                 return it->second;
-            throw Error("cdxml obj tag %x not found", (uint32_t)*ptag);
             return std::string{};
         }
 
@@ -753,7 +751,16 @@ namespace indigo
 
         std::string getText()
         {
-            return _size ? getBinaryText() : std::string(xml().GetText());
+            std::string result;
+            if (_size)
+                result = getBinaryText();
+            else
+            {
+                auto ptext = xml().GetText();
+                if (ptext)
+                    result = ptext;
+            }
+            return result;
         }
 
         std::string getBinaryText()
