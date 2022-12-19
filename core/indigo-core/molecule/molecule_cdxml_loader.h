@@ -372,7 +372,7 @@ namespace indigo
                 auto ptr16 = (uint16_t*)ptr;
                 int offset = (*ptr16) * sizeof(CDXTextStyle) + sizeof(uint16_t);
                 sz -= offset;
-                if ( sz > 0 )
+                if (sz > 0)
                 {
                     if (sz == sizeof(uint16_t))
                         return std::string();
