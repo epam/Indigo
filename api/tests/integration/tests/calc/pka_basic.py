@@ -133,12 +133,12 @@ for root, dirnames, filenames in os.walk(joinPathPy("molecules/AA", __file__)):
         for atom in acid_sites:
             if (acid_pKas[acid_sites.index(atom)] - pH) < pH_toll:
                 atom.setCharge(atom.charge() - 1)
-                print("              %s" % acid_pKas[acid_sites.index(atom)])
+                print("              {:.1f}".format(acid_pKas[acid_sites.index(atom)]))
 
         for atom in basic_sites:
             if (basic_pKas[basic_sites.index(atom)] - pH) > -pH_toll:
                 atom.setCharge(atom.charge() + 1)
-                print("              %s" % basic_pKas[basic_sites.index(atom)])
+                print("              {:.1f}".format(basic_pKas[basic_sites.index(atom)]))
 
         mol.setProperty("grid-comment", filename)
         collection.arrayAdd(mol)
