@@ -263,20 +263,29 @@ namespace indigo
             }
 
             auto tag = *ptr16;
-            auto it = KCDXPropToName.find(*ptr16);
+
+            auto it = KCDXPropToName.find(tag);
+            ptr16++;
+            auto sz = *ptr16;
+            ptr16++;
+            auto ptr = (uint8_t*)ptr16;
             if (it != KCDXPropToName.end())
             {
-                ptr16++;
-                auto sz = *ptr16;
                 if (sz)
                 {
-                    ptr16++;
-                    auto ptr = (uint8_t*)ptr16;
                     auto prop_type = it->second.second;
                     return formatValue(ptr, sz, tag, prop_type);
                 }
+                else
+                    throw Error("null size: %x", (int)tag);
             }
-            return std::string();
+
+            std::stringstream ss;
+            std::vector<uint8_t> val_dump(ptr, ptr + sz);
+            ss << "raw value:" << std::hex;
+            for (auto val : val_dump)
+                ss << std::setw(2) << std::setfill('0') << (int)val << " ";
+            return ss.str();
         }
 
         std::string formatValue(uint8_t* ptr, uint16_t sz, uint16_t tag, ECDXType cdx_type)
@@ -284,23 +293,44 @@ namespace indigo
             std::string result;
             switch (cdx_type)
             {
-            case ECDXType::CDXPoint3D:
             case ECDXType::CDXPoint2D:
             case ECDXType::CDXRectangle: {
                 auto ptr32 = (int32_t*)ptr;
+                std::stringstream ss;
+                ss << std::setprecision(2) << std::fixed;
                 for (int i = 0; i < sz / sizeof(int32_t); ++i)
                 {
                     if (i)
-                        result += " ";
-                    result += std::to_string(double(ptr32[i ^ 1]) / (1 << 16));
+                        ss << " ";
+                    ss << double(ptr32[i ^ 1]) / (1 << 16);
                 }
+                result = ss.str();
             }
             break;
+
+            case ECDXType::CDXPoint3D: {
+                auto ptr32 = (int32_t*)ptr;
+                std::stringstream ss;
+                ss << std::setprecision(2) << std::fixed;
+                for (int i = 0; i < sz / sizeof(int32_t); ++i)
+                {
+                    if (i)
+                        ss << " ";
+                    ss << double(ptr32[i]) / (1 << 16);
+                }
+                result = ss.str();
+            }
+            break;
+
             case ECDXType::CDXCoordinate: {
                 auto ptr32 = (int32_t*)ptr;
-                result = std::to_string(double(*ptr32) / (1 << 16));
+                std::stringstream ss;
+                ss << std::setprecision(2) << std::fixed << double(*ptr32) / (1 << 16);
+                result = ss.str();
             }
             break;
+
+                break;
             case ECDXType::CDXUINT16: {
                 auto ptr16 = (uint16_t*)ptr;
                 result = parseCDXUINT16(*ptr16, tag);
@@ -314,6 +344,11 @@ namespace indigo
             case ECDXType::CDXUINT8:
             case ECDXType::CDXINT8: {
                 result = parseCDXINT8(*ptr, tag);
+            }
+            break;
+            case ECDXType::CDXINT32: {
+                auto ptr32 = (uint32_t*)ptr;
+                result = parseCDXINT32(*ptr32, tag);
             }
             break;
             case ECDXType::CDXObjectID:
@@ -333,8 +368,17 @@ namespace indigo
             }
             break;
             case ECDXType::CDXString: {
-                return std::string((char*)ptr, sz);
+                // get raw string.
+                auto ptr16 = (uint16_t*)ptr;
+                int offset = (*ptr16) * sizeof(CDXTextStyle) + sizeof(uint16_t);
+                sz -= offset;
+                if (sz > 0)
+                {
+                    return std::string((char*)(ptr + offset), sz);
+                }
+                return std::string();
             }
+            break;
 
             case ECDXType::CDXFLOAT64: {
                 auto pflt = (double*)ptr;
@@ -342,6 +386,41 @@ namespace indigo
             }
             break;
 
+            case ECDXType::CDXBooleanImplied: {
+                result = "yes";
+            }
+            break;
+
+            case ECDXType::CDXBoolean: {
+                result = *ptr ? "yes" : "no";
+            }
+            break;
+
+            case ECDXType::CDXColorTableCDXINT16:
+                result = "ColorTableCDXINT16 not implemented";
+                break;
+
+            case ECDXType::CDXColorTable:
+                result = "ColorTable not implemented";
+                break;
+
+            case ECDXType::CDXFontTable:
+                result = "FontTable not implemented";
+                break;
+
+            case ECDXType::CDXFontStyle:
+                result = "FontStyle not implemented";
+                break;
+
+            case ECDXType::CDXUnformatted: {
+                std::stringstream ss;
+                ss << std::hex;
+                std::vector<uint8_t> val_dump(ptr, ptr + sz);
+                for (auto val : val_dump)
+                    ss << std::setw(2) << std::setfill('0') << (int)val;
+                return ss.str();
+            }
+            break;
             default:
                 throw Error("undefined property type: %d", cdx_type);
                 break;
@@ -351,9 +430,6 @@ namespace indigo
 
         std::string parseCDXUINT16(uint16_t val, uint16_t tag)
         {
-            if (_style_prop == 2)
-            {
-            }
             return std::to_string(val);
         }
 
@@ -364,10 +440,42 @@ namespace indigo
             case kCDXProp_Node_Type: {
                 return KNodeTypeIntToName.at(val);
             }
+            break;
             case kCDXProp_Bond_Display: {
                 return kCDXProp_Bond_DisplayIdToStr.at((CDXBondDisplay)val);
             }
             break;
+            case kCDXProp_BondSpacing: {
+                val /= 10;
+            }
+            break;
+            case kCDXProp_Graphic_Type: {
+                return kCDXPropGraphicTypeIDToStr.at((CDXGraphicType)val);
+            }
+            break;
+            case kCDXProp_Symbol_Type: {
+                return kCDXPropSymbolTypeIDToStr.at((CDXSymbolType)val);
+            }
+            break;
+            case kCDXProp_Arrow_Type: {
+                return kCDXProp_Arrow_TypeIDToStr.at((CDXArrowType)val);
+            }
+            break;
+            default:
+                break;
+            }
+            return std::to_string(val);
+        }
+
+        std::string parseCDXINT32(int32_t val, uint16_t tag)
+        {
+            switch (tag)
+            {
+            case kCDXProp_ChainAngle: {
+                std::stringstream ss;
+                ss << std::setprecision(2) << std::fixed << double(val) / (1 << 16);
+                return ss.str();
+            }
             default:
                 break;
             }
@@ -418,7 +526,7 @@ namespace indigo
         CDXElement(const void* data, int size = 0, int style_index = -1) : _data(data), _size(size), _style_index(style_index)
         {
             auto ptag = (uint16_t*)data;
-            if (ptag)
+            if (ptag && size)
             {
                 if (*ptag < kCDXTag_Object) // root element starts from property
                 {
@@ -496,14 +604,20 @@ namespace indigo
 
         CDXProperty findBinaryProperty(const std::string& name)
         {
-            auto ptr = (uint8_t*)_data;
+            auto prop = firstBinaryProperty();
+            if (prop.name() == name)
+                return prop;
+            auto it = KCDXNameToProp.find(name);
+            if (it != KCDXNameToProp.end())
+                return findBinaryProperty(it->second.first);
+            throw Error("Property %s not found", name.c_str());
             return CDXProperty();
         }
 
         CDXProperty findBinaryProperty(int16_t tag)
         {
             auto prop = firstBinaryProperty();
-            for (; prop.hasContent(); prop = prop.getNextProp())
+            for (prop; prop.hasContent(); prop = prop.getNextProp())
             {
                 if (prop.tag() == tag)
                     return prop;
@@ -559,7 +673,7 @@ namespace indigo
             if (*ptr16 == kCDXProp_Text)
             {
                 auto tsp = (CDXTextStyleProperty*)(ptr16);
-                if (tsp->style_count > _style_index)
+                if (tsp->style_count > _style_index + 1)
                     return CDXElement(_data, _size, _style_index + 1);
                 else
                     return CDXElement();
@@ -599,10 +713,11 @@ namespace indigo
         std::string getBinaryName()
         {
             auto ptag = (uint16_t*)_data;
+            if (*ptag < kCDXTag_Object && _style_index < 0)
+                return "CDXML";
             auto it = KCDXObjToName.find(*ptag);
             if (it != KCDXObjToName.end())
                 return it->second;
-            throw Error("cdxml obj tag %x not found", (uint32_t)*ptag);
             return std::string{};
         }
 
@@ -632,7 +747,16 @@ namespace indigo
 
         std::string getText()
         {
-            return _size ? getBinaryText() : std::string(xml().GetText());
+            std::string result;
+            if (_size)
+                result = getBinaryText();
+            else
+            {
+                auto ptext = xml().GetText();
+                if (ptext)
+                    result = ptext;
+            }
+            return result;
         }
 
         std::string getBinaryText()
@@ -729,9 +853,9 @@ namespace indigo
 
         DECL_ERROR;
 
-        MoleculeCdxmlLoader(Scanner& scanner);
+        MoleculeCdxmlLoader(Scanner& scanner, bool is_binary = false);
 
-        void loadMolecule(BaseMolecule& mol, bool is_binary = false);
+        void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
         void loadMoleculeFromFragment(BaseMolecule& mol, CDXElement elem);
 
         static void applyDispatcher(CDXProperty prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
@@ -793,6 +917,7 @@ namespace indigo
         float _bond_length;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         Scanner& _scanner;
+        bool _is_binary;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy

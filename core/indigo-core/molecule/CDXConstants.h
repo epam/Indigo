@@ -147,6 +147,7 @@ enum CDXDatumID
     kCDXProp_Atom_ShowEnhancedStereo,          // 0x0445
     kCDXProp_Atom_EnhancedStereoType,          // 0x0446
     kCDXProp_Atom_EnhancedStereoGroupNum,      // 0x0447
+    kCDXProp_ShowResidueID = 0x044a,
     // Molecule properties.
     kCDXProp_Mole_Racemic = 0x0500, // 0x0500 Indicates that the molecule is a racemic mixture. (CDXBoolean)
     kCDXProp_Mole_Absolute,         // 0x0501 Indicates that the molecule has known absolute configuration. (CDXBoolean)
@@ -226,7 +227,20 @@ enum CDXDatumID
     kCDXProp_FixInplaceExtent,      // 0x0824 Defines a size for OLE In-Place editing. (CDXPoint2D)
     kCDXProp_Side,                  // 0x0825 A specific side of an object (rectangle). (INT16)
     kCDXProp_FixInplaceGap,         // 0x0826 Defines a padding for OLE In-Place editing. (CDXPoint2D)
-    kCDXProp_CartridgeData,         // 0x0827
+    kCDXProp_CartridgeData,         // 0x0827 Transient data used by the CambridgeSoft Oracle Cartridge. Should not be read or written by anyone other than the
+                                    // cartridge. (Unformatted)
+    kCDXProp_AminoAcidTermini,      // 0x0828 The default display style for amino-acid termini (INT8)
+    kCDXProp_ShowSequenceTermini,   // 0x0829 Show sequence termini (CDXBooleanImplied)
+    kCDXProp_ShowSequenceBonds,     // 0x082A Show sequence bonds (CDXBooleanImplied)
+    kCDXProp_ResidueWrapCount,      // 0x082B Number of residues per line (INT8)
+    kCDXProp_ResidueBlockCount,     // 0x082C Number of residues per block (INT8)
+    kCDXProp_ResidueZigZag,         // 0x082D Zigzag sequence display (CDXBooleanImplied)
+    kCDXProp_NumberResidueBlocks,   // 0x082E Number residue blocks (CDXBooleanImplied)
+    kCDXProp_BondSpacingType,       // 0x082F select between using kCDXProp_BondSpacingAbs and kCDXProp_BondSpacing ((INT8))
+    kCDXProp_LabelStyleFontName,    // 0x0830 name of the label font - supersedes kCDXProp_LabelStyleFont
+    kCDXProp_CaptionStyleFontName,  // 0x0831 name of the caption font - supersedes kCDXProp_CaptionStyleFont
+    kCDXProp_ShowSequenceUnlinkedBranches, // 0x0832 Show Unlinked Branches (CDXBooleanImplied)
+
     // Window properties.
     kCDXProp_Window_IsZoomed = 0x0900, // 0x0900 Signifies whether the main viewing window is zoomed (maximized). (CDXBooleanImplied)
     kCDXProp_Window_Position,          // 0x0901 The top-left position of the main viewing window. (CDXPoint2D)
@@ -332,10 +346,38 @@ enum CDXDatumID
     kCDXProp_DihedralIsChiral,          // 0x0B87 Signifies whether a dihedral is signed or unsigned. (CDXBooleanImplied)
     kCDXProp_PointIsDirected, // 0x0B88 For a point based on a normal, signifies whether it is in a specific direction relative to the reference point.
                               // (CDXBooleanImplied)
-    kCDXProp_ChemicalPropertyType = 0x0BB0, // 0x0BB0
-    kCDXProp_ChemicalPropertyDisplayID,     // 0x0BB1
-    kCDXProp_ChemicalPropertyIsActive,      // 0x0BB2
+    // Chemical property properties (also uses kCDXProp_BasisObjects
+    kCDXProp_ChemicalPropertyType = 0xBB0,        // 0x0BB0 The type of property (name, formula, molecular weight, etc.). (UINT32)
+    kCDXProp_ChemicalPropertyDisplayID,           // 0x0BB1 The display object for this property. (CDXObjectID)
+    kCDXProp_ChemicalPropertyIsActive,            // 0x0BB2 The editable-ness of this property. (CDXBoolean)
+    kCDXProp_ChemicalPropertyUnknown,             // 0xBB3
+    kCDXProp_ChemicalPropertyName,                // 0xBB4
+    kCDXProp_ChemicalPropertyFormula,             // 0xBB5
+    kCDXProp_ChemicalPropertyExactMass,           // 0xBB6
+    kCDXProp_ChemicalPropertyMolWeight,           // 0xBB7
+    kCDXProp_ChemicalPropertyMOverZ,              // 0xBB8
+    kCDXProp_ChemicalPropertyAnalysis,            // 0xBB9
+    kCDXProp_ChemicalPropertyBoilingPoint,        // 0xBBA
+    kCDXProp_ChemicalPropertyMeltingPoint,        // 0xBBB
+    kCDXProp_ChemicalPropertyCriticalTemp,        // 0xBBC
+    kCDXProp_ChemicalPropertyCriticalPressure,    // 0xBBD
+    kCDXProp_ChemicalPropertyCriticalVolume,      // 0xBBE
+    kCDXProp_ChemicalPropertyGibbsEnergy,         // 0xBBF
+    kCDXProp_ChemicalPropertyLogP,                // 0xBC0
+    kCDXProp_ChemicalPropertyMR,                  // 0xBC1
+    kCDXProp_ChemicalPropertyHenrysLaw,           // 0xBC2
+    kCDXProp_ChemicalPropertyHeatOfForm,          // 0xBC3
+    kCDXProp_ChemicalPropertytPSA,                // 0xBC4
+    kCDXProp_ChemicalPropertyCLogP,               // 0xBC5
+    kCDXProp_ChemicalPropertyCMR,                 // 0xBC6
+    kCDXProp_ChemicalPropertyLogS,                // 0xBC7
+    kCDXProp_ChemicalPropertyPKa,                 // 0xBC8
+    kCDXProp_ChemicalPropertyID,                  // 0xBC9
+    kCDXProp_ChemicalPropertyFragmentLabel,       // 0xBCA
+    kCDXProp_ChemicalPropertyTypeIUPACAtomNumber, // 0xBCB
+
     // Reaction properties
+
     kCDXProp_ReactionStep_Atom_Map =
         0x0C00,                      // 0x0C00 Represents pairs of mapped atom IDs; each pair is a reactant atom mapped to to a product atom. (CDXObjectIDArray)
     kCDXProp_ReactionStep_Reactants, // 0x0C01 An order list of reactants present in the Reaction Step. (CDXObjectIDArray)
@@ -348,6 +390,10 @@ enum CDXDatumID
                                              // (CDXObjectIDArray)
     kCDXProp_ReactionStep_Atom_Map_Auto,     // 0x0C08 Represents pairs of mapped atom IDs; each pair is a reactant atom mapped to to a product atom.
                                              // (CDXObjectIDArray)
+    kCDXProp_RxnAutonumber_Style,            // 0x0C09 Style in which to represent autonumbers. (INT16)
+    kCDXProp_RxnAutonumber_Conditions,       // 0x0C0A Include reaction conditions in numbers. (CDXBoolean)
+    kCDXProp_RxnAutonumber_Start,            // 0x0C0B Number at which to being numbering reaction components. (INT16)
+    kCDXProp_RxnAutonumber_Format,           // 0x0C0C Format in which to represent autonumbers. (CDXString)
 
     // CDObjectTag properties
     kCDXProp_ObjectTag_Type = 0x0D00, // 0x0D00 The tag's data type. (INT16)
