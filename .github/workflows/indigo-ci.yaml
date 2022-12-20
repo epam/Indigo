@@ -902,7 +902,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: bingo-oracle-windows-msvc-x86_64
-/          path: dist/bingo-oracle*.zip
+          path: dist/bingo-oracle*.zip
 
   build_bingo_postgres_linux_x86_64:
     strategy:
