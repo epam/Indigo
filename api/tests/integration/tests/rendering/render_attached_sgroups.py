@@ -26,7 +26,7 @@ def testRenderAttachedSGroups(smiles):
     mol.layout()
     for atom in mol.iterateAtoms():
         mol.addDataSGroup([atom.index()], [], "some", str(atom.index() + 1))
-    indigo.setOption("render-data-sgroup-color", 0.8, 0.2, 0.8)
+    indigo.setOption("render-data-sgroup-color", 200, 50, 200)
     indigo.setOption("render-output-format", "png")
     renderer.renderToFile(
         mol, joinPathPy("out/mol-with-indices.png", __file__)
