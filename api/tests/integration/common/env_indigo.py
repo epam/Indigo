@@ -122,7 +122,7 @@ elif isJython():
                 jars.insert(0, jar_path)
             else:
                 jars.append(jar_path)
-    for jar in jars:
+    for jar in sorted(jars):
         sys.path.append(jar)
     from com.epam.indigo import (
         Bingo,

@@ -4,6 +4,7 @@ import difflib
 import gc
 import io
 import os
+import platform
 import re
 import runpy
 import shutil
@@ -146,10 +147,8 @@ def main():
     print("Indigo version: " + indigo.version())
     print("Indigo library path: " + dll_full_path())
     print("Date & time: " + datetime.datetime.now().strftime("%d.%m.%Y %H:%M"))
-    if sys.platform == "cli":
-        import System.Environment
-    # print("Platform: {}".format(platform.platform() if sys.platform != 'cli' else System.Environment.OSVersion.ToString()))
-    # print("Processor: {}".format(platform.processor() if sys.platform != 'cli' else 'x86_64' if System.Environment.Is64BitProcess else 'x86'))
+    print("Platform: {}".format(platform.platform()))
+    print("Processor: {}".format(platform.processor()))
     print("Python: " + sys.version.replace("\n", "\t"))
     print("Executable: " + python_exec)
     import socket
@@ -231,6 +230,12 @@ def main():
 
         generate_junit_report(test_results, junit_report_name)
 
+    # remove output folders where no errors were found
+    for folder in os.listdir(output_dir):
+        f_path = os.path.join(output_dir, folder)
+        if not os.listdir(f_path):
+            shutil.rmtree(f_path)
+
     return test_status
 
 
@@ -309,7 +314,12 @@ def run_analyze_test(args):
         ndiffcnt = write_difference(new_ref_file, out_filename, diff_file)
         # remove empty diff file
         if not ndiffcnt:
-            os.remove(diff_file)
+            if os.path.exists(diff_file):
+                os.remove(diff_file)
+            if os.path.exists(diff_file + ".html"):
+                os.remove(diff_file + ".html")
+            os.remove(out_filename)
+            os.remove(new_ref_file)
         base_exists = True
     spacer = "."
     msg = ""
