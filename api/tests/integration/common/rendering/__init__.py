@@ -106,8 +106,8 @@ def imageDiff(imp1, imp2):
     imh2, im2_width, im2_height = ImageHash(
         imp2, HASH_SIZE
     ).average_hash_and_sizes()
-    if (abs((float(im1_width) / float(im2_width)) - 1.0) > 0.1) or (
-        abs((float(im1_height) / float(im2_height)) - 1.0) > 0.1
+    if (abs((float(im1_width) / float(im2_width)) - 1.0) > 0.2) or (
+        abs((float(im1_height) / float(im2_height)) - 1.0) > 0.2
     ):
         raise RenderingTestException(
             "Images have different sizes: %sx%s (ref) and %sx%s (out)"
