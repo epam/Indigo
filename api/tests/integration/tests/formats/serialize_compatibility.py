@@ -82,7 +82,7 @@ def testUnserialize(fname):
         if isIronPython():
             from System import Array, Byte
 
-            buf = Array[Byte]([Byte(ord(symbol)) for symbol in buf])
+            buf = Array[Byte](buf)
         try:
             obj = indigo.unserialize(buf)
             print(obj.smiles())
