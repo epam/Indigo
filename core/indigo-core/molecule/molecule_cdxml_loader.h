@@ -132,6 +132,9 @@ namespace indigo
         AutoInt enhanced_stereo_group;
         AutoInt index;
         AutoInt geometry;
+        AutoInt alt_group_id;
+        AutoInt rg_index;
+
         bool is_not_list;
         std::vector<AutoInt> element_list;
         std::unordered_map<int, int> bond_id_to_connection_idx;
@@ -893,6 +896,7 @@ namespace indigo
 
         void _parseGraphic(CDXElement elem);
         void _parseArrow(CDXElement elem);
+        void _parseAltGroup(CDXElement elem);
 
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
