@@ -34,5 +34,8 @@
   "homepage": "https://lifescience.opensource.epam.com/indigo/api/index.html",
   "scripts": {
     "test": "node test.js"
+  },
+  "dependencies": {
+    "looks-same": "^8.1.0"
   }
 }
