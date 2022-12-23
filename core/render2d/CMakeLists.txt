@@ -5,6 +5,10 @@ project(render2d LANGUAGES C CXX)
 file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
+if(NOT USE_FONT_MANAGER)
+        list(REMOVE_ITEM ${PROJECT_NAME}_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/render_font_face_manager.cpp)
+endif ()
+
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
 get_target_property(IndigoCore_INCLUDE_DIRECTORIES indigo-core INCLUDE_DIRECTORIES)
 target_include_directories(${PROJECT_NAME}
