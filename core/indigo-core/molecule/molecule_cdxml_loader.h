@@ -280,7 +280,7 @@ namespace indigo
                     return formatValue(ptr, sz, tag, prop_type);
                 }
                 else
-                    throw Error("null size: %x", (int)tag);
+                    return "";
             }
 
             std::stringstream ss;
@@ -865,6 +865,7 @@ namespace indigo
         void parseCDXMLAttributes(CDXProperty prop);
         void parseBBox(const std::string& data, Rect2f& bbox);
         void parsePos(const std::string& data, Vec3f& bbox);
+        void parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;

@@ -223,18 +223,11 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         _scanner->skipSpace();
         if (_scanner->lookNext() == '<' && _scanner->findWord("<CDXML"))
         {
-            if (_scanner->findWord("<arrow"))
-            {
-                _scanner->seek(pos, SEEK_SET);
-                ReactionCdxmlLoader loader(*_scanner);
-                loader.stereochemistry_options = stereochemistry_options;
-                loader.loadReaction(reaction);
-                return;
-            }
-            else
-            {
-                throw Error("CDXML: not a reacton. No arrows found.");
-            }
+            _scanner->seek(pos, SEEK_SET);
+            ReactionCdxmlLoader loader(*_scanner);
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.loadReaction(reaction);
+            return;
         }
         _scanner->seek(pos, SEEK_SET);
     }
