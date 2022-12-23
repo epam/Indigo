@@ -553,7 +553,7 @@ const std::unordered_map<std::string, std::pair<uint16_t, ECDXType>> KCDXNameToP
     {"ShowAtomEnhancedStereo", {kCDXProp_Atom_ShowEnhancedStereo, ECDXType::CDXBoolean}},
     {"EnhancedStereoType", {kCDXProp_Atom_EnhancedStereoType, ECDXType::CDXUINT8}},
     {"EnhancedStereoGroupNum", {kCDXProp_Atom_EnhancedStereoGroupNum, ECDXType::CDXUINT16}},
-    {"ShowResidueID",{kCDXProp_ShowResidueID, ECDXType::CDXBoolean}},
+    {"ShowResidueID", {kCDXProp_ShowResidueID, ECDXType::CDXBoolean}},
     {"Racemic", {kCDXProp_Mole_Racemic, ECDXType::CDXBoolean}},
     {"Absolute", {kCDXProp_Mole_Absolute, ECDXType::CDXBoolean}},
     {"Relative", {kCDXProp_Mole_Relative, ECDXType::CDXBoolean}},
