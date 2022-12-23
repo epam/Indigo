@@ -23,6 +23,13 @@ for filename in files:
         print(mol.json())
     except IndigoException as e:
         print(getIndigoExceptionText(e))
-        print("*** Try as Query ***")
-        mol = indigo.loadQueryMoleculeFromFile(os.path.join(root, filename))
-        print(mol.json())
+        try:
+            print("*** Try as Reaction ***")
+            rct = indigo.loadReactionFromFile(os.path.join(root, filename))
+            print(rct.json())
+        except IndigoException as e:
+            print("*** Try as Query ***")
+            mol = indigo.loadQueryMoleculeFromFile(
+                os.path.join(root, filename)
+            )
+            print(mol.json())
