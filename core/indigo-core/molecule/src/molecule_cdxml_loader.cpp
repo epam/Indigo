@@ -849,14 +849,12 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, CDXProperty prop)
                                                                                       {"WedgeBegin", {BOND_UP, false}},
                                                                                       {"WedgeEnd", {BOND_UP, true}},
                                                                                       {"Wavy", {BOND_EITHER, false}}};
-        try
+        auto disp_it = dir_map.find(data);
+        if (disp_it != dir_map.end())
         {
-            auto& dir = dir_map.at(data);
+            auto& dir = disp_it->second;
             bond.dir = dir.first;
             bond.swap_bond = dir.second;
-        }
-        catch (std::out_of_range& e)
-        {
         }
     };
 
@@ -888,11 +886,18 @@ void MoleculeCdxmlLoader::parsePos(const std::string& data, Vec3f& pos)
 
 void MoleculeCdxmlLoader::parseBBox(const std::string& data, Rect2f& bbox)
 {
+    Vec2f v1, v2;
+    parseSeg(data, v1, v2);
+    bbox = Rect2f(v1, v2);
+}
+
+void MoleculeCdxmlLoader::parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2)
+{
     std::vector<std::string> coords = split(data, ' ');
     if (coords.size() == 4)
     {
-        Vec2f v1(std::stof(coords[0]), std::stof(coords[1]));
-        Vec2f v2(std::stof(coords[2]), std::stof(coords[3]));
+        v1.set(std::stof(coords[0]), std::stof(coords[1]));
+        v2.set(std::stof(coords[2]), std::stof(coords[3]));
         if (this->_has_bounding_box)
         {
             v1.sub(this->cdxml_bbox.leftBottom());
@@ -902,7 +907,6 @@ void MoleculeCdxmlLoader::parseBBox(const std::string& data, Rect2f& bbox)
         v2.x /= SCALE;
         v1.y /= -SCALE;
         v2.y /= -SCALE;
-        bbox = Rect2f(v1, v2);
     }
     else
         throw Error("Not enought coordinates for text bounding box");
@@ -944,17 +948,18 @@ void MoleculeCdxmlLoader::_parseGraphic(CDXElement elem)
     AutoInt superseded_id = 0;
     auto superseded_lambda = [&superseded_id](const std::string& data) { superseded_id = data; };
 
-    Rect2f graph_bbox;
-    auto graphic_bbox_lambda = [&graph_bbox, this](const std::string& data) { this->parseBBox(data, graph_bbox); };
+    std::pair<Vec2f, Vec2f> graph_bbox;
 
-    std::string graphic_type;
-    auto graphic_type_lambda = [&graphic_type](const std::string& data) { graphic_type = data; };
+    auto graphic_bbox_lambda = [&graph_bbox, this](const std::string& data) { this->parseSeg(data, graph_bbox.first, graph_bbox.second); };
 
-    std::string symbol_type;
-    auto symbol_type_lambda = [&symbol_type](const std::string& data) { symbol_type = data; };
+    CDXGraphicType graphic_type;
+    auto graphic_type_lambda = [&graphic_type](const std::string& data) { graphic_type = kCDXPropGraphicTypeStrToID.at(data); };
 
-    std::string arrow_type;
-    auto arrow_type_lambda = [&arrow_type](const std::string& data) { arrow_type = data; };
+    CDXSymbolType symbol_type;
+    auto symbol_type_lambda = [&symbol_type](const std::string& data) { symbol_type = kCDXPropSymbolTypeStrToID.at(data); };
+
+    CDXArrowType arrow_type;
+    auto arrow_type_lambda = [&arrow_type](const std::string& data) { arrow_type = kCDXProp_Arrow_TypeStrToID.at(data); };
 
     AutoInt head_size;
     auto head_size_lambda = [&head_size](const std::string& data) { head_size = data; };
@@ -966,9 +971,51 @@ void MoleculeCdxmlLoader::_parseGraphic(CDXElement elem)
     auto prop = elem.firstProperty();
     applyDispatcher(prop, graphic_dispatcher);
 
-    if (graphic_type == "Symbol" && symbol_type == "Plus")
+    switch (graphic_type)
     {
-        _pluses.emplace_back(graph_bbox.center());
+    case kCDXGraphicType_Undefined:
+        break;
+    case kCDXGraphicType_Line: {
+        if (arrow_type && superseded_id == 0)
+        {
+            auto head = graph_bbox.first;
+            auto tail = graph_bbox.second;
+            int ar_type = ReactionComponent::ARROW_BASIC;
+            switch (arrow_type)
+            {
+            case kCDXArrowType_Resonance:
+                ar_type = ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE;
+                break;
+            case kCDXArrowType_Equilibrium:
+                ar_type = ReactionComponent::ARROW_EQUILIBRIUM_FILLED_HALF_BOW;
+                break;
+            default:
+                break;
+            }
+            _arrows.push_back(std::make_pair(std::make_pair(Vec3f(tail.x, tail.y, 0), Vec3f(head.x, head.y, 0)), ar_type));
+        }
+    }
+    break;
+    case kCDXGraphicType_Arc:
+        break;
+    case kCDXGraphicType_Rectangle:
+        break;
+    case kCDXGraphicType_Oval:
+        break;
+    case kCDXGraphicType_Orbital:
+        break;
+    case kCDXGraphicType_Bracket:
+        break;
+    case kCDXGraphicType_Symbol: {
+        if (symbol_type == kCDXSymbolType_Plus)
+        {
+            Rect2f bbox(graph_bbox.first, graph_bbox.second);
+            _pluses.emplace_back(bbox.center());
+        }
+    }
+    break;
+    default:
+        break;
     }
 }
 
