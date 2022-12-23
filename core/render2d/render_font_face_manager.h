@@ -27,11 +27,11 @@ namespace indigo
     class RenderFontFaceManager
     {
     private:
-        FT_Library  _library;
-        FT_Face     _face_regular;
-        FT_Face     _face_italic;
-        FT_Face     _face_bold;
-        FT_Face     _face_bold_italic;
+        FT_Library _library;
+        FT_Face _face_regular;
+        FT_Face _face_italic;
+        FT_Face _face_bold;
+        FT_Face _face_bold_italic;
 
         cairo_font_face_t* _cairo_face_regular = nullptr;
         cairo_font_face_t* _cairo_face_bold = nullptr;
@@ -39,13 +39,9 @@ namespace indigo
         cairo_font_face_t* _cairo_face_bold_italic = nullptr;
 
         void _loadFontFaces();
-        void _loadFontFace( FT_Library  library, 
-                            FT_Face* face,
-                            cairo_font_face_t** cairo_face,
-                            const cairo_user_data_key_t *key,
-                            const unsigned char font[],
-                            int font_size,
-                            const std::string &name);
+        void _loadFontFace(FT_Library library, FT_Face* face, cairo_font_face_t** cairo_face, const cairo_user_data_key_t* key, const unsigned char font[],
+                           int font_size, const std::string& name);
+
     public:
         RenderFontFaceManager();
         ~RenderFontFaceManager();

@@ -18,10 +18,10 @@
 
 #include "render_font_face_manager.h"
 
-#include "sans_regular.h"
 #include "sans_bold.h"
-#include "sans_italic.h"
 #include "sans_bold_italic.h"
+#include "sans_italic.h"
+#include "sans_regular.h"
 
 #include <stdexcept>
 
@@ -44,37 +44,39 @@ namespace indigo
 
     cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(bool is_bold, bool is_italic)
     {
-        if (is_bold && is_italic) {
+        if (is_bold && is_italic)
+        {
             return _cairo_face_bold_italic;
-        } else if (is_bold) {
+        }
+        else if (is_bold)
+        {
             return _cairo_face_bold;
-        } else if (is_italic) {
+        }
+        else if (is_italic)
+        {
             return _cairo_face_italic;
-        } else {
+        }
+        else
+        {
             return _cairo_face_regular;
         }
     }
 
-    void RenderFontFaceManager::_loadFontFace(  FT_Library  library, 
-                                                FT_Face *face,
-                                                cairo_font_face_t **cairo_face,
-                                                const cairo_user_data_key_t *key,
-                                                const unsigned char font[],
-                                                int font_size,
-                                                const std::string &name)
+    void RenderFontFaceManager::_loadFontFace(FT_Library library, FT_Face* face, cairo_font_face_t** cairo_face, const cairo_user_data_key_t* key,
+                                              const unsigned char font[], int font_size, const std::string& name)
     {
-        int  error = FT_New_Memory_Face(library, font, font_size, 0, face);
+        int error = FT_New_Memory_Face(library, font, font_size, 0, face);
         if (error)
         {
             throw std::runtime_error("error loading font regular");
         }
 
-        *cairo_face = cairo_ft_font_face_create_for_ft_face (*face, 0);
-        auto status = cairo_font_face_set_user_data (*cairo_face, key,
-                                *face, (cairo_destroy_func_t) FT_Done_Face);
-        if (status) {
-            cairo_font_face_destroy (*cairo_face);
-            FT_Done_Face (*face);
+        *cairo_face = cairo_ft_font_face_create_for_ft_face(*face, 0);
+        auto status = cairo_font_face_set_user_data(*cairo_face, key, *face, (cairo_destroy_func_t)FT_Done_Face);
+        if (status)
+        {
+            cairo_font_face_destroy(*cairo_face);
+            FT_Done_Face(*face);
             throw std::runtime_error("error creating cairo font face " + name);
         }
     }
