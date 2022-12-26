@@ -839,7 +839,8 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, CDXProperty prop)
     auto bond_end_lambda = [&bond](const std::string& data) { bond.be.second = data; };
     auto bond_order_lambda = [&bond](const std::string& data) {
         static const std::unordered_map<std::string, int> order_map = {
-            {"1", BOND_SINGLE}, {"2", BOND_DOUBLE}, {"3", BOND_TRIPLE}, {"1.5", BOND_AROMATIC}, {"dative", _BOND_COORDINATION}, {"hydrogen", _BOND_HYDROGEN}};
+            {"1", BOND_SINGLE},          {"2", BOND_DOUBLE}, {"3", BOND_TRIPLE}, {"1.5", BOND_AROMATIC}, {"dative", _BOND_COORDINATION},
+            {"hydrogen", _BOND_HYDROGEN}};
         bond.order = order_map.at(data);
     };
 

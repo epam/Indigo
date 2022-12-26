@@ -1520,6 +1520,11 @@ void MoleculeCdxmlSaver::endDocument()
 {
     if (_is_binary)
     {
+        std::ifstream t("C:\\cdx\\benz.xml");
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        _doc->Parse(buffer.str().c_str());
+
         _output.writeString(kCDX_HeaderString);
         _output.writeBinaryInt(kCDXMagicNumber);
         _output.write(kCDXReserved, sizeof(kCDXReserved));

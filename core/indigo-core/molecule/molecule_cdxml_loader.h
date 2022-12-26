@@ -440,6 +440,9 @@ namespace indigo
         {
             switch (tag)
             {
+            case kCDXProp_Bond_Order: {
+                return kBondOrderIntToStr.at(val);
+            }
             case kCDXProp_Node_Type: {
                 return KNodeTypeIntToName.at(val);
             }
