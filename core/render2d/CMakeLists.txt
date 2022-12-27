@@ -15,6 +15,10 @@ target_include_directories(${PROJECT_NAME}
         PRIVATE ${IndigoCore_INCLUDE_DIRECTORIES}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 target_link_libraries(${PROJECT_NAME} PUBLIC object_threadsafe)
+if (USE_FONT_MANAGER)
+        target_include_directories(${PROJECT_NAME}
+        PRIVATE ${CMAKE_SOURCE_DIR}/third_party/googlefonts/)
+endif()
 
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}

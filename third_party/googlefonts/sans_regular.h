@@ -1,3 +1,10 @@
+/*****************************************************************************************
+* Copyright 2020 The Open Sans Project Authors (https://github.com/googlefonts/opensans)
+* This Font Software is licensed under the SIL Open Font License, Version 1.1.
+*****************************************************************************************/
+
+#pragma once
+
 /* Embedded file: OpenSans-Regular.ttf */
 const int sans_regular_size = 129796;
 const unsigned char sans_regular[129796] = {

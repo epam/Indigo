@@ -1,3 +1,10 @@
+/*****************************************************************************************
+* Copyright 2020 The Open Sans Project Authors (https://github.com/googlefonts/opensans)
+* This Font Software is licensed under the SIL Open Font License, Version 1.1.
+*****************************************************************************************/
+
+#pragma once
+
 /* Embedded file: OpenSans-Bold.ttf */
 const int sans_bold_size = 129784;
 const unsigned char sans_bold[129784] = {

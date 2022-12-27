@@ -1,3 +1,10 @@
+/*****************************************************************************************
+* Copyright 2020 The Open Sans Project Authors (https://github.com/googlefonts/opensans)
+* This Font Software is licensed under the SIL Open Font License, Version 1.1.
+*****************************************************************************************/
+
+#pragma once
+
 /* Embedded file: OpenSans-Italic.ttf */
 const int sans_italic_size = 135380;
 const unsigned char sans_italic[135380] = {
