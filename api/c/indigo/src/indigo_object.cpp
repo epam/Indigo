@@ -16,13 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "indigo_internal.h"
 #include "base_cpp/output.h"
 #include "base_cpp/properties_map.h"
+#include "indigo_internal.h"
 #include "reaction/reaction.h"
 
-#include <map>
 #include <../cppcodec/cppcodec/base64_default_rfc4648.hpp>
+#include <map>
 
 using IndigoObjectTypesMap = std::map<int, const char* const>;
 class IndigoObjectTypes : public IndigoObjectTypesMap, public NonCopyable
