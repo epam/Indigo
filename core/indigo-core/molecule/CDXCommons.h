@@ -26,7 +26,7 @@ const float kColorMult = ((1 << 16) - 1);
 
 struct CDXColor
 {
-    CDXColor(float red, float green, float blue) : r(red * kColorMult), g(green * kColorMult), b(blue* kColorMult)
+    CDXColor(float red, float green, float blue) : r(red * kColorMult), g(green * kColorMult), b(blue * kColorMult)
     {
     }
     uint16_t r;
