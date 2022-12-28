@@ -333,7 +333,6 @@ namespace indigo
             }
             break;
 
-                break;
             case ECDXType::CDXUINT16: {
                 auto ptr16 = (uint16_t*)ptr;
                 result = parseCDXUINT16(*ptr16, tag);
@@ -398,10 +397,6 @@ namespace indigo
                 result = *ptr ? "yes" : "no";
             }
             break;
-
-            case ECDXType::CDXColorTableCDXINT16:
-                result = "ColorTableCDXINT16 not implemented";
-                break;
 
             case ECDXType::CDXColorTable:
                 result = "ColorTable not implemented";

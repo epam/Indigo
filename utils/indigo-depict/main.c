@@ -938,6 +938,7 @@ int main(int argc, char* argv[])
             else if (p.out_ext == OEXT_CDX)
             {
                 indigoSaveCdxToFile(obj, p.outfile);
+                printf("cdx: %s\n", indigoCdx(obj));
             }
             else
                 indigoSaveCmlToFile(obj, p.outfile);
@@ -975,7 +976,6 @@ int main(int argc, char* argv[])
             else
             {
                 indigoSaveJsonToFile(obj, p.outfile);
-                printf("smiles: %s\n", indigoSmiles(obj));
             }
         }
         else

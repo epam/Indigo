@@ -20,8 +20,19 @@ const int kCDXMLSizeMultiplier = 20;
 const int kCDXMLStyleSizeIndex = 2;
 const uint32_t kCDXMagicNumber = 0x01020304;
 const char kCDXReserved[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+const float kColorMult = ((1 << 16) - 1);
 
 #pragma pack(push, 1)
+
+struct CDXColor
+{
+    CDXColor(float red, float green, float blue) : r(red * kColorMult), g(green * kColorMult), b(blue* kColorMult)
+    {
+    }
+    uint16_t r;
+    uint16_t g;
+    uint16_t b;
+};
 
 struct CDXTextStyle
 {
@@ -61,7 +72,6 @@ enum class ECDXType
     CDXINT32,
     CDXRectangle,
     CDXColorTable,
-    CDXColorTableCDXINT16,
     CDXElementList,
     CDXFormula,
     CDXObjectIDArray,
@@ -252,7 +262,7 @@ const std::unordered_map<uint16_t, std::pair<std::string, ECDXType>> KCDXPropToN
     {kCDXProp_3DMinorAxisEnd, {"Center3D", ECDXType::CDXPoint3D}},
     {kCDXProp_ColorTable, {"colortable", ECDXType::CDXColorTable}},
     {kCDXProp_ForegroundColor, {"color", ECDXType::CDXUINT16}},
-    {kCDXProp_BackgroundColor, {"bgcolor", ECDXType::CDXColorTableCDXINT16}},
+    {kCDXProp_BackgroundColor, {"bgcolor", ECDXType::CDXUINT16}},
     {kCDXProp_Node_Type, {"NodeType", ECDXType::CDXINT16}},
     {kCDXProp_Node_LabelDisplay, {"LabelDisplay", ECDXType::CDXINT8}},
     {kCDXProp_Node_Element, {"Element", ECDXType::CDXINT16}},
@@ -480,7 +490,7 @@ const std::unordered_map<uint16_t, std::pair<std::string, ECDXType>> KCDXPropToN
     {kCDXProp_ChemicalPropertyMR, {"ChemPropMR", ECDXType::CDXString}},
     {kCDXProp_ChemicalPropertyHenrysLaw, {"ChemPropHenry", ECDXType::CDXString}},
     {kCDXProp_ChemicalPropertyHeatOfForm, {"ChemPropEForm", ECDXType::CDXString}},
-    {kCDXProp_ChemicalPropertytPSA, {"ChemPropPSA", ECDXType::CDXString}},
+    {kCDXProp_ChemicalPropertytPSA, {"ChemProptPSA", ECDXType::CDXString}},
     {kCDXProp_ChemicalPropertyID, {"ChemPropID", ECDXType::CDXString}},
     {kCDXProp_ChemicalPropertyFragmentLabel, {"ChemPropFragmentLabel", ECDXType::CDXString}},
     {kCDXProp_ReactionStep_Atom_Map, {"ReactionStepAtomMap", ECDXType::CDXObjectIDArray}},
@@ -550,7 +560,7 @@ const std::unordered_map<std::string, std::pair<uint16_t, ECDXType>> KCDXNameToP
     {"Center3D", {kCDXProp_3DMinorAxisEnd, ECDXType::CDXPoint3D}},
     {"colortable", {kCDXProp_ColorTable, ECDXType::CDXColorTable}},
     {"color", {kCDXProp_ForegroundColor, ECDXType::CDXUINT16}},
-    {"bgcolor", {kCDXProp_BackgroundColor, ECDXType::CDXColorTableCDXINT16}},
+    {"bgcolor", {kCDXProp_BackgroundColor, ECDXType::CDXUINT16}},
     {"NodeType", {kCDXProp_Node_Type, ECDXType::CDXINT16}},
     {"LabelDisplay", {kCDXProp_Node_LabelDisplay, ECDXType::CDXINT8}},
     {"Element", {kCDXProp_Node_Element, ECDXType::CDXINT16}},
@@ -778,9 +788,9 @@ const std::unordered_map<std::string, std::pair<uint16_t, ECDXType>> KCDXNameToP
     {"ChemPropMR", {kCDXProp_ChemicalPropertyMR, ECDXType::CDXString}},
     {"ChemPropHenry", {kCDXProp_ChemicalPropertyHenrysLaw, ECDXType::CDXString}},
     {"ChemPropEForm", {kCDXProp_ChemicalPropertyHeatOfForm, ECDXType::CDXString}},
-    {"ChemPropPSA", {kCDXProp_ChemicalPropertytPSA, ECDXType::CDXString}},
+    {"ChemProptPSA", {kCDXProp_ChemicalPropertytPSA, ECDXType::CDXString}},
     {"ChemPropID", {kCDXProp_ChemicalPropertyID, ECDXType::CDXString}},
-    {"ChemPropPSA", {kCDXProp_ChemicalPropertyFragmentLabel, ECDXType::CDXString}},
+    {"ChemPropFragmentLabel", {kCDXProp_ChemicalPropertyFragmentLabel, ECDXType::CDXString}},
     {"ReactionStepAtomMap", {kCDXProp_ReactionStep_Atom_Map, ECDXType::CDXObjectIDArray}},
     {"ReactionStepReactants", {kCDXProp_ReactionStep_Reactants, ECDXType::CDXObjectIDArray}},
     {"ReactionStepProducts", {kCDXProp_ReactionStep_Products, ECDXType::CDXObjectIDArray}},

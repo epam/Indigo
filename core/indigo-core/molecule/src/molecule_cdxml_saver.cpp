@@ -106,11 +106,7 @@ void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type,
     }
     break;
 
-    case ECDXType::CDXBooleanImplied: {
-        // no need to write anything
-    }
-    break;
-
+    case ECDXType::CDXBooleanImplied:
     case ECDXType::CDXBoolean: {
         uint8_t val = std::string(pAttr->Value()) == "yes" ? 1 : 0;
         out.writeBinaryUInt16(sizeof(val));
@@ -130,10 +126,6 @@ void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type,
     break;
 
     case ECDXType::CDXColorTable: {
-    }
-    break;
-
-    case ECDXType::CDXColorTableCDXINT16: {
     }
     break;
 
@@ -192,6 +184,12 @@ void writeBinaryValue(const XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type,
     case ECDXType::CDXvaries: {
     }
     break;
+
+    case ECDXType::CDXFontStyle: {
+    }
+    break;
+    default:
+        break;
     }
 }
 
@@ -1449,13 +1447,43 @@ bool MoleculeCdxmlSaver::writeBinaryAttributes(tinyxml2::XMLElement* pElement, i
 {
     switch (tag)
     {
-    case kCDXProp_FontTable:
-        // write font_table, elem
+    case kCDXProp_FontTable: {
+        uint16_t sz = 0;
+        _output.writeBinaryUInt16(sz);
         return false;
-        break;
-    case kCDXProp_ColorTable:
+    }
+    break;
+    case kCDXProp_ColorTable: {
+        std::vector<CDXColor> color_table;
+        for (auto pElem = pElement->FirstChildElement(); pElem; pElem = pElem->NextSiblingElement())
+        {
+            float r = 0, g = 0, b = 0;
+            for (auto pAttr = pElem->FirstAttribute(); pAttr; pAttr = pAttr->Next())
+            {
+                const char* pcol = pAttr->Name();
+                switch (*pcol)
+                {
+                case 'r':
+                    r = pAttr->FloatValue();
+                    break;
+                case 'g':
+                    g = pAttr->FloatValue();
+                    break;
+                case 'b':
+                    b = pAttr->FloatValue();
+                    break;
+                }
+            }
+            color_table.emplace_back(r, g, b);
+        }
+        _output.writeBinaryUInt16(color_table.size() * sizeof(CDXColor));
+        for (const auto& rgb : color_table)
+        {
+            _output.write(&rgb, sizeof(rgb));
+        }
         return false;
-        break;
+    }
+    break;
     default:
         break;
     }
@@ -1476,6 +1504,7 @@ bool MoleculeCdxmlSaver::writeBinaryAttributes(tinyxml2::XMLElement* pElement, i
             printf("Undefined property: %s\n", pAttr->Name());
         }
     }
+
     return true;
 }
 
@@ -1490,12 +1519,15 @@ void MoleculeCdxmlSaver::writeBinaryElement(tinyxml2::XMLElement* element)
         if (it != KCDXNameToObjID.end())
         {
             tag = it->second;
+            if (tag == kCDXProp_FontTable)
+                return;
             _output.writeBinaryUInt16(tag);
         }
         auto id_attribute = element->FindAttribute("id");
         if (id_attribute)
             id = id_attribute->IntValue();
-        _output.writeBinaryInt(id);
+        if (tag != kCDXProp_ColorTable)
+            _output.writeBinaryInt(id);
         printf("obj name: %s tag=%x id=%d\n", objname.c_str(), tag, id);
     }
     else
@@ -1514,6 +1546,8 @@ void MoleculeCdxmlSaver::writeBinaryElement(tinyxml2::XMLElement* element)
         for (auto elem = element->FirstChildElement(); elem; elem = elem->NextSiblingElement())
             writeBinaryElement(elem);
     }
+    if (tag >= kCDXTag_Object)
+        _output.writeBinaryUInt16(0);
 }
 
 void MoleculeCdxmlSaver::endDocument()
@@ -1525,6 +1559,7 @@ void MoleculeCdxmlSaver::endDocument()
         _output.write(kCDXReserved, sizeof(kCDXReserved));
         auto cdxml = _doc->FirstChildElement();
         writeBinaryElement(cdxml);
+        _output.writeBinaryUInt16(0);
     }
     else
     {

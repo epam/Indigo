@@ -200,6 +200,8 @@ public:
     virtual MonomersProperties& getMonomersProperties();
     virtual void copyProperties(PropertiesMap&);
 
+    void toBase64String(Array<char>& str);
+
 private:
     IndigoObject(const IndigoObject&);
 };
