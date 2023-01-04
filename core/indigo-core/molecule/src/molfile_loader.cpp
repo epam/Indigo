@@ -2636,7 +2636,11 @@ void MolfileLoader::_readCtab3000()
                         if (subst == -1)
                             _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, 0)));
                         else if (subst == -2)
-                            throw Error("Query substitution count as drawn is not supported yet (SUBST=%d)", subst);
+                        {
+                            _qmol->resetAtom(
+                                i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+                                                            new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, _qmol->getVertex(i).degree())));
+                        }
                         else if (subst > 0)
                             _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst,
                                                                                                                         (subst < 6 ? subst : 100))));
@@ -2674,8 +2678,19 @@ void MolfileLoader::_readCtab3000()
                         {
                             if (rb == -1)
                                 rb = 0;
+                            else if (rb == -2)
+                            {
+                                int k, rbonds = 0;
+                                const Vertex& vertex = _qmol->getVertex(i);
 
-                            if (rb > 1)
+                                for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                                    if (_qmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
+                                        rbonds++;
+
+                                _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+                                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
+                            }
+                            else if (rb > 1)
                                 _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
                                                                              new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rb, (rb < 4 ? rb : 100))));
                             else
