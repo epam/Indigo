@@ -38,7 +38,7 @@
 typedef unsigned short int UINT16;
 typedef int INT32;
 typedef unsigned int UINT32;
-#include "molecule/CDXCommons.h"
+#include "CDXCommons.h"
 
 namespace tinyxml2
 {
@@ -194,6 +194,13 @@ namespace indigo
         CDXProperty(const void* data, int size = 0, int first_id = 0, int style_index = -1, int style_prop = -1)
             : _data(data), _size(size), _first_id(first_id), _style_index(style_index), _style_prop(style_prop)
         {
+            if( _data && _size)
+            {
+                uint16_t* ptr16 = (uint16_t*)_data;
+                int tag = *ptr16;
+                int sz = ptr16[1];
+                printf("propery tag: %x size:%x sz:%x\n", tag, _size, sz);
+            }
         }
 
         const tinyxml2::XMLAttribute& attribute()
@@ -529,6 +536,7 @@ namespace indigo
             auto ptag = (uint16_t*)data;
             if (ptag && size)
             {
+                printf("obj tag: %x\n", *ptag);
                 if (*ptag < kCDXTag_Object) // root element starts from property
                 {
                     if (*ptag == kCDXProp_Text)

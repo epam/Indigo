@@ -1032,8 +1032,16 @@ enum CDXCharSet
     kCDXCharSetMacVietnamese,
     kCDXCharSetMacExtArabic,
     kCDXCharSetMacUninterpreted,
+    kCDXCharSetMacSymbol,
+    kCDXCharSetMacDingbats,
+    kCDXCharSetMacCroatian,
+    kCDXCharSetMacRomanian,
+    kCDXCharSetMacCeltic,
+    kCDXCharSetMacGaelic,
+    kCDXCharSetMacKeyboardGlyphs,
     kCDXCharSetMacIcelandic = 10079,
-    kCDXCharSetMacTurkish = 10081
+    kCDXCharSetMacTurkish = 10081,
+    kCDXCharSetUTF8 = 65001
 };
 
 #endif // _H_CDXConstants

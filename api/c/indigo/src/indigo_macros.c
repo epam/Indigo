@@ -150,7 +150,7 @@ CEXPORT const char* indigoCdx(int object)
     if (b == -1)
         return 0;
 
-    if (indigoSaveCml(object, b) == -1)
+    if (indigoSaveCdx(object, b) == -1)
         return 0;
 
     res = indigoToBase64String(b);
