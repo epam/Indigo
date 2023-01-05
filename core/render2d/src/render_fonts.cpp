@@ -102,7 +102,7 @@ double RenderContext::fontGetSize(FONT_SIZE size)
     return _settings.fzz[size];
 }
 
-#ifndef FONT_MANAGER
+#ifndef RENDER_USE_FONT_MANAGER
 void RenderContext::fontsSetFont(const TextItem& ti)
 {
     std::lock_guard<std::mutex> _lock(_cairo_mutex);

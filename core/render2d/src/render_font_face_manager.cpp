@@ -35,11 +35,13 @@ namespace indigo
     RenderFontFaceManager::~RenderFontFaceManager()
     {
         // TODO: fix faces realease
-        // TODO: fix function signature mismatch in _cairo_user_data_array_fini
-        // cairo_font_face_destroy (_cairo_face_regular);
-        // cairo_font_face_destroy (_cairo_face_bold);
-        // cairo_font_face_destroy (_cairo_face_italic);
-        // cairo_font_face_destroy (_cairo_face_bold_italic);
+#ifndef RENDER_EMSCRIPTEN
+        // there is a function signature mismatch in _cairo_user_data_array_fini when using EMSCRIPTEN
+        cairo_font_face_destroy(_cairo_face_regular);
+        cairo_font_face_destroy(_cairo_face_bold);
+        cairo_font_face_destroy(_cairo_face_italic);
+        cairo_font_face_destroy(_cairo_face_bold_italic);
+#endif
     }
 
     cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(bool is_bold, bool is_italic)
