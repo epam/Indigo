@@ -1283,7 +1283,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                 XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 4);
-                s->SetAttribute("size", font_size);
+                s->SetAttribute("size", font_size / kCDXMLFonsSizeMultiplier);
                 s->SetAttribute("face", font_face.face);
                 XMLText* txt = _doc->NewText(sub_text.c_str());
                 s->LinkEndChild(txt);
