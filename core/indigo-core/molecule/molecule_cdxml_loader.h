@@ -111,6 +111,19 @@ namespace indigo
         int atom_idx;
     };
 
+    struct CdxmlKetTextStyle
+    {
+        int offset;
+        int size;
+        std::list<std::string> styles;
+    };
+
+    struct CdxmlKetTextLine
+    {
+        std::string text;
+        std::list<CdxmlKetTextStyle> text_styles;
+    };
+
     struct CdxmlNode
     {
         CdxmlNode() : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false) // Carbon by default
@@ -713,17 +726,6 @@ namespace indigo
             return _data;
         }
 
-        std::string getBinaryName()
-        {
-            auto ptag = (uint16_t*)_data;
-            if (*ptag < kCDXTag_Object && _style_index < 0)
-                return "CDXML";
-            auto it = KCDXObjToName.find(*ptag);
-            if (it != KCDXObjToName.end())
-                return it->second;
-            return std::string{};
-        }
-
         std::string name()
         {
             return _size ? getBinaryName() : std::string(xml().Name());
@@ -734,18 +736,28 @@ namespace indigo
             return _size ? getBinaryValue() : std::string(xml().Value());
         }
 
-        std::string getBinaryValue()
+        std::string getBinaryName()
         {
             auto ptag = (uint16_t*)_data;
+            if (*ptag < kCDXTag_Object && _style_index < 0)
+                return "CDXML";
             switch (*ptag)
             {
             case kCDXProp_Text: // property tag as am object tag. special case for style object.
                 return "s";
                 break;
-            default:
-                return getBinaryName();
+            default: {
+                auto it = KCDXObjToName.find(*ptag);
+                if (it != KCDXObjToName.end())
+                    return it->second;
+            }
             }
             return std::string{};
+        }
+
+        std::string getBinaryValue()
+        {
+            return getBinaryName();
         }
 
         std::string getText()
