@@ -453,6 +453,9 @@ namespace indigo
         {
             switch (tag)
             {
+            case kCDXProp_Bond_Order: {
+                return kBondOrderIntToStr.at(val);
+            }
             case kCDXProp_Node_Type: {
                 return KNodeTypeIntToName.at(val);
             }
@@ -823,6 +826,8 @@ namespace indigo
             return _scanner;
         }
 
+        virtual ~CDXReader(){};
+
     protected:
         std::string _buffer;
         Scanner& _scanner;
@@ -847,6 +852,10 @@ namespace indigo
         CDXElement rootElement() override
         {
             return CDXElement{_xml.RootElement()};
+        }
+
+        ~CDXMLReader()
+        {
         }
 
     private:
