@@ -1220,7 +1220,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
             attrs.insert("GraphicType", "Line");
             break;
         }
-        addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
+        addElement("graphic", id, simple_obj._coordinates.first, simple_obj._coordinates.second, attrs);
     }
     break;
     case KETTextObject::CID: {
@@ -1275,7 +1275,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                         font_face.is_subscript = text_style.second;
                         break;
                     default:
-                        font_size = text_style.second ? text_style.first : 13;
+                        font_size = text_style.second ? text_style.first : KETDefaultFontSize;
                         break;
                     }
                 }
@@ -1608,7 +1608,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
     addDefaultColorTable();
     beginPage(NULL);
 
-    Vec2f offset(-min_coord.x, -max_coord.y);
+    Vec2f offset(0, 0);
 
     saveMoleculeFragment(mol, offset, 1);
     endPage();

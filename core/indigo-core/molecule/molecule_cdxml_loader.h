@@ -120,7 +120,7 @@ namespace indigo
         AutoInt id;
         std::string label;
         AutoInt element;
-        Vec3f pos;
+        Vec2f pos;
         int type;
         AutoInt isotope;
         AutoInt charge;
@@ -873,7 +873,7 @@ namespace indigo
         static void applyDispatcher(CDXProperty prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
         void parseCDXMLAttributes(CDXProperty prop);
         void parseBBox(const std::string& data, Rect2f& bbox);
-        void parsePos(const std::string& data, Vec3f& bbox);
+        void parsePos(const std::string& data, Vec2f& pos);
         void parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2);
 
         StereocentersOptions stereochemistry_options;
@@ -884,7 +884,7 @@ namespace indigo
         std::vector<CdxmlNode> nodes;
         std::vector<CdxmlBond> bonds;
         std::vector<CdxmlBracket> brackets;
-        std::vector<std::pair<Vec3f, std::string>> text_objects;
+        std::vector<std::pair<Vec2f, std::string>> text_objects;
 
         static const int SCALE = 30;
 
@@ -901,7 +901,7 @@ namespace indigo
         void _addBond(CdxmlBond& node);
 
         void _parseBracket(CdxmlBracket& bracket, CDXProperty prop);
-        void _parseText(CDXElement elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
+        void _parseText(CDXElement elem, std::vector<std::pair<Vec2f, std::string>>& text_parsed);
         void _parseLabel(CDXElement elem, std::string& label);
 
         void _parseGraphic(CDXElement elem);
@@ -927,7 +927,7 @@ namespace indigo
         std::unordered_map<int, int> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
-        std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
+        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _arrows;
         float _bond_length;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         Scanner& _scanner;

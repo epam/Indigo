@@ -30,7 +30,7 @@
 
 namespace indigo
 {
-    const double KETDefaultFontSize = 13;
+    const int KETDefaultFontSize = 13;
     const double KETFontScaleFactor = 47;
     const auto KETFontBoldStr = "BOLD";
     const auto KETFontItalicStr = "ITALIC";

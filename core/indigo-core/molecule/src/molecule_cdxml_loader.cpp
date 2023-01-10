@@ -193,7 +193,10 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         _addBracket(mol, brk);
 
     for (const auto& to : text_objects)
-        mol.meta().addMetaObject(new KETTextObject(to.first, to.second));
+    {
+        Vec3f tpos(to.first.x, to.first.y, 0);
+        mol.meta().addMetaObject(new KETTextObject(tpos, to.second));
+    }
 
     for (const auto& plus : _pluses)
         mol.meta().addMetaObject(new KETReactionPlus(plus));
@@ -864,19 +867,15 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, CDXProperty prop)
     applyDispatcher(prop, bond_dispatcher);
 }
 
-void MoleculeCdxmlLoader::parsePos(const std::string& data, Vec3f& pos)
+void MoleculeCdxmlLoader::parsePos(const std::string& data, Vec2f& pos)
 {
     std::vector<std::string> coords = split(data, ' ');
     if (coords.size() >= 2)
     {
         pos.x = std::stof(coords[0]);
         pos.y = std::stof(coords[1]);
-        pos.z = 0;
         if (this->_has_bounding_box)
-        {
-            pos.x -= this->cdxml_bbox.left();
-            pos.y -= this->cdxml_bbox.bottom();
-        }
+            pos.sub(this->cdxml_bbox.leftBottom());
         pos.x /= SCALE;
         pos.y /= -SCALE;
     }
@@ -992,7 +991,7 @@ void MoleculeCdxmlLoader::_parseGraphic(CDXElement elem)
             default:
                 break;
             }
-            _arrows.push_back(std::make_pair(std::make_pair(Vec3f(tail.x, tail.y, 0), Vec3f(head.x, head.y, 0)), ar_type));
+            _arrows.push_back(std::make_pair(std::make_pair(Vec2f(tail.x, tail.y), Vec2f(head.x, head.y)), ar_type));
         }
     }
     break;
@@ -1023,9 +1022,9 @@ void MoleculeCdxmlLoader::_parseArrow(CDXElement elem)
 {
     Rect2f text_bbox;
     auto arrow_bbox_lambda = [&text_bbox, this](const std::string& data) { this->parseBBox(data, text_bbox); };
-    Vec3f begin_pos;
+    Vec2f begin_pos;
     auto arrow_begin_lambda = [&begin_pos, this](const std::string& data) { this->parsePos(data, begin_pos); };
-    Vec3f end_pos;
+    Vec2f end_pos;
     auto arrow_end_lambda = [&end_pos, this](const std::string& data) { this->parsePos(data, end_pos); };
     std::string fill_type;
     auto fill_type_lambda = [&fill_type](const std::string& data) { fill_type = data; };
@@ -1055,9 +1054,9 @@ void MoleculeCdxmlLoader::_parseLabel(CDXElement elem, std::string& label)
     }
 }
 
-void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed)
+void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec2f, std::string>>& text_parsed)
 {
-    Vec3f text_pos;
+    Vec2f text_pos;
     auto text_coordinates_lambda = [&text_pos, this](const std::string& data) { this->parsePos(data, text_pos); };
 
     Rect2f text_bbox;
@@ -1124,8 +1123,9 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
                 if (fs.is_superscript)
                     text_vec_styles.push_back(KETFontSubscriptStr);
             }
-            if (font_size > 0)
-                text_vec_styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)ceil(font_size)) + "px");
+
+            if (font_size > 0 && (int)font_size != KETDefaultFontSize)
+                text_vec_styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)(font_size)) + "px");
 
             std::remove_if(label_plain.begin(), label_plain.end(), [](char c) { return (c == '\r'); });
 
@@ -1175,8 +1175,7 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
     Vec3f tpos(text_pos);
     if (text_bbox.width() > 0 && text_bbox.height() > 0)
         tpos.set(text_bbox.center().x, text_bbox.center().y, 0);
-
-    text_parsed.emplace_back(tpos, s.GetString());
+    text_parsed.emplace_back(text_pos, s.GetString());
 }
 
 void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, CDXProperty prop)
