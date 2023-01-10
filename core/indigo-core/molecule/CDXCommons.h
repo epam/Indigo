@@ -17,6 +17,7 @@ enum class EnhancedStereoType : int
 
 const int KCDXMLChemicalFontStyle = 96;
 const int kCDXMLSizeMultiplier = 20;
+const float kCDXMLFonsSizeMultiplier = 1.5;
 const int kCDXMLStyleSizeIndex = 2;
 const uint32_t kCDXMagicNumber = 0x01020304;
 const char kCDXReserved[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -166,12 +167,15 @@ const std::unordered_map<int, std::string> kCDXPropSymbolTypeIDToStr = {
 };
 
 const std::unordered_map<std::string, CDXGraphicType> kCDXPropGraphicTypeStrToID = {
-    {"Undefined", kCDXGraphicType_Undefined}, {"Line", kCDXGraphicType_Line},       {"Arc", kCDXGraphicType_Arc},      {"Oval", kCDXGraphicType_Oval},
-    {"Orbital", kCDXGraphicType_Orbital},     {"Bracket", kCDXGraphicType_Bracket}, {"Symbol", kCDXGraphicType_Symbol}};
+    {"Undefined", kCDXGraphicType_Undefined}, {"Line", kCDXGraphicType_Line},
+    {"Rectangle", kCDXGraphicType_Rectangle}, {"Arc", kCDXGraphicType_Arc},
+    {"Oval", kCDXGraphicType_Oval},           {"Orbital", kCDXGraphicType_Orbital},
+    {"Bracket", kCDXGraphicType_Bracket},     {"Symbol", kCDXGraphicType_Symbol}};
 
-const std::unordered_map<int, std::string> kCDXPropGraphicTypeIDToStr = {
-    {kCDXGraphicType_Undefined, "Undefined"}, {kCDXGraphicType_Line, "Line"},       {kCDXGraphicType_Arc, "Arc"},      {kCDXGraphicType_Oval, "Oval"},
-    {kCDXGraphicType_Orbital, "Orbital"},     {kCDXGraphicType_Bracket, "Bracket"}, {kCDXGraphicType_Symbol, "Symbol"}};
+const std::unordered_map<int, std::string> kCDXPropGraphicTypeIDToStr = {{kCDXGraphicType_Undefined, "Undefined"}, {kCDXGraphicType_Line, "Line"},
+                                                                         {kCDXGraphicType_Rectangle, "Rectangle"}, {kCDXGraphicType_Arc, "Arc"},
+                                                                         {kCDXGraphicType_Oval, "Oval"},           {kCDXGraphicType_Orbital, "Orbital"},
+                                                                         {kCDXGraphicType_Bracket, "Bracket"},     {kCDXGraphicType_Symbol, "Symbol"}};
 
 const std::unordered_map<std::string, int> kCDXProp_Bond_DisplayStrToID = {{"Solid", kCDXBondDisplay_Solid},
                                                                            {"Dash", kCDXBondDisplay_Dash},
