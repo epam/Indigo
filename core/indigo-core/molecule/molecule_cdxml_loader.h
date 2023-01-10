@@ -739,7 +739,7 @@ namespace indigo
             return _size ? getBinaryValue() : std::string(xml().Value());
         }
 
-        std::string getBinaryName()
+        std::string getBinaryName() const
         {
             auto ptag = (uint16_t*)_data;
             if (*ptag < kCDXTag_Object && _style_index < 0)
@@ -758,7 +758,7 @@ namespace indigo
             return std::string{};
         }
 
-        std::string getBinaryValue()
+        std::string getBinaryValue() const
         {
             return getBinaryName();
         }
