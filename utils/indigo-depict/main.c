@@ -393,6 +393,7 @@ int parseParams(Params* p, int argc, char* argv[])
     indigoSetOptionBool("treat-x-as-pseudoatom", 1);
     indigoSetOptionBool("render-coloring", 1);
     indigoSetOptionBool("render-highlight-color-enabled", 1);
+    indigoSetOption("render-superatom-mode", "collapse");
 
     for (; i < argc; i++)
     {
@@ -965,7 +966,7 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            //indigoLayout(obj);
+            indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_RXN)
