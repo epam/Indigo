@@ -1072,10 +1072,10 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec2
                                                                                                 {"LabelAlignment", label_justification_alignment_lambda}};
 
     AutoInt font_id, font_color_id, font_face;
-    float font_size;
+    int font_size;
 
     auto style_font_lambda = [&font_id](const std::string& data) { font_id = data; };
-    auto style_size_lambda = [&font_size](const std::string& data) { font_size = std::stof(data) * kCDXMLFonsSizeMultiplier; };
+    auto style_size_lambda = [&font_size](const std::string& data) { font_size = round(std::stof(data) * kCDXMLFonsSizeMultiplier); };
     auto style_color_lambda = [&font_color_id](const std::string& data) { font_color_id = data; };
     auto style_face_lambda = [&font_face](const std::string& data) { font_face = data; };
 
@@ -1103,7 +1103,7 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec2
             }
 
             font_face = 0;
-            font_size = 0.0;
+            font_size = 0;
             auto style = text_style.firstProperty();
             applyDispatcher(style, style_dispatcher);
             std::vector<std::string> text_vec_styles;
@@ -1125,7 +1125,7 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec2
             }
 
             if (font_size > 0 && (int)font_size != KETDefaultFontSize)
-                text_vec_styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)(font_size)) + "px");
+                text_vec_styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string(font_size) + "px");
 
             std::remove_if(label_plain.begin(), label_plain.end(), [](char c) { return (c == '\r'); });
 
