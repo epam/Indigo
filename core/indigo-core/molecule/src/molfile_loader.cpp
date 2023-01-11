@@ -855,10 +855,10 @@ void MolfileLoader::_readCtab2000()
                                 atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
                         else if (rbcount == -2) // as drawn
                         {
-                            int k, rbonds = 0;
+                            int rbonds = 0;
                             const Vertex& vertex = _qmol->getVertex(atom_idx);
 
-                            for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                            for (int k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
                                 if (_qmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
                                     rbonds++;
 
@@ -1938,8 +1938,7 @@ void MolfileLoader::_postLoad()
 
     if (_mol != 0)
     {
-        int k;
-        for (k = 0; k < _atoms_num; k++)
+        for (int k = 0; k < _atoms_num; k++)
             if (_hcount[k] > 0)
                 _mol->setImplicitH(k, _hcount[k] - 1);
     }
@@ -1987,8 +1986,7 @@ void MolfileLoader::_postLoad()
             }
         }
 
-        int k;
-        for (k = 0; k < _atoms_num; k++)
+        for (int k = 0; k < _atoms_num; k++)
         {
             int expl_h = 0;
 
@@ -2680,10 +2678,10 @@ void MolfileLoader::_readCtab3000()
                                 rb = 0;
                             else if (rb == -2)
                             {
-                                int k, rbonds = 0;
+                                int rbonds = 0;
                                 const Vertex& vertex = _qmol->getVertex(i);
 
-                                for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                                for (int k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
                                     if (_qmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
                                         rbonds++;
 
