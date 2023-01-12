@@ -1,0 +1,130 @@
+*** KET to cdxml ***
+super.ket
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable id="1">
+        <font id="2" charset="utf-8" name="Arial"/>
+        <font id="3" charset="utf-8" name="Times New Roman"/>
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1"/>
+        <color r="0" g="0" b="0"/>
+        <color r="1" g="0" b="0"/>
+        <color r="1" g="1" b="0"/>
+        <color r="0" g="1" b="0"/>
+        <color r="0" g="1" b="1"/>
+        <color r="0" g="0" b="1"/>
+        <color r="1" g="0" b="1"/>
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="4">
+            <n id="48" NodeType="Fragment">
+                <fragment id="49">
+                    <n id="11" p="59.835632 109.329903"/>
+                    <n id="50" NodeType="ExternalConnectionPoint"/>
+                    <n id="12" Element="8" NumHydrogens="0" p="30.202303 104.643272">
+                        <t p="30.202303 104.643272" LabelJustification="Left">
+                            <s font="3" size="10" face="96">O</s>
+                        </t>
+                    </n>
+                    <n id="13" Element="8" NumHydrogens="0" p="78.707344 86.007683">
+                        <t p="78.707344 86.007683" LabelJustification="Left">
+                            <s font="3" size="10" face="96">O</s>
+                        </t>
+                    </n>
+                    <n id="14" p="67.949692 58.002048"/>
+                    <n id="15" p="38.316734 53.319012"/>
+                    <n id="16" p="57.192390 30.000000"/>
+                    <n id="17" p="86.821777 34.683422"/>
+                    <b id="34" B="11" E="12" Order="2"/>
+                    <b id="35" B="11" E="13"/>
+                    <b id="36" B="13" E="14"/>
+                    <b id="37" B="14" E="15"/>
+                    <b id="38" B="14" E="16"/>
+                    <b id="39" B="14" E="17"/>
+                    <b id="52" B="50" E="11"/>
+                </fragment>
+                <t LabelJustification="Left" LabelAlignment="Above">
+                    <s>CO2tBu</s>
+                </t>
+            </n>
+            <n id="53" NodeType="Fragment">
+                <fragment id="54">
+                    <n id="18" Element="16" NumHydrogens="0" p="59.998569 229.331665">
+                        <t p="59.998569 229.331665" LabelJustification="Left">
+                            <s font="3" size="10" face="96">S</s>
+                        </t>
+                    </n>
+                    <n id="55" NodeType="ExternalConnectionPoint"/>
+                    <n id="19" p="60.107033 259.326599"/>
+                    <n id="20" Element="8" NumHydrogens="0" p="30.000000 229.440125">
+                        <t p="30.000000 229.440125" LabelJustification="Left">
+                            <s font="3" size="10" face="96">O</s>
+                        </t>
+                    </n>
+                    <n id="21" Element="8" NumHydrogens="0" p="90.004433 229.223175">
+                        <t p="90.004433 229.223175" LabelJustification="Left">
+                            <s font="3" size="10" face="96">O</s>
+                        </t>
+                    </n>
+                    <b id="41" B="19" E="18"/>
+                    <b id="42" B="18" E="20" Order="2"/>
+                    <b id="43" B="18" E="21" Order="2"/>
+                    <b id="57" B="55" E="18"/>
+                </fragment>
+                <t LabelJustification="Left" LabelAlignment="Above">
+                    <s>Ms</s>
+                </t>
+            </n>
+            <n id="58" NodeType="Fragment">
+                <fragment id="59">
+                    <n id="22" Element="16" NumHydrogens="0" p="168.518234 145.330887">
+                        <t p="168.518234 145.330887" LabelJustification="Left">
+                            <s font="3" size="10" face="96">S</s>
+                        </t>
+                    </n>
+                    <n id="23" Element="8" NumHydrogens="0" p="168.518234 115.330894">
+                        <t p="168.518234 115.330894" LabelJustification="Left">
+                            <s font="3" size="10" face="96">O</s>
+                        </t>
+                    </n>
+                    <n id="24" Element="8" NumHydrogens="0" p="168.518234 175.330887">
+                        <t p="168.518234 175.330887" LabelJustification="Left">
+                            <s font="3" size="10" face="96">O</s>
+                        </t>
+                    </n>
+                    <n id="25" Element="8" NumHydrogens="1" p="198.518234 145.330887">
+                        <t p="198.518234 145.330887" LabelJustification="Left">
+                            <s font="3" size="10" face="96">OH</s>
+                        </t>
+                    </n>
+                    <n id="26" p="138.518234 145.330887"/>
+                    <b id="44" B="22" E="23" Order="2"/>
+                    <b id="45" B="22" E="24" Order="2"/>
+                    <b id="46" B="22" E="25"/>
+                    <b id="47" B="22" E="26"/>
+                </fragment>
+                <t LabelJustification="Left" LabelAlignment="Above">
+                    <s>methane sulphonic acid</s>
+                </t>
+            </n>
+            <n id="5" p="33.813686 154.333115"/>
+            <n id="6" p="85.722740 154.318558"/>
+            <n id="7" p="59.817352 139.329895"/>
+            <n id="8" p="85.722740 184.346848"/>
+            <n id="9" p="33.813686 184.481491"/>
+            <n id="10" p="59.882843 199.331894"/>
+            <b id="27" B="7" E="5" Order="2"/>
+            <b id="28" B="8" E="6" Order="2"/>
+            <b id="29" B="5" E="9"/>
+            <b id="30" B="6" E="7"/>
+            <b id="31" B="9" E="10" Order="2"/>
+            <b id="32" B="10" E="8"/>
+            <b id="51" B="7" E="48"/>
+            <b id="56" B="10" E="53"/>
+        </fragment>
+    </page>
+</CDXML>
+

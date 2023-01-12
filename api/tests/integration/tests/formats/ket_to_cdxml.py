@@ -11,25 +11,25 @@ from env_indigo import *  # noqa
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
-print("*** CDX to ket ***")
+print("*** KET to cdxml ***")
 
-root = joinPathPy("molecules/cdx", __file__)
+root = joinPathPy("molecules/ket", __file__)
 files = os.listdir(root)
 files.sort()
 for filename in files:
     print(filename)
     try:
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
-        print(mol.json())
+        print(mol.cdxml())
     except IndigoException as e:
         print(getIndigoExceptionText(e))
         try:
             print("*** Try as Reaction ***")
             rct = indigo.loadReactionFromFile(os.path.join(root, filename))
-            print(rct.json())
+            print(rct.cdxml())
         except IndigoException as e:
             print("*** Try as Query ***")
             mol = indigo.loadQueryMoleculeFromFile(
                 os.path.join(root, filename)
             )
-            print(mol.json())
+            print(mol.cdxml())
