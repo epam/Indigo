@@ -155,6 +155,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         case kCDXNodeType_NamedAlternativeGroup:
         case kCDXNodeType_Element:
         case kCDXNodeType_ElementList:
+        case kCDXNodeType_GenericNickname:
             atoms.push_back(node_idx);
             break;
         case kCDXNodeType_ExternalConnectionPoint: {
@@ -437,7 +438,8 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                 _pmol->setExplicitValence(atom_idx, atom.valence);
             _pmol->setAtomRadical(atom_idx, atom.radical);
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
-            // _pmol->setPseudoAtom(atom_idx, label.c_str());
+            if (atom.type == kCDXNodeType_GenericNickname)
+                _pmol->setPseudoAtom(atom_idx, atom.label.c_str());
             switch (atom.enchanced_stereo)
             {
             case EnhancedStereoType::ABSOLUTE:

@@ -17,6 +17,7 @@ files = [
     "agents.ket",
     "multi.ket",
     "multi_overlap.ket",
+    "generic.ket",
 ]
 
 files.sort()
@@ -35,3 +36,10 @@ for filename in files:
     except IndigoException as e:
         print(getIndigoExceptionText(e))
         print("*** Try as QueryReaction ***")
+        ket = indigo.loadQueryReactionFromFile(os.path.join(root, filename))
+        ket.layout()
+        cdxml_text = ket.cdxml()
+        print(cdxml_text)
+        ket = indigo.loadReaction(cdxml_text)
+        ket.layout()
+        print(ket.json())
