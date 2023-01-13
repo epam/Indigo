@@ -78,6 +78,15 @@ enum class ECDXType
     CDXFontStyle
 };
 
+const std::unordered_map<std::string, CDXRadical> kRadicalStrToId = {
+    {"None", kCDXRadical_None},
+    {"Singlet", kCDXRadical_Singlet},
+    {"Doublet", kCDXRadical_Doublet},
+    {"Triplet", kCDXRadical_Triplet}
+};
+
+const std::vector<std::string> kRadicalIdToStr = {"None", "Singlet", "Doublet", "Triplet"};
+
 const std::unordered_map<int, std::string> kBondOrderIntToStr = {{kCDXBondOrder_Single, "1"},
                                                                  {kCDXBondOrder_Double, "2"},
                                                                  {kCDXBondOrder_Triple, "3"},

@@ -751,7 +751,11 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
     auto charge_lambda = [&node](const std::string& data) { node.charge = data; };
     auto element_lambda = [&node](const std::string& data) { node.element = data; };
     auto isotope_lambda = [&node](const std::string& data) { node.isotope = data; };
-    auto radical_lambda = [&node](const std::string& data) { node.radical = data; };
+    auto radical_lambda = [&node](const std::string& data) {
+        auto rd_it = kRadicalStrToId.find(data);
+        if (rd_it != kRadicalStrToId.end())
+            node.radical = rd_it->second;
+    };
     auto label_lambda = [&node](const std::string& data) { node.label = data; };
 
     auto bond_ordering_lambda = [&node](const std::string& data) {
@@ -1000,6 +1004,7 @@ void MoleculeCdxmlLoader::_parseGraphic(CDXElement elem)
     case kCDXGraphicType_Arc:
         break;
     case kCDXGraphicType_Rectangle:
+
         break;
     case kCDXGraphicType_Oval:
         break;
