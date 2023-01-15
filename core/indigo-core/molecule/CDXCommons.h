@@ -79,11 +79,7 @@ enum class ECDXType
 };
 
 const std::unordered_map<std::string, CDXRadical> kRadicalStrToId = {
-    {"None", kCDXRadical_None},
-    {"Singlet", kCDXRadical_Singlet},
-    {"Doublet", kCDXRadical_Doublet},
-    {"Triplet", kCDXRadical_Triplet}
-};
+    {"None", kCDXRadical_None}, {"Singlet", kCDXRadical_Singlet}, {"Doublet", kCDXRadical_Doublet}, {"Triplet", kCDXRadical_Triplet}};
 
 const std::vector<std::string> kRadicalIdToStr = {"None", "Singlet", "Doublet", "Triplet"};
 
