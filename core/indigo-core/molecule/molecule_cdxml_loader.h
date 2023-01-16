@@ -940,6 +940,8 @@ namespace indigo
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
+        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
+
         float _bond_length;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         Scanner& _scanner;
