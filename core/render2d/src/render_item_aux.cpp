@@ -331,7 +331,8 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         {
                             // TODO: not utf8. need conversion.
                             sub_text = text_item.text.substr(first_index, second_index - first_index);
-                        } else
+                        }
+                        else
                             sub_text = w2utf8.to_bytes(decoded_utf.substr(first_index, second_index - first_index));
                         ti.text.readString(sub_text.c_str(), true);
                         fillKETStyle(ti, current_styles);
