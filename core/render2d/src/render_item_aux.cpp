@@ -327,7 +327,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
 
                         auto decoded_utf = utf82w.from_bytes(text_item.text);
                         std::string sub_text;
-                        if (first_index > decoded_utf.size() - 1)
+                        if (first_index + 1 > decoded_utf.size())
                         {
                             // TODO: not utf8. need conversion.
                             sub_text = text_item.text.substr(first_index, second_index - first_index);
