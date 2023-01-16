@@ -208,7 +208,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         mol.meta().addMetaObject(new KETReactionArrow(arrow.second, v1, v2));
     }
 
-    for (const auto& prim : _primitives )
+    for (const auto& prim : _primitives)
     {
         if (prim.second == kCDXGraphicType_Rectangle)
             mol.meta().addMetaObject(new KETSimpleObject(KETSimpleObject::EKETRectangle, prim.first));
