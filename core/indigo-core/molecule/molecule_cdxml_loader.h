@@ -126,7 +126,9 @@ namespace indigo
 
     struct CdxmlNode
     {
-        CdxmlNode() : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false) // Carbon by default
+        CdxmlNode()
+            : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false),
+              has_fragment(false) // Carbon by default
         {
         }
 
@@ -149,6 +151,7 @@ namespace indigo
         AutoInt rg_index;
 
         bool is_not_list;
+        bool has_fragment;
         std::vector<AutoInt> element_list;
         std::unordered_map<int, int> bond_id_to_connection_idx;
         std::unordered_map<int, int> node_id_to_connection_idx;
