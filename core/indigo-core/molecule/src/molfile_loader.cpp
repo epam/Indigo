@@ -28,8 +28,6 @@
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
-#include "base_cpp/multimap.h"
-
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
 using namespace indigo;

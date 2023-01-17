@@ -19,10 +19,10 @@
 #ifndef __molecule_rgroups_composition__
 #define __molecule_rgroups_composition__
 
+#include <map>
 #include <memory>
 
 #include "base_cpp/array.h"
-#include "base_cpp/multimap.h"
 #include "molecule/molecule.h"
 
 namespace indigo
@@ -240,13 +240,13 @@ namespace indigo
 
         inline Fragment _fragment_coordinates(int rsite, int fragment) const
         {
-            const RedBlackSet<int>& rs = _rsite2rgroup[_rsite2vertex.at(rsite)];
-
             int r = -1;
             int f = fragment;
-            for (int i = rs.begin(); i != rs.end(); i = rs.next(i))
+            const auto it_end = _rsite2rgroup.upper_bound(_rsite2vertex.at(rsite));
+
+            for (auto it = _rsite2rgroup.lower_bound(_rsite2vertex.at(rsite)); it != it_end; it++)
             {
-                r = rs.key(i);
+                r = it->second;
                 int size = _rgroup2size[r];
                 if (f >= size)
                 {
@@ -281,7 +281,7 @@ namespace indigo
 
         Array<int> _limits;
         Array<int> _rgroup2size;
-        MultiMap<int, int> _rsite2rgroup;
+        std::multimap<int, int> _rsite2rgroup;
         RedBlackMap<int, int> _rsite2vertex;
 
         mutable std::unique_ptr<Attachments> _ats;
