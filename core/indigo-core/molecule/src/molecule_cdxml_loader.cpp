@@ -323,7 +323,7 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(CDXElement elem, bool no_siblings,
         CdxmlNode node;
         this->_parseNode(node, elem);
         _addNode(node);
-        if (is_fragment(node.type))
+        if (node.has_fragment)
         {
             int inner_idx_start = nodes.size();
             this->_parseCDXMLElements(elem.firstChildElement(), false, true);
@@ -829,6 +829,10 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
             _parseLabel(child_elem, label);
             if (label.find("R") == 0)
                 node.rg_index = label.substr(1);
+        }
+        else if (child_elem.name() == "fragment")
+        {
+            node.has_fragment = true;
         }
     }
 }
