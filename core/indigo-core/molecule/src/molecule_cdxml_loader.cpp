@@ -1128,7 +1128,6 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
                 text_vec_styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)font_size) + "px");
 
             std::remove_if(label_plain.begin(), label_plain.end(), [](char c) { return (c == '\r'); });
-
             auto labels = split(label_plain, '\n');
             for (const auto& label : labels)
             {
