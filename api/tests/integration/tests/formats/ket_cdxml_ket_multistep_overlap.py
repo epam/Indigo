@@ -1,5 +1,7 @@
 import os
 import sys
+import json
+import xml.etree.ElementTree as ET
 
 sys.path.append(
     os.path.normpath(
@@ -14,8 +16,6 @@ print("*** KET to CDXML to KET ***")
 
 root = joinPathPy("reactions/", __file__)
 files = [
-    "agents.ket",
-    "multi.ket",
     "multi_overlap.ket",
 ]
 
@@ -24,14 +24,15 @@ files.sort()
 for filename in files:
     print(filename)
     try:
-        print("*** Try as Reaction ***")
         ket = indigo.loadReactionFromFile(os.path.join(root, filename))
         ket.layout()
-        cdxml_text = ket.cdxml()
+        cdxml_raw = ket.cdxml()
+        cdxml = ET.XML(cdxml_raw)
+        ET.indent(cdxml)
+        cdxml_text = ET.dump(cdxml)
         print(cdxml_text)
-        ket = indigo.loadReaction(cdxml_text)
+        ket = indigo.loadReaction(cdxml_raw)
         ket.layout()
-        print(ket.json())
+        print(json.dumps(json.loads(ket.json()), indent=2))
     except IndigoException as e:
         print(getIndigoExceptionText(e))
-        print("*** Try as QueryReaction ***")
