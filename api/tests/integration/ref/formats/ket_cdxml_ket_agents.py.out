@@ -119,7 +119,7 @@ None
       {
         "type": "text",
         "data": {
-          "content": "{\"blocks\":[{\"text\":\"test\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":4,\"style\":\"CUSTOM_FONT_SIZE_14px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+          "content": "{\"blocks\":[{\"text\":\"test\",\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
           "position": {
             "x": 10.149999618530273,
             "y": -5.574999809265137,

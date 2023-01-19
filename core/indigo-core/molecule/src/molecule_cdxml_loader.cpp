@@ -1076,7 +1076,7 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
     float font_size;
 
     auto style_font_lambda = [&font_id](const std::string& data) { font_id = data; };
-    auto style_size_lambda = [&font_size](const std::string& data) { font_size = std::stof(data) * kCDXMLFonsSizeMultiplier; };
+    auto style_size_lambda = [&font_size](const std::string& data) { font_size = round(std::stof(data) * kCDXMLFonsSizeMultiplier); };
     auto style_color_lambda = [&font_color_id](const std::string& data) { font_color_id = data; };
     auto style_face_lambda = [&font_face](const std::string& data) { font_face = data; };
 
@@ -1124,8 +1124,8 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
                 if (fs.is_superscript)
                     text_vec_styles.push_back(KETFontSubscriptStr);
             }
-            if (font_size > 0)
-                text_vec_styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)ceil(font_size)) + "px");
+            if (font_size > 0 && (int)font_size != KETDefaultFontSize)
+                text_vec_styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)font_size) + "px");
 
             std::remove_if(label_plain.begin(), label_plain.end(), [](char c) { return (c == '\r'); });
 

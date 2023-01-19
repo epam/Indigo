@@ -44,7 +44,7 @@ None
       {
         "type": "text",
         "data": {
-          "content": "{\"blocks\":[{\"text\":\"text13text20text40\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_14px\"},{\"offset\":6,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_20px\"},{\"offset\":12,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_41px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+          "content": "{\"blocks\":[{\"text\":\"text13\",\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"text\":\"text20\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_20px\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"text40\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_40px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
           "position": {
             "x": 6.050000190734863,
             "y": -6.949999809265137,
