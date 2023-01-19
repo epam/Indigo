@@ -3,33 +3,33 @@ text_size.ket
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
   <fonttable id="1">
     <font id="2" charset="utf-8" name="Arial" />
-    <font id="3" charset="utf-8" name="Times New Roman" />
+  <font id="3" charset="utf-8" name="Times New Roman" />
   </fonttable>
-  <colortable>
+<colortable>
     <color r="1" g="1" b="1" />
-    <color r="0" g="0" b="0" />
-    <color r="1" g="0" b="0" />
-    <color r="1" g="1" b="0" />
-    <color r="0" g="1" b="0" />
-    <color r="0" g="1" b="1" />
-    <color r="0" g="0" b="1" />
-    <color r="1" g="0" b="1" />
-    <color r="0.5" g="0.5" b="0.5" />
+  <color r="0" g="0" b="0" />
+  <color r="1" g="0" b="0" />
+  <color r="1" g="1" b="0" />
+  <color r="0" g="1" b="0" />
+  <color r="0" g="1" b="1" />
+  <color r="0" g="0" b="1" />
+  <color r="1" g="0" b="1" />
+  <color r="0.5" g="0.5" b="0.5" />
   </colortable>
-  <page HeightPages="1" WidthPages="1">
+<page HeightPages="1" WidthPages="1">
     <fragment id="4">
       <n id="5" p="30.000000 30.000000" />
-      <n id="6" p="78.000000 30.000000" />
-      <n id="7" p="30.000000 78.000000" />
-      <n id="8" p="78.000000 78.000000" />
-      <b id="9" B="5" E="6" />
-      <b id="10" B="5" E="7" />
-      <b id="11" B="6" E="8" />
-      <b id="12" B="7" E="8" />
-      <t id="13" p="181.500000 208.500000" Justification="Left" InterpretChemically="no">
+    <n id="6" p="78.000000 30.000000" />
+    <n id="7" p="30.000000 78.000000" />
+    <n id="8" p="78.000000 78.000000" />
+    <b id="9" B="5" E="6" />
+    <b id="10" B="5" E="7" />
+    <b id="11" B="6" E="8" />
+    <b id="12" B="7" E="8" />
+    <t id="13" p="181.500000 208.500000" Justification="Left" InterpretChemically="no">
         <s font="4" size="8.66667" face="0">text13</s>
-        <s font="4" size="13.3333" face="0">text20</s>
-        <s font="4" size="26.6667" face="0">text40</s>
+      <s font="4" size="13.3333" face="0">text20</s>
+      <s font="4" size="26.6667" face="0">text40</s>
       </t>
     </fragment>
   </page>

@@ -8,6 +8,26 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+
+
+def indent(elem, level=0):
+    i = "\n" + level * "  "
+    j = "\n" + (level - 1) * "  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for subelem in elem:
+            indent(subelem, level + 1)
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = j
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = j
+    return elem
+
+
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -28,7 +48,7 @@ for filename in files:
         ket.layout()
         cdxml_raw = ket.cdxml()
         cdxml = ET.XML(cdxml_raw)
-        ET.indent(cdxml)
+        indent(cdxml)
         cdxml_text = ET.dump(cdxml)
         print(cdxml_text)
         ket = indigo.loadMolecule(cdxml_raw)
