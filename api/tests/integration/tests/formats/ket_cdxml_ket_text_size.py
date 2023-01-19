@@ -1,6 +1,6 @@
+import json
 import os
 import sys
-import json
 import xml.etree.ElementTree as ET
 
 sys.path.append(
