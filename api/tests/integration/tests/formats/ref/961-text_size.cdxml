@@ -1,48 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
 <CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
-  <fonttable id="1">
-    <font id="2" charset="utf-8" name="Arial" />
-  <font id="3" charset="utf-8" name="Times New Roman" />
-  </fonttable>
-<colortable>
-    <color r="1" g="1" b="1" />
-  <color r="0" g="0" b="0" />
-  <color r="1" g="0" b="0" />
-  <color r="1" g="1" b="0" />
-  <color r="0" g="1" b="0" />
-  <color r="0" g="1" b="1" />
-  <color r="0" g="0" b="1" />
-  <color r="1" g="0" b="1" />
-  <color r="0.5" g="0.5" b="0.5" />
-  </colortable>
-<page HeightPages="1" WidthPages="1">
-    <fragment id="4">
-      <n id="5" p="192.216217 188.926468" />
-    <n id="6" p="192.105118 159.073532" />
-    <n id="7" p="161.858841 188.539108" />
-    <n id="8" p="161.783783 159.073532" />
-    <b id="20" B="5" E="6" />
-    <b id="21" B="5" E="7" />
-    <b id="22" B="6" E="8" />
-    <b id="23" B="7" E="8" />
-    </fragment>
-  <fragment id="9">
-      <n id="10" p="403.716217 186.676468" />
-    <n id="11" p="403.605133 156.823547" />
-    <n id="12" p="373.358826 186.289108" />
-    <n id="13" p="373.283783 156.823547" />
-    <b id="24" B="10" E="11" />
-    <b id="25" B="10" E="12" />
-    <b id="26" B="11" E="13" />
-    <b id="27" B="12" E="13" />
-    </fragment>
-  <arrow id="14" BoundingBox="338.250000 174.000000 217.500000 174.750000" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="338.250000 174.000000 0.000000" Tail3D="217.500000 174.750000 0.000000" />
-  <t id="17" p="222.750000 135.000000" Justification="Left" InterpretChemically="no">
-      <s font="4" size="8.66667" face="0">test13</s>
-    <s font="4" size="13.3333" face="0">test20</s>
-    <s font="4" size="26.6667" face="0">test40</s>
-    </t>
-  <scheme>
-      <step ReactionStepReactants="4" ReactionStepProducts="9" ReactionStepArrows="14" />
-    </scheme>
-  </page>
+    <fonttable id="1">
+        <font id="2" charset="utf-8" name="Arial"/>
+        <font id="3" charset="utf-8" name="Times New Roman"/>
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1"/>
+        <color r="0" g="0" b="0"/>
+        <color r="1" g="0" b="0"/>
+        <color r="1" g="1" b="0"/>
+        <color r="0" g="1" b="0"/>
+        <color r="0" g="1" b="1"/>
+        <color r="0" g="0" b="1"/>
+        <color r="1" g="0" b="1"/>
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="4">
+            <n id="5" p="192.216217 188.926468"/>
+            <n id="6" p="192.105118 159.073532"/>
+            <n id="7" p="161.858841 188.539108"/>
+            <n id="8" p="161.783783 159.073532"/>
+            <b id="20" B="5" E="6"/>
+            <b id="21" B="5" E="7"/>
+            <b id="22" B="6" E="8"/>
+            <b id="23" B="7" E="8"/>
+        </fragment>
+        <fragment id="9">
+            <n id="10" p="403.716217 186.676468"/>
+            <n id="11" p="403.605133 156.823547"/>
+            <n id="12" p="373.358826 186.289108"/>
+            <n id="13" p="373.283783 156.823547"/>
+            <b id="24" B="10" E="11"/>
+            <b id="25" B="10" E="12"/>
+            <b id="26" B="11" E="13"/>
+            <b id="27" B="12" E="13"/>
+        </fragment>
+        <arrow id="14" BoundingBox="338.250000 174.000000 217.500000 174.750000" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="338.250000 174.000000 0.000000" Tail3D="217.500000 174.750000 0.000000"/>
+        <t id="17" p="222.750000 135.000000" Justification="Left" InterpretChemically="no">
+            <s font="4" size="8.66667" face="0">test13</s>
+            <s font="4" size="13.3333" face="0">test20</s>
+            <s font="4" size="26.6667" face="0">test40</s>
+        </t>
+        <scheme>
+            <step ReactionStepReactants="4" ReactionStepProducts="9" ReactionStepArrows="14"/>
+        </scheme>
+    </page>
 </CDXML>

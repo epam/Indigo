@@ -44,7 +44,7 @@ void dumpAtoms(BaseMolecule& mol)
     printf("\n");
 }
 
-MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output), _pmol(nullptr), _pqmol(nullptr), _add_stereo_desc(false)
+MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false)
 {
 }
 
@@ -146,7 +146,7 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
     }
 }
 
-void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<int>, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
@@ -165,7 +165,7 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, rapidjson::Writer<rapidjs
     }
 }
 
-void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
 {
     writer.StartObject();
     writer.Key("type");
@@ -347,7 +347,7 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, rapidjson::Writer<rap
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
@@ -442,7 +442,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson
     }
 }
 
-void MoleculeJsonSaver::saveAttachmentPoint(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void MoleculeJsonSaver::saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer)
 {
     int val = 0;
     for (int idx = 1; idx <= mol.attachmentPointCount(); idx++)
@@ -464,7 +464,7 @@ void MoleculeJsonSaver::saveAttachmentPoint(BaseMolecule& mol, int atom_idx, rap
     }
 }
 
-void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer)
 {
     writer.Key("pyramid");
     writer.StartArray();
@@ -479,7 +479,7 @@ void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, rapidj
     writer.EndArray();
 }
 
-void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
 {
     int ca = mol.countSelectedAtoms();
     int cb = mol.countSelectedBonds();
@@ -528,7 +528,7 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, rapidjson::Writer<rapi
     }
 }
 
-void MoleculeJsonSaver::saveSelection(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void MoleculeJsonSaver::saveSelection(BaseMolecule& mol, JsonWriter& writer)
 {
     int ca = mol.countSelectedAtoms();
     int cb = mol.countSelectedBonds();
@@ -575,7 +575,7 @@ void MoleculeJsonSaver::saveSelection(BaseMolecule& mol, rapidjson::Writer<rapid
     }
 }
 
-void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& writer)
+void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 {
     // collect aliases
     std::unordered_map<int, std::string> aliases;
@@ -803,7 +803,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
     }
 }
 
-void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
@@ -836,13 +836,13 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& writer)
+void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 {
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
 
     MoleculeCIPCalculator mcc;
-    mcc.updateCIPStereoDescriptors(*mol, _add_stereo_desc);
+    mcc.updateCIPStereoDescriptors(*mol, add_stereo_desc);
 
     if (!BaseMolecule::hasCoord(*mol))
     {
@@ -961,14 +961,15 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
 {
     StringBuffer s;
-    Writer<StringBuffer> writer(s);
+    JsonWriter writer(pretty_json);
+    writer.Reset(s);
     saveMolecule(bmol, writer);
     std::stringstream result;
     result << s.GetString();
     _output.printf("%s", result.str().c_str());
 }
 
-void MoleculeJsonSaver::saveMetaData(rapidjson::Writer<rapidjson::StringBuffer>& writer, MetaDataStorage& meta)
+void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
 {
     static const std::unordered_map<int, std::string> _arrow_type2string = {
         {ReactionComponent::ARROW_BASIC, "open-angle"},
