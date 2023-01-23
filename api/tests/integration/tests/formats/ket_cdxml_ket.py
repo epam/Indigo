@@ -5,7 +5,7 @@ import sys
 def find_diff(a, b):
     if a == b:
         return ""
-    return "not equal"
+    return "actual:\n{}\nexpected:\n{}".format(a, b)
 
 
 sys.path.append(
