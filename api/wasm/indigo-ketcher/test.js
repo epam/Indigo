@@ -572,6 +572,55 @@ M  END
             assert(equal);
             options.delete();
         });
+
+        test("render", "ketcher_text_panel_regular", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("ketcher_text_panel_test_regular.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("ketcher_text_panel_regular_out.png", png);
+            const {equal} = await looksSame('ketcher_text_panel_regular_ref.png', 'ketcher_text_panel_regular_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        // TODO: enable rest of ketcher text panel tests
+        // test("render", "ketcher_text_panel_bold", async () => {
+        //     let options = new indigo.MapStringString();
+        //     options.set("render-output-format", "png");
+        //     var fs = require('fs');
+        //     const ket_data = fs.readFileSync("ketcher_text_panel_test_bold.ket");
+        //     const png = Buffer.from(indigo.render(ket_data, options), "base64");
+        //     fs.writeFileSync("ketcher_text_panel_bold_out.png", png);
+        //     const {equal} = await looksSame('ketcher_text_panel_bold_ref.png', 'ketcher_text_panel_bold_out.png');
+        //     assert(equal);
+        //     options.delete();
+        // });
+
+        // test("render", "ketcher_text_panel_italic", async () => {
+        //     let options = new indigo.MapStringString();
+        //     options.set("render-output-format", "png");
+        //     var fs = require('fs');
+        //     const ket_data = fs.readFileSync("ketcher_text_panel_test_italic.ket");
+        //     const png = Buffer.from(indigo.render(ket_data, options), "base64");
+        //     fs.writeFileSync("ketcher_text_panel_italic_out.png", png);
+        //     const {equal} = await looksSame('ketcher_text_panel_italic_ref.png', 'ketcher_text_panel_italic_out.png');
+        //     assert(equal);
+        //     options.delete();
+        // });
+
+        // test("render", "ketcher_text_panel_bold_italic", async () => {
+        //     let options = new indigo.MapStringString();
+        //     options.set("render-output-format", "png");
+        //     var fs = require('fs');
+        //     const ket_data = fs.readFileSync("ketcher_text_panel_test_bold_italic.ket");
+        //     const png = Buffer.from(indigo.render(ket_data, options), "base64");
+        //     fs.writeFileSync("ketcher_text_panel_bold_italic_out.png", png);
+        //     const {equal} = await looksSame('ketcher_text_panel_bold_italic_ref.png', 'ketcher_text_panel_bold_italic_out.png');
+        //     assert(equal);
+        //     options.delete();
+        // });
     }
 
     // Throws
