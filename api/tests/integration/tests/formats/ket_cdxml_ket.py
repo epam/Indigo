@@ -51,8 +51,6 @@ for filename in files:
             print(filename + ".cdxml:FAILED")
             print("difference:" + diff)
         diff = find_diff(ket_ref, ket_result)
-        with open(os.path.join(ref_path, filename), "w") as file:
-            file.write(cdxml_text)
         if not diff:
             print(filename + ".ket:SUCCEED")
         else:
