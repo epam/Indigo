@@ -1226,7 +1226,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     case KETTextObject::CID: {
         const KETTextObject& ko = static_cast<const KETTextObject&>(obj);
         double text_offset_y = 0;
-        int font_size = 13;
+        int font_size = KETDefaultFontSize;
         CDXMLFontStyle font_face(0);
         for (auto& text_item : ko._block)
         {
@@ -1275,7 +1275,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                         font_face.is_subscript = text_style.second;
                         break;
                     default:
-                        font_size = text_style.second ? text_style.first : 13;
+                        font_size = text_style.second ? text_style.first : KETDefaultFontSize;
                         break;
                     }
                 }
@@ -1283,7 +1283,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                 XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 4);
-                s->SetAttribute("size", font_size);
+                s->SetAttribute("size", font_size / kCDXMLFonsSizeMultiplier);
                 s->SetAttribute("face", font_face.face);
                 XMLText* txt = _doc->NewText(sub_text.c_str());
                 s->LinkEndChild(txt);
