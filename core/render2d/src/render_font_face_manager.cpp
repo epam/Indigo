@@ -18,10 +18,10 @@
 
 #include "render_font_face_manager.h"
 
-#include "sans_bold.h"
-#include "sans_bold_italic.h"
-#include "sans_italic.h"
-#include "sans_regular.h"
+#include "NotoSans_Bold.h"
+#include "NotoSans_BoldItalic.h"
+#include "NotoSans_Italic.h"
+#include "NotoSans_Regular.h"
 
 #include <stdexcept>
 
