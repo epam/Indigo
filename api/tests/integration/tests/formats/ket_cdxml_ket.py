@@ -29,6 +29,7 @@ files = [
     "multi_overlap",
     "961-text_size",
     "generic",
+    "963-super",
 ]
 
 files.sort()
@@ -37,14 +38,32 @@ for filename in files:
     with open(os.path.join(root, filename + ".ket"), "r") as file:
         ket_str = file.read()
     try:
-        ket = indigo.loadReaction(ket_str)
+        ket = indigo.loadMolecule(ket_str)
     except IndigoException as e:
-        print(getIndigoExceptionText(e))
-        ket = indigo.loadQueryReaction(ket_str)
+        try:
+            ket = indigo.loadQueryMolecule(ket_str)
+        except IndigoException as e:
+            try:
+                ket = indigo.loadReaction(ket_str)
+            except IndigoException as e:
+                try:
+                    ket = indigo.loadQueryReaction(ket_str)
+                except IndigoException as e:
+                    print(getIndigoExceptionText(e))
+                    raise SystemExit
 
     cdxml_text = ket.cdxml()
-    ket = indigo.loadReaction(cdxml_text)
+
+    try:
+        ket = indigo.loadMolecule(cdxml_text)
+    except IndigoException as e:
+        ket = indigo.loadReaction(cdxml_text)
+
     ket_result = ket.json()
+
+    # with open(os.path.join(ref_path, filename), "w") as file:
+    #    file.write(ket_result)
+
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
     with open(os.path.join(ref_path, filename) + ".cdxml", "r") as file:

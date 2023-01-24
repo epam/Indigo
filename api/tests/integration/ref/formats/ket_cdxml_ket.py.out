@@ -1,9 +1,10 @@
 *** KET to CDXML to KET ***
 961-text_size.cdxml:SUCCEED
 961-text_size.ket:SUCCEED
+963-super.cdxml:SUCCEED
+963-super.ket:SUCCEED
 agents.cdxml:SUCCEED
 agents.ket:SUCCEED
-molecule json loader: 'A' label is allowed only for queries
 generic.cdxml:SUCCEED
 generic.ket:SUCCEED
 multi.cdxml:SUCCEED
