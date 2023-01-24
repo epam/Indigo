@@ -3,6 +3,9 @@
 961-text_size.ket:SUCCEED
 agents.cdxml:SUCCEED
 agents.ket:SUCCEED
+molecule json loader: 'A' label is allowed only for queries
+generic.cdxml:SUCCEED
+generic.ket:SUCCEED
 multi.cdxml:SUCCEED
 multi.ket:SUCCEED
 multi_overlap.cdxml:SUCCEED
