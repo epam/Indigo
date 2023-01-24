@@ -1,5 +1,6 @@
 const indigoModuleFn = require('./indigo-ketcher.js')
 const assert = require('assert').strict;
+const looksSame = require('looks-same');
 
 // Extremely simple test framework, thanks to @sohamkamari (https://github.com/sohamkamani/nodejs-test-without-library)
 let tests = []
@@ -545,6 +546,30 @@ M  END
             options.set("render-output-format", "pdf");
             const pdf = Buffer.from(indigo.render(mol_smiles, options), "base64").toString();
             assert(pdf.indexOf("%PDF-") !== -1);
+            options.delete();
+        });
+
+        test("render", "uf8_svg", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "svg");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("test_symbols_4_styles_2_sizes.ket");
+            const svg = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("utf8_out.svg",svg);
+            const {equal} = await looksSame('utf8_ref.svg', 'utf8_out.svg');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "uf8_png", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("test_symbols_4_styles_2_sizes.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("utf8_out.png", png);
+            const {equal} = await looksSame('utf8_ref.png', 'utf8_out.png');
+            assert(equal);
             options.delete();
         });
     }

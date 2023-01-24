@@ -24,6 +24,7 @@ namespace indigo
     const uint32_t kCDXMagicNumber = 0x01020304;
     const char kCDXReserved[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     const float kColorMult = ((1 << 16) - 1);
+    const float kCDXMLFonsSizeMultiplier = 1.5;
 
 #pragma pack(push, 1)
 
@@ -352,12 +353,15 @@ namespace indigo
     };
 
     const std::unordered_map<std::string, CDXGraphicType> kCDXPropGraphicTypeStrToID = {
-        {"Undefined", kCDXGraphicType_Undefined}, {"Line", kCDXGraphicType_Line},       {"Arc", kCDXGraphicType_Arc},      {"Oval", kCDXGraphicType_Oval},
-        {"Orbital", kCDXGraphicType_Orbital},     {"Bracket", kCDXGraphicType_Bracket}, {"Symbol", kCDXGraphicType_Symbol}};
+        {"Undefined", kCDXGraphicType_Undefined}, {"Line", kCDXGraphicType_Line},
+        {"Rectangle", kCDXGraphicType_Rectangle}, {"Arc", kCDXGraphicType_Arc},
+        {"Oval", kCDXGraphicType_Oval},           {"Orbital", kCDXGraphicType_Orbital},
+        {"Bracket", kCDXGraphicType_Bracket},     {"Symbol", kCDXGraphicType_Symbol}};
 
-    const std::unordered_map<int, std::string> kCDXPropGraphicTypeIDToStr = {
-        {kCDXGraphicType_Undefined, "Undefined"}, {kCDXGraphicType_Line, "Line"},       {kCDXGraphicType_Arc, "Arc"},      {kCDXGraphicType_Oval, "Oval"},
-        {kCDXGraphicType_Orbital, "Orbital"},     {kCDXGraphicType_Bracket, "Bracket"}, {kCDXGraphicType_Symbol, "Symbol"}};
+    const std::unordered_map<int, std::string> kCDXPropGraphicTypeIDToStr = {{kCDXGraphicType_Undefined, "Undefined"}, {kCDXGraphicType_Line, "Line"},
+                                                                             {kCDXGraphicType_Rectangle, "Rectangle"}, {kCDXGraphicType_Arc, "Arc"},
+                                                                             {kCDXGraphicType_Oval, "Oval"},           {kCDXGraphicType_Orbital, "Orbital"},
+                                                                             {kCDXGraphicType_Bracket, "Bracket"},     {kCDXGraphicType_Symbol, "Symbol"}};
 
     const std::unordered_map<std::string, int> kCDXProp_Bond_DisplayStrToID = {{"Solid", kCDXBondDisplay_Solid},
                                                                                {"Dash", kCDXBondDisplay_Dash},

@@ -28,7 +28,7 @@ add_custom_target(${PROJECT_NAME}
         -o ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/indigo-ketcher.js
         ${EMCC_FLAGS}
         $<TARGET_OBJECTS:${PROJECT_NAME}-object>
-        $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:cairo> $<TARGET_FILE:png> $<TARGET_FILE:pixman> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
+        $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:cairo> $<TARGET_FILE:freetype> $<TARGET_FILE:png> $<TARGET_FILE:pixman> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
         DEPENDS ${PROJECT_NAME}-object
         )
 
@@ -36,6 +36,10 @@ add_custom_target(${PROJECT_NAME}-test
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/test.js ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/test64.cdx ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/test64.ket ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/utf8_ref.svg ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/utf8_ref.png ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/test_symbols_4_styles_2_sizes.ket ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND npm install looks-same
         COMMAND node test
         WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         DEPENDS ${PROJECT_NAME}

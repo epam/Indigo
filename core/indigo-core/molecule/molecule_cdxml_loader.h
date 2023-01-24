@@ -817,6 +817,8 @@ namespace indigo
             return _scanner;
         }
 
+        virtual ~CDXReader(){};
+
     protected:
         std::string _buffer;
         Scanner& _scanner;
@@ -841,6 +843,10 @@ namespace indigo
         CDXElement rootElement() override
         {
             return CDXElement{_xml.RootElement()};
+        }
+
+        ~CDXMLReader()
+        {
         }
 
     private:
