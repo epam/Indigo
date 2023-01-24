@@ -36,6 +36,6 @@ for filename in files:
                 reac = indigo.loadReactionFromFile(
                     os.path.join(root, filename)
                 )
-                print(reac.json())
+                print(reac.rxnfile())
             except IndigoException as e:
                 print(getIndigoExceptionText(e))
