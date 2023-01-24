@@ -326,7 +326,7 @@ class IndigoObject:
             str: CDXML string
         """
 
-        return IndigoLib.checkResultString(self._lib().indigoCdxml(self.id))
+        return IndigoLib.checkResultString(self._lib().indigoCdx(self.id))
 
     def json(self):
         """Structure method returns the structure as a string in KET format
