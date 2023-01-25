@@ -564,6 +564,7 @@ M  END
         test("render", "uf8_png", async () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");
+            options.set("render-background-color","1,1,1");
             var fs = require('fs');
             const ket_data = fs.readFileSync("test_symbols_4_styles_2_sizes.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
