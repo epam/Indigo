@@ -52,7 +52,6 @@ namespace indigo
             _plus_indexes.clear();
             _arrow_indexes.clear();
             _simple_object_indexes.clear();
-            _text_object_indexes.clear();
         }
 
         void resetReactionData();

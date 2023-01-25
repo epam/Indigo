@@ -90,7 +90,6 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     nodes.clear();
     bonds.clear();
     _arrows.clear();
-    _primitives.clear();
     _id_to_atom_idx.clear();
     _id_to_node_index.clear();
     _id_to_bond_index.clear();
@@ -207,12 +206,6 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         Vec2f v2(arr_info.second.x, arr_info.second.y);
         mol.meta().addMetaObject(new KETReactionArrow(arrow.second, v1, v2));
     }
-
-    for (const auto& prim : _primitives)
-    {
-        if (prim.second == kCDXGraphicType_Rectangle)
-            mol.meta().addMetaObject(new KETSimpleObject(KETSimpleObject::EKETRectangle, prim.first));
-    }
 }
 
 void MoleculeCdxmlLoader::_processEnhancedStereo(BaseMolecule& mol)
@@ -323,7 +316,7 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(CDXElement elem, bool no_siblings,
         CdxmlNode node;
         this->_parseNode(node, elem);
         _addNode(node);
-        if (node.has_fragment)
+        if (is_fragment(node.type))
         {
             int inner_idx_start = nodes.size();
             this->_parseCDXMLElements(elem.firstChildElement(), false, true);
@@ -830,10 +823,6 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
             if (label.find("R") == 0)
                 node.rg_index = label.substr(1);
         }
-        else if (child_elem.name() == "fragment")
-        {
-            node.has_fragment = true;
-        }
     }
 }
 
@@ -1013,10 +1002,10 @@ void MoleculeCdxmlLoader::_parseGraphic(CDXElement elem)
         }
     }
     break;
-    case kCDXGraphicType_Oval:
     case kCDXGraphicType_Arc:
+        break;
     case kCDXGraphicType_Rectangle:
-        _primitives.push_back(std::make_pair(graph_bbox, graphic_type));
+
         break;
     case kCDXGraphicType_Oval:
         break;

@@ -24,18 +24,5 @@ for filename in files:
     except IndigoException as e:
         print(getIndigoExceptionText(e))
         print("*** Try as Query ***")
-        try:
-            mol = indigo.loadQueryMoleculeFromFile(
-                os.path.join(root, filename)
-            )
-            print(mol.molfile())
-        except IndigoException as e:
-            print(getIndigoExceptionText(e))
-            print("*** Try as Reaction ***")
-            try:
-                reac = indigo.loadReactionFromFile(
-                    os.path.join(root, filename)
-                )
-                print(reac.rxnfile())
-            except IndigoException as e:
-                print(getIndigoExceptionText(e))
+        mol = indigo.loadQueryMoleculeFromFile(os.path.join(root, filename))
+        print(mol.molfile())
