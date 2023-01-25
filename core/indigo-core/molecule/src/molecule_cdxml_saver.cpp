@@ -1636,7 +1636,7 @@ void MoleculeCdxmlSaver::endDocument()
 {
     if (_is_binary)
     {
-        std::ifstream t("C:\\cdx\\text.cdxml");
+        std::ifstream t("C:\\cdx\\1.cdxml");
         std::stringstream buffer;
         buffer << t.rdbuf();
         _doc->Parse(buffer.str().c_str());
