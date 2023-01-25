@@ -1018,6 +1018,8 @@ void MoleculeCdxmlLoader::_parseGraphic(CDXElement elem)
     case kCDXGraphicType_Rectangle:
         _primitives.push_back(std::make_pair(graph_bbox, graphic_type));
         break;
+    case kCDXGraphicType_Oval:
+        break;
     case kCDXGraphicType_Orbital:
         break;
     case kCDXGraphicType_Bracket:
