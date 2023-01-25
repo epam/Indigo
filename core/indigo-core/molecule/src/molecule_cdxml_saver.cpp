@@ -885,7 +885,7 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
     {
         std::vector<std::pair<int, int>> ext_connections;
         std::vector<int> connection_order, bond_ordering;
-        std::vector<int> int_connections;
+        std::set<int> int_connections;
         XMLElement* node = _doc->NewElement("n");
         fragment->LinkEndChild(node);
         node->SetAttribute("id", ++_id);
@@ -917,7 +917,10 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
                 }
 
                 if (_bonds_included.find(nei_edge_idx) != _bonds_included.end())
-                    int_connections.push_back(nei_edge_idx);
+                {
+                    if (int_connections.find(nei_edge_idx) == int_connections.end())
+                        int_connections.insert(nei_edge_idx);
+                }
             }
         }
 
