@@ -326,7 +326,6 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
 
                         auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
-
                         ti.text.readString(sub_text.c_str(), true);
                         fillKETStyle(ti, current_styles);
                         _rc.setTextItemSize(ti);
