@@ -326,7 +326,9 @@ class IndigoObject:
             str: base64 encoded CDX string
         """
 
-        return IndigoLib.checkResultString(self._lib().indigoCdxBase64(self.id))
+        return IndigoLib.checkResultString(
+            self._lib().indigoCdxBase64(self.id)
+        )
 
     def json(self):
         """Structure method returns the structure as a string in KET format
