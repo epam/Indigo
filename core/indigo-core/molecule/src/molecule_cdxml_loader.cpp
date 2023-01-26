@@ -862,7 +862,6 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, CDXProperty prop)
 
     auto stereo_lambda = [&bond](const std::string& data) { bond.stereo = kCIPStereochemistryCharToIndex.at(data.front()); };
 
-
     auto bond_dir_lambda = [&bond](const std::string& data) {
         static const std::unordered_map<std::string, std::pair<int, bool>> dir_map = {{"WedgedHashBegin", {BOND_DOWN, false}},
                                                                                       {"WedgedHashEnd", {BOND_DOWN, true}},
