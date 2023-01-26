@@ -20,6 +20,7 @@ namespace indigo
 
     const int KCDXMLChemicalFontStyle = 96;
     const int kCDXMLSizeMultiplier = 20;
+    const int kBondSpacingMultiplier = 10;
     const int kCDXMLStyleSizeIndex = 2;
     const uint32_t kCDXMagicNumber = 0x01020304;
     const char kCDXReserved[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -47,6 +48,7 @@ namespace indigo
 
     struct CDXTextStyle
     {
+        CDXTextStyle() : offset(0), font_index(-1), font_face(0), font_size(0), font_color(0){};
         uint16_t offset;
         uint16_t font_index;
         uint16_t font_face;
@@ -263,6 +265,24 @@ namespace indigo
                                                                    {kCDXCharSetMacIcelandic, "x-mac-icelandic"},
                                                                    {kCDXCharSetMacTurkish, "x-mac-turkish"},
                                                                    {kCDXCharSetUTF8, "utf-8"}};
+
+    const std::unordered_map<int8_t, std::string> kTextJustificationIntToStr = {
+        {kCDXTextJustification_Right, "Right"}, {kCDXTextJustification_Left, "Left"},       {kCDXTextJustification_Center, "Center"},
+        {kCDXTextJustification_Full, "Full"},   {kCDXTextJustification_Above, "Above"},     {kCDXTextJustification_Below, "Below"},
+        {kCDXTextJustification_Auto, "Auto"},   {kCDXTextJustification_BestInitial, "Best"}};
+
+    const std::unordered_map<std::string, int8_t> kTextJustificationStrToInt = {
+        {"Right", kCDXTextJustification_Right}, {"Left", kCDXTextJustification_Left},       {"Center", kCDXTextJustification_Center},
+        {"Full", kCDXTextJustification_Full},   {"Above", kCDXTextJustification_Above},     {"Below", kCDXTextJustification_Below},
+        {"Auto", kCDXTextJustification_Auto},   {"Best", kCDXTextJustification_BestInitial}};
+
+    const std::unordered_map<int8_t, std::string> kLabelAlignmentIntTostr = {
+        {kCDXLabelDisplay_Auto, "Auto"},   {kCDXLabelDisplay_Left, "Left"},   {kCDXLabelDisplay_Center, "Center"},   {kCDXLabelDisplay_Right, "Right"},
+        {kCDXLabelDisplay_Above, "Above"}, {kCDXLabelDisplay_Below, "Below"}, {kCDXLabelDisplay_BestInitial, "Best"}};
+
+    const std::unordered_map<std::string, int8_t> kLabelAlignmentStrToInt = {
+        {"Auto", kCDXLabelDisplay_Auto},   {"Left", kCDXLabelDisplay_Left},   {"Center", kCDXLabelDisplay_Center},   {"Right", kCDXLabelDisplay_Right},
+        {"Above", kCDXLabelDisplay_Above}, {"Below", kCDXLabelDisplay_Below}, {"Best", kCDXLabelDisplay_BestInitial}};
 
     const std::unordered_map<int, std::string> kBondOrderIntToStr = {{kCDXBondOrder_Single, "1"},
                                                                      {kCDXBondOrder_Double, "2"},
@@ -557,7 +577,7 @@ namespace indigo
         {kCDXProp_Side, {"Side", ECDXType::CDXUINT16}},
         {kCDXProp_FixInplaceGap, {"FixInPlaceGap", ECDXType::CDXPoint2D}},
         {kCDXProp_CartridgeData, {"CartridgeData", ECDXType::CDXUnformatted}},
-        {kCDXProp_AminoAcidTermini, {"AminoAcidTermini", ECDXType::CDXINT8}},
+        {kCDXProp_AminoAcidTermini, {"AminoAcidTermini", ECDXType::CDXINT8}}, // values are undocumented
         {kCDXProp_ShowSequenceTermini, {"ShowSequenceTermini", ECDXType::CDXBooleanImplied}},
         {kCDXProp_ShowSequenceBonds, {"ShowSequenceBonds", ECDXType::CDXBooleanImplied}},
         {kCDXProp_ResidueWrapCount, {"ResidueWrapCount", ECDXType::CDXINT8}},

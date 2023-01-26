@@ -194,7 +194,7 @@ namespace indigo
         CDXProperty(const void* data, int size = 0, int first_id = 0, int style_index = -1, int style_prop = -1)
             : _data(data), _size(size), _first_id(first_id), _style_index(style_index), _style_prop(style_prop)
         {
-            if( _data && _size)
+            if (_data && _size)
             {
                 uint16_t* ptr16 = (uint16_t*)_data;
                 int tag = *ptr16;
@@ -504,6 +504,11 @@ namespace indigo
             case kCDXProp_Bracket_Usage:
                 return std::string{kBracketUsageIntToName.at(val)};
                 break;
+            case kCDXProp_LabelJustification:
+                return std::string(kTextJustificationIntToStr.at(val));
+            case kCDXProp_Node_LabelDisplay:
+            case kCDXProp_LabelAlignment:
+                return std::string(kLabelAlignmentIntTostr.at(val));
             default:
                 break;
             }
