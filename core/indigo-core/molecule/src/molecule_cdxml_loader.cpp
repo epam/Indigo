@@ -90,6 +90,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     nodes.clear();
     bonds.clear();
     _arrows.clear();
+    _primitives.clear();
     _id_to_atom_idx.clear();
     _id_to_node_index.clear();
     _id_to_bond_index.clear();
@@ -206,6 +207,12 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         Vec2f v2(arr_info.second.x, arr_info.second.y);
         mol.meta().addMetaObject(new KETReactionArrow(arrow.second, v1, v2));
     }
+
+    for (const auto& prim : _primitives)
+    {
+        if (prim.second == kCDXGraphicType_Rectangle)
+            mol.meta().addMetaObject(new KETSimpleObject(KETSimpleObject::EKETRectangle, prim.first));
+    }
 }
 
 void MoleculeCdxmlLoader::_processEnhancedStereo(BaseMolecule& mol)
@@ -316,7 +323,7 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(CDXElement elem, bool no_siblings,
         CdxmlNode node;
         this->_parseNode(node, elem);
         _addNode(node);
-        if (is_fragment(node.type))
+        if (node.has_fragment)
         {
             int inner_idx_start = nodes.size();
             this->_parseCDXMLElements(elem.firstChildElement(), false, true);
@@ -751,7 +758,11 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
     auto charge_lambda = [&node](const std::string& data) { node.charge = data; };
     auto element_lambda = [&node](const std::string& data) { node.element = data; };
     auto isotope_lambda = [&node](const std::string& data) { node.isotope = data; };
-    auto radical_lambda = [&node](const std::string& data) { node.radical = data; };
+    auto radical_lambda = [&node](const std::string& data) {
+        auto rd_it = kRadicalStrToId.find(data);
+        if (rd_it != kRadicalStrToId.end())
+            node.radical = rd_it->second;
+    };
     auto label_lambda = [&node](const std::string& data) { node.label = data; };
 
     auto bond_ordering_lambda = [&node](const std::string& data) {
@@ -766,7 +777,7 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
 
     auto pos_lambda = [&node, this](const std::string& data) { this->parsePos(data, node.pos); };
 
-    auto stereo_lambda = [&node](const std::string& data) { node.stereo = KCIPStereochemistryCharToIndex.at(data.front()); };
+    auto stereo_lambda = [&node](const std::string& data) { node.stereo = kCIPStereochemistryCharToIndex.at(data.front()); };
 
     auto node_type_lambda = [&node](const std::string& data) {
         node.type = KNodeTypeNameToInt.at(data);
@@ -819,6 +830,10 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
             if (label.find("R") == 0)
                 node.rg_index = label.substr(1);
         }
+        else if (child_elem.name() == "fragment")
+        {
+            node.has_fragment = true;
+        }
     }
 }
 
@@ -845,6 +860,9 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, CDXProperty prop)
         bond.order = order_map.at(data);
     };
 
+    auto stereo_lambda = [&bond](const std::string& data) { bond.stereo = kCIPStereochemistryCharToIndex.at(data.front()); };
+
+
     auto bond_dir_lambda = [&bond](const std::string& data) {
         static const std::unordered_map<std::string, std::pair<int, bool>> dir_map = {{"WedgedHashBegin", {BOND_DOWN, false}},
                                                                                       {"WedgedHashEnd", {BOND_DOWN, true}},
@@ -861,7 +879,7 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, CDXProperty prop)
     };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> bond_dispatcher = {
-        {"id", id_lambda}, {"B", bond_begin_lambda}, {"E", bond_end_lambda}, {"Order", bond_order_lambda}, {"Display", bond_dir_lambda}};
+        {"id", id_lambda}, {"B", bond_begin_lambda}, {"E", bond_end_lambda}, {"Order", bond_order_lambda}, {"Display", bond_dir_lambda}, {"BS", stereo_lambda}};
 
     applyDispatcher(prop, bond_dispatcher);
 }
@@ -998,11 +1016,10 @@ void MoleculeCdxmlLoader::_parseGraphic(CDXElement elem)
         }
     }
     break;
-    case kCDXGraphicType_Arc:
-        break;
-    case kCDXGraphicType_Rectangle:
-        break;
     case kCDXGraphicType_Oval:
+    case kCDXGraphicType_Arc:
+    case kCDXGraphicType_Rectangle:
+        _primitives.push_back(std::make_pair(graph_bbox, graphic_type));
         break;
     case kCDXGraphicType_Orbital:
         break;

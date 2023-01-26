@@ -100,6 +100,24 @@ namespace indigo
         CDXFontStyle
     };
 
+    const std::unordered_map<std::string, int16_t> kCDXProp_Arrow_ArrowHeadStrToInt = {{"Full", 1}};
+
+    const std::unordered_map<std::string, CDXLineType> kLineTypeStrToInt = {
+        {"Solid", kCDXLineType_Solid}, {"Dashed", kCDXLineType_Dashed}, {"Bold", kCDXLineType_Bold}, {"Wavy", kCDXLineType_Wavy}};
+
+    const std::unordered_map<int16_t, std::string> kLineTypeIntToStr = {
+        {kCDXLineType_Solid, "Solid"}, {kCDXLineType_Dashed, "Dashed"}, {kCDXLineType_Bold, "Bold"}, {kCDXLineType_Wavy, "Wavy"}};
+
+    const std::unordered_map<std::string, CDXRectangleType> kRectangleTypeStrToInt = {
+        {"Plain", kCDXRectangleType_Plain},   {"RoundEdge", kCDXRectangleType_RoundEdge}, {"Shadow", kCDXRectangleType_Shadow},
+        {"Shaded", kCDXRectangleType_Shaded}, {"Filled", kCDXRectangleType_Filled},       {"Dashed", kCDXRectangleType_Dashed},
+        {"Bold", kCDXRectangleType_Bold}};
+
+    const std::unordered_map<int16_t, std::string> kRectangleTypeIntToStr = {{kCDXRectangleType_Plain, "Plain"},   {kCDXRectangleType_RoundEdge, "RoundEdge"},
+                                                                             {kCDXRectangleType_Shadow, "Shadow"}, {kCDXRectangleType_Shaded, "Shaded"},
+                                                                             {kCDXRectangleType_Filled, "Filled"}, {kCDXRectangleType_Dashed, "Dashed"},
+                                                                             {kCDXRectangleType_Bold, "Bold"}};
+
     const std::unordered_map<std::string, CDXCharSet> kCharsetStrToInt = {{"Unknown", kCDXCharSetUnknown},
                                                                           {"EBCDICOEM", kCDXCharSetEBCDICOEM},
                                                                           {"MSDOSUS", kCDXCharSetMSDOSUS},
@@ -182,6 +200,10 @@ namespace indigo
                                                                           {"x-mac-icelandic", kCDXCharSetMacIcelandic},
                                                                           {"x-mac-turkish", kCDXCharSetMacTurkish},
                                                                           {"utf-8", kCDXCharSetUTF8}};
+    const std::unordered_map<std::string, CDXRadical> kRadicalStrToId = {
+        {"None", kCDXRadical_None}, {"Singlet", kCDXRadical_Singlet}, {"Doublet", kCDXRadical_Doublet}, {"Triplet", kCDXRadical_Triplet}};
+
+    const std::vector<std::string> kRadicalIdToStr = {"None", "Singlet", "Doublet", "Triplet"};
 
     const std::unordered_map<int, std::string> kCharsetIntToStr = {{kCDXCharSetUnknown, "Unknown"},
                                                                    {kCDXCharSetEBCDICOEM, "EBCDICOEM"},
@@ -1203,8 +1225,8 @@ namespace indigo
                                                                          {kCDXBracketUsage_Generic, "Generic"},
                                                                          {kCDXBracketUsage_Anypolymer, "Anypolymer"}};
 
-    const std::vector<char> KCIPStereochemistryIndexToChar = {'U', 'N', 'R', 'S', 'r', 's', 'u'};
-    const std::unordered_map<char, uint8_t> KCIPStereochemistryCharToIndex = {{'U', 0}, {'N', 1}, {'R', 2}, {'S', 3}, {'r', 4}, {'s', 5}, {'u', 6}};
+    const std::vector<char> kCIPStereochemistryIndexToChar = {'U', 'N', 'R', 'S', 'r', 's', 'u'};
+    const std::unordered_map<char, uint8_t> kCIPStereochemistryCharToIndex = {{'U', 0}, {'N', 1}, {'R', 2}, {'S', 3}, {'r', 4}, {'s', 5}, {'u', 6}};
     const std::vector<std::string> KStyleProperties = {"font", "face", "size", "color"};
 
 }

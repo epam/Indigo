@@ -101,12 +101,24 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
         int8_t val;
         switch (tag)
         {
+        case kCDXProp_CaptionJustification:
+        case kCDXProp_Justification:
         case kCDXProp_LabelJustification:
-            val = kTextJustificationStrToInt.at( pAttr->Value() );
+            val = kTextJustificationStrToInt.at(pAttr->Value());
             break;
         case kCDXProp_LabelAlignment:
         case kCDXProp_Node_LabelDisplay:
-            val = kLabelAlignmentStrToInt.at(pAttr->Value() );
+            val = kLabelAlignmentStrToInt.at(pAttr->Value());
+            break;
+        case kCDXProp_Atom_Radical:
+            val = kRadicalStrToId.at(pAttr->Value());
+            break;
+        case kCDXProp_Bond_CIPStereochemistry:
+        case kCDXProp_Atom_CIPStereochemistry:
+            val = kCIPStereochemistryCharToIndex.at(pAttr->Value()[0]);
+            break;
+        case kCDXProp_Arrow_Type:
+            val = kCDXProp_Arrow_TypeStrToID.at(pAttr->Value());
             break;
         default:
             val = pAttr->IntValue();
@@ -120,8 +132,32 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     case ECDXType::CDXINT16:
     case ECDXType::CDXUINT16: {
         int16_t val = pAttr->IntValue();
-        if (tag == kCDXProp_BondSpacing)
+        switch (tag)
+        {
+        case kCDXProp_Graphic_Type:
+            val = kCDXPropGraphicTypeStrToID.at(pAttr->Value());
+            break;
+        case kCDXProp_Rectangle_Type: {
+            auto vecs = split(pAttr->Value(), ' ');
+            for (auto str_val : vecs)
+                val |= kRectangleTypeStrToInt.at(str_val);
+        }
+        break;
+        case kCDXProp_BondSpacing:
             val *= kBondSpacingMultiplier;
+            break;
+        case kCDXProp_Line_Type:
+            val = kLineTypeStrToInt.at(pAttr->Value());
+            break;
+        case kCDXProp_Arrow_Type:
+            val = kCDXProp_Arrow_TypeStrToID.at(pAttr->Value());
+            break;
+        case kCDXProp_Arrow_ArrowHead_Head:
+        case kCDXProp_Arrow_ArrowHead_Tail:
+            val = kCDXProp_Arrow_ArrowHeadStrToInt.at(pAttr->Value());
+            break;
+        }
+
         _output.writeBinaryUInt16(sizeof(val));
         _output.writeBinaryUInt16(val);
     }
@@ -137,15 +173,20 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     }
     break;
 
-    case ECDXType::CDXPoint2D:
     case ECDXType::CDXPoint3D:
+    case ECDXType::CDXPoint2D:
     case ECDXType::CDXRectangle: {
         std::string values = pAttr->Value();
         std::stringstream ss(values);
         std::string val_str;
         std::list<std::string> vec_strs;
         while (std::getline(ss, val_str, ' '))
-            vec_strs.push_front(val_str);
+        {
+            if (cdx_type == ECDXType::CDXPoint3D)
+                vec_strs.push_back(val_str);
+            else
+                vec_strs.push_front(val_str);
+        }
 
         _output.writeBinaryUInt16(sizeof(int32_t) * vec_strs.size());
 
@@ -915,7 +956,7 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
     {
         std::vector<std::pair<int, int>> ext_connections;
         std::vector<int> connection_order, bond_ordering;
-        std::vector<int> int_connections;
+        std::set<int> int_connections;
         XMLElement* node = _doc->NewElement("n");
         fragment->LinkEndChild(node);
         node->SetAttribute("id", ++_id);
@@ -947,7 +988,10 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
                 }
 
                 if (_bonds_included.find(nei_edge_idx) != _bonds_included.end())
-                    int_connections.push_back(nei_edge_idx);
+                {
+                    if (int_connections.find(nei_edge_idx) == int_connections.end())
+                        int_connections.insert(nei_edge_idx);
+                }
             }
         }
 
@@ -1484,14 +1528,12 @@ void MoleculeCdxmlSaver::writeBinaryAttributes(tinyxml2::XMLElement* pElement)
         auto prop_it = KCDXNameToProp.find(pAttr->Name());
         if (prop_it != KCDXNameToProp.end())
         {
-            printf("property: %s tag: %x\n", prop_it->first.c_str(), prop_it->second.first);
             writeBinaryValue(pAttr, prop_it->second.first, prop_it->second.second);
         }
         else
         {
             if (std::string("NeedsClean") != pAttr->Name())
             {
-                printf("Undefined property: %s\n", pAttr->Name());
                 throw Error("Undefined property: %s\n", pAttr->Name());
             }
         }
@@ -1626,7 +1668,6 @@ void MoleculeCdxmlSaver::writeBinaryElement(tinyxml2::XMLElement* element)
         if (id_attribute)
             id = id_attribute->IntValue();
         _output.writeBinaryInt(id);
-        printf("obj name: %s tag=%x id=%d\n", objname.c_str(), tag, id);
     }
     else
         tag = -1;
@@ -1650,10 +1691,6 @@ void MoleculeCdxmlSaver::endDocument()
 {
     if (_is_binary)
     {
-        std::ifstream t("C:\\cdx\\chem.cdxml");
-        std::stringstream buffer;
-        buffer << t.rdbuf();
-        _doc->Parse(buffer.str().c_str());
         _output.writeString(kCDX_HeaderString);
         _output.writeBinaryInt(kCDXMagicNumber);
         _output.write(kCDXReserved, sizeof(kCDXReserved));

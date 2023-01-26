@@ -113,7 +113,9 @@ namespace indigo
 
     struct CdxmlNode
     {
-        CdxmlNode() : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false) // Carbon by default
+        CdxmlNode()
+            : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false),
+              has_fragment(false) // Carbon by default
         {
         }
 
@@ -136,6 +138,7 @@ namespace indigo
         AutoInt rg_index;
 
         bool is_not_list;
+        bool has_fragment;
         std::vector<AutoInt> element_list;
         std::unordered_map<int, int> bond_id_to_connection_idx;
         std::unordered_map<int, int> node_id_to_connection_idx;
@@ -194,13 +197,6 @@ namespace indigo
         CDXProperty(const void* data, int size = 0, int first_id = 0, int style_index = -1, int style_prop = -1)
             : _data(data), _size(size), _first_id(first_id), _style_index(style_index), _style_prop(style_prop)
         {
-            if (_data && _size)
-            {
-                uint16_t* ptr16 = (uint16_t*)_data;
-                int tag = *ptr16;
-                int sz = ptr16[1];
-                printf("propery tag: %x size:%x sz:%x\n", tag, _size, sz);
-            }
         }
 
         const tinyxml2::XMLAttribute& attribute()
@@ -497,14 +493,17 @@ namespace indigo
             case kCDXProp_Atom_EnhancedStereoType:
                 return kCDXEnhancedStereoIDToStr.at(val);
                 break;
+            case kCDXProp_Bond_CIPStereochemistry:
             case kCDXProp_Atom_CIPStereochemistry: {
-                return std::string{KCIPStereochemistryIndexToChar[val]};
+                return std::string{kCIPStereochemistryIndexToChar[val]};
             }
             break;
             case kCDXProp_Bracket_Usage:
                 return std::string{kBracketUsageIntToName.at(val)};
                 break;
+            case kCDXProp_Justification:
             case kCDXProp_LabelJustification:
+            case kCDXProp_CaptionJustification:
                 return std::string(kTextJustificationIntToStr.at(val));
             case kCDXProp_Node_LabelDisplay:
             case kCDXProp_LabelAlignment:
@@ -541,7 +540,6 @@ namespace indigo
             auto ptag = (uint16_t*)data;
             if (ptag && size)
             {
-                printf("obj tag: %x\n", *ptag);
                 if (*ptag < kCDXTag_Object) // root element starts from property
                 {
                     if (*ptag == kCDXProp_Text)
@@ -936,6 +934,8 @@ namespace indigo
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
+        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
+
         float _bond_length;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         Scanner& _scanner;
