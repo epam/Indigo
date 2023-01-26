@@ -374,7 +374,7 @@ def save_moldata(md, output_format=None, options={}, indigo=None):
     elif output_format == "chemical/x-cdxml":
         return md.struct.cdxml()
     elif output_format == "chemical/x-cdx":
-        return md.struct.cdx()
+        return md.struct.b64cdx()
     elif output_format == "chemical/x-inchi":
         return indigo.inchi.getInchi(md.struct)
     elif output_format == "chemical/x-inchi-key":

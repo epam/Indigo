@@ -142,7 +142,7 @@ CEXPORT const char* indigoMolfile(int molecule)
     return res;
 }
 
-CEXPORT const char* indigoCdx(int object)
+CEXPORT const char* indigoCdxBase64(int object)
 {
     int b = indigoWriteBuffer();
     const char* res;

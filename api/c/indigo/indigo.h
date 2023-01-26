@@ -203,7 +203,7 @@ CEXPORT int indigoSaveJson(int item, int output);
 CEXPORT int indigoSaveCml(int object, int output);
 CEXPORT int indigoSaveCmlToFile(int object, const char* filename);
 CEXPORT const char* indigoCml(int object);
-CEXPORT const char* indigoCdx(int object);
+CEXPORT const char* indigoCdxBase64(int object);
 
 // accepts molecules and reactions
 CEXPORT int indigoSaveCdxml(int object, int output);

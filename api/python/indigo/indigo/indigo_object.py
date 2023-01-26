@@ -319,14 +319,14 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(self._lib().indigoCdxml(self.id))
 
-    def cdx(self):
+    def b64cdx(self):
         """Molecule method returns the structure as a string in CDX base64 encoded format
 
         Returns:
-            str: CDXML string
+            str: base64 encoded CDX string
         """
 
-        return IndigoLib.checkResultString(self._lib().indigoCdx(self.id))
+        return IndigoLib.checkResultString(self._lib().indigoCdxBase64(self.id))
 
     def json(self):
         """Structure method returns the structure as a string in KET format

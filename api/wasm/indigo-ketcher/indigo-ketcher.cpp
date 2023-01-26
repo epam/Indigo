@@ -151,7 +151,7 @@ namespace indigo
             }
             else if (outputFormat == "cdx" || outputFormat == "chemical/x-cdx")
             {
-                return _checkResultString(indigoCdx(id()));
+                return _checkResultString(indigoCdxBase64(id()));
             }
             else if (outputFormat == "inchi" || outputFormat == "chemical/x-inchi")
             {
