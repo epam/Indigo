@@ -52,36 +52,3 @@ for filename in files:
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
         print(filename + (":success" if refb64 == resb64 else ":failed"))
-
-cdxml_path = joinPathPy("cdxml/", __file__)
-files = os.listdir(cdxml_path)
-files.sort()
-
-print("*** CDXML to CDX ***")
-
-for filename in files:
-    try:
-        mol = indigo.loadReactionFromFile(os.path.join(cdxml_path, filename))
-        resb64 = mol.b64cdx()
-        # with open(os.path.join(ref_path, filename.rsplit('.', 1)[0] + ".cdxml"), 'w') as file:
-        #    data = file.write(mol.cdxml())
-        with open(
-            os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".b64cdx"), "r"
-        ) as file:
-            refb64 = file.read()
-        print(filename + (":success" if refb64 == resb64 else ":failed"))
-
-    except IndigoException as e:
-        print(getIndigoExceptionText(e))
-        print("*** Try as Query ***")
-        mol = indigo.loadQueryReactionFromFile(
-            os.path.join(cdxml_path, filename)
-        )
-        resb64 = mol.b64cdx()
-        # with open(os.path.join(ref_path, filename.rsplit('.', 1)[0] + ".cdxml()"), 'w') as file:
-        #    data = file.write(mol.cdxml())
-        with open(
-            os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".b64cdx"), "r"
-        ) as file:
-            refb64 = file.read()
-        print(filename + (":success" if refb64 == resb64 else ":failed"))
