@@ -1,11 +1,10 @@
+import difflib
 import os
 import sys
 
-from difflib import unified_diff
-
 
 def find_diff(a, b):
-    return "\n".join(unified_diff(a.splitlines(), b.splitlines()))
+    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
 
 
 sys.path.append(
