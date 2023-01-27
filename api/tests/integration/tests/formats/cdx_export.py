@@ -86,9 +86,9 @@ for filename in files:
             refb64 = file.read()
         print(filename + (":success" if refb64 == resb64 else ":failed"))
 
-#print("*** CDXML to CDXML ***")
+# print("*** CDXML to CDXML ***")
 
-#for filename in files:
+# for filename in files:
 #    try:
 #        mol = indigo.loadReactionFromFile(os.path.join(cdxml_path, filename))
 #        res = mol.cdxml()
