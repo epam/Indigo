@@ -4,7 +4,6 @@ enhanced_stereo2:success
 enhanced_stereo3:success
 stereo_either-0020:success
 *** CDXML to CDX ***
-AlcoholOxidation_Rxn1.cdxml:success
 AlcoholOxidation_Rxn2.cdxml:success
 Amidation_Rxn1.cdxml:success
 Amidation_Rxn2.cdxml:success
@@ -14,7 +13,6 @@ CarbonylReduction_Rxn1.cdxml:success
 CarbonylReduction_Rxn2.cdxml:success
 Esterification_Rxn1.cdxml:success
 Esterification_Rxn2.cdxml:success
-Grignard_Rxn1.cdxml:success
 Grignard_Rxn2.cdxml:success
 N-Alkylation_Rxn1.cdxml:success
 N-Alkylation_Rxn2.cdxml:success
@@ -29,7 +27,6 @@ SnAr_Rxn2.cdxml:success
 Suzuki_Rxn1.cdxml:success
 Suzuki_Rxn2.cdxml:success
 *** CDXML to CDXML ***
-AlcoholOxidation_Rxn1.cdxml:success
 AlcoholOxidation_Rxn2.cdxml:success
 Amidation_Rxn1.cdxml:success
 Amidation_Rxn2.cdxml:success
@@ -39,7 +36,6 @@ CarbonylReduction_Rxn1.cdxml:success
 CarbonylReduction_Rxn2.cdxml:success
 Esterification_Rxn1.cdxml:success
 Esterification_Rxn2.cdxml:success
-Grignard_Rxn1.cdxml:success
 Grignard_Rxn2.cdxml:success
 N-Alkylation_Rxn1.cdxml:success
 N-Alkylation_Rxn2.cdxml:success
