@@ -180,10 +180,10 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     case ECDXType::CDXRectangle: {
         std::string values = pAttr->Value();
         auto vec_strs = split(values, ' ');
-        if( vec_strs.size() % 2 == 0 )
+        if (vec_strs.size() % 2 == 0)
         {
-            for (int i = 0; i < vec_strs.size(); i+=2)
-                std::swap(vec_strs[i], vec_strs[i+1]);
+            for (int i = 0; i < vec_strs.size(); i += 2)
+                std::swap(vec_strs[i], vec_strs[i + 1]);
         }
 
         _output.writeBinaryUInt16(sizeof(int32_t) * vec_strs.size());
