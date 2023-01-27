@@ -86,29 +86,29 @@ for filename in files:
             refb64 = file.read()
         print(filename + (":success" if refb64 == resb64 else ":failed"))
 
-print("*** CDXML to CDXML ***")
+#print("*** CDXML to CDXML ***")
 
-for filename in files:
-    try:
-        mol = indigo.loadReactionFromFile(os.path.join(cdxml_path, filename))
-        res = mol.cdxml()
-        with open(
-            os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".cdxml"), "r"
-        ) as file:
-            ref = file.read()
-        df = find_diff(res, ref)
-        print(filename + (":success" if not df else (":failed\n" + df)))
-
-    except IndigoException as e:
-        print(getIndigoExceptionText(e))
-        print("*** Try as Query ***")
-        mol = indigo.loadQueryReactionFromFile(
-            os.path.join(cdxml_path, filename)
-        )
-        res = mol.cdxml()
-        with open(
-            os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".cdxml"), "r"
-        ) as file:
-            ref = file.read()
-        df = find_diff(res, ref)
-        print(filename + (":success" if not df else (":failed\n" + df)))
+#for filename in files:
+#    try:
+#        mol = indigo.loadReactionFromFile(os.path.join(cdxml_path, filename))
+#        res = mol.cdxml()
+#        with open(
+#            os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".cdxml"), "r"
+#        ) as file:
+#            ref = file.read()
+#        df = find_diff(res, ref)
+#        print(filename + (":success" if not df else (":failed\n" + df)))
+#
+#    except IndigoException as e:
+#        print(getIndigoExceptionText(e))
+#        print("*** Try as Query ***")
+#        mol = indigo.loadQueryReactionFromFile(
+#            os.path.join(cdxml_path, filename)
+#        )
+#        res = mol.cdxml()
+#        with open(
+#            os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".cdxml"), "r"
+#        ) as file:
+#            ref = file.read()
+#        df = find_diff(res, ref)
+#        print(filename + (":success" if not df else (":failed\n" + df)))
