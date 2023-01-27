@@ -177,29 +177,25 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     case ECDXType::CDXPoint2D:
     case ECDXType::CDXRectangle: {
         std::string values = pAttr->Value();
-        std::stringstream ss(values);
-        std::string val_str;
-        std::list<std::string> vec_strs;
-        while (std::getline(ss, val_str, ' '))
+        auto vec_strs = split(values, ' ');
+        if( vec_strs.size() % 2 == 0 )
         {
-            if (cdx_type == ECDXType::CDXPoint3D)
-                vec_strs.push_back(val_str);
-            else
-                vec_strs.push_front(val_str);
+            for (int i = 0; i < vec_strs.size(); i+=2)
+                std::swap(vec_strs[i], vec_strs[i+1]);
         }
 
         _output.writeBinaryUInt16(sizeof(int32_t) * vec_strs.size());
 
         for (const auto& v : vec_strs)
         {
-            int32_t coord = round(std::stod(v) * (1 << 16));
+            int32_t coord = std::stof(v) * (1 << 16);
             _output.writeBinaryInt(coord);
         }
     }
     break;
 
     case ECDXType::CDXCoordinate: {
-        int32_t coord = round(pAttr->DoubleValue() * (1 << 16));
+        int32_t coord = pAttr->FloatValue() * (1 << 16);
         _output.writeBinaryUInt16(sizeof(coord));
         _output.writeBinaryInt(coord);
     }

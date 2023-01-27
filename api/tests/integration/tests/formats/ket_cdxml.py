@@ -1,12 +1,9 @@
 import os
 import sys
-
+from difflib import unified_diff
 
 def find_diff(a, b):
-    if a == b:
-        return ""
-    return "actual:\n{}\nexpected:\n{}".format(b, a)
-
+    return "\n".join(unified_diff(a.splitlines(), b.splitlines()))
 
 sys.path.append(
     os.path.normpath(
@@ -72,13 +69,13 @@ for filename in files:
         print(filename + ".cdxml:SUCCEED")
     else:
         print(filename + ".cdxml:FAILED")
-        print("difference:" + diff)
+        print(diff)
     diff = find_diff(ket_ref, ket_result)
     if not diff:
         print(filename + ".ket:SUCCEED")
     else:
         print(filename + ".ket:FAILED")
-        print("difference:" + diff)
+        print(diff)
 
 print("*** KET to CDXML ***")
 
@@ -108,4 +105,4 @@ for filename in files:
         print(filename + ".cdxml:SUCCEED")
     else:
         print(filename + ".cdxml:FAILED")
-        print("difference:" + diff)
+        print(diff)
