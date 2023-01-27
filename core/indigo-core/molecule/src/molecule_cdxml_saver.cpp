@@ -114,6 +114,8 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             val = kRadicalStrToId.at(pAttr->Value());
             break;
         case kCDXProp_Bond_CIPStereochemistry:
+            val = kCIPBondStereochemistryIndexToChar.at(pAttr->Value()[0]);
+            break;
         case kCDXProp_Atom_CIPStereochemistry:
             val = kCIPStereochemistryCharToIndex.at(pAttr->Value()[0]);
             break;

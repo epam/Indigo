@@ -1,0 +1,29 @@
+*** Mol to CDXML ***
+enhanced_stereo1:success
+enhanced_stereo2:success
+enhanced_stereo3:success
+stereo_either-0020:success
+AlcoholOxidation_Rxn1.cdxml:success
+AlcoholOxidation_Rxn2.cdxml:success
+Amidation_Rxn1.cdxml:success
+Amidation_Rxn2.cdxml:success
+BuchwaldHartwig_Rxn1.cdxml:success
+BuchwaldHartwig_Rxn2.cdxml:success
+CarbonylReduction_Rxn1.cdxml:success
+CarbonylReduction_Rxn2.cdxml:success
+Esterification_Rxn1.cdxml:success
+Esterification_Rxn2.cdxml:success
+Grignard_Rxn1.cdxml:success
+Grignard_Rxn2.cdxml:success
+N-Alkylation_Rxn1.cdxml:success
+N-Alkylation_Rxn2.cdxml:success
+N-Sulfonylation_Rxn1.cdxml:success
+N-Sulfonylation_Rxn2.cdxml:success
+O-Alkylation_Rxn1.cdxml:success
+O-Alkylation_Rxn2.cdxml:success
+Reductive Amination_Rxn1.cdxml:success
+Reductive Amination_Rxn2.cdxml:success
+SnAr_Rxn1.cdxml:success
+SnAr_Rxn2.cdxml:success
+Suzuki_Rxn1.cdxml:success
+Suzuki_Rxn2.cdxml:success

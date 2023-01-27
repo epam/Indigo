@@ -1227,6 +1227,10 @@ namespace indigo
 
     const std::vector<char> kCIPStereochemistryIndexToChar = {'U', 'N', 'R', 'S', 'r', 's', 'u'};
     const std::unordered_map<char, uint8_t> kCIPStereochemistryCharToIndex = {{'U', 0}, {'N', 1}, {'R', 2}, {'S', 3}, {'r', 4}, {'s', 5}, {'u', 6}};
+
+    const std::vector<char> kCIPBondStereochemistryIndexToChar = {'U', 'N', 'E', 'Z'};
+    const std::unordered_map<char, uint8_t> kCIPBondStereochemistryCharToIndex = {{'U', 0}, {'N', 1}, {'E', 2}, {'Z', 3}};
+
     const std::vector<std::string> KStyleProperties = {"font", "face", "size", "color"};
 
 }

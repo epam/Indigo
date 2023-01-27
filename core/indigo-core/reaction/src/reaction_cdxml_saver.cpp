@@ -321,9 +321,12 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     }
     else
     {
-        auto& rb = rxn.reactionBlock(arrow_id.second);
-        for (auto i : rb.reactants)
-            buf_out.printf("%d ", mol_ids[i]);
+        if (rxn.reactionBlocksCount())
+        {
+            auto& rb = rxn.reactionBlock(arrow_id.second);
+            for (auto i : rb.reactants)
+                buf_out.printf("%d ", mol_ids[i]);
+        }
     }
 
     if (buf.size() > 1)
@@ -344,9 +347,12 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     }
     else
     {
-        auto& rb = rxn.reactionBlock(arrow_id.second);
-        for (auto i : rb.products)
-            buf_out.printf("%d ", mol_ids[i]);
+        if (rxn.reactionBlocksCount())
+        {
+            auto& rb = rxn.reactionBlock(arrow_id.second);
+            for (auto i : rb.products)
+                buf_out.printf("%d ", mol_ids[i]);
+        }
     }
 
     if (buf.size() > 1)
