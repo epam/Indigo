@@ -1,5 +1,11 @@
+import difflib
 import os
 import sys
+
+
+def find_diff(a, b):
+    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+
 
 sys.path.append(
     os.path.normpath(
@@ -10,7 +16,7 @@ from env_indigo import *  # noqa
 
 indigo = Indigo()
 
-print("*** Mol to CDXML ***")
+print("*** Mol to CDX ***")
 
 root = joinPathPy("molecules/", __file__)
 files = [
@@ -29,8 +35,8 @@ for filename in files:
             os.path.join(root, filename + ".mol")
         )
         resb64 = mol.b64cdx()
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-        #   data = file.write(resb64)
+        # with open(os.path.join(ref_path, filename + ".cdxml"), 'w') as file:
+        #    data = file.write(mol.cdxml())
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
         print(filename + (":success" if refb64 == resb64 else ":failed"))
@@ -41,8 +47,8 @@ for filename in files:
             os.path.join(root, filename + ".mol")
         )
         resb64 = mol.b64cdx()
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-        #    data = file.write(resb64)
+        # with open(os.path.join(ref_path, filename + ".cdxml"), 'w') as file:
+        #   data = file.write(mol.cdxml())
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
         print(filename + (":success" if refb64 == resb64 else ":failed"))
@@ -50,12 +56,15 @@ for filename in files:
 cdxml_path = joinPathPy("cdxml/", __file__)
 files = os.listdir(cdxml_path)
 files.sort()
+
+print("*** CDXML to CDX ***")
+
 for filename in files:
     try:
         mol = indigo.loadReactionFromFile(os.path.join(cdxml_path, filename))
         resb64 = mol.b64cdx()
-        # with open(os.path.join(ref_path, filename.rsplit('.', 1)[0] + ".b64cdx"), 'w') as file:
-        #   data = file.write(resb64)
+        # with open(os.path.join(ref_path, filename.rsplit('.', 1)[0] + ".cdxml"), 'w') as file:
+        #    data = file.write(mol.cdxml())
         with open(
             os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".b64cdx"), "r"
         ) as file:
@@ -69,10 +78,37 @@ for filename in files:
             os.path.join(cdxml_path, filename)
         )
         resb64 = mol.b64cdx()
-        # with open(os.path.join(ref_path, filename.rsplit('.', 1)[0] + ".b64cdx"), 'w') as file:
-        #    data = file.write(resb64)
+        # with open(os.path.join(ref_path, filename.rsplit('.', 1)[0] + ".cdxml()"), 'w') as file:
+        #    data = file.write(mol.cdxml())
         with open(
             os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".b64cdx"), "r"
         ) as file:
             refb64 = file.read()
         print(filename + (":success" if refb64 == resb64 else ":failed"))
+
+print("*** CDXML to CDXML ***")
+
+for filename in files:
+    try:
+        mol = indigo.loadReactionFromFile(os.path.join(cdxml_path, filename))
+        res = mol.cdxml()
+        with open(
+            os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".cdxml"), "r"
+        ) as file:
+            ref = file.read()
+        df = find_diff(res, ref)
+        print(filename + (":success" if not df else (":failed\n" + df)))
+
+    except IndigoException as e:
+        print(getIndigoExceptionText(e))
+        print("*** Try as Query ***")
+        mol = indigo.loadQueryReactionFromFile(
+            os.path.join(cdxml_path, filename)
+        )
+        res = mol.cdxml()
+        with open(
+            os.path.join(ref_path, filename.rsplit(".", 1)[0] + ".cdxml"), "r"
+        ) as file:
+            ref = file.read()
+        df = find_diff(res, ref)
+        print(filename + (":success" if not df else (":failed\n" + df)))

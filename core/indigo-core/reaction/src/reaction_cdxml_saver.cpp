@@ -82,7 +82,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
 
     std::vector<std::vector<int>> nodes_ids;
 
-    MoleculeCdxmlSaver molsaver(_output);
+    MoleculeCdxmlSaver molsaver(_output, _is_binary);
     MoleculeCdxmlSaver::Bounds b;
 
     molsaver.beginDocument(NULL);
