@@ -38,7 +38,7 @@
 typedef unsigned short int UINT16;
 typedef int INT32;
 typedef unsigned int UINT32;
-#include "molecule/CDXCommons.h"
+#include "CDXCommons.h"
 
 namespace tinyxml2
 {
@@ -336,7 +336,6 @@ namespace indigo
             }
             break;
 
-                break;
             case ECDXType::CDXUINT16: {
                 auto ptr16 = (uint16_t*)ptr;
                 result = parseCDXUINT16(*ptr16, tag);
@@ -401,10 +400,6 @@ namespace indigo
                 result = *ptr ? "yes" : "no";
             }
             break;
-
-            case ECDXType::CDXColorTableCDXINT16:
-                result = "ColorTableCDXINT16 not implemented";
-                break;
 
             case ECDXType::CDXColorTable:
                 result = "ColorTable not implemented";
@@ -498,13 +493,21 @@ namespace indigo
             case kCDXProp_Atom_EnhancedStereoType:
                 return kCDXEnhancedStereoIDToStr.at(val);
                 break;
+            case kCDXProp_Bond_CIPStereochemistry:
             case kCDXProp_Atom_CIPStereochemistry: {
-                return std::string{KCIPStereochemistryIndexToChar[val]};
+                return std::string{kCIPStereochemistryIndexToChar[val]};
             }
             break;
             case kCDXProp_Bracket_Usage:
                 return std::string{kBracketUsageIntToName.at(val)};
                 break;
+            case kCDXProp_Justification:
+            case kCDXProp_LabelJustification:
+            case kCDXProp_CaptionJustification:
+                return std::string(kTextJustificationIntToStr.at(val));
+            case kCDXProp_Node_LabelDisplay:
+            case kCDXProp_LabelAlignment:
+                return std::string(kLabelAlignmentIntTostr.at(val));
             default:
                 break;
             }
