@@ -25,6 +25,11 @@
 #include "ket_commons.h"
 #include "math/algebra.h"
 
+typedef unsigned short int UINT16;
+typedef int INT32;
+typedef unsigned int UINT32;
+#include "CDXCommons.h"
+
 namespace tinyxml2
 {
     class XMLElement;
@@ -97,7 +102,11 @@ namespace indigo
         void endPage();
         void endDocument();
         void writeBinaryElement(tinyxml2::XMLElement* element);
-        bool writeBinaryAttributes(tinyxml2::XMLElement* pElement, int16_t tag);
+        void writeBinaryAttributes(tinyxml2::XMLElement* pElement);
+        void writeIrregularElement(tinyxml2::XMLElement* pElement, int16_t tag);
+
+        void writeBinaryValue(const tinyxml2::XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type);
+        void writeBinaryTextValue(const tinyxml2::XMLElement* pTextElement);
 
         int getHydrogenCount(BaseMolecule& mol, int idx, int charge, int radical);
 

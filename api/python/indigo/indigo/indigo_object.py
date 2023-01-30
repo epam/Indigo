@@ -296,6 +296,20 @@ class IndigoObject:
             self._lib().indigoSaveCdxmlToFile(self.id, filename.encode())
         )
 
+    def saveCdx(self, filename):
+        """Molecule method saves the structure into a CDX file
+
+        Args:
+            filename (str): full path to the output file
+
+        Returns:
+            int: 1 if the file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveCdxToFile(self.id, filename.encode())
+        )
+
     def cdxml(self):
         """Molecule method returns the structure as a string in CDXML format
 
@@ -304,6 +318,17 @@ class IndigoObject:
         """
 
         return IndigoLib.checkResultString(self._lib().indigoCdxml(self.id))
+
+    def b64cdx(self):
+        """Molecule method returns the structure as a string in CDX base64 encoded format
+
+        Returns:
+            str: base64 encoded CDX string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoCdxBase64(self.id)
+        )
 
     def json(self):
         """Structure method returns the structure as a string in KET format

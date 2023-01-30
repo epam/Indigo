@@ -777,7 +777,7 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
 
     auto pos_lambda = [&node, this](const std::string& data) { this->parsePos(data, node.pos); };
 
-    auto stereo_lambda = [&node](const std::string& data) { node.stereo = KCIPStereochemistryCharToIndex.at(data.front()); };
+    auto stereo_lambda = [&node](const std::string& data) { node.stereo = kCIPStereochemistryCharToIndex.at(data.front()); };
 
     auto node_type_lambda = [&node](const std::string& data) {
         node.type = KNodeTypeNameToInt.at(data);
@@ -860,6 +860,8 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, CDXProperty prop)
         bond.order = order_map.at(data);
     };
 
+    auto stereo_lambda = [&bond](const std::string& data) { bond.stereo = kCIPBondStereochemistryCharToIndex.at(data.front()); };
+
     auto bond_dir_lambda = [&bond](const std::string& data) {
         static const std::unordered_map<std::string, std::pair<int, bool>> dir_map = {{"WedgedHashBegin", {BOND_DOWN, false}},
                                                                                       {"WedgedHashEnd", {BOND_DOWN, true}},
@@ -876,7 +878,7 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, CDXProperty prop)
     };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> bond_dispatcher = {
-        {"id", id_lambda}, {"B", bond_begin_lambda}, {"E", bond_end_lambda}, {"Order", bond_order_lambda}, {"Display", bond_dir_lambda}};
+        {"id", id_lambda}, {"B", bond_begin_lambda}, {"E", bond_end_lambda}, {"Order", bond_order_lambda}, {"Display", bond_dir_lambda}, {"BS", stereo_lambda}};
 
     applyDispatcher(prop, bond_dispatcher);
 }

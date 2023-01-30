@@ -149,6 +149,10 @@ namespace indigo
             {
                 return _checkResultString(indigoCdxml(id()));
             }
+            else if (outputFormat == "cdx" || outputFormat == "chemical/x-cdx")
+            {
+                return _checkResultString(indigoCdxBase64(id()));
+            }
             else if (outputFormat == "inchi" || outputFormat == "chemical/x-inchi")
             {
                 return _checkResultString(indigoInchiGetInchi(id()));
