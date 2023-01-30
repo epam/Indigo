@@ -112,6 +112,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoCdxml(self));
         }
 
+        public string b64cdx()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCdxBase64(self));
+        }
+
         public void saveCdxml(string filename)
         {
             dispatcher.setSessionID();
