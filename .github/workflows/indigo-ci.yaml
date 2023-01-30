@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Check
         run: |
@@ -47,7 +47,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
@@ -97,7 +97,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build Windows
         if: ${{ matrix.os == 'windows' }}
@@ -127,7 +127,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
@@ -171,7 +171,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
@@ -255,7 +255,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
@@ -301,7 +301,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
@@ -347,7 +347,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
@@ -392,7 +392,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
@@ -433,7 +433,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
@@ -479,7 +479,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
@@ -525,7 +525,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
@@ -599,7 +599,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
@@ -737,7 +737,7 @@ jobs:
           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build native libs
         run: |
@@ -782,7 +782,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Install Emcripten SDK
         uses: mymindstorm/setup-emsdk@v7
@@ -818,7 +818,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build utils Linux
         if: ${{ matrix.os == 'ubuntu' }}
@@ -865,7 +865,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build bingo-oracle
         run: |
@@ -896,7 +896,7 @@ jobs:
           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build bingo-oracle
         run: |
@@ -920,7 +920,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build bingo-oracle
         run: |
@@ -952,7 +952,7 @@ jobs:
           python-version: 3.7
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Install postgres server headers and build bingo-postgres
         uses: docker://epmlsop/buildpack-centos7:latest
@@ -1020,7 +1020,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Setup Postgres
         run: |
@@ -1055,7 +1055,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Setup Postgres
         run: |
@@ -1089,7 +1089,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build
         run: |
@@ -1116,7 +1116,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir -p dist/lib
@@ -1196,7 +1196,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Download wrappers
         uses: actions/download-artifact@v2
@@ -1244,7 +1244,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: |
-             git config --global --add safe.directory '*
+             git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Download wrappers
         uses: actions/download-artifact@v2
