@@ -25,7 +25,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+          git config --global --add safe.directory /__w/Indigo/Indigo
+          git fetch --tags -f
       - name: Check
         run: |
           python3 -m pip install -r api/python/requirements_dev.txt
