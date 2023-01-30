@@ -25,7 +25,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Check
         run: |
           python3 -m pip install -r api/python/requirements_dev.txt
@@ -44,7 +45,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-centos7:latest
@@ -92,7 +94,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Build Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
@@ -120,7 +123,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-arm64:latest
@@ -162,7 +166,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download Linux native libs x86_64
@@ -244,7 +249,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -288,7 +294,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -332,7 +339,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -375,7 +383,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -414,7 +423,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -458,7 +468,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -502,7 +513,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -574,7 +586,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -710,7 +723,8 @@ jobs:
           msystem: mingw64
           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Build native libs
         run: |
           mkdir build
@@ -753,7 +767,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Install Emcripten SDK
         uses: mymindstorm/setup-emsdk@v7
       - name: Update version
@@ -787,7 +802,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Build utils Linux
         if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-centos7:latest
@@ -832,7 +848,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Build bingo-oracle
         run: |
           mkdir build
@@ -861,7 +878,8 @@ jobs:
           msystem: mingw64
           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Build bingo-oracle
         run: |
           mkdir build
@@ -883,7 +901,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Build bingo-oracle
         run: |
           mkdir build
@@ -913,7 +932,8 @@ jobs:
         with:
           python-version: 3.7
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Install postgres server headers and build bingo-postgres
         uses: docker://epmlsop/buildpack-centos7:latest
         with:
@@ -979,7 +999,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Setup Postgres
         run: |
           $pg_version = switch(${{ matrix.postgres_major_version }}) { "15" { "15.1" } "14" { "14.6" } "13" { "13.9" } "12" { "12.13" } "11" { "11.18" } }
@@ -1012,7 +1033,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Setup Postgres
         run: |
           case ${{ matrix.postgres_major_version }} in 15) pg_version=15.1;; 14) pg_version=14.6;; 13) pg_version=13.9;; 12) pg_version=12.13;; 11) pg_version=11.18;; esac;
@@ -1044,7 +1066,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Build
         run: |
           mkdir build
@@ -1069,7 +1092,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
@@ -1147,7 +1171,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
@@ -1193,7 +1218,8 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: git config --global --add safe.directory /__w/Indigo/Indigo
+             git fetch --tags -f
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
