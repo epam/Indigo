@@ -2,11 +2,6 @@
 Released 2023-01-31
 
 ## What's Changed
-* core: SMARTS support for implicit hydrogens specifier 'h' added by @mkviatkovskii
-* Feature/#861 cdxml enhanced stereochemistry by @even1024
-* Feature/#862 cdxml abbreviations by @even1024
-* Bugfix/#891 dearomatize query onload by @even1024
-* Bugfix/#870 and bugfix/#871 multistep to rxn-smiles by @even1024
 * MDL Molfile v3000 encoding: Automatic selection of MDL Molfile v3000 encoding doesn't work if the structure contains Enhanced stereochemistry by @mkviatkovskii in #924
 * cdx import in scope of current KET/CDXML features support by @even1024 in #885
 * Structures with the arrow lose their integrity when pressing 'Layout' by @even1024 in #938
