@@ -20,6 +20,11 @@ Released 2023-01-31
 * CDXML import: nodes with radicals are not getting parsed #990 by @even1024 in #991
 * CDXML import: fails to import some cdxml files with multiple text objects related to different fragments by @even1024 in #993
 * CDXML import: 'superscript' and 'subscript' is not displayed correctly #962
+* Improve ssl bingo elastic by @MysterionRise in #901
+* bingo: postgres: add support for Postgres 15, drop support for Postgres 10 by @mkviatkovskii in #903
+* #521: core: replace MultiMap in MoleculeRGroupsComposition class by @loimu in #917
+* #521: core: replace MultiMap in MolfileLoader class by @loimu in #911 
+* #929: fix auto-saving to CTAB v3000 by @mkviatkovskii in #931
 
 **Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.8.0...indigo-1.9.0
 
