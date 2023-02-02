@@ -971,6 +971,11 @@ jobs:
             cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_PREFIX_PATH=/usr/pgsql-${{ matrix.postgres_major_version }} &&
             cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
             "
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
+          path: dist/bingo-postgres*.tgz
       - name: Build Docker image
         run: |
           docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION=${{ matrix.postgres_major_version }} .
@@ -985,11 +990,6 @@ jobs:
           export PYTHONPATH=${{ github.workspace }}/bingo/bingo-elastic/python
           pytest --tb=no --db postgres --junit-xml=junit_report.xml
         working-directory: bingo/tests
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
-          path: dist/bingo-postgres*.
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
