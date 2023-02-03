@@ -81,7 +81,7 @@ CDXReader::CDXReader(Scanner& scanner) : _scanner(scanner)
 }
 
 MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner, bool is_binary)
-    : _scanner(scanner), _is_binary(is_binary), _has_bounding_box(false), _pmol(nullptr), _pqmol(nullptr), ignore_bad_valence( false )
+    : _scanner(scanner), _is_binary(is_binary), _has_bounding_box(false), _pmol(nullptr), _pqmol(nullptr), ignore_bad_valence(false)
 {
 }
 
