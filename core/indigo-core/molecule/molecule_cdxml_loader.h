@@ -884,7 +884,6 @@ namespace indigo
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
-        bool _has_bounding_box;
         Rect2f cdxml_bbox;
         AutoInt cdxml_bond_length;
         std::vector<CdxmlNode> nodes;
@@ -895,7 +894,6 @@ namespace indigo
         static const int SCALE = 30;
 
     protected:
-        const tinyxml2::XMLNode* _fragment;
         void _initMolecule(BaseMolecule& mol);
         void _parseCollections(BaseMolecule& mol);
         void _checkFragmentConnection(int node_id, int bond_id);
@@ -936,10 +934,10 @@ namespace indigo
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
 
-        float _bond_length;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         Scanner& _scanner;
         bool _is_binary;
+        bool _has_bounding_box;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy
