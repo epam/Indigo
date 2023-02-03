@@ -4,7 +4,7 @@ import sys
 
 
 def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+    return "\n".join(difflib.unified_diff(a.decode("utf-8").splitlines(), b.decode("utf-8").splitlines()))
 
 
 sys.path.append(
@@ -93,22 +93,24 @@ for filename in files:
         )
         resb64 = rea.b64cdx()
         res = rea.cdxml()
-        # with open(os.path.join(ref_path, filename + ".cdxml"), 'w') as file:
-        #    data = file.write(res)
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-        #    data = file.write(resb64)
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
-        #    refb64 = file.read()
-        # print(filename + (":success" if refb64 == resb64 else ":failed"))
+        #with open(os.path.join(ref_path, filename + ".cdxml"), 'w') as file:
+        #   data = file.write(res)
+        #with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        #   data = file.write(resb64)
+        with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
+           refb64 = file.read()
+        print(filename + (":success" if refb64 == resb64 else ":failed"))
 
         with open(os.path.join(ref_path, filename + ".cdxml"), "r") as file:
             refcdxml = file.read()
-        diff = find_diff(res, refcdxml)
-        if not diff:
-            print(filename + ".cdxml:SUCCEED")
-        else:
-            print(filename + ".cdxml:FAILED")
-            print(diff)
+        print(filename + (":success" if res == refcdxml else ":failed"))
+
+        #diff = find_diff(res, refcdxml)
+        #if not diff:
+        #    print(filename + ".cdxml:SUCCEED")
+        #else:
+        #    print(filename + ".cdxml:FAILED")
+        #    print(diff)
 
     except IndigoException as e:
         print(getIndigoExceptionText(e))

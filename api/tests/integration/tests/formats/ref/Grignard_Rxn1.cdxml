@@ -83,7 +83,7 @@
             </n>
             <n id="150" NodeType="Fragment">
                 <fragment id="151">
-                    <n id="21" Element="12" NumHydrogens="0" p="260.500000 69.120003">
+                    <n id="21" Element="12" p="260.500000 69.120003">
                         <t p="260.500000 69.120003" LabelJustification="Left">
                             <s font="3" size="10" face="96">Mg</s>
                         </t>
