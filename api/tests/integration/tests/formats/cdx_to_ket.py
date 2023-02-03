@@ -11,7 +11,7 @@ from env_indigo import *  # noqa
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
-print("*** CDXML to mol ***")
+print("*** CDX to ket ***")
 
 root = joinPathPy("molecules/cdx", __file__)
 files = os.listdir(root)

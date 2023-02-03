@@ -2,7 +2,7 @@
     $Workfile: CDXConstants.h $
     $Revision: 82 $
     $Date: 7/02/02 6:39p $
-    Copyright:	© 1986-2002 CambridgeSoft Corp., all rights reserved.
+    Copyright:	Â© 1986-2002 CambridgeSoft Corp., all rights reserved.
 
     Description:	Constants defined by the CDX file format Specification
 */
@@ -1032,8 +1032,16 @@ enum CDXCharSet
     kCDXCharSetMacVietnamese,
     kCDXCharSetMacExtArabic,
     kCDXCharSetMacUninterpreted,
+    kCDXCharSetMacSymbol,
+    kCDXCharSetMacDingbats,
+    kCDXCharSetMacCroatian,
+    kCDXCharSetMacRomanian,
+    kCDXCharSetMacCeltic,
+    kCDXCharSetMacGaelic,
+    kCDXCharSetMacKeyboardGlyphs,
     kCDXCharSetMacIcelandic = 10079,
-    kCDXCharSetMacTurkish = 10081
+    kCDXCharSetMacTurkish = 10081,
+    kCDXCharSetUTF8 = 65001
 };
 
 #endif // _H_CDXConstants

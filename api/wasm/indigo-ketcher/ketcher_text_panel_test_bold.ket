@@ -1,0 +1,39 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "data": {
+                    "content": "{\"blocks\":[{\"key\":\"39j4\",\"text\":\"αβγδεζηθ\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":8,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"e7djo\",\"text\":\"ικλμνξοπ\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":8,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"cg7qd\",\"text\":\"ρστυφχψω\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":8,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"4v76g\",\"text\":\"℃℉Å°ħ±‰√\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":8,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"5hd5p\",\"text\":\"←→←//→↔∏∑∞\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":10,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"csgav\",\"text\":\"∂∆∫≈=/≤≥\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":8,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "position": {
+                        "x": 19.200000000000003,
+                        "y": -13.5,
+                        "z": 0
+                    },
+                    "pos": [
+                        {
+                            "x": 19.200000000000003,
+                            "y": -13.5,
+                            "z": 0
+                        },
+                        {
+                            "x": 19.200000000000003,
+                            "y": -15.716666722297669,
+                            "z": 0
+                        },
+                        {
+                            "x": 21.738167381286623,
+                            "y": -15.716666722297669,
+                            "z": 0
+                        },
+                        {
+                            "x": 21.738167381286623,
+                            "y": -13.5,
+                            "z": 0
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

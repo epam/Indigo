@@ -254,8 +254,12 @@ class IndigoLib:
         IndigoLib.lib.indigoCml.argtypes = [c_int]
         IndigoLib.lib.indigoSaveCdxmlToFile.restype = c_int
         IndigoLib.lib.indigoSaveCdxmlToFile.argtypes = [c_int, c_char_p]
+        IndigoLib.lib.indigoSaveCdxToFile.restype = c_int
+        IndigoLib.lib.indigoSaveCdxToFile.argtypes = [c_int, c_char_p]
         IndigoLib.lib.indigoCdxml.restype = c_char_p
         IndigoLib.lib.indigoCdxml.argtypes = [c_int]
+        IndigoLib.lib.indigoCdxBase64.restype = c_char_p
+        IndigoLib.lib.indigoCdxBase64.argtypes = [c_int]
         IndigoLib.lib.indigoJson.restype = c_char_p
         IndigoLib.lib.indigoJson.argtypes = [c_int]
         IndigoLib.lib.indigoSaveMDLCT.restype = c_int

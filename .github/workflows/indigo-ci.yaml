@@ -25,7 +25,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Check
         run: |
           python3 -m pip install -r api/python/requirements_dev.txt
@@ -44,7 +46,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-centos7:latest
@@ -92,7 +96,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
@@ -120,7 +126,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-arm64:latest
@@ -162,7 +170,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download Linux native libs x86_64
@@ -244,7 +254,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -288,7 +300,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -332,7 +346,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -375,7 +391,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -414,7 +432,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -458,7 +478,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -502,7 +524,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -574,7 +598,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -710,7 +736,9 @@ jobs:
           msystem: mingw64
           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build native libs
         run: |
           mkdir build
@@ -753,7 +781,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Install Emcripten SDK
         uses: mymindstorm/setup-emsdk@v7
       - name: Update version
@@ -787,7 +817,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build utils Linux
         if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-centos7:latest
@@ -832,7 +864,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build bingo-oracle
         run: |
           mkdir build
@@ -861,7 +895,9 @@ jobs:
           msystem: mingw64
           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build bingo-oracle
         run: |
           mkdir build
@@ -883,7 +919,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build bingo-oracle
         run: |
           mkdir build
@@ -913,7 +951,9 @@ jobs:
         with:
           python-version: 3.7
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Install postgres server headers and build bingo-postgres
         uses: docker://epmlsop/buildpack-centos7:latest
         with:
@@ -931,6 +971,11 @@ jobs:
             cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_PREFIX_PATH=/usr/pgsql-${{ matrix.postgres_major_version }} &&
             cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
             "
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
+          path: dist/bingo-postgres*.tgz
       - name: Build Docker image
         run: |
           docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION=${{ matrix.postgres_major_version }} .
@@ -945,11 +990,6 @@ jobs:
           export PYTHONPATH=${{ github.workspace }}/bingo/bingo-elastic/python
           pytest --tb=no --db postgres --junit-xml=junit_report.xml
         working-directory: bingo/tests
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
-          path: dist/bingo-postgres*.
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -979,7 +1019,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Setup Postgres
         run: |
           $pg_version = switch(${{ matrix.postgres_major_version }}) { "15" { "15.1" } "14" { "14.6" } "13" { "13.9" } "12" { "12.13" } "11" { "11.18" } }
@@ -1012,7 +1054,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Setup Postgres
         run: |
           case ${{ matrix.postgres_major_version }} in 15) pg_version=15.1;; 14) pg_version=14.6;; 13) pg_version=13.9;; 12) pg_version=12.13;; 11) pg_version=11.18;; esac;
@@ -1044,7 +1088,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build
         run: |
           mkdir build
@@ -1069,7 +1115,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
@@ -1106,6 +1154,15 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: dotnet nuget push dist/*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Publish indigo-ketcher to NPM
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
+        run: |
+          echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
+          echo email=${NPM_EMAIL} >> ~/.npmrc
+          echo always-auth=true >> ~/.npmrc
+          npm publish ./dist/indigo-ketcher-*.tgz
       - name: Publish Java jars to Maven Central
         env:
           MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
@@ -1126,15 +1183,6 @@ jobs:
           ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
           cd ${GITHUB_WORKSPACE}/bingo/bingo-elastic/java/
           ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
-      - name: Publish indigo-ketcher to NPM
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
-        run: |
-          echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
-          echo email=${NPM_EMAIL} >> ~/.npmrc
-          echo always-auth=true >> ~/.npmrc
-          npm publish ./dist/indigo-ketcher-*.tgz
 
   build_test_publish_indigo_service_old:
     timeout-minutes: 60
@@ -1147,7 +1195,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
@@ -1193,7 +1243,9 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
