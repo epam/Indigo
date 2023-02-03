@@ -3,3 +3,28 @@ enhanced_stereo1:success
 enhanced_stereo2:success
 enhanced_stereo3:success
 stereo_either-0020:success
+AlcoholOxidation_Rxn1.cdxml:SUCCEED
+AlcoholOxidation_Rxn1.cdxml:SUCCEED
+AlcoholOxidation_Rxn2.cdxml:SUCCEED
+Amidation_Rxn1.cdxml:SUCCEED
+Amidation_Rxn2.cdxml:SUCCEED
+BuchwaldHartwig_Rxn1.cdxml:SUCCEED
+BuchwaldHartwig_Rxn2.cdxml:SUCCEED
+CarbonylReduction_Rxn1.cdxml:SUCCEED
+CarbonylReduction_Rxn2.cdxml:SUCCEED
+Esterification_Rxn1.cdxml:SUCCEED
+Esterification_Rxn2.cdxml:SUCCEED
+Grignard_Rxn1.cdxml:SUCCEED
+Grignard_Rxn2.cdxml:SUCCEED
+N-Alkylation_Rxn1.cdxml:SUCCEED
+N-Alkylation_Rxn2.cdxml:SUCCEED
+N-Sulfonylation_Rxn1.cdxml:SUCCEED
+N-Sulfonylation_Rxn2.cdxml:SUCCEED
+O-Alkylation_Rxn1.cdxml:SUCCEED
+O-Alkylation_Rxn2.cdxml:SUCCEED
+Reductive Amination_Rxn1.cdxml:SUCCEED
+Reductive Amination_Rxn2.cdxml:SUCCEED
+SnAr_Rxn1.cdxml:SUCCEED
+SnAr_Rxn2.cdxml:SUCCEED
+Suzuki_Rxn1.cdxml:SUCCEED
+Suzuki_Rxn2.cdxml:SUCCEED
