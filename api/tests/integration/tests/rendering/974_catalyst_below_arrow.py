@@ -20,7 +20,9 @@ if not os.path.exists(joinPathPy("out", __file__)):
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 
-rea = indigo.loadReactionFromFile(joinPathPy("reactions/catalist_below.ket", __file__))
+rea = indigo.loadReactionFromFile(
+    joinPathPy("reactions/catalist_below.ket", __file__)
+)
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(rea, joinPathPy("out/catalist_below.png", __file__))
 print(checkImageSimilarity("catalist_below.png"))
