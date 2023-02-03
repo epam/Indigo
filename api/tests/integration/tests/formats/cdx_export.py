@@ -103,7 +103,7 @@ for filename in files:
 
         with open(os.path.join(ref_path, filename + ".cdxml"), "r") as file:
             refcdxml = file.read()
-        diff = find_diff(refcdxml, res)
+        diff = find_diff(res, refcdxml)
         if not diff:
             print(filename + ".cdxml:SUCCEED")
         else:
