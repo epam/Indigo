@@ -1707,8 +1707,8 @@ void MoleculeCdxmlSaver::endDocument()
 
 int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule& mol, int idx, int charge, int radical)
 {
-    int h;
-    int val, chg, rad;
+    int h = 0;
+    int val = 0, chg = 0, rad = 0;
 
     if (!mol.isQueryMolecule())
         h = mol.asMolecule().getImplicitH(idx);

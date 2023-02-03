@@ -971,16 +971,16 @@ void MoleculeCdxmlLoader::_parseGraphic(CDXElement elem)
 
     auto graphic_bbox_lambda = [&graph_bbox, this](const std::string& data) { this->parseSeg(data, graph_bbox.first, graph_bbox.second); };
 
-    CDXGraphicType graphic_type;
+    CDXGraphicType graphic_type = kCDXGraphicType_Undefined;
     auto graphic_type_lambda = [&graphic_type](const std::string& data) { graphic_type = kCDXPropGraphicTypeStrToID.at(data); };
 
-    CDXSymbolType symbol_type;
+    CDXSymbolType symbol_type = kCDXSymbolType_LonePair;
     auto symbol_type_lambda = [&symbol_type](const std::string& data) { symbol_type = kCDXPropSymbolTypeStrToID.at(data); };
 
-    CDXArrowType arrow_type;
+    CDXArrowType arrow_type = kCDXArrowType_FullHead;
     auto arrow_type_lambda = [&arrow_type](const std::string& data) { arrow_type = kCDXProp_Arrow_TypeStrToID.at(data); };
 
-    AutoInt head_size;
+    AutoInt head_size = 0;
     auto head_size_lambda = [&head_size](const std::string& data) { head_size = data; };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> graphic_dispatcher = {
