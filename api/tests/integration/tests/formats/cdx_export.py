@@ -1,7 +1,6 @@
 import difflib
 import os
 import sys
-import locale
 
 
 def find_diff(a, b):
@@ -34,9 +33,6 @@ files = [
 
 ref_path = joinPathPy("ref/", __file__)
 files.sort()
-
-locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
-print(locale.getlocale())
 
 for filename in files:
     try:
