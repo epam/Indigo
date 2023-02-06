@@ -1,4 +1,5 @@
 import difflib
+import locale
 import os
 import sys
 
@@ -20,6 +21,10 @@ sys.path.append(
 from env_indigo import *  # noqa
 
 indigo = Indigo()
+
+print(locale.getdefaultlocale())
+print(locale.getlocale())
+print(locale.getpreferredencoding())
 
 print("*** Mol to CDX ***")
 
