@@ -107,7 +107,7 @@ for filename in files:
 
         with open(os.path.join(ref_path, filename + ".cdxml"), "r") as file:
             refcdxml = file.read()
-        print(filename + (":success" if res == refcdxml else ":failed"))
+        print(filename + (":success" if res == refcdxml else ":failed\n" + res))
 
         # diff = find_diff(res, refcdxml)
         # if not diff:
