@@ -1,6 +1,7 @@
 import difflib
 import os
 import sys
+import locale
 
 
 def find_diff(a, b):
@@ -33,6 +34,9 @@ files = [
 
 ref_path = joinPathPy("ref/", __file__)
 files.sort()
+
+locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
+print(locale.getlocale())
 
 for filename in files:
     try:
@@ -107,7 +111,7 @@ for filename in files:
 
         with open(os.path.join(ref_path, filename + ".cdxml"), "r") as file:
             refcdxml = file.read()
-        print(filename + (":success" if res == refcdxml else ":failed\n" + res))
+        print(filename + (":success" if res == refcdxml else ":failed"))
 
         # diff = find_diff(res, refcdxml)
         # if not diff:
