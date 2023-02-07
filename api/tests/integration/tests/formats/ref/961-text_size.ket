@@ -28,7 +28,7 @@
             {
                 "type": "text",
                 "data": {
-                    "content": "{\"blocks\":[{\"text\":\"test13\",\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"text\":\"test20\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_20px\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"test40\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_40px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "content": "{\"blocks\":[{\"text\":\"test13test20test40\",\"inlineStyleRanges\":[{\"offset\":6,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_20px\"},{\"offset\":12,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_40px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 7.425000190734863,
                         "y": -4.5,
