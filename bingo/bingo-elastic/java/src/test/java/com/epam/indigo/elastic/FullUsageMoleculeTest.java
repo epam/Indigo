@@ -274,11 +274,9 @@ public class FullUsageMoleculeTest {
     @Test
     @DisplayName("Page size of 10000 should throw exception")
     public void pageSizeOverLimit() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            repository.stream()
-                    .filter(new KeywordQuery<>("test", "test"))
-                    .limit(2000)
-                    .collect(Collectors.toList());
-        });
+        assertThrows(IllegalArgumentException.class, () -> repository.stream()
+                .filter(new KeywordQuery<>("test", "test"))
+                .limit(2000)
+                .collect(Collectors.toList()));
     }
 }

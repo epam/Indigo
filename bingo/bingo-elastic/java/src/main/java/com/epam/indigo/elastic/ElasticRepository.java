@@ -198,8 +198,6 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 //        TODO do we need it?
 //        FlushRequest flushRequest = new FlushRequest();
 //        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
-//        ForceMergeRequest forceMergeRequest = new ForceMergeRequest();
-//        this.elasticClient.indices().forcemerge(forceMergeRequest, RequestOptions.DEFAULT);
     }
 
     @Override

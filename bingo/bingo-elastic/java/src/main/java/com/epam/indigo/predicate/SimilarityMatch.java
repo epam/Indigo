@@ -9,6 +9,7 @@ import java.util.Map;
 
 /**
  * Similarity match based on Tanimoto metric
+ *
  * @see <a href="https://en.wikipedia.org/wiki/Jaccard_index#Tanimoto_similarity_and_distance">Tanimoto_similarity_and_distance</a>
  */
 public final class SimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
