@@ -18,10 +18,12 @@
 
 #include "render_font_face_manager.h"
 
-#include "NotoSans_Bold.h"
-#include "NotoSans_BoldItalic.h"
-#include "NotoSans_Italic.h"
-#include "NotoSans_Regular.h"
+// #include "NotoSans_Bold.h"
+// #include "NotoSans_BoldItalic.h"
+// #include "NotoSans_Italic.h"
+// #include "NotoSans_Regular.h"
+
+#include "NotoSansCJK_Fonts.h"
 
 #include <stdexcept>
 
