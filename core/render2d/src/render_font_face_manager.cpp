@@ -51,9 +51,11 @@ namespace indigo
 #endif
     }
 
-    cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(bool is_bold, bool is_italic)
+    cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(const TextItem& ti)
     {
         auto lang = _lang_detector.detectLang(ti);
+        bool is_bold = ti.bold;
+        bool is_italic = ti.italic;
 
         lang = FONT_LANG::NO_CJK;
 

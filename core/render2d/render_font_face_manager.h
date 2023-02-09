@@ -17,6 +17,9 @@
  ***************************************************************************/
 
 #pragma once
+
+#include "render_common.h"
+
 #include <cairo-ft.h>
 #include <freetype/freetype.h>
 
@@ -249,6 +252,6 @@ namespace indigo
         RenderFontFaceManager();
         ~RenderFontFaceManager();
 
-        cairo_font_face_t* selectCairoFontFace(bool is_bold, bool is_italic);
+        cairo_font_face_t* selectCairoFontFace(const TextItem& ti);
     };
 } // namespace indigo
