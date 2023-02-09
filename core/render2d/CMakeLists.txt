@@ -3,9 +3,7 @@ cmake_minimum_required(VERSION 3.6)
 project(render2d LANGUAGES C CXX)
 
 file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/googlefonts/src/*.cpp
-        )
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
 
 if (EMSCRIPTEN)

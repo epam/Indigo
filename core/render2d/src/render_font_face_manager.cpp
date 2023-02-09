@@ -18,12 +18,17 @@
 
 #include "render_font_face_manager.h"
 
-// #include "NotoSans_Bold.h"
-// #include "NotoSans_BoldItalic.h"
-// #include "NotoSans_Italic.h"
-// #include "NotoSans_Regular.h"
+#include "NotoSans_Bold.h"
+#include "NotoSansCJK_Bold.h"
 
-#include "NotoSansCJK_Fonts.h"
+#include "NotoSans_BoldItalic.h"
+
+#include "NotoSans_Italic.h"
+
+#include "NotoSans_Regular.h"
+#include "NotoSansCJK_Regular.h"
+
+#include <cstdlib>
 
 #include <stdexcept>
 
@@ -48,6 +53,14 @@ namespace indigo
 
     cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(bool is_bold, bool is_italic)
     {
+        if (std::rand() >= 1) {
+            if (is_bold) {
+                return _cairo_face_cjk_bold;
+            } else {
+                return _cairo_face_cjk_regular;
+            }
+        }
+
         if (is_bold && is_italic)
         {
             return _cairo_face_bold_italic;
@@ -104,5 +117,11 @@ namespace indigo
 
         static const cairo_user_data_key_t key3 = {0};
         _loadFontFace(_library, &_face_bold_italic, &_cairo_face_bold_italic, &key3, sans_bold_italic, sans_bold_italic_size, "bold italic");
+
+        static const cairo_user_data_key_t key_cjk_regular = {0};
+        _loadFontFace(_library, &_face_cjk_regular, &_cairo_face_cjk_regular, &key_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "regular");
+
+        static const cairo_user_data_key_t key_cjk_bold = {0};
+        _loadFontFace(_library, &_face_cjk_bold, &_cairo_face_cjk_bold, &key_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "bold");
     }
 } // namespace indigo

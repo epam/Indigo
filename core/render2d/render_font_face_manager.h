@@ -38,6 +38,12 @@ namespace indigo
         cairo_font_face_t* _cairo_face_italic = nullptr;
         cairo_font_face_t* _cairo_face_bold_italic = nullptr;
 
+        FT_Face _face_cjk_regular;
+        FT_Face _face_cjk_bold;
+
+        cairo_font_face_t* _cairo_face_cjk_regular = nullptr;
+        cairo_font_face_t* _cairo_face_cjk_bold = nullptr;
+
         void _loadFontFaces();
         void _loadFontFace(FT_Library library, FT_Face* face, cairo_font_face_t** cairo_face, const cairo_user_data_key_t* key, const unsigned char font[],
                            int font_size, const std::string& name);
