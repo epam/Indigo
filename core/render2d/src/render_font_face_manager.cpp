@@ -18,15 +18,15 @@
 
 #include "render_font_face_manager.h"
 
-#include "NotoSans_Bold.h"
 #include "NotoSansCJK_Bold.h"
+#include "NotoSans_Bold.h"
 
 #include "NotoSans_BoldItalic.h"
 
 #include "NotoSans_Italic.h"
 
-#include "NotoSans_Regular.h"
 #include "NotoSansCJK_Regular.h"
+#include "NotoSans_Regular.h"
 
 #include <cstdlib>
 
@@ -53,29 +53,39 @@ namespace indigo
 
     cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(bool is_bold, bool is_italic)
     {
-        if (std::rand() >= 1) {
-            if (is_bold) {
-                return _cairo_face_cjk_bold;
-            } else {
-                return _cairo_face_cjk_regular;
-            }
-        }
+        auto lang = _lang_detector.detectLang(ti);
 
-        if (is_bold && is_italic)
+        lang = FONT_LANG::NO_CJK;
+
+        if (lang == FONT_LANG::NO_CJK)
         {
-            return _cairo_face_bold_italic;
-        }
-        else if (is_bold)
-        {
-            return _cairo_face_bold;
-        }
-        else if (is_italic)
-        {
-            return _cairo_face_italic;
+            if (is_bold && is_italic)
+            {
+                return _cairo_face_bold_italic;
+            }
+            else if (is_bold)
+            {
+                return _cairo_face_bold;
+            }
+            else if (is_italic)
+            {
+                return _cairo_face_italic;
+            }
+            else
+            {
+                return _cairo_face_regular;
+            }
         }
         else
         {
-            return _cairo_face_regular;
+            if (is_bold)
+            {
+                return _cairo_face_cjk_bold;
+            }
+            else
+            {
+                return _cairo_face_cjk_regular;
+            }
         }
     }
 
