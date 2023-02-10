@@ -47,43 +47,45 @@ TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
 #ifdef __GNUC__
     SEFUtility::HeapWatcher::get_heap_watcher().start_watching();
 #endif
-    FileScanner sc(dataPath("molecules/resonance/resonance.sdf").c_str());
-
-    SdfLoader sdf(sc);
-    QueryMolecule qmol;
-
-    Array<char> qbuf;
-    qbuf.readString("N(#C)=C(C)C", false);
-    BufferScanner sm_scanner(qbuf);
-    SmilesLoader smiles_loader(sm_scanner);
-    smiles_loader.loadQueryMolecule(qmol);
-
-    sdf.readAt(138);
-    try
     {
-        BufferScanner bsc(sdf.data);
-        MolfileLoader loader(bsc);
-        Molecule mol;
-        loader.loadMolecule(mol);
-        Array<char> buf;
-        ArrayOutput buf_out(buf);
-        CmfSaver cmf_saver(buf_out);
+        FileScanner sc(dataPath("molecules/resonance/resonance.sdf").c_str());
 
-        cmf_saver.saveMolecule(mol);
+        SdfLoader sdf(sc);
+        QueryMolecule qmol;
 
-        Molecule mol2;
-        BufferScanner buf_in(buf);
-        CmfLoader cmf_loader(buf_in);
-        cmf_loader.loadMolecule(mol2);
+        Array<char> qbuf;
+        qbuf.readString("N(#C)=C(C)C", false);
+        BufferScanner sm_scanner(qbuf);
+        SmilesLoader smiles_loader(sm_scanner);
+        smiles_loader.loadQueryMolecule(qmol);
 
-        MoleculeSubstructureMatcher matcher(mol2);
-        matcher.use_pi_systems_matcher = true;
-        matcher.setQuery(qmol);
-        matcher.find();
-    }
-    catch (Exception& e)
-    {
-        ASSERT_STREQ("", e.message());
+        sdf.readAt(138);
+        try
+        {
+            BufferScanner bsc(sdf.data);
+            MolfileLoader loader(bsc);
+            Molecule mol;
+            loader.loadMolecule(mol);
+            Array<char> buf;
+            ArrayOutput buf_out(buf);
+            CmfSaver cmf_saver(buf_out);
+
+            cmf_saver.saveMolecule(mol);
+
+            Molecule mol2;
+            BufferScanner buf_in(buf);
+            CmfLoader cmf_loader(buf_in);
+            cmf_loader.loadMolecule(mol2);
+
+            MoleculeSubstructureMatcher matcher(mol2);
+            matcher.use_pi_systems_matcher = true;
+            matcher.setQuery(qmol);
+            matcher.find();
+        }
+        catch (Exception& e)
+        {
+            ASSERT_STREQ("", e.message());
+        }
     }
 #ifdef __GNUC__
     auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
