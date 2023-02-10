@@ -21,11 +21,15 @@ if (ENABLE_TESTS)
             ${heapwatcher_BIN_DIR}
         )
         SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")
-        set( LEAK_TESTS, HeapWatcher )
     endif()
     file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp)
     add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES} common.cpp main.cpp)
-    target_link_libraries(${PROJECT_NAME} indigo-core gtest $(LEAK_TESTS))
+
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_link_libraries(${PROJECT_NAME} indigo-core gtest HeapWatcher)
+    else()
+        target_link_libraries(${PROJECT_NAME} indigo-core gtest)
+        
     target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
         PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
