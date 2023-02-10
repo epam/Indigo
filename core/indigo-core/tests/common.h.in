@@ -15,6 +15,7 @@
 #define BENZENE_AROMATIC "c1ccccc1"
 #define CAFFEINE "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
 #define SULFASALAZINE "C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O"
+#define GTEST_COUT std::cerr << "[          ] [ INFO ]"
 
 inline void leaks_start_watch()
 {
@@ -29,7 +30,6 @@ inline void leaks_start_watch()
 inline void leaks_stop_watch()
 {
 #ifdef __GNUC__
-#define GTEST_COUT std::cerr << "[          ] [ INFO ]"
     auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
     GTEST_COUT << "allocations on stop:" << leaks.open_allocations().size() << std::endl;
     ASSERT_FALSE(leaks.has_leaks());
