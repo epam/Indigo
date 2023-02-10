@@ -16,10 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <gtest/gtest.h>
 #include <array>
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
+#include <gtest/gtest.h>
 #include <molecule/cmf_loader.h>
 #include <molecule/cmf_saver.h>
 #include <molecule/cml_saver.h>
@@ -40,55 +40,15 @@ using namespace indigo;
 
 #define GTEST_COUT std::cerr << "[          ] [ INFO ]"
 
-class IndigoCoreFormatsTest : public IndigoCoreTest
-{
-};
-
-TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
+void leaks_start_watch()
 {
 #ifdef __GNUC__
     SEFUtility::HeapWatcher::get_heap_watcher().start_watching();
 #endif
-    {
-        FileScanner sc(dataPath("molecules/resonance/resonance.sdf").c_str());
+}
 
-        SdfLoader sdf(sc);
-        QueryMolecule qmol;
-
-        Array<char> qbuf;
-        qbuf.readString("N(#C)=C(C)C", false);
-        BufferScanner sm_scanner(qbuf);
-        SmilesLoader smiles_loader(sm_scanner);
-        smiles_loader.loadQueryMolecule(qmol);
-
-        sdf.readAt(138);
-        try
-        {
-            BufferScanner bsc(sdf.data);
-            MolfileLoader loader(bsc);
-            Molecule mol;
-            loader.loadMolecule(mol);
-            Array<char> buf;
-            ArrayOutput buf_out(buf);
-            CmfSaver cmf_saver(buf_out);
-
-            cmf_saver.saveMolecule(mol);
-
-            Molecule mol2;
-            BufferScanner buf_in(buf);
-            CmfLoader cmf_loader(buf_in);
-            cmf_loader.loadMolecule(mol2);
-
-            MoleculeSubstructureMatcher matcher(mol2);
-            matcher.use_pi_systems_matcher = true;
-            matcher.setQuery(qmol);
-            matcher.find();
-        }
-        catch (Exception& e)
-        {
-            ASSERT_STREQ("", e.message());
-        }
-    }
+void leaks_stop_watch()
+{
 #ifdef __GNUC__
     auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
     GTEST_COUT << "allocations:" << leaks.high_level_statistics().number_of_mallocs() << std::endl;
@@ -97,8 +57,58 @@ TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
 #endif
 }
 
+class IndigoCoreFormatsTest : public IndigoCoreTest
+{
+};
+
+TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
+{
+    leaks_start_watch();
+    FileScanner sc(dataPath("molecules/resonance/resonance.sdf").c_str());
+
+    SdfLoader sdf(sc);
+    QueryMolecule qmol;
+
+    Array<char> qbuf;
+    qbuf.readString("N(#C)=C(C)C", false);
+    BufferScanner sm_scanner(qbuf);
+    SmilesLoader smiles_loader(sm_scanner);
+    smiles_loader.loadQueryMolecule(qmol);
+
+    sdf.readAt(138);
+    try
+    {
+        BufferScanner bsc(sdf.data);
+        MolfileLoader loader(bsc);
+        Molecule mol;
+        loader.loadMolecule(mol);
+        Array<char> buf;
+        ArrayOutput buf_out(buf);
+        CmfSaver cmf_saver(buf_out);
+
+        cmf_saver.saveMolecule(mol);
+
+        Molecule mol2;
+        BufferScanner buf_in(buf);
+        CmfLoader cmf_loader(buf_in);
+        cmf_loader.loadMolecule(mol2);
+
+        MoleculeSubstructureMatcher matcher(mol2);
+        matcher.use_pi_systems_matcher = true;
+        matcher.setQuery(qmol);
+        matcher.find();
+        leaks_stop_watch();
+    }
+    catch (Exception& e)
+    {
+        leaks_stop_watch();
+        ASSERT_STREQ("", e.message());
+    }
+}
+
 TEST_F(IndigoCoreFormatsTest, save_cdxml)
 {
+    leaks_start_watch();
     Molecule t_mol;
 
     loadMolecule("c1ccccc1N", t_mol);
@@ -109,12 +119,14 @@ TEST_F(IndigoCoreFormatsTest, save_cdxml)
     saver.saveMolecule(t_mol);
     loadMolecule("c1ccccc1", t_mol);
     saver.saveMolecule(t_mol);
-
+    leaks_stop_watch();
     ASSERT_TRUE(out.size() > 2000);
 }
 
 TEST_F(IndigoCoreFormatsTest, save_cml)
 {
+    leaks_start_watch();
+
     Molecule t_mol;
 
     loadMolecule("c1ccccc1N", t_mol);
@@ -125,6 +137,6 @@ TEST_F(IndigoCoreFormatsTest, save_cml)
     saver.saveMolecule(t_mol);
     loadMolecule("c1ccccc1", t_mol);
     saver.saveMolecule(t_mol);
-
+    leaks_stop_watch();
     ASSERT_TRUE(out.size() > 1000);
 }
