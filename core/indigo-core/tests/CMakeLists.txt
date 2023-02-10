@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 project(indigo-core-unit-tests LANGUAGES CXX)
 
-if (ENABLE_TESTS)
+if(ENABLE_TESTS)
     set(DATA_PATH ${CMAKE_SOURCE_DIR}/data)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common.h.in ${CMAKE_CURRENT_BINARY_DIR}/common.h)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
