@@ -18,6 +18,7 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
 #include <molecule/cmf_loader.h>
@@ -32,7 +33,9 @@
 #include <molecule/smiles_loader.h>
 
 #include "common.h"
-
+#ifdef __GNUC__
+#include "HeapWatcher.hpp"
+#endif
 using namespace indigo;
 
 class IndigoCoreFormatsTest : public IndigoCoreTest
@@ -41,6 +44,9 @@ class IndigoCoreFormatsTest : public IndigoCoreTest
 
 TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
 {
+#ifdef __GNUC__
+    SEFUtility::HeapWatcher::get_heap_watcher().start_watching();
+#endif
     FileScanner sc(dataPath("molecules/resonance/resonance.sdf").c_str());
 
     SdfLoader sdf(sc);
@@ -79,6 +85,9 @@ TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
     {
         ASSERT_STREQ("", e.message());
     }
+#ifdef __GNUC__
+    auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
+#endif
 }
 
 TEST_F(IndigoCoreFormatsTest, save_cdxml)
