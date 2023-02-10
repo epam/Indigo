@@ -35,8 +35,6 @@
 
 using namespace indigo;
 
-#define GTEST_COUT std::cerr << "[          ] [ INFO ]"
-
 class IndigoCoreFormatsTest : public IndigoCoreTest
 {
 };

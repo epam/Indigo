@@ -26,6 +26,7 @@ void leaks_start_watch()
 void leaks_stop_watch()
 {
 #ifdef __GNUC__
+#define GTEST_COUT std::cerr << "[          ] [ INFO ]"
     auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
     GTEST_COUT << "allocations:" << leaks.high_level_statistics().number_of_mallocs() << std::endl;
     GTEST_COUT << "frees:" << leaks.high_level_statistics().number_of_frees() << std::endl;
