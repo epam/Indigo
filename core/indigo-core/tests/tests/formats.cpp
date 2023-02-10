@@ -17,7 +17,6 @@
  ***************************************************************************/
 
 #include <gtest/gtest.h>
-
 #include <array>
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
@@ -36,7 +35,10 @@
 #ifdef __GNUC__
 #include "HeapWatcher.hpp"
 #endif
+
 using namespace indigo;
+
+#define GTEST_COUT std::cerr << "[          ] [ INFO ]"
 
 class IndigoCoreFormatsTest : public IndigoCoreTest
 {
@@ -89,8 +91,8 @@ TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
     }
 #ifdef __GNUC__
     auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
-    EXPECT_TRUE(false) << "allocations:" << leaks.high_level_statistics().number_of_mallocs() << "\n";
-    EXPECT_TRUE(false) << "frees:" << leaks.high_level_statistics().number_of_frees() << "\n";
+    GTEST_COUT << "allocations:" << leaks.high_level_statistics().number_of_mallocs() << std::endl();
+    GTEST_COUT << "frees:" << leaks.high_level_statistics().number_of_frees() << std::endl();
     ASSERT_FALSE(leaks.has_leaks());
 #endif
 }
