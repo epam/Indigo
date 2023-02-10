@@ -87,6 +87,7 @@ TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
     }
 #ifdef __GNUC__
     auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
+    ASSERT_FALSE(leaks.has_leaks());
 #endif
 }
 
