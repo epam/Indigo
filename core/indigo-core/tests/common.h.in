@@ -6,11 +6,32 @@
 
 #include <molecule/molecule.h>
 
+#ifdef __GNUC__
+#include "HeapWatcher.hpp"
+#endif
+
 #define METHANE "C"
 #define BENZENE "C1=CC=CC=C1"
 #define BENZENE_AROMATIC "c1ccccc1"
 #define CAFFEINE "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
 #define SULFASALAZINE "C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O"
+
+void leaks_start_watch()
+{
+#ifdef __GNUC__
+    SEFUtility::HeapWatcher::get_heap_watcher().start_watching();
+#endif
+}
+
+void leaks_stop_watch()
+{
+#ifdef __GNUC__
+    auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
+    GTEST_COUT << "allocations:" << leaks.high_level_statistics().number_of_mallocs() << std::endl;
+    GTEST_COUT << "frees:" << leaks.high_level_statistics().number_of_frees() << std::endl;
+    ASSERT_FALSE(leaks.has_leaks());
+#endif
+}
 
 namespace indigo
 {

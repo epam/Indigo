@@ -32,30 +32,10 @@
 #include <molecule/smiles_loader.h>
 
 #include "common.h"
-#ifdef __GNUC__
-#include "HeapWatcher.hpp"
-#endif
 
 using namespace indigo;
 
 #define GTEST_COUT std::cerr << "[          ] [ INFO ]"
-
-void leaks_start_watch()
-{
-#ifdef __GNUC__
-    SEFUtility::HeapWatcher::get_heap_watcher().start_watching();
-#endif
-}
-
-void leaks_stop_watch()
-{
-#ifdef __GNUC__
-    auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
-    GTEST_COUT << "allocations:" << leaks.high_level_statistics().number_of_mallocs() << std::endl;
-    GTEST_COUT << "frees:" << leaks.high_level_statistics().number_of_frees() << std::endl;
-    ASSERT_FALSE(leaks.has_leaks());
-#endif
-}
 
 class IndigoCoreFormatsTest : public IndigoCoreTest
 {
