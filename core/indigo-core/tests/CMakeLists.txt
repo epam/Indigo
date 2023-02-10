@@ -29,6 +29,7 @@ if(ENABLE_TESTS)
         target_link_libraries(${PROJECT_NAME} indigo-core gtest HeapWatcher)
     else()
         target_link_libraries(${PROJECT_NAME} indigo-core gtest)
+    endif()
         
     target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
