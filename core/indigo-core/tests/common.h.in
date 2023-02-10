@@ -20,6 +20,9 @@ inline void leaks_start_watch()
 {
 #ifdef __GNUC__
     SEFUtility::HeapWatcher::get_heap_watcher().start_watching();
+    auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
+    GTEST_COUT << "allocations on start:" << leaks.open_allocations().size() << std::endl;
+    SEFUtility::HeapWatcher::get_heap_watcher().start_watching();
 #endif
 }
 
@@ -28,7 +31,7 @@ inline void leaks_stop_watch()
 #ifdef __GNUC__
 #define GTEST_COUT std::cerr << "[          ] [ INFO ]"
     auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
-    GTEST_COUT << "allocations:" << leaks.open_allocations().size() << std::endl;
+    GTEST_COUT << "allocations on stop:" << leaks.open_allocations().size() << std::endl;
     ASSERT_FALSE(leaks.has_leaks());
 #endif
 }
