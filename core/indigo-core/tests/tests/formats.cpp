@@ -88,6 +88,9 @@ TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
         }
     }
 #ifdef __GNUC__
+    printf("allocations: %d\n", leaks.high_level_statistics().number_of_mallocs());
+    printf("frees: %d\n", leaks.high_level_statistics().number_of_frees());
+
     auto leaks(SEFUtility::HeapWatcher::get_heap_watcher().stop_watching());
     ASSERT_FALSE(leaks.has_leaks());
 #endif
