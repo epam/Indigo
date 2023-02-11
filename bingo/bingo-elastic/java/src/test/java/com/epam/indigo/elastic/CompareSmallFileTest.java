@@ -65,7 +65,7 @@ public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
 
         // Tanimoto elastic
         List<IndigoRecord> indigoResult = repository.stream().limit(10).filter(
-                new SimilarityMatch<>(elasticNeedle, 0.9f))
+                        new SimilarityMatch<>(elasticNeedle, 0.9f))
                 .collect(Collectors.toList());
         assertEquals(indigoObjectResult.canonicalSmiles(), indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
         assertEquals(1, indigoResult.size());
@@ -84,7 +84,7 @@ public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
 
         // Euclid elastic
         List<IndigoRecord> indigoResult = repository.stream().limit(10).filter(
-                new EuclidSimilarityMatch<>(elasticNeedle, 0.95f))
+                        new EuclidSimilarityMatch<>(elasticNeedle, 0.95f))
                 .collect(Collectors.toList());
         assertEquals(1, indigoResult.size());
         assertEquals(indigoObjectResult.canonicalSmiles(),
@@ -103,7 +103,7 @@ public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
 
         // Tversky elastic
         List<IndigoRecord> indigoResult = repository.stream().limit(10).filter(
-                new TverskySimilarityMatch<>(elasticNeedle, 0.95f, 1, 1))
+                        new TverskySimilarityMatch<>(elasticNeedle, 0.95f, 1, 1))
                 .collect(Collectors.toList());
         assertEquals(indigoObjectResult.canonicalSmiles(),
                 indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
