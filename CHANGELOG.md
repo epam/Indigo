@@ -1,3 +1,33 @@
+# Indigo 1.9.0
+Released 2023-01-31
+
+## What's Changed
+* MDL Molfile v3000 encoding: Automatic selection of MDL Molfile v3000 encoding doesn't work if the structure contains Enhanced stereochemistry by @mkviatkovskii in #924
+* cdx import in scope of current KET/CDXML features support by @even1024 in #885
+* Structures with the arrow lose their integrity when pressing 'Layout' by @even1024 in #938
+* Abbreviations are not supported by @even1024 in #685
+* #934: api: tests: IronPython update to 3.4.0, fix tests by @mkviatkovskii in #940
+* Add support of R-groups to the CDX loader. #36 by @even1024 in #946
+* CDX import: Reaction arrows disappear when opening a file #943 by @even1024 in #948
+* CDX import: Aromatized structures are not recognized when Pasting from Clipboard #950 by @even1024 in #953
+* CDXML parser memory leak #966 by @even1024 in #967
+* Error opening MOL and RXN files with RBC/SUB/UNC queries #928 by @even1024 in #969
+* CDX Import, CDXML Import: parsing error when superatom starts with 'R' symbol #960 by @even1024 in #975
+* CDXML: When opening a saved file with text, the Font size enlarges #961 by @even1024 in #982
+* CDXML: When opening a file saved with 'Any atom', 'Atom Generics' or 'Group Generics' structure loses its integrity #968 by @even1024 in #985
+* CDXML import fails to load rectangle primitives #979 by @even1024 in #980
+* CDXML: File containing Functional Groups or Salts and Solvents cannot be opened and causes a convert error #963 by @even1024 in #984
+* CDXML import: nodes with radicals are not getting parsed #990 by @even1024 in #991
+* CDXML import: fails to import some cdxml files with multiple text objects related to different fragments by @even1024 in #993
+* CDXML import: 'superscript' and 'subscript' is not displayed correctly #962
+* Improve ssl bingo elastic by @MysterionRise in #901
+* bingo: postgres: add support for Postgres 15, drop support for Postgres 10 by @mkviatkovskii in #903
+* #521: core: replace MultiMap in MoleculeRGroupsComposition class by @loimu in #917
+* #521: core: replace MultiMap in MolfileLoader class by @loimu in #911 
+* #929: fix auto-saving to CTAB v3000 by @mkviatkovskii in #931
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.8.0...indigo-1.9.0
+
 # Indigo 1.8.2
 Released 2022-11-28
 

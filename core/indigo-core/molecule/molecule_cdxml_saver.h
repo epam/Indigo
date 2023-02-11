@@ -25,9 +25,15 @@
 #include "ket_commons.h"
 #include "math/algebra.h"
 
+typedef unsigned short int UINT16;
+typedef int INT32;
+typedef unsigned int UINT32;
+#include "CDXCommons.h"
+
 namespace tinyxml2
 {
     class XMLElement;
+    class XMLAttribute;
     class XMLDocument;
 }
 
@@ -50,7 +56,7 @@ namespace indigo
         };
 
     public:
-        explicit MoleculeCdxmlSaver(Output& output);
+        explicit MoleculeCdxmlSaver(Output& output, bool is_binary = false);
 
         ~MoleculeCdxmlSaver();
 
@@ -95,6 +101,13 @@ namespace indigo
         void endCurrentElement();
         void endPage();
         void endDocument();
+        void writeBinaryElement(tinyxml2::XMLElement* element);
+        void writeBinaryAttributes(tinyxml2::XMLElement* pElement);
+        void writeIrregularElement(tinyxml2::XMLElement* pElement, int16_t tag);
+
+        void writeBinaryValue(const tinyxml2::XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type);
+        void writeBinaryTextValue(const tinyxml2::XMLElement* pTextElement);
+
         int getHydrogenCount(BaseMolecule& mol, int idx, int charge, int radical);
 
         float pageHeight() const;
@@ -135,6 +148,7 @@ namespace indigo
 
         int _id;
         float _scale;
+        bool _is_binary;
     };
 
 } // namespace indigo

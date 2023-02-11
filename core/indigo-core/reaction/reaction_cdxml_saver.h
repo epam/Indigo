@@ -35,7 +35,7 @@ namespace indigo
     class DLLEXPORT ReactionCdxmlSaver
     {
     public:
-        explicit ReactionCdxmlSaver(Output& output);
+        explicit ReactionCdxmlSaver(Output& output, bool is_binary = false);
         ~ReactionCdxmlSaver();
 
         void saveReaction(BaseReaction& rxn);
@@ -58,6 +58,7 @@ namespace indigo
         void _generateCdxmlObjIds(BaseReaction& rxn, std::vector<int>& mol_ids, std::vector<int>& meta_ids, std::vector<std::vector<int>>& nodes_ids);
         void _addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
         int _id;
+        bool _is_binary;
     };
 
 } // namespace indigo

@@ -19,8 +19,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FullUsageMoleculeTest {
 
@@ -270,5 +269,14 @@ public class FullUsageMoleculeTest {
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
+    }
+
+    @Test
+    @DisplayName("Page size of 2000 should throw exception")
+    public void pageSizeOverLimit() {
+        assertThrows(IllegalArgumentException.class, () -> repository.stream()
+                .filter(new KeywordQuery<>("test", "test"))
+                .limit(2000)
+                .collect(Collectors.toList()));
     }
 }

@@ -50,16 +50,26 @@ molfile-saving-mode = auto
 
   -INDIGO-01000000002D
 
-  5  4  0  0  0  0  0  0  0  0999 V2000
-   -3.6241    1.9741    0.0000 C   0  0  2  0  0  0  0  0  0  0  0  0
-   -3.6241    1.1491    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.7991    1.9741    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.6241    2.7991    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
-   -4.4491    1.9741    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  1  3  1  0  0  0  0
-  1  4  1  1  0  0  0
-  1  5  1  0  0  0  0
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 5 4 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C -3.6241 1.9741 0.0 0 CFG=2
+M  V30 2 N -3.6241 1.1491 0.0 0
+M  V30 3 O -2.7991 1.9741 0.0 0
+M  V30 4 F -3.6241 2.7991 0.0 0
+M  V30 5 C -4.4491 1.9741 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 1 3
+M  V30 3 1 1 4 CFG=1
+M  V30 4 1 1 5
+M  V30 END BOND
+M  V30 BEGIN COLLECTION
+M  V30 MDLV30/STERAC1 ATOMS=(1 1)
+M  V30 END COLLECTION
+M  V30 END CTAB
 M  END
 
 
@@ -106,14 +116,24 @@ molfile-saving-mode = auto
 
   -INDIGO-01000000002D
 
-  4  3  0  0  0  0  0  0  0  0999 V2000
-   -3.6241    1.9741    0.0000 C   0  0  2  0  0  0  0  0  0  0  0  0
-   -3.6241    1.1491    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.7991    1.9741    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -4.1250    2.7402    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  1  3  1  0  0  0  0
-  1  4  1  1  0  0  0
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 4 3 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C -3.6241 1.9741 0.0 0 CFG=2
+M  V30 2 N -3.6241 1.1491 0.0 0
+M  V30 3 O -2.7991 1.9741 0.0 0
+M  V30 4 F -4.125 2.7402 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 1 3
+M  V30 3 1 1 4 CFG=1
+M  V30 END BOND
+M  V30 BEGIN COLLECTION
+M  V30 MDLV30/STERAC1 ATOMS=(1 1)
+M  V30 END COLLECTION
+M  V30 END CTAB
 M  END
 
 
@@ -160,14 +180,24 @@ molfile-saving-mode = auto
 
   -INDIGO-01000000002D
 
-  4  3  0  0  0  0  0  0  0  0999 V2000
-   -3.6241    1.9741    0.0000 C   0  0  1  0  0  0  0  0  0  0  0  0
-   -2.5339    1.6500    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.7420    0.9723    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -4.1250    2.7402    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  1  3  1  0  0  0  0
-  1  4  1  1  0  0  0
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 4 3 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C -3.6241 1.9741 0.0 0 CFG=1
+M  V30 2 N -2.5339 1.65 0.0 0
+M  V30 3 O -3.742 0.9723 0.0 0
+M  V30 4 F -4.125 2.7402 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 1 3
+M  V30 3 1 1 4 CFG=1
+M  V30 END BOND
+M  V30 BEGIN COLLECTION
+M  V30 MDLV30/STERAC1 ATOMS=(1 1)
+M  V30 END COLLECTION
+M  V30 END CTAB
 M  END
 
 
@@ -218,16 +248,26 @@ molfile-saving-mode = auto
 
   -INDIGO-01000000002D
 
-  5  4  0  0  0  0  0  0  0  0999 V2000
-   -3.6241    1.9741    0.0000 C   0  0  1  0  0  0  0  0  0  0  0  0
-   -4.8027    1.8268    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.7991    1.9741    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.6241    2.7991    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.6536    1.1196    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  1  3  1  0  0  0  0
-  1  4  1  1  0  0  0
-  1  5  1  0  0  0  0
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 5 4 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C -3.6241 1.9741 0.0 0 CFG=1
+M  V30 2 N -4.8027 1.8268 0.0 0
+M  V30 3 O -2.7991 1.9741 0.0 0
+M  V30 4 F -3.6241 2.7991 0.0 0
+M  V30 5 C -3.6536 1.1196 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 1 3
+M  V30 3 1 1 4 CFG=1
+M  V30 4 1 1 5
+M  V30 END BOND
+M  V30 BEGIN COLLECTION
+M  V30 MDLV30/STERAC1 ATOMS=(1 1)
+M  V30 END COLLECTION
+M  V30 END CTAB
 M  END
 
 
@@ -921,16 +961,26 @@ molfile-saving-mode = auto
 
   -INDIGO-01000000002D
 
-  5  4  0  0  0  0  0  0  0  0999 V2000
-   -3.6241    1.9741    0.0000 C   0  0  2  0  0  0  0  0  0  0  0  0
-   -3.6241    1.1491    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.7991    1.9741    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.6241    2.7991    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
-   -4.4491    1.9741    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  1  3  1  0  0  0  0
-  1  4  1  1  0  0  0
-  1  5  1  0  0  0  0
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 5 4 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C -3.6241 1.9741 0.0 0 CFG=2
+M  V30 2 N -3.6241 1.1491 0.0 0
+M  V30 3 O -2.7991 1.9741 0.0 0
+M  V30 4 F -3.6241 2.7991 0.0 0
+M  V30 5 C -4.4491 1.9741 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 1 3
+M  V30 3 1 1 4 CFG=1
+M  V30 4 1 1 5
+M  V30 END BOND
+M  V30 BEGIN COLLECTION
+M  V30 MDLV30/STERAC1 ATOMS=(1 1)
+M  V30 END COLLECTION
+M  V30 END CTAB
 M  END
 
 
@@ -977,14 +1027,24 @@ molfile-saving-mode = auto
 
   -INDIGO-01000000002D
 
-  4  3  0  0  0  0  0  0  0  0999 V2000
-   -3.6241    1.9741    0.0000 C   0  0  2  0  0  0  0  0  0  0  0  0
-   -3.6241    1.1491    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.7991    1.9741    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -4.1250    2.7402    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  1  3  1  0  0  0  0
-  1  4  1  1  0  0  0
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 4 3 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C -3.6241 1.9741 0.0 0 CFG=2
+M  V30 2 N -3.6241 1.1491 0.0 0
+M  V30 3 O -2.7991 1.9741 0.0 0
+M  V30 4 F -4.125 2.7402 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 1 3
+M  V30 3 1 1 4 CFG=1
+M  V30 END BOND
+M  V30 BEGIN COLLECTION
+M  V30 MDLV30/STERAC1 ATOMS=(1 1)
+M  V30 END COLLECTION
+M  V30 END CTAB
 M  END
 
 
@@ -1031,14 +1091,24 @@ molfile-saving-mode = auto
 
   -INDIGO-01000000002D
 
-  4  3  0  0  0  0  0  0  0  0999 V2000
-   -3.6241    1.9741    0.0000 C   0  0  1  0  0  0  0  0  0  0  0  0
-   -2.5339    1.6500    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.7420    0.9723    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -4.1250    2.7402    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  1  3  1  0  0  0  0
-  1  4  1  1  0  0  0
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 4 3 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C -3.6241 1.9741 0.0 0 CFG=1
+M  V30 2 N -2.5339 1.65 0.0 0
+M  V30 3 O -3.742 0.9723 0.0 0
+M  V30 4 F -4.125 2.7402 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 1 3
+M  V30 3 1 1 4 CFG=1
+M  V30 END BOND
+M  V30 BEGIN COLLECTION
+M  V30 MDLV30/STERAC1 ATOMS=(1 1)
+M  V30 END COLLECTION
+M  V30 END CTAB
 M  END
 
 
@@ -1089,16 +1159,26 @@ molfile-saving-mode = auto
 
   -INDIGO-01000000002D
 
-  5  4  0  0  0  0  0  0  0  0999 V2000
-   -3.6241    1.9741    0.0000 C   0  0  1  0  0  0  0  0  0  0  0  0
-   -4.8027    1.8268    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.7991    1.9741    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.6241    2.7991    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.6536    1.1196    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  1  3  1  0  0  0  0
-  1  4  1  1  0  0  0
-  1  5  1  0  0  0  0
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 5 4 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C -3.6241 1.9741 0.0 0 CFG=1
+M  V30 2 N -4.8027 1.8268 0.0 0
+M  V30 3 O -2.7991 1.9741 0.0 0
+M  V30 4 F -3.6241 2.7991 0.0 0
+M  V30 5 C -3.6536 1.1196 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 1 3
+M  V30 3 1 1 4 CFG=1
+M  V30 4 1 1 5
+M  V30 END BOND
+M  V30 BEGIN COLLECTION
+M  V30 MDLV30/STERAC1 ATOMS=(1 1)
+M  V30 END COLLECTION
+M  V30 END CTAB
 M  END
 
 

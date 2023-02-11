@@ -1,6 +1,8 @@
 from enum import Enum
 from os.path import abspath
 
+from indigo import Indigo
+
 TEST_CASES_DATA = {
     "mass": "data/molecules/mass/std.json",
     "gross": "data/molecules/gross/std.json",
@@ -118,12 +120,14 @@ CREATE_INDICES_FOR = [
 
 MOL_FILES_EXTENSIONS = ["sdf", "smi", ".sma", "smiles", "rdf"]
 
+
+indigo = Indigo()
 IMPORT_FUNCTION_MAP = {
-    ".sdf": "importSDF",
-    ".smi": "importSMILES",
-    ".smiles": "importSMILES",
-    ".sma": "importSMILES",
-    ".rdf": "importRDF",
+    ".sdf": indigo.iterateSDFile,
+    ".smi": indigo.iterateSmilesFile,
+    ".smiles": indigo.iterateSmilesFile,
+    ".sma": indigo.iterateSmilesFile,
+    ".rdf": indigo.iterateRDFile,
 }
 
 DB_POSTGRES = "postgres"

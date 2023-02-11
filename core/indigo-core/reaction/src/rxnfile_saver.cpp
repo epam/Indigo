@@ -83,7 +83,7 @@ void RxnfileSaver::_saveReaction()
                 _v2000 = false;
                 break;
             }
-            if (!_brxn->getBaseMolecule(i).stereocenters.haveAllAbsAny() && !_brxn->getBaseMolecule(i).stereocenters.haveAllAndAny())
+            if (_brxn->getBaseMolecule(i).stereocenters.haveEnhancedStereocenter())
             {
                 _v2000 = false;
                 break;

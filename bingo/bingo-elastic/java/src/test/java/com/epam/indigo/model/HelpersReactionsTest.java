@@ -16,7 +16,7 @@ public class HelpersReactionsTest {
         IndigoObject indigoReaction = indigo.loadReactionFromFile(fileReactionPath);
         IndigoRecordReaction indigoRecordReaction = Helpers.loadReaction(fileReactionPath);
         IndigoObject indigoObjectFromRecord = indigoRecordReaction.getIndigoObject(indigo);
-        assertEquals(indigoReaction.countReactants(),  indigoObjectFromRecord.countReactants());
+        assertEquals(indigoReaction.countReactants(), indigoObjectFromRecord.countReactants());
         assertEquals(indigoReaction.countProducts(), indigoObjectFromRecord.countProducts());
     }
 
