@@ -1,4 +1,3 @@
-import math
 import os
 import sys
 
@@ -26,4 +25,4 @@ for i, m in enumerate(
     f = m.fingerprint("sim")
     print(i + 1)
     print(m.smiles())
-    print(int(round(indigo.similarity(fp, f) * 1000000)))
+    print("{:.1f}".format(indigo.similarity(fp, f)))

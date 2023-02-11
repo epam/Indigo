@@ -53,7 +53,7 @@ void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max
     max_vec.scale(scale);
 }
 
-ReactionJsonSaver::ReactionJsonSaver(Output& output) : _output(output), _add_stereo_desc(false)
+ReactionJsonSaver::ReactionJsonSaver(Output& output) : _output(output), add_stereo_desc(false), pretty_json(false)
 {
 }
 
@@ -67,9 +67,9 @@ void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule
         merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
     merged.meta().clone(rxn.meta());
-
     StringBuffer s;
-    Writer<StringBuffer> writer(s);
+    JsonWriter writer(pretty_json);
+    writer.Reset(s);
     json_saver.saveMolecule(merged, writer);
     _output.printf("%s", s.GetString());
 }
@@ -164,7 +164,8 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
 
     // dump molecules
     StringBuffer s;
-    Writer<StringBuffer> writer(s);
+    JsonWriter writer(pretty_json);
+    writer.Reset(s);
     json_saver.saveMolecule(merged, writer);
 
     Document ket;
@@ -269,7 +270,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 {
     MoleculeJsonSaver json_saver(_output);
-    json_saver._add_stereo_desc = _add_stereo_desc;
+    json_saver.add_stereo_desc = add_stereo_desc;
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
     {

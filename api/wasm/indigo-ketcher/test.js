@@ -1,5 +1,6 @@
 const indigoModuleFn = require('./indigo-ketcher.js')
 const assert = require('assert').strict;
+const looksSame = require('looks-same');
 
 // Extremely simple test framework, thanks to @sohamkamari (https://github.com/sohamkamani/nodejs-test-without-library)
 let tests = []
@@ -339,6 +340,66 @@ M  END
             options.delete();
         });
 
+        test("convert", "molfile3000_auto", () => {
+            let options = new indigo.MapStringString();
+			options.set('ignore-stereochemistry-errors', 'true');
+            options.set('ignore-bad-valence', 'true');
+            options.set('molfile-saving-mode', 'auto');
+            const molfile_2000 = indigo.convert(`
+  -INDIGO-12082220102D
+
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 16 17 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 18.5771 -10.2084 0.0 0
+M  V30 2 N 19.5168 -9.86641 0.0 0
+M  V30 3 C 19.6905 -8.8816 0.0 0 CFG=2
+M  V30 4 C 20.1905 -8.01558 0.0 0
+M  V30 5 C 19.6905 -7.14955 0.0 0
+M  V30 6 C 18.6905 -7.14955 0.0 0
+M  V30 7 C 18.1905 -8.01558 0.0 0
+M  V30 8 C 18.6905 -8.8816 0.0 0
+M  V30 9 O 18.1905 -9.74763 0.0 0
+M  V30 10 C 20.6302 -9.22362 0.0 0
+M  V30 11 C 20.8038 -10.2084 0.0 0
+M  V30 12 C 21.7435 -10.5504 0.0 0
+M  V30 13 C 22.5095 -9.90766 0.0 0
+M  V30 14 C 22.3359 -8.92285 0.0 0
+M  V30 15 C 21.3962 -8.58083 0.0 0
+M  V30 16 Cl 21.2225 -7.59603 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 3 2 CFG=1
+M  V30 3 1 3 4
+M  V30 4 1 4 5
+M  V30 5 1 5 6
+M  V30 6 1 6 7
+M  V30 7 1 7 8
+M  V30 8 1 8 3
+M  V30 9 2 8 9
+M  V30 10 1 3 10
+M  V30 11 2 10 11
+M  V30 12 1 11 12
+M  V30 13 2 12 13
+M  V30 14 1 13 14
+M  V30 15 2 14 15
+M  V30 16 1 15 10
+M  V30 17 1 15 16
+M  V30 END BOND
+M  V30 BEGIN COLLECTION
+M  V30 MDLV30/STERAC1 ATOMS=(1 3)
+M  V30 END COLLECTION
+M  V30 END CTAB
+M  END
+`, "molfile", options);
+			console.log(molfile_2000);
+            assert(molfile_2000.indexOf("V3000") !== -1);
+            assert(molfile_2000.indexOf("V2000") === -1);
+            options.delete();
+        });
+
         test("convert", "rxnfile2000", () => {
             let options = new indigo.MapStringString();
             options.set('molfile-saving-mode', '2000');
@@ -421,6 +482,7 @@ M  END
             const cdx_data = fs.readFileSync("test64.cdx");
             const ket = indigo.convert(cdx_data, "ket", options);
             const ket_data = indigo.convert(fs.readFileSync("test64.ket"),"ket", options);
+            fs.writeFileSync("test64a.ket",ket);
             assert.equal(ket, ket_data);
             options.delete();
         });
@@ -484,6 +546,84 @@ M  END
             options.set("render-output-format", "pdf");
             const pdf = Buffer.from(indigo.render(mol_smiles, options), "base64").toString();
             assert(pdf.indexOf("%PDF-") !== -1);
+            options.delete();
+        });
+
+        // TODO: check if looksSame() works correctly for svg files
+        // test("render", "uf8_svg", async () => {
+        //     let options = new indigo.MapStringString();
+        //     options.set("render-output-format", "svg");
+        //     var fs = require('fs');
+        //     const ket_data = fs.readFileSync("test_symbols_4_styles_2_sizes.ket");
+        //     const svg = Buffer.from(indigo.render(ket_data, options), "base64");
+        //     fs.writeFileSync("utf8_out.svg",svg);
+        //     const {equal} = await looksSame('utf8_ref.svg', 'utf8_out.svg');
+        //     assert(equal);
+        //     options.delete();
+        // });
+
+        test("render", "uf8_png", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color","1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("test_symbols_4_styles_2_sizes.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("utf8_out.png", png);
+            const {equal} = await looksSame('utf8_ref.png', 'utf8_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "ketcher_text_panel_regular", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color","1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("ketcher_text_panel_test_regular.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("ketcher_text_panel_regular_out.png", png);
+            const {equal} = await looksSame('ketcher_text_panel_regular_ref.png', 'ketcher_text_panel_regular_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "ketcher_text_panel_bold", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color","1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("ketcher_text_panel_test_bold.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("ketcher_text_panel_bold_out.png", png);
+            const {equal} = await looksSame('ketcher_text_panel_bold_ref.png', 'ketcher_text_panel_bold_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "ketcher_text_panel_italic", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color","1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("ketcher_text_panel_test_italic.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("ketcher_text_panel_italic_out.png", png);
+            const {equal} = await looksSame('ketcher_text_panel_italic_ref.png', 'ketcher_text_panel_italic_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "ketcher_text_panel_bold_italic", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color","1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("ketcher_text_panel_test_bold_italic.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("ketcher_text_panel_bold_italic_out.png", png);
+            const {equal} = await looksSame('ketcher_text_panel_bold_italic_ref.png', 'ketcher_text_panel_bold_italic_out.png');
+            assert(equal);
             options.delete();
         });
     }

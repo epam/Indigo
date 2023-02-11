@@ -17,7 +17,10 @@ def overridePlatform(platform):
 
 
 def isIronPython():
-    return sys.platform == "cli"
+    return sys.platform == "cli" or (
+        "implementation" in dir(sys)
+        and sys.implementation.name == "ironpython"
+    )
 
 
 def isJython():

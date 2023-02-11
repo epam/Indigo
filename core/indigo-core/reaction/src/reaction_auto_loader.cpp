@@ -89,14 +89,41 @@ void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
 void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
 {
     bool query = reaction.isQueryReaction();
+    auto local_scanner = _scanner;
+    // chack for base64
+    uint8_t base64_id[] = "base64::";
+    std::unique_ptr<BufferScanner> base64_scanner;
+    Array<char> base64_data;
+    if (local_scanner->length() >= (sizeof(base64_id) - 1))
+    {
+        byte id[sizeof(base64_id) - 1];
+        long long pos = local_scanner->tell();
+        local_scanner->readCharsFix(sizeof(base64_id) - 1, (char*)id);
+        bool is_base64 = (std::equal(std::begin(id), std::end(id), std::begin(base64_id)));
+        if (!is_base64)
+            local_scanner->seek(pos, SEEK_SET);
+
+        std::string base64_str;
+        local_scanner->readAll(base64_str);
+        base64_str.erase(std::remove_if(base64_str.begin(), base64_str.end(), [](char c) { return c == '\n' || c == '\r'; }), base64_str.end());
+        if (validate_base64(base64_str))
+        {
+            base64_data.copy(base64_str.data(), base64_str.size());
+            base64_scanner = std::make_unique<BufferScanner>(base64_data, true);
+            local_scanner = base64_scanner.get();
+        }
+        local_scanner->seek(pos, SEEK_SET);
+        _scanner->seek(pos, SEEK_SET);
+    }
+
     // check fir GZip format
-    if (_scanner->length() >= 2)
+    if (local_scanner->length() >= 2)
     {
         byte id[2];
-        long long pos = _scanner->tell();
+        long long pos = local_scanner->tell();
 
-        _scanner->readCharsFix(2, (char*)id);
-        _scanner->seek(pos, SEEK_SET);
+        local_scanner->readCharsFix(2, (char*)id);
+        local_scanner->seek(pos, SEEK_SET);
 
         if (id[0] == 0x1f && id[1] == 0x8b)
         {
@@ -112,6 +139,19 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
             loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader2.ignore_bad_valence = ignore_bad_valence;
             loader2.loadReaction(reaction);
+            return;
+        }
+    }
+
+    {
+        if (local_scanner->findWord(kCDX_HeaderString))
+        {
+            local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
+            ReactionCdxmlLoader loader(*local_scanner, true);
+            loader.stereochemistry_options = stereochemistry_options;
+            if (query)
+                throw Error("CDX queries not supported yet");
+            loader.loadReaction(reaction);
             return;
         }
     }
@@ -183,18 +223,11 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         _scanner->skipSpace();
         if (_scanner->lookNext() == '<' && _scanner->findWord("<CDXML"))
         {
-            if (_scanner->findWord("<arrow"))
-            {
-                _scanner->seek(pos, SEEK_SET);
-                ReactionCdxmlLoader loader(*_scanner);
-                loader.stereochemistry_options = stereochemistry_options;
-                loader.loadReaction(reaction);
-                return;
-            }
-            else
-            {
-                throw Error("CDXML: not a reacton. No arrows found.");
-            }
+            _scanner->seek(pos, SEEK_SET);
+            ReactionCdxmlLoader loader(*_scanner);
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.loadReaction(reaction);
+            return;
         }
         _scanner->seek(pos, SEEK_SET);
     }
