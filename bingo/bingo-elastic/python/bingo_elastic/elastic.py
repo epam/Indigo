@@ -36,6 +36,7 @@ ElasticRepositoryT = TypeVar("ElasticRepositoryT")
 
 MAX_ALLOWED_SIZE = 1000
 
+
 class IndexName(Enum):
     BINGO_MOLECULE = "bingo-molecules"
     BINGO_REACTION = "bingo-reactions"
@@ -232,7 +233,9 @@ class AsyncElasticRepository:
     ) -> AsyncGenerator[IndigoRecord, None]:
 
         if limit > MAX_ALLOWED_SIZE:
-            raise ValueError(f"limit should less or equal to {MAX_ALLOWED_SIZE}")
+            raise ValueError(
+                f"limit should less or equal to {MAX_ALLOWED_SIZE}"
+            )
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
 
