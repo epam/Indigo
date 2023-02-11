@@ -246,6 +246,7 @@ enum
     OEXT_KET,
     OEXT_KER,
     OEXT_CDX,
+    OEXT_CDR,
     OEXT_CDXML,
     OEXT_CDXMLR,
     OEXT_SMI,
@@ -393,6 +394,8 @@ int parseParams(Params* p, int argc, char* argv[])
     indigoSetOptionBool("treat-x-as-pseudoatom", 1);
     indigoSetOptionBool("render-coloring", 1);
     indigoSetOptionBool("render-highlight-color-enabled", 1);
+    indigoSetOption("render-superatom-mode", "collapse");
+    indigoSetOptionBool("json-saving-pretty", 1);
 
     for (; i < argc; i++)
     {
@@ -876,6 +879,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_CDXMLR;
     else if (strcmp(p.outfile_ext, "cdx") == 0)
         p.out_ext = OEXT_CDX;
+    else if (strcmp(p.outfile_ext, "cdr") == 0)
+        p.out_ext = OEXT_CDR;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
@@ -972,10 +977,13 @@ int main(int argc, char* argv[])
                 indigoSaveRxnfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_CDXML || p.out_ext == OEXT_CDXMLR)
                 indigoSaveCdxmlToFile(obj, p.outfile);
+            else if (p.out_ext == OEXT_CDX || p.out_ext == OEXT_CDR)
+            {
+                indigoSaveCdxToFile(obj, p.outfile);
+            }
             else
             {
                 indigoSaveJsonToFile(obj, p.outfile);
-                printf("smiles: %s\n", indigoSmiles(obj));
             }
         }
         else

@@ -38,7 +38,7 @@
 typedef unsigned short int UINT16;
 typedef int INT32;
 typedef unsigned int UINT32;
-#include "molecule/CDXCommons.h"
+#include "CDXCommons.h"
 
 namespace tinyxml2
 {
@@ -111,9 +111,24 @@ namespace indigo
         int atom_idx;
     };
 
+    struct CdxmlKetTextStyle
+    {
+        int offset;
+        int size;
+        std::list<std::string> styles;
+    };
+
+    struct CdxmlKetTextLine
+    {
+        std::string text;
+        std::list<CdxmlKetTextStyle> text_styles;
+    };
+
     struct CdxmlNode
     {
-        CdxmlNode() : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false) // Carbon by default
+        CdxmlNode()
+            : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false),
+              has_fragment(false) // Carbon by default
         {
         }
 
@@ -136,6 +151,7 @@ namespace indigo
         AutoInt rg_index;
 
         bool is_not_list;
+        bool has_fragment;
         std::vector<AutoInt> element_list;
         std::unordered_map<int, int> bond_id_to_connection_idx;
         std::unordered_map<int, int> node_id_to_connection_idx;
@@ -333,7 +349,6 @@ namespace indigo
             }
             break;
 
-                break;
             case ECDXType::CDXUINT16: {
                 auto ptr16 = (uint16_t*)ptr;
                 result = parseCDXUINT16(*ptr16, tag);
@@ -398,10 +413,6 @@ namespace indigo
                 result = *ptr ? "yes" : "no";
             }
             break;
-
-            case ECDXType::CDXColorTableCDXINT16:
-                result = "ColorTableCDXINT16 not implemented";
-                break;
 
             case ECDXType::CDXColorTable:
                 result = "ColorTable not implemented";
@@ -495,13 +506,21 @@ namespace indigo
             case kCDXProp_Atom_EnhancedStereoType:
                 return kCDXEnhancedStereoIDToStr.at(val);
                 break;
+            case kCDXProp_Bond_CIPStereochemistry:
             case kCDXProp_Atom_CIPStereochemistry: {
-                return std::string{KCIPStereochemistryIndexToChar[val]};
+                return std::string{kCIPStereochemistryIndexToChar[val]};
             }
             break;
             case kCDXProp_Bracket_Usage:
                 return std::string{kBracketUsageIntToName.at(val)};
                 break;
+            case kCDXProp_Justification:
+            case kCDXProp_LabelJustification:
+            case kCDXProp_CaptionJustification:
+                return std::string(kTextJustificationIntToStr.at(val));
+            case kCDXProp_Node_LabelDisplay:
+            case kCDXProp_LabelAlignment:
+                return std::string(kLabelAlignmentIntTostr.at(val));
             default:
                 break;
             }
@@ -716,17 +735,6 @@ namespace indigo
             return _data;
         }
 
-        std::string getBinaryName()
-        {
-            auto ptag = (uint16_t*)_data;
-            if (*ptag < kCDXTag_Object && _style_index < 0)
-                return "CDXML";
-            auto it = KCDXObjToName.find(*ptag);
-            if (it != KCDXObjToName.end())
-                return it->second;
-            return std::string{};
-        }
-
         std::string name()
         {
             return _size ? getBinaryName() : std::string(xml().Name());
@@ -737,18 +745,28 @@ namespace indigo
             return _size ? getBinaryValue() : std::string(xml().Value());
         }
 
-        std::string getBinaryValue()
+        std::string getBinaryName() const
         {
             auto ptag = (uint16_t*)_data;
+            if (*ptag < kCDXTag_Object && _style_index < 0)
+                return "CDXML";
             switch (*ptag)
             {
             case kCDXProp_Text: // property tag as am object tag. special case for style object.
                 return "s";
                 break;
-            default:
-                return getBinaryName();
+            default: {
+                auto it = KCDXObjToName.find(*ptag);
+                if (it != KCDXObjToName.end())
+                    return it->second;
+            }
             }
             return std::string{};
+        }
+
+        std::string getBinaryValue() const
+        {
+            return getBinaryName();
         }
 
         std::string getText()
@@ -928,6 +946,8 @@ namespace indigo
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
+        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
+
         float _bond_length;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         Scanner& _scanner;

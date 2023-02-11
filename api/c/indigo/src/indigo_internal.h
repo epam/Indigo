@@ -200,6 +200,8 @@ public:
     virtual MonomersProperties& getMonomersProperties();
     virtual void copyProperties(PropertiesMap&);
 
+    void toBase64String(Array<char>& str);
+
 private:
     IndigoObject(const IndigoObject&);
 };
@@ -315,6 +317,7 @@ public:
     bool molfile_saving_add_stereo_desc;
     bool molfile_saving_add_implicit_h;
     bool json_saving_add_stereo_desc;
+    bool json_saving_pretty;
     bool smiles_saving_write_name;
     bool smiles_saving_smarts_mode;
 
