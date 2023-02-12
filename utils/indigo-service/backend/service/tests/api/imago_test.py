@@ -107,7 +107,7 @@ class ImagoTestCase(unittest.TestCase):
                 os.path.dirname(os.path.realpath(__file__)),
                 "..",
                 "data",
-                "imago_upload",
+                "imago",
                 filename,
             ),
             mime_type,
@@ -197,7 +197,7 @@ M  END
                     os.path.dirname(os.path.realpath(__file__)),
                     "..",
                     "data",
-                    "imago_upload",
+                    "imago",
                     filename,
                 ),
                 mime_type,
@@ -229,7 +229,7 @@ M  END
                 os.path.dirname(os.path.realpath(__file__)),
                 "..",
                 "data",
-                "imago_upload",
+                "imago",
                 filename,
             ),
             mime_type,
@@ -249,7 +249,7 @@ M  END
             os.path.dirname(os.path.realpath(__file__)),
             "..",
             "data",
-            "imago_upload",
+            "imago",
             filename,
         )
         with open(path, "rb") as f:
@@ -283,7 +283,7 @@ M  END
             os.path.dirname(os.path.realpath(__file__)),
             "..",
             "data",
-            "imago_upload",
+            "imago",
             filename,
         )
         txt = os.path.join(
@@ -315,3 +315,7 @@ M  END
         )
         data = json.loads(result.text)
         self.assertTrue("mol_str" in data)
+
+
+if __name__ == "__main__":
+    exit(unittest.main(verbosity=2, warnings="ignore"))
