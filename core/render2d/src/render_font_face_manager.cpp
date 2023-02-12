@@ -57,8 +57,6 @@ namespace indigo
         bool is_bold = ti.bold;
         bool is_italic = ti.italic;
 
-        lang = FONT_LANG::NO_CJK;
-
         if (lang == FONT_LANG::NO_CJK)
         {
             if (is_bold && is_italic)

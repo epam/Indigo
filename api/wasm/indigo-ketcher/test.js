@@ -626,6 +626,45 @@ M  END
             assert(equal);
             options.delete();
         });
+
+        test("render", "CJK_characters", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color","1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("CJK_characters_test.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("CJK_characters_out.png", png);
+            const {equal} = await looksSame('CJK_characters_ref.png', 'CJK_characters_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "CJK_characters_2_styles_2_sizes", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color","1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("CJK_characters_2_styles_2_sizes_test.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("CJK_characters_2_styles_2_sizes_out.png", png);
+            const {equal} = await looksSame('CJK_characters_2_styles_2_sizes_ref.png', 'CJK_characters_2_styles_2_sizes_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "Characters_4_sets_4_styles", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color","1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("Characters_4_sets_4_styles_test.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("Characters_4_sets_4_styles_out.png", png);
+            const {equal} = await looksSame('Characters_4_sets_4_styles_ref.png', 'Characters_4_sets_4_styles_out.png');
+            assert(equal);
+            options.delete();
+        });
     }
 
     // Throws

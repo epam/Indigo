@@ -47,6 +47,12 @@ add_custom_target(${PROJECT_NAME}-test
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/ketcher_text_panel_test_italic.ket ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/ketcher_text_panel_bold_italic_ref.png ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/ketcher_text_panel_test_bold_italic.ket ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/CJK_characters_ref.png ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/CJK_characters_test.ket ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/CJK_characters_2_styles_2_sizes_ref.png ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/CJK_characters_2_styles_2_sizes_test.ket ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Characters_4_sets_4_styles_ref.png ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Characters_4_sets_4_styles_test.ket ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
         COMMAND npm install looks-same
         COMMAND node test
         WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}

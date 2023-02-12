@@ -97,7 +97,7 @@ namespace indigo
         void prepareRanges()
         {
             CharacterRange CJK_Unified_Ideographs(0x4E00, 0x9FFF);             // 一丁
-            CharacterRange CJK_Compatibility_Ideographs(0x4E00, 0x9FFF);       // 一丁
+            CharacterRange CJK_Compatibility_Ideographs(0xF900, 0xFAFF);       // 豈類
             CharacterRange CJK_Unified_Ideographs_Extension_A(0x3400, 0x4DBF); // 㐀㐁
 
             _cjk_common_ranges.addRange(CJK_Unified_Ideographs);
@@ -129,7 +129,7 @@ namespace indigo
             // U+3040–U+309F Hiragana
             // U+30A0–U+30FF Katakana
             CharacterRange Hiragana(0x3040, 0x309F); // ぁあ
-            CharacterRange Katakana(0x30A0, 0x30FF); // ゠ァ
+            CharacterRange Katakana(0x30A0, 0x30FF); // ゠ァジ
 
             _j_ranges.addRange(Hiragana);
             _j_ranges.addRange(Katakana);
