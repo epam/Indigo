@@ -88,8 +88,6 @@ namespace indigo
     class FontLangDetector
     {
     private:
-        FontRanges _tc_ranges;         // tradional chinese
-        FontRanges _sc_ranges;         // simplified chinese
         FontRanges _j_ranges;          // japan
         FontRanges _k_ranges;          // korean
         FontRanges _cjk_common_ranges; // common_cjk_ranges
@@ -138,7 +136,6 @@ namespace indigo
         std::vector<unsigned int> utf8_indexes(const TextItem& ti)
         {
             std::vector<unsigned int> indexes;
-            // for (std::string::const_iterator it = str.begin(); it != str.end(); ) {
             for (unsigned int i = 0; i < ti.text.size();)
             {
                 unsigned int utf8_char = static_cast<unsigned char>(ti.text[i]);
@@ -224,33 +221,37 @@ namespace indigo
 
     class RenderFontFaceManager
     {
+        struct Face
+        {
+            FT_Face ft_face = nullptr;
+            cairo_font_face_t* cairo_face = nullptr;
+        };
+
     private:
         FT_Library _library;
         FontLangDetector _lang_detector;
 
-        FT_Face _face_regular;
-        FT_Face _face_italic;
-        FT_Face _face_bold;
-        FT_Face _face_bold_italic;
+        Face _face_regular;
+        Face _face_italic;
+        Face _face_bold;
+        Face _face_bold_italic;
 
-        cairo_font_face_t* _cairo_face_regular = nullptr;
-        cairo_font_face_t* _cairo_face_bold = nullptr;
-        cairo_font_face_t* _cairo_face_italic = nullptr;
-        cairo_font_face_t* _cairo_face_bold_italic = nullptr;
-
-        FT_Face _face_cjk_regular;
-        FT_Face _face_cjk_bold;
-
-        cairo_font_face_t* _cairo_face_cjk_regular = nullptr;
-        cairo_font_face_t* _cairo_face_cjk_bold = nullptr;
+        Face _face_cjk_regular;
+        Face _face_cjk_bold;
 
         void _loadFontFaces();
-        void _loadFontFace(FT_Library library, FT_Face* face, cairo_font_face_t** cairo_face, const cairo_user_data_key_t* key, const unsigned char font[],
-                           int font_size, const std::string& name);
+        void _loadFontFace(FT_Library library, Face* face, const cairo_user_data_key_t* key, const unsigned char font[], int font_size,
+                           const std::string& name);
 
     public:
         RenderFontFaceManager();
         ~RenderFontFaceManager();
+
+        RenderFontFaceManager(const RenderFontFaceManager&) = delete;
+        RenderFontFaceManager& operator=(const RenderFontFaceManager&) = delete;
+
+        RenderFontFaceManager(RenderFontFaceManager&&) = delete;
+        RenderFontFaceManager& operator=(RenderFontFaceManager&&) = delete;
 
         cairo_font_face_t* selectCairoFontFace(const TextItem& ti);
     };

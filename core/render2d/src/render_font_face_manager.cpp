@@ -44,10 +44,13 @@ namespace indigo
         // TODO: fix faces realease
 #ifndef RENDER_EMSCRIPTEN
         // there is a function signature mismatch in _cairo_user_data_array_fini when using EMSCRIPTEN
-        cairo_font_face_destroy(_cairo_face_regular);
-        cairo_font_face_destroy(_cairo_face_bold);
-        cairo_font_face_destroy(_cairo_face_italic);
-        cairo_font_face_destroy(_cairo_face_bold_italic);
+        cairo_font_face_destroy(_face_regular.cairo_face);
+        cairo_font_face_destroy(_face_bold.cairo_face);
+        cairo_font_face_destroy(_face_italic.cairo_face);
+        cairo_font_face_destroy(_face_bold_italic.cairo_face);
+
+        cairo_font_face_destroy(_face_cjk_regular.cairo_face);
+        cairo_font_face_destroy(_face_cjk_bold.cairo_face);
 #endif
     }
 
@@ -61,49 +64,49 @@ namespace indigo
         {
             if (is_bold && is_italic)
             {
-                return _cairo_face_bold_italic;
+                return _face_bold_italic.cairo_face;
             }
             else if (is_bold)
             {
-                return _cairo_face_bold;
+                return _face_bold.cairo_face;
             }
             else if (is_italic)
             {
-                return _cairo_face_italic;
+                return _face_italic.cairo_face;
             }
             else
             {
-                return _cairo_face_regular;
+                return _face_regular.cairo_face;
             }
         }
-        else
+        else // if CJK caracters detected then use common font for CJK
         {
             if (is_bold)
             {
-                return _cairo_face_cjk_bold;
+                return _face_cjk_bold.cairo_face;
             }
             else
             {
-                return _cairo_face_cjk_regular;
+                return _face_cjk_regular.cairo_face;
             }
         }
     }
 
-    void RenderFontFaceManager::_loadFontFace(FT_Library library, FT_Face* face, cairo_font_face_t** cairo_face, const cairo_user_data_key_t* key,
-                                              const unsigned char font[], int font_size, const std::string& name)
+    void RenderFontFaceManager::_loadFontFace(FT_Library library, Face* face, const cairo_user_data_key_t* key, const unsigned char font[], int font_size,
+                                              const std::string& name)
     {
-        int error = FT_New_Memory_Face(library, font, font_size, 0, face);
+        int error = FT_New_Memory_Face(library, font, font_size, 0, &(face->ft_face));
         if (error)
         {
             throw std::runtime_error("error loading font regular");
         }
 
-        *cairo_face = cairo_ft_font_face_create_for_ft_face(*face, 0);
-        auto status = cairo_font_face_set_user_data(*cairo_face, key, *face, (cairo_destroy_func_t)FT_Done_Face);
+        face->cairo_face = cairo_ft_font_face_create_for_ft_face(face->ft_face, 0);
+        auto status = cairo_font_face_set_user_data(face->cairo_face, key, face->ft_face, (cairo_destroy_func_t)FT_Done_Face);
         if (status)
         {
-            cairo_font_face_destroy(*cairo_face);
-            FT_Done_Face(*face);
+            cairo_font_face_destroy(face->cairo_face);
+            FT_Done_Face(face->ft_face);
             throw std::runtime_error("error creating cairo font face " + name);
         }
     }
@@ -116,22 +119,22 @@ namespace indigo
             throw std::runtime_error("error loading freetype");
         }
 
-        static const cairo_user_data_key_t key = {0};
-        _loadFontFace(_library, &_face_regular, &_cairo_face_regular, &key, sans_regular, sans_regular_size, "regular");
+        static const cairo_user_data_key_t key_regular = {0};
+        _loadFontFace(_library, &_face_regular, &key_regular, sans_regular, sans_regular_size, "regular");
 
-        static const cairo_user_data_key_t key1 = {0};
-        _loadFontFace(_library, &_face_bold, &_cairo_face_bold, &key1, sans_bold, sans_bold_size, "bold");
+        static const cairo_user_data_key_t key_bold = {0};
+        _loadFontFace(_library, &_face_bold, &key_bold, sans_bold, sans_bold_size, "bold");
 
-        static const cairo_user_data_key_t key2 = {0};
-        _loadFontFace(_library, &_face_italic, &_cairo_face_italic, &key2, sans_italic, sans_italic_size, "italic");
+        static const cairo_user_data_key_t key_italic = {0};
+        _loadFontFace(_library, &_face_italic, &key_italic, sans_italic, sans_italic_size, "italic");
 
-        static const cairo_user_data_key_t key3 = {0};
-        _loadFontFace(_library, &_face_bold_italic, &_cairo_face_bold_italic, &key3, sans_bold_italic, sans_bold_italic_size, "bold italic");
+        static const cairo_user_data_key_t key_bold_italic = {0};
+        _loadFontFace(_library, &_face_bold_italic, &key_bold_italic, sans_bold_italic, sans_bold_italic_size, "bold italic");
 
         static const cairo_user_data_key_t key_cjk_regular = {0};
-        _loadFontFace(_library, &_face_cjk_regular, &_cairo_face_cjk_regular, &key_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "regular");
+        _loadFontFace(_library, &_face_cjk_regular, &key_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
 
         static const cairo_user_data_key_t key_cjk_bold = {0};
-        _loadFontFace(_library, &_face_cjk_bold, &_cairo_face_cjk_bold, &key_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "bold");
+        _loadFontFace(_library, &_face_cjk_bold, &key_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
     }
 } // namespace indigo
