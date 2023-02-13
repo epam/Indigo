@@ -27,6 +27,8 @@
 
 namespace indigo
 {
+
+#ifdef RENDER_ENABLE_CJK
     class CharacterRange
     {
     private:
@@ -218,6 +220,7 @@ namespace indigo
             return FONT_LANG::NO_CJK;
         }
     };
+#endif
 
     class RenderFontFaceManager
     {
@@ -229,15 +232,17 @@ namespace indigo
 
     private:
         FT_Library _library;
-        FontLangDetector _lang_detector;
 
         Face _face_regular;
         Face _face_italic;
         Face _face_bold;
         Face _face_bold_italic;
 
+#ifdef RENDER_ENABLE_CJK
+        FontLangDetector _lang_detector;
         Face _face_cjk_regular;
         Face _face_cjk_bold;
+#endif
 
         void _loadFontFaces();
         void _loadFontFace(FT_Library library, Face* face, const cairo_user_data_key_t* key, const unsigned char font[], int font_size,

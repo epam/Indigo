@@ -48,12 +48,14 @@ namespace indigo
         cairo_font_face_destroy(_face_bold.cairo_face);
         cairo_font_face_destroy(_face_italic.cairo_face);
         cairo_font_face_destroy(_face_bold_italic.cairo_face);
-
+#ifdef RENDER_ENABLE_CJK
         cairo_font_face_destroy(_face_cjk_regular.cairo_face);
         cairo_font_face_destroy(_face_cjk_bold.cairo_face);
 #endif
+#endif
     }
 
+#ifdef RENDER_ENABLE_CJK
     cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(const TextItem& ti)
     {
         auto lang = _lang_detector.detectLang(ti);
@@ -91,6 +93,30 @@ namespace indigo
             }
         }
     }
+#else
+    cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(const TextItem& ti)
+    {
+        bool is_bold = ti.bold;
+        bool is_italic = ti.italic;
+
+        if (is_bold && is_italic)
+        {
+            return _face_bold_italic.cairo_face;
+        }
+        else if (is_bold)
+        {
+            return _face_bold.cairo_face;
+        }
+        else if (is_italic)
+        {
+            return _face_italic.cairo_face;
+        }
+        else
+        {
+            return _face_regular.cairo_face;
+        }
+    }
+#endif
 
     void RenderFontFaceManager::_loadFontFace(FT_Library library, Face* face, const cairo_user_data_key_t* key, const unsigned char font[], int font_size,
                                               const std::string& name)
@@ -131,10 +157,12 @@ namespace indigo
         static const cairo_user_data_key_t key_bold_italic = {0};
         _loadFontFace(_library, &_face_bold_italic, &key_bold_italic, sans_bold_italic, sans_bold_italic_size, "bold italic");
 
+#ifdef RENDER_ENABLE_CJK
         static const cairo_user_data_key_t key_cjk_regular = {0};
         _loadFontFace(_library, &_face_cjk_regular, &key_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
 
         static const cairo_user_data_key_t key_cjk_bold = {0};
         _loadFontFace(_library, &_face_cjk_bold, &key_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
+#endif
     }
 } // namespace indigo

@@ -29,6 +29,10 @@ if (USE_FONT_MANAGER)
         PRIVATE ${CMAKE_SOURCE_DIR}/third_party/googlefonts/)
 endif()
 
+if (RENDER_ENABLE_CJK)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE RENDER_ENABLE_CJK)
+endif()
+
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC rapidjson
