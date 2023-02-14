@@ -898,7 +898,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         writer.Key("$ref");
         writer.String(buf.ptr());
         writer.EndObject();
-    }   
+    }
 
     writer.EndArray();  // nodes
     writer.EndObject(); // root

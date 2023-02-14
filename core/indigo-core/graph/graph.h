@@ -28,7 +28,6 @@
 #include "graph/filter.h"
 #include "graph/graph_iterators.h"
 #include <list>
-#include <optional>
 #include <unordered_set>
 
 #ifdef _WIN32
