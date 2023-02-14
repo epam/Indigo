@@ -855,6 +855,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     std::set<int> rgrp_full_list;
+    std::unordered_set<int> sg_set;
     writer.StartObject();
 
     writer.Key("root");
@@ -864,7 +865,14 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     if (bmol.vertexCount())
     {
-        for (int idx = 0; idx < bmol.countComponents(); ++idx)
+        for (int i = bmol.sgroups.begin(); i != bmol.sgroups.end(); i = bmol.sgroups.next(i))
+        {
+            SGroup& sgroup = bmol.sgroups.getSGroup(i);
+            for (auto atom_idx : sgroup.atoms)
+                sg_set.insert(atom_idx);
+        }
+
+        for (int idx = 0; idx < bmol.countComponents(sg_set); ++idx)
         {
             writer.StartObject();
             writer.Key("$ref");
@@ -890,12 +898,12 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         writer.Key("$ref");
         writer.String(buf.ptr());
         writer.EndObject();
-    }
+    }   
 
     writer.EndArray();  // nodes
     writer.EndObject(); // root
 
-    for (int idx = 0; idx < mol->countComponents(); idx++)
+    for (int idx = 0; idx < mol->countComponents(sg_set); idx++)
     {
         _pmol = nullptr;
         _pqmol = nullptr;
