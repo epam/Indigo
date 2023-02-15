@@ -137,31 +137,5 @@ namespace indigo
         {
             throw std::runtime_error("error loading freetype");
         }
-
-        // static const cairo_user_data_key_t key_regular = {0};
-        // _loadFontFace(_library, &_face_regular, &key_regular, sans_regular, sans_regular_size, "regular");
-        // _loadFontFace(_library, &_face_regular, sans_regular, sans_regular_size, "regular");
-
-        // static const cairo_user_data_key_t key_bold = {0};
-        // _loadFontFace(_library, &_face_bold, &key_bold, sans_bold, sans_bold_size, "bold");
-        // _loadFontFace(_library, &_face_bold, sans_bold, sans_bold_size, "bold");
-
-        // static const cairo_user_data_key_t key_italic = {0};
-        // _loadFontFace(_library, &_face_italic, &key_italic, sans_italic, sans_italic_size, "italic");
-        // _loadFontFace(_library, &_face_italic, sans_italic, sans_italic_size, "italic");
-
-        // static const cairo_user_data_key_t key_bold_italic = {0};
-        // _loadFontFace(_library, &_face_bold_italic, &key_bold_italic, sans_bold_italic, sans_bold_italic_size, "bold italic");
-        // _loadFontFace(_library, &_face_bold_italic, sans_bold_italic, sans_bold_italic_size, "bold italic");
-
-#ifdef RENDER_ENABLE_CJK
-        // static const cairo_user_data_key_t key_cjk_regular = {0};
-        // _loadFontFace(_library, &_face_cjk_regular, &key_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
-        // _loadFontFace(_library, &_face_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
-
-        // static const cairo_user_data_key_t key_cjk_bold = {0};
-        // _loadFontFace(_library, &_face_cjk_bold, &key_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
-        // _loadFontFace(_library, &_face_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
-#endif
     }
 } // namespace indigo

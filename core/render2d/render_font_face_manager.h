@@ -23,9 +23,8 @@
 #include <cairo-ft.h>
 #include <freetype/freetype.h>
 
-#include <string>
 #include <memory>
-
+#include <string>
 namespace indigo
 {
 
@@ -136,6 +135,7 @@ namespace indigo
             _j_ranges.addRange(Katakana);
         }
 
+        // TODO: use wstring_convert instead of custom converter
         std::vector<unsigned int> utf8_indexes(const TextItem& ti)
         {
             std::vector<unsigned int> indexes;
@@ -252,8 +252,7 @@ namespace indigo
 #endif
 
         void _loadFontFaces();
-        void _loadFontFace(FT_Library library, Face* face, const unsigned char font[], int font_size,
-                           const std::string& name);
+        void _loadFontFace(FT_Library library, Face* face, const unsigned char font[], int font_size, const std::string& name);
 
     public:
         RenderFontFaceManager();
