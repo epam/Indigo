@@ -1,6 +1,6 @@
 {
   "name": "indigo-ketcher",
-  "version": "1.10.0-rc.2",
+  "version": "1.10.0-rc.3",
   "description": "WASM implementation of Indigo organic chemistry toolkit web service for Ketcher",
   "main": "indigo-ketcher.js",
   "files": [
