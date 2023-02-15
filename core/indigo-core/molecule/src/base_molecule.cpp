@@ -40,6 +40,7 @@ IMPL_ERROR(BaseMolecule, "molecule");
 BaseMolecule::BaseMolecule()
 {
     _edit_revision = 0;
+    int *p= new int(100);
 }
 
 BaseMolecule::~BaseMolecule()
