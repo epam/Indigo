@@ -517,3 +517,22 @@ async def test_a_similaririty_matches_reactions(
                 as_iob(found_reaction, indigo_fixture).countReactants()
                 == reaction.countReactants()
             )
+
+
+def test_limit_on_size(
+    elastic_repository_molecule: ElasticRepository,
+):
+    with pytest.raises(ValueError):
+        result = elastic_repository_molecule.filter(limit=2000)
+        next(result)
+
+
+@pytest.mark.asyncio
+async def test_a_limit_on_size(
+    a_elastic_repository_molecule: AsyncRepositoryT,
+):
+    with pytest.raises(ValueError):
+        async with a_elastic_repository_molecule() as rep:
+            result = rep.filter(limit=2000)
+            async for mol in result:
+                mol.name

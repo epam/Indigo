@@ -1,6 +1,6 @@
 attrs==21.2.0
 black==21.12b0
-certifi==2021.10.8
+certifi==2022.12.7
 charset-normalizer==2.0.7
 iniconfig==1.1.1
 mypy==0.910
