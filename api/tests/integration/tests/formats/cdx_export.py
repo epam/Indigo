@@ -7,7 +7,7 @@ import sys
 def find_diff(a, b):
     return "\n".join(
         difflib.unified_diff(
-            a.decode("utf-8").splitlines(), b.decode("utf-8").splitlines()
+            a.splitlines(), b.splitlines()
         )
     )
 
@@ -113,15 +113,12 @@ for filename in files:
         with open(os.path.join(ref_path, filename + ".cdxml"), "r") as file:
             refcdxml = file.read()
         print(filename + (":success" if res == refcdxml else ":failed"))
-        if( filename == "Suzuki_Rxn2" and res != refcdxml):
-            print( res )
-            print( find_diff( res, refcdxml) )
-        # diff = find_diff(res, refcdxml)
-        # if not diff:
-        #    print(filename + ".cdxml:SUCCEED")
-        # else:
-        #    print(filename + ".cdxml:FAILED")
-        #    print(diff)
+        diff = find_diff(res, refcdxml)
+        if not diff:
+           print(filename + ".cdxml:SUCCEED")
+        else:
+           print(filename + ".cdxml:FAILED")
+           print(diff)
 
     except IndigoException as e:
         print(getIndigoExceptionText(e))
