@@ -44,82 +44,75 @@ namespace indigo
         // TODO: fix faces realease
 #ifndef RENDER_EMSCRIPTEN
         // there is a function signature mismatch in _cairo_user_data_array_fini when using EMSCRIPTEN
-        cairo_font_face_destroy(_face_regular.cairo_face);
-        cairo_font_face_destroy(_face_bold.cairo_face);
-        cairo_font_face_destroy(_face_italic.cairo_face);
-        cairo_font_face_destroy(_face_bold_italic.cairo_face);
+        if (_face_regular.cairo_face)
+            cairo_font_face_destroy(_face_regular.cairo_face);
+        if (_face_bold.cairo_face)
+            cairo_font_face_destroy(_face_bold.cairo_face);
+        if (_face_italic.cairo_face)
+            cairo_font_face_destroy(_face_italic.cairo_face);
+        if (_face_bold_italic.cairo_face)
+            cairo_font_face_destroy(_face_bold_italic.cairo_face);
 #ifdef RENDER_ENABLE_CJK
-        cairo_font_face_destroy(_face_cjk_regular.cairo_face);
-        cairo_font_face_destroy(_face_cjk_bold.cairo_face);
+        if (_face_cjk_regular.cairo_face)
+            cairo_font_face_destroy(_face_cjk_regular.cairo_face);
+        if (_face_cjk_bold.cairo_face)
+            cairo_font_face_destroy(_face_cjk_bold.cairo_face);
 #endif
 #endif
     }
 
-#ifdef RENDER_ENABLE_CJK
     cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(const TextItem& ti)
     {
-        auto lang = _lang_detector.detectLang(ti);
         bool is_bold = ti.bold;
         bool is_italic = ti.italic;
 
-        if (lang == FONT_LANG::NO_CJK)
-        {
-            if (is_bold && is_italic)
-            {
-                return _face_bold_italic.cairo_face;
-            }
-            else if (is_bold)
-            {
-                return _face_bold.cairo_face;
-            }
-            else if (is_italic)
-            {
-                return _face_italic.cairo_face;
-            }
-            else
-            {
-                return _face_regular.cairo_face;
-            }
-        }
-        else // if CJK caracters detected then use common font for CJK
+#ifdef RENDER_ENABLE_CJK
+        auto lang = _lang_detector.detectLang(ti);
+
+        if (lang != FONT_LANG::NO_CJK)
         {
             if (is_bold)
             {
+                if (!_face_cjk_bold.cairo_face)
+                    _loadFontFace(_library, &_face_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
                 return _face_cjk_bold.cairo_face;
             }
             else
             {
+                if (!_face_cjk_regular.cairo_face)
+                    _loadFontFace(_library, &_face_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
                 return _face_cjk_regular.cairo_face;
             }
         }
-    }
-#else
-    cairo_font_face_t* RenderFontFaceManager::selectCairoFontFace(const TextItem& ti)
-    {
-        bool is_bold = ti.bold;
-        bool is_italic = ti.italic;
+#endif
 
         if (is_bold && is_italic)
         {
+            if (!_face_bold_italic.cairo_face)
+                _loadFontFace(_library, &_face_bold_italic, sans_bold_italic, sans_bold_italic_size, "bold italic");
             return _face_bold_italic.cairo_face;
         }
         else if (is_bold)
         {
+            if (!_face_bold.cairo_face)
+                _loadFontFace(_library, &_face_bold, sans_bold, sans_bold_size, "bold");
             return _face_bold.cairo_face;
         }
         else if (is_italic)
         {
+            if (!_face_italic.cairo_face)
+                _loadFontFace(_library, &_face_italic, sans_italic, sans_italic_size, "italic");
             return _face_italic.cairo_face;
         }
         else
         {
+            if (!_face_regular.cairo_face)
+                _loadFontFace(_library, &_face_regular, sans_regular, sans_regular_size, "regular");
             return _face_regular.cairo_face;
         }
     }
-#endif
 
-    void RenderFontFaceManager::_loadFontFace(FT_Library library, Face* face, const cairo_user_data_key_t* key, const unsigned char font[], int font_size,
-                                              const std::string& name)
+    void RenderFontFaceManager::_loadFontFace(FT_Library library, Face* face, const unsigned char font[], int font_size, const std::string& name)
     {
         int error = FT_New_Memory_Face(library, font, font_size, 0, &(face->ft_face));
         if (error)
@@ -128,7 +121,7 @@ namespace indigo
         }
 
         face->cairo_face = cairo_ft_font_face_create_for_ft_face(face->ft_face, 0);
-        auto status = cairo_font_face_set_user_data(face->cairo_face, key, face->ft_face, (cairo_destroy_func_t)FT_Done_Face);
+        auto status = cairo_font_face_set_user_data(face->cairo_face, face->key.get(), face->ft_face, (cairo_destroy_func_t)FT_Done_Face);
         if (status)
         {
             cairo_font_face_destroy(face->cairo_face);
@@ -145,24 +138,30 @@ namespace indigo
             throw std::runtime_error("error loading freetype");
         }
 
-        static const cairo_user_data_key_t key_regular = {0};
-        _loadFontFace(_library, &_face_regular, &key_regular, sans_regular, sans_regular_size, "regular");
+        // static const cairo_user_data_key_t key_regular = {0};
+        // _loadFontFace(_library, &_face_regular, &key_regular, sans_regular, sans_regular_size, "regular");
+        // _loadFontFace(_library, &_face_regular, sans_regular, sans_regular_size, "regular");
 
-        static const cairo_user_data_key_t key_bold = {0};
-        _loadFontFace(_library, &_face_bold, &key_bold, sans_bold, sans_bold_size, "bold");
+        // static const cairo_user_data_key_t key_bold = {0};
+        // _loadFontFace(_library, &_face_bold, &key_bold, sans_bold, sans_bold_size, "bold");
+        // _loadFontFace(_library, &_face_bold, sans_bold, sans_bold_size, "bold");
 
-        static const cairo_user_data_key_t key_italic = {0};
-        _loadFontFace(_library, &_face_italic, &key_italic, sans_italic, sans_italic_size, "italic");
+        // static const cairo_user_data_key_t key_italic = {0};
+        // _loadFontFace(_library, &_face_italic, &key_italic, sans_italic, sans_italic_size, "italic");
+        // _loadFontFace(_library, &_face_italic, sans_italic, sans_italic_size, "italic");
 
-        static const cairo_user_data_key_t key_bold_italic = {0};
-        _loadFontFace(_library, &_face_bold_italic, &key_bold_italic, sans_bold_italic, sans_bold_italic_size, "bold italic");
+        // static const cairo_user_data_key_t key_bold_italic = {0};
+        // _loadFontFace(_library, &_face_bold_italic, &key_bold_italic, sans_bold_italic, sans_bold_italic_size, "bold italic");
+        // _loadFontFace(_library, &_face_bold_italic, sans_bold_italic, sans_bold_italic_size, "bold italic");
 
 #ifdef RENDER_ENABLE_CJK
-        static const cairo_user_data_key_t key_cjk_regular = {0};
-        _loadFontFace(_library, &_face_cjk_regular, &key_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
+        // static const cairo_user_data_key_t key_cjk_regular = {0};
+        // _loadFontFace(_library, &_face_cjk_regular, &key_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
+        // _loadFontFace(_library, &_face_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
 
-        static const cairo_user_data_key_t key_cjk_bold = {0};
-        _loadFontFace(_library, &_face_cjk_bold, &key_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
+        // static const cairo_user_data_key_t key_cjk_bold = {0};
+        // _loadFontFace(_library, &_face_cjk_bold, &key_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
+        // _loadFontFace(_library, &_face_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
 #endif
     }
 } // namespace indigo

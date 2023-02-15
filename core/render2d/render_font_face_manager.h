@@ -24,6 +24,7 @@
 #include <freetype/freetype.h>
 
 #include <string>
+#include <memory>
 
 namespace indigo
 {
@@ -228,6 +229,12 @@ namespace indigo
         {
             FT_Face ft_face = nullptr;
             cairo_font_face_t* cairo_face = nullptr;
+            std::unique_ptr<cairo_user_data_key_t> key;
+
+            Face()
+            {
+                key = std::make_unique<cairo_user_data_key_t>();
+            }
         };
 
     private:
@@ -245,7 +252,7 @@ namespace indigo
 #endif
 
         void _loadFontFaces();
-        void _loadFontFace(FT_Library library, Face* face, const cairo_user_data_key_t* key, const unsigned char font[], int font_size,
+        void _loadFontFace(FT_Library library, Face* face, const unsigned char font[], int font_size,
                            const std::string& name);
 
     public:
