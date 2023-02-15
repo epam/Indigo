@@ -1,6 +1,3 @@
-('en_US', 'UTF-8')
-('en_US', 'UTF-8')
-UTF-8
 *** Mol to CDX ***
 enhanced_stereo1:success
 enhanced_stereo2:success
@@ -8,51 +5,76 @@ enhanced_stereo3:success
 stereo_either-0020:success
 AlcoholOxidation_Rxn1:success
 AlcoholOxidation_Rxn1:success
+AlcoholOxidation_Rxn1.cdxml:SUCCEED
 AlcoholOxidation_Rxn1:success
 AlcoholOxidation_Rxn1:success
+AlcoholOxidation_Rxn1.cdxml:SUCCEED
 AlcoholOxidation_Rxn2:success
 AlcoholOxidation_Rxn2:success
+AlcoholOxidation_Rxn2.cdxml:SUCCEED
 Amidation_Rxn1:success
 Amidation_Rxn1:success
+Amidation_Rxn1.cdxml:SUCCEED
 Amidation_Rxn2:success
 Amidation_Rxn2:success
+Amidation_Rxn2.cdxml:SUCCEED
 BuchwaldHartwig_Rxn1:success
 BuchwaldHartwig_Rxn1:success
+BuchwaldHartwig_Rxn1.cdxml:SUCCEED
 BuchwaldHartwig_Rxn2:success
 BuchwaldHartwig_Rxn2:success
+BuchwaldHartwig_Rxn2.cdxml:SUCCEED
 CarbonylReduction_Rxn1:success
 CarbonylReduction_Rxn1:success
+CarbonylReduction_Rxn1.cdxml:SUCCEED
 CarbonylReduction_Rxn2:success
 CarbonylReduction_Rxn2:success
+CarbonylReduction_Rxn2.cdxml:SUCCEED
 Esterification_Rxn1:success
 Esterification_Rxn1:success
+Esterification_Rxn1.cdxml:SUCCEED
 Esterification_Rxn2:success
 Esterification_Rxn2:success
+Esterification_Rxn2.cdxml:SUCCEED
 Grignard_Rxn1:success
 Grignard_Rxn1:success
+Grignard_Rxn1.cdxml:SUCCEED
 Grignard_Rxn2:success
 Grignard_Rxn2:success
+Grignard_Rxn2.cdxml:SUCCEED
 N-Alkylation_Rxn1:success
 N-Alkylation_Rxn1:success
+N-Alkylation_Rxn1.cdxml:SUCCEED
 N-Alkylation_Rxn2:success
 N-Alkylation_Rxn2:success
+N-Alkylation_Rxn2.cdxml:SUCCEED
 N-Sulfonylation_Rxn1:success
 N-Sulfonylation_Rxn1:success
+N-Sulfonylation_Rxn1.cdxml:SUCCEED
 N-Sulfonylation_Rxn2:success
 N-Sulfonylation_Rxn2:success
+N-Sulfonylation_Rxn2.cdxml:SUCCEED
 O-Alkylation_Rxn1:success
 O-Alkylation_Rxn1:success
+O-Alkylation_Rxn1.cdxml:SUCCEED
 O-Alkylation_Rxn2:success
 O-Alkylation_Rxn2:success
+O-Alkylation_Rxn2.cdxml:SUCCEED
 Reductive Amination_Rxn1:success
 Reductive Amination_Rxn1:success
+Reductive Amination_Rxn1.cdxml:SUCCEED
 Reductive Amination_Rxn2:success
 Reductive Amination_Rxn2:success
+Reductive Amination_Rxn2.cdxml:SUCCEED
 SnAr_Rxn1:success
 SnAr_Rxn1:success
+SnAr_Rxn1.cdxml:SUCCEED
 SnAr_Rxn2:success
 SnAr_Rxn2:success
+SnAr_Rxn2.cdxml:SUCCEED
 Suzuki_Rxn1:success
 Suzuki_Rxn1:success
+Suzuki_Rxn1.cdxml:SUCCEED
 Suzuki_Rxn2:success
 Suzuki_Rxn2:success
+Suzuki_Rxn2.cdxml:SUCCEED
