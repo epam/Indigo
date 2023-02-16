@@ -281,8 +281,6 @@
         </t>
         <t id="87" p="347.349976 73.854996" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2.5 equiv </s>
-        </t>
-        <t id="87" p="347.349976 73.854996" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">pyridine</s>
         </t>
         <t id="90" p="86.444992 7.509999" Justification="Left" InterpretChemically="no">
@@ -330,9 +328,7 @@
         </t>
         <t id="135" p="503.014984 127.900002" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="135" p="503.014984 127.900002" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-(4-cyanophenyl)naphthalene-2-sulfonamide</s>
+            <s font="4" size="9.33333" face="1">-(4-cyanophenyl)naphthalene-2-sulfonamide</s>
         </t>
         <t id="138" p="499.695007 140.859985" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">107491-50-9</s>

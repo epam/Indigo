@@ -3,12 +3,102 @@ enhanced_stereo1:success
 enhanced_stereo2:success
 enhanced_stereo3:success
 stereo_either-0020:success
-AlcoholOxidation_Rxn1:success
-AlcoholOxidation_Rxn1:success
-AlcoholOxidation_Rxn1.cdxml:SUCCEED
-AlcoholOxidation_Rxn1:success
-AlcoholOxidation_Rxn1:success
-AlcoholOxidation_Rxn1.cdxml:SUCCEED
+AlcoholOxidation_Rxn1:failed
+AlcoholOxidation_Rxn1:failed
+AlcoholOxidation_Rxn1.cdxml:FAILED
+--- 
+
++++ 
+
+@@ -485,14 +485,20 @@
+
+         </t>
+         <t id="132" p="355.114990 65.349998" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0">0.01 equiv</s>
++        </t>
++        <t id="132" p="355.114990 65.349998" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0"> TEMPO</s>
+         </t>
+         <t id="135" p="353.415009 81.959999" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0">0.04 equiv</s>
++        </t>
++        <t id="135" p="353.415009 81.959999" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0"> TBAB</s>
+         </t>
+         <t id="138" p="354.839996 47.579998" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0">2.2 equiv </s>
++        </t>
++        <t id="138" p="354.839996 47.579998" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0">Oxone</s>
+         </t>
+         <t id="141" p="352.434998 112.169998" Justification="Left" InterpretChemically="no">
+@@ -579,9 +585,17 @@
+
+         </t>
+         <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">KHSO5</s>
++        </t>
++        <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">∙½K</s>
++        </t>
++        <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">HSO4</s>
++        </t>
++        <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">∙½</s>
++        </t>
++        <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">K2SO4</s>
+         </t>
+         <t id="228" p="257.135010 285.510010" Justification="Left" InterpretChemically="no">
+AlcoholOxidation_Rxn1:failed
+AlcoholOxidation_Rxn1:failed
+AlcoholOxidation_Rxn1.cdxml:FAILED
+--- 
+
++++ 
+
+@@ -485,14 +485,20 @@
+
+         </t>
+         <t id="132" p="355.114990 65.349998" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0">0.01 equiv</s>
++        </t>
++        <t id="132" p="355.114990 65.349998" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0"> TEMPO</s>
+         </t>
+         <t id="135" p="353.415009 81.959999" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0">0.04 equiv</s>
++        </t>
++        <t id="135" p="353.415009 81.959999" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0"> TBAB</s>
+         </t>
+         <t id="138" p="354.839996 47.579998" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0">2.2 equiv </s>
++        </t>
++        <t id="138" p="354.839996 47.579998" Justification="Left" InterpretChemically="no">
+             <s font="4" size="10" face="0">Oxone</s>
+         </t>
+         <t id="141" p="352.434998 112.169998" Justification="Left" InterpretChemically="no">
+@@ -579,9 +585,17 @@
+
+         </t>
+         <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">KHSO5</s>
++        </t>
++        <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">∙½K</s>
++        </t>
++        <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">HSO4</s>
++        </t>
++        <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">∙½</s>
++        </t>
++        <t id="225" p="108.180000 313.885010" Justification="Left" InterpretChemically="no">
+             <s font="4" size="9.33333" face="0">K2SO4</s>
+         </t>
+         <t id="228" p="257.135010 285.510010" Justification="Left" InterpretChemically="no">
 AlcoholOxidation_Rxn2:success
 AlcoholOxidation_Rxn2:success
 AlcoholOxidation_Rxn2.cdxml:SUCCEED

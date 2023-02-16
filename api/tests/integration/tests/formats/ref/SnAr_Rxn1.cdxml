@@ -346,27 +346,17 @@
         </t>
         <t id="95" p="377.459991 55.860001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">1.1 equiv </s>
-        </t>
-        <t id="95" p="377.459991 55.860001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">K2CO3</s>
         </t>
         <t id="98" p="56.625000 7.520000" Justification="Left" InterpretChemically="no">
             <s font="4" size="16" face="2">S</s>
-        </t>
-        <t id="98" p="56.625000 7.520000" Justification="Left" InterpretChemically="no">
             <s font="4" size="16" face="2">N</s>
-        </t>
-        <t id="98" p="56.625000 7.520000" Justification="Left" InterpretChemically="no">
             <s font="4" size="16" face="2">Ar Rxn1</s>
         </t>
         <t id="101" p="281.319977 112.200005" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">4-(</s>
-        </t>
-        <t id="101" p="281.319977 112.200005" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="101" p="281.319977 112.200005" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)aniline</s>
+            <s font="4" size="9.33333" face="1">-butyl)aniline</s>
         </t>
         <t id="104" p="281.319977 129.769989" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">769-92-6</s>
@@ -402,18 +392,10 @@
         </t>
         <t id="140" p="501.615021 118.180000" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">4-(</s>
-        </t>
-        <t id="140" p="501.615021 118.180000" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="140" p="501.615021 118.180000" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)-</s>
-        </t>
-        <t id="140" p="501.615021 118.180000" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="140" p="501.615021 118.180000" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-(4-nitrophenyl)aniline</s>
+            <s font="4" size="9.33333" face="2">tert</s>
+            <s font="4" size="9.33333" face="1">-butyl)-</s>
+            <s font="4" size="9.33333" face="2">N</s>
+            <s font="4" size="9.33333" face="1">-(4-nitrophenyl)aniline</s>
         </t>
         <t id="143" p="72.169998 311.480011" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">potassium carbonate</s>

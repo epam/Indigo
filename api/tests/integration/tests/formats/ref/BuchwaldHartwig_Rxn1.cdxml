@@ -347,7 +347,7 @@
             <b id="378" B="99" E="82"/>
             <b id="379" B="95" E="100"/>
             <b id="380" B="100" E="101" Order="2"/>
-            <b id="381" B="101" E="102"/>
+            <b id="381" B="101" E="102" Display="WedgeBegin"/>
             <b id="382" B="102" E="103" Order="2"/>
             <b id="383" B="103" E="104"/>
             <b id="384" B="104" E="105" Order="2"/>
@@ -460,7 +460,7 @@
             <b id="436" B="129" E="112"/>
             <b id="437" B="125" E="130"/>
             <b id="438" B="130" E="131" Order="2"/>
-            <b id="439" B="131" E="132"/>
+            <b id="439" B="131" E="132" Display="WedgeBegin"/>
             <b id="440" B="132" E="133" Order="2"/>
             <b id="441" B="133" E="134"/>
             <b id="442" B="134" E="135" Order="2"/>
@@ -624,8 +624,6 @@
         </fragment>
         <t id="175" p="364.304993 50.099998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2 equiv</s>
-        </t>
-        <t id="175" p="364.304993 50.099998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">KOtBu</s>
         </t>
         <t id="178" p="364.304993 94.769997" Justification="Left" InterpretChemically="no">
@@ -639,11 +637,7 @@
         </t>
         <t id="187" p="364.304993 66.744995" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">0.05 equiv</s>
-        </t>
-        <t id="187" p="364.304993 66.744995" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">SPhosPd G</s>
-        </t>
-        <t id="187" p="364.304993 66.744995" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">3</s>
         </t>
         <t id="190" p="92.269997 7.410000" Justification="Left" InterpretChemically="no">
@@ -701,12 +695,8 @@
         </t>
         <t id="247" p="249.339981 287.669983" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">potassium </s>
-        </t>
-        <t id="247" p="249.339981 287.669983" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="247" p="249.339981 287.669983" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butoxide</s>
+            <s font="4" size="9.33333" face="1">-butoxide</s>
         </t>
         <t id="250" p="101.999985 269.860016" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">SPhosPd G3</s>

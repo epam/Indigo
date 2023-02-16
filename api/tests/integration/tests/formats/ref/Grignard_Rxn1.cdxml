@@ -258,12 +258,8 @@
         </t>
         <t id="72" p="112.894997 119.750008" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">4-(1</s>
-        </t>
-        <t id="72" p="112.894997 119.750008" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">H</s>
-        </t>
-        <t id="72" p="112.894997 119.750008" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-1,2,4-triazol-1-yl)benzaldehyde</s>
+            <s font="4" size="9.33333" face="1">-1,2,4-triazol-1-yl)benzaldehyde</s>
         </t>
         <t id="75" p="112.904999 141.720001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">27996-86-7</s>
@@ -299,19 +295,13 @@
         </t>
         <t id="111" p="515.905029 119.750008" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">1-(4-(1</s>
-        </t>
-        <t id="111" p="515.905029 119.750008" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">H</s>
-        </t>
-        <t id="111" p="515.905029 119.750008" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-1,2,4-triazol-1-yl)phenyl)ethan-1-ol</s>
+            <s font="4" size="9.33333" face="1">-1,2,4-triazol-1-yl)phenyl)ethan-1-ol</s>
         </t>
         <t id="114" p="259.005005 123.975006" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="1">methylmagnesium</s>
+            <s font="4" size="9.33333" face="1">methylmagnesiumbromide</s>
         </t>
-        <t id="114" p="259.005005 123.975006" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="1">bromide</s>
-        </t>
+        <t id="114" p="259.005005 123.975006" Justification="Left" InterpretChemically="no"/>
         <t id="117" p="515.910095 141.720001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">926228-98-0</s>
         </t>

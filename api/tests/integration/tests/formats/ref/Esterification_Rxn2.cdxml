@@ -144,11 +144,9 @@
             <b id="149" B="46" E="49"/>
         </fragment>
         <t id="50" p="372.824982 89.770004" Justification="Left" InterpretChemically="no">
-            <s font="4" size="10" face="0">Neat</s>
+            <s font="4" size="10" face="0">Neat80 °C</s>
         </t>
-        <t id="50" p="372.824982 89.770004" Justification="Left" InterpretChemically="no">
-            <s font="4" size="10" face="0">80 °C</s>
-        </t>
+        <t id="50" p="372.824982 89.770004" Justification="Left" InterpretChemically="no"/>
         <t id="53" p="87.440002 7.415000" Justification="Left" InterpretChemically="no">
             <s font="4" size="16" face="2">Esterification_Rxn2</s>
         </t>
@@ -183,24 +181,16 @@
         </t>
         <t id="89" p="153.139999 115.040001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">3-(4-(</s>
-        </t>
-        <t id="89" p="153.139999 115.040001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="2">tert</s>
-        </t>
-        <t id="89" p="153.139999 115.040001" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="2">-butyl)phenyl)propanoic acid</s>
+            <s font="4" size="9.33333" face="0">-butyl)phenyl)propanoic acid</s>
         </t>
         <t id="92" p="297.474976 115.095001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">trimethoxymethane</s>
         </t>
         <t id="95" p="491.659973 115.040001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">methyl 3-(4-(</s>
-        </t>
-        <t id="95" p="491.659973 115.040001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="2">tert</s>
-        </t>
-        <t id="95" p="491.659973 115.040001" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="2">-butyl)phenyl)propanoate</s>
+            <s font="4" size="9.33333" face="0">-butyl)phenyl)propanoate</s>
         </t>
         <t id="98" p="297.464996 129.630005" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">149-73-5</s>
