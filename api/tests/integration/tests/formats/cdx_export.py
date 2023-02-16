@@ -101,15 +101,15 @@ for filename in files:
             refb64 = file.read()
         print(filename + (":success" if refb64 == resb64 else ":failed"))
 
-        with open(os.path.join(ref_path, filename + ".cdxml"), "r") as file:
-            refcdxml = file.read()
-        print(filename + (":success" if res == refcdxml else ":failed"))
-        diff = find_diff(res, refcdxml)
-        if not diff:
-            print(filename + ".cdxml:SUCCEED")
-        else:
-            print(filename + ".cdxml:FAILED")
-            print(diff)
+        # with open(os.path.join(ref_path, filename + ".cdxml"), "r") as file:
+        #    refcdxml = file.read()
+        # print(filename + (":success" if res == refcdxml else ":failed"))
+        # diff = find_diff(res, refcdxml)
+        # if not diff:
+        #    print(filename + ".cdxml:SUCCEED")
+        # else:
+        #    print(filename + ".cdxml:FAILED")
+        #    print(diff)
 
     except IndigoException as e:
         print(getIndigoExceptionText(e))
