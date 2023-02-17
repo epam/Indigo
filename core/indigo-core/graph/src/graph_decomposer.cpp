@@ -37,7 +37,7 @@ GraphDecomposer::~GraphDecomposer()
 {
 }
 
-int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter)
+int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter, const std::unordered_set<int>* ext_neighbours)
 {
     if (_graph.vertexCount() < 1)
     {
@@ -74,12 +74,13 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter)
         queue[0] = vertex_idx;
         while (top != bottom)
         {
-            const Vertex& vertex = _graph.getVertex(queue[bottom]);
+            auto v_bottom_id = queue[bottom];
+            const Vertex& vertex = _graph.getVertex(v_bottom_id);
 
             _component_vertices_count.expandFill(n_comp + 1, 0);
             _component_edges_count.expandFill(n_comp + 1, 0);
 
-            _component_ids[queue[bottom]] = n_comp;
+            _component_ids[v_bottom_id] = n_comp;
             _component_vertices_count[n_comp]++;
 
             for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
@@ -100,6 +101,29 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter)
                 if (_component_ids[other] == -2)
                     _component_edges_count[n_comp]++;
             }
+
+            if (ext_neighbours && ext_neighbours->find(v_bottom_id) != ext_neighbours->end())
+            {
+                for (auto other : *ext_neighbours)
+                {
+                    if (other != v_bottom_id)
+                    {
+                        if (filter != 0 && !filter->valid(other))
+                            continue;
+                        if (edge_filter != 0 && !edge_filter->valid(other))
+                            continue;
+
+                        if (_component_ids[other] == -1)
+                        {
+                            queue[top++] = other;
+                            _component_ids[other] = -2;
+                        }
+                        if (_component_ids[other] == -2)
+                            _component_edges_count[n_comp]++;
+                    }
+                }
+            }
+
             bottom++;
         }
 
