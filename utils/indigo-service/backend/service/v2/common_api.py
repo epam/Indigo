@@ -37,6 +37,6 @@ def version():
     #             imago_versions.append(re.search('imago-console-(.*)\..*', line).group(1))
     #         else:
     #             versions['service_version'] = line.rstrip()
-    versions['imago_versions'] = ['2.0.0']
+    versions["imago_versions"] = ["2.0.0"]
 
     return jsonify(versions), 200, {"Content-Type": "application/json"}
