@@ -41,7 +41,7 @@ namespace indigo
         ~GraphDecomposer();
 
         // returns the amount of connected components
-        int decompose(const Filter* filter = NULL, const Filter* edge_filter = NULL);
+        int decompose(const Filter* filter = NULL, const Filter* edge_filter = NULL, const std::unordered_set<int>* ext_neighbours = NULL);
 
         const Array<int>& getDecomposition() const;
 
