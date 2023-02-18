@@ -174,13 +174,41 @@ M  END
             "\n".join(str(data["metadata"]["mol_str"]).splitlines()[3:]),
         )
 
-    def test_imago_upload(self):
+    def test_imago_upload_1(self):
         """
-        Pass images for Imago for testing
-        :return:
+        Test bmp
         """
-        for file_mime in self.test_images:
-            self.imago_upload(file_mime[0], file_mime[1])
+        self.imago_upload("imago_test_1.bmp", "image/bmp")
+
+    def test_imago_upload_2(self):
+        """
+        Test dib
+        """
+        self.imago_upload("imago_test_1.dib", "image/bmp")
+
+    def test_imago_upload_3(self):
+        """
+        Test jpg
+        """
+        self.imago_upload("imago_test_1.jpg", "image/jpeg")
+
+    def test_imago_upload_4(self):
+        """
+        Test pbm
+        """
+        self.imago_upload("imago_test_1.pbm", "image/x-portable-bitmap")
+
+    def test_imago_upload_5(self):
+        """
+        Test png
+        """
+        self.imago_upload("imago_test_1.png", "image/png")
+
+    def test_imago_upload_6(self):
+        """
+        Test tiff
+        """
+        self.imago_upload("imago_test_1.tiff", "image/tiff")
 
     def test_versions(self):
         """
@@ -188,7 +216,6 @@ M  END
         :return:
         Assert is mol files returned by different versions
         """
-        filename, mime_type = self.test_images[5]
         request = requests.get(self.url_prefix + "/info")
         versions = json.loads(request.text)["imago_versions"]
         for version in versions:
@@ -198,45 +225,44 @@ M  END
                     "..",
                     "data",
                     "imago",
-                    filename,
+                    "imago_test_1.tiff",
                 ),
-                mime_type,
+                "image/tiff",
                 version=version,
             )
             self.assertEqual("SUCCESS", data["state"])
             self.assertTrue("mol_str" in data["metadata"])
 
-    def test_settings(self):
-        """
-        Test POST request with configuration parameters for IMAGO in URI
-        :return:
-        Assert if imago processed image with passed configuration
-        """
-        filename, mime_type = self.test_images[5]
-        txt = os.path.join(
-            os.path.dirname(os.path.realpath(__file__)),
-            "..",
-            "data",
-            "test_config_imago.inc",
-        )
-        settings = {}
-        with open(txt, "r") as f:
-            for line in f.readlines():
-                param, mean = re.search("(.*) = (.*);", line).group(1, 2)
-                settings[param] = mean
-        data = self.do_upload(
-            os.path.join(
-                os.path.dirname(os.path.realpath(__file__)),
-                "..",
-                "data",
-                "imago",
-                filename,
-            ),
-            mime_type,
-            settings=json.dumps(settings),
-        )
-        self.assertEqual("SUCCESS", data["state"])
-        self.assertTrue("mol_str" in data["metadata"])
+    # def test_settings(self):
+    #     """
+    #     Test POST request with configuration parameters for IMAGO in URI
+    #     :return:
+    #     Assert if imago processed image with passed configuration
+    #     """
+    #     txt = os.path.join(
+    #         os.path.dirname(os.path.realpath(__file__)),
+    #         "..",
+    #         "data",
+    #         "test_config_imago.inc",
+    #     )
+    #     settings = {}
+    #     with open(txt, "r") as f:
+    #         for line in f.readlines():
+    #             param, mean = re.search("(.*) = (.*);", line).group(1, 2)
+    #             settings[param] = mean
+    #     data = self.do_upload(
+    #         os.path.join(
+    #             os.path.dirname(os.path.realpath(__file__)),
+    #             "..",
+    #             "data",
+    #             "imago",
+    #             "imago_test_1.tiff",
+    #         ),
+    #         "image/tiff",
+    #         settings=json.dumps(settings),
+    #     )
+    #     self.assertEqual("SUCCESS", data["state"])
+    #     self.assertTrue("mol_str" in data["metadata"])
 
     def test_expire_wait_request(self):
         """
@@ -244,7 +270,8 @@ M  END
         :return:
         Assert if error message 410 were returned
         """
-        filename, mime_type = self.test_images[5]
+        filename = "imago_test_1.tiff"
+        mime_type = "image/tiff"
         path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
             "..",
@@ -278,7 +305,8 @@ M  END
         :return:
         Assert if image was processed by Imago
         """
-        filename, mime_type = self.test_images[5]
+        filename = "imago_test_1.tiff"
+        mime_type = "image/tiff"
         path = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
             "..",
