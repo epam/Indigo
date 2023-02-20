@@ -267,8 +267,6 @@
         </t>
         <t id="85" p="358.449982 75.855003" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2.5 equiv </s>
-        </t>
-        <t id="85" p="358.449982 75.855003" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">pyridine</s>
         </t>
         <t id="88" p="91.035004 7.509999" Justification="Left" InterpretChemically="no">
@@ -320,27 +318,17 @@
         </t>
         <t id="139" p="100.710007 127.610008" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">4-(</s>
-        </t>
-        <t id="139" p="100.710007 127.610008" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="139" p="100.710007 127.610008" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)aniline</s>
+            <s font="4" size="9.33333" face="1">-butyl)aniline</s>
         </t>
         <t id="142" p="532.125000 141.479980" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">697786-47-3</s>
         </t>
         <t id="145" p="532.125000 127.610008" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="145" p="532.125000 127.610008" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-(4-(</s>
-        </t>
-        <t id="145" p="532.125000 127.610008" Justification="Left" InterpretChemically="no">
+            <s font="4" size="9.33333" face="1">-(4-(</s>
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="145" p="532.125000 127.610008" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)phenyl)-4-methylbenzenesulfonamide</s>
+            <s font="4" size="9.33333" face="1">-butyl)phenyl)-4-methylbenzenesulfonamide</s>
         </t>
         <t id="148" p="65.529999 311.264984" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">pyridine</s>

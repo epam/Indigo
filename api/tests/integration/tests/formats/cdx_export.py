@@ -12,6 +12,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -39,7 +40,10 @@ for filename in files:
         #            data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
-        indigo.loadMolecule(resb64)
+        try:
+            indigo.loadMolecule(resb64)
+        except IndigoException as e:
+            print(getIndigoExceptionText(e))
         print(filename + (":success" if refb64 == resb64 else ":failed"))
     except IndigoException as e:
         print(getIndigoExceptionText(e))
@@ -52,8 +56,13 @@ for filename in files:
         #            data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
-        indigo.loadQueryMolecule(resb64)
+        try:
+            indigo.loadQueryMolecule(resb64)
+        except IndigoException as e:
+            print(getIndigoExceptionText(e))
         print(filename + (":success" if refb64 == resb64 else ":failed"))
+
+print("*** KET to CDX ***")
 
 root = joinPathPy("reactions/", __file__)
 files = ["agents"]
@@ -70,7 +79,12 @@ for filename in files:
         #            data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
-        indigo.loadReaction(resb64)
+
+        try:
+            indigo.loadReaction(resb64)
+        except IndigoException as e:
+            print(getIndigoExceptionText(e))
+
         print(filename + (":success" if refb64 == resb64 else ":failed"))
     except IndigoException as e:
         print(getIndigoExceptionText(e))
@@ -83,5 +97,69 @@ for filename in files:
         #            data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
-        indigo.loadQueryReaction(resb64)
+        try:
+            indigo.loadQueryReaction(resb64)
+        except IndigoException as e:
+            print(getIndigoExceptionText(e))
         print(filename + (":success" if refb64 == resb64 else ":failed"))
+
+print("*** CDXML to CDX ***")
+
+root_cdxml = joinPathPy("cdxml/", __file__)
+files = [
+    "AlcoholOxidation_Rxn1",
+    "AlcoholOxidation_Rxn1",
+    "AlcoholOxidation_Rxn2",
+    "Amidation_Rxn1",
+    "Amidation_Rxn2",
+    "BuchwaldHartwig_Rxn1",
+    "BuchwaldHartwig_Rxn2",
+    "CarbonylReduction_Rxn1",
+    "CarbonylReduction_Rxn2",
+    "Esterification_Rxn1",
+    "Esterification_Rxn2",
+    "Grignard_Rxn1",
+    "Grignard_Rxn2",
+    "N-Alkylation_Rxn1",
+    "N-Alkylation_Rxn2",
+    "N-Sulfonylation_Rxn1",
+    "N-Sulfonylation_Rxn2",
+    "O-Alkylation_Rxn1",
+    "O-Alkylation_Rxn2",
+    "Reductive Amination_Rxn1",
+    "Reductive Amination_Rxn2",
+    "SnAr_Rxn1",
+    "SnAr_Rxn2",
+    "Suzuki_Rxn1",
+    "Suzuki_Rxn2",
+]
+
+files.sort()
+
+for filename in files:
+    try:
+        rea = indigo.loadReactionFromFile(
+            os.path.join(root_cdxml, filename + ".cdxml")
+        )
+        resb64 = rea.b64cdx()
+        res = rea.cdxml()
+        # with open(os.path.join(ref_path, filename + ".cdxml"), 'w') as file:
+        #     data = file.write(res)
+        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        #     data = file.write(resb64)
+        with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
+            refb64 = file.read()
+        print(filename + (":success" if refb64 == resb64 else ":failed"))
+
+        # with open(os.path.join(ref_path, filename + ".cdxml"), "r") as file:
+        #    refcdxml = file.read()
+        # print(filename + (":success" if res == refcdxml else ":failed"))
+        # diff = find_diff(res, refcdxml)
+        # if not diff:
+        #    print(filename + ".cdxml:SUCCEED")
+        # else:
+        #    print(filename + ".cdxml:FAILED")
+        #    print(diff)
+
+    except IndigoException as e:
+        print(getIndigoExceptionText(e))

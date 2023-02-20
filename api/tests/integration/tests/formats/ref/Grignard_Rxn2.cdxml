@@ -282,11 +282,9 @@
             <s font="4" size="9.33333" face="0">63488-10-8</s>
         </t>
         <t id="97" p="293.944977 120.004990" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="1">4-tert-Butylphenyl-</s>
+            <s font="4" size="9.33333" face="1">4-tert-Butylphenyl-magnesium bromide</s>
         </t>
-        <t id="97" p="293.944977 120.004990" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="1">magnesium bromide</s>
-        </t>
+        <t id="97" p="293.944977 120.004990" Justification="Left" InterpretChemically="no"/>
         <graphic id="100" BoundingBox="237.529999 75.344994 237.529999 67.844994" GraphicType="Symbol" SymbolType="Plus"/>
         <t id="103" p="284.140045 164.549988" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">1.2 equiv</s>
@@ -311,28 +309,18 @@
         </t>
         <t id="124" p="157.570007 120.044991" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="124" p="157.570007 120.044991" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-methoxy-2-(4-methoxyphenyl)-</s>
+            <s font="4" size="9.33333" face="1">-methoxy-2-(4-methoxyphenyl)-</s>
         </t>
         <t id="124" p="157.570007 120.044991" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="124" p="157.570007 120.044991" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-methylacetamide</s>
+            <s font="4" size="9.33333" face="1">-methylacetamide</s>
         </t>
         <t id="127" p="528.164978 120.044991" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">1-(4-(</s>
-        </t>
-        <t id="127" p="528.164978 120.044991" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">tert</s>
+            <s font="4" size="9.33333" face="1">-butyl)phenyl)-2-(4-methoxyphenyl)ethan-1-one</s>
         </t>
-        <t id="127" p="528.164978 120.044991" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)phenyl)-2-</s>
-        </t>
-        <t id="127" p="528.164978 120.044991" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">(4-methoxyphenyl)ethan-1-one</s>
-        </t>
+        <t id="127" p="528.164978 120.044991" Justification="Left" InterpretChemically="no"/>
         <t id="130" p="528.164978 139.000000" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">184477-20-1</s>
         </t>

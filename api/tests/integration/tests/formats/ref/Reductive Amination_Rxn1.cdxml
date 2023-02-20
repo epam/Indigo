@@ -360,8 +360,6 @@
         </fragment>
         <t id="97" p="361.350006 42.105003" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2.0 equiv</s>
-        </t>
-        <t id="97" p="361.350006 42.105003" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> STAB</s>
         </t>
         <t id="100" p="361.355011 89.724998" Justification="Left" InterpretChemically="no">
@@ -375,8 +373,6 @@
         </t>
         <t id="109" p="361.354980 59.709999" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">1.0 equiv</s>
-        </t>
-        <t id="109" p="361.354980 59.709999" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> AcOH</s>
         </t>
         <t id="112" p="111.854996 5.844999" Justification="Left" InterpretChemically="no">
@@ -384,12 +380,8 @@
         </t>
         <t id="115" p="173.940002 98.440002" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">1-(</s>
-        </t>
-        <t id="115" p="173.940002 98.440002" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">p</s>
-        </t>
-        <t id="115" p="173.940002 98.440002" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-tolyl)propan-2-one</s>
+            <s font="4" size="9.33333" face="1">-tolyl)propan-2-one</s>
         </t>
         <t id="118" p="167.190002 109.570000" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">2096-86-8</s>
@@ -425,15 +417,9 @@
         <graphic id="151" BoundingBox="225.539993 64.925003 225.539993 57.424999" GraphicType="Symbol" SymbolType="Plus"/>
         <t id="154" p="484.994995 98.440002" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="154" p="484.994995 98.440002" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-benzyl-1-(</s>
-        </t>
-        <t id="154" p="484.994995 98.440002" Justification="Left" InterpretChemically="no">
+            <s font="4" size="9.33333" face="1">-benzyl-1-(</s>
             <s font="4" size="9.33333" face="3">p</s>
-        </t>
-        <t id="154" p="484.994995 98.440002" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-tolyl)propan-2-amine</s>
+            <s font="4" size="9.33333" face="1">-tolyl)propan-2-amine</s>
         </t>
         <t id="157" p="228.004990 315.245026" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">methanol</s>

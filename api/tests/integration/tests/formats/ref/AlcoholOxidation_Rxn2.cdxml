@@ -283,23 +283,15 @@
         </t>
         <t id="87" p="365.614990 56.330002" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">0.18 equiv</s>
-        </t>
-        <t id="87" p="365.614990 56.330002" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> TEMPO</s>
         </t>
         <t id="90" p="365.815002 86.720001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">DCM/</s>
+            <s font="4" size="10" face="0">Water(1:1)</s>
         </t>
-        <t id="90" p="365.815002 86.720001" Justification="Left" InterpretChemically="no">
-            <s font="4" size="10" face="0">Water</s>
-        </t>
-        <t id="90" p="365.815002 86.720001" Justification="Left" InterpretChemically="no">
-            <s font="4" size="10" face="0">(1:1)</s>
-        </t>
+        <t id="90" p="365.815002 86.720001" Justification="Left" InterpretChemically="no"/>
         <t id="93" p="365.605042 42.009998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2.2 equiv</s>
-        </t>
-        <t id="93" p="365.605042 42.009998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> BAIB</s>
         </t>
         <t id="96" p="89.495003 5.925000" Justification="Left" InterpretChemically="no">

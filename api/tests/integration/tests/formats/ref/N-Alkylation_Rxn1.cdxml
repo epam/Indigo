@@ -394,14 +394,10 @@
         </fragment>
         <t id="113" p="378.084991 71.459999" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2 equiv</s>
-        </t>
-        <t id="113" p="378.084991 71.459999" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">K2CO3</s>
         </t>
         <t id="116" p="378.084991 86.400002" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">0.2 equiv</s>
-        </t>
-        <t id="116" p="378.084991 86.400002" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> TBAI</s>
         </t>
         <t id="119" p="378.084991 131.919998" Justification="Left" InterpretChemically="no">
@@ -415,12 +411,8 @@
         </t>
         <t id="128" p="270.239990 139.050003" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">4-(</s>
-        </t>
-        <t id="128" p="270.239990 139.050003" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="128" p="270.239990 139.050003" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)aniline</s>
+            <s font="4" size="9.33333" face="1">-butyl)aniline</s>
         </t>
         <t id="131" p="270.239990 152.490005" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">769-92-6</s>
@@ -456,18 +448,10 @@
         <graphic id="164" BoundingBox="209.979996 103.185005 209.979996 95.685005" GraphicType="Symbol" SymbolType="Plus"/>
         <t id="167" p="530.584961 139.050003" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">4-(</s>
-        </t>
-        <t id="167" p="530.584961 139.050003" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="167" p="530.584961 139.050003" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)-</s>
-        </t>
-        <t id="167" p="530.584961 139.050003" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="167" p="530.584961 139.050003" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-(4-methylphenethyl)aniline</s>
+            <s font="4" size="9.33333" face="2">tert</s>
+            <s font="4" size="9.33333" face="1">-butyl)-</s>
+            <s font="4" size="9.33333" face="2">N</s>
+            <s font="4" size="9.33333" face="1">-(4-methylphenethyl)aniline</s>
         </t>
         <t id="170" p="532.945007 152.490005" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">135306-84-3</s>

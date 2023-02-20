@@ -363,14 +363,10 @@
         </fragment>
         <t id="115" p="383.169983 39.804996" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2 equiv</s>
-        </t>
-        <t id="115" p="383.169983 39.804996" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> EDCI</s>
         </t>
         <t id="118" p="387.054993 54.850002" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2.2 equiv</s>
-        </t>
-        <t id="118" p="387.054993 54.850002" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> TEA</s>
         </t>
         <t id="121" p="381.899994 87.620003" Justification="Left" InterpretChemically="no">
@@ -384,8 +380,6 @@
         </t>
         <t id="130" p="390.134979 68.349998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">0.1 equiv</s>
-        </t>
-        <t id="130" p="390.134979 68.349998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">DMAP</s>
         </t>
         <t id="133" p="79.550003 5.919999" Justification="Left" InterpretChemically="no">
@@ -470,30 +464,16 @@
         </t>
         <t id="217" p="101.254997 315.854980" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">3-(((ethylimino)methylene)amino)-</s>
-        </t>
-        <t id="217" p="101.254997 315.854980" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="217" p="101.254997 315.854980" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">,</s>
-        </t>
-        <t id="217" p="101.254997 315.854980" Justification="Left" InterpretChemically="no">
+            <s font="4" size="9.33333" face="1">,</s>
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="217" p="101.254997 315.854980" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-dimethylpropan-1-aminium chloride</s>
+            <s font="4" size="9.33333" face="1">-dimethylpropan-1-aminium chloride</s>
         </t>
         <t id="220" p="254.229980 315.659973" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="220" p="254.229980 315.659973" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">,</s>
-        </t>
-        <t id="220" p="254.229980 315.659973" Justification="Left" InterpretChemically="no">
+            <s font="4" size="9.33333" face="1">,</s>
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="220" p="254.229980 315.659973" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-dimethylpyridin-4-amine</s>
+            <s font="4" size="9.33333" face="1">-dimethylpyridin-4-amine</s>
         </t>
         <t id="223" p="254.225006 433.119995" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">[catalyst]</s>
