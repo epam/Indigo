@@ -84,6 +84,18 @@ namespace indigo
         return bit_mask;
     }
 
+    inline void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)
+    {
+        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        {
+            SGroup& sgroup = mol.sgroups.getSGroup(i);
+            neighbors.push_back({});
+            auto& sg_set = neighbors.back();
+            for (auto atom_idx : sgroup.atoms)
+                sg_set.insert(atom_idx);
+        }
+    }
+
     class KETSimpleObject : public MetaObject
     {
     public:
