@@ -471,14 +471,10 @@
         </fragment>
         <t id="143" p="375.894989 55.050003" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">1.2 equiv</s>
-        </t>
-        <t id="143" p="375.894989 55.050003" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> TTP</s>
         </t>
         <t id="146" p="375.894989 70.595001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">1.2 equiv</s>
-        </t>
-        <t id="146" p="375.894989 70.595001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> DEAD</s>
         </t>
         <t id="149" p="375.900024 109.264999" Justification="Left" InterpretChemically="no">

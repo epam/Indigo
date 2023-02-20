@@ -188,7 +188,7 @@
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <n id="49" Element="16" Charge="1" NumHydrogens="0" p="139.439987 356.329987">
+            <n id="49" Element="16" Charge="1" p="139.439987 356.329987">
                 <t p="139.439987 356.329987" LabelJustification="Left">
                     <s font="3" size="10" face="96">S</s>
                 </t>
@@ -218,7 +218,7 @@
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <n id="55" Element="16" Charge="1" NumHydrogens="0" p="181.229996 356.329987">
+            <n id="55" Element="16" Charge="1" p="181.229996 356.329987">
                 <t p="181.229996 356.329987" LabelJustification="Left">
                     <s font="3" size="10" face="96">S</s>
                 </t>
@@ -407,7 +407,7 @@
                             <s font="3" size="10" face="96">NH</s>
                         </t>
                     </n>
-                    <n id="106" Element="35" NumHydrogens="0" p="615.419983 292.299988">
+                    <n id="106" Element="35" p="615.419983 292.299988">
                         <t p="615.419983 292.299988" LabelJustification="Left">
                             <s font="3" size="10" face="96">Br</s>
                         </t>

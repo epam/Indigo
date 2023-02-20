@@ -490,14 +490,10 @@
         </fragment>
         <t id="137" p="375.714996 55.149998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2.0 equiv</s>
-        </t>
-        <t id="137" p="375.714996 55.149998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> HATU</s>
         </t>
         <t id="140" p="372.520020 69.729996" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2.0 equiv</s>
-        </t>
-        <t id="140" p="372.520020 69.729996" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> TEA</s>
         </t>
         <t id="143" p="372.944977 108.489998" Justification="Left" InterpretChemically="no">
@@ -511,19 +507,15 @@
         </t>
         <t id="152" p="375.809998 84.345001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2.15 equiv</s>
-        </t>
-        <t id="152" p="375.809998 84.345001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> 1 N HCl</s>
         </t>
         <t id="155" p="73.724998 7.340000" Justification="Left" InterpretChemically="no">
             <s font="4" size="16" face="2">Amidation_Rxn1</s>
         </t>
         <t id="158" p="142.774994 292.670013" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="0">	</s>
+            <s font="4" size="9.33333" face="0">	148893-10-1</s>
         </t>
-        <t id="158" p="142.774994 292.670013" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="0">148893-10-1</s>
-        </t>
+        <t id="158" p="142.774994 292.670013" Justification="Left" InterpretChemically="no"/>
         <t id="161" p="256.075012 128.529999" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">4-(trifluoromethyl)benzoic acid</s>
         </t>
@@ -532,12 +524,8 @@
         </t>
         <t id="167" p="95.735008 127.900002" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">2-(4-(</s>
-        </t>
-        <t id="167" p="95.735008 127.900002" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="167" p="95.735008 127.900002" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)phenyl)ethan-1-amine</s>
+            <s font="4" size="9.33333" face="1">-butyl)phenyl)ethan-1-amine</s>
         </t>
         <t id="170" p="95.735008 144.430008" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">91552-82-8</s>
@@ -559,15 +547,9 @@
         </t>
         <t id="188" p="555.234985 127.149979" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="188" p="555.234985 127.149979" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-(4-(</s>
-        </t>
-        <t id="188" p="555.234985 127.149979" Justification="Left" InterpretChemically="no">
+            <s font="4" size="9.33333" face="1">-(4-(</s>
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="188" p="555.234985 127.149979" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)phenethyl)-4-(trifluoromethyl)benzamide</s>
+            <s font="4" size="9.33333" face="1">-butyl)phenethyl)-4-(trifluoromethyl)benzamide</s>
         </t>
         <t id="191" p="547.299927 227.720001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">[byproducts]</s>
@@ -594,24 +576,14 @@
         </t>
         <t id="218" p="142.774994 269.405029" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">1-((dimethylamino)(dimethyliminio)methyl)-1</s>
-        </t>
-        <t id="218" p="142.774994 269.405029" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">H</s>
-        </t>
-        <t id="218" p="142.774994 269.405029" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-[1,2,3]triazolo[4,5-</s>
-        </t>
-        <t id="218" p="142.774994 269.405029" Justification="Left" InterpretChemically="no">
+            <s font="4" size="9.33333" face="1">-[1,2,3]triazolo[4,5-</s>
             <s font="4" size="9.33333" face="3">b</s>
+            <s font="4" size="9.33333" face="1">]pyridine 3-oxide hexafluorophosphate</s>
+            <s font="4" size="9.33333" face="0">or</s>
         </t>
         <t id="218" p="142.774994 269.405029" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">]pyridine 3-oxide hexafluorophosphate</s>
-        </t>
-        <t id="218" p="142.774994 269.405029" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">or</s>
-        </t>
-        <t id="218" p="142.774994 269.405029" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">Hexafluorophosphate Azabenzotriazole Tetramethyl Uronium</s>
+            <s font="4" size="9.33333" face="1">Hexafluorophosphate Azabenzotriazole Tetramethyl Uronium</s>
         </t>
         <t id="221" p="142.774994 408.699982" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">MW 380.24</s>
