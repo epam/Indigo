@@ -6,7 +6,7 @@ ARG GIT_VERSION=227
 RUN yum install -y epel-release centos-release-scl
 RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
 RUN yum update -y
-RUN yum install -y devtoolset-${DEVTOOLSET_VERSION}-gcc-c++ freetype-devel fontconfig-devel make python3 rh-git${GIT_VERSION}
+RUN yum install -y devtoolset-${DEVTOOLSET_VERSION}-gcc-c++ libasan freetype-devel fontconfig-devel make python3 rh-git${GIT_VERSION}
 RUN yum clean -y all
 
 # Enable the SCL for all bash scripts.
