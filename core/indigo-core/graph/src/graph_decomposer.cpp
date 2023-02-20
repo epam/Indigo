@@ -102,9 +102,9 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter, 
                     _component_edges_count[n_comp]++;
             }
 
-            if (ext_neighbours )
+            if (ext_neighbours)
             {
-                for (const auto& neighbors_group : *ext_neighbours )
+                for (const auto& neighbors_group : *ext_neighbours)
                 {
                     if (neighbors_group.find(v_bottom_id) != neighbors_group.end())
                     {

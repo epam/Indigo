@@ -229,7 +229,7 @@ namespace indigo
 
         int vertexComponent(int v_idx);
         int countComponents();
-        int countComponents(const std::list< std::unordered_set<int> >& external_neighbors);
+        int countComponents(const std::list<std::unordered_set<int>>& external_neighbors);
         int countComponentVertices(int comp_idx);
         int countComponentVertices(int comp_idx, const std::list<std::unordered_set<int>>& external_neighbors);
         int countComponentEdges(int comp_idx);
