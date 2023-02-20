@@ -23,6 +23,9 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
 
+#include <list>
+#include <unordered_set>
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4251)
