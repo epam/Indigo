@@ -213,8 +213,9 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     auto pair_comp_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first > a.first; };
     auto pair_comp_des = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first < a.first; };
     auto pair_comp_mol_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.second > a.second; };
-
-    int count = _pmol->countComponents();
+    std::list<std::unordered_set<int>> s_neighbors;
+    getSGroupAtoms(*_pmol, s_neighbors);
+    int count = _pmol->countComponents(s_neighbors);
     _reaction_components.reserve(count);
     FLOAT_INT_PAIRS mol_tops, mol_bottoms, mol_lefts, mol_rights;
 
@@ -474,7 +475,10 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
 
     std::vector<ReactionComponent> components;
 
-    for (int index = 0; index < _pmol->countComponents(); ++index)
+    std::list<std::unordered_set<int>> s_neighbors;
+    getSGroupAtoms(*_pmol, s_neighbors);
+
+    for (int index = 0; index < _pmol->countComponents(s_neighbors); ++index)
     {
         std::unique_ptr<BaseMolecule> mol;
         if (_pmol->isQueryMolecule())

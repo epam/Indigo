@@ -17,7 +17,7 @@ from env_indigo import *  # noqa
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 
-print("*** KET to CDXML to KET ***")
+print("*** MOL to KET ***")
 
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
