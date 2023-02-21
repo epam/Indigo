@@ -37,7 +37,7 @@ GraphDecomposer::~GraphDecomposer()
 {
 }
 
-int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter, const std::unordered_set<int>* ext_neighbours)
+int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter, const std::list<std::unordered_set<int>>* ext_neighbours)
 {
     if (_graph.vertexCount() < 1)
     {
@@ -102,28 +102,33 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter, 
                     _component_edges_count[n_comp]++;
             }
 
-            if (ext_neighbours && ext_neighbours->find(v_bottom_id) != ext_neighbours->end())
+            if (ext_neighbours)
             {
-                for (auto other : *ext_neighbours)
+                for (const auto& neighbors_group : *ext_neighbours)
                 {
-                    if (other != v_bottom_id)
+                    if (neighbors_group.find(v_bottom_id) != neighbors_group.end())
                     {
-                        if (filter != 0 && !filter->valid(other))
-                            continue;
-                        if (edge_filter != 0 && !edge_filter->valid(other))
-                            continue;
-
-                        if (_component_ids[other] == -1)
+                        for (auto other : neighbors_group)
                         {
-                            queue[top++] = other;
-                            _component_ids[other] = -2;
+                            if (other != v_bottom_id)
+                            {
+                                if (filter != 0 && !filter->valid(other))
+                                    continue;
+                                if (edge_filter != 0 && !edge_filter->valid(other))
+                                    continue;
+
+                                if (_component_ids[other] == -1)
+                                {
+                                    queue[top++] = other;
+                                    _component_ids[other] = -2;
+                                }
+                                if (_component_ids[other] == -2)
+                                    _component_edges_count[n_comp]++;
+                            }
                         }
-                        if (_component_ids[other] == -2)
-                            _component_edges_count[n_comp]++;
                     }
                 }
             }
-
             bottom++;
         }
 
