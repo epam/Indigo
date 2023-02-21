@@ -10,8 +10,8 @@ RUN yum -y --enablerepo=centos-sclo-rh-testing install devtoolset-${DEVTOOLSET_V
 RUN yum clean -y all
 
 # Enable the SCL for all bash scripts.
-echo "source /opt/rh/devtoolset-${DEVTOOLSET_VERSION}/enable" | sudo tee -a /etc/profile
-source /opt/rh/devtoolset-${DEVTOOLSET_VERSION}/enable
+RUN echo "source /opt/rh/devtoolset-${DEVTOOLSET_VERSION}/enable" | sudo tee -a /etc/profile
+RUN source /opt/rh/devtoolset-${DEVTOOLSET_VERSION}/enable
 
 #ENV MANPATH=/opt/rh/rh-git${GIT_VERSION}/root/usr/share/man:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/share/man \
 #    X_SCLS="devtoolset-${DEVTOOLSET_VERSION} rh-git${GIT_VERSION}" \
