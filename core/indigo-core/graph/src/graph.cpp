@@ -679,12 +679,12 @@ void Graph::_calculateSSSR()
     _calculateSSSRByCycleBasis(basis);
 }
 
-void Graph::_calculateComponents(const std::unordered_set<int> external_neighbours)
+void Graph::_calculateComponents(const std::list<std::unordered_set<int>> external_neighbors)
 {
     GraphDecomposer decomposer(*this);
     int i;
 
-    decomposer.decompose(NULL, NULL, &external_neighbours);
+    decomposer.decompose(NULL, NULL, &external_neighbors);
 
     _component_numbers.clear_resize(vertexEnd());
 
@@ -713,26 +713,26 @@ int Graph::vertexComponent(int v_idx)
     return _component_numbers[v_idx];
 }
 
-int Graph::countComponents(const std::unordered_set<int>& external_neighbours)
+int Graph::countComponents(const std::list<std::unordered_set<int>>& external_neighbors)
 {
     if (!_components_valid)
-        _calculateComponents(external_neighbours);
+        _calculateComponents(external_neighbors);
 
     return _components_count;
 }
 
-int Graph::countComponentEdges(int comp_idx, const std::unordered_set<int>& external_neighbours)
+int Graph::countComponentEdges(int comp_idx, const std::list<std::unordered_set<int>>& external_neighbors)
 {
     if (!_components_valid)
-        _calculateComponents(external_neighbours);
+        _calculateComponents(external_neighbors);
 
     return _component_ecount[comp_idx];
 }
 
-int Graph::countComponentVertices(int comp_idx, const std::unordered_set<int>& external_neighbours)
+int Graph::countComponentVertices(int comp_idx, const std::list<std::unordered_set<int>>& external_neighbors)
 {
     if (!_components_valid)
-        _calculateComponents(external_neighbours);
+        _calculateComponents(external_neighbors);
 
     return _component_vcount[comp_idx];
 }
