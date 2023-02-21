@@ -1634,7 +1634,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
                 if (superatom.subscript.size() > 1)
                 {
-                    if( superatom.subscript.find(' ') > - 1)
+                    if (superatom.subscript.find(' ') > -1)
                         output.printfCR("M  SMT %3d \"%s\"", superatom.original_group, superatom.subscript.ptr());
                     else
                         output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.ptr());
@@ -1687,7 +1687,12 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 RepeatingUnit& sru = (RepeatingUnit&)sgroup;
 
                 if (sru.subscript.size() > 1)
-                    output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.ptr());
+                {
+                    if (sru.subscript.find(' ') > -1)
+                        output.printfCR("M  SMT %3d \"%s\"", sru.original_group, sru.subscript.ptr());
+                    else
+                        output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.ptr());
+                }
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
