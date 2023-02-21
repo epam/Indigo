@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.6)
 project(indigo-core-unit-tests LANGUAGES CXX)
 
 if (ENABLE_TESTS)
-    if(UNIX UNIX AND NOT APPLE)
+    if(UNIX AND NOT APPLE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=leak -g")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fsanitize=leak -g")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fsanitize=leak")
