@@ -1,4 +1,4 @@
-FROM centos:7
+FROM centos:8
 
 RUN yum install -y epel-release centos-release-scl
 RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
