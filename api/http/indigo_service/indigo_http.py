@@ -60,6 +60,7 @@ def compounds(
         jsonapi.ValidationRequest,
         jsonapi.CompoundConvertRequest,
         jsonapi.RenderRequest,
+        jsonapi.PKARequest,
     ],
 ) -> List[Tuple[str, jsonapi.CompoundFormat]]:
     return service.extract_pairs(request.data.attributes.compound)
@@ -81,7 +82,7 @@ def targets(
 
 
 @app.get(f"{BASE_URL_INDIGO}/version", response_model=jsonapi.VersionResponse)
-def indigo_version() -> jsonapi.VersionResponse:
+async def indigo_version() -> jsonapi.VersionResponse:
     return jsonapi.make_version_response(indigo().version())
 
 
@@ -90,7 +91,7 @@ def indigo_version() -> jsonapi.VersionResponse:
     response_model=jsonapi.SimilaritiesResponse,
     response_model_exclude_unset=True,
 )
-def similarities(
+async def similarities(
     request: jsonapi.SimilaritiesRequest,
 ) -> jsonapi.SimilaritiesResponse:
 
@@ -122,7 +123,7 @@ def similarities(
     response_model=jsonapi.MatchResponse,  # type: ignore
     response_model_exclude_unset=True,
 )
-def exact_match(request: jsonapi.MatchRequest) -> jsonapi.MatchResponse:
+async def exact_match(request: jsonapi.MatchRequest) -> jsonapi.MatchResponse:
     compound, *_ = service.extract_compounds(source(request))
     target_pairs = targets(request)
     target_compounds = service.extract_compounds(target_pairs)
@@ -149,7 +150,7 @@ def exact_match(request: jsonapi.MatchRequest) -> jsonapi.MatchResponse:
     response_model=jsonapi.CompoundResponse,
     response_model_exclude_unset=True,
 )
-def convert(
+async def convert(
     request: jsonapi.CompoundConvertRequest,
 ) -> jsonapi.CompoundResponse:
     compound, *_ = service.extract_compounds(
@@ -165,7 +166,9 @@ def convert(
     response_model=jsonapi.ValidationResponse,
     response_model_exclude_unset=True,
 )
-def validate(request: jsonapi.ValidationRequest) -> jsonapi.ValidationResponse:
+async def validate(
+    request: jsonapi.ValidationRequest,
+) -> jsonapi.ValidationResponse:
     compound, *_ = service.extract_compounds(compounds(request))
     validations = request.data.attributes.validations
     results = {}
@@ -179,7 +182,7 @@ def validate(request: jsonapi.ValidationRequest) -> jsonapi.ValidationResponse:
     response_model=jsonapi.DescriptorResponse,
     response_model_exclude_unset=True,
 )
-def descriptors(
+async def descriptors(
     request: jsonapi.DescriptorRequest,
 ) -> jsonapi.DescriptorResponse:
     compound, *_ = service.extract_compounds(compounds(request))
@@ -190,12 +193,54 @@ def descriptors(
     return jsonapi.make_descriptor_response(results)
 
 
+@app.post(f"{BASE_URL_INDIGO}/pka", response_model=jsonapi.PKAResponse)
+async def pka(request: jsonapi.PKARequest) -> jsonapi.PKAResponse:
+    compound, *_ = service.extract_compounds(compounds(request))
+    if request.data.attributes.pka_model == jsonapi.PKAModel.ADVANCED:
+        indigo().setOption("pKa-model", jsonapi.PKAModel.ADVANCED.value)
+    pka_model_level = request.data.attributes.pka_model_level
+    pka_model_min_level = request.data.attributes.pka_model_min_level
+    pka_values = jsonapi.AtomToValueContainer()
+    pka_type = request.data.attributes.pka_type
+    pka_model_build = request.data.attributes.pka_model_build
+
+    if pka_model_build is not None:
+        service.build_pka_model(
+            pka_model_build.sdf,
+            pka_model_build.max_level,
+            pka_model_build.threshold,
+        )
+
+    for atom in compound.iterateAtoms():
+        if pka_type == jsonapi.PKAType.BASIC:
+            pka_values.mappings.append(
+                jsonapi.AtomToValueMapping(
+                    index=atom.index(),
+                    symbol=atom.symbol(),
+                    value=compound.getBasicPkaValue(
+                        atom, pka_model_level, pka_model_min_level
+                    ),
+                )
+            )
+        elif pka_type == jsonapi.PKAType.ACID:
+            pka_values.mappings.append(
+                jsonapi.AtomToValueMapping(
+                    index=atom.index(),
+                    symbol=atom.symbol(),
+                    value=compound.getAcidPkaValue(
+                        atom, pka_model_level, pka_model_min_level
+                    ),
+                )
+            )
+    return jsonapi.make_pka_response(pka_values)
+
+
 @app.post(
     f"{BASE_URL_INDIGO}/commonBits",
     response_model=jsonapi.CommonBitsResponse,
     response_model_exclude_unset=True,
 )
-def common_bits(
+async def common_bits(
     request: jsonapi.CommonBitsRequest,
 ) -> jsonapi.CommonBitsResponse:
     compound, *_ = service.extract_compounds(source(request))
@@ -209,7 +254,7 @@ def common_bits(
 
 
 @app.post(f"{BASE_URL_INDIGO}/render", response_model=jsonapi.RenderResponse)
-def render(
+async def render(
     request: jsonapi.RenderRequest,
 ) -> jsonapi.RenderResponse:
     compound, *_ = service.extract_compounds(compounds(request))
