@@ -35,6 +35,7 @@ Molecule::Molecule()
 
 Molecule::~Molecule()
 {
+    clear();
 }
 
 Molecule& Molecule::asMolecule()

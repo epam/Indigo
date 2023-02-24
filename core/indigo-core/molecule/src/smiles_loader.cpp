@@ -2718,10 +2718,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 if (qatom.get() == 0)
                     atom.label = ELEM_PSEUDO;
                 else
-                {
-                    subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, ELEM_H);
-                    subatom.reset(QueryMolecule::Atom::nicht(subatom.release()));
-                }
+                    subatom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             }
         }
         else if (next == '#')

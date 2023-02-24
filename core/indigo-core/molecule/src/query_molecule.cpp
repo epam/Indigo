@@ -32,6 +32,7 @@ QueryMolecule::QueryMolecule() : spatial_constraints(*this)
 
 QueryMolecule::~QueryMolecule()
 {
+    clear();
 }
 
 QueryMolecule& QueryMolecule::asQueryMolecule()
