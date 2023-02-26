@@ -27,8 +27,7 @@ imago_api.indigo_inchi = IndigoInchi(imago_api.indigo)  # type: ignore
 imago_api_app = flask_restful.Api(imago_api)
 imago_api_app.route = types.MethodType(api_route, imago_api_app)
 allowed_types = imago_api.config["ALLOWED_TYPES"]  # type: ignore
-
-versions: List[str] = ["2.0.0"]
+versions: List[str] = imago_api.config["IMAGO_VERSIONS"]  # type: ignore
 # with open('/srv/service_version', 'r') as ver:
 #     for line in ver.readlines():
 #         if line.startswith("imago-console-"):

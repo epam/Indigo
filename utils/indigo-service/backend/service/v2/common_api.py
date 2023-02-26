@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify  # type: ignore
 # import re
 from v2.db.database import db_session
 from v2.indigo_api import indigo_init
+from v2.imago_api import versions as imago_versions
 
 common_api = Blueprint("common_api", __name__)
 common_api_logger = logging.getLogger("common")
@@ -37,6 +38,6 @@ def version():
     #             imago_versions.append(re.search('imago-console-(.*)\..*', line).group(1))
     #         else:
     #             versions['service_version'] = line.rstrip()
-    versions["imago_versions"] = ["2.0.0"]
+    versions["imago_versions"] = imago_versions
 
     return jsonify(versions), 200, {"Content-Type": "application/json"}
