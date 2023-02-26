@@ -58,6 +58,4 @@ ALLOWED_TYPES = (
     "image/x-portable-bitmap",
 )
 
-IMAGO_VERSIONS = [
-    "2.0.0"
-]
+IMAGO_VERSIONS = ["2.0.0"]
