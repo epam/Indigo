@@ -4,8 +4,8 @@ from flask import Blueprint, jsonify  # type: ignore
 
 # import re
 from v2.db.database import db_session
-from v2.indigo_api import indigo_init
 from v2.imago_api import versions as imago_versions
+from v2.indigo_api import indigo_init
 
 common_api = Blueprint("common_api", __name__)
 common_api_logger = logging.getLogger("common")
