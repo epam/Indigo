@@ -981,6 +981,25 @@ int main(int argc, char* argv[])
             {
                 indigoSaveCdxToFile(obj, p.outfile);
             }
+            else if (p.out_ext == OEXT_SMI)
+            {
+                char* pReaction;
+                if (p.query_set)
+                    pReaction = indigoSmarts(obj);
+                else
+                    pReaction = indigoSmiles(obj);
+                FILE* fp = fopen(p.outfile, "w+");
+                if (fp)
+                {
+                    fputs(pReaction, fp);
+                    fclose(fp);
+                }
+                else
+                {
+                    fprintf(stderr, "can not write: %s\n", p.outfile);
+                    return -1;
+                }
+            }
             else
             {
                 indigoSaveJsonToFile(obj, p.outfile);
