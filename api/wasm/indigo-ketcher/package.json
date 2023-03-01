@@ -33,7 +33,8 @@
   },
   "homepage": "https://lifescience.opensource.epam.com/indigo/api/index.html",
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "test_cjk": "node test_cjk.js"
   },
   "dependencies": {
     "looks-same": "^8.1.0"
