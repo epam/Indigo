@@ -394,7 +394,6 @@ M  V30 END COLLECTION
 M  V30 END CTAB
 M  END
 `, "molfile", options);
-			console.log(molfile_2000);
             assert(molfile_2000.indexOf("V3000") !== -1);
             assert(molfile_2000.indexOf("V2000") === -1);
             options.delete();
