@@ -42,6 +42,8 @@ namespace indigo
     const uint8_t KETReagentDownArea = 2;
     const uint8_t KETProductArea = 3;
 
+    const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"(R)", CIPDesc::R}, {"(S)", CIPDesc::R}, {"(r)", CIPDesc::r},
+                                                                   {"(s)", CIPDesc::s}, {"(E)", CIPDesc::E}, {"(Z)", CIPDesc::Z}};
     struct compareFunction
     {
         bool operator()(const std::pair<int, bool>& a, const std::pair<int, bool>& b) const
@@ -82,6 +84,16 @@ namespace indigo
             bit_mask |= KETReagentDownArea;
 
         return bit_mask;
+    }
+
+    inline bool isCIPSGroup(SGroup& sgroup)
+    {
+        if (sgroup.sgroup_type == SGroup::SG_DATA)
+        {
+            auto& dsg = (DataSGroup&)sgroup;
+            return std::string(dsg.name.ptr()) == "INDIGO_CIP_DESC";
+        }
+        return false;
     }
 
     class KETSimpleObject : public MetaObject
