@@ -441,7 +441,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
             auto cip = mol.getBondCIP(i);
             if (cip != CIPDesc::NONE)
             {
-                auto cip_it = KCIPToString.find(cip);
+                auto cip_it = KCIPToString.find((int)cip);
                 if (cip_it != KCIPToString.end())
                 {
                     writer.Key("cip");
@@ -813,7 +813,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             auto cip = mol.getAtomCIP(i);
             if (cip != CIPDesc::NONE)
             {
-                auto cip_it = KCIPToString.find(cip);
+                auto cip_it = KCIPToString.find((int)cip);
                 if (cip_it != KCIPToString.end())
                 {
                     writer.Key("cip");
