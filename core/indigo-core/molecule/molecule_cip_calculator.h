@@ -28,7 +28,7 @@ namespace indigo
     class BaseMolecule;
     class Molecule;
 
-    enum class CIPDesc
+    enum class CIPDesc : int
     {
         NONE = 0,
         UNKNOWN,

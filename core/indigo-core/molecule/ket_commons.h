@@ -45,8 +45,8 @@ namespace indigo
 
     const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"R", CIPDesc::R}, {"S", CIPDesc::R}, {"r", CIPDesc::r},
                                                                    {"s", CIPDesc::s}, {"E", CIPDesc::E}, {"Z", CIPDesc::Z}};
-    const std::unordered_map<CIPDesc, std::string> KCIPToString = {{CIPDesc::R, "R"}, {CIPDesc::R, "S"}, {CIPDesc::r, "r"},
-                                                                   {CIPDesc::s, "s"}, {CIPDesc::E, "E"}, {CIPDesc::Z, "Z"}};
+    const std::unordered_map<int, std::string> KCIPToString = {{(int)CIPDesc::R, "R"}, {(int)CIPDesc::R, "S"}, {(int)CIPDesc::r, "r"},
+                                                               {(int)CIPDesc::s, "s"}, {(int)CIPDesc::E, "E"}, {(int)CIPDesc::Z, "Z"}};
 
     struct compareFunction
     {
