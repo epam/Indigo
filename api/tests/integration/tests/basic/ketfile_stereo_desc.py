@@ -26,8 +26,6 @@ for filename in sorted(os.listdir(root)):
     ketfile = joinPathPy(
         os.path.join(ref_path, filename[:-4] + ".ket"), __file__
     )
-    # with open(ketfile, "w") as file:
-    #    file.write(mol.json())
     with open(ketfile, "r") as file:
         ket_ref = file.read()
         diff = find_diff(ket_ref, mol.json())
@@ -43,8 +41,6 @@ rxn = indigo.loadReactionFromFile(
     os.path.join(joinPathPy("reactions/", __file__), filename)
 )
 ketfile = joinPathPy(os.path.join(ref_path, "crazystereo.ket"), __file__)
-# with open(ketfile, "w") as file:
-#    file.write(rxn.json())
 with open(ketfile, "r") as file:
     ket_ref = file.read()
     diff = find_diff(ket_ref, rxn.json())
