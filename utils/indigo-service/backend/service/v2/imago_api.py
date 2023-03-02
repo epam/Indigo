@@ -27,8 +27,7 @@ imago_api.indigo_inchi = IndigoInchi(imago_api.indigo)  # type: ignore
 imago_api_app = flask_restful.Api(imago_api)
 imago_api_app.route = types.MethodType(api_route, imago_api_app)
 allowed_types = imago_api.config["ALLOWED_TYPES"]  # type: ignore
-
-versions: List[str] = []
+versions: List[str] = imago_api.config["IMAGO_VERSIONS"]  # type: ignore
 # with open('/srv/service_version', 'r') as ver:
 #     for line in ver.readlines():
 #         if line.startswith("imago-console-"):
@@ -238,11 +237,14 @@ class ImagoUpload(flask_restful.Resource):
             if params["version"] in versions:
                 version = "imago-console-" + params["version"]
             else:
-                return {
-                    "error": "Incorrect version {0}, should be one of [{1}]".format(
-                        request.headers["Version"], ", ".join(versions)
-                    )
-                }, 400
+                return (
+                    {
+                        "error": "Incorrect version {0}, should be one of [{1}]".format(
+                            request.headers["Version"], ", ".join(versions)
+                        )
+                    },
+                    400,
+                )
         else:
             version = "imago-console-" + versions[-1]
         args.append(os.path.join("/srv", "imago", version, "imago_console"))
@@ -264,11 +266,14 @@ class ImagoUpload(flask_restful.Resource):
         # optional parameters might be appended, get just the type
         mime_type = re.search(r"\A([^;]+)", full_mime_type)
         if not mime_type:
-            return {
-                "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
-                    full_mime_type, ", ".join(allowed_types)
-                )
-            }, 415
+            return (
+                {
+                    "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
+                        full_mime_type, ", ".join(allowed_types)
+                    )
+                },
+                415,
+            )
 
         mime_type = mime_type.group(1)
         imago_api_logger.info(
@@ -276,11 +281,14 @@ class ImagoUpload(flask_restful.Resource):
         )
 
         if mime_type not in allowed_types:
-            return {
-                "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
-                    mime_type, ", ".join(allowed_types)
-                )
-            }, 415
+            return (
+                {
+                    "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
+                        mime_type, ", ".join(allowed_types)
+                    )
+                },
+                415,
+            )
         try:
 
             select_exten = {
@@ -306,12 +314,7 @@ class ImagoUpload(flask_restful.Resource):
             # else pass image for GET request
             if "action" in params:
                 if params["action"] == "wait":
-                    pass_task = pass_to_res.apply_async(
-                        args=(
-                            args,
-                            expire,
-                        ),
-                    )
+                    pass_task = pass_to_res.apply_async(args=(args, expire))
                     id_args = pass_to_res.AsyncResult(pass_task.id).get()
                     return {"upload_id": id_args}
                 else:
@@ -470,11 +473,14 @@ class ImagoUploadStatus(flask_restful.Resource):
                         request.headers["action"]
                     )
                 )
-                return {
-                    "error": "Incorrect parameter {0} in request.".format(
-                        request.headers["action"]
-                    )
-                }, 400
+                return (
+                    {
+                        "error": "Incorrect parameter {0} in request.".format(
+                            request.headers["action"]
+                        )
+                    },
+                    400,
+                )
         else:
             imago_api_logger.error(
                 "[RESPONSE-400] Parameter action not in request."
@@ -489,16 +495,20 @@ class ImagoUploadStatus(flask_restful.Resource):
                     imago_api_logger.error(
                         "[RESPONSE-410] Image are not available because of time limit."
                     )
-                    return {
-                        "error": "Image are not available because of time limit"
-                    }, 410
+                    return (
+                        {
+                            "error": "Image are not available because of time limit"
+                        },
+                        410,
+                    )
             else:
                 imago_api_logger.error(
                     "[RESPONSE-410] Image are not available because of time limit."
                 )
-                return {
-                    "error": "Image are not available because of time limit"
-                }, 410
+                return (
+                    {"error": "Image are not available because of time limit"},
+                    410,
+                )
 
             if "error" in param:
                 imago_api_logger.error("[RESPONSE-400] {0}".format(param))

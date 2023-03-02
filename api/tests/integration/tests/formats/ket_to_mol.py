@@ -16,22 +16,23 @@ from env_indigo import *  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
+indigo.setOption("molfile-saving-skip-date", True)
 
-print("*** MOL to KET ***")
+print("*** KET to MOL ***")
 
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
 files = [
-    "1032-quadra",
+    "suplabel",
 ]
 
 files.sort()
 for filename in files:
-    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+    with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
         ket_ref = file.read()
-    ket = mol.json()
+    ket = mol.molfile()
     diff = find_diff(ket_ref, ket)
     if not diff:
         print(filename + ".ket:SUCCEED")

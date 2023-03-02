@@ -437,6 +437,18 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 writer.Key("stereo");
                 writer.Uint(stereo);
             }
+
+            auto cip = mol.getBondCIP(i);
+            if (cip != CIPDesc::NONE)
+            {
+                auto cip_it = KCIPToString.find(cip);
+                if (cip_it != KCIPToString.end())
+                {
+                    writer.Key("cip");
+                    writer.String(cip_it->second.c_str());
+                }
+            }
+
             writer.EndObject();
         }
     }
@@ -798,6 +810,16 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     break;
                 }
             }
+            auto cip = mol.getAtomCIP(i);
+            if (cip != CIPDesc::NONE)
+            {
+                auto cip_it = KCIPToString.find(cip);
+                if (cip_it != KCIPToString.end())
+                {
+                    writer.Key("cip");
+                    writer.String(cip_it->second.c_str());
+                }
+            }
             writer.EndObject();
         }
     }
@@ -840,9 +862,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 {
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
-
-    MoleculeCIPCalculator mcc;
-    mcc.updateCIPStereoDescriptors(*mol, add_stereo_desc);
+    if (add_stereo_desc)
+        mol->addCIP();
 
     if (!BaseMolecule::hasCoord(*mol))
     {
@@ -854,8 +875,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    std::set<int> rgrp_full_list;
-    std::unordered_set<int> sg_set;
     writer.StartObject();
 
     writer.Key("root");
@@ -863,16 +882,13 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     writer.Key("nodes");
     writer.StartArray();
 
+    std::list<std::unordered_set<int>> s_neighbors;
+
     if (bmol.vertexCount())
     {
-        for (int i = bmol.sgroups.begin(); i != bmol.sgroups.end(); i = bmol.sgroups.next(i))
-        {
-            SGroup& sgroup = bmol.sgroups.getSGroup(i);
-            for (auto atom_idx : sgroup.atoms)
-                sg_set.insert(atom_idx);
-        }
+        getSGroupAtoms(bmol, s_neighbors);
 
-        for (int idx = 0; idx < bmol.countComponents(sg_set); ++idx)
+        for (int idx = 0; idx < bmol.countComponents(s_neighbors); ++idx)
         {
             writer.StartObject();
             writer.Key("$ref");
@@ -903,7 +919,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     writer.EndArray();  // nodes
     writer.EndObject(); // root
 
-    for (int idx = 0; idx < mol->countComponents(sg_set); idx++)
+    for (int idx = 0; idx < mol->countComponents(s_neighbors); idx++)
     {
         _pmol = nullptr;
         _pqmol = nullptr;

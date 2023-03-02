@@ -34,6 +34,7 @@
 #include "reaction/reaction_cml_saver.h"
 #include "reaction/reaction_json_saver.h"
 #include "reaction/rsmiles_saver.h"
+#include "reaction/rxnfile_loader.h"
 #include "reaction/rxnfile_saver.h"
 #include <memory>
 
@@ -229,7 +230,18 @@ void IndigoSmilesSaver::generateSmarts(IndigoObject& obj, Array<char>& out_buffe
         if (rxn.isQueryReaction())
             saver.saveQueryReaction(rxn.asQueryReaction());
         else
-            saver.saveReaction(rxn.asReaction());
+        {
+            Array<char> rxn_out_buffer;
+            ArrayOutput rxn_output(rxn_out_buffer);
+            RxnfileSaver saver_tmp(rxn_output);
+            saver_tmp.saveReaction(rxn.asReaction());
+            rxn_out_buffer.push(0);
+            BufferScanner sc(rxn_out_buffer);
+            RxnfileLoader loader_tmp(sc);
+            QueryReaction qreaction;
+            loader_tmp.loadQueryReaction(qreaction);
+            saver.saveQueryReaction(qreaction);
+        }
     }
     else
         throw IndigoError("%s can not be converted to SMARTS", obj.debugInfo());

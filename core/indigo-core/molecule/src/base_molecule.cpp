@@ -263,6 +263,29 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     else
         _xyz.zerofill();
 
+    // copy cip values
+    for (int i = mol._cip_atoms.begin(); i != mol._cip_atoms.end(); i = mol._cip_atoms.next(i))
+    {
+        try
+        {
+            _cip_atoms.insert(mapping[mol._cip_atoms.key(i)], mol._cip_atoms.value(i));
+        }
+        catch (Exception& e)
+        {
+        }
+    }
+
+    for (int i = mol._cip_bonds.begin(); i != mol._cip_bonds.end(); i = mol._cip_bonds.next(i))
+    {
+        try
+        {
+            _cip_bonds.insert(mapping[mol._cip_bonds.key(i)], mol._cip_bonds.value(i));
+        }
+        catch (Exception& e)
+        {
+        }
+    }
+
     reaction_atom_mapping.expandFill(vertexEnd(), 0);
     reaction_atom_inversion.expandFill(vertexEnd(), 0);
     reaction_atom_exact_change.expandFill(vertexEnd(), 0);
@@ -4114,7 +4137,7 @@ void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
 {
     try
     {
-        _stereo_flag_positions.emplace(frag_index, pos);
+        _stereo_flag_positions.insert(frag_index, pos);
     }
     catch (Exception& ex)
     {
@@ -4123,10 +4146,10 @@ void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
 
 bool BaseMolecule::getStereoFlagPosition(int frag_index, Vec3f& pos)
 {
-    auto it = _stereo_flag_positions.find(frag_index);
-    if (it != _stereo_flag_positions.end())
+    auto* pval = _stereo_flag_positions.at2(frag_index);
+    if (pval)
     {
-        pos = it->second;
+        pos = *pval;
         return true;
     }
     return false;
@@ -4260,6 +4283,42 @@ void BaseMolecule::removeBondsAlleneStereo(const Array<int>& indices)
 void BaseMolecule::buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_bonds_out)
 {
     allene_stereo.buildFromBonds(*this, ignore_errors, sensible_bonds_out);
+}
+
+void BaseMolecule::addCIP()
+{
+    MoleculeCIPCalculator mcc;
+    mcc.addCIPStereoDescriptors(*this);
+    have_cip = true;
+}
+
+void BaseMolecule::clearCIP()
+{
+    _cip_atoms.clear();
+    _cip_bonds.clear();
+    have_cip = false;
+}
+
+CIPDesc BaseMolecule::getAtomCIP(int atom_idx)
+{
+    auto* pval = _cip_atoms.at2(atom_idx);
+    return pval ? *pval : CIPDesc::NONE;
+}
+
+CIPDesc BaseMolecule::getBondCIP(int bond_idx)
+{
+    auto* pval = _cip_bonds.at2(bond_idx);
+    return pval ? *pval : CIPDesc::NONE;
+}
+
+void BaseMolecule::setAtomCIP(int atom_idx, CIPDesc cip)
+{
+    _cip_atoms.insert(atom_idx, cip);
+}
+
+void BaseMolecule::setBondCIP(int bond_idx, CIPDesc cip)
+{
+    _cip_bonds.insert(bond_idx, cip);
 }
 
 void BaseMolecule::getBoundingBox(Rect2f& bbox) const

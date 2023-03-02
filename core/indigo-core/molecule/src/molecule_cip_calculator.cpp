@@ -48,11 +48,11 @@ void MoleculeCIPCalculator::updateCIPStereoDescriptors(BaseMolecule& mol, bool a
     // add current stereo descriptors DAT S-groups
     if (add_stereo_desc)
     {
-        _addCIPStereoDescriptors(mol);
+        addCIPStereoDescriptors(mol);
     }
 }
 
-void MoleculeCIPCalculator::_addCIPStereoDescriptors(BaseMolecule& mol)
+void MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
 {
     QS_DEF(Array<CIPDesc>, atom_cip_desc);
     QS_DEF(Array<CIPDesc>, bond_cip_desc);
@@ -171,7 +171,20 @@ void MoleculeCIPCalculator::_addCIPStereoDescriptors(BaseMolecule& mol)
         _calcEZStereoDescriptor(mol, *unfolded_h_mol, i, bond_cip_desc);
     }
 
-    _addCIPSgroups(mol, atom_cip_desc, bond_cip_desc);
+    mol._cip_atoms.clear();
+    mol._cip_bonds.clear();
+
+    for (auto atom_idx = 0; atom_idx < atom_cip_desc.size(); ++atom_idx)
+    {
+        if (atom_cip_desc[atom_idx] > CIPDesc::UNKNOWN)
+            mol._cip_atoms.insert(atom_idx, atom_cip_desc[atom_idx]);
+    }
+
+    for (auto bond_idx = 0; bond_idx < bond_cip_desc.size(); ++bond_idx)
+    {
+        if (bond_cip_desc[bond_idx] != CIPDesc::NONE)
+            mol._cip_bonds.insert(bond_idx, bond_cip_desc[bond_idx]);
+    }
 }
 
 int MoleculeCIPCalculator::_getNumberOfStereoDescritors(const Array<CIPDesc>& atom_cip_desc)
@@ -185,59 +198,60 @@ int MoleculeCIPCalculator::_getNumberOfStereoDescritors(const Array<CIPDesc>& at
     return ndesc;
 }
 
-void MoleculeCIPCalculator::_addCIPSgroups(BaseMolecule& mol, Array<CIPDesc>& atom_cip_desc, Array<CIPDesc>& bond_cip_desc)
+void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
 {
     int sg_idx;
 
-    for (auto i : mol.vertices())
+    for (int i = mol._cip_atoms.begin(); i != mol._cip_atoms.end(); i = mol._cip_atoms.next(i))
     {
-        if (atom_cip_desc[i] > CIPDesc::UNKNOWN)
+        sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+        DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(sg_idx);
+        sgroup.atoms.push(mol._cip_atoms.key(i));
+
+        switch (mol._cip_atoms.value(i))
         {
-            sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
-            DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(sg_idx);
-
-            sgroup.atoms.push(i);
-
-            if (atom_cip_desc[i] == CIPDesc::R)
-                sgroup.data.readString("(R)", true);
-            else if (atom_cip_desc[i] == CIPDesc::S)
-                sgroup.data.readString("(S)", true);
-            else if (atom_cip_desc[i] == CIPDesc::r)
-                sgroup.data.readString("(r)", true);
-            else if (atom_cip_desc[i] == CIPDesc::s)
-                sgroup.data.readString("(s)", true);
-
-            sgroup.name.readString("INDIGO_CIP_DESC", true);
-            sgroup.display_pos.x = 0.0;
-            sgroup.display_pos.y = 0.0;
-            sgroup.detached = true;
-            sgroup.relative = true;
+        case CIPDesc::R:
+            sgroup.data.readString("(R)", true);
+            break;
+        case CIPDesc::S:
+            sgroup.data.readString("(S)", true);
+            break;
+        case CIPDesc::r:
+            sgroup.data.readString("(r)", true);
+            break;
+        case CIPDesc::s:
+            sgroup.data.readString("(s)", true);
+            break;
         }
+
+        sgroup.name.readString("INDIGO_CIP_DESC", true);
+        sgroup.display_pos.x = 0.0;
+        sgroup.display_pos.y = 0.0;
+        sgroup.detached = true;
+        sgroup.relative = true;
     }
 
-    for (auto i : mol.edges())
+    for (int i = mol._cip_bonds.begin(); i != mol._cip_bonds.end(); i = mol._cip_bonds.next(i))
     {
-        int beg = mol.getEdge(i).beg;
-        int end = mol.getEdge(i).end;
+        int bond_idx = mol._cip_bonds.key(i);
+        int beg = mol.getEdge(bond_idx).beg;
+        int end = mol.getEdge(bond_idx).end;
 
-        if (bond_cip_desc[i] != CIPDesc::NONE)
-        {
-            sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
-            DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(sg_idx);
+        sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+        DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(sg_idx);
 
-            sgroup.atoms.push(beg);
-            sgroup.atoms.push(end);
-            if (bond_cip_desc[i] == CIPDesc::E)
-                sgroup.data.readString("(E)", true);
-            else if (bond_cip_desc[i] == CIPDesc::Z)
-                sgroup.data.readString("(Z)", true);
+        sgroup.atoms.push(beg);
+        sgroup.atoms.push(end);
+        if (mol._cip_bonds.value(i) == CIPDesc::E)
+            sgroup.data.readString("(E)", true);
+        else if (mol._cip_bonds.value(i) == CIPDesc::Z)
+            sgroup.data.readString("(Z)", true);
 
-            sgroup.name.readString("INDIGO_CIP_DESC", true);
-            sgroup.display_pos.x = 0.0;
-            sgroup.display_pos.y = 0.0;
-            sgroup.detached = true;
-            sgroup.relative = true;
-        }
+        sgroup.name.readString("INDIGO_CIP_DESC", true);
+        sgroup.display_pos.x = 0.0;
+        sgroup.display_pos.y = 0.0;
+        sgroup.detached = true;
+        sgroup.relative = true;
     }
 }
 

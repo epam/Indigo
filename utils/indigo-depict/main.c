@@ -396,6 +396,7 @@ int parseParams(Params* p, int argc, char* argv[])
     indigoSetOptionBool("render-highlight-color-enabled", 1);
     indigoSetOption("render-superatom-mode", "collapse");
     indigoSetOptionBool("json-saving-pretty", 1);
+    indigoSetOptionBool("json-saving-add-stereo-desc", 1);
 
     for (; i < argc; i++)
     {
@@ -980,6 +981,25 @@ int main(int argc, char* argv[])
             else if (p.out_ext == OEXT_CDX || p.out_ext == OEXT_CDR)
             {
                 indigoSaveCdxToFile(obj, p.outfile);
+            }
+            else if (p.out_ext == OEXT_SMI)
+            {
+                char* pReaction;
+                if (p.query_set)
+                    pReaction = indigoSmarts(obj);
+                else
+                    pReaction = indigoSmiles(obj);
+                FILE* fp = fopen(p.outfile, "w+");
+                if (fp)
+                {
+                    fputs(pReaction, fp);
+                    fclose(fp);
+                }
+                else
+                {
+                    fprintf(stderr, "can not write: %s\n", p.outfile);
+                    return -1;
+                }
             }
             else
             {

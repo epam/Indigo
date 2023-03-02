@@ -27,6 +27,7 @@
 #include "common/math/algebra.h"
 #include "graph/graph.h"
 #include "reaction/base_reaction.h"
+#include "molecule/molecule_cip_calculator.h"
 
 namespace indigo
 {
@@ -42,8 +43,11 @@ namespace indigo
     const uint8_t KETReagentDownArea = 2;
     const uint8_t KETProductArea = 3;
 
-    const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"(R)", CIPDesc::R}, {"(S)", CIPDesc::R}, {"(r)", CIPDesc::r},
-                                                                   {"(s)", CIPDesc::s}, {"(E)", CIPDesc::E}, {"(Z)", CIPDesc::Z}};
+    const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"R", CIPDesc::R}, {"S", CIPDesc::R}, {"r", CIPDesc::r},
+                                                                   {"s", CIPDesc::s}, {"E", CIPDesc::E}, {"Z", CIPDesc::Z}};
+    const std::unordered_map<CIPDesc, std::string> KCIPToString = {{CIPDesc::R, "R"}, {CIPDesc::R, "S"}, {CIPDesc::r ,"r"},
+                                                                   {CIPDesc::s, "s"}, {CIPDesc::E, "E"}, {CIPDesc::Z, "Z"}};
+
     struct compareFunction
     {
         bool operator()(const std::pair<int, bool>& a, const std::pair<int, bool>& b) const
@@ -94,6 +98,18 @@ namespace indigo
             return std::string(dsg.name.ptr()) == "INDIGO_CIP_DESC";
         }
         return false;
+    }
+
+    inline void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)
+    {
+        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        {
+            SGroup& sgroup = mol.sgroups.getSGroup(i);
+            neighbors.push_back({});
+            auto& sg_set = neighbors.back();
+            for (auto atom_idx : sgroup.atoms)
+                sg_set.insert(atom_idx);
+        }
     }
 
     class KETSimpleObject : public MetaObject
