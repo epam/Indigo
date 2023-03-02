@@ -804,6 +804,38 @@ jobs:
           name: indigo-ketcher
           path: dist/indigo-ketcher*.tgz
 
+  build_indigo_ketcher_cjk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Install Emcripten SDK
+        uses: mymindstorm/setup-emsdk@v7
+      - name: Update version
+        run: |
+          cd api/wasm/indigo-ketcher
+          ver=$(git describe --abbrev=0 --tags --match "indigo-*")-$(git rev-list $(git describe --abbrev=0 --tags --match "indigo-*").. --count)
+          ver=$(echo $ver | sed 's/indigo-//g' | sed 's/-0//g')
+          npm version --allow-same-version ${ver}
+      - name: Build, Test, Pack
+        run: |
+          mkdir build
+          cd build
+          emcmake cmake .. -DCMAKE_BUILD_TYPE=Release -DRENDER_ENABLE_CJK=ON
+          cmake --build . --config Release --target indigo-ketcher-package -- -j $(nproc)
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-ketcher-cjk
+          path: dist/indigo-ketcher*.tgz
+
   build_indigo_utils_x86_64:
     strategy:
       fail-fast: false

@@ -118,7 +118,7 @@ void RenderContext::fontsSetFont(const TextItem& ti)
 {
     std::lock_guard<std::mutex> _lock(_cairo_mutex);
 
-    cairo_font_face_t* _cairo_face = _font_face_manager.selectCairoFontFace(ti.bold, ti.italic);
+    cairo_font_face_t* _cairo_face = _font_face_manager.selectCairoFontFace(ti);
     cairoCheckStatus();
 
     cairo_set_font_face(_cr, _cairo_face);
