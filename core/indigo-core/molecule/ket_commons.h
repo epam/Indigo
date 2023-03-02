@@ -26,8 +26,8 @@
 
 #include "common/math/algebra.h"
 #include "graph/graph.h"
-#include "reaction/base_reaction.h"
 #include "molecule/molecule_cip_calculator.h"
+#include "reaction/base_reaction.h"
 
 namespace indigo
 {
@@ -45,7 +45,7 @@ namespace indigo
 
     const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"R", CIPDesc::R}, {"S", CIPDesc::R}, {"r", CIPDesc::r},
                                                                    {"s", CIPDesc::s}, {"E", CIPDesc::E}, {"Z", CIPDesc::Z}};
-    const std::unordered_map<CIPDesc, std::string> KCIPToString = {{CIPDesc::R, "R"}, {CIPDesc::R, "S"}, {CIPDesc::r ,"r"},
+    const std::unordered_map<CIPDesc, std::string> KCIPToString = {{CIPDesc::R, "R"}, {CIPDesc::R, "S"}, {CIPDesc::r, "r"},
                                                                    {CIPDesc::s, "s"}, {CIPDesc::E, "E"}, {CIPDesc::Z, "Z"}};
 
     struct compareFunction
