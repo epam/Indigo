@@ -28,7 +28,7 @@ for filename in sorted(os.listdir(root)):
     )
     with open(ketfile, "r") as file:
         ket_ref = file.read()
-        diff = find_diff(ket_ref, mol.json())
+        diff = ket_ref != mol.json()
         if not diff:
             print(filename + ":SUCCEED")
         else:
@@ -43,7 +43,7 @@ rxn = indigo.loadReactionFromFile(
 ketfile = joinPathPy(os.path.join(ref_path, "crazystereo.ket"), __file__)
 with open(ketfile, "r") as file:
     ket_ref = file.read()
-    diff = find_diff(ket_ref, rxn.json())
+    diff = ket_ref != rxn.json()
     if not diff:
         print(filename + ":SUCCEED")
     else:
