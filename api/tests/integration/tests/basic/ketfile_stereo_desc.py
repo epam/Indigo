@@ -33,7 +33,11 @@ for filename in sorted(os.listdir(root)):
     )
     with open(ketfile, "r") as file:
         ket_ref = file.read()
-        diff = ket_ref != mol.json()
+        try:
+            diff = ket_ref != mol.json()
+        except:
+            print(e)
+            diff = "exception"
         if not diff:
             print(filename + ":SUCCEED")
         else:

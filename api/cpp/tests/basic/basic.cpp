@@ -48,7 +48,6 @@ TEST(Basic, Molfile)
     ASSERT_TRUE(molfile.rfind("M  END") != -1);
 }
 
-// TODO: This causes a memory leak that could be catched by Valgrind
 TEST(Basic, LoadQueryMolecule)
 {
     auto session = IndigoSession::create();
