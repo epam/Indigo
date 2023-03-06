@@ -20,9 +20,14 @@ root = joinPathPy("molecules/CIP/", __file__)
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
-indigo.setOption("json-saving-add-stereo-desc", "1")
+indigo.setOption("json-saving-add-stereo-desc", True)
+
 for filename in sorted(os.listdir(root)):
-    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
+    try:
+        mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
+    except Exception as e:
+        print(e)
+        continue
     ketfile = joinPathPy(
         os.path.join(ref_path, filename[:-4] + ".ket"), __file__
     )
@@ -37,9 +42,11 @@ for filename in sorted(os.listdir(root)):
 
 indigo.setOption("ignore-stereochemistry-errors", "true")
 filename = "crazystereo.rxn"
+
 rxn = indigo.loadReactionFromFile(
     os.path.join(joinPathPy("reactions/", __file__), filename)
 )
+
 ketfile = joinPathPy(os.path.join(ref_path, "crazystereo.ket"), __file__)
 with open(ketfile, "r") as file:
     ket_ref = file.read()
