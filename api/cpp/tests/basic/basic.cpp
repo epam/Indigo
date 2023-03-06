@@ -51,8 +51,10 @@ TEST(Basic, Molfile)
 // TODO: This causes a memory leak that could be catched by Valgrind
 TEST(Basic, LoadQueryMolecule)
 {
-    auto session = IndigoSession::create();
-    const auto& m_1 = session->loadQueryMolecule("* |$Q_e$|");
+    {
+        auto session = IndigoSession::create();
+        const auto& m_1 = session->loadQueryMolecule("* |$Q_e$|");
+    }
 }
 
 TEST(Basic, MolecularWeight)
