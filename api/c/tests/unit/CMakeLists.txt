@@ -3,6 +3,13 @@ cmake_minimum_required(VERSION 3.6)
 project(indigo-api-unit-tests LANGUAGES CXX)
 
 if (ENABLE_TESTS)
+    if(UNIX AND NOT APPLE)
+    #    commented out due to memory leaks
+    #    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fsanitize=leak -g")
+    #    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fsanitize=leak -g")
+    #    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address -fsanitize=leak")
+    #    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fsanitize=address -fsanitize=leak")
+    endif()
     set(DATA_PATH ${CMAKE_SOURCE_DIR}/data)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common.h.in ${CMAKE_CURRENT_BINARY_DIR}/common.h)
 
