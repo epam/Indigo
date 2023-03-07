@@ -2,8 +2,10 @@ import difflib
 import os
 import sys
 
+
 def find_diff(a, b):
     return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+
 
 sys.path.append(
     os.path.normpath(
@@ -12,7 +14,9 @@ sys.path.append(
 )
 
 from env_indigo import *
+
 threading.stack_size(2 * 1024 * 1024)
+
 
 def stereo_desc_test(py_file, out_queue):
     ref_path = joinPathPy("ref/", __file__)
@@ -24,7 +28,9 @@ def stereo_desc_test(py_file, out_queue):
 
     for filename in sorted(os.listdir(root)):
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
-        ketfile = joinPathPy(os.path.join(ref_path, filename[:-4] + ".ket"), __file__)
+        ketfile = joinPathPy(
+            os.path.join(ref_path, filename[:-4] + ".ket"), __file__
+        )
         with open(ketfile, "r") as file:
             ket_ref = file.read()
             diff = find_diff(ket_ref, mol.json())
@@ -37,7 +43,9 @@ def stereo_desc_test(py_file, out_queue):
     indigo.setOption("ignore-stereochemistry-errors", "true")
     filename = "crazystereo.rxn"
 
-    rxn = indigo.loadReactionFromFile(os.path.join(joinPathPy("reactions/", __file__), filename))
+    rxn = indigo.loadReactionFromFile(
+        os.path.join(joinPathPy("reactions/", __file__), filename)
+    )
 
     ketfile = joinPathPy(os.path.join(ref_path, "crazystereo.ket"), __file__)
     with open(ketfile, "r") as file:
@@ -48,6 +56,7 @@ def stereo_desc_test(py_file, out_queue):
         else:
             print(filename + ":FAILED")
             print(diff)
+
 
 if isJython():
     from Queue import Queue
@@ -60,5 +69,4 @@ test_thread = threading.Thread(
 )
 test_thread.start()
 test_thread.join()
-#print(th_queue.get())
-
+# print(th_queue.get())
