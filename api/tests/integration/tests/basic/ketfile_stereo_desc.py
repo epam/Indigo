@@ -19,6 +19,7 @@ threading.stack_size(2 * 1024 * 1024)
 
 
 def stereo_desc_test(py_file, out_queue):
+    str_res = ""
     ref_path = joinPathPy("ref/", __file__)
     root = joinPathPy("molecules/CIP/", __file__)
 
@@ -35,10 +36,10 @@ def stereo_desc_test(py_file, out_queue):
             ket_ref = file.read()
             diff = find_diff(ket_ref, mol.json())
             if not diff:
-                print(filename + ":SUCCEED")
+                str_res += filename + ":SUCCEED\n"
             else:
-                print(filename + ":FAILED")
-                print(diff)
+                str_res += filename + ":FAILED\n"
+                str_res += diff
 
     indigo.setOption("ignore-stereochemistry-errors", "true")
     filename = "crazystereo.rxn"
@@ -52,10 +53,11 @@ def stereo_desc_test(py_file, out_queue):
         ket_ref = file.read()
         diff = find_diff(ket_ref, rxn.json())
         if not diff:
-            print(filename + ":SUCCEED")
+            str_res += filename + ":SUCCEED\n"
         else:
-            print(filename + ":FAILED")
-            print(diff)
+            str_res += filename + ":FAILED\n"
+            str_res += diff + "\n"
+    out_queue.put(str_res)
 
 
 if isJython():
@@ -69,4 +71,4 @@ test_thread = threading.Thread(
 )
 test_thread.start()
 test_thread.join()
-# print(th_queue.get())
+print(th_queue.get())
