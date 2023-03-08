@@ -495,7 +495,7 @@ void SmilesLoader::_readOtherStuff()
                         {
                             if (label.size() == 2 && label[0] == 'Q')
                             {
-                                QueryMolecule::Atom* atom = _qmol->releaseAtom(i);
+                                std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(
                                     i, QueryMolecule::Atom::und(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
@@ -503,7 +503,7 @@ void SmilesLoader::_readOtherStuff()
                             }
                             else if (label.size() == 3 && label[0] == 'Q' && label[1] == 'H')
                             {
-                                QueryMolecule::Atom* atom = _qmol->releaseAtom(i);
+                                std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(i, QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
                             }
@@ -525,7 +525,7 @@ void SmilesLoader::_readOtherStuff()
                                 x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I));
                                 x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At));
 
-                                QueryMolecule::Atom* atom = _qmol->releaseAtom(i);
+                                std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(i, x_atom.release());
                             }
@@ -541,7 +541,7 @@ void SmilesLoader::_readOtherStuff()
                                 x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At));
                                 x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
 
-                                QueryMolecule::Atom* atom = _qmol->releaseAtom(i);
+                                std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(i, x_atom.release());
                             }
@@ -569,7 +569,7 @@ void SmilesLoader::_readOtherStuff()
                                 x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Rn)));
                                 x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
 
-                                QueryMolecule::Atom* atom = _qmol->releaseAtom(i);
+                                std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(i, x_atom.release());
                             }
@@ -596,15 +596,15 @@ void SmilesLoader::_readOtherStuff()
                                 x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Xe)));
                                 x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Rn)));
 
-                                QueryMolecule::Atom* atom = _qmol->releaseAtom(i);
+                                std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(i, x_atom.release());
                             }
                             else
                             {
-                                QueryMolecule::Atom* atom = _qmol->releaseAtom(i);
+                                std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
-                                _qmol->resetAtom(i, QueryMolecule::Atom::und(atom, new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                                _qmol->resetAtom(i, QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
                             }
                         }
                     }
