@@ -52,8 +52,8 @@ namespace indigo
         bool smart_layout = false;
         RENDER_MODE rmode;
 
-        BaseMolecule* mol;
-        BaseReaction* rxn;
+        std::unique_ptr<BaseMolecule> mol;
+        std::unique_ptr<BaseReaction> rxn;
 
         PtrArray<BaseMolecule> mols;
         PtrArray<BaseReaction> rxns;

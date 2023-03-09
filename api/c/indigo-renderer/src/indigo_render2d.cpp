@@ -488,18 +488,18 @@ CEXPORT int indigoRender(int object, int output)
         if (IndigoBaseMolecule::is(obj))
         {
             if (obj.getBaseMolecule().isQueryMolecule())
-                rp.mol = new QueryMolecule();
+                rp.mol.reset(new QueryMolecule());
             else
-                rp.mol = new Molecule();
+                rp.mol.reset(new Molecule());
             rp.mol->clone_KeepIndices(self.getObject(object).getBaseMolecule());
             rp.rmode = RENDER_MOL;
         }
         else if (IndigoBaseReaction::is(obj))
         {
             if (obj.getBaseReaction().isQueryReaction())
-                rp.rxn = new QueryReaction();
+                rp.rxn.reset(new QueryReaction());
             else
-                rp.rxn = new Reaction();
+                rp.rxn.reset(new Reaction());
             rp.rxn->clone(self.getObject(object).getBaseReaction(), 0, 0, 0);
             rp.rmode = RENDER_RXN;
         }
