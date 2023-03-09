@@ -33,31 +33,38 @@ def stereo_desc_test(py_file, out_queue):
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
         with open(ketfile, "r") as file:
             ket_ref = file.read()
-        mol_json_no_cip = mol.json();
+        mol_json_no_cip = mol.json()
         indigo.setOption("json-saving-add-stereo-desc", True)
         mol_json_cip = mol.json()
         diff = find_diff(ket_ref, mol_json_cip)
         if not diff:
             diff = find_diff(mol_json_no_cip, mol_json_cip)
             indigo.setOption("json-saving-add-stereo-desc", False)
-            mol = indigo.loadMoleculeFromFile(os.path.join(root, filename)) # reload to reset CIP
+            mol = indigo.loadMoleculeFromFile(
+                os.path.join(root, filename)
+            )  # reload to reset CIP
             if diff:
                 diff = find_diff(mol.json(), mol_json_no_cip)
                 if diff:
-                    str_res += "mismatch: json-saving-add-stereo-desc = false:\n"
+                    str_res += (
+                        "mismatch: json-saving-add-stereo-desc = false:\n"
+                    )
                 else:
                     # check conversion
                     indigo.setOption("molfile-saving-add-stereo-desc", True)
-                    mol_cip = indigo.loadMolecule( mol.molfile() ) # mol_cip should contain CIP as properties of atoms and bonds
-                    diff = find_diff(mol_cip.json(), mol_json_cip) # check if molecule has CIP
-                    if( diff ):
+                    mol_cip = indigo.loadMolecule(
+                        mol.molfile()
+                    )  # mol_cip should contain CIP as properties of atoms and bonds
+                    diff = find_diff(
+                        mol_cip.json(), mol_json_cip
+                    )  # check if molecule has CIP
+                    if diff:
                         str_res += "mismatch: molfile loader doesn't convert CIP SGroups:\n"
                     else:
                         str_res += filename + ":SUCCEED\n"
                         continue
             str_res += filename + ":FAILED\n"
             str_res += diff + "\n"
-
 
     indigo.setOption("ignore-stereochemistry-errors", "true")
     filename = "crazystereo.rxn"
