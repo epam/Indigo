@@ -155,8 +155,8 @@ void RenderParamCdxmlInterface::_renderRxns(RenderParams& params)
     if (params.rxns.size() != 0)
         for (int i = 0; i < params.rxns.size(); ++i)
             rxns.push(params.rxns[i]);
-    else if (params.rxn.get() != 0)
-        rxns.push(params.rxn.get());
+    else if (params.rxn)
+        rxns.push(params.rxn);
 
     for (int rxn_ind = 0; rxn_ind < rxns.size(); rxn_ind++)
     {
@@ -175,8 +175,8 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     if (params.mols.size() != 0)
         for (int i = 0; i < params.mols.size(); ++i)
             mols.push(params.mols[i]);
-    else if (params.mol.get() != 0)
-        mols.push(params.mol.get());
+    else if (params.mol)
+        mols.push(params.mol);
 
     Vec2f offset(0, 0);
     Array<float> column_widths;
