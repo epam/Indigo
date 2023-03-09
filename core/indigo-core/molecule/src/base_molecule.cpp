@@ -61,6 +61,12 @@ bool BaseMolecule::isQueryMolecule()
     return false;
 }
 
+void BaseMolecule::changed()
+{
+    if (have_cip)
+        clearCIP();
+}
+
 void BaseMolecule::clear()
 {
     have_xyz = false;
@@ -94,6 +100,7 @@ void BaseMolecule::clear()
     ignore_chem_templates = false;
     updateEditRevision();
     _meta.resetMetaData();
+    clearCIP();
 }
 
 bool BaseMolecule::hasCoord(BaseMolecule& mol)
@@ -4288,8 +4295,7 @@ void BaseMolecule::buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_
 void BaseMolecule::addCIP()
 {
     MoleculeCIPCalculator mcc;
-    mcc.addCIPStereoDescriptors(*this);
-    have_cip = true;
+    have_cip = mcc.addCIPStereoDescriptors(*this);
 }
 
 void BaseMolecule::clearCIP()
@@ -4314,11 +4320,13 @@ CIPDesc BaseMolecule::getBondCIP(int bond_idx)
 void BaseMolecule::setAtomCIP(int atom_idx, CIPDesc cip)
 {
     _cip_atoms.insert(atom_idx, cip);
+    have_cip = true;
 }
 
 void BaseMolecule::setBondCIP(int bond_idx, CIPDesc cip)
 {
     _cip_bonds.insert(bond_idx, cip);
+    have_cip = true;
 }
 
 void BaseMolecule::getBoundingBox(Rect2f& bbox) const

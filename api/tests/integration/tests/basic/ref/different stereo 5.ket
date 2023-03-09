@@ -32,7 +32,8 @@
                     3.563699960708618,
                     0.0
                 ],
-                "stereoLabel": "&1"
+                "stereoLabel": "&1",
+                "cip": "S"
             },
             {
                 "label": "C",
@@ -41,7 +42,8 @@
                     2.43969988822937,
                     0.0
                 ],
-                "stereoLabel": "&1"
+                "stereoLabel": "&1",
+                "cip": "S"
             },
             {
                 "label": "C",
@@ -108,7 +110,8 @@
                     3.919600009918213,
                     0.0
                 ],
-                "stereoLabel": "&1"
+                "stereoLabel": "&1",
+                "cip": "S"
             },
             {
                 "label": "O",

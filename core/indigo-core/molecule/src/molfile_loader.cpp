@@ -2097,6 +2097,8 @@ void MolfileLoader::_postLoad()
              _bmol->rgroups.getRGroup(i).occurrence.push((1 << 16) | 0xFFFF);
     */
     _bmol->have_xyz = true;
+    MoleculeCIPCalculator cip;
+    cip.convertSGroupsToCIP(*_bmol);
 }
 
 void MolfileLoader::_readRGroups2000()

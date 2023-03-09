@@ -37,7 +37,8 @@
                     5.301599979400635,
                     0.0
                 ],
-                "stereoLabel": "&1"
+                "stereoLabel": "&1",
+                "cip": "S"
             },
             {
                 "label": "N",
@@ -62,7 +63,8 @@
                     5.317200183868408,
                     0.0
                 ],
-                "stereoLabel": "&1"
+                "stereoLabel": "&1",
+                "cip": "S"
             },
             {
                 "label": "C",
@@ -170,7 +172,8 @@
                     3.4895999431610109,
                     0.0
                 ],
-                "stereoLabel": "&1"
+                "stereoLabel": "&1",
+                "cip": "S"
             },
             {
                 "label": "C",
@@ -187,7 +190,8 @@
                     4.008800029754639,
                     0.0
                 ],
-                "stereoLabel": "&1"
+                "stereoLabel": "&1",
+                "cip": "S"
             },
             {
                 "label": "C",

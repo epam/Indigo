@@ -19,6 +19,7 @@
 #pragma once
 
 #include <array>
+#include <unordered_map>
 
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
@@ -70,9 +71,13 @@ namespace indigo
     class DLLEXPORT MoleculeCIPCalculator
     {
     public:
-        void updateCIPStereoDescriptors(BaseMolecule& mol, bool add_stereo_desc);
-        void addCIPStereoDescriptors(BaseMolecule& mol);
+        bool addCIPStereoDescriptors(BaseMolecule& mol);
         void addCIPSgroups(BaseMolecule& mol);
+        void removeCIPSgroups(BaseMolecule& mol);
+        void convertSGroupsToCIP(BaseMolecule& mol);
+
+        const std::unordered_map<std::string, CIPDesc> KSGroupToCIP = {{"(R)", CIPDesc::R}, {"(S)", CIPDesc::S}, {"(r)", CIPDesc::r},
+                                                                       {"(s)", CIPDesc::s}, {"(E)", CIPDesc::E}, {"(Z)", CIPDesc::Z}};
 
     private:
         void _calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& atom_cip_desc, Array<int>& stereo_passed,

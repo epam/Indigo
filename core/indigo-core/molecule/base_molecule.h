@@ -120,6 +120,7 @@ namespace indigo
         virtual bool isQueryMolecule();
 
         void clear() override;
+        virtual void changed() override;
 
         // 'neu' means 'new' in German
         virtual BaseMolecule* neu() = 0;

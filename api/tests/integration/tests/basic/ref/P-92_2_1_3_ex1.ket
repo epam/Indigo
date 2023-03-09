@@ -16,7 +16,8 @@
                     -2.5481998920440676,
                     0.0
                 ],
-                "stereoLabel": "&1"
+                "stereoLabel": "&1",
+                "cip": "S"
             },
             {
                 "label": "C",

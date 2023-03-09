@@ -810,6 +810,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     break;
                 }
             }
+
             auto cip = mol.getAtomCIP(i);
             if (cip != CIPDesc::NONE)
             {
@@ -820,6 +821,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     writer.String(cip_it->second.c_str());
                 }
             }
+
             writer.EndObject();
         }
     }
@@ -860,10 +862,11 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
 
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 {
+    if (add_stereo_desc)
+        bmol.addCIP();
+
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
-    if (add_stereo_desc)
-        mol->addCIP();
 
     if (!BaseMolecule::hasCoord(*mol))
     {
@@ -938,6 +941,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
         if (component->vertexCount())
         {
+            //  if (add_stereo_desc)
+            //    component->addCIP();
+
             std::string mol_node = std::string("mol") + std::to_string(idx);
             writer.Key(mol_node.c_str());
             writer.StartObject();

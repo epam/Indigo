@@ -36,7 +36,8 @@
                     -7.596099853515625,
                     0.0
                 ],
-                "stereoLabel": "abs"
+                "stereoLabel": "abs",
+                "cip": "S"
             },
             {
                 "label": "C",
@@ -87,7 +88,8 @@
                     -6.286099910736084,
                     0.0
                 ],
-                "stereoLabel": "abs"
+                "stereoLabel": "abs",
+                "cip": "S"
             },
             {
                 "label": "C",
@@ -218,7 +220,8 @@
                     -7.226099967956543,
                     0.0
                 ],
-                "stereoLabel": "abs"
+                "stereoLabel": "abs",
+                "cip": "S"
             },
             {
                 "label": "O",
@@ -307,7 +310,8 @@
                     -6.836100101470947,
                     0.0
                 ],
-                "stereoLabel": "abs"
+                "stereoLabel": "abs",
+                "cip": "S"
             },
             {
                 "label": "C",
