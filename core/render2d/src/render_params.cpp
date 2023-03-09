@@ -54,7 +54,6 @@ RenderParams::RenderParams()
 
 RenderParams::~RenderParams()
 {
-
 }
 
 void RenderParams::clearArrays()
