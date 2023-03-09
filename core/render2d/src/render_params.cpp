@@ -63,10 +63,6 @@ void RenderParams::clearArrays()
     rxns.clear();
     titles.clear();
     refAtoms.clear();
-    if (mol)
-        delete mol;
-    if (rxn)
-        delete rxn;
     mol = nullptr;
     rxn = nullptr;
 }
