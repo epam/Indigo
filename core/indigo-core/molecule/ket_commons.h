@@ -26,6 +26,7 @@
 
 #include "common/math/algebra.h"
 #include "graph/graph.h"
+#include "molecule/molecule_cip_calculator.h"
 #include "reaction/base_reaction.h"
 
 namespace indigo
@@ -41,6 +42,11 @@ namespace indigo
     const uint8_t KETReagentUpArea = 1;
     const uint8_t KETReagentDownArea = 2;
     const uint8_t KETProductArea = 3;
+
+    const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"R", CIPDesc::R}, {"S", CIPDesc::S}, {"r", CIPDesc::r},
+                                                                   {"s", CIPDesc::s}, {"E", CIPDesc::E}, {"Z", CIPDesc::Z}};
+    const std::unordered_map<int, std::string> KCIPToString = {{(int)CIPDesc::R, "R"}, {(int)CIPDesc::S, "S"}, {(int)CIPDesc::r, "r"},
+                                                               {(int)CIPDesc::s, "s"}, {(int)CIPDesc::E, "E"}, {(int)CIPDesc::Z, "Z"}};
 
     struct compareFunction
     {
@@ -82,6 +88,16 @@ namespace indigo
             bit_mask |= KETReagentDownArea;
 
         return bit_mask;
+    }
+
+    inline bool isCIPSGroup(SGroup& sgroup)
+    {
+        if (sgroup.sgroup_type == SGroup::SG_DATA)
+        {
+            auto& dsg = (DataSGroup&)sgroup;
+            return std::string(dsg.name.ptr()) == "INDIGO_CIP_DESC";
+        }
+        return false;
     }
 
     inline void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)

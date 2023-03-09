@@ -148,7 +148,11 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
     }
 
     MoleculeCIPCalculator mcc;
-    mcc.updateCIPStereoDescriptors(mol, add_stereo_desc);
+    if (add_stereo_desc && mcc.addCIPStereoDescriptors(mol))
+    {
+        mcc.removeCIPSgroups(mol); // remove old CIP-Sroups
+        mcc.addCIPSgroups(mol);
+    }
 
     if (_v2000)
     {

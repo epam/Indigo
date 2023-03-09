@@ -75,6 +75,7 @@ Graph::~Graph()
 
 int Graph::addVertex()
 {
+    changed();
     return _vertices->add(*_neighbors_pool);
 }
 
@@ -144,7 +145,7 @@ int Graph::addEdge(int beg, int end)
     _topology_valid = false;
     _sssr_valid = false;
     _components_valid = false;
-
+    changed();
     return edge_idx;
 }
 
@@ -169,6 +170,7 @@ void Graph::removeEdge(int idx)
     _topology_valid = false;
     _sssr_valid = false;
     _components_valid = false;
+    changed();
 }
 
 void Graph::removeAllEdges()
@@ -180,6 +182,7 @@ void Graph::removeAllEdges()
     _topology_valid = false;
     _sssr_valid = false;
     _components_valid = false;
+    changed();
 }
 
 void Graph::removeVertex(int idx)
@@ -203,6 +206,7 @@ void Graph::removeVertex(int idx)
     _topology_valid = false;
     _sssr_valid = false;
     _components_valid = false;
+    changed();
 }
 
 const Vertex& Graph::getVertex(int idx) const
@@ -296,6 +300,10 @@ EdgesAuto Graph::edges()
     return EdgesAuto(*this);
 }
 
+void Graph::changed()
+{
+}
+
 void Graph::clear()
 {
     _vertices->clear();
@@ -303,6 +311,7 @@ void Graph::clear()
     _topology_valid = false;
     _sssr_valid = false;
     _components_valid = false;
+    changed();
 }
 
 bool Graph::isChain_AssumingConnected(const Graph& graph)

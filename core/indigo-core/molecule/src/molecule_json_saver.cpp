@@ -437,6 +437,18 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 writer.Key("stereo");
                 writer.Uint(stereo);
             }
+
+            auto cip = mol.getBondCIP(i);
+            if (cip != CIPDesc::NONE)
+            {
+                auto cip_it = KCIPToString.find((int)cip);
+                if (cip_it != KCIPToString.end())
+                {
+                    writer.Key("cip");
+                    writer.String(cip_it->second.c_str());
+                }
+            }
+
             writer.EndObject();
         }
     }
@@ -798,6 +810,18 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     break;
                 }
             }
+
+            auto cip = mol.getAtomCIP(i);
+            if (cip != CIPDesc::NONE)
+            {
+                auto cip_it = KCIPToString.find((int)cip);
+                if (cip_it != KCIPToString.end())
+                {
+                    writer.Key("cip");
+                    writer.String(cip_it->second.c_str());
+                }
+            }
+
             writer.EndObject();
         }
     }
@@ -838,11 +862,11 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
 
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 {
+    if (add_stereo_desc)
+        bmol.addCIP();
+
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
-
-    MoleculeCIPCalculator mcc;
-    mcc.updateCIPStereoDescriptors(*mol, add_stereo_desc);
 
     if (!BaseMolecule::hasCoord(*mol))
     {

@@ -141,6 +141,7 @@ namespace indigo
         EdgesAuto edges();
 
         virtual void clear();
+        virtual void changed();
 
         const Vertex& getVertex(int idx) const;
 

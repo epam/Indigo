@@ -54,7 +54,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
-    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
+    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false),
+      skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0)
 {
 }
 
@@ -487,6 +488,14 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             sgroup.display_pos.x = mol.getAtomXyz(atom_idx).x;
             sgroup.display_pos.y = mol.getAtomXyz(atom_idx).y;
         }
+
+        if (a.HasMember("cip"))
+        {
+            std::string cip = a["cip"].GetString();
+            auto cip_it = KStringToCIP.find(cip);
+            if (cip_it != KStringToCIP.end())
+                mol.setAtomCIP(atom_idx, cip_it->second);
+        }
     }
 
     if (_pqmol)
@@ -583,6 +592,15 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                     break;
                 }
             }
+
+            if (b.HasMember("cip"))
+            {
+                std::string cip = b["cip"].GetString();
+                auto cip_it = KStringToCIP.find(cip);
+                if (cip_it != KStringToCIP.end())
+                    mol.setBondCIP(bond_idx, cip_it->second);
+            }
+
             if (rcenter)
             {
                 mol.reaction_bond_reacting_center[i] = rcenter;
