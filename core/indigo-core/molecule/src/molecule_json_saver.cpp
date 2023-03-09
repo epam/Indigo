@@ -941,9 +941,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
         if (component->vertexCount())
         {
-            //  if (add_stereo_desc)
-            //    component->addCIP();
-
             std::string mol_node = std::string("mol") + std::to_string(idx);
             writer.Key(mol_node.c_str());
             writer.StartObject();
