@@ -54,6 +54,7 @@ RenderParams::RenderParams()
 
 RenderParams::~RenderParams()
 {
+
 }
 
 void RenderParams::clearArrays()
@@ -62,6 +63,12 @@ void RenderParams::clearArrays()
     rxns.clear();
     titles.clear();
     refAtoms.clear();
+    if (mol)
+        delete mol;
+    if (rxn)
+        delete rxn;
+    mol = nullptr;
+    rxn = nullptr;
 }
 
 void RenderParams::clear()
@@ -69,8 +76,6 @@ void RenderParams::clear()
     relativeThickness = 1.0f;
     bondLineWidthFactor = 1.0f;
     rmode = RENDER_NONE;
-    mol.reset(nullptr);
-    rxn.reset(nullptr);
     rOpt.clear();
     cnvOpt.clear();
     clearArrays();
