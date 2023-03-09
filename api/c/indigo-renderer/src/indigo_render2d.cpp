@@ -33,7 +33,7 @@
 #include "indigo_renderer_internal.h"
 #include "option_manager.h"
 
-//#define INDIGO_DEBUG
+// #define INDIGO_DEBUG
 
 #ifdef INDIGO_DEBUG
 #include <iostream>
@@ -488,9 +488,9 @@ CEXPORT int indigoRender(int object, int output)
         if (IndigoBaseMolecule::is(obj))
         {
             if (obj.getBaseMolecule().isQueryMolecule())
-                rp.mol = std::make_unique<QueryMolecule>();
+                rp.mol.reset(new QueryMolecule());
             else
-                rp.mol = std::make_unique<Molecule>();
+                rp.mol.reset(new Molecule());
             rp.mol->clone_KeepIndices(self.getObject(object).getBaseMolecule());
             rp.rmode = RENDER_MOL;
         }
