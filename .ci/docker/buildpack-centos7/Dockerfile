@@ -8,7 +8,7 @@ RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
 RUN yum update -y
 RUN yum install -y devtoolset-${DEVTOOLSET_VERSION}-gcc-c++ devtoolset-${DEVTOOLSET_VERSION}-libasan-devel devtoolset-${DEVTOOLSET_VERSION}-liblsan-devel freetype-devel fontconfig-devel make python3 rh-git${GIT_VERSION}
 RUN yum clean -y all
-RUN echo $'leak:libfontconfig\nleak:glibc\n' >> /opt/external.supp
+RUN echo $'leak:libfontconfig\nleak:libc\n' >> /opt/external.supp
 
 # Enable the SCL for all bash scripts.
 ENV MANPATH=/opt/rh/rh-git${GIT_VERSION}/root/usr/share/man:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/share/man \

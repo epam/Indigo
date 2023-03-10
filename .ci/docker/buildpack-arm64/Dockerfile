@@ -26,7 +26,8 @@ RUN apt update && \
         libfontconfig1-dev:arm64 \
         libfreetype6-dev:arm64 \
         make \
-        qemu-user-static
+        qemu-user-static \
+        liblsan0
 
 ENV CC=aarch64-linux-gnu-gcc-5
 ENV CXX=aarch64-linux-gnu-g++-5
