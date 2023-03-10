@@ -1082,7 +1082,7 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
 
 void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 {
-    _handleCIP( mol );
+    _handleCIP(mol);
     QueryMolecule* qmol = 0;
 
     if (query)
