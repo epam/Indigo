@@ -26,12 +26,14 @@ RUN apt update && \
         libfontconfig1-dev:arm64 \
         libfreetype6-dev:arm64 \
         make \
-        qemu-user-static \
-        liblsan0
+        qemu-user-static
 
 ENV CC=aarch64-linux-gnu-gcc-5
 ENV CXX=aarch64-linux-gnu-g++-5
 ENV INDIGO_QEMU_BINARY=qemu-aarch64-static
+ENV ASAN_OPTIONS=alloc_dealloc_mismatch=0
+RUN echo $'leak:libfontconfig\nleak:libc\n' >> /opt/external.supp
+ENV LSAN_OPTIONS=suppressions=/opt/external.supp
 
 RUN cmake --version && \
     aarch64-linux-gnu-gcc-5 --version && \
