@@ -48,8 +48,8 @@ files = [
 files.sort()
 for filename in files:
     rc = indigo.loadReactionFromFile(os.path.join(root_rea, filename + ".ket"))
-    with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
-        file.write(rc.rxnfile())
+    with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
+        ket_ref = file.read()
     ket = rc.rxnfile()
     diff = find_diff(ket_ref, ket)
     if not diff:
