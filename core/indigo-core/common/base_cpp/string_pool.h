@@ -20,8 +20,8 @@
 #define __string_pool_h__
 
 #include "base_cpp/auto_iter.h"
-#include "base_cpp/pool.h"
 #include "base_cpp/obj_array.h"
+#include "base_cpp/pool.h"
 
 #ifdef _WIN32
 #pragma warning(push)
