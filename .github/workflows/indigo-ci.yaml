@@ -1135,10 +1135,10 @@ jobs:
           name: bingo-sqlserver-${{ matrix.os }}-x86_64
           path: dist/bingo-sqlserver*.zip
 
-  publish_indigo:
+  publish_indigo_to_pypi:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
-    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64]
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -1162,30 +1162,76 @@ jobs:
         with:
           name: indigo-python
           path: dist/
-      - name: Download .NET nupkg
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-dotnet
-          path: dist/
       - name: Download bingo-elastic-python
         uses: actions/download-artifact@v2
         with:
           name: bingo-elastic-python
-          path: dist/
-      - name: Download indigo-ketcher NPM package
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-ketcher
           path: dist/
       - name: Publish Python wheels to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
              twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*.whl
+
+  publish_indigo_to_nuget:
+    if: startsWith(github.ref, 'refs/tags/indigo-')
+    runs-on: ubuntu-latest
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir -p dist/lib
+      - name: Download native shared libraries
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-native-shared-libs
+          path: dist/lib
+      - name: Download .NET nupkg
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-dotnet
+          path: dist/
       - name: Publish .NET nupkg to Nuget
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: dotnet nuget push dist/*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+  publish_indigo_to_npm:
+    if: startsWith(github.ref, 'refs/tags/indigo-')
+    runs-on: ubuntu-latest
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir -p dist/lib
+      - name: Download native shared libraries
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-native-shared-libs
+          path: dist/lib
+      - name: Download indigo-ketcher NPM package
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-ketcher
+          path: dist/
       - name: Publish indigo-ketcher to NPM
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -1195,6 +1241,29 @@ jobs:
           echo email=${NPM_EMAIL} >> ~/.npmrc
           echo always-auth=true >> ~/.npmrc
           npm publish ./dist/indigo-ketcher-*.tgz
+
+  publish_indigo_to_maven:
+    if: startsWith(github.ref, 'refs/tags/indigo-')
+    runs-on: ubuntu-latest
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir -p dist/lib
+      - name: Download native shared libraries
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-native-shared-libs
+          path: dist/lib
       - name: Publish Java jars to Maven Central
         env:
           MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
