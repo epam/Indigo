@@ -149,20 +149,11 @@ void RenderParamCdxmlInterface::render(RenderParams& params)
 void RenderParamCdxmlInterface::_renderRxns(RenderParams& params)
 {
     ReactionCdxmlSaver saver(*params.rOpt.output);
-
-    Array<BaseReaction*> rxns;
-
     if (params.rxns.size() != 0)
         for (int i = 0; i < params.rxns.size(); ++i)
-            rxns.push(params.rxns[i]);
-    else if (params.rxn.get() != 0)
-        rxns.push(params.rxn.get());
-
-    for (int rxn_ind = 0; rxn_ind < rxns.size(); rxn_ind++)
-    {
-        BaseReaction& rxn = (BaseReaction&)*rxns[rxn_ind];
-        saver.saveReaction(rxn);
-    }
+            saver.saveReaction(*params.rxns[i]);
+    else if (params.rxn)
+        saver.saveReaction(*params.rxn);
 }
 
 void RenderParamCdxmlInterface::_renderMols(RenderParams& params)

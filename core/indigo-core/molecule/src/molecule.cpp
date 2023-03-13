@@ -33,10 +33,6 @@ Molecule::Molecule()
     _ignore_bad_valence = false;
 }
 
-Molecule::~Molecule()
-{
-}
-
 Molecule& Molecule::asMolecule()
 {
     return *this;
