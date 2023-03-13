@@ -95,6 +95,17 @@ void MolfileSaver::saveQueryMolecule(QueryMolecule& mol)
     _saveMolecule(mol, true);
 }
 
+void MolfileSaver::_handleCIP(BaseMolecule& mol)
+{
+    MoleculeCIPCalculator mcc;
+    mcc.removeCIPSgroups(mol); // remove old CIP-Sroups
+
+    if (add_stereo_desc && mcc.addCIPStereoDescriptors(mol))
+    {
+        mcc.addCIPSgroups(mol);
+    }
+}
+
 void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
 {
     LocaleGuard locale_guard;
@@ -146,9 +157,6 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
         _output.writeStringCR("$END HDR");
         _output.writeStringCR("$CTAB");
     }
-
-    MoleculeCIPCalculator mcc;
-    mcc.updateCIPStereoDescriptors(mol, add_stereo_desc);
 
     if (_v2000)
     {
@@ -338,6 +346,7 @@ void MolfileSaver::_writeMultiString(Output& output, const char* string, int len
 
 void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 {
+    _handleCIP(mol);
     QueryMolecule* qmol = 0;
 
     if (query)
@@ -1073,6 +1082,7 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
 
 void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 {
+    _handleCIP(mol);
     QueryMolecule* qmol = 0;
 
     if (query)
