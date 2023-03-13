@@ -68,7 +68,7 @@ namespace indigo
         friend class MoleculeCIPCalculator;
 
         void _saveMolecule(BaseMolecule& mol, bool query);
-
+        void _handleCIP(BaseMolecule& mol);
         void _writeHeader(BaseMolecule& mol, Output& output, bool zcoord);
         void _writeCtabHeader(Output& output);
         void _writeAtomLabel(Output& output, int label);
