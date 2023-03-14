@@ -152,7 +152,7 @@
                     0.0,
                     0.0
                 ],
-                "hImpCount": 1
+                "implicitHCount": 1
             },
             {
                 "label": "C",

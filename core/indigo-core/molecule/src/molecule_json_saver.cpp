@@ -752,7 +752,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             {
                 if (Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
                 {
-                    writer.Key("hImpCount");
+                    writer.Key("implicitHCount");
                     writer.Int(hcount);
                 }
             }

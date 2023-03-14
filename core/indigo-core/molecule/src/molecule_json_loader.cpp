@@ -413,12 +413,12 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             hcounts[atom_idx] = a["hCount"].GetInt();
         }
 
-        if (a.HasMember("hImpCount"))
+        if (a.HasMember("implicitHCount"))
         {
             if (_pmol)
-                _pmol->setImplicitH(atom_idx, a["hImpCount"].GetInt());
+                _pmol->setImplicitH(atom_idx, a["implicitHCount"].GetInt());
             else
-                throw Error("hImpCount is allowed only for molecules");
+                throw Error("implicitHCount is allowed only for molecules");
         }
 
         if (a.HasMember("invRet"))
