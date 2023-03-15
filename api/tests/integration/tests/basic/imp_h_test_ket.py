@@ -10,7 +10,9 @@ sys.path.append(
 from env_indigo import *  # noqa
 
 indigo = Indigo()
-mol = indigo.loadMolecule(indigo.loadMolecule("c1cccc(-c2ccc(Nc3cccc4c(=O)[nH]ccc34)nc2)c1").json())
+mol = indigo.loadMolecule(
+    indigo.loadMolecule("c1cccc(-c2ccc(Nc3cccc4c(=O)[nH]ccc34)nc2)c1").json()
+)
 print(mol.smiles())
 mol.dearomatize()
 s = ""
