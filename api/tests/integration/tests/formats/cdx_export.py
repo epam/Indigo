@@ -35,12 +35,12 @@ for filename in files:
             os.path.join(root, filename + ".mol")
         )
         resb64 = mol.b64cdx()
-#        with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-#            data = file.write(resb64)
+#       with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+#           data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
-        indigo.loadMolecule(resb64)
         print(filename + (":success" if refb64 == resb64 else ":failed"))
+        indigo.loadMolecule(resb64)
     except IndigoException as e:
         print(getIndigoExceptionText(e))
         print("*** Try as Query ***")
