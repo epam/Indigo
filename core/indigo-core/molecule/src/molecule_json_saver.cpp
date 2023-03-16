@@ -715,6 +715,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             int mapping = mol.reaction_atom_mapping[i];
             int inv_ret = mol.reaction_atom_inversion[i];
             bool ecflag = mol.reaction_atom_exact_change[i];
+            int hcount = MoleculeSavers::getHCount(mol, i, anum, charge);
 
             if (_pqmol)
             {
@@ -737,7 +738,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     writer.Bool(true);
                 }
 
-                int hcount = MoleculeSavers::getHCount(mol, i, anum, charge);
                 if (hcount == -1)
                     hcount = 0;
                 else
@@ -745,6 +745,14 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 if (hcount > 0)
                 {
                     writer.Key("hCount");
+                    writer.Int(hcount);
+                }
+            }
+            else
+            {
+                if (Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
+                {
+                    writer.Key("implicitHCount");
                     writer.Int(hcount);
                 }
             }
