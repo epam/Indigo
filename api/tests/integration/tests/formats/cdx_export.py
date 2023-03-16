@@ -35,8 +35,8 @@ for filename in files:
             os.path.join(root, filename + ".mol")
         )
         resb64 = mol.b64cdx()
-#        with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-#            data = file.write(resb64)
+        #        with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        #            data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
         indigo.loadMolecule(resb64)
@@ -48,17 +48,15 @@ for filename in files:
             os.path.join(root, filename + ".mol")
         )
         resb64 = mol.b64cdx()
-#        with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-#            data = file.write(resb64)
+        #        with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        #            data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
         indigo.loadQueryMolecule(resb64)
         print(filename + (":success" if refb64 == resb64 else ":failed"))
 
 root = joinPathPy("reactions/", __file__)
-files = [
-    "agents",
-]
+files = ["agents"]
 
 files.sort()
 
@@ -68,8 +66,8 @@ for filename in files:
             os.path.join(root, filename + ".ket")
         )
         resb64 = rea.b64cdx()
-#        with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-#            data = file.write(resb64)
+        #        with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        #            data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
         indigo.loadReaction(resb64)
@@ -81,8 +79,8 @@ for filename in files:
             os.path.join(root, filename + ".ket")
         )
         resb64 = rea.b64cdx()
-#        with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-#            data = file.write(resb64)
+        #        with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        #            data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
         indigo.loadQueryReaction(resb64)
