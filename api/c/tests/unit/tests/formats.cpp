@@ -247,7 +247,6 @@ TEST_F(IndigoApiFormatsTest, cdx)
     }
 }
 
-
 TEST_F(IndigoApiFormatsTest, fromGzFile)
 {
     try
