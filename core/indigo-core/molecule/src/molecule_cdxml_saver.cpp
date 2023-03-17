@@ -122,6 +122,12 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
         case kCDXProp_Arrow_Type:
             val = kCDXProp_Arrow_TypeStrToID.at(pAttr->Value());
             break;
+        case kCDXProp_Atom_Geometry:
+            val = KGeometryTypeNameToInt.at(pAttr->Value());
+            break;
+        case kCDXProp_Atom_EnhancedStereoType:
+            val = (int)kCDXEnhancedStereoStrToID.at(pAttr->Value());
+            break;
         default:
             val = pAttr->IntValue();
             break;
@@ -157,6 +163,9 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
         case kCDXProp_Arrow_ArrowHead_Head:
         case kCDXProp_Arrow_ArrowHead_Tail:
             val = kCDXProp_Arrow_ArrowHeadStrToInt.at(pAttr->Value());
+            break;
+        case kCDXProp_Bond_Display:
+            val = kCDXProp_Bond_DisplayStrToID.at(pAttr->Value());
             break;
         }
 
@@ -642,16 +651,16 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
             break;
         case MoleculeStereocenters::ATOM_OR:
             node->SetAttribute("EnhancedStereoType", "Or");
+            node->SetAttribute("EnhancedStereoGroupNum", enh_stereo_grp);
             break;
         case MoleculeStereocenters::ATOM_AND:
             node->SetAttribute("EnhancedStereoType", "And");
+            node->SetAttribute("EnhancedStereoGroupNum", enh_stereo_grp);
             break;
         default:
             throw Error("Unknows enhanced stereo type %d", enh_stereo_type);
             break;
         }
-        if (enh_stereo_grp > 0)
-            node->SetAttribute("EnhancedStereoGroupNum", enh_stereo_grp);
     }
 
     if (mol.getVertex(atom_idx).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)
@@ -1324,10 +1333,11 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                 }
                 second_index = kvp.first;
 
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
+                // std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
+                // std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
 
-                auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
+                // auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
+                auto sub_text = text_item.text.substr(first_index, second_index - first_index);
                 for (const auto& text_style : current_styles)
                 {
                     switch (text_style.first)
@@ -1707,8 +1717,8 @@ void MoleculeCdxmlSaver::endDocument()
 
 int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule& mol, int idx, int charge, int radical)
 {
-    int h;
-    int val, chg, rad;
+    int h = 0;
+    int val = 0, chg = 0, rad = 0;
 
     if (!mol.isQueryMolecule())
         h = mol.asMolecule().getImplicitH(idx);

@@ -521,6 +521,8 @@ namespace indigo
             case kCDXProp_Node_LabelDisplay:
             case kCDXProp_LabelAlignment:
                 return std::string(kLabelAlignmentIntTostr.at(val));
+            case kCDXProp_Atom_Geometry:
+                return std::string(KGeometryTypeIntToName.at(val));
             default:
                 break;
             }
@@ -586,7 +588,7 @@ namespace indigo
                     ptr += sizeof(uint32_t); // skip tag and id to enter inside the current object
                     ptr16 = (uint16_t*)ptr;
                 }
-                if (*ptr16 < kCDXTag_Object)
+                if (tag || *ptr16 < kCDXTag_Object)
                 {
                     auto sz = *(ptr16 + 1); // property size
                     return CDXProperty(ptr16, sz + sizeof(uint16_t) * 2, tag, _style_index,
@@ -896,7 +898,6 @@ namespace indigo
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
-        bool _has_bounding_box;
         Rect2f cdxml_bbox;
         AutoInt cdxml_bond_length;
         std::vector<CdxmlNode> nodes;
@@ -907,7 +908,6 @@ namespace indigo
         static const int SCALE = 30;
 
     protected:
-        const tinyxml2::XMLNode* _fragment;
         void _initMolecule(BaseMolecule& mol);
         void _parseCollections(BaseMolecule& mol);
         void _checkFragmentConnection(int node_id, int bond_id);
@@ -948,10 +948,10 @@ namespace indigo
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
 
-        float _bond_length;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         Scanner& _scanner;
         bool _is_binary;
+        bool _has_bounding_box;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy

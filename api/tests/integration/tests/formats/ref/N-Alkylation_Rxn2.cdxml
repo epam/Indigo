@@ -398,14 +398,10 @@
         </fragment>
         <t id="115" p="393.644958 47.459999" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2 equiv</s>
-        </t>
-        <t id="115" p="393.644958 47.459999" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">K2CO3</s>
         </t>
         <t id="118" p="393.644958 62.399998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">0.2 equiv</s>
-        </t>
-        <t id="118" p="393.644958 62.399998" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0"> TBAI</s>
         </t>
         <t id="121" p="393.644958 99.419998" Justification="Left" InterpretChemically="no">
@@ -444,30 +440,16 @@
         <graphic id="154" BoundingBox="190.029999 79.035004 190.029999 71.535004" GraphicType="Symbol" SymbolType="Plus"/>
         <t id="157" p="263.479980 118.369995" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">(4-(</s>
-        </t>
-        <t id="157" p="263.479980 118.369995" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="157" p="263.479980 118.369995" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)phenyl)methanamine</s>
+            <s font="4" size="9.33333" face="1">-butyl)phenyl)methanamine</s>
         </t>
         <t id="160" p="552.894958 118.369995" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">N</s>
-        </t>
-        <t id="160" p="552.894958 118.369995" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-(4-(</s>
-        </t>
-        <t id="160" p="552.894958 118.369995" Justification="Left" InterpretChemically="no">
+            <s font="4" size="9.33333" face="1">-(4-(</s>
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="160" p="552.894958 118.369995" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)benzyl)-2-(</s>
-        </t>
-        <t id="160" p="552.894958 118.369995" Justification="Left" InterpretChemically="no">
+            <s font="4" size="9.33333" face="1">-butyl)benzyl)-2-(</s>
             <s font="4" size="9.33333" face="3">p</s>
-        </t>
-        <t id="160" p="552.894958 118.369995" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-tolyl)ethan-1-amine</s>
+            <s font="4" size="9.33333" face="1">-tolyl)ethan-1-amine</s>
         </t>
         <t id="163" p="84.284996 424.915009" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">[additive]</s>
