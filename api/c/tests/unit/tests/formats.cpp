@@ -226,6 +226,28 @@ TEST_F(IndigoApiFormatsTest, fromFile)
     }
 }
 
+TEST_F(IndigoApiFormatsTest, cdx)
+{
+    try
+    {
+        int obj = -1;
+        obj = indigoLoadMoleculeFromFile(dataPath("molecules/stereo/enhanced_stereo1.mol").c_str());
+        const char* ptr = indigoCdxBase64(obj);
+        indigoLoadMoleculeFromString(ptr);
+        obj = indigoLoadMoleculeFromFile(dataPath("molecules/stereo/enhanced_stereo2.mol").c_str());
+        ptr = indigoCdxBase64(obj);
+        indigoLoadMoleculeFromString(ptr);
+        obj = indigoLoadMoleculeFromFile(dataPath("molecules/stereo/enhanced_stereo3.mol").c_str());
+        ptr = indigoCdxBase64(obj);
+        indigoLoadMoleculeFromString(ptr);
+    }
+    catch (Exception& e)
+    {
+        ASSERT_STREQ("", e.message());
+    }
+}
+
+
 TEST_F(IndigoApiFormatsTest, fromGzFile)
 {
     try

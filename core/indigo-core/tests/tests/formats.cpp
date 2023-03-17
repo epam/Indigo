@@ -112,3 +112,4 @@ TEST_F(IndigoCoreFormatsTest, save_cml)
 
     ASSERT_TRUE(out.size() > 1000);
 }
+
