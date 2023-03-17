@@ -195,7 +195,6 @@ CEXPORT const char* indigoToBase64String(int handle)
 
         auto& tmp = self.getThreadTmpData();
         obj.toBase64String(tmp.string);
-        tmp.string.push(0);
         return tmp.string.ptr();
     }
     INDIGO_END(0);

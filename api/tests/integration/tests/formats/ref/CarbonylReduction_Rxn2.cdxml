@@ -285,12 +285,8 @@
         </t>
         <t id="97" p="213.555008 104.860001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">4-(1</s>
-        </t>
-        <t id="97" p="213.555008 104.860001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">H</s>
-        </t>
-        <t id="97" p="213.555008 104.860001" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-1,2,4-triazol-1-yl)benzaldehyde</s>
+            <s font="4" size="9.33333" face="1">-1,2,4-triazol-1-yl)benzaldehyde</s>
         </t>
         <t id="100" p="213.554993 118.350006" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">143426-50-0</s>
@@ -313,12 +309,8 @@
         </t>
         <t id="121" p="478.644958 104.769997" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">(4-(1</s>
-        </t>
-        <t id="121" p="478.644958 104.769997" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">H</s>
-        </t>
-        <t id="121" p="478.644958 104.769997" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-1,2,4-triazol-1-yl)phenyl)methanol</s>
+            <s font="4" size="9.33333" face="1">-1,2,4-triazol-1-yl)phenyl)methanol</s>
         </t>
         <arrow id="124" BoundingBox="298.970001 406.149994 298.970001 307.899994" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="298.970001 406.149994 0.000000" Tail3D="298.970001 307.899994 0.000000"/>
         <arrow id="127" BoundingBox="385.980011 75.650002 294.309998 75.650002" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="385.980011 75.650002 0.000000" Tail3D="294.309998 75.650002 0.000000"/>

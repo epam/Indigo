@@ -382,7 +382,7 @@
             <b id="404" B="103" E="86"/>
             <b id="405" B="99" E="104"/>
             <b id="406" B="104" E="105" Order="2"/>
-            <b id="407" B="105" E="106"/>
+            <b id="407" B="105" E="106" Display="WedgeBegin"/>
             <b id="408" B="106" E="107" Order="2"/>
             <b id="409" B="107" E="108"/>
             <b id="410" B="108" E="109" Order="2"/>
@@ -599,7 +599,7 @@
             <b id="483" B="158" E="141"/>
             <b id="484" B="154" E="159"/>
             <b id="485" B="159" E="160" Order="2"/>
-            <b id="486" B="160" E="161"/>
+            <b id="486" B="160" E="161" Display="WedgeBegin"/>
             <b id="487" B="161" E="162" Order="2"/>
             <b id="488" B="162" E="163"/>
             <b id="489" B="163" E="164" Order="2"/>
@@ -700,8 +700,6 @@
         </fragment>
         <t id="188" p="386.750000 45.360001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">2 equiv</s>
-        </t>
-        <t id="188" p="386.750000 45.360001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">K2CO3</s>
         </t>
         <t id="191" p="386.745026 104.364998" Justification="Left" InterpretChemically="no">
@@ -715,8 +713,6 @@
         </t>
         <t id="200" p="386.745026 61.860001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">0.05 equiv</s>
-        </t>
-        <t id="200" p="386.745026 61.860001" Justification="Left" InterpretChemically="no">
             <s font="4" size="10" face="0">SPhosPd G3</s>
         </t>
         <t id="203" p="58.635002 5.925000" Justification="Left" InterpretChemically="no">
@@ -724,12 +720,8 @@
         </t>
         <t id="206" p="161.229996 126.470001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">(4-(</s>
-        </t>
-        <t id="206" p="161.229996 126.470001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="206" p="161.229996 126.470001" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)phenyl)boronic acid</s>
+            <s font="4" size="9.33333" face="1">-butyl)phenyl)boronic acid</s>
         </t>
         <t id="209" p="161.224991 139.819992" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">123324-71-0</s>
@@ -758,12 +750,8 @@
         <graphic id="233" BoundingBox="225.039993 77.625000 225.039993 70.125000" GraphicType="Symbol" SymbolType="Plus"/>
         <t id="236" p="517.899963 126.470001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="1">3-(4-(</s>
-        </t>
-        <t id="236" p="517.899963 126.470001" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="3">tert</s>
-        </t>
-        <t id="236" p="517.899963 126.470001" Justification="Left" InterpretChemically="no">
-            <s font="4" size="9.33333" face="3">-butyl)phenyl)quinoline</s>
+            <s font="4" size="9.33333" face="1">-butyl)phenyl)quinoline</s>
         </t>
         <t id="239" p="517.899963 139.819992" Justification="Left" InterpretChemically="no">
             <s font="4" size="9.33333" face="0">57479-16-0</s>

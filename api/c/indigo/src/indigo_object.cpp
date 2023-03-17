@@ -166,7 +166,7 @@ void IndigoObject::toBase64String(Array<char>& str)
     Array<char> temp;
     toString(temp);
     auto encoded = base64::encode(temp.ptr(), temp.size());
-    str.copy(encoded.c_str(), encoded.size());
+    str.readString(encoded.c_str(), true);
 }
 
 void IndigoObject::toString(Array<char>& str)
