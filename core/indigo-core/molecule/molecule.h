@@ -33,8 +33,6 @@ namespace indigo
     {
     public:
         Molecule();
-        ~Molecule() override;
-
         Molecule& asMolecule() override;
 
         void clear() override;

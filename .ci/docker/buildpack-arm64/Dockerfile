@@ -31,6 +31,9 @@ RUN apt update && \
 ENV CC=aarch64-linux-gnu-gcc-5
 ENV CXX=aarch64-linux-gnu-g++-5
 ENV INDIGO_QEMU_BINARY=qemu-aarch64-static
+ENV ASAN_OPTIONS=alloc_dealloc_mismatch=0
+RUN echo $'leak:libfontconfig\nleak:libc\n' >> /opt/external.supp
+ENV LSAN_OPTIONS=suppressions=/opt/external.supp
 
 RUN cmake --version && \
     aarch64-linux-gnu-gcc-5 --version && \
