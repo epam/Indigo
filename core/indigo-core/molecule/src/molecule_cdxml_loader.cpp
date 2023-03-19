@@ -55,22 +55,22 @@ IMPL_ERROR(CDXProperty, "CDXML property");
 CDXProperty CDXProperty::getNextProp()
 {
     if (_first_id)
-        return CDXProperty(_data, _size, 0, _style_index, _style_prop);
+        return CDXProperty(_data, _data_limit, _size, 0, _style_index, _style_prop);
 
     auto ptr16 = (uint16_t*)_data;
     if (*ptr16 == kCDXProp_Text && _style_index >= 0 && _style_prop >= 0)
     {
         if (++_style_prop < KStyleProperties.size())
-            return CDXProperty(_data, _size, 0, _style_index, _style_prop);
+            return CDXProperty(_data, _data_limit, _size, 0, _style_index, _style_prop);
         else
             return CDXProperty();
     }
 
     ptr16 = (uint16_t*)CDXElement::skipProperty((uint8_t*)ptr16);
-    if (*ptr16 && *ptr16 < kCDXTag_Object)
+    if (ptr16 < _data_limit && *ptr16 && *ptr16 < kCDXTag_Object)
     {
         auto sz = *(ptr16 + 1);
-        return CDXProperty(ptr16, sz + sizeof(uint16_t) * 2);
+        return CDXProperty(ptr16, _data_limit, sz + sizeof(uint16_t) * 2);
     }
     return CDXProperty();
 }

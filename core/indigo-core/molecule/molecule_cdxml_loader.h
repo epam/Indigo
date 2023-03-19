@@ -207,8 +207,8 @@ namespace indigo
         {
         }
 
-        CDXProperty(const void* data, int size = 0, int first_id = 0, int style_index = -1, int style_prop = -1)
-            : _data(data), _size(size), _first_id(first_id), _style_index(style_index), _style_prop(style_prop)
+        CDXProperty(const void* data, const void* data_limit = nullptr, int size = 0, int first_id = 0, int style_index = -1, int style_prop = -1)
+            : _data(data), _data_limit(data_limit), _size(size), _first_id(first_id), _style_index(style_index), _style_prop(style_prop)
         {
         }
 
@@ -536,6 +536,7 @@ namespace indigo
 
     protected:
         const void* _data;
+        const void* _data_limit;
         int _size;
         int _first_id;
         int _style_index;
@@ -591,7 +592,7 @@ namespace indigo
                 if (tag || *ptr16 < kCDXTag_Object)
                 {
                     auto sz = *(ptr16 + 1); // property size
-                    return CDXProperty(ptr16, sz + sizeof(uint16_t) * 2, tag, _style_index,
+                    return CDXProperty(ptr16, (uint8_t*)_data + _size, sz + sizeof(uint16_t) * 2, tag, _style_index,
                                        _style_index < 0 ? -1 : 0); // total chunk size = property size + tag + size
                 }
             }
