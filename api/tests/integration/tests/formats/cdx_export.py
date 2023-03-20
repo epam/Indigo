@@ -36,7 +36,7 @@ for filename in files:
             os.path.join(root, filename + ".mol")
         )
         resb64 = mol.b64cdx()
-        #with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
         #    data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
@@ -52,7 +52,7 @@ for filename in files:
             os.path.join(root, filename + ".mol")
         )
         resb64 = mol.b64cdx()
-        #with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
         #    data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
@@ -75,7 +75,7 @@ for filename in files:
             os.path.join(root, filename + ".ket")
         )
         resb64 = rea.b64cdx()
-        #with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
         #    data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
@@ -93,7 +93,7 @@ for filename in files:
             os.path.join(root, filename + ".ket")
         )
         resb64 = rea.b64cdx()
-        #with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
         #    data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
@@ -143,7 +143,7 @@ for filename in files:
         )
         resb64 = rea.b64cdx()
         res = rea.cdxml()
-        #with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
+        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
         #    data = file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
