@@ -521,6 +521,8 @@ namespace indigo
             case kCDXProp_Node_LabelDisplay:
             case kCDXProp_LabelAlignment:
                 return std::string(kLabelAlignmentIntTostr.at(val));
+            case kCDXProp_Atom_Geometry:
+                return std::string(KGeometryTypeIntToName.at(val));
             default:
                 break;
             }
@@ -587,7 +589,7 @@ namespace indigo
                     ptr += sizeof(uint32_t); // skip tag and id to enter inside the current object
                     ptr16 = (uint16_t*)ptr;
                 }
-                if (*ptr16 < kCDXTag_Object)
+                if (tag || *ptr16 < kCDXTag_Object)
                 {
                     auto sz = *(ptr16 + 1); // property size
                     return CDXProperty(ptr16, (uint8_t*)_data + _size, sz + sizeof(uint16_t) * 2, tag, _style_index,

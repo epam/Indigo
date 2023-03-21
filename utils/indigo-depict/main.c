@@ -246,6 +246,7 @@ enum
     OEXT_KET,
     OEXT_KER,
     OEXT_CDX,
+    OEXT_CDX64,
     OEXT_CDR,
     OEXT_CDXML,
     OEXT_CDXMLR,
@@ -337,8 +338,8 @@ int parseParams(Params* p, int argc, char* argv[])
 
         p->file_to_load = argv[1];
 
-        if (strcasecmp(p->infile_ext, "cdx") == 0 || strcasecmp(p->infile_ext, "mol") == 0 || strcasecmp(p->infile_ext, "ket") == 0 ||
-            strcasecmp(p->infile_ext, "xml") == 0)
+        if (strcasecmp(p->infile_ext, "cdx") == 0 || strcasecmp(p->infile_ext, "b64") == 0 || strcasecmp(p->infile_ext, "mol") == 0 ||
+            strcasecmp(p->infile_ext, "ket") == 0 || strcasecmp(p->infile_ext, "xml") == 0)
             p->mode = MODE_SINGLE_MOLECULE;
         else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0 || strcasecmp(p->infile_ext, "cdr") == 0 ||
                  strcasecmp(p->infile_ext, "xmr") == 0)
@@ -879,6 +880,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_CDXMLR;
     else if (strcmp(p.outfile_ext, "cdx") == 0)
         p.out_ext = OEXT_CDX;
+    else if (strcmp(p.outfile_ext, "b64") == 0)
+        p.out_ext = OEXT_CDX64;
     else if (strcmp(p.outfile_ext, "cdr") == 0)
         p.out_ext = OEXT_CDR;
 
@@ -943,6 +946,21 @@ int main(int argc, char* argv[])
             else if (p.out_ext == OEXT_CDX)
             {
                 indigoSaveCdxToFile(obj, p.outfile);
+            }
+            else if (p.out_ext == OEXT_CDX64)
+            {
+                char* pMol = indigoCdxBase64(obj);
+                FILE* fp = fopen(p.outfile, "w+");
+                if (fp)
+                {
+                    fputs(pMol, fp);
+                    fclose(fp);
+                }
+                else
+                {
+                    fprintf(stderr, "can not write: %s\n", p.outfile);
+                    return -1;
+                }
             }
             else
                 indigoSaveCmlToFile(obj, p.outfile);
