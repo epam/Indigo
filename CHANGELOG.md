@@ -1,4 +1,5 @@
 # Indigo 1.10.0
+Released 2023-03-22
 
 ## What's Changed
 
