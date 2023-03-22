@@ -257,6 +257,26 @@ namespace indigo
 
         bool isChiral();
 
+        Array<int>& getAAMArray()
+        {
+            return reaction_atom_mapping;
+        }
+
+        Array<int>& getReactingCenterArray()
+        {
+            return reaction_bond_reacting_center;
+        }
+
+        Array<int>& getInversionArray()
+        {
+            return reaction_atom_inversion;
+        }
+
+        Array<int>& getExactChangeArray()
+        {
+            return reaction_atom_exact_change;
+        }
+
         struct TemplateAttPoint
         {
             int ap_occur_idx;
