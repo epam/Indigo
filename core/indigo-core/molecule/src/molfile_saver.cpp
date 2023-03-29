@@ -125,8 +125,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
         // if v2000 is not enough
         _v2000 = true;
 
-        if (mol.hasHighlighting()
-            || mol.stereocenters.haveEnhancedStereocenter() || (mol.vertexCount() > 999 || mol.edgeCount() > 999))
+        if (mol.hasHighlighting() || mol.stereocenters.haveEnhancedStereocenter() || (mol.vertexCount() > 999 || mol.edgeCount() > 999))
         {
             _v2000 = false;
         }
