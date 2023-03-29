@@ -35,20 +35,7 @@ IMPL_ERROR(ReactionJsonSaver, "reaction KET saver");
 
 void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale)
 {
-    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-    {
-        Vec3f& p = mol.getAtomXyz(i);
-        Vec2f p2(p.x, p.y);
-
-        if (i == mol.vertexBegin())
-            min_vec = max_vec = p2;
-        else
-        {
-            min_vec.min(p2);
-            max_vec.max(p2);
-        }
-    }
-
+    mol.getBoundingBox(min_vec, max_vec);
     min_vec.scale(scale);
     max_vec.scale(scale);
 }
@@ -208,34 +195,18 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
         }
         else
         {
-            if ((pmin.x - rmax.x) > 0)
+            p1.y = (pmin.y + pmax.y) / 2;
+            p2.y = (rmin.y + rmax.y) / 2;
+
+            if ( pmin.x > rmax.x )
             {
-                p2.x = (rmax.x + pmin.x) / 2 - (pmin.x - rmax.x) / 8;
-                p2.y = (rmin.y + rmax.y) / 2;
+                p1.x = pmin.x - 1.0f;
+                p2.x = rmax.x + 1.0f;
             }
             else
             {
-                p2.x = (rmax.x + pmin.x) / 2 - 1.0f;
-                p2.y = (rmin.y + rmax.y) / 2;
-            }
-
-            if ((pmin.x - rmax.x) > 0)
-            {
-                p1.x = (rmax.x + pmin.x) / 2.f + (pmin.x - rmax.x) / 8.f;
-                p1.y = (pmin.y + pmax.y) / 2.f;
-            }
-            else
-            {
-                p1.x = (rmax.x + pmin.x) / 2 + 1.0f;
-                p1.y = (pmin.y + pmax.y) / 2;
-            }
-            if (rxn.catalystCount() && cmin.x != cmax.x)
-            {
-                if (cmin.x < p2.x)
-                    p2.x = cmin.x;
-
-                if (cmax.x > p1.x)
-                    p1.x = cmax.x;
+                p1.x = rmax.x + 1.0f;
+                p2.x = pmin.x - 1.0f;
             }
         }
 

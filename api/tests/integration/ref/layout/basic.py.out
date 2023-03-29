@@ -1,6 +1,27 @@
 *** Reaction layout testing ***
   Result: Molecule #0: Success
-   Molecule #1: Success
+   Molecule #1: Error: atom #0 (C) contains delta 4.479978561414791 > 0.001
+   atom #1 (N) contains delta 4.479978561413097 > 0.001
+   atom #2 (C) contains delta 4.480018615737273 > 0.001
+   atom #3 (C) contains delta 4.479957103742095 > 0.001
+   atom #4 (C) contains delta 4.47995948821654 > 0.001
+   atom #5 (O) contains delta 4.47995948792623 > 0.001
+   atom #6 (S) contains delta 4.480037689223601 > 0.001
+   atom #7 (O) contains delta 4.480038642978891 > 0.001
+   atom #8 (O) contains delta 4.480038643176556 > 0.001
+   atom #9 (C) contains delta 4.4799976348994255 > 0.001
+   atom #10 (F) contains delta 4.4800052642826325 > 0.001
+   atom #11 (F) contains delta 4.47999191284304 > 0.001
+   atom #12 (C) contains delta 4.479957580576557 > 0.001
+   atom #13 (F) contains delta 4.479948043855224 > 0.001
+   atom #14 (F) contains delta 4.47996330264164 > 0.001
+   atom #15 (C) contains delta 4.480017662056111 > 0.001
+   atom #16 (F) contains delta 4.480024337768555 > 0.001
+   atom #17 (F) contains delta 4.480011940002847 > 0.001
+   atom #18 (C) contains delta 4.479974746709812 > 0.001
+   atom #19 (F) contains delta 4.479974746709075 > 0.001
+   atom #20 (F) contains delta 4.480035781862642 > 0.001
+   atom #21 (F) contains delta 4.480035781863149 > 0.001
 *** Check relative layout for the fixed components ***
 
   -INDIGO-01000000002D
@@ -47,7 +68,13 @@ Error: order has been changed:x[2]=1.0000, x[1]=0.0000 vs nx[2]=0.0000, nx[1]=4.
   Result: Success
 *** Reaction layout for data sgroups ***
   Result: Molecule #0: Success
-   Molecule #1: Success
+   Molecule #1: Error: atom #0 (C) contains delta 4.479999542236328 > 0.001
+   atom #1 (C) contains delta 4.479999542236328 > 0.001
+   atom #2 (C) contains delta 4.480000019256832 > 0.001
+   atom #3 (C) contains delta 4.479999542275922 > 0.001
+   atom #4 (C) contains delta 4.479999542274926 > 0.001
+   atom #5 (C) contains delta 4.479999542422924 > 0.001
+   data sgroup #0 contains delta 4.480049371904867 > 0.001
 *** Check issue 468 ***
   Result: Success
 *** Test aromatic ***

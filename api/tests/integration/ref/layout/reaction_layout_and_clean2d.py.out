@@ -1,8 +1,25 @@
 **** Test reaction leayout and clean2d layout *****
   Item #0: Result of layout: Molecule #0: Success
-   Molecule #1: Success
-   Molecule #2: Success
-   Molecule #3: Success
+   Molecule #1: Error: atom #0 (C) contains delta 4.480014801025391 > 0.001
+   atom #1 (C) contains delta 4.479956626892093 > 0.001
+   atom #2 (C) contains delta 4.479956626892116 > 0.001
+   atom #3 (C) contains delta 4.480014801025416 > 0.001
+   atom #4 (C) contains delta 4.479974746704102 > 0.001
+   atom #5 (C) contains delta 4.479974746704121 > 0.001
+   Molecule #2: Error: atom #0 (C) contains delta 8.959974288940458 > 0.001
+   atom #1 (C) contains delta 8.96003437042237 > 0.001
+   atom #2 (C) contains delta 8.959994316101078 > 0.001
+   atom #3 (C) contains delta 8.959953308105476 > 0.001
+   atom #4 (C) contains delta 8.960012435913093 > 0.001
+   atom #5 (P) contains delta 8.959972381591797 > 0.001
+   atom #6 (C) contains delta 8.959994316101087 > 0.001
+   Molecule #3: Error: atom #0 (C) contains delta 13.439971923828125 > 0.001
+   atom #1 (C) contains delta 13.43997192388978 > 0.001
+   atom #2 (C) contains delta 13.439970016541148 > 0.001
+   atom #3 (C) contains delta 13.439971923828125 > 0.001
+   atom #4 (C) contains delta 13.439970016542054 > 0.001
+   atom #5 (C) contains delta 13.439971923890687 > 0.001
+   atom #6 (O) contains delta 13.439971923828125 > 0.001
   Item #0: Result of clean2d: Molecule #0: Success
    Molecule #1: Success
    Molecule #2: Success

@@ -89,16 +89,32 @@ void Metalayout::process()
     for (int i = 0; i < _layout.size(); ++i)
     {
         LayoutLine& line = _layout[i];
-        pos.y -= line.height / 2;
         pos.x = 0;
 
         for (int j = 0; j < line.items.size(); ++j)
         {
             LayoutItem& item = line.items[j];
-            cb_process(item, pos, context);
-            pos.x += item.scaledSize.x + horizontalIntervalFactor * bondLength;
+            Vec2f offset( pos );
+            if (item.horizontalAlign == LayoutItem::ItemHorizontalAlign::ECenter)
+            {
+                offset.x += item.scaledSize.x / 2;
+            }
+            switch (item.verticalAlign)
+            {
+            case LayoutItem::ItemVerticalAlign::ECenter:
+                offset.y -= line.height / 2;
+                break;
+            case LayoutItem::ItemVerticalAlign::ETop:
+                offset.y += line.height / 2;
+                break;
+            case LayoutItem::ItemVerticalAlign::EBottom:
+                offset.y -= line.height;
+                break;
+            }
+            cb_process(item, offset, context);
+            pos.x += item.scaledSize.x;
         }
-        pos.y -= line.height / 2 + verticalIntervalFactor * bondLength;
+        pos.y -= line.height + verticalIntervalFactor * bondLength;
     }
 }
 
@@ -139,7 +155,7 @@ void Metalayout::scaleSz()
             {
                 item.scaledSize.diff(item.max, item.min);
                 item.scaledSize.scale(_scaleFactor);
-                item.scaledSize.max(Vec2f(bondLength, bondLength));
+                item.scaledSize.max(item.minScaledSize);
             }
         }
 }

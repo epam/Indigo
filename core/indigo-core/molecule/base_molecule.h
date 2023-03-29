@@ -442,6 +442,7 @@ namespace indigo
 
         // calc bounding box
         void getBoundingBox(Rect2f& bbox) const;
+        void getBoundingBox(Vec2f& a, Vec2f& b) const;
 
         DECL_ERROR;
 

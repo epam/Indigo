@@ -45,7 +45,7 @@ namespace indigo
         layout_orientation_value layout_orientation;
 
     private:
-        Metalayout::LayoutItem& _pushMol(Metalayout::LayoutLine& line, int id);
+        Metalayout::LayoutItem& _pushMol(Metalayout::LayoutLine& line, int id, bool is_agent = false);
         Metalayout::LayoutItem& _pushSpace(Metalayout::LayoutLine& line, float size);
         BaseMolecule& _getMol(int id);
         void _shiftMol(const Metalayout::LayoutItem& item, const Vec2f& pos);

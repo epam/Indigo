@@ -53,7 +53,17 @@ void ReactionLayout::make()
             _pushSpace(line, plus_interval_factor);
         _pushMol(line, i);
     }
-    _pushSpace(line, arrow_interval_factor);
+
+    if (_r.catalystCount())
+    {
+        _pushSpace(line, bond_length);
+        for (int i = _r.catalystBegin(); i < _r.catalystEnd(); i = _r.catalystNext(i))
+            _pushMol(line, i, true);
+        _pushSpace(line, bond_length);
+    }
+    else
+        _pushSpace(line, arrow_interval_factor);
+
     for (int i = _r.productBegin(); i < _r.productEnd(); i = _r.productNext(i))
     {
         if (i != _r.productBegin())
@@ -72,13 +82,32 @@ void ReactionLayout::make()
     _ml.process();
 }
 
-Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id)
+Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agent)
 {
     Metalayout::LayoutItem& item = line.items.push();
     item.type = 0;
     item.fragment = true;
     item.id = id;
-    Metalayout::getBoundRect(item.min, item.max, _getMol(id));
+    auto& mol = _getMol(id);
+    Metalayout::getBoundRect(item.min, item.max, mol);
+    if (is_agent)
+    {
+        item.verticalAlign = Metalayout::LayoutItem::ItemVerticalAlign::ETop;
+    }
+
+    if (mol.vertexCount() == 1)
+    {
+        int max_h = mol.getAtomMaxH(0);
+        int mult = max_h + 1;
+        if (mult > 3)
+            mult = 3;
+        auto hl = bond_length / 2;
+        item.horizontalAlign = Metalayout::LayoutItem::ItemHorizontalAlign::ECenter;
+        item.minScaledSize.set(hl * mult, hl);
+    }
+    else
+        item.minScaledSize.set(bond_length, bond_length);
+
     return item;
 }
 

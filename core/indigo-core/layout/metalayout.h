@@ -38,12 +38,27 @@ namespace indigo
     public:
         struct DLLEXPORT LayoutItem
         {
+            enum class ItemVerticalAlign
+            {
+                ECenter, ETop, EBottom  
+            };
+
+            enum class ItemHorizontalAlign
+            {
+                ECenter,
+                ELeft,
+                ERight
+            };
+
             LayoutItem()
             {
                 clear();
             }
+
             void clear()
             {
+                verticalAlign = ItemVerticalAlign::ECenter;
+                horizontalAlign = ItemHorizontalAlign::ELeft;
                 type = 0;
                 id = 0;
                 fragment = false;
@@ -55,6 +70,7 @@ namespace indigo
                 scaledSize.zero();
                 scaledOffset.zero();
                 scaleFactor.zero();
+                minScaledSize.zero();
             }
             int type;
             int id;
@@ -62,9 +78,11 @@ namespace indigo
             bool over;
             bool explicitVerticalOffset;
             float verticalOffset;
+            ItemVerticalAlign verticalAlign;
+            ItemHorizontalAlign horizontalAlign;
 
             Vec2f min, max;
-            Vec2f scaledSize, scaledOffset;
+            Vec2f scaledSize, scaledOffset, minScaledSize;
             Vec2f scaleFactor;
         };
 

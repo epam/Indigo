@@ -895,11 +895,11 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     std::list<std::unordered_set<int>> s_neighbors;
 
-    if (bmol.vertexCount())
+    if (mol->vertexCount())
     {
-        getSGroupAtoms(bmol, s_neighbors);
+        getSGroupAtoms(*mol, s_neighbors);
 
-        for (int idx = 0; idx < bmol.countComponents(s_neighbors); ++idx)
+        for (int idx = 0; idx < mol->countComponents(s_neighbors); ++idx)
         {
             writer.StartObject();
             writer.Key("$ref");
@@ -909,7 +909,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         }
     }
 
-    saveMetaData(writer, bmol.meta());
+    saveMetaData(writer, mol->meta());
 
     int n_rgroups = mol->rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; ++i)
