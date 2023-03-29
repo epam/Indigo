@@ -123,12 +123,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
     {
         // auto-detect the format: save to v3000 molfile only
         // if v2000 is not enough
-        _v2000 = true;
-
-        if (mol.hasHighlighting() || mol.stereocenters.haveEnhancedStereocenter() || (mol.vertexCount() > 999 || mol.edgeCount() > 999))
-        {
-            _v2000 = false;
-        }
+        _v2000 = !(mol.hasHighlighting() || mol.stereocenters.haveEnhancedStereocenter() || (mol.vertexCount() > 999 || mol.edgeCount() > 999));
     }
 
     bool rg2000 = (_v2000 && mol.rgroups.getRGroupCount() > 0);
