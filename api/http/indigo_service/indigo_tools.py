@@ -26,15 +26,22 @@ __indigo: ContextVar[Indigo] = ContextVar("indigo", default=Indigo())
 __cur_thread: ContextVar[int] = ContextVar(
     "thread_id", default=threading.get_ident()
 )
+print("BEGINNING", threading.get_ident(), __cur_thread.get())
 
 
 def indigo(thread_local: bool = False) -> Indigo:
+    # print("__cur_thread", __cur_thread.get())
+    # print("__indigo_1", __indigo.get().getSessionId())
+    # print("thread_local ----> ", thread_local)
     if thread_local:
+        # print("THREAD LOCAL !!!")
         ident = threading.get_ident()
+        # print("def indigo ----> ", ident)
         if __cur_thread.get() != ident:
             __indigo.set(Indigo())
             __cur_thread.set(ident)
-
+    # print("def indigo ----> ", threading.get_ident())
+    # print("__indigo_2", __indigo.get().getSessionId())
     return __indigo.get()
 
 

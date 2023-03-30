@@ -16,13 +16,22 @@
 # limitations under the License.
 #
 
-from typing import List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from indigo import IndigoObject
 from indigo.inchi import IndigoInchi
 
 from indigo_service import jsonapi
 from indigo_service.indigo_tools import indigo
+
+
+def set_indigo_options(
+    options: Optional[Dict[str, Union[str, int, float, bool]]]
+) -> None:
+    if options:
+        for option, value in options.items():
+            indigo().setOption(option, value)
+    return
 
 
 def extract_compounds(
