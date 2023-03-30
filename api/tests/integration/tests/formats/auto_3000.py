@@ -22,13 +22,14 @@ indigo.setOption("ignore-stereochemistry-errors", True)
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["cis_trans","enhanced_stereo3", "atoms (or bonds) exceeds 999"]
+files = ["cis_trans", "enhanced_stereo3", "atoms (or bonds) exceeds 999"]
 
 files.sort()
 for filename in files:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
+
     # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
-    #    file.write(mol.molfile())
+    # file.write(mol.molfile())
     with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
         mol_ref = file.read()
 
