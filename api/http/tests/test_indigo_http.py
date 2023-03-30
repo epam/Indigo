@@ -356,12 +356,12 @@ def test_render_incorrect_options() -> None:
     )
 
 
-def get_request_attributes(
+def get_request_attributes(  # pylint: disable=too-many-arguments
     compound: Optional[dict[str, str]] = None,
     modifiers: Optional[Iterable[tuple[str, Any]]] = None,
     source: Optional[dict[str, str]] = None,
     targets: Optional[list[dict[str, str]]] = None,
-    fp: Optional[str] = None,
+    fingerprint: Optional[str] = None,
     metric: Optional[str] = None,
     descriptors: Optional[list[str]] = None,
     validations: Optional[list[str]] = None,
@@ -373,7 +373,7 @@ def get_request_attributes(
         "compound": compound,
         "source": source,
         "targets": targets,
-        "fingerprint": fp,
+        "fingerprint": fingerprint,
         "metric": metric,
         "descriptors": descriptors,
         "validations": validations,
@@ -393,7 +393,7 @@ def get_request_attributes(
                 get_request_attributes(
                     source=test_stereo_err_structure,
                     targets=[test_stereo_err_structure],
-                    fp="sim",
+                    fingerprint="sim",
                     metric="tanimoto",
                 ),
                 {400: "chirality not possible on atom #1"},
@@ -490,7 +490,7 @@ def get_request_attributes(
         ),
     ],
 )
-def test_indigo_options(
+def test_indigo_options(  # pylint: disable=too-many-arguments
     url: str,
     type_: str,
     attributes: dict[str, Any],

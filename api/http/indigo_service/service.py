@@ -31,7 +31,6 @@ def set_indigo_options(
     if options:
         for option, value in options.items():
             indigo().setOption(option, value)
-    return
 
 
 def extract_compounds(
