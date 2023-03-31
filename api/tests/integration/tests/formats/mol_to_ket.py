@@ -27,7 +27,7 @@ files = ["1032-quadra", "1046-imp_hydrogen", "SgroupDifferent"]
 files.sort()
 for filename in files:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
-    
+
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #    file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
