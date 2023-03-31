@@ -204,7 +204,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
             p1.y = (pmin.y + pmax.y) / 2;
             p2.y = (rmin.y + rmax.y) / 2;
 
-            if ( pmin.x > rmax.x )
+            if (pmin.x > rmax.x)
             {
                 p1.x = pmin.x - ptab;
                 p2.x = rmax.x + rtab;
