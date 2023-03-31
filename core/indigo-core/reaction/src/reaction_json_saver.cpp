@@ -64,8 +64,9 @@ void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
     std::vector<Vec2f> pluses;
-
     Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0), cmin(0, 0), cmax(0, 0);
+    bool last_single_reactant = false;
+    bool first_single_product = false;
 
     if (rxn.reactantsCount() > 0)
     {
@@ -94,6 +95,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
                 pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
                 rcount++;
             }
+            last_single_reactant = rxn.getBaseMolecule(i).vertexCount() == 1;
         }
     }
 
@@ -112,6 +114,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
             {
                 pmin = min1;
                 pmax = max1;
+                first_single_product = rxn.getBaseMolecule(i).vertexCount() == 1;
             }
             else
             {
@@ -195,18 +198,21 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
         }
         else
         {
+            double ptab = first_single_product ? 2.0f : 1.0;
+            double rtab = last_single_reactant ? 2.0f : 1.0;
+
             p1.y = (pmin.y + pmax.y) / 2;
             p2.y = (rmin.y + rmax.y) / 2;
 
             if ( pmin.x > rmax.x )
             {
-                p1.x = pmin.x - 1.0f;
-                p2.x = rmax.x + 1.0f;
+                p1.x = pmin.x - ptab;
+                p2.x = rmax.x + rtab;
             }
             else
             {
-                p1.x = rmax.x + 1.0f;
-                p2.x = pmin.x - 1.0f;
+                p1.x = rmax.x + rtab;
+                p2.x = pmin.x - ptab;
             }
         }
 

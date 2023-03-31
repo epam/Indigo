@@ -40,14 +40,9 @@ namespace indigo
         {
             enum class ItemVerticalAlign
             {
-                ECenter, ETop, EBottom  
-            };
-
-            enum class ItemHorizontalAlign
-            {
                 ECenter,
-                ELeft,
-                ERight
+                ETop,
+                EBottom
             };
 
             LayoutItem()
@@ -58,13 +53,9 @@ namespace indigo
             void clear()
             {
                 verticalAlign = ItemVerticalAlign::ECenter;
-                horizontalAlign = ItemHorizontalAlign::ELeft;
                 type = 0;
                 id = 0;
                 fragment = false;
-                over = false;
-                explicitVerticalOffset = false;
-                verticalOffset = 0.0;
                 min.zero();
                 max.zero();
                 scaledSize.zero();
@@ -75,11 +66,7 @@ namespace indigo
             int type;
             int id;
             bool fragment;
-            bool over;
-            bool explicitVerticalOffset;
-            float verticalOffset;
             ItemVerticalAlign verticalAlign;
-            ItemHorizontalAlign horizontalAlign;
 
             Vec2f min, max;
             Vec2f scaledSize, scaledOffset, minScaledSize;
@@ -95,6 +82,8 @@ namespace indigo
 
             ObjArray<LayoutItem> items;
             float height;
+            float top_height;
+            float bottom_height;
             float width;
 
         private:

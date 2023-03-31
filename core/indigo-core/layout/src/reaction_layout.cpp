@@ -24,7 +24,7 @@
 using namespace indigo;
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
-    : bond_length(1), plus_interval_factor(1), arrow_interval_factor(1), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
+    : bond_length(1), plus_interval_factor(2), arrow_interval_factor(2), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
       horizontal_interval_factor(0.5f)
 {
     max_iterations = 0;
@@ -49,25 +49,36 @@ void ReactionLayout::make()
     Metalayout::LayoutLine& line = _ml.newLine();
     for (int i = _r.reactantBegin(); i < _r.reactantEnd(); i = _r.reactantNext(i))
     {
+        bool single_atom = _getMol(i).vertexCount() == 1;
         if (i != _r.reactantBegin())
-            _pushSpace(line, plus_interval_factor);
+        {
+            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : 0));
+        }
         _pushMol(line, i);
     }
 
     if (_r.catalystCount())
     {
-        _pushSpace(line, bond_length);
         for (int i = _r.catalystBegin(); i < _r.catalystEnd(); i = _r.catalystNext(i))
+        {
+            auto& mol = _getMol(i);
+            Rect2f bbox;
+            mol.getBoundingBox(bbox);
+            _pushSpace(line, bond_length + bbox.width() / 2);
             _pushMol(line, i, true);
+        }
         _pushSpace(line, bond_length);
     }
     else
         _pushSpace(line, arrow_interval_factor);
 
+    _pushSpace(line, bond_length);
+
     for (int i = _r.productBegin(); i < _r.productEnd(); i = _r.productNext(i))
     {
+        bool single_atom = _getMol(i).vertexCount() == 1;
         if (i != _r.productBegin())
-            _pushSpace(line, plus_interval_factor);
+            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : 0));
         _pushMol(line, i);
     }
 
@@ -102,8 +113,7 @@ Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, i
         if (mult > 3)
             mult = 3;
         auto hl = bond_length / 2;
-        item.horizontalAlign = Metalayout::LayoutItem::ItemHorizontalAlign::ECenter;
-        item.minScaledSize.set(hl * mult, hl);
+        item.minScaledSize.set(0, hl / 4);
     }
     else
         item.minScaledSize.set(bond_length, bond_length);

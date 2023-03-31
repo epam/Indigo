@@ -34,7 +34,7 @@ Metalayout::LayoutLine::~LayoutLine()
 void Metalayout::LayoutLine::clear()
 {
     items.clear();
-    height = width = 0;
+    bottom_height = top_height = height = width = 0;
 }
 
 IMPL_ERROR(Metalayout, "metalayout");
@@ -94,24 +94,20 @@ void Metalayout::process()
         for (int j = 0; j < line.items.size(); ++j)
         {
             LayoutItem& item = line.items[j];
-            Vec2f offset( pos );
-            if (item.horizontalAlign == LayoutItem::ItemHorizontalAlign::ECenter)
-            {
-                offset.x += item.scaledSize.x / 2;
-            }
+            Vec2f offset(pos);
             switch (item.verticalAlign)
             {
             case LayoutItem::ItemVerticalAlign::ECenter:
-                offset.y -= line.height / 2;
                 break;
             case LayoutItem::ItemVerticalAlign::ETop:
-                offset.y += line.height / 2;
+                offset.y += (bondLength + line.top_height) / 2;
                 break;
             case LayoutItem::ItemVerticalAlign::EBottom:
-                offset.y -= line.height;
+                offset.y -= (bondLength + line.bottom_height) / 2;
                 break;
             }
             cb_process(item, offset, context);
+
             pos.x += item.scaledSize.x;
         }
         pos.y -= line.height + verticalIntervalFactor * bondLength;
@@ -129,12 +125,18 @@ void Metalayout::calcContentSize()
         {
             line.width += line.items[j].scaledSize.x;
             Metalayout::LayoutItem& item = line.items[j];
-            if (item.explicitVerticalOffset)
-                line.height = std::max(line.height, 2 * std::max(item.verticalOffset, item.scaledSize.y - item.verticalOffset));
-            else if (item.over)
-                line.height = std::max(line.height, item.scaledSize.y * 2 + 2);
-            else
+            switch (item.verticalAlign)
+            {
+            case LayoutItem::ItemVerticalAlign::ECenter:
                 line.height = std::max(line.height, item.scaledSize.y);
+                break;
+            case LayoutItem::ItemVerticalAlign::ETop:
+                line.top_height = std::max(line.top_height, item.scaledSize.y);
+                break;
+            case LayoutItem::ItemVerticalAlign::EBottom:
+                line.bottom_height = std::max(line.bottom_height, item.scaledSize.y);
+                break;
+            }
         }
         line.width += horizontalIntervalFactor * bondLength * (line.items.size() - 1);
         _contentSize.x = std::max(_contentSize.x, line.width);
