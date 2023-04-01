@@ -38,6 +38,7 @@ jobs:
       matrix:
         os: [ macos, ubuntu, windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -88,6 +89,7 @@ jobs:
       matrix:
         os: [ windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -118,6 +120,7 @@ jobs:
       matrix:
         os: [ macos, ubuntu ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -721,6 +724,7 @@ jobs:
   build_indigo_windows_mingw_x86_64:
     timeout-minutes: 60
     runs-on: windows-latest
+    needs: static_analysis
     defaults:
       run:
         shell: msys2 {0}
@@ -773,6 +777,7 @@ jobs:
 
   build_indigo_ketcher:
     runs-on: ubuntu-latest
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -805,6 +810,7 @@ jobs:
 
   build_indigo_ketcher_cjk:
     runs-on: ubuntu-latest
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -841,6 +847,7 @@ jobs:
       matrix:
         os: [ macos, ubuntu, windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
