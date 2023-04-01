@@ -1,7 +1,27 @@
+# Indigo 1.10.0
+Released 2023-03-22
+
+## What's Changed
+
+## Features
+* #941 CDX export
+
+## Bugfixes
+* #1003 Some texts are not rendered and may lead to Indigo crash
+* #987 docker-indigo-tester image build failed
+* #994 Some UTF-8 characters from Ketcher Text panel are not displayed in Indigo WASM
+* #889 When saving in PNG and SVG format UTF-8 text display incorrectly (Ketcher Standalone)
+* #1032 Combine molecules that are related to a single s-group into one in .Ket format
+* #974 SVG/PNG: Molecule reagent located below arrow is displayed in preview above arrow
+* #1039 Opening file with a superatom label saved in RXN v3000 format removes a custom s-group
+* #1063 Structure saved in CDX and Base64CDX with reaction arrow cannot be opened 
+* #1068 CDX-loader crash 
+
+**Full Changelog**:https://github.com/epam/Indigo/compare/release/1.9...release/1.10
+
 # Indigo 1.9.0
 Released 2023-01-31
 
-## What's Changed
 * MDL Molfile v3000 encoding: Automatic selection of MDL Molfile v3000 encoding doesn't work if the structure contains Enhanced stereochemistry by @mkviatkovskii in #924
 * cdx import in scope of current KET/CDXML features support by @even1024 in #885
 * Structures with the arrow lose their integrity when pressing 'Layout' by @even1024 in #938
@@ -23,7 +43,7 @@ Released 2023-01-31
 * Improve ssl bingo elastic by @MysterionRise in #901
 * bingo: postgres: add support for Postgres 15, drop support for Postgres 10 by @mkviatkovskii in #903
 * #521: core: replace MultiMap in MoleculeRGroupsComposition class by @loimu in #917
-* #521: core: replace MultiMap in MolfileLoader class by @loimu in #911 
+* #521: core: replace MultiMap in MolfileLoader class by @loimu in #911 
 * #929: fix auto-saving to CTAB v3000 by @mkviatkovskii in #931
 
 **Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.8.0...indigo-1.9.0
