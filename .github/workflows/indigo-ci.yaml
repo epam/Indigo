@@ -178,32 +178,32 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download Linux native libs x86_64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-linux-x86_64
           path: dist/
       - name: Download Linux native libs aarch64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-linux-aarch64
           path: dist/
       - name: Download Windows native libs x86_64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-windows-x86_64
           path: dist/
       - name: Download Windows native libs i386
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-windows-i386
           path: dist/
       - name: Download macOS native libs x86_64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-macos-x86_64
           path: dist/
       - name: Download macOS native libs aarch64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-macos-aarch64
           path: dist/
@@ -262,7 +262,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -308,7 +308,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -354,7 +354,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -399,7 +399,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -440,7 +440,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -486,7 +486,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -532,7 +532,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/
@@ -606,7 +606,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/
@@ -655,7 +655,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -711,7 +711,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -1166,17 +1166,17 @@ jobs:
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: dist/lib
       - name: Download Python wheels
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
       - name: Download bingo-elastic-python
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bingo-elastic-python
           path: dist/
@@ -1204,12 +1204,12 @@ jobs:
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: dist/lib
       - name: Download .NET nupkg
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/
@@ -1236,12 +1236,12 @@ jobs:
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: dist/lib
       - name: Download indigo-ketcher NPM package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-ketcher
           path: dist/
@@ -1273,7 +1273,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: dist/lib
@@ -1313,7 +1313,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: utils/indigo-service/backend/lib/
@@ -1371,7 +1371,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: api/http/
