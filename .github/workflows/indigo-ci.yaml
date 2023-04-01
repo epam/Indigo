@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-      - indigo-1.5
     tags:
       - 'indigo-*'
   workflow_dispatch:
@@ -20,7 +19,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -41,7 +40,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -91,7 +90,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -121,7 +120,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -165,7 +164,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -249,7 +248,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -295,7 +294,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -341,7 +340,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -386,7 +385,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -427,7 +426,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -473,7 +472,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -519,7 +518,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -593,7 +592,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -643,7 +642,7 @@ jobs:
         python-version: [ '3.7', '3.10' ]
     needs: build_indigo_wrappers
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -694,7 +693,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -727,7 +726,7 @@ jobs:
         shell: msys2 {0}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -776,7 +775,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -808,7 +807,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -844,7 +843,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -891,7 +890,7 @@ jobs:
     container: epmlsop/buildpack-centos7:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -918,7 +917,7 @@ jobs:
         shell: msys2 {0}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -946,7 +945,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -974,7 +973,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1046,7 +1045,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1081,7 +1080,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1115,7 +1114,7 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1142,7 +1141,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1180,7 +1179,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1212,7 +1211,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1249,7 +1248,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1291,7 +1290,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1349,7 +1348,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
