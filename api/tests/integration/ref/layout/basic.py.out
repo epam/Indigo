@@ -1,31 +1,6 @@
 *** Reaction layout testing ***
-  Result: Molecule #0: Error: atom #0 (Cl) contains delta 2.339079737663269 > 0.001
-   atom #1 (C) contains delta 2.339120030403137 > 0.001
-   atom #2 (C) contains delta 2.339120030403149 > 0.001
-   atom #3 (C) contains delta 2.339120149963579 > 0.001
-   atom #4 (O) contains delta 2.3391202691728687 > 0.001
-   Molecule #1: Error: atom #0 (C) contains delta 3.000946612492339 > 0.001
-   atom #1 (N) contains delta 3.0009470770820696 > 0.001
-   atom #2 (C) contains delta 3.00097133348515 > 0.001
-   atom #3 (C) contains delta 3.000933561765267 > 0.001
-   atom #4 (C) contains delta 3.000903297374147 > 0.001
-   atom #5 (O) contains delta 3.000935705784977 > 0.001
-   atom #6 (S) contains delta 3.000983282487194 > 0.001
-   atom #7 (O) contains delta 3.001015611124085 > 0.001
-   atom #8 (O) contains delta 3.0009528458421726 > 0.001
-   atom #9 (C) contains delta 3.0009591188437006 > 0.001
-   atom #10 (F) contains delta 3.0009710000710688 > 0.001
-   atom #11 (F) contains delta 3.00096092341222 > 0.001
-   atom #12 (C) contains delta 3.0009345838672328 > 0.001
-   atom #13 (F) contains delta 3.000923446003327 > 0.001
-   atom #14 (F) contains delta 3.000932965068001 > 0.001
-   atom #15 (C) contains delta 3.0009737493318625 > 0.001
-   atom #16 (F) contains delta 3.0009838382230196 > 0.001
-   atom #17 (F) contains delta 3.0009751821862922 > 0.001
-   atom #18 (C) contains delta 3.000948390988062 > 0.001
-   atom #19 (F) contains delta 3.000947567781758 > 0.001
-   atom #20 (F) contains delta 3.000988671663973 > 0.001
-   atom #21 (F) contains delta 3.000987012177964 > 0.001
+  Result: Molecule #0: Success
+   Molecule #1: Success
 *** Check relative layout for the fixed components ***
 
   -INDIGO-01000000002D
@@ -71,20 +46,8 @@ Error: order has been changed:x[2]=1.0000, x[1]=0.0000 vs nx[2]=0.0000, nx[1]=4.
 *** Molecule layout for data sgroups ***
   Result: Success
 *** Reaction layout for data sgroups ***
-  Result: Molecule #0: Error: atom #0 (C) contains delta 1.3856407403946127 > 0.001
-   atom #1 (C) contains delta 1.3856407403945936 > 0.001
-   atom #2 (C) contains delta 1.385600209236145 > 0.001
-   atom #3 (C) contains delta 1.3856595754623426 > 0.001
-   atom #4 (C) contains delta 1.3856593370437622 > 0.001
-   atom #5 (C) contains delta 1.3855998516082968 > 0.001
-   data sgroup #0 contains delta 1.3856000900268555 > 0.001
-   Molecule #1: Error: atom #0 (C) contains delta 2.3354658404136717 > 0.001
-   atom #1 (C) contains delta 2.335465072726287 > 0.001
-   atom #2 (C) contains delta 2.335441793351552 > 0.001
-   atom #3 (C) contains delta 2.335476247696303 > 0.001
-   atom #4 (C) contains delta 2.335476106240371 > 0.001
-   atom #5 (C) contains delta 2.3354415811736207 > 0.001
-   data sgroup #0 contains delta 2.3354816429707306 > 0.001
+  Result: Molecule #0: Success
+   Molecule #1: Success
 *** Check issue 468 ***
   Result: Success
 *** Test aromatic ***
